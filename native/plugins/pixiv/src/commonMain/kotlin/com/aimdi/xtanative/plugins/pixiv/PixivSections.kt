@@ -197,7 +197,7 @@ internal fun RankingSection(model: PixivHomeModel, view: PixivHomeView, padding:
 
 /** A board's name, from XTA's own words for it. */
 @Composable
-internal fun rankingLabel(mode: PixivRankingMode): String = Strings.get(mode.labelKey.removePrefix("plugin_pixiv_"), currentLanguage())
+internal fun rankingLabel(mode: PixivRankingMode): String = Strings.get(PixivRankingPins.labelName(mode), currentLanguage())
 
 /** The archive day shown, the calendar that picks another, and the way back to today. */
 @OptIn(ExperimentalMaterial3Api::class)

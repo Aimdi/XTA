@@ -72,6 +72,7 @@ internal fun PixivNovelScreen(id: Long, seed: PixivNovel?) {
     val reading by model.reading.collectAsState()
     var menu by remember { mutableStateOf(false) }
     var appearance by remember { mutableStateOf(false) }
+    var exporting by remember { mutableStateOf(false) }
     val novel = reading.novel
     PluginScaffold(
         title = novel?.title?.ifEmpty { null } ?: pluginString(Strings.novel),
@@ -86,8 +87,16 @@ internal fun PixivNovelScreen(id: Long, seed: PixivNovel?) {
             }
         }
     }
-    if (menu && novel != null) NovelMenu(novel, reading.content, onAppearance = { appearance = true }) { menu = false }
+    if (novel == null) return
+    val export = rememberNovelExport(novel, reading)
+    if (menu) NovelMenu(novel, reading.content, onAppearance = { appearance = true }, onExport = { exporting = true }) { menu = false }
     if (appearance) AppearanceDialog { appearance = false }
+    if (exporting) {
+        NovelExportSheet(onPick = { format ->
+            exporting = false
+            export(format)
+        }) { exporting = false }
+    }
 }
 
 /** A muted novel waits behind a notice saying why, as a muted work does. */

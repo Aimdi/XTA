@@ -60,5 +60,13 @@ class PixivRoutesTest {
         assertNull(PixivRoutes.forUrl("artworks/123"))
     }
 
+    @Test
+    fun aGroupsCreatorOpensOnTheirProfile() {
+        assertEquals(PixivRoute.User(2841234), PixivRoutes.forAccount("2841234")?.let(PixivRoutes::parse))
+        assertNull(PixivRoutes.forAccount("0"))
+        assertNull(PixivRoutes.forAccount("someone"))
+        assertNull(PixivRoutes.forAccount(""))
+    }
+
     private fun parsedUrl(url: String): PixivRoute? = PixivRoutes.forUrl(url)?.let(PixivRoutes::parse)
 }

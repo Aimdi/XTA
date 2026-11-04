@@ -10,6 +10,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
@@ -145,7 +146,7 @@ private fun HostOption(value: PixivImageHostChoice, label: PluginText, detail: S
     )
 }
 
-/** Folders per creator and for R-18, the file-name template, and the record of pages saved here. */
+/** The file-name template, folders per creator and for R-18, and the record of pages saved here, as pixiv_settings_downloads.dart orders them. */
 @Composable
 internal fun DownloadSettings() {
     val runtime = LocalPixiv.current
@@ -154,15 +155,14 @@ internal fun DownloadSettings() {
     val language = currentLanguage()
     var naming by remember { mutableStateOf(false) }
     SectionTitle(pluginString(Strings.downloads_section))
+    ActionRow(pluginString(Strings.file_name), { naming = true }, subtitle = PixivSaveNaming.of(settings).template, trailing = { Icon(Icons.Filled.Edit, null) })
     SwitchRow(pluginString(Strings.folder_per_artist), pluginString(Strings.folder_per_artist_description), settings[PixivPrefs.folderPerArtist]) { runtime.settings.set(PixivPrefs.folderPerArtist, it) }
-    SwitchRow(pluginString(Strings.folder_r18), null, settings[PixivPrefs.folderR18]) { runtime.settings.set(PixivPrefs.folderR18, it) }
-    ActionRow(pluginString(Strings.file_name), { naming = true }, subtitle = PixivSaveNaming.of(settings).template)
+    SwitchRow(pluginString(Strings.folder_r18), pluginString(Strings.folder_r18_description), settings[PixivPrefs.folderR18]) { runtime.settings.set(PixivPrefs.folderR18, it) }
     val saved = PixivSavedPages.of(settings).size
-    ActionRow(
-        pluginString(Strings.download_index),
-        if (saved == 0) null else ({ sheets.ask.ask(Strings.download_index_forget_question.get(language), Strings.download_index_forget.get(language)) { runtime.settings.update(PixivSavedPages::cleared) } }),
-        subtitle = pluginString(Strings.download_index_description) + "\n" + savedCount(saved),
-    )
+    val forget = { sheets.ask.ask(Strings.download_index_forget_question.get(language), Strings.download_index_forget.get(language)) { runtime.settings.update(PixivSavedPages::cleared) } }
+    ActionRow(pluginString(Strings.download_index), null, subtitle = pluginString(Strings.download_index_description) + "\n" + savedCount(saved), trailing = {
+        TextButton(onClick = forget, enabled = saved > 0) { Text(pluginString(Strings.download_index_forget)) }
+    })
     if (naming) FileNameDialog { naming = false }
 }
 

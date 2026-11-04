@@ -23,6 +23,7 @@
     <string name="article_reader_line_spacing">पंक्तियों के बीच दूरी</string>
     <string name="article_reader_text_size">टेक्स्ट स्केल फ़ैक्टर</string>
     <string name="bookmark">बुकमार्क</string>
+    <string name="bookmark_add">बुकमार्क जोड़ें</string>
     <string name="bookmark_after_save">सहेजते समय बुकमार्क करें</string>
     <string name="bookmark_after_save_description">किसी कृति को उसके पेज से सहेजने पर वह बुकमार्क भी हो जाती है, अगर पहले से नहीं है।</string>
     <string name="bookmark_auto_tag">बुकमार्क पर अपने आप टैग लगाएँ</string>
@@ -45,6 +46,7 @@
     <string name="bookmark_tag_search">टैग खोजें या लिखें</string>
     <string name="bookmark_tag_unclassified">बिना श्रेणी</string>
     <string name="bookmark_tag_use">“%1$s” इस्तेमाल करें</string>
+    <string name="bookmark_tags">टैग</string>
     <string name="bookmark_tags_empty">अभी कोई टैग नहीं। ऊपर अपने टैग जोड़ें।</string>
     <string name="bookmark_tags_none">यहाँ अभी कोई बुकमार्क टैग नहीं हैं</string>
     <string name="bookmarks_empty">इस खाते पर अभी कोई सार्वजनिक बुकमार्क नहीं हैं</string>
@@ -103,6 +105,7 @@
     <string name="download_page">यह पृष्ठ डाउनलोड करें</string>
     <string name="download_page_saved">सहेजा गया – फिर से डाउनलोड करें</string>
     <string name="downloads_section">डाउनलोड</string>
+    <string name="downloads_title">डाउनलोड</string>
     <string name="empty">फ़ॉलोइंग फ़ीड में अभी कुछ नहीं</string>
     <string name="error_network">Pixiv तक पहुँच नहीं सकी</string>
     <string name="error_not_found">Pixiv पर नहीं मिला</string>
@@ -123,6 +126,7 @@
     <string name="folder_per_artist">हर कलाकार के लिए फ़ोल्डर</string>
     <string name="folder_per_artist_description">हर कलाकार के कामों को डाउनलोड फ़ोल्डर के अंदर उनके नाम वाले फ़ोल्डर में रखता है</string>
     <string name="folder_r18">R-18 के लिए अलग फ़ोल्डर</string>
+    <string name="folder_r18_description">R-18 कामों को डाउनलोड फ़ोल्डर के अंदर “R-18” फ़ोल्डर में रखता है</string>
     <string name="follow">फ़ॉलो करें</string>
     <string name="follow_private">निजी</string>
     <string name="follow_public">सार्वजनिक</string>
@@ -207,6 +211,12 @@
     <string name="novel_chapter_number">अध्याय %1$d</string>
     <plurals name="novel_chapters_count"><item quantity="one">%2$s अध्याय</item><item quantity="other">%2$s अध्याय</item></plurals>
     <plurals name="novel_characters"><item quantity="one">%2$s अक्षर</item><item quantity="other">%2$s अक्षर</item></plurals>
+    <string name="novel_export">टेक्स्ट के रूप में निर्यात करें</string>
+    <string name="novel_export_markup">Pixiv मार्कअप के साथ</string>
+    <string name="novel_export_markup_hint">टेक्स्ट ठीक वैसा ही जैसा Pixiv उसे सहेजता है, [newpage] जैसे टैग के साथ</string>
+    <string name="novel_export_plain">सादा टेक्स्ट</string>
+    <string name="novel_export_plain_hint">Pixiv मार्कअप हटाकर, रूबी को आधार(रूबी) के रूप में लिखा जाता है</string>
+    <string name="novel_exported">%1$s सहेजी गई</string>
     <string name="novel_following_empty">आप जिन रचनाकारों को फ़ॉलो करते हैं, उनके नए उपन्यास यहाँ दिखते हैं</string>
     <string name="novel_image">उपन्यास में चित्र</string>
     <string name="novel_image_open">कृति खोलें</string>
@@ -287,11 +297,24 @@
     <string name="r18">R-18</string>
     <string name="r18g">R-18G</string>
     <string name="ranking_back_to_today">आज पर वापस जाएँ</string>
+    <string name="ranking_day">दैनिक</string>
+    <string name="ranking_day_ai">AI</string>
+    <string name="ranking_day_female">महिला</string>
+    <string name="ranking_day_male">पुरुष</string>
+    <string name="ranking_day_manga">मांगा</string>
+    <string name="ranking_day_r18">R-18 दैनिक</string>
+    <string name="ranking_day_r18_ai">R-18 AI</string>
     <string name="ranking_edit">संपादित करें</string>
     <string name="ranking_edit_hint">पिन की गई रैंकिंग टैब के रूप में दिखती हैं। R-18 रैंकिंग तभी मिलती हैं जब “R-18 कृतियाँ दिखाएँ” चालू हो।</string>
     <string name="ranking_edit_title">रैंकिंग टैब</string>
     <string name="ranking_empty">अभी रैंकिंग में कोई कृति नहीं</string>
+    <string name="ranking_month">मासिक</string>
     <string name="ranking_pick_date">संग्रह से एक दिन चुनें</string>
+    <string name="ranking_rookie">नवागंतुक</string>
+    <string name="ranking_week">साप्ताहिक</string>
+    <string name="ranking_week_original">मूल</string>
+    <string name="ranking_week_r18">R-18 साप्ताहिक</string>
+    <string name="ranking_week_r18g">R-18G साप्ताहिक</string>
     <string name="read_horizontally">क्षैतिज पढ़ें</string>
     <string name="read_vertically">लंबवत पढ़ें</string>
     <string name="recommended_empty">अभी कोई सुझाव नहीं — रीफ़्रेश करने के लिए खींचें</string>
@@ -385,6 +408,7 @@
     <string name="settings_intro">यह निजी प्लगइन Pixiv को गैलरी ऐप की तरह पढ़ता है: चित्र, मंगा, उपन्यास, रैंकिंग, आपके बुकमार्क और खोज। अपने Pixiv खाते से लॉग इन करने के लिए साइन इन पर टैप करें, या नीचे रिफ़्रेश टोकन चिपकाएँ। बुकमार्क, फ़ॉलो और इतिहास इसी डिवाइस पर रहते हैं: आपके Pixiv खाते पर कभी कुछ भेजा, पोस्ट या बदला नहीं जाता।</string>
     <string name="share_link">लिंक साझा करें</string>
     <string name="show_r18">R-18 कृतियाँ दिखाएँ</string>
+    <string name="show_r18_description">डिफ़ॉल्ट रूप से बंद। बंद होने पर प्रतिबंधित कृतियाँ फ़ीड से छिपती हैं।</string>
     <string name="sign_in">Pixiv से साइन इन करें</string>
     <string name="sign_in_failed">Pixiv में साइन इन नहीं हो सका</string>
     <string name="sign_in_needs_android">यहाँ साइन इन करने के लिए Android ऐप का बिल्ट-इन ब्राउज़र चाहिए, जो डेस्कटॉप ऐप में नहीं है।</string>

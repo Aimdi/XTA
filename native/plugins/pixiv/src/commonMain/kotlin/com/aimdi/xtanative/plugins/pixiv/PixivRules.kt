@@ -37,6 +37,9 @@ internal object PixivRankingPins {
     /** Whether unpinning [id] would leave no chip the reader may see. */
     fun lastVisible(pins: List<String>, id: String, offered: List<PixivRankingMode>): Boolean =
         id in pins && offered.count { it.id in pins } <= 1
+
+    /** The name of [mode]'s label among the plugin's strings: XTA's key for it, without the prefix every Pixiv key of XTA's has. */
+    fun labelName(mode: PixivRankingMode): String = mode.labelKey.removePrefix("plugin_pixiv_")
 }
 
 /** Where an image size is chosen, the sizes offered there and the one it starts at. Downloads always save the original. */

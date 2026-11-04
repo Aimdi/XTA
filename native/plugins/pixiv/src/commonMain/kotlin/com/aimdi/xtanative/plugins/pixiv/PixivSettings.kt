@@ -144,14 +144,14 @@ private fun TokenField() {
     }
 }
 
-/** Show R-18, what the account itself shows of AI works (changed on Pixiv), and Hide AI. */
+/** Show R-18, Hide AI, and what the account itself shows of AI works (changed on Pixiv), as pixiv_settings_content.dart orders them. */
 @Composable
 private fun ContentSettings() {
     val runtime = LocalPixiv.current
     val settings = pixivSettings()
-    SwitchRow(pluginString(Strings.show_r18), null, settings[PixivPrefs.showR18]) { runtime.settings.set(PixivPrefs.showR18, it) }
-    if (PixivAccounts.signedIn(settings)) AccountAiRow(settings[PixivPrefs.userId])
+    SwitchRow(pluginString(Strings.show_r18), pluginString(Strings.show_r18_description), settings[PixivPrefs.showR18]) { runtime.settings.set(PixivPrefs.showR18, it) }
     SwitchRow(pluginString(Strings.hide_ai), pluginString(Strings.hide_ai_description), settings[PixivPrefs.hideAi]) { runtime.settings.set(PixivPrefs.hideAi, it) }
+    if (PixivAccounts.signedIn(settings)) AccountAiRow(settings[PixivPrefs.userId])
 }
 
 private enum class AiShown { LOADING, FAILED, SHOWN, HIDDEN }

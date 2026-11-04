@@ -23,6 +23,7 @@
     <string name="article_reader_line_spacing">Interligne</string>
     <string name="article_reader_text_size">Taille du texte</string>
     <string name="bookmark">Favori</string>
+    <string name="bookmark_add">Ajouter aux favoris</string>
     <string name="bookmark_after_save">Ajouter aux favoris en enregistrant</string>
     <string name="bookmark_after_save_description">Enregistrer une œuvre depuis sa page l’ajoute aussi aux favoris, si elle n’y est pas déjà.</string>
     <string name="bookmark_auto_tag">Étiqueter les favoris automatiquement</string>
@@ -45,6 +46,7 @@
     <string name="bookmark_tag_search">Chercher ou saisir une étiquette</string>
     <string name="bookmark_tag_unclassified">Non classés</string>
     <string name="bookmark_tag_use">Utiliser « %1$s »</string>
+    <string name="bookmark_tags">Étiquettes</string>
     <string name="bookmark_tags_empty">Pas encore d’étiquettes. Ajoutez les vôtres ci-dessus.</string>
     <string name="bookmark_tags_none">Pas encore d’étiquettes de favoris ici</string>
     <string name="bookmarks_empty">Aucun favori public sur ce compte pour l’instant</string>
@@ -103,6 +105,7 @@
     <string name="download_page">Télécharger cette page</string>
     <string name="download_page_saved">Enregistrée – télécharger à nouveau</string>
     <string name="downloads_section">Téléchargements</string>
+    <string name="downloads_title">Téléchargements</string>
     <string name="empty">Rien dans le fil des abonnements pour l’instant</string>
     <string name="error_network">Impossible de joindre Pixiv</string>
     <string name="error_not_found">Introuvable sur Pixiv</string>
@@ -123,6 +126,7 @@
     <string name="folder_per_artist">Un dossier par artiste</string>
     <string name="folder_per_artist_description">Range les œuvres de chaque artiste dans un dossier à son nom, dans le dossier de téléchargement</string>
     <string name="folder_r18">Dossier séparé pour R-18</string>
+    <string name="folder_r18_description">Range les œuvres R-18 dans un dossier « R-18 », dans le dossier de téléchargement</string>
     <string name="follow">Suivre</string>
     <string name="follow_private">Privés</string>
     <string name="follow_public">Publics</string>
@@ -207,6 +211,12 @@
     <string name="novel_chapter_number">N° %1$d</string>
     <plurals name="novel_chapters_count"><item quantity="one">%2$s chapitre</item><item quantity="other">%2$s chapitres</item></plurals>
     <plurals name="novel_characters"><item quantity="one">%2$s caractère</item><item quantity="other">%2$s caractères</item></plurals>
+    <string name="novel_export">Exporter en texte</string>
+    <string name="novel_export_markup">Avec le balisage Pixiv</string>
+    <string name="novel_export_markup_hint">Le texte tel que Pixiv l’enregistre, avec des balises comme [newpage]</string>
+    <string name="novel_export_plain">Texte brut</string>
+    <string name="novel_export_plain_hint">Sans le balisage Pixiv, le ruby écrit sous la forme base(ruby)</string>
+    <string name="novel_exported">%1$s enregistré</string>
     <string name="novel_following_empty">Les nouveaux romans des créateurs que vous suivez apparaissent ici</string>
     <string name="novel_image">Image du roman</string>
     <string name="novel_image_open">Ouvrir l’œuvre</string>
@@ -287,11 +297,24 @@
     <string name="r18">R-18</string>
     <string name="r18g">R-18G</string>
     <string name="ranking_back_to_today">Revenir à aujourd’hui</string>
+    <string name="ranking_day">Quotidien</string>
+    <string name="ranking_day_ai">IA</string>
+    <string name="ranking_day_female">Féminin</string>
+    <string name="ranking_day_male">Masculin</string>
+    <string name="ranking_day_manga">Manga</string>
+    <string name="ranking_day_r18">R-18 quotidien</string>
+    <string name="ranking_day_r18_ai">R-18 IA</string>
     <string name="ranking_edit">Modifier</string>
     <string name="ranking_edit_hint">Les classements épinglés s’affichent en onglets. Les classements R-18 sont proposés tant que « Afficher les œuvres R-18 » est activé.</string>
     <string name="ranking_edit_title">Onglets de classement</string>
     <string name="ranking_empty">Aucune œuvre au classement pour le moment</string>
+    <string name="ranking_month">Mensuel</string>
     <string name="ranking_pick_date">Choisir un jour dans les archives</string>
+    <string name="ranking_rookie">Débutants</string>
+    <string name="ranking_week">Hebdomadaire</string>
+    <string name="ranking_week_original">Original</string>
+    <string name="ranking_week_r18">R-18 hebdomadaire</string>
+    <string name="ranking_week_r18g">R-18G hebdomadaire</string>
     <string name="read_horizontally">Lire horizontalement</string>
     <string name="read_vertically">Lire verticalement</string>
     <string name="recommended_empty">Rien à recommander pour le moment — tirez pour actualiser</string>
@@ -385,6 +408,7 @@
     <string name="settings_intro">Ce plugin privé lit Pixiv comme une application de galerie : illustrations, mangas, romans, classements, vos favoris et la recherche. Touchez Se connecter pour vous connecter avec votre compte Pixiv, ou collez un jeton d’actualisation ci-dessous. Les favoris, les abonnements et l’historique restent sur cet appareil : rien n’est jamais envoyé à votre compte Pixiv, publié ni modifié sur celui-ci.</string>
     <string name="share_link">Partager le lien</string>
     <string name="show_r18">Afficher les œuvres R-18</string>
+    <string name="show_r18_description">Désactivé par défaut. Quand c’est désactivé, les œuvres restreintes sont masquées des fils.</string>
     <string name="sign_in">Se connecter avec Pixiv</string>
     <string name="sign_in_failed">Impossible de se connecter à Pixiv</string>
     <string name="sign_in_needs_android">La connexion ici nécessite le navigateur intégré de l'app Android, que l'app de bureau n'a pas.</string>

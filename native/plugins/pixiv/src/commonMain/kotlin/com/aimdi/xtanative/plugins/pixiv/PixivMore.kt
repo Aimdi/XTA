@@ -44,6 +44,7 @@ import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.post.PostIcons
+import com.aimdi.xtanative.ui.saved.SavedIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 
 /** One line of More: where it goes, and whether it needs an account. */
@@ -53,6 +54,7 @@ private val moreEntries = listOf(
     MoreEntry("history", PostIcons.History, Strings.history) { novels, _ -> open(PixivRoute.History(if (novels) PixivKind.NOVEL else PixivKind.WORK)) },
     MoreEntry("favorite-tags", PixivIcons.Label, Strings.search_favorite_tags) { _, _ -> open(PixivRoute.FavoriteTags) },
     MoreEntry("pixivision", PostIcons.Article, Strings.pixivision_articles, needsAccount = true) { _, _ -> open(PixivRoute.PixivisionList) },
+    MoreEntry("downloads", SavedIcons.Download, Strings.downloads_title) { _, _ -> host.openDownloads() },
     MoreEntry("preferences", PostIcons.Tune, Strings.more_preferences) { _, _ -> open(PixivRoute.Settings) },
     MoreEntry("mute", PixivIcons.VolumeOff, Strings.more_mute) { _, _ -> open(PixivRoute.Mute) },
     MoreEntry("manage", Icons.Filled.AccountCircle, Strings.manage_account, needsAccount = true) { _, outside -> outside.open(MANAGE_URL) },
@@ -60,7 +62,7 @@ private val moreEntries = listOf(
 
 private const val MANAGE_URL = "https://www.pixiv.net/settings/account"
 
-/** More: the account (switch, add, sign out), then history, favorite tags, Pixivision, preferences, mute and Pixiv's own account page. */
+/** More: the account (switch, add, sign out), then history, favorite tags, Pixivision, the app's downloads, preferences, mute and Pixiv's own account page. */
 @Composable
 internal fun MorePane(novels: Boolean, padding: PaddingValues, toTop: Int) {
     val runtime = LocalPixiv.current

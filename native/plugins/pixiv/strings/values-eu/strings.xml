@@ -23,6 +23,7 @@
     <string name="article_reader_line_spacing">Lerroartea</string>
     <string name="article_reader_text_size">Testuaren eskala-faktorea</string>
     <string name="bookmark">Laster-marka</string>
+    <string name="bookmark_add">Gehitu laster-marka</string>
     <string name="bookmark_after_save">Gorde ahala gehitu laster-marketara</string>
     <string name="bookmark_after_save_description">Lan bat bere orritik gordetzean laster-marketara ere gehitzen da, oraindik ez badago.</string>
     <string name="bookmark_auto_tag">Etiketatu laster-markak automatikoki</string>
@@ -45,6 +46,7 @@
     <string name="bookmark_tag_search">Bilatu edo idatzi etiketa bat</string>
     <string name="bookmark_tag_unclassified">Kategoriarik gabe</string>
     <string name="bookmark_tag_use">Erabili «%1$s»</string>
+    <string name="bookmark_tags">Etiketak</string>
     <string name="bookmark_tags_empty">Oraindik ez dago etiketarik. Gehitu zureak goian.</string>
     <string name="bookmark_tags_none">Oraindik ez dago laster-marken etiketarik hemen</string>
     <string name="bookmarks_empty">Oraindik ez dago laster-marka publikorik kontu honetan</string>
@@ -103,6 +105,7 @@
     <string name="download_page">Deskargatu orrialde hau</string>
     <string name="download_page_saved">Gordeta – deskargatu berriro</string>
     <string name="downloads_section">Deskargak</string>
+    <string name="downloads_title">Deskargak</string>
     <string name="empty">Oraindik ez dago ezer jarraipen-jarioan</string>
     <string name="error_network">Ezin izan da Pixivrekin konektatu</string>
     <string name="error_not_found">Ez da aurkitu Pixiven</string>
@@ -123,6 +126,7 @@
     <string name="folder_per_artist">Karpeta bat artista bakoitzeko</string>
     <string name="folder_per_artist_description">Artista bakoitzaren lanak haren izena duen karpeta batean jartzen ditu, deskargen karpetaren barruan</string>
     <string name="folder_r18">R-18rako karpeta bereizia</string>
+    <string name="folder_r18_description">R-18 lanak «R-18» karpetan jartzen ditu, deskargen karpetaren barruan</string>
     <string name="follow">Jarraitu</string>
     <string name="follow_private">Pribatuak</string>
     <string name="follow_public">Publikoak</string>
@@ -207,6 +211,12 @@
     <string name="novel_chapter_number">%1$d. zatia</string>
     <plurals name="novel_chapters_count"><item quantity="one">kapitulu %2$s</item><item quantity="other">%2$s kapitulu</item></plurals>
     <plurals name="novel_characters"><item quantity="one">karaktere %2$s</item><item quantity="other">%2$s karaktere</item></plurals>
+    <string name="novel_export">Esportatu testu gisa</string>
+    <string name="novel_export_markup">Pixiv-en markaketarekin</string>
+    <string name="novel_export_markup_hint">Testua Pixiv-ek gordetzen duen bezala, [newpage] bezalako etiketekin</string>
+    <string name="novel_export_plain">Testu soila</string>
+    <string name="novel_export_plain_hint">Pixiv-en markaketarik gabe; ruby-a oinarria(ruby) gisa idatzita</string>
+    <string name="novel_exported">%1$s gorde da</string>
     <string name="novel_following_empty">Jarraitzen dituzun sortzaileen eleberri berriak hemen agertzen dira</string>
     <string name="novel_image">Eleberriko irudia</string>
     <string name="novel_image_open">Ireki lana</string>
@@ -287,11 +297,24 @@
     <string name="r18">R-18</string>
     <string name="r18g">R-18G</string>
     <string name="ranking_back_to_today">Itzuli gaurkora</string>
+    <string name="ranking_day">Egunekoa</string>
+    <string name="ranking_day_ai">AA</string>
+    <string name="ranking_day_female">Emakumezkoa</string>
+    <string name="ranking_day_male">Gizonezkoa</string>
+    <string name="ranking_day_manga">Manga</string>
+    <string name="ranking_day_r18">R-18 egunekoa</string>
+    <string name="ranking_day_r18_ai">R-18 AA</string>
     <string name="ranking_edit">Editatu</string>
     <string name="ranking_edit_hint">Ainguratutako sailkapenak fitxa gisa agertzen dira. R-18 sailkapenak «Erakutsi R-18 lanak» aktibatuta dagoenean eskaintzen dira.</string>
     <string name="ranking_edit_title">Sailkapen-fitxak</string>
     <string name="ranking_empty">Ez dago sailkapeneko lanik orain</string>
+    <string name="ranking_month">Hilekora</string>
     <string name="ranking_pick_date">Aukeratu egun bat artxibotik</string>
+    <string name="ranking_rookie">Hasiberriak</string>
+    <string name="ranking_week">Astekoa</string>
+    <string name="ranking_week_original">Originala</string>
+    <string name="ranking_week_r18">R-18 astekoa</string>
+    <string name="ranking_week_r18g">R-18G astekoa</string>
     <string name="read_horizontally">Irakurri horizontalki</string>
     <string name="read_vertically">Irakurri bertikalki</string>
     <string name="recommended_empty">Une honetan ez dago gomendiorik — tira freskatzeko</string>
@@ -385,6 +408,7 @@
     <string name="settings_intro">Plugin pribatu honek Pixiv galeria-aplikazio baten moduan irakurtzen du: ilustrazioak, mangak, eleberriak, sailkapenak, zure laster-markak eta bilaketa. Sakatu Hasi saioa zure Pixiv kontuarekin sartzeko, edo itsatsi freskatze-token bat behean. Laster-markak, jarraipenak eta historia gailu honetan geratzen dira: ez da inoiz ezer bidaltzen, argitaratzen edo aldatzen zure Pixiv kontuan.</string>
     <string name="share_link">Partekatu esteka</string>
     <string name="show_r18">Erakutsi R-18 lanak</string>
+    <string name="show_r18_description">Desaktibatuta lehenespenez. Desaktibatuta dagoenean, lan murriztuak ezkutatzen dira jarioetan.</string>
     <string name="sign_in">Hasi saioa Pixivekin</string>
     <string name="sign_in_failed">Ezin izan da Pixiven saioa hasi</string>
     <string name="sign_in_needs_android">Hemen saioa hasteko Android aplikazioaren nabigatzaile integratua behar da, eta mahaigaineko aplikazioak ez du.</string>

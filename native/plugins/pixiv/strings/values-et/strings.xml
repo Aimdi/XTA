@@ -23,6 +23,7 @@
     <string name="article_reader_line_spacing">Reavahe</string>
     <string name="article_reader_text_size">Teksti skaleerimistegur</string>
     <string name="bookmark">Järjehoidja</string>
+    <string name="bookmark_add">Lisa järjehoidja</string>
     <string name="bookmark_after_save">Lisa salvestamisel järjehoidjatesse</string>
     <string name="bookmark_after_save_description">Teose salvestamine selle lehelt lisab selle ka järjehoidjatesse, kui seda seal veel pole.</string>
     <string name="bookmark_auto_tag">Sildista järjehoidjad automaatselt</string>
@@ -45,6 +46,7 @@
     <string name="bookmark_tag_search">Otsi või sisesta silt</string>
     <string name="bookmark_tag_unclassified">Kategoriseerimata</string>
     <string name="bookmark_tag_use">Kasuta „%1$s“</string>
+    <string name="bookmark_tags">Sildid</string>
     <string name="bookmark_tags_empty">Silte veel pole. Lisa ülal oma sildid.</string>
     <string name="bookmark_tags_none">Siin pole veel järjehoidjate silte</string>
     <string name="bookmarks_empty">Sellel kontol pole veel avalikke järjehoidjaid</string>
@@ -103,6 +105,7 @@
     <string name="download_page">Laadi see leht alla</string>
     <string name="download_page_saved">Salvestatud – laadi uuesti alla</string>
     <string name="downloads_section">Allalaadimised</string>
+    <string name="downloads_title">Allalaadimised</string>
     <string name="empty">Jälgimisvoos pole veel midagi</string>
     <string name="error_network">Pixiviga ei õnnestunud ühendust saada</string>
     <string name="error_not_found">Seda ei leitud Pixivist</string>
@@ -123,6 +126,7 @@
     <string name="folder_per_artist">Iga kunstniku jaoks kaust</string>
     <string name="folder_per_artist_description">Paneb iga kunstniku teosed allalaadimiste kausta sees tema nimega kausta</string>
     <string name="folder_r18">Eraldi kaust R-18 jaoks</string>
+    <string name="folder_r18_description">Paneb R-18 teosed allalaadimiste kausta sees olevasse kausta „R-18”</string>
     <string name="follow">Jälgi</string>
     <string name="follow_private">Privaatsed</string>
     <string name="follow_public">Avalikud</string>
@@ -207,6 +211,12 @@
     <string name="novel_chapter_number">Nr %1$d</string>
     <plurals name="novel_chapters_count"><item quantity="one">%2$s peatükk</item><item quantity="other">%2$s peatükki</item></plurals>
     <plurals name="novel_characters"><item quantity="one">%2$s märk</item><item quantity="other">%2$s märki</item></plurals>
+    <string name="novel_export">Ekspordi tekstina</string>
+    <string name="novel_export_markup">Pixivi märgendusega</string>
+    <string name="novel_export_markup_hint">Tekst täpselt nii, nagu Pixiv selle salvestab, koos siltidega nagu [newpage]</string>
+    <string name="novel_export_plain">Lihttekst</string>
+    <string name="novel_export_plain_hint">Ilma Pixivi märgenduseta, ruby kujul alus(ruby)</string>
+    <string name="novel_exported">%1$s salvestatud</string>
     <string name="novel_following_empty">Siin on jälgitavate autorite uued romaanid</string>
     <string name="novel_image">Pilt romaanis</string>
     <string name="novel_image_open">Ava teos</string>
@@ -287,11 +297,24 @@
     <string name="r18">R-18</string>
     <string name="r18g">R-18G</string>
     <string name="ranking_back_to_today">Tagasi tänasesse</string>
+    <string name="ranking_day">Päevane</string>
+    <string name="ranking_day_ai">TI</string>
+    <string name="ranking_day_female">Naised</string>
+    <string name="ranking_day_male">Mehed</string>
+    <string name="ranking_day_manga">Manga</string>
+    <string name="ranking_day_r18">R-18 päevane</string>
+    <string name="ranking_day_r18_ai">R-18 TI</string>
     <string name="ranking_edit">Muuda</string>
     <string name="ranking_edit_hint">Kinnitatud edetabelid on vahekaartidena. R-18 edetabelid on valikus, kui „Näita R-18 teoseid“ on sees.</string>
     <string name="ranking_edit_title">Edetabelite vahekaardid</string>
     <string name="ranking_empty">Edetabelis pole praegu töid</string>
+    <string name="ranking_month">Kuine</string>
     <string name="ranking_pick_date">Vali päev arhiivist</string>
+    <string name="ranking_rookie">Uustulnukad</string>
+    <string name="ranking_week">Nädalane</string>
+    <string name="ranking_week_original">Originaal</string>
+    <string name="ranking_week_r18">R-18 nädalane</string>
+    <string name="ranking_week_r18g">R-18G nädalane</string>
     <string name="read_horizontally">Loe horisontaalselt</string>
     <string name="read_vertically">Loe vertikaalselt</string>
     <string name="recommended_empty">Praegu soovitusi pole — tõmba värskendamiseks</string>
@@ -385,6 +408,7 @@
     <string name="settings_intro">See privaatne pistikprogramm loeb Pixivit nagu galeriirakendus: illustratsioone, mangat, romaane, edetabeleid, sinu järjehoidjaid ja otsingut. Puuduta Logi sisse, et siseneda oma Pixivi kontoga, või kleebi allpool värskendustõend. Järjehoidjad, jälgimised ja ajalugu jäävad sellesse seadmesse: sinu Pixivi kontole ei saadeta, postitata ega muudeta kunagi midagi.</string>
     <string name="share_link">Jaga linki</string>
     <string name="show_r18">Näita R-18 teoseid</string>
+    <string name="show_r18_description">Vaikimisi väljas. Kui väljas, peidetakse piiratud teosed voogudest.</string>
     <string name="sign_in">Logi Pixiviga sisse</string>
     <string name="sign_in_failed">Pixivisse sisselogimine ebaõnnestus</string>
     <string name="sign_in_needs_android">Siin sisselogimiseks on vaja Androidi rakenduse sisseehitatud brauserit, mida töölauarakendusel pole.</string>

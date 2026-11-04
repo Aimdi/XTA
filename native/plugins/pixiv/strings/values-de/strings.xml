@@ -23,6 +23,7 @@
     <string name="article_reader_line_spacing">Zeilenabstand</string>
     <string name="article_reader_text_size">Textskalierungsfaktor</string>
     <string name="bookmark">Lesezeichen</string>
+    <string name="bookmark_add">Lesezeichen hinzufügen</string>
     <string name="bookmark_after_save">Beim Speichern als Lesezeichen merken</string>
     <string name="bookmark_after_save_description">Speicherst du ein Werk auf seiner Seite, wird es auch als Lesezeichen gemerkt, falls es noch keins ist.</string>
     <string name="bookmark_auto_tag">Lesezeichen automatisch taggen</string>
@@ -45,6 +46,7 @@
     <string name="bookmark_tag_search">Tag suchen oder eingeben</string>
     <string name="bookmark_tag_unclassified">Ohne Kategorie</string>
     <string name="bookmark_tag_use">„%1$s“ verwenden</string>
+    <string name="bookmark_tags">Tags</string>
     <string name="bookmark_tags_empty">Noch keine Tags. Füge oben eigene hinzu.</string>
     <string name="bookmark_tags_none">Hier gibt es noch keine Lesezeichen-Tags</string>
     <string name="bookmarks_empty">Noch keine öffentlichen Lesezeichen auf diesem Konto</string>
@@ -103,6 +105,7 @@
     <string name="download_page">Diese Seite herunterladen</string>
     <string name="download_page_saved">Gespeichert – erneut herunterladen</string>
     <string name="downloads_section">Downloads</string>
+    <string name="downloads_title">Downloads</string>
     <string name="empty">Noch nichts im Following-Feed</string>
     <string name="error_network">Pixiv konnte nicht erreicht werden</string>
     <string name="error_not_found">Auf Pixiv nicht gefunden</string>
@@ -123,6 +126,7 @@
     <string name="folder_per_artist">Ordner pro Künstler</string>
     <string name="folder_per_artist_description">Legt die Werke jedes Künstlers in einem nach ihm benannten Ordner im Download-Ordner ab</string>
     <string name="folder_r18">Eigener Ordner für R-18</string>
+    <string name="folder_r18_description">Legt R-18-Werke in einem Ordner „R-18“ im Download-Ordner ab</string>
     <string name="follow">Folgen</string>
     <string name="follow_private">Privat</string>
     <string name="follow_public">Öffentlich</string>
@@ -207,6 +211,12 @@
     <string name="novel_chapter_number">Nr. %1$d</string>
     <plurals name="novel_chapters_count"><item quantity="one">%2$s Kapitel</item><item quantity="other">%2$s Kapitel</item></plurals>
     <plurals name="novel_characters"><item quantity="one">%2$s Zeichen</item><item quantity="other">%2$s Zeichen</item></plurals>
+    <string name="novel_export">Als Text exportieren</string>
+    <string name="novel_export_markup">Mit Pixiv-Markup</string>
+    <string name="novel_export_markup_hint">Der Text genau so, wie Pixiv ihn speichert, mit Tags wie [newpage]</string>
+    <string name="novel_export_plain">Reiner Text</string>
+    <string name="novel_export_plain_hint">Ohne Pixiv-Markup, Ruby als Basis(Ruby) geschrieben</string>
+    <string name="novel_exported">%1$s gespeichert</string>
     <string name="novel_following_empty">Neue Romane von Leuten, denen du folgst, erscheinen hier</string>
     <string name="novel_image">Bild im Roman</string>
     <string name="novel_image_open">Werk öffnen</string>
@@ -287,11 +297,24 @@
     <string name="r18">R-18</string>
     <string name="r18g">R-18G</string>
     <string name="ranking_back_to_today">Zurück zu heute</string>
+    <string name="ranking_day">Täglich</string>
+    <string name="ranking_day_ai">KI</string>
+    <string name="ranking_day_female">Weiblich</string>
+    <string name="ranking_day_male">Männlich</string>
+    <string name="ranking_day_manga">Manga</string>
+    <string name="ranking_day_r18">R-18 täglich</string>
+    <string name="ranking_day_r18_ai">R-18 KI</string>
     <string name="ranking_edit">Bearbeiten</string>
     <string name="ranking_edit_hint">Angeheftete Rankings erscheinen als Tabs. R-18-Rankings stehen zur Wahl, solange „R-18-Werke anzeigen“ an ist.</string>
     <string name="ranking_edit_title">Ranking-Tabs</string>
     <string name="ranking_empty">Gerade keine Ranking-Werke</string>
+    <string name="ranking_month">Monatlich</string>
     <string name="ranking_pick_date">Tag aus dem Archiv wählen</string>
+    <string name="ranking_rookie">Newcomer</string>
+    <string name="ranking_week">Wöchentlich</string>
+    <string name="ranking_week_original">Original</string>
+    <string name="ranking_week_r18">R-18 wöchentlich</string>
+    <string name="ranking_week_r18g">R-18G wöchentlich</string>
     <string name="read_horizontally">Horizontal lesen</string>
     <string name="read_vertically">Vertikal lesen</string>
     <string name="recommended_empty">Gerade nichts Empfohlenes — zum Aktualisieren ziehen</string>
@@ -385,6 +408,7 @@
     <string name="settings_intro">Dieses private Plugin liest Pixiv wie eine Galerie-App: Illustrationen, Manga, Romane, Rankings, deine Lesezeichen und die Suche. Tippe auf Anmelden, um dich mit deinem Pixiv-Konto anzumelden, oder füge unten ein Refresh-Token ein. Lesezeichen, Follows und Verlauf bleiben auf diesem Gerät: An dein Pixiv-Konto wird nie etwas gesendet, dort nie etwas gepostet oder geändert.</string>
     <string name="share_link">Link teilen</string>
     <string name="show_r18">R-18-Werke anzeigen</string>
+    <string name="show_r18_description">Standardmäßig aus. Wenn aus, werden eingeschränkte Werke in Feeds ausgeblendet.</string>
     <string name="sign_in">Mit Pixiv anmelden</string>
     <string name="sign_in_failed">Anmeldung bei Pixiv fehlgeschlagen</string>
     <string name="sign_in_needs_android">Die Anmeldung hier braucht den integrierten Browser der Android-App, den die Desktop-App nicht hat.</string>

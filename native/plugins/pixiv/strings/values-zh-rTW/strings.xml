@@ -23,6 +23,7 @@
     <string name="article_reader_line_spacing">行距</string>
     <string name="article_reader_text_size">文字大小</string>
     <string name="bookmark">收藏</string>
+    <string name="bookmark_add">加入收藏</string>
     <string name="bookmark_after_save">儲存時收藏</string>
     <string name="bookmark_after_save_description">在作品頁面儲存作品時，若尚未收藏，也會一併收藏。</string>
     <string name="bookmark_auto_tag">自動為收藏加上標籤</string>
@@ -45,6 +46,7 @@
     <string name="bookmark_tag_search">搜尋或輸入標籤</string>
     <string name="bookmark_tag_unclassified">未分類</string>
     <string name="bookmark_tag_use">使用「%1$s」</string>
+    <string name="bookmark_tags">標籤</string>
     <string name="bookmark_tags_empty">還沒有標籤。可在上方新增你自己的標籤。</string>
     <string name="bookmark_tags_none">這裡還沒有收藏標籤</string>
     <string name="bookmarks_empty">此帳號尚無公開收藏</string>
@@ -103,6 +105,7 @@
     <string name="download_page">下載本頁</string>
     <string name="download_page_saved">已儲存 – 再次下載</string>
     <string name="downloads_section">下載</string>
+    <string name="downloads_title">下載</string>
     <string name="empty">追蹤動態裡還沒有內容</string>
     <string name="error_network">無法連線 Pixiv</string>
     <string name="error_not_found">在 Pixiv 上找不到</string>
@@ -123,6 +126,7 @@
     <string name="folder_per_artist">依繪師分資料夾</string>
     <string name="folder_per_artist_description">將每位繪師的作品存入下載資料夾中以其名稱命名的資料夾</string>
     <string name="folder_r18">R-18 獨立資料夾</string>
+    <string name="folder_r18_description">將 R-18 作品存入下載資料夾中的「R-18」資料夾</string>
     <string name="follow">追蹤</string>
     <string name="follow_private">私密</string>
     <string name="follow_public">公開</string>
@@ -207,6 +211,12 @@
     <string name="novel_chapter_number">第 %1$d 章</string>
     <plurals name="novel_chapters_count"><item quantity="other">%2$s 章</item></plurals>
     <plurals name="novel_characters"><item quantity="other">%2$s 字</item></plurals>
+    <string name="novel_export">匯出為文字檔</string>
+    <string name="novel_export_markup">保留 Pixiv 標記</string>
+    <string name="novel_export_markup_hint">與 Pixiv 儲存的原文完全相同，包含 [newpage] 等標記</string>
+    <string name="novel_export_plain">純文字</string>
+    <string name="novel_export_plain_hint">去除 Pixiv 標記，注音寫成「正文(注音)」</string>
+    <string name="novel_exported">已儲存 %1$s</string>
     <string name="novel_following_empty">你追蹤的作者發布的新小說會顯示在這裡</string>
     <string name="novel_image">小說中的圖片</string>
     <string name="novel_image_open">開啟作品</string>
@@ -287,11 +297,24 @@
     <string name="r18">R-18</string>
     <string name="r18g">R-18G</string>
     <string name="ranking_back_to_today">回到今天</string>
+    <string name="ranking_day">日榜</string>
+    <string name="ranking_day_ai">AI生成</string>
+    <string name="ranking_day_female">女性</string>
+    <string name="ranking_day_male">男性</string>
+    <string name="ranking_day_manga">漫畫</string>
+    <string name="ranking_day_r18">R-18 日榜</string>
+    <string name="ranking_day_r18_ai">R-18 AI生成</string>
     <string name="ranking_edit">編輯</string>
     <string name="ranking_edit_hint">已釘選的排行榜會顯示為分頁。開啟「顯示 R-18 作品」時才提供 R-18 排行榜。</string>
     <string name="ranking_edit_title">排行榜分頁</string>
     <string name="ranking_empty">目前沒有排行榜作品</string>
+    <string name="ranking_month">月榜</string>
     <string name="ranking_pick_date">從歷史榜單中選擇日期</string>
+    <string name="ranking_rookie">新人</string>
+    <string name="ranking_week">週榜</string>
+    <string name="ranking_week_original">原創</string>
+    <string name="ranking_week_r18">R-18 週榜</string>
+    <string name="ranking_week_r18g">R-18G 週榜</string>
     <string name="read_horizontally">橫向閱讀</string>
     <string name="read_vertically">直向閱讀</string>
     <string name="recommended_empty">目前沒有推薦 — 下拉重新整理</string>
@@ -385,6 +408,7 @@
     <string name="settings_intro">這個私人外掛像圖庫應用程式一樣瀏覽 Pixiv：插畫、漫畫、小說、排行榜、你的收藏和搜尋。點按「登入」以你的 Pixiv 帳號登入，或在下方貼上更新權杖。收藏、追蹤和瀏覽紀錄都保存在本裝置上：絕不會向你的 Pixiv 帳號傳送、發布或變更任何內容。</string>
     <string name="share_link">分享連結</string>
     <string name="show_r18">顯示 R-18 作品</string>
+    <string name="show_r18_description">預設關閉。關閉時，受限作品會從動態中隱藏。</string>
     <string name="sign_in">使用 Pixiv 登入</string>
     <string name="sign_in_failed">無法登入 Pixiv</string>
     <string name="sign_in_needs_android">在此登入需要 Android 應用程式的內建瀏覽器，桌面版沒有這個瀏覽器。</string>

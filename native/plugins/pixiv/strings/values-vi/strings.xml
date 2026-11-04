@@ -23,6 +23,7 @@
     <string name="article_reader_line_spacing">Giãn dòng</string>
     <string name="article_reader_text_size">Kích thước chữ</string>
     <string name="bookmark">Đánh dấu</string>
+    <string name="bookmark_add">Thêm đánh dấu</string>
     <string name="bookmark_after_save">Đánh dấu khi lưu</string>
     <string name="bookmark_after_save_description">Lưu một tác phẩm từ trang của nó cũng sẽ đánh dấu tác phẩm, nếu chưa được đánh dấu.</string>
     <string name="bookmark_auto_tag">Tự động gắn thẻ cho đánh dấu</string>
@@ -45,6 +46,7 @@
     <string name="bookmark_tag_search">Tìm hoặc nhập thẻ</string>
     <string name="bookmark_tag_unclassified">Chưa phân loại</string>
     <string name="bookmark_tag_use">Dùng “%1$s”</string>
+    <string name="bookmark_tags">Thẻ</string>
     <string name="bookmark_tags_empty">Chưa có thẻ nào. Hãy thêm thẻ của bạn ở trên.</string>
     <string name="bookmark_tags_none">Chưa có thẻ đánh dấu nào ở đây</string>
     <string name="bookmarks_empty">Chưa có dấu trang công khai trên tài khoản này</string>
@@ -103,6 +105,7 @@
     <string name="download_page">Tải trang này xuống</string>
     <string name="download_page_saved">Đã lưu – tải lại</string>
     <string name="downloads_section">Tải xuống</string>
+    <string name="downloads_title">Tệp tải xuống</string>
     <string name="empty">Chưa có gì trong bảng tin theo dõi</string>
     <string name="error_network">Không thể kết nối tới Pixiv</string>
     <string name="error_not_found">Không tìm thấy trên Pixiv</string>
@@ -123,6 +126,7 @@
     <string name="folder_per_artist">Mỗi họa sĩ một thư mục</string>
     <string name="folder_per_artist_description">Đặt tác phẩm của từng họa sĩ vào một thư mục mang tên họ bên trong thư mục tải xuống</string>
     <string name="folder_r18">Thư mục riêng cho R-18</string>
+    <string name="folder_r18_description">Đặt tác phẩm R-18 vào thư mục “R-18” bên trong thư mục tải xuống</string>
     <string name="follow">Theo dõi</string>
     <string name="follow_private">Riêng tư</string>
     <string name="follow_public">Công khai</string>
@@ -207,6 +211,12 @@
     <string name="novel_chapter_number">Chương %1$d</string>
     <plurals name="novel_chapters_count"><item quantity="other">%2$s chương</item></plurals>
     <plurals name="novel_characters"><item quantity="other">%2$s ký tự</item></plurals>
+    <string name="novel_export">Xuất dạng văn bản</string>
+    <string name="novel_export_markup">Kèm mã định dạng của Pixiv</string>
+    <string name="novel_export_markup_hint">Văn bản đúng như Pixiv lưu, kèm các thẻ như [newpage]</string>
+    <string name="novel_export_plain">Văn bản thuần</string>
+    <string name="novel_export_plain_hint">Bỏ mã định dạng của Pixiv, chú âm ruby viết dạng chữ(chú âm)</string>
+    <string name="novel_exported">Đã lưu %1$s</string>
     <string name="novel_following_empty">Tiểu thuyết mới từ những tác giả bạn theo dõi sẽ hiện ở đây</string>
     <string name="novel_image">Hình trong tiểu thuyết</string>
     <string name="novel_image_open">Mở tác phẩm</string>
@@ -287,11 +297,24 @@
     <string name="r18">R-18</string>
     <string name="r18g">R-18G</string>
     <string name="ranking_back_to_today">Quay lại hôm nay</string>
+    <string name="ranking_day">Hàng ngày</string>
+    <string name="ranking_day_ai">AI</string>
+    <string name="ranking_day_female">Nữ</string>
+    <string name="ranking_day_male">Nam</string>
+    <string name="ranking_day_manga">Manga</string>
+    <string name="ranking_day_r18">R-18 hàng ngày</string>
+    <string name="ranking_day_r18_ai">R-18 AI</string>
     <string name="ranking_edit">Chỉnh sửa</string>
     <string name="ranking_edit_hint">Bảng xếp hạng đã ghim hiện thành thẻ. Bảng xếp hạng R-18 chỉ có khi bật “Hiện tác phẩm R-18”.</string>
     <string name="ranking_edit_title">Thẻ bảng xếp hạng</string>
     <string name="ranking_empty">Hiện không có tác phẩm xếp hạng</string>
+    <string name="ranking_month">Hàng tháng</string>
     <string name="ranking_pick_date">Chọn một ngày trong kho lưu trữ</string>
+    <string name="ranking_rookie">Tân binh</string>
+    <string name="ranking_week">Hàng tuần</string>
+    <string name="ranking_week_original">Gốc</string>
+    <string name="ranking_week_r18">R-18 hàng tuần</string>
+    <string name="ranking_week_r18g">R-18G hàng tuần</string>
     <string name="read_horizontally">Đọc ngang</string>
     <string name="read_vertically">Đọc dọc</string>
     <string name="recommended_empty">Hiện không có gợi ý — kéo để làm mới</string>
@@ -385,6 +408,7 @@
     <string name="settings_intro">Plugin riêng tư này đọc Pixiv như một ứng dụng thư viện ảnh: tranh minh họa, manga, tiểu thuyết, bảng xếp hạng, dấu trang của bạn và tìm kiếm. Nhấn Đăng nhập để đăng nhập bằng tài khoản Pixiv, hoặc dán mã làm mới bên dưới. Dấu trang, lượt theo dõi và lịch sử được giữ trên thiết bị này: không có gì được gửi, đăng hay thay đổi trên tài khoản Pixiv của bạn.</string>
     <string name="share_link">Chia sẻ liên kết</string>
     <string name="show_r18">Hiện tác phẩm R-18</string>
+    <string name="show_r18_description">Mặc định tắt. Khi tắt, tác phẩm bị hạn chế được ẩn khỏi bảng tin.</string>
     <string name="sign_in">Đăng nhập bằng Pixiv</string>
     <string name="sign_in_failed">Không thể đăng nhập Pixiv</string>
     <string name="sign_in_needs_android">Đăng nhập ở đây cần trình duyệt tích hợp của ứng dụng Android, mà ứng dụng máy tính không có.</string>

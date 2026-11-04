@@ -119,6 +119,9 @@ internal object PixivRoutes {
         return PixivLinks.parse(text)?.let(::routeOf)?.let(::of)
     }
 
+    /** A creator a group holds by their Pixiv id, on their profile (pixiv_plugin.dart's destinationFor); null for anything else. */
+    fun forAccount(account: String): String? = account.trim().toLongOrNull()?.takeIf { it > 0 }?.let { of(PixivRoute.User(it)) }
+
     /** The screen that shows what [ref] names. */
     fun routeOf(ref: PixivLinkRef): PixivRoute = when (ref) {
         is PixivLinkRef.Artwork -> PixivRoute.Work(ref.id)

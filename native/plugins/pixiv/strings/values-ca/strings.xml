@@ -23,6 +23,7 @@
     <string name="article_reader_line_spacing">Interlineat</string>
     <string name="article_reader_text_size">Factor d'escala del text</string>
     <string name="bookmark">Marcador</string>
+    <string name="bookmark_add">Afegeix un marcador</string>
     <string name="bookmark_after_save">Afegeix als marcadors en desar</string>
     <string name="bookmark_after_save_description">Desar una obra des de la seva pàgina també l’afegeix als marcadors, si encara no hi és.</string>
     <string name="bookmark_auto_tag">Etiqueta els marcadors automàticament</string>
@@ -45,6 +46,7 @@
     <string name="bookmark_tag_search">Cerca o escriu una etiqueta</string>
     <string name="bookmark_tag_unclassified">Sense categoria</string>
     <string name="bookmark_tag_use">Fes servir «%1$s»</string>
+    <string name="bookmark_tags">Etiquetes</string>
     <string name="bookmark_tags_empty">Encara no hi ha etiquetes. Afegeix-ne a dalt.</string>
     <string name="bookmark_tags_none">Encara no hi ha etiquetes de marcadors aquí</string>
     <string name="bookmarks_empty">Encara no hi ha marcadors públics en aquest compte</string>
@@ -103,6 +105,7 @@
     <string name="download_page">Baixa aquesta pàgina</string>
     <string name="download_page_saved">Desada: torna-la a baixar</string>
     <string name="downloads_section">Baixades</string>
+    <string name="downloads_title">Baixades</string>
     <string name="empty">Encara no hi ha res al fil de seguiments</string>
     <string name="error_network">No s’ha pogut contactar amb Pixiv</string>
     <string name="error_not_found">No s’ha trobat a Pixiv</string>
@@ -123,6 +126,7 @@
     <string name="folder_per_artist">Una carpeta per artista</string>
     <string name="folder_per_artist_description">Desa les obres de cada artista en una carpeta amb el seu nom dins de la carpeta de baixades</string>
     <string name="folder_r18">Carpeta a part per a R-18</string>
+    <string name="folder_r18_description">Desa les obres R-18 en una carpeta «R-18» dins de la carpeta de baixades</string>
     <string name="follow">Segueix</string>
     <string name="follow_private">Privats</string>
     <string name="follow_public">Públics</string>
@@ -207,6 +211,12 @@
     <string name="novel_chapter_number">Núm. %1$d</string>
     <plurals name="novel_chapters_count"><item quantity="one">%2$s capítol</item><item quantity="other">%2$s capítols</item></plurals>
     <plurals name="novel_characters"><item quantity="one">%2$s caràcter</item><item quantity="other">%2$s caràcters</item></plurals>
+    <string name="novel_export">Exporta com a text</string>
+    <string name="novel_export_markup">Amb el marcatge de Pixiv</string>
+    <string name="novel_export_markup_hint">El text tal com el desa Pixiv, amb etiquetes com [newpage]</string>
+    <string name="novel_export_plain">Text sense format</string>
+    <string name="novel_export_plain_hint">Sense el marcatge de Pixiv; el ruby s’escriu com a base(ruby)</string>
+    <string name="novel_exported">S’ha desat %1$s</string>
     <string name="novel_following_empty">Aquí apareixen les novel·les noves dels creadors que segueixes</string>
     <string name="novel_image">Imatge de la novel·la</string>
     <string name="novel_image_open">Obre l’obra</string>
@@ -287,11 +297,24 @@
     <string name="r18">R-18</string>
     <string name="r18g">R-18G</string>
     <string name="ranking_back_to_today">Torna a avui</string>
+    <string name="ranking_day">Diari</string>
+    <string name="ranking_day_ai">IA</string>
+    <string name="ranking_day_female">Dones</string>
+    <string name="ranking_day_male">Homes</string>
+    <string name="ranking_day_manga">Manga</string>
+    <string name="ranking_day_r18">R-18 diari</string>
+    <string name="ranking_day_r18_ai">R-18 IA</string>
     <string name="ranking_edit">Edita</string>
     <string name="ranking_edit_hint">Els rànquings fixats es mostren com a pestanyes. Els rànquings R-18 s’ofereixen mentre «Mostra obres R-18» estigui activat.</string>
     <string name="ranking_edit_title">Pestanyes de rànquing</string>
     <string name="ranking_empty">No hi ha obres al rànquing ara mateix</string>
+    <string name="ranking_month">Mensual</string>
     <string name="ranking_pick_date">Tria un dia de l’arxiu</string>
+    <string name="ranking_rookie">Novells</string>
+    <string name="ranking_week">Setmanal</string>
+    <string name="ranking_week_original">Original</string>
+    <string name="ranking_week_r18">R-18 setmanal</string>
+    <string name="ranking_week_r18g">R-18G setmanal</string>
     <string name="read_horizontally">Llegeix en horitzontal</string>
     <string name="read_vertically">Llegeix en vertical</string>
     <string name="recommended_empty">Res de recomanat ara mateix — estira per actualitzar</string>
@@ -385,6 +408,7 @@
     <string name="settings_intro">Aquest connector privat llegeix Pixiv com una aplicació de galeria: il·lustracions, manga, novel·les, rànquings, els teus marcadors i la cerca. Toca Inicia la sessió per entrar amb el teu compte de Pixiv, o enganxa un testimoni d’actualització a sota. Els marcadors, els seguiments i l’historial es queden en aquest dispositiu: mai no s’envia, es publica ni es canvia res al teu compte de Pixiv.</string>
     <string name="share_link">Comparteix l’enllaç</string>
     <string name="show_r18">Mostra obres R-18</string>
+    <string name="show_r18_description">Desactivat per defecte. Quan està desactivat, les obres restringides s’amaguen dels fils.</string>
     <string name="sign_in">Inicia sessió amb Pixiv</string>
     <string name="sign_in_failed">No s’ha pogut iniciar sessió a Pixiv</string>
     <string name="sign_in_needs_android">Per iniciar la sessió aquí cal el navegador integrat de l'app d'Android, que l'app d'escriptori no té.</string>

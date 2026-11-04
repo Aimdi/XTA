@@ -23,6 +23,7 @@
     <string name="article_reader_line_spacing">Regelafstand</string>
     <string name="article_reader_text_size">Tekstschaalfactor</string>
     <string name="bookmark">Bladwijzer</string>
+    <string name="bookmark_add">Bladwijzer toevoegen</string>
     <string name="bookmark_after_save">Bladwijzer maken bij opslaan</string>
     <string name="bookmark_after_save_description">Een werk opslaan vanaf de pagina maakt er ook een bladwijzer van, als dat nog niet zo is.</string>
     <string name="bookmark_auto_tag">Bladwijzers automatisch taggen</string>
@@ -45,6 +46,7 @@
     <string name="bookmark_tag_search">Zoek of typ een tag</string>
     <string name="bookmark_tag_unclassified">Zonder categorie</string>
     <string name="bookmark_tag_use">‘%1$s’ gebruiken</string>
+    <string name="bookmark_tags">Tags</string>
     <string name="bookmark_tags_empty">Nog geen tags. Voeg hierboven je eigen tags toe.</string>
     <string name="bookmark_tags_none">Hier zijn nog geen bladwijzertags</string>
     <string name="bookmarks_empty">Nog geen openbare bladwijzers op dit account</string>
@@ -103,6 +105,7 @@
     <string name="download_page">Deze pagina downloaden</string>
     <string name="download_page_saved">Opgeslagen – opnieuw downloaden</string>
     <string name="downloads_section">Downloads</string>
+    <string name="downloads_title">Downloads</string>
     <string name="empty">Nog niets in je volgfeed</string>
     <string name="error_network">Kon Pixiv niet bereiken</string>
     <string name="error_not_found">Niet gevonden op Pixiv</string>
@@ -123,6 +126,7 @@
     <string name="folder_per_artist">Map per artiest</string>
     <string name="folder_per_artist_description">Zet de werken van elke artiest in een map met diens naam, binnen de downloadmap</string>
     <string name="folder_r18">Aparte map voor R-18</string>
+    <string name="folder_r18_description">Zet R-18-werken in een map ‘R-18’ binnen de downloadmap</string>
     <string name="follow">Volgen</string>
     <string name="follow_private">Privé</string>
     <string name="follow_public">Openbaar</string>
@@ -207,6 +211,12 @@
     <string name="novel_chapter_number">Nr. %1$d</string>
     <plurals name="novel_chapters_count"><item quantity="one">%2$s hoofdstuk</item><item quantity="other">%2$s hoofdstukken</item></plurals>
     <plurals name="novel_characters"><item quantity="one">%2$s teken</item><item quantity="other">%2$s tekens</item></plurals>
+    <string name="novel_export">Exporteren als tekst</string>
+    <string name="novel_export_markup">Met Pixiv-opmaakcodes</string>
+    <string name="novel_export_markup_hint">De tekst precies zoals Pixiv hem opslaat, met codes zoals [newpage]</string>
+    <string name="novel_export_plain">Platte tekst</string>
+    <string name="novel_export_plain_hint">Zonder Pixiv-opmaakcodes, ruby geschreven als basis(ruby)</string>
+    <string name="novel_exported">%1$s opgeslagen</string>
     <string name="novel_following_empty">Nieuwe romans van makers die je volgt, verschijnen hier</string>
     <string name="novel_image">Afbeelding in de roman</string>
     <string name="novel_image_open">Werk openen</string>
@@ -287,11 +297,24 @@
     <string name="r18">R-18</string>
     <string name="r18g">R-18G</string>
     <string name="ranking_back_to_today">Terug naar vandaag</string>
+    <string name="ranking_day">Dagelijks</string>
+    <string name="ranking_day_ai">AI</string>
+    <string name="ranking_day_female">Vrouwen</string>
+    <string name="ranking_day_male">Mannen</string>
+    <string name="ranking_day_manga">Manga</string>
+    <string name="ranking_day_r18">R-18 dagelijks</string>
+    <string name="ranking_day_r18_ai">R-18 AI</string>
     <string name="ranking_edit">Bewerken</string>
     <string name="ranking_edit_hint">Vastgezette ranglijsten verschijnen als tabbladen. R-18-ranglijsten zijn beschikbaar zolang ‘R-18-werken tonen’ aan staat.</string>
     <string name="ranking_edit_title">Ranglijsttabbladen</string>
     <string name="ranking_empty">Geen rankingwerken nu</string>
+    <string name="ranking_month">Maandelijks</string>
     <string name="ranking_pick_date">Kies een dag uit het archief</string>
+    <string name="ranking_rookie">Nieuwkomers</string>
+    <string name="ranking_week">Wekelijks</string>
+    <string name="ranking_week_original">Origineel</string>
+    <string name="ranking_week_r18">R-18 wekelijks</string>
+    <string name="ranking_week_r18g">R-18G wekelijks</string>
     <string name="read_horizontally">Horizontaal lezen</string>
     <string name="read_vertically">Verticaal lezen</string>
     <string name="recommended_empty">Nu niets aanbevolen — trek om te vernieuwen</string>
@@ -385,6 +408,7 @@
     <string name="settings_intro">Deze privé-plug-in leest Pixiv als een galerij-app: illustraties, manga, romans, ranglijsten, je bladwijzers en zoeken. Tik op Inloggen om in te loggen met je Pixiv-account, of plak hieronder een vernieuwingstoken. Bladwijzers, gevolgde makers en geschiedenis blijven op dit apparaat: er wordt nooit iets naar je Pixiv-account gestuurd, op geplaatst of in gewijzigd.</string>
     <string name="share_link">Link delen</string>
     <string name="show_r18">R-18-werken tonen</string>
+    <string name="show_r18_description">Standaard uit. Als uit, worden beperkte werken in feeds verborgen.</string>
     <string name="sign_in">Aanmelden met Pixiv</string>
     <string name="sign_in_failed">Aanmelden bij Pixiv mislukt</string>
     <string name="sign_in_needs_android">Inloggen kan hier alleen met de ingebouwde browser van de Android-app, en die heeft de desktopapp niet.</string>

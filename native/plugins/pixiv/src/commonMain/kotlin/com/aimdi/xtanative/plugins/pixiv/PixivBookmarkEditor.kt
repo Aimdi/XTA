@@ -36,8 +36,9 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.ui.plugins.pluginString
 
 /**
- * The bookmark editor, kept on this device: the work's title with Remove
- * while it is bookmarked here, Select all or Clear all, a field adding tags
+ * The bookmark editor, kept on this device: Add bookmark, or Edit bookmark
+ * with Remove while it is bookmarked here, over the work's title; its tags
+ * with Select all or Clear all, a field adding tags
  * (suggesting the reader's own as they type, from this device's bookmarks
  * and their bookmark tags on Pixiv), the checklist, then Cancel and Save.
  */
@@ -59,15 +60,11 @@ internal fun BookmarkEditor(
         mutableStateOf(PixivBookmarkDraft.of(workTags, filed?.tags, known, runtime.bookmarking.autoTags(workTags)))
     }
     PixivSheetFrame(sheets) {
-        EditorTitle(title, removable = filed != null) {
+        EditorTitle(title, bookmarked = filed != null) {
             sheets.close()
             sheets.removeBookmark(kind, id, haptics)
         }
-        Row(Modifier.padding(horizontal = 12.dp)) {
-            TextButton(onClick = { draft = draft.allToggled() }) {
-                Text(pluginString(if (draft.allChecked) Strings.bookmark_clear_all else Strings.bookmark_select_all))
-            }
-        }
+        TagsHeader(draft) { draft = draft.allToggled() }
         TagField(draft, known) { draft = it }
         if (draft.tags.isEmpty()) {
             Text(
@@ -87,15 +84,27 @@ internal fun BookmarkEditor(
     }
 }
 
+/** Add bookmark for a work not bookmarked here yet, else Edit bookmark with Remove (pixiv_bookmark_editor.dart's title row). */
 @Composable
-private fun EditorTitle(title: String, removable: Boolean, onRemove: () -> Unit) {
+private fun EditorTitle(title: String, bookmarked: Boolean, onRemove: () -> Unit) {
     Row(Modifier.fillMaxWidth().padding(start = 20.dp, end = 8.dp, top = 4.dp), verticalAlignment = Alignment.CenterVertically) {
         Column(Modifier.weight(1f)) {
-            Text(pluginString(Strings.bookmark_edit), style = MaterialTheme.typography.titleMedium)
+            Text(pluginString(if (bookmarked) Strings.bookmark_edit else Strings.bookmark_add), style = MaterialTheme.typography.titleMedium)
             if (title.isNotEmpty()) Text(title, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2, overflow = TextOverflow.Ellipsis)
         }
-        if (removable) {
+        if (bookmarked) {
             TextButton(onClick = onRemove) { Text(pluginString(Strings.unbookmark), color = MaterialTheme.colorScheme.error) }
+        }
+    }
+}
+
+/** Tags, with Select all or Clear all once there are tags to check. */
+@Composable
+private fun TagsHeader(draft: PixivBookmarkDraft, onToggleAll: () -> Unit) {
+    Row(Modifier.fillMaxWidth().padding(start = 20.dp, end = 8.dp, top = 8.dp).heightIn(min = 40.dp), verticalAlignment = Alignment.CenterVertically) {
+        Text(pluginString(Strings.bookmark_tags), style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
+        if (draft.tags.isNotEmpty()) {
+            TextButton(onClick = onToggleAll) { Text(pluginString(if (draft.allChecked) Strings.bookmark_clear_all else Strings.bookmark_select_all)) }
         }
     }
 }

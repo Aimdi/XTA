@@ -23,6 +23,7 @@
     <string name="article_reader_line_spacing">Satır aralığı</string>
     <string name="article_reader_text_size">Metin ölçek faktörü</string>
     <string name="bookmark">Yer imi</string>
+    <string name="bookmark_add">Yer imi ekle</string>
     <string name="bookmark_after_save">Kaydederken yer imlerine ekle</string>
     <string name="bookmark_after_save_description">Bir eseri kendi sayfasından kaydetmek, henüz yer imlerinde değilse onu yer imlerine de ekler.</string>
     <string name="bookmark_auto_tag">Yer imlerini otomatik etiketle</string>
@@ -45,6 +46,7 @@
     <string name="bookmark_tag_search">Etiket bul ya da yaz</string>
     <string name="bookmark_tag_unclassified">Kategorisiz</string>
     <string name="bookmark_tag_use">“%1$s” kullan</string>
+    <string name="bookmark_tags">Etiketler</string>
     <string name="bookmark_tags_empty">Henüz etiket yok. Kendi etiketlerini yukarıdan ekle.</string>
     <string name="bookmark_tags_none">Burada henüz yer imi etiketi yok</string>
     <string name="bookmarks_empty">Bu hesapta henüz herkese açık yer imi yok</string>
@@ -103,6 +105,7 @@
     <string name="download_page">Bu sayfayı indir</string>
     <string name="download_page_saved">Kaydedildi – tekrar indir</string>
     <string name="downloads_section">İndirmeler</string>
+    <string name="downloads_title">İndirilenler</string>
     <string name="empty">Takip akışında henüz bir şey yok</string>
     <string name="error_network">Pixiv’ye ulaşılamadı</string>
     <string name="error_not_found">Pixiv’de bulunamadı</string>
@@ -123,6 +126,7 @@
     <string name="folder_per_artist">Her sanatçıya ayrı klasör</string>
     <string name="folder_per_artist_description">Her sanatçının eserlerini indirme klasöründe onun adını taşıyan bir klasöre koyar</string>
     <string name="folder_r18">R-18 için ayrı klasör</string>
+    <string name="folder_r18_description">R-18 eserlerini indirme klasöründeki “R-18” klasörüne koyar</string>
     <string name="follow">Takip et</string>
     <string name="follow_private">Özel</string>
     <string name="follow_public">Herkese açık</string>
@@ -207,6 +211,12 @@
     <string name="novel_chapter_number">%1$d. bölüm</string>
     <plurals name="novel_chapters_count"><item quantity="one">%2$s bölüm</item><item quantity="other">%2$s bölüm</item></plurals>
     <plurals name="novel_characters"><item quantity="one">%2$s karakter</item><item quantity="other">%2$s karakter</item></plurals>
+    <string name="novel_export">Metin olarak dışa aktar</string>
+    <string name="novel_export_markup">Pixiv biçimlendirmesiyle</string>
+    <string name="novel_export_markup_hint">Metin, Pixiv'in sakladığı haliyle, [newpage] gibi etiketlerle birlikte</string>
+    <string name="novel_export_plain">Düz metin</string>
+    <string name="novel_export_plain_hint">Pixiv biçimlendirmesi olmadan, ruby taban(ruby) olarak yazılır</string>
+    <string name="novel_exported">%1$s kaydedildi</string>
     <string name="novel_following_empty">Takip ettiğiniz yazarların yeni romanları burada görünür</string>
     <string name="novel_image">Romandaki görsel</string>
     <string name="novel_image_open">Eseri aç</string>
@@ -287,11 +297,24 @@
     <string name="r18">R-18</string>
     <string name="r18g">R-18G</string>
     <string name="ranking_back_to_today">Bugüne dön</string>
+    <string name="ranking_day">Günlük</string>
+    <string name="ranking_day_ai">YZ</string>
+    <string name="ranking_day_female">Kadın</string>
+    <string name="ranking_day_male">Erkek</string>
+    <string name="ranking_day_manga">Manga</string>
+    <string name="ranking_day_r18">R-18 günlük</string>
+    <string name="ranking_day_r18_ai">R-18 YZ</string>
     <string name="ranking_edit">Düzenle</string>
     <string name="ranking_edit_hint">Sabitlenen sıralamalar sekme olarak görünür. R-18 sıralamaları “R-18 eserleri göster” açıkken sunulur.</string>
     <string name="ranking_edit_title">Sıralama sekmeleri</string>
     <string name="ranking_empty">Şu an sıralamada eser yok</string>
+    <string name="ranking_month">Aylık</string>
     <string name="ranking_pick_date">Arşivden bir gün seç</string>
+    <string name="ranking_rookie">Çaylak</string>
+    <string name="ranking_week">Haftalık</string>
+    <string name="ranking_week_original">Orijinal</string>
+    <string name="ranking_week_r18">R-18 haftalık</string>
+    <string name="ranking_week_r18g">R-18G haftalık</string>
     <string name="read_horizontally">Yatay oku</string>
     <string name="read_vertically">Dikey oku</string>
     <string name="recommended_empty">Şu an öneri yok — yenilemek için çekin</string>
@@ -385,6 +408,7 @@
     <string name="settings_intro">Bu özel eklenti Pixiv'i bir galeri uygulaması gibi okur: çizimler, manga, romanlar, sıralamalar, yer imlerin ve arama. Pixiv hesabınla giriş yapmak için Giriş yap'a dokun ya da aşağıya bir yenileme belirteci yapıştır. Yer imleri, takipler ve geçmiş bu cihazda kalır: Pixiv hesabına hiçbir şey gönderilmez, paylaşılmaz veya orada değiştirilmez.</string>
     <string name="share_link">Bağlantıyı paylaş</string>
     <string name="show_r18">R-18 eserleri göster</string>
+    <string name="show_r18_description">Varsayılan olarak kapalı. Kapalıyken kısıtlı eserler akışlardan gizlenir.</string>
     <string name="sign_in">Pixiv ile oturum aç</string>
     <string name="sign_in_failed">Pixiv’de oturum açılamadı</string>
     <string name="sign_in_needs_android">Burada giriş yapmak için Android uygulamasının yerleşik tarayıcısı gerekir; masaüstü uygulamasında bu tarayıcı yok.</string>

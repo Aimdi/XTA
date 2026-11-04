@@ -108,6 +108,37 @@ internal object PixivIcons {
 
     val TextFields: ImageVector by lazy { icon("TextFields", "M2.5,4v3h5v12h3L10.5,7h5L15.5,4h-13zM21.5,9h-9v3h3v7h3v-7h3L21.5,9z") }
 
+    /** A novel's Export as text, description_outlined. */
+    val Description: ImageVector by lazy {
+        icon("Description", "M8,16h8v2H8zM8,12h8v2H8zM14,2H6c-1.1,0 -2,0.9 -2,2v16c0,1.1 0.89,2 1.99,2H18c1.1,0 2,-0.9 2,-2V8l-6,-6zM18,20H6V4h7v5h5v11z")
+    }
+
+    val Code: ImageVector by lazy { icon("Code", "M9.4,16.6L4.8,12l4.6,-4.6L8,6l-6,6 6,6 1.4,-1.4zM14.6,16.6l4.6,-4.6 -4.6,-4.6L16,6l6,6 -6,6 -1.4,-1.4z") }
+
+    /** Search by image, image_search. */
+    val ImageSearch: ImageVector by lazy {
+        icon(
+            "ImageSearch",
+            "M18,13v7H4V6h5.02c0.05,-0.71 0.22,-1.38 0.48,-2H4c-1.1,0 -2,0.9 -2,2v14c0,1.1 0.9,2 2,2h14c1.1,0 2,-0.9 2,-2v-5l-2,-2z" +
+                "M16.5,18h-11l2.75,-3.53 1.96,2.36 2.75,-3.54zM19.3,8.89c0.44,-0.7 0.7,-1.51 0.7,-2.39C20,4.01 17.99,2 15.5,2S11,4.01 11,6.5" +
+                "s2.01,4.5 4.49,4.5c0.88,0 1.7,-0.26 2.39,-0.7L21,13.42 22.42,12 19.3,8.89zM15.5,9C14.12,9 13,7.88 13,6.5S14.12,4 15.5,4 18,5.12 18,6.5 16.88,9 15.5,9z",
+        )
+    }
+
+    /** Choosing a picture, add_photo_alternate. */
+    val AddPhotoAlternate: ImageVector by lazy {
+        icon(
+            "AddPhotoAlternate",
+            "M19,7v2.99s-1.99,0.01 -2,0V7h-3s0.01,-1.99 0,-2h3V2h2v3h3v2h-3zM16,11V8h-3V5H5c-1.1,0 -2,0.9 -2,2v12c0,1.1 0.9,2 2,2h12" +
+                "c1.1,0 2,-0.9 2,-2v-8h-3zM5,19l3,-4 2,3 3,-4 4,5H5z",
+        )
+    }
+
+    /** An ugoira's Save as GIF. */
+    val Gif: ImageVector by lazy {
+        icon("Gif", "M11.5,9H13v6h-1.5zM9,9H6c-0.6,0 -1,0.5 -1,1v4c0,0.5 0.4,1 1,1h3c0.6,0 1,-0.5 1,-1v-2H8.5v1.5h-2v-3H10V10c0,-0.5 -0.4,-1 -1,-1zM19,10.5V9h-4.5v6H16v-2h2v-1.5h-2v-1z")
+    }
+
     private fun icon(name: String, path: String): ImageVector =
         ImageVector.Builder(name = name, defaultWidth = 24.dp, defaultHeight = 24.dp, viewportWidth = 24f, viewportHeight = 24f)
             .addPath(pathData = PathParser().parsePathString(path).toNodes(), fill = SolidColor(Color.Black))

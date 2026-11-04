@@ -23,6 +23,7 @@
     <string name="article_reader_line_spacing">Міжрядковий інтервал</string>
     <string name="article_reader_text_size">Коефіцієнт масштабування тексту</string>
     <string name="bookmark">У закладки</string>
+    <string name="bookmark_add">Додати в закладки</string>
     <string name="bookmark_after_save">Додавати в закладки під час збереження</string>
     <string name="bookmark_after_save_description">Збереження роботи з її сторінки також додає її в закладки, якщо її там ще немає.</string>
     <string name="bookmark_auto_tag">Автоматично додавати теги до закладок</string>
@@ -45,6 +46,7 @@
     <string name="bookmark_tag_search">Знайдіть або введіть тег</string>
     <string name="bookmark_tag_unclassified">Без категорії</string>
     <string name="bookmark_tag_use">Використати «%1$s»</string>
+    <string name="bookmark_tags">Теги</string>
     <string name="bookmark_tags_empty">Тегів поки немає. Додайте свої вище.</string>
     <string name="bookmark_tags_none">Тут поки немає тегів закладок</string>
     <string name="bookmarks_empty">На цьому акаунті ще немає публічних закладок</string>
@@ -103,6 +105,7 @@
     <string name="download_page">Завантажити цю сторінку</string>
     <string name="download_page_saved">Збережено — завантажити знову</string>
     <string name="downloads_section">Завантаження</string>
+    <string name="downloads_title">Завантаження</string>
     <string name="empty">У стрічці підписок поки нічого немає</string>
     <string name="error_network">Не вдалося з’єднатися з Pixiv</string>
     <string name="error_not_found">На Pixiv цього не знайдено</string>
@@ -123,6 +126,7 @@
     <string name="folder_per_artist">Папка для кожного автора</string>
     <string name="folder_per_artist_description">Складає роботи кожного автора в папку з його іменем усередині папки завантажень</string>
     <string name="folder_r18">Окрема папка для R-18</string>
+    <string name="folder_r18_description">Складає роботи R-18 у папку «R-18» усередині папки завантажень</string>
     <string name="follow">Підписатися</string>
     <string name="follow_private">Приватні</string>
     <string name="follow_public">Публічні</string>
@@ -207,6 +211,12 @@
     <string name="novel_chapter_number">№ %1$d</string>
     <plurals name="novel_chapters_count"><item quantity="one">%2$s розділ</item><item quantity="few">%2$s розділи</item><item quantity="many">%2$s розділів</item><item quantity="other">%2$s розділу</item></plurals>
     <plurals name="novel_characters"><item quantity="one">%2$s знак</item><item quantity="few">%2$s знаки</item><item quantity="many">%2$s знаків</item><item quantity="other">%2$s знака</item></plurals>
+    <string name="novel_export">Експортувати як текст</string>
+    <string name="novel_export_markup">З розміткою Pixiv</string>
+    <string name="novel_export_markup_hint">Текст точно так, як його зберігає Pixiv, з тегами на кшталт [newpage]</string>
+    <string name="novel_export_plain">Звичайний текст</string>
+    <string name="novel_export_plain_hint">Без розмітки Pixiv, рубі записано як основа(рубі)</string>
+    <string name="novel_exported">Збережено: %1$s</string>
     <string name="novel_following_empty">Тут з’являться нові романи авторів, на яких ви підписані</string>
     <string name="novel_image">Зображення в романі</string>
     <string name="novel_image_open">Відкрити роботу</string>
@@ -287,11 +297,24 @@
     <string name="r18">R-18</string>
     <string name="r18g">R-18G</string>
     <string name="ranking_back_to_today">Повернутися до сьогодні</string>
+    <string name="ranking_day">Денний</string>
+    <string name="ranking_day_ai">ШІ</string>
+    <string name="ranking_day_female">Жіночий</string>
+    <string name="ranking_day_male">Чоловічий</string>
+    <string name="ranking_day_manga">Манґа</string>
+    <string name="ranking_day_r18">R-18 денний</string>
+    <string name="ranking_day_r18_ai">R-18 ШІ</string>
     <string name="ranking_edit">Змінити</string>
     <string name="ranking_edit_hint">Закріплені рейтинги показуються вкладками. Рейтинги R-18 доступні, поки ввімкнено «Показувати роботи R-18».</string>
     <string name="ranking_edit_title">Вкладки рейтингу</string>
     <string name="ranking_empty">Зараз у рейтингу нічого немає</string>
+    <string name="ranking_month">Місячний</string>
     <string name="ranking_pick_date">Вибрати день з архіву</string>
+    <string name="ranking_rookie">Новачки</string>
+    <string name="ranking_week">Тижневий</string>
+    <string name="ranking_week_original">Оригінал</string>
+    <string name="ranking_week_r18">R-18 тижневий</string>
+    <string name="ranking_week_r18g">R-18G тижневий</string>
     <string name="read_horizontally">Читати горизонтально</string>
     <string name="read_vertically">Читати вертикально</string>
     <string name="recommended_empty">Поки немає рекомендацій — потягніть, щоб оновити</string>
@@ -385,6 +408,7 @@
     <string name="settings_intro">Цей приватний плагін читає Pixiv як застосунок-галерея: ілюстрації, мангу, романи, рейтинги, ваші закладки й пошук. Натисніть «Увійти», щоб увійти з акаунтом Pixiv, або вставте токен оновлення нижче. Закладки, підписки та історія залишаються на цьому пристрої: до вашого акаунта Pixiv нічого не надсилається, там нічого не публікується і не змінюється.</string>
     <string name="share_link">Поділитися посиланням</string>
     <string name="show_r18">Показувати роботи R-18</string>
+    <string name="show_r18_description">Типово вимкнено. Коли вимкнено, обмежені роботи ховаються зі стрічок.</string>
     <string name="sign_in">Увійти через Pixiv</string>
     <string name="sign_in_failed">Не вдалося увійти в Pixiv</string>
     <string name="sign_in_needs_android">Для входу тут потрібен вбудований браузер застосунку для Android, якого немає у версії для комп'ютера.</string>

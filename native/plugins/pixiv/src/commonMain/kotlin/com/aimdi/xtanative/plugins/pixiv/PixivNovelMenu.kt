@@ -18,6 +18,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
@@ -43,14 +44,16 @@ import com.aimdi.xtanative.networks.pixiv.pixivUserUrl
 import com.aimdi.xtanative.store.reading.ReadingAppearance
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
+import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
+import com.aimdi.xtanative.ui.plugins.rememberTextFileSaver
 import com.aimdi.xtanative.ui.saved.SavedIcons
 import kotlinx.coroutines.launch
 
-/** The reader's sheet: the creator's novels, the chapters beside this one, the reading appearance, sharing and Pixiv's own page. */
+/** The reader's sheet: the creator's novels, the chapters beside this one, the reading appearance, Export as text once the text is read, sharing and Pixiv's own page. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun NovelMenu(novel: PixivNovel, content: PixivNovelContent?, onAppearance: () -> Unit, onClose: () -> Unit) {
+internal fun NovelMenu(novel: PixivNovel, content: PixivNovelContent?, onAppearance: () -> Unit, onExport: () -> Unit, onClose: () -> Unit) {
     val runtime = LocalPixiv.current
     val outside = rememberOutside()
     val run = { action: () -> Unit ->
@@ -71,6 +74,7 @@ internal fun NovelMenu(novel: PixivNovel, content: PixivNovelContent?, onAppeara
             content?.previous?.let { ChapterRow(it, Strings.novel_previous, Icons.AutoMirrored.Filled.KeyboardArrowLeft) { run { runtime.open(PixivRoute.Novel(it.id)) } } }
             content?.next?.let { ChapterRow(it, Strings.novel_next, Icons.AutoMirrored.Filled.KeyboardArrowRight) { run { runtime.open(PixivRoute.Novel(it.id)) } } }
             MenuRow(PixivIcons.TextFields, Strings.article_reader_appearance) { run(onAppearance) }
+            if (content != null) MenuRow(PixivIcons.Description, Strings.novel_export) { run(onExport) }
             MenuRow(Icons.Filled.Share, Strings.share_link) { run { outside.share(pixivNovelUrl(novel.id)) } }
             novel.series?.let { series -> MenuRow(PixivIcons.Collections, Strings.novel_share_series) { run { outside.share(pixivNovelSeriesUrl(series.id)) } } }
             MenuRow(SavedIcons.OpenInNew, Strings.open_on_pixiv) { run { outside.open(pixivNovelUrl(novel.id)) } }
@@ -90,8 +94,42 @@ private fun ChapterRow(chapter: PixivNovelNeighbour, label: PluginText, icon: Im
 }
 
 @Composable
-private fun MenuRow(icon: ImageVector, label: PluginText, onClick: () -> Unit) {
-    ListItem(headlineContent = { Text(pluginString(label)) }, leadingContent = { Icon(icon, null) }, modifier = Modifier.clickable(onClick = onClick))
+private fun MenuRow(icon: ImageVector, label: PluginText, hint: PluginText? = null, onClick: () -> Unit) {
+    ListItem(
+        headlineContent = { Text(pluginString(label)) },
+        supportingContent = hint?.let { { Text(pluginString(it)) } },
+        leadingContent = { Icon(icon, null) },
+        modifier = Modifier.clickable(onClick = onClick),
+    )
+}
+
+/** The two ways to export a novel as text, each saying what the file will hold (pixiv_novel_export.dart's sheet). */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun NovelExportSheet(onPick: (PixivNovelExportFormat) -> Unit, onClose: () -> Unit) {
+    ModalBottomSheet(onDismissRequest = onClose) {
+        Column(Modifier.fillMaxWidth().navigationBarsPadding().padding(bottom = 8.dp)) {
+            ListItem(headlineContent = { Text(pluginString(Strings.novel_export), style = MaterialTheme.typography.titleMedium) })
+            MenuRow(PixivIcons.Notes, Strings.novel_export_plain, Strings.novel_export_plain_hint) { onPick(PixivNovelExportFormat.PLAIN) }
+            MenuRow(PixivIcons.Code, Strings.novel_export_markup, Strings.novel_export_markup_hint) { onPick(PixivNovelExportFormat.MARKUP) }
+        }
+    }
+}
+
+/**
+ * Export as text: the novel's text as the format picked, in a file the
+ * reader names and places through the system's save dialog, saying where it
+ * went. Remembered by the reader's screen, so the dialog's answer outlives the sheet.
+ */
+@Composable
+internal fun rememberNovelExport(novel: PixivNovel, reading: PixivNovelReading): (PixivNovelExportFormat) -> Unit {
+    val runtime = LocalPixiv.current
+    val language = currentLanguage()
+    val save = rememberTextFileSaver(pluginString(Strings.novel_export), PixivNovelExport.MIME) { saved ->
+        if (saved != null) runtime.tell(Strings.novel_exported.get(language, saved))
+    }
+    val markup = reading.content?.text
+    return { format -> if (markup != null) save(PixivNovelExport.fileName(novel.title, novel.id), PixivNovelExport.text(markup, reading.blocks, format)) }
 }
 
 /** The app's reading appearance, which its article reader shares: text size and line spacing. */

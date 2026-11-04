@@ -177,7 +177,7 @@ private fun WorkScaffold(model: PixivWorkModel, state: PixivWorkState, illust: P
     PluginScaffold(
         title = illust.title.ifEmpty { pluginString(Strings.title) },
         onBack = runtime.host::back,
-        actions = { WorkActions(illust, state.page, sheets, surface) },
+        actions = { WorkActions(illust, state.page, sheets) },
     ) { padding ->
         BoxWithConstraints(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
             val layout = pixivSettings()[PixivPrefs.detailLayout]
@@ -200,7 +200,7 @@ private fun WorkScaffold(model: PixivWorkModel, state: PixivWorkState, illust: P
 
 /** The bar's heart (kept on this device), Save this page, and the work's menu. */
 @Composable
-private fun WorkActions(illust: PixivIllust, page: Int, sheets: PixivSheets, surface: WorkSurface) {
+private fun WorkActions(illust: PixivIllust, page: Int, sheets: PixivSheets) {
     val runtime = LocalPixiv.current
     val haptics = rememberHaptics()
     val marks by runtime.bookmarks.state.collectAsState()
@@ -213,7 +213,7 @@ private fun WorkActions(illust: PixivIllust, page: Int, sheets: PixivSheets, sur
         )
     }
     SavePageButton(illust, page) { sheets.savePages(illust, listOf(page)) }
-    WorkMenu(illust, sheets, surface)
+    WorkMenu(illust, sheets)
 }
 
 /** Saves the page on screen; it shows once that page is saved here. */
@@ -229,8 +229,10 @@ internal fun SavePageButton(illust: PixivIllust, page: Int, onClick: () -> Unit)
     }
 }
 
+/** The work's ⋯ menu (pixiv_detail_menu.dart); More actions opens the shared post sheet, as XTA's does. */
 @Composable
-private fun WorkMenu(illust: PixivIllust, sheets: PixivSheets, surface: WorkSurface) {
+private fun WorkMenu(illust: PixivIllust, sheets: PixivSheets) {
+    val runtime = LocalPixiv.current
     var open by remember { mutableStateOf(false) }
     val copy = rememberCopy()
     val outside = rememberOutside()
@@ -248,7 +250,7 @@ private fun WorkMenu(illust: PixivIllust, sheets: PixivSheets, surface: WorkSurf
             },
             entry(pluginString(Strings.open_on_pixiv), PostIcons.OpenInNew) { outside.open(illust.url) },
             entry(pluginString(Strings.mute_illust), PixivIcons.VolumeOff) { sheets.show(PixivSheet.Mute(illust)) },
-            entry(pluginString(Strings.more_actions), PostIcons.MoreHoriz) { sheets.show(PixivSheet.PageActions(illust, surface.page, surface)) },
+            entry(pluginString(Strings.more_actions), PostIcons.MoreHoriz) { runtime.host.openPostMenu(PixivShared.menu(illust)) },
         ).forEach { (label, icon, run) ->
             DropdownMenuItem(text = { Text(label) }, leadingIcon = { Icon(icon, null) }, onClick = {
                 open = false

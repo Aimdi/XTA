@@ -23,6 +23,7 @@
     <string name="article_reader_line_spacing">行間</string>
     <string name="article_reader_text_size">文字サイズ</string>
     <string name="bookmark">ブックマーク</string>
+    <string name="bookmark_add">ブックマークに追加</string>
     <string name="bookmark_after_save">保存時にブックマーク</string>
     <string name="bookmark_after_save_description">作品ページから保存すると、まだブックマークしていない作品はブックマークもされます。</string>
     <string name="bookmark_auto_tag">ブックマークに自動でタグを付ける</string>
@@ -45,6 +46,7 @@
     <string name="bookmark_tag_search">タグを検索または入力</string>
     <string name="bookmark_tag_unclassified">未分類</string>
     <string name="bookmark_tag_use">「%1$s」を使う</string>
+    <string name="bookmark_tags">タグ</string>
     <string name="bookmark_tags_empty">タグはまだありません。上で追加できます。</string>
     <string name="bookmark_tags_none">ここにはまだブックマークタグがありません</string>
     <string name="bookmarks_empty">このアカウントには公開ブックマークがまだありません</string>
@@ -103,6 +105,7 @@
     <string name="download_page">このページを保存</string>
     <string name="download_page_saved">保存済み – もう一度保存</string>
     <string name="downloads_section">ダウンロード</string>
+    <string name="downloads_title">ダウンロード</string>
     <string name="empty">フォローフィードにまだ何もありません</string>
     <string name="error_network">Pixiv に接続できませんでした</string>
     <string name="error_not_found">Pixiv で見つかりませんでした</string>
@@ -123,6 +126,7 @@
     <string name="folder_per_artist">作者ごとのフォルダ</string>
     <string name="folder_per_artist_description">ダウンロードフォルダ内の作者名のフォルダに、その作者の作品を保存します</string>
     <string name="folder_r18">R-18 用の別フォルダ</string>
+    <string name="folder_r18_description">R-18 作品をダウンロードフォルダ内の「R-18」フォルダに保存します</string>
     <string name="follow">フォローする</string>
     <string name="follow_private">非公開</string>
     <string name="follow_public">公開</string>
@@ -207,6 +211,12 @@
     <string name="novel_chapter_number">第%1$d話</string>
     <plurals name="novel_chapters_count"><item quantity="other">%2$s話</item></plurals>
     <plurals name="novel_characters"><item quantity="other">%2$s文字</item></plurals>
+    <string name="novel_export">テキストとして書き出す</string>
+    <string name="novel_export_markup">Pixivのタグ付き</string>
+    <string name="novel_export_markup_hint">Pixivに保存されているままの本文（[newpage]などのタグを含む）</string>
+    <string name="novel_export_plain">プレーンテキスト</string>
+    <string name="novel_export_plain_hint">Pixivのタグを除き、ルビは「親文字(ルビ)」の形にします</string>
+    <string name="novel_exported">%1$s を保存しました</string>
     <string name="novel_following_empty">フォロー中のユーザーの新着小説がここに表示されます</string>
     <string name="novel_image">小説内の画像</string>
     <string name="novel_image_open">作品を開く</string>
@@ -287,11 +297,24 @@
     <string name="r18">R-18</string>
     <string name="r18g">R-18G</string>
     <string name="ranking_back_to_today">今日に戻る</string>
+    <string name="ranking_day">デイリー</string>
+    <string name="ranking_day_ai">AI生成</string>
+    <string name="ranking_day_female">女子</string>
+    <string name="ranking_day_male">男子</string>
+    <string name="ranking_day_manga">マンガ</string>
+    <string name="ranking_day_r18">R-18 デイリー</string>
+    <string name="ranking_day_r18_ai">R-18 AI生成</string>
     <string name="ranking_edit">編集</string>
     <string name="ranking_edit_hint">ピン留めしたランキングがタブになります。R-18 ランキングは「R-18 作品を表示」がオンのときに選べます。</string>
     <string name="ranking_edit_title">ランキングのタブ</string>
     <string name="ranking_empty">いまランキング作品がありません</string>
+    <string name="ranking_month">マンスリー</string>
     <string name="ranking_pick_date">アーカイブから日付を選ぶ</string>
+    <string name="ranking_rookie">ルーキー</string>
+    <string name="ranking_week">ウィークリー</string>
+    <string name="ranking_week_original">オリジナル</string>
+    <string name="ranking_week_r18">R-18 ウィークリー</string>
+    <string name="ranking_week_r18g">R-18G ウィークリー</string>
     <string name="read_horizontally">横読み</string>
     <string name="read_vertically">縦読み</string>
     <string name="recommended_empty">いまおすすめはありません — 引っ張って更新</string>
@@ -385,6 +408,7 @@
     <string name="settings_intro">この非公開プラグインは Pixiv をギャラリーアプリのように閲覧します：イラスト、マンガ、小説、ランキング、ブックマーク、検索。「ログイン」をタップして Pixiv アカウントでログインするか、下にリフレッシュトークンを貼り付けてください。ブックマーク、フォロー、閲覧履歴はこの端末に保存され、Pixiv アカウントへ送信・投稿・変更されることは一切ありません。</string>
     <string name="share_link">リンクを共有</string>
     <string name="show_r18">R-18 作品を表示</string>
+    <string name="show_r18_description">既定ではオフ。オフのとき、制限付き作品はフィードから隠されます。</string>
     <string name="sign_in">Pixiv でサインイン</string>
     <string name="sign_in_failed">Pixiv にサインインできませんでした</string>
     <string name="sign_in_needs_android">ここでのログインには Android アプリの内蔵ブラウザが必要ですが、デスクトップ版にはありません。</string>

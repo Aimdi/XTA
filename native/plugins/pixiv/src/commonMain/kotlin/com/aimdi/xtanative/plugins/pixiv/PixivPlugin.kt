@@ -69,6 +69,9 @@ class PixivPlugin : XtaPlugin() {
 
     override fun routeFor(url: String): String? = PixivRoutes.forUrl(url)
 
+    /** A creator in the app's groups opens on their profile, as XTA's destinationFor opens them. */
+    override fun routeForAccount(account: String): String? = PixivRoutes.forAccount(account)
+
     override fun screen(route: String): PluginScreen? {
         val opened = PixivRoutes.parse(route) ?: return null
         return { PixivRoot(runtime) { PixivScreenOf(opened) } }
