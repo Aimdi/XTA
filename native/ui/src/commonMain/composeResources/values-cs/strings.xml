@@ -23,10 +23,6 @@
     <string name="ago_minutes">%1$d min</string>
     <string name="ago_hours">%1$d h</string>
 
-    <string name="feed_nobody_followed">Nikdo z těch, které sledujete, zatím není ve zdroji Sledování. Otevřete profil, třeba vyhledáním @jméno, a začněte ho sledovat.</string>
-    <string name="feed_empty">Sledované účty zatím nemají žádné příspěvky.</string>
-    <string name="feed_partial">Některé účty se nepodařilo načíst: %1$s</string>
-
     <string name="problem_no_account">Žádný účet X. Importujte zálohu XTA i s jejími účty.</string>
     <string name="problem_rate_limited">X tu omezuje všechny účty. Zkuste to znovu za pár minut.</string>
     <string name="problem_offline">Žádné připojení k X.</string>

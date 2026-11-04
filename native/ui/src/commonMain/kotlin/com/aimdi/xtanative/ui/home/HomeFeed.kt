@@ -1,24 +1,23 @@
 package com.aimdi.xtanative.ui.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,8 +25,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ScrollableTabRow
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -37,34 +34,47 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.feed.FeedSort
-import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.core.feed.FeedStrip
 import com.aimdi.xtanative.ui.common.XIcons
-import com.aimdi.xtanative.ui.feed.FeedPage
 import com.aimdi.xtanative.ui.feed.MediaModes
 import com.aimdi.xtanative.ui.feed.ToTop
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.discover_loaded_title
 import com.aimdi.xtanative.ui.generated.resources.following
-import com.aimdi.xtanative.ui.generated.resources.home_add_timeline
 import com.aimdi.xtanative.ui.generated.resources.home_feed_accounts
-import com.aimdi.xtanative.ui.generated.resources.home_for_you
+import com.aimdi.xtanative.ui.generated.resources.home_filter_accounts
 import com.aimdi.xtanative.ui.generated.resources.home_more_options
-import com.aimdi.xtanative.ui.generated.resources.home_open_group
-import com.aimdi.xtanative.ui.generated.resources.home_open_menu
+import com.aimdi.xtanative.ui.generated.resources.home_networks
 import com.aimdi.xtanative.ui.generated.resources.home_pin_to_bar
 import com.aimdi.xtanative.ui.generated.resources.home_refresh
-import com.aimdi.xtanative.ui.generated.resources.search
+import com.aimdi.xtanative.ui.generated.resources.home_saved
+import com.aimdi.xtanative.ui.generated.resources.home_search_in
+import com.aimdi.xtanative.ui.generated.resources.home_subscriptions
+import com.aimdi.xtanative.ui.generated.resources.home_unread
+import com.aimdi.xtanative.ui.generated.resources.home_x
+import com.aimdi.xtanative.ui.group.GroupFeedBody
+import com.aimdi.xtanative.ui.group.groupFeedViewModel
+import com.aimdi.xtanative.ui.media.ReaderIcons
 import com.aimdi.xtanative.ui.post.PostActions
-import com.aimdi.xtanative.ui.search.LoadedSearchButton
+import com.aimdi.xtanative.ui.settings.SettingsRoutes
+import com.aimdi.xtanative.ui.settings.SettingsSection
+import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import org.jetbrains.compose.resources.stringResource
 
 /** Where the feed page's controls lead, in the shell that holds the drawer, the sheets and what opens over Home. */
@@ -72,24 +82,29 @@ internal class FeedPageCalls(
     val openMenu: () -> Unit,
     val openSheet: (HomeSheet) -> Unit,
     val openLayer: (HomeLayer) -> Unit,
+    /** The timeline at an index of [HomeUi.tabs] shown; the one shown, back to its top. */
     val onTab: (Int) -> Unit,
     val toTitleTop: () -> Unit,
     /** Following's order picked: set, and Custom's rules opened. */
     val onOrder: (FeedSort) -> Unit,
 )
 
+/** Home's timelines as the feed page shows them: the one shown, the last request for a timeline's top, and the feeds with unread posts. */
+internal class TimelinesState(val index: Int, val toTop: ToTop, val unread: Set<String>)
+
 /**
- * Home's Feed page (XTA's FeedScreen): the timelines of the strip, each a
- * page of its own, under Following's one bar while Following is shown, else
- * the top bar of the timeline shown; both leave with the scroll when Theme
- * says so.
+ * Home's Feed page (XTA's FeedScreen): the timeline shown (Following, X, the
+ * networks pinned there) under Following's one bar while Following is shown,
+ * else the timeline's own; both leave with the scroll when Theme says so. A
+ * drag sideways turns to the next or the previous timeline, as their picker
+ * lists them; the bar's mark opens that picker.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun HomeFeedPage(
     ui: HomeUi,
     vm: HomeViewModel,
-    strip: StripState,
+    timelines: TimelinesState,
     following: FollowingLook,
     networks: HomeNetworks,
     actions: PostActions,
@@ -99,28 +114,29 @@ internal fun HomeFeedPage(
 ) {
     val tabs = ui.tabs
     val bar = if (ui.hideOnScroll) TopAppBarDefaults.enterAlwaysScrollBehavior() else TopAppBarDefaults.pinnedScrollBehavior()
-    val current = tabs.getOrNull(strip.pager.currentPage)
+    val current = tabs.getOrNull(timelines.index)
     val desktop = LocalDesktopActions.current != null
+    val anyUnread = SourcePicker.sources(tabs).any { it.key in timelines.unread }
+    val labels = tabs.map { tabLabel(it, ui) }
+    val holder = rememberSaveableStateHolder()
     Scaffold(
         modifier = Modifier.nestedScroll(bar.nestedScrollConnection),
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            Column {
-                if (current == HomeTab.Following) {
-                    FollowingTopBar(following, followingCalls(calls, desktop, refresh), bar)
-                } else {
-                    TimelineTopBar(current, ui, networks, routes, refresh, calls, bar, vm::setTopBarPins)
-                }
-                Strip(tabs, strip.pager.currentPage, ui, networks, strip.unread, onTab = calls.onTab, onAdd = { calls.openSheet(HomeSheet.STRIP) })
+            if (current == HomeTab.Following) {
+                FollowingTopBar(following, followingCalls(calls, desktop, refresh), bar)
+            } else {
+                TimelineTopBar(current, TopBarLook(ui, anyUnread, timelines.unread), networks, routes, refresh, calls, bar, vm::setTopBarPins)
             }
         },
     ) { padding ->
-        HorizontalPager(
-            state = strip.pager,
-            key = { page -> tabs.getOrNull(page)?.key ?: page },
-            modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding()),
-        ) { page ->
-            TimelinePage(tabs.getOrNull(page), page, strip.toTop, following.mediaOnly, actions, routes, networks, PaddingValues(bottom = padding.calculateBottomPadding()))
+        SwipesTimelines(timelines.index, labels, onTurn = calls.onTab, modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
+            if (current != null) {
+                holder.SaveableStateProvider(current.key) {
+                    val toTop = if (timelines.toTop.page == timelines.index) timelines.toTop.count else 0
+                    TimelinePage(current, toTop, following.mediaOnly, actions, routes, networks, PaddingValues(bottom = padding.calculateBottomPadding()))
+                }
+            }
         }
     }
 }
@@ -135,12 +151,11 @@ private fun followingCalls(calls: FeedPageCalls, desktop: Boolean, refresh: () -
     onRefresh = refresh.takeIf { desktop },
 )
 
-/** One timeline of the strip as a page of the pager; Following shows its media alone in Media. */
+/** One timeline of Home; [toTop] grows when the reader asks for its top. Following shows its media alone in Media. */
 @Composable
 private fun TimelinePage(
-    tab: HomeTab?,
-    page: Int,
-    toTop: ToTop,
+    tab: HomeTab,
+    toTop: Int,
     followingMedia: Boolean,
     actions: PostActions,
     routes: HomeRoutes,
@@ -148,20 +163,31 @@ private fun TimelinePage(
     bottom: PaddingValues,
 ) {
     when (tab) {
-        HomeTab.Following -> FeedPage(null, page, toTop, actions, bottom, mediaOnly = followingMedia)
-        HomeTab.ForYou -> ForYouPage(page, toTop, actions, bottom, onImport = { routes.openIfExists(HomeRoutes.IMPORT) })
-        is HomeTab.Group -> FeedPage(tab.id, page, toTop, actions, bottom)
-        is HomeTab.Network -> networks.Page(tab.id, bottom, if (toTop.page == page) toTop.count else 0)
-        null -> Unit
+        HomeTab.Following -> {
+            val vm = groupFeedViewModel(null)
+            val state by vm.ui.collectAsStateWithLifecycle()
+            GroupFeedBody(state, vm, actions, rememberLazyListState(), bottom, mediaOnly = followingMedia, toTop = toTop)
+        }
+        HomeTab.ForYou -> ForYouPage(toTop, actions, bottom, onImport = { routes.openIfExists(HomeRoutes.IMPORT) })
+        is HomeTab.Network -> networks.Page(tab.id, bottom, toTop)
+        is HomeTab.Group -> Unit
     }
 }
 
-/** The top bar of a timeline that is not Following: the reader's mark that opens the menu, the timeline's name, its actions. */
+/** What a timeline's top bar shows of Home: the reader's settings, whether any timeline has unread posts, and which feeds do. */
+private class TopBarLook(val ui: HomeUi, val anyUnread: Boolean, val unread: Set<String>)
+
+/**
+ * The top bar of a timeline that is not Following (plugin_compact_header.dart):
+ * its mark, which opens the timeline picker and carries the unread dot of
+ * any timeline; its name, or, for Mastodon, Bluesky and Threads while they
+ * are grouped, the switch between them; its actions.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TimelineTopBar(
     current: HomeTab?,
-    ui: HomeUi,
+    look: TopBarLook,
     networks: HomeNetworks,
     routes: HomeRoutes,
     refresh: () -> Unit,
@@ -169,15 +195,20 @@ private fun TimelineTopBar(
     bar: TopAppBarScrollBehavior,
     onPins: (String, List<String>) -> Unit,
 ) {
+    val ui = look.ui
     TopAppBar(
-        navigationIcon = { MenuButton(ui, calls.openMenu) },
+        navigationIcon = { if (current != null) PickerMark(current, ui, networks, look.anyUnread) { calls.openSheet(HomeSheet.PICKER) } },
         title = {
-            Text(
-                current?.let { tabLabel(it, ui) }.orEmpty(),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.clickable(onClick = calls.toTitleTop),
-            )
+            if (current is HomeTab.Network && ui.microblogsGrouped && AltMicroblogging.isMember(current.id)) {
+                MicroblogSwitcher(ui, networks, current.id, look.unread) { id -> calls.onTab(ui.tabs.indexOf(HomeTab.Network(id))) }
+            } else {
+                Text(
+                    current?.let { tabLabel(it, ui) }.orEmpty(),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.clickable(onClick = calls.toTitleTop),
+                )
+            }
         },
         actions = { TabActions(current, ui, networks, routes, refresh, calls, onPins) },
         scrollBehavior = bar,
@@ -188,77 +219,74 @@ private fun TimelineTopBar(
     )
 }
 
-/** The reader's mark, which opens the account menu. */
+/** The timeline's mark as the picker's button (HomeTimelineTitle): said as the timeline's name, with the dot while a timeline has unread posts. */
 @Composable
-private fun MenuButton(ui: HomeUi, onClick: () -> Unit) {
-    val label = stringResource(Res.string.home_open_menu)
+private fun PickerMark(tab: HomeTab, ui: HomeUi, networks: HomeNetworks, unread: Boolean, onClick: () -> Unit) {
+    val label = listOfNotNull(tabLabel(tab, ui), stringResource(Res.string.home_unread).takeIf { unread }, stringResource(Res.string.home_networks)).joinToString(", ")
     IconButton(onClick = onClick, modifier = Modifier.semantics { contentDescription = label }) {
-        AccountMark(ui.account, 30.dp, Modifier.clearAndSetSemantics {})
+        UnreadDot(unread) { TimelineMark(tab, networks, 24.dp) }
     }
 }
 
-/** The strip (XTA's feed strip): the timelines' tabs, each with its unread dot, then the button that adds a timeline. */
+/** A timeline's mark: Following's stacked posts, X's own mark, a network's. */
 @Composable
-private fun Strip(
-    tabs: List<HomeTab>,
-    selected: Int,
-    ui: HomeUi,
-    networks: HomeNetworks,
-    unread: Set<String>,
-    onTab: (Int) -> Unit,
-    onAdd: () -> Unit,
-) {
-    Column {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            ScrollableTabRow(
-                selectedTabIndex = selected.coerceIn(0, tabs.lastIndex.coerceAtLeast(0)),
-                edgePadding = 8.dp,
-                containerColor = MaterialTheme.colorScheme.background,
-                divider = {},
-                modifier = Modifier.weight(1f),
+internal fun TimelineMark(tab: HomeTab, networks: HomeNetworks, size: Dp) {
+    val tint = MaterialTheme.colorScheme.onSurface
+    when (tab) {
+        HomeTab.Following -> Icon(HomeIcons.DynamicFeed, contentDescription = null, tint = tint, modifier = Modifier.size(size))
+        HomeTab.ForYou -> Icon(ReaderIcons.XMark, contentDescription = null, tint = tint, modifier = Modifier.size(size * 0.85f))
+        is HomeTab.Network -> networks.Mark(tab.id, size)
+        is HomeTab.Group -> Unit
+    }
+}
+
+/**
+ * Mastodon, Bluesky and Threads side by side (alt_microblogging_selector.dart's
+ * compact row): the one shown lit, each with its unread dot; a tap shows another.
+ */
+@Composable
+private fun MicroblogSwitcher(ui: HomeUi, networks: HomeNetworks, shown: String, unread: Set<String>, onPick: (String) -> Unit) {
+    val members = AltMicroblogging.members(ui.tabs.filterIsInstance<HomeTab.Network>().map { it.id })
+    val unreadLabel = stringResource(Res.string.home_unread)
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        members.forEach { id ->
+            val selected = id == shown
+            val name = ui.networks.firstOrNull { it.id == id }?.title ?: id
+            val lit = HomeTab.Network(id).key in unread
+            Box(
+                Modifier
+                    .size(48.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(if (selected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.background)
+                    .clickable(onClick = { if (!selected) onPick(id) })
+                    .semantics(mergeDescendants = true) {
+                        role = Role.Tab
+                        this.selected = selected
+                        contentDescription = if (lit) "$name, $unreadLabel" else name
+                    },
+                contentAlignment = Alignment.Center,
             ) {
-                tabs.forEachIndexed { index, tab ->
-                    Tab(
-                        selected = index == selected,
-                        onClick = { onTab(index) },
-                        text = { TabTitle(tab, ui, networks, tab.key in unread) },
-                        selectedContentColor = MaterialTheme.colorScheme.onBackground,
-                        unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
+                if (lit) BadgedBox(badge = { Badge() }) { networks.Mark(id, 22.dp) } else networks.Mark(id, 22.dp)
             }
-            IconButton(onClick = onAdd) { Icon(Icons.Filled.Add, stringResource(Res.string.home_add_timeline)) }
-        }
-        Hairline()
-    }
-}
-
-@Composable
-private fun TabTitle(tab: HomeTab, ui: HomeUi, networks: HomeNetworks, unread: Boolean) {
-    UnreadDot(unread) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            if (tab is HomeTab.Network) {
-                networks.Mark(tab.id, 18.dp)
-                Spacer(Modifier.width(6.dp))
-            }
-            Text(tabLabel(tab, ui), maxLines = 1)
         }
     }
 }
 
+/** What the strip, the picker and the menus call a timeline: Following, X, a network by its title. */
 @Composable
 internal fun tabLabel(tab: HomeTab, ui: HomeUi): String = when (tab) {
     HomeTab.Following -> stringResource(Res.string.following)
-    HomeTab.ForYou -> stringResource(Res.string.home_for_you)
+    HomeTab.ForYou -> stringResource(Res.string.home_x)
     is HomeTab.Group -> tab.label
     is HomeTab.Network -> ui.networks.firstOrNull { it.id == tab.id }?.title ?: tab.id
 }
 
 /**
- * The top bar's buttons for [tab]: search; for For you the search of its
- * loaded posts and Home feed accounts; for a group the search of its loaded
- * posts and its own screen once there is one; for a network its pinned
- * options and the menu of them all; on the desktop, refresh.
+ * The top bar's buttons for [tab]: for X, Search X, then the options it
+ * pinned and the menu of them all (x_reader_chrome.dart: Subscriptions,
+ * Saved and Accounts; the search of the loaded posts, Home feed accounts and
+ * Refresh); for a network its pinned options and the menu of them all, and
+ * on the desktop, refresh.
  */
 @Composable
 private fun RowScope.TabActions(
@@ -270,24 +298,40 @@ private fun RowScope.TabActions(
     calls: FeedPageCalls,
     onPins: (String, List<String>) -> Unit,
 ) {
-    IconButton(onClick = { routes.openIfExists(HomeDestination.SEARCH.route) }) { Icon(Icons.Filled.Search, stringResource(Res.string.search)) }
     when (tab) {
-        HomeTab.Following, HomeTab.ForYou -> {
-            LoadedSearchButton { calls.openLayer(HomeLayer.LOADED_SEARCH) }
-            FeedAccountsButton(HomeFilter.turnedOff(ui.filter, ui.session.accounts, ui.session.groups)) { calls.openSheet(HomeSheet.FILTER) }
+        HomeTab.ForYou -> {
+            val x = stringResource(Res.string.home_x)
+            IconButton(onClick = { routes.openIfExists(HomeDestination.SEARCH.route) }) { Icon(Icons.Filled.Search, stringResource(Res.string.home_search_in, x)) }
+            val off = HomeFilter.turnedOff(ui.filter, ui.session.accounts, ui.session.groups)
+            PinnedOptions(FeedStrip.FOR_YOU, xOptions(routes, refresh, calls), ui.topBarPins[FeedStrip.FOR_YOU].orEmpty(), onPins, attention = off > 0)
         }
-        is HomeTab.Group -> {
-            LoadedSearchButton { calls.openLayer(HomeLayer.LOADED_SEARCH) }
-            if (routes.exists(HomeRoutes.GROUP)) {
-                IconButton(onClick = { routes.openGroup(tab.id) }) { Icon(HomeIcons.OpenInNew, stringResource(Res.string.home_open_group)) }
-            }
+        is HomeTab.Network -> {
+            key(tab.id) { NetworkActions(tab.id, ui, networks, onPins) }
+            if (LocalDesktopActions.current != null) IconButton(onClick = refresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) }
         }
-        is HomeTab.Network -> key(tab.id) { NetworkActions(tab.id, ui, networks, onPins) }
-        null -> Unit
+        HomeTab.Following, is HomeTab.Group, null -> Unit
     }
-    if (LocalDesktopActions.current != null && tab != null) {
-        IconButton(onClick = refresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) }
-    }
+}
+
+/** X's options, by the ids its pins keep: its library, the reader's accounts, and the loaded posts' search, Home feed accounts and Refresh. */
+@Composable
+private fun xOptions(routes: HomeRoutes, refresh: () -> Unit, calls: FeedPageCalls): List<NetworkOption> {
+    val subscriptions = stringResource(Res.string.home_subscriptions)
+    val saved = stringResource(Res.string.home_saved)
+    val accounts = stringResource(Res.string.home_filter_accounts)
+    val loaded = stringResource(Res.string.discover_loaded_title)
+    val feedAccounts = stringResource(Res.string.home_feed_accounts)
+    val again = stringResource(Res.string.home_refresh)
+    return listOf(
+        NetworkOption("subscriptions", subscriptions, HomeIcons.PeopleOutlined) { routes.openIfExists(HomeDestination.SUBSCRIPTIONS.route) },
+        NetworkOption("saved", saved, HomeIcons.Bookmark) { routes.openIfExists(HomeDestination.SAVED.route) },
+        NetworkOption("accounts", accounts, HomeIcons.ManageAccounts) {
+            if (routes.exists(HomeDestination.SETTINGS.route)) routes.open(SettingsRoutes.of(SettingsSection.ACCOUNT))
+        },
+        NetworkOption("loaded-search", loaded, GroupIcons.ManageSearch) { calls.openLayer(HomeLayer.LOADED_SEARCH) },
+        NetworkOption("feed-accounts", feedAccounts, Icons.Outlined.Person) { calls.openSheet(HomeSheet.FILTER) },
+        NetworkOption("refresh", again, Icons.Filled.Refresh, refresh),
+    )
 }
 
 /** Home feed accounts (homeFeedAccountsButton): a person, with a dot while accounts or groups are turned off. */
@@ -301,15 +345,26 @@ internal fun FeedAccountsButton(off: Int, onClick: () -> Unit) {
 /** A network's options pinned to the bar, in pin order, and the menu of them all, where each can be pinned (XTA's top-bar pins). */
 @Composable
 internal fun NetworkActions(id: String, ui: HomeUi, networks: HomeNetworks, onPins: (String, List<String>) -> Unit) {
-    val options = networks.options(id)
+    PinnedOptions(id, networks.options(id), ui.topBarPins[id].orEmpty(), onPins)
+}
+
+/**
+ * [options] of the timeline [id]: those in [pins] on the bar, in pin order,
+ * then the menu of them all, where each can be pinned; the menu's button
+ * carries a dot while one of them wants the reader's [attention].
+ */
+@Composable
+private fun PinnedOptions(id: String, options: List<NetworkOption>, pins: List<String>, onPins: (String, List<String>) -> Unit, attention: Boolean = false) {
     if (options.isEmpty()) return
-    val pins = ui.topBarPins[id].orEmpty()
     TopBarPins.shown(options, pins) { it.id }.forEach { option ->
         IconButton(onClick = option.onClick) { Icon(option.icon, option.label) }
     }
     var open by remember { mutableStateOf(false) }
     Box {
-        IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, stringResource(Res.string.home_more_options)) }
+        IconButton(onClick = { open = true }) {
+            val more = stringResource(Res.string.home_more_options)
+            if (attention) BadgedBox(badge = { Badge() }) { Icon(Icons.Filled.MoreVert, more) } else Icon(Icons.Filled.MoreVert, more)
+        }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             val pinLabel = stringResource(Res.string.home_pin_to_bar)
             options.forEach { option ->
@@ -335,6 +390,3 @@ internal fun NetworkActions(id: String, ui: HomeUi, networks: HomeNetworks, onPi
         }
     }
 }
-
-/** The strip as the feed page shows it: its pager, the last tap asking for a timeline's top, and the tabs with their unread dot. */
-internal class StripState(val pager: PagerState, val toTop: ToTop, val unread: Set<String>)

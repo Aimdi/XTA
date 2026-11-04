@@ -23,10 +23,6 @@
     <string name="ago_minutes">%1$d min</string>
     <string name="ago_hours">%1$d h</string>
 
-    <string name="feed_nobody_followed">Jarraitzen duzunetako inor ez dago oraindik Jarraitzen jarioan. Ireki profil bat, adibidez @izena bilatuz, eta jarraitu.</string>
-    <string name="feed_empty">Oraindik ez dago jarraitzen dituzun kontuen argitalpenik.</string>
-    <string name="feed_partial">Kontu batzuk ezin izan dira irakurri: %1$s</string>
-
     <string name="problem_no_account">Ez dago X konturik. Inportatu XTAren babeskopia bere kontuekin.</string>
     <string name="problem_rate_limited">X hemengo kontu guztiak mugatzen ari da. Saiatu berriro minutu batzuk barru.</string>
     <string name="problem_offline">Ez dago X-rako konexiorik.</string>

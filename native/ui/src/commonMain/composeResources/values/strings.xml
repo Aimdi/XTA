@@ -25,10 +25,6 @@
     <string name="ago_minutes">%1$dm</string>
     <string name="ago_hours">%1$dh</string>
 
-    <string name="feed_nobody_followed">Nobody you follow is in the Following feed yet. Open a profile, for example by searching for @name, and follow it.</string>
-    <string name="feed_empty">No posts from the accounts you follow yet.</string>
-    <string name="feed_partial">Some accounts couldn't be read: %1$s</string>
-
     <string name="problem_no_account">No X account. Import XTA's backup with its accounts.</string>
     <string name="problem_rate_limited">X is rate-limiting every account here. Try again in a few minutes.</string>
     <string name="problem_offline">No connection to X.</string>

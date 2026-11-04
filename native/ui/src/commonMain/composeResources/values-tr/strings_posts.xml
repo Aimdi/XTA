@@ -7,6 +7,7 @@
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Daralt</string>
     <string name="posts_expand">Genişlet</string>
+    <string name="posts_link_more">Bu bağlantıyı paylaşan diğer gönderiler: %1$d</string>
     <string name="posts_community">Topluluk</string>
     <string name="posts_community_notes">Topluluk notları</string>
     <string name="posts_continue_thread">Continue thread</string>

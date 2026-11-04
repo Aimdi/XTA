@@ -23,10 +23,6 @@
     <string name="ago_minutes">%1$d分</string>
     <string name="ago_hours">%1$d時間</string>
 
-    <string name="feed_nobody_followed">フォロー中のフィードにはまだ誰もいません。たとえば @名前 で検索してプロフィールを開き、フォローしてください。</string>
-    <string name="feed_empty">フォローしているアカウントのポストはまだありません。</string>
-    <string name="feed_partial">一部のアカウントを読み込めませんでした: %1$s</string>
-
     <string name="problem_no_account">X アカウントがありません。アカウントを含む XTA のバックアップをインポートしてください。</string>
     <string name="problem_rate_limited">X がここのすべてのアカウントを制限しています。数分後にもう一度お試しください。</string>
     <string name="problem_offline">X に接続できません。</string>

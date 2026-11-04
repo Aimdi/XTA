@@ -23,10 +23,6 @@
     <string name="ago_minutes">%1$d chv</string>
     <string name="ago_hours">%1$d hadz</string>
 
-    <string name="feed_nobody_followed">Nikoha z tych, kaho vy čytajecie, pakul niama ŭ stužcy «Čytaju». Adkryjcie profil, naprykład znajšoŭšy @imia, i padpišyciesia.</string>
-    <string name="feed_empty">Pakul niama dopisaŭ ad akaŭntaŭ, jakija vy čytajecie.</string>
-    <string name="feed_partial">Niekatoryja akaŭnty nie ŭdałosia pračytać: %1$s</string>
-
     <string name="problem_no_account">Niama akaŭnta X. Impartujcie rezervovuju kopiju XTA z jaje akaŭntami.</string>
     <string name="problem_rate_limited">X abmiažoŭvaje tut usie akaŭnty. Pasprabujcie znoŭ praz niekalki chvilin.</string>
     <string name="problem_offline">Niama złučennia z X.</string>

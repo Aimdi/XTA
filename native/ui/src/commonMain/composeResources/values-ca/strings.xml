@@ -23,10 +23,6 @@
     <string name="ago_minutes">%1$d min</string>
     <string name="ago_hours">%1$d h</string>
 
-    <string name="feed_nobody_followed">Encara no hi ha ningú dels que segueixes al feed Seguint. Obre un perfil, per exemple cercant @nom, i segueix-lo.</string>
-    <string name="feed_empty">Encara no hi ha publicacions dels comptes que segueixes.</string>
-    <string name="feed_partial">No s'han pogut llegir alguns comptes: %1$s</string>
-
     <string name="problem_no_account">No hi ha cap compte d'X. Importa la còpia de seguretat de l'XTA amb els seus comptes.</string>
     <string name="problem_rate_limited">X està limitant tots els comptes d'aquí. Torna-ho a provar d'aquí a uns minuts.</string>
     <string name="problem_offline">Sense connexió amb X.</string>

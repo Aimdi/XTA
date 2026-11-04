@@ -2,7 +2,8 @@
 <!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
      Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
 <resources>
-    <string name="home_for_you">Dla vas</string>
+    <string name="home_x">X</string>
+    <string name="home_search_in">Pošuk u %1$s</string>
     <string name="home_open_menu">Adkryć mieniu navihacyi</string>
     <string name="home_add_timeline">Dadać stužku</string>
     <string name="home_unread">Niepračytanaje</string>
@@ -12,13 +13,12 @@
     <string name="home_pin_to_bar">Zamacavać na vierchniaj paneli</string>
 
     <string name="home_strip_title">Stužki plahinaŭ</string>
-    <string name="home_strip_intro">Zamacujcie ŭstalavanyja plahiny pobač z «Dla vas» u zručnym paradku. Inšyja možna ŭstalavać z kramy plahinaŭ.</string>
+    <string name="home_strip_intro">Zamacujcie ŭstalavanyja plahiny pobač z «Dla vas». Pieraciahnicie, kab zmianić paradak. Inšyja — u kramie plahinaŭ.</string>
     <string name="home_strip_pinned">Na hetaj stužcy</string>
     <string name="home_strip_available">Možna dadać</string>
     <string name="home_strip_empty">Pakul niama što zamacavać. Adkryjcie kramu: Reddit, Pixiv, Mastodon i inš.</string>
     <string name="home_strip_remove">Prybrać sa stužki</string>
-    <string name="home_strip_up">Pieramiascić uvierch</string>
-    <string name="home_strip_down">Pieramiascić uniz</string>
+    <string name="home_strip_reorder">Zmianić paradak</string>
     <string name="home_plugin_store">Krama plahinaŭ</string>
 
     <string name="home_subscriptions">Padpiski</string>
@@ -53,13 +53,14 @@
     <string name="home_for_you_empty">Nie atrymlivajecca zahruzić dopisy stužki</string>
     <string name="home_for_you_no_account">Kab zahruzić «Dla vas», impartujcie rezervovuju kopiju XTA z jaje akaŭntami.</string>
     <string name="home_import">Impartavać rezervovuju kopiju XTA</string>
-    <string name="home_zen_end">Pakul heta ŭsio</string>
-    <string name="home_zen_more">Usio roŭna zahruzić jašče</string>
 
     <string name="home_home">Hałoŭnaja</string>
     <string name="home_networks">Sietki</string>
     <string name="home_networks_recent">Niadaŭnija</string>
     <string name="home_networks_all">Usie sietki</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">Abjadnać servisy mikrabłohaŭ</string>
+    <string name="home_alt_microblogging_group_detail">Pakazvać Mastodon, Bluesky i Threads u adnym razdziele hałoŭnaha ekrana. Vyklučycie, kab pakazvać ich asobna. Danyja i nalady zastanucca biez zmien.</string>
     <string name="home_posts">Tvity</string>
     <string name="home_media">Medyja</string>
 </resources>

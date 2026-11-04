@@ -67,10 +67,10 @@ class HomeFilterTest {
         assertFalse(HomeUnread.tracks(session, HomeTab.Following, readingPosition = false))
         assertFalse(HomeUnread.tracks(session, HomeTab.Group("g1", "One"), readingPosition = true))
         assertTrue(HomeUnread.tracks(session, HomeTab.Group("g2", "Two"), readingPosition = false))
-        assertFalse(HomeUnread.tracks(session, HomeTab.ForYou, readingPosition = true))
+        assertTrue(HomeUnread.tracks(session, HomeTab.ForYou, readingPosition = true), "For you keeps its place as XTA's does")
+        assertFalse(HomeUnread.tracks(session, HomeTab.ForYou, readingPosition = false))
         assertFalse(HomeUnread.tracks(session, HomeTab.Network("reddit"), readingPosition = true))
-        assertTrue(HomeUnread.unread(tracks = true, newAbove = 3))
-        assertFalse(HomeUnread.unread(tracks = true, newAbove = 0))
-        assertFalse(HomeUnread.unread(tracks = false, newAbove = 3))
+        assertEquals(listOf("following", "for_you", "group:g1", "group:g2"), HomeUnread.feeds(session).map { it.key })
+        assertEquals("for_you", HomeUnread.feedKey(HomeTab.ForYou))
     }
 }

@@ -23,10 +23,6 @@
     <string name="ago_minutes">%1$d Min.</string>
     <string name="ago_hours">%1$d Std.</string>
 
-    <string name="feed_nobody_followed">Niemand, dem du folgst, steht schon im Folge-ich-Feed. Öffne ein Profil, etwa über die Suche nach @Name, und folge ihm.</string>
-    <string name="feed_empty">Noch keine Posts von den Konten, denen du folgst.</string>
-    <string name="feed_partial">Einige Konten ließen sich nicht lesen: %1$s</string>
-
     <string name="problem_no_account">Kein X-Konto. Importiere XTAs Sicherung mit den Konten.</string>
     <string name="problem_rate_limited">X bremst gerade jedes Konto. Versuch es in ein paar Minuten noch einmal.</string>
     <string name="problem_offline">Keine Verbindung zu X.</string>

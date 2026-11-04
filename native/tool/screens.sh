@@ -80,11 +80,11 @@ if tap_node "Quoting tweet with limited replies"; then
   sleep 2
 fi
 
-# Home's strip by swipes: For you after Following, then the group's tab.
+# Home's timelines by a swipe: X after Following, then back to Following.
 adb shell input swipe $((width * 80 / 100)) $((height / 2)) $((width * 15 / 100)) $((height / 2)) 250
 shot for-you 8
-adb shell input swipe $((width * 80 / 100)) $((height / 2)) $((width * 15 / 100)) $((height / 2)) 250
-shot group 8
+adb shell input swipe $((width * 20 / 100)) $((height / 2)) $((width * 85 / 100)) $((height / 2)) 250
+shot following-again 4
 
 open_link "https://x.com/quax_tests"
 shot profile 8

@@ -11,7 +11,12 @@ import com.aimdi.xtanative.store.settings.HomePrefs
 import com.aimdi.xtanative.store.settings.PostsPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.ThemePrefs
+import com.aimdi.xtanative.ui.group.ReadMarks
 import com.aimdi.xtanative.ui.settings.HomePages
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -42,18 +47,27 @@ data class HomeUi(
     val hideOnScroll: Boolean = true,
     /** Networks opened lately, newest first: the one the bar keeps when it has no room for all. */
     val recentNetworks: List<String> = emptyList(),
+    /** Settings › Plugin store › Group microblogging services: Mastodon, Bluesky and Threads as one entry. */
+    val microblogsGrouped: Boolean = true,
+    /** Which of those three was opened last. */
+    val lastMicroblog: String = "",
 ) {
     /** The account whose mark stands for the reader: the first one, as in XTA, which has no single signed-in identity. */
     val account: XAccount? get() = session.accounts.firstOrNull()
 }
 
 /**
- * Home's strip and bar, from the session (the groups), the settings (pins,
- * opening page and tab, filter, Home pages, Theme's switches) and the
- * plugins' networks.
+ * Home's timelines and bar, from the session, the settings (pins, opening
+ * page and timeline, filter, Home pages, Theme's switches) and the plugins'
+ * networks; and which feeds have posts the reader has not read.
  */
 class HomeViewModel(private val graph: AppGraph, networks: StateFlow<List<StripNetwork>>) : ViewModel() {
     private var opening: Pair<Int, Int>? = null
+    private val unreadKeys = MutableStateFlow<Set<String>>(emptySet())
+    private var unreadJob: Job? = null
+
+    /** The keys of the feeds with unread posts ([HomeTab.key]): Following, For you and the groups. */
+    val unread: StateFlow<Set<String>> = unreadKeys.asStateFlow()
 
     /** Null until the session and the settings are read. */
     val ui: StateFlow<HomeUi?> = combine(graph.sessions.state.filterNotNull(), graph.settings.settings, networks) { session, settings, available ->
@@ -63,7 +77,8 @@ class HomeViewModel(private val graph: AppGraph, networks: StateFlow<List<StripN
     private fun build(session: Session, settings: Settings, available: List<StripNetwork>): HomeUi {
         val ids = available.mapTo(HashSet()) { it.id }
         val pins = settings[HomePrefs.feedStripNetworks]
-        val tabs = HomeStrip.tabs(pins, ids::contains, session.feedGroups)
+        // XTA's Home turns between Following, X and the pinned networks; a group opens on its own screen.
+        val tabs = HomeStrip.tabs(pins, ids::contains, emptyList())
         val bar = barOf(session, settings, ids)
         val (index, barIndex) = opening ?: openingOf(tabs, bar, settings).also { opening = it }
         return HomeUi(
@@ -74,12 +89,14 @@ class HomeViewModel(private val graph: AppGraph, networks: StateFlow<List<StripN
             pins = pins,
             filter = HomeFilter.draftOf(session, settings),
             readingPosition = settings[PostsPrefs.rememberReadingPosition],
-            topBarPins = available.associate { it.id to settings[HomePrefs.topBarPins[it.id]] },
+            topBarPins = (available.map { it.id } + FeedStrip.FOR_YOU).associateWith { settings[HomePrefs.topBarPins[it]] },
             bar = bar,
             initialBarIndex = barIndex,
             navigationLabels = settings[ThemePrefs.showNavigationLabels],
             hideOnScroll = settings[ThemePrefs.hideNavigationOnScroll],
             recentNetworks = settings[HomePrefs.recentNetworks],
+            microblogsGrouped = settings[HomePrefs.altMicrobloggingGrouped],
+            lastMicroblog = settings[HomePrefs.altMicrobloggingLastSource],
         )
     }
 
@@ -110,15 +127,36 @@ class HomeViewModel(private val graph: AppGraph, networks: StateFlow<List<StripN
         }
     }
 
-    /** [tab] opened from the strip: a network goes first among the recent ones, as XTA keeps them. */
+    /** [tab] shown: a network goes first among the recent ones, as XTA keeps them. */
     fun opened(tab: HomeTab) {
         if (tab is HomeTab.Network) touched(tab.id)
     }
 
-    /** Network [id] opened, from the strip or the bar's Networks (rememberNetwork). */
+    /** Network [id] opened, on Home or from the bar's Networks (rememberNetwork): the newest of the recent ones, and the microblog opened last when it is one. */
     fun touched(id: String) {
         viewModelScope.launch {
-            graph.settings.update { it.with(HomePrefs.recentNetworks, HomeStrip.touched(it[HomePrefs.recentNetworks], id)) }
+            graph.settings.update {
+                it.with(HomePrefs.recentNetworks, HomeStrip.touched(it[HomePrefs.recentNetworks], id))
+                    .with(HomePrefs.altMicrobloggingLastSource, AltMicroblogging.remembered(id, it[HomePrefs.altMicrobloggingLastSource]))
+            }
+        }
+    }
+
+    /**
+     * Reads again which feeds have posts newer than their last read mark,
+     * as XTA's unread store reloads: a moment after a timeline is shown, and
+     * as Home comes back into view.
+     */
+    fun reloadUnread() {
+        unreadJob?.cancel()
+        unreadJob = viewModelScope.launch {
+            delay(UNREAD_AFTER_MILLIS)
+            val session = graph.sessions.state.value ?: return@launch
+            val reading = graph.settings.load()[PostsPrefs.rememberReadingPosition]
+            unreadKeys.value = HomeUnread.feeds(session).filter { tab ->
+                val key = HomeUnread.feedKey(tab) ?: return@filter false
+                ReadMarks(graph.feedCache(ReadMarks.key(key))).unread(HomeUnread.tracks(session, tab, reading))
+            }.mapTo(HashSet()) { it.key }
         }
     }
 
@@ -133,5 +171,10 @@ class HomeViewModel(private val graph: AppGraph, networks: StateFlow<List<StripN
             graph.settings.update { HomeFilter.applied(it, draft) }
             graph.sessions.update { HomeFilter.applied(it, draft) }
         }
+    }
+
+    private companion object {
+        /** Timelines turned in quick succession read the marks once (XTA's 200 ms). */
+        const val UNREAD_AFTER_MILLIS = 200L
     }
 }

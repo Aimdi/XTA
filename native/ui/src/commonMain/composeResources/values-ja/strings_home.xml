@@ -2,7 +2,8 @@
 <!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
      Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
 <resources>
-    <string name="home_for_you">おすすめ</string>
+    <string name="home_x">X</string>
+    <string name="home_search_in">%1$sを検索</string>
     <string name="home_open_menu">ナビゲーション メニューを開く</string>
     <string name="home_add_timeline">タイムラインを追加</string>
     <string name="home_unread">未読</string>
@@ -12,13 +13,12 @@
     <string name="home_pin_to_bar">上部バーに固定</string>
 
     <string name="home_strip_title">プラグインのタイムライン</string>
-    <string name="home_strip_intro">インストールしたプラグインを「おすすめ」の隣に好きな順番で固定できます。プラグインストアからさらに追加できます。</string>
+    <string name="home_strip_intro">インストール済みのプラグインを「おすすめ」の横に固定できます。ドラッグで並べ替え。ほかはプラグインストアから。</string>
     <string name="home_strip_pinned">このバーに表示中</string>
     <string name="home_strip_available">追加できます</string>
     <string name="home_strip_empty">まだ固定できるプラグインがありません。ストアで Reddit、Pixiv、Mastodon などをインストールしてください。</string>
     <string name="home_strip_remove">バーから外す</string>
-    <string name="home_strip_up">上へ移動</string>
-    <string name="home_strip_down">下へ移動</string>
+    <string name="home_strip_reorder">並べ替え</string>
     <string name="home_plugin_store">プラグインストア</string>
 
     <string name="home_subscriptions">登録アカウント</string>
@@ -50,13 +50,14 @@
     <string name="home_for_you_empty">フィードのポストを読み込めませんでした</string>
     <string name="home_for_you_no_account">「おすすめ」を読み込むには、アカウントを含む XTA のバックアップをインポートしてください。</string>
     <string name="home_import">XTA のバックアップをインポート</string>
-    <string name="home_zen_end">今はここまでです</string>
-    <string name="home_zen_more">それでももっと読み込む</string>
 
     <string name="home_home">ホーム</string>
     <string name="home_networks">ネットワーク</string>
     <string name="home_networks_recent">最近</string>
     <string name="home_networks_all">すべてのネットワーク</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">マイクロブログサービスをまとめる</string>
+    <string name="home_alt_microblogging_group_detail">ホームでMastodon、Bluesky、Threadsを1つのセクションにまとめます。オフにすると個別に表示されます。データや設定はそのまま保持されます。</string>
     <string name="home_posts">ツイート</string>
     <string name="home_media">メディア</string>
 </resources>

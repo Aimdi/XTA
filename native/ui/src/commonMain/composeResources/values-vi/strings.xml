@@ -23,10 +23,6 @@
     <string name="ago_minutes">%1$d phút</string>
     <string name="ago_hours">%1$d giờ</string>
 
-    <string name="feed_nobody_followed">Chưa có ai bạn theo dõi trong bảng tin Đang theo dõi. Hãy mở một hồ sơ, chẳng hạn bằng cách tìm @tên, rồi theo dõi.</string>
-    <string name="feed_empty">Chưa có bài đăng nào từ các tài khoản bạn theo dõi.</string>
-    <string name="feed_partial">Không đọc được một số tài khoản: %1$s</string>
-
     <string name="problem_no_account">Không có tài khoản X. Hãy nhập bản sao lưu của XTA cùng các tài khoản trong đó.</string>
     <string name="problem_rate_limited">X đang giới hạn mọi tài khoản ở đây. Hãy thử lại sau vài phút.</string>
     <string name="problem_offline">Không có kết nối tới X.</string>

@@ -23,10 +23,6 @@
     <string name="ago_minutes">%1$d dk</string>
     <string name="ago_hours">%1$d sa</string>
 
-    <string name="feed_nobody_followed">Takip ettiğin kimse henüz Takip edilenler akışında değil. Bir profil aç, örneğin @ad diye arayarak, ve onu takip et.</string>
-    <string name="feed_empty">Takip ettiğin hesaplardan henüz gönderi yok.</string>
-    <string name="feed_partial">Bazı hesaplar okunamadı: %1$s</string>
-
     <string name="problem_no_account">X hesabı yok. XTA yedeğini hesaplarıyla birlikte içe aktar.</string>
     <string name="problem_rate_limited">X buradaki her hesabı sınırlıyor. Birkaç dakika sonra yeniden dene.</string>
     <string name="problem_offline">X'e bağlantı yok.</string>

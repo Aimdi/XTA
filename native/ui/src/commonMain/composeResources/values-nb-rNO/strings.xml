@@ -23,10 +23,6 @@
     <string name="ago_minutes">%1$d min</string>
     <string name="ago_hours">%1$d t</string>
 
-    <string name="feed_nobody_followed">Ingen du følger, er i Følger-feeden ennå. Åpne en profil, for eksempel ved å søke etter @navn, og følg den.</string>
-    <string name="feed_empty">Ingen innlegg fra kontoene du følger ennå.</string>
-    <string name="feed_partial">Noen kontoer kunne ikke leses: %1$s</string>
-
     <string name="problem_no_account">Ingen X-konto. Importer XTA-sikkerhetskopien med kontoene.</string>
     <string name="problem_rate_limited">X begrenser hver konto her. Prøv igjen om noen minutter.</string>
     <string name="problem_offline">Ingen tilkobling til X.</string>

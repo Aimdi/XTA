@@ -23,10 +23,6 @@
     <string name="ago_minutes">%1$d min</string>
     <string name="ago_hours">%1$d h</string>
 
-    <string name="feed_nobody_followed">Neniu, kiun vi sekvas, ankoraŭ estas en la fluo Abonoj. Malfermu profilon, ekzemple serĉante @nomo, kaj sekvu ĝin.</string>
-    <string name="feed_empty">Ankoraŭ neniuj afiŝoj de la kontoj, kiujn vi sekvas.</string>
-    <string name="feed_partial">Kelkaj kontoj ne legeblis: %1$s</string>
-
     <string name="problem_no_account">Neniu X-konto. Importu la savkopion de XTA kun ĝiaj kontoj.</string>
     <string name="problem_rate_limited">X limigas ĉiun konton ĉi tie. Reprovu post kelkaj minutoj.</string>
     <string name="problem_offline">Neniu konekto al X.</string>

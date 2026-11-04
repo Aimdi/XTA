@@ -7,6 +7,7 @@
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Faldi</string>
     <string name="posts_expand">Etendi</string>
+    <string name="posts_link_more">Pliaj afiŝoj kun ĉi tiu ligilo: %1$d</string>
     <string name="posts_community">Komunumo</string>
     <string name="posts_community_notes">Komunumaj notoj</string>
     <string name="posts_continue_thread">Continue thread</string>

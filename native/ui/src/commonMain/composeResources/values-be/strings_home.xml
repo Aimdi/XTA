@@ -2,7 +2,8 @@
 <!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
      Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
 <resources>
-    <string name="home_for_you">Для вас</string>
+    <string name="home_x">X</string>
+    <string name="home_search_in">Пошук у %1$s</string>
     <string name="home_open_menu">Адкрыць меню навігацыі</string>
     <string name="home_add_timeline">Дадаць стужку</string>
     <string name="home_unread">Непрачытанае</string>
@@ -12,13 +13,12 @@
     <string name="home_pin_to_bar">Замацаваць на верхняй панэлі</string>
 
     <string name="home_strip_title">Стужкі плагінаў</string>
-    <string name="home_strip_intro">Замацуйце ўсталяваныя плагіны побач з «Для вас» у зручным парадку. Іншыя можна ўсталяваць з крамы плагінаў.</string>
+    <string name="home_strip_intro">Замацуйце ўсталяваныя плагіны побач з «Для вас». Перацягніце, каб змяніць парадак. Іншыя — у краме плагінаў.</string>
     <string name="home_strip_pinned">На гэтай стужцы</string>
     <string name="home_strip_available">Можна дадаць</string>
     <string name="home_strip_empty">Пакуль няма што замацаваць. Адкрыйце краму: Reddit, Pixiv, Mastodon і інш.</string>
     <string name="home_strip_remove">Прыбраць са стужкі</string>
-    <string name="home_strip_up">Перамясціць уверх</string>
-    <string name="home_strip_down">Перамясціць уніз</string>
+    <string name="home_strip_reorder">Змяніць парадак</string>
     <string name="home_plugin_store">Крама плагінаў</string>
 
     <string name="home_subscriptions">Падпіскі</string>
@@ -53,13 +53,14 @@
     <string name="home_for_you_empty">Не атрымліваецца загрузіць допісы стужкі</string>
     <string name="home_for_you_no_account">Каб загрузіць «Для вас», імпартуйце рэзервовую копію XTA з яе акаўнтамі.</string>
     <string name="home_import">Імпартаваць рэзервовую копію XTA</string>
-    <string name="home_zen_end">Пакуль гэта ўсё</string>
-    <string name="home_zen_more">Усё роўна загрузіць яшчэ</string>
 
     <string name="home_home">Галоўная</string>
     <string name="home_networks">Сеткі</string>
     <string name="home_networks_recent">Нядаўнія</string>
     <string name="home_networks_all">Усе сеткі</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">Аб’яднаць сэрвісы мікраблогаў</string>
+    <string name="home_alt_microblogging_group_detail">Паказваць Mastodon, Bluesky і Threads у адным раздзеле галоўнага экрана. Выключыце, каб паказваць іх асобна. Даныя і налады застануцца без змен.</string>
     <string name="home_posts">Твіты</string>
     <string name="home_media">Медыя</string>
 </resources>

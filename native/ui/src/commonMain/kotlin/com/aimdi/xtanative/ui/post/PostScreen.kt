@@ -62,6 +62,7 @@ import com.aimdi.xtanative.ui.article.ArticlePreviewCard
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.countText
@@ -126,28 +127,30 @@ fun PostScreen(id: String, actions: PostActions, onBack: () -> Unit) {
         PostScopeProvider(focalId = id, translateAll = true, revealReplies = reveal) {
             val prefs = postScope().prefs
             val zenHidden = prefs.zen && !state.repliesRevealed
-            LazyColumn(
-                state = list,
-                contentPadding = PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding() + 48.dp),
-                modifier = Modifier.fillMaxSize(),
-            ) {
-                state.withheldBefore.forEach { gap ->
-                    item(key = "gap-" + gap.id) { Gap(gap.reason, gap.screenName, gap.id, actions) }
-                }
-                items(state.before, key = { "before-" + it.id }, contentType = { "post" }) { post ->
-                    PostCard(post, actions, continues = true, midThread = post !== state.before.first())
-                }
-                focalItems(state, id, actions, vm, prefs)
-                val problem = state.problem
-                when {
-                    state.loading && state.replies.isEmpty() -> item(key = "loading") { LoadingRow() }
-                    problem != null -> item(key = "problem") { ProblemRow(problem, { vm.load() }) }
-                }
-                if (zenHidden) {
-                    item(key = "zen") { ZenReplies(vm::revealReplies) }
-                } else {
-                    replyItems(state, actions, prefs.threadedReplies)
-                    item(key = "footer") { ThreadEnd(state, vm) }
+            WithReadingColumn(PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding() + 48.dp)) { column ->
+                LazyColumn(
+                    state = list,
+                    contentPadding = column,
+                    modifier = Modifier.fillMaxSize(),
+                ) {
+                    state.withheldBefore.forEach { gap ->
+                        item(key = "gap-" + gap.id) { Gap(gap.reason, gap.screenName, gap.id, actions) }
+                    }
+                    items(state.before, key = { "before-" + it.id }, contentType = { "post" }) { post ->
+                        PostCard(post, actions, continues = true, midThread = post !== state.before.first())
+                    }
+                    focalItems(state, id, actions, vm, prefs)
+                    val problem = state.problem
+                    when {
+                        state.loading && state.replies.isEmpty() -> item(key = "loading") { LoadingRow() }
+                        problem != null -> item(key = "problem") { ProblemRow(problem, { vm.load() }) }
+                    }
+                    if (zenHidden) {
+                        item(key = "zen") { ZenReplies(vm::revealReplies) }
+                    } else {
+                        replyItems(state, actions, prefs.threadedReplies)
+                        item(key = "footer") { ThreadEnd(state, vm) }
+                    }
                 }
             }
         }

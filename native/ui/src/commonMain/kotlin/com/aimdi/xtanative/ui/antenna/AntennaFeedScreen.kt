@@ -3,6 +3,9 @@ package com.aimdi.xtanative.ui.antenna
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import com.aimdi.xtanative.ui.common.WithReadingColumn
+import com.aimdi.xtanative.ui.feed.feedThreads
+import com.aimdi.xtanative.ui.feed.rememberFeedLayout
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -28,7 +31,6 @@ import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.discover_no_posts_match
 import com.aimdi.xtanative.ui.generated.resources.discover_no_results
 import com.aimdi.xtanative.ui.post.PostActions
-import com.aimdi.xtanative.ui.post.ThreadRows
 import com.aimdi.xtanative.ui.search.EmptyNote
 import com.aimdi.xtanative.ui.search.LoadMoreNearEnd
 import com.aimdi.xtanative.ui.search.pageStatus
@@ -61,9 +63,12 @@ fun AntennaFeedScreen(id: String, actions: PostActions, onBack: () -> Unit) {
             !loaded -> LoadingRow(Modifier.padding(top = padding.calculateTopPadding()))
             // Deleted since it was opened.
             antenna == null -> EmptyNote(stringResource(Res.string.discover_no_results), modifier = Modifier.padding(top = padding.calculateTopPadding()))
-            else -> LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
-                items(posts.items, key = { it.id }, contentType = { "thread" }) { thread -> ThreadRows(thread, actions) }
-                pageStatus(posts, Res.string.discover_no_posts_match, vm::retry, vm::more)
+            else -> WithReadingColumn(padding) { column ->
+                val layout = rememberFeedLayout(posts.items)
+                LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
+                    feedThreads(posts.items, layout, actions)
+                    pageStatus(posts, Res.string.discover_no_posts_match, vm::retry, vm::more)
+                }
             }
         }
     }

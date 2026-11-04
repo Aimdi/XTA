@@ -2,7 +2,8 @@
 <!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
      Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
 <resources>
-    <string name="home_for_you">Para ti</string>
+    <string name="home_x">X</string>
+    <string name="home_search_in">Buscar en %1$s</string>
     <string name="home_open_menu">Abrir el menú de navegación</string>
     <string name="home_add_timeline">Añadir cronología</string>
     <string name="home_unread">No leído</string>
@@ -12,13 +13,12 @@
     <string name="home_pin_to_bar">Fijar en la barra superior</string>
 
     <string name="home_strip_title">Cronologías de plugins</string>
-    <string name="home_strip_intro">Fija los plugins instalados junto a Para ti, en el orden que quieras. Instala más desde la tienda de plugins.</string>
+    <string name="home_strip_intro">Fija plugins instalados junto a «Para ti». Arrastra para reordenar. Instala más desde la tienda de plugins.</string>
     <string name="home_strip_pinned">En esta barra</string>
     <string name="home_strip_available">Disponibles</string>
     <string name="home_strip_empty">Aún no hay plugins que fijar. Abre la tienda para instalar Reddit, Pixiv, Mastodon y más.</string>
     <string name="home_strip_remove">Quitar de la barra</string>
-    <string name="home_strip_up">Subir</string>
-    <string name="home_strip_down">Bajar</string>
+    <string name="home_strip_reorder">Reordenar</string>
     <string name="home_plugin_store">Tienda de plugins</string>
 
     <string name="home_subscriptions">Suscripciones</string>
@@ -51,13 +51,14 @@
     <string name="home_for_you_empty">No se pueden cargar los posts del feed</string>
     <string name="home_for_you_no_account">Importa la copia de seguridad de XTA con sus cuentas para cargar Para ti.</string>
     <string name="home_import">Importar una copia de seguridad de XTA</string>
-    <string name="home_zen_end">Eso es todo por ahora</string>
-    <string name="home_zen_more">Cargar más de todos modos</string>
 
     <string name="home_home">Inicio</string>
     <string name="home_networks">Redes</string>
     <string name="home_networks_recent">Recientes</string>
     <string name="home_networks_all">Todas las redes</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">Agrupar servicios de microblogging</string>
+    <string name="home_alt_microblogging_group_detail">Mostrar Mastodon, Bluesky y Threads en una sola sección de Inicio. Desactiva esta opción para separarlos. Tus datos y ajustes se conservan.</string>
     <string name="home_posts">Publicaciones</string>
     <string name="home_media">Multimedia</string>
 </resources>

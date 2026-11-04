@@ -7,6 +7,7 @@
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">طي</string>
     <string name="posts_expand">توسيع</string>
+    <string name="posts_link_more">منشورات أخرى تشارك هذا الرابط: %1$d</string>
     <string name="posts_community">مجتمع</string>
     <string name="posts_community_notes">ملاحظات المجتمع</string>
     <string name="posts_continue_thread">Continue thread</string>

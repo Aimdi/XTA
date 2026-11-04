@@ -7,6 +7,7 @@
     <string name="posts_boosts">Republicaciones</string>
     <string name="posts_collapse">Contraer</string>
     <string name="posts_expand">Expandir</string>
+    <string name="posts_link_more">Más publicaciones con este enlace: %1$d</string>
     <string name="posts_community">Comunidad</string>
     <string name="posts_community_notes">Notas de la comunidad</string>
     <string name="posts_continue_thread">Continuar hilo</string>

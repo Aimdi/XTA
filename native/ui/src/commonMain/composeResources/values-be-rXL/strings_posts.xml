@@ -7,6 +7,7 @@
     <string name="posts_boosts">Reposty</string>
     <string name="posts_collapse">Zharnuć</string>
     <string name="posts_expand">Razharnuć</string>
+    <string name="posts_link_more">Inšyja dopisy z hetaj spasyłkaj: %1$d</string>
     <string name="posts_community">Supolnasć</string>
     <string name="posts_community_notes">Natatki supolnasci</string>
     <string name="posts_continue_thread">Čytać halinku dalej</string>

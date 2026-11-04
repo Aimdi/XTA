@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.backup.FollowedAccount
 import com.aimdi.xtanative.core.feed.ContentFilter
+import com.aimdi.xtanative.core.feed.FeedKeys
 import com.aimdi.xtanative.core.feed.FeedPage
 import com.aimdi.xtanative.core.feed.FeedProgress
 import com.aimdi.xtanative.core.feed.FeedSettings
@@ -33,6 +34,7 @@ import com.aimdi.xtanative.ui.feed.PluginPostsState
 import com.aimdi.xtanative.ui.feed.SourceAsk
 import com.aimdi.xtanative.ui.feed.feedConcurrency
 import com.aimdi.xtanative.ui.plugins.FeedKinds
+import com.aimdi.xtanative.ui.plugins.PluginSettings
 import com.aimdi.xtanative.ui.plugins.problemOf
 import com.aimdi.xtanative.ui.subscriptions.GroupActions
 import com.aimdi.xtanative.ui.subscriptions.GroupBoardModel
@@ -138,22 +140,27 @@ object FeedPlaces {
 }
 
 /**
- * A group's feed (_feed.dart, group_screen.dart): the session's plan for it,
- * read with core's [GroupFeed], shown with its progress, the sources that
- * failed to retry, folded posts, the unrelated-posts pill, the read position
- * and catch-up mode. A change of members or settings, or of the reposts and
- * replies the reader hid on profiles, refreshes it, held while the reader is
- * scrolled down. Its members of other networks are read by their plugins
- * ([feeds]) and mixed in by time, with the group's reply and repost settings.
+ * A group's feed (_feed.dart, group_screen.dart), or for a null [groupId]
+ * the Following feed, which XTA runs as its group `-1`: the session's plan
+ * for it, read with core's [GroupFeed], shown with its progress, the sources
+ * that failed to retry, folded posts, the unrelated-posts pill, the read
+ * position and catch-up mode. A change of members or settings, or of the
+ * reposts and replies the reader hid on profiles, refreshes it, held while
+ * the reader is scrolled down. Its members of other networks are read by
+ * their plugins ([feeds]) and mixed in by time, with the feed's reply and
+ * repost settings; the Following feed mixes in, instead, what is followed in
+ * every plugin whose "show in the home timeline" switch is on.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
-class GroupFeedViewModel(private val graph: AppGraph, private val groupId: String, private val feeds: PluginFeeds = PluginFeeds.None) : ViewModel() {
+class GroupFeedViewModel(private val graph: AppGraph, private val groupId: String?, private val feeds: PluginFeeds = PluginFeeds.None) : ViewModel() {
+    /** The feed's key: its group's id, or the Following feed's. */
+    private val key = groupId ?: FeedKeys.FOLLOWING
     private val cache: FeedCache = graph.feedCache(groupId)
-    private val marks = ReadMarks(graph.feedCache(ReadMarks.key(groupId)))
+    private val marks = ReadMarks(graph.feedCache(ReadMarks.key(key)))
     private val run = MutableStateFlow(FeedRun())
     private val current = MutableStateFlow<GroupFeed?>(null)
     val groupActions = GroupActions(graph, viewModelScope)
-    val settingsActions = GroupSettingsActions(graph, groupId, viewModelScope)
+    val settingsActions = GroupSettingsActions(graph, key, viewModelScope)
 
     private var plan: GroupFeedPlan? = null
     private var prefs = FeedPrefs()
@@ -165,7 +172,7 @@ class GroupFeedViewModel(private val graph: AppGraph, private val groupId: Strin
     private val held = HeldRefresh()
     private var atTop = true
     private var evaluated = false
-    private val place: KeptPlace? = FeedPlaces[groupId]
+    private val place: KeptPlace? = FeedPlaces[key]
     private var jumps = 0
     private var resets = 0
 
@@ -183,7 +190,9 @@ class GroupFeedViewModel(private val graph: AppGraph, private val groupId: Strin
     private val mixed = MixedSources(
         viewModelScope,
         feeds,
-        combine(feeds.ids, graph.sessions.state.filterNotNull(), Combinations.state) { ids, session, combined -> asksOf(ids, session, combined) },
+        combine(feeds.ids, graph.sessions.state.filterNotNull(), Combinations.state, graph.settings.settings) { ids, session, combined, settings ->
+            asksOf(ids, session, alsoReadOf(combined), settings)
+        },
         ::problemOf,
     )
 
@@ -191,7 +200,7 @@ class GroupFeedViewModel(private val graph: AppGraph, private val groupId: Strin
     val plugin: StateFlow<PluginPostsState> = mixed.posts.state
 
     init {
-        Combinations.state.update { it.released(groupId) }
+        groupId?.let { id -> Combinations.state.update { it.released(id) } }
         viewModelScope.launch {
             run.update { it.copy(lastSeen = marks.position()) }
             combine(
@@ -201,24 +210,31 @@ class GroupFeedViewModel(private val graph: AppGraph, private val groupId: Strin
                 HiddenPosts.of(graph.profileFilters),
             ) { session, settings, combined, hidden ->
                 val prefs = FeedPrefs.of(settings)
-                Inputs(GroupFeedRules.plan(session, prefs, groupId, combined.ids, hidden), prefs)
+                Inputs(GroupFeedRules.plan(session, prefs, groupId, alsoReadOf(combined), hidden), prefs)
             }.distinctUntilChanged().collect(::read)
         }
     }
 
-    /** What the group asks of the plugins with a feed ([ids]): its members of theirs, with the group's reply and repost settings. */
-    private fun asksOf(ids: Set<String>, session: Session, combined: CombinedGroups): Map<String, SourceAsk> {
-        val alsoRead = combined.ids - groupId
+    /** The groups read alongside this one; none beside the Following feed, which combines with nothing. */
+    private fun alsoReadOf(combined: CombinedGroups): Set<String> = groupId?.let { combined.ids - it }.orEmpty()
+
+    /**
+     * What the feed asks of the plugins with a feed ([ids]), with its reply
+     * and repost settings: a group its members of theirs, the Following feed
+     * the accounts followed in each whose home-timeline switch is on.
+     */
+    private fun asksOf(ids: Set<String>, session: Session, alsoRead: Set<String>, settings: Settings): Map<String, SourceAsk> {
         val plan = session.feedPlan(groupId, alsoRead)
-        val members = PluginMembers.of(session, groupId, alsoRead, ids)
-        return FeedSources.asks(ids, members, home = false, inHome = { false }, kinds = FeedKinds(plan.includeReplies, plan.includeReposts))
+        val kinds = FeedKinds(plan.includeReplies, plan.includeReposts)
+        val members = groupId?.let { PluginMembers.of(session, it, alsoRead, ids) }.orEmpty()
+        return FeedSources.asks(ids, members, home = groupId == null, inHome = { PluginSettings.inHomeFeed(settings, it) }, kinds = kinds)
     }
 
     private fun build(session: Session, settings: Settings, combined: CombinedGroups, run: FeedRun, progress: FeedProgress, plugins: Set<String>): GroupFeedUi {
-        val feedSettings = session.settingsOf(groupId)
-        val alsoRead = combined.ids - groupId
-        val memberIds = session.membersOf(groupId, alsoRead).mapTo(HashSet()) { it.id }
-        val pluginMembers = PluginMembers.of(session, groupId, alsoRead, plugins).values.sumOf { it.size }
+        val feedSettings = session.settingsOf(key)
+        val alsoRead = alsoReadOf(combined)
+        val memberIds = (if (groupId == null) session.feedMembers else session.membersOf(groupId, alsoRead)).mapTo(HashSet()) { it.id }
+        val pluginMembers = groupId?.let { PluginMembers.of(session, it, alsoRead, plugins).values.sumOf { members -> members.size } } ?: 0
         val rows = SubscriptionList.ordered(
             SubscriptionList.rows(session),
             settings[SubscriptionPrefs.order],
@@ -233,7 +249,7 @@ class GroupFeedViewModel(private val graph: AppGraph, private val groupId: Strin
             includeReplies = feedSettings.includeReplies ?: session.includeReplies,
             includeReposts = feedSettings.includeReposts ?: session.includeReposts,
             prefs = FeedPrefs.of(settings),
-            inDeck = groupId in session.deck,
+            inDeck = groupId != null && groupId in session.deck,
             alsoRead = alsoRead,
             groups = GroupBoardModel.ordered(session.groups, settings[SubscriptionPrefs.groupsOrder], settings[SubscriptionPrefs.groupsAscending]),
             accounts = session.following.filter { it.id in memberIds },
@@ -453,7 +469,7 @@ class GroupFeedViewModel(private val graph: AppGraph, private val groupId: Strin
     /** The post at the top of the screen, kept as the feed closes, for the next visit in this run of the app. */
     fun keepPlace(threadIndex: Int, offset: Int) {
         val thread = run.value.shown.threads.getOrNull(threadIndex) ?: return
-        FeedPlaces[groupId] = KeptPlace(thread.id, offset, atTop = threadIndex == 0 && offset == 0)
+        FeedPlaces[key] = KeptPlace(thread.id, offset, atTop = threadIndex == 0 && offset == 0)
     }
 
     fun jumped() = run.update { it.copy(jump = null) }
@@ -472,7 +488,7 @@ class GroupFeedViewModel(private val graph: AppGraph, private val groupId: Strin
     // ---- groups read alongside ----
 
     fun toggleAlongside(otherId: String) {
-        if (otherId != groupId) Combinations.state.update { it.toggled(otherId) }
+        if (groupId != null && otherId != groupId) Combinations.state.update { it.toggled(otherId) }
     }
 
     fun clearAlongside() = Combinations.state.update { it.cleared() }

@@ -37,7 +37,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LocalGraph
-import com.aimdi.xtanative.ui.feed.FeedPage
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.runtime.mutableIntStateOf
+import com.aimdi.xtanative.ui.group.GroupFeedBody
+import com.aimdi.xtanative.ui.group.groupFeedViewModel
+import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.feed.ToTop
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
@@ -48,7 +52,8 @@ import org.jetbrains.compose.resources.stringResource
 
 /**
  * The deck (XTA's deck screen): the groups pinned to it side by side, each a
- * column with its own feed, for a tablet or a wide window.
+ * column with its own group feed, for a tablet or a wide window. The
+ * desktop's F5 and Ctrl+R read every column again.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,6 +62,8 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
     val session by graph.sessions.state.collectAsStateWithLifecycle()
     val columns = session?.deckGroups.orEmpty()
     var toTop by remember { mutableStateOf(ToTop(0, 0)) }
+    var refreshed by remember { mutableIntStateOf(0) }
+    DesktopShortcuts(refresh = { refreshed++ }, turn = {}, isOpen = { false }, close = {})
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
@@ -83,7 +90,7 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
                 columns.forEachIndexed { index, group ->
                     if (index > 0) Box(Modifier.fillMaxHeight().width(Dp.Hairline).background(MaterialTheme.colorScheme.outlineVariant))
                     key(group.id) {
-                        DeckColumn(group, index, toTop, actions, Modifier.weight(1f)) { toTop = ToTop(index, toTop.count + 1) }
+                        DeckColumn(group, if (toTop.page == index) toTop.count else 0, refreshed, actions, Modifier.weight(1f)) { toTop = ToTop(index, toTop.count + 1) }
                     }
                 }
             }
@@ -91,9 +98,13 @@ fun DeckScreen(actions: PostActions, onBack: () -> Unit) {
     }
 }
 
-/** One group of the deck: its name, a tap on which goes back to the top, over its feed. */
+/** One group of the deck: its name, a tap on which goes back to the top ([toTop] grows), over its group feed, read again as [refreshed] grows. */
 @Composable
-private fun DeckColumn(group: FollowGroup, index: Int, toTop: ToTop, actions: PostActions, modifier: Modifier, onTitle: () -> Unit) {
+private fun DeckColumn(group: FollowGroup, toTop: Int, refreshed: Int, actions: PostActions, modifier: Modifier, onTitle: () -> Unit) {
+    val vm = groupFeedViewModel(group.id)
+    val state by vm.ui.collectAsStateWithLifecycle()
+    val list = rememberLazyListState()
+    RefreshesOn(refreshed) { vm.refresh() }
     Column(modifier.fillMaxHeight()) {
         Text(
             HomeStrip.groupLabel(group),
@@ -103,6 +114,6 @@ private fun DeckColumn(group: FollowGroup, index: Int, toTop: ToTop, actions: Po
             modifier = Modifier.fillMaxWidth().clickable(onClick = onTitle).padding(horizontal = 16.dp, vertical = 12.dp),
         )
         Hairline()
-        FeedPage(group.id, index, toTop, actions, PaddingValues())
+        GroupFeedBody(state, vm, actions, list, PaddingValues(), mediaOnly = false, toTop = toTop)
     }
 }

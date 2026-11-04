@@ -82,12 +82,18 @@ object SourcePicker {
 /**
  * What another screen asks Home to show (XTA's FeedTabStore, which a group's
  * title menu sets before going back to Home): a timeline, by its tab's key.
- * Home takes the request once.
+ * Home takes the request once. And what Home asks of Discover (XTA's
+ * SearchScopeStore): reached from a network's page on the bar, it searches
+ * that network.
  */
 object HomeRequests {
     private val asked = MutableStateFlow<String?>(null)
+    private val scope = MutableStateFlow<String?>(null)
 
     val tab: StateFlow<String?> = asked.asStateFlow()
+
+    /** The network Discover is asked to search, by plugin id, until it takes the request. */
+    val searchScope: StateFlow<String?> = scope.asStateFlow()
 
     fun show(tabKey: String) {
         asked.value = tabKey
@@ -95,5 +101,13 @@ object HomeRequests {
 
     fun taken(tabKey: String) {
         asked.compareAndSet(tabKey, null)
+    }
+
+    fun searchIn(networkId: String) {
+        scope.value = networkId
+    }
+
+    fun searchScopeTaken(networkId: String) {
+        scope.compareAndSet(networkId, null)
     }
 }

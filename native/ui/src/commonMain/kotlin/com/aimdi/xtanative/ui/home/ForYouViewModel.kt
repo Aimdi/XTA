@@ -2,23 +2,21 @@ package com.aimdi.xtanative.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.aimdi.xtanative.core.feed.FeedKeys
+import com.aimdi.xtanative.core.feed.FeedStops
+import com.aimdi.xtanative.core.feed.FirstPageAction
 import com.aimdi.xtanative.core.feed.ForYou
 import com.aimdi.xtanative.core.feed.ForYouPage
-import com.aimdi.xtanative.core.feed.FeedStops
 import com.aimdi.xtanative.core.feed.HomeReads
+import com.aimdi.xtanative.core.feed.ReadPosition
 import com.aimdi.xtanative.core.x.XAccount
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.store.settings.AccountPrefs
 import com.aimdi.xtanative.store.settings.PostsPrefs
-import com.aimdi.xtanative.ui.feed.FeedSources
-import com.aimdi.xtanative.ui.feed.MixedSources
-import com.aimdi.xtanative.ui.feed.PluginFeeds
-import com.aimdi.xtanative.ui.feed.PluginPostsState
-import com.aimdi.xtanative.ui.plugins.FeedKinds
-import com.aimdi.xtanative.ui.plugins.PluginSettings
-import com.aimdi.xtanative.ui.plugins.problemOf
+import com.aimdi.xtanative.ui.group.GroupFeedPaging
+import com.aimdi.xtanative.ui.group.ReadMarks
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -48,53 +46,60 @@ data class ForYouUi(
     val paused: Boolean = false,
     /** Grows when a refresh the reader asked for put new posts on top: back to the top then. */
     val toTop: Int = 0,
-)
+    /** Settings › Posts › Remember reading position: the timeline keeps where the reader left off. */
+    val tracks: Boolean = false,
+    /** The last read post as the timeline opened: the divider stays where it was for the whole visit. */
+    val lastSeen: ReadPosition? = null,
+    /** Back to the last read post, once, when the first page has posts above it: the divider's row. */
+    val jump: Int? = null,
+) {
+    /** Where "You're caught up" goes: above the first read post, when something new sits above it. */
+    val divider: Int? get() = GroupFeedPaging.dividerIndex(threads, lastSeen, tracks, catchUp = false)
+}
 
 /**
- * For you (XTA's `x` source on the strip): the home timelines of the X
+ * For you (XTA's `x` source, its X timeline): the home timelines of the X
  * accounts left on in Home feed accounts, merged newest first, without
- * replies, without the posts of the groups kept off the home feeds, and in
- * zen mode paused after its pages; with the posts of what is followed in each
- * plugin whose "show in the home timeline" switch is on mixed in by time
- * ([feeds]), all of them, as XTA's For you takes them.
+ * replies and without the posts of the groups kept off the home feeds, and in
+ * zen mode paused after its pages. It mixes in no other network: the plugins'
+ * home-timeline posts join Following alone. With Settings › Posts › Remember
+ * reading position it keeps where the reader left off (_for_you.dart): the
+ * divider over the posts read before, the timeline opened at it, and the
+ * newest post read from the top recorded, whose mark the unread dot compares.
  */
-class ForYouViewModel(private val graph: AppGraph, feeds: PluginFeeds = PluginFeeds.None) : ViewModel() {
+class ForYouViewModel(private val graph: AppGraph) : ViewModel() {
     private val state = MutableStateFlow(ForYouUi())
     val ui: StateFlow<ForYouUi> = state.asStateFlow()
 
-    private val mixed = MixedSources(
-        viewModelScope,
-        feeds,
-        combine(feeds.ids, graph.settings.settings) { ids, settings ->
-            FeedSources.asks(ids, emptyMap(), home = true, inHome = { PluginSettings.inHomeFeed(settings, it) }, kinds = FeedKinds.ALL)
-        },
-        ::problemOf,
-    )
-
-    /** The plugins' posts For you mixes in. */
-    val plugin: StateFlow<PluginPostsState> = mixed.posts.state
-
-    private data class Shape(val accounts: List<XAccount>, val off: Set<String>, val excluded: Set<String>, val pageCap: Int?)
+    private data class Shape(val accounts: List<XAccount>, val off: Set<String>, val excluded: Set<String>, val pageCap: Int?, val tracks: Boolean)
 
     private val reads = HomeReads { account, cursor, count -> graph.client.homeTimeline(account, cursor, count) }
+    private val marks = ReadMarks(graph.feedCache(ReadMarks.key(FeedKeys.FOR_YOU)))
     private var shape: Shape? = null
     private var cursor: String? = null
     private var stops = FeedStops()
     private var refreshJob: Job? = null
     private var resets = 0
 
+    /** The divider is placed once per visit, on the first page that has posts above the last read one. */
+    private var placed = false
+    private var atTop = true
+
     init {
         viewModelScope.launch { retryWhenBackOnline() }
         viewModelScope.launch {
+            state.update { it.copy(lastSeen = marks.position()) }
             combine(graph.sessions.state.filterNotNull(), graph.settings.settings) { session, settings ->
                 Shape(
                     accounts = session.accounts,
                     off = settings[AccountPrefs.disabledAccountIds].toSet(),
                     excluded = session.excludedFromFollowing,
                     pageCap = ForYouRules.pageCap(settings[PostsPrefs.zenMode], settings[PostsPrefs.zenPageCap]),
+                    tracks = settings[PostsPrefs.rememberReadingPosition],
                 )
             }.distinctUntilChanged().collect { next ->
                 shape = next
+                state.update { it.copy(tracks = next.tracks) }
                 refresh(byReader = false)
             }
         }
@@ -104,7 +109,6 @@ class ForYouViewModel(private val graph: AppGraph, feeds: PluginFeeds = PluginFe
     private suspend fun retryWhenBackOnline() {
         graph.online.collect { online ->
             if (!online) return@collect
-            mixed.retryFailed()
             refreshJob?.join()
             val now = state.value
             if (now.problem == Problem.Offline || now.notice == Problem.Offline) refresh(byReader = false)
@@ -113,7 +117,6 @@ class ForYouViewModel(private val graph: AppGraph, feeds: PluginFeeds = PluginFe
 
     /** The newest page, in place of what is shown; [byReader] is a pull, which also goes back to the top. */
     fun refresh(byReader: Boolean = true) {
-        if (byReader) mixed.refresh(force = true)
         val shape = shape ?: return
         refreshJob?.cancel()
         resets++
@@ -136,6 +139,7 @@ class ForYouViewModel(private val graph: AppGraph, feeds: PluginFeeds = PluginFe
             stops = step.stops
             cursor = page.next
             graph.posts.remember(step.shown)
+            val action = firstPageAction(step.shown, shape.tracks)
             state.update {
                 it.copy(
                     threads = step.shown,
@@ -144,9 +148,20 @@ class ForYouViewModel(private val graph: AppGraph, feeds: PluginFeeds = PluginFe
                     hasMore = page.next != null && stops.pause == null,
                     paused = stops.pause != null,
                     toTop = if (byReader) it.toTop + 1 else it.toTop,
+                    jump = (action as? FirstPageAction.RestoreToBoundary)?.index ?: it.jump,
                 )
             }
+            if (shape.tracks) step.shown.firstOrNull()?.let { marks.noteNewest(it) }
+            if (action is FirstPageAction.RecordPosition) marks.record(action.thread, System.currentTimeMillis())
         }
+    }
+
+    /** What a first page does with the read position: back to the divider once per visit, else a record while the reader is at the top. */
+    private fun firstPageAction(threads: List<XThread>, tracks: Boolean): FirstPageAction? {
+        if (!tracks) return null
+        val action = FirstPageAction.of(threads, state.value.lastSeen, placed, sessionOffset = null, atTop = atTop)
+        placed = true
+        return action
     }
 
     /** The next page under what is shown; a page that brings nothing new ends the feed. */
@@ -191,16 +206,18 @@ class ForYouViewModel(private val graph: AppGraph, feeds: PluginFeeds = PluginFe
         loadMore()
     }
 
+    /** Whether the reader is at the top: back there, everything loaded counts as read. */
+    fun atTop(top: Boolean) {
+        if (top == atTop) return
+        atTop = top
+        val now = state.value
+        if (!top || !now.tracks) return
+        ReadPosition.newestRecordable(now.threads)?.let { viewModelScope.launch { marks.record(it, System.currentTimeMillis()) } }
+    }
+
+    fun jumped() = state.update { it.copy(jump = null) }
+
     fun dismissNotice() = state.update { it.copy(notice = null) }
-
-    /** Whether the reader is down the list, where the plugins' new posts wait until they come back up or ask for them. */
-    fun readingAway(away: Boolean) = mixed.posts.readingAway(away)
-
-    /** Shows the plugins' posts that waited, as the new-posts pill does. */
-    fun revealPlugins() = mixed.posts.reveal()
-
-    /** Reads plugin [source] again, as its failure's retry does. */
-    fun retryPlugin(source: String) = mixed.posts.retry(source)
 
     private suspend fun read(shape: Shape, cursor: String?): ForYouPage {
         val page = ForYou.page(shape.accounts, shape.off, cursor, reads, ForYouRules.PAGE_SIZE, shape.excluded)

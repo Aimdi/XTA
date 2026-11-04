@@ -7,6 +7,7 @@
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Redueix</string>
     <string name="posts_expand">Amplia</string>
+    <string name="posts_link_more">Més publicacions amb aquest enllaç: %1$d</string>
     <string name="posts_community">Comunitat</string>
     <string name="posts_community_notes">Notes de la comunitat</string>
     <string name="posts_continue_thread">Continue thread</string>

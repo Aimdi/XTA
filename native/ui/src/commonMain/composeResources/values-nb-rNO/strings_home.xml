@@ -2,7 +2,8 @@
 <!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
      Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
 <resources>
-    <string name="home_for_you">For deg</string>
+    <string name="home_x">X</string>
+    <string name="home_search_in">Søk i %1$s</string>
     <string name="home_open_menu">Åpne navigasjonsmenyen</string>
     <string name="home_add_timeline">Legg til tidslinje</string>
     <string name="home_unread">Ulest</string>
@@ -12,13 +13,12 @@
     <string name="home_pin_to_bar">Fest til topplinjen</string>
 
     <string name="home_strip_title">Programtilleggets tidslinjer</string>
-    <string name="home_strip_intro">Fest installerte programtillegg ved siden av For deg, i den rekkefølgen du vil. Installer flere fra tilleggsbutikken.</string>
+    <string name="home_strip_intro">Fest installerte tillegg ved siden av «For deg». Dra for å endre rekkefølgen. Installer flere fra tilleggsbutikken.</string>
     <string name="home_strip_pinned">På denne stripen</string>
     <string name="home_strip_available">Tilgjengelige</string>
     <string name="home_strip_empty">Ingen tillegg å feste ennå. Åpne butikken for Reddit, Pixiv, Mastodon med mer.</string>
     <string name="home_strip_remove">Fjern fra stripen</string>
-    <string name="home_strip_up">Flytt opp</string>
-    <string name="home_strip_down">Flytt ned</string>
+    <string name="home_strip_reorder">Endre rekkefølge</string>
     <string name="home_plugin_store">Tilleggsbutikk</string>
 
     <string name="home_subscriptions">Abonnementer</string>
@@ -51,13 +51,14 @@
     <string name="home_for_you_empty">Kan ikke laste inn innleggene i feeden</string>
     <string name="home_for_you_no_account">Importer XTA-sikkerhetskopien med kontoene for å laste inn For deg.</string>
     <string name="home_import">Importer en XTA-sikkerhetskopi</string>
-    <string name="home_zen_end">Det var alt for nå</string>
-    <string name="home_zen_more">Last inn mer likevel</string>
 
     <string name="home_home">Hjem</string>
     <string name="home_networks">Nettverk</string>
     <string name="home_networks_recent">Nylige</string>
     <string name="home_networks_all">Alle nettverk</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">Samle mikrobloggtjenester</string>
+    <string name="home_alt_microblogging_group_detail">Vis Mastodon, Bluesky og Threads i én seksjon på Hjem. Slå av for å vise dem hver for seg. Data og innstillinger beholdes.</string>
     <string name="home_posts">Tvitringer</string>
     <string name="home_media">Media</string>
 </resources>

@@ -7,6 +7,7 @@
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">संक्षिप्त करें</string>
     <string name="posts_expand">विस्तार करें</string>
+    <string name="posts_link_more">इस लिंक वाली अन्य पोस्ट: %1$d</string>
     <string name="posts_community">समुदाय</string>
     <string name="posts_community_notes">समुदाय नोट्स</string>
     <string name="posts_continue_thread">Continue thread</string>

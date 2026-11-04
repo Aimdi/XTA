@@ -27,7 +27,7 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import com.aimdi.xtanative.ui.home.rememberRetappedList
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -261,7 +261,7 @@ private fun GroupsList(
     onMove: (Int, Int) -> Unit,
     contentPadding: PaddingValues,
 ) {
-    val list = rememberLazyListState()
+    val list = rememberRetappedList()
     val drag = rememberRowDrag(list)
     val tiles = state.board.all.associateBy { it.id }
     val keys: List<Any> = state.board.safe.map { it.id } + (if (state.board.nsfw.isNotEmpty()) listOf(HEADER) else emptyList()) + state.board.nsfw.map { it.id }

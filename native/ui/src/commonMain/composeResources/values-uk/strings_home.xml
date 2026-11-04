@@ -2,7 +2,8 @@
 <!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
      Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
 <resources>
-    <string name="home_for_you">Для вас</string>
+    <string name="home_x">X</string>
+    <string name="home_search_in">Шукати в %1$s</string>
     <string name="home_open_menu">Відкрити меню навігації</string>
     <string name="home_add_timeline">Додати стрічку</string>
     <string name="home_unread">Непрочитане</string>
@@ -12,13 +13,12 @@
     <string name="home_pin_to_bar">Закріпити на верхній панелі</string>
 
     <string name="home_strip_title">Стрічки плагінів</string>
-    <string name="home_strip_intro">Закріпіть установлені плагіни поруч із «Для вас» у зручному порядку. Інші можна встановити з крамниці плагінів.</string>
+    <string name="home_strip_intro">Закріпіть установлені плагіни поруч із «Для вас». Перетягніть, щоб змінити порядок. Інші — в крамниці плагінів.</string>
     <string name="home_strip_pinned">На цій смужці</string>
     <string name="home_strip_available">Можна додати</string>
     <string name="home_strip_empty">Поки немає що закріпити. Відкрийте крамницю: Reddit, Pixiv, Mastodon тощо.</string>
     <string name="home_strip_remove">Прибрати зі смужки</string>
-    <string name="home_strip_up">Перемістити вгору</string>
-    <string name="home_strip_down">Перемістити вниз</string>
+    <string name="home_strip_reorder">Змінити порядок</string>
     <string name="home_plugin_store">Крамниця плагінів</string>
 
     <string name="home_subscriptions">Підписки</string>
@@ -53,13 +53,14 @@
     <string name="home_for_you_empty">Не вдається завантажити дописи стрічки</string>
     <string name="home_for_you_no_account">Щоб завантажити «Для вас», імпортуйте резервну копію XTA з її обліковими записами.</string>
     <string name="home_import">Імпортувати резервну копію XTA</string>
-    <string name="home_zen_end">Поки що це все</string>
-    <string name="home_zen_more">Все одно завантажити ще</string>
 
     <string name="home_home">Головна</string>
     <string name="home_networks">Мережі</string>
     <string name="home_networks_recent">Недавні</string>
     <string name="home_networks_all">Усі мережі</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">Об’єднати сервіси мікроблогів</string>
+    <string name="home_alt_microblogging_group_detail">Показувати Mastodon, Bluesky і Threads в одному розділі головного екрана. Вимкніть, щоб знову показувати їх окремо. Дані та налаштування збережуться.</string>
     <string name="home_posts">Твіти</string>
     <string name="home_media">Медіа</string>
 </resources>

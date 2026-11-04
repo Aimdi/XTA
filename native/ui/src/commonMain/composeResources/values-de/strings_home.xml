@@ -2,7 +2,8 @@
 <!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
      Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
 <resources>
-    <string name="home_for_you">Für dich</string>
+    <string name="home_x">X</string>
+    <string name="home_search_in">%1$s durchsuchen</string>
     <string name="home_open_menu">Navigationsmenü öffnen</string>
     <string name="home_add_timeline">Timeline hinzufügen</string>
     <string name="home_unread">Ungelesen</string>
@@ -12,13 +13,12 @@
     <string name="home_pin_to_bar">An obere Leiste anheften</string>
 
     <string name="home_strip_title">Plugin-Timelines</string>
-    <string name="home_strip_intro">Hefte installierte Plugins neben „Für dich“ an, in der Reihenfolge, die du magst. Weitere gibt es im Plugin-Store.</string>
+    <string name="home_strip_intro">Pinne installierte Plugins neben „Für dich“. Ziehe sie, um die Reihenfolge zu ändern. Weitere findest du im Plugin-Store.</string>
     <string name="home_strip_pinned">Auf dieser Leiste</string>
     <string name="home_strip_available">Zum Hinzufügen</string>
     <string name="home_strip_empty">Noch keine Plugins zum Anheften. Öffne den Plugin-Store für Reddit, Pixiv, Mastodon und mehr.</string>
     <string name="home_strip_remove">Von der Leiste entfernen</string>
-    <string name="home_strip_up">Nach oben</string>
-    <string name="home_strip_down">Nach unten</string>
+    <string name="home_strip_reorder">Reihenfolge ändern</string>
     <string name="home_plugin_store">Plugin-Store</string>
 
     <string name="home_subscriptions">Abos</string>
@@ -51,13 +51,14 @@
     <string name="home_for_you_empty">Die Posts für den Feed lassen sich nicht laden</string>
     <string name="home_for_you_no_account">Importiere XTAs Sicherung mit ihren Konten, um „Für dich“ zu laden.</string>
     <string name="home_import">XTA-Sicherung importieren</string>
-    <string name="home_zen_end">Das ist erstmal alles</string>
-    <string name="home_zen_more">Trotzdem mehr laden</string>
 
     <string name="home_home">Start</string>
     <string name="home_networks">Netzwerke</string>
     <string name="home_networks_recent">Zuletzt</string>
     <string name="home_networks_all">Alle Netzwerke</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">Microblogging-Dienste gruppieren</string>
+    <string name="home_alt_microblogging_group_detail">Mastodon, Bluesky und Threads in einem Bereich auf der Startseite anzeigen. Ausschalten, um sie wieder einzeln anzuzeigen. Daten und Einstellungen bleiben erhalten.</string>
     <string name="home_posts">Tweets</string>
     <string name="home_media">Medien</string>
 </resources>

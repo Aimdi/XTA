@@ -23,10 +23,6 @@
     <string name="ago_minutes">%1$d분</string>
     <string name="ago_hours">%1$d시간</string>
 
-    <string name="feed_nobody_followed">팔로우하는 사람 중 아직 팔로잉 피드에 있는 사람이 없습니다. 예를 들어 @이름으로 검색해 프로필을 열고 팔로우하세요.</string>
-    <string name="feed_empty">팔로우하는 계정의 게시물이 아직 없습니다.</string>
-    <string name="feed_partial">일부 계정을 읽지 못했습니다: %1$s</string>
-
     <string name="problem_no_account">X 계정이 없습니다. 계정이 포함된 XTA 백업을 가져오세요.</string>
     <string name="problem_rate_limited">X가 이곳의 모든 계정을 제한하고 있습니다. 몇 분 후에 다시 시도하세요.</string>
     <string name="problem_offline">X에 연결되지 않았습니다.</string>

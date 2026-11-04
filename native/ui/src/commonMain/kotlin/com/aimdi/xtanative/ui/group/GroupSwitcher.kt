@@ -48,7 +48,7 @@ import com.aimdi.xtanative.ui.generated.resources.groups_groups
 import com.aimdi.xtanative.ui.generated.resources.groups_member_count
 import com.aimdi.xtanative.ui.generated.resources.groups_none_yet
 import com.aimdi.xtanative.ui.generated.resources.groups_switch_group
-import com.aimdi.xtanative.ui.generated.resources.home_for_you
+import com.aimdi.xtanative.ui.generated.resources.home_x
 import com.aimdi.xtanative.ui.home.HomeNetworks
 import com.aimdi.xtanative.ui.home.HomeStrip
 import com.aimdi.xtanative.ui.home.HomeTab
@@ -246,7 +246,7 @@ private fun HomeFeedItems(onPick: (String) -> Unit) {
 @Composable
 private fun feedLabel(tab: HomeTab, available: List<StripNetwork>): String = when (tab) {
     HomeTab.Following -> stringResource(Res.string.following)
-    HomeTab.ForYou -> stringResource(Res.string.home_for_you)
+    HomeTab.ForYou -> stringResource(Res.string.home_x)
     is HomeTab.Network -> available.firstOrNull { it.id == tab.id }?.title ?: tab.id
     is HomeTab.Group -> tab.label
 }

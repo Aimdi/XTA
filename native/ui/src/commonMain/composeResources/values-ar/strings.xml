@@ -23,10 +23,6 @@
     <string name="ago_minutes">%1$d د</string>
     <string name="ago_hours">%1$d س</string>
 
-    <string name="feed_nobody_followed">لا أحد ممن تتابعهم في موجز «المتابَعون» بعد. افتح ملفًا شخصيًا، مثلًا بالبحث عن ‎@الاسم، وتابِعه.</string>
-    <string name="feed_empty">لا منشورات بعد من الحسابات التي تتابعها.</string>
-    <string name="feed_partial">تعذّرت قراءة بعض الحسابات: %1$s</string>
-
     <string name="problem_no_account">لا يوجد حساب X. استورد النسخة الاحتياطية من XTA مع حساباتها.</string>
     <string name="problem_rate_limited">يقيّد X كل الحسابات هنا. أعد المحاولة بعد بضع دقائق.</string>
     <string name="problem_offline">لا اتصال بـ X.</string>

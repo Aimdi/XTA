@@ -23,10 +23,6 @@
     <string name="ago_minutes">%1$d मि॰</string>
     <string name="ago_hours">%1$d घं॰</string>
 
-    <string name="feed_nobody_followed">आप जिन्हें फ़ॉलो करते हैं, उनमें से कोई अभी फ़ॉलोइंग फ़ीड में नहीं है। कोई प्रोफ़ाइल खोलें, जैसे @नाम खोजकर, और उसे फ़ॉलो करें।</string>
-    <string name="feed_empty">आप जिन खातों को फ़ॉलो करते हैं, उनकी अभी कोई पोस्ट नहीं है।</string>
-    <string name="feed_partial">कुछ खाते पढ़े नहीं जा सके: %1$s</string>
-
     <string name="problem_no_account">कोई X खाता नहीं है। XTA का बैकअप उसके खातों के साथ इंपोर्ट करें।</string>
     <string name="problem_rate_limited">X यहाँ के हर खाते को सीमित कर रहा है। कुछ मिनट बाद फिर कोशिश करें।</string>
     <string name="problem_offline">X से कोई कनेक्शन नहीं है।</string>

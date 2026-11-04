@@ -2,7 +2,8 @@
 <!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
      Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
 <resources>
-    <string name="home_for_you">Por vi</string>
+    <string name="home_x">X</string>
+    <string name="home_search_in">Serĉi en %1$s</string>
     <string name="home_open_menu">Malfermi la navigan menuon</string>
     <string name="home_add_timeline">Aldoni tempolinion</string>
     <string name="home_unread">Nelegita</string>
@@ -12,13 +13,12 @@
     <string name="home_pin_to_bar">Fiksi al la supra breto</string>
 
     <string name="home_strip_title">Kromaĵaj tempolinioj</string>
-    <string name="home_strip_intro">Alpinglu instalitajn kromaĵojn apud Por vi, laŭ la ordo, kiun vi ŝatas. Instalu pliajn el la kromaĵa vendejo.</string>
+    <string name="home_strip_intro">Alpinglu instalitajn kromaĵojn apud «Por vi». Trenu por reordigi. Instalu pli el la kromaĵa vendejo.</string>
     <string name="home_strip_pinned">Sur ĉi tiu rubando</string>
     <string name="home_strip_available">Haveblaj</string>
     <string name="home_strip_empty">Ankoraŭ neniu kromaĵo por alpingli. Malfermu la vendejon por Reddit, Pixiv, Mastodon ktp.</string>
     <string name="home_strip_remove">Forigi de la rubando</string>
-    <string name="home_strip_up">Movi supren</string>
-    <string name="home_strip_down">Movi malsupren</string>
+    <string name="home_strip_reorder">Reordigi</string>
     <string name="home_plugin_store">Kromaĵa vendejo</string>
 
     <string name="home_subscriptions">Abonoj</string>
@@ -51,13 +51,14 @@
     <string name="home_for_you_empty">Ne eblas ŝargi la afiŝojn por la fluo</string>
     <string name="home_for_you_no_account">Importu la savkopion de XTA kun ĝiaj kontoj por ŝargi Por vi.</string>
     <string name="home_import">Importi savkopion de XTA</string>
-    <string name="home_zen_end">Jen ĉio nuntempe</string>
-    <string name="home_zen_more">Tamen ŝargi pli</string>
 
     <string name="home_home">Hejmo</string>
     <string name="home_networks">Retoj</string>
     <string name="home_networks_recent">Lastaj</string>
     <string name="home_networks_all">Ĉiuj retoj</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">Grupigi mikroblogajn servojn</string>
+    <string name="home_alt_microblogging_group_detail">Montri Mastodon, Bluesky kaj Threads en unu sekcio de la hejma ekrano. Malŝaltu por apartigi ilin. Viaj datumoj kaj agordoj restas senŝanĝaj.</string>
     <string name="home_posts">Pepoj</string>
     <string name="home_media">Plurmedio</string>
 </resources>

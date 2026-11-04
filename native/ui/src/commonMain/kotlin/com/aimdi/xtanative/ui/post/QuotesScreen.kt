@@ -5,6 +5,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import com.aimdi.xtanative.ui.common.WithReadingColumn
+import com.aimdi.xtanative.ui.feed.feedThreads
+import com.aimdi.xtanative.ui.feed.rememberFeedLayout
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -207,12 +210,15 @@ private fun QuotesList(state: QuotesUi, vm: QuotesViewModel, actions: PostAction
     val list = rememberLazyListState()
     val quotes = state.quotes
     PageMore(list, quotes.items.size) { quotes.cursor?.let(vm::loadQuotes) }
-    LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
-        item(key = "sort") {
-            SortChip(state.quoteSort, Sorts.X_QUOTES, { quoteSortLabel(it) }, ::quoteSortIcon, vm::selectQuotes, Modifier.padding(start = 4.dp))
-        }
-        listState(quotes, { vm.loadQuotes() }, { quotes.cursor?.let(vm::loadQuotes) }, Res.string.posts_no_quotes) {
-            items(quotes.items, key = { "quote-" + it.id }, contentType = { "thread" }) { thread -> ThreadRows(thread, actions) }
+    val layout = rememberFeedLayout(quotes.items)
+    WithReadingColumn(padding) { column ->
+        LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
+            item(key = "sort") {
+                SortChip(state.quoteSort, Sorts.X_QUOTES, { quoteSortLabel(it) }, ::quoteSortIcon, vm::selectQuotes, Modifier.padding(start = 4.dp))
+            }
+            listState(quotes, { vm.loadQuotes() }, { quotes.cursor?.let(vm::loadQuotes) }, Res.string.posts_no_quotes) {
+                feedThreads(quotes.items, layout, actions, keyOf = { "quote-" + it.id })
+            }
         }
     }
 }

@@ -7,6 +7,7 @@
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Tolestu</string>
     <string name="posts_expand">Zabaldu</string>
+    <string name="posts_link_more">Esteka hau duten argitalpen gehiago: %1$d</string>
     <string name="posts_community">Komunitatea</string>
     <string name="posts_community_notes">Komunitatearen oharrak</string>
     <string name="posts_continue_thread">Continue thread</string>

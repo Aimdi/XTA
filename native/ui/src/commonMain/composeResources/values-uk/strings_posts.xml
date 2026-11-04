@@ -7,6 +7,7 @@
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Згорнути</string>
     <string name="posts_expand">Розгорнути</string>
+    <string name="posts_link_more">Інші дописи з цим посиланням: %1$d</string>
     <string name="posts_community">Спільнота</string>
     <string name="posts_community_notes">Нотатки спільноти</string>
     <string name="posts_continue_thread">Continue thread</string>

@@ -2,7 +2,8 @@
 <!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
      Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
 <resources>
-    <string name="home_for_you">Voor jou</string>
+    <string name="home_x">X</string>
+    <string name="home_search_in">Zoeken in %1$s</string>
     <string name="home_open_menu">Navigatiemenu openen</string>
     <string name="home_add_timeline">Tijdlijn toevoegen</string>
     <string name="home_unread">Ongelezen</string>
@@ -12,13 +13,12 @@
     <string name="home_pin_to_bar">Vastzetten in bovenbalk</string>
 
     <string name="home_strip_title">Plugin-tijdlijnen</string>
-    <string name="home_strip_intro">Zet geïnstalleerde plugins naast Voor jou, in de volgorde die je wilt. Installeer er meer uit de pluginwinkel.</string>
+    <string name="home_strip_intro">Pin geïnstalleerde plugins naast Voor jou. Sleep om de volgorde te wijzigen. Installeer meer via de pluginwinkel.</string>
     <string name="home_strip_pinned">Op deze balk</string>
     <string name="home_strip_available">Beschikbaar</string>
     <string name="home_strip_empty">Nog geen plugins om te pinnen. Open de winkel voor Reddit, Pixiv, Mastodon en meer.</string>
     <string name="home_strip_remove">Van balk verwijderen</string>
-    <string name="home_strip_up">Omhoog</string>
-    <string name="home_strip_down">Omlaag</string>
+    <string name="home_strip_reorder">Volgorde wijzigen</string>
     <string name="home_plugin_store">Pluginwinkel</string>
 
     <string name="home_subscriptions">Abonnementen</string>
@@ -51,13 +51,14 @@
     <string name="home_for_you_empty">Kan de berichten voor de feed niet laden</string>
     <string name="home_for_you_no_account">Importeer de back-up van XTA met de accounts erin om Voor jou te laden.</string>
     <string name="home_import">Een XTA-back-up importeren</string>
-    <string name="home_zen_end">Dat is alles voor nu</string>
-    <string name="home_zen_more">Toch meer laden</string>
 
     <string name="home_home">Startpagina</string>
     <string name="home_networks">Netwerken</string>
     <string name="home_networks_recent">Recent</string>
     <string name="home_networks_all">Alle netwerken</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">Microblogdiensten groeperen</string>
+    <string name="home_alt_microblogging_group_detail">Toon Mastodon, Bluesky en Threads in één onderdeel op Start. Schakel dit uit om ze apart te tonen. Je gegevens en instellingen blijven behouden.</string>
     <string name="home_posts">Berichten</string>
     <string name="home_media">Media</string>
 </resources>

@@ -13,6 +13,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import com.aimdi.xtanative.ui.common.WithReadingColumn
+import com.aimdi.xtanative.ui.feed.feedThreads
+import com.aimdi.xtanative.ui.feed.rememberFeedLayout
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -88,7 +91,6 @@ import com.aimdi.xtanative.ui.generated.resources.discover_search
 import com.aimdi.xtanative.ui.generated.resources.discover_search_x
 import com.aimdi.xtanative.ui.generated.resources.saved_search_library
 import com.aimdi.xtanative.ui.post.PostActions
-import com.aimdi.xtanative.ui.post.ThreadRows
 import com.aimdi.xtanative.ui.saved.SavedIcons
 import org.jetbrains.compose.resources.stringResource
 
@@ -338,9 +340,12 @@ private fun PostResults(read: PagedRead<XThread, String>, list: LazyListState, a
     val paged by read.state.collectAsStateWithLifecycle()
     LoadMoreNearEnd(list, paged, onMore)
     LaunchedEffect(paged.loading) { if (paged.loading) list.scrollToItem(0) }
-    LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
-        items(paged.items, key = { it.id }, contentType = { "thread" }) { thread -> ThreadRows(thread, actions) }
-        pageStatus(paged, Res.string.discover_no_results, onRetry, onMore)
+    val layout = rememberFeedLayout(paged.items)
+    WithReadingColumn(padding) { column ->
+        LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
+            feedThreads(paged.items, layout, actions)
+            pageStatus(paged, Res.string.discover_no_results, onRetry, onMore)
+        }
     }
 }
 

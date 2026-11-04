@@ -64,6 +64,7 @@ import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.home.MicroblogGroupingRow
 import com.aimdi.xtanative.ui.generated.resources.cancel
 import com.aimdi.xtanative.ui.generated.resources.plugin_more_options
 import com.aimdi.xtanative.ui.generated.resources.plugin_available
@@ -162,6 +163,8 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
         ) {
             if (store.catalogue.refreshing) item(key = "refreshing") { LinearProgressIndicator(Modifier.fillMaxWidth()) }
             if (store.catalogue.unreachable) item(key = "unreachable") { Unreachable(store.catalogue.fetchedAt != null) }
+            // XTA's "Group microblogging services", above the plugins (_plugin_store.dart).
+            item(key = "group-microblogging") { MicroblogGroupingRow() }
             val installed = store.installed
             if (installed.isNotEmpty()) {
                 item(key = "installed") { Header(stringResource(Res.string.plugin_installed)) }

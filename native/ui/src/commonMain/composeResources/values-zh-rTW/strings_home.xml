@@ -2,7 +2,8 @@
 <!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
      Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
 <resources>
-    <string name="home_for_you">為您推薦</string>
+    <string name="home_x">X</string>
+    <string name="home_search_in">搜尋 %1$s</string>
     <string name="home_open_menu">開啟導覽選單</string>
     <string name="home_add_timeline">新增時間軸</string>
     <string name="home_unread">未讀</string>
@@ -12,13 +13,12 @@
     <string name="home_pin_to_bar">釘選到頂端列</string>
 
     <string name="home_strip_title">外掛時間軸</string>
-    <string name="home_strip_intro">把已安裝的外掛依你喜歡的順序釘選在「為您推薦」旁邊。可從外掛商店安裝更多外掛。</string>
+    <string name="home_strip_intro">將已安裝的外掛釘選在「為你推薦」旁。拖曳可重新排序。更多可在外掛商店安裝。</string>
     <string name="home_strip_pinned">已釘選在此列</string>
     <string name="home_strip_available">可新增</string>
     <string name="home_strip_empty">尚無可釘選的外掛。開啟外掛商店安裝 Reddit、Pixiv、Mastodon 等。</string>
     <string name="home_strip_remove">從此列移除</string>
-    <string name="home_strip_up">上移</string>
-    <string name="home_strip_down">下移</string>
+    <string name="home_strip_reorder">重新排序</string>
     <string name="home_plugin_store">外掛商店</string>
 
     <string name="home_subscriptions">訂閱</string>
@@ -50,13 +50,14 @@
     <string name="home_for_you_empty">無法載入這個動態的貼文</string>
     <string name="home_for_you_no_account">請匯入含有帳號的 XTA 備份來載入「為您推薦」。</string>
     <string name="home_import">匯入 XTA 備份</string>
-    <string name="home_zen_end">目前就這些了</string>
-    <string name="home_zen_more">仍要載入更多</string>
 
     <string name="home_home">主頁</string>
     <string name="home_networks">網路</string>
     <string name="home_networks_recent">最近使用</string>
     <string name="home_networks_all">全部網路</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">合併微網誌服務</string>
+    <string name="home_alt_microblogging_group_detail">在首頁的同一個區塊中顯示 Mastodon、Bluesky 和 Threads。關閉後恢復個別顯示。資料和設定維持不變。</string>
     <string name="home_posts">推文</string>
     <string name="home_media">媒體</string>
 </resources>

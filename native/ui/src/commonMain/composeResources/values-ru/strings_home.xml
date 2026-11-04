@@ -2,7 +2,8 @@
 <!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
      Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
 <resources>
-    <string name="home_for_you">Для вас</string>
+    <string name="home_x">X</string>
+    <string name="home_search_in">Искать в %1$s</string>
     <string name="home_open_menu">Открыть меню навигации</string>
     <string name="home_add_timeline">Добавить ленту</string>
     <string name="home_unread">Непрочитанное</string>
@@ -12,13 +13,12 @@
     <string name="home_pin_to_bar">Закрепить на верхней панели</string>
 
     <string name="home_strip_title">Ленты плагинов</string>
-    <string name="home_strip_intro">Закрепите установленные плагины рядом с «Для вас» в удобном порядке. Другие можно установить из магазина плагинов.</string>
+    <string name="home_strip_intro">Закрепите установленные плагины рядом с «Для вас». Перетащите, чтобы изменить порядок. Остальные — в магазине плагинов.</string>
     <string name="home_strip_pinned">На этой полоске</string>
     <string name="home_strip_available">Можно добавить</string>
     <string name="home_strip_empty">Пока нечего закрепить. Откройте магазин: Reddit, Pixiv, Mastodon и другие.</string>
     <string name="home_strip_remove">Убрать с полоски</string>
-    <string name="home_strip_up">Переместить вверх</string>
-    <string name="home_strip_down">Переместить вниз</string>
+    <string name="home_strip_reorder">Изменить порядок</string>
     <string name="home_plugin_store">Магазин плагинов</string>
 
     <string name="home_subscriptions">Подписки</string>
@@ -53,13 +53,14 @@
     <string name="home_for_you_empty">Не удаётся загрузить посты ленты</string>
     <string name="home_for_you_no_account">Чтобы загрузить «Для вас», импортируйте резервную копию XTA с её аккаунтами.</string>
     <string name="home_import">Импортировать резервную копию XTA</string>
-    <string name="home_zen_end">Пока это всё</string>
-    <string name="home_zen_more">Всё равно загрузить ещё</string>
 
     <string name="home_home">Главная</string>
     <string name="home_networks">Сети</string>
     <string name="home_networks_recent">Недавние</string>
     <string name="home_networks_all">Все сети</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">Объединить сервисы микроблогов</string>
+    <string name="home_alt_microblogging_group_detail">Показывать Mastodon, Bluesky и Threads в одном разделе главного экрана. Выключите, чтобы снова показывать их отдельно. Данные и настройки сохранятся.</string>
     <string name="home_posts">Твиты</string>
     <string name="home_media">Медиа</string>
 </resources>

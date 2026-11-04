@@ -2,7 +2,8 @@
 <!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
      Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
 <resources>
-    <string name="home_for_you">Sinu jaoks</string>
+    <string name="home_x">X</string>
+    <string name="home_search_in">Otsi: %1$s</string>
     <string name="home_open_menu">Ava navigeerimismenüü</string>
     <string name="home_add_timeline">Lisa ajajoon</string>
     <string name="home_unread">Lugemata</string>
@@ -12,13 +13,12 @@
     <string name="home_pin_to_bar">Kinnita ülaribale</string>
 
     <string name="home_strip_title">Pluginate ajajooned</string>
-    <string name="home_strip_intro">Kinnita installitud pluginad voo Sinu jaoks kõrvale soovitud järjekorras. Rohkem leiad pluginapoest.</string>
+    <string name="home_strip_intro">Kinnita installitud pluginad «Sulle» kõrvale. Lohista järjekorra muutmiseks. Rohkem pluginapoest.</string>
     <string name="home_strip_pinned">Sellel ribal</string>
     <string name="home_strip_available">Saadaval</string>
     <string name="home_strip_empty">Pole veel kinnitatavaid pluginaid. Ava pood Reddit’i, Pixivi, Mastodoni jms jaoks.</string>
     <string name="home_strip_remove">Eemalda ribalt</string>
-    <string name="home_strip_up">Liiguta üles</string>
-    <string name="home_strip_down">Liiguta alla</string>
+    <string name="home_strip_reorder">Järjesta ümber</string>
     <string name="home_plugin_store">Pluginapood</string>
 
     <string name="home_subscriptions">Tellimused</string>
@@ -51,13 +51,14 @@
     <string name="home_for_you_empty">Voo postitusi ei õnnestu laadida</string>
     <string name="home_for_you_no_account">Voo Sinu jaoks laadimiseks impordi XTA varukoopia koos selle kontodega.</string>
     <string name="home_import">Impordi XTA varukoopia</string>
-    <string name="home_zen_end">Praegu on see kõik</string>
-    <string name="home_zen_more">Laadi ikkagi rohkem</string>
 
     <string name="home_home">Koduleht</string>
     <string name="home_networks">Võrgustikud</string>
     <string name="home_networks_recent">Hiljutised</string>
     <string name="home_networks_all">Kõik võrgustikud</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">Rühmita mikroblogiteenused</string>
+    <string name="home_alt_microblogging_group_detail">Kuva Mastodon, Bluesky ja Threads avakuval ühes jaotises. Eraldi kuvamiseks lülita see välja. Andmed ja seaded jäävad alles.</string>
     <string name="home_posts">Säutsud</string>
     <string name="home_media">Meedia</string>
 </resources>

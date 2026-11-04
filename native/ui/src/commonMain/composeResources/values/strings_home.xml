@@ -2,7 +2,8 @@
 <!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
      Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
 <resources>
-    <string name="home_for_you">For you</string>
+    <string name="home_x">X</string>
+    <string name="home_search_in">Search %1$s</string>
     <string name="home_open_menu">Open navigation menu</string>
     <string name="home_add_timeline">Add timeline</string>
     <string name="home_unread">Unread</string>
@@ -12,13 +13,12 @@
     <string name="home_pin_to_bar">Pin to top bar</string>
 
     <string name="home_strip_title">Plugin timelines</string>
-    <string name="home_strip_intro">Pin installed plugins next to For you, in the order you like. Install more from the plugin store.</string>
+    <string name="home_strip_intro">Pin installed plugins next to For you. Drag to reorder. Install more from the plugin store.</string>
     <string name="home_strip_pinned">On this strip</string>
     <string name="home_strip_available">Available to add</string>
     <string name="home_strip_empty">No installed plugins to pin yet. Open the plugin store to install Reddit, Pixiv, Mastodon and more.</string>
     <string name="home_strip_remove">Remove from strip</string>
-    <string name="home_strip_up">Move up</string>
-    <string name="home_strip_down">Move down</string>
+    <string name="home_strip_reorder">Reorder</string>
     <string name="home_plugin_store">Plugin store</string>
 
     <string name="home_subscriptions">Subscriptions</string>
@@ -51,13 +51,14 @@
     <string name="home_for_you_empty">Unable to load the posts for the feed</string>
     <string name="home_for_you_no_account">Import XTA's backup with its accounts to load For you.</string>
     <string name="home_import">Import an XTA backup</string>
-    <string name="home_zen_end">That's everything for now</string>
-    <string name="home_zen_more">Load more anyway</string>
 
     <string name="home_home">Home</string>
     <string name="home_networks">Networks</string>
     <string name="home_networks_recent">Recent</string>
     <string name="home_networks_all">All networks</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">Group microblogging services</string>
+    <string name="home_alt_microblogging_group_detail">Show Mastodon, Bluesky and Threads in one Home section. Turn off to separate them. Your data and settings stay unchanged.</string>
     <string name="home_posts">Posts</string>
     <string name="home_media">Media</string>
 </resources>

@@ -23,10 +23,6 @@
     <string name="ago_minutes">%1$d分钟</string>
     <string name="ago_hours">%1$d小时</string>
 
-    <string name="feed_nobody_followed">你关注的人还都不在“正在关注”信息流中。打开一个个人资料，例如搜索 @用户名，然后关注它。</string>
-    <string name="feed_empty">你关注的账号还没有帖子。</string>
-    <string name="feed_partial">有些账号无法读取：%1$s</string>
-
     <string name="problem_no_account">没有 X 账号。请导入包含账号的 XTA 备份。</string>
     <string name="problem_rate_limited">X 正在限制这里的所有账号。请几分钟后再试。</string>
     <string name="problem_offline">无法连接到 X。</string>

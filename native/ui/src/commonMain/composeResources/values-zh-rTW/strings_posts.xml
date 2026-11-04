@@ -7,6 +7,7 @@
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">收起</string>
     <string name="posts_expand">展開</string>
+    <string name="posts_link_more">分享此連結的其他貼文：%1$d</string>
     <string name="posts_community">社群</string>
     <string name="posts_community_notes">社群備註</string>
     <string name="posts_continue_thread">Continue thread</string>

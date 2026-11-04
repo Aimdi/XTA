@@ -36,7 +36,6 @@ import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.community.CommunityMembersScreen
 import com.aimdi.xtanative.ui.community.CommunityScreen
 import com.aimdi.xtanative.ui.downloads.DownloadsScreen
-import com.aimdi.xtanative.ui.feed.FeedScreen
 import com.aimdi.xtanative.ui.group.GroupFeedScreen
 import com.aimdi.xtanative.ui.home.DeckScreen
 import com.aimdi.xtanative.ui.home.DesktopNavigation
@@ -96,7 +95,6 @@ private object Routes {
     const val IMPORT = "import"
     const val HOME = "home"
     const val DECK = "deck"
-    const val FEED = "feed"
     const val POST = "post/{id}"
     const val PROFILE = "profile/{screenName}"
     const val MEDIA = "media/{postId}/{index}"
@@ -335,9 +333,6 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
         }
         composable(Routes.DECK) {
             DeckScreen(actions, onBack = { nav.popBackStack() })
-        }
-        composable(Routes.FEED) {
-            FeedScreen(actions, openSearch = { nav.navigate(Routes.search(null)) }, openSettings = { nav.navigate(Routes.SETTINGS) })
         }
         composable(
             Routes.POST,

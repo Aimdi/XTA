@@ -18,7 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import com.aimdi.xtanative.ui.home.rememberRetappedList
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -110,7 +110,7 @@ private fun NobodyFollowed(onImport: () -> Unit, onSearch: () -> Unit, contentPa
 
 @Composable
 private fun PeopleList(state: SubscriptionsUi, actions: PeopleActions, contentPadding: PaddingValues) {
-    val list = rememberLazyListState()
+    val list = rememberRetappedList()
     val drag = rememberRowDrag(list)
     val rows = state.people.associateBy { it.key }
     val keys: List<Any> = state.people.map { it.key }

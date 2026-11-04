@@ -30,6 +30,7 @@ import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.data.plugins.Destination
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.ProblemRow
+import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.retry
 import com.aimdi.xtanative.ui.links.LocalLinks
@@ -94,12 +95,6 @@ fun PluginPostRow(post: SourcedPost, plugin: XtaPlugin?) {
     Hairline()
 }
 
-/** [posts] one under another, as a thread's row carries the posts placed above or below it ([FeedMix.around]). */
-@Composable
-fun PluginPostRows(posts: List<SourcedPost>, plugins: Map<String, XtaPlugin>) {
-    posts.forEach { post -> key(post.key) { PluginPostRow(post, plugins[post.source]) } }
-}
-
 /**
  * A timeline with nothing from X but posts from plugins (XTA's
  * interleaved-only list): they alone, under why X's did not come ([problem],
@@ -114,9 +109,13 @@ fun PluginPostsOnly(
     problem: Problem?,
     onRetry: () -> Unit,
 ) {
-    LazyColumn(state = list, contentPadding = contentPadding, modifier = Modifier.fillMaxSize()) {
-        if (problem != null) item(key = "x-problem", contentType = "notice") { ProblemRow(problem, onRetry) }
-        items(posts, key = { it.key }, contentType = { "plugin-post" }) { post -> PluginPostRow(post, plugins[post.source]) }
+    val layout = rememberFeedLayout(emptyList(), posts)
+    val byKey = remember(posts) { posts.associateBy { it.key } }
+    WithReadingColumn(contentPadding) { padding ->
+        LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
+            if (problem != null) item(key = "x-problem", contentType = "notice") { ProblemRow(problem, onRetry) }
+            items(posts, key = { it.key }, contentType = { "plugin-post" }) { post -> PlacedPluginPost(post, layout, plugins, byKey) {} }
+        }
     }
 }
 
@@ -148,14 +147,25 @@ fun SourceProblems(state: PluginPostsState, plugins: Map<String, XtaPlugin>, onR
 /**
  * The thread at [index] of a timeline, drawn by [thread], with the plugin
  * posts [buckets] place above it, and for the last thread those below it. One
- * column whether there are any or not, so the thread keeps its state as they come.
+ * column whether there are any or not, so the thread keeps its state as they
+ * come. [layout] stacks the posts sharing one article: a plugin's post shown
+ * in a stack above is left out, and one that is a stack's first draws the
+ * stack, its plugin posts from [posts] and its X threads by [drawThread].
  */
 @Composable
-fun Placed(buckets: List<List<SourcedPost>>, index: Int, plugins: Map<String, XtaPlugin>, thread: @Composable () -> Unit) {
+fun Placed(
+    buckets: List<List<SourcedPost>>,
+    index: Int,
+    plugins: Map<String, XtaPlugin>,
+    layout: FeedLayout,
+    posts: Map<String, SourcedPost>,
+    drawThread: @Composable (String) -> Unit,
+    thread: @Composable () -> Unit,
+) {
     val (above, below) = FeedMix.around(buckets, index)
     Column(Modifier.fillMaxWidth()) {
-        PluginPostRows(above, plugins)
+        above.forEach { post -> key(post.key) { PlacedPluginPost(post, layout, plugins, posts, drawThread) } }
         thread()
-        PluginPostRows(below, plugins)
+        below.forEach { post -> key(post.key) { PlacedPluginPost(post, layout, plugins, posts, drawThread) } }
     }
 }

@@ -1,6 +1,8 @@
 package com.aimdi.xtanative.ui.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,12 +13,11 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -27,6 +28,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -35,19 +40,21 @@ import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.home_add_timeline
 import com.aimdi.xtanative.ui.generated.resources.home_plugin_store
 import com.aimdi.xtanative.ui.generated.resources.home_strip_available
-import com.aimdi.xtanative.ui.generated.resources.home_strip_down
 import com.aimdi.xtanative.ui.generated.resources.home_strip_empty
 import com.aimdi.xtanative.ui.generated.resources.home_strip_intro
 import com.aimdi.xtanative.ui.generated.resources.home_strip_pinned
 import com.aimdi.xtanative.ui.generated.resources.home_strip_remove
+import com.aimdi.xtanative.ui.generated.resources.home_strip_reorder
 import com.aimdi.xtanative.ui.generated.resources.home_strip_title
-import com.aimdi.xtanative.ui.generated.resources.home_strip_up
+import com.aimdi.xtanative.ui.subscriptions.GroupIcons
+import com.aimdi.xtanative.ui.subscriptions.rememberRowDrag
 import org.jetbrains.compose.resources.stringResource
 
 /**
  * Which plugin timelines sit next to For you (XTA's feed strip add sheet):
- * those on the strip, to open, take off or move, then those that could be
- * added. With no plugin installed, the way to the plugin store.
+ * those on Home, to open, take off or drag into another order by their
+ * handle, then those that could be added. With no plugin installed, the way
+ * to the plugin store.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,39 +70,62 @@ internal fun StripSheet(
 ) {
     val pinned = StripPins.pinned(ui.pins, ui.networks)
     val candidates = StripPins.candidates(ui.pins, ui.networks)
+    val list = rememberLazyListState()
+    val drag = rememberRowDrag(list)
+    val byId = pinned.associateBy { it.id }
+    val keys: List<Any> = pinned.map { it.id }
     ModalBottomSheet(onDismissRequest = onDismiss) {
-        Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(bottom = 16.dp)) {
-            Text(stringResource(Res.string.home_strip_title), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 24.dp))
-            Text(
-                stringResource(Res.string.home_strip_intro),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 4.dp, bottom = 8.dp),
-            )
-            if (pinned.isEmpty() && candidates.isEmpty()) {
-                NoPlugins(routes.exists(HomeDestination.PLUGINS.route)) {
-                    onDismiss()
-                    routes.openIfExists(HomeDestination.PLUGINS.route)
+        LazyColumn(state = list, modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
+            item(key = "title") {
+                Column {
+                    Text(stringResource(Res.string.home_strip_title), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 24.dp))
+                    Text(
+                        stringResource(Res.string.home_strip_intro),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 4.dp, bottom = 8.dp),
+                    )
                 }
             }
-            if (pinned.isNotEmpty()) {
-                Section(stringResource(Res.string.home_strip_pinned))
-                pinned.forEachIndexed { index, network ->
+            if (pinned.isEmpty() && candidates.isEmpty()) {
+                item(key = "empty") {
+                    NoPlugins(routes.exists(HomeDestination.PLUGINS.route)) {
+                        onDismiss()
+                        routes.openIfExists(HomeDestination.PLUGINS.route)
+                    }
+                }
+            }
+            if (pinned.isNotEmpty()) item(key = "pinned") { Section(stringResource(Res.string.home_strip_pinned)) }
+            items(drag.shown(keys), key = { it }) { key ->
+                val network = byId[key] ?: return@items
+                val dragged = drag.key == key
+                Box(Modifier.graphicsLayer { translationY = if (dragged) drag.offset else 0f }.let { if (dragged) it.background(MaterialTheme.colorScheme.surfaceContainerHigh) else it }) {
                     NetworkRow(network, networks, onClick = { onOpen(network.id) }) {
                         IconButton(onClick = { onUnpin(network.id) }) { Icon(HomeIcons.RemoveCircle, stringResource(Res.string.home_strip_remove)) }
-                        IconButton(onClick = { onMove(index, index - 1) }, enabled = index > 0) {
-                            Icon(Icons.Filled.KeyboardArrowUp, stringResource(Res.string.home_strip_up))
-                        }
-                        IconButton(onClick = { onMove(index, index + 1) }, enabled = index < pinned.lastIndex) {
-                            Icon(Icons.Filled.KeyboardArrowDown, stringResource(Res.string.home_strip_down))
-                        }
+                        DragHandle(
+                            Modifier.pointerInput(key, keys) {
+                                detectDragGestures(
+                                    onDragStart = { drag.start(key, keys) },
+                                    onDrag = { change, amount ->
+                                        change.consume()
+                                        drag.drag(amount.y)
+                                    },
+                                    onDragEnd = { drag.end()?.let { (from, to) -> onMove(from, to) } },
+                                    onDragCancel = { drag.end() },
+                                )
+                            },
+                        )
                     }
                 }
             }
             if (candidates.isNotEmpty()) {
-                if (pinned.isNotEmpty()) Hairline(Modifier.padding(vertical = 4.dp))
-                Section(stringResource(Res.string.home_strip_available))
-                candidates.forEach { network ->
+                item(key = "available") {
+                    Column {
+                        if (pinned.isNotEmpty()) Hairline(Modifier.padding(vertical = 4.dp))
+                        Section(stringResource(Res.string.home_strip_available))
+                    }
+                }
+                items(candidates, key = { "add-" + it.id }) { network ->
                     // Adding a timeline opens it, as in XTA.
                     val add = {
                         onPin(network.id)
@@ -107,6 +137,15 @@ internal fun StripSheet(
                 }
             }
         }
+    }
+}
+
+/** The handle a pinned timeline is dragged by, a 48 dp target: "Reorder". */
+@Composable
+private fun DragHandle(modifier: Modifier) {
+    val label = stringResource(Res.string.home_strip_reorder)
+    Box(modifier.size(48.dp).semantics { contentDescription = label }, contentAlignment = Alignment.Center) {
+        Icon(GroupIcons.DragHandle, contentDescription = null)
     }
 }
 

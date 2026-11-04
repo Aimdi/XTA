@@ -2,8 +2,8 @@
 # The plugin store's whole chain on a running emulator, after screens.sh,
 # with the app installed from a build made with -PpluginCatalogue naming a
 # catalogue the runner serves: the first plugin installed through the store
-# (downloaded, checked, loaded), opened, pinned on Home's strip and shown
-# there, then uninstalled; a screenshot of each step. Fails when the app
+# (downloaded, checked, loaded), opened, pinned on Home and shown there from
+# its timeline picker, then uninstalled; a screenshot of each step. Fails when the app
 # crashed, or the plugin was not installed, loaded and uninstalled.
 #
 #   bash native/tool/plugin_screens.sh <output dir> [plugin name in the store, Bluesky]
@@ -63,12 +63,12 @@ fail() {
   exit 1
 }
 
-# The account menu: Home's avatar where the tab has the top bar; on Following,
-# whose one bar has no avatar (as in XTA), the timeline picker's last row,
-# under its timelines (the sheet is pulled up when that row is below it).
+# The account menu: no bar on Home has an avatar (as in XTA), so the timeline
+# picker's last row, under its timelines (the sheet is pulled up when that row
+# is below it). The picker is Following's button, or another timeline's mark.
 open_menu() {
   tap_node 'content-desc="Open navigation menu"' && return 0
-  tap_node 'content-desc="Following"' || fail "No account menu or timeline picker on Home"
+  open_picker || fail "No account menu or timeline picker on Home"
   sleep 2
   tap_node 'text="Open navigation menu"' && return 0
   local size
@@ -76,6 +76,11 @@ open_menu() {
   adb shell input swipe $((${size% *} / 2)) $((${size#* } * 85 / 100)) $((${size% *} / 2)) $((${size#* } * 25 / 100)) 300
   sleep 1
   tap_node 'text="Open navigation menu"' || fail "No account menu in the timeline picker"
+}
+
+# Home's timeline picker: Following's button, or the mark of the timeline shown ("Bluesky, Networks").
+open_picker() {
+  tap_node 'content-desc="Following"' || tap_node ', Networks"'
 }
 
 # The store, from Home's account menu.
@@ -117,11 +122,12 @@ sleep 1
 tap_node 'text="Open"' || fail "No Open for $name"
 shot plugin-home 15
 
-# Home, where its tab now sits on the strip.
+# Home, where its timeline is now one of Home's, picked in the timeline picker.
 back
 back
-wait_for "text=\"$name\"" 15 || { shot plugin-strip-missing 0; fail "$name is not on Home's strip"; }
-tap_node "text=\"$name\"" || fail "No $name tab on Home's strip"
+open_picker || fail "No timeline picker on Home"
+wait_for "text=\"$name\"" 15 || { shot plugin-strip-missing 0; fail "$name is not among Home's timelines"; }
+tap_node "text=\"$name\"" || fail "No $name in Home's timeline picker"
 shot plugin-strip 12
 
 # Uninstalled from the store, after its confirmation.

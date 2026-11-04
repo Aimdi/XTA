@@ -44,6 +44,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -73,6 +75,7 @@ import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.home_add_timeline
+import com.aimdi.xtanative.ui.generated.resources.home_alt_microblogging
 import com.aimdi.xtanative.ui.generated.resources.home_discover
 import com.aimdi.xtanative.ui.generated.resources.home_home
 import com.aimdi.xtanative.ui.generated.resources.home_networks
@@ -80,6 +83,7 @@ import com.aimdi.xtanative.ui.generated.resources.home_networks_all
 import com.aimdi.xtanative.ui.generated.resources.home_networks_recent
 import com.aimdi.xtanative.ui.generated.resources.home_saved
 import com.aimdi.xtanative.ui.generated.resources.home_subscriptions
+import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupMark
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -322,19 +326,23 @@ internal fun barLabel(page: BarPage, ui: HomeUi): String = when (page) {
 
 /**
  * The networks on the bar (network_switcher.dart's sheet): those opened
- * lately, then all the others, the one open ticked; and Add timeline.
+ * lately, then all the others, the one open ticked, with Mastodon, Bluesky
+ * and Threads under one entry that opens on them while they are grouped; and
+ * Add timeline.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun NetworksSheet(ui: HomeUi, networks: HomeNetworks, current: String?, onPick: (String) -> Unit, onAdd: () -> Unit, onDismiss: () -> Unit) {
-    val (recent, rest) = HomeBar.networkSections(HomeBar.networks(ui.bar), ui.recentNetworks)
+    val onBar = HomeBar.networks(ui.bar)
+    val (recent, rest) = AltMicroblogging.sections(onBar, ui.recentNetworks, ui.microblogsGrouped)
+    val sheet = NetworkRows(ui, networks, current, AltMicroblogging.members(onBar), onPick)
     ModalBottomSheet(onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.surface) {
         LazyColumn(Modifier.padding(bottom = 16.dp)) {
             item(key = "title") {
                 Text(stringResource(Res.string.home_networks), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 4.dp))
             }
-            networkSection("recent", recent, Res.string.home_networks_recent, ui, networks, current, onPick)
-            networkSection("all", rest, Res.string.home_networks_all, ui, networks, current, onPick)
+            networkSection("recent", recent, Res.string.home_networks_recent, sheet)
+            networkSection("all", rest, Res.string.home_networks_all, sheet)
             item(key = "add") {
                 HorizontalDivider()
                 Row(Modifier.fillMaxWidth().heightIn(min = 56.dp).clickable(onClick = onAdd).padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -346,32 +354,51 @@ internal fun NetworksSheet(ui: HomeUi, networks: HomeNetworks, current: String?,
     }
 }
 
-private fun LazyListScope.networkSection(
-    key: String,
-    ids: List<String>,
-    title: StringResource,
-    ui: HomeUi,
-    networks: HomeNetworks,
-    current: String?,
-    onPick: (String) -> Unit,
-) {
+/** What the Networks sheet draws its rows with: the networks' names and marks, the one open, the microblogs among them, and what a tap opens. */
+private class NetworkRows(val ui: HomeUi, val networks: HomeNetworks, val current: String?, val microblogs: List<String>, val onPick: (String) -> Unit)
+
+private fun LazyListScope.networkSection(key: String, ids: List<String>, title: StringResource, rows: NetworkRows) {
     if (ids.isEmpty()) return
     item(key = "section-$key") {
         Text(stringResource(title), style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp))
     }
     items(ids, key = { "$key-$it" }) { id ->
-        Row(
-            Modifier.fillMaxWidth().heightIn(min = 56.dp).clickable { onPick(id) }.semantics { selected = id == current }.padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            networks.Mark(id, 28.dp)
-            Text(
-                ui.networks.firstOrNull { it.id == id }?.title ?: id,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f).padding(horizontal = 16.dp),
-            )
-            if (id == current) Icon(Icons.Filled.Check, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+        if (id == AltMicroblogging.SECTION) MicroblogsEntry(rows) else NetworkRow(id, rows)
+    }
+}
+
+@Composable
+private fun NetworkRow(id: String, rows: NetworkRows, indent: Boolean = false) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .heightIn(min = 56.dp)
+            .clickable { rows.onPick(id) }
+            .semantics { selected = id == rows.current }
+            .padding(start = if (indent) 32.dp else 16.dp, end = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        rows.networks.Mark(id, 28.dp)
+        Text(
+            rows.ui.networks.firstOrNull { it.id == id }?.title ?: id,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f).padding(horizontal = 16.dp),
+        )
+        if (id == rows.current) Icon(Icons.Filled.Check, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+    }
+}
+
+/** Mastodon, Bluesky and Threads under one entry, open while one of them is shown. */
+@Composable
+private fun MicroblogsEntry(rows: NetworkRows) {
+    var open by rememberSaveable { mutableStateOf(rows.current in rows.microblogs) }
+    Column {
+        Row(Modifier.fillMaxWidth().heightIn(min = 56.dp).clickable { open = !open }.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+            MicroblogMark(rows.networks, 28.dp)
+            Text(stringResource(Res.string.home_alt_microblogging), maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f).padding(horizontal = 16.dp))
+            Icon(if (open) GroupIcons.ExpandLess else GroupIcons.ExpandMore, contentDescription = null)
         }
+        if (open) rows.microblogs.forEach { id -> NetworkRow(id, rows, indent = true) }
     }
 }

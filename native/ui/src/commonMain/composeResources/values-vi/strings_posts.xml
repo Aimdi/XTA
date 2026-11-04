@@ -7,6 +7,7 @@
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Thu gọn</string>
     <string name="posts_expand">Mở rộng</string>
+    <string name="posts_link_more">Bài đăng khác chia sẻ liên kết này: %1$d</string>
     <string name="posts_community">Cộng đồng</string>
     <string name="posts_community_notes">Đã có người dùng thêm ghi chú</string>
     <string name="posts_continue_thread">Continue thread</string>

@@ -63,6 +63,14 @@ object HomeStrip {
         else -> HomeTab.Network(id)
     }
 
+    /** The id XTA's strip names [tab] by: `following`, `x`, a network's id, `group-` and a group's id. */
+    fun idOf(tab: HomeTab): String = when (tab) {
+        HomeTab.Following -> FeedStrip.FOLLOWING
+        HomeTab.ForYou -> FeedStrip.FOR_YOU
+        is HomeTab.Network -> tab.id
+        is HomeTab.Group -> GROUP_PAGE + tab.id
+    }
+
     /** A group as its tab names it: its emoji, then its name. */
     fun groupLabel(group: FollowGroup): String = listOfNotNull(group.emoji?.takeIf { it.isNotBlank() }, group.name).joinToString(" ")
 

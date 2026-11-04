@@ -77,7 +77,7 @@ its plugins have to link against that prerelease's app.
 | `category`, `isPrivate` | the store's group for it; offered only with private plugins shown |
 | `title(language)`, `description(language)` | its name and one line, in a BCP 47 language |
 | `attach(host)`, `detach()` | given its `PluginHost` once, before anything else; stopped when uninstalled or updated |
-| `homeTab` | its timeline on Home's strip beside For you (a `PluginBody`), or none |
+| `homeTab` | its timeline on Home beside Following and X (a `PluginBody`), or none |
 | `clientTab` | what it shows opened on its own from the store, when not its home tab |
 | `settings` | its settings screen body, or none |
 | `search` | a `PluginSearch` (`hint(language)`, `Results(query, frame)`), or none |
@@ -191,10 +191,10 @@ built before still find it. The pieces' words are the app's, in all its
 languages: a plugin draws them without strings of its own.
 ### Posts in Home's timelines
 
-XTA mixes the posts of what a network follows into Following and For you
-when the reader turns on its "show in the home timeline" switch, and the
-posts of a group's members of other networks into that group's feed
-(`SubscriptionSource`). A plugin offers them with `XtaPlugin.feed`, a
+XTA mixes the posts of what a network follows into Following when the
+reader turns on its "show in the home timeline" switch (its X timeline, For
+you, stays X's alone), and the posts of a group's members of other networks
+into that group's feed (`SubscriptionSource`). A plugin offers them with `XtaPlugin.feed`, a
 `PluginFeed`:
 
 | Member | What it is |
@@ -218,11 +218,11 @@ settings show for it, in XTA's words. Off until the reader turns it on.
 The app does the rest, as XTA does (`ui/feed`'s `FeedSources`, `PluginPosts`,
 `FeedMix`):
 
-- **Who is asked**: on Following and For you, every running plugin with a
-  feed whose switch is on, for its followed accounts; on a group's feed (its
-  screen and its tab on Home), each plugin for its members in the group, its
-  nested groups and those read alongside. For you takes every kind of post;
-  Following and the groups their own reply and repost settings.
+- **Who is asked**: on Following, every running plugin with a feed whose
+  switch is on, for its followed accounts; on a group's feed (its screen, its
+  page on Home's bar and its deck column), each plugin for its members in the
+  group, its nested groups and those read alongside, all with the feed's own
+  reply and repost settings.
 - **Its place**: a post goes above the first X thread older than it (a
   thread sits at its newest post); one older than every thread read so far
   rides at the end until paging reaches it. With nothing from X, or X failing,

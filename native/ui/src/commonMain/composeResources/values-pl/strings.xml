@@ -23,10 +23,6 @@
     <string name="ago_minutes">%1$d min</string>
     <string name="ago_hours">%1$d godz.</string>
 
-    <string name="feed_nobody_followed">Nikogo z obserwowanych nie ma jeszcze w kanale Obserwowani. Otwórz profil, na przykład wyszukując @nazwa, i zacznij go obserwować.</string>
-    <string name="feed_empty">Obserwowane konta nie mają jeszcze wpisów.</string>
-    <string name="feed_partial">Nie udało się odczytać niektórych kont: %1$s</string>
-
     <string name="problem_no_account">Brak konta X. Zaimportuj kopię zapasową XTA z jej kontami.</string>
     <string name="problem_rate_limited">X ogranicza tu wszystkie konta. Spróbuj ponownie za kilka minut.</string>
     <string name="problem_offline">Brak połączenia z X.</string>

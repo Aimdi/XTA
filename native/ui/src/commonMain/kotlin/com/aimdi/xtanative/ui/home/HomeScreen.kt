@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.pager.PagerState
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.DrawerState
@@ -29,6 +27,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
@@ -38,14 +37,14 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.core.backup.FollowGroup
@@ -53,20 +52,17 @@ import com.aimdi.xtanative.core.session.DeckGroups
 import com.aimdi.xtanative.ui.common.BackHandling
 import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
-import com.aimdi.xtanative.ui.common.turnTo
 import com.aimdi.xtanative.ui.feed.MediaModes
 import com.aimdi.xtanative.ui.feed.ToTop
-import com.aimdi.xtanative.ui.feed.feedViewModel
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.home_refresh
 import com.aimdi.xtanative.ui.group.CustomSettingsScreen
 import com.aimdi.xtanative.ui.group.FeedSettingsSheet
 import com.aimdi.xtanative.ui.group.GroupFeedScreen
+import com.aimdi.xtanative.ui.group.groupFeedViewModel
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.search.LoadedFeedSearchScreen
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -85,9 +81,10 @@ class HomeBarScreens(
 
 /**
  * Home (XTA's home screen): the reader's pages on the bottom bar (Settings ›
- * Home), the Feed page's strip of timelines (Following, For you, the networks
- * pinned there, the groups) and the account menu behind the reader's mark.
- * The app opens here once XTA's backup has given it an account.
+ * Home), the Feed page's timelines (Following, X and the networks pinned
+ * there), turned by a drag or picked in the timeline picker, and the account
+ * menu the picker leads to. The app opens here once XTA's backup has given it
+ * an account.
  */
 @Composable
 fun HomeScreen(actions: PostActions, routes: HomeRoutes, screens: HomeBarScreens) {
@@ -110,10 +107,9 @@ fun HomeScreen(actions: PostActions, routes: HomeRoutes, screens: HomeBarScreens
 /** What Home's parts are given. */
 private class HomeParts(val ui: HomeUi, val vm: HomeViewModel, val networks: HomeNetworks, val actions: PostActions, val routes: HomeRoutes, val screens: HomeBarScreens)
 
-/** Where Home stands: the bar's page, the strip's tab, the menu, the sheet and what is open over it. */
+/** Where Home stands: the bar's page, the timeline shown, the menu, the sheet and what is open over it. */
 @Stable
 private class HomeShellState(
-    val pager: PagerState,
     val drawer: DrawerState,
     val bars: HomeBarsState,
     private val barPage: MutableState<String>,
@@ -126,7 +122,7 @@ private class HomeShellState(
             barPage.value = value
         }
 
-    /** The strip's tab shown, by key: it stays shown when tabs come and go. */
+    /** The timeline shown, by key: it stays shown when timelines come and go. */
     var shownKey: String
         get() = shownTab.value
         set(value) {
@@ -135,7 +131,9 @@ private class HomeShellState(
 
     var toTop by mutableStateOf(ToTop(0, 0))
     var networkTop by mutableIntStateOf(0)
-    var visited by mutableStateOf(emptySet<String>())
+
+    /** How often each page's place on the bar was tapped again, by the page's id. */
+    var retaps by mutableStateOf(emptyMap<String, Int>())
     var sheet by mutableStateOf<HomeSheet?>(null)
     var layer by mutableStateOf<HomeLayer?>(null)
 
@@ -147,17 +145,28 @@ private class HomeShellState(
         barId = page.id
         bars.show()
     }
+
+    /** Where the timeline shown stands among [ui]'s: Following's place when it went, as XTA falls back to Following. */
+    fun index(ui: HomeUi): Int = HomeStrip.indexOf(ui.tabs, shownKey)
+
+    /** The timeline at [index] shown, or, when it is the one shown, back at its top. */
+    fun turnTo(ui: HomeUi, index: Int) {
+        val tab = ui.tabs.getOrNull(index) ?: return
+        if (tab.key == ui.tabs.getOrNull(index(ui))?.key) toTop = ToTop(index, toTop.count + 1) else shownKey = tab.key
+    }
+
+    fun retapped(page: BarPage) {
+        retaps = retaps + (page.id to (retaps[page.id] ?: 0) + 1)
+    }
 }
 
 @Composable
 private fun rememberShell(ui: HomeUi): HomeShellState {
-    val tabs = ui.tabs
-    val pager = rememberPagerState(initialPage = ui.initialIndex.coerceIn(0, tabs.lastIndex.coerceAtLeast(0))) { tabs.size }
     val drawer = rememberDrawerState(DrawerValue.Closed)
     val bars = rememberHomeBars(ui.hideOnScroll)
     val bar = rememberSaveable { mutableStateOf(ui.bar.getOrElse(ui.initialBarIndex) { ui.bar.first() }.id) }
-    val shown = rememberSaveable { mutableStateOf(tabs.getOrNull(pager.currentPage)?.key ?: HomeTab.Following.key) }
-    return remember(pager, drawer, bars) { HomeShellState(pager, drawer, bars, bar, shown) }
+    val shown = rememberSaveable { mutableStateOf(ui.tabs.getOrNull(ui.initialIndex)?.key ?: HomeTab.Following.key) }
+    return remember(drawer, bars) { HomeShellState(drawer, bars, bar, shown) }
 }
 
 @Composable
@@ -165,21 +174,18 @@ private fun HomeShell(parts: HomeParts, deckFits: Boolean) {
     val ui = parts.ui
     val shell = rememberShell(ui)
     val scope = rememberCoroutineScope()
-    val reduced = LocalReducedMotion.current
     val graph = LocalGraph.current
+    // Following's order and rules alone: its feed is read only while it is shown, as XTA mounts it.
     val following: FollowingSettingsViewModel = viewModel { FollowingSettingsViewModel(graph) }
-    KeepShownTab(shell, ui.tabs, parts.vm)
+    KeepShownTab(shell, ui, parts.vm)
     TakeRequests(shell, ui)
-    val unread = unreadKeys(ui, shell.visited, parts.networks)
+    val unread = unreadKeys(ui, parts.vm, parts.networks)
     val page = shell.page(ui)
-    val refresh = rememberRefresh(page, ui.tabs.getOrNull(shell.pager.currentPage), parts.networks)
-    fun showTab(index: Int) {
-        if (index !in ui.tabs.indices) return
-        if (index == shell.pager.currentPage) shell.toTop = ToTop(index, shell.toTop.count + 1) else scope.launch { shell.pager.turnTo(index, reduced) }
-    }
+    val index = shell.index(ui)
+    val refresh = rememberRefresh(page, ui.tabs.getOrNull(index), parts.networks)
     DesktopShortcuts(
         refresh = refresh,
-        turn = { by -> if (page == BarPage.Feed) DesktopKeys.turned(shell.pager.currentPage, ui.tabs.size, by)?.let { scope.launch { shell.pager.turnTo(it, reduced) } } },
+        turn = { by -> if (page == BarPage.Feed) DesktopKeys.turned(index, ui.tabs.size, by)?.let { shell.turnTo(ui, it) } },
         isOpen = { shell.drawer.isOpen || shell.sheet != null || shell.layer != null },
         close = {
             shell.sheet = null
@@ -191,8 +197,8 @@ private fun HomeShell(parts: HomeParts, deckFits: Boolean) {
         openMenu = { scope.launch { shell.drawer.open() } },
         openSheet = { shell.sheet = it },
         openLayer = { shell.layer = it },
-        onTab = ::showTab,
-        toTitleTop = { shell.toTop = ToTop(shell.pager.currentPage, shell.toTop.count + 1) },
+        onTab = { shell.turnTo(ui, it) },
+        toTitleTop = { shell.toTop = ToTop(index, shell.toTop.count + 1) },
         onOrder = { sort ->
             following.actions.setSort(sort)
             if (FollowingBar.opensCustom(sort)) shell.layer = HomeLayer.FOLLOWING_CUSTOM
@@ -204,21 +210,21 @@ private fun HomeShell(parts: HomeParts, deckFits: Boolean) {
         }
         HomeLayers(parts, shell, following)
     }
-    HomeSheets(parts, shell, following, unread, onShowTab = ::showTab)
+    HomeSheets(parts, shell, following, unread)
 }
 
-/** The account menu (XTA's home drawer) around Home, opened from the reader's mark or the timeline picker. */
+/** The account menu (XTA's home drawer) around Home, opened from the timeline picker. */
 @Composable
 private fun HomeDrawer(parts: HomeParts, shell: HomeShellState, deckFits: Boolean, unread: Set<String>, content: @Composable () -> Unit) {
     val scope = rememberCoroutineScope()
-    val reduced = LocalReducedMotion.current
     fun go(route: String) {
         scope.launch { shell.drawer.snapTo(DrawerValue.Closed) }
         parts.routes.openIfExists(route)
     }
+    LaunchedEffect(shell.drawer.isOpen) { if (shell.drawer.isOpen) parts.vm.reloadUnread() }
     ModalNavigationDrawer(
         drawerState = shell.drawer,
-        // Swipes belong to the strip's pages; the drawer opens from the reader's mark, and closes with a swipe too.
+        // Swipes belong to the timelines; the drawer opens from the picker, and closes with a swipe too.
         gesturesEnabled = shell.drawer.isOpen,
         drawerContent = {
             ModalDrawerSheet(drawerContainerColor = MaterialTheme.colorScheme.background) {
@@ -228,7 +234,7 @@ private fun HomeDrawer(parts: HomeParts, shell: HomeShellState, deckFits: Boolea
                     deckFits = deckFits,
                     unread = unread,
                     onGo = ::go,
-                    onGroup = { group -> openGroup(group, parts.ui.tabs, parts.routes, shell.drawer, scope) { index -> shell.pager.turnTo(index, reduced) } },
+                    onGroup = { group -> openGroup(group, parts.routes, shell.drawer, scope) },
                     onClose = { scope.launch { shell.drawer.close() } },
                 )
             }
@@ -258,9 +264,19 @@ private fun HomeBody(parts: HomeParts, shell: HomeShellState, page: BarPage, fol
     ) { padding ->
         val bottom = PaddingValues(bottom = padding.calculateBottomPadding())
         Box(Modifier.fillMaxSize().padding(bottom).consumeWindowInsets(bottom).nestedScroll(shell.bars.connection)) {
-            BarPageHost(page) { shown ->
+            BarPageHost(page, shell.retaps) { shown ->
                 when (shown) {
-                    BarPage.Feed -> HomeFeedPage(ui, parts.vm, StripState(shell.pager, shell.toTop, unread), following, parts.networks, parts.actions, parts.routes, refresh, feedCalls)
+                    BarPage.Feed -> HomeFeedPage(
+                        ui,
+                        parts.vm,
+                        TimelinesState(shell.index(ui), shell.toTop, unread),
+                        following,
+                        parts.networks,
+                        parts.actions,
+                        parts.routes,
+                        refresh,
+                        feedCalls,
+                    )
                     BarPage.Subscriptions -> parts.screens.subscriptions()
                     BarPage.Trending -> parts.screens.trends()
                     BarPage.Saved -> parts.screens.saved()
@@ -274,34 +290,41 @@ private fun HomeBody(parts: HomeParts, shell: HomeShellState, page: BarPage, fol
 
 /**
  * A page of the bar, its state kept while another is shown, as XTA keeps its
- * pages alive; it fades in, at once while motion is reduced.
+ * pages alive; it fades in, at once while motion is reduced. Each is told how
+ * often its place on the bar was tapped again ([LocalBarRetap]).
  */
 @Composable
-private fun BarPageHost(page: BarPage, content: @Composable (BarPage) -> Unit) {
+private fun BarPageHost(page: BarPage, retaps: Map<String, Int>, content: @Composable (BarPage) -> Unit) {
     val holder = rememberSaveableStateHolder()
     val reduced = LocalReducedMotion.current
     Crossfade(targetState = page, animationSpec = if (reduced) snap() else tween(PAGE_FADE_MS), label = "home-page") { shown ->
-        holder.SaveableStateProvider(shown.id) { content(shown) }
+        holder.SaveableStateProvider(shown.id) {
+            CompositionLocalProvider(LocalBarRetap provides (retaps[shown.id] ?: 0)) { content(shown) }
+        }
     }
 }
 
 private const val PAGE_FADE_MS = 150
 
 /**
- * The bar tapped (_onBarDestination): another page is shown at once; its own
- * page again goes back to the top of the timeline shown.
+ * The bar tapped (_onBarDestination): another page is shown at once, and
+ * Discover reached from a network's page searches that network; its own
+ * page again goes back to the top of what it shows, and Discover, already
+ * there, puts the cursor in its search.
  */
 private fun barTapped(shell: HomeShellState, ui: HomeUi, index: Int) {
     val tapped = ui.bar.getOrNull(index) ?: return
     shell.bars.show()
-    if (tapped != shell.page(ui)) {
+    val from = shell.page(ui)
+    if (tapped != from) {
+        if (tapped == BarPage.Trending && from is BarPage.Network) HomeRequests.searchIn(from.id)
         shell.show(tapped)
         return
     }
     when (tapped) {
-        BarPage.Feed -> shell.toTop = ToTop(shell.pager.currentPage, shell.toTop.count + 1)
+        BarPage.Feed -> shell.toTop = ToTop(shell.index(ui), shell.toTop.count + 1)
         is BarPage.Network -> shell.networkTop++
-        else -> Unit
+        else -> shell.retapped(tapped)
     }
 }
 
@@ -341,25 +364,24 @@ private fun followingLook(following: FollowingSettingsViewModel, ui: HomeUi, unr
     )
 }
 
-/** The strip's tab shown stays shown as tabs come and go (a network pinned before it, a group gone); a tab opened is remembered. */
+/**
+ * The timeline shown stays shown as timelines come and go (a network pinned
+ * before it); one that went gives way to Following, as XTA's Home does. A
+ * timeline shown is remembered, and the unread marks are read again.
+ */
 @Composable
-private fun KeepShownTab(shell: HomeShellState, tabs: List<HomeTab>, vm: HomeViewModel) {
-    val latestTabs by rememberUpdatedState(tabs)
-    LaunchedEffect(shell.pager) {
-        snapshotFlow { shell.pager.currentPage }.collect { page ->
-            val tab = latestTabs.getOrNull(page) ?: return@collect
-            shell.shownKey = tab.key
-            vm.opened(tab)
-        }
+private fun KeepShownTab(shell: HomeShellState, ui: HomeUi, vm: HomeViewModel) {
+    LaunchedEffect(ui.tabs) {
+        if (ui.tabs.none { it.key == shell.shownKey }) shell.shownKey = HomeTab.Following.key
     }
-    LaunchedEffect(tabs) {
-        val index = HomeStrip.indexOf(tabs, shell.shownKey)
-        if (index != shell.pager.currentPage) shell.pager.scrollToPage(index)
+    LaunchedEffect(shell.shownKey) {
+        ui.tabs.firstOrNull { it.key == shell.shownKey }?.let(vm::opened)
+        vm.reloadUnread()
     }
-    LaunchedEffect(shell.shownKey) { shell.visited = shell.visited + shell.shownKey }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { vm.reloadUnread() }
 }
 
-/** A timeline another screen asked for (a group's title menu): the Feed page, on that tab. */
+/** A timeline another screen asked for (a group's title menu): the Feed page, on that timeline. */
 @Composable
 private fun TakeRequests(shell: HomeShellState, ui: HomeUi) {
     val asked by HomeRequests.tab.collectAsStateWithLifecycle()
@@ -367,8 +389,7 @@ private fun TakeRequests(shell: HomeShellState, ui: HomeUi) {
         val key = asked ?: return@LaunchedEffect
         HomeRequests.taken(key)
         if (BarPage.Feed in ui.bar) shell.show(BarPage.Feed)
-        shell.shownKey = key
-        shell.pager.scrollToPage(HomeStrip.indexOf(ui.tabs, key))
+        if (ui.tabs.any { it.key == key }) shell.shownKey = key
     }
 }
 
@@ -376,7 +397,7 @@ private fun TakeRequests(shell: HomeShellState, ui: HomeUi) {
 @Composable
 private fun HomeLayers(parts: HomeParts, shell: HomeShellState, following: FollowingSettingsViewModel) {
     when (shell.layer) {
-        HomeLayer.LOADED_SEARCH -> LoadedPostsSearch(parts.ui.tabs.getOrNull(shell.pager.currentPage), parts.actions) { shell.layer = null }
+        HomeLayer.LOADED_SEARCH -> LoadedPostsSearch(parts.ui.tabs.getOrNull(shell.index(parts.ui)), parts.actions) { shell.layer = null }
         HomeLayer.FOLLOWING_CUSTOM -> {
             val feed by following.ui.collectAsStateWithLifecycle()
             BackHandling(enabled = true) { shell.layer = null }
@@ -386,24 +407,24 @@ private fun HomeLayers(parts: HomeParts, shell: HomeShellState, following: Follo
     }
 }
 
-/** The search of what [tab]'s feed has loaded (XTA's LoadedSearchButton): Following's, For you's or a group's. */
+/** The search of what [tab]'s feed has loaded (XTA's LoadedSearchButton): Following's or X's. */
 @Composable
 private fun LoadedPostsSearch(tab: HomeTab?, actions: PostActions, onClose: () -> Unit) {
     val threads = when (tab) {
         HomeTab.ForYou -> forYouViewModel().ui.collectAsStateWithLifecycle().value.threads
-        HomeTab.Following, is HomeTab.Group -> feedViewModel((tab as? HomeTab.Group)?.id).ui.collectAsStateWithLifecycle().value.threads
-        is HomeTab.Network, null -> emptyList()
+        HomeTab.Following -> groupFeedViewModel(null).ui.collectAsStateWithLifecycle().value.run.shown.threads
+        is HomeTab.Network, is HomeTab.Group, null -> emptyList()
     }
     LoadedFeedSearchScreen(threads, actions, onClose)
 }
 
-/** The sheets over Home: Home feed accounts, the strip's timelines, the timeline picker, the bar's networks and Following's filters. */
+/** The sheets over Home: Home feed accounts, the plugin timelines, the timeline picker, the bar's networks and Following's filters. */
 @Composable
-private fun HomeSheets(parts: HomeParts, shell: HomeShellState, following: FollowingSettingsViewModel, unread: Set<String>, onShowTab: (Int) -> Unit) {
+private fun HomeSheets(parts: HomeParts, shell: HomeShellState, following: FollowingSettingsViewModel, unread: Set<String>) {
     val ui = parts.ui
     val scope = rememberCoroutineScope()
-    val reduced = LocalReducedMotion.current
     val close = { shell.sheet = null }
+    LaunchedEffect(shell.sheet) { if (shell.sheet == HomeSheet.PICKER) parts.vm.reloadUnread() }
     when (shell.sheet) {
         HomeSheet.FILTER -> HomeFilterSheet(ui, onApply = { draft ->
             parts.vm.apply(draft)
@@ -415,7 +436,7 @@ private fun HomeSheets(parts: HomeParts, shell: HomeShellState, following: Follo
             parts.routes,
             onOpen = { id ->
                 close()
-                showFeedTab(shell, ui, HomeTab.Network(id).key, onShowTab)
+                showTimeline(shell, ui, HomeTab.Network(id).key)
             },
             onPin = parts.vm::pin,
             onUnpin = parts.vm::unpin,
@@ -430,11 +451,11 @@ private fun HomeSheets(parts: HomeParts, shell: HomeShellState, following: Follo
             PickerCalls(
                 onSource = { tab ->
                     close()
-                    showFeedTab(shell, ui, tab.key, onShowTab)
+                    showTimeline(shell, ui, tab.key)
                 },
                 onGroup = { group ->
                     close()
-                    openGroup(group, ui.tabs, parts.routes, shell.drawer, scope) { index -> shell.pager.turnTo(index, reduced) }
+                    openGroup(group, parts.routes, shell.drawer, scope)
                 },
                 onAdd = { shell.sheet = HomeSheet.STRIP },
                 onMenu = {
@@ -467,62 +488,29 @@ private fun HomeSheets(parts: HomeParts, shell: HomeShellState, following: Follo
     }
 }
 
-/** The Feed page on the strip's tab [key]: a network just pinned is not on the strip yet, and is shown once it is. */
-private fun showFeedTab(shell: HomeShellState, ui: HomeUi, key: String, onShowTab: (Int) -> Unit) {
+/** The Feed page on the timeline [key]: back to its top when it is shown; a network just pinned is shown once it is on Home. */
+private fun showTimeline(shell: HomeShellState, ui: HomeUi, key: String) {
     if (BarPage.Feed in ui.bar) shell.show(BarPage.Feed)
     val index = ui.tabs.indexOfFirst { it.key == key }
-    if (index >= 0) onShowTab(index) else shell.shownKey = key
+    if (index >= 0) shell.turnTo(ui, index) else shell.shownKey = key
 }
 
-/** A group picked in the menu or the picker: its own screen once the app has one, else its tab, which [showTab] turns to. */
-private fun openGroup(
-    group: FollowGroup,
-    tabs: List<HomeTab>,
-    routes: HomeRoutes,
-    drawer: DrawerState,
-    scope: CoroutineScope,
-    showTab: suspend (Int) -> Unit,
-) {
-    if (routes.exists(HomeRoutes.GROUP)) {
-        // Closed at once: an animation cut short by leaving would come back open.
-        scope.launch { drawer.snapTo(DrawerValue.Closed) }
-        routes.openGroup(group.id)
-        return
-    }
-    scope.launch { drawer.close() }
-    val index = tabs.indexOfFirst { it is HomeTab.Group && it.id == group.id }
-    if (index >= 0) scope.launch { showTab(index) }
+/** A group picked in the menu or the picker: its own screen, as XTA opens it. */
+private fun openGroup(group: FollowGroup, routes: HomeRoutes, drawer: DrawerState, scope: CoroutineScope) {
+    // Closed at once: an animation cut short by leaving would come back open.
+    scope.launch { drawer.snapTo(DrawerValue.Closed) }
+    routes.openGroup(group.id)
 }
 
 /**
- * The tabs with the unread dot. A Following or group feed already opened
- * says whether it put posts above the reader they have not seen; a feed not
- * opened yet is not read for it, as reading it would ask X. Networks answer
- * for themselves.
+ * The feeds with the unread dot: Following, X and the groups by their read
+ * marks, as XTA's unread store reads them; networks answer for themselves.
  */
 @Composable
-private fun unreadKeys(ui: HomeUi, visited: Set<String>, networks: HomeNetworks): Set<String> {
-    return buildSet {
-        ui.tabs.forEach { tab ->
-            val lit = key(tab.key) {
-                when (tab) {
-                    HomeTab.Following, is HomeTab.Group -> tab.key in visited && feedUnread(tab, ui)
-                    is HomeTab.Network -> networks.unread(tab.id)
-                    HomeTab.ForYou -> false
-                }
-            }
-            if (lit) add(tab.key)
-        }
-    }
-}
-
-@Composable
-private fun feedUnread(tab: HomeTab, ui: HomeUi): Boolean {
-    val groupId = (tab as? HomeTab.Group)?.id
-    val vm = feedViewModel(groupId)
-    // Only the count above the reader: the feed's other changes need not redraw Home.
-    val newAbove by remember(vm) { vm.ui.map { it.newAbove }.distinctUntilChanged() }.collectAsStateWithLifecycle(vm.ui.value.newAbove)
-    return HomeUnread.unread(HomeUnread.tracks(ui.session, tab, ui.readingPosition), newAbove)
+private fun unreadKeys(ui: HomeUi, vm: HomeViewModel, networks: HomeNetworks): Set<String> {
+    val feeds by vm.unread.collectAsStateWithLifecycle()
+    val lit = ui.tabs.filterIsInstance<HomeTab.Network>().filter { tab -> key(tab.id) { networks.unread(tab.id) } }
+    return if (lit.isEmpty()) feeds else feeds + lit.map { it.key }
 }
 
 /** What refreshing the page shown does: its timeline read again, the desktop's button and F5. */
@@ -531,14 +519,18 @@ private fun rememberRefresh(page: BarPage, tab: HomeTab?, networks: HomeNetworks
     when (page) {
         BarPage.Feed -> rememberTabRefresh(tab, networks)
         is BarPage.Network -> remember(page.id) { { networks.refresh(page.id) } }
-        is BarPage.Group, BarPage.Subscriptions, BarPage.Trending, BarPage.Saved -> remember { {} }
+        is BarPage.Group -> {
+            val vm = groupFeedViewModel(page.groupId)
+            remember(vm) { { vm.refresh() } }
+        }
+        BarPage.Subscriptions, BarPage.Trending, BarPage.Saved -> remember { {} }
     }
 }
 
 @Composable
 private fun rememberTabRefresh(tab: HomeTab?, networks: HomeNetworks): () -> Unit = when (tab) {
-    HomeTab.Following, is HomeTab.Group -> {
-        val vm = feedViewModel((tab as? HomeTab.Group)?.id)
+    HomeTab.Following -> {
+        val vm = groupFeedViewModel(null)
         remember(vm) { { vm.refresh() } }
     }
     HomeTab.ForYou -> {
@@ -546,5 +538,5 @@ private fun rememberTabRefresh(tab: HomeTab?, networks: HomeNetworks): () -> Uni
         remember(vm) { { vm.refresh() } }
     }
     is HomeTab.Network -> remember(tab.id) { { networks.refresh(tab.id) } }
-    null -> remember { {} }
+    is HomeTab.Group, null -> remember { {} }
 }

@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import com.aimdi.xtanative.ui.feed.feedThreads
+import com.aimdi.xtanative.ui.feed.rememberFeedLayout
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -84,6 +86,7 @@ fun CommunityScreen(id: String, about: Boolean, actions: PostActions, openMember
     val posts by vm.posts.state.collectAsStateWithLifecycle()
     val list = rememberLazyListState()
     if (state.tab == CommunityTab.TOP) LoadMoreNearEnd(list, posts, vm::morePosts)
+    val layout = rememberFeedLayout(posts.items)
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -113,9 +116,7 @@ fun CommunityScreen(id: String, about: Boolean, actions: PostActions, openMember
                 stickyHeader(key = "tabs", contentType = "tabs") { CommunityTabs(state.tab, vm::select) }
                 when (state.tab) {
                     CommunityTab.TOP -> {
-                        items(posts.items, key = { "post-" + it.id }, contentType = { "thread" }) { thread ->
-                            ThreadRows(thread, actions, pinnedIds = state.pinnedIds)
-                        }
+                        feedThreads(posts.items, layout, actions, keyOf = { "post-" + it.id }) { thread -> ThreadRows(thread, actions, pinnedIds = state.pinnedIds) }
                         pageStatus(posts, Res.string.discover_no_results, vm::retryPosts, vm::morePosts)
                     }
                     CommunityTab.ABOUT -> item(key = "about", contentType = "about") { CommunityAbout(community) }

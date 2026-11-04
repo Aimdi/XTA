@@ -2,7 +2,8 @@
 <!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
      Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
 <resources>
-    <string name="home_for_you">لك</string>
+    <string name="home_x">X</string>
+    <string name="home_search_in">البحث في %1$s</string>
     <string name="home_open_menu">فتح قائمة التنقل</string>
     <string name="home_add_timeline">إضافة موجز</string>
     <string name="home_unread">غير مقروء</string>
@@ -12,13 +13,12 @@
     <string name="home_pin_to_bar">التثبيت في الشريط العلوي</string>
 
     <string name="home_strip_title">موجزات الإضافات</string>
-    <string name="home_strip_intro">ثبّت الإضافات المثبّتة بجانب «لك» بالترتيب الذي تريده. ثبّت المزيد من متجر الإضافات.</string>
+    <string name="home_strip_intro">ثبّت الإضافات المثبتة بجانب «لك». اسحب لإعادة الترتيب. ثبّت المزيد من متجر الإضافات.</string>
     <string name="home_strip_pinned">على هذا الشريط</string>
     <string name="home_strip_available">متاح للإضافة</string>
     <string name="home_strip_empty">لا إضافات للتثبيت بعد. افتح المتجر لتثبيت Reddit وPixiv وMastodon وغيرها.</string>
     <string name="home_strip_remove">إزالة من الشريط</string>
-    <string name="home_strip_up">نقل لأعلى</string>
-    <string name="home_strip_down">نقل لأسفل</string>
+    <string name="home_strip_reorder">إعادة الترتيب</string>
     <string name="home_plugin_store">متجر الإضافات</string>
 
     <string name="home_subscriptions">الاشتراكات</string>
@@ -55,13 +55,14 @@
     <string name="home_for_you_empty">تعذّر تحميل منشورات الموجز</string>
     <string name="home_for_you_no_account">استورد النسخة الاحتياطية من XTA مع حساباتها لتحميل «لك».</string>
     <string name="home_import">استيراد نسخة XTA الاحتياطية</string>
-    <string name="home_zen_end">هذا كل شيء حتى الآن</string>
-    <string name="home_zen_more">تحميل المزيد على أي حال</string>
 
     <string name="home_home">الرئيسية</string>
     <string name="home_networks">الشبكات</string>
     <string name="home_networks_recent">الأخيرة</string>
     <string name="home_networks_all">كل الشبكات</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">تجميع خدمات التدوين المصغّر</string>
+    <string name="home_alt_microblogging_group_detail">اعرض Mastodon وBluesky وThreads في قسم واحد على الصفحة الرئيسية. أوقف هذا الخيار لفصلها. تبقى بياناتك وإعداداتك كما هي.</string>
     <string name="home_posts">التغريدات</string>
     <string name="home_media">الوسائط</string>
 </resources>

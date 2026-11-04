@@ -23,10 +23,6 @@
     <string name="ago_minutes">%1$d хв</string>
     <string name="ago_hours">%1$d год</string>
 
-    <string name="feed_nobody_followed">Нікого з тих, за ким ви стежите, ще немає в стрічці «Стежу». Відкрийте профіль, наприклад знайшовши @ім’я, і стежте за ним.</string>
-    <string name="feed_empty">Поки немає дописів від облікових записів, за якими ви стежите.</string>
-    <string name="feed_partial">Деякі облікові записи не вдалося прочитати: %1$s</string>
-
     <string name="problem_no_account">Немає облікового запису X. Імпортуйте резервну копію XTA з її обліковими записами.</string>
     <string name="problem_rate_limited">X обмежує тут усі облікові записи. Спробуйте ще раз за кілька хвилин.</string>
     <string name="problem_offline">Немає з’єднання з X.</string>

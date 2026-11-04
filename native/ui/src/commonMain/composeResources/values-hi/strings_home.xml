@@ -2,7 +2,8 @@
 <!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
      Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
 <resources>
-    <string name="home_for_you">आपके लिए</string>
+    <string name="home_x">X</string>
+    <string name="home_search_in">%1$s में खोजें</string>
     <string name="home_open_menu">नेविगेशन मेन्यू खोलें</string>
     <string name="home_add_timeline">टाइमलाइन जोड़ें</string>
     <string name="home_unread">अपठित</string>
@@ -12,13 +13,12 @@
     <string name="home_pin_to_bar">ऊपरी बार में पिन करें</string>
 
     <string name="home_strip_title">प्लगइन टाइमलाइन</string>
-    <string name="home_strip_intro">इंस्टॉल किए गए प्लगइन 'आपके लिए' के बगल में, अपनी पसंद के क्रम में पिन करें। प्लगइन स्टोर से और इंस्टॉल करें।</string>
+    <string name="home_strip_intro">इंस्टॉल किए प्लगइन «आपके लिए» के पास पिन करें। क्रम बदलने के लिए खींचें। और प्लगइन स्टोर से इंस्टॉल करें।</string>
     <string name="home_strip_pinned">इस पट्टी पर</string>
     <string name="home_strip_available">जोड़ने योग्य</string>
     <string name="home_strip_empty">पिन करने के लिए कोई प्लगइन नहीं। स्टोर से Reddit, Pixiv, Mastodon आदि इंस्टॉल करें।</string>
     <string name="home_strip_remove">पट्टी से हटाएँ</string>
-    <string name="home_strip_up">ऊपर ले जाएँ</string>
-    <string name="home_strip_down">नीचे ले जाएँ</string>
+    <string name="home_strip_reorder">क्रम बदलें</string>
     <string name="home_plugin_store">प्लगइन स्टोर</string>
 
     <string name="home_subscriptions">सदस्यताएँ</string>
@@ -51,13 +51,14 @@
     <string name="home_for_you_empty">फ़ीड के लिए पोस्ट लोड नहीं की जा सकीं</string>
     <string name="home_for_you_no_account">'आपके लिए' लोड करने के लिए XTA का बैकअप उसके खातों के साथ इंपोर्ट करें।</string>
     <string name="home_import">XTA बैकअप इंपोर्ट करें</string>
-    <string name="home_zen_end">अभी के लिए बस इतना ही</string>
-    <string name="home_zen_more">फिर भी और लोड करें</string>
 
     <string name="home_home">होम</string>
     <string name="home_networks">नेटवर्क</string>
     <string name="home_networks_recent">हालिया</string>
     <string name="home_networks_all">सभी नेटवर्क</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">माइक्रोब्लॉगिंग सेवाओं को एक साथ दिखाएँ</string>
+    <string name="home_alt_microblogging_group_detail">होम पर Mastodon, Bluesky और Threads को एक ही सेक्शन में दिखाएँ। उन्हें अलग-अलग दिखाने के लिए इसे बंद करें। आपका डेटा और सेटिंग्स सुरक्षित रहेंगे।</string>
     <string name="home_posts">पोस्ट</string>
     <string name="home_media">मीडिया</string>
 </resources>

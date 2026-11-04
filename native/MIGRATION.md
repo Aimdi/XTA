@@ -45,7 +45,7 @@ layer is written in `networks/<id>` first, then moves with its screens into
 | client | `core/x` (done) |
 | database | `store` (no SQLite migrations: XTA's data arrives through its backup) |
 | tweet | `ui/post` (done: post card, opened post, conversation and its orders, quotes and reposters, polls, cards, translation) |
-| home | `ui/home` (done: the bottom bar with Settings › Home's pages, its labels and hide-on-scroll; strip of Following, For you, groups and pinned networks; Following's bar with Posts/Media, order, filters and the timeline picker; search in the loaded posts; the deck; the account menu; desktop navigation) |
+| home | `ui/home` (done: the bottom bar with Settings › Home's pages, its labels and hide-on-scroll; Following, X and the pinned networks turned by a drag or picked in the timeline picker, Mastodon, Bluesky and Threads grouped; Following, the groups and the deck as group feeds; Following's bar with Posts/Media, order, filters and the timeline picker; search in the loaded posts; the account menu; desktop navigation) |
 | profile | `ui/profile` (done: header, filters, follows lists, followed by, note, Posts/Replies/Media/Saved tabs, gates) |
 | search | `ui/search` (done: tabs, advanced search, languages, recent searches, media grid, search in a loaded feed); `store` recent searches |
 | trends | `ui/trends` (done: Discover with places, trends, shortcuts) |

@@ -7,6 +7,7 @@
     <string name="posts_boosts">Reposts</string>
     <string name="posts_collapse">Collapse</string>
     <string name="posts_expand">Expand</string>
+    <string name="posts_link_more">More posts sharing this link: %1$d</string>
     <string name="posts_community">Community</string>
     <string name="posts_community_notes">Users added context</string>
     <string name="posts_continue_thread">Continue thread</string>

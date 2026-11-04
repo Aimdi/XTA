@@ -2,7 +2,8 @@
 <!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
      Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
 <resources>
-    <string name="home_for_you">Per te</string>
+    <string name="home_x">X</string>
+    <string name="home_search_in">Cerca in %1$s</string>
     <string name="home_open_menu">Apri il menu di navigazione</string>
     <string name="home_add_timeline">Aggiungi timeline</string>
     <string name="home_unread">Non letto</string>
@@ -12,13 +13,12 @@
     <string name="home_pin_to_bar">Fissa nella barra in alto</string>
 
     <string name="home_strip_title">Timeline dei plugin</string>
-    <string name="home_strip_intro">Fissa i plugin installati accanto a Per te, nell'ordine che preferisci. Installane altri dallo store dei plugin.</string>
+    <string name="home_strip_intro">Fissa i plugin installati accanto a «Per te». Trascina per riordinare. Installane altri dallo store.</string>
     <string name="home_strip_pinned">Su questa barra</string>
     <string name="home_strip_available">Disponibili</string>
     <string name="home_strip_empty">Nessun plugin da fissare. Apri lo store per installare Reddit, Pixiv, Mastodon e altri.</string>
     <string name="home_strip_remove">Rimuovi dalla barra</string>
-    <string name="home_strip_up">Sposta su</string>
-    <string name="home_strip_down">Sposta giù</string>
+    <string name="home_strip_reorder">Riordina</string>
     <string name="home_plugin_store">Store dei plugin</string>
 
     <string name="home_subscriptions">Iscrizioni</string>
@@ -51,13 +51,14 @@
     <string name="home_for_you_empty">Impossibile caricare i post del feed</string>
     <string name="home_for_you_no_account">Importa il backup di XTA con i suoi account per caricare Per te.</string>
     <string name="home_import">Importa un backup di XTA</string>
-    <string name="home_zen_end">Per ora è tutto</string>
-    <string name="home_zen_more">Carica altro comunque</string>
 
     <string name="home_home">Home</string>
     <string name="home_networks">Reti</string>
     <string name="home_networks_recent">Recenti</string>
     <string name="home_networks_all">Tutte le reti</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">Raggruppa i servizi di microblogging</string>
+    <string name="home_alt_microblogging_group_detail">Mostra Mastodon, Bluesky e Threads in una sola sezione della Home. Disattiva per separarli. I dati e le impostazioni restano invariati.</string>
     <string name="home_posts">Tweet</string>
     <string name="home_media">Contenuti</string>
 </resources>

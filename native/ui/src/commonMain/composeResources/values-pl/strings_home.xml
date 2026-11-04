@@ -2,7 +2,8 @@
 <!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
      Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
 <resources>
-    <string name="home_for_you">Dla Ciebie</string>
+    <string name="home_x">X</string>
+    <string name="home_search_in">Szukaj w %1$s</string>
     <string name="home_open_menu">Otwórz menu nawigacyjne</string>
     <string name="home_add_timeline">Dodaj oś czasu</string>
     <string name="home_unread">Nieprzeczytane</string>
@@ -12,13 +13,12 @@
     <string name="home_pin_to_bar">Przypnij do górnego paska</string>
 
     <string name="home_strip_title">Osie czasu wtyczek</string>
-    <string name="home_strip_intro">Przypnij zainstalowane wtyczki obok Dla Ciebie, w dowolnej kolejności. Więcej zainstalujesz ze sklepu z wtyczkami.</string>
+    <string name="home_strip_intro">Przypnij zainstalowane wtyczki obok „Dla ciebie”. Przeciągnij, aby zmienić kolejność. Więcej w sklepie wtyczek.</string>
     <string name="home_strip_pinned">Na tym pasku</string>
     <string name="home_strip_available">Do dodania</string>
     <string name="home_strip_empty">Brak wtyczek do przypięcia. Otwórz sklep, by zainstalować Reddit, Pixiv, Mastodon i inne.</string>
     <string name="home_strip_remove">Usuń z paska</string>
-    <string name="home_strip_up">Przenieś w górę</string>
-    <string name="home_strip_down">Przenieś w dół</string>
+    <string name="home_strip_reorder">Zmień kolejność</string>
     <string name="home_plugin_store">Sklep z wtyczkami</string>
 
     <string name="home_subscriptions">Subskrypcje</string>
@@ -53,13 +53,14 @@
     <string name="home_for_you_empty">Nie można wczytać wpisów kanału</string>
     <string name="home_for_you_no_account">Aby wczytać Dla Ciebie, zaimportuj kopię zapasową XTA z jej kontami.</string>
     <string name="home_import">Zaimportuj kopię zapasową XTA</string>
-    <string name="home_zen_end">To na razie wszystko</string>
-    <string name="home_zen_more">Mimo to wczytaj więcej</string>
 
     <string name="home_home">Karty</string>
     <string name="home_networks">Sieci</string>
     <string name="home_networks_recent">Ostatnie</string>
     <string name="home_networks_all">Wszystkie sieci</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">Grupuj serwisy mikroblogowe</string>
+    <string name="home_alt_microblogging_group_detail">Pokazuj Mastodon, Bluesky i Threads w jednej sekcji na ekranie głównym. Wyłącz, aby znów wyświetlać je osobno. Dane i ustawienia pozostaną bez zmian.</string>
     <string name="home_posts">Tweety</string>
     <string name="home_media">Multimedia</string>
 </resources>

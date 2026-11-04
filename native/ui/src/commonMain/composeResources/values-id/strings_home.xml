@@ -2,7 +2,8 @@
 <!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
      Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
 <resources>
-    <string name="home_for_you">Untuk Anda</string>
+    <string name="home_x">X</string>
+    <string name="home_search_in">Cari di %1$s</string>
     <string name="home_open_menu">Buka menu navigasi</string>
     <string name="home_add_timeline">Tambah timeline</string>
     <string name="home_unread">Belum dibaca</string>
@@ -12,13 +13,12 @@
     <string name="home_pin_to_bar">Sematkan di bilah atas</string>
 
     <string name="home_strip_title">Timeline plugin</string>
-    <string name="home_strip_intro">Sematkan plugin yang terpasang di samping Untuk Anda, dengan urutan yang Anda suka. Pasang lebih banyak dari toko plugin.</string>
+    <string name="home_strip_intro">Sematkan plugin terpasang di samping Untuk Anda. Seret untuk mengubah urutan. Instal lainnya dari toko plugin.</string>
     <string name="home_strip_pinned">Di bilah ini</string>
     <string name="home_strip_available">Tersedia</string>
     <string name="home_strip_empty">Belum ada plugin untuk disematkan. Buka toko untuk memasang Reddit, Pixiv, Mastodon, dll.</string>
     <string name="home_strip_remove">Hapus dari bilah</string>
-    <string name="home_strip_up">Pindahkan ke atas</string>
-    <string name="home_strip_down">Pindahkan ke bawah</string>
+    <string name="home_strip_reorder">Ubah urutan</string>
     <string name="home_plugin_store">Toko plugin</string>
 
     <string name="home_subscriptions">Langganan</string>
@@ -50,13 +50,14 @@
     <string name="home_for_you_empty">Tidak bisa memuat postingan untuk umpan</string>
     <string name="home_for_you_no_account">Impor cadangan XTA beserta akunnya untuk memuat Untuk Anda.</string>
     <string name="home_import">Impor cadangan XTA</string>
-    <string name="home_zen_end">Itu saja untuk saat ini</string>
-    <string name="home_zen_more">Tetap muat lebih banyak</string>
 
     <string name="home_home">Beranda</string>
     <string name="home_networks">Jaringan</string>
     <string name="home_networks_recent">Terbaru</string>
     <string name="home_networks_all">Semua jaringan</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">Kelompokkan layanan mikroblog</string>
+    <string name="home_alt_microblogging_group_detail">Tampilkan Mastodon, Bluesky, dan Threads dalam satu bagian di Beranda. Nonaktifkan untuk memisahkannya. Data dan pengaturan Anda tetap tersimpan.</string>
     <string name="home_posts">Cuitan</string>
     <string name="home_media">Media</string>
 </resources>

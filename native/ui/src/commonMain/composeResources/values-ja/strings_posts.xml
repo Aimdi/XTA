@@ -7,6 +7,7 @@
     <string name="posts_boosts">リポスト</string>
     <string name="posts_collapse">折りたたむ</string>
     <string name="posts_expand">展開</string>
+    <string name="posts_link_more">同じリンクを含む他の投稿: %1$d</string>
     <string name="posts_community">コミュニティ</string>
     <string name="posts_community_notes">コミュニティノート</string>
     <string name="posts_continue_thread">スレッドを続ける</string>

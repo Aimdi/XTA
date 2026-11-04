@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.close
+import com.aimdi.xtanative.ui.generated.resources.home_alt_microblogging
 import com.aimdi.xtanative.ui.generated.resources.home_add_timeline
 import com.aimdi.xtanative.ui.generated.resources.home_groups
 import com.aimdi.xtanative.ui.generated.resources.home_home
@@ -56,7 +57,6 @@ import com.aimdi.xtanative.ui.generated.resources.home_no_results
 import com.aimdi.xtanative.ui.generated.resources.home_open_menu
 import com.aimdi.xtanative.ui.generated.resources.home_unread
 import com.aimdi.xtanative.ui.generated.resources.search
-import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupMark
 import org.jetbrains.compose.resources.stringResource
 
@@ -69,12 +69,35 @@ internal class PickerCalls(
     val onDismiss: () -> Unit,
 )
 
+/** A row of the picker's timelines: one timeline, or Mastodon, Bluesky and Threads as one entry. */
+private sealed interface PickerEntry {
+    val key: String
+
+    class Timeline(val tab: HomeTab) : PickerEntry {
+        override val key: String get() = tab.key
+    }
+
+    class Microblogs(val members: List<String>) : PickerEntry {
+        override val key: String get() = AltMicroblogging.SECTION
+    }
+}
+
+/** [sources] as the picker lists them: with [grouped], the microblogs as one entry where the first of them stood. */
+private fun entriesOf(sources: List<HomeTab>, grouped: Boolean): List<PickerEntry> {
+    val byId = sources.associateBy(HomeStrip::idOf)
+    val members = AltMicroblogging.members(byId.keys.toList())
+    return AltMicroblogging.listed(byId.keys.toList(), grouped && members.isNotEmpty()).mapNotNull { id ->
+        if (id == AltMicroblogging.SECTION) PickerEntry.Microblogs(members) else byId[id]?.let(PickerEntry::Timeline)
+    }
+}
+
 /**
  * The timeline picker (home_timeline_picker.dart, home_source_picker.dart),
- * Following's source button and a hold of Home on the bar: Following, For
- * you and the networks on the strip, the one shown ticked, each with its
- * unread dot, then the groups; a search once there are many; Add timeline,
- * and the way to the account menu, which Following's bar has no mark for.
+ * the button that is the shown timeline's mark and a hold of Home on the
+ * bar: Following, X and the networks pinned there, the one shown ticked,
+ * each with its unread dot, with Mastodon, Bluesky and Threads as one entry
+ * while they are grouped; then the groups; a search once there are many;
+ * Add timeline, and the way to the account menu, which no bar has a mark for.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -83,7 +106,8 @@ internal fun SourcePickerSheet(ui: HomeUi, networks: HomeNetworks, shownKey: Str
     val sources = SourcePicker.sources(ui.tabs)
     val groups = DrawerGroups.matching(ui.session.groups, "")
     val labels = sources.associateWith { tabLabel(it, ui) }
-    val shownSources = sources.filter { SourcePicker.matches(labels.getValue(it), query) }
+    // A search lists every timeline by its own name, as XTA's does.
+    val shownSources = if (query.isEmpty()) entriesOf(sources, ui.microblogsGrouped) else entriesOf(sources.filter { SourcePicker.matches(labels.getValue(it), query) }, grouped = false)
     val shownGroups = groups.filter { SourcePicker.matches(it.name, query) }
     ModalBottomSheet(onDismissRequest = calls.onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true), containerColor = MaterialTheme.colorScheme.surface) {
         Column(Modifier.padding(bottom = 8.dp)) {
@@ -93,8 +117,14 @@ internal fun SourcePickerSheet(ui: HomeUi, networks: HomeNetworks, shownKey: Str
                 Text(stringResource(Res.string.home_no_results), modifier = Modifier.padding(16.dp))
             }
             LazyColumn(Modifier.weight(1f, fill = false).padding(horizontal = 12.dp)) {
-                items(shownSources, key = { it.key }) { tab ->
-                    PickerRow(labels.getValue(tab), tab.key in unread, selected = tab.key == shownKey, onClick = { calls.onSource(tab) }) { SourceMark(tab, networks) }
+                items(shownSources, key = { it.key }) { entry ->
+                    when (entry) {
+                        is PickerEntry.Timeline -> {
+                            val tab = entry.tab
+                            PickerRow(labels.getValue(tab), tab.key in unread, selected = tab.key == shownKey, onClick = { calls.onSource(tab) }) { TimelineMark(tab, networks, 24.dp) }
+                        }
+                        is PickerEntry.Microblogs -> MicroblogsRow(entry.members, ui, networks, shownKey, unread, calls)
+                    }
                 }
                 if (shownGroups.isNotEmpty()) {
                     item(key = "groups") {
@@ -170,13 +200,12 @@ private fun PickerRow(label: String, unread: Boolean, selected: Boolean, onClick
     }
 }
 
+/** Mastodon, Bluesky and Threads as one entry: lit while one of them is shown, its dot while one has unread posts; it opens the one shown, else the one opened last. */
 @Composable
-private fun SourceMark(tab: HomeTab, networks: HomeNetworks) {
-    val tint = MaterialTheme.colorScheme.onSurfaceVariant
-    when (tab) {
-        HomeTab.Following -> Icon(HomeIcons.DynamicFeed, contentDescription = null, tint = tint)
-        HomeTab.ForYou -> Icon(GroupIcons.AutoAwesomeOutlined, contentDescription = null, tint = tint)
-        is HomeTab.Network -> networks.Mark(tab.id, 24.dp)
-        is HomeTab.Group -> Unit
-    }
+private fun MicroblogsRow(members: List<String>, ui: HomeUi, networks: HomeNetworks, shownKey: String?, unread: Set<String>, calls: PickerCalls) {
+    val keys = members.map { HomeTab.Network(it).key }
+    val shown = members.firstOrNull { HomeTab.Network(it).key == shownKey }
+    PickerRow(stringResource(Res.string.home_alt_microblogging), keys.any { it in unread }, selected = shown != null, onClick = {
+        AltMicroblogging.destination(members, shown, ui.lastMicroblog)?.let { calls.onSource(HomeTab.Network(it)) }
+    }) { MicroblogMark(networks, 24.dp) }
 }

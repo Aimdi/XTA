@@ -2,7 +2,8 @@
 <!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
      Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
 <resources>
-    <string name="home_for_you">Dành cho bạn</string>
+    <string name="home_x">X</string>
+    <string name="home_search_in">Tìm trong %1$s</string>
     <string name="home_open_menu">Mở menu điều hướng</string>
     <string name="home_add_timeline">Thêm dòng thời gian</string>
     <string name="home_unread">Chưa đọc</string>
@@ -12,13 +13,12 @@
     <string name="home_pin_to_bar">Ghim lên thanh trên cùng</string>
 
     <string name="home_strip_title">Dòng thời gian plugin</string>
-    <string name="home_strip_intro">Ghim các plugin đã cài cạnh Dành cho bạn, theo thứ tự bạn muốn. Cài thêm từ cửa hàng plugin.</string>
+    <string name="home_strip_intro">Ghim plugin đã cài cạnh «Dành cho bạn». Kéo để sắp xếp lại. Cài thêm từ cửa hàng plugin.</string>
     <string name="home_strip_pinned">Trên thanh này</string>
     <string name="home_strip_available">Có thể thêm</string>
     <string name="home_strip_empty">Chưa có plugin để ghim. Mở cửa hàng để cài Reddit, Pixiv, Mastodon…</string>
     <string name="home_strip_remove">Gỡ khỏi thanh</string>
-    <string name="home_strip_up">Chuyển lên</string>
-    <string name="home_strip_down">Chuyển xuống</string>
+    <string name="home_strip_reorder">Sắp xếp lại</string>
     <string name="home_plugin_store">Cửa hàng plugin</string>
 
     <string name="home_subscriptions">Đăng ký</string>
@@ -50,13 +50,14 @@
     <string name="home_for_you_empty">Không thể tải bài viết</string>
     <string name="home_for_you_no_account">Nhập bản sao lưu của XTA cùng các tài khoản trong đó để tải Dành cho bạn.</string>
     <string name="home_import">Nhập một bản sao lưu XTA</string>
-    <string name="home_zen_end">Tạm thời chỉ có vậy</string>
-    <string name="home_zen_more">Vẫn tải thêm</string>
 
     <string name="home_home">Trang chủ</string>
     <string name="home_networks">Mạng</string>
     <string name="home_networks_recent">Gần đây</string>
     <string name="home_networks_all">Tất cả mạng</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">Nhóm các dịch vụ tiểu blog</string>
+    <string name="home_alt_microblogging_group_detail">Hiển thị Mastodon, Bluesky và Threads trong một mục trên Trang chủ. Tắt để hiển thị riêng từng dịch vụ. Dữ liệu và cài đặt của bạn vẫn được giữ nguyên.</string>
     <string name="home_posts">Bài viết</string>
     <string name="home_media">Đa phương tiện</string>
 </resources>

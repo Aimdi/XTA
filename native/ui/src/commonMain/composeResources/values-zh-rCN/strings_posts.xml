@@ -7,6 +7,7 @@
     <string name="posts_boosts">转发</string>
     <string name="posts_collapse">收起</string>
     <string name="posts_expand">展开</string>
+    <string name="posts_link_more">分享此链接的其他帖子：%1$d</string>
     <string name="posts_community">社群</string>
     <string name="posts_community_notes">社区备注</string>
     <string name="posts_continue_thread">继续帖子串</string>

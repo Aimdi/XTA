@@ -19,6 +19,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -74,6 +76,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.aimdi.xtanative.ui.home.HomeRequests
+import com.aimdi.xtanative.ui.home.RetapsToTop
 import com.aimdi.xtanative.core.x.model.XTrend
 import com.aimdi.xtanative.core.x.model.XTrendPlace
 import com.aimdi.xtanative.core.x.model.XTrendPlaces
@@ -142,6 +146,16 @@ fun TrendsScreen(actions: TrendsActions, onBack: (() -> Unit)? = null) {
     val plugin = plugins.firstOrNull { it.id == scope }
     val focus = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
+    val list = rememberLazyListState()
+    // Home's bar tapped again here: the trends to the top, and from there the cursor into the search.
+    RetapsToTop(list) { focus.requestFocus() }
+    // Reached from a network's page on Home's bar, Discover searches that network (_adoptSearchScope).
+    val askedScope by HomeRequests.searchScope.collectAsStateWithLifecycle()
+    LaunchedEffect(askedScope) {
+        val id = askedScope ?: return@LaunchedEffect
+        HomeRequests.searchScopeTaken(id)
+        if (plugins.any { it.id == id }) vm.select(id)
+    }
     var picking by rememberSaveable { mutableStateOf(false) }
     // An empty bar takes focus instead of searching for nothing; a plugin's results show under the bar.
     val searched = { query: String? ->
@@ -205,7 +219,7 @@ fun TrendsScreen(actions: TrendsActions, onBack: (() -> Unit)? = null) {
                 )
             }
             if (plugin == null) {
-                TrendsBody(state, onRefresh = vm::refresh, onTrend = { trend -> actions.openSearch(trend.query) }, onAddLocation = { picking = true }, bottom = padding.calculateBottomPadding())
+                TrendsBody(state, list, onRefresh = vm::refresh, onTrend = { trend -> actions.openSearch(trend.query) }, onAddLocation = { picking = true }, bottom = padding.calculateBottomPadding())
             } else {
                 PluginPane(plugin, state.committed, bottom = padding.calculateBottomPadding())
             }
@@ -348,7 +362,7 @@ private fun DiscoverShortcuts(actions: TrendsActions) {
 /** The trends, ranked, pulled down to read again; a tap searches one. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TrendsBody(state: TrendsUi, onRefresh: () -> Unit, onTrend: (XTrend) -> Unit, onAddLocation: () -> Unit, bottom: Dp) {
+private fun TrendsBody(state: TrendsUi, list: LazyListState, onRefresh: () -> Unit, onTrend: (XTrend) -> Unit, onAddLocation: () -> Unit, bottom: Dp) {
     val problem = state.problem
     PullToRefreshBox(isRefreshing = state.loading && state.loaded, onRefresh = onRefresh, modifier = Modifier.fillMaxSize()) {
         when {
@@ -356,7 +370,7 @@ private fun TrendsBody(state: TrendsUi, onRefresh: () -> Unit, onTrend: (XTrend)
             !state.loaded -> Whole { LoadingRow() }
             state.trends.isEmpty() -> Whole { EmptyTrends(onAddLocation) }
             // Room under the last trend for the button over it.
-            else -> LazyColumn(contentPadding = PaddingValues(bottom = bottom + 88.dp), modifier = Modifier.fillMaxSize()) {
+            else -> LazyColumn(state = list, contentPadding = PaddingValues(bottom = bottom + 88.dp), modifier = Modifier.fillMaxSize()) {
                 itemsIndexed(state.trends, key = { index, trend -> "$index-${trend.name}" }, contentType = { _, _ -> "trend" }) { index, trend ->
                     TrendRow(index + 1, trend) { onTrend(trend) }
                 }

@@ -23,10 +23,6 @@
     <string name="ago_minutes">%1$d min</string>
     <string name="ago_hours">%1$d h</string>
 
-    <string name="feed_nobody_followed">Aucun des comptes que vous suivez n'est encore dans le fil Abonnements. Ouvrez un profil, par exemple en recherchant @nom, et suivez-le.</string>
-    <string name="feed_empty">Aucun post des comptes que vous suivez pour l'instant.</string>
-    <string name="feed_partial">Certains comptes n'ont pas pu être lus : %1$s</string>
-
     <string name="problem_no_account">Aucun compte X. Importez la sauvegarde de XTA avec ses comptes.</string>
     <string name="problem_rate_limited">X limite tous les comptes ici. Réessayez dans quelques minutes.</string>
     <string name="problem_offline">Pas de connexion à X.</string>

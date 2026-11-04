@@ -53,8 +53,7 @@ import org.jetbrains.compose.resources.stringResource
  * A group feed's filters (_settings.dart): its own reply and repost choices,
  * which show the session's until it has one, catch-up mode for a
  * chronological feed, the deck column and the order. The Following feed
- * ([following]) keeps its place by itself and is no deck column: it has
- * neither row.
+ * ([following]) is no deck column: it has no such row.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,7 +70,7 @@ fun FeedSettingsSheet(state: GroupFeedUi, actions: GroupSettingsActions, onCusto
             SwitchRow(Res.string.groups_include_replies, null, state.includeReplies, actions::setIncludeReplies)
             SwitchRow(Res.string.groups_include_reposts, null, state.includeReposts, actions::setIncludeReposts)
             // Only a chronological feed has a place where the reader left off.
-            if (state.settings.sort != FeedSort.POPULAR && !following) {
+            if (state.settings.sort != FeedSort.POPULAR) {
                 SwitchRow(Res.string.groups_catch_up_mode, Res.string.groups_catch_up_mode_description, state.settings.catchUp, actions::setCatchUp)
             }
             if (!following) {

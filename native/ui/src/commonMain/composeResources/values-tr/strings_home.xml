@@ -2,7 +2,8 @@
 <!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
      Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
 <resources>
-    <string name="home_for_you">Senin için</string>
+    <string name="home_x">X</string>
+    <string name="home_search_in">%1$s içinde ara</string>
     <string name="home_open_menu">Gezinme menüsünü aç</string>
     <string name="home_add_timeline">Zaman çizelgesi ekle</string>
     <string name="home_unread">Okunmamış</string>
@@ -12,13 +13,12 @@
     <string name="home_pin_to_bar">Üst çubuğa sabitle</string>
 
     <string name="home_strip_title">Eklenti zaman çizelgeleri</string>
-    <string name="home_strip_intro">Yüklü eklentileri Senin için'in yanına, istediğin sırayla sabitle. Eklenti mağazasından daha fazlasını yükle.</string>
+    <string name="home_strip_intro">Yüklü eklentileri «Sizin için» yanına sabitleyin. Sıralamak için sürükleyin. Daha fazlası eklenti mağazasında.</string>
     <string name="home_strip_pinned">Bu şeritte</string>
     <string name="home_strip_available">Eklenebilir</string>
     <string name="home_strip_empty">Sabitlenecek eklenti yok. Reddit, Pixiv, Mastodon ve daha fazlası için mağazayı açın.</string>
     <string name="home_strip_remove">Şeritten kaldır</string>
-    <string name="home_strip_up">Yukarı taşı</string>
-    <string name="home_strip_down">Aşağı taşı</string>
+    <string name="home_strip_reorder">Sıralamayı değiştir</string>
     <string name="home_plugin_store">Eklenti mağazası</string>
 
     <string name="home_subscriptions">Abonelikler</string>
@@ -51,13 +51,14 @@
     <string name="home_for_you_empty">Akışın gönderileri yüklenemiyor</string>
     <string name="home_for_you_no_account">Senin için'i yüklemek için XTA yedeğini hesaplarıyla birlikte içe aktar.</string>
     <string name="home_import">Bir XTA yedeğini içe aktar</string>
-    <string name="home_zen_end">Şimdilik hepsi bu</string>
-    <string name="home_zen_more">Yine de daha fazla yükle</string>
 
     <string name="home_home">Ana sayfa</string>
     <string name="home_networks">Ağlar</string>
     <string name="home_networks_recent">Son kullanılanlar</string>
     <string name="home_networks_all">Tüm ağlar</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">Mikroblog hizmetlerini grupla</string>
+    <string name="home_alt_microblogging_group_detail">Mastodon, Bluesky ve Threads’i ana ekranda tek bir bölümde gösterir. Ayrı göstermek için kapatın. Verileriniz ve ayarlarınız korunur.</string>
     <string name="home_posts">Tweet'ler</string>
     <string name="home_media">Medya</string>
 </resources>

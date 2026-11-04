@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import com.aimdi.xtanative.ui.home.rememberRetappedList
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -99,18 +100,18 @@ internal fun SavedBodyView(
     when (val body = state.body) {
         is SavedBody.Empty -> EmptyPane(body.kind, onWriteNote)
         is SavedBody.Grid -> MediaGrid(body.tiles, actions, contentPadding, onRemove = vm::removeFromGrid)
-        is SavedBody.Posts -> LazyColumn(Modifier.fillMaxSize(), contentPadding = contentPadding) {
+        is SavedBody.Posts -> LazyColumn(Modifier.fillMaxSize(), rememberRetappedList(), contentPadding) {
             items(body.posts, key = { it.id }, contentType = { "saved" }) { post ->
                 SavedRow(post, actions, state.view.selecting, post.id in state.view.selected, vm)
             }
         }
-        is SavedBody.Likes -> LazyColumn(Modifier.fillMaxSize(), contentPadding = contentPadding) {
+        is SavedBody.Likes -> LazyColumn(Modifier.fillMaxSize(), rememberRetappedList(), contentPadding) {
             items(body.likes, key = { it.id }, contentType = { "like" }) { like ->
                 KeptPost(like.about, actions)
                 Hairline()
             }
         }
-        is SavedBody.LikesByGroup -> LazyColumn(Modifier.fillMaxSize(), contentPadding = contentPadding) {
+        is SavedBody.LikesByGroup -> LazyColumn(Modifier.fillMaxSize(), rememberRetappedList(), contentPadding) {
             items(body.rows, key = { it.key }) { row ->
                 when (row) {
                     is LikesRow.Heading -> Text(
@@ -126,7 +127,7 @@ internal fun SavedBodyView(
                 }
             }
         }
-        is SavedBody.Notes -> LazyColumn(Modifier.fillMaxSize(), contentPadding = contentPadding) {
+        is SavedBody.Notes -> LazyColumn(Modifier.fillMaxSize(), rememberRetappedList(), contentPadding) {
             items(body.notes, key = { it.note.id }, contentType = { "note" }) { row ->
                 NoteTile(
                     note = row.note,

@@ -23,10 +23,6 @@
     <string name="ago_minutes">%1$d мин</string>
     <string name="ago_hours">%1$d ч</string>
 
-    <string name="feed_nobody_followed">Никого из тех, кого вы читаете, пока нет в ленте «Читаю». Откройте профиль, например найдя @имя, и подпишитесь.</string>
-    <string name="feed_empty">Пока нет постов от аккаунтов, которые вы читаете.</string>
-    <string name="feed_partial">Некоторые аккаунты не удалось прочитать: %1$s</string>
-
     <string name="problem_no_account">Нет аккаунта X. Импортируйте резервную копию XTA с её аккаунтами.</string>
     <string name="problem_rate_limited">X ограничивает здесь все аккаунты. Повторите через несколько минут.</string>
     <string name="problem_offline">Нет соединения с X.</string>
