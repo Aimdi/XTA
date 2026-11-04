@@ -3,8 +3,8 @@
 ### Trying it
 
 1. Install the APK below. It installs **next to XTA** (its own app id, `com.aimdi.xtanative`) and shares nothing with it: XTA and its data are untouched.
-2. In XTA, open **Settings → Data → Export**, switch on **"Export accounts?"**, and export.
-3. Open XTA Native and choose that file (later, **Settings → Data → Import**). Your X accounts, the accounts you follow, your groups, saved posts, notes and settings come with it.
+2. Sign in to X in the app, from its first screen or **Settings → Accounts → +**: X's own sign-in page on Android, XTA's cookie form on Linux.
+3. Or bring everything over from XTA: in XTA, open **Settings → Data → Export**, switch on **"Export accounts?"**, and export; then choose that file in XTA Native (later, **Settings → Data → Import**). Your X accounts, the accounts you follow, your groups, saved posts, notes and settings come with it.
 
 Like XTA, it only reads: nothing is posted, liked or followed on X or on any other network. Follows, likes and saves stay on the device. Your sessions stay on the phone, in storage that Android neither backs up nor moves to a new phone.
 
@@ -23,13 +23,14 @@ It keeps its data in `~/.local/share/xta-native`, a folder only you can open. Vi
 
 ### What is in it
 
-- Home as in XTA: the bottom bar with the pages you pick in Settings › Home; Following with its own bar (Posts or Media, the order, filters and the timeline picker), For you and a tab per group, merged in time order, opening where you left off; a group's Media and Discover; the deck of columns on the desktop
-- Posts as XTA draws them: threads, quotes, polls, link cards, community notes, translation, read aloud, and the media viewer with zoom and video
+- Home as in XTA: the bottom bar with the pages you pick in Settings › Home; Following, X, your groups and the networks you pin, turned by a sideways drag or picked in the timeline picker, with Mastodon, Bluesky and Threads in one; Following's bar (Posts or Media, the order, filters); posts linking one article stacked, reposts in runs, opening where you left off; a group's Media, and its Discover across every network with Rank with AI; the deck of columns on the desktop
+- Posts as XTA draws them: threads, quotes, polls, link cards, community notes, translation, read aloud; the footer with likes and bookmarks kept on the device, the share sheet (the post as a picture too) and the ⋯ sheet; pictures in a sideways row with their descriptions; videos playing in place under XTA's controls, full screen and, on Android, picture in picture; and the media viewer with zoom
+- Signing in to X in the app; XTA's screens for a read that failed, with Add account and the wait for X's rate limit; Diagnostics with the recent reads and each account's health
 - Reading aloud with the phone's voices or with voices downloaded to the device (Settings › Read aloud); on Android the voice engine downloads with the first voice, from this prerelease or else XTA's latest release, and while it reads, or a podcast plays, the notification and the lock screen carry its controls
-- Profiles with their tabs and filters, notes on accounts, follows and groups kept on the device
+- Profiles with their tabs and filters, notes on accounts, Subscribe and one group sheet everywhere, Unsubscribe with undo, all kept on the device
 - Search with its tabs and advanced search; Discover with trends; communities, lists and antennas
 - Saved posts with folders, likes on this device, notes, the archive, the offline collection and downloads
-- Every section of XTA's settings, its backup export and import, WebDAV sync, and 29 languages
+- Every section of XTA's settings, its backup export and import, WebDAV sync, and 29 languages; an opened post that swipes back as XTA's card, confirm close, the check for a newer prerelease and the licences page
 - Links open in the app's own browser on Android, or in the browser you pick; x.com and the networks' links open in the app
 
 ### Comparing it with XTA

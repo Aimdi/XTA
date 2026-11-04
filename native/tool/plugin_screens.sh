@@ -123,11 +123,17 @@ tap_node 'text="Open"' || fail "No Open for $name"
 shot plugin-home 15
 
 # Home, where its timeline is now one of Home's, picked in the timeline picker.
+# Mastodon, Bluesky and Threads share one timeline there while "Group
+# microblogging services" is on, as it is at first, as in XTA.
+timeline="text=\"$name\""
+case "$name" in
+  Mastodon | Bluesky | Threads) timeline='text="Mastodon &amp; Bluesky"' ;;
+esac
 back
 back
 open_picker || fail "No timeline picker on Home"
-wait_for "text=\"$name\"" 15 || { shot plugin-strip-missing 0; fail "$name is not among Home's timelines"; }
-tap_node "text=\"$name\"" || fail "No $name in Home's timeline picker"
+wait_for "$timeline" 15 || { shot plugin-strip-missing 0; fail "$name is not among Home's timelines"; }
+tap_node "$timeline" || fail "No $name in Home's timeline picker"
 shot plugin-strip 12
 
 # Uninstalled from the store, after its confirmation.
