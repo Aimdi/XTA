@@ -82,6 +82,11 @@ class XLiveTest {
             val inline = page.select("script:not([src])").map { it.data() }
             println("LIVE sign-in page: HTTP ${answer.code}, ${answer.body.length} characters, ${scripts.size} scripts, ${inline.size} inline")
             println("LIVE sign-in inline scripts naming ondemand.s: ${inline.count { "ondemand.s" in it }}")
+            println("LIVE sign-in title: ${page.title().take(80)}; noscript: ${page.select("noscript").text().take(120)}")
+            inline.forEachIndexed { i, body ->
+                val urls = Regex("""https?://[^"'\s]+?\.js""").findAll(body).map { it.value.substringAfterLast('/') }.distinct().take(6).toList()
+                println("LIVE sign-in inline $i: ${body.length} characters, starts ${body.trim().take(60).replace(Regex("\\s+"), " ")}, scripts named $urls")
+            }
             scripts.take(12).forEach { src ->
                 val source = runCatching { http.get(src.toHttpUrl(), emptyMap(), followRedirects = false).body }.getOrDefault("")
                 println("LIVE sign-in script ${src.substringAfterLast('/')}: ${source.length} characters, ondemand.s ${"ondemand.s" in source}")
