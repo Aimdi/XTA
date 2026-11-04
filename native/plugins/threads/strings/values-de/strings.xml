@@ -112,4 +112,5 @@
     <string name="unlike_on_device">Like von diesem Gerät entfernen</string>
     <string name="use_session">Meine Sitzung für gefolgte Konten nutzen</string>
     <string name="use_session_description">Standardmäßig aus. Wenn an, spricht die App als Sie mit Threads — Meta kann das Konto sperren. Aus lassen, außer Sie nutzen ein Wegwerflogin.</string>
+    <string name="add_to_group">Zu Gruppe hinzufügen</string>
 </resources>

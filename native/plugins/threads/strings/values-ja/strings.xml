@@ -109,4 +109,5 @@
     <string name="unlike_on_device">この端末のいいねを取り消す</string>
     <string name="use_session">フォロー中のアカウントに自分のセッションを使う</string>
     <string name="use_session_description">初期値はオフ。オンにするとこのアプリがあなたとして Threads にアクセスし、Meta がそのアカウントを凍結することがあります。捨てアカ以外はオフのままに。</string>
+    <string name="add_to_group">グループに追加</string>
 </resources>

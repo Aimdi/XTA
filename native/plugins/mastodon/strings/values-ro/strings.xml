@@ -58,9 +58,6 @@
     <string name="reposted_by">Redistribuit de</string>
     <string name="quotes">Citate</string>
     <string name="likes">Aprecieri</string>
-    <string name="save">Salvează pe acest dispozitiv</string>
-    <string name="unsave">Elimină de pe acest dispozitiv</string>
-    <string name="save_to_folder">Salvează în dosar...</string>
     <string name="share_link">Distribuie linkul</string>
     <string name="open_in_browser">Deschide în browser</string>
     <string name="alt_text">Image description</string>
@@ -113,10 +110,10 @@
     <string name="builtin_description">Încercate după ale tale, astfel încât citirea funcționează fără nimic configurat.</string>
     <string name="no_accounts">Niciun cont încă</string>
     <string name="more">Mai multe opțiuni</string>
-    <string name="saved_empty">Nimic salvat încă din Mastodon. Semnul de carte de sub o postare o păstrează pe acest dispozitiv.</string>
     <plurals name="poll_votes">
         <item quantity="one">%1$s vot</item>
         <item quantity="few">%1$s voturi</item>
         <item quantity="other">%1$s de voturi</item>
     </plurals>
+    <string name="add_to_group">Adăugați la grup</string>
 </resources>

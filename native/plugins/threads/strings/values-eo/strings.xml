@@ -112,4 +112,5 @@
     <string name="unlike_on_device">Forigi ŝaton el ĉi tiu aparato</string>
     <string name="use_session">Uzi mian seancon por sekvataj kontoj</string>
     <string name="use_session_description">Defaŭlte malŝaltita. Ŝaltite, la apo parolas al Threads kiel vi — Meta povas malpermesi tiun konton. Lasu malŝaltita krom se vi uzas forĵeteblan ensaluton.</string>
+    <string name="add_to_group">Aldoni al grupo</string>
 </resources>

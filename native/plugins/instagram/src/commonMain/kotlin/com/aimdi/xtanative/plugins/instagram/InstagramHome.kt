@@ -256,7 +256,7 @@ private fun EmptyFollowing(hasAccounts: Boolean, onRetry: () -> Unit, onSearch: 
     }
 }
 
-/** The accounts followed here, newest first, each opening its profile, each unfollowed after asking. */
+/** The accounts followed here, newest first, each opening its profile, each to put in the app's groups or unfollow after asking. */
 @Composable
 private fun Accounts(app: InstagramApp, frame: PluginFrame, onSearch: () -> Unit) {
     val rows by app.follows.state.collectAsState()
@@ -286,6 +286,7 @@ private fun LazyListScope.accountRows(app: InstagramApp, follows: List<com.aimdi
                     Box {
                         IconButton(onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, contentDescription = pluginString(Strings.more_options)) }
                         DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
+                            DropdownMenuItem(text = { Text(pluginString(Strings.add_to_group)) }, onClick = { menu = false; app.addToGroup(follow.id) })
                             DropdownMenuItem(text = { Text(pluginString(Strings.unfollow)) }, onClick = { menu = false; onUnfollow(follow.id) })
                         }
                     }

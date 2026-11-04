@@ -60,4 +60,5 @@
     <string name="unfollow">Bỏ theo dõi</string>
     <string name="unfollow_confirm">Bỏ theo dõi @%1$s?</string>
     <string name="unlike_on_device">Bỏ thích khỏi thiết bị này</string>
+    <string name="add_to_group">Thêm vào nhóm</string>
 </resources>

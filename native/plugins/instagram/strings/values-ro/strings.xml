@@ -60,4 +60,5 @@
     <string name="unfollow">Nu mai urmări</string>
     <string name="unfollow_confirm">Nu mai urmărești @%1$s?</string>
     <string name="unlike_on_device">Elimină aprecierea de pe acest dispozitiv</string>
+    <string name="add_to_group">Adăugați la grup</string>
 </resources>

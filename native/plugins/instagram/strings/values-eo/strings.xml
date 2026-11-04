@@ -60,4 +60,5 @@
     <string name="unfollow">Malsekvi</string>
     <string name="unfollow_confirm">Ĉu malsekvi @%1$s?</string>
     <string name="unlike_on_device">Forigi ŝaton el ĉi tiu aparato</string>
+    <string name="add_to_group">Aldoni al grupo</string>
 </resources>

@@ -24,6 +24,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
@@ -165,7 +166,7 @@ private fun emptyLabel(tab: ProfileTab): PluginText = when (tab) {
  * The profile itself: face, name, what they say about themselves (its
  * mentions, links and tags tappable), their link unless it is their own
  * Threads page, the counts Meta told, Add account while not followed here,
- * and a word when the profile is private.
+ * Add to group, and a word when the profile is private.
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -205,6 +206,10 @@ internal fun ThreadsProfileCard(app: ThreadsApp, profile: ThreadsProfile, modifi
                 Icon(ThreadsIcons.PersonAdd, contentDescription = null, modifier = Modifier.size(18.dp))
                 Text(pluginString(Strings.add_account), modifier = Modifier.padding(start = 8.dp))
             }
+        }
+        OutlinedButton(onClick = { app.addToGroup(ThreadsAccount.of(profile)) }, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
+            Icon(PostIcons.People, contentDescription = null, modifier = Modifier.size(18.dp))
+            Text(pluginString(Strings.add_to_group), modifier = Modifier.padding(start = 8.dp))
         }
         if (profile.isPrivate) {
             Text(pluginString(Strings.profile_private), style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 14.dp))

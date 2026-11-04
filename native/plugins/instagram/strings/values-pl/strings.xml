@@ -60,4 +60,5 @@
     <string name="unfollow">Przestań obserwować</string>
     <string name="unfollow_confirm">Przestać obserwować @%1$s?</string>
     <string name="unlike_on_device">Usuń polubienie z tego urządzenia</string>
+    <string name="add_to_group">Dodaj do grupy</string>
 </resources>

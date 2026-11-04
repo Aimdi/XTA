@@ -4,13 +4,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.aimdi.xtanative.networks.mastodon.MastodonFollowRows
+import com.aimdi.xtanative.networks.mastodon.MastodonSnapshot
+import com.aimdi.xtanative.ui.plugins.NetworkPost
+import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.PluginBackupSection
 import com.aimdi.xtanative.ui.plugins.PluginBody
+import com.aimdi.xtanative.ui.plugins.PluginFeed
 import com.aimdi.xtanative.ui.plugins.PluginFootprint
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginScreen
 import com.aimdi.xtanative.ui.plugins.PluginSearch
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
+import kotlinx.serialization.json.JsonElement
 
 /**
  * Mastodon and the Fediverse as a downloadable plugin, read without an
@@ -18,8 +23,10 @@ import com.aimdi.xtanative.ui.plugins.XtaPlugin
  * reads them (docs/specs/mastodon-plugin.md): Explore, Local, Federated and
  * the accounts followed here, on Home and on its own; profiles, threads,
  * hashtags, search, who boosted and quoted a post, and what was saved from
- * it. Nothing is posted, boosted, favourited, voted on or followed on any
- * instance: following and saving stay on the device.
+ * it; the accounts followed here in Home's timelines when the reader asks,
+ * its accounts in the app's groups, and its posts in the app's Saved with
+ * their folders and notes. Nothing is posted, boosted, favourited, voted on
+ * or followed on any instance: following and saving stay on the device.
  */
 class MastodonPlugin : XtaPlugin() {
     private lateinit var app: MastodonApp
@@ -53,6 +60,13 @@ class MastodonPlugin : XtaPlugin() {
         val opened = MastodonRoutes.parse(route) ?: return null
         return { MastodonScreen(app, opened) }
     }
+
+    override val feed: PluginFeed get() = app.shared
+
+    override val postActions: NetworkPostActions get() = app.actions
+
+    /** A post kept in XTA's record, as Saved draws it; one of another network is none of its. */
+    override fun archived(content: JsonElement): NetworkPost? = MastodonSnapshot.fromArchive(content)?.let(app::shown)
 
     /** The accounts followed here, as XTA's backup keeps them: its `mastodonSubscriptions` rows. */
     override val backupSections: List<PluginBackupSection>

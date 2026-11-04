@@ -58,9 +58,6 @@
     <string name="reposted_by">Partilhado por</string>
     <string name="quotes">Citações</string>
     <string name="likes">Gostos</string>
-    <string name="save">Guardar neste dispositivo</string>
-    <string name="unsave">Remover deste dispositivo</string>
-    <string name="save_to_folder">Guardar numa pasta...</string>
     <string name="share_link">Partilhar ligação</string>
     <string name="open_in_browser">Abrir no navegador</string>
     <string name="alt_text">Image description</string>
@@ -113,9 +110,9 @@
     <string name="builtin_description">Experimentadas depois das tuas, para que a leitura funcione sem configurar nada.</string>
     <string name="no_accounts">Ainda não há contas</string>
     <string name="more">Mais opções</string>
-    <string name="saved_empty">Ainda não guardou nada do Mastodon. O marcador por baixo de uma publicação guarda-a neste dispositivo.</string>
     <plurals name="poll_votes">
         <item quantity="one">%1$s voto</item>
         <item quantity="other">%1$s votos</item>
     </plurals>
+    <string name="add_to_group">Adicionar ao grupo</string>
 </resources>

@@ -58,9 +58,6 @@
     <string name="reposted_by">轉發者</string>
     <string name="quotes">引用</string>
     <string name="likes">喜歡</string>
-    <string name="save">儲存在此裝置</string>
-    <string name="unsave">從此裝置移除</string>
-    <string name="save_to_folder">儲存到資料夾...</string>
     <string name="share_link">分享連結</string>
     <string name="open_in_browser">在瀏覽器中開啟</string>
     <string name="alt_text">Image description</string>
@@ -113,8 +110,8 @@
     <string name="builtin_description">在你的站台之後嘗試，因此不設定任何東西也能閱讀。</string>
     <string name="no_accounts">尚無帳號</string>
     <string name="more">更多選項</string>
-    <string name="saved_empty">還沒有儲存任何 Mastodon 貼文。貼文下方的書籤會把它保存在這部裝置上。</string>
     <plurals name="poll_votes">
         <item quantity="other">%1$s 票</item>
     </plurals>
+    <string name="add_to_group">新增至群組</string>
 </resources>

@@ -112,4 +112,5 @@
     <string name="unlike_on_device">Eemalda meeldimine sellest seadmest</string>
     <string name="use_session">Kasuta minu seanssi jälgitavate kontode jaoks</string>
     <string name="use_session_description">Vaikimisi väljas. Sisselülitatuna räägib rakendus Threadsiga sinuna — Meta võib selle konto bännida. Jäta väljaks, kui see pole ühekordne sisselogimine.</string>
+    <string name="add_to_group">Lisa gruppi</string>
 </resources>

@@ -33,6 +33,7 @@ class ThreadsRulesTest {
         val terms = ThreadsSearchTerms("café & co", tag = true, profile = null)
         assertEquals(ThreadsRoute.Search(terms), ThreadsRoutes.parse(ThreadsRoutes.search(terms)))
         assertEquals(ThreadsRoute.Media("3", 2), ThreadsRoutes.parse(ThreadsRoutes.media("3", 2)))
+        assertEquals(ThreadsRoute.Saved, ThreadsRoutes.parse(ThreadsRoutes.SAVED))
         assertNull(ThreadsRoutes.parse("elsewhere?x=1"))
     }
 

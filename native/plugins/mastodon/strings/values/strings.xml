@@ -68,9 +68,6 @@
     <string name="reposted_by">Reposted by</string>
     <string name="quotes">Quotes</string>
     <string name="likes">Likes</string>
-    <string name="save">Save on this device</string>
-    <string name="unsave">Remove from this device</string>
-    <string name="save_to_folder">Save to folder…</string>
     <string name="share_link">Share link</string>
     <string name="open_in_browser">Open in browser</string>
     <string name="alt_text">Image description</string>
@@ -121,7 +118,6 @@
     <string name="no_hashtags">No matching hashtags</string>
     <string name="empty_list">No results</string>
 
-    <string name="saved_empty">Nothing saved from Mastodon yet. The bookmark under a post keeps it on this device.</string>
 
     <string name="settings_intro">Reading works without any setup: an account\'s own instance is asked first, then your instances, then the built-in ones. Public profiles and posts only — no Mastodon account is required.</string>
     <string name="instance">Home instance</string>
@@ -134,4 +130,5 @@
     <string name="builtin_instances">Built-in instances</string>
     <string name="builtin_description">Tried after yours, so reading works with nothing configured.</string>
     <string name="no_accounts">No accounts yet</string>
+    <string name="add_to_group">Add to group</string>
 </resources>

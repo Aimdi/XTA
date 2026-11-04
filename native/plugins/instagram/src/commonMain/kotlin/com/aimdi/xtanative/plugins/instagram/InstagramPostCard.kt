@@ -3,6 +3,7 @@ package com.aimdi.xtanative.plugins.instagram
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,7 +36,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.semantics.onLongClick
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -58,11 +62,19 @@ import com.aimdi.xtanative.ui.post.PostIcons
  * A photo, carousel, video or reel as a feed card (instagram_post_card.dart):
  * the author (opening the profile, Follow beside an account not followed
  * here when [showFollow]), the caption, the pictures, then the like kept on
- * this device with Instagram's count, the post on Instagram and its link to share.
+ * this device with Instagram's count, the post on Instagram and its link to
+ * share. A long press opens the app's post sheet, which keeps it in Saved as
+ * XTA keeps it, a link.
  */
 @Composable
 internal fun InstagramPostCard(app: InstagramApp, post: InstagramPost, openAuthor: Boolean = true, showFollow: Boolean = false) {
-    Column(Modifier.fillMaxWidth()) {
+    val more = pluginString(Strings.more_options)
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .pointerInput(post.id) { detectTapGestures(onLongPress = { app.openMenu(post) }) }
+            .semantics { onLongClick(more) { app.openMenu(post); true } },
+    ) {
         Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 8.dp, top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             Avatar(post.author.avatarUrl, 40.dp, onClick = if (openAuthor) { { app.openProfile(post.author.username) } } else null)
             Spacer(Modifier.width(16.dp))

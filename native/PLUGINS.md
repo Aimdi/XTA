@@ -108,6 +108,7 @@ read again, the desktop's F5: `RefreshesOn`).
 | `openSearch(query)`, `openSettings()` | its own search and settings |
 | `settings` | the app's settings, all to read and its own (`plugin.<id>.*`) to change; `inHomeFeed()`, `setInHomeFeed(on)` |
 | `saved`, `toggleSaved(post)`, `chooseFolder(post)`, `editNote(post)`, `setLiked(post, liked)` | the reader's archive: what is in Saved, the bookmark, the save sheet, the note, the likes |
+| `savedPosts` | its own posts in Saved with their notes, as they change, for its own saved list (`PluginSavedScreen`) |
 | `addToGroup(account, follow)` | the app's group picker for one of its accounts |
 | `openPostMenu(menu)` | the shared post menu over the screen |
 | `download(media, fileName, subfolder)`, `saveFile(bytes, fileName, mimeType, subfolder)`, `shareFile(bytes, fileName, mimeType)`, `openDownloads()` | the app's downloads, a file it made saved or shared, the Downloads screen |
@@ -119,7 +120,8 @@ with a test.
 - Posts: `NetworkPostCard` (with `NetworkPostExtras` for what a network adds),
   `NetworkFocalPost`, `QuotedNetworkPost` (a `NetworkPost`), `LinkedText`,
   `NetworkCount`, `NetworkHeaderButton`, `PostLines` (a post's time and
-  counts in words) and `NetworkBookmark` (below).
+  counts in words), `NetworkBookmark` (below) and `DrawnPosts` (the posts
+  its shared rows drew lately, found again by id).
 - Media: `MediaTiles`, `MediaPager` (the viewer, with qualities and a
   download), `ZoomableImage`, and `rememberImageRequest` for pictures that
   need request headers.
@@ -139,8 +141,9 @@ with a test.
 - Rows and fields: `PluginSwitchRow`, `PluginActionRow`, `PluginMenuRow`,
   `PluginSectionTitle`, `PluginTabs`, `PluginCounts`, `NetworkPersonRow`,
   `SecretField` (a cookie, a token, a key) and `PluginIcons`.
-- The app's features: `HomeTimelineSwitch` and `AddToGroupButton` (below),
-  and `PluginSearchHistory` (recent searches, as XTA keeps them).
+- The app's features: `HomeTimelineSwitch`, `AddToGroupButton` and
+  `PluginSavedScreen` (below), and `PluginSearchHistory` (recent searches, as
+  XTA keeps them).
 - Leaving and files: `rememberOpenOutside`, `rememberShareText`,
   `rememberTextFileChooser` and `rememberTextFileSaver`.
 - Words: `PluginStrings` with `pluginString` and `pluginPlural`
@@ -158,7 +161,6 @@ X posts, `rememberRowDrag` for a list dragged into order. Whatever a plugin
 uses is part of the plugin API: `tool/plugin_abi.py` checks that plugins
 built before still find it. The pieces' words are the app's, in all its
 languages: a plugin draws them without strings of its own.
-
 ### Posts in Home's timelines
 
 XTA mixes the posts of what a network follows into Following and For you
@@ -235,6 +237,7 @@ reads the same in XTA. Nothing reaches the network.
 | `PluginHost` | What it does |
 |---|---|
 | `saved` | the ids in Saved, as they change |
+| `savedPosts` | its own posts in Saved, newest first, as they change: those whose record names it (`xtaPlugin`, or a link record's `source`), each a `PluginSavedPost` with the reader's note; null until Saved has been read |
 | `toggleSaved(post)` | the bookmark: saved where a plain tap files (the folder remembered), or taken out |
 | `chooseFolder(post)` | the save sheet, as a long press on the bookmark opens it |
 | `editNote(post)` | the note on it in Saved, in the app's editor; writing one saves the post first |
@@ -254,6 +257,13 @@ reads the record back, and the shared row draws it with the plugin's
 `postActions`. A record the plugin does not read, or a plugin that is not
 installed, gets Saved's own card, whose link opens as the app opens links,
 in the plugin's screen once it is there (`routeFor`, `screen`).
+
+A plugin's own saved list (XTA's plugin bookmarks, a "Saved" in its menu) is
+`PluginSavedScreen(host, read) { post -> … }`: Saved's notice that saves stay
+on this device, then `savedPosts`, each drawn by the plugin from what `read`
+makes of its record (Saved's own card for one it does not read), with its
+note under it (a tap edits it) and Keep offline where it has media. A
+plugin that lists them its own way reads `savedPosts` itself.
 
 ### Downloads and files
 

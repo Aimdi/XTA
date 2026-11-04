@@ -58,9 +58,6 @@
     <string name="reposted_by">इन्होंने फिर से साझा किया</string>
     <string name="quotes">उद्धरण</string>
     <string name="likes">पसंद</string>
-    <string name="save">इस डिवाइस पर सहेजें</string>
-    <string name="unsave">इस डिवाइस से हटाएँ</string>
-    <string name="save_to_folder">फ़ोल्डर में सहेजें...</string>
     <string name="share_link">लिंक साझा करें</string>
     <string name="open_in_browser">ब्राउज़र में खोलें</string>
     <string name="alt_text">Image description</string>
@@ -113,9 +110,9 @@
     <string name="builtin_description">आपके इंस्टेंस के बाद आज़माए जाते हैं, इसलिए बिना कुछ सेट किए भी पढ़ना काम करता है।</string>
     <string name="no_accounts">अभी कोई खाता नहीं</string>
     <string name="more">और विकल्प</string>
-    <string name="saved_empty">Mastodon से अभी तक कुछ सहेजा नहीं गया। पोस्ट के नीचे का बुकमार्क उसे इसी डिवाइस पर रखता है।</string>
     <plurals name="poll_votes">
         <item quantity="one">%1$s वोट</item>
         <item quantity="other">%1$s वोट</item>
     </plurals>
+    <string name="add_to_group">समूह में जोड़ें</string>
 </resources>

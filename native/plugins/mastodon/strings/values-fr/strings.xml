@@ -58,9 +58,6 @@
     <string name="reposted_by">Repartagé par</string>
     <string name="quotes">Citations</string>
     <string name="likes">J\'aime</string>
-    <string name="save">Enregistrer sur cet appareil</string>
-    <string name="unsave">Retirer de cet appareil</string>
-    <string name="save_to_folder">Enregistrer dans un dossier...</string>
     <string name="share_link">Partager le lien</string>
     <string name="open_in_browser">Ouvrir dans le navigateur</string>
     <string name="alt_text">Description de l’image</string>
@@ -113,9 +110,9 @@
     <string name="builtin_description">Essayées après les vôtres, pour que la lecture fonctionne sans rien configurer.</string>
     <string name="no_accounts">Aucun compte pour l’instant</string>
     <string name="more">Plus d\'options</string>
-    <string name="saved_empty">Rien d\'enregistré depuis Mastodon pour l\'instant. Le signet sous une publication la garde sur cet appareil.</string>
     <plurals name="poll_votes">
         <item quantity="one">%1$s vote</item>
         <item quantity="other">%1$s votes</item>
     </plurals>
+    <string name="add_to_group">Ajouter au groupe</string>
 </resources>

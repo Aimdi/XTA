@@ -58,9 +58,6 @@
     <string name="reposted_by">Ricondiviso da</string>
     <string name="quotes">Citazioni</string>
     <string name="likes">Mi piace</string>
-    <string name="save">Salva su questo dispositivo</string>
-    <string name="unsave">Rimuovi da questo dispositivo</string>
-    <string name="save_to_folder">Salva in una cartella...</string>
     <string name="share_link">Condividi link</string>
     <string name="open_in_browser">Apri nel browser</string>
     <string name="alt_text">Image description</string>
@@ -113,9 +110,9 @@
     <string name="builtin_description">Provate dopo le tue, così la lettura funziona senza configurare nulla.</string>
     <string name="no_accounts">Nessun account ancora</string>
     <string name="more">Altre opzioni</string>
-    <string name="saved_empty">Ancora nulla salvato da Mastodon. Il segnalibro sotto un post lo conserva su questo dispositivo.</string>
     <plurals name="poll_votes">
         <item quantity="one">%1$s voto</item>
         <item quantity="other">%1$s voti</item>
     </plurals>
+    <string name="add_to_group">Aggiungi al gruppo</string>
 </resources>

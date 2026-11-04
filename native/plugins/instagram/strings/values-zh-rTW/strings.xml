@@ -60,4 +60,5 @@
     <string name="unfollow">取消追蹤</string>
     <string name="unfollow_confirm">取消追蹤 @%1$s？</string>
     <string name="unlike_on_device">從此裝置取消按讚</string>
+    <string name="add_to_group">新增至群組</string>
 </resources>

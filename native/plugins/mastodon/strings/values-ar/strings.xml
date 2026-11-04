@@ -58,9 +58,6 @@
     <string name="reposted_by">أعاد نشره</string>
     <string name="quotes">الاقتباسات</string>
     <string name="likes">الإعجابات</string>
-    <string name="save">حفظ على هذا الجهاز</string>
-    <string name="unsave">إزالة من هذا الجهاز</string>
-    <string name="save_to_folder">الحفظ في مجلد...</string>
     <string name="share_link">مشاركة الرابط</string>
     <string name="open_in_browser">فتح في المتصفح</string>
     <string name="alt_text">Image description</string>
@@ -113,7 +110,6 @@
     <string name="builtin_description">تُجرَّب بعد خوادمك، لذا تعمل القراءة دون أي إعداد.</string>
     <string name="no_accounts">لا حسابات بعد</string>
     <string name="more">خيارات أخرى</string>
-    <string name="saved_empty">لم يُحفظ شيء من ماستودون بعد. الإشارة المرجعية أسفل المنشور تحفظه على هذا الجهاز.</string>
     <plurals name="poll_votes">
         <item quantity="zero">لا تصويت</item>
         <item quantity="one">تصويت واحد</item>
@@ -122,4 +118,5 @@
         <item quantity="many">%1$s تصويتًا</item>
         <item quantity="other">%1$s تصويت</item>
     </plurals>
+    <string name="add_to_group">أضف إلى المجموعة</string>
 </resources>

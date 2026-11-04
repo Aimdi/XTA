@@ -58,9 +58,6 @@
     <string name="reposted_by">Udostępnili</string>
     <string name="quotes">Cytaty</string>
     <string name="likes">Polubienia</string>
-    <string name="save">Zapisz na tym urządzeniu</string>
-    <string name="unsave">Usuń z tego urządzenia</string>
-    <string name="save_to_folder">Zapisz w folderze...</string>
     <string name="share_link">Udostępnij link</string>
     <string name="open_in_browser">Otwórz w przeglądarce</string>
     <string name="alt_text">Image description</string>
@@ -113,11 +110,11 @@
     <string name="builtin_description">Sprawdzane po twoich, więc czytanie działa bez konfigurowania czegokolwiek.</string>
     <string name="no_accounts">Brak kont</string>
     <string name="more">Więcej opcji</string>
-    <string name="saved_empty">Nic jeszcze nie zapisano z Mastodona. Zakładka pod wpisem zapisuje go na tym urządzeniu.</string>
     <plurals name="poll_votes">
         <item quantity="one">%1$s głos</item>
         <item quantity="few">%1$s głosy</item>
         <item quantity="many">%1$s głosów</item>
         <item quantity="other">%1$s głosu</item>
     </plurals>
+    <string name="add_to_group">Dodaj do grupy</string>
 </resources>

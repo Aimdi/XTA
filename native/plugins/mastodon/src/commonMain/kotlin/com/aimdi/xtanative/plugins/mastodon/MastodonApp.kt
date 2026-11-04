@@ -2,6 +2,7 @@ package com.aimdi.xtanative.plugins.mastodon
 
 import com.aimdi.xtanative.networks.mastodon.MastodonClient
 import com.aimdi.xtanative.networks.mastodon.MastodonExploreReader
+import com.aimdi.xtanative.networks.mastodon.MastodonFollow
 import com.aimdi.xtanative.networks.mastodon.MastodonFollowing
 import com.aimdi.xtanative.networks.mastodon.MastodonFollowingReader
 import com.aimdi.xtanative.networks.mastodon.MastodonInstances
@@ -14,8 +15,13 @@ import com.aimdi.xtanative.networks.mastodon.MastodonTimelineFilter
 import com.aimdi.xtanative.networks.mastodon.MastodonTimelineReader
 import com.aimdi.xtanative.store.backup.XtaTime
 import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.ui.plugins.DrawnPosts
+import com.aimdi.xtanative.ui.plugins.FeedKinds
+import com.aimdi.xtanative.ui.plugins.NetworkPost
 import com.aimdi.xtanative.ui.plugins.NetworkPostActions
+import com.aimdi.xtanative.ui.plugins.PluginFeed
 import com.aimdi.xtanative.ui.plugins.PluginHost
+import com.aimdi.xtanative.ui.plugins.PluginPostMenu
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.cancellation.CancellationException
@@ -38,9 +44,11 @@ import kotlinx.coroutines.launch
  * What the Mastodon plugin's screens share while it runs, as XTA's providers
  * share it: the client, the accounts followed here, its settings (the app's,
  * under XTA's keys), the four timelines Home and the client both show, the
- * places they were left, and the session's choices (orders, searches of
- * loaded posts). The timelines are forgotten when the reader's instances
- * change, and read again where they are shown.
+ * places they were left, the session's choices (orders, searches of loaded
+ * posts), the followed accounts' part of the app's timelines, and the posts
+ * the app drew lately, which their bookmark and menu file in the app's
+ * archive. The timelines are forgotten when the reader's instances change,
+ * and read again where they are shown.
  */
 internal class MastodonApp(val host: PluginHost) {
     val client = MastodonClient(host.http)
@@ -65,7 +73,9 @@ internal class MastodonApp(val host: PluginHost) {
     val explore = MastodonExploreReader(client, ::discovery, scope)
     val local = MastodonPublicReader(client, ::discovery, local = true, scope)
     val federated = MastodonPublicReader(client, ::discovery, local = false, scope)
-    val following = MastodonFollowingReader(MastodonFollowing(client, { configured }), follows::accts, scope)
+    /** Each followed account's page, kept ten minutes: what Following, Home's timelines and the groups read through. */
+    private val followingPages = MastodonFollowing(client, { configured })
+    val following = MastodonFollowingReader(followingPages, follows::accts, scope)
 
     fun reader(timeline: MastodonTimeline): MastodonTimelineReader = when (timeline) {
         MastodonTimeline.EXPLORE -> explore
@@ -133,6 +143,16 @@ internal class MastodonApp(val host: PluginHost) {
         following.refresh(force = false)
     }
 
+    /** [account] followed here unless it is, as putting it in a group follows it first (XTA's addMastodonAccountToGroup). */
+    suspend fun ensureFollowed(account: MastodonFollow) {
+        if (follows.load().any { it.isOf(account.acct) }) return
+        follows.follow(account.copy(createdAt = XtaTime.sqlite(Instant.now())))
+        following.refresh(force = false)
+    }
+
+    /** [account] in the app's groups, followed here first once a group is picked. */
+    fun addToGroup(account: MastodonFollow) = host.addToGroup(account.acct) { ensureFollowed(account) }
+
     /** A backup's follows (XTA's `mastodonSubscriptions` rows) in place of these; Following read again. */
     suspend fun restoreFollows(rows: String) {
         follows.importRows(rows)
@@ -182,6 +202,52 @@ internal class MastodonApp(val host: PluginHost) {
     fun openQuotes(post: MastodonPost) = host.open(MastodonRoutes.quotes(post))
 
     fun openSaved() = host.open(MastodonRoutes.saved())
+
+    // ---- the app's timelines, Saved and the post sheet ----
+
+    /** The posts the app's shared rows drew lately, by address: what their taps, bookmark and menu find again. */
+    private val drawn = DrawnPosts<MastodonPost> { it.url }
+
+    /** [post] as the app's shared row draws it, kept (its quote with it) so that its taps, bookmark and menu find it again. */
+    fun shown(post: MastodonPost): NetworkPost {
+        drawn.put(post)
+        post.quote?.let(drawn::put)
+        return MastodonShared.post(post, host.language)
+    }
+
+    /** Where a post the app draws leads: its conversation, its author, a tag's timeline, the viewer; its bookmark and the shared post sheet. */
+    val actions = NetworkPostActions(
+        open = { shown -> drawn[shown.id]?.let(::openThread) ?: shown.url?.let(host::openLink) },
+        openAuthor = { shown -> openProfile(shown.authorId) },
+        openMention = ::openProfile,
+        openTag = ::openTag,
+        openMedia = { shown, index -> host.openMedia(shown.media, index) },
+        archive = { shown -> drawn[shown.id]?.let(MastodonShared::archive) },
+        more = { shown -> drawn[shown.id]?.let(::openMenu) },
+    )
+
+    /** XTA's one post sheet for [post] (showMastodonPostActions): Saved, its note, its author's groups, its link, who boosted and quoted it. */
+    fun openMenu(post: MastodonPost) = host.openPostMenu(
+        PluginPostMenu(
+            MastodonShared.archive(post),
+            post.url,
+            author = post.acct,
+            reposts = { openReposts(post) },
+            quotes = { openQuotes(post) },
+            follow = { ensureFollowed(MastodonFollow(post.acct, post.authorName, post.avatarUrl)) },
+        ),
+    )
+
+    /** The accounts followed here in Home's timelines and the groups' (XTA's loadMastodonInterleaved). */
+    val shared: PluginFeed = SharedFeed()
+
+    private inner class SharedFeed : PluginFeed() {
+        override suspend fun followed(): List<String> = follows.load().map { it.acct }
+
+        /** Through Following's pages and their ten minutes, ten posts in all, as XTA mixes Mastodon in. */
+        override suspend fun posts(accounts: List<String>, kinds: FeedKinds, force: Boolean): List<NetworkPost> =
+            MastodonShared.mixed(followingPages.posts(accounts, force), kinds).map(::shown)
+    }
 
     private companion object {
         const val MAX_OPENED = 64

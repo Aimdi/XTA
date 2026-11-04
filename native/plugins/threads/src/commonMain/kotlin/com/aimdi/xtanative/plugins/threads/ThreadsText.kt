@@ -7,11 +7,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
-import com.aimdi.xtanative.networks.threads.ThreadsCaption
 import com.aimdi.xtanative.networks.threads.ThreadsLinks
 import com.aimdi.xtanative.networks.threads.ThreadsTextFragment
 import com.aimdi.xtanative.ui.plugins.LinkedText
-import com.aimdi.xtanative.ui.plugins.TextRun
 
 /**
  * A caption with its mentions, links and tags tappable (threads_rich_text.dart):
@@ -42,18 +40,6 @@ internal fun ThreadsRichText(
         )
     }
     if (selectable) SelectionContainer { linked() } else linked()
-}
-
-/** The caption's runs as the shared text draws them. */
-internal fun threadsRuns(text: String, fragments: List<ThreadsTextFragment>): List<TextRun> = ThreadsCaption.runs(text, fragments).map { run ->
-    val target = run.target
-    when {
-        target == null -> TextRun.Plain(run.text)
-        run.kind == ThreadsTextFragment.Kind.MENTION -> TextRun.Mention(run.text, target)
-        run.kind == ThreadsTextFragment.Kind.LINK -> TextRun.Link(run.text, target)
-        run.kind == ThreadsTextFragment.Kind.TAG -> TextRun.Tag(run.text, target)
-        else -> TextRun.Plain(run.text)
-    }
 }
 
 @Composable

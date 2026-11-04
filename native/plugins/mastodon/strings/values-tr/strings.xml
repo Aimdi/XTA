@@ -58,9 +58,6 @@
     <string name="reposted_by">Yeniden paylaşanlar</string>
     <string name="quotes">Alıntılar</string>
     <string name="likes">Beğeniler</string>
-    <string name="save">Bu cihaza kaydet</string>
-    <string name="unsave">Bu cihazdan kaldır</string>
-    <string name="save_to_folder">Klasöre kaydet...</string>
     <string name="share_link">Bağlantıyı paylaş</string>
     <string name="open_in_browser">Tarayıcıda aç</string>
     <string name="alt_text">Image description</string>
@@ -113,9 +110,9 @@
     <string name="builtin_description">Sizinkilerden sonra denenir, böylece hiçbir şey ayarlamadan okuma çalışır.</string>
     <string name="no_accounts">Henüz hesap yok</string>
     <string name="more">Diğer seçenekler</string>
-    <string name="saved_empty">Henüz Mastodon\'dan kaydedilen bir şey yok. Gönderinin altındaki yer imi onu bu cihazda tutar.</string>
     <plurals name="poll_votes">
         <item quantity="one">%1$s oy</item>
         <item quantity="other">%1$s oy</item>
     </plurals>
+    <string name="add_to_group">Gruba ekle</string>
 </resources>

@@ -58,9 +58,6 @@
     <string name="reposted_by">Berrargitaratzaileak</string>
     <string name="quotes">Aipamenak</string>
     <string name="likes">Atsegiteak</string>
-    <string name="save">Gorde gailu honetan</string>
-    <string name="unsave">Kendu gailu honetatik</string>
-    <string name="save_to_folder">Gorde karpeta batean...</string>
     <string name="share_link">Partekatu esteka</string>
     <string name="open_in_browser">Ireki nabigatzailean</string>
     <string name="alt_text">Image description</string>
@@ -113,9 +110,9 @@
     <string name="builtin_description">Zureen ondoren probatzen dira; beraz, irakurketak ezer konfiguratu gabe funtzionatzen du.</string>
     <string name="no_accounts">Oraindik ez dago konturik</string>
     <string name="more">Aukera gehiago</string>
-    <string name="saved_empty">Ez duzu oraindik Mastodonetik ezer gorde. Argitalpen baten azpiko laster-markak gailu honetan gordetzen du.</string>
     <plurals name="poll_votes">
         <item quantity="one">Boto bat</item>
         <item quantity="other">%1$s boto</item>
     </plurals>
+    <string name="add_to_group">Gehitu taldera</string>
 </resources>

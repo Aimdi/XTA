@@ -60,4 +60,5 @@
     <string name="unfollow">Smetti di seguire</string>
     <string name="unfollow_confirm">Smettere di seguire @%1$s?</string>
     <string name="unlike_on_device">Rimuovi il mi piace da questo dispositivo</string>
+    <string name="add_to_group">Aggiungi al gruppo</string>
 </resources>

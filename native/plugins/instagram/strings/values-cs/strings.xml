@@ -60,4 +60,5 @@
     <string name="unfollow">Přestat sledovat</string>
     <string name="unfollow_confirm">Přestat sledovat @%1$s?</string>
     <string name="unlike_on_device">Odebrat like z tohoto zařízení</string>
+    <string name="add_to_group">Přidat do skupiny</string>
 </resources>

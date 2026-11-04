@@ -58,9 +58,6 @@
     <string name="reposted_by">Delt videre av</string>
     <string name="quotes">Sitater</string>
     <string name="likes">Liker</string>
-    <string name="save">Lagre på denne enheten</string>
-    <string name="unsave">Fjern fra denne enheten</string>
-    <string name="save_to_folder">Lagre i mappe...</string>
     <string name="share_link">Del lenke</string>
     <string name="open_in_browser">Åpne i nettleser</string>
     <string name="alt_text">Image description</string>
@@ -113,9 +110,9 @@
     <string name="builtin_description">Prøves etter dine, slik at lesing fungerer helt uten oppsett.</string>
     <string name="no_accounts">Ingen kontoer ennå</string>
     <string name="more">Flere alternativer</string>
-    <string name="saved_empty">Ingenting er lagret fra Mastodon ennå. Bokmerket under et innlegg lagrer det på denne enheten.</string>
     <plurals name="poll_votes">
         <item quantity="one">%1$s stemme</item>
         <item quantity="other">%1$s stemmer</item>
     </plurals>
+    <string name="add_to_group">Legg til i gruppe</string>
 </resources>

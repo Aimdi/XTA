@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -42,6 +43,8 @@ import com.aimdi.xtanative.networks.threads.ThreadsXyException
 import com.aimdi.xtanative.store.settings.Pref
 import com.aimdi.xtanative.store.settings.ThreadsPrefs
 import com.aimdi.xtanative.ui.common.Avatar
+import com.aimdi.xtanative.ui.plugins.AddToGroupButton
+import com.aimdi.xtanative.ui.plugins.HomeTimelineSwitch
 import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginText
@@ -53,10 +56,12 @@ import kotlinx.coroutines.launch
 
 /**
  * Where the reader points the plugin, and who they follow with it
- * (threads_settings.dart), in XTA's order: public reading, the switch that
- * spends the session on followed accounts, the accounts, the optional
- * session with its warning, an RSSHub instance and an Xy server, each with
- * its test. The session and the token are never backed up or exported.
+ * (threads_settings.dart), in XTA's order: public reading, whether the
+ * accounts followed here join Home's timelines, the switch that spends the
+ * session on followed accounts, the accounts (each to put in groups or
+ * remove), the optional session with its warning, an RSSHub instance and an
+ * Xy server, each with its test. The session and the token are never backed
+ * up or exported.
  */
 @Composable
 internal fun ThreadsSettingsBody(app: ThreadsApp, frame: PluginFrame) {
@@ -70,6 +75,7 @@ internal fun ThreadsSettingsBody(app: ThreadsApp, frame: PluginFrame) {
         LazyColumn(contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
             item(key = "guest") { GuestCard() }
             item(key = "intro") { Paragraph(Strings.settings_intro) }
+            item(key = "home") { HomeTimelineSwitch(app.host.settings, pluginString(Strings.plugin_name)) }
             item(key = "session-apis") {
                 Toggle(Strings.use_session, Strings.use_session_description, settings[ThreadsPrefs.useSessionApis]) { on -> app.update { it.with(ThreadsPrefs.useSessionApis, on) } }
             }
@@ -122,7 +128,7 @@ private fun Section(title: PluginText?, content: @Composable () -> Unit) {
     }
 }
 
-/** The accounts followed here, each removable. */
+/** The accounts followed here, each to put in the app's groups or remove. */
 @Composable
 private fun Accounts(app: ThreadsApp) {
     val rows by app.accounts.state.collectAsState()
@@ -136,7 +142,10 @@ private fun Accounts(app: ThreadsApp) {
             leadingContent = { Avatar(account.avatarUrl, 36.dp) },
             headlineContent = { Text("@" + account.handle) },
             trailingContent = {
-                IconButton(onClick = { app.unfollow(account.handle) }) { Icon(Icons.Filled.Delete, contentDescription = pluginString(Strings.delete)) }
+                Row {
+                    AddToGroupButton(app.host, account.handle)
+                    IconButton(onClick = { app.unfollow(account.handle) }) { Icon(Icons.Filled.Delete, contentDescription = pluginString(Strings.delete)) }
+                }
             },
             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
         )

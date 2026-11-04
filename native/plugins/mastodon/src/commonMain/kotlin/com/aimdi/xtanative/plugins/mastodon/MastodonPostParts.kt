@@ -12,42 +12,24 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.mastodon.MastodonPoll
-import com.aimdi.xtanative.networks.mastodon.MastodonPost
-import com.aimdi.xtanative.ui.common.LocalGraph
-import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.fullTimeText
-import com.aimdi.xtanative.ui.plugins.PluginMenuRow
-import com.aimdi.xtanative.ui.plugins.PluginNoteEditor
-import com.aimdi.xtanative.ui.plugins.PluginNoteMenuRow
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
-import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
-import com.aimdi.xtanative.ui.plugins.rememberShareText
-import com.aimdi.xtanative.ui.post.PostIcons
-import com.aimdi.xtanative.ui.saved.Keeping
-import com.aimdi.xtanative.ui.saved.SaveSheet
-import com.aimdi.xtanative.ui.saved.SavedIcons
 import java.text.NumberFormat
 import java.time.Instant
 import java.util.Locale
@@ -109,43 +91,5 @@ internal fun PollResults(poll: MastodonPoll) {
             poll.expiresAt?.let { pluginString(if (closed) Strings.poll_ended else Strings.poll_ends, fullTimeText(it)) },
         )
         Text(parts.joinToString(" · "), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-    }
-}
-
-/**
- * What a long press on a post offers, in XTA's order (plugin_post_actions.dart):
- * save it on this device or remove it, a note on it in Saved, share its link,
- * file it in a folder, who boosted it, what quotes it, and the browser.
- * Nothing reaches the instance.
- */
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-internal fun PostActionsSheet(app: MastodonApp, post: MastodonPost, onDismiss: () -> Unit) {
-    val graph = LocalGraph.current
-    val openOutside = rememberOpenOutside()
-    val share = rememberShareText()
-    val saved = savedHere(post)
-    val item = remember(post) { keepable(post) }
-    var folders by remember { mutableStateOf(false) }
-    var noting by remember { mutableStateOf(false) }
-    if (folders) {
-        SaveSheet(item, onDismiss)
-        return
-    }
-    if (noting) {
-        PluginNoteEditor(item, onDismiss)
-        return
-    }
-    ModalBottomSheet(onDismissRequest = onDismiss) {
-        Column(Modifier.padding(bottom = 16.dp)) {
-            val then = { action: () -> Unit -> { onDismiss(); action() } }
-            PluginMenuRow(if (saved) SavedIcons.Bookmark else SavedIcons.BookmarkBorder, pluginString(if (saved) Strings.unsave else Strings.save), then { Keeping.toggleSave(graph, item) })
-            PluginNoteMenuRow({ noting = true })
-            PluginMenuRow(Icons.Filled.Share, pluginString(Strings.share_link), then { share(post.url) })
-            PluginMenuRow(SavedIcons.Folder, pluginString(Strings.save_to_folder), { folders = true })
-            PluginMenuRow(XIcons.Repost, pluginString(Strings.reposted_by), then { app.openReposts(post) })
-            PluginMenuRow(PostIcons.Quote, pluginString(Strings.quotes), then { app.openQuotes(post) })
-            PluginMenuRow(PostIcons.OpenInNew, pluginString(Strings.open_in_browser), then { openOutside(post.url) })
-        }
     }
 }

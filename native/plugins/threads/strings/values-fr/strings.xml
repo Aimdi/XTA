@@ -115,4 +115,5 @@
     <string name="unlike_on_device">Retirer le j’aime de cet appareil</string>
     <string name="use_session">Utiliser ma session pour les comptes suivis</string>
     <string name="use_session_description">Désactivé par défaut. Activé, l’app parle à Threads en votre nom — Meta peut bannir ce compte. Laissez désactivé sauf compte jetable.</string>
+    <string name="add_to_group">Ajouter au groupe</string>
 </resources>

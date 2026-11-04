@@ -8,6 +8,7 @@ import com.aimdi.xtanative.store.offline.OfflineStore
 import com.aimdi.xtanative.store.reading.ReadingAppearanceStore
 import com.aimdi.xtanative.store.reading.ReadingJournal
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 /**
@@ -98,6 +99,14 @@ interface PluginHost {
     /** The ids filed in Saved, as they change: what draws a bookmark filled. */
     val saved: StateFlow<Set<String>>
 
+    /**
+     * The plugin's own posts in Saved, newest first, as they change: those
+     * whose record names it (its `xtaPlugin`, or a link record's `source`),
+     * each with the reader's note; null until Saved has been read. What a
+     * plugin's own saved list shows ([PluginSavedScreen]).
+     */
+    val savedPosts: StateFlow<List<PluginSavedPost>?> get() = NoSavedPosts
+
     /** The bookmark tapped: [post] saved in Saved where a plain tap files (the folder remembered, else unfiled), or taken out once saved. */
     fun toggleSaved(post: PluginPostArchive)
 
@@ -147,3 +156,6 @@ interface PluginHost {
     /** The app's Downloads screen: what was saved, what is under way, and retries. */
     fun openDownloads()
 }
+
+/** What [PluginHost.savedPosts] holds where a host keeps no Saved: nothing. */
+private val NoSavedPosts: StateFlow<List<PluginSavedPost>?> = MutableStateFlow(emptyList())

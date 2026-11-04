@@ -60,4 +60,5 @@
     <string name="unfollow">언팔로우</string>
     <string name="unfollow_confirm">\@%1$s님을 언팔로우할까요?</string>
     <string name="unlike_on_device">이 기기에서 마음에 들어요 취소</string>
+    <string name="add_to_group">그룹에 추가</string>
 </resources>

@@ -58,9 +58,6 @@
     <string name="reposted_by">Dibagikan ulang oleh</string>
     <string name="quotes">Kutipan</string>
     <string name="likes">Suka</string>
-    <string name="save">Simpan di perangkat ini</string>
-    <string name="unsave">Hapus dari perangkat ini</string>
-    <string name="save_to_folder">Simpan ke folder...</string>
     <string name="share_link">Bagikan tautan</string>
     <string name="open_in_browser">Buka di browser</string>
     <string name="alt_text">Image description</string>
@@ -113,8 +110,8 @@
     <string name="builtin_description">Dicoba setelah milik Anda, sehingga membaca tetap berfungsi tanpa pengaturan apa pun.</string>
     <string name="no_accounts">Belum ada akun</string>
     <string name="more">Opsi lainnya</string>
-    <string name="saved_empty">Belum ada yang disimpan dari Mastodon. Markah di bawah postingan menyimpannya di perangkat ini.</string>
     <plurals name="poll_votes">
         <item quantity="other">%1$s suara</item>
     </plurals>
+    <string name="add_to_group">Tambah ke grup</string>
 </resources>

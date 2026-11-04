@@ -30,6 +30,7 @@ import com.aimdi.xtanative.ui.plugins.PLUGIN_API_VERSION
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginPostArchive
 import com.aimdi.xtanative.ui.plugins.PluginPostMenu
+import com.aimdi.xtanative.ui.plugins.PluginSavedPost
 import com.aimdi.xtanative.ui.plugins.PluginSettings
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
 import com.aimdi.xtanative.ui.saved.Keeping
@@ -120,6 +121,11 @@ class AppPlugins(
     val savedIds: StateFlow<Set<String>> = graph.saved.state
         .map { library -> library?.posts?.mapTo(HashSet()) { it.id }.orEmpty() }
         .stateIn(scope, SharingStarted.Eagerly, emptySet())
+
+    /** Plugin [id]'s own posts in Saved, with their notes, while a screen of it lists them ([PluginHost.savedPosts]). */
+    internal fun savedPostsOf(id: String): StateFlow<List<PluginSavedPost>?> = graph.saved.state
+        .map { library -> library?.let { PluginSaved.posts(it, id) } }
+        .stateIn(scope, SharingStarted.WhileSubscribed(SAVED_LIST_LINGER_MILLIS), null)
 
     private val mutableSheet = MutableStateFlow<PluginSheet?>(null)
 
@@ -388,6 +394,8 @@ class AppPlugins(
 
         override val saved: StateFlow<Set<String>> get() = plugins.savedIds
 
+        override val savedPosts: StateFlow<List<PluginSavedPost>?> by lazy { plugins.savedPostsOf(id) }
+
         override fun toggleSaved(post: PluginPostArchive) = Keeping.toggleSave(plugins.graph, post.keepable())
 
         override fun chooseFolder(post: PluginPostArchive) = plugins.show(PluginSheet.Folders(post))
@@ -410,5 +418,10 @@ class AppPlugins(
             Downloading.shareMade(plugins.graph, bytes, PluginDownloads.named(fileName, mimeType), mimeType)
 
         override fun openDownloads() = plugins.navigator.go(Destination.Downloads)
+    }
+
+    private companion object {
+        /** How long a plugin's saved list keeps following Saved once no screen shows it: past a quick back and forth. */
+        const val SAVED_LIST_LINGER_MILLIS = 5_000L
     }
 }

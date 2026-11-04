@@ -115,4 +115,5 @@
     <string name="unlike_on_device">Treu el m’agrada d’aquest dispositiu</string>
     <string name="use_session">Fes servir la meva sessió per als comptes seguits</string>
     <string name="use_session_description">Desactivat per defecte. Si s’activa, l’app parla amb Threads com si fossis tu — Meta pot bandejar aquest compte. Deixa-ho apagat tret que sigui un inici de sessió d’un sol ús.</string>
+    <string name="add_to_group">Afegir al grup</string>
 </resources>

@@ -60,4 +60,5 @@
     <string name="unfollow">Takipten çık</string>
     <string name="unfollow_confirm">\@%1$s takipten çıkılsın mı?</string>
     <string name="unlike_on_device">Beğeniyi bu cihazdan kaldır</string>
+    <string name="add_to_group">Gruba ekle</string>
 </resources>

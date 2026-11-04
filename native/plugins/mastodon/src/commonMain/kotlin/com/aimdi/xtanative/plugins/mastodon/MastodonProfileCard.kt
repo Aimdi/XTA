@@ -5,6 +5,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -23,6 +25,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -40,6 +43,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.aimdi.xtanative.networks.mastodon.MastodonField
+import com.aimdi.xtanative.networks.mastodon.MastodonFollow
 import com.aimdi.xtanative.networks.mastodon.MastodonPost
 import com.aimdi.xtanative.networks.mastodon.MastodonProfile
 import com.aimdi.xtanative.networks.mastodon.MastodonUrls
@@ -55,8 +59,9 @@ import com.aimdi.xtanative.ui.post.PostIcons
 /**
  * A profile's card, as XTA's MastodonProfileCard: its header, picture, name,
  * address, Bot and Locked, bio, fields (a verified link marked), when it
- * joined, its counts, and Follow, which follows it here only.
+ * joined, its counts, Follow, which follows it here only, and Add to group.
  */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun ProfileCard(app: MastodonApp, profile: MastodonProfile, following: Boolean, onFollow: () -> Unit) {
     Column(Modifier.fillMaxWidth().padding(16.dp)) {
@@ -92,10 +97,17 @@ internal fun ProfileCard(app: MastodonApp, profile: MastodonProfile, following: 
             ),
             Modifier.padding(top = 14.dp),
         )
-        FilledTonalButton(onClick = onFollow, modifier = Modifier.padding(top = 18.dp)) {
-            Icon(if (following) MastodonIcons.PersonRemove else MastodonIcons.PersonAdd, contentDescription = null, modifier = Modifier.size(18.dp))
-            Spacer(Modifier.width(8.dp))
-            Text(pluginString(if (following) Strings.unfollow else Strings.follow))
+        FlowRow(Modifier.padding(top = 18.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            FilledTonalButton(onClick = onFollow) {
+                Icon(if (following) MastodonIcons.PersonRemove else MastodonIcons.PersonAdd, contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(8.dp))
+                Text(pluginString(if (following) Strings.unfollow else Strings.follow))
+            }
+            OutlinedButton(onClick = { app.addToGroup(MastodonFollow(profile.acct, profile.displayName.ifBlank { profile.acct }, profile.avatarUrl)) }) {
+                Icon(PostIcons.People, contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(8.dp))
+                Text(pluginString(Strings.add_to_group))
+            }
         }
     }
 }

@@ -112,4 +112,5 @@
     <string name="unlike_on_device">Beğeniyi bu cihazdan kaldır</string>
     <string name="use_session">Takip edilen hesaplar için oturumumu kullan</string>
     <string name="use_session_description">Varsayılan kapalı. Açıkken uygulama Threads’e sizin adınıza konuşur — Meta o hesabı yasaklayabilir. Tek kullanımlık giriş değilse kapalı bırakın.</string>
+    <string name="add_to_group">Gruba ekle</string>
 </resources>

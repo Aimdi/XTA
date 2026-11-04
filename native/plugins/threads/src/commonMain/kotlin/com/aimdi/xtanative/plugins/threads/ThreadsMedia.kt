@@ -85,11 +85,11 @@ internal fun PlayBadge(modifier: Modifier = Modifier) {
     }
 }
 
-/** The viewer the post's media opened in: the app's, with each video's qualities in its menu. */
+/** The viewer the post's media opened in: the app's, with each video's qualities in its menu and Download saving the one shown through the app's downloads. */
 @Composable
 internal fun ThreadsMediaScreen(app: ThreadsApp, route: ThreadsRoute.Media) {
     val viewed = app.shelf.viewed(route.media)
-    MediaPager(viewed?.items.orEmpty(), route.start, onClose = app.host::back, qualities = viewed?.qualities.orEmpty())
+    MediaPager(viewed?.items.orEmpty(), route.start, onClose = app.host::back, qualities = viewed?.qualities.orEmpty(), onDownload = { app.host.download(it) })
 }
 
 /** A little space under what is above: the gap between a post's parts. */

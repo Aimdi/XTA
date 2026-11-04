@@ -58,9 +58,6 @@
     <string name="reposted_by">リポストした人</string>
     <string name="quotes">引用</string>
     <string name="likes">いいね</string>
-    <string name="save">この端末に保存</string>
-    <string name="unsave">この端末から削除</string>
-    <string name="save_to_folder">フォルダーに保存...</string>
     <string name="share_link">リンクを共有</string>
     <string name="open_in_browser">ブラウザで開く</string>
     <string name="alt_text">画像の説明</string>
@@ -113,8 +110,8 @@
     <string name="builtin_description">あなたのインスタンスの後に試されるため、何も設定しなくても読めます。</string>
     <string name="no_accounts">まだアカウントがありません</string>
     <string name="more">その他のオプション</string>
-    <string name="saved_empty">Mastodon から保存したものはまだありません。投稿の下のブックマークで、この端末に保存できます。</string>
     <plurals name="poll_votes">
         <item quantity="other">%1$s 票</item>
     </plurals>
+    <string name="add_to_group">グループに追加</string>
 </resources>

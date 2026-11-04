@@ -58,9 +58,6 @@
     <string name="reposted_by">Được đăng lại bởi</string>
     <string name="quotes">Trích dẫn</string>
     <string name="likes">Lượt thích</string>
-    <string name="save">Lưu trên thiết bị này</string>
-    <string name="unsave">Xóa khỏi thiết bị này</string>
-    <string name="save_to_folder">Lưu vào thư mục...</string>
     <string name="share_link">Chia sẻ liên kết</string>
     <string name="open_in_browser">Mở trong trình duyệt</string>
     <string name="alt_text">Image description</string>
@@ -113,8 +110,8 @@
     <string name="builtin_description">Được thử sau máy chủ của bạn, nên việc đọc hoạt động mà không cần cấu hình gì.</string>
     <string name="no_accounts">Chưa có tài khoản</string>
     <string name="more">Tùy chọn khác</string>
-    <string name="saved_empty">Chưa lưu gì từ Mastodon. Dấu trang bên dưới bài đăng sẽ lưu nó trên máy này.</string>
     <plurals name="poll_votes">
         <item quantity="other">%1$s phiếu</item>
     </plurals>
+    <string name="add_to_group">Thêm vào nhóm</string>
 </resources>

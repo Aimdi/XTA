@@ -58,9 +58,6 @@
     <string name="reposted_by">Edasi jaganud</string>
     <string name="quotes">Tsitaadid</string>
     <string name="likes">Meeldimised</string>
-    <string name="save">Salvesta selles seadmes</string>
-    <string name="unsave">Eemalda sellest seadmest</string>
-    <string name="save_to_folder">Salvesta kausta...</string>
     <string name="share_link">Jaga linki</string>
     <string name="open_in_browser">Ava brauseris</string>
     <string name="alt_text">Image description</string>
@@ -113,9 +110,9 @@
     <string name="builtin_description">Proovitakse pärast sinu omi, nii et lugemine töötab ka ilma seadistuseta.</string>
     <string name="no_accounts">Kontosid pole veel</string>
     <string name="more">Rohkem valikuid</string>
-    <string name="saved_empty">Mastodonist pole veel midagi salvestatud. Postituse all olev järjehoidja hoiab selle selles seadmes.</string>
     <plurals name="poll_votes">
         <item quantity="one">%1$s hääl</item>
         <item quantity="other">%1$s häält</item>
     </plurals>
+    <string name="add_to_group">Lisa gruppi</string>
 </resources>

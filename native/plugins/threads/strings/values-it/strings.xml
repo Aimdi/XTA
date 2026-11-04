@@ -115,4 +115,5 @@
     <string name="unlike_on_device">Rimuovi il mi piace da questo dispositivo</string>
     <string name="use_session">Usa la mia sessione per gli account seguiti</string>
     <string name="use_session_description">Disattivato di default. Se attivo, l’app parla a Threads come te — Meta può bannare quell’account. Lascialo spento a meno di un accesso usa e getta.</string>
+    <string name="add_to_group">Aggiungi al gruppo</string>
 </resources>

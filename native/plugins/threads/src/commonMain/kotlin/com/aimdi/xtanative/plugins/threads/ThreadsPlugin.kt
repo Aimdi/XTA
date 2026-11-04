@@ -2,22 +2,28 @@ package com.aimdi.xtanative.plugins.threads
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.aimdi.xtanative.ui.plugins.NetworkPost
+import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.PluginBackupSection
 import com.aimdi.xtanative.ui.plugins.PluginBody
+import com.aimdi.xtanative.ui.plugins.PluginFeed
 import com.aimdi.xtanative.ui.plugins.PluginFootprint
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginScreen
 import com.aimdi.xtanative.ui.plugins.PluginSearch
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
+import kotlinx.serialization.json.JsonElement
 
 /**
  * Threads as a downloadable plugin, read as XTA's Threads plugin reads it:
  * Meta's public pages with no account, and a pasted session, an RSSHub
  * instance or an Xy server only when the reader names one. Its tab (the
  * accounts followed here, newest first, and the posts liked here), the
- * conversation, profiles with their tabs, search and every setting XTA has.
- * Nothing is posted, liked, reposted or followed on Threads: following and
- * likes stay on the device.
+ * conversation, profiles with their tabs, search and every setting XTA has;
+ * the accounts followed here in Home's timelines when the reader asks, its
+ * accounts in the app's groups, and its posts in the app's Saved with their
+ * folders and notes. Nothing is posted, liked, reposted or followed on
+ * Threads: following and likes stay on the device.
  */
 class ThreadsPlugin : XtaPlugin() {
     private var attached: ThreadsApp? = null
@@ -54,8 +60,16 @@ class ThreadsPlugin : XtaPlugin() {
         is ThreadsRoute.Profile -> { { ThreadsProfileScreen(app, opened.handle) } }
         is ThreadsRoute.Search -> { { ThreadsSearchScreen(app, opened.terms) } }
         is ThreadsRoute.Media -> { { ThreadsMediaScreen(app, opened) } }
+        ThreadsRoute.Saved -> { { ThreadsSavedScreen(app) } }
         null -> null
     }
+
+    override val feed: PluginFeed get() = app.shared
+
+    override val postActions: NetworkPostActions get() = app.actions
+
+    /** A post kept in XTA's record, as Saved draws it; one of another network, or kept as a link, is none of its. */
+    override fun archived(content: JsonElement): NetworkPost? = ThreadsArchive.post(content)?.let(app::shown)
 
     /** What XTA's backup holds of Threads as its rows: the accounts followed and the likes. Its preferences travel with the app's settings. */
     override val backupSections: List<PluginBackupSection>

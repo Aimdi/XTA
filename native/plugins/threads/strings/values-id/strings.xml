@@ -109,4 +109,5 @@
     <string name="unlike_on_device">Hapus suka dari perangkat ini</string>
     <string name="use_session">Gunakan sesi saya untuk akun yang diikuti</string>
     <string name="use_session_description">Nonaktif secara bawaan. Jika aktif, aplikasi berbicara ke Threads sebagai Anda — Meta bisa memblokir akun itu. Biarkan mati kecuali login sekali pakai.</string>
+    <string name="add_to_group">Tambah ke grup</string>
 </resources>

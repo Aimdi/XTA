@@ -58,9 +58,6 @@
     <string name="reposted_by">Opnieuw gedeeld door</string>
     <string name="quotes">Citaten</string>
     <string name="likes">Likes</string>
-    <string name="save">Opslaan op dit apparaat</string>
-    <string name="unsave">Van dit apparaat verwijderen</string>
-    <string name="save_to_folder">Opslaan in map...</string>
     <string name="share_link">Link delen</string>
     <string name="open_in_browser">Openen in browser</string>
     <string name="alt_text">Image description</string>
@@ -113,9 +110,9 @@
     <string name="builtin_description">Worden na die van jou geprobeerd, zodat lezen werkt zonder iets in te stellen.</string>
     <string name="no_accounts">Nog geen accounts</string>
     <string name="more">Meer opties</string>
-    <string name="saved_empty">Nog niets opgeslagen van Mastodon. De bladwijzer onder een bericht bewaart het op dit apparaat.</string>
     <plurals name="poll_votes">
         <item quantity="one">%1$s stem</item>
         <item quantity="other">%1$s stemmen</item>
     </plurals>
+    <string name="add_to_group">Aan groep toevoegen</string>
 </resources>

@@ -112,4 +112,5 @@
     <string name="unlike_on_device">Kendu atsegina gailu honetatik</string>
     <string name="use_session">Erabili nire saioa jarraitutako kontuetarako</string>
     <string name="use_session_description">Desaktibatuta lehenetsita. Piztuta, aplikazioak Threads-ekin hitz egiten du zu bazina bezala — Metak kontu hori debeka dezake. Utzi itzalita saio botagarria ez bada.</string>
+    <string name="add_to_group">Gehitu taldera</string>
 </resources>

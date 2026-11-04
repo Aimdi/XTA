@@ -25,9 +25,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,6 +49,7 @@ import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.fullTimeText
+import com.aimdi.xtanative.ui.plugins.NetworkBookmark
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
@@ -65,10 +64,12 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
  * (threads_post_card.dart): who reposted it, the author with Follow and ⋯,
  * the topic, whom it answers, the caption, its pictures and videos, the
  * link card, the quote and "Show N more posts in this thread"; then the
- * counts Meta gave, the like kept on this device and the way to the web.
- * With [focal] it is the opened post: its time and date on a line under it,
- * its text selectable. [connectTop] and [connectBottom] join it to the posts
- * above and below it through the avatar, as a thread draws them.
+ * counts Meta gave, the like kept on this device, its bookmark in the app's
+ * Saved and the way to the web. A long press, or ⋯, opens the app's post
+ * sheet. With [focal] it is the opened post: its time and date on a line
+ * under it, its text selectable. [connectTop] and [connectBottom] join it to
+ * the posts above and below it through the avatar, as a thread draws them;
+ * without [divider] the line under it is left to the list.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -80,19 +81,20 @@ internal fun ThreadsPostCard(
     focal: Boolean = false,
     connectTop: Boolean = false,
     connectBottom: Boolean = false,
+    divider: Boolean = true,
 ) {
     val settings by app.prefs.collectAsState()
     val liked by app.likes.state.collectAsState()
-    var actions by remember(post.id) { mutableStateOf(false) }
     val doubleTap = settings[AccessibilityPrefs.doubleTapLike]
     val isLiked = liked?.contains(post.id) == true
     val open = { if (openOnTap) app.openPost(post) }
+    val menu = { app.openMenu(post) }
     Column(
         modifier
             .fillMaxWidth()
             .combinedClickable(
                 onClick = open,
-                onLongClick = { actions = true },
+                onLongClick = menu,
                 onDoubleClick = if (doubleTap) { { if (!isLiked) app.toggleLike(post) } } else null,
             )
             .padding(start = 16.dp, end = 8.dp),
@@ -103,14 +105,13 @@ internal fun ThreadsPostCard(
             Avatar(post.avatarUrl, AvatarSize) { app.openProfile(post.handle) }
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
-                Header(app, post, focal, PostPrefs.of(settings).absoluteTimestamps) { actions = true }
+                Header(app, post, focal, PostPrefs.of(settings).absoluteTimestamps, menu)
                 Body(app, post, openOnTap, focal)
                 Engagement(app, post, isLiked, PostPrefs.of(settings).hideCounts, open)
             }
         }
     }
-    if (!connectBottom) Hairline()
-    if (actions) ThreadsPostActions(app, post) { actions = false }
+    if (divider && !connectBottom) Hairline()
 }
 
 private val AvatarSize = 40.dp
@@ -263,7 +264,8 @@ private fun ThreadsQuote(app: ThreadsApp, quote: ThreadsPost, modifier: Modifier
 /**
  * Replies and reposts as Meta counted them, both opening the post (Meta
  * lists neither apart); the like kept on this device, its count one more
- * while liked; the post on the web. No count Meta did not give is drawn,
+ * while liked; the bookmark that files it in the app's Saved (a long press:
+ * its folder); the post on the web. No count Meta did not give is drawn,
  * and none in zen or calm mode.
  */
 @Composable
@@ -272,6 +274,7 @@ private fun Engagement(app: ThreadsApp, post: ThreadsPost, liked: Boolean, hideC
     val openPost = pluginString(Strings.open_post)
     val counted = { n: Long? -> n?.takeIf { !hideCounts } }
     val outside = rememberOpenOutside()
+    val archive = remember(post) { ThreadsArchive.of(post) }
     Row(Modifier.fillMaxWidth().padding(top = 2.dp), verticalAlignment = Alignment.CenterVertically) {
         CountButton(XIcons.Reply, counted(post.replyCount), openPost, muted, open)
         CountButton(XIcons.Repost, counted(post.repostCount), openPost, muted, open)
@@ -281,6 +284,7 @@ private fun Engagement(app: ThreadsApp, post: ThreadsPost, liked: Boolean, hideC
             pluginString(if (liked) Strings.unlike_on_device else Strings.like_on_device),
             if (liked) MaterialTheme.colorScheme.primary else muted,
         ) { app.toggleLike(post) }
+        NetworkBookmark(archive)
         Spacer(Modifier.weight(1f))
         post.url?.let { url -> SmallIcon(PostIcons.OpenInNew, pluginString(Strings.open_in_browser)) { outside(url) } }
     }

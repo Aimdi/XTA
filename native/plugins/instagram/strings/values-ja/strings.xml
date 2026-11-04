@@ -60,4 +60,5 @@
     <string name="unfollow">フォロー解除</string>
     <string name="unfollow_confirm">\@%1$s のフォローを解除しますか？</string>
     <string name="unlike_on_device">この端末のいいねを取り消す</string>
+    <string name="add_to_group">グループに追加</string>
 </resources>

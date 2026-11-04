@@ -32,9 +32,11 @@ internal class MastodonFollowsStore(private val file: StoreFile) {
     fun follows(acct: String): Boolean = mutable.value.orEmpty().any { it.isOf(acct) }
 
     /** [profile] followed here, its name and picture as they are now; [createdAt] is when, as XTA writes it. */
-    suspend fun follow(profile: MastodonProfile, createdAt: String) = change { follows ->
-        MastodonFollowRows.upsert(follows, listOf(MastodonFollow(profile.acct, profile.displayName.ifBlank { profile.acct }, profile.avatarUrl, true, createdAt)))
-    }
+    suspend fun follow(profile: MastodonProfile, createdAt: String) =
+        follow(MastodonFollow(profile.acct, profile.displayName.ifBlank { profile.acct }, profile.avatarUrl, true, createdAt))
+
+    /** [follow] in place of the row of its account, or after the others. */
+    suspend fun follow(follow: MastodonFollow) = change { follows -> MastodonFollowRows.upsert(follows, listOf(follow)) }
 
     suspend fun unfollow(acct: String) = change { follows -> follows.filterNot { it.isOf(acct) } }
 

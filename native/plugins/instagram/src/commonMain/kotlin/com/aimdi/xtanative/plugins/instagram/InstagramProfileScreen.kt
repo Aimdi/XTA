@@ -19,6 +19,7 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -139,7 +140,7 @@ private fun LazyListScope.posts(app: InstagramApp, pages: PagedItems<InstagramPo
     }
 }
 
-/** The face, the name, the bio, the three counts, and Follow or Unfollow on this device. */
+/** The face, the name, the bio, the three counts, Add to group, and Follow or Unfollow on this device. */
 @Composable
 private fun Header(app: InstagramApp, profile: InstagramProfile) {
     val rows by app.follows.state.collectAsState()
@@ -162,9 +163,13 @@ private fun Header(app: InstagramApp, profile: InstagramProfile) {
             Stat(profile.followingCount, Strings.stat_following)
             Stat(profile.mediaCount, Strings.stat_posts)
         }
+        OutlinedButton(onClick = { app.addToGroup(profile.username) }, modifier = Modifier.padding(top = 16.dp)) {
+            Icon(PostIcons.People, contentDescription = null, modifier = Modifier.size(18.dp))
+            Text(pluginString(Strings.add_to_group), modifier = Modifier.padding(start = 8.dp))
+        }
         FilledTonalButton(
             onClick = { if (following) app.unfollow(profile.username) else app.follow(profile) },
-            modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+            modifier = Modifier.fillMaxWidth(),
         ) { Text(pluginString(if (following) Strings.unfollow else Strings.follow)) }
     }
 }

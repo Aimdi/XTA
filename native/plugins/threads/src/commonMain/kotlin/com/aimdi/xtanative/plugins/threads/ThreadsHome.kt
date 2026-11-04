@@ -61,6 +61,7 @@ import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.post.PostIcons
+import com.aimdi.xtanative.ui.saved.SavedIcons
 import kotlinx.coroutines.launch
 
 /**
@@ -94,7 +95,7 @@ internal fun ThreadsHome(app: ThreadsApp, frame: PluginFrame) {
     if (adding) AddAccountDialog(app) { adding = false }
 }
 
-/** Home and Liked, then search and the menu: add an account, the settings. */
+/** Home and Liked, then search and the menu: add an account, what was saved from Threads, the settings. */
 @Composable
 private fun HomeBar(app: ThreadsApp, liked: Boolean, onLiked: (Boolean) -> Unit, onSearch: () -> Unit, onAdd: () -> Unit) {
     var menu by remember { mutableStateOf(false) }
@@ -108,6 +109,7 @@ private fun HomeBar(app: ThreadsApp, liked: Boolean, onLiked: (Boolean) -> Unit,
             IconButton(onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, contentDescription = pluginString(Strings.more_options)) }
             DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                 MenuRow(ThreadsIcons.PersonAdd, Strings.add_account) { menu = false; onAdd() }
+                MenuRow(SavedIcons.BookmarkBorder, Strings.saved) { menu = false; app.host.open(ThreadsRoutes.SAVED) }
                 MenuRow(Icons.Filled.Settings, Strings.settings) { menu = false; app.host.openSettings() }
             }
         }

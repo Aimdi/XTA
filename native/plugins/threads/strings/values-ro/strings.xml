@@ -115,4 +115,5 @@
     <string name="unlike_on_device">Elimină aprecierea de pe acest dispozitiv</string>
     <string name="use_session">Folosește sesiunea mea pentru conturile urmărite</string>
     <string name="use_session_description">Oprit implicit. Pornit, aplicația vorbește cu Threads ca tine — Meta poate interzice acel cont. Lasă oprit, decât dacă e un login de unică folosință.</string>
+    <string name="add_to_group">Adăugați la grup</string>
 </resources>

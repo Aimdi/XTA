@@ -58,9 +58,6 @@
     <string name="reposted_by">Поширили</string>
     <string name="quotes">Цитати</string>
     <string name="likes">Вподобання</string>
-    <string name="save">Зберегти на цьому пристрої</string>
-    <string name="unsave">Видалити з цього пристрою</string>
-    <string name="save_to_folder">Зберегти в теку...</string>
     <string name="share_link">Поділитися посиланням</string>
     <string name="open_in_browser">Відкрити у браузері</string>
     <string name="alt_text">Image description</string>
@@ -113,11 +110,11 @@
     <string name="builtin_description">Пробуються після ваших, тож читання працює зовсім без налаштування.</string>
     <string name="no_accounts">Поки немає облікових записів</string>
     <string name="more">Інші параметри</string>
-    <string name="saved_empty">З Mastodon ще нічого не збережено. Закладка під дописом зберігає його на цьому пристрої.</string>
     <plurals name="poll_votes">
         <item quantity="one">%1$s голос</item>
         <item quantity="few">%1$s голоси</item>
         <item quantity="many">%1$s голосів</item>
         <item quantity="other">%1$s голосу</item>
     </plurals>
+    <string name="add_to_group">Додати до групи</string>
 </resources>

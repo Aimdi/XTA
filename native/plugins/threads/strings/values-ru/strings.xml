@@ -118,4 +118,5 @@
     <string name="unlike_on_device">Убрать отметку «нравится» с этого устройства</string>
     <string name="use_session">Использовать мою сессию для отслеживаемых аккаунтов</string>
     <string name="use_session_description">По умолчанию выключено. Если включить, приложение обращается к Threads от вашего имени — Meta может забанить этот аккаунт. Оставьте выключенным, если это не одноразовый вход.</string>
+    <string name="add_to_group">Добавить в группу</string>
 </resources>

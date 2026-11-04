@@ -37,6 +37,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.mastodon.MastodonInstances
+import com.aimdi.xtanative.ui.plugins.HomeTimelineSwitch
 import com.aimdi.xtanative.ui.plugins.NetworkPersonRow
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginSectionTitle
@@ -46,10 +47,11 @@ import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.launch
 
 /**
- * XTA's Mastodon settings (mastodon_settings.dart): the home instance and a
- * test of it, more instances, the built-in ones tried after them, and the
- * accounts followed here, each to open or unfollow. They are kept in the
- * app's settings under XTA's keys.
+ * XTA's Mastodon settings (mastodon_settings.dart): whether the accounts
+ * followed here join Home's timelines, the home instance and a test of it,
+ * more instances, the built-in ones tried after them, and the accounts
+ * followed here, each to open or unfollow. They are kept in the app's
+ * settings under XTA's keys.
  */
 @Composable
 internal fun MastodonSettingsBody(app: MastodonApp, frame: PluginFrame) {
@@ -57,6 +59,7 @@ internal fun MastodonSettingsBody(app: MastodonApp, frame: PluginFrame) {
     val follows by app.follows.state.collectAsState()
     LaunchedEffect(Unit) { app.follows.load() }
     LazyColumn(contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+        item(key = "in-home") { HomeTimelineSwitch(app.host.settings, pluginString(Strings.plugin_name)) }
         item(key = "intro") { Note(Strings.settings_intro, Modifier.padding(16.dp)) }
         item(key = "home") { HomeInstance(app, prefs.home) }
         item(key = "more") { PluginSectionTitle(pluginString(Strings.more_instances)) }

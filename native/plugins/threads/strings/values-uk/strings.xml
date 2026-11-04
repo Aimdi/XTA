@@ -118,4 +118,5 @@
     <string name="unlike_on_device">Прибрати вподобання з цього пристрою</string>
     <string name="use_session">Використовувати мою сесію для відстежуваних акаунтів</string>
     <string name="use_session_description">Типово вимкнено. Якщо увімкнути, застосунок звертається до Threads від вашого імені — Meta може забанити той акаунт. Залиште вимкненим, якщо це не одноразовий вхід.</string>
+    <string name="add_to_group">Додати до групи</string>
 </resources>

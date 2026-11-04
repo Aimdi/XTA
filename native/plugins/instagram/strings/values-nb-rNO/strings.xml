@@ -60,4 +60,5 @@
     <string name="unfollow">Slutt å følge</string>
     <string name="unfollow_confirm">Slutte å følge @%1$s?</string>
     <string name="unlike_on_device">Fjern likerklikk fra denne enheten</string>
+    <string name="add_to_group">Legg til i gruppe</string>
 </resources>

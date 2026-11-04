@@ -147,11 +147,10 @@ internal fun SavedBodyView(
  * button that keeps its media offline. While selecting, a tap toggles it;
  * otherwise a long press starts selecting it.
  */
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun SavedRow(post: SavedPost, actions: PostActions, selecting: Boolean, selected: Boolean, vm: SavedViewModel) {
     var editing by remember { mutableStateOf(false) }
-    var offline by remember { mutableStateOf(false) }
     val content = post.about
     Box(
         Modifier
@@ -162,7 +161,7 @@ private fun SavedRow(post: SavedPost, actions: PostActions, selecting: Boolean, 
     ) {
         Column(Modifier.fillMaxWidth()) {
             KeptPost(content, actions)
-            if (!selecting) NoteLine(post.note, OfflineSaved.hasMedia(content), onEdit = { editing = true }, onOffline = { offline = true })
+            if (!selecting) SavedNoteRow(post.id, post.note, content) { editing = true }
             Hairline()
         }
         if (selecting) {
@@ -178,9 +177,21 @@ private fun SavedRow(post: SavedPost, actions: PostActions, selecting: Boolean, 
             saveText = { note -> vm.setNote(post.id, note) },
         )
     }
+}
+
+/**
+ * Under saved post [id]: its [note], or a button to add one, [onEdit] editing
+ * it, and the offline button where [content] has media to keep, opening its
+ * sheet. A plugin's own saved list draws it too ([com.aimdi.xtanative.ui.plugins.PluginSavedScreen]).
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun SavedNoteRow(id: String, note: String?, content: SavedContent, onEdit: () -> Unit) {
+    var offline by remember { mutableStateOf(false) }
+    NoteLine(note, OfflineSaved.hasMedia(content), onEdit = onEdit, onOffline = { offline = true })
     if (offline) {
         ModalBottomSheet(onDismissRequest = { offline = false }) {
-            OfflineSavedAction(post.id, content, Modifier.padding(bottom = 16.dp))
+            OfflineSavedAction(id, content, Modifier.padding(bottom = 16.dp))
         }
     }
 }

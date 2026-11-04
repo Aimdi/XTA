@@ -58,9 +58,6 @@
     <string name="reposted_by">Пашырылі</string>
     <string name="quotes">Цытаты</string>
     <string name="likes">Упадабанае</string>
-    <string name="save">Захаваць на гэтай прыладзе</string>
-    <string name="unsave">Выдаліць з гэтай прылады</string>
-    <string name="save_to_folder">Захаваць у тэчку...</string>
     <string name="share_link">Падзяліцца спасылкай</string>
     <string name="open_in_browser">Адкрыць у браўзеры</string>
     <string name="alt_text">Image description</string>
@@ -113,11 +110,11 @@
     <string name="builtin_description">Спрабуюцца пасля вашых, таму чытанне працуе без ніякай наладкі.</string>
     <string name="no_accounts">Пакуль няма ўліковых запісаў</string>
     <string name="more">Іншыя параметры</string>
-    <string name="saved_empty">З Mastodon яшчэ нічога не захавана. Закладка пад допісам захоўвае яго на гэтай прыладзе.</string>
     <plurals name="poll_votes">
         <item quantity="one">%1$s голас</item>
         <item quantity="few">%1$s галасы</item>
         <item quantity="many">%1$s галасоў</item>
         <item quantity="other">%1$s голасу</item>
     </plurals>
+    <string name="add_to_group">Дадаць у групу</string>
 </resources>

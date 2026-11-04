@@ -48,6 +48,13 @@ class PluginPostArchive(val id: String, val authorId: String?, val content: Json
 }
 
 /**
+ * One of a plugin's posts in Saved, as its own saved list shows it
+ * ([PluginHost.savedPosts]): its record as the archive keeps it ([post]), and
+ * the reader's note on it.
+ */
+class PluginSavedPost(val post: PluginPostArchive, val note: String? = null)
+
+/**
  * The shared post menu a plugin opens over its screens ([PluginHost.openPostMenu],
  * XTA's plugin post actions): saving [post] on this device and taking it out,
  * the note on it, Add to group for its [author] (an account of the plugin, as

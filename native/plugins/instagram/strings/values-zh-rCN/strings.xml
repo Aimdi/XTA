@@ -60,4 +60,5 @@
     <string name="unfollow">取消关注</string>
     <string name="unfollow_confirm">取消关注 @%1$s？</string>
     <string name="unlike_on_device">从此设备取消点赞</string>
+    <string name="add_to_group">添加到订阅组</string>
 </resources>

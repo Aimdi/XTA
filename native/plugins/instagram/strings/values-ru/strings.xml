@@ -60,4 +60,5 @@
     <string name="unfollow">Отписаться</string>
     <string name="unfollow_confirm">Отписаться от @%1$s?</string>
     <string name="unlike_on_device">Убрать отметку «нравится» с этого устройства</string>
+    <string name="add_to_group">Добавить в группу</string>
 </resources>

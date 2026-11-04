@@ -60,4 +60,5 @@
     <string name="unfollow">अनफ़ॉलो करें</string>
     <string name="unfollow_confirm">\@%1$s को अनफ़ॉलो करें?</string>
     <string name="unlike_on_device">इस डिवाइस से पसंद हटाएँ</string>
+    <string name="add_to_group">समूह में जोड़ें</string>
 </resources>

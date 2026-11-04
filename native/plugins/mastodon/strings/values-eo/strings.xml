@@ -58,9 +58,6 @@
     <string name="reposted_by">Resendita de</string>
     <string name="quotes">Citaĵoj</string>
     <string name="likes">Ŝatoj</string>
-    <string name="save">Konservi en ĉi tiu aparato</string>
-    <string name="unsave">Forigi el ĉi tiu aparato</string>
-    <string name="save_to_folder">Konservi en dosierujo...</string>
     <string name="share_link">Kunhavigi ligilon</string>
     <string name="open_in_browser">Malfermi en retumilo</string>
     <string name="alt_text">Image description</string>
@@ -113,9 +110,9 @@
     <string name="builtin_description">Provataj post la viaj, do legado funkcias sen ia agordo.</string>
     <string name="no_accounts">Ankoraŭ neniuj kontoj</string>
     <string name="more">Pliaj elektoj</string>
-    <string name="saved_empty">Ankoraŭ nenio konservita el Mastodon. La legosigno sub afiŝo konservas ĝin en ĉi tiu aparato.</string>
     <plurals name="poll_votes">
         <item quantity="one">%1$s voĉo</item>
         <item quantity="other">%1$s voĉoj</item>
     </plurals>
+    <string name="add_to_group">Aldoni al grupo</string>
 </resources>

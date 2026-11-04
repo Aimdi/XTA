@@ -1,11 +1,13 @@
 package com.aimdi.xtanative.plugins.threads
 
 import com.aimdi.xtanative.networks.threads.ThreadsDirectClient
+import com.aimdi.xtanative.networks.threads.ThreadsLinks
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsProfile
 import com.aimdi.xtanative.networks.threads.ThreadsReader
 import com.aimdi.xtanative.networks.threads.ThreadsRepairs
 import com.aimdi.xtanative.networks.threads.ThreadsReplyOrder
+import com.aimdi.xtanative.networks.threads.ThreadsRetryBudget
 import com.aimdi.xtanative.networks.threads.ThreadsRssHub
 import com.aimdi.xtanative.networks.threads.ThreadsSearchTerms
 import com.aimdi.xtanative.networks.threads.ThreadsSession
@@ -14,9 +16,15 @@ import com.aimdi.xtanative.networks.threads.ThreadsXy
 import com.aimdi.xtanative.store.settings.MediaPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.ThreadsPrefs
+import com.aimdi.xtanative.ui.plugins.DrawnPosts
+import com.aimdi.xtanative.ui.plugins.FeedKinds
 import com.aimdi.xtanative.ui.plugins.MergedFeed
+import com.aimdi.xtanative.ui.plugins.NetworkPost
+import com.aimdi.xtanative.ui.plugins.NetworkPostActions
+import com.aimdi.xtanative.ui.plugins.PluginFeed
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginNotices
+import com.aimdi.xtanative.ui.plugins.PluginPostMenu
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -36,9 +44,11 @@ import kotlinx.coroutines.launch
  * What the Threads plugin's screens share while it runs: Meta's public pages
  * and, when the reader pasted one, their session, read with XTA's published
  * repairs in force; an RSSHub instance or an Xy server when they named one;
- * the accounts followed and the posts liked on this device; the tab's feed;
- * the preferences (the app's settings under XTA's keys) and where a tap
- * leads. Nothing is posted, liked, reposted or followed on Threads.
+ * the accounts followed and the posts liked on this device; the tab's feed
+ * and the followed accounts' part of the app's timelines; the preferences
+ * (the app's settings under XTA's keys); the posts the app drew lately, which
+ * their bookmark and menu file in the app's archive; and where a tap leads.
+ * Nothing is posted, liked, reposted or followed on Threads.
  */
 internal class ThreadsApp(val host: PluginHost) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
@@ -58,6 +68,9 @@ internal class ThreadsApp(val host: PluginHost) {
     val feed = MergedFeed(scope, ::readFeed)
     val notices = PluginNotices()
     val shelf = ThreadsShelf()
+
+    /** The posts the app's shared rows drew lately, by id: what their taps, bookmark and menu find again. */
+    private val drawn = DrawnPosts<ThreadsPost> { it.id }
 
     /** The settings now, the defaults until the app has read them. */
     fun current(): Settings = host.settings.state.value ?: Settings()
@@ -171,6 +184,16 @@ internal class ThreadsApp(val host: PluginHost) {
         feed.refresh(force = true)
     }
 
+    /** [account] followed here unless it is, as putting it in a group follows it first (XTA's addThreadsAccountToGroup). */
+    suspend fun ensureFollowed(account: ThreadsAccount) {
+        if (ThreadsAccounts.follows(accounts.load(), account.handle)) return
+        accounts.add(account)
+        feed.refresh()
+    }
+
+    /** [account] in the app's groups, followed here first once a group is picked. */
+    fun addToGroup(account: ThreadsAccount) = host.addToGroup(account.handle.trim().lowercase()) { ensureFollowed(account) }
+
     fun toggleLike(post: ThreadsPost) = launch { likes.toggle(post) }
 
     fun setOptions(options: ThreadsFeedOptions) = update { it.with(ThreadsPrefs.feedOptions, options.encode()) }
@@ -181,6 +204,50 @@ internal class ThreadsApp(val host: PluginHost) {
     suspend fun restoreAccounts(text: String) {
         accounts.import(text)
         feed.refresh(force = true)
+    }
+
+    // ---- The app's timelines, Saved and the post sheet ----
+
+    /** [post] as the app's shared row draws it, kept (its quote with it) so that its taps, bookmark and menu find it again. */
+    fun shown(post: ThreadsPost): NetworkPost {
+        drawn.put(post)
+        post.quoted?.let(drawn::put)
+        return ThreadsShared.post(post, current()[MediaPrefs.videoQuality])
+    }
+
+    /** Where a post the app draws leads: its conversation, its author, the viewer; its bookmark and the shared post sheet. */
+    val actions = NetworkPostActions(
+        open = { shown -> drawn[shown.id]?.let(::openPost) ?: shown.url?.let(host::openLink) },
+        openAuthor = { shown -> openProfile(shown.authorId) },
+        openMention = { who -> openProfile(ThreadsLinks.normaliseHandle(who) ?: who.lowercase()) },
+        openTag = ::openTag,
+        openMedia = { shown, index -> drawn[shown.id]?.let { openMedia(it, index) } ?: host.openMedia(shown.media, index) },
+        archive = { shown -> drawn[shown.id]?.let(ThreadsArchive::of) },
+        more = { shown -> drawn[shown.id]?.let(::openMenu) },
+    )
+
+    /** XTA's one post sheet for [post] (showPluginPostActions): Saved, its note, its author's groups, its link. */
+    fun openMenu(post: ThreadsPost) = host.openPostMenu(
+        PluginPostMenu(ThreadsArchive.of(post), post.url ?: post.id, author = post.handle.trim().lowercase(), follow = { ensureFollowed(ThreadsAccount.of(post)) }),
+    )
+
+    /** The accounts followed here in Home's timelines and the groups' (XTA's loadThreadsInterleaved). */
+    val shared: PluginFeed = SharedFeed()
+
+    private inner class SharedFeed : PluginFeed() {
+        override suspend fun followed(): List<String> = ThreadsAccounts.handles(accounts.load())
+
+        /**
+         * Through the tab's reads and their ten minutes, so the tab, Home and
+         * the groups ask Meta once; tried again as Meta advises; at most ten
+         * of each account, as XTA mixes Threads in.
+         */
+        override suspend fun posts(accounts: List<String>, kinds: FeedKinds, force: Boolean): List<NetworkPost> {
+            ready()
+            val posts = ThreadsRetryBudget.retrying(online = { host.online.first() }) { reader.postsFor(accounts, force) }
+            this@ThreadsApp.accounts.keepCurrent(posts)
+            return ThreadsShared.mixed(posts, kinds).map(::shown)
+        }
     }
 
     // ---- Where a tap leads ----

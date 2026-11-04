@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.mastodon.MastodonFollow
 import com.aimdi.xtanative.networks.mastodon.MastodonTimeline
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.plugins.AddToGroupButton
 import com.aimdi.xtanative.ui.plugins.NetworkPersonRow
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginText
@@ -155,13 +156,15 @@ private fun FollowingControls(people: Boolean, onSelect: (Boolean) -> Unit, onAd
     }
 }
 
-/** The accounts followed here, by name, each opening its profile. */
+/** The accounts followed here, by name, each opening its profile and each to put in the app's groups. */
 @Composable
 private fun PeoplePane(app: MastodonApp, frame: PluginFrame, onAdd: () -> Unit) {
     val follows by app.follows.state.collectAsState()
     LaunchedEffect(Unit) { app.follows.load() }
     LazyColumn(contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
         if (follows?.isEmpty() == true) item(key = "none") { EmptyTimeline(pluginString(Strings.empty_following), pluginString(Strings.add_account), onAdd) }
-        items(follows.orEmpty(), key = MastodonFollow::acct) { follow -> NetworkPersonRow(follow.name, follow.acct, follow.avatarUrl, { app.openProfile(follow.acct) }) }
+        items(follows.orEmpty(), key = MastodonFollow::acct) { follow ->
+            NetworkPersonRow(follow.name, follow.acct, follow.avatarUrl, { app.openProfile(follow.acct) }) { AddToGroupButton(app.host, follow.acct) }
+        }
     }
 }

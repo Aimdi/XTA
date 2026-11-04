@@ -58,9 +58,6 @@
     <string name="reposted_by">Репостнули</string>
     <string name="quotes">Цитаты</string>
     <string name="likes">Нравится</string>
-    <string name="save">Сохранить на этом устройстве</string>
-    <string name="unsave">Удалить с этого устройства</string>
-    <string name="save_to_folder">Сохранить в папку...</string>
     <string name="share_link">Поделиться ссылкой</string>
     <string name="open_in_browser">Открыть в браузере</string>
     <string name="alt_text">Image description</string>
@@ -113,11 +110,11 @@
     <string name="builtin_description">Проверяются после ваших, поэтому чтение работает вовсе без настройки.</string>
     <string name="no_accounts">Пока нет аккаунтов</string>
     <string name="more">Другие параметры</string>
-    <string name="saved_empty">Из Mastodon пока ничего не сохранено. Закладка под постом сохраняет его на этом устройстве.</string>
     <plurals name="poll_votes">
         <item quantity="one">%1$s голос</item>
         <item quantity="few">%1$s голоса</item>
         <item quantity="many">%1$s голосов</item>
         <item quantity="other">%1$s голоса</item>
     </plurals>
+    <string name="add_to_group">Добавить в группу</string>
 </resources>

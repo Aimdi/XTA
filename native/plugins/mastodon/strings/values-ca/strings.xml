@@ -58,9 +58,6 @@
     <string name="reposted_by">Compartit per</string>
     <string name="quotes">Citacions</string>
     <string name="likes">M\'agrada</string>
-    <string name="save">Desa en aquest dispositiu</string>
-    <string name="unsave">Treu d’aquest dispositiu</string>
-    <string name="save_to_folder">Desa a una carpeta...</string>
     <string name="share_link">Comparteix l’enllaç</string>
     <string name="open_in_browser">Obre al navegador</string>
     <string name="alt_text">Image description</string>
@@ -113,9 +110,9 @@
     <string name="builtin_description">Es proven després de les teves, de manera que la lectura funciona sense configurar res.</string>
     <string name="no_accounts">Encara no hi ha comptes</string>
     <string name="more">Més opcions</string>
-    <string name="saved_empty">Encara no has desat res de Mastodon. El marcador sota una publicació la desa en aquest dispositiu.</string>
     <plurals name="poll_votes">
         <item quantity="one">%1$s vot</item>
         <item quantity="other">%1$s vots</item>
     </plurals>
+    <string name="add_to_group">Afegir al grup</string>
 </resources>

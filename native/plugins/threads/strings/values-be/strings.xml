@@ -118,4 +118,5 @@
     <string name="unlike_on_device">Прыбраць «падабаецца» з гэтай прылады</string>
     <string name="use_session">Выкарыстоўваць маю сесію для адсочваных акаўнтаў</string>
     <string name="use_session_description">Выключана па змаўчанні. Калі ўключана, праграма звяртаецца да Threads ад вашага імя — Meta можа заблакаваць той акаўнт. Пакіньце выключаным, калі гэта не аднаразовы ўваход.</string>
+    <string name="add_to_group">Дадаць у групу</string>
 </resources>

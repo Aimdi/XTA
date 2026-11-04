@@ -62,4 +62,5 @@
     <string name="unfollow">Unfollow</string>
     <string name="unfollow_confirm">Unfollow @%1$s?</string>
     <string name="unlike_on_device">Remove like from this device</string>
+    <string name="add_to_group">Add to group</string>
 </resources>

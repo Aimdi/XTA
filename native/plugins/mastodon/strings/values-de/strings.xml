@@ -58,9 +58,6 @@
     <string name="reposted_by">Geteilt von</string>
     <string name="quotes">Zitate</string>
     <string name="likes">Gefällt mir</string>
-    <string name="save">Auf diesem Gerät speichern</string>
-    <string name="unsave">Von diesem Gerät entfernen</string>
-    <string name="save_to_folder">In Ordner speichern...</string>
     <string name="share_link">Link teilen</string>
     <string name="open_in_browser">Im Browser öffnen</string>
     <string name="alt_text">Bildbeschreibung</string>
@@ -113,9 +110,9 @@
     <string name="builtin_description">Werden nach deinen versucht, damit das Lesen ganz ohne Einrichtung funktioniert.</string>
     <string name="no_accounts">Noch keine Konten</string>
     <string name="more">Weitere Optionen</string>
-    <string name="saved_empty">Noch nichts von Mastodon gespeichert. Das Lesezeichen unter einem Beitrag behält ihn auf diesem Gerät.</string>
     <plurals name="poll_votes">
         <item quantity="one">%1$s Stimme</item>
         <item quantity="other">%1$s Stimmen</item>
     </plurals>
+    <string name="add_to_group">Zu Gruppe hinzufügen</string>
 </resources>

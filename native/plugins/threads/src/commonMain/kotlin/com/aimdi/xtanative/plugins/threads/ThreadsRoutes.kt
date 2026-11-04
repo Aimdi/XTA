@@ -22,6 +22,9 @@ internal sealed interface ThreadsRoute {
 
     /** Pictures and videos full screen, from [start]; [media] names them on the shelf. */
     data class Media(val media: String, val start: Int) : ThreadsRoute
+
+    /** What was saved from Threads on this device. */
+    data object Saved : ThreadsRoute
 }
 
 internal object ThreadsRoutes {
@@ -37,6 +40,8 @@ internal object ThreadsRoutes {
 
     fun media(media: String, start: Int): String = "media" + params("key" to media, "start" to "$start")
 
+    const val SAVED = "saved"
+
     /** The screen [route] names; null for one this plugin does not have. */
     fun parse(route: String): ThreadsRoute? {
         val name = route.substringBefore('?')
@@ -48,6 +53,7 @@ internal object ThreadsRoutes {
             "profile" -> query["handle"]?.let(ThreadsLinks::normaliseHandle)?.let(ThreadsRoute::Profile)
             "search" -> query["q"]?.let { ThreadsRoute.Search(ThreadsSearchTerms(it, tag = query["tag"] == "1", profile = query["profile"])) }
             "media" -> query["key"]?.let { ThreadsRoute.Media(it, query["start"]?.toIntOrNull() ?: 0) }
+            SAVED -> ThreadsRoute.Saved
             else -> null
         }
     }

@@ -2,8 +2,10 @@ package com.aimdi.xtanative.plugins.instagram
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.PluginBackupSection
 import com.aimdi.xtanative.ui.plugins.PluginBody
+import com.aimdi.xtanative.ui.plugins.PluginFeed
 import com.aimdi.xtanative.ui.plugins.PluginFootprint
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginScreen
@@ -14,8 +16,9 @@ import com.aimdi.xtanative.ui.plugins.XtaPlugin
  * Instagram as a downloadable plugin, private as XTA's is: guest first, a
  * pasted session (or Threads' one) only when Instagram blocks guests. Its
  * tab (For you, the accounts followed here and those accounts), profiles,
- * people search and its settings. Nothing is liked, followed or commented on
- * Instagram: follows and likes stay on the device.
+ * people search and its settings; its accounts in the app's groups, and its
+ * posts in the app's Saved as XTA keeps them, as links. Nothing is liked,
+ * followed or commented on Instagram: follows and likes stay on the device.
  */
 class InstagramPlugin : XtaPlugin() {
     private var attached: InstagramApp? = null
@@ -52,6 +55,10 @@ class InstagramPlugin : XtaPlugin() {
         val handle = InstagramRoutes.profileOf(route) ?: return null
         return { InstagramProfileScreen(app, handle) }
     }
+
+    override val feed: PluginFeed get() = app.shared
+
+    override val postActions: NetworkPostActions get() = app.actions
 
     /** What XTA's backup holds of Instagram as its rows: the accounts followed. Its preferences travel with the app's settings. */
     override val backupSections: List<PluginBackupSection>
