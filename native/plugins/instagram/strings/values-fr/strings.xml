@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Instagram's text in fr, from XTA's ARB wording (lib/l10n). -->
+<resources>
+    <string name="cancel">Annuler</string>
+    <string name="clear_session">Effacer la session</string>
+    <string name="clear_session_description">Supprime les cookies invités et collés d’Instagram</string>
+    <string name="cookies">Cookies Instagram</string>
+    <string name="cookies_description">Mêmes noms de cookies que Threads. Facultatif — seulement si les requêtes invitées sont bloquées.</string>
+    <string name="cookies_hint">sessionid=…; csrftoken=…; ds_user_id=…</string>
+    <string name="delete">Supprimer</string>
+    <string name="empty_cta">Recherchez des personnes ou un @identifiant public à suivre sur cet appareil. Aucune connexion Instagram n’est nécessaire pour les profils publics.</string>
+    <string name="empty_posts">Aucune publication publique sur ce profil</string>
+    <string name="error_login">Instagram a demandé une connexion. Collez des cookies ou copiez-les depuis Threads.</string>
+    <string name="error_network">Impossible de joindre Instagram</string>
+    <string name="error_not_found">Ce profil est introuvable</string>
+    <string name="error_rate_limited">Instagram limite les requêtes — réessayez plus tard ou collez une session</string>
+    <string name="error_response">Instagram a renvoyé une réponse inattendue</string>
+    <string name="follow">Suivre</string>
+    <string name="for_you_empty">Rien pour l’instant dans Pour toi</string>
+    <string name="for_you_guest_note">Publications publiques de comptes connus. Collez des cookies dans Réglages pour le mix Explore d’Instagram.</string>
+    <string name="from_feed">Personnes dans ce fil</string>
+    <string name="guest_note">La navigation invitée est tentée d’abord. Les abonnements et j’aime restent sur cet appareil et ne sont jamais envoyés à Instagram. Une session est facultative lorsque Instagram bloque les invités.</string>
+    <string name="hide">Masquer</string>
+    <string name="import_threads_cookies">Copier les cookies Threads</string>
+    <string name="import_threads_cookies_description">Réutilise la session de la famille Instagram déjà collée dans Threads</string>
+    <string name="import_threads_empty">Threads n’a aucun cookie à copier</string>
+    <string name="import_threads_ok">Cookies Threads copiés dans Instagram</string>
+    <string name="like_on_device">Aimer sur cet appareil</string>
+    <string name="link_copied">Lien copié</string>
+    <string name="more_needs_session">C’est tout ce que les invités peuvent charger. Collez des cookies dans Réglages pour voir plus de publications.</string>
+    <string name="more_options">Plus d\'options</string>
+    <string name="no_accounts">Aucun compte suivi pour l’instant</string>
+    <string name="no_posts">Aucune publication des comptes suivis</string>
+    <string name="open_handle">Ouvrir le profil</string>
+    <string name="open_on_site">Ouvrir sur Instagram</string>
+    <string name="plugin_description">Parcourez les profils Instagram publics en privé — les abonnements restent sur cet appareil</string>
+    <string name="plugin_name">Instagram</string>
+    <string name="profile_private">Les publications publiques de ce compte ne sont pas disponibles sans connexion Instagram.</string>
+    <string name="recent_searches">Recherches récentes</string>
+    <string name="retry">Réessayer</string>
+    <string name="search">Rechercher</string>
+    <string name="search_empty">Recherchez un @identifiant public. La recherche de personnes nécessite une session lorsque Instagram bloque les invités.</string>
+    <string name="search_guest_hint">Pas de session — la recherche ouvre un @identifiant public. Collez des cookies dans Réglages pour chercher des personnes par nom.</string>
+    <string name="search_hint">Nom, @identifiant ou instagram.com/…</string>
+    <string name="section_session">Session</string>
+    <string name="session_cleared">Cookies Instagram effacés</string>
+    <string name="settings">Paramètres</string>
+    <string name="share_link">Partager le lien du tweet</string>
+    <string name="show">Afficher</string>
+    <string name="stat_followers">Abonnés</string>
+    <string name="stat_following">Abonnements</string>
+    <string name="stat_posts">Publications</string>
+    <string name="tab_accounts">Comptes</string>
+    <string name="tab_following">Abonnements</string>
+    <string name="tab_for_you">Pour toi</string>
+    <string name="test_connection">Tester la connexion</string>
+    <string name="test_connection_description">Récupère le profil public @instagram</string>
+    <string name="test_failed">Le test Instagram a échoué : %1$s</string>
+    <string name="test_ok">Instagram a répondu (%1$s)</string>
+    <string name="unfollow">Ne plus suivre</string>
+    <string name="unfollow_confirm">Ne plus suivre @%1$s ?</string>
+    <string name="unlike_on_device">Retirer le j’aime de cet appareil</string>
+</resources>

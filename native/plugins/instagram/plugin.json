@@ -1,0 +1,7 @@
+{
+  "id": "instagram",
+  "version": "1.0.0",
+  "entry": "com.aimdi.xtanative.plugins.instagram.InstagramPlugin",
+  "category": "social",
+  "private": true
+}

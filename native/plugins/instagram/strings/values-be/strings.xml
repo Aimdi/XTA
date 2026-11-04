@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Instagram's text in be, from XTA's ARB wording (lib/l10n). -->
+<resources>
+    <string name="cancel">Скасаваць</string>
+    <string name="clear_session">Ачысціць сесію</string>
+    <string name="clear_session_description">Выдаляе гасцявыя і ўстаўленыя cookies Instagram</string>
+    <string name="cookies">Cookies Instagram</string>
+    <string name="cookies_description">Тыя ж імёны cookies, што і ў Threads. Неабавязкова — толькі калі гасцявыя запыты заблакаваныя.</string>
+    <string name="cookies_hint">sessionid=…; csrftoken=…; ds_user_id=…</string>
+    <string name="delete">Выдаліць</string>
+    <string name="empty_cta">Знайдзіце людзей або публічны @нік, каб падпісацца на гэтай прыладзе. Для публічных профіляў уваход у Instagram не патрэбны.</string>
+    <string name="empty_posts">У гэтым профілі няма публічных допісаў</string>
+    <string name="error_login">Instagram папрасіў увайсці. Устаўце cookies або скапіруйце іх з Threads.</string>
+    <string name="error_network">Не ўдалося звязацца з Instagram</string>
+    <string name="error_not_found">Такі профіль не знойдзены</string>
+    <string name="error_rate_limited">Instagram абмяжоўвае запыты — паспрабуйце пазней або ўстаўце сесію</string>
+    <string name="error_response">Instagram вярнуў нечаканы адказ</string>
+    <string name="follow">Падпісацца</string>
+    <string name="for_you_empty">У «Для вас» пакуль нічога няма</string>
+    <string name="for_you_guest_note">Публічныя допісы вядомых акаўнтаў. Устаўце cookies у Наладах, каб убачыць Explore Instagram.</string>
+    <string name="from_feed">Людзі ў гэтай стужцы</string>
+    <string name="guest_note">Спачатку спрабуецца гасцявы прагляд. Падпіскі і ўпадабанні застаюцца на гэтай прыладзе і ніколі не адпраўляюцца ў Instagram. Сесія патрэбна толькі калі Instagram блакуе гасцей.</string>
+    <string name="hide">Схаваць</string>
+    <string name="import_threads_cookies">Скапіраваць cookies Threads</string>
+    <string name="import_threads_cookies_description">Паўторна выкарыстоўвае сесію сямейства Instagram, ужо ўстаўленую ў Threads</string>
+    <string name="import_threads_empty">У Threads няма cookies для капіявання</string>
+    <string name="import_threads_ok">Cookies Threads скапіраваны ў Instagram</string>
+    <string name="like_on_device">Падабаецца на гэтай прыладзе</string>
+    <string name="link_copied">Спасылка скапіявана</string>
+    <string name="more_needs_session">Гэта ўсё, што могуць загрузіць госці. Устаўце cookies у Наладах, каб убачыць больш допісаў.</string>
+    <string name="more_options">Іншыя дзеянні</string>
+    <string name="no_accounts">Пакуль няма падпісак</string>
+    <string name="no_posts">Няма допісаў з падпісаных акаўнтаў</string>
+    <string name="open_handle">Адкрыць профіль</string>
+    <string name="open_on_site">Адкрыць у Instagram</string>
+    <string name="plugin_description">Глядзіце публічныя профілі Instagram прыватна — падпіскі застаюцца на гэтай прыладзе</string>
+    <string name="plugin_name">Instagram</string>
+    <string name="profile_private">Публічныя допісы гэтага акаўнта недаступныя без уваходу ў Instagram.</string>
+    <string name="recent_searches">Нядаўнія пошукі</string>
+    <string name="retry">Паўтарыць</string>
+    <string name="search">Пошук</string>
+    <string name="search_empty">Шукайце публічны @нік. Пошук людзей патрабуе сесіі, калі Instagram блакуе гасцей.</string>
+    <string name="search_guest_hint">Няма сесіі — пошук адкрывае публічны профіль. Устаўце cookies у Наладах, каб шукаць людзей па імені.</string>
+    <string name="search_hint">Імя, @нік або instagram.com/…</string>
+    <string name="section_session">Сесія</string>
+    <string name="session_cleared">Cookies Instagram ачышчаны</string>
+    <string name="settings">Налады</string>
+    <string name="share_link">Падзяліцца спасылкай на твіт</string>
+    <string name="show">Паказаць</string>
+    <string name="stat_followers">Падпісчыкі</string>
+    <string name="stat_following">Падпіскі</string>
+    <string name="stat_posts">Допісы</string>
+    <string name="tab_accounts">Акаўнты</string>
+    <string name="tab_following">Стужка</string>
+    <string name="tab_for_you">Для вас</string>
+    <string name="test_connection">Праверыць злучэнне</string>
+    <string name="test_connection_description">Запытвае публічны профіль @instagram</string>
+    <string name="test_failed">Праверка Instagram не ўдалася: %1$s</string>
+    <string name="test_ok">Instagram адказаў (%1$s)</string>
+    <string name="unfollow">Адпісацца</string>
+    <string name="unfollow_confirm">Адпісацца ад @%1$s?</string>
+    <string name="unlike_on_device">Прыбраць «падабаецца» з гэтай прылады</string>
+</resources>

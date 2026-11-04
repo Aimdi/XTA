@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Instagram's text in hi, from XTA's ARB wording (lib/l10n). -->
+<resources>
+    <string name="cancel">रद्द करें</string>
+    <string name="clear_session">सत्र साफ़ करें</string>
+    <string name="clear_session_description">अतिथि और चिपकाई गई Instagram कुकीज़ हटाता है</string>
+    <string name="cookies">Instagram कुकीज़</string>
+    <string name="cookies_description">Threads जैसी ही कुकी नाम। वैकल्पिक — केवल जब अतिथि अनुरोध रोके जाएँ।</string>
+    <string name="cookies_hint">sessionid=…; csrftoken=…; ds_user_id=…</string>
+    <string name="delete">हटाएं</string>
+    <string name="empty_cta">लोगों या सार्वजनिक @हैंडल को इस डिवाइस पर फ़ॉलो करने के लिए खोजें। सार्वजनिक प्रोफ़ाइल के लिए Instagram लॉगिन ज़रूरी नहीं।</string>
+    <string name="empty_posts">इस प्रोफ़ाइल पर कोई सार्वजनिक पोस्ट नहीं</string>
+    <string name="error_login">Instagram ने लॉगिन माँगा। कुकीज़ चिपकाएँ या उन्हें Threads से कॉपी करें।</string>
+    <string name="error_network">Instagram तक पहुँच नहीं सका</string>
+    <string name="error_not_found">वह प्रोफ़ाइल नहीं मिली</string>
+    <string name="error_rate_limited">Instagram अनुरोध सीमित कर रहा है — बाद में कोशिश करें या सत्र चिपकाएँ</string>
+    <string name="error_response">Instagram ने अप्रत्याशित जवाब दिया</string>
+    <string name="follow">फ़ॉलो करें</string>
+    <string name="for_you_empty">‘आपके लिए’ में अभी कुछ नहीं है</string>
+    <string name="for_you_guest_note">जाने-माने खातों की सार्वजनिक पोस्टें। Instagram के Explore मिक्स के लिए सेटिंग में कुकीज़ चिपकाएँ।</string>
+    <string name="from_feed">इस फ़ीड के लोग</string>
+    <string name="guest_note">पहले अतिथि ब्राउज़िंग आज़माई जाती है। फ़ॉलो और पसंद इसी डिवाइस पर रहते हैं और Instagram को कभी नहीं भेजे जाते। जब Instagram अतिथियों को रोकता है तब सत्र वैकल्पिक है।</string>
+    <string name="hide">छिपाएँ</string>
+    <string name="import_threads_cookies">Threads कुकीज़ कॉपी करें</string>
+    <string name="import_threads_cookies_description">Threads में पहले से चिपका Instagram-परिवार सत्र फिर से इस्तेमाल करता है</string>
+    <string name="import_threads_empty">कॉपी करने के लिए Threads में कोई कुकी नहीं</string>
+    <string name="import_threads_ok">Threads कुकीज़ Instagram में कॉपी हो गईं</string>
+    <string name="like_on_device">इस डिवाइस पर पसंद करें</string>
+    <string name="link_copied">लिंक कॉपी हो गया</string>
+    <string name="more_needs_session">अतिथि इतना ही लोड कर सकते हैं। और पोस्ट के लिए सेटिंग्स में कुकीज़ चिपकाएँ।</string>
+    <string name="more_options">और विकल्प</string>
+    <string name="no_accounts">अभी कोई फ़ॉलो किया खाता नहीं</string>
+    <string name="no_posts">फ़ॉलो किए खातों से कोई पोस्ट नहीं</string>
+    <string name="open_handle">प्रोफ़ाइल खोलें</string>
+    <string name="open_on_site">Instagram पर खोलें</string>
+    <string name="plugin_description">सार्वजनिक Instagram प्रोफ़ाइल निजी तौर पर देखें — फ़ॉलो इसी डिवाइस पर रहते हैं</string>
+    <string name="plugin_name">Instagram</string>
+    <string name="profile_private">इस खाते की सार्वजनिक पोस्ट Instagram लॉगिन के बिना उपलब्ध नहीं हैं।</string>
+    <string name="recent_searches">हाल की खोजें</string>
+    <string name="retry">पुनः प्रयास करें</string>
+    <string name="search">खोजें</string>
+    <string name="search_empty">कोई सार्वजनिक @हैंडल खोजें। जब Instagram अतिथियों को रोकता है तब लोगों की खोज के लिए सत्र चाहिए।</string>
+    <string name="search_guest_hint">कोई सत्र नहीं — खोज एक सार्वजनिक @हैंडल खोलती है। नाम से लोगों को खोजने के लिए सेटिंग्स में कुकीज़ चिपकाएँ।</string>
+    <string name="search_hint">नाम, @हैंडल या instagram.com/…</string>
+    <string name="section_session">सत्र</string>
+    <string name="session_cleared">Instagram कुकीज़ साफ़ हो गईं</string>
+    <string name="settings">सेटिंग</string>
+    <string name="share_link">पोस्ट लिंक साझा करें</string>
+    <string name="show">दिखाएँ</string>
+    <string name="stat_followers">फ़ॉलोअर्स</string>
+    <string name="stat_following">फ़ॉलोइंग</string>
+    <string name="stat_posts">पोस्ट</string>
+    <string name="tab_accounts">खाते</string>
+    <string name="tab_following">फ़ॉलोइंग</string>
+    <string name="tab_for_you">आपके लिए</string>
+    <string name="test_connection">कनेक्शन जाँचें</string>
+    <string name="test_connection_description">सार्वजनिक @instagram प्रोफ़ाइल लाता है</string>
+    <string name="test_failed">Instagram जाँच असफल: %1$s</string>
+    <string name="test_ok">Instagram ने जवाब दिया (%1$s)</string>
+    <string name="unfollow">अनफ़ॉलो करें</string>
+    <string name="unfollow_confirm">\@%1$s को अनफ़ॉलो करें?</string>
+    <string name="unlike_on_device">इस डिवाइस से पसंद हटाएँ</string>
+</resources>

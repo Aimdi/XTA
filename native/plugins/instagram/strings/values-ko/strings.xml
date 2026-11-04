@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Instagram's text in ko, from XTA's ARB wording (lib/l10n). -->
+<resources>
+    <string name="cancel">취소</string>
+    <string name="clear_session">세션 지우기</string>
+    <string name="clear_session_description">게스트 및 붙여 넣은 Instagram 쿠키를 제거합니다</string>
+    <string name="cookies">Instagram 쿠키</string>
+    <string name="cookies_description">Threads와 같은 쿠키 이름입니다. 선택 사항 — 게스트 요청이 차단될 때만 필요합니다.</string>
+    <string name="cookies_hint">sessionid=…; csrftoken=…; ds_user_id=…</string>
+    <string name="delete">삭제</string>
+    <string name="empty_cta">이 기기에서 팔로우할 사람이나 공개 @핸들을 검색하세요. 공개 프로필에는 Instagram 로그인이 필요 없습니다.</string>
+    <string name="empty_posts">이 프로필에 공개 게시물이 없습니다</string>
+    <string name="error_login">Instagram이 로그인을 요청했습니다. 쿠키를 붙여넣거나 Threads에서 복사하세요.</string>
+    <string name="error_network">Instagram에 연결할 수 없습니다</string>
+    <string name="error_not_found">그 프로필을 찾을 수 없습니다</string>
+    <string name="error_rate_limited">Instagram이 요청을 제한하고 있습니다. 나중에 다시 시도하거나 세션을 붙여넣으세요</string>
+    <string name="error_response">Instagram이 예상치 못한 응답을 반환했습니다</string>
+    <string name="follow">팔로우</string>
+    <string name="for_you_empty">추천에 아직 아무것도 없습니다</string>
+    <string name="for_you_guest_note">잘 알려진 계정의 공개 게시물입니다. Instagram Explore 믹스를 보려면 설정에 쿠키를 붙여넣으세요.</string>
+    <string name="from_feed">이 피드의 사람들</string>
+    <string name="guest_note">먼저 게스트 탐색을 시도합니다. 팔로우와 좋아요는 이 기기에 남고 Instagram으로 전송되지 않습니다. Instagram이 게스트를 막을 때만 세션이 선택 사항입니다.</string>
+    <string name="hide">숨기기</string>
+    <string name="import_threads_cookies">Threads 쿠키 복사</string>
+    <string name="import_threads_cookies_description">Threads에 이미 붙여 넣은 Instagram 계열 세션을 다시 사용합니다</string>
+    <string name="import_threads_empty">복사할 Threads 쿠키가 없습니다</string>
+    <string name="import_threads_ok">Threads 쿠키를 Instagram으로 복사했습니다</string>
+    <string name="like_on_device">이 기기에 마음에 들어요</string>
+    <string name="link_copied">링크를 복사했습니다</string>
+    <string name="more_needs_session">게스트가 불러올 수 있는 건 여기까지입니다. 더 많은 게시물을 보려면 설정에 쿠키를 붙여넣으세요.</string>
+    <string name="more_options">더보기</string>
+    <string name="no_accounts">아직 팔로우한 계정이 없습니다</string>
+    <string name="no_posts">팔로우한 계정의 게시물이 없습니다</string>
+    <string name="open_handle">프로필 열기</string>
+    <string name="open_on_site">Instagram에서 열기</string>
+    <string name="plugin_description">공개 Instagram 프로필을 비공개로 둘러보세요 — 팔로우는 이 기기에만 남습니다</string>
+    <string name="plugin_name">Instagram</string>
+    <string name="profile_private">이 계정의 공개 게시물은 Instagram 로그인 없이는 볼 수 없습니다.</string>
+    <string name="recent_searches">최근 검색</string>
+    <string name="retry">재시도</string>
+    <string name="search">검색</string>
+    <string name="search_empty">공개 @핸들을 검색하세요. Instagram이 게스트를 막을 때 사람 검색에는 세션이 필요합니다.</string>
+    <string name="search_guest_hint">세션 없음 — 검색은 공개 @핸들을 엽니다. 이름으로 사람을 찾으려면 설정에 쿠키를 붙여넣으세요.</string>
+    <string name="search_hint">이름, @핸들 또는 instagram.com/…</string>
+    <string name="section_session">세션</string>
+    <string name="session_cleared">Instagram 쿠키를 지웠습니다</string>
+    <string name="settings">설정</string>
+    <string name="share_link">게시물 링크 공유</string>
+    <string name="show">표시</string>
+    <string name="stat_followers">팔로워</string>
+    <string name="stat_following">팔로잉</string>
+    <string name="stat_posts">게시물</string>
+    <string name="tab_accounts">계정</string>
+    <string name="tab_following">팔로잉</string>
+    <string name="tab_for_you">추천</string>
+    <string name="test_connection">연결 테스트</string>
+    <string name="test_connection_description">공개 @instagram 프로필을 가져옵니다</string>
+    <string name="test_failed">Instagram 테스트 실패: %1$s</string>
+    <string name="test_ok">Instagram이 응답했습니다 (%1$s)</string>
+    <string name="unfollow">언팔로우</string>
+    <string name="unfollow_confirm">\@%1$s님을 언팔로우할까요?</string>
+    <string name="unlike_on_device">이 기기에서 마음에 들어요 취소</string>
+</resources>

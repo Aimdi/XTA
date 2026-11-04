@@ -1,7 +1,6 @@
 package com.aimdi.xtanative.networks
 
 import com.aimdi.xtanative.core.repairs.Repairs
-import com.aimdi.xtanative.networks.instagram.InstagramRepairs
 import com.aimdi.xtanative.networks.stocks.TickerClient
 import com.aimdi.xtanative.networks.tiktok.TikTokRepairs
 import java.io.File
@@ -53,14 +52,9 @@ class NetworkRepairsTest {
     }
 
     @Test
-    fun instagramAndTikTokTakeWhatFitsAndKeepTheRest() {
-        val published = mapOf(
-            "instagram.app_id" to "111111111111111",
-            "instagram.user_agent" to "Repaired/1.0\r\nX-Evil: 1",
-            "tiktok.aid" to "2000",
-        )
+    fun tikTokTakesWhatFits() {
+        val published = mapOf("tiktok.aid" to "2000")
 
-        assertEquals(InstagramRepairs(appId = "111111111111111"), InstagramRepairs.published(published))
         assertEquals(TikTokRepairs(aid = "2000"), TikTokRepairs.published(published))
     }
 

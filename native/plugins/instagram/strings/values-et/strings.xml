@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Instagram's text in et, from XTA's ARB wording (lib/l10n). -->
+<resources>
+    <string name="cancel">Katkesta</string>
+    <string name="clear_session">Tühjenda seanss</string>
+    <string name="clear_session_description">Eemaldab külalise ja kleebitud Instagrami küpsised</string>
+    <string name="cookies">Instagrami küpsised</string>
+    <string name="cookies_description">Samad küpsisenimed nagu Threadsis. Valikuline — vaja ainult siis, kui külalispäringud on blokeeritud.</string>
+    <string name="cookies_hint">sessionid=…; csrftoken=…; ds_user_id=…</string>
+    <string name="delete">Kustuta</string>
+    <string name="empty_cta">Otsi inimesi või avalikku @kasutajanime, et seda selles seadmes jälgida. Avalike profiilide jaoks Instagrami sisselogimist ei vaja.</string>
+    <string name="empty_posts">Sellel profiilil pole avalikke postitusi</string>
+    <string name="error_login">Instagram palus sisse logida. Kleebi küpsised või kopeeri need Threadsist.</string>
+    <string name="error_network">Instagramiga ei saanud ühendust</string>
+    <string name="error_not_found">Seda profiili ei leitud</string>
+    <string name="error_rate_limited">Instagram piirab päringuid — proovi hiljem või kleebi seanss</string>
+    <string name="error_response">Instagram tagastas ootamatu vastuse</string>
+    <string name="follow">Jälgi</string>
+    <string name="for_you_empty">Jaotises Sulle pole veel midagi</string>
+    <string name="for_you_guest_note">Tuntud kontode avalikud postitused. Instagrami Explore’i jaoks kleebi küpsised seadetes.</string>
+    <string name="from_feed">Inimesed selles voos</string>
+    <string name="guest_note">Esmalt proovitakse külalissirvimist. Jälgimised ja meeldimised jäävad sellesse seadmesse ega lähe kunagi Instagrami. Seanss on valikuline, kui Instagram külalisi blokeerib.</string>
+    <string name="hide">Peida</string>
+    <string name="import_threads_cookies">Kopeeri Threadsi küpsised</string>
+    <string name="import_threads_cookies_description">Taaskasutab Instagrami-pere seanssi, mis on juba Threadsi kleebitud</string>
+    <string name="import_threads_empty">Threadsis pole küpsiseid, mida kopeerida</string>
+    <string name="import_threads_ok">Threadsi küpsised kopeeriti Instagrami</string>
+    <string name="like_on_device">Meeldi selles seadmes</string>
+    <string name="link_copied">Link kopeeritud</string>
+    <string name="more_needs_session">See on kõik, mida külalised saavad laadida. Kleebi küpsised seadetes, et näha rohkem postitusi.</string>
+    <string name="more_options">Rohkem valikuid</string>
+    <string name="no_accounts">Jälgitavaid kontosid pole veel</string>
+    <string name="no_posts">Jälgitavatelt kontodelt pole postitusi</string>
+    <string name="open_handle">Ava profiil</string>
+    <string name="open_on_site">Ava Instagramis</string>
+    <string name="plugin_description">Sirvi avalikke Instagrami profiile privaatselt — jälgimised jäävad sellesse seadmesse</string>
+    <string name="plugin_name">Instagram</string>
+    <string name="profile_private">Selle konto avalikud postitused pole ilma Instagrami sisselogimiseta saadaval.</string>
+    <string name="recent_searches">Hiljutised otsingud</string>
+    <string name="retry">Proovi uuesti</string>
+    <string name="search">Otsi</string>
+    <string name="search_empty">Otsi avalikku @kasutajanime. Inimeste otsing vajab seanssi, kui Instagram külalisi blokeerib.</string>
+    <string name="search_guest_hint">Seanssi pole — otsing avab avaliku @kasutajanime. Kleebi küpsised seadetes, et otsida inimesi nime järgi.</string>
+    <string name="search_hint">Nimi, @kasutajanimi või instagram.com/…</string>
+    <string name="section_session">Seanss</string>
+    <string name="session_cleared">Instagrami küpsised tühjendatud</string>
+    <string name="settings">Seaded</string>
+    <string name="share_link">Jaga säutsu linki</string>
+    <string name="show">Näita</string>
+    <string name="stat_followers">Jälgijad</string>
+    <string name="stat_following">Jälgitavad</string>
+    <string name="stat_posts">Postitused</string>
+    <string name="tab_accounts">Kontod</string>
+    <string name="tab_following">Jälgitavad</string>
+    <string name="tab_for_you">Sulle</string>
+    <string name="test_connection">Testi ühendust</string>
+    <string name="test_connection_description">Laadib avaliku @instagram profiili</string>
+    <string name="test_failed">Instagrami test ebaõnnestus: %1$s</string>
+    <string name="test_ok">Instagram vastas (%1$s)</string>
+    <string name="unfollow">Lõpeta jälgimine</string>
+    <string name="unfollow_confirm">Lõpetada @%1$s jälgimine?</string>
+    <string name="unlike_on_device">Eemalda meeldimine sellest seadmest</string>
+</resources>

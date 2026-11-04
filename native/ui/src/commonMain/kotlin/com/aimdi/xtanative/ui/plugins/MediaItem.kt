@@ -1,5 +1,14 @@
 package com.aimdi.xtanative.ui.plugins
 
+import com.aimdi.xtanative.ui.media.VideoQuality
+
+/** What [item] plays in the viewer: [chosen] when it is one of [qualities], else the item's own file. */
+fun playedUrl(item: MediaItem, qualities: List<VideoQuality>, chosen: String?): String? =
+    chosen?.takeIf { url -> qualities.any { it.url == url } } ?: item.videoUrl
+
+/** Which of [qualities] [url] is, for the quality menu to name; null when it is none of them. */
+fun qualityOf(url: String?, qualities: List<VideoQuality>): VideoQuality? = qualities.firstOrNull { it.url == url }
+
 /** A photo, video or GIF as the shared tiles and viewer show it, whatever network it comes from. */
 data class MediaItem(
     /** The picture opened full screen, or a video's poster. */

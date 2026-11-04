@@ -1,9 +1,7 @@
 package com.aimdi.xtanative.networks
 
 import com.aimdi.xtanative.core.repairs.RepairSlot
-import com.aimdi.xtanative.networks.instagram.InstagramRepairs
 import com.aimdi.xtanative.networks.stocks.TickerClient
-import com.aimdi.xtanative.networks.threads.ThreadsRepairs
 import com.aimdi.xtanative.networks.tiktok.TikTokRepairs
 
 /** The desktop browser XTA's Instagram and TikTok reads present themselves as, as XTA ships it. */
@@ -13,11 +11,11 @@ const val DESKTOP_CHROME =
 /**
  * Every value of the networks here that XTA's published `repairs.json` may
  * replace, each declared beside the client that sends it. A client takes its
- * values from the published entries with its own `published(...)` (Threads,
- * Instagram, TikTok) or its slot's `valueIn` (Stocks). A network that
+ * values from the published entries with its own `published(...)` (TikTok)
+ * or its slot's `valueIn` (Stocks). A network that
  * became a plugin keeps its slots, and their check, in the plugin.
  */
 object NetworkRepairs {
     val SLOTS: List<RepairSlot> =
-        ThreadsRepairs.SLOTS + InstagramRepairs.SLOTS + TikTokRepairs.SLOTS + TickerClient.REPAIR_SLOTS
+        TikTokRepairs.SLOTS + TickerClient.REPAIR_SLOTS
 }

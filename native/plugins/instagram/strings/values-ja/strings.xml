@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Instagram's text in ja, from XTA's ARB wording (lib/l10n). -->
+<resources>
+    <string name="cancel">キャンセル</string>
+    <string name="clear_session">セッションを消去</string>
+    <string name="clear_session_description">ゲストおよび貼り付けたInstagramのCookieを削除します</string>
+    <string name="cookies">InstagramのCookie</string>
+    <string name="cookies_description">Threadsと同じCookie名です。任意 — ゲストリクエストがブロックされたときだけ必要です。</string>
+    <string name="cookies_hint">sessionid=…; csrftoken=…; ds_user_id=…</string>
+    <string name="delete">削除</string>
+    <string name="empty_cta">この端末でフォローする人や公開の@ハンドルを検索してください。公開プロフィールにInstagramログインは不要です。</string>
+    <string name="empty_posts">このプロフィールに公開投稿はありません</string>
+    <string name="error_login">Instagramがログインを求めました。Cookieを貼り付けるか、Threadsからコピーしてください。</string>
+    <string name="error_network">Instagramに接続できませんでした</string>
+    <string name="error_not_found">そのプロフィールは見つかりませんでした</string>
+    <string name="error_rate_limited">Instagramがリクエストを制限しています。後でもう一度試すか、セッションを貼り付けてください</string>
+    <string name="error_response">Instagramから予期しない応答が返されました</string>
+    <string name="follow">フォロー</string>
+    <string name="for_you_empty">「おすすめ」はまだ空です</string>
+    <string name="for_you_guest_note">よく知られたアカウントの公開投稿です。Instagram本体のExploreを見るには、設定でCookieを貼り付けてください。</string>
+    <string name="from_feed">このフィードの人</string>
+    <string name="guest_note">まずゲスト閲覧を試します。フォローといいねはこの端末に残り、Instagramには送られません。ゲストがブロックされたときだけセッションは任意です。</string>
+    <string name="hide">非表示</string>
+    <string name="import_threads_cookies">ThreadsのCookieをコピー</string>
+    <string name="import_threads_cookies_description">Threadsにすでに貼ったInstagram系セッションを再利用します</string>
+    <string name="import_threads_empty">コピーできるThreadsのCookieがありません</string>
+    <string name="import_threads_ok">ThreadsのCookieをInstagramにコピーしました</string>
+    <string name="like_on_device">この端末でいいね</string>
+    <string name="link_copied">リンクをコピーしました</string>
+    <string name="more_needs_session">ゲストで読み込めるのはここまでです。設定にCookieを貼ると、さらに投稿を表示できます。</string>
+    <string name="more_options">その他のオプション</string>
+    <string name="no_accounts">フォロー中のアカウントはまだありません</string>
+    <string name="no_posts">フォロー中のアカウントからの投稿はありません</string>
+    <string name="open_handle">プロフィールを開く</string>
+    <string name="open_on_site">Instagramで開く</string>
+    <string name="plugin_description">公開のInstagramプロフィールを非公開で閲覧 — フォローはこの端末に残ります</string>
+    <string name="plugin_name">Instagram</string>
+    <string name="profile_private">このアカウントの公開投稿は、Instagramにログインしないと表示できません。</string>
+    <string name="recent_searches">最近の検索</string>
+    <string name="retry">再試行</string>
+    <string name="search">検索</string>
+    <string name="search_empty">公開の@ハンドルを検索してください。ゲストがブロックされているとき、人の検索にはセッションが必要です。</string>
+    <string name="search_guest_hint">セッションなし — 検索は公開@ハンドルを開きます。名前で探すには設定にCookieを貼ってください。</string>
+    <string name="search_hint">名前、@ハンドル、または instagram.com/…</string>
+    <string name="section_session">セッション</string>
+    <string name="session_cleared">InstagramのCookieを消去しました</string>
+    <string name="settings">設定</string>
+    <string name="share_link">ツイートリンクを共有</string>
+    <string name="show">表示</string>
+    <string name="stat_followers">フォロワー</string>
+    <string name="stat_following">フォロー中</string>
+    <string name="stat_posts">投稿</string>
+    <string name="tab_accounts">アカウント</string>
+    <string name="tab_following">フォロー中</string>
+    <string name="tab_for_you">おすすめ</string>
+    <string name="test_connection">接続をテスト</string>
+    <string name="test_connection_description">公開プロフィール @instagram を取得します</string>
+    <string name="test_failed">Instagramのテストに失敗しました: %1$s</string>
+    <string name="test_ok">Instagramが応答しました（%1$s）</string>
+    <string name="unfollow">フォロー解除</string>
+    <string name="unfollow_confirm">\@%1$s のフォローを解除しますか？</string>
+    <string name="unlike_on_device">この端末のいいねを取り消す</string>
+</resources>

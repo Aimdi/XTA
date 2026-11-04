@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Instagram's text in cs, from XTA's ARB wording (lib/l10n). -->
+<resources>
+    <string name="cancel">Zrušit</string>
+    <string name="clear_session">Vymazat relaci</string>
+    <string name="clear_session_description">Odstraní hostovské i vložené cookies Instagramu</string>
+    <string name="cookies">Cookies Instagramu</string>
+    <string name="cookies_description">Stejné názvy cookies jako u Threads. Volitelné — jen když jsou hostovské požadavky blokovány.</string>
+    <string name="cookies_hint">sessionid=…; csrftoken=…; ds_user_id=…</string>
+    <string name="delete">Odstranit</string>
+    <string name="empty_cta">Vyhledejte lidi nebo veřejnou @přezdívku ke sledování v tomto zařízení. Pro veřejné profily není přihlášení k Instagramu potřeba.</string>
+    <string name="empty_posts">Na tomto profilu nejsou žádné veřejné příspěvky</string>
+    <string name="error_login">Instagram požádal o přihlášení. Vložte cookies nebo je zkopírujte z Threads.</string>
+    <string name="error_network">Instagram se nepodařilo kontaktovat</string>
+    <string name="error_not_found">Tento profil se nenašel</string>
+    <string name="error_rate_limited">Instagram omezuje požadavky — zkuste to později nebo vložte relaci</string>
+    <string name="error_response">Instagram vrátil neočekávanou odpověď</string>
+    <string name="follow">Sledovat</string>
+    <string name="for_you_empty">V Pro vás zatím nic není</string>
+    <string name="for_you_guest_note">Veřejné příspěvky známých účtů. Pro vlastní mix Explore vložte cookies v Nastavení.</string>
+    <string name="from_feed">Lidé v tomto kanálu</string>
+    <string name="guest_note">Nejprve se zkusí hostovský režim. Sledování a lajky zůstávají v tomto zařízení a na Instagram se nikdy neodesílají. Relace je volitelná, když Instagram hosty blokuje.</string>
+    <string name="hide">Skrýt</string>
+    <string name="import_threads_cookies">Zkopírovat cookies z Threads</string>
+    <string name="import_threads_cookies_description">Znovu použije relaci rodiny Instagram už vloženou v Threads</string>
+    <string name="import_threads_empty">Threads nemá žádné cookies ke zkopírování</string>
+    <string name="import_threads_ok">Cookies z Threads byly zkopírovány do Instagramu</string>
+    <string name="like_on_device">Líbí se na tomto zařízení</string>
+    <string name="link_copied">Odkaz zkopírován</string>
+    <string name="more_needs_session">To je vše, co můžou hosté načíst. Pro další příspěvky vložte cookies v Nastavení.</string>
+    <string name="more_options">Další možnosti</string>
+    <string name="no_accounts">Zatím žádné sledované účty</string>
+    <string name="no_posts">Žádné příspěvky ze sledovaných účtů</string>
+    <string name="open_handle">Otevřít profil</string>
+    <string name="open_on_site">Otevřít na Instagramu</string>
+    <string name="plugin_description">Prohlížejte veřejné profily Instagramu soukromě — sledování zůstává v tomto zařízení</string>
+    <string name="plugin_name">Instagram</string>
+    <string name="profile_private">Veřejné příspěvky tohoto účtu nejsou bez přihlášení k Instagramu dostupné.</string>
+    <string name="recent_searches">Nedávná hledání</string>
+    <string name="retry">Zkusit znovu</string>
+    <string name="search">Hledat</string>
+    <string name="search_empty">Hledejte veřejnou @přezdívku. Hledání lidí vyžaduje relaci, když Instagram blokuje hosty.</string>
+    <string name="search_guest_hint">Bez relace — hledání otevře veřejný @handle. Pro hledání lidí podle jména vložte cookies v Nastavení.</string>
+    <string name="search_hint">Jméno, @přezdívka nebo instagram.com/…</string>
+    <string name="section_session">Relace</string>
+    <string name="session_cleared">Cookies Instagramu byly vymazány</string>
+    <string name="settings">Nastavení</string>
+    <string name="share_link">Sdílet odkaz na tweet</string>
+    <string name="show">Zobrazit</string>
+    <string name="stat_followers">Sledující</string>
+    <string name="stat_following">Sledovaní</string>
+    <string name="stat_posts">Příspěvky</string>
+    <string name="tab_accounts">Účty</string>
+    <string name="tab_following">Sledovaní</string>
+    <string name="tab_for_you">Pro vás</string>
+    <string name="test_connection">Otestovat připojení</string>
+    <string name="test_connection_description">Načte veřejný profil @instagram</string>
+    <string name="test_failed">Test Instagramu selhal: %1$s</string>
+    <string name="test_ok">Instagram odpověděl (%1$s)</string>
+    <string name="unfollow">Přestat sledovat</string>
+    <string name="unfollow_confirm">Přestat sledovat @%1$s?</string>
+    <string name="unlike_on_device">Odebrat like z tohoto zařízení</string>
+</resources>

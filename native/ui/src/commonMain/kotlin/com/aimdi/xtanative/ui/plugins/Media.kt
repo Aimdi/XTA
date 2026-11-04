@@ -23,17 +23,24 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,6 +60,7 @@ import coil3.compose.AsyncImage
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.close
 import com.aimdi.xtanative.ui.media.LocalInlinePlayer
+import com.aimdi.xtanative.ui.media.VideoQuality
 import com.aimdi.xtanative.ui.post.PlayBadge
 import org.jetbrains.compose.resources.stringResource
 
@@ -146,9 +154,18 @@ private fun duration(ms: Long): String {
  * between them, pinch or double-tap a photo to zoom; videos play, GIFs loop.
  * With nothing to show, it closes.
  */
+@Composable
+fun MediaPager(items: List<MediaItem>, start: Int, onClose: () -> Unit) = MediaPager(items, start, onClose, emptyList())
+
+/**
+ * [MediaPager] whose videos may play another of the files their network
+ * offers: [qualities] holds, item by item, a video's files highest first,
+ * named as the quality menu lists them ("720p"). A video with more than one
+ * has the menu; it starts on [MediaItem.videoUrl].
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun MediaPager(items: List<MediaItem>, start: Int, onClose: () -> Unit) {
+fun MediaPager(items: List<MediaItem>, start: Int, onClose: () -> Unit, qualities: List<List<VideoQuality>>) {
     Box(Modifier.fillMaxSize().background(Color.Black)) {
         if (items.isEmpty()) {
             LaunchedEffect(Unit) { onClose() }
@@ -159,7 +176,7 @@ fun MediaPager(items: List<MediaItem>, start: Int, onClose: () -> Unit) {
             val item = items[page]
             when (item.kind) {
                 MediaItem.Kind.PHOTO -> ZoomableImage(item.imageUrl, item.alt)
-                MediaItem.Kind.VIDEO, MediaItem.Kind.GIF -> ItemVideoPage(item, active = pager.currentPage == page)
+                MediaItem.Kind.VIDEO, MediaItem.Kind.GIF -> QualityVideoPage(item, qualities.getOrNull(page).orEmpty(), active = pager.currentPage == page)
             }
         }
         IconButton(onClick = onClose, modifier = Modifier.statusBarsPadding().padding(8.dp).align(Alignment.TopStart)) {
@@ -171,6 +188,42 @@ fun MediaPager(items: List<MediaItem>, start: Int, onClose: () -> Unit) {
                 color = Color.White,
                 modifier = Modifier.statusBarsPadding().padding(20.dp).align(Alignment.TopEnd),
             )
+        }
+    }
+}
+
+/** A video page playing the quality chosen in its menu, the item's own file until one is. */
+@Composable
+private fun QualityVideoPage(item: MediaItem, qualities: List<VideoQuality>, active: Boolean) {
+    var chosen by rememberSaveable(item.videoUrl) { mutableStateOf(item.videoUrl) }
+    val url = playedUrl(item, qualities, chosen)
+    Box(Modifier.fillMaxSize()) {
+        key(url) { ItemVideoPage(item.copy(videoUrl = url), active) }
+        if (qualities.size > 1) {
+            QualityMenu(qualities, url, { chosen = it }, Modifier.align(Alignment.TopEnd).statusBarsPadding().padding(top = 52.dp, end = 8.dp))
+        }
+    }
+}
+
+@Composable
+private fun QualityMenu(qualities: List<VideoQuality>, playing: String?, onChoose: (String) -> Unit, modifier: Modifier) {
+    var open by remember { mutableStateOf(false) }
+    Box(modifier) {
+        TextButton(onClick = { open = true }) {
+            Text(qualityOf(playing, qualities)?.label ?: qualities.first().label, color = Color.White)
+            Icon(Icons.Filled.ArrowDropDown, contentDescription = null, tint = Color.White)
+        }
+        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+            qualities.forEach { quality ->
+                DropdownMenuItem(
+                    text = { Text(quality.label) },
+                    trailingIcon = if (quality.url == playing) { { Icon(Icons.Filled.Check, contentDescription = null) } } else null,
+                    onClick = {
+                        open = false
+                        onChoose(quality.url)
+                    },
+                )
+            }
         }
     }
 }
