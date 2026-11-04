@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.plugins.websources
 
+import androidx.compose.runtime.Composable
 import com.aimdi.xtanative.networks.websources.WebSourceDefinition
 import com.aimdi.xtanative.networks.websources.WebSourceItem
 import com.aimdi.xtanative.networks.websources.WebSources
@@ -19,7 +20,8 @@ import kotlinx.coroutines.flow.first
  * Web sources in the app's timelines, as XTA's loadWebSourceInterleaved
  * mixes them: the newest posts of the followed lists (eight of each) in
  * Home's Following and For you while its switch is on, and of the lists a
- * group holds (`websources:lobsters/hottest`). Each is a link post, filed in
+ * group holds (`websources:lobsters/hottest`). Each is drawn as its source's
+ * layout draws it, naming the source ([card]), and is a link post, filed in
  * Saved as XTA's link record (plugin_link_post.dart); a long press opens the
  * shared post menu, here and on the source's own lists.
  */
@@ -57,6 +59,12 @@ internal class WebSourceShared(private val app: WebSourcesApp) : PluginFeed() {
             media = item.pictures.map { MediaItem(it) },
             url = urlOf(source, item),
         )
+    }
+
+    /** The card of the post [post] names, as XTA's timelines draw it ([SharedItemCard]); none for one not drawn lately. */
+    fun card(post: NetworkPost): (@Composable () -> Unit)? {
+        val (source, item) = entry(post) ?: return null
+        return { SharedItemCard(app, source, item) }
     }
 
     /**

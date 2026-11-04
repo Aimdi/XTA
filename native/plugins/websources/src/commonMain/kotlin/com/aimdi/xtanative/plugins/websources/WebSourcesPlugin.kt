@@ -14,6 +14,7 @@ import com.aimdi.xtanative.networks.websources.WebSourceFollows
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.HomeTimelineSwitch
+import com.aimdi.xtanative.ui.plugins.NetworkPost
 import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.PluginBody
 import com.aimdi.xtanative.ui.plugins.PluginFeed
@@ -66,6 +67,9 @@ class WebSourcesPlugin : XtaPlugin() {
     override val subscriptions: Flow<List<PluginSubscription>> get() = app.subscriptions
 
     override val postActions: NetworkPostActions get() = app.shared.actions
+
+    /** Its posts in the app's timelines as their source's layout draws them, as XTA's timelines draw them. */
+    override fun postCard(post: NetworkPost): (@Composable () -> Unit)? = app.shared.card(post)
 
     /** A followed list in a group (`lobsters/hottest`), opened on its source's screen at that list, as XTA opens it. */
     override fun routeForAccount(account: String): String? = WebSourceFollows.parts(account)?.let { (source, list) -> WebSourceRoutes.source(source, list) }

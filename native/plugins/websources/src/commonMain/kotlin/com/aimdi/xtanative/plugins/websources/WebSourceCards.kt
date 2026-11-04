@@ -73,6 +73,15 @@ internal fun WebSourceItemCard(source: WebSourceDefinition, item: WebSourceItem,
     Hairline()
 }
 
+/**
+ * A source's post the app draws among others' (Home's timelines, the
+ * groups), as XTA's draws it there: its card naming the source, opening as
+ * the source's own lists open it.
+ */
+@Composable
+internal fun SharedItemCard(app: WebSourcesApp, source: WebSourceDefinition, item: WebSourceItem) =
+    WebSourceItemCard(source, item, rememberItemActions(app, source), showSource = true)
+
 private fun hostOf(link: String?): String? = link?.toHttpUrlOrNull()?.host
 
 @Composable

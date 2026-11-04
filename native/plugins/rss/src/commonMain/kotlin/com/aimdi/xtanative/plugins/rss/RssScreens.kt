@@ -17,10 +17,12 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -40,14 +42,15 @@ import com.aimdi.xtanative.networks.Page
 import com.aimdi.xtanative.networks.RssItem
 import com.aimdi.xtanative.networks.rss.RssFeed
 import com.aimdi.xtanative.ui.common.LoadingRow
-import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.AddToGroupButton
+import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.networkProblemText
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.problemOf
 import com.aimdi.xtanative.ui.plugins.rememberKept
+import com.aimdi.xtanative.ui.post.PostIcons
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -111,7 +114,8 @@ internal fun RssFeedScreen(app: RssApp, feed: RssFeed) {
 
 /**
  * Add feed (rss_add_screen.dart): a site's or a feed's address, whose feed
- * is found and followed at once, then shown with its site and description.
+ * is found and followed at once, then shown with its site and description,
+ * and Add to a group under it.
  */
 @Composable
 internal fun RssAddScreen(app: RssApp) {
@@ -138,14 +142,14 @@ internal fun RssAddScreen(app: RssApp) {
             when {
                 state.loading -> LinearProgressIndicator(Modifier.fillMaxWidth())
                 error != null -> RetryMessage(pluginString(Strings.add_error) + "\n" + networkProblemText(problemOf(error), NETWORK), { lookup.follow(address) })
-                else -> state.value?.let { FoundFeed(it) }
+                else -> state.value?.let { feed -> FoundFeed(feed) { app.addToGroup(feed) } }
             }
         }
     }
 }
 
 @Composable
-private fun FoundFeed(feed: RssFeed) {
+private fun FoundFeed(feed: RssFeed, onAddToGroup: () -> Unit) {
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
             val icon = feed.iconUrl
@@ -160,6 +164,10 @@ private fun FoundFeed(feed: RssFeed) {
             }
         }
         feed.description?.let { Text(it, modifier = Modifier.padding(top = 12.dp)) }
+        TextButton(onClick = onAddToGroup, modifier = Modifier.padding(top = 4.dp)) {
+            Icon(PostIcons.People, contentDescription = null, modifier = Modifier.size(18.dp))
+            Text(pluginString(Strings.add_to_group), modifier = Modifier.padding(start = 8.dp))
+        }
     }
 }
 

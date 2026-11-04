@@ -1,9 +1,11 @@
 package com.aimdi.xtanative.plugins.rss
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.aimdi.xtanative.networks.rss.RssFeed
 import com.aimdi.xtanative.ui.plugins.AddToGroupButton
+import com.aimdi.xtanative.ui.plugins.NetworkPost
 import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.PluginBackupSection
 import com.aimdi.xtanative.ui.plugins.PluginBody
@@ -51,6 +53,9 @@ class RssPlugin : XtaPlugin() {
     override val subscriptions: Flow<List<PluginSubscription>> get() = app.subscriptions
 
     override val postActions: NetworkPostActions get() = app.shared.actions
+
+    /** Its items in the app's timelines as RSS's own article rows, read or not, as XTA's timelines draw them. */
+    override fun postCard(post: NetworkPost): (@Composable () -> Unit)? = app.shared.card(post)
 
     /** A feed in a group, opened on its own page, as XTA opens an RSS member. */
     override fun routeForAccount(account: String): String = RssRoutes.feed(app.feedFor(account) ?: RssFeed(account, account, ""))

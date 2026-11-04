@@ -1,7 +1,8 @@
 package com.aimdi.xtanative.plugins.rss
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,15 +40,17 @@ import com.aimdi.xtanative.ui.plugins.pluginString
  * An article row (rss_card.dart): its feed and author over the headline and
  * excerpt, the picture beside them (under them at large text), unread ones
  * marked by a dot and a heavier title. [showSource] names the feed, where
- * several feeds' items mix.
+ * several feeds' items mix; [onLongPress] is what a long press opens, where
+ * there is something.
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-internal fun RssItemCard(item: RssItem, unread: Boolean, onOpen: () -> Unit, showSource: Boolean = true) {
+internal fun RssItemCard(item: RssItem, unread: Boolean, onOpen: () -> Unit, showSource: Boolean = true, onLongPress: (() -> Unit)? = null) {
     val cover = item.imageUrl?.takeIf { it.isNotEmpty() }
     val largeText = LocalDensity.current.fontScale * 14 > 20
     val unreadLabel = pluginString(Strings.unread)
     Column(
-        Modifier.fillMaxWidth().clickable(onClick = onOpen).semantics { if (unread) stateDescription = unreadLabel }.padding(16.dp),
+        Modifier.fillMaxWidth().combinedClickable(onClick = onOpen, onLongClick = onLongPress).semantics { if (unread) stateDescription = unreadLabel }.padding(16.dp),
     ) {
         SourceLine(item, unread, showSource)
         Spacer(Modifier.height(8.dp))
@@ -59,6 +64,18 @@ internal fun RssItemCard(item: RssItem, unread: Boolean, onOpen: () -> Unit, sho
         if (cover != null && largeText) Cover(cover, Modifier.padding(top = 12.dp).fillMaxWidth().height(140.dp))
     }
     Hairline()
+}
+
+/**
+ * An item the app draws among others' posts (Home's timelines, the groups),
+ * as XTA's draws it there: its article row naming its feed, read or not as
+ * the reader left it; it opens in the reader, and a long press opens the
+ * shared post menu.
+ */
+@Composable
+internal fun SharedItemCard(app: RssApp, item: RssItem) {
+    val read by app.read.collectAsState()
+    RssItemCard(item, unread = item.id !in read, onOpen = { app.openItem(item) }, onLongPress = { app.host.openPostMenu(app.shared.menu(item)) })
 }
 
 @Composable
