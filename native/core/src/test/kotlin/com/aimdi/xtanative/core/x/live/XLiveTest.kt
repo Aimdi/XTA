@@ -91,9 +91,44 @@ class XLiveTest {
                 val source = runCatching { http.get(src.toHttpUrl(), emptyMap(), followRedirects = false).body }.getOrDefault("")
                 println("LIVE sign-in script ${src.substringAfterLast('/')}: ${source.length} characters, ondemand.s ${"ondemand.s" in source}")
             }
+            walkBundles(http, inline)
         }.onFailure { println("LIVE sign-in page probe failed: ${it::class.simpleName}: ${it.message?.take(160)}") }
         // A test returns nothing: JUnit passes over a method that returns the Result above.
         Unit
+    }
+
+    /**
+     * The bundles the sign-in page's inline code starts, and their imports, as
+     * the signer search walks them (breadth first, 24 at most): what each is
+     * called, how big, what it imports, and whether it names a signing script,
+     * holds the transaction-id header or the `(a[N], 16)` calls the indices
+     * come from.
+     */
+    private suspend fun walkBundles(http: OkHttpXHttp, inline: List<String>) {
+        val page = "https://x.com/".toHttpUrl()
+        val literal = Regex("""(["'`])([^"'`\s$]+\.js)\1""")
+        val imports = Regex("""(?:\bfrom\s*|\bimport\s*\(?\s*)(["'`])([^"'`\s$]+\.js)\1""")
+        val calls = Regex("""\(\w\[\d{1,2}\],\s*16\)""")
+        fun named(parent: okhttp3.HttpUrl, source: String, pattern: Regex) =
+            pattern.findAll(source).mapNotNull { parent.resolve(it.groupValues[2]) }
+                .filter { it.host == "abs.twimg.com" }.distinct().toList()
+        val queue = ArrayDeque(inline.flatMap { named(page, it, literal) }.distinct())
+        val seen = HashSet(queue)
+        var read = 0
+        while (queue.isNotEmpty() && read < 24) {
+            val url = queue.removeFirst()
+            read++
+            val source = runCatching { http.get(url, emptyMap(), followRedirects = false).body }.getOrDefault("")
+            val next = named(url, source, imports)
+            val signers = named(url, source, literal).map { it.pathSegments.last() }
+                .filter { it.startsWith("sign.") || it.startsWith("ondemand.") }
+            println(
+                "LIVE bundle ${url.encodedPath}: ${source.length} characters, ${next.size} imports, " +
+                    "signers $signers, transaction header ${"x-client-transaction-id" in source}, " +
+                    "(a[N], 16) calls ${calls.findAll(source).count()}",
+            )
+            next.filter { seen.add(it) }.forEach(queue::addLast)
+        }
     }
 
     private suspend fun probe(what: String, read: suspend () -> Int) {
