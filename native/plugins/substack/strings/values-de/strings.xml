@@ -143,6 +143,7 @@
     <string name="unfollow">Entfolgen</string>
     <string name="unknown">Unbekannt</string>
     <string name="unlike">Gefällt mir nicht mehr</string>
+    <string name="favorites">Gefällt mir</string>
     <string name="unpin">Loslösen</string>
     <string name="unsave">Aus Gespeichert entfernen</string>
     <string name="videos">Videos</string>

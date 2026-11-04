@@ -215,7 +215,8 @@ internal class ThreadsApp(val host: PluginHost) {
     /** [account] in the app's groups, followed here first once a group is picked. */
     fun addToGroup(account: ThreadsAccount) = host.addToGroup(account.handle.trim().lowercase()) { ensureFollowed(account) }
 
-    fun toggleLike(post: ThreadsPost) = launch { likes.toggle(post) }
+    /** [post] liked here, or no longer; the first like the reader makes says that likes stay on this device, as XTA's heart does. */
+    fun toggleLike(post: ThreadsPost) = launch { if (likes.toggle(post)) host.likedOnDevice() }
 
     fun setOptions(options: ThreadsFeedOptions) = update { it.with(ThreadsPrefs.feedOptions, options.encode()) }
 
@@ -235,6 +236,9 @@ internal class ThreadsApp(val host: PluginHost) {
         post.quoted?.let(drawn::put)
         return ThreadsShared.post(post, current()[MediaPrefs.videoQuality])
     }
+
+    /** The post [shown] names, as the app drew it lately; null for one not drawn lately. */
+    fun drawnPost(shown: NetworkPost): ThreadsPost? = drawn[shown.id]
 
     /** Where a post the app draws leads: its conversation, its author, the viewer; its bookmark and the shared post sheet. */
     val actions = NetworkPostActions(

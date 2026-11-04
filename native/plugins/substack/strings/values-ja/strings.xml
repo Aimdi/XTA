@@ -140,6 +140,7 @@
     <string name="unfollow">フォロー解除</string>
     <string name="unknown">不明</string>
     <string name="unlike">いいねを解除</string>
+    <string name="favorites">いいね</string>
     <string name="unpin">ピン留めを解除</string>
     <string name="unsave">保存を解除</string>
     <string name="videos">動画</string>

@@ -3,6 +3,7 @@ package com.aimdi.xtanative.plugins.substack
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -32,9 +33,12 @@ import com.aimdi.xtanative.networks.substack.SubstackLinks
 import com.aimdi.xtanative.networks.substack.SubstackNote
 import com.aimdi.xtanative.networks.substack.SubstackNotesFeed
 import com.aimdi.xtanative.networks.substack.SubstackPublication
+import com.aimdi.xtanative.store.settings.PostsPrefs
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.plugins.MediaItem
+import com.aimdi.xtanative.ui.plugins.NetworkCount
 import com.aimdi.xtanative.ui.plugins.NetworkFocalPost
 import com.aimdi.xtanative.ui.plugins.NetworkHeaderButton
 import com.aimdi.xtanative.ui.plugins.NetworkPost
@@ -81,11 +85,14 @@ internal fun NotesPane(app: SubstackApp, notes: SubstackNotesFeed, frame: Plugin
     }
 }
 
-/** A note in the list, its ⋯ and a long press opening the shared post sheet (substack_note_card.dart), its publication under it. */
+/** A note in the list, its ⋯ and a long press opening the shared post sheet (substack_note_card.dart), its hearts under it, then its publication. */
 @Composable
 private fun NoteRow(app: SubstackApp, note: SubstackNote, actions: NoteActions) {
     val more = pluginString(Strings.more_options)
-    val extras = NetworkPostExtras(trailing = if (actions.hasMenu(note)) { { NetworkHeaderButton(PostIcons.MoreHoriz, more) { app.openMenu(note) } } } else null)
+    val extras = NetworkPostExtras(
+        trailing = if (actions.hasMenu(note)) { { NetworkHeaderButton(PostIcons.MoreHoriz, more) { app.openMenu(note) } } } else null,
+        footer = { NoteReactions(app, note) },
+    )
     NetworkPostCard(actions.post(note), actions.of(note), extras)
     note.publication?.let { NotePublication(app, it, Modifier.padding(start = 68.dp, end = 16.dp, bottom = 8.dp)) }
     Hairline()
@@ -133,12 +140,23 @@ internal fun rememberNoteActions(app: SubstackApp): NoteActions {
     return remember(app, unknown, outside) { NoteActions(app, unknown, outside) }
 }
 
-/** The publication a note came from: open it, follow it here, or put it in groups. */
+/** A note's hearts, as XTA counts them under it (no reply or repost to count): none when it has none, or in zen or calm mode. */
+@Composable
+private fun NoteReactions(app: SubstackApp, note: SubstackNote) {
+    val settings by app.host.settings.state.collectAsState()
+    val count = note.reactionCount ?: 0
+    val quiet = settings?.let { it[PostsPrefs.zenMode] || it[PostsPrefs.calmMode] } == true
+    if (count <= 0 || quiet) return
+    Row(Modifier.padding(top = 12.dp)) { NetworkCount(XIcons.Like, count, label = pluginString(Strings.favorites) + ": " + count) }
+}
+
+/** The publication a note came from: open it, follow it here (saying so, as XTA's chip does), or put it in groups. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun NotePublication(app: SubstackApp, publication: SubstackPublication, modifier: Modifier = Modifier) {
     val follows by app.publications.collectAsState()
     val followed = follows != null && app.followOf(publication) != null
+    val followedText = pluginString(Strings.followed, publication.displayName)
     FlowRow(modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         AssistChip(
             onClick = { app.openPublication(publication) },
@@ -146,7 +164,10 @@ private fun NotePublication(app: SubstackApp, publication: SubstackPublication, 
             leadingIcon = { Icon(SubstackIcons.Newspaper, null, Modifier.size(16.dp)) },
         )
         AssistChip(
-            onClick = { app.follow(publication) },
+            onClick = {
+                app.follow(publication)
+                app.host.tell(followedText)
+            },
             enabled = !followed,
             label = { Text(pluginString(if (followed) Strings.following else Strings.follow)) },
             leadingIcon = { Icon(if (followed) Icons.Default.Check else Icons.Default.Add, null, Modifier.size(16.dp)) },

@@ -228,6 +228,9 @@ internal class SubstackApp(val host: PluginHost) {
     /** A post or note Saved kept as XTA's link record, as Saved draws it; null for another network's record. */
     fun shownSaved(content: JsonElement): NetworkPost? = PluginPostArchive.ofLink(content, SubstackShared.SOURCE)?.let { SubstackShared.saved(records.put(it)) }
 
+    /** The post [shown] names, as the app drew it lately; null for one not drawn lately. */
+    fun drawnPost(shown: NetworkPost): SubstackPost? = drawn[shown.id]
+
     /** Where a post the app draws leads: the reader, its publication's page, else its link; its bookmark and the shared sheet. */
     val actions = NetworkPostActions(
         open = ::openShown,

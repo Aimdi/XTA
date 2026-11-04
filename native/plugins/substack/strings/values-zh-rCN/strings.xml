@@ -140,6 +140,7 @@
     <string name="unfollow">取消关注</string>
     <string name="unknown">未知</string>
     <string name="unlike">取消喜欢</string>
+    <string name="favorites">喜欢</string>
     <string name="unpin">取消置顶</string>
     <string name="unsave">取消保存</string>
     <string name="videos">视频</string>

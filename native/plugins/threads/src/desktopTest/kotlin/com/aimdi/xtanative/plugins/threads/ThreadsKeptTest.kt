@@ -67,11 +67,11 @@ class ThreadsKeptTest {
         val settings = MutableStateFlow(Settings())
         val likes = ThreadsLikes(file("likes.json"), { settings.value }) { edit -> settings.value = edit(settings.value) }
 
-        likes.toggle(post("1"))
+        assertTrue(likes.toggle(post("1")), "a like says it is one, for the notice that likes stay here")
         likes.toggle(post("2"))
         assertEquals(listOf("2", "1"), likes.posts().map { it.id })
         assertTrue(likes.isLiked("1"))
-        likes.toggle(post("1"))
+        assertFalse(likes.toggle(post("1")))
         assertEquals(listOf("2"), likes.posts().map { it.id })
         assertEquals(listOf("2"), ThreadsPostJson.list(settings.value[ThreadsPrefs.likedPosts]).map { it.id })
 

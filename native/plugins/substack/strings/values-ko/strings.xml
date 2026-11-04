@@ -140,6 +140,7 @@
     <string name="unfollow">팔로우 취소</string>
     <string name="unknown">알 수 없음</string>
     <string name="unlike">좋아요 취소</string>
+    <string name="favorites">좋아요</string>
     <string name="unpin">고정 해제</string>
     <string name="unsave">저장 해제</string>
     <string name="videos">동영상</string>

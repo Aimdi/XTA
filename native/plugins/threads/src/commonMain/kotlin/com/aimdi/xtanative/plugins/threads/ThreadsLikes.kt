@@ -36,13 +36,14 @@ internal class ThreadsLikes(
 
     fun isLiked(id: String): Boolean = mutable.value?.contains(id) == true
 
-    /** Likes [post] on this device, or takes the like back. */
-    suspend fun toggle(post: ThreadsPost) = mutex.withLock {
+    /** Likes [post] on this device, or takes the like back; whether it is liked now. */
+    suspend fun toggle(post: ThreadsPost): Boolean = mutex.withLock {
         val ids = loaded()
         val liked = post.id in ids
         val next = if (liked) ids - post.id else ids + post.id
         save(next)
         update { stored -> stored.with(ThreadsPrefs.likedPosts, ThreadsPostJson.listText(toggled(posts(stored), post, liked))) }
+        !liked
     }
 
     /** The rows as XTA's backup writes `threadsLocalLikes`. */

@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.plugins.substack
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.aimdi.xtanative.networks.substack.SubstackRoute
@@ -80,6 +81,12 @@ class SubstackPlugin : XtaPlugin() {
     override val subscriptions: Flow<List<PluginSubscription>> get() = app.subscriptions
 
     override val postActions: NetworkPostActions get() = app.actions
+
+    /** Its posts in the groups' timelines as its own card, with its heart, bookmark and read mark, as XTA's timelines draw them. */
+    override fun postCard(post: NetworkPost): (@Composable () -> Unit)? {
+        val drawn = app.drawnPost(post) ?: return null
+        return { SubstackPostCard(app, drawn, rememberMarks(app), logoUrl = post.avatarUrl) }
+    }
 
     /** An article or note kept as XTA's link record, as Saved draws it; another record is none of its. */
     override fun archived(content: JsonElement): NetworkPost? = app.shownSaved(content)

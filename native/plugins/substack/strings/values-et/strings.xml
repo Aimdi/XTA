@@ -143,6 +143,7 @@
     <string name="unfollow">Lõpeta jälgimine</string>
     <string name="unknown">Teadmata</string>
     <string name="unlike">Eemalda meeldimine</string>
+    <string name="favorites">Meeldimised</string>
     <string name="unpin">Eemalda kinnitus</string>
     <string name="unsave">Eemalda salvestatutest</string>
     <string name="videos">Videod</string>

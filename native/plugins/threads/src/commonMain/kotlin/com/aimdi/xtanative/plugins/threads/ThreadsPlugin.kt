@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.plugins.threads
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.aimdi.xtanative.ui.plugins.NetworkPost
@@ -71,6 +72,12 @@ class ThreadsPlugin : XtaPlugin() {
     override val subscriptions: Flow<List<PluginSubscription>> get() = app.subscriptions
 
     override val postActions: NetworkPostActions get() = app.actions
+
+    /** Its posts in the app's timelines as its own card, with the heart kept here, as XTA's timelines draw them. */
+    override fun postCard(post: NetworkPost): (@Composable () -> Unit)? {
+        val drawn = app.drawnPost(post) ?: return null
+        return { ThreadsPostCard(app, drawn) }
+    }
 
     /** A post kept in XTA's record, as Saved draws it; one of another network, or kept as a link, is none of its. */
     override fun archived(content: JsonElement): NetworkPost? = ThreadsArchive.post(content)?.let(app::shown)

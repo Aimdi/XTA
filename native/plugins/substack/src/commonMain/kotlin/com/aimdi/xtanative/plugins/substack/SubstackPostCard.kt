@@ -171,7 +171,13 @@ private fun CardActions(app: SubstackApp, post: SubstackPost, marks: PostMarks, 
     val hearts = (post.reactionCount ?: 0) + if (liked) 1 else 0
     Row(Modifier.padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         CountButton(if (liked) Icons.Default.Favorite else Icons.Default.FavoriteBorder, if (hearts > 0) "$hearts" else "", if (liked) accent else muted,
-            pluginString(if (liked) Strings.unlike else Strings.like)) { app.launch { app.likes.toggle(post) } }
+            pluginString(if (liked) Strings.unlike else Strings.like)) {
+            // As XTA's card: the first like the reader makes says that likes stay on this device.
+            app.launch {
+                app.likes.toggle(post)
+                if (!liked) app.host.likedOnDevice()
+            }
+        }
         CountButton(if (saved) SubstackIcons.Bookmark else SubstackIcons.BookmarkBorder, "", if (saved) accent else muted,
             pluginString(if (saved) Strings.unsave else Strings.save)) { app.launch { app.saves.toggle(post) } }
         CountButton(SubstackIcons.Comment, "${post.commentCount ?: 0}", muted, pluginString(Strings.comments)) { app.openComments(post) }
