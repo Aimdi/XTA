@@ -84,14 +84,18 @@ compile_dep() { # <module name> <classpath>
   dest="$cache/$name-$key"
   if [ ! -f "$dest/META-INF/main.kotlin_module" ]; then
     echo "uicheck: compiling :$name" >&2
-    rm -rf "$dest"
-    mkdir -p "$dest"
+    # Into a folder of its own, then moved into place: another run (another
+    # worktree with the same sources) may be compiling the same module.
+    local tmp
+    tmp=$(mktemp -d "$cache/.$name.XXXXXX")
     find "$src" -name '*.kt' > "$work/$name.sources"
-    if ! kotlinc "$work/$name.log" @"$work/$name.sources" -cp "$classpath" -d "$dest" -jvm-target 17 -nowarn; then
+    if ! kotlinc "$work/$name.log" @"$work/$name.sources" -cp "$classpath" -d "$tmp" -jvm-target 17 -nowarn; then
       grep -v JAVA_TOOL_OPTIONS "$work/$name.log" >&2
       echo "uicheck: :$name does not compile" >&2
+      rm -rf "$tmp"
       exit 1
     fi
+    mv -T "$tmp" "$dest" 2> /dev/null || rm -rf "$tmp"
   fi
   echo "$dest"
 }

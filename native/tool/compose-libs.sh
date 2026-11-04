@@ -20,6 +20,10 @@
 # those a module that declares the roots sees when it compiles, as Gradle builds
 # its compile classpath: each library's API variant (a POM's compile scope), so
 # a library another one needs only at run time is left out of it.
+# plugin-compile-classpath.txt is what a plugin compiles against: what :ui
+# declares with api(...), with :core's api libraries, and jsoup, which the
+# plugins build adds compileOnly; not what :ui keeps to itself (lifecycle,
+# navigation, its resources).
 #
 # For the desktop, lifecycle, savedstate, collection and annotation come from
 # Google Maven alone. With KOTLINC set they are built instead from the sources
@@ -46,6 +50,8 @@
 # Compose version where it is in the table below; otherwise pass them.
 # Exits 3 when something stays missing.
 set -euo pipefail
+NATIVE_DIR=$(cd "$(dirname "$0")/.." && pwd)
+export NATIVE_DIR
 exec python3 -I - "$@" <<'PY'
 import argparse
 import hashlib
@@ -824,6 +830,30 @@ def scan(paths):
     return kept, versions
 
 
+def plugin_roots():
+    """The libraries a plugin compiles against (see plugin-compile-classpath.txt
+    above), from native/ui and native/core's build files and the version catalog;
+    None outside a checkout."""
+    native = os.environ.get("NATIVE_DIR", "")
+    paths = [os.path.join(native, *p) for p in (("ui", "build.gradle.kts"), ("core", "build.gradle.kts"),
+                                                 ("gradle", "libs.versions.toml"))]
+    if not all(os.path.isfile(p) for p in paths):
+        return None
+    ui, core = (open(p, encoding="utf-8").read() for p in paths[:2])
+    import tomllib
+    with open(paths[2], "rb") as f:
+        catalog = tomllib.load(f)
+    by_alias = {re.sub(r"[-_]", ".", key): lib for key, lib in catalog.get("libraries", {}).items()}
+    roots = []
+    for alias in re.findall(r"\bapi\(libs\.([A-Za-z0-9_.]+)\)", ui):
+        lib = by_alias.get(alias)
+        module = lib if isinstance(lib, str) else (lib or {}).get("module") or f"{lib.get('group')}:{lib.get('name')}"
+        if module:
+            roots.append(tuple(module.split(":")[:2]) + ("",))
+    roots += [tuple(c.split(":")[:2]) + ("",) for c in re.findall(r'\bapi\("([^":]+:[^":]+)(?::[^"]*)?"\)', core)]
+    return roots + [("org.jsoup", "jsoup", "")]
+
+
 def roots_for(args):
     compose = args.compose
     lifecycle, navigation, coil = COMPANIONS.get(compose, (None, None, None))
@@ -925,6 +955,11 @@ def main():
         visible = resolver.compile_closure([r for r in roots if f"{r[0]}:{r[1]}" not in IMPLEMENTATION_ONLY], selected)
         with open(os.path.join(out, "compile-classpath.txt"), "w") as f:
             f.write("".join(p + "\n" for p in placed if owners.get(os.path.basename(p)) in visible))
+        for_plugins = plugin_roots()
+        if for_plugins is not None:
+            visible = resolver.compile_closure(for_plugins, selected)
+            with open(os.path.join(out, "plugin-compile-classpath.txt"), "w") as f:
+                f.write("".join(p + "\n" for p in placed if owners.get(os.path.basename(p)) in visible))
         with open(os.path.join(out, "resolved.txt"), "w") as f:
             f.write("# " + " ".join(f"{k}={v}" for k, v in versions.items()) + "\n" + "\n".join(sorted(lines)) + "\n")
     else:

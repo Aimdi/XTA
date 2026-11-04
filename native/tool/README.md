@@ -89,6 +89,13 @@ the build's own generator functions (run with `kotlinc -script`), compiles
 KOTLINC=<kotlinc home> COMPOSE_LIBS=$COMPOSE_LIBS_HOME/1.8.2 bash native/tool/plugincheck.sh bluesky
 ```
 
+The plugin sees what Gradle gives it: `:ui`'s `api` libraries, `:core`'s and
+jsoup (compose-libs.sh's `plugin-compile-classpath.txt`), not what `:ui`
+keeps to itself (lifecycle, navigation, its resources): a plugin that imports
+those fails here as in CI. The jars sit in a folder named after the `:ui`
+compiled, so worktrees checking at once do not share one, and a `:ui` that
+has not changed reuses the compiled `:core` and the others.
+
 `jvmcheck.sh plugins/<id>` compiles its reading layer (`networks.<id>`) with
 `:networks` and runs its tests, as `jvmcheck.sh networks` does for a network
 still in `networks/`.

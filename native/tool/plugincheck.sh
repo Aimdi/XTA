@@ -28,9 +28,6 @@ package=${entry%.*}
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 cache=${UICHECK_CACHE:-$LIBS/.uicheck-cache}
-# The jars the plugin compiles against, in a folder that keeps its name, so
-# uicheck.sh compiles :core and the others for it once per change, not per run.
-libs=$cache/plugincheck-libs
 
 # 1. Strings.
 {
@@ -56,10 +53,26 @@ if [ -z "${UI_CLASSES:-}" ]; then
   UICHECK_CACHE=$cache OUT=$ui bash "$here/tool/uicheck.sh" "$here/ui" > "$work/ui.log" 2>&1 \
     || { grep -v JAVA_TOOL_OPTIONS "$work/ui.log" | tail -40; echo "plugincheck: :ui does not compile"; exit 1; }
 fi
-rm -rf "$libs"
-mkdir -p "$libs"
-find "$LIBS" -maxdepth 1 -name '*.jar' -exec ln -s {} "$libs/" \;
-jar cf "$libs/xta-native-ui.jar" -C "$ui" . 2>&1 | grep -v JAVA_TOOL_OPTIONS || true
+# The jars the plugin compiles against, in a folder named after this :ui (each
+# worktree has its own, and several may check at once), so uicheck.sh compiles
+# :core and the others for it once per change of :ui, not per run. It is built
+# aside and moved into place, never emptied while another run reads it. Its
+# compile-classpath.txt is what Gradle gives a plugin: :ui's api libraries,
+# not those :ui keeps to itself (compose-libs.sh's plugin-compile-classpath.txt).
+key=$( { (cd "$ui" && find . -type f -print0 | sort -z | xargs -0 sha256sum); ls "$LIBS"; } | sha256sum | cut -c1-16)
+libs=$cache/plugincheck-libs-$key
+if [ ! -f "$libs/xta-native-ui.jar" ]; then
+  mkdir -p "$cache"
+  aside=$(mktemp -d "$cache/.plugincheck-libs.XXXXXX")
+  find "$LIBS" -maxdepth 1 -name '*.jar' -exec ln -s {} "$aside/" \;
+  jar cf "$aside/xta-native-ui.jar" -C "$ui" . 2>&1 | grep -v JAVA_TOOL_OPTIONS || true
+  if [ -f "$LIBS/plugin-compile-classpath.txt" ]; then
+    { cat "$LIBS/plugin-compile-classpath.txt"; echo "$libs/xta-native-ui.jar"; } > "$aside/compile-classpath.txt"
+  else
+    echo "plugincheck: no plugin-compile-classpath.txt in $LIBS (an older compose-libs.sh): the plugin sees every jar" >&2
+  fi
+  mv -T "$aside" "$libs" 2> /dev/null || rm -rf "$aside"
+fi
 
 # 3. The plugin.
 COMPOSE_LIBS=$libs DEPS="core networks store services" UICHECK_CACHE=$cache bash "$here/tool/uicheck.sh" "$work/$id"
