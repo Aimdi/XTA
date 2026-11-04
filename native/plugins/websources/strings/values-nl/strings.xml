@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Web sources' text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Bron toevoegen</string>
+    <string name="add_link">Toevoegen via link</string>
+    <string name="back">Terug</string>
+    <string name="cancel">Annuleren</string>
+    <plurals name="comments">
+        <item quantity="one">%1$d reactie</item>
+        <item quantity="other">%1$d reacties</item>
+    </plurals>
+    <string name="consent_from">Van %1$s</string>
+    <string name="consent_read_only">Hij kan alleen openbare pagina’s lezen. Hij kan je accounts niet gebruiken en niets plaatsen.</string>
+    <string name="consent_sites">Hij leest pagina’s van deze sites:</string>
+    <string name="consent_title">%1$s toevoegen?</string>
+    <string name="discussion">Discussie</string>
+    <string name="empty">Nog geen bronnen. Voeg er een toe uit de gepubliceerde lijst of via een link.</string>
+    <string name="failure_blocked">Deze pagina staat niet op een site die de bron vermeldt.</string>
+    <string name="failure_status">De site antwoordde met fout %1$s.</string>
+    <string name="failure_too_large">Deze pagina is te groot om te lezen.</string>
+    <string name="failure_unreachable">De site was niet bereikbaar.</string>
+    <string name="follow">Volgen</string>
+    <string name="install">Toevoegen</string>
+    <string name="installed">Toegevoegd</string>
+    <string name="link">Link naar de bron</string>
+    <string name="link_placeholder">https://example.org/source.json</string>
+    <string name="list_empty">Hier is nu niets.</string>
+    <plurals name="lists">
+        <item quantity="one">%1$d lijst</item>
+        <item quantity="other">%1$d lijsten</item>
+    </plurals>
+    <string name="more_options">Meer opties</string>
+    <string name="ok">OK</string>
+    <string name="open_in_browser">Openen in browser</string>
+    <string name="plugin_description">Voeg eenvoudige sites toe uit een gepubliceerde lijst of via een link. Een bron leest alleen openbare pagina’s, en vraagt het eerst voordat hij een nieuwe site leest.</string>
+    <string name="plugin_name">Webbronnen</string>
+    <plurals name="points">
+        <item quantity="one">%1$d punt</item>
+        <item quantity="other">%1$d punten</item>
+    </plurals>
+    <string name="published">Gepubliceerde bronnen</string>
+    <string name="published_unreachable">De gepubliceerde lijst kon niet worden geladen.</string>
+    <string name="reading">Bron wordt gelezen…</string>
+    <string name="refused_detail">Waar: %1$s</string>
+    <string name="refused_insecure">Deze bron zou een site lezen die hij niet vermeldt, of zonder HTTPS.</string>
+    <string name="refused_invalid">Het bestand van deze bron bevat een fout.</string>
+    <string name="refused_newer">Deze bron heeft een nieuwere versie van XTA nodig.</string>
+    <string name="refused_too_large">Deze bron gaat verder dan XTA toestaat.</string>
+    <string name="refused_unreadable">Dit is geen bestand van een webbron.</string>
+    <string name="remove">Bron verwijderen</string>
+    <string name="remove_confirm">%1$s verwijderen? De lijsten die je daaruit volgt, worden ook verwijderd.</string>
+    <string name="retry">Opnieuw</string>
+    <string name="review_update">Update bekijken</string>
+    <string name="search_in">Zoeken in %1$s</string>
+    <string name="unfollow">Ontvolgen</string>
+    <string name="unreachable">Het bestand van de bron kon niet worden gelezen. Controleer de link en je verbinding.</string>
+    <string name="update_title">%1$s bijwerken?</string>
+</resources>

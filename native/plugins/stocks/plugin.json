@@ -1,0 +1,7 @@
+{
+  "id": "stocks",
+  "version": "1.0.0",
+  "entry": "com.aimdi.xtanative.plugins.stocks.StocksPlugin",
+  "category": "markets",
+  "private": false
+}

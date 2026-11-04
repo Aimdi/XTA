@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RSS's text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Gehitu jarioa</string>
+    <string name="add_error">Ezin izan da jario hori irakurri</string>
+    <string name="add_hint">Itsatsi gune edo jario baten URLa. XTAk RSS edo Atom jarioa aurkitzen du.</string>
+    <string name="add_placeholder">https://example.com/feed</string>
+    <string name="add_to_group">Gehitu talde batean</string>
+    <string name="all">Guztia</string>
+    <string name="cancel">Ezeztatu</string>
+    <string name="close">Itxi</string>
+    <string name="data_exported_to">%1$s-era esportatu dira datuak</string>
+    <string name="empty">Jarraitu jario bat bere argitalpenak hemen ikusteko</string>
+    <string name="empty_filter">Ez dago iragazki hauekin bat datorren edukirik</string>
+    <string name="feeds">Jarioak</string>
+    <string name="follow">Jarraitu</string>
+    <string name="following_empty">Oraindik ez dago jaririk</string>
+    <string name="home">Hasiera</string>
+    <string name="load_error">Ezin izan dira jarioak kargatu</string>
+    <string name="mark_all_read">Markatu dena irakurrita</string>
+    <string name="more_options">Aukera gehiago</string>
+    <string name="opml_empty">Fitxategi honetan ez dago jariorik</string>
+    <string name="opml_export">Esportatu jarraipenak OPML gisa</string>
+    <string name="opml_export_description">Beste jario-irakurgailuek inporta dezaketen fitxategia.</string>
+    <string name="opml_import">Inportatu jarraipenak OPMLtik</string>
+    <string name="opml_import_description">Fitxategiko jario bakoitza jarraitzen du; lehendik jarraitzen dituzunak bere horretan geratzen dira.</string>
+    <string name="opml_importing">Inportatzen: %1$d/%2$d</string>
+    <string name="opml_result">Gehituak: %1$d · Lehendik jarraituak: %2$d · Hutsegiteak: %3$d</string>
+    <string name="partial_error">Ezin izan dira %1$d iturri kargatu</string>
+    <string name="plugin_description">Jarraitu RSS eta Atom jario publikoak. Irakurri gabea gailu honetan geratzen da.</string>
+    <string name="plugin_name">RSS</string>
+    <string name="reader_empty">Oraindik ez dago irakurtzekorik</string>
+    <string name="reset_filters">Berrezarri iragazkiak</string>
+    <string name="retry">Saiatu berriro</string>
+    <string name="set_tag">Ezarri etiketa</string>
+    <string name="settings">Ezarpenak</string>
+    <string name="settings_blurb">Saioa hasi gabe. Jarraitu jario publikoak. Irakurri gabea eta etiketak gailu honetan geratzen dira.</string>
+    <string name="tag">Etiketa</string>
+    <string name="tag_hint">Etiketa laburra, adibidez Albisteak edo Blogak</string>
+    <string name="unfollow">Jarraitzeari utzi</string>
+    <string name="unread">Irakurri gabe</string>
+</resources>

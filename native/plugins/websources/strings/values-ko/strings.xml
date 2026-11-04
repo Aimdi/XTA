@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Web sources' text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">소스 추가</string>
+    <string name="add_link">링크로 추가</string>
+    <string name="back">뒤로</string>
+    <string name="cancel">취소</string>
+    <plurals name="comments">
+        <item quantity="other">댓글 %1$d개</item>
+    </plurals>
+    <string name="consent_from">%1$s에서</string>
+    <string name="consent_read_only">공개 페이지만 읽을 수 있습니다. 내 계정을 사용하거나 무엇이든 게시할 수 없습니다.</string>
+    <string name="consent_sites">다음 사이트의 페이지를 읽습니다:</string>
+    <string name="consent_title">%1$s을(를) 추가할까요?</string>
+    <string name="discussion">토론</string>
+    <string name="empty">아직 소스가 없습니다. 공개 목록이나 링크로 추가하세요.</string>
+    <string name="failure_blocked">이 페이지는 소스 목록에 있는 사이트의 페이지가 아닙니다.</string>
+    <string name="failure_status">사이트가 오류 %1$s(으)로 응답했습니다.</string>
+    <string name="failure_too_large">이 페이지는 너무 커서 읽을 수 없습니다.</string>
+    <string name="failure_unreachable">사이트에 연결할 수 없습니다.</string>
+    <string name="follow">팔로우</string>
+    <string name="install">추가</string>
+    <string name="installed">추가됨</string>
+    <string name="link">소스 링크</string>
+    <string name="link_placeholder">https://example.org/source.json</string>
+    <string name="list_empty">지금은 아무것도 없습니다.</string>
+    <plurals name="lists">
+        <item quantity="other">목록 %1$d개</item>
+    </plurals>
+    <string name="more_options">더보기</string>
+    <string name="ok">확인</string>
+    <string name="open_in_browser">브라우저에서 열기</string>
+    <string name="plugin_description">공개 목록이나 링크로 간단한 사이트를 추가하세요. 소스는 공개 페이지만 읽고, 새 사이트를 읽기 전에 먼저 묻습니다.</string>
+    <string name="plugin_name">웹 소스</string>
+    <plurals name="points">
+        <item quantity="other">%1$d점</item>
+    </plurals>
+    <string name="published">공개 소스</string>
+    <string name="published_unreachable">공개 목록을 불러올 수 없습니다.</string>
+    <string name="reading">소스를 읽는 중…</string>
+    <string name="refused_detail">위치: %1$s</string>
+    <string name="refused_insecure">이 소스는 목록에 없는 사이트를 읽거나 HTTPS 없이 읽으려고 합니다.</string>
+    <string name="refused_invalid">이 소스 파일에 오류가 있습니다.</string>
+    <string name="refused_newer">이 소스는 더 새로운 버전의 XTA가 필요합니다.</string>
+    <string name="refused_too_large">이 소스는 XTA가 허용하는 범위를 넘습니다.</string>
+    <string name="refused_unreadable">웹 소스 파일이 아닙니다.</string>
+    <string name="remove">소스 제거</string>
+    <string name="remove_confirm">%1$s을(를) 제거할까요? 여기서 팔로우한 목록도 함께 제거됩니다.</string>
+    <string name="retry">재시도</string>
+    <string name="review_update">업데이트 검토</string>
+    <string name="search_in">%1$s 검색</string>
+    <string name="unfollow">언팔로우</string>
+    <string name="unreachable">소스 파일을 읽을 수 없습니다. 링크와 연결을 확인하세요.</string>
+    <string name="update_title">%1$s을(를) 업데이트할까요?</string>
+</resources>

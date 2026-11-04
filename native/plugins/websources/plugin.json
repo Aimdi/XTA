@@ -1,0 +1,7 @@
+{
+  "id": "websources",
+  "version": "1.0.0",
+  "entry": "com.aimdi.xtanative.plugins.websources.WebSourcesPlugin",
+  "category": "sites",
+  "private": false
+}

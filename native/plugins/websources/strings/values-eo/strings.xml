@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Web sources' text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Aldoni fonton</string>
+    <string name="add_link">Aldoni per ligilo</string>
+    <string name="back">Antaŭen</string>
+    <string name="cancel">Rezigni</string>
+    <plurals name="comments">
+        <item quantity="one">%1$d komento</item>
+        <item quantity="other">%1$d komentoj</item>
+    </plurals>
+    <string name="consent_from">De %1$s</string>
+    <string name="consent_read_only">Ĝi povas nur legi publikajn paĝojn. Ĝi ne povas uzi viajn kontojn nek afiŝi ion ajn.</string>
+    <string name="consent_sites">Ĝi legos paĝojn de ĉi tiuj retejoj:</string>
+    <string name="consent_title">Ĉu aldoni %1$s?</string>
+    <string name="discussion">Diskuto</string>
+    <string name="empty">Ankoraŭ neniuj fontoj. Aldonu unu el la publikigita listo aŭ per ligilo.</string>
+    <string name="failure_blocked">Ĉi tiu paĝo ne estas en retejo, kiun la fonto listigas.</string>
+    <string name="failure_status">La retejo respondis per eraro %1$s.</string>
+    <string name="failure_too_large">Ĉi tiu paĝo estas tro granda por legi.</string>
+    <string name="failure_unreachable">Ne eblis atingi la retejon.</string>
+    <string name="follow">Sekvi</string>
+    <string name="install">Aldoni</string>
+    <string name="installed">Aldonita</string>
+    <string name="link">Ligilo de fonto</string>
+    <string name="link_placeholder">https://example.org/source.json</string>
+    <string name="list_empty">Nenio estas ĉi tie nun.</string>
+    <plurals name="lists">
+        <item quantity="one">%1$d listo</item>
+        <item quantity="other">%1$d listoj</item>
+    </plurals>
+    <string name="more_options">Pliaj agoj</string>
+    <string name="ok">Bone</string>
+    <string name="open_in_browser">Malfermi en retumilo</string>
+    <string name="plugin_description">Aldonu simplajn retejojn el publikigita listo aŭ per ligilo. Fonto legas nur publikajn paĝojn kaj demandas antaŭ ol legi novan retejon.</string>
+    <string name="plugin_name">Retaj fontoj</string>
+    <plurals name="points">
+        <item quantity="one">%1$d poento</item>
+        <item quantity="other">%1$d poentoj</item>
+    </plurals>
+    <string name="published">Publikigitaj fontoj</string>
+    <string name="published_unreachable">Ne eblis ŝargi la publikigitan liston.</string>
+    <string name="reading">Legado de la fonto…</string>
+    <string name="refused_detail">Kie: %1$s</string>
+    <string name="refused_insecure">Ĉi tiu fonto legus retejon, kiun ĝi ne listigas, aŭ sen HTTPS.</string>
+    <string name="refused_invalid">La dosiero de ĉi tiu fonto enhavas eraron.</string>
+    <string name="refused_newer">Ĉi tiu fonto bezonas pli novan version de XTA.</string>
+    <string name="refused_too_large">Ĉi tiu fonto transpasas tion, kion XTA permesas.</string>
+    <string name="refused_unreadable">Ĉi tio ne estas dosiero de reta fonto.</string>
+    <string name="remove">Forigi fonton</string>
+    <string name="remove_confirm">Ĉu forigi %1$s? La listoj, kiujn vi sekvas el ĝi, ankaŭ estos forigitaj.</string>
+    <string name="retry">Reprovi</string>
+    <string name="review_update">Kontroli ĝisdatigon</string>
+    <string name="search_in">Serĉi en %1$s</string>
+    <string name="unfollow">Ne plu sekvi</string>
+    <string name="unreachable">Ne eblis legi la dosieron de la fonto. Kontrolu la ligilon kaj vian konekton.</string>
+    <string name="update_title">Ĉu ĝisdatigi %1$s?</string>
+</resources>

@@ -10,9 +10,9 @@ Like XTA, it only reads: nothing is posted, liked or followed on X or on any oth
 
 ### The other networks
 
-Every network but X is a plugin you add from **Settings → Plugin store**, and remove there just as easily. In this prerelease: **Bluesky, Mastodon, Threads, Instagram, Reddit, Hacker News, Pixiv, Substack and Booru**, each with XTA's screens and settings, and **EhViewer and TikTok**, private as in XTA: the store lists them once **Show private plugins** is on, in its menu. RSS, the web sources, Stocks and the Immich, Karakeep and Deepmarks saves come in later prereleases.
+Every network but X is a plugin you add from **Settings → Plugin store**, and remove there just as easily. In this prerelease: **Bluesky, Mastodon, Threads, Instagram, Reddit, Hacker News, Pixiv, Substack, Booru, RSS, the web sources and Stocks**, each with XTA's screens and settings, and **EhViewer and TikTok**, private as in XTA: the store lists them once **Show private plugins** is on, in its menu. With Stocks, X posts show the price strip under their cashtags, and a cashtag opens its ticker. The Immich, Karakeep and Deepmarks saves come in a later prerelease.
 
-A network's follows in your XTA backup wait for its plugin and arrive when you add it; an export from XTA Native writes them where XTA reads them back. Where XTA lets a network join Home's timelines, groups, Saved and downloads, its plugin can too; Reddit and Bluesky already do, the others follow.
+A network's follows in your XTA backup wait for its plugin and arrive when you add it; an export from XTA Native writes them where XTA reads them back. Where XTA lets a network join Home's timelines, groups, Saved and downloads, its plugin can too; Reddit, Bluesky, RSS and the web sources already do, TikTok joins the groups, and the others follow.
 
 ### On Linux
 

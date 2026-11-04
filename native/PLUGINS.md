@@ -68,6 +68,8 @@ against one it supports.
 | `feed` | a `PluginFeed`: its followed accounts' posts for Home's timelines and the groups ([below](#posts-in-homes-timelines)), or none |
 | `postActions` | where its posts lead where the app draws them (Home, groups, Saved), with their bookmark and menu, or none |
 | `archived(content)` | one of its posts the archive kept, read back as a `NetworkPost` for Saved ([below](#saved-notes-and-likes)), or null |
+| `cashtagStrip` | what it draws under an X post that names tickers (Stocks' price strip), or none |
+| `routeForCashtag(symbol)` | its own screen for a cashtag tapped in an X post (Stocks' ticker), or null: the tap searches X |
 
 A `PluginBody` is drawn in a `PluginFrame`: `padding` (the list's content
 padding, clear of the app's bars), `toTop` (grows when the reader asks for
@@ -107,9 +109,13 @@ with a test.
   download), `ZoomableImage`, and `rememberImageRequest` for pictures that
   need request headers.
 - Reads and lists: `Fetch` (one read, kept on screen through a failure),
-  `MergedFeed` (accounts' pages merged as they come), `PagedItems` with
-  `PagedList`, `NetworkProblemView` and `NetworkProblemRow` with `problemOf`,
-  `RetryRow`, `MessageText` and `EmptyPane`.
+  `MergedFeed` (accounts' pages merged as they come), `FeedReads` (a feed's
+  reads, one failing without the others), `PagedItems` with `PagedList`,
+  `NetworkProblemView` and `NetworkProblemRow` with `problemOf`, `RetryRow`,
+  `MessageText` and `EmptyPane`.
+- Articles and X posts: `RssReaderScreen`, the article reader RSS and the web
+  sources open (its place kept, an offline copy), and X posts drawn in a
+  plugin with `rememberXPostActions` and `XPostMedia`.
 - Screens: `PluginScaffold`, `PluginRoute` (a screen and its arguments as
   text, for `open`), `PluginChipTabs` over a home tab, `WithSettings`,
   `PluginShelf` (what one screen hands the next), `rememberKept` (state kept
@@ -125,9 +131,18 @@ with a test.
 - Words: `PluginStrings` with `pluginString` and `pluginPlural`
   (`pluralCategory` gives each language's plural forms).
 
-`:ui`'s `ui.common` (avatar, hairline, loading row, times) is there too. The
-pieces' words are the app's, in all its languages: a plugin draws them
-without strings of its own.
+`PluginSettings` reads a preference with `get(pref)` and `observe(pref)` and
+changes one of its own with `set(pref, value)`; its own are the keys under
+`plugin.<id>.` and the few its network's NetworkPrefs keeps where XTA kept
+them (`keysOf`, Stocks' `other.ticker_chart`).
+
+`:ui`'s `ui.common` (avatar, hairline, loading row, times) is there too, and a
+plugin may draw with the app's other public building blocks where they fit:
+its icon sets (`PostIcons`, `DiscoverIcons`, `GroupIcons`), `ThreadRows` for
+X posts, `rememberRowDrag` for a list dragged into order. Whatever a plugin
+uses is part of the plugin API: `tool/plugin_abi.py` checks that plugins
+built before still find it. The pieces' words are the app's, in all its
+languages: a plugin draws them without strings of its own.
 
 ### Posts in Home's timelines
 

@@ -10,6 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalUriHandler
@@ -24,12 +26,16 @@ import androidx.savedstate.read
 import com.aimdi.xtanative.data.plugins.AppPlugins
 import com.aimdi.xtanative.data.plugins.Destination
 import com.aimdi.xtanative.data.plugins.NavTarget
+import com.aimdi.xtanative.data.plugins.RunningPlugin
 import com.aimdi.xtanative.ui.home.LocalHomeNetworks
 import com.aimdi.xtanative.ui.links.LinkOpener
 import com.aimdi.xtanative.ui.links.LinkScreens
 import com.aimdi.xtanative.ui.links.LocalLinks
 import com.aimdi.xtanative.ui.plugins.MediaPager
+import com.aimdi.xtanative.ui.plugins.XtaPlugin
 import com.aimdi.xtanative.ui.plugins.currentLanguage
+import com.aimdi.xtanative.ui.post.LocalCashtagOpener
+import com.aimdi.xtanative.ui.post.LocalCashtagStrip
 import com.aimdi.xtanative.ui.settings.SettingsRoutes
 import java.net.URLEncoder
 import kotlinx.coroutines.flow.first
@@ -58,15 +64,51 @@ internal object PluginRoutes {
 val LocalPlugins = staticCompositionLocalOf<AppPlugins> { error("No AppPlugins provided") }
 
 /**
- * [plugins] for everything inside [content], and their home tabs on Home's
- * strip ([LocalHomeNetworks]), named in the reader's language.
+ * [plugins] for everything inside [content], their home tabs on Home's
+ * strip ([LocalHomeNetworks]), named in the reader's language, and what an
+ * X post's cashtags do with them ([PluginCashtags]).
  */
 @Composable
 fun PluginsFrame(plugins: AppPlugins, content: @Composable () -> Unit) {
     val language = currentLanguage()
     LaunchedEffect(plugins, language) { plugins.useLanguage(language) }
     val networks = remember(plugins) { PluginHomeNetworks(plugins) }
-    CompositionLocalProvider(LocalPlugins provides plugins, LocalHomeNetworks provides networks, content = content)
+    val running by plugins.running.collectAsState()
+    val cashtags = remember(plugins, running) { PluginCashtags(plugins, running) }
+    CompositionLocalProvider(
+        LocalPlugins provides plugins,
+        LocalHomeNetworks provides networks,
+        LocalCashtagStrip provides cashtags.strip,
+        LocalCashtagOpener provides cashtags.opener,
+        content = content,
+    )
+}
+
+/**
+ * What the running plugins do with an X post's cashtags: the first price
+ * strip one draws under the post ([XtaPlugin.cashtagStrip]), and the first
+ * screen one has for a tapped cashtag ([XtaPlugin.routeForCashtag]). With
+ * none, a post has no strip and a cashtag searches X, as without plugins.
+ */
+private class PluginCashtags(private val plugins: AppPlugins, private val running: List<RunningPlugin>) {
+    val strip: (@Composable (List<String>) -> Unit)? = running.firstNotNullOfOrNull { guarded { it.plugin.cashtagStrip } }
+
+    val opener: ((String) -> Boolean)? = if (running.isEmpty()) null else ::open
+
+    private fun open(symbol: String): Boolean {
+        val (id, route) = running.firstNotNullOfOrNull { each -> guarded { each.plugin.routeForCashtag(symbol) }?.let { each.plugin.id to it } } ?: return false
+        plugins.navigator.go(Destination.PluginRoute(id, route))
+        return true
+    }
+
+    /** A plugin's answer; null when its code fails, or was built against another API. */
+    private fun <T> guarded(ask: () -> T): T? = try {
+        ask()
+    } catch (e: Exception) {
+        null
+    } catch (e: LinkageError) {
+        null
+    }
 }
 
 /**

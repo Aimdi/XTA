@@ -135,6 +135,21 @@ abstract class XtaPlugin {
     /** Its own screen named [route] (one [PluginHost.open] pushes, or [routeFor] gave); null when it has none by that name. */
     open fun screen(route: String): PluginScreen? = null
 
+    /**
+     * What it draws under an X post that names tickers, as Stocks draws its
+     * price strip (cashtag_quotes.dart): [symbols] are the post's first
+     * cashtags, upper-cased, each once, and none for a quoted post. Null
+     * when it draws nothing there.
+     */
+    open val cashtagStrip: (@Composable (symbols: List<String>) -> Unit)? get() = null
+
+    /**
+     * The route of its own screen for a cashtag tapped in an X post
+     * ([symbol] without its `$`), as Stocks' ticker screen; null when it has
+     * none, and the tap searches X for the cashtag as it does without it.
+     */
+    open fun routeForCashtag(symbol: String): String? = null
+
     /** What it keeps that the app's backup holds. */
     open val backupSections: List<PluginBackupSection> get() = emptyList()
 

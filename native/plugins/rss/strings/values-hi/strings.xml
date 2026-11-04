@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RSS's text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">फ़ीड जोड़ें</string>
+    <string name="add_error">वह फ़ीड पढ़ी नहीं जा सकी</string>
+    <string name="add_hint">साइट या फ़ीड का URL चिपकाएँ। XTA RSS या Atom फ़ीड ढूँढता है।</string>
+    <string name="add_placeholder">https://example.com/feed</string>
+    <string name="add_to_group">समूह में जोड़ें</string>
+    <string name="all">सभी</string>
+    <string name="cancel">रद्द करें</string>
+    <string name="close">बंद करें</string>
+    <string name="data_exported_to">डेटा %1$s में निर्यात किया गया</string>
+    <string name="empty">यहाँ पोस्ट देखने के लिए कोई फ़ीड फ़ॉलो करें</string>
+    <string name="empty_filter">इन फ़िल्टर से मेल खाने वाली कोई सामग्री नहीं है</string>
+    <string name="feeds">फ़ीड</string>
+    <string name="follow">फ़ॉलो करें</string>
+    <string name="following_empty">अभी कोई फ़ीड नहीं</string>
+    <string name="home">होम</string>
+    <string name="load_error">फ़ीड लोड नहीं हो सकीं</string>
+    <string name="mark_all_read">सभी को पढ़ा हुआ चिह्नित करें</string>
+    <string name="more_options">और विकल्प</string>
+    <string name="opml_empty">इस फ़ाइल में कोई फ़ीड नहीं है</string>
+    <string name="opml_export">फ़ॉलो की गई सूची OPML में निर्यात करें</string>
+    <string name="opml_export_description">एक फ़ाइल जिसे दूसरे फ़ीड रीडर आयात कर सकते हैं।</string>
+    <string name="opml_import">OPML से फ़ॉलो आयात करें</string>
+    <string name="opml_import_description">फ़ाइल में दी हर फ़ीड को फ़ॉलो करता है; जिन्हें आप पहले से फ़ॉलो करते हैं वे जैसी हैं वैसी रहती हैं।</string>
+    <string name="opml_importing">आयात हो रहा है: %2$d में से %1$d</string>
+    <string name="opml_result">जोड़े गए: %1$d · पहले से फ़ॉलो: %2$d · विफल: %3$d</string>
+    <string name="partial_error">%1$d स्रोत लोड नहीं हो सके</string>
+    <string name="plugin_description">सार्वजनिक RSS और Atom फ़ीड फ़ॉलो करें। अपठित इसी डिवाइस पर रहता है।</string>
+    <string name="plugin_name">RSS</string>
+    <string name="reader_empty">अभी पढ़ने के लिए कुछ नहीं है</string>
+    <string name="reset_filters">फ़िल्टर रीसेट करें</string>
+    <string name="retry">पुनः प्रयास करें</string>
+    <string name="set_tag">टैग सेट करें</string>
+    <string name="settings">सेटिंग</string>
+    <string name="settings_blurb">लॉगिन नहीं। सार्वजनिक फ़ीड फ़ॉलो करें। अपठित और टैग इसी डिवाइस पर रहते हैं।</string>
+    <string name="tag">टैग</string>
+    <string name="tag_hint">छोटा लेबल, जैसे समाचार या ब्लॉग</string>
+    <string name="unfollow">अनफ़ॉलो करें</string>
+    <string name="unread">अपठित</string>
+</resources>

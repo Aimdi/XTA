@@ -348,6 +348,11 @@ object EhViewerPrefs : NetworkPrefs("ehviewer") {
     val readingMode = choice(key("reading_mode"), EhReadingMode.LEFT_TO_RIGHT, EhReadingMode.entries)
 }
 
+/**
+ * Stocks, with the ticker screen a cashtag opens. Its chart and the reading
+ * of a cashtag naming both a coin and a stock are kept where XTA keeps them,
+ * under `other.`: they are the plugin's all the same.
+ */
 object StocksPrefs : NetworkPrefs("stocks") {
     override val enabled = flag(key("enabled"), false)
     override val showTab = flag(key("show_tab"), true)
@@ -357,6 +362,12 @@ object StocksPrefs : NetworkPrefs("stocks") {
 
     /** Posts shaped like a trading-signal group's arrive folded. */
     val foldSignalPosts = flag(key("fold_signal_posts"), false)
+
+    /** The chart on a ticker screen: the one thing it reads from outside X, so it can be switched off. */
+    val tickerChart = flag("other.ticker_chart", true)
+
+    /** `SYMBOL=stock` or `SYMBOL=crypto`, one per cashtag the reader chose for. */
+    val tickerInstruments = texts("other.ticker_instruments", emptyList(), seeded = false)
 }
 
 /** Karakeep: saved posts sent to the reader's own bookmark server. */

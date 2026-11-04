@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Web sources' text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Přidat zdroj</string>
+    <string name="add_link">Přidat z odkazu</string>
+    <string name="back">Zpět</string>
+    <string name="cancel">Zrušit</string>
+    <plurals name="comments">
+        <item quantity="one">%1$d komentář</item>
+        <item quantity="few">%1$d komentáře</item>
+        <item quantity="other">%1$d komentářů</item>
+    </plurals>
+    <string name="consent_from">Z %1$s</string>
+    <string name="consent_read_only">Může jen číst veřejné stránky. Nemůže používat vaše účty ani nic zveřejňovat.</string>
+    <string name="consent_sites">Bude číst stránky z těchto webů:</string>
+    <string name="consent_title">Přidat %1$s?</string>
+    <string name="discussion">Diskuse</string>
+    <string name="empty">Zatím žádné zdroje. Přidejte zdroj ze zveřejněného seznamu nebo odkazem.</string>
+    <string name="failure_blocked">Tato stránka není na žádném webu, který zdroj uvádí.</string>
+    <string name="failure_status">Web odpověděl chybou %1$s.</string>
+    <string name="failure_too_large">Tato stránka je příliš velká na přečtení.</string>
+    <string name="failure_unreachable">K webu se nepodařilo připojit.</string>
+    <string name="follow">Sledovat</string>
+    <string name="install">Přidat</string>
+    <string name="installed">Přidáno</string>
+    <string name="link">Odkaz na zdroj</string>
+    <string name="link_placeholder">https://example.org/source.json</string>
+    <string name="list_empty">Momentálně tu nic není.</string>
+    <plurals name="lists">
+        <item quantity="one">%1$d seznam</item>
+        <item quantity="few">%1$d seznamy</item>
+        <item quantity="other">%1$d seznamů</item>
+    </plurals>
+    <string name="more_options">Další možnosti</string>
+    <string name="ok">OK</string>
+    <string name="open_in_browser">Otevřít v prohlížeči</string>
+    <string name="plugin_description">Přidávejte jednoduché weby ze zveřejněného seznamu nebo odkazem. Zdroj čte jen veřejné stránky, a než začne číst nový web, zeptá se.</string>
+    <string name="plugin_name">Webové zdroje</string>
+    <plurals name="points">
+        <item quantity="one">%1$d bod</item>
+        <item quantity="few">%1$d body</item>
+        <item quantity="other">%1$d bodů</item>
+    </plurals>
+    <string name="published">Zveřejněné zdroje</string>
+    <string name="published_unreachable">Zveřejněný seznam se nepodařilo načíst.</string>
+    <string name="reading">Čtení zdroje…</string>
+    <string name="refused_detail">Kde: %1$s</string>
+    <string name="refused_insecure">Tento zdroj by četl web, který neuvádí, nebo bez HTTPS.</string>
+    <string name="refused_invalid">Soubor tohoto zdroje obsahuje chybu.</string>
+    <string name="refused_newer">Tento zdroj potřebuje novější verzi XTA.</string>
+    <string name="refused_too_large">Tento zdroj překračuje to, co XTA dovoluje.</string>
+    <string name="refused_unreadable">Toto není soubor webového zdroje.</string>
+    <string name="remove">Odebrat zdroj</string>
+    <string name="remove_confirm">Odebrat %1$s? Odeberou se i seznamy, které z něj sledujete.</string>
+    <string name="retry">Zkusit znovu</string>
+    <string name="review_update">Zkontrolovat aktualizaci</string>
+    <string name="search_in">Hledat v %1$s</string>
+    <string name="unfollow">Přestat sledovat</string>
+    <string name="unreachable">Soubor zdroje se nepodařilo přečíst. Zkontrolujte odkaz a připojení.</string>
+    <string name="update_title">Aktualizovat %1$s?</string>
+</resources>

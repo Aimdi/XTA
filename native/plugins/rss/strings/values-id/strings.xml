@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RSS's text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Tambah umpan</string>
+    <string name="add_error">Umpan itu tidak dapat dibaca</string>
+    <string name="add_hint">Tempel URL situs atau umpan. XTA menemukan umpan RSS atau Atom.</string>
+    <string name="add_placeholder">https://example.com/feed</string>
+    <string name="add_to_group">Tambahkan ke grup</string>
+    <string name="all">Semua</string>
+    <string name="cancel">Batal</string>
+    <string name="close">Tutup</string>
+    <string name="data_exported_to">Data diekspor ke %1$s</string>
+    <string name="empty">Ikuti umpan untuk melihat kirimannya di sini</string>
+    <string name="empty_filter">Tidak ada konten yang sesuai dengan filter ini</string>
+    <string name="feeds">Umpan</string>
+    <string name="follow">Ikuti</string>
+    <string name="following_empty">Belum ada umpan</string>
+    <string name="home">Beranda</string>
+    <string name="load_error">Umpan tidak dapat dimuat</string>
+    <string name="mark_all_read">Tandai semua sudah dibaca</string>
+    <string name="more_options">Opsi lainnya</string>
+    <string name="opml_empty">Tidak ada umpan di file ini</string>
+    <string name="opml_export">Ekspor langganan sebagai OPML</string>
+    <string name="opml_export_description">File yang bisa diimpor pembaca feed lain.</string>
+    <string name="opml_import">Impor langganan dari OPML</string>
+    <string name="opml_import_description">Mengikuti setiap umpan di file; yang sudah Anda ikuti tetap seperti semula.</string>
+    <string name="opml_importing">Mengimpor %1$d dari %2$d</string>
+    <string name="opml_result">Ditambahkan: %1$d · Sudah diikuti: %2$d · Gagal: %3$d</string>
+    <string name="partial_error">Tidak dapat memuat %1$d sumber</string>
+    <string name="plugin_description">Ikuti umpan RSS dan Atom publik. Yang belum dibaca tetap di perangkat ini.</string>
+    <string name="plugin_name">RSS</string>
+    <string name="reader_empty">Belum ada yang bisa dibaca</string>
+    <string name="reset_filters">Atur ulang filter</string>
+    <string name="retry">Ulang</string>
+    <string name="set_tag">Atur tag</string>
+    <string name="settings">Pengaturan</string>
+    <string name="settings_blurb">Tanpa masuk. Ikuti umpan publik. Yang belum dibaca dan tag tetap di perangkat ini.</string>
+    <string name="tag">Tag</string>
+    <string name="tag_hint">Label singkat, misalnya Berita atau Blog</string>
+    <string name="unfollow">Berhenti mengikuti</string>
+    <string name="unread">Belum dibaca</string>
+</resources>

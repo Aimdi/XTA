@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The RSS reader the RSS plugin and web sources open their articles in (ui/plugins/RssReader.kt), from XTA's ARB files. -->
+<resources>
+    <string name="plugin_reader_opened">閲覧済み</string>
+    <string name="plugin_reader_resumed">続きから再開</string>
+    <string name="plugin_reader_finished">読了</string>
+    <string name="plugin_reader_finish">読了にする</string>
+    <string name="plugin_reader_start_over">先頭に戻る</string>
+    <string name="plugin_reader_appearance">読書画面の表示</string>
+    <string name="plugin_reader_text_size">文字サイズ</string>
+    <string name="plugin_reader_line_spacing">行間</string>
+    <string name="plugin_rss_no_article">このフィードは元のページへのリンクだけです</string>
+</resources>

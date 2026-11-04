@@ -2,6 +2,10 @@ package com.aimdi.xtanative.networks
 
 import java.time.Instant
 
+/** The desktop browser XTA's Instagram and TikTok reads present themselves as, as XTA ships it. */
+const val DESKTOP_CHROME =
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+
 /**
  * One page of a list a network hands out page by page, and where the next
  * page starts: null when there is none.

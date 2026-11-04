@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Web sources' text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">添加来源</string>
+    <string name="add_link">通过链接添加</string>
+    <string name="back">返回</string>
+    <string name="cancel">取消</string>
+    <plurals name="comments">
+        <item quantity="other">%1$d 条评论</item>
+    </plurals>
+    <string name="consent_from">来自 %1$s</string>
+    <string name="consent_read_only">它只能读取公开页面，不能使用你的账号，也不能发布任何内容。</string>
+    <string name="consent_sites">它将读取以下网站的页面：</string>
+    <string name="consent_title">添加 %1$s？</string>
+    <string name="discussion">讨论</string>
+    <string name="empty">还没有来源。从已发布的列表或通过链接添加一个。</string>
+    <string name="failure_blocked">此页面不在来源列出的任何网站上。</string>
+    <string name="failure_status">网站返回了错误 %1$s。</string>
+    <string name="failure_too_large">此页面太大，无法读取。</string>
+    <string name="failure_unreachable">无法连接到网站。</string>
+    <string name="follow">关注</string>
+    <string name="install">添加</string>
+    <string name="installed">已添加</string>
+    <string name="link">来源链接</string>
+    <string name="link_placeholder">https://example.org/source.json</string>
+    <string name="list_empty">这里暂时没有内容。</string>
+    <plurals name="lists">
+        <item quantity="other">%1$d 个列表</item>
+    </plurals>
+    <string name="more_options">更多选项</string>
+    <string name="ok">确定</string>
+    <string name="open_in_browser">在浏览器中打开</string>
+    <string name="plugin_description">从已发布的列表或通过链接添加简单网站。来源只读取公开页面，读取新网站前会先征求你的同意。</string>
+    <string name="plugin_name">网页来源</string>
+    <plurals name="points">
+        <item quantity="other">%1$d 分</item>
+    </plurals>
+    <string name="published">已发布的来源</string>
+    <string name="published_unreachable">无法加载已发布的列表。</string>
+    <string name="reading">正在读取来源…</string>
+    <string name="refused_detail">位置：%1$s</string>
+    <string name="refused_insecure">此来源会读取未在其列表中的网站，或不使用 HTTPS。</string>
+    <string name="refused_invalid">此来源的文件有错误。</string>
+    <string name="refused_newer">此来源需要更新版本的 XTA。</string>
+    <string name="refused_too_large">此来源超出了 XTA 允许的范围。</string>
+    <string name="refused_unreadable">这不是网页来源文件。</string>
+    <string name="remove">移除来源</string>
+    <string name="remove_confirm">移除 %1$s？你从中关注的列表也会一并移除。</string>
+    <string name="retry">重试</string>
+    <string name="review_update">查看更新</string>
+    <string name="search_in">搜索 %1$s</string>
+    <string name="unfollow">取消关注</string>
+    <string name="unreachable">无法读取来源文件。请检查链接和网络连接。</string>
+    <string name="update_title">更新 %1$s？</string>
+</resources>

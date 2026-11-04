@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RSS's text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Akış ekle</string>
+    <string name="add_error">Bu akış okunamadı</string>
+    <string name="add_hint">Bir site veya akış adresi yapıştırın. XTA RSS veya Atom akışını bulur.</string>
+    <string name="add_placeholder">https://example.com/feed</string>
+    <string name="add_to_group">Bir gruba ekle</string>
+    <string name="all">Tümü</string>
+    <string name="cancel">İptal et</string>
+    <string name="close">Kapat</string>
+    <string name="data_exported_to">Veriler %1$s'a aktarıldı</string>
+    <string name="empty">Gönderilerini burada görmek için bir akış takip edin</string>
+    <string name="empty_filter">Bu filtrelerle eşleşen içerik yok</string>
+    <string name="feeds">Akışlar</string>
+    <string name="follow">Takip et</string>
+    <string name="following_empty">Henüz akış yok</string>
+    <string name="home">Ana sayfa</string>
+    <string name="load_error">Akışlar yüklenemedi</string>
+    <string name="mark_all_read">Tümünü okundu işaretle</string>
+    <string name="more_options">Diğer seçenekler</string>
+    <string name="opml_empty">Bu dosyada akış yok</string>
+    <string name="opml_export">Takip edilenleri OPML olarak dışa aktar</string>
+    <string name="opml_export_description">Diğer akış okuyucularının içe aktarabileceği bir dosya.</string>
+    <string name="opml_import">OPML'den takip edilenleri içe aktar</string>
+    <string name="opml_import_description">Dosyadaki her akışı takip eder; zaten takip ettikleriniz olduğu gibi kalır.</string>
+    <string name="opml_importing">İçe aktarılıyor: %1$d/%2$d</string>
+    <string name="opml_result">Eklendi: %1$d · Zaten takipte: %2$d · Başarısız: %3$d</string>
+    <string name="partial_error">%1$d kaynak yüklenemedi</string>
+    <string name="plugin_description">Herkese açık RSS ve Atom akışlarını takip edin. Okunmamışlar bu cihazda kalır.</string>
+    <string name="plugin_name">RSS</string>
+    <string name="reader_empty">Henüz okunacak bir şey yok</string>
+    <string name="reset_filters">Filtreleri sıfırla</string>
+    <string name="retry">Yeniden dene</string>
+    <string name="set_tag">Etiket ayarla</string>
+    <string name="settings">Ayarlar</string>
+    <string name="settings_blurb">Giriş yok. Herkese açık akışları takip edin. Okunmamışlar ve etiketler bu cihazda kalır.</string>
+    <string name="tag">Etiket</string>
+    <string name="tag_hint">Haberler veya Bloglar gibi kısa bir etiket</string>
+    <string name="unfollow">Takipten çık</string>
+    <string name="unread">Okunmamış</string>
+</resources>

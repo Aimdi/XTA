@@ -63,7 +63,8 @@ fun RunsText(
     maxLines: Int = Int.MAX_VALUE,
 ) {
     val linkColor = MaterialTheme.colorScheme.primary
-    val text = remember(runs, linkColor, actions) { annotated(runs, linkColor, actions) }
+    val cashtags = LocalCashtagOpener.current
+    val text = remember(runs, linkColor, actions, cashtags) { annotated(runs, linkColor, actions, cashtags) }
     if (text.isEmpty()) return
     Text(text, modifier = modifier, style = style, color = MaterialTheme.colorScheme.onSurface, maxLines = maxLines, overflow = TextOverflow.Ellipsis)
 }
@@ -84,7 +85,8 @@ fun ExpandablePostText(
 ) {
     val runs = remember(post) { XText.runs(post) }
     val linkColor = MaterialTheme.colorScheme.primary
-    val text = remember(runs, linkColor, actions) { annotated(runs, linkColor, actions) }
+    val cashtags = LocalCashtagOpener.current
+    val text = remember(runs, linkColor, actions, cashtags) { annotated(runs, linkColor, actions, cashtags) }
     if (text.isEmpty()) return
     var expanded by remember(post.id, post.text) { mutableStateOf(false) }
     var folds by remember(post.id, post.text, maxLines) { mutableStateOf(false) }
@@ -124,7 +126,8 @@ private fun Modifier.fadingBottom(): Modifier = graphicsLayer { compositingStrat
         )
     }
 
-internal fun annotated(runs: List<XRun>, linkColor: Color, actions: PostActions): AnnotatedString = buildAnnotatedString {
+/** [runs] with each link, mention and tag leading where X's would; a cashtag goes to [cashtags]' screen first ([LocalCashtagOpener]). */
+internal fun annotated(runs: List<XRun>, linkColor: Color, actions: PostActions, cashtags: ((String) -> Boolean)? = null): AnnotatedString = buildAnnotatedString {
     val styles = TextLinkStyles(SpanStyle(color = linkColor))
     for (run in runs) {
         when (run) {
@@ -134,7 +137,7 @@ internal fun annotated(runs: List<XRun>, linkColor: Color, actions: PostActions)
                 append(run.text)
             }
             is XRun.Hashtag -> withLink(LinkAnnotation.Clickable("#" + run.tag, styles) { actions.search("#" + run.tag) }) { append(run.text) }
-            is XRun.Cashtag -> withLink(LinkAnnotation.Clickable("$" + run.symbol, styles) { actions.search("$" + run.symbol) }) {
+            is XRun.Cashtag -> withLink(LinkAnnotation.Clickable("$" + run.symbol, styles) { if (cashtags?.invoke(run.symbol) != true) actions.search("$" + run.symbol) }) {
                 append(run.text)
             }
         }

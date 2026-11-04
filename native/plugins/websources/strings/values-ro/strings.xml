@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Web sources' text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Adaugă sursă</string>
+    <string name="add_link">Adaugă din link</string>
+    <string name="back">Înapoi</string>
+    <string name="cancel">Anulare</string>
+    <plurals name="comments">
+        <item quantity="one">%1$d comentariu</item>
+        <item quantity="few">%1$d comentarii</item>
+        <item quantity="other">%1$d comentarii</item>
+    </plurals>
+    <string name="consent_from">De la %1$s</string>
+    <string name="consent_read_only">Poate doar să citească pagini publice. Nu îți poate folosi conturile și nu poate publica nimic.</string>
+    <string name="consent_sites">Va citi pagini de pe aceste site-uri:</string>
+    <string name="consent_title">Adaugi %1$s?</string>
+    <string name="discussion">Discuție</string>
+    <string name="empty">Încă nu ai surse. Adaugă una din lista publicată sau printr-un link.</string>
+    <string name="failure_blocked">Această pagină nu se află pe niciun site din lista sursei.</string>
+    <string name="failure_status">Site-ul a răspuns cu eroarea %1$s.</string>
+    <string name="failure_too_large">Această pagină este prea mare pentru a fi citită.</string>
+    <string name="failure_unreachable">Site-ul nu a putut fi accesat.</string>
+    <string name="follow">Urmărește</string>
+    <string name="install">Adaugă</string>
+    <string name="installed">Adăugată</string>
+    <string name="link">Linkul sursei</string>
+    <string name="link_placeholder">https://example.org/source.json</string>
+    <string name="list_empty">Momentan nu e nimic aici.</string>
+    <plurals name="lists">
+        <item quantity="one">%1$d listă</item>
+        <item quantity="few">%1$d liste</item>
+        <item quantity="other">%1$d de liste</item>
+    </plurals>
+    <string name="more_options">Mai multe opțiuni</string>
+    <string name="ok">OK</string>
+    <string name="open_in_browser">Deschide în browser</string>
+    <string name="plugin_description">Adaugă site-uri simple dintr-o listă publicată sau printr-un link. O sursă citește doar pagini publice și întreabă înainte să citească un site nou.</string>
+    <string name="plugin_name">Surse web</string>
+    <plurals name="points">
+        <item quantity="one">%1$d punct</item>
+        <item quantity="few">%1$d puncte</item>
+        <item quantity="other">%1$d puncte</item>
+    </plurals>
+    <string name="published">Surse publicate</string>
+    <string name="published_unreachable">Lista publicată nu a putut fi încărcată.</string>
+    <string name="reading">Se citește sursa…</string>
+    <string name="refused_detail">Unde: %1$s</string>
+    <string name="refused_insecure">Această sursă ar citi un site pe care nu îl listează sau fără HTTPS.</string>
+    <string name="refused_invalid">Fișierul acestei surse conține o greșeală.</string>
+    <string name="refused_newer">Această sursă are nevoie de o versiune mai nouă de XTA.</string>
+    <string name="refused_too_large">Această sursă depășește ce permite XTA.</string>
+    <string name="refused_unreadable">Acesta nu este un fișier de sursă web.</string>
+    <string name="remove">Elimină sursa</string>
+    <string name="remove_confirm">Elimini %1$s? Listele pe care le urmărești din ea vor fi eliminate și ele.</string>
+    <string name="retry">Reîncercați</string>
+    <string name="review_update">Verifică actualizarea</string>
+    <string name="search_in">Caută în %1$s</string>
+    <string name="unfollow">Nu mai urmări</string>
+    <string name="unreachable">Fișierul sursei nu a putut fi citit. Verifică linkul și conexiunea.</string>
+    <string name="update_title">Actualizezi %1$s?</string>
+</resources>

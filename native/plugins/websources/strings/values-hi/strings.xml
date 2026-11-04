@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Web sources' text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">स्रोत जोड़ें</string>
+    <string name="add_link">लिंक से जोड़ें</string>
+    <string name="back">वापस</string>
+    <string name="cancel">रद्द करें</string>
+    <plurals name="comments">
+        <item quantity="one">%1$d टिप्पणी</item>
+        <item quantity="other">%1$d टिप्पणियाँ</item>
+    </plurals>
+    <string name="consent_from">%1$s से</string>
+    <string name="consent_read_only">यह केवल सार्वजनिक पेज पढ़ सकता है। यह आपके खातों का उपयोग नहीं कर सकता और कुछ भी पोस्ट नहीं कर सकता।</string>
+    <string name="consent_sites">यह इन साइटों के पेज पढ़ेगा:</string>
+    <string name="consent_title">%1$s जोड़ें?</string>
+    <string name="discussion">चर्चा</string>
+    <string name="empty">अभी कोई स्रोत नहीं है। प्रकाशित सूची से या लिंक से एक जोड़ें।</string>
+    <string name="failure_blocked">यह पेज स्रोत की सूची की किसी साइट पर नहीं है।</string>
+    <string name="failure_status">साइट ने त्रुटि %1$s के साथ जवाब दिया।</string>
+    <string name="failure_too_large">यह पेज पढ़ने के लिए बहुत बड़ा है।</string>
+    <string name="failure_unreachable">साइट तक पहुँचा नहीं जा सका।</string>
+    <string name="follow">फ़ॉलो करें</string>
+    <string name="install">जोड़ें</string>
+    <string name="installed">जोड़ा गया</string>
+    <string name="link">स्रोत का लिंक</string>
+    <string name="link_placeholder">https://example.org/source.json</string>
+    <string name="list_empty">अभी यहाँ कुछ नहीं है।</string>
+    <plurals name="lists">
+        <item quantity="one">%1$d सूची</item>
+        <item quantity="other">%1$d सूचियाँ</item>
+    </plurals>
+    <string name="more_options">और विकल्प</string>
+    <string name="ok">ठीक है</string>
+    <string name="open_in_browser">ब्राउज़र में खोलें</string>
+    <string name="plugin_description">प्रकाशित सूची से या लिंक से सरल साइटें जोड़ें। स्रोत केवल सार्वजनिक पेज पढ़ता है, और कोई नई साइट पढ़ने से पहले पूछता है।</string>
+    <string name="plugin_name">वेब स्रोत</string>
+    <plurals name="points">
+        <item quantity="one">%1$d अंक</item>
+        <item quantity="other">%1$d अंक</item>
+    </plurals>
+    <string name="published">प्रकाशित स्रोत</string>
+    <string name="published_unreachable">प्रकाशित सूची लोड नहीं हो सकी।</string>
+    <string name="reading">स्रोत पढ़ा जा रहा है…</string>
+    <string name="refused_detail">कहाँ: %1$s</string>
+    <string name="refused_insecure">यह स्रोत ऐसी साइट पढ़ेगा जो उसकी सूची में नहीं है, या बिना HTTPS के।</string>
+    <string name="refused_invalid">इस स्रोत की फ़ाइल में गलती है।</string>
+    <string name="refused_newer">इस स्रोत को XTA का नया संस्करण चाहिए।</string>
+    <string name="refused_too_large">यह स्रोत XTA की अनुमति से आगे जाता है।</string>
+    <string name="refused_unreadable">यह वेब स्रोत की फ़ाइल नहीं है।</string>
+    <string name="remove">स्रोत हटाएँ</string>
+    <string name="remove_confirm">%1$s हटाएँ? इससे आपकी फ़ॉलो की गई सूचियाँ भी हट जाएँगी।</string>
+    <string name="retry">पुनः प्रयास करें</string>
+    <string name="review_update">अपडेट देखें</string>
+    <string name="search_in">%1$s में खोजें</string>
+    <string name="unfollow">अनफ़ॉलो करें</string>
+    <string name="unreachable">स्रोत की फ़ाइल पढ़ी नहीं जा सकी। लिंक और अपना कनेक्शन जाँचें।</string>
+    <string name="update_title">%1$s अपडेट करें?</string>
+</resources>

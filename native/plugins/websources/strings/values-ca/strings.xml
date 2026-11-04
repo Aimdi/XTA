@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Web sources' text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Afegeix una font</string>
+    <string name="add_link">Afegeix des d’un enllaç</string>
+    <string name="back">Enrere</string>
+    <string name="cancel">Cancelar</string>
+    <plurals name="comments">
+        <item quantity="one">%1$d comentari</item>
+        <item quantity="many">%1$d comentaris</item>
+        <item quantity="other">%1$d comentaris</item>
+    </plurals>
+    <string name="consent_from">De %1$s</string>
+    <string name="consent_read_only">Només pot llegir pàgines públiques. No pot fer servir els teus comptes ni publicar res.</string>
+    <string name="consent_sites">Llegirà pàgines d’aquests llocs:</string>
+    <string name="consent_title">Vols afegir %1$s?</string>
+    <string name="discussion">Debat</string>
+    <string name="empty">Encara no hi ha fonts. Afegeix-ne una des de la llista publicada o amb un enllaç.</string>
+    <string name="failure_blocked">Aquesta pàgina no és a cap dels llocs de la llista de la font.</string>
+    <string name="failure_status">El lloc ha respost amb l’error %1$s.</string>
+    <string name="failure_too_large">Aquesta pàgina és massa gran per llegir-la.</string>
+    <string name="failure_unreachable">No s’ha pogut accedir al lloc.</string>
+    <string name="follow">Segueix</string>
+    <string name="install">Afegeix</string>
+    <string name="installed">Afegida</string>
+    <string name="link">Enllaç de la font</string>
+    <string name="link_placeholder">https://example.org/source.json</string>
+    <string name="list_empty">Ara mateix no hi ha res aquí.</string>
+    <plurals name="lists">
+        <item quantity="one">%1$d llista</item>
+        <item quantity="many">%1$d llistes</item>
+        <item quantity="other">%1$d llistes</item>
+    </plurals>
+    <string name="more_options">Més opcions</string>
+    <string name="ok">D'acord</string>
+    <string name="open_in_browser">Obre al navegador</string>
+    <string name="plugin_description">Afegeix llocs senzills des d’una llista publicada o amb un enllaç. Una font només llegeix pàgines públiques i pregunta abans de llegir un lloc nou.</string>
+    <string name="plugin_name">Fonts web</string>
+    <plurals name="points">
+        <item quantity="one">%1$d punt</item>
+        <item quantity="many">%1$d punts</item>
+        <item quantity="other">%1$d punts</item>
+    </plurals>
+    <string name="published">Fonts publicades</string>
+    <string name="published_unreachable">No s’ha pogut carregar la llista publicada.</string>
+    <string name="reading">S’està llegint la font…</string>
+    <string name="refused_detail">On: %1$s</string>
+    <string name="refused_insecure">Aquesta font llegiria un lloc que no té a la llista, o sense HTTPS.</string>
+    <string name="refused_invalid">El fitxer d’aquesta font té un error.</string>
+    <string name="refused_newer">Aquesta font necessita una versió més nova de XTA.</string>
+    <string name="refused_too_large">Aquesta font va més enllà del que permet XTA.</string>
+    <string name="refused_unreadable">Això no és un fitxer de font web.</string>
+    <string name="remove">Elimina la font</string>
+    <string name="remove_confirm">Vols eliminar %1$s? També s’eliminaran les llistes que hi segueixes.</string>
+    <string name="retry">Reintentar</string>
+    <string name="review_update">Revisa l’actualització</string>
+    <string name="search_in">Cerca a %1$s</string>
+    <string name="unfollow">Deixa de seguir</string>
+    <string name="unreachable">No s’ha pogut llegir el fitxer de la font. Comprova l’enllaç i la connexió.</string>
+    <string name="update_title">Vols actualitzar %1$s?</string>
+</resources>

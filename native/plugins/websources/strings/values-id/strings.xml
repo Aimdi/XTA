@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Web sources' text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Tambah sumber</string>
+    <string name="add_link">Tambah dari tautan</string>
+    <string name="back">Kembali</string>
+    <string name="cancel">Batal</string>
+    <plurals name="comments">
+        <item quantity="other">%1$d komentar</item>
+    </plurals>
+    <string name="consent_from">Dari %1$s</string>
+    <string name="consent_read_only">Sumber ini hanya dapat membaca halaman publik. Sumber ini tidak dapat menggunakan akun Anda atau memposting apa pun.</string>
+    <string name="consent_sites">Sumber ini akan membaca halaman dari situs berikut:</string>
+    <string name="consent_title">Tambahkan %1$s?</string>
+    <string name="discussion">Diskusi</string>
+    <string name="empty">Belum ada sumber. Tambahkan satu dari daftar yang diterbitkan atau lewat tautan.</string>
+    <string name="failure_blocked">Halaman ini tidak berada di situs mana pun dalam daftar sumber.</string>
+    <string name="failure_status">Situs menjawab dengan galat %1$s.</string>
+    <string name="failure_too_large">Halaman ini terlalu besar untuk dibaca.</string>
+    <string name="failure_unreachable">Situs tidak dapat dijangkau.</string>
+    <string name="follow">Ikuti</string>
+    <string name="install">Tambah</string>
+    <string name="installed">Ditambahkan</string>
+    <string name="link">Tautan sumber</string>
+    <string name="link_placeholder">https://example.org/source.json</string>
+    <string name="list_empty">Belum ada apa-apa di sini.</string>
+    <plurals name="lists">
+        <item quantity="other">%1$d daftar</item>
+    </plurals>
+    <string name="more_options">Opsi lainnya</string>
+    <string name="ok">Oke</string>
+    <string name="open_in_browser">Buka di browser</string>
+    <string name="plugin_description">Tambahkan situs sederhana dari daftar yang diterbitkan atau lewat tautan. Sumber hanya membaca halaman publik, dan bertanya sebelum membaca situs baru.</string>
+    <string name="plugin_name">Sumber web</string>
+    <plurals name="points">
+        <item quantity="other">%1$d poin</item>
+    </plurals>
+    <string name="published">Sumber yang diterbitkan</string>
+    <string name="published_unreachable">Daftar yang diterbitkan tidak dapat dimuat.</string>
+    <string name="reading">Membaca sumber…</string>
+    <string name="refused_detail">Lokasi: %1$s</string>
+    <string name="refused_insecure">Sumber ini akan membaca situs yang tidak ada di daftarnya, atau tanpa HTTPS.</string>
+    <string name="refused_invalid">File sumber ini berisi kesalahan.</string>
+    <string name="refused_newer">Sumber ini memerlukan versi XTA yang lebih baru.</string>
+    <string name="refused_too_large">Sumber ini melampaui batas yang diizinkan XTA.</string>
+    <string name="refused_unreadable">Ini bukan file sumber web.</string>
+    <string name="remove">Hapus sumber</string>
+    <string name="remove_confirm">Hapus %1$s? Daftar yang Anda ikuti darinya juga akan dihapus.</string>
+    <string name="retry">Ulang</string>
+    <string name="review_update">Tinjau pembaruan</string>
+    <string name="search_in">Cari di %1$s</string>
+    <string name="unfollow">Berhenti mengikuti</string>
+    <string name="unreachable">File sumber tidak dapat dibaca. Periksa tautan dan koneksi Anda.</string>
+    <string name="update_title">Perbarui %1$s?</string>
+</resources>

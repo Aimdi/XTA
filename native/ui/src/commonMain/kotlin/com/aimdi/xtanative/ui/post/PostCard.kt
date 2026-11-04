@@ -60,6 +60,13 @@ import org.jetbrains.compose.resources.stringResource
  */
 val LocalCashtagStrip = staticCompositionLocalOf<(@Composable (symbols: List<String>) -> Unit)?> { null }
 
+/**
+ * Where a cashtag tapped in a post goes instead of X's search for it: an
+ * installed plugin's screen for the symbol (Stocks' ticker), answering
+ * whether one opened. Without one, or when none opens, the tap searches X.
+ */
+val LocalCashtagOpener = staticCompositionLocalOf<((symbol: String) -> Boolean)?> { null }
+
 /** One timeline row, or a thread X groups, with the line under it. With [playing], its first video plays in place. */
 @Composable
 fun ThreadRows(thread: XThread, actions: PostActions, pinnedIds: Set<String> = emptySet(), playing: Boolean = false) {

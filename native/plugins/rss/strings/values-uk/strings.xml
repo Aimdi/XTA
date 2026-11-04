@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RSS's text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Додати стрічку</string>
+    <string name="add_error">Не вдалося прочитати цю стрічку</string>
+    <string name="add_hint">Вставте адресу сайта чи стрічки. XTA знайде RSS або Atom.</string>
+    <string name="add_placeholder">https://example.com/feed</string>
+    <string name="add_to_group">Додати до групи</string>
+    <string name="all">Усе</string>
+    <string name="cancel">Скасувати</string>
+    <string name="close">Закрити</string>
+    <string name="data_exported_to">Дані експортовано до %1$s</string>
+    <string name="empty">Підпишіться на стрічку, щоб бачити її дописи тут</string>
+    <string name="empty_filter">Немає матеріалів, що відповідають цим фільтрам</string>
+    <string name="feeds">Стрічки</string>
+    <string name="follow">Стежити</string>
+    <string name="following_empty">Поки немає стрічок</string>
+    <string name="home">Головна</string>
+    <string name="load_error">Не вдалося завантажити стрічки</string>
+    <string name="mark_all_read">Позначити все як прочитане</string>
+    <string name="more_options">Інші дії</string>
+    <string name="opml_empty">У цьому файлі немає стрічок</string>
+    <string name="opml_export">Експортувати підписки в OPML</string>
+    <string name="opml_export_description">Файл, який можуть імпортувати інші читачі стрічок.</string>
+    <string name="opml_import">Імпортувати підписки з OPML</string>
+    <string name="opml_import_description">Підписується на кожну стрічку з файлу; наявні підписки лишаються як є.</string>
+    <string name="opml_importing">Імпорт: %1$d з %2$d</string>
+    <string name="opml_result">Додано: %1$d · Уже в підписках: %2$d · Не вдалося: %3$d</string>
+    <string name="partial_error">Не вдалося завантажити джерела: %1$d</string>
+    <string name="plugin_description">Стежте за відкритими стрічками RSS і Atom. Непрочитане лишається на цьому пристрої.</string>
+    <string name="plugin_name">RSS</string>
+    <string name="reader_empty">Поки немає що читати</string>
+    <string name="reset_filters">Скинути фільтри</string>
+    <string name="retry">Повторити</string>
+    <string name="set_tag">Задати мітку</string>
+    <string name="settings">Налаштування</string>
+    <string name="settings_blurb">Без входу. Стежте за відкритими стрічками. Непрочитане й мітки лишаються на цьому пристрої.</string>
+    <string name="tag">Мітка</string>
+    <string name="tag_hint">Коротка мітка, наприклад Новини чи Блоги</string>
+    <string name="unfollow">Відписатися</string>
+    <string name="unread">Непрочитане</string>
+</resources>

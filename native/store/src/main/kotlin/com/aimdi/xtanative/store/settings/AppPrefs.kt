@@ -203,8 +203,8 @@ object AccessibilityPrefs : PrefSection() {
     val disableAnimations = flag("accessibility.disable_animations", false)
     val haptics = flag("accessibility.haptic_feedback", true)
 
-    /** The TradingView chart on a ticker screen, the one thing XTA loads from outside X. */
-    val tickerChart = flag("other.ticker_chart", true)
+    /** The chart on a ticker screen, which Settings › Accessibility also offers: Stocks' own ([StocksPrefs.tickerChart]). */
+    val tickerChart: Pref<Boolean> get() = StocksPrefs.tickerChart
 
     /** Off by default: a double-tap handler makes every single tap wait for a second. */
     val doubleTapLike = flag("gestures.double_tap_like", false)

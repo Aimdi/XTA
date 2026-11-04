@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RSS's text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Feed hinzufügen</string>
+    <string name="add_error">Dieser Feed konnte nicht gelesen werden</string>
+    <string name="add_hint">Füge eine Seiten- oder Feed-URL ein. XTA findet den RSS- oder Atom-Feed.</string>
+    <string name="add_placeholder">https://example.com/feed</string>
+    <string name="add_to_group">Zu einer Gruppe hinzufügen</string>
+    <string name="all">Alle</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="close">Schließen</string>
+    <string name="data_exported_to">Daten wurden exportiert nach %1$s</string>
+    <string name="empty">Folge einem Feed, um seine Beiträge hier zu sehen</string>
+    <string name="empty_filter">Keine Inhalte entsprechen diesen Filtern</string>
+    <string name="feeds">Feeds</string>
+    <string name="follow">Folgen</string>
+    <string name="following_empty">Noch keine Feeds</string>
+    <string name="home">Start</string>
+    <string name="load_error">Feeds konnten nicht geladen werden</string>
+    <string name="mark_all_read">Alles als gelesen markieren</string>
+    <string name="more_options">Weitere Optionen</string>
+    <string name="opml_empty">Diese Datei enthält keine Feeds</string>
+    <string name="opml_export">Abos als OPML exportieren</string>
+    <string name="opml_export_description">Eine Datei, die andere Feedreader importieren können.</string>
+    <string name="opml_import">Abos aus OPML importieren</string>
+    <string name="opml_import_description">Abonniert jeden Feed aus der Datei; bestehende Abos bleiben unverändert.</string>
+    <string name="opml_importing">Import: %1$d von %2$d</string>
+    <string name="opml_result">Hinzugefügt: %1$d · Schon abonniert: %2$d · Fehlgeschlagen: %3$d</string>
+    <string name="partial_error">%1$d Quellen konnten nicht geladen werden</string>
+    <string name="plugin_description">Öffentliche RSS- und Atom-Feeds folgen. Ungelesenes bleibt auf diesem Gerät.</string>
+    <string name="plugin_name">RSS</string>
+    <string name="reader_empty">Noch keine Inhalte zum Lesen</string>
+    <string name="reset_filters">Filter zurücksetzen</string>
+    <string name="retry">Erneut versuchen</string>
+    <string name="set_tag">Tag setzen</string>
+    <string name="settings">Einstellungen</string>
+    <string name="settings_blurb">Kein Login. Öffentlichen Feeds folgen. Ungelesenes und Tags bleiben auf diesem Gerät.</string>
+    <string name="tag">Tag</string>
+    <string name="tag_hint">Ein kurzes Label, etwa Nachrichten oder Blogs</string>
+    <string name="unfollow">Nicht mehr folgen</string>
+    <string name="unread">Ungelesen</string>
+</resources>

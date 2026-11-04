@@ -96,16 +96,13 @@ object SubscriptionPrefs : PrefSection() {
     val customOrder = text("subscription.order_by.custom", "")
 }
 
-/** The Discover tab: trend places, and how a cashtag naming both a coin and a stock is read. */
+/** The Discover tab: trend places. */
 object DiscoverPrefs : PrefSection() {
     /** The places offered for trends and the one in use, as JSON. */
     val trendLocations = text(
         "trends.locations",
         """{"active":{"name":"Worldwide","woeid":1},"locations":[{"name":"Worldwide","woeid":1}]}""",
     )
-
-    /** `SYMBOL=stock` or `SYMBOL=crypto`, one per cashtag the reader chose for. */
-    val tickerInstruments = texts("other.ticker_instruments", emptyList(), seeded = false)
 }
 
 /** Recent searches per network, as JSON; [com.aimdi.xtanative.store.search.RecentSearches] reads them. */

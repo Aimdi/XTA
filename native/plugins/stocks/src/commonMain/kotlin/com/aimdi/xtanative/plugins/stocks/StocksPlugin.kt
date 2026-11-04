@@ -1,0 +1,65 @@
+package com.aimdi.xtanative.plugins.stocks
+
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import com.aimdi.xtanative.networks.stocks.StocksRoute
+import com.aimdi.xtanative.networks.stocks.StocksRoutes
+import com.aimdi.xtanative.store.backup.BackupKeys
+import com.aimdi.xtanative.ui.plugins.PluginBackupSection
+import com.aimdi.xtanative.ui.plugins.PluginBody
+import com.aimdi.xtanative.ui.plugins.PluginFootprint
+import com.aimdi.xtanative.ui.plugins.PluginHost
+import com.aimdi.xtanative.ui.plugins.PluginScreen
+import com.aimdi.xtanative.ui.plugins.XtaPlugin
+
+/**
+ * Stocks as a downloadable plugin, as XTA's Stocks plugin reads the markets:
+ * a watchlist of tickers and tokens with their quotes, X's posts about them,
+ * the trending tickers and the markets, each ticker's and token's page, and
+ * the price strip under an X post that names tickers, whose cashtags open
+ * the ticker's page. Read-only: quotes are shown, nothing is traded, no
+ * account is needed, and the watchlist stays on the device.
+ */
+class StocksPlugin : XtaPlugin() {
+    private lateinit var app: StocksApp
+
+    override val id: String = "stocks"
+
+    /** StockTwits green, the colour of a rising tape on that app. */
+    override val brandColor: Color = Color(0xFF00C805)
+    override val icon: ImageVector get() = StocksIcons.CandlestickChart
+    override val category: Category = Category.MARKETS
+
+    override fun title(language: String): String = Strings.plugin_name.get(language)
+
+    override fun description(language: String): String = Strings.plugin_description.get(language)
+
+    override fun attach(host: PluginHost) {
+        app = StocksApp(host)
+    }
+
+    override fun detach() = app.close()
+
+    override val homeTab: PluginBody = { frame -> StocksHome(app, frame) }
+
+    override fun screen(route: String): PluginScreen? = when (val opened = StocksRoutes.parse(route)) {
+        is StocksRoute.Ticker -> tickerScreen(opened.symbol)
+        is StocksRoute.Asset -> assetScreen(opened)
+        null -> null
+    }
+
+    private fun tickerScreen(symbol: String): PluginScreen = { TickerScreen(app, symbol) }
+
+    private fun assetScreen(route: StocksRoute.Asset): PluginScreen = { CryptoAssetScreen(app, route.asset) }
+
+    override val cashtagStrip: @Composable (List<String>) -> Unit = { symbols -> CashtagStrip(app, symbols) }
+
+    override fun routeForCashtag(symbol: String): String? = StocksRoutes.ticker(symbol)
+
+    /** The watchlist as XTA's backup holds it: its `stockSubscriptions` rows. Its order and the rest are in the app's settings. */
+    override val backupSections: List<PluginBackupSection>
+        get() = listOf(PluginBackupSection(BackupKeys.STOCK_SUBSCRIPTIONS, export = { app.watchlist.export() }, import = { app.watchlist.import(it) }))
+
+    override suspend fun footprint(): PluginFootprint = PluginFootprint(app.watchlist.load().size)
+}

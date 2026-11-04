@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RSS's text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Дадаць стужку</string>
+    <string name="add_error">Не ўдалося прачытаць гэтую стужку</string>
+    <string name="add_hint">Устаўце адрас сайта ці стужкі. XTA знойдзе RSS або Atom.</string>
+    <string name="add_placeholder">https://example.com/feed</string>
+    <string name="add_to_group">Дадаць у групу</string>
+    <string name="all">Усе</string>
+    <string name="cancel">Скасаваць</string>
+    <string name="close">Закрыць</string>
+    <string name="data_exported_to">Дадзеныя экспартуюцца ў %1$s</string>
+    <string name="empty">Падпішыцеся на стужку, каб бачыць яе запісы тут</string>
+    <string name="empty_filter">Няма матэрыялаў, якія адпавядаюць гэтым фільтрам</string>
+    <string name="feeds">Стужкі</string>
+    <string name="follow">Сачыць</string>
+    <string name="following_empty">Пакуль няма стужак</string>
+    <string name="home">Галоўная</string>
+    <string name="load_error">Не ўдалося загрузіць стужкі</string>
+    <string name="mark_all_read">Пазначыць усё як прачытанае</string>
+    <string name="more_options">Іншыя дзеянні</string>
+    <string name="opml_empty">У гэтым файле няма стужак</string>
+    <string name="opml_export">Экспартаваць падпіскі ў OPML</string>
+    <string name="opml_export_description">Файл, які могуць імпартаваць іншыя чыталкі стужак.</string>
+    <string name="opml_import">Імпартаваць падпіскі з OPML</string>
+    <string name="opml_import_description">Падпісваецца на кожную стужку з файла; існыя падпіскі застаюцца як ёсць.</string>
+    <string name="opml_importing">Імпарт: %1$d з %2$d</string>
+    <string name="opml_result">Дададзена: %1$d · Ужо ў падпісках: %2$d · Не ўдалося: %3$d</string>
+    <string name="partial_error">Не ўдалося загрузіць крыніцы: %1$d</string>
+    <string name="plugin_description">Чытайце публічныя стужкі RSS і Atom. Непрачытанае застаецца на гэтай прыладзе.</string>
+    <string name="plugin_name">RSS</string>
+    <string name="reader_empty">Пакуль няма чаго чытаць</string>
+    <string name="reset_filters">Скінуць фільтры</string>
+    <string name="retry">Паўтарыць</string>
+    <string name="set_tag">Задаць тэг</string>
+    <string name="settings">Налады</string>
+    <string name="settings_blurb">Без уваходу. Чытайце публічныя стужкі. Непрачытанае і тэгі застаюцца на гэтай прыладзе.</string>
+    <string name="tag">Тэг</string>
+    <string name="tag_hint">Кароткая метка, напрыклад Навіны ці Блогі</string>
+    <string name="unfollow">Адпісацца</string>
+    <string name="unread">Непрачытанае</string>
+</resources>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Web sources' text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Ajouter une source</string>
+    <string name="add_link">Ajouter depuis un lien</string>
+    <string name="back">Retour</string>
+    <string name="cancel">Annuler</string>
+    <plurals name="comments">
+        <item quantity="one">%1$d commentaire</item>
+        <item quantity="many">%1$d commentaires</item>
+        <item quantity="other">%1$d commentaires</item>
+    </plurals>
+    <string name="consent_from">Depuis %1$s</string>
+    <string name="consent_read_only">Elle ne peut lire que des pages publiques. Elle ne peut pas utiliser vos comptes ni publier quoi que ce soit.</string>
+    <string name="consent_sites">Elle lira des pages de ces sites :</string>
+    <string name="consent_title">Ajouter %1$s ?</string>
+    <string name="discussion">Discussion</string>
+    <string name="empty">Aucune source pour l’instant. Ajoutez-en une depuis la liste publiée ou par un lien.</string>
+    <string name="failure_blocked">Cette page n’est sur aucun des sites que la source liste.</string>
+    <string name="failure_status">Le site a répondu par l’erreur %1$s.</string>
+    <string name="failure_too_large">Cette page est trop volumineuse pour être lue.</string>
+    <string name="failure_unreachable">Impossible de joindre le site.</string>
+    <string name="follow">Suivre</string>
+    <string name="install">Ajouter</string>
+    <string name="installed">Ajoutée</string>
+    <string name="link">Lien de la source</string>
+    <string name="link_placeholder">https://example.org/source.json</string>
+    <string name="list_empty">Rien ici pour le moment.</string>
+    <plurals name="lists">
+        <item quantity="one">%1$d liste</item>
+        <item quantity="many">%1$d listes</item>
+        <item quantity="other">%1$d listes</item>
+    </plurals>
+    <string name="more_options">Plus d'options</string>
+    <string name="ok">OK</string>
+    <string name="open_in_browser">Ouvrir dans le navigateur</string>
+    <string name="plugin_description">Ajoutez des sites simples depuis une liste publiée ou par un lien. Une source ne lit que des pages publiques, et demande avant de lire un nouveau site.</string>
+    <string name="plugin_name">Sources web</string>
+    <plurals name="points">
+        <item quantity="one">%1$d point</item>
+        <item quantity="many">%1$d points</item>
+        <item quantity="other">%1$d points</item>
+    </plurals>
+    <string name="published">Sources publiées</string>
+    <string name="published_unreachable">Impossible de charger la liste publiée.</string>
+    <string name="reading">Lecture de la source…</string>
+    <string name="refused_detail">Où : %1$s</string>
+    <string name="refused_insecure">Cette source lirait un site qu’elle ne liste pas, ou sans HTTPS.</string>
+    <string name="refused_invalid">Le fichier de cette source contient une erreur.</string>
+    <string name="refused_newer">Cette source nécessite une version plus récente de XTA.</string>
+    <string name="refused_too_large">Cette source dépasse ce que XTA autorise.</string>
+    <string name="refused_unreadable">Ce n’est pas un fichier de source web.</string>
+    <string name="remove">Supprimer la source</string>
+    <string name="remove_confirm">Supprimer %1$s ? Les listes que vous y suivez seront aussi supprimées.</string>
+    <string name="retry">Réessayer</string>
+    <string name="review_update">Examiner la mise à jour</string>
+    <string name="search_in">Rechercher dans %1$s</string>
+    <string name="unfollow">Ne plus suivre</string>
+    <string name="unreachable">Impossible de lire le fichier de la source. Vérifiez le lien et votre connexion.</string>
+    <string name="update_title">Mettre à jour %1$s ?</string>
+</resources>

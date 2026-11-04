@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RSS's text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Legg til strøm</string>
+    <string name="add_error">Klarte ikke å lese den strømmen</string>
+    <string name="add_hint">Lim inn nettadressen til et nettsted eller en strøm. XTA finner RSS- eller Atom-strømmen.</string>
+    <string name="add_placeholder">https://example.com/feed</string>
+    <string name="add_to_group">Legg til i en gruppe</string>
+    <string name="all">Alle</string>
+    <string name="cancel">Avbryt</string>
+    <string name="close">Lukk</string>
+    <string name="data_exported_to">Data eksportert til %1$s</string>
+    <string name="empty">Følg en strøm for å se innleggene her</string>
+    <string name="empty_filter">Ingen elementer samsvarer med filtrene</string>
+    <string name="feeds">Strømmer</string>
+    <string name="follow">Følg</string>
+    <string name="following_empty">Ingen strømmer ennå</string>
+    <string name="home">Hjem</string>
+    <string name="load_error">Klarte ikke å laste strømmene</string>
+    <string name="mark_all_read">Merk alt som lest</string>
+    <string name="more_options">Flere valg</string>
+    <string name="opml_empty">Ingen strømmer i denne filen</string>
+    <string name="opml_export">Eksporter fulgte som OPML</string>
+    <string name="opml_export_description">En fil andre feedlesere kan importere.</string>
+    <string name="opml_import">Importer fulgte fra OPML</string>
+    <string name="opml_import_description">Følger hver strøm i filen; de du allerede følger, forblir som de er.</string>
+    <string name="opml_importing">Importerer %1$d av %2$d</string>
+    <string name="opml_result">Lagt til: %1$d · Fulgt fra før: %2$d · Mislyktes: %3$d</string>
+    <string name="partial_error">Kunne ikke laste inn %1$d kilder</string>
+    <string name="plugin_description">Følg offentlige RSS- og Atom-strømmer. Ulest blir på denne enheten.</string>
+    <string name="plugin_name">RSS</string>
+    <string name="reader_empty">Ingenting å lese ennå</string>
+    <string name="reset_filters">Nullstill filtre</string>
+    <string name="retry">Prøv på nytt</string>
+    <string name="set_tag">Sett merkelapp</string>
+    <string name="settings">Innstillinger</string>
+    <string name="settings_blurb">Ingen innlogging. Følg offentlige strømmer. Ulest og merkelapper blir på denne enheten.</string>
+    <string name="tag">Merkelapp</string>
+    <string name="tag_hint">En kort merkelapp, som Nyheter eller Blogger</string>
+    <string name="unfollow">Slutt å følge</string>
+    <string name="unread">Ulest</string>
+</resources>

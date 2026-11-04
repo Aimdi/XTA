@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The RSS reader the RSS plugin and web sources open their articles in (ui/plugins/RssReader.kt), from XTA's ARB files. -->
+<resources>
+    <string name="plugin_reader_opened">Åpnet</string>
+    <string name="plugin_reader_resumed">Gjenopptatt</string>
+    <string name="plugin_reader_finished">Ferdiglest</string>
+    <string name="plugin_reader_finish">Merk som ferdiglest</string>
+    <string name="plugin_reader_start_over">Tilbake til begynnelsen</string>
+    <string name="plugin_reader_appearance">Lesevisning</string>
+    <string name="plugin_reader_text_size">Tekstskalafaktor</string>
+    <string name="plugin_reader_line_spacing">Linjeavstand</string>
+    <string name="plugin_rss_no_article">Denne strømmen lenker bare til originalsiden</string>
+</resources>

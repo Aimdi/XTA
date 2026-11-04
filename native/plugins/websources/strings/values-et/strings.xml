@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Web sources' text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Lisa allikas</string>
+    <string name="add_link">Lisa lingiga</string>
+    <string name="back">Tagasi</string>
+    <string name="cancel">Katkesta</string>
+    <plurals name="comments">
+        <item quantity="one">%1$d kommentaar</item>
+        <item quantity="other">%1$d kommentaari</item>
+    </plurals>
+    <string name="consent_from">Asukohast %1$s</string>
+    <string name="consent_read_only">See saab lugeda ainult avalikke lehti. See ei saa kasutada sinu kontosid ega midagi postitada.</string>
+    <string name="consent_sites">See loeb lehti nendelt saitidelt:</string>
+    <string name="consent_title">Kas lisada %1$s?</string>
+    <string name="discussion">Arutelu</string>
+    <string name="empty">Allikaid veel pole. Lisa üks avaldatud loendist või lingiga.</string>
+    <string name="failure_blocked">See leht ei asu ühelgi allika loendis oleval saidil.</string>
+    <string name="failure_status">Sait vastas veaga %1$s.</string>
+    <string name="failure_too_large">See leht on lugemiseks liiga suur.</string>
+    <string name="failure_unreachable">Saidiga ei õnnestunud ühendust saada.</string>
+    <string name="follow">Jälgi</string>
+    <string name="install">Lisa</string>
+    <string name="installed">Lisatud</string>
+    <string name="link">Allika link</string>
+    <string name="link_placeholder">https://example.org/source.json</string>
+    <string name="list_empty">Praegu pole siin midagi.</string>
+    <plurals name="lists">
+        <item quantity="one">%1$d loend</item>
+        <item quantity="other">%1$d loendit</item>
+    </plurals>
+    <string name="more_options">Rohkem valikuid</string>
+    <string name="ok">Sobib</string>
+    <string name="open_in_browser">Ava brauseris</string>
+    <string name="plugin_description">Lisa lihtsaid saite avaldatud loendist või lingiga. Allikas loeb ainult avalikke lehti ja küsib enne, kui hakkab uut saiti lugema.</string>
+    <string name="plugin_name">Veebiallikad</string>
+    <plurals name="points">
+        <item quantity="one">%1$d punkt</item>
+        <item quantity="other">%1$d punkti</item>
+    </plurals>
+    <string name="published">Avaldatud allikad</string>
+    <string name="published_unreachable">Avaldatud loendit ei õnnestunud laadida.</string>
+    <string name="reading">Allika lugemine…</string>
+    <string name="refused_detail">Kus: %1$s</string>
+    <string name="refused_insecure">See allikas loeks saiti, mida tema loendis pole, või ilma HTTPS-ita.</string>
+    <string name="refused_invalid">Selle allika failis on viga.</string>
+    <string name="refused_newer">See allikas vajab XTA uuemat versiooni.</string>
+    <string name="refused_too_large">See allikas läheb kaugemale sellest, mida XTA lubab.</string>
+    <string name="refused_unreadable">See ei ole veebiallika fail.</string>
+    <string name="remove">Eemalda allikas</string>
+    <string name="remove_confirm">Kas eemaldada %1$s? Ka selle loendid, mida jälgid, eemaldatakse.</string>
+    <string name="retry">Proovi uuesti</string>
+    <string name="review_update">Vaata uuendus üle</string>
+    <string name="search_in">Otsi: %1$s</string>
+    <string name="unfollow">Lõpeta jälgimine</string>
+    <string name="unreachable">Allika faili ei õnnestunud lugeda. Kontrolli linki ja ühendust.</string>
+    <string name="update_title">Kas uuendada %1$s?</string>
+</resources>

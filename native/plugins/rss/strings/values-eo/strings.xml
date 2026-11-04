@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RSS's text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Aldoni fluon</string>
+    <string name="add_error">Ne eblis legi tiun fluon</string>
+    <string name="add_hint">Algluu retejan aŭ fluo-adreson. XTA trovas la RSS- aŭ Atom-fluon.</string>
+    <string name="add_placeholder">https://example.com/feed</string>
+    <string name="add_to_group">Aldoni al grupo</string>
+    <string name="all">Ĉio</string>
+    <string name="cancel">Rezigni</string>
+    <string name="close">Fermi</string>
+    <string name="data_exported_to">Datumoj eksportiĝis al %1$s</string>
+    <string name="empty">Sekvu fluon por vidi ĝiajn afiŝojn ĉi tie</string>
+    <string name="empty_filter">Neniu enhavo kongruas kun ĉi tiuj filtriloj</string>
+    <string name="feeds">Fluoj</string>
+    <string name="follow">Sekvi</string>
+    <string name="following_empty">Ankoraŭ neniuj fluoj</string>
+    <string name="home">Hejmo</string>
+    <string name="load_error">Ne eblis ŝargi fluojn</string>
+    <string name="mark_all_read">Marki ĉion kiel legitajn</string>
+    <string name="more_options">Pliaj agoj</string>
+    <string name="opml_empty">Neniu fluo en ĉi tiu dosiero</string>
+    <string name="opml_export">Eksporti sekatojn kiel OPML</string>
+    <string name="opml_export_description">Dosiero, kiun aliaj fluo-legiloj povas importi.</string>
+    <string name="opml_import">Importi sekatojn el OPML</string>
+    <string name="opml_import_description">Sekas ĉiun fluon de la dosiero; tiuj, kiujn vi jam sekas, restas kiel ili estas.</string>
+    <string name="opml_importing">Importado: %1$d el %2$d</string>
+    <string name="opml_result">Aldonitaj: %1$d · Jam sekataj: %2$d · Malsukcesis: %3$d</string>
+    <string name="partial_error">Ne eblis ŝargi %1$d fontojn</string>
+    <string name="plugin_description">Sekvu publikajn RSS- kaj Atom-fluojn. Nelegita restas sur ĉi tiu aparato.</string>
+    <string name="plugin_name">RSS</string>
+    <string name="reader_empty">Ankoraŭ nenio por legi</string>
+    <string name="reset_filters">Restarigi filtrilojn</string>
+    <string name="retry">Reprovi</string>
+    <string name="set_tag">Agordi etikedon</string>
+    <string name="settings">Agordoj</string>
+    <string name="settings_blurb">Sen ensaluto. Sekvu publikajn fluojn. Nelegita kaj etikedoj restas sur ĉi tiu aparato.</string>
+    <string name="tag">Etikedo</string>
+    <string name="tag_hint">Mallonga etikedo, ekzemple Novaĵoj aŭ Blogo</string>
+    <string name="unfollow">Ne plu sekvi</string>
+    <string name="unread">Nelegita</string>
+</resources>

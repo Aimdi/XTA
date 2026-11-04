@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Web sources' text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Kaynak ekle</string>
+    <string name="add_link">Bağlantıdan ekle</string>
+    <string name="back">Geri</string>
+    <string name="cancel">İptal et</string>
+    <plurals name="comments">
+        <item quantity="one">%1$d yorum</item>
+        <item quantity="other">%1$d yorum</item>
+    </plurals>
+    <string name="consent_from">Kaynak: %1$s</string>
+    <string name="consent_read_only">Yalnızca herkese açık sayfaları okuyabilir. Hesaplarınızı kullanamaz ve hiçbir şey paylaşamaz.</string>
+    <string name="consent_sites">Şu sitelerdeki sayfaları okuyacak:</string>
+    <string name="consent_title">%1$s eklensin mi?</string>
+    <string name="discussion">Tartışma</string>
+    <string name="empty">Henüz kaynak yok. Yayımlanmış listeden veya bağlantıyla bir tane ekleyin.</string>
+    <string name="failure_blocked">Bu sayfa, kaynağın listelediği sitelerden birinde değil.</string>
+    <string name="failure_status">Site %1$s hatasıyla yanıt verdi.</string>
+    <string name="failure_too_large">Bu sayfa okunamayacak kadar büyük.</string>
+    <string name="failure_unreachable">Siteye ulaşılamadı.</string>
+    <string name="follow">Takip et</string>
+    <string name="install">Ekle</string>
+    <string name="installed">Eklendi</string>
+    <string name="link">Kaynak bağlantısı</string>
+    <string name="link_placeholder">https://example.org/source.json</string>
+    <string name="list_empty">Şu anda burada bir şey yok.</string>
+    <plurals name="lists">
+        <item quantity="one">%1$d liste</item>
+        <item quantity="other">%1$d liste</item>
+    </plurals>
+    <string name="more_options">Diğer seçenekler</string>
+    <string name="ok">TAMAM</string>
+    <string name="open_in_browser">Tarayıcıda aç</string>
+    <string name="plugin_description">Yayımlanmış bir listeden veya bağlantıyla basit siteler ekleyin. Bir kaynak yalnızca herkese açık sayfaları okur ve yeni bir siteyi okumadan önce sorar.</string>
+    <string name="plugin_name">Web kaynakları</string>
+    <plurals name="points">
+        <item quantity="one">%1$d puan</item>
+        <item quantity="other">%1$d puan</item>
+    </plurals>
+    <string name="published">Yayımlanmış kaynaklar</string>
+    <string name="published_unreachable">Yayımlanmış liste yüklenemedi.</string>
+    <string name="reading">Kaynak okunuyor…</string>
+    <string name="refused_detail">Yer: %1$s</string>
+    <string name="refused_insecure">Bu kaynak listesinde olmayan bir siteyi ya da HTTPS olmadan okuyacaktı.</string>
+    <string name="refused_invalid">Bu kaynağın dosyasında bir hata var.</string>
+    <string name="refused_newer">Bu kaynak XTA’nın daha yeni bir sürümünü gerektiriyor.</string>
+    <string name="refused_too_large">Bu kaynak XTA’nın izin verdiğinin ötesine geçiyor.</string>
+    <string name="refused_unreadable">Bu bir web kaynağı dosyası değil.</string>
+    <string name="remove">Kaynağı kaldır</string>
+    <string name="remove_confirm">%1$s kaldırılsın mı? Buradan takip ettiğiniz listeler de kaldırılır.</string>
+    <string name="retry">Yeniden dene</string>
+    <string name="review_update">Güncellemeyi incele</string>
+    <string name="search_in">%1$s içinde ara</string>
+    <string name="unfollow">Takipten çık</string>
+    <string name="unreachable">Kaynak dosyası okunamadı. Bağlantıyı ve internet bağlantınızı kontrol edin.</string>
+    <string name="update_title">%1$s güncellensin mi?</string>
+</resources>

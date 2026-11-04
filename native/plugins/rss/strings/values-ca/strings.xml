@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RSS's text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Afegeix una font</string>
+    <string name="add_error">No s’ha pogut llegir aquesta font</string>
+    <string name="add_hint">Enganxa l’URL d’un lloc o d’una font. L’XTA en troba l’RSS o l’Atom.</string>
+    <string name="add_placeholder">https://example.com/feed</string>
+    <string name="add_to_group">Afegeix a un grup</string>
+    <string name="all">Tot</string>
+    <string name="cancel">Cancelar</string>
+    <string name="close">Tanca</string>
+    <string name="data_exported_to">Dades exportades a %1$s</string>
+    <string name="empty">Segueix una font per veure’n les publicacions aquí</string>
+    <string name="empty_filter">No hi ha contingut que coincideixi amb aquests filtres</string>
+    <string name="feeds">Fonts</string>
+    <string name="follow">Segueix</string>
+    <string name="following_empty">Encara no hi ha fonts</string>
+    <string name="home">Inici</string>
+    <string name="load_error">No s’han pogut carregar les fonts</string>
+    <string name="mark_all_read">Marca-ho tot com a llegit</string>
+    <string name="more_options">Més opcions</string>
+    <string name="opml_empty">Aquest fitxer no conté cap font</string>
+    <string name="opml_export">Exporta els seguiments en OPML</string>
+    <string name="opml_export_description">Un fitxer que altres lectors de canals poden importar.</string>
+    <string name="opml_import">Importa seguiments des d’OPML</string>
+    <string name="opml_import_description">Segueix cada font del fitxer; les que ja segueixes queden igual.</string>
+    <string name="opml_importing">S’està important: %1$d de %2$d</string>
+    <string name="opml_result">Afegides: %1$d · Ja seguides: %2$d · Errors: %3$d</string>
+    <string name="partial_error">No s’han pogut carregar %1$d fonts</string>
+    <string name="plugin_description">Segueix fonts RSS i Atom públiques. El no llegit es queda en aquest dispositiu.</string>
+    <string name="plugin_name">RSS</string>
+    <string name="reader_empty">Encara no hi ha res per llegir</string>
+    <string name="reset_filters">Restableix els filtres</string>
+    <string name="retry">Reintentar</string>
+    <string name="set_tag">Defineix una etiqueta</string>
+    <string name="settings">Configuració</string>
+    <string name="settings_blurb">Sense inici de sessió. Segueix fonts públiques. El no llegit i les etiquetes es queden en aquest dispositiu.</string>
+    <string name="tag">Etiqueta</string>
+    <string name="tag_hint">Una etiqueta curta, com Notícies o Blogs</string>
+    <string name="unfollow">Deixa de seguir</string>
+    <string name="unread">No llegit</string>
+</resources>
