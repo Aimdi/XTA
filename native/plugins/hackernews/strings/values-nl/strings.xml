@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Hacker News</string>
+    <string name="plugin_description">Hacker News lezen zonder account. Hartjes en bladwijzers blijven op dit apparaat.</string>
+    <string name="tab_top">Top</string>
+    <string name="tab_new">Nieuw</string>
+    <string name="tab_best">Beste</string>
+    <string name="tab_ask">Ask</string>
+    <string name="tab_show">Show</string>
+    <string name="tab_jobs">Banen</string>
+    <string name="tab_saved">Opgeslagen</string>
+    <string name="tab_following">Volgend</string>
+    <string name="search">Hacker News doorzoeken</string>
+    <string name="settings">Instellingen</string>
+    <string name="feed_empty">Nu niets hier</string>
+    <string name="saved_empty">Nog geen opgeslagen verhalen — bladwijzers blijven op dit apparaat</string>
+    <string name="following_empty">Volg iemand om de verhalen hier te zien</string>
+    <string name="by">door %1$s</string>
+    <string name="like">Vind ik leuk op dit apparaat</string>
+    <string name="unlike">Like van dit apparaat verwijderen</string>
+    <string name="save">Opslaan op dit apparaat</string>
+    <string name="unsave">Van dit apparaat verwijderen</string>
+    <string name="share_link">Link delen</string>
+    <string name="save_to_folder">Opslaan in map...</string>
+    <string name="open_in_browser">Openen in browser</string>
+    <string name="comments">Reacties</string>
+    <string name="open_article">Artikel openen</string>
+    <string name="deleted">[verwijderd]</string>
+    <string name="user_empty">Geen openbare inzendingen</string>
+    <string name="follow">Volgen op dit apparaat</string>
+    <string name="unfollow">Ontvolgen</string>
+    <string name="search_hint">Verhalen zoeken</string>
+    <string name="search_empty">Geen overeenkomsten</string>
+    <string name="settings_blurb">Geen login. Stemmen en reacties blijven op Hacker News. Hartjes en bladwijzers blijven op dit apparaat.</string>
+    <plurals name="points">
+        <item quantity="one">%1$d punt</item>
+        <item quantity="other">%1$d punten</item>
+    </plurals>
+    <plurals name="comment_count">
+        <item quantity="one">%1$d reactie</item>
+        <item quantity="other">%1$d reacties</item>
+    </plurals>
+    <plurals name="user_karma">
+        <item quantity="one">%1$d karma</item>
+        <item quantity="other">%1$d karma</item>
+    </plurals>
+</resources>

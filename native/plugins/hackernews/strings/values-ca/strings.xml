@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Hacker News</string>
+    <string name="plugin_description">Llegeix Hacker News sense compte. Cors i marcadors es queden en aquest dispositiu.</string>
+    <string name="tab_top">Top</string>
+    <string name="tab_new">Nous</string>
+    <string name="tab_best">Millors</string>
+    <string name="tab_ask">Ask</string>
+    <string name="tab_show">Show</string>
+    <string name="tab_jobs">Feina</string>
+    <string name="tab_saved">Desats</string>
+    <string name="tab_following">Seguint</string>
+    <string name="search">Cerca a Hacker News</string>
+    <string name="settings">Configuració</string>
+    <string name="feed_empty">Res de moment</string>
+    <string name="saved_empty">Encara no hi ha desats — els marcadors es queden en aquest dispositiu</string>
+    <string name="following_empty">Segueix algú per veure’n les històries aquí</string>
+    <string name="by">per %1$s</string>
+    <string name="like">M’agrada en aquest dispositiu</string>
+    <string name="unlike">Treu el m’agrada d’aquest dispositiu</string>
+    <string name="save">Desa en aquest dispositiu</string>
+    <string name="unsave">Treu d’aquest dispositiu</string>
+    <string name="share_link">Comparteix l’enllaç</string>
+    <string name="save_to_folder">Desa a una carpeta...</string>
+    <string name="open_in_browser">Obre al navegador</string>
+    <string name="comments">Comentaris</string>
+    <string name="open_article">Obre l’article</string>
+    <string name="deleted">[suprimit]</string>
+    <string name="user_empty">Cap enviament públic</string>
+    <string name="follow">Segueix en aquest dispositiu</string>
+    <string name="unfollow">Deixa de seguir</string>
+    <string name="search_hint">Cerca històries</string>
+    <string name="search_empty">Cap història no coincideix</string>
+    <string name="settings_blurb">Sense inici de sessió. Vots i comentaris es queden a Hacker News. Cors i marcadors es queden en aquest dispositiu.</string>
+    <plurals name="points">
+        <item quantity="one">%1$d punt</item>
+        <item quantity="other">%1$d punts</item>
+    </plurals>
+    <plurals name="comment_count">
+        <item quantity="one">%1$d comentari</item>
+        <item quantity="other">%1$d comentaris</item>
+    </plurals>
+    <plurals name="user_karma">
+        <item quantity="one">%1$d karma</item>
+        <item quantity="other">%1$d karma</item>
+    </plurals>
+</resources>

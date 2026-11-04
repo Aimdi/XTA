@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Hacker News</string>
+    <string name="plugin_description">Đọc Hacker News không cần tài khoản. Tim và dấu trang ở lại trên máy này.</string>
+    <string name="tab_top">Top</string>
+    <string name="tab_new">Mới</string>
+    <string name="tab_best">Hay nhất</string>
+    <string name="tab_ask">Ask</string>
+    <string name="tab_show">Show</string>
+    <string name="tab_jobs">Việc làm</string>
+    <string name="tab_saved">Đã lưu</string>
+    <string name="tab_following">Đang theo</string>
+    <string name="search">Tìm trên Hacker News</string>
+    <string name="settings">Cài đặt</string>
+    <string name="feed_empty">Hiện chưa có gì</string>
+    <string name="saved_empty">Chưa lưu bài nào — dấu trang ở lại trên máy này</string>
+    <string name="following_empty">Theo dõi ai đó để thấy bài của họ ở đây</string>
+    <string name="by">bởi %1$s</string>
+    <string name="like">Thích trên thiết bị này</string>
+    <string name="unlike">Bỏ thích khỏi thiết bị này</string>
+    <string name="save">Lưu trên thiết bị này</string>
+    <string name="unsave">Xóa khỏi thiết bị này</string>
+    <string name="share_link">Chia sẻ liên kết</string>
+    <string name="save_to_folder">Lưu vào thư mục...</string>
+    <string name="open_in_browser">Mở trong trình duyệt</string>
+    <string name="comments">Bình luận</string>
+    <string name="open_article">Mở bài viết</string>
+    <string name="deleted">[đã xóa]</string>
+    <string name="user_empty">Không có bài công khai</string>
+    <string name="follow">Theo dõi trên máy này</string>
+    <string name="unfollow">Bỏ theo dõi</string>
+    <string name="search_hint">Tìm bài</string>
+    <string name="search_empty">Không có bài khớp</string>
+    <string name="settings_blurb">Không đăng nhập. Phiếu bầu và bình luận ở lại Hacker News. Tim và dấu trang ở lại trên máy này.</string>
+    <plurals name="points">
+        <item quantity="other">%1$d điểm</item>
+    </plurals>
+    <plurals name="comment_count">
+        <item quantity="other">%1$d bình luận</item>
+    </plurals>
+    <plurals name="user_karma">
+        <item quantity="other">%1$d karma</item>
+    </plurals>
+</resources>

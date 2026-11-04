@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Hacker News</string>
+    <string name="plugin_description">Baca Hacker News tanpa akun. Hati dan markah tetap di perangkat ini.</string>
+    <string name="tab_top">Top</string>
+    <string name="tab_new">Baru</string>
+    <string name="tab_best">Terbaik</string>
+    <string name="tab_ask">Ask</string>
+    <string name="tab_show">Show</string>
+    <string name="tab_jobs">Lowongan</string>
+    <string name="tab_saved">Tersimpan</string>
+    <string name="tab_following">Mengikuti</string>
+    <string name="search">Cari di Hacker News</string>
+    <string name="settings">Pengaturan</string>
+    <string name="feed_empty">Kosong untuk sekarang</string>
+    <string name="saved_empty">Belum ada yang disimpan — markah tetap di perangkat ini</string>
+    <string name="following_empty">Ikuti seseorang untuk melihat ceritanya di sini</string>
+    <string name="by">oleh %1$s</string>
+    <string name="like">Suka di perangkat ini</string>
+    <string name="unlike">Hapus suka dari perangkat ini</string>
+    <string name="save">Simpan di perangkat ini</string>
+    <string name="unsave">Hapus dari perangkat ini</string>
+    <string name="share_link">Bagikan tautan</string>
+    <string name="save_to_folder">Simpan ke folder...</string>
+    <string name="open_in_browser">Buka di browser</string>
+    <string name="comments">Komentar</string>
+    <string name="open_article">Buka artikel</string>
+    <string name="deleted">[dihapus]</string>
+    <string name="user_empty">Tidak ada kiriman publik</string>
+    <string name="follow">Ikuti di perangkat ini</string>
+    <string name="unfollow">Berhenti mengikuti</string>
+    <string name="search_hint">Cari cerita</string>
+    <string name="search_empty">Tidak ada yang cocok</string>
+    <string name="settings_blurb">Tanpa masuk. Suara dan komentar tetap di Hacker News. Hati dan markah tetap di perangkat ini.</string>
+    <plurals name="points">
+        <item quantity="other">%1$d poin</item>
+    </plurals>
+    <plurals name="comment_count">
+        <item quantity="other">%1$d komentar</item>
+    </plurals>
+    <plurals name="user_karma">
+        <item quantity="other">%1$d karma</item>
+    </plurals>
+</resources>

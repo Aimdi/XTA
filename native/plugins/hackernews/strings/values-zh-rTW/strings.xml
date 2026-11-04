@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Hacker News</string>
+    <string name="plugin_description">不必登入就能閱讀 Hacker News。愛心與書籤留在這部裝置上。</string>
+    <string name="tab_top">熱門</string>
+    <string name="tab_new">最新</string>
+    <string name="tab_best">最佳</string>
+    <string name="tab_ask">Ask</string>
+    <string name="tab_show">Show</string>
+    <string name="tab_jobs">職缺</string>
+    <string name="tab_saved">已儲存</string>
+    <string name="tab_following">追蹤中</string>
+    <string name="search">搜尋 Hacker News</string>
+    <string name="settings">設定</string>
+    <string name="feed_empty">目前這裡沒有內容</string>
+    <string name="saved_empty">還沒有儲存的文章——書籤留在這部裝置上</string>
+    <string name="following_empty">追蹤某人後，他們的文章會出現在這裡</string>
+    <string name="by">%1$s</string>
+    <string name="like">在此裝置按讚</string>
+    <string name="unlike">從此裝置取消按讚</string>
+    <string name="save">儲存在此裝置</string>
+    <string name="unsave">從此裝置移除</string>
+    <string name="share_link">分享連結</string>
+    <string name="save_to_folder">儲存到資料夾...</string>
+    <string name="open_in_browser">在瀏覽器中開啟</string>
+    <string name="comments">留言</string>
+    <string name="open_article">開啟文章</string>
+    <string name="deleted">[已刪除]</string>
+    <string name="user_empty">沒有公開提交</string>
+    <string name="follow">在這部裝置追蹤</string>
+    <string name="unfollow">取消追蹤</string>
+    <string name="search_hint">搜尋文章</string>
+    <string name="search_empty">沒有符合的文章</string>
+    <string name="settings_blurb">不必登入。投票與留言留在 Hacker News。愛心與書籤留在這部裝置上。</string>
+    <plurals name="points">
+        <item quantity="other">%1$d 分</item>
+    </plurals>
+    <plurals name="comment_count">
+        <item quantity="other">%1$d 則留言</item>
+    </plurals>
+    <plurals name="user_karma">
+        <item quantity="other">%1$d 點 karma</item>
+    </plurals>
+</resources>

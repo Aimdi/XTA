@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Hacker News</string>
+    <string name="plugin_description">Citește Hacker News fără cont. Inimile și semnele de carte rămân pe acest dispozitiv.</string>
+    <string name="tab_top">Top</string>
+    <string name="tab_new">Noi</string>
+    <string name="tab_best">Cele mai bune</string>
+    <string name="tab_ask">Ask</string>
+    <string name="tab_show">Show</string>
+    <string name="tab_jobs">Joburi</string>
+    <string name="tab_saved">Salvate</string>
+    <string name="tab_following">Urmăresc</string>
+    <string name="search">Caută pe Hacker News</string>
+    <string name="settings">Setări</string>
+    <string name="feed_empty">Nimic aici momentan</string>
+    <string name="saved_empty">Nicio poveste salvată — semnele de carte rămân pe acest dispozitiv</string>
+    <string name="following_empty">Urmărește pe cineva ca să vezi poveștile aici</string>
+    <string name="by">de %1$s</string>
+    <string name="like">Apreciază pe acest dispozitiv</string>
+    <string name="unlike">Elimină aprecierea de pe acest dispozitiv</string>
+    <string name="save">Salvează pe acest dispozitiv</string>
+    <string name="unsave">Elimină de pe acest dispozitiv</string>
+    <string name="share_link">Distribuie linkul</string>
+    <string name="save_to_folder">Salvează în dosar...</string>
+    <string name="open_in_browser">Deschide în browser</string>
+    <string name="comments">Comentarii</string>
+    <string name="open_article">Deschide articolul</string>
+    <string name="deleted">[șters]</string>
+    <string name="user_empty">Nicio trimitere publică</string>
+    <string name="follow">Urmărește pe acest dispozitiv</string>
+    <string name="unfollow">Nu mai urmări</string>
+    <string name="search_hint">Caută povești</string>
+    <string name="search_empty">Nicio poveste nu se potrivește</string>
+    <string name="settings_blurb">Fără autentificare. Voturile și comentariile rămân pe Hacker News. Inimile și semnele de carte rămân pe acest dispozitiv.</string>
+    <plurals name="points">
+        <item quantity="one">%1$d punct</item>
+        <item quantity="few">%1$d puncte</item>
+        <item quantity="other">%1$d de puncte</item>
+    </plurals>
+    <plurals name="comment_count">
+        <item quantity="one">%1$d comentariu</item>
+        <item quantity="few">%1$d comentarii</item>
+        <item quantity="other">%1$d de comentarii</item>
+    </plurals>
+    <plurals name="user_karma">
+        <item quantity="one">%1$d karma</item>
+        <item quantity="few">%1$d karma</item>
+        <item quantity="other">%1$d de karma</item>
+    </plurals>
+</resources>

@@ -179,14 +179,38 @@ class NetworkPostActions(
 )
 
 /**
+ * What a network adds to the shared row beyond its [NetworkPost], each
+ * optional: [repostLine] over the row in the network's own words ("Alice
+ * boosted"), in place of "Reposted by", opening [onRepostLine]; [timeNote]
+ * after the post's time ("Edited"); [above] over its text (a content warning
+ * that holds the rest back); [below] under its media, card and quote (a
+ * poll's results); [footer] in place of the counts (the network's own
+ * buttons); [trailing] at the end of the author line (a follow button, see
+ * [NetworkHeaderButton]); and what a long press on the row does.
+ */
+class NetworkPostExtras(
+    val trailing: (@Composable () -> Unit)? = null,
+    val repostLine: String? = null,
+    val onRepostLine: (() -> Unit)? = null,
+    val timeNote: String? = null,
+    val above: (@Composable () -> Unit)? = null,
+    val below: (@Composable () -> Unit)? = null,
+    val footer: (@Composable () -> Unit)? = null,
+    val onLongPress: (() -> Unit)? = null,
+) {
+    companion object {
+        val None = NetworkPostExtras()
+    }
+}
+
+/**
  * A post as a list row, as the app draws X's: who reposted or pinned it, the
  * author, whom it answers, its text, media, link card and quoted post, and its
  * counts. [continues] draws it as part of a thread going on below; [indent]
  * moves a reply under the one it answers; with [playing], its first video
- * plays in place. A plugin may put its own glyph at the end of the author
- * line ([trailing], see [NetworkHeaderButton]), its own row under the post in
- * place of the counts ([footer], see [NetworkCount]), and act on a long press
- * ([onLongClick]).
+ * plays in place. What a network adds to the row (its own glyph on the
+ * author line, its own row in place of the counts, a long press) comes in
+ * [NetworkPostExtras].
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -197,20 +221,32 @@ fun NetworkPostCard(
     continues: Boolean = false,
     indent: Int = 0,
     playing: Boolean = false,
-    trailing: (@Composable () -> Unit)? = null,
-    footer: (@Composable () -> Unit)? = null,
-    onLongClick: (() -> Unit)? = null,
+) = NetworkPostCard(post, actions, NetworkPostExtras.None, modifier, continues, indent, playing)
+
+/** [NetworkPostCard] with what the network adds to it ([extras]). */
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun NetworkPostCard(
+    post: NetworkPost,
+    actions: NetworkPostActions,
+    extras: NetworkPostExtras,
+    modifier: Modifier = Modifier,
+    continues: Boolean = false,
+    indent: Int = 0,
+    playing: Boolean = false,
 ) {
     var revealed by rememberSaveable(post.id) { mutableStateOf(false) }
     Column(
         modifier
             .fillMaxWidth()
-            .combinedClickable(onLongClick = onLongClick) { actions.open(post) }
+            .combinedClickable(onClick = { actions.open(post) }, onLongClick = extras.onLongPress)
             .padding(start = 16.dp + IndentStep * indent.coerceIn(0, MAX_INDENT), end = 16.dp, top = 12.dp, bottom = if (continues) 4.dp else 12.dp),
     ) {
         val repostedBy = post.repostedBy
+        val repostLine = extras.repostLine
         when {
             post.pinned -> ContextLine(XIcons.Pin, stringResource(Res.string.pinned))
+            repostLine != null -> ContextLine(XIcons.Repost, repostLine, extras.onRepostLine)
             repostedBy != null -> ContextLine(XIcons.Repost, stringResource(Res.string.reposted_by, repostedBy))
         }
         Row {
@@ -218,12 +254,15 @@ fun NetworkPostCard(
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.Top) {
-                    AuthorLine(post.authorName, post.authorHandle, agoText(post.createdAt), verified = false, modifier = Modifier.weight(1f))
-                    trailing?.invoke()
+                    AuthorLine(post.authorName, post.authorHandle, PostLines.time(agoText(post.createdAt), extras.timeNote), verified = false, modifier = Modifier.weight(1f))
+                    extras.trailing?.invoke()
                 }
                 post.replyingTo?.let { handle -> ReplyLine(handle) { actions.openMention(handle) } }
+                extras.above?.invoke()
                 if (!post.textCovered(revealed)) LinkedText(post.text, actions.openMention, actions.openTag, Modifier.padding(top = 2.dp))
                 Attachments(post, actions, revealed, onReveal = { revealed = true }, gap = 10.dp, playing = playing)
+                extras.below?.invoke()
+                val footer = extras.footer
                 if (footer != null) footer() else CountsLine(post)
             }
         }
@@ -325,10 +364,11 @@ private fun WarningLine(warning: String, onReveal: () -> Unit) {
     }
 }
 
-/** "Reposted by …" or "Pinned" above a row. */
+/** "Reposted by …" or "Pinned" above a row; with [onClick], a tap on it goes there. */
 @Composable
-private fun ContextLine(icon: ImageVector, text: String) {
-    Row(Modifier.padding(start = 24.dp, bottom = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+private fun ContextLine(icon: ImageVector, text: String, onClick: (() -> Unit)? = null) {
+    val tappable = if (onClick == null) Modifier else Modifier.clickable(onClick = onClick)
+    Row(tappable.padding(start = 24.dp, bottom = 4.dp), verticalAlignment = Alignment.CenterVertically) {
         Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(14.dp))
         Spacer(Modifier.width(12.dp))
         Text(

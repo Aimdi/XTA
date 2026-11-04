@@ -36,6 +36,7 @@ import com.aimdi.xtanative.ui.plugins.NetworkHeaderButton
 import com.aimdi.xtanative.ui.plugins.NetworkPost
 import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.NetworkPostCard
+import com.aimdi.xtanative.ui.plugins.NetworkPostExtras
 import com.aimdi.xtanative.ui.plugins.TextRun
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -127,18 +128,14 @@ internal fun PostRow(
     val follows by app.follows.state.collectAsState()
     val followed = follows.orEmpty().any { it.isOf(post.did) || it.isOf(post.handle) }
     var menu by rememberSaveable(post.uri) { mutableStateOf(false) }
-    NetworkPostCard(
-        shown,
-        actions,
-        modifier = modifier,
-        indent = indent,
-        continues = continues,
+    val extras = NetworkPostExtras(
         trailing = if (followed || follows == null) null else {
             { NetworkHeaderButton(DiscoverIcons.PersonAdd, pluginString(Strings.follow)) { app.toggleFollow(post.author()) } }
         },
         footer = { PostFooter(app, post, onOpen = { actions.open(shown) }) { menu = true } },
-        onLongClick = { menu = true },
+        onLongPress = { menu = true },
     )
+    NetworkPostCard(shown, actions, extras, modifier = modifier, indent = indent, continues = continues)
     if (!continues) Hairline()
     if (menu) PostMenu(app, post) { menu = false }
 }

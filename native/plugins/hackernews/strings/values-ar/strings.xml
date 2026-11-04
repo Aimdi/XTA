@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Hacker News</string>
+    <string name="plugin_description">اقرأ هاكر نيوز دون حساب. القلوب والإشارات المرجعية تبقى على هذا الجهاز.</string>
+    <string name="tab_top">الأعلى</string>
+    <string name="tab_new">الجديد</string>
+    <string name="tab_best">الأفضل</string>
+    <string name="tab_ask">Ask</string>
+    <string name="tab_show">Show</string>
+    <string name="tab_jobs">وظائف</string>
+    <string name="tab_saved">المحفوظ</string>
+    <string name="tab_following">المتابَعون</string>
+    <string name="search">البحث في هاكر نيوز</string>
+    <string name="settings">الإعدادات</string>
+    <string name="feed_empty">لا شيء هنا الآن</string>
+    <string name="saved_empty">لا قصص محفوظة بعد — الإشارات المرجعية تبقى على هذا الجهاز</string>
+    <string name="following_empty">تابع أحداً لترى قصصه هنا</string>
+    <string name="by">بقلم %1$s</string>
+    <string name="like">إعجاب على هذا الجهاز</string>
+    <string name="unlike">إزالة الإعجاب من هذا الجهاز</string>
+    <string name="save">حفظ على هذا الجهاز</string>
+    <string name="unsave">إزالة من هذا الجهاز</string>
+    <string name="share_link">مشاركة الرابط</string>
+    <string name="save_to_folder">الحفظ في مجلد...</string>
+    <string name="open_in_browser">فتح في المتصفح</string>
+    <string name="comments">التعليقات</string>
+    <string name="open_article">افتح المقال</string>
+    <string name="deleted">[محذوف]</string>
+    <string name="user_empty">لا منشورات عامة</string>
+    <string name="follow">تابع على هذا الجهاز</string>
+    <string name="unfollow">إلغاء المتابعة</string>
+    <string name="search_hint">ابحث عن القصص</string>
+    <string name="search_empty">لا توجد قصص مطابقة</string>
+    <string name="settings_blurb">بلا تسجيل دخول. الأصوات والتعليقات تبقى على هاكر نيوز. القلوب والإشارات المرجعية تبقى على هذا الجهاز.</string>
+    <plurals name="points">
+        <item quantity="zero">لا نقاط</item>
+        <item quantity="one">نقطة واحدة</item>
+        <item quantity="two">نقطتان</item>
+        <item quantity="few">%1$d نقاط</item>
+        <item quantity="many">%1$d نقطة</item>
+        <item quantity="other">%1$d نقطة</item>
+    </plurals>
+    <plurals name="comment_count">
+        <item quantity="zero">لا تعليقات</item>
+        <item quantity="one">تعليق واحد</item>
+        <item quantity="two">تعليقان</item>
+        <item quantity="few">%1$d تعليقات</item>
+        <item quantity="many">%1$d تعليقاً</item>
+        <item quantity="other">%1$d تعليق</item>
+    </plurals>
+    <plurals name="user_karma">
+        <item quantity="zero">لا كارما</item>
+        <item quantity="one">كارما واحدة</item>
+        <item quantity="two">كارما اثنتان</item>
+        <item quantity="few">%1$d كارما</item>
+        <item quantity="many">%1$d كارما</item>
+        <item quantity="other">%1$d كارما</item>
+    </plurals>
+</resources>

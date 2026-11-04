@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Hacker News</string>
+    <string name="plugin_description">Legu Hacker News sen konto. Koroj kaj legosignoj restas en ĉi tiu aparato.</string>
+    <string name="tab_top">Top</string>
+    <string name="tab_new">Novaj</string>
+    <string name="tab_best">Plej bonaj</string>
+    <string name="tab_ask">Ask</string>
+    <string name="tab_show">Show</string>
+    <string name="tab_jobs">Laboroj</string>
+    <string name="tab_saved">Konservitaj</string>
+    <string name="tab_following">Sekvataj</string>
+    <string name="search">Serĉi en Hacker News</string>
+    <string name="settings">Agordoj</string>
+    <string name="feed_empty">Nenio ĉi tie nun</string>
+    <string name="saved_empty">Ankoraŭ neniuj konservitaj rakontoj — legosignoj restas en ĉi tiu aparato</string>
+    <string name="following_empty">Sekvu iun por vidi la rakontojn ĉi tie</string>
+    <string name="by">de %1$s</string>
+    <string name="like">Ŝati en ĉi tiu aparato</string>
+    <string name="unlike">Forigi ŝaton el ĉi tiu aparato</string>
+    <string name="save">Konservi en ĉi tiu aparato</string>
+    <string name="unsave">Forigi el ĉi tiu aparato</string>
+    <string name="share_link">Kunhavigi ligilon</string>
+    <string name="save_to_folder">Konservi en dosierujo...</string>
+    <string name="open_in_browser">Malfermi en retumilo</string>
+    <string name="comments">Komentoj</string>
+    <string name="open_article">Malfermi artikolon</string>
+    <string name="deleted">[forigita]</string>
+    <string name="user_empty">Neniuj publikaj sendaĵoj</string>
+    <string name="follow">Sekvi en ĉi tiu aparato</string>
+    <string name="unfollow">Ne plu sekvi</string>
+    <string name="search_hint">Serĉi rakontojn</string>
+    <string name="search_empty">Neniu rakonto kongruas</string>
+    <string name="settings_blurb">Neniu ensaluto. Voĉdonoj kaj komentoj restas ĉe Hacker News. Koroj kaj legosignoj restas en ĉi tiu aparato.</string>
+    <plurals name="points">
+        <item quantity="one">%1$d poento</item>
+        <item quantity="other">%1$d poentoj</item>
+    </plurals>
+    <plurals name="comment_count">
+        <item quantity="one">%1$d komento</item>
+        <item quantity="other">%1$d komentoj</item>
+    </plurals>
+    <plurals name="user_karma">
+        <item quantity="one">%1$d karma</item>
+        <item quantity="other">%1$d karma</item>
+    </plurals>
+</resources>

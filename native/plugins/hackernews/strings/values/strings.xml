@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Hacker News's text, English (the default), from XTA's wording. Written as Android writes strings;
+     the plugins build turns them into the Kotlin object Strings, so they load from any class loader.
+     plugin_name and plugin_description also name the plugin in the store's catalogue. -->
+<resources>
+    <string name="plugin_name">Hacker News</string>
+    <string name="plugin_description">Read Hacker News without an account. Hearts and bookmarks stay on this device.</string>
+
+    <string name="tab_top">Top</string>
+    <string name="tab_new">New</string>
+    <string name="tab_best">Best</string>
+    <string name="tab_ask">Ask</string>
+    <string name="tab_show">Show</string>
+    <string name="tab_jobs">Jobs</string>
+    <string name="tab_saved">Saved</string>
+    <string name="tab_following">Following</string>
+    <string name="search">Search Hacker News</string>
+    <string name="settings">Settings</string>
+
+    <string name="feed_empty">Nothing here right now</string>
+    <string name="saved_empty">No saved stories yet — bookmarks stay on this device</string>
+    <string name="following_empty">Follow someone to see their stories here</string>
+
+    <plurals name="points">
+        <item quantity="one">%1$d point</item>
+        <item quantity="other">%1$d points</item>
+    </plurals>
+    <plurals name="comment_count">
+        <item quantity="one">%1$d comment</item>
+        <item quantity="other">%1$d comments</item>
+    </plurals>
+    <string name="by">by %1$s</string>
+    <string name="like">Like on this device</string>
+    <string name="unlike">Remove like from this device</string>
+    <string name="save">Save on this device</string>
+    <string name="unsave">Remove from this device</string>
+    <string name="share_link">Share link</string>
+    <string name="save_to_folder">Save to folder…</string>
+    <string name="open_in_browser">Open in browser</string>
+
+    <string name="comments">Comments</string>
+    <string name="open_article">Open article</string>
+    <string name="deleted">[deleted]</string>
+
+    <plurals name="user_karma">
+        <item quantity="one">%1$d karma</item>
+        <item quantity="other">%1$d karma</item>
+    </plurals>
+    <string name="user_empty">No public submissions</string>
+    <string name="follow">Follow on this device</string>
+    <string name="unfollow">Unfollow</string>
+
+    <string name="search_hint">Search stories</string>
+    <string name="search_empty">No stories match</string>
+
+    <string name="settings_blurb">No login. Votes and comments stay on Hacker News. Hearts and bookmarks stay on this device.</string>
+</resources>

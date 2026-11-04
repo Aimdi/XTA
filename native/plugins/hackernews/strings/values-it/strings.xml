@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Hacker News</string>
+    <string name="plugin_description">Leggi Hacker News senza account. Cuori e segnalibri restano su questo dispositivo.</string>
+    <string name="tab_top">Top</string>
+    <string name="tab_new">Nuovi</string>
+    <string name="tab_best">Migliori</string>
+    <string name="tab_ask">Ask</string>
+    <string name="tab_show">Show</string>
+    <string name="tab_jobs">Lavoro</string>
+    <string name="tab_saved">Salvati</string>
+    <string name="tab_following">Seguiti</string>
+    <string name="search">Cerca su Hacker News</string>
+    <string name="settings">Impostazioni</string>
+    <string name="feed_empty">Niente per ora</string>
+    <string name="saved_empty">Nessuna storia salvata — i segnalibri restano su questo dispositivo</string>
+    <string name="following_empty">Segui qualcuno per vedere le storie qui</string>
+    <string name="by">di %1$s</string>
+    <string name="like">Mi piace su questo dispositivo</string>
+    <string name="unlike">Rimuovi il mi piace da questo dispositivo</string>
+    <string name="save">Salva su questo dispositivo</string>
+    <string name="unsave">Rimuovi da questo dispositivo</string>
+    <string name="share_link">Condividi link</string>
+    <string name="save_to_folder">Salva in una cartella...</string>
+    <string name="open_in_browser">Apri nel browser</string>
+    <string name="comments">Commenti</string>
+    <string name="open_article">Apri articolo</string>
+    <string name="deleted">[eliminato]</string>
+    <string name="user_empty">Nessun invio pubblico</string>
+    <string name="follow">Segui su questo dispositivo</string>
+    <string name="unfollow">Smetti di seguire</string>
+    <string name="search_hint">Cerca storie</string>
+    <string name="search_empty">Nessuna storia corrisponde</string>
+    <string name="settings_blurb">Nessun accesso. Voti e commenti restano su Hacker News. Cuori e segnalibri restano su questo dispositivo.</string>
+    <plurals name="points">
+        <item quantity="one">%1$d punto</item>
+        <item quantity="other">%1$d punti</item>
+    </plurals>
+    <plurals name="comment_count">
+        <item quantity="one">%1$d commento</item>
+        <item quantity="other">%1$d commenti</item>
+    </plurals>
+    <plurals name="user_karma">
+        <item quantity="one">%1$d karma</item>
+        <item quantity="other">%1$d karma</item>
+    </plurals>
+</resources>

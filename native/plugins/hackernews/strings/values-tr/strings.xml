@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Hacker News</string>
+    <string name="plugin_description">Hesapsız Hacker News oku. Kalpler ve yer imleri bu cihazda kalır.</string>
+    <string name="tab_top">Top</string>
+    <string name="tab_new">Yeni</string>
+    <string name="tab_best">En iyi</string>
+    <string name="tab_ask">Ask</string>
+    <string name="tab_show">Show</string>
+    <string name="tab_jobs">İşler</string>
+    <string name="tab_saved">Kaydedilenler</string>
+    <string name="tab_following">Takip</string>
+    <string name="search">Hacker News’te ara</string>
+    <string name="settings">Ayarlar</string>
+    <string name="feed_empty">Şu an burada bir şey yok</string>
+    <string name="saved_empty">Henüz kaydedilen hikaye yok — yer imleri bu cihazda kalır</string>
+    <string name="following_empty">Hikayelerini burada görmek için birini takip et</string>
+    <string name="by">%1$s</string>
+    <string name="like">Bu cihazda beğen</string>
+    <string name="unlike">Beğeniyi bu cihazdan kaldır</string>
+    <string name="save">Bu cihaza kaydet</string>
+    <string name="unsave">Bu cihazdan kaldır</string>
+    <string name="share_link">Bağlantıyı paylaş</string>
+    <string name="save_to_folder">Klasöre kaydet...</string>
+    <string name="open_in_browser">Tarayıcıda aç</string>
+    <string name="comments">Yorumlar</string>
+    <string name="open_article">Yazıyı aç</string>
+    <string name="deleted">[silindi]</string>
+    <string name="user_empty">Herkese açık gönderi yok</string>
+    <string name="follow">Bu cihazda takip et</string>
+    <string name="unfollow">Takipten çık</string>
+    <string name="search_hint">Hikaye ara</string>
+    <string name="search_empty">Eşleşen hikaye yok</string>
+    <string name="settings_blurb">Giriş yok. Oylar ve yorumlar Hacker News’te kalır. Kalpler ve yer imleri bu cihazda kalır.</string>
+    <plurals name="points">
+        <item quantity="one">%1$d puan</item>
+        <item quantity="other">%1$d puan</item>
+    </plurals>
+    <plurals name="comment_count">
+        <item quantity="one">%1$d yorum</item>
+        <item quantity="other">%1$d yorum</item>
+    </plurals>
+    <plurals name="user_karma">
+        <item quantity="one">%1$d karma</item>
+        <item quantity="other">%1$d karma</item>
+    </plurals>
+</resources>

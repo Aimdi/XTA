@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Hacker News</string>
+    <string name="plugin_description">Lee Hacker News sin cuenta. Los corazones y marcadores se quedan en este dispositivo.</string>
+    <string name="tab_top">Top</string>
+    <string name="tab_new">Nuevos</string>
+    <string name="tab_best">Mejores</string>
+    <string name="tab_ask">Ask</string>
+    <string name="tab_show">Show</string>
+    <string name="tab_jobs">Empleo</string>
+    <string name="tab_saved">Guardados</string>
+    <string name="tab_following">Siguiendo</string>
+    <string name="search">Buscar en Hacker News</string>
+    <string name="settings">Configuración</string>
+    <string name="feed_empty">Nada por ahora</string>
+    <string name="saved_empty">Aún no hay guardados — los marcadores se quedan en este dispositivo</string>
+    <string name="following_empty">Sigue a alguien para ver sus historias aquí</string>
+    <string name="by">por %1$s</string>
+    <string name="like">Me gusta en este dispositivo</string>
+    <string name="unlike">Quitar el me gusta de este dispositivo</string>
+    <string name="save">Guardar en este dispositivo</string>
+    <string name="unsave">Quitar de este dispositivo</string>
+    <string name="share_link">Compartir enlace</string>
+    <string name="save_to_folder">Guardar en una carpeta...</string>
+    <string name="open_in_browser">Abrir en el navegador</string>
+    <string name="comments">Comentarios</string>
+    <string name="open_article">Abrir artículo</string>
+    <string name="deleted">[eliminado]</string>
+    <string name="user_empty">Sin envíos públicos</string>
+    <string name="follow">Seguir en este dispositivo</string>
+    <string name="unfollow">Dejar de seguir</string>
+    <string name="search_hint">Buscar historias</string>
+    <string name="search_empty">Ninguna historia coincide</string>
+    <string name="settings_blurb">Sin inicio de sesión. Los votos y comentarios se quedan en Hacker News. Los corazones y marcadores se quedan en este dispositivo.</string>
+    <plurals name="points">
+        <item quantity="one">%1$d punto</item>
+        <item quantity="other">%1$d puntos</item>
+    </plurals>
+    <plurals name="comment_count">
+        <item quantity="one">%1$d comentario</item>
+        <item quantity="other">%1$d comentarios</item>
+    </plurals>
+    <plurals name="user_karma">
+        <item quantity="one">%1$d karma</item>
+        <item quantity="other">%1$d karma</item>
+    </plurals>
+</resources>

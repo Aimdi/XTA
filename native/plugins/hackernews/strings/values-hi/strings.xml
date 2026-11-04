@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Hacker News</string>
+    <string name="plugin_description">बिना खाते हैकर न्यूज़ पढ़ें। दिल और बुकमार्क इसी डिवाइस पर रहते हैं।</string>
+    <string name="tab_top">टॉप</string>
+    <string name="tab_new">नए</string>
+    <string name="tab_best">सर्वश्रेष्ठ</string>
+    <string name="tab_ask">Ask</string>
+    <string name="tab_show">Show</string>
+    <string name="tab_jobs">नौकरियाँ</string>
+    <string name="tab_saved">सहेजे</string>
+    <string name="tab_following">फ़ॉलो किए</string>
+    <string name="search">हैकर न्यूज़ खोजें</string>
+    <string name="settings">सेटिंग</string>
+    <string name="feed_empty">अभी यहाँ कुछ नहीं है</string>
+    <string name="saved_empty">अभी कोई सहेजी कहानी नहीं — बुकमार्क इसी डिवाइस पर रहते हैं</string>
+    <string name="following_empty">किसी को फ़ॉलो करें ताकि उनकी कहानियाँ यहाँ दिखें</string>
+    <string name="by">%1$s</string>
+    <string name="like">इस डिवाइस पर पसंद करें</string>
+    <string name="unlike">इस डिवाइस से पसंद हटाएँ</string>
+    <string name="save">इस डिवाइस पर सहेजें</string>
+    <string name="unsave">इस डिवाइस से हटाएँ</string>
+    <string name="share_link">लिंक साझा करें</string>
+    <string name="save_to_folder">फ़ोल्डर में सहेजें...</string>
+    <string name="open_in_browser">ब्राउज़र में खोलें</string>
+    <string name="comments">टिप्पणियाँ</string>
+    <string name="open_article">लेख खोलें</string>
+    <string name="deleted">[हटाया गया]</string>
+    <string name="user_empty">कोई सार्वजनिक प्रस्तुति नहीं</string>
+    <string name="follow">इस डिवाइस पर फ़ॉलो करें</string>
+    <string name="unfollow">अनफ़ॉलो करें</string>
+    <string name="search_hint">कहानियाँ खोजें</string>
+    <string name="search_empty">कोई कहानी मेल नहीं खाती</string>
+    <string name="settings_blurb">लॉगिन नहीं। वोट और टिप्पणियाँ हैकर न्यूज़ पर रहती हैं। दिल और बुकमार्क इसी डिवाइस पर रहते हैं।</string>
+    <plurals name="points">
+        <item quantity="one">%1$d अंक</item>
+        <item quantity="other">%1$d अंक</item>
+    </plurals>
+    <plurals name="comment_count">
+        <item quantity="one">%1$d टिप्पणी</item>
+        <item quantity="other">%1$d टिप्पणियाँ</item>
+    </plurals>
+    <plurals name="user_karma">
+        <item quantity="one">%1$d karma</item>
+        <item quantity="other">%1$d karma</item>
+    </plurals>
+</resources>

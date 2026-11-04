@@ -210,13 +210,29 @@ class PagedItems<T : Any>(
  * says there is nothing, and a failure names [network]. [toTop] grows each
  * time the reader asks for the top again ([PluginFrame.toTop]).
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <T : Any> PagedList(
     pages: PagedItems<T>,
     key: (T) -> String,
     network: String,
     empty: String,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(),
+    toTop: Int = 0,
+    state: LazyListState = rememberLazyListState(),
+    header: LazyListScope.() -> Unit = {},
+    footer: LazyListScope.() -> Unit = {},
+    row: @Composable (T) -> Unit,
+) = PagedList(pages, key, empty, { networkProblemText(it, network) }, modifier, contentPadding, toTop, state, header, footer, row)
+
+/** [PagedList] saying what went wrong in the network's own words ([problemText]). */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun <T : Any> PagedList(
+    pages: PagedItems<T>,
+    key: (T) -> String,
+    empty: String,
+    problemText: @Composable (Problem) -> String,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
     toTop: Int = 0,
@@ -231,7 +247,7 @@ fun <T : Any> PagedList(
     PullToRefreshBox(isRefreshing = paged.loading && paged.loaded, onRefresh = pages::refresh, modifier = modifier.fillMaxSize()) {
         LazyColumn(state = state, contentPadding = contentPadding, modifier = Modifier.fillMaxSize()) {
             header()
-            pagedRows(paged, pages, key, network, empty, row)
+            pagedRows(paged, pages, key, empty, problemText, row)
             footer()
         }
     }
@@ -245,20 +261,30 @@ fun <T : Any> LazyListScope.pagedRows(
     network: String,
     empty: String,
     row: @Composable (T) -> Unit,
+) = pagedRows(paged, pages, key, empty, { networkProblemText(it, network) }, row)
+
+/** [pagedRows] saying what went wrong in the network's own words ([problemText]). */
+fun <T : Any> LazyListScope.pagedRows(
+    paged: PagedState<T>,
+    pages: PagedItems<T>,
+    key: (T) -> String,
+    empty: String,
+    problemText: @Composable (Problem) -> String,
+    row: @Composable (T) -> Unit,
 ) {
     val problem = paged.problem
     when {
-        paged.items.isEmpty() && problem != null -> item(key = "paged-problem") { NetworkProblemView(problem, network, pages::refresh) }
+        paged.items.isEmpty() && problem != null -> item(key = "paged-problem") { RetryMessage(problemText(problem), pages::refresh) }
         paged.items.isEmpty() && paged.loaded && !paged.loading -> item(key = "paged-empty") { MessageText(empty) }
         paged.items.isEmpty() -> item(key = "paged-loading") { LoadingRow() }
-        problem != null -> item(key = "paged-problem") { NetworkProblemRow(problem, network, pages::refresh) }
+        problem != null -> item(key = "paged-problem") { RetryRow(problemText(problem), pages::refresh) }
     }
     items(paged.items, key = key, contentType = { "row" }) { row(it) }
     item(key = "paged-footer") {
         val more = paged.moreProblem
         when {
             paged.loadingMore -> LoadingRow()
-            more != null -> NetworkProblemRow(more, network, pages::retryMore)
+            more != null -> RetryRow(problemText(more), pages::retryMore)
         }
     }
 }

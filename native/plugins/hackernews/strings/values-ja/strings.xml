@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Hacker News</string>
+    <string name="plugin_description">アカウントなしで Hacker News を読む。ハートとブックマークはこの端末に残ります。</string>
+    <string name="tab_top">トップ</string>
+    <string name="tab_new">新着</string>
+    <string name="tab_best">ベスト</string>
+    <string name="tab_ask">Ask</string>
+    <string name="tab_show">Show</string>
+    <string name="tab_jobs">求人</string>
+    <string name="tab_saved">保存済み</string>
+    <string name="tab_following">フォロー</string>
+    <string name="search">Hacker News を検索</string>
+    <string name="settings">設定</string>
+    <string name="feed_empty">いまは何もありません</string>
+    <string name="saved_empty">保存したストーリーはまだありません。ブックマークはこの端末に残ります</string>
+    <string name="following_empty">誰かをフォローすると、その人の投稿がここに出ます</string>
+    <string name="by">%1$s</string>
+    <string name="like">この端末でいいね</string>
+    <string name="unlike">この端末のいいねを取り消す</string>
+    <string name="save">この端末に保存</string>
+    <string name="unsave">この端末から削除</string>
+    <string name="share_link">リンクを共有</string>
+    <string name="save_to_folder">フォルダーに保存...</string>
+    <string name="open_in_browser">ブラウザで開く</string>
+    <string name="comments">コメント</string>
+    <string name="open_article">記事を開く</string>
+    <string name="deleted">[削除済み]</string>
+    <string name="user_empty">公開投稿はありません</string>
+    <string name="follow">この端末でフォロー</string>
+    <string name="unfollow">フォロー解除</string>
+    <string name="search_hint">ストーリーを検索</string>
+    <string name="search_empty">一致するストーリーはありません</string>
+    <string name="settings_blurb">ログインはありません。投票とコメントは Hacker News に残ります。ハートとブックマークはこの端末に残ります。</string>
+    <plurals name="points">
+        <item quantity="other">%1$d ポイント</item>
+    </plurals>
+    <plurals name="comment_count">
+        <item quantity="other">%1$d 件のコメント</item>
+    </plurals>
+    <plurals name="user_karma">
+        <item quantity="other">カルマ %1$d</item>
+    </plurals>
+</resources>

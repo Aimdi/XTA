@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Hacker News</string>
+    <string name="plugin_description">Lire Hacker News sans compte. Cœurs et signets restent sur cet appareil.</string>
+    <string name="tab_top">Top</string>
+    <string name="tab_new">Récent</string>
+    <string name="tab_best">Meilleurs</string>
+    <string name="tab_ask">Ask</string>
+    <string name="tab_show">Show</string>
+    <string name="tab_jobs">Emplois</string>
+    <string name="tab_saved">Enregistrés</string>
+    <string name="tab_following">Abonnements</string>
+    <string name="search">Rechercher sur Hacker News</string>
+    <string name="settings">Paramètres</string>
+    <string name="feed_empty">Rien pour le moment</string>
+    <string name="saved_empty">Aucun enregistrement — les signets restent sur cet appareil</string>
+    <string name="following_empty">Suivez quelqu’un pour voir ses liens ici</string>
+    <string name="by">par %1$s</string>
+    <string name="like">Aimer sur cet appareil</string>
+    <string name="unlike">Retirer le j’aime de cet appareil</string>
+    <string name="save">Enregistrer sur cet appareil</string>
+    <string name="unsave">Retirer de cet appareil</string>
+    <string name="share_link">Partager le lien</string>
+    <string name="save_to_folder">Enregistrer dans un dossier...</string>
+    <string name="open_in_browser">Ouvrir dans le navigateur</string>
+    <string name="comments">Commentaires</string>
+    <string name="open_article">Ouvrir l’article</string>
+    <string name="deleted">[supprimé]</string>
+    <string name="user_empty">Aucune publication publique</string>
+    <string name="follow">Suivre sur cet appareil</string>
+    <string name="unfollow">Ne plus suivre</string>
+    <string name="search_hint">Rechercher des liens</string>
+    <string name="search_empty">Aucun résultat</string>
+    <string name="settings_blurb">Pas de connexion. Votes et commentaires restent sur Hacker News. Cœurs et signets restent sur cet appareil.</string>
+    <plurals name="points">
+        <item quantity="one">%1$d point</item>
+        <item quantity="other">%1$d points</item>
+    </plurals>
+    <plurals name="comment_count">
+        <item quantity="one">%1$d commentaire</item>
+        <item quantity="other">%1$d commentaires</item>
+    </plurals>
+    <plurals name="user_karma">
+        <item quantity="one">%1$d karma</item>
+        <item quantity="other">%1$d karma</item>
+    </plurals>
+</resources>

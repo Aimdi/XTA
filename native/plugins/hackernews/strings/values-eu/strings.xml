@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Hacker News</string>
+    <string name="plugin_description">Irakurri Hacker News konturik gabe. Bihotzak eta laster-markak gailu honetan geratzen dira.</string>
+    <string name="tab_top">Top</string>
+    <string name="tab_new">Berriak</string>
+    <string name="tab_best">Onenak</string>
+    <string name="tab_ask">Ask</string>
+    <string name="tab_show">Show</string>
+    <string name="tab_jobs">Lanak</string>
+    <string name="tab_saved">Gordetakoak</string>
+    <string name="tab_following">Jarraitzen</string>
+    <string name="search">Bilatu Hacker News-en</string>
+    <string name="settings">Ezarpenak</string>
+    <string name="feed_empty">Ez dago ezer orain</string>
+    <string name="saved_empty">Oraindik ez dago gordetakorik — laster-markak gailu honetan geratzen dira</string>
+    <string name="following_empty">Jarraitu norbaiti istorioak hemen ikusteko</string>
+    <string name="by">%1$s-(r)en eskutik</string>
+    <string name="like">Atsegin gailu honetan</string>
+    <string name="unlike">Kendu atsegina gailu honetatik</string>
+    <string name="save">Gorde gailu honetan</string>
+    <string name="unsave">Kendu gailu honetatik</string>
+    <string name="share_link">Partekatu esteka</string>
+    <string name="save_to_folder">Gorde karpeta batean...</string>
+    <string name="open_in_browser">Ireki nabigatzailean</string>
+    <string name="comments">Iruzkinak</string>
+    <string name="open_article">Ireki artikulua</string>
+    <string name="deleted">[ezabatuta]</string>
+    <string name="user_empty">Ez dago bidalketa publikorik</string>
+    <string name="follow">Jarraitu gailu honetan</string>
+    <string name="unfollow">Jarraitzeari utzi</string>
+    <string name="search_hint">Bilatu istorioak</string>
+    <string name="search_empty">Ez dago bat datorren istoriorik</string>
+    <string name="settings_blurb">Saio-hasierarik ez. Botoak eta iruzkinak Hacker News-en geratzen dira. Bihotzak eta laster-markak gailu honetan geratzen dira.</string>
+    <plurals name="points">
+        <item quantity="one">%1$d puntu</item>
+        <item quantity="other">%1$d puntu</item>
+    </plurals>
+    <plurals name="comment_count">
+        <item quantity="one">%1$d iruzkin</item>
+        <item quantity="other">%1$d iruzkin</item>
+    </plurals>
+    <plurals name="user_karma">
+        <item quantity="one">%1$d karma</item>
+        <item quantity="other">%1$d karma</item>
+    </plurals>
+</resources>
