@@ -1,0 +1,7 @@
+{
+  "id": "ehviewer",
+  "version": "1.0.0",
+  "entry": "com.aimdi.xtanative.plugins.ehviewer.EhViewerPlugin",
+  "category": "art",
+  "private": true
+}

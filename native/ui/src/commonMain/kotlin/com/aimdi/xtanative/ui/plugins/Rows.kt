@@ -92,6 +92,36 @@ fun PluginSwitchRow(label: String, checked: Boolean, onChange: (Boolean) -> Unit
     }
 }
 
+/**
+ * A setting that does something when tapped (clears, tests, picks): the whole
+ * row is the button, [icon] before [label], [description] under it, and
+ * [trailing] at its end (a spinner while it works).
+ */
+@Composable
+fun PluginActionRow(
+    label: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    description: String? = null,
+    icon: ImageVector? = null,
+    enabled: Boolean = true,
+    trailing: (@Composable () -> Unit)? = null,
+) {
+    Row(
+        modifier.fillMaxWidth().heightIn(min = 56.dp).clickable(enabled = enabled, onClick = onClick).padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        icon?.let { Icon(it, contentDescription = null, modifier = Modifier.padding(end = 16.dp)) }
+        Column(Modifier.weight(1f).padding(end = 12.dp)) {
+            Text(label, style = MaterialTheme.typography.bodyLarge)
+            if (!description.isNullOrBlank()) {
+                Text(description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
+        trailing?.invoke()
+    }
+}
+
 /** Tabs over a list, as the app's profiles draw them, scrolling sideways when they do not fit. */
 @Composable
 fun PluginTabs(labels: List<String>, selected: Int, onSelect: (Int) -> Unit, modifier: Modifier = Modifier) {

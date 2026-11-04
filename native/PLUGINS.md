@@ -95,15 +95,39 @@ read again, the desktop's F5: `RefreshesOn`).
 | `openPostMenu(menu)` | the shared post menu over the screen |
 | `download(media, fileName, subfolder)`, `saveFile(bytes, fileName, mimeType, subfolder)`, `shareFile(bytes, fileName, mimeType)`, `openDownloads()` | the app's downloads, a file it made saved or shared, the Downloads screen |
 
-The shared pieces, in the same package, drawn in the app's theme:
-`NetworkPostCard`, `NetworkFocalPost`, `QuotedNetworkPost` (a `NetworkPost`),
-`MediaTiles`, `PagedItems` with `PagedList`, `NetworkProblemView`,
-`problemOf`, `MessageText`, `PluginScaffold`, `rememberKept` (state kept per
-screen across recompositions), `HomeTimelineSwitch`, `AddToGroupButton` and
-`NetworkBookmark` (below), and `PluginStrings` with `pluginString` and
-`pluginPlural`. `:ui`'s `ui.common` (avatar, hairline, loading row, times) is
-there too. Their words are the app's, in all its languages: a plugin draws
-them without strings of its own.
+The shared pieces, in the same package, drawn in the app's theme. Use them
+rather than a copy of your own; a piece two plugins need goes here once,
+with a test.
+
+- Posts: `NetworkPostCard` (with `NetworkPostExtras` for what a network adds),
+  `NetworkFocalPost`, `QuotedNetworkPost` (a `NetworkPost`), `LinkedText`,
+  `NetworkCount`, `NetworkHeaderButton`, `PostLines` (a post's time and
+  counts in words) and `NetworkBookmark` (below).
+- Media: `MediaTiles`, `MediaPager` (the viewer, with qualities and a
+  download), `ZoomableImage`, and `rememberImageRequest` for pictures that
+  need request headers.
+- Reads and lists: `Fetch` (one read, kept on screen through a failure),
+  `MergedFeed` (accounts' pages merged as they come), `PagedItems` with
+  `PagedList`, `NetworkProblemView` and `NetworkProblemRow` with `problemOf`,
+  `RetryRow`, `MessageText` and `EmptyPane`.
+- Screens: `PluginScaffold`, `PluginRoute` (a screen and its arguments as
+  text, for `open`), `PluginChipTabs` over a home tab, `WithSettings`,
+  `PluginShelf` (what one screen hands the next), `rememberKept` (state kept
+  while the screen is on the back stack) and `PluginNotices` with
+  `NoticeHost`.
+- Rows and fields: `PluginSwitchRow`, `PluginActionRow`, `PluginMenuRow`,
+  `PluginSectionTitle`, `PluginTabs`, `PluginCounts`, `NetworkPersonRow`,
+  `SecretField` (a cookie, a token, a key) and `PluginIcons`.
+- The app's features: `HomeTimelineSwitch` and `AddToGroupButton` (below),
+  and `PluginSearchHistory` (recent searches, as XTA keeps them).
+- Leaving and files: `rememberOpenOutside`, `rememberShareText`,
+  `rememberTextFileChooser` and `rememberTextFileSaver`.
+- Words: `PluginStrings` with `pluginString` and `pluginPlural`
+  (`pluralCategory` gives each language's plural forms).
+
+`:ui`'s `ui.common` (avatar, hairline, loading row, times) is there too. The
+pieces' words are the app's, in all its languages: a plugin draws them
+without strings of its own.
 
 ### Posts in Home's timelines
 

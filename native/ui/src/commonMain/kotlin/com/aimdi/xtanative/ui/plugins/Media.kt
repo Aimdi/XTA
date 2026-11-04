@@ -57,6 +57,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.close
 import com.aimdi.xtanative.ui.generated.resources.reader_download
@@ -180,7 +181,7 @@ fun MediaPager(
         HorizontalPager(state = pager, modifier = Modifier.fillMaxSize(), key = { it }) { page ->
             val item = items[page]
             when (item.kind) {
-                MediaItem.Kind.PHOTO -> ZoomableImage(item.imageUrl, item.alt)
+                MediaItem.Kind.PHOTO -> ZoomableImage(item.imageUrl, item.alt, Modifier.fillMaxSize())
                 MediaItem.Kind.VIDEO, MediaItem.Kind.GIF -> QualityVideoPage(item, qualities.getOrNull(page).orEmpty(), active = pager.currentPage == page)
             }
         }
@@ -233,18 +234,34 @@ private fun QualityMenu(qualities: List<VideoQuality>, playing: String?, onChoos
     }
 }
 
+/**
+ * A picture fitted to its box that pinches and double-taps to zoom, as the
+ * viewer's photos do: one finger pans only once zoomed, so a pager around it
+ * still swipes. [model] is what Coil's AsyncImage loads (an address, or a
+ * request with headers, [rememberImageRequest]); [onTap] and [onLongPress]
+ * hear where the picture was touched, and [onState] how its load goes.
+ */
 @Composable
-private fun ZoomableImage(url: String, alt: String?) {
+fun ZoomableImage(
+    model: Any?,
+    contentDescription: String?,
+    modifier: Modifier = Modifier,
+    onTap: ((Offset) -> Unit)? = null,
+    onLongPress: ((Offset) -> Unit)? = null,
+    onState: ((AsyncImagePainter.State) -> Unit)? = null,
+) {
     var scale by remember { mutableFloatStateOf(1f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
     AsyncImage(
-        model = url,
-        contentDescription = alt,
+        model = model,
+        contentDescription = contentDescription,
         contentScale = ContentScale.Fit,
-        modifier = Modifier
-            .fillMaxSize()
-            .pointerInput(Unit) {
+        onState = onState,
+        modifier = modifier
+            .pointerInput(onTap, onLongPress) {
                 detectTapGestures(
+                    onTap = onTap,
+                    onLongPress = onLongPress,
                     onDoubleTap = { tap ->
                         if (scale > 1f) {
                             scale = 1f

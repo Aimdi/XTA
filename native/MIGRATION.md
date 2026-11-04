@@ -27,9 +27,9 @@ layer is written in `networks/<id>` first, then moves with its screens into
 | substack | `plugins/substack` (177 tests) | plugin: XTA's screens, the reader and podcasts |
 | booru | `plugins/booru` (151 tests, live check passes) | plugin: XTA's screens and settings |
 | pixiv | `plugins/pixiv` (220 tests, live check passes) | plugin: Home, Rankings, Favorites and Search, works and novels, profiles, comments, series, Pixivision and settings |
-| ehviewer | `networks/ehviewer` ported (97 tests, live check passes) | screens wave |
+| ehviewer | `plugins/ehviewer` (97 tests, live check passes) | plugin, private as in XTA: Popular, the front page, the toplists, Watched, history and favourites, search with XTA's categories and the site's tag suggestions, galleries with tags, comments and previews, the reader in its three modes with downloads, settings |
 | instagram | `plugins/instagram` (55 tests) | plugin: For you and Following, profiles, the accounts followed here, search, the post card with its carousel, settings |
-| tiktok | `networks/tiktok` ported (52 tests, live check passes) | screens wave |
+| tiktok | `plugins/tiktok` (61 tests, live check passes) | plugin, private as in XTA: Following and Accounts, trending, discover, search for people and videos, profiles, the player in XTA's renditions or TikTok's own, groups, settings |
 | rss | `networks/rss` ported (48 tests) | screens wave |
 | hackernews | `plugins/hackernews` (29 tests) | plugin: Top, New, Best, Ask, Show and Jobs, Saved and Following, stories with their comments, users, search and settings |
 | websources | `networks/websources` ported (73 tests) | screens wave |

@@ -2,7 +2,6 @@ package com.aimdi.xtanative.networks
 
 import com.aimdi.xtanative.core.repairs.Repairs
 import com.aimdi.xtanative.networks.stocks.TickerClient
-import com.aimdi.xtanative.networks.tiktok.TikTokRepairs
 import java.io.File
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -52,15 +51,7 @@ class NetworkRepairsTest {
     }
 
     @Test
-    fun tikTokTakesWhatFits() {
-        val published = mapOf("tiktok.aid" to "2000")
-
-        assertEquals(TikTokRepairs(aid = "2000"), TikTokRepairs.published(published))
-    }
-
-    @Test
     fun aWithdrawnRepairGoesBackToTheShippedValue() {
-        assertEquals(TikTokRepairs(), TikTokRepairs.published(emptyMap()))
         assertEquals("Repaired/2.0", TickerClient.USER_AGENT_SLOT.valueIn(mapOf("stocks.user_agent" to "Repaired/2.0")))
     }
 
