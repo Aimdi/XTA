@@ -50,10 +50,16 @@ wait_for() {
   return 1
 }
 
+# Why it failed, in the job's own log: the app's plugin lines (why a plugin
+# was not started), a crash, and what the screen says (a row's status line).
 fail() {
   echo "$1"
   adb logcat -d > "$out/plugin-logcat.txt" || true
-  grep -E "XTA Native: plugin|FATAL EXCEPTION|AndroidRuntime" "$out/plugin-logcat.txt" | tail -40 || true
+  grep -F "XTA Native: plugin" "$out/plugin-logcat.txt" || true
+  grep -A 30 -E "FATAL EXCEPTION|E AndroidRuntime" "$out/plugin-logcat.txt" | head -60 || true
+  echo "On screen:"
+  adb shell uiautomator dump /sdcard/ui.xml > /dev/null 2>&1 || true
+  adb exec-out cat /sdcard/ui.xml 2> /dev/null | tr '>' '\n' | sed -n 's/.* text="\([^"][^"]*\)".*/  \1/p' | head -40 || true
   exit 1
 }
 
