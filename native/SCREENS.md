@@ -27,6 +27,10 @@ speech text). Their KDoc says what each call does.
   text-to-speech, MediaStore, custom tabs) goes behind a small interface or
   `expect`/`actual`, with a desktop side that works (system browser,
   `~/Downloads`, keyboard and mouse). Nothing may crash on the desktop.
+- **JDK 17.** CI and the desktop app run on Java 17, while a machine that
+  checks locally may have a newer one. Use nothing that changed after 17:
+  `java.text.BreakIterator` joins emoji sequences only from Java 20 on, so a
+  "character" goes through `ui.common.Graphemes`.
 
 ## How a screen is built
 

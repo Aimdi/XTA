@@ -2,7 +2,7 @@ package com.aimdi.xtanative.ui.subscriptions
 
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.json.J
-import java.text.BreakIterator
+import com.aimdi.xtanative.ui.common.Graphemes
 import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.roundToLong
@@ -120,29 +120,12 @@ object GroupLook {
     }
 
     /** The first grapheme of [text]: an emoji with its modifiers, a letter with its accents. */
-    fun firstGrapheme(text: String): String {
-        val trimmed = text.trim()
-        if (trimmed.isEmpty()) return ""
-        val graphemes = BreakIterator.getCharacterInstance()
-        graphemes.setText(trimmed)
-        return trimmed.substring(0, graphemes.next().takeIf { it != BreakIterator.DONE } ?: trimmed.length)
-    }
+    fun firstGrapheme(text: String): String = Graphemes.first(text.trim())
 
     /** A group's one letter: its first letter, else its first grapheme, else `?`. */
     fun initial(name: String): String {
-        val trimmed = name.trim()
-        if (trimmed.isEmpty()) return "?"
-        val graphemes = BreakIterator.getCharacterInstance()
-        graphemes.setText(trimmed)
-        var start = graphemes.first()
-        var end = graphemes.next()
-        while (end != BreakIterator.DONE) {
-            val grapheme = trimmed.substring(start, end)
-            if (letter.containsMatchIn(grapheme)) return grapheme.uppercase()
-            start = end
-            end = graphemes.next()
-        }
-        return firstGrapheme(trimmed).uppercase()
+        val graphemes = Graphemes.of(name.trim())
+        return (graphemes.firstOrNull { letter.containsMatchIn(it) } ?: graphemes.firstOrNull() ?: "?").uppercase()
     }
 
     private fun hasEmoji(emoji: String?) = !emoji.isNullOrBlank()
