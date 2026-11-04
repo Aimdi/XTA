@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.desktop
 
 import com.aimdi.xtanative.data.AppGraph
+import com.aimdi.xtanative.ui.downloads.DesktopFiles
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.attribute.PosixFilePermissions
@@ -8,14 +9,16 @@ import kotlinx.coroutines.flow.flowOf
 
 /**
  * The app graph on the Linux desktop: its files in ~/.local/share/xta-native,
- * always online, and XTA's stand-in for X instead of x.com when
- * XTA_NATIVE_MOCK_X names its address (as CI's desktop check does).
+ * always online, XTA's stand-in for X instead of x.com when
+ * XTA_NATIVE_MOCK_X names its address (as CI's desktop check does), and
+ * downloads in ~/Downloads/XTA Native.
  */
 internal fun desktopGraph(): AppGraph = AppGraph(
     files = dataFolder(),
     connection = flowOf(true),
     version = System.getProperty("xtanative.version").orEmpty(),
     mockX = System.getenv("XTA_NATIVE_MOCK_X")?.takeIf { it.isNotBlank() },
+    platformFiles = DesktopFiles(),
 )
 
 /**

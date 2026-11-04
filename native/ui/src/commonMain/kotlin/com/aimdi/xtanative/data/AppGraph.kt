@@ -9,6 +9,11 @@ import com.aimdi.xtanative.core.x.signing.FileSignerStore
 import com.aimdi.xtanative.core.x.signing.SigningBootstrap
 import com.aimdi.xtanative.store.StoreDir
 import com.aimdi.xtanative.store.antenna.AntennaStore
+import com.aimdi.xtanative.store.downloads.DownloadQueue
+import com.aimdi.xtanative.store.downloads.DownloadTransfer
+import com.aimdi.xtanative.store.downloads.FileDownloadHistory
+import com.aimdi.xtanative.store.downloads.OkHttpMediaHttp
+import com.aimdi.xtanative.store.offline.OfflineStore
 import com.aimdi.xtanative.store.offline.TimelineCache
 import com.aimdi.xtanative.store.published.PublishedDocument
 import com.aimdi.xtanative.store.published.RepairsRegistry
@@ -17,9 +22,11 @@ import com.aimdi.xtanative.store.reading.ReadingJournal
 import com.aimdi.xtanative.store.saved.ArchiveNotesStore
 import com.aimdi.xtanative.store.saved.LikesStore
 import com.aimdi.xtanative.store.saved.LocalPostsStore
+import com.aimdi.xtanative.store.saved.NoteDrafts
 import com.aimdi.xtanative.store.saved.SavedStore
 import com.aimdi.xtanative.store.search.RecentSearches
 import com.aimdi.xtanative.store.settings.SettingsStore
+import com.aimdi.xtanative.ui.downloads.PlatformFiles
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,10 +44,17 @@ import kotlinx.coroutines.withContext
  * Everything the screens share, made once per process by the app's shell
  * (Android's Application, the desktop's main): [files] is the app's private
  * folder, [connection] whether there is one as it changes, [version] this
- * build's, and [mockX] the address of XTA's stand-in for X to read instead of
- * x.com (see [MockX]), or null.
+ * build's, [mockX] the address of XTA's stand-in for X to read instead of
+ * x.com (see [MockX]), or null, and [platformFiles] what only the platform
+ * does with files: where downloads are saved, and how a file is opened.
  */
-class AppGraph(private val files: File, connection: Flow<Boolean>, val version: String, private val mockX: String? = null) {
+class AppGraph(
+    private val files: File,
+    connection: Flow<Boolean>,
+    val version: String,
+    private val mockX: String? = null,
+    val platformFiles: PlatformFiles = PlatformFiles.Unavailable,
+) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val writes = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
@@ -60,6 +74,20 @@ class AppGraph(private val files: File, connection: Flow<Boolean>, val version: 
     val readingJournal = ReadingJournal(store)
     val readingAppearance = ReadingAppearanceStore(store)
     val timelineCache = TimelineCache(store)
+    val noteDrafts = NoteDrafts(store)
+
+    /** Pictures and videos, streamed for downloads and the offline library. */
+    private val mediaHttp = OkHttpMediaHttp()
+    val offline = OfflineStore(store, mediaHttp)
+
+    /** Partial downloads wait here until they are whole. */
+    private val downloadStaging = File(files, "download-parts")
+    val downloads = DownloadQueue(
+        history = FileDownloadHistory(store),
+        runner = DownloadTransfer(mediaHttp, downloadStaging, platformFiles) { platformFiles.sharedStorageAvailable() },
+        discard = { entry -> DownloadTransfer.discardEntry(downloadStaging, entry) },
+        cleanup = { DownloadTransfer.clearInterruptedFiles(downloadStaging) },
+    )
 
     /** Whether there is a connection, as it changes: the present state first. */
     val online: SharedFlow<Boolean> = connection.shareIn(scope, SharingStarted.WhileSubscribed(5_000), replay = 1)

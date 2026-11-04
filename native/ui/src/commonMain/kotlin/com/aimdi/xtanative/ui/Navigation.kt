@@ -24,16 +24,25 @@ import androidx.navigation.navDeepLink
 import androidx.savedstate.read
 import com.aimdi.xtanative.ui.antenna.AntennaFeedScreen
 import com.aimdi.xtanative.ui.antenna.AntennasScreen
+import com.aimdi.xtanative.ui.archive.ArchiveScreen
 import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.community.CommunityMembersScreen
 import com.aimdi.xtanative.ui.community.CommunityScreen
+import com.aimdi.xtanative.ui.downloads.DownloadsScreen
 import com.aimdi.xtanative.ui.feed.FeedScreen
 import com.aimdi.xtanative.ui.importer.ImportScreen
 import com.aimdi.xtanative.ui.lists.ListImportScreen
 import com.aimdi.xtanative.ui.media.MediaViewer
+import com.aimdi.xtanative.ui.offline.OfflineLibraryScreen
+import com.aimdi.xtanative.ui.offline.OfflineMediaScreen
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.PostScreen
 import com.aimdi.xtanative.ui.profile.ProfileScreen
+import com.aimdi.xtanative.ui.saved.KeepHost
+import com.aimdi.xtanative.ui.saved.NoteThreadScreen
+import com.aimdi.xtanative.ui.saved.SavedFoldersScreen
+import com.aimdi.xtanative.ui.saved.SavedLinks
+import com.aimdi.xtanative.ui.saved.SavedScreen
 import com.aimdi.xtanative.ui.search.SearchActions
 import com.aimdi.xtanative.ui.search.SearchScreen
 import com.aimdi.xtanative.ui.search.SearchTab
@@ -58,6 +67,13 @@ private object Routes {
     const val LIST = "list/{id}"
     const val ANTENNAS = "antennas"
     const val ANTENNA = "antenna/{id}"
+    const val SAVED = "saved"
+    const val SAVED_FOLDERS = "saved/folders"
+    const val NOTE_THREAD = "notes?root={root}"
+    const val DOWNLOADS = "downloads"
+    const val OFFLINE = "offline"
+    const val OFFLINE_MEDIA = "offline/media?id={id}"
+    const val ARCHIVE = "archive?id={id}"
 
     fun post(id: String) = "post/$id"
     fun profile(screenName: String) = "profile/" + encoded(screenName)
@@ -72,6 +88,9 @@ private object Routes {
     fun community(id: String) = "community/" + encoded(id)
     fun communityMembers(id: String) = "community/" + encoded(id) + "/members"
     fun antenna(id: String) = "antenna/" + encoded(id)
+    fun noteThread(rootId: String) = "notes?root=" + encoded(rootId)
+    fun offlineMedia(id: String) = "offline/media?id=" + encoded(id)
+    fun archive(id: String) = "archive?id=" + encoded(id)
 
     /** [text] escaped for a route, which is matched as a URI: a space as %20, which every platform decodes. */
     private fun encoded(text: String): String = URLEncoder.encode(text, "UTF-8").replace("+", "%20")
@@ -189,7 +208,49 @@ fun XtaNativeRoot() {
                 onCleared = { nav.startOver(Routes.IMPORT) },
             )
         }
+        composable(Routes.SAVED) {
+            SavedScreen(
+                actions,
+                SavedLinks(
+                    openFolders = { nav.navigate(Routes.SAVED_FOLDERS) },
+                    openThread = { rootId -> nav.navigate(Routes.noteThread(rootId)) },
+                    openDownloads = { nav.navigate(Routes.DOWNLOADS) },
+                    openOffline = { nav.navigate(Routes.OFFLINE) },
+                    openSettings = { nav.navigate(Routes.SETTINGS) },
+                ),
+                onBack = { nav.popBackStack() },
+            )
+        }
+        composable(Routes.SAVED_FOLDERS) { SavedFoldersScreen(onBack = { nav.popBackStack() }) }
+        composable(
+            Routes.NOTE_THREAD,
+            arguments = listOf(navArgument("root") { type = NavType.StringType; nullable = true; defaultValue = null }),
+        ) { entry ->
+            NoteThreadScreen(entry.text("root").orEmpty(), actions, onBack = { nav.popBackStack() })
+        }
+        composable(Routes.DOWNLOADS) { DownloadsScreen(onBack = { nav.popBackStack() }) }
+        composable(Routes.OFFLINE) {
+            OfflineLibraryScreen(
+                onBack = { nav.popBackStack() },
+                openMedia = { id -> nav.navigate(Routes.offlineMedia(id)) },
+                openArticle = { id -> nav.navigate(Routes.archive(id)) },
+            )
+        }
+        composable(
+            Routes.OFFLINE_MEDIA,
+            arguments = listOf(navArgument("id") { type = NavType.StringType; nullable = true; defaultValue = null }),
+        ) { entry ->
+            OfflineMediaScreen(entry.text("id").orEmpty(), onBack = { nav.popBackStack() })
+        }
+        composable(
+            Routes.ARCHIVE,
+            arguments = listOf(navArgument("id") { type = NavType.StringType; nullable = true; defaultValue = null }),
+        ) { entry ->
+            ArchiveScreen(entry.text("id").orEmpty(), onBack = { nav.popBackStack() })
+        }
     }
+    // The foot-of-window notices of saves, likes and downloads, and the platform's save dialog (ui/saved).
+    KeepHost()
 }
 
 /** An x.com or twitter.com link opens here, as it opens XTA. Only Android is handed links. */
