@@ -10,7 +10,6 @@ import com.aimdi.xtanative.services.speech.SpeechSession
 import com.aimdi.xtanative.services.speech.VoiceDownloadStore
 import com.aimdi.xtanative.services.speech.VoiceEnginePackage
 import com.aimdi.xtanative.services.speech.VoiceEngineStore
-import com.aimdi.xtanative.services.speech.VoiceEngines
 import com.aimdi.xtanative.services.speech.VoiceSynthesizer
 import com.aimdi.xtanative.store.downloads.OkHttpMediaHttp
 import com.aimdi.xtanative.store.settings.SpeechPrefs
@@ -24,7 +23,8 @@ import kotlinx.coroutines.launch
 
 /**
  * Turns text into speech with a downloaded voice, and plays what it made:
- * sherpa-onnx, loaded from the voice engine [VoiceEngineStore] downloads.
+ * sherpa-onnx, loaded from the voice engine [VoiceEngineStore] downloads, or
+ * the one the app carries.
  */
 interface VoiceSynthesis {
     /** [installed] ready to speak, run by the engine in [engineFolder] (null: the one the app carries). */
@@ -46,13 +46,20 @@ interface SpeechPlatform {
     /** Where downloaded voices, the voice engine and their downloads under way are kept. */
     val voiceFolder: File
 
-    /** The voice engine this device would download; null where none is published for its processor. */
+    /** The voice engine this device would download; null where none is published for its processor, or the app carries it. */
     val voiceEngine: VoiceEnginePackage?
 
+    /** The app carries the voice engine (the desktop's tarball and Arch package), so there is none to download. */
+    val engineBundled: Boolean get() = false
+
+    /** Where voices and the engine download from. */
+    val sources: VoiceSources get() = VoiceSources(server = null, releaseTag = "")
+
     /**
-     * Synthesis with a downloaded voice; null while this build has no binding
-     * to the sherpa-onnx library. Then voices still download, and the
-     * platform's engine reads.
+     * Synthesis with a downloaded voice; null where this build cannot reach
+     * sherpa-onnx (an APK built without the JNI shim, a desktop run without
+     * the engine beside it). Then voices still download, and the platform's
+     * engine reads, where it has one.
      */
     val synthesis: VoiceSynthesis?
 }
@@ -69,16 +76,18 @@ class SpeechParts private constructor(graph: AppGraph, platform: SpeechPlatform)
     val voices: VoiceDownloadStore = run {
         val transfer = MediaVoiceTransfer(OkHttpMediaHttp(), File(platform.voiceFolder, "partial"))
         val reader = SystemTar()
-        val engine = VoiceEngineStore(platform.voiceEngine, bundled = false, File(platform.voiceFolder, "engine"), transfer, reader) {
-            VoiceEngines.urls(it, releaseTag = "")
-        }
-        VoiceDownloadStore(engine, File(platform.voiceFolder, "voices"), transfer, reader)
+        val sources = platform.sources
+        val engine = VoiceEngineStore(platform.voiceEngine, platform.engineBundled, File(platform.voiceFolder, "engine"), transfer, reader, sources::engineUrls)
+        VoiceDownloadStore(engine, File(platform.voiceFolder, "voices"), transfer, reader, sources.catalog)
     }
 
     val systemVoices: SystemVoices? = platform.voices
 
+    /** Synthesis with a downloaded voice, where this build can reach sherpa-onnx. */
+    val synthesis: VoiceSynthesis? = platform.synthesis
+
     /** Whether downloaded voices can read in this build at all. */
-    val synthesisAvailable: Boolean = platform.synthesis != null
+    val synthesisAvailable: Boolean = synthesis != null
 
     /** Runs [work] for as long as the app does: a download goes on when its screen is left. */
     fun keep(work: suspend () -> Unit) {
@@ -86,9 +95,9 @@ class SpeechParts private constructor(graph: AppGraph, platform: SpeechPlatform)
     }
 
     val speech: AppSpeech = run {
-        val offline = platform.synthesis?.let { synthesis -> offlineEngine(graph, synthesis) }
+        val offline = synthesis?.let { offlineEngine(graph, it) }
         val engines = listOfNotNull(offline, platform.engine)
-        AppSpeech(SpeechReader(engines, platform.session), graph.settings, scope, hasEngine = engines.isNotEmpty())
+        AppSpeech(SpeechReader(engines, platform.session), graph.settings, scope, hasEngine = engines.isNotEmpty(), voicesOnly = platform.engine == null && offline != null)
     }
 
     /** A downloaded voice reading, while the setting allows it and one speaks the text's language (offline_speech_setup.dart). */

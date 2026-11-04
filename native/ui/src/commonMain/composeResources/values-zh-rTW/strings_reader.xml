@@ -47,6 +47,8 @@
     <string name="reader_speech_voice_settings">語音設定</string>
     <string name="reader_speech_unavailable">此裝置未安裝語音引擎</string>
     <string name="reader_speech_no_engine">朗讀需要語音引擎，而桌面版沒有。</string>
+    <string name="reader_speech_voices_only">桌面版使用已下載的語音朗讀：請為你閱讀的每種語言下載一個語音。</string>
+    <string name="reader_speech_no_voice">沒有可以朗讀此內容的已下載語音</string>
     <string name="reader_speech_sherpa_missing">尚未安裝 Sherpa TTS</string>
     <string name="reader_speech_get_sherpa">取得 Sherpa TTS</string>
     <string name="reader_speech_use_sherpa">使用 Sherpa</string>
@@ -83,6 +85,8 @@
     <string name="reader_media_unknown">未知</string>
     <string name="reader_media_previous">上一頁</string>
     <string name="reader_media_next">下一頁</string>
+    <string name="reader_media_play">播放</string>
+    <string name="reader_media_pause">暫停</string>
     <string name="reader_video">影片</string>
     <string name="reader_video_failed">影片載入失敗</string>
     <string name="reader_video_restart">重新啟動影片播放器</string>

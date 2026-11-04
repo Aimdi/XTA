@@ -47,6 +47,8 @@
     <string name="reader_speech_voice_settings">Cài đặt giọng đọc</string>
     <string name="reader_speech_unavailable">Thiết bị này chưa cài bộ đọc nào</string>
     <string name="reader_speech_no_engine">Đọc to cần một bộ đọc, và ứng dụng máy tính không có bộ đọc nào.</string>
+    <string name="reader_speech_voices_only">Ứng dụng máy tính đọc to bằng giọng đã tải xuống: hãy tải một giọng cho mỗi ngôn ngữ bạn đọc.</string>
+    <string name="reader_speech_no_voice">Không có giọng đã tải xuống nào đọc được nội dung này</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS chưa được cài đặt</string>
     <string name="reader_speech_get_sherpa">Tải Sherpa TTS</string>
     <string name="reader_speech_use_sherpa">Dùng Sherpa</string>
@@ -83,6 +85,8 @@
     <string name="reader_media_unknown">Không xác định</string>
     <string name="reader_media_previous">Trang trước</string>
     <string name="reader_media_next">Trang sau</string>
+    <string name="reader_media_play">Phát</string>
+    <string name="reader_media_pause">Tạm dừng</string>
     <string name="reader_video">Video</string>
     <string name="reader_video_failed">Không thể tải video</string>
     <string name="reader_video_restart">Khởi động lại trình phát video</string>

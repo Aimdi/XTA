@@ -51,6 +51,8 @@
     <string name="reader_speech_voice_settings">Voice settings</string>
     <string name="reader_speech_unavailable">This device has no speech engine installed</string>
     <string name="reader_speech_no_engine">Reading aloud needs a speech engine, and the desktop app has none.</string>
+    <string name="reader_speech_voices_only">The desktop app reads aloud with downloaded voices: download one for each language you read.</string>
+    <string name="reader_speech_no_voice">No downloaded voice can read this</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS is not installed yet</string>
     <string name="reader_speech_get_sherpa">Get Sherpa TTS</string>
     <string name="reader_speech_use_sherpa">Use Sherpa</string>
@@ -89,6 +91,8 @@
     <string name="reader_media_unknown">Unknown</string>
     <string name="reader_media_previous">Previous page</string>
     <string name="reader_media_next">Next page</string>
+    <string name="reader_media_play">Play</string>
+    <string name="reader_media_pause">Pause</string>
     <string name="reader_video">Video</string>
     <string name="reader_video_failed">Failed to load video</string>
     <string name="reader_video_restart">Restart video player</string>

@@ -47,6 +47,8 @@
     <string name="reader_speech_voice_settings">Налады голасу</string>
     <string name="reader_speech_unavailable">На гэтай прыладзе няма рухавіка маўлення</string>
     <string name="reader_speech_no_engine">Для чытання ўслых патрэбны рухавік маўлення, а ў праграмы для камп'ютара яго няма.</string>
+    <string name="reader_speech_voices_only">Праграма для камп'ютара чытае ўслых спампаванымі галасамі: спампуйце голас для кожнай мовы, на якой чытаеце.</string>
+    <string name="reader_speech_no_voice">Ніводзін спампаваны голас не можа гэта прачытаць</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS яшчэ не ўсталяваны</string>
     <string name="reader_speech_get_sherpa">Атрымаць Sherpa TTS</string>
     <string name="reader_speech_use_sherpa">Выкарыстоўваць Sherpa</string>
@@ -83,6 +85,8 @@
     <string name="reader_media_unknown">Невядомы</string>
     <string name="reader_media_previous">Папярэдняя старонка</string>
     <string name="reader_media_next">Наступная старонка</string>
+    <string name="reader_media_play">Прайграць</string>
+    <string name="reader_media_pause">Паўза</string>
     <string name="reader_video">Відэа</string>
     <string name="reader_video_failed">Не ўдалося загрузіць відэа</string>
     <string name="reader_video_restart">Перазапусціць плэер</string>

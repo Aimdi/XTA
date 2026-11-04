@@ -47,6 +47,8 @@
     <string name="reader_speech_voice_settings">音声の設定</string>
     <string name="reader_speech_unavailable">この端末には音声エンジンがありません</string>
     <string name="reader_speech_no_engine">読み上げには音声エンジンが必要ですが、デスクトップ版にはありません。</string>
+    <string name="reader_speech_voices_only">デスクトップ版はダウンロードした音声で読み上げます。読む言語ごとに音声をダウンロードしてください。</string>
+    <string name="reader_speech_no_voice">これを読み上げられるダウンロード済みの音声がありません</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS はまだインストールされていません</string>
     <string name="reader_speech_get_sherpa">Sherpa TTS を入手</string>
     <string name="reader_speech_use_sherpa">Sherpa を使う</string>
@@ -83,6 +85,8 @@
     <string name="reader_media_unknown">不明</string>
     <string name="reader_media_previous">前のページ</string>
     <string name="reader_media_next">次のページ</string>
+    <string name="reader_media_play">再生</string>
+    <string name="reader_media_pause">一時停止</string>
     <string name="reader_video">動画</string>
     <string name="reader_video_failed">動画の読み込みに失敗しました</string>
     <string name="reader_video_restart">動画プレーヤーを再起動</string>

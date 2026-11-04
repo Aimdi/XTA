@@ -47,6 +47,8 @@
     <string name="reader_speech_voice_settings">Ahots-ezarpenak</string>
     <string name="reader_speech_unavailable">Gailu honek ez du ahots-motorrik</string>
     <string name="reader_speech_no_engine">Ozen irakurtzeko ahots-motor bat behar da, eta mahaigaineko aplikazioak ez du bat ere.</string>
+    <string name="reader_speech_voices_only">Mahaigaineko aplikazioak deskargatutako ahotsekin irakurtzen du ozen: deskargatu ahots bat irakurtzen duzun hizkuntza bakoitzeko.</string>
+    <string name="reader_speech_no_voice">Deskargatutako ahotsik ezin du hau irakurri</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS oraindik ez dago instalatuta</string>
     <string name="reader_speech_get_sherpa">Lortu Sherpa TTS</string>
     <string name="reader_speech_use_sherpa">Erabili Sherpa</string>
@@ -83,6 +85,8 @@
     <string name="reader_media_unknown">Ezezaguna</string>
     <string name="reader_media_previous">Aurreko orria</string>
     <string name="reader_media_next">Hurrengo orria</string>
+    <string name="reader_media_play">Erreproduzitu</string>
+    <string name="reader_media_pause">Pausatu</string>
     <string name="reader_video">Bideoa</string>
     <string name="reader_video_failed">Ezin izan da bideoa kargatu</string>
     <string name="reader_video_restart">Berrabiarazi erreproduzitzailea</string>

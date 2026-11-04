@@ -47,6 +47,8 @@
     <string name="reader_speech_voice_settings">Hääle seaded</string>
     <string name="reader_speech_unavailable">Selles seadmes pole kõnemootorit</string>
     <string name="reader_speech_no_engine">Ettelugemiseks on vaja kõnemootorit, kuid töölauarakendusel seda pole.</string>
+    <string name="reader_speech_voices_only">Töölauarakendus loeb ette allalaaditud häältega: laadi iga keele jaoks, mida loed, alla üks hääl.</string>
+    <string name="reader_speech_no_voice">Ükski allalaaditud hääl ei saa seda ette lugeda</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS pole veel paigaldatud</string>
     <string name="reader_speech_get_sherpa">Hangi Sherpa TTS</string>
     <string name="reader_speech_use_sherpa">Kasuta Sherpat</string>
@@ -83,6 +85,8 @@
     <string name="reader_media_unknown">Teadmata</string>
     <string name="reader_media_previous">Eelmine leht</string>
     <string name="reader_media_next">Järgmine leht</string>
+    <string name="reader_media_play">Esita</string>
+    <string name="reader_media_pause">Peata</string>
     <string name="reader_video">Video</string>
     <string name="reader_video_failed">Video laadimine ebaõnnestus</string>
     <string name="reader_video_restart">Taaskäivita pleier</string>

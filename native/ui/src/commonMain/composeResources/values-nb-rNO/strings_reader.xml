@@ -47,6 +47,8 @@
     <string name="reader_speech_voice_settings">Stemmeinnstillinger</string>
     <string name="reader_speech_unavailable">Ingen talemotor er installert på denne enheten</string>
     <string name="reader_speech_no_engine">Opplesning krever en talemotor, og skrivebordsappen har ingen.</string>
+    <string name="reader_speech_voices_only">Skrivebordsappen leser høyt med nedlastede stemmer: last ned én for hvert språk du leser.</string>
+    <string name="reader_speech_no_voice">Ingen nedlastet stemme kan lese dette</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS er ikke installert ennå</string>
     <string name="reader_speech_get_sherpa">Hent Sherpa TTS</string>
     <string name="reader_speech_use_sherpa">Bruk Sherpa</string>
@@ -83,6 +85,8 @@
     <string name="reader_media_unknown">Ukjent</string>
     <string name="reader_media_previous">Forrige side</string>
     <string name="reader_media_next">Neste side</string>
+    <string name="reader_media_play">Spill av</string>
+    <string name="reader_media_pause">Pause</string>
     <string name="reader_video">Video</string>
     <string name="reader_video_failed">Kunne ikke laste videoen</string>
     <string name="reader_video_restart">Start videospilleren på nytt</string>

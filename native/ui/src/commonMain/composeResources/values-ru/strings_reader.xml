@@ -47,6 +47,8 @@
     <string name="reader_speech_voice_settings">Настройки голоса</string>
     <string name="reader_speech_unavailable">На этом устройстве нет синтезатора речи</string>
     <string name="reader_speech_no_engine">Для чтения вслух нужен синтезатор речи, а у приложения для компьютера его нет.</string>
+    <string name="reader_speech_voices_only">Приложение для компьютера читает вслух загруженными голосами: загрузите голос для каждого языка, на котором читаете.</string>
+    <string name="reader_speech_no_voice">Ни один загруженный голос не может это прочитать</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS ещё не установлен</string>
     <string name="reader_speech_get_sherpa">Установить Sherpa TTS</string>
     <string name="reader_speech_use_sherpa">Использовать Sherpa</string>
@@ -83,6 +85,8 @@
     <string name="reader_media_unknown">Неизвестный</string>
     <string name="reader_media_previous">Предыдущая страница</string>
     <string name="reader_media_next">Следующая страница</string>
+    <string name="reader_media_play">Воспроизвести</string>
+    <string name="reader_media_pause">Пауза</string>
     <string name="reader_video">Видео</string>
     <string name="reader_video_failed">Не удалось загрузить видео</string>
     <string name="reader_video_restart">Перезапустить видеоплеер</string>

@@ -47,6 +47,8 @@
     <string name="reader_speech_voice_settings">إعدادات الصوت</string>
     <string name="reader_speech_unavailable">لا يوجد محرك قراءة على هذا الجهاز</string>
     <string name="reader_speech_no_engine">تحتاج القراءة بصوت عالٍ إلى محرك قراءة، ولا يوجد أي محرك في تطبيق سطح المكتب.</string>
+    <string name="reader_speech_voices_only">يقرأ تطبيق سطح المكتب بصوت عالٍ بالأصوات المحمّلة: حمّل صوتًا لكل لغة تقرأ بها.</string>
+    <string name="reader_speech_no_voice">لا يوجد صوت محمّل يستطيع قراءة هذا</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS غير مثبت بعد</string>
     <string name="reader_speech_get_sherpa">الحصول على Sherpa TTS</string>
     <string name="reader_speech_use_sherpa">استخدام Sherpa</string>
@@ -83,6 +85,8 @@
     <string name="reader_media_unknown">غير معروف</string>
     <string name="reader_media_previous">الصفحة السابقة</string>
     <string name="reader_media_next">الصفحة التالية</string>
+    <string name="reader_media_play">تشغيل</string>
+    <string name="reader_media_pause">إيقاف مؤقت</string>
     <string name="reader_video">فيديو</string>
     <string name="reader_video_failed">فشل تحميل الفيديو</string>
     <string name="reader_video_restart">إعادة تشغيل مشغل الفيديو</string>

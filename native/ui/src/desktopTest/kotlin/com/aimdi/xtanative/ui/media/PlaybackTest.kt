@@ -118,4 +118,22 @@ class PlaybackTest {
         assertEquals(PodcastPlace(10, 20), decoded.of("https://e.com/a"))
         assertEquals(PodcastPlaces.EMPTY, PodcastPlaces.decode("{\"not\":\"a list\"}"))
     }
+
+    @Test
+    fun theSystemsControlsAreXtasPlayOrPauseWhereBothAreBoundThenStop() {
+        val pressed = ArrayList<String>()
+        val podcast = AudioSessionBinding(onPlay = { pressed += "play" }, onPause = { pressed += "pause" }, onStop = { pressed += "stop" }, onSeek = {})
+        val reading = AudioSessionBinding(onStop = { pressed += "stop reading" })
+        assertEquals(listOf(PlaybackControl.PAUSE, PlaybackControl.STOP), PlaybackControls.of(podcast, playing = true))
+        assertEquals(listOf(PlaybackControl.PLAY, PlaybackControl.STOP), PlaybackControls.of(podcast, playing = false))
+        assertEquals(listOf(PlaybackControl.STOP), PlaybackControls.of(reading, playing = true))
+        assertEquals(PlaybackNotice("Episode", "Show", playing = true, listOf(PlaybackControl.PAUSE, PlaybackControl.STOP)), PlaybackControls.notice(podcast, "Episode", "Show", playing = true))
+
+        assertTrue(PlaybackControls.press(podcast, PlaybackControl.PAUSE))
+        assertTrue(PlaybackControls.press(podcast, PlaybackControl.PLAY))
+        assertFalse(PlaybackControls.press(reading, PlaybackControl.PLAY))
+        assertTrue(PlaybackControls.press(reading, PlaybackControl.STOP))
+        assertFalse(PlaybackControls.press(null, PlaybackControl.STOP))
+        assertEquals(listOf("pause", "play", "stop reading"), pressed)
+    }
 }

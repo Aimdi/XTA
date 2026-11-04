@@ -5,6 +5,7 @@ import com.aimdi.xtanative.data.plugins.AppPlugins
 import com.aimdi.xtanative.data.plugins.Destination
 import com.aimdi.xtanative.pluginhost.HostPlatform
 import com.aimdi.xtanative.ui.downloads.DesktopFiles
+import com.aimdi.xtanative.ui.speech.VoiceCheck
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.attribute.PosixFilePermissions
@@ -25,7 +26,10 @@ internal class DesktopApp(val graph: AppGraph, val plugins: AppPlugins)
  * install from it at start, put on Home's strip and uninstall
  * (XTA_NATIVE_PLUGIN_INSTALL, _PIN and _UNINSTALL, ids separated by commas)
  * and the screen to open (XTA_NATIVE_OPEN: "plugins" for the store,
- * "plugin:<id>" for a plugin).
+ * "plugin:<id>" for a plugin). Its voice check downloads voices from a
+ * server of its own (XTA_NATIVE_VOICE_SERVER) and runs at start
+ * (XTA_NATIVE_VOICE_CHECK); XTA_NATIVE_VOICE_ENGINE names the voice engine's
+ * folder for a build run from Gradle, which the packages carry otherwise.
  */
 internal fun desktopApp(): DesktopApp {
     val files = dataFolder()
@@ -51,6 +55,7 @@ internal fun DesktopApp.start() {
     graph.start()
     plugins.start()
     plugins.startWith(ids("XTA_NATIVE_PLUGIN_INSTALL"), ids("XTA_NATIVE_PLUGIN_PIN"), ids("XTA_NATIVE_PLUGIN_UNINSTALL"))
+    if (env("XTA_NATIVE_VOICE_CHECK") != null) VoiceCheck.ask()
 }
 
 private fun env(name: String): String? = System.getenv(name)?.takeIf { it.isNotBlank() }

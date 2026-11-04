@@ -17,10 +17,13 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 
@@ -108,6 +111,20 @@ class AppSpeechTest {
         speech.dismiss(SpeechNotice.NothingToRead)
         assertEquals(SpeechNotice.Failed(TtsFailureAction.INSTALL_SHERPA), speech.notice.value)
         speech.dismiss(speech.notice.value)
+        assertNull(speech.notice.value)
+        scope.cancel()
+    }
+
+    @Test
+    fun whereOnlyDownloadedVoicesReadTheWayOutIsTheVoiceSettings(): Unit = timed {
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+        val speech = AppSpeech(SpeechReader(listOf(Engine(ready = false))), settings(), scope, hasEngine = true, voicesOnly = true)
+        val asked = async(start = CoroutineStart.UNDISPATCHED) { speech.voiceSettingsAsked.first() }
+        speech.speak("Article", "Some words to read.")
+        until { speech.notice.value != null }
+        assertEquals(SpeechNotice.NeedsVoice, speech.notice.value)
+        speech.openVoiceSettings(speech.notice.value)
+        asked.await()
         assertNull(speech.notice.value)
         scope.cancel()
     }

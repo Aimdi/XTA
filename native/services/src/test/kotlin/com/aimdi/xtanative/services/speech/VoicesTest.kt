@@ -115,6 +115,23 @@ class VoicesTest {
     }
 
     @Test
+    fun theDesktopCarriesTheEngineBesideTheShimAtItsPinnedSizes() {
+        assertEquals(listOf("libonnxruntime.so", "libsherpa-onnx-c-api.so"), VoiceEngines.LINUX_X64.libraries.map { it.name })
+        VoiceEngines.LINUX_X64.libraries.forEach { assertTrue(Regex("^[0-9a-f]{64}$").matches(it.sha256) && it.bytes > 1 shl 20) }
+        assertNull(VoiceEngines.forAbi("linux-x64"))
+
+        val carried = File(temp, "voice-engine").apply { mkdirs() }
+        val engine = fakeEngine()
+        assertFalse(VoiceEngines.carriedIn(carried, engine))
+        engine.libraries.zip(fakeEngineFiles.values).forEach { (library, content) -> File(carried, library.name).writeText(content) }
+        assertFalse(VoiceEngines.carriedIn(carried, engine))
+        File(carried, System.mapLibraryName(VoiceEngines.SHIM)).writeText("shim")
+        assertTrue(VoiceEngines.carriedIn(carried, engine))
+        File(carried, engine.libraries.first().name).appendText("!")
+        assertFalse(VoiceEngines.carriedIn(carried, engine))
+    }
+
+    @Test
     fun aReleaseBuildFetchesItsOwnReleasesArchiveThenTheLatest() {
         val arm64 = VoiceEngines.forAbi("arm64-v8a")!!
         assertEquals(

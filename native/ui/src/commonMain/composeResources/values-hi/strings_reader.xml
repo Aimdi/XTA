@@ -47,6 +47,8 @@
     <string name="reader_speech_voice_settings">आवाज़ सेटिंग</string>
     <string name="reader_speech_unavailable">इस डिवाइस पर कोई वाक् इंजन इंस्टॉल नहीं है</string>
     <string name="reader_speech_no_engine">ज़ोर से पढ़ने के लिए वाक् इंजन चाहिए, और डेस्कटॉप ऐप में कोई नहीं है।</string>
+    <string name="reader_speech_voices_only">डेस्कटॉप ऐप डाउनलोड की गई आवाज़ों से ज़ोर से पढ़ता है: आप जिस भी भाषा में पढ़ते हैं, उसके लिए एक आवाज़ डाउनलोड करें।</string>
+    <string name="reader_speech_no_voice">डाउनलोड की गई कोई भी आवाज़ इसे नहीं पढ़ सकती</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS अभी इंस्टॉल नहीं है</string>
     <string name="reader_speech_get_sherpa">Sherpa TTS पाएँ</string>
     <string name="reader_speech_use_sherpa">Sherpa इस्तेमाल करें</string>
@@ -83,6 +85,8 @@
     <string name="reader_media_unknown">अज्ञात</string>
     <string name="reader_media_previous">पिछला पेज</string>
     <string name="reader_media_next">अगला पेज</string>
+    <string name="reader_media_play">चलाएँ</string>
+    <string name="reader_media_pause">विराम दें</string>
     <string name="reader_video">वीडियो</string>
     <string name="reader_video_failed">वीडियो लोड करने में विफल</string>
     <string name="reader_video_restart">वीडियो प्लेयर पुनः आरंभ करें</string>

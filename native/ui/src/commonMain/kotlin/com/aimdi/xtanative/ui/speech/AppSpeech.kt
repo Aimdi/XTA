@@ -5,11 +5,15 @@ import com.aimdi.xtanative.services.article.Article
 import com.aimdi.xtanative.services.speech.SpeechPlayback
 import com.aimdi.xtanative.services.speech.SpeechReader
 import com.aimdi.xtanative.services.speech.Tts
+import com.aimdi.xtanative.services.speech.TtsChoice
 import com.aimdi.xtanative.services.speech.TtsFailureAction
 import com.aimdi.xtanative.store.settings.SettingsStore
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -19,8 +23,11 @@ sealed interface SpeechNotice {
     /** No engine would read: [action] is the way out XTA offers, picking Sherpa or getting it. */
     data class Failed(val action: TtsFailureAction) : SpeechNotice
 
-    /** The platform has no speech engine at all: the desktop. */
+    /** The platform has no speech engine at all, and no downloaded voice can read in this build. */
     data object NoEngine : SpeechNotice
+
+    /** Only downloaded voices read here (the desktop), and none would read this: the voice settings are the way out. */
+    data object NeedsVoice : SpeechNotice
 
     /** The text had nothing to read. */
     data object NothingToRead : SpeechNotice
@@ -31,18 +38,26 @@ sealed interface SpeechNotice {
  * Listen button around it): one reading at a time, which outlives the screen
  * that started it until it ends or is stopped. The voice, engine and speed
  * are the reader's settings at the moment a reading starts. [hasEngine] is
- * false where the platform has none to read with.
+ * false where the platform has none to read with; [voicesOnly] where only
+ * downloaded voices read (the desktop), so no system engine is offered when
+ * none of them would.
  */
 class AppSpeech(
     private val reader: SpeechReader,
     private val settings: SettingsStore,
     private val scope: CoroutineScope,
     val hasEngine: Boolean,
+    private val voicesOnly: Boolean = false,
 ) {
     val playback: StateFlow<SpeechPlayback> = reader.state
 
     private val notices = MutableStateFlow<SpeechNotice?>(null)
     val notice: StateFlow<SpeechNotice?> = notices.asStateFlow()
+
+    private val settingsAsks = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+
+    /** Ticks when a notice's way out asks for the voice settings, which the app's navigation opens. */
+    val voiceSettingsAsked: SharedFlow<Unit> = settingsAsks.asSharedFlow()
 
     /** The last reading asked for, which "Use Sherpa" starts again. */
     @Volatile
@@ -66,10 +81,18 @@ class AppSpeech(
                 last = title to text
                 scope.launch {
                     val choice = VoiceChoices.choiceOf(settings.load())
-                    if (!reader.speak(title, text, choice)) notices.value = SpeechNotice.Failed(Tts.failureAction(choice.engine))
+                    if (!reader.speak(title, text, choice)) notices.value = failure(choice)
                 }
             }
         }
+    }
+
+    private fun failure(choice: TtsChoice): SpeechNotice = if (voicesOnly) SpeechNotice.NeedsVoice else SpeechNotice.Failed(Tts.failureAction(choice.engine))
+
+    /** A notice's "Voice settings": [notice] goes, and the settings open. */
+    fun openVoiceSettings(notice: SpeechNotice? = null) {
+        dismiss(notice)
+        settingsAsks.tryEmit(Unit)
     }
 
     fun stop() {

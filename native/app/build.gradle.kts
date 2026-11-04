@@ -10,6 +10,29 @@ plugins {
 val mockX = (findProperty("mockX") as String?).orEmpty()
 // -PpluginCatalogue=<url> reads the plugin catalogue there instead of the published one (CI's emulator check); never set for a release.
 val pluginCatalogue = (findProperty("pluginCatalogue") as String?).orEmpty()
+// -PvoiceServer=<url> downloads voices and the voice engine from there, and lets CI start the voice check (tool/voice_screens.sh); never set for a release.
+val voiceServer = (findProperty("voiceServer") as String?).orEmpty()
+// A prerelease's APK downloads the voice engine from its own release first, then XTA's latest, as XTA's does.
+val releaseTag = System.getenv("NATIVE_VERSION_NAME")?.takeIf { it.isNotBlank() }?.let { "native-$it" }.orEmpty()
+
+/** [file] read as Java properties, or null when there is none. */
+fun propertiesOf(file: File): java.util.Properties? = file.takeIf { it.isFile }?.let { java.util.Properties().apply { it.inputStream().use { input -> load(input) } } }
+
+/**
+ * The NDK of the Android SDK in [sdk] to build with, as its version: the one
+ * [preferred] names (ANDROID_NDK_HOME, a runner's default) when the SDK holds
+ * it, else the newest it holds; null when it holds none.
+ */
+fun chosenNdk(sdk: String?, preferred: String?): String? {
+    fun part(version: String, index: Int): Int = version.split('.').getOrNull(index)?.toIntOrNull() ?: 0
+    val installed = File(sdk ?: return null, "ndk").listFiles().orEmpty()
+        .mapNotNull { ndk -> propertiesOf(File(ndk, "source.properties"))?.getProperty("Pkg.Revision")?.trim()?.takeIf { it == ndk.name } }
+    return preferred?.let { File(it).name }?.takeIf { it in installed }
+        ?: installed.maxWithOrNull(compareBy<String>({ part(it, 0) }, { part(it, 1) }, { part(it, 2) }))
+}
+
+val androidSdk: String? = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
+    ?: propertiesOf(rootProject.file("local.properties"))?.getProperty("sdk.dir")
 
 android {
     namespace = "com.aimdi.xtanative"
@@ -24,8 +47,23 @@ android {
         versionName = System.getenv("NATIVE_VERSION_NAME") ?: "0.1.0"
         buildConfigField("String", "MOCK_X", "\"$mockX\"")
         buildConfigField("String", "PLUGIN_CATALOGUE", "\"$pluginCatalogue\"")
+        buildConfigField("String", "VOICE_SERVER", "\"$voiceServer\"")
+        buildConfigField("String", "RELEASE_TAG", "\"$releaseTag\"")
         // Only the stand-ins, on the emulator's host, are reached without TLS.
-        manifestPlaceholders["cleartext"] = (mockX.isNotEmpty() || pluginCatalogue.startsWith("http://")).toString()
+        manifestPlaceholders["cleartext"] = (mockX.isNotEmpty() || pluginCatalogue.startsWith("http://") || voiceServer.startsWith("http://")).toString()
+    }
+
+    // The JNI shim downloaded voices speak through (services/src/main/c), a
+    // few kilobytes for each processor, built with the NDK's own ndk-build
+    // where one is installed, as on CI's runners. Without one the APK leaves
+    // it out: voices still download, and the system's engine reads.
+    chosenNdk(androidSdk, System.getenv("ANDROID_NDK_HOME") ?: System.getenv("ANDROID_NDK_ROOT"))?.let { ndk ->
+        ndkVersion = ndk
+        externalNativeBuild {
+            ndkBuild {
+                path = file("../services/src/main/c/Android.mk")
+            }
+        }
     }
 
     // Lifecycle 2.9's lint check for LiveData crashes this Android plugin's lint
@@ -60,8 +98,8 @@ android {
 
     splits {
         abi {
-            // Kotlin has no native code of its own; the split only matters for
-            // libraries that bring some.
+            // The voice shim is the app's only native code, a few kilobytes a
+            // processor: one APK for every phone.
             isEnable = false
         }
     }

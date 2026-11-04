@@ -105,6 +105,34 @@ class AudioSessionBinding(
     val onSeek: ((positionMs: Long) -> Unit)? = null,
 )
 
+/** A button of the media notification, the lock screen and a headset (xta_audio_handler.dart's MediaControl). */
+enum class PlaybackControl { PLAY, PAUSE, STOP }
+
+/** What the media notification shows while something is bound: its title, whether it plays, and its controls. */
+data class PlaybackNotice(val title: String, val artist: String?, val playing: Boolean, val controls: List<PlaybackControl>)
+
+/** The system's controls for what plays (xta_audio_handler.dart's updateSession and its buttons). */
+object PlaybackControls {
+    /** Play or pause where [binding] offers both, as it [playing] stands, then stop. */
+    fun of(binding: AudioSessionBinding, playing: Boolean): List<PlaybackControl> = buildList {
+        if (binding.onPlay != null && binding.onPause != null) add(if (playing) PlaybackControl.PAUSE else PlaybackControl.PLAY)
+        add(PlaybackControl.STOP)
+    }
+
+    fun notice(binding: AudioSessionBinding, title: String, artist: String?, playing: Boolean) = PlaybackNotice(title, artist, playing, of(binding, playing))
+
+    /** Presses [control] on [binding]; false when nothing is bound or it offers nothing for it. */
+    fun press(binding: AudioSessionBinding?, control: PlaybackControl): Boolean {
+        val action = when (control) {
+            PlaybackControl.PLAY -> binding?.onPlay
+            PlaybackControl.PAUSE -> binding?.onPause
+            PlaybackControl.STOP -> binding?.onStop
+        } ?: return false
+        action()
+        return true
+    }
+}
+
 /**
  * The one media session behind everything the app plays without a screen.
  * Whoever plays binds itself, and a new binding replaces the last, the way

@@ -73,6 +73,24 @@ object VoiceEngines {
         ),
     )
 
+    /**
+     * The Linux build's engine, which its tarball and Arch package carry as
+     * XTA's Linux bundle does: pub.dev's `sherpa_onnx_linux` 1.13.8
+     * (`linux/x64`), hashed on 2026-11-04. tool/voice_engine.py refuses to
+     * package libraries that differ; it is not downloaded, so it has no archive.
+     */
+    val LINUX_X64: VoiceEnginePackage = VoiceEnginePackage(
+        "linux-x64",
+        0,
+        libraries(
+            27_026_609L to "4b3607aebd1784b26b6f9b20e4bd974c7ab8287043e4d095cb7d2cb40b5e566e",
+            5_124_768L to "892443aed68181c59fc2b21c8ece04da7406bb9960f4fb65ed046baf21ae3755",
+        ),
+    )
+
+    /** The app's JNI shim the engine is reached through (services/src/main/c), as `System.loadLibrary` names it. */
+    const val SHIM = "xta_sherpa"
+
     /** The engine for a process on [abi] (Android's `Build.SUPPORTED_ABIS[0]`), or null when none is published for it. */
     fun forAbi(abi: String): VoiceEnginePackage? = PACKAGES.firstOrNull { it.abi == abi }
 
@@ -88,4 +106,8 @@ object VoiceEngines {
 
     /** The folder [engine] is installed in under [root]. */
     fun directory(root: File, engine: VoiceEnginePackage): File = File(File(root, "sherpa-onnx-$VERSION"), engine.abi)
+
+    /** Whether [folder] carries [engine] as the desktop's bundle does: each library at its pinned size, and the shim beside them. */
+    fun carriedIn(folder: File, engine: VoiceEnginePackage = LINUX_X64): Boolean =
+        File(folder, System.mapLibraryName(SHIM)).isFile && engine.libraries.all { File(folder, it.name).length() == it.bytes }
 }

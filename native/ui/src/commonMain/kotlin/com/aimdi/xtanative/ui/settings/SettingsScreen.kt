@@ -55,6 +55,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.aimdi.xtanative.services.speech.VoiceEngines
 import com.aimdi.xtanative.store.settings.AccessibilityPrefs
 import com.aimdi.xtanative.store.settings.GeneralPrefs
 import com.aimdi.xtanative.store.settings.MediaPrefs
@@ -210,6 +211,8 @@ private val LIBRARIES = listOf(
     "OkHttp, Okio" to "Apache-2.0",
     "Coil" to "Apache-2.0",
     "Media3" to "Apache-2.0",
+    // The voice engine downloaded voices read with; sherpa-onnx links espeak-ng in, as XTA's licence page says.
+    "sherpa-onnx, ONNX Runtime, espeak-ng" to VoiceEngines.LICENCES,
     "jsoup" to "MIT",
     "XTA, Fritter, Quacker" to "MIT",
 )

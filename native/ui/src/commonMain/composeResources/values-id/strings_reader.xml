@@ -47,6 +47,8 @@
     <string name="reader_speech_voice_settings">Pengaturan suara</string>
     <string name="reader_speech_unavailable">Perangkat ini tidak memiliki mesin suara</string>
     <string name="reader_speech_no_engine">Membacakan teks memerlukan mesin suara, dan aplikasi desktop tidak memilikinya.</string>
+    <string name="reader_speech_voices_only">Aplikasi desktop membacakan teks dengan suara yang diunduh: unduh satu suara untuk setiap bahasa yang Anda baca.</string>
+    <string name="reader_speech_no_voice">Tidak ada suara yang diunduh yang dapat membacakan ini</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS belum terpasang</string>
     <string name="reader_speech_get_sherpa">Dapatkan Sherpa TTS</string>
     <string name="reader_speech_use_sherpa">Pakai Sherpa</string>
@@ -83,6 +85,8 @@
     <string name="reader_media_unknown">Tidak diketahui</string>
     <string name="reader_media_previous">Halaman sebelumnya</string>
     <string name="reader_media_next">Halaman berikutnya</string>
+    <string name="reader_media_play">Putar</string>
+    <string name="reader_media_pause">Jeda</string>
     <string name="reader_video">Video</string>
     <string name="reader_video_failed">Gagal memuat video</string>
     <string name="reader_video_restart">Mulai ulang pemutar video</string>

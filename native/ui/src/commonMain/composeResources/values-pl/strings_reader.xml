@@ -47,6 +47,8 @@
     <string name="reader_speech_voice_settings">Ustawienia głosu</string>
     <string name="reader_speech_unavailable">To urządzenie nie ma zainstalowanego silnika mowy</string>
     <string name="reader_speech_no_engine">Czytanie na głos wymaga silnika mowy, a aplikacja na komputer go nie ma.</string>
+    <string name="reader_speech_voices_only">Aplikacja na komputer czyta na głos pobranymi głosami: pobierz głos dla każdego języka, w którym czytasz.</string>
+    <string name="reader_speech_no_voice">Żaden pobrany głos nie może tego przeczytać</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS nie jest jeszcze zainstalowany</string>
     <string name="reader_speech_get_sherpa">Pobierz Sherpa TTS</string>
     <string name="reader_speech_use_sherpa">Użyj Sherpa</string>
@@ -83,6 +85,8 @@
     <string name="reader_media_unknown">Nieznane</string>
     <string name="reader_media_previous">Poprzednia strona</string>
     <string name="reader_media_next">Następna strona</string>
+    <string name="reader_media_play">Odtwórz</string>
+    <string name="reader_media_pause">Wstrzymaj</string>
     <string name="reader_video">Wideo</string>
     <string name="reader_video_failed">Nie udało się załadować wideo</string>
     <string name="reader_video_restart">Uruchom ponownie odtwarzacz</string>

@@ -47,6 +47,8 @@
     <string name="reader_speech_voice_settings">Nalady hołasu</string>
     <string name="reader_speech_unavailable">Na hetaj pryladzie niama ruchavika maŭliennia</string>
     <string name="reader_speech_no_engine">Dla čytannia ŭsłych patrebny ruchavik maŭliennia, a ŭ prahramy dla kampjutara jaho niama.</string>
+    <string name="reader_speech_voices_only">Prahrama dla kampjutara čytaje ŭsłych spampavanymi hałasami: spampujcie hołas dla kožnaj movy, na jakoj čytajecie.</string>
+    <string name="reader_speech_no_voice">Nivodzin spampavany hołas nie moža heta pračytać</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS jašče nie ŭstalavany</string>
     <string name="reader_speech_get_sherpa">Atrymać Sherpa TTS</string>
     <string name="reader_speech_use_sherpa">Vykarystoŭvać Sherpa</string>
@@ -83,6 +85,8 @@
     <string name="reader_media_unknown">Nieviadomy</string>
     <string name="reader_media_previous">Papiaredniaja staronka</string>
     <string name="reader_media_next">Nastupnaja staronka</string>
+    <string name="reader_media_play">Prajhrać</string>
+    <string name="reader_media_pause">Paŭza</string>
     <string name="reader_video">Videa</string>
     <string name="reader_video_failed">Nie ŭdałosia zahruzić videa</string>
     <string name="reader_video_restart">Pierazapuscić plejer</string>

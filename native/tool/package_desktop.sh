@@ -2,7 +2,9 @@
 # Packs XTA Native's desktop app (what :desktop:createDistributable made) for a
 # prerelease, as scripts/package_linux.sh packs XTA's:
 #   <out>/xta-native-desktop-<version>-linux-x64.tar.gz  the app (bin/, and lib/ with its
-#                                                       Java runtime) and, under share/,
+#                                                       Java runtime and, in lib/app/resources,
+#                                                       the voice engine tool/voice_engine.py
+#                                                       put in the build) and, under share/,
 #                                                       its menu entry and icon
 #   <out>/PKGBUILD                                       the Arch package of that tarball
 # With --makepkg (on Arch, or in an archlinux container) it also builds

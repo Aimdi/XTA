@@ -19,19 +19,18 @@ A network's follows in your XTA backup wait for its plugin and arrive when you a
 - **Any distribution:** unpack `xta-native-desktop-…-linux-x64.tar.gz` and run `bin/xta-native`. It brings its own Java runtime.
 - **Arch:** `sudo pacman -U xta-native-…-x86_64.pkg.tar.zst` puts it in your application menu (the PKGBUILD beside it builds the same package).
 
-It keeps its data in `~/.local/share/xta-native`, a folder only you can open. Videos open in your system player.
+It keeps its data in `~/.local/share/xta-native`, a folder only you can open. Videos open in your system player. Downloaded voices read aloud here too: the tarball and the package carry the voice engine, as XTA's do.
 
 ### What is in it
 
 - Home as in XTA: the bottom bar with the pages you pick in Settings › Home; Following with its own bar (Posts or Media, the order, filters and the timeline picker), For you and a tab per group, merged in time order, opening where you left off; a group's Media and Discover; the deck of columns on the desktop
 - Posts as XTA draws them: threads, quotes, polls, link cards, community notes, translation, read aloud, and the media viewer with zoom and video
+- Reading aloud with the phone's voices or with voices downloaded to the device (Settings › Read aloud); on Android the voice engine downloads with the first voice, from this prerelease or else XTA's latest release, and while it reads, or a podcast plays, the notification and the lock screen carry its controls
 - Profiles with their tabs and filters, notes on accounts, follows and groups kept on the device
 - Search with its tabs and advanced search; Discover with trends; communities, lists and antennas
 - Saved posts with folders, likes on this device, notes, the archive, the offline collection and downloads
 - Every section of XTA's settings, its backup export and import, WebDAV sync, and 29 languages
 - Links open in the app's own browser on Android, or in the browser you pick; x.com and the networks' links open in the app
-
-Still to come: downloaded voices speaking (they download but do not speak yet) and lock-screen media controls.
 
 ### Comparing it with XTA
 

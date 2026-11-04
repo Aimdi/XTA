@@ -140,3 +140,33 @@ python3 -I native/tool/plugin_abi.py --app "/tmp/ui:$(cat /tmp/deps.txt)" xta-pl
 
 The JARs are the desktop builds of the `native-plugins` release (the APKs
 hold the same classes, dexed); it reads them and runs nothing of them.
+
+## Downloaded voices (`voice_engine.py`, `voice_screens.sh`)
+
+Downloaded voices read with sherpa-onnx's C API through the app's JNI shim
+(`services/src/main/c/xta_sherpa.c`), as XTA's `lib/speech/` does. `:app`
+builds the shim with the NDK's ndk-build where one is installed; the engine
+itself is never in the APK and downloads with the first voice
+(`docs/specs/downloadable-voice-engine.md`).
+
+```bash
+python3 -I native/tool/voice_engine.py desktop native/desktop/build/voice-engine-resources/linux-x64/voice-engine
+python3 -I native/tool/voice_engine.py check <folder of the Android archives>
+```
+
+`desktop` puts the Linux engine there (pub.dev's `sherpa_onnx_linux`, from
+the pub cache or pub.dev's archive checked against `pubspec.lock`, each
+library against `VoiceEngines.LINUX_X64`'s pins) with the shim built by `cc`
+against `$JAVA_HOME`'s headers, needing no newer glibc than the engine; the
+desktop build carries that folder in `lib/app/resources/voice-engine`, and
+`XTA_NATIVE_VOICE_ENGINE=<folder>` points a Gradle run at one. `check` says
+whether the archives `scripts/voice_engine_archives.py` makes (as XTA's
+releases publish them) hold what `VoiceEngines.PACKAGES` pins.
+
+`voice_screens.sh` is the emulator's voice check, after `screens.sh`, for an
+APK built with `-PvoiceServer=<url>` naming a server of the engine's archives
+and the English voice: the app's `VoiceCheck` downloads and installs both,
+reads a sentence into a clip, reads aloud through the app, and shows a
+podcast's media session, whose controls the script presses from the keys, the
+lock screen and the notification. The desktop job runs the same check with
+`XTA_NATIVE_VOICE_SERVER` and `XTA_NATIVE_VOICE_CHECK=1`.

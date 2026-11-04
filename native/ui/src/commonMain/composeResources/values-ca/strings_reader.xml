@@ -47,6 +47,8 @@
     <string name="reader_speech_voice_settings">Ajustos de veu</string>
     <string name="reader_speech_unavailable">Aquest dispositiu no té cap motor de veu</string>
     <string name="reader_speech_no_engine">Llegir en veu alta necessita un motor de veu, i l'aplicació d'escriptori no en té cap.</string>
+    <string name="reader_speech_voices_only">L'aplicació d'escriptori llegeix en veu alta amb veus descarregades: descarrega'n una per a cada llengua que llegeixis.</string>
+    <string name="reader_speech_no_voice">Cap veu descarregada no pot llegir això</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS encara no està instal·lat</string>
     <string name="reader_speech_get_sherpa">Obtén Sherpa TTS</string>
     <string name="reader_speech_use_sherpa">Fes servir Sherpa</string>
@@ -83,6 +85,8 @@
     <string name="reader_media_unknown">Desconegut</string>
     <string name="reader_media_previous">Pàgina anterior</string>
     <string name="reader_media_next">Pàgina següent</string>
+    <string name="reader_media_play">Reprodueix</string>
+    <string name="reader_media_pause">Pausa</string>
     <string name="reader_video">Vídeo</string>
     <string name="reader_video_failed">No s’ha pogut carregar el vídeo</string>
     <string name="reader_video_restart">Reinicia el reproductor</string>

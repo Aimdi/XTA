@@ -10,12 +10,15 @@ import com.aimdi.xtanative.data.plugins.AppPlugins
 import com.aimdi.xtanative.plugins.androidPlugins
 import com.aimdi.xtanative.ui.appImageLoader
 import com.aimdi.xtanative.ui.downloads.AndroidFiles
+import com.aimdi.xtanative.ui.speech.VoiceSources
 
 /**
  * The app graph on Android: the app's private files, the phone's connection,
  * the stand-in for X in a -PmockX build, and MediaStore for downloads; beside
  * it the plugins, kept in the private files' plugins/, offered by the
- * published catalogue or the one a -PpluginCatalogue build names.
+ * published catalogue or the one a -PpluginCatalogue build names. Where
+ * voices download from is this build's: its prerelease's, or the server a
+ * -PvoiceServer build names.
  */
 class XtaNativeApp : Application(), SingletonImageLoader.Factory {
     lateinit var graph: AppGraph
@@ -25,6 +28,8 @@ class XtaNativeApp : Application(), SingletonImageLoader.Factory {
 
     override fun onCreate() {
         super.onCreate()
+        System.setProperty(VoiceSources.RELEASE_TAG_PROPERTY, BuildConfig.RELEASE_TAG)
+        if (BuildConfig.VOICE_SERVER.isNotEmpty()) System.setProperty(VoiceSources.SERVER_PROPERTY, BuildConfig.VOICE_SERVER)
         graph = AppGraph(
             filesDir,
             onlineFlow(this),

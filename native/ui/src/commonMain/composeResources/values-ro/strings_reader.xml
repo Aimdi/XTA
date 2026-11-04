@@ -47,6 +47,8 @@
     <string name="reader_speech_voice_settings">Setări de voce</string>
     <string name="reader_speech_unavailable">Acest dispozitiv nu are niciun motor de voce</string>
     <string name="reader_speech_no_engine">Citirea cu voce tare are nevoie de un motor de voce, iar aplicația pentru desktop nu are niciunul.</string>
+    <string name="reader_speech_voices_only">Aplicația pentru desktop citește cu voce tare cu voci descărcate: descarcă una pentru fiecare limbă în care citești.</string>
+    <string name="reader_speech_no_voice">Nicio voce descărcată nu poate citi asta</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS nu este încă instalat</string>
     <string name="reader_speech_get_sherpa">Descarcă Sherpa TTS</string>
     <string name="reader_speech_use_sherpa">Folosește Sherpa</string>
@@ -83,6 +85,8 @@
     <string name="reader_media_unknown">Necunoscut</string>
     <string name="reader_media_previous">Pagina anterioară</string>
     <string name="reader_media_next">Pagina următoare</string>
+    <string name="reader_media_play">Redă</string>
+    <string name="reader_media_pause">Pauză</string>
     <string name="reader_video">Video</string>
     <string name="reader_video_failed">Încărcarea videoclipului a eșuat</string>
     <string name="reader_video_restart">Repornește playerul video</string>

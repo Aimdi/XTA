@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -78,6 +79,7 @@ import com.aimdi.xtanative.ui.settings.BackupScreen
 import com.aimdi.xtanative.ui.settings.SettingsRoutes
 import com.aimdi.xtanative.ui.settings.SettingsScreen
 import com.aimdi.xtanative.ui.settings.SettingsSectionScreen
+import com.aimdi.xtanative.ui.speech.LocalSpeech
 import com.aimdi.xtanative.ui.speech.VoiceSettingsScreen
 import com.aimdi.xtanative.ui.subscriptions.ImportFollowingScreen
 import com.aimdi.xtanative.ui.subscriptions.ListImportScreen
@@ -272,8 +274,16 @@ fun XtaNativeRoot() {
     // Where a plugin asks to go lands here too (PLUGINS.md).
     AttachPluginNavigation(nav, linkScreens, Routes.DOWNLOADS)
     AttachPluginBackups()
+    OpenVoiceSettingsWhenAsked(nav)
 
     DesktopNavigation(nav) { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes)) }
+}
+
+/** The reading-aloud bar's "Voice settings" opens them over whatever screen is up. */
+@Composable
+private fun OpenVoiceSettingsWhenAsked(nav: NavHostController) {
+    val speech = LocalSpeech.current ?: return
+    LaunchedEffect(speech, nav) { speech.voiceSettingsAsked.collect { nav.navigate(Routes.SPEECH_SETTINGS) } }
 }
 
 /** What the screens are given to reach one another. */

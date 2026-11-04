@@ -4,6 +4,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- To read the feed again when the connection comes back. -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- Reading aloud and a podcast go on when the app is left, with their controls on the lock screen, as in XTA. -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
 
     <queries>
         <!-- Settings › General › Open links in: the browsers to pick from. -->
@@ -56,6 +60,15 @@
                 <data android:host="mobile.twitter.com" />
             </intent-filter>
         </activity>
+        <!-- Keeps reading aloud and a podcast playing when the app is left, with the media notification
+             (XTA's audio_service AudioService); its buttons come back through the receiver. -->
+        <service
+            android:name="com.aimdi.xtanative.ui.media.PlaybackService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" />
+        <receiver
+            android:name="com.aimdi.xtanative.ui.media.PlaybackButtons"
+            android:exported="false" />
         <!-- A note's attachment or the photo the media viewer shares, handed to another app one file at a time. -->
         <provider
             android:name="androidx.core.content.FileProvider"

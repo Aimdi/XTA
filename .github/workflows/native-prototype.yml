@@ -80,6 +80,21 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
+      # The voice engine downloads with the first voice (docs/specs/downloadable-voice-engine.md):
+      # the APK carries only the JNI shim that reaches it, built with the runner's NDK.
+      - name: The APK carries the voice shim and no engine
+        run: |
+          apk=app/build/outputs/apk/release/app-release.apk
+          if unzip -l "$apk" | grep -E 'lib/[^/]+/lib(onnxruntime|sherpa-onnx-c-api)\.so$'; then
+            echo "::error::The APK carries the voice engine, which downloads with the first voice"
+            exit 1
+          fi
+          shims=$(unzip -lv "$apk" | grep -E 'lib/[^/]+/libxta_sherpa\.so$' || true)
+          [ "$(printf '%s\n' "$shims" | grep -c libxta_sherpa)" -ge 3 ] \
+            || { echo "::error::The APK lacks the voice shim for a processor (no NDK on the runner?):"; echo "$shims"; exit 1; }
+          echo "$shims"
+          { echo "### The voice shim in the APK"; echo; echo '```'; echo "$shims"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+
       - uses: actions/upload-artifact@v4
         with:
           name: xta-native-${{ env.VERSION_NAME }}
@@ -148,7 +163,7 @@ jobs:
   # when the app crashes, and keeps a screenshot of each screen.
   screens:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 55
     steps:
       - uses: actions/checkout@v4
         with:
@@ -162,10 +177,11 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
 
       # With the plugins of this commit, signed with this runner's debug key as
-      # the app is, and a catalogue the runner serves to the emulator.
+      # the app is, a catalogue the runner serves to the emulator, and the
+      # voice engine and a voice served the same way.
       - name: Build against the stand-in
         working-directory: native
-        run: ./gradlew :app:assembleRelease :plugins:androidPlugins -PmockX=http://10.0.2.2:8787 -PpluginCatalogue=http://10.0.2.2:8788/plugins.json --console=plain
+        run: ./gradlew :app:assembleRelease :plugins:androidPlugins -PmockX=http://10.0.2.2:8787 -PpluginCatalogue=http://10.0.2.2:8788/plugins.json -PvoiceServer=http://10.0.2.2:8789 --console=plain
 
       - name: Serve a catalogue of this build's plugins
         run: |
@@ -189,6 +205,22 @@ jobs:
             sleep 1
           done
           curl -s -o /dev/null -w 'stand-in answers %{http_code}\n' http://127.0.0.1:8787/
+
+      # As XTA's voice-engine job serves its emulator (emulator-qa.yml): the
+      # engine's archives as XTA's releases publish them, checked against the
+      # app's pins, and the English voice, checked against its own.
+      - name: Serve the voice engine and a voice
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/voices"
+          python3 scripts/voice_engine_archives.py "$RUNNER_TEMP/voices"
+          python3 -I native/tool/voice_engine.py check "$RUNNER_TEMP/voices"
+          voice=vits-piper-en_US-libritts_r-medium-int8.tar.bz2
+          curl -fsSL -o "$RUNNER_TEMP/voices/$voice" "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/$voice"
+          echo "7e4552e239988f4896872822b56e99e0e9e00958164e3f6bdf5ee14391fbe829  $RUNNER_TEMP/voices/$voice" | sha256sum -c -
+          nohup python3 -m http.server 8789 --bind 127.0.0.1 --directory "$RUNNER_TEMP/voices" > "$RUNNER_TEMP/voices.log" 2>&1 &
+          sleep 1
+          curl -fsS -o /dev/null "http://127.0.0.1:8789/$voice"
 
       - name: Fetch XTA to compare with
         env:
@@ -216,8 +248,8 @@ jobs:
           target: google_apis
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          # The plugin store last, so the measured starts load no plugin.
-          script: bash native/tool/screens.sh native/app/build/outputs/apk/release/app-release.apk native-screens && bash native/tool/compare.sh native/app/build/outputs/apk/release/app-release.apk "$RUNNER_TEMP/xta.apk" native-screens/compare.txt && bash native/tool/plugin_screens.sh native-screens
+          # The plugin store and the voices last, so the measured starts load neither.
+          script: bash native/tool/screens.sh native/app/build/outputs/apk/release/app-release.apk native-screens && bash native/tool/compare.sh native/app/build/outputs/apk/release/app-release.apk "$RUNNER_TEMP/xta.apk" native-screens/compare.txt && bash native/tool/plugin_screens.sh native-screens && bash native/tool/voice_screens.sh native/app/build/outputs/apk/release/app-release.apk native-screens
 
       - name: Start, memory and size against XTA
         if: always()
@@ -230,9 +262,10 @@ jobs:
       - name: Keep the stand-in's log
         if: always()
         run: |
-          cp "$RUNNER_TEMP/mock-x.log" "$RUNNER_TEMP/catalogue.log" native-screens/ 2>/dev/null || true
+          cp "$RUNNER_TEMP/mock-x.log" "$RUNNER_TEMP/catalogue.log" "$RUNNER_TEMP/voices.log" native-screens/ 2>/dev/null || true
           tail -40 "$RUNNER_TEMP/mock-x.log" || true
           tail -20 "$RUNNER_TEMP/catalogue.log" || true
+          tail -20 "$RUNNER_TEMP/voices.log" || true
 
       # The top of each screen, small, in the log itself: readable where the
       # artifact store is not.
@@ -288,6 +321,13 @@ jobs:
             echo "$SIGNING_KEY" | base64 -d > "$RUNNER_TEMP/native.jks"
             echo "KEY_PATH=$RUNNER_TEMP/native.jks" >> "$GITHUB_ENV"
           fi
+
+      # The voice engine downloaded voices read with, which the tarball and the
+      # Arch package carry as XTA's Linux bundle does: pub.dev's
+      # sherpa_onnx_linux checked against the app's pins, and the app's JNI
+      # shim built beside it; the desktop build takes it from here.
+      - name: The voice engine the desktop app carries
+        run: python3 -I native/tool/voice_engine.py desktop native/desktop/build/voice-engine-resources/linux-x64/voice-engine
 
       - name: Build the desktop app and its plugins
         working-directory: native
@@ -351,7 +391,10 @@ jobs:
             || { echo "These plugins need what $last's app lacks, at the same plugin API $api: move PLUGIN_API_VERSION up"; exit 1; }
 
       - name: Pack the tarball and the PKGBUILD
-        run: bash native/tool/package_desktop.sh native/desktop/build/compose/binaries/main/app/xta-native "$VERSION_NAME" "$RUNNER_TEMP/desktop"
+        run: |
+          bash native/tool/package_desktop.sh native/desktop/build/compose/binaries/main/app/xta-native "$VERSION_NAME" "$RUNNER_TEMP/desktop"
+          carried=$(tar -tzf "$RUNNER_TEMP/desktop/xta-native-desktop-$VERSION_NAME-linux-x64.tar.gz" | grep -cE '/lib/app/resources/voice-engine/lib(onnxruntime|sherpa-onnx-c-api|xta_sherpa)\.so$' || true)
+          [ "$carried" -eq 3 ] || { echo "::error::The tarball does not carry the voice engine and its shim ($carried of 3)"; exit 1; }
 
       # makepkg refuses to run as root, and takes the tarball beside the
       # PKGBUILD rather than downloading it, so this also proves the PKGBUILD.
@@ -467,11 +510,44 @@ jobs:
           fi
           echo "Bluesky was installed from the catalogue, loaded, loaded again at the next start, pinned on Home and uninstalled."
 
+      # The desktop's voice check, as the emulator's (tool/voice_screens.sh):
+      # the English voice from a server of the runner's, read into a clip by
+      # the engine the tarball carries. The runner has no sound card, so the
+      # reading itself may not play; the clip is what counts, as in XTA's check.
+      - name: Downloaded voices speak
+        env:
+          SKIKO_RENDER_API: SOFTWARE
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/voices" native-desktop
+          voice=vits-piper-en_US-libritts_r-medium-int8.tar.bz2
+          curl -fsSL -o "$RUNNER_TEMP/voices/$voice" "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/$voice"
+          echo "7e4552e239988f4896872822b56e99e0e9e00958164e3f6bdf5ee14391fbe829  $RUNNER_TEMP/voices/$voice" | sha256sum -c -
+          nohup python3 -m http.server 8789 --bind 127.0.0.1 --directory "$RUNNER_TEMP/voices" > "$RUNNER_TEMP/voices.log" 2>&1 &
+          sleep 1
+          app="$RUNNER_TEMP/xta-native-desktop-$VERSION_NAME-linux-x64/bin/xta-native"
+          xvfb-run -a -s '-screen 0 1280x960x24' bash -c '
+            env XTA_NATIVE_MOCK_X=http://127.0.0.1:8787 XTA_NATIVE_VOICE_SERVER=http://127.0.0.1:8789 XTA_NATIVE_VOICE_CHECK=1 \
+              "XDG_DATA_HOME=$2/data" "XDG_CACHE_HOME=$2/cache" "$1" > native-desktop/voice.log 2>&1 &
+            pid=$!
+            for _ in $(seq 1 240); do
+              grep -q "voice check: done" native-desktop/voice.log && break
+              kill -0 "$pid" 2> /dev/null || break
+              sleep 1
+            done
+            import -window root native-desktop/voice.png
+            kill "$pid" 2> /dev/null || true
+          ' _ "$app" "$RUNNER_TEMP/voice-home"
+          grep "XTA Native: voice check" native-desktop/voice.log || true
+          bytes=$(sed -n 's/.*voice check: clip \([0-9]*\) bytes.*/\1/p' native-desktop/voice.log | tail -1)
+          [ "${bytes:-0}" -gt 16000 ] || { echo "The downloaded voice made no clip on the desktop:"; cat native-desktop/voice.log; exit 1; }
+          echo "The engine the desktop app carries read a sentence with the downloaded voice: $bytes bytes."
+
       - name: Keep the logs
         if: always()
         run: |
           mkdir -p native-desktop
-          cp "$RUNNER_TEMP/mock-x.log" "$RUNNER_TEMP/catalogue.log" native-desktop/ 2>/dev/null || true
+          cp "$RUNNER_TEMP/mock-x.log" "$RUNNER_TEMP/catalogue.log" "$RUNNER_TEMP/voices.log" native-desktop/ 2>/dev/null || true
           tail -40 native-desktop/app.log 2>/dev/null || true
           tail -40 "$RUNNER_TEMP/mock-x.log" || true
           tail -20 "$RUNNER_TEMP/catalogue.log" || true
@@ -528,6 +604,15 @@ jobs:
           name: xta-native-plugins-desktop-${{ env.VERSION_NAME }}
           path: plugins-desktop
 
+      # The voice engine beside the APK, one archive per processor, as XTA's
+      # releases publish it (docs/specs/downloadable-voice-engine.md): the app
+      # downloads its own release's first, then XTA's latest. Checked against
+      # the app's pins before it is published.
+      - name: The voice engine's archives
+        run: |
+          python3 scripts/voice_engine_archives.py voice-engine
+          python3 -I native/tool/voice_engine.py check voice-engine
+
       - name: Prerelease
         env:
           GH_TOKEN: ${{ github.token }}
@@ -536,6 +621,7 @@ jobs:
             "desktop/xta-native-desktop-$VERSION_NAME-linux-x64.tar.gz" \
             "desktop/xta-native-$VERSION_NAME-1-x86_64.pkg.tar.zst" \
             desktop/PKGBUILD \
+            voice-engine/xta-voice-engine-*.tar.xz \
             --repo "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" \
             --prerelease \

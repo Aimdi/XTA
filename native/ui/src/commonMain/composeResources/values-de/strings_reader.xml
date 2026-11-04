@@ -47,6 +47,8 @@
     <string name="reader_speech_voice_settings">Stimme einstellen</string>
     <string name="reader_speech_unavailable">Auf diesem Gerät ist keine Sprachausgabe installiert</string>
     <string name="reader_speech_no_engine">Vorlesen braucht eine Sprachausgabe, und die Desktop-App hat keine.</string>
+    <string name="reader_speech_voices_only">Die Desktop-App liest mit heruntergeladenen Stimmen vor: Lade für jede Sprache, die du liest, eine herunter.</string>
+    <string name="reader_speech_no_voice">Keine heruntergeladene Stimme kann das vorlesen</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS ist noch nicht installiert</string>
     <string name="reader_speech_get_sherpa">Sherpa TTS holen</string>
     <string name="reader_speech_use_sherpa">Sherpa verwenden</string>
@@ -83,6 +85,8 @@
     <string name="reader_media_unknown">Unbekannt</string>
     <string name="reader_media_previous">Vorherige Seite</string>
     <string name="reader_media_next">Nächste Seite</string>
+    <string name="reader_media_play">Abspielen</string>
+    <string name="reader_media_pause">Pause</string>
     <string name="reader_video">Video</string>
     <string name="reader_video_failed">Video konnte nicht geladen werden</string>
     <string name="reader_video_restart">Player neu starten</string>

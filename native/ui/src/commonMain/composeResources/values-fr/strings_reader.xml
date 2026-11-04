@@ -47,6 +47,8 @@
     <string name="reader_speech_voice_settings">Réglages de la voix</string>
     <string name="reader_speech_unavailable">Aucun moteur vocal n’est installé sur cet appareil</string>
     <string name="reader_speech_no_engine">La lecture à voix haute nécessite un moteur vocal, et l'application de bureau n'en a aucun.</string>
+    <string name="reader_speech_voices_only">L'application de bureau lit à voix haute avec des voix téléchargées : téléchargez-en une pour chaque langue que vous lisez.</string>
+    <string name="reader_speech_no_voice">Aucune voix téléchargée ne peut lire ceci</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS n'est pas encore installé</string>
     <string name="reader_speech_get_sherpa">Obtenir Sherpa TTS</string>
     <string name="reader_speech_use_sherpa">Utiliser Sherpa</string>
@@ -83,6 +85,8 @@
     <string name="reader_media_unknown">Inconnu</string>
     <string name="reader_media_previous">Page précédente</string>
     <string name="reader_media_next">Page suivante</string>
+    <string name="reader_media_play">Lecture</string>
+    <string name="reader_media_pause">Pause</string>
     <string name="reader_video">Vidéo</string>
     <string name="reader_video_failed">Échec du chargement de la vidéo</string>
     <string name="reader_video_restart">Redémarrer le lecteur vidéo</string>

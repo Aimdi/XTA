@@ -58,8 +58,8 @@ layer is written in `networks/<id>` first, then moves with its screens into
 | reading | `store/reading` (done: reading places, journal, appearance) |
 | article | `services/article`; `ui/article` (done) |
 | links | `services/links`; `ui/links` (done: opening rules, in-app browser on Android, previews, post context bar, shared links) |
-| speech | `services/speech`; `ui/speech` (done: the bar, system voices on Android, voice settings and downloads; offline voices download but cannot speak yet) |
-| media | `ui/media` (done: viewer with zoom and video controls, continuity player); lock-screen controls need media3-session |
+| speech | `services/speech`; `ui/speech` (done: the bar, system voices on Android, voice settings and downloads, and downloaded voices speaking through sherpa-onnx's C API and the app's JNI shim, `services/src/main/c`: the engine downloads with the first voice on Android, pinned as in XTA, and the Linux packages carry it) |
+| media | `ui/media` (done: viewer with zoom and video controls, continuity player, and XTA's media session: the notification and the lock screen's controls while reading aloud or a podcast plays, kept by a foreground service) |
 | antenna | `store` (antennas) + `ui/antenna` (done: list, editor, feed) |
 | community | `ui/community` (done: posts, about, members, links) |
 | intro | `ui/intro` (done) |
@@ -77,6 +77,6 @@ layer is written in `networks/<id>` first, then moves with its screens into
 | Package | APK beside XTA (`com.aimdi.xtanative`) | tarball and Arch package, as XTA ships |
 | Links | x.com and the networks' links open in the app; shared links arrive | — |
 | Privacy | secure window switch; no backup or device transfer of data | data in `~/.local/share/xta-native` |
-| Media | Media3 players, audio session | system player for video |
-| Speech | system text-to-speech, downloadable voices | — |
+| Media | Media3 players, the media session with its notification and lock-screen controls | system player for video; no media session, as XTA has none there |
+| Speech | system text-to-speech, downloadable voices (the engine downloads with the first) | downloadable voices (the engine in the packages) |
 | Downloads | MediaStore | `~/Downloads` |

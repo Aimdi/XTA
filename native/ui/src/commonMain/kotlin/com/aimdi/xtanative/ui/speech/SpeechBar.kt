@@ -45,13 +45,17 @@ import com.aimdi.xtanative.ui.generated.resources.reader_dismiss
 import com.aimdi.xtanative.ui.generated.resources.reader_speech_get_sherpa
 import com.aimdi.xtanative.ui.generated.resources.reader_speech_no_engine
 import com.aimdi.xtanative.ui.generated.resources.reader_speech_no_text
+import com.aimdi.xtanative.ui.generated.resources.reader_speech_no_voice
 import com.aimdi.xtanative.ui.generated.resources.reader_speech_playing
 import com.aimdi.xtanative.ui.generated.resources.reader_speech_sherpa_missing
 import com.aimdi.xtanative.ui.generated.resources.reader_speech_stop
 import com.aimdi.xtanative.ui.generated.resources.reader_speech_unavailable
 import com.aimdi.xtanative.ui.generated.resources.reader_speech_use_sherpa
+import com.aimdi.xtanative.ui.generated.resources.reader_speech_voice_settings
 import com.aimdi.xtanative.ui.links.LocalLinks
+import com.aimdi.xtanative.ui.media.AudioSessions
 import com.aimdi.xtanative.ui.media.ReaderIcons
+import com.aimdi.xtanative.ui.media.rememberAudioSessions
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 
@@ -79,7 +83,9 @@ internal fun rememberSpeechParts(): SpeechParts {
  */
 @Composable
 fun SpeechBarScaffold(content: @Composable () -> Unit) {
-    val speech = rememberSpeechParts().speech
+    val parts = rememberSpeechParts()
+    val speech = parts.speech
+    VoiceCheckEffect(parts)
     val playback by speech.playback.collectAsStateWithLifecycle()
     val notice by speech.notice.collectAsStateWithLifecycle()
     val shown = playback.speaking || notice != null
@@ -127,12 +133,16 @@ private fun NoticeRow(notice: SpeechNotice, speech: AppSpeech) {
     val message = when (notice) {
         is SpeechNotice.Failed -> if (notice.action == TtsFailureAction.INSTALL_SHERPA) Res.string.reader_speech_sherpa_missing else Res.string.reader_speech_unavailable
         SpeechNotice.NoEngine -> Res.string.reader_speech_no_engine
+        SpeechNotice.NeedsVoice -> Res.string.reader_speech_no_voice
         SpeechNotice.NothingToRead -> Res.string.reader_speech_no_text
     }
     Row(Modifier.fillMaxWidth().padding(start = 16.dp, top = 6.dp, end = 4.dp, bottom = 6.dp), verticalAlignment = Alignment.CenterVertically) {
         Icon(ReaderIcons.RecordVoiceOver, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
         Spacer(Modifier.width(12.dp))
         Text(stringResource(message), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+        if (notice == SpeechNotice.NeedsVoice) {
+            TextButton(onClick = { speech.openVoiceSettings(notice) }) { Text(stringResource(Res.string.reader_speech_voice_settings)) }
+        }
         if (notice is SpeechNotice.Failed) {
             when (notice.action) {
                 TtsFailureAction.USE_SHERPA -> TextButton(onClick = { speech.useSherpa() }) { Text(stringResource(Res.string.reader_speech_use_sherpa)) }
@@ -148,3 +158,12 @@ private fun NoticeRow(notice: SpeechNotice, speech: AppSpeech) {
 
 /** How long a notice stays: long enough to reach its action. */
 private const val NOTICE_MS = 6_000L
+
+/** CI's voice check, once, when a CI build or start asked for it ([VoiceCheck]). */
+@Composable
+private fun VoiceCheckEffect(parts: SpeechParts) {
+    val sessions = rememberAudioSessions()
+    LaunchedEffect(parts) {
+        if (VoiceCheck.take()) VoiceCheck.run(parts, sessions.takeIf { it !== AudioSessions.None })
+    }
+}

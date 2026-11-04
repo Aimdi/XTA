@@ -47,6 +47,8 @@
     <string name="reader_speech_voice_settings">Nastavení hlasu</string>
     <string name="reader_speech_unavailable">V tomto zařízení není žádný hlasový modul</string>
     <string name="reader_speech_no_engine">Čtení nahlas potřebuje hlasový modul a aplikace pro počítač žádný nemá.</string>
+    <string name="reader_speech_voices_only">Aplikace pro počítač čte nahlas staženými hlasy: stáhněte si hlas pro každý jazyk, ve kterém čtete.</string>
+    <string name="reader_speech_no_voice">Žádný stažený hlas tohle nepřečte</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS ještě není nainstalovaný</string>
     <string name="reader_speech_get_sherpa">Získat Sherpa TTS</string>
     <string name="reader_speech_use_sherpa">Použít Sherpa</string>
@@ -83,6 +85,8 @@
     <string name="reader_media_unknown">Neznámé</string>
     <string name="reader_media_previous">Předchozí stránka</string>
     <string name="reader_media_next">Další stránka</string>
+    <string name="reader_media_play">Přehrát</string>
+    <string name="reader_media_pause">Pozastavit</string>
     <string name="reader_video">Video</string>
     <string name="reader_video_failed">Video se nepodařilo načíst</string>
     <string name="reader_video_restart">Restartovat přehrávač</string>

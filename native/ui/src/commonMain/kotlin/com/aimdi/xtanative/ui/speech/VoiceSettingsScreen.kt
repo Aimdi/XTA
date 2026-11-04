@@ -72,6 +72,7 @@ import com.aimdi.xtanative.ui.generated.resources.reader_speech_sherpa_descripti
 import com.aimdi.xtanative.ui.generated.resources.reader_speech_speed
 import com.aimdi.xtanative.ui.generated.resources.reader_speech_title
 import com.aimdi.xtanative.ui.generated.resources.reader_speech_voice
+import com.aimdi.xtanative.ui.generated.resources.reader_speech_voices_only
 import com.aimdi.xtanative.ui.generated.resources.reader_voice_delete_description
 import com.aimdi.xtanative.ui.generated.resources.reader_voice_delete_question
 import com.aimdi.xtanative.ui.generated.resources.reader_voice_engine
@@ -149,7 +150,9 @@ private fun VoiceSettingsList(vm: VoiceSettingsViewModel, padding: PaddingValues
     LazyColumn(modifier, contentPadding = padding) {
         offlineVoices(ui, vm, parts)
         if (parts.systemVoices == null) {
-            item(key = "no-engine") { Note(stringResource(Res.string.reader_speech_no_engine)) }
+            item(key = "no-engine") {
+                Note(stringResource(if (parts.synthesisAvailable) Res.string.reader_speech_voices_only else Res.string.reader_speech_no_engine))
+            }
         } else {
             engines(ui, vm)
             voices(ui, vm)

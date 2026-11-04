@@ -47,6 +47,8 @@
     <string name="reader_speech_voice_settings">Steminstellingen</string>
     <string name="reader_speech_unavailable">Op dit apparaat is geen spraakmodule geïnstalleerd</string>
     <string name="reader_speech_no_engine">Voorlezen heeft een spraakmodule nodig, en de desktop-app heeft er geen.</string>
+    <string name="reader_speech_voices_only">De desktop-app leest voor met gedownloade stemmen: download er een voor elke taal die je leest.</string>
+    <string name="reader_speech_no_voice">Geen enkele gedownloade stem kan dit voorlezen</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS is nog niet geïnstalleerd</string>
     <string name="reader_speech_get_sherpa">Sherpa TTS ophalen</string>
     <string name="reader_speech_use_sherpa">Sherpa gebruiken</string>
@@ -83,6 +85,8 @@
     <string name="reader_media_unknown">Onbekend</string>
     <string name="reader_media_previous">Vorige pagina</string>
     <string name="reader_media_next">Volgende pagina</string>
+    <string name="reader_media_play">Afspelen</string>
+    <string name="reader_media_pause">Pauzeren</string>
     <string name="reader_video">Video</string>
     <string name="reader_video_failed">Kan video niet laden</string>
     <string name="reader_video_restart">Videospeler opnieuw starten</string>

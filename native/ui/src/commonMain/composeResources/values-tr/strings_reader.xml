@@ -47,6 +47,8 @@
     <string name="reader_speech_voice_settings">Ses ayarları</string>
     <string name="reader_speech_unavailable">Bu cihazda konuşma motoru yüklü değil</string>
     <string name="reader_speech_no_engine">Sesli okuma için bir konuşma motoru gerekir ve masaüstü uygulamasında hiç yok.</string>
+    <string name="reader_speech_voices_only">Masaüstü uygulaması indirilen seslerle sesli okur: okuduğunuz her dil için bir ses indirin.</string>
+    <string name="reader_speech_no_voice">İndirilen hiçbir ses bunu okuyamaz</string>
     <string name="reader_speech_sherpa_missing">Sherpa TTS henüz yüklü değil</string>
     <string name="reader_speech_get_sherpa">Sherpa TTS'i al</string>
     <string name="reader_speech_use_sherpa">Sherpa kullan</string>
@@ -83,6 +85,8 @@
     <string name="reader_media_unknown">Bilinmeyen</string>
     <string name="reader_media_previous">Önceki sayfa</string>
     <string name="reader_media_next">Sonraki sayfa</string>
+    <string name="reader_media_play">Oynat</string>
+    <string name="reader_media_pause">Duraklat</string>
     <string name="reader_video">Video</string>
     <string name="reader_video_failed">Video yüklenemedi</string>
     <string name="reader_video_restart">Video oynatıcıyı yeniden başlat</string>
