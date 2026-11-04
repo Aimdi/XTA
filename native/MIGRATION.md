@@ -23,12 +23,12 @@ layer is written in `networks/<id>` first, then moves with its screens into
 | reddit | `plugins/reddit` (moved from `networks/reddit`; 239 tests) | plugin: XTA's tab, communities, threads, search and settings |
 | bluesky | `plugins/bluesky` (124 tests, live check passes) | plugin: Following, Discover and custom feeds, lists, device likes, threads, profiles, search, imports and settings |
 | mastodon | `plugins/mastodon` (169 tests) | plugin: Explore, Local, Federated and Following, trending tags, profiles, threads, hashtags, search, boosts and quotes, saved posts and settings |
-| threads | `networks/threads` ported (166 tests, live check passes) | screens wave |
+| threads | `plugins/threads` (169 tests, live check passes) | plugin: Home and Liked, the post card, conversations with their orders, profiles with honest counts, search, every video rendition, settings |
 | substack | `plugins/substack` (177 tests) | plugin: XTA's screens, the reader and podcasts |
 | booru | `plugins/booru` (151 tests, live check passes) | plugin: XTA's screens and settings |
 | pixiv | `plugins/pixiv` (220 tests, live check passes) | plugin: Home, Rankings, Favorites and Search, works and novels, profiles, comments, series, Pixivision and settings |
 | ehviewer | `networks/ehviewer` ported (97 tests, live check passes) | screens wave |
-| instagram | `networks/instagram` ported (51 tests) | screens wave |
+| instagram | `plugins/instagram` (55 tests) | plugin: For you and Following, profiles, the accounts followed here, search, the post card with its carousel, settings |
 | tiktok | `networks/tiktok` ported (52 tests, live check passes) | screens wave |
 | rss | `networks/rss` ported (48 tests) | screens wave |
 | hackernews | `plugins/hackernews` (29 tests) | plugin: Top, New, Best, Ask, Show and Jobs, Saved and Following, stories with their comments, users, search and settings |

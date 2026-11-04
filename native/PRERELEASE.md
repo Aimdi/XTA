@@ -10,9 +10,9 @@ Like XTA, it only reads: nothing is posted, liked or followed on X or on any oth
 
 ### The other networks
 
-Every network but X is a plugin you add from **Settings → Plugin store**, and remove there just as easily. In this prerelease: **Bluesky, Mastodon, Reddit, Hacker News, Pixiv, Substack and Booru**, each with XTA's screens and settings. Threads, Instagram, TikTok, EhViewer, RSS, the web sources, Stocks and the Immich, Karakeep and Deepmarks saves come in later prereleases.
+Every network but X is a plugin you add from **Settings → Plugin store**, and remove there just as easily. In this prerelease: **Bluesky, Mastodon, Threads, Instagram, Reddit, Hacker News, Pixiv, Substack and Booru**, each with XTA's screens and settings. TikTok, EhViewer, RSS, the web sources, Stocks and the Immich, Karakeep and Deepmarks saves come in later prereleases.
 
-A network's follows in your XTA backup wait for its plugin and arrive when you add it; an export from XTA Native writes them where XTA reads them back.
+A network's follows in your XTA backup wait for its plugin and arrive when you add it; an export from XTA Native writes them where XTA reads them back. Where XTA lets a network join Home's timelines, groups, Saved and downloads, its plugin can too; Reddit and Bluesky already do, the others follow.
 
 ### On Linux
 

@@ -9,9 +9,11 @@ import java.io.IOException
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl
+import org.junit.jupiter.api.Assumptions.assumeFalse
 import org.junit.jupiter.api.Assumptions.assumeTrue
 
 /**
@@ -19,7 +21,10 @@ import org.junit.jupiter.api.Assumptions.assumeTrue
  * test/live/instagram_search_smoke_test.dart reads it. Instagram answers
  * datacenter addresses with 429 or its login wall, so the test only asks
  * that the answer is either @instagram's profile or one of those refusals,
- * never a crash. Each route the client tried is logged with what it
+ * never a crash. It answers GitHub's runners with its own "Page Not Found"
+ * page in place of the JSON for @instagram, an account that exists: the test
+ * then skips, as Reddit's and Substack's do where they turn a datacenter
+ * away. Each route the client tried is logged with what it
  * answered (status, type and a short reason, the names of the cookies it
  * set, never their values), so a run that fails names its cause. Skipped
  * unless RUN_LIVE=true.
@@ -38,6 +43,7 @@ class InstagramLiveTest {
             println("LIVE @instagram ${profile.displayName}, ${profile.followerCount} followers")
         } catch (refused: NetworkRequestException) {
             routes.print()
+            assumeFalse(routes.endedOnAPage404(), "Instagram hides @instagram from this network: ${routes.summary()}")
             assertTrue(refused.code in setOf(401, 403, 429), "Instagram refused with ${refused.code}: ${refused.message}; ${routes.summary()}")
             println("LIVE Instagram refused a guest: ${refused.code}")
         } catch (offline: IOException) {
@@ -65,6 +71,24 @@ class InstagramLiveTest {
         assertEquals("GET www.instagram.com/ → 200 text/html \"Instagram\", sets csrftoken, mid", lines[0])
         assertEquals("GET i.instagram.com/api/v1/users/web_profile_info/ → 404 application/json \"useragent mismatch\"", lines[1])
         assertTrue(lines.none { "SECRET" in it || "OTHER" in it }, "a cookie's value is never logged")
+        assertFalse(routes.endedOnAPage404(), "a 404 in JSON is Instagram's API answering")
+    }
+
+    @Test
+    fun aPageNotFoundInPlaceOfTheJsonIsInstagramHidingTheAccount(): Unit = runBlocking {
+        val answers = listOf(
+            XResponse(200, "<html><head><title>Instagram</title></head></html>", mapOf("Content-Type" to listOf("text/html"))),
+            XResponse(404, "<html><head><title>Page Not Found &bull; Instagram</title></head></html>", mapOf("Content-Type" to listOf("text/html; charset=utf-8"))),
+        ).iterator()
+        val routes = RouteLog(
+            object : XHttp {
+                override suspend fun get(url: HttpUrl, headers: Map<String, String>, followRedirects: Boolean): XResponse = answers.next()
+            },
+        )
+
+        runCatching { InstagramClient(routes).profile("instagram") }
+
+        assertTrue(routes.endedOnAPage404())
     }
 }
 
@@ -77,8 +101,17 @@ class InstagramLiveTest {
 private class RouteLog(private val http: XHttp) : XHttp {
     private val seen = CopyOnWriteArrayList<String>()
 
+    @Volatile
+    private var last: XResponse? = null
+
     override suspend fun get(url: HttpUrl, headers: Map<String, String>, followRedirects: Boolean): XResponse =
-        http.get(url, headers, followRedirects).also { seen += describe(url, it) }
+        http.get(url, headers, followRedirects).also {
+            seen += describe(url, it)
+            last = it
+        }
+
+    /** Whether the last answer was a 404 as one of Instagram's web pages, not as its API's JSON. */
+    fun endedOnAPage404(): Boolean = last?.let { it.code == 404 && typeOf(it) == "text/html" } ?: false
 
     fun lines(): List<String> = seen.toList()
 
@@ -86,8 +119,10 @@ private class RouteLog(private val http: XHttp) : XHttp {
 
     fun print() = seen.forEach { println("LIVE Instagram route: $it") }
 
+    private fun typeOf(response: XResponse): String = response.header("Content-Type")?.substringBefore(';')?.trim().orEmpty()
+
     private fun describe(url: HttpUrl, response: XResponse): String {
-        val type = response.header("Content-Type")?.substringBefore(';')?.trim().orEmpty().ifEmpty { "no type" }
+        val type = typeOf(response).ifEmpty { "no type" }
         val reason = reasonOf(response.body)?.let { " \"$it\"" }.orEmpty()
         val cookies = response.headers("Set-Cookie").mapNotNull { it.substringBefore('=').trim().ifEmpty { null } }
         val set = if (cookies.isEmpty()) "" else ", sets " + cookies.joinToString(", ")
