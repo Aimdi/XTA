@@ -207,7 +207,6 @@ internal fun feedViewModel(groupId: String?): FeedViewModel {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun FeedPage(groupId: String?, page: Int, toTop: ToTop, actions: PostActions, contentPadding: PaddingValues, mediaOnly: Boolean = false) {
-    val graph = LocalGraph.current
     val vm = feedViewModel(groupId)
     val state by vm.ui.collectAsStateWithLifecycle()
     val plugin by vm.plugin.collectAsStateWithLifecycle()
@@ -237,8 +236,6 @@ internal fun FeedPage(groupId: String?, page: Int, toTop: ToTop, actions: PostAc
     }
     LifecycleEventEffect(Lifecycle.Event.ON_STOP) { keepPlace() }
     DisposableEffect(Unit) { onDispose { keepPlace() } }
-    val session by graph.sessions.state.collectAsStateWithLifecycle()
-    val autoplay = session?.autoplay ?: true
     val inline = rememberInlinePlayer()
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { inline?.pause() }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { inline?.resume() }
@@ -267,7 +264,7 @@ internal fun FeedPage(groupId: String?, page: Int, toTop: ToTop, actions: PostAc
                 contentPadding = contentPadding,
                 onMore = vm::loadMore,
             )
-            else -> CompositionLocalProvider(LocalInlinePlayer provides inline.takeIf { autoplay }) {
+            else -> CompositionLocalProvider(LocalInlinePlayer provides inline) {
                 FeedList(state, vm, actions, list, contentPadding, buckets, plugins)
             }
         }

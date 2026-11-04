@@ -5,15 +5,16 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 
 /**
- * One player for a whole feed: the video or GIF most in view plays in its
- * tile, muted and looping, as X's feed plays them.
+ * One player for a whole feed, which its tiles take turns at: an X video
+ * plays in its tile under XTA's controls ([TileVideo]), a GIF loops there
+ * ([TileGif]), and a plugin's tile loops a silent preview in it ([Video]).
  */
 interface InlinePlayer {
-    /** [url] playing in its tile, over the tile's poster until the first frame. */
+    /** [url] looping silently in its tile while Autoplay videos is on, over the tile's poster until the first frame. */
     @Composable
     fun Video(url: String, modifier: Modifier)
 
-    /** The feed is no longer seen: nothing plays until it is again. */
+    /** The feed is no longer seen: nothing plays until it is again, but a video full screen, or one heard while Background play allows. */
     fun pause()
 
     fun resume()

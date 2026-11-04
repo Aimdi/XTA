@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="video_fullscreen">Toàn màn hình</string>
+    <string name="video_fullscreen_exit">Thoát chế độ toàn màn hình</string>
+    <string name="video_picture_in_picture">Hình trong hình</string>
+</resources>

@@ -59,7 +59,7 @@ layer is written in `networks/<id>` first, then moves with its screens into
 | article | `services/article`; `ui/article` (done) |
 | links | `services/links`; `ui/links` (done: opening rules, in-app browser on Android, previews, post context bar, shared links) |
 | speech | `services/speech`; `ui/speech` (done: the bar, system voices on Android, voice settings and downloads, and downloaded voices speaking through sherpa-onnx's C API and the app's JNI shim, `services/src/main/c`: the engine downloads with the first voice on Android, pinned as in XTA, and the Linux packages carry it; voices and engine archives unpack in the app, tar with bzip2 or xz, as XTA's archive package does) |
-| media | `ui/media` (done: viewer with zoom and video controls, continuity player, and XTA's media session: the notification and the lock screen's controls while reading aloud or a podcast plays, kept by a foreground service) |
+| media | `ui/media` (done: viewer with zoom and video controls, videos playing in their tiles with XTA's controls and mute corner, full screen in the video's orientation with picture-in-picture on Android, Settings › Media's video settings applied to the players, continuity player, and XTA's media session: the notification and the lock screen's controls while reading aloud or a podcast plays, kept by a foreground service) |
 | antenna | `store` (antennas) + `ui/antenna` (done: list, editor, feed) |
 | community | `ui/community` (done: posts, about, members, links) |
 | intro | `ui/intro` (done) |

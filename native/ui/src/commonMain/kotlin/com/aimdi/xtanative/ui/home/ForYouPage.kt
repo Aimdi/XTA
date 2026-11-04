@@ -91,7 +91,6 @@ internal fun forYouViewModel(): ForYouViewModel {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ForYouPage(page: Int, toTop: ToTop, actions: PostActions, contentPadding: PaddingValues, onImport: () -> Unit) {
-    val graph = LocalGraph.current
     val vm = forYouViewModel()
     val state by vm.ui.collectAsStateWithLifecycle()
     val plugin by vm.plugin.collectAsStateWithLifecycle()
@@ -114,7 +113,6 @@ internal fun ForYouPage(page: Int, toTop: ToTop, actions: PostActions, contentPa
             list.scrollToItem(0)
         }
     }
-    val session by graph.sessions.state.collectAsStateWithLifecycle()
     val inline = rememberInlinePlayer()
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { inline?.pause() }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { inline?.resume() }
@@ -134,7 +132,7 @@ internal fun ForYouPage(page: Int, toTop: ToTop, actions: PostActions, contentPa
             state.threads.isEmpty() && state.answered && !state.refreshing -> PageMessage(stringResource(Res.string.home_for_you_empty)) {}
             // The pull indicator already says a first load is under way.
             state.threads.isEmpty() -> PageMessage(null) { if (!state.refreshing) LoadingRow() }
-            else -> CompositionLocalProvider(LocalInlinePlayer provides inline.takeIf { session?.autoplay ?: true }) {
+            else -> CompositionLocalProvider(LocalInlinePlayer provides inline) {
                 ForYouList(state, vm, actions, list, contentPadding, buckets, plugins)
             }
         }

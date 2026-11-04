@@ -79,6 +79,23 @@ internal object ReaderIcons {
     val FullscreenExit: ImageVector by lazy {
         icon("FullscreenExit", "M5,16h3v3h2v-5H5v2zM8,8H5v2h5V5H8v3zM14,19h2v-3h3v-2h-5v5zM16,8V5h-2v5h5V8h-3z")
     }
+    val Fullscreen: ImageVector by lazy {
+        icon("Fullscreen", "M7,14H5v5h5v-2H7v-3zM5,10h2V7h3V5H5v5zM17,17h-3v2h5v-5h-2v3zM14,5v2h3v3h2V5h-5z")
+    }
+    val PictureInPicture: ImageVector by lazy {
+        icon(
+            "PictureInPictureAlt",
+            "M19,11h-8v6h8v-6zM23,19V4.98C23,3.88 22.1,3 21,3H3c-1.1,0 -2,0.88 -2,1.98V19c0,1.1 0.9,2 2,2h18c1.1,0 2,-0.9 2,-2z" +
+                "M21,19.02H3V4.97h18v14.05z",
+        )
+    }
+    val ErrorOutline: ImageVector by lazy {
+        icon(
+            "ErrorOutline",
+            "M11,15h2v2h-2zM11,7h2v6h-2zM11.99,2C6.47,2 2,6.48 2,12s4.47,10 9.99,10C17.52,22 22,17.52 22,12S17.52,2 11.99,2z" +
+                "M12,20c-4.42,0 -8,-3.58 -8,-8s3.58,-8 8,-8 8,3.58 8,8 -3.58,8 -8,8z",
+        )
+    }
     val Download: ImageVector by lazy { icon("Download", "M19,9h-4V3H9v6H5l7,7 7,-7zM5,18v2h14v-2H5z") }
     val FastRewind: ImageVector by lazy { icon("FastRewind", "M11,18V6l-8.5,6 8.5,6zM11.5,12l8.5,6V6l-8.5,6z") }
     val FastForward: ImageVector by lazy { icon("FastForward", "M4,18l8.5,-6L4,6v12zM13,6v12l8.5,-6L13,6z") }

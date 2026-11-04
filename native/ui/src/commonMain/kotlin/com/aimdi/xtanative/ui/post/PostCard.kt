@@ -241,10 +241,10 @@ internal fun PostAttachments(shown: XPost, scope: PostScope, actions: PostAction
     if (shown.media.isNotEmpty()) {
         if (shown.sensitive) {
             SensitiveGate(scope.sensitive, modifier = Modifier.padding(top = gap)) {
-                MediaGrid(shown.media, { index -> actions.openMedia(shown.id, index) }, Modifier.padding(top = gap), playing = playing)
+                MediaGrid(shown.media, { index -> actions.openMedia(shown.id, index) }, Modifier.padding(top = gap), playing = playing, post = shown)
             }
         } else {
-            MediaGrid(shown.media, { index -> actions.openMedia(shown.id, index) }, Modifier.padding(top = gap), playing = playing)
+            MediaGrid(shown.media, { index -> actions.openMedia(shown.id, index) }, Modifier.padding(top = gap), playing = playing, post = shown)
         }
     }
     when (val quote = PostView.quote(shown, quoted)) {

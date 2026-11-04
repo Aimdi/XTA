@@ -384,7 +384,6 @@ fun contentFilterLabel(filter: ContentFilter): String = stringResource(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun GroupFeedBody(state: GroupFeedUi, vm: GroupFeedViewModel, actions: PostActions, list: LazyListState, contentPadding: PaddingValues, mediaOnly: Boolean) {
-    val graph = LocalGraph.current
     val plugin by vm.plugin.collectAsStateWithLifecycle()
     val plugins = rememberRunningPlugins()
     val media = rememberLazyListState()
@@ -403,7 +402,6 @@ private fun GroupFeedBody(state: GroupFeedUi, vm: GroupFeedViewModel, actions: P
     val keepPlace = { vm.keepPlace((list.firstVisibleItemIndex - leading).coerceAtLeast(0), list.firstVisibleItemScrollOffset) }
     LifecycleEventEffect(Lifecycle.Event.ON_STOP) { keepPlace() }
     DisposableEffect(Unit) { onDispose { keepPlace() } }
-    val session by graph.sessions.state.collectAsStateWithLifecycle()
     val inline = rememberInlinePlayer()
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { inline?.pause() }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { inline?.resume() }
@@ -429,7 +427,7 @@ private fun GroupFeedBody(state: GroupFeedUi, vm: GroupFeedViewModel, actions: P
                 contentPadding = contentPadding,
                 onMore = vm::loadMore,
             )
-            else -> CompositionLocalProvider(LocalInlinePlayer provides inline.takeIf { session?.autoplay ?: true }) {
+            else -> CompositionLocalProvider(LocalInlinePlayer provides inline) {
                 FeedList(state, vm, actions, list, contentPadding, buckets, plugins)
             }
         }

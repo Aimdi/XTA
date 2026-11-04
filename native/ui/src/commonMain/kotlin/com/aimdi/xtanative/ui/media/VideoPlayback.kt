@@ -2,6 +2,7 @@ package com.aimdi.xtanative.ui.media
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * Whether videos play with their sound off, for the whole app
@@ -11,10 +12,37 @@ import kotlinx.coroutines.flow.StateFlow
 object VideoMute {
     private val chosen = MutableStateFlow<Boolean?>(null)
 
+    /** What the reader chose last; null until they touch a mute control. */
+    val choice: StateFlow<Boolean?> = chosen.asStateFlow()
+
     fun muted(setting: Boolean): Boolean = chosen.value ?: setting
 
     fun set(muted: Boolean) {
         chosen.value = muted
+    }
+}
+
+/**
+ * One video plays at a time, as XTA's pool pauses the others when one starts
+ * (VideoControllerPool.pauseOthers); GIFs and silent previews loop on and are
+ * not counted. Players tell it on the main thread.
+ */
+internal object OneVideo {
+    private var owner: Any? = null
+    private var pauseIt: (() -> Unit)? = null
+
+    /** [owner] started playing: the one playing before it is paused with what it gave. */
+    fun started(owner: Any, pause: () -> Unit) {
+        if (this.owner !== owner) pauseIt?.invoke()
+        this.owner = owner
+        pauseIt = pause
+    }
+
+    /** [owner] paused, stopped or let go: nothing is left to pause for it. */
+    fun stopped(owner: Any) {
+        if (this.owner !== owner) return
+        this.owner = null
+        pauseIt = null
     }
 }
 
@@ -39,6 +67,8 @@ data class VideoState(
     val qualityFailed: Boolean = false,
     /** The first frame is on screen, so the poster under it can go. */
     val started: Boolean = false,
+    /** It plays once it can, or plays now: what play and pause last said. */
+    val active: Boolean = false,
 )
 
 /** What the viewer's video controls ask of the platform's player (_video_controls.dart's use of it). */

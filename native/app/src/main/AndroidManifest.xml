@@ -32,9 +32,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.XtaNative"
         android:usesCleartextTraffic="${cleartext}">
+        <!-- A video full screen turns the screen to its shape and may shrink into picture-in-picture, as in XTA:
+             the activity takes those changes itself, so what plays goes on through them. -->
         <activity
             android:name=".MainActivity"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize"
             android:exported="true"
+            android:supportsPictureInPicture="true"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

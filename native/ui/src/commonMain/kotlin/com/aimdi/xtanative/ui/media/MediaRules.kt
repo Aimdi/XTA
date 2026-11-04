@@ -66,6 +66,34 @@ object VideoRules {
 
     /** The share of the video [ms] stands for, 0 to 1. */
     fun fraction(ms: Long, durationMs: Long): Float = if (durationMs <= 0) 0f else (ms.toFloat() / durationMs).coerceIn(0f, 1f)
+
+    /** kVideoCreationSettleDelay: how long a tile stays in view before it plays by itself, so a fling plays nothing it sweeps past. */
+    const val SETTLE_MS = 250L
+
+    /** How long a playing tile may be mostly out of view before it pauses. */
+    const val UNSEEN_PAUSE_MS = 100L
+
+    /** Whether a tile [height] tall of which [visibleHeight] is on screen is seen: half of it at least, as XTA's tiles count. */
+    fun mostlySeen(visibleHeight: Float, height: Int): Boolean = height > 0 && visibleHeight >= height / 2f
+
+    /**
+     * Whether a video stops when the app is left: unless Background play
+     * lets it go on, and only one that is [heard] has anything to go on with.
+     */
+    fun pausesWhenLeft(backgroundPlay: Boolean, heard: Boolean): Boolean = !(backgroundPlay && heard)
+
+    /** Whether a video of [aspectRatio] turns the screen upright when full screen, as video_fullscreen.dart's orientation does. */
+    fun portrait(aspectRatio: Float): Boolean = aspectRatio < 1f
+
+    /**
+     * The picture-in-picture window's shape for [aspectRatio], in thousandths:
+     * within the 1:2.39 to 2.39:1 Android allows (MainActivity.kt's
+     * enterPictureInPicture), 16:9 for a shape that is not one.
+     */
+    fun pictureInPictureRatio(aspectRatio: Float): Int {
+        val ratio = if (aspectRatio.isFinite() && aspectRatio > 0f) aspectRatio.toDouble() else 16.0 / 9.0
+        return (ratio.coerceIn(0.42, 2.39) * 1000).toInt()
+    }
 }
 
 /** What the media viewer saves: the file, and the name it is saved under. */

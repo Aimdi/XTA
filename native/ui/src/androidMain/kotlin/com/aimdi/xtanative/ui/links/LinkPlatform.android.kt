@@ -3,7 +3,6 @@ package com.aimdi.xtanative.ui.links
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -21,6 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.util.Consumer
 import com.aimdi.xtanative.services.links.InstalledBrowser
 import com.aimdi.xtanative.services.links.LinkLaunch
+import com.aimdi.xtanative.ui.common.findActivity
 
 @Composable
 internal actual fun rememberLinkPlatform(): LinkPlatform {
@@ -53,12 +53,6 @@ internal actual fun SharedTextEffect(onText: (String) -> Unit) {
 private fun sharedText(intent: Intent?): String? {
     if (intent?.action != Intent.ACTION_SEND) return null
     return intent.getCharSequenceExtra(Intent.EXTRA_TEXT)?.toString() ?: intent.getStringExtra(Intent.EXTRA_TEXT) ?: ""
-}
-
-private tailrec fun Context.findActivity(): Activity? = when (this) {
-    is Activity -> this
-    is ContextWrapper -> baseContext.findActivity()
-    else -> null
 }
 
 /**

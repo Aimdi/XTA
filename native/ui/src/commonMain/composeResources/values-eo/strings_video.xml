@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="video_fullscreen">Plena ekrano</string>
+    <string name="video_fullscreen_exit">Eliri el plena ekrano</string>
+    <string name="video_picture_in_picture">Bildo en bildo</string>
+</resources>

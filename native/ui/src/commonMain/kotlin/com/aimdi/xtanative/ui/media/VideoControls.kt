@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -24,6 +25,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -31,13 +33,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -51,6 +54,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
@@ -61,11 +65,13 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.setProgress
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -84,21 +90,42 @@ import com.aimdi.xtanative.ui.generated.resources.reader_video_seconds
 import com.aimdi.xtanative.ui.generated.resources.reader_video_speed
 import com.aimdi.xtanative.ui.generated.resources.reader_video_speed_value
 import com.aimdi.xtanative.ui.generated.resources.reader_video_subtitles
+import com.aimdi.xtanative.ui.generated.resources.video_fullscreen
+import com.aimdi.xtanative.ui.generated.resources.video_fullscreen_exit
+import com.aimdi.xtanative.ui.generated.resources.video_picture_in_picture
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 
 private enum class VideoSheet { MORE, SPEED, QUALITY }
 
 /**
- * The viewer's video controls (_video_controls.dart): a tap shows or hides
- * them, and they hide by themselves a few seconds after the last touch; the
- * play button in the middle, the time, mute and the menu (speed, quality,
- * subtitles, fit or fill, download) at the bottom over the seek bar. A double
- * tap on either half skips ten seconds that way. [fill] is whether the
- * picture fills the screen rather than fits in it.
+ * What the controls offer beyond playing (XtaControls' options). Full screen
+ * ([fullscreen]) has the mute button in its bar and fit or fill
+ * ([onToggleFill]) in its menu; in place, the corner badge mutes
+ * ([MuteCorner]) and the seek bar stops short of it. [onFullscreen] goes full
+ * screen in place and leaves it full screen; [onPictureInPicture] shrinks
+ * the app into a floating window where the platform has one.
+ */
+internal class VideoChrome(
+    val fullscreen: Boolean = false,
+    val onFullscreen: (() -> Unit)? = null,
+    val onPictureInPicture: (() -> Unit)? = null,
+    val fill: Boolean = false,
+    val onToggleFill: (() -> Unit)? = null,
+    val onDownload: (() -> Unit)? = null,
+)
+
+/**
+ * XTA's video controls (_video_controls.dart): a tap shows or hides them, and
+ * they hide by themselves a few seconds after the last touch. The play button
+ * is in the middle; at the bottom, over the seek bar, the time, then (full
+ * screen) mute and picture-in-picture, the menu (speed, quality, subtitles,
+ * fit or fill when full screen, download) and the full-screen button. A double
+ * tap on either half skips ten seconds that way. They take no insets: their
+ * caller keeps them clear of the system bars.
  */
 @Composable
-internal fun VideoControls(playback: VideoPlayback, fill: Boolean, onToggleFill: () -> Unit, onDownload: (() -> Unit)?, modifier: Modifier = Modifier) {
+internal fun VideoControls(playback: VideoPlayback, chrome: VideoChrome, modifier: Modifier = Modifier) {
     val state by playback.state.collectAsStateWithLifecycle()
     var visible by remember { mutableStateOf(true) }
     var touches by remember { mutableIntStateOf(0) }
@@ -139,31 +166,109 @@ internal fun VideoControls(playback: VideoPlayback, fill: Boolean, onToggleFill:
                     touch()
                     playback.playOrPause()
                 }
-                Column(Modifier.align(Alignment.BottomCenter).fillMaxWidth().navigationBarsPadding()) {
-                    Row(Modifier.fillMaxWidth().padding(start = 14.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                        PositionText(state)
-                        Spacer(Modifier.weight(1f))
-                        ControlButton(if (state.muted) ReaderIcons.VolumeOff else ReaderIcons.VolumeUp, stringResource(Res.string.reader_video_mute)) {
-                            touch()
-                            VideoMute.set(!state.muted)
-                            playback.setMuted(!state.muted)
-                        }
-                        ControlButton(Icons.Filled.MoreVert, stringResource(Res.string.reader_more_options)) { sheet = VideoSheet.MORE }
-                    }
-                    SeekBar(state, Modifier.offset(y = (-8).dp).padding(start = 14.dp, end = 16.dp, bottom = 6.dp), onTouch = touch) { playback.seekTo(it) }
-                }
+                BottomBar(state, playback, chrome, touch, onMenu = { sheet = VideoSheet.MORE }, modifier = Modifier.align(Alignment.BottomCenter))
             }
         }
         if (skipped != 0) SkipBadge(skipped, Modifier.align(if (skipped < 0) Alignment.CenterStart else Alignment.CenterEnd))
         if (state.qualityFailed) QualityFailed(playback, Modifier.align(Alignment.TopCenter))
         if (state.failed) FailedOverlay(playback)
     }
-    VideoSheets(sheet, state, playback, fill, onToggleFill, onDownload) { sheet = it }
+    VideoSheets(sheet, state, playback, chrome) { sheet = it }
+}
+
+/** The viewer's controls as they were before full screen came: the mute button in the bar and fit or fill in the menu, clear of the navigation bar. */
+@Composable
+internal fun VideoControls(playback: VideoPlayback, fill: Boolean, onToggleFill: () -> Unit, onDownload: (() -> Unit)?, modifier: Modifier = Modifier) =
+    VideoControls(playback, VideoChrome(fullscreen = true, fill = fill, onToggleFill = onToggleFill, onDownload = onDownload), modifier.navigationBarsPadding())
+
+/** The time, then the buttons, over the seek bar; in place, the bar stops short of the mute corner. */
+@Composable
+private fun BottomBar(state: VideoState, playback: VideoPlayback, chrome: VideoChrome, touch: () -> Unit, onMenu: () -> Unit, modifier: Modifier) {
+    Column(modifier.fillMaxWidth()) {
+        Row(Modifier.fillMaxWidth().padding(start = 14.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+            PositionText(state)
+            Spacer(Modifier.weight(1f))
+            if (chrome.fullscreen) {
+                MuteButton(state.muted) {
+                    touch()
+                    toggleMute(playback, state.muted)
+                }
+            }
+            chrome.onPictureInPicture?.let { enter -> ControlButton(ReaderIcons.PictureInPicture, stringResource(Res.string.video_picture_in_picture), enter) }
+            ControlButton(Icons.Filled.MoreVert, stringResource(Res.string.reader_more_options), onMenu)
+            chrome.onFullscreen?.let { toggle ->
+                if (chrome.fullscreen) {
+                    ControlButton(ReaderIcons.FullscreenExit, stringResource(Res.string.video_fullscreen_exit), toggle)
+                } else {
+                    ControlButton(ReaderIcons.Fullscreen, stringResource(Res.string.video_fullscreen), toggle)
+                }
+            }
+        }
+        val end = if (chrome.fullscreen) 16.dp else MuteCornerReserve
+        SeekBar(state, Modifier.offset(y = (-8).dp).padding(start = 14.dp, end = end, bottom = 6.dp), onTouch = touch) { playback.seekTo(it) }
+    }
+}
+
+/** Mute is the app's, not one video's: the next one starts as this one was left (VideoContextState). */
+internal fun toggleMute(playback: VideoPlayback, muted: Boolean) {
+    VideoMute.set(!muted)
+    playback.setMuted(!muted)
 }
 
 @Composable
 private fun ControlButton(icon: ImageVector, label: String, onClick: () -> Unit) {
     IconButton(onClick = onClick) { Icon(icon, contentDescription = label, tint = Color.White) }
+}
+
+/** Full screen's sound button, said as on or off. */
+@Composable
+private fun MuteButton(muted: Boolean, onToggle: () -> Unit) {
+    val label = stringResource(Res.string.reader_video_mute)
+    IconToggleButton(checked = muted, onCheckedChange = { onToggle() }, modifier = Modifier.semantics { contentDescription = label }) {
+        Crossfade(targetState = muted, animationSpec = tween(MOTION_FAST_MS)) { quiet ->
+            Icon(if (quiet) ReaderIcons.VolumeOff else ReaderIcons.VolumeUp, contentDescription = null, tint = Color.White)
+        }
+    }
+}
+
+private val MuteDisc = 30.dp
+private val MuteInset = 12.dp
+private val TouchTarget = 48.dp
+
+/** kVideoMuteCornerReserve: where the seek bar stops in place, clear of the mute corner's touch target. */
+private val MuteCornerReserve = MuteInset + MuteDisc + MuteInset + 2.dp
+
+/**
+ * The always-shown sound switch at the bottom end of a video in place
+ * (video_mute_badge.dart): a small dark disc with the speaker, its edge 12 dp
+ * in from the corner, inside a full touch target.
+ */
+@Composable
+internal fun MuteCorner(muted: Boolean, onToggle: () -> Unit, modifier: Modifier = Modifier) {
+    val label = stringResource(Res.string.reader_video_mute)
+    Box(
+        modifier
+            .padding(MuteInset - (TouchTarget - MuteDisc) / 2)
+            .size(TouchTarget)
+            .clip(CircleShape)
+            .toggleable(value = muted, role = Role.Switch, onValueChange = { onToggle() })
+            .semantics { contentDescription = label },
+        contentAlignment = Alignment.Center,
+    ) {
+        Box(
+            Modifier
+                .size(MuteDisc)
+                .clip(CircleShape)
+                .background(Color.Black.copy(alpha = 0.4f))
+                .background(Brush.verticalGradient(0f to Color.White.copy(alpha = 0.16f), 0.5f to Color.Transparent))
+                .border(0.75.dp, Color.White.copy(alpha = 0.24f), CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            Crossfade(targetState = muted, animationSpec = tween(MOTION_FAST_MS)) { quiet ->
+                Icon(if (quiet) ReaderIcons.VolumeOff else ReaderIcons.VolumeUp, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
+            }
+        }
+    }
 }
 
 /** The round button in the middle: play or pause, and start over once the video has ended. */
@@ -299,51 +404,29 @@ private fun QualityFailed(playback: VideoPlayback, modifier: Modifier) {
     )
 }
 
-/** A video that would not start: why, and a way to try again. */
+/** A video that would not start: why, and a way to start the player again (_video.dart's error poster). */
 @Composable
 private fun FailedOverlay(playback: VideoPlayback) {
-    Column(Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.6f)), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(stringResource(Res.string.reader_video_failed), color = Color.White)
-        TextButton(onClick = playback::retry) { Text(stringResource(Res.string.reader_video_restart)) }
+    Column(
+        Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.54f)).padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Icon(ReaderIcons.ErrorOutline, contentDescription = null, tint = Color.White, modifier = Modifier.size(48.dp))
+        Text(stringResource(Res.string.reader_video_failed), color = Color.White, textAlign = TextAlign.Center, modifier = Modifier.padding(vertical = 12.dp))
+        Button(onClick = playback::retry) { Text(stringResource(Res.string.reader_video_restart)) }
     }
 }
 
 /** The ⋮ menu, and the speed and quality lists it leads to. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun VideoSheets(
-    sheet: VideoSheet?,
-    state: VideoState,
-    playback: VideoPlayback,
-    fill: Boolean,
-    onToggleFill: () -> Unit,
-    onDownload: (() -> Unit)?,
-    show: (VideoSheet?) -> Unit,
-) {
+private fun VideoSheets(sheet: VideoSheet?, state: VideoState, playback: VideoPlayback, chrome: VideoChrome, show: (VideoSheet?) -> Unit) {
     sheet ?: return
     ModalBottomSheet(onDismissRequest = { show(null) }) {
         Column(Modifier.verticalScroll(rememberScrollState()).navigationBarsPadding().padding(bottom = 8.dp)) {
             when (sheet) {
-                VideoSheet.MORE -> {
-                    SheetRow(ReaderIcons.Speed, stringResource(Res.string.reader_video_speed)) { show(VideoSheet.SPEED) }
-                    if (state.qualities.size > 1) SheetRow(ReaderIcons.HighQuality, stringResource(Res.string.reader_video_quality)) { show(VideoSheet.QUALITY) }
-                    if (state.hasSubtitles) {
-                        SheetRow(if (state.subtitles) ReaderIcons.ClosedCaption else ReaderIcons.ClosedCaptionOff, stringResource(Res.string.reader_video_subtitles), checked = state.subtitles) {
-                            show(null)
-                            playback.setSubtitles(!state.subtitles)
-                        }
-                    }
-                    SheetRow(if (fill) ReaderIcons.FullscreenExit else ReaderIcons.AspectRatio, stringResource(if (fill) Res.string.reader_video_fit else Res.string.reader_video_fill)) {
-                        show(null)
-                        onToggleFill()
-                    }
-                    if (onDownload != null) {
-                        SheetRow(ReaderIcons.Download, stringResource(Res.string.reader_download)) {
-                            show(null)
-                            onDownload()
-                        }
-                    }
-                }
+                VideoSheet.MORE -> MoreRows(state, playback, chrome, show)
                 VideoSheet.SPEED -> VideoRules.SPEEDS.reversed().forEach { speed ->
                     CheckRow(stringResource(Res.string.reader_video_speed_value, VideoRules.speedText(speed)), kotlin.math.abs(speed - state.speed) < 0.01) {
                         show(null)
@@ -357,6 +440,31 @@ private fun VideoSheets(
                     }
                 }
             }
+        }
+    }
+}
+
+/** The ⋮ menu's rows, in XTA's order: speed, quality, subtitles, fit or fill, download. */
+@Composable
+private fun MoreRows(state: VideoState, playback: VideoPlayback, chrome: VideoChrome, show: (VideoSheet?) -> Unit) {
+    SheetRow(ReaderIcons.Speed, stringResource(Res.string.reader_video_speed)) { show(VideoSheet.SPEED) }
+    if (state.qualities.size > 1) SheetRow(ReaderIcons.HighQuality, stringResource(Res.string.reader_video_quality)) { show(VideoSheet.QUALITY) }
+    if (state.hasSubtitles) {
+        SheetRow(if (state.subtitles) ReaderIcons.ClosedCaption else ReaderIcons.ClosedCaptionOff, stringResource(Res.string.reader_video_subtitles), checked = state.subtitles) {
+            show(null)
+            playback.setSubtitles(!state.subtitles)
+        }
+    }
+    chrome.onToggleFill?.let { toggle ->
+        SheetRow(if (chrome.fill) ReaderIcons.FullscreenExit else ReaderIcons.AspectRatio, stringResource(if (chrome.fill) Res.string.reader_video_fit else Res.string.reader_video_fill)) {
+            show(null)
+            toggle()
+        }
+    }
+    chrome.onDownload?.let { download ->
+        SheetRow(ReaderIcons.Download, stringResource(Res.string.reader_download)) {
+            show(null)
+            download()
         }
     }
 }
