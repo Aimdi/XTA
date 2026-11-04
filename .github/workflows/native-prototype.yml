@@ -135,12 +135,13 @@ jobs:
         env:
           RUN_LIVE: 'true'
         run: |
-          # The networks that are plugins test in their own modules.
+          # The networks that are plugins test in their own modules. --continue:
+          # one network failing must not keep the others from reporting.
           plugins=()
           for f in plugins/*/build.gradle.kts; do
             plugins+=(":plugins:$(basename "$(dirname "$f")"):desktopTest" --tests '*LiveTest*')
           done
-          ./gradlew :core:test --tests '*XLiveTest*' :networks:test --tests '*LiveTest*' "${plugins[@]}" --rerun --console=plain
+          ./gradlew :core:test --tests '*XLiveTest*' :networks:test --tests '*LiveTest*' "${plugins[@]}" --rerun --continue --console=plain
 
   # Every screen on an emulator, against the stand-in for X that XTA's own
   # emulator check uses (docs/mock-x.md): no account, no live request. Fails
