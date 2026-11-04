@@ -244,6 +244,15 @@ class SubstackClientTest {
     }
 
     @Test
+    fun aConnectionEveryAddressTurnsAwayIsRefusedNotAMissingPublication() = runBlocking {
+        val challenge = FakeHttp { answer(403, "<html><head><title>Just a moment...</title></head></html>") }
+        val failure = assertFailsWith<NetworkRequestException> { clientOf(challenge).publication("https://on.substack.com") }
+        assertEquals(403, failure.code)
+        assertTrue(failure.message!!.startsWith("Substack refused this connection ("), failure.message)
+        assertTrue("on.substack.com/api/v1/posts: HTTP 403 \"Just a moment...\"" in failure.message!!, failure.message)
+    }
+
+    @Test
     fun aPublicationNotFoundSaysWhatEachRouteAnswered() = runBlocking {
         val foreignFeed = """<rss version="2.0"><channel><title>Platformer</title><item><title>A</title><link>https://platformer.news/p/a</link></item></channel></rss>"""
         val http = FakeHttp {

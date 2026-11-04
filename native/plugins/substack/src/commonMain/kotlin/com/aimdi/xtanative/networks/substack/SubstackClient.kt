@@ -677,7 +677,8 @@ class SubstackClient(val transport: SubstackTransport) {
         val reach = coroutineContext[Reach]
         val offline = reach?.offline
         if (reach != null && offline != null && !reach.answered) throw offline
-        throw reach?.trail?.explained(verdict) ?: verdict
+        val trail = reach?.trail ?: throw verdict
+        throw trail.explained(if (trail.allRefused()) Substack.refused() else verdict)
     }
 
     /** [read], or null when it fails for any reason but a rate limit, which ends every fallback chain. */

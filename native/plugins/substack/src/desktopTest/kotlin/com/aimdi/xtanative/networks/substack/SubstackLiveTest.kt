@@ -1,16 +1,21 @@
 package com.aimdi.xtanative.networks.substack
 
 import com.aimdi.xtanative.core.x.http.OkHttpXHttp
+import com.aimdi.xtanative.networks.NetworkRequestException
 import kotlin.test.Test
 import kotlin.test.assertTrue
 import kotlinx.coroutines.runBlocking
+import org.junit.jupiter.api.Assumptions.assumeFalse
 import org.junit.jupiter.api.Assumptions.assumeTrue
 
 /**
  * Live Substack, read as XTA reads it: one public publication's archive, then
  * one of its posts whole, through its public JSON. Skipped unless RUN_LIVE=true.
  * A read that fails is logged with what each address it asked answered, so the
- * run names the route that changed.
+ * run names the route that changed. Substack's Cloudflare turns some networks
+ * away, GitHub's runners among them, with a challenge (403) on every route;
+ * the test is skipped there too, saying so, as Reddit's is, since that answer
+ * says nothing about the reader.
  */
 class SubstackLiveTest {
     @Test
@@ -40,6 +45,7 @@ class SubstackLiveTest {
         read()
     } catch (e: Exception) {
         println("LIVE substack: $what failed: ${e.javaClass.simpleName}: ${e.message}")
+        assumeFalse(e is NetworkRequestException && e.code == 403, "Substack refuses this network: ${e.message}")
         throw e
     }
 }

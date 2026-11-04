@@ -23,6 +23,9 @@ object Substack {
         failure(429, "Rate limited by $host; ask again in ${(waitMillis + 999) / 1000} s")
 
     internal fun notAPublication() = failure(404, "This is not a Substack publication")
+
+    /** Every address asked turned this connection away (403), as Substack's Cloudflare does some networks: no word on the publication. */
+    internal fun refused() = failure(403, "Substack refused this connection")
 }
 
 /**

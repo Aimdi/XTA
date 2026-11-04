@@ -18,6 +18,13 @@ internal class SubstackTrail {
         answers[where(url)] = outcome
     }
 
+    /** Whether every address that answered refused it (403), so the read learned nothing about the publication. */
+    @Synchronized
+    fun allRefused(): Boolean {
+        val heard = answers.values.filter { it.startsWith("HTTP ") }
+        return heard.isNotEmpty() && heard.all { it.startsWith("HTTP 403") }
+    }
+
     /** [verdict] with the trail after its message; [verdict] itself when nothing was asked. */
     @Synchronized
     fun explained(verdict: NetworkRequestException): NetworkRequestException {
