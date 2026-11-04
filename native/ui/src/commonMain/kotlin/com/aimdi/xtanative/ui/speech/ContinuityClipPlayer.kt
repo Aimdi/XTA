@@ -20,10 +20,11 @@ import kotlinx.coroutines.withContext
 
 /**
  * Plays synthesised clips through the podcast player's port
- * (clip_player.dart's ContinuityClipPlayer): Media3's player on Android. It
- * is made on first use, on [context] (Android's main thread, which the player
- * wants), so nothing loads a player until a downloaded voice speaks. A clip
- * that has not started within [startTimeoutMs] counts as failed.
+ * (clip_player.dart's ContinuityClipPlayer): Media3's player on Android,
+ * libmpv's on the desktop. It is made on first use, on [context] (Android's
+ * main thread, which the player wants), so nothing loads a player until a
+ * downloaded voice speaks. A clip that has not started within
+ * [startTimeoutMs] counts as failed.
  */
 class ContinuityClipPlayer(
     private val create: () -> ContinuityPlayer,

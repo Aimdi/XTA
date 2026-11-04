@@ -77,6 +77,6 @@ layer is written in `networks/<id>` first, then moves with its screens into
 | Package | APK beside XTA (`com.aimdi.xtanative`) | tarball and Arch package, as XTA ships |
 | Links | x.com and the networks' links open in the app; shared links arrive | — |
 | Privacy | secure window switch; no backup or device transfer of data | data in `~/.local/share/xta-native` |
-| Media | Media3 players, the media session with its notification and lock-screen controls | system player for video; no media session, as XTA has none there |
+| Media | Media3 players, the media session with its notification and lock-screen controls | the system's libmpv, as XTA's media_kit: videos, GIFs, the feed's player, podcasts, read-aloud clips and offline videos in the app (the app's JNI shim and mpv's software renderer); the system player without it; no media session, as XTA has none there |
 | Speech | system text-to-speech, downloadable voices (the engine downloads with the first) | downloadable voices (the engine in the packages) |
 | Downloads | MediaStore | `~/Downloads` |

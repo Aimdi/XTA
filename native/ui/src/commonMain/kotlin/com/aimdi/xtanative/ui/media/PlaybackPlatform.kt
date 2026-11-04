@@ -8,8 +8,8 @@ expect fun rememberAudioSessions(): AudioSessions
 
 /**
  * A way to make players that keep a podcast episode going across screens
- * (Media3's on Android); null on the desktop, which plays none. Whoever
- * makes one disposes of it.
+ * (Media3's on Android, libmpv's on the desktop); null on a desktop without
+ * libmpv, which plays none. Whoever makes one disposes of it.
  */
 @Composable
 expect fun rememberContinuityPlayers(): (() -> ContinuityPlayer)?

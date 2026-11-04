@@ -12,11 +12,11 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.withTimeoutOrNull
 
 /**
- * Plays synthesised clips on the desktop, which has no player of its own in
- * the app (videos open in the system's): sherpa-onnx's WAV files streamed to
- * the default output with Java Sound, one at a time, each on a thread of its
- * own. A clip that has not started within [startTimeoutMs] counts as failed,
- * as on Android (clip_player.dart).
+ * Plays synthesised clips on a desktop without libmpv, which has no player
+ * of its own in the app then (videos open in the system's): sherpa-onnx's
+ * WAV files streamed to the default output with Java Sound, one at a time,
+ * each on a thread of its own. A clip that has not started within
+ * [startTimeoutMs] counts as failed, as on Android (clip_player.dart).
  */
 class SoundClipPlayer(private val startTimeoutMs: Long = 10_000) : ClipPlayer {
     private val current = AtomicReference<Clip?>(null)

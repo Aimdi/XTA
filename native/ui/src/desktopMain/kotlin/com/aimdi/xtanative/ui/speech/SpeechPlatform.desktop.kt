@@ -7,9 +7,13 @@ import com.aimdi.xtanative.services.speech.SherpaJni
 import com.aimdi.xtanative.services.speech.SherpaVoiceSynthesizer
 import com.aimdi.xtanative.services.speech.SpeechEngine
 import com.aimdi.xtanative.services.speech.SpeechSession
+import com.aimdi.xtanative.services.speech.UtteranceOutcome
 import com.aimdi.xtanative.services.speech.VoiceEnginePackage
 import com.aimdi.xtanative.services.speech.VoiceEngines
 import com.aimdi.xtanative.services.speech.VoiceSynthesizer
+import com.aimdi.xtanative.ui.common.AppResources
+import com.aimdi.xtanative.ui.media.MpvContinuityPlayer
+import com.aimdi.xtanative.ui.media.MpvEngine
 import java.io.File
 
 @Composable
@@ -36,19 +40,14 @@ private object DesktopSpeech : SpeechPlatform {
     /** Beside the app's own files: under $XDG_DATA_HOME, else ~/.local/share. */
     override val voiceFolder: File by lazy { File(File(xdg("XDG_DATA_HOME", ".local/share"), "xta-native"), "voices") }
 
-    /** Where the engine is: as named, in Compose's app resources, else beside the launcher jpackage made (bin/xta-native). */
-    private fun engineFolder(): File? {
-        System.getenv("XTA_NATIVE_VOICE_ENGINE")?.ifEmpty { null }?.let { return File(it) }
-        System.getProperty("compose.application.resources.dir")?.let { return File(it, "voice-engine") }
-        return System.getProperty("jpackage.app-path")?.let { File(File(it).parentFile?.parentFile, "lib/app/resources/voice-engine") }
-    }
+    private fun engineFolder(): File? = AppResources.folder("voice-engine", System.getenv("XTA_NATIVE_VOICE_ENGINE"))
 }
 
 /** $[name], else [fallback] in the home folder. */
 private fun xdg(name: String, fallback: String): File =
     System.getenv(name)?.takeIf { it.isNotBlank() }?.let(::File) ?: File(System.getProperty("user.home"), fallback)
 
-/** Downloaded voices on the desktop: the engine in [folder], clips in the user's cache, played with Java Sound. */
+/** Downloaded voices on the desktop: the engine in [folder], clips in the user's cache, played as [DesktopClipPlayer] plays them. */
 private class DesktopSynthesis(private val folder: File) : VoiceSynthesis {
     private val clips = File(File(xdg("XDG_CACHE_HOME", ".cache"), "xta-native"), "voice-clips")
 
@@ -56,5 +55,21 @@ private class DesktopSynthesis(private val folder: File) : VoiceSynthesis {
         SherpaJni.open(folder, VoiceEngines.LINUX_X64.libraries.map { it.name }) { System.load(File(folder, System.mapLibraryName(VoiceEngines.SHIM)).path) }
     }
 
-    override val player: ClipPlayer = SoundClipPlayer()
+    override val player: ClipPlayer = DesktopClipPlayer()
+}
+
+/**
+ * Clips through libmpv's continuity player where the desktop has libmpv, as
+ * XTA plays them through media_kit (clip_player.dart), so a reading goes
+ * out wherever the podcasts do; through Java Sound without it. Chosen at the
+ * first clip, so nothing opens libmpv before a downloaded voice speaks.
+ */
+private class DesktopClipPlayer : ClipPlayer {
+    private val chosen = lazy<ClipPlayer> { if (MpvEngine.ready) ContinuityClipPlayer(create = { MpvContinuityPlayer.create() }) else SoundClipPlayer() }
+
+    override suspend fun play(path: String): UtteranceOutcome = chosen.value.play(path)
+
+    override suspend fun stop() {
+        if (chosen.isInitialized()) chosen.value.stop()
+    }
 }

@@ -24,7 +24,7 @@ data class MediaItem(
     val thumbUrl: String? = null,
     /** A lighter rendition for a tile to play in place; [videoUrl] otherwise. */
     val inlineVideoUrl: String? = null,
-    /** Where the video plays on the web: the desktop, which has no player of its own, opens it there. */
+    /** Where the video plays on the web: a desktop without libmpv, which has no player of its own then, opens it there. */
     val webUrl: String? = null,
 ) {
     enum class Kind { PHOTO, VIDEO, GIF }

@@ -1,6 +1,9 @@
 package com.aimdi.xtanative.desktop
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
@@ -10,6 +13,7 @@ import coil3.SingletonImageLoader
 import com.aimdi.xtanative.ui.XtaNativeContent
 import com.aimdi.xtanative.ui.appImageLoader
 import com.aimdi.xtanative.ui.appName
+import com.aimdi.xtanative.ui.media.VideoCheck
 import kotlin.system.exitProcess
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeoutOrNull
@@ -29,7 +33,10 @@ fun main() {
             state = rememberWindowState(width = 520.dp, height = 860.dp),
         ) {
             CompositionLocalProvider(LocalUriHandler provides SystemBrowser) {
-                XtaNativeContent(graph, app.plugins)
+                Box(Modifier.fillMaxSize()) {
+                    XtaNativeContent(graph, app.plugins)
+                    VideoCheck.Shown()
+                }
             }
         }
     }

@@ -5,6 +5,8 @@ import com.aimdi.xtanative.data.plugins.AppPlugins
 import com.aimdi.xtanative.data.plugins.Destination
 import com.aimdi.xtanative.pluginhost.HostPlatform
 import com.aimdi.xtanative.ui.downloads.DesktopFiles
+import com.aimdi.xtanative.ui.media.MpvEngine
+import com.aimdi.xtanative.ui.media.VideoCheck
 import com.aimdi.xtanative.ui.speech.VoiceCheck
 import java.io.File
 import java.nio.file.Files
@@ -30,6 +32,9 @@ internal class DesktopApp(val graph: AppGraph, val plugins: AppPlugins)
  * server of its own (XTA_NATIVE_VOICE_SERVER) and runs at start
  * (XTA_NATIVE_VOICE_CHECK); XTA_NATIVE_VOICE_ENGINE names the voice engine's
  * folder for a build run from Gradle, which the packages carry otherwise.
+ * Its video check plays the video XTA_NATIVE_VIDEO_CHECK names at start.
+ * libmpv, which plays videos and podcasts in the app, opens a few seconds
+ * after start, as XTA opens it after its first frame.
  */
 internal fun desktopApp(): DesktopApp {
     val files = dataFolder()
@@ -56,6 +61,8 @@ internal fun DesktopApp.start() {
     plugins.start()
     plugins.startWith(ids("XTA_NATIVE_PLUGIN_INSTALL"), ids("XTA_NATIVE_PLUGIN_PIN"), ids("XTA_NATIVE_PLUGIN_UNINSTALL"))
     if (env("XTA_NATIVE_VOICE_CHECK") != null) VoiceCheck.ask()
+    env("XTA_NATIVE_VIDEO_CHECK")?.let(VideoCheck::ask)
+    MpvEngine.warmUp()
 }
 
 private fun env(name: String): String? = System.getenv(name)?.takeIf { it.isNotBlank() }
