@@ -64,7 +64,8 @@ after that, depending on the machine's load: `:core` is kept in
 - The kotlinx.serialization plugin is loaded too, for `@Serializable` routes.
 - `KOTLINC_ARGS` adds compiler arguments (`-opt-in=...`), `WARNINGS=1` shows
   warnings, `OUT=<dir>` keeps the classes, `DEPS="core store"` overrides the
-  plain modules.
+  plain modules, `DEPS_OUT=<file>` writes the folders of those plain modules'
+  classes there.
 
 What it cannot check:
 
@@ -105,3 +106,18 @@ plugins build made (`--android`, `--desktop`, `--base-url`, `--copy-to`):
 CI's prerelease publishes it, and the emulator and desktop checks serve one of
 their own. `plugin_screens.sh` is the emulator's walk through the store
 (install, open, Home's strip, uninstall), after `screens.sh`.
+
+`plugin_abi.py` says whether plugins built before still link against this
+tree: every class, method and field a plugin uses from the app's modules has
+to be there with the same descriptor, and every abstract method it takes on
+from the app's types (an interface member added since, which Kotlin 2.1
+compiles abstract) has to have a body. The app may keep loading an older
+`PLUGIN_API_VERSION` only while its published plugins pass:
+
+```bash
+OUT=/tmp/ui DEPS_OUT=/tmp/deps.txt KOTLINC=… COMPOSE_LIBS=… bash native/tool/uicheck.sh
+python3 -I native/tool/plugin_abi.py --app "/tmp/ui:$(cat /tmp/deps.txt)" xta-plugin-*.jar
+```
+
+The JARs are the desktop builds of the `native-plugins` release (the APKs
+hold the same classes, dexed); it reads them and runs nothing of them.

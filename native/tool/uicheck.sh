@@ -22,7 +22,9 @@
 # The plain modules the build file names with project(":x") (:core, ...) are
 # compiled first, once per change of their sources; DEPS="core store" names
 # them instead. KOTLINC_ARGS adds compiler arguments (e.g. -opt-in=...);
-# WARNINGS=1 shows warnings; OUT=<dir> keeps the compiled classes there.
+# WARNINGS=1 shows warnings; OUT=<dir> keeps the compiled classes there;
+# DEPS_OUT=<file> writes there the class folders of the modules compiled first,
+# ':'-separated (plugin_abi.py's --app is OUT and those).
 set -euo pipefail
 here=$(cd "$(dirname "$0")/.." && pwd)
 module=$(cd "${1:-$here/ui}" && pwd)
@@ -108,6 +110,7 @@ for name in "${order[@]}"; do
   fi
   deps="${deps:+$deps:}$(compile_dep "$name" "$jars${deps:+:$deps}")"
 done
+[ -z "${DEPS_OUT:-}" ] || echo "$deps" > "$DEPS_OUT"
 
 # Source sets from the most common to the desktop one, each refining the one before.
 if [ -n "${SOURCE_SETS:-}" ]; then
