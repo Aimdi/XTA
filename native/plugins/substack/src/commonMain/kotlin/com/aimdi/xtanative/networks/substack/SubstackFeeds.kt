@@ -1,6 +1,8 @@
 package com.aimdi.xtanative.networks.substack
 
+import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.networks.Page
+import java.time.Instant
 import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -9,6 +11,10 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.sync.withPermit
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
 /** A publication's posts, a page at a time: [SubstackClient.posts], or a stand-in in tests. */
@@ -18,6 +24,43 @@ fun interface SubstackPostReads {
 
 /** The client's reads of a publication's posts. */
 fun SubstackClient.postReads(): SubstackPostReads = SubstackPostReads { publication, limit, offset -> posts(publication, limit, offset).items }
+
+/** One followed publication's first page as it last answered (epoch milliseconds), kept across a restart. */
+data class SubstackRememberedPage(val answeredAt: Long, val posts: List<SubstackPost>)
+
+/**
+ * The feed as it last stood, as XTA's SubstackFeedMemory writes it: each
+ * publication's first page by its feed key, with when it answered.
+ */
+object SubstackFeedMemory {
+    fun encode(pages: Map<String, SubstackRememberedPage>): String = buildJsonObject {
+        put("v", 1)
+        put(
+            "pages",
+            JsonObject(
+                pages.mapValues { (_, page) ->
+                    buildJsonObject {
+                        put("answeredAt", Instant.ofEpochMilli(page.answeredAt).toString())
+                        put("posts", JsonArray(page.posts.take(SubstackFeed.PAGE_SIZE).map(SubstackPostJson::encode)))
+                    }
+                },
+            ),
+        )
+    }.toString()
+
+    /** What [text] remembers; nothing for a damaged or foreign text. */
+    fun decode(text: String?): Map<String, SubstackRememberedPage> {
+        val root = J.parse(text.orEmpty())
+        if (root["v"].int != 1) return emptyMap()
+        val pages = root["pages"]
+        return pages.keys.mapNotNull { key ->
+            val page = pages[key]
+            val at = SubstackText.instant(page["answeredAt"].string)?.toEpochMilli() ?: return@mapNotNull null
+            val posts = page["posts"].list.filter { it.raw is JsonObject }.map(SubstackPostJson::decode).filter { it.id.isNotEmpty() }
+            key to SubstackRememberedPage(at, posts)
+        }.toMap()
+    }
+}
 
 /** A post's key in the feed: its publication's address (host case and trailing slashes aside) and its id. */
 fun SubstackPost.feedKey(): String = "${sourceUrl(publicationBaseUrl)}\n$id"
@@ -102,6 +145,33 @@ class SubstackFeed(
 
     /** Where the feed stands now, nothing asked. */
     suspend fun snapshot(): Snapshot = lock.withLock { snapshotLocked() }
+
+    /** Each followed publication's first page as it last answered, for [restore] after a restart; bodies are never kept. */
+    suspend fun remembered(): Map<String, SubstackRememberedPage> = lock.withLock {
+        followed.mapNotNull { publication ->
+            val key = publication.sourceKey()
+            val source = sources[key] ?: return@mapNotNull null
+            val at = source.answeredAt ?: return@mapNotNull null
+            if (source.posts.isEmpty()) null else key to SubstackRememberedPage(at, source.posts.take(pageSize).map { it.copy(bodyHtml = null) })
+        }.toMap()
+    }
+
+    /**
+     * Paints the feed as it last stood ([remembered]) before anything is asked:
+     * a publication that answered within [freshMillis] counts as loaded, the
+     * others show and are read again. Only before the first read; whether it
+     * painted anything.
+     */
+    suspend fun restore(pages: Map<String, SubstackRememberedPage>): Boolean = lock.withLock {
+        if (sources.isNotEmpty()) return@withLock false
+        val keys = followed.mapTo(HashSet()) { it.sourceKey() }
+        for ((key, page) in pages) {
+            if (key !in keys || page.posts.isEmpty()) continue
+            val fresh = clock() - page.answeredAt < freshMillis
+            sources[key] = Source(posts = page.posts, offset = page.posts.size, loaded = fresh, answeredAt = page.answeredAt.takeIf { fresh })
+        }
+        sources.isNotEmpty()
+    }
 
     private suspend fun load(more: Boolean, force: Boolean): Snapshot {
         val (request, candidates) = lock.withLock {

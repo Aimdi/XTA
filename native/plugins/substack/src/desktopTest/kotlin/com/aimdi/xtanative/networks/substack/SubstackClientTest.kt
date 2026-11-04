@@ -194,7 +194,7 @@ class SubstackClientTest {
     fun aValidEmptyLaterPageIsAnAnswerButAnUnreadableArchiveIsAnError() = runBlocking {
         assertTrue(clientOf(FakeHttp { ok("[]") }).posts(customFieldNotes, offset = 12).items.isEmpty())
         val down = assertFailsWith<NetworkRequestException> { clientOf(FakeHttp { answer(503) }).posts(customFieldNotes, offset = 12) }
-        assertEquals("Archive page unavailable", down.message)
+        assertTrue(down.message!!.startsWith("Archive page unavailable ("), down.message)
         assertFailsWith<NetworkRequestException> { clientOf(FakeHttp { ok("""{"error":true}""") }).posts(customFieldNotes, offset = 12) }
         Unit
     }
@@ -240,7 +240,44 @@ class SubstackClientTest {
     fun aSiteThatIsNotSubstackIsNotAPublication() = runBlocking {
         val failure = assertFailsWith<NetworkRequestException> { clientOf(FakeHttp { answer(404) }).publication("https://www.platformer.news") }
         assertEquals(404, failure.code)
-        assertEquals("This is not a Substack publication", failure.message)
+        assertTrue(failure.message!!.startsWith("This is not a Substack publication ("), failure.message)
+    }
+
+    @Test
+    fun aPublicationNotFoundSaysWhatEachRouteAnswered() = runBlocking {
+        val foreignFeed = """<rss version="2.0"><channel><title>Platformer</title><item><title>A</title><link>https://platformer.news/p/a</link></item></channel></rss>"""
+        val http = FakeHttp {
+            val path = it.url.encodedPath
+            when {
+                path == "/api/v1/posts" -> answer(403, "<html><head><title>Just a moment...</title></head></html>")
+                path == "/api/v1/archive" -> ok("[]")
+                path == "/posts" -> ok("<html>no</html>")
+                path == "/feed" && it.url.host == "www.platformer.news" -> ok("<html><head><title>Platformer</title></head></html>")
+                path == "/feed" && it.url.host == "platformer.news" -> ok(foreignFeed)
+                path == "/" -> ok("<html><body>nothing</body></html>")
+                else -> answer(404)
+            }
+        }
+        val message = assertFailsWith<NetworkRequestException> { clientOf(http).publication("https://www.platformer.news") }.message!!
+        val expected = listOf(
+            "www.platformer.news/api/v1/posts: HTTP 403 \"Just a moment...\"",
+            "www.platformer.news/api/v1/archive: HTTP 200, no posts",
+            "www.platformer.news/posts: HTTP 200, no Beehiiv posts",
+            "www.platformer.news/feed: HTTP 200, not a feed \"Platformer\"",
+            "www.platformer.news/rss: HTTP 404",
+            "platformer.news/feed: HTTP 200, a feed, not Substack's",
+            "platformer.substack.com/: HTTP 200, no publication in the page",
+        )
+        expected.forEach { assertTrue(it in message, "$it in $message") }
+        assertTrue(message.startsWith("This is not a Substack publication ("), message)
+    }
+
+    @Test
+    fun aFailureListsAtMostTheFirstAddressesAsked() = runBlocking {
+        val message = assertFailsWith<NetworkRequestException> { clientOf(FakeHttp { answer(404) }).resolve("https://www.platformer.news/p/one") }.message!!
+        val listed = message.substringAfter('(').substringBeforeLast(')').split("; ")
+        assertTrue(listed.size <= SubstackTrail.LIMIT + 1, message)
+        assertTrue(listed.all { it.contains(": HTTP 404") || it.endsWith(" more") }, message)
     }
 
     @Test
@@ -376,7 +413,8 @@ class SubstackClientTest {
         assertEquals("<p>Body 3</p>", post.bodyHtml)
         assertEquals("rss-3", post.id, "an RSS copy is named by its slug")
         val missing = assertFailsWith<NetworkRequestException> { clientOf(FakeHttp { answer(404) }).post(customFieldNotes, "gone") }
-        assertEquals("Post not found: gone", missing.message)
+        assertTrue(missing.message!!.startsWith("Post not found: gone ("), missing.message)
+        assertTrue("www.fieldnotes.example/api/v1/posts/gone: HTTP 404" in missing.message!!, missing.message)
     }
 
     @Test

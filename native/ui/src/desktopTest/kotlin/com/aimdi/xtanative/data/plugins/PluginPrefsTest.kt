@@ -3,8 +3,10 @@ package com.aimdi.xtanative.data.plugins
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.store.StoreFile
+import com.aimdi.xtanative.store.settings.BlueskyPrefs
 import com.aimdi.xtanative.store.settings.HomePrefs
 import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.store.settings.SubstackPrefs
 import java.io.File
 import java.nio.file.Files
 import kotlin.test.Test
@@ -52,6 +54,19 @@ class PluginPrefsTest {
         assertEquals(listOf("feed", "saved"), erased[HomePrefs.pages])
         assertFalse(erased.isSet(HomePrefs.topBarPins["bluesky"]))
         assertEquals(listOf("settings"), erased[HomePrefs.topBarPins["reddit"]])
+    }
+
+    @Test
+    fun uninstallingAPluginResetsItsOwnSettingsAndNoOtherNetworks() {
+        val settings = Settings()
+            .with(SubstackPrefs.readIds, """["a.substack.com/p/one"]""")
+            .with(SubstackPrefs.markReadOnScroll, true)
+            .with(BlueskyPrefs.instance, "https://example.social")
+        val erased = settings.withoutPlugin("substack")
+        assertFalse(erased.isSet(SubstackPrefs.readIds))
+        assertFalse(erased.isSet(SubstackPrefs.markReadOnScroll))
+        assertEquals("https://example.social", erased[BlueskyPrefs.instance])
+        assertEquals(settings, settings.withoutPlugin("sub"), "a prefix of another id is not that plugin")
     }
 
     @Test

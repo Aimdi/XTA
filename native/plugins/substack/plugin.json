@@ -1,0 +1,7 @@
+{
+  "id": "substack",
+  "version": "1.0.0",
+  "entry": "com.aimdi.xtanative.plugins.substack.SubstackPlugin",
+  "category": "newsletters",
+  "private": false
+}

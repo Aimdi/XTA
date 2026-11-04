@@ -377,14 +377,19 @@ class SubstackClient(val transport: SubstackTransport) {
         for (url in reads) {
             val rows = orNull { jsonList(url, "Unexpected archive response") } ?: continue
             if (rows.isNotEmpty()) return rows
+            rejected(url, "no posts")
             empty = rows
         }
         return empty
     }
 
     private suspend fun postFromJson(base: HttpUrl, publication: SubstackPublication, slug: String): SubstackPost? {
-        val body = json(endpoint(base, "api/v1/posts/$slug"))
-        if (body.raw !is JsonObject || !servesFollowed(base, publication, body)) return null
+        val url = endpoint(base, "api/v1/posts/$slug")
+        val body = json(url)
+        if (body.raw !is JsonObject || !servesFollowed(base, publication, body)) {
+            rejected(url, if (body.raw is JsonObject) "another publication's post" else "no post")
+            return null
+        }
         return SubstackParser.post(body, publication.baseUrl, resolvedName(publication, body, base), includeBody = true)
             .takeIf { it.title.isNotEmpty() && it.slug.isNotEmpty() }
     }
@@ -400,7 +405,10 @@ class SubstackClient(val transport: SubstackTransport) {
 
     private suspend fun publicationOfListing(base: HttpUrl, followed: SubstackPublication? = null): SubstackPublication? = orNull {
         val first = listing(base, 1, 0)?.firstOrNull() ?: return@orNull null
-        if (followed != null && !servesFollowed(base, followed, first)) return@orNull null
+        if (followed != null && !servesFollowed(base, followed, first)) {
+            rejected(endpoint(base, "api/v1/posts"), "another publication's posts")
+            return@orNull null
+        }
         SubstackParser.publicationOfPost(first, base)
     }
 
@@ -413,7 +421,9 @@ class SubstackClient(val transport: SubstackTransport) {
     private suspend fun publicationOfHomepage(base: HttpUrl): SubstackPublication? = orNull {
         val response = get(base, HTML)
         if (response.code != 200) return@orNull null
-        SubstackPages.publicationOfBeehiivHomepage(response.body, base) ?: SubstackPages.publicationOfHomepage(response.body, base)
+        val found = SubstackPages.publicationOfBeehiivHomepage(response.body, base) ?: SubstackPages.publicationOfHomepage(response.body, base)
+        if (found == null) rejected(base, "no publication in the page", response.body)
+        found
     }
 
     private fun publicationOfRss(base: HttpUrl, rss: SubstackRssChannel) = SubstackPublication(
@@ -450,26 +460,38 @@ class SubstackClient(val transport: SubstackTransport) {
     private class BeehiivListing(val posts: List<J>, val totalPages: Int)
 
     private suspend fun beehiivListing(base: HttpUrl, page: Int): BeehiivListing? = orNull {
-        val response = get(endpoint(base, "posts", "page" to "$page"), BEEHIIV_JSON)
-        if (response.code != 200 || !response.body.trimStart().startsWith("{")) return@orNull null
+        val url = endpoint(base, "posts", "page" to "$page")
+        val response = get(url, BEEHIIV_JSON)
+        if (response.code != 200) return@orNull null
         val body = J.parse(response.body)
-        if (!SubstackParser.looksLikeBeehiivPosts(body)) return@orNull null
+        if (!response.body.trimStart().startsWith("{") || !SubstackParser.looksLikeBeehiivPosts(body)) {
+            rejected(url, "no Beehiiv posts", response.body)
+            return@orNull null
+        }
         val pages = SubstackParser.number(body["pagination"]["total_pages"])?.toInt()?.coerceAtLeast(1) ?: 1
         BeehiivListing(body["posts"].list.filter { it.raw is JsonObject }, pages)
     }
 
     private suspend fun postFromBeehiivPage(base: HttpUrl, publication: SubstackPublication, slug: String): SubstackPost? = orNull {
-        val response = get(endpoint(base, "p/$slug"), HTML)
+        val url = endpoint(base, "p/$slug")
+        val response = get(url, HTML)
         if (response.code != 200) return@orNull null
-        SubstackPages.beehiivPost(response.body, slug, publication.baseUrl, publication.displayName)
+        val post = SubstackPages.beehiivPost(response.body, slug, publication.baseUrl, publication.displayName)
+        if (post == null) rejected(url, "no post in the page", response.body)
+        post
     }
 
     /** The RSS feed at `/feed`, `/rss` or `/feed.xml`, the first that is one. */
     private suspend fun rss(base: HttpUrl, publication: SubstackPublication? = null): SubstackRssChannel? =
         RSS_PATHS.firstNotNullOfOrNull { path ->
             orNull {
-                val response = get(endpoint(base, path), RSS)
-                if (response.code != 200 || ("<rss" !in response.body && "<feed" !in response.body)) return@orNull null
+                val url = endpoint(base, path)
+                val response = get(url, RSS)
+                if (response.code != 200) return@orNull null
+                if ("<rss" !in response.body && "<feed" !in response.body) {
+                    rejected(url, "not a feed", response.body)
+                    return@orNull null
+                }
                 SubstackRss.parse(
                     response.body,
                     publication?.baseUrl ?: SubstackHosts.origin(base),
@@ -478,7 +500,11 @@ class SubstackClient(val transport: SubstackTransport) {
             }
         }
 
-    private fun rssIsSubstack(base: HttpUrl, rss: SubstackRssChannel) = SubstackHosts.isPublicationHost(base.host) || rss.looksLikeSubstack
+    private suspend fun rssIsSubstack(base: HttpUrl, rss: SubstackRssChannel): Boolean {
+        val substack = SubstackHosts.isPublicationHost(base.host) || rss.looksLikeSubstack
+        if (!substack) rejected(endpoint(base, "feed"), "a feed, not Substack's")
+        return substack
+    }
 
     /** The posts of an RSS feed, kept without bodies (at most 120, for 64 publications) so later pages need no request. */
     private fun rememberRss(key: String, posts: List<SubstackPost>) = synchronized(rssPages) {
@@ -548,9 +574,11 @@ class SubstackClient(val transport: SubstackTransport) {
     private fun servesFollowed(base: HttpUrl, publication: SubstackPublication, post: J): Boolean =
         !SubstackHosts.isLeftoverTwin(base.host, SubstackHosts.hostOf(publication.baseUrl)) || SubstackHosts.twinMatches(publication, post)
 
-    private fun checkTwin(base: HttpUrl, publication: SubstackPublication, rows: List<J>) {
+    private suspend fun checkTwin(base: HttpUrl, publication: SubstackPublication, rows: List<J>) {
         val first = rows.firstOrNull() ?: return
-        if (!servesFollowed(base, publication, first)) throw Substack.failure(404, "${base.host} serves another publication")
+        if (servesFollowed(base, publication, first)) return
+        rejected(endpoint(base, "api/v1/posts"), "another publication's posts")
+        throw Substack.failure(404, "${base.host} serves another publication")
     }
 
     /** The stored name, unless it is a leftover label and the post's byline names the publication. */
@@ -584,46 +612,72 @@ class SubstackClient(val transport: SubstackTransport) {
     private suspend fun json(url: HttpUrl): J {
         val response = get(url, JSON)
         if (response.code != 200) throw Substack.failure(response.code, "HTTP ${response.code} loading $url")
-        return J.parse(response.body)
+        val body = J.parse(response.body)
+        if (!body.exists) rejected(url, "no JSON", response.body)
+        return body
     }
 
     private suspend fun jsonList(url: HttpUrl, unexpected: String): List<J> {
         val body = json(url)
-        if (body.raw !is JsonArray) throw Substack.failure(200, "$unexpected from ${url.host}")
+        if (body.raw !is JsonArray) {
+            if (body.exists) rejected(url, "not a list")
+            throw Substack.failure(200, "$unexpected from ${url.host}")
+        }
         return body.list.filter { it.raw is JsonObject }
     }
 
     private suspend fun get(url: HttpUrl, accept: String, followRedirects: Boolean = true): XResponse {
         val reach = coroutineContext[Reach]
         try {
-            return transport.get(url, mapOf("Accept" to accept, "User-Agent" to USER_AGENT), followRedirects).also { reach?.answered = true }
+            return transport.get(url, mapOf("Accept" to accept, "User-Agent" to USER_AGENT), followRedirects).also { reach?.heard(url, it) }
         } catch (e: IOException) {
             reach?.offline = e
+            reach?.trail?.note(url, e.javaClass.simpleName)
             throw e
         } catch (e: NetworkRequestException) {
             reach?.answered = true
+            reach?.trail?.note(url, "HTTP ${e.code}")
             throw e
         }
     }
 
-    /** One read's record of whether any host answered at all, shared by the reads it is made of. */
+    /** Notes why [url]'s answer did not count, for a failure to say ([SubstackTrail]). */
+    private suspend fun rejected(url: HttpUrl, why: String, body: String? = null) {
+        coroutineContext[Reach]?.trail?.note(url, SubstackTrail.rejected(why, body))
+    }
+
+    /**
+     * One read's record of whether any host answered at all, and of what each
+     * address it asked answered, shared by the reads it is made of.
+     */
     private class Reach : AbstractCoroutineContextElement(Key) {
         companion object Key : CoroutineContext.Key<Reach>
 
         @Volatile var answered = false
 
         @Volatile var offline: IOException? = null
+
+        val trail = SubstackTrail()
+
+        fun heard(url: HttpUrl, response: XResponse) {
+            answered = true
+            trail.note(url, SubstackTrail.status(response))
+        }
     }
 
     private suspend fun <T> reaching(read: suspend () -> T): T =
         if (coroutineContext[Reach] != null) read() else withContext(Reach()) { read() }
 
-    /** [verdict], unless no host answered at all: then the connection failure it was. */
+    /**
+     * [verdict], unless no host answered at all: then the connection failure it
+     * was. The verdict lists what each address asked answered, so a failure in
+     * the field says which route gave what.
+     */
     private suspend fun unreachable(verdict: NetworkRequestException): Nothing {
         val reach = coroutineContext[Reach]
         val offline = reach?.offline
         if (reach != null && offline != null && !reach.answered) throw offline
-        throw verdict
+        throw reach?.trail?.explained(verdict) ?: verdict
     }
 
     /** [read], or null when it fails for any reason but a rate limit, which ends every fallback chain. */

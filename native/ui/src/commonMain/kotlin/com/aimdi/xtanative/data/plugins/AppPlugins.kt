@@ -13,6 +13,9 @@ import com.aimdi.xtanative.pluginhost.PluginApi
 import com.aimdi.xtanative.pluginhost.PluginLoad
 import com.aimdi.xtanative.pluginhost.PluginManager
 import com.aimdi.xtanative.store.StoreDir
+import com.aimdi.xtanative.store.offline.OfflineStore
+import com.aimdi.xtanative.store.reading.ReadingAppearanceStore
+import com.aimdi.xtanative.store.reading.ReadingJournal
 import com.aimdi.xtanative.store.settings.HomePrefs
 import com.aimdi.xtanative.store.settings.SettingsStore
 import com.aimdi.xtanative.ui.home.StripNetwork
@@ -77,6 +80,9 @@ class AppPlugins(
     internal val x: XClient = graph.client
     internal val sessions: SessionStore = graph.sessions
     internal val online: Flow<Boolean> = graph.online
+    internal val readingJournal: ReadingJournal = graph.readingJournal
+    internal val readingAppearance: ReadingAppearanceStore = graph.readingAppearance
+    internal val offline: OfflineStore = graph.offline
     internal val repairs: StateFlow<Map<String, String>> = graph.repairs.published
     internal val settings: SettingsStore = graph.settings
     private val store = StoreDir(File(files, "store"))
@@ -288,6 +294,9 @@ class AppPlugins(
         override val x: XClient get() = plugins.x
         override val session: StateFlow<Session?> get() = plugins.sessions.state
         override val repairs: StateFlow<Map<String, String>> get() = plugins.repairs
+        override val readingJournal: ReadingJournal get() = plugins.readingJournal
+        override val readingAppearance: ReadingAppearanceStore get() = plugins.readingAppearance
+        override val offline: OfflineStore get() = plugins.offline
 
         override fun open(route: String) = plugins.navigator.go(Destination.PluginRoute(id, route))
 

@@ -62,4 +62,43 @@ class PluginStringsTest {
     fun aTextNobodyWroteIsItsName() {
         assertEquals("missing", Texts.get("missing", "de"))
     }
+
+    private object Plurals : PluginStrings(
+        mapOf(
+            "" to mapOf("min#one" to "%1\$d min", "min#other" to "%1\$d mins"),
+            "ru" to mapOf("min#one" to "%1\$d минута", "min#few" to "%1\$d минуты", "min#many" to "%1\$d минут", "min#other" to "%1\$d минуты"),
+            "ar" to mapOf("min#zero" to "لا دقائق", "min#one" to "دقيقة", "min#two" to "دقيقتان", "min#few" to "%1\$d دقائق", "min#many" to "%1\$d دقيقة", "min#other" to "%1\$d دقيقة"),
+            "pl" to mapOf("min#one" to "%1\$d minuta", "min#few" to "%1\$d minuty", "min#many" to "%1\$d minut"),
+            "fr" to mapOf("min#one" to "%1\$d minute", "min#other" to "%1\$d minutes"),
+            "ja" to mapOf("min#other" to "%1\$d分"),
+        ),
+    ) {
+        val min = plural("min")
+    }
+
+    @Test
+    fun pluralsTakeTheFormTheirLanguageUsesForTheCount() {
+        assertEquals(listOf("1 минута", "3 минуты", "5 минут", "11 минут", "21 минута", "22 минуты"), listOf(1, 3, 5, 11, 21, 22).map { Plurals.min.get(it, "ru", it) })
+        assertEquals(listOf("لا دقائق", "دقيقة", "دقيقتان"), listOf(0, 1, 2).map { Plurals.min.get(it, "ar", it) })
+        assertEquals(listOf("zero", "one", "two", "few", "many", "other"), listOf(0, 1, 2, 3, 11, 100).map { pluralCategory(it.toLong(), "ar") })
+        assertEquals(listOf("2 minuty", "5 minut", "12 minut", "22 minuty"), listOf(2, 5, 12, 22).map { Plurals.min.get(it, "pl", it) })
+        assertEquals(listOf("0 minute", "1 minute", "2 minutes"), listOf(0, 1, 2).map { Plurals.min.get(it, "fr", it) }, "French counts 0 as one")
+        assertEquals("1分", Plurals.min.get(1, "ja", 1))
+    }
+
+    @Test
+    fun aPluralALanguageLacksComesFromTheDefaultInItsOwnForms() {
+        assertEquals(listOf("0 mins", "1 min", "4 mins"), listOf(0, 1, 4).map { Plurals.min.get(it, "uk", it) })
+        assertEquals("1 min", Plurals.min.get(1, "pt-BR", 1))
+    }
+
+    @Test
+    fun theCategoriesFollowCldrForTheAppsLanguages() {
+        assertEquals(listOf("one", "few", "other", "other"), listOf(1, 3, 5, 0).map { pluralCategory(it.toLong(), "cs") })
+        assertEquals(listOf("one", "few", "few", "other"), listOf(1, 0, 19, 20).map { pluralCategory(it.toLong(), "ro") })
+        assertEquals(listOf("one", "one", "other"), listOf(0, 1, 2).map { pluralCategory(it.toLong(), "pt-BR") })
+        assertEquals(listOf("other", "one"), listOf(0, 1).map { pluralCategory(it.toLong(), "pt_PT") })
+        assertEquals(listOf("one", "other"), listOf(1, 0).map { pluralCategory(it.toLong(), "nb-NO") })
+        assertEquals("other", pluralCategory(1, "zh-TW"))
+    }
 }

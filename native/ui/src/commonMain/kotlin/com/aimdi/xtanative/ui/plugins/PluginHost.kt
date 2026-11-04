@@ -4,6 +4,9 @@ import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.core.x.XClient
 import com.aimdi.xtanative.core.x.http.XHttp
 import com.aimdi.xtanative.store.StoreDir
+import com.aimdi.xtanative.store.offline.OfflineStore
+import com.aimdi.xtanative.store.reading.ReadingAppearanceStore
+import com.aimdi.xtanative.store.reading.ReadingJournal
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -56,6 +59,15 @@ interface PluginHost {
      * here, with its slot's [com.aimdi.xtanative.core.repairs.RepairSlot.valueIn].
      */
     val repairs: StateFlow<Map<String, String>>
+
+    /** Where the app's article readers leave each article, for [com.aimdi.xtanative.store.reading.ArticleReading]. */
+    val readingJournal: ReadingJournal
+
+    /** The text size and line height every article reader shares. */
+    val readingAppearance: ReadingAppearanceStore
+
+    /** The app's offline library: an article kept there, and its pictures, read without a connection. */
+    val offline: OfflineStore
 
     /** Pushes the plugin's own screen [route] (one [XtaPlugin.screen] knows) on the app's back stack. */
     fun open(route: String)

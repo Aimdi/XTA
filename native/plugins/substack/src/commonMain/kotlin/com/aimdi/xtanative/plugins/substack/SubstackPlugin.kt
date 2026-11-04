@@ -1,0 +1,79 @@
+package com.aimdi.xtanative.plugins.substack
+
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import com.aimdi.xtanative.networks.substack.SubstackRoute
+import com.aimdi.xtanative.networks.substack.SubstackRoutes
+import com.aimdi.xtanative.ui.plugins.PluginBackupSection
+import com.aimdi.xtanative.ui.plugins.PluginBody
+import com.aimdi.xtanative.ui.plugins.PluginFootprint
+import com.aimdi.xtanative.ui.plugins.PluginHost
+import com.aimdi.xtanative.ui.plugins.PluginScreen
+import com.aimdi.xtanative.ui.plugins.PluginSearch
+import com.aimdi.xtanative.ui.plugins.XtaPlugin
+
+/**
+ * Substack as a downloadable plugin, read without an account as XTA's
+ * Substack plugin reads it: the publications followed here as Home, Inbox,
+ * public Notes and the Library; publications with their archives; the native
+ * reader with its place, contents and find, highlights, Listen and episodes;
+ * discussions; search; OPML. Nothing is subscribed to, liked, commented on or
+ * paid for on Substack: follows, hearts, saves, read marks and highlights stay
+ * on the device (the plugin's folder and the app's settings, as XTA keeps them).
+ */
+class SubstackPlugin : XtaPlugin() {
+    private lateinit var app: SubstackApp
+
+    override val id: String = "substack"
+    override val brandColor: Color = Color(0xFFFF6719)
+    override val icon: ImageVector get() = SubstackIcons.Newspaper
+    override val category: Category = Category.NEWSLETTERS
+
+    override fun title(language: String): String = Strings.plugin_name.get(language)
+
+    override fun description(language: String): String = Strings.plugin_description.get(language)
+
+    override fun attach(host: PluginHost) {
+        app = SubstackApp(host)
+    }
+
+    override fun detach() = app.close()
+
+    override val homeTab: PluginBody = { frame -> SubstackHome(app, frame) }
+
+    override val settings: PluginBody = { frame -> SubstackSettingsBody(app, frame) }
+
+    override val search: PluginSearch by lazy { SubstackSearchUi(app) }
+
+    override fun routeFor(url: String): String? = SubstackRoutes.forUrl(url, app.publications.value.orEmpty().map { it.baseUrl })
+
+    override fun screen(route: String): PluginScreen? = when (val opened = SubstackRoutes.parse(route)) {
+        is SubstackRoute.Post -> readerScreen(opened)
+        is SubstackRoute.Comments -> commentsScreen(opened)
+        is SubstackRoute.Publication -> publicationScreen(opened)
+        is SubstackRoute.Note -> noteScreen(opened)
+        SubstackRoute.Add -> addScreen()
+        null -> null
+    }
+
+    private fun readerScreen(route: SubstackRoute.Post): PluginScreen = { SubstackReaderScreen(app, route.link, route.key) }
+
+    private fun commentsScreen(route: SubstackRoute.Comments): PluginScreen = { SubstackCommentsScreen(app, route.link, route.key) }
+
+    private fun publicationScreen(route: SubstackRoute.Publication): PluginScreen = { SubstackPublicationScreen(app, route.publication) }
+
+    private fun noteScreen(route: SubstackRoute.Note): PluginScreen = { SubstackNoteScreen(app, route.id) }
+
+    private fun addScreen(): PluginScreen = { SubstackAddScreen(app) }
+
+    /** The follows, as XTA's backup holds them: its `substackSubscriptions` rows. The rest of what it keeps is in the app's settings. */
+    override val backupSections: List<PluginBackupSection>
+        get() = listOf(PluginBackupSection(BACKUP_FOLLOWS, export = { app.follows.export() }, import = { app.follows.import(it) }))
+
+    override suspend fun footprint(): PluginFootprint = PluginFootprint(app.follows.load().size + app.saves.load().size + app.likes.load().size)
+
+    private companion object {
+        /** XTA's backup key for the follows: load-bearing, as a reader's file is read by it. */
+        const val BACKUP_FOLLOWS = "substackSubscriptions"
+    }
+}
