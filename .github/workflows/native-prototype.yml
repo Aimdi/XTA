@@ -191,10 +191,14 @@ jobs:
           curl -s -o /dev/null -w 'stand-in answers %{http_code}\n' http://127.0.0.1:8787/
 
       - name: Fetch XTA to compare with
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          # The latest XTA release's x86_64 build, for the emulator.
-          tag=$(curl -fsSL https://api.github.com/repos/${{ github.repository }}/releases/latest | python3 -c 'import json,sys; print(json.load(sys.stdin)["tag_name"])')
-          curl -fsSL -o "$RUNNER_TEMP/xta.apk" "https://github.com/${{ github.repository }}/releases/download/$tag/xta-${tag}_x86_64.apk"
+          # The latest XTA release's x86_64 build, for the emulator, asked for
+          # with the job's token: the API turns away a runner's unauthenticated
+          # calls once its address has made too many.
+          tag=$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName -q .tagName)
+          gh release download "$tag" --repo "$GITHUB_REPOSITORY" --pattern "xta-${tag}_x86_64.apk" --output "$RUNNER_TEMP/xta.apk"
           echo "XTA $tag: $(stat -c %s "$RUNNER_TEMP/xta.apk") bytes"
 
       - name: Let the emulator use KVM
