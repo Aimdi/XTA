@@ -19,7 +19,7 @@ A network's follows in your XTA backup wait for its plugin and arrive when you a
 - **Any distribution:** unpack `xta-native-desktop-…-linux-x64.tar.gz` and run `bin/xta-native`. It brings its own Java runtime.
 - **Arch:** `sudo pacman -U xta-native-…-x86_64.pkg.tar.zst` puts it in your application menu (the PKGBUILD beside it builds the same package).
 
-It keeps its data in `~/.local/share/xta-native`, a folder only you can open. Videos open in your system player. Downloaded voices read aloud here too: the tarball and the package carry the voice engine, as XTA's do.
+It keeps its data in `~/.local/share/xta-native`, a folder only you can open. Videos, GIFs, podcasts and offline videos play in the app through mpv's library, as XTA's do: the Arch package installs `mpv`; with the tarball, install your system's (`libmpv2` on Debian and Ubuntu, `libmpv1` on Ubuntu 22.04, `mpv-libs` on Fedora). Without it, videos open in your system player. Downloaded voices read aloud here too: the tarball and the package carry the voice engine, as XTA's do.
 
 ### What is in it
 

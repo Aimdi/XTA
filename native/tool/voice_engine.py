@@ -8,7 +8,7 @@
       JNI shim (services/src/main/c/xta_sherpa.c) built beside them with cc
       against $JAVA_HOME's headers, needing no glibc newer than the engine's.
       The desktop build carries <out dir> under lib/app/resources/voice-engine
-      when it is native/desktop/build/voice-engine-resources/linux-x64/voice-engine.
+      when it is native/desktop/build/app-resources/linux-x64/voice-engine.
 
   python3 -I native/tool/voice_engine.py check <dir>
       Every Android archive in <dir> (scripts/voice_engine_archives.py makes

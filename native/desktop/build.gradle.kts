@@ -90,6 +90,36 @@ fun certificateSha256(signing: Map<String, String>): String {
     return MessageDigest.getInstance("SHA-256").digest(certificate.encoded).joinToString("") { "%02x".format(it) }
 }
 
+// The native parts the app carries in lib/app/resources, from linux-x64/ here.
+val appResources = layout.buildDirectory.dir("app-resources")
+
+// The video engine's JNI shim (ui/src/desktopMain/c/xta_mpv.c), a few
+// kilobytes built with the system's cc against the JDK's headers. libmpv
+// itself is the system's, opened at run time as XTA's media_kit opens it:
+// the app plays videos, GIFs and podcasts where mpv's library is installed
+// (the Arch package depends on it) and hands them to the system's player
+// where it is not. Without cc the app is built without it, and says so.
+val videoEngine by tasks.registering(Exec::class) {
+    val source = rootProject.file("ui/src/desktopMain/c/xta_mpv.c")
+    val shim = appResources.get().file("linux-x64/video-engine/libxta_mpv.so").asFile
+    val jdk = File(System.getProperty("java.home"))
+    val cc = System.getenv("PATH").orEmpty().split(File.pathSeparator).map { File(it, "cc") }.firstOrNull { it.canExecute() }
+    inputs.file(source)
+    outputs.file(shim)
+    onlyIf {
+        val ready = cc != null && File(jdk, "include/jni.h").isFile && System.getProperty("os.name").startsWith("Linux")
+        if (!ready) logger.warn("No video engine: it needs cc and a JDK's headers on Linux. The app hands videos to the system's player.")
+        ready
+    }
+    doFirst { shim.parentFile.mkdirs() }
+    commandLine(
+        cc?.path ?: "cc", "-O2", "-fPIC", "-shared", "-s", "-Wall", "-Wextra",
+        "-I${jdk.resolve("include")}", "-I${jdk.resolve("include/linux")}",
+        "-o", shim.path, source.path, "-Wl,--no-as-needed", "-ldl", "-lpthread",
+    )
+}
+tasks.configureEach { if (name == "prepareAppResources") dependsOn(videoEngine) }
+
 compose.desktop {
     application {
         mainClass = "com.aimdi.xtanative.desktop.MainKt"
@@ -105,8 +135,9 @@ compose.desktop {
             // The voice engine downloaded voices read with, as XTA's Linux bundle
             // carries it: tool/voice_engine.py puts it in linux-x64/voice-engine
             // here (CI does before it builds), and the app finds it under
-            // lib/app/resources. Without it, voices show as unavailable.
-            appResourcesRootDir.set(layout.buildDirectory.dir("voice-engine-resources"))
+            // lib/app/resources. Without it, voices show as unavailable. The
+            // video engine's shim goes beside it (videoEngine, above).
+            appResourcesRootDir.set(appResources)
         }
     }
 }

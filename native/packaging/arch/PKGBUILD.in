@@ -7,10 +7,12 @@ pkgdesc="XTA's X reader written in Kotlin, a prototype beside XTA (desktop build
 arch=('x86_64')
 url='https://github.com/@REPO@'
 license=('MIT')
-# The app carries its own Java runtime and the voice engine (ONNX Runtime and
-# sherpa-onnx); it draws through the X libraries and fontconfig, plays
-# downloaded voices through ALSA, and opens links and videos with xdg-open.
-depends=('libx11' 'libxext' 'libxi' 'libxrandr' 'libxrender' 'libxtst' 'fontconfig' 'freetype2' 'alsa-lib' 'xdg-utils')
+# The app carries its own Java runtime, the voice engine (ONNX Runtime and
+# sherpa-onnx) and the video engine's shim; it draws through the X libraries
+# and fontconfig, plays videos, GIFs and podcasts through the system's libmpv
+# (as XTA's package does) and downloaded voices through it or ALSA, and opens
+# links with xdg-open.
+depends=('libx11' 'libxext' 'libxi' 'libxrandr' 'libxrender' 'libxtst' 'fontconfig' 'freetype2' 'alsa-lib' 'mpv' 'xdg-utils')
 options=('!strip' '!debug')
 _bundle="xta-native-desktop-${pkgver}-linux-x64"
 source=("${_bundle}.tar.gz::https://github.com/@REPO@/releases/download/native-${pkgver}/${_bundle}.tar.gz")

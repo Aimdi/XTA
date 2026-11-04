@@ -150,7 +150,7 @@ itself is never in the APK and downloads with the first voice
 (`docs/specs/downloadable-voice-engine.md`).
 
 ```bash
-python3 -I native/tool/voice_engine.py desktop native/desktop/build/voice-engine-resources/linux-x64/voice-engine
+python3 -I native/tool/voice_engine.py desktop native/desktop/build/app-resources/linux-x64/voice-engine
 python3 -I native/tool/voice_engine.py check <folder of the Android archives>
 ```
 
@@ -170,3 +170,31 @@ reads a sentence into a clip, reads aloud through the app, and shows a
 podcast's media session, whose controls the script presses from the keys, the
 lock screen and the notification. The desktop job runs the same check with
 `XTA_NATIVE_VOICE_SERVER` and `XTA_NATIVE_VOICE_CHECK=1`.
+
+## Videos on the desktop (`video_check.sh`)
+
+The Linux app plays videos, GIFs, the feed's tiles, podcasts, read-aloud clips
+and offline videos itself through the system's libmpv, as XTA's media_kit
+does: the app's JNI shim (`ui/src/desktopMain/c/xta_mpv.c`, a few kilobytes)
+opens `libmpv.so.2`, else `libmpv.so.1`, at run time, and mpv's software
+renderer draws each frame into a Skia image the screen shows. mpv turns no
+picture (its software renderer aborts the process on a video with rotation
+metadata, in mpv 0.37): the app draws the frame turned. `:desktop`
+builds the shim with `cc` against the JDK's headers (`videoEngine`) into
+`lib/app/resources/video-engine`; `XTA_NATIVE_VIDEO_ENGINE=<folder>` points
+a Gradle run at another. The Arch package depends on `mpv`; the tarball
+needs the system's library. Without the shim or the library, videos open in
+the system's player, as before, and podcasts in the browser; read-aloud
+clips play through Java Sound.
+
+```bash
+bash native/tool/video_check.sh <bin/xta-native> <out dir> [without]
+```
+
+is the desktop job's check, under a virtual display: it serves a video made
+with `ffmpeg` and starts the app with `XTA_NATIVE_VIDEO_CHECK` naming it, so
+the app's `VideoCheck` plays it in the viewer's player and then as a podcast
+plays it, a line each step. With `without` (libmpv missing) the app has to
+say that videos go to the system's player and stay up; otherwise the video
+has to play to its end, its frames drawn and on the screen, and the podcast
+player has to play.

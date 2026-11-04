@@ -336,7 +336,7 @@ jobs:
       # sherpa_onnx_linux checked against the app's pins, and the app's JNI
       # shim built beside it; the desktop build takes it from here.
       - name: The voice engine the desktop app carries
-        run: python3 -I native/tool/voice_engine.py desktop native/desktop/build/voice-engine-resources/linux-x64/voice-engine
+        run: python3 -I native/tool/voice_engine.py desktop native/desktop/build/app-resources/linux-x64/voice-engine
 
       - name: Build the desktop app and its plugins
         working-directory: native
@@ -404,6 +404,15 @@ jobs:
           bash native/tool/package_desktop.sh native/desktop/build/compose/binaries/main/app/xta-native "$VERSION_NAME" "$RUNNER_TEMP/desktop"
           carried=$(tar -tzf "$RUNNER_TEMP/desktop/xta-native-desktop-$VERSION_NAME-linux-x64.tar.gz" | grep -cE '/lib/app/resources/voice-engine/lib(onnxruntime|sherpa-onnx-c-api|xta_sherpa)\.so$' || true)
           [ "$carried" -eq 3 ] || { echo "::error::The tarball does not carry the voice engine and its shim ($carried of 3)"; exit 1; }
+          # The video engine's shim, which plays through the system's libmpv: built
+          # by :desktop:videoEngine, needing no glibc newer than the Java runtime's.
+          shim=native/desktop/build/compose/binaries/main/app/xta-native/lib/app/resources/video-engine/libxta_mpv.so
+          tar -tzf "$RUNNER_TEMP/desktop/xta-native-desktop-$VERSION_NAME-linux-x64.tar.gz" | grep -qE '/lib/app/resources/video-engine/libxta_mpv\.so$' \
+            || { echo "::error::The tarball does not carry the video engine's shim"; exit 1; }
+          glibc=$(objdump -T "$shim" | grep -oE 'GLIBC_[0-9.]+' | sort -uV | tail -1)
+          [ "$(printf '%s\n' "$glibc" GLIBC_2.17 | sort -V | tail -1)" = GLIBC_2.17 ] \
+            || { echo "::error::The video engine's shim needs $glibc, newer than the Java runtime's glibc 2.17"; exit 1; }
+          echo "The video engine's shim: $(stat -c %s "$shim") bytes, $glibc at most."
 
       # makepkg refuses to run as root, and takes the tarball beside the
       # PKGBUILD rather than downloading it, so this also proves the PKGBUILD.
@@ -562,6 +571,26 @@ jobs:
             exit 1
           fi
           echo "The engine the desktop app carries read a sentence with the downloaded voice: $bytes bytes."
+
+      # Videos, GIFs, podcasts and offline videos play in the app through the
+      # system's libmpv, as XTA's do (tool/video_check.sh): first without it,
+      # where the app has to say they go to the system's player and stay up;
+      # then with Ubuntu's libmpv2, where a video the runner serves has to play
+      # in the viewer's player to its end, its frames drawn and on the screen
+      # (the last one in the screenshot), and again as a podcast plays it. The
+      # runner has no sound card: mpv's null output keeps the time.
+      - name: Videos play in the app
+        env:
+          SKIKO_RENDER_API: SOFTWARE
+          XTA_NATIVE_MOCK_X: http://127.0.0.1:8787
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg > /dev/null
+          app="$RUNNER_TEMP/xta-native-desktop-$VERSION_NAME-linux-x64/bin/xta-native"
+          bash native/tool/video_check.sh "$app" native-desktop without
+          sudo apt-get install -y -qq libmpv2 > /dev/null
+          bash native/tool/video_check.sh "$app" native-desktop
 
       - name: Keep the logs
         if: always()

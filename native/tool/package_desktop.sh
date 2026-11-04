@@ -4,7 +4,9 @@
 #   <out>/xta-native-desktop-<version>-linux-x64.tar.gz  the app (bin/, and lib/ with its
 #                                                       Java runtime and, in lib/app/resources,
 #                                                       the voice engine tool/voice_engine.py
-#                                                       put in the build) and, under share/,
+#                                                       put in the build and the video engine's
+#                                                       shim the build made, which plays through
+#                                                       the system's libmpv) and, under share/,
 #                                                       its menu entry and icon
 #   <out>/PKGBUILD                                       the Arch package of that tarball
 # With --makepkg (on Arch, or in an archlinux container) it also builds
@@ -24,6 +26,8 @@ repo=${GITHUB_REPOSITORY:-Aimdi/XTA}
   echo "error: $app is not the desktop app (expected bin/xta-native and lib/)" >&2
   exit 1
 }
+[[ -f "$app/lib/app/resources/video-engine/libxta_mpv.so" ]] \
+  || echo "warning: $app carries no video engine (built without cc?): it will hand videos to the system's player" >&2
 # Arch versions cannot carry '-'.
 [[ "$version" =~ ^[0-9][0-9A-Za-z.]*$ ]] || {
   echo "error: $version is not a version Arch can take" >&2
