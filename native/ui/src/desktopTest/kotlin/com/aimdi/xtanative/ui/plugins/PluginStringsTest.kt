@@ -1,5 +1,7 @@
 package com.aimdi.xtanative.ui.plugins
 
+import com.aimdi.xtanative.ui.settings.SettingsChoices
+import java.util.Locale
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -118,6 +120,29 @@ class PluginStringsTest {
         assertEquals(listOf("2 minuty", "5 minut", "12 minut", "22 minuty"), listOf(2, 5, 12, 22).map { Plurals.min.get(it, "pl", it) })
         assertEquals(listOf("0 minute", "1 minute", "2 minutes"), listOf(0, 1, 2).map { Plurals.min.get(it, "fr", it) }, "French counts 0 as one")
         assertEquals("1分", Plurals.min.get(1, "ja", 1))
+    }
+
+    /** Latin Belarusian as the plugins build reads strings/values-be-rXL: under the tag the app's locale for it gives. */
+    private object Belarusian : PluginStrings(
+        mapOf(
+            "" to mapOf("hello" to "Hello", "about" to "About", "posts#one" to "%1\$d post", "posts#other" to "%1\$d posts"),
+            "be" to mapOf("hello" to "Вітаю", "about" to "Пра плагін", "posts#one" to "%1\$d допіс", "posts#other" to "%1\$d допісу"),
+            "be-XL" to mapOf("hello" to "Vitaju", "posts#one" to "%1\$d dopis", "posts#few" to "%1\$d dopisy", "posts#many" to "%1\$d dopisaŭ", "posts#other" to "%1\$d dopisu"),
+        ),
+    ) {
+        val hello = text("hello")
+        val about = text("about")
+        val posts = plural("posts")
+    }
+
+    @Test
+    fun latinBelarusianHasItsOwnTextsAndBelarusiansPlurals() {
+        val tag = Locale.Builder().setLanguage("be").setRegion(SettingsChoices.LATIN_BELARUSIAN_REGION).build().toLanguageTag()
+        assertEquals("be-XL", tag)
+        assertEquals("Vitaju", Belarusian.hello.get(tag))
+        assertEquals("Вітаю", Belarusian.hello.get("be"))
+        assertEquals("Пра плагін", Belarusian.about.get(tag), "a text it lacks is Belarusian's")
+        assertEquals(listOf("1 dopis", "3 dopisy", "5 dopisaŭ", "11 dopisaŭ", "21 dopis"), listOf(1, 3, 5, 11, 21).map { Belarusian.posts.get(it, tag, it) })
     }
 
     @Test

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Hacker News</string>
+    <string name="plugin_description">Čytajcie Hacker News biez akaŭnta. Sercy i zakladki zastajucca na hetaj pryladzie.</string>
+    <string name="tab_top">Top</string>
+    <string name="tab_new">Novyja</string>
+    <string name="tab_best">Najlepšyja</string>
+    <string name="tab_ask">Ask</string>
+    <string name="tab_show">Show</string>
+    <string name="tab_jobs">Vakansii</string>
+    <string name="tab_saved">Zachavanyja</string>
+    <string name="tab_following">Padpiski</string>
+    <string name="search">Pošuk u Hacker News</string>
+    <string name="settings">Nalady</string>
+    <string name="feed_empty">Pakul tut pusta</string>
+    <string name="saved_empty">Pakul niama zachavanych historyj — zakladki zastajucca na hetaj pryladzie</string>
+    <string name="following_empty">Padpišyciesia na kahości, kab bačyć historyi tut</string>
+    <string name="by">ad %1$s</string>
+    <string name="like">Padabajecca na hetaj pryladzie</string>
+    <string name="unlike">Prybrać «padabajecca» z hetaj prylady</string>
+    <string name="save">Zachavać na hetaj pryladzie</string>
+    <string name="unsave">Vydalić z hetaj prylady</string>
+    <string name="comments">Kamentaryi</string>
+    <string name="open_article">Adkryć artykuł</string>
+    <string name="deleted">[vydalena]</string>
+    <string name="user_empty">Niama publičnych publikacyj</string>
+    <string name="follow">Padpisacca na hetaj pryladzie</string>
+    <string name="unfollow">Adpisacca</string>
+    <string name="search_hint">Šukać historyi</string>
+    <string name="search_empty">Ničoha nie znojdziena</string>
+    <string name="settings_blurb">Biez uvachodu. Hałasy i kamentaryi zastajucca na Hacker News. Sercy i zakladki zastajucca na hetaj pryladzie.</string>
+    <plurals name="points">
+        <item quantity="one">%1$d bal</item>
+        <item quantity="few">%1$d baly</item>
+        <item quantity="many">%1$d balaŭ</item>
+        <item quantity="other">%1$d bala</item>
+    </plurals>
+    <plurals name="comment_count">
+        <item quantity="one">%1$d kamentaryj</item>
+        <item quantity="few">%1$d kamentaryi</item>
+        <item quantity="many">%1$d kamentaryjaŭ</item>
+        <item quantity="other">%1$d kamentaryja</item>
+    </plurals>
+    <plurals name="user_karma">
+        <item quantity="one">Karma: %1$d</item>
+        <item quantity="other">Karma: %1$d</item>
+    </plurals>
+</resources>

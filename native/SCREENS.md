@@ -82,7 +82,16 @@ asks. Plurals use `<plurals>`, with each language's categories.
 | pt_BR | `values-pt-rBR` |
 | zh_Hans | `values-zh-rCN` |
 | zh_Hant | `values-zh-rTW` |
-| be_Latn | not expressible as a Compose resource qualifier; falls back to `be` |
+| be_Latn | `values-be-rXL` |
+
+Compose's resources name a folder by language and region only: a script
+(`values-b+be+Latn`) is refused at build time. So Latin Belarusian is filed
+under a region of its own, XL, one of ISO 3166's private codes: the language
+setting hands both platforms `be_XL` (`SettingsChoices.localeOf`), and the
+plugins keep it in `strings/values-be-rXL` too (the tag `be-XL`). Write the
+other languages and leave this folder to `native/tool/belarusian_latin.py`,
+which fills in what is missing from XTA's `intl_be_Latn.arb` and `values-be`
+(`tool/README.md`); `LatinBelarusianTest` fails while a string is missing.
 
 Compose's resources match a folder by the language exactly as the platform's
 `Locale` names it, and Android's still names Indonesian `in` where Java 17

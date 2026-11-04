@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Karakeep</string>
+    <string name="plugin_description">Zachoŭvajcie pasty i spasyłki na svoj server Karakeep u adzin dotyk</string>
+    <string name="settings_intro">Karakeep — heta servis zakladak, jaki vy chostujecie sami. Uviadzicie adras svajho asobnika i kluč API z «Nalady &gt; Klučy API» u Karakeep.</string>
+    <string name="server_url">Adras servera</string>
+    <string name="server_url_hint">Naprykład, karakeep.example.com</string>
+    <string name="api_key">Kluč API</string>
+    <string name="api_key_hint">Zastajecca tolki na hetaj pryladzie</string>
+    <string name="test">Pravieryć złučennie</string>
+    <string name="test_ok">Złučana z Karakeep</string>
+    <string name="not_configured">Spačatku dadajcie server Karakeep i kluč API</string>
+    <string name="error_unauthorized">Karakeep admoviŭ kluču API</string>
+    <string name="error_server_url">Pa hetym adrasie Karakeep nie znojdzieny</string>
+    <string name="error_network">Nie ŭdałosia zviazacca z serveram Karakeep</string>
+    <string name="error_generic">Karakeep nie zmoh zachavać hetuju spasyłku</string>
+    <string name="learn_more">Pra Karakeep</string>
+    <string name="save_action">Zachavać u Karakeep</string>
+    <string name="saved">Zachavana ŭ Karakeep</string>
+    <string name="already_saved">Užo ŭ Karakeep</string>
+    <string name="show">Pakazać</string>
+    <string name="hide">Schavać</string>
+    <string name="save">Zachavać</string>
+    <string name="connection">Złučennie</string>
+</resources>

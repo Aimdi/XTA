@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">Čytaju</string>
+    <string name="search">Pošuk</string>
+    <string name="settings">Nalady</string>
+    <string name="dismiss">Zakryć</string>
+    <string name="retry">Paŭtaryć</string>
+    <string name="back">Nazad</string>
+    <string name="close">Začynić</string>
+    <string name="cancel">Skasavać</string>
+    <string name="post">Dopis</string>
+
+    <string name="pinned">Zamacavana</string>
+    <string name="reposted_by">%1$s zrabiŭ(-ła) repost</string>
+    <string name="replying_to">U adkaz</string>
+    <string name="stat_reposts">Reposty</string>
+    <string name="stat_quotes">Cytaty</string>
+    <string name="stat_likes">Upadabanaje</string>
+
+    <string name="ago_seconds">%1$d s</string>
+    <string name="ago_minutes">%1$d chv</string>
+    <string name="ago_hours">%1$d hadz</string>
+
+    <string name="feed_nobody_followed">Nikoha z tych, kaho vy čytajecie, pakul niama ŭ stužcy «Čytaju». Adkryjcie profil, naprykład znajšoŭšy @imia, i padpišyciesia.</string>
+    <string name="feed_empty">Pakul niama dopisaŭ ad akaŭntaŭ, jakija vy čytajecie.</string>
+    <string name="feed_partial">Niekatoryja akaŭnty nie ŭdałosia pračytać: %1$s</string>
+
+    <string name="problem_no_account">Niama akaŭnta X. Impartujcie rezervovuju kopiju XTA z jaje akaŭntami.</string>
+    <string name="problem_rate_limited">X abmiažoŭvaje tut usie akaŭnty. Pasprabujcie znoŭ praz niekalki chvilin.</string>
+    <string name="problem_offline">Niama złučennia z X.</string>
+    <string name="problem_signing">Nie ŭdałosia naładzić podpis zapytaŭ da X. Pasprabujcie znoŭ krychu paźniej.</string>
+    <string name="problem_refused">X adchiliŭ zapyt (%1$d).</string>
+    <string name="problem_other">Pry čytanni X nešta pajšło nie tak.</string>
+
+    <string name="import_intro">XTA Native — heta XTA, napisany tolki dla Android, kab paraŭnać jaho z XTA. Jon čytaje X praz akaŭnty, jakimi vy ŭžo karystajeciesia ŭ XTA.</string>
+    <string name="import_steps">U XTA adkryjcie Nalady → Dadzienyja → Ekspartavać, uklučycie «Ekspartavać ulikovyja zapisy», ekspartujcie i vybierycie hety fajł tut.</string>
+    <string name="import_choose">Vybrać rezervovuju kopiju XTA</string>
+    <string name="import_choose_another">Vybrać inšy fajł</string>
+    <string name="import_no_accounts">U hetaj rezervovaj kopii niama akaŭntaŭ X: ekspartujcie jaje znoŭ z uklučanym «Ekspartavać ulikovyja zapisy».</string>
+    <string name="import_use">Vykarystać hetu kopiju</string>
+    <string name="import_privacy">Rezervovaja kopija źmiaščaje vašy seansy X. XTA Native trymaje ich na hetym telefonie, adpraŭlaje tolki ŭ X i nikoli ničoha tam nie publikuje, nie ŭpadabaje i ni na kaho nie padpisvajecca.</string>
+
+    <string name="settings_clear">Vydalić usio</string>
+    <string name="settings_clear_explained">Vydalaje z XTA Native seansy X i akaŭnty, jakija vy čytajecie. Sam XTA zachoŭvaje ŭsio.</string>
+    <string name="settings_clear_confirm">Vydalić</string>
+
+    <string name="card_from">Krynica: %1$s</string>
+    <string name="poll_final">Kančatkovyja vyniki</string>
+    <plurals name="poll_votes">
+        <item quantity="one">%1$d hołas</item>
+        <item quantity="few">%1$d hałasy</item>
+        <item quantity="many">%1$d hałasoŭ</item>
+        <item quantity="other">%1$d hołasu</item>
+    </plurals>
+    <plurals name="poll_days_left">
+        <item quantity="one">Zastaŭsia %1$d dzień</item>
+        <item quantity="few">Zastałosia %1$d dni</item>
+        <item quantity="many">Zastałosia %1$d dzion</item>
+        <item quantity="other">Zastałosia %1$d dnia</item>
+    </plurals>
+    <plurals name="poll_hours_left">
+        <item quantity="one">Zastałasia %1$d hadzina</item>
+        <item quantity="few">Zastałosia %1$d hadziny</item>
+        <item quantity="many">Zastałosia %1$d hadzin</item>
+        <item quantity="other">Zastałosia %1$d hadziny</item>
+    </plurals>
+    <plurals name="poll_minutes_left">
+        <item quantity="one">Zastałasia %1$d chvilina</item>
+        <item quantity="few">Zastałosia %1$d chviliny</item>
+        <item quantity="many">Zastałosia %1$d chvilin</item>
+        <item quantity="other">Zastałosia %1$d chviliny</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d novy dopis</item>
+        <item quantity="few">%1$d novyja dopisy</item>
+        <item quantity="many">%1$d novych dopisaŭ</item>
+        <item quantity="other">%1$d novaha dopisu</item>
+    </plurals>
+    <string name="follow_here_only">Vy čytajecie tolki ŭ XTA Native: X pra heta nie daviedajecca.</string>
+    <string name="follow_in_feed">U stužcy «Čytaju»</string>
+    <string name="follow_groups">Hrupy</string>
+    <string name="follow_new_group">Novaja hrupa</string>
+    <string name="follow_group_name">Nazva hrupy</string>
+    <string name="follow_create">Stvaryć</string>
+    <string name="follow_unfollow">Pierastać čytać</string>
+</resources>

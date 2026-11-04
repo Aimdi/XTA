@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RSS's text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Dadać stužku</string>
+    <string name="add_error">Nie ŭdałosia pračytać hetuju stužku</string>
+    <string name="add_hint">Ustaŭcie adras sajta ci stužki. XTA znojdzie RSS abo Atom.</string>
+    <string name="add_placeholder">https://example.com/feed</string>
+    <string name="add_to_group">Dadać u hrupu</string>
+    <string name="all">Usio</string>
+    <string name="cancel">Skasavać</string>
+    <string name="close">Začynić</string>
+    <string name="data_exported_to">Dadzienyja ekspartujucca ŭ %1$s</string>
+    <string name="empty">Padpišyciesia na stužku, kab bačyć jaje zapisy tut</string>
+    <string name="empty_filter">Niama materyjałaŭ, jakija adpaviadajuć hetym filtram</string>
+    <string name="feeds">Stužki</string>
+    <string name="follow">Sačyć</string>
+    <string name="following_empty">Pakul niama stužak</string>
+    <string name="home">Hałoŭnaja</string>
+    <string name="load_error">Nie ŭdałosia zahruzić stužki</string>
+    <string name="mark_all_read">Paznačyć usio jak pračytanaje</string>
+    <string name="more_options">Inšyja dziejanni</string>
+    <string name="opml_empty">U hetym fajle niama stužak</string>
+    <string name="opml_export">Ekspartavać padpiski ŭ OPML</string>
+    <string name="opml_export_description">Fajł, jaki mohuć impartavać inšyja čytałki stužak.</string>
+    <string name="opml_import">Impartavać padpiski z OPML</string>
+    <string name="opml_import_description">Padpisvajecca na kožnuju stužku z fajła; isnyja padpiski zastajucca jak jość.</string>
+    <string name="opml_importing">Impart: %1$d z %2$d</string>
+    <string name="opml_result">Dadadziena: %1$d · Užo ŭ padpiskach: %2$d · Nie ŭdałosia: %3$d</string>
+    <string name="partial_error">Nie ŭdałosia zahruzić krynicy: %1$d</string>
+    <string name="plugin_description">Čytajcie publičnyja stužki RSS i Atom. Niepračytanaje zastajecca na hetaj pryladzie.</string>
+    <string name="plugin_name">RSS</string>
+    <string name="reader_empty">Pakul niama čaho čytać</string>
+    <string name="reset_filters">Skinuć filtry</string>
+    <string name="retry">Paŭtaryć</string>
+    <string name="set_tag">Zadać teh</string>
+    <string name="settings">Nalady</string>
+    <string name="settings_blurb">Biez uvachodu. Čytajcie publičnyja stužki. Niepračytanaje i tehi zastajucca na hetaj pryladzie.</string>
+    <string name="tag">Teh</string>
+    <string name="tag_hint">Karotkaja metka, naprykład Naviny ci Blohi</string>
+    <string name="unfollow">Adpisacca</string>
+    <string name="unread">Niepračytanaje</string>
+</resources>

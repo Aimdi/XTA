@@ -67,7 +67,7 @@ layer is written in `networks/<id>` first, then moves with its screens into
 | catcher | crash reports kept on the device (done; a switch in settings) |
 | utils | `services` (AI client, translation, sizes, debounce, cached pages) and the platform modules |
 | ui | `ui/common` (the whole UI is now one Compose Multiplatform module for Android and Linux) |
-| l10n | `ui` resources in all 29 of XTA's languages (done for every screen so far, `SCREENS.md`) |
+| l10n | `ui` resources and the plugins' strings in all 29 of XTA's languages (done for every screen so far, `SCREENS.md`), Latin Belarusian (`values-be-rXL`) filled in by `tool/belarusian_latin.py` |
 | generated | not needed |
 
 ## Platforms

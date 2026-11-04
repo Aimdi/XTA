@@ -77,6 +77,24 @@ What it cannot check:
   are only close to Google's, so the output is for compiling against, not for
   shipping or running.
 
+## Latin Belarusian: `belarusian_latin.py`
+
+```bash
+python3 -I native/tool/belarusian_latin.py [--dry-run]
+```
+
+fills `values-be-rXL` (XTA's `be_Latn`, `SCREENS.md`) in the app's resources
+and every plugin's strings with each string of `values/` it lacks: XTA's own
+Latin where XTA has the string (the same English in `intl_en.arb` and the
+same Cyrillic in `intl_be.arb` as `values-be`), its misspelt words written
+again from the Cyrillic; otherwise `values-be`'s text in Latin letters, as
+XTA's file spells each word's family. It only adds, so run it after strings
+come into the other folders, then read what it lists: strings kept as they
+are (a name, or English in `values-be`), Russian in `values-be`, and XTA's
+Latin set aside for words its Cyrillic lacks (`XTA_OWN_WORDS` keeps one that
+is good Belarusian). Correct the result by hand where it needs it: a later run
+leaves it as it is.
+
 ## The downloadable plugins (`PLUGINS.md`)
 
 `plugincheck.sh` compiles a plugin's Compose code as Gradle would, against

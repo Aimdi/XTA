@@ -12,7 +12,7 @@ import org.w3c.dom.Element
 class HomeStringsTest {
     private val folders = listOf(
         "ar", "be", "ca", "cs", "de", "eo", "es", "et", "eu", "fr", "hi", "id", "it", "ja", "ko", "nl", "pl", "pt", "ro", "ru",
-        "tr", "uk", "vi", "nb-rNO", "pt-rBR", "zh-rCN", "zh-rTW",
+        "tr", "uk", "vi", "nb-rNO", "pt-rBR", "zh-rCN", "zh-rTW", "be-rXL",
     )
 
     private val resources: File by lazy {

@@ -28,7 +28,7 @@ It keeps its data in `~/.local/share/xta-native`, a folder only you can open. Vi
 - Profiles with their tabs and filters, notes on accounts, follows and groups kept on the device
 - Search with its tabs and advanced search; Discover with trends; communities, lists and antennas
 - Saved posts with folders, likes on this device, notes, the archive, the offline collection and downloads
-- Every section of XTA's settings, its backup export and import, WebDAV sync, and 28 languages
+- Every section of XTA's settings, its backup export and import, WebDAV sync, and 29 languages
 - Links open in the app's own browser on Android, or in the browser you pick; x.com and the networks' links open in the app
 
 Still to come: downloaded voices speaking (they download but do not speak yet) and lock-screen media controls.

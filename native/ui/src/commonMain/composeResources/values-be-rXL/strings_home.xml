@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
+     Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="home_for_you">Dla vas</string>
+    <string name="home_open_menu">Adkryć mieniu navihacyi</string>
+    <string name="home_add_timeline">Dadać stužku</string>
+    <string name="home_unread">Niepračytanaje</string>
+    <string name="home_refresh">Abnavić</string>
+    <string name="home_open_group">Adkryć hrupu</string>
+    <string name="home_more_options">Inšyja parametry</string>
+    <string name="home_pin_to_bar">Zamacavać na vierchniaj paneli</string>
+
+    <string name="home_strip_title">Stužki plahinaŭ</string>
+    <string name="home_strip_intro">Zamacujcie ŭstalavanyja plahiny pobač z «Dla vas» u zručnym paradku. Inšyja možna ŭstalavać z kramy plahinaŭ.</string>
+    <string name="home_strip_pinned">Na hetaj stužcy</string>
+    <string name="home_strip_available">Možna dadać</string>
+    <string name="home_strip_empty">Pakul niama što zamacavać. Adkryjcie kramu: Reddit, Pixiv, Mastodon i inš.</string>
+    <string name="home_strip_remove">Prybrać sa stužki</string>
+    <string name="home_strip_up">Pieramiascić uvierch</string>
+    <string name="home_strip_down">Pieramiascić uniz</string>
+    <string name="home_plugin_store">Krama plahinaŭ</string>
+
+    <string name="home_subscriptions">Padpiski</string>
+    <string name="home_discover">Ahlad</string>
+    <string name="home_saved">Zachavanaje</string>
+    <string name="home_downloads">Spampoŭki</string>
+    <string name="home_antennas">Anteny</string>
+    <string name="home_deck">Kałonki</string>
+    <string name="home_deck_empty">Zamacujcie hrupy, kab bačyć ich pobač na šyrokim ekranie</string>
+    <string name="home_groups">Hrupy</string>
+    <string name="home_no_groups">Pakul niama hrup</string>
+    <string name="home_no_results">Niama vyniku</string>
+    <plurals name="home_group_members">
+        <item quantity="one">%1$d padpiska</item>
+        <item quantity="few">%1$d padpiski</item>
+        <item quantity="many">%1$d padpisak</item>
+        <item quantity="other">%1$d padpiski</item>
+    </plurals>
+
+    <string name="home_feed_accounts">Akaŭnty hałoŭnaj stužki</string>
+    <string name="home_filter_accounts">Akaunty</string>
+    <string name="home_filter_accounts_explained">Adkliučajcie zapasnyja akaŭnty, jakija trymajecie tolki dziela limitaŭ. «Dla vas» abjadnoŭvaje stužki ŭklučanych akaŭntaŭ; «Čytaju» dalej vykarystoŭvaje lakalnyja padpiski, ale pry zahruzcy prapuskaje adklučanyja. Kamentary i profili pry patrebie mohuć vykarystać luby akaŭnt.</string>
+    <string name="home_filter_groups_explained">Vyklučycie hrupu, kab schavać jaje ŭdzielnikaŭ z «Čytaju». Układka hrupy zastajecca. Ich dopisy taksama znikajuć z «Dla vas».</string>
+    <string name="home_filter_only_hint">Doŭha nacisnicie na punkt, kab pakinuć uklučanym tolki jaho.</string>
+    <string name="home_filter_keep_one">Choć adzin ulikovy zapis musić zastacca ŭklučanym</string>
+    <string name="home_filter_count">%1$d / %2$d</string>
+    <string name="home_filter_all">Usio</string>
+    <string name="home_filter_none">Ničoha</string>
+    <string name="home_filter_reset">Skinuć filtry</string>
+    <string name="home_filter_apply">Užyć</string>
+
+    <string name="home_for_you_empty">Nie atrymlivajecca zahruzić dopisy stužki</string>
+    <string name="home_for_you_no_account">Kab zahruzić «Dla vas», impartujcie rezervovuju kopiju XTA z jaje akaŭntami.</string>
+    <string name="home_import">Impartavać rezervovuju kopiju XTA</string>
+    <string name="home_zen_end">Pakul heta ŭsio</string>
+    <string name="home_zen_more">Usio roŭna zahruzić jašče</string>
+
+    <string name="home_home">Hałoŭnaja</string>
+    <string name="home_networks">Sietki</string>
+    <string name="home_networks_recent">Niadaŭnija</string>
+    <string name="home_networks_all">Usie sietki</string>
+    <string name="home_posts">Tvity</string>
+    <string name="home_media">Medyja</string>
+</resources>

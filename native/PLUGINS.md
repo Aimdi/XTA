@@ -377,6 +377,7 @@ native/plugins/<id>/
   plugin.json             {"id": "<id>", "version": "1.0.0", "entry": "<class>", "category": "social", "private": false}
   strings/values/strings.xml       English: plugin_name, plugin_description, the screens' text
   strings/values-de/strings.xml    each other language
+  strings/values-be-rXL/strings.xml  Latin Belarusian, filled in by tool/belarusian_latin.py (SCREENS.md)
   src/commonMain/kotlin/com/aimdi/xtanative/networks/<id>/   the reading layer
   src/commonMain/kotlin/com/aimdi/xtanative/plugins/<id>/    the screens and the entry class
   src/desktopTest/kotlin/...      tests (JUnit 5, plain Kotlin), resources in src/desktopTest/resources/<id>/

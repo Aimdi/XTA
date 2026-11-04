@@ -175,16 +175,24 @@ object SettingsChoices {
     fun languageTag(code: String?): String? = code?.takeIf { it.isNotBlank() && it != SYSTEM_LANGUAGE }?.replace('_', '-')
 
     /**
+     * The region Latin Belarusian is filed under. Compose's resources pick a
+     * folder by language and region and cannot name a script
+     * (values-b+be+Latn), so the app's and the plugins' Latin Belarusian is in
+     * values-be-rXL, XL being one of ISO 3166's private codes (SCREENS.md).
+     */
+    const val LATIN_BELARUSIAN_REGION = "XL"
+
+    /**
      * The language and region whose resources [code] reads, or null for the
-     * system's: the scripts of Chinese are kept under China and Taiwan, and
-     * Latin Belarusian falls back to Belarusian (SCREENS.md).
+     * system's: the scripts of Chinese are kept under China and Taiwan, Latin
+     * Belarusian under [LATIN_BELARUSIAN_REGION].
      */
     fun localeOf(code: String?): Pair<String, String>? {
         val tag = code?.takeIf { it.isNotBlank() && it != SYSTEM_LANGUAGE } ?: return null
         return when (tag) {
             "zh_Hans" -> "zh" to "CN"
             "zh_Hant" -> "zh" to "TW"
-            "be_Latn" -> "be" to ""
+            "be_Latn" -> "be" to LATIN_BELARUSIAN_REGION
             else -> tag.substringBefore('_') to tag.substringAfter('_', "")
         }
     }

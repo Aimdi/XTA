@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Web sources' text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Dadać krynicu</string>
+    <string name="add_link">Dadać pa spasyłcy</string>
+    <string name="back">Nazad</string>
+    <string name="cancel">Skasavać</string>
+    <plurals name="comments">
+        <item quantity="one">%1$d kamentaryj</item>
+        <item quantity="few">%1$d kamentaryi</item>
+        <item quantity="many">%1$d kamentaryjaŭ</item>
+        <item quantity="other">%1$d kamentaryja</item>
+    </plurals>
+    <string name="consent_from">Z %1$s</string>
+    <string name="consent_read_only">Jana moža tolki čytać publičnyja staronki. Jana nie moža karystacca vašymi ŭlikovymi zapisami abo nešta publikavać.</string>
+    <string name="consent_sites">Jana budzie čytać staronki z hetych sajtaŭ:</string>
+    <string name="consent_title">Dadać %1$s?</string>
+    <string name="discussion">Abmierkavannie</string>
+    <string name="empty">Krynic pakul niama. Dadajcie krynicu z apublikavanaha spisa abo pa spasyłcy.</string>
+    <string name="failure_blocked">Hetaj staronki niama na sajtach sa spisa krynicy.</string>
+    <string name="failure_status">Sajt adkazaŭ pamyłkaj %1$s.</string>
+    <string name="failure_too_large">Hetaja staronka zanadta vialikaja, kab jaje pračytać.</string>
+    <string name="failure_unreachable">Nie ŭdałosia zviazacca z sajtam.</string>
+    <string name="follow">Sačyć</string>
+    <string name="install">Dadać</string>
+    <string name="installed">Dadadziena</string>
+    <string name="link">Spasyłka na krynicu</string>
+    <string name="link_placeholder">https://example.org/source.json</string>
+    <string name="list_empty">Tut pakul ničoha niama.</string>
+    <plurals name="lists">
+        <item quantity="one">%1$d spis</item>
+        <item quantity="few">%1$d spisy</item>
+        <item quantity="many">%1$d spisaŭ</item>
+        <item quantity="other">%1$d spisa</item>
+    </plurals>
+    <string name="more_options">Inšyja dziejanni</string>
+    <string name="ok">Dobra</string>
+    <string name="open_in_browser">Adčynić u braŭzery</string>
+    <string name="plugin_description">Dadavajcie prostyja sajty z apublikavanaha spisa abo pa spasyłcy. Krynica čytaje tolki publičnyja staronki i pytajecca, pierš čym čytać novy sajt.</string>
+    <string name="plugin_name">Veb-krynicy</string>
+    <plurals name="points">
+        <item quantity="one">%1$d bal</item>
+        <item quantity="few">%1$d baly</item>
+        <item quantity="many">%1$d balaŭ</item>
+        <item quantity="other">%1$d bala</item>
+    </plurals>
+    <string name="published">Apublikavanyja krynicy</string>
+    <string name="published_unreachable">Nie ŭdałosia zahruzić apublikavany spis.</string>
+    <string name="reading">Čytajem krynicu…</string>
+    <string name="refused_detail">Dzie: %1$s</string>
+    <string name="refused_insecure">Hetaja krynica čytała b sajt, jakoha niama ŭ jaje spisie, abo biez HTTPS.</string>
+    <string name="refused_invalid">U fajle hetaj krynicy pamyłka.</string>
+    <string name="refused_newer">Hetaj krynicy patrebna naviejšaja viersija XTA.</string>
+    <string name="refused_too_large">Hetaja krynica vychodzić za miežy taho, što dazvalaje XTA.</string>
+    <string name="refused_unreadable">Heta nie fajł veb-krynicy.</string>
+    <string name="remove">Vydalić krynicu</string>
+    <string name="remove_confirm">Vydalić %1$s? Spisy, za jakimi vy sočycie ŭ joj, taksama buduć vydaleny.</string>
+    <string name="retry">Paŭtaryć</string>
+    <string name="review_update">Prahladzieć abnaŭlennie</string>
+    <string name="search_in">Pošuk u %1$s</string>
+    <string name="unfollow">Adpisacca</string>
+    <string name="unreachable">Nie ŭdałosia pračytać fajł krynicy. Praviercie spasyłku i padkliučennie.</string>
+    <string name="update_title">Abnavić %1$s?</string>
+</resources>
