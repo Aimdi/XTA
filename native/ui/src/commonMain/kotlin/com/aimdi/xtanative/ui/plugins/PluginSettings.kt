@@ -3,6 +3,7 @@ package com.aimdi.xtanative.ui.plugins
 import com.aimdi.xtanative.store.settings.PrefValue
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.XtaPrefs
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.flow.StateFlow
 
 /**
@@ -21,6 +22,19 @@ class PluginSettings(
 ) {
     /** Applies [change] to the app's settings, keeping only what it does to this plugin's keys. */
     suspend fun update(change: (Settings) -> Settings) = write { current -> ownChanges(current, change(current), prefixOf(id), keysOf(id)) }
+
+    /** [update], answering whether it was written: one that fails (the disk would not keep it) leaves them as they were. */
+    suspend fun tryUpdate(change: (Settings) -> Settings): Boolean = try {
+        update(change)
+        true
+    } catch (e: CancellationException) {
+        throw e
+    } catch (_: Exception) {
+        false
+    }
+
+    /** The settings now: the defaults until the app has read them. */
+    fun current(): Settings = state.value ?: Settings()
 
     /** Whether [settings] have the plugin's followed accounts in Home's Following and For you: its "show in the home timeline" switch. */
     fun inHomeFeed(settings: Settings? = state.value): Boolean = inHomeFeed(settings, id)

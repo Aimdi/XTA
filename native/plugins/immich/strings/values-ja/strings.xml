@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Immich</string>
+    <string name="plugin_description">選んだブックマークフォルダーのメディアを自分の Immich サーバーへ送信</string>
+    <string name="settings_intro">Immich サーバーのアドレスと、アカウント設定 → API キー で作成した API キーを入力します。これを有効にしたブックマークフォルダーは、写真と動画をここへ送ります。</string>
+    <string name="server_url">サーバーのアドレス</string>
+    <string name="server_url_hint">例: 192.168.1.10:2283 または https://photos.example.org</string>
+    <string name="api_key">API キー</string>
+    <string name="api_key_hint">Immich → アカウント設定 → API キー</string>
+    <string name="test">接続をテスト</string>
+    <string name="test_ok">Immich サーバーに接続できました</string>
+    <string name="not_configured">先にアドレスと API キーを入力してください</string>
+    <string name="error_unauthorized">Immich が API キーを受け付けませんでした</string>
+    <string name="error_server_url">そのアドレスでは Immich サーバーが応答しません</string>
+    <string name="error_network">Immich サーバーに接続できません</string>
+    <string name="error_generic">Immich サーバーがエラーを返しました</string>
+    <string name="options">アップロード設定</string>
+    <string name="album_per_folder">フォルダーごとにアルバム</string>
+    <string name="album_per_folder_description">アップロードしたものは、ブックマークフォルダーと同じ名前の Immich アルバムに入ります。なければ作成されます</string>
+    <string name="include_videos">動画もアップロード</string>
+    <string name="include_videos_description">動画や GIF は写真よりずっと大きくなります。オフのときは写真だけを送ります。</string>
+    <string name="folder_hint">アップロードは、ブックマークでフォルダーを作成または編集するときにフォルダーごとに有効にします。</string>
+    <string name="learn_more">Immich について</string>
+    <string name="auto_upload">メディアを Immich にアップロード</string>
+    <string name="auto_upload_description">このフォルダーに保存した投稿の写真と動画を Immich サーバーへ送ります</string>
+    <string name="uploading">Immich にアップロード中…</string>
+    <string name="upload_done">Immich に送信しました</string>
+    <string name="upload_failed">Immich にアップロードできませんでした</string>
+    <string name="show">表示</string>
+    <string name="hide">非表示</string>
+    <string name="save">保存</string>
+    <string name="connection">接続</string>
+</resources>

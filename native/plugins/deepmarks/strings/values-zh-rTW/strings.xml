@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Deepmarks</string>
+    <string name="plugin_description">把貼文儲存到以 Nostr 為基礎的書籤服務 Deepmarks</string>
+    <string name="settings_intro">Deepmarks 以已簽章的 Nostr 事件儲存書籤。簽章金鑰不會離開本裝置：貼文在本機簽章，只有完成的事件會送出。</string>
+    <string name="lifetime_notice">使用 API 需要 Deepmarks 終身會員。</string>
+    <string name="api_key">API 金鑰</string>
+    <string name="api_key_hint">以 dmk_live_ 開頭，可在 Deepmarks 設定的「api access」取得</string>
+    <string name="identity">簽章身分</string>
+    <string name="secret_key">簽章金鑰</string>
+    <string name="secret_key_hint">你的 nsec 僅儲存在本裝置。它為每個書籤簽章，絕不會送往 Deepmarks。</string>
+    <string name="signing_as">以 %1$s 簽章</string>
+    <string name="api_base">伺服器位址</string>
+    <string name="test">測試連線</string>
+    <string name="test_ok">已連線到 Deepmarks</string>
+    <string name="test_ok_unverified">金鑰已通過，但帳戶尚無公開書籤可核對簽章金鑰</string>
+    <string name="not_configured">請先填寫 Deepmarks 的 API 金鑰與簽章金鑰</string>
+    <string name="error_secret_key">這不是有效的 nsec，也不是 64 位十六進位金鑰</string>
+    <string name="error_unauthorized">Deepmarks 拒絕了該 API 金鑰</string>
+    <string name="error_lifetime">Deepmarks 的 API 僅限終身會員</string>
+    <string name="error_key_mismatch">你的簽章金鑰屬於另一個 Deepmarks 帳戶，與 API 金鑰不符</string>
+    <string name="error_rejected">Deepmarks 拒絕了這個書籤</string>
+    <string name="error_rate_limited">請求過多，請稍後再試</string>
+    <string name="error_server">該位址上沒有 Deepmarks API 回應</string>
+    <string name="error_network">無法連線到 Deepmarks</string>
+    <string name="learn_more">關於 Deepmarks</string>
+    <string name="save_action">儲存到 Deepmarks</string>
+    <string name="saved">已儲存到 Deepmarks</string>
+    <string name="saved_no_relay">已送出到 Deepmarks，但尚無中繼接收</string>
+    <string name="show">顯示</string>
+    <string name="hide">隱藏</string>
+    <string name="save">儲存</string>
+    <string name="connection">連線</string>
+</resources>

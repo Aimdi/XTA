@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Karakeep</string>
+    <string name="plugin_description">Gönderileri ve bağlantıları tek dokunuşla kendi Karakeep sunucunuza kaydedin</string>
+    <string name="settings_intro">Karakeep, kendi barındırdığınız bir yer imi hizmetidir. Örneğinizin adresini ve Karakeep’teki «Ayarlar &gt; API Anahtarları» bölümünden bir anahtar girin.</string>
+    <string name="server_url">Sunucu adresi</string>
+    <string name="server_url_hint">Örneğin karakeep.example.com</string>
+    <string name="api_key">API anahtarı</string>
+    <string name="api_key_hint">Yalnızca bu cihazda kalır</string>
+    <string name="test">Bağlantıyı sına</string>
+    <string name="test_ok">Karakeep’e bağlandı</string>
+    <string name="not_configured">Önce Karakeep sunucunuzu ve API anahtarını ekleyin</string>
+    <string name="error_unauthorized">Karakeep API anahtarını reddetti</string>
+    <string name="error_server_url">Bu adreste Karakeep bulunamadı</string>
+    <string name="error_network">Karakeep sunucunuza ulaşılamadı</string>
+    <string name="error_generic">Karakeep bu bağlantıyı kaydedemedi</string>
+    <string name="learn_more">Karakeep hakkında</string>
+    <string name="save_action">Karakeep’e kaydet</string>
+    <string name="saved">Karakeep’e kaydedildi</string>
+    <string name="already_saved">Karakeep’te zaten var</string>
+    <string name="show">Göster</string>
+    <string name="hide">Gizle</string>
+    <string name="save">Kaydet</string>
+    <string name="connection">Bağlantı</string>
+</resources>

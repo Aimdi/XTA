@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Immich</string>
+    <string name="plugin_description">Posílat média vybraných složek záložek na vlastní server Immich</string>
+    <string name="settings_intro">Zadejte adresu svého serveru Immich a klíč API z Nastavení účtu → Klíče API. Složky záložek, u kterých to zapnete, sem budou posílat své fotky a videa.</string>
+    <string name="server_url">Adresa serveru</string>
+    <string name="server_url_hint">Například 192.168.1.10:2283 nebo https://fotky.example.org</string>
+    <string name="api_key">Klíč API</string>
+    <string name="api_key_hint">Immich → Nastavení účtu → Klíče API</string>
+    <string name="test">Vyzkoušet připojení</string>
+    <string name="test_ok">Připojeno k vašemu serveru Immich</string>
+    <string name="not_configured">Zadejte nejdřív adresu a klíč API</string>
+    <string name="error_unauthorized">Immich klíč API odmítl</string>
+    <string name="error_server_url">Na této adrese žádný server Immich neodpovídá</string>
+    <string name="error_network">Váš server Immich není dostupný</string>
+    <string name="error_generic">Váš server Immich vrátil chybu</string>
+    <string name="options">Možnosti nahrávání</string>
+    <string name="album_per_folder">Album pro každou složku</string>
+    <string name="album_per_folder_description">Nahrané soubory jdou do albumu Immich pojmenovaného podle složky záložek, které se vytvoří, pokud ještě není</string>
+    <string name="include_videos">Nahrávat i videa</string>
+    <string name="include_videos_description">Videa a GIFy jsou mnohem větší než fotky. Když je tohle vypnuté, posílají se jen fotky.</string>
+    <string name="folder_hint">Nahrávání zapnete u jednotlivé složky, když ji vytváříte nebo upravujete, v Záložkách.</string>
+    <string name="learn_more">O Immichu</string>
+    <string name="auto_upload">Nahrávat média do Immichu</string>
+    <string name="auto_upload_description">Posílat fotky a videa příspěvků uložených sem na váš server Immich</string>
+    <string name="uploading">Nahrávání do Immichu…</string>
+    <string name="upload_done">Odesláno do Immichu</string>
+    <string name="upload_failed">Nahrání do Immichu se nepovedlo</string>
+    <string name="show">Zobrazit</string>
+    <string name="hide">Skrýt</string>
+    <string name="save">Uložit</string>
+    <string name="connection">Připojení</string>
+</resources>

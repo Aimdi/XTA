@@ -115,8 +115,10 @@ fun SavedFoldersScreen(onBack: () -> Unit) {
     }
     if (creating || editing != null) {
         val folder = editing
-        FolderDialog(folder, onDismiss = { creating = false; editing = null }) { name, autoDownload ->
-            graph.keep { if (folder == null) graph.saved.createFolder(name, autoDownload) else graph.saved.updateFolder(folder.id, name, autoDownload) }
+        FolderDialog(folder, onDismiss = { creating = false; editing = null }) { name, autoDownload, upload ->
+            graph.keep {
+                if (folder == null) graph.saved.createFolder(name, autoDownload, upload ?: false) else graph.saved.updateFolder(folder.id, name, autoDownload, upload)
+            }
             creating = false
             editing = null
         }

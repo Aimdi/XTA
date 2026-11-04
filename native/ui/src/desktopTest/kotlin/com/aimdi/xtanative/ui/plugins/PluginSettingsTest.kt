@@ -2,11 +2,15 @@ package com.aimdi.xtanative.ui.plugins
 
 import com.aimdi.xtanative.store.settings.BlueskyPrefs
 import com.aimdi.xtanative.store.settings.GeneralPrefs
+import com.aimdi.xtanative.store.settings.ImmichPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.StocksPrefs
 import com.aimdi.xtanative.store.settings.ThreadsPrefs
+import java.io.IOException
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
 
@@ -43,6 +47,27 @@ class PluginSettingsTest {
         assertEquals(listOf("ETH=stock"), now[StocksPrefs.tickerInstruments])
         assertEquals(true, now[GeneralPrefs.cleanLinks], "the app's own settings stay as they were")
         assertEquals(emptySet(), PluginSettings.keysOf("bluesky"), "Bluesky keeps everything under its prefix")
+    }
+
+    @Test
+    fun aWriteTheDiskRefusesSaysSoAndLeavesTheSettings(): Unit = runBlocking {
+        val app = MutableStateFlow<Settings?>(start)
+        val written = PluginSettings("immich", app) { change -> app.value = change(app.value!!) }
+        assertTrue(written.tryUpdate { it.with(ImmichPrefs.serverUrl, "photos.example.org") })
+        assertEquals("photos.example.org", app.value!![ImmichPrefs.serverUrl])
+
+        val refused = PluginSettings("immich", app) { throw IOException("disk full") }
+        assertFalse(refused.tryUpdate { it.with(ImmichPrefs.serverUrl, "other.example.org") })
+        assertEquals("photos.example.org", refused.current()[ImmichPrefs.serverUrl])
+    }
+
+    @Test
+    fun theSettingsNowAreTheDefaultsUntilTheAppHasReadThem() {
+        val app = MutableStateFlow<Settings?>(null)
+        val settings = PluginSettings("karakeep", app) { change -> app.value = change(app.value ?: Settings()) }
+        assertEquals(Settings(), settings.current())
+        app.value = start
+        assertEquals(start, settings.current())
     }
 
     @Test

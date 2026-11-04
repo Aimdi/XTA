@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Karakeep</string>
+    <string name="plugin_description">Bewaar berichten en links met één tik op je eigen Karakeep-server</string>
+    <string name="settings_intro">Karakeep is een zelfgehoste bookmarkdienst. Vul het adres van je instantie in en een API-sleutel uit ‘Instellingen &gt; API-sleutels’ in Karakeep.</string>
+    <string name="server_url">Serveradres</string>
+    <string name="server_url_hint">Bijvoorbeeld karakeep.example.com</string>
+    <string name="api_key">API-sleutel</string>
+    <string name="api_key_hint">Blijft alleen op dit apparaat</string>
+    <string name="test">Verbinding testen</string>
+    <string name="test_ok">Verbonden met Karakeep</string>
+    <string name="not_configured">Vul eerst je Karakeep-server en API-sleutel in</string>
+    <string name="error_unauthorized">Karakeep weigerde de API-sleutel</string>
+    <string name="error_server_url">Geen Karakeep gevonden op dat adres</string>
+    <string name="error_network">Kan je Karakeep-server niet bereiken</string>
+    <string name="error_generic">Karakeep kon deze link niet opslaan</string>
+    <string name="learn_more">Over Karakeep</string>
+    <string name="save_action">Opslaan in Karakeep</string>
+    <string name="saved">Opgeslagen in Karakeep</string>
+    <string name="already_saved">Staat al in Karakeep</string>
+    <string name="show">Tonen</string>
+    <string name="hide">Verbergen</string>
+    <string name="save">Veilig</string>
+    <string name="connection">Verbinding</string>
+</resources>

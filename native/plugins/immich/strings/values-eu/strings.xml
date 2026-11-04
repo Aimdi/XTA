@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Immich</string>
+    <string name="plugin_description">Bidali aukeratutako laster-marken karpeten multimedia zure Immich zerbitzarira</string>
+    <string name="settings_intro">Sartu zure Immich zerbitzariaren helbidea eta API gako bat, Kontuaren ezarpenak → API gakoak atalean sortuta. Hau aktibatzen duzun laster-marken karpetek beren argazkiak eta bideoak hona bidaliko dituzte.</string>
+    <string name="server_url">Zerbitzariaren helbidea</string>
+    <string name="server_url_hint">Adibidez 192.168.1.10:2283 edo https://argazkiak.example.org</string>
+    <string name="api_key">API gakoa</string>
+    <string name="api_key_hint">Immich → Kontuaren ezarpenak → API gakoak</string>
+    <string name="test">Probatu konexioa</string>
+    <string name="test_ok">Zure Immich zerbitzariarekin konektatuta</string>
+    <string name="not_configured">Gehitu lehenik helbidea eta API gakoa</string>
+    <string name="error_unauthorized">Immich-ek API gakoa ez du onartu</string>
+    <string name="error_server_url">Helbide horretan ez du Immich zerbitzari batek erantzun</string>
+    <string name="error_network">Ezin izan da zure Immich zerbitzarira iritsi</string>
+    <string name="error_generic">Zure Immich zerbitzariak errore bat eman du</string>
+    <string name="options">Igotzeko aukerak</string>
+    <string name="album_per_folder">Album bat karpeta bakoitzeko</string>
+    <string name="album_per_folder_description">Igotakoa laster-marken karpetaren izena duen Immich album batera joango da, oraindik ez badago sortuta</string>
+    <string name="include_videos">Igo bideoak ere</string>
+    <string name="include_videos_description">Bideoak eta GIFak argazkiak baino askoz handiagoak dira. Hau itzalita, argazkiak baino ez dira bidaltzen.</string>
+    <string name="folder_hint">Igoera karpetaz karpeta aktibatzen da, sortzean edo editatzean, Laster-marketan.</string>
+    <string name="learn_more">Immich-i buruz</string>
+    <string name="auto_upload">Igo multimedia Immich-era</string>
+    <string name="auto_upload_description">Bidali hemen gordetako bidalketen argazkiak eta bideoak zure Immich zerbitzarira</string>
+    <string name="uploading">Immich-era igotzen…</string>
+    <string name="upload_done">Immich-era bidalita</string>
+    <string name="upload_failed">Ezin izan da Immich-era igo</string>
+    <string name="show">Erakutsi</string>
+    <string name="hide">Ezkutatu</string>
+    <string name="save">Gorde</string>
+    <string name="connection">Konexioa</string>
+</resources>

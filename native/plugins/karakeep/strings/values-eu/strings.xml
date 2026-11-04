@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Karakeep</string>
+    <string name="plugin_description">Gorde argitalpenak eta loturak zure Karakeep zerbitzarian ukitu bakar batez</string>
+    <string name="settings_intro">Karakeep zuk zeuk ostatatzen duzun laster-marken zerbitzua da. Sartu zure instantziaren helbidea eta Karakeep-eko «Ezarpenak &gt; API gakoak» ataleko gako bat.</string>
+    <string name="server_url">Zerbitzariaren helbidea</string>
+    <string name="server_url_hint">Adibidez karakeep.example.com</string>
+    <string name="api_key">API gakoa</string>
+    <string name="api_key_hint">Gailu honetan bakarrik gordetzen da</string>
+    <string name="test">Probatu konexioa</string>
+    <string name="test_ok">Karakeep-era konektatuta</string>
+    <string name="not_configured">Gehitu lehenik zure Karakeep zerbitzaria eta API gakoa</string>
+    <string name="error_unauthorized">Karakeep-ek API gakoa ez du onartu</string>
+    <string name="error_server_url">Helbide horretan ez da Karakeep aurkitu</string>
+    <string name="error_network">Ezin izan da zure Karakeep zerbitzarira iritsi</string>
+    <string name="error_generic">Karakeep-ek ez du lotura hau gorde ahal izan</string>
+    <string name="learn_more">Karakeep-i buruz</string>
+    <string name="save_action">Gorde Karakeep-en</string>
+    <string name="saved">Karakeep-en gordeta</string>
+    <string name="already_saved">Dagoeneko Karakeep-en dago</string>
+    <string name="show">Erakutsi</string>
+    <string name="hide">Ezkutatu</string>
+    <string name="save">Gorde</string>
+    <string name="connection">Konexioa</string>
+</resources>

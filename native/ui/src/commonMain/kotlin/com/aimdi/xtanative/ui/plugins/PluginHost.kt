@@ -155,6 +155,20 @@ interface PluginHost {
 
     /** The app's Downloads screen: what was saved, what is under way, and retries. */
     fun openDownloads()
+
+    /**
+     * [text] said at the foot of the window over whatever screen is up, as
+     * XTA's snack bars and the app's own notices are (how a save to the
+     * reader's own server went); the newest takes the place of the one shown.
+     * A host with no window to say it in says nothing.
+     */
+    fun tell(text: String) {}
+
+    /**
+     * [text] said while [work] runs, as XTA's working snack bar ("Uploading…"),
+     * and taken away once it ends: what [tell] says next takes its place.
+     */
+    suspend fun <T> working(text: String, work: suspend () -> T): T = work()
 }
 
 /** What [PluginHost.savedPosts] holds where a host keeps no Saved: nothing. */

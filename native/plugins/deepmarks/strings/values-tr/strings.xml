@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Deepmarks</string>
+    <string name="plugin_description">Gönderileri Nostr tabanlı yer imi servisi Deepmarks’a kaydedin</string>
+    <string name="settings_intro">Deepmarks yer imlerini imzalı Nostr olayları olarak saklar. İmzalama anahtarınız bu cihazdan hiç çıkmaz: gönderi burada imzalanır ve yalnızca tamamlanmış olay iletilir.</string>
+    <string name="lifetime_notice">API erişimi için Deepmarks yaşam boyu üyelik gerekir.</string>
+    <string name="api_key">API anahtarı</string>
+    <string name="api_key_hint">dmk_live_ ile başlar, Deepmarks ayarlarındaki «api access» bölümünden</string>
+    <string name="identity">İmza kimliği</string>
+    <string name="secret_key">İmzalama anahtarı</string>
+    <string name="secret_key_hint">nsec’iniz, yalnızca bu cihazda kalır. Her yer imini imzalar ve Deepmarks’a hiç gönderilmez.</string>
+    <string name="signing_as">%1$s olarak imzalanıyor</string>
+    <string name="api_base">Sunucu adresi</string>
+    <string name="test">Bağlantıyı sına</string>
+    <string name="test_ok">Deepmarks’a bağlandı</string>
+    <string name="test_ok_unverified">Anahtar kabul edildi, ancak hesabın imzalama anahtarını karşılaştıracak herkese açık yer imi yok</string>
+    <string name="not_configured">Önce Deepmarks API anahtarını ve imzalama anahtarını girin</string>
+    <string name="error_secret_key">Bu geçerli bir nsec veya 64 karakterlik onaltılık anahtar değil</string>
+    <string name="error_unauthorized">Deepmarks API anahtarını reddetti</string>
+    <string name="error_lifetime">Deepmarks API’si yalnızca yaşam boyu üyelere açıktır</string>
+    <string name="error_key_mismatch">İmzalama anahtarınız, API anahtarından farklı bir Deepmarks hesabına ait</string>
+    <string name="error_rejected">Deepmarks bu yer imini reddetti</string>
+    <string name="error_rate_limited">Çok fazla istek, biraz sonra tekrar deneyin</string>
+    <string name="error_server">Bu adreste bir Deepmarks API’si yanıt vermedi</string>
+    <string name="error_network">Deepmarks’a ulaşılamadı</string>
+    <string name="learn_more">Deepmarks hakkında</string>
+    <string name="save_action">Deepmarks’a kaydet</string>
+    <string name="saved">Deepmarks’a kaydedildi</string>
+    <string name="saved_no_relay">Deepmarks’a gönderildi, ancak henüz hiçbir relay kabul etmedi</string>
+    <string name="show">Göster</string>
+    <string name="hide">Gizle</string>
+    <string name="save">Kaydet</string>
+    <string name="connection">Bağlantı</string>
+</resources>

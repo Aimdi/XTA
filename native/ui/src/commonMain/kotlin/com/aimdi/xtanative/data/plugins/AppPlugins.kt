@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.data.plugins
 
 import androidx.compose.runtime.Stable
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.core.x.XClient
 import com.aimdi.xtanative.core.x.http.OkHttpXHttp
@@ -16,6 +17,7 @@ import com.aimdi.xtanative.store.StoreDir
 import com.aimdi.xtanative.store.offline.OfflineStore
 import com.aimdi.xtanative.store.reading.ReadingAppearanceStore
 import com.aimdi.xtanative.store.reading.ReadingJournal
+import com.aimdi.xtanative.store.saved.SavedFolder
 import com.aimdi.xtanative.store.settings.HomePrefs
 import com.aimdi.xtanative.store.settings.SettingsStore
 import com.aimdi.xtanative.ui.downloads.Downloading
@@ -27,12 +29,18 @@ import com.aimdi.xtanative.ui.plugins.MediaItem
 import com.aimdi.xtanative.ui.plugins.NetworkPost
 import com.aimdi.xtanative.ui.plugins.OLDEST_PLUGIN_API
 import com.aimdi.xtanative.ui.plugins.PLUGIN_API_VERSION
+import com.aimdi.xtanative.ui.plugins.PluginFolderOption
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginPostArchive
 import com.aimdi.xtanative.ui.plugins.PluginPostMenu
 import com.aimdi.xtanative.ui.plugins.PluginSavedPost
 import com.aimdi.xtanative.ui.plugins.PluginSettings
+import com.aimdi.xtanative.ui.plugins.PluginSharedPost
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
+import com.aimdi.xtanative.ui.saved.FolderFilings
+import com.aimdi.xtanative.ui.saved.KeepNotice
+import com.aimdi.xtanative.ui.saved.KeepNotices
+import com.aimdi.xtanative.ui.saved.Keepable
 import com.aimdi.xtanative.ui.saved.Keeping
 import com.aimdi.xtanative.ui.subscriptions.GroupActions
 import java.io.File
@@ -64,6 +72,9 @@ class RunningPlugin internal constructor(val plugin: XtaPlugin, val installed: I
 /** What a plugin takes on the device: the [items] it keeps, the bytes of its folder and of its code. */
 data class PluginUse(val items: Int, val dataBytes: Long, val codeBytes: Long)
 
+/** A running plugin's entry in a post sheet, in the reader's language: [run] once the sheet has closed. */
+class SheetEntry(val icon: ImageVector, val label: String, val run: () -> Unit)
+
 /**
  * The app's downloadable plugins (PLUGINS.md), beside [graph], made by the
  * shell with how its platform checks and loads a plugin ([platform]) and
@@ -73,6 +84,9 @@ data class PluginUse(val items: Int, val dataBytes: Long, val codeBytes: Long)
  * install, cast to [XtaPlugin], given its [PluginHost] and listed in
  * [running], which Home's strip, the links and the plugin screens read
  * (through LocalPlugins).
+ *
+ * It also hands them what the post sheets and Saved's folders send on
+ * ([sheetEntries], [folderOption], and each post filed in a folder).
  *
  * A plugin's code is kept under `plugins/` of the app's private folder
  * ([files]) and what it stores under `plugin-data/<id>/`. Uninstalling erases
@@ -163,6 +177,10 @@ class AppPlugins(
     val stripPins: Flow<List<String>> = settings.settings.map { it[HomePrefs.feedStripNetworks] }.distinctUntilChanged()
 
     private val changing = Mutex()
+
+    init {
+        FolderFilings.listen(graph, ::filed)
+    }
 
     /** Reads what is installed and starts it, then follows every install, update and uninstall. */
     fun start() {
@@ -266,6 +284,29 @@ class AppPlugins(
     /** Saves [media] of plugin [id] through the downloads, as [PluginHost.download] and the plugins' media viewer do. */
     fun download(id: String, media: MediaItem, fileName: String? = null, subfolder: String? = null) =
         Downloading.pluginMedia(graph, id, media, fileName, subfolder)
+
+    /**
+     * What [plugins] (the running ones) add to a post sheet for [post], in
+     * [language], below the app's own entries: each runs beyond the sheet. A
+     * plugin that fails to say what it offers offers nothing.
+     */
+    fun sheetEntries(post: PluginSharedPost, language: String, plugins: List<RunningPlugin> = running.value): List<SheetEntry> =
+        plugins.flatMap { running -> guardedNow { running.plugin.postSheetActions(post) }.orEmpty() }.mapNotNull { action ->
+            guardedNow { action.label(language) }?.let { label -> SheetEntry(action.icon, label) { scope.launch { guarded { action.run(post) } } } }
+        }
+
+    /** The switch Saved's folder dialog shows: the folder's upload switch, as the first of [plugins] that offers one names it. */
+    fun folderOption(plugins: List<RunningPlugin> = running.value): PluginFolderOption? = folderOwner(plugins)?.second
+
+    /** [item] was filed in [folder]: the plugin that has the folder's switch hears of it while the switch is on. */
+    private fun filed(folder: SavedFolder, item: Keepable) {
+        val post = PluginSaves.filed(folder, item) ?: return
+        val owner = folderOwner(running.value)?.first ?: return
+        scope.launch { guarded { owner.plugin.filed(post) } }
+    }
+
+    private fun folderOwner(plugins: List<RunningPlugin>): Pair<RunningPlugin, PluginFolderOption>? =
+        plugins.firstNotNullOfOrNull { running -> guardedNow { running.plugin.folderOption }?.let { running to it } }
 
     /** The feeds of the running plugins that have one. */
     private inner class RunningFeeds : PluginFeeds {
@@ -418,6 +459,19 @@ class AppPlugins(
             Downloading.shareMade(plugins.graph, bytes, PluginDownloads.named(fileName, mimeType), mimeType)
 
         override fun openDownloads() = plugins.navigator.go(Destination.Downloads)
+
+        override fun tell(text: String) {
+            if (text.isNotBlank()) KeepNotices.show(KeepNotice.Said(text))
+        }
+
+        override suspend fun <T> working(text: String, work: suspend () -> T): T {
+            KeepNotices.show(KeepNotice.Said(text, working = true))
+            return try {
+                work()
+            } finally {
+                KeepNotices.endWorking()
+            }
+        }
     }
 
     private companion object {

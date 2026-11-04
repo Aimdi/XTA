@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Karakeep</string>
+    <string name="plugin_description">Guarda publicacions i enllaços al teu servidor Karakeep amb un toc</string>
+    <string name="settings_intro">Karakeep és un servei d’adreces d’interès autoallotjat. Introdueix l’adreça de la teva instància i una clau d’API de «Configuració &gt; Claus d’API» a Karakeep.</string>
+    <string name="server_url">Adreça del servidor</string>
+    <string name="server_url_hint">Per exemple karakeep.example.com</string>
+    <string name="api_key">Clau d’API</string>
+    <string name="api_key_hint">Es queda només en aquest dispositiu</string>
+    <string name="test">Prova la connexió</string>
+    <string name="test_ok">Connectat a Karakeep</string>
+    <string name="not_configured">Primer afegeix el servidor de Karakeep i una clau d’API</string>
+    <string name="error_unauthorized">Karakeep ha rebutjat la clau d’API</string>
+    <string name="error_server_url">No s’ha trobat cap Karakeep en aquesta adreça</string>
+    <string name="error_network">No s’ha pogut contactar amb el servidor Karakeep</string>
+    <string name="error_generic">Karakeep no ha pogut guardar aquest enllaç</string>
+    <string name="learn_more">Quant a Karakeep</string>
+    <string name="save_action">Guarda a Karakeep</string>
+    <string name="saved">Guardat a Karakeep</string>
+    <string name="already_saved">Ja és a Karakeep</string>
+    <string name="show">Mostra</string>
+    <string name="hide">Amaga</string>
+    <string name="save">Desa</string>
+    <string name="connection">Connexió</string>
+</resources>

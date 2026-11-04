@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Immich</string>
+    <string name="plugin_description">Надсилання медіа з вибраних папок закладок на власний сервер Immich</string>
+    <string name="settings_intro">Вкажіть адресу свого сервера Immich і ключ API з «Налаштування акаунта» → «Ключі API». Папки закладок, для яких ви це ввімкнете, надсилатимуть сюди свої фото та відео.</string>
+    <string name="server_url">Адреса сервера</string>
+    <string name="server_url_hint">Наприклад, 192.168.1.10:2283 або https://photos.example.org</string>
+    <string name="api_key">Ключ API</string>
+    <string name="api_key_hint">Immich → Налаштування акаунта → Ключі API</string>
+    <string name="test">Перевірити з\'єднання</string>
+    <string name="test_ok">З\'єднано з вашим сервером Immich</string>
+    <string name="not_configured">Спершу вкажіть адресу та ключ API</string>
+    <string name="error_unauthorized">Immich відхилив ключ API</string>
+    <string name="error_server_url">За цією адресою сервер Immich не відповідає</string>
+    <string name="error_network">Не вдалося з\'єднатися з вашим сервером Immich</string>
+    <string name="error_generic">Ваш сервер Immich повернув помилку</string>
+    <string name="options">Параметри надсилання</string>
+    <string name="album_per_folder">По альбому на папку</string>
+    <string name="album_per_folder_description">Завантажене потрапляє до альбому Immich з назвою папки закладок — він створюється, якщо його ще немає</string>
+    <string name="include_videos">Завантажувати й відео</string>
+    <string name="include_videos_description">Відео та GIF значно більші за фотографії. Якщо це вимкнено, надсилаються лише фото.</string>
+    <string name="folder_hint">Завантаження вмикають для окремої папки, коли її створюють або редагують, у «Закладках».</string>
+    <string name="learn_more">Про Immich</string>
+    <string name="auto_upload">Завантажувати медіа до Immich</string>
+    <string name="auto_upload_description">Надсилати фото та відео постів із цієї папки на ваш сервер Immich</string>
+    <string name="uploading">Завантаження до Immich…</string>
+    <string name="upload_done">Надіслано до Immich</string>
+    <string name="upload_failed">Не вдалося завантажити до Immich</string>
+    <string name="show">Показати</string>
+    <string name="hide">Сховати</string>
+    <string name="save">Зберегти</string>
+    <string name="connection">З’єднання</string>
+</resources>

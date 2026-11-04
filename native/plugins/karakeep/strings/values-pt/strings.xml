@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Karakeep</string>
+    <string name="plugin_description">Guarde publicações e ligações no seu servidor Karakeep num toque</string>
+    <string name="settings_intro">O Karakeep é um serviço de marcadores alojado por si. Introduza o endereço da sua instância e uma chave de API em «Configurações &gt; Chaves de API» no Karakeep.</string>
+    <string name="server_url">Endereço do servidor</string>
+    <string name="server_url_hint">Por exemplo karakeep.example.com</string>
+    <string name="api_key">Chave de API</string>
+    <string name="api_key_hint">Fica apenas neste dispositivo</string>
+    <string name="test">Testar ligação</string>
+    <string name="test_ok">Ligado ao Karakeep</string>
+    <string name="not_configured">Indique primeiro o servidor Karakeep e uma chave de API</string>
+    <string name="error_unauthorized">O Karakeep recusou a chave de API</string>
+    <string name="error_server_url">Não foi encontrado Karakeep nesse endereço</string>
+    <string name="error_network">Não foi possível contactar o seu servidor Karakeep</string>
+    <string name="error_generic">O Karakeep não conseguiu guardar esta ligação</string>
+    <string name="learn_more">Sobre o Karakeep</string>
+    <string name="save_action">Guardar no Karakeep</string>
+    <string name="saved">Guardado no Karakeep</string>
+    <string name="already_saved">Já está no Karakeep</string>
+    <string name="show">Mostrar</string>
+    <string name="hide">Ocultar</string>
+    <string name="save">Gravar</string>
+    <string name="connection">Ligação</string>
+</resources>

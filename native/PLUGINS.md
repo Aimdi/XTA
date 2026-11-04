@@ -85,6 +85,8 @@ its plugins have to link against that prerelease's app.
 | `archived(content)` | one of its posts the archive kept, read back as a `NetworkPost` for Saved ([below](#saved-notes-and-likes)), or null |
 | `cashtagStrip` | what it draws under an X post that names tickers (Stocks' price strip), or none |
 | `routeForCashtag(symbol)` | its own screen for a cashtag tapped in an X post (Stocks' ticker), or null: the tap searches X |
+| `postSheetActions(post)` | its entries in the post sheets for a `PluginSharedPost` ([below](#sending-a-post-to-the-readers-own-server)), or none |
+| `folderOption`, `filed(post)` | its switch in Saved's folder dialog, and a post filed in a folder with it on, as a `PluginFiledPost` ([below](#sending-a-post-to-the-readers-own-server)) |
 
 A `PluginBody` is drawn in a `PluginFrame`: `padding` (the list's content
 padding, clear of the app's bars), `toTop` (grows when the reader asks for
@@ -112,6 +114,7 @@ read again, the desktop's F5: `RefreshesOn`).
 | `addToGroup(account, follow)` | the app's group picker for one of its accounts |
 | `openPostMenu(menu)` | the shared post menu over the screen |
 | `download(media, fileName, subfolder)`, `saveFile(bytes, fileName, mimeType, subfolder)`, `shareFile(bytes, fileName, mimeType)`, `openDownloads()` | the app's downloads, a file it made saved or shared, the Downloads screen |
+| `tell(text)`, `working(text, work)` | a line at the foot of the window over any screen, as XTA's snack bars; one shown while `work` runs |
 
 The shared pieces, in the same package, drawn in the app's theme. Use them
 rather than a copy of your own; a piece two plugins need goes here once,
@@ -141,6 +144,10 @@ with a test.
 - Rows and fields: `PluginSwitchRow`, `PluginActionRow`, `PluginMenuRow`,
   `PluginSectionTitle`, `PluginTabs`, `PluginCounts`, `NetworkPersonRow`,
   `SecretField` (a cookie, a token, a key) and `PluginIcons`.
+- The reader's own server's settings: `PluginAddressField`, `PluginConnection`
+  with `PluginConnectionControls` (the connection test, Test and Save, the
+  result line), `PluginLinkButton` and `answeredOr`
+  ([below](#sending-a-post-to-the-readers-own-server)).
 - The app's features: `HomeTimelineSwitch`, `AddToGroupButton` and
   `PluginSavedScreen` (below), and `PluginSearchHistory` (recent searches, as
   XTA keeps them).
@@ -242,7 +249,7 @@ reads the same in XTA. Nothing reaches the network.
 | `chooseFolder(post)` | the save sheet, as a long press on the bookmark opens it |
 | `editNote(post)` | the note on it in Saved, in the app's editor; writing one saves the post first |
 | `setLiked(post, liked)` | in the archive's likes or out of them: a network's own like mirrored there, as XTA mirrors Reddit's upvotes |
-| `openPostMenu(menu)` | the shared post menu (XTA's plugin post actions): save or remove, the note, Add to group for its author, Share link, Save to folder…, Reposted by and Quotes where the plugin lists them (`PluginPostMenu.reposts`, `quotes`), Open in browser |
+| `openPostMenu(menu)` | the shared post menu (XTA's plugin post actions): save or remove, the note, Add to group for its author, Share link, Save to folder…, Reposted by and Quotes where the plugin lists them (`PluginPostMenu.reposts`, `quotes`), Open in browser; then the running plugins' entries, which take its `title` ([below](#sending-a-post-to-the-readers-own-server)) |
 
 The shared row does this by itself when a plugin's `NetworkPostActions` say
 how: `archive` (a post's record) puts the bookmark at the end of its counts,
@@ -278,6 +285,59 @@ A file is named `<plugin>-<its own name>` unless the plugin names it, as
 XTA names a plugin's media; a made file without an extension gets the one
 its type stands for. The media viewer a plugin opens (`openMedia`) has the
 same Download in its bar.
+
+### Sending a post to the reader's own server
+
+XTA's save targets (Karakeep, Deepmarks, Immich) send what the reader keeps
+to the reader's own account: the only writes any plugin makes, and never to
+the network a post came from. Two hooks carry them; the app's code names no
+plugin.
+
+**The post sheets.** `XtaPlugin.postSheetActions(post)` lists a plugin's
+entries for a post, `PluginPostAction`s (an icon, a label in a language, and
+`run`), as XTA's share sheet offers "Save to Karakeep". The app asks every
+running plugin as a sheet opens and draws their entries below its own, in
+the plugins' order: in the X post's ⋯ sheet (`ui/post`'s `PostMenu`) and in
+the shared plugin post menu (`PluginPostMenu`). The post is a
+`PluginSharedPost`: its `url` (an X post's as its Share gives it, a plugin
+post's `PluginPostMenu.url`), its `title` (an X post's author and words on
+one line, `PluginSharedPost.titleOf`, as XTA titles the bookmark; a plugin
+post's `PluginPostMenu.title`, empty when not given) and its `media` (the
+archive's `SavedMedia` of the post's record, what downloads and uploads
+take). A tap closes the sheet, then the entry runs in the app's scope,
+beyond the screen; it says how it went with `host.tell`.
+
+**Saved's folders.** A folder keeps one upload switch, XTA's `auto_upload`
+(`SavedFolder.autoUpload`), which XTA's backup carries. The first running
+plugin with a `folderOption` (`PluginFolderOption`: a title and a
+description in a language) has it: the folder dialog shows the switch under
+its own auto-download, in those words, and only while such a plugin runs; a
+folder keeps its stored switch either way, the dialog leaving it as it is
+when it offers none. When a post is filed in a folder (the bookmark, the
+save sheet, a note), the app hands it on after its own downloads, and while
+the folder's switch is on that plugin's `filed(post)` runs in the app's
+scope with a `PluginFiledPost`: the post's archive id, the folder's name and
+the post's `SavedMedia` (every picture, video and GIF of an X post, another
+network's pictures), as XTA's filing hands them to Immich. Moving posts
+between folders in Saved files nothing, as in XTA.
+
+**Notices.** `host.tell(text)` says a line at the foot of the window over
+whatever screen is up, as the app's own notices and XTA's snack bars;
+`host.working(text) { … }` says one while the work runs ("Uploading to
+Immich…") and takes it away when it ends.
+
+**Settings and secrets.** The server's address, key or token and options
+are the app's settings under XTA's keys (`:store`'s `KarakeepPrefs`,
+`DeepmarksPrefs`, `ImmichPrefs`), so XTA's backup brings the addresses and
+options back. The keys are among `SecretPrefs`, which no export, backup or
+log carries and no restore writes; under `plugin.<id>.`, uninstalling erases
+them with the rest. The kit draws XTA's settings of such a server:
+`PluginAddressField` and `SecretField`, then `PluginConnectionControls` with
+a `PluginConnection` (XTA's PluginConnectionStore: Test connection keeps the
+fields and then tests them, Save keeps them and closes the screen, and what a
+test said goes away as a field changes), and `PluginLinkButton` for "About
+…". `PluginSettings.tryUpdate` writes without throwing, `current()` reads
+them now, and `answeredOr` turns a request's failure into the plugin's words.
 
 ## A plugin module
 

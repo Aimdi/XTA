@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Karakeep</string>
+    <string name="plugin_description">一鍵把貼文和連結儲存到自己的 Karakeep 伺服器</string>
+    <string name="settings_intro">Karakeep 是可自行架設的書籤服務。請填寫實例位址，以及在 Karakeep「設定 &gt; API 金鑰」中建立的金鑰。</string>
+    <string name="server_url">伺服器位址</string>
+    <string name="server_url_hint">例如 karakeep.example.com</string>
+    <string name="api_key">API 金鑰</string>
+    <string name="api_key_hint">僅儲存在本裝置</string>
+    <string name="test">測試連線</string>
+    <string name="test_ok">已連線到 Karakeep</string>
+    <string name="not_configured">請先填寫 Karakeep 伺服器位址與 API 金鑰</string>
+    <string name="error_unauthorized">Karakeep 拒絕了該 API 金鑰</string>
+    <string name="error_server_url">該位址上找不到 Karakeep</string>
+    <string name="error_network">無法連線到你的 Karakeep 伺服器</string>
+    <string name="error_generic">Karakeep 無法儲存這個連結</string>
+    <string name="learn_more">關於 Karakeep</string>
+    <string name="save_action">儲存到 Karakeep</string>
+    <string name="saved">已儲存到 Karakeep</string>
+    <string name="already_saved">Karakeep 中已有</string>
+    <string name="show">顯示</string>
+    <string name="hide">隱藏</string>
+    <string name="save">儲存</string>
+    <string name="connection">連線</string>
+</resources>

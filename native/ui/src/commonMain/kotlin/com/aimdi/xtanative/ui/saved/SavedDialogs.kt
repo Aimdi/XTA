@@ -44,6 +44,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.x.model.XConversation
 import com.aimdi.xtanative.store.saved.SavedFolder
 import com.aimdi.xtanative.store.saved.SavedPost
@@ -71,6 +72,8 @@ import com.aimdi.xtanative.ui.generated.resources.saved_rename
 import com.aimdi.xtanative.ui.generated.resources.saved_save
 import com.aimdi.xtanative.ui.generated.resources.saved_some_unchecked
 import com.aimdi.xtanative.ui.generated.resources.saved_tab_unfiled
+import com.aimdi.xtanative.ui.plugins.currentLanguage
+import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -88,16 +91,21 @@ fun ConfirmDialog(title: String, text: String?, confirm: String, onDismiss: () -
 }
 
 /**
- * A new folder, or [existing] renamed (folder_picker.dart): its name, and
- * whether filing a post in it downloads its pictures.
+ * A new folder, or [existing] renamed (folder_picker.dart): its name,
+ * whether filing a post in it downloads its pictures, and the switch a
+ * running plugin adds (sending what is filed there to the reader's own
+ * server), offered only where one does. [onDone]'s `upload` is null when no
+ * switch was offered: the folder keeps the one it has.
  */
 @Composable
-fun FolderDialog(existing: SavedFolder?, onDismiss: () -> Unit, onDone: (name: String, autoDownload: Boolean) -> Unit) {
+fun FolderDialog(existing: SavedFolder?, onDismiss: () -> Unit, onDone: (name: String, autoDownload: Boolean, upload: Boolean?) -> Unit) {
     var name by rememberSaveable { mutableStateOf(existing?.name.orEmpty()) }
     var autoDownload by rememberSaveable { mutableStateOf(existing?.autoDownload ?: false) }
+    var upload by rememberSaveable { mutableStateOf(existing?.autoUpload ?: false) }
+    val option = rememberFolderOption()
     val focus = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
-    val submit = { if (name.isNotBlank()) onDone(name.trim(), autoDownload) }
+    val submit = { if (name.isNotBlank()) onDone(name.trim(), autoDownload, upload.takeIf { option != null }) }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(if (existing == null) Res.string.saved_new_folder else Res.string.saved_edit_folder)) },
@@ -112,16 +120,8 @@ fun FolderDialog(existing: SavedFolder?, onDismiss: () -> Unit, onDone: (name: S
                     keyboardActions = KeyboardActions(onDone = { submit() }),
                     modifier = Modifier.fillMaxWidth().focusRequester(focus),
                 )
-                Row(
-                    Modifier.fillMaxWidth().padding(top = 8.dp).clickable(role = Role.Switch) { autoDownload = !autoDownload }.padding(vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Column(Modifier.weight(1f).padding(end = 12.dp)) {
-                        Text(stringResource(Res.string.saved_auto_download), style = MaterialTheme.typography.bodyLarge)
-                        Text(stringResource(Res.string.saved_auto_download_description), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                    Switch(checked = autoDownload, onCheckedChange = null)
-                }
+                FolderSwitch(stringResource(Res.string.saved_auto_download), stringResource(Res.string.saved_auto_download_description), autoDownload) { autoDownload = it }
+                option?.let { FolderSwitch(it.title, it.description, upload) { on -> upload = on } }
             }
         },
         confirmButton = {
@@ -131,6 +131,34 @@ fun FolderDialog(existing: SavedFolder?, onDismiss: () -> Unit, onDone: (name: S
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.cancel)) } },
     )
+}
+
+/** The folder switch a running plugin adds, in the reader's language; null while none does. */
+@Composable
+private fun rememberFolderOption(): FolderOptionText? {
+    val plugins = LocalPlugins.current
+    val running by plugins.running.collectAsStateWithLifecycle()
+    val language = currentLanguage()
+    return remember(running, language) {
+        plugins.folderOption(running)?.let { option -> runCatching { FolderOptionText(option.title(language), option.description(language)) }.getOrNull() }
+    }
+}
+
+private class FolderOptionText(val title: String, val description: String)
+
+/** A switch of the folder dialog: the whole row turns it, [description] says what it does. */
+@Composable
+private fun FolderSwitch(title: String, description: String, checked: Boolean, onChange: (Boolean) -> Unit) {
+    Row(
+        Modifier.fillMaxWidth().padding(top = 8.dp).clickable(role = Role.Switch) { onChange(!checked) }.padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f).padding(end = 12.dp)) {
+            Text(title, style = MaterialTheme.typography.bodyLarge)
+            Text(description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        Switch(checked = checked, onCheckedChange = null)
+    }
 }
 
 /** Deleting a folder moves its posts to Unfiled. */

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Deepmarks</string>
+    <string name="plugin_description">把帖子保存到基于 Nostr 的书签服务 Deepmarks</string>
+    <string name="settings_intro">Deepmarks 以签名的 Nostr 事件保存书签。签名密钥不会离开本设备：帖子在本地签名，只有完成的事件被发送。</string>
+    <string name="lifetime_notice">使用 API 需要 Deepmarks 终身会员。</string>
+    <string name="api_key">API 密钥</string>
+    <string name="api_key_hint">以 dmk_live_ 开头，在 Deepmarks 设置的“api access”中获取</string>
+    <string name="identity">签名身份</string>
+    <string name="secret_key">签名密钥</string>
+    <string name="secret_key_hint">你的 nsec 仅保存在本设备。它为每个书签签名，绝不会发送给 Deepmarks。</string>
+    <string name="signing_as">以 %1$s 签名</string>
+    <string name="api_base">服务器地址</string>
+    <string name="test">测试连接</string>
+    <string name="test_ok">已连接到 Deepmarks</string>
+    <string name="test_ok_unverified">密钥已通过，但账户还没有公开书签可用于核对签名密钥</string>
+    <string name="not_configured">请先填写 Deepmarks 的 API 密钥和签名密钥</string>
+    <string name="error_secret_key">这不是有效的 nsec，也不是 64 位十六进制密钥</string>
+    <string name="error_unauthorized">Deepmarks 拒绝了该 API 密钥</string>
+    <string name="error_lifetime">Deepmarks 的 API 仅面向终身会员</string>
+    <string name="error_key_mismatch">你的签名密钥属于另一个 Deepmarks 账户，与 API 密钥不一致</string>
+    <string name="error_rejected">Deepmarks 拒绝了这个书签</string>
+    <string name="error_rate_limited">请求过多，请稍后再试</string>
+    <string name="error_server">该地址上没有 Deepmarks API 响应</string>
+    <string name="error_network">无法连接到 Deepmarks</string>
+    <string name="learn_more">关于 Deepmarks</string>
+    <string name="save_action">保存到 Deepmarks</string>
+    <string name="saved">已保存到 Deepmarks</string>
+    <string name="saved_no_relay">已发送到 Deepmarks，但还没有中继接收</string>
+    <string name="show">显示</string>
+    <string name="hide">隐藏</string>
+    <string name="save">保存</string>
+    <string name="connection">连接</string>
+</resources>

@@ -4,7 +4,9 @@ import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.store.StoreFile
 import com.aimdi.xtanative.store.settings.BlueskyPrefs
+import com.aimdi.xtanative.store.settings.DeepmarksPrefs
 import com.aimdi.xtanative.store.settings.HomePrefs
+import com.aimdi.xtanative.store.settings.KarakeepPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.SubstackPrefs
 import java.io.File
@@ -67,6 +69,18 @@ class PluginPrefsTest {
         assertFalse(erased.isSet(SubstackPrefs.markReadOnScroll))
         assertEquals("https://example.social", erased[BlueskyPrefs.instance])
         assertEquals(settings, settings.withoutPlugin("sub"), "a prefix of another id is not that plugin")
+    }
+
+    @Test
+    fun uninstallingAPluginErasesTheKeysItKeptAmongTheSecrets() {
+        val settings = Settings()
+            .with(DeepmarksPrefs.apiKey, "dmk_live_x")
+            .with(DeepmarksPrefs.secretKey, "nsec1example")
+            .with(DeepmarksPrefs.apiBase, "http://localhost:4000")
+            .with(KarakeepPrefs.apiKey, "kk")
+        val erased = settings.withoutPlugin("deepmarks")
+        assertFalse(listOf(DeepmarksPrefs.apiKey, DeepmarksPrefs.secretKey, DeepmarksPrefs.apiBase).any(erased::isSet))
+        assertEquals("kk", erased[KarakeepPrefs.apiKey], "another plugin's key stays")
     }
 
     @Test

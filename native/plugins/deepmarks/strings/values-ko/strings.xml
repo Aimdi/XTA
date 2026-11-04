@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Deepmarks</string>
+    <string name="plugin_description">Nostr 기반 북마크 서비스 Deepmarks에 게시물 저장</string>
+    <string name="settings_intro">Deepmarks는 북마크를 서명된 Nostr 이벤트로 저장합니다. 서명 키는 이 기기를 벗어나지 않으며, 게시물은 여기서 서명되고 완성된 이벤트만 전송됩니다.</string>
+    <string name="lifetime_notice">API를 사용하려면 Deepmarks 평생 회원이어야 합니다.</string>
+    <string name="api_key">API 키</string>
+    <string name="api_key_hint">dmk_live_로 시작하며 Deepmarks 설정의 ‘api access’에서 발급합니다</string>
+    <string name="identity">서명 ID</string>
+    <string name="secret_key">서명 키</string>
+    <string name="secret_key_hint">nsec은 이 기기에만 저장됩니다. 모든 북마크에 서명하며 Deepmarks로는 전송되지 않습니다.</string>
+    <string name="signing_as">%1$s(으)로 서명 중</string>
+    <string name="api_base">서버 주소</string>
+    <string name="test">연결 테스트</string>
+    <string name="test_ok">Deepmarks에 연결되었습니다</string>
+    <string name="test_ok_unverified">키는 승인되었지만 서명 키를 확인할 공개 북마크가 계정에 아직 없습니다</string>
+    <string name="not_configured">먼저 Deepmarks API 키와 서명 키를 입력하세요</string>
+    <string name="error_secret_key">올바른 nsec도, 64자 16진수 키도 아닙니다</string>
+    <string name="error_unauthorized">Deepmarks가 API 키를 거부했습니다</string>
+    <string name="error_lifetime">Deepmarks API는 평생 회원 전용입니다</string>
+    <string name="error_key_mismatch">서명 키가 API 키와 다른 Deepmarks 계정의 것입니다</string>
+    <string name="error_rejected">Deepmarks가 이 북마크를 거부했습니다</string>
+    <string name="error_rate_limited">요청이 너무 많습니다. 잠시 후 다시 시도하세요</string>
+    <string name="error_server">해당 주소에서 Deepmarks API가 응답하지 않았습니다</string>
+    <string name="error_network">Deepmarks에 연결할 수 없습니다</string>
+    <string name="learn_more">Deepmarks 정보</string>
+    <string name="save_action">Deepmarks에 저장</string>
+    <string name="saved">Deepmarks에 저장했습니다</string>
+    <string name="saved_no_relay">Deepmarks로 보냈지만 아직 받아준 릴레이가 없습니다</string>
+    <string name="show">표시</string>
+    <string name="hide">숨기기</string>
+    <string name="save">저장</string>
+    <string name="connection">연결</string>
+</resources>

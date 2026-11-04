@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Immich</string>
+    <string name="plugin_description">Sendu la aŭdvidaĵojn de elektitaj legosignaj dosierujoj al via propra Immich-servilo</string>
+    <string name="settings_intro">Enigu la adreson de via Immich-servilo kaj API-ŝlosilon el Kontagordoj → API-ŝlosiloj. Legosignaj dosierujoj, por kiuj vi ŝaltas tion, sendos siajn fotojn kaj videojn ĉi tien.</string>
+    <string name="server_url">Adreso de la servilo</string>
+    <string name="server_url_hint">Ekzemple 192.168.1.10:2283 aŭ https://fotoj.example.org</string>
+    <string name="api_key">API-ŝlosilo</string>
+    <string name="api_key_hint">Immich → Kontagordoj → API-ŝlosiloj</string>
+    <string name="test">Provi la konekton</string>
+    <string name="test_ok">Konektita al via Immich-servilo</string>
+    <string name="not_configured">Unue enigu la adreson kaj la API-ŝlosilon</string>
+    <string name="error_unauthorized">Immich rifuzis la API-ŝlosilon</string>
+    <string name="error_server_url">Ĉe tiu adreso nenia Immich-servilo respondas</string>
+    <string name="error_network">Ne eblis atingi vian Immich-servilon</string>
+    <string name="error_generic">Via Immich-servilo respondis per eraro</string>
+    <string name="options">Alŝutaj opcioj</string>
+    <string name="album_per_folder">Unu albumo por ĉiu dosierujo</string>
+    <string name="album_per_folder_description">Alŝutitaĵoj iras en Immich-albumon nomitan laŭ la legosigna dosierujo, kreatan se ĝi ankoraŭ ne ekzistas</string>
+    <string name="include_videos">Alŝuti ankaŭ videojn</string>
+    <string name="include_videos_description">Videoj kaj GIF-oj estas multe pli grandaj ol fotoj. Se tio estas malŝaltita, nur fotoj estas senditaj.</string>
+    <string name="folder_hint">Alŝutadon vi ŝaltas por unuopa dosierujo, kreante aŭ redaktante ĝin, sub Legosignoj.</string>
+    <string name="learn_more">Pri Immich</string>
+    <string name="auto_upload">Alŝuti aŭdvidaĵojn al Immich</string>
+    <string name="auto_upload_description">Sendu la fotojn kaj videojn de afiŝoj konservitaj ĉi tie al via Immich-servilo</string>
+    <string name="uploading">Alŝutado al Immich…</string>
+    <string name="upload_done">Sendita al Immich</string>
+    <string name="upload_failed">Ne eblis alŝuti al Immich</string>
+    <string name="show">Montri</string>
+    <string name="hide">Kaŝi</string>
+    <string name="save">Konservi</string>
+    <string name="connection">Konekto</string>
+</resources>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Karakeep</string>
+    <string name="plugin_description">Ukládejte příspěvky a odkazy na vlastní server Karakeep jedním klepnutím</string>
+    <string name="settings_intro">Karakeep je služba záložek, kterou si hostujete sami. Zadejte adresu své instance a klíč API z „Nastavení &gt; Klíče API“ v Karakeep.</string>
+    <string name="server_url">Adresa serveru</string>
+    <string name="server_url_hint">Například karakeep.example.com</string>
+    <string name="api_key">Klíč API</string>
+    <string name="api_key_hint">Zůstane jen v tomto zařízení</string>
+    <string name="test">Otestovat spojení</string>
+    <string name="test_ok">Připojeno ke Karakeep</string>
+    <string name="not_configured">Nejdřív zadejte server Karakeep a klíč API</string>
+    <string name="error_unauthorized">Karakeep odmítl klíč API</string>
+    <string name="error_server_url">Na této adrese žádný Karakeep není</string>
+    <string name="error_network">Server Karakeep není dostupný</string>
+    <string name="error_generic">Karakeep tento odkaz nedokázal uložit</string>
+    <string name="learn_more">O Karakeep</string>
+    <string name="save_action">Uložit do Karakeep</string>
+    <string name="saved">Uloženo do Karakeep</string>
+    <string name="already_saved">Už je v Karakeep</string>
+    <string name="show">Zobrazit</string>
+    <string name="hide">Skrýt</string>
+    <string name="save">Uložit</string>
+    <string name="connection">Připojení</string>
+</resources>

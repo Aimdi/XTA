@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Immich</string>
+    <string name="plugin_description">Send mediene i valgte bokmerkemapper til din egen Immich-tjener</string>
+    <string name="settings_intro">Skriv inn adressen til Immich-tjeneren din og en API-nøkkel fra Kontoinnstillinger → API-nøkler. Bokmerkemapper du slår dette på for, sender bildene og videoene sine hit.</string>
+    <string name="server_url">Tjeneradresse</string>
+    <string name="server_url_hint">For eksempel 192.168.1.10:2283 eller https://bilder.example.org</string>
+    <string name="api_key">API-nøkkel</string>
+    <string name="api_key_hint">Immich → Kontoinnstillinger → API-nøkler</string>
+    <string name="test">Test tilkoblingen</string>
+    <string name="test_ok">Koblet til Immich-tjeneren din</string>
+    <string name="not_configured">Fyll inn adressen og API-nøkkelen først</string>
+    <string name="error_unauthorized">Immich avviste API-nøkkelen</string>
+    <string name="error_server_url">Ingen Immich-tjener svarer på den adressen</string>
+    <string name="error_network">Fikk ikke kontakt med Immich-tjeneren din</string>
+    <string name="error_generic">Immich-tjeneren din svarte med en feil</string>
+    <string name="options">Opplastingsvalg</string>
+    <string name="album_per_folder">Ett album per mappe</string>
+    <string name="album_per_folder_description">Det du laster opp havner i et Immich-album med navnet til bokmerkemappen, som opprettes hvis det ikke finnes ennå</string>
+    <string name="include_videos">Last opp videoer også</string>
+    <string name="include_videos_description">Videoer og GIF-er er mye større enn bilder. Er dette av, sendes bare bilder.</string>
+    <string name="folder_hint">Opplasting slår du på for én mappe om gangen, når du oppretter eller endrer den, under Bokmerker.</string>
+    <string name="learn_more">Om Immich</string>
+    <string name="auto_upload">Last opp medier til Immich</string>
+    <string name="auto_upload_description">Send bildene og videoene i innlegg som havner her, til Immich-tjeneren din</string>
+    <string name="uploading">Laster opp til Immich…</string>
+    <string name="upload_done">Sendt til Immich</string>
+    <string name="upload_failed">Klarte ikke å laste opp til Immich</string>
+    <string name="show">Vis</string>
+    <string name="hide">Skjul</string>
+    <string name="save">Lagre</string>
+    <string name="connection">Tilkobling</string>
+</resources>

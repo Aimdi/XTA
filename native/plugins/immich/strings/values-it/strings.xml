@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Immich</string>
+    <string name="plugin_description">Inviare i media delle cartelle di segnalibri scelte al proprio server Immich</string>
+    <string name="settings_intro">Inserisci l\'indirizzo del tuo server Immich e una chiave API da Impostazioni account → Chiavi API. Le cartelle di segnalibri per cui lo attivi invieranno qui le loro foto e i loro video.</string>
+    <string name="server_url">Indirizzo del server</string>
+    <string name="server_url_hint">Ad esempio 192.168.1.10:2283 o https://foto.example.org</string>
+    <string name="api_key">Chiave API</string>
+    <string name="api_key_hint">Immich → Impostazioni account → Chiavi API</string>
+    <string name="test">Prova la connessione</string>
+    <string name="test_ok">Connesso al tuo server Immich</string>
+    <string name="not_configured">Inserisci prima indirizzo e chiave API</string>
+    <string name="error_unauthorized">Immich ha rifiutato la chiave API</string>
+    <string name="error_server_url">Nessun server Immich risponde a quell\'indirizzo</string>
+    <string name="error_network">Impossibile raggiungere il tuo server Immich</string>
+    <string name="error_generic">Il tuo server Immich ha restituito un errore</string>
+    <string name="options">Opzioni di caricamento</string>
+    <string name="album_per_folder">Un album per cartella</string>
+    <string name="album_per_folder_description">I caricamenti finiscono in un album Immich con il nome della cartella di segnalibri, creato se non esiste ancora</string>
+    <string name="include_videos">Carica anche i video</string>
+    <string name="include_videos_description">I video e le GIF sono molto più grandi delle foto. Se disattivato, vengono inviate solo le foto.</string>
+    <string name="folder_hint">Il caricamento si attiva su una cartella quando la crei o la modifichi, nei Segnalibri.</string>
+    <string name="learn_more">Informazioni su Immich</string>
+    <string name="auto_upload">Carica i media su Immich</string>
+    <string name="auto_upload_description">Invia le foto e i video dei post archiviati qui al tuo server Immich</string>
+    <string name="uploading">Caricamento su Immich…</string>
+    <string name="upload_done">Inviato a Immich</string>
+    <string name="upload_failed">Impossibile caricare su Immich</string>
+    <string name="show">Mostra</string>
+    <string name="hide">Nascondi</string>
+    <string name="save">Salva</string>
+    <string name="connection">Connessione</string>
+</resources>

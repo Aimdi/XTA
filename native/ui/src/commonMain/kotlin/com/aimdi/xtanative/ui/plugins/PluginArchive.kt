@@ -60,7 +60,10 @@ class PluginSavedPost(val post: PluginPostArchive, val note: String? = null)
  * the note on it, Add to group for its [author] (an account of the plugin, as
  * [PluginHost.addToGroup] takes it, with [follow]), Share link, Save to folder…,
  * Reposted by and Quotes where the plugin lists them ([reposts], [quotes]),
- * and Open in browser for [url].
+ * and Open in browser for [url]; then the running plugins' entries
+ * ([XtaPlugin.postSheetActions]), which take the post by [url], by [title]
+ * (the line it goes by elsewhere, [PluginSharedPost.titleOf]: none when not
+ * given) and by the media of its record.
  */
 class PluginPostMenu(
     val post: PluginPostArchive,
@@ -69,4 +72,5 @@ class PluginPostMenu(
     val reposts: (() -> Unit)? = null,
     val quotes: (() -> Unit)? = null,
     val follow: suspend () -> Unit = {},
+    val title: String? = null,
 )

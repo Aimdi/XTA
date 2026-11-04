@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Karakeep</string>
+    <string name="plugin_description">Salvează postări și linkuri pe serverul tău Karakeep cu o atingere</string>
+    <string name="settings_intro">Karakeep este un serviciu de favorite găzduit de tine. Introdu adresa instanței tale și o cheie API din „Setări &gt; Chei API” în Karakeep.</string>
+    <string name="server_url">Adresa serverului</string>
+    <string name="server_url_hint">De exemplu karakeep.example.com</string>
+    <string name="api_key">Cheie API</string>
+    <string name="api_key_hint">Rămâne doar pe acest dispozitiv</string>
+    <string name="test">Testează conexiunea</string>
+    <string name="test_ok">Conectat la Karakeep</string>
+    <string name="not_configured">Adaugă mai întâi serverul Karakeep și o cheie API</string>
+    <string name="error_unauthorized">Karakeep a respins cheia API</string>
+    <string name="error_server_url">Nu am găsit niciun Karakeep la această adresă</string>
+    <string name="error_network">Serverul Karakeep nu poate fi contactat</string>
+    <string name="error_generic">Karakeep nu a putut salva acest link</string>
+    <string name="learn_more">Despre Karakeep</string>
+    <string name="save_action">Salvează în Karakeep</string>
+    <string name="saved">Salvat în Karakeep</string>
+    <string name="already_saved">Există deja în Karakeep</string>
+    <string name="show">Afișează</string>
+    <string name="hide">Ascunde</string>
+    <string name="save">Salvează</string>
+    <string name="connection">Conexiune</string>
+</resources>

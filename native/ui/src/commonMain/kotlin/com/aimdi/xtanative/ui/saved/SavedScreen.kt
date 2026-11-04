@@ -246,9 +246,9 @@ fun SavedScreen(actions: PostActions, links: SavedLinks, onBack: (() -> Unit)? =
 
     when (val open = dialog) {
         null -> Unit
-        is SavedDialog.EditFolder -> FolderDialog(open.folder, onDismiss = { dialog = null }) { name, autoDownload ->
+        is SavedDialog.EditFolder -> FolderDialog(open.folder, onDismiss = { dialog = null }) { name, autoDownload, upload ->
             val folder = open.folder
-            if (folder == null) vm.createFolder(name, autoDownload) else vm.updateFolder(folder.id, name, autoDownload)
+            if (folder == null) vm.createFolder(name, autoDownload, upload) else vm.updateFolder(folder.id, name, autoDownload, upload)
             dialog = null
         }
         is SavedDialog.FolderMenu -> FolderMenuSheet(

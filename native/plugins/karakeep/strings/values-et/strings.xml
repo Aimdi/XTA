@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Karakeep</string>
+    <string name="plugin_description">Salvesta postitusi ja linke ühe puudutusega oma Karakeepi serverisse</string>
+    <string name="settings_intro">Karakeep on ise majutatav järjehoidjateenus. Sisesta oma eksemplari aadress ja API-võti Karakeepi menüüst „Seaded &gt; API-võtmed“.</string>
+    <string name="server_url">Serveri aadress</string>
+    <string name="server_url_hint">Näiteks karakeep.example.com</string>
+    <string name="api_key">API-võti</string>
+    <string name="api_key_hint">Jääb ainult sellesse seadmesse</string>
+    <string name="test">Testi ühendust</string>
+    <string name="test_ok">Karakeepiga ühendatud</string>
+    <string name="not_configured">Lisa esmalt Karakeepi server ja API-võti</string>
+    <string name="error_unauthorized">Karakeep lükkas API-võtme tagasi</string>
+    <string name="error_server_url">Sellel aadressil Karakeepi ei leitud</string>
+    <string name="error_network">Karakeepi serverini ei õnnestunud jõuda</string>
+    <string name="error_generic">Karakeep ei suutnud seda linki salvestada</string>
+    <string name="learn_more">Karakeepi kohta</string>
+    <string name="save_action">Salvesta Karakeepi</string>
+    <string name="saved">Karakeepi salvestatud</string>
+    <string name="already_saved">Juba Karakeepis</string>
+    <string name="show">Näita</string>
+    <string name="hide">Peida</string>
+    <string name="save">salvesta</string>
+    <string name="connection">Ühendus</string>
+</resources>

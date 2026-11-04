@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Karakeep</string>
+    <string name="plugin_description">Simpan postingan dan tautan ke server Karakeep Anda dengan sekali sentuh</string>
+    <string name="settings_intro">Karakeep adalah layanan markah yang Anda hos sendiri. Masukkan alamat instans Anda dan kunci API dari «Pengaturan &gt; Kunci API» di Karakeep.</string>
+    <string name="server_url">Alamat server</string>
+    <string name="server_url_hint">Misalnya karakeep.example.com</string>
+    <string name="api_key">Kunci API</string>
+    <string name="api_key_hint">Hanya disimpan di perangkat ini</string>
+    <string name="test">Uji koneksi</string>
+    <string name="test_ok">Terhubung ke Karakeep</string>
+    <string name="not_configured">Tambahkan dulu server Karakeep dan kunci API Anda</string>
+    <string name="error_unauthorized">Karakeep menolak kunci API</string>
+    <string name="error_server_url">Tidak ada Karakeep di alamat itu</string>
+    <string name="error_network">Tidak dapat menghubungi server Karakeep Anda</string>
+    <string name="error_generic">Karakeep tidak dapat menyimpan tautan ini</string>
+    <string name="learn_more">Tentang Karakeep</string>
+    <string name="save_action">Simpan ke Karakeep</string>
+    <string name="saved">Tersimpan ke Karakeep</string>
+    <string name="already_saved">Sudah ada di Karakeep</string>
+    <string name="show">Tampilkan</string>
+    <string name="hide">Sembunyikan</string>
+    <string name="save">Simpan</string>
+    <string name="connection">Koneksi</string>
+</resources>

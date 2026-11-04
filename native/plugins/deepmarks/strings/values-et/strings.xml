@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Deepmarks</string>
+    <string name="plugin_description">Salvesta postitusi Deepmarksi, Nostril põhinevasse järjehoidjateenusesse</string>
+    <string name="settings_intro">Deepmarks salvestab järjehoidjad allkirjastatud Nostri sündmustena. Sinu allkirjastamisvõti ei lahku kunagi sellest seadmest: postitus allkirjastatakse siin ja saadetakse ainult valmis sündmus.</string>
+    <string name="lifetime_notice">API-juurdepääs eeldab Deepmarksi eluaegset liikmesust.</string>
+    <string name="api_key">API-võti</string>
+    <string name="api_key_hint">Algab dmk_live_, Deepmarksi seadete jaotisest „api access“</string>
+    <string name="identity">Allkirjastaja identiteet</string>
+    <string name="secret_key">Allkirjastamisvõti</string>
+    <string name="secret_key_hint">Sinu nsec jääb ainult sellesse seadmesse. See allkirjastab iga järjehoidja ja seda ei saadeta kunagi Deepmarksile.</string>
+    <string name="signing_as">Allkirjastab kui %1$s</string>
+    <string name="api_base">Serveri aadress</string>
+    <string name="test">Testi ühendust</string>
+    <string name="test_ok">Deepmarksiga ühendatud</string>
+    <string name="test_ok_unverified">Võti võeti vastu, aga kontol pole veel avalikku järjehoidjat, mille vastu allkirjastamisvõtit kontrollida</string>
+    <string name="not_configured">Lisa esmalt Deepmarksi API-võti ja allkirjastamisvõti</string>
+    <string name="error_secret_key">See pole kehtiv nsec ega 64-märgiline kuueteistkümnendvõti</string>
+    <string name="error_unauthorized">Deepmarks lükkas API-võtme tagasi</string>
+    <string name="error_lifetime">Deepmarksi API on ainult eluaegsetele liikmetele</string>
+    <string name="error_key_mismatch">Sinu allkirjastamisvõti kuulub teisele Deepmarksi kontole kui API-võti</string>
+    <string name="error_rejected">Deepmarks keeldus sellest järjehoidjast</string>
+    <string name="error_rate_limited">Liiga palju päringuid, proovi veidi hiljem</string>
+    <string name="error_server">Sellel aadressil ei vastanud ükski Deepmarksi API</string>
+    <string name="error_network">Deepmarksini ei õnnestunud jõuda</string>
+    <string name="learn_more">Deepmarksi kohta</string>
+    <string name="save_action">Salvesta Deepmarksi</string>
+    <string name="saved">Deepmarksi salvestatud</string>
+    <string name="saved_no_relay">Deepmarksile saadetud, kuid ükski relay pole seda veel vastu võtnud</string>
+    <string name="show">Näita</string>
+    <string name="hide">Peida</string>
+    <string name="save">salvesta</string>
+    <string name="connection">Ühendus</string>
+</resources>

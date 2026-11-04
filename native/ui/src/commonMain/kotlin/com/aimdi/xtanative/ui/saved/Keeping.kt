@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.ui.saved
 
 import com.aimdi.xtanative.data.AppGraph
+import com.aimdi.xtanative.store.saved.SavedFolder
 import com.aimdi.xtanative.ui.downloads.Downloading
 import java.util.WeakHashMap
 import kotlinx.coroutines.CoroutineScope
@@ -65,6 +66,26 @@ object Keeping {
             AutoDownload.NeedsFolder -> KeepNotices.show(KeepNotice.NeedsDownloadFolder)
             is AutoDownload.Start -> Downloading.batch(graph, auto.requests)
         }
+        folderId?.let { graph.saved.library().folder(it) }?.let { folder -> FolderFilings.filed(graph, folder, item) }
+    }
+}
+
+/**
+ * Who hears of a post filed in one of a graph's folders besides Saved, as
+ * XTA's filing hands a post on once its folder's downloads are under way:
+ * the app's plugins, whose runner listens for its graph.
+ */
+internal object FolderFilings {
+    private val listeners = WeakHashMap<AppGraph, (SavedFolder, Keepable) -> Unit>()
+
+    @Synchronized
+    fun listen(graph: AppGraph, listener: (SavedFolder, Keepable) -> Unit) {
+        listeners[graph] = listener
+    }
+
+    fun filed(graph: AppGraph, folder: SavedFolder, item: Keepable) {
+        val listener = synchronized(this) { listeners[graph] }
+        listener?.invoke(folder, item)
     }
 }
 

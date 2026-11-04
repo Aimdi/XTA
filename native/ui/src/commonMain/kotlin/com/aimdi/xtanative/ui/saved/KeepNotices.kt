@@ -64,6 +64,9 @@ sealed interface KeepNotice {
     data object NoteSaved : KeepNotice
 
     data object SomethingWentWrong : KeepNotice
+
+    /** A plugin's own words, in the reader's language: how a post it sent to the reader's own server went. */
+    data class Said(val text: String, override val working: Boolean = false) : KeepNotice
 }
 
 /** The notice showing now, one at a time: a new one replaces it. [serial] tells two of the same apart. */

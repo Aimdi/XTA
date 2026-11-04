@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Immich</string>
+    <string name="plugin_description">Gửi phương tiện của các thư mục dấu trang đã chọn tới máy chủ Immich của riêng bạn</string>
+    <string name="settings_intro">Nhập địa chỉ máy chủ Immich của bạn và một khoá API từ Cài đặt tài khoản → Khoá API. Những thư mục dấu trang bạn bật mục này sẽ gửi ảnh và video của chúng về đây.</string>
+    <string name="server_url">Địa chỉ máy chủ</string>
+    <string name="server_url_hint">Ví dụ 192.168.1.10:2283 hoặc https://anh.example.org</string>
+    <string name="api_key">Khoá API</string>
+    <string name="api_key_hint">Immich → Cài đặt tài khoản → Khoá API</string>
+    <string name="test">Thử kết nối</string>
+    <string name="test_ok">Đã kết nối tới máy chủ Immich của bạn</string>
+    <string name="not_configured">Hãy nhập địa chỉ và khoá API trước</string>
+    <string name="error_unauthorized">Immich đã từ chối khoá API</string>
+    <string name="error_server_url">Không có máy chủ Immich nào trả lời ở địa chỉ đó</string>
+    <string name="error_network">Không thể kết nối tới máy chủ Immich của bạn</string>
+    <string name="error_generic">Máy chủ Immich của bạn trả về lỗi</string>
+    <string name="options">Tùy chọn tải lên</string>
+    <string name="album_per_folder">Mỗi thư mục một album</string>
+    <string name="album_per_folder_description">Nội dung tải lên sẽ vào một album Immich mang tên thư mục dấu trang, được tạo nếu chưa có</string>
+    <string name="include_videos">Tải lên cả video</string>
+    <string name="include_videos_description">Video và GIF lớn hơn ảnh rất nhiều. Khi tắt mục này, chỉ ảnh được gửi đi.</string>
+    <string name="folder_hint">Bạn bật việc tải lên cho từng thư mục khi tạo hoặc sửa nó, trong Dấu trang.</string>
+    <string name="learn_more">Về Immich</string>
+    <string name="auto_upload">Tải phương tiện lên Immich</string>
+    <string name="auto_upload_description">Gửi ảnh và video của các bài đăng lưu ở đây tới máy chủ Immich của bạn</string>
+    <string name="uploading">Đang tải lên Immich…</string>
+    <string name="upload_done">Đã gửi tới Immich</string>
+    <string name="upload_failed">Không thể tải lên Immich</string>
+    <string name="show">Hiện</string>
+    <string name="hide">Ẩn</string>
+    <string name="save">Lưu</string>
+    <string name="connection">Kết nối</string>
+</resources>

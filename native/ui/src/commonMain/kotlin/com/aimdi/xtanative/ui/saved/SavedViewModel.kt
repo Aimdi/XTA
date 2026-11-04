@@ -130,9 +130,11 @@ class SavedViewModel(private val graph: AppGraph) : ViewModel() {
         graph.keep { if (likes) graph.likes.unlike(id) else graph.saved.remove(id) }
     }
 
-    fun createFolder(name: String, autoDownload: Boolean) = graph.keep { graph.saved.createFolder(name, autoDownload) }
+    /** A new folder; [upload] is its upload switch when the dialog offered one. */
+    fun createFolder(name: String, autoDownload: Boolean, upload: Boolean?) = graph.keep { graph.saved.createFolder(name, autoDownload, upload ?: false) }
 
-    fun updateFolder(id: String, name: String, autoDownload: Boolean) = graph.keep { graph.saved.updateFolder(id, name, autoDownload) }
+    /** The folder renamed and switched; [upload] null keeps the upload switch it has. */
+    fun updateFolder(id: String, name: String, autoDownload: Boolean, upload: Boolean?) = graph.keep { graph.saved.updateFolder(id, name, autoDownload, upload) }
 
     /** Deletes the folder (its posts stay saved, unfiled); a tab on it goes back to All. */
     fun deleteFolder(id: String) {

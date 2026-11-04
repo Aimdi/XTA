@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -20,12 +21,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.x.model.XPost
+import com.aimdi.xtanative.data.plugins.PluginSaves
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_add_to_group
 import com.aimdi.xtanative.ui.generated.resources.posts_open_in_browser
 import com.aimdi.xtanative.ui.generated.resources.posts_quotes
 import com.aimdi.xtanative.ui.generated.resources.posts_reposted_by
+import com.aimdi.xtanative.ui.pluginstore.PluginSheetEntries
 import com.aimdi.xtanative.ui.profile.AuthorGroupsSheet
 import org.jetbrains.compose.resources.stringResource
 
@@ -34,8 +37,10 @@ enum class PostMenuEntry { ADD_TO_GROUP, REPOSTED_BY, QUOTES, OPEN_IN_BROWSER }
 
 /**
  * The post's ⋯ menu as a sheet: file its author in groups here, see who
- * reposted it and what quotes it, or open it in the browser. Saving, notes
- * and sharing join it from the screens that keep them.
+ * reposted it and what quotes it, or open it in the browser; then what the
+ * running plugins add, as XTA's share sheet ends with them (sending its link
+ * to the reader's own bookmarks). Saving, notes and sharing join it from the
+ * screens that keep them.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,6 +71,7 @@ fun PostMenu(post: XPost, actions: PostActions, onDismiss: () -> Unit) {
                     }
                 }
             }
+            PluginSheetEntries(remember(post, prefs) { PluginSaves.shared(post, PostView.url(post, prefs)) }, onDismiss)
         }
     }
 }

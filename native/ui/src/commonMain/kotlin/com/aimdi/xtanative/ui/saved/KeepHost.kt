@@ -127,6 +127,7 @@ fun noticeText(notice: KeepNotice): String = when (notice) {
     KeepNotice.NoteSaveFailed -> stringResource(Res.string.saved_note_save_error)
     KeepNotice.NoteSaved -> stringResource(Res.string.saved_note_saved)
     KeepNotice.SomethingWentWrong -> stringResource(Res.string.saved_something_wrong)
+    is KeepNotice.Said -> notice.text
 }
 
 /** The line behind the lock: what the open tab keeps stays on this device. */

@@ -17,6 +17,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.data.plugins.PluginMembers
+import com.aimdi.xtanative.data.plugins.PluginSaves
 import com.aimdi.xtanative.data.plugins.PluginSheet
 import com.aimdi.xtanative.data.plugins.keepable
 import com.aimdi.xtanative.store.settings.SubscriptionPrefs
@@ -33,6 +34,8 @@ import com.aimdi.xtanative.ui.generated.resources.saved_save_here
 import com.aimdi.xtanative.ui.generated.resources.saved_save_to_folder
 import com.aimdi.xtanative.ui.generated.resources.saved_unsave
 import com.aimdi.xtanative.ui.plugins.PluginPostArchive
+import com.aimdi.xtanative.ui.plugins.PluginSharedPost
+import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 import com.aimdi.xtanative.ui.plugins.rememberShareText
 import com.aimdi.xtanative.ui.post.MenuRow
@@ -105,7 +108,8 @@ private fun GroupsSheet(sheet: PluginSheet.Groups, onDismiss: () -> Unit) {
 /**
  * A plugin post's menu (XTA's showPluginPostActions), in XTA's order: saving
  * it on this device or taking it out, the note on it, its author's groups,
- * sharing its link, its folder, and the browser.
+ * sharing its link, its folder, and the browser; then what the running
+ * plugins add ([PluginSheetEntries]).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -151,6 +155,26 @@ private fun PostMenuSheet(sheet: PluginSheet.Menu, onDismiss: () -> Unit) {
                 onDismiss()
                 outside(menu.url)
             }
+            PluginSheetEntries(remember(menu) { PluginSaves.shared(menu) }, onDismiss)
+        }
+    }
+}
+
+/**
+ * The running plugins' entries for [post] in a post sheet, below the app's
+ * own, as XTA's share sheet ends with them: each closes the sheet, then runs
+ * beyond it.
+ */
+@Composable
+fun PluginSheetEntries(post: PluginSharedPost, onDismiss: () -> Unit) {
+    val plugins = LocalPlugins.current
+    val running by plugins.running.collectAsStateWithLifecycle()
+    val language = currentLanguage()
+    val entries = remember(post, running, language) { plugins.sheetEntries(post, language, running) }
+    entries.forEach { entry ->
+        MenuRow(entry.icon, entry.label) {
+            onDismiss()
+            entry.run()
         }
     }
 }

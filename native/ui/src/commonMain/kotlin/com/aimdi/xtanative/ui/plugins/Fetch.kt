@@ -9,6 +9,19 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+/**
+ * What [ask] answers, or what [failed] makes of the exception it threw
+ * instead (a refused request, no connection, a key that does not read): a
+ * plugin's words for how a request went. A cancellation goes on as it is.
+ */
+suspend fun <T> answeredOr(failed: (Exception) -> T, ask: suspend () -> T): T = try {
+    ask()
+} catch (e: CancellationException) {
+    throw e
+} catch (e: Exception) {
+    failed(e)
+}
+
 /** Where one read stands: what it last gave, whether it is reading, and why the last read failed. */
 data class Fetched<T>(val value: T? = null, val loading: Boolean = false, val problem: Throwable? = null)
 

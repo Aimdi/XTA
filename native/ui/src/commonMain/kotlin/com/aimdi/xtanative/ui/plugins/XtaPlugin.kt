@@ -186,6 +186,24 @@ abstract class XtaPlugin {
      */
     open fun archived(content: JsonElement): NetworkPost? = null
 
+    /**
+     * The entries it adds to the post sheets for [post] (the app's X post
+     * sheet and the shared post menu), below the app's own, as XTA's share
+     * sheet offers "Save to Karakeep"; none by default. Asked as a sheet
+     * opens, so quick: the work is the entry's [PluginPostAction.run].
+     */
+    open fun postSheetActions(post: PluginSharedPost): List<PluginPostAction> = emptyList()
+
+    /** Its switch in Saved's folder dialog (XTA's "Upload media to Immich"); null for none. */
+    open val folderOption: PluginFolderOption? get() = null
+
+    /**
+     * [post] was filed in one of Saved's folders whose switch ([folderOption])
+     * is on: from the bookmark, the save sheet or a note. It runs beyond the
+     * screen that filed it, and says how it went itself ([PluginHost.tell]).
+     */
+    open suspend fun filed(post: PluginFiledPost) {}
+
     /** The store's groups, in the order XTA's store shows them; [key] as the catalogue writes it. */
     enum class Category(val key: String) {
         SOCIAL("social"),

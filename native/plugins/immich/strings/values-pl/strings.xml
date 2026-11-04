@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Immich</string>
+    <string name="plugin_description">Wysyłanie mediów z wybranych folderów zakładek na własny serwer Immich</string>
+    <string name="settings_intro">Podaj adres swojego serwera Immich i klucz API z Ustawień konta → Klucze API. Foldery zakładek, dla których to włączysz, będą wysyłać tutaj swoje zdjęcia i filmy.</string>
+    <string name="server_url">Adres serwera</string>
+    <string name="server_url_hint">Na przykład 192.168.1.10:2283 albo https://zdjecia.example.org</string>
+    <string name="api_key">Klucz API</string>
+    <string name="api_key_hint">Immich → Ustawienia konta → Klucze API</string>
+    <string name="test">Sprawdź połączenie</string>
+    <string name="test_ok">Połączono z serwerem Immich</string>
+    <string name="not_configured">Najpierw podaj adres i klucz API</string>
+    <string name="error_unauthorized">Immich odrzucił klucz API</string>
+    <string name="error_server_url">Pod tym adresem nie odpowiada żaden serwer Immich</string>
+    <string name="error_network">Nie udało się połączyć z serwerem Immich</string>
+    <string name="error_generic">Serwer Immich zwrócił błąd</string>
+    <string name="options">Opcje przesyłania</string>
+    <string name="album_per_folder">Album dla każdego folderu</string>
+    <string name="album_per_folder_description">Wysłane pliki trafiają do albumu Immich o nazwie folderu zakładek, tworzonego, jeśli jeszcze go nie ma</string>
+    <string name="include_videos">Wysyłaj też filmy</string>
+    <string name="include_videos_description">Filmy i GIF-y są znacznie większe od zdjęć. Gdy to jest wyłączone, wysyłane są tylko zdjęcia.</string>
+    <string name="folder_hint">Wysyłanie włącza się dla folderu przy jego tworzeniu lub edycji, w Zakładkach.</string>
+    <string name="learn_more">O Immichu</string>
+    <string name="auto_upload">Wysyłaj media do Immicha</string>
+    <string name="auto_upload_description">Wysyłaj zdjęcia i filmy z postów zapisanych w tym folderze na swój serwer Immich</string>
+    <string name="uploading">Wysyłanie do Immicha…</string>
+    <string name="upload_done">Wysłano do Immicha</string>
+    <string name="upload_failed">Nie udało się wysłać do Immicha</string>
+    <string name="show">Pokaż</string>
+    <string name="hide">Ukryj</string>
+    <string name="save">Zapisz</string>
+    <string name="connection">Połączenie</string>
+</resources>
