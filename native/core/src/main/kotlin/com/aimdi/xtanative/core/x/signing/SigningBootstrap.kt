@@ -103,9 +103,19 @@ class SigningBootstrap(private val http: XHttp) {
                 val url = script.attr("src").toHttpUrlOrNull()
                 if (url != null && isSigningBundle(url)) return url
             }
-            val index = ondemandIndex.find(html)?.groupValues?.get(1) ?: return null
+            return chunkMapSigner(html)
+        }
+
+        /**
+         * The signing bundle a webpack runtime names in [source]: the chunk
+         * whose name is `ondemand.s`, by the hash the runtime keeps for it. The
+         * home page carries the runtime inline; the sign-in page loads it as a
+         * script, so the asset search asks every script it reads.
+         */
+        internal fun chunkMapSigner(source: String): HttpUrl? {
+            val index = ondemandIndex.find(source)?.groupValues?.get(1) ?: return null
             val hash = Regex("""(?:^|[,{])\s*["']?${Regex.escape(index)}["']?\s*:\s*["']([a-zA-Z0-9_-]+)["']""")
-                .find(html)?.groupValues?.get(1) ?: return null
+                .findAll(source).map { it.groupValues[1] }.firstOrNull { it != "ondemand.s" && !it.contains('.') } ?: return null
             val url = ONDEMAND_TEMPLATE.format(hash).toHttpUrlOrNull() ?: return null
             return url.takeIf { isSigningBundle(it) }
         }
@@ -175,6 +185,7 @@ internal class SigningAssets(private val http: XHttp) {
                 }
                 loaded++
                 references(url, source, literal).firstOrNull { signer(it) }?.let { return@coroutineScope it }
+                SigningBootstrap.chunkMapSigner(source)?.let { return@coroutineScope it }
                 enqueue(references(url, source, moduleImport).toList(), depth + 1)
             }
         }

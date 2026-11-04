@@ -9,6 +9,8 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlinx.coroutines.runBlocking
+import okhttp3.HttpUrl.Companion.toHttpUrl
+import org.jsoup.Jsoup
 import org.junit.jupiter.api.Assumptions.assumeTrue
 
 /**
@@ -58,6 +60,33 @@ class XLiveTest {
         probe("community") { client.community("1472249315724771329").rules.size }
         probe("community posts") { client.communityPosts("1472249315724771329").threads.size }
         probe("trends") { client.trends(1).trends.size }
+    }
+
+    /**
+     * What x.com's sign-in page links, written to the log and never failed on:
+     * where the signing script is named when /home and /search are refused
+     * (as they were to CI's runners from 3 November 2026).
+     */
+    @Test
+    fun theSignInPageScriptsAreLogged() = runBlocking {
+        assumeTrue(System.getenv("RUN_LIVE") == "true", "Set RUN_LIVE=true to read live x.com")
+        val http = OkHttpXHttp()
+        val headers = mapOf(
+            "Accept-Language" to "en-US,en;q=0.9",
+            "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36",
+        )
+        runCatching {
+            val answer = http.get("https://x.com/i/flow/login".toHttpUrl(), headers, followRedirects = true)
+            val page = Jsoup.parse(answer.body, "https://x.com/i/flow/login")
+            val scripts = page.select("script[src]").map { it.attr("src") }
+            val inline = page.select("script:not([src])").map { it.data() }
+            println("LIVE sign-in page: HTTP ${answer.code}, ${answer.body.length} characters, ${scripts.size} scripts, ${inline.size} inline")
+            println("LIVE sign-in inline scripts naming ondemand.s: ${inline.count { "ondemand.s" in it }}")
+            scripts.take(12).forEach { src ->
+                val source = runCatching { http.get(src.toHttpUrl(), emptyMap(), followRedirects = false).body }.getOrDefault("")
+                println("LIVE sign-in script ${src.substringAfterLast('/')}: ${source.length} characters, ondemand.s ${"ondemand.s" in source}")
+            }
+        }.onFailure { println("LIVE sign-in page probe failed: ${it::class.simpleName}: ${it.message?.take(160)}") }
     }
 
     private suspend fun probe(what: String, read: suspend () -> Int) {

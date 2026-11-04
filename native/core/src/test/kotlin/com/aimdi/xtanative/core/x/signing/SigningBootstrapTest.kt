@@ -68,6 +68,23 @@ class SigningBootstrapTest {
     }
 
     @Test
+    fun theSignInPageSignerIsFoundThroughTheChunkMapOfTheRuntimeItLoads() = runBlocking {
+        // As X answered CI's runners on 3 November 2026: /home and /search refused,
+        // and a sign-in page that names the signer only in its webpack runtime.
+        val runtime = "https://abs.twimg.com/responsive-web/client-web/runtime.abc123.js"
+        val signInPage = page.replace("<script src=\"$bundle\"></script>", "<script src=\"$runtime\"></script>")
+        val x = FakeX { url, _ ->
+            when (url.toString()) {
+                runtime -> XResponse(200, """(()=>{var n={20113:"ondemand.s",3:"main"},h={3:"9f8e7d",20113:"abcdef1234567890"};})();""")
+                bundle -> XResponse(200, script)
+                else -> if (url.encodedPath == "/i/flow/login") XResponse(200, signInPage) else XResponse(403, "challenge")
+            }
+        }
+        SigningBootstrap(x).derive(null)
+        assertEquals(listOf("https://x.com/home", "https://x.com/search?q=AI&f=live", "https://x.com/i/flow/login", runtime, bundle), x.asked)
+    }
+
+    @Test
     fun aFailedBootstrapSaysWhatEachPageLacked() {
         val keyOnly = "<html><head><title>X</title>" +
             "<meta name=\"twitter-site-verification\" content=\"${java.util.Base64.getEncoder().encodeToString(ByteArray(48))}\">" +
