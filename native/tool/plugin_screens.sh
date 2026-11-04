@@ -63,9 +63,24 @@ fail() {
   exit 1
 }
 
+# The account menu: Home's avatar where the tab has the top bar; on Following,
+# whose one bar has no avatar (as in XTA), the timeline picker's last row,
+# under its timelines (the sheet is pulled up when that row is below it).
+open_menu() {
+  tap_node 'content-desc="Open navigation menu"' && return 0
+  tap_node 'content-desc="Following"' || fail "No account menu or timeline picker on Home"
+  sleep 2
+  tap_node 'text="Open navigation menu"' && return 0
+  local size
+  size=$(adb shell wm size | sed -n 's/.*: \([0-9]*\)x\([0-9]*\).*/\1 \2/p' | tail -1)
+  adb shell input swipe $((${size% *} / 2)) $((${size#* } * 85 / 100)) $((${size% *} / 2)) $((${size#* } * 25 / 100)) 300
+  sleep 1
+  tap_node 'text="Open navigation menu"' || fail "No account menu in the timeline picker"
+}
+
 # The store, from Home's account menu.
 open_store() {
-  tap_node 'content-desc="Open navigation menu"' || fail "No account menu on Home"
+  open_menu
   sleep 2
   tap_node 'text="Plugin store"' || fail "No plugin store in the account menu"
   sleep 3

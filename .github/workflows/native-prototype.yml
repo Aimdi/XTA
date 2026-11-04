@@ -305,6 +305,47 @@ jobs:
           name: xta-native-plugins-desktop-${{ env.VERSION_NAME }}
           path: native/plugins/build/out/desktop
 
+      # The app keeps loading plugins built for OLDEST_PLUGIN_API and later
+      # (XtaPlugin.kt): the ones published in native-plugins have to link
+      # against what this build ships, or OLDEST_PLUGIN_API moves up.
+      - name: The published plugins still link
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/published"
+          if ! gh release download native-plugins --repo "$GITHUB_REPOSITORY" --pattern 'xta-plugin-*.jar' --dir "$RUNNER_TEMP/published"; then
+            echo "No published plugins to check"
+            exit 0
+          fi
+          oldest=$(sed -n 's/^const val OLDEST_PLUGIN_API: Int = \([0-9]*\)$/\1/p' native/ui/src/commonMain/kotlin/com/aimdi/xtanative/ui/plugins/XtaPlugin.kt)
+          app=$(ls native/desktop/build/compose/binaries/main/app/xta-native/lib/app/*.jar | paste -sd:)
+          python3 -I native/tool/plugin_abi.py --oldest "${oldest:?no OLDEST_PLUGIN_API in XtaPlugin.kt}" --app "$app" "$RUNNER_TEMP"/published/*.jar
+
+      # This build's plugins say they are for PLUGIN_API_VERSION, and an app of
+      # the last prerelease that loads that version would be offered them: they
+      # have to link against it, or the API changed without a new version.
+      - name: The last prerelease's app runs this build's plugins
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          api=$(sed -n 's/^const val PLUGIN_API_VERSION: Int = \([0-9]*\)$/\1/p' native/ui/src/commonMain/kotlin/com/aimdi/xtanative/ui/plugins/XtaPlugin.kt)
+          last=$(gh release list --repo "$GITHUB_REPOSITORY" --limit 50 --json tagName -q '.[].tagName' | grep -E '^native-[0-9]+\.' | sort -V | tail -1)
+          mkdir -p "$RUNNER_TEMP/last"
+          if [ -z "$last" ] || ! gh release download native-plugins --repo "$GITHUB_REPOSITORY" --pattern plugins.json --dir "$RUNNER_TEMP/last"; then
+            echo "No prerelease with plugins yet"
+            exit 0
+          fi
+          published=$(python3 -I -c 'import json, sys; print(json.load(open(sys.argv[1]))["apiVersion"])' "$RUNNER_TEMP/last/plugins.json")
+          if [ "$published" != "${api:?no PLUGIN_API_VERSION in XtaPlugin.kt}" ]; then
+            echo "$last published plugins for API $published, this build is API $api: an app of $last does not load them"
+            exit 0
+          fi
+          gh release download "$last" --repo "$GITHUB_REPOSITORY" --pattern '*-linux-x64.tar.gz' --dir "$RUNNER_TEMP/last"
+          tar -xzf "$RUNNER_TEMP"/last/*-linux-x64.tar.gz -C "$RUNNER_TEMP/last"
+          app=$(find "$RUNNER_TEMP/last" -path '*/lib/app/*.jar' | paste -sd:)
+          python3 -I native/tool/plugin_abi.py --app "${app:?no lib/app in the tarball of $last}" native/plugins/build/out/desktop/*.jar \
+            || { echo "These plugins need what $last's app lacks, at the same plugin API $api: move PLUGIN_API_VERSION up"; exit 1; }
+
       - name: Pack the tarball and the PKGBUILD
         run: bash native/tool/package_desktop.sh native/desktop/build/compose/binaries/main/app/xta-native "$VERSION_NAME" "$RUNNER_TEMP/desktop"
 

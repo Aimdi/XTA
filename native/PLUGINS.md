@@ -44,9 +44,24 @@ plugin API version it was built against, `PLUGIN_API_VERSION`) and `entry`
 
 ## The plugin API
 
-`PLUGIN_API_VERSION` is 1. Changing anything below in a way a plugin already
-built would notice means a new version; the app loads only plugins built
-against one it supports.
+`PLUGIN_API_VERSION` is 2. Version 1 is what native-0.1.41 shipped; 2 adds
+`cashtagStrip` and `routeForCashtag`, and the kit's pieces since (the article
+reader, `FeedReads`, X posts in a plugin, the chip tabs, the shelf, the recent
+searches, the action row, `ZoomableImage`). A plugin's `xta-plugin.json`
+names the version it was built against.
+
+The app loads the versions from `OLDEST_PLUGIN_API` (1) to its own, so a
+plugin built before keeps working until its update comes, for as long as what
+it uses is still here: CI's desktop job checks the plugins published in
+`native-plugins` against what the build ships (`tool/plugin_abi.py`). So add
+to the API (new members with defaults, new classes) rather than change what
+is there; a change that leaves the published plugins behind has to move
+`OLDEST_PLUGIN_API` up with it, and the store then offers those plugins their
+update. Changing anything below in a way a plugin already built would notice
+means a new version, and so does any addition once a prerelease has shipped
+the version: an app of that prerelease would be offered the plugins that use
+it. CI checks that too: while this build's version is the last prerelease's,
+its plugins have to link against that prerelease's app.
 
 `XtaPlugin`, what a plugin is:
 

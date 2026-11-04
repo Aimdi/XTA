@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Whether plugins built before still link against this tree's app.
 
-    python3 -I native/tool/plugin_abi.py --app <dirs or jars, ':'-separated> <plugin jar>...
+    python3 -I native/tool/plugin_abi.py [--oldest N] --app <dirs or jars, ':'-separated> <plugin jar>...
 
 Every class, method and field a plugin's classes use from the app's own
 modules (com.aimdi.xtanative.*, outside the plugin itself) has to be in the
@@ -12,12 +12,17 @@ has to be implemented. What breaks either fails at run time, as
 NoSuchMethodError, NoClassDefFoundError or AbstractMethodError.
 
 The app's classes are its compiled modules (:ui, :core, :store, :services,
-:networks, :plugin-host); a plugin is its desktop JAR (the Android APK is the
-same classes, dexed). Libraries (Kotlin, Compose, OkHttp) are not checked: the
-app and its plugins are built with the same versions. Prints what is missing
-and exits 1 when anything is; reads class files only, runs nothing of them.
+:networks, :plugin-host), as class folders or JARs (the desktop app's lib/app
+holds them; only com.aimdi.xtanative classes are taken from them); a plugin
+is its desktop JAR (the Android APK is the same classes, dexed). Libraries
+(Kotlin, Compose, OkHttp) are not checked: the app and its plugins are built
+with the same versions. --oldest leaves out plugins built for an API older
+than the app loads (OLDEST_PLUGIN_API): the store offers them their update.
+Prints what is missing and exits 1 when anything is; reads class files and
+xta-plugin.json only, runs nothing of them.
 """
 import argparse
+import json
 import os
 import struct
 import sys
@@ -111,26 +116,35 @@ def strip(name):
     return name[1:-1] if name.startswith("L") and name.endswith(";") else name
 
 
-def classes_of(path):
-    """Every class in a directory of class files or a JAR, by name."""
+def classes_of(path, only_app=False):
+    """Every class in a directory of class files or a JAR, by name; only the app's own when [only_app]."""
     found = {}
     if os.path.isdir(path):
         for root, _, files in os.walk(path):
             for file in files:
                 if file.endswith(".class"):
                     with open(os.path.join(root, file), "rb") as handle:
-                        keep(found, handle.read())
+                        keep(found, handle.read(), only_app)
     else:
         with zipfile.ZipFile(path) as archive:
             for entry in archive.namelist():
-                if entry.endswith(".class") and not entry.startswith("META-INF/"):
-                    keep(found, archive.read(entry))
+                if entry.endswith(".class") and not entry.startswith("META-INF/") and (not only_app or entry.startswith(APP)):
+                    keep(found, archive.read(entry), only_app)
     return found
 
 
-def keep(found, data):
+def keep(found, data, only_app):
     parsed = ClassFile(data)
-    found[parsed.name] = parsed
+    if not only_app or parsed.name.startswith(APP):
+        found[parsed.name] = parsed
+
+
+def api_of(path):
+    """The plugin API version a plugin JAR's xta-plugin.json says it was built for, or None."""
+    with zipfile.ZipFile(path) as archive:
+        if "xta-plugin.json" not in archive.namelist():
+            return None
+        return json.loads(archive.read("xta-plugin.json")).get("apiVersion")
 
 
 def supertypes(name, world):
@@ -201,16 +215,20 @@ def unimplemented(plugin, app):
 def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--app", required=True, help="the app's class directories and JARs, ':'-separated")
+    parser.add_argument("--oldest", type=int, default=0, help="the oldest plugin API the app loads; older plugins are left out")
     parser.add_argument("plugins", nargs="+", help="plugin JARs built before")
     args = parser.parse_args()
     app = {}
     for path in filter(None, args.app.split(":")):
-        app.update(classes_of(path))
+        app.update(classes_of(path, only_app=True))
     failed = False
     for path in args.plugins:
+        name, api = os.path.basename(path), api_of(path)
+        if api is not None and api < args.oldest:
+            print(f"{name}: built for plugin API {api}, which the app no longer loads: offered its update, not checked")
+            continue
         plugin = classes_of(path)
         problems = sorted(missing_references(plugin, app) | unimplemented(plugin, app))
-        name = os.path.basename(path)
         print(f"{name}: {len(plugin)} classes, " + (f"{len(problems)} problems" if problems else "links"))
         for problem in problems:
             print(f"  {problem}")

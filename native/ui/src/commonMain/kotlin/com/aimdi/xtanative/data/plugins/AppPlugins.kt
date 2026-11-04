@@ -25,6 +25,7 @@ import com.aimdi.xtanative.ui.feed.SourceAsk
 import com.aimdi.xtanative.ui.home.StripNetwork
 import com.aimdi.xtanative.ui.plugins.MediaItem
 import com.aimdi.xtanative.ui.plugins.NetworkPost
+import com.aimdi.xtanative.ui.plugins.OLDEST_PLUGIN_API
 import com.aimdi.xtanative.ui.plugins.PLUGIN_API_VERSION
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginPostArchive
@@ -101,7 +102,7 @@ class AppPlugins(
 
     val manager = PluginManager(
         host = platform,
-        api = PluginApi(PLUGIN_API_VERSION),
+        api = PluginApi((OLDEST_PLUGIN_API..PLUGIN_API_VERSION).toSet()),
         directory = File(files, "plugins"),
         store = store,
         erase = ::erase,

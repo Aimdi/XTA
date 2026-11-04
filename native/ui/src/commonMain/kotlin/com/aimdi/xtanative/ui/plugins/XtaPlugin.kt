@@ -12,8 +12,17 @@ import kotlinx.serialization.json.JsonElement
  * xta-plugin.json names the version it was built against, and the app loads
  * only plugins built against one it supports. Changing what is in this
  * package in a way a plugin already built would notice means a new version.
+ * 1 is what native-0.1.41 shipped; 2 adds the cashtag hooks and the kit's
+ * pieces since.
  */
-const val PLUGIN_API_VERSION: Int = 1
+const val PLUGIN_API_VERSION: Int = 2
+
+/**
+ * The oldest plugin API whose plugins this app still loads: what they use of
+ * it is all still here, as `tool/plugin_abi.py` checks against the published
+ * plugins in CI. It moves up when a change leaves them behind.
+ */
+const val OLDEST_PLUGIN_API: Int = 1
 
 /** What a plugin draws inside the app's own chrome: its home tab, its client, its settings. */
 typealias PluginBody = @Composable (PluginFrame) -> Unit
