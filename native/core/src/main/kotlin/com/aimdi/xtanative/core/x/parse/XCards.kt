@@ -64,6 +64,7 @@ object XCards {
             imageWidth = picture?.get("width")?.int,
             imageHeight = picture?.get("height")?.int,
             large = large,
+            kind = name,
         )
     }
 

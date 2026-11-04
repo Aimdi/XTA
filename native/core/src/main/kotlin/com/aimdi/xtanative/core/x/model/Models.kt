@@ -81,7 +81,9 @@ sealed interface XCard {
      * A link preview. [large] draws the picture above the title, as
      * `summary_large_image` and `player` do. A website card X builds itself
      * (a unified card) may bring [media] instead: a video, or the pictures of a
-     * carousel, all leading to [url].
+     * carousel, all leading to [url]. [kind] is X's name for the preview
+     * (`summary`, `summary_large_image`, `player`), "link" for another
+     * network's, null for the cards X builds itself.
      */
     data class Link(
         val url: String,
@@ -93,6 +95,7 @@ sealed interface XCard {
         val imageHeight: Int?,
         val large: Boolean,
         val media: List<XMedia> = emptyList(),
+        val kind: String? = null,
     ) : XCard
 
     /** A poll, as counted when the post was read. Read only: XTA Native never votes. */

@@ -190,6 +190,7 @@ object XCodec {
             card.imageHeight?.let { put("h", it) }
             put("large", card.large)
             if (card.media.isNotEmpty()) put("media", JsonArray(card.media.map(::media)))
+            card.kind?.let { put("kind", it) }
         }
         is XCard.Poll -> buildJsonObject {
             put("k", "poll")
@@ -236,6 +237,7 @@ object XCodec {
             imageHeight = json["h"].int,
             large = json["large"].boolean ?: false,
             media = json["media"].list.mapNotNull(::media),
+            kind = json["kind"].string,
         )
     }
 

@@ -4,6 +4,7 @@ import com.aimdi.xtanative.core.x.XReplyRanking
 import com.aimdi.xtanative.core.x.XQuoteOrder
 import com.aimdi.xtanative.core.x.XTranslationException
 import com.aimdi.xtanative.core.x.model.XArticle
+import com.aimdi.xtanative.core.x.model.XCard
 import com.aimdi.xtanative.core.x.model.XEntity
 import com.aimdi.xtanative.core.x.model.XLive
 import com.aimdi.xtanative.core.x.model.XMedia
@@ -196,5 +197,18 @@ class PostRulesTest {
         val memory = TranslationMemory { 0 }
         memory.write("k", "v", ttlMillis = 1)
         assertEquals("v", memory.read("k"))
+    }
+
+    @Test
+    fun aLinkCardIsLargeOnlyWhereItsPictureIsTheLink() {
+        fun card(url: String, kind: String?, image: String? = "https://pbs.twimg.com/card.jpg", large: Boolean = true) =
+            XCard.Link(url, "T", null, null, image, null, null, large = large, kind = kind)
+        assertFalse(PostView.drawsLargeCard(card("https://news.example/story", "summary_large_image")), "a story's share image is decoration")
+        assertTrue(PostView.drawsLargeCard(card("https://www.youtube.com/watch?v=1", "summary_large_image")))
+        assertFalse(PostView.drawsLargeCard(card("https://www.youtube.com/watch?v=1", "player")), "a player is a row beside its picture")
+        assertFalse(PostView.drawsLargeCard(card("https://news.example/story", "link")), "another network's article link, as XTA draws every network's")
+        assertTrue(PostView.drawsLargeCard(card("https://example.com/buy", null)), "a website card X builds itself")
+        assertFalse(PostView.drawsLargeCard(card("https://www.youtube.com/watch?v=1", "summary_large_image", image = null)))
+        assertFalse(PostView.drawsLargeCard(card("https://news.example/story", "summary", large = false)))
     }
 }

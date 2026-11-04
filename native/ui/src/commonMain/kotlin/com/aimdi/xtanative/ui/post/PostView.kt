@@ -1,10 +1,13 @@
 package com.aimdi.xtanative.ui.post
 
+import com.aimdi.xtanative.core.x.model.XCard
 import com.aimdi.xtanative.core.x.model.XEntity
 import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.services.ai.XTranslator
+import com.aimdi.xtanative.services.links.LinkPreviewLayout
+import com.aimdi.xtanative.services.links.LinkPreviews
 import com.aimdi.xtanative.services.links.XLinks
 
 /** A line above a card's author, as XTA's tweet.dart draws them, in its order. */
@@ -79,6 +82,21 @@ object PostView {
     }
 
     /** Whether a post offers translation into [appLanguage]: never an article, nor a post already in it. */
+    /**
+     * Whether a link card draws its picture large (_card.dart): X's own
+     * website and event cards always; a large-image preview, or another
+     * network's link, only where the picture is what the link is (a video
+     * site, LinkPreviews); a player as a row beside its picture, never.
+     */
+    fun drawsLargeCard(card: XCard.Link): Boolean {
+        if (!card.large || card.imageUrl == null) return false
+        return when (card.kind) {
+            "player" -> false
+            "summary_large_image", "link" -> LinkPreviews.layoutFor(card.url, hasImage = true) == LinkPreviewLayout.LARGE
+            else -> true
+        }
+    }
+
     fun offersTranslation(shown: XPost, appLanguage: String): Boolean = shown.article == null && XTranslator.offers(shown.lang, appLanguage)
 
     /**

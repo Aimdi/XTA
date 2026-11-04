@@ -492,7 +492,7 @@ private fun FocalCounts(post: NetworkPost) {
     }
 }
 
-/** A network's link card drawn as X's: large with its picture, small without. */
+/** A network's link card drawn as X's, by the rule every network's preview follows (PostView.drawsLargeCard). */
 private fun LinkCard.asXCard(): XCard.Link = XCard.Link(
     url = url,
     title = title?.takeIf { it.isNotBlank() } ?: domain ?: url,
@@ -502,6 +502,7 @@ private fun LinkCard.asXCard(): XCard.Link = XCard.Link(
     imageWidth = null,
     imageHeight = null,
     large = imageUrl != null,
+    kind = "link",
 )
 
 private val IndentStep = 20.dp

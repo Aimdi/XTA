@@ -87,7 +87,7 @@ private fun CardBody(card: XCard, modifier: Modifier, open: (XCard.Link) -> Unit
     when (card) {
         is XCard.Link -> when {
             card.media.isNotEmpty() -> MediaCard(card, { open(card) }, modifier)
-            card.large && card.imageUrl != null -> LargeLinkCard(card, { open(card) }, modifier)
+            PostView.drawsLargeCard(card) -> LargeLinkCard(card, { open(card) }, modifier)
             // XTA draws a small preview as every network's (link_preview_card.dart).
             else -> LinkPreviewCard(card.url, card.title, { open(card) }, modifier, imageUrl = card.imageUrl)
         }

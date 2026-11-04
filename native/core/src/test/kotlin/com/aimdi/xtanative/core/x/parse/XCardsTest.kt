@@ -143,6 +143,14 @@ class XCardsTest {
     }
 
     @Test
+    fun aPreviewKeepsXsNameForItsLayout() {
+        val values = mapOf("title" to "T", "card_url" to "https://example.com/a")
+        assertEquals(listOf("summary", "summary_large_image", "player"), listOf("summary", "summary_large_image", "player").map { (XCards.card(card(it, values), emptyList()) as XCard.Link).kind })
+        val promo = XCards.card(card("promo_website", mapOf("website_url" to "https://example.com/buy", "title" to "Buy")), emptyList()) as XCard.Link
+        assertNull(promo.kind, "a card X builds itself draws as X sends it")
+    }
+
+    @Test
     fun aPromotedWebsiteAndALiveEventAreLinkPreviews() {
         val promo = XCards.card(card("promo_website", mapOf("website_url" to "https://example.com/buy", "title" to "Buy", "vanity_url" to "example.com")), emptyList()) as XCard.Link
         assertEquals(Triple("https://example.com/buy", "Buy", "example.com"), Triple(promo.url, promo.title, promo.domain))
