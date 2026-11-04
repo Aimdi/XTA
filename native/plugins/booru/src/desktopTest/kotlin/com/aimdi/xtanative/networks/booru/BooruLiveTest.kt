@@ -1,11 +1,13 @@
 package com.aimdi.xtanative.networks.booru
 
 import com.aimdi.xtanative.core.x.http.OkHttpXHttp
+import com.aimdi.xtanative.networks.NetworkRequestException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import kotlinx.coroutines.runBlocking
+import org.junit.jupiter.api.Assumptions.assumeFalse
 import org.junit.jupiter.api.Assumptions.assumeTrue
 
 /**
@@ -14,8 +16,18 @@ import org.junit.jupiter.api.Assumptions.assumeTrue
  */
 class BooruLiveTest {
     @Test
-    fun aSafeSearchOnDanbooruReadsAPostsDetailAndTheAutocomplete() = runBlocking {
+    fun aSafeSearchOnDanbooruReadsAPostsDetailAndTheAutocomplete(): Unit = runBlocking {
         assumeTrue(System.getenv("RUN_LIVE") == "true", "Set RUN_LIVE=true to read live Danbooru")
+        try {
+            readsAsAGuest()
+        } catch (e: NetworkRequestException) {
+            // Danbooru down (its 5xx, its maintenance page) says nothing of the app: the check has nothing to read.
+            assumeFalse(e.refusal?.kind == BooruErrorKind.UNAVAILABLE, "Danbooru is unavailable: ${e.message}")
+            throw e
+        }
+    }
+
+    private suspend fun readsAsAGuest() {
         val client = BooruClient(OkHttpXHttp(), settings = { BooruSettings(maxRating = BooruRating.GENERAL) })
 
         val page = client.search("scenery", limit = 10)
