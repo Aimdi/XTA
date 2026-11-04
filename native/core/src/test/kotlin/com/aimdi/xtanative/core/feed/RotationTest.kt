@@ -34,7 +34,7 @@ class RotationTest {
     }
 
     @Test
-    fun oneMemberFailingKeepsTheOthersAndTheFailureShowsOnlyWhenNothingWasRead() = runBlocking {
+    fun oneMemberFailingKeepsTheOthersAndTheFailureShowsOnlyWhenNothingWasRead(): Unit = runBlocking {
         val merged = cache().merge(listOf("good", "bad")) { key -> if (key == "bad") throw IllegalStateException("down") else listOf(Post(key, day(1))) }
         assertEquals(listOf("good"), merged.map { it.from })
         assertFailsWith<IllegalStateException> { cache().merge(listOf("bad")) { throw IllegalStateException("down") } }
@@ -84,7 +84,7 @@ class RotationTest {
     }
 
     @Test
-    fun aRefreshPaintsWhatWasHeldAndAFailedMemberKeepsWhatItSaidLast() = runBlocking {
+    fun aRefreshPaintsWhatWasHeldAndAFailedMemberKeepsWhatItSaidLast(): Unit = runBlocking {
         val members = cache(concurrency = 1)
         members.merge(listOf("a", "b", "c"), fetch = answering())
         val painted = ArrayList<Set<String>>()

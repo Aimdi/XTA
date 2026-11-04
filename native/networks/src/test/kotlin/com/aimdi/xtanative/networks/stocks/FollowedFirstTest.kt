@@ -174,7 +174,7 @@ class FollowedFirstTest {
     }
 
     @Test
-    fun theFirstPageDoesNotWaitPastItsTimeForX() = runBlocking {
+    fun theFirstPageDoesNotWaitPastItsTimeForX(): Unit = runBlocking {
         val never = CompletableDeferred<List<XThread>>()
         val slow = FollowedTickerSource(search = { never.await() }, cached = { listOf(single("device", "1")) }, now = { now })
         val started = System.nanoTime()

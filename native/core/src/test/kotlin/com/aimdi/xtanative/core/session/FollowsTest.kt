@@ -51,7 +51,7 @@ class FollowsTest {
     private fun user(id: String) = XUser(id, "handle$id", "Name $id")
 
     @Test
-    fun aListIsReadPageByPageEachMemberOnceUntilItRunsOut() = runBlocking {
+    fun aListIsReadPageByPageEachMemberOnceUntilItRunsOut(): Unit = runBlocking {
         val lists = Lists(
             "Space",
             mapOf(

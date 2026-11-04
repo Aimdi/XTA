@@ -108,7 +108,7 @@ class WebSourceClientTest {
     }
 
     @Test
-    fun reportsAnotherStatusAPageTooLargeAndNoAnswer() = runBlocking {
+    fun reportsAnotherStatusAPageTooLargeAndNoAnswer(): Unit = runBlocking {
         val url = "https://lobste.rs/x".toHttpUrl()
 
         val status = assertFailsWith<NetworkRequestException> { client(FakeSites { _, _ -> XResponse(503, "") }).page(lobsters, url, WebSourcePageType.JSON) }

@@ -77,7 +77,7 @@ class ForYouTest {
     }
 
     @Test
-    fun severalAccountsPageOnEachOnesCursorAndAFailedOneKeepsItsPlace() = runBlocking {
+    fun severalAccountsPageOnEachOnesCursorAndAFailedOneKeepsItsPlace(): Unit = runBlocking {
         val homes = Homes(
             mapOf(
                 ("1" to null) to page(at(1, 1), next = "1a"),

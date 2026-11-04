@@ -280,7 +280,7 @@ class VoicesTest {
     }
 
     @Test
-    fun aFailedDownloadCanBeTriedAgain() = runBlocking {
+    fun aFailedDownloadCanBeTriedAgain(): Unit = runBlocking {
         val answers = HashMap<String, Any>(mapOf(voice.url to 503))
         val store = downloads(FakeTransfer(answers, staging))
         store.download(voice)

@@ -18,7 +18,7 @@ layer is written in `networks/<id>` first, then moves with its screens into
 
 | XTA | Read | Screens |
 |---|---|---|
-| x (`lib/client`, `plugins/x`) | `core/x`: every read XTA makes | feed, post, profile, search done; trends, communities, lists and the rest in the screens wave |
+| x (`lib/client`, `plugins/x`) | `core/x`: every read XTA makes | feed, post, profile, search, Discover, communities, list import and antennas done; the rest in the screens wave |
 | reddit | `networks/reddit` ported (237 tests) | screens wave |
 | bluesky | `networks/bluesky` ported (98 tests, live check passes) | first plugin, being built |
 | mastodon | `networks/mastodon` ported (146 tests) | screens wave |
@@ -46,8 +46,8 @@ layer is written in `networks/<id>` first, then moves with its screens into
 | tweet | `ui/post` (done in part); translation in `services` |
 | home | `ui/home`: a tab per followed network and group, deck, For you, saved |
 | profile | `ui/profile` (done in part): follows lists, saved tab, filters, followed by |
-| search | `core/x` advanced search; `store` recent searches; `ui/search` |
-| trends | `core/x`; `ui/trends` |
+| search | `ui/search` (done: tabs, advanced search, languages, recent searches, media grid, search in a loaded feed); `store` recent searches |
+| trends | `ui/trends` (done: Discover with places, trends, shortcuts) |
 | subscriptions | `core/session` + `store`; `ui/subscriptions` (list, import, cleanup, groups) |
 | group | `core/feed` and `core/session` rules (done: custom rules, post caps, saved searches, batch read, rotation, nesting, combined and deck groups, packs); `ui/group` |
 | saved | `store/saved` (done: saved posts, folders, device likes, local notes and posts); `ui/saved` |
@@ -59,8 +59,8 @@ layer is written in `networks/<id>` first, then moves with its screens into
 | links | `services/links` (done: opening rules, routing, previews, shared links); `ui/links` |
 | speech | `services/speech` (done: text, languages, chunks, offline voices and their downloads); engines per platform; `ui/speech` |
 | media | per platform (players, continuity, podcasts, audio session); `ui/media` |
-| antenna | `store` (antennas) + `core` (their queries); `ui/antenna` |
-| community | `core/x`; `ui/community` |
+| antenna | `store` (antennas) + `ui/antenna` (done: list, editor, feed) |
+| community | `ui/community` (done: posts, about, members, links) |
 | intro | `ui/intro` |
 | settings | `store` (every setting); `ui/settings`; the plugin store in `plugin-host` + `ui/plugins` |
 | catcher | crash reports per platform; a switch in settings |
