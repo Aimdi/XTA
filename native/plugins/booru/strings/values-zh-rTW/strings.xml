@@ -128,6 +128,7 @@
     <string name="save_search">儲存搜尋</string>
     <string name="saved_searches">已儲存的搜尋</string>
     <string name="score">分數 %1$d</string>
+    <string name="card_title">Booru #%1$s</string>
     <string name="search">搜尋</string>
     <string name="search_hint">以空格分隔的標籤</string>
     <string name="search_history">最近的搜尋</string>

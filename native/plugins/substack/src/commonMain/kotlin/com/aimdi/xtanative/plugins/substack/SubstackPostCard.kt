@@ -21,8 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -31,9 +29,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,8 +48,6 @@ import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
-import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
-import com.aimdi.xtanative.ui.plugins.rememberShareText
 
 /** What the cards of one list need to know of what the reader keeps: read with each change, once for the list. */
 internal class PostMarks(val readIds: Set<String>, val liked: List<SubstackPost>, val saved: List<SubstackPost>) {
@@ -77,14 +71,14 @@ internal fun rememberMarks(app: SubstackApp): PostMarks {
  * publication's logo and name, opening its page), when, how long it reads,
  * whether it is paid or an episode, its headline and excerpt opening the
  * reader, its cover, and the reader's own heart, bookmark, its discussion and
- * the read mark. A long press offers its link. Nothing is told to Substack.
+ * the read mark. A long press opens the shared post sheet: Saved, its note,
+ * its link shared or opened. Nothing is told to Substack.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun SubstackPostCard(app: SubstackApp, post: SubstackPost, marks: PostMarks, logoUrl: String? = null, modifier: Modifier = Modifier) {
     val unread = marks.unread(post)
-    var menu by remember { mutableStateOf(false) }
-    Column(modifier.fillMaxWidth().combinedClickable(onClick = { app.openPost(post) }, onLongClick = { menu = true })) {
+    Column(modifier.fillMaxWidth().combinedClickable(onClick = { app.openPost(post) }, onLongClick = { app.openMenu(post) })) {
         Column(Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 4.dp)) {
             CardHeader(app, post, unread, logoUrl)
             post.authorName?.takeIf { it.isNotBlank() }?.let {
@@ -113,7 +107,6 @@ internal fun SubstackPostCard(app: SubstackApp, post: SubstackPost, marks: PostM
         post.coverImage?.takeIf { it.isNotEmpty() }?.let { Cover(it, post.isVideo) }
         CardActions(app, post, marks, unread)
         Hairline()
-        LinkMenu(post, menu) { menu = false }
     }
 }
 
@@ -193,17 +186,5 @@ private fun CountButton(icon: ImageVector, label: String, tint: Color, descripti
     TextButton(onClick = onClick) {
         Icon(icon, description, Modifier.size(20.dp), tint = tint)
         if (label.isNotEmpty()) Text(label, style = MaterialTheme.typography.bodySmall, color = tint, modifier = Modifier.padding(start = 4.dp))
-    }
-}
-
-/** A long press's menu: the post's link, shared or opened in the browser. */
-@Composable
-private fun LinkMenu(post: SubstackPost, open: Boolean, onDismiss: () -> Unit) {
-    val share = rememberShareText()
-    val outside = rememberOpenOutside()
-    val url = post.canonicalUrl ?: "${post.publicationBaseUrl}/p/${post.slug}"
-    DropdownMenu(expanded = open, onDismissRequest = onDismiss) {
-        DropdownMenuItem(text = { Text(pluginString(Strings.share_link)) }, onClick = { onDismiss(); share(url) })
-        DropdownMenuItem(text = { Text(pluginString(Strings.open_in_browser)) }, onClick = { onDismiss(); outside(url) })
     }
 }

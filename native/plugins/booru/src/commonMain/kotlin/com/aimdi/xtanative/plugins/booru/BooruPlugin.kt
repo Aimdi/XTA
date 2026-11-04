@@ -3,23 +3,28 @@ package com.aimdi.xtanative.plugins.booru
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.aimdi.xtanative.ui.plugins.NetworkPost
+import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.PluginBackupSection
 import com.aimdi.xtanative.ui.plugins.PluginBody
+import com.aimdi.xtanative.ui.plugins.PluginFeed
 import com.aimdi.xtanative.ui.plugins.PluginFootprint
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginScreen
 import com.aimdi.xtanative.ui.plugins.PluginSearch
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
+import kotlinx.serialization.json.JsonElement
 
 /**
  * Booru as a downloadable plugin (XTA's booru_plugin.dart): Danbooru and the
  * boorus that speak Moebooru's, Gelbooru 0.2's and e621's APIs, read as a
  * gallery: Latest, Popular and the tags followed here, the tag search with
  * the host's suggestions, posts with their tags, notes, pools and comments,
- * and the settings with each site's own rating cap, blacklist and login.
- * Read-only: nothing is voted on, favourited, commented on or tagged at any
- * booru. Followed tags and saved searches stay in the plugin's own folder;
- * a post saved here goes to the app's saved posts.
+ * and the settings with each site's own rating cap, blacklist and login;
+ * the followed tags' posts in Home's timelines when the reader asks and in
+ * the groups that hold them. Read-only: nothing is voted on, favourited,
+ * commented on or tagged at any booru. Followed tags and saved searches stay
+ * in the plugin's own folder; a post saved here goes to the app's Saved.
  */
 class BooruPlugin : XtaPlugin() {
     private lateinit var app: BooruApp
@@ -53,6 +58,13 @@ class BooruPlugin : XtaPlugin() {
     override fun screen(route: String): PluginScreen? = BooruRoutes.parse(route)?.let(::screenOf)
 
     private fun screenOf(route: BooruRoute): PluginScreen = { BooruRouteScreen(app, route) }
+
+    override val feed: PluginFeed get() = app.feed
+
+    override val postActions: NetworkPostActions get() = app.actions
+
+    /** A post kept as XTA's link record, as Saved draws it; another record is none of its. */
+    override fun archived(content: JsonElement): NetworkPost? = app.shownSaved(content)
 
     /** The tags followed and the searches saved here, under the name and in the rows XTA's backup gives them. */
     override val backupSections: List<PluginBackupSection>

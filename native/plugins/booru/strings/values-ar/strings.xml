@@ -133,6 +133,7 @@
     <string name="save_search">حفظ البحث</string>
     <string name="saved_searches">عمليات البحث المحفوظة</string>
     <string name="score">النقاط: %1$d</string>
+    <string name="card_title">Booru #%1$s</string>
     <string name="search">البحث</string>
     <string name="search_hint">وسوم تفصل بينها مسافات</string>
     <string name="search_history">عمليات البحث الأخيرة</string>

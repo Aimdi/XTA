@@ -21,26 +21,81 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.pixiv.PixivIllust
 import com.aimdi.xtanative.networks.pixiv.PixivNovel
 import com.aimdi.xtanative.networks.pixiv.PixivUser
 import com.aimdi.xtanative.networks.pixiv.PixivUserPreview
+import com.aimdi.xtanative.ui.plugins.addToGroupText
 import com.aimdi.xtanative.ui.plugins.pluginString
+import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 
 /** How many works or novels a creator's card shows. */
 private const val PREVIEWS = 3
+
+/** What Follow takes at least beside Add to group, and the group button's own icon, gap and padding around its name. */
+private val FOLLOW_ROOM = 136.dp
+private val GROUP_CHROME = 82.dp
+
+/**
+ * A profile's Follow across the row and Add to group beside it, named while
+ * the name fits beside Follow and its icon otherwise; the reader's own
+ * profile has Add to group alone (pixiv_user_header.dart's _ProfileButtons).
+ */
+@Composable
+internal fun ProfileButtons(user: PixivUser) {
+    val runtime = LocalPixiv.current
+    val self = user.id == runtime.ownId
+    val label = addToGroupText()
+    val measurer = rememberTextMeasurer()
+    val style = MaterialTheme.typography.labelLarge
+    val density = LocalDensity.current
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+        val named = self || maxWidth >= FOLLOW_ROOM + GROUP_CHROME + with(density) { measurer.measure(label, style).size.width.toDp() }
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            if (!self) FollowButton(user, Modifier.weight(1f), prominent = true)
+            ProfileGroupButton(label, named) { runtime.addToGroup(user) }
+        }
+    }
+}
+
+/** Add to group as the profile draws it, outlined with an edge: [label] beside its icon when [named], its icon alone otherwise. */
+@Composable
+private fun ProfileGroupButton(label: String, named: Boolean, onClick: () -> Unit) {
+    val shape = RoundedCornerShape(8.dp)
+    val border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+    if (named) {
+        OutlinedButton(onClick = onClick, shape = shape, border = border, modifier = Modifier.heightIn(min = 48.dp)) {
+            Icon(PostIcons.People, null, Modifier.size(18.dp))
+            Spacer(Modifier.width(8.dp))
+            Text(label, maxLines = 1)
+        }
+    } else {
+        OutlinedIconButton(onClick = onClick, shape = shape, border = border, modifier = Modifier.size(48.dp)) { Icon(PostIcons.People, label) }
+    }
+}
+
+/** Add to group in a creator's row (pixiv_user_list_screen.dart), followed here once a group is picked. */
+@Composable
+internal fun GroupIconButton(user: PixivUser) {
+    val runtime = LocalPixiv.current
+    IconButton(onClick = { runtime.addToGroup(user) }) { Icon(PostIcons.People, addToGroupText()) }
+}
 
 /**
  * Follow or Unfollow on this device: the creator's works join Following's
@@ -89,19 +144,20 @@ internal fun UserNames(name: String, account: String, modifier: Modifier = Modif
 
 /** A creator, their Follow button beside them while there is room (under them when not), then [novels] or works of theirs. */
 @Composable
-internal fun UserPreviewCard(preview: PixivUserPreview, novels: Boolean = false) {
+internal fun UserPreviewCard(preview: PixivUserPreview, novels: Boolean = false, grouped: Boolean = false) {
     val runtime = LocalPixiv.current
     val user = preview.user
     OutlinedCard(Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).clickable { runtime.openUser(user.id) }) {
         Column(Modifier.padding(12.dp)) {
-            UserHeader(user)
+            UserHeader(user, grouped)
             PreviewRow(preview, novels)
         }
     }
 }
 
+/** Who the card is about beside Follow and, when [grouped], Add to group: side by side, or the buttons under them on a narrow card. */
 @Composable
-private fun UserHeader(user: PixivUser) {
+private fun UserHeader(user: PixivUser, grouped: Boolean) {
     val identity: @Composable (Modifier) -> Unit = { modifier ->
         Row(modifier, verticalAlignment = Alignment.CenterVertically) {
             PixivAvatar(user.avatarUrl, user.name)
@@ -109,18 +165,25 @@ private fun UserHeader(user: PixivUser) {
             UserNames(user.name, user.account, Modifier.weight(1f))
         }
     }
-    if (user.id == LocalPixiv.current.ownId) return identity(Modifier.fillMaxWidth())
+    val self = user.id == LocalPixiv.current.ownId
+    if (self && !grouped) return identity(Modifier.fillMaxWidth())
+    val buttons: @Composable () -> Unit = {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            if (!self) FollowButton(user)
+            if (grouped) GroupIconButton(user)
+        }
+    }
     BoxWithConstraints(Modifier.fillMaxWidth()) {
         if (maxWidth >= 300.dp) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 identity(Modifier.weight(1f))
                 Spacer(Modifier.width(8.dp))
-                FollowButton(user)
+                buttons()
             }
         } else {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 identity(Modifier.fillMaxWidth())
-                FollowButton(user)
+                buttons()
             }
         }
     }
@@ -165,9 +228,9 @@ private fun PreviewNovel(novel: PixivNovel) {
 
 /** A paged list of creators as cards, without those the reader muted. */
 @Composable
-internal fun PixivUsersFeed(list: PixivList<PixivUserPreview>, empty: String, padding: PaddingValues = PaddingValues(), toTop: Int = 0, novels: Boolean = false) {
+internal fun PixivUsersFeed(list: PixivList<PixivUserPreview>, empty: String, padding: PaddingValues = PaddingValues(), toTop: Int = 0, novels: Boolean = false, grouped: Boolean = false) {
     val mutes = pixivMutes()
     PixivRows(list, { it.user.id }, empty, padding, toTop, shown = { previews -> mutes.withoutMutedAuthors(previews) { it.user.id } }, divided = false) { preview ->
-        Column(Modifier.fillMaxSize().padding(horizontal = 12.dp, vertical = 4.dp)) { UserPreviewCard(preview, novels) }
+        Column(Modifier.fillMaxSize().padding(horizontal = 12.dp, vertical = 4.dp)) { UserPreviewCard(preview, novels, grouped) }
     }
 }

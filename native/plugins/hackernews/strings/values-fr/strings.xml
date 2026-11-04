@@ -20,9 +20,6 @@
     <string name="unlike">Retirer le j’aime de cet appareil</string>
     <string name="save">Enregistrer sur cet appareil</string>
     <string name="unsave">Retirer de cet appareil</string>
-    <string name="share_link">Partager le lien</string>
-    <string name="save_to_folder">Enregistrer dans un dossier...</string>
-    <string name="open_in_browser">Ouvrir dans le navigateur</string>
     <string name="comments">Commentaires</string>
     <string name="open_article">Ouvrir l’article</string>
     <string name="deleted">[supprimé]</string>

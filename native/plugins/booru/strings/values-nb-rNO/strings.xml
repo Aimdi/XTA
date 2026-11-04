@@ -129,6 +129,7 @@
     <string name="save_search">Lagre søk</string>
     <string name="saved_searches">Lagrede søk</string>
     <string name="score">Poeng %1$d</string>
+    <string name="card_title">Booru #%1$s</string>
     <string name="search">Søk</string>
     <string name="search_hint">Tagger, adskilt med mellomrom</string>
     <string name="search_history">Nylige søk</string>

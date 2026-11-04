@@ -20,9 +20,6 @@
     <string name="unlike">Treu el m’agrada d’aquest dispositiu</string>
     <string name="save">Desa en aquest dispositiu</string>
     <string name="unsave">Treu d’aquest dispositiu</string>
-    <string name="share_link">Comparteix l’enllaç</string>
-    <string name="save_to_folder">Desa a una carpeta...</string>
-    <string name="open_in_browser">Obre al navegador</string>
     <string name="comments">Comentaris</string>
     <string name="open_article">Obre l’article</string>
     <string name="deleted">[suprimit]</string>

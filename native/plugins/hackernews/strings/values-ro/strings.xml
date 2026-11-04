@@ -20,9 +20,6 @@
     <string name="unlike">Elimină aprecierea de pe acest dispozitiv</string>
     <string name="save">Salvează pe acest dispozitiv</string>
     <string name="unsave">Elimină de pe acest dispozitiv</string>
-    <string name="share_link">Distribuie linkul</string>
-    <string name="save_to_folder">Salvează în dosar...</string>
-    <string name="open_in_browser">Deschide în browser</string>
     <string name="comments">Comentarii</string>
     <string name="open_article">Deschide articolul</string>
     <string name="deleted">[șters]</string>

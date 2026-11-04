@@ -215,12 +215,17 @@ private fun kindColor(kind: PixivTagKind): Color = when (kind) {
 internal fun CommentsLink(kind: PixivKind, id: Long, count: Long) {
     val runtime = LocalPixiv.current
     ActionRow(
-        if (count > 0) pluginString(Strings.comments_view_count, countText(count)) else pluginString(Strings.comments_view),
+        commentsLabel(count),
         onClick = { runtime.open(PixivRoute.Comments(kind, id)) },
         icon = PostIcons.Forum,
         trailing = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) },
     )
 }
+
+/** "View comments (N)" (pixiv_detail_comments.dart's pixivCommentsLabel), without a number where there is no total. */
+@Composable
+internal fun commentsLabel(count: Long): String =
+    if (count > 0) pluginString(Strings.comments_view_count, countText(count)) else pluginString(Strings.comments_view)
 
 /** "Series: <title>" leading to the series; [dense] is the one-line form under a tile's title. */
 @Composable

@@ -100,6 +100,7 @@ private fun Preview(app: SubstackApp, asked: String, retype: String, onAsk: (Str
                 Spacer(Modifier.width(8.dp))
                 Text(if (followed) pluginString(Strings.followed, found.displayName) else pluginString(Strings.follow))
             }
+            GroupButton(app, found, outlined = false, enabled = !state.loading)
             TextButton(onClick = { app.openPublication(found) }) {
                 Icon(SubstackIcons.Newspaper, null, Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))

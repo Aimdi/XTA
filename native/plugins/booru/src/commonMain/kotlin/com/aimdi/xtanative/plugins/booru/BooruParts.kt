@@ -52,15 +52,12 @@ import coil3.compose.AsyncImagePainter
 import com.aimdi.xtanative.networks.booru.BooruTagCategory
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.LoadingRow
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.links.LocalLinks
 import com.aimdi.xtanative.ui.plugins.pluginString
 
-/** What the reader chose, once the app's settings are read; the plugin takes the app's graph from the first screen drawn. */
+/** What the reader chose, once the app's settings are read. */
 @Composable
 internal fun Bound(app: BooruApp, content: @Composable (Settings) -> Unit) {
-    val graph = LocalGraph.current
-    LaunchedEffect(graph) { app.bind(graph) }
     val settings by app.settings.collectAsState()
     val loaded = settings
     if (loaded == null) LoadingRow() else content(loaded)

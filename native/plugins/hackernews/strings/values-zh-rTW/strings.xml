@@ -20,9 +20,6 @@
     <string name="unlike">從此裝置取消按讚</string>
     <string name="save">儲存在此裝置</string>
     <string name="unsave">從此裝置移除</string>
-    <string name="share_link">分享連結</string>
-    <string name="save_to_folder">儲存到資料夾...</string>
-    <string name="open_in_browser">在瀏覽器中開啟</string>
     <string name="comments">留言</string>
     <string name="open_article">開啟文章</string>
     <string name="deleted">[已刪除]</string>

@@ -20,9 +20,6 @@
     <string name="unlike">この端末のいいねを取り消す</string>
     <string name="save">この端末に保存</string>
     <string name="unsave">この端末から削除</string>
-    <string name="share_link">リンクを共有</string>
-    <string name="save_to_folder">フォルダーに保存...</string>
-    <string name="open_in_browser">ブラウザで開く</string>
     <string name="comments">コメント</string>
     <string name="open_article">記事を開く</string>
     <string name="deleted">[削除済み]</string>

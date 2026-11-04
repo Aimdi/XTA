@@ -4,22 +4,28 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.aimdi.xtanative.networks.substack.SubstackRoute
 import com.aimdi.xtanative.networks.substack.SubstackRoutes
+import com.aimdi.xtanative.ui.plugins.NetworkPost
+import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.PluginBackupSection
 import com.aimdi.xtanative.ui.plugins.PluginBody
+import com.aimdi.xtanative.ui.plugins.PluginFeed
 import com.aimdi.xtanative.ui.plugins.PluginFootprint
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginScreen
 import com.aimdi.xtanative.ui.plugins.PluginSearch
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
+import kotlinx.serialization.json.JsonElement
 
 /**
  * Substack as a downloadable plugin, read without an account as XTA's
  * Substack plugin reads it: the publications followed here as Home, Inbox,
  * public Notes and the Library; publications with their archives; the native
  * reader with its place, contents and find, highlights, Listen and episodes;
- * discussions; search; OPML. Nothing is subscribed to, liked, commented on or
- * paid for on Substack: follows, hearts, saves, read marks and highlights stay
- * on the device (the plugin's folder and the app's settings, as XTA keeps them).
+ * discussions; search; OPML; its publications in the app's groups, and its
+ * articles and notes in the app's Saved as XTA's link records. Nothing is
+ * subscribed to, liked, commented on or paid for on Substack: follows, hearts,
+ * saves, read marks and highlights stay on the device (the plugin's folder
+ * and the app's settings, as XTA keeps them).
  */
 class SubstackPlugin : XtaPlugin() {
     private lateinit var app: SubstackApp
@@ -65,6 +71,14 @@ class SubstackPlugin : XtaPlugin() {
     private fun noteScreen(route: SubstackRoute.Note): PluginScreen = { SubstackNoteScreen(app, route.id) }
 
     private fun addScreen(): PluginScreen = { SubstackAddScreen(app) }
+
+    /** The publications followed here, in the groups that hold them; XTA has no switch for Home's timelines. */
+    override val feed: PluginFeed get() = app.feed
+
+    override val postActions: NetworkPostActions get() = app.actions
+
+    /** An article or note kept as XTA's link record, as Saved draws it; another record is none of its. */
+    override fun archived(content: JsonElement): NetworkPost? = app.shownSaved(content)
 
     /** The follows, as XTA's backup holds them: its `substackSubscriptions` rows. The rest of what it keeps is in the app's settings. */
     override val backupSections: List<PluginBackupSection>

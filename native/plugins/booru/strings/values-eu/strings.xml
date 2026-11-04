@@ -129,6 +129,7 @@
     <string name="save_search">Gorde bilaketa</string>
     <string name="saved_searches">Gordetako bilaketak</string>
     <string name="score">Puntuazioa: %1$d</string>
+    <string name="card_title">Booru #%1$s</string>
     <string name="search">Bilatu</string>
     <string name="search_hint">Etiketak, zuriunez bereizita</string>
     <string name="search_history">Azken bilaketak</string>

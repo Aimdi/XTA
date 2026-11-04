@@ -130,6 +130,7 @@
     <string name="save_search">Guardar pesquisa</string>
     <string name="saved_searches">Pesquisas guardadas</string>
     <string name="score">Pontuação %1$d</string>
+    <string name="card_title">Booru #%1$s</string>
     <string name="search">Buscar</string>
     <string name="search_hint">Etiquetas separadas por espaços</string>
     <string name="search_history">Pesquisas recentes</string>

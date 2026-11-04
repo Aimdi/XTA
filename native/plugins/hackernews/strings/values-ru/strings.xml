@@ -20,9 +20,6 @@
     <string name="unlike">Убрать отметку «нравится» с этого устройства</string>
     <string name="save">Сохранить на этом устройстве</string>
     <string name="unsave">Удалить с этого устройства</string>
-    <string name="share_link">Поделиться ссылкой</string>
-    <string name="save_to_folder">Сохранить в папку...</string>
-    <string name="open_in_browser">Открыть в браузере</string>
     <string name="comments">Комментарии</string>
     <string name="open_article">Открыть статью</string>
     <string name="deleted">[удалено]</string>

@@ -129,6 +129,7 @@
     <string name="save_search">Zoekopdracht opslaan</string>
     <string name="saved_searches">Opgeslagen zoekopdrachten</string>
     <string name="score">Score %1$d</string>
+    <string name="card_title">Booru #%1$s</string>
     <string name="search">Zoeken</string>
     <string name="search_hint">Tags, gescheiden door spaties</string>
     <string name="search_history">Recente zoekopdrachten</string>

@@ -3,25 +3,19 @@ package com.aimdi.xtanative.plugins.booru
 import com.aimdi.xtanative.networks.booru.BooruHosts
 import com.aimdi.xtanative.networks.booru.BooruPost
 import com.aimdi.xtanative.networks.booru.BooruTagCategory
-import com.aimdi.xtanative.store.downloads.DownloadDestination
-import com.aimdi.xtanative.store.downloads.DownloadRequest
 import com.aimdi.xtanative.store.downloads.MAX_DOWNLOAD_STEM_BYTES
 import com.aimdi.xtanative.store.downloads.fillNameTemplate
 import com.aimdi.xtanative.store.downloads.fitUtf8Bytes
 import com.aimdi.xtanative.store.downloads.safeFileStem
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonNull
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
+import com.aimdi.xtanative.ui.plugins.MediaItem
+import com.aimdi.xtanative.ui.plugins.PluginDownload
+import com.aimdi.xtanative.ui.plugins.PluginPostArchive
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-
-/** What a batch of downloads queues, and how many of the posts were skipped as downloaded already. */
-internal data class DownloadPlan(val requests: List<DownloadRequest>, val skipped: Int)
 
 /**
  * Booru downloads (booru_download.dart): file names from the reader's
- * template, and the posts a feed has loaded queued at once, without the files
- * the download history already has.
+ * template, and the posts a feed has loaded as one batch, which the app's
+ * downloads queue without the files they have already.
  */
 internal object BooruDownloads {
     /** What a file name template may say, as the settings list them. */
@@ -39,17 +33,13 @@ internal object BooruDownloads {
         return if (stem.isEmpty()) ownName(url(post)) else stem + extension(post)
     }
 
-    /**
-     * What a batch queues: [posts] whose files the download history does not
-     * know ([known]) and the batch does not repeat, as many as the queue has
-     * [room] for, named by [template].
-     */
-    fun plan(posts: List<BooruPost>, known: Set<String>, room: Int, template: String, destination: DownloadDestination): DownloadPlan {
-        val seen = known.toHashSet()
-        val fresh = posts.filter { post -> url(post).toHttpUrlOrNull() != null && seen.add(url(post)) }.map { post ->
-            DownloadRequest(url(post), fileName(post, template), destination.treeUri, destination.background)
-        }
-        return DownloadPlan(fresh.take(room.coerceAtLeast(0)), posts.size - fresh.size)
+    /** [posts]' files as one batch, each named by [template]. */
+    fun files(posts: List<BooruPost>, template: String): List<PluginDownload> = posts.map { PluginDownload(url(it), fileName(it, template)) }
+
+    /** What the viewer's Download saves of [post]: its video, else its original (booru_post_actions.dart's booruDownloadItem). */
+    fun media(post: BooruPost): MediaItem {
+        val video = post.videoUrl ?: return MediaItem(post.originalUrl)
+        return MediaItem(post.thumbnailUrl, MediaItem.Kind.VIDEO, videoUrl = video)
     }
 
     private fun values(post: BooruPost): Map<String, String> = mapOf(
@@ -75,42 +65,29 @@ internal object BooruDownloads {
     /** The file's own name, as XTA names a plugin's media without a template: `booru-<name>`. */
     private fun ownName(url: String): String {
         val base = lastSegment(url)
-        if (base.isEmpty()) return "$SOURCE-media"
+        if (base.isEmpty()) return "${BooruArchive.SOURCE}-media"
         val extension = extensionOf(base).takeIf(LOOSE_EXTENSION::matches).orEmpty()
-        val start = fitUtf8Bytes("$SOURCE-" + base.dropLast(extension.length), MAX_DOWNLOAD_STEM_BYTES).trimEnd('.', ' ')
+        val start = fitUtf8Bytes("${BooruArchive.SOURCE}-" + base.dropLast(extension.length), MAX_DOWNLOAD_STEM_BYTES).trimEnd('.', ' ')
         return start + extension
     }
 
     private fun lastSegment(url: String): String = url.toHttpUrlOrNull()?.pathSegments?.lastOrNull { it.isNotEmpty() }.orEmpty()
 
     private fun extensionOf(name: String): String = name.lastIndexOf('.').let { if (it <= 0) "" else name.substring(it) }
-
-    private const val SOURCE = "booru"
 }
 
 /**
  * What "Save on this device" keeps of a post (booru_post_actions.dart's
- * booruPostArchive): XTA's link archive, under the same id from a feed or the
- * viewer, which Saved lists with the other networks' kept links.
+ * booruPostArchive): XTA's link record under the post's page, the same from
+ * a feed, the viewer or the shared timelines, which Saved lists with the
+ * other networks' kept links.
  */
 internal object BooruArchive {
+    const val SOURCE = "booru"
+
     /** The page that names the post: on its host, else the file itself. */
     fun shareUrl(post: BooruPost): String = post.hostPageUrl ?: post.originalUrl
 
-    fun id(post: BooruPost): String = "booru:" + shareUrl(post)
-
-    fun authorId(post: BooruPost): String = post.host
-
-    fun content(post: BooruPost): JsonObject = JsonObject(
-        mapOf(
-            "archiveId" to JsonNull,
-            "archiveUserId" to JsonNull,
-            "xtaPlugin" to JsonPrimitive("link"),
-            "source" to JsonPrimitive("booru"),
-            "url" to JsonPrimitive(shareUrl(post)),
-            "author" to JsonPrimitive(post.host),
-            "text" to JsonPrimitive(post.tagLine),
-            "images" to JsonArray(listOf(JsonPrimitive(if (post.isVideo) post.thumbnailUrl else post.displayUrl))),
-        ),
-    )
+    fun of(post: BooruPost): PluginPostArchive =
+        PluginPostArchive.link(SOURCE, shareUrl(post), post.host, post.tagLine, listOf(if (post.isVideo) post.thumbnailUrl else post.displayUrl).filter { it.isNotEmpty() })
 }

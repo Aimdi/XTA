@@ -39,13 +39,16 @@ import com.aimdi.xtanative.networks.booru.BooruText
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.RetryMessage
+import com.aimdi.xtanative.ui.plugins.addToGroupText
 import com.aimdi.xtanative.ui.plugins.pluginString
+import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 
 /**
  * What can be done with one of a post's tags (booru_tag_sheet.dart): search
  * it; add it to, or exclude it from, the [search] the post was opened from;
- * follow it; hide it; read its wiki on [site] (not Gelbooru); copy it.
+ * follow it, or put it in groups as XTA's subscriptions put a followed tag;
+ * hide it; read its wiki on [site] (not Gelbooru); copy it.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,6 +77,7 @@ internal fun TagActions(app: BooruApp, opened: OpenedTag, search: BooruSearch?, 
             Action(if (followed) Icons.Filled.Check else BooruIcons.Sell, pluginString(if (followed) Strings.unfollow_tag else Strings.follow_tag)) {
                 done { app.launch { if (followed) app.follows.remove(tag) else app.follows.add(tag) } }
             }
+            Action(PostIcons.People, addToGroupText()) { done { app.addToGroup(tag) } }
             Action(if (hidden) BooruIcons.Visibility else GroupIcons.VisibilityOffOutlined, pluginString(if (hidden) Strings.unhide_tag else Strings.hide_tag)) {
                 done { app.update { if (hidden) BooruConfig.withoutMuted(it, tag) else BooruConfig.withMuted(it, tag) } }
             }

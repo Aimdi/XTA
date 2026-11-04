@@ -10,7 +10,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,11 +17,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.networks.booru.BooruPost
 import com.aimdi.xtanative.store.settings.BooruPrefs
 import com.aimdi.xtanative.ui.common.XIcons
-import com.aimdi.xtanative.ui.downloads.Downloading
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import kotlinx.coroutines.launch
@@ -36,26 +33,19 @@ private enum class PostMenu { SHARE, COPY_LINK, COPY_TAGS, COPY_PROMPT, HOST, SO
  * app's own.
  */
 @Composable
-internal fun PostActions(app: BooruApp, viewer: ViewerState, post: BooruPost, graph: AppGraph) {
-    IconButton(onClick = { download(app, graph, post) }) { Icon(GroupIcons.FileDownloadOutlined, pluginString(Strings.download)) }
-    SaveButton(app, graph, post)
+internal fun PostActions(app: BooruApp, viewer: ViewerState, post: BooruPost) {
+    IconButton(onClick = { app.download(post) }) { Icon(GroupIcons.FileDownloadOutlined, pluginString(Strings.download)) }
+    SaveButton(app, post)
     PostMenuButton(app, viewer, post)
 }
 
-/** Saves [post]'s file as the download setting says, under the reader's file name template. */
-private fun download(app: BooruApp, graph: AppGraph, post: BooruPost) {
-    Downloading.save(graph, BooruDownloads.url(post), BooruDownloads.fileName(post, app.current()[BooruPrefs.fileNameTemplate]))
-}
-
+/** Saves [post] in the app's Saved where a plain tap files, or takes it out (booru_post_actions.dart's _SaveButton). */
 @Composable
-private fun SaveButton(app: BooruApp, graph: AppGraph, post: BooruPost) {
-    val library by graph.saved.state.collectAsState()
-    LaunchedEffect(graph) { graph.saved.library() }
-    val id = BooruArchive.id(post)
-    val saved = library?.isSaved(id) == true
-    IconButton(onClick = {
-        app.launch { if (saved) graph.saved.remove(id) else graph.saved.file(id, BooruArchive.authorId(post), BooruArchive.content(post)) }
-    }) {
+private fun SaveButton(app: BooruApp, post: BooruPost) {
+    val archived by app.host.saved.collectAsState()
+    val archive = remember(post) { BooruArchive.of(post) }
+    val saved = archive.id in archived
+    IconButton(onClick = { app.host.toggleSaved(archive) }) {
         Icon(
             if (saved) BooruIcons.Bookmark else BooruIcons.BookmarkBorder,
             pluginString(if (saved) Strings.unsave_from_this_device else Strings.save_on_this_device),

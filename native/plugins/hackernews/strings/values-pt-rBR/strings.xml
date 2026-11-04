@@ -20,9 +20,6 @@
     <string name="unlike">Remover curtida deste dispositivo</string>
     <string name="save">Salvar neste dispositivo</string>
     <string name="unsave">Remover deste dispositivo</string>
-    <string name="share_link">Compartilhar link</string>
-    <string name="save_to_folder">Salvar em uma pasta...</string>
-    <string name="open_in_browser">Abrir no navegador</string>
     <string name="comments">Comentários</string>
     <string name="open_article">Abrir artigo</string>
     <string name="deleted">[excluído]</string>

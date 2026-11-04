@@ -128,6 +128,7 @@
     <string name="save_search">검색 저장</string>
     <string name="saved_searches">저장된 검색</string>
     <string name="score">점수 %1$d</string>
+    <string name="card_title">Booru #%1$s</string>
     <string name="search">검색</string>
     <string name="search_hint">띄어쓰기로 구분한 태그</string>
     <string name="search_history">최근 검색</string>

@@ -53,13 +53,14 @@ import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
+import com.aimdi.xtanative.ui.plugins.addToGroupText
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.plugins.PluginText
 
 /**
  * Library, as XTA's: the publications followed here (pinned first, each to
- * pin or unfollow), and the posts saved and liked on this device, found by
+ * pin, put in groups or unfollow), and the posts saved and liked on this device, found by
  * title or, for those whose body the device keeps, by what they say.
  */
 @Composable
@@ -145,6 +146,7 @@ private fun FollowRow(app: SubstackApp, publication: SubstackPublication, pinned
         Box {
             IconButton(onClick = { menu = true }) { Icon(Icons.Default.MoreVert, pluginString(Strings.more_options)) }
             DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
+                DropdownMenuItem(text = { Text(addToGroupText()) }, onClick = { menu = false; app.addToGroup(publication) })
                 DropdownMenuItem(text = { Text(pluginString(Strings.unfollow)) }, onClick = { menu = false; confirm = true })
             }
         }

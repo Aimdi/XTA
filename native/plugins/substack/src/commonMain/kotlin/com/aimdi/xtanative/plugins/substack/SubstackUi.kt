@@ -7,10 +7,13 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -35,12 +38,34 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.aimdi.xtanative.networks.substack.SubstackPublication
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.plugins.addToGroupText
 import com.aimdi.xtanative.ui.plugins.networkProblemText
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.problemOf
+import com.aimdi.xtanative.ui.post.PostIcons
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+
+/**
+ * Add to group for [publication] (substack_group.dart), following it here
+ * once a group is picked: [outlined] as a publication's page and its similar
+ * ones draw it, else as a search's and the add screen's rows do.
+ */
+@Composable
+internal fun GroupButton(app: SubstackApp, publication: SubstackPublication, outlined: Boolean = true, enabled: Boolean = true) {
+    val content: @Composable RowScope.() -> Unit = {
+        Icon(PostIcons.People, null, Modifier.size(18.dp))
+        Spacer(Modifier.width(8.dp))
+        Text(addToGroupText())
+    }
+    if (outlined) {
+        OutlinedButton(onClick = { app.addToGroup(publication) }, enabled = enabled, content = content)
+    } else {
+        TextButton(onClick = { app.addToGroup(publication) }, enabled = enabled, content = content)
+    }
+}
 
 /** A publication's logo in [shape], or the newspaper mark where it has none. */
 @Composable

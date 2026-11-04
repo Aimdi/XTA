@@ -234,6 +234,7 @@ private fun Hero(app: SubstackApp, model: PublicationModel, state: PublicationMo
         }
         FlowRow(Modifier.padding(top = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             FollowButton(app, publication)
+            GroupButton(app, publication)
             OutlinedButton(onClick = onSimilar) {
                 Icon(SubstackIcons.Similar, null, Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
@@ -321,7 +322,7 @@ private fun EmptyPublication(model: PublicationModel, filter: SubstackPublicatio
     }
 }
 
-/** What a publication's author recommends, padded with publications like it, each to open or follow (substack_similar_sheet.dart). */
+/** What a publication's author recommends, padded with publications like it, each to open, follow or put in groups (substack_similar_sheet.dart). */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SimilarSheet(app: SubstackApp, publication: SubstackPublication, onDismiss: () -> Unit) {
@@ -359,7 +360,10 @@ private fun SimilarRow(app: SubstackApp, recommendation: SubstackRecommendation,
                 Text(subtitle, maxLines = 3, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodyMedium)
             }
         }
-        Box(Modifier.padding(top = 8.dp)) { FollowButton(app, publication) }
+        Row(Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FollowButton(app, publication)
+            GroupButton(app, publication)
+        }
     }
 }
 

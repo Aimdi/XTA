@@ -130,6 +130,7 @@
     <string name="save_search">Salvează căutarea</string>
     <string name="saved_searches">Căutări salvate</string>
     <string name="score">Scor %1$d</string>
+    <string name="card_title">Booru #%1$s</string>
     <string name="search">Căutare</string>
     <string name="search_hint">Etichete separate prin spații</string>
     <string name="search_history">Căutări recente</string>

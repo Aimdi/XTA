@@ -41,7 +41,6 @@ import com.aimdi.xtanative.networks.pixiv.pixivNovelSeriesUrl
 import com.aimdi.xtanative.networks.pixiv.pixivNovelUrl
 import com.aimdi.xtanative.networks.pixiv.pixivUserUrl
 import com.aimdi.xtanative.store.reading.ReadingAppearance
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -98,7 +97,7 @@ private fun MenuRow(icon: ImageVector, label: PluginText, onClick: () -> Unit) {
 /** The app's reading appearance, which its article reader shares: text size and line spacing. */
 @Composable
 internal fun AppearanceDialog(onClose: () -> Unit) {
-    val store = LocalGraph.current.readingAppearance
+    val store = LocalPixiv.current.host.readingAppearance
     val scope = rememberCoroutineScope()
     var look by remember { mutableStateOf<ReadingAppearance?>(null) }
     LaunchedEffect(store) { look = store.get() }

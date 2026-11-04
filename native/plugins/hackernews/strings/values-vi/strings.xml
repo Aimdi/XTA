@@ -20,9 +20,6 @@
     <string name="unlike">Bỏ thích khỏi thiết bị này</string>
     <string name="save">Lưu trên thiết bị này</string>
     <string name="unsave">Xóa khỏi thiết bị này</string>
-    <string name="share_link">Chia sẻ liên kết</string>
-    <string name="save_to_folder">Lưu vào thư mục...</string>
-    <string name="open_in_browser">Mở trong trình duyệt</string>
     <string name="comments">Bình luận</string>
     <string name="open_article">Mở bài viết</string>
     <string name="deleted">[đã xóa]</string>

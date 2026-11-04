@@ -20,9 +20,6 @@
     <string name="unlike">从此设备取消点赞</string>
     <string name="save">保存在此设备</string>
     <string name="unsave">从此设备移除</string>
-    <string name="share_link">分享链接</string>
-    <string name="save_to_folder">保存到文件夹...</string>
-    <string name="open_in_browser">在浏览器中打开</string>
     <string name="comments">评论</string>
     <string name="open_article">打开文章</string>
     <string name="deleted">[已删除]</string>

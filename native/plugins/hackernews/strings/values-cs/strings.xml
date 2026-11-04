@@ -20,9 +20,6 @@
     <string name="unlike">Odebrat like z tohoto zařízení</string>
     <string name="save">Uložit na toto zařízení</string>
     <string name="unsave">Odebrat z tohoto zařízení</string>
-    <string name="share_link">Sdílet odkaz</string>
-    <string name="save_to_folder">Uložit do složky...</string>
-    <string name="open_in_browser">Otevřít v prohlížeči</string>
     <string name="comments">Komentáře</string>
     <string name="open_article">Otevřít článek</string>
     <string name="deleted">[smazáno]</string>

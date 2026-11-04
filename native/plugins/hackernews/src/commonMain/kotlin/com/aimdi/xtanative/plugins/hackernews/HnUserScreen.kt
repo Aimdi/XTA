@@ -6,10 +6,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -26,12 +29,14 @@ import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.NetworkProblemView
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
+import com.aimdi.xtanative.ui.plugins.addToGroupText
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.problemOf
 import com.aimdi.xtanative.ui.plugins.rememberKept
+import com.aimdi.xtanative.ui.post.PostIcons
 
-/** A Hacker News account (hn_user_screen.dart): its karma, Follow on this device, its about text, and its latest stories. */
+/** A Hacker News account (hn_user_screen.dart): its karma, Follow on this device, Add to group, its about text, and its latest stories. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun HnUserScreen(app: HnApp, id: String) {
@@ -47,7 +52,7 @@ internal fun HnUserScreen(app: HnApp, id: String) {
                     page == null && error != null -> item(key = "problem") { NetworkProblemView(problemOf(error), app.network, reader::refresh) }
                     page == null -> item(key = "loading") { LoadingRow() }
                     else -> {
-                        item(key = "lead") { Lead(page.user, kept.isFollowing(page.user.id)) { app.toggleFollow(page.user.id) } }
+                        item(key = "lead") { Lead(page.user, kept.isFollowing(page.user.id), { app.toggleFollow(page.user.id) }) { app.addToGroup(page.user.id) } }
                         if (page.stories.isEmpty()) item(key = "empty") { MessageText(pluginString(Strings.user_empty)) }
                         items(page.stories, key = { "${it.id}" }) { story -> HnStoryRow(app, story) }
                     }
@@ -57,8 +62,9 @@ internal fun HnUserScreen(app: HnApp, id: String) {
     }
 }
 
+/** The account's name and karma with Follow on this device, Add to group under them, then its about text (hn_user_screen.dart's _UserLead). */
 @Composable
-private fun Lead(user: HnUser, following: Boolean, onFollow: () -> Unit) {
+private fun Lead(user: HnUser, following: Boolean, onFollow: () -> Unit, onGroup: () -> Unit) {
     Column(Modifier.fillMaxWidth()) {
         Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 8.dp, top = 8.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
@@ -66,6 +72,10 @@ private fun Lead(user: HnUser, following: Boolean, onFollow: () -> Unit) {
                 Text(pluginPlural(Strings.user_karma, user.karma, user.karma), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             TextButton(onClick = onFollow) { Text(pluginString(if (following) Strings.unfollow else Strings.follow)) }
+        }
+        OutlinedButton(onClick = onGroup, modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp)) {
+            Icon(PostIcons.People, contentDescription = null, modifier = Modifier.size(18.dp))
+            Text(addToGroupText(), modifier = Modifier.padding(start = 8.dp))
         }
         if (user.about.isNotEmpty()) Text(user.about, modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp))
         Hairline()

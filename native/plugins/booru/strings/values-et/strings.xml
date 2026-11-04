@@ -129,6 +129,7 @@
     <string name="save_search">Salvesta otsing</string>
     <string name="saved_searches">Salvestatud otsingud</string>
     <string name="score">Skoor %1$d</string>
+    <string name="card_title">Booru #%1$s</string>
     <string name="search">Otsi</string>
     <string name="search_hint">Sildid, tühikutega eraldatud</string>
     <string name="search_history">Hiljutised otsingud</string>

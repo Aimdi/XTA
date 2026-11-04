@@ -1,6 +1,5 @@
 package com.aimdi.xtanative.plugins.hackernews
 
-import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.networks.hackernews.HnStory
 import com.aimdi.xtanative.store.settings.HackerNewsPrefs
 import com.aimdi.xtanative.store.settings.Settings
@@ -10,7 +9,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-/** The plugin's own rules: its routes and links, what it keeps in the app's settings, and what Saved keeps of a story. */
+/** The plugin's own rules: its routes and links, and what it keeps in the app's settings. */
 class HackerNewsPluginRulesTest {
     private val story = HnStory(8863, "My YC app", url = "https://dropbox.com/", text = "", author = "dhouston", score = 111)
 
@@ -44,17 +43,5 @@ class HackerNewsPluginRulesTest {
         assertTrue(kept.isFollowing("ALICE"))
         assertFalse(HnKept.of(HnKept.withLike(followed, story)).isLiked(story))
         assertEquals(HnKept(), HnKept.of(null))
-    }
-
-    @Test
-    fun savedKeepsAStoryAsXtasLinkSnapshot() {
-        assertEquals("hackernews:https://news.ycombinator.com/item?id=8863", HnArchive.id(story))
-        val content = J(HnArchive.content(story.copy(text = "Body")))
-        assertEquals("link", content["xtaPlugin"].string)
-        assertEquals("hackernews", content["source"].string)
-        assertEquals(story.hnUrl, content["url"].string)
-        assertEquals("dhouston", content["author"].string)
-        assertEquals("My YC app\nBody", content["text"].string)
-        assertEquals(0, content["images"].list.size)
     }
 }

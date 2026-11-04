@@ -20,9 +20,6 @@
     <string name="unlike">إزالة الإعجاب من هذا الجهاز</string>
     <string name="save">حفظ على هذا الجهاز</string>
     <string name="unsave">إزالة من هذا الجهاز</string>
-    <string name="share_link">مشاركة الرابط</string>
-    <string name="save_to_folder">الحفظ في مجلد...</string>
-    <string name="open_in_browser">فتح في المتصفح</string>
     <string name="comments">التعليقات</string>
     <string name="open_article">افتح المقال</string>
     <string name="deleted">[محذوف]</string>

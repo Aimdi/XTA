@@ -20,9 +20,6 @@
     <string name="unlike">Прибрати вподобання з цього пристрою</string>
     <string name="save">Зберегти на цьому пристрої</string>
     <string name="unsave">Видалити з цього пристрою</string>
-    <string name="share_link">Поділитися посиланням</string>
-    <string name="save_to_folder">Зберегти в теку...</string>
-    <string name="open_in_browser">Відкрити у браузері</string>
     <string name="comments">Коментарі</string>
     <string name="open_article">Відкрити статтю</string>
     <string name="deleted">[видалено]</string>

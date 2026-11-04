@@ -20,9 +20,6 @@
     <string name="unlike">Like van dit apparaat verwijderen</string>
     <string name="save">Opslaan op dit apparaat</string>
     <string name="unsave">Van dit apparaat verwijderen</string>
-    <string name="share_link">Link delen</string>
-    <string name="save_to_folder">Opslaan in map...</string>
-    <string name="open_in_browser">Openen in browser</string>
     <string name="comments">Reacties</string>
     <string name="open_article">Artikel openen</string>
     <string name="deleted">[verwijderd]</string>

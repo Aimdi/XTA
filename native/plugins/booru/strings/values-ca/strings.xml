@@ -130,6 +130,7 @@
     <string name="save_search">Desa la cerca</string>
     <string name="saved_searches">Cerques desades</string>
     <string name="score">Puntuació %1$d</string>
+    <string name="card_title">Booru #%1$s</string>
     <string name="search">Cerca</string>
     <string name="search_hint">Etiquetes separades per espais</string>
     <string name="search_history">Cerques recents</string>

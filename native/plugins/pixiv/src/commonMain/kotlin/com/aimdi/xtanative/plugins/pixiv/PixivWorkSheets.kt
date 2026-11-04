@@ -11,11 +11,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,6 +39,7 @@ import com.aimdi.xtanative.networks.pixiv.PixivIllust
 import com.aimdi.xtanative.networks.pixiv.PixivNovel
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.links.LocalLinks
+import com.aimdi.xtanative.ui.plugins.PluginPostMenuRows
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.post.PostIcons
@@ -98,7 +96,11 @@ internal fun rememberOutside(): PixivOutside {
     }
 }
 
-/** A work's long-press sheet: save, the bookmark kept here, links and info, and muting its creator or the work itself. */
+/**
+ * A work's long-press sheet (pixiv_post_actions.dart's showPixivPostActions):
+ * Pixiv's own entries (save, the bookmark kept here, copy link, muting its
+ * creator or the work itself) above the shared post sheet's.
+ */
 @Composable
 internal fun WorkActionsSheet(illust: PixivIllust, sheets: PixivSheets) {
     val runtime = LocalPixiv.current
@@ -106,9 +108,6 @@ internal fun WorkActionsSheet(illust: PixivIllust, sheets: PixivSheets) {
     val bookmarked = marks.orEmpty().any { it.kind == PixivKind.WORK && it.kept.id == illust.id }
     val haptics = rememberHaptics()
     val copy = rememberCopy()
-    val outside = rememberOutside()
-    val settings = pixivSettings()
-    val language = currentLanguage()
     PixivSheetFrame(sheets) {
         val pages = illust.viewerUrls.size
         SheetRow(SavedIcons.Download, pluginString(if (pages > 1) Strings.download_all else Strings.download), { sheets.close(); sheets.saveAll(illust) })
@@ -116,22 +115,17 @@ internal fun WorkActionsSheet(illust: PixivIllust, sheets: PixivSheets) {
             sheets.close()
             sheets.toggleBookmark(illust, haptics)
         })
-        SheetRow(Icons.Filled.Edit, pluginString(Strings.bookmark_edit), { sheets.show(PixivSheet.EditWork(illust)) })
         SheetRow(XIcons.Link, pluginString(Strings.copy_link), { sheets.close(); copy(illust.url, Strings.link_copied) })
-        SheetRow(PixivIcons.ContentCopy, pluginString(Strings.copy_info), {
-            sheets.close()
-            copy(PixivCopyInfo.filled(PixivCopyInfo.template(settings, defaultCopyTemplate(language)), illust), Strings.info_copied)
-        })
-        SheetRow(Icons.Filled.Share, pluginString(Strings.share_link), { sheets.close(); outside.share(illust.url) })
-        SheetRow(PostIcons.OpenInNew, pluginString(Strings.open_on_pixiv), { sheets.close(); outside.open(illust.url) })
-        HorizontalDivider()
         MuteRows(sheets, workMuteChoices(illust).take(2), leave = false)
+        HorizontalDivider()
+        PluginPostMenuRows(runtime.host, PixivShared.menu(illust), sheets::close) { icon, label, onClick -> SheetRow(icon, label, onClick) }
     }
 }
 
 /** The page sheet a long press on [PixivSheet.PageActions.page] opens, or the reader's menu. */
 @Composable
 internal fun PageActionsSheet(sheet: PixivSheet.PageActions, sheets: PixivSheets) {
+    val runtime = LocalPixiv.current
     val illust = sheet.illust
     val pages = illust.viewerUrls.size
     val copy = rememberCopy()
@@ -147,7 +141,7 @@ internal fun PageActionsSheet(sheet: PixivSheet.PageActions, sheets: PixivSheets
             SheetRow(SavedIcons.Folder, pluginString(Strings.ugoira_save_zip), { sheets.close(); sheets.saveZip(illust) })
         }
         SheetRow(XIcons.Link, pluginString(Strings.copy_link), { sheets.close(); copy(illust.url, Strings.link_copied) })
-        SheetRow(PostIcons.MoreHoriz, pluginString(Strings.more_actions), { sheets.show(PixivSheet.WorkActions(illust)) })
+        SheetRow(PostIcons.MoreHoriz, pluginString(Strings.more_actions), { sheets.close(); runtime.host.openPostMenu(PixivShared.menu(illust)) })
     }
 }
 
@@ -216,7 +210,11 @@ internal fun TagSheet(sheet: PixivSheet.Tag, sheets: PixivSheets) {
     }
 }
 
-/** A novel's long-press sheet: the bookmark kept here, links, and muting its author or the novel. */
+/**
+ * A novel's long-press sheet (pixiv_novel_actions.dart): Pixiv's own entries
+ * (the bookmark kept here, its comments, copy link, muting its author or the
+ * novel) above the shared post sheet's.
+ */
 @Composable
 internal fun NovelActionsSheet(novel: PixivNovel, sheets: PixivSheets) {
     val runtime = LocalPixiv.current
@@ -224,27 +222,24 @@ internal fun NovelActionsSheet(novel: PixivNovel, sheets: PixivSheets) {
     val bookmarked = marks.orEmpty().any { it.kind == PixivKind.NOVEL && it.kept.id == novel.id }
     val haptics = rememberHaptics()
     val copy = rememberCopy()
-    val outside = rememberOutside()
     val language = currentLanguage()
     PixivSheetFrame(sheets) {
         SheetRow(if (bookmarked) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder, pluginString(if (bookmarked) Strings.unbookmark else Strings.bookmark), {
             sheets.close()
             sheets.toggleBookmark(novel, haptics)
         })
-        SheetRow(Icons.Filled.Edit, pluginString(Strings.bookmark_edit), { sheets.show(PixivSheet.EditNovel(novel)) })
+        SheetRow(PostIcons.Forum, commentsLabel(novel.totalComments), {
+            sheets.close()
+            runtime.open(PixivRoute.Comments(PixivKind.NOVEL, novel.id))
+        })
         SheetRow(XIcons.Link, pluginString(Strings.copy_link), { sheets.close(); copy(novel.url, Strings.link_copied) })
-        SheetRow(Icons.Filled.Share, pluginString(Strings.share_link), { sheets.close(); outside.share(novel.url) })
-        SheetRow(PostIcons.OpenInNew, pluginString(Strings.open_on_pixiv), { sheets.close(); outside.open(novel.url) })
-        HorizontalDivider()
         val choices = listOf(
             PixivMuteChoice(PixivIcons.VolumeOff, Strings.mute_author.get(language)) { it.muteAuthor(novel.user.id, novel.user.name) },
             PixivMuteChoice(PostIcons.VisibilityOff, Strings.mute_novel.get(language)) { it.muteNovel(novel.id) },
         )
         MuteRows(sheets, choices, leave = false)
-        SheetRow(Icons.AutoMirrored.Filled.KeyboardArrowRight, pluginString(Strings.novel_author_novels), {
-            sheets.close()
-            runtime.open(PixivRoute.User(novel.user.id, "novels"))
-        })
+        HorizontalDivider()
+        PluginPostMenuRows(runtime.host, PixivShared.menu(novel), sheets::close) { icon, label, onClick -> SheetRow(icon, label, onClick) }
     }
 }
 

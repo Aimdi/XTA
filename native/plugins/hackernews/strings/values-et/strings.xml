@@ -20,9 +20,6 @@
     <string name="unlike">Eemalda meeldimine sellest seadmest</string>
     <string name="save">Salvesta selles seadmes</string>
     <string name="unsave">Eemalda sellest seadmest</string>
-    <string name="share_link">Jaga linki</string>
-    <string name="save_to_folder">Salvesta kausta...</string>
-    <string name="open_in_browser">Ava brauseris</string>
     <string name="comments">Kommentaarid</string>
     <string name="open_article">Ava artikkel</string>
     <string name="deleted">[kustutatud]</string>

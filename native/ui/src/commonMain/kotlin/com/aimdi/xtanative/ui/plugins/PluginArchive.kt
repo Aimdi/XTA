@@ -1,10 +1,12 @@
 package com.aimdi.xtanative.ui.plugins
 
+import com.aimdi.xtanative.core.json.J
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
 /**
  * One of a plugin's posts as the app's archive keeps it (XTA's
@@ -43,6 +45,21 @@ class PluginPostArchive(val id: String, val authorId: String?, val content: Json
                 put("images", JsonArray(images.map(::JsonPrimitive)))
             }
             return PluginPostArchive(id ?: "$source:$url", authorId ?: author, content)
+        }
+
+        /**
+         * The link record [content] is, kept from plugin [source] under the id
+         * and author [link] gave it (XTA's PluginLinkPost.fromArchive): what a
+         * plugin's row in Saved files and takes out. Null for another plugin's
+         * record, another kind of record, or one without a web address.
+         */
+        fun ofLink(content: JsonElement, source: String): PluginPostArchive? {
+            val root = J(content)
+            val url = root["url"].string.orEmpty()
+            val web = url.toHttpUrlOrNull()?.host?.isNotEmpty() == true
+            if (root["xtaPlugin"].string != "link" || root["source"].string != source || !web) return null
+            val author = root["author"].string.orEmpty()
+            return PluginPostArchive(root["archiveId"].string ?: "$source:$url", root["archiveUserId"].string ?: author, content)
         }
     }
 }

@@ -24,14 +24,14 @@ layer is written in `networks/<id>` first, then moves with its screens into
 | bluesky | `plugins/bluesky` (124 tests, live check passes) | plugin: Following, Discover and custom feeds, lists, device likes, threads, profiles, search, imports and settings |
 | mastodon | `plugins/mastodon` (169 tests) | plugin: Explore, Local, Federated and Following, trending tags, profiles, threads, hashtags, search, boosts and quotes, saved posts and settings; Home's timelines, groups and Saved through the host |
 | threads | `plugins/threads` (174 tests, live check passes) | plugin: Home and Liked, the post card, conversations with their orders, profiles with honest counts, search, every video rendition, settings; Home's timelines (ten posts an account), groups, Saved and downloads, retries by Meta's advice |
-| substack | `plugins/substack` (177 tests) | plugin: XTA's screens, the reader and podcasts |
-| booru | `plugins/booru` (151 tests, live check passes) | plugin: XTA's screens and settings |
-| pixiv | `plugins/pixiv` (220 tests, live check passes) | plugin: Home, Rankings, Favorites and Search, works and novels, profiles, comments, series, Pixivision and settings |
+| substack | `plugins/substack` (177 tests) | plugin: XTA's screens, the reader and podcasts; groups and the shared post sheet |
+| booru | `plugins/booru` (151 tests, live check passes) | plugin: XTA's screens and settings; Home's timelines, groups, Saved and downloads through the host |
+| pixiv | `plugins/pixiv` (220 tests, live check passes) | plugin: Home, Rankings, Favorites and Search, works and novels, profiles, comments, series, Pixivision and settings; groups, Saved and batch downloads through the host |
 | ehviewer | `plugins/ehviewer` (97 tests, live check passes) | plugin, private as in XTA: Popular, the front page, the toplists, Watched, history and favourites, search with XTA's categories and the site's tag suggestions, galleries with tags, comments and previews, the reader in its three modes with downloads, settings |
 | instagram | `plugins/instagram` (56 tests) | plugin: For you and Following, profiles, the accounts followed here, search, the post card with its carousel, settings; groups and the shared post sheet |
 | tiktok | `plugins/tiktok` (61 tests, live check passes) | plugin, private as in XTA: Following and Accounts, trending, discover, search for people and videos, profiles, the player in XTA's renditions or TikTok's own, groups, settings |
 | rss | `plugins/rss` (24 tests; its parsing, shared with the web sources, at `:networks`' top level) | plugin: the timeline with unread and tag filters, feeds and their tags, a site's feeds discovered, OPML import and export, the reader with its place and offline copy, Home's timelines and groups, settings |
-| hackernews | `plugins/hackernews` (29 tests) | plugin: Top, New, Best, Ask, Show and Jobs, Saved and Following, stories with their comments, users, search and settings |
+| hackernews | `plugins/hackernews` (29 tests) | plugin: Top, New, Best, Ask, Show and Jobs, Saved and Following, stories with their comments, users, search and settings; groups, Saved and the shared post sheet |
 | websources | `plugins/websources` (80 tests) | plugin: the published catalogue, adding a source with its consent, its lists, search and follows, Home's timelines and groups |
 | stocks | `plugins/stocks` (171 tests, live check passes) | plugin: the watchlist, posts about it, trending and markets, a ticker's and a token's pages with the chart, the price strip under X posts and cashtags opening the ticker |
 | immich | `plugins/immich` (52 tests): the reader's own library | plugin: "Upload media to Immich" in Saved's folders, an album per folder, its settings and connection test |

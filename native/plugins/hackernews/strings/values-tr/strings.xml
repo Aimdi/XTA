@@ -20,9 +20,6 @@
     <string name="unlike">Beğeniyi bu cihazdan kaldır</string>
     <string name="save">Bu cihaza kaydet</string>
     <string name="unsave">Bu cihazdan kaldır</string>
-    <string name="share_link">Bağlantıyı paylaş</string>
-    <string name="save_to_folder">Klasöre kaydet...</string>
-    <string name="open_in_browser">Tarayıcıda aç</string>
     <string name="comments">Yorumlar</string>
     <string name="open_article">Yazıyı aç</string>
     <string name="deleted">[silindi]</string>

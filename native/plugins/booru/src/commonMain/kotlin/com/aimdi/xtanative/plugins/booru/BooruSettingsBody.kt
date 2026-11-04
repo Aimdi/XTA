@@ -43,6 +43,7 @@ import com.aimdi.xtanative.networks.booru.BooruRating
 import com.aimdi.xtanative.networks.booru.BooruRatingRules
 import com.aimdi.xtanative.store.settings.BooruPrefs
 import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.ui.plugins.HomeTimelineSwitch
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.pluginString
 
@@ -63,8 +64,9 @@ private sealed interface SettingsAsk {
 /**
  * Booru's settings (booru_settings.dart), in XTA's order: the site, built in
  * or added, its engine and host; the login and key it alone is sent; the
- * content (each site keeps its own rating cap and blacklist); the grid and
- * viewer; the prompt's kinds; the download name; the muted tags; a test.
+ * content (each site keeps its own rating cap and blacklist) and whether the
+ * followed tags join Home's timelines; the grid and viewer; the prompt's
+ * kinds; the download name; the muted tags; a test.
  */
 @Composable
 internal fun BooruSettingsBody(app: BooruApp, frame: PluginFrame) = Bound(app) { settings ->
@@ -73,7 +75,7 @@ internal fun BooruSettingsBody(app: BooruApp, frame: PluginFrame) = Bound(app) {
         LazyColumn(Modifier.fillMaxSize(), contentPadding = frame.padding) {
             siteSection(app, settings) { ask = it }
             credentialsSection(app, settings)
-            contentSection(settings) { ask = it }
+            contentSection(app, settings) { ask = it }
             displaySection(app, settings) { ask = it }
             item(key = "prompt") { PromptSection(app, settings) }
             item(key = "download") { DownloadSection(app, settings) }
@@ -242,10 +244,11 @@ private fun keyHelp(engine: BooruEngine): String = pluginString(
     },
 )
 
-private fun LazyListScope.contentSection(settings: Settings, onAsk: (SettingsAsk) -> Unit) {
+private fun LazyListScope.contentSection(app: BooruApp, settings: Settings, onAsk: (SettingsAsk) -> Unit) {
     item(key = "content-title") { SectionTitle(pluginString(Strings.section_content)) }
     item(key = "per-site") { Note(pluginString(Strings.per_site_note)) }
     item(key = "rating") { ValueRow(pluginString(Strings.max_rating), ratingLabel(BooruConfig.maxRating(settings))) { onAsk(SettingsAsk.Rating) } }
+    item(key = "home") { HomeTimelineSwitch(app.host.settings, pluginString(Strings.plugin_name)) }
 }
 
 /** Grid and viewer choices (booru_display_settings.dart). */

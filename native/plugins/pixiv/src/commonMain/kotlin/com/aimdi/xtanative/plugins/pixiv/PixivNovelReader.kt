@@ -50,7 +50,6 @@ import com.aimdi.xtanative.store.reading.ReadingAppearance
 import com.aimdi.xtanative.store.reading.ReadingAppearanceStore
 import com.aimdi.xtanative.store.settings.PixivPrefs
 import com.aimdi.xtanative.ui.common.LoadingRow
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
@@ -102,8 +101,7 @@ private fun MuteGateNovel(novel: PixivNovel, content: @Composable () -> Unit) {
 
 @Composable
 private fun NovelText(model: PixivNovelModel, reading: PixivNovelReading, novel: PixivNovel) {
-    val graph = LocalGraph.current
-    val look by produceAppearance(graph.readingAppearance)
+    val look by produceAppearance(LocalPixiv.current.host.readingAppearance)
     val scroll = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val content = reading.content

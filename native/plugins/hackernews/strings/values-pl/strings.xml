@@ -20,9 +20,6 @@
     <string name="unlike">Usuń polubienie z tego urządzenia</string>
     <string name="save">Zapisz na tym urządzeniu</string>
     <string name="unsave">Usuń z tego urządzenia</string>
-    <string name="share_link">Udostępnij link</string>
-    <string name="save_to_folder">Zapisz w folderze...</string>
-    <string name="open_in_browser">Otwórz w przeglądarce</string>
     <string name="comments">Komentarze</string>
     <string name="open_article">Otwórz artykuł</string>
     <string name="deleted">[usunięte]</string>

@@ -131,6 +131,7 @@
     <string name="save_search">Zapisz wyszukiwanie</string>
     <string name="saved_searches">Zapisane wyszukiwania</string>
     <string name="score">Wynik %1$d</string>
+    <string name="card_title">Booru #%1$s</string>
     <string name="search">Szukaj</string>
     <string name="search_hint">Tagi rozdzielone spacjami</string>
     <string name="search_history">Ostatnie wyszukiwania</string>

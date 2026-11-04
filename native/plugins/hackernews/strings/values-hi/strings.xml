@@ -20,9 +20,6 @@
     <string name="unlike">इस डिवाइस से पसंद हटाएँ</string>
     <string name="save">इस डिवाइस पर सहेजें</string>
     <string name="unsave">इस डिवाइस से हटाएँ</string>
-    <string name="share_link">लिंक साझा करें</string>
-    <string name="save_to_folder">फ़ोल्डर में सहेजें...</string>
-    <string name="open_in_browser">ब्राउज़र में खोलें</string>
     <string name="comments">टिप्पणियाँ</string>
     <string name="open_article">लेख खोलें</string>
     <string name="deleted">[हटाया गया]</string>

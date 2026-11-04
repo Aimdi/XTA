@@ -131,6 +131,7 @@
     <string name="save_search">Uložit hledání</string>
     <string name="saved_searches">Uložená hledání</string>
     <string name="score">Skóre %1$d</string>
+    <string name="card_title">Booru #%1$s</string>
     <string name="search">Hledat</string>
     <string name="search_hint">Štítky oddělené mezerami</string>
     <string name="search_history">Nedávná hledání</string>

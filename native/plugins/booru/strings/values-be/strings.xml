@@ -131,6 +131,7 @@
     <string name="save_search">Захаваць пошук</string>
     <string name="saved_searches">Захаваныя пошукі</string>
     <string name="score">Балы: %1$d</string>
+    <string name="card_title">Booru #%1$s</string>
     <string name="search">Пошук</string>
     <string name="search_hint">Тэгі праз прабел</string>
     <string name="search_history">Нядаўнія пошукі</string>

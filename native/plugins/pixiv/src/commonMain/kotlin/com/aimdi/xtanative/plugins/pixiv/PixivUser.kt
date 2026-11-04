@@ -164,7 +164,7 @@ private fun ProfileActions(scope: PixivProfileScope) {
     }
 }
 
-/** The banner (a long press saves it), the avatar (a tap saves it), names, Premium, Follow, the counts and the bio. */
+/** The banner (a long press saves it), the avatar (a tap saves it), names, Premium, Follow and Add to group, the counts and the bio. */
 @Composable
 private fun UserHeader(profile: PixivUserProfile, onWorks: () -> Unit) {
     val user = profile.user
@@ -173,7 +173,7 @@ private fun UserHeader(profile: PixivUserProfile, onWorks: () -> Unit) {
         Column(Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp)) {
             Identity(profile)
             Spacer(Modifier.height(14.dp))
-            if (user.id != LocalPixiv.current.ownId) FollowButton(user, Modifier.fillMaxWidth(), prominent = true)
+            ProfileButtons(user)
             Counts(profile, onWorks)
             if (user.comment.isNotBlank()) {
                 Spacer(Modifier.height(8.dp))

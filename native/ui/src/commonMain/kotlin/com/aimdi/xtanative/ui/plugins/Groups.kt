@@ -17,3 +17,7 @@ import org.jetbrains.compose.resources.stringResource
 fun AddToGroupButton(host: PluginHost, account: String, follow: suspend () -> Unit = {}) {
     IconButton(onClick = { host.addToGroup(account, follow) }) { Icon(PostIcons.People, stringResource(Res.string.posts_add_to_group)) }
 }
+
+/** "Add to group" in the reader's language, for a plugin's own button, chip or menu entry that opens [PluginHost.addToGroup]. */
+@Composable
+fun addToGroupText(): String = stringResource(Res.string.posts_add_to_group)

@@ -12,7 +12,7 @@ Like XTA, it only reads: nothing is posted, liked or followed on X or on any oth
 
 Every network but X is a plugin you add from **Settings → Plugin store**, and remove there just as easily. In this prerelease: **Bluesky, Mastodon, Threads, Instagram, Reddit, Hacker News, Pixiv, Substack, Booru, RSS, the web sources and Stocks**, each with XTA's screens and settings, and **EhViewer and TikTok**, private as in XTA: the store lists them once **Show private plugins** is on, in its menu. With Stocks, X posts show the price strip under their cashtags, and a cashtag opens its ticker. **Karakeep and Deepmarks** add "Save to …" to a post's sheets and **Immich** an upload switch to Saved's folders, sending to your own servers, as in XTA.
 
-A network's follows in your XTA backup wait for its plugin and arrive when you add it; an export from XTA Native writes them where XTA reads them back. Where XTA lets a network join Home's timelines, groups, Saved and downloads, its plugin does too: Reddit, Bluesky, Mastodon, Threads, RSS and the web sources join Home's timelines and the groups, Instagram and TikTok the groups; Hacker News, Booru, Pixiv and Substack follow.
+A network's follows in your XTA backup wait for its plugin and arrive when you add it; an export from XTA Native writes them where XTA reads them back. Where XTA lets a network join Home's timelines, groups, Saved and downloads, its plugin does too: Reddit, Bluesky, Mastodon, Threads, Booru, RSS and the web sources join Home's timelines and the groups; Instagram, TikTok, Hacker News, Pixiv and Substack the groups; and their posts are saved, noted and downloaded through the app.
 
 ### On Linux
 
@@ -31,7 +31,7 @@ It keeps its data in `~/.local/share/xta-native`, a folder only you can open. Vi
 - Every section of XTA's settings, its backup export and import, WebDAV sync, and 28 languages
 - Links open in the app's own browser on Android, or in the browser you pick; x.com and the networks' links open in the app
 
-Still to come: the rest of the networks' shared features above, downloaded voices speaking (they download but do not speak yet) and lock-screen media controls.
+Still to come: downloaded voices speaking (they download but do not speak yet) and lock-screen media controls.
 
 ### Comparing it with XTA
 

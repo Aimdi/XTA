@@ -132,6 +132,7 @@
     <string name="save_search">Save search</string>
     <string name="saved_searches">Saved searches</string>
     <string name="score">Score %1$d</string>
+    <string name="card_title">Booru #%1$s</string>
     <string name="search">Search</string>
     <string name="search_hint">Tags, separated by spaces</string>
     <string name="search_history">Recent searches</string>

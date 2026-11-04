@@ -113,7 +113,7 @@ read again, the desktop's F5: `RefreshesOn`).
 | `savedPosts` | its own posts in Saved with their notes, as they change, for its own saved list (`PluginSavedScreen`) |
 | `addToGroup(account, follow)` | the app's group picker for one of its accounts |
 | `openPostMenu(menu)` | the shared post menu over the screen |
-| `download(media, fileName, subfolder)`, `saveFile(bytes, fileName, mimeType, subfolder)`, `shareFile(bytes, fileName, mimeType)`, `openDownloads()` | the app's downloads, a file it made saved or shared, the Downloads screen |
+| `download(media, fileName, subfolder)`, `downloadAll(files, subfolder)`, `queueDownloads(files, subfolder)`, `saveFile(bytes, fileName, mimeType, subfolder)`, `shareFile(bytes, fileName, mimeType)`, `openDownloads()` | the app's downloads (a file, a batch saved together, a batch queued), a file it made saved or shared, the Downloads screen |
 | `tell(text)`, `working(text, work)` | a line at the foot of the window over any screen, as XTA's snack bars; one shown while `work` runs |
 
 The shared pieces, in the same package, drawn in the app's theme. Use them
@@ -129,8 +129,9 @@ with a test.
   download), `ZoomableImage`, and `rememberImageRequest` for pictures that
   need request headers.
 - Reads and lists: `Fetch` (one read, kept on screen through a failure),
-  `MergedFeed` (accounts' pages merged as they come), `FeedReads` (a feed's
-  reads, one failing without the others), `PagedItems` with `PagedList`,
+  `MergedFeed` (accounts' pages merged as they come), `FeedReads` (what a
+  feed follows read a few at a time, one failing without the others),
+  `PagedItems` with `PagedList`,
   `NetworkProblemView` and `NetworkProblemRow` with `problemOf`, `RetryRow`,
   `MessageText` and `EmptyPane`.
 - Articles and X posts: `RssReaderScreen`, the article reader RSS and the web
@@ -148,9 +149,10 @@ with a test.
   with `PluginConnectionControls` (the connection test, Test and Save, the
   result line), `PluginLinkButton` and `answeredOr`
   ([below](#sending-a-post-to-the-readers-own-server)).
-- The app's features: `HomeTimelineSwitch`, `AddToGroupButton` and
-  `PluginSavedScreen` (below), and `PluginSearchHistory` (recent searches, as
-  XTA keeps them).
+- The app's features: `HomeTimelineSwitch`, `AddToGroupButton` with
+  `addToGroupText`, `PluginPostMenuRows` (the shared post sheet's entries in
+  a plugin's own sheet) and `PluginSavedScreen` (below), and
+  `PluginSearchHistory` (recent searches, as XTA keeps them).
 - Leaving and files: `rememberOpenOutside`, `rememberShareText`,
   `rememberTextFileChooser` and `rememberTextFileSaver`.
 - Words: `PluginStrings` with `pluginString` and `pluginPlural`
@@ -186,7 +188,8 @@ posts of a group's members of other networks into that group's feed
 caches, as a pull does. A plugin reads a page of each account a few at a
 time, keeps only a few posts (Reddit ten of each community, Bluesky ten in
 all, as XTA), lets an account that fails add nothing and throws only when
-none answered, and reads through the same pages and caches as its own tab.
+none answered, and reads through the same pages and caches as its own tab:
+`FeedReads.each(accounts, FeedReads.ACCOUNTS_AT_ONCE) { account -> … }` reads them so, four at a time.
 
 The switch is the app's setting `plugin.<id>.in_home_feed`, where XTA keeps
 it (`:store`'s `NetworkPrefs.inHomeFeed`): `PluginSettings.inHomeFeed()` reads
@@ -226,8 +229,9 @@ a community's name in lower case). `host.addToGroup(account, follow)` opens the
 app's group picker (XTA's group membership sheet) for it; the choice applies
 as it closes, and `follow` runs first once a group is picked, for the plugin
 to follow the account, as XTA's picker does. `AddToGroupButton(host,
-account, follow)` is that as a bar's button; the shared post menu offers it
-for a post's author. The group's feed reads its members through their
+account, follow)` is that as a bar's button, and `addToGroupText()` its words
+for a button of the plugin's own; the shared post menu offers it for a
+post's author. The group's feed reads its members through their
 plugins ([above](#posts-in-homes-timelines)), and counts them among its
 members; uninstalling a plugin takes its members out of every group.
 
@@ -239,7 +243,8 @@ post, and the likes. A plugin files a post there as a `PluginPostArchive`:
 it is, and `content`, XTA's record of such a post where XTA has one
 (`{"xtaPlugin": "bluesky", "post": …}`), else XTA's link record,
 `PluginPostArchive.link(source, url, author, text, images)`, so a backup
-reads the same in XTA. Nothing reaches the network.
+reads the same in XTA (`PluginPostArchive.ofLink(content, source)` reads one
+back, as `archived` does). Nothing reaches the network.
 
 | `PluginHost` | What it does |
 |---|---|
@@ -257,7 +262,11 @@ a tap saving and a long press opening the save sheet, and `more` is what a
 long press on the row opens (`host.openPostMenu`). A plugin that draws its
 own footer (`NetworkPostExtras.footer`) puts `NetworkBookmark(archive)` in it,
 where XTA's footer has its bookmark, and its `onLongPress` comes before
-`more`. The sheets open over the app's screens, one at a time.
+`more`. The sheets open over the app's screens, one at a time. A plugin
+whose own sheet has entries of its own above the shared ones, as XTA's
+Pixiv's does, draws those in it with `PluginPostMenuRows(host, menu,
+onDone, row)`: each closes the sheet (`onDone`) before it acts, drawn as
+`row` draws the sheet's own entries.
 
 Saved draws a plugin's post through its plugin: `XtaPlugin.archived(content)`
 reads the record back, and the shared row draws it with the plugin's
@@ -277,6 +286,8 @@ plugin that lists them its own way reads `savedPosts` itself.
 | `PluginHost` | What it does |
 |---|---|
 | `download(media, fileName, subfolder)` | a `MediaItem` saved through the app's downloads, with their notices: a photo, or a video's own file (a stream has none) |
+| `downloadAll(files, subfolder)` | `PluginDownload`s (an address, a file name) saved together, as XTA saves a work's pages, as many at a time as the download setting allows, with one notice for them all; answers, once each has ended, whether it was saved |
+| `queueDownloads(files, subfolder)` | `PluginDownload`s queued to run on their own, as XTA's Download all queues a feed's posts, without those the downloads hold or are saving; answers a `PluginQueued` (how many queued, how many left out), or null where the download setting asks where each file goes |
 | `saveFile(bytes, fileName, mimeType, subfolder)` | a file the plugin made (an exported animation, a novel's text) saved where the download setting says, with the same notices |
 | `shareFile(bytes, fileName, mimeType)` | such a file handed to the share sheet (Android's, through the app's file provider); the desktop has none, so it is saved instead, the notice saying where |
 | `openDownloads()` | the app's Downloads screen |

@@ -14,8 +14,11 @@ import com.aimdi.xtanative.networks.pixiv.PixivLinkRef
 import com.aimdi.xtanative.networks.pixiv.PixivLinks
 import com.aimdi.xtanative.networks.pixiv.PixivNovel
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.plugins.NetworkPost
+import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.PluginBackupSection
 import com.aimdi.xtanative.ui.plugins.PluginBody
+import com.aimdi.xtanative.ui.plugins.PluginFeed
 import com.aimdi.xtanative.ui.plugins.PluginFootprint
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
@@ -24,11 +27,13 @@ import com.aimdi.xtanative.ui.plugins.PluginSearch
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
+import kotlinx.serialization.json.JsonElement
 
 /**
  * Pixiv as a downloadable plugin: XTA's Pixiv screens, reading as the
- * signed-in account. Bookmarks, follows and history stay on this device;
- * nothing is written to Pixiv.
+ * signed-in account; its creators in the app's groups, its works and novels
+ * in the app's Saved, its pages through the app's downloads. Bookmarks,
+ * follows and history stay on this device; nothing is written to Pixiv.
  */
 class PixivPlugin : XtaPlugin() {
     private var attached: PixivRuntime? = null
@@ -66,7 +71,14 @@ class PixivPlugin : XtaPlugin() {
         return { PixivRoot(runtime) { PixivScreenOf(opened) } }
     }
 
-    /** The bookmarks kept here; the settings are the app's, which its backup carries. */
+    /** The creators followed here, in the groups that hold them; XTA has no switch for Home's timelines. */
+    override val feed: PluginFeed get() = runtime.feed
+
+    override val postActions: NetworkPostActions get() = runtime.actions
+
+    /** A work or novel kept as XTA's link record, as Saved draws it; another record is none of its. */
+    override fun archived(content: JsonElement): NetworkPost? = runtime.shownSaved(content)
+
     /** The bookmarks kept here; the settings are the app's, which its backup carries. */
     override val backupSections: List<PluginBackupSection>
         get() = listOf(PluginBackupSection("pixiv.bookmarks", export = { runtime.bookmarks.export() }, import = { runtime.bookmarks.import(it) }))

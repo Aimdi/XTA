@@ -129,6 +129,7 @@
     <string name="save_search">Aramayı kaydet</string>
     <string name="saved_searches">Kayıtlı aramalar</string>
     <string name="score">Puan %1$d</string>
+    <string name="card_title">Booru #%1$s</string>
     <string name="search">Ara</string>
     <string name="search_hint">Boşlukla ayrılmış etiketler</string>
     <string name="search_history">Son aramalar</string>

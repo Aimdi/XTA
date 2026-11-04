@@ -2,8 +2,6 @@ package com.aimdi.xtanative.ui.pluginstore
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
@@ -12,8 +10,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.data.plugins.PluginMembers
@@ -22,34 +18,20 @@ import com.aimdi.xtanative.data.plugins.PluginSheet
 import com.aimdi.xtanative.data.plugins.keepable
 import com.aimdi.xtanative.store.settings.SubscriptionPrefs
 import com.aimdi.xtanative.ui.common.LocalGraph
-import com.aimdi.xtanative.ui.common.XIcons
-import com.aimdi.xtanative.ui.generated.resources.Res
-import com.aimdi.xtanative.ui.generated.resources.posts_add_to_group
-import com.aimdi.xtanative.ui.generated.resources.posts_open_in_browser
-import com.aimdi.xtanative.ui.generated.resources.posts_quotes
-import com.aimdi.xtanative.ui.generated.resources.posts_reposted_by
-import com.aimdi.xtanative.ui.generated.resources.reader_link_share
-import com.aimdi.xtanative.ui.generated.resources.saved_add_note
-import com.aimdi.xtanative.ui.generated.resources.saved_save_here
-import com.aimdi.xtanative.ui.generated.resources.saved_save_to_folder
-import com.aimdi.xtanative.ui.generated.resources.saved_unsave
 import com.aimdi.xtanative.ui.plugins.PluginPostArchive
 import com.aimdi.xtanative.ui.plugins.PluginSharedPost
+import com.aimdi.xtanative.ui.plugins.PostMenuHandlers
+import com.aimdi.xtanative.ui.plugins.PostMenuRows
 import com.aimdi.xtanative.ui.plugins.currentLanguage
-import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
-import com.aimdi.xtanative.ui.plugins.rememberShareText
 import com.aimdi.xtanative.ui.post.MenuRow
-import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.saved.Keeping
 import com.aimdi.xtanative.ui.saved.NoteEditorDialog
 import com.aimdi.xtanative.ui.saved.NoteRules
 import com.aimdi.xtanative.ui.saved.NoteTarget
 import com.aimdi.xtanative.ui.saved.SaveSheet
-import com.aimdi.xtanative.ui.saved.SavedIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupBoardModel
 import com.aimdi.xtanative.ui.subscriptions.GroupMembershipSheet
 import com.aimdi.xtanative.ui.subscriptions.GroupPicker
-import org.jetbrains.compose.resources.stringResource
 
 /**
  * The sheets the plugins open over the app's screens (PluginHost's archive
@@ -108,8 +90,8 @@ private fun GroupsSheet(sheet: PluginSheet.Groups, onDismiss: () -> Unit) {
 /**
  * A plugin post's menu (XTA's showPluginPostActions), in XTA's order: saving
  * it on this device or taking it out, the note on it, its author's groups,
- * sharing its link, its folder, and the browser; then what the running
- * plugins add ([PluginSheetEntries]).
+ * sharing its link, its folder, and the browser ([PostMenuRows]); then what
+ * the running plugins add ([PluginSheetEntries]).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -118,43 +100,18 @@ private fun PostMenuSheet(sheet: PluginSheet.Menu, onDismiss: () -> Unit) {
     val graph = LocalGraph.current
     val menu = sheet.menu
     val saved by plugins.savedIds.collectAsStateWithLifecycle()
-    val outside = rememberOpenOutside()
-    val share = rememberShareOrCopy()
-    val item = remember(menu) { menu.post.keepable() }
-    val isSaved = menu.post.id in saved
+    val handlers = remember(menu) {
+        val item = menu.post.keepable()
+        PostMenuHandlers(
+            toggleSaved = { Keeping.toggleSave(graph, item) },
+            editNote = { plugins.show(PluginSheet.Note(menu.post)) },
+            addToGroup = { author -> plugins.show(PluginSheet.Groups(PluginMembers.memberId(sheet.pluginId, author), menu.follow)) },
+            chooseFolder = { plugins.show(PluginSheet.Folders(menu.post)) },
+        )
+    }
     ModalBottomSheet(onDismissRequest = onDismiss) {
         Column(Modifier.padding(bottom = 16.dp)) {
-            MenuRow(if (isSaved) SavedIcons.Bookmark else SavedIcons.BookmarkBorder, stringResource(if (isSaved) Res.string.saved_unsave else Res.string.saved_save_here)) {
-                onDismiss()
-                Keeping.toggleSave(graph, item)
-            }
-            MenuRow(SavedIcons.EditNote, stringResource(Res.string.saved_add_note)) { plugins.show(PluginSheet.Note(menu.post)) }
-            menu.author?.let { author ->
-                MenuRow(PostIcons.People, stringResource(Res.string.posts_add_to_group)) {
-                    plugins.show(PluginSheet.Groups(PluginMembers.memberId(sheet.pluginId, author), menu.follow))
-                }
-            }
-            MenuRow(Icons.Filled.Share, stringResource(Res.string.reader_link_share)) {
-                onDismiss()
-                share(menu.url)
-            }
-            MenuRow(SavedIcons.Folder, stringResource(Res.string.saved_save_to_folder)) { plugins.show(PluginSheet.Folders(menu.post)) }
-            menu.reposts?.let { open ->
-                MenuRow(XIcons.Repost, stringResource(Res.string.posts_reposted_by)) {
-                    onDismiss()
-                    open()
-                }
-            }
-            menu.quotes?.let { open ->
-                MenuRow(PostIcons.Quote, stringResource(Res.string.posts_quotes)) {
-                    onDismiss()
-                    open()
-                }
-            }
-            MenuRow(PostIcons.OpenInNew, stringResource(Res.string.posts_open_in_browser)) {
-                onDismiss()
-                outside(menu.url)
-            }
+            PostMenuRows(menu, menu.post.id in saved, handlers, onDismiss)
             PluginSheetEntries(remember(menu) { PluginSaves.shared(menu) }, onDismiss)
         }
     }
@@ -177,12 +134,4 @@ fun PluginSheetEntries(post: PluginSharedPost, onDismiss: () -> Unit) {
             entry.run()
         }
     }
-}
-
-/** Shares a link where the system can, and copies it where it cannot (the desktop). */
-@Composable
-private fun rememberShareOrCopy(): (String) -> Unit {
-    val share = rememberShareText()
-    val clipboard = LocalClipboardManager.current
-    return remember(share, clipboard) { { url -> if (!share(url)) clipboard.setText(AnnotatedString(url)) } }
 }

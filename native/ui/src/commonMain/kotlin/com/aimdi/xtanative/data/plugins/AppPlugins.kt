@@ -21,6 +21,7 @@ import com.aimdi.xtanative.store.saved.SavedFolder
 import com.aimdi.xtanative.store.settings.HomePrefs
 import com.aimdi.xtanative.store.settings.SettingsStore
 import com.aimdi.xtanative.ui.downloads.Downloading
+import com.aimdi.xtanative.ui.downloads.PluginBatches
 import com.aimdi.xtanative.ui.downloads.PluginDownloads
 import com.aimdi.xtanative.ui.feed.PluginFeeds
 import com.aimdi.xtanative.ui.feed.SourceAsk
@@ -29,10 +30,12 @@ import com.aimdi.xtanative.ui.plugins.MediaItem
 import com.aimdi.xtanative.ui.plugins.NetworkPost
 import com.aimdi.xtanative.ui.plugins.OLDEST_PLUGIN_API
 import com.aimdi.xtanative.ui.plugins.PLUGIN_API_VERSION
+import com.aimdi.xtanative.ui.plugins.PluginDownload
 import com.aimdi.xtanative.ui.plugins.PluginFolderOption
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginPostArchive
 import com.aimdi.xtanative.ui.plugins.PluginPostMenu
+import com.aimdi.xtanative.ui.plugins.PluginQueued
 import com.aimdi.xtanative.ui.plugins.PluginSavedPost
 import com.aimdi.xtanative.ui.plugins.PluginSettings
 import com.aimdi.xtanative.ui.plugins.PluginSharedPost
@@ -472,6 +475,12 @@ class AppPlugins(
                 KeepNotices.endWorking()
             }
         }
+
+        override suspend fun downloadAll(files: List<PluginDownload>, subfolder: String?): List<Boolean> =
+            PluginBatches.saveAll(plugins.graph, files, subfolder)
+
+        override suspend fun queueDownloads(files: List<PluginDownload>, subfolder: String?): PluginQueued? =
+            PluginBatches.queueAll(plugins.graph, files, subfolder)
     }
 
     private companion object {

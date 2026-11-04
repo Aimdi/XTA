@@ -169,6 +169,25 @@ interface PluginHost {
      * and taken away once it ends: what [tell] says next takes its place.
      */
     suspend fun <T> working(text: String, work: suspend () -> T): T = work()
+
+    /**
+     * [files] saved through the app's downloads as one batch, as XTA saves a
+     * work's pages: in [subfolder] of where the download setting says, as many
+     * at a time as it allows, with one notice for them all, how many were
+     * saved (a lone file says it as [download] does). Answers once each has
+     * ended, file by file, whether it was saved.
+     */
+    suspend fun downloadAll(files: List<PluginDownload>, subfolder: String? = null): List<Boolean> = files.map { false }
+
+    /**
+     * [files] queued in the app's downloads to run on their own, as XTA's
+     * Booru queues the posts a feed has loaded: each the downloads have saved
+     * or are saving already is left out, and so are those past what the queue
+     * takes. Answers how many were queued and how many were left out as there
+     * already; null when none could be, as the download setting asks where
+     * each file goes and a batch needs a folder (the app says so).
+     */
+    suspend fun queueDownloads(files: List<PluginDownload>, subfolder: String? = null): PluginQueued? = null
 }
 
 /** What [PluginHost.savedPosts] holds where a host keeps no Saved: nothing. */

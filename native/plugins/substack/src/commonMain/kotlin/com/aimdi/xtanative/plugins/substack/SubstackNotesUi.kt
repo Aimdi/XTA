@@ -36,18 +36,22 @@ import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.MediaItem
 import com.aimdi.xtanative.ui.plugins.NetworkFocalPost
+import com.aimdi.xtanative.ui.plugins.NetworkHeaderButton
 import com.aimdi.xtanative.ui.plugins.NetworkPost
 import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.NetworkPostCard
+import com.aimdi.xtanative.ui.plugins.NetworkPostExtras
 import com.aimdi.xtanative.ui.plugins.NetworkProblemView
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.TextRun
+import com.aimdi.xtanative.ui.plugins.addToGroupText
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.problemOf
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 import com.aimdi.xtanative.ui.plugins.rememberShareText
+import com.aimdi.xtanative.ui.post.PostIcons
 
 /** Notes: public Notes from around Substack, not a Following feed, which would need a Substack account. */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,9 +81,12 @@ internal fun NotesPane(app: SubstackApp, notes: SubstackNotesFeed, frame: Plugin
     }
 }
 
+/** A note in the list, its ⋯ and a long press opening the shared post sheet (substack_note_card.dart), its publication under it. */
 @Composable
 private fun NoteRow(app: SubstackApp, note: SubstackNote, actions: NoteActions) {
-    NetworkPostCard(actions.post(note), actions.of(note))
+    val more = pluginString(Strings.more_options)
+    val extras = NetworkPostExtras(trailing = if (actions.hasMenu(note)) { { NetworkHeaderButton(PostIcons.MoreHoriz, more) { app.openMenu(note) } } } else null)
+    NetworkPostCard(actions.post(note), actions.of(note), extras)
     note.publication?.let { NotePublication(app, it, Modifier.padding(start = 68.dp, end = 16.dp, bottom = 8.dp)) }
     Hairline()
 }
@@ -112,7 +119,11 @@ internal class NoteActions(private val app: SubstackApp, private val unknown: St
         openMention = {},
         openTag = {},
         openMedia = { post, index -> app.host.openMedia(post.media, index) },
+        more = if (hasMenu(note)) { { app.openMenu(note) } } else null,
     )
+
+    /** Whether [note] has a page of its own, which its sheet files and shares. */
+    fun hasMenu(note: SubstackNote): Boolean = SubstackShared.archive(note) != null
 }
 
 @Composable
@@ -122,7 +133,7 @@ internal fun rememberNoteActions(app: SubstackApp): NoteActions {
     return remember(app, unknown, outside) { NoteActions(app, unknown, outside) }
 }
 
-/** The publication a note came from: open it, or follow it here. */
+/** The publication a note came from: open it, follow it here, or put it in groups. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun NotePublication(app: SubstackApp, publication: SubstackPublication, modifier: Modifier = Modifier) {
@@ -140,10 +151,15 @@ private fun NotePublication(app: SubstackApp, publication: SubstackPublication, 
             label = { Text(pluginString(if (followed) Strings.following else Strings.follow)) },
             leadingIcon = { Icon(if (followed) Icons.Default.Check else Icons.Default.Add, null, Modifier.size(16.dp)) },
         )
+        AssistChip(
+            onClick = { app.addToGroup(publication) },
+            label = { Text(addToGroupText()) },
+            leadingIcon = { Icon(PostIcons.People, null, Modifier.size(16.dp)) },
+        )
     }
 }
 
-/** One note on its own (substack_note_screen.dart): its text to select, its link to share or open in the browser. */
+/** One note on its own (substack_note_screen.dart): its text to select, its link to share or open in the browser, and the shared post sheet. */
 @Composable
 internal fun SubstackNoteScreen(app: SubstackApp, id: String) {
     val note = remember(id) { app.noteFor(id) }
@@ -155,9 +171,10 @@ internal fun SubstackNoteScreen(app: SubstackApp, id: String) {
         title = pluginString(Strings.tab_notes),
         onBack = app.host::back,
         actions = {
-            if (url != null) {
+            if (url != null && note != null) {
                 IconButton(onClick = { share(url) }) { Icon(Icons.Default.Share, pluginString(Strings.share_link)) }
                 IconButton(onClick = { outside(url) }) { Icon(SubstackIcons.OpenInNew, pluginString(Strings.open_in_browser)) }
+                IconButton(onClick = { app.openMenu(note) }) { Icon(PostIcons.MoreHoriz, pluginString(Strings.more_options)) }
             }
         },
     ) { padding ->

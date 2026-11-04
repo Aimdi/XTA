@@ -17,14 +17,14 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
-import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.networks.pixiv.PixivIllust
 import com.aimdi.xtanative.networks.pixiv.PixivImages
 import com.aimdi.xtanative.networks.pixiv.PixivNovel
 import com.aimdi.xtanative.networks.pixiv.PixivTag
 import com.aimdi.xtanative.networks.pixiv.PixivUgoira
 import com.aimdi.xtanative.store.settings.PixivPrefs
-import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.plugins.MediaItem
+import com.aimdi.xtanative.ui.plugins.PluginDownload
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -67,7 +67,7 @@ internal interface PixivPageSurface {
  * own scope, so they outlive the screen.
  */
 @Stable
-internal class PixivSheets(private val runtime: PixivRuntime, private val graph: AppGraph, private val language: () -> String) {
+internal class PixivSheets(private val runtime: PixivRuntime, private val language: () -> String) {
     var open by mutableStateOf<PixivSheet?>(null)
         private set
 
@@ -114,11 +114,8 @@ internal class PixivSheets(private val runtime: PixivRuntime, private val graph:
 
     fun saveAll(illust: PixivIllust) = savePages(illust, illust.viewerUrls.indices.toList())
 
-    /** Saves one picture as Pixiv serves it, a profile's avatar or banner, under its own file name. */
-    fun saveImage(url: String) = runtime.launch {
-        val name = url.substringBefore('?').substringAfterLast('/').ifEmpty { "pixiv.jpg" }
-        PixivDownloads.save(graph, listOf(PixivFile(PixivImages.url(url, runtime.settings[PixivPrefs.imageHost]), name)), null)
-    }
+    /** Saves one picture as Pixiv serves it, a profile's avatar or banner, as any plugin's picture is saved (pixiv_download.dart's savePixivImage). */
+    fun saveImage(url: String) = runtime.host.download(MediaItem(PixivImages.url(url, runtime.settings[PixivPrefs.imageHost])))
 
     /** Saves [pages] of [illust], asking first when some were saved before. */
     fun savePages(illust: PixivIllust, pages: List<Int>) {
@@ -142,7 +139,7 @@ internal class PixivSheets(private val runtime: PixivRuntime, private val graph:
     private fun startSaving(illust: PixivIllust, pages: List<Int>) {
         runtime.launch {
             val naming = PixivSaveNaming.of(runtime.settings.now)
-            val saved = PixivDownloads.save(graph, PixivDownloads.pageFiles(runtime, illust, pages), naming.subfolder(illust))
+            val saved = runtime.host.downloadAll(PixivDownloads.pageFiles(runtime, illust, pages), naming.subfolder(illust))
             afterSave(illust, pages.filterIndexed { index, _ -> saved.getOrElse(index) { false } })
         }
     }
@@ -151,8 +148,8 @@ internal class PixivSheets(private val runtime: PixivRuntime, private val graph:
         runtime.launch {
             val archive: PixivUgoira = runCatching { runtime.client.ugoiraMetadata(illust.id) }.getOrNull() ?: return@launch runtime.tell(Strings.ugoira_export_failed.get(language()))
             val naming = PixivSaveNaming.of(runtime.settings.now)
-            val file = PixivFile(archive.archiveUrl(runtime.settings[PixivPrefs.imageHost]), naming.workName(illust, ".zip"))
-            val saved = PixivDownloads.save(graph, listOf(file), naming.subfolder(illust))
+            val file = PluginDownload(archive.archiveUrl(runtime.settings[PixivPrefs.imageHost]), naming.workName(illust, ".zip"))
+            val saved = runtime.host.downloadAll(listOf(file), naming.subfolder(illust))
             afterSave(illust, if (saved.firstOrNull() == true) listOf(0) else emptyList())
         }
     }
@@ -171,9 +168,8 @@ internal val LocalPixivSheets = staticCompositionLocalOf<PixivSheets> { error("N
 /** A screen of the plugin: [runtime] for every part of it, its sheets and dialogs, and its notices at the foot. */
 @Composable
 internal fun PixivRoot(runtime: PixivRuntime, content: @Composable () -> Unit) {
-    val graph = LocalGraph.current
     val language = rememberUpdatedState(currentLanguage())
-    val sheets = remember(runtime, graph) { PixivSheets(runtime, graph) { language.value } }
+    val sheets = remember(runtime) { PixivSheets(runtime) { language.value } }
     LaunchedEffect(runtime) { runtime.ready() }
     CompositionLocalProvider(LocalPixiv provides runtime, LocalPixivSheets provides sheets) {
         Box(Modifier.fillMaxSize()) {

@@ -20,9 +20,6 @@
     <string name="unlike">Fjern likerklikk fra denne enheten</string>
     <string name="save">Lagre på denne enheten</string>
     <string name="unsave">Fjern fra denne enheten</string>
-    <string name="share_link">Del lenke</string>
-    <string name="save_to_folder">Lagre i mappe...</string>
-    <string name="open_in_browser">Åpne i nettleser</string>
     <string name="comments">Kommentarer</string>
     <string name="open_article">Åpne artikkel</string>
     <string name="deleted">[slettet]</string>

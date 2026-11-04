@@ -9,23 +9,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.ImeAction
-import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.networks.booru.BooruPost
-import com.aimdi.xtanative.store.downloads.DownloadQueue
-import com.aimdi.xtanative.store.downloads.DownloadStatus
 import com.aimdi.xtanative.store.settings.BooruPrefs
-import com.aimdi.xtanative.ui.downloads.Downloading
-import com.aimdi.xtanative.ui.downloads.downloadDestination
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
-import com.aimdi.xtanative.ui.saved.KeepNotice
-import com.aimdi.xtanative.ui.saved.KeepNotices
 
 /**
  * Asks the reader to confirm being 18 or older and wanting adult posts
@@ -68,15 +60,13 @@ internal fun RawQueryDialog(initial: String, onSearch: (String) -> Unit, onDismi
 }
 
 /**
- * Asks before downloading the [posts] a feed has loaded, then queues those
- * the downloads do not have yet, and says how many were queued and how many
- * were there already (booru_download.dart).
+ * Asks before downloading the [posts] a feed has loaded, then has the app's
+ * downloads queue those they do not have yet, and says how many were queued
+ * and how many were there already (booru_download.dart).
  */
 @Composable
 internal fun DownloadAllDialog(app: BooruApp, posts: List<BooruPost>, onDone: () -> Unit) {
-    val graph by app.graph.collectAsState()
-    val ready = graph
-    if (posts.isEmpty() || ready == null) {
+    if (posts.isEmpty()) {
         LaunchedEffect(Unit) { onDone() }
         return
     }
@@ -88,22 +78,15 @@ internal fun DownloadAllDialog(app: BooruApp, posts: List<BooruPost>, onDone: ()
         confirmButton = {
             Button(onClick = {
                 onDone()
-                app.launch { downloadAll(app, ready, posts, language) }
+                app.launch { downloadAll(app, posts, language) }
             }) { Text(pluginString(Strings.download)) }
         },
         dismissButton = { TextButton(onClick = onDone) { Text(pluginString(Strings.cancel)) } },
     )
 }
 
-/** Queues [posts] where the download setting says; one that asks where to save each file needs a folder for a batch, as the app's other batches do. */
-private suspend fun downloadAll(app: BooruApp, graph: AppGraph, posts: List<BooruPost>, language: String) {
-    val settings = graph.settings.load()
-    val destination = downloadDestination(settings)
-    if (destination.asks) return KeepNotices.show(KeepNotice.NeedsDownloadFolder)
-    graph.downloads.initialize()
-    val entries = graph.downloads.state.value.entries
-    val known = entries.filter { it.active || it.status == DownloadStatus.COMPLETED }.mapTo(HashSet()) { it.url }
-    val plan = BooruDownloads.plan(posts, known, DownloadQueue.MAX_ACTIVE - entries.count { it.active }, settings[BooruPrefs.fileNameTemplate], destination)
-    if (plan.requests.isNotEmpty()) Downloading.batch(graph, plan.requests)
-    app.tell(Strings.download_all_result.get(language, plan.requests.size, plan.skipped))
+/** Queues [posts] where the download setting says, named by the reader's template; a setting that asks where each file goes has the app say a batch needs a folder. */
+private suspend fun downloadAll(app: BooruApp, posts: List<BooruPost>, language: String) {
+    val queued = app.host.queueDownloads(BooruDownloads.files(posts, app.current()[BooruPrefs.fileNameTemplate])) ?: return
+    app.tell(Strings.download_all_result.get(language, queued.queued, queued.skipped))
 }

@@ -2,10 +2,12 @@ package com.aimdi.xtanative.plugins.substack
 
 import com.aimdi.xtanative.networks.substack.SubstackArticleCache
 import com.aimdi.xtanative.networks.substack.SubstackClient
+import com.aimdi.xtanative.networks.substack.SubstackFeed
 import com.aimdi.xtanative.networks.substack.SubstackFeedMemory
 import com.aimdi.xtanative.networks.substack.SubstackFollowing
 import com.aimdi.xtanative.networks.substack.SubstackFollows
 import com.aimdi.xtanative.networks.substack.SubstackHighlights
+import com.aimdi.xtanative.networks.substack.SubstackHomeRules
 import com.aimdi.xtanative.networks.substack.SubstackHosts
 import com.aimdi.xtanative.networks.substack.SubstackLinks
 import com.aimdi.xtanative.networks.substack.SubstackNote
@@ -19,7 +21,15 @@ import com.aimdi.xtanative.networks.substack.SubstackRememberedPage
 import com.aimdi.xtanative.networks.substack.SubstackRoutes
 import com.aimdi.xtanative.store.offline.OfflineArticle
 import com.aimdi.xtanative.store.settings.SubstackPrefs
+import com.aimdi.xtanative.ui.plugins.DrawnPosts
+import com.aimdi.xtanative.ui.plugins.FeedKinds
+import com.aimdi.xtanative.ui.plugins.FeedReads
+import com.aimdi.xtanative.ui.plugins.NetworkPost
+import com.aimdi.xtanative.ui.plugins.NetworkPostActions
+import com.aimdi.xtanative.ui.plugins.PluginFeed
 import com.aimdi.xtanative.ui.plugins.PluginHost
+import com.aimdi.xtanative.ui.plugins.PluginPostArchive
+import com.aimdi.xtanative.ui.plugins.PluginPostMenu
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -29,13 +39,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.JsonElement
 
 /**
  * What the Substack plugin's screens share while it runs: the client, the
  * publications followed here, what the reader keeps of posts (read marks,
  * likes, saves, highlights, kept bodies, in XTA's preferences and the
- * plugin's folder), the podcast player, and the posts, publications and
- * notes its screens were opened with.
+ * plugin's folder), the podcast player, the posts, publications and notes
+ * its screens were opened with, and the posts the app's shared rows drew,
+ * which their bookmark and menu file in the app's Saved.
  */
 internal class SubstackApp(val host: PluginHost) {
     /** Where what outlives a screen runs: a follow, a mark, a reader's last place. */
@@ -160,6 +172,68 @@ internal class SubstackApp(val host: PluginHost) {
     fun publicationFor(publication: SubstackPublication): SubstackPublication = opened.publications.get(publication.baseUrl) ?: publication
 
     fun noteFor(id: String): SubstackNote? = opened.notes.get(id)
+
+    // ---- the app's shared features ----
+
+    /** [publication]'s groups, followed here first once a group is picked (substack_group.dart). */
+    fun addToGroup(publication: SubstackPublication) = host.addToGroup(publication.id) { followHere(publication) }
+
+    private suspend fun followHere(publication: SubstackPublication) {
+        if (SubstackFollows.followOf(follows.load().map { it.publication }, publication) == null) follows.follow(publication)
+    }
+
+    /** The shared post sheet for [post], as its card's long press opens it (substack_post_card.dart). */
+    fun openMenu(post: SubstackPost) = host.openPostMenu(PluginPostMenu(SubstackShared.archive(post), SubstackShared.urlOf(post)))
+
+    /** The shared post sheet for [note] (substack_note_content.dart): its publication's groups too; nothing for a note without its own page. */
+    fun openMenu(note: SubstackNote) {
+        val archive = SubstackShared.archive(note) ?: return
+        val publication = note.publication
+        host.openPostMenu(PluginPostMenu(archive, SubstackLinks.webUrl(note.url).orEmpty(), author = publication?.id, follow = { publication?.let { followHere(it) } }))
+    }
+
+    private val drawn = DrawnPosts<SubstackPost> { it.key }
+    private val records = DrawnPosts<PluginPostArchive> { it.id }
+
+    /** [post] as the app's shared rows draw it, with its publication's [logoUrl], kept so that what a row asks of it finds the post. */
+    fun shown(post: SubstackPost, logoUrl: String?): NetworkPost = SubstackShared.post(drawn.put(post), logoUrl)
+
+    /** A post or note Saved kept as XTA's link record, as Saved draws it; null for another network's record. */
+    fun shownSaved(content: JsonElement): NetworkPost? = PluginPostArchive.ofLink(content, SubstackShared.SOURCE)?.let { SubstackShared.saved(records.put(it)) }
+
+    /** Where a post the app draws leads: the reader, its publication's page, else its link; its bookmark and the shared sheet. */
+    val actions = NetworkPostActions(
+        open = ::openShown,
+        openAuthor = { post -> drawn[post.id]?.let { openPublication(SubstackHomeRules.publicationOf(it, post.avatarUrl)) } ?: openShown(post) },
+        openMention = {},
+        openTag = {},
+        openMedia = { post, _ -> openShown(post) },
+        archive = { post -> drawn[post.id]?.let(SubstackShared::archive) ?: records[post.id] },
+        more = { post -> drawn[post.id]?.let(::openMenu) ?: records[post.id]?.let { host.openPostMenu(PluginPostMenu(it, post.url.orEmpty())) } },
+    )
+
+    private fun openShown(post: NetworkPost) {
+        val shown = drawn[post.id]
+        if (shown != null) openPost(shown) else post.url?.let(::openLink)
+    }
+
+    /**
+     * The publications followed here in the groups that hold them
+     * (substack_interleaved.dart): each one's newest page, three read at a
+     * time, the posts that have a date; Home's timelines have no switch for
+     * them in XTA.
+     */
+    val feed: PluginFeed = object : PluginFeed() {
+        override suspend fun followed(): List<String> = follows.load().map { it.publication.id }
+
+        override suspend fun posts(accounts: List<String>, kinds: FeedKinds, force: Boolean): List<NetworkPost> {
+            val publications = follows.load().map { it.publication }.filter { it.id in accounts }.associateBy { it.id }
+            return FeedReads.each(publications.keys.toList(), atOnce = SubstackFeed.CONCURRENCY) { id ->
+                val publication = publications.getValue(id)
+                client.posts(publication, limit = SubstackFeed.PAGE_SIZE).items.filter { it.publishedAt != null }.map { shown(it, publication.logoUrl) }
+            }
+        }
+    }
 
     /** What the plugin's screens were opened with, the last few of each, while it runs. */
     private class Opened {

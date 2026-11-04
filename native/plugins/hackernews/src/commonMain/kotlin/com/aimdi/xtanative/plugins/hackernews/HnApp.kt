@@ -7,7 +7,14 @@ import com.aimdi.xtanative.networks.hackernews.HnLinks
 import com.aimdi.xtanative.networks.hackernews.HnStory
 import com.aimdi.xtanative.store.settings.HackerNewsPrefs
 import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.ui.plugins.DrawnPosts
+import com.aimdi.xtanative.ui.plugins.FeedKinds
+import com.aimdi.xtanative.ui.plugins.FeedReads
+import com.aimdi.xtanative.ui.plugins.NetworkPost
+import com.aimdi.xtanative.ui.plugins.NetworkPostActions
+import com.aimdi.xtanative.ui.plugins.PluginFeed
 import com.aimdi.xtanative.ui.plugins.PluginHost
+import com.aimdi.xtanative.ui.plugins.PluginPostMenu
 import com.aimdi.xtanative.ui.plugins.PluginRoute
 import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.CoroutineScope
@@ -19,10 +26,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
 
 /** What the plugin keeps, as the app's settings hold it under XTA's keys (`:store`'s HackerNewsPrefs). */
 internal data class HnKept(val liked: List<String> = emptyList(), val saved: List<HnStory> = emptyList(), val follows: List<String> = emptyList()) {
@@ -80,26 +83,12 @@ internal object HnRoutes {
     }
 }
 
-/** A story as Saved keeps a post from a network with no archive of its own: XTA's link snapshot (plugin_link_post.dart), under the story's page. */
-internal object HnArchive {
-    fun id(story: HnStory): String = "hackernews:${story.hnUrl}"
-
-    fun content(story: HnStory): JsonObject = buildJsonObject {
-        put("archiveId", null as String?)
-        put("archiveUserId", null as String?)
-        put("xtaPlugin", "link")
-        put("source", "hackernews")
-        put("url", story.hnUrl)
-        put("author", story.author.orEmpty())
-        put("text", listOf(story.title, story.text).filter { it.isNotEmpty() }.joinToString("\n"))
-        put("images", JsonArray(emptyList()))
-    }
-}
-
 /**
  * What the Hacker News plugin's screens share while it runs: the guest
  * client, what is kept (hearts, saved stories, follows) as the app's settings
- * hold it, and where things open. Nothing is voted, commented or submitted.
+ * hold it, where things open, and the stories the app's shared rows drew,
+ * which their bookmark and menu file in the app's Saved. Nothing is voted,
+ * commented or submitted.
  */
 internal class HnApp(val host: PluginHost) {
     val client = HackerNewsClient(host.http)
@@ -131,6 +120,39 @@ internal class HnApp(val host: PluginHost) {
     fun seen(id: Long): HnStory? = opened[id]
 
     fun openUser(id: String) = host.open(HnRoutes.user(id))
+
+    /** The shared post sheet for [story] (hn_story_card.dart's long press): Saved, its note, its page shared or opened. */
+    fun openMenu(story: HnStory) = host.openPostMenu(PluginPostMenu(HnShared.archive(story), story.hnUrl))
+
+    /** [id]'s groups, followed here first once a group is picked (hn_group.dart's addHnToGroup). */
+    fun addToGroup(id: String) = host.addToGroup(id) { host.settings.update { if (HnKept.of(it).isFollowing(id)) it else HnKept.withFollow(it, id) } }
+
+    private val drawn = DrawnPosts<HnStory> { "${it.id}" }
+
+    /** [story] as the app's shared rows draw it, kept so that what a row asks of it finds the story; with [words], its text too. */
+    fun shown(story: HnStory, words: Boolean = false): NetworkPost = HnShared.post(drawn.put(story), words)
+
+    /** Where a story the app draws leads: its comments, its author's page; its bookmark and the shared sheet. */
+    val actions = NetworkPostActions(
+        open = { post -> drawn[post.id]?.let(::openStory) ?: post.id.toLongOrNull()?.let { host.open(HnRoutes.story(it)) } },
+        openAuthor = { post -> post.authorId.takeIf { it.isNotEmpty() }?.let(::openUser) },
+        openMention = ::openUser,
+        openTag = { query -> host.openSearch(query) },
+        openMedia = { _, _ -> },
+        archive = { post -> drawn[post.id]?.let(HnShared::archive) },
+        more = { post -> drawn[post.id]?.let(::openMenu) },
+    )
+
+    /**
+     * The accounts followed here in the groups that hold them (hn_group.dart's
+     * loadHnGroupPosts): each one's latest stories that have a date.
+     */
+    val feed: PluginFeed = object : PluginFeed() {
+        override suspend fun followed(): List<String> = kept.value.follows
+
+        override suspend fun posts(accounts: List<String>, kinds: FeedKinds, force: Boolean): List<NetworkPost> =
+            FeedReads.each(accounts, FeedReads.ACCOUNTS_AT_ONCE) { client.submissions(it).items }.filter { it.createdAt != null }.map { shown(it) }
+    }
 
     /** The network's name where a problem names it. */
     val network: String get() = Strings.plugin_name.get(host.language)

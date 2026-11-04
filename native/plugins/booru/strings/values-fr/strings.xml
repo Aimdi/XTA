@@ -130,6 +130,7 @@
     <string name="save_search">Enregistrer la recherche</string>
     <string name="saved_searches">Recherches enregistrées</string>
     <string name="score">Score %1$d</string>
+    <string name="card_title">Booru n°%1$s</string>
     <string name="search">Rechercher</string>
     <string name="search_hint">Tags, séparés par des espaces</string>
     <string name="search_history">Recherches récentes</string>

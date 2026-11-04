@@ -129,6 +129,7 @@
     <string name="save_search">Konservi serĉon</string>
     <string name="saved_searches">Konservitaj serĉoj</string>
     <string name="score">Poentoj: %1$d</string>
+    <string name="card_title">Booru #%1$s</string>
     <string name="search">Serĉi</string>
     <string name="search_hint">Etikedoj, apartigitaj per spacetoj</string>
     <string name="search_history">Lastatempaj serĉoj</string>

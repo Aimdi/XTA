@@ -128,6 +128,7 @@
     <string name="save_search">検索を保存</string>
     <string name="saved_searches">保存した検索</string>
     <string name="score">スコア %1$d</string>
+    <string name="card_title">Booru #%1$s</string>
     <string name="search">検索</string>
     <string name="search_hint">タグをスペース区切りで入力</string>
     <string name="search_history">最近の検索</string>

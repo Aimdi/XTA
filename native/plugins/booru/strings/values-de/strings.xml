@@ -129,6 +129,7 @@
     <string name="save_search">Suche speichern</string>
     <string name="saved_searches">Gespeicherte Suchen</string>
     <string name="score">Score %1$d</string>
+    <string name="card_title">Booru #%1$s</string>
     <string name="search">Suche</string>
     <string name="search_hint">Tags, durch Leerzeichen getrennt</string>
     <string name="search_history">Letzte Suchen</string>

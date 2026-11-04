@@ -231,7 +231,7 @@ private fun PublicationPages(
     }
 }
 
-/** A publication found, as XTA's SubstackDiscoveryPublicationTile: who it is, and Follow on this device. */
+/** A publication found, as XTA's SubstackDiscoveryPublicationTile: who it is, Follow on this device, and Add to group. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun PublicationTile(app: SubstackApp, publication: SubstackPublication, notices: Notices) {
@@ -250,6 +250,7 @@ internal fun PublicationTile(app: SubstackApp, publication: SubstackPublication,
                     Icon(if (followed) Icons.Default.CheckCircle else Icons.Default.Add, null, Modifier.size(18.dp).padding(end = 4.dp))
                     Text(if (followed) followedText else pluginString(Strings.follow))
                 }
+                GroupButton(app, publication, outlined = false)
             }
         }
     }

@@ -129,6 +129,7 @@
     <string name="save_search">खोज सहेजें</string>
     <string name="saved_searches">सहेजी गई खोजें</string>
     <string name="score">स्कोर %1$d</string>
+    <string name="card_title">Booru #%1$s</string>
     <string name="search">खोजें</string>
     <string name="search_hint">टैग, स्पेस से अलग किए हुए</string>
     <string name="search_history">हाल की खोजें</string>

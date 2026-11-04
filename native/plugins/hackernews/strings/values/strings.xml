@@ -34,9 +34,6 @@
     <string name="unlike">Remove like from this device</string>
     <string name="save">Save on this device</string>
     <string name="unsave">Remove from this device</string>
-    <string name="share_link">Share link</string>
-    <string name="save_to_folder">Save to folder…</string>
-    <string name="open_in_browser">Open in browser</string>
 
     <string name="comments">Comments</string>
     <string name="open_article">Open article</string>

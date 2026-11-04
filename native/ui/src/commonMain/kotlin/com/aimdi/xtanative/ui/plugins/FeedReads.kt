@@ -4,17 +4,24 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 
 /** How a [PluginFeed] reads what it follows for the app's timelines. */
 object FeedReads {
+    /** How many of a network's accounts XTA reads at once for its timelines. */
+    const val ACCOUNTS_AT_ONCE = 4
+
     /**
-     * [read] of each of [keys] at once (a feed, a list), as [PluginFeed.posts]
-     * reads its accounts: their answers in [keys]' order, one that fails
-     * adding nothing. Only when every one fails does this throw, the first
-     * failure, for the app to say so beside the other networks' posts.
+     * [read] of each of [keys] (a feed, a list, an account), [atOnce] at a
+     * time, as [PluginFeed.posts] reads what it follows: their answers in
+     * [keys]' order, one that fails adding nothing. Only when every one fails
+     * does this throw, the first failure, for the app to say so beside the
+     * other networks' posts.
      */
-    suspend fun <K, T> each(keys: List<K>, read: suspend (K) -> List<T>): List<T> = coroutineScope {
-        val answers = keys.map { key -> async { attempt { read(key) } } }.awaitAll()
+    suspend fun <K, T> each(keys: List<K>, atOnce: Int = Int.MAX_VALUE, read: suspend (K) -> List<T>): List<T> = coroutineScope {
+        val gate = Semaphore(atOnce.coerceIn(1, keys.size.coerceAtLeast(1)))
+        val answers = keys.map { key -> async { gate.withPermit { attempt { read(key) } } } }.awaitAll()
         answers.firstNotNullOfOrNull { it.exceptionOrNull() }?.takeIf { answers.none { answer -> answer.isSuccess } }?.let { throw it }
         answers.flatMap { it.getOrNull().orEmpty() }
     }

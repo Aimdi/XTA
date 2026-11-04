@@ -20,9 +20,6 @@
     <string name="unlike">Like von diesem Gerät entfernen</string>
     <string name="save">Auf diesem Gerät speichern</string>
     <string name="unsave">Von diesem Gerät entfernen</string>
-    <string name="share_link">Link teilen</string>
-    <string name="save_to_folder">In Ordner speichern...</string>
-    <string name="open_in_browser">Im Browser öffnen</string>
     <string name="comments">Kommentare</string>
     <string name="open_article">Artikel öffnen</string>
     <string name="deleted">[gelöscht]</string>

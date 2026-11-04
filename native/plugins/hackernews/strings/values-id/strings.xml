@@ -20,9 +20,6 @@
     <string name="unlike">Hapus suka dari perangkat ini</string>
     <string name="save">Simpan di perangkat ini</string>
     <string name="unsave">Hapus dari perangkat ini</string>
-    <string name="share_link">Bagikan tautan</string>
-    <string name="save_to_folder">Simpan ke folder...</string>
-    <string name="open_in_browser">Buka di browser</string>
     <string name="comments">Komentar</string>
     <string name="open_article">Buka artikel</string>
     <string name="deleted">[dihapus]</string>

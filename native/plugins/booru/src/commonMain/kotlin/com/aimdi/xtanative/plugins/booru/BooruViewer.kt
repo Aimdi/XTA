@@ -72,7 +72,6 @@ private fun MissingPost(app: BooruApp, ref: BooruPostRef, error: Throwable?, onR
 private fun ViewerPages(app: BooruApp, key: String, source: ViewerSource, start: Int) {
     val viewer = rememberKept(key) { scope -> ViewerState(app, source, scope) }
     val posts by viewer.posts.collectAsState()
-    val graph by app.graph.collectAsState()
     val pager = rememberPagerState(initialPage = start.coerceIn(0, (posts.size - 1).coerceAtLeast(0))) { posts.size }
     LaunchedEffect(pager) { snapshotFlow { pager.currentPage }.collect(viewer::show) }
     Preloads(posts, pager.settledPage)
@@ -80,7 +79,7 @@ private fun ViewerPages(app: BooruApp, key: String, source: ViewerSource, start:
     PluginScaffold(
         title = "#" + current.id,
         onBack = app.host::back,
-        actions = { graph?.let { PostActions(app, viewer, current, it) } },
+        actions = { PostActions(app, viewer, current) },
     ) { padding ->
         Box(Modifier.fillMaxSize()) {
             HorizontalPager(pager, key = { posts[it].key }, modifier = Modifier.fillMaxSize()) { page ->

@@ -114,7 +114,7 @@ fun MediaTiles(items: List<MediaItem>, onOpen: (Int) -> Unit, modifier: Modifier
 private fun MediaTile(item: MediaItem, playing: Boolean, hidden: Boolean, modifier: Modifier, onClick: () -> Unit) {
     Box(modifier.background(MaterialTheme.colorScheme.surfaceVariant).clickable(onClick = onClick)) {
         AsyncImage(
-            model = item.tileUrl,
+            model = rememberMediaModel(item.tileUrl),
             contentDescription = item.alt,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize().let { if (hidden) it.blur(24.dp) else it },
@@ -181,7 +181,7 @@ fun MediaPager(
         HorizontalPager(state = pager, modifier = Modifier.fillMaxSize(), key = { it }) { page ->
             val item = items[page]
             when (item.kind) {
-                MediaItem.Kind.PHOTO -> ZoomableImage(item.imageUrl, item.alt, Modifier.fillMaxSize())
+                MediaItem.Kind.PHOTO -> ZoomableImage(rememberMediaModel(item.imageUrl), item.alt, Modifier.fillMaxSize())
                 MediaItem.Kind.VIDEO, MediaItem.Kind.GIF -> QualityVideoPage(item, qualities.getOrNull(page).orEmpty(), active = pager.currentPage == page)
             }
         }

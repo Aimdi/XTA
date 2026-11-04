@@ -20,9 +20,6 @@
     <string name="unlike">Kendu atsegina gailu honetatik</string>
     <string name="save">Gorde gailu honetan</string>
     <string name="unsave">Kendu gailu honetatik</string>
-    <string name="share_link">Partekatu esteka</string>
-    <string name="save_to_folder">Gorde karpeta batean...</string>
-    <string name="open_in_browser">Ireki nabigatzailean</string>
     <string name="comments">Iruzkinak</string>
     <string name="open_article">Ireki artikulua</string>
     <string name="deleted">[ezabatuta]</string>
