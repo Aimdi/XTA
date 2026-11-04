@@ -54,17 +54,17 @@ import kotlinx.coroutines.launch
  */
 @Composable
 internal fun RedditSettingsBody(app: RedditApp, frame: PluginFrame) {
-    val settings by app.prefs.state.collectAsState()
+    val credentials by app.credentials.state.collectAsState()
     val choices by app.choices.collectAsState()
     var sorting by remember { mutableStateOf(false) }
     var editingClientId by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) { app.prefs.load() }
-    val signedIn = settings[RedditPrefs.refreshToken].isNotBlank()
+    LaunchedEffect(Unit) { app.credentials.load() }
+    val signedIn = credentials[RedditPrefs.refreshToken].isNotBlank()
     LazyColumn(contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
         item(key = "account") { SectionHeader(pluginString(Strings.accounts)) }
         item(key = "sign-in") { AccountRow(app, signedIn, onNeedsClientId = { editingClientId = true }) }
         item(key = "client-id") {
-            val clientId = settings[RedditPrefs.clientId].trim()
+            val clientId = credentials[RedditPrefs.clientId].trim()
             SettingRow(RedditGlyphs.Key, pluginString(Strings.client_id), clientId.ifEmpty { pluginString(Strings.client_id_help) }) { editingClientId = true }
         }
         item(key = "source") { SectionHeader(pluginString(Strings.source)) }
@@ -78,14 +78,15 @@ internal fun RedditSettingsBody(app: RedditApp, frame: PluginFrame) {
         item(key = "spoilers") { SpoilerRow(app, choices.showSpoilers) }
     }
     if (sorting) SortSheet(app) { sorting = false }
-    if (editingClientId) ClientIdDialog(app, settings[RedditPrefs.clientId]) { editingClientId = false }
+    if (editingClientId) ClientIdDialog(app, credentials[RedditPrefs.clientId]) { editingClientId = false }
 }
 
 /** Signed in or not, and, since the sign-in asks Reddit for `identity`, as whom: a device signed in to two accounts in its life cannot tell from "signed in". */
 @Composable
 private fun AccountRow(app: RedditApp, signedIn: Boolean, onNeedsClientId: () -> Unit) {
-    val settings by app.prefs.state.collectAsState()
-    val name by produceState<String?>(null, signedIn, settings[RedditPrefs.clientId], settings[RedditPrefs.source]) { value = app.accountName() }
+    val credentials by app.credentials.state.collectAsState()
+    val choices by app.choices.collectAsState()
+    val name by produceState<String?>(null, signedIn, credentials[RedditPrefs.clientId], choices.preferPublic) { value = app.accountName() }
     val scope = rememberCoroutineScope()
     ListItem(
         leadingContent = { Icon(if (signedIn) Icons.Outlined.AccountCircle else RedditGlyphs.Login, contentDescription = null) },
@@ -96,7 +97,7 @@ private fun AccountRow(app: RedditApp, signedIn: Boolean, onNeedsClientId: () ->
         } else {
             null
         },
-        modifier = if (signedIn) Modifier else Modifier.clickable { if (settings[RedditPrefs.clientId].isBlank()) onNeedsClientId() else app.host.open(RedditRoutes.SIGN_IN) },
+        modifier = if (signedIn) Modifier else Modifier.clickable { if (credentials[RedditPrefs.clientId].isBlank()) onNeedsClientId() else app.host.open(RedditRoutes.SIGN_IN) },
     )
 }
 
@@ -182,8 +183,8 @@ private fun ClientIdDialog(app: RedditApp, initial: String, onDismiss: () -> Uni
  */
 @Composable
 internal fun SignInScreen(app: RedditApp) {
-    val settings by app.prefs.state.collectAsState()
-    val clientId = settings[RedditPrefs.clientId].trim()
+    val credentials by app.credentials.state.collectAsState()
+    val clientId = credentials[RedditPrefs.clientId].trim()
     val state = remember { RedditAuth.oauthState() }
     val url = remember(clientId) { RedditAuth.authorizeUrl(clientId, state).toString() }
     val returned = remember { AtomicBoolean(false) }

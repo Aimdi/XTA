@@ -11,12 +11,13 @@ import com.aimdi.xtanative.store.backup.XtaTime
 import com.aimdi.xtanative.store.settings.Pref
 import com.aimdi.xtanative.store.settings.PrefValue
 import com.aimdi.xtanative.store.settings.RedditPrefs
-import com.aimdi.xtanative.store.settings.SecretPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import java.time.Instant
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.JsonArray
@@ -26,11 +27,35 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
 /**
- * The plugin's preferences, in its own folder under XTA's keys
- * ([RedditPrefs]): the sort, the route, the NSFW display, the saved posts,
- * the thread visits, the sign-in. Read once, each change written whole.
+ * The plugin's preferences, which are the app's settings under XTA's keys
+ * ([RedditPrefs], `plugin.reddit.*`): the sort, the route, the NSFW display,
+ * the saved posts, the thread visits. So XTA's backup restores them where
+ * the plugin reads them, and the app's backup carries them. [state] is null
+ * until the app has read its settings; [write] changes them as the host lets
+ * a plugin, only its own keys.
  */
-internal class RedditPrefsStore(private val file: StoreFile) {
+internal class RedditPreferences(
+    val state: StateFlow<Settings?>,
+    private val write: suspend ((Settings) -> Settings) -> Unit,
+) {
+    /** The settings, once the app has read them: asked to read them when it has not yet. */
+    suspend fun load(): Settings = state.value ?: run {
+        write { it }
+        state.filterNotNull().first()
+    }
+
+    suspend fun update(edit: (Settings) -> Settings) = write(edit)
+
+    suspend fun <T> set(pref: Pref<T>, value: T) = update { it.with(pref, value) }
+}
+
+/**
+ * The client id and the sign-in, under XTA's keys, in the plugin's own
+ * folder rather than the app's settings: no backup carries them, and
+ * uninstalling erases them with the folder, the part of an uninstall that
+ * matters most. Read once, each change written whole.
+ */
+internal class RedditCredentials(private val file: StoreFile) {
     private val mutable = MutableStateFlow(Settings())
     val state: StateFlow<Settings> = mutable.asStateFlow()
 
@@ -39,30 +64,10 @@ internal class RedditPrefsStore(private val file: StoreFile) {
 
     suspend fun load(): Settings = mutex.withLock { loaded() }
 
-    suspend fun <T> set(pref: Pref<T>, value: T) {
-        update { it.with(pref, value) }
-    }
-
-    suspend fun update(edit: (Settings) -> Settings): Settings = mutex.withLock {
-        val before = loaded()
-        edit(before).also { after ->
-            if (after != before) {
-                file.write(encode(after))
-                mutable.value = after
-            }
-        }
-    }
-
-    /** What a backup keeps of them, as XTA's settings carry them: by key, the sign-in and the client id left out. */
-    suspend fun export(): String = JsonObject(shared(load()).mapValues { it.value.toJson() }).toString()
-
-    /** A backup's preferences in place of these; the sign-in and the client id stay this device's. */
-    suspend fun import(text: String) {
-        val restored = (J.parse(text).raw as? JsonObject).orEmpty()
-            .filterKeys { it in known && !SecretPrefs.isSecret(it) }
-            .mapNotNull { (key, value) -> PrefValue.fromJson(value)?.let { key to it } }
-            .toMap()
-        update { current -> Settings(current.values.filterKeys(SecretPrefs::isSecret) + restored) }
+    suspend fun <T> set(pref: Pref<T>, value: T) = mutex.withLock {
+        val next = loaded().with(pref, value)
+        file.write(encode(next))
+        mutable.value = next
     }
 
     private suspend fun loaded(): Settings {
@@ -74,18 +79,13 @@ internal class RedditPrefsStore(private val file: StoreFile) {
     }
 
     companion object {
-        private val known = RedditPrefs.prefs.mapTo(HashSet()) { it.key }
+        private val keys = setOf(RedditPrefs.clientId.key, RedditPrefs.refreshToken.key)
 
-        fun shared(settings: Settings): Map<String, PrefValue> = settings.values.filterKeys { it in known && !SecretPrefs.isSecret(it) }
-
-        fun encode(settings: Settings): String = buildJsonObject {
-            put("v", 1)
-            put("preferences", JsonObject(settings.values.filterKeys { it in known }.mapValues { it.value.toJson() }))
-        }.toString()
+        fun encode(settings: Settings): String = JsonObject(settings.values.filterKeys { it in keys }.mapValues { it.value.toJson() }).toString()
 
         fun decode(text: String): Settings {
-            val preferences = (J.parse(text)["preferences"].raw as? JsonObject).orEmpty()
-            return Settings(preferences.filterKeys { it in known }.mapNotNull { (key, value) -> PrefValue.fromJson(value)?.let { key to it } }.toMap())
+            val stored = (J.parse(text).raw as? JsonObject).orEmpty()
+            return Settings(stored.filterKeys { it in keys }.mapNotNull { (key, value) -> PrefValue.fromJson(value)?.let { key to it } }.toMap())
         }
     }
 }
@@ -98,7 +98,7 @@ internal class RedditPrefsStore(private val file: StoreFile) {
  */
 internal class RedditSubscriptions(
     private val file: StoreFile,
-    private val prefs: RedditPrefsStore,
+    private val prefs: RedditPreferences,
     private val now: () -> Instant = Instant::now,
 ) {
     private val mutable = MutableStateFlow<List<NamedSubscriptionRow>?>(null)

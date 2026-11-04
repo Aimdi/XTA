@@ -57,12 +57,11 @@ class RedditPlugin : XtaPlugin() {
 
     private fun screenOf(screen: PluginScreen): PluginScreen = screen
 
-    /** What XTA's backup holds of Reddit: the followed communities and the upvotes, as its rows, and its Reddit preferences without the credentials. */
+    /** What XTA's backup holds of Reddit as its rows: the followed communities and the upvotes. Its preferences travel with the app's settings. */
     override val backupSections: List<PluginBackupSection>
         get() = listOf(
             PluginBackupSection("redditSubscriptions", export = { app.subscriptions.export() }, import = { app.restoreSubscriptions(it) }),
             PluginBackupSection("redditLocalVotes", export = { app.votes.export() }, import = { app.votes.import(it) }),
-            PluginBackupSection("reddit.settings", export = { app.prefs.export() }, import = { app.prefs.import(it) }),
         )
 
     override suspend fun footprint(): PluginFootprint =

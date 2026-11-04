@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -36,9 +37,10 @@ import kotlinx.coroutines.launch
 
 /**
  * What the Reddit plugin's screens share while it runs: its readers under
- * the repairs in force, the session every read goes through, what it keeps
- * on the device (preferences, followed communities, upvotes, saved posts),
- * the merged feed, and where a tap leads.
+ * the repairs in force, the session every read goes through, its
+ * preferences (the app's settings, saved posts and thread visits among
+ * them), what it keeps in its own folder (the credentials, the followed
+ * communities, the upvotes), the merged feed, and where a tap leads.
  */
 internal class RedditApp(val host: PluginHost) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
@@ -46,15 +48,17 @@ internal class RedditApp(val host: PluginHost) {
     private val auth = RedditAuth(host.http)
     private val sessions = RedditSignIn(auth)
 
-    val prefs = RedditPrefsStore(host.store.file("settings.json"))
+    val prefs = RedditPreferences(host.settings.state) { change -> host.settings.update(change) }
+    val credentials = RedditCredentials(host.store.file("credentials.json"))
     val subscriptions = RedditSubscriptions(host.store.file("subscriptions.json"), prefs)
     val votes = RedditVotes(host.store.file("votes.json"))
     val icons = RedditIcons(RedditIconCache(host.store.file("icons.json")), scope) { name -> reading().client.icon(name, session()) }
     val feed = RedditFeed(scope, read = ::readFeed)
 
-    val choices: StateFlow<RedditChoices> = prefs.state.map(RedditChoices::of).stateIn(scope, SharingStarted.Eagerly, RedditChoices.of(Settings()))
-    val home: StateFlow<RedditHomeSource> = prefs.state.map(RedditHomeSource::of).stateIn(scope, SharingStarted.Eagerly, RedditHomeSource())
-    val saved: StateFlow<List<RedditPost>> = prefs.state.map(RedditSaved::posts).stateIn(scope, SharingStarted.Eagerly, emptyList())
+    val choices: StateFlow<RedditChoices> = prefs.state.map { RedditChoices.of(it ?: Settings()) }.stateIn(scope, SharingStarted.Eagerly, RedditChoices.of(Settings()))
+    val home: StateFlow<RedditHomeSource> = prefs.state.map { RedditHomeSource.of(it ?: Settings()) }.stateIn(scope, SharingStarted.Eagerly, RedditHomeSource())
+    val saved: StateFlow<List<RedditPost>> = prefs.state.map { (it ?: Settings())[RedditPrefs.savedPosts] }.distinctUntilChanged()
+        .map(RedditPostJson::list).stateIn(scope, SharingStarted.Eagerly, emptyList())
     val followed: StateFlow<List<String>> = subscriptions.state.map(RedditSubscriptions::names).stateIn(scope, SharingStarted.Eagerly, emptyList())
 
     private val changes = MutableStateFlow(0)
@@ -67,6 +71,7 @@ internal class RedditApp(val host: PluginHost) {
     init {
         launch {
             prefs.load()
+            credentials.load()
             votes.load()
             val names = RedditSubscriptions.names(subscriptions.load())
             prefs.update { RedditHomeSource.reconciled(it, names) }
@@ -81,13 +86,13 @@ internal class RedditApp(val host: PluginHost) {
      * the client id. Reddit ending the sign-in signs the reader out.
      */
     suspend fun session(): RedditSession {
-        val settings = prefs.load()
+        val signedIn = credentials.load()
         val resolved = sessions.resolve(
-            clientId = settings[RedditPrefs.clientId].trim(),
-            refreshToken = settings[RedditPrefs.refreshToken].trim().ifEmpty { null },
-            preferPublic = settings[RedditPrefs.source] == RedditSource.PUBLIC,
+            clientId = signedIn[RedditPrefs.clientId].trim(),
+            refreshToken = signedIn[RedditPrefs.refreshToken].trim().ifEmpty { null },
+            preferPublic = prefs.load()[RedditPrefs.source] == RedditSource.PUBLIC,
         )
-        if (resolved.signedOut) prefs.set(RedditPrefs.refreshToken, "")
+        if (resolved.signedOut) credentials.set(RedditPrefs.refreshToken, "")
         return resolved.session
     }
 
@@ -180,19 +185,19 @@ internal class RedditApp(val host: PluginHost) {
     fun store(edit: (Settings) -> Settings) = launch { prefs.update(edit) }
 
     fun setClientId(clientId: String) = launch {
-        prefs.set(RedditPrefs.clientId, clientId)
+        credentials.set(RedditPrefs.clientId, clientId)
         credentialsChanged()
     }
 
     /** Trades the code Reddit's sign-in came back with for the sign-in kept here, its one long-lived credential. */
     suspend fun signIn(clientId: String, code: String) {
-        prefs.set(RedditPrefs.refreshToken, auth.exchangeCode(clientId, code))
+        credentials.set(RedditPrefs.refreshToken, auth.exchangeCode(clientId, code))
         credentialsChanged()
     }
 
     /** The sign-in is the refresh token alone: forgetting it signs out, whatever comes after. */
     suspend fun signOut() {
-        prefs.set(RedditPrefs.refreshToken, "")
+        credentials.set(RedditPrefs.refreshToken, "")
         credentialsChanged()
     }
 
@@ -202,8 +207,9 @@ internal class RedditApp(val host: PluginHost) {
      * route, whose point is that Reddit is not told who reads.
      */
     suspend fun accountName(): String? {
-        val settings = prefs.load()
-        val asks = settings[RedditPrefs.refreshToken].isNotBlank() && settings[RedditPrefs.clientId].isNotBlank() && settings[RedditPrefs.source] != RedditSource.PUBLIC
+        val signedIn = credentials.load()
+        val asks = signedIn[RedditPrefs.refreshToken].isNotBlank() && signedIn[RedditPrefs.clientId].isNotBlank() &&
+            prefs.load()[RedditPrefs.source] != RedditSource.PUBLIC
         if (!asks) return null
         return attempt { session().userToken?.let { auth.accountName(it) } }.getOrNull()
     }

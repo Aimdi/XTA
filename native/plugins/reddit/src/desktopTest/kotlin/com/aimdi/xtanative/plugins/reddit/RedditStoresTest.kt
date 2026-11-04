@@ -4,9 +4,12 @@ import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.networks.reddit.RedditComment
 import com.aimdi.xtanative.networks.reddit.RedditPost
 import com.aimdi.xtanative.store.StoreFile
+import com.aimdi.xtanative.store.settings.GeneralPrefs
+import com.aimdi.xtanative.store.settings.PrefValue
 import com.aimdi.xtanative.store.settings.RedditNsfwMode
 import com.aimdi.xtanative.store.settings.RedditPrefs
 import com.aimdi.xtanative.store.settings.RedditSort
+import com.aimdi.xtanative.store.settings.Settings
 import java.io.File
 import java.nio.file.Files
 import java.time.Instant
@@ -15,7 +18,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 
 class RedditStoresTest {
     private val folder: File = Files.createTempDirectory("reddit-plugin").toFile()
@@ -24,36 +29,54 @@ class RedditStoresTest {
 
     private val at = Instant.parse("2026-11-04T09:30:00Z")
 
-    @Test
-    fun thePreferencesAreKeptUnderXtasKeys(): Unit = runBlocking {
-        RedditPrefsStore(file("settings.json")).update { it.with(RedditPrefs.sort, RedditSort.TOP).with(RedditPrefs.nsfwMode, RedditNsfwMode.HIDE) }
-        val read = RedditPrefsStore(file("settings.json")).load()
-        assertEquals(RedditSort.TOP, read[RedditPrefs.sort])
-        assertEquals(RedditNsfwMode.HIDE, read[RedditPrefs.nsfwMode])
-        assertEquals("top", J.parse(File(folder, "settings.json").readText())["preferences"]["plugin.reddit.sort"].string)
+    /** The app's settings as the host hands them to a plugin: all of them to read, only its own keys to change. */
+    private class AppSettings(start: Settings? = Settings(), private val stored: Settings = start ?: Settings()) {
+        val state = MutableStateFlow(start)
+        val prefs = RedditPreferences(state) { change ->
+            val before = state.value ?: stored
+            val after = change(before)
+            state.value = Settings(before.values.filterKeys { !it.startsWith(OWN) } + after.values.filterKeys { it.startsWith(OWN) })
+        }
+
+        companion object {
+            const val OWN = "plugin.reddit."
+        }
     }
 
     @Test
-    fun theBackupCarriesThePreferencesButNeverTheSignInOrTheClientId(): Unit = runBlocking {
-        val prefs = RedditPrefsStore(file("settings.json"))
-        prefs.update { it.with(RedditPrefs.sort, RedditSort.RISING).with(RedditPrefs.refreshToken, "secret").with(RedditPrefs.clientId, "app") }
-        val exported = J.parse(prefs.export())
-        assertEquals("rising", exported["plugin.reddit.sort"].string)
-        assertFalse(exported["plugin.reddit.refresh_token"].exists)
-        assertFalse(exported["plugin.reddit.client_id"].exists)
+    fun thePreferencesAreTheAppsSettingsUnderXtasKeys(): Unit = runBlocking {
+        val app = AppSettings(Settings().with(GeneralPrefs.cleanLinks, true))
+        app.prefs.update { it.with(RedditPrefs.sort, RedditSort.TOP).with(RedditPrefs.nsfwMode, RedditNsfwMode.HIDE) }
+        val now = app.prefs.load()
+        assertEquals(RedditSort.TOP, now[RedditPrefs.sort])
+        assertEquals(RedditNsfwMode.HIDE, now[RedditPrefs.nsfwMode])
+        assertEquals(PrefValue.Text("top"), now.values["plugin.reddit.sort"])
+        assertTrue(now[GeneralPrefs.cleanLinks])
+    }
 
-        val other = RedditPrefsStore(file("other.json"))
-        other.update { it.with(RedditPrefs.refreshToken, "mine").with(RedditPrefs.nsfwMode, RedditNsfwMode.SHOW) }
-        other.import("""{"plugin.reddit.sort": "newest", "plugin.reddit.refresh_token": "theirs", "plugin.unknown": 1}""")
-        val restored = other.load()
-        assertEquals(RedditSort.NEWEST, restored[RedditPrefs.sort])
-        assertEquals("mine", restored[RedditPrefs.refreshToken])
-        assertEquals(RedditNsfwMode.TAP, restored[RedditPrefs.nsfwMode], "a restore replaces what the backup holds")
+    @Test
+    fun thePreferencesAreReadOnceTheAppHasReadItsOwn(): Unit = runBlocking {
+        val app = AppSettings(start = null, stored = Settings().with(RedditPrefs.sort, RedditSort.RISING))
+        assertEquals(RedditSort.RISING, withTimeout(5_000) { app.prefs.load() }[RedditPrefs.sort])
+    }
+
+    @Test
+    fun theSignInAndTheClientIdStayInThePluginsFolderUnderXtasKeys(): Unit = runBlocking {
+        val credentials = RedditCredentials(file("credentials.json"))
+        credentials.set(RedditPrefs.clientId, "my-app")
+        credentials.set(RedditPrefs.refreshToken, "secret")
+        val read = RedditCredentials(file("credentials.json")).load()
+        assertEquals("my-app", read[RedditPrefs.clientId])
+        assertEquals("secret", read[RedditPrefs.refreshToken])
+        assertEquals("secret", J.parse(File(folder, "credentials.json").readText())["plugin.reddit.refresh_token"].string)
+
+        File(folder, "other.json").writeText("""{"plugin.reddit.client_id": "x", "plugin.reddit.sort": "top", "elsewhere": 1}""")
+        assertEquals(setOf("plugin.reddit.client_id"), RedditCredentials(file("other.json")).load().values.keys)
     }
 
     @Test
     fun aCommunityIsFollowedByNameWhateverWasPastedListedAsXtaListsThem(): Unit = runBlocking {
-        val subs = RedditSubscriptions(file("subscriptions.json"), RedditPrefsStore(file("settings.json"))) { at }
+        val subs = RedditSubscriptions(file("subscriptions.json"), AppSettings().prefs) { at }
         assertTrue(subs.add("https://www.reddit.com/r/dartlang/"))
         assertTrue(subs.add("r/FlutterDev"))
         assertTrue(subs.add("androiddev"))
@@ -67,7 +90,7 @@ class RedditStoresTest {
 
     @Test
     fun theFollowedCommunitiesAreXtasRowsInTheBackup(): Unit = runBlocking {
-        val subs = RedditSubscriptions(file("subscriptions.json"), RedditPrefsStore(file("settings.json"))) { at }
+        val subs = RedditSubscriptions(file("subscriptions.json"), AppSettings().prefs) { at }
         subs.add("dartlang")
         val row = J.parse(subs.export())[0]
         assertEquals("dartlang", row["id"].string)
@@ -75,7 +98,7 @@ class RedditStoresTest {
         assertEquals(1L, row["in_feed"].long)
         assertTrue(row["created_at"].string.orEmpty().matches(Regex("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}")))
 
-        val other = RedditSubscriptions(file("other.json"), RedditPrefsStore(file("other-settings.json"))) { at }
+        val other = RedditSubscriptions(file("other.json"), AppSettings().prefs) { at }
         other.add("pics")
         other.import("""[{"id": "flutterdev", "name": "FlutterDev", "in_feed": 1, "created_at": "2024-01-02 03:04:05"}, {"name": "no id"}]""")
         assertEquals(listOf("FlutterDev"), RedditSubscriptions.names(other.load()))
@@ -83,8 +106,7 @@ class RedditStoresTest {
 
     @Test
     fun theListXtaKeptInPreferencesComesInOnceAndLeavesThem(): Unit = runBlocking {
-        val prefs = RedditPrefsStore(file("settings.json"))
-        prefs.set(RedditPrefs.subreddits, """["dartlang", "r/pics", "???"]""")
+        val prefs = AppSettings(Settings().with(RedditPrefs.subreddits, """["dartlang", "r/pics", "???"]""")).prefs
         val subs = RedditSubscriptions(file("subscriptions.json"), prefs) { at }
         assertEquals(listOf("dartlang", "pics"), RedditSubscriptions.names(subs.load()))
         assertEquals("", prefs.load()[RedditPrefs.subreddits])
@@ -121,7 +143,7 @@ class RedditStoresTest {
 
     @Test
     fun theSavedPostsAreKeptInTheirPreference() {
-        val settings = RedditSaved.with(com.aimdi.xtanative.store.settings.Settings(), listOf(post("a"), post("b")))
+        val settings = RedditSaved.with(Settings(), listOf(post("a"), post("b")))
         assertEquals(listOf("a", "b"), RedditSaved.posts(settings).map { it.id })
     }
 
