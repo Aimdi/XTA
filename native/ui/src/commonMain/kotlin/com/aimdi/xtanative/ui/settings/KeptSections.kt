@@ -2,17 +2,18 @@ package com.aimdi.xtanative.ui.settings
 
 import com.aimdi.xtanative.store.StoreDir
 import com.aimdi.xtanative.store.backup.BackupDocument
+import com.aimdi.xtanative.store.backup.upsert
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 /**
  * The parts of a restored XTA backup no store of XTA Native holds yet: each
- * network's follows, likes, votes and galleries as XTA wrote them (until its
- * plugin reads them), the sections of plugins that are not running (until
- * they run, see [PluginBackups]), and what a group's row carries beyond the
- * session's groups (its icon, colour, mark and when it was made). They are
- * kept in `backup/kept.json`, so the next export carries them again and
- * nothing a reader restored is lost.
+ * network's follows, likes, votes and galleries as XTA wrote them, and the
+ * sections of plugins that are not running, each until the plugin that keeps
+ * it runs and takes it (see [PluginBackups]); and what a group's row carries
+ * beyond the session's groups (its icon, colour, mark and when it was made).
+ * They are kept in `backup/kept.json`, so the next export carries them again
+ * and nothing a reader restored is lost.
  */
 class KeptSections(dir: StoreDir) {
     private val file = dir.file(FILE)
@@ -25,13 +26,19 @@ class KeptSections(dir: StoreDir) {
     suspend fun get(): BackupDocument = mutex.withLock { loaded() }
 
     /** [incoming]'s kept sections merged in, row by row, as XTA's import replaces rows by their key. */
-    suspend fun merge(incoming: BackupDocument): BackupDocument = mutex.withLock { write(merged(loaded(), incoming)) }
+    suspend fun merge(incoming: BackupDocument): BackupDocument = edit { merged(it, incoming) }
 
-    /** The plugins' sections [names] kept no more: their plugins took them. */
-    suspend fun forgetPluginSections(names: Set<String>): BackupDocument = mutex.withLock {
-        val kept = loaded()
-        write(kept.copy(pluginSections = kept.pluginSections?.minus(names)?.takeIf { it.isNotEmpty() }))
+    /** The plugins' sections in [taken] kept no more, their plugins took them; one a restore has changed since stays. */
+    suspend fun forgetPluginSections(taken: Map<String, String>) {
+        edit { kept -> kept.copy(pluginSections = kept.pluginSections?.filterNot { (name, text) -> taken[name] == text }?.takeIf { it.isNotEmpty() }) }
     }
+
+    /** The networks' rows in [taken] kept no more, the plugins named by their keys took them; rows a restore has changed since stay. */
+    suspend fun forgetNetworkSections(taken: Map<String, String>) {
+        edit { kept -> kept.withoutNetworks(kept.networkRows().filter { (key, rows) -> taken[key] == rows }.keys) }
+    }
+
+    private suspend fun edit(change: (BackupDocument) -> BackupDocument): BackupDocument = mutex.withLock { write(change(loaded())) }
 
     /**
      * Hands [adopt] the profile notes and filters an older build kept here,
@@ -64,25 +71,8 @@ class KeptSections(dir: StoreDir) {
         const val FILE = "backup/kept.json"
 
         /** Only the sections this store keeps. */
-        fun keptOf(document: BackupDocument): BackupDocument = BackupDocument(
-            threadsSubscriptions = document.threadsSubscriptions,
-            threadsLocalLikes = document.threadsLocalLikes,
-            blueskySubscriptions = document.blueskySubscriptions,
-            blueskyLocalLikes = document.blueskyLocalLikes,
-            mastodonSubscriptions = document.mastodonSubscriptions,
-            tiktokSubscriptions = document.tiktokSubscriptions,
-            instagramSubscriptions = document.instagramSubscriptions,
-            redditSubscriptions = document.redditSubscriptions,
-            redditLocalVotes = document.redditLocalVotes,
-            substackSubscriptions = document.substackSubscriptions,
-            rssSubscriptions = document.rssSubscriptions,
-            booruSubscriptions = document.booruSubscriptions,
-            ehFavorites = document.ehFavorites,
-            ehHistory = document.ehHistory,
-            stockSubscriptions = document.stockSubscriptions,
-            groups = document.groups,
-            pluginSections = document.pluginSections,
-        )
+        fun keptOf(document: BackupDocument): BackupDocument =
+            BackupDocument(groups = document.groups, pluginSections = document.pluginSections).withNetworks(document)
 
         /** The profile notes and filters [document] carries, or null when it carries none. */
         private fun profilesOf(document: BackupDocument): BackupDocument? =
@@ -91,34 +81,8 @@ class KeptSections(dir: StoreDir) {
 
         /** [kept] with each of [incoming]'s kept sections merged in; a section [incoming] does not carry stays as it was. */
         fun merged(kept: BackupDocument, incoming: BackupDocument): BackupDocument = BackupDocument(
-            threadsSubscriptions = upsert(kept.threadsSubscriptions, incoming.threadsSubscriptions) { it.id },
-            threadsLocalLikes = upsert(kept.threadsLocalLikes, incoming.threadsLocalLikes) { it.id },
-            blueskySubscriptions = upsert(kept.blueskySubscriptions, incoming.blueskySubscriptions) { it.id },
-            blueskyLocalLikes = upsert(kept.blueskyLocalLikes, incoming.blueskyLocalLikes) { it.id },
-            mastodonSubscriptions = upsert(kept.mastodonSubscriptions, incoming.mastodonSubscriptions) { it.id },
-            tiktokSubscriptions = upsert(kept.tiktokSubscriptions, incoming.tiktokSubscriptions) { it.id },
-            instagramSubscriptions = upsert(kept.instagramSubscriptions, incoming.instagramSubscriptions) { it.id },
-            redditSubscriptions = upsert(kept.redditSubscriptions, incoming.redditSubscriptions) { it.id },
-            redditLocalVotes = upsert(kept.redditLocalVotes, incoming.redditLocalVotes) { it.id },
-            substackSubscriptions = upsert(kept.substackSubscriptions, incoming.substackSubscriptions) { it.id },
-            rssSubscriptions = upsert(kept.rssSubscriptions, incoming.rssSubscriptions) { it.id },
-            booruSubscriptions = upsert(kept.booruSubscriptions, incoming.booruSubscriptions) { it.id },
-            ehFavorites = upsert(kept.ehFavorites, incoming.ehFavorites) { it.gallery.gid },
-            ehHistory = upsert(kept.ehHistory, incoming.ehHistory) { it.gallery.gid },
-            stockSubscriptions = upsert(kept.stockSubscriptions, incoming.stockSubscriptions) { it.id },
             groups = upsert(kept.groups, incoming.groups) { it.id },
             pluginSections = incoming.pluginSections?.let { kept.pluginSections.orEmpty() + it } ?: kept.pluginSections,
-        )
-
-        /**
-         * [incoming]'s rows over [current]'s: a row with a known key replaces
-         * the old one and goes last, as SQLite's INSERT OR REPLACE does; null
-         * [incoming] leaves [current] alone.
-         */
-        fun <T, K> upsert(current: List<T>?, incoming: List<T>?, key: (T) -> K): List<T>? {
-            if (incoming == null) return current
-            val fresh = incoming.associateBy(key)
-            return current.orEmpty().filterNot { key(it) in fresh } + fresh.values
-        }
+        ).withNetworks(kept).withNetworksMerged(incoming)
     }
 }

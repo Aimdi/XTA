@@ -26,10 +26,11 @@ import kotlinx.coroutines.launch
  * through, and the reader's choices.
  *
  * The choices are the app's settings ([PluginHost.settings]), under XTA's
- * keys ([BooruPrefs]), so XTA's backup and the app's carry them. What the
- * plugin API has no member for (saving a post on the device, the downloads,
- * the followed tags an XTA backup restored) is the app's graph's, which the
- * first of the plugin's screens to be drawn hands over ([bind]).
+ * keys ([BooruPrefs]), so XTA's backup and the app's carry them; the followed
+ * tags are the plugin's backup section, which a restored XTA backup's rows
+ * reach. What the plugin API has no member for (saving a post on the device,
+ * the downloads) is the app's graph's, which the first of the plugin's
+ * screens to be drawn hands over ([bind]).
  */
 internal class BooruApp(val host: PluginHost) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
@@ -59,15 +60,9 @@ internal class BooruApp(val host: PluginHost) {
     /** What the app does to XTA's Booru preferences as it starts: credentials saved before they had a host get the host in use. */
     fun start() = update(BooruConfig::withCredentialsHost)
 
-    /** Takes the app's [graph] from the first screen drawn, and the followed tags an XTA backup restored with it. */
+    /** Takes the app's [graph] from the first screen drawn. */
     fun bind(graph: AppGraph) {
-        if (bound.compareAndSet(null, graph)) adoptRestored()
-    }
-
-    /** The followed tags and saved searches a restored XTA backup left with the app, taken as XTA's import takes them. */
-    fun adoptRestored() {
-        val graph = bound.value ?: return
-        launch { graph.kept.get().booruSubscriptions?.let { follows.adopt(it) } }
+        bound.compareAndSet(null, graph)
     }
 
     /** The settings changed by [edit] (only Booru's own: `plugin.booru.`), written and announced. */

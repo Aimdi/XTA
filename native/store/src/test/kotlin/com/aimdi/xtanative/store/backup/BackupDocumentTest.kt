@@ -271,5 +271,25 @@ class BackupDocumentTest {
         assertNull(written.chosen(ExportChoice(savedPosts = true)).pluginSections)
     }
 
+    @Test
+    fun xtasNetworksAreKnownByTheirKeysAndTheirRowsAreWrittenAsXtasImportWritesThem() {
+        val written = BackupDocument().toJson().keys.toList()
+        val plugins = written.subList(written.indexOf(BackupKeys.SETTINGS) + 1, written.indexOf(BackupKeys.SEARCH_SUBSCRIPTIONS))
+        assertEquals(plugins, BackupKeys.NETWORKS.toList(), "the tables of XTA's plugins, where and in the order XTA writes them")
+        val kept = BackupDocument(redditSubscriptions = listOf(NamedSubscriptionRow("a", "A"), NamedSubscriptionRow("b", "B")), redditLocalVotes = emptyList())
+        assertEquals(setOf(BackupKeys.REDDIT_SUBSCRIPTIONS), kept.networkRows().keys, "an empty section holds no rows")
+        val read = BackupDocument.ofNetworkRows(kept.networkRows() + mapOf(BackupKeys.SUBSTACK_SUBSCRIPTIONS to "{}", "bluesky.follows" to "[]"))
+        assertEquals(kept.redditSubscriptions, read.redditSubscriptions)
+        assertEquals(BackupDocument(redditSubscriptions = kept.redditSubscriptions), read, "nothing else: no rows in the text, or no network by that name")
+
+        val incoming = BackupDocument(redditSubscriptions = listOf(NamedSubscriptionRow("a", "A2")))
+        assertEquals(listOf("b" to "B", "a" to "A2"), kept.withNetworksMerged(incoming).redditSubscriptions!!.map { it.id to it.name })
+        assertEquals(incoming.redditSubscriptions, kept.withNetworks(incoming).redditSubscriptions)
+        assertEquals(emptyList(), kept.withNetworks(incoming).redditLocalVotes, "a section the other does not carry stays")
+        assertNull(kept.withoutNetworks(setOf(BackupKeys.REDDIT_SUBSCRIPTIONS)).redditSubscriptions)
+        assertEquals(kept.redditSubscriptions, kept.withEveryNetwork().redditSubscriptions)
+        assertEquals(emptyList(), kept.withEveryNetwork().ehHistory, "XTA writes every table")
+    }
+
     private fun resource(path: String): String = checkNotNull(javaClass.getResource(path)) { path }.readText()
 }

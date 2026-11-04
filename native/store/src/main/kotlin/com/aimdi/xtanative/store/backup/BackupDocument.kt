@@ -61,6 +61,8 @@ data class BackupDocument(
     /**
      * XTA Native's downloadable plugins' own sections, by the name each plugin
      * gives one ("bluesky.follows"), as the text it exported. XTA reads past them.
+     * A section named by one of XTA's networks' keys ([BackupKeys.NETWORKS])
+     * is not here: it is that network's rows, where XTA reads them.
      */
     val pluginSections: Map<String, String>? = null,
     /** On a document a WebDAV sync uploaded: the earlier versions it kept on the server, newest first. */
@@ -76,37 +78,23 @@ data class BackupDocument(
      * written, in the order XTA lists it. Sections the file is silent about,
      * and empty ones, are left out.
      */
-    fun counts(): Map<BackupCategory, Int> = linkedMapOf(
-        BackupCategory.ARCHIVE_ANNOTATIONS to archiveAnnotations?.size,
-        BackupCategory.SETTINGS to settings?.size,
-        BackupCategory.SUBSCRIPTIONS to total(subscriptions, searchSubscriptions),
-        BackupCategory.GROUPS to groups?.size,
-        BackupCategory.GROUP_MEMBERS to total(groupMembers, searchGroupMembers),
-        BackupCategory.SAVED_POSTS to savedPosts?.size,
-        BackupCategory.FOLDERS to savedFolders?.size,
-        BackupCategory.LIKED_POSTS to likedPosts?.size,
-        BackupCategory.FILTERS to total(repostFilters, replyFilters),
-        BackupCategory.READ_POSITIONS to readPositions?.size,
-        BackupCategory.ACCOUNTS to accounts?.size,
-        BackupCategory.PROFILE_NOTES to profileNotes?.size,
-        BackupCategory.ANTENNAS to antennas?.size,
-        BackupCategory.LOCAL_POSTS to localPosts?.size,
-        BackupCategory.THREADS to threadsSubscriptions?.size,
-        BackupCategory.THREADS_LIKES to threadsLocalLikes?.size,
-        BackupCategory.BLUESKY to blueskySubscriptions?.size,
-        BackupCategory.BLUESKY_LIKES to blueskyLocalLikes?.size,
-        BackupCategory.MASTODON to mastodonSubscriptions?.size,
-        BackupCategory.TIKTOK_SUBSCRIPTIONS to tiktokSubscriptions?.size,
-        BackupCategory.INSTAGRAM_SUBSCRIPTIONS to instagramSubscriptions?.size,
-        BackupCategory.SUBREDDITS to redditSubscriptions?.size,
-        BackupCategory.UPVOTES to redditLocalVotes?.size,
-        BackupCategory.SUBSTACK to substackSubscriptions?.size,
-        BackupCategory.RSS to rssSubscriptions?.size,
-        BackupCategory.BOORU_TAGS to booruSubscriptions?.size,
-        BackupCategory.EH_FAVORITES to ehFavorites?.size,
-        BackupCategory.EH_HISTORY to ehHistory?.size,
-        BackupCategory.STOCKS to stockSubscriptions?.size,
-        BackupCategory.PLUGINS to pluginSections?.size,
+    fun counts(): Map<BackupCategory, Int> = (
+        listOf(
+            BackupCategory.ARCHIVE_ANNOTATIONS to archiveAnnotations?.size,
+            BackupCategory.SETTINGS to settings?.size,
+            BackupCategory.SUBSCRIPTIONS to total(subscriptions, searchSubscriptions),
+            BackupCategory.GROUPS to groups?.size,
+            BackupCategory.GROUP_MEMBERS to total(groupMembers, searchGroupMembers),
+            BackupCategory.SAVED_POSTS to savedPosts?.size,
+            BackupCategory.FOLDERS to savedFolders?.size,
+            BackupCategory.LIKED_POSTS to likedPosts?.size,
+            BackupCategory.FILTERS to total(repostFilters, replyFilters),
+            BackupCategory.READ_POSITIONS to readPositions?.size,
+            BackupCategory.ACCOUNTS to accounts?.size,
+            BackupCategory.PROFILE_NOTES to profileNotes?.size,
+            BackupCategory.ANTENNAS to antennas?.size,
+            BackupCategory.LOCAL_POSTS to localPosts?.size,
+        ) + NETWORK_SECTIONS.map { it.category to it.count(this) } + (BackupCategory.PLUGINS to pluginSections?.size)
     ).mapNotNull { (category, count) -> count?.takeIf { it > 0 }?.let { category to it } }.toMap()
 
     /**
@@ -118,23 +106,8 @@ data class BackupDocument(
     fun chosen(choice: ExportChoice): BackupDocument {
         fun <T> List<T>?.ifChosen(chosen: Boolean) = takeIf { chosen }
         val networks = choice.subscriptions
-        return copy(
+        val picked = copy(
             archiveAnnotations = archiveAnnotations.takeIf { choice.savedPosts },
-            threadsSubscriptions = threadsSubscriptions.ifChosen(networks),
-            threadsLocalLikes = threadsLocalLikes.ifChosen(networks),
-            blueskySubscriptions = blueskySubscriptions.ifChosen(networks),
-            blueskyLocalLikes = blueskyLocalLikes.ifChosen(networks),
-            mastodonSubscriptions = mastodonSubscriptions.ifChosen(networks),
-            tiktokSubscriptions = tiktokSubscriptions.ifChosen(networks),
-            instagramSubscriptions = instagramSubscriptions.ifChosen(networks),
-            redditSubscriptions = redditSubscriptions.ifChosen(networks),
-            redditLocalVotes = redditLocalVotes.ifChosen(networks),
-            substackSubscriptions = substackSubscriptions.ifChosen(networks),
-            rssSubscriptions = rssSubscriptions.ifChosen(networks),
-            booruSubscriptions = booruSubscriptions.ifChosen(networks),
-            ehFavorites = ehFavorites.ifChosen(networks),
-            ehHistory = ehHistory.ifChosen(networks),
-            stockSubscriptions = stockSubscriptions.ifChosen(networks),
             pluginSections = pluginSections.takeIf { networks },
             searchSubscriptions = searchSubscriptions.ifChosen(choice.subscriptions),
             subscriptions = subscriptions.ifChosen(choice.subscriptions),
@@ -151,7 +124,29 @@ data class BackupDocument(
             profileNotes = profileNotes.ifChosen(choice.filters),
             antennas = antennas.ifChosen(choice.filters),
         )
+        return if (networks) picked else picked.withoutNetworks(BackupKeys.NETWORKS)
     }
+
+    /** [other]'s networks' sections in place of these, where [other] carries one. */
+    fun withNetworks(other: BackupDocument): BackupDocument =
+        NETWORK_SECTIONS.fold(this) { document, section -> section.copied(other, document) }
+
+    /** [incoming]'s networks' rows over these, as XTA's import writes them ([upsert]); a section [incoming] does not carry stays. */
+    fun withNetworksMerged(incoming: BackupDocument): BackupDocument =
+        NETWORK_SECTIONS.fold(this) { document, section -> section.merged(document, incoming) }
+
+    fun withoutNetworks(keys: Collection<String>): BackupDocument =
+        NETWORK_SECTIONS.filter { it.key in keys }.fold(this) { document, section -> section.removed(document) }
+
+    /** Every network's section, an empty one where this carries none, as XTA writes each of its tables. */
+    fun withEveryNetwork(): BackupDocument = NETWORK_SECTIONS.fold(this) { document, section -> section.filled(document) }
+
+    /** The rows under each of XTA's networks' keys, as the text of XTA's rows, by key; a section without a row is left out. */
+    fun networkRows(): Map<String, String> =
+        NETWORK_SECTIONS.mapNotNull { section -> section.text(this)?.let { section.key to it } }.toMap()
+
+    private fun withNetworksRead(section: (key: String) -> J): BackupDocument =
+        NETWORK_SECTIONS.fold(this) { document, network -> network.parsed(document, section(network.key)) }
 
     /**
      * What a restore writes. Reading positions go only when asked for: one
@@ -170,21 +165,7 @@ data class BackupDocument(
             put(BackupKeys.EXPORTED_AT, jsonOf(exportedAt))
             put(BackupKeys.APP_VERSION, jsonOf(appVersion))
             put(BackupKeys.SETTINGS, settings?.let(::JsonObject) ?: JsonNull)
-            put(BackupKeys.THREADS_SUBSCRIPTIONS, threadsSubscriptions.json { it.toJson() })
-            put(BackupKeys.THREADS_LOCAL_LIKES, threadsLocalLikes.json { it.toJson() })
-            put(BackupKeys.BLUESKY_SUBSCRIPTIONS, blueskySubscriptions.json { it.toJson() })
-            put(BackupKeys.BLUESKY_LOCAL_LIKES, blueskyLocalLikes.json { it.toJson() })
-            put(BackupKeys.MASTODON_SUBSCRIPTIONS, mastodonSubscriptions.json { it.toJson() })
-            put(BackupKeys.TIKTOK_SUBSCRIPTIONS, tiktokSubscriptions.json { it.toJson() })
-            put(BackupKeys.INSTAGRAM_SUBSCRIPTIONS, instagramSubscriptions.json { it.toJson() })
-            put(BackupKeys.REDDIT_SUBSCRIPTIONS, redditSubscriptions.json { it.toJson() })
-            put(BackupKeys.REDDIT_LOCAL_VOTES, redditLocalVotes.json { it.toJson() })
-            put(BackupKeys.SUBSTACK_SUBSCRIPTIONS, substackSubscriptions.json { it.toJson() })
-            put(BackupKeys.RSS_SUBSCRIPTIONS, rssSubscriptions.json { it.toJson() })
-            put(BackupKeys.BOORU_SUBSCRIPTIONS, booruSubscriptions.json { it.toJson() })
-            put(BackupKeys.EH_FAVORITES, ehFavorites.json { it.toJson() })
-            put(BackupKeys.EH_HISTORY, ehHistory.json { it.toJson() })
-            put(BackupKeys.STOCK_SUBSCRIPTIONS, stockSubscriptions.json { it.toJson() })
+            NETWORK_SECTIONS.forEach { put(it.key, it.json(this@BackupDocument)) }
             put(BackupKeys.SEARCH_SUBSCRIPTIONS, searchSubscriptions.json { it.toJson() })
             put(BackupKeys.SUBSCRIPTIONS, subscriptions.json { it.toJson() })
             put(BackupKeys.GROUPS, groups.json { it.toJson() })
@@ -227,21 +208,6 @@ data class BackupDocument(
                 appVersion = root[BackupKeys.APP_VERSION].string,
                 archiveAnnotations = root[BackupKeys.ARCHIVE_ANNOTATIONS].takeIf { it.exists }?.let { ArchiveAnnotationRow.section(it) },
                 settings = (root[BackupKeys.SETTINGS].raw as? JsonObject)?.toMap(),
-                threadsSubscriptions = root[BackupKeys.THREADS_SUBSCRIPTIONS].rows { ProfileSubscriptionRow.from(it) },
-                threadsLocalLikes = root[BackupKeys.THREADS_LOCAL_LIKES].rows { LocalMarkRow.from(it) },
-                blueskySubscriptions = root[BackupKeys.BLUESKY_SUBSCRIPTIONS].rows { ProfileSubscriptionRow.from(it) },
-                blueskyLocalLikes = root[BackupKeys.BLUESKY_LOCAL_LIKES].rows { LocalMarkRow.from(it) },
-                mastodonSubscriptions = root[BackupKeys.MASTODON_SUBSCRIPTIONS].rows { ProfileSubscriptionRow.from(it) },
-                tiktokSubscriptions = root[BackupKeys.TIKTOK_SUBSCRIPTIONS].rows { TikTokSubscriptionRow.from(it) },
-                instagramSubscriptions = root[BackupKeys.INSTAGRAM_SUBSCRIPTIONS].rows { InstagramSubscriptionRow.from(it) },
-                redditSubscriptions = root[BackupKeys.REDDIT_SUBSCRIPTIONS].rows { NamedSubscriptionRow.from(it) },
-                redditLocalVotes = root[BackupKeys.REDDIT_LOCAL_VOTES].rows { LocalMarkRow.from(it) },
-                substackSubscriptions = root[BackupKeys.SUBSTACK_SUBSCRIPTIONS].rows { SubstackSubscriptionRow.from(it) },
-                rssSubscriptions = root[BackupKeys.RSS_SUBSCRIPTIONS].rows { RssSubscriptionRow.from(it) },
-                booruSubscriptions = root[BackupKeys.BOORU_SUBSCRIPTIONS].rows { NamedSubscriptionRow.from(it) },
-                ehFavorites = root[BackupKeys.EH_FAVORITES].rows { EhFavoriteRow.from(it) },
-                ehHistory = root[BackupKeys.EH_HISTORY].rows { EhHistoryRow.from(it) },
-                stockSubscriptions = root[BackupKeys.STOCK_SUBSCRIPTIONS].rows { StockSubscriptionRow.from(it) },
                 searchSubscriptions = root[BackupKeys.SEARCH_SUBSCRIPTIONS].rows { SearchSubscriptionRow.from(it) },
                 subscriptions = root[BackupKeys.SUBSCRIPTIONS].rows { UserSubscriptionRow.from(it) },
                 groups = root[BackupKeys.GROUPS].rows { GroupRow.from(it) },
@@ -259,8 +225,15 @@ data class BackupDocument(
                 localPosts = root[BackupKeys.LOCAL_POSTS].rows { LocalPostRow.from(it) },
                 pluginSections = texts(root[BackupKeys.PLUGIN_SECTIONS]),
                 webDavHistory = root[BackupKeys.WEBDAV_HISTORY].takeIf { it.exists }?.let { WebDavVersion.list(it) },
-            )
+            ).withNetworksRead { root[it] }
         }
+
+        /**
+         * A document carrying [rows]: texts of XTA's rows by its networks'
+         * keys, as a plugin keeps them, read as a file is. A name no network
+         * has, or a text holding no list of rows, carries nothing.
+         */
+        fun ofNetworkRows(rows: Map<String, String>): BackupDocument = BackupDocument().withNetworksRead { key -> J.parse(rows[key] ?: "") }
 
         /** A section of texts by name; null when the file has none. */
         private fun texts(section: J): Map<String, String>? =
@@ -324,6 +297,9 @@ object BackupKeys {
     const val PROFILE_NOTES = "profileNotes"
     const val ANTENNAS = "antennas"
     const val LOCAL_POSTS = "localPosts"
+
+    /** Where XTA writes its networks' tables, the ones its plugins own, from [THREADS_SUBSCRIPTIONS] to [STOCK_SUBSCRIPTIONS]. */
+    val NETWORKS: Set<String> = NETWORK_SECTIONS.mapTo(LinkedHashSet()) { it.key }
 
     /** XTA Native's alone: the plugins' sections. */
     const val PLUGIN_SECTIONS = "pluginSections"

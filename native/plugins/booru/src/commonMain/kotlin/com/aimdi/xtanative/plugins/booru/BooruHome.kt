@@ -60,7 +60,6 @@ internal fun BooruHome(app: BooruApp, frame: PluginFrame, ownActions: Boolean = 
     val grids = HomeTab.entries.associateWith { rememberLazyStaggeredGridState() }
     val reduced = LocalReducedMotion.current
     LaunchedEffect(tab, settings, follows) { feeds.ensure(tab) }
-    LaunchedEffect(Unit) { app.adoptRestored() }
     RefreshesOn(frame.refresh) { feeds.feed(tab).refresh() }
     ScrollsToTop(frame.toTop) { grids.getValue(tab).let { if (reduced) it.scrollToItem(0) else it.animateScrollToItem(0) } }
     Box(Modifier.fillMaxSize()) {

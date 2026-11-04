@@ -51,9 +51,9 @@ class DeviceBackup(private val graph: AppGraph, private val clock: () -> Instant
      * Writes every section of [document] into its store, as XTA's import does:
      * the settings first (and XTA's launch steps after them), then the session,
      * the saved posts, likes, notes, article notes, antennas, profile notes and
-     * filters and reading places, each plugin's sections into the running
-     * plugin that keeps them, and what no store here holds yet into
-     * [KeptSections]. Reading positions only when [includeReadPositions].
+     * filters and reading places, each network's rows and each plugin's
+     * sections into the running plugin that keeps them, and what no store here
+     * holds yet into [KeptSections]. Reading positions only when [includeReadPositions].
      */
     suspend fun restore(document: BackupDocument, includeReadPositions: Boolean) {
         val restoring = document.forRestore(includeReadPositions)

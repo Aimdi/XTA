@@ -191,8 +191,12 @@ the screens:
 - its **search** is one of Discover's chips and is offered by the search of
   the reader's library;
 - its **backup sections** go in the app's full backup, under
-  `pluginSections` by name (`PluginBackups`): a restore hands each to the
-  running plugin that keeps it, and one for a plugin that is not running
+  `pluginSections` by name (`PluginBackups`); a section named by one of
+  XTA's network keys (`redditSubscriptions`, `booruSubscriptions`: `:store`'s
+  `BackupKeys.NETWORKS`) holds that network's rows in XTA's format and goes
+  under its key, where XTA reads it back. A restore hands each to the running
+  plugin that keeps it (XTA's rows written over what the plugin keeps, as
+  XTA's import writes them), once; one for a plugin that is not running
   waits in `backup/kept.json`, carried by every export, until that plugin
   runs and takes it.
 

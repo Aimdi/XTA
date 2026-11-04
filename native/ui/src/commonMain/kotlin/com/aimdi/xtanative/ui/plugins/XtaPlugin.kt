@@ -53,6 +53,11 @@ abstract class PluginSearch {
  * Something a plugin keeps that belongs in the app's backup, as the section
  * [name] ("bluesky.follows"): [export] gives it as text, and [import] takes
  * such a text back, replacing what the plugin kept there.
+ *
+ * Named by one of the keys of XTA's backup ("redditSubscriptions"), the text
+ * is that network's rows as XTA writes them, a JSON list: the backup carries
+ * it under that key, where XTA reads it, and a restore of XTA's rows imports
+ * them written over the ones [export] gave, as XTA's import writes a table.
  */
 class PluginBackupSection(
     val name: String,

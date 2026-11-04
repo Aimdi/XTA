@@ -69,7 +69,6 @@ private sealed interface SettingsAsk {
 @Composable
 internal fun BooruSettingsBody(app: BooruApp, frame: PluginFrame) = Bound(app) { settings ->
     var ask by remember { mutableStateOf<SettingsAsk?>(null) }
-    LaunchedEffect(Unit) { app.adoptRestored() }
     Box(Modifier.fillMaxSize()) {
         LazyColumn(Modifier.fillMaxSize(), contentPadding = frame.padding) {
             siteSection(app, settings) { ask = it }

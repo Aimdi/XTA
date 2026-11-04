@@ -3,6 +3,7 @@ package com.aimdi.xtanative.ui.settings
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.backup.FollowedAccount
 import com.aimdi.xtanative.core.feed.FeedPlace
+import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.core.session.SavedSearch
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.core.x.XAccount
@@ -14,6 +15,7 @@ import com.aimdi.xtanative.store.backup.AntennaRow
 import com.aimdi.xtanative.store.backup.ArchiveAnnotationRow
 import com.aimdi.xtanative.store.backup.BackupCategory
 import com.aimdi.xtanative.store.backup.BackupDocument
+import com.aimdi.xtanative.store.backup.BackupKeys
 import com.aimdi.xtanative.store.backup.ExportChoice
 import com.aimdi.xtanative.store.backup.FeedFilterRow
 import com.aimdi.xtanative.store.backup.GroupMemberRow
@@ -22,6 +24,7 @@ import com.aimdi.xtanative.store.backup.LikedPostRow
 import com.aimdi.xtanative.store.backup.LocalMarkRow
 import com.aimdi.xtanative.store.backup.LocalPostMediaRow
 import com.aimdi.xtanative.store.backup.LocalPostRow
+import com.aimdi.xtanative.store.backup.NamedSubscriptionRow
 import com.aimdi.xtanative.store.backup.ProfileNoteRow
 import com.aimdi.xtanative.store.backup.ProfileSubscriptionRow
 import com.aimdi.xtanative.store.backup.ReadPositionRow
@@ -29,6 +32,7 @@ import com.aimdi.xtanative.store.backup.SavedFolderRow
 import com.aimdi.xtanative.store.backup.SavedPostRow
 import com.aimdi.xtanative.store.backup.SearchGroupMemberRow
 import com.aimdi.xtanative.store.backup.SearchSubscriptionRow
+import com.aimdi.xtanative.store.backup.SubstackSubscriptionRow
 import com.aimdi.xtanative.store.backup.UserSubscriptionRow
 import com.aimdi.xtanative.store.reading.ArticleReadPoint
 import com.aimdi.xtanative.store.saved.ProfileNotesStore
@@ -54,6 +58,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonPrimitive
 
 private const val HEADERS = """{"Cookie":"auth_token=a;ct0=c1","x-csrf-token":"c1"}"""
@@ -202,6 +207,23 @@ class KeptSectionsTest {
             assertNull(read.repostFilters, "the profiles' filters and notes have their own stores")
             assertNull(read.profileNotes)
             assertNull(read.subscriptions)
+        } finally {
+            dir.deleteRecursively()
+        }
+    }
+
+    @Test
+    fun whatARestoreKeptAfterItWasHandedOverStaysForTheNextHandOver(): Unit = runBlocking {
+        val dir = Files.createTempDirectory("kept").toFile()
+        try {
+            val kept = KeptSections(StoreDir(dir))
+            kept.merge(BackupDocument(redditLocalVotes = listOf(LocalMarkRow("v1")), pluginSections = mapOf("a.b" to "1", "c.d" to "1")))
+            val handed = kept.get()
+            kept.merge(BackupDocument(redditLocalVotes = listOf(LocalMarkRow("v2")), pluginSections = mapOf("a.b" to "2")))
+            kept.forgetNetworkSections(handed.networkRows())
+            kept.forgetPluginSections(handed.pluginSections!!)
+            assertEquals(listOf("v1", "v2"), kept.get().redditLocalVotes!!.map { it.id })
+            assertEquals(mapOf("a.b" to "2"), kept.get().pluginSections, "the one taken as it was is kept no more")
         } finally {
             dir.deleteRecursively()
         }
@@ -405,5 +427,84 @@ class DeviceBackupTest {
         val graph = AppGraph(dir, flowOf(true), "test")
         DeviceBackup(graph).restore(backup(), includeReadPositions = false)
         assertNull(graph.feedCache("g1").readPlace())
+    }
+
+    /** XTA's rows as a plugin keeps them: the text of their list. */
+    private fun rowsText(vararg rows: NamedSubscriptionRow): String = JsonArray(rows.map { it.toJson() }).toString()
+
+    private fun namedRows(text: String?): List<Pair<String, String>> =
+        J.parse(text.orEmpty()).list.mapNotNull { NamedSubscriptionRow.from(it) }.map { it.id to it.name }
+
+    private suspend fun exported(graph: AppGraph): BackupDocument = BackupDocument.parse(DeviceBackup(graph).export(ExportChoice(subscriptions = true)))!!
+
+    @Test
+    fun xtasRowsGoToThePluginWhoseSectionTheirKeyNamesOverWhatItKeeps(): Unit = runBlocking {
+        val graph = AppGraph(dir, flowOf(true), "test")
+        val reddit = FakeSection(BackupKeys.REDDIT_SUBSCRIPTIONS, rowsText(NamedSubscriptionRow("mine", "mine"), NamedSubscriptionRow("dart", "Dart")))
+        graph.pluginBackups.attach(listOf(reddit.section))
+        val xta = BackupDocument(redditSubscriptions = listOf(NamedSubscriptionRow("dart", "dartlang"), NamedSubscriptionRow("kotlin", "Kotlin")))
+        DeviceBackup(graph).restore(xta, includeReadPositions = false)
+        assertEquals(listOf("mine" to "mine", "dart" to "dartlang", "kotlin" to "Kotlin"), namedRows(reddit.text), "a row replaces the one with its id, as XTA's import writes it")
+        assertNull(graph.kept.get().redditSubscriptions, "taken, they are kept no more: uninstalling the plugin erases them")
+
+        DeviceBackup(graph).restore(BackupDocument(redditSubscriptions = emptyList()), includeReadPositions = false)
+        assertEquals(3, namedRows(reddit.text).size, "a table XTA wrote without rows leaves the plugin's alone")
+    }
+
+    @Test
+    fun aRunningPluginsSectionNamedByXtasKeyGoesOutWhereXtaReadsIt(): Unit = runBlocking {
+        val graph = AppGraph(dir, flowOf(true), "test")
+        DeviceBackup(graph).restore(BackupDocument(booruSubscriptions = listOf(NamedSubscriptionRow("solo", "solo"))), includeReadPositions = false)
+        val alone = DeviceBackup(graph).export(ExportChoice(subscriptions = true))
+        assertEquals(BackupDocument().toJson().keys, J.parse(alone).keys, "without a plugin's data, only the keys XTA writes")
+
+        val reddit = FakeSection(BackupKeys.REDDIT_SUBSCRIPTIONS, rowsText(NamedSubscriptionRow("dart", "Dart")))
+        graph.pluginBackups.attach(listOf(reddit.section, FakeSection("bluesky.follows", "mine").section))
+        val exported = exported(graph)
+        assertEquals(listOf(NamedSubscriptionRow("dart", "Dart")), exported.redditSubscriptions)
+        assertEquals(mapOf("bluesky.follows" to "mine"), exported.pluginSections, "only a section XTA has no key for")
+        assertEquals("solo", exported.booruSubscriptions!!.single().id, "kept for a plugin that is not running")
+        assertEquals(emptyList(), exported.substackSubscriptions, "and every other table, as XTA writes them")
+    }
+
+    @Test
+    fun aRunningPluginsRowsGoOutInPlaceOfTheOnesKeptForIt(): Unit = runBlocking {
+        val graph = AppGraph(dir, flowOf(true), "test")
+        graph.pluginBackups.attach(listOf(FakeSection(BackupKeys.REDDIT_SUBSCRIPTIONS, rowsText(NamedSubscriptionRow("dart", "Dart")), failing = true).section))
+        DeviceBackup(graph).restore(BackupDocument(redditSubscriptions = listOf(NamedSubscriptionRow("old", "old"))), includeReadPositions = false)
+        assertEquals("old", graph.kept.get().redditSubscriptions!!.single().id, "kept while the plugin cannot take them")
+        assertEquals(listOf("dart"), exported(graph).redditSubscriptions!!.map { it.id })
+    }
+
+    @Test
+    fun xtasRowsForAPluginNotInstalledGoOutWithEveryExportUntilItIsInstalledAndTakesThem(): Unit = runBlocking {
+        val follows = listOf(SubstackSubscriptionRow("astral", "https://astral.substack.com", "Astral"))
+        DeviceBackup(AppGraph(dir, flowOf(true), "test")).restore(BackupDocument(substackSubscriptions = follows), includeReadPositions = false)
+        val graph = AppGraph(dir, flowOf(true), "test")
+        assertEquals(follows, exported(graph).substackSubscriptions, "carried meanwhile, where XTA reads them")
+
+        val substack = FakeSection(BackupKeys.SUBSTACK_SUBSCRIPTIONS)
+        graph.pluginBackups.attach(listOf(substack.section))
+        assertEquals(follows, J.parse(substack.text!!).list.mapNotNull { SubstackSubscriptionRow.from(it) }, "installed, it takes them")
+        assertNull(graph.kept.get().substackSubscriptions, "and they are kept no more")
+
+        substack.text = "[]"
+        graph.pluginBackups.attach(listOf(substack.section))
+        assertEquals("[]", substack.text, "once")
+        assertEquals(emptyList(), exported(graph).substackSubscriptions)
+    }
+
+    @Test
+    fun whatAnEarlierBuildWroteUnderPluginSectionsByXtasKeyReachesItsPluginBeforeXtasRows(): Unit = runBlocking {
+        val graph = AppGraph(dir, flowOf(true), "test")
+        val reddit = FakeSection(BackupKeys.REDDIT_SUBSCRIPTIONS)
+        graph.pluginBackups.attach(listOf(reddit.section))
+        val earlier = BackupDocument(
+            redditSubscriptions = listOf(NamedSubscriptionRow("kotlin", "Kotlin")),
+            pluginSections = mapOf(BackupKeys.REDDIT_SUBSCRIPTIONS to rowsText(NamedSubscriptionRow("dart", "Dart"))),
+        )
+        DeviceBackup(graph).restore(earlier, includeReadPositions = false)
+        assertEquals(listOf("dart" to "Dart", "kotlin" to "Kotlin"), namedRows(reddit.text))
+        assertEquals(BackupDocument(), graph.kept.get(), "both taken")
     }
 }

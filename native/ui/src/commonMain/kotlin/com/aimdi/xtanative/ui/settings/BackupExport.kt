@@ -9,6 +9,7 @@ import com.aimdi.xtanative.store.backup.AccountRow
 import com.aimdi.xtanative.store.backup.AntennaRow
 import com.aimdi.xtanative.store.backup.ArchiveAnnotationRow
 import com.aimdi.xtanative.store.backup.BackupDocument
+import com.aimdi.xtanative.store.backup.BackupKeys
 import com.aimdi.xtanative.store.backup.ExportChoice
 import com.aimdi.xtanative.store.backup.FeedFilterRow
 import com.aimdi.xtanative.store.backup.GroupMemberRow
@@ -82,23 +83,7 @@ object BackupExport {
             appVersion = appVersion,
             archiveAnnotations = ArchiveAnnotationRow.section(J(XtaRows.annotationsSection(content.annotations))),
             settings = settings(content, choice),
-            threadsSubscriptions = kept.threadsSubscriptions.orEmpty(),
-            threadsLocalLikes = kept.threadsLocalLikes.orEmpty(),
-            blueskySubscriptions = kept.blueskySubscriptions.orEmpty(),
-            blueskyLocalLikes = kept.blueskyLocalLikes.orEmpty(),
-            mastodonSubscriptions = kept.mastodonSubscriptions.orEmpty(),
-            tiktokSubscriptions = kept.tiktokSubscriptions.orEmpty(),
-            instagramSubscriptions = kept.instagramSubscriptions.orEmpty(),
-            redditSubscriptions = kept.redditSubscriptions.orEmpty(),
-            redditLocalVotes = kept.redditLocalVotes.orEmpty(),
-            substackSubscriptions = kept.substackSubscriptions.orEmpty(),
-            rssSubscriptions = kept.rssSubscriptions.orEmpty(),
-            booruSubscriptions = kept.booruSubscriptions.orEmpty(),
-            ehFavorites = kept.ehFavorites.orEmpty(),
-            ehHistory = kept.ehHistory.orEmpty(),
-            stockSubscriptions = kept.stockSubscriptions.orEmpty(),
-            // A running plugin's own section over the one kept for it.
-            pluginSections = (kept.pluginSections.orEmpty() + content.pluginSections).takeIf { it.isNotEmpty() },
+            pluginSections = pluginSections(content),
             searchSubscriptions = session.searches.map { SearchSubscriptionRow(it.query, sqlite(it.followedAt)) },
             subscriptions = session.following.map { account ->
                 UserSubscriptionRow(
@@ -129,8 +114,19 @@ object BackupExport {
                 AntennaRow(antenna.id, antenna.name, antenna.includeTerms, antenna.excludeTerms, antenna.scope.stored, XtaTime.iso(Instant.ofEpochMilli(antenna.createdAt)))
             },
             localPosts = content.localPosts.mapNotNull { LocalPostRow.from(J(XtaRows.row(it))) },
-        ).chosen(choice)
+        ).withNetworks(networks(content)).chosen(choice)
     }
+
+    /**
+     * Every network's table, as XTA writes them: the rows of a running
+     * plugin's section named by its key, else the ones kept for it, else none.
+     */
+    private fun networks(content: DeviceContent): BackupDocument =
+        content.kept.withNetworks(BackupDocument.ofNetworkRows(content.pluginSections)).withEveryNetwork()
+
+    /** The plugins' sections XTA has no key for, a running plugin's own over the one kept for it. */
+    private fun pluginSections(content: DeviceContent): Map<String, String>? =
+        (content.kept.pluginSections.orEmpty() + content.pluginSections.filterKeys { it !in BackupKeys.NETWORKS }).takeIf { it.isNotEmpty() }
 
     /**
      * The settings section: the preferences without secrets, with what XTA

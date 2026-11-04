@@ -40,35 +40,22 @@ class BooruFollowsTest {
         val at = Instant.parse("2026-03-04T05:06:07Z")
         val follows = BooruFollows(StoreFile(file())) { at }
         follows.add("solo")
-        assertEquals(XtaTime.sqlite(at), J.parse(follows.export())["rows"].list.single()["created_at"].string)
+        assertEquals(XtaTime.sqlite(at), J.parse(follows.export()).list.single()["created_at"].string)
     }
 
     @Test
-    fun xtasRestoredRowsAreTakenOnlyOnce(): Unit = runBlocking {
+    fun theBackupSectionIsXtasRowsBothWays(): Unit = runBlocking {
         val follows = follows()
-        val restored = listOf(row("Solo"), row("comic"))
-        follows.adopt(restored)
+        follows.import("""[{"id":"Solo","name":"Solo","in_feed":1,"created_at":"2026-01-02 03:04:05"},{"id":"comic","name":"comic","in_feed":0}]""")
         assertEquals(listOf("comic", "solo"), follows.load())
-
-        follows.remove("solo")
-        follows.adopt(restored)
-        assertEquals(listOf("comic"), follows.load())
-
-        follows.adopt(restored + row("smile"))
-        assertEquals(listOf("comic", "smile", "solo"), follows.load())
+        val exported = J.parse(follows.export()).list.mapNotNull { NamedSubscriptionRow.from(it) }
+        assertEquals(listOf(NamedSubscriptionRow("comic", "comic", inFeed = false), row("solo")), exported)
     }
 
     @Test
-    fun thePluginsBackupSaysWhichRowsWereTaken(): Unit = runBlocking {
-        val restored = listOf(row("solo"), row("comic"))
-        val first = follows().apply { adopt(restored) }
-        val second = follows()
-        second.import(first.export())
-        assertEquals(listOf("comic", "solo"), second.load())
-
-        second.remove("comic")
-        second.adopt(restored)
-        assertEquals(listOf("solo"), second.load())
+    fun theFileAnEarlierBuildWroteReads(): Unit = runBlocking {
+        val path = file().apply { writeText("""{"v":1,"rows":[{"id":"solo","name":"solo","in_feed":1}],"adopted":"0f"}""") }
+        assertEquals(listOf("solo"), BooruFollows(StoreFile(path)).load())
     }
 
     @Test
