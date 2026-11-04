@@ -28,6 +28,9 @@ internal class XTransport(
     val limits = XRateLimits()
     private val load = XAccountLoad()
 
+    /** Each read, how it ended and how long it took, for Diagnostics. */
+    val reads = XReadLog(clock = clock)
+
     /** Reads take turns across the accounts, so no one account reaches X's limits first. */
     private val turn = AtomicInteger()
 
@@ -38,10 +41,10 @@ internal class XTransport(
 
     suspend fun graphql(endpoint: String, params: Map<String, String>): J = get(endpoints.url(endpoint, params), endpoint)
 
-    suspend fun get(url: HttpUrl, what: String): J {
+    suspend fun get(url: HttpUrl, what: String): J = reads.track(what) {
         val pool = pool()
-        if (pool.isEmpty()) return asGuest(what, url)
-        return when (val first = rotate(pool, url, what)) {
+        if (pool.isEmpty()) return@track asGuest(what, url)
+        when (val first = rotate(pool, url, what)) {
             is Outcome.Answer -> first.body
             // Every account tried was refused with 404: X answers a stale
             // signature that way, so the signers are derived again once.
@@ -59,10 +62,10 @@ internal class XTransport(
      * [url] read with [account] alone, as XTA's fetchAs reads a chosen
      * account's own home timeline: no other account stands in for it.
      */
-    suspend fun getAs(account: XAccount, url: HttpUrl, what: String): J {
+    suspend fun getAs(account: XAccount, url: HttpUrl, what: String): J = reads.track(what) {
         val path = url.encodedPath
         val response = send(account, url, path)
-        return when {
+        when {
             response.isSuccessful -> answered(account, emptyList(), path, response)
             response.code == 429 -> {
                 limits.flag(account.id, path, resetOf(response))

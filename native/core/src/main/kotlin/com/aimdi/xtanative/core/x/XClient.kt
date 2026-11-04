@@ -62,6 +62,9 @@ class XClient(
     /** What X said of each account's limits: when a rate-limited read may be tried again. */
     val rateLimits: XRateLimits get() = transport.limits
 
+    /** The reads asked of X lately, how each ended and how long it took (Diagnostics' recent reads). */
+    val reads: XReadLog get() = transport.reads
+
     /** Between tries while Grok still writes a translation. */
     internal var translationWaitMillis = 1000L
 
