@@ -19,6 +19,7 @@ import com.aimdi.xtanative.ui.home.StripNetwork
 import com.aimdi.xtanative.ui.plugins.MediaItem
 import com.aimdi.xtanative.ui.plugins.PLUGIN_API_VERSION
 import com.aimdi.xtanative.ui.plugins.PluginHost
+import com.aimdi.xtanative.ui.plugins.PluginSettings
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
 import java.io.File
 import java.io.IOException
@@ -77,7 +78,7 @@ class AppPlugins(
     internal val sessions: SessionStore = graph.sessions
     internal val online: Flow<Boolean> = graph.online
     internal val repairs: StateFlow<Map<String, String>> = graph.repairs.published
-    private val settings: SettingsStore = graph.settings
+    internal val settings: SettingsStore = graph.settings
     private val store = StoreDir(File(files, "store"))
 
     /** What the app keeps of the plugins itself: whether private plugins are offered. */
@@ -281,6 +282,7 @@ class AppPlugins(
     private class AppPluginHost(private val id: String, private val plugins: AppPlugins) : PluginHost {
         override val http: XHttp get() = plugins.http
         override val store: StoreDir = StoreDir(plugins.dataOf(id))
+        override val settings = PluginSettings(id, plugins.settings.state) { change -> plugins.settings.update(change) }
         override val language: String get() = plugins.language.value
         override val online: Flow<Boolean> get() = plugins.online
         override val x: XClient get() = plugins.x

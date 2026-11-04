@@ -28,8 +28,15 @@ interface PluginHost {
     /** HTTP through the app's client and its connection pool; a plugin sends its network's own headers. */
     val http: XHttp
 
-    /** The plugin's own folder of the store, for its settings, follows and caches. Uninstalling erases it. */
+    /** The plugin's own folder of the store, for its follows and caches. Uninstalling erases it. */
     val store: StoreDir
+
+    /**
+     * The app's settings: a plugin keeps its preferences here, under
+     * `plugin.<id>.` as XTA kept a network's (`:store`'s NetworkPrefs), so a
+     * backup, XTA's or the app's, brings them back. It changes only its own.
+     */
+    val settings: PluginSettings
 
     /** The reader's language as a BCP 47 tag: "en", "de", "pt-BR". A composable follows it with [currentLanguage]. */
     val language: String
