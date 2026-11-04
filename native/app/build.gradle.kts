@@ -1,5 +1,7 @@
 // The Android app: a shell around :ui's screens (the Application, the activity
 // and its links, signing, the baseline profile).
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     kotlin("android")
@@ -16,7 +18,7 @@ val voiceServer = (findProperty("voiceServer") as String?).orEmpty()
 val releaseTag = System.getenv("NATIVE_VERSION_NAME")?.takeIf { it.isNotBlank() }?.let { "native-$it" }.orEmpty()
 
 /** [file] read as Java properties, or null when there is none. */
-fun propertiesOf(file: File): java.util.Properties? = file.takeIf { it.isFile }?.let { java.util.Properties().apply { it.inputStream().use { input -> load(input) } } }
+fun propertiesOf(file: File): Properties? = file.takeIf { it.isFile }?.let { found -> Properties().apply { found.inputStream().use { input -> load(input) } } }
 
 /**
  * The NDK of the Android SDK in [sdk] to build with, as its version: the one
