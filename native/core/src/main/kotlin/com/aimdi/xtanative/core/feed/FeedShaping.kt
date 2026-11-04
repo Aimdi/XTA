@@ -118,7 +118,7 @@ data class FeedShaping(
     val hiddenReposts: Set<String> = emptySet(),
     /** Lower-case handles whose replies to others the reader hid. */
     val hiddenReplies: Set<String> = emptySet(),
-    val facts: PostFacts = PostFacts.UNKNOWN,
+    val facts: PostFacts = PostFacts.OF_POST,
 ) {
     /**
      * Whether [thread] may be shown at all. A feed asks this as it reads, so

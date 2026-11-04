@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
@@ -22,9 +23,11 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import androidx.savedstate.read
+import com.aimdi.xtanative.store.settings.GeneralPrefs
 import com.aimdi.xtanative.ui.antenna.AntennaFeedScreen
 import com.aimdi.xtanative.ui.antenna.AntennasScreen
 import com.aimdi.xtanative.ui.archive.ArchiveScreen
+import com.aimdi.xtanative.ui.article.ArticleScreen
 import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.community.CommunityMembersScreen
 import com.aimdi.xtanative.ui.community.CommunityScreen
@@ -46,6 +49,9 @@ import com.aimdi.xtanative.ui.offline.OfflineLibraryScreen
 import com.aimdi.xtanative.ui.offline.OfflineMediaScreen
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.PostScreen
+import com.aimdi.xtanative.ui.post.QuotesScreen
+import com.aimdi.xtanative.ui.post.linkOpener
+import com.aimdi.xtanative.ui.profile.FollowsScreen
 import com.aimdi.xtanative.ui.profile.ProfileScreen
 import com.aimdi.xtanative.ui.saved.KeepHost
 import com.aimdi.xtanative.ui.saved.NoteThreadScreen
@@ -105,6 +111,11 @@ private object Routes {
     const val SUBSCRIPTIONS_SORT = "subscriptions/sort"
     const val SUBSCRIPTIONS_SORT_ONE = "subscriptions/sort-one?ids={ids}"
     const val GROUP = "group/{id}"
+    const val QUOTES = "post/{id}/quotes"
+    const val REPOSTERS = "post/{id}/reposters"
+    const val FOLLOWING = "profile/{screenName}/following"
+    const val FOLLOWERS = "profile/{screenName}/followers"
+    const val ARTICLE = "article/{postId}"
 
     fun post(id: String) = "post/$id"
     fun profile(screenName: String) = "profile/" + encoded(screenName)
@@ -126,6 +137,10 @@ private object Routes {
     fun group(id: String) = "group/" + encoded(id)
     fun importList(list: String?) = if (list.isNullOrBlank()) "subscriptions/import-list" else "subscriptions/import-list?list=" + encoded(list)
     fun sortOne(ids: List<String>) = "subscriptions/sort-one?ids=" + encoded(ids.joinToString(","))
+    fun quotes(id: String) = "post/$id/quotes"
+    fun reposters(id: String) = "post/$id/reposters"
+    fun follows(screenName: String, followers: Boolean) = "profile/" + encoded(screenName) + if (followers) "/followers" else "/following"
+    fun article(postId: String) = "article/$postId"
 
     /** [text] escaped for a route, which is matched as a URI: a space as %20, which every platform decodes. */
     private fun encoded(text: String): String = URLEncoder.encode(text, "UTF-8").replace("+", "%20")
@@ -154,12 +169,25 @@ fun XtaNativeRoot() {
         }
     }
     val nav = rememberNavController()
-    val actions = remember(nav) {
+    val uri = LocalUriHandler.current
+    val actions = remember(nav, uri) {
+        val web: (String) -> Unit = { url -> runCatching { uri.openUri(url) } }
         PostActions(
             openPost = { id -> nav.navigate(Routes.post(id)) },
             openProfile = { name -> nav.navigate(Routes.profile(name)) },
             openMedia = { postId, index -> nav.navigate(Routes.media(postId, index)) },
             search = { query -> nav.navigate(Routes.search(query)) },
+            openQuotes = { id -> nav.navigate(Routes.quotes(id)) },
+            openReposters = { id -> nav.navigate(Routes.reposters(id)) },
+            openArticle = { postId -> nav.navigate(Routes.article(postId)) },
+            openFollows = { name, followers -> nav.navigate(Routes.follows(name, followers)) },
+            openLink = linkOpener(
+                openPost = { id -> nav.navigate(Routes.post(id)) },
+                openProfile = { name -> nav.navigate(Routes.profile(name)) },
+                web = web,
+                cleanLinks = { graph.settings.state.value?.get(GeneralPrefs.cleanLinks) ?: true },
+            ),
+            openInBrowser = web,
         )
     }
     val searchActions = remember(nav) {
@@ -410,6 +438,21 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
         }
         composable(Routes.GROUP, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
             GroupFeedScreen(entry.text("id").orEmpty(), actions, onBack = { nav.popBackStack() })
+        }
+        composable(Routes.QUOTES, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
+            QuotesScreen(entry.text("id").orEmpty(), reposters = false, actions, onBack = { nav.popBackStack() })
+        }
+        composable(Routes.REPOSTERS, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
+            QuotesScreen(entry.text("id").orEmpty(), reposters = true, actions, onBack = { nav.popBackStack() })
+        }
+        composable(Routes.FOLLOWING, arguments = listOf(navArgument("screenName") { type = NavType.StringType })) { entry ->
+            FollowsScreen(entry.text("screenName").orEmpty(), followers = false, actions, onBack = { nav.popBackStack() })
+        }
+        composable(Routes.FOLLOWERS, arguments = listOf(navArgument("screenName") { type = NavType.StringType })) { entry ->
+            FollowsScreen(entry.text("screenName").orEmpty(), followers = true, actions, onBack = { nav.popBackStack() })
+        }
+        composable(Routes.ARTICLE, arguments = listOf(navArgument("postId") { type = NavType.StringType })) { entry ->
+            ArticleScreen(entry.text("postId").orEmpty(), actions, onBack = { nav.popBackStack() })
         }
     }
     // The foot-of-window notices of saves, likes and downloads, and the platform's save dialog (ui/saved).

@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,26 +45,35 @@ import kotlin.math.roundToInt
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
-/** A post's link preview or poll. */
+/** A post's link preview, the website card X builds itself (its video or carousel), or a poll (_card.dart). */
 @Composable
-fun CardView(card: XCard, modifier: Modifier = Modifier) {
+fun CardView(card: XCard, actions: PostActions, modifier: Modifier = Modifier) {
     when (card) {
-        is XCard.Link -> if (card.large && card.imageUrl != null) LargeLinkCard(card, modifier) else SmallLinkCard(card, modifier)
+        is XCard.Link -> when {
+            card.media.isNotEmpty() -> MediaCard(card, actions, modifier)
+            card.large && card.imageUrl != null -> LargeLinkCard(card, actions, modifier)
+            else -> SmallLinkCard(card, actions, modifier)
+        }
         is XCard.Poll -> PollCard(card, modifier)
     }
 }
 
-private val CardShape = RoundedCornerShape(16.dp)
-
+/** A card drawn without a screen's actions: its links open in the platform's browser. */
 @Composable
-private fun openLink(url: String): () -> Unit {
+fun CardView(card: XCard, modifier: Modifier = Modifier) {
     val uri = LocalUriHandler.current
-    return { runCatching { uri.openUri(url) } }
+    val actions = remember(uri) {
+        val web: (String) -> Unit = { url -> runCatching { uri.openUri(url) } }
+        PostActions(openPost = {}, openProfile = {}, openMedia = { _, _ -> }, search = {}, openLink = web, openInBrowser = web)
+    }
+    CardView(card, actions, modifier)
 }
+
+private val CardShape = RoundedCornerShape(16.dp)
 
 /** X's large preview: the picture with the title on it, the site under it. */
 @Composable
-private fun LargeLinkCard(card: XCard.Link, modifier: Modifier) {
+private fun LargeLinkCard(card: XCard.Link, actions: PostActions, modifier: Modifier) {
     val ratio = card.imageWidth?.let { w -> card.imageHeight?.takeIf { it > 0 }?.let { h -> w.toFloat() / h } } ?: 1.91f
     Column(modifier.fillMaxWidth()) {
         Box(
@@ -71,7 +81,7 @@ private fun LargeLinkCard(card: XCard.Link, modifier: Modifier) {
                 .fillMaxWidth()
                 .clip(CardShape)
                 .border(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant, CardShape)
-                .clickable(onClick = openLink(card.url)),
+                .clickable { actions.openLink(card.url) },
         ) {
             AsyncImage(
                 model = card.imageUrl,
@@ -79,41 +89,65 @@ private fun LargeLinkCard(card: XCard.Link, modifier: Modifier) {
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxWidth().aspectRatio(ratio.coerceIn(1f, 2.2f)).background(MaterialTheme.colorScheme.surfaceVariant),
             )
-            Text(
-                card.title,
-                color = Color.White,
-                fontSize = 13.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(10.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(Color.Black.copy(alpha = 0.65f))
-                    .padding(horizontal = 5.dp, vertical = 1.dp),
-            )
+            TitleOverPicture(card.title, Modifier.align(Alignment.BottomStart))
         }
-        card.domain?.let {
-            Text(
-                stringResource(Res.string.card_from, it),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 4.dp),
-            )
+        CardSite(card.domain)
+    }
+}
+
+/**
+ * A website card with its own media: the video, or the pictures of a
+ * carousel, each opening the page the card leads to, with its title on it.
+ */
+@Composable
+private fun MediaCard(card: XCard.Link, actions: PostActions, modifier: Modifier) {
+    Column(modifier.fillMaxWidth()) {
+        Box {
+            MediaGrid(card.media, onOpen = { actions.openLink(card.url) })
+            if (card.title.isNotBlank()) TitleOverPicture(card.title, Modifier.align(Alignment.BottomStart))
         }
+        CardSite(card.domain)
+    }
+}
+
+@Composable
+private fun TitleOverPicture(title: String, modifier: Modifier) {
+    Text(
+        title,
+        color = Color.White,
+        fontSize = 13.sp,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        modifier = modifier
+            .padding(10.dp)
+            .clip(RoundedCornerShape(4.dp))
+            .background(Color.Black.copy(alpha = 0.65f))
+            .padding(horizontal = 5.dp, vertical = 1.dp),
+    )
+}
+
+@Composable
+private fun CardSite(domain: String?) {
+    domain?.let {
+        Text(
+            stringResource(Res.string.card_from, it),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 4.dp),
+        )
     }
 }
 
 /** X's small preview: a square picture beside the site, title and description. */
 @Composable
-private fun SmallLinkCard(card: XCard.Link, modifier: Modifier) {
+private fun SmallLinkCard(card: XCard.Link, actions: PostActions, modifier: Modifier) {
     Row(
         modifier
             .fillMaxWidth()
             .height(104.dp)
             .clip(CardShape)
             .border(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant, CardShape)
-            .clickable(onClick = openLink(card.url)),
+            .clickable { actions.openLink(card.url) },
         verticalAlignment = Alignment.CenterVertically,
     ) {
         card.imageUrl?.let {
@@ -142,32 +176,41 @@ private fun SmallLinkCard(card: XCard.Link, modifier: Modifier) {
     }
 }
 
-/** A poll as counted when it was read: XTA Native never votes. */
+/** A poll as counted when it was read, each choice's picture beside it: XTA Native never votes. */
 @Composable
 private fun PollCard(poll: XCard.Poll, modifier: Modifier) {
     val total = poll.total
-    val leading = poll.choices.maxOf { it.votes }
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         poll.choices.forEach { choice ->
-            val share = if (total > 0) choice.votes.toFloat() / total else 0f
-            val ahead = total > 0 && choice.votes == leading
-            Box(Modifier.fillMaxWidth().height(34.dp).clip(RoundedCornerShape(6.dp))) {
-                Box(
-                    Modifier
-                        .fillMaxHeight()
-                        .fillMaxWidth(share.coerceAtLeast(0.015f))
-                        .background(if (ahead) MaterialTheme.colorScheme.primary.copy(alpha = 0.4f) else MaterialTheme.colorScheme.surfaceContainerHigh),
-                )
-                Row(Modifier.fillMaxSize().padding(horizontal = 10.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        choice.label,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = if (ahead) FontWeight.Bold else FontWeight.Normal,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f),
+            val share = poll.share(choice).toFloat()
+            val ahead = poll.leads(choice)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                choice.imageUrl?.let { image ->
+                    AsyncImage(
+                        model = image,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.padding(end = 8.dp).size(34.dp).clip(RoundedCornerShape(6.dp)).background(MaterialTheme.colorScheme.surfaceVariant),
                     )
-                    Text("${(share * 100).roundToInt()}%", style = MaterialTheme.typography.bodyMedium, fontWeight = if (ahead) FontWeight.Bold else FontWeight.Normal)
+                }
+                Box(Modifier.weight(1f).height(34.dp).clip(RoundedCornerShape(6.dp))) {
+                    Box(
+                        Modifier
+                            .fillMaxHeight()
+                            .fillMaxWidth(share.coerceAtLeast(0.015f))
+                            .background(if (ahead) MaterialTheme.colorScheme.primary.copy(alpha = 0.4f) else MaterialTheme.colorScheme.surfaceContainerHigh),
+                    )
+                    Row(Modifier.fillMaxSize().padding(horizontal = 10.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            choice.label,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = if (ahead) FontWeight.Bold else FontWeight.Normal,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f),
+                        )
+                        Text("${(share * 100).roundToInt()}%", style = MaterialTheme.typography.bodyMedium, fontWeight = if (ahead) FontWeight.Bold else FontWeight.Normal)
+                    }
                 }
             }
         }

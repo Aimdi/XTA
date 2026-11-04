@@ -23,6 +23,8 @@ import com.aimdi.xtanative.store.saved.ArchiveNotesStore
 import com.aimdi.xtanative.store.saved.LikesStore
 import com.aimdi.xtanative.store.saved.LocalPostsStore
 import com.aimdi.xtanative.store.saved.NoteDrafts
+import com.aimdi.xtanative.store.saved.ProfileFiltersStore
+import com.aimdi.xtanative.store.saved.ProfileNotesStore
 import com.aimdi.xtanative.store.saved.SavedStore
 import com.aimdi.xtanative.store.search.RecentSearches
 import com.aimdi.xtanative.store.settings.CrashReportPrefs
@@ -75,6 +77,9 @@ class AppGraph(
     val likes = LikesStore(store)
     val localPosts = LocalPostsStore(store)
     val archiveNotes = ArchiveNotesStore(store)
+    /** The reader's private notes on profiles, and the profiles whose reposts or replies the feeds hide. */
+    val profileNotes = ProfileNotesStore(store)
+    val profileFilters = ProfileFiltersStore(store)
     val antennas = AntennaStore(store)
     val readingJournal = ReadingJournal(store)
     val readingAppearance = ReadingAppearanceStore(store)

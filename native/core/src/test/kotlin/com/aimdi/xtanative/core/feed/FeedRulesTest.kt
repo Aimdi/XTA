@@ -160,6 +160,20 @@ class FeedRulesTest {
     }
 
     @Test
+    fun withoutFactsGivenTheRulesReadTheSensitiveFlagAndLanguageXSentWithThePost() {
+        val clean = thread(post(1, text = "clean").copy(lang = "en"))
+        val marked = thread(post(2, text = "spicy").copy(sensitive = true, lang = "de"))
+        val unsaid = thread(post(3, text = "no language").copy(lang = ""))
+        val threads = listOf(clean, marked, unsaid)
+        assertEquals(listOf("clean", "no language"), texts(FeedRules(ContentFilter.SFW).apply(threads).threads))
+        assertEquals(listOf("spicy"), texts(FeedRules(ContentFilter.NSFW).apply(threads).threads))
+        assertEquals(listOf("1", "3"), Posts.ids(LanguageFilter(listOf("en"), LanguageAction.HIDE).apply(threads).threads), "an empty language passes")
+        assertEquals(mapOf("2" to "de"), FeedShaping(language = LanguageFilter(listOf("en"), LanguageAction.FOLD)).shape(threads).foldReasons)
+        val repostOfMarked = thread(post(4, text = "RT", repostOf = post(40, text = "spicy")).copy(sensitive = true))
+        assertTrue(FeedShaping(rules = FeedRules(ContentFilter.SFW)).shape(listOf(repostOfMarked)).threads.isEmpty(), "XTA reads the repost's own flag")
+    }
+
+    @Test
     fun theLanguageSettingIsCommaSeparatedPrefixes() {
         assertEquals(listOf("en", "ja", "fr"), LanguageFilter.parseLanguages("en, ja ,fr"))
         assertEquals(LanguageAction.FOLD, LanguageAction.parse("fold"))

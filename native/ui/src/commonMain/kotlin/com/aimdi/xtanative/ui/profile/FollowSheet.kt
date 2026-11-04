@@ -13,6 +13,8 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -47,21 +49,32 @@ import com.aimdi.xtanative.ui.generated.resources.follow_here_only
 import com.aimdi.xtanative.ui.generated.resources.follow_in_feed
 import com.aimdi.xtanative.ui.generated.resources.follow_new_group
 import com.aimdi.xtanative.ui.generated.resources.follow_unfollow
-import com.aimdi.xtanative.ui.generated.resources.profile_follow
-import com.aimdi.xtanative.ui.generated.resources.profile_following
+import com.aimdi.xtanative.ui.generated.resources.posts_follow
+import com.aimdi.xtanative.ui.generated.resources.posts_followed
+import com.aimdi.xtanative.ui.post.PostIcons
 import org.jetbrains.compose.resources.stringResource
 
-/** Follow, or Following: the latter opens [FollowSheet]. Both stay in XTA Native. */
+/** [FollowButton] for an account whose place in the Following feed is not known: drawn as in it. */
 @Composable
-fun FollowButton(followed: Boolean, onFollow: () -> Unit, onManage: () -> Unit) {
-    val padding = PaddingValues(horizontal = 18.dp)
+fun FollowButton(followed: Boolean, onFollow: () -> Unit, onManage: () -> Unit) = FollowButton(followed, inFeed = true, onFollow, onManage)
+
+/**
+ * Follow, or Following: the latter opens [FollowSheet]. Both stay in XTA
+ * Native. As XTA's follow face, its icon says what the follow is: a check,
+ * or the eye struck through for an account kept out of the Following feed.
+ */
+@Composable
+fun FollowButton(followed: Boolean, inFeed: Boolean, onFollow: () -> Unit, onManage: () -> Unit) {
+    val padding = PaddingValues(start = 12.dp, end = 10.dp)
     if (followed) {
         OutlinedButton(
             onClick = onManage,
             contentPadding = padding,
             colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.onBackground),
         ) {
-            Text(stringResource(Res.string.profile_following), fontWeight = FontWeight.Bold)
+            Icon(if (inFeed) Icons.Filled.Check else PostIcons.VisibilityOff, contentDescription = null, modifier = Modifier.size(18.dp))
+            Text(stringResource(Res.string.posts_followed), fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 6.dp))
+            Icon(Icons.Filled.KeyboardArrowDown, contentDescription = null, modifier = Modifier.padding(start = 2.dp).size(18.dp))
         }
     } else {
         Button(
@@ -72,12 +85,17 @@ fun FollowButton(followed: Boolean, onFollow: () -> Unit, onManage: () -> Unit) 
                 contentColor = MaterialTheme.colorScheme.background,
             ),
         ) {
-            Text(stringResource(Res.string.profile_follow), fontWeight = FontWeight.Bold)
+            Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+            Text(stringResource(Res.string.posts_follow), fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 6.dp))
         }
     }
 }
 
-/** What following an account here means: the Following feed, its groups, or no longer. */
+/**
+ * What following an account here means: the Following feed, its groups, or
+ * no longer. For an account not followed yet, only its groups: filing it in
+ * one follows it.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FollowSheet(
@@ -99,10 +117,12 @@ fun FollowSheet(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 2.dp, bottom = 8.dp),
             )
-            ToggleRow(stringResource(Res.string.follow_in_feed), follow.inFeed, Role.Switch, onInFeed) { checked ->
-                Switch(checked = checked, onCheckedChange = null)
+            if (follow.followed) {
+                ToggleRow(stringResource(Res.string.follow_in_feed), follow.inFeed, Role.Switch, onInFeed) { checked ->
+                    Switch(checked = checked, onCheckedChange = null)
+                }
+                Hairline(Modifier.padding(vertical = 4.dp))
             }
-            Hairline(Modifier.padding(vertical = 4.dp))
             Text(
                 stringResource(Res.string.follow_groups),
                 style = MaterialTheme.typography.labelLarge,
@@ -119,16 +139,18 @@ fun FollowSheet(
                 Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
                 Text(stringResource(Res.string.follow_new_group), modifier = Modifier.padding(start = 8.dp))
             }
-            Hairline(Modifier.padding(vertical = 4.dp))
-            TextButton(
-                onClick = {
-                    onUnfollow()
-                    onDismiss()
-                },
-                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
-                modifier = Modifier.padding(horizontal = 12.dp),
-            ) {
-                Text(stringResource(Res.string.follow_unfollow))
+            if (follow.followed) {
+                Hairline(Modifier.padding(vertical = 4.dp))
+                TextButton(
+                    onClick = {
+                        onUnfollow()
+                        onDismiss()
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                    modifier = Modifier.padding(horizontal = 12.dp),
+                ) {
+                    Text(stringResource(Res.string.follow_unfollow))
+                }
             }
         }
     }

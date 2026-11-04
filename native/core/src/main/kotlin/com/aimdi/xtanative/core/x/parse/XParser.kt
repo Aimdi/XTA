@@ -293,9 +293,10 @@ object XParser {
             val (start, end) = span(tag) ?: return@mapNotNull null
             XEntity.Hashtag(start, end, tag["text"].string ?: return@mapNotNull null)
         }
+        // A cashtag without its symbol opens nothing: XTA's rich text skips it.
         val cashtags = entities["symbols"].list.mapNotNull { symbol ->
             val (start, end) = span(symbol) ?: return@mapNotNull null
-            XEntity.Cashtag(start, end, symbol["text"].string ?: return@mapNotNull null)
+            XEntity.Cashtag(start, end, symbol["text"].string?.ifEmpty { null } ?: return@mapNotNull null)
         }
         return (links + mentions + hashtags + cashtags).sortedBy { it.start }
     }
@@ -330,11 +331,17 @@ object XParser {
         )
     }
 
-    /** A Grok translation's answer: its `result`'s text and entities; null when it has none. */
+    /**
+     * A Grok translation's answer: its `result`'s text and entities; null when
+     * it has none. The links X put in for the post's media come as links too,
+     * under their `t.co` address, so a post showing the translation hides them
+     * as it hides its own, as XTA's MediaEntity does.
+     */
     fun translation(body: J): XTranslation? {
         val result = body["result"]
         val text = result["text"].string ?: return null
-        return XTranslation(text, entitiesOf(result["entities"]))
+        val entities = result["entities"]
+        return XTranslation(text, (entitiesOf(entities) + linksOf(entities["media"].list)).sortedBy { it.start })
     }
 
     /** X's own error, when it answered with one in place of what was asked. */

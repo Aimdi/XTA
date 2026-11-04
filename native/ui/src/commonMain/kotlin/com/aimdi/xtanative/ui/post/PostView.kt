@@ -1,0 +1,161 @@
+package com.aimdi.xtanative.ui.post
+
+import com.aimdi.xtanative.core.x.model.XEntity
+import com.aimdi.xtanative.core.x.model.XMedia
+import com.aimdi.xtanative.core.x.model.XPost
+import com.aimdi.xtanative.core.x.model.XUser
+import com.aimdi.xtanative.services.ai.XTranslator
+import com.aimdi.xtanative.services.links.XLinks
+
+/** A line above a card's author, as XTA's tweet.dart draws them, in its order. */
+sealed interface ContextLine {
+    /** "Maya reposted 3h": the reposter's profile opens on a tap. */
+    data class Reposted(val by: XUser) : ContextLine
+
+    data object Pinned : ContextLine
+
+    /** The first post of a thread X groups. */
+    data object Thread : ContextLine
+
+    /** The community the post was written in; X names only its id. */
+    data class Community(val id: String) : ContextLine {
+        val url: String get() = "https://x.com/i/communities/$id"
+    }
+}
+
+/** What stands in a card for the post it quotes. */
+sealed interface QuoteBlock {
+    data class Shown(val post: XPost) : QuoteBlock
+
+    /**
+     * X would not give it: [message] is X's own reason, or null for the
+     * plain "unavailable"; [archiveUrl] finds it in the Wayback Machine when
+     * its author is known.
+     */
+    data class Withheld(val message: String?, val subscribersOnly: Boolean, val archiveUrl: String?) : QuoteBlock
+
+    /** X named the quoted post without sending it: a tap opens it. */
+    data class Unsent(val id: String) : QuoteBlock
+}
+
+/** The decisions behind one post card, as XTA's tweet.dart makes them. */
+object PostView {
+    /** How many of a post's cashtags the price strip shows: a post listing twenty is an advert. */
+    const val CASHTAG_LIMIT = 4
+
+    /** Lines a card draws before which, from what XTA shows: the repost, pinned, the thread, the community. */
+    fun contextLines(post: XPost, pinned: Boolean, firstOfThread: Boolean, quoted: Boolean): List<ContextLine> = listOfNotNull(
+        post.reposted?.let { ContextLine.Reposted(post.author) },
+        ContextLine.Pinned.takeIf { pinned },
+        ContextLine.Thread.takeIf { firstOfThread },
+        post.shown.communityId?.takeIf { !quoted && it.isNotEmpty() }?.let(ContextLine::Community),
+    )
+
+    /**
+     * Whom [shown] answers, for "Replying to @name" under its header: never in
+     * a quote, nor mid-thread, where the post answered is just above.
+     */
+    fun replyingTo(shown: XPost, quoted: Boolean, midThread: Boolean): String? =
+        shown.replyToScreenName?.takeIf { !quoted && !midThread && it.isNotEmpty() }
+
+    /** An X article link the post carries without its article: shown as a card, not a cut-off address. */
+    fun articleLink(shown: XPost): String? =
+        if (shown.article != null) null else XLinks.firstArticleLink(shown.entities.filterIsInstance<XEntity.Link>().map { it.expanded })
+
+    /** The tickers the price strip under a post names: its first cashtags, upper-cased, each once; none in a quote. */
+    fun cashtags(shown: XPost, quoted: Boolean): List<String> =
+        if (quoted) emptyList() else shown.entities.filterIsInstance<XEntity.Cashtag>().map { it.symbol.uppercase() }.distinct().take(CASHTAG_LIMIT)
+
+    /** What stands for the post [shown] quotes, or null when it quotes none; a quote's own quote is never drawn. */
+    fun quote(shown: XPost, quoted: Boolean): QuoteBlock? {
+        if (quoted) return null
+        shown.quoted?.let { return QuoteBlock.Shown(it) }
+        val withheld = shown.quotedWithheld ?: return null
+        return if (withheld.reason == null && !withheld.subscribersOnly) {
+            QuoteBlock.Unsent(withheld.id)
+        } else {
+            QuoteBlock.Withheld(withheld.reason, withheld.subscribersOnly, withheld.screenName?.let { XLinks.waybackUrl(it, withheld.id) })
+        }
+    }
+
+    /** Whether a post offers translation into [appLanguage]: never an article, nor a post already in it. */
+    fun offersTranslation(shown: XPost, appLanguage: String): Boolean = shown.article == null && XTranslator.offers(shown.lang, appLanguage)
+
+    /**
+     * Whether the post's broadcast or Space shows as its own block. A
+     * broadcast whose recording is the post's video is that video already.
+     */
+    fun showsLive(shown: XPost): Boolean {
+        val live = shown.live ?: return false
+        return live.isSpace || shown.media.none { it.kind == XMedia.Kind.VIDEO }
+    }
+
+    /** Whether the post's media, card and quote stay behind the sensitive gate. */
+    fun gated(shown: XPost, hidden: Boolean): Boolean = hidden && shown.sensitive && shown.media.isNotEmpty()
+
+    /** The address a post is shared and opened in a browser as. */
+    fun url(post: XPost, prefs: PostPrefs): String = XLinks.shareUrl(post.shown, prefs.shareBase) ?: post.shown.url
+
+    /** Whether [post]'s author is drawn: not with XTA's non-confirmation-bias mode, except on their own profile. */
+    fun showsAuthor(post: XPost, prefs: PostPrefs, profileScreenName: String?): Boolean =
+        !prefs.hideAuthors || post.author.screenName.equals(profileScreenName, ignoreCase = true)
+}
+
+/** The numbers under a card, as XTA's footer writes them; null for one not shown. */
+data class FooterCounts(val replies: Long?, val reposts: Long?, val likes: Long?, val views: Long?) {
+    companion object {
+        /**
+         * The counts of [post]: none in zen or calm mode. Reposts and quotes
+         * count together, as X counts them. Views show only when X counted
+         * some, and not on an opened post, whose line above says them.
+         */
+        fun of(post: XPost, prefs: PostPrefs, showViews: Boolean): FooterCounts {
+            if (prefs.hideCounts) return FooterCounts(null, null, null, null)
+            return FooterCounts(
+                replies = post.replyCount,
+                reposts = post.repostCount + post.quoteCount,
+                likes = post.likeCount,
+                views = post.viewCount?.takeIf { showViews && it > 0 },
+            )
+        }
+    }
+}
+
+/**
+ * Posts in a row that read as one reposted run, as XTA's boost_runs.dart
+ * folds them when "collapse reposts" is on: two or more reposts in a row.
+ */
+object BoostRuns {
+    fun isBoost(thread: com.aimdi.xtanative.core.x.model.XThread): Boolean = thread.posts.firstOrNull()?.isRepost == true
+
+    /** A row of the list: a thread, or a run of reposts drawn as one carousel. */
+    sealed interface Item {
+        data class Single(val thread: com.aimdi.xtanative.core.x.model.XThread) : Item
+
+        data class Run(val threads: List<com.aimdi.xtanative.core.x.model.XThread>) : Item {
+            val key: String get() = "boosts-" + threads.first().id
+        }
+    }
+
+    fun collapse(threads: List<com.aimdi.xtanative.core.x.model.XThread>): List<Item> {
+        val out = ArrayList<Item>()
+        var index = 0
+        while (index < threads.size) {
+            if (!isBoost(threads[index])) {
+                out += Item.Single(threads[index++])
+                continue
+            }
+            val end = (index until threads.size).firstOrNull { !isBoost(threads[it]) } ?: threads.size
+            val run = threads.subList(index, end)
+            out += if (run.size >= 2) Item.Run(run.toList()) else Item.Single(run.single())
+            index = end
+        }
+        return out
+    }
+
+    /** The first line or so of a reposted post, as text: X's escapes undone, line breaks made spaces. */
+    fun preview(text: String): String {
+        val trimmed = com.aimdi.xtanative.core.x.parse.XText.unescape(text).replace('\n', ' ').trim()
+        return if (trimmed.length <= 80) trimmed else trimmed.take(77) + "…"
+    }
+}

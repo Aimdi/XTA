@@ -1,49 +1,89 @@
 package com.aimdi.xtanative.ui.post
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.model.XThread
+import com.aimdi.xtanative.services.ai.TranslationStatus
+import com.aimdi.xtanative.services.links.XLinks
+import com.aimdi.xtanative.ui.article.ArticlePreviewCard
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.agoText
-import com.aimdi.xtanative.ui.common.countText
+import com.aimdi.xtanative.ui.common.fullTimeText
 import com.aimdi.xtanative.ui.generated.resources.Res
-import com.aimdi.xtanative.ui.generated.resources.pinned
-import com.aimdi.xtanative.ui.generated.resources.replying_to
-import com.aimdi.xtanative.ui.generated.resources.reposted_by
+import com.aimdi.xtanative.ui.generated.resources.posts_community
+import com.aimdi.xtanative.ui.generated.resources.posts_more
+import com.aimdi.xtanative.ui.generated.resources.posts_pinned
+import com.aimdi.xtanative.ui.generated.resources.posts_replying_to
+import com.aimdi.xtanative.ui.generated.resources.posts_reposted
+import com.aimdi.xtanative.ui.generated.resources.posts_subscribers_only_of_author
+import com.aimdi.xtanative.ui.generated.resources.posts_thread
+import com.aimdi.xtanative.ui.generated.resources.posts_unavailable
+import com.aimdi.xtanative.ui.generated.resources.posts_view_quoted
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+
+/**
+ * The price strip under a post that names tickers: XTA's stocks plugin draws
+ * it (cashtag_quotes.dart). Without one there is no strip, never an error.
+ */
+val LocalCashtagStrip = staticCompositionLocalOf<(@Composable (symbols: List<String>) -> Unit)?> { null }
 
 /** One timeline row, or a thread X groups, with the line under it. With [playing], its first video plays in place. */
 @Composable
 fun ThreadRows(thread: XThread, actions: PostActions, pinnedIds: Set<String> = emptySet(), playing: Boolean = false) {
     val playingPost = if (playing) thread.posts.firstOrNull { it.hasVideo } else null
+    val threaded = thread.posts.size > 1
     thread.posts.forEachIndexed { index, post ->
-        PostCard(post, actions, pinned = post.id in pinnedIds, continues = index < thread.posts.lastIndex, playing = post === playingPost)
+        PostCard(
+            post,
+            actions,
+            pinned = post.id in pinnedIds,
+            continues = index < thread.posts.lastIndex,
+            playing = post === playingPost,
+            firstOfThread = threaded && index == 0,
+            midThread = index > 0,
+        )
+    }
+    // A conversation keeps the place of the posts X withheld.
+    thread.withheld.forEach { gap ->
+        UnavailablePost(
+            gap.reason ?: stringResource(if (gap.subscribersOnly) Res.string.posts_subscribers_only_of_author else Res.string.posts_unavailable),
+            gap.screenName?.let { XLinks.waybackUrl(it, gap.id) },
+            actions,
+            Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        )
     }
     Hairline()
 }
@@ -53,9 +93,15 @@ val XPost.hasVideo: Boolean get() = shown.media.any { it.kind != XMedia.Kind.PHO
 
 val XThread.hasVideo: Boolean get() = posts.any { it.hasVideo }
 
+private val AvatarSize = 40.dp
+private val RailStart = 16.dp
+
 /**
- * A post as a feed row. A repost shows the post reposted, under a line naming
- * who reposted it, as X does.
+ * A post as a feed row (tweet.dart): who reposted it, pinned, the thread and
+ * the community above; the author with translate and ⋯ at the end; then the
+ * reply line, the text and what the post carries, and the counts.
+ * [continues] and [midThread] join it to the posts of its thread by a line
+ * through the avatars.
  */
 @Composable
 fun PostCard(
@@ -65,121 +111,196 @@ fun PostCard(
     pinned: Boolean = false,
     continues: Boolean = false,
     playing: Boolean = false,
+    firstOfThread: Boolean = false,
+    midThread: Boolean = false,
 ) {
+    val scope = postScope()
     val shown = post.shown
+    val translation = rememberPostTranslation(shown, scope)
+    val drawn = translation?.shown ?: shown
+    val railColor = MaterialTheme.colorScheme.outlineVariant
     Column(
         modifier
             .fillMaxWidth()
             .clickable { actions.openPost(shown.id) }
-            .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = if (continues) 4.dp else 12.dp),
+            .drawBehind {
+                val x = (RailStart + AvatarSize / 2).toPx()
+                val width = 2.dp.toPx()
+                val top = 12.dp.toPx()
+                if (midThread) drawLine(railColor, Offset(x, 0f), Offset(x, top), width)
+                if (continues) drawLine(railColor, Offset(x, top + AvatarSize.toPx()), Offset(x, size.height), width)
+            }
+            .padding(start = RailStart, end = 16.dp, top = 12.dp, bottom = if (continues) 4.dp else 12.dp),
     ) {
-        when {
-            pinned -> ContextLine(XIcons.Pin, stringResource(Res.string.pinned))
-            post.isRepost -> ContextLine(XIcons.Repost, stringResource(Res.string.reposted_by, post.author.name))
-        }
+        ContextLines(post, actions, pinned, firstOfThread)
         Row {
-            Avatar(shown.author.largeAvatarUrl, 40.dp) { actions.openProfile(shown.author.screenName) }
+            PostAvatar(shown, scope, actions, AvatarSize)
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
-                AuthorLine(shown.author.name, shown.author.screenName, agoText(shown.createdAt), shown.author.verified)
-                ReplyingTo(shown, actions)
-                PostText(shown, actions, Modifier.padding(top = 2.dp))
-                if (shown.media.isNotEmpty()) {
-                    MediaGrid(shown.media, { index -> actions.openMedia(shown.id, index) }, Modifier.padding(top = 10.dp), playing = playing)
-                }
-                shown.card?.let { CardView(it, Modifier.padding(top = 10.dp)) }
-                shown.quoted?.let { QuotedPost(it, actions, Modifier.padding(top = 10.dp)) }
-                Counts(shown)
+                PostHeader(post, scope, translation, actions)
+                PostView.replyingTo(shown, quoted = false, midThread = midThread)?.let { ReplyingTo(it, shown.replyToPostId, actions) }
+                if (shown.article == null) ExpandablePostText(drawn, actions, Modifier.padding(top = 2.dp))
+                TranslationFailure(translation)
+                PostAttachments(shown, scope, actions, playing = playing, gap = 10.dp)
+                PostFooter(shown, actions, FooterCounts.of(shown, scope.prefs, showViews = true))
             }
         }
     }
 }
 
 @Composable
-private fun ContextLine(icon: ImageVector, text: String) {
-    Row(Modifier.padding(start = 24.dp, bottom = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(14.dp))
-        Spacer(Modifier.width(12.dp))
-        Text(
-            text,
-            style = MaterialTheme.typography.bodySmall,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
+private fun ContextLines(post: XPost, actions: PostActions, pinned: Boolean, firstOfThread: Boolean) {
+    PostView.contextLines(post, pinned, firstOfThread, quoted = false).forEach { line ->
+        when (line) {
+            is ContextLine.Reposted -> ContextRow(XIcons.Repost, stringResource(Res.string.posts_reposted, line.by.name, agoText(post.createdAt))) {
+                actions.openProfile(line.by.screenName)
+            }
+            ContextLine.Pinned -> ContextRow(XIcons.Pin, stringResource(Res.string.posts_pinned))
+            ContextLine.Thread -> ContextRow(PostIcons.Forum, stringResource(Res.string.posts_thread))
+            is ContextLine.Community -> ContextRow(PostIcons.People, stringResource(Res.string.posts_community)) { actions.openLink(line.url) }
+        }
     }
 }
 
-/** "Replying to @maya", for a reply to someone else. */
+/** The author's picture, opening the profile; a plain face in non-confirmation-bias mode; XTA's follow badge on it. */
 @Composable
-private fun ReplyingTo(post: XPost, actions: PostActions) {
-    val to = post.replyToScreenName ?: return
-    if (to.equals(post.author.screenName, ignoreCase = true)) return
-    Row(Modifier.padding(top = 2.dp)) {
-        Text(stringResource(Res.string.replying_to) + " ", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(
-            "@$to",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.primary,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.clickable { actions.openProfile(to) },
-        )
+internal fun PostAvatar(post: XPost, scope: PostScope, actions: PostActions, size: Dp) {
+    if (!PostView.showsAuthor(post, scope.prefs, scope.profileScreenName)) {
+        Icon(Icons.Filled.AccountCircle, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(size))
+        return
+    }
+    val open = { actions.openProfile(post.author.screenName) }
+    if (!scope.prefs.followBadge) {
+        Avatar(post.author.largeAvatarUrl, size, onClick = open)
+        return
+    }
+    FollowBadge(post.author, size) { Avatar(post.author.largeAvatarUrl, size, onClick = open) }
+}
+
+/** The author line with the translate control and the ⋯ menu at its end, where X keeps them. */
+@Composable
+private fun PostHeader(post: XPost, scope: PostScope, translation: PostTranslation?, actions: PostActions) {
+    val shown = post.shown
+    var menu by rememberSaveable(shown.id) { mutableStateOf(false) }
+    Row(verticalAlignment = Alignment.Top) {
+        Box(Modifier.weight(1f).padding(top = 2.dp)) { PostAuthor(shown, scope) }
+        translation?.let { TranslateButton(it, scope) }
+        HeaderButton(PostIcons.MoreHoriz, stringResource(Res.string.posts_more)) { menu = true }
+    }
+    if (menu) PostMenu(post, actions, onDismiss = { menu = false })
+}
+
+/** "Name ✓ @handle · 3h", or the time alone when the author is not shown. */
+@Composable
+internal fun PostAuthor(post: XPost, scope: PostScope, modifier: Modifier = Modifier) {
+    val time = if (scope.prefs.absoluteTimestamps) fullTimeText(post.createdAt) else agoText(post.createdAt)
+    if (PostView.showsAuthor(post, scope.prefs, scope.profileScreenName)) {
+        AuthorLine(post.author.name, post.author.screenName, time, post.author.verified, modifier)
+    } else {
+        Text(time, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = modifier)
     }
 }
 
-/** The post a post quotes, framed, opening on its own. */
+/** "Replying to @maya": the post it answers opens on a tap. */
+@Composable
+internal fun ReplyingTo(screenName: String, replyToId: String?, actions: PostActions) {
+    Row(Modifier.padding(top = 2.dp).let { if (replyToId != null) it.clickable { actions.openPost(replyToId) } else it }) {
+        Text(
+            stringResource(Res.string.posts_replying_to) + " ",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text("@$screenName", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary, maxLines = 1, overflow = TextOverflow.Ellipsis)
+    }
+}
+
+/**
+ * What a post carries under its text, in XTA's order: the paid-subscriber
+ * line, an article link, the media (behind the sensitive gate when X marks
+ * it), the quote, the card, a Grok share, the community note, the article,
+ * a broadcast or Space and the price strip.
+ */
+@Composable
+internal fun PostAttachments(shown: XPost, scope: PostScope, actions: PostActions, playing: Boolean, gap: Dp, quoted: Boolean = false) {
+    if (shown.subscriberPreview) SubscriberPreviewLine(shown.author.screenName)
+    PostView.articleLink(shown)?.let { ArticleLinkCard({ actions.openArticle(shown.id) }, Modifier.padding(top = gap)) }
+    if (shown.media.isNotEmpty()) {
+        if (shown.sensitive) {
+            SensitiveGate(scope.sensitive, modifier = Modifier.padding(top = gap)) {
+                MediaGrid(shown.media, { index -> actions.openMedia(shown.id, index) }, Modifier.padding(top = gap), playing = playing)
+            }
+        } else {
+            MediaGrid(shown.media, { index -> actions.openMedia(shown.id, index) }, Modifier.padding(top = gap), playing = playing)
+        }
+    }
+    when (val quote = PostView.quote(shown, quoted)) {
+        is QuoteBlock.Shown -> QuotedPost(quote.post, actions, Modifier.padding(top = gap))
+        is QuoteBlock.Withheld -> UnavailablePost(
+            quote.message ?: stringResource(if (quote.subscribersOnly) Res.string.posts_subscribers_only_of_author else Res.string.posts_unavailable),
+            quote.archiveUrl,
+            actions,
+            Modifier.padding(top = gap),
+        )
+        is QuoteBlock.Unsent -> StateTile(stringResource(Res.string.posts_view_quoted), { actions.openPost(quote.id) }, Modifier.padding(top = gap))
+        null -> Unit
+    }
+    shown.card?.let { CardView(it, actions, Modifier.padding(top = gap)) }
+    shown.grokShare?.let { GrokShareCard(it, actions, Modifier.padding(top = gap)) }
+    shown.note?.let { CommunityNoteBlock(it, actions, Modifier.padding(top = gap)) }
+    // The opened post lays its article out in full; anywhere else it is a card leading there.
+    if (shown.article != null && scope.focalId != shown.id) ArticlePreviewCard(shown, { actions.openPost(shown.id) }, Modifier.padding(top = gap))
+    if (PostView.showsLive(shown)) LiveOpener(shown, actions, Modifier.padding(top = gap))
+    val symbols = PostView.cashtags(shown, quoted)
+    if (symbols.isNotEmpty()) LocalCashtagStrip.current?.invoke(symbols)
+}
+
+/** A broadcast or Space: its stream handed to the platform's player once X gives it, else its page in the browser. */
+@Composable
+private fun LiveOpener(post: XPost, actions: PostActions, modifier: Modifier) {
+    val live = post.live ?: return
+    val client = LocalGraph.current.client
+    val uri = LocalUriHandler.current
+    val coroutines = rememberCoroutineScope()
+    LiveBlock(
+        live,
+        onOpen = {
+            coroutines.launch {
+                val stream = client.livePlaybackUrl(live)
+                val opened = stream != null && runCatching { uri.openUri(stream) }.isSuccess
+                if (!opened) live.watchUrl?.let(actions.openInBrowser)
+            }
+        },
+        modifier = modifier,
+    )
+}
+
+/** Why the translation failed, under the text: the translate button turns red as well. */
+@Composable
+internal fun TranslationFailure(translation: PostTranslation?) {
+    if (translation?.status != TranslationStatus.FAILED) return
+    Text(
+        translationProblemText(translation.problem ?: TranslationProblem.OTHER),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.error,
+        modifier = Modifier.padding(top = 4.dp),
+    )
+}
+
+/** The post a post quotes, framed and smaller, opening on its own: no counts, translate, menu, nor a quote of its own. */
 @Composable
 fun QuotedPost(post: XPost, actions: PostActions, modifier: Modifier = Modifier) {
-    val shape = RoundedCornerShape(16.dp)
-    Column(
-        modifier
-            .fillMaxWidth()
-            .clip(shape)
-            .border(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant, shape)
-            .clickable { actions.openPost(post.id) }
-            .padding(12.dp),
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Avatar(post.author.avatarUrl, 20.dp)
-            Spacer(Modifier.width(6.dp))
-            AuthorLine(post.author.name, post.author.screenName, agoText(post.createdAt), post.author.verified, Modifier.weight(1f))
-        }
-        PostText(post, actions, Modifier.padding(top = 4.dp), maxLines = 8)
-        if (post.media.isNotEmpty()) {
-            MediaGrid(post.media, { index -> actions.openMedia(post.id, index) }, Modifier.padding(top = 8.dp))
-        }
-        post.card?.let { CardView(it, Modifier.padding(top = 8.dp)) }
-    }
-}
-
-/** Replies, reposts, likes and views, as numbers to read: nothing here is sent to X. */
-@Composable
-private fun Counts(post: XPost) {
-    Row(
-        Modifier.fillMaxWidth().padding(top = 10.dp, end = 24.dp).height(20.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Count(XIcons.Reply, post.replyCount)
-        Count(XIcons.Repost, post.repostCount + post.quoteCount)
-        Count(XIcons.Like, post.likeCount)
-        Count(XIcons.Views, post.viewCount ?: 0)
-    }
-}
-
-@Composable
-private fun Count(icon: ImageVector, n: Long) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(17.dp))
-        if (n > 0) {
-            Text(
-                countText(n),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(start = 4.dp),
-            )
+    val scope = postScope()
+    Embed(modifier, onClick = { actions.openPost(post.id) }) {
+        Column(Modifier.padding(12.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (PostView.showsAuthor(post, scope.prefs, scope.profileScreenName)) {
+                    Avatar(post.author.avatarUrl, 20.dp)
+                    Spacer(Modifier.width(6.dp))
+                }
+                PostAuthor(post, scope, Modifier.weight(1f))
+            }
+            if (post.article == null) ExpandablePostText(post, actions, Modifier.padding(top = 4.dp))
+            PostAttachments(post, scope, actions, playing = false, gap = 8.dp, quoted = true)
         }
     }
 }

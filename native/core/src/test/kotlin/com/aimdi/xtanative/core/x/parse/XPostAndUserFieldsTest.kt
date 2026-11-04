@@ -5,6 +5,7 @@ import com.aimdi.xtanative.core.x.model.XAffiliation
 import com.aimdi.xtanative.core.x.model.XCodec
 import com.aimdi.xtanative.core.x.model.XEntity
 import com.aimdi.xtanative.core.x.model.XGrokShare
+import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.core.x.model.XTranslation
@@ -133,6 +134,23 @@ class XPostAndUserFieldsTest {
         assertEquals(XTranslation("Hallo @dart", listOf(XEntity.Mention(6, 11, "dart"))), translation)
         assertEquals(listOf("Hallo ", "@dart"), XText.translation(translation).map { it.text })
         assertNull(XParser.translation(J.parse("""{"result":{}}""")))
+    }
+
+    @Test
+    fun aTranslatedPostHidesTheLinkXPutInForItsMediaAndSkipsAnEmptyCashtag() {
+        val translation = XParser.translation(
+            J.parse(
+                """{"result":{"text":"Hallo ${'$'} https://t.co/m","entities":{
+                  "symbols":[{"text":"","indices":[6,7]}],
+                  "media":[{"url":"https://t.co/m","expanded_url":"https://x.com/maya/status/1/photo/1","display_url":"pic.x.com/m","indices":[8,22]}]}}}""",
+            ),
+        )!!
+        assertEquals(listOf(XEntity.Link(8, 22, "https://t.co/m", "https://x.com/maya/status/1/photo/1", "pic.x.com/m")), translation.entities)
+        val post = XPost(
+            "1", XUser("9", "maya", "Maya"), null, "Hello ${'$'} https://t.co/m",
+            media = listOf(XMedia(XMedia.Kind.PHOTO, "https://pbs.twimg.com/media/m.jpg", 1, 1, shortUrl = "https://t.co/m")),
+        )
+        assertEquals("Hallo ${'$'}", XText.plain(post.copy(text = translation.text, entities = translation.entities)))
     }
 
     @Test

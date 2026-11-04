@@ -15,10 +15,11 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
 /**
- * What the rules read of a post that [XPost] does not carry yet: X's
- * `possibly_sensitive` and `lang`. Until the parser keeps them, nothing counts
- * as sensitive and no language is known, which is how XTA treats a post that
- * lacks them.
+ * What the rules read of a post besides its text and counts: X's
+ * `possibly_sensitive` and `lang`, as XTA's custom_feed_rules.dart and
+ * language_filter.dart read them. [OF_POST] reads what the parser kept on
+ * [XPost]; a post X sent without them is not sensitive and has no language,
+ * as XTA treats it.
  */
 interface PostFacts {
     fun sensitive(post: XPost): Boolean
@@ -26,10 +27,11 @@ interface PostFacts {
     fun language(post: XPost): String?
 
     companion object {
-        val UNKNOWN: PostFacts = object : PostFacts {
-            override fun sensitive(post: XPost) = false
+        /** The post's own [XPost.sensitive] and [XPost.lang]: what every feed reads. */
+        val OF_POST: PostFacts = object : PostFacts {
+            override fun sensitive(post: XPost) = post.sensitive
 
-            override fun language(post: XPost): String? = null
+            override fun language(post: XPost): String? = post.lang?.takeIf { it.isNotEmpty() }
         }
     }
 }
@@ -166,7 +168,7 @@ data class FeedRules(
      * as the footer and the popular order do; keywords read every post in it
      * and what each reposts and quotes, since a muted word there is on screen too.
      */
-    fun verdict(thread: XThread, active: List<MutedKeyword>, facts: PostFacts = PostFacts.UNKNOWN): Verdict {
+    fun verdict(thread: XThread, active: List<MutedKeyword>, facts: PostFacts = PostFacts.OF_POST): Verdict {
         if (filtered(thread, facts)) return Verdict.Hide
         if (active.isEmpty()) return Verdict.Keep
         val text = searchText(thread)
@@ -185,7 +187,7 @@ data class FeedRules(
     }
 
     /** Keeps what the rules let through, and says why the folded ones are folded. */
-    fun apply(threads: List<XThread>, now: Instant = Instant.now(), facts: PostFacts = PostFacts.UNKNOWN): Shaped {
+    fun apply(threads: List<XThread>, now: Instant = Instant.now(), facts: PostFacts = PostFacts.OF_POST): Shaped {
         if (isEmpty) return Shaped(threads)
         val active = MutedKeywords.active(mutedKeywords, now)
         val verdicts = threads.map { it to verdict(it, active, facts) }
@@ -239,7 +241,7 @@ enum class LanguageAction(val stored: String) {
  * [allowed] are hidden or folded. A post whose language X did not say passes.
  */
 data class LanguageFilter(val allowed: List<String> = emptyList(), val action: LanguageAction = LanguageAction.OFF) {
-    fun verdict(thread: XThread, facts: PostFacts = PostFacts.UNKNOWN): Verdict {
+    fun verdict(thread: XThread, facts: PostFacts = PostFacts.OF_POST): Verdict {
         if (action == LanguageAction.OFF || allowed.isEmpty()) return Verdict.Keep
         val language = thread.posts.firstOrNull()?.let(facts::language)
         return when {
@@ -250,7 +252,7 @@ data class LanguageFilter(val allowed: List<String> = emptyList(), val action: L
     }
 
     /** [threads] filtered, with [priorFolds] kept and a language's fold reason taking a thread's place in them. */
-    fun apply(threads: List<XThread>, priorFolds: Map<String, String> = emptyMap(), facts: PostFacts = PostFacts.UNKNOWN): Shaped {
+    fun apply(threads: List<XThread>, priorFolds: Map<String, String> = emptyMap(), facts: PostFacts = PostFacts.OF_POST): Shaped {
         val verdicts = threads.map { it to verdict(it, facts) }
         return Shaped(
             threads = verdicts.filter { it.second != Verdict.Hide }.map { it.first },
