@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.ui.feed
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -22,6 +23,10 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -81,18 +86,46 @@ internal fun rememberLinkActions(source: String): NetworkPostActions {
 internal fun rememberPostExtras(plugin: XtaPlugin?, post: NetworkPost): NetworkPostExtras =
     remember(plugin, post) { plugin?.let { runCatching { it.postExtras(post) }.getOrNull() } ?: NetworkPostExtras.None }
 
-/** A plugin's post among X's: the shared row with its plugin's mark and what it adds there, leading where its plugin says. */
+/** [plugin]'s own card for [post] ([XtaPlugin.postCard]: RSS's article row); none when it draws none, or fails to say. */
+@Composable
+internal fun rememberPostCard(plugin: XtaPlugin?, post: NetworkPost): (@Composable () -> Unit)? =
+    remember(plugin, post) { plugin?.let { runCatching { it.postCard(post) }.getOrNull() } }
+
+/**
+ * A plugin's post among X's: its plugin's own card, with the plugin's colour
+ * down its side as XTA's provenance strip, or the shared row with its
+ * plugin's mark and what it adds there, leading where its plugin says.
+ */
 @Composable
 fun PluginPostRow(post: SourcedPost, plugin: XtaPlugin?) {
+    val markColor = plugin?.brandColor ?: MaterialTheme.colorScheme.primary
+    val card = rememberPostCard(plugin, post.post)
+    if (card != null) return SourceStrip(provenanceColor(markColor), card)
     val fallback = rememberLinkActions(post.source)
     NetworkPostCard(
         post.post,
         plugin?.postActions ?: fallback,
         rememberPostExtras(plugin, post.post),
         mark = plugin?.icon,
-        markColor = plugin?.brandColor ?: MaterialTheme.colorScheme.primary,
+        markColor = markColor,
     )
     Hairline()
+}
+
+/** [brand] as a card's strip shows it on the list's ground ([ProvenanceColors]): Threads' near-black is lightened on a dark theme. */
+@Composable
+private fun provenanceColor(brand: Color): Color {
+    val ground = MaterialTheme.colorScheme.background
+    return remember(brand, ground) { Color(ProvenanceColors.accent(brand.toArgb(), ground.toArgb())) }
+}
+
+/** [content] with [color] down its left edge, two points wide (provenance_accent.dart), where a card without an avatar to mark says where it came from. */
+@Composable
+private fun SourceStrip(color: Color, content: @Composable () -> Unit) {
+    Box(Modifier.fillMaxWidth().drawWithContent {
+        drawContent()
+        drawRect(color, size = Size(2.dp.toPx(), size.height))
+    }) { content() }
 }
 
 /**

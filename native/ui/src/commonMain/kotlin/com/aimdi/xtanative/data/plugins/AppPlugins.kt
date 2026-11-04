@@ -563,6 +563,8 @@ class AppPlugins(
 
         override fun setLiked(post: PluginPostArchive, liked: Boolean) = Keeping.setLiked(plugins.graph, post.keepable(), liked)
 
+        override fun likedOnDevice() = Keeping.likedElsewhere(plugins.graph)
+
         override fun addToGroup(account: String, follow: suspend () -> Unit) =
             plugins.show(PluginSheet.Groups(PluginMembers.memberId(id, account), follow))
 

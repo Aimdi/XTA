@@ -120,6 +120,14 @@ interface PluginHost {
     fun setLiked(post: PluginPostArchive, liked: Boolean)
 
     /**
+     * The reader liked one of the plugin's posts among the likes it keeps
+     * itself, as XTA's Bluesky, Threads and Substack keep their hearts: the
+     * app says, on the first like the reader makes anywhere, that likes stay
+     * on this device (XTA's maybeShowLikeToast), as [setLiked] does by itself.
+     */
+    fun likedOnDevice() {}
+
+    /**
      * The app's group picker for [account], one of the plugin's (as its
      * [PluginFeed] reads it): the groups picked hold it as "<plugin id>:<account>",
      * and their feeds read its posts. [follow] runs first once a group is

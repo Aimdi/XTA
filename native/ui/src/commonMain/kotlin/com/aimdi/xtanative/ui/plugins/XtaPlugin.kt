@@ -14,9 +14,10 @@ import kotlinx.serialization.json.JsonElement
  * only plugins built against one it supports. Changing what is in this
  * package in a way a plugin already built would notice means a new version.
  * 1 is what native-0.1.41 shipped, 2 what native-0.1.45 shipped; 3 adds the
- * held cashtag's entries, a post's extras, an account's route, the accounts
- * a plugin follows, for Subscriptions, and the networks of the contracts it
- * watches, for X posts' text.
+ * held cashtag's entries, a post's extras, an account's route and the
+ * accounts a plugin follows, for Subscriptions (native-0.1.52); 4 adds a
+ * post's own card, the networks of the contracts a plugin watches, for X
+ * posts' text, and the likes a network keeps on the device.
  */
 const val PLUGIN_API_VERSION: Int = 3
 
@@ -223,6 +224,18 @@ abstract class XtaPlugin {
      * drawn, so quick.
      */
     open fun postExtras(post: NetworkPost): NetworkPostExtras? = null
+
+    /**
+     * Its own card for [post], one of its posts, where the app draws it among
+     * others' (Home's timelines, the groups), in place of the shared row, as
+     * XTA draws an RSS item there as RSS's article row with its read mark,
+     * and a web source's post as its layout draws it. The card draws its
+     * whole row, the line under it included, and leads where it leads on the
+     * plugin's own lists; the app marks where it came from down its side.
+     * Null leaves the shared row, with [postExtras]. Asked as the row is
+     * drawn, so quick.
+     */
+    open fun postCard(post: NetworkPost): (@Composable () -> Unit)? = null
 
     /**
      * One of its posts the archive kept ([PluginPostArchive.content]), as

@@ -50,8 +50,9 @@ the kit's pieces of that time (the article reader, `FeedReads`, X posts in a
 plugin, the chip tabs, the shelf, the recent searches, the action row,
 `ZoomableImage`); 3 adds `cashtagActions` (the held cashtag's entries),
 `postExtras`, `routeForAccount`, `subscriptions` with `PluginSubscription`,
-`PluginHost.unfollowed`, `RssReads` and `contractNetworks` (the networks of
-the contracts a plugin watches, for X posts' text). A plugin's
+`PluginHost.unfollowed` and `RssReads`; 4 adds `contractNetworks` (the
+networks of the contracts a plugin watches, for X posts' text),
+`postCard`, `PluginHost.likedOnDevice` and `SwipeToUnfollow`. A plugin's
 `xta-plugin.json` names the version it was built against.
 
 The app loads the versions from `OLDEST_PLUGIN_API` (2) to its own, so a
@@ -90,6 +91,7 @@ its plugins have to link against that prerelease's app.
 | `subscriptions` | the accounts it follows, as they change, for the app's Subscriptions list ([below](#accounts-in-the-apps-groups)), or none |
 | `postActions` | where its posts lead where the app draws them (Home, groups, Saved), with their bookmark and menu, or none |
 | `postExtras(post)` | what it adds to the shared row where the app draws one of its posts (a `NetworkPostExtras`: Mastodon's poll results), or none |
+| `postCard(post)` | its own card for one of its posts where the app draws it among others' (Home's timelines, the groups), in place of the shared row, as XTA draws RSS's article row with its read mark there; the card draws its line under it, the app its colour down its side; or none |
 | `archived(content)` | one of its posts the archive kept, read back as a `NetworkPost` for Saved ([below](#saved-notes-and-likes)), or null |
 | `cashtagStrip` | what it draws under an X post that names tickers (Stocks' price strip), or none |
 | `routeForCashtag(symbol)` | its own screen for a cashtag tapped in an X post (Stocks' ticker), or null: the tap searches X |
@@ -121,6 +123,7 @@ read again, the desktop's F5: `RefreshesOn`).
 | `openSearch(query)`, `openSettings()` | its own search and settings |
 | `settings` | the app's settings, all to read and its own (`plugin.<id>.*`) to change; `inHomeFeed()`, `setInHomeFeed(on)` |
 | `saved`, `toggleSaved(post)`, `chooseFolder(post)`, `editNote(post)`, `setLiked(post, liked)` | the reader's archive: what is in Saved, the bookmark, the save sheet, the note, the likes |
+| `likedOnDevice()` | a like the plugin keeps itself (Bluesky's, Threads', Substack's hearts): the app says once that likes stay on this device |
 | `savedPosts` | its own posts in Saved with their notes, as they change, for its own saved list (`PluginSavedScreen`) |
 | `addToGroup(account, follow)` | the app's group picker for one of its accounts |
 | `unfollowed(account)` | one of its accounts unfollowed: the app takes it out of every group |
@@ -159,7 +162,9 @@ with a test.
   `NoticeHost`.
 - Rows and fields: `PluginSwitchRow`, `PluginActionRow`, `PluginMenuRow`,
   `PluginSectionTitle`, `PluginTabs`, `PluginCounts`, `NetworkPersonRow`,
-  `SecretField` (a cookie, a token, a key) and `PluginIcons`.
+  `SwipeToUnfollow` (a followed account's row swiped away after a confirm,
+  as TikTok's and Instagram's lists), `SecretField` (a cookie, a token, a
+  key) and `PluginIcons`.
 - The reader's own server's settings: `PluginAddressField`, `PluginConnection`
   with `PluginConnectionControls` (the connection test, Test and Save, the
   result line), `PluginLinkButton` and `answeredOr`
@@ -244,7 +249,10 @@ The app does the rest, as XTA does (`ui/feed`'s `FeedSources`, `PluginPosts`,
 
 A post is drawn with the shared row, the plugin's mark on its avatar and
 what `postExtras` adds to it, and leads where `postActions` says (its link
-otherwise).
+otherwise); or, where the plugin draws its own card (`postCard`, as XTA's
+timelines draw RSS's, the web sources', Reddit's, Threads' and Substack's
+cards), as that card with the plugin's colour down its side, XTA's
+provenance strip.
 
 ### Accounts in the app's groups
 
@@ -306,6 +314,7 @@ back, as `archived` does). Nothing reaches the network.
 | `chooseFolder(post)` | the save sheet, as a long press on the bookmark opens it |
 | `editNote(post)` | the note on it in Saved, in the app's editor; writing one saves the post first |
 | `setLiked(post, liked)` | in the archive's likes or out of them: a network's own like mirrored there, as XTA mirrors Reddit's upvotes |
+| `likedOnDevice()` | a like the plugin keeps in its own likes, as XTA's Bluesky, Threads and Substack keep theirs: on the reader's first like anywhere, the app says that likes stay on this device, as `setLiked` does by itself |
 | `openPostMenu(menu)` | the shared post menu (XTA's plugin post actions): save or remove, the note, Add to group for its author, Share link, Save to folder…, Reposted by and Quotes where the plugin lists them (`PluginPostMenu.reposts`, `quotes`), Open in browser; then the running plugins' entries, which take its `title` ([below](#sending-a-post-to-the-readers-own-server)) |
 
 The shared row does this by itself when a plugin's `NetworkPostActions` say

@@ -47,6 +47,9 @@ object Keeping {
     /** [item] liked on this device unless it is already, as a double-tap on a post likes it (tweet_footer.dart's withDoubleTapToLike). */
     fun likeHere(graph: AppGraph, item: Keepable) = graph.keep { if (!graph.likes.isLiked(item.id)) like(graph, item, true) }
 
+    /** A like a network keeps in its own likes (XTA's Bluesky, Threads and Substack hearts): the first like says that likes stay here, as one of these does. */
+    fun likedElsewhere(graph: AppGraph) = graph.keep { sayLikesStayHere(graph) }
+
     /** The note on [item] in Saved, as its editor saves it: a post not saved yet is saved first, where a plain tap files. */
     suspend fun writeNote(graph: AppGraph, item: Keepable, note: String?) {
         if (!graph.saved.library().isSaved(item.id)) {
@@ -60,7 +63,12 @@ object Keeping {
         if (!liked) return graph.likes.unlike(item.id)
         val first = !graph.likes.isLiked(item.id)
         graph.likes.like(item.id, item.authorId, item.content)
-        if (first && SavedFiling(graph.saved, graph.settings).firstLike()) KeepNotices.show(KeepNotice.LikesStayHere)
+        if (first) sayLikesStayHere(graph)
+    }
+
+    /** Once, on the reader's first like: that likes stay on this device. */
+    private suspend fun sayLikesStayHere(graph: AppGraph) {
+        if (SavedFiling(graph.saved, graph.settings).firstLike()) KeepNotices.show(KeepNotice.LikesStayHere)
     }
 
     private suspend fun file(graph: AppGraph, filing: SavedFiling, item: Keepable, folderId: String?) {
