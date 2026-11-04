@@ -36,6 +36,12 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- Text shared from another app: an X link opens its post, another link its page, anything else is searched. -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
             <!-- X links can open here once the phone is told to (app settings → Open by default). -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -51,4 +57,20 @@
             </intent-filter>
         </activity>
     </application>
+
+    <queries>
+        <!-- The browsers links can be handed to, and the one the system opens pages with. -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="http" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+        <!-- Android 11 hides text-to-speech engines other than the default unless they are asked for. -->
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+    </queries>
 </manifest>

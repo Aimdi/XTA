@@ -37,6 +37,9 @@ import com.aimdi.xtanative.ui.home.HomeScreen
 import com.aimdi.xtanative.ui.importer.ImportScreen
 import com.aimdi.xtanative.ui.intro.IntroFlow
 import com.aimdi.xtanative.ui.intro.IntroScreen
+import com.aimdi.xtanative.ui.links.BindLinkScreens
+import com.aimdi.xtanative.ui.links.LinkBrowserScreen
+import com.aimdi.xtanative.ui.links.LinkScreens
 import com.aimdi.xtanative.ui.lists.ListImportScreen
 import com.aimdi.xtanative.ui.media.MediaViewer
 import com.aimdi.xtanative.ui.offline.OfflineLibraryScreen
@@ -55,6 +58,7 @@ import com.aimdi.xtanative.ui.search.SearchTab
 import com.aimdi.xtanative.ui.settings.BackupScreen
 import com.aimdi.xtanative.ui.settings.SettingsScreen
 import com.aimdi.xtanative.ui.settings.SettingsSectionScreen
+import com.aimdi.xtanative.ui.speech.VoiceSettingsScreen
 import com.aimdi.xtanative.ui.trends.TrendsActions
 import com.aimdi.xtanative.ui.trends.TrendsScreen
 import java.net.URLEncoder
@@ -87,6 +91,8 @@ private object Routes {
     const val SETTINGS_SECTION = "settings/{section}?focus={focus}"
     const val BACKUP = "backup"
     const val INTRO = "intro"
+    const val BROWSER = "browser?url={url}&from={from}"
+    const val SPEECH_SETTINGS = "speech/settings"
 
     fun post(id: String) = "post/$id"
     fun profile(screenName: String) = "profile/" + encoded(screenName)
@@ -104,6 +110,7 @@ private object Routes {
     fun noteThread(rootId: String) = "notes?root=" + encoded(rootId)
     fun offlineMedia(id: String) = "offline/media?id=" + encoded(id)
     fun archive(id: String) = "archive?id=" + encoded(id)
+    fun browser(url: String, from: String?) = "browser?url=" + encoded(url) + (from?.let { "&from=" + encoded(it) } ?: "")
 
     /** [text] escaped for a route, which is matched as a URI: a space as %20, which every platform decodes. */
     private fun encoded(text: String): String = URLEncoder.encode(text, "UTF-8").replace("+", "%20")
@@ -151,6 +158,15 @@ fun XtaNativeRoot() {
         )
     }
     val homeRoutes = remember(nav) { HomeRoutes(exists = nav::hasRoute, open = { route -> nav.navigate(route) }) }
+    val linkScreens = remember(nav, actions) {
+        LinkScreens(
+            post = actions.openPost,
+            profile = actions.openProfile,
+            search = actions.search,
+            browser = { url, from -> nav.navigate(Routes.browser(url, from)) },
+        )
+    }
+    BindLinkScreens(linkScreens)
 
     DesktopNavigation(nav) { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes)) }
 }
@@ -253,6 +269,18 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
         }
         composable(Routes.ANTENNA, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
             AntennaFeedScreen(entry.text("id").orEmpty(), actions, onBack = { nav.popBackStack() })
+        }
+        composable(
+            Routes.BROWSER,
+            arguments = listOf(
+                navArgument("url") { type = NavType.StringType },
+                navArgument("from") { type = NavType.StringType; nullable = true; defaultValue = null },
+            ),
+        ) { entry ->
+            LinkBrowserScreen(entry.text("url").orEmpty(), entry.text("from"), onClose = { nav.popBackStack() })
+        }
+        composable(Routes.SPEECH_SETTINGS) {
+            VoiceSettingsScreen(onBack = { nav.popBackStack() })
         }
         composable(Routes.SETTINGS) {
             SettingsScreen(

@@ -9,14 +9,20 @@ import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.app_name
+import com.aimdi.xtanative.ui.links.LinksFrame
+import com.aimdi.xtanative.ui.speech.SpeechBarScaffold
 import com.aimdi.xtanative.ui.theme.XtaTheme
 import org.jetbrains.compose.resources.stringResource
 
-/** The whole app in an Android activity or a desktop window: [graph]'s screens in XTA's theme. */
+/**
+ * The whole app in an Android activity or a desktop window: [graph]'s screens
+ * in XTA's theme, their links opening the way XTA opens them, with the
+ * reading-aloud bar under them.
+ */
 @Composable
 fun XtaNativeContent(graph: AppGraph) {
     CompositionLocalProvider(LocalGraph provides graph) {
-        XtaTheme { XtaNativeRoot() }
+        XtaTheme { LinksFrame { SpeechBarScaffold { XtaNativeRoot() } } }
     }
 }
 
