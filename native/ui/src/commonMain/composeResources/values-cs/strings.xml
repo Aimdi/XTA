@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">Sledování</string>
+    <string name="search">Hledat</string>
+    <string name="settings">Nastavení</string>
+    <string name="dismiss">Zavřít</string>
+    <string name="retry">Zkusit znovu</string>
+    <string name="back">Zpět</string>
+    <string name="close">Zavřít</string>
+    <string name="cancel">Zrušit</string>
+    <string name="post">Příspěvek</string>
+
+    <string name="pinned">Připnuto</string>
+    <string name="reposted_by">%1$s sdílí</string>
+    <string name="replying_to">Odpověď uživateli</string>
+    <string name="views">%1$s zobrazení</string>
+    <string name="stat_reposts">Reposty</string>
+    <string name="stat_quotes">Citace</string>
+    <string name="stat_likes">To se mi líbí</string>
+    <string name="stat_bookmarks">Záložky</string>
+
+    <string name="ago_seconds">%1$d s</string>
+    <string name="ago_minutes">%1$d min</string>
+    <string name="ago_hours">%1$d h</string>
+
+    <string name="joined">Připojil(a) se: %1$s</string>
+    <string name="following_count">Sledování</string>
+    <string name="followers_count">Sledující</string>
+
+    <string name="feed_nobody_followed">Nikdo z těch, které sledujete, zatím není ve zdroji Sledování. Otevřete profil, třeba vyhledáním @jméno, a začněte ho sledovat.</string>
+    <string name="feed_empty">Sledované účty zatím nemají žádné příspěvky.</string>
+    <string name="feed_partial">Některé účty se nepodařilo načíst: %1$s</string>
+
+    <string name="problem_no_account">Žádný účet X. Importujte zálohu XTA i s jejími účty.</string>
+    <string name="problem_rate_limited">X tu omezuje všechny účty. Zkuste to znovu za pár minut.</string>
+    <string name="problem_offline">Žádné připojení k X.</string>
+    <string name="problem_signing">Podepisování požadavků pro X se nepodařilo připravit. Zkuste to znovu za chvíli.</string>
+    <string name="problem_refused">X požadavek odmítl (%1$d).</string>
+    <string name="problem_other">Při čtení X se něco pokazilo.</string>
+
+    <string name="search_x">Hledat na X</string>
+    <string name="search_top">Nejlepší</string>
+    <string name="search_latest">Nejnovější</string>
+    <string name="search_nothing">Žádné výsledky pro „%1$s“.</string>
+    <string name="search_go_to">Přejít na @%1$s</string>
+
+    <string name="import_intro">XTA Native je XTA napsané jen pro Android, aby se dalo porovnat s XTA. Čte X účty, které už v XTA používáte.</string>
+    <string name="import_steps">V XTA otevřete Nastavení → Data → Exportovat, zapněte „Exportovat účty“, exportujte a pak tu vyberte ten soubor.</string>
+    <string name="import_choose">Vybrat zálohu XTA</string>
+    <string name="import_choose_another">Vybrat jiný soubor</string>
+    <string name="import_not_a_backup">Tento soubor není záloha exportovaná z XTA.</string>
+    <string name="import_no_accounts">Tato záloha neobsahuje žádné účty X: exportujte ji znovu se zapnutým „Exportovat účty“.</string>
+    <string name="import_use">Použít tuto zálohu</string>
+    <string name="import_privacy">Záloha obsahuje vaše relace X. XTA Native je uchovává v tomto telefonu, posílá je jen na X a nikdy tam nic nezveřejňuje, nelajkuje ani nesleduje.</string>
+    <plurals name="import_found_accounts">
+        <item quantity="one">%1$d účet X</item>
+        <item quantity="few">%1$d účty X</item>
+        <item quantity="many">%1$d účtu X</item>
+        <item quantity="other">%1$d účtů X</item>
+    </plurals>
+    <plurals name="import_found_following">
+        <item quantity="one">%1$d sledovaný účet, %2$d ve zdroji Sledování</item>
+        <item quantity="few">%1$d sledované účty, %2$d ve zdroji Sledování</item>
+        <item quantity="many">%1$d sledovaného účtu, %2$d ve zdroji Sledování</item>
+        <item quantity="other">%1$d sledovaných účtů, %2$d ve zdroji Sledování</item>
+    </plurals>
+
+    <string name="settings_feed">Zdroj Sledování</string>
+    <string name="settings_replies">Zobrazovat odpovědi</string>
+    <string name="settings_reposts">Zobrazovat reposty</string>
+    <string name="settings_accounts">Účty X</string>
+    <string name="settings_following">Sledované účty: %1$d, ve zdroji: %2$d</string>
+    <string name="settings_import_again">Znovu importovat zálohu XTA</string>
+    <string name="settings_clear">Odstranit vše</string>
+    <string name="settings_clear_explained">Odstraní z XTA Native relace X a sledované účty. Samotné XTA si ponechá vše.</string>
+    <string name="settings_clear_confirm">Odstranit</string>
+    <string name="settings_about">O aplikaci</string>
+    <string name="settings_version">XTA Native %1$s</string>
+    <string name="settings_prototype">Prototyp vedle XTA, pro srovnání. Může být stažen.</string>
+
+    <string name="card_from">Z webu %1$s</string>
+    <string name="poll_final">Konečné výsledky</string>
+    <plurals name="poll_votes">
+        <item quantity="one">%1$d hlas</item>
+        <item quantity="few">%1$d hlasy</item>
+        <item quantity="many">%1$d hlasu</item>
+        <item quantity="other">%1$d hlasů</item>
+    </plurals>
+    <plurals name="poll_days_left">
+        <item quantity="one">Zbývá %1$d den</item>
+        <item quantity="few">Zbývají %1$d dny</item>
+        <item quantity="many">Zbývá %1$d dne</item>
+        <item quantity="other">Zbývá %1$d dní</item>
+    </plurals>
+    <plurals name="poll_hours_left">
+        <item quantity="one">Zbývá %1$d hodina</item>
+        <item quantity="few">Zbývají %1$d hodiny</item>
+        <item quantity="many">Zbývá %1$d hodiny</item>
+        <item quantity="other">Zbývá %1$d hodin</item>
+    </plurals>
+    <plurals name="poll_minutes_left">
+        <item quantity="one">Zbývá %1$d minuta</item>
+        <item quantity="few">Zbývají %1$d minuty</item>
+        <item quantity="many">Zbývá %1$d minuty</item>
+        <item quantity="other">Zbývá %1$d minut</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d nový příspěvek</item>
+        <item quantity="few">%1$d nové příspěvky</item>
+        <item quantity="many">%1$d nového příspěvku</item>
+        <item quantity="other">%1$d nových příspěvků</item>
+    </plurals>
+    <string name="settings_autoplay">Přehrávat videa ve zdroji bez zvuku</string>
+    <string name="profile_posts">Příspěvky</string>
+    <string name="profile_replies">Odpovědi</string>
+    <string name="profile_media">Média</string>
+    <string name="profile_nothing">Zatím tu nic není.</string>
+    <string name="profile_follow">Sledovat</string>
+    <string name="profile_following">Sledujete</string>
+    <string name="follow_here_only">Sledováno jen v XTA Native: X se to nedozví.</string>
+    <string name="follow_in_feed">Ve zdroji Sledování</string>
+    <string name="follow_groups">Skupiny</string>
+    <string name="follow_new_group">Nová skupina</string>
+    <string name="follow_group_name">Název skupiny</string>
+    <string name="follow_create">Vytvořit</string>
+    <string name="follow_unfollow">Přestat sledovat</string>
+</resources>

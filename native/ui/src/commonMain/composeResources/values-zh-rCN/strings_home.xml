@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
+     Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="home_for_you">为你推荐</string>
+    <string name="home_open_menu">打开导航菜单</string>
+    <string name="home_add_timeline">添加时间线</string>
+    <string name="home_unread">未读</string>
+    <string name="home_refresh">刷新</string>
+    <string name="home_open_group">打开分组</string>
+    <string name="home_more_options">更多选项</string>
+    <string name="home_pin_to_bar">固定到顶栏</string>
+
+    <string name="home_strip_title">插件时间线</string>
+    <string name="home_strip_intro">把已安装的插件按你喜欢的顺序固定在“为你推荐”旁边。可从插件商店安装更多插件。</string>
+    <string name="home_strip_pinned">已固定在此栏</string>
+    <string name="home_strip_available">可添加</string>
+    <string name="home_strip_empty">还没有可固定的插件。打开插件商店安装 Reddit、Pixiv、Mastodon 等。</string>
+    <string name="home_strip_remove">从此栏移除</string>
+    <string name="home_strip_up">上移</string>
+    <string name="home_strip_down">下移</string>
+    <string name="home_plugin_store">插件商店</string>
+
+    <string name="home_subscriptions">订阅</string>
+    <string name="home_discover">发现</string>
+    <string name="home_saved">已保存</string>
+    <string name="home_downloads">下载</string>
+    <string name="home_antennas">天线</string>
+    <string name="home_deck">多栏</string>
+    <string name="home_deck_empty">在宽屏上将分组固定以便并排查看</string>
+    <string name="home_groups">订阅组</string>
+    <string name="home_no_groups">还没有分组</string>
+    <string name="home_no_results">没有结果</string>
+    <plurals name="home_group_members">
+        <item quantity="other">%1$d 个订阅</item>
+    </plurals>
+
+    <string name="home_feed_accounts">主页信息流账号</string>
+    <string name="home_filter_accounts">账户</string>
+    <string name="home_filter_accounts_explained">关闭那些只为提高请求限制而保留的备用账号。“为你推荐”会合并仍开启的账号的主页时间线。</string>
+    <string name="home_filter_groups_explained">关闭某个分组后，其成员会从“正在关注”中隐藏。分组自己的标签页仍在。他们的帖子也会从“为你推荐”中去掉。</string>
+    <string name="home_filter_only_hint">长按某一项即可只保留它开启。</string>
+    <string name="home_filter_keep_one">至少需要保留一个账号开启</string>
+    <string name="home_filter_count">%1$d / %2$d</string>
+    <string name="home_filter_all">全部</string>
+    <string name="home_filter_none">全不选</string>
+    <string name="home_filter_reset">重置筛选</string>
+    <string name="home_filter_apply">应用</string>
+
+    <string name="home_for_you_empty">无法加载此信息流的帖子</string>
+    <string name="home_for_you_no_account">请导入包含账号的 XTA 备份来加载“为你推荐”。</string>
+    <string name="home_import">导入 XTA 备份</string>
+    <string name="home_zen_end">暂时就这些了</string>
+    <string name="home_zen_more">仍然加载更多</string>
+</resources>

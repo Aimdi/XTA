@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
+     Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="home_for_you">Pro vás</string>
+    <string name="home_open_menu">Otevřít navigační nabídku</string>
+    <string name="home_add_timeline">Přidat timeline</string>
+    <string name="home_unread">Nepřečteno</string>
+    <string name="home_refresh">Obnovit</string>
+    <string name="home_open_group">Otevřít skupinu</string>
+    <string name="home_more_options">Další možnosti</string>
+    <string name="home_pin_to_bar">Připnout na horní lištu</string>
+
+    <string name="home_strip_title">Timeline pluginů</string>
+    <string name="home_strip_intro">Připněte nainstalované pluginy vedle Pro vás v pořadí, jaké chcete. Další nainstalujete z obchodu s pluginy.</string>
+    <string name="home_strip_pinned">Na tomto pruhu</string>
+    <string name="home_strip_available">K dispozici</string>
+    <string name="home_strip_empty">Zatím není co připnout. Otevřete obchod pluginů pro Reddit, Pixiv, Mastodon a další.</string>
+    <string name="home_strip_remove">Odebrat z pruhu</string>
+    <string name="home_strip_up">Posunout nahoru</string>
+    <string name="home_strip_down">Posunout dolů</string>
+    <string name="home_plugin_store">Obchod s pluginy</string>
+
+    <string name="home_subscriptions">Odběry</string>
+    <string name="home_discover">Objevovat</string>
+    <string name="home_saved">Uloženo</string>
+    <string name="home_downloads">Stahování</string>
+    <string name="home_antennas">Antény</string>
+    <string name="home_deck">Sloupce</string>
+    <string name="home_deck_empty">Připněte skupiny a uvidíte je na širokém displeji vedle sebe</string>
+    <string name="home_groups">Skupiny</string>
+    <string name="home_no_groups">Zatím žádné skupiny</string>
+    <string name="home_no_results">Žádné výsledky</string>
+    <plurals name="home_group_members">
+        <item quantity="one">%1$d odběr</item>
+        <item quantity="few">%1$d odběry</item>
+        <item quantity="many">%1$d odběrů</item>
+        <item quantity="other">%1$d odběrů</item>
+    </plurals>
+
+    <string name="home_feed_accounts">Účty hlavní chronologie</string>
+    <string name="home_filter_accounts">Účty</string>
+    <string name="home_filter_accounts_explained">Vypněte záložní účty, které máte jen kvůli vyšším limitům. Pro vás spojuje domovské časové osy účtů, které zůstanou zapnuté.</string>
+    <string name="home_filter_groups_explained">Vypněte skupinu, aby se její členové skryli ze Sledování. Karta skupiny zůstane. Jejich příspěvky zmizí i z Pro vás.</string>
+    <string name="home_filter_only_hint">Dlouhým stisknutím položky necháte zapnutou jen ji.</string>
+    <string name="home_filter_keep_one">Alespoň jeden účet musí zůstat zapnutý</string>
+    <string name="home_filter_count">%1$d / %2$d</string>
+    <string name="home_filter_all">Vše</string>
+    <string name="home_filter_none">Nic</string>
+    <string name="home_filter_reset">Obnovit filtry</string>
+    <string name="home_filter_apply">Použít</string>
+
+    <string name="home_for_you_empty">Příspěvky zdroje se nepodařilo načíst</string>
+    <string name="home_for_you_no_account">Chcete-li načíst Pro vás, importujte zálohu XTA i s jejími účty.</string>
+    <string name="home_import">Importovat zálohu XTA</string>
+    <string name="home_zen_end">To je prozatím vše</string>
+    <string name="home_zen_more">Přesto načíst další</string>
+</resources>

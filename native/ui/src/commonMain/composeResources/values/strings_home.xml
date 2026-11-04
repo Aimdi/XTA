@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
+     Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="home_for_you">For you</string>
+    <string name="home_open_menu">Open navigation menu</string>
+    <string name="home_add_timeline">Add timeline</string>
+    <string name="home_unread">Unread</string>
+    <string name="home_refresh">Refresh</string>
+    <string name="home_open_group">Open group</string>
+    <string name="home_more_options">More options</string>
+    <string name="home_pin_to_bar">Pin to top bar</string>
+
+    <string name="home_strip_title">Plugin timelines</string>
+    <string name="home_strip_intro">Pin installed plugins next to For you, in the order you like. Install more from the plugin store.</string>
+    <string name="home_strip_pinned">On this strip</string>
+    <string name="home_strip_available">Available to add</string>
+    <string name="home_strip_empty">No installed plugins to pin yet. Open the plugin store to install Reddit, Pixiv, Mastodon and more.</string>
+    <string name="home_strip_remove">Remove from strip</string>
+    <string name="home_strip_up">Move up</string>
+    <string name="home_strip_down">Move down</string>
+    <string name="home_plugin_store">Plugin store</string>
+
+    <string name="home_subscriptions">Subscriptions</string>
+    <string name="home_discover">Discover</string>
+    <string name="home_saved">Saved</string>
+    <string name="home_downloads">Downloads</string>
+    <string name="home_antennas">Antennas</string>
+    <string name="home_deck">Deck</string>
+    <string name="home_deck_empty">Pin groups to see them side by side on a wide screen</string>
+    <string name="home_groups">Groups</string>
+    <string name="home_no_groups">No groups yet</string>
+    <string name="home_no_results">No results</string>
+    <plurals name="home_group_members">
+        <item quantity="one">%1$d subscription</item>
+        <item quantity="other">%1$d subscriptions</item>
+    </plurals>
+
+    <string name="home_feed_accounts">Home feed accounts</string>
+    <string name="home_filter_accounts">Accounts</string>
+    <string name="home_filter_accounts_explained">Turn off spare accounts you only keep for higher rate limits. For you merges the Home timelines of the accounts left on.</string>
+    <string name="home_filter_groups_explained">Turn off a group to hide its members from Following. The group's own tab stays. Their posts are also dropped from For you.</string>
+    <string name="home_filter_only_hint">Long-press one to keep only it on.</string>
+    <string name="home_filter_keep_one">At least one account has to stay on</string>
+    <string name="home_filter_count">%1$d / %2$d</string>
+    <string name="home_filter_all">All</string>
+    <string name="home_filter_none">None</string>
+    <string name="home_filter_reset">Reset filters</string>
+    <string name="home_filter_apply">Apply</string>
+
+    <string name="home_for_you_empty">Unable to load the posts for the feed</string>
+    <string name="home_for_you_no_account">Import XTA's backup with its accounts to load For you.</string>
+    <string name="home_import">Import an XTA backup</string>
+    <string name="home_zen_end">That's everything for now</string>
+    <string name="home_zen_more">Load more anyway</string>
+</resources>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
+     Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="home_for_you">आपके लिए</string>
+    <string name="home_open_menu">नेविगेशन मेन्यू खोलें</string>
+    <string name="home_add_timeline">टाइमलाइन जोड़ें</string>
+    <string name="home_unread">अपठित</string>
+    <string name="home_refresh">रीफ़्रेश करें</string>
+    <string name="home_open_group">समूह खोलें</string>
+    <string name="home_more_options">और विकल्प</string>
+    <string name="home_pin_to_bar">ऊपरी बार में पिन करें</string>
+
+    <string name="home_strip_title">प्लगइन टाइमलाइन</string>
+    <string name="home_strip_intro">इंस्टॉल किए गए प्लगइन 'आपके लिए' के बगल में, अपनी पसंद के क्रम में पिन करें। प्लगइन स्टोर से और इंस्टॉल करें।</string>
+    <string name="home_strip_pinned">इस पट्टी पर</string>
+    <string name="home_strip_available">जोड़ने योग्य</string>
+    <string name="home_strip_empty">पिन करने के लिए कोई प्लगइन नहीं। स्टोर से Reddit, Pixiv, Mastodon आदि इंस्टॉल करें।</string>
+    <string name="home_strip_remove">पट्टी से हटाएँ</string>
+    <string name="home_strip_up">ऊपर ले जाएँ</string>
+    <string name="home_strip_down">नीचे ले जाएँ</string>
+    <string name="home_plugin_store">प्लगइन स्टोर</string>
+
+    <string name="home_subscriptions">सदस्यताएँ</string>
+    <string name="home_discover">एक्सप्लोर</string>
+    <string name="home_saved">सहेजा गया</string>
+    <string name="home_downloads">डाउनलोड</string>
+    <string name="home_antennas">एंटेना</string>
+    <string name="home_deck">कॉलम</string>
+    <string name="home_deck_empty">चौड़ी स्क्रीन पर समूहों को साथ-साथ देखने के लिए उन्हें पिन करें</string>
+    <string name="home_groups">समूह</string>
+    <string name="home_no_groups">अभी कोई समूह नहीं</string>
+    <string name="home_no_results">कोई परिणाम नहीं</string>
+    <plurals name="home_group_members">
+        <item quantity="one">%1$d सदस्यता</item>
+        <item quantity="other">%1$d सदस्यताएँ</item>
+    </plurals>
+
+    <string name="home_feed_accounts">होम फ़ीड खाते</string>
+    <string name="home_filter_accounts">खाते</string>
+    <string name="home_filter_accounts_explained">उन अतिरिक्त खातों को बंद करें जिन्हें आप सिर्फ़ ऊँची सीमाओं के लिए रखते हैं। 'आपके लिए' चालू खातों की होम टाइमलाइन को मिलाता है।</string>
+    <string name="home_filter_groups_explained">समूह बंद करने पर उसके सदस्य फ़ॉलोइंग से छिप जाते हैं। समूह का टैब रहता है। उनकी पोस्ट 'आपके लिए' से भी हट जाती हैं।</string>
+    <string name="home_filter_only_hint">किसी एक को देर तक दबाएँ, ताकि सिर्फ़ वही चालू रहे।</string>
+    <string name="home_filter_keep_one">कम से कम एक खाता चालू रहना चाहिए</string>
+    <string name="home_filter_count">%1$d / %2$d</string>
+    <string name="home_filter_all">सभी</string>
+    <string name="home_filter_none">कोई नहीं</string>
+    <string name="home_filter_reset">फ़िल्टर रीसेट करें</string>
+    <string name="home_filter_apply">लागू करें</string>
+
+    <string name="home_for_you_empty">फ़ीड के लिए पोस्ट लोड नहीं की जा सकीं</string>
+    <string name="home_for_you_no_account">'आपके लिए' लोड करने के लिए XTA का बैकअप उसके खातों के साथ इंपोर्ट करें।</string>
+    <string name="home_import">XTA बैकअप इंपोर्ट करें</string>
+    <string name="home_zen_end">अभी के लिए बस इतना ही</string>
+    <string name="home_zen_more">फिर भी और लोड करें</string>
+</resources>

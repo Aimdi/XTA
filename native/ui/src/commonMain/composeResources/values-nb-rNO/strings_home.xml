@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
+     Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="home_for_you">For deg</string>
+    <string name="home_open_menu">Åpne navigasjonsmenyen</string>
+    <string name="home_add_timeline">Legg til tidslinje</string>
+    <string name="home_unread">Ulest</string>
+    <string name="home_refresh">Oppdater</string>
+    <string name="home_open_group">Åpne gruppen</string>
+    <string name="home_more_options">Flere alternativer</string>
+    <string name="home_pin_to_bar">Fest til topplinjen</string>
+
+    <string name="home_strip_title">Programtilleggets tidslinjer</string>
+    <string name="home_strip_intro">Fest installerte programtillegg ved siden av For deg, i den rekkefølgen du vil. Installer flere fra tilleggsbutikken.</string>
+    <string name="home_strip_pinned">På denne stripen</string>
+    <string name="home_strip_available">Tilgjengelige</string>
+    <string name="home_strip_empty">Ingen tillegg å feste ennå. Åpne butikken for Reddit, Pixiv, Mastodon med mer.</string>
+    <string name="home_strip_remove">Fjern fra stripen</string>
+    <string name="home_strip_up">Flytt opp</string>
+    <string name="home_strip_down">Flytt ned</string>
+    <string name="home_plugin_store">Tilleggsbutikk</string>
+
+    <string name="home_subscriptions">Abonnementer</string>
+    <string name="home_discover">Oppdag</string>
+    <string name="home_saved">Lagret</string>
+    <string name="home_downloads">Nedlastinger</string>
+    <string name="home_antennas">Antenner</string>
+    <string name="home_deck">Kolonner</string>
+    <string name="home_deck_empty">Fest grupper for å se dem side om side på en bred skjerm</string>
+    <string name="home_groups">Grupper</string>
+    <string name="home_no_groups">Ingen grupper ennå</string>
+    <string name="home_no_results">Ingen resultater</string>
+    <plurals name="home_group_members">
+        <item quantity="one">%1$d abonnement</item>
+        <item quantity="other">%1$d abonnementer</item>
+    </plurals>
+
+    <string name="home_feed_accounts">Kontoer for startfeeden</string>
+    <string name="home_filter_accounts">Kontoer</string>
+    <string name="home_filter_accounts_explained">Slå av reservekontoer du bare har for høyere grenser. For deg slår sammen starttidslinjene til kontoene som står på.</string>
+    <string name="home_filter_groups_explained">Slå av en gruppe for å skjule medlemmene i Følger. Gruppefanen blir. Innleggene deres fjernes også fra For deg.</string>
+    <string name="home_filter_only_hint">Trykk lenge på ett for å bare ha det på.</string>
+    <string name="home_filter_keep_one">Minst én konto må stå på</string>
+    <string name="home_filter_count">%1$d / %2$d</string>
+    <string name="home_filter_all">Alle</string>
+    <string name="home_filter_none">Ingen</string>
+    <string name="home_filter_reset">Nullstill filtre</string>
+    <string name="home_filter_apply">Bruk</string>
+
+    <string name="home_for_you_empty">Kan ikke laste inn innleggene i feeden</string>
+    <string name="home_for_you_no_account">Importer XTA-sikkerhetskopien med kontoene for å laste inn For deg.</string>
+    <string name="home_import">Importer en XTA-sikkerhetskopi</string>
+    <string name="home_zen_end">Det var alt for nå</string>
+    <string name="home_zen_more">Last inn mer likevel</string>
+</resources>

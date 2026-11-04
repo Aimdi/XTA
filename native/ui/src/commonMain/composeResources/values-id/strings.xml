@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">Mengikuti</string>
+    <string name="search">Cari</string>
+    <string name="settings">Pengaturan</string>
+    <string name="dismiss">Tutup</string>
+    <string name="retry">Coba lagi</string>
+    <string name="back">Kembali</string>
+    <string name="close">Tutup</string>
+    <string name="cancel">Batal</string>
+    <string name="post">Postingan</string>
+
+    <string name="pinned">Disematkan</string>
+    <string name="reposted_by">%1$s memposting ulang</string>
+    <string name="replying_to">Membalas ke</string>
+    <string name="views">%1$s tayangan</string>
+    <string name="stat_reposts">Posting ulang</string>
+    <string name="stat_quotes">Kutipan</string>
+    <string name="stat_likes">Suka</string>
+    <string name="stat_bookmarks">Markah</string>
+
+    <string name="ago_seconds">%1$d dtk</string>
+    <string name="ago_minutes">%1$d mnt</string>
+    <string name="ago_hours">%1$d j</string>
+
+    <string name="joined">Bergabung %1$s</string>
+    <string name="following_count">Mengikuti</string>
+    <string name="followers_count">Pengikut</string>
+
+    <string name="feed_nobody_followed">Belum ada yang Anda ikuti di umpan Mengikuti. Buka profil, misalnya dengan mencari @nama, lalu ikuti.</string>
+    <string name="feed_empty">Belum ada postingan dari akun yang Anda ikuti.</string>
+    <string name="feed_partial">Beberapa akun tidak dapat dibaca: %1$s</string>
+
+    <string name="problem_no_account">Tidak ada akun X. Impor cadangan XTA beserta akunnya.</string>
+    <string name="problem_rate_limited">X sedang membatasi semua akun di sini. Coba lagi dalam beberapa menit.</string>
+    <string name="problem_offline">Tidak ada koneksi ke X.</string>
+    <string name="problem_signing">Penandatanganan permintaan X tidak dapat disiapkan. Coba lagi sebentar lagi.</string>
+    <string name="problem_refused">X menolak permintaan (%1$d).</string>
+    <string name="problem_other">Terjadi kesalahan saat membaca X.</string>
+
+    <string name="search_x">Cari di X</string>
+    <string name="search_top">Teratas</string>
+    <string name="search_latest">Terbaru</string>
+    <string name="search_nothing">Tidak ada hasil untuk “%1$s”.</string>
+    <string name="search_go_to">Buka @%1$s</string>
+
+    <string name="import_intro">XTA Native adalah XTA yang ditulis khusus untuk Android, untuk dibandingkan dengan XTA. Aplikasi ini membaca X dengan akun yang sudah Anda gunakan di XTA.</string>
+    <string name="import_steps">Di XTA, buka Pengaturan → Data → Ekspor, nyalakan “Ekspor akun”, ekspor, lalu pilih file itu di sini.</string>
+    <string name="import_choose">Pilih cadangan XTA</string>
+    <string name="import_choose_another">Pilih file lain</string>
+    <string name="import_not_a_backup">File ini bukan cadangan yang diekspor XTA.</string>
+    <string name="import_no_accounts">Cadangan ini tidak berisi akun X: ekspor lagi dengan “Ekspor akun” dinyalakan.</string>
+    <string name="import_use">Gunakan cadangan ini</string>
+    <string name="import_privacy">Cadangan ini berisi sesi X Anda. XTA Native menyimpannya di ponsel ini, hanya mengirimnya ke X, dan tidak pernah memposting, menyukai, atau mengikuti apa pun di sana.</string>
+    <plurals name="import_found_accounts">
+        <item quantity="other">%1$d akun X</item>
+    </plurals>
+    <plurals name="import_found_following">
+        <item quantity="other">%1$d akun diikuti, %2$d di umpan Mengikuti</item>
+    </plurals>
+
+    <string name="settings_feed">Umpan Mengikuti</string>
+    <string name="settings_replies">Tampilkan balasan</string>
+    <string name="settings_reposts">Tampilkan posting ulang</string>
+    <string name="settings_accounts">Akun X</string>
+    <string name="settings_following">%1$d akun diikuti, %2$d di umpan</string>
+    <string name="settings_import_again">Impor cadangan XTA lagi</string>
+    <string name="settings_clear">Hapus semuanya</string>
+    <string name="settings_clear_explained">Menghapus sesi X dan akun yang diikuti dari XTA Native. XTA sendiri tetap menyimpan semuanya.</string>
+    <string name="settings_clear_confirm">Hapus</string>
+    <string name="settings_about">Tentang</string>
+    <string name="settings_version">XTA Native %1$s</string>
+    <string name="settings_prototype">Prototipe di samping XTA, untuk perbandingan. Bisa saja ditarik.</string>
+
+    <string name="card_from">Dari %1$s</string>
+    <string name="poll_final">Hasil akhir</string>
+    <plurals name="poll_votes">
+        <item quantity="other">%1$d suara</item>
+    </plurals>
+    <plurals name="poll_days_left">
+        <item quantity="other">%1$d hari lagi</item>
+    </plurals>
+    <plurals name="poll_hours_left">
+        <item quantity="other">%1$d jam lagi</item>
+    </plurals>
+    <plurals name="poll_minutes_left">
+        <item quantity="other">%1$d menit lagi</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="other">%1$d postingan baru</item>
+    </plurals>
+    <string name="settings_autoplay">Putar video di umpan tanpa suara</string>
+    <string name="profile_posts">Postingan</string>
+    <string name="profile_replies">Balasan</string>
+    <string name="profile_media">Media</string>
+    <string name="profile_nothing">Belum ada apa-apa di sini.</string>
+    <string name="profile_follow">Ikuti</string>
+    <string name="profile_following">Mengikuti</string>
+    <string name="follow_here_only">Diikuti hanya di XTA Native: X tidak diberi tahu.</string>
+    <string name="follow_in_feed">Di umpan Mengikuti</string>
+    <string name="follow_groups">Grup</string>
+    <string name="follow_new_group">Grup baru</string>
+    <string name="follow_group_name">Nama grup</string>
+    <string name="follow_create">Buat</string>
+    <string name="follow_unfollow">Berhenti mengikuti</string>
+</resources>

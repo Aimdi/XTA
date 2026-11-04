@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
+     Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="home_for_you">추천</string>
+    <string name="home_open_menu">탐색 메뉴 열기</string>
+    <string name="home_add_timeline">타임라인 추가</string>
+    <string name="home_unread">읽지 않음</string>
+    <string name="home_refresh">새로고침</string>
+    <string name="home_open_group">그룹 열기</string>
+    <string name="home_more_options">옵션 더보기</string>
+    <string name="home_pin_to_bar">상단 바에 고정</string>
+
+    <string name="home_strip_title">플러그인 타임라인</string>
+    <string name="home_strip_intro">설치한 플러그인을 원하는 순서로 추천 옆에 고정하세요. 플러그인 스토어에서 더 설치할 수 있습니다.</string>
+    <string name="home_strip_pinned">이 표시줄에</string>
+    <string name="home_strip_available">추가 가능</string>
+    <string name="home_strip_empty">고정할 플러그인이 없습니다. 스토어에서 Reddit, Pixiv, Mastodon 등을 설치하세요.</string>
+    <string name="home_strip_remove">표시줄에서 제거</string>
+    <string name="home_strip_up">위로 이동</string>
+    <string name="home_strip_down">아래로 이동</string>
+    <string name="home_plugin_store">플러그인 스토어</string>
+
+    <string name="home_subscriptions">구독</string>
+    <string name="home_discover">탐색</string>
+    <string name="home_saved">저장됨</string>
+    <string name="home_downloads">다운로드</string>
+    <string name="home_antennas">안테나</string>
+    <string name="home_deck">덱</string>
+    <string name="home_deck_empty">넓은 화면에서 나란히 보려면 그룹을 고정하세요</string>
+    <string name="home_groups">그룹</string>
+    <string name="home_no_groups">아직 그룹이 없습니다</string>
+    <string name="home_no_results">결과 없음</string>
+    <plurals name="home_group_members">
+        <item quantity="other">구독 %1$d개</item>
+    </plurals>
+
+    <string name="home_feed_accounts">홈 피드 계정</string>
+    <string name="home_filter_accounts">계정</string>
+    <string name="home_filter_accounts_explained">사용 한도를 늘리려고만 두는 예비 계정을 끄세요. 추천은 켜 둔 계정들의 홈 타임라인을 합쳐 보여 줍니다.</string>
+    <string name="home_filter_groups_explained">그룹을 끄면 멤버가 팔로잉에서 숨겨집니다. 그룹 탭은 그대로입니다. 그 게시물은 추천에서도 빠집니다.</string>
+    <string name="home_filter_only_hint">길게 누르면 그 항목만 켜 둡니다.</string>
+    <string name="home_filter_keep_one">계정은 하나 이상 켜 두어야 합니다</string>
+    <string name="home_filter_count">%1$d / %2$d</string>
+    <string name="home_filter_all">전체</string>
+    <string name="home_filter_none">없음</string>
+    <string name="home_filter_reset">필터 초기화</string>
+    <string name="home_filter_apply">적용</string>
+
+    <string name="home_for_you_empty">피드의 게시물을 불러올 수 없습니다</string>
+    <string name="home_for_you_no_account">추천을 불러오려면 계정이 포함된 XTA 백업을 가져오세요.</string>
+    <string name="home_import">XTA 백업 가져오기</string>
+    <string name="home_zen_end">지금은 여기까지입니다</string>
+    <string name="home_zen_more">그래도 더 불러오기</string>
+</resources>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
+     Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="home_for_you">Для вас</string>
+    <string name="home_open_menu">Открыть меню навигации</string>
+    <string name="home_add_timeline">Добавить ленту</string>
+    <string name="home_unread">Непрочитанное</string>
+    <string name="home_refresh">Обновить</string>
+    <string name="home_open_group">Открыть группу</string>
+    <string name="home_more_options">Другие параметры</string>
+    <string name="home_pin_to_bar">Закрепить на верхней панели</string>
+
+    <string name="home_strip_title">Ленты плагинов</string>
+    <string name="home_strip_intro">Закрепите установленные плагины рядом с «Для вас» в удобном порядке. Другие можно установить из магазина плагинов.</string>
+    <string name="home_strip_pinned">На этой полоске</string>
+    <string name="home_strip_available">Можно добавить</string>
+    <string name="home_strip_empty">Пока нечего закрепить. Откройте магазин: Reddit, Pixiv, Mastodon и другие.</string>
+    <string name="home_strip_remove">Убрать с полоски</string>
+    <string name="home_strip_up">Переместить вверх</string>
+    <string name="home_strip_down">Переместить вниз</string>
+    <string name="home_plugin_store">Магазин плагинов</string>
+
+    <string name="home_subscriptions">Подписки</string>
+    <string name="home_discover">Обзор</string>
+    <string name="home_saved">Избранное</string>
+    <string name="home_downloads">Загрузки</string>
+    <string name="home_antennas">Антенны</string>
+    <string name="home_deck">Колонки</string>
+    <string name="home_deck_empty">Закрепите группы, чтобы видеть их рядом на широком экране</string>
+    <string name="home_groups">Группы</string>
+    <string name="home_no_groups">Пока нет групп</string>
+    <string name="home_no_results">Ничего не найдено</string>
+    <plurals name="home_group_members">
+        <item quantity="one">%1$d подписка</item>
+        <item quantity="few">%1$d подписки</item>
+        <item quantity="many">%1$d подписок</item>
+        <item quantity="other">%1$d подписки</item>
+    </plurals>
+
+    <string name="home_feed_accounts">Аккаунты главной ленты</string>
+    <string name="home_filter_accounts">Аккаунты</string>
+    <string name="home_filter_accounts_explained">Выключите запасные аккаунты, которые вы держите только ради более высоких лимитов. «Для вас» объединяет главные ленты оставшихся включёнными аккаунтов.</string>
+    <string name="home_filter_groups_explained">Выключите группу, чтобы спрятать её участников из «Читаю». Вкладка группы остаётся. Их посты также убираются из «Для вас».</string>
+    <string name="home_filter_only_hint">Долгое нажатие оставит включённым только этот пункт.</string>
+    <string name="home_filter_keep_one">Хотя бы один аккаунт должен остаться включённым</string>
+    <string name="home_filter_count">%1$d / %2$d</string>
+    <string name="home_filter_all">Все</string>
+    <string name="home_filter_none">Ничего</string>
+    <string name="home_filter_reset">Сбросить фильтры</string>
+    <string name="home_filter_apply">Применить</string>
+
+    <string name="home_for_you_empty">Не удаётся загрузить посты ленты</string>
+    <string name="home_for_you_no_account">Чтобы загрузить «Для вас», импортируйте резервную копию XTA с её аккаунтами.</string>
+    <string name="home_import">Импортировать резервную копию XTA</string>
+    <string name="home_zen_end">Пока это всё</string>
+    <string name="home_zen_more">Всё равно загрузить ещё</string>
+</resources>

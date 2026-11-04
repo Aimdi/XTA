@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
+     Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="home_for_you">Voor jou</string>
+    <string name="home_open_menu">Navigatiemenu openen</string>
+    <string name="home_add_timeline">Tijdlijn toevoegen</string>
+    <string name="home_unread">Ongelezen</string>
+    <string name="home_refresh">Vernieuwen</string>
+    <string name="home_open_group">Groep openen</string>
+    <string name="home_more_options">Meer opties</string>
+    <string name="home_pin_to_bar">Vastzetten in bovenbalk</string>
+
+    <string name="home_strip_title">Plugin-tijdlijnen</string>
+    <string name="home_strip_intro">Zet geïnstalleerde plugins naast Voor jou, in de volgorde die je wilt. Installeer er meer uit de pluginwinkel.</string>
+    <string name="home_strip_pinned">Op deze balk</string>
+    <string name="home_strip_available">Beschikbaar</string>
+    <string name="home_strip_empty">Nog geen plugins om te pinnen. Open de winkel voor Reddit, Pixiv, Mastodon en meer.</string>
+    <string name="home_strip_remove">Van balk verwijderen</string>
+    <string name="home_strip_up">Omhoog</string>
+    <string name="home_strip_down">Omlaag</string>
+    <string name="home_plugin_store">Pluginwinkel</string>
+
+    <string name="home_subscriptions">Abonnementen</string>
+    <string name="home_discover">Ontdekken</string>
+    <string name="home_saved">Opgeslagen</string>
+    <string name="home_downloads">Downloads</string>
+    <string name="home_antennas">Antennes</string>
+    <string name="home_deck">Deck</string>
+    <string name="home_deck_empty">Zet groepen vast om ze op een breed scherm naast elkaar te zien</string>
+    <string name="home_groups">Groepen</string>
+    <string name="home_no_groups">Nog geen groepen</string>
+    <string name="home_no_results">Geen resultaten</string>
+    <plurals name="home_group_members">
+        <item quantity="one">%1$d abonnement</item>
+        <item quantity="other">%1$d abonnementen</item>
+    </plurals>
+
+    <string name="home_feed_accounts">Accounts voor de starttijdlijn</string>
+    <string name="home_filter_accounts">Accounts</string>
+    <string name="home_filter_accounts_explained">Zet reserve-accounts uit die je alleen bewaart voor hogere limieten. Voor jou voegt de starttijdlijnen samen van de accounts die aan blijven.</string>
+    <string name="home_filter_groups_explained">Zet een groep uit om de leden in Volgend te verbergen. Het tabblad van de groep blijft. Hun berichten verdwijnen ook uit Voor jou.</string>
+    <string name="home_filter_only_hint">Houd er een ingedrukt om alleen die aan te laten.</string>
+    <string name="home_filter_keep_one">Er moet minstens één account aan blijven</string>
+    <string name="home_filter_count">%1$d / %2$d</string>
+    <string name="home_filter_all">Alles</string>
+    <string name="home_filter_none">Geen</string>
+    <string name="home_filter_reset">Filters herstellen</string>
+    <string name="home_filter_apply">Toepassen</string>
+
+    <string name="home_for_you_empty">Kan de berichten voor de feed niet laden</string>
+    <string name="home_for_you_no_account">Importeer de back-up van XTA met de accounts erin om Voor jou te laden.</string>
+    <string name="home_import">Een XTA-back-up importeren</string>
+    <string name="home_zen_end">Dat is alles voor nu</string>
+    <string name="home_zen_more">Toch meer laden</string>
+</resources>

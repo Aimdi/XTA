@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">Jälgin</string>
+    <string name="search">Otsi</string>
+    <string name="settings">Seaded</string>
+    <string name="dismiss">Sulge</string>
+    <string name="retry">Proovi uuesti</string>
+    <string name="back">Tagasi</string>
+    <string name="close">Sulge</string>
+    <string name="cancel">Katkesta</string>
+    <string name="post">Postitus</string>
+
+    <string name="pinned">Kinnitatud</string>
+    <string name="reposted_by">%1$s jagas uuesti</string>
+    <string name="replying_to">Vastus kasutajale</string>
+    <string name="views">%1$s vaatamist</string>
+    <string name="stat_reposts">Uuesti jagamised</string>
+    <string name="stat_quotes">Tsitaadid</string>
+    <string name="stat_likes">Meeldimised</string>
+    <string name="stat_bookmarks">Järjehoidjad</string>
+
+    <string name="ago_seconds">%1$d s</string>
+    <string name="ago_minutes">%1$d min</string>
+    <string name="ago_hours">%1$d t</string>
+
+    <string name="joined">Liitunud: %1$s</string>
+    <string name="following_count">Jälgitavaid</string>
+    <string name="followers_count">Jälgijaid</string>
+
+    <string name="feed_nobody_followed">Keegi, keda jälgid, pole veel voos Jälgin. Ava profiil, näiteks otsides @nimi, ja jälgi seda.</string>
+    <string name="feed_empty">Jälgitavatelt kontodelt pole veel postitusi.</string>
+    <string name="feed_partial">Mõnda kontot ei õnnestunud lugeda: %1$s</string>
+
+    <string name="problem_no_account">X-i kontot pole. Impordi XTA varukoopia koos selle kontodega.</string>
+    <string name="problem_rate_limited">X piirab siin kõiki kontosid. Proovi mõne minuti pärast uuesti.</string>
+    <string name="problem_offline">X-iga pole ühendust.</string>
+    <string name="problem_signing">X-i päringute allkirjastamist ei õnnestunud seadistada. Proovi kohe uuesti.</string>
+    <string name="problem_refused">X lükkas päringu tagasi (%1$d).</string>
+    <string name="problem_other">X-i lugemisel läks midagi valesti.</string>
+
+    <string name="search_x">Otsi X-ist</string>
+    <string name="search_top">Populaarsed</string>
+    <string name="search_latest">Uusimad</string>
+    <string name="search_nothing">Päringule „%1$s“ pole tulemusi.</string>
+    <string name="search_go_to">Mine kasutajale @%1$s</string>
+
+    <string name="import_intro">XTA Native on XTA, mis on kirjutatud ainult Androidile, et seda XTA-ga võrrelda. See loeb X-i kontodega, mida juba XTA-s kasutad.</string>
+    <string name="import_steps">Ava XTA-s Seaded → Andmed → Eksport, lülita sisse „Ekspordi kontod“, ekspordi ja vali see fail siin.</string>
+    <string name="import_choose">Vali XTA varukoopia</string>
+    <string name="import_choose_another">Vali teine fail</string>
+    <string name="import_not_a_backup">See fail pole XTA eksporditud varukoopia.</string>
+    <string name="import_no_accounts">Selles varukoopias pole X-i kontosid: ekspordi uuesti, „Ekspordi kontod“ sisse lülitatud.</string>
+    <string name="import_use">Kasuta seda varukoopiat</string>
+    <string name="import_privacy">Varukoopias on sinu X-i seansid. XTA Native hoiab neid selles telefonis, saadab neid ainult X-ile ega postita, märgi meeldivaks ega jälgi seal kunagi midagi.</string>
+    <plurals name="import_found_accounts">
+        <item quantity="one">%1$d X-i konto</item>
+        <item quantity="other">%1$d X-i kontot</item>
+    </plurals>
+    <plurals name="import_found_following">
+        <item quantity="one">%1$d jälgitav konto, %2$d voos Jälgin</item>
+        <item quantity="other">%1$d jälgitavat kontot, %2$d voos Jälgin</item>
+    </plurals>
+
+    <string name="settings_feed">Voog Jälgin</string>
+    <string name="settings_replies">Näita vastuseid</string>
+    <string name="settings_reposts">Näita uuesti jagamisi</string>
+    <string name="settings_accounts">X-i kontod</string>
+    <string name="settings_following">Jälgitavaid kontosid: %1$d, voos: %2$d</string>
+    <string name="settings_import_again">Impordi XTA varukoopia uuesti</string>
+    <string name="settings_clear">Eemalda kõik</string>
+    <string name="settings_clear_explained">Eemaldab XTA Native’ist X-i seansid ja jälgitavad kontod. XTA ise jätab kõik alles.</string>
+    <string name="settings_clear_confirm">Eemalda</string>
+    <string name="settings_about">Teave</string>
+    <string name="settings_version">XTA Native %1$s</string>
+    <string name="settings_prototype">Prototüüp XTA kõrval, võrdlemiseks. Selle võib tagasi võtta.</string>
+
+    <string name="card_from">Allikas: %1$s</string>
+    <string name="poll_final">Lõpptulemused</string>
+    <plurals name="poll_votes">
+        <item quantity="one">%1$d hääl</item>
+        <item quantity="other">%1$d häält</item>
+    </plurals>
+    <plurals name="poll_days_left">
+        <item quantity="one">Jäänud %1$d päev</item>
+        <item quantity="other">Jäänud %1$d päeva</item>
+    </plurals>
+    <plurals name="poll_hours_left">
+        <item quantity="one">Jäänud %1$d tund</item>
+        <item quantity="other">Jäänud %1$d tundi</item>
+    </plurals>
+    <plurals name="poll_minutes_left">
+        <item quantity="one">Jäänud %1$d minut</item>
+        <item quantity="other">Jäänud %1$d minutit</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d uus postitus</item>
+        <item quantity="other">%1$d uut postitust</item>
+    </plurals>
+    <string name="settings_autoplay">Esita voo videod ilma helita</string>
+    <string name="profile_posts">Postitused</string>
+    <string name="profile_replies">Vastused</string>
+    <string name="profile_media">Meedia</string>
+    <string name="profile_nothing">Siin pole veel midagi.</string>
+    <string name="profile_follow">Jälgi</string>
+    <string name="profile_following">Jälgin</string>
+    <string name="follow_here_only">Jälgitav ainult XTA Native’is: X ei saa sellest teada.</string>
+    <string name="follow_in_feed">Voos Jälgin</string>
+    <string name="follow_groups">Grupid</string>
+    <string name="follow_new_group">Uus grupp</string>
+    <string name="follow_group_name">Grupi nimi</string>
+    <string name="follow_create">Loo</string>
+    <string name="follow_unfollow">Lõpeta jälgimine</string>
+</resources>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
+     Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="home_for_you">Pour vous</string>
+    <string name="home_open_menu">Ouvrir le menu de navigation</string>
+    <string name="home_add_timeline">Ajouter un fil</string>
+    <string name="home_unread">Non lu</string>
+    <string name="home_refresh">Actualiser</string>
+    <string name="home_open_group">Ouvrir le groupe</string>
+    <string name="home_more_options">Plus d'options</string>
+    <string name="home_pin_to_bar">Épingler dans la barre du haut</string>
+
+    <string name="home_strip_title">Fils des plugins</string>
+    <string name="home_strip_intro">Épinglez les plugins installés à côté de Pour vous, dans l'ordre de votre choix. Installez-en d'autres depuis la boutique.</string>
+    <string name="home_strip_pinned">Sur cette barre</string>
+    <string name="home_strip_available">Disponibles</string>
+    <string name="home_strip_empty">Aucun plugin à épingler. Ouvrez le magasin pour installer Reddit, Pixiv, Mastodon, etc.</string>
+    <string name="home_strip_remove">Retirer de la barre</string>
+    <string name="home_strip_up">Monter</string>
+    <string name="home_strip_down">Descendre</string>
+    <string name="home_plugin_store">Boutique d’extensions</string>
+
+    <string name="home_subscriptions">Abonnements</string>
+    <string name="home_discover">Découvrir</string>
+    <string name="home_saved">Enregistré</string>
+    <string name="home_downloads">Téléchargements</string>
+    <string name="home_antennas">Antennes</string>
+    <string name="home_deck">Deck</string>
+    <string name="home_deck_empty">Épinglez des groupes pour les voir côte à côte sur un grand écran</string>
+    <string name="home_groups">Groupes</string>
+    <string name="home_no_groups">Aucun groupe pour l’instant</string>
+    <string name="home_no_results">Aucun résultat</string>
+    <plurals name="home_group_members">
+        <item quantity="one">%1$d abonnement</item>
+        <item quantity="other">%1$d abonnements</item>
+    </plurals>
+
+    <string name="home_feed_accounts">Comptes du fil d'accueil</string>
+    <string name="home_filter_accounts">Comptes</string>
+    <string name="home_filter_accounts_explained">Désactivez les comptes de réserve que vous ne gardez que pour des limites plus élevées. Pour vous réunit les fils d'accueil des comptes laissés activés.</string>
+    <string name="home_filter_groups_explained">Désactivez un groupe pour masquer ses membres dans Abonnements. L’onglet du groupe reste. Leurs publications sont aussi retirées de Pour vous.</string>
+    <string name="home_filter_only_hint">Appuyez longuement sur un élément pour ne garder que lui.</string>
+    <string name="home_filter_keep_one">Au moins un compte doit rester activé</string>
+    <string name="home_filter_count">%1$d / %2$d</string>
+    <string name="home_filter_all">Tout</string>
+    <string name="home_filter_none">Aucun</string>
+    <string name="home_filter_reset">Réinitialiser les filtres</string>
+    <string name="home_filter_apply">Appliquer</string>
+
+    <string name="home_for_you_empty">Impossible de charger les posts du fil</string>
+    <string name="home_for_you_no_account">Importez la sauvegarde de XTA avec ses comptes pour charger Pour vous.</string>
+    <string name="home_import">Importer une sauvegarde XTA</string>
+    <string name="home_zen_end">C'est tout pour le moment</string>
+    <string name="home_zen_more">Charger plus quand même</string>
+</resources>

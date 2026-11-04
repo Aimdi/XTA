@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">Seguint</string>
+    <string name="search">Cerca</string>
+    <string name="settings">Configuració</string>
+    <string name="dismiss">Tanca</string>
+    <string name="retry">Reintentar</string>
+    <string name="back">Enrere</string>
+    <string name="close">Tanca</string>
+    <string name="cancel">Cancelar</string>
+    <string name="post">Publicació</string>
+
+    <string name="pinned">Fixat</string>
+    <string name="reposted_by">%1$s ha republicat</string>
+    <string name="replying_to">Responent a</string>
+    <string name="views">%1$s visualitzacions</string>
+    <string name="stat_reposts">Republicacions</string>
+    <string name="stat_quotes">Citacions</string>
+    <string name="stat_likes">M'agrada</string>
+    <string name="stat_bookmarks">Elements desats</string>
+
+    <string name="ago_seconds">%1$d s</string>
+    <string name="ago_minutes">%1$d min</string>
+    <string name="ago_hours">%1$d h</string>
+
+    <string name="joined">Membre des de %1$s</string>
+    <string name="following_count">Seguint</string>
+    <string name="followers_count">Seguidors</string>
+
+    <string name="feed_nobody_followed">Encara no hi ha ningú dels que segueixes al feed Seguint. Obre un perfil, per exemple cercant @nom, i segueix-lo.</string>
+    <string name="feed_empty">Encara no hi ha publicacions dels comptes que segueixes.</string>
+    <string name="feed_partial">No s'han pogut llegir alguns comptes: %1$s</string>
+
+    <string name="problem_no_account">No hi ha cap compte d'X. Importa la còpia de seguretat de l'XTA amb els seus comptes.</string>
+    <string name="problem_rate_limited">X està limitant tots els comptes d'aquí. Torna-ho a provar d'aquí a uns minuts.</string>
+    <string name="problem_offline">Sense connexió amb X.</string>
+    <string name="problem_signing">No s'ha pogut preparar la signatura de les sol·licituds a X. Torna-ho a provar d'aquí a un moment.</string>
+    <string name="problem_refused">X ha rebutjat la sol·licitud (%1$d).</string>
+    <string name="problem_other">Alguna cosa ha anat malament en llegir X.</string>
+
+    <string name="search_x">Cerca a X</string>
+    <string name="search_top">Destacat</string>
+    <string name="search_latest">Més recent</string>
+    <string name="search_nothing">No hi ha resultats per a «%1$s».</string>
+    <string name="search_go_to">Ves a @%1$s</string>
+
+    <string name="import_intro">XTA Native és l'XTA escrit només per a Android, per comparar-lo amb l'XTA. Llegeix X amb els comptes que ja fas servir a l'XTA.</string>
+    <string name="import_steps">A l'XTA, obre Configuració → Dades → Exportar, activa «Exporta els comptes», exporta i tria aquí aquest fitxer.</string>
+    <string name="import_choose">Tria una còpia de seguretat de l'XTA</string>
+    <string name="import_choose_another">Tria un altre fitxer</string>
+    <string name="import_not_a_backup">Aquest fitxer no és una còpia de seguretat exportada per l'XTA.</string>
+    <string name="import_no_accounts">Aquesta còpia de seguretat no té comptes d'X: torna a exportar-la amb «Exporta els comptes» activat.</string>
+    <string name="import_use">Fes servir aquesta còpia</string>
+    <string name="import_privacy">La còpia de seguretat conté les teves sessions d'X. XTA Native les guarda en aquest telèfon, només les envia a X i mai no hi publica, hi fa m'agrada ni hi segueix res.</string>
+    <plurals name="import_found_accounts">
+        <item quantity="one">%1$d compte d'X</item>
+        <item quantity="other">%1$d comptes d'X</item>
+    </plurals>
+    <plurals name="import_found_following">
+        <item quantity="one">%1$d compte seguit, %2$d al feed Seguint</item>
+        <item quantity="other">%1$d comptes seguits, %2$d al feed Seguint</item>
+    </plurals>
+
+    <string name="settings_feed">Feed Seguint</string>
+    <string name="settings_replies">Mostra les respostes</string>
+    <string name="settings_reposts">Mostra les republicacions</string>
+    <string name="settings_accounts">Comptes d'X</string>
+    <string name="settings_following">Comptes seguits: %1$d; al feed: %2$d</string>
+    <string name="settings_import_again">Torna a importar una còpia de seguretat de l'XTA</string>
+    <string name="settings_clear">Suprimeix-ho tot</string>
+    <string name="settings_clear_explained">Suprimeix d'XTA Native les sessions d'X i els comptes seguits. L'XTA ho conserva tot.</string>
+    <string name="settings_clear_confirm">Suprimeix</string>
+    <string name="settings_about">Quant a</string>
+    <string name="settings_version">XTA Native %1$s</string>
+    <string name="settings_prototype">Un prototip al costat de l'XTA, per comparar. Es pot retirar.</string>
+
+    <string name="card_from">De %1$s</string>
+    <string name="poll_final">Resultats finals</string>
+    <plurals name="poll_votes">
+        <item quantity="one">%1$d vot</item>
+        <item quantity="other">%1$d vots</item>
+    </plurals>
+    <plurals name="poll_days_left">
+        <item quantity="one">Queda %1$d dia</item>
+        <item quantity="other">Queden %1$d dies</item>
+    </plurals>
+    <plurals name="poll_hours_left">
+        <item quantity="one">Queda %1$d hora</item>
+        <item quantity="other">Queden %1$d hores</item>
+    </plurals>
+    <plurals name="poll_minutes_left">
+        <item quantity="one">Queda %1$d minut</item>
+        <item quantity="other">Queden %1$d minuts</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d publicació nova</item>
+        <item quantity="other">%1$d publicacions noves</item>
+    </plurals>
+    <string name="settings_autoplay">Reprodueix els vídeos del feed, sense so</string>
+    <string name="profile_posts">Publicacions</string>
+    <string name="profile_replies">Respostes</string>
+    <string name="profile_media">Mèdia</string>
+    <string name="profile_nothing">Encara no hi ha res.</string>
+    <string name="profile_follow">Segueix</string>
+    <string name="profile_following">Seguint</string>
+    <string name="follow_here_only">Seguit només a XTA Native: X no se n'assabenta.</string>
+    <string name="follow_in_feed">Al feed Seguint</string>
+    <string name="follow_groups">Grups</string>
+    <string name="follow_new_group">Grup nou</string>
+    <string name="follow_group_name">Nom del grup</string>
+    <string name="follow_create">Crea</string>
+    <string name="follow_unfollow">Deixa de seguir</string>
+</resources>

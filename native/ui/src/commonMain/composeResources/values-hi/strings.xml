@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">फ़ॉलोइंग</string>
+    <string name="search">खोजें</string>
+    <string name="settings">सेटिंग</string>
+    <string name="dismiss">बंद करें</string>
+    <string name="retry">पुनः प्रयास करें</string>
+    <string name="back">वापस</string>
+    <string name="close">बंद करें</string>
+    <string name="cancel">रद्द करें</string>
+    <string name="post">पोस्ट</string>
+
+    <string name="pinned">पिन की गई</string>
+    <string name="reposted_by">%1$s ने रीपोस्ट किया</string>
+    <string name="replying_to">जवाब दे रहे हैं</string>
+    <string name="views">%1$s बार देखा गया</string>
+    <string name="stat_reposts">रीपोस्ट</string>
+    <string name="stat_quotes">उद्धरण</string>
+    <string name="stat_likes">पसंद</string>
+    <string name="stat_bookmarks">बुकमार्क</string>
+
+    <string name="ago_seconds">%1$d से॰</string>
+    <string name="ago_minutes">%1$d मि॰</string>
+    <string name="ago_hours">%1$d घं॰</string>
+
+    <string name="joined">%1$s में शामिल हुए</string>
+    <string name="following_count">अनुसरण कर रहे हैं</string>
+    <string name="followers_count">अनुसरणकर्ता</string>
+
+    <string name="feed_nobody_followed">आप जिन्हें फ़ॉलो करते हैं, उनमें से कोई अभी फ़ॉलोइंग फ़ीड में नहीं है। कोई प्रोफ़ाइल खोलें, जैसे @नाम खोजकर, और उसे फ़ॉलो करें।</string>
+    <string name="feed_empty">आप जिन खातों को फ़ॉलो करते हैं, उनकी अभी कोई पोस्ट नहीं है।</string>
+    <string name="feed_partial">कुछ खाते पढ़े नहीं जा सके: %1$s</string>
+
+    <string name="problem_no_account">कोई X खाता नहीं है। XTA का बैकअप उसके खातों के साथ इंपोर्ट करें।</string>
+    <string name="problem_rate_limited">X यहाँ के हर खाते को सीमित कर रहा है। कुछ मिनट बाद फिर कोशिश करें।</string>
+    <string name="problem_offline">X से कोई कनेक्शन नहीं है।</string>
+    <string name="problem_signing">X के अनुरोधों का हस्ताक्षर तैयार नहीं हो सका। थोड़ी देर में फिर कोशिश करें।</string>
+    <string name="problem_refused">X ने अनुरोध अस्वीकार कर दिया (%1$d)।</string>
+    <string name="problem_other">X पढ़ते समय कुछ गड़बड़ हो गई।</string>
+
+    <string name="search_x">X पर खोजें</string>
+    <string name="search_top">टॉप</string>
+    <string name="search_latest">नवीनतम</string>
+    <string name="search_nothing">“%1$s” के लिए कोई परिणाम नहीं।</string>
+    <string name="search_go_to">@%1$s पर जाएँ</string>
+
+    <string name="import_intro">XTA Native केवल Android के लिए लिखा गया XTA है, ताकि उसकी XTA से तुलना की जा सके। यह X को उन्हीं खातों से पढ़ता है जिन्हें आप XTA में पहले से इस्तेमाल करते हैं।</string>
+    <string name="import_steps">XTA में सेटिंग → डेटा → निर्यात खोलें, “खाते निर्यात करें” चालू करें, निर्यात करें, फिर वह फ़ाइल यहाँ चुनें।</string>
+    <string name="import_choose">XTA बैकअप चुनें</string>
+    <string name="import_choose_another">दूसरी फ़ाइल चुनें</string>
+    <string name="import_not_a_backup">यह फ़ाइल XTA से निर्यात किया गया बैकअप नहीं है।</string>
+    <string name="import_no_accounts">इस बैकअप में कोई X खाता नहीं है: “खाते निर्यात करें” चालू करके फिर से निर्यात करें।</string>
+    <string name="import_use">यह बैकअप इस्तेमाल करें</string>
+    <string name="import_privacy">बैकअप में आपके X सेशन हैं। XTA Native उन्हें इसी फ़ोन पर रखता है, उन्हें सिर्फ़ X को भेजता है, और वहाँ कभी कुछ पोस्ट, लाइक या फ़ॉलो नहीं करता।</string>
+    <plurals name="import_found_accounts">
+        <item quantity="one">%1$d X खाता</item>
+        <item quantity="other">%1$d X खाते</item>
+    </plurals>
+    <plurals name="import_found_following">
+        <item quantity="one">%1$d फ़ॉलो किया गया खाता, %2$d फ़ॉलोइंग फ़ीड में</item>
+        <item quantity="other">%1$d फ़ॉलो किए गए खाते, %2$d फ़ॉलोइंग फ़ीड में</item>
+    </plurals>
+
+    <string name="settings_feed">फ़ॉलोइंग फ़ीड</string>
+    <string name="settings_replies">जवाब दिखाएँ</string>
+    <string name="settings_reposts">रीपोस्ट दिखाएँ</string>
+    <string name="settings_accounts">X खाते</string>
+    <string name="settings_following">फ़ॉलो किए गए खाते: %1$d, फ़ीड में: %2$d</string>
+    <string name="settings_import_again">XTA बैकअप फिर से इंपोर्ट करें</string>
+    <string name="settings_clear">सब कुछ हटाएँ</string>
+    <string name="settings_clear_explained">XTA Native से X सेशन और फ़ॉलो किए गए खाते हटाता है। XTA स्वयं सब कुछ रखता है।</string>
+    <string name="settings_clear_confirm">हटाएँ</string>
+    <string name="settings_about">परिचय</string>
+    <string name="settings_version">XTA Native %1$s</string>
+    <string name="settings_prototype">तुलना के लिए XTA के साथ एक प्रोटोटाइप। इसे वापस लिया जा सकता है।</string>
+
+    <string name="card_from">%1$s से</string>
+    <string name="poll_final">अंतिम परिणाम</string>
+    <plurals name="poll_votes">
+        <item quantity="one">%1$d वोट</item>
+        <item quantity="other">%1$d वोट</item>
+    </plurals>
+    <plurals name="poll_days_left">
+        <item quantity="one">%1$d दिन बाकी</item>
+        <item quantity="other">%1$d दिन बाकी</item>
+    </plurals>
+    <plurals name="poll_hours_left">
+        <item quantity="one">%1$d घंटा बाकी</item>
+        <item quantity="other">%1$d घंटे बाकी</item>
+    </plurals>
+    <plurals name="poll_minutes_left">
+        <item quantity="one">%1$d मिनट बाकी</item>
+        <item quantity="other">%1$d मिनट बाकी</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d नई पोस्ट</item>
+        <item quantity="other">%1$d नई पोस्ट</item>
+    </plurals>
+    <string name="settings_autoplay">फ़ीड में वीडियो बिना आवाज़ चलाएँ</string>
+    <string name="profile_posts">पोस्ट</string>
+    <string name="profile_replies">जवाब</string>
+    <string name="profile_media">मीडिया</string>
+    <string name="profile_nothing">यहाँ अभी कुछ नहीं है।</string>
+    <string name="profile_follow">फ़ॉलो करें</string>
+    <string name="profile_following">फ़ॉलो कर रहे हैं</string>
+    <string name="follow_here_only">सिर्फ़ XTA Native में फ़ॉलो किया गया: X को नहीं बताया जाता।</string>
+    <string name="follow_in_feed">फ़ॉलोइंग फ़ीड में</string>
+    <string name="follow_groups">समूह</string>
+    <string name="follow_new_group">नया समूह</string>
+    <string name="follow_group_name">समूह का नाम</string>
+    <string name="follow_create">बनाएँ</string>
+    <string name="follow_unfollow">अनफ़ॉलो करें</string>
+</resources>

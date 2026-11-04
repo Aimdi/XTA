@@ -30,6 +30,10 @@ import com.aimdi.xtanative.ui.community.CommunityMembersScreen
 import com.aimdi.xtanative.ui.community.CommunityScreen
 import com.aimdi.xtanative.ui.downloads.DownloadsScreen
 import com.aimdi.xtanative.ui.feed.FeedScreen
+import com.aimdi.xtanative.ui.home.DeckScreen
+import com.aimdi.xtanative.ui.home.DesktopNavigation
+import com.aimdi.xtanative.ui.home.HomeRoutes
+import com.aimdi.xtanative.ui.home.HomeScreen
 import com.aimdi.xtanative.ui.importer.ImportScreen
 import com.aimdi.xtanative.ui.intro.IntroFlow
 import com.aimdi.xtanative.ui.intro.IntroScreen
@@ -58,6 +62,8 @@ import java.net.URLEncoder
 private object Routes {
     const val ROOT = "root"
     const val IMPORT = "import"
+    const val HOME = "home"
+    const val DECK = "deck"
     const val FEED = "feed"
     const val POST = "post/{id}"
     const val PROFILE = "profile/{screenName}"
@@ -122,7 +128,7 @@ fun XtaNativeRoot() {
         when {
             IntroFlow.opensOn(prefs, hasAccounts = loaded.accounts.isNotEmpty()) -> Routes.INTRO
             loaded.accounts.isEmpty() -> Routes.IMPORT
-            else -> Routes.FEED
+            else -> Routes.HOME
         }
     }
     val nav = rememberNavController()
@@ -144,7 +150,22 @@ fun XtaNativeRoot() {
             openAntennas = { nav.navigate(Routes.ANTENNAS) },
         )
     }
+    val homeRoutes = remember(nav) { HomeRoutes(exists = nav::hasRoute, open = { route -> nav.navigate(route) }) }
 
+    DesktopNavigation(nav) { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes)) }
+}
+
+/** What the screens are given to reach one another. */
+private class ScreenActions(val posts: PostActions, val search: SearchActions, val trends: TrendsActions, val home: HomeRoutes)
+
+/** Every screen, by route; [start] is the first. */
+@Composable
+private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
+    val graph = LocalGraph.current
+    val actions = all.posts
+    val searchActions = all.search
+    val trendsActions = all.trends
+    val homeRoutes = all.home
     NavHost(
         navController = nav,
         startDestination = start,
@@ -159,15 +180,21 @@ fun XtaNativeRoot() {
             ImportScreen(onImported = {
                 // A restored backup is a returning reader's: the first-launch cards are done.
                 graph.keep { graph.settings.update(IntroFlow::finished) }
-                nav.startOver(Routes.FEED)
+                nav.startOver(Routes.HOME)
             })
         }
         composable(Routes.INTRO) {
             IntroScreen(
-                onFinished = { nav.startOver(Routes.FEED) },
+                onFinished = { nav.startOver(Routes.HOME) },
                 onImport = { nav.navigate(Routes.IMPORT) },
                 onOpen = { route -> nav.navigateIfKnown(route) },
             )
+        }
+        composable(Routes.HOME) {
+            HomeScreen(actions, homeRoutes)
+        }
+        composable(Routes.DECK) {
+            DeckScreen(actions, onBack = { nav.popBackStack() })
         }
         composable(Routes.FEED) {
             FeedScreen(actions, openSearch = { nav.navigate(Routes.search(null)) }, openSettings = { nav.navigate(Routes.SETTINGS) })
@@ -307,6 +334,9 @@ private fun xLinks(path: String) =
     listOf("x.com", "www.x.com", "twitter.com", "www.twitter.com", "mobile.twitter.com", "mobile.x.com").map { host ->
         navDeepLink { uriPattern = "https://$host/$path" }
     }
+
+/** Whether the app has a screen at [route] yet: Home leads only to those. */
+private fun NavHostController.hasRoute(route: String): Boolean = runCatching { graph.findNode(route) != null }.getOrDefault(false)
 
 /** A route's text argument; null where the route has none. */
 private fun NavBackStackEntry.text(name: String): String? = arguments?.read { getStringOrNull(name) }

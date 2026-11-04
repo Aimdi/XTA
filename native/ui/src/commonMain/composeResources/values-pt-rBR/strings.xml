@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">Seguindo</string>
+    <string name="search">Buscar</string>
+    <string name="settings">Configurações</string>
+    <string name="dismiss">Fechar</string>
+    <string name="retry">Tentar novamente</string>
+    <string name="back">Voltar</string>
+    <string name="close">Fechar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="post">Post</string>
+
+    <string name="pinned">Fixado</string>
+    <string name="reposted_by">%1$s repostou</string>
+    <string name="replying_to">Respondendo a</string>
+    <string name="views">%1$s visualizações</string>
+    <string name="stat_reposts">Reposts</string>
+    <string name="stat_quotes">Citações</string>
+    <string name="stat_likes">Curtidas</string>
+    <string name="stat_bookmarks">Itens salvos</string>
+
+    <string name="ago_seconds">%1$d s</string>
+    <string name="ago_minutes">%1$d min</string>
+    <string name="ago_hours">%1$d h</string>
+
+    <string name="joined">Entrou em %1$s</string>
+    <string name="following_count">Seguindo</string>
+    <string name="followers_count">Seguidores</string>
+
+    <string name="feed_nobody_followed">Ninguém que você segue está no feed Seguindo ainda. Abra um perfil, por exemplo buscando @nome, e siga.</string>
+    <string name="feed_empty">Ainda não há posts das contas que você segue.</string>
+    <string name="feed_partial">Não foi possível ler algumas contas: %1$s</string>
+
+    <string name="problem_no_account">Nenhuma conta do X. Importe o backup do XTA com as contas dele.</string>
+    <string name="problem_rate_limited">O X está limitando todas as contas aqui. Tente novamente em alguns minutos.</string>
+    <string name="problem_offline">Sem conexão com o X.</string>
+    <string name="problem_signing">Não foi possível preparar a assinatura das solicitações ao X. Tente novamente daqui a pouco.</string>
+    <string name="problem_refused">O X recusou a solicitação (%1$d).</string>
+    <string name="problem_other">Algo deu errado ao ler o X.</string>
+
+    <string name="search_x">Buscar no X</string>
+    <string name="search_top">Em alta</string>
+    <string name="search_latest">Mais recentes</string>
+    <string name="search_nothing">Nenhum resultado para “%1$s”.</string>
+    <string name="search_go_to">Ir para @%1$s</string>
+
+    <string name="import_intro">O XTA Native é o XTA escrito só para Android, para comparar com o XTA. Ele lê o X com as contas que você já usa no XTA.</string>
+    <string name="import_steps">No XTA, abra Configurações → Dados → Exportar, ative “Exportar contas”, exporte e escolha esse arquivo aqui.</string>
+    <string name="import_choose">Escolher backup do XTA</string>
+    <string name="import_choose_another">Escolher outro arquivo</string>
+    <string name="import_not_a_backup">Este arquivo não é um backup exportado pelo XTA.</string>
+    <string name="import_no_accounts">Este backup não tem contas do X: exporte de novo com “Exportar contas” ativado.</string>
+    <string name="import_use">Usar este backup</string>
+    <string name="import_privacy">O backup contém suas sessões do X. O XTA Native as guarda neste celular, só as envia ao X e nunca posta, curte nem segue nada lá.</string>
+    <plurals name="import_found_accounts">
+        <item quantity="one">%1$d conta do X</item>
+        <item quantity="other">%1$d contas do X</item>
+    </plurals>
+    <plurals name="import_found_following">
+        <item quantity="one">%1$d conta seguida, %2$d no feed Seguindo</item>
+        <item quantity="other">%1$d contas seguidas, %2$d no feed Seguindo</item>
+    </plurals>
+
+    <string name="settings_feed">Feed Seguindo</string>
+    <string name="settings_replies">Mostrar respostas</string>
+    <string name="settings_reposts">Mostrar reposts</string>
+    <string name="settings_accounts">Contas do X</string>
+    <string name="settings_following">Contas seguidas: %1$d; no feed: %2$d</string>
+    <string name="settings_import_again">Importar um backup do XTA de novo</string>
+    <string name="settings_clear">Remover tudo</string>
+    <string name="settings_clear_explained">Remove do XTA Native as sessões do X e as contas seguidas. O próprio XTA mantém tudo.</string>
+    <string name="settings_clear_confirm">Remover</string>
+    <string name="settings_about">Sobre</string>
+    <string name="settings_version">XTA Native %1$s</string>
+    <string name="settings_prototype">Um protótipo ao lado do XTA, para comparar. Ele pode ser retirado.</string>
+
+    <string name="card_from">De %1$s</string>
+    <string name="poll_final">Resultados finais</string>
+    <plurals name="poll_votes">
+        <item quantity="one">%1$d voto</item>
+        <item quantity="other">%1$d votos</item>
+    </plurals>
+    <plurals name="poll_days_left">
+        <item quantity="one">Falta %1$d dia</item>
+        <item quantity="other">Faltam %1$d dias</item>
+    </plurals>
+    <plurals name="poll_hours_left">
+        <item quantity="one">Falta %1$d hora</item>
+        <item quantity="other">Faltam %1$d horas</item>
+    </plurals>
+    <plurals name="poll_minutes_left">
+        <item quantity="one">Falta %1$d minuto</item>
+        <item quantity="other">Faltam %1$d minutos</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d post novo</item>
+        <item quantity="other">%1$d posts novos</item>
+    </plurals>
+    <string name="settings_autoplay">Reproduzir vídeos no feed, sem som</string>
+    <string name="profile_posts">Posts</string>
+    <string name="profile_replies">Respostas</string>
+    <string name="profile_media">Mídia</string>
+    <string name="profile_nothing">Ainda não há nada aqui.</string>
+    <string name="profile_follow">Seguir</string>
+    <string name="profile_following">Seguindo</string>
+    <string name="follow_here_only">Seguido só no XTA Native: o X não fica sabendo.</string>
+    <string name="follow_in_feed">No feed Seguindo</string>
+    <string name="follow_groups">Grupos</string>
+    <string name="follow_new_group">Novo grupo</string>
+    <string name="follow_group_name">Nome do grupo</string>
+    <string name="follow_create">Criar</string>
+    <string name="follow_unfollow">Deixar de seguir</string>
+</resources>

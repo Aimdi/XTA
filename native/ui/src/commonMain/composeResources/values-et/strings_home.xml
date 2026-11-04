@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
+     Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="home_for_you">Sinu jaoks</string>
+    <string name="home_open_menu">Ava navigeerimismenüü</string>
+    <string name="home_add_timeline">Lisa ajajoon</string>
+    <string name="home_unread">Lugemata</string>
+    <string name="home_refresh">Värskenda</string>
+    <string name="home_open_group">Ava grupp</string>
+    <string name="home_more_options">Rohkem valikuid</string>
+    <string name="home_pin_to_bar">Kinnita ülaribale</string>
+
+    <string name="home_strip_title">Pluginate ajajooned</string>
+    <string name="home_strip_intro">Kinnita installitud pluginad voo Sinu jaoks kõrvale soovitud järjekorras. Rohkem leiad pluginapoest.</string>
+    <string name="home_strip_pinned">Sellel ribal</string>
+    <string name="home_strip_available">Saadaval</string>
+    <string name="home_strip_empty">Pole veel kinnitatavaid pluginaid. Ava pood Reddit’i, Pixivi, Mastodoni jms jaoks.</string>
+    <string name="home_strip_remove">Eemalda ribalt</string>
+    <string name="home_strip_up">Liiguta üles</string>
+    <string name="home_strip_down">Liiguta alla</string>
+    <string name="home_plugin_store">Pluginapood</string>
+
+    <string name="home_subscriptions">Tellimused</string>
+    <string name="home_discover">Avasta</string>
+    <string name="home_saved">Salvestatud</string>
+    <string name="home_downloads">Allalaadimised</string>
+    <string name="home_antennas">Antennid</string>
+    <string name="home_deck">Veerud</string>
+    <string name="home_deck_empty">Kinnita grupid, et näha neid laial ekraanil kõrvuti</string>
+    <string name="home_groups">Grupid</string>
+    <string name="home_no_groups">Gruppe pole veel</string>
+    <string name="home_no_results">Tulemusi pole</string>
+    <plurals name="home_group_members">
+        <item quantity="one">%1$d tellimus</item>
+        <item quantity="other">%1$d tellimust</item>
+    </plurals>
+
+    <string name="home_feed_accounts">Avakuva kontod</string>
+    <string name="home_filter_accounts">Kontod</string>
+    <string name="home_filter_accounts_explained">Lülita välja varukontod, mida hoiad ainult kõrgemate piirangute jaoks. Sinu jaoks liidab sisse jäetud kontode avalehe ajajooned.</string>
+    <string name="home_filter_groups_explained">Lülita grupp välja, et peita selle liikmed voost Jälgin. Grupi vahekaart jääb. Nende postitused kaovad ka voost Sinu jaoks.</string>
+    <string name="home_filter_only_hint">Vajuta pikalt, et jätta sisse ainult see.</string>
+    <string name="home_filter_keep_one">Vähemalt üks konto peab jääma sisse</string>
+    <string name="home_filter_count">%1$d / %2$d</string>
+    <string name="home_filter_all">Kõik</string>
+    <string name="home_filter_none">Mitte ükski</string>
+    <string name="home_filter_reset">Lähtesta filtrid</string>
+    <string name="home_filter_apply">Rakenda</string>
+
+    <string name="home_for_you_empty">Voo postitusi ei õnnestu laadida</string>
+    <string name="home_for_you_no_account">Voo Sinu jaoks laadimiseks impordi XTA varukoopia koos selle kontodega.</string>
+    <string name="home_import">Impordi XTA varukoopia</string>
+    <string name="home_zen_end">Praegu on see kõik</string>
+    <string name="home_zen_more">Laadi ikkagi rohkem</string>
+</resources>

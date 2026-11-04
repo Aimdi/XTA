@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
+     Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="home_for_you">Por vi</string>
+    <string name="home_open_menu">Malfermi la navigan menuon</string>
+    <string name="home_add_timeline">Aldoni tempolinion</string>
+    <string name="home_unread">Nelegita</string>
+    <string name="home_refresh">Aktualigi</string>
+    <string name="home_open_group">Malfermi la grupon</string>
+    <string name="home_more_options">Pliaj elektoj</string>
+    <string name="home_pin_to_bar">Fiksi al la supra breto</string>
+
+    <string name="home_strip_title">Kromaĵaj tempolinioj</string>
+    <string name="home_strip_intro">Alpinglu instalitajn kromaĵojn apud Por vi, laŭ la ordo, kiun vi ŝatas. Instalu pliajn el la kromaĵa vendejo.</string>
+    <string name="home_strip_pinned">Sur ĉi tiu rubando</string>
+    <string name="home_strip_available">Haveblaj</string>
+    <string name="home_strip_empty">Ankoraŭ neniu kromaĵo por alpingli. Malfermu la vendejon por Reddit, Pixiv, Mastodon ktp.</string>
+    <string name="home_strip_remove">Forigi de la rubando</string>
+    <string name="home_strip_up">Movi supren</string>
+    <string name="home_strip_down">Movi malsupren</string>
+    <string name="home_plugin_store">Kromaĵa vendejo</string>
+
+    <string name="home_subscriptions">Abonoj</string>
+    <string name="home_discover">Malkovri</string>
+    <string name="home_saved">Konservitaĵoj</string>
+    <string name="home_downloads">Elŝutoj</string>
+    <string name="home_antennas">Antenoj</string>
+    <string name="home_deck">Kolumnaro</string>
+    <string name="home_deck_empty">Alpinglu grupojn por vidi ilin unu apud la alia sur larĝa ekrano</string>
+    <string name="home_groups">Grupoj</string>
+    <string name="home_no_groups">Ankoraŭ neniuj grupoj</string>
+    <string name="home_no_results">Neniuj rezultoj</string>
+    <plurals name="home_group_members">
+        <item quantity="one">%1$d abono</item>
+        <item quantity="other">%1$d abonoj</item>
+    </plurals>
+
+    <string name="home_feed_accounts">Kontoj de la ĉefa fluo</string>
+    <string name="home_filter_accounts">Kontoj</string>
+    <string name="home_filter_accounts_explained">Malŝaltu rezervajn kontojn, kiujn vi tenas nur por pli altaj limoj. Por vi kunigas la hejmajn tempoliniojn de la kontoj lasitaj ŝaltitaj.</string>
+    <string name="home_filter_groups_explained">Malŝaltu grupon por kaŝi ĝiajn membrojn el Abonoj. La langeto de la grupo restas. Iliaj afiŝoj ankaŭ foriĝas el Por vi.</string>
+    <string name="home_filter_only_hint">Longe premu eron por lasi nur ĝin ŝaltita.</string>
+    <string name="home_filter_keep_one">Almenaŭ unu konto devas resti ŝaltita</string>
+    <string name="home_filter_count">%1$d / %2$d</string>
+    <string name="home_filter_all">Ĉio</string>
+    <string name="home_filter_none">Neniu</string>
+    <string name="home_filter_reset">Restarigi filtrilojn</string>
+    <string name="home_filter_apply">Apliki</string>
+
+    <string name="home_for_you_empty">Ne eblas ŝargi la afiŝojn por la fluo</string>
+    <string name="home_for_you_no_account">Importu la savkopion de XTA kun ĝiaj kontoj por ŝargi Por vi.</string>
+    <string name="home_import">Importi savkopion de XTA</string>
+    <string name="home_zen_end">Jen ĉio nuntempe</string>
+    <string name="home_zen_more">Tamen ŝargi pli</string>
+</resources>

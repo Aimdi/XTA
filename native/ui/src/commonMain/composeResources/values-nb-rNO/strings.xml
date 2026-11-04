@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">Følger</string>
+    <string name="search">Søk</string>
+    <string name="settings">Innstillinger</string>
+    <string name="dismiss">Lukk</string>
+    <string name="retry">Prøv på nytt</string>
+    <string name="back">Tilbake</string>
+    <string name="close">Lukk</string>
+    <string name="cancel">Avbryt</string>
+    <string name="post">Innlegg</string>
+
+    <string name="pinned">Festet</string>
+    <string name="reposted_by">%1$s repostet</string>
+    <string name="replying_to">Svarer til</string>
+    <string name="views">%1$s visninger</string>
+    <string name="stat_reposts">Reposts</string>
+    <string name="stat_quotes">Sitater</string>
+    <string name="stat_likes">Liker</string>
+    <string name="stat_bookmarks">Bokmerker</string>
+
+    <string name="ago_seconds">%1$d s</string>
+    <string name="ago_minutes">%1$d min</string>
+    <string name="ago_hours">%1$d t</string>
+
+    <string name="joined">Ble med i %1$s</string>
+    <string name="following_count">Følger</string>
+    <string name="followers_count">Følgere</string>
+
+    <string name="feed_nobody_followed">Ingen du følger, er i Følger-feeden ennå. Åpne en profil, for eksempel ved å søke etter @navn, og følg den.</string>
+    <string name="feed_empty">Ingen innlegg fra kontoene du følger ennå.</string>
+    <string name="feed_partial">Noen kontoer kunne ikke leses: %1$s</string>
+
+    <string name="problem_no_account">Ingen X-konto. Importer XTA-sikkerhetskopien med kontoene.</string>
+    <string name="problem_rate_limited">X begrenser hver konto her. Prøv igjen om noen minutter.</string>
+    <string name="problem_offline">Ingen tilkobling til X.</string>
+    <string name="problem_signing">Signering av forespørsler til X kunne ikke settes opp. Prøv igjen om et øyeblikk.</string>
+    <string name="problem_refused">X avviste forespørselen (%1$d).</string>
+    <string name="problem_other">Noe gikk galt under lesing av X.</string>
+
+    <string name="search_x">Søk på X</string>
+    <string name="search_top">Topp</string>
+    <string name="search_latest">Nyeste</string>
+    <string name="search_nothing">Ingen resultater for «%1$s».</string>
+    <string name="search_go_to">Gå til @%1$s</string>
+
+    <string name="import_intro">XTA Native er XTA skrevet bare for Android, for å sammenligne med XTA. Den leser X med kontoene du allerede bruker i XTA.</string>
+    <string name="import_steps">I XTA åpner du Innstillinger → Data → Eksporter, slår på «Eksporter kontoer», eksporterer og velger filen her.</string>
+    <string name="import_choose">Velg XTA-sikkerhetskopi</string>
+    <string name="import_choose_another">Velg en annen fil</string>
+    <string name="import_not_a_backup">Denne filen er ikke en sikkerhetskopi eksportert av XTA.</string>
+    <string name="import_no_accounts">Denne sikkerhetskopien har ingen X-kontoer: eksporter på nytt med «Eksporter kontoer» slått på.</string>
+    <string name="import_use">Bruk denne sikkerhetskopien</string>
+    <string name="import_privacy">Sikkerhetskopien inneholder X-øktene dine. XTA Native beholder dem på denne telefonen, sender dem bare til X og legger aldri ut, liker eller følger noe der.</string>
+    <plurals name="import_found_accounts">
+        <item quantity="one">%1$d X-konto</item>
+        <item quantity="other">%1$d X-kontoer</item>
+    </plurals>
+    <plurals name="import_found_following">
+        <item quantity="one">%1$d fulgt konto, %2$d i Følger-feeden</item>
+        <item quantity="other">%1$d fulgte kontoer, %2$d i Følger-feeden</item>
+    </plurals>
+
+    <string name="settings_feed">Følger-feeden</string>
+    <string name="settings_replies">Vis svar</string>
+    <string name="settings_reposts">Vis reposts</string>
+    <string name="settings_accounts">X-kontoer</string>
+    <string name="settings_following">Fulgte kontoer: %1$d, i feeden: %2$d</string>
+    <string name="settings_import_again">Importer en XTA-sikkerhetskopi på nytt</string>
+    <string name="settings_clear">Fjern alt</string>
+    <string name="settings_clear_explained">Fjerner X-øktene og de fulgte kontoene fra XTA Native. XTA selv beholder alt.</string>
+    <string name="settings_clear_confirm">Fjern</string>
+    <string name="settings_about">Om</string>
+    <string name="settings_version">XTA Native %1$s</string>
+    <string name="settings_prototype">En prototype ved siden av XTA, for å sammenligne. Den kan bli trukket tilbake.</string>
+
+    <string name="card_from">Fra %1$s</string>
+    <string name="poll_final">Endelige resultater</string>
+    <plurals name="poll_votes">
+        <item quantity="one">%1$d stemme</item>
+        <item quantity="other">%1$d stemmer</item>
+    </plurals>
+    <plurals name="poll_days_left">
+        <item quantity="one">%1$d dag igjen</item>
+        <item quantity="other">%1$d dager igjen</item>
+    </plurals>
+    <plurals name="poll_hours_left">
+        <item quantity="one">%1$d time igjen</item>
+        <item quantity="other">%1$d timer igjen</item>
+    </plurals>
+    <plurals name="poll_minutes_left">
+        <item quantity="one">%1$d minutt igjen</item>
+        <item quantity="other">%1$d minutter igjen</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d nytt innlegg</item>
+        <item quantity="other">%1$d nye innlegg</item>
+    </plurals>
+    <string name="settings_autoplay">Spill av videoer i feeden, uten lyd</string>
+    <string name="profile_posts">Innlegg</string>
+    <string name="profile_replies">Svar</string>
+    <string name="profile_media">Media</string>
+    <string name="profile_nothing">Ingenting her ennå.</string>
+    <string name="profile_follow">Følg</string>
+    <string name="profile_following">Følger</string>
+    <string name="follow_here_only">Fulgt bare i XTA Native: X får ikke vite det.</string>
+    <string name="follow_in_feed">I Følger-feeden</string>
+    <string name="follow_groups">Grupper</string>
+    <string name="follow_new_group">Ny gruppe</string>
+    <string name="follow_group_name">Gruppenavn</string>
+    <string name="follow_create">Opprett</string>
+    <string name="follow_unfollow">Slutt å følge</string>
+</resources>

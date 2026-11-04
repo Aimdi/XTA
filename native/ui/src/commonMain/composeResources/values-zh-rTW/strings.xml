@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">追蹤中</string>
+    <string name="search">搜尋</string>
+    <string name="settings">設定</string>
+    <string name="dismiss">關閉</string>
+    <string name="retry">重試</string>
+    <string name="back">返回</string>
+    <string name="close">關閉</string>
+    <string name="cancel">取消</string>
+    <string name="post">貼文</string>
+
+    <string name="pinned">已置頂</string>
+    <string name="reposted_by">%1$s 已轉發</string>
+    <string name="replying_to">正在回覆</string>
+    <string name="views">%1$s 次查看</string>
+    <string name="stat_reposts">轉發</string>
+    <string name="stat_quotes">引用</string>
+    <string name="stat_likes">喜歡</string>
+    <string name="stat_bookmarks">書籤</string>
+
+    <string name="ago_seconds">%1$d秒</string>
+    <string name="ago_minutes">%1$d分鐘</string>
+    <string name="ago_hours">%1$d小時</string>
+
+    <string name="joined">於 %1$s 加入</string>
+    <string name="following_count">追蹤中</string>
+    <string name="followers_count">追蹤者</string>
+
+    <string name="feed_nobody_followed">你追蹤的人都還不在「追蹤中」動態裡。開啟一個個人檔案，例如搜尋 @名稱，然後追蹤。</string>
+    <string name="feed_empty">你追蹤的帳號還沒有貼文。</string>
+    <string name="feed_partial">有些帳號無法讀取：%1$s</string>
+
+    <string name="problem_no_account">沒有 X 帳號。請匯入含有帳號的 XTA 備份。</string>
+    <string name="problem_rate_limited">X 正在限制這裡的所有帳號。請幾分鐘後再試。</string>
+    <string name="problem_offline">無法連線到 X。</string>
+    <string name="problem_signing">無法準備 X 請求的簽章。請稍後再試。</string>
+    <string name="problem_refused">X 拒絕了請求（%1$d）。</string>
+    <string name="problem_other">讀取 X 時發生問題。</string>
+
+    <string name="search_x">搜尋 X</string>
+    <string name="search_top">熱門</string>
+    <string name="search_latest">最新</string>
+    <string name="search_nothing">沒有「%1$s」的結果。</string>
+    <string name="search_go_to">前往 @%1$s</string>
+
+    <string name="import_intro">XTA Native 是專為 Android 撰寫的 XTA，用來和 XTA 比較。它用你在 XTA 已經使用的帳號讀取 X。</string>
+    <string name="import_steps">在 XTA 開啟 設定 → 資料 → 匯出，開啟「匯出帳號」，匯出後在這裡選擇該檔案。</string>
+    <string name="import_choose">選擇 XTA 備份</string>
+    <string name="import_choose_another">選擇其他檔案</string>
+    <string name="import_not_a_backup">這個檔案不是 XTA 匯出的備份。</string>
+    <string name="import_no_accounts">這份備份沒有 X 帳號：請開啟「匯出帳號」後重新匯出。</string>
+    <string name="import_use">使用這份備份</string>
+    <string name="import_privacy">備份裡有你的 X 工作階段。XTA Native 會把它們保存在這支手機上，只傳送給 X，而且從不在那裡發文、按喜歡或追蹤任何東西。</string>
+    <plurals name="import_found_accounts">
+        <item quantity="other">%1$d 個 X 帳號</item>
+    </plurals>
+    <plurals name="import_found_following">
+        <item quantity="other">追蹤了 %1$d 個帳號，其中 %2$d 個在「追蹤中」動態裡</item>
+    </plurals>
+
+    <string name="settings_feed">「追蹤中」動態</string>
+    <string name="settings_replies">顯示回覆</string>
+    <string name="settings_reposts">顯示轉發</string>
+    <string name="settings_accounts">X 帳號</string>
+    <string name="settings_following">追蹤了 %1$d 個帳號，其中 %2$d 個在動態裡</string>
+    <string name="settings_import_again">再次匯入 XTA 備份</string>
+    <string name="settings_clear">全部移除</string>
+    <string name="settings_clear_explained">從 XTA Native 移除 X 工作階段和追蹤的帳號。XTA 本身會保留一切。</string>
+    <string name="settings_clear_confirm">移除</string>
+    <string name="settings_about">關於</string>
+    <string name="settings_version">XTA Native %1$s</string>
+    <string name="settings_prototype">與 XTA 並列的原型，用來比較。它可能會被撤下。</string>
+
+    <string name="card_from">來自 %1$s</string>
+    <string name="poll_final">最終結果</string>
+    <plurals name="poll_votes">
+        <item quantity="other">%1$d 票</item>
+    </plurals>
+    <plurals name="poll_days_left">
+        <item quantity="other">還剩 %1$d 天</item>
+    </plurals>
+    <plurals name="poll_hours_left">
+        <item quantity="other">還剩 %1$d 小時</item>
+    </plurals>
+    <plurals name="poll_minutes_left">
+        <item quantity="other">還剩 %1$d 分鐘</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="other">%1$d 則新貼文</item>
+    </plurals>
+    <string name="settings_autoplay">在動態中靜音播放影片</string>
+    <string name="profile_posts">貼文</string>
+    <string name="profile_replies">回覆</string>
+    <string name="profile_media">媒體</string>
+    <string name="profile_nothing">這裡還沒有任何內容。</string>
+    <string name="profile_follow">追蹤</string>
+    <string name="profile_following">追蹤中</string>
+    <string name="follow_here_only">只在 XTA Native 追蹤：X 不會知道。</string>
+    <string name="follow_in_feed">顯示在「追蹤中」動態</string>
+    <string name="follow_groups">群組</string>
+    <string name="follow_new_group">新增群組</string>
+    <string name="follow_group_name">群組名稱</string>
+    <string name="follow_create">建立</string>
+    <string name="follow_unfollow">取消追蹤</string>
+</resources>

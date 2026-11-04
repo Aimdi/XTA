@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
+     Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="home_for_you">為您推薦</string>
+    <string name="home_open_menu">開啟導覽選單</string>
+    <string name="home_add_timeline">新增時間軸</string>
+    <string name="home_unread">未讀</string>
+    <string name="home_refresh">重新整理</string>
+    <string name="home_open_group">開啟群組</string>
+    <string name="home_more_options">更多選項</string>
+    <string name="home_pin_to_bar">釘選到頂端列</string>
+
+    <string name="home_strip_title">外掛時間軸</string>
+    <string name="home_strip_intro">把已安裝的外掛依你喜歡的順序釘選在「為您推薦」旁邊。可從外掛商店安裝更多外掛。</string>
+    <string name="home_strip_pinned">已釘選在此列</string>
+    <string name="home_strip_available">可新增</string>
+    <string name="home_strip_empty">尚無可釘選的外掛。開啟外掛商店安裝 Reddit、Pixiv、Mastodon 等。</string>
+    <string name="home_strip_remove">從此列移除</string>
+    <string name="home_strip_up">上移</string>
+    <string name="home_strip_down">下移</string>
+    <string name="home_plugin_store">外掛商店</string>
+
+    <string name="home_subscriptions">訂閱</string>
+    <string name="home_discover">探索</string>
+    <string name="home_saved">已儲存</string>
+    <string name="home_downloads">下載</string>
+    <string name="home_antennas">天線</string>
+    <string name="home_deck">多欄</string>
+    <string name="home_deck_empty">釘選群組，在寬螢幕上並排查看</string>
+    <string name="home_groups">群組</string>
+    <string name="home_no_groups">尚無群組</string>
+    <string name="home_no_results">沒有結果</string>
+    <plurals name="home_group_members">
+        <item quantity="other">%1$d 個訂閱</item>
+    </plurals>
+
+    <string name="home_feed_accounts">主頁動態帳號</string>
+    <string name="home_filter_accounts">帳號</string>
+    <string name="home_filter_accounts_explained">關閉那些只為了提高請求上限而保留的備用帳號。「為您推薦」會合併仍開啟的帳號的首頁時間軸。</string>
+    <string name="home_filter_groups_explained">關閉群組後，成員會從「追蹤中」隱藏。群組自己的分頁仍在。他們的貼文也會從「為您推薦」拿掉。</string>
+    <string name="home_filter_only_hint">長按某一項即可只保留它開啟。</string>
+    <string name="home_filter_keep_one">至少要保留一個帳號開啟</string>
+    <string name="home_filter_count">%1$d / %2$d</string>
+    <string name="home_filter_all">全部</string>
+    <string name="home_filter_none">全不選</string>
+    <string name="home_filter_reset">重設篩選</string>
+    <string name="home_filter_apply">套用</string>
+
+    <string name="home_for_you_empty">無法載入這個動態的貼文</string>
+    <string name="home_for_you_no_account">請匯入含有帳號的 XTA 備份來載入「為您推薦」。</string>
+    <string name="home_import">匯入 XTA 備份</string>
+    <string name="home_zen_end">目前就這些了</string>
+    <string name="home_zen_more">仍要載入更多</string>
+</resources>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
+     Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="home_for_you">Senin için</string>
+    <string name="home_open_menu">Gezinme menüsünü aç</string>
+    <string name="home_add_timeline">Zaman çizelgesi ekle</string>
+    <string name="home_unread">Okunmamış</string>
+    <string name="home_refresh">Yenile</string>
+    <string name="home_open_group">Grubu aç</string>
+    <string name="home_more_options">Diğer seçenekler</string>
+    <string name="home_pin_to_bar">Üst çubuğa sabitle</string>
+
+    <string name="home_strip_title">Eklenti zaman çizelgeleri</string>
+    <string name="home_strip_intro">Yüklü eklentileri Senin için'in yanına, istediğin sırayla sabitle. Eklenti mağazasından daha fazlasını yükle.</string>
+    <string name="home_strip_pinned">Bu şeritte</string>
+    <string name="home_strip_available">Eklenebilir</string>
+    <string name="home_strip_empty">Sabitlenecek eklenti yok. Reddit, Pixiv, Mastodon ve daha fazlası için mağazayı açın.</string>
+    <string name="home_strip_remove">Şeritten kaldır</string>
+    <string name="home_strip_up">Yukarı taşı</string>
+    <string name="home_strip_down">Aşağı taşı</string>
+    <string name="home_plugin_store">Eklenti mağazası</string>
+
+    <string name="home_subscriptions">Abonelikler</string>
+    <string name="home_discover">Keşfet</string>
+    <string name="home_saved">Kaydedilmiş</string>
+    <string name="home_downloads">İndirilenler</string>
+    <string name="home_antennas">Antenler</string>
+    <string name="home_deck">Sütunlar</string>
+    <string name="home_deck_empty">Geniş ekranda yan yana görmek için grupları sabitle</string>
+    <string name="home_groups">Gruplar</string>
+    <string name="home_no_groups">Henüz grup yok</string>
+    <string name="home_no_results">Sonuç yok</string>
+    <plurals name="home_group_members">
+        <item quantity="one">%1$d abonelik</item>
+        <item quantity="other">%1$d abonelik</item>
+    </plurals>
+
+    <string name="home_feed_accounts">Ana akış hesapları</string>
+    <string name="home_filter_accounts">Hesaplar</string>
+    <string name="home_filter_accounts_explained">Yalnızca daha yüksek sınırlar için tuttuğun yedek hesapları kapat. Senin için, açık kalan hesapların ana zaman çizelgelerini birleştirir.</string>
+    <string name="home_filter_groups_explained">Bir grubu kapatınca üyeleri Takip edilenler'den gizlenir. Grubun sekmesi kalır. Gönderileri Senin için'den de düşer.</string>
+    <string name="home_filter_only_hint">Yalnızca birini açık bırakmak için ona uzun basın.</string>
+    <string name="home_filter_keep_one">En az bir hesabın açık kalması gerekir</string>
+    <string name="home_filter_count">%1$d / %2$d</string>
+    <string name="home_filter_all">Hepsi</string>
+    <string name="home_filter_none">Hiçbiri</string>
+    <string name="home_filter_reset">Filtreleri sıfırla</string>
+    <string name="home_filter_apply">Uygula</string>
+
+    <string name="home_for_you_empty">Akışın gönderileri yüklenemiyor</string>
+    <string name="home_for_you_no_account">Senin için'i yüklemek için XTA yedeğini hesaplarıyla birlikte içe aktar.</string>
+    <string name="home_import">Bir XTA yedeğini içe aktar</string>
+    <string name="home_zen_end">Şimdilik hepsi bu</string>
+    <string name="home_zen_more">Yine de daha fazla yükle</string>
+</resources>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
+     Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="home_for_you">Dành cho bạn</string>
+    <string name="home_open_menu">Mở menu điều hướng</string>
+    <string name="home_add_timeline">Thêm dòng thời gian</string>
+    <string name="home_unread">Chưa đọc</string>
+    <string name="home_refresh">Làm mới</string>
+    <string name="home_open_group">Mở nhóm</string>
+    <string name="home_more_options">Tùy chọn khác</string>
+    <string name="home_pin_to_bar">Ghim lên thanh trên cùng</string>
+
+    <string name="home_strip_title">Dòng thời gian plugin</string>
+    <string name="home_strip_intro">Ghim các plugin đã cài cạnh Dành cho bạn, theo thứ tự bạn muốn. Cài thêm từ cửa hàng plugin.</string>
+    <string name="home_strip_pinned">Trên thanh này</string>
+    <string name="home_strip_available">Có thể thêm</string>
+    <string name="home_strip_empty">Chưa có plugin để ghim. Mở cửa hàng để cài Reddit, Pixiv, Mastodon…</string>
+    <string name="home_strip_remove">Gỡ khỏi thanh</string>
+    <string name="home_strip_up">Chuyển lên</string>
+    <string name="home_strip_down">Chuyển xuống</string>
+    <string name="home_plugin_store">Cửa hàng plugin</string>
+
+    <string name="home_subscriptions">Đăng ký</string>
+    <string name="home_discover">Khám phá</string>
+    <string name="home_saved">Đã lưu</string>
+    <string name="home_downloads">Tệp tải xuống</string>
+    <string name="home_antennas">Ăng-ten</string>
+    <string name="home_deck">Cột</string>
+    <string name="home_deck_empty">Ghim các nhóm để xem chúng cạnh nhau trên màn hình rộng</string>
+    <string name="home_groups">Nhóm</string>
+    <string name="home_no_groups">Chưa có nhóm nào</string>
+    <string name="home_no_results">Không có kết quả</string>
+    <plurals name="home_group_members">
+        <item quantity="other">%1$d đăng ký</item>
+    </plurals>
+
+    <string name="home_feed_accounts">Tài khoản bảng tin chính</string>
+    <string name="home_filter_accounts">Tài khoản</string>
+    <string name="home_filter_accounts_explained">Tắt các tài khoản dự phòng mà bạn chỉ giữ để có giới hạn cao hơn. Dành cho bạn gộp các dòng thời gian Trang chủ của những tài khoản còn bật.</string>
+    <string name="home_filter_groups_explained">Tắt một nhóm để ẩn thành viên khỏi Đang theo dõi. Tab của nhóm vẫn còn. Bài của họ cũng bị gỡ khỏi Dành cho bạn.</string>
+    <string name="home_filter_only_hint">Nhấn giữ một mục để chỉ bật mục đó.</string>
+    <string name="home_filter_keep_one">Phải để ít nhất một tài khoản bật</string>
+    <string name="home_filter_count">%1$d / %2$d</string>
+    <string name="home_filter_all">Tất cả</string>
+    <string name="home_filter_none">Không chọn</string>
+    <string name="home_filter_reset">Đặt lại bộ lọc</string>
+    <string name="home_filter_apply">Áp dụng</string>
+
+    <string name="home_for_you_empty">Không thể tải bài viết</string>
+    <string name="home_for_you_no_account">Nhập bản sao lưu của XTA cùng các tài khoản trong đó để tải Dành cho bạn.</string>
+    <string name="home_import">Nhập một bản sao lưu XTA</string>
+    <string name="home_zen_end">Tạm thời chỉ có vậy</string>
+    <string name="home_zen_more">Vẫn tải thêm</string>
+</resources>

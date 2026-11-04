@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
+     Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="home_for_you">Dla Ciebie</string>
+    <string name="home_open_menu">Otwórz menu nawigacyjne</string>
+    <string name="home_add_timeline">Dodaj oś czasu</string>
+    <string name="home_unread">Nieprzeczytane</string>
+    <string name="home_refresh">Odśwież</string>
+    <string name="home_open_group">Otwórz grupę</string>
+    <string name="home_more_options">Więcej opcji</string>
+    <string name="home_pin_to_bar">Przypnij do górnego paska</string>
+
+    <string name="home_strip_title">Osie czasu wtyczek</string>
+    <string name="home_strip_intro">Przypnij zainstalowane wtyczki obok Dla Ciebie, w dowolnej kolejności. Więcej zainstalujesz ze sklepu z wtyczkami.</string>
+    <string name="home_strip_pinned">Na tym pasku</string>
+    <string name="home_strip_available">Do dodania</string>
+    <string name="home_strip_empty">Brak wtyczek do przypięcia. Otwórz sklep, by zainstalować Reddit, Pixiv, Mastodon i inne.</string>
+    <string name="home_strip_remove">Usuń z paska</string>
+    <string name="home_strip_up">Przenieś w górę</string>
+    <string name="home_strip_down">Przenieś w dół</string>
+    <string name="home_plugin_store">Sklep z wtyczkami</string>
+
+    <string name="home_subscriptions">Subskrypcje</string>
+    <string name="home_discover">Odkrywaj</string>
+    <string name="home_saved">Zapisane</string>
+    <string name="home_downloads">Pobrane pliki</string>
+    <string name="home_antennas">Anteny</string>
+    <string name="home_deck">Kolumny</string>
+    <string name="home_deck_empty">Przypnij grupy, by widzieć je obok siebie na szerokim ekranie</string>
+    <string name="home_groups">Grupy</string>
+    <string name="home_no_groups">Brak grup</string>
+    <string name="home_no_results">Brak wyników</string>
+    <plurals name="home_group_members">
+        <item quantity="one">%1$d subskrypcja</item>
+        <item quantity="few">%1$d subskrypcje</item>
+        <item quantity="many">%1$d subskrypcji</item>
+        <item quantity="other">%1$d subskrypcji</item>
+    </plurals>
+
+    <string name="home_feed_accounts">Konta na osi głównej</string>
+    <string name="home_filter_accounts">Konta</string>
+    <string name="home_filter_accounts_explained">Wyłącz zapasowe konta, które trzymasz tylko dla wyższych limitów. Dla Ciebie łączy główne osie czasu kont, które zostają włączone.</string>
+    <string name="home_filter_groups_explained">Wyłącz grupę, aby ukryć jej członków w Obserwowanych. Karta grupy zostaje. Ich wpisy znikają też z Dla Ciebie.</string>
+    <string name="home_filter_only_hint">Przytrzymaj pozycję, aby zostawić włączoną tylko ją.</string>
+    <string name="home_filter_keep_one">Przynajmniej jedno konto musi zostać włączone</string>
+    <string name="home_filter_count">%1$d / %2$d</string>
+    <string name="home_filter_all">Wszystkie</string>
+    <string name="home_filter_none">Żadne</string>
+    <string name="home_filter_reset">Wyczyść filtry</string>
+    <string name="home_filter_apply">Zastosuj</string>
+
+    <string name="home_for_you_empty">Nie można wczytać wpisów kanału</string>
+    <string name="home_for_you_no_account">Aby wczytać Dla Ciebie, zaimportuj kopię zapasową XTA z jej kontami.</string>
+    <string name="home_import">Zaimportuj kopię zapasową XTA</string>
+    <string name="home_zen_end">To na razie wszystko</string>
+    <string name="home_zen_more">Mimo to wczytaj więcej</string>
+</resources>

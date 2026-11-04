@@ -80,7 +80,9 @@ if tap_node "Quoting tweet with limited replies"; then
   sleep 2
 fi
 
-# The group's tab, by a swipe.
+# Home's strip by swipes: For you after Following, then the group's tab.
+adb shell input swipe $((width * 80 / 100)) $((height / 2)) $((width * 15 / 100)) $((height / 2)) 250
+shot for-you 8
 adb shell input swipe $((width * 80 / 100)) $((height / 2)) $((width * 15 / 100)) $((height / 2)) 250
 shot group 8
 

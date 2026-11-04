@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">Abonnements</string>
+    <string name="search">Rechercher</string>
+    <string name="settings">Paramètres</string>
+    <string name="dismiss">Ignorer</string>
+    <string name="retry">Réessayer</string>
+    <string name="back">Retour</string>
+    <string name="close">Fermer</string>
+    <string name="cancel">Annuler</string>
+    <string name="post">Post</string>
+
+    <string name="pinned">Épinglé</string>
+    <string name="reposted_by">%1$s a republié</string>
+    <string name="replying_to">En réponse à</string>
+    <string name="views">%1$s vues</string>
+    <string name="stat_reposts">Republications</string>
+    <string name="stat_quotes">Citations</string>
+    <string name="stat_likes">J'aime</string>
+    <string name="stat_bookmarks">Signets</string>
+
+    <string name="ago_seconds">%1$d s</string>
+    <string name="ago_minutes">%1$d min</string>
+    <string name="ago_hours">%1$d h</string>
+
+    <string name="joined">Inscrit(e) en %1$s</string>
+    <string name="following_count">Abonnements</string>
+    <string name="followers_count">Abonnés</string>
+
+    <string name="feed_nobody_followed">Aucun des comptes que vous suivez n'est encore dans le fil Abonnements. Ouvrez un profil, par exemple en recherchant @nom, et suivez-le.</string>
+    <string name="feed_empty">Aucun post des comptes que vous suivez pour l'instant.</string>
+    <string name="feed_partial">Certains comptes n'ont pas pu être lus : %1$s</string>
+
+    <string name="problem_no_account">Aucun compte X. Importez la sauvegarde de XTA avec ses comptes.</string>
+    <string name="problem_rate_limited">X limite tous les comptes ici. Réessayez dans quelques minutes.</string>
+    <string name="problem_offline">Pas de connexion à X.</string>
+    <string name="problem_signing">La signature des requêtes pour X n'a pas pu être préparée. Réessayez dans un instant.</string>
+    <string name="problem_refused">X a refusé la requête (%1$d).</string>
+    <string name="problem_other">Une erreur s'est produite en lisant X.</string>
+
+    <string name="search_x">Rechercher sur X</string>
+    <string name="search_top">Top</string>
+    <string name="search_latest">Récents</string>
+    <string name="search_nothing">Aucun résultat pour « %1$s ».</string>
+    <string name="search_go_to">Aller à @%1$s</string>
+
+    <string name="import_intro">XTA Native, c'est XTA écrit pour Android seul, pour le comparer à XTA. Il lit X avec les comptes que vous utilisez déjà dans XTA.</string>
+    <string name="import_steps">Dans XTA, ouvrez Paramètres → Données → Exporter, activez « Exporter les comptes ? », exportez, puis choisissez ce fichier ici.</string>
+    <string name="import_choose">Choisir une sauvegarde XTA</string>
+    <string name="import_choose_another">Choisir un autre fichier</string>
+    <string name="import_not_a_backup">Ce fichier n'est pas une sauvegarde exportée par XTA.</string>
+    <string name="import_no_accounts">Cette sauvegarde ne contient aucun compte X : exportez-la de nouveau avec « Exporter les comptes ? » activé.</string>
+    <string name="import_use">Utiliser cette sauvegarde</string>
+    <string name="import_privacy">La sauvegarde contient vos sessions X. XTA Native les garde sur ce téléphone, ne les envoie qu'à X et n'y publie, n'aime ni ne suit jamais rien.</string>
+    <plurals name="import_found_accounts">
+        <item quantity="one">%1$d compte X</item>
+        <item quantity="other">%1$d comptes X</item>
+    </plurals>
+    <plurals name="import_found_following">
+        <item quantity="one">%1$d compte suivi, %2$d dans le fil Abonnements</item>
+        <item quantity="other">%1$d comptes suivis, %2$d dans le fil Abonnements</item>
+    </plurals>
+
+    <string name="settings_feed">Fil Abonnements</string>
+    <string name="settings_replies">Afficher les réponses</string>
+    <string name="settings_reposts">Afficher les republications</string>
+    <string name="settings_accounts">Comptes X</string>
+    <string name="settings_following">Comptes suivis : %1$d, dans le fil : %2$d</string>
+    <string name="settings_import_again">Importer de nouveau une sauvegarde XTA</string>
+    <string name="settings_clear">Tout supprimer</string>
+    <string name="settings_clear_explained">Supprime de XTA Native les sessions X et les comptes suivis. XTA lui-même garde tout.</string>
+    <string name="settings_clear_confirm">Supprimer</string>
+    <string name="settings_about">À propos</string>
+    <string name="settings_version">XTA Native %1$s</string>
+    <string name="settings_prototype">Un prototype à côté de XTA, pour comparer. Il peut être retiré.</string>
+
+    <string name="card_from">Depuis %1$s</string>
+    <string name="poll_final">Résultats définitifs</string>
+    <plurals name="poll_votes">
+        <item quantity="one">%1$d vote</item>
+        <item quantity="other">%1$d votes</item>
+    </plurals>
+    <plurals name="poll_days_left">
+        <item quantity="one">%1$d jour restant</item>
+        <item quantity="other">%1$d jours restants</item>
+    </plurals>
+    <plurals name="poll_hours_left">
+        <item quantity="one">%1$d heure restante</item>
+        <item quantity="other">%1$d heures restantes</item>
+    </plurals>
+    <plurals name="poll_minutes_left">
+        <item quantity="one">%1$d minute restante</item>
+        <item quantity="other">%1$d minutes restantes</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d nouveau post</item>
+        <item quantity="other">%1$d nouveaux posts</item>
+    </plurals>
+    <string name="settings_autoplay">Lire les vidéos du fil, sans le son</string>
+    <string name="profile_posts">Posts</string>
+    <string name="profile_replies">Réponses</string>
+    <string name="profile_media">Médias</string>
+    <string name="profile_nothing">Rien ici pour l'instant.</string>
+    <string name="profile_follow">Suivre</string>
+    <string name="profile_following">Abonné</string>
+    <string name="follow_here_only">Suivi dans XTA Native seulement : X n'en sait rien.</string>
+    <string name="follow_in_feed">Dans le fil Abonnements</string>
+    <string name="follow_groups">Groupes</string>
+    <string name="follow_new_group">Nouveau groupe</string>
+    <string name="follow_group_name">Nom du groupe</string>
+    <string name="follow_create">Créer</string>
+    <string name="follow_unfollow">Ne plus suivre</string>
+</resources>

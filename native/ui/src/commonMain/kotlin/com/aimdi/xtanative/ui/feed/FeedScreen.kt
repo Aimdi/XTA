@@ -90,7 +90,7 @@ import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
 /** The top of the scroll of one tab, asked for by tapping the title. */
-private data class ToTop(val page: Int, val count: Int)
+internal data class ToTop(val page: Int, val count: Int)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -170,12 +170,15 @@ private const val FOLLOWING = "following"
 
 private fun tabLabel(group: FollowGroup): String = listOfNotNull(group.emoji, group.name).joinToString(" ")
 
+/** The key [FeedPage] keeps the view model of [groupId]'s feed under, the Following feed's for null. */
+internal fun feedViewModelKey(groupId: String?): String = "feed-" + (groupId ?: FOLLOWING)
+
 /** One tab: a feed with its own pull to refresh, place and cache. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun FeedPage(groupId: String?, page: Int, toTop: ToTop, actions: PostActions, contentPadding: PaddingValues) {
+internal fun FeedPage(groupId: String?, page: Int, toTop: ToTop, actions: PostActions, contentPadding: PaddingValues) {
     val graph = LocalGraph.current
-    val vm: FeedViewModel = viewModel(key = "feed-" + (groupId ?: FOLLOWING)) { FeedViewModel(graph, groupId) }
+    val vm: FeedViewModel = viewModel(key = feedViewModelKey(groupId)) { FeedViewModel(graph, groupId) }
     val state by vm.ui.collectAsStateWithLifecycle()
     val list = rememberLazyListState()
     val scope = rememberCoroutineScope()

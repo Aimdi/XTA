@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">フォロー中</string>
+    <string name="search">検索</string>
+    <string name="settings">設定</string>
+    <string name="dismiss">閉じる</string>
+    <string name="retry">再試行</string>
+    <string name="back">戻る</string>
+    <string name="close">閉じる</string>
+    <string name="cancel">キャンセル</string>
+    <string name="post">ポスト</string>
+
+    <string name="pinned">固定</string>
+    <string name="reposted_by">%1$sさんがリポスト</string>
+    <string name="replying_to">返信先:</string>
+    <string name="views">%1$s件の表示</string>
+    <string name="stat_reposts">リポスト</string>
+    <string name="stat_quotes">引用</string>
+    <string name="stat_likes">いいね</string>
+    <string name="stat_bookmarks">ブックマーク</string>
+
+    <string name="ago_seconds">%1$d秒</string>
+    <string name="ago_minutes">%1$d分</string>
+    <string name="ago_hours">%1$d時間</string>
+
+    <string name="joined">%1$sから利用しています</string>
+    <string name="following_count">フォロー</string>
+    <string name="followers_count">フォロワー</string>
+
+    <string name="feed_nobody_followed">フォロー中のフィードにはまだ誰もいません。たとえば @名前 で検索してプロフィールを開き、フォローしてください。</string>
+    <string name="feed_empty">フォローしているアカウントのポストはまだありません。</string>
+    <string name="feed_partial">一部のアカウントを読み込めませんでした: %1$s</string>
+
+    <string name="problem_no_account">X アカウントがありません。アカウントを含む XTA のバックアップをインポートしてください。</string>
+    <string name="problem_rate_limited">X がここのすべてのアカウントを制限しています。数分後にもう一度お試しください。</string>
+    <string name="problem_offline">X に接続できません。</string>
+    <string name="problem_signing">X へのリクエストの署名を準備できませんでした。しばらくしてからもう一度お試しください。</string>
+    <string name="problem_refused">X がリクエストを拒否しました (%1$d)。</string>
+    <string name="problem_other">X の読み込み中に問題が発生しました。</string>
+
+    <string name="search_x">X を検索</string>
+    <string name="search_top">話題</string>
+    <string name="search_latest">最新</string>
+    <string name="search_nothing">「%1$s」の結果はありません。</string>
+    <string name="search_go_to">@%1$s へ移動</string>
+
+    <string name="import_intro">XTA Native は、XTA と比べるために Android 専用に書かれた XTA です。XTA ですでに使っているアカウントで X を読みます。</string>
+    <string name="import_steps">XTA で 設定 → データ → エクスポート を開き、「Export accounts?」をオンにしてエクスポートし、そのファイルをここで選んでください。</string>
+    <string name="import_choose">XTA のバックアップを選ぶ</string>
+    <string name="import_choose_another">別のファイルを選ぶ</string>
+    <string name="import_not_a_backup">このファイルは XTA がエクスポートしたバックアップではありません。</string>
+    <string name="import_no_accounts">このバックアップには X アカウントがありません。「Export accounts?」をオンにしてもう一度エクスポートしてください。</string>
+    <string name="import_use">このバックアップを使う</string>
+    <string name="import_privacy">バックアップには X のセッションが含まれます。XTA Native はそれをこのスマートフォンに保存し、X にだけ送り、X で何かを投稿したり、いいねしたり、フォローしたりすることはありません。</string>
+    <plurals name="import_found_accounts">
+        <item quantity="other">X アカウント %1$d 件</item>
+    </plurals>
+    <plurals name="import_found_following">
+        <item quantity="other">フォロー中のアカウント %1$d 件、うちフォロー中のフィードに %2$d 件</item>
+    </plurals>
+
+    <string name="settings_feed">フォロー中のフィード</string>
+    <string name="settings_replies">返信を表示</string>
+    <string name="settings_reposts">リポストを表示</string>
+    <string name="settings_accounts">X アカウント</string>
+    <string name="settings_following">フォロー中 %1$d 件、フィードに %2$d 件</string>
+    <string name="settings_import_again">XTA のバックアップをもう一度インポート</string>
+    <string name="settings_clear">すべて削除</string>
+    <string name="settings_clear_explained">XTA Native から X のセッションとフォロー中のアカウントを削除します。XTA 自体のデータはすべて残ります。</string>
+    <string name="settings_clear_confirm">削除</string>
+    <string name="settings_about">このアプリについて</string>
+    <string name="settings_version">XTA Native %1$s</string>
+    <string name="settings_prototype">比較のための XTA と並ぶプロトタイプです。提供を終了することがあります。</string>
+
+    <string name="card_from">%1$s より</string>
+    <string name="poll_final">最終結果</string>
+    <plurals name="poll_votes">
+        <item quantity="other">%1$d票</item>
+    </plurals>
+    <plurals name="poll_days_left">
+        <item quantity="other">残り%1$d日</item>
+    </plurals>
+    <plurals name="poll_hours_left">
+        <item quantity="other">残り%1$d時間</item>
+    </plurals>
+    <plurals name="poll_minutes_left">
+        <item quantity="other">残り%1$d分</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="other">新しいポスト %1$d 件</item>
+    </plurals>
+    <string name="settings_autoplay">フィードの動画をミュートで再生</string>
+    <string name="profile_posts">ポスト</string>
+    <string name="profile_replies">返信</string>
+    <string name="profile_media">メディア</string>
+    <string name="profile_nothing">まだ何もありません。</string>
+    <string name="profile_follow">フォロー</string>
+    <string name="profile_following">フォロー中</string>
+    <string name="follow_here_only">XTA Native の中だけでフォローしています。X には伝わりません。</string>
+    <string name="follow_in_feed">フォロー中のフィードに表示</string>
+    <string name="follow_groups">グループ</string>
+    <string name="follow_new_group">新しいグループ</string>
+    <string name="follow_group_name">グループ名</string>
+    <string name="follow_create">作成</string>
+    <string name="follow_unfollow">フォロー解除</string>
+</resources>
