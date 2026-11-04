@@ -493,7 +493,8 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
         composable(Routes.ARTICLE, arguments = listOf(navArgument("postId") { type = NavType.StringType })) { entry ->
             ArticleScreen(entry.text("postId").orEmpty(), actions, onBack = { nav.popBackStack() })
         }
-        pluginScreens(nav)
+        // A plugin's media viewer fades as the app's does, and not at all while animations are off.
+        pluginScreens(nav, motion.fadeEnter, motion.fadeExit)
     }
     // The foot-of-window notices of saves, likes and downloads, and the platform's save dialog (ui/saved).
     KeepHost()

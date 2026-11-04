@@ -1,5 +1,8 @@
 package com.aimdi.xtanative.ui.pluginstore
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -91,7 +94,11 @@ fun AttachPluginNavigation(nav: NavHostController, x: LinkScreens) {
 }
 
 /** The plugin store and each plugin's screens, in the app's navigation graph. */
-fun NavGraphBuilder.pluginScreens(nav: NavHostController) {
+fun NavGraphBuilder.pluginScreens(
+    nav: NavHostController,
+    mediaEnter: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition = { fadeIn(tween(180)) },
+    mediaExit: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition = { fadeOut(tween(180)) },
+) {
     val pluginId = navArgument("pluginId") { type = NavType.StringType }
     composable(PluginRoutes.STORE) {
         PluginStoreScreen(
@@ -127,10 +134,10 @@ fun NavGraphBuilder.pluginScreens(nav: NavHostController) {
     composable(
         PluginRoutes.MEDIA,
         arguments = listOf(navArgument("key") { type = NavType.StringType }, navArgument("index") { type = NavType.IntType }),
-        enterTransition = { fadeIn(tween(180)) },
-        exitTransition = { fadeOut(tween(180)) },
-        popEnterTransition = { fadeIn(tween(180)) },
-        popExitTransition = { fadeOut(tween(180)) },
+        enterTransition = mediaEnter,
+        exitTransition = mediaExit,
+        popEnterTransition = mediaEnter,
+        popExitTransition = mediaExit,
     ) { entry ->
         val plugins = LocalPlugins.current
         val key = entry.text("key").orEmpty()
