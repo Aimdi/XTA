@@ -38,17 +38,17 @@ object VideoCheck {
             }
             return
         }
-        val playback = remember { MpvVideoPlayback(ViewerVideo(url, emptyList(), gif = false, loop = false, muted = false, prefetchSeconds = 0)) }
-        DisposableEffect(playback) { onDispose { playback.release() } }
-        LaunchedEffect(playback) { run(url, playback) }
+        val player = remember { MpvVideoPlayer(VideoOptions()).apply { open(VideoSource(url, loop = false, muted = false)) } }
+        DisposableEffect(player) { onDispose(player::release) }
+        LaunchedEffect(player) { run(url, player) }
         Box(Modifier.fillMaxSize().background(Color.Black)) {
-            EngineVideo(playback, poster = null, alt = null, controls = true, onDownload = null)
+            EngineVideo(player, poster = null, alt = null, controls = true, onDownload = null)
         }
     }
 
     private fun say(line: String) = println("XTA Native: video check: $line")
 
-    private suspend fun run(url: String, playback: MpvVideoPlayback) {
+    private suspend fun run(url: String, playback: MpvVideoPlayer) {
         (MpvEngine.state as? MpvEngineState.Ready)?.let { say("engine ${it.library}, client API ${MpvEngines.versionText(it.apiVersion)}") }
         say("playing $url")
         val asked = System.nanoTime()

@@ -35,7 +35,7 @@ internal fun rememberFeedPlayer(players: VideoPlayers): InlinePlayer {
     return remember(turns) { FeedPlayer(turns) }
 }
 
-/** The player a tile plays in: its feed's, else one of its own; null where nothing plays in place (the desktop, for now). */
+/** The player a tile plays in: its feed's, else one of its own; null where nothing plays in place (a desktop without libmpv). */
 @Composable
 internal fun rememberTilePlayer(): PlayerTurns<VideoPlayer>? {
     (LocalInlinePlayer.current as? FeedPlayer)?.let { return it.turns }

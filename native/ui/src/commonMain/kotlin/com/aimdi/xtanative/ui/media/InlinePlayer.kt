@@ -21,9 +21,9 @@ interface InlinePlayer {
 }
 
 /**
- * A feed page's player, released with the page. Null, or one that draws
- * nothing, where the platform plays nothing in place (a desktop without
- * libmpv): the poster shows, and a tap opens the viewer.
+ * A feed page's player, released with the page. Null where the platform
+ * plays nothing in place (a desktop without libmpv): the poster shows, and a
+ * tap opens the viewer.
  */
 @Composable
 expect fun rememberInlinePlayer(): InlinePlayer?

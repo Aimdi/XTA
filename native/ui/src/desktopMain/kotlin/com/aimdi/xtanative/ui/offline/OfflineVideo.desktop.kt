@@ -27,8 +27,9 @@ import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.downloads_open_file
 import com.aimdi.xtanative.ui.media.EngineVideo
 import com.aimdi.xtanative.ui.media.MpvEngine
-import com.aimdi.xtanative.ui.media.MpvVideoPlayback
-import com.aimdi.xtanative.ui.media.ViewerVideo
+import com.aimdi.xtanative.ui.media.MpvVideoPlayer
+import com.aimdi.xtanative.ui.media.VideoOptions
+import com.aimdi.xtanative.ui.media.VideoSource
 import com.aimdi.xtanative.ui.saved.KeepNotice
 import com.aimdi.xtanative.ui.saved.KeepNotices
 import java.io.File
@@ -45,11 +46,11 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal actual fun OfflineVideo(file: File, active: Boolean, modifier: Modifier) {
     if (!MpvEngine.ready) return SystemPlayer(file, modifier)
-    val playback = remember(file) { MpvVideoPlayback(ViewerVideo(file.path, emptyList(), gif = false, loop = false, muted = false, prefetchSeconds = 0)) }
-    DisposableEffect(playback) { onDispose { playback.release() } }
-    LaunchedEffect(active) { if (!active) playback.setActive(false) }
-    LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { playback.setActive(false) }
-    EngineVideo(playback, poster = null, alt = null, controls = true, onDownload = null, modifier = modifier)
+    val player = remember(file) { MpvVideoPlayer(VideoOptions()).apply { open(VideoSource(file.path, loop = false, muted = false)) } }
+    DisposableEffect(player) { onDispose(player::release) }
+    LaunchedEffect(active) { if (!active) player.setActive(false) }
+    LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { player.setActive(false) }
+    EngineVideo(player, poster = null, alt = null, controls = true, onDownload = null, modifier = modifier)
 }
 
 /** A click hands the kept video to the player the system has. */

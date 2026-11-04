@@ -6,7 +6,7 @@ import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.media.MpvEngine
 import com.aimdi.xtanative.ui.media.OutsideVideo
 import com.aimdi.xtanative.ui.media.PlayingVideo
-import com.aimdi.xtanative.ui.media.ViewerVideo
+import com.aimdi.xtanative.ui.media.VideoSource
 
 /**
  * A network's video in the app through libmpv, under the viewer's controls
@@ -20,6 +20,6 @@ internal actual fun ItemVideoPage(item: MediaItem, active: Boolean) {
     val graph = LocalGraph.current
     val url = item.videoUrl
     if (url == null || !MpvEngine.ready) return OutsideVideo(item.imageUrl, item.alt, item.webUrl ?: item.videoUrl)
-    val video = remember(url) { ViewerVideo.of(url, emptyList(), item.kind == MediaItem.Kind.GIF, graph.settings.state.value) }
-    PlayingVideo(video, item.imageUrl, item.alt, active)
+    val source = remember(url) { VideoSource.of(url, item.kind == MediaItem.Kind.GIF, graph.settings.state.value) }
+    PlayingVideo(source, item.imageUrl, item.alt, active)
 }

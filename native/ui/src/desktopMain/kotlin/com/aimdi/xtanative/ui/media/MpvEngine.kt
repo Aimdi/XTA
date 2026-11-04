@@ -74,26 +74,21 @@ internal object MpvEngines {
 
 /**
  * The desktop's engine, chosen once: opening libmpv takes tens of
- * milliseconds, so the app does it on a thread of its own once the window is
- * up ([warmUp]), as XTA opens it after its first frame, and the first video
- * does not wait for it; whatever plays sooner chooses it then.
- * XTA_NATIVE_VIDEO_ENGINE names the shim's folder for a build run from
- * Gradle without the app's resources.
+ * milliseconds, so the app does it on a thread of its own as it starts
+ * ([warmUp]), beside its first frame, as XTA opens it right after its own:
+ * a feed's tiles ask for players as soon as they are drawn, and wait only
+ * for what is left of it. XTA_NATIVE_VIDEO_ENGINE names the shim's folder for
+ * a build run from Gradle without the app's resources.
  */
 object MpvEngine {
     internal val state: MpvEngineState by lazy { load().also { println(MpvEngines.describe(it)) } }
 
     internal val ready: Boolean get() = state is MpvEngineState.Ready
 
-    /** Chooses the engine on a thread of its own, a few seconds after the app starts. */
+    /** Chooses the engine on a thread of its own, now. */
     fun warmUp() {
-        thread(name = "mpv-engine", isDaemon = true) {
-            Thread.sleep(WARM_UP_MS)
-            state
-        }
+        thread(name = "mpv-engine", isDaemon = true) { state }
     }
-
-    private const val WARM_UP_MS = 3_000L
 
     private fun load(): MpvEngineState = MpvEngines.choose(
         shim = AppResources.folder(MpvEngines.FOLDER, System.getenv("XTA_NATIVE_VIDEO_ENGINE"))?.let { File(it, System.mapLibraryName(MpvEngines.SHIM)) },

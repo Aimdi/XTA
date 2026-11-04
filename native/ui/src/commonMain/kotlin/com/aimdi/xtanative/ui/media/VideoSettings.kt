@@ -25,10 +25,15 @@ internal data class VideoSource(
          */
         fun of(media: XMedia, settings: Settings?): VideoSource? {
             val prefs = settings ?: Settings()
-            val gif = media.kind == XMedia.Kind.GIF
             val qualities = VideoRules.qualities(media)
             val url = VideoRules.defaultUrl(qualities, VideoRules.streamUrl(media), prefs[MediaPrefs.videoQuality]) ?: return null
-            return VideoSource(url, qualities, loop = gif || prefs[MediaPrefs.loop], muted = gif || VideoMute.muted(prefs[MediaPrefs.mute]), gif = gif)
+            return of(url, media.kind == XMedia.Kind.GIF, settings).copy(qualities = qualities)
+        }
+
+        /** A network's file at [url] (one variant, no menu of qualities) as Settings › Media plays it, as XTA plays a plugin's video. */
+        fun of(url: String, gif: Boolean, settings: Settings?): VideoSource {
+            val prefs = settings ?: Settings()
+            return VideoSource(url, loop = gif || prefs[MediaPrefs.loop], muted = gif || VideoMute.muted(prefs[MediaPrefs.mute]), gif = gif)
         }
 
         /** The silent looping preview at [url] a plugin's tile plays in a feed. */

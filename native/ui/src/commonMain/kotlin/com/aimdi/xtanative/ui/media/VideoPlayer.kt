@@ -29,9 +29,9 @@ internal fun interface VideoPlayers {
 }
 
 /**
- * The players of this platform: Media3's on Android; none on the desktop,
- * which has no engine of its own yet, so a video's poster leads to the
- * system's player there, as before.
+ * The players of this platform: Media3's on Android, libmpv's on the
+ * desktop; none on a desktop without libmpv, where a video's poster leads to
+ * the system's player.
  */
 @Composable
 internal expect fun rememberVideoPlayers(): VideoPlayers?

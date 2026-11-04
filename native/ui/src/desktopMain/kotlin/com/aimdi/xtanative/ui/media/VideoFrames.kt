@@ -37,11 +37,13 @@ internal class VideoFrame(val image: Image, val load: Long, val rotation: Int)
  * the size the surface shows it ([VideoFrameSizes]) and hands a copy over as
  * a Skia image, which the surface's canvas draws as it is. A frame drawn
  * before its source is ready ([MpvState.ready]) is drawn, since mpv waits
- * for it, but not handed over. Closing ends the thread, which frees the
- * render context and then the player. [onFirst] hears each source's first
- * frame handed over.
+ * for it, but not handed over. One surface shows them, the one put on screen
+ * last ([owner], VideoPlayer.Picture's rule); a source opened lets the
+ * surface that showed the one before go. Closing ends the thread, which frees
+ * the render context and then the player. [onFirst] hears each source's
+ * first frame handed over.
  */
-internal class MpvFrames(private val player: MpvPlayer, private val onFirst: (load: Long) -> Unit = {}) {
+internal class MpvFrames(private val player: MpvPlayer, private val onFirst: (load: Long) -> Unit = {}) : MpvPictures {
     private val mpv = checkNotNull(player.mpv)
     private val render = mpv.render
     private val handed = AtomicReference<VideoFrame?>(null)
@@ -75,9 +77,29 @@ internal class MpvFrames(private val player: MpvPlayer, private val onFirst: (lo
     private val alive = Any()
     private var freed = false
 
+    /** The surface showing the frames: the one put on screen last, none after a source opened until the next comes. Main thread only. */
+    var owner: Any? by mutableStateOf(null)
+        private set
+
     init {
         player.onReady = ::redrawSoon
         thread(name = "mpv-render", isDaemon = true) { run() }
+    }
+
+    /** [surface] shows the frames now, in place of the one that did: the frame due is drawn for it at once, paused or not. */
+    fun attach(surface: Any) {
+        owner = surface
+        redrawSoon()
+    }
+
+    fun detach(surface: Any) {
+        if (owner === surface) owner = null
+    }
+
+    /** Another source, or none: the surface that showed this one lets it go, and its last frame is not shown again. */
+    override fun opened() {
+        owner = null
+        handed.getAndSet(null)?.image?.close()
     }
 
     /** The surface is [size] pixels, cropping the video to cover it or fitting it in. */
@@ -97,7 +119,7 @@ internal class MpvFrames(private val player: MpvPlayer, private val onFirst: (lo
     /** The newest frame not taken yet, for the screen; whoever takes it closes it. */
     fun take(): VideoFrame? = handed.getAndSet(null)?.also { shownCount += 1 }
 
-    fun close() {
+    override fun close() {
         closing = true
         wake()
     }
@@ -166,18 +188,28 @@ internal class MpvFrames(private val player: MpvPlayer, private val onFirst: (lo
 
 /**
  * A player's frames on screen, fitted in the surface or, [crop]ped, covering
- * it as a tile's poster does. Only a frame of a source [shows] accepts is
- * drawn (an inline tile: its own); until one comes, nothing is, so the
- * poster under the surface shows.
+ * it as a tile's poster does, while this surface is the one showing them
+ * (the one put on screen last). Only a frame of a source [shows] accepts is
+ * drawn (the source playing now); until one comes, nothing is, so what lies
+ * under the surface shows.
  */
 @Composable
 internal fun VideoSurface(frames: MpvFrames, crop: Boolean, modifier: Modifier, shows: (load: Long) -> Boolean = { true }) {
+    val surface = remember { Any() }
     val shown = remember(frames) { ShownFrame() }
     var size by remember { mutableStateOf(IntSize.Zero) }
-    SideEffect { frames.show(size, crop) }
-    DisposableEffect(frames) { onDispose { shown.close() } }
+    SideEffect { if (frames.owner === surface) frames.show(size, crop) }
+    DisposableEffect(frames, surface) {
+        frames.attach(surface)
+        if (size != IntSize.Zero) frames.show(size, crop)
+        onDispose {
+            frames.detach(surface)
+            shown.close()
+        }
+    }
     Canvas(modifier.onSizeChanged { size = it }) {
         frames.version.longValue
+        if (frames.owner !== surface) return@Canvas
         shown.next(frames.take())?.takeIf { shows(it.load) }?.let { drawFrame(it, crop) }
     }
 }

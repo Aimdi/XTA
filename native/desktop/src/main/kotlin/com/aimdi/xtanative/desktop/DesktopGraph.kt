@@ -33,8 +33,8 @@ internal class DesktopApp(val graph: AppGraph, val plugins: AppPlugins)
  * (XTA_NATIVE_VOICE_CHECK); XTA_NATIVE_VOICE_ENGINE names the voice engine's
  * folder for a build run from Gradle, which the packages carry otherwise.
  * Its video check plays the video XTA_NATIVE_VIDEO_CHECK names at start.
- * libmpv, which plays videos and podcasts in the app, opens a few seconds
- * after start, as XTA opens it after its first frame.
+ * libmpv, which plays videos and podcasts in the app, opens on a thread of
+ * its own at start, as XTA opens it right after its first frame.
  */
 internal fun desktopApp(): DesktopApp {
     val files = dataFolder()

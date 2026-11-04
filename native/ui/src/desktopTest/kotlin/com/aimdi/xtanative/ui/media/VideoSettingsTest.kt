@@ -46,6 +46,16 @@ class VideoSettingsTest {
     }
 
     @Test
+    fun aNetworksFilePlaysAsTheMediaSettingsSayWithoutAQualityMenu() {
+        val looped = VideoSource.of("https://v.redd.it/x/DASH_720.mp4", gif = false, Settings().with(MediaPrefs.loop, true))
+        assertEquals("https://v.redd.it/x/DASH_720.mp4", looped.url)
+        assertTrue(looped.loop && !looped.gif && looped.qualities.isEmpty())
+        val gif = VideoSource.of("https://v.redd.it/x/DASH_480.mp4", gif = true, Settings().with(MediaPrefs.loop, false).with(MediaPrefs.mute, false))
+        assertTrue(gif.loop && gif.muted && gif.gif)
+        assertFalse(VideoSource.of("https://cdn/a.mp4", gif = false, null).loop)
+    }
+
+    @Test
     fun aGifLoopsSilentlyWhateverTheSettings() {
         val source = VideoSource.of(gif, Settings().with(MediaPrefs.loop, false).with(MediaPrefs.mute, false))!!
         assertTrue(source.loop && source.muted && source.gif)
