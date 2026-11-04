@@ -95,8 +95,9 @@
     <string name="possibly_sensitive">Potencjalnie wrażliwy</string>
     <string name="media">Multimedia</string>
     <string name="photos">Zdjęcia</string>
-    <string name="save_post">Zapisz post</string>
     <string name="unsave_post">Usuń z zapisanych</string>
+    <string name="save_on_device">Zapisz na tym urządzeniu</string>
+    <string name="remove_from_device">Usuń z tego urządzenia</string>
     <string name="save_to_folder">Zapisz w folderze…</string>
     <string name="add_note">Dodaj notatkę do tego zapisanego wpisu</string>
     <string name="add_to_group">Dodaj do grupy</string>

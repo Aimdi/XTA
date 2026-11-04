@@ -95,8 +95,9 @@
     <string name="possibly_sensitive">Возможно чувствительно</string>
     <string name="media">Медиа</string>
     <string name="photos">Фото</string>
-    <string name="save_post">Сохранить пост</string>
     <string name="unsave_post">Удалить из сохранённых</string>
+    <string name="save_on_device">Сохранить на этом устройстве</string>
+    <string name="remove_from_device">Удалить с этого устройства</string>
     <string name="save_to_folder">Сохранить в папку…</string>
     <string name="add_note">Добавить заметку к этому сохранённому посту</string>
     <string name="add_to_group">Добавить в группу</string>

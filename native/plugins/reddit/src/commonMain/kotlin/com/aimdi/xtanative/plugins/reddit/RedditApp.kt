@@ -85,8 +85,8 @@ internal class RedditApp(val host: PluginHost) {
 
     private val shelf = RedditShelf { it.permalink }
 
-    /** The posts the app's shared rows drew lately, by id, so their bookmark and their menu file the post itself. */
-    private val drawn = RedditShelf { it.id }
+    /** The posts the app's timelines drew lately, by id, so their card ([drawnPost]), bookmark and menu have the post itself: as many as a timeline holds of them. */
+    private val drawn = RedditShelf(SHARED_KEPT) { it.id }
 
     init {
         launch {
@@ -252,6 +252,9 @@ internal class RedditApp(val host: PluginHost) {
     private fun mirrorSaved(post: RedditPost, filed: Boolean) =
         launch { prefs.update { RedditSaved.with(it, RedditSaved.mirrored(RedditSaved.posts(it), post, filed)) } }
 
+    /** The post [shown] names, as the app drew it lately; null for one not drawn lately. */
+    fun drawnPost(shown: NetworkPost): RedditPost? = drawn.get(shown.id)
+
     /** [post] as the app's shared row draws it, its community's picture when it is known. */
     fun shown(post: RedditPost, iconUrl: String? = null): NetworkPost {
         drawn.put(post)
@@ -358,6 +361,9 @@ internal class RedditApp(val host: PluginHost) {
     private companion object {
         /** XTA's kRedditInterleavedPageSize. */
         const val SHARED_PER_COMMUNITY = 10
+
+        /** The posts of the app's timelines kept to be drawn as cards: forty communities' worth. */
+        const val SHARED_KEPT = 400
         const val ICON_WAIT_MILLIS = 3_000L
 
         /** How long a save sheet opened for a post waits to see it filed before the plugin's saved list stops following it. */
@@ -378,6 +384,9 @@ internal class RedditApp(val host: PluginHost) {
     fun openUser(name: String) = host.open(RedditRoutes.user(name))
 
     fun openPictures(urls: List<String>, start: Int) = host.openMedia(urls.map { MediaItem(imageUrl = it) }, start)
+
+    /** The picture at [url] saved through the app's downloads, as a long press on a post's, a gallery's or a comment's picture saves it (XTA's downloadRedditImage). */
+    fun savePicture(url: String) = host.download(MediaItem(url))
 
     /** A video in the app's viewer; the desktop, with no player of its own, opens the post on the web. */
     fun openVideo(post: RedditPost, stream: String) = host.openMedia(

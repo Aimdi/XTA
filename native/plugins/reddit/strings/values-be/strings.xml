@@ -95,8 +95,9 @@
     <string name="possibly_sensitive">Магчыма чулліва</string>
     <string name="media">Медыя</string>
     <string name="photos">Фота</string>
-    <string name="save_post">Захаваць допіс</string>
     <string name="unsave_post">Выдаліць з захаваных</string>
+    <string name="save_on_device">Захаваць на гэтай прыладзе</string>
+    <string name="remove_from_device">Выдаліць з гэтай прылады</string>
     <string name="save_to_folder">Захаваць у тэчку…</string>
     <string name="add_note">Дадаць нататку да гэтага захаванага допісу</string>
     <string name="add_to_group">Дадаць у групу</string>

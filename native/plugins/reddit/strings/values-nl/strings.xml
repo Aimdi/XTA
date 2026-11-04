@@ -95,8 +95,9 @@
     <string name="possibly_sensitive">Mogelijk gevoelig</string>
     <string name="media">Media</string>
     <string name="photos">Foto\'s</string>
-    <string name="save_post">Bericht opslaan</string>
     <string name="unsave_post">Uit opgeslagen verwijderen</string>
+    <string name="save_on_device">Opslaan op dit apparaat</string>
+    <string name="remove_from_device">Van dit apparaat verwijderen</string>
     <string name="save_to_folder">Opslaan in map…</string>
     <string name="add_note">Voeg een notitie toe aan dit opgeslagen bericht</string>
     <string name="add_to_group">Aan groep toevoegen</string>

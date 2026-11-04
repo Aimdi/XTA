@@ -95,8 +95,9 @@
     <string name="possibly_sensitive">潜在敏感</string>
     <string name="media">媒体</string>
     <string name="photos">照片</string>
-    <string name="save_post">保存帖子</string>
     <string name="unsave_post">从收藏中移除</string>
+    <string name="save_on_device">保存在此设备</string>
+    <string name="remove_from_device">从此设备移除</string>
     <string name="save_to_folder">保存到文件夹…</string>
     <string name="add_note">为这条收藏添加备注</string>
     <string name="add_to_group">添加到订阅组</string>

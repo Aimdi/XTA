@@ -95,8 +95,9 @@
     <string name="possibly_sensitive">Potenzialmente sensibile</string>
     <string name="media">Contenuti</string>
     <string name="photos">Foto</string>
-    <string name="save_post">Salva il post</string>
     <string name="unsave_post">Rimuovi dai salvati</string>
+    <string name="save_on_device">Salva su questo dispositivo</string>
+    <string name="remove_from_device">Rimuovi da questo dispositivo</string>
     <string name="save_to_folder">Salva in una cartella…</string>
     <string name="add_note">Aggiungi una nota a questo post salvato</string>
     <string name="add_to_group">Aggiungi al gruppo</string>

@@ -95,8 +95,9 @@
     <string name="possibly_sensitive">민감할 수 있음</string>
     <string name="media">미디어</string>
     <string name="photos">사진</string>
-    <string name="save_post">게시물 저장</string>
     <string name="unsave_post">저장에서 삭제</string>
+    <string name="save_on_device">이 기기에 저장</string>
+    <string name="remove_from_device">이 기기에서 삭제</string>
     <string name="save_to_folder">폴더에 저장…</string>
     <string name="add_note">저장한 이 게시물에 메모 추가</string>
     <string name="add_to_group">그룹에 추가</string>

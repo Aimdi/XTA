@@ -95,8 +95,9 @@
     <string name="possibly_sensitive">Eble sentema</string>
     <string name="media">Plurmedio</string>
     <string name="photos">Fotoj</string>
-    <string name="save_post">Konservi la afiŝon</string>
     <string name="unsave_post">Forigi el konservitaj</string>
+    <string name="save_on_device">Konservi en ĉi tiu aparato</string>
+    <string name="remove_from_device">Forigi el ĉi tiu aparato</string>
     <string name="save_to_folder">Konservi en dosierujo…</string>
     <string name="add_note">Aldoni noton al ĉi tiu konservita afiŝo</string>
     <string name="add_to_group">Aldoni al grupo</string>

@@ -95,8 +95,9 @@
     <string name="possibly_sensitive">Mahčyma čułliva</string>
     <string name="media">Medyja</string>
     <string name="photos">Fota</string>
-    <string name="save_post">Zachavać dopis</string>
     <string name="unsave_post">Vydalić z zachavanych</string>
+    <string name="save_on_device">Zachavać na hetaj pryladzie</string>
+    <string name="remove_from_device">Vydalić z hetaj prylady</string>
     <string name="save_to_folder">Zachavać u tečku...</string>
     <string name="add_note">Dadać natatku da hetaha zachavanaha dopisu</string>
     <string name="add_to_group">Dadać u hrupu</string>

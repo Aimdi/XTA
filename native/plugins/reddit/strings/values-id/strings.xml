@@ -95,8 +95,9 @@
     <string name="possibly_sensitive">Kemungkinan sensitif</string>
     <string name="media">Media</string>
     <string name="photos">Foto</string>
-    <string name="save_post">Simpan postingan</string>
     <string name="unsave_post">Hapus dari simpanan</string>
+    <string name="save_on_device">Simpan di perangkat ini</string>
+    <string name="remove_from_device">Hapus dari perangkat ini</string>
     <string name="save_to_folder">Simpan ke folder…</string>
     <string name="add_note">Tambahkan catatan ke postingan tersimpan ini</string>
     <string name="add_to_group">Tambah ke grup</string>

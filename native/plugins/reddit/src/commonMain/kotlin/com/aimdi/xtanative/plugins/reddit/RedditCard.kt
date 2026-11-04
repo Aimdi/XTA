@@ -143,7 +143,7 @@ private fun CardFooter(app: RedditApp, post: RedditPost) {
         FooterAction(
             if (isSaved) RedditGlyphs.Bookmark else RedditGlyphs.BookmarkBorder,
             null,
-            pluginString(if (isSaved) Strings.unsave_post else Strings.save_post),
+            pluginString(if (isSaved) Strings.remove_from_device else Strings.save_on_device),
             if (isSaved) accent else null,
             onLongClick = { app.chooseFolder(post) },
         ) { app.toggleSaved(post) }

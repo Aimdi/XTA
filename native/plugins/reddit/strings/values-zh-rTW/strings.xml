@@ -95,8 +95,9 @@
     <string name="possibly_sensitive">可能含敏感內容</string>
     <string name="media">媒體</string>
     <string name="photos">照片</string>
-    <string name="save_post">儲存貼文</string>
     <string name="unsave_post">從收藏中移除</string>
+    <string name="save_on_device">儲存在此裝置</string>
+    <string name="remove_from_device">從此裝置移除</string>
     <string name="save_to_folder">儲存到資料夾…</string>
     <string name="add_note">為這則已儲存的貼文新增筆記</string>
     <string name="add_to_group">新增至群組</string>

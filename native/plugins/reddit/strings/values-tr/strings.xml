@@ -95,8 +95,9 @@
     <string name="possibly_sensitive">Hassas olabilir</string>
     <string name="media">Medya</string>
     <string name="photos">Fotoğraflar</string>
-    <string name="save_post">Gönderiyi kaydet</string>
     <string name="unsave_post">Kaydedilenlerden kaldır</string>
+    <string name="save_on_device">Bu cihaza kaydet</string>
+    <string name="remove_from_device">Bu cihazdan kaldır</string>
     <string name="save_to_folder">Klasöre kaydet…</string>
     <string name="add_note">Bu kaydedilen gönderiye not ekle</string>
     <string name="add_to_group">Gruba ekle</string>

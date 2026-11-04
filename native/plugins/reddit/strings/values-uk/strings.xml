@@ -95,8 +95,9 @@
     <string name="possibly_sensitive">Потенційно чутливе</string>
     <string name="media">Медіа</string>
     <string name="photos">Фото</string>
-    <string name="save_post">Зберегти допис</string>
     <string name="unsave_post">Вилучити зі збережених</string>
+    <string name="save_on_device">Зберегти на цьому пристрої</string>
+    <string name="remove_from_device">Видалити з цього пристрою</string>
     <string name="save_to_folder">Зберегти в теку…</string>
     <string name="add_note">Додати нотатку до цього збереженого допису</string>
     <string name="add_to_group">Додати до групи</string>

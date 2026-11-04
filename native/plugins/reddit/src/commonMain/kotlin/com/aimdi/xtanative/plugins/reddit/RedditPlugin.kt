@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.plugins.reddit
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.aimdi.xtanative.ui.plugins.NetworkPost
@@ -56,6 +57,12 @@ class RedditPlugin : XtaPlugin() {
     override val subscriptions: Flow<List<PluginSubscription>> get() = app.listed
 
     override val postActions: NetworkPostActions get() = app.actions
+
+    /** Its posts in the app's timelines as its own card, with the upvote and the bookmark, as XTA's timelines draw them. */
+    override fun postCard(post: NetworkPost): (@Composable () -> Unit)? {
+        val drawn = app.drawnPost(post) ?: return null
+        return { RedditPostCard(app, drawn) }
+    }
 
     /** A post kept in XTA's record, as Saved draws it; one of another network is none of its. */
     override fun archived(content: JsonElement): NetworkPost? = RedditArchive.post(content)?.let { app.shown(it) }

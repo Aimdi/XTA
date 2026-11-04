@@ -95,8 +95,9 @@
     <string name="possibly_sensitive">संभावित रूप से संवेदनशील</string>
     <string name="media">मीडिया</string>
     <string name="photos">फ़ोटो</string>
-    <string name="save_post">पोस्ट सहेजें</string>
     <string name="unsave_post">सहेजे गए से हटाएँ</string>
+    <string name="save_on_device">इस डिवाइस पर सहेजें</string>
+    <string name="remove_from_device">इस डिवाइस से हटाएँ</string>
     <string name="save_to_folder">फ़ोल्डर में सहेजें…</string>
     <string name="add_note">इस सहेजी गई पोस्ट में नोट जोड़ें</string>
     <string name="add_to_group">समूह में जोड़ें</string>

@@ -95,8 +95,9 @@
     <string name="possibly_sensitive">Potencialment sensible</string>
     <string name="media">Mèdia</string>
     <string name="photos">Fotos</string>
-    <string name="save_post">Desa la publicació</string>
     <string name="unsave_post">Treu dels desats</string>
+    <string name="save_on_device">Desa en aquest dispositiu</string>
+    <string name="remove_from_device">Treu d’aquest dispositiu</string>
     <string name="save_to_folder">Desa a una carpeta…</string>
     <string name="add_note">Afegeix una nota a aquesta publicació desada</string>
     <string name="add_to_group">Afegir al grup</string>

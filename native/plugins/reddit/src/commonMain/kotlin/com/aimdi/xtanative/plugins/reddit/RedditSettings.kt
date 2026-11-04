@@ -50,8 +50,8 @@ import kotlinx.coroutines.launch
 /**
  * Everything Reddit is doing, and every switch that changes it (XTA's
  * `RedditSettingsScreen`): the sign-in and the client id, the route Reddit
- * is read through, the order listings read in, how NSFW posts are shown, and
- * spoilers.
+ * is read through, the order listings read in, how NSFW posts are shown, the
+ * followed communities in Home's timeline, and spoilers, in XTA's order.
  */
 @Composable
 internal fun RedditSettingsBody(app: RedditApp, frame: PluginFrame) {
@@ -73,9 +73,9 @@ internal fun RedditSettingsBody(app: RedditApp, frame: PluginFrame) {
         item(key = "public") { SourceRow(app, RedditSource.PUBLIC, RedditGlyphs.VisibilityOff, Strings.source_public, Strings.source_public_description, choices.preferPublic) }
         item(key = "feed") { SectionHeader(pluginString(Strings.feed)) }
         item(key = "sort") { SettingRow(sortIcon(choices.sort), pluginString(Strings.sort), sortTitle(choices)) { sorting = true } }
-        item(key = "home") { HomeTimelineSwitch(app.host.settings, pluginString(Strings.plugin_name)) }
         item(key = "nsfw") { SectionHeader(pluginString(Strings.nsfw_display)) }
         RedditNsfwMode.entries.forEach { mode -> item(key = "nsfw-" + mode.stored) { NsfwRow(app, mode, choices.nsfw == mode) } }
+        item(key = "home") { HomeTimelineSwitch(app.host.settings, pluginString(Strings.plugin_name)) }
         item(key = "spoiler") { SectionHeader(pluginString(Strings.spoiler)) }
         item(key = "spoilers") { SpoilerRow(app, choices.showSpoilers) }
     }

@@ -106,7 +106,7 @@ internal fun PostSheet(app: RedditApp, post: RedditPost, onDismiss: () -> Unit) 
                 onDismiss()
             }
             val isSaved = RedditArchive.id(post) in archived
-            SheetAction(if (isSaved) RedditGlyphs.Bookmark else RedditGlyphs.BookmarkBorder, pluginString(if (isSaved) Strings.unsave_post else Strings.save_post)) {
+            SheetAction(if (isSaved) RedditGlyphs.Bookmark else RedditGlyphs.BookmarkBorder, pluginString(if (isSaved) Strings.unsave_post else Strings.save_on_device)) {
                 app.toggleSaved(post)
                 onDismiss()
             }

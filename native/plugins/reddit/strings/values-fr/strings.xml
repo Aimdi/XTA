@@ -95,8 +95,9 @@
     <string name="possibly_sensitive">Potentiellement sensible</string>
     <string name="media">Médias</string>
     <string name="photos">Photos</string>
-    <string name="save_post">Enregistrer la publication</string>
     <string name="unsave_post">Retirer des enregistrements</string>
+    <string name="save_on_device">Enregistrer sur cet appareil</string>
+    <string name="remove_from_device">Retirer de cet appareil</string>
     <string name="save_to_folder">Enregistrer dans un dossier…</string>
     <string name="add_note">Ajouter une note à ce post enregistré</string>
     <string name="add_to_group">Ajouter au groupe</string>

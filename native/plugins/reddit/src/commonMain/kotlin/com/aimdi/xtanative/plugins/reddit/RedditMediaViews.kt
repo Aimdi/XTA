@@ -72,8 +72,8 @@ internal fun PostMediaView(app: RedditApp, post: RedditPost, choices: RedditChoi
     Box(modifier) {
         when (media) {
             is PostMedia.Video -> Covered(post, gate, ratioOf(post)) { VideoTile(app, post, media.stream) }
-            is PostMedia.Gallery -> Covered(post, gate, 1f) { Gallery(media.images) { app.openPictures(media.images, it) } }
-            is PostMedia.Image -> Covered(post, gate) { Picture(media.url, onSave = { app.host.download(MediaItem(media.url)) }) { app.openPictures(listOf(media.url), 0) } }
+            is PostMedia.Gallery -> Covered(post, gate, 1f) { Gallery(media.images, onSave = { app.savePicture(media.images[it]) }) { app.openPictures(media.images, it) } }
+            is PostMedia.Image -> Covered(post, gate) { Picture(media.url, onSave = { app.savePicture(media.url) }) { app.openPictures(listOf(media.url), 0) } }
             is PostMedia.GalleryLink -> GalleryLink(app, post, gate, media.url, thread)
             is PostMedia.Link -> LinkCard(app, post, gate, media.url, thread)
         }
@@ -107,10 +107,10 @@ private fun Picture(url: String, onSave: (() -> Unit)? = null, onOpen: () -> Uni
     )
 }
 
-/** A gallery one picture at a time in a square, with where the reader is in it: the album in the height of one picture. */
+/** A gallery one picture at a time in a square, with where the reader is in it: the album in the height of one picture; a long press saves the picture shown, as XTA's RedditGallery. */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun Gallery(images: List<String>, onOpen: (Int) -> Unit) {
+private fun Gallery(images: List<String>, onSave: (Int) -> Unit, onOpen: (Int) -> Unit) {
     val pager = rememberPagerState { images.size }
     Box(Modifier.fillMaxWidth().aspectRatio(1f).framed()) {
         HorizontalPager(state = pager, modifier = Modifier.fillMaxSize()) { page ->
@@ -118,7 +118,7 @@ private fun Gallery(images: List<String>, onOpen: (Int) -> Unit) {
                 model = images[page],
                 contentDescription = pluginString(Strings.photos),
                 contentScale = ContentScale.Fit,
-                modifier = Modifier.fillMaxSize().clickable { onOpen(page) },
+                modifier = Modifier.fillMaxSize().combinedClickable(onClick = { onOpen(page) }, onLongClick = { onSave(page) }),
             )
         }
         Text(
@@ -137,8 +137,8 @@ private fun Gallery(images: List<String>, onOpen: (Int) -> Unit) {
 private fun GalleryLink(app: RedditApp, post: RedditPost, gate: MediaGate?, url: String, thread: Boolean) {
     val images by produceState(emptyList<String>(), post.permalink) { value = RedditMedia.collapseImageUrls(attempt { app.galleryImages(post.permalink) }.getOrDefault(emptyList())) }
     when {
-        images.size > 1 -> Covered(post, gate, 1f) { Gallery(images) { app.openPictures(images, it) } }
-        images.size == 1 -> Covered(post, gate) { Picture(images[0]) { app.openPictures(images, 0) } }
+        images.size > 1 -> Covered(post, gate, 1f) { Gallery(images, onSave = { app.savePicture(images[it]) }) { app.openPictures(images, it) } }
+        images.size == 1 -> Covered(post, gate) { Picture(images[0], onSave = { app.savePicture(images[0]) }) { app.openPictures(images, 0) } }
         else -> LinkCard(app, post, gate, url, thread)
     }
 }
@@ -285,7 +285,8 @@ private fun Covered(post: RedditPost, gate: MediaGate?, ratio: Float = 4f / 3f, 
     }
 }
 
-/** Pictures and GIFs a comment carries, smaller than a post's: a reply is a reply. */
+/** Pictures and GIFs a comment carries, smaller than a post's: a reply is a reply. A long press saves one, as XTA's. */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun CommentImages(app: RedditApp, urls: List<String>) {
     urls.forEachIndexed { index, url ->
@@ -300,7 +301,7 @@ internal fun CommentImages(app: RedditApp, urls: List<String>) {
                 alignment = Alignment.CenterStart,
                 onError = { broken = true },
                 modifier = Modifier.padding(top = 6.dp).fillMaxWidth().heightIn(max = 280.dp).clip(RoundedCornerShape(10.dp))
-                    .clickable { app.openPictures(urls, index) },
+                    .combinedClickable(onClick = { app.openPictures(urls, index) }, onLongClick = { app.savePicture(url) }),
             )
         }
     }

@@ -95,8 +95,9 @@
     <string name="possibly_sensitive">Potentiell anstößig</string>
     <string name="media">Medien</string>
     <string name="photos">Fotos</string>
-    <string name="save_post">Beitrag speichern</string>
     <string name="unsave_post">Aus Gespeichertem entfernen</string>
+    <string name="save_on_device">Auf diesem Gerät speichern</string>
+    <string name="remove_from_device">Von diesem Gerät entfernen</string>
     <string name="save_to_folder">In Ordner speichern…</string>
     <string name="add_note">Notiz zu diesem gespeicherten Beitrag</string>
     <string name="add_to_group">Zu Gruppe hinzufügen</string>

@@ -95,8 +95,9 @@
     <string name="possibly_sensitive">センシティブな内容</string>
     <string name="media">メディア</string>
     <string name="photos">写真</string>
-    <string name="save_post">投稿を保存</string>
     <string name="unsave_post">保存から削除</string>
+    <string name="save_on_device">この端末に保存</string>
+    <string name="remove_from_device">この端末から削除</string>
     <string name="save_to_folder">フォルダーに保存…</string>
     <string name="add_note">保存した投稿にメモを追加</string>
     <string name="add_to_group">グループに追加</string>

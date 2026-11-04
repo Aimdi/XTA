@@ -18,6 +18,7 @@ import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.DropdownMenu
@@ -46,7 +47,6 @@ import com.aimdi.xtanative.store.settings.RedditFeedMode
 import com.aimdi.xtanative.store.settings.RedditPrefs
 import com.aimdi.xtanative.store.settings.RedditSource
 import com.aimdi.xtanative.ui.common.LoadingRow
-import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
@@ -78,7 +78,7 @@ internal fun RedditHome(app: RedditApp, frame: PluginFrame) {
     }
 }
 
-/** Following, Popular and All, then the order and the menu. */
+/** Following, Popular and All, then Reddit's search, the order and the menu, in XTA's order (reddit_actions.dart). */
 @Composable
 private fun HomeBar(app: RedditApp, home: RedditHomeSource) {
     var sorting by remember { mutableStateOf(false) }
@@ -89,6 +89,7 @@ private fun HomeBar(app: RedditApp, home: RedditHomeSource) {
             Rail(app, home, RedditFeedMode.POPULAR, RedditGlyphs.Popular, Strings.feed_popular)
             Rail(app, home, RedditFeedMode.ALL, RedditGlyphs.All, Strings.feed_all)
         }
+        IconButton(onClick = { app.host.openSearch(null) }) { Icon(Icons.Filled.Search, contentDescription = pluginString(Strings.search_hint)) }
         IconButton(onClick = { sorting = true }) { Icon(sortIcon(choices.sort), contentDescription = pluginString(Strings.sort)) }
         HomeMenu(app, choices)
     }
@@ -207,14 +208,14 @@ private fun FollowingFeed(app: RedditApp, frame: PluginFrame) {
                 rows != null && names.isEmpty() -> item(key = "nothing") { AddFirst(app) }
                 state.posts.isEmpty() && problem != null -> item(key = "problem") { RedditProblemView(problem, onRetry = { app.feed.refresh(names, force = true) }) }
                 state.posts.isEmpty() && (rows == null || state.loading || !state.loaded) -> item(key = "loading") { LoadingRow() }
-                state.posts.isEmpty() -> item(key = "empty") { MessageText(pluginString(Strings.no_results)) }
+                state.posts.isEmpty() -> item(key = "empty") { AddFirst(app) }
             }
             items(state.posts, key = { "post:" + it.id }, contentType = { "post" }) { post -> RedditPostCard(app, post) }
         }
     }
 }
 
-/** The tab a reader following nothing sees: where to start. */
+/** The tab a reader following nothing, or nothing that posted, sees: where to start (reddit_feed_list.dart's empty state). */
 @Composable
 private fun AddFirst(app: RedditApp) {
     var adding by remember { mutableStateOf(false) }

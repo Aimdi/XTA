@@ -95,8 +95,9 @@
     <string name="possibly_sensitive">NSFW</string>
     <string name="media">Đa phương tiện</string>
     <string name="photos">Ảnh</string>
-    <string name="save_post">Lưu bài đăng</string>
     <string name="unsave_post">Bỏ khỏi mục đã lưu</string>
+    <string name="save_on_device">Lưu trên thiết bị này</string>
+    <string name="remove_from_device">Xóa khỏi thiết bị này</string>
     <string name="save_to_folder">Lưu vào thư mục…</string>
     <string name="add_note">Thêm ghi chú cho bài đã lưu này</string>
     <string name="add_to_group">Thêm vào nhóm</string>

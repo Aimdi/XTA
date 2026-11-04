@@ -1,5 +1,7 @@
 package com.aimdi.xtanative.plugins.reddit
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Share
@@ -36,6 +39,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -196,7 +201,7 @@ private fun PostAuthor(app: RedditApp, post: RedditPost) {
 }
 
 /** Under the post: the vote pill and the comments pill, and at the end share and save; a line each where they do not fit beside each other. */
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
 @Composable
 private fun PostActions(app: RedditApp, post: RedditPost, comments: Int, onComments: () -> Unit) {
     val archived by app.host.saved.collectAsState()
@@ -219,10 +224,14 @@ private fun PostActions(app: RedditApp, post: RedditPost, comments: Int, onComme
             IconButton(onClick = { share(RedditThreadRules.postUrl(post)) }) {
                 Icon(Icons.Outlined.Share, contentDescription = pluginString(Strings.share_link), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
             }
-            IconButton(onClick = { app.toggleSaved(post) }) {
+            // A tap saves on this device or takes it out; a long press picks its folder, as XTA's RedditThreadSaveButton.
+            Box(
+                Modifier.size(48.dp).clip(CircleShape).combinedClickable(role = Role.Button, onClick = { app.toggleSaved(post) }, onLongClick = { app.chooseFolder(post) }),
+                contentAlignment = Alignment.Center,
+            ) {
                 Icon(
                     if (isSaved) RedditGlyphs.Bookmark else RedditGlyphs.BookmarkBorder,
-                    contentDescription = pluginString(if (isSaved) Strings.unsave_post else Strings.save_post),
+                    contentDescription = pluginString(if (isSaved) Strings.remove_from_device else Strings.save_on_device),
                     tint = if (isSaved) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(20.dp),
                 )

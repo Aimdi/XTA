@@ -95,8 +95,9 @@
     <string name="possibly_sensitive">Posibil sensibil</string>
     <string name="media">Media</string>
     <string name="photos">Fotografii</string>
-    <string name="save_post">Salvează postarea</string>
     <string name="unsave_post">Elimină din cele salvate</string>
+    <string name="save_on_device">Salvează pe acest dispozitiv</string>
+    <string name="remove_from_device">Elimină de pe acest dispozitiv</string>
     <string name="save_to_folder">Salvează în dosar…</string>
     <string name="add_note">Adaugă o notiță la această postare salvată</string>
     <string name="add_to_group">Adăugați la grup</string>

@@ -95,8 +95,9 @@
     <string name="possibly_sensitive">Potentzialki sentikorra</string>
     <string name="media">Multimedia</string>
     <string name="photos">Argazkiak</string>
-    <string name="save_post">Gorde argitalpena</string>
     <string name="unsave_post">Kendu gordetakoetatik</string>
+    <string name="save_on_device">Gorde gailu honetan</string>
+    <string name="remove_from_device">Kendu gailu honetatik</string>
     <string name="save_to_folder">Gorde karpeta batean…</string>
     <string name="add_note">Gehitu ohar bat gordetako argitalpen honi</string>
     <string name="add_to_group">Gehitu taldera</string>

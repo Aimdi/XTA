@@ -95,8 +95,9 @@
     <string name="possibly_sensitive">Potenciálně citlivé</string>
     <string name="media">Média</string>
     <string name="photos">Fotky</string>
-    <string name="save_post">Uložit příspěvek</string>
     <string name="unsave_post">Odebrat z uložených</string>
+    <string name="save_on_device">Uložit na toto zařízení</string>
+    <string name="remove_from_device">Odebrat z tohoto zařízení</string>
     <string name="save_to_folder">Uložit do složky…</string>
     <string name="add_note">Přidat poznámku k tomuto uloženému příspěvku</string>
     <string name="add_to_group">Přidat do skupiny</string>

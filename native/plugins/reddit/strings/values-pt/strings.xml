@@ -95,8 +95,9 @@
     <string name="possibly_sensitive">Potencialmente sensível</string>
     <string name="media">Mídia</string>
     <string name="photos">Fotos</string>
-    <string name="save_post">Guardar a publicação</string>
     <string name="unsave_post">Remover dos guardados</string>
+    <string name="save_on_device">Guardar neste dispositivo</string>
+    <string name="remove_from_device">Remover deste dispositivo</string>
     <string name="save_to_folder">Guardar numa pasta…</string>
     <string name="add_note">Adicionar uma nota a esta publicação guardada</string>
     <string name="add_to_group">Adicionar ao grupo</string>
