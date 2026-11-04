@@ -230,7 +230,7 @@ class BlueskyClient(private val http: XHttp, private val appView: () -> String? 
     ): Page<BlueskyPost> {
         val text = query.trim()
         BlueskyUrls.searchPostTarget(text)?.let { return Page(listOf(targetPost(it)), null) }
-        val hashtag = text.takeIf { HASHTAG.matches(it) }?.substring(1)
+        val hashtag = text.takeIf { BlueskySearchRules.hashtag.matches(it) }?.substring(1)
         val tags = listOfNotNull(tag?.ifEmpty { null }, hashtag).distinct()
         val words = if (hashtag == null) text else ""
         return searchPosts(words, limit = 25, cursor = cursor, sort = sort, author = author?.ifEmpty { null }, tags = tags)
@@ -292,7 +292,5 @@ class BlueskyClient(private val http: XHttp, private val appView: () -> String? 
     companion object {
         /** XTA's own request headers: it names itself and asks for JSON. */
         val HEADERS = mapOf("User-Agent" to "XTA Bluesky plugin", "Accept" to "application/json")
-
-        private val HASHTAG = Regex("#[^$JS_SPACE#]+")
     }
 }

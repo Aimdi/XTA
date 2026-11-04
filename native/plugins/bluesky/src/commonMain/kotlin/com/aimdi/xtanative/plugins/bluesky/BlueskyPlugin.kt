@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.networks.bluesky.BlueskyXtaRows
 import com.aimdi.xtanative.ui.plugins.PluginBackupSection
 import com.aimdi.xtanative.ui.plugins.PluginBody
 import com.aimdi.xtanative.ui.plugins.PluginFootprint
@@ -12,13 +13,16 @@ import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginScreen
 import com.aimdi.xtanative.ui.plugins.PluginSearch
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
+import java.time.Instant
 
 /**
  * Bluesky as a downloadable plugin, read through the public AppView with no
- * account, as XTA's Bluesky plugin reads it: the Discover feed and the
- * accounts followed here as its home tab, threads, profiles with their tabs,
- * and search. Nothing is posted, liked, reposted or followed on Bluesky:
- * following stays on the device, in the plugin's own folder.
+ * account, as XTA's Bluesky plugin reads it: Following (the accounts followed
+ * here), custom feeds, lists and the posts liked here on its home tab;
+ * threads, profiles with their tabs, people, reposts and quotes; search;
+ * imports of follows; its settings. Nothing is posted, liked, reposted or
+ * followed on Bluesky: follows and likes stay on the device (in the plugin's
+ * folder, and in XTA's backup rows), its preferences in the app's settings.
  */
 class BlueskyPlugin : XtaPlugin() {
     private lateinit var app: BlueskyApp
@@ -46,22 +50,40 @@ class BlueskyPlugin : XtaPlugin() {
 
     override fun routeFor(url: String): String? = BlueskyRoutes.forUrl(url)
 
-    override fun screen(route: String): PluginScreen? = when (val opened = BlueskyRoutes.parse(route)) {
-        is BlueskyRoute.Post -> threadScreen(opened.target)
-        is BlueskyRoute.Profile -> profileScreen(opened.actor)
-        null -> null
+    override fun screen(route: String): PluginScreen? = BlueskyRoutes.parse(route)?.let(::screenOf)
+
+    private fun screenOf(route: BlueskyRoute): PluginScreen = when (route) {
+        is BlueskyRoute.Post -> screen { BlueskyThreadScreen(app, route.target) }
+        is BlueskyRoute.Profile -> screen { BlueskyProfileScreen(app, route.actor) }
+        is BlueskyRoute.People -> screen { PeopleScreen(app, route.actor, route.kind) }
+        is BlueskyRoute.Activity -> screen { ActivityScreen(app, route.uri, route.url, route.quotes) }
+        is BlueskyRoute.Search -> screen { BlueskySearchScreen(app, route.query, route.author, route.kind) }
+        is BlueskyRoute.Import -> screen { ImportScreen(app, route.kind, route.value) }
+        BlueskyRoute.Feeds -> screen { FeedCatalogScreen(app) }
     }
 
-    private fun threadScreen(target: PostTarget): PluginScreen = { BlueskyThreadScreen(app, target) }
+    private fun screen(content: PluginScreen): PluginScreen = content
 
-    private fun profileScreen(actor: String): PluginScreen = { BlueskyProfileScreen(app, actor) }
-
+    /**
+     * What it keeps, as XTA's backup carries it: the accounts followed here
+     * (`blueskySubscriptions`) and the posts liked here (`blueskyLocalLikes`),
+     * XTA's own rows, which the app writes where XTA reads them. Its
+     * preferences (the liked posts to show among them) travel in the app's
+     * settings. An earlier build's own section is still taken back.
+     */
     override val backupSections: List<PluginBackupSection>
-        get() = listOf(PluginBackupSection("bluesky.follows", export = { app.follows.export() }, import = { app.follows.import(it) }))
+        get() = listOf(
+            PluginBackupSection(BlueskyXtaRows.FOLLOWS, export = { app.follows.exportRows() }, import = { app.follows.importRows(it, Instant.now()) }),
+            PluginBackupSection(BlueskyXtaRows.LIKES, export = { app.likes.exportRows() }, import = { app.likes.importRows(it, Instant.now()) }),
+            PluginBackupSection(EARLIER_FOLLOWS, export = { null }, import = { app.follows.importOwn(it) }),
+        )
 
-    override suspend fun footprint(): PluginFootprint = PluginFootprint(app.follows.load().size)
+    override suspend fun footprint(): PluginFootprint = PluginFootprint(app.follows.load().size + app.likes.load().size)
 
     private companion object {
+        /** The section an earlier build of this plugin kept its follows in. */
+        const val EARLIER_FOLLOWS = "bluesky.follows"
+
         /** Bluesky's butterfly, from the Bootstrap Icons glyph XTA draws it with (16 × 16). */
         val Butterfly: ImageVector by lazy {
             val path = "M3.468,1.948C5.303,3.325 7.276,6.118 8,7.616C8.725,6.118 10.698,3.326 12.532,1.948" +

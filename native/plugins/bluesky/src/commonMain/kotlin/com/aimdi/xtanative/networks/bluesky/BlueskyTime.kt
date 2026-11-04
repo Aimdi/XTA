@@ -20,6 +20,11 @@ internal object BlueskyTime {
 
     private val toSeconds = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss").withZone(ZoneOffset.UTC)
 
+    private val sqliteFormat = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss")
+
+    /** [instant] as XTA's database rows write a time, `2026-08-04 09:30:00`, in the device's time zone. */
+    fun sqlite(instant: Instant, zone: ZoneId = ZoneId.systemDefault()): String = sqliteFormat.format(instant.atZone(zone))
+
     /** [text] as an instant, null when it is no date. Without a zone it is the device's local time, as in Dart. */
     fun parse(text: String?): Instant? {
         val parts = text?.let(grammar::matchEntire)?.groupValues ?: return null

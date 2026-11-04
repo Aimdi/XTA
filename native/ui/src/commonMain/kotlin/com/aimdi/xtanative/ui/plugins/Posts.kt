@@ -1,16 +1,21 @@
 package com.aimdi.xtanative.ui.plugins
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -27,6 +32,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
@@ -155,6 +163,8 @@ data class NetworkPost(
     val warning: String? = null,
     /** Where it lives on the web. */
     val url: String? = null,
+    /** The [warning] keeps its text, link card and quoted post back too, not only its media. */
+    val coversText: Boolean = false,
 )
 
 /** Where a network post's parts lead: its plugin decides. */
@@ -173,8 +183,12 @@ class NetworkPostActions(
  * author, whom it answers, its text, media, link card and quoted post, and its
  * counts. [continues] draws it as part of a thread going on below; [indent]
  * moves a reply under the one it answers; with [playing], its first video
- * plays in place.
+ * plays in place. A plugin may put its own glyph at the end of the author
+ * line ([trailing], see [NetworkHeaderButton]), its own row under the post in
+ * place of the counts ([footer], see [NetworkCount]), and act on a long press
+ * ([onLongClick]).
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NetworkPostCard(
     post: NetworkPost,
@@ -183,12 +197,15 @@ fun NetworkPostCard(
     continues: Boolean = false,
     indent: Int = 0,
     playing: Boolean = false,
+    trailing: (@Composable () -> Unit)? = null,
+    footer: (@Composable () -> Unit)? = null,
+    onLongClick: (() -> Unit)? = null,
 ) {
     var revealed by rememberSaveable(post.id) { mutableStateOf(false) }
     Column(
         modifier
             .fillMaxWidth()
-            .clickable { actions.open(post) }
+            .combinedClickable(onLongClick = onLongClick) { actions.open(post) }
             .padding(start = 16.dp + IndentStep * indent.coerceIn(0, MAX_INDENT), end = 16.dp, top = 12.dp, bottom = if (continues) 4.dp else 12.dp),
     ) {
         val repostedBy = post.repostedBy
@@ -200,15 +217,21 @@ fun NetworkPostCard(
             Avatar(post.avatarUrl, 40.dp) { actions.openAuthor(post) }
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
-                AuthorLine(post.authorName, post.authorHandle, agoText(post.createdAt), verified = false)
+                Row(verticalAlignment = Alignment.Top) {
+                    AuthorLine(post.authorName, post.authorHandle, agoText(post.createdAt), verified = false, modifier = Modifier.weight(1f))
+                    trailing?.invoke()
+                }
                 post.replyingTo?.let { handle -> ReplyLine(handle) { actions.openMention(handle) } }
-                LinkedText(post.text, actions.openMention, actions.openTag, Modifier.padding(top = 2.dp))
+                if (!post.textCovered(revealed)) LinkedText(post.text, actions.openMention, actions.openTag, Modifier.padding(top = 2.dp))
                 Attachments(post, actions, revealed, onReveal = { revealed = true }, gap = 10.dp, playing = playing)
-                CountsLine(post)
+                if (footer != null) footer() else CountsLine(post)
             }
         }
     }
 }
+
+/** Whether [this] keeps its text back behind its warning while it is not [revealed]. */
+private fun NetworkPost.textCovered(revealed: Boolean): Boolean = coversText && warning != null && !revealed
 
 /** The opened post, larger, with its full time and its counts spelled out, as the app's opened X post; the line under it closes it off. */
 @Composable
@@ -224,7 +247,9 @@ fun NetworkFocalPost(post: NetworkPost, actions: NetworkPostActions, modifier: M
             }
         }
         post.replyingTo?.let { handle -> ReplyLine(handle) { actions.openMention(handle) } }
-        LinkedText(post.text, actions.openMention, actions.openTag, Modifier.padding(top = 12.dp), style = TextStyle(fontSize = 17.sp, lineHeight = 24.sp))
+        if (!post.textCovered(revealed)) {
+            LinkedText(post.text, actions.openMention, actions.openTag, Modifier.padding(top = 12.dp), style = TextStyle(fontSize = 17.sp, lineHeight = 24.sp))
+        }
         Attachments(post, actions, revealed, onReveal = { revealed = true }, gap = 12.dp, playing = false)
         Text(
             fullTimeText(post.createdAt),
@@ -254,19 +279,30 @@ fun QuotedNetworkPost(post: NetworkPost, actions: NetworkPostActions, modifier: 
             Spacer(Modifier.width(6.dp))
             AuthorLine(post.authorName, post.authorHandle, agoText(post.createdAt), verified = false, modifier = Modifier.weight(1f))
         }
-        LinkedText(post.text, actions.openMention, actions.openTag, Modifier.padding(top = 4.dp), maxLines = 8)
-        if (post.media.isNotEmpty()) {
-            MediaTiles(post.media, { index -> actions.openMedia(post, index) }, Modifier.padding(top = 8.dp), hidden = post.warning != null)
+        val warning = post.warning
+        if (post.coversText && warning != null) {
+            // Its own screen is where the reader opens it.
+            Text(warning, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 4.dp))
+        } else {
+            LinkedText(post.text, actions.openMention, actions.openTag, Modifier.padding(top = 4.dp), maxLines = 8)
+            if (post.media.isNotEmpty()) {
+                MediaTiles(post.media, { index -> actions.openMedia(post, index) }, Modifier.padding(top = 8.dp), hidden = warning != null)
+            }
+            post.card?.let { CardView(it.asXCard(), Modifier.padding(top = 8.dp)) }
         }
-        post.card?.let { CardView(it.asXCard(), Modifier.padding(top = 8.dp)) }
     }
 }
 
-/** The media (behind its warning until revealed), the link card and the quoted post, [gap] below what is above. */
+/**
+ * The media (behind its warning until revealed), the link card and the quoted
+ * post, [gap] below what is above; a warning that [NetworkPost.coversText]
+ * keeps all of them back until revealed.
+ */
 @Composable
 private fun Attachments(post: NetworkPost, actions: NetworkPostActions, revealed: Boolean, onReveal: () -> Unit, gap: Dp, playing: Boolean) {
-    val warning = post.warning?.takeIf { !revealed && post.media.isNotEmpty() }
+    val warning = post.warning?.takeIf { !revealed && (post.media.isNotEmpty() || post.coversText) }
     if (warning != null) WarningLine(warning, onReveal)
+    if (post.textCovered(revealed)) return
     if (post.media.isNotEmpty()) {
         MediaTiles(
             post.media,
@@ -338,12 +374,52 @@ private fun CountsLine(post: NetworkPost) {
 }
 
 @Composable
-private fun Count(icon: ImageVector, n: Long) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(17.dp))
+private fun Count(icon: ImageVector, n: Long) = NetworkCount(icon, n)
+
+/**
+ * A glyph and its count under a post, as the app's X footer draws one:
+ * [onClick] (and [onLongClick]) make it a button that [label] names, [tint]
+ * colours it (the theme's primary for what the reader marked).
+ */
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun NetworkCount(
+    icon: ImageVector,
+    n: Long,
+    label: String? = null,
+    tint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    onLongClick: (() -> Unit)? = null,
+    onClick: (() -> Unit)? = null,
+) {
+    val clickable = if (onClick != null) {
+        Modifier.clip(CircleShape).combinedClickable(role = Role.Button, onClick = onClick, onLongClick = onLongClick).padding(4.dp)
+    } else {
+        Modifier
+    }
+    Row(
+        clickable.let { if (label != null) it.semantics { contentDescription = label } else it },
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(17.dp))
         if (n > 0) {
-            Text(countText(n), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(start = 4.dp))
+            Text(countText(n), style = MaterialTheme.typography.labelMedium, color = tint, modifier = Modifier.padding(start = 4.dp))
         }
+    }
+}
+
+/** A glyph at the end of a post's author line, where an X post has ⋯: a plugin's own follow or menu; [tint] marks one that is on. */
+@Composable
+fun NetworkHeaderButton(icon: ImageVector, label: String, tint: Color = MaterialTheme.colorScheme.onSurfaceVariant, onClick: () -> Unit) {
+    Box(
+        Modifier
+            .offset(y = (-4).dp)
+            .size(32.dp)
+            .clip(CircleShape)
+            .clickable(role = Role.Button, onClick = onClick)
+            .semantics { contentDescription = label },
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(18.dp))
     }
 }
 

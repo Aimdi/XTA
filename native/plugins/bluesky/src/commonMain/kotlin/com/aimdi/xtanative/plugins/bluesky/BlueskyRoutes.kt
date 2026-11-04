@@ -1,7 +1,9 @@
 package com.aimdi.xtanative.plugins.bluesky
 
 import com.aimdi.xtanative.networks.bluesky.BlueskyClient
-import com.aimdi.xtanative.networks.bluesky.BlueskyUrls
+import com.aimdi.xtanative.networks.bluesky.BlueskySearchKind
+import com.aimdi.xtanative.services.links.NetworkLink
+import com.aimdi.xtanative.services.links.NetworkLinks
 import java.net.URLDecoder
 import java.net.URLEncoder
 
@@ -25,43 +27,84 @@ internal sealed interface PostTarget {
     }
 }
 
-/** The plugin's own screens, as routes on the app's back stack: "post?uri=…", "post?actor=…&rkey=…", "profile?actor=…". */
+/** Whose accounts a list of people shows: those [actor] follows, or those who follow them. */
+internal enum class PeopleKind { FOLLOWING, FOLLOWERS }
+
+/** What an import copies into the follows kept here: someone's following, a list's members, a starter pack's. */
+internal enum class ImportKind { FOLLOWING, LIST, STARTER }
+
+/** The plugin's own screens, as routes on the app's back stack ("post?uri=…", "profile?actor=…", …). */
 internal sealed interface BlueskyRoute {
     data class Post(val target: PostTarget) : BlueskyRoute
 
     data class Profile(val actor: String) : BlueskyRoute
+
+    data class People(val actor: String, val kind: PeopleKind) : BlueskyRoute
+
+    /** Who reposted the post [uri], or ([quotes]) the posts quoting it; [url] is where it lives on bsky.app. */
+    data class Activity(val uri: String, val url: String, val quotes: Boolean) : BlueskyRoute
+
+    data class Search(val query: String, val author: String, val kind: BlueskySearchKind) : BlueskyRoute
+
+    data class Import(val kind: ImportKind, val value: String) : BlueskyRoute
+
+    /** The custom feeds to find, pin and open on Discover. */
+    data object Feeds : BlueskyRoute
 }
 
 internal object BlueskyRoutes {
-    fun post(uri: String): String = "post?uri=" + encoded(uri)
+    fun post(uri: String): String = route("post", "uri" to uri)
 
-    fun post(actor: String, rkey: String): String = "post?actor=" + encoded(actor) + "&rkey=" + encoded(rkey)
+    fun post(actor: String, rkey: String): String = route("post", "actor" to actor, "rkey" to rkey)
 
-    fun profile(actor: String): String = "profile?actor=" + encoded(actor)
+    fun profile(actor: String): String = route("profile", "actor" to actor)
+
+    fun people(actor: String, kind: PeopleKind): String = route("people", "actor" to actor, "kind" to kind.name.lowercase())
+
+    fun activity(uri: String, url: String, quotes: Boolean): String = route(if (quotes) "quotes" else "reposts", "uri" to uri, "url" to url)
+
+    fun search(query: String = "", author: String = "", kind: BlueskySearchKind = BlueskySearchKind.PEOPLE): String =
+        route("search", "q" to query, "author" to author, "kind" to kind.name.lowercase())
+
+    fun import(kind: ImportKind, value: String = ""): String = route("import", "kind" to kind.name.lowercase(), "value" to value)
+
+    const val FEEDS = "feeds"
 
     /** The screen [route] names; null for one this plugin does not have. */
     fun parse(route: String): BlueskyRoute? {
         val name = route.substringBefore('?')
         val query = route.substringAfter('?', "").split('&').filter { '=' in it }
             .associate { it.substringBefore('=') to URLDecoder.decode(it.substringAfter('='), "UTF-8") }
-        val uri = query["uri"]?.takeIf { it.startsWith("at://") }
-        val actor = query["actor"]?.takeIf { it.isNotBlank() }
-        val rkey = query["rkey"]?.takeIf { it.isNotBlank() }
-        return when {
-            name == "post" && uri != null -> BlueskyRoute.Post(PostTarget.Uri(uri))
-            name == "post" && actor != null && rkey != null -> BlueskyRoute.Post(PostTarget.Key(actor, rkey))
-            name == "profile" && actor != null -> BlueskyRoute.Profile(actor)
+        fun value(key: String) = query[key]?.takeIf { it.isNotBlank() }
+        val uri = value("uri")?.takeIf { it.startsWith("at://") }
+        val actor = value("actor")
+        return when (name) {
+            "post" -> post(uri, actor, value("rkey"))
+            "profile" -> actor?.let(BlueskyRoute::Profile)
+            "people" -> actor?.let { who -> kindOf<PeopleKind>(value("kind"))?.let { BlueskyRoute.People(who, it) } }
+            "reposts", "quotes" -> uri?.let { BlueskyRoute.Activity(it, value("url").orEmpty(), quotes = name == "quotes") }
+            "search" -> BlueskyRoute.Search(query["q"].orEmpty(), query["author"].orEmpty(), kindOf<BlueskySearchKind>(value("kind")) ?: BlueskySearchKind.PEOPLE)
+            "import" -> kindOf<ImportKind>(value("kind"))?.let { BlueskyRoute.Import(it, query["value"].orEmpty()) }
+            FEEDS -> BlueskyRoute.Feeds
             else -> null
         }
     }
 
-    /** The route of the screen showing [url]: a bsky.app post or profile link; null for any other link. */
-    fun forUrl(url: String): String? {
-        val text = url.trim()
-        if (!text.startsWith("https://")) return null
-        BlueskyUrls.searchPostTarget(text)?.let { return post(it.actor, it.rkey) }
-        return BlueskyUrls.searchActor(text)?.let(::profile)
+    private fun post(uri: String?, actor: String?, rkey: String?): BlueskyRoute? = when {
+        uri != null -> BlueskyRoute.Post(PostTarget.Uri(uri))
+        actor != null && rkey != null -> BlueskyRoute.Post(PostTarget.Key(actor, rkey))
+        else -> null
     }
 
-    private fun encoded(text: String): String = URLEncoder.encode(text, "UTF-8")
+    private inline fun <reified E : Enum<E>> kindOf(name: String?): E? = enumValues<E>().firstOrNull { it.name.equals(name, ignoreCase = true) }
+
+    /** The route of the screen showing [url], as XTA reads a bsky.app link: a post's thread, else the profile it is under. */
+    fun forUrl(url: String): String? = when (val link = NetworkLinks.bluesky(url)) {
+        is NetworkLink.BlueskyPost -> post(link.actor, link.rkey)
+        is NetworkLink.BlueskyProfile -> profile(link.actor)
+        else -> null
+    }
+
+    private fun route(name: String, vararg values: Pair<String, String>): String =
+        name + "?" + values.joinToString("&") { (key, value) -> key + "=" + URLEncoder.encode(value, "UTF-8") }
 }

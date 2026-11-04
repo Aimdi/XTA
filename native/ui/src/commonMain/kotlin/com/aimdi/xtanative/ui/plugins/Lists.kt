@@ -206,9 +206,9 @@ class PagedItems<T : Any>(
 
 /**
  * [pages] as a list that reads more as its end comes into view and is pulled
- * to read again: [row] draws each item under [header], [empty] says there is
- * nothing, and a failure names [network]. [toTop] grows each time the reader
- * asks for the top again ([PluginFrame.toTop]).
+ * to read again: [row] draws each item between [header] and [footer], [empty]
+ * says there is nothing, and a failure names [network]. [toTop] grows each
+ * time the reader asks for the top again ([PluginFrame.toTop]).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -222,6 +222,7 @@ fun <T : Any> PagedList(
     toTop: Int = 0,
     state: LazyListState = rememberLazyListState(),
     header: LazyListScope.() -> Unit = {},
+    footer: LazyListScope.() -> Unit = {},
     row: @Composable (T) -> Unit,
 ) {
     val paged by pages.state.collectAsStateWithLifecycle()
@@ -231,6 +232,7 @@ fun <T : Any> PagedList(
         LazyColumn(state = state, contentPadding = contentPadding, modifier = Modifier.fillMaxSize()) {
             header()
             pagedRows(paged, pages, key, network, empty, row)
+            footer()
         }
     }
 }
