@@ -95,13 +95,13 @@ class BlueskyStoresTest {
     fun aLikeKeepsItsPostToShowInTheAppsSettings(): Unit = runBlocking {
         val prefs = Prefs()
         val likes = BlueskyLikes(file("likes.json"), prefs.prefs)
-        likes.toggle(post("1"), at = 1)
+        assertTrue(likes.toggle(post("1"), at = 1), "a like says it is one, for the notice that likes stay here")
         likes.toggle(post("2"), at = 2)
         assertTrue(likes.isLiked(post("1").uri))
         assertEquals(listOf(post("2").uri, post("1").uri), prefs.prefs.likedPosts.value.map { it.uri })
         assertTrue(BlueskyPrefs.likedPosts.key in prefs.values.value!!.values, "kept where XTA keeps them: the app's backup carries them")
 
-        likes.toggle(post("1"), at = 3)
+        assertFalse(likes.toggle(post("1"), at = 3))
         assertFalse(likes.isLiked(post("1").uri))
         assertEquals(listOf(post("2").uri), prefs.prefs.likedPosts.value.map { it.uri })
         assertEquals("""[{"id":"${post("2").uri}"}]""", likes.exportRows())

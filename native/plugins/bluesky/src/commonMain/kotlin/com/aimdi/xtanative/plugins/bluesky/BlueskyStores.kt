@@ -94,8 +94,8 @@ internal class BlueskyLikes(private val file: StoreFile, private val prefs: Blue
 
     fun isLiked(uri: String): Boolean = mutable.value.orEmpty().any { it.uri == uri }
 
-    /** Likes [post] here, or takes the like back. */
-    suspend fun toggle(post: BlueskyPost, at: Long) {
+    /** Likes [post] here, or takes the like back; whether it is liked now. */
+    suspend fun toggle(post: BlueskyPost, at: Long): Boolean {
         val liked = mutex.withLock {
             val before = loaded()
             val now = before.none { it.uri == post.uri }
@@ -103,6 +103,7 @@ internal class BlueskyLikes(private val file: StoreFile, private val prefs: Blue
             now
         }
         prefs.likedPosts { posts -> if (liked) BlueskyLocal.withLikedPost(posts, post) else posts.filterNot { it.uri == post.uri } }
+        return liked
     }
 
     /** The likes as XTA's backup rows. */

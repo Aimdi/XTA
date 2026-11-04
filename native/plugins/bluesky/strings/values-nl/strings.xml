@@ -10,6 +10,8 @@
     <string name="more_options">Meer opties</string>
     <string name="add_account">Account toevoegen</string>
     <string name="settings">Instellingen</string>
+    <string name="saved">Opgeslagen</string>
+    <string name="pinned_post">Vastgezette tweet</string>
     <string name="handle_hint">Handle of DID, zonder @</string>
     <string name="invalid_handle">Dat is geen Bluesky-handle</string>
     <string name="cancel">Annuleren</string>

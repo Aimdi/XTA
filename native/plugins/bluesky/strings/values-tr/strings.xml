@@ -10,6 +10,8 @@
     <string name="more_options">Diğer seçenekler</string>
     <string name="add_account">Hesap ekle</string>
     <string name="settings">Ayarlar</string>
+    <string name="saved">Kaydedilmiş</string>
+    <string name="pinned_post">Sabitlenmiş tweet</string>
     <string name="handle_hint">Handle veya DID, @ olmadan</string>
     <string name="invalid_handle">Bu bir Bluesky handle’ı değil</string>
     <string name="cancel">İptal et</string>

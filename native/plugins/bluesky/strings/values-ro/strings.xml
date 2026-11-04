@@ -10,6 +10,8 @@
     <string name="more_options">Mai multe opțiuni</string>
     <string name="add_account">Adaugă cont</string>
     <string name="settings">Setări</string>
+    <string name="saved">Salvat</string>
+    <string name="pinned_post">Postare fixată</string>
     <string name="handle_hint">Handle sau DID, fără @</string>
     <string name="invalid_handle">Acesta nu este un handle Bluesky</string>
     <string name="cancel">Anulare</string>

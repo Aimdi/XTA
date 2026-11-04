@@ -10,6 +10,8 @@
     <string name="more_options">Rohkem valikuid</string>
     <string name="add_account">Lisa konto</string>
     <string name="settings">Seaded</string>
+    <string name="saved">Salvestatud</string>
+    <string name="pinned_post">Klammerdatud säuts</string>
     <string name="handle_hint">Kasutajanimi või DID, ilma @-märgita</string>
     <string name="invalid_handle">See ei ole Bluesky kasutajanimi</string>
     <string name="cancel">Katkesta</string>

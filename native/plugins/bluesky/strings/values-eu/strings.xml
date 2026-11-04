@@ -10,6 +10,8 @@
     <string name="more_options">Aukera gehiago</string>
     <string name="add_account">Gehitu kontua</string>
     <string name="settings">Ezarpenak</string>
+    <string name="saved">Gordeak</string>
+    <string name="pinned_post">Ainguratutako txioa</string>
     <string name="handle_hint">Handle edo DID, @ gabe</string>
     <string name="invalid_handle">Hori ez da Bluesky handle bat</string>
     <string name="cancel">Ezeztatu</string>

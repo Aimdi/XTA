@@ -10,6 +10,8 @@
     <string name="more_options">Іншыя дзеянні</string>
     <string name="add_account">Дадаць уліковы запіс</string>
     <string name="settings">Налады</string>
+    <string name="saved">Захаванае</string>
+    <string name="pinned_post">Замацаваны твіт</string>
     <string name="handle_hint">Хэндл або DID, без @</string>
     <string name="invalid_handle">Гэта не хэндл Bluesky</string>
     <string name="cancel">Скасаваць</string>

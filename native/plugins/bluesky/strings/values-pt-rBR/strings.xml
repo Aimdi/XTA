@@ -10,6 +10,8 @@
     <string name="more_options">Mais opções</string>
     <string name="add_account">Adicionar conta</string>
     <string name="settings">Configurações</string>
+    <string name="saved">Salvo</string>
+    <string name="pinned_post">Tweet fixado</string>
     <string name="handle_hint">Identificador ou DID, sem o @</string>
     <string name="invalid_handle">Isso não é um identificador do Bluesky</string>
     <string name="cancel">Cancelar</string>

@@ -10,6 +10,8 @@
     <string name="more_options">더보기</string>
     <string name="add_account">계정 추가</string>
     <string name="settings">설정</string>
+    <string name="saved">저장됨</string>
+    <string name="pinned_post">고정 게시물</string>
     <string name="handle_hint">핸들 또는 DID (@ 없이)</string>
     <string name="invalid_handle">Bluesky 핸들이 아닙니다</string>
     <string name="cancel">취소</string>

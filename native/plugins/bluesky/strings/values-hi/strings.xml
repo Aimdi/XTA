@@ -10,6 +10,8 @@
     <string name="more_options">और विकल्प</string>
     <string name="add_account">खाता जोड़ें</string>
     <string name="settings">सेटिंग</string>
+    <string name="saved">सहेजा गया</string>
+    <string name="pinned_post">पिन की गई पोस्ट</string>
     <string name="handle_hint">हैंडल या DID, @ के बिना</string>
     <string name="invalid_handle">यह Bluesky हैंडल नहीं है</string>
     <string name="cancel">रद्द करें</string>

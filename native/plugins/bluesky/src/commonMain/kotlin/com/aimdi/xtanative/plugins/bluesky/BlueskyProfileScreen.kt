@@ -64,7 +64,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.aimdi.xtanative.data.Problem
-import com.aimdi.xtanative.networks.Page
 import com.aimdi.xtanative.networks.bluesky.BlueskyLocal
 import com.aimdi.xtanative.networks.bluesky.BlueskyMediaGrid
 import com.aimdi.xtanative.networks.bluesky.BlueskyMediaTile
@@ -87,6 +86,7 @@ import com.aimdi.xtanative.ui.plugins.PagedState
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.ReadsMoreNearEnd
+import com.aimdi.xtanative.ui.plugins.RetryRow
 import com.aimdi.xtanative.ui.plugins.pagedRows
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -161,9 +161,8 @@ internal fun BlueskyProfileScreen(app: BlueskyApp, actor: String) {
                         when {
                             tab == ProfileTab.LIKES -> likedRows(app, shown)
                             tab == ProfileTab.MEDIA && pages != null -> mediaRows(app, paged, pages, columns, noPosts)
-                            pages != null -> pagedRows(paged, pages, key = { it.uri }, network = app.network, empty = noPosts) { post ->
-                                PostRow(app, post, pinned = tab == ProfileTab.POSTS && post.uri == shown.pinnedPostUri)
-                            }
+                            tab == ProfileTab.POSTS && pages != null -> postRows(app, profile, state, paged, pages, noPosts)
+                            pages != null -> pagedRows(paged, pages, key = { it.uri }, network = app.network, empty = noPosts) { post -> PostRow(app, post) }
                         }
                     }
                 }
@@ -279,6 +278,19 @@ private fun Tabs(selected: ProfileTab, onSelect: (ProfileTab) -> Unit) {
     }
 }
 
+/**
+ * The Posts tab: the post its author pinned first, read on its own, once
+ * the first page is in; when it could not be read, "Pinned post: …" over
+ * the posts with Retry, as XTA says it.
+ */
+private fun LazyListScope.postRows(app: BlueskyApp, profile: ProfileState, state: ProfileState.State, paged: PagedState<BlueskyPost>, pages: PagedItems<BlueskyPost>, empty: String) {
+    state.pinFailure?.let { failure ->
+        item(key = "pin-problem") { RetryRow(pluginString(Strings.pinned_post) + ": " + pluginString(errorText(failure)), profile::retryPin) }
+    }
+    val listed = if (paged.loaded) paged.copy(items = BlueskyProfileTab.POSTS.withPin(paged.items, state.pinned)) else paged
+    pagedRows(listed, pages, key = { it.uri }, network = app.network, empty = empty) { post -> PostRow(app, post, pinned = post.uri == state.pinned?.uri) }
+}
+
 /** The posts of [profile] liked on this device, under the reminder that likes stay here. */
 private fun LazyListScope.likedRows(app: BlueskyApp, profile: BlueskyProfile) {
     item(key = "likes-note") { NoteText(pluginString(Strings.likes_stay_notice), Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 8.dp)) }
@@ -351,11 +363,20 @@ private fun TileBadge(modifier: Modifier, content: @Composable () -> Unit) {
 
 /**
  * One profile, read once the screen opens, and a paged list per tab read
- * from the AppView, made the first time the tab is shown; the first page of
- * Posts starts with the post the author pinned.
+ * from the AppView, made the first time the tab is shown; the post the
+ * author pinned is read on its own beside them (bluesky_profile_store.dart),
+ * kept through a reload of the profile that still pins it.
  */
 internal class ProfileState(private val app: BlueskyApp, private val actor: String, private val scope: CoroutineScope) {
-    data class State(val profile: BlueskyProfile? = null, val loading: Boolean = true, val problem: Problem? = null)
+    data class State(
+        val profile: BlueskyProfile? = null,
+        val loading: Boolean = true,
+        val problem: Problem? = null,
+        /** The post the author pinned, at the head of Posts. */
+        val pinned: BlueskyPost? = null,
+        /** Why the pinned post could not be read, said over the posts. */
+        val pinFailure: Throwable? = null,
+    )
 
     private val mutable = MutableStateFlow(State())
     val state: StateFlow<State> = mutable.asStateFlow()
@@ -370,7 +391,9 @@ internal class ProfileState(private val app: BlueskyApp, private val actor: Stri
         scope.launch {
             mutable.update { it.copy(loading = true, problem = null) }
             try {
-                mutable.value = State(app.client.profile(actor), loading = false)
+                val profile = app.client.profile(actor)
+                mutable.update { State(profile, loading = false, pinned = it.pinned?.takeIf { pin -> pin.uri == profile.pinnedPostUri }) }
+                readPin(profile)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -379,23 +402,27 @@ internal class ProfileState(private val app: BlueskyApp, private val actor: Stri
         }
     }
 
+    /** The pinned post read again, after it could not be. */
+    fun retryPin() {
+        val profile = state.value.profile ?: return
+        scope.launch { readPin(profile) }
+    }
+
     /** [tab]'s posts, once the profile is known. */
     fun pages(tab: BlueskyProfileTab): PagedItems<BlueskyPost>? {
         val profile = state.value.profile ?: return null
-        return tabs.getOrPut(tab) { PagedItems(scope, key = { it.uri }) { cursor -> read(profile, tab, cursor) } }
+        return tabs.getOrPut(tab) { PagedItems(scope, key = { it.uri }) { cursor -> app.client.profileTab(profile, tab, cursor) } }
     }
 
-    private suspend fun read(profile: BlueskyProfile, tab: BlueskyProfileTab, cursor: String?): Page<BlueskyPost> {
-        val page = app.client.profileTab(profile, tab, cursor)
-        if (cursor != null || tab != BlueskyProfileTab.POSTS) return page
-        return Page(tab.withPin(page.items, pinned(profile)), page.next)
-    }
-
-    private suspend fun pinned(profile: BlueskyProfile): BlueskyPost? = try {
-        app.client.pinnedPost(profile)
-    } catch (e: CancellationException) {
-        throw e
-    } catch (e: Exception) {
-        null
+    private suspend fun readPin(profile: BlueskyProfile) {
+        mutable.update { it.copy(pinFailure = null) }
+        try {
+            val pin = app.client.pinnedPost(profile)
+            mutable.update { it.copy(pinned = pin) }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            mutable.update { it.copy(pinFailure = e) }
+        }
     }
 }

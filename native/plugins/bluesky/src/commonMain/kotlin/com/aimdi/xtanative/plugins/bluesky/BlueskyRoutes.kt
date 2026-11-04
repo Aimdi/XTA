@@ -50,6 +50,9 @@ internal sealed interface BlueskyRoute {
 
     /** The custom feeds to find, pin and open on Discover. */
     data object Feeds : BlueskyRoute
+
+    /** What was saved from Bluesky on this device. */
+    data object Saved : BlueskyRoute
 }
 
 internal object BlueskyRoutes {
@@ -70,6 +73,8 @@ internal object BlueskyRoutes {
 
     const val FEEDS = "feeds"
 
+    const val SAVED = "saved"
+
     /** The screen [route] names; null for one this plugin does not have. */
     fun parse(route: String): BlueskyRoute? {
         val name = route.substringBefore('?')
@@ -86,6 +91,7 @@ internal object BlueskyRoutes {
             "search" -> BlueskyRoute.Search(query["q"].orEmpty(), query["author"].orEmpty(), kindOf<BlueskySearchKind>(value("kind")) ?: BlueskySearchKind.PEOPLE)
             "import" -> kindOf<ImportKind>(value("kind"))?.let { BlueskyRoute.Import(it, query["value"].orEmpty()) }
             FEEDS -> BlueskyRoute.Feeds
+            SAVED -> BlueskyRoute.Saved
             else -> null
         }
     }

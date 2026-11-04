@@ -12,6 +12,7 @@ import com.aimdi.xtanative.networks.bluesky.BlueskyXtaRows
 import com.aimdi.xtanative.ui.plugins.FeedKinds
 import com.aimdi.xtanative.ui.plugins.NetworkPost
 import com.aimdi.xtanative.ui.plugins.NetworkPostActions
+import com.aimdi.xtanative.ui.plugins.NetworkPostExtras
 import com.aimdi.xtanative.ui.plugins.PluginFeed
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginPostMenu
@@ -107,7 +108,8 @@ internal class BlueskyApp(val host: PluginHost) {
 
     private fun followed(profile: BlueskyProfile) = follows.follows(profile.did) || follows.follows(profile.handle)
 
-    fun toggleLike(post: BlueskyPost) = launch { likes.toggle(post, now()) }
+    /** [post] liked here, or no longer; the first like the reader makes says that likes stay on this device, as XTA's heart does. */
+    fun toggleLike(post: BlueskyPost) = launch { if (likes.toggle(post, now())) host.likedOnDevice() }
 
     fun openPost(uri: String) = host.open(BlueskyRoutes.post(uri))
 
@@ -136,6 +138,9 @@ internal class BlueskyApp(val host: PluginHost) {
         archive = { shown -> shelf.get(shown.id)?.let(BlueskyArchive::of) },
         more = { shown -> shelf.get(shown.id)?.let(::openMenu) },
     )
+
+    /** What Bluesky's card adds to [shown], one of its posts the app draws among others' ([extrasOf]); none for one not drawn lately. */
+    fun extrasFor(shown: NetworkPost): NetworkPostExtras? = shelf.get(shown.id)?.let { post -> extrasOf(this, post) { actions.open(shown) } }
 
     /** XTA's post sheet for [post] (showBlueskyPostActions): Saved, its note, its author's groups, its link, who reposted and quoted it. */
     fun openMenu(post: BlueskyPost) = host.openPostMenu(

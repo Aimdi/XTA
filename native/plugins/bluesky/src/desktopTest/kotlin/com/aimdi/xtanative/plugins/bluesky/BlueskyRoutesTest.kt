@@ -50,6 +50,7 @@ class BlueskyRoutesTest {
         assertEquals(BlueskyRoute.Search("", "", BlueskySearchKind.PEOPLE), BlueskyRoutes.parse(BlueskyRoutes.search()))
         assertEquals(BlueskyRoute.Import(ImportKind.LIST, "at://did:plc:maya/app.bsky.graph.list/l"), BlueskyRoutes.parse(BlueskyRoutes.import(ImportKind.LIST, "at://did:plc:maya/app.bsky.graph.list/l")))
         assertEquals(BlueskyRoute.Feeds, BlueskyRoutes.parse(BlueskyRoutes.FEEDS))
+        assertEquals(BlueskyRoute.Saved, BlueskyRoutes.parse(BlueskyRoutes.SAVED), "the menu's Saved, as XTA's opens the posts saved from Bluesky")
     }
 
     @Test

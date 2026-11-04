@@ -10,6 +10,8 @@
     <string name="more_options">その他のオプション</string>
     <string name="add_account">アカウントを追加</string>
     <string name="settings">設定</string>
+    <string name="saved">保存ツイート</string>
+    <string name="pinned_post">固定ツイート</string>
     <string name="handle_hint">ハンドルまたは DID（@ なし）</string>
     <string name="invalid_handle">Bluesky のハンドルではありません</string>
     <string name="cancel">キャンセル</string>

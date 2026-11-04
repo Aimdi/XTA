@@ -43,7 +43,7 @@ import com.aimdi.xtanative.ui.post.PostIcons
  * The Bluesky tab, as XTA's Bluesky screen: Following (the accounts followed
  * here), Discover (custom feeds), Lists and Liked (the likes kept on this
  * device), the one open kept for the next launch; search, and a menu to
- * add an account, import follows and open the settings.
+ * add an account, open what was saved, import follows and open the settings.
  */
 @Composable
 internal fun BlueskyHome(app: BlueskyApp, frame: PluginFrame) {
@@ -100,7 +100,7 @@ private fun HomeBar(app: BlueskyApp, tab: BlueskyTab, onTab: (BlueskyTab) -> Uni
     }
 }
 
-/** XTA's Bluesky menu: add an account, import follows three ways, the settings. */
+/** XTA's Bluesky menu: add an account, what was saved from Bluesky, import follows three ways, the settings. */
 @Composable
 private fun HomeMenu(app: BlueskyApp) {
     var open by rememberSaveable { mutableStateOf(false) }
@@ -110,6 +110,7 @@ private fun HomeMenu(app: BlueskyApp) {
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             listOf<Pair<PluginText, () -> Unit>>(
                 Strings.add_account to { adding = true },
+                Strings.saved to { app.host.open(BlueskyRoutes.SAVED) },
                 Strings.import_following to { app.host.open(BlueskyRoutes.import(ImportKind.FOLLOWING)) },
                 Strings.import_list to { app.host.open(BlueskyRoutes.import(ImportKind.LIST)) },
                 Strings.import_starter to { app.host.open(BlueskyRoutes.import(ImportKind.STARTER)) },

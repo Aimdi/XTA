@@ -34,6 +34,7 @@ import com.aimdi.xtanative.networks.bluesky.BlueskyErrorKind
 import com.aimdi.xtanative.networks.bluesky.BlueskyProfile
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.plugins.AddToGroupButton
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -80,10 +81,11 @@ internal fun NoteText(text: String, modifier: Modifier = Modifier) {
 /**
  * An account in a list: its picture, name and handle (and, with
  * [description], the start of its description), Follow or Unfollow here
- * beside it; it opens the profile.
+ * beside it, after Add to group where the list offers it ([groups]); it
+ * opens the profile.
  */
 @Composable
-internal fun PersonRow(app: BlueskyApp, person: BlueskyProfile, followed: Boolean, description: Boolean = false) {
+internal fun PersonRow(app: BlueskyApp, person: BlueskyProfile, followed: Boolean, description: Boolean = false, groups: Boolean = false) {
     Row(
         Modifier.fillMaxWidth().clickable { app.openProfile(person.actor) }.padding(start = 16.dp, end = 8.dp, top = 10.dp, bottom = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -97,6 +99,7 @@ internal fun PersonRow(app: BlueskyApp, person: BlueskyProfile, followed: Boolea
                 Text(person.description, style = MaterialTheme.typography.bodyMedium, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 4.dp))
             }
         }
+        if (groups) AddToGroupButton(app.host, person.actor) { app.ensureFollowed(person) }
         TextButton(onClick = { app.toggleFollow(person) }) { Text(pluginString(if (followed) Strings.unfollow else Strings.follow)) }
     }
     Hairline()

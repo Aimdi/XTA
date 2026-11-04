@@ -10,6 +10,8 @@
     <string name="more_options">Flere valg</string>
     <string name="add_account">Legg til konto</string>
     <string name="settings">Innstillinger</string>
+    <string name="saved">Lagret</string>
+    <string name="pinned_post">Festet tvitring</string>
     <string name="handle_hint">Handle eller DID, uten @</string>
     <string name="invalid_handle">Det er ikke et Bluesky-handle</string>
     <string name="cancel">Avbryt</string>

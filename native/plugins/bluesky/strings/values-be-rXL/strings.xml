@@ -10,6 +10,8 @@
     <string name="more_options">Inšyja dziejanni</string>
     <string name="add_account">Dadać ulikovy zapis</string>
     <string name="settings">Nalady</string>
+    <string name="saved">Zachavanaje</string>
+    <string name="pinned_post">Zamacavany post</string>
     <string name="handle_hint">Chendl abo DID, biez @</string>
     <string name="invalid_handle">Heta nie chendl Bluesky</string>
     <string name="cancel">Skasavać</string>

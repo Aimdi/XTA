@@ -24,12 +24,14 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -59,6 +61,7 @@ import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.scrollToTop
 import com.aimdi.xtanative.ui.plugins.NetworkPostActions
+import com.aimdi.xtanative.ui.plugins.NetworkProblemRow
 import com.aimdi.xtanative.ui.plugins.NetworkProblemView
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
@@ -80,9 +83,10 @@ import kotlinx.coroutines.launch
  * what it replies to folded under "Replying to", the post itself marked,
  * and its replies under it, each under the one it answers and each branch
  * folding; all of them or the author's own, in the order picked for the
- * session. Its bar goes back to the post, to the browser, and folds or
- * unfolds every branch.
+ * session; a pull reads it all again. Its bar goes back to the post, to the
+ * browser, and folds or unfolds every branch.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun BlueskyThreadScreen(app: BlueskyApp, target: PostTarget) {
     val thread = rememberKept("bluesky-thread:" + target.key) { scope -> ThreadState(app, target, scope) }
@@ -105,22 +109,20 @@ internal fun BlueskyThreadScreen(app: BlueskyApp, target: PostTarget) {
             BranchesMenu(enabled = rows.isNotEmpty() || state.collapsed.isNotEmpty()) { expand -> thread.setAllExpanded(expand, order) }
         },
     ) { padding ->
-        LazyColumn(
-            state = list,
-            contentPadding = PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding() + 48.dp),
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            threadHead(app, thread, state)
-            if (state.thread?.replies.orEmpty().isNotEmpty()) item(key = "controls") { Controls(app, state.authorOnly, order, thread::selectAuthor) }
-            if (!state.loading && state.problem == null && state.thread != null && rows.isEmpty()) {
-                item(key = "no-replies") { EmptyReplies(if (state.authorOnly) Strings.no_author_replies else Strings.no_replies) }
+        PullToRefreshBox(isRefreshing = state.loading && state.thread != null, onRefresh = thread::load, modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
+            LazyColumn(state = list, contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + 48.dp), modifier = Modifier.fillMaxSize()) {
+                threadHead(app, thread, state)
+                if (state.thread?.replies.orEmpty().isNotEmpty()) item(key = "controls") { Controls(app, state.authorOnly, order, thread::selectAuthor) }
+                if (!state.loading && state.problem == null && state.thread != null && rows.isEmpty()) {
+                    item(key = "no-replies") { EmptyReplies(if (state.authorOnly) Strings.no_author_replies else Strings.no_replies) }
+                }
+                items(rows, key = { "reply-" + it.branch.post.uri }, contentType = { "reply" }) { row -> ReplyRow(app, row, thread::toggle) }
             }
-            items(rows, key = { "reply-" + it.branch.post.uri }, contentType = { "reply" }) { row -> ReplyRow(app, row, thread::toggle) }
         }
     }
 }
 
-/** The context above the post, folded until asked for, the post itself, and why it is not there yet. */
+/** The context above the post, folded until asked for, the post itself, and why it is not there yet or was not read again. */
 private fun LazyListScope.threadHead(app: BlueskyApp, thread: ThreadState, state: ThreadState.State) {
     val ancestors = state.thread?.ancestors.orEmpty()
     if (ancestors.isNotEmpty()) item(key = "context") { ContextToggle(ancestors.last().handle, state.contextOpen, thread::toggleContext) }
@@ -132,6 +134,8 @@ private fun LazyListScope.threadHead(app: BlueskyApp, thread: ThreadState, state
         problem != null -> item(key = "problem") { NetworkProblemView(problem, app.network, onRetry = thread::load) }
         state.loading -> item(key = "loading") { LoadingRow() }
     }
+    // A reload that failed leaves what was read on screen, saying so under the post.
+    if (focal != null && problem != null) item(key = "reload-problem") { NetworkProblemRow(problem, app.network, onRetry = thread::load) }
 }
 
 /** "Replying to @…", folding open the posts the opened one answers. */

@@ -10,6 +10,8 @@
     <string name="more_options">Další možnosti</string>
     <string name="add_account">Přidat účet</string>
     <string name="settings">Nastavení</string>
+    <string name="saved">Uloženo</string>
+    <string name="pinned_post">Připnutý tweet</string>
     <string name="handle_hint">Handle nebo DID, bez @</string>
     <string name="invalid_handle">To není handle Bluesky</string>
     <string name="cancel">Zrušit</string>

@@ -8,6 +8,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.bluesky.BlueskyXtaRows
 import com.aimdi.xtanative.ui.plugins.NetworkPost
 import com.aimdi.xtanative.ui.plugins.NetworkPostActions
+import com.aimdi.xtanative.ui.plugins.NetworkPostExtras
 import com.aimdi.xtanative.ui.plugins.PluginBackupSection
 import com.aimdi.xtanative.ui.plugins.PluginBody
 import com.aimdi.xtanative.ui.plugins.PluginFeed
@@ -69,6 +70,7 @@ class BlueskyPlugin : XtaPlugin() {
         is BlueskyRoute.Search -> screen { BlueskySearchScreen(app, route.query, route.author, route.kind) }
         is BlueskyRoute.Import -> screen { ImportScreen(app, route.kind, route.value) }
         BlueskyRoute.Feeds -> screen { FeedCatalogScreen(app) }
+        BlueskyRoute.Saved -> screen { BlueskySavedScreen(app) }
     }
 
     private fun screen(content: PluginScreen): PluginScreen = content
@@ -78,6 +80,9 @@ class BlueskyPlugin : XtaPlugin() {
     override val subscriptions: Flow<List<PluginSubscription>> get() = app.subscriptions
 
     override val postActions: NetworkPostActions get() = app.actions
+
+    /** Its posts in the app's timelines with Bluesky's own footer and Follow, as XTA's Bluesky card there. */
+    override fun postExtras(post: NetworkPost): NetworkPostExtras? = app.extrasFor(post)
 
     /** A post kept in XTA's record, as Saved draws it; one of another network is none of its. */
     override fun archived(content: JsonElement): NetworkPost? = BlueskyArchive.post(content)?.let { app.shown(it) }

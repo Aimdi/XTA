@@ -10,6 +10,8 @@
     <string name="more_options">Opsi lainnya</string>
     <string name="add_account">Tambah akun</string>
     <string name="settings">Pengaturan</string>
+    <string name="saved">Disimpan</string>
+    <string name="pinned_post">Cuitan yang disematkan</string>
     <string name="handle_hint">Handle atau DID, tanpa @</string>
     <string name="invalid_handle">Itu bukan handle Bluesky</string>
     <string name="cancel">Batal</string>

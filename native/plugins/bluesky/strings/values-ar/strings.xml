@@ -10,6 +10,8 @@
     <string name="more_options">خيارات إضافية</string>
     <string name="add_account">إضافة حساب</string>
     <string name="settings">الإعدادات</string>
+    <string name="saved">المحفوظ</string>
+    <string name="pinned_post">التغريدة المثبتة</string>
     <string name="handle_hint">المعرّف أو DID، بدون @</string>
     <string name="invalid_handle">هذا ليس معرّف Bluesky صالحًا</string>
     <string name="cancel">الغاء</string>

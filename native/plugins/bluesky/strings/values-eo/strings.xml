@@ -10,6 +10,8 @@
     <string name="more_options">Pliaj agoj</string>
     <string name="add_account">Aldoni konton</string>
     <string name="settings">Agordoj</string>
+    <string name="saved">Konservitaĵoj</string>
+    <string name="pinned_post">Alpinglita pepo</string>
     <string name="handle_hint">Uzulnomo aŭ DID, sen @</string>
     <string name="invalid_handle">Tio ne estas Bluesky-uzulnomo</string>
     <string name="cancel">Rezigni</string>

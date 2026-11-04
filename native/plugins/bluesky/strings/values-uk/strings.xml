@@ -10,6 +10,8 @@
     <string name="more_options">Інші дії</string>
     <string name="add_account">Додати обліковий запис</string>
     <string name="settings">Налаштування</string>
+    <string name="saved">Збережено</string>
+    <string name="pinned_post">Закріплена публікація</string>
     <string name="handle_hint">Хендл або DID, без @</string>
     <string name="invalid_handle">Це не хендл Bluesky</string>
     <string name="cancel">Скасувати</string>

@@ -105,7 +105,8 @@ internal fun BlueskyMedia.toMediaItem(postUrl: String): MediaItem = MediaItem(
  * reposted it (a long press: its quotes), its quotes, the like kept on this
  * device, its bookmark in Saved, Open in browser and the app's post sheet
  * (a long press on the post opens that too). [actions] is where its parts
- * lead; the line under it closes it off unless it [continues].
+ * lead; the line under it closes it off unless it [continues], or the list
+ * draws its own ([divider] off).
  */
 @Composable
 internal fun PostRow(
@@ -116,20 +117,33 @@ internal fun PostRow(
     indent: Int = 0,
     continues: Boolean = false,
     actions: NetworkPostActions = app.actions,
+    divider: Boolean = true,
 ) {
     val language = currentLanguage()
     val shown = remember(post, language, pinned) { post.toNetworkPost(language, pinned) }
+    val extras = remember(app, post, shown, actions) { extrasOf(app, post) { actions.open(shown) } }
+    NetworkPostCard(shown, actions, extras, modifier = modifier, indent = indent, continues = continues)
+    if (!continues && divider) Hairline()
+}
+
+/**
+ * What XTA's Bluesky card adds to the shared row, here and where the app
+ * draws [post] among others' (Home's timelines, the groups): Follow at the
+ * end of its author line while its author is not followed here, its footer
+ * ([onOpen] opens its thread), and the app's post sheet on a long press.
+ */
+internal fun extrasOf(app: BlueskyApp, post: BlueskyPost, onOpen: () -> Unit): NetworkPostExtras = NetworkPostExtras(
+    trailing = { FollowGlyph(app, post) },
+    footer = { PostFooter(app, post, onOpen) { app.openMenu(post) } },
+    onLongPress = { app.openMenu(post) },
+)
+
+/** Follow, while [post]'s author is not followed here. */
+@Composable
+private fun FollowGlyph(app: BlueskyApp, post: BlueskyPost) {
     val follows by app.follows.state.collectAsState()
     val followed = follows.orEmpty().any { it.isOf(post.did) || it.isOf(post.handle) }
-    val extras = NetworkPostExtras(
-        trailing = if (followed || follows == null) null else {
-            { NetworkHeaderButton(DiscoverIcons.PersonAdd, pluginString(Strings.follow)) { app.toggleFollow(post.author()) } }
-        },
-        footer = { PostFooter(app, post, onOpen = { actions.open(shown) }) { app.openMenu(post) } },
-        onLongPress = { app.openMenu(post) },
-    )
-    NetworkPostCard(shown, actions, extras, modifier = modifier, indent = indent, continues = continues)
-    if (!continues) Hairline()
+    if (follows != null && !followed) NetworkHeaderButton(DiscoverIcons.PersonAdd, pluginString(Strings.follow)) { app.toggleFollow(post.author()) }
 }
 
 /** The author of [this] as a profile to follow from it. */

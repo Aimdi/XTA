@@ -34,8 +34,8 @@ private fun List<BlueskyFollow>?.has(person: BlueskyProfile): Boolean = orEmpty(
 
 /**
  * Who [actor] follows, or who follows them (bluesky_follows_screen.dart):
- * read page by page from the public graph, each account to open, or to
- * follow or unfollow here.
+ * read page by page from the public graph, each account to open, to put
+ * in the app's groups, or to follow or unfollow here.
  */
 @Composable
 internal fun PeopleScreen(app: BlueskyApp, actor: String, kind: PeopleKind) {
@@ -55,7 +55,7 @@ internal fun PeopleScreen(app: BlueskyApp, actor: String, kind: PeopleKind) {
             empty = empty,
             modifier = Modifier.padding(top = padding.calculateTopPadding()),
             contentPadding = PaddingValues(bottom = padding.calculateBottomPadding()),
-        ) { person -> PersonRow(app, person, follows.has(person)) }
+        ) { person -> PersonRow(app, person, follows.has(person), groups = true) }
     }
 }
 
