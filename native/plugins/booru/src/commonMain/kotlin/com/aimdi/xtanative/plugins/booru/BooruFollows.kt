@@ -26,6 +26,11 @@ internal class BooruFollows(private val file: StoreFile, private val clock: () -
     /** The queries followed, in name order; null until the file has been read. */
     val state: StateFlow<List<String>?> = mutable.asStateFlow()
 
+    private val mutableRows = MutableStateFlow<List<NamedSubscriptionRow>?>(null)
+
+    /** Their rows, with when each was followed; null until the file has been read. */
+    val rows: StateFlow<List<NamedSubscriptionRow>?> = mutableRows.asStateFlow()
+
     private val mutex = Mutex()
     private var current: List<NamedSubscriptionRow>? = null
 
@@ -54,11 +59,13 @@ internal class BooruFollows(private val file: StoreFile, private val clock: () -
         val sorted = sorted(next)
         file.write(encode(sorted))
         current = sorted
+        mutableRows.value = sorted
         mutable.value = sorted.map { it.name }
     }
 
     private suspend fun loaded(): List<NamedSubscriptionRow> = current ?: sorted(decode(file.read().orEmpty())).also {
         current = it
+        mutableRows.value = it
         mutable.value = it.map { row -> row.name }
     }
 

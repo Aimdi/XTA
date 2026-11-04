@@ -15,6 +15,8 @@ import com.aimdi.xtanative.networks.reddit.RedditSubredditResult
 import com.aimdi.xtanative.networks.reddit.RedditThread
 import com.aimdi.xtanative.networks.reddit.RedditUserResult
 import com.aimdi.xtanative.networks.reddit.normaliseSubreddit
+import com.aimdi.xtanative.store.backup.NamedSubscriptionRow
+import com.aimdi.xtanative.store.backup.XtaTime
 import com.aimdi.xtanative.store.settings.RedditFeedMode
 import com.aimdi.xtanative.store.settings.RedditPrefs
 import com.aimdi.xtanative.store.settings.RedditSource
@@ -26,6 +28,7 @@ import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.PluginFeed
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginPostMenu
+import com.aimdi.xtanative.ui.plugins.PluginSubscription
 import java.time.Instant
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,13 +37,16 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -171,9 +177,30 @@ internal class RedditApp(val host: PluginHost) {
     }
 
     fun follow(subreddit: String, follow: Boolean) = launch {
-        if (follow) subscriptions.add(subreddit) else subscriptions.remove(subreddit)
+        if (follow) subscriptions.add(subreddit) else unfollowNow(subreddit)
         feed.refresh(RedditSubscriptions.names(subscriptions.load()))
     }
+
+    /** [subreddit] no longer followed here and out of the app's groups, as XTA's RedditSubredditsStore.remove takes it out of them. */
+    private suspend fun unfollowNow(subreddit: String) {
+        subscriptions.remove(subreddit)
+        host.unfollowed((normaliseSubreddit(subreddit) ?: subreddit).lowercase())
+    }
+
+    /** The communities followed here as the app's Subscriptions list shows them (XTA's RedditSubscription): "r/name", a tap opens it. */
+    val listed: Flow<List<PluginSubscription>> = subscriptions.state.onStart { subscriptions.load() }.filterNotNull().map { rows -> rows.map(::subscriptionOf) }
+
+    private fun subscriptionOf(row: NamedSubscriptionRow) = PluginSubscription(
+        id = row.id,
+        name = row.name,
+        subtitle = "r/${row.name}",
+        route = RedditRoutes.subreddit(row.name),
+        followedAt = XtaTime.parse(row.createdAt)?.toEpochMilli() ?: 0,
+        unfollow = {
+            unfollowNow(row.name)
+            feed.refresh(RedditSubscriptions.names(subscriptions.load()))
+        },
+    )
 
     /** A backup's followed communities in place of these, and the feed read for them. */
     suspend fun restoreSubscriptions(text: String) {

@@ -9,12 +9,14 @@ import com.aimdi.xtanative.store.settings.Pref
 import com.aimdi.xtanative.store.settings.RssPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.plugins.PluginHost
+import com.aimdi.xtanative.ui.plugins.PluginSubscription
 import com.aimdi.xtanative.ui.plugins.RssReads
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -65,7 +67,23 @@ internal class RssApp(val host: PluginHost) {
 
     suspend fun follow(feed: RssFeed) = change(RssPrefs.feeds) { RssFeeds.encode(RssFeeds.followed(RssFeeds.decode(it), feed)) }
 
-    suspend fun unfollow(id: String) = change(RssPrefs.feeds) { RssFeeds.encode(RssFeeds.unfollowed(RssFeeds.decode(it), id)) }
+    /** [id] no longer followed here and out of the app's groups, as XTA's RssFeedsStore.remove takes it out of them. */
+    suspend fun unfollow(id: String) {
+        change(RssPrefs.feeds) { RssFeeds.encode(RssFeeds.unfollowed(RssFeeds.decode(it), id)) }
+        host.unfollowed(id)
+    }
+
+    /** The feeds followed here as the app's Subscriptions list shows them (XTA's RssSubscription): their site under their name, a tap opens them. */
+    val subscriptions: Flow<List<PluginSubscription>> = feeds.filterNotNull().map { list -> list.map(::subscriptionOf) }
+
+    private fun subscriptionOf(feed: RssFeed) = PluginSubscription(
+        id = feed.id,
+        name = feed.name,
+        subtitle = PluginSubscription.siteOf(feed.siteUrl ?: feed.feedUrl),
+        avatarUrl = feed.iconUrl,
+        route = RssRoutes.feed(feed),
+        unfollow = { unfollow(feed.id) },
+    )
 
     fun isFollowing(id: String): Boolean = feeds.value.orEmpty().any { it.id == id }
 

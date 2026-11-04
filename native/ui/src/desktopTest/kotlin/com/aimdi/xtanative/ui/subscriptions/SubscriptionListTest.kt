@@ -4,8 +4,10 @@ import com.aimdi.xtanative.core.backup.FollowedAccount
 import com.aimdi.xtanative.core.session.SavedSearch
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.store.settings.SubscriptionsOrder
+import com.aimdi.xtanative.ui.plugins.PluginSubscription
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -60,6 +62,63 @@ class SubscriptionListTest {
         assertEquals(listOf("b", "c", "a"), SubscriptionList.moved(listOf("a", "b", "c"), 0, 2))
         assertEquals(listOf("c", "a", "b"), SubscriptionList.moved(listOf("a", "b", "c"), 2, 0))
         assertEquals(listOf("a", "b"), SubscriptionList.moved(listOf("a", "b"), 5, 0))
+    }
+
+    private val threads = SubscriptionList.pluginRow("threads", PluginSubscription("aria", "Aria", avatarUrl = "https://t/a.jpg", route = "profile?handle=aria", followedAt = 25) {})
+    private val reddit = SubscriptionList.pluginRow("reddit", PluginSubscription("dartlang", "DartLang", subtitle = "r/DartLang") {})
+    private val bluesky = SubscriptionList.pluginRow("bluesky", PluginSubscription("did:plc:maya", "Maya", handle = "maya.bsky.social", backupId = "maya.bsky.social") {})
+    private val tiktok = SubscriptionList.pluginRow("tiktok", PluginSubscription("dancer", "Dancer", followedAt = 5) {})
+
+    @Test
+    fun aPluginsAccountIsItsGroupMemberWithWhatItsPluginSaysOfIt() {
+        assertEquals("threads:aria", threads.id)
+        assertEquals("threads", threads.plugin)
+        assertEquals("@aria", threads.subtitle, "a handle under the name, as XTA's subscriptions say it")
+        assertEquals("r/DartLang", reddit.subtitle)
+        assertEquals("profile?handle=aria", threads.route)
+        assertEquals("https://t/a.jpg", threads.avatarUrl)
+        assertEquals("maya.bsky.social", bluesky.screenName)
+        assertEquals("@maya.bsky.social", bluesky.subtitle)
+        assertFalse(threads.isX || threads.search)
+        assertTrue(rows.first().isX)
+    }
+
+    @Test
+    fun thePluginsAccountsComeAfterXsAndAreOrderedAndFoundWithThem() {
+        val all = SubscriptionList.rows(session, listOf(threads, reddit, bluesky, tiktok))
+        assertEquals(listOf("1", "2", "3", "from:nasa moon", "threads:aria", "reddit:dartlang", "bluesky:did:plc:maya", "tiktok:dancer"), ids(all))
+        assertEquals(
+            listOf("3", "threads:aria", "tiktok:dancer", "reddit:dartlang", "2", "from:nasa moon", "bluesky:did:plc:maya", "1"),
+            ids(SubscriptionList.ordered(all, SubscriptionsOrder.NAME, true, "")),
+        )
+        assertEquals(
+            listOf("reddit:dartlang", "bluesky:did:plc:maya", "tiktok:dancer", "2", "3", "threads:aria", "1", "from:nasa moon"),
+            ids(SubscriptionList.ordered(all, SubscriptionsOrder.CREATED_AT, true, "")),
+            "one followed at a time not known first",
+        )
+        assertEquals(listOf("bluesky:did:plc:maya"), ids(SubscriptionList.filtered(all, "maya.bsky")), "by its handle")
+        assertEquals(listOf("reddit:dartlang"), ids(SubscriptionList.filtered(all, "dartlang")))
+    }
+
+    @Test
+    fun theReadersOwnOrderKeepsAPluginsAccountAsXtasListDoes() {
+        val all = SubscriptionList.rows(session, listOf(threads, bluesky, tiktok))
+        val ordered = SubscriptionList.ordered(all, SubscriptionsOrder.NAME, true, "tiktok:dancer,maya.bsky.social,aria,3")
+        assertEquals(listOf("tiktok:dancer", "bluesky:did:plc:maya", "threads:aria", "3"), ids(ordered).take(4), "XTA's ids: a bare network's account by its subscription's")
+        assertEquals("tiktok:dancer,maya.bsky.social,aria,3,1,2,from:nasa moon", SubscriptionList.customOrder(ordered))
+    }
+
+    @Test
+    fun aPublicationOrAFeedIsNamedByItsSiteUnderItsName() {
+        assertEquals("astral.substack.com", PluginSubscription.siteOf("https://astral.substack.com"))
+        assertEquals("example.org", PluginSubscription.siteOf("https://example.org/feed.xml"))
+        assertEquals("feed", PluginSubscription.siteOf("feed"), "an address naming no site is shown as it is")
+    }
+
+    @Test
+    fun aSearchAndAnAccountSharingAnIdAreBothKeptInTheReadersOrder() {
+        val both = listOf(SubscriptionRow("42", "42", "42", search = true), SubscriptionRow("42", "Answer", "answer"))
+        assertEquals(2, SubscriptionList.ordered(both, SubscriptionsOrder.NAME, true, "42").size)
     }
 
     @Test

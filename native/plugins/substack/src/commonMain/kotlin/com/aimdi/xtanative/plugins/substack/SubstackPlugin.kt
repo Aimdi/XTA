@@ -13,7 +13,9 @@ import com.aimdi.xtanative.ui.plugins.PluginFootprint
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginScreen
 import com.aimdi.xtanative.ui.plugins.PluginSearch
+import com.aimdi.xtanative.ui.plugins.PluginSubscription
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
+import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.JsonElement
 
 /**
@@ -74,6 +76,8 @@ class SubstackPlugin : XtaPlugin() {
 
     /** The publications followed here, in the groups that hold them; XTA has no switch for Home's timelines. */
     override val feed: PluginFeed get() = app.feed
+
+    override val subscriptions: Flow<List<PluginSubscription>> get() = app.subscriptions
 
     override val postActions: NetworkPostActions get() = app.actions
 

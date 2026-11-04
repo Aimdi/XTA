@@ -127,6 +127,13 @@ interface PluginHost {
      */
     fun addToGroup(account: String, follow: suspend () -> Unit = {})
 
+    /**
+     * The reader unfollowed [account], one of the plugin's (as its group
+     * members name it): the app takes it out of every group, as XTA's stores
+     * do when they remove an account. A plugin says so wherever it unfollows.
+     */
+    fun unfollowed(account: String) {}
+
     /** The shared post menu over the screen: [menu]'s post saved or taken out, its note, its author's groups, its link shared or opened. */
     fun openPostMenu(menu: PluginPostMenu)
 

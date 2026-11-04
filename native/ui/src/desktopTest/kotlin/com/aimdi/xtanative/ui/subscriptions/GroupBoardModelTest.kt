@@ -54,6 +54,19 @@ class GroupBoardModelTest {
     }
 
     @Test
+    fun aPluginsAccountsShowTheirFacesAfterTheXAccountsInTheGroupsOrder() {
+        val mixed = session.copy(groups = listOf(FollowGroup("mixed", "Mixed", listOf("bluesky:did:plc:maya", "3", "threads:aria", "threads:gone"))))
+        val plugins = listOf(
+            SubscriptionRow("threads:aria", "Aria", "aria", "https://t/a.jpg", plugin = "threads"),
+            SubscriptionRow("bluesky:did:plc:maya", "", "maya.bsky.social", plugin = "bluesky"),
+        )
+        val tile = GroupBoardModel.tiles(mixed, GroupsOrder.NAME, true, "", plugins = plugins).single()
+        assertEquals(listOf("3", "bluesky:did:plc:maya", "threads:aria"), tile.faces.map { it.id }, "a plugin not running shows none")
+        assertEquals("maya.bsky.social", tile.faces[1].name, "named by its handle when it has no name")
+        assertEquals(4, tile.memberCount)
+    }
+
+    @Test
     fun nsfwGroupsGetASectionOfTheirOwn() {
         val sections = GroupBoardModel.sections(GroupBoardModel.tiles(session, GroupsOrder.NAME, true, ""))
         assertEquals(listOf("news", "tech", "ai"), sections.safe.map { it.id })

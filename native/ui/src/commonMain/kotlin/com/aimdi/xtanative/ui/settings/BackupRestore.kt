@@ -14,6 +14,8 @@ import com.aimdi.xtanative.store.backup.AccountRow
 import com.aimdi.xtanative.store.backup.BackupDocument
 import com.aimdi.xtanative.store.backup.FeedFilterRow
 import com.aimdi.xtanative.store.backup.GroupRow
+import com.aimdi.xtanative.store.backup.NetworkAccount
+import com.aimdi.xtanative.store.backup.NetworkMembers
 import com.aimdi.xtanative.store.backup.ProfileNoteRow
 import com.aimdi.xtanative.store.backup.XtaTime
 import com.aimdi.xtanative.store.backup.upsert
@@ -62,10 +64,31 @@ sealed interface BackupRead {
  * every other row stays; a section the file does not carry changes nothing.
  */
 object BackupRestore {
-    /** The session with the backup's accounts, follows, saved searches, groups and their members. */
-    fun session(session: Session, document: BackupDocument): Session =
-        listOf(::withAccounts, ::withFollows, ::withSearches, ::withGroups, ::withMembers, ::withHomeGroups)
-            .fold(session) { current, step -> step(current, document) }
+    /**
+     * The session with the backup's accounts, follows, saved searches,
+     * groups and their members: a bare member that is the id of one of
+     * [accounts] (its networks' rows, and what the running plugins follow)
+     * becomes that plugin's, as XTA's groups read it ([NetworkMembers]).
+     */
+    fun session(session: Session, document: BackupDocument, accounts: List<NetworkAccount> = NetworkMembers.accounts(document)): Session {
+        val restored = listOf(::withAccounts, ::withFollows, ::withSearches, ::withGroups).fold(session) { current, step -> step(current, document) }
+        return withHomeGroups(withMembers(restored, document, accounts), document)
+    }
+
+    /**
+     * [session] with each group's bare members that are the id of one of
+     * [owners] made that plugin's, when a network's rows reach its plugin
+     * after the restore that brought them: a member X still claims (an
+     * account followed, a saved search) is left to X.
+     */
+    fun withNetworkMembers(session: Session, owners: List<NetworkAccount>): Session {
+        val claimed = claimedBy(session)
+        val theirs = owners.filterNot { it.subscriptionId in claimed }
+        return session.copy(groups = session.groups.map { group -> group.copy(memberIds = NetworkMembers.adopted(group.memberIds, theirs, claimed)) })
+    }
+
+    /** What X keeps by an id a group may hold: the accounts followed, the saved searches. */
+    private fun claimedBy(session: Session): Set<String> = session.following.mapTo(HashSet()) { it.id } + session.searches.map { it.query }
 
     private fun withAccounts(session: Session, document: BackupDocument): Session {
         val rows = document.accounts ?: return session
@@ -118,15 +141,20 @@ object BackupRestore {
         return rows.fold(grouped) { current, row -> current.nestedIn(row.id, row.parentId?.takeIf { it != row.id }) ?: current }
     }
 
-    private fun withMembers(session: Session, document: BackupDocument): Session {
-        val members = document.groupMembers.orEmpty().map { it.groupId to it.profileId } +
-            document.searchGroupMembers.orEmpty().map { it.groupId to it.searchId }
-        if (members.isEmpty()) return session
-        val byGroup = members.filter { (group, member) -> group.isNotEmpty() && member.isNotEmpty() }.groupBy({ it.first }, { it.second })
+    /** The backup's members added to their groups, its accounts' as XTA Native's groups name them; its searches as they are. */
+    private fun withMembers(session: Session, document: BackupDocument, accounts: List<NetworkAccount>): Session {
+        val claimed = claimedBy(session)
+        val profiles = byGroup(document.groupMembers.orEmpty().map { it.groupId to it.profileId }).mapValues { (_, ids) -> NetworkMembers.adopted(ids, accounts, claimed) }
+        val searches = byGroup(document.searchGroupMembers.orEmpty().map { it.groupId to it.searchId })
+        if (profiles.isEmpty() && searches.isEmpty()) return session
         return session.copy(groups = session.groups.map { group ->
-            byGroup[group.id]?.let { added -> group.copy(memberIds = (group.memberIds + added).distinct()) } ?: group
+            val added = profiles[group.id].orEmpty() + searches[group.id].orEmpty()
+            if (added.isEmpty()) group else group.copy(memberIds = (group.memberIds + added).distinct())
         })
     }
+
+    private fun byGroup(members: List<Pair<String, String>>): Map<String, List<String>> =
+        members.filter { (group, member) -> group.isNotEmpty() && member.isNotEmpty() }.groupBy({ it.first }, { it.second })
 
     /**
      * The groups kept out of the home feeds and the deck's columns: XTA keeps

@@ -16,6 +16,8 @@ import com.aimdi.xtanative.store.backup.GroupMemberRow
 import com.aimdi.xtanative.store.backup.GroupRow
 import com.aimdi.xtanative.store.backup.LikedPostRow
 import com.aimdi.xtanative.store.backup.LocalPostRow
+import com.aimdi.xtanative.store.backup.NetworkAccount
+import com.aimdi.xtanative.store.backup.NetworkMembers
 import com.aimdi.xtanative.store.backup.ProfileNoteRow
 import com.aimdi.xtanative.store.backup.ReadPositionRow
 import com.aimdi.xtanative.store.backup.SavedFolderRow
@@ -63,6 +65,8 @@ data class DeviceContent(
     val replyFilters: List<FeedFilterRow> = emptyList(),
     /** What the running plugins keep, by section name ([PluginBackups.exported]). */
     val pluginSections: Map<String, String> = emptyMap(),
+    /** What the running plugins follow, as each app names it ([PluginBackups.accounts]): how their accounts go out in the groups. */
+    val networkAccounts: List<NetworkAccount> = emptyList(),
     /** What was restored that no store here holds yet. */
     val kept: BackupDocument = BackupDocument(),
 )
@@ -98,7 +102,7 @@ object BackupExport {
                 )
             },
             groups = groups(session, kept, now),
-            groupMembers = session.groups.flatMap { group -> group.memberIds.map { GroupMemberRow(group.id, it) } },
+            groupMembers = groupMembers(session, content.networkAccounts),
             searchGroupMembers = emptyList(),
             savedPosts = content.library.posts.map { SavedPostRow(it.id, it.authorId, it.content?.toString(), it.folderId, it.note) },
             savedFolders = content.library.folders.mapNotNull { SavedFolderRow.from(J(XtaRows.row(it))) },
@@ -145,6 +149,14 @@ object BackupExport {
             content.appearance?.let { put(ReadingPrefs.appearance.key, JsonPrimitive(it.toJson().toString())) }
         }
         return section + overrides
+    }
+
+    /** The groups' members as XTA's groups hold them, each once a group: the bare networks' accounts by their subscription's id ([NetworkMembers]). */
+    private fun groupMembers(session: Session, accounts: List<NetworkAccount>): List<GroupMemberRow> {
+        val searches = session.searches.mapTo(HashSet()) { it.query }
+        return session.groups.flatMap { group ->
+            group.memberIds.map { NetworkMembers.xtaMemberId(it, accounts, searches) }.distinct().map { GroupMemberRow(group.id, it) }
+        }
     }
 
     /** The session's groups as XTA's rows, with what their restored rows carried beyond them. */

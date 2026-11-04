@@ -75,7 +75,7 @@ internal fun TagActions(app: BooruApp, opened: OpenedTag, search: BooruSearch?, 
                 Action(BooruIcons.Remove, pluginString(Strings.exclude_from_search)) { done { search.refine(BooruTagOperator.EXCLUDE.prefix + tag); app.host.back() } }
             }
             Action(if (followed) Icons.Filled.Check else BooruIcons.Sell, pluginString(if (followed) Strings.unfollow_tag else Strings.follow_tag)) {
-                done { app.launch { if (followed) app.follows.remove(tag) else app.follows.add(tag) } }
+                done { app.launch { if (followed) app.unfollow(tag) else app.follows.add(tag) } }
             }
             Action(PostIcons.People, addToGroupText()) { done { app.addToGroup(tag) } }
             Action(if (hidden) BooruIcons.Visibility else GroupIcons.VisibilityOffOutlined, pluginString(if (hidden) Strings.unhide_tag else Strings.hide_tag)) {

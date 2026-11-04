@@ -89,7 +89,7 @@ internal fun BooruTagScreen(app: BooruApp, route: BooruRoute.Tag) = Bound(app) {
         site = route.site,
         title = route.tag,
         actions = {
-            IconButton(onClick = { app.launch { if (followed) app.follows.remove(route.tag) else app.follows.add(route.tag) } }) {
+            IconButton(onClick = { app.launch { if (followed) app.unfollow(route.tag) else app.follows.add(route.tag) } }) {
                 Icon(if (followed) Icons.Filled.Check else BooruIcons.Sell, pluginString(if (followed) Strings.unfollow_tag else Strings.follow_tag))
             }
             if (BooruEndpoints.supportsWiki(engine)) IconButton(onClick = { wiki = true }) { Icon(BooruIcons.Wiki, pluginString(Strings.wiki)) }

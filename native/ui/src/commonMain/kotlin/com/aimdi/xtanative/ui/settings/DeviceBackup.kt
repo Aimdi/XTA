@@ -7,6 +7,8 @@ import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.data.SessionStore
 import com.aimdi.xtanative.store.backup.BackupDocument
 import com.aimdi.xtanative.store.backup.ExportChoice
+import com.aimdi.xtanative.store.backup.NetworkAccount
+import com.aimdi.xtanative.store.backup.NetworkMembers
 import com.aimdi.xtanative.store.backup.XtaTime
 import com.aimdi.xtanative.store.settings.AccountPrefs
 import com.aimdi.xtanative.store.settings.DataPrefs
@@ -40,6 +42,7 @@ class DeviceBackup(private val graph: AppGraph, private val clock: () -> Instant
             repostFilters = reposts,
             replyFilters = replies,
             pluginSections = graph.pluginBackups.exported(),
+            networkAccounts = graph.pluginBackups.accounts(),
             kept = graph.kept.get(),
         )
     }
@@ -50,10 +53,12 @@ class DeviceBackup(private val graph: AppGraph, private val clock: () -> Instant
     /**
      * Writes every section of [document] into its store, as XTA's import does:
      * the settings first (and XTA's launch steps after them), then the session,
-     * the saved posts, likes, notes, article notes, antennas, profile notes and
-     * filters and reading places, each network's rows and each plugin's
-     * sections into the running plugin that keeps them, and what no store here
-     * holds yet into [KeptSections]. Reading positions only when [includeReadPositions].
+     * its groups' members of other networks named as their plugins name them
+     * ([networkAccounts]), the saved posts, likes, notes, article notes,
+     * antennas, profile notes and filters and reading places, each network's
+     * rows and each plugin's sections into the running plugin that keeps
+     * them, and what no store here holds yet into [KeptSections]. Reading
+     * positions only when [includeReadPositions].
      */
     suspend fun restore(document: BackupDocument, includeReadPositions: Boolean) {
         val restoring = document.forRestore(includeReadPositions)
@@ -61,7 +66,8 @@ class DeviceBackup(private val graph: AppGraph, private val clock: () -> Instant
         restoring.settings?.let { graph.settings.restore(it) }
         val settings = graph.settings.load()
         graph.sessions.load()
-        graph.sessions.update { FeedSwitches.mirrored(BackupRestore.session(it, restoring), settings) }
+        val accounts = networkAccounts(restoring)
+        graph.sessions.update { FeedSwitches.mirrored(BackupRestore.session(it, restoring, accounts), settings) }
         BackupRestore.library(graph.saved.library(), restoring, now)?.let { graph.saved.replace(it) }
         BackupRestore.likes(graph.likes.likes(), restoring, now)?.let { graph.likes.replace(it) }
         BackupRestore.localPosts(graph.localPosts.notes(), restoring, now)?.let { graph.localPosts.replace(it) }
@@ -76,6 +82,17 @@ class DeviceBackup(private val graph: AppGraph, private val clock: () -> Instant
         if (restoring.subscriptions != null || restoring.groups != null || restoring.groupMembers != null) graph.clearFeedCaches()
         val groups = graph.sessions.state.value?.groups.orEmpty().mapTo(HashSet()) { it.id }
         BackupRestore.readPlaces(restoring, groups).forEach { (group, place) -> graph.feedCache(group).writePlace(place) }
+    }
+
+    /**
+     * The networks' accounts a restore of [restoring] knows, as XTA's groups
+     * read a member through every table that keeps its id: [restoring]'s
+     * rows and those kept for plugins not running, as the running plugins
+     * name them, and what the running plugins follow.
+     */
+    private suspend fun networkAccounts(restoring: BackupDocument): List<NetworkAccount> {
+        val running = graph.pluginBackups.accounts()
+        return NetworkMembers.named(NetworkMembers.accounts(graph.kept.get().withNetworksMerged(restoring)), running) + running
     }
 
     /** The profile notes and filters an older build kept aside on restoring a backup, put into their stores once. */

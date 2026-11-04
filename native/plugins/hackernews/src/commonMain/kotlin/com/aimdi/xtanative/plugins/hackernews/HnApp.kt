@@ -16,11 +16,14 @@ import com.aimdi.xtanative.ui.plugins.PluginFeed
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginPostMenu
 import com.aimdi.xtanative.ui.plugins.PluginRoute
+import com.aimdi.xtanative.ui.plugins.PluginSubscription
+import com.aimdi.xtanative.ui.plugins.loaded
 import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -100,7 +103,28 @@ internal class HnApp(val host: PluginHost) {
 
     fun toggleSaved(story: HnStory) = change { HnKept.withSaved(it, story) }
 
-    fun toggleFollow(id: String) = change { HnKept.withFollow(it, id) }
+    fun toggleFollow(id: String) {
+        scope.launch { toggleNow(id) }
+    }
+
+    /** [id] followed here, or no longer and then out of the app's groups, as XTA's HnFollowsStore.toggle takes it out of them. */
+    private suspend fun toggleNow(id: String) {
+        val before = HnKept.of(host.settings.loaded()).follows
+        host.settings.update { HnKept.withFollow(it, id) }
+        val after = HnKept.of(host.settings.loaded()).follows.toSet()
+        before.filterNot { it in after }.forEach(host::unfollowed)
+    }
+
+    /** The accounts followed here as the app's Subscriptions list shows them (XTA's Hacker News subscriptions): a tap opens the account. */
+    val subscriptions: Flow<List<PluginSubscription>> = kept.map { it.follows.map(::subscriptionOf) }
+
+    private fun subscriptionOf(id: String) = PluginSubscription(
+        id = id,
+        name = id,
+        subtitle = id,
+        route = HnRoutes.user(id),
+        unfollow = { if (HnKept.of(host.settings.loaded()).isFollowing(id)) toggleNow(id) },
+    )
 
     private fun change(edit: (Settings) -> Settings) {
         scope.launch { host.settings.update(edit) }

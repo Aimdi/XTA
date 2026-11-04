@@ -113,6 +113,14 @@ class BlueskyLocalTest {
     }
 
     @Test
+    fun anAccountFollowedHereKeepsTheNameXtasGroupsHoldItBy() {
+        val followed = BlueskyFollow("did:plc:maya", "maya.bsky.social", "Maya", null, 1)
+        assertEquals("did:plc:maya", followed.actor, "what the AppView reads it by, and the app's groups hold it as")
+        assertEquals("maya.bsky.social", BlueskyXtaRows.idOf(followed))
+        assertEquals("did:plc:lee", BlueskyXtaRows.idOf(BlueskyFollow("did:plc:lee", "", "Lee", null, 1)))
+    }
+
+    @Test
     fun xtasLikeRowsAreThePostsUris() {
         val rows = """[{"id": "${uriOf("1")}"}, {"id": "nonsense"}, {"id": "${uriOf("1")}"}, {}]"""
         assertEquals(listOf(uriOf("1")), BlueskyXtaRows.likes(rows))

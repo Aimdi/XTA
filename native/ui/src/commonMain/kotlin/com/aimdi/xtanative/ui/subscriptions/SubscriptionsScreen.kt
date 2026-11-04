@@ -70,6 +70,7 @@ import com.aimdi.xtanative.ui.generated.resources.groups_search
 import com.aimdi.xtanative.ui.generated.resources.groups_search_subscriptions
 import com.aimdi.xtanative.ui.generated.resources.groups_subscriptions
 import com.aimdi.xtanative.ui.generated.resources.groups_sort_applied
+import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getPluralString
 import org.jetbrains.compose.resources.getString
@@ -100,7 +101,8 @@ private data class Editing(val id: String?)
 @Composable
 fun SubscriptionsScreen(navigation: SubscriptionsNavigation, onBack: (() -> Unit)? = null) {
     val graph = LocalGraph.current
-    val vm: SubscriptionsViewModel = viewModel { SubscriptionsViewModel(graph) }
+    val follows = LocalPlugins.current.follows
+    val vm: SubscriptionsViewModel = viewModel { SubscriptionsViewModel(graph, follows) }
     val state by vm.ui.collectAsStateWithLifecycle()
     val pager = rememberPagerState(initialPage = state.tab.ordinal) { SubscriptionsTab.entries.size }
     val scope = rememberCoroutineScope()
@@ -167,7 +169,13 @@ fun SubscriptionsScreen(navigation: SubscriptionsNavigation, onBack: (() -> Unit
                 SubscriptionsTab.PEOPLE -> PeoplePage(
                     state,
                     PeopleActions(
-                        open = { row -> if (row.search) navigation.search(row.id) else navigation.openProfile(row.screenName) },
+                        open = { row ->
+                            when {
+                                row.search -> navigation.search(row.id)
+                                row.plugin != null -> vm.openInPlugin(row)
+                                else -> navigation.openProfile(row.screenName)
+                            }
+                        },
                         unfollow = vm::unfollow,
                         pickGroups = { picking = it },
                         setInFeed = vm::setInFeed,

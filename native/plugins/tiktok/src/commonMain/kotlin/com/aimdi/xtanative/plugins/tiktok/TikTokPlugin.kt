@@ -11,7 +11,9 @@ import com.aimdi.xtanative.ui.plugins.PluginFootprint
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginScreen
 import com.aimdi.xtanative.ui.plugins.PluginSearch
+import com.aimdi.xtanative.ui.plugins.PluginSubscription
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
+import kotlinx.coroutines.flow.Flow
 
 /**
  * TikTok as a downloadable plugin (XTA's tiktok_plugin.dart): public
@@ -54,6 +56,8 @@ class TikTokPlugin : XtaPlugin() {
 
     /** The accounts followed here in the app's groups, as in XTA; never in Home's timelines, which XTA's TikTok stays out of. */
     override val feed: PluginFeed get() = app.shared
+
+    override val subscriptions: Flow<List<PluginSubscription>> get() = app.subscriptions
 
     override val postActions: NetworkPostActions get() = app.actions
 

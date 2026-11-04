@@ -47,27 +47,41 @@ object GroupBoardModel {
 
     /**
      * The tiles for [session]'s groups: ordered, filtered by [query] (on the
-     * name, whatever its case) and, without a query, nested under their parents.
+     * name, whatever its case) and, without a query, nested under their
+     * parents; [plugins] are the plugins' accounts, whose faces they show too.
      */
-    fun tiles(session: Session, field: GroupsOrder, ascending: Boolean, query: String, unread: Set<String> = emptySet()): List<GroupTile> {
+    fun tiles(
+        session: Session,
+        field: GroupsOrder,
+        ascending: Boolean,
+        query: String,
+        unread: Set<String> = emptySet(),
+        plugins: List<SubscriptionRow> = emptyList(),
+    ): List<GroupTile> {
         val needle = query.trim().lowercase()
         val ordered = ordered(session.groups, field, ascending).filter { needle.isEmpty() || it.name.lowercase().contains(needle) }
         val byId = ordered.associateBy { it.id }
         val shown = if (needle.isEmpty()) GroupTree.treeOrder(ordered.map { it.id }, session.nesting).mapNotNull(byId::get) else ordered
-        val faces = facesByGroup(session)
+        val faces = facesByGroup(session, plugins)
         return shown.map { group ->
             GroupTile(group, GroupTree.depthOf(group.id, session.nesting), group.memberIds.size, faces[group.id].orEmpty(), group.id in unread)
         }
     }
 
-    /** The first [GroupLook.FACES] followed accounts of each group, by handle, whatever its case, as XTA's tiles show them. */
-    fun facesByGroup(session: Session): Map<String, List<MemberFace>> {
+    /**
+     * The first [GroupLook.FACES] members of each group, as XTA's tiles show
+     * them: its followed X accounts by handle, whatever its case, then the
+     * plugins' accounts among [plugins] in the group's order.
+     */
+    fun facesByGroup(session: Session, plugins: List<SubscriptionRow> = emptyList()): Map<String, List<MemberFace>> {
         val byId = session.following.associateBy { it.id }
+        val others = plugins.associateBy { it.id }
         return session.groups.associate { group ->
-            group.id to group.memberIds.mapNotNull(byId::get)
+            val accounts = group.memberIds.mapNotNull(byId::get)
                 .sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.screenName })
-                .take(GroupLook.FACES)
                 .map { MemberFace(it.id, it.name.ifBlank { it.screenName }, it.avatarUrl) }
+            val theirs = group.memberIds.mapNotNull(others::get).map { MemberFace(it.id, it.name.ifBlank { it.screenName }, it.avatarUrl) }
+            group.id to (accounts + theirs).take(GroupLook.FACES)
         }
     }
 

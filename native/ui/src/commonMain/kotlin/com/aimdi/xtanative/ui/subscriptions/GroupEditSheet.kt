@@ -67,7 +67,6 @@ import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.session.GroupPack
 import com.aimdi.xtanative.core.session.Session
-import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.cancel
 import com.aimdi.xtanative.ui.generated.resources.groups_add_to_group
@@ -98,7 +97,6 @@ import com.aimdi.xtanative.ui.generated.resources.groups_pick_color
 import com.aimdi.xtanative.ui.generated.resources.groups_pin
 import com.aimdi.xtanative.ui.generated.resources.groups_please_enter_a_name
 import com.aimdi.xtanative.ui.generated.resources.groups_search_subscriptions
-import com.aimdi.xtanative.ui.generated.resources.groups_search_term
 import com.aimdi.xtanative.ui.generated.resources.groups_toggle_all
 import com.aimdi.xtanative.ui.generated.resources.groups_unmark_nsfw
 import com.aimdi.xtanative.ui.generated.resources.groups_unpin
@@ -337,15 +335,11 @@ private fun MemberCheckRow(row: SubscriptionRow, checked: Boolean, onChange: (Bo
         Modifier.fillMaxWidth().heightIn(min = 56.dp).toggleable(value = checked, role = Role.Checkbox, onValueChange = onChange).padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (row.search) {
-            Box(Modifier.size(40.dp), contentAlignment = Alignment.Center) { Icon(Icons.Filled.Search, contentDescription = null) }
-        } else {
-            Avatar(row.avatarUrl, 40.dp)
-        }
+        SubscriptionFace(row, 40.dp)
         Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
             Text(row.name, maxLines = 1, overflow = TextOverflow.Ellipsis, color = if (checked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface)
             Text(
-                if (row.search) stringResource(Res.string.groups_search_term) else "@${row.screenName}",
+                subscriptionSubtitle(row),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.bodySmall,

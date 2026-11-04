@@ -8,15 +8,15 @@ import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
 
 /**
  * Keeps the full backup in step with the plugins that run ([PluginBackups]):
- * their sections, and what a restore kept for them, handed over as each
- * plugin starts.
+ * their sections and the accounts they follow, and what a restore kept for
+ * them, handed over as each plugin starts.
  */
 @Composable
 fun AttachPluginBackups() {
     val graph = LocalGraph.current
     val plugins = LocalPlugins.current
     LaunchedEffect(graph, plugins) {
-        plugins.running.collect { running -> graph.pluginBackups.attach(running.flatMap(::sectionsOf)) }
+        plugins.running.collect { running -> graph.pluginBackups.attach(running.flatMap(::sectionsOf), plugins.follows::accounts) }
     }
 }
 

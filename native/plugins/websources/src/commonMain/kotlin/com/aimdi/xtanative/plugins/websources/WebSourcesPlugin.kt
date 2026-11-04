@@ -21,9 +21,11 @@ import com.aimdi.xtanative.ui.plugins.PluginFootprint
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginScreen
+import com.aimdi.xtanative.ui.plugins.PluginSubscription
 import com.aimdi.xtanative.ui.plugins.RssReaderScreen
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
 import com.aimdi.xtanative.ui.plugins.pluginString
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Web sources as a downloadable plugin, as XTA's web sources read them:
@@ -60,6 +62,8 @@ class WebSourcesPlugin : XtaPlugin() {
     override val settings: PluginBody = { frame -> LazyColumn(contentPadding = frame.padding) { item { HomeTimelineSwitch(app.host.settings, pluginString(Strings.plugin_name)) } } }
 
     override val feed: PluginFeed get() = app.shared
+
+    override val subscriptions: Flow<List<PluginSubscription>> get() = app.subscriptions
 
     override val postActions: NetworkPostActions get() = app.shared.actions
 

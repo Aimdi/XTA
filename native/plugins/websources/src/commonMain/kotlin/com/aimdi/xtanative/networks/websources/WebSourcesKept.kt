@@ -85,6 +85,14 @@ data class WebSourceFollow(val row: JsonObject) {
     val sourceId: String get() = key.substringBefore('/')
     val listId: String get() = key.substringAfter('/', "")
 
+    /** The source's name, and the list's under it, as XTA's subscriptions show them; its key where the row names neither. */
+    val name: String get() = J(row)["name"].string ?: key
+    val listName: String get() = J(row)["screen_name"].string ?: key
+    val iconUrl: String? get() = J(row)["avatar_url"].string
+
+    /** When it was followed, as XTA wrote it. */
+    val createdAt: String? get() = J(row)["created_at"].string
+
     /** Its id among the app's subscriptions and groups: `websources:lobsters/hottest`. */
     val subscriptionId: String get() = WebSourceFollows.subscriptionId(sourceId, listId)
 }

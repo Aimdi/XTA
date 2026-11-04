@@ -187,7 +187,7 @@ fun NetworkPostCard(
             repostedBy != null -> ContextLine(XIcons.Repost, stringResource(Res.string.reposted_by, repostedBy))
         }
         Row {
-            MarkedAvatar(post.avatarUrl, mark, markColor) { actions.openAuthor(post) }
+            MarkedAvatar(post.avatarUrl, mark, markColor, onClick = { actions.openAuthor(post) })
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.Top) {
@@ -210,11 +210,15 @@ fun NetworkPostCard(
 /** Whether [this] keeps its text back behind its warning while it is not [revealed]. */
 private fun NetworkPost.textCovered(revealed: Boolean): Boolean = coversText && warning != null && !revealed
 
-/** The avatar, with the network's [mark] at its foot when the row is among other networks'. */
+/**
+ * The avatar, [size] across, with the network's [mark] at its foot when the
+ * row is among other networks'; its picture asked for with the headers its
+ * server wants, as the shared tiles ask for theirs.
+ */
 @Composable
-private fun MarkedAvatar(url: String?, mark: ImageVector?, color: Color, onClick: () -> Unit) {
+internal fun MarkedAvatar(url: String?, mark: ImageVector?, color: Color, size: Dp = 40.dp, onClick: (() -> Unit)? = null) {
     Box {
-        Avatar(url, 40.dp, onClick = onClick)
+        Avatar(url, size, onClick = onClick)
         if (mark != null) {
             Icon(
                 mark,

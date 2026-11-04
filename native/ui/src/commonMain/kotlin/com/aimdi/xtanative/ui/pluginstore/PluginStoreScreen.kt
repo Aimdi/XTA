@@ -385,7 +385,7 @@ private fun Progress(status: PluginStatus) {
  * catalogue gives no picture, so its initial.
  */
 @Composable
-private fun PluginMark(running: RunningPlugin?, name: String, size: Dp) {
+internal fun PluginMark(running: RunningPlugin?, name: String, size: Dp) {
     val plugin = running?.plugin
     Box(
         Modifier

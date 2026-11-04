@@ -184,7 +184,7 @@ private fun AccountsTab(app: TikTokApp, follows: List<TikTokSubscriptionRow>?, p
     unfollowing?.let { handle ->
         UnfollowDialog(handle, onDismiss = { unfollowing = null }) {
             unfollowing = null
-            app.launch { app.follows.unfollow(handle) }
+            app.launch { app.unfollow(handle) }
         }
     }
 }

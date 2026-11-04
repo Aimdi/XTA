@@ -15,8 +15,10 @@ import com.aimdi.xtanative.ui.plugins.PluginFootprint
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginScreen
 import com.aimdi.xtanative.ui.plugins.PluginSearch
+import com.aimdi.xtanative.ui.plugins.PluginSubscription
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
 import java.time.Instant
+import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.JsonElement
 
 /**
@@ -72,6 +74,8 @@ class BlueskyPlugin : XtaPlugin() {
     private fun screen(content: PluginScreen): PluginScreen = content
 
     override val feed: PluginFeed get() = app.feed
+
+    override val subscriptions: Flow<List<PluginSubscription>> get() = app.subscriptions
 
     override val postActions: NetworkPostActions get() = app.actions
 

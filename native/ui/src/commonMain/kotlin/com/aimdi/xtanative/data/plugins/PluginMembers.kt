@@ -2,6 +2,7 @@ package com.aimdi.xtanative.data.plugins
 
 import com.aimdi.xtanative.core.session.CombinedGroups
 import com.aimdi.xtanative.core.session.Session
+import com.aimdi.xtanative.store.backup.NetworkMembers
 
 /**
  * The accounts of other networks the reader put in groups: a member written
@@ -11,7 +12,7 @@ import com.aimdi.xtanative.core.session.Session
  */
 object PluginMembers {
     /** What a group holds plugin [pluginId]'s [account] as. */
-    fun memberId(pluginId: String, account: String): String = "$pluginId:$account"
+    fun memberId(pluginId: String, account: String): String = NetworkMembers.memberId(pluginId, account)
 
     /**
      * The members of [groupId]'s feed (its nested groups' and those of the
@@ -22,6 +23,16 @@ object PluginMembers {
         val covered = CombinedGroups(alsoRead).covers(groupId, session.nesting)
         val ids = session.groups.filter { it.id in covered }.flatMap { it.memberIds }.distinct()
         return accounts(ids, plugins, searches = session.searches.mapTo(HashSet()) { it.query })
+    }
+
+    /**
+     * [session] with plugin [pluginId]'s [account] out of every group, as its
+     * plugin unfollowed it (XTA's stores delete its memberships); a saved
+     * search spelled as its member stays in its groups, the search it is.
+     */
+    fun unfollowed(session: Session, pluginId: String, account: String): Session {
+        val member = memberId(pluginId, account)
+        return if (session.searches.any { it.query == member }) session else session.withMemberships(member, emptySet())
     }
 
     /** The plugin accounts among [memberIds], by plugin: those of [plugins] that are no search in [searches]. */

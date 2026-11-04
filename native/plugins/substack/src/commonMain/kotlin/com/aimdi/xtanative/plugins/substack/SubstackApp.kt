@@ -4,6 +4,7 @@ import com.aimdi.xtanative.networks.substack.SubstackArticleCache
 import com.aimdi.xtanative.networks.substack.SubstackClient
 import com.aimdi.xtanative.networks.substack.SubstackFeed
 import com.aimdi.xtanative.networks.substack.SubstackFeedMemory
+import com.aimdi.xtanative.networks.substack.SubstackFollow
 import com.aimdi.xtanative.networks.substack.SubstackFollowing
 import com.aimdi.xtanative.networks.substack.SubstackFollows
 import com.aimdi.xtanative.networks.substack.SubstackHighlights
@@ -19,6 +20,7 @@ import com.aimdi.xtanative.networks.substack.SubstackPublication
 import com.aimdi.xtanative.networks.substack.SubstackReadMarks
 import com.aimdi.xtanative.networks.substack.SubstackRememberedPage
 import com.aimdi.xtanative.networks.substack.SubstackRoutes
+import com.aimdi.xtanative.store.backup.XtaTime
 import com.aimdi.xtanative.store.offline.OfflineArticle
 import com.aimdi.xtanative.store.settings.SubstackPrefs
 import com.aimdi.xtanative.ui.plugins.DrawnPosts
@@ -30,13 +32,18 @@ import com.aimdi.xtanative.ui.plugins.PluginFeed
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginPostArchive
 import com.aimdi.xtanative.ui.plugins.PluginPostMenu
+import com.aimdi.xtanative.ui.plugins.PluginSubscription
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonElement
@@ -110,10 +117,30 @@ internal class SubstackApp(val host: PluginHost) {
 
     fun follow(publication: SubstackPublication) = launch { follows.follow(publication) }
 
-    fun unfollow(publication: SubstackPublication) = launch {
+    fun unfollow(publication: SubstackPublication) = launch { unfollowNow(publication) }
+
+    /** [publication] no longer followed here, unpinned and out of the app's groups, as XTA's SubstackPublicationsStore.remove. */
+    private suspend fun unfollowNow(publication: SubstackPublication) {
         val id = followOf(publication)?.id ?: publication.id
         follows.unfollow(id)
         pins.forget(id)
+        host.unfollowed(id)
+    }
+
+    /** The publications followed here as the app's Subscriptions list shows them (XTA's SubstackSubscription): their site under their name, a tap opens their page. */
+    val subscriptions: Flow<List<PluginSubscription>> = follows.state.onStart { follows.load() }.filterNotNull().map { list -> list.map(::subscriptionOf) }
+
+    private fun subscriptionOf(follow: SubstackFollow): PluginSubscription {
+        val publication = follow.publication
+        return PluginSubscription(
+            id = publication.id,
+            name = publication.displayName,
+            subtitle = PluginSubscription.siteOf(publication.baseUrl),
+            avatarUrl = publication.logoUrl,
+            route = SubstackRoutes.publication(publication),
+            followedAt = XtaTime.parse(follow.createdAt)?.toEpochMilli() ?: 0,
+            unfollow = { unfollowNow(publication) },
+        )
     }
 
     /** Writes [fresh], read from its page, over the follow it is; a pin moves with it when its id does. */

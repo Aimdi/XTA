@@ -164,7 +164,7 @@ private fun FollowRow(app: BlueskyApp, follow: BlueskyFollow) {
             Text("@" + follow.shownHandle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
         }
         AddToGroupButton(app.host, follow.actor)
-        TextButton(onClick = { app.launch { app.follows.unfollow(follow.actor) } }) { Text(pluginString(Strings.unfollow)) }
+        TextButton(onClick = { app.unfollow(follow.actor) }) { Text(pluginString(Strings.unfollow)) }
     }
     Hairline()
 }

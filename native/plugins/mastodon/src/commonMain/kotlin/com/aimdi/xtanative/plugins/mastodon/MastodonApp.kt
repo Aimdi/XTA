@@ -23,6 +23,7 @@ import com.aimdi.xtanative.ui.plugins.NetworkPostExtras
 import com.aimdi.xtanative.ui.plugins.PluginFeed
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginPostMenu
+import com.aimdi.xtanative.ui.plugins.PluginSubscription
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.cancellation.CancellationException
@@ -30,13 +31,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -135,14 +139,36 @@ internal class MastodonApp(val host: PluginHost) {
 
     /** [profile] followed here, or no longer; Following read again. */
     fun toggleFollow(profile: MastodonProfile) = launch {
-        if (follows.follows(profile.acct)) follows.unfollow(profile.acct) else follows.follow(profile, XtaTime.sqlite(Instant.now()))
+        if (follows.follows(profile.acct)) unfollowNow(profile.acct) else follows.follow(profile, XtaTime.sqlite(Instant.now()))
         following.refresh(force = false)
     }
 
     fun unfollow(acct: String) = launch {
-        follows.unfollow(acct)
+        unfollowNow(acct)
         following.refresh(force = false)
     }
+
+    /** [acct] no longer followed here, and out of the app's groups, as XTA's MastodonAccountsStore.remove takes it out of its groups. */
+    private suspend fun unfollowNow(acct: String) {
+        val names = follows.load().filter { it.isOf(acct) }.map { it.acct } + acct.trim().removePrefix("@")
+        follows.unfollow(acct)
+        names.distinct().forEach(host::unfollowed)
+    }
+
+    /** The accounts followed here as the app's Subscriptions list shows them (XTA's MastodonSubscription): a tap opens the profile. */
+    val subscriptions: Flow<List<PluginSubscription>> = follows.state.onStart { follows.load() }.filterNotNull().map { list -> list.map(::subscriptionOf) }
+
+    private fun subscriptionOf(follow: MastodonFollow) = PluginSubscription(
+        id = follow.acct,
+        name = follow.name,
+        avatarUrl = follow.avatarUrl,
+        route = MastodonRoutes.profile(follow.acct),
+        followedAt = XtaTime.parse(follow.createdAt)?.toEpochMilli() ?: 0,
+        unfollow = {
+            unfollowNow(follow.acct)
+            following.refresh(force = false)
+        },
+    )
 
     /** [account] followed here unless it is, as putting it in a group follows it first (XTA's addMastodonAccountToGroup). */
     suspend fun ensureFollowed(account: MastodonFollow) {

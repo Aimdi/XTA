@@ -7,6 +7,7 @@ import com.aimdi.xtanative.networks.tiktok.TikTokProfile
 import com.aimdi.xtanative.networks.tiktok.TikTokRepairs
 import com.aimdi.xtanative.networks.tiktok.TikTokSession
 import com.aimdi.xtanative.store.backup.TikTokSubscriptionRow
+import com.aimdi.xtanative.store.backup.XtaTime
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.plugins.FeedKinds
 import com.aimdi.xtanative.ui.plugins.MergedFeed
@@ -16,15 +17,19 @@ import com.aimdi.xtanative.ui.plugins.PluginFeed
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginNotices
 import com.aimdi.xtanative.ui.plugins.PluginShelf
+import com.aimdi.xtanative.ui.plugins.PluginSubscription
 import java.util.concurrent.atomic.AtomicReference
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -125,6 +130,24 @@ internal class TikTokApp(val host: PluginHost, private val playsHere: Boolean) {
     fun addToGroup(profile: TikTokProfile) = host.addToGroup(profile.uniqueId.lowercase()) { if (!follows.isFollowed(profile.uniqueId)) follows.follow(profile) }
 
     fun addToGroup(row: TikTokSubscriptionRow) = host.addToGroup(row.id)
+
+    /** [handle] no longer followed here and out of the app's groups, as XTA's TikTokFollowsStore.unfollow takes it out of them. */
+    suspend fun unfollow(handle: String) {
+        follows.unfollow(handle)
+        host.unfollowed(handle.lowercase())
+    }
+
+    /** The accounts followed here as the app's Subscriptions list shows them (XTA's TikTok subscriptions): a tap opens the profile. */
+    val subscriptions: Flow<List<PluginSubscription>> = follows.state.onStart { follows.load() }.filterNotNull().map { rows -> rows.map(::subscriptionOf) }
+
+    private fun subscriptionOf(row: TikTokSubscriptionRow) = PluginSubscription(
+        id = row.id,
+        name = row.name,
+        avatarUrl = row.avatarUrl,
+        route = TikTokRoutes.profile(row.id),
+        followedAt = XtaTime.parse(row.createdAt)?.toEpochMilli() ?: 0,
+        unfollow = { unfollow(row.id) },
+    )
 
     /** [post] as the app's shared row draws it, kept for a tap on that row to open what it drew. */
     fun shown(post: TikTokPost): NetworkPost {

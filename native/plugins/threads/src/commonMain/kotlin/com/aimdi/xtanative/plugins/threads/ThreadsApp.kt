@@ -13,6 +13,8 @@ import com.aimdi.xtanative.networks.threads.ThreadsSearchTerms
 import com.aimdi.xtanative.networks.threads.ThreadsSession
 import com.aimdi.xtanative.networks.threads.ThreadsSetup
 import com.aimdi.xtanative.networks.threads.ThreadsXy
+import com.aimdi.xtanative.store.backup.ProfileSubscriptionRow
+import com.aimdi.xtanative.store.backup.XtaTime
 import com.aimdi.xtanative.store.settings.MediaPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.ThreadsPrefs
@@ -25,11 +27,13 @@ import com.aimdi.xtanative.ui.plugins.PluginFeed
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginNotices
 import com.aimdi.xtanative.ui.plugins.PluginPostMenu
+import com.aimdi.xtanative.ui.plugins.PluginSubscription
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -37,6 +41,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -179,10 +184,26 @@ internal class ThreadsApp(val host: PluginHost) {
         feed.refresh(force = true)
     }
 
-    fun unfollow(handle: String) = launch {
+    fun unfollow(handle: String) = launch { unfollowNow(handle) }
+
+    /** [handle] no longer followed here and out of the app's groups (XTA's ThreadsAccountsStore.remove); the feed read without it. */
+    private suspend fun unfollowNow(handle: String) {
         accounts.remove(handle)
+        host.unfollowed(handle.trim().lowercase())
         feed.refresh(force = true)
     }
+
+    /** The accounts followed here as the app's Subscriptions list shows them (XTA's ThreadsSubscription): a tap opens the profile. */
+    val subscriptions: Flow<List<PluginSubscription>> = accounts.state.onStart { accounts.load() }.filterNotNull().map { rows -> rows.map(::subscriptionOf) }
+
+    private fun subscriptionOf(row: ProfileSubscriptionRow) = PluginSubscription(
+        id = row.id,
+        name = row.name,
+        avatarUrl = row.avatarUrl,
+        route = ThreadsRoutes.profile(row.id),
+        followedAt = XtaTime.parse(row.createdAt)?.toEpochMilli() ?: 0,
+        unfollow = { unfollowNow(row.id) },
+    )
 
     /** [account] followed here unless it is, as putting it in a group follows it first (XTA's addThreadsAccountToGroup). */
     suspend fun ensureFollowed(account: ThreadsAccount) {

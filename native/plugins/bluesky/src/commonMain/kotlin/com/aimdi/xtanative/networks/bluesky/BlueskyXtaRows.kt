@@ -41,12 +41,15 @@ object BlueskyXtaRows {
         )
     }.distinctBy { it.actor.lowercase() }
 
-    /** [follows] as XTA's rows: each named by its handle, as XTA names one, else its DID. */
+    /** [follow]'s id in XTA's rows, which XTA's groups hold it by: its handle, as XTA names one, else its DID. */
+    fun idOf(follow: BlueskyFollow): String = follow.handle.ifEmpty { follow.did }
+
+    /** [follows] as XTA's rows, each by [idOf]. */
     fun followRows(follows: List<BlueskyFollow>): String = JsonArray(
         follows.map { follow ->
             JsonObject(
                 mapOf(
-                    "id" to JsonPrimitive(follow.handle.ifEmpty { follow.did }),
+                    "id" to JsonPrimitive(idOf(follow)),
                     "name" to JsonPrimitive(follow.name),
                     "avatar_url" to (follow.avatarUrl?.let(::JsonPrimitive) ?: JsonNull),
                     "in_feed" to JsonPrimitive(if (follow.inFeed) 1 else 0),

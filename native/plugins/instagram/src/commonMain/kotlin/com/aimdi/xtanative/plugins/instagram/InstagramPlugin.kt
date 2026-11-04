@@ -10,7 +10,9 @@ import com.aimdi.xtanative.ui.plugins.PluginFootprint
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginScreen
 import com.aimdi.xtanative.ui.plugins.PluginSearch
+import com.aimdi.xtanative.ui.plugins.PluginSubscription
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Instagram as a downloadable plugin, private as XTA's is: guest first, a
@@ -57,6 +59,8 @@ class InstagramPlugin : XtaPlugin() {
     }
 
     override val feed: PluginFeed get() = app.shared
+
+    override val subscriptions: Flow<List<PluginSubscription>> get() = app.subscriptions
 
     override val postActions: NetworkPostActions get() = app.actions
 

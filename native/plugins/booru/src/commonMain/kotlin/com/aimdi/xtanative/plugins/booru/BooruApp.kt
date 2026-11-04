@@ -5,6 +5,8 @@ import com.aimdi.xtanative.networks.booru.BooruPost
 import com.aimdi.xtanative.networks.booru.BooruQuery
 import com.aimdi.xtanative.networks.booru.BooruSite
 import com.aimdi.xtanative.networks.booru.BooruTagCategory
+import com.aimdi.xtanative.store.backup.NamedSubscriptionRow
+import com.aimdi.xtanative.store.backup.XtaTime
 import com.aimdi.xtanative.store.settings.BooruPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.plugins.DrawnPosts
@@ -15,14 +17,19 @@ import com.aimdi.xtanative.ui.plugins.PluginFeed
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginPostArchive
 import com.aimdi.xtanative.ui.plugins.PluginPostMenu
+import com.aimdi.xtanative.ui.plugins.PluginSubscription
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonElement
 
@@ -103,6 +110,24 @@ internal class BooruApp(val host: PluginHost) {
         val query = BooruQuery.normalise(tag) ?: return
         host.addToGroup(query) { if (query !in follows.load()) follows.add(query) }
     }
+
+    /** [tag] no longer followed here and out of the app's groups, as XTA's BooruTagsStore.remove takes it out of them. */
+    suspend fun unfollow(tag: String) {
+        follows.remove(tag)
+        BooruQuery.normalise(tag)?.let(host::unfollowed)
+    }
+
+    /** The tags and searches followed here as the app's Subscriptions list shows them (XTA's Booru subscriptions): "tag:…", a tap searches it. */
+    val subscriptions: Flow<List<PluginSubscription>> = follows.rows.onStart { follows.load() }.filterNotNull().map { rows -> rows.map(::subscriptionOf) }
+
+    private fun subscriptionOf(row: NamedSubscriptionRow) = PluginSubscription(
+        id = row.id,
+        name = row.name,
+        subtitle = "tag:${row.name}",
+        route = BooruRoutes.search(row.name),
+        followedAt = XtaTime.parse(row.createdAt)?.toEpochMilli() ?: 0,
+        unfollow = { unfollow(row.name) },
+    )
 
     private val drawn = DrawnPosts<BooruPost> { it.key }
     private val records = DrawnPosts<PluginPostArchive> { it.id }

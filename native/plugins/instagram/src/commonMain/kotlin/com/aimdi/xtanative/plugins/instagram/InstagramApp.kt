@@ -6,6 +6,8 @@ import com.aimdi.xtanative.networks.instagram.InstagramClient
 import com.aimdi.xtanative.networks.instagram.InstagramPost
 import com.aimdi.xtanative.networks.instagram.InstagramProfile
 import com.aimdi.xtanative.networks.instagram.InstagramRepairs
+import com.aimdi.xtanative.store.backup.InstagramSubscriptionRow
+import com.aimdi.xtanative.store.backup.XtaTime
 import com.aimdi.xtanative.store.settings.InstagramPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.ThreadsPrefs
@@ -18,16 +20,19 @@ import com.aimdi.xtanative.ui.plugins.PluginFeed
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginNotices
 import com.aimdi.xtanative.ui.plugins.PluginPostMenu
+import com.aimdi.xtanative.ui.plugins.PluginSubscription
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -116,10 +121,26 @@ internal class InstagramApp(val host: PluginHost) {
         following.refresh()
     }
 
-    fun unfollow(handle: String) = launch {
+    fun unfollow(handle: String) = launch { unfollowNow(handle) }
+
+    /** [handle] no longer followed here and out of the app's groups (XTA's InstagramFollowsStore.unfollow); Following read without it. */
+    private suspend fun unfollowNow(handle: String) {
         follows.unfollow(handle)
+        host.unfollowed(handle.trim().lowercase())
         following.refresh()
     }
+
+    /** The accounts followed here as the app's Subscriptions list shows them (XTA's instagram subscriptions): a tap opens the profile. */
+    val subscriptions: Flow<List<PluginSubscription>> = follows.state.onStart { follows.load() }.filterNotNull().map { rows -> rows.map(::subscriptionOf) }
+
+    private fun subscriptionOf(row: InstagramSubscriptionRow) = PluginSubscription(
+        id = row.id,
+        name = row.name,
+        avatarUrl = row.avatarUrl,
+        route = InstagramRoutes.profile(row.id),
+        followedAt = XtaTime.parse(row.createdAt)?.toEpochMilli() ?: 0,
+        unfollow = { unfollowNow(row.id) },
+    )
 
     /** [handle] followed here unless it is, with what its profile says, as putting it in a group follows it first (XTA's addInstagramToGroup). */
     suspend fun ensureFollowed(handle: String) {

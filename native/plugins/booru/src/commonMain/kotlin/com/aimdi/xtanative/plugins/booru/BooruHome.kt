@@ -156,7 +156,7 @@ private fun FollowingRow(app: BooruApp, tags: List<String>, failed: Int, onRetry
                 onClick = { app.openSearch(tag) },
                 label = { Text(tag) },
                 trailingIcon = {
-                    IconButton(onClick = { app.launch { app.follows.remove(tag) } }, modifier = Modifier.size(24.dp)) {
+                    IconButton(onClick = { app.launch { app.unfollow(tag) } }, modifier = Modifier.size(24.dp)) {
                         Icon(Icons.Filled.Close, pluginString(Strings.unsubscribe), modifier = Modifier.size(18.dp))
                     }
                 },

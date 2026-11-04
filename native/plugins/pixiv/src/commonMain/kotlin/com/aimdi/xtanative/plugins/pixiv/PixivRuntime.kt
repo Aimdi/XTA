@@ -10,6 +10,7 @@ import com.aimdi.xtanative.networks.pixiv.PixivNovelApi
 import com.aimdi.xtanative.networks.pixiv.PixivSearchApi
 import com.aimdi.xtanative.networks.pixiv.PixivSocialApi
 import com.aimdi.xtanative.networks.pixiv.PixivUser
+import com.aimdi.xtanative.store.backup.XtaTime
 import com.aimdi.xtanative.store.reading.ReadingJournal
 import com.aimdi.xtanative.store.settings.PixivPrefs
 import com.aimdi.xtanative.ui.plugins.DrawnPosts
@@ -21,15 +22,18 @@ import com.aimdi.xtanative.ui.plugins.PluginFeed
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginPostArchive
 import com.aimdi.xtanative.ui.plugins.PluginPostMenu
+import com.aimdi.xtanative.ui.plugins.PluginSubscription
 import java.time.Instant
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonElement
 
@@ -105,8 +109,27 @@ internal class PixivRuntime(val host: PluginHost) {
 
     /** Follows [user] on this device, or stops: Pixiv is never told. */
     fun toggleFollow(user: PixivUser) {
-        if (isFollowedHere(user.id)) settings.update { PixivFollows.unfollowed(it, user.id) } else followHere(user)
+        if (isFollowedHere(user.id)) unfollow(user.id) else followHere(user)
     }
+
+    /** [id] no longer followed here and out of the app's groups, as XTA's PixivGroupSubscriptionsStore.remove takes it out of them. */
+    fun unfollow(id: Long) {
+        settings.update { PixivFollows.unfollowed(it, id) }
+        host.unfollowed("$id")
+    }
+
+    /** The creators followed here as the app's Subscriptions list shows them (XTA's Pixiv subscriptions): a tap opens their profile. */
+    val subscriptions: Flow<List<PluginSubscription>> = settings.state.map { PixivFollows.of(it).map(::subscriptionOf) }
+
+    private fun subscriptionOf(follow: PixivFollow) = PluginSubscription(
+        id = "${follow.id}",
+        name = follow.displayName,
+        handle = follow.account.ifEmpty { "${follow.id}" },
+        avatarUrl = follow.avatarUrl,
+        route = PixivRoutes.of(PixivRoute.User(follow.id)),
+        followedAt = XtaTime.parse(follow.createdAt)?.toEpochMilli() ?: 0,
+        unfollow = { unfollow(follow.id) },
+    )
 
     private fun followHere(user: PixivUser) = settings.update { PixivFollows.followed(it, user, Instant.now().toString()) }
 

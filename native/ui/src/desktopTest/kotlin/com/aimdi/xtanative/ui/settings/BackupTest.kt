@@ -25,6 +25,8 @@ import com.aimdi.xtanative.store.backup.LocalMarkRow
 import com.aimdi.xtanative.store.backup.LocalPostMediaRow
 import com.aimdi.xtanative.store.backup.LocalPostRow
 import com.aimdi.xtanative.store.backup.NamedSubscriptionRow
+import com.aimdi.xtanative.store.backup.NetworkAccount
+import com.aimdi.xtanative.store.backup.NetworkMembers
 import com.aimdi.xtanative.store.backup.ProfileNoteRow
 import com.aimdi.xtanative.store.backup.ProfileSubscriptionRow
 import com.aimdi.xtanative.store.backup.ReadPositionRow
@@ -102,6 +104,17 @@ private fun backup() = BackupDocument(
     localPosts = listOf(LocalPostRow("n1", "stays", "2026-01-02T03:04:05.000Z", media = listOf(LocalPostMediaRow("m1", "a.jpg", "image/jpeg", "AAEC")))),
 )
 
+/** An XTA backup whose group holds accounts of other networks, as XTA writes them: bare where XTA's tables join them so. */
+private fun networks() = BackupDocument(
+    threadsSubscriptions = listOf(ProfileSubscriptionRow("aria", "Aria")),
+    blueskySubscriptions = listOf(ProfileSubscriptionRow("maya.bsky.social", "Maya")),
+    redditSubscriptions = listOf(NamedSubscriptionRow("dartlang", "dartlang")),
+    booruSubscriptions = listOf(NamedSubscriptionRow("sky", "sky")),
+    searchSubscriptions = listOf(SearchSubscriptionRow("dartlang", "2026-01-02 03:04:05")),
+    groups = listOf(GroupRow("g2", "Mixed", createdAt = "2026-01-02T03:04:05.000Z")),
+    groupMembers = listOf("1", "aria", "maya.bsky.social", "dartlang", "sky", "tiktok:dancer", "gone").map { GroupMemberRow("g2", it) },
+)
+
 class BackupReadTest {
     @Test
     fun aFileIsABackupXtaCanRestoreOrSaysWhyNot() {
@@ -146,6 +159,32 @@ class BackupRestoreTest {
         assertTrue(restored.groups.none { it.id == GroupRow.EVERYONE })
         assertEquals(setOf("g1"), restored.offFollowing)
         assertEquals(listOf("g1"), restored.deck)
+    }
+
+    @Test
+    fun xtasBareMembersOfOtherNetworksBecomeTheirPluginsAndWhatXClaimsStays() {
+        val mixed = BackupRestore.session(session, networks()).groups.first { it.id == "g2" }
+        assertEquals(
+            listOf("1", "threads:aria", "bluesky:maya.bsky.social", "dartlang", "reddit:dartlang", "booru:sky", "tiktok:dancer", "gone"),
+            mixed.memberIds,
+            "a saved search of the same name stays beside the subreddit, as XTA's groups read both",
+        )
+    }
+
+    @Test
+    fun anAccountARunningPluginReadsByAnotherNameJoinsUnderIt() {
+        val running = listOf(NetworkAccount("bluesky", "maya.bsky.social", "did:plc:maya"), NetworkAccount("threads", "nova"))
+        val owners = NetworkMembers.named(NetworkMembers.accounts(networks()), running) + running
+        val members = BackupRestore.session(session, networks().copy(groupMembers = listOf(GroupMemberRow("g2", "maya.bsky.social"), GroupMemberRow("g2", "nova"))), owners)
+            .groups.first { it.id == "g2" }.memberIds
+        assertEquals(listOf("bluesky:did:plc:maya", "threads:nova"), members, "a plugin's own follows are read too, as XTA joins its tables")
+    }
+
+    @Test
+    fun rowsThatReachTheirPluginLaterTakeOverTheBareMembersXDoesNotClaim() {
+        val legacy = session.copy(groups = listOf(FollowGroup("g1", "Old", listOf("9", "aria", "kotlin", "x"))))
+        val owners = listOf(NetworkAccount("threads", "aria"), NetworkAccount("reddit", "kotlin"), NetworkAccount("threads", "9"))
+        assertEquals(listOf("9", "threads:aria", "kotlin", "x"), BackupRestore.withNetworkMembers(legacy, owners).groups.single().memberIds)
     }
 
     @Test
@@ -265,6 +304,17 @@ class BackupExportTest {
         assertEquals(1, feeds.markStyle)
         assertEquals("g0", feeds.parentId)
         assertEquals(listOf(GroupMemberRow("g1", "1"), GroupMemberRow("g1", "dart")), document.groupMembers)
+    }
+
+    @Test
+    fun theGroupsHoldOtherNetworksAccountsAsXtaWritesThem() {
+        val session = Session(
+            groups = listOf(FollowGroup("g", "Mixed", listOf("1", "threads:aria", "bluesky:did:plc:maya", "aria", "tiktok:dancer", "booru:sky", "threads:q"))),
+            searches = listOf(SavedSearch("threads:q", 0)),
+        )
+        val content = DeviceContent(session = session, networkAccounts = listOf(NetworkAccount("bluesky", "maya.bsky.social", "did:plc:maya")))
+        val document = BackupExport.document(content, ExportChoice(subscriptions = true, groups = true, groupMembers = true), "1.0", Instant.EPOCH)
+        assertEquals(listOf("1", "aria", "maya.bsky.social", "tiktok:dancer", "booru:sky", "threads:q"), document.groupMembers!!.map { it.profileId })
     }
 
     @Test
@@ -492,6 +542,45 @@ class DeviceBackupTest {
         graph.pluginBackups.attach(listOf(substack.section))
         assertEquals("[]", substack.text, "once")
         assertEquals(emptyList(), exported(graph).substackSubscriptions)
+    }
+
+    private suspend fun membersOf(graph: AppGraph, group: String): List<String> = graph.sessions.state.value!!.groups.first { it.id == group }.memberIds
+
+    @Test
+    fun aRestoreGivesXtasGroupsTheirOtherNetworksAccountsAndAnExportWritesThemBackAsXtaDoes(): Unit = runBlocking {
+        val graph = AppGraph(dir, flowOf(true), "test")
+        DeviceBackup(graph).restore(networks(), includeReadPositions = false)
+        assertEquals(
+            listOf("1", "threads:aria", "bluesky:maya.bsky.social", "dartlang", "reddit:dartlang", "booru:sky", "tiktok:dancer", "gone"),
+            membersOf(graph, "g2"),
+            "their plugins not running yet, their rows wait for them",
+        )
+        val exported = BackupDocument.parse(DeviceBackup(graph).export(ExportChoice(subscriptions = true, groups = true, groupMembers = true)))!!
+        assertEquals(listOf("1", "aria", "maya.bsky.social", "dartlang", "booru:sky", "tiktok:dancer", "gone"), exported.groupMembers!!.map { it.profileId })
+        assertEquals("aria", exported.threadsSubscriptions!!.single().id)
+    }
+
+    @Test
+    fun rowsAnEarlierRestoreKeptTakeOverTheirBareMembersWhenTheirPluginRuns(): Unit = runBlocking {
+        val graph = AppGraph(dir, flowOf(true), "test")
+        graph.sessions.update { Session(groups = listOf(FollowGroup("g", "G", listOf("aria", "dart"))), searches = listOf(SavedSearch("dart", 0))) }
+        graph.kept.merge(BackupDocument(threadsSubscriptions = listOf(ProfileSubscriptionRow("aria", "Aria"), ProfileSubscriptionRow("dart", "Dart"))))
+        val threads = FakeSection(BackupKeys.THREADS_SUBSCRIPTIONS)
+        graph.pluginBackups.attach(listOf(threads.section))
+        assertEquals(listOf("threads:aria", "dart"), membersOf(graph, "g"), "the saved search stays one")
+        assertNull(graph.kept.get().threadsSubscriptions)
+    }
+
+    @Test
+    fun anAccountTheRunningPluginReadsByAnotherNameGoesOutAndComesBackByXtasName(): Unit = runBlocking {
+        val graph = AppGraph(dir, flowOf(true), "test")
+        val bluesky = FakeSection(BackupKeys.BLUESKY_SUBSCRIPTIONS, JsonArray(listOf(ProfileSubscriptionRow("maya.bsky.social", "Maya").toJson())).toString())
+        graph.pluginBackups.attach(listOf(bluesky.section)) { listOf(NetworkAccount("bluesky", "maya.bsky.social", "did:plc:maya")) }
+        val xta = BackupDocument(groups = networks().groups, groupMembers = listOf(GroupMemberRow("g2", "maya.bsky.social")))
+        DeviceBackup(graph).restore(xta, includeReadPositions = false)
+        assertEquals(listOf("bluesky:did:plc:maya"), membersOf(graph, "g2"))
+        val exported = BackupDocument.parse(DeviceBackup(graph).export(ExportChoice(subscriptions = true, groups = true, groupMembers = true)))!!
+        assertEquals(listOf("maya.bsky.social"), exported.groupMembers!!.map { it.profileId })
     }
 
     @Test

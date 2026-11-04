@@ -49,8 +49,9 @@ which native-0.1.45 shipped, added `cashtagStrip` and `routeForCashtag` and
 the kit's pieces of that time (the article reader, `FeedReads`, X posts in a
 plugin, the chip tabs, the shelf, the recent searches, the action row,
 `ZoomableImage`); 3 adds `cashtagActions` (the held cashtag's entries),
-`postExtras`, `routeForAccount` and `RssReads`. A plugin's `xta-plugin.json`
-names the version it was built against.
+`postExtras`, `routeForAccount`, `subscriptions` with `PluginSubscription`,
+`PluginHost.unfollowed` and `RssReads`. A plugin's `xta-plugin.json` names
+the version it was built against.
 
 The app loads the versions from `OLDEST_PLUGIN_API` (2) to its own, so a
 plugin built before keeps working until its update comes, for as long as what
@@ -85,6 +86,7 @@ its plugins have to link against that prerelease's app.
 | `backupSections` | `PluginBackupSection`s (name, export, import) of what it keeps |
 | `footprint()` | what it keeps on the device, counted in the store |
 | `feed` | a `PluginFeed`: its followed accounts' posts for Home's timelines and the groups ([below](#posts-in-homes-timelines)), or none |
+| `subscriptions` | the accounts it follows, as they change, for the app's Subscriptions list ([below](#accounts-in-the-apps-groups)), or none |
 | `postActions` | where its posts lead where the app draws them (Home, groups, Saved), with their bookmark and menu, or none |
 | `postExtras(post)` | what it adds to the shared row where the app draws one of its posts (a `NetworkPostExtras`: Mastodon's poll results), or none |
 | `archived(content)` | one of its posts the archive kept, read back as a `NetworkPost` for Saved ([below](#saved-notes-and-likes)), or null |
@@ -119,6 +121,7 @@ read again, the desktop's F5: `RefreshesOn`).
 | `saved`, `toggleSaved(post)`, `chooseFolder(post)`, `editNote(post)`, `setLiked(post, liked)` | the reader's archive: what is in Saved, the bookmark, the save sheet, the note, the likes |
 | `savedPosts` | its own posts in Saved with their notes, as they change, for its own saved list (`PluginSavedScreen`) |
 | `addToGroup(account, follow)` | the app's group picker for one of its accounts |
+| `unfollowed(account)` | one of its accounts unfollowed: the app takes it out of every group |
 | `openPostMenu(menu)` | the shared post menu over the screen |
 | `download(media, fileName, subfolder)`, `downloadAll(files, subfolder)`, `queueDownloads(files, subfolder)`, `saveFile(bytes, fileName, mimeType, subfolder)`, `shareFile(bytes, fileName, mimeType)`, `openDownloads()` | the app's downloads (a file, a batch saved together, a batch queued), a file it made saved or shared, the Downloads screen |
 | `tell(text)`, `working(text, work)` | a line at the foot of the window over any screen, as XTA's snack bars; one shown while `work` runs |
@@ -160,7 +163,8 @@ with a test.
   result line), `PluginLinkButton` and `answeredOr`
   ([below](#sending-a-post-to-the-readers-own-server)).
 - The app's features: `HomeTimelineSwitch`, `AddToGroupButton` with
-  `addToGroupText`, `PluginPostMenuRows` (the shared post sheet's entries in
+  `addToGroupText`, `PluginSubscription` (an account in Subscriptions, with
+  `siteOf`), `PluginPostMenuRows` (the shared post sheet's entries in
   a plugin's own sheet) and `PluginSavedScreen` (below), and
   `PluginSearchHistory` (recent searches, as XTA keeps them).
 - Leaving and files: `rememberOpenOutside`, `rememberShareText`,
@@ -250,6 +254,32 @@ for a button of the plugin's own; the shared post menu offers it for a
 post's author. The group's feed reads its members through their
 plugins ([above](#posts-in-homes-timelines)), and counts them among its
 members; uninstalling a plugin takes its members out of every group.
+
+Wherever a plugin unfollows one of its accounts it says so,
+`host.unfollowed(account)`, and the app takes that member out of every
+group, as XTA's stores do when they remove an account.
+
+`XtaPlugin.subscriptions` is what Subscriptions lists of it beside X's
+accounts and saved searches, in the list's order, search and filters, as
+XTA's list shows a network's (`subscription_look.dart`): a
+`PluginSubscription` per account, its `id` as its group members name it,
+`name`, `handle` (what the search and the order by handle read), the
+`subtitle` under its name (`@handle` unless it says another: `r/dartlang`,
+`tag:sky`, a feed's site, `PluginSubscription.siteOf`), `avatarUrl` (drawn
+with the plugin's mark at its foot, the mark alone without one), `route`
+(its own screen a tap opens), `followedAt`, and `unfollow`. The row has
+Add to group and its menu (Unsubscribe, Add to group); the group editor
+lists the accounts too, and the board's tiles show their faces after X's.
+
+XTA's groups hold Threads, Bluesky, Mastodon, Reddit, Substack and RSS
+accounts bare, by the subscription's own id (`:store`'s `NetworkMembers`),
+and every other network's as `<plugin>:<id>`. Restoring an XTA backup makes
+a bare member that is one of those networks' rows (the backup's, those kept
+for a plugin not running, and what the running plugins follow) that
+plugin's member, and so does a plugin's held-back rows reaching it later; an
+export writes them back bare. Where a plugin reads an account by another
+name than XTA keeps, `PluginSubscription.backupId` is XTA's (Bluesky: the
+DID read, the handle kept).
 
 ### Saved, notes and likes
 

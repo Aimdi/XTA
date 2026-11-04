@@ -14,6 +14,7 @@ import com.aimdi.xtanative.pluginhost.PluginApi
 import com.aimdi.xtanative.pluginhost.PluginLoad
 import com.aimdi.xtanative.pluginhost.PluginManager
 import com.aimdi.xtanative.store.StoreDir
+import com.aimdi.xtanative.store.backup.NetworkAccount
 import com.aimdi.xtanative.store.offline.OfflineStore
 import com.aimdi.xtanative.store.reading.ReadingAppearanceStore
 import com.aimdi.xtanative.store.reading.ReadingJournal
@@ -39,6 +40,7 @@ import com.aimdi.xtanative.ui.plugins.PluginQueued
 import com.aimdi.xtanative.ui.plugins.PluginSavedPost
 import com.aimdi.xtanative.ui.plugins.PluginSettings
 import com.aimdi.xtanative.ui.plugins.PluginSharedPost
+import com.aimdi.xtanative.ui.plugins.PluginSubscription
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
 import com.aimdi.xtanative.ui.post.CashtagLinks
 import com.aimdi.xtanative.ui.saved.FolderFilings
@@ -47,27 +49,38 @@ import com.aimdi.xtanative.ui.saved.KeepNotices
 import com.aimdi.xtanative.ui.saved.Keepable
 import com.aimdi.xtanative.ui.saved.Keeping
 import com.aimdi.xtanative.ui.subscriptions.GroupActions
+import com.aimdi.xtanative.ui.subscriptions.PluginFollows
+import com.aimdi.xtanative.ui.subscriptions.SubscriptionList
+import com.aimdi.xtanative.ui.subscriptions.SubscriptionRow
 import java.io.File
 import java.io.IOException
 import java.util.Locale
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 
 /** A plugin the app runs: the instance of its entry class, as it was installed. */
 @Stable
@@ -91,7 +104,8 @@ class SheetEntry(val icon: ImageVector, val label: String, val run: () -> Unit)
  *
  * It also hands them what the post sheets and Saved's folders send on
  * ([sheetEntries], [folderOption], and each post filed in a folder), and
- * what a cashtag opens ([openCashtag], [cashtagEntries]).
+ * what a cashtag opens ([openCashtag], [cashtagEntries]), and lists what
+ * they follow for Subscriptions and the backup ([follows]).
  *
  * A plugin's code is kept under `plugins/` of the app's private folder
  * ([files]) and what it stores under `plugin-data/<id>/`. Uninstalling erases
@@ -165,6 +179,9 @@ class AppPlugins(
 
     /** The running plugins' feeds, for the timelines that mix them in (Home's, the groups'). */
     val feeds: PluginFeeds = RunningFeeds()
+
+    /** The accounts the running plugins follow, for the Subscriptions tab and the backup. */
+    val follows: PluginFollows = RunningFollows()
 
     private val mutableProblems = MutableStateFlow<Map<String, String>>(emptyMap())
 
@@ -371,6 +388,51 @@ class AppPlugins(
         }
     }
 
+    /**
+     * The running plugins' followed accounts, each plugin's as it says them
+     * ([XtaPlugin.subscriptions]), off the screen's thread; a plugin that
+     * fails lists none, and the others' stay.
+     */
+    private inner class RunningFollows : PluginFollows {
+        @OptIn(ExperimentalCoroutinesApi::class)
+        override val rows: Flow<List<SubscriptionRow>> = running.flatMapLatest { list ->
+            val each = list.mapNotNull { running -> guardedNow { running.plugin.subscriptions }?.let { rowsOf(running.plugin.id, it) } }
+            if (each.isEmpty()) flowOf(emptyList()) else combine(each) { lists -> lists.flatMap { it } }
+        }
+
+        private fun rowsOf(id: String, subscriptions: Flow<List<PluginSubscription>>): Flow<List<SubscriptionRow>> =
+            subscriptions.map { list -> list.map { SubscriptionList.pluginRow(id, it) } }
+                .onStart { emit(emptyList()) }
+                .catch { emit(emptyList()) }
+                .flowOn(Dispatchers.Default)
+
+        override fun unfollow(row: SubscriptionRow) {
+            val plugin = row.plugin?.let(::runningOf)?.plugin ?: return
+            scope.launch { guarded { subscriptionsOf(plugin)?.firstOrNull { PluginMembers.memberId(plugin.id, it.id) == row.id }?.unfollow?.invoke() } }
+        }
+
+        override fun open(row: SubscriptionRow) {
+            val plugin = row.plugin ?: return
+            row.route?.let { navigator.go(Destination.PluginRoute(plugin, it)) }
+        }
+
+        override suspend fun accounts(): List<NetworkAccount> = running.value.flatMap { running ->
+            subscriptionsOf(running.plugin).orEmpty().map { NetworkAccount(running.plugin.id, it.backupId, it.id) }
+        }
+
+        /** What [plugin] follows now, or null when it cannot say in [ASKED_MILLIS]. */
+        private suspend fun subscriptionsOf(plugin: XtaPlugin): List<PluginSubscription>? =
+            guarded { withTimeoutOrNull(ASKED_MILLIS) { plugin.subscriptions?.first() } }
+    }
+
+    /** [account] of plugin [id] out of every group, as the plugin unfollowed it ([PluginHost.unfollowed]). */
+    internal fun leaveGroups(id: String, account: String) {
+        scope.launch {
+            sessions.load()
+            sessions.update { PluginMembers.unfollowed(it, id, account) }
+        }
+    }
+
     private suspend fun reconcile(installed: List<InstalledPlugin>) = changing.withLock {
         val wanted = installed.associateBy { it.id }
         mutableRunning.value.filter { wanted[it.plugin.id]?.version != it.installed.version }.forEach { stop(it) }
@@ -491,6 +553,8 @@ class AppPlugins(
         override fun addToGroup(account: String, follow: suspend () -> Unit) =
             plugins.show(PluginSheet.Groups(PluginMembers.memberId(id, account), follow))
 
+        override fun unfollowed(account: String) = plugins.leaveGroups(id, account)
+
         override fun openPostMenu(menu: PluginPostMenu) = plugins.show(PluginSheet.Menu(id, menu))
 
         override fun download(media: MediaItem, fileName: String?, subfolder: String?) = plugins.download(id, media, fileName, subfolder)
@@ -526,5 +590,8 @@ class AppPlugins(
     private companion object {
         /** How long a plugin's saved list keeps following Saved once no screen shows it: past a quick back and forth. */
         const val SAVED_LIST_LINGER_MILLIS = 5_000L
+
+        /** How long a plugin is given to say what it follows, for an export or a restore: one that cannot is left as it is. */
+        const val ASKED_MILLIS = 5_000L
     }
 }

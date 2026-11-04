@@ -121,7 +121,7 @@ internal fun SaveSearchButton(app: BooruApp, text: String) {
             if (query != null) {
                 app.launch {
                     if (saved) {
-                        app.follows.remove(query)
+                        app.unfollow(query)
                     } else {
                         app.follows.add(query)
                         app.tell(message)

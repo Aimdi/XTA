@@ -40,7 +40,7 @@ data class SubscriptionsUi(
     val tab: SubscriptionsTab = SubscriptionsTab.GROUPS,
     val searching: Boolean = false,
     val query: String = "",
-    /** The people page: every account and saved search followed, ordered, then filtered by the search. */
+    /** The people page: every account (X's and the plugins') and saved search followed, ordered, then filtered by the search. */
     val people: List<SubscriptionRow> = emptyList(),
     /** Everything followed, in the page's order, whatever the search: the members a group can pick from. */
     val allPeople: List<SubscriptionRow> = emptyList(),
@@ -79,9 +79,10 @@ sealed interface SubscriptionsNotice {
 /**
  * XTA's Subscriptions tab (subscriptions.dart, _groups.dart, _list.dart,
  * subscriptions_menu_sheet.dart): the groups board and the people followed,
- * read from the session and the settings, and everything their menus change.
+ * read from the session, the settings and the running plugins ([follows]),
+ * and everything their menus change.
  */
-class SubscriptionsViewModel(private val graph: AppGraph) : ViewModel() {
+class SubscriptionsViewModel(private val graph: AppGraph, private val follows: PluginFollows = PluginFollows.None) : ViewModel() {
     val groups = GroupActions(graph, viewModelScope)
 
     private val view = MutableStateFlow(View())
@@ -92,15 +93,15 @@ class SubscriptionsViewModel(private val graph: AppGraph) : ViewModel() {
     private data class View(val tab: SubscriptionsTab = SubscriptionsTab.GROUPS, val searching: Boolean = false, val query: String = "")
 
     val ui: StateFlow<SubscriptionsUi> =
-        combine(graph.sessions.state.filterNotNull(), graph.settings.settings, view, unread) { session, settings, view, unread ->
-            build(session, settings, view, unread)
+        combine(graph.sessions.state.filterNotNull(), graph.settings.settings, view, unread, follows.rows) { session, settings, view, unread, plugins ->
+            build(session, settings, view, unread, plugins)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SubscriptionsUi())
 
-    private fun build(session: Session, settings: Settings, view: View, unread: Set<String>): SubscriptionsUi {
+    private fun build(session: Session, settings: Settings, view: View, unread: Set<String>, plugins: List<SubscriptionRow>): SubscriptionsUi {
         val groupsOrder = settings[SubscriptionPrefs.groupsOrder]
         val groupsAscending = settings[SubscriptionPrefs.groupsAscending]
         val ordered = SubscriptionList.ordered(
-            SubscriptionList.rows(session),
+            SubscriptionList.rows(session, plugins),
             settings[SubscriptionPrefs.order],
             settings[SubscriptionPrefs.ascending],
             settings[SubscriptionPrefs.customOrder],
@@ -115,7 +116,7 @@ class SubscriptionsViewModel(private val graph: AppGraph) : ViewModel() {
             people = SubscriptionList.filtered(ordered, view.query),
             allPeople = ordered,
             followedCount = ordered.size,
-            board = GroupBoardModel.sections(GroupBoardModel.tiles(session, groupsOrder, groupsAscending, view.query, unread)),
+            board = GroupBoardModel.sections(GroupBoardModel.tiles(session, groupsOrder, groupsAscending, view.query, unread, plugins)),
             groupCount = session.groups.size,
             layout = settings[SubscriptionPrefs.groupsLayout],
             columns = settings[SubscriptionPrefs.groupsColumns],
@@ -187,7 +188,13 @@ class SubscriptionsViewModel(private val graph: AppGraph) : ViewModel() {
         settings { it.with(SubscriptionPrefs.customOrder, SubscriptionList.customOrder(SubscriptionList.moved(rows, from, to))) }
     }
 
-    fun unfollow(row: SubscriptionRow) = session { if (row.search) it.unfollowSearch(row.id) else it.unfollow(row.id) }
+    /** [row] unfollowed and out of every group: a plugin's account by its plugin, as XTA's stores remove theirs. */
+    fun unfollow(row: SubscriptionRow) {
+        if (row.plugin != null) follows.unfollow(row) else session { if (row.search) it.unfollowSearch(row.id) else it.unfollow(row.id) }
+    }
+
+    /** A plugin's account's page, in its plugin. */
+    fun openInPlugin(row: SubscriptionRow) = follows.open(row)
 
     fun setInFeed(row: SubscriptionRow, inFeed: Boolean) = session { it.withInFeed(row.id, inFeed) }
 

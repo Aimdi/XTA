@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.JsonElement
 
 /**
@@ -13,7 +14,8 @@ import kotlinx.serialization.json.JsonElement
  * only plugins built against one it supports. Changing what is in this
  * package in a way a plugin already built would notice means a new version.
  * 1 is what native-0.1.41 shipped, 2 what native-0.1.45 shipped; 3 adds the
- * held cashtag's entries, a post's extras and an account's route.
+ * held cashtag's entries, a post's extras, an account's route and the
+ * accounts a plugin follows, for Subscriptions.
  */
 const val PLUGIN_API_VERSION: Int = 3
 
@@ -188,6 +190,13 @@ abstract class XtaPlugin {
      * groups that hold its accounts. Null when it has none to mix in.
      */
     open val feed: PluginFeed? get() = null
+
+    /**
+     * The accounts it follows, as they change: the app's Subscriptions list
+     * shows them beside X's, each with Add to group, Unfollow and its page
+     * (XTA's SubscriptionSource). Null when it follows none.
+     */
+    open val subscriptions: Flow<List<PluginSubscription>>? get() = null
 
     /**
      * Where its posts lead where the app draws them (Home's timelines, the

@@ -90,6 +90,18 @@ class WebSourcesKeptTest {
     }
 
     @Test
+    fun aFollowedListIsNamedAsXtasSubscriptionsNameIt() {
+        val follow = WebSourceFollows.decode("""[{"id":"lobsters/hottest","name":"Lobsters","screen_name":"Hottest","avatar_url":"https://l/i.png","created_at":"2026-01-01T00:00:00.000"}]""").single()
+        assertEquals("Lobsters", follow.name)
+        assertEquals("Hottest", follow.listName)
+        assertEquals("https://l/i.png", follow.iconUrl)
+        assertEquals("2026-01-01T00:00:00.000", follow.createdAt)
+        val bare = WebSourceFollows.decode("""[{"id":"lobsters/hottest"}]""").single()
+        assertEquals("lobsters/hottest" to "lobsters/hottest", bare.name to bare.listName, "its key where the row names neither")
+        assertNull(bare.iconUrl)
+    }
+
+    @Test
     fun aPostReadsInTheRssReaderAndItsStandInUntilItsCopyIsRead() {
         val item = WebSourceItem(sourceId = lobsters.id, id = "abc", text = "Some words", link = "https://lobste.rs/s/abc", author = "ann")
         val reading = WebSourceReading.itemOf(lobsters, item, "<p>Full</p>")

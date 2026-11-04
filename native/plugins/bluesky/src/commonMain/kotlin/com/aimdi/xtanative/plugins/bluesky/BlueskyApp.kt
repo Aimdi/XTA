@@ -1,23 +1,30 @@
 package com.aimdi.xtanative.plugins.bluesky
 
 import com.aimdi.xtanative.networks.bluesky.BlueskyClient
+import com.aimdi.xtanative.networks.bluesky.BlueskyFollow
 import com.aimdi.xtanative.networks.bluesky.BlueskyFollowing
 import com.aimdi.xtanative.networks.bluesky.BlueskyPost
 import com.aimdi.xtanative.networks.bluesky.BlueskyProfile
 import com.aimdi.xtanative.networks.bluesky.BlueskyQuoteSort
 import com.aimdi.xtanative.networks.bluesky.BlueskyReplySort
 import com.aimdi.xtanative.networks.bluesky.BlueskySearchKind
+import com.aimdi.xtanative.networks.bluesky.BlueskyXtaRows
 import com.aimdi.xtanative.ui.plugins.FeedKinds
 import com.aimdi.xtanative.ui.plugins.NetworkPost
 import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.PluginFeed
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginPostMenu
+import com.aimdi.xtanative.ui.plugins.PluginSubscription
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
 /**
@@ -62,8 +69,36 @@ internal class BlueskyApp(val host: PluginHost) {
 
     /** Follows [profile] here, or unfollows it when it is followed. */
     fun toggleFollow(profile: BlueskyProfile) = launch {
-        if (followed(profile)) follows.unfollow(profile.actor) else follows.follow(profile, now())
+        if (followed(profile)) unfollowNow(profile.did, profile.handle) else follows.follow(profile, now())
     }
+
+    fun unfollow(actor: String) = launch { unfollowNow(actor) }
+
+    /**
+     * The account [names] name (its DID, its handle) no longer followed here,
+     * and out of the app's groups by each name it has there, as XTA's
+     * BlueskyAccountsStore.remove takes it out of its groups.
+     */
+    private suspend fun unfollowNow(vararg names: String) {
+        val known = names.filter { it.isNotEmpty() }
+        val gone = follows.load().filter { follow -> known.any(follow::isOf) }
+        known.forEach { follows.unfollow(it) }
+        gone.flatMap { listOf(it.did, it.handle) }.filter { it.isNotEmpty() }.distinct().forEach(host::unfollowed)
+    }
+
+    /** The accounts followed here as the app's Subscriptions list shows them (XTA's BlueskySubscription): a tap opens the profile. */
+    val subscriptions: Flow<List<PluginSubscription>> = follows.state.onStart { follows.load() }.filterNotNull().map { list -> list.map(::subscriptionOf) }
+
+    private fun subscriptionOf(follow: BlueskyFollow) = PluginSubscription(
+        id = follow.actor,
+        name = follow.name,
+        handle = follow.shownHandle,
+        avatarUrl = follow.avatarUrl,
+        route = BlueskyRoutes.profile(follow.actor),
+        followedAt = follow.followedAt,
+        backupId = BlueskyXtaRows.idOf(follow),
+        unfollow = { unfollowNow(follow.actor) },
+    )
 
     /** [profile] followed here unless it is, as putting an account in a group follows it first (XTA's ensureFollowed). */
     suspend fun ensureFollowed(profile: BlueskyProfile) {

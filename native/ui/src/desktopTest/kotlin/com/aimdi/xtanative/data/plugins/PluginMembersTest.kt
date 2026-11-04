@@ -47,6 +47,15 @@ class PluginMembersTest {
     }
 
     @Test
+    fun anAccountItsPluginUnfollowedLeavesEveryGroupAndTheOthersStay() {
+        val left = PluginMembers.unfollowed(session, "bluesky", "did:plc:maya")
+        assertEquals(listOf("12", "reddit:kotlin", "from:someone", "blueskyfan"), left.groups.first { it.id == "art" }.memberIds)
+        assertEquals(listOf("bluesky:alice.bsky.social"), left.groups.first { it.id == "inner" }.memberIds)
+        assertEquals(session.groups.last(), left.groups.last())
+        assertEquals(session, PluginMembers.unfollowed(session, "from", "someone"), "a saved search spelled so stays the search it is")
+    }
+
+    @Test
     fun aMemberIsThePluginsIdAndItsAccount() {
         assertEquals("bluesky:did:plc:maya", PluginMembers.memberId("bluesky", "did:plc:maya"))
         assertTrue(PluginMembers.accounts(listOf("bluesky:", ":x", "12"), setOf("bluesky", "")).isEmpty(), "no account, or no plugin, is no member")

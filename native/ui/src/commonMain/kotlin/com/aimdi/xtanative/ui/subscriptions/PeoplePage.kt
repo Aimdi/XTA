@@ -49,7 +49,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.cancel
@@ -62,7 +61,6 @@ import com.aimdi.xtanative.ui.generated.resources.groups_quiet_account
 import com.aimdi.xtanative.ui.generated.resources.groups_quiet_account_description
 import com.aimdi.xtanative.ui.generated.resources.groups_quiet_account_off
 import com.aimdi.xtanative.ui.generated.resources.groups_search
-import com.aimdi.xtanative.ui.generated.resources.groups_search_term
 import com.aimdi.xtanative.ui.generated.resources.groups_show_in_main_feed
 import com.aimdi.xtanative.ui.generated.resources.groups_unsubscribe
 import org.jetbrains.compose.resources.stringResource
@@ -156,7 +154,11 @@ private fun PeopleList(state: SubscriptionsUi, actions: PeopleActions, contentPa
     }
 }
 
-/** One followed account or saved search: its face or a search mark, its name and handle, and its menu. */
+/**
+ * One followed account, saved search or plugin's account (_list.dart's
+ * buildSubscriptionTile): its face or mark, its name and the line under it,
+ * Add to group beside a search's and a plugin account's menu, and its menu.
+ */
 @Composable
 private fun SubscriptionRowView(row: SubscriptionRow, actions: PeopleActions) {
     var menu by remember { mutableStateOf(false) }
@@ -170,11 +172,7 @@ private fun SubscriptionRowView(row: SubscriptionRow, actions: PeopleActions) {
             .padding(start = 16.dp, end = 4.dp, top = 8.dp, bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (row.search) {
-            Box(Modifier.size(48.dp), contentAlignment = Alignment.Center) { Icon(Icons.Filled.Search, contentDescription = null) }
-        } else {
-            Avatar(row.avatarUrl, 48.dp)
-        }
+        SubscriptionFace(row, 48.dp)
         Spacer(Modifier.width(16.dp))
         Column(Modifier.weight(1f)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -184,14 +182,14 @@ private fun SubscriptionRowView(row: SubscriptionRow, actions: PeopleActions) {
                 }
             }
             Text(
-                if (row.search) stringResource(Res.string.groups_search_term) else "@${row.screenName}",
+                subscriptionSubtitle(row),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        if (row.search) {
+        if (!row.isX) {
             IconButton(onClick = { actions.pickGroups(row) }) {
                 Icon(GroupIcons.Group, contentDescription = stringResource(Res.string.groups_add_to_group))
             }
@@ -199,7 +197,7 @@ private fun SubscriptionRowView(row: SubscriptionRow, actions: PeopleActions) {
         Box {
             IconButton(onClick = { menu = true }) {
                 Icon(
-                    if (row.inFeed || row.search) GroupIcons.PersonRemove else GroupIcons.VisibilityOff,
+                    if (row.inFeed || !row.isX) GroupIcons.PersonRemove else GroupIcons.VisibilityOff,
                     contentDescription = stringResource(Res.string.groups_unsubscribe),
                 )
             }
@@ -212,7 +210,7 @@ private fun SubscriptionRowView(row: SubscriptionRow, actions: PeopleActions) {
                     menu = false
                     actions.pickGroups(row)
                 })
-                if (!row.search) {
+                if (row.isX) {
                     DropdownMenuItem(
                         text = { Text(stringResource(if (row.inFeed) Res.string.groups_hide_from_main_feed else Res.string.groups_show_in_main_feed)) },
                         onClick = {

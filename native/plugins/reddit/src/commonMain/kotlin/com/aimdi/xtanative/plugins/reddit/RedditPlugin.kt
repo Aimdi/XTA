@@ -11,7 +11,9 @@ import com.aimdi.xtanative.ui.plugins.PluginFootprint
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginScreen
 import com.aimdi.xtanative.ui.plugins.PluginSearch
+import com.aimdi.xtanative.ui.plugins.PluginSubscription
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
+import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.JsonElement
 
 /**
@@ -50,6 +52,8 @@ class RedditPlugin : XtaPlugin() {
     override fun routeFor(url: String): String? = RedditRoutes.forUrl(url)
 
     override val feed: PluginFeed get() = app.shared
+
+    override val subscriptions: Flow<List<PluginSubscription>> get() = app.listed
 
     override val postActions: NetworkPostActions get() = app.actions
 

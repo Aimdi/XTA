@@ -199,7 +199,7 @@ private fun FollowButton(app: TikTokApp, profile: TikTokProfile) {
     val follows by app.follows.state.collectAsState()
     val following = follows.orEmpty().any { it.id == profile.uniqueId.lowercase() }
     FilledTonalButton(
-        onClick = { app.launch { if (following) app.follows.unfollow(profile.uniqueId) else app.follows.follow(profile) } },
+        onClick = { app.launch { if (following) app.unfollow(profile.uniqueId) else app.follows.follow(profile) } },
         modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
     ) {
         Icon(if (following) DiscoverIcons.PersonRemove else DiscoverIcons.PersonAdd, contentDescription = null)

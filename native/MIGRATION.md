@@ -49,7 +49,7 @@ layer is written in `networks/<id>` first, then moves with its screens into
 | profile | `ui/profile` (done: header, filters, follows lists, followed by, note, Posts/Replies/Media/Saved tabs, gates) |
 | search | `ui/search` (done: tabs, advanced search, languages, recent searches, media grid, search in a loaded feed); `store` recent searches |
 | trends | `ui/trends` (done: Discover with places, trends, shortcuts) |
-| subscriptions | `ui/subscriptions` (done: groups board, people list, imports of handles, lists and packs, cleanup, sort ungrouped by hand or AI) |
+| subscriptions | `ui/subscriptions` (done: groups board, people list with every plugin's followed accounts, imports of handles, lists and packs, cleanup, sort ungrouped by hand or AI); `store/backup` `NetworkMembers` (XTA's groups' members of other networks) |
 | group | `core/feed` and `core/session` rules; `ui/group` (done: the group feed with progress, retries, folds, catch-up; feed settings; Media; Discover from the members' follows, kept in `store/follows`) |
 | saved | `store/saved`; `ui/saved` (done: tabs, folders, save sheet, device likes, notes and their editor, profile Saved tab) |
 | archive | `store/saved`; `ui/archive` (done: highlights, tags, AI transcription) |

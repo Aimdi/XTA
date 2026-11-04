@@ -111,7 +111,7 @@ class AppGraph(
     val kept = KeptSections(store)
 
     /** The running plugins' sections of the full backup, which the screens attach as the plugins run. */
-    val pluginBackups = PluginBackups(kept)
+    val pluginBackups = PluginBackups(kept, sessions)
     val webDavBaselines = StoredWebDavBaselines(store)
 
     /** Crash reports, written down on the device only while the reader has them on. */

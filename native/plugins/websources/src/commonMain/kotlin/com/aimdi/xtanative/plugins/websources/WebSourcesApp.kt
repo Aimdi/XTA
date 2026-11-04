@@ -11,9 +11,11 @@ import com.aimdi.xtanative.networks.websources.WebSourceList
 import com.aimdi.xtanative.networks.websources.WebSourceOpening
 import com.aimdi.xtanative.networks.websources.WebSourceReading
 import com.aimdi.xtanative.networks.websources.WebSourcesInstalled
+import com.aimdi.xtanative.store.backup.XtaTime
 import com.aimdi.xtanative.store.settings.Pref
 import com.aimdi.xtanative.store.settings.WebSourcesPrefs
 import com.aimdi.xtanative.ui.plugins.PluginHost
+import com.aimdi.xtanative.ui.plugins.PluginSubscription
 import com.aimdi.xtanative.ui.plugins.RssReads
 import com.aimdi.xtanative.ui.plugins.loaded
 import java.time.Instant
@@ -22,8 +24,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -69,10 +73,12 @@ internal class WebSourcesApp(val host: PluginHost) {
 
     suspend fun install(source: WebSourceDefinition, origin: String?) = change(WebSourcesPrefs.installed) { WebSourcesInstalled.encode(WebSourcesInstalled.installed(WebSourcesInstalled.decode(it), source, origin)) }
 
-    /** Removes [id] and every list followed of it, as XTA's removeWebSource does. */
+    /** Removes [id] and every list followed of it, out of the app's groups too, as XTA's removeWebSource does. */
     suspend fun remove(id: String) {
+        val lists = WebSourceFollows.decode(host.settings.loaded()[WebSourcesPrefs.follows]).filter { it.sourceId == id }.map { it.key }
         change(WebSourcesPrefs.follows) { WebSourceFollows.encode(WebSourceFollows.withoutSource(WebSourceFollows.decode(it), id)) }
         change(WebSourcesPrefs.installed) { WebSourcesInstalled.encode(WebSourcesInstalled.removed(WebSourcesInstalled.decode(it), id)) }
+        lists.forEach(host::unfollowed)
     }
 
     suspend fun agreeToUpdate(id: String) = change(WebSourcesPrefs.installed) { WebSourcesInstalled.encode(WebSourcesInstalled.agreed(WebSourcesInstalled.decode(it), id)) }
@@ -82,8 +88,28 @@ internal class WebSourcesApp(val host: PluginHost) {
     suspend fun follow(source: WebSourceDefinition, list: WebSourceList) =
         change(WebSourcesPrefs.follows) { WebSourceFollows.encode(WebSourceFollows.followed(WebSourceFollows.decode(it), source, list, Instant.now())) }
 
-    suspend fun unfollow(source: WebSourceDefinition, list: WebSourceList) =
-        change(WebSourcesPrefs.follows) { WebSourceFollows.encode(WebSourceFollows.unfollowed(WebSourceFollows.decode(it), WebSourceFollows.subscriptionId(source.id, list.id))) }
+    suspend fun unfollow(source: WebSourceDefinition, list: WebSourceList) = unfollow(WebSourceFollows.key(source.id, list.id))
+
+    /** The list [key] names no longer followed here and out of the app's groups, as XTA's WebSourceFollowsStore.unfollow takes it out of them. */
+    suspend fun unfollow(key: String) {
+        val (sourceId, listId) = WebSourceFollows.parts(key) ?: return
+        change(WebSourcesPrefs.follows) { WebSourceFollows.encode(WebSourceFollows.unfollowed(WebSourceFollows.decode(it), WebSourceFollows.subscriptionId(sourceId, listId))) }
+        host.unfollowed(key)
+    }
+
+    /** The lists followed here as the app's Subscriptions list shows them (XTA's web source subscriptions): the list under its source, a tap opens it. */
+    val subscriptions: Flow<List<PluginSubscription>> = follows.filterNotNull().map { list -> list.map(::subscriptionOf) }
+
+    private fun subscriptionOf(follow: WebSourceFollow) = PluginSubscription(
+        id = follow.key,
+        name = follow.name,
+        handle = follow.listName,
+        subtitle = follow.listName,
+        avatarUrl = follow.iconUrl,
+        route = WebSourceRoutes.source(follow.sourceId, follow.listId),
+        followedAt = XtaTime.parse(follow.createdAt)?.toEpochMilli() ?: 0,
+        unfollow = { unfollow(follow.key) },
+    )
 
     /**
      * Reads every installed source's file again, at most once in
