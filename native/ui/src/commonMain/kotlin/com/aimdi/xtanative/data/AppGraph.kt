@@ -25,8 +25,13 @@ import com.aimdi.xtanative.store.saved.LocalPostsStore
 import com.aimdi.xtanative.store.saved.NoteDrafts
 import com.aimdi.xtanative.store.saved.SavedStore
 import com.aimdi.xtanative.store.search.RecentSearches
+import com.aimdi.xtanative.store.settings.CrashReportPrefs
 import com.aimdi.xtanative.store.settings.SettingsStore
 import com.aimdi.xtanative.ui.downloads.PlatformFiles
+import com.aimdi.xtanative.ui.settings.CrashReports
+import com.aimdi.xtanative.ui.settings.KeptSections
+import com.aimdi.xtanative.ui.settings.SettingsStart
+import com.aimdi.xtanative.ui.settings.StoredWebDavBaselines
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -89,6 +94,13 @@ class AppGraph(
         cleanup = { DownloadTransfer.clearInterruptedFiles(downloadStaging) },
     )
 
+    /** What a restored XTA backup carried that no store here holds yet, kept for the next export. */
+    val kept = KeptSections(store)
+    val webDavBaselines = StoredWebDavBaselines(store)
+
+    /** Crash reports, written down on the device only while the reader has them on. */
+    val crashReports = CrashReports(File(files, "crash-reports"))
+
     /** Whether there is a connection, as it changes: the present state first. */
     val online: SharedFlow<Boolean> = connection.shareIn(scope, SharingStarted.WhileSubscribed(5_000), replay = 1)
 
@@ -132,8 +144,11 @@ class AppGraph(
     val repairs = RepairsRegistry(PublishedDocument(http, PublishedDocument.REPAIRS_URL, store.file("published/repairs.json")))
 
     fun start() {
+        crashReports.install({ settings.state.value?.get(CrashReportPrefs.enabled) == true }, version)
         scope.launch { sessions.load() }
-        if (mockX == null) scope.launch { client.refreshEndpoints() }
+        // XTA's launch steps on the settings, once; then the feeds' switches follow the settings.
+        scope.launch { SettingsStart.keepSessionInStep(settings, sessions) }
+        if (mockX == null) scope.launch { SettingsStart.refreshEndpoints(settings, client) }
         scope.launch {
             repairs.applyKept()
             if (mockX == null) repairs.refresh()

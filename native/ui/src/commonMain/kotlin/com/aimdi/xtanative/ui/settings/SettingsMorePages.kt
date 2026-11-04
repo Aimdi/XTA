@@ -1,0 +1,428 @@
+package com.aimdi.xtanative.ui.settings
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.KeyboardArrowUp
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.aimdi.xtanative.core.session.Session
+import com.aimdi.xtanative.services.ai.AiProvider
+import com.aimdi.xtanative.services.speech.Tts
+import com.aimdi.xtanative.store.settings.AccountPrefs
+import com.aimdi.xtanative.store.settings.AiPrefs
+import com.aimdi.xtanative.store.settings.HomePrefs
+import com.aimdi.xtanative.store.settings.NetworkPrefs
+import com.aimdi.xtanative.store.settings.SpeechPrefs
+import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.*
+import java.util.Locale
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
+
+/** A choice among several, with what it is. */
+@Composable
+private fun RadioRow(title: String, description: String? = null, selected: Boolean, onClick: () -> Unit) {
+    Row(
+        Modifier.fillMaxWidth().selectable(selected = selected, role = Role.RadioButton, onClick = onClick).padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        RadioButton(selected = selected, onClick = null)
+        Spacer(Modifier.width(16.dp))
+        Column(Modifier.weight(1f)) {
+            Text(title, style = MaterialTheme.typography.bodyLarge)
+            if (!description.isNullOrEmpty()) Text(description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
+}
+
+// ---- Home (_home.dart) ----
+
+@Composable
+internal fun HomeSettings(title: String, vm: SettingsViewModel, onBack: () -> Unit) {
+    val session by vm.session.collectAsStateWithLifecycle()
+    val snackbar = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val minimum = stringResource(Res.string.settings_home_minimum)
+    val first = remember { HomePages.load(vm.settings.value, vm.session.value.groups.map { it.id }) }
+    var pages by remember { mutableStateOf(first.pages) }
+    LaunchedEffect(Unit) {
+        // Loading the pages seeds a network's tab once and repairs an empty bar, as XTA's loadPages writes back.
+        vm.update { it.with(HomePrefs.pages, first.saved).with(HomePrefs.seededNetworkTabs, first.seeded) }
+    }
+    fun save(next: List<HomePage>) {
+        pages = next
+        vm.set(HomePrefs.pages, HomePages.selectedIds(next))
+    }
+    SettingsPage(
+        title,
+        onBack,
+        snackbar,
+        actions = {
+            IconButton(onClick = {
+                vm.set(HomePrefs.pages, HomePages.DEFAULTS)
+                pages = HomePages.load(vm.settings.value.with(HomePrefs.pages, HomePages.DEFAULTS), session.groups.map { it.id }).pages
+            }) { Icon(Icons.Outlined.Refresh, stringResource(Res.string.settings_reset_home_pages)) }
+        },
+    ) { padding ->
+        SettingsList(padding) {
+            pages.forEachIndexed { index, page ->
+                Row(
+                    Modifier.fillMaxWidth().padding(start = 4.dp, end = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Checkbox(checked = page.selected, onCheckedChange = { on ->
+                        val next = HomePages.toggled(pages, page.id, on)
+                        if (next == null) scope.launch { snackbar.showSnackbar(minimum) } else save(next)
+                    })
+                    Text(
+                        homePageLabel(page.id) { group -> session.groups.firstOrNull { it.id == group }?.name },
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.weight(1f),
+                    )
+                    IconButton(onClick = { save(HomePages.moved(pages, index, index - 1)) }, enabled = index > 0) {
+                        Icon(Icons.Outlined.KeyboardArrowUp, stringResource(Res.string.settings_move_up))
+                    }
+                    IconButton(onClick = { save(HomePages.moved(pages, index, index + 1)) }, enabled = index < pages.lastIndex) {
+                        Icon(Icons.Outlined.KeyboardArrowDown, stringResource(Res.string.settings_move_down))
+                    }
+                }
+            }
+        }
+    }
+}
+
+// ---- Read aloud (tts_settings.dart) ----
+
+@Composable
+internal fun SpeechSettings(title: String, vm: SettingsViewModel, onBack: () -> Unit) {
+    val settings by vm.settings.collectAsStateWithLifecycle()
+    val links = LocalUriHandler.current
+    val group = SpeechChoices.engineGroup(settings)
+    val options = rememberSpeechOptions(settings[SpeechPrefs.engine].ifEmpty { null })
+    SettingsPage(title, onBack) { padding ->
+        SettingsList(padding) {
+            SwitchRow(
+                stringResource(Res.string.settings_speech_offline),
+                stringResource(Res.string.settings_speech_offline_description),
+                settings[SpeechPrefs.offlineVoice],
+            ) { vm.set(SpeechPrefs.offlineVoice, it) }
+            when {
+                options == null -> LoadingRow()
+                // The desktop has no system engine: only the speed applies there.
+                isDesktop -> Unit
+                else -> {
+                    SettingsHeader(stringResource(Res.string.settings_speech_engine))
+                    RadioRow(stringResource(Res.string.settings_speech_default), selected = group == null) {
+                        vm.update { SpeechChoices.withEngine(it, null) }
+                    }
+                    RadioRow(
+                        stringResource(Res.string.settings_speech_sherpa),
+                        stringResource(Res.string.settings_speech_sherpa_description),
+                        selected = group == Tts.SHERPA_ENGINE,
+                    ) { vm.update { SpeechChoices.withEngine(it, SpeechChoices.sherpaEngine(options)) } }
+                    if (!SpeechChoices.sherpaInstalled(options)) {
+                        TextButton(onClick = { runCatching { links.openUri(Tts.SHERPA_INSTALL_URL) } }, modifier = Modifier.padding(start = 56.dp)) {
+                            Text(stringResource(Res.string.settings_speech_sherpa_install))
+                        }
+                    }
+                    SpeechChoices.otherEngines(options).forEach { engine ->
+                        RadioRow(engine, selected = group == engine) { vm.update { SpeechChoices.withEngine(it, engine) } }
+                    }
+                    if (options.voices.isNotEmpty()) {
+                        SettingsHeader(stringResource(Res.string.settings_speech_voice))
+                        val voice = settings[SpeechPrefs.voiceName]
+                        RadioRow(stringResource(Res.string.settings_speech_default), selected = voice.isEmpty()) {
+                            vm.update { SpeechChoices.withVoice(it, null) }
+                        }
+                        options.voices.forEach { option ->
+                            RadioRow(option.name, option.locale, selected = voice == option.name) { vm.update { SpeechChoices.withVoice(it, option) } }
+                        }
+                    }
+                }
+            }
+            SettingsHeader(stringResource(Res.string.settings_speech_speed))
+            SliderRow(
+                stringResource(Res.string.settings_speech_speed),
+                null,
+                settings[SpeechPrefs.rate].toFloat(),
+                SettingsChoices.SPEECH_RATE_MIN..SettingsChoices.SPEECH_RATE_MAX,
+                SettingsChoices.SPEECH_RATE_STEPS,
+                label = { String.format(Locale.ROOT, "%.2f", it) },
+            ) { vm.set(SpeechPrefs.rate, Math.round(it * 100) / 100.0) }
+        }
+    }
+}
+
+// ---- Accounts (_account.dart) ----
+
+@Composable
+internal fun AccountSettings(title: String, vm: SettingsViewModel, onBack: () -> Unit, onOpen: (String) -> Unit, onStartOver: () -> Unit) {
+    val settings by vm.settings.collectAsStateWithLifecycle()
+    val session by vm.session.collectAsStateWithLifecycle()
+    var deleting by remember { mutableStateOf<String?>(null) }
+    var clearing by remember { mutableStateOf(false) }
+    val hidden = settings[AccountPrefs.forYouHiddenAccountIds]
+    val ids = session.accounts.map { it.id }
+    SettingsPage(
+        title,
+        onBack,
+        actions = {
+            IconButton(onClick = { onOpen(SettingsRoutes.IMPORT) }) { Icon(Icons.Outlined.Add, stringResource(Res.string.settings_import_backup)) }
+        },
+    ) { padding ->
+        SettingsList(padding) {
+            if (session.accounts.isEmpty()) {
+                Text(stringResource(Res.string.settings_accounts_empty), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(24.dp))
+            } else {
+                Text(
+                    stringResource(Res.string.settings_accounts_description),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                )
+                session.accounts.forEach { account ->
+                    val on = ForYouAccounts.isOn(account.id, hidden)
+                    Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 4.dp, top = 4.dp, bottom = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            account.screenName?.let { "@$it" } ?: stringResource(Res.string.settings_unknown_username),
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.weight(1f),
+                        )
+                        Switch(
+                            checked = on,
+                            enabled = !on || ForYouAccounts.canTurnOff(account.id, ids, hidden),
+                            onCheckedChange = { next ->
+                                vm.update { current ->
+                                    ForYouAccounts.toggled(current[AccountPrefs.forYouHiddenAccountIds], account.id, next, ids)
+                                        ?.let { current.with(AccountPrefs.forYouHiddenAccountIds, it) } ?: current
+                                }
+                            },
+                        )
+                        IconButton(onClick = { deleting = account.id }) { Icon(Icons.Outlined.Delete, stringResource(Res.string.settings_delete)) }
+                    }
+                }
+            }
+            SettingsDivider()
+            NavigationRow(stringResource(Res.string.settings_clear), stringResource(Res.string.settings_clear_explained), chevron = false, destructive = true) {
+                clearing = true
+            }
+        }
+    }
+    deleting?.let { id ->
+        val name = session.accounts.firstOrNull { it.id == id }?.screenName ?: stringResource(Res.string.settings_unknown_username)
+        ConfirmDialog(
+            stringResource(Res.string.settings_are_you_sure),
+            stringResource(Res.string.settings_account_delete_confirm, name),
+            stringResource(Res.string.settings_delete),
+            stringResource(Res.string.settings_cancel),
+            destructive = true,
+            onDismiss = { deleting = null },
+        ) {
+            deleting = null
+            vm.updateSession { it.copy(accounts = it.accounts.filterNot { account -> account.id == id }) }
+            vm.update { it.with(AccountPrefs.forYouHiddenAccountIds, it[AccountPrefs.forYouHiddenAccountIds] - id) }
+        }
+    }
+    if (clearing) {
+        ConfirmDialog(
+            stringResource(Res.string.settings_clear),
+            stringResource(Res.string.settings_clear_explained),
+            stringResource(Res.string.settings_clear_confirm),
+            stringResource(Res.string.settings_cancel),
+            destructive = true,
+            onDismiss = { clearing = false },
+        ) {
+            clearing = false
+            vm.graph.keep {
+                vm.graph.sessions.update { Session() }
+                vm.graph.clearFeedCaches()
+                vm.graph.signers.clear()
+            }
+            onStartOver()
+        }
+    }
+}
+
+// ---- AI (_ai.dart) ----
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+internal fun AiSettings(title: String, vm: SettingsViewModel, onBack: () -> Unit) {
+    val snackbar = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val saved = stringResource(Res.string.settings_ai_saved)
+    var form by remember {
+        val settings = vm.settings.value
+        mutableStateOf(AiForm(settings[AiPrefs.baseUrl], settings[AiPrefs.apiKey], settings[AiPrefs.model]))
+    }
+    SettingsPage(title, onBack, snackbar) { padding ->
+        SettingsList(padding) {
+            Column(Modifier.padding(16.dp), verticalArrangement = FormSpacing) {
+                Text(stringResource(Res.string.settings_ai_description), style = MaterialTheme.typography.bodyMedium)
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    AssistChip(
+                        onClick = { form = form.withPreset(AiProvider.GROK) },
+                        label = { Text(stringResource(Res.string.settings_ai_grok)) },
+                        leadingIcon = { Icon(Icons.Outlined.Star, null, Modifier.size(18.dp)) },
+                    )
+                    AssistChip(onClick = { form = form.withPreset(AiProvider.OPENROUTER) }, label = { Text(stringResource(Res.string.settings_ai_openrouter)) })
+                    AssistChip(onClick = { form = form.withPreset(AiProvider.OPENAI) }, label = { Text(stringResource(Res.string.settings_ai_openai)) })
+                }
+                OutlinedTextField(
+                    value = form.baseUrl,
+                    onValueChange = { form = form.copy(baseUrl = it) },
+                    label = { Text(stringResource(Res.string.settings_ai_base_url)) },
+                    placeholder = { Text(AiProvider.GROK.baseUrl) },
+                    supportingText = { Text(stringResource(Res.string.settings_ai_base_url_description)) },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, autoCorrectEnabled = false),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                OutlinedTextField(
+                    value = form.apiKey,
+                    onValueChange = { form = form.copy(apiKey = it) },
+                    label = { Text(stringResource(Res.string.settings_ai_api_key)) },
+                    supportingText = when {
+                        form.isOpenRouter -> ({ Text(stringResource(Res.string.settings_ai_openrouter_key_hint)) })
+                        form.isGrok -> ({ Text(stringResource(Res.string.settings_ai_grok_key_hint)) })
+                        else -> null
+                    },
+                    singleLine = true,
+                    visualTransformation = if (form.keyHidden) PasswordVisualTransformation() else VisualTransformation.None,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, autoCorrectEnabled = false),
+                    trailingIcon = {
+                        TextButton(onClick = { form = form.copy(keyHidden = !form.keyHidden) }) {
+                            Text(stringResource(if (form.keyHidden) Res.string.settings_show else Res.string.settings_hide))
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                OutlinedTextField(
+                    value = form.model,
+                    onValueChange = { form = form.copy(model = it) },
+                    label = { Text(stringResource(Res.string.settings_ai_model)) },
+                    placeholder = { Text(form.modelPlaceholder) },
+                    supportingText = if (form.isOpenRouter) ({ Text(stringResource(Res.string.settings_ai_openrouter_model_hint)) }) else null,
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(autoCorrectEnabled = false),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Button(onClick = {
+                    val config = form.saved()
+                    vm.update { it.with(AiPrefs.baseUrl, config.baseUrl).with(AiPrefs.apiKey, config.apiKey).with(AiPrefs.model, config.model) }
+                    scope.launch { snackbar.showSnackbar(saved) }
+                }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.settings_save)) }
+            }
+        }
+    }
+}
+
+// ---- A network's section, from its preferences, until its plugin brings its own ----
+
+@Composable
+internal fun NetworkSettings(network: NetworkPrefs, vm: SettingsViewModel, onBack: () -> Unit) {
+    val settings by vm.settings.collectAsStateWithLifecycle()
+    SettingsPage(networkName(network.id), onBack) { padding ->
+        SettingsList(padding) {
+            network.showTab?.let { pref ->
+                SwitchRow(stringResource(Res.string.settings_show_as_tab), checked = settings[pref]) { vm.set(pref, it) }
+            }
+            network.inHomeFeed?.let { pref ->
+                SwitchRow(stringResource(Res.string.settings_in_home_timeline), checked = settings[pref]) { vm.set(pref, it) }
+            }
+            NetworkSections.fields(network).forEach { field ->
+                when (field) {
+                    is NetworkField.Flag -> SwitchRow(fieldLabel(field.label), checked = settings[field.pref]) { vm.set(field.pref, it) }
+                    is NetworkField.Text -> {
+                        val value = settings[field.pref]
+                        TextRow(
+                            fieldLabel(field.label),
+                            when {
+                                value.isEmpty() -> stringResource(Res.string.settings_not_set)
+                                field.secret -> "••••••••"
+                                else -> value
+                            },
+                            value,
+                            hint = fieldHint(field.label),
+                            secret = field.secret,
+                            url = !field.secret,
+                        ) { vm.set(field.pref, it.trim()) }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun fieldLabel(label: NetworkFieldLabel): String = stringResource(
+    when (label) {
+        NetworkFieldLabel.THREADS_INSTANCE -> Res.string.settings_threads_instance
+        NetworkFieldLabel.BLUESKY_INSTANCE -> Res.string.settings_bluesky_instance
+        NetworkFieldLabel.MASTODON_INSTANCE -> Res.string.settings_mastodon_instance
+        NetworkFieldLabel.BOORU_HOST -> Res.string.settings_booru_host
+        NetworkFieldLabel.KARAKEEP_SERVER -> Res.string.settings_karakeep_server
+        NetworkFieldLabel.DEEPMARKS_SERVER -> Res.string.settings_deepmarks_server
+        NetworkFieldLabel.DEEPMARKS_SIGNING_KEY -> Res.string.settings_deepmarks_signing_key
+        NetworkFieldLabel.IMMICH_SERVER -> Res.string.settings_immich_server
+        NetworkFieldLabel.IMMICH_ALBUM_PER_FOLDER -> Res.string.settings_immich_album
+        NetworkFieldLabel.IMMICH_INCLUDE_VIDEOS -> Res.string.settings_immich_videos
+        NetworkFieldLabel.API_KEY -> Res.string.settings_api_key
+    },
+)
+
+@Composable
+private fun fieldHint(label: NetworkFieldLabel): String? = when (label) {
+    NetworkFieldLabel.THREADS_INSTANCE -> stringResource(Res.string.settings_threads_instance_hint)
+    NetworkFieldLabel.BLUESKY_INSTANCE -> stringResource(Res.string.settings_bluesky_instance_hint)
+    NetworkFieldLabel.MASTODON_INSTANCE -> stringResource(Res.string.settings_mastodon_instance_hint)
+    NetworkFieldLabel.BOORU_HOST -> stringResource(Res.string.settings_booru_host_hint)
+    NetworkFieldLabel.KARAKEEP_SERVER -> stringResource(Res.string.settings_karakeep_server_hint)
+    NetworkFieldLabel.IMMICH_SERVER -> stringResource(Res.string.settings_immich_server_hint)
+    else -> null
+}

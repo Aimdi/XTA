@@ -2,42 +2,59 @@ package com.aimdi.xtanative.ui.importer
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.aimdi.xtanative.core.backup.XtaBackup
+import com.aimdi.xtanative.store.backup.BackupCategory
+import com.aimdi.xtanative.store.backup.BackupDocument
+import com.aimdi.xtanative.store.backup.XtaTime
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.app_name
 import com.aimdi.xtanative.ui.generated.resources.import_choose
 import com.aimdi.xtanative.ui.generated.resources.import_choose_another
-import com.aimdi.xtanative.ui.generated.resources.import_found_accounts
-import com.aimdi.xtanative.ui.generated.resources.import_found_following
 import com.aimdi.xtanative.ui.generated.resources.import_intro
 import com.aimdi.xtanative.ui.generated.resources.import_no_accounts
-import com.aimdi.xtanative.ui.generated.resources.import_not_a_backup
 import com.aimdi.xtanative.ui.generated.resources.import_privacy
 import com.aimdi.xtanative.ui.generated.resources.import_steps
 import com.aimdi.xtanative.ui.generated.resources.import_use
-import org.jetbrains.compose.resources.pluralStringResource
+import com.aimdi.xtanative.ui.generated.resources.settings_import_from
+import com.aimdi.xtanative.ui.generated.resources.settings_import_read_positions
+import com.aimdi.xtanative.ui.generated.resources.settings_import_read_positions_description
+import com.aimdi.xtanative.ui.settings.backupProblem
+import com.aimdi.xtanative.ui.settings.categoryLabel
+import com.aimdi.xtanative.ui.settings.shortDateTime
 import org.jetbrains.compose.resources.stringResource
 
-/** The first screen: bring XTA's X sessions and follows over from a file XTA exported. */
+/**
+ * The first screen without an account, and Settings › Accounts' import:
+ * a file XTA exported, previewed as XTA previews it, then restored whole
+ * (sessions, follows, groups, saved posts, notes, settings and the rest).
+ */
 @Composable
 fun ImportScreen(onImported: () -> Unit) {
     val graph = LocalGraph.current
@@ -61,30 +78,54 @@ fun ImportScreen(onImported: () -> Unit) {
         Text(stringResource(Res.string.import_steps), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         when (val now = state) {
             ImportUi.Idle, ImportUi.Done -> Button(onClick = choose, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.import_choose)) }
-            ImportUi.Reading -> LoadingRow()
-            ImportUi.NotABackup -> {
-                Text(stringResource(Res.string.import_not_a_backup), color = MaterialTheme.colorScheme.error)
+            ImportUi.Reading, ImportUi.Restoring -> LoadingRow()
+            is ImportUi.Refused -> {
+                backupProblem(now.read)?.let { Text(it, color = MaterialTheme.colorScheme.error) }
                 Button(onClick = choose, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.import_choose_another)) }
             }
-            is ImportUi.Ready -> Found(now.backup, onUse = { vm.use(now.backup) }, onAnother = choose)
+            is ImportUi.Ready -> Found(now.document, onUse = { vm.use(now.document, it) }, onAnother = choose)
         }
         Text(stringResource(Res.string.import_privacy), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
+/** What the file would restore, where it came from, and the choice XTA offers about reading positions. */
 @Composable
-private fun Found(backup: XtaBackup, onUse: () -> Unit, onAnother: () -> Unit) {
-    val inFeed = backup.following.count { it.inFeed }
-    Text(
-        pluralStringResource(Res.plurals.import_found_accounts, backup.accounts.size, backup.accounts.size) + "\n" +
-            pluralStringResource(Res.plurals.import_found_following, backup.following.size, backup.following.size, inFeed),
-        style = MaterialTheme.typography.bodyLarge,
-    )
-    if (backup.accounts.isEmpty()) {
+private fun Found(document: BackupDocument, onUse: (includeReadPositions: Boolean) -> Unit, onAnother: () -> Unit) {
+    var readPositions by remember { mutableStateOf(false) }
+    val counts = document.counts()
+    val version = document.appVersion
+    val at = XtaTime.parse(document.exportedAt)
+    if (version != null && at != null) {
+        Text(
+            stringResource(Res.string.settings_import_from, version, shortDateTime(at, currentLocale())),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+    Column {
+        counts.forEach { (category, count) ->
+            Row(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+                Text(categoryLabel(category), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+                Text(count.toString(), style = MaterialTheme.typography.bodyLarge)
+            }
+        }
+    }
+    if (BackupCategory.ACCOUNTS !in counts) {
         Text(stringResource(Res.string.import_no_accounts), color = MaterialTheme.colorScheme.error)
     }
-    Button(onClick = onUse, enabled = backup.accounts.isNotEmpty(), modifier = Modifier.fillMaxWidth()) {
-        Text(stringResource(Res.string.import_use))
+    if (BackupCategory.READ_POSITIONS in counts) {
+        Row(
+            Modifier.fillMaxWidth().selectable(readPositions, role = Role.Checkbox) { readPositions = !readPositions },
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(Modifier.weight(1f)) {
+                Text(stringResource(Res.string.settings_import_read_positions), style = MaterialTheme.typography.bodyLarge)
+                Text(stringResource(Res.string.settings_import_read_positions_description), style = MaterialTheme.typography.bodySmall)
+            }
+            Checkbox(checked = readPositions, onCheckedChange = null)
+        }
     }
+    Button(onClick = { onUse(readPositions) }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.import_use)) }
     OutlinedButton(onClick = onAnother, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.import_choose_another)) }
 }

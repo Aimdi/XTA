@@ -5,6 +5,19 @@
     <!-- To read the feed again when the connection comes back. -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <queries>
+        <!-- Settings › General › Open links in: the browsers to pick from. -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="https" />
+        </intent>
+        <!-- Settings › Read aloud: the speech engines installed. -->
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+    </queries>
+
     <application
         android:name=".XtaNativeApp"
         android:allowBackup="false"

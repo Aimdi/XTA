@@ -31,6 +31,8 @@ import com.aimdi.xtanative.ui.community.CommunityScreen
 import com.aimdi.xtanative.ui.downloads.DownloadsScreen
 import com.aimdi.xtanative.ui.feed.FeedScreen
 import com.aimdi.xtanative.ui.importer.ImportScreen
+import com.aimdi.xtanative.ui.intro.IntroFlow
+import com.aimdi.xtanative.ui.intro.IntroScreen
 import com.aimdi.xtanative.ui.lists.ListImportScreen
 import com.aimdi.xtanative.ui.media.MediaViewer
 import com.aimdi.xtanative.ui.offline.OfflineLibraryScreen
@@ -46,7 +48,9 @@ import com.aimdi.xtanative.ui.saved.SavedScreen
 import com.aimdi.xtanative.ui.search.SearchActions
 import com.aimdi.xtanative.ui.search.SearchScreen
 import com.aimdi.xtanative.ui.search.SearchTab
+import com.aimdi.xtanative.ui.settings.BackupScreen
 import com.aimdi.xtanative.ui.settings.SettingsScreen
+import com.aimdi.xtanative.ui.settings.SettingsSectionScreen
 import com.aimdi.xtanative.ui.trends.TrendsActions
 import com.aimdi.xtanative.ui.trends.TrendsScreen
 import java.net.URLEncoder
@@ -74,6 +78,9 @@ private object Routes {
     const val OFFLINE = "offline"
     const val OFFLINE_MEDIA = "offline/media?id={id}"
     const val ARCHIVE = "archive?id={id}"
+    const val SETTINGS_SECTION = "settings/{section}?focus={focus}"
+    const val BACKUP = "backup"
+    const val INTRO = "intro"
 
     fun post(id: String) = "post/$id"
     fun profile(screenName: String) = "profile/" + encoded(screenName)
@@ -103,13 +110,21 @@ private const val SLIDE_MS = 280
 fun XtaNativeRoot() {
     val graph = LocalGraph.current
     val session by graph.sessions.state.collectAsStateWithLifecycle()
+    val settings by graph.settings.state.collectAsStateWithLifecycle()
     val loaded = session
-    if (loaded == null) {
-        // The session is read in a few milliseconds; until then, the theme's background.
+    val prefs = settings
+    if (loaded == null || prefs == null) {
+        // The session and settings are read in a few milliseconds; until then, the theme's background.
         Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
         return
     }
-    val start = remember { if (loaded.accounts.isEmpty()) Routes.IMPORT else Routes.FEED }
+    val start = remember {
+        when {
+            IntroFlow.opensOn(prefs, hasAccounts = loaded.accounts.isNotEmpty()) -> Routes.INTRO
+            loaded.accounts.isEmpty() -> Routes.IMPORT
+            else -> Routes.FEED
+        }
+    }
     val nav = rememberNavController()
     val actions = remember(nav) {
         PostActions(
@@ -141,7 +156,18 @@ fun XtaNativeRoot() {
         popExitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(SLIDE_MS)) },
     ) {
         composable(Routes.IMPORT) {
-            ImportScreen(onImported = { nav.startOver(Routes.FEED) })
+            ImportScreen(onImported = {
+                // A restored backup is a returning reader's: the first-launch cards are done.
+                graph.keep { graph.settings.update(IntroFlow::finished) }
+                nav.startOver(Routes.FEED)
+            })
+        }
+        composable(Routes.INTRO) {
+            IntroScreen(
+                onFinished = { nav.startOver(Routes.FEED) },
+                onImport = { nav.navigate(Routes.IMPORT) },
+                onOpen = { route -> nav.navigateIfKnown(route) },
+            )
         }
         composable(Routes.FEED) {
             FeedScreen(actions, openSearch = { nav.navigate(Routes.search(null)) }, openSettings = { nav.navigate(Routes.SETTINGS) })
@@ -204,8 +230,8 @@ fun XtaNativeRoot() {
         composable(Routes.SETTINGS) {
             SettingsScreen(
                 onBack = { nav.popBackStack() },
-                onImport = { nav.navigate(Routes.IMPORT) },
-                onCleared = { nav.startOver(Routes.IMPORT) },
+                onOpen = { route -> nav.navigateIfKnown(route) },
+                onIntroAgain = { nav.startOver(Routes.INTRO) },
             )
         }
         composable(Routes.SAVED) {
@@ -248,9 +274,32 @@ fun XtaNativeRoot() {
         ) { entry ->
             ArchiveScreen(entry.text("id").orEmpty(), onBack = { nav.popBackStack() })
         }
+        composable(
+            Routes.SETTINGS_SECTION,
+            arguments = listOf(
+                navArgument("section") { type = NavType.StringType },
+                navArgument("focus") { type = NavType.StringType; nullable = true; defaultValue = null },
+            ),
+        ) { entry ->
+            SettingsSectionScreen(
+                entry.text("section").orEmpty(),
+                entry.text("focus"),
+                onBack = { nav.popBackStack() },
+                onOpen = { route -> nav.navigateIfKnown(route) },
+                onStartOver = { nav.startOver(Routes.IMPORT) },
+            )
+        }
+        composable(Routes.BACKUP) {
+            BackupScreen(onBack = { nav.popBackStack() })
+        }
     }
     // The foot-of-window notices of saves, likes and downloads, and the platform's save dialog (ui/saved).
     KeepHost()
+}
+
+/** To [route] when a screen is there for it: Settings links to screens other parts of the app add (the plugin store, downloads). */
+private fun NavHostController.navigateIfKnown(route: String) {
+    runCatching { navigate(route) }
 }
 
 /** An x.com or twitter.com link opens here, as it opens XTA. Only Android is handed links. */
