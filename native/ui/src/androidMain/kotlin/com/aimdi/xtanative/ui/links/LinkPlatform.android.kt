@@ -66,31 +66,34 @@ private tailrec fun Context.findActivity(): Activity? = when (this) {
  * (a VIEW carrying the Custom Tabs session extra, which a browser that has
  * them opens as a tab and any other browser as a page), a browser by its
  * package, or the system's choice. A link the app itself claims (x.com)
- * goes to a browser by name, since a plain VIEW of it would land back here.
- * Every launch falls back to the next way rather than doing nothing.
+ * goes to a browser by name, since a plain VIEW of it would land back here;
+ * every other launch falls back to the next way rather than doing nothing.
  */
 private class AndroidLinks(private val context: Context) : LinkPlatform {
     override val desktop: Boolean = false
 
     override fun launch(launch: LinkLaunch) {
         val url = launch.url
-        val opened = when (launch) {
+        when (launch) {
             is LinkLaunch.CustomTab, is LinkLaunch.InAppBrowser -> customTab(url, if (LinkSteps.claimedByApp(url)) defaultBrowser() else null) || view(url, null)
             is LinkLaunch.External -> (launch.browser.isNotEmpty() && view(url, launch.browser)) || view(url, null)
+            // Never a VIEW that names no browser: it would land in this app again.
             is LinkLaunch.RealBrowser -> realBrowser(launch)
             is LinkLaunch.Desktop -> view(url, null)
         }
-        if (!opened) view(url, null)
     }
 
-    /** A named browser, then a Custom Tab where the reader keeps links in the app, then the default browser by name, then a Custom Tab. */
+    /**
+     * A page the app claims, in a browser by name (urls.dart's openInRealBrowser):
+     * the one picked, then a Custom Tab where the reader keeps links in the
+     * app, then the default browser, else another installed one; never this app.
+     */
     private fun realBrowser(launch: LinkLaunch.RealBrowser): Boolean {
         val named = launch.browser.takeIf { it.isNotEmpty() && it != context.packageName }
         if (named != null && view(launch.url, named)) return true
-        val default = defaultBrowser()
-        if (launch.customTabFirst && customTab(launch.url, default)) return true
-        if (default != null && view(launch.url, default)) return true
-        return customTab(launch.url, default)
+        val browser = LinkSteps.realBrowser(defaultBrowser(), browsers(), context.packageName) ?: return false
+        if (launch.customTabFirst && customTab(launch.url, browser)) return true
+        return view(launch.url, browser) || customTab(launch.url, browser)
     }
 
     /**

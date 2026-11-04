@@ -55,11 +55,6 @@
     <string name="settings_share_base_url_description">공유 시 사용자 지정 기본 URL 사용</string>
     <string name="settings_cancel">취소</string>
     <string name="settings_save">저장</string>
-    <string name="settings_links_open_in">링크 열기</string>
-    <string name="settings_links_open_in_description">앱 내 브라우저, 시스템 기본값, 또는 직접 고른 브라우저</string>
-    <string name="settings_links_in_app">앱 안</string>
-    <string name="settings_links_in_app_description">웹 링크를 기본 브라우저 앱 대신 내장 브라우저에서 엽니다.</string>
-    <string name="settings_links_system">시스템 기본값</string>
     <string name="settings_tab_following">팔로잉</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">구독</string>
@@ -185,15 +180,6 @@
     <string name="settings_swipe_back_anywhere_description">열린 게시물의 어느 곳에서든 끌어서 뒤로 갑니다. 끄면 화면 가장자리에서만 가능합니다.</string>
     <string name="settings_swipe_back_tilt">손가락 따라 기울이기</string>
     <string name="settings_swipe_back_tilt_description">뒤로 끄는 게시물이 손가락을 중심으로 돌고 움직이는 속도에 따라 흔들립니다.</string>
-    <string name="settings_speech_engine">음성 엔진</string>
-    <string name="settings_speech_default">시스템 기본값</string>
-    <string name="settings_speech_sherpa">Sherpa (기기에서)</string>
-    <string name="settings_speech_sherpa_description">이 기기에서 읽어 줍니다. 아직 없다면 Sherpa ONNX TTS Engine 앱을 설치하세요.</string>
-    <string name="settings_speech_sherpa_install">Sherpa TTS 받기</string>
-    <string name="settings_speech_voice">음성</string>
-    <string name="settings_speech_speed">속도</string>
-    <string name="settings_speech_offline">다운로드한 음성 사용</string>
-    <string name="settings_speech_offline_description">기사 언어에 맞는 다운로드한 음성이 있으면 그 음성으로 읽고, 없으면 아래 엔진을 사용합니다.</string>
     <string name="settings_accounts_empty">추천을 불러오려면 계정을 추가하세요.</string>
     <string name="settings_accounts_description">한도만 위해 남겨 둔 예비 계정은 끄세요. 추천은 켠 계정의 홈 타임라인을 합칩니다. 팔로잉은 로컬 구독을 쓰되, 끈 계정으로는 가져오지 않습니다. 댓글과 프로필은 필요하면 어떤 계정이든 쓸 수 있습니다.</string>
     <string name="settings_account_delete_confirm">@%1$s에서 로그아웃할까요? 이 기기에 남아 있는 세션이 삭제되며 되돌릴 수 없습니다.</string>

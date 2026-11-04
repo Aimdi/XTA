@@ -55,11 +55,6 @@
     <string name="settings_share_base_url_description">Erabili oinarri-URL pertsonalizatua partekatzean</string>
     <string name="settings_cancel">Ezeztatu</string>
     <string name="settings_save">Gorde</string>
-    <string name="settings_links_open_in">Ireki estekak hemen</string>
-    <string name="settings_links_open_in_description">Aplikazioko nabigatzailea, sistemako lehenetsia, edo zuk aukeratutakoa</string>
-    <string name="settings_links_in_app">Aplikazioan</string>
-    <string name="settings_links_in_app_description">Ireki web-estekak barneko nabigatzaile batean, nabigatzaile lehenetsiaren ordez.</string>
-    <string name="settings_links_system">Sistemaren lehenetsia</string>
     <string name="settings_tab_following">Jarraitzen</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">Harpidetzak</string>
@@ -185,15 +180,6 @@
     <string name="settings_swipe_back_anywhere_description">Arrastatu irekitako argitalpena bere edozein lekutatik atzera egiteko. Itzalita: pantailaren ertzetik soilik.</string>
     <string name="settings_swipe_back_tilt">Okertu hatzarekin batera</string>
     <string name="settings_swipe_back_tilt_description">Atzera arrastatzen duzun argitalpenak zure hatzaren inguruan biratzen du eta abiaduraren arabera kulunkatzen da.</string>
-    <string name="settings_speech_engine">Ahots-motorra</string>
-    <string name="settings_speech_default">Sistemaren lehenetsia</string>
-    <string name="settings_speech_sherpa">Sherpa (gailuan)</string>
-    <string name="settings_speech_sherpa_description">Gailu honetan irakurtzen du ozen. Instalatu Sherpa ONNX TTS Engine aplikazioa oraindik ez baduzu.</string>
-    <string name="settings_speech_sherpa_install">Lortu Sherpa TTS</string>
-    <string name="settings_speech_voice">Ahotsa</string>
-    <string name="settings_speech_speed">Abiadura</string>
-    <string name="settings_speech_offline">Erabili deskargatutako ahotsa</string>
-    <string name="settings_speech_offline_description">Deskargatutako ahots batekin irakurtzen du artikuluaren hizkuntza hitz egiten badu; bestela, beheko motorra erabiltzen du.</string>
     <string name="settings_accounts_empty">Gehitu kontu bat Zuretzat kargatzeko.</string>
     <string name="settings_accounts_description">Itzali tasa-mugetarako bakarrik gordetzen dituzun erreserba-kontuak. Zuretzat piztuta dauden kontuen hasierako kronologiak biltzen ditu; Jarraitzen tokiko harpidetzak erabiltzen jarraitzen du, baina itzalitakoak saltatzen ditu eskuratzean. Iruzkinek eta profilek edozein kontu erabil dezakete behar izanez gero.</string>
     <string name="settings_account_delete_confirm">@%1$s kontuko saioa itxi nahi duzu? XTAk gailu honetako saioa ahaztuko du, eta ezingo da desegin.</string>

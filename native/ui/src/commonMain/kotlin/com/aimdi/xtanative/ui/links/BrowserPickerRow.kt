@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -58,11 +59,11 @@ fun BrowserPickerRow(modifier: Modifier = Modifier) {
     val scope = rememberCoroutineScope()
     val settings by graph.settings.state.collectAsStateWithLifecycle()
     val browsers by produceState(emptyList<InstalledBrowser>(), links) { value = withContext(Dispatchers.Default) { links.browsers() } }
-    val selected = BrowserPicker.selected(LinkSteps.settingsOf(settings), browsers)
+    val selected = LinkSteps.pickedBrowser(settings, browsers)
     var open by remember { mutableStateOf(false) }
 
     Row(
-        modifier.fillMaxWidth().clickable { open = true }.padding(horizontal = 16.dp, vertical = 10.dp),
+        modifier.fillMaxWidth().heightIn(min = 56.dp).clickable { open = true }.padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(Modifier.weight(1f)) {
@@ -90,11 +91,7 @@ fun BrowserPickerRow(modifier: Modifier = Modifier) {
                         selected = destination == selected,
                     ) {
                         open = false
-                        scope.launch {
-                            graph.settings.update { current ->
-                                LinkSteps.withLinkSettings(current, BrowserPicker.choose(LinkSteps.settingsOf(current), destination))
-                            }
-                        }
+                        scope.launch { graph.settings.update { current -> LinkSteps.withPicked(current, destination) } }
                     }
                 }
             }

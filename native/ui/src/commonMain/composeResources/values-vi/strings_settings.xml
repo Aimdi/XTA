@@ -55,11 +55,6 @@
     <string name="settings_share_base_url_description">Sử dụng một URL khác khi được chia sẻ dưới dạng liên kết</string>
     <string name="settings_cancel">Hủy</string>
     <string name="settings_save">Lưu</string>
-    <string name="settings_links_open_in">Mở liên kết trong</string>
-    <string name="settings_links_open_in_description">Trình duyệt trong ứng dụng, mặc định hệ thống, hoặc trình bạn chọn</string>
-    <string name="settings_links_in_app">Trong ứng dụng</string>
-    <string name="settings_links_in_app_description">Mở liên kết web trong trình duyệt tích hợp thay vì ứng dụng trình duyệt mặc định.</string>
-    <string name="settings_links_system">Mặc định hệ thống</string>
     <string name="settings_tab_following">Đang theo dõi</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">Người đăng kí</string>
@@ -185,15 +180,6 @@
     <string name="settings_swipe_back_anywhere_description">Kéo bài viết đang mở từ bất kỳ chỗ nào trên đó để quay lại. Tắt: chỉ từ cạnh màn hình.</string>
     <string name="settings_swipe_back_tilt">Nghiêng theo ngón tay</string>
     <string name="settings_swipe_back_tilt_description">Bài viết bạn kéo lại sẽ xoay quanh ngón tay và đung đưa theo tốc độ của bạn.</string>
-    <string name="settings_speech_engine">Bộ đọc</string>
-    <string name="settings_speech_default">Mặc định hệ thống</string>
-    <string name="settings_speech_sherpa">Sherpa (trên máy)</string>
-    <string name="settings_speech_sherpa_description">Đọc to trên thiết bị này. Cài ứng dụng Sherpa ONNX TTS Engine nếu bạn chưa có.</string>
-    <string name="settings_speech_sherpa_install">Tải Sherpa TTS</string>
-    <string name="settings_speech_voice">Giọng</string>
-    <string name="settings_speech_speed">Tốc độ</string>
-    <string name="settings_speech_offline">Dùng giọng đã tải xuống</string>
-    <string name="settings_speech_offline_description">Đọc bằng giọng đã tải xuống khi có giọng nói đúng ngôn ngữ của bài viết; nếu không, dùng công cụ bên dưới.</string>
     <string name="settings_accounts_empty">Thêm tài khoản để tải Dành cho bạn.</string>
     <string name="settings_accounts_description">Tắt các tài khoản dự phòng bạn chỉ giữ vì giới hạn tốc độ. Dành cho bạn gộp dòng thời gian trang chủ từ các tài khoản còn bật; Đang theo dõi vẫn dùng đăng ký cục bộ nhưng bỏ qua tài khoản đã tắt khi tải. Bình luận và hồ sơ vẫn có thể dùng bất kỳ tài khoản nào nếu cần.</string>
     <string name="settings_account_delete_confirm">Đăng xuất @%1$s? XTA sẽ quên phiên đăng nhập trên thiết bị này và bạn không thể hoàn tác.</string>

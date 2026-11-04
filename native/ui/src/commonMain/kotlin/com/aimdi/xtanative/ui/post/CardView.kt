@@ -24,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -32,6 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.aimdi.xtanative.core.x.model.XCard
+import com.aimdi.xtanative.core.x.model.XPost
+import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.card_from
 import com.aimdi.xtanative.ui.generated.resources.poll_days_left
@@ -39,41 +40,66 @@ import com.aimdi.xtanative.ui.generated.resources.poll_final
 import com.aimdi.xtanative.ui.generated.resources.poll_hours_left
 import com.aimdi.xtanative.ui.generated.resources.poll_minutes_left
 import com.aimdi.xtanative.ui.generated.resources.poll_votes
+import com.aimdi.xtanative.ui.links.LinkFrom
+import com.aimdi.xtanative.ui.links.LinkPreviewCard
+import com.aimdi.xtanative.ui.links.LocalLinks
 import java.time.Duration
 import java.time.Instant
 import kotlin.math.roundToInt
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
-/** A post's link preview, the website card X builds itself (its video or carousel), or a poll (_card.dart). */
+/**
+ * A post's link preview, the website card X builds itself (its video or
+ * carousel), or a poll (_card.dart). Its page opens in XTA's browser, with
+ * [post] in reach in the browser's bar.
+ */
 @Composable
-fun CardView(card: XCard, actions: PostActions, modifier: Modifier = Modifier) {
-    when (card) {
-        is XCard.Link -> when {
-            card.media.isNotEmpty() -> MediaCard(card, actions, modifier)
-            card.large && card.imageUrl != null -> LargeLinkCard(card, actions, modifier)
-            else -> SmallLinkCard(card, actions, modifier)
-        }
-        is XCard.Poll -> PollCard(card, modifier)
+fun CardView(card: XCard, post: XPost, actions: PostActions, modifier: Modifier = Modifier) {
+    val open = rememberCardOpener(post, actions)
+    CardBody(card, modifier) { link -> open(link.url, link.title.ifBlank { null }) }
+}
+
+/** A card drawn without its post: its page opens in XTA's browser on its own. */
+@Composable
+fun CardView(card: XCard, modifier: Modifier = Modifier) {
+    val links = LocalLinks.current
+    CardBody(card, modifier) { link -> links?.openPostLink(link.url, title = link.title.ifBlank { null }) }
+}
+
+/**
+ * How a post's card opens the page it leads to (_card.dart's _openLink): in
+ * XTA's browser, with [post] in its bar and the title the card gives shown
+ * while the page loads.
+ */
+@Composable
+internal fun rememberCardOpener(post: XPost, actions: PostActions): (url: String, title: String?) -> Unit {
+    val links = LocalLinks.current
+    val settings = LocalGraph.current.settings
+    val onPostScreen = postScope().focalId != null
+    return remember(links, settings, post, actions, onPostScreen) {
+        { url, title -> links?.openPostLink(url, LinkFrom.card(post, settings.state.value, onPostScreen) { actions.openPost(post.id) }, title) }
     }
 }
 
-/** A card drawn without a screen's actions: its links open in the platform's browser. */
 @Composable
-fun CardView(card: XCard, modifier: Modifier = Modifier) {
-    val uri = LocalUriHandler.current
-    val actions = remember(uri) {
-        val web: (String) -> Unit = { url -> runCatching { uri.openUri(url) } }
-        PostActions(openPost = {}, openProfile = {}, openMedia = { _, _ -> }, search = {}, openLink = web, openInBrowser = web)
+private fun CardBody(card: XCard, modifier: Modifier, open: (XCard.Link) -> Unit) {
+    when (card) {
+        is XCard.Link -> when {
+            card.media.isNotEmpty() -> MediaCard(card, { open(card) }, modifier)
+            card.large && card.imageUrl != null -> LargeLinkCard(card, { open(card) }, modifier)
+            // XTA draws a small preview as every network's (link_preview_card.dart).
+            else -> LinkPreviewCard(card.url, card.title, { open(card) }, modifier, imageUrl = card.imageUrl)
+        }
+        is XCard.Poll -> PollCard(card, modifier)
     }
-    CardView(card, actions, modifier)
 }
 
 private val CardShape = RoundedCornerShape(16.dp)
 
 /** X's large preview: the picture with the title on it, the site under it. */
 @Composable
-private fun LargeLinkCard(card: XCard.Link, actions: PostActions, modifier: Modifier) {
+private fun LargeLinkCard(card: XCard.Link, onOpen: () -> Unit, modifier: Modifier) {
     val ratio = card.imageWidth?.let { w -> card.imageHeight?.takeIf { it > 0 }?.let { h -> w.toFloat() / h } } ?: 1.91f
     Column(modifier.fillMaxWidth()) {
         Box(
@@ -81,7 +107,7 @@ private fun LargeLinkCard(card: XCard.Link, actions: PostActions, modifier: Modi
                 .fillMaxWidth()
                 .clip(CardShape)
                 .border(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant, CardShape)
-                .clickable { actions.openLink(card.url) },
+                .clickable(onClick = onOpen),
         ) {
             AsyncImage(
                 model = card.imageUrl,
@@ -100,10 +126,10 @@ private fun LargeLinkCard(card: XCard.Link, actions: PostActions, modifier: Modi
  * carousel, each opening the page the card leads to, with its title on it.
  */
 @Composable
-private fun MediaCard(card: XCard.Link, actions: PostActions, modifier: Modifier) {
+private fun MediaCard(card: XCard.Link, onOpen: () -> Unit, modifier: Modifier) {
     Column(modifier.fillMaxWidth()) {
         Box {
-            MediaGrid(card.media, onOpen = { actions.openLink(card.url) })
+            MediaGrid(card.media, onOpen = { onOpen() })
             if (card.title.isNotBlank()) TitleOverPicture(card.title, Modifier.align(Alignment.BottomStart))
         }
         CardSite(card.domain)
@@ -135,44 +161,6 @@ private fun CardSite(domain: String?) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 4.dp),
         )
-    }
-}
-
-/** X's small preview: a square picture beside the site, title and description. */
-@Composable
-private fun SmallLinkCard(card: XCard.Link, actions: PostActions, modifier: Modifier) {
-    Row(
-        modifier
-            .fillMaxWidth()
-            .height(104.dp)
-            .clip(CardShape)
-            .border(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant, CardShape)
-            .clickable { actions.openLink(card.url) },
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        card.imageUrl?.let {
-            AsyncImage(
-                model = it,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.size(104.dp).background(MaterialTheme.colorScheme.surfaceVariant),
-            )
-        }
-        Column(Modifier.weight(1f).padding(horizontal = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            card.domain?.let {
-                Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
-            }
-            Text(card.title, style = MaterialTheme.typography.bodyMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
-            card.description?.let {
-                Text(
-                    it,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-        }
     }
 }
 

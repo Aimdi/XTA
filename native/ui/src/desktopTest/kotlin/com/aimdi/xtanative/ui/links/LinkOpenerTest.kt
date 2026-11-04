@@ -2,6 +2,8 @@ package com.aimdi.xtanative.ui.links
 
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.model.XUser
+import com.aimdi.xtanative.services.links.InstalledBrowser
+import com.aimdi.xtanative.services.links.LinkDestination
 import com.aimdi.xtanative.services.links.LinkLaunch
 import com.aimdi.xtanative.services.links.NetworkLink
 import com.aimdi.xtanative.store.settings.BlueskyPrefs
@@ -29,6 +31,7 @@ class LinkOpenerTest {
     private class Screens {
         val opened = ArrayList<String>()
         var readsNetworks = false
+        var hasXScreens = false
         var pluginHosts = emptySet<String>()
         val screens = LinkScreens(
             post = { opened += "post $it" },
@@ -36,6 +39,8 @@ class LinkOpenerTest {
             search = { opened += "search $it" },
             browser = { url, from -> opened += "browser $url ${from ?: "-"}" },
             network = { link -> readsNetworks.also { if (it) opened += "network ${link.network}" } },
+            community = { id, about -> hasXScreens.also { if (it) opened += listOfNotNull("community", id, "about".takeIf { about }).joinToString(" ") } },
+            list = { id -> hasXScreens.also { if (it) opened += "list $id" } },
             plugin = { url -> (LinkSteps.hostOf(url) in pluginHosts).also { if (it) opened += "plugin $url" } },
         )
     }
@@ -138,6 +143,20 @@ class LinkOpenerTest {
     }
 
     @Test
+    fun aCommunityOrAListOpensItsScreenOnceTheAppHasOne() {
+        val platform = Platform(reopens = LinkSteps::claimedByApp)
+        val screens = Screens().apply { hasXScreens = true }
+        val opener = opener(platform, settings("inApp" to false))
+        opener.bind(screens.screens)
+        opener.open("https://x.com/i/communities/9/about")
+        opener.open("https://twitter.com/i/lists/42?s=20")
+        assertTrue(opener.openOnScreen("https://mobile.x.com/i/lists/43"))
+        opener.open("https://example.com/i/lists/44")
+        assertEquals(listOf("community 9 about", "list 42", "list 43"), screens.opened)
+        assertEquals(listOf<LinkLaunch>(LinkLaunch.External("https://example.com/i/lists/44", "")), platform.launched)
+    }
+
+    @Test
     fun aNetworkThatIsOnAndHasAScreenOpensItsLinks() {
         val platform = Platform()
         val screens = Screens()
@@ -217,6 +236,54 @@ class LinkOpenerTest {
             listOf<LinkLaunch>(LinkLaunch.External("https://example.com/?utm_source=a", "org.mozilla.firefox"), LinkLaunch.CustomTab("https://example.com/x")),
             platform.launched,
         )
+    }
+
+    @Test
+    fun leavingTheBrowserScreenForAPageTheAppClaimsNamesABrowser() {
+        val platform = Platform(reopens = LinkSteps::claimedByApp)
+        val opener = opener(platform, settings("browser" to "com.brave.browser"))
+        opener.leaveBrowserScreen("https://x.com/i/grok/share/abc?s=20")
+        opener.leaveBrowserScreen("https://example.com/a")
+        assertEquals(
+            listOf<LinkLaunch>(
+                LinkLaunch.RealBrowser("https://x.com/i/grok/share/abc", "com.brave.browser", customTabFirst = false),
+                LinkLaunch.External("https://example.com/a", "com.brave.browser"),
+            ),
+            platform.launched,
+        )
+    }
+
+    @Test
+    fun aPageTheAppClaimsGoesToARealBrowserNeverToTheApp() {
+        val self = "com.aimdi.xtanative"
+        val installed = listOf(InstalledBrowser(self, "XTA Native"), InstalledBrowser("org.mozilla.firefox", "Firefox"))
+        assertEquals("com.brave.browser", LinkSteps.realBrowser("com.brave.browser", installed, self))
+        assertEquals("org.mozilla.firefox", LinkSteps.realBrowser("android", installed, self), "Android's chooser is no browser")
+        assertEquals("org.mozilla.firefox", LinkSteps.realBrowser(null, installed, self))
+        assertNull(LinkSteps.realBrowser(self, installed.take(1), self))
+    }
+
+    @Test
+    fun thePickerShowsAndStoresWhereLinksOpen() {
+        val browsers = listOf(InstalledBrowser("org.mozilla.firefox", "Firefox"))
+        assertEquals(LinkDestination.InApp, LinkSteps.pickedBrowser(Settings(), browsers), "links open in the app until a browser is picked")
+        val picked = LinkSteps.withPicked(Settings(), LinkDestination.Browser("org.mozilla.firefox"))
+        assertFalse(picked[GeneralPrefs.openLinksInApp])
+        assertEquals(LinkDestination.Browser("org.mozilla.firefox"), LinkSteps.pickedBrowser(picked, browsers))
+        assertEquals(LinkDestination.SystemDefault, LinkSteps.pickedBrowser(picked, emptyList()), "a browser since uninstalled is the system's choice")
+        val inApp = LinkSteps.withPicked(picked, LinkDestination.InApp)
+        assertEquals("org.mozilla.firefox", inApp[GeneralPrefs.externalBrowser])
+        assertEquals(LinkDestination.InApp, LinkSteps.pickedBrowser(inApp, browsers))
+        assertEquals(LinkDestination.SystemDefault, LinkSteps.pickedBrowser(LinkSteps.withPicked(inApp, LinkDestination.SystemDefault), browsers))
+    }
+
+    @Test
+    fun aCardOnItsPostsOwnScreenHasNoWayBackToThePost() {
+        val post = XPost("5", XUser("1", "maya", "Maya"), null, "t")
+        var opened = 0
+        assertNull(LinkFrom.card(post, null, onPostScreen = true) { opened++ }.openPost)
+        LinkFrom.card(post, null, onPostScreen = false) { opened++ }.openPost?.invoke()
+        assertEquals(1, opened)
     }
 
     @Test

@@ -1,7 +1,9 @@
 package com.aimdi.xtanative.ui.links
 
 import com.aimdi.xtanative.core.x.model.XPost
+import com.aimdi.xtanative.services.links.BrowserPicker
 import com.aimdi.xtanative.services.links.InstalledBrowser
+import com.aimdi.xtanative.services.links.LinkDestination
 import com.aimdi.xtanative.services.links.LinkLaunch
 import com.aimdi.xtanative.services.links.LinkOpening
 import com.aimdi.xtanative.services.links.LinkPostContext
@@ -24,9 +26,9 @@ import kotlinx.coroutines.flow.asSharedFlow
 
 /**
  * The screens a link can land on, bound by the app's navigation. A network,
- * the live player or a community opens only where the app has a screen for
- * it: those answer true when they opened the link, and a link none of them
- * opens goes to the web.
+ * the live player, a community or a list opens only where the app has a
+ * screen for it: those answer true when they opened the link, and a link
+ * none of them opens goes to the web.
  */
 class LinkScreens(
     val post: (id: String) -> Unit,
@@ -37,6 +39,8 @@ class LinkScreens(
     val network: (NetworkLink) -> Boolean = { false },
     val live: (XLink.Live) -> Boolean = { false },
     val community: (id: String, about: Boolean) -> Boolean = { _, _ -> false },
+    /** An X list: its members, to follow here (main.dart opens a list link in its list import). */
+    val list: (id: String) -> Boolean = { false },
     /** Pixiv's search for a work's id; while it is null, a shared number is searched on X. */
     val pixivWork: ((id: String) -> Unit)? = null,
     /** An installed plugin's screen for [url] (PLUGINS.md), asked before any other rule: true when one opened it. */
@@ -73,6 +77,14 @@ class LinkFrom(val post: LinkPostContext, val openPost: (() -> Unit)?) {
         /** An X post's context, shared under the reader's share host from [settings]. */
         fun x(post: XPost, settings: Settings?, openPost: (() -> Unit)?): LinkFrom =
             LinkFrom(LinkPostContext.of(post, settings?.get(GeneralPrefs.shareBaseUrl)), openPost)
+
+        /**
+         * The X post whose card a link opened from (tweet_link_context.dart):
+         * [openPost] opens it, except on a post's own screen ([onPostScreen]),
+         * where the post is what the browser covers.
+         */
+        fun card(post: XPost, settings: Settings?, onPostScreen: Boolean, openPost: () -> Unit): LinkFrom =
+            x(post, settings, openPost.takeUnless { onPostScreen })
     }
 }
 
@@ -85,7 +97,7 @@ sealed interface LinkStep {
 
     data class Profile(val screenName: String) : LinkStep
 
-    /** A network's screen, the live player or a community: opened when the app has one, else [orElse]. */
+    /** A network's screen, the live player, a community or a list: opened when the app has one, else [orElse]. */
     data class Screen(val route: NativeRoute, val orElse: LinkLaunch) : LinkStep
 
     data class Web(val launch: LinkLaunch) : LinkStep
@@ -94,8 +106,8 @@ sealed interface LinkStep {
 /**
  * The rules a link follows (plugin_links.dart, link_opening.dart, urls.dart):
  * an X post or profile opens its screen, a network that reads it and is on,
- * the live player or a community open theirs when the app has them, and
- * anything else leaves for the web the way the reader's link settings say.
+ * the live player, a community or a list open theirs when the app has them,
+ * and anything else leaves for the web the way the reader's link settings say.
  */
 object LinkSteps {
     /**
@@ -145,6 +157,51 @@ object LinkSteps {
         links.clean?.let { next = next.with(GeneralPrefs.cleanLinks, it) }
         return next
     }
+
+    /**
+     * What the browser picker shows as chosen (_browser_picker.dart): an
+     * in-app switch never set reads as on, as links then open (XTA turns it
+     * on at first launch).
+     */
+    fun pickedBrowser(settings: Settings?, browsers: List<InstalledBrowser>): LinkDestination {
+        val links = settingsOf(settings)
+        return BrowserPicker.selected(links.copy(inApp = links.inApp ?: true), browsers)
+    }
+
+    /** [settings] once [destination] is picked in the browser picker. */
+    fun withPicked(settings: Settings, destination: LinkDestination): Settings =
+        withLinkSettings(settings, BrowserPicker.choose(settingsOf(settings), destination))
+
+    /**
+     * Where [url] opens in the app: what [router] reads, in XTA's link order,
+     * then an X list, which XTA opens in its list screen when one is handed
+     * to it (main.dart's handleInitialLink).
+     */
+    fun route(router: LinkRouter, url: String): NativeRoute? = router.route(url) ?: listRoute(url)
+
+    private fun listRoute(url: String): NativeRoute? =
+        (XLinks.parse(url) as? XLink.XList)?.takeIf { claimedByApp(url) }?.let { NativeRoute.X(it) }
+
+    /**
+     * "Open in browser" from XTA's browser screen: the picked browser, or the
+     * system's choice. A page a plain VIEW would bring back to the app goes
+     * to a browser by name instead (urls.dart's openInRealBrowser).
+     */
+    fun leaving(url: String, settings: LinkSettings, reopensApp: Boolean): LinkLaunch {
+        val launch = LinkOpening.leaveBrowserScreen(url, settings)
+        return if (reopensApp) LinkLaunch.RealBrowser(launch.url, launch.browser, customTabFirst = false) else launch
+    }
+
+    /**
+     * The browser a page the app claims goes to when none was picked: the
+     * system's default ([default]), else the first of [installed]; never
+     * [self], nor Android's chooser, which would offer the app again.
+     */
+    fun realBrowser(default: String?, installed: List<InstalledBrowser>, self: String): String? =
+        (listOfNotNull(default) + installed.map { it.packageName }).firstOrNull { it.isNotEmpty() && it != self && it != SYSTEM_CHOOSER }
+
+    /** The package Android names when it would ask which app opens a link. */
+    private const val SYSTEM_CHOOSER = "android"
 
     /** Whether the network [id] is switched on in [settings]. */
     fun networkEnabled(settings: Settings?, id: String): Boolean {
@@ -219,9 +276,9 @@ class LinkOpener(
         platform.launch(LinkOpening.outside(url, LinkSteps.settingsOf(current), platform.desktop, reopensApp(url)))
     }
 
-    /** "Open in browser" from XTA's browser screen: the picked browser, or the system's choice. */
+    /** "Open in browser" from XTA's browser screen: the picked browser, or the system's choice; never this app. */
     fun leaveBrowserScreen(url: String) {
-        platform.launch(LinkOpening.leaveBrowserScreen(url, LinkSteps.settingsOf(settings())))
+        platform.launch(LinkSteps.leaving(url, LinkSteps.settingsOf(settings()), reopensApp(url)))
     }
 
     /** [url] as it leaves the app: without tracking unless the reader turned that off. */
@@ -238,7 +295,7 @@ class LinkOpener(
         val screens = screens ?: return false
         if (screens.plugin(url)) return true
         val current = settings()
-        return when (val step = LinkSteps.step(url, router(current).route(url), LinkSteps.settingsOf(current), platform.desktop, false, inPost = false)) {
+        return when (val step = LinkSteps.step(url, LinkSteps.route(router(current), url), LinkSteps.settingsOf(current), platform.desktop, false, inPost = false)) {
             is LinkStep.Post -> true.also { screens.post(step.id) }
             is LinkStep.Profile -> true.also { screens.profile(step.screenName) }
             is LinkStep.Screen -> openScreen(screens, step.route)
@@ -267,7 +324,7 @@ class LinkOpener(
         }
         if (screens.plugin(url)) return
         val current = settings()
-        val step = LinkSteps.step(url, router(current).route(url), LinkSteps.settingsOf(current), platform.desktop, reopensApp(url), inPost)
+        val step = LinkSteps.step(url, LinkSteps.route(router(current), url), LinkSteps.settingsOf(current), platform.desktop, reopensApp(url), inPost)
         when (step) {
             is LinkStep.Post -> screens.post(step.id)
             is LinkStep.Profile -> screens.profile(step.screenName)
@@ -283,6 +340,7 @@ class LinkOpener(
             is XLink.Post -> true.also { screens.post(link.id) }
             is XLink.Profile -> true.also { screens.profile(link.screenName) }
             is XLink.Community -> screens.community(link.id, link.about)
+            is XLink.XList -> screens.list(link.id)
             else -> false
         }
     }

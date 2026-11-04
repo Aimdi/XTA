@@ -1,21 +1,12 @@
 package com.aimdi.xtanative.ui.settings
 
 import androidx.compose.runtime.Composable
-import com.aimdi.xtanative.services.links.InstalledBrowser
 
 /**
- * The Linux desktop, which has no browser to pick (links open in the default
- * one), no screenshot blocking and no vibration, as XTA's isDesktop.
+ * The Linux desktop, which has no screenshot blocking and no vibration, as
+ * XTA's isDesktop.
  */
 internal expect val isDesktop: Boolean
-
-/** The apps that say they open https links; empty where the platform cannot say. */
-@Composable
-internal expect fun rememberInstalledBrowsers(): List<InstalledBrowser>
-
-/** What the platform's text-to-speech offers, with the voices of [engine] (the system's for null). */
-@Composable
-internal expect fun rememberSpeechOptions(engine: String?): SpeechOptions?
 
 /**
  * Asks where to keep a backup, the platform's way (Android's document

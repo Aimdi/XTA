@@ -90,6 +90,20 @@ class MediaRulesTest {
     }
 
     @Test
+    fun aPictureThatIsNoPostsIsShownAndSavedAsItIs() {
+        val face = "https://pbs.twimg.com/profile_images/1/face_400x400.jpg"
+        val alone = ViewerMedia.image(face, "maya")
+        val shown = alone.items.single()
+        assertEquals(face, alone.shownUrl(shown, PhotoSize.MEDIUM))
+        assertEquals(MediaSave(face, "maya-face_400x400.jpg", XMedia.Kind.PHOTO, ""), alone.save(shown))
+        val photo = XMedia(XMedia.Kind.PHOTO, "https://pbs.twimg.com/media/Fabc.jpg", 100, 100)
+        val posted = ViewerMedia(listOf(photo), "maya", "42")
+        assertEquals("https://pbs.twimg.com/media/Fabc?format=jpg&name=medium", posted.shownUrl(photo, PhotoSize.MEDIUM))
+        assertEquals(MediaFiles.save(photo, "42", "maya"), posted.save(photo))
+        assertTrue(ViewerMedia.of(null, "42").items.isEmpty())
+    }
+
+    @Test
     fun aDoubleTapZoomsAroundThePointTapped() {
         assertEquals(ViewerZoom.MAX, ViewerZoom.doubleTapScale(1f))
         assertEquals(ViewerZoom.MIN, ViewerZoom.doubleTapScale(2.5f))

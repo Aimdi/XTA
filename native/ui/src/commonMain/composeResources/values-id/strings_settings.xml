@@ -55,11 +55,6 @@
     <string name="settings_share_base_url_description">Gunakan URL dasar kustom saat berbagi</string>
     <string name="settings_cancel">Batal</string>
     <string name="settings_save">Simpan</string>
-    <string name="settings_links_open_in">Buka tautan di</string>
-    <string name="settings_links_open_in_description">Peramban dalam aplikasi, bawaan sistem, atau yang Anda pilih</string>
-    <string name="settings_links_in_app">Di aplikasi</string>
-    <string name="settings_links_in_app_description">Buka tautan web di peramban bawaan alih-alih aplikasi peramban default Anda.</string>
-    <string name="settings_links_system">Bawaan sistem</string>
     <string name="settings_tab_following">Mengikuti</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">Langganan</string>
@@ -185,15 +180,6 @@
     <string name="settings_swipe_back_anywhere_description">Seret pos yang terbuka dari bagian mana pun untuk kembali. Nonaktif: hanya dari tepi layar.</string>
     <string name="settings_swipe_back_tilt">Miring mengikuti jari</string>
     <string name="settings_swipe_back_tilt_description">Pos yang Anda seret kembali berputar di sekitar jari Anda dan berayun sesuai kecepatan Anda.</string>
-    <string name="settings_speech_engine">Mesin suara</string>
-    <string name="settings_speech_default">Bawaan sistem</string>
-    <string name="settings_speech_sherpa">Sherpa (di perangkat)</string>
-    <string name="settings_speech_sherpa_description">Membaca nyaring di perangkat ini. Pasang aplikasi Sherpa ONNX TTS Engine jika belum ada.</string>
-    <string name="settings_speech_sherpa_install">Dapatkan Sherpa TTS</string>
-    <string name="settings_speech_voice">Suara</string>
-    <string name="settings_speech_speed">Kecepatan</string>
-    <string name="settings_speech_offline">Gunakan suara yang diunduh</string>
-    <string name="settings_speech_offline_description">Membaca dengan suara yang diunduh jika ada yang berbahasa sama dengan artikel; jika tidak, memakai mesin di bawah.</string>
     <string name="settings_accounts_empty">Tambahkan akun untuk memuat Untuk Anda.</string>
     <string name="settings_accounts_description">Matikan akun cadangan yang hanya Anda simpan untuk batas laju. Untuk Anda menggabungkan linimasa beranda dari akun yang tetap aktif; Mengikuti tetap memakai langganan lokal tetapi melewati akun yang dimatikan saat mengambil. Komentar dan profil masih bisa memakai akun mana pun jika perlu.</string>
     <string name="settings_account_delete_confirm">Keluar dari @%1$s? XTA akan melupakan sesinya di perangkat ini, dan tindakan ini tidak dapat dibatalkan.</string>

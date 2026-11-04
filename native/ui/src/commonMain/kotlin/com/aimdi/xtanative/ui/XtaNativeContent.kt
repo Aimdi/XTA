@@ -8,6 +8,7 @@ import coil3.request.crossfade
 import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.data.plugins.AppPlugins
 import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.downloads.DownloadsFrame
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.app_name
 import com.aimdi.xtanative.ui.links.LinksFrame
@@ -18,13 +19,14 @@ import org.jetbrains.compose.resources.stringResource
 
 /**
  * The whole app in an Android activity or a desktop window: [graph]'s screens
- * in XTA's theme, their links opening the way XTA opens them, with the
- * reading-aloud bar under them, and [plugins]' tabs and screens among them.
+ * in XTA's theme, their links opening the way XTA opens them and their media
+ * saved through the downloads, with the reading-aloud bar under them, and
+ * [plugins]' tabs and screens among them.
  */
 @Composable
 fun XtaNativeContent(graph: AppGraph, plugins: AppPlugins) {
     CompositionLocalProvider(LocalGraph provides graph) {
-        XtaTheme { LinksFrame { PluginsFrame(plugins) { SpeechBarScaffold { XtaNativeRoot() } } } }
+        XtaTheme { LinksFrame { PluginsFrame(plugins) { DownloadsFrame { SpeechBarScaffold { XtaNativeRoot() } } } } }
     }
 }
 

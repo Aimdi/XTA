@@ -16,7 +16,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
@@ -27,7 +26,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import androidx.savedstate.read
-import com.aimdi.xtanative.store.settings.GeneralPrefs
 import com.aimdi.xtanative.ui.antenna.AntennaFeedScreen
 import com.aimdi.xtanative.ui.antenna.AntennasScreen
 import com.aimdi.xtanative.ui.archive.ArchiveScreen
@@ -49,6 +47,8 @@ import com.aimdi.xtanative.ui.intro.IntroScreen
 import com.aimdi.xtanative.ui.links.BindLinkScreens
 import com.aimdi.xtanative.ui.links.LinkBrowserScreen
 import com.aimdi.xtanative.ui.links.LinkScreens
+import com.aimdi.xtanative.ui.links.LocalLinks
+import com.aimdi.xtanative.ui.media.ImageViewer
 import com.aimdi.xtanative.ui.media.MediaViewer
 import com.aimdi.xtanative.ui.offline.OfflineLibraryScreen
 import com.aimdi.xtanative.ui.offline.OfflineMediaScreen
@@ -58,7 +58,6 @@ import com.aimdi.xtanative.ui.pluginstore.pluginScreens
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.PostScreen
 import com.aimdi.xtanative.ui.post.QuotesScreen
-import com.aimdi.xtanative.ui.post.linkOpener
 import com.aimdi.xtanative.ui.profile.FollowsScreen
 import com.aimdi.xtanative.ui.profile.ProfileScreen
 import com.aimdi.xtanative.ui.saved.KeepHost
@@ -70,6 +69,7 @@ import com.aimdi.xtanative.ui.search.SearchActions
 import com.aimdi.xtanative.ui.search.SearchScreen
 import com.aimdi.xtanative.ui.search.SearchTab
 import com.aimdi.xtanative.ui.settings.BackupScreen
+import com.aimdi.xtanative.ui.settings.SettingsRoutes
 import com.aimdi.xtanative.ui.settings.SettingsScreen
 import com.aimdi.xtanative.ui.settings.SettingsSectionScreen
 import com.aimdi.xtanative.ui.speech.VoiceSettingsScreen
@@ -112,7 +112,8 @@ private object Routes {
     const val BACKUP = "backup"
     const val INTRO = "intro"
     const val BROWSER = "browser?url={url}&from={from}"
-    const val SPEECH_SETTINGS = "speech/settings"
+    const val IMAGE = "image?url={url}&name={name}"
+    const val SPEECH_SETTINGS = SettingsRoutes.SPEECH
     const val SUBSCRIPTIONS = "subscriptions"
     const val SUBSCRIPTIONS_IMPORT = "subscriptions/import"
     const val SUBSCRIPTIONS_IMPORT_LIST = "subscriptions/import-list?list={list}"
@@ -136,12 +137,15 @@ private object Routes {
         return if (params.isEmpty()) "search" else "search?" + params.joinToString("&")
     }
     fun community(id: String) = "community/" + encoded(id)
+    fun communityAbout(id: String) = "community/" + encoded(id) + "/about"
     fun communityMembers(id: String) = "community/" + encoded(id) + "/members"
+    fun list(id: String) = "list/" + encoded(id)
     fun antenna(id: String) = "antenna/" + encoded(id)
     fun noteThread(rootId: String) = "notes?root=" + encoded(rootId)
     fun offlineMedia(id: String) = "offline/media?id=" + encoded(id)
     fun archive(id: String) = "archive?id=" + encoded(id)
     fun browser(url: String, from: String?) = "browser?url=" + encoded(url) + (from?.let { "&from=" + encoded(it) } ?: "")
+    fun image(url: String, name: String) = "image?url=" + encoded(url) + "&name=" + encoded(name)
     fun group(id: String) = "group/" + encoded(id)
     fun importList(list: String?) = if (list.isNullOrBlank()) "subscriptions/import-list" else "subscriptions/import-list?list=" + encoded(list)
     fun sortOne(ids: List<String>) = "subscriptions/sort-one?ids=" + encoded(ids.joinToString(","))
@@ -200,9 +204,8 @@ fun XtaNativeRoot() {
         }
     }
     val nav = rememberNavController()
-    val uri = LocalUriHandler.current
-    val actions = remember(nav, uri) {
-        val web: (String) -> Unit = { url -> runCatching { uri.openUri(url) } }
+    val links = LocalLinks.current
+    val actions = remember(nav, links) {
         PostActions(
             openPost = { id -> nav.navigate(Routes.post(id)) },
             openProfile = { name -> nav.navigate(Routes.profile(name)) },
@@ -212,13 +215,9 @@ fun XtaNativeRoot() {
             openReposters = { id -> nav.navigate(Routes.reposters(id)) },
             openArticle = { postId -> nav.navigate(Routes.article(postId)) },
             openFollows = { name, followers -> nav.navigate(Routes.follows(name, followers)) },
-            openLink = linkOpener(
-                openPost = { id -> nav.navigate(Routes.post(id)) },
-                openProfile = { name -> nav.navigate(Routes.profile(name)) },
-                web = web,
-                cleanLinks = { graph.settings.state.value?.get(GeneralPrefs.cleanLinks) ?: true },
-            ),
-            openInBrowser = web,
+            openLink = { url -> links?.open(url) },
+            openInBrowser = { url -> links?.openOutside(url) },
+            openImage = { url, name -> nav.navigate(Routes.image(url, name)) },
         )
     }
     val searchActions = remember(nav) {
@@ -239,6 +238,8 @@ fun XtaNativeRoot() {
             profile = actions.openProfile,
             search = actions.search,
             browser = { url, from -> nav.navigate(Routes.browser(url, from)) },
+            community = { id, about -> true.also { nav.navigate(if (about) Routes.communityAbout(id) else Routes.community(id)) } },
+            list = { id -> true.also { nav.navigate(Routes.list(id)) } },
             plugin = plugins::openOnScreen,
         )
     }
@@ -358,6 +359,19 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
             ),
         ) { entry ->
             LinkBrowserScreen(entry.text("url").orEmpty(), entry.text("from"), onClose = { nav.popBackStack() })
+        }
+        composable(
+            Routes.IMAGE,
+            arguments = listOf(
+                navArgument("url") { type = NavType.StringType },
+                navArgument("name") { type = NavType.StringType; nullable = true; defaultValue = null },
+            ),
+            enterTransition = motion.fadeEnter,
+            exitTransition = motion.fadeExit,
+            popEnterTransition = motion.fadeEnter,
+            popExitTransition = motion.fadeExit,
+        ) { entry ->
+            ImageViewer(entry.text("url").orEmpty(), entry.text("name").orEmpty(), onClose = { nav.popBackStack() })
         }
         composable(Routes.SPEECH_SETTINGS) {
             VoiceSettingsScreen(onBack = { nav.popBackStack() })

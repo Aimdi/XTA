@@ -77,7 +77,13 @@ object SettingsRoutes {
     const val DOWNLOADS = "downloads"
     const val OFFLINE = "offline"
 
+    /** Read aloud's own screen (ui.speech), which Settings lists among its sections. */
+    const val SPEECH = "speech/settings"
+
     fun section(id: String, focus: String? = null): String = "settings/$id" + (focus?.let { "?focus=$it" } ?: "")
+
+    /** Where [section]'s row leads: its page here, or Read aloud's own screen. */
+    fun of(section: SettingsSection): String = if (section == SettingsSection.SPEECH) SPEECH else section(section.id)
 }
 
 private const val REPOSITORY = "https://github.com/Aimdi/XTA"
@@ -147,7 +153,7 @@ private fun SettingsHome(onOpen: (String) -> Unit, onIntroAgain: () -> Unit, sna
 @Composable
 private fun SectionRow(section: SettingsSection, onOpen: (String) -> Unit) {
     NavigationRow(stringResource(sectionTitle(section)), stringResource(sectionHint(section)), sectionIcon(section)) {
-        onOpen(SettingsRoutes.section(section.id))
+        onOpen(SettingsRoutes.of(section))
     }
 }
 
@@ -241,7 +247,7 @@ private fun SearchResults(query: String, onOpen: (String) -> Unit) {
         ) { onOpen(SettingsRoutes.section(control.section.id, control.key)) }
     }
     val entries = (SettingsSection.everyday + SettingsSection.ACCOUNT + SettingsSection.DATA + SettingsSection.advanced).map { section ->
-        SettingsEntry(SettingsRoutes.section(section.id), stringResource(sectionTitle(section)), stringResource(sectionHint(section)))
+        SettingsEntry(SettingsRoutes.of(section), stringResource(sectionTitle(section)), stringResource(sectionHint(section)))
     } + listOf(
         SettingsEntry(SettingsRoutes.PLUGINS, stringResource(Res.string.settings_plugin_store), stringResource(Res.string.settings_plugin_store_description)),
         SettingsEntry(SettingsRoutes.DOWNLOADS, stringResource(Res.string.settings_downloads), stringResource(Res.string.settings_media)),

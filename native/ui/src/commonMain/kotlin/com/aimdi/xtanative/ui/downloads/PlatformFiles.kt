@@ -26,6 +26,12 @@ interface PlatformFiles : SaveStaged {
     /** Opens a file of the app's own (a note's attachment, an offline video); false where the platform cannot share one. */
     suspend fun openFile(file: File, mime: String): Boolean
 
+    /** Where a file waits to be handed to the share sheet; null where the platform shares no files (the desktop). */
+    fun shareFolder(): File? = null
+
+    /** The platform's share sheet for [file], one of the app's own; false where there is none. */
+    suspend fun shareFile(file: File, mime: String): Boolean = false
+
     /** For a shell that gives none: each download fails, and can be tried again once there is one. */
     object Unavailable : PlatformFiles {
         override suspend fun save(entry: DownloadEntry, file: File, cancellation: DownloadCancellation): String? =

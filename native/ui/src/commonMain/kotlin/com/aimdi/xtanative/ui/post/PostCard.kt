@@ -244,8 +244,8 @@ internal fun PostAttachments(shown: XPost, scope: PostScope, actions: PostAction
         is QuoteBlock.Unsent -> StateTile(stringResource(Res.string.posts_view_quoted), { actions.openPost(quote.id) }, Modifier.padding(top = gap))
         null -> Unit
     }
-    shown.card?.let { CardView(it, actions, Modifier.padding(top = gap)) }
-    shown.grokShare?.let { GrokShareCard(it, actions, Modifier.padding(top = gap)) }
+    shown.card?.let { CardView(it, shown, actions, Modifier.padding(top = gap)) }
+    shown.grokShare?.let { GrokShareCard(it, shown, actions, Modifier.padding(top = gap)) }
     shown.note?.let { CommunityNoteBlock(it, actions, Modifier.padding(top = gap)) }
     // The opened post lays its article out in full; anywhere else it is a card leading there.
     if (shown.article != null && scope.focalId != shown.id) ArticlePreviewCard(shown, { actions.openPost(shown.id) }, Modifier.padding(top = gap))

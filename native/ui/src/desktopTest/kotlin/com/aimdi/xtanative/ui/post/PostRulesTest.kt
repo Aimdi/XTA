@@ -46,23 +46,6 @@ class PostRulesTest {
     }
 
     @Test
-    fun xPostsAndProfilesOpenHereAndTheRestGoesToTheWebCleaned() {
-        assertEquals(PostLink.Post("123"), PostLinks.route("https://x.com/maya/status/123?s=20", cleanLinks = true))
-        assertEquals(PostLink.Profile("maya"), PostLinks.route("https://twitter.com/maya", cleanLinks = true))
-        assertEquals(PostLink.Profile("maya"), PostLinks.route("https://x.com/maya/media", cleanLinks = true))
-        assertEquals(PostLink.Web("https://example.com/a?id=1"), PostLinks.route("https://example.com/a?id=1&utm_source=x", cleanLinks = true))
-        assertEquals(PostLink.Web("https://example.com/a?utm_source=x"), PostLinks.route("https://example.com/a?utm_source=x", cleanLinks = false))
-        assertEquals(PostLink.Web("https://x.com/i/broadcasts/1abc"), PostLinks.route("https://x.com/i/broadcasts/1abc", cleanLinks = true), "the live player is not here yet")
-        assertEquals(PostLink.Web("https://x.com/i/communities/9"), PostLinks.route("https://x.com/i/communities/9", cleanLinks = true))
-
-        val opened = ArrayList<String>()
-        val open = linkOpener({ opened += "post $it" }, { opened += "profile $it" }, { opened += "web $it" }, { true })
-        open("https://x.com/maya/status/5")
-        open("https://bsky.app/profile/maya")
-        assertEquals(listOf("post 5", "web https://bsky.app/profile/maya"), opened)
-    }
-
-    @Test
     fun theLinesAboveACardFollowXtasOrder() {
         val repost = post("1", by = "tom").copy(reposted = post("2", by = "maya").copy(communityId = "77"))
         assertEquals(

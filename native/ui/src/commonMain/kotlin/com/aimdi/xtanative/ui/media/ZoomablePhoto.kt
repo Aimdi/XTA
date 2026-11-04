@@ -35,9 +35,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
-import com.aimdi.xtanative.core.x.model.PhotoSize
-import com.aimdi.xtanative.core.x.model.XMedia
-import com.aimdi.xtanative.core.x.model.photoUrl
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_media
 import kotlinx.coroutines.Job
@@ -56,7 +53,7 @@ private enum class PhotoGesture { UNDECIDED, TRANSFORM, SLIDE, PAGE }
  * turns the page. [motion] off makes every change at once.
  */
 @Composable
-internal fun ZoomablePhoto(media: XMedia, photoSize: PhotoSize, motion: Boolean, onBackdrop: (Float) -> Unit, onClose: () -> Unit) {
+internal fun ZoomablePhoto(url: String, alt: String?, motion: Boolean, onBackdrop: (Float) -> Unit, onClose: () -> Unit) {
     var scale by remember { mutableFloatStateOf(1f) }
     var shift by remember { mutableStateOf(Shift.ZERO) }
     var slide by remember { mutableFloatStateOf(0f) }
@@ -154,8 +151,8 @@ internal fun ZoomablePhoto(media: XMedia, photoSize: PhotoSize, motion: Boolean,
         contentAlignment = Alignment.Center,
     ) {
         AsyncImage(
-            model = photoUrl(media.url, photoSize),
-            contentDescription = media.alt,
+            model = url,
+            contentDescription = alt,
             contentScale = ContentScale.Fit,
             onState = { state ->
                 loading = state is AsyncImagePainter.State.Loading

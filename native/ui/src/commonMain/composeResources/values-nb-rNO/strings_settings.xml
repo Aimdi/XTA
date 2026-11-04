@@ -55,11 +55,6 @@
     <string name="settings_share_base_url_description">Bruk en egendefinert basis-URL ved deling</string>
     <string name="settings_cancel">Avbryt</string>
     <string name="settings_save">Lagre</string>
-    <string name="settings_links_open_in">Åpne lenker i</string>
-    <string name="settings_links_open_in_description">Nettleseren i appen, systemstandarden eller en du velger</string>
-    <string name="settings_links_in_app">I appen</string>
-    <string name="settings_links_in_app_description">Åpne nettlenker i en innebygd nettleser i stedet for standard nettleserapp.</string>
-    <string name="settings_links_system">Systemstandard</string>
     <string name="settings_tab_following">Følger</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">Abonnementer</string>
@@ -185,15 +180,6 @@
     <string name="settings_swipe_back_anywhere_description">Dra et åpent innlegg fra hvor som helst på det for å gå tilbake. Av: bare fra kanten av skjermen.</string>
     <string name="settings_swipe_back_tilt">Vipp med fingeren</string>
     <string name="settings_swipe_back_tilt_description">Et innlegg du drar tilbake, dreier rundt fingeren din og svinger med farten din.</string>
-    <string name="settings_speech_engine">Talemotor</string>
-    <string name="settings_speech_default">Systemstandard</string>
-    <string name="settings_speech_sherpa">Sherpa (på enheten)</string>
-    <string name="settings_speech_sherpa_description">Leser høyt på denne enheten. Installer appen Sherpa ONNX TTS Engine hvis du ikke allerede har den.</string>
-    <string name="settings_speech_sherpa_install">Hent Sherpa TTS</string>
-    <string name="settings_speech_voice">Stemme</string>
-    <string name="settings_speech_speed">Hastighet</string>
-    <string name="settings_speech_offline">Bruk en nedlastet stemme</string>
-    <string name="settings_speech_offline_description">Leser med en nedlastet stemme når en av dem snakker artikkelens språk; ellers brukes motoren nedenfor.</string>
     <string name="settings_accounts_empty">Legg til en konto for å laste For deg.</string>
     <string name="settings_accounts_description">Slå av reservekontoer du bare beholder for høyere grenser. For deg slår sammen tidslinjene fra kontoer som er på; Følger bruker fortsatt lokale abonnementer, men hopper over avslåtte kontoer ved henting. Kommentarer og profiler kan fortsatt bruke hvilken som helst konto om nødvendig.</string>
     <string name="settings_account_delete_confirm">Vil du logge av @%1$s? XTA glemmer økten på denne enheten, og det kan ikke angres.</string>

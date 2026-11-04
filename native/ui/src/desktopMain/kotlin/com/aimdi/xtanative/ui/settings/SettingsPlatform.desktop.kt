@@ -3,10 +3,8 @@ package com.aimdi.xtanative.ui.settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.key
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.staticCompositionLocalOf
-import com.aimdi.xtanative.services.links.InstalledBrowser
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.settings_download_path
 import com.aimdi.xtanative.ui.generated.resources.settings_export
@@ -21,14 +19,6 @@ import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
 
 internal actual val isDesktop: Boolean = true
-
-/** The desktop opens every link in its default browser: there is nothing to pick from. */
-@Composable
-internal actual fun rememberInstalledBrowsers(): List<InstalledBrowser> = emptyList()
-
-/** The desktop app has no system speech engine to list. */
-@Composable
-internal actual fun rememberSpeechOptions(engine: String?): SpeechOptions? = remember { SpeechOptions() }
 
 /** The system's save dialog, in ~/Downloads first. */
 @Composable

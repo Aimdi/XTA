@@ -55,11 +55,6 @@
     <string name="settings_share_base_url_description">Używaj niestandardowej podstawy adresu URL podczas udostępniania</string>
     <string name="settings_cancel">Anuluj</string>
     <string name="settings_save">Zapisz</string>
-    <string name="settings_links_open_in">Otwieraj linki w</string>
-    <string name="settings_links_open_in_description">Przeglądarka w aplikacji, systemowa lub wybrana przez Ciebie</string>
-    <string name="settings_links_in_app">W aplikacji</string>
-    <string name="settings_links_in_app_description">Otwieraj linki internetowe we wbudowanej przeglądarce zamiast w domyślnej aplikacji przeglądarki.</string>
-    <string name="settings_links_system">Domyślna systemowa</string>
     <string name="settings_tab_following">Obserwowani</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">Subskrypcje</string>
@@ -185,15 +180,6 @@
     <string name="settings_swipe_back_anywhere_description">Przeciągnij otwarty wpis z dowolnego miejsca, aby wrócić. Wyłączone: tylko od krawędzi ekranu.</string>
     <string name="settings_swipe_back_tilt">Przechylanie za palcem</string>
     <string name="settings_swipe_back_tilt_description">Przeciągany wpis obraca się wokół palca i kołysze w rytm prędkości.</string>
-    <string name="settings_speech_engine">Silnik mowy</string>
-    <string name="settings_speech_default">Domyślny systemu</string>
-    <string name="settings_speech_sherpa">Sherpa (na urządzeniu)</string>
-    <string name="settings_speech_sherpa_description">Czyta na głos na tym urządzeniu. Zainstaluj aplikację Sherpa ONNX TTS Engine, jeśli jeszcze jej nie masz.</string>
-    <string name="settings_speech_sherpa_install">Pobierz Sherpa TTS</string>
-    <string name="settings_speech_voice">Głos</string>
-    <string name="settings_speech_speed">Szybkość</string>
-    <string name="settings_speech_offline">Używaj pobranego głosu</string>
-    <string name="settings_speech_offline_description">Czyta pobranym głosem, gdy któryś mówi w języku artykułu; w przeciwnym razie używa mechanizmu poniżej.</string>
     <string name="settings_accounts_empty">Dodaj konto, aby wczytać Dla Ciebie.</string>
     <string name="settings_accounts_description">Wyłącz zapasowe konta trzymane tylko dla limitów. Dla Ciebie scala osi czasu włączonych kont; Obserwowani nadal używa lokalnych subskrypcji, ale pomija wyłączone konta przy pobieraniu. Komentarze i profile w razie potrzeby mogą użyć dowolnego konta.</string>
     <string name="settings_account_delete_confirm">Wylogować @%1$s? XTA zapomni jego sesję na tym urządzeniu, a tej operacji nie można cofnąć.</string>

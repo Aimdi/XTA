@@ -55,11 +55,6 @@
     <string name="settings_share_base_url_description">استخدام عنوان URL أساسي مخصص عند المشاركة</string>
     <string name="settings_cancel">الغاء</string>
     <string name="settings_save">حفظ</string>
-    <string name="settings_links_open_in">فتح الروابط في</string>
-    <string name="settings_links_open_in_description">المتصفح داخل التطبيق، الافتراضي للنظام، أو متصفح تختاره</string>
-    <string name="settings_links_in_app">داخل التطبيق</string>
-    <string name="settings_links_in_app_description">افتح روابط الويب في متصفح مدمج بدلاً من تطبيق المتصفح الافتراضي.</string>
-    <string name="settings_links_system">الإعداد الافتراضي للنظام</string>
     <string name="settings_tab_following">المتابَعون</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">الإشتراكات</string>
@@ -185,15 +180,6 @@
     <string name="settings_swipe_back_anywhere_description">اسحب المنشور المفتوح من أي مكان فيه للرجوع. عند الإيقاف: من حافة الشاشة فقط.</string>
     <string name="settings_swipe_back_tilt">الإمالة مع إصبعك</string>
     <string name="settings_swipe_back_tilt_description">المنشور الذي تسحبه للرجوع يدور حول إصبعك ويتمايل مع سرعتك.</string>
-    <string name="settings_speech_engine">محرك القراءة</string>
-    <string name="settings_speech_default">الافتراضي للنظام</string>
-    <string name="settings_speech_sherpa">Sherpa (على الجهاز)</string>
-    <string name="settings_speech_sherpa_description">يقرأ بصوت عالٍ على هذا الجهاز. ثبّت تطبيق Sherpa ONNX TTS Engine إن لم يكن مثبتًا.</string>
-    <string name="settings_speech_sherpa_install">الحصول على Sherpa TTS</string>
-    <string name="settings_speech_voice">الصوت</string>
-    <string name="settings_speech_speed">السرعة</string>
-    <string name="settings_speech_offline">استخدام صوت محمّل</string>
-    <string name="settings_speech_offline_description">يقرأ بصوت محمّل عندما يتحدث أحدها لغة المقال، وإلا فيستخدم المحرك أدناه.</string>
     <string name="settings_accounts_empty">أضف حساباً لتحميل «لك».</string>
     <string name="settings_accounts_description">عطّل الحسابات الاحتياطية التي تبقيها فقط لحدود المعدّل. «لك» يدمج الجداول الزمنية للحسابات المفعّلة؛ «المتابَعون» ما زال يستخدم اشتراكاتك المحلية لكنه يتجاوز الحسابات المعطّلة عند الجلب. يمكن للتعليقات والملفات الشخصية استخدام أي حساب عند الحاجة.</string>
     <string name="settings_account_delete_confirm">تسجيل الخروج من @%1$s؟ سينسى XTA جلسته على هذا الجهاز، ولا يمكن التراجع عن ذلك.</string>

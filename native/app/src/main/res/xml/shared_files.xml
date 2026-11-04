@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- What the file provider may hand out: notes' attachments (LocalPostsStore) and the photo the viewer shares (AndroidFiles.shareFolder). -->
+<paths>
+    <files-path name="notes" path="store/notes-media/" />
+    <cache-path name="shared" path="shared/" />
+</paths>

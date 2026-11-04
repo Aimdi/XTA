@@ -55,11 +55,6 @@
     <string name="settings_share_base_url_description">शेयर करते समय एक कस्टम बेस URL का उपयोग करें</string>
     <string name="settings_cancel">रद्द करें</string>
     <string name="settings_save">सहेजें</string>
-    <string name="settings_links_open_in">लिंक यहाँ खोलें</string>
-    <string name="settings_links_open_in_description">ऐप के अंदर का ब्राउज़र, सिस्टम डिफ़ॉल्ट, या आपकी चुनी हुई ब्राउज़र</string>
-    <string name="settings_links_in_app">ऐप में</string>
-    <string name="settings_links_in_app_description">वेब लिंक को आपके डिफ़ॉल्ट ब्राउज़र ऐप के बजाय एक अंतर्निहित ब्राउज़र में खोलें।</string>
-    <string name="settings_links_system">सिस्टम डिफ़ॉल्ट</string>
     <string name="settings_tab_following">अनुसरण कर रहे हैं</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">सदस्यताएँ</string>
@@ -185,15 +180,6 @@
     <string name="settings_swipe_back_anywhere_description">वापस जाने के लिए खुली पोस्ट को उस पर कहीं से भी खींचें। बंद होने पर: केवल स्क्रीन के किनारे से।</string>
     <string name="settings_swipe_back_tilt">उंगली के साथ झुकाव</string>
     <string name="settings_swipe_back_tilt_description">जिस पोस्ट को आप वापस खींचते हैं, वह आपकी उंगली के चारों ओर घूमती है और आपकी गति के साथ झूलती है।</string>
-    <string name="settings_speech_engine">वाक् इंजन</string>
-    <string name="settings_speech_default">सिस्टम डिफ़ॉल्ट</string>
-    <string name="settings_speech_sherpa">Sherpa (डिवाइस पर)</string>
-    <string name="settings_speech_sherpa_description">इस डिवाइस पर ज़ोर से पढ़ता है। अगर पहले से नहीं है तो Sherpa ONNX TTS Engine ऐप इंस्टॉल करें।</string>
-    <string name="settings_speech_sherpa_install">Sherpa TTS पाएँ</string>
-    <string name="settings_speech_voice">आवाज़</string>
-    <string name="settings_speech_speed">गति</string>
-    <string name="settings_speech_offline">डाउनलोड की गई आवाज़ इस्तेमाल करें</string>
-    <string name="settings_speech_offline_description">अगर कोई डाउनलोड की गई आवाज़ लेख की भाषा बोलती है तो उसी से पढ़ता है; वरना नीचे दिया इंजन इस्तेमाल करता है।</string>
     <string name="settings_accounts_empty">आपके लिए लोड करने हेतु खाता जोड़ें।</string>
     <string name="settings_accounts_description">केवल दर सीमाओं के लिए रखे अतिरिक्त खाते बंद करें। आपके लिए चालू खातों की होम टाइमलाइन मिलाता है; फ़ॉलोइंग स्थानीय सदस्यताएँ इस्तेमाल करता है, पर बंद खातों से नहीं लाता। टिप्पणियाँ और प्रोफ़ाइल ज़रूरत पर किसी भी खाते का उपयोग कर सकते हैं।</string>
     <string name="settings_account_delete_confirm">@%1$s से साइन आउट करें? XTA इस उपकरण पर उसका सत्र भूल जाएगा, और इसे वापस नहीं लाया जा सकता।</string>

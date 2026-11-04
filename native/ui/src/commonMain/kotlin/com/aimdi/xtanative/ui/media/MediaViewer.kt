@@ -60,10 +60,12 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.x.model.XMedia
-import com.aimdi.xtanative.store.settings.AccessibilityPrefs
 import com.aimdi.xtanative.store.settings.MediaPrefs
 import com.aimdi.xtanative.store.settings.MediaQuality
 import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.turnTo
+import com.aimdi.xtanative.ui.downloads.MediaSharing
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_back
 import com.aimdi.xtanative.ui.generated.resources.reader_download
@@ -93,16 +95,28 @@ internal expect val viewerPageButtons: Boolean
  * its own. The bar counts the pages and saves or shares the one shown; on
  * the desktop, ← and → turn pages and Esc closes.
  */
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MediaViewer(postId: String, start: Int, onClose: () -> Unit) {
     val graph = LocalGraph.current
-    val post = remember(postId) { graph.posts.post(postId) }
-    val items = post?.media.orEmpty()
-    val username = post?.author?.screenName.orEmpty()
+    val viewed = remember(postId) { ViewerMedia.of(graph.posts.post(postId), postId) }
+    MediaPages(viewed, start, onClose)
+}
+
+/** One picture full screen as it is, a profile's banner or face (profile.dart's _openProfileMedia), saved under [username]'s name. */
+@Composable
+fun ImageViewer(url: String, username: String, onClose: () -> Unit) {
+    MediaPages(remember(url, username) { ViewerMedia.image(url, username) }, 0, onClose)
+}
+
+/** The viewer's pages over [viewed], from [start]. */
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit) {
+    val graph = LocalGraph.current
+    val items = viewed.items
     val settings by graph.settings.state.collectAsStateWithLifecycle()
     val size = MediaFiles.viewerSize(settings?.get(MediaPrefs.imageQuality) ?: MediaQuality.MEDIUM)
-    val motion = settings?.get(AccessibilityPrefs.disableAnimations) != true
+    val reduced = LocalReducedMotion.current
     val saver = LocalMediaSaver.current
     val links = LocalLinks.current
     val clipboard = LocalClipboardManager.current
@@ -117,13 +131,16 @@ fun MediaViewer(postId: String, start: Int, onClose: () -> Unit) {
     fun turn(by: Int) {
         val target = pager.currentPage + by
         if (target !in items.indices) return
-        scope.launch { if (motion) pager.animateScrollToPage(target) else pager.scrollToPage(target) }
+        scope.launch { pager.turnTo(target, reduced) }
     }
 
-    fun share(url: String) {
-        if (links?.share(url) == true) return
-        clipboard.setText(AnnotatedString(url))
-        scope.launch { snackbar.showSnackbar(copied) }
+    // A photo as the picture itself where the platform shares files, else its address (_media.dart).
+    fun share(save: MediaSave) {
+        scope.launch {
+            if (MediaSharing.share(graph.platformFiles, save) || links?.share(save.url) == true) return@launch
+            clipboard.setText(AnnotatedString(save.url))
+            snackbar.showSnackbar(copied)
+        }
     }
 
     LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
@@ -147,12 +164,12 @@ fun MediaViewer(postId: String, start: Int, onClose: () -> Unit) {
         Column(Modifier.fillMaxSize()) {
             val current = items.getOrNull(pager.currentPage)
             ViewerBar(pager, items.size, backdrop, onClose) {
-                val save = current?.let { MediaFiles.save(it, postId, username, playing[pager.currentPage]) }
+                val save = current?.let { viewed.save(it, playing[pager.currentPage]) }
                 if (saver != null && save != null) {
                     IconButton(onClick = { saver.save(save) }) { Icon(ReaderIcons.Download, stringResource(Res.string.reader_download), tint = Color.White) }
                 }
                 if (save != null) {
-                    IconButton(onClick = { share(save.url) }) { Icon(Icons.Filled.Share, stringResource(Res.string.reader_link_share), tint = Color.White) }
+                    IconButton(onClick = { share(save) }) { Icon(Icons.Filled.Share, stringResource(Res.string.reader_link_share), tint = Color.White) }
                 }
             }
             Box(Modifier.weight(1f).fillMaxWidth()) {
@@ -162,9 +179,9 @@ fun MediaViewer(postId: String, start: Int, onClose: () -> Unit) {
                     HorizontalPager(state = pager, modifier = Modifier.fillMaxSize(), key = { it }) { page ->
                         val item = items[page]
                         when (item.kind) {
-                            XMedia.Kind.PHOTO -> ZoomablePhoto(item, size, motion, onBackdrop = { backdrop = it }, onClose = onClose)
+                            XMedia.Kind.PHOTO -> ZoomablePhoto(viewed.shownUrl(item, size), item.alt, motion = !reduced, onBackdrop = { backdrop = it }, onClose = onClose)
                             XMedia.Kind.VIDEO, XMedia.Kind.GIF -> {
-                                val download: ((String) -> Unit)? = if (saver == null) null else { url -> MediaFiles.save(item, postId, username, url)?.let(saver::save) }
+                                val download: ((String) -> Unit)? = if (saver == null) null else { url -> viewed.save(item, url)?.let(saver::save) }
                                 VideoPage(item, active = pager.currentPage == page, onPlaying = { url -> playing[page] = url }, onDownload = download)
                             }
                         }

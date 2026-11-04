@@ -2,10 +2,6 @@ package com.aimdi.xtanative.ui.settings
 
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.services.ai.AiProvider
-import com.aimdi.xtanative.services.links.InstalledBrowser
-import com.aimdi.xtanative.services.links.LinkDestination
-import com.aimdi.xtanative.services.speech.Tts
-import com.aimdi.xtanative.store.settings.GeneralPrefs
 import com.aimdi.xtanative.store.settings.HomePrefs
 import com.aimdi.xtanative.store.settings.LanguageFilterAction
 import com.aimdi.xtanative.store.settings.MastodonPrefs
@@ -13,7 +9,6 @@ import com.aimdi.xtanative.store.settings.MediaPrefs
 import com.aimdi.xtanative.store.settings.PostsPrefs
 import com.aimdi.xtanative.store.settings.RedditPrefs
 import com.aimdi.xtanative.store.settings.Settings
-import com.aimdi.xtanative.store.settings.SpeechPrefs
 import com.aimdi.xtanative.store.settings.KarakeepPrefs
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -136,32 +131,6 @@ class SettingsRulesTest {
         val typed = LanguageFilterInput.committed(Settings(), " en, fr ")
         assertEquals("en, fr", typed[PostsPrefs.languages])
         assertEquals(LanguageFilterAction.FOLD, LanguageFilterInput.withAction(typed, LanguageFilterAction.FOLD)!![PostsPrefs.languageAction])
-    }
-
-    @Test
-    fun linksOpenWhereThePickerSays() {
-        val browsers = listOf(InstalledBrowser("org.mozilla.firefox", "Firefox"))
-        val picked = LinkChoice.chosen(Settings(), LinkDestination.Browser("org.mozilla.firefox"))
-        assertFalse(picked[GeneralPrefs.openLinksInApp])
-        assertEquals(LinkDestination.Browser("org.mozilla.firefox"), LinkChoice.selected(picked, browsers))
-        val inApp = LinkChoice.chosen(picked, LinkDestination.InApp)
-        assertEquals("org.mozilla.firefox", inApp[GeneralPrefs.externalBrowser])
-        assertEquals(LinkDestination.InApp, LinkChoice.selected(inApp, browsers))
-        assertEquals(LinkDestination.SystemDefault, LinkChoice.selected(LinkChoice.chosen(inApp, LinkDestination.SystemDefault), browsers))
-    }
-
-    @Test
-    fun aVoiceBelongsToItsEngine() {
-        val withVoice = SpeechChoices.withVoice(Settings(), SpeechVoice("en-us-x-1", "en-US"))
-        assertEquals("en-US", withVoice[SpeechPrefs.voiceLocale])
-        val engine = SpeechChoices.withEngine(withVoice, "com.google.android.tts")
-        assertEquals("", engine[SpeechPrefs.voiceName])
-        assertEquals("com.google.android.tts", SpeechChoices.engineGroup(engine))
-        assertEquals(Tts.SHERPA_ENGINE, SpeechChoices.engineGroup(SpeechChoices.withEngine(engine, Tts.SHERPA_ENGINE)))
-        assertNull(SpeechChoices.engineGroup(SpeechChoices.withEngine(engine, null)))
-        val options = SpeechOptions(listOf("com.google.android.tts", Tts.SHERPA_ENGINE))
-        assertEquals(listOf("com.google.android.tts"), SpeechChoices.otherEngines(options))
-        assertTrue(SpeechChoices.sherpaInstalled(options))
     }
 
     @Test

@@ -138,11 +138,6 @@ object SettingsChoices {
     const val TEXT_SCALE_MAX = 1.5f
     const val TEXT_SCALE_STEPS = 9
 
-    /** The reading speed slider: 0.2 to 1.0 in eight steps. */
-    const val SPEECH_RATE_MIN = 0.2f
-    const val SPEECH_RATE_MAX = 1.0f
-    const val SPEECH_RATE_STEPS = 7
-
     /**
      * The feeds the Default feed tab offers: Following, For you, then the
      * networks pinned on Home's strip that are on and can sit there.

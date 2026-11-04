@@ -55,11 +55,6 @@
     <string name="settings_share_base_url_description">Paylaşırken özel bir temel URL kullanın</string>
     <string name="settings_cancel">İptal et</string>
     <string name="settings_save">Kaydet</string>
-    <string name="settings_links_open_in">Bağlantıları şurada aç</string>
-    <string name="settings_links_open_in_description">Uygulama içi tarayıcı, sistem varsayılanı veya senin seçtiğin</string>
-    <string name="settings_links_in_app">Uygulamada</string>
-    <string name="settings_links_in_app_description">Web bağlantılarını varsayılan tarayıcı uygulaması yerine yerleşik bir tarayıcıda açın.</string>
-    <string name="settings_links_system">Sistem varsayılanı</string>
     <string name="settings_tab_following">Takip ediyor</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">Abonelikler</string>
@@ -185,15 +180,6 @@
     <string name="settings_swipe_back_anywhere_description">Geri dönmek için açık bir gönderiyi herhangi bir yerinden sürükleyin. Kapalı: yalnızca ekranın kenarından.</string>
     <string name="settings_swipe_back_tilt">Parmakla eğme</string>
     <string name="settings_swipe_back_tilt_description">Geri sürüklediğiniz gönderi parmağınızın etrafında döner ve hızınıza göre sallanır.</string>
-    <string name="settings_speech_engine">Konuşma motoru</string>
-    <string name="settings_speech_default">Sistem varsayılanı</string>
-    <string name="settings_speech_sherpa">Sherpa (cihazda)</string>
-    <string name="settings_speech_sherpa_description">Bu cihazda sesli okur. Henüz yoksa Sherpa ONNX TTS Engine uygulamasını yükleyin.</string>
-    <string name="settings_speech_sherpa_install">Sherpa TTS'i al</string>
-    <string name="settings_speech_voice">Ses</string>
-    <string name="settings_speech_speed">Hız</string>
-    <string name="settings_speech_offline">İndirilen bir sesi kullan</string>
-    <string name="settings_speech_offline_description">Makalenin dilini konuşan indirilmiş bir ses varsa onunla okur; yoksa aşağıdaki motoru kullanır.</string>
     <string name="settings_accounts_empty">Sana özel’i yüklemek için bir hesap ekleyin.</string>
     <string name="settings_accounts_description">Yalnızca hız limitleri için tuttuğunuz yedek hesapları kapatın. Sana özel, açık hesapların ana sayfa akışlarını birleştirir; Takip edilenler yerel aboneliklerinizi kullanmaya devam eder ancak kapalı hesapları çekerken atlar. Yorumlar ve profiller gerekirse hâlâ herhangi bir hesabı kullanabilir.</string>
     <string name="settings_account_delete_confirm">@%1$s hesabından çıkış yapılsın mı? XTA bu cihazdaki oturumu unutacak ve bu işlem geri alınamaz.</string>

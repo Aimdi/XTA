@@ -55,11 +55,6 @@
     <string name="settings_share_base_url_description">Nutze beim Teilen eine andere Basisadresse</string>
     <string name="settings_cancel">Abbrechen</string>
     <string name="settings_save">Speichern</string>
-    <string name="settings_links_open_in">Links öffnen in</string>
-    <string name="settings_links_open_in_description">Der Browser in der App, der Systemstandard oder einer deiner Wahl</string>
-    <string name="settings_links_in_app">In der App</string>
-    <string name="settings_links_in_app_description">Weblinks in einem integrierten Browser statt in deiner Standard-Browser-App öffnen.</string>
-    <string name="settings_links_system">Systemstandard</string>
     <string name="settings_tab_following">Folgt</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">Abos</string>
@@ -185,15 +180,6 @@
     <string name="settings_swipe_back_anywhere_description">Zieh einen geöffneten Beitrag von jeder Stelle aus, um zurückzugehen. Aus: nur vom Bildschirmrand.</string>
     <string name="settings_swipe_back_tilt">Mit dem Finger neigen</string>
     <string name="settings_swipe_back_tilt_description">Ein Beitrag, den du zurückziehst, dreht sich um deinen Finger und schwingt mit deinem Tempo.</string>
-    <string name="settings_speech_engine">Sprachausgabe</string>
-    <string name="settings_speech_default">Systemstandard</string>
-    <string name="settings_speech_sherpa">Sherpa (auf dem Gerät)</string>
-    <string name="settings_speech_sherpa_description">Liest auf diesem Gerät vor. Installiere die App Sherpa ONNX TTS Engine, falls noch nicht geschehen.</string>
-    <string name="settings_speech_sherpa_install">Sherpa TTS holen</string>
-    <string name="settings_speech_voice">Stimme</string>
-    <string name="settings_speech_speed">Geschwindigkeit</string>
-    <string name="settings_speech_offline">Heruntergeladene Stimme verwenden</string>
-    <string name="settings_speech_offline_description">Liest mit einer heruntergeladenen Stimme vor, wenn eine die Sprache des Artikels spricht – sonst mit der Engine weiter unten.</string>
     <string name="settings_accounts_empty">Konto hinzufügen, um Für dich zu laden.</string>
     <string name="settings_accounts_description">Schalten Sie Ersatzkonten aus, die Sie nur für höhere Ratenlimits behalten. Für dich führt die Timelines eingeschalteter Konten zusammen; Folgt verwendet weiter deine lokalen Abos, überspringt ausgeschaltete Konten beim Abrufen aber. Kommentare und Profile können bei Bedarf weiterhin jedes Konto nutzen.</string>
     <string name="settings_account_delete_confirm">Von @%1$s abmelden? XTA vergisst die Sitzung auf diesem Gerät – das lässt sich nicht rückgängig machen.</string>

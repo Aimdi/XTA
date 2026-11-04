@@ -55,11 +55,6 @@
     <string name="settings_share_base_url_description">Использовать пользовательский базовый URL при публикации</string>
     <string name="settings_cancel">Отмена</string>
     <string name="settings_save">Сохранить</string>
-    <string name="settings_links_open_in">Открывать ссылки в</string>
-    <string name="settings_links_open_in_description">Встроенный браузер, системный по умолчанию или тот, который выберете</string>
-    <string name="settings_links_in_app">В приложении</string>
-    <string name="settings_links_in_app_description">Открывать веб-ссылки во встроенном браузере вместо браузера по умолчанию.</string>
-    <string name="settings_links_system">Системный по умолчанию</string>
     <string name="settings_tab_following">Читает</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">Подписки</string>
@@ -185,15 +180,6 @@
     <string name="settings_swipe_back_anywhere_description">Потяните открытый пост из любого его места, чтобы вернуться. Выключено: только от края экрана.</string>
     <string name="settings_swipe_back_tilt">Наклон за пальцем</string>
     <string name="settings_swipe_back_tilt_description">Пост, который вы тянете назад, поворачивается вокруг пальца и покачивается в такт скорости.</string>
-    <string name="settings_speech_engine">Синтезатор речи</string>
-    <string name="settings_speech_default">Системный по умолчанию</string>
-    <string name="settings_speech_sherpa">Sherpa (на устройстве)</string>
-    <string name="settings_speech_sherpa_description">Читает вслух на этом устройстве. Установите приложение Sherpa ONNX TTS Engine, если его ещё нет.</string>
-    <string name="settings_speech_sherpa_install">Установить Sherpa TTS</string>
-    <string name="settings_speech_voice">Голос</string>
-    <string name="settings_speech_speed">Скорость</string>
-    <string name="settings_speech_offline">Использовать загруженный голос</string>
-    <string name="settings_speech_offline_description">Читает загруженным голосом, если он говорит на языке статьи; иначе использует движок ниже.</string>
     <string name="settings_accounts_empty">Добавьте аккаунт, чтобы загрузить «Для вас».</string>
     <string name="settings_accounts_description">Отключайте запасные аккаунты, которые вы держите только ради лимитов. «Для вас» объединяет ленты включённых аккаунтов; «Читаю» по-прежнему использует локальные подписки, но при загрузке пропускает отключённые. Комментарии и профили при необходимости могут использовать любой аккаунт.</string>
     <string name="settings_account_delete_confirm">Выйти из @%1$s? XTA забудет эту сессию на устройстве, и отменить это будет нельзя.</string>

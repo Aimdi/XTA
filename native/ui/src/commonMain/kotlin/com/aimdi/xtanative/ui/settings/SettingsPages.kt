@@ -46,8 +46,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.aimdi.xtanative.services.links.BrowserPicker
-import com.aimdi.xtanative.services.links.LinkDestination
 import com.aimdi.xtanative.store.settings.AccessibilityPrefs
 import com.aimdi.xtanative.store.settings.CrashReportPrefs
 import com.aimdi.xtanative.store.settings.DownloadType
@@ -66,6 +64,8 @@ import com.aimdi.xtanative.store.settings.ThemePrefs
 import com.aimdi.xtanative.store.downloads.DownloadDestination
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.*
+import com.aimdi.xtanative.ui.links.BrowserPickerRow
+import com.aimdi.xtanative.ui.speech.VoiceSettingsSheet
 import com.aimdi.xtanative.ui.theme.Contrast
 import com.aimdi.xtanative.ui.theme.XLookTokens
 import java.util.Locale
@@ -99,8 +99,7 @@ internal fun GeneralSettings(title: String, vm: SettingsViewModel, focus: String
             ) { vm.set(GeneralPrefs.locale, it) }
             PrefSwitch(settings, GeneralPrefs.checkForUpdates, stringResource(Res.string.settings_update_check), stringResource(Res.string.settings_update_check_description), vm, focus)
             PrefSwitch(settings, GeneralPrefs.confirmClose, stringResource(Res.string.settings_confirm_close), stringResource(Res.string.settings_confirm_close_description), vm, focus)
-            // The desktop opens every link in its default browser.
-            if (!isDesktop) BrowserPickerRow(settings, vm)
+            BrowserPickerRow()
             PrefSwitch(settings, GeneralPrefs.cleanLinks, stringResource(Res.string.settings_clean_links), stringResource(Res.string.settings_clean_links_description), vm, focus)
             if (!isDesktop) {
                 PrefSwitch(settings, GeneralPrefs.disableScreenshots, stringResource(Res.string.settings_disable_screenshots), stringResource(Res.string.settings_disable_screenshots_hint), vm, focus)
@@ -141,36 +140,6 @@ internal fun GeneralSettings(title: String, vm: SettingsViewModel, focus: String
 
             SettingsHeader(stringResource(Res.string.settings_crash_title))
             CrashReportRows(settings, vm)
-        }
-    }
-}
-
-/** Where links go: in the app, the system's choice, or one browser (one row, always enabled). */
-@Composable
-private fun BrowserPickerRow(settings: Settings, vm: SettingsViewModel) {
-    val browsers = rememberInstalledBrowsers()
-    val selected = LinkChoice.selected(settings, browsers)
-    var open by remember { mutableStateOf(false) }
-    val label: @Composable (LinkDestination) -> String = { destination ->
-        when (destination) {
-            LinkDestination.InApp -> stringResource(Res.string.settings_links_in_app)
-            LinkDestination.SystemDefault -> stringResource(Res.string.settings_links_system)
-            is LinkDestination.Browser -> BrowserPicker.label(destination.packageName, browsers)
-        }
-    }
-    NavigationRow(stringResource(Res.string.settings_links_open_in), label(selected), chevron = false) { open = true }
-    if (open) {
-        ChoiceDialog(
-            stringResource(Res.string.settings_links_open_in),
-            BrowserPicker.options(browsers),
-            selected,
-            label,
-            description = { if (it == LinkDestination.InApp) stringResource(Res.string.settings_links_in_app_description) else null },
-            header = stringResource(Res.string.settings_links_open_in_description),
-            onDismiss = { open = false },
-        ) { destination ->
-            open = false
-            vm.update { LinkChoice.chosen(it, destination) }
         }
     }
 }
@@ -499,8 +468,9 @@ internal fun AccentPicker(selected: ThemeAccent, modifier: Modifier = Modifier, 
 // ---- Accessibility (_accessibility.dart) ----
 
 @Composable
-internal fun AccessibilitySettings(title: String, vm: SettingsViewModel, focus: String?, onBack: () -> Unit, onOpen: (String) -> Unit) {
+internal fun AccessibilitySettings(title: String, vm: SettingsViewModel, focus: String?, onBack: () -> Unit) {
     val settings by vm.settings.collectAsStateWithLifecycle()
+    var voices by rememberSaveable { mutableStateOf(false) }
     SettingsPage(title, onBack) { padding ->
         SettingsList(padding) {
             SliderRow(
@@ -520,11 +490,13 @@ internal fun AccessibilitySettings(title: String, vm: SettingsViewModel, focus: 
             PrefSwitch(settings, AccessibilityPrefs.doubleTapLike, stringResource(Res.string.settings_double_tap_like), stringResource(Res.string.settings_double_tap_like_description), vm, focus)
             PrefSwitch(settings, AccessibilityPrefs.swipeBackAnywhere, stringResource(Res.string.settings_swipe_back_anywhere), stringResource(Res.string.settings_swipe_back_anywhere_description), vm, focus)
             PrefSwitch(settings, AccessibilityPrefs.swipeBackTilt, stringResource(Res.string.settings_swipe_back_tilt), stringResource(Res.string.settings_swipe_back_tilt_description), vm, focus)
+            // XTA opens Read aloud's settings over this page (openTtsSettings).
             NavigationRow(
                 stringResource(Res.string.settings_speech),
                 stringResource(Res.string.settings_speech_description),
                 Icons.Outlined.Notifications,
-            ) { onOpen(SettingsRoutes.section(SettingsSection.SPEECH.id)) }
+            ) { voices = true }
         }
     }
+    if (voices) VoiceSettingsSheet(onDismiss = { voices = false })
 }

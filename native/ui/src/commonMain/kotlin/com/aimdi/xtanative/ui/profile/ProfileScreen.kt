@@ -454,6 +454,7 @@ private fun Header(state: ProfileUi, follow: FollowUi, screenName: String, actio
     Column(Modifier.fillMaxWidth()) {
         Box {
             val banner = user?.bannerUrl
+            val owner = user?.screenName ?: screenName
             AsyncImage(
                 model = banner?.let(ProfileHeader::bannerUrl),
                 contentDescription = user?.name,
@@ -462,13 +463,13 @@ private fun Header(state: ProfileUi, follow: FollowUi, screenName: String, actio
                     .fillMaxWidth()
                     .aspectRatio(3f)
                     .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .let { if (banner != null) it.clickable { actions.openInBrowser(banner) } else it },
+                    .let { if (banner != null) it.clickable { actions.openImage(banner, owner) } else it },
             )
             Avatar(
                 user?.largeAvatarUrl,
                 80.dp,
                 Modifier.align(Alignment.BottomStart).offset(x = 16.dp, y = 40.dp).border(4.dp, background, CircleShape),
-                onClick = user?.avatarUrl?.let { avatar -> { actions.openInBrowser(ProfileHeader.fullAvatarUrl(avatar)) } },
+                onClick = user?.avatarUrl?.let { avatar -> { actions.openImage(ProfileHeader.fullAvatarUrl(avatar), owner) } },
             )
         }
         // Beside the avatar's lower half, as X places it: the feed filters, then following here.

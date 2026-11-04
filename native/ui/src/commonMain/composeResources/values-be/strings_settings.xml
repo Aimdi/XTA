@@ -55,11 +55,6 @@
     <string name="settings_share_base_url_description">Выкарыстоўваць карыстальніцкі базавы URL пры абагульванні</string>
     <string name="settings_cancel">Скасаваць</string>
     <string name="settings_save">Захаваць</string>
-    <string name="settings_links_open_in">Адкрываць спасылкі ў</string>
-    <string name="settings_links_open_in_description">Убудаваны браўзер, сістэмны прадвызначаны або той, які выберыце</string>
-    <string name="settings_links_in_app">У праграме</string>
-    <string name="settings_links_in_app_description">Адкрываць вэб-спасылкі ва ўбудаваным браўзеры замест прадвызначанага браўзера.</string>
-    <string name="settings_links_system">Сістэмны прадвызначаны</string>
     <string name="settings_tab_following">Чытае</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">Падпіскі</string>
@@ -185,15 +180,6 @@
     <string name="settings_swipe_back_anywhere_description">Пацягніце адкрыты пост з любога яго месца, каб вярнуцца. Выключана: толькі ад краю экрана.</string>
     <string name="settings_swipe_back_tilt">Нахіл услед за пальцам</string>
     <string name="settings_swipe_back_tilt_description">Пост, які вы цягнеце назад, паварочваецца вакол пальца і гойдаецца ад хуткасці руху.</string>
-    <string name="settings_speech_engine">Рухавік маўлення</string>
-    <string name="settings_speech_default">Сістэмны</string>
-    <string name="settings_speech_sherpa">Sherpa (на прыладзе)</string>
-    <string name="settings_speech_sherpa_description">Чытае ўголас на гэтай прыладзе. Усталюйце праграму Sherpa ONNX TTS Engine, калі яе яшчэ няма.</string>
-    <string name="settings_speech_sherpa_install">Атрымаць Sherpa TTS</string>
-    <string name="settings_speech_voice">Голас</string>
-    <string name="settings_speech_speed">Хуткасць</string>
-    <string name="settings_speech_offline">Выкарыстоўваць спампаваны голас</string>
-    <string name="settings_speech_offline_description">Чытае спампаваным голасам, калі ён гаворыць на мове артыкула; інакш выкарыстоўвае рухавік ніжэй.</string>
     <string name="settings_accounts_empty">Дадайце акаўнт, каб загрузіць «Для вас».</string>
     <string name="settings_accounts_description">Адключайце запасныя акаўнты, якія трымаеце толькі дзеля лімітаў. «Для вас» аб’ядноўвае стужкі ўключаных акаўнтаў; «Чытаю» далей выкарыстоўвае лакальныя падпіскі, але пры загрузцы прапускае адключаныя. Каментары і профілі пры патрэбе могуць выкарыстаць любы акаўнт.</string>
     <string name="settings_account_delete_confirm">Выйсці з @%1$s? XTA забудзе гэты сеанс на прыладзе, і адрабіць гэта будзе немагчыма.</string>

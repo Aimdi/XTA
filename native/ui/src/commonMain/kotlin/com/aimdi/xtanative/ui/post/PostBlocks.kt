@@ -42,6 +42,7 @@ import coil3.compose.AsyncImage
 import com.aimdi.xtanative.core.x.model.XCommunityNote
 import com.aimdi.xtanative.core.x.model.XGrokShare
 import com.aimdi.xtanative.core.x.model.XLive
+import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.parse.XText
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.LocalGraph
@@ -238,11 +239,13 @@ internal fun LiveBlock(live: XLive, onOpen: () -> Unit, modifier: Modifier = Mod
 
 /**
  * A shared Grok conversation: the question asked, and the start of the
- * answer beside Grok's picture (grok_share_card.dart); a tap opens it.
+ * answer beside Grok's picture (grok_share_card.dart); a tap opens it in
+ * XTA's browser, as a card of [post] does.
  */
 @Composable
-internal fun GrokShareCard(share: XGrokShare, actions: PostActions, modifier: Modifier = Modifier) {
-    Embed(modifier, onClick = { actions.openLink(share.url) }) {
+internal fun GrokShareCard(share: XGrokShare, post: XPost, actions: PostActions, modifier: Modifier = Modifier) {
+    val open = rememberCardOpener(post, actions)
+    Embed(modifier, onClick = { open(share.url, null) }) {
         Column(Modifier.padding(12.dp)) {
             Row(Modifier.fillMaxWidth()) {
                 Spacer(Modifier.weight(0.2f))

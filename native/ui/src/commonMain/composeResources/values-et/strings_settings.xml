@@ -55,11 +55,6 @@
     <string name="settings_share_base_url_description">Kasuta lingi jagamiseks kohandatud URL'i</string>
     <string name="settings_cancel">Katkesta</string>
     <string name="settings_save">salvesta</string>
-    <string name="settings_links_open_in">Ava lingid siin</string>
-    <string name="settings_links_open_in_description">Rakenduse sisene brauser, süsteemi vaikeväärtus või sinu valitud brauser</string>
-    <string name="settings_links_in_app">Rakenduses</string>
-    <string name="settings_links_in_app_description">Ava veebilingid sisseehitatud brauseris vaikimisi brauserirakenduse asemel.</string>
-    <string name="settings_links_system">Süsteemi vaikeväärtus</string>
     <string name="settings_tab_following">Jälgitavaid</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">Tellimused</string>
@@ -185,15 +180,6 @@
     <string name="settings_swipe_back_anywhere_description">Lohista avatud postitust selle mis tahes kohast, et tagasi minna. Väljas: ainult ekraani servast.</string>
     <string name="settings_swipe_back_tilt">Kallutamine sõrmega kaasa</string>
     <string name="settings_swipe_back_tilt_description">Tagasi lohistatav postitus pöörleb ümber su sõrme ja kõigub vastavalt kiirusele.</string>
-    <string name="settings_speech_engine">Kõnemootor</string>
-    <string name="settings_speech_default">Süsteemi vaikeväärtus</string>
-    <string name="settings_speech_sherpa">Sherpa (seadmes)</string>
-    <string name="settings_speech_sherpa_description">Loeb sellel seadmel ette. Paigalda rakendus Sherpa ONNX TTS Engine, kui seda veel pole.</string>
-    <string name="settings_speech_sherpa_install">Hangi Sherpa TTS</string>
-    <string name="settings_speech_voice">Hääl</string>
-    <string name="settings_speech_speed">Kiirus</string>
-    <string name="settings_speech_offline">Kasuta allalaaditud häält</string>
-    <string name="settings_speech_offline_description">Loeb ette allalaaditud häälega, kui mõni neist räägib artikli keelt; muidu kasutab allolevat mootorit.</string>
     <string name="settings_accounts_empty">Lisa konto, et laadida Sulle.</string>
     <string name="settings_accounts_description">Lülita välja varukontod, mida hoiad vaid limiitide pärast. Sulle ühendab sisselülitatud kontode avalehe ajajooned; Jälgin kasutab endiselt kohalikke tellimusi, kuid jätab väljalülitatud kontod laadimisel vahele. Kommentaarid ja profiilid võivad vajadusel kasutada ükskõik millist kontot.</string>
     <string name="settings_account_delete_confirm">Kas logida @%1$s välja? XTA unustab selle seansi siin seadmes ja seda ei saa tagasi võtta.</string>

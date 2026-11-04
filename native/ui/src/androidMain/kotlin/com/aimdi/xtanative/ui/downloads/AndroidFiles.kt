@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.DocumentsContract
 import android.provider.MediaStore
+import androidx.core.content.FileProvider
 import com.aimdi.xtanative.store.downloads.DownloadCancellation
 import com.aimdi.xtanative.store.downloads.DownloadEntry
 import com.aimdi.xtanative.store.downloads.SharedDownloadFolder
@@ -64,8 +65,23 @@ class AndroidFiles(context: Context) : PlatformFiles {
         }.isSuccess
     }
 
-    /** The app's own files cannot be handed to another app without a file provider, which XTA Native does not declare. */
-    override suspend fun openFile(file: File, mime: String): Boolean = false
+    /** A note's attachment goes to the share sheet, as XTA's does: the reader picks the app that opens it. */
+    override suspend fun openFile(file: File, mime: String): Boolean = shareFile(file, mime)
+
+    /** The app's cache, whose `shared` folder the file provider hands out (res/xml/shared_files.xml). */
+    override fun shareFolder(): File = File(app.cacheDir, "shared")
+
+    /** The share sheet for one of the app's own files, through the app's file provider, read-only. */
+    override suspend fun shareFile(file: File, mime: String): Boolean = withContext(Dispatchers.Main) {
+        runCatching {
+            val uri = FileProvider.getUriForFile(app, app.packageName + ".files", file)
+            val send = Intent(Intent.ACTION_SEND)
+                .setType(mime)
+                .putExtra(Intent.EXTRA_STREAM, uri)
+                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            app.startActivity(Intent.createChooser(send, null).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK))
+        }.isSuccess
+    }
 
     @TargetApi(Build.VERSION_CODES.Q)
     private fun intoShared(entry: DownloadEntry, file: File, cancellation: DownloadCancellation): String {

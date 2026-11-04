@@ -9,6 +9,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
 import com.aimdi.xtanative.ui.pluginstore.PluginSettingsScreen
+import com.aimdi.xtanative.ui.speech.VoiceSettingsScreen
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -32,8 +33,8 @@ fun SettingsSectionScreen(id: String, focus: String?, onBack: () -> Unit, onOpen
         SettingsSection.MEDIA -> MediaSettings(title, vm, focus, onBack)
         SettingsSection.HOME -> HomeSettings(title, vm, onBack)
         SettingsSection.THEME -> ThemeSettings(title, vm, focus, onBack)
-        SettingsSection.ACCESSIBILITY -> AccessibilitySettings(title, vm, focus, onBack, onOpen)
-        SettingsSection.SPEECH -> SpeechSettings(title, vm, onBack)
+        SettingsSection.ACCESSIBILITY -> AccessibilitySettings(title, vm, focus, onBack)
+        SettingsSection.SPEECH -> VoiceSettingsScreen(onBack)
         SettingsSection.ACCOUNT -> AccountSettings(title, vm, onBack, onOpen, onStartOver)
         SettingsSection.DATA -> DataSettings(title, vm, onBack, onOpen)
         SettingsSection.SYNC -> SyncSettings(title, vm, onBack)

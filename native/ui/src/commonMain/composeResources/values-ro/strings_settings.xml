@@ -55,11 +55,6 @@
     <string name="settings_share_base_url_description">Utilizați un URL de bază personalizat la distribuire</string>
     <string name="settings_cancel">Anulare</string>
     <string name="settings_save">Salvează</string>
-    <string name="settings_links_open_in">Deschide linkurile în</string>
-    <string name="settings_links_open_in_description">Browserul din aplicație, cel implicit al sistemului sau unul ales de tine</string>
-    <string name="settings_links_in_app">În aplicație</string>
-    <string name="settings_links_in_app_description">Deschide linkurile web într-un browser integrat în loc de aplicația de browser implicită.</string>
-    <string name="settings_links_system">Implicit de sistem</string>
     <string name="settings_tab_following">Urmăritori</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">Abonamente</string>
@@ -185,15 +180,6 @@
     <string name="settings_swipe_back_anywhere_description">Trage o postare deschisă din orice punct pentru a reveni. Dezactivat: doar de la marginea ecranului.</string>
     <string name="settings_swipe_back_tilt">Înclinare după deget</string>
     <string name="settings_swipe_back_tilt_description">Postarea pe care o tragi înapoi se rotește în jurul degetului și se leagănă după viteza ta.</string>
-    <string name="settings_speech_engine">Motor de voce</string>
-    <string name="settings_speech_default">Implicit al sistemului</string>
-    <string name="settings_speech_sherpa">Sherpa (pe dispozitiv)</string>
-    <string name="settings_speech_sherpa_description">Citește cu voce tare pe acest dispozitiv. Instalează aplicația Sherpa ONNX TTS Engine dacă nu o ai deja.</string>
-    <string name="settings_speech_sherpa_install">Descarcă Sherpa TTS</string>
-    <string name="settings_speech_voice">Voce</string>
-    <string name="settings_speech_speed">Viteză</string>
-    <string name="settings_speech_offline">Folosește o voce descărcată</string>
-    <string name="settings_speech_offline_description">Citește cu o voce descărcată atunci când una vorbește limba articolului; altfel folosește motorul de mai jos.</string>
     <string name="settings_accounts_empty">Adaugă un cont pentru a încărca Pentru tine.</string>
     <string name="settings_accounts_description">Dezactivează conturile de rezervă ținute doar pentru limite. Pentru tine îmbină cronologiile conturilor lăsate pe pornit; Urmărești tot folosește abonamentele locale, dar sare peste conturile oprite la încărcare. Comentariile și profilurile pot folosi orice cont dacă e nevoie.</string>
     <string name="settings_account_delete_confirm">Deconectezi contul @%1$s? XTA va uita sesiunea de pe acest dispozitiv, iar acțiunea nu poate fi anulată.</string>

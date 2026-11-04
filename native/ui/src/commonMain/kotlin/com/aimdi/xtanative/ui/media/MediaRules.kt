@@ -2,6 +2,7 @@ package com.aimdi.xtanative.ui.media
 
 import com.aimdi.xtanative.core.x.model.PhotoSize
 import com.aimdi.xtanative.core.x.model.XMedia
+import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.model.photoUrl
 import com.aimdi.xtanative.store.settings.MediaQuality
 import java.util.Locale
@@ -73,6 +74,29 @@ data class MediaSave(val url: String, val fileName: String, val kind: XMedia.Kin
 /** Saves a picture or a video; the downloads give the viewer one. */
 fun interface MediaSaver {
     fun save(save: MediaSave)
+}
+
+/**
+ * What the viewer pages through: [items] by [username], whose name a saved
+ * file takes, from post [postId]. [asIs] shows and saves each picture at
+ * its own address, as XTA's viewer does one that is no post's (a profile's
+ * banner or face: tweetMedia false), not at X's sizes.
+ */
+data class ViewerMedia(val items: List<XMedia>, val username: String, val postId: String, val asIs: Boolean = false) {
+    /** The address [media] is shown at: its own, or at [size]. */
+    fun shownUrl(media: XMedia, size: PhotoSize): String = if (asIs) media.url else photoUrl(media.url, size)
+
+    /** What a download of [media] saves, [playingUrl] being the variant a video plays; null when there is nothing to save. */
+    fun save(media: XMedia, playingUrl: String? = null): MediaSave? =
+        if (asIs) MediaSave(media.url, MediaFiles.fileName(username, media.url), media.kind, postId) else MediaFiles.save(media, postId, username, playingUrl)
+
+    companion object {
+        /** [post]'s media, by its author; nothing while the post is not known. */
+        fun of(post: XPost?, postId: String) = ViewerMedia(post?.media.orEmpty(), post?.author?.screenName.orEmpty(), postId)
+
+        /** The one picture at [url], as it is, saved under [username]'s name. */
+        fun image(url: String, username: String) = ViewerMedia(listOf(XMedia(XMedia.Kind.PHOTO, url, null, null)), username, postId = "", asIs = true)
+    }
 }
 
 /** Which file of a post's media the viewer saves and shares (_media.dart). */

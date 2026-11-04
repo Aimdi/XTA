@@ -5,6 +5,7 @@ import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.store.downloads.DownloadBatchResult
 import com.aimdi.xtanative.store.downloads.DownloadRequest
 import com.aimdi.xtanative.store.settings.MediaPrefs
+import com.aimdi.xtanative.ui.media.MediaSaver
 import com.aimdi.xtanative.ui.saved.KeepNotice
 import com.aimdi.xtanative.ui.saved.KeepNotices
 import kotlin.coroutines.cancellation.CancellationException
@@ -24,8 +25,16 @@ object Downloading {
     /** Saves the media at [index] of [post]: a photo at its original size, a video or GIF as its best MP4. */
     fun media(graph: AppGraph, post: XPost, index: Int) {
         val target = mediaDownload(post, index) ?: return KeepNotices.show(KeepNotice.NoMediaFile)
-        scope.launch { file(graph, target.url, target.fileName) }
+        save(graph, target.url, target.fileName)
     }
+
+    /** Saves [url] as [fileName], however long the screen that asked stays. */
+    fun save(graph: AppGraph, url: String, fileName: String) {
+        scope.launch { file(graph, url, fileName) }
+    }
+
+    /** The media viewer's Save (_media.dart's download button): the file the viewer names, saved as any download is. */
+    fun saver(graph: AppGraph): MediaSaver = MediaSaver { media -> save(graph, media.url, media.fileName) }
 
     /** Saves [url] as [fileName], in [subfolder] of the destination when one is named, saying how it went. */
     suspend fun file(graph: AppGraph, url: String, fileName: String, subfolder: String? = null) {

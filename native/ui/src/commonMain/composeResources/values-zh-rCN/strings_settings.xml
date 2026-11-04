@@ -55,11 +55,6 @@
     <string name="settings_share_base_url_description">分享时使用自定义的基 URL</string>
     <string name="settings_cancel">取消</string>
     <string name="settings_save">保存</string>
-    <string name="settings_links_open_in">打开链接的位置</string>
-    <string name="settings_links_open_in_description">应用内浏览器、系统默认，或你指定的浏览器</string>
-    <string name="settings_links_in_app">应用内</string>
-    <string name="settings_links_in_app_description">在内置浏览器中打开网页链接，而不是默认浏览器应用。</string>
-    <string name="settings_links_system">系统默认</string>
     <string name="settings_tab_following">正在关注</string>
     <string name="settings_tab_for_you">X</string>
     <string name="settings_page_subscriptions">订阅</string>
@@ -185,15 +180,6 @@
     <string name="settings_swipe_back_anywhere_description">从已打开帖子的任意位置拖动即可返回。关闭后：仅能从屏幕边缘拖动。</string>
     <string name="settings_swipe_back_tilt">随手指倾斜</string>
     <string name="settings_swipe_back_tilt_description">拖回的帖子会绕着手指转动，并随你的速度摆动。</string>
-    <string name="settings_speech_engine">语音引擎</string>
-    <string name="settings_speech_default">系统默认</string>
-    <string name="settings_speech_sherpa">Sherpa（本机）</string>
-    <string name="settings_speech_sherpa_description">在本机朗读。若尚未安装，请安装 Sherpa ONNX TTS Engine 应用。</string>
-    <string name="settings_speech_sherpa_install">获取 Sherpa TTS</string>
-    <string name="settings_speech_voice">语音</string>
-    <string name="settings_speech_speed">速度</string>
-    <string name="settings_speech_offline">使用已下载的语音</string>
-    <string name="settings_speech_offline_description">如果有已下载的语音支持文章的语言，就用它朗读；否则使用下方的引擎。</string>
     <string name="settings_accounts_empty">添加账号以加载“推荐”。</string>
     <string name="settings_accounts_description">关掉只为提高速率限制而保留的备用账号。“推荐”合并仍开启账号的主页时间线；“正在关注”仍用本地订阅，但抓取时会跳过已关闭的账号。评论和资料页在需要时仍可用任意账号。</string>
     <string name="settings_account_delete_confirm">要退出 @%1$s 吗？XTA 将忘记该账号在本设备上的会话，且无法撤销。</string>

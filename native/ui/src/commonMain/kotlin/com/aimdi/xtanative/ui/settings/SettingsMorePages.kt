@@ -5,12 +5,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
@@ -27,7 +24,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -42,8 +38,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -51,34 +45,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.services.ai.AiProvider
-import com.aimdi.xtanative.services.speech.Tts
 import com.aimdi.xtanative.store.settings.AccountPrefs
 import com.aimdi.xtanative.store.settings.AiPrefs
 import com.aimdi.xtanative.store.settings.HomePrefs
 import com.aimdi.xtanative.store.settings.NetworkPrefs
-import com.aimdi.xtanative.store.settings.SpeechPrefs
-import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.*
-import java.util.Locale
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
-
-/** A choice among several, with what it is. */
-@Composable
-private fun RadioRow(title: String, description: String? = null, selected: Boolean, onClick: () -> Unit) {
-    Row(
-        Modifier.fillMaxWidth().selectable(selected = selected, role = Role.RadioButton, onClick = onClick).padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        RadioButton(selected = selected, onClick = null)
-        Spacer(Modifier.width(16.dp))
-        Column(Modifier.weight(1f)) {
-            Text(title, style = MaterialTheme.typography.bodyLarge)
-            if (!description.isNullOrEmpty()) Text(description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-    }
-}
 
 // ---- Home (_home.dart) ----
 
@@ -132,68 +106,6 @@ internal fun HomeSettings(title: String, vm: SettingsViewModel, onBack: () -> Un
                     }
                 }
             }
-        }
-    }
-}
-
-// ---- Read aloud (tts_settings.dart) ----
-
-@Composable
-internal fun SpeechSettings(title: String, vm: SettingsViewModel, onBack: () -> Unit) {
-    val settings by vm.settings.collectAsStateWithLifecycle()
-    val links = LocalUriHandler.current
-    val group = SpeechChoices.engineGroup(settings)
-    val options = rememberSpeechOptions(settings[SpeechPrefs.engine].ifEmpty { null })
-    SettingsPage(title, onBack) { padding ->
-        SettingsList(padding) {
-            SwitchRow(
-                stringResource(Res.string.settings_speech_offline),
-                stringResource(Res.string.settings_speech_offline_description),
-                settings[SpeechPrefs.offlineVoice],
-            ) { vm.set(SpeechPrefs.offlineVoice, it) }
-            when {
-                options == null -> LoadingRow()
-                // The desktop has no system engine: only the speed applies there.
-                isDesktop -> Unit
-                else -> {
-                    SettingsHeader(stringResource(Res.string.settings_speech_engine))
-                    RadioRow(stringResource(Res.string.settings_speech_default), selected = group == null) {
-                        vm.update { SpeechChoices.withEngine(it, null) }
-                    }
-                    RadioRow(
-                        stringResource(Res.string.settings_speech_sherpa),
-                        stringResource(Res.string.settings_speech_sherpa_description),
-                        selected = group == Tts.SHERPA_ENGINE,
-                    ) { vm.update { SpeechChoices.withEngine(it, SpeechChoices.sherpaEngine(options)) } }
-                    if (!SpeechChoices.sherpaInstalled(options)) {
-                        TextButton(onClick = { runCatching { links.openUri(Tts.SHERPA_INSTALL_URL) } }, modifier = Modifier.padding(start = 56.dp)) {
-                            Text(stringResource(Res.string.settings_speech_sherpa_install))
-                        }
-                    }
-                    SpeechChoices.otherEngines(options).forEach { engine ->
-                        RadioRow(engine, selected = group == engine) { vm.update { SpeechChoices.withEngine(it, engine) } }
-                    }
-                    if (options.voices.isNotEmpty()) {
-                        SettingsHeader(stringResource(Res.string.settings_speech_voice))
-                        val voice = settings[SpeechPrefs.voiceName]
-                        RadioRow(stringResource(Res.string.settings_speech_default), selected = voice.isEmpty()) {
-                            vm.update { SpeechChoices.withVoice(it, null) }
-                        }
-                        options.voices.forEach { option ->
-                            RadioRow(option.name, option.locale, selected = voice == option.name) { vm.update { SpeechChoices.withVoice(it, option) } }
-                        }
-                    }
-                }
-            }
-            SettingsHeader(stringResource(Res.string.settings_speech_speed))
-            SliderRow(
-                stringResource(Res.string.settings_speech_speed),
-                null,
-                settings[SpeechPrefs.rate].toFloat(),
-                SettingsChoices.SPEECH_RATE_MIN..SettingsChoices.SPEECH_RATE_MAX,
-                SettingsChoices.SPEECH_RATE_STEPS,
-                label = { String.format(Locale.ROOT, "%.2f", it) },
-            ) { vm.set(SpeechPrefs.rate, Math.round(it * 100) / 100.0) }
         }
     }
 }
