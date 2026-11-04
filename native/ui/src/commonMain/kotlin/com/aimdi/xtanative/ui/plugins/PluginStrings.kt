@@ -21,11 +21,18 @@ open class PluginStrings(tables: Map<String, Map<String, String>>) {
     /** [get], its placeholders (%1$s, %1$d) filled with [args] as [language] writes them. */
     fun format(name: String, language: String, vararg args: Any): String = fill(get(name, language), language, args)
 
-    /** The plural named [name] for [count], filled with [args]: "one" for 1, as English and German say it, else "other". */
+    /**
+     * The plural named [name] for [count], filled with [args]: the form
+     * [count] takes ([PluralRules]: "few" for 3 in Russian, "zero" for 0 in
+     * Arabic) in the first of [language]'s tables that has the plural, the
+     * default's counted as English, else that table's "other".
+     */
     fun plural(name: String, count: Int, language: String, vararg args: Any): String {
-        val form = if (count == 1) "one" else "other"
-        val text = lookup("$name#$form", language) ?: lookup("$name#other", language) ?: name
-        return fill(text, language, args)
+        val tag = normalized(language)
+        val found = listOf(tag, tag.substringBefore('-'), "").firstOrNull { byTag[it]?.containsKey("$name#other") == true } ?: return name
+        val forms = byTag.getValue(found)
+        val form = PluralRules.category(found.ifEmpty { "en" }, count)
+        return fill(forms["$name#$form"] ?: forms.getValue("$name#other"), language, args)
     }
 
     /** The text named [name], for the generated object's properties. */
