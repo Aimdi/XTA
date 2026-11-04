@@ -35,6 +35,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -69,6 +70,7 @@ import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.RetryRow
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
+import com.aimdi.xtanative.ui.plugins.SwipeToUnfollow
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.post.PostIcons
@@ -277,24 +279,27 @@ private fun Accounts(app: InstagramApp, frame: PluginFrame, onSearch: () -> Unit
 private fun LazyListScope.accountRows(app: InstagramApp, follows: List<com.aimdi.xtanative.store.backup.InstagramSubscriptionRow>, onUnfollow: (String) -> Unit) {
     items(follows, key = { it.id }) { follow ->
         var menu by remember { mutableStateOf(false) }
-        ListItem(
-            leadingContent = { Avatar(follow.avatarUrl, 48.dp) },
-            headlineContent = { Text(follow.name, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-            supportingContent = { Text("@" + follow.id) },
-            trailingContent = {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box {
-                        IconButton(onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, contentDescription = pluginString(Strings.more_options)) }
-                        DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
-                            DropdownMenuItem(text = { Text(pluginString(Strings.add_to_group)) }, onClick = { menu = false; app.addToGroup(follow.id) })
-                            DropdownMenuItem(text = { Text(pluginString(Strings.unfollow)) }, onClick = { menu = false; onUnfollow(follow.id) })
+        SwipeToUnfollow(onUnfollow = { onUnfollow(follow.id) }) {
+            ListItem(
+                leadingContent = { Avatar(follow.avatarUrl, 48.dp) },
+                headlineContent = { Text(follow.name, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                supportingContent = { Text("@" + follow.id) },
+                trailingContent = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box {
+                            IconButton(onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, contentDescription = pluginString(Strings.more_options)) }
+                            DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
+                                DropdownMenuItem(text = { Text(pluginString(Strings.add_to_group)) }, onClick = { menu = false; app.addToGroup(follow.id) })
+                                DropdownMenuItem(text = { Text(pluginString(Strings.unfollow)) }, onClick = { menu = false; onUnfollow(follow.id) })
+                            }
                         }
+                        Icon(Icons.Filled.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
-                    Icon(Icons.Filled.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-            },
-            modifier = Modifier.clickable { app.openProfile(follow.id) },
-        )
+                },
+                colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.background),
+                modifier = Modifier.clickable { app.openProfile(follow.id) },
+            )
+        }
     }
 }
 

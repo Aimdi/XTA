@@ -1,6 +1,5 @@
 package com.aimdi.xtanative.plugins.tiktok
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,12 +27,9 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -42,7 +38,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -61,6 +56,7 @@ import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
+import com.aimdi.xtanative.ui.plugins.SwipeToUnfollow
 import com.aimdi.xtanative.ui.plugins.WithSettings
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.search.DiscoverIcons
@@ -189,23 +185,10 @@ private fun AccountsTab(app: TikTokApp, follows: List<TikTokSubscriptionRow>?, p
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AccountRow(app: TikTokApp, follow: TikTokSubscriptionRow, onUnfollow: () -> Unit) {
-    val swipe = rememberSwipeToDismissBoxState(confirmValueChange = { value ->
-        if (value == SwipeToDismissBoxValue.EndToStart) onUnfollow()
-        false
-    })
     var menu by remember { mutableStateOf(false) }
-    SwipeToDismissBox(
-        state = swipe,
-        enableDismissFromStartToEnd = false,
-        backgroundContent = {
-            Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.error).padding(horizontal = 24.dp), contentAlignment = Alignment.CenterEnd) {
-                Icon(DiscoverIcons.PersonRemove, contentDescription = null, tint = MaterialTheme.colorScheme.onError)
-            }
-        },
-    ) {
+    SwipeToUnfollow(onUnfollow) {
         ListItem(
             leadingContent = { TikTokAvatar(follow.avatarUrl, follow.name, follow.id, 48.dp) },
             headlineContent = { Text(follow.name, fontWeight = FontWeight.SemiBold, maxLines = 2, overflow = TextOverflow.Ellipsis) },
