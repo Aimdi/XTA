@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- An X post's footer, its share and ⋯ sheets and menus, its poll's line, and the contract addresses in its text (ui.post): XTA's words where XTA has them. -->
+<resources>
+    <string name="posts_share">Kunhavigi la afiŝon</string>
+    <string name="posts_share_content">Kunhavigi la enhavon de la pepo</string>
+    <string name="posts_share_article_link">Kunhavigi ligilon al artikolo</string>
+    <string name="posts_share_content_and_link">Kunhavigi la enhavon kaj ligilon de la pepo</string>
+    <string name="posts_share_image">Kunhavigi afiŝon kiel bildon</string>
+    <string name="posts_share_article_image">Kunhavigi artikolon kiel bildon</string>
+    <string name="posts_copied">Kopiita al la tondujo</string>
+    <string name="posts_reply_not_found">Pardonu, la pepo alrespondita ne eblas troviĝi!</string>
+    <string name="posts_subscribe">Aboni</string>
+    <string name="contract_address_copied">Kontrakta adreso kopiita</string>
+    <string name="poll_no_votes">Neniu voĉo</string>
+    <plurals name="poll_ends_minutes">
+        <item quantity="one">Finiĝos post %1$d minuto</item>
+        <item quantity="other">Finiĝos post %1$d minutoj</item>
+    </plurals>
+    <plurals name="poll_ends_hours">
+        <item quantity="one">Finiĝos post %1$d horo</item>
+        <item quantity="other">Finiĝos post %1$d horoj</item>
+    </plurals>
+    <plurals name="poll_ends_days">
+        <item quantity="one">Finiĝos post %1$d tago</item>
+        <item quantity="other">Finiĝos post %1$d tagoj</item>
+    </plurals>
+    <plurals name="poll_ended_minutes">
+        <item quantity="one">Finiĝis antaŭ %1$d minuto</item>
+        <item quantity="other">Finiĝis antaŭ %1$d minutoj</item>
+    </plurals>
+    <plurals name="poll_ended_hours">
+        <item quantity="one">Finiĝis antaŭ %1$d horo</item>
+        <item quantity="other">Finiĝis antaŭ %1$d horoj</item>
+    </plurals>
+    <plurals name="poll_ended_days">
+        <item quantity="one">Finiĝis antaŭ %1$d tago</item>
+        <item quantity="other">Finiĝis antaŭ %1$d tagoj</item>
+    </plurals>
+    <plurals name="poll_ended_months">
+        <item quantity="one">Finiĝis antaŭ %1$d monato</item>
+        <item quantity="other">Finiĝis antaŭ %1$d monatoj</item>
+    </plurals>
+    <plurals name="poll_ended_years">
+        <item quantity="one">Finiĝis antaŭ %1$d jaro</item>
+        <item quantity="other">Finiĝis antaŭ %1$d jaroj</item>
+    </plurals>
+</resources>

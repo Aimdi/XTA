@@ -6,7 +6,6 @@
     <string name="change_hours">Variació en %1$d h</string>
     <string name="closed_on">Tancament %1$s</string>
     <string name="crypto">Criptomonedes</string>
-    <string name="crypto_address_copied">S’ha copiat l’adreça del contracte</string>
     <string name="crypto_contract">Adreça del contracte</string>
     <string name="crypto_copy_contract">Copia el contracte</string>
     <string name="crypto_identity_hint">Tria el projecte segons la xarxa i el contracte. Diversos tokens poden compartir símbol.</string>

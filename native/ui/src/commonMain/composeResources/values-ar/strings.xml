@@ -43,38 +43,13 @@
     <string name="settings_clear_confirm">إزالة</string>
 
     <string name="card_from">من %1$s</string>
-    <string name="poll_final">النتائج النهائية</string>
     <plurals name="poll_votes">
         <item quantity="zero">لا أصوات</item>
         <item quantity="one">صوت واحد</item>
         <item quantity="two">صوتان</item>
-        <item quantity="few">%1$d أصوات</item>
-        <item quantity="many">%1$d صوتًا</item>
-        <item quantity="other">%1$d صوت</item>
-    </plurals>
-    <plurals name="poll_days_left">
-        <item quantity="zero">بقي %1$d يوم</item>
-        <item quantity="one">بقي يوم واحد</item>
-        <item quantity="two">بقي يومان</item>
-        <item quantity="few">بقيت %1$d أيام</item>
-        <item quantity="many">بقي %1$d يومًا</item>
-        <item quantity="other">بقي %1$d يوم</item>
-    </plurals>
-    <plurals name="poll_hours_left">
-        <item quantity="zero">بقيت %1$d ساعة</item>
-        <item quantity="one">بقيت ساعة واحدة</item>
-        <item quantity="two">بقيت ساعتان</item>
-        <item quantity="few">بقيت %1$d ساعات</item>
-        <item quantity="many">بقيت %1$d ساعة</item>
-        <item quantity="other">بقيت %1$d ساعة</item>
-    </plurals>
-    <plurals name="poll_minutes_left">
-        <item quantity="zero">بقيت %1$d دقيقة</item>
-        <item quantity="one">بقيت دقيقة واحدة</item>
-        <item quantity="two">بقيت دقيقتان</item>
-        <item quantity="few">بقيت %1$d دقائق</item>
-        <item quantity="many">بقيت %1$d دقيقة</item>
-        <item quantity="other">بقيت %1$d دقيقة</item>
+        <item quantity="few">%1$s أصوات</item>
+        <item quantity="many">%1$s صوتًا</item>
+        <item quantity="other">%1$s صوت</item>
     </plurals>
     <plurals name="new_posts">
         <item quantity="zero">%1$d منشور جديد</item>

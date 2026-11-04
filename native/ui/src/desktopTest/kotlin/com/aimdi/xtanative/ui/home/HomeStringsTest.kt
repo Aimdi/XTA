@@ -8,7 +8,7 @@ import kotlin.test.assertTrue
 import kotlin.test.fail
 import org.w3c.dom.Element
 
-/** The home and group strings, and the app's shared ones, in every language of XTA (SCREENS.md's table). */
+/** The home and group strings, an X post's footer and sheets', and the app's shared ones, in every language of XTA (SCREENS.md's table). */
 class HomeStringsTest {
     private val folders = listOf(
         "ar", "be", "ca", "cs", "de", "eo", "es", "et", "eu", "fr", "hi", "id", "it", "ja", "ko", "nl", "pl", "pt", "ro", "ru",
@@ -77,5 +77,10 @@ class HomeStringsTest {
     @Test
     fun theGroupStringsAreInEveryLanguage() {
         check("strings_groups.xml")
+    }
+
+    @Test
+    fun anXPostsFooterSheetsAndPollStringsAreInEveryLanguage() {
+        check("strings_post_actions.xml")
     }
 }

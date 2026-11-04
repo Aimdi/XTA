@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
@@ -28,10 +27,8 @@ import com.aimdi.xtanative.ui.plugins.pathIcon
 import com.aimdi.xtanative.ui.post.CashtagLinks
 import com.aimdi.xtanative.ui.post.MenuRow
 import com.aimdi.xtanative.ui.saved.Keeping
-import com.aimdi.xtanative.ui.saved.NoteEditorDialog
-import com.aimdi.xtanative.ui.saved.NoteRules
-import com.aimdi.xtanative.ui.saved.NoteTarget
 import com.aimdi.xtanative.ui.saved.SaveSheet
+import com.aimdi.xtanative.ui.saved.SavedNoteEditor
 import com.aimdi.xtanative.ui.subscriptions.GroupBoardModel
 import com.aimdi.xtanative.ui.subscriptions.GroupMembershipSheet
 import com.aimdi.xtanative.ui.subscriptions.GroupPicker
@@ -59,15 +56,7 @@ fun PluginSheetHost() {
 
 /** The note on [post] in Saved (XTA's editPluginPostNote): written, it saves the post first where a plain tap files. */
 @Composable
-private fun NoteSheet(post: PluginPostArchive, onDismiss: () -> Unit) {
-    val graph = LocalGraph.current
-    val library by graph.saved.state.collectAsStateWithLifecycle()
-    LaunchedEffect(graph) { graph.saved.library() }
-    val loaded = library ?: return
-    val note = remember(post.id) { loaded.post(post.id)?.note }
-    val item = remember(post) { post.keepable() }
-    NoteEditorDialog(NoteTarget.Text(note, NoteRules.savedNoteKey(post.id)), onDismiss, saveText = { text -> Keeping.writeNote(graph, item, text) })
-}
+private fun NoteSheet(post: PluginPostArchive, onDismiss: () -> Unit) = SavedNoteEditor(remember(post) { post.keepable() }, onDismiss)
 
 /** The group picker for a plugin's account (XTA's editPluginAccountGroups): the choice applies as it closes. */
 @Composable

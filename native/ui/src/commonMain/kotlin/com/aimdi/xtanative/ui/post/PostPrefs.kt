@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.post
 
+import com.aimdi.xtanative.store.settings.AccessibilityPrefs
 import com.aimdi.xtanative.store.settings.GeneralPrefs
 import com.aimdi.xtanative.store.settings.MediaGridLayout
 import com.aimdi.xtanative.store.settings.MediaPrefs
@@ -35,6 +36,8 @@ data class PostPrefs(
     val defaultProfileTab: ProfileTab = ProfileTab.POSTS,
     val gridColumns: Int = 3,
     val gridLayout: MediaGridLayout = MediaGridLayout.MASONRY,
+    /** Settings › Accessibility's "Double-tap to like": off, as XTA has it, since a double-tap makes each single tap wait. */
+    val doubleTapLike: Boolean = false,
 ) {
     /** Engagement counts are hidden in zen and calm mode. */
     val hideCounts: Boolean get() = zen || calm
@@ -66,6 +69,7 @@ data class PostPrefs(
             defaultProfileTab = settings[GeneralPrefs.defaultProfileTab],
             gridColumns = settings[MediaPrefs.gridColumns].coerceIn(1, 5),
             gridLayout = settings[MediaPrefs.gridLayout],
+            doubleTapLike = settings[AccessibilityPrefs.doubleTapLike],
         )
     }
 }

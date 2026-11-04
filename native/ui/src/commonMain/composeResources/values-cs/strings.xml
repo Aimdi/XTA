@@ -43,30 +43,11 @@
     <string name="settings_clear_confirm">Odstranit</string>
 
     <string name="card_from">Z webu %1$s</string>
-    <string name="poll_final">Konečné výsledky</string>
     <plurals name="poll_votes">
-        <item quantity="one">%1$d hlas</item>
-        <item quantity="few">%1$d hlasy</item>
-        <item quantity="many">%1$d hlasu</item>
-        <item quantity="other">%1$d hlasů</item>
-    </plurals>
-    <plurals name="poll_days_left">
-        <item quantity="one">Zbývá %1$d den</item>
-        <item quantity="few">Zbývají %1$d dny</item>
-        <item quantity="many">Zbývá %1$d dne</item>
-        <item quantity="other">Zbývá %1$d dní</item>
-    </plurals>
-    <plurals name="poll_hours_left">
-        <item quantity="one">Zbývá %1$d hodina</item>
-        <item quantity="few">Zbývají %1$d hodiny</item>
-        <item quantity="many">Zbývá %1$d hodiny</item>
-        <item quantity="other">Zbývá %1$d hodin</item>
-    </plurals>
-    <plurals name="poll_minutes_left">
-        <item quantity="one">Zbývá %1$d minuta</item>
-        <item quantity="few">Zbývají %1$d minuty</item>
-        <item quantity="many">Zbývá %1$d minuty</item>
-        <item quantity="other">Zbývá %1$d minut</item>
+        <item quantity="one">%1$s hlas</item>
+        <item quantity="few">%1$s hlasy</item>
+        <item quantity="many">%1$s hlasu</item>
+        <item quantity="other">%1$s hlasů</item>
     </plurals>
     <plurals name="new_posts">
         <item quantity="one">%1$d nový příspěvek</item>

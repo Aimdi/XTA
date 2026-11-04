@@ -1,4 +1,4 @@
-package com.aimdi.xtanative.networks.stocks
+package com.aimdi.xtanative.networks
 
 /** The two address families readers paste from X: EVM chains share one `0x` format, Solana mints are base58. */
 enum class CryptoAddressKind { EVM, SOLANA }
@@ -19,7 +19,9 @@ sealed interface AddressPiece {
 
 /**
  * Recognising contract addresses, comparing and shortening them, and naming
- * the networks they live on, as XTA's crypto_address.dart does.
+ * the networks they live on, as XTA's crypto_address.dart does: Stocks'
+ * search and watchlist read them, and so does the app's text of an X post,
+ * which shows an address cut in the middle (rich_text.dart).
  */
 object CryptoAddresses {
     private val evm = Regex("^0x[0-9a-fA-F]{40}$")
@@ -106,9 +108,9 @@ object CryptoAddresses {
         return if (network == null) cut else "$network · $cut"
     }
 
-    /** The network of the first of [watched] tokens that is [address], in any EVM casing; null when none is. */
-    fun networkOf(address: String, watched: Iterable<CryptoAsset>): String? =
-        watched.firstOrNull { same(it.address, address) }?.chainName
+    /** The network [networks] names for [address] (contract to network, as a plugin watching tokens gives them), in any EVM casing; null when none does. */
+    fun networkIn(address: String, networks: Map<String, String>): String? =
+        networks.entries.firstOrNull { same(it.key, address) }?.value
 
     /** The path segments of a link, last first, or the text itself when it is not a link. */
     private fun candidates(text: String): List<String> {

@@ -43,22 +43,9 @@
     <string name="settings_clear_confirm">Forigi</string>
 
     <string name="card_from">De %1$s</string>
-    <string name="poll_final">Finaj rezultoj</string>
     <plurals name="poll_votes">
-        <item quantity="one">%1$d voĉdono</item>
-        <item quantity="other">%1$d voĉdonoj</item>
-    </plurals>
-    <plurals name="poll_days_left">
-        <item quantity="one">Restas %1$d tago</item>
-        <item quantity="other">Restas %1$d tagoj</item>
-    </plurals>
-    <plurals name="poll_hours_left">
-        <item quantity="one">Restas %1$d horo</item>
-        <item quantity="other">Restas %1$d horoj</item>
-    </plurals>
-    <plurals name="poll_minutes_left">
-        <item quantity="one">Restas %1$d minuto</item>
-        <item quantity="other">Restas %1$d minutoj</item>
+        <item quantity="one">%1$s voĉdono</item>
+        <item quantity="other">%1$s voĉdonoj</item>
     </plurals>
     <plurals name="new_posts">
         <item quantity="one">%1$d nova afiŝo</item>

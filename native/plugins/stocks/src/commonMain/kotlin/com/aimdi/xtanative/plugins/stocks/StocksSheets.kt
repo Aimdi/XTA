@@ -46,10 +46,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.stocks.CryptoMarket
@@ -57,6 +53,7 @@ import com.aimdi.xtanative.networks.stocks.StocksSearch
 import com.aimdi.xtanative.networks.stocks.StocksSearchResult
 import com.aimdi.xtanative.networks.stocks.TickerSearchHit
 import com.aimdi.xtanative.networks.stocks.Watchlist
+import com.aimdi.xtanative.ui.common.rememberCopyContract
 import com.aimdi.xtanative.ui.plugins.pluginString
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -193,7 +190,7 @@ private fun TokenHit(market: CryptoMarket, onTap: () -> Unit) {
 @Composable
 internal fun StocksManageSheet(app: StocksApp, onDismiss: () -> Unit, onRemoved: (String) -> Unit, say: (String) -> Unit) {
     val entries by app.watchlist.state.collectAsState()
-    val copy = rememberCopyAddress(say)
+    val copy = rememberCopyContract(say)
     val shown = entries ?: return
     ModalBottomSheet(onDismissRequest = onDismiss) {
         LazyColumn(Modifier.fillMaxWidth().navigationBarsPadding()) {
@@ -220,21 +217,6 @@ internal fun StocksManageSheet(app: StocksApp, onDismiss: () -> Unit, onRemoved:
                     ),
                 )
             }
-        }
-    }
-}
-
-/** Copies a token's whole contract, the thing a reader pastes into a wallet or explorer, and [say]s so: a long press gives no other sign. */
-@Composable
-internal fun rememberCopyAddress(say: (String) -> Unit): (String) -> Unit {
-    val clipboard = LocalClipboardManager.current
-    val haptics = LocalHapticFeedback.current
-    val copied = pluginString(Strings.crypto_address_copied)
-    return remember(clipboard, haptics, copied, say) {
-        { address ->
-            haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-            clipboard.setText(AnnotatedString(address))
-            say(copied)
         }
     }
 }

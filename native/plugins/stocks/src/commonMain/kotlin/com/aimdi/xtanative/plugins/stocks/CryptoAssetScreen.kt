@@ -42,6 +42,7 @@ import com.aimdi.xtanative.networks.stocks.CryptoAsset
 import com.aimdi.xtanative.networks.stocks.CryptoMarket
 import com.aimdi.xtanative.networks.stocks.DexScreener
 import com.aimdi.xtanative.networks.stocks.StockNumbers
+import com.aimdi.xtanative.ui.common.rememberCopyContract
 import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginNotices
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
@@ -126,7 +127,7 @@ internal fun CryptoAssetScreen(app: StocksApp, asset: CryptoAsset) {
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun CryptoHeader(asset: CryptoAsset, state: CryptoDetail, model: CryptoAssetModel, say: (String) -> Unit) {
-    val copy = rememberCopyAddress(say)
+    val copy = rememberCopyContract(say)
     val outside = rememberOpenOutside()
     val pair = state.market?.pairAddress
     Column(Modifier.fillMaxWidth()) {

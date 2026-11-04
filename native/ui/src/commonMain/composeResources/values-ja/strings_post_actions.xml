@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- An X post's footer, its share and ⋯ sheets and menus, its poll's line, and the contract addresses in its text (ui.post): XTA's words where XTA has them. -->
+<resources>
+    <string name="posts_share">投稿を共有</string>
+    <string name="posts_share_content">ツイート内容を共有</string>
+    <string name="posts_share_article_link">記事リンクを共有</string>
+    <string name="posts_share_content_and_link">ツイート内容とリンクを共有</string>
+    <string name="posts_share_image">投稿を画像として共有</string>
+    <string name="posts_share_article_image">記事を画像として共有</string>
+    <string name="posts_copied">クリップボードにコピーしました</string>
+    <string name="posts_reply_not_found">返信ツイートが見つかりませんでした！</string>
+    <string name="posts_subscribe">登録する</string>
+    <string name="contract_address_copied">コントラクトアドレスをコピーしました</string>
+    <string name="poll_no_votes">0票</string>
+    <plurals name="poll_ends_minutes">
+        <item quantity="other">%1$d分後に終了</item>
+    </plurals>
+    <plurals name="poll_ends_hours">
+        <item quantity="other">%1$d時間後に終了</item>
+    </plurals>
+    <plurals name="poll_ends_days">
+        <item quantity="other">%1$d日後に終了</item>
+    </plurals>
+    <plurals name="poll_ended_minutes">
+        <item quantity="other">%1$d分前に終了</item>
+    </plurals>
+    <plurals name="poll_ended_hours">
+        <item quantity="other">%1$d時間前に終了</item>
+    </plurals>
+    <plurals name="poll_ended_days">
+        <item quantity="other">%1$d日前に終了</item>
+    </plurals>
+    <plurals name="poll_ended_months">
+        <item quantity="other">%1$dか月前に終了</item>
+    </plurals>
+    <plurals name="poll_ended_years">
+        <item quantity="other">%1$d年前に終了</item>
+    </plurals>
+</resources>

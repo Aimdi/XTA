@@ -6,7 +6,6 @@
     <string name="change_hours">التغيّر خلال %1$d س</string>
     <string name="closed_on">إغلاق %1$s</string>
     <string name="crypto">العملات المشفرة</string>
-    <string name="crypto_address_copied">تم نسخ عنوان العقد</string>
     <string name="crypto_contract">عنوان العقد</string>
     <string name="crypto_copy_contract">نسخ عنوان العقد</string>
     <string name="crypto_identity_hint">اختر المشروع حسب الشبكة وعنوان العقد. قد تحمل رموز مختلفة الاختصار نفسه.</string>

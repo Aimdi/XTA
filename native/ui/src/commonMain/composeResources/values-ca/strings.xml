@@ -43,22 +43,9 @@
     <string name="settings_clear_confirm">Suprimeix</string>
 
     <string name="card_from">De %1$s</string>
-    <string name="poll_final">Resultats finals</string>
     <plurals name="poll_votes">
-        <item quantity="one">%1$d vot</item>
-        <item quantity="other">%1$d vots</item>
-    </plurals>
-    <plurals name="poll_days_left">
-        <item quantity="one">Queda %1$d dia</item>
-        <item quantity="other">Queden %1$d dies</item>
-    </plurals>
-    <plurals name="poll_hours_left">
-        <item quantity="one">Queda %1$d hora</item>
-        <item quantity="other">Queden %1$d hores</item>
-    </plurals>
-    <plurals name="poll_minutes_left">
-        <item quantity="one">Queda %1$d minut</item>
-        <item quantity="other">Queden %1$d minuts</item>
+        <item quantity="one">%1$s vot</item>
+        <item quantity="other">%1$s vots</item>
     </plurals>
     <plurals name="new_posts">
         <item quantity="one">%1$d publicació nova</item>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- An X post's footer, its share and ⋯ sheets and menus, its poll's line, and the contract addresses in its text (ui.post): XTA's words where XTA has them. -->
+<resources>
+    <string name="posts_share">分享貼文</string>
+    <string name="posts_share_content">分享推文內容</string>
+    <string name="posts_share_article_link">分享文章連結</string>
+    <string name="posts_share_content_and_link">分享推文內容與連結</string>
+    <string name="posts_share_image">以圖片分享貼文</string>
+    <string name="posts_share_article_image">以圖片分享文章</string>
+    <string name="posts_copied">已複製到剪貼簿</string>
+    <string name="posts_reply_not_found">抱歉，找不到回覆的推文！</string>
+    <string name="posts_subscribe">訂閱</string>
+    <string name="contract_address_copied">已複製合約地址</string>
+    <string name="poll_no_votes">無投票</string>
+    <plurals name="poll_ends_minutes">
+        <item quantity="other">將於 %1$d 分鐘後結束</item>
+    </plurals>
+    <plurals name="poll_ends_hours">
+        <item quantity="other">將於 %1$d 小時後結束</item>
+    </plurals>
+    <plurals name="poll_ends_days">
+        <item quantity="other">將於 %1$d 天後結束</item>
+    </plurals>
+    <plurals name="poll_ended_minutes">
+        <item quantity="other">已於 %1$d 分鐘前結束</item>
+    </plurals>
+    <plurals name="poll_ended_hours">
+        <item quantity="other">已於 %1$d 小時前結束</item>
+    </plurals>
+    <plurals name="poll_ended_days">
+        <item quantity="other">已於 %1$d 天前結束</item>
+    </plurals>
+    <plurals name="poll_ended_months">
+        <item quantity="other">已於 %1$d 個月前結束</item>
+    </plurals>
+    <plurals name="poll_ended_years">
+        <item quantity="other">已於 %1$d 年前結束</item>
+    </plurals>
+</resources>

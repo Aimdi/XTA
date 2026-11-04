@@ -140,6 +140,44 @@ object PostIcons {
         )
     }
 
+
+    /** The share sheet's "Share post content". */
+    val TextSnippet: ImageVector by lazy {
+        icon(
+            "TextSnippet",
+            "m20.41 8.41-4.83-4.83c-.37-.37-.88-.58-1.41-.58H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V9.83c0-.53-.21-1.04-.59-1.42z" +
+                "M7 7h7v2H7V7zm10 10H7v-2h10v2zm0-4H7v-2h10v2z",
+        )
+    }
+
+    /** The share sheet's "Share post content and link". */
+    val AddLink: ImageVector by lazy {
+        icon(
+            "AddLink",
+            "M8 11h8v2H8zm12.1 1H22c0-2.76-2.24-5-5-5h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1zM3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5" +
+                "s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM19 12h-2v3h-3v2h3v3h2v-3h3v-2h-3z",
+        )
+    }
+
+    /** The share sheet's "Share … as image". */
+    val Screenshot: ImageVector by lazy {
+        icon(
+            "Screenshot",
+            "M17 1.01 7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 18H7V6h10v12zM9.5 8.5H12V7H8v4h1.5V8.5z" +
+                "M12 17h4v-4h-1.5v2.5H12V17z",
+        )
+    }
+
+    /** "Add to group" in the sheet a long press on an author's + opens. */
+    val GroupAdd: ImageVector by lazy {
+        icon(
+            "GroupAdd",
+            "M22 9V7h-2v2h-2v2h2v2h2v-2h2V9zM8 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 1c-2.67 0-8 1.34-8 4v3h16v-3" +
+                "c0-2.66-5.33-4-8-4zm4.51-8.95C13.43 5.11 14 6.49 14 8s-.57 2.89-1.49 3.95C14.47 11.7 16 10.04 16 8s-1.53-3.7-3.49-3.95z" +
+                "m4.02 9.78C17.42 14.66 18 15.7 18 17v3h2v-3c0-1.45-1.59-2.51-3.47-3.17z",
+        )
+    }
+
     private fun icon(name: String, path: String): ImageVector =
         ImageVector.Builder(name = name, defaultWidth = 24.dp, defaultHeight = 24.dp, viewportWidth = 24f, viewportHeight = 24f)
             .addPath(pathData = PathParser().parsePathString(path).toNodes(), fill = SolidColor(Color.Black))

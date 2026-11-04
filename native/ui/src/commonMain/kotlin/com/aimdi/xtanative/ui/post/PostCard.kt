@@ -1,6 +1,8 @@
 package com.aimdi.xtanative.ui.post
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -45,12 +48,14 @@ import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_community
 import com.aimdi.xtanative.ui.generated.resources.posts_more
 import com.aimdi.xtanative.ui.generated.resources.posts_pinned
+import com.aimdi.xtanative.ui.generated.resources.posts_reply_not_found
 import com.aimdi.xtanative.ui.generated.resources.posts_replying_to
 import com.aimdi.xtanative.ui.generated.resources.posts_reposted
 import com.aimdi.xtanative.ui.generated.resources.posts_subscribers_only_of_author
 import com.aimdi.xtanative.ui.generated.resources.posts_thread
 import com.aimdi.xtanative.ui.generated.resources.posts_unavailable
 import com.aimdi.xtanative.ui.generated.resources.posts_view_quoted
+import com.aimdi.xtanative.ui.saved.KeepNotices
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -118,7 +123,8 @@ private val MediaBleed = 16.dp
  * the community above; the author with translate and ⋯ at the end; then the
  * reply line, the text and what the post carries, and the counts.
  * [continues] and [midThread] join it to the posts of its thread by a line
- * through the avatars.
+ * through the avatars. A tap opens it; with "Double-tap to like" on, a
+ * double-tap likes it on this device.
  */
 @Composable
 fun PostCard(
@@ -136,10 +142,12 @@ fun PostCard(
     val translation = rememberPostTranslation(shown, scope)
     val drawn = translation?.shown ?: shown
     val railColor = MaterialTheme.colorScheme.outlineVariant
+    val picture = rememberPostPicture()
     Column(
         modifier
             .fillMaxWidth()
-            .clickable { actions.openPost(shown.id) }
+            .recordedIn(picture)
+            .opening(rememberDoubleTapLike(shown, scope.prefs, actions)) { actions.openPost(shown.id) }
             .drawBehind {
                 val x = (RailStart + AvatarSize / 2).toPx()
                 val width = 2.dp.toPx()
@@ -159,10 +167,27 @@ fun PostCard(
                 if (shown.article == null) ExpandablePostText(drawn, actions, Modifier.padding(top = 2.dp))
                 TranslationFailure(translation)
                 PostAttachments(shown, scope, actions, playing = playing, gap = 10.dp)
-                PostFooter(shown, actions, FooterCounts.of(shown, scope.prefs, showViews = true))
+                PostFooter(shown, actions, FooterCounts.of(shown, scope.prefs, showViews = true), picture = picture)
             }
         }
     }
+}
+
+/**
+ * A tap on a post opens it; [like], when the reader asked for it, likes it
+ * at a double-tap (tweet.dart's _withDoubleTapToLike). Without it a tap does
+ * not wait to see whether a second follows.
+ */
+@OptIn(ExperimentalFoundationApi::class)
+internal fun Modifier.opening(like: (() -> Unit)?, open: () -> Unit): Modifier =
+    if (like == null) clickable(onClick = open) else combinedClickable(onDoubleClick = like, onClick = open)
+
+/** What a double-tap on [post] does with "Double-tap to like" on: likes it on this device, unless it is liked already; null while off. */
+@Composable
+internal fun rememberDoubleTapLike(post: XPost, prefs: PostPrefs, actions: PostActions): (() -> Unit)? {
+    val graph = LocalGraph.current
+    val like = remember(graph, post, actions) { { actions.keep.likeHere(graph, post) } }
+    return like.takeIf { prefs.doubleTapLike }
 }
 
 @Composable
@@ -218,10 +243,11 @@ internal fun PostAuthor(post: XPost, scope: PostScope, modifier: Modifier = Modi
     }
 }
 
-/** "Replying to @maya": the post it answers opens on a tap. */
+/** "Replying to @maya": the post it answers opens on a tap, or, when X did not say which it is, a notice says it could not be found. */
 @Composable
 internal fun ReplyingTo(screenName: String, replyToId: String?, actions: PostActions) {
-    Row(Modifier.padding(top = 2.dp).let { if (replyToId != null) it.clickable { actions.openPost(replyToId) } else it }) {
+    val missing = stringResource(Res.string.posts_reply_not_found)
+    Row(Modifier.padding(top = 2.dp).clickable { if (replyToId != null) actions.openPost(replyToId) else KeepNotices.say(missing) }) {
         Text(
             stringResource(Res.string.posts_replying_to) + " ",
             style = MaterialTheme.typography.bodyMedium,

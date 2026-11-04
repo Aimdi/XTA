@@ -43,18 +43,8 @@
     <string name="settings_clear_confirm">移除</string>
 
     <string name="card_from">来自 %1$s</string>
-    <string name="poll_final">最终结果</string>
     <plurals name="poll_votes">
-        <item quantity="other">%1$d 票</item>
-    </plurals>
-    <plurals name="poll_days_left">
-        <item quantity="other">还剩 %1$d 天</item>
-    </plurals>
-    <plurals name="poll_hours_left">
-        <item quantity="other">还剩 %1$d 小时</item>
-    </plurals>
-    <plurals name="poll_minutes_left">
-        <item quantity="other">还剩 %1$d 分钟</item>
+        <item quantity="other">%1$s 票</item>
     </plurals>
     <plurals name="new_posts">
         <item quantity="other">%1$d 条新帖子</item>

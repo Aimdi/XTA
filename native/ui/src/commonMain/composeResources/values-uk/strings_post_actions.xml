@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- An X post's footer, its share and ⋯ sheets and menus, its poll's line, and the contract addresses in its text (ui.post): XTA's words where XTA has them. -->
+<resources>
+    <string name="posts_share">Поділитися дописом</string>
+    <string name="posts_share_content">Поділитися вмістом публікації</string>
+    <string name="posts_share_article_link">Поділитися посиланням на статтю</string>
+    <string name="posts_share_content_and_link">Поділитися вмістом і посиланням публікації</string>
+    <string name="posts_share_image">Поділитися публікацією як зображенням</string>
+    <string name="posts_share_article_image">Поділитися статтею як зображенням</string>
+    <string name="posts_copied">Скопійовано до буфера обміну</string>
+    <string name="posts_reply_not_found">Вибачте, публікацію-відповідь не вдалося знайти!</string>
+    <string name="posts_subscribe">Підписатися</string>
+    <string name="contract_address_copied">Адресу контракту скопійовано</string>
+    <string name="poll_no_votes">Немає голосів</string>
+    <plurals name="poll_ends_minutes">
+        <item quantity="one">Закінчується через %1$d хвилину</item>
+        <item quantity="few">Закінчується через %1$d хвилини</item>
+        <item quantity="many">Закінчується через %1$d хвилин</item>
+        <item quantity="other">Закінчується через %1$d хвилини</item>
+    </plurals>
+    <plurals name="poll_ends_hours">
+        <item quantity="one">Закінчується через %1$d годину</item>
+        <item quantity="few">Закінчується через %1$d години</item>
+        <item quantity="many">Закінчується через %1$d годин</item>
+        <item quantity="other">Закінчується через %1$d години</item>
+    </plurals>
+    <plurals name="poll_ends_days">
+        <item quantity="one">Закінчується через %1$d день</item>
+        <item quantity="few">Закінчується через %1$d дні</item>
+        <item quantity="many">Закінчується через %1$d днів</item>
+        <item quantity="other">Закінчується через %1$d дня</item>
+    </plurals>
+    <plurals name="poll_ended_minutes">
+        <item quantity="one">Закінчилося %1$d хвилину тому</item>
+        <item quantity="few">Закінчилося %1$d хвилини тому</item>
+        <item quantity="many">Закінчилося %1$d хвилин тому</item>
+        <item quantity="other">Закінчилося %1$d хвилини тому</item>
+    </plurals>
+    <plurals name="poll_ended_hours">
+        <item quantity="one">Закінчилося %1$d годину тому</item>
+        <item quantity="few">Закінчилося %1$d години тому</item>
+        <item quantity="many">Закінчилося %1$d годин тому</item>
+        <item quantity="other">Закінчилося %1$d години тому</item>
+    </plurals>
+    <plurals name="poll_ended_days">
+        <item quantity="one">Закінчилося %1$d день тому</item>
+        <item quantity="few">Закінчилося %1$d дні тому</item>
+        <item quantity="many">Закінчилося %1$d днів тому</item>
+        <item quantity="other">Закінчилося %1$d дня тому</item>
+    </plurals>
+    <plurals name="poll_ended_months">
+        <item quantity="one">Закінчилося %1$d місяць тому</item>
+        <item quantity="few">Закінчилося %1$d місяці тому</item>
+        <item quantity="many">Закінчилося %1$d місяців тому</item>
+        <item quantity="other">Закінчилося %1$d місяця тому</item>
+    </plurals>
+    <plurals name="poll_ended_years">
+        <item quantity="one">Закінчилося %1$d рік тому</item>
+        <item quantity="few">Закінчилося %1$d роки тому</item>
+        <item quantity="many">Закінчилося %1$d років тому</item>
+        <item quantity="other">Закінчилося %1$d року тому</item>
+    </plurals>
+</resources>

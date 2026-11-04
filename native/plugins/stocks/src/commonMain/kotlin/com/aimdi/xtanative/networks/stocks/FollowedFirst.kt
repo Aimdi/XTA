@@ -5,6 +5,7 @@ import com.aimdi.xtanative.core.feed.FeedQueries
 import com.aimdi.xtanative.core.x.model.XEntity
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.model.XThread
+import com.aimdi.xtanative.networks.CryptoAddresses
 import com.aimdi.xtanative.networks.Page
 import java.time.Duration
 import java.time.Instant

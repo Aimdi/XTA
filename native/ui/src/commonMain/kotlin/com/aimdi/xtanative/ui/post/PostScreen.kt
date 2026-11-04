@@ -301,7 +301,8 @@ internal fun <T> SortChip(value: T, options: List<T>, label: @Composable (T) -> 
  * The opened post, larger: the author beside the avatar with translate and
  * ⋯, the text across the width (whole unless the reader asked for the
  * compact form), what it carries, its article in full, X's time · date ·
- * views line, and the counts.
+ * views line, and the counts, whose share sheet takes the post as drawn
+ * for "Share … as image".
  */
 @Composable
 private fun FocalPost(post: XPost, actions: PostActions, startMedia: Int) {
@@ -311,7 +312,8 @@ private fun FocalPost(post: XPost, actions: PostActions, startMedia: Int) {
     val drawn = translation?.shown ?: shown
     var menu by rememberSaveable(shown.id) { mutableStateOf(false) }
     val article = remember(shown) { ArticleLayout.fullArticle(shown) }
-    Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
+    val picture = rememberPostPicture()
+    Column(Modifier.fillMaxWidth().recordedIn(picture).padding(horizontal = 16.dp, vertical = 12.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             PostAvatar(shown, scope, actions, 44.dp)
             Spacer(Modifier.width(12.dp))
@@ -349,12 +351,12 @@ private fun FocalPost(post: XPost, actions: PostActions, startMedia: Int) {
         TranslationFailure(translation)
         PostAttachments(shown, scope, actions, playing = false, gap = 12.dp, startMedia = startMedia)
         if (article != null) {
-            ArticleBody(article, actions, Modifier.padding(top = 12.dp), header = { PostFooter(shown, actions, FooterCounts.of(shown, scope.prefs, showViews = false)) })
+            ArticleBody(article, actions, Modifier.padding(top = 12.dp), header = { PostFooter(shown, actions, FooterCounts.of(shown, scope.prefs, showViews = false), picture = picture) })
         } else if (shown.article != null) {
             ArticlePreviewCard(shown, { actions.openArticle(shown.id) }, Modifier.padding(top = 12.dp))
         }
         FocalMetaLine(shown, scope.prefs)
-        if (article == null) PostFooter(shown, actions, FooterCounts.of(shown, scope.prefs, showViews = false))
+        if (article == null) PostFooter(shown, actions, FooterCounts.of(shown, scope.prefs, showViews = false), picture = picture)
     }
     Hairline()
     if (menu) PostMenu(post, actions, onDismiss = { menu = false })

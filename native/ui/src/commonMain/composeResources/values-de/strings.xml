@@ -43,22 +43,9 @@
     <string name="settings_clear_confirm">Entfernen</string>
 
     <string name="card_from">Von %1$s</string>
-    <string name="poll_final">Endergebnis</string>
     <plurals name="poll_votes">
-        <item quantity="one">%1$d Stimme</item>
-        <item quantity="other">%1$d Stimmen</item>
-    </plurals>
-    <plurals name="poll_days_left">
-        <item quantity="one">Noch %1$d Tag</item>
-        <item quantity="other">Noch %1$d Tage</item>
-    </plurals>
-    <plurals name="poll_hours_left">
-        <item quantity="one">Noch %1$d Stunde</item>
-        <item quantity="other">Noch %1$d Stunden</item>
-    </plurals>
-    <plurals name="poll_minutes_left">
-        <item quantity="one">Noch %1$d Minute</item>
-        <item quantity="other">Noch %1$d Minuten</item>
+        <item quantity="one">%1$s Stimme</item>
+        <item quantity="other">%1$s Stimmen</item>
     </plurals>
     <plurals name="new_posts">
         <item quantity="one">%1$d neuer Post</item>

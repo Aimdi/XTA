@@ -38,6 +38,7 @@ import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.post.LocalCashtagOpener
 import com.aimdi.xtanative.ui.post.LocalCashtagSheet
 import com.aimdi.xtanative.ui.post.LocalCashtagStrip
+import com.aimdi.xtanative.ui.post.LocalContractNetworks
 import com.aimdi.xtanative.ui.settings.SettingsRoutes
 import java.net.URLEncoder
 import kotlinx.coroutines.flow.first
@@ -67,9 +68,10 @@ val LocalPlugins = staticCompositionLocalOf<AppPlugins> { error("No AppPlugins p
 
 /**
  * [plugins] for everything inside [content], their home tabs on Home's
- * strip ([LocalHomeNetworks]), named in the reader's language, and what an
- * X post's cashtags do with them ([PluginCashtags]), a long press on one
- * opening its sheet ([PluginSheet.Cashtag]).
+ * strip ([LocalHomeNetworks]), named in the reader's language, what an X
+ * post's cashtags do with them ([PluginCashtags]), a long press on one
+ * opening its sheet ([PluginSheet.Cashtag]), and the networks they name for
+ * the contract addresses in its text ([LocalContractNetworks]).
  */
 @Composable
 fun PluginsFrame(plugins: AppPlugins, content: @Composable () -> Unit) {
@@ -79,12 +81,14 @@ fun PluginsFrame(plugins: AppPlugins, content: @Composable () -> Unit) {
     val running by plugins.running.collectAsState()
     val cashtags = remember(plugins, running) { PluginCashtags(plugins, running) }
     val cashtagSheet = remember(plugins) { { symbol: String -> plugins.show(PluginSheet.Cashtag(symbol)) } }
+    val contracts by plugins.contractNetworks.collectAsState()
     CompositionLocalProvider(
         LocalPlugins provides plugins,
         LocalHomeNetworks provides networks,
         LocalCashtagStrip provides cashtags.strip,
         LocalCashtagOpener provides cashtags.opener,
         LocalCashtagSheet provides cashtagSheet,
+        LocalContractNetworks provides contracts,
         content = content,
     )
 }

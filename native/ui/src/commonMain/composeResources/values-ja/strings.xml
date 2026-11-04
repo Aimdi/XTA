@@ -43,18 +43,8 @@
     <string name="settings_clear_confirm">削除</string>
 
     <string name="card_from">%1$s より</string>
-    <string name="poll_final">最終結果</string>
     <plurals name="poll_votes">
-        <item quantity="other">%1$d票</item>
-    </plurals>
-    <plurals name="poll_days_left">
-        <item quantity="other">残り%1$d日</item>
-    </plurals>
-    <plurals name="poll_hours_left">
-        <item quantity="other">残り%1$d時間</item>
-    </plurals>
-    <plurals name="poll_minutes_left">
-        <item quantity="other">残り%1$d分</item>
+        <item quantity="other">%1$s票</item>
     </plurals>
     <plurals name="new_posts">
         <item quantity="other">新しいポスト %1$d 件</item>

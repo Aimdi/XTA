@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- An X post's footer, its share and ⋯ sheets and menus, its poll's line, and the contract addresses in its text (ui.post): XTA's words where XTA has them. -->
+<resources>
+    <string name="posts_share">Поделиться постом</string>
+    <string name="posts_share_content">Поделиться содержимым твита</string>
+    <string name="posts_share_article_link">Поделиться ссылкой на статью</string>
+    <string name="posts_share_content_and_link">Отправить содержимое и ссылку</string>
+    <string name="posts_share_image">Поделиться публикацией как изображением</string>
+    <string name="posts_share_article_image">Поделиться статьёй как изображением</string>
+    <string name="posts_copied">Скопировано в буфер обмена</string>
+    <string name="posts_reply_not_found">Извините, ответ не удалось найти!</string>
+    <string name="posts_subscribe">Читать</string>
+    <string name="contract_address_copied">Адрес контракта скопирован</string>
+    <string name="poll_no_votes">Нет голосов</string>
+    <plurals name="poll_ends_minutes">
+        <item quantity="one">Завершится через %1$d минуту</item>
+        <item quantity="few">Завершится через %1$d минуты</item>
+        <item quantity="many">Завершится через %1$d минут</item>
+        <item quantity="other">Завершится через %1$d минуты</item>
+    </plurals>
+    <plurals name="poll_ends_hours">
+        <item quantity="one">Завершится через %1$d час</item>
+        <item quantity="few">Завершится через %1$d часа</item>
+        <item quantity="many">Завершится через %1$d часов</item>
+        <item quantity="other">Завершится через %1$d часа</item>
+    </plurals>
+    <plurals name="poll_ends_days">
+        <item quantity="one">Завершится через %1$d день</item>
+        <item quantity="few">Завершится через %1$d дня</item>
+        <item quantity="many">Завершится через %1$d дней</item>
+        <item quantity="other">Завершится через %1$d дня</item>
+    </plurals>
+    <plurals name="poll_ended_minutes">
+        <item quantity="one">Завершено %1$d минуту назад</item>
+        <item quantity="few">Завершено %1$d минуты назад</item>
+        <item quantity="many">Завершено %1$d минут назад</item>
+        <item quantity="other">Завершено %1$d минуты назад</item>
+    </plurals>
+    <plurals name="poll_ended_hours">
+        <item quantity="one">Завершено %1$d час назад</item>
+        <item quantity="few">Завершено %1$d часа назад</item>
+        <item quantity="many">Завершено %1$d часов назад</item>
+        <item quantity="other">Завершено %1$d часа назад</item>
+    </plurals>
+    <plurals name="poll_ended_days">
+        <item quantity="one">Завершено %1$d день назад</item>
+        <item quantity="few">Завершено %1$d дня назад</item>
+        <item quantity="many">Завершено %1$d дней назад</item>
+        <item quantity="other">Завершено %1$d дня назад</item>
+    </plurals>
+    <plurals name="poll_ended_months">
+        <item quantity="one">Завершено %1$d месяц назад</item>
+        <item quantity="few">Завершено %1$d месяца назад</item>
+        <item quantity="many">Завершено %1$d месяцев назад</item>
+        <item quantity="other">Завершено %1$d месяца назад</item>
+    </plurals>
+    <plurals name="poll_ended_years">
+        <item quantity="one">Завершено %1$d год назад</item>
+        <item quantity="few">Завершено %1$d года назад</item>
+        <item quantity="many">Завершено %1$d лет назад</item>
+        <item quantity="other">Завершено %1$d года назад</item>
+    </plurals>
+</resources>

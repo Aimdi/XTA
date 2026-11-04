@@ -4,6 +4,14 @@ package com.aimdi.xtanative.networks.stocks
 data class WatchlistEntries(val ids: List<String>, val assets: Map<String, CryptoAsset>) {
     /** What the manage sheet calls an entry: a token's [CryptoAsset.label], else the cashtag. */
     fun label(id: String): String = assets[id]?.label ?: "$$id"
+
+    /**
+     * The network of each token watched, by its contract, as an X post writes
+     * it before such an address (rich_text.dart): where two share a contract,
+     * the first in the list names it.
+     */
+    val contractNetworks: Map<String, String>
+        get() = ids.mapNotNull(assets::get).asReversed().associate { it.address to it.chainName }
 }
 
 /** How XTA stores a watchlist entry (`stock_subscription`): a lower-case id, and the ticker or the encoded token. */

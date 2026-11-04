@@ -6,7 +6,6 @@
     <string name="change_hours">Zmiana %1$d h</string>
     <string name="closed_on">Zamknięcie %1$s</string>
     <string name="crypto">Kryptowaluty</string>
-    <string name="crypto_address_copied">Skopiowano adres kontraktu</string>
     <string name="crypto_contract">Adres kontraktu</string>
     <string name="crypto_copy_contract">Kopiuj adres</string>
     <string name="crypto_identity_hint">Wybierz projekt według sieci i adresu kontraktu. Różne tokeny mogą mieć ten sam symbol.</string>

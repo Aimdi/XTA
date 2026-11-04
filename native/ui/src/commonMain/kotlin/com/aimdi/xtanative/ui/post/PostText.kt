@@ -8,17 +8,18 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
@@ -32,13 +33,40 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.parse.XRun
 import com.aimdi.xtanative.core.x.parse.XText
+import com.aimdi.xtanative.networks.AddressPiece
+import com.aimdi.xtanative.networks.CryptoAddresses
 import com.aimdi.xtanative.ui.common.clickableNoRipple
+import com.aimdi.xtanative.ui.common.rememberCopyContract
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_show_more
+import com.aimdi.xtanative.ui.saved.KeepNotices
 import org.jetbrains.compose.resources.stringResource
 
 /** The line cap a post has to break before it folds: sixteen is long-form territory (_ExpandableTweetText.dart). */
 const val POST_TEXT_MAX_LINES = 16
+
+/**
+ * The networks the running plugins name for contract addresses (Stocks'
+ * watched tokens), by address: a post's text writes a watched token's
+ * network in front of its address. Empty without such a plugin.
+ */
+val LocalContractNetworks = compositionLocalOf<Map<String, String>> { emptyMap() }
+
+/**
+ * How the contract addresses in a text are drawn (rich_text.dart's
+ * _addressPart): cut in the middle in [color], led by the network
+ * [networks] names for a watched token's, and copied whole by [copy] on a tap.
+ */
+internal class ContractSpans(val color: Color, val networks: Map<String, String>, val copy: (String) -> Unit)
+
+/** The contract spans of the screen's texts, as the running plugins' watched tokens change. */
+@Composable
+internal fun rememberContractSpans(): ContractSpans {
+    val networks = LocalContractNetworks.current
+    val color = MaterialTheme.colorScheme.onSurfaceVariant
+    val copy = rememberCopyContract(KeepNotices::say)
+    return remember(networks, color, copy) { ContractSpans(color, networks, copy) }
+}
 
 /** A post's text with its links, mentions, hashtags and cashtags in blue, each leading where X's would. */
 @Composable
@@ -64,7 +92,8 @@ fun RunsText(
 ) {
     val linkColor = MaterialTheme.colorScheme.primary
     val cashtags = LocalCashtagOpener.current
-    val text = remember(runs, linkColor, actions, cashtags) { annotated(runs, linkColor, actions, cashtags) }
+    val contracts = rememberContractSpans()
+    val text = remember(runs, linkColor, actions, cashtags, contracts) { annotated(runs, linkColor, actions, cashtags, contracts) }
     if (text.isEmpty()) return
     val layout = remember { TextLayoutHolder() }
     Text(
@@ -95,7 +124,8 @@ fun ExpandablePostText(
     val runs = remember(post) { XText.runs(post) }
     val linkColor = MaterialTheme.colorScheme.primary
     val cashtags = LocalCashtagOpener.current
-    val text = remember(runs, linkColor, actions, cashtags) { annotated(runs, linkColor, actions, cashtags) }
+    val contracts = rememberContractSpans()
+    val text = remember(runs, linkColor, actions, cashtags, contracts) { annotated(runs, linkColor, actions, cashtags, contracts) }
     if (text.isEmpty()) return
     var expanded by remember(post.id, post.text) { mutableStateOf(false) }
     var folds by remember(post.id, post.text, maxLines) { mutableStateOf(false) }
@@ -139,12 +169,22 @@ private fun Modifier.fadingBottom(): Modifier = graphicsLayer { compositingStrat
         )
     }
 
-/** [runs] with each link, mention and tag leading where X's would; a cashtag goes to [cashtags]' screen first ([LocalCashtagOpener]). */
-internal fun annotated(runs: List<XRun>, linkColor: Color, actions: PostActions, cashtags: ((String) -> Boolean)? = null): AnnotatedString = buildAnnotatedString {
+/**
+ * [runs] with each link, mention and tag leading where X's would; a cashtag
+ * goes to [cashtags]' screen first ([LocalCashtagOpener]), and a contract
+ * address in the words between is drawn as [contracts] says.
+ */
+internal fun annotated(
+    runs: List<XRun>,
+    linkColor: Color,
+    actions: PostActions,
+    cashtags: ((String) -> Boolean)? = null,
+    contracts: ContractSpans? = null,
+): AnnotatedString = buildAnnotatedString {
     val styles = TextLinkStyles(SpanStyle(color = linkColor))
     for (run in runs) {
         when (run) {
-            is XRun.Text -> append(run.text)
+            is XRun.Text -> if (contracts == null) append(run.text) else appendWithContracts(run.text, contracts)
             is XRun.Link -> withLink(LinkAnnotation.Clickable(run.url, styles) { actions.openLink(run.url) }) { append(run.text) }
             is XRun.Mention -> withLink(LinkAnnotation.Clickable("@" + run.screenName, styles) { actions.openProfile(run.screenName) }) {
                 append(run.text)
@@ -156,3 +196,19 @@ internal fun annotated(runs: List<XRun>, linkColor: Color, actions: PostActions,
         }
     }
 }
+
+/** [text] with each contract address in it cut in the middle, led by its watched token's network, a tap copying it whole. */
+private fun AnnotatedString.Builder.appendWithContracts(text: String, contracts: ContractSpans) {
+    val styles = TextLinkStyles(SpanStyle(color = contracts.color))
+    for (piece in CryptoAddresses.pieces(text)) {
+        when (piece) {
+            is AddressPiece.Text -> append(piece.text)
+            is AddressPiece.Address -> withLink(LinkAnnotation.Clickable(CONTRACT_TAG + piece.address, styles) { contracts.copy(piece.address) }) {
+                append(CryptoAddresses.postLabel(piece.address, CryptoAddresses.networkIn(piece.address, contracts.networks)))
+            }
+        }
+    }
+}
+
+/** What a contract address's link is tagged with, before the address: never a cashtag's `$`. */
+private const val CONTRACT_TAG = "contract:"

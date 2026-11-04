@@ -6,7 +6,6 @@
     <string name="change_hours">Aldaketa (%1$d h)</string>
     <string name="closed_on">Itxiera %1$s</string>
     <string name="crypto">Kriptomonetak</string>
-    <string name="crypto_address_copied">Kontratuaren helbidea kopiatu da</string>
     <string name="crypto_contract">Kontratuaren helbidea</string>
     <string name="crypto_copy_contract">Kopiatu helbidea</string>
     <string name="crypto_identity_hint">Aukeratu proiektua sarearen eta kontratuaren arabera. Token desberdinek ikur bera izan dezakete.</string>

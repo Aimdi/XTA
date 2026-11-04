@@ -183,6 +183,19 @@ class AppPlugins(
     /** The accounts the running plugins follow, for the Subscriptions tab and the backup. */
     val follows: PluginFollows = RunningFollows()
 
+    /**
+     * The networks the running plugins name for contract addresses
+     * ([XtaPlugin.contractNetworks], Stocks' watched tokens), for X posts'
+     * text; the first plugin's name of a contract leads, and one that fails
+     * names none.
+     */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val contractNetworks: StateFlow<Map<String, String>> = running.flatMapLatest { list ->
+        val each = list.mapNotNull { running -> guardedNow { running.plugin.contractNetworks } }
+            .map { networks -> networks.onStart { emit(emptyMap()) }.catch { emit(emptyMap()) } }
+        if (each.isEmpty()) flowOf(emptyMap()) else combine(each) { maps -> maps.reversed().fold(emptyMap<String, String>()) { all, map -> all + map } }
+    }.flowOn(Dispatchers.Default).stateIn(scope, SharingStarted.Eagerly, emptyMap())
+
     private val mutableProblems = MutableStateFlow<Map<String, String>>(emptyMap())
 
     /** Installed plugins that could not be started, with why: for the log and the store. */
@@ -567,9 +580,7 @@ class AppPlugins(
 
         override fun openDownloads() = plugins.navigator.go(Destination.Downloads)
 
-        override fun tell(text: String) {
-            if (text.isNotBlank()) KeepNotices.show(KeepNotice.Said(text))
-        }
+        override fun tell(text: String) = KeepNotices.say(text)
 
         override suspend fun <T> working(text: String, work: suspend () -> T): T {
             KeepNotices.show(KeepNotice.Said(text, working = true))

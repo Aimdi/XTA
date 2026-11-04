@@ -6,7 +6,6 @@
     <string name="change_hours">Thay đổi %1$d giờ</string>
     <string name="closed_on">Đóng cửa %1$s</string>
     <string name="crypto">Tiền mã hóa</string>
-    <string name="crypto_address_copied">Đã sao chép địa chỉ hợp đồng</string>
     <string name="crypto_contract">Địa chỉ hợp đồng</string>
     <string name="crypto_copy_contract">Sao chép địa chỉ</string>
     <string name="crypto_identity_hint">Chọn dự án theo mạng và địa chỉ hợp đồng. Các token khác nhau có thể trùng ký hiệu.</string>

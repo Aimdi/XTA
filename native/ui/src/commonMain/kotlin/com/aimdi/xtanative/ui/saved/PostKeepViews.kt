@@ -2,19 +2,13 @@ package com.aimdi.xtanative.ui.saved
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -38,15 +32,16 @@ import com.aimdi.xtanative.ui.generated.resources.saved_like
 import com.aimdi.xtanative.ui.generated.resources.saved_save_here
 import com.aimdi.xtanative.ui.generated.resources.saved_unlike
 import com.aimdi.xtanative.ui.generated.resources.saved_unsave
+import com.aimdi.xtanative.ui.plugins.NetworkCount
 import org.jetbrains.compose.resources.stringResource
 
 /** The bookmark: a tap saves the post on this device where plain taps file, or removes it; a long press opens the save sheet. */
 @Composable
 fun PostKeep.SaveButton(post: XPost, modifier: Modifier = Modifier, tint: Color = Color.Unspecified) = DeviceSaveButton(post, modifier, tint)
 
-/** The heart, liked on this device only, with [count] beside it when given. */
+/** The heart, liked on this device only, drawn as a post's counts are, with X's like [count] beside it when above 0. */
 @Composable
-fun PostKeep.LikeButton(post: XPost, modifier: Modifier = Modifier, tint: Color = Color.Unspecified, count: String? = null) =
+fun PostKeep.LikeButton(post: XPost, modifier: Modifier = Modifier, tint: Color = Color.Unspecified, count: Long = 0) =
     DeviceLikeButton(post, modifier, tint, count)
 
 /** The save sheet for [post], as a long press on the bookmark opens it. */
@@ -54,6 +49,13 @@ fun PostKeep.LikeButton(post: XPost, modifier: Modifier = Modifier, tint: Color 
 fun PostKeep.SaveSheet(post: XPost, onDismiss: () -> Unit) {
     val item = remember(post.shown.id) { Keepable.of(post) }
     SaveSheet(item, onDismiss)
+}
+
+/** The note on [post] in Saved, as its ⋯ sheet's "Add a note to this saved post" edits it: writing one saves the post first. */
+@Composable
+fun PostKeep.NoteSheet(post: XPost, onDismiss: () -> Unit) {
+    val item = remember(post.shown.id) { Keepable.of(post) }
+    SavedNoteEditor(item, onDismiss)
 }
 
 /** "Write a note" about [post] (XTA's quote menu): a note of Notes quoting it, which says so once kept. */
@@ -78,6 +80,20 @@ fun PostKeep.isSaved(postId: String): Boolean = savedHere(postId)
 /** Whether [postId] is liked on this device, as that changes. */
 @Composable
 fun PostKeep.isLiked(postId: String): Boolean = likedHere(postId)
+
+/**
+ * The note on [item] in Saved, in the note editor (XTA's editPluginPostNote):
+ * written, it saves the post first, where a plain tap on the bookmark files.
+ */
+@Composable
+internal fun SavedNoteEditor(item: Keepable, onDismiss: () -> Unit) {
+    val graph = LocalGraph.current
+    val library by graph.saved.state.collectAsStateWithLifecycle()
+    LaunchedEffect(graph) { graph.saved.library() }
+    val loaded = library ?: return
+    val note = remember(item.id) { loaded.post(item.id)?.note }
+    NoteEditorDialog(NoteTarget.Text(note, NoteRules.savedNoteKey(item.id)), onDismiss, saveText = { text -> Keeping.writeNote(graph, item, text) })
+}
 
 @Composable
 internal fun savedHere(postId: String): Boolean {
@@ -130,24 +146,13 @@ internal fun KeepableSaveButton(item: Keepable, modifier: Modifier, tint: Color)
     sheetFor?.let { item -> SaveSheet(item) { sheetFor = null } }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-internal fun DeviceLikeButton(post: XPost, modifier: Modifier, tint: Color, count: String?) {
+internal fun DeviceLikeButton(post: XPost, modifier: Modifier, tint: Color, count: Long) {
     val graph = LocalGraph.current
     val liked = likedHere(post.shown.id)
     val label = stringResource(if (liked) Res.string.saved_unlike else Res.string.saved_like)
     val color = if (liked) MaterialTheme.colorScheme.primary else tint.takeOrElse { MaterialTheme.colorScheme.onSurfaceVariant }
-    Row(
-        modifier
-            .heightIn(min = 40.dp)
-            .widthIn(min = 40.dp)
-            .clip(CircleShape)
-            .combinedClickable(role = Role.Button, onClickLabel = label, onClick = { Keeping.toggleLike(graph, Keepable.of(post)) })
-            .padding(horizontal = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
-    ) {
-        Icon(if (liked) Icons.Filled.Favorite else XIcons.Like, contentDescription = label, tint = color, modifier = Modifier.size(18.dp))
-        if (count != null) Text(count, style = MaterialTheme.typography.labelMedium, color = color, modifier = Modifier.padding(start = 4.dp))
+    Box(modifier) {
+        NetworkCount(if (liked) Icons.Filled.Favorite else XIcons.Like, count, label, color) { Keeping.toggleLike(graph, Keepable.of(post)) }
     }
 }

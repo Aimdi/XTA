@@ -6,7 +6,6 @@
     <string name="change_hours">Зміна за %1$d год</string>
     <string name="closed_on">Закриття %1$s</string>
     <string name="crypto">Криптовалюти</string>
-    <string name="crypto_address_copied">Адресу контракту скопійовано</string>
     <string name="crypto_contract">Адреса контракту</string>
     <string name="crypto_copy_contract">Копіювати адресу</string>
     <string name="crypto_identity_hint">Виберіть проєкт за мережею та адресою контракту. Різні токени можуть мати однаковий символ.</string>

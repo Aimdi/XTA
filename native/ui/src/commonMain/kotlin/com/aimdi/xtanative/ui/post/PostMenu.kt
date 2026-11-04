@@ -11,6 +11,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,57 +22,69 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.x.model.XPost
-import com.aimdi.xtanative.data.plugins.PluginSaves
-import com.aimdi.xtanative.ui.common.XIcons
-import com.aimdi.xtanative.ui.generated.resources.Res
-import com.aimdi.xtanative.ui.generated.resources.posts_add_to_group
-import com.aimdi.xtanative.ui.generated.resources.posts_open_in_browser
-import com.aimdi.xtanative.ui.generated.resources.posts_quotes
-import com.aimdi.xtanative.ui.generated.resources.posts_reposted_by
-import com.aimdi.xtanative.ui.pluginstore.PluginSheetEntries
+import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.plugins.PluginPostArchive
+import com.aimdi.xtanative.ui.plugins.PluginPostMenu
+import com.aimdi.xtanative.ui.plugins.PostMenuHandlers
+import com.aimdi.xtanative.ui.plugins.PostMenuRows
 import com.aimdi.xtanative.ui.profile.AuthorGroupsSheet
-import org.jetbrains.compose.resources.stringResource
+import com.aimdi.xtanative.ui.saved.Keepable
+import com.aimdi.xtanative.ui.saved.NoteSheet
+import com.aimdi.xtanative.ui.saved.SaveSheet
+import com.aimdi.xtanative.ui.saved.isSaved
 
-/** What a post's ⋯ menu offers, in XTA's order (plugin_post_actions.dart); none of it writes to X. */
-enum class PostMenuEntry { ADD_TO_GROUP, REPOSTED_BY, QUOTES, OPEN_IN_BROWSER }
+/** What an X post's ⋯ sheet opens once it has closed: the note on the post, its folders, its author's groups; or nothing more. */
+private enum class MenuStep { MENU, NOTE, FOLDERS, GROUPS, CLOSED }
 
 /**
- * The post's ⋯ menu as a sheet: file its author in groups here, see who
- * reposted it and what quotes it, or open it in the browser; then what the
- * running plugins add, as XTA's share sheet ends with them (sending its link
- * to the reader's own bookmarks). Saving, notes and sharing join it from the
- * screens that keep them.
+ * An X post's ⋯ sheet, in XTA's order (plugin_post_actions.dart, as
+ * tweet_post_menu.dart opens it for an X post): save it on this device or
+ * take it out, the note on it in Saved, Add to group for its author, Share
+ * link, Save to folder…, Reposted by, Quotes and Open in browser. None of it
+ * writes to X; what the running plugins add is in the post's share sheet,
+ * where XTA has it.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostMenu(post: XPost, actions: PostActions, onDismiss: () -> Unit) {
-    val shown = post.shown
-    var groups by rememberSaveable { mutableStateOf(false) }
-    if (groups) {
-        AuthorGroupsSheet(shown.author, onDismiss = onDismiss)
-        return
+    var step by rememberSaveable { mutableStateOf(MenuStep.MENU) }
+    when (step) {
+        MenuStep.MENU -> MenuSheet(post, actions, onDismiss, onStep = { step = it })
+        MenuStep.NOTE -> actions.keep.NoteSheet(post, onDismiss)
+        MenuStep.FOLDERS -> actions.keep.SaveSheet(post, onDismiss)
+        MenuStep.GROUPS -> AuthorGroupsSheet(post.shown.author, onDismiss)
+        MenuStep.CLOSED -> LaunchedEffect(Unit) { onDismiss() }
     }
-    val prefs = postScope().prefs
+}
+
+/** The sheet's entries, the shared post sheet's ([PostMenuRows]), each closing it before it acts. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MenuSheet(post: XPost, actions: PostActions, onDismiss: () -> Unit, onStep: (MenuStep) -> Unit) {
+    val graph = LocalGraph.current
+    val shown = post.shown
+    val url = PostView.url(post, postScope().prefs)
+    val saved = actions.keep.isSaved(shown.id)
+    val menu = remember(post, url, actions) {
+        val kept = Keepable.of(post)
+        PluginPostMenu(
+            post = PluginPostArchive(kept.id, kept.authorId, kept.content),
+            url = url,
+            author = shown.author.id.takeIf { it.isNotEmpty() && shown.author.screenName.isNotEmpty() },
+            reposts = { actions.openReposters(shown.id) },
+            quotes = { actions.openQuotes(shown.id) },
+        )
+    }
+    val handlers = remember(post, actions, graph) {
+        PostMenuHandlers(
+            toggleSaved = { actions.keep.toggleSave(graph, post) },
+            editNote = { onStep(MenuStep.NOTE) },
+            addToGroup = { onStep(MenuStep.GROUPS) },
+            chooseFolder = { onStep(MenuStep.FOLDERS) },
+        )
+    }
     ModalBottomSheet(onDismissRequest = onDismiss) {
         Column(Modifier.padding(bottom = 16.dp)) {
-            PostMenuEntry.entries.forEach { entry ->
-                when (entry) {
-                    PostMenuEntry.ADD_TO_GROUP -> MenuRow(PostIcons.People, stringResource(Res.string.posts_add_to_group)) { groups = true }
-                    PostMenuEntry.REPOSTED_BY -> MenuRow(XIcons.Repost, stringResource(Res.string.posts_reposted_by)) {
-                        onDismiss()
-                        actions.openReposters(shown.id)
-                    }
-                    PostMenuEntry.QUOTES -> MenuRow(PostIcons.Quote, stringResource(Res.string.posts_quotes)) {
-                        onDismiss()
-                        actions.openQuotes(shown.id)
-                    }
-                    PostMenuEntry.OPEN_IN_BROWSER -> MenuRow(PostIcons.OpenInNew, stringResource(Res.string.posts_open_in_browser)) {
-                        onDismiss()
-                        actions.openInBrowser(PostView.url(post, prefs))
-                    }
-                }
-            }
-            PluginSheetEntries(remember(post, prefs) { PluginSaves.shared(post, PostView.url(post, prefs)) }, onDismiss)
+            PostMenuRows(menu, saved, handlers, onDone = { onStep(MenuStep.CLOSED) })
         }
     }
 }

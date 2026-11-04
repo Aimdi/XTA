@@ -6,7 +6,6 @@
     <string name="change_hours">%1$d시간 변동</string>
     <string name="closed_on">종가 (%1$s)</string>
     <string name="crypto">암호화폐</string>
-    <string name="crypto_address_copied">컨트랙트 주소를 복사했습니다</string>
     <string name="crypto_contract">컨트랙트 주소</string>
     <string name="crypto_copy_contract">주소 복사</string>
     <string name="crypto_identity_hint">네트워크와 컨트랙트 주소로 프로젝트를 선택하세요. 서로 다른 토큰이 같은 심볼을 쓸 수 있습니다.</string>

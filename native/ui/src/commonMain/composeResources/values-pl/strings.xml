@@ -43,30 +43,11 @@
     <string name="settings_clear_confirm">Usuń</string>
 
     <string name="card_from">Z %1$s</string>
-    <string name="poll_final">Wyniki końcowe</string>
     <plurals name="poll_votes">
-        <item quantity="one">%1$d głos</item>
-        <item quantity="few">%1$d głosy</item>
-        <item quantity="many">%1$d głosów</item>
-        <item quantity="other">%1$d głosu</item>
-    </plurals>
-    <plurals name="poll_days_left">
-        <item quantity="one">Został %1$d dzień</item>
-        <item quantity="few">Zostały %1$d dni</item>
-        <item quantity="many">Zostało %1$d dni</item>
-        <item quantity="other">Zostało %1$d dnia</item>
-    </plurals>
-    <plurals name="poll_hours_left">
-        <item quantity="one">Została %1$d godzina</item>
-        <item quantity="few">Zostały %1$d godziny</item>
-        <item quantity="many">Zostało %1$d godzin</item>
-        <item quantity="other">Zostało %1$d godziny</item>
-    </plurals>
-    <plurals name="poll_minutes_left">
-        <item quantity="one">Została %1$d minuta</item>
-        <item quantity="few">Zostały %1$d minuty</item>
-        <item quantity="many">Zostało %1$d minut</item>
-        <item quantity="other">Zostało %1$d minuty</item>
+        <item quantity="one">%1$s głos</item>
+        <item quantity="few">%1$s głosy</item>
+        <item quantity="many">%1$s głosów</item>
+        <item quantity="other">%1$s głosu</item>
     </plurals>
     <plurals name="new_posts">
         <item quantity="one">%1$d nowy wpis</item>

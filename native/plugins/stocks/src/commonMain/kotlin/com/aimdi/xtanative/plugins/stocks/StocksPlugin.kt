@@ -17,14 +17,18 @@ import com.aimdi.xtanative.ui.plugins.PluginFootprint
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginScreen
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 /**
  * Stocks as a downloadable plugin, as XTA's Stocks plugin reads the markets:
  * a watchlist of tickers and tokens with their quotes, X's posts about them,
  * the trending tickers and the markets, each ticker's and token's page, and
  * the price strip under an X post that names tickers, whose cashtags open
- * the ticker's page and, held, offer it to the watchlist. Read-only: quotes are shown, nothing is traded, no
- * account is needed, and the watchlist stays on the device.
+ * the ticker's page and, held, offer it to the watchlist, and the network a
+ * watched token's contract address is on, where an X post names it.
+ * Read-only: quotes are shown, nothing is traded, no account is needed, and
+ * the watchlist stays on the device.
  */
 class StocksPlugin : XtaPlugin() {
     private lateinit var app: StocksApp
@@ -71,6 +75,10 @@ class StocksPlugin : XtaPlugin() {
             },
         )
     }
+
+    /** The network of each watched token by its contract, which an X post writes before the address, as XTA's does. */
+    override val contractNetworks: Flow<Map<String, String>>
+        get() = app.watchlist.state.map { it?.contractNetworks.orEmpty() }
 
     /** The watchlist as XTA's backup holds it: its `stockSubscriptions` rows. Its order and the rest are in the app's settings. */
     override val backupSections: List<PluginBackupSection>

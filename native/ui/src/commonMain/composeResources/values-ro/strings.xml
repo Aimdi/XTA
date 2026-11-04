@@ -43,26 +43,10 @@
     <string name="settings_clear_confirm">Elimină</string>
 
     <string name="card_from">De la %1$s</string>
-    <string name="poll_final">Rezultate finale</string>
     <plurals name="poll_votes">
-        <item quantity="one">%1$d vot</item>
-        <item quantity="few">%1$d voturi</item>
-        <item quantity="other">%1$d de voturi</item>
-    </plurals>
-    <plurals name="poll_days_left">
-        <item quantity="one">A mai rămas %1$d zi</item>
-        <item quantity="few">Au mai rămas %1$d zile</item>
-        <item quantity="other">Au mai rămas %1$d de zile</item>
-    </plurals>
-    <plurals name="poll_hours_left">
-        <item quantity="one">A mai rămas %1$d oră</item>
-        <item quantity="few">Au mai rămas %1$d ore</item>
-        <item quantity="other">Au mai rămas %1$d de ore</item>
-    </plurals>
-    <plurals name="poll_minutes_left">
-        <item quantity="one">A mai rămas %1$d minut</item>
-        <item quantity="few">Au mai rămas %1$d minute</item>
-        <item quantity="other">Au mai rămas %1$d de minute</item>
+        <item quantity="one">%1$s vot</item>
+        <item quantity="few">%1$s voturi</item>
+        <item quantity="other">%1$s de voturi</item>
     </plurals>
     <plurals name="new_posts">
         <item quantity="one">%1$d postare nouă</item>

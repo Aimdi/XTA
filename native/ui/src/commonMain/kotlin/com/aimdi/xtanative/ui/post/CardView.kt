@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,13 +35,19 @@ import com.aimdi.xtanative.core.x.model.XCard
 import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.common.rememberLoadsManually
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.card_from
-import com.aimdi.xtanative.ui.generated.resources.poll_days_left
-import com.aimdi.xtanative.ui.generated.resources.poll_final
-import com.aimdi.xtanative.ui.generated.resources.poll_hours_left
-import com.aimdi.xtanative.ui.generated.resources.poll_minutes_left
+import com.aimdi.xtanative.ui.generated.resources.poll_ended_days
+import com.aimdi.xtanative.ui.generated.resources.poll_ended_hours
+import com.aimdi.xtanative.ui.generated.resources.poll_ended_minutes
+import com.aimdi.xtanative.ui.generated.resources.poll_ended_months
+import com.aimdi.xtanative.ui.generated.resources.poll_ended_years
+import com.aimdi.xtanative.ui.generated.resources.poll_ends_days
+import com.aimdi.xtanative.ui.generated.resources.poll_ends_hours
+import com.aimdi.xtanative.ui.generated.resources.poll_ends_minutes
+import com.aimdi.xtanative.ui.generated.resources.poll_no_votes
 import com.aimdi.xtanative.ui.generated.resources.poll_votes
 import com.aimdi.xtanative.ui.generated.resources.reader_media
 import com.aimdi.xtanative.ui.links.LinkFrom
@@ -52,9 +58,9 @@ import com.aimdi.xtanative.ui.media.MediaGallery
 import com.aimdi.xtanative.ui.media.MediaIcons
 import com.aimdi.xtanative.ui.media.ViewerMedia
 import com.aimdi.xtanative.ui.media.rememberPhotoSize
-import java.time.Duration
 import java.time.Instant
-import kotlin.math.roundToInt
+import java.util.Locale
+import org.jetbrains.compose.resources.PluralStringResource
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -193,43 +199,19 @@ private fun CardSite(domain: String?, onOpen: (() -> Unit)? = null) {
     }
 }
 
-/** A poll as counted when it was read, each choice's picture beside it: XTA Native never votes. */
+/**
+ * A poll as counted when it was read (poll_results.dart): a bar per choice
+ * filled to its share, the choice and its share on it, the leader in bold on
+ * the accent, its picture before it opening full screen ([onPicture]), then
+ * the votes and when the poll ends or ended. XTA Native never votes.
+ */
 @Composable
 private fun PollCard(poll: XCard.Poll, post: XPost?, modifier: Modifier) {
     val pictures = rememberPollPictures(poll, post)
-    val total = poll.total
+    val locale = currentLocale()
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        poll.choices.forEach { choice ->
-            val share = poll.share(choice).toFloat()
-            val ahead = poll.leads(choice)
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                choice.imageUrl?.let { image -> PollChoiceImage(image.takeIf { pictures.load }, pictures.opener(choice)) }
-                Box(Modifier.weight(1f).height(34.dp).clip(RoundedCornerShape(6.dp))) {
-                    Box(
-                        Modifier
-                            .fillMaxHeight()
-                            .fillMaxWidth(share.coerceAtLeast(0.015f))
-                            .background(if (ahead) MaterialTheme.colorScheme.primary.copy(alpha = 0.4f) else MaterialTheme.colorScheme.surfaceContainerHigh),
-                    )
-                    Row(Modifier.fillMaxSize().padding(horizontal = 10.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            choice.label,
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = if (ahead) FontWeight.Bold else FontWeight.Normal,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.weight(1f),
-                        )
-                        Text("${(share * 100).roundToInt()}%", style = MaterialTheme.typography.bodyMedium, fontWeight = if (ahead) FontWeight.Bold else FontWeight.Normal)
-                    }
-                }
-            }
-        }
-        Text(
-            pluralStringResource(Res.plurals.poll_votes, total.coerceAtMost(Int.MAX_VALUE.toLong()).toInt(), total) + " · " + pollState(poll),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        poll.choices.forEach { choice -> PollChoiceBar(poll, choice, locale, pictures) }
+        Text(pollLine(poll, locale), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
@@ -272,13 +254,50 @@ private fun PollChoiceImage(url: String?, onOpen: (() -> Unit)?) {
 }
 
 @Composable
-private fun pollState(poll: XCard.Poll): String {
-    val ends = poll.endsAt
-    val left = ends?.let { Duration.between(Instant.now(), it) }
-    return when {
-        poll.final || left == null || left.isNegative -> stringResource(Res.string.poll_final)
-        left.toDays() >= 1 -> pluralStringResource(Res.plurals.poll_days_left, left.toDays().toInt(), left.toDays())
-        left.toHours() >= 1 -> pluralStringResource(Res.plurals.poll_hours_left, left.toHours().toInt(), left.toHours())
-        else -> pluralStringResource(Res.plurals.poll_minutes_left, left.toMinutes().toInt().coerceAtLeast(1), left.toMinutes().coerceAtLeast(1))
+private fun PollChoiceBar(poll: XCard.Poll, choice: XCard.Poll.Choice, locale: Locale, pictures: PollPictures) {
+    val share = poll.share(choice)
+    val ahead = poll.leads(choice)
+    val shape = RoundedCornerShape(6.dp)
+    val weight = if (ahead) FontWeight.Bold else FontWeight.Normal
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        choice.imageUrl?.let { image -> PollChoiceImage(image.takeIf { pictures.load }, pictures.opener(choice)) }
+        Box(Modifier.weight(1f).heightIn(min = 36.dp).clip(shape)) {
+            Box(Modifier.matchParentSize()) {
+                Box(
+                    Modifier
+                        .fillMaxHeight()
+                        .fillMaxWidth(share.toFloat().coerceAtLeast(0.015f))
+                        .background(if (ahead) MaterialTheme.colorScheme.primary.copy(alpha = 0.35f) else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)),
+                )
+            }
+            Row(Modifier.fillMaxWidth().heightIn(min = 36.dp).padding(horizontal = 10.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text(choice.label, style = MaterialTheme.typography.bodyMedium, fontWeight = weight, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+                Text(PollWords.percent(share, locale), style = MaterialTheme.typography.bodyMedium, fontWeight = weight, modifier = Modifier.padding(start = 10.dp))
+            }
+        }
     }
+}
+
+/** "1,234 votes · Ends in 2 hours", "No votes · Ended 3 days ago": the votes, then when it ends where X says. */
+@Composable
+private fun pollLine(poll: XCard.Poll, locale: Locale): String {
+    val total = poll.total
+    val votes = if (total == 0L) {
+        stringResource(Res.string.poll_no_votes)
+    } else {
+        pluralStringResource(Res.plurals.poll_votes, total.coerceAtMost(Int.MAX_VALUE.toLong()).toInt(), PollWords.votes(total, locale))
+    }
+    val end = PollWords.end(poll.endsAt, Instant.now()) ?: return votes
+    return votes + " · " + pluralStringResource(pollPhrase(end.phrase), end.n, end.n)
+}
+
+private fun pollPhrase(phrase: PollPhrase): PluralStringResource = when (phrase) {
+    PollPhrase.ENDS_MINUTES -> Res.plurals.poll_ends_minutes
+    PollPhrase.ENDS_HOURS -> Res.plurals.poll_ends_hours
+    PollPhrase.ENDS_DAYS -> Res.plurals.poll_ends_days
+    PollPhrase.ENDED_MINUTES -> Res.plurals.poll_ended_minutes
+    PollPhrase.ENDED_HOURS -> Res.plurals.poll_ended_hours
+    PollPhrase.ENDED_DAYS -> Res.plurals.poll_ended_days
+    PollPhrase.ENDED_MONTHS -> Res.plurals.poll_ended_months
+    PollPhrase.ENDED_YEARS -> Res.plurals.poll_ended_years
 }

@@ -43,30 +43,11 @@
     <string name="settings_clear_confirm">Вилучити</string>
 
     <string name="card_from">Джерело: %1$s</string>
-    <string name="poll_final">Остаточні результати</string>
     <plurals name="poll_votes">
-        <item quantity="one">%1$d голос</item>
-        <item quantity="few">%1$d голоси</item>
-        <item quantity="many">%1$d голосів</item>
-        <item quantity="other">%1$d голосу</item>
-    </plurals>
-    <plurals name="poll_days_left">
-        <item quantity="one">Залишився %1$d день</item>
-        <item quantity="few">Залишилося %1$d дні</item>
-        <item quantity="many">Залишилося %1$d днів</item>
-        <item quantity="other">Залишилося %1$d дня</item>
-    </plurals>
-    <plurals name="poll_hours_left">
-        <item quantity="one">Залишилася %1$d година</item>
-        <item quantity="few">Залишилося %1$d години</item>
-        <item quantity="many">Залишилося %1$d годин</item>
-        <item quantity="other">Залишилося %1$d години</item>
-    </plurals>
-    <plurals name="poll_minutes_left">
-        <item quantity="one">Залишилася %1$d хвилина</item>
-        <item quantity="few">Залишилося %1$d хвилини</item>
-        <item quantity="many">Залишилося %1$d хвилин</item>
-        <item quantity="other">Залишилося %1$d хвилини</item>
+        <item quantity="one">%1$s голос</item>
+        <item quantity="few">%1$s голоси</item>
+        <item quantity="many">%1$s голосів</item>
+        <item quantity="other">%1$s голосу</item>
     </plurals>
     <plurals name="new_posts">
         <item quantity="one">%1$d новий допис</item>

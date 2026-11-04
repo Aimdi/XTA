@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- An X post's footer, its share and ⋯ sheets and menus, its poll's line, and the contract addresses in its text (ui.post): XTA's words where XTA has them. -->
+<resources>
+    <string name="posts_share">Jaga postitust</string>
+    <string name="posts_share_content">Jaga säutsu sisu</string>
+    <string name="posts_share_article_link">Jaga artikli linki</string>
+    <string name="posts_share_content_and_link">Jaga säutsu sisu ja linki</string>
+    <string name="posts_share_image">Jaga postitust pildina</string>
+    <string name="posts_share_article_image">Jaga artiklit pildina</string>
+    <string name="posts_copied">Kopeeritud lõikelauale</string>
+    <string name="posts_reply_not_found">Vabandust, aga vastatud säutsu enam ei leidu!</string>
+    <string name="posts_subscribe">Telli</string>
+    <string name="contract_address_copied">Lepingu aadress kopeeritud</string>
+    <string name="poll_no_votes">Hääli pole</string>
+    <plurals name="poll_ends_minutes">
+        <item quantity="one">Lõpeb %1$d minuti pärast</item>
+        <item quantity="other">Lõpeb %1$d minuti pärast</item>
+    </plurals>
+    <plurals name="poll_ends_hours">
+        <item quantity="one">Lõpeb %1$d tunni pärast</item>
+        <item quantity="other">Lõpeb %1$d tunni pärast</item>
+    </plurals>
+    <plurals name="poll_ends_days">
+        <item quantity="one">Lõpeb %1$d päeva pärast</item>
+        <item quantity="other">Lõpeb %1$d päeva pärast</item>
+    </plurals>
+    <plurals name="poll_ended_minutes">
+        <item quantity="one">Lõppes %1$d minut tagasi</item>
+        <item quantity="other">Lõppes %1$d minutit tagasi</item>
+    </plurals>
+    <plurals name="poll_ended_hours">
+        <item quantity="one">Lõppes %1$d tund tagasi</item>
+        <item quantity="other">Lõppes %1$d tundi tagasi</item>
+    </plurals>
+    <plurals name="poll_ended_days">
+        <item quantity="one">Lõppes %1$d päev tagasi</item>
+        <item quantity="other">Lõppes %1$d päeva tagasi</item>
+    </plurals>
+    <plurals name="poll_ended_months">
+        <item quantity="one">Lõppes %1$d kuu tagasi</item>
+        <item quantity="other">Lõppes %1$d kuud tagasi</item>
+    </plurals>
+    <plurals name="poll_ended_years">
+        <item quantity="one">Lõppes %1$d aasta tagasi</item>
+        <item quantity="other">Lõppes %1$d aastat tagasi</item>
+    </plurals>
+</resources>

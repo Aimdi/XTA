@@ -44,6 +44,9 @@ object Keeping {
     /** [item] liked on this device, or no longer, as a network's own like mirrored into the likes is. */
     fun setLiked(graph: AppGraph, item: Keepable, liked: Boolean) = graph.keep { like(graph, item, liked) }
 
+    /** [item] liked on this device unless it is already, as a double-tap on a post likes it (tweet_footer.dart's withDoubleTapToLike). */
+    fun likeHere(graph: AppGraph, item: Keepable) = graph.keep { if (!graph.likes.isLiked(item.id)) like(graph, item, true) }
+
     /** The note on [item] in Saved, as its editor saves it: a post not saved yet is saved first, where a plain tap files. */
     suspend fun writeNote(graph: AppGraph, item: Keepable, note: String?) {
         if (!graph.saved.library().isSaved(item.id)) {

@@ -43,22 +43,9 @@
     <string name="settings_clear_confirm">Supprimer</string>
 
     <string name="card_from">Depuis %1$s</string>
-    <string name="poll_final">Résultats définitifs</string>
     <plurals name="poll_votes">
-        <item quantity="one">%1$d vote</item>
-        <item quantity="other">%1$d votes</item>
-    </plurals>
-    <plurals name="poll_days_left">
-        <item quantity="one">%1$d jour restant</item>
-        <item quantity="other">%1$d jours restants</item>
-    </plurals>
-    <plurals name="poll_hours_left">
-        <item quantity="one">%1$d heure restante</item>
-        <item quantity="other">%1$d heures restantes</item>
-    </plurals>
-    <plurals name="poll_minutes_left">
-        <item quantity="one">%1$d minute restante</item>
-        <item quantity="other">%1$d minutes restantes</item>
+        <item quantity="one">%1$s vote</item>
+        <item quantity="other">%1$s votes</item>
     </plurals>
     <plurals name="new_posts">
         <item quantity="one">%1$d nouveau post</item>

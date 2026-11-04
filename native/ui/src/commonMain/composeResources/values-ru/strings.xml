@@ -43,30 +43,11 @@
     <string name="settings_clear_confirm">Удалить</string>
 
     <string name="card_from">Источник: %1$s</string>
-    <string name="poll_final">Окончательные результаты</string>
     <plurals name="poll_votes">
-        <item quantity="one">%1$d голос</item>
-        <item quantity="few">%1$d голоса</item>
-        <item quantity="many">%1$d голосов</item>
-        <item quantity="other">%1$d голоса</item>
-    </plurals>
-    <plurals name="poll_days_left">
-        <item quantity="one">Остался %1$d день</item>
-        <item quantity="few">Осталось %1$d дня</item>
-        <item quantity="many">Осталось %1$d дней</item>
-        <item quantity="other">Осталось %1$d дня</item>
-    </plurals>
-    <plurals name="poll_hours_left">
-        <item quantity="one">Остался %1$d час</item>
-        <item quantity="few">Осталось %1$d часа</item>
-        <item quantity="many">Осталось %1$d часов</item>
-        <item quantity="other">Осталось %1$d часа</item>
-    </plurals>
-    <plurals name="poll_minutes_left">
-        <item quantity="one">Осталась %1$d минута</item>
-        <item quantity="few">Осталось %1$d минуты</item>
-        <item quantity="many">Осталось %1$d минут</item>
-        <item quantity="other">Осталось %1$d минуты</item>
+        <item quantity="one">%1$s голос</item>
+        <item quantity="few">%1$s голоса</item>
+        <item quantity="many">%1$s голосов</item>
+        <item quantity="other">%1$s голоса</item>
     </plurals>
     <plurals name="new_posts">
         <item quantity="one">%1$d новый пост</item>

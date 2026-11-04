@@ -43,18 +43,8 @@
     <string name="settings_clear_confirm">Hapus</string>
 
     <string name="card_from">Dari %1$s</string>
-    <string name="poll_final">Hasil akhir</string>
     <plurals name="poll_votes">
-        <item quantity="other">%1$d suara</item>
-    </plurals>
-    <plurals name="poll_days_left">
-        <item quantity="other">%1$d hari lagi</item>
-    </plurals>
-    <plurals name="poll_hours_left">
-        <item quantity="other">%1$d jam lagi</item>
-    </plurals>
-    <plurals name="poll_minutes_left">
-        <item quantity="other">%1$d menit lagi</item>
+        <item quantity="other">%1$s suara</item>
     </plurals>
     <plurals name="new_posts">
         <item quantity="other">%1$d postingan baru</item>

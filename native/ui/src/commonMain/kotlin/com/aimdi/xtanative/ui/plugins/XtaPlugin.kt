@@ -14,8 +14,9 @@ import kotlinx.serialization.json.JsonElement
  * only plugins built against one it supports. Changing what is in this
  * package in a way a plugin already built would notice means a new version.
  * 1 is what native-0.1.41 shipped, 2 what native-0.1.45 shipped; 3 adds the
- * held cashtag's entries, a post's extras, an account's route and the
- * accounts a plugin follows, for Subscriptions.
+ * held cashtag's entries, a post's extras, an account's route, the accounts
+ * a plugin follows, for Subscriptions, and the networks of the contracts it
+ * watches, for X posts' text.
  */
 const val PLUGIN_API_VERSION: Int = 3
 
@@ -171,6 +172,16 @@ abstract class XtaPlugin {
     open fun cashtagActions(symbol: String): List<PluginCashtagAction> = emptyList()
 
     /**
+     * The networks of the tokens it watches, by their contract addresses, as
+     * they change: an X post's text cuts a contract address in the middle and
+     * writes a watched token's network in front of it, as XTA's does (Stocks'
+     * "Base · 0x23a2…fe51"). The app matches an address as contracts compare
+     * ([com.aimdi.xtanative.networks.CryptoAddresses.same]); null when it
+     * watches none.
+     */
+    open val contractNetworks: Flow<Map<String, String>>? get() = null
+
+    /**
      * The route of its own screen for [account], one of its accounts as its
      * [feed] reads it and a group holds it ("<plugin id>:<account>"): its page
      * there, as XTA's subscription sources open a member (destinationFor).
@@ -221,10 +232,11 @@ abstract class XtaPlugin {
     open fun archived(content: JsonElement): NetworkPost? = null
 
     /**
-     * The entries it adds to the post sheets for [post] (the app's X post
-     * sheet and the shared post menu), below the app's own, as XTA's share
-     * sheet offers "Save to Karakeep"; none by default. Asked as a sheet
-     * opens, so quick: the work is the entry's [PluginPostAction.run].
+     * The entries it adds to the post sheets for [post] (an X post's share
+     * sheet, before its Cancel, and the shared post menu, below the app's
+     * own), as XTA's share sheet offers "Save to Karakeep"; none by default.
+     * Asked as a sheet opens, so quick: the work is the entry's
+     * [PluginPostAction.run].
      */
     open fun postSheetActions(post: PluginSharedPost): List<PluginPostAction> = emptyList()
 

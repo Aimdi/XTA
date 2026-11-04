@@ -65,7 +65,7 @@ sealed interface KeepNotice {
 
     data object SomethingWentWrong : KeepNotice
 
-    /** A plugin's own words, in the reader's language: how a post it sent to the reader's own server went. */
+    /** Words already in the reader's language: a plugin's (how a post it sent to the reader's own server went), or a screen's own. */
     data class Said(val text: String, override val working: Boolean = false) : KeepNotice
 }
 
@@ -81,6 +81,11 @@ object KeepNotices {
 
     fun show(notice: KeepNotice) {
         current.value = ShownNotice(notice, serials.incrementAndGet())
+    }
+
+    /** Says [text], already in the reader's language; nothing for a blank one. */
+    fun say(text: String) {
+        if (text.isNotBlank()) show(KeepNotice.Said(text))
     }
 
     /** Hides [shown] if it is still the one showing: a newer notice stays. */

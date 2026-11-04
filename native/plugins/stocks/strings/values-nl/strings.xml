@@ -6,7 +6,6 @@
     <string name="change_hours">Verandering %1$d u</string>
     <string name="closed_on">Slot %1$s</string>
     <string name="crypto">Crypto</string>
-    <string name="crypto_address_copied">Contractadres gekopieerd</string>
     <string name="crypto_contract">Contractadres</string>
     <string name="crypto_copy_contract">Adres kopiëren</string>
     <string name="crypto_identity_hint">Kies het project op basis van netwerk en contractadres. Verschillende tokens kunnen hetzelfde symbool hebben.</string>

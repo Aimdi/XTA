@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.networks.stocks
 
 import com.aimdi.xtanative.core.json.J
+import com.aimdi.xtanative.networks.CryptoAddresses
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 

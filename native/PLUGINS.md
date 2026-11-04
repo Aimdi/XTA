@@ -50,8 +50,9 @@ the kit's pieces of that time (the article reader, `FeedReads`, X posts in a
 plugin, the chip tabs, the shelf, the recent searches, the action row,
 `ZoomableImage`); 3 adds `cashtagActions` (the held cashtag's entries),
 `postExtras`, `routeForAccount`, `subscriptions` with `PluginSubscription`,
-`PluginHost.unfollowed` and `RssReads`. A plugin's `xta-plugin.json` names
-the version it was built against.
+`PluginHost.unfollowed`, `RssReads` and `contractNetworks` (the networks of
+the contracts a plugin watches, for X posts' text). A plugin's
+`xta-plugin.json` names the version it was built against.
 
 The app loads the versions from `OLDEST_PLUGIN_API` (2) to its own, so a
 plugin built before keeps working until its update comes, for as long as what
@@ -93,6 +94,7 @@ its plugins have to link against that prerelease's app.
 | `cashtagStrip` | what it draws under an X post that names tickers (Stocks' price strip), or none |
 | `routeForCashtag(symbol)` | its own screen for a cashtag tapped in an X post (Stocks' ticker), or null: the tap searches X |
 | `cashtagActions(symbol)` | its entries (`PluginCashtagAction`s) in the sheet a long press on a cashtag opens, below the cashtag itself (Stocks' Add to watchlist), or none |
+| `contractNetworks` | the networks of the tokens it watches by their contract addresses, as they change: an X post's text cuts a contract address in the middle and writes a watched token's network before it (Stocks' "Base · 0x23a2…fe51"), the app matching addresses as `:networks`' `CryptoAddresses` compares them; or none |
 | `routeForAccount(account)` | its own screen for one of its accounts as a group holds it (`<id>:<account>`), XTA's destinationFor: the app opens a member there (`AppPlugins.openMember`), or null |
 | `postSheetActions(post)` | its entries in the post sheets for a `PluginSharedPost` ([below](#sending-a-post-to-the-readers-own-server)), or none |
 | `folderOption`, `filed(post)` | its switch in Saved's folder dialog, and a post filed in a folder with it on, as a `PluginFiledPost` ([below](#sending-a-post-to-the-readers-own-server)) |
@@ -180,12 +182,13 @@ where XTA's writes it (`NetworkPrefs.shared`: the web sources' read marks
 in RSS's `plugin.rss.read_ids`).
 
 `:ui`'s `ui.common` (avatar, hairline, loading row, times, `longPressOver`
-for a long press over a whole card, its tappable parts included, and a
+for a long press over a whole card, its tappable parts included, a
 picture's marks as XTA draws them: `MediaBadge`, `AltBadge` with
 `AltTextDialog`, and `ShowMediaTile` with `mediaShown` for Settings ›
-Media's "Load media manually") is there too: its avatar asks for a
-picture as the tiles do, with the headers its server wants (Pixiv's
-Referer). A plugin may draw with the app's other
+Media's "Load media manually", and `rememberCopyContract` for a contract
+address copied whole) is there too: its avatar asks for a picture as the
+tiles do, with the headers its server wants (Pixiv's Referer). A plugin
+may draw with the app's other
 public building blocks where they fit:
 its icon sets (`PostIcons`, `DiscoverIcons`, `GroupIcons`), `ThreadRows` for
 X posts, `rememberRowDrag` for a list dragged into order. Whatever a plugin
@@ -359,9 +362,10 @@ sheet that embeds the shared rows does not, as XTA's Pixiv sheets do not.)
 `XtaPlugin.postSheetActions(post)` lists a plugin's
 entries for a post, `PluginPostAction`s (an icon, a label in a language, and
 `run`), as XTA's share sheet offers "Save to Karakeep". The app asks every
-running plugin as a sheet opens and draws their entries below its own, in
-the plugins' order: in the X post's ⋯ sheet (`ui/post`'s `PostMenu`) and in
-the shared plugin post menu (`PluginPostMenu`). The post is a
+running plugin as a sheet opens and draws their entries in the plugins'
+order: in an X post's share sheet (`ui/post`'s `PostShareSheet`), after its
+own and before its Cancel, where XTA has them (Deepmarks, then Karakeep), and
+below the shared plugin post menu's own (`PluginPostMenu`). The post is a
 `PluginSharedPost`: its `url` (an X post's as its Share gives it, a plugin
 post's `PluginPostMenu.url`), its `title` (an X post's author and words on
 one line, `PluginSharedPost.titleOf`, as XTA titles the bookmark; a plugin

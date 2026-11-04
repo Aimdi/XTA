@@ -140,6 +140,44 @@ data class FooterCounts(val replies: Long?, val reposts: Long?, val likes: Long?
 }
 
 /**
+ * What a post's footer affords at the width it has, as XTA's
+ * resolveFooterFit decides it (tweet_footer.dart): the views go first, for
+ * they open nothing, then the counts' numbers; when not even the bare glyphs
+ * fit, the buttons wrap onto a second line rather than shrink.
+ */
+data class FooterFit(val showCounts: Boolean, val showViews: Boolean, val wraps: Boolean) {
+    companion object {
+        /** Around a count's glyph and number, as the app's counts draw them (NetworkCount). */
+        const val PADDING = 4f
+        const val GLYPH = 17f
+
+        /** Between a count's glyph and its number. */
+        const val GAP = 4f
+
+        /** The bookmark's and the share button's side. */
+        const val BUTTON = 40f
+
+        /** Between the counts and the bookmark and share at the end. */
+        const val GROUP_GAP = 8f
+
+        /** How wide a count is with a number [label] wide (0 for none). */
+        fun countWidth(label: Float): Float = PADDING * 2 + GLYPH + if (label > 0f) GAP + label else 0f
+
+        /**
+         * The fit in [available] width of counts whose numbers are [labels]
+         * wide and a view count [views] wide (null for none), all in dp.
+         */
+        fun of(available: Float, labels: List<Float>, views: Float?): FooterFit {
+            if (views != null && width(labels + views) <= available) return FooterFit(showCounts = true, showViews = true, wraps = false)
+            if (width(labels) <= available) return FooterFit(showCounts = true, showViews = false, wraps = false)
+            return FooterFit(showCounts = false, showViews = false, wraps = width(labels.map { 0f }) > available)
+        }
+
+        private fun width(labels: List<Float>): Float = labels.sumOf { countWidth(it).toDouble() }.toFloat() + 2 * BUTTON + GROUP_GAP
+    }
+}
+
+/**
  * Posts in a row that read as one reposted run, as XTA's boost_runs.dart
  * folds them when "collapse reposts" is on: two or more reposts in a row.
  */

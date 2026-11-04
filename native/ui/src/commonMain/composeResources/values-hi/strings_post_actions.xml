@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- An X post's footer, its share and ⋯ sheets and menus, its poll's line, and the contract addresses in its text (ui.post): XTA's words where XTA has them. -->
+<resources>
+    <string name="posts_share">पोस्ट साझा करें</string>
+    <string name="posts_share_content">पोस्ट सामग्री साझा करें</string>
+    <string name="posts_share_article_link">लेख लिंक साझा करें</string>
+    <string name="posts_share_content_and_link">पोस्ट सामग्री और लिंक साझा करें</string>
+    <string name="posts_share_image">पोस्ट को छवि के रूप में साझा करें</string>
+    <string name="posts_share_article_image">लेख को छवि के रूप में साझा करें</string>
+    <string name="posts_copied">क्लिपबोर्ड पर कॉपी हो गया</string>
+    <string name="posts_reply_not_found">क्षमा करें, उत्तर दी गई पोस्ट नहीं मिली!</string>
+    <string name="posts_subscribe">सदस्यता लें</string>
+    <string name="contract_address_copied">कॉन्ट्रैक्ट पता कॉपी हो गया</string>
+    <string name="poll_no_votes">कोई वोट नहीं</string>
+    <plurals name="poll_ends_minutes">
+        <item quantity="one">%1$d मिनट में समाप्त होगा</item>
+        <item quantity="other">%1$d मिनट में समाप्त होगा</item>
+    </plurals>
+    <plurals name="poll_ends_hours">
+        <item quantity="one">%1$d घंटे में समाप्त होगा</item>
+        <item quantity="other">%1$d घंटे में समाप्त होगा</item>
+    </plurals>
+    <plurals name="poll_ends_days">
+        <item quantity="one">%1$d दिन में समाप्त होगा</item>
+        <item quantity="other">%1$d दिन में समाप्त होगा</item>
+    </plurals>
+    <plurals name="poll_ended_minutes">
+        <item quantity="one">%1$d मिनट पहले समाप्त हुआ</item>
+        <item quantity="other">%1$d मिनट पहले समाप्त हुआ</item>
+    </plurals>
+    <plurals name="poll_ended_hours">
+        <item quantity="one">%1$d घंटे पहले समाप्त हुआ</item>
+        <item quantity="other">%1$d घंटे पहले समाप्त हुआ</item>
+    </plurals>
+    <plurals name="poll_ended_days">
+        <item quantity="one">%1$d दिन पहले समाप्त हुआ</item>
+        <item quantity="other">%1$d दिन पहले समाप्त हुआ</item>
+    </plurals>
+    <plurals name="poll_ended_months">
+        <item quantity="one">%1$d महीने पहले समाप्त हुआ</item>
+        <item quantity="other">%1$d महीने पहले समाप्त हुआ</item>
+    </plurals>
+    <plurals name="poll_ended_years">
+        <item quantity="one">%1$d साल पहले समाप्त हुआ</item>
+        <item quantity="other">%1$d साल पहले समाप्त हुआ</item>
+    </plurals>
+</resources>

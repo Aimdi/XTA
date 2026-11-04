@@ -6,7 +6,6 @@
     <string name="change_hours">Změna za %1$d h</string>
     <string name="closed_on">Závěr %1$s</string>
     <string name="crypto">Kryptoměny</string>
-    <string name="crypto_address_copied">Adresa kontraktu zkopírována</string>
     <string name="crypto_contract">Adresa kontraktu</string>
     <string name="crypto_copy_contract">Kopírovat adresu</string>
     <string name="crypto_identity_hint">Vyberte projekt podle sítě a adresy kontraktu. Různé tokeny mohou mít stejný symbol.</string>

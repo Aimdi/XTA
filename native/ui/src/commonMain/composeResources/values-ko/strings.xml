@@ -43,18 +43,8 @@
     <string name="settings_clear_confirm">제거</string>
 
     <string name="card_from">출처: %1$s</string>
-    <string name="poll_final">최종 결과</string>
     <plurals name="poll_votes">
-        <item quantity="other">%1$d표</item>
-    </plurals>
-    <plurals name="poll_days_left">
-        <item quantity="other">%1$d일 남음</item>
-    </plurals>
-    <plurals name="poll_hours_left">
-        <item quantity="other">%1$d시간 남음</item>
-    </plurals>
-    <plurals name="poll_minutes_left">
-        <item quantity="other">%1$d분 남음</item>
+        <item quantity="other">%1$s표</item>
     </plurals>
     <plurals name="new_posts">
         <item quantity="other">새 게시물 %1$d개</item>

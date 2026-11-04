@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- An X post's footer, its share and ⋯ sheets and menus, its poll's line, and the contract addresses in its text (ui.post): XTA's words where XTA has them. -->
+<resources>
+    <string name="posts_share">Bagikan postingan</string>
+    <string name="posts_share_content">Bagi konten cuitan</string>
+    <string name="posts_share_article_link">Bagikan tautan artikel</string>
+    <string name="posts_share_content_and_link">Bagi konten dan tautan cuitan</string>
+    <string name="posts_share_image">Bagikan postingan sebagai gambar</string>
+    <string name="posts_share_article_image">Bagikan artikel sebagai gambar</string>
+    <string name="posts_copied">Disalin ke papan klip</string>
+    <string name="posts_reply_not_found">Maaf, cuitan yang dibalas tidak dapat ditemukan!</string>
+    <string name="posts_subscribe">Langgan</string>
+    <string name="contract_address_copied">Alamat kontrak disalin</string>
+    <string name="poll_no_votes">Tidak ada suara</string>
+    <plurals name="poll_ends_minutes">
+        <item quantity="other">Berakhir dalam %1$d menit</item>
+    </plurals>
+    <plurals name="poll_ends_hours">
+        <item quantity="other">Berakhir dalam %1$d jam</item>
+    </plurals>
+    <plurals name="poll_ends_days">
+        <item quantity="other">Berakhir dalam %1$d hari</item>
+    </plurals>
+    <plurals name="poll_ended_minutes">
+        <item quantity="other">Berakhir %1$d menit yang lalu</item>
+    </plurals>
+    <plurals name="poll_ended_hours">
+        <item quantity="other">Berakhir %1$d jam yang lalu</item>
+    </plurals>
+    <plurals name="poll_ended_days">
+        <item quantity="other">Berakhir %1$d hari yang lalu</item>
+    </plurals>
+    <plurals name="poll_ended_months">
+        <item quantity="other">Berakhir %1$d bulan yang lalu</item>
+    </plurals>
+    <plurals name="poll_ended_years">
+        <item quantity="other">Berakhir %1$d tahun yang lalu</item>
+    </plurals>
+</resources>

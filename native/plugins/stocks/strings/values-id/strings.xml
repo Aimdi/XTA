@@ -6,7 +6,6 @@
     <string name="change_hours">Perubahan %1$d jam</string>
     <string name="closed_on">Penutupan %1$s</string>
     <string name="crypto">Kripto</string>
-    <string name="crypto_address_copied">Alamat kontrak disalin</string>
     <string name="crypto_contract">Alamat kontrak</string>
     <string name="crypto_copy_contract">Salin alamat</string>
     <string name="crypto_identity_hint">Pilih proyek berdasarkan jaringan dan alamat kontrak. Token berbeda bisa memiliki simbol yang sama.</string>

@@ -1,4 +1,4 @@
-package com.aimdi.xtanative.networks.stocks
+package com.aimdi.xtanative.networks
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -6,7 +6,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-class CryptoAddressTest {
+class CryptoAddressesTest {
     /** PEPE's mainnet contract, in its EIP-55 checksum casing. */
     private val pepe = "0x6982508145454Ce325dDbE47a25d4ec3d2311933"
     private val pepeLower = "0x6982508145454ce325ddbe47a25d4ec3d2311933"
@@ -61,7 +61,6 @@ class CryptoAddressTest {
         assertEquals("short", CryptoAddresses.short("short"))
         assertEquals("BNB Chain", CryptoAddresses.chainName("bsc"))
         assertEquals("newchain", CryptoAddresses.chainName("newchain"))
-        assertEquals("Ethereum · 0x6982…1933", CryptoAsset("ethereum", pepeLower, "PEPE", "Pepe").subtitle)
     }
 
     @Test
@@ -96,10 +95,11 @@ class CryptoAddressTest {
     fun aPostShowsAnAddressCutInTheMiddleAndAWatchedTokensWithItsNetwork() {
         assertEquals("0x23a2…⁠fe51", CryptoAddresses.postLabel(evm), "unbroken by the cut")
         assertEquals("EKpQ…⁠zcjm", CryptoAddresses.postLabel(mint))
-        val watched = listOf(CryptoAsset("base", evm, "DOT", "Dot"))
+        val watched = mapOf(evm to "Base")
         val shown = evm.uppercase().replaceFirst("0X", "0x")
-        assertEquals("Base", CryptoAddresses.networkOf(shown, watched), "any casing")
-        assertEquals("Base · 0x23A2…⁠FE51", CryptoAddresses.postLabel(shown, CryptoAddresses.networkOf(shown, watched)))
-        assertNull(CryptoAddresses.networkOf(mint, watched), "not watched: no network")
+        assertEquals("Base", CryptoAddresses.networkIn(shown, watched), "any casing")
+        assertEquals("Base\u00a0·\u00a00x23A2…\u2060FE51", CryptoAddresses.postLabel(shown, CryptoAddresses.networkIn(shown, watched)), "one unit: no break around the dot")
+        assertNull(CryptoAddresses.networkIn(mint, watched), "not watched: no network")
+        assertNull(CryptoAddresses.networkIn(mint.lowercase(), mapOf(mint to "Solana")), "a mint's case is its own")
     }
 }

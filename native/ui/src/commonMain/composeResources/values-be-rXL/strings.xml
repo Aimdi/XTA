@@ -43,30 +43,11 @@
     <string name="settings_clear_confirm">Vydalić</string>
 
     <string name="card_from">Krynica: %1$s</string>
-    <string name="poll_final">Kančatkovyja vyniki</string>
     <plurals name="poll_votes">
-        <item quantity="one">%1$d hołas</item>
-        <item quantity="few">%1$d hałasy</item>
-        <item quantity="many">%1$d hałasoŭ</item>
-        <item quantity="other">%1$d hołasu</item>
-    </plurals>
-    <plurals name="poll_days_left">
-        <item quantity="one">Zastaŭsia %1$d dzień</item>
-        <item quantity="few">Zastałosia %1$d dni</item>
-        <item quantity="many">Zastałosia %1$d dzion</item>
-        <item quantity="other">Zastałosia %1$d dnia</item>
-    </plurals>
-    <plurals name="poll_hours_left">
-        <item quantity="one">Zastałasia %1$d hadzina</item>
-        <item quantity="few">Zastałosia %1$d hadziny</item>
-        <item quantity="many">Zastałosia %1$d hadzin</item>
-        <item quantity="other">Zastałosia %1$d hadziny</item>
-    </plurals>
-    <plurals name="poll_minutes_left">
-        <item quantity="one">Zastałasia %1$d chvilina</item>
-        <item quantity="few">Zastałosia %1$d chviliny</item>
-        <item quantity="many">Zastałosia %1$d chvilin</item>
-        <item quantity="other">Zastałosia %1$d chviliny</item>
+        <item quantity="one">%1$s hołas</item>
+        <item quantity="few">%1$s hałasy</item>
+        <item quantity="many">%1$s hałasoŭ</item>
+        <item quantity="other">%1$s hołasu</item>
     </plurals>
     <plurals name="new_posts">
         <item quantity="one">%1$d novy dopis</item>

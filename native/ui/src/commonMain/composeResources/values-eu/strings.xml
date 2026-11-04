@@ -43,22 +43,9 @@
     <string name="settings_clear_confirm">Kendu</string>
 
     <string name="card_from">Iturria: %1$s</string>
-    <string name="poll_final">Azken emaitzak</string>
     <plurals name="poll_votes">
-        <item quantity="one">Boto %1$d</item>
-        <item quantity="other">%1$d boto</item>
-    </plurals>
-    <plurals name="poll_days_left">
-        <item quantity="one">Egun %1$d falta da</item>
-        <item quantity="other">%1$d egun falta dira</item>
-    </plurals>
-    <plurals name="poll_hours_left">
-        <item quantity="one">Ordu %1$d falta da</item>
-        <item quantity="other">%1$d ordu falta dira</item>
-    </plurals>
-    <plurals name="poll_minutes_left">
-        <item quantity="one">Minutu %1$d falta da</item>
-        <item quantity="other">%1$d minutu falta dira</item>
+        <item quantity="one">Boto %1$s</item>
+        <item quantity="other">%1$s boto</item>
     </plurals>
     <plurals name="new_posts">
         <item quantity="one">Argitalpen berri %1$d</item>

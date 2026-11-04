@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- An X post's footer, its share and ⋯ sheets and menus, its poll's line, and the contract addresses in its text (ui.post): XTA's words where XTA has them. -->
+<resources>
+    <string name="posts_share">Compartilhar o post</string>
+    <string name="posts_share_content">Compartilhar conteúdo do tweet</string>
+    <string name="posts_share_article_link">Compartilhar link do artigo</string>
+    <string name="posts_share_content_and_link">Compartilhar conteúdo e link do tweet</string>
+    <string name="posts_share_image">Compartilhar publicação como imagem</string>
+    <string name="posts_share_article_image">Compartilhar artigo como imagem</string>
+    <string name="posts_copied">Copiado para a área de transferência</string>
+    <string name="posts_reply_not_found">Desculpe, o tweet respondido não foi encontrado!</string>
+    <string name="posts_subscribe">Inscrever-se</string>
+    <string name="contract_address_copied">Endereço do contrato copiado</string>
+    <string name="poll_no_votes">Nenhum voto</string>
+    <plurals name="poll_ends_minutes">
+        <item quantity="one">Termina em %1$d minuto</item>
+        <item quantity="other">Termina em %1$d minutos</item>
+    </plurals>
+    <plurals name="poll_ends_hours">
+        <item quantity="one">Termina em %1$d hora</item>
+        <item quantity="other">Termina em %1$d horas</item>
+    </plurals>
+    <plurals name="poll_ends_days">
+        <item quantity="one">Termina em %1$d dia</item>
+        <item quantity="other">Termina em %1$d dias</item>
+    </plurals>
+    <plurals name="poll_ended_minutes">
+        <item quantity="one">Terminou há %1$d minuto</item>
+        <item quantity="other">Terminou há %1$d minutos</item>
+    </plurals>
+    <plurals name="poll_ended_hours">
+        <item quantity="one">Terminou há %1$d hora</item>
+        <item quantity="other">Terminou há %1$d horas</item>
+    </plurals>
+    <plurals name="poll_ended_days">
+        <item quantity="one">Terminou há %1$d dia</item>
+        <item quantity="other">Terminou há %1$d dias</item>
+    </plurals>
+    <plurals name="poll_ended_months">
+        <item quantity="one">Terminou há %1$d mês</item>
+        <item quantity="other">Terminou há %1$d meses</item>
+    </plurals>
+    <plurals name="poll_ended_years">
+        <item quantity="one">Terminou há %1$d ano</item>
+        <item quantity="other">Terminou há %1$d anos</item>
+    </plurals>
+</resources>

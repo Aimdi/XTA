@@ -6,7 +6,6 @@
     <string name="change_hours">%1$d 小時漲跌</string>
     <string name="closed_on">%1$s收盤</string>
     <string name="crypto">加密貨幣</string>
-    <string name="crypto_address_copied">已複製合約地址</string>
     <string name="crypto_contract">合約地址</string>
     <string name="crypto_copy_contract">複製合約地址</string>
     <string name="crypto_identity_hint">請根據網路和合約地址選擇專案。不同代幣可能使用相同代號。</string>

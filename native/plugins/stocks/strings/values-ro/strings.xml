@@ -6,7 +6,6 @@
     <string name="change_hours">Variație %1$d h</string>
     <string name="closed_on">Închidere %1$s</string>
     <string name="crypto">Criptomonede</string>
-    <string name="crypto_address_copied">Adresa contractului a fost copiată</string>
     <string name="crypto_contract">Adresa contractului</string>
     <string name="crypto_copy_contract">Copiază adresa</string>
     <string name="crypto_identity_hint">Alege proiectul după rețea și contract. Tokenuri diferite pot avea același simbol.</string>

@@ -82,6 +82,15 @@ class WatchlistTest {
     }
 
     @Test
+    fun aWatchedTokenNamesItsNetworkByItsContractAndTheFirstOfTwoOnOneContractLeads() {
+        val onBase = CryptoAsset("base", a, "SAME", "Same on Base")
+        val read = Watchlist.read(listOf("AAPL", token.encode(), onBase.encode()), listOf(onBase.id, token.id))
+        assertEquals(mapOf(a to "Base"), read.contractNetworks, "tickers name none")
+        assertEquals(mapOf(a to "Ethereum"), Watchlist.read(listOf(token.encode()), order = null).contractNetworks)
+        assertEquals("Ethereum · 0x1111…1111", token.subtitle)
+    }
+
+    @Test
     fun anEnteredTickerOrTokenIsStoredUnderItsId() {
         assertEquals(WatchlistRow("aapl", "AAPL"), Watchlist.row("\$aapl"))
         assertEquals(WatchlistRow(token.id, token.encode()), Watchlist.row(token.encode()))

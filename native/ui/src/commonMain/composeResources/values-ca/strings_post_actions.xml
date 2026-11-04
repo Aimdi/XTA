@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- An X post's footer, its share and ⋯ sheets and menus, its poll's line, and the contract addresses in its text (ui.post): XTA's words where XTA has them. -->
+<resources>
+    <string name="posts_share">Comparteix la publicació</string>
+    <string name="posts_share_content">Compartir el contingut del tuit</string>
+    <string name="posts_share_article_link">Comparteix l'enllaç de l'article</string>
+    <string name="posts_share_content_and_link">Comparteix contingut i enllaç del tuit</string>
+    <string name="posts_share_image">Comparteix la publicació com a imatge</string>
+    <string name="posts_share_article_image">Comparteix l'article com a imatge</string>
+    <string name="posts_copied">Copiat al porta-retalls</string>
+    <string name="posts_reply_not_found">Disculpa, el tuit contestat no s'ha pogut trobar!</string>
+    <string name="posts_subscribe">Subscriure</string>
+    <string name="contract_address_copied">S’ha copiat l’adreça del contracte</string>
+    <string name="poll_no_votes">Cap vot</string>
+    <plurals name="poll_ends_minutes">
+        <item quantity="one">Acaba d'aquí a %1$d minut</item>
+        <item quantity="other">Acaba d'aquí a %1$d minuts</item>
+    </plurals>
+    <plurals name="poll_ends_hours">
+        <item quantity="one">Acaba d'aquí a %1$d hora</item>
+        <item quantity="other">Acaba d'aquí a %1$d hores</item>
+    </plurals>
+    <plurals name="poll_ends_days">
+        <item quantity="one">Acaba d'aquí a %1$d dia</item>
+        <item quantity="other">Acaba d'aquí a %1$d dies</item>
+    </plurals>
+    <plurals name="poll_ended_minutes">
+        <item quantity="one">Va acabar fa %1$d minut</item>
+        <item quantity="other">Va acabar fa %1$d minuts</item>
+    </plurals>
+    <plurals name="poll_ended_hours">
+        <item quantity="one">Va acabar fa %1$d hora</item>
+        <item quantity="other">Va acabar fa %1$d hores</item>
+    </plurals>
+    <plurals name="poll_ended_days">
+        <item quantity="one">Va acabar fa %1$d dia</item>
+        <item quantity="other">Va acabar fa %1$d dies</item>
+    </plurals>
+    <plurals name="poll_ended_months">
+        <item quantity="one">Va acabar fa %1$d mes</item>
+        <item quantity="other">Va acabar fa %1$d mesos</item>
+    </plurals>
+    <plurals name="poll_ended_years">
+        <item quantity="one">Va acabar fa %1$d any</item>
+        <item quantity="other">Va acabar fa %1$d anys</item>
+    </plurals>
+</resources>

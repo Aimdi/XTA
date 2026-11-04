@@ -43,18 +43,8 @@
     <string name="settings_clear_confirm">Xóa</string>
 
     <string name="card_from">Từ %1$s</string>
-    <string name="poll_final">Kết quả cuối cùng</string>
     <plurals name="poll_votes">
-        <item quantity="other">%1$d phiếu</item>
-    </plurals>
-    <plurals name="poll_days_left">
-        <item quantity="other">Còn %1$d ngày</item>
-    </plurals>
-    <plurals name="poll_hours_left">
-        <item quantity="other">Còn %1$d giờ</item>
-    </plurals>
-    <plurals name="poll_minutes_left">
-        <item quantity="other">Còn %1$d phút</item>
+        <item quantity="other">%1$s phiếu</item>
     </plurals>
     <plurals name="new_posts">
         <item quantity="other">%1$d bài đăng mới</item>

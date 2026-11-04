@@ -2,6 +2,7 @@ package com.aimdi.xtanative.networks.stocks
 
 import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.core.x.http.XHttp
+import com.aimdi.xtanative.networks.CryptoAddressInput
 import com.aimdi.xtanative.networks.NetworkRequestException
 import com.aimdi.xtanative.networks.Page
 import java.time.Duration

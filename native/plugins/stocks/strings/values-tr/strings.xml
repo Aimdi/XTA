@@ -6,7 +6,6 @@
     <string name="change_hours">%1$d sa değişim</string>
     <string name="closed_on">Kapanış %1$s</string>
     <string name="crypto">Kripto</string>
-    <string name="crypto_address_copied">Sözleşme adresi kopyalandı</string>
     <string name="crypto_contract">Sözleşme adresi</string>
     <string name="crypto_copy_contract">Adresi kopyala</string>
     <string name="crypto_identity_hint">Projeyi ağ ve sözleşme adresine göre seçin. Farklı tokenler aynı sembolü kullanabilir.</string>

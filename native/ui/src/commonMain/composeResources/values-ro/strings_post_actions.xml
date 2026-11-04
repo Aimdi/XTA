@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- An X post's footer, its share and ⋯ sheets and menus, its poll's line, and the contract addresses in its text (ui.post): XTA's words where XTA has them. -->
+<resources>
+    <string name="posts_share">Distribuie postarea</string>
+    <string name="posts_share_content">Distribuiți conținutul postării</string>
+    <string name="posts_share_article_link">Distribuiți linkul articolului</string>
+    <string name="posts_share_content_and_link">Distribuiți conținutul și linkul postării</string>
+    <string name="posts_share_image">Distribuiți postarea ca imagine</string>
+    <string name="posts_share_article_image">Distribuiți articolul ca imagine</string>
+    <string name="posts_copied">Copiat în clipboard</string>
+    <string name="posts_reply_not_found">Ne pare rău, postarea la care s-a răspuns nu a putut fi găsită!</string>
+    <string name="posts_subscribe">Abonează-te</string>
+    <string name="contract_address_copied">Adresa contractului a fost copiată</string>
+    <string name="poll_no_votes">Niciun vot</string>
+    <plurals name="poll_ends_minutes">
+        <item quantity="one">Se încheie peste %1$d minut</item>
+        <item quantity="few">Se încheie peste %1$d minute</item>
+        <item quantity="other">Se încheie peste %1$d de minute</item>
+    </plurals>
+    <plurals name="poll_ends_hours">
+        <item quantity="one">Se încheie peste %1$d oră</item>
+        <item quantity="few">Se încheie peste %1$d ore</item>
+        <item quantity="other">Se încheie peste %1$d de ore</item>
+    </plurals>
+    <plurals name="poll_ends_days">
+        <item quantity="one">Se încheie peste %1$d zi</item>
+        <item quantity="few">Se încheie peste %1$d zile</item>
+        <item quantity="other">Se încheie peste %1$d de zile</item>
+    </plurals>
+    <plurals name="poll_ended_minutes">
+        <item quantity="one">S-a încheiat acum %1$d minut</item>
+        <item quantity="few">S-a încheiat acum %1$d minute</item>
+        <item quantity="other">S-a încheiat acum %1$d de minute</item>
+    </plurals>
+    <plurals name="poll_ended_hours">
+        <item quantity="one">S-a încheiat acum %1$d oră</item>
+        <item quantity="few">S-a încheiat acum %1$d ore</item>
+        <item quantity="other">S-a încheiat acum %1$d de ore</item>
+    </plurals>
+    <plurals name="poll_ended_days">
+        <item quantity="one">S-a încheiat acum %1$d zi</item>
+        <item quantity="few">S-a încheiat acum %1$d zile</item>
+        <item quantity="other">S-a încheiat acum %1$d de zile</item>
+    </plurals>
+    <plurals name="poll_ended_months">
+        <item quantity="one">S-a încheiat acum %1$d lună</item>
+        <item quantity="few">S-a încheiat acum %1$d luni</item>
+        <item quantity="other">S-a încheiat acum %1$d de luni</item>
+    </plurals>
+    <plurals name="poll_ended_years">
+        <item quantity="one">S-a încheiat acum %1$d an</item>
+        <item quantity="few">S-a încheiat acum %1$d ani</item>
+        <item quantity="other">S-a încheiat acum %1$d de ani</item>
+    </plurals>
+</resources>

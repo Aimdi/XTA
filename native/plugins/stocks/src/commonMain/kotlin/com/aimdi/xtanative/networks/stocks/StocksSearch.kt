@@ -1,5 +1,7 @@
 package com.aimdi.xtanative.networks.stocks
 
+import com.aimdi.xtanative.networks.CryptoAddressInput
+import com.aimdi.xtanative.networks.CryptoAddresses
 import java.time.Duration
 
 /**

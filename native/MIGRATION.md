@@ -33,7 +33,7 @@ layer is written in `networks/<id>` first, then moves with its screens into
 | rss | `plugins/rss` (25 tests; its parsing, shared with the web sources, at `:networks`' top level, and its read marks, shared too, in `ui/plugins`' `RssReads`) | plugin: the timeline with unread and tag filters, feeds and their tags, a site's feeds discovered, OPML import and export, the reader with its place and offline copy, Home's timelines and groups, settings |
 | hackernews | `plugins/hackernews` (29 tests) | plugin: Top, New, Best, Ask, Show and Jobs, Saved and Following, stories with their comments, users, search and settings; groups, Saved and the shared post sheet |
 | websources | `plugins/websources` (85 tests) | plugin: the published catalogue, adding a source with its consent, its lists, search and follows, the reader with its read marks among RSS's, Home's timelines and groups, whose posts open in the reader as XTA's do |
-| stocks | `plugins/stocks` (171 tests, live check passes) | plugin: the watchlist, posts about it, trending and markets, a ticker's and a token's pages with the chart, the price strip under X posts and cashtags opening the ticker |
+| stocks | `plugins/stocks` (171 tests, live check passes) | plugin: the watchlist, posts about it, trending and markets, a ticker's and a token's pages with the chart, the price strip under X posts and cashtags opening the ticker, a watched token's network before its contract in X posts' text |
 | immich | `plugins/immich` (52 tests): the reader's own library | plugin: "Upload media to Immich" in Saved's folders, an album per folder, its settings and connection test |
 | deepmarks | `plugins/deepmarks` (30 tests): bookmarks signed on the device | plugin: "Save to Deepmarks" in the post sheets, its settings and connection test |
 | karakeep | `plugins/karakeep` (18 tests): the reader's own bookmarks | plugin: "Save to Karakeep" in the post sheets, its settings and connection test |
@@ -44,7 +44,7 @@ layer is written in `networks/<id>` first, then moves with its screens into
 |---|---|
 | client | `core/x` (done) |
 | database | `store` (no SQLite migrations: XTA's data arrives through its backup) |
-| tweet | `ui/post` (done: post card, opened post, conversation and its orders, quotes and reposters, polls, cards, translation) |
+| tweet | `ui/post` (done: post card, opened post, conversation and its orders, quotes and reposters, polls, cards, translation, the footer with the device's like and bookmark, the share sheet with the post as a picture, the ⋯ sheet, double-tap to like, contract addresses in the text) |
 | home | `ui/home` (done: the bottom bar with Settings › Home's pages, its labels and hide-on-scroll; Following, X and the pinned networks turned by a drag or picked in the timeline picker, Mastodon, Bluesky and Threads grouped; Following, the groups and the deck as group feeds; Following's bar with Posts/Media, order, filters and the timeline picker; search in the loaded posts; the account menu; desktop navigation) |
 | profile | `ui/profile` (done: header, filters, follows lists, followed by, note, Posts/Replies/Media/Saved tabs, gates) |
 | search | `ui/search` (done: tabs, advanced search, languages, recent searches, media grid, search in a loaded feed); `store` recent searches |

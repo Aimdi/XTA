@@ -43,22 +43,9 @@
     <string name="settings_clear_confirm">Eemalda</string>
 
     <string name="card_from">Allikas: %1$s</string>
-    <string name="poll_final">Lõpptulemused</string>
     <plurals name="poll_votes">
-        <item quantity="one">%1$d hääl</item>
-        <item quantity="other">%1$d häält</item>
-    </plurals>
-    <plurals name="poll_days_left">
-        <item quantity="one">Jäänud %1$d päev</item>
-        <item quantity="other">Jäänud %1$d päeva</item>
-    </plurals>
-    <plurals name="poll_hours_left">
-        <item quantity="one">Jäänud %1$d tund</item>
-        <item quantity="other">Jäänud %1$d tundi</item>
-    </plurals>
-    <plurals name="poll_minutes_left">
-        <item quantity="one">Jäänud %1$d minut</item>
-        <item quantity="other">Jäänud %1$d minutit</item>
+        <item quantity="one">%1$s hääl</item>
+        <item quantity="other">%1$s häält</item>
     </plurals>
     <plurals name="new_posts">
         <item quantity="one">%1$d uus postitus</item>

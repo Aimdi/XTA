@@ -6,7 +6,6 @@
     <string name="change_hours">Muutus %1$d h</string>
     <string name="closed_on">Sulgemine %1$s</string>
     <string name="crypto">Krüptoraha</string>
-    <string name="crypto_address_copied">Lepingu aadress kopeeritud</string>
     <string name="crypto_contract">Lepingu aadress</string>
     <string name="crypto_copy_contract">Kopeeri aadress</string>
     <string name="crypto_identity_hint">Vali projekt võrgu ja lepingu aadressi järgi. Erinevatel tokenitel võib olla sama sümbol.</string>

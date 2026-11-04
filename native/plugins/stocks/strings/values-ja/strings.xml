@@ -6,7 +6,6 @@
     <string name="change_hours">%1$d時間の変動</string>
     <string name="closed_on">終値（%1$s）</string>
     <string name="crypto">暗号資産</string>
-    <string name="crypto_address_copied">コントラクトアドレスをコピーしました</string>
     <string name="crypto_contract">コントラクトアドレス</string>
     <string name="crypto_copy_contract">アドレスをコピー</string>
     <string name="crypto_identity_hint">ネットワークとコントラクトアドレスでプロジェクトを選んでください。異なるトークンが同じシンボルを使う場合があります。</string>

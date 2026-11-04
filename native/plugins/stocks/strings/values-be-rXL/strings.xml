@@ -6,7 +6,6 @@
     <string name="change_hours">Zmiena za %1$d h</string>
     <string name="closed_on">Zakryccio %1$s</string>
     <string name="crypto">Kryptavaliuty</string>
-    <string name="crypto_address_copied">Adras kantrakta skapijavany</string>
     <string name="crypto_contract">Adras kantrakta</string>
     <string name="crypto_copy_contract">Skapijavać adras</string>
     <string name="crypto_identity_hint">Vybirajcie prajekt pavodle sietki i adrasa kantrakta. Roznyja tokeny mohuć mieć adnolkavy simval.</string>

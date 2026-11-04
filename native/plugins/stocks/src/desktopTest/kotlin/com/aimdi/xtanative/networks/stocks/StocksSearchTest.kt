@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.networks.stocks
 
+import com.aimdi.xtanative.networks.CryptoAddressKind
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull

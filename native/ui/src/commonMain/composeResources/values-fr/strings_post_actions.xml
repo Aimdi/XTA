@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- An X post's footer, its share and ⋯ sheets and menus, its poll's line, and the contract addresses in its text (ui.post): XTA's words where XTA has them. -->
+<resources>
+    <string name="posts_share">Partager la publication</string>
+    <string name="posts_share_content">Partager le contenu du tweet</string>
+    <string name="posts_share_article_link">Partager le lien de l'article</string>
+    <string name="posts_share_content_and_link">Partager le contenu et le lien du tweet</string>
+    <string name="posts_share_image">Partager le tweet en tant qu'image</string>
+    <string name="posts_share_article_image">Partager l'article en tant qu'image</string>
+    <string name="posts_copied">Copié dans le presse-papiers</string>
+    <string name="posts_reply_not_found">Le tweet auquel on a répondu est introuvable !</string>
+    <string name="posts_subscribe">S'abonner</string>
+    <string name="contract_address_copied">Adresse du contrat copiée</string>
+    <string name="poll_no_votes">Aucun vote</string>
+    <plurals name="poll_ends_minutes">
+        <item quantity="one">Se termine dans %1$d minute</item>
+        <item quantity="other">Se termine dans %1$d minutes</item>
+    </plurals>
+    <plurals name="poll_ends_hours">
+        <item quantity="one">Se termine dans %1$d heure</item>
+        <item quantity="other">Se termine dans %1$d heures</item>
+    </plurals>
+    <plurals name="poll_ends_days">
+        <item quantity="one">Se termine dans %1$d jour</item>
+        <item quantity="other">Se termine dans %1$d jours</item>
+    </plurals>
+    <plurals name="poll_ended_minutes">
+        <item quantity="one">Terminé il y a %1$d minute</item>
+        <item quantity="other">Terminé il y a %1$d minutes</item>
+    </plurals>
+    <plurals name="poll_ended_hours">
+        <item quantity="one">Terminé il y a %1$d heure</item>
+        <item quantity="other">Terminé il y a %1$d heures</item>
+    </plurals>
+    <plurals name="poll_ended_days">
+        <item quantity="one">Terminé il y a %1$d jour</item>
+        <item quantity="other">Terminé il y a %1$d jours</item>
+    </plurals>
+    <plurals name="poll_ended_months">
+        <item quantity="one">Terminé il y a %1$d mois</item>
+        <item quantity="other">Terminé il y a %1$d mois</item>
+    </plurals>
+    <plurals name="poll_ended_years">
+        <item quantity="one">Terminé il y a %1$d an</item>
+        <item quantity="other">Terminé il y a %1$d ans</item>
+    </plurals>
+</resources>

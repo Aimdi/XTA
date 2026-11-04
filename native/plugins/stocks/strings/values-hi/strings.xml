@@ -6,7 +6,6 @@
     <string name="change_hours">%1$d घंटे में बदलाव</string>
     <string name="closed_on">बंद भाव %1$s</string>
     <string name="crypto">क्रिप्टो</string>
-    <string name="crypto_address_copied">कॉन्ट्रैक्ट पता कॉपी हो गया</string>
     <string name="crypto_contract">कॉन्ट्रैक्ट पता</string>
     <string name="crypto_copy_contract">पता कॉपी करें</string>
     <string name="crypto_identity_hint">नेटवर्क और कॉन्ट्रैक्ट पते से प्रोजेक्ट चुनें। अलग-अलग टोकन का चिह्न एक जैसा हो सकता है।</string>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- An X post's footer, its share and ⋯ sheets and menus, its poll's line, and the contract addresses in its text (ui.post): XTA's words where XTA has them. -->
+<resources>
+    <string name="posts_share">Partekatu argitalpena</string>
+    <string name="posts_share_content">Partekatu txioaren edukia</string>
+    <string name="posts_share_article_link">Partekatu artikuluaren esteka</string>
+    <string name="posts_share_content_and_link">Partekatu txioaren edukia eta esteka</string>
+    <string name="posts_share_image">Partekatu argitalpena irudi gisa</string>
+    <string name="posts_share_article_image">Partekatu artikulua irudi gisa</string>
+    <string name="posts_copied">Arbelera kopiatu da</string>
+    <string name="posts_reply_not_found">Sentitzen dugu, ezin izan zen txioa aurkitu!</string>
+    <string name="posts_subscribe">Harpidetu</string>
+    <string name="contract_address_copied">Kontratuaren helbidea kopiatu da</string>
+    <string name="poll_no_votes">Botorik ez</string>
+    <plurals name="poll_ends_minutes">
+        <item quantity="one">Minutu %1$d barru amaituko da</item>
+        <item quantity="other">%1$d minutu barru amaituko da</item>
+    </plurals>
+    <plurals name="poll_ends_hours">
+        <item quantity="one">Ordu %1$d barru amaituko da</item>
+        <item quantity="other">%1$d ordu barru amaituko da</item>
+    </plurals>
+    <plurals name="poll_ends_days">
+        <item quantity="one">Egun %1$d barru amaituko da</item>
+        <item quantity="other">%1$d egun barru amaituko da</item>
+    </plurals>
+    <plurals name="poll_ended_minutes">
+        <item quantity="one">Duela minutu %1$d amaitu zen</item>
+        <item quantity="other">Duela %1$d minutu amaitu zen</item>
+    </plurals>
+    <plurals name="poll_ended_hours">
+        <item quantity="one">Duela ordu %1$d amaitu zen</item>
+        <item quantity="other">Duela %1$d ordu amaitu zen</item>
+    </plurals>
+    <plurals name="poll_ended_days">
+        <item quantity="one">Duela egun %1$d amaitu zen</item>
+        <item quantity="other">Duela %1$d egun amaitu zen</item>
+    </plurals>
+    <plurals name="poll_ended_months">
+        <item quantity="one">Duela hilabete %1$d amaitu zen</item>
+        <item quantity="other">Duela %1$d hilabete amaitu zen</item>
+    </plurals>
+    <plurals name="poll_ended_years">
+        <item quantity="one">Duela urte %1$d amaitu zen</item>
+        <item quantity="other">Duela %1$d urte amaitu zen</item>
+    </plurals>
+</resources>

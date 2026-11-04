@@ -65,6 +65,11 @@ class SavedPiecesTest {
         KeepNotices.endWorking()
         assertNull(KeepNotices.shown.value)
         assertTrue(KeepNotice.LikesStayHere.long)
+        KeepNotices.say("Contract address copied")
+        assertEquals(KeepNotice.Said("Contract address copied"), KeepNotices.shown.value?.notice)
+        KeepNotices.say(" ")
+        assertEquals(KeepNotice.Said("Contract address copied"), KeepNotices.shown.value?.notice, "nothing to say says nothing")
+        KeepNotices.shown.value?.let(KeepNotices::hide)
     }
 
     @Test

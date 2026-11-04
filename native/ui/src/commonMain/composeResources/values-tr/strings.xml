@@ -43,22 +43,9 @@
     <string name="settings_clear_confirm">Kaldır</string>
 
     <string name="card_from">Kaynak: %1$s</string>
-    <string name="poll_final">Son sonuçlar</string>
     <plurals name="poll_votes">
-        <item quantity="one">%1$d oy</item>
-        <item quantity="other">%1$d oy</item>
-    </plurals>
-    <plurals name="poll_days_left">
-        <item quantity="one">%1$d gün kaldı</item>
-        <item quantity="other">%1$d gün kaldı</item>
-    </plurals>
-    <plurals name="poll_hours_left">
-        <item quantity="one">%1$d saat kaldı</item>
-        <item quantity="other">%1$d saat kaldı</item>
-    </plurals>
-    <plurals name="poll_minutes_left">
-        <item quantity="one">%1$d dakika kaldı</item>
-        <item quantity="other">%1$d dakika kaldı</item>
+        <item quantity="one">%1$s oy</item>
+        <item quantity="other">%1$s oy</item>
     </plurals>
     <plurals name="new_posts">
         <item quantity="one">%1$d yeni gönderi</item>

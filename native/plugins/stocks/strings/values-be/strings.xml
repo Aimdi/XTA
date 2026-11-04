@@ -6,7 +6,6 @@
     <string name="change_hours">Змена за %1$d г</string>
     <string name="closed_on">Закрыццё %1$s</string>
     <string name="crypto">Крыптавалюты</string>
-    <string name="crypto_address_copied">Адрас кантракта скапіяваны</string>
     <string name="crypto_contract">Адрас кантракта</string>
     <string name="crypto_copy_contract">Скапіяваць адрас</string>
     <string name="crypto_identity_hint">Выбірайце праект паводле сеткі і адраса кантракта. Розныя токены могуць мець аднолькавы сімвал.</string>

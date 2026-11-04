@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- An X post's footer, its share and ⋯ sheets and menus, its poll's line, and the contract addresses in its text (ui.post): XTA's words where XTA has them. -->
+<resources>
+    <string name="posts_share">مشاركة المنشور</string>
+    <string name="posts_share_content">مشاركة محتوى التغريدة</string>
+    <string name="posts_share_article_link">مشاركة رابط المقال</string>
+    <string name="posts_share_content_and_link">مشاركة محتوى التغريدة والرابط</string>
+    <string name="posts_share_image">مشاركة المنشور كصورة</string>
+    <string name="posts_share_article_image">مشاركة المقال كصورة</string>
+    <string name="posts_copied">نُسخ إلى الحافظة</string>
+    <string name="posts_reply_not_found">عذرا ، لم يتم العثور على التغريدة التي تم الرد عليها!</string>
+    <string name="posts_subscribe">الاشتراك</string>
+    <string name="contract_address_copied">تم نسخ عنوان العقد</string>
+    <string name="poll_no_votes">لا أصوات</string>
+    <plurals name="poll_ends_minutes">
+        <item quantity="zero">ينتهي بعد %1$d دقيقة</item>
+        <item quantity="one">ينتهي بعد دقيقة واحدة</item>
+        <item quantity="two">ينتهي بعد دقيقتين</item>
+        <item quantity="few">ينتهي بعد %1$d دقائق</item>
+        <item quantity="many">ينتهي بعد %1$d دقيقة</item>
+        <item quantity="other">ينتهي بعد %1$d دقيقة</item>
+    </plurals>
+    <plurals name="poll_ends_hours">
+        <item quantity="zero">ينتهي بعد %1$d ساعة</item>
+        <item quantity="one">ينتهي بعد ساعة واحدة</item>
+        <item quantity="two">ينتهي بعد ساعتين</item>
+        <item quantity="few">ينتهي بعد %1$d ساعات</item>
+        <item quantity="many">ينتهي بعد %1$d ساعة</item>
+        <item quantity="other">ينتهي بعد %1$d ساعة</item>
+    </plurals>
+    <plurals name="poll_ends_days">
+        <item quantity="zero">ينتهي بعد %1$d يوم</item>
+        <item quantity="one">ينتهي بعد يوم واحد</item>
+        <item quantity="two">ينتهي بعد يومين</item>
+        <item quantity="few">ينتهي بعد %1$d أيام</item>
+        <item quantity="many">ينتهي بعد %1$d يومًا</item>
+        <item quantity="other">ينتهي بعد %1$d يوم</item>
+    </plurals>
+    <plurals name="poll_ended_minutes">
+        <item quantity="zero">انتهى منذ %1$d دقيقة</item>
+        <item quantity="one">انتهى منذ دقيقة واحدة</item>
+        <item quantity="two">انتهى منذ دقيقتين</item>
+        <item quantity="few">انتهى منذ %1$d دقائق</item>
+        <item quantity="many">انتهى منذ %1$d دقيقة</item>
+        <item quantity="other">انتهى منذ %1$d دقيقة</item>
+    </plurals>
+    <plurals name="poll_ended_hours">
+        <item quantity="zero">انتهى منذ %1$d ساعة</item>
+        <item quantity="one">انتهى منذ ساعة واحدة</item>
+        <item quantity="two">انتهى منذ ساعتين</item>
+        <item quantity="few">انتهى منذ %1$d ساعات</item>
+        <item quantity="many">انتهى منذ %1$d ساعة</item>
+        <item quantity="other">انتهى منذ %1$d ساعة</item>
+    </plurals>
+    <plurals name="poll_ended_days">
+        <item quantity="zero">انتهى منذ %1$d يوم</item>
+        <item quantity="one">انتهى منذ يوم واحد</item>
+        <item quantity="two">انتهى منذ يومين</item>
+        <item quantity="few">انتهى منذ %1$d أيام</item>
+        <item quantity="many">انتهى منذ %1$d يومًا</item>
+        <item quantity="other">انتهى منذ %1$d يوم</item>
+    </plurals>
+    <plurals name="poll_ended_months">
+        <item quantity="zero">انتهى منذ %1$d شهر</item>
+        <item quantity="one">انتهى منذ شهر واحد</item>
+        <item quantity="two">انتهى منذ شهرين</item>
+        <item quantity="few">انتهى منذ %1$d أشهر</item>
+        <item quantity="many">انتهى منذ %1$d شهرًا</item>
+        <item quantity="other">انتهى منذ %1$d شهر</item>
+    </plurals>
+    <plurals name="poll_ended_years">
+        <item quantity="zero">انتهى منذ %1$d سنة</item>
+        <item quantity="one">انتهى منذ سنة واحدة</item>
+        <item quantity="two">انتهى منذ سنتين</item>
+        <item quantity="few">انتهى منذ %1$d سنوات</item>
+        <item quantity="many">انتهى منذ %1$d سنة</item>
+        <item quantity="other">انتهى منذ %1$d سنة</item>
+    </plurals>
+</resources>

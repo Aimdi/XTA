@@ -2,6 +2,7 @@ package com.aimdi.xtanative.networks.stocks
 
 import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.core.x.http.XResponse
+import com.aimdi.xtanative.networks.CryptoAddresses
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
