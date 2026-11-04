@@ -57,8 +57,11 @@ class PixivClient(
     /** The language XTA Native is shown in (`ja`, `zh-Hant-TW`, ...): Pixiv translates tags into it. */
     internal val locale: () -> String = { Locale.getDefault().toLanguageTag() },
     private val clock: () -> Long = System::currentTimeMillis,
-    val app: PixivApp = PixivApp(),
+    /** The app Pixiv's API is told it talks to, read at each request: XTA's published repairs may replace it meanwhile. */
+    private val appInForce: () -> PixivApp = { PixivApp() },
 ) {
+    val app: PixivApp get() = appInForce()
+
     private val writing = Any()
     private val refreshing = Mutex()
 

@@ -10,7 +10,8 @@ import java.util.Locale
  * [PluginText] and each `<plurals>` a [PluginPlural], named as in the file.
  *
  * [tables] maps a language tag ("" for the default, "de", "pt-BR") to the
- * texts by name; a plural's forms are named "name#one" and "name#other".
+ * texts by name; a plural's forms are named by their CLDR category,
+ * "name#one", "name#few", "name#other" and so on.
  */
 open class PluginStrings(tables: Map<String, Map<String, String>>) {
     private val byTag = tables.mapKeys { normalized(it.key) }
@@ -23,7 +24,7 @@ open class PluginStrings(tables: Map<String, Map<String, String>>) {
 
     /**
      * The plural named [name] for [count], filled with [args]: the form
-     * [count] takes ([PluralRules]: "few" for 3 in Russian, "zero" for 0 in
+     * [count] takes ([pluralCategory]: "few" for 3 in Russian, "zero" for 0 in
      * Arabic) in the first of [language]'s tables that has the plural, the
      * default's counted as English, else that table's "other".
      */
@@ -31,7 +32,7 @@ open class PluginStrings(tables: Map<String, Map<String, String>>) {
         val tag = normalized(language)
         val found = listOf(tag, tag.substringBefore('-'), "").firstOrNull { byTag[it]?.containsKey("$name#other") == true } ?: return name
         val forms = byTag.getValue(found)
-        val form = PluralRules.category(found.ifEmpty { "en" }, count)
+        val form = pluralCategory(count.toLong(), found.ifEmpty { "en" })
         return fill(forms["$name#$form"] ?: forms.getValue("$name#other"), language, args)
     }
 

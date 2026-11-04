@@ -2,7 +2,6 @@ package com.aimdi.xtanative.networks
 
 import com.aimdi.xtanative.core.repairs.Repairs
 import com.aimdi.xtanative.networks.instagram.InstagramRepairs
-import com.aimdi.xtanative.networks.pixiv.PixivApp
 import com.aimdi.xtanative.networks.stocks.TickerClient
 import com.aimdi.xtanative.networks.tiktok.TikTokRepairs
 import java.io.File
@@ -16,20 +15,30 @@ import kotlin.test.assertTrue
  * at the repository's root, which both apps read: the file names exactly the
  * values the networks here know, each of its slot's kind and each the value
  * this build ships, so a repair is made in the file and in the code together.
- * The values of a network that became a plugin ([IN_PLUGINS]) are its
- * plugin's to check.
+ * The values of a network that became a plugin (`native/plugins/<id>`) are
+ * checked the same way by that plugin's own tests.
  */
 class NetworkRepairsTest {
     @Test
     fun repairsJsonNamesOnlyKnownValuesThatFitEachTheOneThisBuildShips() {
-        val published = Repairs.parse(repairsJson().readText()).filterKeys { it.substringBefore('.') !in IN_PLUGINS }
         val slots = NetworkRepairs.SLOTS.associateBy { it.key }
+        val here = slots.keys.map(::networkOf).toSet()
+        val published = Repairs.parse(repairsJson().readText()).filterKeys { networkOf(it) in here }
 
         assertEquals(slots.keys, published.keys)
         published.forEach { (key, value) ->
             val slot = slots.getValue(key)
             assertTrue(slot.kind.fits(value), key)
             assertEquals(slot.shipped, value, "$key: change repairs.json and the network's slot together")
+        }
+    }
+
+    @Test
+    fun everyOtherPublishedValueBelongsToAPluginThatChecksIt() {
+        val here = NetworkRepairs.SLOTS.map { networkOf(it.key) }.toSet()
+        val plugins = File(repairsJson().parentFile, "native/plugins").listFiles().orEmpty().filter { it.isDirectory }.map { it.name }.toSet()
+        Repairs.parse(repairsJson().readText()).keys.filterNot { networkOf(it) in here }.forEach { key ->
+            assertTrue(networkOf(key) in plugins, "$key: no network here or plugin in native/plugins has it")
         }
     }
 
@@ -56,24 +65,13 @@ class NetworkRepairsTest {
     }
 
     @Test
-    fun pixivTakesItsAppFromThePublishedEntries() {
-        val app = PixivApp.published(mapOf("pixiv.app_version" to "6.1.0", "pixiv.client_secret" to "not/a/token"))
-
-        assertEquals("6.1.0", app.version)
-        assertEquals(PixivApp().clientSecret, app.clientSecret)
-        assertEquals(PixivApp().userAgent, app.userAgent)
-    }
-
-    @Test
     fun aWithdrawnRepairGoesBackToTheShippedValue() {
         assertEquals(TikTokRepairs(), TikTokRepairs.published(emptyMap()))
         assertEquals("Repaired/2.0", TickerClient.USER_AGENT_SLOT.valueIn(mapOf("stocks.user_agent" to "Repaired/2.0")))
     }
 
-    private companion object {
-        /** The networks whose values are declared, and checked against the file, in their plugins (plugins/<id>). */
-        val IN_PLUGINS = setOf("reddit")
-    }
+    /** The network a key repairs: `pixiv` of `pixiv.app_version`. */
+    private fun networkOf(key: String): String = key.substringBefore('.')
 
     /** The repository's `repairs.json`, found from wherever the tests run (native/networks under Gradle). */
     private fun repairsJson(): File {
