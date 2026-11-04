@@ -40,9 +40,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -54,6 +52,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.store.settings.NetworkPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.ThemePrefs
+import com.aimdi.xtanative.ui.common.BackHandling
 import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.*
@@ -69,7 +68,6 @@ import org.jetbrains.compose.resources.stringResource
  * sources on Home. Next moves on, Skip leaves everything as it is, Back steps
  * to the card before. Finishing or skipping marks the cards seen.
  */
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun IntroScreen(onFinished: () -> Unit, onImport: () -> Unit, onOpen: (String) -> Unit) {
     val graph = LocalGraph.current
@@ -85,7 +83,7 @@ fun IntroScreen(onFinished: () -> Unit, onImport: () -> Unit, onOpen: (String) -
     }
     val next = { page.next?.let { index = it.ordinal } ?: finish() }
 
-    BackHandler(enabled = page.previous != null) { page.previous?.let { index = it.ordinal } }
+    BackHandling(enabled = page.previous != null) { page.previous?.let { index = it.ordinal } }
 
     Column(
         Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).safeDrawingPadding(),

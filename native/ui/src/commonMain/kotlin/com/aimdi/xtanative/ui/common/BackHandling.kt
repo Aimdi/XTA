@@ -1,4 +1,4 @@
-package com.aimdi.xtanative.ui.subscriptions
+package com.aimdi.xtanative.ui.common
 
 import androidx.compose.runtime.Composable
 
