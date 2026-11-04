@@ -50,4 +50,6 @@
     <string name="plugin_problem_offline">Няма злучэння з %1$s.</string>
     <string name="plugin_problem_refused">%1$s адхіліў запыт (%2$d).</string>
     <string name="plugin_problem_other">Не ўдалося прачытаць %1$s.</string>
+    <string name="plugin_store_search">Шукаць плагіны</string>
+    <string name="plugin_store_no_results">Нічога не знойдзена</string>
 </resources>

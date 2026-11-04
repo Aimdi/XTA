@@ -148,4 +148,5 @@
     <string name="unsave">Forigi el konservitaj</string>
     <string name="videos">Videoj</string>
     <string name="web_only_block">Ĉi tiu parto de la afiŝo aperas nur en la reto.</string>
+    <string name="search_posts_hint">Serĉi artikolojn en eldonaĵoj, kiujn vi sekvas</string>
 </resources>

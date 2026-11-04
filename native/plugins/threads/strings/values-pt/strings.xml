@@ -116,4 +116,6 @@
     <string name="use_session">Usar a minha sessão nas contas seguidas</string>
     <string name="use_session_description">Desligado por omissão. Ligado, a app fala com o Threads como você — a Meta pode banir essa conta. Deixe desligado salvo um início de sessão descartável.</string>
     <string name="add_to_group">Adicionar ao grupo</string>
+    <string name="in_home_feed">Mostrar na cronologia principal</string>
+    <string name="in_home_feed_description">Mistura as publicações das contas do Threads que segue em «A seguir» e «Para si»</string>
 </resources>

@@ -39,4 +39,11 @@ class PluginDownloadsTest {
         assertNull(PluginDownloads.url(MediaItem("https://x.test/p.jpg", MediaItem.Kind.GIF)))
         assertNull(PluginDownloads.url(MediaItem("data:image/png;base64,AAAA")))
     }
+
+    @Test
+    fun anOriginalTheNetworkNamesIsWhatSaves() {
+        assertEquals("https://x.test/original.png", PluginDownloads.url(MediaItem("https://x.test/sample.jpg", downloadUrl = "https://x.test/original.png")))
+        assertEquals("https://x.test/sample.jpg", PluginDownloads.url(MediaItem("https://x.test/sample.jpg", downloadUrl = "file:///etc/hosts")), "not a web file")
+        assertEquals("https://x.test/v.mp4", PluginDownloads.url(MediaItem("https://x.test/p.jpg", MediaItem.Kind.VIDEO, videoUrl = "https://x.test/v.mp4", downloadUrl = "https://x.test/hls/a.m3u8")))
+    }
 }

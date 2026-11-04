@@ -61,4 +61,7 @@
     <string name="unfollow_confirm">Przestać obserwować @%1$s?</string>
     <string name="unlike_on_device">Usuń polubienie z tego urządzenia</string>
     <string name="add_to_group">Dodaj do grupy</string>
+    <string name="settings_title">Ustawienia Instagrama</string>
+    <string name="show_tab">Pokaż kartę Instagram</string>
+    <string name="show_tab_description">Dodaje Instagram do dolnej nawigacji, gdy wtyczka jest włączona</string>
 </resources>

@@ -116,4 +116,6 @@
     <string name="use_session">Utiliser ma session pour les comptes suivis</string>
     <string name="use_session_description">Désactivé par défaut. Activé, l’app parle à Threads en votre nom — Meta peut bannir ce compte. Laissez désactivé sauf compte jetable.</string>
     <string name="add_to_group">Ajouter au groupe</string>
+    <string name="in_home_feed">Afficher dans le fil principal</string>
+    <string name="in_home_feed_description">Intègre les publications des comptes Threads que vous suivez dans « Abonnements » et « Pour vous »</string>
 </resources>

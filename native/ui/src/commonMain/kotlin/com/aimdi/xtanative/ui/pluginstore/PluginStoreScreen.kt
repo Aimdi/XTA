@@ -19,10 +19,13 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
@@ -35,6 +38,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -42,11 +46,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -54,16 +61,27 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.data.plugins.AppPlugins
 import com.aimdi.xtanative.data.plugins.PluginUse
 import com.aimdi.xtanative.data.plugins.RunningPlugin
+import com.aimdi.xtanative.data.plugins.hasTabOf
+import com.aimdi.xtanative.data.plugins.showsPluginAsTab
 import com.aimdi.xtanative.pluginhost.PluginCategory
 import com.aimdi.xtanative.pluginhost.PluginFailure
 import com.aimdi.xtanative.pluginhost.PluginState
 import com.aimdi.xtanative.pluginhost.PluginStatus
 import com.aimdi.xtanative.pluginhost.PluginStoreState
+import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.SearchPillShape
+import com.aimdi.xtanative.ui.common.searchPillColors
+import com.aimdi.xtanative.ui.generated.resources.plugin_store_no_results
+import com.aimdi.xtanative.ui.generated.resources.plugin_store_search
+import com.aimdi.xtanative.ui.generated.resources.settings_show_as_tab
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.home_alt_microblogging
+import com.aimdi.xtanative.ui.generated.resources.home_alt_microblogging_group
 import com.aimdi.xtanative.ui.home.MicroblogGroupingRow
 import com.aimdi.xtanative.ui.generated.resources.cancel
 import com.aimdi.xtanative.ui.generated.resources.plugin_more_options
@@ -130,12 +148,17 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
     val running by plugins.running.collectAsStateWithLifecycle()
     val pins by plugins.stripPins.collectAsStateWithLifecycle(emptyList())
     val problems by plugins.startProblems.collectAsStateWithLifecycle()
+    val settings by LocalGraph.current.settings.state.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     var confirming by remember { mutableStateOf<PluginState?>(null) }
+    var query by rememberSaveable { mutableStateOf("") }
     val locale = currentLocale()
     val list = rememberLazyListState()
+    val matching = storeMatching(query, running, locale)
+    val installed = store.installed.filter(matching)
+    val offer = store.onOffer.mapValues { (_, states) -> states.filter(matching) }.filterValues { it.isNotEmpty() }
     LaunchedEffect(Unit) { plugins.manager.refresh() }
-    FollowInstalls(list, store)
+    FollowInstalls(list, store, installed)
 
     PluginScaffold(
         title = stringResource(Res.string.plugin_store),
@@ -155,25 +178,32 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
             cancel = plugins.manager::cancel,
             uninstall = { state -> confirming = state },
             pin = { id, pinned -> scope.launch { plugins.pinOnStrip(id, pinned) } },
+            tab = { id, on -> scope.launch { plugins.showAsTab(id, on) } },
         )
+        val groupingWords = stringResource(Res.string.home_alt_microblogging) + " " +
+            stringResource(Res.string.home_alt_microblogging_group) + " Mastodon Bluesky Threads"
+        val grouping = StoreSearch.showsGrouping(query, groupingWords)
         LazyColumn(
             state = list,
             contentPadding = PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding() + 24.dp),
             modifier = Modifier.fillMaxSize(),
         ) {
+            item(key = "search") { StoreSearchField(query) { query = it } }
             if (store.catalogue.refreshing) item(key = "refreshing") { LinearProgressIndicator(Modifier.fillMaxWidth()) }
             if (store.catalogue.unreachable) item(key = "unreachable") { Unreachable(store.catalogue.fetchedAt != null) }
-            // XTA's "Group microblogging services", above the plugins (_plugin_store.dart).
-            item(key = "group-microblogging") { MicroblogGroupingRow() }
-            val installed = store.installed
+            if (StoreSearch.noResults(query, installed.size, offer.values.sumOf { it.size }, grouping)) {
+                item(key = "no-results") { MessageText(stringResource(Res.string.plugin_store_no_results)) }
+            }
+            // XTA's "Group microblogging services", above the plugins (_plugin_store.dart), unless the search leaves it out.
+            if (grouping) item(key = "group-microblogging") { MicroblogGroupingRow() }
             if (installed.isNotEmpty()) {
                 item(key = "installed") { Header(stringResource(Res.string.plugin_installed)) }
                 items(installed, key = { "installed-" + it.id }) { state ->
-                    InstalledRow(state, running.firstOrNull { it.plugin.id == state.id }, state.id in pins, problems[state.id], plugins, locale, actions)
+                    InstalledRow(state, running.firstOrNull { it.plugin.id == state.id }, StoreMarks(state.id in pins, settings.tabOf(state.id)), problems[state.id], plugins, locale, actions)
                 }
             }
-            available(store.onOffer, locale, actions)
-            if (installed.isEmpty() && store.onOffer.isEmpty() && !store.catalogue.refreshing) {
+            available(offer, locale, actions)
+            if (store.installed.isEmpty() && store.onOffer.isEmpty() && !store.catalogue.refreshing) {
                 item(key = "empty") { MessageText(stringResource(Res.string.plugin_store_empty)) }
             }
         }
@@ -191,18 +221,59 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
     }
 }
 
-/** Scrolls [list] to a plugin whose install has just ended, as [StoreRows] says. */
+/** Scrolls [list] to a plugin whose install has just ended, as [StoreRows] says, among the installed plugins [shown]. */
 @Composable
-private fun FollowInstalls(list: LazyListState, store: PluginStoreState) {
+private fun FollowInstalls(list: LazyListState, store: PluginStoreState, shown: List<PluginState>) {
     val ids = store.installed.map { it.id }
     var seen by remember { mutableStateOf<List<String>?>(null) }
     LaunchedEffect(ids) {
         val added = StoreRows.newlyInstalled(seen, ids)
         seen = ids
-        added ?: return@LaunchedEffect
-        list.animateScrollToItem(StoreRows.afterInstall(ids.indexOf(added), store.catalogue.refreshing, store.catalogue.unreachable))
+        val position = shown.indexOfFirst { it.id == added }.takeIf { added != null && it >= 0 } ?: return@LaunchedEffect
+        list.animateScrollToItem(StoreRows.afterInstall(position, store.catalogue.refreshing, store.catalogue.unreachable, searchField = true))
     }
 }
+
+/**
+ * Which of the store's plugins [query] keeps ([StoreSearch]): by its name and
+ * line in the reader's language, as the running plugin gives them, else as
+ * the catalogue does, and its category's name.
+ */
+@Composable
+private fun storeMatching(query: String, running: List<RunningPlugin>, locale: Locale): (PluginState) -> Boolean {
+    val language = currentLanguage()
+    val categories = PluginCategory.entries.associateWith { stringResource(categoryName(it)) }
+    return { state ->
+        val plugin = running.firstOrNull { it.plugin.id == state.id }?.plugin
+        val title = plugin?.let { runCatching { it.title(language) }.getOrNull() } ?: state.name(locale)
+        val description = plugin?.let { runCatching { it.description(language) }.getOrNull() } ?: state.description(locale)
+        StoreSearch.matches(query, state.id, title, description, categories[state.category].orEmpty())
+    }
+}
+
+/** XTA's "Search plugins": a pill above the list, filtering it as it is typed in. */
+@Composable
+private fun StoreSearchField(query: String, onQuery: (String) -> Unit) {
+    val focus = LocalFocusManager.current
+    TextField(
+        value = query,
+        onValueChange = onQuery,
+        singleLine = true,
+        placeholder = { Text(stringResource(Res.string.plugin_store_search)) },
+        leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        keyboardActions = KeyboardActions(onSearch = { focus.clearFocus() }),
+        shape = SearchPillShape,
+        colors = searchPillColors(),
+        modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp),
+    )
+}
+
+/** What an installed plugin's menu ticks: its pin on Home's strip, and its tab on Home's bar (null when it has none to show). */
+private class StoreMarks(val pinned: Boolean, val tab: Boolean?)
+
+/** Whether plugin [id] shows as a tab in these settings; null for one with no tab of its own. */
+private fun Settings?.tabOf(id: String): Boolean? = if (hasTabOf(id)) this?.showsPluginAsTab(id) == true else null
 
 /** What the store's rows ask for. */
 private class StoreActions(
@@ -214,6 +285,8 @@ private class StoreActions(
     val uninstall: (PluginState) -> Unit,
     /** On Home's strip or off it. */
     val pin: (String, Boolean) -> Unit,
+    /** A page of Home's bottom bar, or not. */
+    val tab: (String, Boolean) -> Unit,
 )
 
 /** What is on offer and not installed, under Available, by category in the store's order. */
@@ -232,7 +305,7 @@ private fun LazyListScope.available(offer: Map<PluginCategory, List<PluginState>
 private fun InstalledRow(
     state: PluginState,
     running: RunningPlugin?,
-    pinned: Boolean,
+    marks: StoreMarks,
     startProblem: String?,
     plugins: AppPlugins,
     locale: Locale,
@@ -265,10 +338,12 @@ private fun InstalledRow(
                     Icon(Icons.Filled.Settings, stringResource(Res.string.settings), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
+            val home = plugin?.homeTab != null
             InstalledMenu(
-                hasTab = plugin?.homeTab != null,
-                pinned = pinned,
+                pinned = marks.pinned.takeIf { home },
+                tab = marks.tab.takeIf { home },
                 onPin = { pin -> actions.pin(state.id, pin) },
+                onTab = { on -> actions.tab(state.id, on) },
                 onUninstall = { actions.uninstall(state) },
             )
         }
@@ -405,15 +480,30 @@ internal fun PluginMark(running: RunningPlugin?, name: String, size: Dp) {
     }
 }
 
+/**
+ * An installed plugin's menu: XTA's Show as a tab (its page on Home's bottom
+ * bar) where it has a [tab] to show, its pin beside For you where it is
+ * [pinned] or can be, and Uninstall.
+ */
 @Composable
-private fun InstalledMenu(hasTab: Boolean, pinned: Boolean, onPin: (Boolean) -> Unit, onUninstall: () -> Unit) {
+private fun InstalledMenu(pinned: Boolean?, tab: Boolean?, onPin: (Boolean) -> Unit, onTab: (Boolean) -> Unit, onUninstall: () -> Unit) {
     var open by remember { mutableStateOf(false) }
     Box {
         IconButton(onClick = { open = true }) {
             Icon(Icons.Filled.MoreVert, stringResource(Res.string.plugin_more_options), tint = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
-            if (hasTab) {
+            if (tab != null) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(Res.string.settings_show_as_tab)) },
+                    onClick = {
+                        open = false
+                        onTab(!tab)
+                    },
+                    trailingIcon = { Checkbox(checked = tab, onCheckedChange = null) },
+                )
+            }
+            if (pinned != null) {
                 DropdownMenuItem(
                     text = { Text(stringResource(Res.string.plugin_pin)) },
                     onClick = {

@@ -39,4 +39,6 @@
     <string name="tag_hint">Кароткая метка, напрыклад Навіны ці Блогі</string>
     <string name="unfollow">Адпісацца</string>
     <string name="unread">Непрачытанае</string>
+    <string name="in_home_feed">Змешваць падпісаныя стужкі ў «Чытаю»</string>
+    <string name="in_home_feed_description">Паказваць новыя запісы з падпісаных стужак у стужцы «Чытаю».</string>
 </resources>

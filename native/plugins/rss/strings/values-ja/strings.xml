@@ -39,4 +39,6 @@
     <string name="tag_hint">ニュースやブログなど、短いラベル</string>
     <string name="unfollow">フォロー解除</string>
     <string name="unread">未読</string>
+    <string name="in_home_feed">フォロー中にフィードを混ぜる</string>
+    <string name="in_home_feed_description">フォロー中のタイムラインに、フォローしたフィードの新しい項目を表示します。</string>
 </resources>

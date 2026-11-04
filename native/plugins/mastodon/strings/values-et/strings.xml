@@ -115,4 +115,6 @@
         <item quantity="other">%1$s häält</item>
     </plurals>
     <string name="add_to_group">Lisa gruppi</string>
+    <string name="in_home_feed">Näita avalehe voos</string>
+    <string name="in_home_feed_description">Lisab jälgitavate Mastodoni kontode postitused voogudesse „Jälgitavad“ ja „Sulle“</string>
 </resources>

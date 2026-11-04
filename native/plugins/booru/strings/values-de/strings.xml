@@ -186,4 +186,9 @@
     <string name="votes">%1$d dafür, %2$d dagegen</string>
     <string name="wiki">Wiki</string>
     <string name="wiki_empty">Zu diesem Tag gibt es keine Wiki-Seite</string>
+    <string name="settings_title">Booru-Einstellungen</string>
+    <string name="show_tab">Booru-Tab anzeigen</string>
+    <string name="show_tab_description">Fügt Booru der unteren Navigation hinzu, wenn das Plugin aktiv ist</string>
+    <string name="in_home_feed">In der Start-Timeline anzeigen</string>
+    <string name="in_home_feed_description">Mischt Beiträge gefolgter Tags in Following und Für dich</string>
 </resources>

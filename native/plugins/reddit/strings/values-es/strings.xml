@@ -119,4 +119,6 @@
         <item quantity="one">%1$s seguidor</item>
         <item quantity="other">%1$s seguidores</item>
     </plurals>
+    <string name="in_home_feed">Mostrar en la cronología principal</string>
+    <string name="in_home_feed_description">Mezcla las publicaciones de los subreddits que sigues en «Siguiendo» y «Para ti»</string>
 </resources>

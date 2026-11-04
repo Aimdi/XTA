@@ -119,4 +119,6 @@
         <item quantity="one">%1$s jarraitzaile</item>
         <item quantity="other">%1$s jarraitzaile</item>
     </plurals>
+    <string name="in_home_feed">Erakutsi hasierako denbora-lerroan</string>
+    <string name="in_home_feed_description">Jarraitzen dituzun subredditen bidalketak «Jarraitzen» eta «Zuretzat» ataletan tartekatzen ditu</string>
 </resources>

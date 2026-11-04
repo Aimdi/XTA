@@ -12,8 +12,9 @@ internal object StoreRows {
     /**
      * The row the list brings to its top once the plugin at [position] under
      * Installed is in: the row above the plugin's own (Installed's header,
-     * for the first), so both are in view. The refresh line and the
-     * unreachable notice, when shown, come before that header.
+     * for the first), so both are in view. The search field, the refresh
+     * line and the unreachable notice, when shown, come before that header.
      */
-    fun afterInstall(position: Int, refreshing: Boolean, unreachable: Boolean): Int = listOf(refreshing, unreachable).count { it } + position
+    fun afterInstall(position: Int, refreshing: Boolean, unreachable: Boolean, searchField: Boolean = false): Int =
+        listOf(searchField, refreshing, unreachable).count { it } + position
 }

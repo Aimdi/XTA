@@ -39,4 +39,6 @@
     <string name="tag_hint">Короткая метка, например Новости или Блоги</string>
     <string name="unfollow">Отписаться</string>
     <string name="unread">Непрочитанное</string>
+    <string name="in_home_feed">Смешивать подписки в ленте «Читаю»</string>
+    <string name="in_home_feed_description">Показывать новые записи из подписок в ленте «Читаю».</string>
 </resources>

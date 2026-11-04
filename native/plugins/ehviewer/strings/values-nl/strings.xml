@@ -121,4 +121,7 @@
     <string name="test_connection">Verbinding testen</string>
     <string name="test_ok">De site antwoordde (%1$d galerijen)</string>
     <string name="test_failed">EH-test mislukt: %1$s</string>
+    <string name="settings_title">EH-instellingen</string>
+    <string name="show_tab">EH-tabblad tonen</string>
+    <string name="show_tab_description">Voegt EH toe aan de onderste navigatie als de plugin aan staat</string>
 </resources>

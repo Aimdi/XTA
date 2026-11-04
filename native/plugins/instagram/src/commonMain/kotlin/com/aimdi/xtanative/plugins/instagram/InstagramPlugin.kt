@@ -49,6 +49,8 @@ class InstagramPlugin : XtaPlugin() {
 
     override val settings: PluginBody = { frame -> InstagramSettingsBody(app, frame) }
 
+    override fun settingsTitle(language: String): String = Strings.settings_title.get(language)
+
     override val search: PluginSearch by lazy { InstagramSearch { app } }
 
     override fun routeFor(url: String): String? = InstagramRoutes.forUrl(url)

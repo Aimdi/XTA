@@ -114,4 +114,6 @@
         <item quantity="other">%1$s표</item>
     </plurals>
     <string name="add_to_group">그룹에 추가</string>
+    <string name="in_home_feed">홈 타임라인에 표시</string>
+    <string name="in_home_feed_description">팔로우한 Mastodon 계정의 게시물을 팔로잉과 추천에 함께 표시합니다</string>
 </resources>

@@ -119,4 +119,6 @@
     <string name="use_session">Použít moji relaci pro sledované účty</string>
     <string name="use_session_description">Ve výchozím stavu vypnuto. Zapnuté to znamená, že aplikace mluví s Threads jako vy — Meta může ten účet zabanovat. Nechte vypnuté, pokud nepoužíváte jednorázové přihlášení.</string>
     <string name="add_to_group">Přidat do skupiny</string>
+    <string name="in_home_feed">Zobrazovat na hlavní nástěnce</string>
+    <string name="in_home_feed_description">Přimíchá příspěvky z účtů na Threads, které sledujete, do „Sleduji“ a „Pro tebe“</string>
 </resources>

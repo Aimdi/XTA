@@ -36,6 +36,7 @@ import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.SecretField
+import com.aimdi.xtanative.ui.plugins.ShowTabSwitch
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
 import kotlinx.coroutines.CancellationException
@@ -57,6 +58,7 @@ internal fun InstagramSettingsBody(app: InstagramApp, frame: PluginFrame) {
     Box(Modifier.fillMaxSize()) {
         LazyColumn(contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
             item(key = "guest") { GuestNote() }
+            item(key = "tab") { ShowTabSwitch(app.host.settings, pluginString(Strings.show_tab), pluginString(Strings.show_tab_description)) }
             item(key = "section") { Text(pluginString(Strings.section_session), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)) }
             cookies?.let { pasted ->
                 item(key = "cookies") {

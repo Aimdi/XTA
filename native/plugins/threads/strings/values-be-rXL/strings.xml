@@ -119,4 +119,6 @@
     <string name="use_session">Vykarystoŭvać maju sesiju dla adsočvanych akaŭntaŭ</string>
     <string name="use_session_description">Vyklučana pa zmaŭčanni. Kali ŭklučana, prahrama zviartajecca da Threads ad vašaha imia — Meta moža zablakavać toj akaŭnt. Pakińcie vyklučanym, kali heta nie adnarazovy ŭvachod.</string>
     <string name="add_to_group">Dadać u hrupu</string>
+    <string name="in_home_feed">Pakazvać u hałoŭnaj stužcy</string>
+    <string name="in_home_feed_description">Dadaje zapisy z akaŭntaŭ Threads, na jakija vy padpisany, u «Padpiski» i «Dla vas»</string>
 </resources>

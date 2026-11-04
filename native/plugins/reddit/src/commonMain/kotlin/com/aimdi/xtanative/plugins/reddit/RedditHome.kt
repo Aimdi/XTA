@@ -47,6 +47,7 @@ import com.aimdi.xtanative.store.settings.RedditFeedMode
 import com.aimdi.xtanative.store.settings.RedditPrefs
 import com.aimdi.xtanative.store.settings.RedditSource
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
@@ -66,7 +67,9 @@ internal fun RedditHome(app: RedditApp, frame: PluginFrame) {
     Column(Modifier.fillMaxSize()) {
         HomeBar(app, home)
         if (followed.isNotEmpty()) CommunityStrip(app, followed, home)
-        Box(Modifier.weight(1f)) {
+        // A community picked from the strip is no section of its own: the swipes turn Following, Popular and All.
+        val modes = if (home.subreddit == null) RedditFeedMode.entries else emptyList()
+        Box(Modifier.weight(1f).swipeTabs(modes, home.mode) { app.selectMode(it) }) {
             val subreddit = home.subreddit
             when {
                 subreddit != null -> ListingBody(app, Listing.Subreddit(subreddit), frame)

@@ -184,4 +184,9 @@
     <string name="votes">%1$d 票贊同，%2$d 票反對</string>
     <string name="wiki">維基</string>
     <string name="wiki_empty">此標籤沒有維基頁面</string>
+    <string name="settings_title">Booru 設定</string>
+    <string name="show_tab">顯示 Booru 分頁</string>
+    <string name="show_tab_description">啟用外掛後，將 Booru 加入底部導覽</string>
+    <string name="in_home_feed">顯示在主時間軸中</string>
+    <string name="in_home_feed_description">將已追蹤標籤的貼文混入「追蹤中」和「為你推薦」</string>
 </resources>

@@ -131,4 +131,6 @@
     <string name="builtin_description">Tried after yours, so reading works with nothing configured.</string>
     <string name="no_accounts">No accounts yet</string>
     <string name="add_to_group">Add to group</string>
+    <string name="in_home_feed">Show in the home timeline</string>
+    <string name="in_home_feed_description">Mixes posts from the Mastodon accounts you follow into Following and For you</string>
 </resources>

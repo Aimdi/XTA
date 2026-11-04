@@ -117,4 +117,6 @@
         <item quantity="other">%1$s hołasu</item>
     </plurals>
     <string name="add_to_group">Dadać u hrupu</string>
+    <string name="in_home_feed">Pakazvać u hałoŭnaj stužcy</string>
+    <string name="in_home_feed_description">Dadaje zapisy z akaŭntaŭ Mastodon, na jakija vy padpisany, u «Padpiski» i «Dla vas»</string>
 </resources>

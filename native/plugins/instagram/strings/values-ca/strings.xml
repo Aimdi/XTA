@@ -61,4 +61,7 @@
     <string name="unfollow_confirm">Vols deixar de seguir @%1$s?</string>
     <string name="unlike_on_device">Treu el m’agrada d’aquest dispositiu</string>
     <string name="add_to_group">Afegir al grup</string>
+    <string name="settings_title">Configuració d’Instagram</string>
+    <string name="show_tab">Mostra la pestanya d’Instagram</string>
+    <string name="show_tab_description">Afegeix Instagram a la navegació inferior quan el connector està activat</string>
 </resources>

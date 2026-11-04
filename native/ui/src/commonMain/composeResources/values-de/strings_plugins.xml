@@ -51,4 +51,6 @@
     <string name="plugin_problem_offline">Keine Verbindung zu %1$s.</string>
     <string name="plugin_problem_refused">%1$s hat die Anfrage abgelehnt (%2$d).</string>
     <string name="plugin_problem_other">Beim Lesen von %1$s ist etwas schiefgegangen.</string>
+    <string name="plugin_store_search">Plugins suchen</string>
+    <string name="plugin_store_no_results">Keine Ergebnisse</string>
 </resources>

@@ -56,9 +56,18 @@ networks of the contracts a plugin watches, for X posts' text),
 of a group's Discover), `PluginHost.likedOnDevice`, a long piece of work's
 progress (`PluginHost.withProgress` with `PluginProgress`, and `downloadAll`
 with its `progress`), `PluginHost.saveFileAndWait`, `SwipeToUnfollow`,
-`rememberImageChooser`, `rememberAppLinkSettings` and, in `ui.common`,
-`rememberSwitchedHaptics`. A plugin's `xta-plugin.json` names the version
-it was built against.
+`rememberImageChooser`, `rememberAppLinkSettings`, the search's landing
+(`PluginSearch.Landing`, `landsInDiscover`, `sharesRecentSearches`, `sent`)
+with `PluginRecentSearchRow`, `settingsTitle`, the viewer's Open post
+(`PluginHost.openMedia(media, start, openPost)`, `MediaPager`'s
+`onOpenPost`), a picture's own download and share address
+(`MediaItem.downloadUrl`, `shareUrl`), the tiles' ALT and long press
+(`LocalMediaSave`), `HomeTimelineSwitch` in a plugin's own words,
+`ShowTabSwitch` and `PluginSettings.pluginId`; and in `ui.common`
+`rememberSwitchedHaptics`, the tabs' swipes (`swipeTabs`,
+`LocalParentTurnsPages`, `TabSwipes`), `AltBadge` with `AltTextDialog`,
+and the search pill's look. A plugin's `xta-plugin.json` names the
+version it was built against.
 
 The app loads the versions from `OLDEST_PLUGIN_API` (2) to its own, so a
 plugin built before keeps working until its update comes, for as long as what
@@ -87,7 +96,8 @@ its plugins have to link against that prerelease's app.
 | `homeTab` | its timeline on Home beside Following and X (a `PluginBody`), or none |
 | `clientTab` | what it shows opened on its own from the store, when not its home tab |
 | `settings` | its settings screen body, or none |
-| `search` | a `PluginSearch` (`hint(language)`, `Results(query, frame)`), or none |
+| `settingsTitle(language)` | that screen's title ("Booru settings"); its name by default |
+| `search` | a `PluginSearch` (`hint(language)`, `Results(query, frame)`; `Landing(frame, send)`, what its search shows until a query is sent, `landsInDiscover` where Discover shows that too, `sharesRecentSearches` where its recent searches are the app's, `sent(query)` to keep its own), or none |
 | `routeFor(url)` | the route of its own screen for a link (a post, a profile), or null |
 | `screen(route)` | its own whole screen for a route (`PluginScreen`), or null |
 | `backupSections` | `PluginBackupSection`s (name, export, import) of what it keeps |
@@ -126,7 +136,7 @@ read again, the desktop's F5: `RefreshesOn`).
 | `open(route)`, `back()` | its own screen pushed on the app's back stack; back |
 | `openLink(url)` | a link, opened as the app opens links (a plugin's screen, X's, else the web) |
 | `openPost(id)`, `openProfile(screenName)` | X's post and profile screens |
-| `openMedia(media, start)` | the media viewer for `MediaItem`s |
+| `openMedia(media, start)` | the media viewer for `MediaItem`s; `openMedia(media, start, openPost)` with Open post in its bar |
 | `openSearch(query)`, `openSettings()` | its own search and settings |
 | `settings` | the app's settings, all to read and its own (`plugin.<id>.*`) to change; `inHomeFeed()`, `setInHomeFeed(on)` |
 | `saved`, `toggleSaved(post)`, `chooseFolder(post)`, `editNote(post)`, `setLiked(post, liked)` | the reader's archive: what is in Saved, the bookmark, the save sheet, the note, the likes |
@@ -147,9 +157,12 @@ with a test.
   `NetworkCount`, `NetworkHeaderButton`, `PostLines` (a post's time and
   counts in words), `NetworkBookmark` (below) and `DrawnPosts` (the posts
   its shared rows drew lately, found again by id).
-- Media: `MediaTiles`, `MediaPager` (the viewer, with qualities and a
-  download), `ZoomableImage`, and `rememberImageRequest` for pictures that
-  need request headers.
+- Media: `MediaTiles` (ALT on a described picture; a long press shows the
+  description or saves a photo where the app gives `LocalMediaSave`, as it
+  does around a plugin's screens), `MediaPager` (the viewer, with qualities,
+  Open post, the description, a download of `MediaItem.downloadUrl` where it
+  names the original, and Share link of `shareUrl`), `ZoomableImage`, and
+  `rememberImageRequest` for pictures that need request headers.
 - Reads and lists: `Fetch` (one read, kept on screen through a failure),
   `MergedFeed` (accounts' pages merged as they come), `FeedReads` (what a
   feed follows read a few at a time, one failing without the others),
@@ -168,7 +181,9 @@ with a test.
   while the screen is on the back stack) and `PluginNotices` with
   `NoticeHost`.
 - Rows and fields: `PluginSwitchRow`, `PluginActionRow`, `PluginMenuRow`,
-  `PluginSectionTitle`, `PluginTabs`, `PluginCounts`, `NetworkPersonRow`,
+  `PluginSectionTitle`, `PluginTabs` (its body turned by sideways swipes with
+  `ui.common`'s `swipeTabs`, which leaves them to Home's timelines),
+  `PluginCounts`, `NetworkPersonRow`, `PluginRecentSearchRow`,
   `SwipeToUnfollow` (a followed account's row swiped away after a confirm,
   as TikTok's and Instagram's lists), `SecretField` (a cookie, a token, a
   key) and `PluginIcons`.
@@ -176,7 +191,8 @@ with a test.
   with `PluginConnectionControls` (the connection test, Test and Save, the
   result line), `PluginLinkButton` and `answeredOr`
   ([below](#sending-a-post-to-the-readers-own-server)).
-- The app's features: `HomeTimelineSwitch`, `AddToGroupButton` with
+- The app's features: `HomeTimelineSwitch` (in the app's words, or the
+  plugin's own), `ShowTabSwitch` (its page on Home's bar), `AddToGroupButton` with
   `addToGroupText`, `PluginSubscription` (an account in Subscriptions, with
   `siteOf`), `PluginPostMenuRows` (the shared post sheet's entries in
   a plugin's own sheet) and `PluginSavedScreen` (below), and
@@ -196,14 +212,15 @@ where XTA's writes it (`NetworkPrefs.shared`: the web sources' read marks
 in RSS's `plugin.rss.read_ids`).
 
 `:ui`'s `ui.common` (avatar, hairline, loading row, times, `longPressOver`
-for a long press over a whole card, its tappable parts included, a
-picture's marks as XTA draws them: `MediaBadge`, `AltBadge` with
-`AltTextDialog`, and `ShowMediaTile` with `mediaShown` for Settings ›
-Media's "Load media manually", `rememberCopyContract` for a contract
-address copied whole, and `rememberSwitchedHaptics`, the haptics behind
-the reader's Haptic feedback switch, which a sheet's own window needs:
-everywhere else `LocalHapticFeedback` is behind it already) is there too:
-its avatar asks for a picture as the tiles do, with the headers its
+for a long press over a whole card, its tappable parts included, `swipeTabs`
+for tabs that turn with a sideways swipe, a picture's marks as XTA draws
+them: `MediaBadge`, `AltBadge` with `AltTextDialog`, and `ShowMediaTile`
+with `mediaShown` for Settings › Media's "Load media manually",
+`rememberCopyContract` for a contract address copied whole, and
+`rememberSwitchedHaptics`, the haptics behind the reader's Haptic feedback
+switch, which a sheet's own window needs: everywhere else
+`LocalHapticFeedback` is behind it already) is there too: its avatar asks
+for a picture as the tiles do, with the headers its
 server wants (Pixiv's Referer). A plugin may draw with the app's other
 public building blocks where they fit:
 its icon sets (`PostIcons`, `DiscoverIcons`, `GroupIcons`), `ThreadRows` for
@@ -235,7 +252,10 @@ none answered, and reads through the same pages and caches as its own tab:
 The switch is the app's setting `plugin.<id>.in_home_feed`, where XTA keeps
 it (`:store`'s `NetworkPrefs.inHomeFeed`): `PluginSettings.inHomeFeed()` reads
 it, and `HomeTimelineSwitch(host.settings, name)` is the row a plugin's
-settings show for it, in XTA's words. Off until the reader turns it on.
+settings show for it, in the app's words, or
+`HomeTimelineSwitch(host.settings, title, description)` in the network's own,
+as each of XTA's networks words it ("Mix followed feeds into Following").
+Off until the reader turns it on.
 
 The app does the rest, as XTA does (`ui/feed`'s `FeedSources`, `PluginPosts`,
 `FeedMix`):

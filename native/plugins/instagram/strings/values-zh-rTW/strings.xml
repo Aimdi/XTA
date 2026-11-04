@@ -61,4 +61,7 @@
     <string name="unfollow_confirm">取消追蹤 @%1$s？</string>
     <string name="unlike_on_device">從此裝置取消按讚</string>
     <string name="add_to_group">新增至群組</string>
+    <string name="settings_title">Instagram 設定</string>
+    <string name="show_tab">顯示 Instagram 分頁</string>
+    <string name="show_tab_description">啟用外掛後，將 Instagram 加入底部導覽</string>
 </resources>

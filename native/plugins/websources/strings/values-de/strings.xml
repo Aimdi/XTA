@@ -55,4 +55,6 @@
     <string name="unfollow">Nicht mehr folgen</string>
     <string name="unreachable">Die Datei der Quelle konnte nicht gelesen werden. Prüfe den Link und deine Verbindung.</string>
     <string name="update_title">%1$s aktualisieren?</string>
+    <string name="in_home_feed">Gefolgte Listen in Folgend mischen</string>
+    <string name="in_home_feed_description">Neue Beiträge gefolgter Listen in der Folgend-Zeitleiste zeigen.</string>
 </resources>

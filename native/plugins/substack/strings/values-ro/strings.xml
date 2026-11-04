@@ -151,4 +151,5 @@
     <string name="unsave">Scoate din salvate</string>
     <string name="videos">Videoclipuri</string>
     <string name="web_only_block">Această parte a postării apare doar pe web.</string>
+    <string name="search_posts_hint">Caută articole în publicațiile pe care le urmărești</string>
 </resources>

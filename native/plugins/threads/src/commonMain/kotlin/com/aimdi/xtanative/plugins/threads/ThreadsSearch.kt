@@ -16,8 +16,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Person
@@ -71,6 +73,15 @@ internal class ThreadsSearch(private val app: () -> ThreadsApp) : PluginSearch()
 
     @Composable
     override fun Results(query: String, frame: PluginFrame) = QueryResults(app(), query, frame)
+
+    /** Before a search, as XTA's search sheet (threads_search_sheet.dart): the recent searches and public accounts to try. */
+    @Composable
+    override fun Landing(frame: PluginFrame, send: (String) -> Unit) {
+        val shown = app()
+        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(frame.padding)) {
+            BeforeSearch(shown, "", onOpenProfile = { shown.openProfile(it) }, onRecent = send)
+        }
+    }
 }
 
 /** Opens the page [query] names: the post, the profile, or the posts a tag or words find. */

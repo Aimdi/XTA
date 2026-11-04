@@ -61,4 +61,7 @@
     <string name="unfollow_confirm">Adpisacca ad @%1$s?</string>
     <string name="unlike_on_device">Prybrać «padabajecca» z hetaj prylady</string>
     <string name="add_to_group">Dadać u hrupu</string>
+    <string name="settings_title">Nalady Instagram</string>
+    <string name="show_tab">Pakazvać układku Instagram</string>
+    <string name="show_tab_description">Dadaje Instagram u nižniuju navihacyju, kali ŭbudova ŭklučana</string>
 </resources>

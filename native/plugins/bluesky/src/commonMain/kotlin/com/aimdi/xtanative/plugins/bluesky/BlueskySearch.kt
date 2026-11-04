@@ -51,6 +51,7 @@ import com.aimdi.xtanative.networks.bluesky.BlueskySearchKind
 import com.aimdi.xtanative.networks.bluesky.BlueskySearchRules
 import com.aimdi.xtanative.networks.bluesky.BlueskyUrls
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.NetworkProblemRow
 import com.aimdi.xtanative.ui.plugins.PagedItems
@@ -81,7 +82,19 @@ internal class BlueskySearch(private val app: BlueskyApp) : PluginSearch() {
 
     @Composable
     override fun Results(query: String, frame: PluginFrame) = SearchBody(app, query, author = "", BlueskySearchRules.kindFor(query), frame)
+
+    @Composable
+    override fun Landing(frame: PluginFrame, send: (String) -> Unit) = SearchLanding(app, frame, send)
+
+    override fun sent(query: String) {
+        app.launch { app.prefs.remember(query) }
+    }
 }
+
+/** Before a search, as XTA's search screen lands (bluesky_search_sheet.dart): People or Posts, with what each offers until something is searched. */
+@Composable
+private fun SearchLanding(app: BlueskyApp, frame: PluginFrame, send: (String) -> Unit) =
+    SearchBody(app, "", author = "", BlueskySearchKind.PEOPLE, frame) { kind -> Landing(app, kind, send) }
 
 /**
  * XTA's own Bluesky search screen (bluesky_search_sheet.dart): its field,
@@ -149,7 +162,7 @@ private fun SearchBody(
             }
         }
         if (kind == BlueskySearchKind.POSTS) PostFiltersRow(filters) { filters = it }
-        Box(Modifier.weight(1f)) {
+        Box(Modifier.weight(1f).swipeTabs(BlueskySearchKind.entries, kind) { kind = it }) {
             when {
                 query.isEmpty() -> landing?.invoke(kind)
                 kind == BlueskySearchKind.PEOPLE -> PeopleResults(app, query, frame)

@@ -63,7 +63,7 @@ class WebSourcesPlugin : XtaPlugin() {
     override val homeTab: PluginBody = { frame -> WebSourcesHome(app, frame) }
 
     /** XTA's web sources settings: the followed lists' posts in Home's timeline. */
-    override val settings: PluginBody = { frame -> LazyColumn(contentPadding = frame.padding) { item { HomeTimelineSwitch(app.host.settings, pluginString(Strings.plugin_name)) } } }
+    override val settings: PluginBody = { frame -> LazyColumn(contentPadding = frame.padding) { item { HomeTimelineSwitch(app.host.settings, pluginString(Strings.in_home_feed), pluginString(Strings.in_home_feed_description)) } } }
 
     override val feed: PluginFeed get() = app.shared
 

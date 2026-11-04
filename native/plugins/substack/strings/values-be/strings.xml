@@ -154,4 +154,5 @@
     <string name="unsave">Прыбраць з захаваных</string>
     <string name="videos">Відэа</string>
     <string name="web_only_block">Гэтая частка допісу паказваецца толькі ў вэбе.</string>
+    <string name="search_posts_hint">Пошук артыкулаў у выданнях, на якія вы падпісаны</string>
 </resources>

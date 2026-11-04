@@ -146,4 +146,6 @@
         <item quantity="one">1 publicación</item>
         <item quantity="other">%1$s publicaciones</item>
     </plurals>
+    <string name="in_home_feed">Mostrar en la cronología principal</string>
+    <string name="in_home_feed_description">Mezcla las publicaciones de las cuentas de Bluesky que sigues en «Siguiendo» y «Para ti»</string>
 </resources>

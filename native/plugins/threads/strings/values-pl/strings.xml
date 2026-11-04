@@ -119,4 +119,6 @@
     <string name="use_session">Użyj mojej sesji dla obserwowanych kont</string>
     <string name="use_session_description">Domyślnie wyłączone. Włączenie sprawia, że aplikacja mówi do Threads jako ty — Meta może zbanować to konto. Zostaw wyłączone, chyba że to konto jednorazowe.</string>
     <string name="add_to_group">Dodaj do grupy</string>
+    <string name="in_home_feed">Pokazuj na osi czasu</string>
+    <string name="in_home_feed_description">Dodaje wpisy z obserwowanych kont Threads do zakładek „Obserwowane” i „Dla Ciebie”</string>
 </resources>

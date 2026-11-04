@@ -58,4 +58,6 @@
     <string name="unfollow">Přestat sledovat</string>
     <string name="unreachable">Soubor zdroje se nepodařilo přečíst. Zkontrolujte odkaz a připojení.</string>
     <string name="update_title">Aktualizovat %1$s?</string>
+    <string name="in_home_feed">Míchat sledované seznamy do Sleduji</string>
+    <string name="in_home_feed_description">Zobrazovat nové příspěvky ze sledovaných seznamů v časové ose Sleduji.</string>
 </resources>

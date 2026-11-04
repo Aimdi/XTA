@@ -39,4 +39,6 @@
     <string name="tag_hint">تسمية قصيرة، مثل أخبار أو مدونات</string>
     <string name="unfollow">إلغاء المتابعة</string>
     <string name="unread">غير مقروء</string>
+    <string name="in_home_feed">دمج الخلاصات المتابَعة في «أتابع»</string>
+    <string name="in_home_feed_description">إظهار العناصر الجديدة من الخلاصات المتابَعة في الخط الزمني «أتابع».</string>
 </resources>

@@ -186,4 +186,9 @@
     <string name="votes">%1$d oppstemmer, %2$d nedstemmer</string>
     <string name="wiki">Wiki</string>
     <string name="wiki_empty">Denne taggen har ingen wikiside</string>
+    <string name="settings_title">Booru-innstillinger</string>
+    <string name="show_tab">Vis Booru-fane</string>
+    <string name="show_tab_description">Legger Booru til i bunnnavigasjonen når programtillegget er slått på</string>
+    <string name="in_home_feed">Vis i hovedstrømmen</string>
+    <string name="in_home_feed_description">Blander innlegg fra fulgte tagger inn i Følger og For deg</string>
 </resources>

@@ -58,4 +58,6 @@
     <string name="unfollow">Deixar de seguir</string>
     <string name="unreachable">Não foi possível ler o arquivo da fonte. Verifique o link e sua conexão.</string>
     <string name="update_title">Atualizar %1$s?</string>
+    <string name="in_home_feed">Misturar as listas seguidas em Seguindo</string>
+    <string name="in_home_feed_description">Mostrar publicações novas das listas seguidas na linha do tempo Seguindo.</string>
 </resources>

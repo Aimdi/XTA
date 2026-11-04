@@ -39,4 +39,6 @@
     <string name="tag_hint">Etiketa laburra, adibidez Albisteak edo Blogak</string>
     <string name="unfollow">Jarraitzeari utzi</string>
     <string name="unread">Irakurri gabe</string>
+    <string name="in_home_feed">Nahastu jarraitutako jarioak Jarraitzen atalean</string>
+    <string name="in_home_feed_description">Erakutsi jarraitutako jarioetako elementu berriak Jarraitzen denbora-lerroan.</string>
 </resources>

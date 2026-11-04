@@ -119,4 +119,6 @@
         <item quantity="one">%1$s seguidor</item>
         <item quantity="other">%1$s seguidors</item>
     </plurals>
+    <string name="in_home_feed">Mostra a la cronologia principal</string>
+    <string name="in_home_feed_description">Barreja les publicacions dels subreddits que segueixes a «Seguint» i «Per a tu»</string>
 </resources>

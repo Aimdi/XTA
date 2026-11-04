@@ -129,4 +129,7 @@
     <string name="test_connection">Перевірити з’єднання</string>
     <string name="test_ok">Сайт відповів (галерей: %1$d)</string>
     <string name="test_failed">Перевірка EH не вдалася: %1$s</string>
+    <string name="settings_title">Налаштування EH</string>
+    <string name="show_tab">Показувати вкладку EH</string>
+    <string name="show_tab_description">Додає EH у нижню навігацію, коли додаток увімкнено</string>
 </resources>

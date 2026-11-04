@@ -148,4 +148,5 @@
     <string name="unsave">Quitar de guardados</string>
     <string name="videos">Vídeos</string>
     <string name="web_only_block">Esta parte de la publicación solo se muestra en la web.</string>
+    <string name="search_posts_hint">Busca artículos en publicaciones que sigues</string>
 </resources>

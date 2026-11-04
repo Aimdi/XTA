@@ -55,4 +55,6 @@
     <string name="unfollow">Slutt å følge</string>
     <string name="unreachable">Klarte ikke å lese kildefilen. Sjekk lenken og tilkoblingen din.</string>
     <string name="update_title">Oppdatere %1$s?</string>
+    <string name="in_home_feed">Bland fulgte lister inn i Følger</string>
+    <string name="in_home_feed_description">Vis nye innlegg fra fulgte lister i tidslinjen Følger.</string>
 </resources>

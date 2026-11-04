@@ -187,7 +187,7 @@ private fun MediaTile(app: MastodonApp, post: MastodonPost, modifier: Modifier) 
     val first = post.media.first()
     val hidden = post.sensitive || post.hasSpoiler
     var describing by remember { mutableStateOf(false) }
-    val open = { if (hidden || first.isVideo) app.openThread(post) else app.host.openMedia(post.media.map { it.toMediaItem(post.url) }, 0) }
+    val open = { if (hidden || first.isVideo) app.openThread(post) else app.host.openMedia(post.media.map { it.toMediaItem(post.url) }, 0) { app.openThread(post) } }
     Box(modifier.clip(RoundedCornerShape(6.dp)).background(MaterialTheme.colorScheme.surfaceContainerHighest).clickable(onClick = open)) {
         if (hidden) {
             Column(Modifier.align(Alignment.Center).padding(8.dp), horizontalAlignment = Alignment.CenterHorizontally) {

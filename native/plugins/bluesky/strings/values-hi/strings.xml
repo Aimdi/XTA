@@ -146,4 +146,6 @@
         <item quantity="one">%1$s पोस्ट</item>
         <item quantity="other">%1$s पोस्ट</item>
     </plurals>
+    <string name="in_home_feed">होम टाइमलाइन में दिखाएँ</string>
+    <string name="in_home_feed_description">आप जिन Bluesky खातों को फ़ॉलो करते हैं उनकी पोस्ट को \"फ़ॉलोइंग\" और \"आपके लिए\" में मिलाता है</string>
 </resources>

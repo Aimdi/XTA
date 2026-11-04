@@ -39,4 +39,6 @@
     <string name="tag_hint">Mallonga etikedo, ekzemple Novaĵoj aŭ Blogo</string>
     <string name="unfollow">Ne plu sekvi</string>
     <string name="unread">Nelegita</string>
+    <string name="in_home_feed">Miksi sekvatajn fluojn en Sekvataj</string>
+    <string name="in_home_feed_description">Montri novajn erojn el sekvataj fluoj en la templinio Sekvataj.</string>
 </resources>

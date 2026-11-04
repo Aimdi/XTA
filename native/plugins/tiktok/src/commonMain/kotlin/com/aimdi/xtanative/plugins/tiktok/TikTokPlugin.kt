@@ -50,6 +50,8 @@ class TikTokPlugin : XtaPlugin() {
 
     override val settings: PluginBody = { frame -> TikTokSettingsBody(app, frame) }
 
+    override fun settingsTitle(language: String): String = Strings.settings_title.get(language)
+
     override val search: PluginSearch by lazy { TikTokAppSearch(app) }
 
     override fun routeFor(url: String): String? = TikTokRoutes.forUrl(url, inAppPlayer)

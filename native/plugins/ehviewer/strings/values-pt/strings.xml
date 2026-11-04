@@ -125,4 +125,7 @@
     <string name="test_connection">Testar ligação</string>
     <string name="test_ok">O site respondeu (%1$d galerias)</string>
     <string name="test_failed">O teste do EH falhou: %1$s</string>
+    <string name="settings_title">Definições do EH</string>
+    <string name="show_tab">Mostrar separador do EH</string>
+    <string name="show_tab_description">Adiciona o EH à navegação inferior quando o extra está ativo</string>
 </resources>

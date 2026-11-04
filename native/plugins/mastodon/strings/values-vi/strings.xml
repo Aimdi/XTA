@@ -114,4 +114,6 @@
         <item quantity="other">%1$s phiếu</item>
     </plurals>
     <string name="add_to_group">Thêm vào nhóm</string>
+    <string name="in_home_feed">Hiển thị trong dòng thời gian chính</string>
+    <string name="in_home_feed_description">Trộn bài viết từ các tài khoản Mastodon bạn theo dõi vào Đang theo dõi và Dành cho bạn</string>
 </resources>

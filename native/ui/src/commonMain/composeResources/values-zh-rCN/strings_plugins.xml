@@ -50,4 +50,6 @@
     <string name="plugin_problem_offline">无法连接到 %1$s。</string>
     <string name="plugin_problem_refused">%1$s 拒绝了请求（%2$d）。</string>
     <string name="plugin_problem_other">读取 %1$s 时出了问题。</string>
+    <string name="plugin_store_search">搜索插件</string>
+    <string name="plugin_store_no_results">没有结果</string>
 </resources>

@@ -39,4 +39,6 @@
     <string name="tag_hint">Nhãn ngắn, như Tin tức hoặc Blog</string>
     <string name="unfollow">Bỏ theo dõi</string>
     <string name="unread">Chưa đọc</string>
+    <string name="in_home_feed">Trộn nguồn đã theo dõi vào Đang theo dõi</string>
+    <string name="in_home_feed_description">Hiện các mục mới từ nguồn đã theo dõi trên dòng thời gian Đang theo dõi.</string>
 </resources>

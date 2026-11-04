@@ -39,4 +39,6 @@
     <string name="tag_hint">छोटा लेबल, जैसे समाचार या ब्लॉग</string>
     <string name="unfollow">अनफ़ॉलो करें</string>
     <string name="unread">अपठित</string>
+    <string name="in_home_feed">फ़ॉलो की गई फ़ीड को फ़ॉलोइंग में मिलाएँ</string>
+    <string name="in_home_feed_description">फ़ॉलोइंग टाइमलाइन में फ़ॉलो की गई फ़ीड की नई प्रविष्टियाँ दिखाएँ।</string>
 </resources>

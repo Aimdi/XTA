@@ -75,7 +75,7 @@ internal fun ThreadsSettingsBody(app: ThreadsApp, frame: PluginFrame) {
         LazyColumn(contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
             item(key = "guest") { GuestCard() }
             item(key = "intro") { Paragraph(Strings.settings_intro) }
-            item(key = "home") { HomeTimelineSwitch(app.host.settings, pluginString(Strings.plugin_name)) }
+            item(key = "home") { HomeTimelineSwitch(app.host.settings, pluginString(Strings.in_home_feed), pluginString(Strings.in_home_feed_description)) }
             item(key = "session-apis") {
                 Toggle(Strings.use_session, Strings.use_session_description, settings[ThreadsPrefs.useSessionApis]) { on -> app.update { it.with(ThreadsPrefs.useSessionApis, on) } }
             }

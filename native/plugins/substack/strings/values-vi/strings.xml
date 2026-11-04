@@ -145,4 +145,5 @@
     <string name="unsave">Xóa khỏi đã lưu</string>
     <string name="videos">Video</string>
     <string name="web_only_block">Phần này của bài viết chỉ hiển thị trên web.</string>
+    <string name="search_posts_hint">Tìm bài viết trong các ấn phẩm bạn theo dõi</string>
 </resources>

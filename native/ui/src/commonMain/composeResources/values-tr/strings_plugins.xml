@@ -50,4 +50,6 @@
     <string name="plugin_problem_offline">%1$s ile bağlantı yok.</string>
     <string name="plugin_problem_refused">%1$s isteği reddetti (%2$d).</string>
     <string name="plugin_problem_other">%1$s okunurken bir sorun oluştu.</string>
+    <string name="plugin_store_search">Eklenti ara</string>
+    <string name="plugin_store_no_results">Sonuç yok</string>
 </resources>

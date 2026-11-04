@@ -190,4 +190,9 @@
     <string name="votes">За: %1$d, против: %2$d</string>
     <string name="wiki">Вики</string>
     <string name="wiki_empty">У этого тега нет вики-страницы</string>
+    <string name="settings_title">Настройки Booru</string>
+    <string name="show_tab">Показывать вкладку Booru</string>
+    <string name="show_tab_description">Добавляет Booru в нижнюю навигацию, когда плагин включён</string>
+    <string name="in_home_feed">Показывать в главной ленте</string>
+    <string name="in_home_feed_description">Добавляет записи из тегов, на которые вы подписаны, в «Подписки» и «Для вас»</string>
 </resources>

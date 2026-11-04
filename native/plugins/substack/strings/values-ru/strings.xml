@@ -154,4 +154,5 @@
     <string name="unsave">Убрать из сохранённых</string>
     <string name="videos">Видео</string>
     <string name="web_only_block">Эта часть публикации отображается только в вебе.</string>
+    <string name="search_posts_hint">Поиск статей в изданиях, на которые вы подписаны</string>
 </resources>

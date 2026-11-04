@@ -16,6 +16,7 @@ import com.aimdi.xtanative.ui.plugins.PluginFeed
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginPostMenu
 import com.aimdi.xtanative.ui.plugins.PluginRoute
+import com.aimdi.xtanative.ui.plugins.PluginSearchHistory
 import com.aimdi.xtanative.ui.plugins.PluginSubscription
 import com.aimdi.xtanative.ui.plugins.loaded
 import java.util.concurrent.ConcurrentHashMap
@@ -129,6 +130,9 @@ internal class HnApp(val host: PluginHost) {
     private fun change(edit: (Settings) -> Settings) {
         scope.launch { host.settings.update(edit) }
     }
+
+    /** [query] first among the searches run here, as XTA's HnSearchHistoryStore keeps them. */
+    fun rememberSearch(query: String) = change { it.with(HackerNewsPrefs.searchHistory, PluginSearchHistory.remembered(it[HackerNewsPrefs.searchHistory], query)) }
 
     fun close() = scope.cancel()
 

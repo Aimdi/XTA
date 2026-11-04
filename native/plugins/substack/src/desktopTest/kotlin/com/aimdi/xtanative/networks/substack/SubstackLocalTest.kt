@@ -82,15 +82,6 @@ class SubstackLocalTest {
     }
 
     @Test
-    fun aSearchIsRememberedFirstOnceAndTheHistoryStopsAtTwenty() {
-        val history = (1..25).fold(emptyList<String>()) { list, n -> SubstackSearches.remembered(list, "q$n") }
-        assertEquals(SubstackSearches.CAP, history.size)
-        assertEquals("q25", history.first())
-        assertEquals(listOf("q3", "q25"), SubstackSearches.remembered(history, " q3 ").take(2))
-        assertEquals(history, SubstackSearches.remembered(history, "  "))
-    }
-
-    @Test
     fun followsListPinnedFirstThenByNameAndPlaceANewOneUnderItsOwnHost() {
         val alpha = SubstackPublication("alpha", "https://alpha.substack.com", "alpha")
         val beta = SubstackPublication("beta", "https://beta.substack.com", "Beta")

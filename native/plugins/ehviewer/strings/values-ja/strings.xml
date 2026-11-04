@@ -117,4 +117,7 @@
     <string name="test_connection">接続をテスト</string>
     <string name="test_ok">サイトが応答しました（%1$d件）</string>
     <string name="test_failed">EHのテストに失敗: %1$s</string>
+    <string name="settings_title">EHの設定</string>
+    <string name="show_tab">EHタブを表示</string>
+    <string name="show_tab_description">プラグイン有効時、下部ナビにEHを追加します</string>
 </resources>

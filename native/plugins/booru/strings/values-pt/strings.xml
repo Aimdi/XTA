@@ -188,4 +188,9 @@
     <string name="votes">%1$d positivos, %2$d negativos</string>
     <string name="wiki">Wiki</string>
     <string name="wiki_empty">Esta etiqueta não tem página na wiki</string>
+    <string name="settings_title">Definições do Booru</string>
+    <string name="show_tab">Mostrar separador do Booru</string>
+    <string name="show_tab_description">Adiciona o Booru à navegação inferior quando o extra está ativo</string>
+    <string name="in_home_feed">Mostrar na cronologia principal</string>
+    <string name="in_home_feed_description">Mistura as publicações das etiquetas que segue em «A seguir» e «Para si»</string>
 </resources>

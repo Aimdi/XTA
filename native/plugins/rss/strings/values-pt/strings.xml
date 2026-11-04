@@ -39,4 +39,6 @@
     <string name="tag_hint">Uma etiqueta curta, como Notícias ou Blogues</string>
     <string name="unfollow">Deixar de seguir</string>
     <string name="unread">Não lido</string>
+    <string name="in_home_feed">Misturar as fontes seguidas em A seguir</string>
+    <string name="in_home_feed_description">Mostrar novos itens das fontes seguidas na cronologia A seguir.</string>
 </resources>

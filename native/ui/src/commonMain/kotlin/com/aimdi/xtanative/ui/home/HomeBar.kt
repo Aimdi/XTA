@@ -1,8 +1,7 @@
 package com.aimdi.xtanative.ui.home
 
+import com.aimdi.xtanative.ui.common.TabSwipes
 import com.aimdi.xtanative.ui.settings.HomePages
-import kotlin.math.abs
-import kotlin.math.sign
 
 /** One page of Home's bottom bar (home_screen.dart's NavigationPage), by the id Settings › Home keeps it under. */
 sealed interface BarPage {
@@ -55,9 +54,9 @@ object HomeBar {
     const val NETWORK_SLOTS = 1
 
     /** How far a swipe across the bar must go, and how fast a flick, to turn its page (reader_swipe_navigation.dart), in dp and dp/s. */
-    const val SWIPE_DISTANCE = 72f
-    const val SWIPE_MINIMUM = 24f
-    const val FLICK_VELOCITY = 650f
+    const val SWIPE_DISTANCE = TabSwipes.DISTANCE
+    const val SWIPE_MINIMUM = TabSwipes.MINIMUM
+    const val FLICK_VELOCITY = TabSwipes.FLICK
 
     val DEFAULT_PAGES: List<BarPage> = listOf(BarPage.Feed, BarPage.Subscriptions, BarPage.Trending, BarPage.Saved)
 
@@ -123,15 +122,8 @@ object HomeBar {
      * A swipe must go [SWIPE_DISTANCE], or be flicked, and agree with the
      * way it travelled; the pages do not wrap.
      */
-    fun swiped(current: Int, count: Int, distance: Float, velocity: Float, rtl: Boolean = false): Int {
-        if (count <= 1 || current !in 0 until count) return current
-        if (!distance.isFinite() || !velocity.isFinite() || abs(distance) < SWIPE_MINIMUM) return current
-        if (velocity != 0f && velocity.sign != distance.sign) return current
-        if (abs(velocity) < FLICK_VELOCITY && abs(distance) < SWIPE_DISTANCE) return current
-        val physical = if (distance < 0) 1 else -1
-        val next = current + if (rtl) -physical else physical
-        return if (next in 0 until count) next else current
-    }
+    fun swiped(current: Int, count: Int, distance: Float, velocity: Float, rtl: Boolean = false): Int =
+        TabSwipes.turned(current, count, distance, velocity, rtl)
 }
 
 /**

@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
@@ -66,10 +67,12 @@ internal fun BooruHome(app: BooruApp, frame: PluginFrame, ownActions: Boolean = 
         Column(Modifier.fillMaxSize()) {
             HomeBar(tab, onTab = { tab = it }, actions = if (ownActions) HomeActions({ app.openSearch() }, app.host::openSettings) else null)
             Hairline()
-            when (tab) {
-                HomeTab.LATEST -> FeedView(app, feeds.latest, pluginString(Strings.empty_latest), frame.padding, grid = grids.getValue(tab))
-                HomeTab.POPULAR -> PopularTab(app, feeds, settings, frame, grids.getValue(tab))
-                HomeTab.FOLLOWING -> FollowingTab(app, feeds, follows, frame, grids.getValue(tab))
+            Box(Modifier.weight(1f).swipeTabs(HomeTab.entries, tab) { tab = it }) {
+                when (tab) {
+                    HomeTab.LATEST -> FeedView(app, feeds.latest, pluginString(Strings.empty_latest), frame.padding, grid = grids.getValue(tab))
+                    HomeTab.POPULAR -> PopularTab(app, feeds, settings, frame, grids.getValue(tab))
+                    HomeTab.FOLLOWING -> FollowingTab(app, feeds, follows, frame, grids.getValue(tab))
+                }
             }
         }
         BooruMessages(app, Modifier.align(Alignment.BottomCenter).padding(frame.padding))

@@ -186,4 +186,9 @@
     <string name="votes">%1$d अपवोट, %2$d डाउनवोट</string>
     <string name="wiki">विकी</string>
     <string name="wiki_empty">इस टैग का कोई विकी पेज नहीं है</string>
+    <string name="settings_title">Booru सेटिंग्स</string>
+    <string name="show_tab">Booru टैब दिखाएँ</string>
+    <string name="show_tab_description">प्लगिन चालू होने पर Booru को निचले नेविगेशन में जोड़ता है</string>
+    <string name="in_home_feed">होम टाइमलाइन में दिखाएँ</string>
+    <string name="in_home_feed_description">फ़ॉलो किए गए टैग की पोस्ट को \"फ़ॉलोइंग\" और \"आपके लिए\" में मिलाता है</string>
 </resources>

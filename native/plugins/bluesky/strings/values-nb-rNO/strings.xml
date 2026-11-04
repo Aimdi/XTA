@@ -146,4 +146,6 @@
         <item quantity="one">%1$s innlegg</item>
         <item quantity="other">%1$s innlegg</item>
     </plurals>
+    <string name="in_home_feed">Vis i hovedstrømmen</string>
+    <string name="in_home_feed_description">Blander innlegg fra Bluesky-kontoene du følger inn i Følger og For deg</string>
 </resources>

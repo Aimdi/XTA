@@ -122,4 +122,6 @@
         <item quantity="few">%1$s urmăritori</item>
         <item quantity="other">%1$s de urmăritori</item>
     </plurals>
+    <string name="in_home_feed">Afișează în cronologia principală</string>
+    <string name="in_home_feed_description">Adaugă postările din subredditurile urmărite în „Urmăriți” și „Pentru tine”</string>
 </resources>

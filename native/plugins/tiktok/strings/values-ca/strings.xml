@@ -51,4 +51,7 @@
     <string name="test_connection_description">Obre el perfil públic @tiktok per comprovar que TikTok respon</string>
     <string name="test_ok">TikTok respondió (%1$s)</string>
     <string name="test_failed">La prueba de TikTok falló: %1$s</string>
+    <string name="settings_title">Configuració de TikTok</string>
+    <string name="show_tab">Mostra la pestanya de TikTok</string>
+    <string name="show_tab_description">Afegeix TikTok a la navegació inferior quan el connector està activat</string>
 </resources>

@@ -113,4 +113,6 @@
     <string name="use_session">Takip edilen hesaplar için oturumumu kullan</string>
     <string name="use_session_description">Varsayılan kapalı. Açıkken uygulama Threads’e sizin adınıza konuşur — Meta o hesabı yasaklayabilir. Tek kullanımlık giriş değilse kapalı bırakın.</string>
     <string name="add_to_group">Gruba ekle</string>
+    <string name="in_home_feed">Ana akışta göster</string>
+    <string name="in_home_feed_description">Takip ettiğin Threads hesaplarının gönderilerini Takip ve Sana Özel akışlarına karıştırır</string>
 </resources>

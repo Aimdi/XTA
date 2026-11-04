@@ -145,4 +145,6 @@
     <plurals name="post_count">
         <item quantity="other">%1$s postingan</item>
     </plurals>
+    <string name="in_home_feed">Tampilkan di lini masa beranda</string>
+    <string name="in_home_feed_description">Menggabungkan kiriman dari akun Bluesky yang Anda ikuti ke Mengikuti dan Untuk Anda</string>
 </resources>

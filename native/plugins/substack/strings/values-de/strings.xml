@@ -148,4 +148,5 @@
     <string name="unsave">Aus Gespeichert entfernen</string>
     <string name="videos">Videos</string>
     <string name="web_only_block">Dieser Teil des Beitrags wird nur im Web angezeigt.</string>
+    <string name="search_posts_hint">Artikel in Publikationen suchen, denen du folgst</string>
 </resources>

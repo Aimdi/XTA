@@ -115,4 +115,6 @@
         <item quantity="other">%1$s votes</item>
     </plurals>
     <string name="add_to_group">Ajouter au groupe</string>
+    <string name="in_home_feed">Afficher dans le fil principal</string>
+    <string name="in_home_feed_description">Intègre les publications des comptes Mastodon que vous suivez dans « Abonnements » et « Pour vous »</string>
 </resources>

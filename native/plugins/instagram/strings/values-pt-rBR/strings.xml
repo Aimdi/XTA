@@ -61,4 +61,7 @@
     <string name="unfollow_confirm">Deixar de seguir @%1$s?</string>
     <string name="unlike_on_device">Remover curtida deste dispositivo</string>
     <string name="add_to_group">Adicionar ao grupo</string>
+    <string name="settings_title">Configurações do Instagram</string>
+    <string name="show_tab">Mostrar aba do Instagram</string>
+    <string name="show_tab_description">Adiciona o Instagram à navegação inferior quando o plugin está ativado</string>
 </resources>

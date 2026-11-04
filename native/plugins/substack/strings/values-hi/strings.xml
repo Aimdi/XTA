@@ -148,4 +148,5 @@
     <string name="unsave">सहेजी गई से हटाएँ</string>
     <string name="videos">वीडियो</string>
     <string name="web_only_block">पोस्ट का यह हिस्सा सिर्फ़ वेब पर दिखता है।</string>
+    <string name="search_posts_hint">जिन प्रकाशनों को आप फ़ॉलो करते हैं, उनके लेख खोजें</string>
 </resources>

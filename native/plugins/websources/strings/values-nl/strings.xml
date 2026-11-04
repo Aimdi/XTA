@@ -55,4 +55,6 @@
     <string name="unfollow">Ontvolgen</string>
     <string name="unreachable">Het bestand van de bron kon niet worden gelezen. Controleer de link en je verbinding.</string>
     <string name="update_title">%1$s bijwerken?</string>
+    <string name="in_home_feed">Gevolgde lijsten mengen in Volgend</string>
+    <string name="in_home_feed_description">Nieuwe berichten van gevolgde lijsten tonen in de tijdlijn Volgend.</string>
 </resources>

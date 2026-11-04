@@ -75,7 +75,7 @@ internal fun RedditSettingsBody(app: RedditApp, frame: PluginFrame) {
         item(key = "sort") { SettingRow(sortIcon(choices.sort), pluginString(Strings.sort), sortTitle(choices)) { sorting = true } }
         item(key = "nsfw") { SectionHeader(pluginString(Strings.nsfw_display)) }
         RedditNsfwMode.entries.forEach { mode -> item(key = "nsfw-" + mode.stored) { NsfwRow(app, mode, choices.nsfw == mode) } }
-        item(key = "home") { HomeTimelineSwitch(app.host.settings, pluginString(Strings.plugin_name)) }
+        item(key = "home") { HomeTimelineSwitch(app.host.settings, pluginString(Strings.in_home_feed), pluginString(Strings.in_home_feed_description)) }
         item(key = "spoiler") { SectionHeader(pluginString(Strings.spoiler)) }
         item(key = "spoilers") { SpoilerRow(app, choices.showSpoilers) }
     }

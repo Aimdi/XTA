@@ -146,4 +146,6 @@
         <item quantity="one">argitalpen %1$s</item>
         <item quantity="other">%1$s argitalpen</item>
     </plurals>
+    <string name="in_home_feed">Erakutsi hasierako denbora-lerroan</string>
+    <string name="in_home_feed_description">Jarraitzen dituzun Bluesky kontuen bidalketak «Jarraitzen» eta «Zuretzat» ataletan tartekatzen ditu</string>
 </resources>

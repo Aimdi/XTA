@@ -54,6 +54,7 @@ import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.ProblemView
 import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.common.datePattern
+import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.discover_community_about
@@ -110,7 +111,7 @@ fun CommunityScreen(id: String, about: Boolean, actions: PostActions, openMember
             else -> LazyColumn(
                 state = list,
                 contentPadding = PaddingValues(bottom = padding.calculateBottomPadding()),
-                modifier = Modifier.fillMaxSize().then(below),
+                modifier = Modifier.fillMaxSize().then(below).swipeTabs(CommunityTab.entries, state.tab, vm::select),
             ) {
                 item(key = "header", contentType = "header") { CommunityHeader(community) { openMembers(community.id) } }
                 stickyHeader(key = "tabs", contentType = "tabs") { CommunityTabs(state.tab, vm::select) }

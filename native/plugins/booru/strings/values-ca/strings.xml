@@ -188,4 +188,9 @@
     <string name="votes">%1$d a favor, %2$d en contra</string>
     <string name="wiki">Wiki</string>
     <string name="wiki_empty">Aquesta etiqueta no té pàgina wiki</string>
+    <string name="settings_title">Configuració de Booru</string>
+    <string name="show_tab">Mostra la pestanya de Booru</string>
+    <string name="show_tab_description">Afegeix Booru a la navegació inferior quan el connector està activat</string>
+    <string name="in_home_feed">Mostra a la cronologia principal</string>
+    <string name="in_home_feed_description">Barreja les publicacions de les etiquetes que segueixes a «Seguint» i «Per a tu»</string>
 </resources>

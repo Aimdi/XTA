@@ -36,6 +36,9 @@ class PluginSettings(
     /** The settings now: the defaults until the app has read them. */
     fun current(): Settings = state.value ?: Settings()
 
+    /** The plugin whose settings these are: the id its keys sit under. */
+    val pluginId: String get() = id
+
     /** Whether [settings] have the plugin's followed accounts in Home's Following and For you: its "show in the home timeline" switch. */
     fun inHomeFeed(settings: Settings? = state.value): Boolean = inHomeFeed(settings, id)
 

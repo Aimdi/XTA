@@ -148,4 +148,5 @@
     <string name="unsave">Kendu gordetakoetatik</string>
     <string name="videos">Bideoak</string>
     <string name="web_only_block">Argitalpenaren zati hau webean bakarrik ikusten da.</string>
+    <string name="search_posts_hint">Bilatu artikuluak jarraitzen dituzun argitalpenetan</string>
 </resources>

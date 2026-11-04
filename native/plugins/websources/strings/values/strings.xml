@@ -55,4 +55,6 @@
     <string name="unfollow">Unfollow</string>
     <string name="unreachable">The source file could not be read. Check the link and your connection.</string>
     <string name="update_title">Update %1$s?</string>
+    <string name="in_home_feed">Mix followed lists into Following</string>
+    <string name="in_home_feed_description">Show new posts from followed lists in the Following timeline.</string>
 </resources>

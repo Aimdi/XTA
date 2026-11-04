@@ -137,4 +137,7 @@
     <string name="test_connection">اختبار الاتصال</string>
     <string name="test_ok">استجاب الموقع (عدد المعارض: %1$d)</string>
     <string name="test_failed">فشل اختبار EH: %1$s</string>
+    <string name="settings_title">إعدادات EH</string>
+    <string name="show_tab">إظهار تبويب EH</string>
+    <string name="show_tab_description">يضيف EH إلى شريط التنقل السفلي عند تفعيل الإضافة</string>
 </resources>

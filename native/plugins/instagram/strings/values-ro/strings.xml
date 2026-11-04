@@ -61,4 +61,7 @@
     <string name="unfollow_confirm">Nu mai urmărești @%1$s?</string>
     <string name="unlike_on_device">Elimină aprecierea de pe acest dispozitiv</string>
     <string name="add_to_group">Adăugați la grup</string>
+    <string name="settings_title">Setări Instagram</string>
+    <string name="show_tab">Afișează fila Instagram</string>
+    <string name="show_tab_description">Adaugă Instagram în navigarea de jos când modulul este activat</string>
 </resources>

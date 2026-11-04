@@ -61,4 +61,7 @@
     <string name="unfollow_confirm">Smettere di seguire @%1$s?</string>
     <string name="unlike_on_device">Rimuovi il mi piace da questo dispositivo</string>
     <string name="add_to_group">Aggiungi al gruppo</string>
+    <string name="settings_title">Impostazioni Instagram</string>
+    <string name="show_tab">Mostra scheda Instagram</string>
+    <string name="show_tab_description">Aggiunge Instagram alla navigazione in basso quando il plugin è attivo</string>
 </resources>

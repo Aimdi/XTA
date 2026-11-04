@@ -113,4 +113,6 @@
     <string name="use_session">Bruk økten min for fulgte kontoer</string>
     <string name="use_session_description">Av som standard. Når den er på, snakker appen med Threads som deg — Meta kan utestenge den kontoen. La den være av med mindre du bruker en engangspålogging.</string>
     <string name="add_to_group">Legg til i gruppe</string>
+    <string name="in_home_feed">Vis i hovedstrømmen</string>
+    <string name="in_home_feed_description">Blander innlegg fra Threads-kontoene du følger inn i Følger og For deg</string>
 </resources>

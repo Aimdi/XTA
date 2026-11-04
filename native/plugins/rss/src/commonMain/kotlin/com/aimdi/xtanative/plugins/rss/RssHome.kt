@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.rss.RssTimelineRules
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
@@ -63,7 +64,7 @@ internal fun RssHome(app: RssApp, frame: PluginFrame) {
     Column(Modifier.fillMaxSize()) {
         Header(app, selected) { pane = it.ordinal }
         Hairline()
-        Box(Modifier.weight(1f)) {
+        Box(Modifier.weight(1f).swipeTabs(RssPane.entries, selected) { pane = it.ordinal }) {
             val followed = feeds
             when {
                 followed == null -> LoadingRow()

@@ -61,4 +61,7 @@
     <string name="unfollow_confirm">\@%1$s のフォローを解除しますか？</string>
     <string name="unlike_on_device">この端末のいいねを取り消す</string>
     <string name="add_to_group">グループに追加</string>
+    <string name="settings_title">Instagramの設定</string>
+    <string name="show_tab">Instagramタブを表示</string>
+    <string name="show_tab_description">プラグインが有効なとき、下部ナビにInstagramを追加します</string>
 </resources>

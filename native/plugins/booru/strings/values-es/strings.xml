@@ -188,4 +188,9 @@
     <string name="votes">%1$d votos a favor, %2$d en contra</string>
     <string name="wiki">Wiki</string>
     <string name="wiki_empty">Esta etiqueta no tiene página en la wiki</string>
+    <string name="settings_title">Ajustes de Booru</string>
+    <string name="show_tab">Mostrar pestaña Booru</string>
+    <string name="show_tab_description">Añade Booru a la navegación inferior cuando el complemento está activo</string>
+    <string name="in_home_feed">Mostrar en la línea de tiempo de inicio</string>
+    <string name="in_home_feed_description">Mezcla publicaciones de etiquetas seguidas en Siguiendo y Para ti</string>
 </resources>

@@ -129,4 +129,7 @@
     <string name="test_connection">Праверыць злучэнне</string>
     <string name="test_ok">Сайт адказаў (галерэй: %1$d)</string>
     <string name="test_failed">Праверка EH не ўдалася: %1$s</string>
+    <string name="settings_title">Налады EH</string>
+    <string name="show_tab">Паказваць укладку EH</string>
+    <string name="show_tab_description">Дадае EH у ніжнюю навігацыю, калі ўбудова ўключана</string>
 </resources>

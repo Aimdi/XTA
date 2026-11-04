@@ -190,4 +190,9 @@
     <string name="votes">%1$d за, %2$d супраць</string>
     <string name="wiki">Вікі</string>
     <string name="wiki_empty">У гэтага тэга няма старонкі ў вікі</string>
+    <string name="settings_title">Налады Booru</string>
+    <string name="show_tab">Паказваць укладку Booru</string>
+    <string name="show_tab_description">Дадае Booru ў ніжнюю навігацыю, калі ўбудова ўключана</string>
+    <string name="in_home_feed">Паказваць у галоўнай стужцы</string>
+    <string name="in_home_feed_description">Дадае запісы з тэгаў, на якія вы падпісаны, у «Падпіскі» і «Для вас»</string>
 </resources>

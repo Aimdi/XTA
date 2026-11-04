@@ -55,7 +55,8 @@ import org.jetbrains.compose.resources.stringResource
  * end; kept offline; its page in the browser. An item that only linked its
  * page says so and opens it. [read] is whether it was read before; what
  * outlives the screen (the last place written) runs in [scope]. [actions]
- * go first in the bar: RSS's Add to group for the item's feed.
+ * go in the bar between Keep offline and Open in browser, as XTA's bar
+ * orders them: RSS's Add to group for the item's feed.
  */
 @Composable
 fun RssReaderScreen(
@@ -76,8 +77,8 @@ fun RssReaderScreen(
         onDispose { reading?.setActive(false) }
     }
     PluginScaffold(title = shown.feedTitle, onBack = host::back, actions = {
-        actions()
         if (shown.hasReadableBody) OfflineArticleAction(RssOffline.articleOf(shown))
+        actions()
         shown.link?.let { link -> IconButton(onClick = { outside(link) }) { Icon(PostIcons.OpenInNew, stringResource(Res.string.reader_link_open_in_browser)) } }
     }) { padding ->
         Column(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {

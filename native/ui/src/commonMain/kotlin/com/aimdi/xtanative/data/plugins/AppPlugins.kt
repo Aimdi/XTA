@@ -277,6 +277,11 @@ class AppPlugins(
         prefs.update { it.copy(showPrivate = show) }
     }
 
+    /** Gives [id] a page on Home's bottom bar, or takes it away, as XTA's "Show as a tab" does ([withPluginAsTab]). */
+    suspend fun showAsTab(id: String, on: Boolean) {
+        settings.update { it.withPluginAsTab(id, on) }
+    }
+
     /** Puts [id] on Home's strip after the networks there, or takes it off, as the strip's own sheet does. */
     suspend fun pinOnStrip(id: String, pinned: Boolean) {
         settings.update { it.withPluginOnStrip(id, pinned) }
@@ -614,7 +619,10 @@ class AppPlugins(
 
         override fun openProfile(screenName: String) = plugins.navigator.go(Destination.XProfile(screenName))
 
-        override fun openMedia(media: List<MediaItem>, start: Int) = plugins.navigator.go(Destination.Media(plugins.media.put(id, media), start))
+        override fun openMedia(media: List<MediaItem>, start: Int) = openMedia(media, start, null)
+
+        override fun openMedia(media: List<MediaItem>, start: Int, openPost: (() -> Unit)?) =
+            plugins.navigator.go(Destination.Media(plugins.media.put(id, media, openPost), start))
 
         override fun openSearch(query: String?) = plugins.navigator.go(Destination.PluginSearch(id, query))
 

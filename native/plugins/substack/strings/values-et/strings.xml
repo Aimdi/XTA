@@ -148,4 +148,5 @@
     <string name="unsave">Eemalda salvestatutest</string>
     <string name="videos">Videod</string>
     <string name="web_only_block">See osa postitusest on nähtav ainult veebis.</string>
+    <string name="search_posts_hint">Otsi artikleid väljaannetest, mida jälgid</string>
 </resources>

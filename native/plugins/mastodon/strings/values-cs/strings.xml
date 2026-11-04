@@ -116,4 +116,6 @@
         <item quantity="other">%1$s hlasů</item>
     </plurals>
     <string name="add_to_group">Přidat do skupiny</string>
+    <string name="in_home_feed">Zobrazovat na hlavní nástěnce</string>
+    <string name="in_home_feed_description">Přimíchá příspěvky z účtů na Mastodon, které sledujete, do „Sleduji“ a „Pro tebe“</string>
 </resources>

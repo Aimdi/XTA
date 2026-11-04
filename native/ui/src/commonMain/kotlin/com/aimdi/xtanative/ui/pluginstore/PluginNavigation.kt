@@ -194,11 +194,13 @@ fun NavGraphBuilder.pluginScreens(
         val plugins = LocalPlugins.current
         val key = entry.text("key").orEmpty()
         val shelved = remember(key) { plugins.media.get(key) }
+        val openPost = shelved?.openPost
         MediaPager(
             shelved?.items.orEmpty(),
             entry.arguments?.read { getIntOrNull("index") } ?: 0,
             onClose = { nav.popBackStack() },
             onDownload = shelved?.let { media -> { item -> plugins.download(media.source, item) } },
+            onOpenPost = openPost?.let { open -> { runCatching { open() } } },
         )
     }
 }

@@ -61,4 +61,7 @@
     <string name="unfollow_confirm">Přestat sledovat @%1$s?</string>
     <string name="unlike_on_device">Odebrat like z tohoto zařízení</string>
     <string name="add_to_group">Přidat do skupiny</string>
+    <string name="settings_title">Nastavení Instagramu</string>
+    <string name="show_tab">Zobrazit kartu Instagram</string>
+    <string name="show_tab_description">Přidá Instagram do spodní navigace, když je zásuvný modul zapnutý</string>
 </resources>

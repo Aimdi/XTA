@@ -39,4 +39,6 @@
     <string name="tag_hint">Un libellé court, comme Actualités ou Blogs</string>
     <string name="unfollow">Ne plus suivre</string>
     <string name="unread">Non lus</string>
+    <string name="in_home_feed">Mélanger les flux suivis dans Abonnements</string>
+    <string name="in_home_feed_description">Afficher les nouveaux éléments des flux suivis dans le fil Abonnements.</string>
 </resources>

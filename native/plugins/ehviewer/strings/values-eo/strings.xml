@@ -121,4 +121,7 @@
     <string name="test_connection">Testi la konekton</string>
     <string name="test_ok">La retejo respondis (%1$d galerioj)</string>
     <string name="test_failed">La testo de EH malsukcesis: %1$s</string>
+    <string name="settings_title">Agordoj de EH</string>
+    <string name="show_tab">Montri langeton EH</string>
+    <string name="show_tab_description">Aldonas EH al la malsupra navigado kiam la kromaĵo estas ŝaltita</string>
 </resources>

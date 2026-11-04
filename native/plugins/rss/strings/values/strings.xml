@@ -39,4 +39,6 @@
     <string name="tag_hint">A short label, like News or Blogs</string>
     <string name="unfollow">Unfollow</string>
     <string name="unread">Unread</string>
+    <string name="in_home_feed">Mix followed feeds into Following</string>
+    <string name="in_home_feed_description">Show new items from followed feeds in the Following timeline.</string>
 </resources>

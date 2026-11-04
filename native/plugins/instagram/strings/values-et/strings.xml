@@ -61,4 +61,7 @@
     <string name="unfollow_confirm">Lõpetada @%1$s jälgimine?</string>
     <string name="unlike_on_device">Eemalda meeldimine sellest seadmest</string>
     <string name="add_to_group">Lisa gruppi</string>
+    <string name="settings_title">Instagrami seaded</string>
+    <string name="show_tab">Näita Instagrami vahekaarti</string>
+    <string name="show_tab_description">Lisab Instagrami alumisse navigeerimisse, kui plugin on sisse lülitatud</string>
 </resources>

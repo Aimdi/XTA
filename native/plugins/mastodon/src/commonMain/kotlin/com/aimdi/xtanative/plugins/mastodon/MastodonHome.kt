@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.mastodon.MastodonFollow
 import com.aimdi.xtanative.networks.mastodon.MastodonTimeline
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.AddToGroupButton
 import com.aimdi.xtanative.ui.plugins.NetworkPersonRow
 import com.aimdi.xtanative.ui.plugins.PluginFrame
@@ -74,11 +75,12 @@ internal fun MastodonHome(app: MastodonApp, frame: PluginFrame, surface: Mastodo
     var people by rememberSaveable { mutableStateOf(left.people) }
     var adding by rememberSaveable { mutableStateOf(false) }
     val panes = rememberSaveableStateHolder()
+    val select: (MastodonTimeline) -> Unit = { chosen ->
+        timeline = chosen
+        app.places.select(chosen.ordinal, people)
+    }
     Column(Modifier.fillMaxSize()) {
-        SectionBar(app, timeline) {
-            timeline = it
-            app.places.select(it.ordinal, people)
-        }
+        SectionBar(app, timeline, select)
         if (timeline == MastodonTimeline.FOLLOWING) {
             FollowingControls(people, onSelect = {
                 people = it
@@ -86,7 +88,7 @@ internal fun MastodonHome(app: MastodonApp, frame: PluginFrame, surface: Mastodo
             }, onAdd = { adding = true })
         }
         Hairline()
-        Box(Modifier.weight(1f)) {
+        Box(Modifier.weight(1f).swipeTabs(MastodonTimeline.entries, timeline, select)) {
             val key = if (timeline == MastodonTimeline.FOLLOWING && people) "people" else timeline.name
             panes.SaveableStateProvider(key) {
                 if (key == "people") PeoplePane(app, frame) { adding = true } else Pane(app, timeline, "${surface.key}:${timeline.ordinal}", frame)

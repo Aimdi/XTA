@@ -190,4 +190,9 @@
     <string name="votes">%1$d na tak, %2$d na nie</string>
     <string name="wiki">Wiki</string>
     <string name="wiki_empty">Ten tag nie ma strony wiki</string>
+    <string name="settings_title">Ustawienia Booru</string>
+    <string name="show_tab">Pokaż kartę Booru</string>
+    <string name="show_tab_description">Dodaje Booru do dolnej nawigacji, gdy wtyczka jest włączona</string>
+    <string name="in_home_feed">Pokazuj na osi czasu</string>
+    <string name="in_home_feed_description">Dodaje wpisy z obserwowanych tagów do zakładek „Obserwowane” i „Dla Ciebie”</string>
 </resources>

@@ -53,6 +53,8 @@ class BooruPlugin : XtaPlugin() {
 
     override val settings: PluginBody = { frame -> BooruSettingsBody(app, frame) }
 
+    override fun settingsTitle(language: String): String = Strings.settings_title.get(language)
+
     override val search: PluginSearch by lazy { BooruFieldSearch(app) }
 
     override fun routeFor(url: String): String? = BooruRoutes.forUrl(url, BooruSites.known(app.current()))

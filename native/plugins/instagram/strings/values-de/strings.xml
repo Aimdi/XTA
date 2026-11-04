@@ -61,4 +61,7 @@
     <string name="unfollow_confirm">\@%1$s entfolgen?</string>
     <string name="unlike_on_device">Like von diesem Gerät entfernen</string>
     <string name="add_to_group">Zu Gruppe hinzufügen</string>
+    <string name="settings_title">Instagram-Einstellungen</string>
+    <string name="show_tab">Instagram-Tab anzeigen</string>
+    <string name="show_tab_description">Fügt Instagram zur unteren Navigation hinzu, wenn das Plugin aktiv ist</string>
 </resources>

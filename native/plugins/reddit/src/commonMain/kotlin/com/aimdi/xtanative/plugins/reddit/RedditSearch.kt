@@ -46,6 +46,7 @@ import com.aimdi.xtanative.networks.reddit.RedditUserResult
 import com.aimdi.xtanative.networks.reddit.normaliseSubreddit
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.countText
+import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.PagedItems
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
@@ -82,7 +83,7 @@ internal fun SearchResults(app: RedditApp, query: String, subreddit: String?, fr
                 )
             }
         }
-        Box(Modifier.weight(1f)) {
+        Box(Modifier.weight(1f).swipeTabs(tab, 3) { tab = it }) {
             when (tab) {
                 0 -> Column(Modifier.fillMaxSize()) {
                     SortChips(subreddit, sort) { sort = it }

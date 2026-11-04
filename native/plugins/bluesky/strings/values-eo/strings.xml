@@ -146,4 +146,6 @@
         <item quantity="one">%1$s afiŝo</item>
         <item quantity="other">%1$s afiŝoj</item>
     </plurals>
+    <string name="in_home_feed">Montri en la hejma tempolinio</string>
+    <string name="in_home_feed_description">Miksas afiŝojn el la Bluesky-kontoj kiujn vi sekvas en «Sekvataj» kaj «Por vi»</string>
 </resources>

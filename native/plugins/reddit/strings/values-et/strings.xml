@@ -119,4 +119,6 @@
         <item quantity="one">%1$s jälgija</item>
         <item quantity="other">%1$s jälgijat</item>
     </plurals>
+    <string name="in_home_feed">Näita avalehe voos</string>
+    <string name="in_home_feed_description">Lisab jälgitavate subredditide postitused voogudesse „Jälgitavad“ ja „Sulle“</string>
 </resources>

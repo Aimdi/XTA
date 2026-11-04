@@ -61,4 +61,7 @@
     <string name="unfollow_confirm">\@%1$s takipten çıkılsın mı?</string>
     <string name="unlike_on_device">Beğeniyi bu cihazdan kaldır</string>
     <string name="add_to_group">Gruba ekle</string>
+    <string name="settings_title">Instagram ayarları</string>
+    <string name="show_tab">Instagram sekmesini göster</string>
+    <string name="show_tab_description">Eklenti açıkken Instagram’ı alt gezinmeye ekler</string>
 </resources>

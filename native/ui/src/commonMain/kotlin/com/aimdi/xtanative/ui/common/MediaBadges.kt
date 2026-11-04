@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -71,34 +72,40 @@ fun MediaBadge(modifier: Modifier = Modifier, label: String? = null, icon: Image
 }
 
 /**
- * "ALT" at the foot of a described picture (_media.dart): a tap or a long
- * press on it shows the description, in a touch target of its own.
+ * "ALT" at the foot of a described picture (_media.dart, plugin_post_media.dart's
+ * _AltBadge): a tap or a long press on it shows [alt] in [AltTextDialog].
  */
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AltBadge(alt: String, modifier: Modifier = Modifier) {
     var open by remember { mutableStateOf(false) }
+    AltBadge(onClick = { open = true }, modifier)
+    if (open) AltTextDialog(alt) { open = false }
+}
+
+/** "ALT" on a described picture, in a touch target of its own: a tap or a long press calls [onClick], which shows the description. */
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun AltBadge(onClick: () -> Unit, modifier: Modifier = Modifier) {
     val title = stringResource(Res.string.media_alt_title)
     Box(
         modifier
             .sizeIn(minWidth = 48.dp, minHeight = 48.dp)
-            .combinedClickable(role = Role.Button, onClick = { open = true }, onLongClick = { open = true })
+            .combinedClickable(role = Role.Button, onClickLabel = title, onClick = onClick, onLongClick = onClick)
             .semantics { contentDescription = title }
             .padding(8.dp),
         contentAlignment = Alignment.BottomStart,
     ) {
         MediaBadge(label = stringResource(Res.string.media_alt_badge))
     }
-    if (open) AltTextDialog(alt) { open = false }
 }
 
-/** "Image description" and a picture's description, with OK (_media.dart's _showAltTextDialog). */
+/** "Image description" and a picture's [description], to read and copy, with OK (_media.dart's _showAltTextDialog). */
 @Composable
-fun AltTextDialog(alt: String, onDismiss: () -> Unit) {
+fun AltTextDialog(description: String, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.media_alt_title)) },
-        text = { Text(alt) },
+        text = { SelectionContainer { Text(description.trim()) } },
         confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(Res.string.reader_ok)) } },
     )
 }

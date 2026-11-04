@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.bluesky.BlueskyTab
 import com.aimdi.xtanative.networks.bluesky.BlueskyUrls
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -49,13 +50,14 @@ import com.aimdi.xtanative.ui.post.PostIcons
 internal fun BlueskyHome(app: BlueskyApp, frame: PluginFrame) {
     val reading by app.prefs.reading.collectAsState()
     var tab by rememberSaveable { mutableStateOf(reading.tab) }
+    val select: (BlueskyTab) -> Unit = { chosen ->
+        tab = chosen
+        app.launch { app.prefs.reading { it.copy(tab = chosen) } }
+    }
     Column(Modifier.fillMaxSize()) {
-        HomeBar(app, tab) { chosen ->
-            tab = chosen
-            app.launch { app.prefs.reading { it.copy(tab = chosen) } }
-        }
+        HomeBar(app, tab, select)
         Hairline()
-        Box(Modifier.weight(1f)) {
+        Box(Modifier.weight(1f).swipeTabs(BlueskyTab.entries, tab, select)) {
             when (tab) {
                 BlueskyTab.FOLLOWING -> FollowingPane(app, frame)
                 BlueskyTab.DISCOVER -> FeedsPane(app, frame)

@@ -29,6 +29,7 @@ import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginIcons
 import com.aimdi.xtanative.ui.plugins.PluginSectionTitle
 import com.aimdi.xtanative.ui.plugins.PluginSwitchRow
+import com.aimdi.xtanative.ui.plugins.ShowTabSwitch
 import com.aimdi.xtanative.ui.plugins.WithSettings
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -47,6 +48,7 @@ internal fun TikTokSettingsBody(app: TikTokApp, frame: PluginFrame) = WithSettin
     Box(Modifier.fillMaxSize()) {
         LazyColumn(Modifier.fillMaxSize(), contentPadding = frame.padding) {
             item(key = "note") { GuestNote() }
+            item(key = "tab") { ShowTabSwitch(app.host.settings, pluginString(Strings.show_tab), pluginString(Strings.show_tab_description)) }
             item(key = "playback") { PluginSectionTitle(pluginString(Strings.section_playback)) }
             item(key = "embed") {
                 PluginSwitchRow(

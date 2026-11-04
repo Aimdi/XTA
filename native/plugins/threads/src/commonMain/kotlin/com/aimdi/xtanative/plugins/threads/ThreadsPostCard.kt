@@ -175,7 +175,7 @@ private fun Body(app: ThreadsApp, post: ThreadsPost, openOnTap: Boolean, focal: 
     post.topicTag?.let { TopicTag(app, it) }
     post.replyToHandle?.takeIf { it.isNotEmpty() }?.let { ReplyingTo(app, it) }
     ThreadsRichText(app, post.text, post.fragments, Modifier.padding(top = 2.dp), style = if (focal) FocalStyle else threadsBodyStyle(), selectable = focal)
-    ThreadsPostMedia(app, post, Modifier.partGap())
+    ThreadsPostMedia(app, post, Modifier.partGap(), opens = openOnTap)
     post.linkCard?.let { ThreadsLink(it, Modifier.partGap()) }
     post.quoted?.let { ThreadsQuote(app, it, Modifier.partGap()) }
     if (post.selfThreadCount > 0 && openOnTap) {

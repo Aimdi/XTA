@@ -190,4 +190,9 @@
     <string name="votes">%1$d za, %2$d suprać</string>
     <string name="wiki">Viki</string>
     <string name="wiki_empty">U hetaha teha niama staronki ŭ viki</string>
+    <string name="settings_title">Nalady Booru</string>
+    <string name="show_tab">Pakazvać układku Booru</string>
+    <string name="show_tab_description">Dadaje Booru ŭ nižniuju navihacyju, kali ŭbudova ŭklučana</string>
+    <string name="in_home_feed">Pakazvać u hałoŭnaj stužcy</string>
+    <string name="in_home_feed_description">Dadaje zapisy z tehaŭ, na jakija vy padpisany, u «Padpiski» i «Dla vas»</string>
 </resources>

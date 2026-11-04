@@ -51,4 +51,7 @@
     <string name="test_connection_description">Mở hồ sơ công khai @tiktok để kiểm tra TikTok có phản hồi hay không</string>
     <string name="test_ok">TikTok đã trả lời (%1$s)</string>
     <string name="test_failed">Kiểm tra TikTok thất bại: %1$s</string>
+    <string name="settings_title">Cài đặt TikTok</string>
+    <string name="show_tab">Hiện thẻ TikTok</string>
+    <string name="show_tab_description">Thêm TikTok vào thanh dưới khi plugin được bật</string>
 </resources>

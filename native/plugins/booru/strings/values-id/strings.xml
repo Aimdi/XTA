@@ -184,4 +184,9 @@
     <string name="votes">%1$d vote positif, %2$d vote negatif</string>
     <string name="wiki">Wiki</string>
     <string name="wiki_empty">Tag ini tidak punya halaman wiki</string>
+    <string name="settings_title">Pengaturan Booru</string>
+    <string name="show_tab">Tampilkan tab Booru</string>
+    <string name="show_tab_description">Menambahkan Booru ke navigasi bawah saat plugin diaktifkan</string>
+    <string name="in_home_feed">Tampilkan di lini masa beranda</string>
+    <string name="in_home_feed_description">Menggabungkan kiriman dari tag yang diikuti ke Mengikuti dan Untuk Anda</string>
 </resources>

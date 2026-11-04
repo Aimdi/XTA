@@ -160,4 +160,5 @@
     <string name="unsave">إزالة من المحفوظات</string>
     <string name="videos">مقاطع فيديو</string>
     <string name="web_only_block">لا يظهر هذا الجزء من المنشور إلا على الويب.</string>
+    <string name="search_posts_hint">ابحث عن مقالات في المنشورات التي تتابعها</string>
 </resources>

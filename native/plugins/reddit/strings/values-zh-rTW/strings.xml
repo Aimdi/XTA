@@ -116,4 +116,6 @@
     <plurals name="followers_count">
         <item quantity="other">%1$s 位追蹤者</item>
     </plurals>
+    <string name="in_home_feed">顯示在主時間軸中</string>
+    <string name="in_home_feed_description">將你追蹤的子版塊的貼文混入「追蹤中」和「為你推薦」</string>
 </resources>

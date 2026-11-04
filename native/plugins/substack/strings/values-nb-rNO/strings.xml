@@ -148,4 +148,5 @@
     <string name="unsave">Fjern fra lagrede</string>
     <string name="videos">Videoer</string>
     <string name="web_only_block">Denne delen av innlegget vises bare på nettet.</string>
+    <string name="search_posts_hint">Søk etter artikler i publikasjoner du følger</string>
 </resources>

@@ -25,6 +25,9 @@ class DiscoverScopesTest {
         assertEquals(DiscoverBody.X_TRENDS, DiscoverScopes.body(SEARCH_SCOPE_X, "anything"))
         assertEquals(DiscoverBody.PLUGIN_EMPTY, DiscoverScopes.body("bluesky", "  "))
         assertEquals(DiscoverBody.PLUGIN_SEARCH, DiscoverScopes.body("bluesky", "skeets"))
+        assertEquals(DiscoverBody.PLUGIN_LANDING, DiscoverScopes.body("mastodon", " ", lands = true), "Mastodon lands on its trends")
+        assertEquals(DiscoverBody.PLUGIN_SEARCH, DiscoverScopes.body("mastodon", "fedi", lands = true))
+        assertEquals(DiscoverBody.X_TRENDS, DiscoverScopes.body(SEARCH_SCOPE_X, "", lands = true))
         assertTrue(DiscoverScopes.opensXSearch(SEARCH_SCOPE_X))
         assertFalse(DiscoverScopes.opensXSearch("bluesky"), "a plugin's results show under the bar")
     }

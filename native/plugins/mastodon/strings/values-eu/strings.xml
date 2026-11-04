@@ -115,4 +115,6 @@
         <item quantity="other">%1$s boto</item>
     </plurals>
     <string name="add_to_group">Gehitu taldera</string>
+    <string name="in_home_feed">Erakutsi hasierako denbora-lerroan</string>
+    <string name="in_home_feed_description">Jarraitzen dituzun Mastodon kontuen bidalketak «Jarraitzen» eta «Zuretzat» ataletan tartekatzen ditu</string>
 </resources>

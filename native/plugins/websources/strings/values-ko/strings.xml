@@ -52,4 +52,6 @@
     <string name="unfollow">언팔로우</string>
     <string name="unreachable">소스 파일을 읽을 수 없습니다. 링크와 연결을 확인하세요.</string>
     <string name="update_title">%1$s을(를) 업데이트할까요?</string>
+    <string name="in_home_feed">팔로잉에 팔로우한 목록 섞기</string>
+    <string name="in_home_feed_description">팔로잉 타임라인에 팔로우한 목록의 새 게시물을 표시합니다.</string>
 </resources>

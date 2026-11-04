@@ -50,4 +50,6 @@
     <string name="plugin_problem_offline">Ühendus %1$s puudub.</string>
     <string name="plugin_problem_refused">%1$s keeldus päringust (%2$d).</string>
     <string name="plugin_problem_other">%1$s lugemisel läks midagi valesti.</string>
+    <string name="plugin_store_search">Otsi pluginaid</string>
+    <string name="plugin_store_no_results">Tulemusi pole</string>
 </resources>

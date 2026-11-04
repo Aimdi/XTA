@@ -113,4 +113,6 @@
     <string name="use_session">Meine Sitzung für gefolgte Konten nutzen</string>
     <string name="use_session_description">Standardmäßig aus. Wenn an, spricht die App als Sie mit Threads — Meta kann das Konto sperren. Aus lassen, außer Sie nutzen ein Wegwerflogin.</string>
     <string name="add_to_group">Zu Gruppe hinzufügen</string>
+    <string name="in_home_feed">In der Startseite anzeigen</string>
+    <string name="in_home_feed_description">Mischt Beiträge aus den Threads-Konten, denen du folgst, unter „Folge ich“ und „Für dich“</string>
 </resources>

@@ -125,4 +125,6 @@
         <item quantity="many">%1$s підписників</item>
         <item quantity="other">%1$s підписника</item>
     </plurals>
+    <string name="in_home_feed">Показувати в головній стрічці</string>
+    <string name="in_home_feed_description">Додає дописи із сабредитів, на які ви підписані, у «Підписки» та «Для вас»</string>
 </resources>

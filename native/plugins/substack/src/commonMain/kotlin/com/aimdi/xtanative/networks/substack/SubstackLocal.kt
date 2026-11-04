@@ -110,14 +110,3 @@ class SubstackPins(kept: SubstackKept) :
         if (id in state.value) update { it - id }
     }
 }
-
-/** What the plugin's search was asked, newest first, at most [CAP], as XTA's plugin search histories. */
-object SubstackSearches {
-    const val CAP = 20
-
-    fun remembered(history: List<String>, query: String): List<String> {
-        val value = query.trim()
-        if (value.isEmpty()) return history
-        return (listOf(value) + history.filter { it != value }).take(CAP)
-    }
-}

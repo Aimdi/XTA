@@ -49,7 +49,7 @@ internal fun RssSettingsBody(app: RssApp, frame: PluginFrame) {
     var notice by rememberSaveable { mutableStateOf<String?>(null) }
     LazyColumn(contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
         item(key = "blurb") { Text(pluginString(Strings.settings_blurb), modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp)) }
-        item(key = "home") { HomeTimelineSwitch(app.host.settings, pluginString(Strings.plugin_name)) }
+        item(key = "home") { HomeTimelineSwitch(app.host.settings, pluginString(Strings.in_home_feed), pluginString(Strings.in_home_feed_description)) }
         item(key = "opml") {
             Hairline()
             OpmlRows(app) { notice = it }

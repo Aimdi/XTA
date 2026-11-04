@@ -50,4 +50,6 @@
     <string name="plugin_problem_offline">Tidak ada koneksi ke %1$s.</string>
     <string name="plugin_problem_refused">%1$s menolak permintaan (%2$d).</string>
     <string name="plugin_problem_other">Terjadi kesalahan saat membaca %1$s.</string>
+    <string name="plugin_store_search">Cari plugin</string>
+    <string name="plugin_store_no_results">Tidak ada hasil</string>
 </resources>

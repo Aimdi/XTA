@@ -125,4 +125,7 @@
     <string name="test_connection">Testează conexiunea</string>
     <string name="test_ok">Site-ul a răspuns (galerii: %1$d)</string>
     <string name="test_failed">Testul EH a eșuat: %1$s</string>
+    <string name="settings_title">Setări EH</string>
+    <string name="show_tab">Afișează fila EH</string>
+    <string name="show_tab_description">Adaugă EH în navigarea de jos când modulul este activat</string>
 </resources>

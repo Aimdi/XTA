@@ -51,4 +51,7 @@
     <string name="test_connection_description">Abre el perfil público @tiktok para comprobar que TikTok responde</string>
     <string name="test_ok">TikTok respondió (%1$s)</string>
     <string name="test_failed">La prueba de TikTok falló: %1$s</string>
+    <string name="settings_title">Ajustes de TikTok</string>
+    <string name="show_tab">Mostrar pestaña de TikTok</string>
+    <string name="show_tab_description">Añade TikTok a la navegación inferior cuando el complemento está activado</string>
 </resources>

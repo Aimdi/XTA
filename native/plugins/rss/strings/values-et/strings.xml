@@ -39,4 +39,6 @@
     <string name="tag_hint">Lühike silt, näiteks Uudised või Blogid</string>
     <string name="unfollow">Lõpeta jälgimine</string>
     <string name="unread">Lugemata</string>
+    <string name="in_home_feed">Sega jälgitavad vood voogu Jälgin</string>
+    <string name="in_home_feed_description">Näita jälgitavate voogude uusi kirjeid ajajoones Jälgin.</string>
 </resources>

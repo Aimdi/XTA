@@ -188,4 +188,9 @@
     <string name="votes">%1$d voti positivi, %2$d negativi</string>
     <string name="wiki">Wiki</string>
     <string name="wiki_empty">Questo tag non ha una pagina wiki</string>
+    <string name="settings_title">Impostazioni Booru</string>
+    <string name="show_tab">Mostra scheda Booru</string>
+    <string name="show_tab_description">Aggiunge Booru alla navigazione in basso quando il plugin è attivo</string>
+    <string name="in_home_feed">Mostra nella timeline principale</string>
+    <string name="in_home_feed_description">Inserisce i post dei tag seguiti in «Seguiti» e «Per te»</string>
 </resources>

@@ -9,8 +9,13 @@ import java.net.URLDecoder
 
 /** What a plugin's media downloads as (plugin_post_media.dart's downloadPluginMediaItem and pluginMediaFileName). */
 object PluginDownloads {
-    /** The file [media] saves: a photo itself, a video's own file; null for a stream (an HLS playlist), which has no one file. */
-    fun url(media: MediaItem): String? = when (media.kind) {
+    /**
+     * The file [media] saves: its original where the network names one
+     * ([MediaItem.downloadUrl], XTA's resolvedDownloadUrl), else a photo
+     * itself, a video's own file; null for a stream (an HLS playlist), which
+     * has no one file.
+     */
+    fun url(media: MediaItem): String? = media.downloadUrl?.takeIf { isWeb(it) && !isPlaylist(it) } ?: when (media.kind) {
         MediaItem.Kind.PHOTO -> media.imageUrl.takeIf(::isWeb)
         MediaItem.Kind.VIDEO, MediaItem.Kind.GIF -> media.videoUrl?.takeIf { isWeb(it) && !isPlaylist(it) }
     }

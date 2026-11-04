@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.plugins.stocks
 
+import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.post.PostIcons
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -93,7 +94,7 @@ internal fun StocksHome(app: StocksApp, frame: PluginFrame) {
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
             StocksHeader(app, view.tab, model::select, onAdd = { adding = true }, onManage = { managing = true })
-            Box(Modifier.weight(1f)) {
+            Box(Modifier.weight(1f).swipeTabs(StocksTab.entries, view.tab) { model.select(it) }) {
                 val shown = entries
                 when {
                     shown == null && unreadable -> NetworkProblemView(Problem.Other, pluginString(Strings.watchlist), { app.launch { app.watchlist.load() } })

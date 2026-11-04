@@ -39,4 +39,6 @@
     <string name="tag_hint">En kort merkelapp, som Nyheter eller Blogger</string>
     <string name="unfollow">Slutt å følge</string>
     <string name="unread">Ulest</string>
+    <string name="in_home_feed">Bland fulgte strømmer inn i Følger</string>
+    <string name="in_home_feed_description">Vis nye innlegg fra fulgte strømmer i tidslinjen Følger.</string>
 </resources>

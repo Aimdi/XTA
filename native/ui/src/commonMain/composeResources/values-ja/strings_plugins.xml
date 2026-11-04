@@ -50,4 +50,6 @@
     <string name="plugin_problem_offline">%1$s に接続できません。</string>
     <string name="plugin_problem_refused">%1$s がリクエストを拒否しました（%2$d）。</string>
     <string name="plugin_problem_other">%1$s の読み込み中に問題が発生しました。</string>
+    <string name="plugin_store_search">プラグインを検索</string>
+    <string name="plugin_store_no_results">結果なし</string>
 </resources>

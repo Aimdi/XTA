@@ -45,6 +45,7 @@ import com.aimdi.xtanative.store.settings.BooruPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.plugins.HomeTimelineSwitch
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.ShowTabSwitch
 import com.aimdi.xtanative.ui.plugins.pluginString
 
 /** What the settings screen is asking the reader. */
@@ -248,7 +249,8 @@ private fun LazyListScope.contentSection(app: BooruApp, settings: Settings, onAs
     item(key = "content-title") { SectionTitle(pluginString(Strings.section_content)) }
     item(key = "per-site") { Note(pluginString(Strings.per_site_note)) }
     item(key = "rating") { ValueRow(pluginString(Strings.max_rating), ratingLabel(BooruConfig.maxRating(settings))) { onAsk(SettingsAsk.Rating) } }
-    item(key = "home") { HomeTimelineSwitch(app.host.settings, pluginString(Strings.plugin_name)) }
+    item(key = "home") { HomeTimelineSwitch(app.host.settings, pluginString(Strings.in_home_feed), pluginString(Strings.in_home_feed_description)) }
+    item(key = "tab") { ShowTabSwitch(app.host.settings, pluginString(Strings.show_tab), pluginString(Strings.show_tab_description)) }
 }
 
 /** Grid and viewer choices (booru_display_settings.dart). */

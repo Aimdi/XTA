@@ -61,4 +61,7 @@
     <string name="unfollow_confirm">取消关注 @%1$s？</string>
     <string name="unlike_on_device">从此设备取消点赞</string>
     <string name="add_to_group">添加到订阅组</string>
+    <string name="settings_title">Instagram 设置</string>
+    <string name="show_tab">显示 Instagram 标签</string>
+    <string name="show_tab_description">启用插件后，将 Instagram 加入底部导航</string>
 </resources>

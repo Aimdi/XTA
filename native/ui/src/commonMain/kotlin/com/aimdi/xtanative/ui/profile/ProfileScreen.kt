@@ -80,6 +80,7 @@ import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.clickableNoRipple
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.monthText
+import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.posts_account_suspended
@@ -198,10 +199,11 @@ fun ProfileScreen(screenName: String, actions: PostActions, onBack: () -> Unit, 
                 onRefresh = vm::refresh,
                 modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding()),
             ) {
+                val tabbed = state.complete && user != null
                 LazyColumn(
                     state = list,
                     contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + 48.dp),
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize().swipeTabs(if (tabbed) ProfileTab.entries else emptyList(), state.tab, vm::select),
                 ) {
                     item(key = "header", contentType = "header") {
                         Header(state, follow, screenName, actions, onSheet = { sheet = it })

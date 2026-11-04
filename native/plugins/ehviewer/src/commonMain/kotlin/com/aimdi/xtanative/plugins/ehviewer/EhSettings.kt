@@ -38,6 +38,7 @@ import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginIcons
 import com.aimdi.xtanative.ui.plugins.PluginSectionTitle
 import com.aimdi.xtanative.ui.plugins.PluginSwitchRow
+import com.aimdi.xtanative.ui.plugins.ShowTabSwitch
 import com.aimdi.xtanative.ui.plugins.WithSettings
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -135,6 +136,7 @@ private fun ReadingSection(app: EhApp, settings: Settings, onMode: () -> Unit) {
         description = pluginString(Strings.keep_screen_on_description),
     )
     PluginActionRow(pluginString(Strings.clear_history), onClick = { app.launch { app.history.clear() } })
+    ShowTabSwitch(app.host.settings, pluginString(Strings.show_tab), pluginString(Strings.show_tab_description))
 }
 
 /** Reads Popular and says how many galleries the site answered with, or why it did not. */

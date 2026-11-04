@@ -58,4 +58,6 @@
     <string name="unfollow">Nu mai urmări</string>
     <string name="unreachable">Fișierul sursei nu a putut fi citit. Verifică linkul și conexiunea.</string>
     <string name="update_title">Actualizezi %1$s?</string>
+    <string name="in_home_feed">Amestecă listele urmărite în Urmăresc</string>
+    <string name="in_home_feed_description">Afișează postările noi din listele urmărite în cronologia Urmăresc.</string>
 </resources>

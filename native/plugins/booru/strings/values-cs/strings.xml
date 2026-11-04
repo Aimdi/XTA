@@ -190,4 +190,9 @@
     <string name="votes">%1$d pro, %2$d proti</string>
     <string name="wiki">Wiki</string>
     <string name="wiki_empty">Tento štítek nemá stránku na wiki</string>
+    <string name="settings_title">Nastavení Booru</string>
+    <string name="show_tab">Zobrazit kartu Booru</string>
+    <string name="show_tab_description">Přidá Booru do spodní navigace, když je zásuvný modul zapnutý</string>
+    <string name="in_home_feed">Zobrazovat na hlavní nástěnce</string>
+    <string name="in_home_feed_description">Přimíchá příspěvky ze sledovaných štítků do „Sleduji“ a „Pro tebe“</string>
 </resources>

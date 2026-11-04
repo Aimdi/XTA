@@ -71,6 +71,7 @@ class ThreadsRulesTest {
         assertEquals(MediaItem.Kind.PHOTO, large[0].kind)
         assertEquals("https://cdn/1080.mp4", large[1].videoUrl)
         assertEquals("https://cdn/720.mp4", ThreadsMediaItems.items(post, MediaQuality.MEDIUM)[1].videoUrl)
+        assertEquals(listOf(post.url, post.url), large.map { it.sharedUrl }, "the viewer's Share gives the post")
         assertEquals("https://cdn/480.mp4", ThreadsMediaItems.items(post, MediaQuality.THUMB)[1].videoUrl)
         assertEquals(post.url, large[1].webUrl, "the desktop opens the post on the web")
         assertEquals(listOf("1080p", "720p", "480p"), ThreadsMediaItems.qualities(post)[1].map { it.label })

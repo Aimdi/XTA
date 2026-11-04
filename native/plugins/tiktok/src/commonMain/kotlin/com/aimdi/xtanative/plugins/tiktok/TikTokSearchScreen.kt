@@ -58,6 +58,7 @@ import com.aimdi.xtanative.networks.tiktok.TikTokSearchUser
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.TikTokPrefs
 import com.aimdi.xtanative.ui.common.countText
+import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginSearch
@@ -131,6 +132,16 @@ internal class TikTokAppSearch(private val app: TikTokApp) : PluginSearch() {
             NoticeHost(app.notices, Modifier.padding(frame.padding))
         }
     }
+
+    /** Before a search, as XTA's search sheet: TikTok's suggestions, the recent searches, what is trending and discover's people. */
+    @Composable
+    override fun Landing(frame: PluginFrame, send: (String) -> Unit) = WithSettings(app.host.settings) { settings ->
+        val model = rememberKept("tiktok-app-landing") { scope -> TikTokSearchModel(app, scope).also { it.loadLanding() } }
+        Box(Modifier.fillMaxSize()) {
+            SearchBody(app, model, settings, "", frame.padding, send)
+            NoticeHost(app.notices, Modifier.padding(frame.padding))
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -148,7 +159,7 @@ private fun SearchBody(app: TikTokApp, model: TikTokSearchModel, settings: Setti
         }
         val shown = found
         val error = shown?.error
-        Box(Modifier.weight(1f)) {
+        Box(Modifier.weight(1f).swipeTabs(tab, FoundTab.entries.size) { tab = it }) {
             when {
                 shown?.loading == true || (shown == null && landing.loading) -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
                 error != null -> Text(pluginString(TikTokText.error(error)), textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(24.dp))

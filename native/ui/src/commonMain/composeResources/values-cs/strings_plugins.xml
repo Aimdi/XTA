@@ -50,4 +50,6 @@
     <string name="plugin_problem_offline">Žádné připojení k %1$s.</string>
     <string name="plugin_problem_refused">%1$s odmítl požadavek (%2$d).</string>
     <string name="plugin_problem_other">Při čtení z %1$s se něco pokazilo.</string>
+    <string name="plugin_store_search">Hledat pluginy</string>
+    <string name="plugin_store_no_results">Žádné výsledky</string>
 </resources>

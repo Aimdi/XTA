@@ -148,4 +148,6 @@
         <item quantity="many">%1$s příspěvku</item>
         <item quantity="other">%1$s příspěvků</item>
     </plurals>
+    <string name="in_home_feed">Zobrazovat na hlavní nástěnce</string>
+    <string name="in_home_feed_description">Přimíchá příspěvky z účtů na Bluesky, které sledujete, do „Sleduji“ a „Pro tebe“</string>
 </resources>

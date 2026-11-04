@@ -50,4 +50,6 @@
     <string name="plugin_problem_offline">لا يوجد اتصال بـ %1$s.</string>
     <string name="plugin_problem_refused">رفض %1$s الطلب (%2$d).</string>
     <string name="plugin_problem_other">حدث خطأ أثناء القراءة من %1$s.</string>
+    <string name="plugin_store_search">البحث في الإضافات</string>
+    <string name="plugin_store_no_results">لا نتائج</string>
 </resources>

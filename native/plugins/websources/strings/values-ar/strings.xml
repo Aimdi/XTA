@@ -67,4 +67,6 @@
     <string name="unfollow">إلغاء المتابعة</string>
     <string name="unreachable">تعذّرت قراءة ملف المصدر. تحقّق من الرابط ومن اتصالك.</string>
     <string name="update_title">تحديث %1$s؟</string>
+    <string name="in_home_feed">دمج القوائم المتابَعة في «أتابع»</string>
+    <string name="in_home_feed_description">إظهار المنشورات الجديدة من القوائم المتابَعة في الخط الزمني «أتابع».</string>
 </resources>

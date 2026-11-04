@@ -188,4 +188,9 @@
     <string name="votes">Voturi pozitive: %1$d, negative: %2$d</string>
     <string name="wiki">Wiki</string>
     <string name="wiki_empty">Această etichetă nu are pagină wiki</string>
+    <string name="settings_title">Setări Booru</string>
+    <string name="show_tab">Afișează fila Booru</string>
+    <string name="show_tab_description">Adaugă Booru în navigarea de jos când modulul este activat</string>
+    <string name="in_home_feed">Afișează în cronologia principală</string>
+    <string name="in_home_feed_description">Adaugă postările etichetelor urmărite în „Urmăriți” și „Pentru tine”</string>
 </resources>

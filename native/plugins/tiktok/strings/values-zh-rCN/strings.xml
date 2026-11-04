@@ -51,4 +51,7 @@
     <string name="test_connection_description">打开公开的 @tiktok 主页，检查 TikTok 是否响应</string>
     <string name="test_ok">TikTok 已响应（%1$s）</string>
     <string name="test_failed">TikTok 测试失败：%1$s</string>
+    <string name="settings_title">TikTok 设置</string>
+    <string name="show_tab">显示 TikTok 标签</string>
+    <string name="show_tab_description">启用插件后，将 TikTok 加入底部导航</string>
 </resources>

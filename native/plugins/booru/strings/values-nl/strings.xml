@@ -186,4 +186,9 @@
     <string name="votes">%1$d upvotes, %2$d downvotes</string>
     <string name="wiki">Wiki</string>
     <string name="wiki_empty">Deze tag heeft geen wikipagina</string>
+    <string name="settings_title">Booru-instellingen</string>
+    <string name="show_tab">Booru-tabblad tonen</string>
+    <string name="show_tab_description">Voegt Booru toe aan de onderste navigatie als de plugin aan staat</string>
+    <string name="in_home_feed">Weergeven in de hoofdtijdlijn</string>
+    <string name="in_home_feed_description">Mengt berichten van gevolgde tags in Volgend en Voor jou</string>
 </resources>

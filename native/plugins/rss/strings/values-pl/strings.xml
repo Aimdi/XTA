@@ -39,4 +39,6 @@
     <string name="tag_hint">Krótka etykieta, np. Wiadomości albo Blogi</string>
     <string name="unfollow">Przestań obserwować</string>
     <string name="unread">Nieprzeczytane</string>
+    <string name="in_home_feed">Mieszaj obserwowane kanały w Obserwowane</string>
+    <string name="in_home_feed_description">Pokazuj nowe pozycje z obserwowanych kanałów na osi Obserwowane.</string>
 </resources>

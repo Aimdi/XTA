@@ -61,4 +61,7 @@
     <string name="unfollow_confirm">Ne plus suivre @%1$s ?</string>
     <string name="unlike_on_device">Retirer le j’aime de cet appareil</string>
     <string name="add_to_group">Ajouter au groupe</string>
+    <string name="settings_title">Réglages Instagram</string>
+    <string name="show_tab">Afficher l’onglet Instagram</string>
+    <string name="show_tab_description">Ajoute Instagram à la navigation inférieure lorsque le greffon est activé</string>
 </resources>

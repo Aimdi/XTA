@@ -125,4 +125,6 @@
         <item quantity="many">%1$s читателей</item>
         <item quantity="other">%1$s читателя</item>
     </plurals>
+    <string name="in_home_feed">Показывать в главной ленте</string>
+    <string name="in_home_feed_description">Добавляет записи из сабреддитов, на которые вы подписаны, в «Подписки» и «Для вас»</string>
 </resources>

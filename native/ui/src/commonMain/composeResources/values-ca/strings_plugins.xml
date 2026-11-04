@@ -50,4 +50,6 @@
     <string name="plugin_problem_offline">No hi ha connexió amb %1$s.</string>
     <string name="plugin_problem_refused">%1$s ha rebutjat la sol·licitud (%2$d).</string>
     <string name="plugin_problem_other">Alguna cosa ha anat malament en llegir %1$s.</string>
+    <string name="plugin_store_search">Cercar connectors</string>
+    <string name="plugin_store_no_results">Sense resultats</string>
 </resources>

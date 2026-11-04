@@ -115,4 +115,6 @@
         <item quantity="other">%1$s voti</item>
     </plurals>
     <string name="add_to_group">Aggiungi al gruppo</string>
+    <string name="in_home_feed">Mostra nella timeline principale</string>
+    <string name="in_home_feed_description">Inserisce i post degli account Mastodon che segui in «Seguiti» e «Per te»</string>
 </resources>

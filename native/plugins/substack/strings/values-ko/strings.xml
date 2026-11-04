@@ -145,4 +145,5 @@
     <string name="unsave">저장 해제</string>
     <string name="videos">동영상</string>
     <string name="web_only_block">게시물의 이 부분은 웹에서만 표시됩니다.</string>
+    <string name="search_posts_hint">팔로우하는 발행물에서 글 검색</string>
 </resources>

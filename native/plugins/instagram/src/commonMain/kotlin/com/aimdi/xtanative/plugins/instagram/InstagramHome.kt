@@ -60,6 +60,7 @@ import com.aimdi.xtanative.networks.instagram.InstagramDiscovery
 import com.aimdi.xtanative.networks.instagram.InstagramPost
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.EmptyPane
 import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PagedItems
@@ -98,7 +99,7 @@ internal fun InstagramHome(app: InstagramApp, frame: PluginFrame) {
         Column(Modifier.fillMaxSize()) {
             HomeBar(app, tab, onTab = { tab = it }, onSearch = { searching = true })
             HorizontalDivider()
-            Box(Modifier.weight(1f)) {
+            Box(Modifier.weight(1f).swipeTabs(InstagramTab.entries, tab) { tab = it }) {
                 when (tab) {
                     InstagramTab.FOR_YOU -> ForYou(app, forYou, frame) { searching = true }
                     InstagramTab.FOLLOWING -> Following(app, frame) { searching = true }

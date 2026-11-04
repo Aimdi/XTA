@@ -57,6 +57,7 @@ import com.aimdi.xtanative.networks.pixiv.PixivIllust
 import com.aimdi.xtanative.networks.pixiv.PixivSearchKind
 import com.aimdi.xtanative.networks.pixiv.PixivUserListKind
 import com.aimdi.xtanative.ui.common.XIcons
+import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -84,7 +85,7 @@ internal fun PixivHome(runtime: PixivRuntime, frame: PluginFrame) {
         Column(Modifier.fillMaxSize()) {
             HomeChrome(view, onTab = { tab -> if (tab == view.tab) reselected++ else model.show(tab) }, onMode = model::switchMode)
             HorizontalDivider()
-            Box(Modifier.weight(1f)) {
+            Box(Modifier.weight(1f).swipeTabs(if (signedIn) PixivTab.entries else emptyList(), view.tab) { model.show(it) }) {
                 val padding = frame.padding
                 when {
                     !signedIn && view.tab != PixivTab.MORE -> SignInBody(padding)

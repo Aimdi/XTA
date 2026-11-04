@@ -121,4 +121,7 @@
     <string name="test_connection">Probatu konexioa</string>
     <string name="test_ok">Guneak erantzun du (%1$d galeria)</string>
     <string name="test_failed">EH probak huts egin du: %1$s</string>
+    <string name="settings_title">EH ezarpenak</string>
+    <string name="show_tab">Erakutsi EH fitxa</string>
+    <string name="show_tab_description">EH gehitzen du beheko nabigaziora plugin-a gaituta dagoenean</string>
 </resources>

@@ -69,8 +69,9 @@ internal object ThreadsMediaItems {
     fun qualities(media: ThreadsMedia): List<VideoQuality> =
         media.renditions.mapNotNull { rendition -> rendition.lines?.let { VideoQuality(rendition.url, "${it}p") } }
 
+    /** A picture or video of [post], the viewer's Share giving the post, as XTA's (threads_models.dart). */
     private fun item(post: ThreadsPost, media: ThreadsMedia, quality: MediaQuality): MediaItem {
-        if (!media.isVideo) return MediaItem(imageUrl = media.url, aspectRatio = media.aspectRatio?.toFloat(), alt = media.alt)
+        if (!media.isVideo) return MediaItem(imageUrl = media.url, aspectRatio = media.aspectRatio?.toFloat(), alt = media.alt, shareUrl = post.url)
         return MediaItem(
             imageUrl = media.url,
             kind = MediaItem.Kind.VIDEO,
@@ -79,6 +80,7 @@ internal object ThreadsMediaItems {
             alt = media.alt,
             inlineVideoUrl = media.renditions.lastOrNull()?.url,
             webUrl = post.url,
+            shareUrl = post.url,
         )
     }
 }

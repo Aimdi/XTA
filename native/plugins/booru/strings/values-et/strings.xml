@@ -186,4 +186,9 @@
     <string name="votes">%1$d poolt, %2$d vastu</string>
     <string name="wiki">Viki</string>
     <string name="wiki_empty">Sellel sildil pole vikilehte</string>
+    <string name="settings_title">Booru seaded</string>
+    <string name="show_tab">Näita Booru vahekaarti</string>
+    <string name="show_tab_description">Lisab Booru alumisse navigeerimisse, kui plugin on sisse lülitatud</string>
+    <string name="in_home_feed">Näita avalehe voos</string>
+    <string name="in_home_feed_description">Lisab jälgitavate siltide postitused voogudesse „Jälgitavad“ ja „Sulle“</string>
 </resources>

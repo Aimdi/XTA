@@ -150,4 +150,6 @@
         <item quantity="many">%1$s منشورًا</item>
         <item quantity="other">%1$s منشور</item>
     </plurals>
+    <string name="in_home_feed">إظهار في الصفحة الرئيسية</string>
+    <string name="in_home_feed_description">يدمج منشورات حسابات بلوسكاي التي تتابعها في \"المتابَعون\" و\"لك\"</string>
 </resources>

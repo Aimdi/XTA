@@ -58,8 +58,8 @@ class AppNavigator {
     }
 }
 
-/** Media a plugin opened full screen: [items], of plugin [source], whose name a download takes. */
-class ShelvedMedia(val source: String, val items: List<MediaItem>)
+/** Media a plugin opened full screen: [items], of plugin [source], whose name a download takes; [openPost] opens the post they belong to. */
+class ShelvedMedia(val source: String, val items: List<MediaItem>, val openPost: (() -> Unit)? = null)
 
 /** The media plugins opened full screen, the last few kept: a route names them by key, as it cannot carry them. */
 class MediaShelf {
@@ -69,7 +69,8 @@ class MediaShelf {
     private var last = 0
 
     @Synchronized
-    fun put(source: String, items: List<MediaItem>): String = (++last).toString().also { shelf[it] = ShelvedMedia(source, items) }
+    fun put(source: String, items: List<MediaItem>, openPost: (() -> Unit)? = null): String =
+        (++last).toString().also { shelf[it] = ShelvedMedia(source, items, openPost) }
 
     /** What [key] names; nothing once it was let go, as after the app was restarted. */
     @Synchronized

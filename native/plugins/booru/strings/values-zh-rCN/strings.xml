@@ -184,4 +184,9 @@
     <string name="votes">%1$d 票赞同，%2$d 票反对</string>
     <string name="wiki">维基</string>
     <string name="wiki_empty">此标签没有维基页面</string>
+    <string name="settings_title">Booru 设置</string>
+    <string name="show_tab">显示 Booru 标签页</string>
+    <string name="show_tab_description">启用插件后，在底部导航加入 Booru</string>
+    <string name="in_home_feed">显示在主页时间线</string>
+    <string name="in_home_feed_description">将已关注标签的帖子混入「正在关注」和「为你推荐」</string>
 </resources>

@@ -76,6 +76,7 @@ import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.monthText
+import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.AddToGroupButton
 import com.aimdi.xtanative.ui.plugins.LinkedText
 import com.aimdi.xtanative.ui.plugins.MediaItem
@@ -149,7 +150,11 @@ internal fun BlueskyProfileScreen(app: BlueskyApp, actor: String) {
                 pages?.refresh()
             }
             PullToRefreshBox(isRefreshing = state.loading && shown != null, onRefresh = { refresh() }, modifier = Modifier.fillMaxSize()) {
-                LazyColumn(state = list, contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + 48.dp), modifier = Modifier.fillMaxSize()) {
+                LazyColumn(
+                    state = list,
+                    contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + 48.dp),
+                    modifier = Modifier.fillMaxSize().swipeTabs(if (shown != null) ProfileTab.entries else emptyList(), tab) { tab = it },
+                ) {
                     item(key = "header") { Header(app, shown, actor, followed) }
                     val problem = state.problem
                     when {
@@ -329,7 +334,7 @@ private fun MediaTile(app: BlueskyApp, tile: BlueskyMediaTile, modifier: Modifie
     val post = tile.post
     Box(
         modifier.aspectRatio(1f).clip(RoundedCornerShape(6.dp)).background(colors.surfaceContainerHighest).clickable {
-            if (tile.opensPost) app.openPost(post.uri) else app.host.openMedia(post.media.map { it.toMediaItem(post.url) }, 0)
+            if (tile.opensPost) app.openPost(post.uri) else app.host.openMedia(post.media.map { it.toMediaItem(post.url) }, 0) { app.openPost(post.uri) }
         },
     ) {
         if (tile.covered) {

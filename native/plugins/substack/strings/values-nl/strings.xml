@@ -148,4 +148,5 @@
     <string name="unsave">Verwijderen uit opgeslagen</string>
     <string name="videos">Video\'s</string>
     <string name="web_only_block">Dit deel van het bericht is alleen op het web te zien.</string>
+    <string name="search_posts_hint">Zoek artikelen in publicaties die je volgt</string>
 </resources>

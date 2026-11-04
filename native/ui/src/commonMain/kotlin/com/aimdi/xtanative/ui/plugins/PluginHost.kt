@@ -88,6 +88,13 @@ interface PluginHost {
     /** [media] full screen from [start]: photos to zoom, videos to play. */
     fun openMedia(media: List<MediaItem>, start: Int)
 
+    /**
+     * [media] full screen from [start], as [openMedia], with Open post in
+     * the viewer's bar where [openPost] is given (XTA's onOpenPost): a post's
+     * pictures opened from a list, which the post's own screen then shows.
+     */
+    fun openMedia(media: List<MediaItem>, start: Int, openPost: (() -> Unit)?) = openMedia(media, start)
+
     /** The plugin's search, with [query] sent when it is given. */
     fun openSearch(query: String?)
 

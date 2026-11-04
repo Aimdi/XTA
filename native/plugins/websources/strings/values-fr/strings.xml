@@ -58,4 +58,6 @@
     <string name="unfollow">Ne plus suivre</string>
     <string name="unreachable">Impossible de lire le fichier de la source. Vérifiez le lien et votre connexion.</string>
     <string name="update_title">Mettre à jour %1$s ?</string>
+    <string name="in_home_feed">Mélanger les listes suivies dans Abonnements</string>
+    <string name="in_home_feed_description">Afficher les nouvelles publications des listes suivies dans le fil Abonnements.</string>
 </resources>

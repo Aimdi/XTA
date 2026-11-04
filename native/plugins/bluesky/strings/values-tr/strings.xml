@@ -146,4 +146,6 @@
         <item quantity="one">%1$s gönderi</item>
         <item quantity="other">%1$s gönderi</item>
     </plurals>
+    <string name="in_home_feed">Ana akışta göster</string>
+    <string name="in_home_feed_description">Takip ettiğin Bluesky hesaplarının gönderilerini Takip ve Sana Özel akışlarına karıştırır</string>
 </resources>

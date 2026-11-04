@@ -289,9 +289,9 @@ internal class ThreadsApp(val host: PluginHost) {
     fun openSearch(terms: ThreadsSearchTerms) = host.open(ThreadsRoutes.search(terms))
 
     /** [post]'s pictures and videos in the viewer, from [index], each video at the quality the setting picks. */
-    fun openMedia(post: ThreadsPost, index: Int) {
+    fun openMedia(post: ThreadsPost, index: Int, opens: Boolean = true) {
         val quality = current()[MediaPrefs.videoQuality]
-        val viewed = ThreadsViewed(ThreadsMediaItems.items(post, quality), ThreadsMediaItems.qualities(post))
+        val viewed = ThreadsViewed(ThreadsMediaItems.items(post, quality), ThreadsMediaItems.qualities(post), post.takeIf { opens })
         host.open(ThreadsRoutes.media(shelf.put(viewed), index))
     }
 

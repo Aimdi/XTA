@@ -148,4 +148,5 @@
     <string name="unsave">Treu dels desats</string>
     <string name="videos">Vídeos</string>
     <string name="web_only_block">Aquesta part de la publicació només es mostra al web.</string>
+    <string name="search_posts_hint">Cerca articles a les publicacions que segueixes</string>
 </resources>

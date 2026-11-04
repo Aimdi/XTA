@@ -59,7 +59,7 @@ internal fun BlueskySettingsBody(app: BlueskyApp, frame: PluginFrame) {
     val follows by app.follows.state.collectAsState()
     LaunchedEffect(Unit) { app.follows.load() }
     LazyColumn(contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
-        item(key = "home") { HomeTimelineSwitch(app.host.settings, pluginString(Strings.plugin_name)) }
+        item(key = "home") { HomeTimelineSwitch(app.host.settings, pluginString(Strings.in_home_feed), pluginString(Strings.in_home_feed_description)) }
         item(key = "intro") { Text(pluginString(Strings.settings_intro), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(16.dp)) }
         item(key = "appview") { AppViewSetting(app) }
         item(key = "handle") { HandleSetting(app) }

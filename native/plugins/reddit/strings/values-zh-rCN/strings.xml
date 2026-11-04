@@ -116,4 +116,6 @@
     <plurals name="followers_count">
         <item quantity="other">%1$s 位关注者</item>
     </plurals>
+    <string name="in_home_feed">显示在主时间线中</string>
+    <string name="in_home_feed_description">把你关注的子版块的帖子混入「关注」和「为你推荐」</string>
 </resources>

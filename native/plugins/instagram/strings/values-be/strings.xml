@@ -61,4 +61,7 @@
     <string name="unfollow_confirm">Адпісацца ад @%1$s?</string>
     <string name="unlike_on_device">Прыбраць «падабаецца» з гэтай прылады</string>
     <string name="add_to_group">Дадаць у групу</string>
+    <string name="settings_title">Налады Instagram</string>
+    <string name="show_tab">Паказваць укладку Instagram</string>
+    <string name="show_tab_description">Дадае Instagram у ніжнюю навігацыю, калі ўбудова ўключана</string>
 </resources>

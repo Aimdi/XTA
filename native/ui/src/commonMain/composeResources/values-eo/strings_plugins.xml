@@ -50,4 +50,6 @@
     <string name="plugin_problem_offline">Neniu konekto al %1$s.</string>
     <string name="plugin_problem_refused">%1$s rifuzis la peton (%2$d).</string>
     <string name="plugin_problem_other">Io misfunkciis dum legado de %1$s.</string>
+    <string name="plugin_store_search">Serĉi kromprogramojn</string>
+    <string name="plugin_store_no_results">Ne rezultoj</string>
 </resources>

@@ -115,4 +115,6 @@
         <item quantity="other">%1$s voĉoj</item>
     </plurals>
     <string name="add_to_group">Aldoni al grupo</string>
+    <string name="in_home_feed">Montri en la hejma tempolinio</string>
+    <string name="in_home_feed_description">Miksas afiŝojn el la Mastodon-kontoj kiujn vi sekvas en «Sekvataj» kaj «Por vi»</string>
 </resources>

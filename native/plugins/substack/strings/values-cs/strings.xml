@@ -151,4 +151,5 @@
     <string name="unsave">Odebrat z uložených</string>
     <string name="videos">Videa</string>
     <string name="web_only_block">Tato část příspěvku se zobrazí jen na webu.</string>
+    <string name="search_posts_hint">Hledat články v publikacích, které sledujete</string>
 </resources>

@@ -57,7 +57,9 @@ internal fun PostMedia(app: BooruApp, viewer: ViewerState, post: BooruPost, disp
         BooruImage(
             if (post.isVideo) post.thumbnailUrl else post.displayUrl,
             Modifier.fillMaxSize().clickable(onClickLabel = full, role = Role.Image) {
-                app.host.openMedia(listOf(MediaItem(display.viewerUrl(post), aspectRatio = post.aspectRatio.toFloat())), 0)
+                // The viewer saves the original file and shares the post's page, as XTA's does.
+                val shown = MediaItem(display.viewerUrl(post), aspectRatio = post.aspectRatio.toFloat(), downloadUrl = post.originalUrl, shareUrl = BooruArchive.shareUrl(post))
+                app.host.openMedia(listOf(shown), 0)
             },
             contentScale = ContentScale.Fit,
             description = full,

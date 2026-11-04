@@ -119,4 +119,6 @@
         <item quantity="other">%1$s تصويت</item>
     </plurals>
     <string name="add_to_group">أضف إلى المجموعة</string>
+    <string name="in_home_feed">إظهار في الصفحة الرئيسية</string>
+    <string name="in_home_feed_description">يدمج منشورات حسابات الفديفيرس التي تتابعها في \"المتابَعون\" و\"لك\"</string>
 </resources>

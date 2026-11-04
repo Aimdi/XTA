@@ -55,4 +55,6 @@
     <string name="unfollow">अनफ़ॉलो करें</string>
     <string name="unreachable">स्रोत की फ़ाइल पढ़ी नहीं जा सकी। लिंक और अपना कनेक्शन जाँचें।</string>
     <string name="update_title">%1$s अपडेट करें?</string>
+    <string name="in_home_feed">फ़ॉलो की गई सूचियों को फ़ॉलोइंग में मिलाएँ</string>
+    <string name="in_home_feed_description">फ़ॉलोइंग टाइमलाइन में फ़ॉलो की गई सूचियों की नई पोस्ट दिखाएँ।</string>
 </resources>

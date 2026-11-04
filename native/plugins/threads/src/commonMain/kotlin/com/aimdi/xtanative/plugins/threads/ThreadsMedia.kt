@@ -41,10 +41,11 @@ private val MediaShape = RoundedCornerShape(16.dp)
  * A post's pictures and videos (threads_media.dart): one at its own shape
  * across the width, several along one row at one height that scrolls
  * sideways, the next one's edge in view. A tap opens the app's viewer at
- * that one; each picture is decoded at the size it is shown.
+ * that one, with Open post where the post [opens] on a tap; each picture is
+ * decoded at the size it is shown.
  */
 @Composable
-internal fun ThreadsPostMedia(app: ThreadsApp, post: ThreadsPost, modifier: Modifier = Modifier) {
+internal fun ThreadsPostMedia(app: ThreadsApp, post: ThreadsPost, modifier: Modifier = Modifier, opens: Boolean = true) {
     val media = post.media
     if (media.isEmpty()) return
     BoxWithConstraints(modifier.fillMaxWidth()) {
@@ -52,12 +53,12 @@ internal fun ThreadsPostMedia(app: ThreadsApp, post: ThreadsPost, modifier: Modi
         val width = with(density) { maxWidth.toPx() }
         val layout = ThreadsStrip.layout(width, media.map { it.aspectRatio })
         if (media.size == 1) {
-            MediaTile(media.single(), Modifier.fillMaxWidth().aspectRatio(ThreadsStrip.plugin(media.single().aspectRatio))) { app.openMedia(post, 0) }
+            MediaTile(media.single(), Modifier.fillMaxWidth().aspectRatio(ThreadsStrip.plugin(media.single().aspectRatio))) { app.openMedia(post, 0, opens) }
         } else {
             val toDp = { px: Float -> with(density) { px.toDp() } }
             LazyRow(Modifier.fillMaxWidth().height(toDp(layout.height)), horizontalArrangement = Arrangement.spacedBy(ThreadsStrip.GAP.dp)) {
                 itemsIndexed(media, key = { index, item -> "$index:${item.url}" }) { index, item ->
-                    MediaTile(item, Modifier.width(toDp(layout.widths[index])).height(toDp(layout.height))) { app.openMedia(post, index) }
+                    MediaTile(item, Modifier.width(toDp(layout.widths[index])).height(toDp(layout.height))) { app.openMedia(post, index, opens) }
                 }
             }
         }
@@ -89,7 +90,15 @@ internal fun PlayBadge(modifier: Modifier = Modifier) {
 @Composable
 internal fun ThreadsMediaScreen(app: ThreadsApp, route: ThreadsRoute.Media) {
     val viewed = app.shelf.viewed(route.media)
-    MediaPager(viewed?.items.orEmpty(), route.start, onClose = app.host::back, qualities = viewed?.qualities.orEmpty(), onDownload = { app.host.download(it) })
+    val post = viewed?.post
+    MediaPager(
+        viewed?.items.orEmpty(),
+        route.start,
+        onClose = app.host::back,
+        qualities = viewed?.qualities.orEmpty(),
+        onDownload = { app.host.download(it) },
+        onOpenPost = post?.let { { app.openPost(it) } },
+    )
 }
 
 /** A little space under what is above: the gap between a post's parts. */

@@ -117,4 +117,6 @@
         <item quantity="other">%1$s голосу</item>
     </plurals>
     <string name="add_to_group">Додати до групи</string>
+    <string name="in_home_feed">Показувати в головній стрічці</string>
+    <string name="in_home_feed_description">Додає дописи з акаунтів Mastodon, на які ви підписані, у «Підписки» та «Для вас»</string>
 </resources>

@@ -61,4 +61,6 @@
     <string name="unfollow">Отписаться</string>
     <string name="unreachable">Не удалось прочитать файл источника. Проверьте ссылку и подключение.</string>
     <string name="update_title">Обновить %1$s?</string>
+    <string name="in_home_feed">Смешивать подписанные списки в ленте «Читаю»</string>
+    <string name="in_home_feed_description">Показывать новые записи из подписанных списков в ленте «Читаю».</string>
 </resources>

@@ -3,7 +3,8 @@ package com.aimdi.xtanative.ui.plugins
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.calculatePan
@@ -20,17 +21,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -40,15 +45,24 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChanged
 import androidx.compose.ui.layout.ContentScale
@@ -58,33 +72,63 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
+import com.aimdi.xtanative.ui.common.AltBadge
+import com.aimdi.xtanative.ui.common.AltTextDialog
+import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.rememberPicture
+import com.aimdi.xtanative.ui.common.turnTo
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.close
+import com.aimdi.xtanative.ui.generated.resources.media_alt_title
+import com.aimdi.xtanative.ui.generated.resources.posts_open_post
 import com.aimdi.xtanative.ui.generated.resources.reader_download
 import com.aimdi.xtanative.ui.downloads.PluginDownloads
+import com.aimdi.xtanative.ui.generated.resources.reader_link_copied
+import com.aimdi.xtanative.ui.generated.resources.reader_link_share
 import com.aimdi.xtanative.ui.media.LocalInlinePlayer
 import com.aimdi.xtanative.ui.media.ReaderIcons
 import com.aimdi.xtanative.ui.media.VideoQuality
 import com.aimdi.xtanative.ui.post.PlayBadge
+import com.aimdi.xtanative.ui.post.PostIcons
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
 private val Gap = 2.dp
 
 /**
+ * How a long press on a photo's tile saves it, as XTA's tiles do: where the
+ * app draws a plugin's screens and its posts, through that plugin's
+ * downloads; null where nothing saves it.
+ */
+val LocalMediaSave = staticCompositionLocalOf<((MediaItem) -> Unit)?> { null }
+
+/**
  * Photos and videos laid out as the app lays out X's: one at its shape, two
  * side by side, three, or four in a square. With [playing], the first video
  * or GIF plays in its tile, muted; with [hidden], the pictures are blurred.
+ * A described one carries "ALT", and a long press shows its description, or
+ * saves a photo where the screen saves them ([LocalMediaSave]), as XTA's
+ * tiles (plugin_post_media.dart).
  */
 @Composable
 fun MediaTiles(items: List<MediaItem>, onOpen: (Int) -> Unit, modifier: Modifier = Modifier, playing: Boolean = false, hidden: Boolean = false) {
     if (items.isEmpty()) return
+    val save = LocalMediaSave.current
+    var describing by remember { mutableStateOf<String?>(null) }
     val playIndex = if (playing && !hidden) items.indexOfFirst { it.kind != MediaItem.Kind.PHOTO } else -1
     val shape = RoundedCornerShape(16.dp)
     val frame = modifier.fillMaxWidth().clip(shape).border(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant, shape)
     val tile: @Composable (Int, Modifier) -> Unit = { index, tileModifier ->
-        MediaTile(items[index], playIndex == index, hidden, tileModifier) { onOpen(index) }
+        val item = items[index]
+        val described = item.description.takeIf { !hidden }
+        val hold: (() -> Unit)? = when (if (hidden) TileHold.NOTHING else tileHold(item, save != null)) {
+            TileHold.DESCRIPTION -> { { describing = described } }
+            TileHold.SAVE -> save?.let { { it(item) } }
+            TileHold.NOTHING -> null
+        }
+        MediaTile(item, playIndex == index, hidden, tileModifier, onClick = { onOpen(index) }, onHold = hold, onDescribe = described?.let { { describing = it } })
     }
+    describing?.let { AltTextDialog(it) { describing = null } }
     when (items.size) {
         1 -> tile(0, frame.aspectRatio((items[0].aspectRatio ?: (16f / 9f)).coerceIn(0.8f, 2f)))
         2 -> Row(frame.aspectRatio(16f / 9f), horizontalArrangement = Arrangement.spacedBy(Gap)) {
@@ -111,9 +155,10 @@ fun MediaTiles(items: List<MediaItem>, onOpen: (Int) -> Unit, modifier: Modifier
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun MediaTile(item: MediaItem, playing: Boolean, hidden: Boolean, modifier: Modifier, onClick: () -> Unit) {
-    Box(modifier.background(MaterialTheme.colorScheme.surfaceVariant).clickable(onClick = onClick)) {
+private fun MediaTile(item: MediaItem, playing: Boolean, hidden: Boolean, modifier: Modifier, onClick: () -> Unit, onHold: (() -> Unit)?, onDescribe: (() -> Unit)?) {
+    Box(modifier.background(MaterialTheme.colorScheme.surfaceVariant).combinedClickable(onClick = onClick, onLongClick = onHold)) {
         AsyncImage(
             model = rememberPicture(item.tileUrl),
             contentDescription = item.alt,
@@ -131,6 +176,8 @@ private fun MediaTile(item: MediaItem, playing: Boolean, hidden: Boolean, modifi
             }
             MediaItem.Kind.GIF -> TileLabel("GIF", Modifier.align(Alignment.BottomStart))
         }
+        // XTA's badge sits at the start; a video's own label holds that corner.
+        onDescribe?.let { AltBadge(it, Modifier.align(if (item.kind == MediaItem.Kind.PHOTO) Alignment.BottomStart else Alignment.BottomEnd)) }
     }
 }
 
@@ -156,12 +203,15 @@ private fun duration(ms: Long): String {
 
 /**
  * [items] full screen from [start], as the app's viewer shows X's: swipe
- * between them, pinch or double-tap a photo to zoom; videos play, GIFs loop.
- * A video may play another of the files its network offers: [qualities]
- * holds, item by item, a video's files highest first, named as the quality
- * menu lists them ("720p"); one with more than one has the menu and starts
- * on [MediaItem.videoUrl]. With [onDownload], the bar saves the one shown
- * where it has a file of its own (a photo, a video's file; never a stream).
+ * between them (or the arrow keys), pinch or double-tap a photo to zoom;
+ * videos play, GIFs loop. A video may play another of the files its network
+ * offers: [qualities] holds, item by item, a video's files highest first,
+ * named as the quality menu lists them ("720p"); one with more than one has
+ * the menu and starts on [MediaItem.videoUrl]. The bar, as XTA's
+ * (plugin_post_media.dart), has the counter, [onOpenPost]'s Open post where
+ * it is given, the description of one that has it, with [onDownload] the
+ * download of the one shown where it has a file of its own (a photo, a
+ * video's file; never a stream), and Share link ([MediaItem.sharedUrl]).
  * With nothing to show, it closes.
  */
 @OptIn(ExperimentalFoundationApi::class)
@@ -172,13 +222,35 @@ fun MediaPager(
     onClose: () -> Unit,
     qualities: List<List<VideoQuality>> = emptyList(),
     onDownload: ((MediaItem) -> Unit)? = null,
+    onOpenPost: (() -> Unit)? = null,
 ) {
-    Box(Modifier.fillMaxSize().background(Color.Black)) {
+    val focus = remember { FocusRequester() }
+    val snackbar = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val reduced = LocalReducedMotion.current
+    val pager = rememberPagerState(initialPage = start.coerceIn(0, (items.size - 1).coerceAtLeast(0))) { items.size }
+    val turn = { by: Int -> (pager.currentPage + by).takeIf { it in items.indices }?.let { page -> scope.launch { pager.turnTo(page, reduced) } } }
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(Color.Black)
+            .onKeyEvent { event ->
+                if (event.type != KeyEventType.KeyDown) return@onKeyEvent false
+                when (event.key) {
+                    Key.DirectionLeft -> true.also { turn(-1) }
+                    Key.DirectionRight -> true.also { turn(1) }
+                    Key.Escape -> true.also { onClose() }
+                    else -> false
+                }
+            }
+            .focusRequester(focus)
+            .focusable(),
+    ) {
         if (items.isEmpty()) {
             LaunchedEffect(Unit) { onClose() }
             return@Box
         }
-        val pager = rememberPagerState(initialPage = start.coerceIn(0, items.lastIndex)) { items.size }
+        LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
         HorizontalPager(state = pager, modifier = Modifier.fillMaxSize(), key = { it }) { page ->
             val item = items[page]
             when (item.kind) {
@@ -189,14 +261,46 @@ fun MediaPager(
         IconButton(onClick = onClose, modifier = Modifier.statusBarsPadding().padding(8.dp).align(Alignment.TopStart)) {
             Icon(Icons.Filled.Close, stringResource(Res.string.close), tint = Color.White)
         }
-        Row(Modifier.statusBarsPadding().padding(8.dp).align(Alignment.TopEnd), verticalAlignment = Alignment.CenterVertically) {
-            if (items.size > 1) Text("${pager.currentPage + 1} / ${items.size}", color = Color.White, modifier = Modifier.padding(horizontal = 12.dp))
-            val shown = items.getOrNull(pager.currentPage)
-            if (onDownload != null && shown != null && PluginDownloads.url(shown) != null) {
-                IconButton(onClick = { onDownload(shown) }) { Icon(ReaderIcons.Download, stringResource(Res.string.reader_download), tint = Color.White) }
-            }
+        PagerBar(items, pager, onDownload, onOpenPost, snackbar, Modifier.statusBarsPadding().padding(8.dp).align(Alignment.TopEnd))
+        SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).padding(16.dp))
+    }
+}
+
+/** [MediaPager] as plugin API 2 calls it, without Open post. */
+@Deprecated("The viewer of plugin API 2", level = DeprecationLevel.HIDDEN)
+@Composable
+fun MediaPager(
+    items: List<MediaItem>,
+    start: Int,
+    onClose: () -> Unit,
+    qualities: List<List<VideoQuality>> = emptyList(),
+    onDownload: ((MediaItem) -> Unit)? = null,
+) = MediaPager(items, start, onClose, qualities, onDownload, onOpenPost = null)
+
+/** The viewer's bar over the page shown: the counter, Open post, the description, Download and Share link. */
+@Composable
+private fun PagerBar(items: List<MediaItem>, pager: PagerState, onDownload: ((MediaItem) -> Unit)?, onOpenPost: (() -> Unit)?, snackbar: SnackbarHostState, modifier: Modifier) {
+    val shown = items.getOrNull(pager.currentPage) ?: return
+    val share = rememberShareText()
+    val scope = rememberCoroutineScope()
+    val copied = stringResource(Res.string.reader_link_copied)
+    var describing by remember { mutableStateOf<String?>(null) }
+    Row(modifier, verticalAlignment = Alignment.CenterVertically) {
+        if (items.size > 1) Text("${pager.currentPage + 1} / ${items.size}", color = Color.White, modifier = Modifier.padding(horizontal = 12.dp))
+        if (onOpenPost != null) {
+            IconButton(onClick = onOpenPost) { Icon(PostIcons.OpenInNew, stringResource(Res.string.posts_open_post), tint = Color.White) }
+        }
+        shown.description?.let { description ->
+            IconButton(onClick = { describing = description }) { Icon(ReaderIcons.ClosedCaption, stringResource(Res.string.media_alt_title), tint = Color.White) }
+        }
+        if (onDownload != null && PluginDownloads.url(shown) != null) {
+            IconButton(onClick = { onDownload(shown) }) { Icon(ReaderIcons.Download, stringResource(Res.string.reader_download), tint = Color.White) }
+        }
+        IconButton(onClick = { if (!share(shown.sharedUrl)) scope.launch { snackbar.showSnackbar(copied) } }) {
+            Icon(Icons.Filled.Share, stringResource(Res.string.reader_link_share), tint = Color.White)
         }
     }
+    describing?.let { AltTextDialog(it) { describing = null } }
 }
 
 /** A video page playing the quality chosen in its menu, the item's own file until one is. */

@@ -145,4 +145,5 @@
     <string name="unsave">取消儲存</string>
     <string name="videos">影片</string>
     <string name="web_only_block">貼文的這一部分只能在網頁上顯示。</string>
+    <string name="search_posts_hint">在你追蹤的出版物中搜尋文章</string>
 </resources>

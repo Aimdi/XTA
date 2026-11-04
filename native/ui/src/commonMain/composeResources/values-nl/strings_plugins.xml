@@ -50,4 +50,6 @@
     <string name="plugin_problem_offline">Geen verbinding met %1$s.</string>
     <string name="plugin_problem_refused">%1$s heeft het verzoek geweigerd (%2$d).</string>
     <string name="plugin_problem_other">Er ging iets mis bij het lezen van %1$s.</string>
+    <string name="plugin_store_search">Plugins zoeken</string>
+    <string name="plugin_store_no_results">Geen resultaten</string>
 </resources>

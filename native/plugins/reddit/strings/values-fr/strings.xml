@@ -119,4 +119,6 @@
         <item quantity="one">%1$s abonné</item>
         <item quantity="other">%1$s abonnés</item>
     </plurals>
+    <string name="in_home_feed">Afficher dans le fil principal</string>
+    <string name="in_home_feed_description">Intègre les publications des subreddits que vous suivez dans « Abonnements » et « Pour vous »</string>
 </resources>

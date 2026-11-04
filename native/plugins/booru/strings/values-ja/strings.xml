@@ -184,4 +184,9 @@
     <string name="votes">高評価 %1$d、低評価 %2$d</string>
     <string name="wiki">Wiki</string>
     <string name="wiki_empty">このタグにはWikiページがありません</string>
+    <string name="settings_title">Booruの設定</string>
+    <string name="show_tab">Booruタブを表示</string>
+    <string name="show_tab_description">プラグイン有効時、下部ナビにBooruを追加します</string>
+    <string name="in_home_feed">ホームのタイムラインに表示</string>
+    <string name="in_home_feed_description">フォロー中のタグの投稿を「フォロー中」「おすすめ」に混ぜます</string>
 </resources>

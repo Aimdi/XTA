@@ -55,4 +55,6 @@
     <string name="unfollow">Lõpeta jälgimine</string>
     <string name="unreachable">Allika faili ei õnnestunud lugeda. Kontrolli linki ja ühendust.</string>
     <string name="update_title">Kas uuendada %1$s?</string>
+    <string name="in_home_feed">Sega jälgitavad loendid voogu Jälgin</string>
+    <string name="in_home_feed_description">Näita jälgitavate loendite uusi postitusi ajajoones Jälgin.</string>
 </resources>

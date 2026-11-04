@@ -101,6 +101,7 @@ import com.aimdi.xtanative.ui.generated.resources.saved_search_library
 import com.aimdi.xtanative.ui.generated.resources.saved_source_x
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.currentLanguage
+import com.aimdi.xtanative.ui.pluginstore.SavesMediaOf
 import com.aimdi.xtanative.ui.saved.SavedIcons
 import com.aimdi.xtanative.ui.search.DiscoverIcons
 import com.aimdi.xtanative.ui.search.EmptyNote
@@ -221,7 +222,7 @@ fun TrendsScreen(actions: TrendsActions, onBack: (() -> Unit)? = null) {
             if (plugin == null) {
                 TrendsBody(state, list, onRefresh = vm::refresh, onTrend = { trend -> actions.openSearch(trend.query) }, onAddLocation = { picking = true }, bottom = padding.calculateBottomPadding())
             } else {
-                PluginPane(plugin, state.committed, bottom = padding.calculateBottomPadding())
+                PluginPane(plugin, state.committed, bottom = padding.calculateBottomPadding(), send = { query -> searched(vm.searchAgain(query)) })
             }
         }
     }
@@ -282,13 +283,18 @@ private fun ScopeChips(plugins: List<SearchablePlugin>, scope: String, onSelect:
     }
 }
 
-/** A plugin's search under the bar (discover_plugin_search.dart): what it searches until something is typed, then what it finds. */
+/**
+ * A plugin's search under the bar (discover_plugin_search.dart): until
+ * something is typed, its landing where it shows one here ([send] putting a
+ * query in the bar and searching it), else what it searches; then what it finds.
+ */
 @Composable
-private fun PluginPane(plugin: SearchablePlugin, query: String, bottom: Dp) {
-    if (DiscoverScopes.body(plugin.id, query) == DiscoverBody.PLUGIN_SEARCH) {
-        Box(Modifier.fillMaxSize()) { plugin.search.Results(query, PluginFrame(PaddingValues(bottom = bottom))) }
-    } else {
-        EmptyNote(stringResource(Res.string.discover_plugin_empty, plugin.title(currentLanguage())), icon = plugin.plugin.icon)
+private fun PluginPane(plugin: SearchablePlugin, query: String, bottom: Dp, send: (String) -> Unit) {
+    val frame = PluginFrame(PaddingValues(bottom = bottom))
+    when (DiscoverScopes.body(plugin.id, query, plugin.landsInDiscover)) {
+        DiscoverBody.PLUGIN_SEARCH -> Box(Modifier.fillMaxSize()) { SavesMediaOf(plugin.id) { plugin.search.Results(query, frame) } }
+        DiscoverBody.PLUGIN_LANDING -> Box(Modifier.fillMaxSize()) { SavesMediaOf(plugin.id) { plugin.search.Landing(frame, send) } }
+        else -> EmptyNote(stringResource(Res.string.discover_plugin_empty, plugin.title(currentLanguage())), icon = plugin.plugin.icon)
     }
 }
 

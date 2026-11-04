@@ -61,4 +61,7 @@
     <string name="unfollow_confirm">\@%1$s jarraitzeari utzi?</string>
     <string name="unlike_on_device">Kendu atsegina gailu honetatik</string>
     <string name="add_to_group">Gehitu taldera</string>
+    <string name="settings_title">Instagram ezarpenak</string>
+    <string name="show_tab">Erakutsi Instagram fitxa</string>
+    <string name="show_tab_description">Instagram gehitzen du beheko nabigaziora plugin-a gaituta dagoenean</string>
 </resources>

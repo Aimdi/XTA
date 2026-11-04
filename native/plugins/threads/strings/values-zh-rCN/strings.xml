@@ -110,4 +110,6 @@
     <string name="use_session">用我的会话读取已关注账号</string>
     <string name="use_session_description">默认关闭。打开后本应用会以你的身份访问 Threads，Meta 可能封禁该账号。除非是一次性登录，否则请保持关闭。</string>
     <string name="add_to_group">添加到订阅组</string>
+    <string name="in_home_feed">显示在主时间线中</string>
+    <string name="in_home_feed_description">把你关注的 Threads 账号的帖子混入「关注」和「为你推荐」</string>
 </resources>

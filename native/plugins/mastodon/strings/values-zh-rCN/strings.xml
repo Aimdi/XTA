@@ -114,4 +114,6 @@
         <item quantity="other">%1$s 票</item>
     </plurals>
     <string name="add_to_group">添加到订阅组</string>
+    <string name="in_home_feed">显示在主时间线中</string>
+    <string name="in_home_feed_description">把你关注的 Mastodon 账号的帖子混入「关注」和「为你推荐」</string>
 </resources>

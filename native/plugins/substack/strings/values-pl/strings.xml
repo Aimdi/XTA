@@ -154,4 +154,5 @@
     <string name="unsave">Usuń z zapisanych</string>
     <string name="videos">Filmy</string>
     <string name="web_only_block">Ta część wpisu wyświetla się tylko w sieci.</string>
+    <string name="search_posts_hint">Szukaj artykułów w obserwowanych publikacjach</string>
 </resources>

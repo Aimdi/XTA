@@ -113,4 +113,6 @@
     <string name="use_session">Mijn sessie gebruiken voor gevolgde accounts</string>
     <string name="use_session_description">Standaard uit. Aan betekent dat de app als jij met Threads praat — Meta kan dat account bannen. Laat uit, tenzij je een wegwerplogin gebruikt.</string>
     <string name="add_to_group">Aan groep toevoegen</string>
+    <string name="in_home_feed">Weergeven in de hoofdtijdlijn</string>
+    <string name="in_home_feed_description">Mengt berichten van de Threads-accounts die je volgt in Volgend en Voor jou</string>
 </resources>

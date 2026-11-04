@@ -32,5 +32,6 @@ class StoreRowsTest {
         // 0 refresh line, 1 unreachable notice, 2 Installed, 3 and 4 installed rows, 5 the new one.
         assertEquals(4, StoreRows.afterInstall(2, refreshing = true, unreachable = true))
         assertEquals(3, StoreRows.afterInstall(2, refreshing = false, unreachable = true))
+        assertEquals(1, StoreRows.afterInstall(0, refreshing = false, unreachable = false, searchField = true), "the search field above it all")
     }
 }

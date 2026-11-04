@@ -39,4 +39,6 @@
     <string name="tag_hint">Label singkat, misalnya Berita atau Blog</string>
     <string name="unfollow">Berhenti mengikuti</string>
     <string name="unread">Belum dibaca</string>
+    <string name="in_home_feed">Campur umpan yang diikuti ke Mengikuti</string>
+    <string name="in_home_feed_description">Tampilkan item baru dari umpan yang diikuti di linimasa Mengikuti.</string>
 </resources>

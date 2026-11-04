@@ -148,4 +148,6 @@
         <item quantity="many">%1$s допісаў</item>
         <item quantity="other">%1$s допісу</item>
     </plurals>
+    <string name="in_home_feed">Паказваць у галоўнай стужцы</string>
+    <string name="in_home_feed_description">Дадае запісы з акаўнтаў Bluesky, на якія вы падпісаны, у «Падпіскі» і «Для вас»</string>
 </resources>

@@ -39,4 +39,6 @@
     <string name="tag_hint">Een kort label, zoals Nieuws of Blogs</string>
     <string name="unfollow">Ontvolgen</string>
     <string name="unread">Ongelezen</string>
+    <string name="in_home_feed">Gevolgde feeds mengen in Volgend</string>
+    <string name="in_home_feed_description">Nieuwe items van gevolgde feeds tonen in de tijdlijn Volgend.</string>
 </resources>

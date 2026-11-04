@@ -148,4 +148,5 @@
     <string name="unsave">Remove from saved</string>
     <string name="videos">Videos</string>
     <string name="web_only_block">This part of the post shows only on the web.</string>
+    <string name="search_posts_hint">Search articles in publications you follow</string>
 </resources>

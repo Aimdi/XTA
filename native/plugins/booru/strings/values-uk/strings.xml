@@ -190,4 +190,9 @@
     <string name="votes">За: %1$d, проти: %2$d</string>
     <string name="wiki">Вікі</string>
     <string name="wiki_empty">Цей тег не має вікі-сторінки</string>
+    <string name="settings_title">Налаштування Booru</string>
+    <string name="show_tab">Показувати вкладку Booru</string>
+    <string name="show_tab_description">Додає Booru у нижню навігацію, коли додаток увімкнено</string>
+    <string name="in_home_feed">Показувати в головній стрічці</string>
+    <string name="in_home_feed_description">Додає дописи з тегів, на які ви підписані, у «Підписки» та «Для вас»</string>
 </resources>

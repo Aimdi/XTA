@@ -194,4 +194,9 @@
     <string name="votes">أصوات مؤيدة: %1$d، معارضة: %2$d</string>
     <string name="wiki">الويكي</string>
     <string name="wiki_empty">لا توجد صفحة ويكي لهذا الوسم</string>
+    <string name="settings_title">إعدادات Booru</string>
+    <string name="show_tab">إظهار تبويب Booru</string>
+    <string name="show_tab_description">يضيف Booru إلى شريط التنقل السفلي عند تفعيل الإضافة</string>
+    <string name="in_home_feed">إظهار في الصفحة الرئيسية</string>
+    <string name="in_home_feed_description">يدمج منشورات الوسوم المتابَعة في \"المتابَعون\" و\"لك\"</string>
 </resources>

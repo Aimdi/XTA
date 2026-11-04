@@ -125,4 +125,7 @@
     <string name="test_connection">Otestovat připojení</string>
     <string name="test_ok">Stránka odpověděla (galerií: %1$d)</string>
     <string name="test_failed">Test EH selhal: %1$s</string>
+    <string name="settings_title">Nastavení EH</string>
+    <string name="show_tab">Zobrazit kartu EH</string>
+    <string name="show_tab_description">Přidá EH do spodní navigace, když je zásuvný modul zapnutý</string>
 </resources>

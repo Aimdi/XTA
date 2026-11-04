@@ -43,6 +43,27 @@ class PluginPrefsTest {
     }
 
     @Test
+    fun showAsATabPutsThePageOnTheBarAndOffItOnTheStrip() {
+        val before = Settings().with(HomePrefs.seededNetworkTabs, listOf("bluesky", "reddit"))
+        assertFalse(before.showsPluginAsTab("bluesky"), "not on until it is turned on")
+        val shown = before.withPluginAsTab("bluesky", on = true)
+        assertTrue(shown.showsPluginAsTab("bluesky"))
+        assertTrue(shown[BlueskyPrefs.enabled])
+        assertEquals(listOf("reddit"), shown[HomePrefs.seededNetworkTabs], "offered to the bar again")
+        val hidden = shown.withPluginAsTab("bluesky", on = false)
+        assertFalse(hidden.showsPluginAsTab("bluesky"))
+        assertEquals(listOf("bluesky"), hidden[HomePrefs.feedStripNetworks], "it waits among Home's timelines")
+    }
+
+    @Test
+    fun aPluginWithoutATabHasNoneToShow() {
+        assertFalse(hasTabOf("karakeep"))
+        assertTrue(hasTabOf("bluesky"))
+        assertEquals(Settings(), Settings().withPluginAsTab("karakeep", on = true))
+        assertFalse(Settings().withPluginAsTab("karakeep", on = true).showsPluginAsTab("karakeep"))
+    }
+
+    @Test
     fun uninstallingAPluginLeavesNothingOfItOnHome() {
         val settings = Settings()
             .with(HomePrefs.feedStripNetworks, listOf("bluesky", "reddit"))

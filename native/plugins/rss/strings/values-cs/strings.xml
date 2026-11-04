@@ -39,4 +39,6 @@
     <string name="tag_hint">Krátký popisek, například Zprávy nebo Blogy</string>
     <string name="unfollow">Přestat sledovat</string>
     <string name="unread">Nepřečtené</string>
+    <string name="in_home_feed">Míchat sledované kanály do Sleduji</string>
+    <string name="in_home_feed_description">Zobrazovat nové položky ze sledovaných kanálů v časové ose Sleduji.</string>
 </resources>

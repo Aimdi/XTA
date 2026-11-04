@@ -110,4 +110,6 @@
     <string name="use_session">팔로우한 계정에 내 세션 사용</string>
     <string name="use_session_description">기본은 꺼짐. 켜면 이 앱이 당신으로서 Threads에 접속하며, Meta가 그 계정을 정지할 수 있습니다. 일회용 로그인이 아니면 꺼 두세요.</string>
     <string name="add_to_group">그룹에 추가</string>
+    <string name="in_home_feed">홈 타임라인에 표시</string>
+    <string name="in_home_feed_description">팔로우한 Threads 계정의 게시물을 팔로잉과 추천에 함께 표시합니다</string>
 </resources>

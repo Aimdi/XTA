@@ -51,4 +51,7 @@
     <string name="test_connection_description">Ouvre le profil public @tiktok pour vérifier que TikTok répond</string>
     <string name="test_ok">TikTok a répondu (%1$s)</string>
     <string name="test_failed">Le test TikTok a échoué : %1$s</string>
+    <string name="settings_title">Réglages TikTok</string>
+    <string name="show_tab">Afficher l’onglet TikTok</string>
+    <string name="show_tab_description">Ajoute TikTok à la navigation du bas lorsque le greffon est activé</string>
 </resources>

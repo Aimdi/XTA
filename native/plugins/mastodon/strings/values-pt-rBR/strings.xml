@@ -115,4 +115,6 @@
         <item quantity="other">%1$s votos</item>
     </plurals>
     <string name="add_to_group">Adicionar ao grupo</string>
+    <string name="in_home_feed">Mostrar na linha do tempo principal</string>
+    <string name="in_home_feed_description">Mistura as publicações das contas do Mastodon que você segue em «Seguindo» e «Para você»</string>
 </resources>

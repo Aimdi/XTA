@@ -58,4 +58,6 @@
     <string name="unfollow">Dejar de seguir</string>
     <string name="unreachable">No se ha podido leer el archivo de la fuente. Comprueba el enlace y tu conexión.</string>
     <string name="update_title">¿Actualizar %1$s?</string>
+    <string name="in_home_feed">Mezclar las listas seguidas en Siguiendo</string>
+    <string name="in_home_feed_description">Mostrar publicaciones nuevas de las listas seguidas en la cronología Siguiendo.</string>
 </resources>

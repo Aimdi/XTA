@@ -42,6 +42,7 @@ import com.aimdi.xtanative.networks.substack.SubstackNotes
 import com.aimdi.xtanative.networks.substack.SubstackNotesFeed
 import com.aimdi.xtanative.networks.substack.postReads
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
@@ -116,7 +117,7 @@ internal fun SubstackHome(app: SubstackApp, frame: PluginFrame) {
     Column(Modifier.fillMaxSize()) {
         HomeHeader(app, state, selected) { pane = it.ordinal }
         Hairline()
-        Box(Modifier.weight(1f)) {
+        Box(Modifier.weight(1f).swipeTabs(HomePane.entries, selected) { pane = it.ordinal }) {
             when (selected) {
                 HomePane.HOME -> HomeFeedPane(app, state, frame)
                 HomePane.INBOX -> InboxPane(app, state, frame)

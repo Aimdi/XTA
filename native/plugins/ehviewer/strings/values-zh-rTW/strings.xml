@@ -117,4 +117,7 @@
     <string name="test_connection">測試連線</string>
     <string name="test_ok">網站已回應（%1$d 個圖庫）</string>
     <string name="test_failed">EH 測試失敗：%1$s</string>
+    <string name="settings_title">EH 設定</string>
+    <string name="show_tab">顯示 EH 分頁</string>
+    <string name="show_tab_description">啟用外掛後，將 EH 加入底部導覽</string>
 </resources>

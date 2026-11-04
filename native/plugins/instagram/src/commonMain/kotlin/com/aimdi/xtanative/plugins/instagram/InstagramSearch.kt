@@ -71,6 +71,16 @@ internal class InstagramSearch(private val app: () -> InstagramApp) : PluginSear
 
     @Composable
     override fun Results(query: String, frame: PluginFrame) = DiscoverResults(app(), query, frame)
+
+    /** Before a search, as XTA's search sheet (instagram_search_sheet.dart): the recent searches, or what can be searched. */
+    @Composable
+    override fun Landing(frame: PluginFrame, send: (String) -> Unit) {
+        Box(Modifier.fillMaxSize().padding(frame.padding).padding(horizontal = 16.dp)) { Recent(app(), send) }
+    }
+
+    override fun sent(query: String) {
+        app().remember(query)
+    }
 }
 
 @Composable

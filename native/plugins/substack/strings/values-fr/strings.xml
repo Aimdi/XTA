@@ -148,4 +148,5 @@
     <string name="unsave">Retirer des enregistrés</string>
     <string name="videos">Vidéos</string>
     <string name="web_only_block">Cette partie de l’article ne s’affiche que sur le web.</string>
+    <string name="search_posts_hint">Rechercher des articles dans les publications que vous suivez</string>
 </resources>

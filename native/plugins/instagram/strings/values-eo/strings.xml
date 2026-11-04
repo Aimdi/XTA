@@ -61,4 +61,7 @@
     <string name="unfollow_confirm">Ĉu malsekvi @%1$s?</string>
     <string name="unlike_on_device">Forigi ŝaton el ĉi tiu aparato</string>
     <string name="add_to_group">Aldoni al grupo</string>
+    <string name="settings_title">Agordoj de Instagram</string>
+    <string name="show_tab">Montri langeton Instagram</string>
+    <string name="show_tab_description">Aldonas Instagram al la malsupra navigado kiam la kromaĵo estas ŝaltita</string>
 </resources>

@@ -61,4 +61,7 @@
     <string name="unfollow_confirm">Berhenti mengikuti @%1$s?</string>
     <string name="unlike_on_device">Hapus suka dari perangkat ini</string>
     <string name="add_to_group">Tambah ke grup</string>
+    <string name="settings_title">Pengaturan Instagram</string>
+    <string name="show_tab">Tampilkan tab Instagram</string>
+    <string name="show_tab_description">Menambahkan Instagram ke navigasi bawah saat plugin diaktifkan</string>
 </resources>

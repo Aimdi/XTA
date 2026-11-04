@@ -28,7 +28,6 @@ import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,11 +45,12 @@ import com.aimdi.xtanative.networks.substack.SubstackPost
 import com.aimdi.xtanative.networks.substack.SubstackPostSearch
 import com.aimdi.xtanative.networks.substack.SubstackPublication
 import com.aimdi.xtanative.networks.substack.SubstackPublicationSearch
-import com.aimdi.xtanative.networks.substack.SubstackSearches
 import com.aimdi.xtanative.store.settings.SubstackPrefs
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginSearch
+import com.aimdi.xtanative.ui.plugins.PluginSearchHistory
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
@@ -71,22 +71,32 @@ internal class SubstackSearchUi(private val app: SubstackApp) : PluginSearch() {
     override fun hint(language: String): String = Strings.search_hint.get(language)
 
     @Composable
-    override fun Results(query: String, frame: PluginFrame) {
-        val trimmed = query.trim()
-        val direct = trimmed.isNotEmpty() && SubstackHosts.postRef(trimmed) != null
-        var tab by rememberSaveable { mutableStateOf(0) }
-        LaunchedEffect(trimmed) { if (trimmed.isNotEmpty()) app.host.settings.update { it.with(SubstackPrefs.searchHistory, SubstackSearches.remembered(it[SubstackPrefs.searchHistory], trimmed)) } }
-        val notices = rememberNotices()
-        WithNotices(notices) {
-            Column(Modifier.fillMaxSize()) {
-                if (!direct) SearchTabs(tab) { tab = it }
-                LazyColumn(Modifier.weight(1f), contentPadding = frame.padding) {
-                    when {
-                        direct -> item(key = "direct") { DirectPost(app, trimmed, notices) }
-                        tab == 0 && trimmed.isEmpty() -> browse(app, notices)
-                        tab == 0 -> item(key = "publications-$trimmed") { PublicationResults(app, trimmed, notices) }
-                        else -> item(key = "posts-$trimmed") { PostResults(app, trimmed) }
-                    }
+    override fun Results(query: String, frame: PluginFrame) = SearchBody(app, query.trim(), frame) {}
+
+    /** Before a search: the recent searches, then Substack's topics with the leaderboard of the one picked. */
+    @Composable
+    override fun Landing(frame: PluginFrame, send: (String) -> Unit) = SearchBody(app, "", frame, send)
+
+    override fun sent(query: String) = app.launch {
+        app.host.settings.update { it.with(SubstackPrefs.searchHistory, PluginSearchHistory.remembered(it[SubstackPrefs.searchHistory], query)) }
+    }
+}
+
+/** Publications or Posts for [trimmed], swiped between; with nothing asked, what to browse, [send] searching a recent search again. */
+@Composable
+private fun SearchBody(app: SubstackApp, trimmed: String, frame: PluginFrame, send: (String) -> Unit) {
+    val direct = trimmed.isNotEmpty() && SubstackHosts.postRef(trimmed) != null
+    var tab by rememberSaveable { mutableStateOf(0) }
+    val notices = rememberNotices()
+    WithNotices(notices) {
+        Column(Modifier.fillMaxSize()) {
+            if (!direct) SearchTabs(tab) { tab = it }
+            LazyColumn(Modifier.weight(1f).swipeTabs(tab, if (direct) 0 else 2) { tab = it }, contentPadding = frame.padding) {
+                when {
+                    direct -> item(key = "direct") { DirectPost(app, trimmed, notices) }
+                    trimmed.isEmpty() -> landing(app, tab, notices, send)
+                    tab == 0 -> item(key = "publications-$trimmed") { PublicationResults(app, trimmed, notices) }
+                    else -> item(key = "posts-$trimmed") { PostResults(app, trimmed) }
                 }
             }
         }
@@ -126,22 +136,40 @@ internal class Stepped<S>(private val scope: CoroutineScope, initial: S, first: 
     }
 }
 
-/** With nothing asked: recent searches, then Substack's topics and the leaderboard of the one picked. */
-private fun LazyListScope.browse(app: SubstackApp, notices: Notices) {
-    item(key = "recent") { RecentSearches(app) }
-    item(key = "intro") { Text(pluginString(Strings.discover_intro), modifier = Modifier.padding(16.dp)) }
-    item(key = "categories") { CategoryBrowser(app, notices) }
+/**
+ * With nothing asked (substack_search_sheet.dart): the recent searches, then
+ * on Publications Substack's topics and the leaderboard of the one picked,
+ * on Posts what they search.
+ */
+private fun LazyListScope.landing(app: SubstackApp, tab: Int, notices: Notices, send: (String) -> Unit) {
+    item(key = "recent") { RecentSearches(app, send) }
+    if (tab == 0) {
+        item(key = "intro") { Text(pluginString(Strings.discover_intro), modifier = Modifier.padding(16.dp)) }
+        item(key = "categories") { CategoryBrowser(app, notices) }
+    } else {
+        item(key = "posts-hint") { PostsHint(app) }
+    }
+}
+
+/** What the Posts tab searches: the followed publications' articles, or a word that it needs one followed. */
+@Composable
+private fun PostsHint(app: SubstackApp) {
+    val follows by app.publications.collectAsState()
+    Column {
+        Text(pluginString(Strings.search_followed_posts), modifier = Modifier.padding(16.dp))
+        EmptyState(pluginString(if (follows.isNullOrEmpty()) Strings.search_no_follows else Strings.search_posts_hint))
+    }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun RecentSearches(app: SubstackApp) {
+private fun RecentSearches(app: SubstackApp, send: (String) -> Unit) {
     val recent by app.host.settings.observe(SubstackPrefs.searchHistory).collectAsState(emptyList())
     if (recent.isEmpty()) return
     Column(Modifier.padding(16.dp)) {
         Text(pluginString(Strings.recent_searches), style = MaterialTheme.typography.titleSmall)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            recent.take(8).forEach { query -> SuggestionChip(onClick = { app.host.openSearch(query) }, label = { Text(query) }) }
+            recent.take(8).forEach { query -> SuggestionChip(onClick = { send(query) }, label = { Text(query) }) }
         }
         TextButton(onClick = { app.launch { app.host.settings.set(SubstackPrefs.searchHistory, emptyList()) } }) {
             Icon(Icons.Default.Delete, null, Modifier.padding(end = 8.dp))

@@ -50,4 +50,6 @@
     <string name="plugin_problem_offline">%1$s से कोई कनेक्शन नहीं।</string>
     <string name="plugin_problem_refused">%1$s ने अनुरोध अस्वीकार कर दिया (%2$d)।</string>
     <string name="plugin_problem_other">%1$s पढ़ते समय कुछ गड़बड़ हो गई।</string>
+    <string name="plugin_store_search">प्लगइन खोजें</string>
+    <string name="plugin_store_no_results">कोई परिणाम नहीं</string>
 </resources>

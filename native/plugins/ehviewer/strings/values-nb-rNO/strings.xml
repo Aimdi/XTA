@@ -121,4 +121,7 @@
     <string name="test_connection">Test tilkoblingen</string>
     <string name="test_ok">Nettstedet svarte (%1$d gallerier)</string>
     <string name="test_failed">EH-testen mislyktes: %1$s</string>
+    <string name="settings_title">EH-innstillinger</string>
+    <string name="show_tab">Vis EH-fane</string>
+    <string name="show_tab_description">Legger EH til i bunnnavigasjonen når programtillegget er slått på</string>
 </resources>

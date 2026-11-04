@@ -50,4 +50,6 @@
     <string name="plugin_problem_offline">Brak połączenia z %1$s.</string>
     <string name="plugin_problem_refused">%1$s odrzucił żądanie (%2$d).</string>
     <string name="plugin_problem_other">Coś poszło nie tak podczas odczytu z %1$s.</string>
+    <string name="plugin_store_search">Szukaj wtyczek</string>
+    <string name="plugin_store_no_results">Brak wyników</string>
 </resources>

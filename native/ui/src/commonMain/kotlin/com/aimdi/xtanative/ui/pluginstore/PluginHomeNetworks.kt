@@ -48,7 +48,7 @@ internal class PluginHomeNetworks(private val plugins: AppPlugins) : HomeNetwork
     override fun Page(id: String, contentPadding: PaddingValues, toTop: Int) {
         val body = runningPlugin(id)?.plugin?.homeTab ?: return
         val refreshed by refreshes.collectAsState()
-        body(PluginFrame(contentPadding, toTop, refreshed[id] ?: 0))
+        SavesMediaOf(id) { body(PluginFrame(contentPadding, toTop, refreshed[id] ?: 0)) }
     }
 
     @Composable

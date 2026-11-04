@@ -39,4 +39,6 @@
     <string name="tag_hint">Um rótulo curto, como Notícias ou Blogs</string>
     <string name="unfollow">Deixar de seguir</string>
     <string name="unread">Não lido</string>
+    <string name="in_home_feed">Misturar os feeds seguidos em Seguindo</string>
+    <string name="in_home_feed_description">Mostrar itens novos dos feeds seguidos na linha do tempo Seguindo.</string>
 </resources>

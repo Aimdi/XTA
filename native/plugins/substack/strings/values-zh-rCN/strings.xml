@@ -145,4 +145,5 @@
     <string name="unsave">取消保存</string>
     <string name="videos">视频</string>
     <string name="web_only_block">帖子的这一部分只能在网页上显示。</string>
+    <string name="search_posts_hint">在你关注的出版物中搜索文章</string>
 </resources>

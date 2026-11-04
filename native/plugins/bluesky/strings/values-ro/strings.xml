@@ -147,4 +147,6 @@
         <item quantity="few">%1$s postări</item>
         <item quantity="other">%1$s de postări</item>
     </plurals>
+    <string name="in_home_feed">Afișează în cronologia principală</string>
+    <string name="in_home_feed_description">Adaugă postările din conturile Bluesky urmărite în „Urmăriți” și „Pentru tine”</string>
 </resources>

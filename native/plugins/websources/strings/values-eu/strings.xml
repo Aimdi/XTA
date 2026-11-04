@@ -55,4 +55,6 @@
     <string name="unfollow">Jarraitzeari utzi</string>
     <string name="unreachable">Ezin izan da iturriaren fitxategia irakurri. Egiaztatu esteka eta konexioa.</string>
     <string name="update_title">%1$s eguneratu nahi duzu?</string>
+    <string name="in_home_feed">Nahastu jarraitutako zerrendak Jarraitzen atalean</string>
+    <string name="in_home_feed_description">Erakutsi jarraitutako zerrendetako argitalpen berriak Jarraitzen denbora-lerroan.</string>
 </resources>

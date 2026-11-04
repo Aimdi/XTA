@@ -145,4 +145,5 @@
     <string name="unsave">Hapus dari tersimpan</string>
     <string name="videos">Video</string>
     <string name="web_only_block">Bagian kiriman ini hanya tampil di web.</string>
+    <string name="search_posts_hint">Cari artikel dalam publikasi yang Anda ikuti</string>
 </resources>

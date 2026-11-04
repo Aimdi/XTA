@@ -117,4 +117,7 @@
     <string name="test_connection">Uji koneksi</string>
     <string name="test_ok">Situs merespons (%1$d galeri)</string>
     <string name="test_failed">Uji EH gagal: %1$s</string>
+    <string name="settings_title">Pengaturan EH</string>
+    <string name="show_tab">Tampilkan tab EH</string>
+    <string name="show_tab_description">Menambahkan EH ke navigasi bawah saat plugin diaktifkan</string>
 </resources>

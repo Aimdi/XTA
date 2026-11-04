@@ -214,4 +214,4 @@ private fun PictureBox(content: @Composable () -> Unit) {
 
 /** The pictures a gallery opens from [item] ([WebSourceReading.pictured]), as the viewer shows them. */
 internal fun galleryPictures(items: List<WebSourceItem>, item: WebSourceItem): Pair<List<MediaItem>, Int>? =
-    WebSourceReading.pictured(items, item)?.let { (pictured, start) -> pictured.map { MediaItem(imageUrl = it.pictures.first(), alt = it.title) } to start }
+    WebSourceReading.pictured(items, item)?.let { (pictured, start) -> pictured.map { MediaItem(imageUrl = it.pictures.first(), alt = it.title, shareUrl = it.link) } to start }

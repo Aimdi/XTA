@@ -186,4 +186,9 @@
     <string name="votes">%1$d aldeko, %2$d aurkako</string>
     <string name="wiki">Wikia</string>
     <string name="wiki_empty">Etiketa honek ez du wiki-orririk</string>
+    <string name="settings_title">Booru ezarpenak</string>
+    <string name="show_tab">Erakutsi Booru fitxa</string>
+    <string name="show_tab_description">Booru gehitzen du beheko nabigaziora plugin-a gaituta dagoenean</string>
+    <string name="in_home_feed">Erakutsi hasierako denbora-lerroan</string>
+    <string name="in_home_feed_description">Jarraitzen dituzun etiketen bidalketak «Jarraitzen» eta «Zuretzat» ataletan tartekatzen ditu</string>
 </resources>

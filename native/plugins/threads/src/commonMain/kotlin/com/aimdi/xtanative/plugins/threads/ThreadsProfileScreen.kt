@@ -55,6 +55,7 @@ import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.countText
+import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.Fetch
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.NoticeHost
@@ -137,13 +138,17 @@ private fun ProfileBody(app: ThreadsApp, model: ThreadsProfileModel, page: Threa
     }
     val waiting = tab == ProfileTab.REPLIES && replies.loading && posts.isEmpty()
     val list = rememberLazyListState()
+    val select: (ProfileTab) -> Unit = { option ->
+        tab = option
+        if (option == ProfileTab.REPLIES) model.replies.ensure()
+    }
     PullToRefreshBox(isRefreshing = refreshing, onRefresh = { model.page.load(force = true) }, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(state = list, modifier = Modifier.fillMaxSize()) {
+        LazyColumn(state = list, modifier = Modifier.fillMaxSize().swipeTabs(ProfileTab.entries, tab, select)) {
             item(key = "card") { ThreadsProfileCard(app, profile, Modifier.padding(16.dp)) }
             item(key = "tabs") {
                 PrimaryTabRow(selectedTabIndex = tab.ordinal) {
                     ProfileTab.entries.forEach { option ->
-                        Tab(selected = tab == option, onClick = { tab = option; if (option == ProfileTab.REPLIES) model.replies.ensure() }, text = { Text(pluginString(option.label), maxLines = 1) })
+                        Tab(selected = tab == option, onClick = { select(option) }, text = { Text(pluginString(option.label), maxLines = 1) })
                     }
                 }
             }

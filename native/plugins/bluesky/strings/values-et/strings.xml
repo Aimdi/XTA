@@ -146,4 +146,6 @@
         <item quantity="one">%1$s postitus</item>
         <item quantity="other">%1$s postitust</item>
     </plurals>
+    <string name="in_home_feed">Näita avalehe voos</string>
+    <string name="in_home_feed_description">Lisab jälgitavate Blueskyi kontode postitused voogudesse „Jälgitavad“ ja „Sulle“</string>
 </resources>

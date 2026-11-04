@@ -39,4 +39,6 @@
     <string name="tag_hint">O etichetă scurtă, de exemplu Știri sau Bloguri</string>
     <string name="unfollow">Nu mai urmări</string>
     <string name="unread">Necitite</string>
+    <string name="in_home_feed">Amestecă fluxurile urmărite în Urmăresc</string>
+    <string name="in_home_feed_description">Afișează elementele noi din fluxurile urmărite în cronologia Urmăresc.</string>
 </resources>

@@ -116,4 +116,6 @@
     <string name="use_session">Usar mi sesión para las cuentas que sigo</string>
     <string name="use_session_description">Desactivado por defecto. Si lo activas, la app habla con Threads como tú — Meta puede banear esa cuenta. Déjalo apagado salvo que uses un inicio desechable.</string>
     <string name="add_to_group">Añadir al grupo</string>
+    <string name="in_home_feed">Mostrar en la cronología principal</string>
+    <string name="in_home_feed_description">Mezcla las publicaciones de las cuentas de Threads que sigues en «Siguiendo» y «Para ti»</string>
 </resources>

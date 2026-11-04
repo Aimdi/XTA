@@ -145,4 +145,6 @@
     <plurals name="post_count">
         <item quantity="other">게시물 %1$s개</item>
     </plurals>
+    <string name="in_home_feed">홈 타임라인에 표시</string>
+    <string name="in_home_feed_description">팔로우한 Bluesky 계정의 게시물을 팔로잉과 추천에 함께 표시합니다</string>
 </resources>

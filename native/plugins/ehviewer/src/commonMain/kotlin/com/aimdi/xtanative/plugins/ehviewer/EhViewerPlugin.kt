@@ -47,6 +47,8 @@ class EhViewerPlugin : XtaPlugin() {
 
     override val settings: PluginBody = { frame -> EhSettingsBody(app, frame) }
 
+    override fun settingsTitle(language: String): String = Strings.settings_title.get(language)
+
     override val search: PluginSearch by lazy { EhAppSearch(app) }
 
     override fun screen(route: String): PluginScreen? = EhRoutes.parse(route)?.let { opened -> { EhRouteScreen(app, opened) } }

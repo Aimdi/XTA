@@ -119,4 +119,6 @@
         <item quantity="one">%1$s seguace</item>
         <item quantity="other">%1$s seguaci</item>
     </plurals>
+    <string name="in_home_feed">Mostra nella timeline principale</string>
+    <string name="in_home_feed_description">Inserisce i post dei subreddit che segui in «Seguiti» e «Per te»</string>
 </resources>

@@ -6,23 +6,31 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.hackernews.HnStory
+import com.aimdi.xtanative.store.settings.HackerNewsPrefs
 import com.aimdi.xtanative.ui.plugins.PagedItems
 import com.aimdi.xtanative.ui.plugins.PagedList
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginRecentSearchRow
 import com.aimdi.xtanative.ui.plugins.PluginSearch
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.post.PostIcons
 
-/** XTA's Hacker News search (hn_search_sheet.dart): stories matching what was typed, most relevant first. */
+/**
+ * XTA's Hacker News search (hn_search_sheet.dart): stories matching what was
+ * typed, most relevant first; before a search, the searches run before.
+ */
 internal class HnSearch(private val app: HnApp) : PluginSearch() {
     override fun hint(language: String): String = Strings.search_hint.get(language)
 
@@ -33,6 +41,17 @@ internal class HnSearch(private val app: HnApp) : PluginSearch() {
             HnStoryRow(app, story)
         }
     }
+
+    @Composable
+    override fun Landing(frame: PluginFrame, send: (String) -> Unit) {
+        val settings by app.host.settings.state.collectAsState()
+        val history = settings?.get(HackerNewsPrefs.searchHistory).orEmpty()
+        LazyColumn(Modifier.fillMaxSize(), contentPadding = frame.padding) {
+            items(history, key = { it }) { query -> PluginRecentSearchRow(query, onClick = { send(query) }) }
+        }
+    }
+
+    override fun sent(query: String) = app.rememberSearch(query)
 }
 
 /** XTA's Hacker News settings (hn_settings.dart): its mark, and that nothing reaches Hacker News but reading. */

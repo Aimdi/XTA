@@ -188,4 +188,9 @@
     <string name="votes">%1$d votes pour, %2$d contre</string>
     <string name="wiki">Wiki</string>
     <string name="wiki_empty">Ce tag n’a pas de page wiki</string>
+    <string name="settings_title">Réglages Booru</string>
+    <string name="show_tab">Afficher l’onglet Booru</string>
+    <string name="show_tab_description">Ajoute Booru à la navigation du bas lorsque le module est activé</string>
+    <string name="in_home_feed">Afficher dans le fil d’accueil</string>
+    <string name="in_home_feed_description">Mélange les publications des tags suivis dans Abonnements et Pour vous</string>
 </resources>

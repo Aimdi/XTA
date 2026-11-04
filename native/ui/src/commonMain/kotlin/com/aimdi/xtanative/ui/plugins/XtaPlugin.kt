@@ -19,7 +19,11 @@ import kotlinx.serialization.json.JsonElement
  * accounts a plugin follows, for Subscriptions (native-0.1.52); 4 adds a
  * post's own card, the networks of the contracts a plugin watches, for X
  * posts' text, the likes a network keeps on the device, a kept article's
- * reader and a plugin's part of a group's Discover.
+ * reader, a plugin's part of a group's Discover, the search's landing, the
+ * settings' title, the viewer's Open post and a picture's own download and
+ * share, the tiles' ALT, a plugin's own words for its home timeline
+ * switch, its tab switch, the tabs' swipes and a long piece of work's
+ * progress.
  */
 const val PLUGIN_API_VERSION: Int = 3
 
@@ -56,7 +60,8 @@ class PluginFrame(val padding: PaddingValues, val toTop: Int = 0, val refresh: I
 
 /**
  * A plugin's search. The app draws the search field; [Results] draws what
- * [query] finds, and is drawn again for each query the reader sends.
+ * [query] finds, and is drawn again for each query the reader sends; until
+ * one is sent, its own search screen shows [Landing].
  */
 abstract class PluginSearch {
     /** The field's placeholder in [language]: "Search Bluesky". */
@@ -64,6 +69,36 @@ abstract class PluginSearch {
 
     @Composable
     abstract fun Results(query: String, frame: PluginFrame)
+
+    /**
+     * What the search shows before a query is sent, as XTA's searches land on
+     * their recent searches, topics or trends; nothing by default. [send] puts
+     * a query in the field and sends it, as the search key does.
+     */
+    @Composable
+    open fun Landing(frame: PluginFrame, send: (String) -> Unit) {}
+
+    /**
+     * Whether Discover shows [Landing] too, under the plugin's chip while
+     * nothing is typed, as XTA's Mastodon does; otherwise Discover says what
+     * the plugin searches until something is.
+     */
+    open val landsInDiscover: Boolean get() = false
+
+    /**
+     * Whether the plugin's recent searches are the app's, kept under its id
+     * where Discover keeps those of its chip (XTA's Mastodon): its own search
+     * screen then remembers each query sent and lists them above [Landing].
+     * A plugin keeping its own ([sent]) leaves this false.
+     */
+    open val sharesRecentSearches: Boolean get() = false
+
+    /**
+     * The reader sent [query], trimmed and not blank, in the plugin's own
+     * search screen (Discover's chip keeps its own): a plugin keeping its
+     * recent searches, as XTA's do ([PluginSearchHistory]), remembers it here.
+     */
+    open fun sent(query: String) {}
 }
 
 /**
@@ -137,6 +172,9 @@ abstract class XtaPlugin {
 
     /** Its settings, reached from its row in the store; null when it has none. */
     open val settings: PluginBody? get() = null
+
+    /** The title of its [settings] screen in [language], as XTA's "Booru settings"; its name by default. */
+    open fun settingsTitle(language: String): String = title(language)
 
     /** Its search; null when it has none. */
     open val search: PluginSearch? get() = null

@@ -113,4 +113,6 @@
     <string name="use_session">फ़ॉलो किए खातों के लिए मेरा सत्र इस्तेमाल करें</string>
     <string name="use_session_description">डिफ़ॉल्ट रूप से बंद। चालू होने पर ऐप आपके रूप में थ्रेड्स से बात करता है — मेटा उस खाते पर बैन लगा सकती है। डिस्पोज़ेबल लॉगिन के अलावा इसे बंद रखें।</string>
     <string name="add_to_group">समूह में जोड़ें</string>
+    <string name="in_home_feed">होम टाइमलाइन में दिखाएँ</string>
+    <string name="in_home_feed_description">आप जिन Threads खातों को फ़ॉलो करते हैं उनकी पोस्ट को \"फ़ॉलोइंग\" और \"आपके लिए\" में मिलाता है</string>
 </resources>

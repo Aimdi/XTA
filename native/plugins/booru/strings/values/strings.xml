@@ -189,4 +189,9 @@
     <string name="votes">%1$d up, %2$d down</string>
     <string name="wiki">Wiki</string>
     <string name="wiki_empty">This tag has no wiki page</string>
+    <string name="settings_title">Booru settings</string>
+    <string name="show_tab">Show Booru tab</string>
+    <string name="show_tab_description">Adds Booru to the bottom navigation when the plugin is enabled</string>
+    <string name="in_home_feed">Show in the home timeline</string>
+    <string name="in_home_feed_description">Mixes posts from followed tags into Following and For you</string>
 </resources>

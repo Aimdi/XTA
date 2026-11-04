@@ -115,4 +115,6 @@
         <item quantity="other">%1$s वोट</item>
     </plurals>
     <string name="add_to_group">समूह में जोड़ें</string>
+    <string name="in_home_feed">होम टाइमलाइन में दिखाएँ</string>
+    <string name="in_home_feed_description">आप जिन Mastodon खातों को फ़ॉलो करते हैं उनकी पोस्ट को \"फ़ॉलोइंग\" और \"आपके लिए\" में मिलाता है</string>
 </resources>

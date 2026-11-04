@@ -129,4 +129,7 @@
     <string name="test_connection">Sprawdź połączenie</string>
     <string name="test_ok">Strona odpowiedziała (galerie: %1$d)</string>
     <string name="test_failed">Test EH nie powiódł się: %1$s</string>
+    <string name="settings_title">Ustawienia EH</string>
+    <string name="show_tab">Pokaż kartę EH</string>
+    <string name="show_tab_description">Dodaje EH do dolnej nawigacji, gdy wtyczka jest włączona</string>
 </resources>

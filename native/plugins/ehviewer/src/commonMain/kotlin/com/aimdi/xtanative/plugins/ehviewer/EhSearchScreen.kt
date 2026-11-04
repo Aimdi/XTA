@@ -193,6 +193,12 @@ internal class EhAppSearch(private val app: EhApp) : PluginSearch() {
             Box(Modifier.weight(1f)) { page.search.results?.let { SearchResults(app, page, it, frame.padding) } ?: LoadingRow() }
         }
     }
+
+    /** Before a search, as XTA's search screen: the searches run before, each to run again or forget. */
+    @Composable
+    override fun Landing(frame: PluginFrame, send: (String) -> Unit) = WithSettings(app.host.settings) { settings ->
+        Box(Modifier.fillMaxSize().padding(frame.padding)) { SearchHistory(app, settings, send) }
+    }
 }
 
 /** Category, minimum rating and language, each a tap away. */

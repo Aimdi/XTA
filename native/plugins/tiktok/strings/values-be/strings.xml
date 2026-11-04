@@ -51,4 +51,7 @@
     <string name="test_connection_description">Адкрывае публічны профіль @tiktok, каб праверыць, ці адказвае TikTok</string>
     <string name="test_ok">TikTok ответил (%1$s)</string>
     <string name="test_failed">Проверка TikTok не удалась: %1$s</string>
+    <string name="settings_title">Налады TikTok</string>
+    <string name="show_tab">Паказваць укладку TikTok</string>
+    <string name="show_tab_description">Дадае TikTok у ніжнюю навігацыю, калі ўбудова ўключана</string>
 </resources>

@@ -52,4 +52,7 @@
     <string name="test_connection_description">Opens the public @tiktok profile to check that TikTok answers</string>
     <string name="test_ok">TikTok answered (%1$s)</string>
     <string name="test_failed">TikTok test failed: %1$s</string>
+    <string name="settings_title">TikTok settings</string>
+    <string name="show_tab">Show TikTok tab</string>
+    <string name="show_tab_description">Adds TikTok to the bottom navigation when the plugin is enabled</string>
 </resources>

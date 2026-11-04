@@ -61,4 +61,7 @@
     <string name="unfollow_confirm">\@%1$s ontvolgen?</string>
     <string name="unlike_on_device">Like van dit apparaat verwijderen</string>
     <string name="add_to_group">Aan groep toevoegen</string>
+    <string name="settings_title">Instagram-instellingen</string>
+    <string name="show_tab">Instagram-tabblad tonen</string>
+    <string name="show_tab_description">Voegt Instagram toe aan de onderste navigatie als de plugin aan staat</string>
 </resources>

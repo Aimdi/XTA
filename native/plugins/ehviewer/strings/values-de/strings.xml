@@ -121,4 +121,7 @@
     <string name="test_connection">Verbindung testen</string>
     <string name="test_ok">Die Seite hat geantwortet (%1$d Galerien)</string>
     <string name="test_failed">EH-Test fehlgeschlagen: %1$s</string>
+    <string name="settings_title">EH-Einstellungen</string>
+    <string name="show_tab">EH-Tab anzeigen</string>
+    <string name="show_tab_description">Fügt EH der unteren Navigation hinzu, wenn das Plugin aktiv ist</string>
 </resources>

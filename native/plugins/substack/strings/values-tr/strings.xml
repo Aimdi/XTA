@@ -148,4 +148,5 @@
     <string name="unsave">Kayıtlardan kaldır</string>
     <string name="videos">Videolar</string>
     <string name="web_only_block">Gönderinin bu bölümü yalnızca web’de görünür.</string>
+    <string name="search_posts_hint">Takip ettiğiniz yayınlardaki makaleleri arayın</string>
 </resources>

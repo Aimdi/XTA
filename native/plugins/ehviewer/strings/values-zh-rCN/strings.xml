@@ -117,4 +117,7 @@
     <string name="test_connection">测试连接</string>
     <string name="test_ok">站点已响应（%1$d 个图库）</string>
     <string name="test_failed">EH 测试失败：%1$s</string>
+    <string name="settings_title">EH 设置</string>
+    <string name="show_tab">显示 EH 标签页</string>
+    <string name="show_tab_description">启用插件后，在底部导航加入 EH</string>
 </resources>

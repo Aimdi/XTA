@@ -184,4 +184,9 @@
     <string name="votes">추천 %1$d, 비추천 %2$d</string>
     <string name="wiki">위키</string>
     <string name="wiki_empty">이 태그에는 위키 문서가 없습니다</string>
+    <string name="settings_title">Booru 설정</string>
+    <string name="show_tab">Booru 탭 표시</string>
+    <string name="show_tab_description">플러그인이 켜져 있을 때 하단 탐색에 Booru를 추가합니다</string>
+    <string name="in_home_feed">홈 타임라인에 표시</string>
+    <string name="in_home_feed_description">팔로우한 태그의 게시물을 팔로잉과 추천에 함께 표시합니다</string>
 </resources>

@@ -117,4 +117,6 @@
         <item quantity="other">%1$s głosu</item>
     </plurals>
     <string name="add_to_group">Dodaj do grupy</string>
+    <string name="in_home_feed">Pokazuj na osi czasu</string>
+    <string name="in_home_feed_description">Dodaje wpisy z obserwowanych kont Mastodon do zakładek „Obserwowane” i „Dla Ciebie”</string>
 </resources>

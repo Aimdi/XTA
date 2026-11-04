@@ -51,4 +51,7 @@
     <string name="test_connection_description">Otwiera publiczny profil @tiktok, aby sprawdzić, czy TikTok odpowiada</string>
     <string name="test_ok">TikTok odpowiedział (%1$s)</string>
     <string name="test_failed">Test TikToka nie powiódł się: %1$s</string>
+    <string name="settings_title">Ustawienia TikToka</string>
+    <string name="show_tab">Pokaż kartę TikTok</string>
+    <string name="show_tab_description">Dodaje TikToka do dolnej nawigacji, gdy wtyczka jest włączona</string>
 </resources>

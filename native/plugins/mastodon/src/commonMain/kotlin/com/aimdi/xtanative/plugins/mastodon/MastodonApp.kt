@@ -212,13 +212,17 @@ internal class MastodonApp(val host: PluginHost) {
      * (not the opened post itself, when it is not [opens]), names and
      * mentions to their profiles, tags to their timelines, media to the viewer.
      */
-    fun actionsFor(post: MastodonPost, opens: Boolean = true): NetworkPostActions = NetworkPostActions(
-        open = { shown -> listOfNotNull(post, post.quote).firstOrNull { it.url == shown.id }?.takeIf { opens || it !== post }?.let(::openThread) },
-        openAuthor = { shown -> openProfile(shown.authorId) },
-        openMention = ::openProfile,
-        openTag = ::openTag,
-        openMedia = { shown, index -> host.openMedia(shown.media, index) },
-    )
+    fun actionsFor(post: MastodonPost, opens: Boolean = true): NetworkPostActions {
+        val opened = { shown: NetworkPost -> listOfNotNull(post, post.quote).firstOrNull { it.url == shown.id }?.takeIf { opens || it !== post } }
+        return NetworkPostActions(
+            open = { shown -> opened(shown)?.let(::openThread) },
+            openAuthor = { shown -> openProfile(shown.authorId) },
+            openMention = ::openProfile,
+            openTag = ::openTag,
+            // The viewer's Open post leads where a tap on the post does (mastodon_post_card.dart).
+            openMedia = { shown, index -> host.openMedia(shown.media, index, opened(shown)?.let { found -> { openThread(found) } }) },
+        )
+    }
 
     fun openProfile(acct: String) = host.open(MastodonRoutes.profile(acct))
 
@@ -251,7 +255,7 @@ internal class MastodonApp(val host: PluginHost) {
         openAuthor = { shown -> openProfile(shown.authorId) },
         openMention = ::openProfile,
         openTag = ::openTag,
-        openMedia = { shown, index -> host.openMedia(shown.media, index) },
+        openMedia = { shown, index -> host.openMedia(shown.media, index, drawn[shown.id]?.let { found -> { openThread(found) } }) },
         archive = { shown -> drawn[shown.id]?.let(MastodonShared::archive) },
         more = { shown -> drawn[shown.id]?.let(::openMenu) },
     )

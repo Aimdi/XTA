@@ -59,7 +59,7 @@ internal fun MastodonSettingsBody(app: MastodonApp, frame: PluginFrame) {
     val follows by app.follows.state.collectAsState()
     LaunchedEffect(Unit) { app.follows.load() }
     LazyColumn(contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
-        item(key = "in-home") { HomeTimelineSwitch(app.host.settings, pluginString(Strings.plugin_name)) }
+        item(key = "in-home") { HomeTimelineSwitch(app.host.settings, pluginString(Strings.in_home_feed), pluginString(Strings.in_home_feed_description)) }
         item(key = "intro") { Note(Strings.settings_intro, Modifier.padding(16.dp)) }
         item(key = "home") { HomeInstance(app, prefs.home) }
         item(key = "more") { PluginSectionTitle(pluginString(Strings.more_instances)) }

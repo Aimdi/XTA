@@ -5,6 +5,7 @@ import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.store.settings.HomePrefs
 import com.aimdi.xtanative.store.settings.Pref
 import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.store.settings.XtaPrefs
 import com.aimdi.xtanative.ui.plugins.PluginSettings
 
 /** [this] without the group memberships of plugin [id]'s accounts, whose member ids start "<id>:". */
@@ -33,4 +34,27 @@ internal fun Settings.withoutPlugin(id: String): Settings {
 internal fun Settings.withPluginOnStrip(id: String, pinned: Boolean): Settings {
     val pins = this[HomePrefs.feedStripNetworks]
     return with(HomePrefs.feedStripNetworks, if (pinned) FeedStrip.pinned(pins, id) else FeedStrip.forgotten(pins, id))
+}
+
+/** Whether plugin [id] has a page on Home's bottom bar to offer: a network with its own tab (XTA's homeTabPrefKey). */
+internal fun hasTabOf(id: String): Boolean = XtaPrefs.networks.firstOrNull { it.id == id }?.showTab != null
+
+/** Whether plugin [id] shows as a tab of Home's bottom bar in [this], as XTA's showsHomeTab says: on, and its tab not switched off. */
+internal fun Settings.showsPluginAsTab(id: String): Boolean {
+    val network = XtaPrefs.networks.firstOrNull { it.id == id } ?: return false
+    val tab = network.showTab ?: return false
+    return this[network.enabled] && this[tab]
+}
+
+/**
+ * [this] with plugin [id]'s page on Home's bottom bar, or not, as XTA's "Show
+ * as a tab" turns it (_plugin_row.dart): on, the network is on and offered to
+ * the bar again, which puts it there once; off, it waits among Home's
+ * timelines instead. A network without a tab of its own stays as it was.
+ */
+internal fun Settings.withPluginAsTab(id: String, on: Boolean): Settings {
+    val network = XtaPrefs.networks.firstOrNull { it.id == id } ?: return this
+    val tab = network.showTab ?: return this
+    val shown = with(tab, on).with(network.enabled, true)
+    return if (on) shown.with(HomePrefs.seededNetworkTabs, this[HomePrefs.seededNetworkTabs] - id) else shown.withPluginOnStrip(id, pinned = true)
 }

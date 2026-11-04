@@ -119,4 +119,6 @@
         <item quantity="one">%1$s Follower</item>
         <item quantity="other">%1$s Follower</item>
     </plurals>
+    <string name="in_home_feed">In der Startseite anzeigen</string>
+    <string name="in_home_feed_description">Mischt Beiträge aus deinen abonnierten Subreddits unter „Folge ich“ und „Für dich“</string>
 </resources>

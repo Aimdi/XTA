@@ -51,4 +51,7 @@
     <string name="test_connection_description">यह सार्वजनिक @tiktok प्रोफ़ाइल खोलकर जाँचता है कि TikTok जवाब दे रहा है या नहीं</string>
     <string name="test_ok">TikTok ने जवाब दिया (%1$s)</string>
     <string name="test_failed">TikTok जाँच विफल: %1$s</string>
+    <string name="settings_title">TikTok सेटिंग</string>
+    <string name="show_tab">TikTok टैब दिखाएँ</string>
+    <string name="show_tab_description">प्लगिन चालू होने पर नीचे के नेविगेशन में TikTok जोड़ता है</string>
 </resources>

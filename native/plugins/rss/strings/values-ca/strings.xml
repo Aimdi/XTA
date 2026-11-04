@@ -39,4 +39,6 @@
     <string name="tag_hint">Una etiqueta curta, com Notícies o Blogs</string>
     <string name="unfollow">Deixa de seguir</string>
     <string name="unread">No llegit</string>
+    <string name="in_home_feed">Combina les fonts seguides a Seguint</string>
+    <string name="in_home_feed_description">Mostra elements nous de les fonts seguides a la cronologia Seguint.</string>
 </resources>

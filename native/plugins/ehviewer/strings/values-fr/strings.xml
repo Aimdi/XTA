@@ -125,4 +125,7 @@
     <string name="test_connection">Tester la connexion</string>
     <string name="test_ok">Le site a répondu (%1$d galeries)</string>
     <string name="test_failed">Échec du test EH : %1$s</string>
+    <string name="settings_title">Réglages EH</string>
+    <string name="show_tab">Afficher l’onglet EH</string>
+    <string name="show_tab_description">Ajoute EH à la navigation du bas lorsque le module est activé</string>
 </resources>

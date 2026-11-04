@@ -52,4 +52,6 @@
     <string name="unfollow">Berhenti mengikuti</string>
     <string name="unreachable">File sumber tidak dapat dibaca. Periksa tautan dan koneksi Anda.</string>
     <string name="update_title">Perbarui %1$s?</string>
+    <string name="in_home_feed">Campur daftar yang diikuti ke Mengikuti</string>
+    <string name="in_home_feed_description">Tampilkan postingan baru dari daftar yang diikuti di linimasa Mengikuti.</string>
 </resources>

@@ -48,6 +48,7 @@ import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.EmptyPane
 import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginChipTabs
@@ -85,9 +86,11 @@ internal fun TikTokHome(app: TikTokApp, frame: PluginFrame, ownActions: Boolean 
         Column(Modifier.fillMaxSize()) {
             TabRow(tab, onTab = { tab = it }, actions = if (ownActions) HomeActions({ app.openSearch() }, app.host::openSettings) else null)
             Hairline()
-            when (tab) {
-                TikTokTab.FOLLOWING -> FollowingTab(app, follows, settings, frame.padding, lists.getValue(tab))
-                TikTokTab.ACCOUNTS -> AccountsTab(app, follows, frame.padding, lists.getValue(tab))
+            Box(Modifier.weight(1f).swipeTabs(TikTokTab.entries, tab) { tab = it }) {
+                when (tab) {
+                    TikTokTab.FOLLOWING -> FollowingTab(app, follows, settings, frame.padding, lists.getValue(tab))
+                    TikTokTab.ACCOUNTS -> AccountsTab(app, follows, frame.padding, lists.getValue(tab))
+                }
             }
         }
         NoticeHost(app.notices, Modifier.padding(frame.padding))

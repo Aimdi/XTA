@@ -113,4 +113,6 @@
     <string name="use_session">Erabili nire saioa jarraitutako kontuetarako</string>
     <string name="use_session_description">Desaktibatuta lehenetsita. Piztuta, aplikazioak Threads-ekin hitz egiten du zu bazina bezala — Metak kontu hori debeka dezake. Utzi itzalita saio botagarria ez bada.</string>
     <string name="add_to_group">Gehitu taldera</string>
+    <string name="in_home_feed">Erakutsi hasierako denbora-lerroan</string>
+    <string name="in_home_feed_description">Jarraitzen dituzun Threads kontuen bidalketak «Jarraitzen» eta «Zuretzat» ataletan tartekatzen ditu</string>
 </resources>

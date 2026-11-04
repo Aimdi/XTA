@@ -61,4 +61,7 @@
     <string name="unfollow_confirm">Slutte å følge @%1$s?</string>
     <string name="unlike_on_device">Fjern likerklikk fra denne enheten</string>
     <string name="add_to_group">Legg til i gruppe</string>
+    <string name="settings_title">Instagram-innstillinger</string>
+    <string name="show_tab">Vis Instagram-fane</string>
+    <string name="show_tab_description">Legger Instagram til i bunnnavigasjonen når programtillegget er slått på</string>
 </resources>

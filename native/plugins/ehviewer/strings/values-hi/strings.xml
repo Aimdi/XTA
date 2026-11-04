@@ -121,4 +121,7 @@
     <string name="test_connection">कनेक्शन जाँचें</string>
     <string name="test_ok">साइट ने जवाब दिया (%1$d गैलरी)</string>
     <string name="test_failed">EH जाँच विफल: %1$s</string>
+    <string name="settings_title">EH सेटिंग्स</string>
+    <string name="show_tab">EH टैब दिखाएँ</string>
+    <string name="show_tab_description">प्लगिन चालू होने पर EH को निचले नेविगेशन में जोड़ता है</string>
 </resources>

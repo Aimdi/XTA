@@ -30,6 +30,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -52,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.feed.FeedSort
 import com.aimdi.xtanative.core.feed.FeedStrip
+import com.aimdi.xtanative.ui.common.LocalParentTurnsPages
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.feed.MediaModes
 import com.aimdi.xtanative.ui.feed.ToTop
@@ -135,7 +137,10 @@ internal fun HomeFeedPage(
             if (current != null) {
                 holder.SaveableStateProvider(current.key) {
                     val toTop = if (timelines.toTop.page == timelines.index) timelines.toTop.count else 0
-                    TimelinePage(current, toTop, following.mediaOnly, actions, networks, PaddingValues(bottom = padding.calculateBottomPadding()))
+                    // Home turns its timelines with a sideways drag: the tabs of a network's page leave it to Home.
+                    CompositionLocalProvider(LocalParentTurnsPages provides true) {
+                        TimelinePage(current, toTop, following.mediaOnly, actions, networks, PaddingValues(bottom = padding.calculateBottomPadding()))
+                    }
                 }
             }
         }

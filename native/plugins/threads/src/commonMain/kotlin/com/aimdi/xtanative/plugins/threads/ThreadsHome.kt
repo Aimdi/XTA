@@ -51,6 +51,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsException
 import com.aimdi.xtanative.networks.threads.ThreadsFailure
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.EmptyPane
 import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginFrame
@@ -85,7 +86,7 @@ internal fun ThreadsHome(app: ThreadsApp, frame: PluginFrame) {
         Column(Modifier.fillMaxSize()) {
             HomeBar(app, liked, onLiked = { liked = it }, onSearch = { searching = true }, onAdd = { adding = true })
             HorizontalDivider()
-            Box(Modifier.weight(1f)) {
+            Box(Modifier.weight(1f).swipeTabs(if (liked) 1 else 0, 2) { liked = it == 1 }) {
                 if (liked) LikedPane(app, frame) else HomePane(app, frame, onAdd = { adding = true }, onSearch = { searching = true })
             }
         }

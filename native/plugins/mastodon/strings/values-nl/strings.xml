@@ -115,4 +115,6 @@
         <item quantity="other">%1$s stemmen</item>
     </plurals>
     <string name="add_to_group">Aan groep toevoegen</string>
+    <string name="in_home_feed">Weergeven in de hoofdtijdlijn</string>
+    <string name="in_home_feed_description">Mengt berichten van de Mastodon-accounts die je volgt in Volgend en Voor jou</string>
 </resources>

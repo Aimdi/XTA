@@ -115,4 +115,6 @@
         <item quantity="other">%1$s vots</item>
     </plurals>
     <string name="add_to_group">Afegir al grup</string>
+    <string name="in_home_feed">Mostra a la cronologia principal</string>
+    <string name="in_home_feed_description">Barreja les publicacions dels comptes de Mastodon que segueixes a «Seguint» i «Per a tu»</string>
 </resources>

@@ -37,6 +37,7 @@ import com.aimdi.xtanative.networks.ehviewer.EhToplistPeriod
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.EmptyPane
 import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginChipTabs
@@ -71,10 +72,12 @@ internal fun EhHome(app: EhApp, frame: PluginFrame, ownActions: Boolean = true) 
             if (tab == EhTab.TOPLIST) PeriodRow(lists)
             Hairline()
             val grid = grids.getValue(tab)
-            when (tab) {
-                EhTab.HISTORY -> HistoryTab(app, frame.padding, grid)
-                EhTab.FAVORITES -> FavoritesTab(app, frame.padding, grid)
-                else -> lists.of(tab)?.let { list -> ListTab(app, list, emptyText(tab), frame.padding, grid) }
+            Box(Modifier.weight(1f).swipeTabs(EhTab.entries, tab) { tab = it }) {
+                when (tab) {
+                    EhTab.HISTORY -> HistoryTab(app, frame.padding, grid)
+                    EhTab.FAVORITES -> FavoritesTab(app, frame.padding, grid)
+                    else -> lists.of(tab)?.let { list -> ListTab(app, list, emptyText(tab), frame.padding, grid) }
+                }
             }
         }
         NoticeHost(app.notices, Modifier.padding(frame.padding))

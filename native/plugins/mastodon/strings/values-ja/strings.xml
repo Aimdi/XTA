@@ -114,4 +114,6 @@
         <item quantity="other">%1$s 票</item>
     </plurals>
     <string name="add_to_group">グループに追加</string>
+    <string name="in_home_feed">ホームのタイムラインに表示</string>
+    <string name="in_home_feed_description">フォロー中の Mastodon アカウントの投稿を「フォロー中」と「おすすめ」に混ぜます</string>
 </resources>

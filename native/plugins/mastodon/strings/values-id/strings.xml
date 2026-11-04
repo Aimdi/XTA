@@ -114,4 +114,6 @@
         <item quantity="other">%1$s suara</item>
     </plurals>
     <string name="add_to_group">Tambah ke grup</string>
+    <string name="in_home_feed">Tampilkan di lini masa beranda</string>
+    <string name="in_home_feed_description">Menggabungkan kiriman dari akun Mastodon yang Anda ikuti ke Mengikuti dan Untuk Anda</string>
 </resources>

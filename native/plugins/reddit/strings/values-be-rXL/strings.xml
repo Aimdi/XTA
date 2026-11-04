@@ -125,4 +125,6 @@
         <item quantity="many">%1$s čytačoŭ</item>
         <item quantity="other">%1$s čytača</item>
     </plurals>
+    <string name="in_home_feed">Pakazvać u hałoŭnaj stužcy</string>
+    <string name="in_home_feed_description">Dadaje zapisy z sabredytaŭ, na jakija vy padpisany, u «Padpiski» i «Dla vas»</string>
 </resources>

@@ -125,4 +125,6 @@
         <item quantity="many">%1$s чытачоў</item>
         <item quantity="other">%1$s чытача</item>
     </plurals>
+    <string name="in_home_feed">Паказваць у галоўнай стужцы</string>
+    <string name="in_home_feed_description">Дадае запісы з сабрэдытаў, на якія вы падпісаны, у «Падпіскі» і «Для вас»</string>
 </resources>

@@ -61,4 +61,7 @@
     <string name="unfollow_confirm">إلغاء متابعة @%1$s؟</string>
     <string name="unlike_on_device">إزالة الإعجاب من هذا الجهاز</string>
     <string name="add_to_group">أضف إلى المجموعة</string>
+    <string name="settings_title">إعدادات إنستغرام</string>
+    <string name="show_tab">إظهار تبويب إنستغرام</string>
+    <string name="show_tab_description">يضيف إنستغرام إلى شريط التنقل السفلي عند تفعيل الإضافة</string>
 </resources>

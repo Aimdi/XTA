@@ -39,4 +39,6 @@
     <string name="tag_hint">Karotkaja metka, naprykład Naviny ci Blohi</string>
     <string name="unfollow">Adpisacca</string>
     <string name="unread">Niepračytanaje</string>
+    <string name="in_home_feed">Zmešvać padpisanyja stužki ŭ «Čytaju»</string>
+    <string name="in_home_feed_description">Pakazvać novyja zapisy z padpisanych stužak u stužcy «Čytaju».</string>
 </resources>

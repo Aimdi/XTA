@@ -41,6 +41,7 @@ import com.aimdi.xtanative.networks.hackernews.HnFollowingReader
 import com.aimdi.xtanative.networks.hackernews.HnStory
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.NetworkProblemView
 import com.aimdi.xtanative.ui.plugins.PagedItems
@@ -75,7 +76,7 @@ internal fun HnHome(app: HnApp, frame: PluginFrame) {
     Column(Modifier.fillMaxSize()) {
         Header(app)
         PluginTabs(HnTab.entries.map { pluginString(it.label) }, tab.ordinal, { tab = HnTab.entries[it] })
-        Box(Modifier.weight(1f)) {
+        Box(Modifier.weight(1f).swipeTabs(HnTab.entries, tab) { tab = it }) {
             panes.SaveableStateProvider(tab.name) {
                 val feed = tab.feed
                 when {

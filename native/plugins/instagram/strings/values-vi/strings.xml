@@ -61,4 +61,7 @@
     <string name="unfollow_confirm">Bỏ theo dõi @%1$s?</string>
     <string name="unlike_on_device">Bỏ thích khỏi thiết bị này</string>
     <string name="add_to_group">Thêm vào nhóm</string>
+    <string name="settings_title">Cài đặt Instagram</string>
+    <string name="show_tab">Hiện thẻ Instagram</string>
+    <string name="show_tab_description">Thêm Instagram vào thanh điều hướng dưới khi plugin được bật</string>
 </resources>

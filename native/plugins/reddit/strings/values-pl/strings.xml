@@ -125,4 +125,6 @@
         <item quantity="many">%1$s obserwujących</item>
         <item quantity="other">%1$s obserwującego</item>
     </plurals>
+    <string name="in_home_feed">Pokazuj na osi czasu</string>
+    <string name="in_home_feed_description">Dodaje wpisy z obserwowanych subredditów do zakładek „Obserwowane” i „Dla Ciebie”</string>
 </resources>

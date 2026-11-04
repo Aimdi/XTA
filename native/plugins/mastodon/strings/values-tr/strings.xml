@@ -115,4 +115,6 @@
         <item quantity="other">%1$s oy</item>
     </plurals>
     <string name="add_to_group">Gruba ekle</string>
+    <string name="in_home_feed">Ana akışta göster</string>
+    <string name="in_home_feed_description">Takip ettiğin Mastodon hesaplarının gönderilerini Takip ve Sana Özel akışlarına karıştırır</string>
 </resources>

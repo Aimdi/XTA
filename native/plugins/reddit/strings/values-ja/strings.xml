@@ -116,4 +116,6 @@
     <plurals name="followers_count">
         <item quantity="other">フォロワー %1$s 人</item>
     </plurals>
+    <string name="in_home_feed">ホームのタイムラインに表示</string>
+    <string name="in_home_feed_description">フォロー中のサブレディットの投稿を「フォロー中」と「おすすめ」に混ぜます</string>
 </resources>
