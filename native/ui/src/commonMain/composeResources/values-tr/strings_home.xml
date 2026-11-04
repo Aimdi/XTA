@@ -38,7 +38,7 @@
 
     <string name="home_feed_accounts">Ana akış hesapları</string>
     <string name="home_filter_accounts">Hesaplar</string>
-    <string name="home_filter_accounts_explained">Yalnızca daha yüksek sınırlar için tuttuğun yedek hesapları kapat. Senin için, açık kalan hesapların ana zaman çizelgelerini birleştirir.</string>
+    <string name="home_filter_accounts_explained">Yalnızca hız limitleri için tuttuğunuz yedek hesapları kapatın. Senin için, açık hesapların ana sayfa akışlarını birleştirir; Takip edilenler yerel aboneliklerinizi kullanmaya devam eder ancak kapalı hesapları çekerken atlar. Yorumlar ve profiller gerekirse hâlâ herhangi bir hesabı kullanabilir.</string>
     <string name="home_filter_groups_explained">Bir grubu kapatınca üyeleri Takip edilenler'den gizlenir. Grubun sekmesi kalır. Gönderileri Senin için'den de düşer.</string>
     <string name="home_filter_only_hint">Yalnızca birini açık bırakmak için ona uzun basın.</string>
     <string name="home_filter_keep_one">En az bir hesabın açık kalması gerekir</string>

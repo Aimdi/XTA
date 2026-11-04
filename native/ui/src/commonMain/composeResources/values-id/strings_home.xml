@@ -37,7 +37,7 @@
 
     <string name="home_feed_accounts">Akun umpan beranda</string>
     <string name="home_filter_accounts">Akun</string>
-    <string name="home_filter_accounts_explained">Matikan akun cadangan yang hanya Anda simpan untuk batas yang lebih tinggi. Untuk Anda menggabungkan linimasa Beranda dari akun yang tetap aktif.</string>
+    <string name="home_filter_accounts_explained">Matikan akun cadangan yang hanya Anda simpan untuk batas laju. Untuk Anda menggabungkan linimasa beranda dari akun yang tetap aktif; Mengikuti tetap memakai langganan lokal tetapi melewati akun yang dimatikan saat mengambil. Komentar dan profil masih bisa memakai akun mana pun jika perlu.</string>
     <string name="home_filter_groups_explained">Matikan grup untuk menyembunyikan anggotanya dari Mengikuti. Tab grup tetap ada. Kiriman mereka juga dihapus dari Untuk Anda.</string>
     <string name="home_filter_only_hint">Tekan lama salah satu untuk hanya menyalakan yang itu.</string>
     <string name="home_filter_keep_one">Setidaknya satu akun harus tetap aktif</string>

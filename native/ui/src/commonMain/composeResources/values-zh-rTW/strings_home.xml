@@ -37,7 +37,7 @@
 
     <string name="home_feed_accounts">主頁動態帳號</string>
     <string name="home_filter_accounts">帳號</string>
-    <string name="home_filter_accounts_explained">關閉那些只為了提高請求上限而保留的備用帳號。「為您推薦」會合併仍開啟的帳號的首頁時間軸。</string>
+    <string name="home_filter_accounts_explained">關閉只為提高速率限制而保留的備用帳號。「為您推薦」合併仍開啟帳號的首頁時間軸；「追蹤中」仍使用本機訂閱，但抓取時會略過已關閉的帳號。留言與個人資料在需要時仍可使用任何帳號。</string>
     <string name="home_filter_groups_explained">關閉群組後，成員會從「追蹤中」隱藏。群組自己的分頁仍在。他們的貼文也會從「為您推薦」拿掉。</string>
     <string name="home_filter_only_hint">長按某一項即可只保留它開啟。</string>
     <string name="home_filter_keep_one">至少要保留一個帳號開啟</string>

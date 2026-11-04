@@ -40,7 +40,7 @@
 
     <string name="home_feed_accounts">Účty hlavní chronologie</string>
     <string name="home_filter_accounts">Účty</string>
-    <string name="home_filter_accounts_explained">Vypněte záložní účty, které máte jen kvůli vyšším limitům. Pro vás spojuje domovské časové osy účtů, které zůstanou zapnuté.</string>
+    <string name="home_filter_accounts_explained">Vypněte náhradní účty, které držíte jen kvůli limitům. Pro vás sloučí časové osy zapnutých účtů; Sledování dál používá místní odběry, ale při načítání přeskočí vypnuté. Komentáře a profily můžou v případě potřeby použít kterýkoli účet.</string>
     <string name="home_filter_groups_explained">Vypněte skupinu, aby se její členové skryli ze Sledování. Karta skupiny zůstane. Jejich příspěvky zmizí i z Pro vás.</string>
     <string name="home_filter_only_hint">Dlouhým stisknutím položky necháte zapnutou jen ji.</string>
     <string name="home_filter_keep_one">Alespoň jeden účet musí zůstat zapnutý</string>

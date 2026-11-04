@@ -22,6 +22,7 @@ import com.aimdi.xtanative.store.settings.AccessibilityPrefs
 import com.aimdi.xtanative.store.settings.GeneralPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.settings.ProvideAppLanguage
 import com.aimdi.xtanative.ui.settings.SettingsChoices
 
@@ -59,6 +60,7 @@ fun XtaTheme(content: @Composable () -> Unit) {
     ProvideAppLanguage(language) {
         CompositionLocalProvider(
             LocalXLook provides scheme,
+            LocalReducedMotion provides settings[AccessibilityPrefs.disableAnimations],
             LocalDensity provides Density(density.density, density.fontScale * textScale),
         ) {
             MaterialTheme(colorScheme = colorSchemeOf(scheme), typography = Type, content = content)

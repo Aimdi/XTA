@@ -38,7 +38,7 @@
 
     <string name="home_feed_accounts">Contas do início</string>
     <string name="home_filter_accounts">Contas</string>
-    <string name="home_filter_accounts_explained">Desative as contas reserva que você só mantém para ter limites maiores. Para você junta as timelines iniciais das contas que ficam ligadas.</string>
+    <string name="home_filter_accounts_explained">Desative contas extras que você só mantém por limites de taxa. Para você mescla as timelines das contas ligadas; Seguindo ainda usa suas assinaturas locais, mas pula contas desligadas ao buscar. Comentários e perfis ainda podem usar qualquer conta se precisar.</string>
     <string name="home_filter_groups_explained">Desative um grupo para ocultar os membros em Seguindo. A aba do grupo permanece. As publicações deles também saem de Para você.</string>
     <string name="home_filter_only_hint">Toque e segure um item para deixar só ele ativado.</string>
     <string name="home_filter_keep_one">Pelo menos uma conta precisa continuar ligada</string>

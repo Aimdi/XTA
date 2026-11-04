@@ -9,6 +9,9 @@ import com.aimdi.xtanative.store.settings.NetworkPrefs
 import com.aimdi.xtanative.store.settings.RssPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.XtaPrefs
+import com.aimdi.xtanative.ui.settings.NetworkSections
+import com.aimdi.xtanative.ui.settings.NetworkSettingsPlace
+import com.aimdi.xtanative.ui.settings.PluginIds
 
 /** XTA's first-launch cards (intro_screen.dart), in order. */
 enum class IntroPage {
@@ -75,6 +78,12 @@ object IntroSources {
         else -> false
     }
 
-    /** The chosen networks still to be set up, each with a "Set up" button under the tiles. */
-    fun toSetUp(settings: Settings): List<NetworkPrefs> = networks.filter { selected(settings, it) && needsSetup(settings, it) }
+    /**
+     * The chosen networks still to be set up, each with a "Set up" button
+     * under the tiles; not one whose settings would show nothing, as a
+     * plugin's that is not installed ([plugins]).
+     */
+    fun toSetUp(settings: Settings, plugins: PluginIds = PluginIds()): List<NetworkPrefs> = networks.filter {
+        selected(settings, it) && needsSetup(settings, it) && NetworkSections.place(it.id, plugins) != NetworkSettingsPlace.NONE
+    }
 }

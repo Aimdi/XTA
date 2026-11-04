@@ -233,7 +233,7 @@ class GroupFeedViewModel(private val graph: AppGraph, private val groupId: Strin
         }
     }
 
-    private fun concurrency(): Int = ChunkConcurrency.forAccounts(ChunkConcurrency.usableAccounts(graph.sessions.state.value?.accounts.orEmpty(), emptySet()))
+    private fun concurrency(): Int = ChunkConcurrency.forAccounts(ChunkConcurrency.usableAccounts(graph.sessions.state.value?.accounts.orEmpty(), graph.accountsOff))
 
     /** What the feed showed the last time, at once, shaped by the rules as they are now. */
     private suspend fun showCached(plan: GroupFeedPlan) {

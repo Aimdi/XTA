@@ -38,7 +38,7 @@
 
     <string name="home_feed_accounts">Kontoer for startfeeden</string>
     <string name="home_filter_accounts">Kontoer</string>
-    <string name="home_filter_accounts_explained">Slå av reservekontoer du bare har for høyere grenser. For deg slår sammen starttidslinjene til kontoene som står på.</string>
+    <string name="home_filter_accounts_explained">Slå av reservekontoer du bare beholder for høyere grenser. For deg slår sammen tidslinjene fra kontoer som er på; Følger bruker fortsatt lokale abonnementer, men hopper over avslåtte kontoer ved henting. Kommentarer og profiler kan fortsatt bruke hvilken som helst konto om nødvendig.</string>
     <string name="home_filter_groups_explained">Slå av en gruppe for å skjule medlemmene i Følger. Gruppefanen blir. Innleggene deres fjernes også fra For deg.</string>
     <string name="home_filter_only_hint">Trykk lenge på ett for å bare ha det på.</string>
     <string name="home_filter_keep_one">Minst én konto må stå på</string>

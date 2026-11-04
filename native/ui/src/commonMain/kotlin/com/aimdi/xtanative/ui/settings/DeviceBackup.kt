@@ -8,6 +8,7 @@ import com.aimdi.xtanative.data.SessionStore
 import com.aimdi.xtanative.store.backup.BackupDocument
 import com.aimdi.xtanative.store.backup.ExportChoice
 import com.aimdi.xtanative.store.backup.XtaTime
+import com.aimdi.xtanative.store.settings.AccountPrefs
 import com.aimdi.xtanative.store.settings.DataPrefs
 import com.aimdi.xtanative.store.settings.SettingsStore
 import java.time.Instant
@@ -85,6 +86,16 @@ object SettingsStart {
             val session = sessions.state.value ?: return@collect
             if (FeedSwitches.mirrored(session, current) != session) sessions.update { FeedSwitches.mirrored(it, current) }
         }
+    }
+
+    /**
+     * The X accounts turned off in Settings › Accounts (or Home feed
+     * accounts), handed to [gate] each time they change. One switch, as in
+     * XTA: For you leaves them out, and every read goes to the accounts left
+     * on while there is one (XTA's AccountFetchGate).
+     */
+    suspend fun keepAccountsOffInStep(settings: SettingsStore, gate: (Set<String>) -> Unit) {
+        settings.observe(AccountPrefs.forYouHiddenAccountIds).collect { gate(it.toSet()) }
     }
 
     /** Rotated X query ids repaired from the published list, unless the reader turned that off; when it answered is noted. */

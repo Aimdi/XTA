@@ -38,7 +38,7 @@
 
     <string name="home_feed_accounts">Home feed accounts</string>
     <string name="home_filter_accounts">Accounts</string>
-    <string name="home_filter_accounts_explained">Turn off spare accounts you only keep for higher rate limits. For you merges the Home timelines of the accounts left on.</string>
+    <string name="home_filter_accounts_explained">Turn off spare accounts you only keep for higher rate limits. For you merges Home timelines from accounts left on; Following still uses your local subscriptions but skips turned-off accounts when fetching. Comments and profiles can still use any account if needed.</string>
     <string name="home_filter_groups_explained">Turn off a group to hide its members from Following. The group's own tab stays. Their posts are also dropped from For you.</string>
     <string name="home_filter_only_hint">Long-press one to keep only it on.</string>
     <string name="home_filter_keep_one">At least one account has to stay on</string>

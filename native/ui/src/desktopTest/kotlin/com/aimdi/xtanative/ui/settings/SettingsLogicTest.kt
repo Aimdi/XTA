@@ -194,4 +194,20 @@ class SettingsRulesTest {
         assertTrue((immich[1] as NetworkField.Text).secret)
         assertEquals(SettingsSection.SPEECH, SettingsSection.of("speech"))
     }
+
+    @Test
+    fun aNetworkThatIsAPluginHasItsPluginsSettingsOnlyWhileInstalled() {
+        val none = PluginIds()
+        assertEquals(NetworkSettingsPlace.SECTION, NetworkSections.place("bluesky", none))
+        assertEquals(NetworkSettingsPlace.SECTION, NetworkSections.place("mastodon", none))
+        val offered = PluginIds(listed = setOf("bluesky", "weather"))
+        assertEquals(NetworkSettingsPlace.NONE, NetworkSections.place("bluesky", offered))
+        assertEquals(NetworkSettingsPlace.SECTION, NetworkSections.place("mastodon", offered))
+        val installed = PluginIds(listed = setOf("bluesky", "weather"), installed = setOf("bluesky", "weather"))
+        assertEquals(NetworkSettingsPlace.PLUGIN, NetworkSections.place("bluesky", installed))
+        // A plugin that was never a network here has its settings all the same.
+        assertEquals(NetworkSettingsPlace.PLUGIN, NetworkSections.place("weather", installed))
+        assertEquals(NetworkSettingsPlace.NONE, NetworkSections.place("bluesky", installed.copy(withoutSettings = setOf("bluesky"))))
+        assertEquals(NetworkSettingsPlace.NONE, NetworkSections.place("general", none))
+    }
 }

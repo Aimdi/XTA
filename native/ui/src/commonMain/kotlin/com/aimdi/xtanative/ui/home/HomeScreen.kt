@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -65,7 +64,9 @@ import com.aimdi.xtanative.core.session.DeckGroups
 import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.XIcons
+import com.aimdi.xtanative.ui.common.turnTo
 import com.aimdi.xtanative.ui.feed.FeedPage
 import com.aimdi.xtanative.ui.feed.FeedViewModel
 import com.aimdi.xtanative.ui.feed.ToTop
@@ -153,9 +154,10 @@ private fun HomeShell(ui: HomeUi, vm: HomeViewModel, networks: HomeNetworks, act
     val current = tabs.getOrNull(pager.currentPage)
     val unread = unreadKeys(ui, visited, networks)
     val refresh = rememberRefresh(current, networks)
+    val reduced = LocalReducedMotion.current
     fun show(index: Int) {
         if (index !in tabs.indices) return
-        if (index == pager.currentPage) toTop = ToTop(index, toTop.count + 1) else scope.launch { pager.animateScrollToPage(index) }
+        if (index == pager.currentPage) toTop = ToTop(index, toTop.count + 1) else scope.launch { pager.turnTo(index, reduced) }
     }
     fun go(route: String) {
         scope.launch { drawer.snapTo(DrawerValue.Closed) }
@@ -163,7 +165,7 @@ private fun HomeShell(ui: HomeUi, vm: HomeViewModel, networks: HomeNetworks, act
     }
     DesktopShortcuts(
         refresh = refresh,
-        turn = { by -> DesktopKeys.turned(pager.currentPage, tabs.size, by)?.let { scope.launch { pager.animateScrollToPage(it) } } },
+        turn = { by -> DesktopKeys.turned(pager.currentPage, tabs.size, by)?.let { scope.launch { pager.turnTo(it, reduced) } } },
         isOpen = { drawer.isOpen || sheet != null },
         close = {
             sheet = null
@@ -183,7 +185,7 @@ private fun HomeShell(ui: HomeUi, vm: HomeViewModel, networks: HomeNetworks, act
                     deckFits = deckFits,
                     unread = unread,
                     onGo = ::go,
-                    onGroup = { group -> openGroup(group, tabs, routes, drawer, pager, scope) },
+                    onGroup = { group -> openGroup(group, tabs, routes, drawer, scope) { index -> pager.turnTo(index, reduced) } },
                     onClose = { scope.launch { drawer.close() } },
                 )
             }
@@ -263,8 +265,15 @@ private fun HomeShell(ui: HomeUi, vm: HomeViewModel, networks: HomeNetworks, act
     }
 }
 
-/** A group picked in the menu: its own screen once the app has one, else its tab. */
-private fun openGroup(group: FollowGroup, tabs: List<HomeTab>, routes: HomeRoutes, drawer: DrawerState, pager: PagerState, scope: CoroutineScope) {
+/** A group picked in the menu: its own screen once the app has one, else its tab, which [showTab] turns to. */
+private fun openGroup(
+    group: FollowGroup,
+    tabs: List<HomeTab>,
+    routes: HomeRoutes,
+    drawer: DrawerState,
+    scope: CoroutineScope,
+    showTab: suspend (Int) -> Unit,
+) {
     if (routes.exists(HomeRoutes.GROUP)) {
         // Closed at once: an animation cut short by leaving would come back open.
         scope.launch { drawer.snapTo(DrawerValue.Closed) }
@@ -273,7 +282,7 @@ private fun openGroup(group: FollowGroup, tabs: List<HomeTab>, routes: HomeRoute
     }
     scope.launch { drawer.close() }
     val index = tabs.indexOfFirst { it is HomeTab.Group && it.id == group.id }
-    if (index >= 0) scope.launch { pager.animateScrollToPage(index) }
+    if (index >= 0) scope.launch { showTab(index) }
 }
 
 /** The reader's mark, which opens the account menu. */

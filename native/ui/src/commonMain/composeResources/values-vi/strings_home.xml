@@ -37,7 +37,7 @@
 
     <string name="home_feed_accounts">Tài khoản bảng tin chính</string>
     <string name="home_filter_accounts">Tài khoản</string>
-    <string name="home_filter_accounts_explained">Tắt các tài khoản dự phòng mà bạn chỉ giữ để có giới hạn cao hơn. Dành cho bạn gộp các dòng thời gian Trang chủ của những tài khoản còn bật.</string>
+    <string name="home_filter_accounts_explained">Tắt các tài khoản dự phòng bạn chỉ giữ vì giới hạn tốc độ. Dành cho bạn gộp dòng thời gian trang chủ từ các tài khoản còn bật; Đang theo dõi vẫn dùng đăng ký cục bộ nhưng bỏ qua tài khoản đã tắt khi tải. Bình luận và hồ sơ vẫn có thể dùng bất kỳ tài khoản nào nếu cần.</string>
     <string name="home_filter_groups_explained">Tắt một nhóm để ẩn thành viên khỏi Đang theo dõi. Tab của nhóm vẫn còn. Bài của họ cũng bị gỡ khỏi Dành cho bạn.</string>
     <string name="home_filter_only_hint">Nhấn giữ một mục để chỉ bật mục đó.</string>
     <string name="home_filter_keep_one">Phải để ít nhất một tài khoản bật</string>

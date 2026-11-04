@@ -75,9 +75,11 @@ import com.aimdi.xtanative.ui.common.BackHandling
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.ProblemView
 import com.aimdi.xtanative.ui.common.problemText
+import com.aimdi.xtanative.ui.common.scrollToTop
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.close
@@ -143,6 +145,7 @@ fun GroupFeedScreen(groupId: String, actions: PostActions, onBack: () -> Unit) {
     var switcher by rememberSaveable { mutableStateOf(false) }
     var creating by rememberSaveable { mutableStateOf(false) }
     val savePack = rememberPackSaver()
+    val reduced = LocalReducedMotion.current
     BackHandling(enabled = custom) { custom = false }
 
     Box(Modifier.fillMaxSize()) {
@@ -155,7 +158,7 @@ fun GroupFeedScreen(groupId: String, actions: PostActions, onBack: () -> Unit) {
                         title = { GroupFeedTitle(state, onClick = { switcher = true }) },
                         actions = {
                             IconButton(onClick = { settings = true }) { Icon(GroupIcons.Build, stringResource(Res.string.groups_filters)) }
-                            IconButton(onClick = { scope.launch { list.animateScrollToItem(0) } }) {
+                            IconButton(onClick = { scope.launch { list.scrollToTop(reduced) } }) {
                                 Icon(GroupIcons.ArrowUpward, stringResource(Res.string.groups_scroll_to_top))
                             }
                             IconButton(onClick = { vm.refresh() }) { Icon(Icons.Filled.Refresh, stringResource(Res.string.groups_refresh)) }

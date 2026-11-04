@@ -60,6 +60,7 @@ import com.aimdi.xtanative.ui.settings.AccentPicker
 import com.aimdi.xtanative.ui.settings.BackgroundPicker
 import com.aimdi.xtanative.ui.settings.SettingsRoutes
 import com.aimdi.xtanative.ui.settings.networkName
+import com.aimdi.xtanative.ui.settings.pluginIds
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -199,7 +200,7 @@ private fun SourcesGrid(settings: Settings, change: ((Settings) -> Settings) -> 
             }
             Tile(stringResource(Res.string.settings_plugin_store), selected = false, icon = Icons.Outlined.AddCircle) { onOpen(SettingsRoutes.PLUGINS) }
         }
-        IntroSources.toSetUp(settings).forEach { network: NetworkPrefs ->
+        IntroSources.toSetUp(settings, pluginIds()).forEach { network: NetworkPrefs ->
             TextButton(onClick = { onOpen(SettingsRoutes.section(network.id)) }) {
                 Icon(Icons.Outlined.Settings, null, Modifier.size(18.dp))
                 Spacer(Modifier.size(8.dp))

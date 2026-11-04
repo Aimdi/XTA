@@ -38,7 +38,7 @@
 
     <string name="home_feed_accounts">Konten für die Start-Timeline</string>
     <string name="home_filter_accounts">Konten</string>
-    <string name="home_filter_accounts_explained">Schalte Reservekonten aus, die du nur für höhere Ratenlimits behältst. „Für dich“ führt die Start-Timelines der Konten zusammen, die an bleiben.</string>
+    <string name="home_filter_accounts_explained">Schalte Reservekonten aus, die du nur für höhere Ratenlimits behältst. „Für dich“ führt die Timelines eingeschalteter Konten zusammen; „Folge ich“ verwendet weiter deine lokalen Abos, überspringt beim Abrufen aber ausgeschaltete Konten. Kommentare und Profile können bei Bedarf weiterhin jedes Konto nutzen.</string>
     <string name="home_filter_groups_explained">Schalte eine Gruppe aus, um ihre Mitglieder im Folge-ich-Feed auszublenden. Der Tab der Gruppe bleibt. Ihre Beiträge fallen auch aus „Für dich“ heraus.</string>
     <string name="home_filter_only_hint">Lange drücken, um nur diesen Eintrag aktiv zu lassen.</string>
     <string name="home_filter_keep_one">Mindestens ein Konto muss an bleiben</string>

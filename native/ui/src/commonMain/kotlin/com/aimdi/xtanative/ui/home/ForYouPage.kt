@@ -44,9 +44,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.ProblemView
 import com.aimdi.xtanative.ui.common.problemText
+import com.aimdi.xtanative.ui.common.scrollToTop
 import com.aimdi.xtanative.ui.feed.ToTop
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.dismiss
@@ -75,10 +77,11 @@ internal fun ForYouPage(page: Int, toTop: ToTop, actions: PostActions, contentPa
     val list = rememberLazyListState()
     // A page swiped back into view must not answer a request it already answered.
     var answeredTap by rememberSaveable { mutableIntStateOf(toTop.count) }
+    val reduced = LocalReducedMotion.current
     LaunchedEffect(toTop) {
         if (toTop.page == page && toTop.count > answeredTap) {
             answeredTap = toTop.count
-            list.animateScrollToItem(0)
+            list.scrollToTop(reduced)
         }
     }
     var answeredRefresh by rememberSaveable { mutableIntStateOf(state.toTop) }

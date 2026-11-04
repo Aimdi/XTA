@@ -6,6 +6,7 @@ import com.aimdi.xtanative.core.x.XEndpoints
 import com.aimdi.xtanative.core.x.XRateLimits
 import com.aimdi.xtanative.data.SessionStore
 import com.aimdi.xtanative.store.StoreDir
+import com.aimdi.xtanative.store.settings.AccountPrefs
 import com.aimdi.xtanative.store.settings.DataPrefs
 import com.aimdi.xtanative.store.settings.GeneralPrefs
 import com.aimdi.xtanative.store.settings.MediaPrefs
@@ -107,6 +108,20 @@ class SettingsStartTest {
             while (sessions.state.value!!.includeReplies || !sessions.state.value!!.autoplay) delay(10)
         }
         assertFalse(sessions.state.value!!.includeReposts)
+        keeping.cancel()
+    }
+
+    @Test
+    fun theAccountsTurnedOffReachTheClientsGateAsTheyChange(): Unit = runBlocking {
+        val settings = SettingsStore(StoreDir(File(dir, "store")))
+        var off: Set<String>? = null
+        val keeping = launch { SettingsStart.keepAccountsOffInStep(settings) { off = it } }
+        withTimeout(5_000) { while (off == null) delay(10) }
+        assertEquals(emptySet<String>(), off)
+        settings.set(AccountPrefs.forYouHiddenAccountIds, listOf("2", "3"))
+        withTimeout(5_000) { while (off != setOf("2", "3")) delay(10) }
+        settings.set(AccountPrefs.forYouHiddenAccountIds, listOf("3"))
+        withTimeout(5_000) { while (off != setOf("3")) delay(10) }
         keeping.cancel()
     }
 }

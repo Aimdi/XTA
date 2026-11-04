@@ -42,7 +42,7 @@
 
     <string name="home_feed_accounts">حسابات الخلاصة الرئيسية</string>
     <string name="home_filter_accounts">الحسابات</string>
-    <string name="home_filter_accounts_explained">أوقف الحسابات الاحتياطية التي تحتفظ بها فقط لرفع حدود الاستخدام. يدمج «لك» الخطوط الزمنية الرئيسية للحسابات التي تبقى مفعّلة.</string>
+    <string name="home_filter_accounts_explained">عطّل الحسابات الاحتياطية التي تبقيها فقط لحدود المعدّل. «لك» يدمج الجداول الزمنية للحسابات المفعّلة؛ «المتابَعون» ما زال يستخدم اشتراكاتك المحلية لكنه يتجاوز الحسابات المعطّلة عند الجلب. يمكن للتعليقات والملفات الشخصية استخدام أي حساب عند الحاجة.</string>
     <string name="home_filter_groups_explained">أوقف مجموعة لإخفاء أعضائها من المتابَعين. تبقى علامة تبويب المجموعة. وتُحذف منشوراتهم من «لك» أيضًا.</string>
     <string name="home_filter_only_hint">اضغط مطولًا على عنصر لإبقائه وحده مفعّلًا.</string>
     <string name="home_filter_keep_one">يجب أن يبقى حساب واحد على الأقل مفعّلاً</string>

@@ -6,6 +6,7 @@ import com.aimdi.xtanative.store.settings.HomePrefs
 import com.aimdi.xtanative.store.settings.MastodonPrefs
 import com.aimdi.xtanative.store.settings.RssPrefs
 import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.ui.settings.PluginIds
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -55,5 +56,14 @@ class IntroFlowTest {
         assertEquals(listOf("mastodon", "rss"), IntroSources.toSetUp(chosen).map { it.id })
         val ready = chosen.with(MastodonPrefs.instance, "https://mastodon.social").with(RssPrefs.feeds, """[{"url":"https://e/f.xml"}]""")
         assertTrue(IntroSources.toSetUp(ready).isEmpty())
+    }
+
+    @Test
+    fun aNetworkThatIsAPluginAsksToBeSetUpOnlyOnceInstalled() {
+        val chosen = IntroSources.toggled(IntroSources.toggled(Settings(), MastodonPrefs), RssPrefs)
+        val offered = PluginIds(listed = setOf("mastodon"))
+        assertEquals(listOf("rss"), IntroSources.toSetUp(chosen, offered).map { it.id })
+        val installed = offered.copy(installed = setOf("mastodon"))
+        assertEquals(listOf("mastodon", "rss"), IntroSources.toSetUp(chosen, installed).map { it.id })
     }
 }

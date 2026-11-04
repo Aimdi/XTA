@@ -38,7 +38,7 @@
 
     <string name="home_feed_accounts">Avakuva kontod</string>
     <string name="home_filter_accounts">Kontod</string>
-    <string name="home_filter_accounts_explained">Lülita välja varukontod, mida hoiad ainult kõrgemate piirangute jaoks. Sinu jaoks liidab sisse jäetud kontode avalehe ajajooned.</string>
+    <string name="home_filter_accounts_explained">Lülita välja varukontod, mida hoiad vaid limiitide pärast. Sinu jaoks ühendab sisselülitatud kontode avalehe ajajooned; Jälgin kasutab endiselt kohalikke tellimusi, kuid jätab väljalülitatud kontod laadimisel vahele. Kommentaarid ja profiilid võivad vajadusel kasutada ükskõik millist kontot.</string>
     <string name="home_filter_groups_explained">Lülita grupp välja, et peita selle liikmed voost Jälgin. Grupi vahekaart jääb. Nende postitused kaovad ka voost Sinu jaoks.</string>
     <string name="home_filter_only_hint">Vajuta pikalt, et jätta sisse ainult see.</string>
     <string name="home_filter_keep_one">Vähemalt üks konto peab jääma sisse</string>

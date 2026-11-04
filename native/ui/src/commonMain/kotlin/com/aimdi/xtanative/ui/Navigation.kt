@@ -1,6 +1,8 @@
 package com.aimdi.xtanative.ui
 
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -9,8 +11,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -29,6 +33,7 @@ import com.aimdi.xtanative.ui.antenna.AntennasScreen
 import com.aimdi.xtanative.ui.archive.ArchiveScreen
 import com.aimdi.xtanative.ui.article.ArticleScreen
 import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.community.CommunityMembersScreen
 import com.aimdi.xtanative.ui.community.CommunityScreen
 import com.aimdi.xtanative.ui.downloads.DownloadsScreen
@@ -150,6 +155,29 @@ private object Routes {
 }
 
 private const val SLIDE_MS = 280
+private const val FADE_MS = 180
+
+private typealias Enter = AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition
+private typealias Exit = AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition
+
+/**
+ * How screens come and go: a slide as one is opened and closed, a fade for
+ * the media viewer, and nothing while Settings › Accessibility › Disable
+ * animations is on ([reduced]), as XTA then pushes its screens without a
+ * transition. [reduced] is read as each change starts, so the switch applies at once.
+ */
+private class ScreenMotion(private val reduced: State<Boolean>) {
+    val enter: Enter = entering { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(SLIDE_MS)) }
+    val exit: Exit = leaving { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(SLIDE_MS)) { it / 4 } }
+    val popEnter: Enter = entering { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(SLIDE_MS)) { it / 4 } }
+    val popExit: Exit = leaving { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(SLIDE_MS)) }
+    val fadeEnter: Enter = entering { fadeIn(tween(FADE_MS)) }
+    val fadeExit: Exit = leaving { fadeOut(tween(FADE_MS)) }
+
+    private fun entering(moving: Enter): Enter = { if (reduced.value) EnterTransition.None else moving(this) }
+
+    private fun leaving(moving: Exit): Exit = { if (reduced.value) ExitTransition.None else moving(this) }
+}
 
 /** The app's screens. The first is the import until XTA's backup has given it an account. */
 @Composable
@@ -232,15 +260,17 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
     val searchActions = all.search
     val trendsActions = all.trends
     val homeRoutes = all.home
+    val reduced = rememberUpdatedState(LocalReducedMotion.current)
+    val motion = remember(reduced) { ScreenMotion(reduced) }
     NavHost(
         navController = nav,
         startDestination = start,
         route = Routes.ROOT,
         modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
-        enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(SLIDE_MS)) },
-        exitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(SLIDE_MS)) { it / 4 } },
-        popEnterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(SLIDE_MS)) { it / 4 } },
-        popExitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(SLIDE_MS)) },
+        enterTransition = motion.enter,
+        exitTransition = motion.exit,
+        popEnterTransition = motion.popEnter,
+        popExitTransition = motion.popExit,
     ) {
         composable(Routes.IMPORT) {
             ImportScreen(onImported = {
@@ -253,7 +283,7 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
             IntroScreen(
                 onFinished = { nav.startOver(Routes.HOME) },
                 onImport = { nav.navigate(Routes.IMPORT) },
-                onOpen = { route -> nav.navigateIfKnown(route) },
+                onOpen = { route -> nav.navigate(route) },
             )
         }
         composable(Routes.HOME) {
@@ -282,10 +312,10 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
         composable(
             Routes.MEDIA,
             arguments = listOf(navArgument("postId") { type = NavType.StringType }, navArgument("index") { type = NavType.IntType }),
-            enterTransition = { fadeIn(tween(180)) },
-            exitTransition = { fadeOut(tween(180)) },
-            popEnterTransition = { fadeIn(tween(180)) },
-            popExitTransition = { fadeOut(tween(180)) },
+            enterTransition = motion.fadeEnter,
+            exitTransition = motion.fadeExit,
+            popEnterTransition = motion.fadeEnter,
+            popExitTransition = motion.fadeExit,
         ) { entry ->
             MediaViewer(entry.text("postId").orEmpty(), entry.arguments?.read { getIntOrNull("index") } ?: 0, onClose = { nav.popBackStack() })
         }
@@ -335,7 +365,7 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
         composable(Routes.SETTINGS) {
             SettingsScreen(
                 onBack = { nav.popBackStack() },
-                onOpen = { route -> nav.navigateIfKnown(route) },
+                onOpen = { route -> nav.navigate(route) },
                 onIntroAgain = { nav.startOver(Routes.INTRO) },
             )
         }
@@ -362,6 +392,8 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
                     importList = { nav.navigate(Routes.importList(null)) },
                     sortUngrouped = { nav.navigate(Routes.SUBSCRIPTIONS_SORT) },
                     settings = { nav.navigate(Routes.SETTINGS) },
+                    antennas = { nav.navigate(Routes.ANTENNAS) },
+                    deck = { nav.navigate(Routes.DECK) },
                 ),
                 onBack = { nav.popBackStack() },
             )
@@ -404,7 +436,7 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
                 entry.text("section").orEmpty(),
                 entry.text("focus"),
                 onBack = { nav.popBackStack() },
-                onOpen = { route -> nav.navigateIfKnown(route) },
+                onOpen = { route -> nav.navigate(route) },
                 onStartOver = { nav.startOver(Routes.IMPORT) },
             )
         }
@@ -465,11 +497,6 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
     }
     // The foot-of-window notices of saves, likes and downloads, and the platform's save dialog (ui/saved).
     KeepHost()
-}
-
-/** To [route] when a screen is there for it: Settings links to screens other parts of the app add (the plugin store, downloads). */
-private fun NavHostController.navigateIfKnown(route: String) {
-    runCatching { navigate(route) }
 }
 
 /** An x.com or twitter.com link opens here, as it opens XTA. Only Android is handed links. */

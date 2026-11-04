@@ -113,7 +113,12 @@ class AppGraph(
         if (mockX == null) OkHttpXHttp() else OkHttpXHttp(OkHttpXHttp.defaultClient.newBuilder().addInterceptor(MockX.interceptor(mockX)).build())
     val signers =
         if (mockX == null) XSigners(SigningBootstrap(http), FileSignerStore(File(files, "signers.json"))) else XSigners({ MockX.signer })
-    val client = XClient(http, accounts = { sessions.state.value?.accounts.orEmpty() }, signers = signers, guest = XGuest(http))
+
+    /** The X accounts turned off for the feeds, as the settings hold them from [start] on: X is read with the others while one is on. */
+    @Volatile
+    var accountsOff: Set<String> = emptySet()
+        private set
+    val client = XClient(http, accounts = { sessions.state.value?.accounts.orEmpty() }, signers = signers, guest = XGuest(http), disabledAccounts = { accountsOff })
 
     /** The Following feed's cache for null, else the group's. */
     @Synchronized
@@ -153,6 +158,7 @@ class AppGraph(
         scope.launch { sessions.load() }
         // XTA's launch steps on the settings, once; then the feeds' switches follow the settings.
         scope.launch { SettingsStart.keepSessionInStep(settings, sessions) }
+        scope.launch { SettingsStart.keepAccountsOffInStep(settings) { accountsOff = it } }
         if (mockX == null) scope.launch { SettingsStart.refreshEndpoints(settings, client) }
         scope.launch {
             repairs.applyKept()

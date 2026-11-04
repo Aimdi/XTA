@@ -38,7 +38,7 @@
 
     <string name="home_feed_accounts">Contas do início</string>
     <string name="home_filter_accounts">Contas</string>
-    <string name="home_filter_accounts_explained">Desative as contas de reserva que só guarda para ter limites mais altos. Para si junta as cronologias iniciais das contas que ficam ligadas.</string>
+    <string name="home_filter_accounts_explained">Desative contas extra que só mantém por limites de taxa. Para si funde as timelines das contas ligadas; A seguir ainda usa as suas subscrições locais, mas salta contas desligadas ao obter. Comentários e perfis ainda podem usar qualquer conta se for preciso.</string>
     <string name="home_filter_groups_explained">Desative um grupo para ocultar os membros em A seguir. O separador do grupo permanece. As publicações deles também saem de Para si.</string>
     <string name="home_filter_only_hint">Mantenha premido um item para deixar só esse ativo.</string>
     <string name="home_filter_keep_one">É preciso deixar pelo menos uma conta ligada</string>

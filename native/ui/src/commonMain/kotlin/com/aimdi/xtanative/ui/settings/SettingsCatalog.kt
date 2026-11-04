@@ -41,9 +41,39 @@ enum class SettingsSection(val id: String) {
     }
 }
 
+/** What `settings/<id>` shows for a network, as the networks move into plugins (PLUGINS.md). */
+enum class NetworkSettingsPlace {
+    /** The section built from the network's preferences: a network the app still reads itself. */
+    SECTION,
+
+    /** The installed plugin's own settings. */
+    PLUGIN,
+
+    /** Nothing: a plugin that is not installed or has no settings, or no network at all. */
+    NONE,
+}
+
+/**
+ * What the plugin store knows, by plugin id: every plugin it lists (installed
+ * or on offer), those installed, and the running ones that bring no settings.
+ */
+data class PluginIds(val listed: Set<String> = emptySet(), val installed: Set<String> = emptySet(), val withoutSettings: Set<String> = emptySet())
+
 /** A network's own section, until its plugin brings one: built from [XtaPrefs.networks]. */
 object NetworkSections {
     fun of(id: String?): NetworkPrefs? = XtaPrefs.networks.firstOrNull { it.id == id }
+
+    /**
+     * Where network [id]'s settings are. A network that is a plugin now
+     * (its id one of [plugins]') has its plugin's own settings while that is
+     * installed, and none while it is not, as XTA shows a network's settings
+     * only while the network is on; one the app still reads keeps its section.
+     */
+    fun place(id: String, plugins: PluginIds): NetworkSettingsPlace = when {
+        id in plugins.installed && id !in plugins.withoutSettings -> NetworkSettingsPlace.PLUGIN
+        id in plugins.listed || id in plugins.installed || of(id) == null -> NetworkSettingsPlace.NONE
+        else -> NetworkSettingsPlace.SECTION
+    }
 
     /** What a network asks before it shows anything, as XTA's settings screens name it. */
     fun fields(network: NetworkPrefs): List<NetworkField> = when (network) {

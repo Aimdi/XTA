@@ -38,7 +38,7 @@
 
     <string name="home_feed_accounts">Accounts voor de starttijdlijn</string>
     <string name="home_filter_accounts">Accounts</string>
-    <string name="home_filter_accounts_explained">Zet reserve-accounts uit die je alleen bewaart voor hogere limieten. Voor jou voegt de starttijdlijnen samen van de accounts die aan blijven.</string>
+    <string name="home_filter_accounts_explained">Zet reserve-accounts uit die je alleen voor hogere limieten aanhoudt. Voor jou voegt timelines van ingeschakelde accounts samen; Volgend gebruikt nog je lokale abonnementen, maar slaat uitgeschakelde accounts over bij ophalen. Reacties en profielen kunnen desnoods nog elk account gebruiken.</string>
     <string name="home_filter_groups_explained">Zet een groep uit om de leden in Volgend te verbergen. Het tabblad van de groep blijft. Hun berichten verdwijnen ook uit Voor jou.</string>
     <string name="home_filter_only_hint">Houd er een ingedrukt om alleen die aan te laten.</string>
     <string name="home_filter_keep_one">Er moet minstens één account aan blijven</string>

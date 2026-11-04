@@ -38,7 +38,7 @@
 
     <string name="home_feed_accounts">Kontoj de la ĉefa fluo</string>
     <string name="home_filter_accounts">Kontoj</string>
-    <string name="home_filter_accounts_explained">Malŝaltu rezervajn kontojn, kiujn vi tenas nur por pli altaj limoj. Por vi kunigas la hejmajn tempoliniojn de la kontoj lasitaj ŝaltitaj.</string>
+    <string name="home_filter_accounts_explained">Malŝaltu rezervajn kontojn, kiujn vi tenas nur pro limoj. Por vi kunfandas hejmajn templiniojn de ŝaltitaj kontoj; Abonoj ankoraŭ uzas viajn lokajn abonojn, sed preterpasas malŝaltitajn kontojn dum lego. Komentoj kaj profiloj ankoraŭ povas uzi iun ajn konton se necese.</string>
     <string name="home_filter_groups_explained">Malŝaltu grupon por kaŝi ĝiajn membrojn el Abonoj. La langeto de la grupo restas. Iliaj afiŝoj ankaŭ foriĝas el Por vi.</string>
     <string name="home_filter_only_hint">Longe premu eron por lasi nur ĝin ŝaltita.</string>
     <string name="home_filter_keep_one">Almenaŭ unu konto devas resti ŝaltita</string>

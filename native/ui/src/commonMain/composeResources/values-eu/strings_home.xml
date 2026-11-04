@@ -38,7 +38,7 @@
 
     <string name="home_feed_accounts">Hasierako kontuak</string>
     <string name="home_filter_accounts">Kontuak</string>
-    <string name="home_filter_accounts_explained">Desaktibatu muga handiagoak izateko soilik gordetzen dituzun ordezko kontuak. Zuretzat atalak piztuta geratzen diren kontuen hasierako denbora-lerroak batzen ditu.</string>
+    <string name="home_filter_accounts_explained">Itzali tasa-mugetarako bakarrik gordetzen dituzun erreserba-kontuak. Zuretzat piztuta dauden kontuen hasierako kronologiak biltzen ditu; Jarraitzen tokiko harpidetzak erabiltzen jarraitzen du, baina itzalitakoak saltatzen ditu eskuratzean. Iruzkinek eta profilek edozein kontu erabil dezakete behar izanez gero.</string>
     <string name="home_filter_groups_explained">Desaktibatu talde bat kideak Jarraitzen ataletik ezkutatzeko. Taldearen fitxa geratzen da. Haien argitalpenak Zuretzat ataletik ere kentzen dira.</string>
     <string name="home_filter_only_hint">Sakatu luze bat hori bakarrik aktibo uzteko.</string>
     <string name="home_filter_keep_one">Gutxienez kontu bat piztuta utzi behar da</string>

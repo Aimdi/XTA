@@ -37,7 +37,7 @@
 
     <string name="home_feed_accounts">홈 피드 계정</string>
     <string name="home_filter_accounts">계정</string>
-    <string name="home_filter_accounts_explained">사용 한도를 늘리려고만 두는 예비 계정을 끄세요. 추천은 켜 둔 계정들의 홈 타임라인을 합쳐 보여 줍니다.</string>
+    <string name="home_filter_accounts_explained">한도만 위해 남겨 둔 예비 계정은 끄세요. 추천은 켠 계정의 홈 타임라인을 합칩니다. 팔로잉은 로컬 구독을 쓰되, 끈 계정으로는 가져오지 않습니다. 댓글과 프로필은 필요하면 어떤 계정이든 쓸 수 있습니다.</string>
     <string name="home_filter_groups_explained">그룹을 끄면 멤버가 팔로잉에서 숨겨집니다. 그룹 탭은 그대로입니다. 그 게시물은 추천에서도 빠집니다.</string>
     <string name="home_filter_only_hint">길게 누르면 그 항목만 켜 둡니다.</string>
     <string name="home_filter_keep_one">계정은 하나 이상 켜 두어야 합니다</string>

@@ -37,7 +37,7 @@
 
     <string name="home_feed_accounts">ホームのアカウント</string>
     <string name="home_filter_accounts">アカウント</string>
-    <string name="home_filter_accounts_explained">レート制限に余裕を持たせるためだけの予備アカウントをオフにします。「おすすめ」はオンのアカウントのホームタイムラインをまとめて表示します。</string>
+    <string name="home_filter_accounts_explained">レート制限のためだけに残している予備アカウントをオフにします。おすすめはオンのアカウントのホームタイムラインをまとめます。フォロー中はローカルの購読を使いますが、オフにしたアカウントでは取得しません。コメントやプロフィールは必要ならどのアカウントでも使えます。</string>
     <string name="home_filter_groups_explained">グループをオフにすると、そのメンバーがフォロー中から非表示になります。グループのタブはそのままです。投稿は「おすすめ」からも外れます。</string>
     <string name="home_filter_only_hint">長押しすると、その項目だけをオンにします。</string>
     <string name="home_filter_keep_one">少なくとも 1 つのアカウントはオンのままにしてください</string>
