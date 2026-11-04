@@ -61,7 +61,7 @@ fun chunkForSpeech(text: String, maxChars: Int = 3500): List<String> {
 }
 
 /** After a sentence's end, any run of space, the ideographic space included. */
-private val sentenceBreak = Regex("(?U)(?<=[.!?。！？])\\s+")
+private val sentenceBreak = Regex("(?<=[.!?。！？])[\\s\\p{Z}]+")
 
 /**
  * The rest of [full] from [needle], a paragraph the reader held to start

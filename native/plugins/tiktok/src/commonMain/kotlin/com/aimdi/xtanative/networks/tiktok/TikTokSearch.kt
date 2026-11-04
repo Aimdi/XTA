@@ -8,8 +8,8 @@ package com.aimdi.xtanative.networks.tiktok
  */
 object TikTokSearch {
     private val apostrophes = Regex("['’]")
-    private val junk = Regex("(?U)[^a-z0-9._\\s]+")
-    private val spaces = Regex("(?U)\\s+")
+    private val junk = Regex("[^a-z0-9._\\s\\p{Z}]+")
+    private val spaces = Regex("[\\s\\p{Z}]+")
 
     /** At most this many usernames are guessed for one search. */
     private const val MAX_CANDIDATES = 8

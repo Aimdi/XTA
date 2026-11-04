@@ -10,6 +10,14 @@
 -dontwarn org.bouncycastle.**
 -dontwarn org.openjsse.**
 -dontwarn com.google.re2j.**
+# Commons Compress and xz-java unpack the downloaded voices and voice engine:
+# the codecs Commons Compress can also use, which the app does not ship, and
+# lambda classes of the JDK that Android's runtime lacks.
+-dontwarn com.github.luben.zstd.**
+-dontwarn org.brotli.dec.**
+-dontwarn org.objectweb.asm.**
+-dontwarn java.lang.invoke.MethodHandleProxies
+-dontwarn java.lang.invoke.SerializedLambda
 
 # Downloadable plugins (PLUGINS.md) are compiled against the app's modules and
 # libraries without bundling them, and call them by name once loaded. So every

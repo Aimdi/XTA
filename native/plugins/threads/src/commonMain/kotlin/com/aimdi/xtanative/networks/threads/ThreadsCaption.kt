@@ -12,7 +12,7 @@ object ThreadsCaption {
     data class Hit(val start: Int, val end: Int, val value: String, val kind: Kind)
 
     private val mention = Regex("""(?<![A-Za-z0-9_])@([A-Za-z0-9._]{1,30})""")
-    private val address = Regex("""(?U)https?://[^\s<>]+""", RegexOption.IGNORE_CASE)
+    private val address = Regex("""https?://[^\s\p{Z}<>]+""", RegexOption.IGNORE_CASE)
     private val tag = Regex("""(?<![\p{L}\p{N}_&/#])#([\p{L}\p{N}_]{1,50})""")
     private const val trailingPunctuation = ".,);]!?\"'"
 

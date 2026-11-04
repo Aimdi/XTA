@@ -2,7 +2,7 @@ package com.aimdi.xtanative.ui.plugins
 
 import com.aimdi.xtanative.store.saved.SavedMedia
 
-private val WHITESPACE = Regex("(?U)\\s+")
+private val WHITESPACE = Regex("[\\s\\p{Z}]+")
 
 /**
  * A post as the post sheets hand it to the plugins' entries

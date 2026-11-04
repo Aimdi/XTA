@@ -41,6 +41,15 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
+      # Android's java.util.regex is ICU's, which refuses some of Java's own syntax:
+      # a pattern with it compiles on the desktop and crashes the app on Android.
+      - name: Regular expressions Android compiles
+        run: |
+          if grep -rnE '\(\?[a-zA-Z]*U[a-zA-Z]*\)|UNICODE_CHARACTER_CLASS|\\+p\{java' --include='*.kt' native; then
+            echo "::error::Android's ICU regex refuses (?U) and Java's own classes: write [\\s\\p{Z}] and the like"
+            exit 1
+          fi
+
       - name: Core tests
         run: ./gradlew :core:test :networks:test :store:test :services:test :plugin-host:test :plugins:test --console=plain
 

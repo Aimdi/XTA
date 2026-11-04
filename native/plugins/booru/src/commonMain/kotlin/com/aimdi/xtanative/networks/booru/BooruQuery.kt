@@ -1,7 +1,7 @@
 package com.aimdi.xtanative.networks.booru
 
 /** Whitespace as XTA's Dart splits on it, Unicode spaces (an ideographic space typed in Japanese) included. */
-internal val WHITESPACE = Regex("(?U)\\s+")
+internal val WHITESPACE = Regex("[\\s\\p{Z}]+")
 
 /** How a search token is used: as is, excluded (`-tag`), or as one of an either group (`~a ~b`). */
 enum class BooruTagOperator(val prefix: String) {
@@ -59,7 +59,7 @@ object BooruQuery {
         "parent", "pool", "rating", "ratio", "score", "sort", "source", "status", "tagcount", "user", "width",
     )
 
-    private val LAST_SPACE = Regex("(?U)\\s(?=\\S*$)")
+    private val LAST_SPACE = Regex("[\\s\\p{Z}](?=[^\\s\\p{Z}]*$)")
     private val WORD_BREAK = Regex("[^\\p{L}\\p{N}]")
 
     /** The tokens of a typed search, split on whitespace. */

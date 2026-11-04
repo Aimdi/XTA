@@ -18,6 +18,10 @@ kotlin {
 dependencies {
     api(project(":core"))
     implementation("org.jsoup:jsoup:1.18.3")
+    // The downloaded voices (tar.bz2) and voice engine (tar.xz), unpacked in the app itself (StreamTar):
+    // Android's toybox tar can decompress neither.
+    implementation("org.apache.commons:commons-compress:1.26.1")
+    implementation("org.tukaani:xz:1.10")
     testImplementation(kotlin("test"))
 }
 

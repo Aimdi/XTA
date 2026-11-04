@@ -7,6 +7,7 @@ import com.aimdi.xtanative.services.speech.OfflineSpeechEngine
 import com.aimdi.xtanative.services.speech.SpeechEngine
 import com.aimdi.xtanative.services.speech.SpeechReader
 import com.aimdi.xtanative.services.speech.SpeechSession
+import com.aimdi.xtanative.services.speech.StreamTar
 import com.aimdi.xtanative.services.speech.VoiceDownloadStore
 import com.aimdi.xtanative.services.speech.VoiceEnginePackage
 import com.aimdi.xtanative.services.speech.VoiceEngineStore
@@ -75,7 +76,7 @@ class SpeechParts private constructor(graph: AppGraph, platform: SpeechPlatform)
 
     val voices: VoiceDownloadStore = run {
         val transfer = MediaVoiceTransfer(OkHttpMediaHttp(), File(platform.voiceFolder, "partial"))
-        val reader = SystemTar()
+        val reader = StreamTar()
         val sources = platform.sources
         val engine = VoiceEngineStore(platform.voiceEngine, platform.engineBundled, File(platform.voiceFolder, "engine"), transfer, reader, sources::engineUrls)
         VoiceDownloadStore(engine, File(platform.voiceFolder, "voices"), transfer, reader, sources.catalog)
