@@ -15,7 +15,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
@@ -56,6 +58,7 @@ import com.aimdi.xtanative.pluginhost.PluginCategory
 import com.aimdi.xtanative.pluginhost.PluginFailure
 import com.aimdi.xtanative.pluginhost.PluginState
 import com.aimdi.xtanative.pluginhost.PluginStatus
+import com.aimdi.xtanative.pluginhost.PluginStoreState
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
@@ -129,7 +132,9 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
     val scope = rememberCoroutineScope()
     var confirming by remember { mutableStateOf<PluginState?>(null) }
     val locale = currentLocale()
+    val list = rememberLazyListState()
     LaunchedEffect(Unit) { plugins.manager.refresh() }
+    FollowInstalls(list, store)
 
     PluginScaffold(
         title = stringResource(Res.string.plugin_store),
@@ -151,6 +156,7 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
             pin = { id, pinned -> scope.launch { plugins.pinOnStrip(id, pinned) } },
         )
         LazyColumn(
+            state = list,
             contentPadding = PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding() + 24.dp),
             modifier = Modifier.fillMaxSize(),
         ) {
@@ -179,6 +185,19 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
             },
             onDismiss = { confirming = null },
         )
+    }
+}
+
+/** Scrolls [list] to a plugin whose install has just ended, as [StoreRows] says. */
+@Composable
+private fun FollowInstalls(list: LazyListState, store: PluginStoreState) {
+    val ids = store.installed.map { it.id }
+    var seen by remember { mutableStateOf<List<String>?>(null) }
+    LaunchedEffect(ids) {
+        val added = StoreRows.newlyInstalled(seen, ids)
+        seen = ids
+        added ?: return@LaunchedEffect
+        list.animateScrollToItem(StoreRows.afterInstall(ids.indexOf(added), store.catalogue.refreshing, store.catalogue.unreachable))
     }
 }
 
