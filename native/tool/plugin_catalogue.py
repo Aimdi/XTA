@@ -21,7 +21,6 @@ import os
 import shutil
 import sys
 
-API_VERSION = 1
 CATEGORIES = ["social", "communities", "newsletters", "art", "markets", "bookmarks", "media", "sites"]
 
 
@@ -79,7 +78,9 @@ def main():
 
     order = {category: index for index, category in enumerate(CATEGORIES)}
     plugins.sort(key=lambda p: (order.get(p["category"], len(order)), p["id"]))
-    catalogue = {"apiVersion": API_VERSION, "plugins": plugins}
+    # The document's own version is the newest its plugins were built for: what an
+    # entry without one is taken as, and what CI compares the next build's against.
+    catalogue = {"apiVersion": max((p["apiVersion"] for p in plugins), default=1), "plugins": plugins}
 
     os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
     with open(args.out, "w", encoding="utf-8") as f:

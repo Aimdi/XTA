@@ -339,7 +339,7 @@ jobs:
             echo "No prerelease with plugins yet"
             exit 0
           fi
-          published=$(python3 -I -c 'import json, sys; print(json.load(open(sys.argv[1]))["apiVersion"])' "$RUNNER_TEMP/last/plugins.json")
+          published=$(python3 -I -c 'import json, sys; print(max(p["apiVersion"] for p in json.load(open(sys.argv[1]))["plugins"]))' "$RUNNER_TEMP/last/plugins.json")
           if [ "$published" != "${api:?no PLUGIN_API_VERSION in XtaPlugin.kt}" ]; then
             echo "$last published plugins for API $published, this build is API $api: an app of $last does not load them"
             exit 0
