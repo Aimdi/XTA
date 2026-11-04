@@ -34,6 +34,16 @@ LIBS=${COMPOSE_LIBS:?set COMPOSE_LIBS to the directory compose-libs.sh filled}
 jars=$(find "$LIBS" -maxdepth 1 -name '*.jar' | sort | tr '\n' ':')
 jars=${jars%:}
 [ -n "$jars" ] || { echo "no jars in $LIBS: run native/tool/compose-libs.sh first"; exit 1; }
+# The module compiles against what Gradle shows it (compile-classpath.txt, which
+# compose-libs.sh writes: a library another needs only at run time is not on it);
+# the plain modules before it against every jar.
+module_jars=$jars
+if [ -f "$LIBS/compile-classpath.txt" ]; then
+  module_jars=$(while IFS= read -r p; do [ ! -f "$LIBS/${p##*/}" ] || echo "$LIBS/${p##*/}"; done < "$LIBS/compile-classpath.txt" | tr '\n' ':')
+  module_jars=${module_jars%:}
+else
+  echo "uicheck: no compile-classpath.txt in $LIBS (an older compose-libs.sh): compiling against every jar" >&2
+fi
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 cache=${UICHECK_CACHE:-$LIBS/.uicheck-cache}
@@ -249,7 +259,7 @@ args="$work/args"
   arg 17
   [ "${WARNINGS:-0}" = 1 ] || arg -nowarn
   arg -cp
-  arg "$jars${deps:+:$deps}"
+  arg "$module_jars${deps:+:$deps}"
   arg -d
   arg "${OUT:-$work/classes}"
   # shellcheck disable=SC2086

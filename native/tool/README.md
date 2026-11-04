@@ -27,6 +27,15 @@ It reads `~/.gradle` and `~/.m2` first. A first run is about 140 requests, so
 it takes minutes to an hour, depending on how throttled Maven Central is. The
 jars land in `$COMPOSE_LIBS_HOME/1.8.2/`, listed in `resolved.txt`.
 
+`classpath.txt` lists every jar, as the module runs. `compile-classpath.txt`
+lists only the jars Gradle puts on the module's compile classpath: each
+library's API variant, and a POM's compile scope. A library that another one
+needs only at run time is left off it. `ui-backhandler` is one, reached only
+through navigation; so is `jsoup`, which `:core` declares with
+`implementation`. uicheck compiles the module against that list, so an import
+that Gradle cannot see fails here too, as it does in CI. Folders filled by an
+older compose-libs.sh have no list: uicheck says so and uses every jar.
+
 For the desktop, JetBrains' lifecycle, savedstate, collection and annotation
 modules only point at Google's own builds, which are on Google Maven alone.
 With `KOTLINC` set, compose-libs.sh builds those 7 jars from the sources

@@ -11,9 +11,15 @@
 # It reads Gradle module metadata the way Gradle does: the desktop JVM variant
 # of each library, the highest version anything asks for. The jars land in
 # $COMPOSE_LIBS_HOME/<compose version>/ (rebuilt on every run, with
-# classpath.txt and resolved.txt); downloads are kept in $COMPOSE_LIBS_HOME/.store,
+# classpath.txt, compile-classpath.txt and resolved.txt); downloads are kept in
+# $COMPOSE_LIBS_HOME/.store,
 # so a re-run fetches only what changed. Gradle's and Maven's local caches are
 # read before the network.
+#
+# classpath.txt lists every jar, as the module runs; compile-classpath.txt only
+# those a module that declares the roots sees when it compiles, as Gradle builds
+# its compile classpath: each library's API variant (a POM's compile scope), so
+# a library another one needs only at run time is left out of it.
 #
 # For the desktop, lifecycle, savedstate, collection and annotation come from
 # Google Maven alone. With KOTLINC set they are built instead from the sources
@@ -68,6 +74,9 @@ CORE_DEPS = [
     "com.squareup.okhttp3:okhttp:4.12.0",
     "org.jsoup:jsoup:1.18.3",
 ]
+# What :core and the modules after it declare with implementation(...): theirs alone,
+# so not on the compile classpath of a module that depends on them.
+IMPLEMENTATION_ONLY = {"org.jsoup:jsoup"}
 # kotlinc brings its own standard library; a second one on the classpath only conflicts.
 SKIP = re.compile(r"^org\.jetbrains\.kotlin:kotlin-stdlib(-common|-jdk7|-jdk8)?$")
 # Where Kotlin Multiplatform libraries publish their desktop JVM module.
@@ -453,6 +462,41 @@ class Resolver:
         if component.get("group") != g or component.get("module") != m or gradle_node(js, False).missing:
             return None
         return Node(redirect=(g, m + suffix, v))
+
+    def api_edges(self, g, m, v, node):
+        """The modules this one puts on the compile classpath of its users: the
+        dependencies of its API variant, or a POM's compile scope."""
+        if node.redirect:
+            return [node.redirect[:2]]
+        if node.missing or node.platform:
+            return []
+        js = self._module_json(g, m, v) if self.repo.has(g, m, v, f"{m}-{v}.module") else None
+        if js is None:
+            pom = self.poms.effective(g, m, v)
+            return [(d["group"], d["module"]) for d in (pom or {}).get("deps", [])
+                    if (d["scope"] or pom["managed"].get((d["group"], d["module"]), {}).get("scope") or "compile") == "compile"
+                    and not d["optional"]]
+        api = [x for x in js.get("variants", []) if jvm_runtime(x) and "api" in x.get("attributes", {}).get("org.gradle.usage", "")]
+        if not api:
+            return [(dg, dm) for dg, dm, *_ in node.deps]
+        best = max(api, key=variant_rank)
+        at = best.get("available-at")
+        if at:
+            return [(at["group"], at["module"])]
+        return [(d["group"], d["module"]) for d in best.get("dependencies", [])
+                if d.get("attributes", {}).get("org.gradle.category") not in ("platform", "enforced-platform")]
+
+    def compile_closure(self, roots, selected):
+        """The modules a module declaring `roots` compiles against."""
+        seen, queue = set(), deque((g, m) for g, m, _ in roots)
+        while queue:
+            ga = queue.popleft()
+            if ga in seen or ga not in selected:
+                continue
+            seen.add(ga)
+            v, node = selected[ga]
+            queue.extend(e for e in self.api_edges(ga[0], ga[1], v, node) if not SKIP.match(f"{e[0]}:{e[1]}"))
+        return seen
 
     def resolve(self, roots):
         """Gradle-like: the highest version any reached module or constraint asks for wins.
@@ -848,7 +892,7 @@ def main():
 
     resolver = Resolver(repo)
     selected, order, missing, unversioned = resolver.resolve(roots)
-    jars, lines = [], []
+    jars, lines, owners = [], [], {}
     for ga in order:
         v, node = selected[ga]
         for url, name, sha256, sha1 in node.files:
@@ -860,6 +904,7 @@ def main():
                 missing[f"{ga[0]}:{ga[1]}:{v}"] = f"lists {url}, which is not on the repository"
                 continue
             jars.append(path)
+            owners[os.path.basename(path)] = ga
             lines.append(f"{ga[0]}:{ga[1]}:{v}  {os.path.basename(path)}")
 
     if not args.dry_run:
@@ -874,9 +919,12 @@ def main():
             except OSError:
                 shutil.copyfile(path, dest)
             placed.append(dest)
-        placed += stand_ins(repo, resolver, selected, missing, placed, lines, out)
+        placed += stand_ins(repo, resolver, selected, missing, placed, lines, out, owners)
         with open(os.path.join(out, "classpath.txt"), "w") as f:
             f.write("\n".join(placed) + "\n")
+        visible = resolver.compile_closure([r for r in roots if f"{r[0]}:{r[1]}" not in IMPLEMENTATION_ONLY], selected)
+        with open(os.path.join(out, "compile-classpath.txt"), "w") as f:
+            f.write("".join(p + "\n" for p in placed if owners.get(os.path.basename(p)) in visible))
         with open(os.path.join(out, "resolved.txt"), "w") as f:
             f.write("# " + " ".join(f"{k}={v}" for k, v in versions.items()) + "\n" + "\n".join(sorted(lines)) + "\n")
     else:
@@ -891,9 +939,10 @@ def main():
     sys.exit(3 if missing else 0)
 
 
-def stand_ins(repo, resolver, selected, missing, classpath, lines, out):
+def stand_ins(repo, resolver, selected, missing, classpath, lines, out, owners):
     """Builds what only Google Maven has from JetBrains' sources of the same code.
-    Takes what it builds off `missing`; returns the jars, placed in `out`."""
+    Takes what it builds off `missing`; returns the jars, placed in `out`, and
+    notes in `owners` the module each stands in for."""
     google = {k for k in missing if k.startswith(GOOGLE_ONLY)}
     found = wrappers(selected, google)
     for key in sorted(google - set(found)):
@@ -929,6 +978,7 @@ def stand_ins(repo, resolver, selected, missing, classpath, lines, out):
             dest = os.path.join(out, f"{key.split(':')[1]}-{key.split(':')[2]}-from-sources.jar")
             shutil.copyfile(cached, dest)
             built.append(dest)
+            owners[os.path.basename(dest)] = tuple(key.split(":")[:2])
             missing.pop(key)
             lines.append(f"{key}  {os.path.basename(dest)} (built from the sources of {g}:{m}:{v})")
     finally:
