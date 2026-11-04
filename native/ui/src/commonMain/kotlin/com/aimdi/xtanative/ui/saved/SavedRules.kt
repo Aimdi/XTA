@@ -1,8 +1,6 @@
 package com.aimdi.xtanative.ui.saved
 
 import com.aimdi.xtanative.core.backup.FollowGroup
-import com.aimdi.xtanative.core.x.model.XMedia
-import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.store.saved.LikedPost
 import com.aimdi.xtanative.store.saved.LocalPost
 import com.aimdi.xtanative.store.saved.LocalPosts
@@ -15,6 +13,8 @@ import com.aimdi.xtanative.store.saved.SavedSort
 import com.aimdi.xtanative.store.saved.SavedTabs
 import com.aimdi.xtanative.store.saved.SavedView
 import com.aimdi.xtanative.store.saved.likesByGroup
+import com.aimdi.xtanative.ui.media.MediaGridItem
+import com.aimdi.xtanative.ui.media.MediaGridItems
 
 /** The Archive's menu, in XTA's order (saved_chrome.dart). */
 enum class SavedMenuAction { SEARCH_LIBRARY, CREATE_FOLDER, MANAGE_FOLDERS, DOWNLOADS, OFFLINE, CLEANUP, SETTINGS }
@@ -71,12 +71,12 @@ fun savedChips(folders: List<SavedFolder>, storedOrder: List<String>, showAll: B
 }
 
 /**
- * A tile of the grid Media only draws when every post shown is X's: the
- * media at [index] of [post] (the post shown, for a repost); [savedId] is
- * what a long press removes.
+ * A tile of the grid Media only draws when every post shown is X's: [item],
+ * a picture, video or broadcast of the kept post (the post shown, for a
+ * repost); [savedId] is what a long press removes.
  */
-data class SavedMediaTile(val savedId: String, val post: XPost, val index: Int, val media: XMedia) {
-    val postId: String get() = post.id
+data class SavedMediaTile(val savedId: String, val item: MediaGridItem) {
+    val postId: String get() = item.post.id
 }
 
 /**
@@ -164,10 +164,10 @@ fun likesRows(likes: List<LikedPost>, groups: List<FollowGroup>): List<LikesRow>
     }
 }
 
-/** The pictures, videos and GIFs of a kept X post, as tiles; a repost's are those of the post reposted. */
+/** The tiles of a kept X post, as the grids draw them (media_grid_item.dart); a repost's are those of the post reposted. */
 fun mediaTiles(savedId: String, content: SavedContent): List<SavedMediaTile> {
-    val post = content.xPost?.shown ?: return emptyList()
-    return post.media.mapIndexed { index, media -> SavedMediaTile(savedId, post, index, media) }
+    val post = content.xPost ?: return emptyList()
+    return MediaGridItems.of(post).map { SavedMediaTile(savedId, it) }
 }
 
 /** The ids Select all takes: the saved posts the list shows. */

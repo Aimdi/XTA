@@ -8,14 +8,14 @@ import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.core.x.search.XAdvancedSearch
 import com.aimdi.xtanative.core.x.search.XSearchView
 import com.aimdi.xtanative.data.AppGraph
-import com.aimdi.xtanative.store.settings.MediaPrefs
+import com.aimdi.xtanative.ui.media.MediaGridItem
+import com.aimdi.xtanative.ui.media.MediaGridItems
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -43,17 +43,12 @@ class SearchViewModel(private val graph: AppGraph, initial: String?, tab: Search
 
     val top = PagedRead<XThread, String>(PageEnd.POSTS) { it.id }
     val latest = PagedRead<XThread, String>(PageEnd.POSTS) { it.id }
-    val media = PagedRead<MediaTile, String>(PageEnd.MEDIA) { it.key }
+    val media = PagedRead<MediaGridItem, String>(PageEnd.MEDIA) { it.key }
     val people = PagedRead<XUser, String>(PageEnd.FRESH) { it.id }
     val communities = PagedRead<XCommunity, String>(PageEnd.FRESH) { it.id }
 
     val recent: StateFlow<List<String>> =
         graph.recentSearches.of(SEARCH_SCOPE_X).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
-
-    /** How the Media tab lays out its tiles, by the reader's Media settings. */
-    val mediaShape: StateFlow<MediaGridShape> =
-        combine(graph.settings.observe(MediaPrefs.gridLayout), graph.settings.observe(MediaPrefs.gridColumns)) { layout, columns -> MediaGridShape.of(layout, columns) }
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), MediaGridShape(3, ownShape = false))
 
     private var dispatched = state.value.view.query
     private var debounce: Job? = null
@@ -167,7 +162,7 @@ class SearchViewModel(private val graph: AppGraph, initial: String?, tab: Search
             SearchTab.MEDIA -> media.start(scope) { cursor ->
                 val page = graph.client.search(query, cursor, product = tab.product!!)
                 graph.posts.remember(page.threads)
-                Page(MediaTile.of(page.threads), page.bottomCursor)
+                Page(MediaGridItems.of(page.threads), page.bottomCursor)
             }
             // XTA reads one page of people.
             SearchTab.PEOPLE -> people.start(scope) {

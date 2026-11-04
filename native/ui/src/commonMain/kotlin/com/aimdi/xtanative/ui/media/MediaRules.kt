@@ -104,32 +104,48 @@ fun interface MediaSaver {
     fun save(save: MediaSave)
 }
 
+/** A page of the viewer: [media], the [index]th of post [postId] by [username], whose name a saved file takes. */
+data class ViewerPage(val media: XMedia, val postId: String, val username: String, val index: Int)
+
 /**
- * What the viewer pages through: [items] by [username], whose name a saved
- * file takes, from post [postId]. [asIs] shows and saves each picture at
- * its own address, as XTA's viewer does one that is no post's (a profile's
- * banner or face: tweetMedia false), not at X's sizes.
+ * What the viewer pages through: [pages], each knowing its post, so a
+ * grid's viewer pages across posts (TweetMediaView.entries). [asIs] shows
+ * and saves each picture at its own address, as XTA's viewer does one that
+ * is no post's (a profile's banner or face, a poll's pictures: tweetMedia
+ * false), not at X's sizes.
  */
-data class ViewerMedia(val items: List<XMedia>, val username: String, val postId: String, val asIs: Boolean = false) {
+data class ViewerMedia(val pages: List<ViewerPage>, val asIs: Boolean = false) {
+    val items: List<XMedia> get() = pages.map { it.media }
+
     /** The address [media] is shown at: its own, or at [size]. */
     fun shownUrl(media: XMedia, size: PhotoSize): String = if (asIs) media.url else photoUrl(media.url, size)
 
-    /** What a download of [media] saves, [playingUrl] being the variant a video plays; null when there is nothing to save. */
-    fun save(media: XMedia, playingUrl: String? = null): MediaSave? =
-        if (asIs) MediaSave(media.url, MediaFiles.fileName(username, media.url), media.kind, postId) else MediaFiles.save(media, postId, username, playingUrl)
+    /** What a download of [page] saves, [playingUrl] being the variant a video plays; null when there is nothing to save. */
+    fun save(page: ViewerPage, playingUrl: String? = null): MediaSave? = if (asIs) {
+        MediaSave(page.media.url, MediaFiles.fileName(page.username, page.media.url), page.media.kind, page.postId)
+    } else {
+        MediaFiles.save(page.media, page.postId, page.username, playingUrl)
+    }
 
     companion object {
         /** [post]'s media, by its author; nothing while the post is not known. */
-        fun of(post: XPost?, postId: String) = ViewerMedia(post?.media.orEmpty(), post?.author?.screenName.orEmpty(), postId)
+        fun of(post: XPost?, postId: String) = of(post?.media.orEmpty(), post?.author?.screenName.orEmpty(), postId)
+
+        /** [media] of post [postId] by [username], in its order. */
+        fun of(media: List<XMedia>, username: String, postId: String) = ViewerMedia(media.mapIndexed { index, item -> ViewerPage(item, postId, username, index) })
 
         /** The one picture at [url], as it is, saved under [username]'s name. */
-        fun image(url: String, username: String) = ViewerMedia(listOf(XMedia(XMedia.Kind.PHOTO, url, null, null)), username, postId = "", asIs = true)
+        fun image(url: String, username: String) = images(listOf(url), username)
+
+        /** The pictures at [urls], as they are, saved under [username]'s name: no post's media at X's sizes. */
+        fun images(urls: List<String>, username: String, postId: String = "") =
+            ViewerMedia(urls.mapIndexed { index, url -> ViewerPage(XMedia(XMedia.Kind.PHOTO, url, null, null), postId, username, index) }, asIs = true)
     }
 }
 
 /** Which file of a post's media the viewer saves and shares (_media.dart). */
 object MediaFiles {
-    /** The size the viewer shows photos at, as the image-quality setting says. */
+    /** The size a post's photos are shown at, in its row and in the viewer, as the image-quality setting says (_media.dart). */
     fun viewerSize(quality: MediaQuality): PhotoSize = when (quality) {
         MediaQuality.THUMB -> PhotoSize.THUMB
         MediaQuality.SMALL -> PhotoSize.SMALL

@@ -1,22 +1,14 @@
 package com.aimdi.xtanative.ui.search
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -29,16 +21,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
-import com.aimdi.xtanative.core.x.model.PhotoSize
-import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.core.x.model.XUser
-import com.aimdi.xtanative.core.x.model.photoUrl
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
@@ -144,33 +131,4 @@ fun LoadMoreNearEnd(list: LazyListState, paged: Paged<*>, onMore: () -> Unit) {
     }
 }
 
-/** A media grid's rows: [shape] says how many tiles a row holds and their shape; a tap opens the viewer at that photo or video. */
-fun LazyListScope.mediaRows(tiles: List<MediaTile>, shape: MediaGridShape, onOpen: (MediaTile) -> Unit) {
-    items(tiles.chunked(shape.columns), key = { row -> "media-" + row.first().key }, contentType = { "media" }) { row ->
-        Row(Modifier.fillMaxWidth().padding(bottom = 2.dp), horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-            row.forEach { tile -> MediaThumb(tile, shape, Modifier.weight(1f)) { onOpen(tile) } }
-            repeat(shape.columns - row.size) { Spacer(Modifier.weight(1f)) }
-        }
-    }
-}
-
-@Composable
-private fun MediaThumb(tile: MediaTile, shape: MediaGridShape, modifier: Modifier, onClick: () -> Unit) {
-    Box(
-        modifier
-            .aspectRatio(shape.aspectOf(tile.media))
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-            .clickable(onClick = onClick),
-    ) {
-        AsyncImage(
-            model = photoUrl(tile.media.url, if (shape.columns == 1) PhotoSize.MEDIUM else PhotoSize.SMALL),
-            contentDescription = tile.media.alt,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize(),
-        )
-        if (tile.media.kind != XMedia.Kind.PHOTO) {
-            Icon(Icons.Filled.PlayArrow, contentDescription = null, tint = Color.White, modifier = Modifier.align(Alignment.Center).size(32.dp))
-        }
-    }
-}
 

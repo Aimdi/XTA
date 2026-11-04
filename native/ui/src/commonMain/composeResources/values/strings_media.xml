@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A post's media and the media grids (ui/post's MediaGrid, ui/media's grid, ui/common's badges). -->
+<resources>
+    <string name="media_alt_badge">ALT</string>
+    <string name="media_alt_title">Image description</string>
+    <string name="media_tap_to_show">Tap to show %1$s</string>
+</resources>

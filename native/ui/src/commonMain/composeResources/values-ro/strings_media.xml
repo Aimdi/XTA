@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="media_alt_badge">ALT</string>
+    <string name="media_alt_title">Descrierea imaginii</string>
+    <string name="media_tap_to_show">Atingeți pentru a afișa %1$s</string>
+</resources>

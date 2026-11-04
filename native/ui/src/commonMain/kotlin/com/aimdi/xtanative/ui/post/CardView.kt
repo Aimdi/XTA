@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,8 +32,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.aimdi.xtanative.core.x.model.XCard
+import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.rememberLoadsManually
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.card_from
 import com.aimdi.xtanative.ui.generated.resources.poll_days_left
@@ -40,9 +43,15 @@ import com.aimdi.xtanative.ui.generated.resources.poll_final
 import com.aimdi.xtanative.ui.generated.resources.poll_hours_left
 import com.aimdi.xtanative.ui.generated.resources.poll_minutes_left
 import com.aimdi.xtanative.ui.generated.resources.poll_votes
+import com.aimdi.xtanative.ui.generated.resources.reader_media
 import com.aimdi.xtanative.ui.links.LinkFrom
 import com.aimdi.xtanative.ui.links.LinkPreviewCard
 import com.aimdi.xtanative.ui.links.LocalLinks
+import com.aimdi.xtanative.ui.media.LocalGalleryOpener
+import com.aimdi.xtanative.ui.media.MediaGallery
+import com.aimdi.xtanative.ui.media.MediaIcons
+import com.aimdi.xtanative.ui.media.ViewerMedia
+import com.aimdi.xtanative.ui.media.rememberPhotoSize
 import java.time.Duration
 import java.time.Instant
 import kotlin.math.roundToInt
@@ -57,14 +66,14 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun CardView(card: XCard, post: XPost, actions: PostActions, modifier: Modifier = Modifier) {
     val open = rememberCardOpener(post, actions)
-    CardBody(card, modifier) { link -> open(link.url, link.title.ifBlank { null }) }
+    CardBody(card, post, modifier) { link -> open(link.url, link.title.ifBlank { null }) }
 }
 
 /** A card drawn without its post: its page opens in XTA's browser on its own. */
 @Composable
 fun CardView(card: XCard, modifier: Modifier = Modifier) {
     val links = LocalLinks.current
-    CardBody(card, modifier) { link -> links?.openPostLink(link.url, title = link.title.ifBlank { null }) }
+    CardBody(card, null, modifier) { link -> links?.openPostLink(link.url, title = link.title.ifBlank { null }) }
 }
 
 /**
@@ -82,25 +91,27 @@ internal fun rememberCardOpener(post: XPost, actions: PostActions): (url: String
     }
 }
 
+/** [card] as XTA draws its kind; [post], when there is one, is whose its media are, which a saved picture is named after. */
 @Composable
-private fun CardBody(card: XCard, modifier: Modifier, open: (XCard.Link) -> Unit) {
+private fun CardBody(card: XCard, post: XPost?, modifier: Modifier, open: (XCard.Link) -> Unit) {
     when (card) {
         is XCard.Link -> when {
-            card.media.isNotEmpty() -> MediaCard(card, { open(card) }, modifier)
+            card.media.isNotEmpty() -> MediaCard(card, post, { open(card) }, modifier)
             PostView.drawsLargeCard(card) -> LargeLinkCard(card, { open(card) }, modifier)
             // XTA draws a small preview as every network's (link_preview_card.dart).
             else -> LinkPreviewCard(card.url, card.title, { open(card) }, modifier, imageUrl = card.imageUrl)
         }
-        is XCard.Poll -> PollCard(card, modifier)
+        is XCard.Poll -> PollCard(card, post, modifier)
     }
 }
 
 private val CardShape = RoundedCornerShape(16.dp)
 
-/** X's large preview: the picture with the title on it, the site under it. */
+/** X's large preview: the picture, at the size the image quality asks for (_card.dart), with the title on it, the site under it. */
 @Composable
 private fun LargeLinkCard(card: XCard.Link, onOpen: () -> Unit, modifier: Modifier) {
-    val ratio = card.imageWidth?.let { w -> card.imageHeight?.takeIf { it > 0 }?.let { h -> w.toFloat() / h } } ?: 1.91f
+    val picture = card.imageAt(rememberPhotoSize())
+    val ratio = picture?.aspectRatio ?: 1.91f
     Column(modifier.fillMaxWidth()) {
         Box(
             Modifier
@@ -110,7 +121,7 @@ private fun LargeLinkCard(card: XCard.Link, onOpen: () -> Unit, modifier: Modifi
                 .clickable(onClick = onOpen),
         ) {
             AsyncImage(
-                model = card.imageUrl,
+                model = picture?.url,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxWidth().aspectRatio(ratio.coerceIn(1f, 2.2f)).background(MaterialTheme.colorScheme.surfaceVariant),
@@ -122,17 +133,35 @@ private fun LargeLinkCard(card: XCard.Link, onOpen: () -> Unit, modifier: Modifi
 }
 
 /**
- * A website card with its own media: the video, or the pictures of a
- * carousel, each opening the page the card leads to, with its title on it.
+ * A website card with its own media (_card.dart's _createWebsiteCard): the
+ * video, which opens the page the card leads to, or the pictures of a
+ * carousel along a row, which open in the viewer as a post's do; the title
+ * (on the picture when there is one, under the row when there are several)
+ * and the site under it lead to the page.
  */
 @Composable
-private fun MediaCard(card: XCard.Link, onOpen: () -> Unit, modifier: Modifier) {
+private fun MediaCard(card: XCard.Link, post: XPost?, onOpen: () -> Unit, modifier: Modifier) {
+    val galleries = LocalGalleryOpener.current
+    val username = post?.author?.screenName.orEmpty()
+    val postId = post?.id.orEmpty()
+    val gallery = remember(card, username, postId) { MediaGallery.of(ViewerMedia.of(card.media, username, postId).pages) }
+    val openMedia: (Int) -> Unit = { index -> if (card.media[index].kind != XMedia.Kind.VIDEO && galleries != null) galleries(gallery, index) else onOpen() }
+    val several = card.media.size > 1
     Column(modifier.fillMaxWidth()) {
         Box {
-            MediaGrid(card.media, onOpen = { onOpen() })
-            if (card.title.isNotBlank()) TitleOverPicture(card.title, Modifier.align(Alignment.BottomStart))
+            MediaGrid(card.media, openMedia, username = username, postId = postId)
+            if (!several && card.title.isNotBlank()) TitleOverPicture(card.title, Modifier.align(Alignment.BottomStart).clickable(onClick = onOpen))
         }
-        CardSite(card.domain)
+        if (several && card.title.isNotBlank()) {
+            Text(
+                card.title,
+                style = MaterialTheme.typography.titleSmall,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.fillMaxWidth().clickable(onClick = onOpen).padding(top = 8.dp),
+            )
+        }
+        CardSite(card.domain, onOpen)
     }
 }
 
@@ -153,34 +182,28 @@ private fun TitleOverPicture(title: String, modifier: Modifier) {
 }
 
 @Composable
-private fun CardSite(domain: String?) {
+private fun CardSite(domain: String?, onOpen: (() -> Unit)? = null) {
     domain?.let {
         Text(
             stringResource(Res.string.card_from, it),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 4.dp),
+            modifier = (if (onOpen != null) Modifier.clickable(onClick = onOpen) else Modifier).padding(top = 4.dp),
         )
     }
 }
 
 /** A poll as counted when it was read, each choice's picture beside it: XTA Native never votes. */
 @Composable
-private fun PollCard(poll: XCard.Poll, modifier: Modifier) {
+private fun PollCard(poll: XCard.Poll, post: XPost?, modifier: Modifier) {
+    val pictures = rememberPollPictures(poll, post)
     val total = poll.total
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         poll.choices.forEach { choice ->
             val share = poll.share(choice).toFloat()
             val ahead = poll.leads(choice)
             Row(verticalAlignment = Alignment.CenterVertically) {
-                choice.imageUrl?.let { image ->
-                    AsyncImage(
-                        model = image,
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.padding(end = 8.dp).size(34.dp).clip(RoundedCornerShape(6.dp)).background(MaterialTheme.colorScheme.surfaceVariant),
-                    )
-                }
+                choice.imageUrl?.let { image -> PollChoiceImage(image.takeIf { pictures.load }, pictures.opener(choice)) }
                 Box(Modifier.weight(1f).height(34.dp).clip(RoundedCornerShape(6.dp))) {
                     Box(
                         Modifier
@@ -207,6 +230,44 @@ private fun PollCard(poll: XCard.Poll, modifier: Modifier) {
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+    }
+}
+
+/** What a poll's pictures do (_card.dart's _openPollImages): load unless media loads manually, and open every choice's full picture in the viewer. */
+private class PollPictures(val load: Boolean, private val choices: List<XCard.Poll.Choice>, private val gallery: MediaGallery, private val open: ((MediaGallery, Int) -> Unit)?) {
+    fun opener(choice: XCard.Poll.Choice): (() -> Unit)? = open?.let { show -> { show(gallery, choices.indexOf(choice).coerceAtLeast(0)) } }
+}
+
+@Composable
+private fun rememberPollPictures(poll: XCard.Poll, post: XPost?): PollPictures {
+    val load = !rememberLoadsManually()
+    val open = LocalGalleryOpener.current
+    return remember(poll, post, load, open) {
+        val choices = poll.choices.filter { it.imageUrl != null }
+        val pages = ViewerMedia.images(choices.mapNotNull { it.fullImageUrl ?: it.imageUrl }, post?.author?.screenName.orEmpty(), post?.id.orEmpty()).pages
+        PollPictures(load, choices, MediaGallery.of(pages, asIs = true), open)
+    }
+}
+
+/** A choice's picture beside its bar (poll_results.dart's PollChoiceImage), or only its sign while media loads manually; a tap opens them all. */
+@Composable
+private fun PollChoiceImage(url: String?, onOpen: (() -> Unit)?) {
+    val muted = MaterialTheme.colorScheme.onSurfaceVariant
+    val word = stringResource(Res.string.reader_media)
+    Box(
+        Modifier
+            .padding(end = 8.dp)
+            .size(48.dp)
+            .clip(RoundedCornerShape(6.dp))
+            .background(muted.copy(alpha = 0.12f))
+            .let { if (onOpen != null) it.clickable(onClickLabel = word, onClick = onOpen) else it },
+        contentAlignment = Alignment.Center,
+    ) {
+        if (url == null) {
+            Icon(MediaIcons.ImageOutlined, contentDescription = word, tint = muted)
+        } else {
+            AsyncImage(model = url, contentDescription = word, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
+        }
     }
 }
 

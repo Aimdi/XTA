@@ -105,6 +105,7 @@ import com.aimdi.xtanative.ui.plugins.XtaPlugin
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -187,6 +188,7 @@ fun GroupFeedBody(
                 list = media,
                 contentPadding = contentPadding,
                 onMore = vm::loadMore,
+                updates = remember(vm) { vm.ui.map { it.run.shown.threads }.distinctUntilChanged() },
             )
             else -> CompositionLocalProvider(LocalInlinePlayer provides inline) {
                 FeedList(state, vm, actions, list, contentPadding, FeedPlugins(buckets, plugin.shown, plugins))

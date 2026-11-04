@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -263,15 +262,4 @@ fun LocalFileViewer(file: File, video: Boolean, onClose: () -> Unit) {
 @Composable
 fun ZoomableFile(file: File, modifier: Modifier = Modifier) {
     ZoomableImage(model = file, modifier = modifier.fillMaxSize())
-}
-
-/** A square thumbnail of a picture, for grids. */
-@Composable
-fun SquareImage(model: Any?, modifier: Modifier = Modifier, description: String? = null) {
-    AsyncImage(
-        model = model,
-        contentDescription = description,
-        contentScale = ContentScale.Crop,
-        modifier = modifier.aspectRatio(1f).background(MaterialTheme.colorScheme.surfaceVariant),
-    )
 }

@@ -30,25 +30,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.data.Problem
-import com.aimdi.xtanative.store.settings.MediaPrefs
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.groups_fold_hide_again
 import com.aimdi.xtanative.ui.generated.resources.groups_fold_matched
 import com.aimdi.xtanative.ui.generated.resources.groups_media_empty
+import com.aimdi.xtanative.ui.media.MediaGridItems
+import com.aimdi.xtanative.ui.media.mediaGrid
+import com.aimdi.xtanative.ui.media.rememberMediaGridRows
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.ThreadRows
-import com.aimdi.xtanative.ui.search.MediaGridShape
-import com.aimdi.xtanative.ui.search.MediaTile
-import com.aimdi.xtanative.ui.search.mediaRows
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import org.jetbrains.compose.resources.stringResource
 
 /** A thread folded behind why (folded_chain.dart): a tap shows it, and hides it again. */
@@ -81,24 +79,15 @@ internal fun FeedThread(thread: XThread, fold: String?, actions: PostActions, pl
     if (fold != null) FoldedThread(thread, fold, actions, playing) else ThreadRows(thread, actions, playing = playing)
 }
 
-/** The grid shape the reader's Media settings ask for. */
-@Composable
-internal fun rememberMediaShape(): MediaGridShape {
-    val settings = LocalGraph.current.settings
-    val flow = remember(settings) {
-        combine(settings.observe(MediaPrefs.gridLayout), settings.observe(MediaPrefs.gridColumns)) { layout, columns -> MediaGridShape.of(layout, columns) }
-    }
-    val shape by flow.collectAsStateWithLifecycle(MediaGridShape(3, ownShape = false))
-    return shape
-}
-
 /** What a feed's media grid has to say at its foot: reading more, why reading failed, or nothing. */
 data class MediaFoot(val loading: Boolean, val problem: Problem?, val onRetry: () -> Unit)
 
 /**
  * A feed's media alone (XTA's group media page): the photos and videos of the
  * posts it has read, in its order, read on as the grid nears its end; a page
- * that brings no media reads the next. A tap opens the viewer.
+ * that brings no media reads the next. A tap opens the viewer over all of
+ * them, which pages on into what [updates] (the feed's threads as they
+ * grow) brings as it asks for more.
  */
 @Composable
 internal fun FeedMediaGrid(
@@ -109,9 +98,11 @@ internal fun FeedMediaGrid(
     list: LazyListState,
     contentPadding: PaddingValues,
     onMore: () -> Unit,
+    updates: Flow<List<XThread>>? = null,
 ) {
-    val tiles = remember(threads) { MediaTile.of(threads) }
-    val shape = rememberMediaShape()
+    val tiles = remember(threads) { MediaGridItems.of(threads) }
+    val tileUpdates = remember(updates) { updates?.map(MediaGridItems::of) }
+    val grid = rememberMediaGridRows(tiles, actions, tileUpdates, onMore)
     val nearEnd by remember(list) {
         derivedStateOf {
             val info = list.layoutInfo
@@ -120,7 +111,7 @@ internal fun FeedMediaGrid(
     }
     LaunchedEffect(nearEnd, threads.size, canLoadMore) { if (nearEnd && canLoadMore) onMore() }
     LazyColumn(state = list, contentPadding = contentPadding, modifier = Modifier.fillMaxSize()) {
-        mediaRows(tiles, shape) { tile -> actions.openMedia(tile.postId, tile.index) }
+        mediaGrid(grid)
         item(key = "media-foot", contentType = "footer") {
             val problem = foot.problem
             when {

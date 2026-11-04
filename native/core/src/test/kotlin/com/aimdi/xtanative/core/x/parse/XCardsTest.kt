@@ -1,7 +1,9 @@
 package com.aimdi.xtanative.core.x.parse
 
 import com.aimdi.xtanative.core.json.J
+import com.aimdi.xtanative.core.x.model.PhotoSize
 import com.aimdi.xtanative.core.x.model.XCard
+import com.aimdi.xtanative.core.x.model.XCardImage
 import com.aimdi.xtanative.core.x.model.XLive
 import com.aimdi.xtanative.core.x.model.XLiveLinks
 import com.aimdi.xtanative.core.x.model.XPost
@@ -148,6 +150,49 @@ class XCardsTest {
         assertEquals(listOf("summary", "summary_large_image", "player"), listOf("summary", "summary_large_image", "player").map { (XCards.card(card(it, values), emptyList()) as XCard.Link).kind })
         val promo = XCards.card(card("promo_website", mapOf("website_url" to "https://example.com/buy", "title" to "Buy")), emptyList()) as XCard.Link
         assertNull(promo.kind, "a card X builds itself draws as X sends it")
+    }
+
+    /** A card whose binding values carry pictures, [images] by key, each `url|width|height`. */
+    private fun pictured(name: String, values: Map<String, String>, images: Map<String, String>): J {
+        val strings = values.entries.map { (key, value) -> """{"key":"$key","value":{"string_value":"$value"}}""" }
+        val pictures = images.entries.map { (key, value) ->
+            val (url, width, height) = value.split('|')
+            """{"key":"$key","value":{"image_value":{"url":"$url","width":$width,"height":$height}}}"""
+        }
+        return J.parse("""{"name":"$name","binding_values":[${(strings + pictures).joinToString(",")}]}""")
+    }
+
+    @Test
+    fun aLargePreviewKeepsItsPictureAtEachSizeTheImageQualityPicks() {
+        val sized = mapOf(
+            "summary_photo_image_small" to "https://pbs.twimg.com/card_img/1/a?name=386x202|386|202",
+            "summary_photo_image" to "https://pbs.twimg.com/card_img/1/a?name=600x314|600|314",
+            "summary_photo_image_large" to "https://pbs.twimg.com/card_img/1/a?name=800x419|800|419",
+            "summary_photo_image_x_large" to "https://pbs.twimg.com/card_img/1/a?name=2048x2048|2048|1072",
+            "thumbnail_image_small" to "https://pbs.twimg.com/card_img/1/t?name=144x144|144|144",
+        )
+        val link = XCards.card(pictured("summary_large_image", mapOf("title" to "T", "card_url" to "https://e.com"), sized), emptyList()) as XCard.Link
+        assertEquals("https://pbs.twimg.com/card_img/1/a?name=800x419", link.imageUrl, "the default stays the large picture")
+        assertEquals(
+            listOf("386x202", "600x314", "800x419", "2048x2048"),
+            listOf(PhotoSize.THUMB, PhotoSize.SMALL, PhotoSize.MEDIUM, PhotoSize.LARGE).map { link.imageAt(it)!!.url.substringAfter("name=") },
+        )
+        assertEquals(2048f / 1072, link.imageAt(PhotoSize.LARGE)!!.aspectRatio)
+        assertEquals(link.imageUrl, link.imageAt(PhotoSize.ORIGINAL)!!.url, "a size X did not send is the default one")
+
+        val player = XCards.card(pictured("player", mapOf("title" to "T", "card_url" to "https://e.com"), mapOf("player_image_small" to "https://p/s|1|1")), emptyList()) as XCard.Link
+        assertEquals("https://p/s", player.imageAt(PhotoSize.THUMB)!!.url, "the first picture X sent at that size")
+        assertNull(player.imageAt(PhotoSize.MEDIUM), "nothing to show")
+        val summary = XCards.card(pictured("summary", mapOf("title" to "T", "card_url" to "https://e.com"), sized), emptyList()) as XCard.Link
+        assertTrue(summary.imageSizes.isEmpty(), "a small preview's tile is one size")
+    }
+
+    @Test
+    fun aPromotedWebsiteAndALiveEventKeepTheirPicturesSizesToo() {
+        val promo = XCards.card(pictured("promo_website", mapOf("website_url" to "https://e.com", "title" to "Buy"), mapOf("promo_image_x_large" to "https://p/xl|4|3")), emptyList()) as XCard.Link
+        assertEquals(mapOf(PhotoSize.LARGE to XCardImage("https://p/xl", 4, 3)), promo.imageSizes)
+        val event = XCards.card(pictured("1:live_event", mapOf("card_url" to "https://x.com/i/events/1"), mapOf("event_thumbnail_small" to "https://e/s|2|1")), emptyList()) as XCard.Link
+        assertEquals(setOf(PhotoSize.THUMB), event.imageSizes.keys)
     }
 
     @Test

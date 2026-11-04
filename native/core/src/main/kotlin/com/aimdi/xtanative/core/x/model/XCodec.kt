@@ -191,6 +191,7 @@ object XCodec {
             put("large", card.large)
             if (card.media.isNotEmpty()) put("media", JsonArray(card.media.map(::media)))
             card.kind?.let { put("kind", it) }
+            if (card.imageSizes.isNotEmpty()) put("sizes", buildJsonObject { card.imageSizes.forEach { (size, image) -> put(size.param, cardImage(image)) } })
         }
         is XCard.Poll -> buildJsonObject {
             put("k", "poll")
@@ -238,8 +239,20 @@ object XCodec {
             large = json["large"].boolean ?: false,
             media = json["media"].list.mapNotNull(::media),
             kind = json["kind"].string,
+            imageSizes = cardImages(json["sizes"]),
         )
     }
+
+    private fun cardImage(image: XCardImage) = buildJsonObject {
+        put("url", image.url)
+        image.width?.let { put("w", it) }
+        image.height?.let { put("h", it) }
+    }
+
+    private fun cardImages(json: J): Map<PhotoSize, XCardImage> = PhotoSize.entries.mapNotNull { size ->
+        val image = json[size.param]
+        image["url"].string?.let { size to XCardImage(it, image["w"].int, image["h"].int) }
+    }.toMap()
 
     private fun user(user: XUser) = buildJsonObject {
         put("id", user.id)

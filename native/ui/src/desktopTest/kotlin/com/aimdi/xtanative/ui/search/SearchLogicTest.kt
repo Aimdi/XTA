@@ -1,14 +1,12 @@
 package com.aimdi.xtanative.ui.search
 
 import com.aimdi.xtanative.core.x.model.XEntity
-import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.core.x.search.XAdvancedSearch
 import com.aimdi.xtanative.core.x.search.XAdvancedSearch.Filter
 import com.aimdi.xtanative.core.x.search.XSearchView
-import com.aimdi.xtanative.store.settings.MediaGridLayout
 import java.time.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -19,8 +17,6 @@ class SearchLogicTest {
     private val maya = XUser("1", "maya", "Maya Rivers")
     private val jo = XUser("2", "jo", "Jo")
 
-    private fun photo(width: Int = 100, height: Int = 100) = XMedia(XMedia.Kind.PHOTO, "https://pbs.twimg.com/media/a.jpg", width, height)
-
     @Test
     fun aRouteNamesItsTab() {
         assertEquals(SearchTab.PEOPLE, SearchTab.of("people"))
@@ -28,29 +24,6 @@ class SearchLogicTest {
         assertEquals(SearchTab.TOP, SearchTab.of(null))
         assertEquals(SearchTab.TOP, SearchTab.of("trending"))
         assertEquals(listOf("Top", "Latest", "Media", null, null), SearchTab.entries.map { it.product })
-    }
-
-    @Test
-    fun mediaTilesAreEachPostsOwnAndARepostsAreThePostReposted() {
-        val own = XPost("10", maya, null, "two photos", media = listOf(photo(), photo()))
-        val original = XPost("20", jo, null, "a photo", media = listOf(photo()))
-        val repost = XPost("21", maya, null, "", reposted = original)
-        val tiles = MediaTile.of(listOf(XThread("10", listOf(own)), XThread("21", listOf(repost))))
-        assertEquals(listOf("10/0", "10/1", "20/0"), tiles.map { it.key })
-        assertEquals(listOf(0, 1, 0), tiles.map { it.index })
-    }
-
-    @Test
-    fun theGridFollowsTheMediaSettings() {
-        assertEquals(MediaGridShape(3, false), MediaGridShape.of(MediaGridLayout.MASONRY, 3))
-        assertEquals(MediaGridShape(5, false), MediaGridShape.of(MediaGridLayout.MASONRY, 9))
-        assertEquals(MediaGridShape(2, false), MediaGridShape.of(MediaGridLayout.TWO_COLUMNS, 4))
-        val feed = MediaGridShape.of(MediaGridLayout.FEED, 3)
-        assertEquals(1, feed.columns)
-        assertEquals(1.5f, feed.aspectOf(photo(300, 200)))
-        assertEquals(MediaGridShape.MIN_ASPECT, feed.aspectOf(photo(100, 400)))
-        assertEquals(MediaGridShape.MAX_ASPECT, feed.aspectOf(photo(1000, 100)))
-        assertEquals(1f, MediaGridShape.of(MediaGridLayout.MASONRY, 3).aspectOf(photo(300, 200)))
     }
 
     @Test

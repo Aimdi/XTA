@@ -5,6 +5,7 @@ import com.aimdi.xtanative.core.x.model.PhotoSize
 import com.aimdi.xtanative.core.x.model.XAffiliation
 import com.aimdi.xtanative.core.x.model.XArticle
 import com.aimdi.xtanative.core.x.model.XCard
+import com.aimdi.xtanative.core.x.model.XCardImage
 import com.aimdi.xtanative.core.x.model.XCodec
 import com.aimdi.xtanative.core.x.model.XCommunityNote
 import com.aimdi.xtanative.core.x.model.XConversation
@@ -96,7 +97,10 @@ class XModelHelpersTest {
             live = XLive(mediaKey = "28_a", broadcastId = "1a", imageUrl = "https://thumb", aspectRatio = 2f),
             grokShare = XGrokShare("https://x.com/i/grok/share/1", "q", "a", "grok", "https://grok.png"),
             quotedWithheld = XWithheld("3", "gone", subscribersOnly = true, screenName = "b"),
-            card = XCard.Link("https://l", "T", null, "l", null, null, null, large = true, media = listOf(XMedia(XMedia.Kind.PHOTO, "https://p.jpg", 1, 1)), kind = "summary_large_image"),
+            card = XCard.Link(
+                "https://l", "T", null, "l", null, null, null, large = true, media = listOf(XMedia(XMedia.Kind.PHOTO, "https://p.jpg", 1, 1)), kind = "summary_large_image",
+                imageSizes = mapOf(PhotoSize.THUMB to XCardImage("https://s.jpg", 144, 144), PhotoSize.LARGE to XCardImage("https://xl.jpg", null, null)),
+            ),
         )
         val threads = pages.flatten() + XThread("7", listOf(extras))
         val expected = threads.map { thread -> thread.copy(posts = thread.posts.map { it.slim() }) }

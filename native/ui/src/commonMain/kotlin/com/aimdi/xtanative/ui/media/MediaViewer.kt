@@ -36,6 +36,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateMapOf
@@ -58,15 +59,13 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.x.model.XMedia
-import com.aimdi.xtanative.store.settings.MediaPrefs
-import com.aimdi.xtanative.store.settings.MediaQuality
 import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.turnTo
 import com.aimdi.xtanative.ui.downloads.MediaSharing
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.posts_open_post
 import com.aimdi.xtanative.ui.generated.resources.reader_back
 import com.aimdi.xtanative.ui.generated.resources.reader_download
 import com.aimdi.xtanative.ui.generated.resources.reader_link_copied
@@ -77,6 +76,7 @@ import com.aimdi.xtanative.ui.generated.resources.reader_media_previous
 import com.aimdi.xtanative.ui.generated.resources.reader_media_unknown
 import com.aimdi.xtanative.ui.generated.resources.reader_share_image
 import com.aimdi.xtanative.ui.links.LocalLinks
+import com.aimdi.xtanative.ui.post.PostIcons
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -109,14 +109,34 @@ fun ImageViewer(url: String, username: String, onClose: () -> Unit) {
     MediaPages(remember(url, username) { ViewerMedia.image(url, username) }, 0, onClose)
 }
 
-/** The viewer's pages over [viewed], from [start]. */
+/**
+ * A grid's, a card's or a poll's media full screen (media_grid_lightbox.dart):
+ * the pages of the gallery [Galleries] keeps under [key], from [start], as
+ * they grow; near the last one it asks the grid for more, and "Open post"
+ * ([openPost]) opens the post of the page shown at that picture. A gallery
+ * no longer kept, as after the app was restarted, leaves post
+ * [fallbackPostId]'s own media at [fallbackIndex].
+ */
+@Composable
+fun GalleryViewer(key: String, start: Int, fallbackPostId: String?, fallbackIndex: Int, openPost: (postId: String, mediaIndex: Int) -> Unit, onClose: () -> Unit) {
+    val gallery = remember(key) { Galleries.get(key) }
+    if (gallery == null) {
+        MediaViewer(fallbackPostId.orEmpty(), fallbackIndex, onClose)
+        return
+    }
+    val pages by gallery.updates.collectAsState(gallery.pages())
+    val viewed = remember(pages, gallery) { ViewerMedia(pages, gallery.asIs) }
+    val open: ((ViewerPage) -> Unit)? = if (gallery.opensPosts) ({ page -> openPost(page.postId, page.index) }) else null
+    MediaPages(viewed, start, onClose, onOpenPost = open, onNearEnd = gallery.loadMore)
+}
+
+/** The viewer's pages over [viewed], from [start]; [onOpenPost] puts "Open post" in its bar, and [onNearEnd] hears it near the last page. */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit) {
+private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onOpenPost: ((ViewerPage) -> Unit)? = null, onNearEnd: (() -> Unit)? = null) {
     val graph = LocalGraph.current
     val items = viewed.items
-    val settings by graph.settings.state.collectAsStateWithLifecycle()
-    val size = MediaFiles.viewerSize(settings?.get(MediaPrefs.imageQuality) ?: MediaQuality.MEDIUM)
+    val size = rememberPhotoSize()
     val reduced = LocalReducedMotion.current
     val saver = LocalMediaSaver.current
     val links = LocalLinks.current
@@ -145,6 +165,9 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit) {
     }
 
     LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
+    if (onNearEnd != null) {
+        LaunchedEffect(pager.currentPage, items.size) { if (MediaGallery.nearEnd(pager.currentPage, items.size)) onNearEnd() }
+    }
     Box(
         Modifier
             .fillMaxSize()
@@ -163,8 +186,11 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit) {
             .focusable(),
     ) {
         Column(Modifier.fillMaxSize()) {
-            val current = items.getOrNull(pager.currentPage)
+            val current = viewed.pages.getOrNull(pager.currentPage)
             ViewerBar(pager, items.size, backdrop, onClose) {
+                if (onOpenPost != null && current != null) {
+                    IconButton(onClick = { onOpenPost(current) }) { Icon(PostIcons.OpenInNew, stringResource(Res.string.posts_open_post), tint = Color.White) }
+                }
                 val save = current?.let { viewed.save(it, playing[pager.currentPage]) }
                 if (saver != null && save != null) {
                     IconButton(onClick = { saver.save(save) }) { Icon(ReaderIcons.Download, stringResource(Res.string.reader_download), tint = Color.White) }
@@ -183,7 +209,7 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit) {
                         when (item.kind) {
                             XMedia.Kind.PHOTO -> ZoomablePhoto(viewed.shownUrl(item, size), item.alt, motion = !reduced, onBackdrop = { backdrop = it }, onClose = onClose)
                             XMedia.Kind.VIDEO, XMedia.Kind.GIF -> {
-                                val download: ((String) -> Unit)? = if (saver == null) null else { url -> viewed.save(item, url)?.let(saver::save) }
+                                val download: ((String) -> Unit)? = if (saver == null) null else { url -> viewed.save(viewed.pages[page], url)?.let(saver::save) }
                                 VideoPage(item, active = pager.currentPage == page, onPlaying = { url -> playing[page] = url }, onDownload = download)
                             }
                         }

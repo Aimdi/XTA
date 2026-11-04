@@ -93,14 +93,32 @@ class MediaRulesTest {
     fun aPictureThatIsNoPostsIsShownAndSavedAsItIs() {
         val face = "https://pbs.twimg.com/profile_images/1/face_400x400.jpg"
         val alone = ViewerMedia.image(face, "maya")
-        val shown = alone.items.single()
-        assertEquals(face, alone.shownUrl(shown, PhotoSize.MEDIUM))
+        val shown = alone.pages.single()
+        assertEquals(face, alone.shownUrl(shown.media, PhotoSize.MEDIUM))
         assertEquals(MediaSave(face, "maya-face_400x400.jpg", XMedia.Kind.PHOTO, ""), alone.save(shown))
         val photo = XMedia(XMedia.Kind.PHOTO, "https://pbs.twimg.com/media/Fabc.jpg", 100, 100)
-        val posted = ViewerMedia(listOf(photo), "maya", "42")
+        val posted = ViewerMedia.of(listOf(photo), "maya", "42")
         assertEquals("https://pbs.twimg.com/media/Fabc?format=jpg&name=medium", posted.shownUrl(photo, PhotoSize.MEDIUM))
-        assertEquals(MediaFiles.save(photo, "42", "maya"), posted.save(photo))
+        assertEquals(MediaFiles.save(photo, "42", "maya"), posted.save(posted.pages.single()))
         assertTrue(ViewerMedia.of(null, "42").items.isEmpty())
+    }
+
+    @Test
+    fun aPollsPicturesAreShownAsTheyAreAndSavedUnderItsAuthor() {
+        val choices = ViewerMedia.images(listOf("https://pbs.twimg.com/card_img/1/a?format=jpg&name=orig", "https://pbs.twimg.com/card_img/1/b?format=png&name=orig"), "maya", "42")
+        assertEquals(listOf(0, 1), choices.pages.map { it.index })
+        assertEquals("https://pbs.twimg.com/card_img/1/b?format=png&name=orig", choices.shownUrl(choices.items[1], PhotoSize.SMALL))
+        assertEquals(MediaSave("https://pbs.twimg.com/card_img/1/a?format=jpg&name=orig", "maya-a.jpg", XMedia.Kind.PHOTO, "42"), choices.save(choices.pages[0]))
+    }
+
+    @Test
+    fun aGridsViewerSavesEachPageUnderItsOwnPostsAuthor() {
+        val photo = XMedia(XMedia.Kind.PHOTO, "https://pbs.twimg.com/media/Fa.jpg", 100, 100)
+        val pages = listOf(ViewerPage(photo, "1", "maya", 0), ViewerPage(video, "2", "jo", 3))
+        val grid = ViewerMedia(pages)
+        assertEquals(listOf(photo, video), grid.items)
+        assertEquals("maya-Fa.jpg", grid.save(pages[0])?.fileName)
+        assertEquals(MediaSave(VideoRules.qualities(video).first().url, "jo-high.mp4", XMedia.Kind.VIDEO, "2"), grid.save(pages[1]))
     }
 
     @Test

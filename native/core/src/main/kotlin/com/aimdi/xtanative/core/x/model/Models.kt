@@ -75,6 +75,12 @@ data class XMedia(
     val mp4s: List<XVideoVariant> get() = variants.filter { it.contentType == "video/mp4" }.sortedByDescending { it.bitrate ?: 0 }
 }
 
+/** A card's picture at one of the sizes X sends it at. */
+data class XCardImage(val url: String, val width: Int?, val height: Int?) {
+    /** Width over height; null when X did not say. */
+    val aspectRatio: Float? get() = if (width != null && height != null && width > 0 && height > 0) width.toFloat() / height else null
+}
+
 /** What X attaches below a post's text besides media: a link preview or a poll. */
 sealed interface XCard {
     /**
@@ -83,7 +89,9 @@ sealed interface XCard {
      * (a unified card) may bring [media] instead: a video, or the pictures of a
      * carousel, all leading to [url]. [kind] is X's name for the preview
      * (`summary`, `summary_large_image`, `player`), "link" for another
-     * network's, null for the cards X builds itself.
+     * network's, null for the cards X builds itself. [imageSizes] is the
+     * picture at the other sizes X sent it at, which the image-quality
+     * setting picks among (_card.dart's imageKey).
      */
     data class Link(
         val url: String,
@@ -96,7 +104,26 @@ sealed interface XCard {
         val large: Boolean,
         val media: List<XMedia> = emptyList(),
         val kind: String? = null,
-    ) : XCard
+        val imageSizes: Map<PhotoSize, XCardImage> = emptyMap(),
+    ) : XCard {
+        /** What plugins built before [imageSizes] call. */
+        @Deprecated("Without imageSizes", level = DeprecationLevel.HIDDEN)
+        constructor(
+            url: String,
+            title: String,
+            description: String?,
+            domain: String?,
+            imageUrl: String?,
+            imageWidth: Int?,
+            imageHeight: Int?,
+            large: Boolean,
+            media: List<XMedia> = emptyList(),
+            kind: String? = null,
+        ) : this(url, title, description, domain, imageUrl, imageWidth, imageHeight, large, media, kind, emptyMap())
+
+        /** The picture at [size] where X sent one, else the one the card shows by default. */
+        fun imageAt(size: PhotoSize): XCardImage? = imageSizes[size] ?: imageUrl?.let { XCardImage(it, imageWidth, imageHeight) }
+    }
 
     /** A poll, as counted when the post was read. Read only: XTA Native never votes. */
     data class Poll(val choices: List<Choice>, val endsAt: Instant?, val final: Boolean) : XCard {

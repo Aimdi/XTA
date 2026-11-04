@@ -94,7 +94,7 @@ import org.jetbrains.compose.resources.stringResource
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostScreen(id: String, actions: PostActions, onBack: () -> Unit) {
+fun PostScreen(id: String, actions: PostActions, onBack: () -> Unit, startMedia: Int = 0) {
     val graph = LocalGraph.current
     val vm: PostViewModel = viewModel(key = "post-$id") { PostViewModel(graph, id) }
     val state by vm.ui.collectAsStateWithLifecycle()
@@ -139,7 +139,7 @@ fun PostScreen(id: String, actions: PostActions, onBack: () -> Unit) {
                     items(state.before, key = { "before-" + it.id }, contentType = { "post" }) { post ->
                         PostCard(post, actions, continues = true, midThread = post !== state.before.first())
                     }
-                    focalItems(state, id, actions, vm, prefs)
+                    focalItems(state, id, actions, vm, prefs, startMedia)
                     val problem = state.problem
                     when {
                         state.loading && state.replies.isEmpty() -> item(key = "loading") { LoadingRow() }
@@ -157,11 +157,11 @@ fun PostScreen(id: String, actions: PostActions, onBack: () -> Unit) {
     }
 }
 
-private fun LazyListScope.focalItems(state: PostUi, id: String, actions: PostActions, vm: PostViewModel, prefs: PostPrefs) {
+private fun LazyListScope.focalItems(state: PostUi, id: String, actions: PostActions, vm: PostViewModel, prefs: PostPrefs, startMedia: Int) {
     val focal = state.focal
     when {
         focal != null -> {
-            item(key = "focal", contentType = "focal") { FocalPost(focal, actions) }
+            item(key = "focal", contentType = "focal") { FocalPost(focal, actions, startMedia) }
             if (focal.shown.replyCount > 0 && !(prefs.zen && !state.repliesRevealed)) item(key = "sort") { ReplySortBar(state.sort, vm::select) }
         }
         state.focalWithheld != null || state.gone -> item(key = "focal-gone") {
@@ -304,7 +304,7 @@ internal fun <T> SortChip(value: T, options: List<T>, label: @Composable (T) -> 
  * views line, and the counts.
  */
 @Composable
-private fun FocalPost(post: XPost, actions: PostActions) {
+private fun FocalPost(post: XPost, actions: PostActions, startMedia: Int) {
     val scope = postScope()
     val shown = post.shown
     val translation = rememberPostTranslation(shown, scope)
@@ -347,7 +347,7 @@ private fun FocalPost(post: XPost, actions: PostActions) {
             )
         }
         TranslationFailure(translation)
-        PostAttachments(shown, scope, actions, playing = false, gap = 12.dp)
+        PostAttachments(shown, scope, actions, playing = false, gap = 12.dp, startMedia = startMedia)
         if (article != null) {
             ArticleBody(article, actions, Modifier.padding(top = 12.dp), header = { PostFooter(shown, actions, FooterCounts.of(shown, scope.prefs, showViews = false)) })
         } else if (shown.article != null) {

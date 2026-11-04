@@ -29,7 +29,6 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -68,13 +67,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
-import com.aimdi.xtanative.core.x.model.PhotoSize
-import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.core.x.model.XUser
-import com.aimdi.xtanative.core.x.model.photoUrl
 import com.aimdi.xtanative.core.x.parse.XText
 import com.aimdi.xtanative.store.saved.ArchiveFilter
-import com.aimdi.xtanative.store.settings.MediaGridLayout
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
@@ -113,6 +108,11 @@ import com.aimdi.xtanative.ui.generated.resources.posts_tab_replies
 import com.aimdi.xtanative.ui.generated.resources.posts_tab_saved
 import com.aimdi.xtanative.ui.generated.resources.posts_user_not_found
 import com.aimdi.xtanative.ui.generated.resources.search
+import com.aimdi.xtanative.ui.media.MediaGridLook
+import com.aimdi.xtanative.ui.media.MediaGridRows
+import com.aimdi.xtanative.ui.media.mediaGrid
+import com.aimdi.xtanative.ui.media.rememberMediaGridLook
+import com.aimdi.xtanative.ui.media.rememberMediaGridRows
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.post.PostScopeProvider
@@ -121,7 +121,8 @@ import com.aimdi.xtanative.ui.post.SensitiveGate
 import com.aimdi.xtanative.ui.post.ThreadRows
 import com.aimdi.xtanative.ui.post.VerifiedBadges
 import com.aimdi.xtanative.ui.post.LocalPostScope
-import com.aimdi.xtanative.ui.post.rememberPostPrefs
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -181,8 +182,8 @@ fun ProfileScreen(screenName: String, actions: PostActions, onBack: () -> Unit) 
         },
     ) { padding ->
         PostScopeProvider(profileScreenName = shownName) {
-            val prefs = rememberPostPrefs()
             val reveal = LocalPostScope.current?.sensitive
+            val grid = rememberProfileGrid(vm, state, actions)
             val failure = state.failure
             // Padding, not content padding: the tab row sticks below the bar, not under it.
             PullToRefreshBox(
@@ -215,7 +216,7 @@ fun ProfileScreen(screenName: String, actions: PostActions, onBack: () -> Unit) 
                                 SensitiveGate(reveal, stringResource(Res.string.posts_possibly_sensitive_profile), framed = false, modifier = Modifier.padding(vertical = 16.dp)) {}
                             }
                             else -> {
-                                tabContent(state, tab, actions, prefs.gridLayout, prefs.gridColumns)
+                                tabContent(state, tab, actions, grid)
                                 tabFooter(state, tab, vm)
                             }
                         }
@@ -250,7 +251,7 @@ fun ProfileScreen(screenName: String, actions: PostActions, onBack: () -> Unit) 
 enum class ProfileSheet { NONE, FOLLOW, FILTERS, NOTE, FOLLOWED_BY }
 
 /** What a tab shows: Posts (the pinned post first), Replies, the media grid, or the device's Saved. */
-private fun LazyListScope.tabContent(state: ProfileUi, tab: TabUi, actions: PostActions, layout: MediaGridLayout, columns: Int) {
+private fun LazyListScope.tabContent(state: ProfileUi, tab: TabUi, actions: PostActions, grid: MediaGridRows) {
     when (state.tab) {
         ProfileTab.POSTS -> {
             val pinnedIds = state.pinned.mapTo(HashSet()) { it.id }
@@ -262,54 +263,20 @@ private fun LazyListScope.tabContent(state: ProfileUi, tab: TabUi, actions: Post
         ProfileTab.REPLIES, ProfileTab.SAVED -> items(tab.threads, key = { state.tab.name + "-" + it.id }, contentType = { "thread" }) { thread ->
             ThreadRows(thread, actions)
         }
-        ProfileTab.MEDIA -> mediaGrid(tab.tiles, actions, layout, columns)
+        ProfileTab.MEDIA -> mediaGrid(grid)
     }
 }
 
-private fun LazyListScope.mediaGrid(tiles: List<MediaTile>, actions: PostActions, layout: MediaGridLayout, columns: Int) {
-    if (layout == MediaGridLayout.FEED) {
-        val posts = tiles.map { it.post }.distinctBy { it.id }
-        items(posts, key = { "media-post-" + it.id }) { post -> ThreadRows(XThread(post.id, listOf(post)), actions) }
-        return
-    }
-    val perRow = if (layout == MediaGridLayout.TWO_COLUMNS) 2 else columns
-    items(tiles.chunked(perRow), key = { row -> "media-" + row.first().key }, contentType = { "media" }) { row ->
-        Row(Modifier.fillMaxWidth().padding(bottom = 2.dp), horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-            row.forEach { tile -> MediaThumb(tile, actions, Modifier.weight(1f)) }
-            repeat(perRow - row.size) { Spacer(Modifier.weight(1f)) }
-        }
-    }
-}
-
+/**
+ * The Media tab's grid (_media_grid.dart): the reader's layout, Livestreams
+ * one 16:9 tile a row; a tap opens the viewer over every tile loaded, which
+ * reads on as the reader nears the last.
+ */
 @Composable
-private fun MediaThumb(tile: MediaTile, actions: PostActions, modifier: Modifier) {
-    val description = stringResource(
-        when (tile.kind) {
-            TileKind.PHOTO -> Res.string.posts_filter_photos
-            TileKind.VIDEO -> Res.string.posts_filter_videos
-            TileKind.BROADCAST -> Res.string.posts_filter_broadcasts
-        },
-    )
-    Box(
-        modifier
-            .aspectRatio(1f)
-            .background(MaterialTheme.colorScheme.surfaceVariant)
-            .clickable { if (tile.kind == TileKind.BROADCAST) actions.openPost(tile.post.id) else actions.openMedia(tile.post.id, tile.index) },
-    ) {
-        tile.thumbnailUrl?.let { url ->
-            AsyncImage(
-                model = photoUrl(url, PhotoSize.SMALL),
-                contentDescription = tile.post.media.getOrNull(tile.index)?.alt ?: description,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize(),
-            )
-        }
-        when (tile.kind) {
-            TileKind.PHOTO -> Unit
-            TileKind.VIDEO -> Icon(Icons.Filled.PlayArrow, null, tint = Color.White, modifier = Modifier.align(Alignment.Center).size(32.dp))
-            TileKind.BROADCAST -> Icon(PostIcons.Sensors, null, tint = Color.White, modifier = Modifier.align(Alignment.Center).size(32.dp))
-        }
-    }
+private fun rememberProfileGrid(vm: ProfileViewModel, state: ProfileUi, actions: PostActions): MediaGridRows {
+    val updates = remember(vm) { vm.ui.map { it.of(ProfileTab.MEDIA).tiles }.distinctUntilChanged() }
+    val look = if (state.mediaFilter == MediaFilter.BROADCASTS) MediaGridLook.BROADCASTS else rememberMediaGridLook()
+    return rememberMediaGridRows(state.of(ProfileTab.MEDIA).tiles, actions, updates, vm::loadMore, look)
 }
 
 private fun LazyListScope.tabFooter(state: ProfileUi, tab: TabUi, vm: ProfileViewModel) {

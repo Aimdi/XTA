@@ -3,7 +3,6 @@ package com.aimdi.xtanative.ui.saved
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,16 +17,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import com.aimdi.xtanative.ui.home.rememberRetappedList
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
@@ -52,9 +47,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.aimdi.xtanative.core.x.model.PhotoSize
-import com.aimdi.xtanative.core.x.model.XMedia
-import com.aimdi.xtanative.core.x.model.photoUrl
 import com.aimdi.xtanative.store.offline.OfflineSaved
 import com.aimdi.xtanative.store.saved.LocalPost
 import com.aimdi.xtanative.store.saved.SavedContent
@@ -79,6 +71,8 @@ import com.aimdi.xtanative.ui.generated.resources.saved_empty_search
 import com.aimdi.xtanative.ui.generated.resources.saved_likes_ungrouped
 import com.aimdi.xtanative.ui.generated.resources.saved_no_media
 import com.aimdi.xtanative.ui.generated.resources.saved_note_button
+import com.aimdi.xtanative.ui.media.mediaGrid
+import com.aimdi.xtanative.ui.media.rememberMediaGridRows
 import com.aimdi.xtanative.ui.offline.OfflineSavedAction
 import com.aimdi.xtanative.ui.plugins.NetworkPostCard
 import com.aimdi.xtanative.ui.post.PostActions
@@ -262,8 +256,11 @@ private fun KeptNetworkPost(content: SavedContent) {
     }
 }
 
-/** The grid Media only draws: a tap opens the media, a long press offers to remove its post. */
-@OptIn(ExperimentalFoundationApi::class)
+/**
+ * The grid Media only draws (saved_screen.dart's StaticMediaGrid), in the
+ * reader's grid layout: a tap opens the viewer over every tile, a long
+ * press offers to remove its post.
+ */
 @Composable
 private fun MediaGrid(tiles: List<SavedMediaTile>, actions: PostActions, contentPadding: PaddingValues, onRemove: (String) -> Unit) {
     val graph = LocalGraph.current
@@ -271,27 +268,11 @@ private fun MediaGrid(tiles: List<SavedMediaTile>, actions: PostActions, content
     if (tiles.isEmpty()) {
         Message(stringResource(Res.string.saved_no_media))
     } else {
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            contentPadding = contentPadding,
-            horizontalArrangement = Arrangement.spacedBy(2.dp),
-            verticalArrangement = Arrangement.spacedBy(2.dp),
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            items(tiles, key = { it.savedId + "/" + it.index }) { tile ->
-                val open = {
-                    // The viewer draws the post's media from the posts on screen.
-                    graph.posts.remember(tile.post)
-                    actions.openMedia(tile.postId, tile.index)
-                }
-                Box(Modifier.combinedClickable(onClick = open, onLongClick = { removing = tile.savedId })) {
-                    SquareImage(photoUrl(tile.media.url, PhotoSize.SMALL), Modifier.fillMaxWidth(), tile.media.alt)
-                    if (tile.media.kind != XMedia.Kind.PHOTO) {
-                        Icon(Icons.Filled.PlayArrow, contentDescription = null, tint = Color.White, modifier = Modifier.align(Alignment.Center).size(32.dp))
-                    }
-                }
-            }
-        }
+        val items = remember(tiles) { tiles.map { it.item } }
+        // "Open post" in the viewer draws the kept post at once.
+        LaunchedEffect(items) { items.forEach { graph.posts.remember(it.post) } }
+        val grid = rememberMediaGridRows(items, actions, onLongPress = { item -> removing = tiles.firstOrNull { it.item.key == item.key }?.savedId })
+        LazyColumn(Modifier.fillMaxSize(), contentPadding = contentPadding) { mediaGrid(grid) }
     }
     removing?.let { id ->
         ConfirmDialog(

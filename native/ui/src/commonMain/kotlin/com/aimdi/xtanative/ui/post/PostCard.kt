@@ -110,6 +110,9 @@ val XThread.hasVideo: Boolean get() = posts.any { it.hasVideo }
 private val AvatarSize = 40.dp
 private val RailStart = 16.dp
 
+/** How far a post's media row runs past its column: the post's own margin, to the screen's edge. */
+private val MediaBleed = 16.dp
+
 /**
  * A post as a feed row (tweet.dart): who reposted it, pinned, the thread and
  * the community above; the author with translate and ⋯ at the end; then the
@@ -232,20 +235,27 @@ internal fun ReplyingTo(screenName: String, replyToId: String?, actions: PostAct
  * What a post carries under its text, in XTA's order: the paid-subscriber
  * line, an article link, the media (behind the sensitive gate when X marks
  * it), the quote, the card, a Grok share, the community note, the article,
- * a broadcast or Space and the price strip.
+ * a broadcast or Space and the price strip. The media's row starts at
+ * [startMedia], the picture a grid's viewer opened the post at, and runs off
+ * the screen's edge except inside a quote.
  */
 @Composable
-internal fun PostAttachments(shown: XPost, scope: PostScope, actions: PostActions, playing: Boolean, gap: Dp, quoted: Boolean = false) {
+internal fun PostAttachments(shown: XPost, scope: PostScope, actions: PostActions, playing: Boolean, gap: Dp, quoted: Boolean = false, startMedia: Int = 0) {
     if (shown.subscriberPreview) SubscriberPreviewLine(shown.author.screenName)
     PostView.articleLink(shown)?.let { ArticleLinkCard({ actions.openArticle(shown.id) }, Modifier.padding(top = gap)) }
     if (shown.media.isNotEmpty()) {
-        if (shown.sensitive) {
-            SensitiveGate(scope.sensitive, modifier = Modifier.padding(top = gap)) {
-                MediaGrid(shown.media, { index -> actions.openMedia(shown.id, index) }, Modifier.padding(top = gap), playing = playing, post = shown)
-            }
-        } else {
-            MediaGrid(shown.media, { index -> actions.openMedia(shown.id, index) }, Modifier.padding(top = gap), playing = playing, post = shown)
+        val media = @Composable {
+            MediaGrid(
+                shown.media,
+                { index -> actions.openMedia(shown.id, index) },
+                Modifier.padding(top = gap),
+                playing = playing,
+                post = shown,
+                start = startMedia,
+                bleed = if (quoted) 0.dp else MediaBleed,
+            )
         }
+        if (shown.sensitive) SensitiveGate(scope.sensitive, modifier = Modifier.padding(top = gap)) { media() } else media()
     }
     when (val quote = PostView.quote(shown, quoted)) {
         is QuoteBlock.Shown -> QuotedPost(quote.post, actions, Modifier.padding(top = gap))

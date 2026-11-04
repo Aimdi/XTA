@@ -11,6 +11,8 @@ import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.store.follows.RememberedFollows
 import com.aimdi.xtanative.store.settings.ProfileTab as StoredTab
+import com.aimdi.xtanative.ui.media.MediaGridItem
+import com.aimdi.xtanative.ui.media.MediaGridItems
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -55,9 +57,10 @@ class ProfileRulesTest {
             XThread("3", listOf(post("3", media = listOf(photo(3), video), live = XLive(broadcastId = "1abc")))),
             XThread("4", listOf(post("4", live = XLive(spaceId = "1room", imageUrl = "https://card/space.jpg")))),
         )
-        val tiles = MediaTiles.of(threads)
+        val tiles = MediaGridItems.of(threads)
         assertEquals(listOf("1/0", "1/1", "2/0", "3/0", "4/0"), tiles.map { it.key })
-        assertEquals(listOf(TileKind.PHOTO, TileKind.PHOTO, TileKind.VIDEO, TileKind.BROADCAST, TileKind.BROADCAST), tiles.map { it.kind })
+        val kinds = listOf(MediaGridItem.Kind.PHOTO, MediaGridItem.Kind.PHOTO, MediaGridItem.Kind.GIF, MediaGridItem.Kind.BROADCAST, MediaGridItem.Kind.BROADCAST)
+        assertEquals(kinds, tiles.map { it.kind })
         assertEquals("https://pbs.twimg.com/v.jpg", tiles[3].thumbnailUrl, "a live post with photos must not turn into photos")
         assertEquals("https://card/space.jpg", tiles[4].thumbnailUrl)
         assertEquals(listOf("2/0"), tiles.filter(MediaFilter.VIDEOS::accepts).map { it.key }, "a GIF plays like a video")
@@ -68,8 +71,8 @@ class ProfileRulesTest {
         assertEquals(4, MediaFilter.ALL.lookahead)
 
         val seen = HashSet<String>()
-        assertEquals(5, MediaTiles.unseen(tiles, seen).size)
-        assertEquals(emptyList(), MediaTiles.unseen(tiles.take(2), seen), "pages overlap at their edges")
+        assertEquals(5, MediaGridItems.unseen(tiles, seen).size)
+        assertEquals(emptyList(), MediaGridItems.unseen(tiles.take(2), seen), "pages overlap at their edges")
     }
 
     @Test

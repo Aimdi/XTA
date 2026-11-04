@@ -19,6 +19,8 @@ import com.aimdi.xtanative.store.saved.XtaTweetJson
 import com.aimdi.xtanative.store.saved.profileArchive
 import com.aimdi.xtanative.store.settings.GeneralPrefs
 import com.aimdi.xtanative.store.settings.ProfileTab as StoredTab
+import com.aimdi.xtanative.ui.media.MediaGridItem
+import com.aimdi.xtanative.ui.media.MediaGridItems
 import com.aimdi.xtanative.ui.post.cached
 import com.aimdi.xtanative.ui.post.page
 import kotlinx.coroutines.CancellationException
@@ -38,7 +40,7 @@ import kotlinx.coroutines.launch
 data class TabUi(
     val threads: List<XThread> = emptyList(),
     /** The media grid's tiles, for the Media tab. */
-    val tiles: List<MediaTile> = emptyList(),
+    val tiles: List<MediaGridItem> = emptyList(),
     val loading: Boolean = false,
     val loaded: Boolean = false,
     val problem: Problem? = null,
@@ -334,15 +336,15 @@ class ProfileViewModel(private val graph: AppGraph, private val screenName: Stri
      * read before the grid says there are none; broadcasts are found among
      * the profile's posts, the rest in its media timeline.
      */
-    private suspend fun mediaPage(user: XUser, cursor: String?): Pair<List<MediaTile>, Boolean> {
+    private suspend fun mediaPage(user: XUser, cursor: String?): Pair<List<MediaGridItem>, Boolean> {
         val filter = state.value.mediaFilter
         var next = cursor
-        var tiles = emptyList<MediaTile>()
+        var tiles = emptyList<MediaGridItem>()
         var reads = 0
         do {
             val page = if (filter.readsPosts) graph.client.userPosts(user.id, next) else graph.client.userMedia(user.id, next)
             graph.posts.remember(page.threads)
-            tiles = MediaTiles.unseen(MediaTiles.of(page.threads).filter(filter::accepts), seenTiles)
+            tiles = MediaGridItems.unseen(MediaGridItems.of(page.threads).filter(filter::accepts), seenTiles)
             next = page.bottomCursor?.takeIf { it != next }
             reads++
         } while (tiles.isEmpty() && next != null && reads <= filter.lookahead)

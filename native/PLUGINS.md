@@ -180,9 +180,12 @@ where XTA's writes it (`NetworkPrefs.shared`: the web sources' read marks
 in RSS's `plugin.rss.read_ids`).
 
 `:ui`'s `ui.common` (avatar, hairline, loading row, times, `longPressOver`
-for a long press over a whole card, its tappable parts included) is there
-too: its avatar asks for a picture as the tiles do, with the headers its
-server wants (Pixiv's Referer). A plugin may draw with the app's other
+for a long press over a whole card, its tappable parts included, and a
+picture's marks as XTA draws them: `MediaBadge`, `AltBadge` with
+`AltTextDialog`, and `ShowMediaTile` with `mediaShown` for Settings ›
+Media's "Load media manually") is there too: its avatar asks for a
+picture as the tiles do, with the headers its server wants (Pixiv's
+Referer). A plugin may draw with the app's other
 public building blocks where they fit:
 its icon sets (`PostIcons`, `DiscoverIcons`, `GroupIcons`), `ThreadRows` for
 X posts, `rememberRowDrag` for a list dragged into order. Whatever a plugin

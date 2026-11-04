@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -50,8 +51,13 @@ import com.aimdi.xtanative.ui.links.BindLinkScreens
 import com.aimdi.xtanative.ui.links.LinkBrowserScreen
 import com.aimdi.xtanative.ui.links.LinkScreens
 import com.aimdi.xtanative.ui.links.LocalLinks
+import com.aimdi.xtanative.ui.media.Galleries
+import com.aimdi.xtanative.ui.media.GalleryViewer
 import com.aimdi.xtanative.ui.media.ImageViewer
+import com.aimdi.xtanative.ui.media.LocalGalleryOpener
+import com.aimdi.xtanative.ui.media.MediaGallery
 import com.aimdi.xtanative.ui.media.MediaViewer
+import com.aimdi.xtanative.ui.media.ViewerPage
 import com.aimdi.xtanative.ui.offline.OfflineLibraryScreen
 import com.aimdi.xtanative.ui.offline.OfflineMediaScreen
 import com.aimdi.xtanative.ui.pluginstore.AttachPluginNavigation
@@ -95,9 +101,10 @@ private object Routes {
     const val IMPORT = "import"
     const val HOME = "home"
     const val DECK = "deck"
-    const val POST = "post/{id}"
+    const val POST = "post/{id}?media={media}"
     const val PROFILE = "profile/{screenName}"
     const val MEDIA = "media/{postId}/{index}"
+    const val GALLERY = "gallery/{key}/{index}?post={post}&at={at}"
     const val SEARCH = "search?q={q}&tab={tab}"
     const val SETTINGS = "settings"
     const val TRENDS = "trends"
@@ -133,9 +140,14 @@ private object Routes {
     const val ARTICLE = "article/{postId}"
     const val LIBRARY = "library?q={q}"
 
-    fun post(id: String) = "post/$id"
+    /** Post [id], its media's row at picture [media]: the one a grid's viewer was on. */
+    fun post(id: String, media: Int = 0) = if (media > 0) "post/$id?media=$media" else "post/$id"
     fun profile(screenName: String) = "profile/" + encoded(screenName)
     fun media(postId: String, index: Int) = "media/$postId/$index"
+
+    /** The viewer over the gallery kept as [key], from [index]; [page] is where it falls back to once the gallery is gone. */
+    fun gallery(key: String, index: Int, page: ViewerPage?) =
+        "gallery/" + encoded(key) + "/$index" + (page?.let { "?post=" + encoded(it.postId) + "&at=" + it.index } ?: "")
     fun search(query: String?) = search(query, null)
 
     /** The search of [query] on [tab] (a [SearchTab.routeName]); either may be left out. */
@@ -274,7 +286,11 @@ fun XtaNativeRoot() {
     AttachPluginBackups()
     OpenVoiceSettingsWhenAsked(nav)
 
-    DesktopNavigation(nav) { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes)) }
+    // A grid's tiles open the viewer over everything it has loaded (media_grid_lightbox.dart).
+    val galleries = remember(nav) { { gallery: MediaGallery, at: Int -> nav.navigate(Routes.gallery(Galleries.put(gallery), at, gallery.pages().getOrNull(at))) } }
+    CompositionLocalProvider(LocalGalleryOpener provides galleries) {
+        DesktopNavigation(nav) { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes)) }
+    }
 }
 
 /** The reading-aloud bar's "Voice settings" opens them over whatever screen is up. */
@@ -336,10 +352,10 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
         }
         composable(
             Routes.POST,
-            arguments = listOf(navArgument("id") { type = NavType.StringType }),
+            arguments = listOf(navArgument("id") { type = NavType.StringType }, navArgument("media") { type = NavType.IntType; defaultValue = 0 }),
             deepLinks = xLinks(".*/status/{id}"),
         ) { entry ->
-            PostScreen(entry.text("id").orEmpty(), actions, onBack = { nav.popBackStack() })
+            PostScreen(entry.text("id").orEmpty(), actions, onBack = { nav.popBackStack() }, startMedia = entry.arguments?.read { getIntOrNull("media") } ?: 0)
         }
         composable(
             Routes.PROFILE,
@@ -357,6 +373,28 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
             popExitTransition = motion.fadeExit,
         ) { entry ->
             MediaViewer(entry.text("postId").orEmpty(), entry.arguments?.read { getIntOrNull("index") } ?: 0, onClose = { nav.popBackStack() })
+        }
+        composable(
+            Routes.GALLERY,
+            arguments = listOf(
+                navArgument("key") { type = NavType.StringType },
+                navArgument("index") { type = NavType.IntType },
+                navArgument("post") { type = NavType.StringType; nullable = true; defaultValue = null },
+                navArgument("at") { type = NavType.IntType; defaultValue = 0 },
+            ),
+            enterTransition = motion.fadeEnter,
+            exitTransition = motion.fadeExit,
+            popEnterTransition = motion.fadeEnter,
+            popExitTransition = motion.fadeExit,
+        ) { entry ->
+            GalleryViewer(
+                entry.text("key").orEmpty(),
+                entry.arguments?.read { getIntOrNull("index") } ?: 0,
+                fallbackPostId = entry.text("post"),
+                fallbackIndex = entry.arguments?.read { getIntOrNull("at") } ?: 0,
+                openPost = { id, media -> nav.navigate(Routes.post(id, media)) },
+                onClose = { nav.popBackStack() },
+            )
         }
         composable(
             Routes.SEARCH,

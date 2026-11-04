@@ -90,8 +90,12 @@ import com.aimdi.xtanative.ui.generated.resources.discover_recent
 import com.aimdi.xtanative.ui.generated.resources.discover_search
 import com.aimdi.xtanative.ui.generated.resources.discover_search_x
 import com.aimdi.xtanative.ui.generated.resources.saved_search_library
+import com.aimdi.xtanative.ui.media.mediaGrid
+import com.aimdi.xtanative.ui.media.rememberMediaGridRows
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.saved.SavedIcons
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import org.jetbrains.compose.resources.stringResource
 
 /** Where the search screen leads, besides posts and profiles: communities, the antennas and the search of the reader's library. */
@@ -352,11 +356,12 @@ private fun PostResults(read: PagedRead<XThread, String>, list: LazyListState, a
 @Composable
 private fun MediaResults(vm: SearchViewModel, list: LazyListState, actions: PostActions, onRetry: () -> Unit, onMore: () -> Unit, padding: PaddingValues) {
     val paged by vm.media.state.collectAsStateWithLifecycle()
-    val shape by vm.mediaShape.collectAsStateWithLifecycle()
+    val updates = remember(vm) { vm.media.state.map { it.items }.distinctUntilChanged() }
+    val grid = rememberMediaGridRows(paged.items, actions, updates, onMore)
     LoadMoreNearEnd(list, paged, onMore)
     LaunchedEffect(paged.loading) { if (paged.loading) list.scrollToItem(0) }
     LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
-        mediaRows(paged.items, shape) { tile -> actions.openMedia(tile.postId, tile.index) }
+        mediaGrid(grid)
         pageStatus(paged, Res.string.discover_no_results, onRetry, onMore)
     }
 }

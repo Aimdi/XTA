@@ -3,14 +3,13 @@ package com.aimdi.xtanative.ui.profile
 import com.aimdi.xtanative.core.backup.FollowedAccount
 import com.aimdi.xtanative.core.x.XAnswerException
 import com.aimdi.xtanative.core.x.XUserUnavailableException
-import com.aimdi.xtanative.core.x.model.XMedia
-import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.store.follows.KnownFollow
 import com.aimdi.xtanative.store.follows.RememberedFollows
 import com.aimdi.xtanative.store.offline.TimelineCache
 import com.aimdi.xtanative.store.settings.ProfileTab as StoredTab
+import com.aimdi.xtanative.ui.media.MediaGridItem
 
 /** A profile's tabs, in XTA's order: Posts, Replies (X's name for posts and replies), Media, and the device's Saved. */
 enum class ProfileTab { POSTS, REPLIES, MEDIA, SAVED;
@@ -44,15 +43,7 @@ enum class PostsFilter {
     }
 }
 
-/** What a tile of a profile's media grid shows. GIFs play like videos, so they count as videos. */
-enum class TileKind { PHOTO, VIDEO, BROADCAST }
-
-/** One tile of the media grid: the [index]th picture of post [post], or its broadcast or Space. */
-data class MediaTile(val post: XPost, val index: Int, val kind: TileKind, val thumbnailUrl: String?, val aspectRatio: Float?) {
-    val key: String get() = post.id + "/" + index
-}
-
-/** Which tiles the media grid shows (media_grid_item.dart's MediaFilter). */
+/** Which tiles the media grid shows (media_grid_item.dart's MediaFilter). GIFs play like videos, so they count as videos. */
 enum class MediaFilter {
     ALL,
     PHOTOS,
@@ -60,11 +51,11 @@ enum class MediaFilter {
     BROADCASTS,
     ;
 
-    fun accepts(tile: MediaTile): Boolean = when (this) {
+    fun accepts(item: MediaGridItem): Boolean = when (this) {
         ALL -> true
-        PHOTOS -> tile.kind == TileKind.PHOTO
-        VIDEOS -> tile.kind == TileKind.VIDEO
-        BROADCASTS -> tile.kind == TileKind.BROADCAST
+        PHOTOS -> item.kind == MediaGridItem.Kind.PHOTO
+        VIDEOS -> item.kind == MediaGridItem.Kind.VIDEO || item.kind == MediaGridItem.Kind.GIF
+        BROADCASTS -> item.kind == MediaGridItem.Kind.BROADCAST
     }
 
     /** Broadcasts are found in the profile's posts, the rest in its media timeline. */
@@ -72,28 +63,6 @@ enum class MediaFilter {
 
     /** Broadcasts are sparse among posts, so more empty pages are read past before the grid says there are none. */
     val lookahead: Int get() = if (this == BROADCASTS) 12 else 4
-}
-
-object MediaTiles {
-    /**
-     * The tiles of [threads], each post's pictures in order. A broadcast or
-     * Space is one tile, thumbed by its video, else its first picture, else
-     * the card's picture: a live post with photos must not turn into photos.
-     */
-    fun of(threads: List<XThread>): List<MediaTile> = threads.flatMap { it.posts }.flatMap { post ->
-        val live = post.live
-        if (live != null) {
-            val thumb = post.media.firstOrNull { it.kind == XMedia.Kind.VIDEO } ?: post.media.firstOrNull()
-            listOf(MediaTile(post, 0, TileKind.BROADCAST, thumb?.url ?: live.imageUrl, thumb?.aspectRatio ?: live.aspectRatio))
-        } else {
-            post.media.mapIndexed { index, media ->
-                MediaTile(post, index, if (media.kind == XMedia.Kind.PHOTO) TileKind.PHOTO else TileKind.VIDEO, media.url, media.aspectRatio)
-            }
-        }
-    }
-
-    /** [tiles] not already in [seen], which it then holds: successive media pages overlap at their edges. */
-    fun unseen(tiles: List<MediaTile>, seen: MutableSet<String>): List<MediaTile> = tiles.filter { seen.add(it.key) }
 }
 
 /** Why a profile did not load, when X said so: a retry cannot change that, so it is the page (profile_load_failure.dart). */

@@ -1,7 +1,9 @@
 package com.aimdi.xtanative.core.x.parse
 
 import com.aimdi.xtanative.core.json.J
+import com.aimdi.xtanative.core.x.model.PhotoSize
 import com.aimdi.xtanative.core.x.model.XCard
+import com.aimdi.xtanative.core.x.model.XCardImage
 import com.aimdi.xtanative.core.x.model.XEntity
 import com.aimdi.xtanative.core.x.model.XGrokShare
 import java.time.Instant
@@ -34,6 +36,14 @@ object XCards {
 
     private fun Map<String, J>.firstImage(keys: List<String>): J? = keys.firstNotNullOfOrNull { image(it) }
 
+    /** The binding suffix of the picture XTA asks a card for at each image quality (_card.dart's imageKey). */
+    private val sizeSuffixes = linkedMapOf(PhotoSize.THUMB to "_small", PhotoSize.SMALL to "", PhotoSize.MEDIUM to "_large", PhotoSize.LARGE to "_x_large")
+
+    /** The picture of the first of [bases] X sent at each of those sizes. */
+    private fun Map<String, J>.sizes(bases: List<String>): Map<PhotoSize, XCardImage> = sizeSuffixes.entries.mapNotNull { (size, suffix) ->
+        firstImage(bases.map { it + suffix })?.let { size to XCardImage(it["url"].string.orEmpty(), it["width"].int, it["height"].int) }
+    }.toMap()
+
     /** The card below a post; [entities] lead a `t.co` card address to where it really goes. */
     fun card(card: J, entities: List<XEntity>): XCard? {
         val name = card["name"].string ?: return null
@@ -65,6 +75,7 @@ object XCards {
             imageHeight = picture?.get("height")?.int,
             large = large,
             kind = name,
+            imageSizes = if (large) values.sizes(listOf("summary_photo_image", "photo_image_full_size", "player_image", "thumbnail_image")) else emptyMap(),
         )
     }
 
@@ -80,6 +91,7 @@ object XCards {
             imageWidth = picture?.get("width")?.int,
             imageHeight = picture?.get("height")?.int,
             large = true,
+            imageSizes = values.sizes(listOf("promo_image")),
         )
     }
 
@@ -95,6 +107,7 @@ object XCards {
             imageWidth = picture?.get("width")?.int,
             imageHeight = picture?.get("height")?.int,
             large = true,
+            imageSizes = values.sizes(listOf("event_thumbnail")),
         )
     }
 
