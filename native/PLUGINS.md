@@ -44,16 +44,20 @@ plugin API version it was built against, `PLUGIN_API_VERSION`) and `entry`
 
 ## The plugin API
 
-`PLUGIN_API_VERSION` is 2. Version 1 is what native-0.1.41 shipped; 2 adds
-`cashtagStrip` and `routeForCashtag`, and the kit's pieces since (the article
-reader, `FeedReads`, X posts in a plugin, the chip tabs, the shelf, the recent
-searches, the action row, `ZoomableImage`). A plugin's `xta-plugin.json`
+`PLUGIN_API_VERSION` is 3. Version 1 is what native-0.1.41 shipped; 2,
+which native-0.1.45 shipped, added `cashtagStrip` and `routeForCashtag` and
+the kit's pieces of that time (the article reader, `FeedReads`, X posts in a
+plugin, the chip tabs, the shelf, the recent searches, the action row,
+`ZoomableImage`); 3 adds `cashtagActions` (the held cashtag's entries),
+`postExtras`, `routeForAccount` and `RssReads`. A plugin's `xta-plugin.json`
 names the version it was built against.
 
-The app loads the versions from `OLDEST_PLUGIN_API` (1) to its own, so a
+The app loads the versions from `OLDEST_PLUGIN_API` (2) to its own, so a
 plugin built before keeps working until its update comes, for as long as what
 it uses is still here: CI's desktop job checks the plugins published in
-`native-plugins` against what the build ships (`tool/plugin_abi.py`). So add
+`native-plugins` against what the build ships (`tool/plugin_abi.py`). Version
+1's plugins are no longer published, so they can no longer be checked, and
+the app offers them their update instead of loading them. So add
 to the API (new members with defaults, new classes) rather than change what
 is there; a change that leaves the published plugins behind has to move
 `OLDEST_PLUGIN_API` up with it, and the store then offers those plugins their
