@@ -86,12 +86,14 @@ import com.aimdi.xtanative.ui.generated.resources.discover_popular
 import com.aimdi.xtanative.ui.generated.resources.discover_recent
 import com.aimdi.xtanative.ui.generated.resources.discover_search
 import com.aimdi.xtanative.ui.generated.resources.discover_search_x
+import com.aimdi.xtanative.ui.generated.resources.saved_search_library
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.ThreadRows
+import com.aimdi.xtanative.ui.saved.SavedIcons
 import org.jetbrains.compose.resources.stringResource
 
-/** Where the search screen's own rows lead, besides posts and profiles. */
-class SearchActions(val openCommunity: (id: String) -> Unit, val openAntennas: () -> Unit)
+/** Where the search screen leads, besides posts and profiles: communities, the antennas and the search of the reader's library. */
+class SearchActions(val openCommunity: (id: String) -> Unit, val openAntennas: () -> Unit, val openLibrary: (query: String) -> Unit)
 
 /**
  * XTA's search of X: the field (with the advanced search behind its filter
@@ -141,7 +143,7 @@ fun SearchScreen(initial: String?, initialTab: SearchTab, actions: PostActions, 
                 query = state.view.query,
                 tab = state.tab,
                 onTab = vm::select,
-                openAntennas = searchActions.openAntennas,
+                searchActions = searchActions,
                 onBack = onBack,
                 field = searchField,
             )
@@ -193,7 +195,7 @@ private fun SearchHeader(
     query: String,
     tab: SearchTab,
     onTab: (SearchTab) -> Unit,
-    openAntennas: () -> Unit,
+    searchActions: SearchActions,
     onBack: () -> Unit,
     field: @Composable (Modifier) -> Unit,
 ) {
@@ -212,7 +214,8 @@ private fun SearchHeader(
                     }
                 },
                 actions = {
-                    IconButton(onClick = openAntennas) { Icon(DiscoverIcons.Sensors, stringResource(Res.string.discover_antennas)) }
+                    IconButton(onClick = { searchActions.openLibrary(query) }) { Icon(SavedIcons.ManageSearch, stringResource(Res.string.saved_search_library)) }
+                    IconButton(onClick = searchActions.openAntennas) { Icon(DiscoverIcons.Sensors, stringResource(Res.string.discover_antennas)) }
                     if (hasQuery) FollowMenu(FollowTarget.Search(query))
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),

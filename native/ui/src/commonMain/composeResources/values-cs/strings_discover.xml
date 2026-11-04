@@ -74,6 +74,7 @@
     <string name="discover_add_location">Přidat místo</string>
     <string name="discover_country">Země</string>
     <string name="discover_trends_empty">Pro toto místo zatím nejsou žádné trendy. Hledejte nahoře nebo přidejte jiné místo.</string>
+    <string name="discover_plugin_empty">Hledejte v %1$s příspěvky, lidi a komunity.</string>
     <plurals name="discover_trend_posts">
         <item quantity="one">%1$s tweet</item>
         <item quantity="few">%1$s tweety</item>

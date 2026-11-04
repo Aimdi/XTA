@@ -24,6 +24,7 @@ class DeviceBackup(private val graph: AppGraph, private val clock: () -> Instant
                 graph.feedCache(group).readPlace()?.let { put(BackupExport.readPlaceKey(group), it) }
             }
         }
+        val (reposts, replies) = graph.profileFilters.content()
         return DeviceContent(
             session = session,
             settings = graph.settings.load(),
@@ -35,6 +36,10 @@ class DeviceBackup(private val graph: AppGraph, private val clock: () -> Instant
             readPlaces = places,
             journal = graph.readingJournal.content(),
             appearance = graph.readingAppearance.get(),
+            profileNotes = graph.profileNotes.content(),
+            repostFilters = reposts,
+            replyFilters = replies,
+            pluginSections = graph.pluginBackups.exported(),
             kept = graph.kept.get(),
         )
     }
@@ -45,9 +50,10 @@ class DeviceBackup(private val graph: AppGraph, private val clock: () -> Instant
     /**
      * Writes every section of [document] into its store, as XTA's import does:
      * the settings first (and XTA's launch steps after them), then the session,
-     * the saved posts, likes, notes, article notes, antennas and reading
-     * places, and what no store here holds yet into [KeptSections]. Reading
-     * positions only when [includeReadPositions].
+     * the saved posts, likes, notes, article notes, antennas, profile notes and
+     * filters and reading places, each plugin's sections into the running
+     * plugin that keeps them, and what no store here holds yet into
+     * [KeptSections]. Reading positions only when [includeReadPositions].
      */
     suspend fun restore(document: BackupDocument, includeReadPositions: Boolean) {
         val restoring = document.forRestore(includeReadPositions)
@@ -63,11 +69,21 @@ class DeviceBackup(private val graph: AppGraph, private val clock: () -> Instant
         BackupRestore.antennas(restoring, now)?.let { graph.antennas.merge(it) }
         BackupRestore.journal(restoring)?.let { graph.readingJournal.replace(it) }
         BackupRestore.appearance(restoring)?.let { graph.readingAppearance.set(it) }
+        restoreProfiles(restoring)
         graph.kept.merge(KeptSections.keptOf(restoring))
+        graph.pluginBackups.handOver()
         // The feeds shown last may hold accounts no longer followed.
         if (restoring.subscriptions != null || restoring.groups != null || restoring.groupMembers != null) graph.clearFeedCaches()
         val groups = graph.sessions.state.value?.groups.orEmpty().mapTo(HashSet()) { it.id }
         BackupRestore.readPlaces(restoring, groups).forEach { (group, place) -> graph.feedCache(group).writePlace(place) }
+    }
+
+    /** The profile notes and filters an older build kept aside on restoring a backup, put into their stores once. */
+    suspend fun adoptKeptProfiles() = graph.kept.adoptProfiles(::restoreProfiles)
+
+    private suspend fun restoreProfiles(document: BackupDocument) {
+        BackupRestore.profileNotes(graph.profileNotes.content(), document)?.let { graph.profileNotes.replace(it) }
+        BackupRestore.profileFilters(graph.profileFilters.content(), document)?.let { (reposts, replies) -> graph.profileFilters.replace(reposts, replies) }
     }
 }
 

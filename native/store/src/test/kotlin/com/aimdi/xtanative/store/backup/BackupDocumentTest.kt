@@ -256,5 +256,20 @@ class BackupDocumentTest {
         assertFalse("_xtaWebDavHistory" in BackupDocument.parse(full)!!.toJson(), "a file export has none")
     }
 
+    @Test
+    fun thePluginsSectionsGoOutAndComeBackAndXtaNeedNotKnowThem() {
+        val sections = mapOf("bluesky.follows" to """{"v":1,"follows":[]}""", "reddit.votes" to "up")
+        val written = BackupDocument(localPosts = emptyList(), pluginSections = sections)
+        val read = BackupDocument.parse(written.encode())!!
+        assertEquals(sections, read.pluginSections)
+        assertEquals(mapOf(BackupCategory.PLUGINS to 2), read.counts())
+        assertFalse(read.isEmpty, "a file with only plugins' sections still restores them")
+        assertNull(BackupDocument.parse(full)!!.pluginSections, "XTA writes none")
+        assertFalse(BackupKeys.PLUGIN_SECTIONS in BackupDocument().toJson(), "a document without them is XTA's to the byte")
+        assertNull(BackupDocument.parse("""{"pluginSections": {"a": 1, "b": "text"}}""")!!.pluginSections!!["a"], "only texts")
+        assertEquals(sections, written.chosen(ExportChoice(subscriptions = true)).pluginSections, "they go with the follows")
+        assertNull(written.chosen(ExportChoice(savedPosts = true)).pluginSections)
+    }
+
     private fun resource(path: String): String = checkNotNull(javaClass.getResource(path)) { path }.readText()
 }

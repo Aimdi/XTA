@@ -12,6 +12,7 @@ import com.aimdi.xtanative.core.feed.MutedKeyword
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.model.XUser
+import com.aimdi.xtanative.store.saved.ProfileFilters
 import com.aimdi.xtanative.store.settings.LanguageFilterAction
 import com.aimdi.xtanative.store.settings.PostsPrefs
 import com.aimdi.xtanative.store.settings.Settings
@@ -50,6 +51,17 @@ class GroupFeedRulesTest {
         assertEquals(LanguageAction.FOLD, plan.shaping.language.action)
         assertTrue(plan.shaping.zen)
         assertNull(FeedPrefs().pageCap)
+    }
+
+    @Test
+    fun theGroupsPlanHidesWhatTheReaderHidOnProfiles() {
+        val hidden = ProfileFilters(hiddenReposts = mapOf("1" to "user1"), hiddenReplies = mapOf("2" to "user2"))
+        val plan = GroupFeedRules.plan(session, FeedPrefs(zen = true), "g", emptySet(), hidden)
+        assertEquals(setOf("user1"), plan.shaping.hiddenReposts)
+        assertEquals(setOf("user2"), plan.shaping.hiddenReplies)
+        assertTrue(plan.shaping.zen, "beside the reader's other filters")
+        assertEquals(FeedSort.POPULAR, plan.shaping.sort, "and the group's own")
+        assertTrue(GroupFeedRules.plan(session, FeedPrefs(), "g", emptySet()).shaping.hiddenReposts.isEmpty())
     }
 
     @Test

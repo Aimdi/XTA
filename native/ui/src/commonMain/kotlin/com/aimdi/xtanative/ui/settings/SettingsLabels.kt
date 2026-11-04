@@ -160,6 +160,7 @@ internal fun categoryLabel(category: BackupCategory): String = when (category) {
     BackupCategory.PROFILE_NOTES -> stringResource(Res.string.settings_cat_profile_notes)
     BackupCategory.ANTENNAS -> stringResource(Res.string.settings_cat_antennas)
     BackupCategory.LOCAL_POSTS -> stringResource(Res.string.settings_cat_local_notes)
+    BackupCategory.PLUGINS -> stringResource(Res.string.settings_cat_plugins)
 }
 
 /** A section's title and what it holds, as Settings lists it. */

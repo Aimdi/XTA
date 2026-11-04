@@ -15,19 +15,13 @@
     <string name="pinned">Fixată</string>
     <string name="reposted_by">%1$s a repostat</string>
     <string name="replying_to">Răspuns la</string>
-    <string name="views">%1$s de vizualizări</string>
     <string name="stat_reposts">Repostări</string>
     <string name="stat_quotes">Citate</string>
     <string name="stat_likes">Aprecieri</string>
-    <string name="stat_bookmarks">Marcaje</string>
 
     <string name="ago_seconds">%1$d s</string>
     <string name="ago_minutes">%1$d min</string>
     <string name="ago_hours">%1$d h</string>
-
-    <string name="joined">Membru din %1$s</string>
-    <string name="following_count">Urmăresc</string>
-    <string name="followers_count">Urmăritori</string>
 
     <string name="feed_nobody_followed">Nimeni dintre cei pe care îi urmărești nu e încă în fluxul Urmăresc. Deschide un profil, de exemplu căutând @nume, și urmărește-l.</string>
     <string name="feed_empty">Încă nu există postări de la conturile pe care le urmărești.</string>
@@ -40,43 +34,17 @@
     <string name="problem_refused">X a refuzat cererea (%1$d).</string>
     <string name="problem_other">Ceva nu a mers bine la citirea X.</string>
 
-    <string name="search_x">Caută pe X</string>
-    <string name="search_top">Populare</string>
-    <string name="search_latest">Cele mai recente</string>
-    <string name="search_nothing">Niciun rezultat pentru „%1$s”.</string>
-    <string name="search_go_to">Mergi la @%1$s</string>
-
     <string name="import_intro">XTA Native este XTA scris doar pentru Android, ca să fie comparat cu XTA. Citește X cu conturile pe care le folosești deja în XTA.</string>
     <string name="import_steps">În XTA, deschide Setări → Date → Export, activează „Exportați conturile”, exportă, apoi alege fișierul aici.</string>
     <string name="import_choose">Alege copia de rezervă XTA</string>
     <string name="import_choose_another">Alege alt fișier</string>
-    <string name="import_not_a_backup">Acest fișier nu este o copie de rezervă exportată de XTA.</string>
     <string name="import_no_accounts">Această copie de rezervă nu are conturi X: exportă din nou cu „Exportați conturile” activat.</string>
     <string name="import_use">Folosește această copie</string>
     <string name="import_privacy">Copia de rezervă conține sesiunile tale X. XTA Native le păstrează pe acest telefon, le trimite doar către X și nu postează, nu apreciază și nu urmărește niciodată nimic acolo.</string>
-    <plurals name="import_found_accounts">
-        <item quantity="one">%1$d cont X</item>
-        <item quantity="few">%1$d conturi X</item>
-        <item quantity="other">%1$d de conturi X</item>
-    </plurals>
-    <plurals name="import_found_following">
-        <item quantity="one">%1$d cont urmărit, %2$d în fluxul Urmăresc</item>
-        <item quantity="few">%1$d conturi urmărite, %2$d în fluxul Urmăresc</item>
-        <item quantity="other">%1$d de conturi urmărite, %2$d în fluxul Urmăresc</item>
-    </plurals>
 
-    <string name="settings_feed">Fluxul Urmăresc</string>
-    <string name="settings_replies">Arată răspunsurile</string>
-    <string name="settings_reposts">Arată repostările</string>
-    <string name="settings_accounts">Conturi X</string>
-    <string name="settings_following">Conturi urmărite: %1$d, în flux: %2$d</string>
-    <string name="settings_import_again">Importă din nou o copie de rezervă XTA</string>
     <string name="settings_clear">Elimină tot</string>
     <string name="settings_clear_explained">Elimină din XTA Native sesiunile X și conturile urmărite. XTA păstrează totul.</string>
     <string name="settings_clear_confirm">Elimină</string>
-    <string name="settings_about">Despre</string>
-    <string name="settings_version">XTA Native %1$s</string>
-    <string name="settings_prototype">Un prototip lângă XTA, pentru comparație. Poate fi retras.</string>
 
     <string name="card_from">De la %1$s</string>
     <string name="poll_final">Rezultate finale</string>
@@ -105,13 +73,6 @@
         <item quantity="few">%1$d postări noi</item>
         <item quantity="other">%1$d de postări noi</item>
     </plurals>
-    <string name="settings_autoplay">Redă videoclipurile din flux, fără sunet</string>
-    <string name="profile_posts">Postări</string>
-    <string name="profile_replies">Răspunsuri</string>
-    <string name="profile_media">Media</string>
-    <string name="profile_nothing">Încă nu e nimic aici.</string>
-    <string name="profile_follow">Urmărește</string>
-    <string name="profile_following">Urmăresc</string>
     <string name="follow_here_only">Urmărit doar în XTA Native: X nu află.</string>
     <string name="follow_in_feed">În fluxul Urmăresc</string>
     <string name="follow_groups">Grupuri</string>

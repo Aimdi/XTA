@@ -15,19 +15,13 @@
     <string name="pinned">In evidenza</string>
     <string name="reposted_by">%1$s ha ripostato</string>
     <string name="replying_to">In risposta a</string>
-    <string name="views">%1$s visualizzazioni</string>
     <string name="stat_reposts">Repost</string>
     <string name="stat_quotes">Citazioni</string>
     <string name="stat_likes">Mi piace</string>
-    <string name="stat_bookmarks">Segnalibri</string>
 
     <string name="ago_seconds">%1$d s</string>
     <string name="ago_minutes">%1$d min</string>
     <string name="ago_hours">%1$d h</string>
-
-    <string name="joined">Iscrizione: %1$s</string>
-    <string name="following_count">Seguiti</string>
-    <string name="followers_count">Seguaci</string>
 
     <string name="feed_nobody_followed">Nessuno di quelli che segui è ancora nel feed Seguiti. Apri un profilo, per esempio cercando @nome, e seguilo.</string>
     <string name="feed_empty">Ancora nessun post dagli account che segui.</string>
@@ -40,41 +34,17 @@
     <string name="problem_refused">X ha rifiutato la richiesta (%1$d).</string>
     <string name="problem_other">Qualcosa è andato storto leggendo X.</string>
 
-    <string name="search_x">Cerca su X</string>
-    <string name="search_top">Popolari</string>
-    <string name="search_latest">Più recenti</string>
-    <string name="search_nothing">Nessun risultato per “%1$s”.</string>
-    <string name="search_go_to">Vai a @%1$s</string>
-
     <string name="import_intro">XTA Native è XTA scritto solo per Android, per confrontarlo con XTA. Legge X con gli account che usi già in XTA.</string>
     <string name="import_steps">In XTA apri Impostazioni → Dati → Esporta, attiva “Esporta account”, esporta, poi scegli qui quel file.</string>
     <string name="import_choose">Scegli il backup di XTA</string>
     <string name="import_choose_another">Scegli un altro file</string>
-    <string name="import_not_a_backup">Questo file non è un backup esportato da XTA.</string>
     <string name="import_no_accounts">Questo backup non contiene account X: esportalo di nuovo con “Esporta account” attivo.</string>
     <string name="import_use">Usa questo backup</string>
     <string name="import_privacy">Il backup contiene le tue sessioni X. XTA Native le tiene su questo telefono, le invia solo a X e lì non pubblica, non mette Mi piace e non segue mai nulla.</string>
-    <plurals name="import_found_accounts">
-        <item quantity="one">%1$d account X</item>
-        <item quantity="other">%1$d account X</item>
-    </plurals>
-    <plurals name="import_found_following">
-        <item quantity="one">%1$d account seguito, %2$d nel feed Seguiti</item>
-        <item quantity="other">%1$d account seguiti, %2$d nel feed Seguiti</item>
-    </plurals>
 
-    <string name="settings_feed">Feed Seguiti</string>
-    <string name="settings_replies">Mostra le risposte</string>
-    <string name="settings_reposts">Mostra i repost</string>
-    <string name="settings_accounts">Account X</string>
-    <string name="settings_following">Account seguiti: %1$d, nel feed: %2$d</string>
-    <string name="settings_import_again">Importa di nuovo un backup di XTA</string>
     <string name="settings_clear">Rimuovi tutto</string>
     <string name="settings_clear_explained">Rimuove da XTA Native le sessioni X e gli account seguiti. XTA conserva tutto.</string>
     <string name="settings_clear_confirm">Rimuovi</string>
-    <string name="settings_about">Informazioni</string>
-    <string name="settings_version">XTA Native %1$s</string>
-    <string name="settings_prototype">Un prototipo accanto a XTA, per confrontare. Potrebbe essere ritirato.</string>
 
     <string name="card_from">Da %1$s</string>
     <string name="poll_final">Risultati finali</string>
@@ -98,13 +68,6 @@
         <item quantity="one">%1$d nuovo post</item>
         <item quantity="other">%1$d nuovi post</item>
     </plurals>
-    <string name="settings_autoplay">Riproduci i video nel feed, senza audio</string>
-    <string name="profile_posts">Post</string>
-    <string name="profile_replies">Risposte</string>
-    <string name="profile_media">Contenuti</string>
-    <string name="profile_nothing">Ancora niente qui.</string>
-    <string name="profile_follow">Segui</string>
-    <string name="profile_following">Segui già</string>
     <string name="follow_here_only">Seguito solo in XTA Native: X non lo sa.</string>
     <string name="follow_in_feed">Nel feed Seguiti</string>
     <string name="follow_groups">Gruppi</string>

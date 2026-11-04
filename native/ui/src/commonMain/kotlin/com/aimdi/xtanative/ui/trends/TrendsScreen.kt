@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +36,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -87,21 +89,40 @@ import com.aimdi.xtanative.ui.generated.resources.discover_antennas
 import com.aimdi.xtanative.ui.generated.resources.discover_clear
 import com.aimdi.xtanative.ui.generated.resources.discover_delete
 import com.aimdi.xtanative.ui.generated.resources.discover_find_people
+import com.aimdi.xtanative.ui.generated.resources.discover_plugin_empty
 import com.aimdi.xtanative.ui.generated.resources.discover_search
 import com.aimdi.xtanative.ui.generated.resources.discover_trend_posts
 import com.aimdi.xtanative.ui.generated.resources.discover_trends_empty
+import com.aimdi.xtanative.ui.generated.resources.saved_search_library
+import com.aimdi.xtanative.ui.generated.resources.saved_source_x
+import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.currentLanguage
+import com.aimdi.xtanative.ui.saved.SavedIcons
 import com.aimdi.xtanative.ui.search.DiscoverIcons
+import com.aimdi.xtanative.ui.search.EmptyNote
 import com.aimdi.xtanative.ui.search.RecentSearchesBar
+import com.aimdi.xtanative.ui.search.SearchablePlugin
+import com.aimdi.xtanative.ui.search.searchablePlugins
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
-/** Where Discover leads: a search of X ([openSearch] with a query, [openPeople] on the Accounts tab) and the antennas. */
-class TrendsActions(val openSearch: (query: String) -> Unit, val openPeople: () -> Unit, val openAntennas: () -> Unit)
+/**
+ * Where Discover leads: a search of X ([openSearch] with a query, [openPeople]
+ * on the Accounts tab), the antennas and the search of the reader's library.
+ */
+class TrendsActions(
+    val openSearch: (query: String) -> Unit,
+    val openPeople: () -> Unit,
+    val openAntennas: () -> Unit,
+    val openLibrary: (query: String) -> Unit,
+)
 
 /**
- * XTA's Discover for X: the search bar with the recent searches, shortcuts to
- * people and antennas, the trends of the place picked, the places kept as
- * tabs (a long press deletes one), and Add a location.
+ * XTA's Discover: the search bar with the recent searches and the search of
+ * the reader's library; for X, shortcuts to people and antennas, the trends
+ * of the place picked, the places kept as tabs (a long press deletes one) and
+ * Add a location; and, once a plugin that searches is installed, a chip for
+ * X and each such plugin, whose results then show under the bar.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -114,16 +135,21 @@ fun TrendsScreen(actions: TrendsActions, onBack: (() -> Unit)? = null) {
     LaunchedEffect(state.textSet) {
         if (field.text != state.text) field = TextFieldValue(state.text, TextRange(state.text.length))
     }
+    val plugins = searchablePlugins()
+    val scope = DiscoverScopes.effective(state.scope, plugins.map { it.id })
+    // The plugin whose chip was picked is gone: the bar searches X again.
+    LaunchedEffect(scope) { if (scope != state.scope) vm.select(scope) }
+    val plugin = plugins.firstOrNull { it.id == scope }
     val focus = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     var picking by rememberSaveable { mutableStateOf(false) }
-    // An empty bar takes focus instead of searching for nothing.
+    // An empty bar takes focus instead of searching for nothing; a plugin's results show under the bar.
     val searched = { query: String? ->
         if (query == null) {
             focus.requestFocus()
         } else {
             focusManager.clearFocus()
-            actions.openSearch(query)
+            if (DiscoverScopes.opensXSearch(scope)) actions.openSearch(query)
         }
     }
 
@@ -140,6 +166,7 @@ fun TrendsScreen(actions: TrendsActions, onBack: (() -> Unit)? = null) {
                     title = {
                         DiscoverField(
                             value = field,
+                            hint = plugin?.hint(currentLanguage()) ?: stringResource(Res.string.discover_search),
                             onValueChange = {
                                 field = it
                                 vm.type(it.text)
@@ -149,22 +176,26 @@ fun TrendsScreen(actions: TrendsActions, onBack: (() -> Unit)? = null) {
                                 vm.clear()
                                 focus.requestFocus()
                             },
+                            onLibrary = { actions.openLibrary(field.text) },
                             modifier = Modifier.fillMaxWidth().padding(end = 12.dp).focusRequester(focus),
                         )
                     },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
                 )
-                PlaceTabs(state.places, onShow = vm::show, onRemove = vm::remove)
+                if (plugin == null) PlaceTabs(state.places, onShow = vm::show, onRemove = vm::remove)
             }
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { picking = true }) {
-                Icon(Icons.Filled.Add, contentDescription = stringResource(Res.string.discover_add_location))
+            if (plugin == null) {
+                FloatingActionButton(onClick = { picking = true }) {
+                    Icon(Icons.Filled.Add, contentDescription = stringResource(Res.string.discover_add_location))
+                }
             }
         },
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
-            DiscoverShortcuts(actions)
+            if (plugin == null) DiscoverShortcuts(actions)
+            ScopeChips(plugins, scope, onSelect = vm::select)
             if (state.committed.isEmpty()) {
                 RecentSearchesBar(
                     recent,
@@ -173,23 +204,38 @@ fun TrendsScreen(actions: TrendsActions, onBack: (() -> Unit)? = null) {
                     onClear = vm::clearRecent,
                 )
             }
-            TrendsBody(state, onRefresh = vm::refresh, onTrend = { trend -> actions.openSearch(trend.query) }, onAddLocation = { picking = true }, bottom = padding.calculateBottomPadding())
+            if (plugin == null) {
+                TrendsBody(state, onRefresh = vm::refresh, onTrend = { trend -> actions.openSearch(trend.query) }, onAddLocation = { picking = true }, bottom = padding.calculateBottomPadding())
+            } else {
+                PluginPane(plugin, state.committed, bottom = padding.calculateBottomPadding())
+            }
         }
     }
     if (picking) PlacesSheet(vm, state.places, onDismiss = { picking = false })
 }
 
+/** The bar: [hint] says what it searches; the magnifier searches, the cross clears it, and the library button searches the reader's library. */
 @Composable
-private fun DiscoverField(value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit, onSearch: () -> Unit, onClear: () -> Unit, modifier: Modifier) {
-    val search = stringResource(Res.string.discover_search)
+private fun DiscoverField(
+    value: TextFieldValue,
+    hint: String,
+    onValueChange: (TextFieldValue) -> Unit,
+    onSearch: () -> Unit,
+    onClear: () -> Unit,
+    onLibrary: () -> Unit,
+    modifier: Modifier,
+) {
     TextField(
         value = value,
         onValueChange = onValueChange,
         singleLine = true,
-        placeholder = { Text(search) },
-        leadingIcon = { IconButton(onClick = onSearch) { Icon(Icons.Filled.Search, contentDescription = search) } },
-        trailingIcon = if (value.text.isEmpty()) null else {
-            { IconButton(onClick = onClear) { Icon(Icons.Filled.Close, stringResource(Res.string.discover_clear)) } }
+        placeholder = { Text(hint, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+        leadingIcon = { IconButton(onClick = onSearch) { Icon(Icons.Filled.Search, contentDescription = stringResource(Res.string.discover_search)) } },
+        trailingIcon = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (value.text.isNotEmpty()) IconButton(onClick = onClear) { Icon(Icons.Filled.Close, stringResource(Res.string.discover_clear)) }
+                IconButton(onClick = onLibrary) { Icon(SavedIcons.ManageSearch, stringResource(Res.string.saved_search_library)) }
+            }
         },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         keyboardActions = KeyboardActions(onSearch = { onSearch() }),
@@ -202,6 +248,34 @@ private fun DiscoverField(value: TextFieldValue, onValueChange: (TextFieldValue)
         ),
         modifier = modifier,
     )
+}
+
+/** The network the bar searches: X, then each installed plugin that searches; nothing while none does. */
+@Composable
+private fun ScopeChips(plugins: List<SearchablePlugin>, scope: String, onSelect: (String) -> Unit) {
+    val chips = DiscoverScopes.chips(plugins.map { it.id })
+    if (chips.isEmpty()) return
+    val language = currentLanguage()
+    val x = stringResource(Res.string.saved_source_x)
+    Row(
+        Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 12.dp, vertical = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        chips.forEach { id ->
+            val label = plugins.firstOrNull { it.id == id }?.title(language) ?: x
+            FilterChip(selected = id == scope, onClick = { onSelect(id) }, label = { Text(label, maxLines = 1) })
+        }
+    }
+}
+
+/** A plugin's search under the bar (discover_plugin_search.dart): what it searches until something is typed, then what it finds. */
+@Composable
+private fun PluginPane(plugin: SearchablePlugin, query: String, bottom: Dp) {
+    if (DiscoverScopes.body(plugin.id, query) == DiscoverBody.PLUGIN_SEARCH) {
+        Box(Modifier.fillMaxSize()) { plugin.search.Results(query, PluginFrame(PaddingValues(bottom = bottom))) }
+    } else {
+        EmptyNote(stringResource(Res.string.discover_plugin_empty, plugin.title(currentLanguage())), icon = plugin.plugin.icon)
+    }
 }
 
 /** The places kept, one tab each; a long press on one but the world offers Delete. */

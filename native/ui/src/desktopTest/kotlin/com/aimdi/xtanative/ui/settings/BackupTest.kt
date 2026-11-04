@@ -22,6 +22,7 @@ import com.aimdi.xtanative.store.backup.LikedPostRow
 import com.aimdi.xtanative.store.backup.LocalMarkRow
 import com.aimdi.xtanative.store.backup.LocalPostMediaRow
 import com.aimdi.xtanative.store.backup.LocalPostRow
+import com.aimdi.xtanative.store.backup.ProfileNoteRow
 import com.aimdi.xtanative.store.backup.ProfileSubscriptionRow
 import com.aimdi.xtanative.store.backup.ReadPositionRow
 import com.aimdi.xtanative.store.backup.SavedFolderRow
@@ -30,6 +31,7 @@ import com.aimdi.xtanative.store.backup.SearchGroupMemberRow
 import com.aimdi.xtanative.store.backup.SearchSubscriptionRow
 import com.aimdi.xtanative.store.backup.UserSubscriptionRow
 import com.aimdi.xtanative.store.reading.ArticleReadPoint
+import com.aimdi.xtanative.store.saved.ProfileNotesStore
 import com.aimdi.xtanative.store.saved.SavedLibrary
 import com.aimdi.xtanative.store.saved.SavedPost
 import com.aimdi.xtanative.store.settings.HomePrefs
@@ -87,6 +89,8 @@ private fun backup() = BackupDocument(
     savedFolders = listOf(SavedFolderRow("f1", "Later", 2, "2026-01-02T03:04:05.000Z", autoDownload = true)),
     likedPosts = listOf(LikedPostRow("t3", "1", "{}")),
     repostFilters = listOf(FeedFilterRow("1", "reader")),
+    replyFilters = listOf(FeedFilterRow("2", "Other")),
+    profileNotes = listOf(ProfileNoteRow("1", "met at a conference", "2026-01-02T03:04:05.000Z")),
     readPositions = listOf(ReadPositionRow("g1", "c1"), ReadPositionRow("-1", "c0"), ReadPositionRow("nowhere", "c9")),
     accounts = listOf(AccountRow("c1", JsonPrimitive(HEADERS), "reader"), AccountRow("nocookie", JsonPrimitive("""{"x":"y"}"""))),
     antennas = listOf(AntennaRow("a1", "Tech", listOf("dart"), scope = AntennaRow.FOLLOWING, createdAt = "2026-01-02T03:04:05.000Z")),
@@ -195,7 +199,8 @@ class KeptSectionsTest {
             val read = KeptSections(StoreDir(dir)).get()
             assertEquals("reader", read.threadsSubscriptions!!.single().id)
             assertEquals("v1", read.redditLocalVotes!!.single().id)
-            assertEquals("reader", read.repostFilters!!.single().screenName)
+            assertNull(read.repostFilters, "the profiles' filters and notes have their own stores")
+            assertNull(read.profileNotes)
             assertNull(read.subscriptions)
         } finally {
             dir.deleteRecursively()
@@ -296,6 +301,9 @@ class DeviceBackupTest {
         assertEquals("v1", graph.kept.get().redditLocalVotes!!.single().id)
         assertEquals(FeedPlace("c1", 0), graph.feedCache("g1").readPlace())
         assertEquals(FeedPlace("c0", 0), graph.feedCache(null).readPlace())
+        assertEquals("met at a conference", graph.profileNotes.of("1")?.note)
+        assertTrue(graph.profileFilters.filters().repostsHidden("1"))
+        assertEquals(setOf("other"), graph.profileFilters.filters().hiddenReplyHandles)
 
         val exported = BackupDocument.parse(DeviceBackup(graph) { now }.export(ExportChoice.everything(includeAccounts = false)))!!
         val counts = exported.counts()
@@ -305,7 +313,91 @@ class DeviceBackupTest {
         assertEquals(1, counts[BackupCategory.UPVOTES])
         assertNull(counts[BackupCategory.ACCOUNTS])
         assertEquals(2, counts[BackupCategory.READ_POSITIONS])
+        assertEquals(2, counts[BackupCategory.FILTERS])
+        assertEquals(1, counts[BackupCategory.PROFILE_NOTES])
         assertEquals("AAEC", exported.localPosts!!.single().media.single().data)
+    }
+
+    @Test
+    fun profileNotesAndFiltersGoOutAndComeBackThroughTheirStores(): Unit = runBlocking {
+        val graph = AppGraph(dir, flowOf(true), "test")
+        graph.profileNotes.set("42", "met at a conference")
+        graph.profileFilters.setRepostsHidden("42", "Tommy", true)
+        graph.profileFilters.setRepliesHidden("7", "Maya", true)
+        val exported = BackupDocument.parse(DeviceBackup(graph).export(ExportChoice(filters = true)))!!
+        assertEquals(listOf("42"), exported.profileNotes!!.map { it.profileId })
+        assertEquals(listOf(FeedFilterRow("42", "tommy")), exported.repostFilters)
+        assertEquals(listOf(FeedFilterRow("7", "maya")), exported.replyFilters)
+
+        val other = AppGraph(File(dir, "other"), flowOf(true), "test")
+        other.profileNotes.set("9", "stays")
+        DeviceBackup(other).restore(exported, includeReadPositions = false)
+        assertEquals("met at a conference", other.profileNotes.of("42")?.note)
+        assertEquals("stays", other.profileNotes.of("9")?.note, "a note replaces the one on its profile, as XTA's import does")
+        assertTrue(other.profileFilters.filters().repostsHidden("42"))
+        assertTrue(other.profileFilters.filters().repliesHidden("7"))
+    }
+
+    @Test
+    fun theProfileRowsAnOlderBuildKeptGoToTheirStoresOnce(): Unit = runBlocking {
+        val kept = File(dir, "store/" + KeptSections.FILE)
+        kept.parentFile.mkdirs()
+        kept.writeText(
+            BackupDocument(
+                profileNotes = listOf(ProfileNoteRow("1", "old note")),
+                repostFilters = listOf(FeedFilterRow("1", "Reader")),
+                threadsSubscriptions = listOf(ProfileSubscriptionRow("t", "T")),
+            ).encode(),
+        )
+        val graph = AppGraph(dir, flowOf(true), "test")
+        DeviceBackup(graph).adoptKeptProfiles()
+        assertEquals("old note", graph.profileNotes.of("1")?.note)
+        assertTrue(graph.profileFilters.filters().repostsHidden("1"))
+
+        graph.profileNotes.set("1", "newer")
+        DeviceBackup(AppGraph(dir, flowOf(true), "test")).adoptKeptProfiles()
+        assertEquals("newer", ProfileNotesStore(StoreDir(File(dir, "store"))).of("1")?.note, "taken once, never again over what came after")
+        val left = BackupDocument.parse(kept.readText())!!
+        assertNull(left.profileNotes)
+        assertEquals("t", left.threadsSubscriptions!!.single().id, "the rest stays kept")
+    }
+
+    /** A plugin's backup section, keeping its text in memory. */
+    private class FakeSection(name: String, var text: String? = null, failing: Boolean = false) {
+        val section = PluginSection(name, export = { text }, import = {
+            if (failing) error("broken")
+            text = it
+        })
+    }
+
+    @Test
+    fun eachRunningPluginTakesItsSectionsAndTheOthersWaitForTheirs(): Unit = runBlocking {
+        val graph = AppGraph(dir, flowOf(true), "test")
+        val bluesky = FakeSection("bluesky.follows", "mine")
+        graph.pluginBackups.attach(listOf(bluesky.section))
+        val restored = BackupDocument(pluginSections = mapOf("bluesky.follows" to "restored", "reddit.votes" to "up"))
+        DeviceBackup(graph).restore(restored, includeReadPositions = false)
+        assertEquals("restored", bluesky.text)
+        assertEquals(mapOf("reddit.votes" to "up"), graph.kept.get().pluginSections, "kept for a plugin that is not running")
+
+        bluesky.text = "followed since"
+        val exported = BackupDocument.parse(DeviceBackup(graph).export(ExportChoice(subscriptions = true)))!!
+        assertEquals(mapOf("reddit.votes" to "up", "bluesky.follows" to "followed since"), exported.pluginSections)
+
+        val reddit = FakeSection("reddit.votes")
+        graph.pluginBackups.attach(listOf(bluesky.section, reddit.section))
+        assertEquals("up", reddit.text, "installed, a plugin gets what was kept for it")
+        assertNull(graph.kept.get().pluginSections, "which is kept no more: uninstalling erases it")
+    }
+
+    @Test
+    fun aSectionAPluginCannotTakeStaysKeptAndGoesOut(): Unit = runBlocking {
+        val graph = AppGraph(dir, flowOf(true), "test")
+        graph.pluginBackups.attach(listOf(FakeSection("broken.data", failing = true).section))
+        DeviceBackup(graph).restore(BackupDocument(pluginSections = mapOf("broken.data" to "text")), includeReadPositions = false)
+        assertEquals(mapOf("broken.data" to "text"), graph.kept.get().pluginSections)
+        val exported = BackupDocument.parse(DeviceBackup(graph).export(ExportChoice(subscriptions = true)))!!
+        assertEquals(mapOf("broken.data" to "text"), exported.pluginSections)
     }
 
     @Test

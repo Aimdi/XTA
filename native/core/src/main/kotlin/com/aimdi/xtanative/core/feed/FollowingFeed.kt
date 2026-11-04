@@ -14,8 +14,9 @@ fun XClient.feedReads(): FeedReads {
 
 /**
  * The Following feed, or a group's, from its members and the two switches
- * alone: a [GroupFeed] with no rules of its own. A feed with its settings
- * comes from `Session.feedPlan`.
+ * alone: a [GroupFeed] with no rules of its own, shaped only by what the
+ * reader hides everywhere ([shaping]: the accounts whose reposts or replies
+ * they hid). A feed with its settings comes from `Session.feedPlan`.
  */
 class FollowingFeed private constructor(private val feed: GroupFeed) : FeedTimeline by feed {
     val chunkCount: Int get() = feed.chunkCount
@@ -29,8 +30,9 @@ class FollowingFeed private constructor(private val feed: GroupFeed) : FeedTimel
             concurrency: Int = ChunkConcurrency.MIN,
             pageSize: Int = 20,
             fallbackMillis: Long = 12_000,
+            shaping: FeedShaping = FeedShaping(),
         ): FollowingFeed = FollowingFeed(
-            GroupFeed(GroupFeedPlan(FeedKeys.FOLLOWING, members, includeReplies, includeReposts), reads, concurrency, pageSize, fallbackMillis),
+            GroupFeed(GroupFeedPlan(FeedKeys.FOLLOWING, members, includeReplies, includeReposts, shaping), reads, concurrency, pageSize, fallbackMillis),
         )
     }
 }

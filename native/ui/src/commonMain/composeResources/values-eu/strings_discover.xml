@@ -72,6 +72,7 @@
     <string name="discover_add_location">Gehitu kokaleku bat</string>
     <string name="discover_country">Herrialdea</string>
     <string name="discover_trends_empty">Oraindik ez dago joerarik leku honetan. Bilatu goian, edo gehitu beste kokaleku bat.</string>
+    <string name="discover_plugin_empty">Bilatu %1$s(e)n argitalpenak, jendea eta komunitateak.</string>
     <plurals name="discover_trend_posts">
         <item quantity="one">%1$s txio</item>
         <item quantity="other">%1$s txio</item>

@@ -233,6 +233,7 @@
     <string name="settings_cat_profile_notes">Private Notiz</string>
     <string name="settings_cat_antennas">Antennen</string>
     <string name="settings_cat_local_notes">Notizen</string>
+    <string name="settings_cat_plugins">Plugins</string>
     <string name="settings_net_threads">Threads</string>
     <string name="settings_net_bluesky">Bluesky</string>
     <string name="settings_net_mastodon">Mastodon</string>

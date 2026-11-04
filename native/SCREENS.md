@@ -84,6 +84,13 @@ asks. Plurals use `<plurals>`, with each language's categories.
 | zh_Hant | `values-zh-rTW` |
 | be_Latn | not expressible as a Compose resource qualifier; falls back to `be` |
 
+Compose's resources match a folder by the language exactly as the platform's
+`Locale` names it, and Android's still names Indonesian `in` where Java 17
+(the desktop's) says `id`. So `values-in` is a link to `values-id`: edit
+`values-id` alone, and a script that walks the `values-*` folders skips links.
+(Hebrew and Yiddish, `iw`/`he` and `ji`/`yi`, would need the same; XTA has
+neither.)
+
 ## Handing back
 
 Commit in your worktree (never push) with a message saying what XTA screens

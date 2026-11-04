@@ -79,6 +79,7 @@
     <string name="discover_add_location">Add a location</string>
     <string name="discover_country">Country</string>
     <string name="discover_trends_empty">Nothing trending for this place yet. Search above, or add another location.</string>
+    <string name="discover_plugin_empty">Search %1$s for posts, people, and communities.</string>
     <plurals name="discover_trend_posts">
         <item quantity="one">%1$s post</item>
         <item quantity="other">%1$s posts</item>

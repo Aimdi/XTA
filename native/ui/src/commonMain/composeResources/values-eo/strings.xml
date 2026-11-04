@@ -15,19 +15,13 @@
     <string name="pinned">Alpinglita</string>
     <string name="reposted_by">%1$s reafiŝis</string>
     <string name="replying_to">Respondante al</string>
-    <string name="views">%1$s vidoj</string>
     <string name="stat_reposts">Reafiŝoj</string>
     <string name="stat_quotes">Citaĵoj</string>
     <string name="stat_likes">Ŝatoj</string>
-    <string name="stat_bookmarks">Legosignoj</string>
 
     <string name="ago_seconds">%1$d s</string>
     <string name="ago_minutes">%1$d min</string>
     <string name="ago_hours">%1$d h</string>
-
-    <string name="joined">Aliĝis en %1$s</string>
-    <string name="following_count">Abonoj</string>
-    <string name="followers_count">Abonantoj</string>
 
     <string name="feed_nobody_followed">Neniu, kiun vi sekvas, ankoraŭ estas en la fluo Abonoj. Malfermu profilon, ekzemple serĉante @nomo, kaj sekvu ĝin.</string>
     <string name="feed_empty">Ankoraŭ neniuj afiŝoj de la kontoj, kiujn vi sekvas.</string>
@@ -40,41 +34,17 @@
     <string name="problem_refused">X rifuzis la peton (%1$d).</string>
     <string name="problem_other">Io misfunkciis dum legado de X.</string>
 
-    <string name="search_x">Serĉi en X</string>
-    <string name="search_top">Plej bonaj</string>
-    <string name="search_latest">Plej novaj</string>
-    <string name="search_nothing">Neniuj rezultoj por “%1$s”.</string>
-    <string name="search_go_to">Iri al @%1$s</string>
-
     <string name="import_intro">XTA Native estas XTA verkita nur por Android, por kompari ĝin kun XTA. Ĝi legas X per la kontoj, kiujn vi jam uzas en XTA.</string>
     <string name="import_steps">En XTA, malfermu Agordoj → Datumoj → Eksporti, ŝaltu “Eksporti kontojn”, eksportu, poste elektu tiun dosieron ĉi tie.</string>
     <string name="import_choose">Elekti savkopion de XTA</string>
     <string name="import_choose_another">Elekti alian dosieron</string>
-    <string name="import_not_a_backup">Ĉi tiu dosiero ne estas savkopio eksportita de XTA.</string>
     <string name="import_no_accounts">Ĉi tiu savkopio ne havas X-kontojn: eksportu denove kun “Eksporti kontojn” ŝaltita.</string>
     <string name="import_use">Uzi ĉi tiun savkopion</string>
     <string name="import_privacy">La savkopio enhavas viajn X-seancojn. XTA Native konservas ilin en ĉi tiu telefono, sendas ilin nur al X kaj neniam afiŝas, ŝatas aŭ sekvas ion tie.</string>
-    <plurals name="import_found_accounts">
-        <item quantity="one">%1$d X-konto</item>
-        <item quantity="other">%1$d X-kontoj</item>
-    </plurals>
-    <plurals name="import_found_following">
-        <item quantity="one">%1$d sekvata konto, %2$d en la fluo Abonoj</item>
-        <item quantity="other">%1$d sekvataj kontoj, %2$d en la fluo Abonoj</item>
-    </plurals>
 
-    <string name="settings_feed">Fluo Abonoj</string>
-    <string name="settings_replies">Montri respondojn</string>
-    <string name="settings_reposts">Montri reafiŝojn</string>
-    <string name="settings_accounts">X-kontoj</string>
-    <string name="settings_following">Sekvataj kontoj: %1$d, en la fluo: %2$d</string>
-    <string name="settings_import_again">Importi savkopion de XTA denove</string>
     <string name="settings_clear">Forigi ĉion</string>
     <string name="settings_clear_explained">Forigas la X-seancojn kaj la sekvatajn kontojn el XTA Native. XTA mem konservas ĉion.</string>
     <string name="settings_clear_confirm">Forigi</string>
-    <string name="settings_about">Pri</string>
-    <string name="settings_version">XTA Native %1$s</string>
-    <string name="settings_prototype">Prototipo apud XTA, por kompari. Ĝi povas esti retirita.</string>
 
     <string name="card_from">De %1$s</string>
     <string name="poll_final">Finaj rezultoj</string>
@@ -98,13 +68,6 @@
         <item quantity="one">%1$d nova afiŝo</item>
         <item quantity="other">%1$d novaj afiŝoj</item>
     </plurals>
-    <string name="settings_autoplay">Ludi la filmetojn en la fluo, sen sono</string>
-    <string name="profile_posts">Afiŝoj</string>
-    <string name="profile_replies">Respondoj</string>
-    <string name="profile_media">Plurmedio</string>
-    <string name="profile_nothing">Ankoraŭ nenio ĉi tie.</string>
-    <string name="profile_follow">Sekvi</string>
-    <string name="profile_following">Sekvata</string>
     <string name="follow_here_only">Sekvata nur en XTA Native: X ne ekscias.</string>
     <string name="follow_in_feed">En la fluo Abonoj</string>
     <string name="follow_groups">Grupoj</string>

@@ -15,19 +15,13 @@
     <string name="pinned">Ainguratua</string>
     <string name="reposted_by">%1$s erabiltzaileak birbidali du</string>
     <string name="replying_to">Honi erantzuten:</string>
-    <string name="views">%1$s ikustaldi</string>
     <string name="stat_reposts">Birbidalketak</string>
     <string name="stat_quotes">Aipamenak</string>
     <string name="stat_likes">Atsegiteak</string>
-    <string name="stat_bookmarks">Laster-markak</string>
 
     <string name="ago_seconds">%1$d s</string>
     <string name="ago_minutes">%1$d min</string>
     <string name="ago_hours">%1$d h</string>
-
-    <string name="joined">Erregistratua: %1$s</string>
-    <string name="following_count">Jarraitzen</string>
-    <string name="followers_count">Jarraitzaileak</string>
 
     <string name="feed_nobody_followed">Jarraitzen duzunetako inor ez dago oraindik Jarraitzen jarioan. Ireki profil bat, adibidez @izena bilatuz, eta jarraitu.</string>
     <string name="feed_empty">Oraindik ez dago jarraitzen dituzun kontuen argitalpenik.</string>
@@ -40,41 +34,17 @@
     <string name="problem_refused">X-k eskaera baztertu du (%1$d).</string>
     <string name="problem_other">Zerbait gaizki joan da X irakurtzean.</string>
 
-    <string name="search_x">Bilatu X-n</string>
-    <string name="search_top">Nabarmenak</string>
-    <string name="search_latest">Berrienak</string>
-    <string name="search_nothing">Ez dago emaitzarik “%1$s” bilaketarako.</string>
-    <string name="search_go_to">Joan @%1$s erabiltzailera</string>
-
     <string name="import_intro">XTA Native Androiderako soilik idatzitako XTA da, XTArekin alderatzeko. X irakurtzen du XTAn dagoeneko erabiltzen dituzun kontuekin.</string>
     <string name="import_steps">XTAn, ireki Ezarpenak → Datuak → Esportatu, aktibatu “Esportatu kontuak”, esportatu eta aukeratu fitxategi hori hemen.</string>
     <string name="import_choose">Aukeratu XTAren babeskopia</string>
     <string name="import_choose_another">Aukeratu beste fitxategi bat</string>
-    <string name="import_not_a_backup">Fitxategi hau ez da XTAk esportatutako babeskopia bat.</string>
     <string name="import_no_accounts">Babeskopia honek ez du X konturik: esportatu berriro “Esportatu kontuak” aktibatuta.</string>
     <string name="import_use">Erabili babeskopia hau</string>
     <string name="import_privacy">Babeskopiak zure X saioak ditu. XTA Native-k telefono honetan gordetzen ditu, X-ri bakarrik bidaltzen dizkio eta ez du inoiz ezer argitaratzen, atsegiten edo jarraitzen han.</string>
-    <plurals name="import_found_accounts">
-        <item quantity="one">X kontu %1$d</item>
-        <item quantity="other">%1$d X kontu</item>
-    </plurals>
-    <plurals name="import_found_following">
-        <item quantity="one">Jarraitutako kontu %1$d, %2$d Jarraitzen jarioan</item>
-        <item quantity="other">Jarraitutako %1$d kontu, %2$d Jarraitzen jarioan</item>
-    </plurals>
 
-    <string name="settings_feed">Jarraitzen jarioa</string>
-    <string name="settings_replies">Erakutsi erantzunak</string>
-    <string name="settings_reposts">Erakutsi birbidalketak</string>
-    <string name="settings_accounts">X kontuak</string>
-    <string name="settings_following">Jarraitutako kontuak: %1$d; jarioan: %2$d</string>
-    <string name="settings_import_again">Inportatu berriro XTAren babeskopia bat</string>
     <string name="settings_clear">Kendu dena</string>
     <string name="settings_clear_explained">X saioak eta jarraitutako kontuak kentzen ditu XTA Native-tik. XTAk berak dena gordetzen du.</string>
     <string name="settings_clear_confirm">Kendu</string>
-    <string name="settings_about">Honi buruz</string>
-    <string name="settings_version">XTA Native %1$s</string>
-    <string name="settings_prototype">XTAren ondoko prototipo bat, alderatzeko. Kendu egin daiteke.</string>
 
     <string name="card_from">Iturria: %1$s</string>
     <string name="poll_final">Azken emaitzak</string>
@@ -98,13 +68,6 @@
         <item quantity="one">Argitalpen berri %1$d</item>
         <item quantity="other">%1$d argitalpen berri</item>
     </plurals>
-    <string name="settings_autoplay">Erreproduzitu jarioko bideoak, soinurik gabe</string>
-    <string name="profile_posts">Argitalpenak</string>
-    <string name="profile_replies">Erantzunak</string>
-    <string name="profile_media">Multimedia</string>
-    <string name="profile_nothing">Oraindik ez dago ezer hemen.</string>
-    <string name="profile_follow">Jarraitu</string>
-    <string name="profile_following">Jarraitzen</string>
     <string name="follow_here_only">XTA Native-n bakarrik jarraitua: X-k ez daki.</string>
     <string name="follow_in_feed">Jarraitzen jarioan</string>
     <string name="follow_groups">Taldeak</string>

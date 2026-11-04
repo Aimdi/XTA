@@ -65,9 +65,12 @@ import com.aimdi.xtanative.ui.saved.NoteThreadScreen
 import com.aimdi.xtanative.ui.saved.SavedFoldersScreen
 import com.aimdi.xtanative.ui.saved.SavedLinks
 import com.aimdi.xtanative.ui.saved.SavedScreen
+import com.aimdi.xtanative.ui.search.LibrarySearchScreen
+import com.aimdi.xtanative.ui.search.LibraryTarget
 import com.aimdi.xtanative.ui.search.SearchActions
 import com.aimdi.xtanative.ui.search.SearchScreen
 import com.aimdi.xtanative.ui.search.SearchTab
+import com.aimdi.xtanative.ui.settings.AttachPluginBackups
 import com.aimdi.xtanative.ui.settings.BackupScreen
 import com.aimdi.xtanative.ui.settings.SettingsRoutes
 import com.aimdi.xtanative.ui.settings.SettingsScreen
@@ -125,6 +128,7 @@ private object Routes {
     const val FOLLOWING = "profile/{screenName}/following"
     const val FOLLOWERS = "profile/{screenName}/followers"
     const val ARTICLE = "article/{postId}"
+    const val LIBRARY = "library?q={q}"
 
     fun post(id: String) = "post/$id"
     fun profile(screenName: String) = "profile/" + encoded(screenName)
@@ -153,6 +157,19 @@ private object Routes {
     fun reposters(id: String) = "post/$id/reposters"
     fun follows(screenName: String, followers: Boolean) = "profile/" + encoded(screenName) + if (followers) "/followers" else "/following"
     fun article(postId: String) = "article/$postId"
+    fun library(query: String?) = if (query.isNullOrBlank()) "library" else "library?q=" + encoded(query.trim())
+
+    /** The screen a result of the library search opens in. */
+    fun of(target: LibraryTarget): String = when (target) {
+        is LibraryTarget.XPost -> post(target.id)
+        LibraryTarget.Saved -> SAVED
+        is LibraryTarget.NoteThread -> noteThread(target.rootId)
+        is LibraryTarget.Profile -> profile(target.screenName)
+        is LibraryTarget.Search -> search(target.query)
+        is LibraryTarget.Group -> group(target.id)
+        is LibraryTarget.Article -> archive(target.id)
+        is LibraryTarget.OfflineMedia -> offlineMedia(target.id)
+    }
 
     /** [text] escaped for a route, which is matched as a URI: a space as %20, which every platform decodes. */
     private fun encoded(text: String): String = URLEncoder.encode(text, "UTF-8").replace("+", "%20")
@@ -221,13 +238,18 @@ fun XtaNativeRoot() {
         )
     }
     val searchActions = remember(nav) {
-        SearchActions(openCommunity = { id -> nav.navigate(Routes.community(id)) }, openAntennas = { nav.navigate(Routes.ANTENNAS) })
+        SearchActions(
+            openCommunity = { id -> nav.navigate(Routes.community(id)) },
+            openAntennas = { nav.navigate(Routes.ANTENNAS) },
+            openLibrary = { query -> nav.navigate(Routes.library(query)) },
+        )
     }
     val trendsActions = remember(nav) {
         TrendsActions(
             openSearch = { query -> nav.navigate(Routes.search(query)) },
             openPeople = { nav.navigate(Routes.search(null, SearchTab.PEOPLE.routeName)) },
             openAntennas = { nav.navigate(Routes.ANTENNAS) },
+            openLibrary = { query -> nav.navigate(Routes.library(query)) },
         )
     }
     val homeRoutes = remember(nav) { HomeRoutes(exists = nav::hasRoute, open = { route -> nav.navigate(route) }) }
@@ -246,6 +268,7 @@ fun XtaNativeRoot() {
     BindLinkScreens(linkScreens)
     // Where a plugin asks to go lands here too (PLUGINS.md).
     AttachPluginNavigation(nav, linkScreens)
+    AttachPluginBackups()
 
     DesktopNavigation(nav) { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes)) }
 }
@@ -392,9 +415,13 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
                     openDownloads = { nav.navigate(Routes.DOWNLOADS) },
                     openOffline = { nav.navigate(Routes.OFFLINE) },
                     openSettings = { nav.navigate(Routes.SETTINGS) },
+                    searchLibrary = { nav.navigate(Routes.library(null)) },
                 ),
                 onBack = { nav.popBackStack() },
             )
+        }
+        composable(Routes.LIBRARY, arguments = listOf(navArgument("q") { type = NavType.StringType; nullable = true; defaultValue = null })) { entry ->
+            LibrarySearchScreen(entry.text("q"), open = { target -> nav.navigate(Routes.of(target)) }, onBack = { nav.popBackStack() })
         }
         composable(Routes.SUBSCRIPTIONS) {
             SubscriptionsScreen(

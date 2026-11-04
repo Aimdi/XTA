@@ -58,6 +58,11 @@ data class BackupDocument(
     val profileNotes: List<ProfileNoteRow>? = null,
     val antennas: List<AntennaRow>? = null,
     val localPosts: List<LocalPostRow>? = null,
+    /**
+     * XTA Native's downloadable plugins' own sections, by the name each plugin
+     * gives one ("bluesky.follows"), as the text it exported. XTA reads past them.
+     */
+    val pluginSections: Map<String, String>? = null,
     /** On a document a WebDAV sync uploaded: the earlier versions it kept on the server, newest first. */
     val webDavHistory: List<WebDavVersion>? = null,
 ) {
@@ -101,12 +106,14 @@ data class BackupDocument(
         BackupCategory.EH_FAVORITES to ehFavorites?.size,
         BackupCategory.EH_HISTORY to ehHistory?.size,
         BackupCategory.STOCKS to stockSubscriptions?.size,
+        BackupCategory.PLUGINS to pluginSections?.size,
     ).mapNotNull { (category, count) -> count?.takeIf { it > 0 }?.let { category to it } }.toMap()
 
     /**
      * Only the sections [choice] asks for, as XTA's export screen picks them.
      * Local posts always go; [settings] is left as given, since what it may
-     * carry is the settings' own business (see `Settings.exported`).
+     * carry is the settings' own business (see `Settings.exported`). The
+     * plugins' sections go with the follows, as XTA's plugins' tables do.
      */
     fun chosen(choice: ExportChoice): BackupDocument {
         fun <T> List<T>?.ifChosen(chosen: Boolean) = takeIf { chosen }
@@ -128,6 +135,7 @@ data class BackupDocument(
             ehFavorites = ehFavorites.ifChosen(networks),
             ehHistory = ehHistory.ifChosen(networks),
             stockSubscriptions = stockSubscriptions.ifChosen(networks),
+            pluginSections = pluginSections.takeIf { networks },
             searchSubscriptions = searchSubscriptions.ifChosen(choice.subscriptions),
             subscriptions = subscriptions.ifChosen(choice.subscriptions),
             groups = groups.ifChosen(choice.groups),
@@ -151,7 +159,10 @@ data class BackupDocument(
      */
     fun forRestore(includeReadPositions: Boolean): BackupDocument = copy(readPositions = readPositions.takeIf { includeReadPositions })
 
-    /** The document as XTA writes it: every section in XTA's order, null where it carries nothing. */
+    /**
+     * The document as XTA writes it: every section in XTA's order, null where
+     * it carries nothing; the plugins' sections only where there are some.
+     */
     fun toJson(): JsonObject = JsonObject(
         buildMap {
             put(BackupKeys.ARCHIVE_ANNOTATIONS, archiveAnnotations?.let { notes -> JsonObject(notes.mapValues { it.value.toJson() }) } ?: JsonNull)
@@ -189,6 +200,7 @@ data class BackupDocument(
             put(BackupKeys.PROFILE_NOTES, profileNotes.json { it.toJson() })
             put(BackupKeys.ANTENNAS, antennas.json { it.toJson() })
             put(BackupKeys.LOCAL_POSTS, localPosts.json { it.toJson() })
+            pluginSections?.let { put(BackupKeys.PLUGIN_SECTIONS, JsonObject(it.mapValues { (_, text) -> JsonPrimitive(text) })) }
             webDavHistory?.let { put(BackupKeys.WEBDAV_HISTORY, it.json { version -> version.toJson() }) }
         },
     )
@@ -245,9 +257,14 @@ data class BackupDocument(
                 profileNotes = root[BackupKeys.PROFILE_NOTES].rows { ProfileNoteRow.from(it) },
                 antennas = root[BackupKeys.ANTENNAS].rows { AntennaRow.from(it) },
                 localPosts = root[BackupKeys.LOCAL_POSTS].rows { LocalPostRow.from(it) },
+                pluginSections = texts(root[BackupKeys.PLUGIN_SECTIONS]),
                 webDavHistory = root[BackupKeys.WEBDAV_HISTORY].takeIf { it.exists }?.let { WebDavVersion.list(it) },
             )
         }
+
+        /** A section of texts by name; null when the file has none. */
+        private fun texts(section: J): Map<String, String>? =
+            (section.raw as? JsonObject)?.let { section.keys.mapNotNull { name -> section[name].string?.let { name to it } }.toMap() }
 
         private fun total(vararg sections: List<*>?): Int? =
             sections.filterNotNull().takeIf { it.isNotEmpty() }?.sumOf { it.size }
@@ -307,6 +324,9 @@ object BackupKeys {
     const val PROFILE_NOTES = "profileNotes"
     const val ANTENNAS = "antennas"
     const val LOCAL_POSTS = "localPosts"
+
+    /** XTA Native's alone: the plugins' sections. */
+    const val PLUGIN_SECTIONS = "pluginSections"
 
     /** Only on the document a WebDAV sync keeps on the server. */
     const val WEBDAV_HISTORY = "_xtaWebDavHistory"

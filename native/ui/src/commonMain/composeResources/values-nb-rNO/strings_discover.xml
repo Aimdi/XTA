@@ -72,6 +72,7 @@
     <string name="discover_add_location">Legg til et sted</string>
     <string name="discover_country">Land</string>
     <string name="discover_trends_empty">Ingen trender for dette stedet ennå. Søk ovenfor, eller legg til et annet sted.</string>
+    <string name="discover_plugin_empty">Søk i %1$s etter innlegg, personer og fellesskap.</string>
     <plurals name="discover_trend_posts">
         <item quantity="one">%1$s tvitring</item>
         <item quantity="other">%1$s tvitringer</item>

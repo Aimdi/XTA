@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.backup.FollowedAccount
-import com.aimdi.xtanative.core.feed.ChunkConcurrency
 import com.aimdi.xtanative.core.feed.ContentFilter
 import com.aimdi.xtanative.core.feed.FeedPage
 import com.aimdi.xtanative.core.feed.FeedProgress
@@ -25,6 +24,8 @@ import com.aimdi.xtanative.data.FeedCache
 import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.SubscriptionPrefs
+import com.aimdi.xtanative.ui.feed.HiddenPosts
+import com.aimdi.xtanative.ui.feed.feedConcurrency
 import com.aimdi.xtanative.ui.subscriptions.GroupActions
 import com.aimdi.xtanative.ui.subscriptions.GroupBoardModel
 import com.aimdi.xtanative.ui.subscriptions.SubscriptionList
@@ -132,8 +133,9 @@ object FeedPlaces {
  * A group's feed (_feed.dart, group_screen.dart): the session's plan for it,
  * read with core's [GroupFeed], shown with its progress, the sources that
  * failed to retry, folded posts, the unrelated-posts pill, the read position
- * and catch-up mode. A change of members or settings refreshes it, held while
- * the reader is scrolled down.
+ * and catch-up mode. A change of members or settings, or of the reposts and
+ * replies the reader hid on profiles, refreshes it, held while the reader is
+ * scrolled down.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class GroupFeedViewModel(private val graph: AppGraph, private val groupId: String) : ViewModel() {
@@ -173,9 +175,14 @@ class GroupFeedViewModel(private val graph: AppGraph, private val groupId: Strin
         Combinations.state.update { it.released(groupId) }
         viewModelScope.launch {
             run.update { it.copy(lastSeen = marks.position()) }
-            combine(graph.sessions.state.filterNotNull(), graph.settings.settings, Combinations.state) { session, settings, combined ->
+            combine(
+                graph.sessions.state.filterNotNull(),
+                graph.settings.settings,
+                Combinations.state,
+                HiddenPosts.of(graph.profileFilters),
+            ) { session, settings, combined, hidden ->
                 val prefs = FeedPrefs.of(settings)
-                Inputs(GroupFeedRules.plan(session, prefs, groupId, combined.ids), prefs)
+                Inputs(GroupFeedRules.plan(session, prefs, groupId, combined.ids, hidden), prefs)
             }.distinctUntilChanged().collect(::read)
         }
     }
@@ -233,7 +240,7 @@ class GroupFeedViewModel(private val graph: AppGraph, private val groupId: Strin
         }
     }
 
-    private fun concurrency(): Int = ChunkConcurrency.forAccounts(ChunkConcurrency.usableAccounts(graph.sessions.state.value?.accounts.orEmpty(), graph.accountsOff))
+    private fun concurrency(): Int = graph.feedConcurrency()
 
     /** What the feed showed the last time, at once, shaped by the rules as they are now. */
     private suspend fun showCached(plan: GroupFeedPlan) {

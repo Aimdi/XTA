@@ -72,6 +72,7 @@
     <string name="discover_add_location">Locatie toevoegen</string>
     <string name="discover_country">Land</string>
     <string name="discover_trends_empty">Nog geen trends voor deze plaats. Zoek hierboven of voeg een andere locatie toe.</string>
+    <string name="discover_plugin_empty">Zoek in %1$s naar posts, mensen en community's.</string>
     <plurals name="discover_trend_posts">
         <item quantity="one">%1$s bericht</item>
         <item quantity="other">%1$s berichten</item>

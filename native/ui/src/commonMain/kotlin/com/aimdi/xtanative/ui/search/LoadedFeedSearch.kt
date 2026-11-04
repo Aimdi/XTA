@@ -30,6 +30,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.x.model.XThread
+import com.aimdi.xtanative.ui.common.BackHandling
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.discover_loaded_hint
@@ -38,17 +39,25 @@ import com.aimdi.xtanative.ui.generated.resources.discover_no_results
 import com.aimdi.xtanative.ui.generated.resources.discover_search
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.ThreadRows
+import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import org.jetbrains.compose.resources.stringResource
+
+/** The bar button a feed opens [LoadedFeedSearchScreen] with, as XTA's feeds have it first in their bar. */
+@Composable
+fun LoadedSearchButton(onClick: () -> Unit) {
+    IconButton(onClick = onClick) { Icon(GroupIcons.ManageSearch, stringResource(Res.string.discover_loaded_title)) }
+}
 
 /**
  * XTA's search of a feed's loaded posts: typing filters [threads], what the
  * feed has already shown, by text, links and authors. Nothing is asked of X,
- * and scrolling loads nothing more. A feed opens it from its bar with the
- * rows it holds.
+ * and scrolling loads nothing more. A feed opens it over itself from its
+ * bar ([LoadedSearchButton]) with the rows it holds; Back closes it.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoadedFeedSearchScreen(threads: List<XThread>, actions: PostActions, onBack: () -> Unit) {
+    BackHandling(enabled = true, onBack = onBack)
     val index = remember(threads) { LoadedFeed.Index(threads) }
     var query by rememberSaveable { mutableStateOf("") }
     val matches = remember(index, query) { index.matching(query) }

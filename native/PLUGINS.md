@@ -187,7 +187,14 @@ the screens:
   (`LinkScreens.plugin`, asked by the app's `LinkOpener`);
 - its **screens** (client, settings, search, its own routes) are pushed on
   the app's back stack under `plugin/<id>/…`, its media in the viewer under
-  `plugin-media/…`.
+  `plugin-media/…`;
+- its **search** is one of Discover's chips and is offered by the search of
+  the reader's library;
+- its **backup sections** go in the app's full backup, under
+  `pluginSections` by name (`PluginBackups`): a restore hands each to the
+  running plugin that keeps it, and one for a plugin that is not running
+  waits in `backup/kept.json`, carried by every export, until that plugin
+  runs and takes it.
 
 A debug or CI build can read another catalogue: `-PpluginCatalogue=<url>` on
 Android, `XTA_NATIVE_PLUGIN_CATALOGUE` on the desktop.

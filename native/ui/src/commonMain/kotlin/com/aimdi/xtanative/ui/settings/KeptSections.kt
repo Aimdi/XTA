@@ -7,35 +7,57 @@ import kotlinx.coroutines.sync.withLock
 
 /**
  * The parts of a restored XTA backup no store of XTA Native holds yet: each
- * network's follows, likes, votes and galleries (until its plugin brings its
- * own backup sections), the profiles' repost and reply filters and private
- * notes, and what a group's row carries beyond the session's groups (its
- * icon, colour, mark and when it was made). They are kept as XTA wrote them
- * in `backup/kept.json`, so the next export carries them again and nothing
- * a reader restored is lost.
+ * network's follows, likes, votes and galleries as XTA wrote them (until its
+ * plugin reads them), the sections of plugins that are not running (until
+ * they run, see [PluginBackups]), and what a group's row carries beyond the
+ * session's groups (its icon, colour, mark and when it was made). They are
+ * kept in `backup/kept.json`, so the next export carries them again and
+ * nothing a reader restored is lost.
  */
 class KeptSections(dir: StoreDir) {
     private val file = dir.file(FILE)
     private val mutex = Mutex()
     private var current: BackupDocument? = null
 
+    /** Profile notes and filters a restore kept here before their stores came, until [adoptProfiles] hands them over. */
+    private var legacyProfiles: BackupDocument? = null
+
     suspend fun get(): BackupDocument = mutex.withLock { loaded() }
 
     /** [incoming]'s kept sections merged in, row by row, as XTA's import replaces rows by their key. */
-    suspend fun merge(incoming: BackupDocument): BackupDocument = mutex.withLock {
-        val next = merged(loaded(), incoming)
+    suspend fun merge(incoming: BackupDocument): BackupDocument = mutex.withLock { write(merged(loaded(), incoming)) }
+
+    /** The plugins' sections [names] kept no more: their plugins took them. */
+    suspend fun forgetPluginSections(names: Set<String>): BackupDocument = mutex.withLock {
+        val kept = loaded()
+        write(kept.copy(pluginSections = kept.pluginSections?.minus(names)?.takeIf { it.isNotEmpty() }))
+    }
+
+    /**
+     * Hands [adopt] the profile notes and filters an older build kept here,
+     * when there are any, and keeps them no more once it has taken them.
+     */
+    suspend fun adoptProfiles(adopt: suspend (BackupDocument) -> Unit) = mutex.withLock {
+        loaded()
+        val legacy = legacyProfiles ?: return@withLock
+        adopt(legacy)
+        legacyProfiles = null
+        file.write(loaded().encode())
+    }
+
+    private suspend fun write(next: BackupDocument): BackupDocument {
         if (next != current) {
             file.write(next.encode())
             current = next
         }
-        next
+        return next
     }
 
     private suspend fun loaded(): BackupDocument {
         current?.let { return it }
-        val read = file.read()?.let(BackupDocument::parse)?.let(::keptOf) ?: BackupDocument()
-        current = read
-        return read
+        val stored = file.read()?.let(BackupDocument::parse)
+        legacyProfiles = stored?.let(::profilesOf)
+        return (stored?.let(::keptOf) ?: BackupDocument()).also { current = it }
     }
 
     companion object {
@@ -59,10 +81,13 @@ class KeptSections(dir: StoreDir) {
             ehHistory = document.ehHistory,
             stockSubscriptions = document.stockSubscriptions,
             groups = document.groups,
-            repostFilters = document.repostFilters,
-            replyFilters = document.replyFilters,
-            profileNotes = document.profileNotes,
+            pluginSections = document.pluginSections,
         )
+
+        /** The profile notes and filters [document] carries, or null when it carries none. */
+        private fun profilesOf(document: BackupDocument): BackupDocument? =
+            BackupDocument(repostFilters = document.repostFilters, replyFilters = document.replyFilters, profileNotes = document.profileNotes)
+                .takeIf { it.repostFilters != null || it.replyFilters != null || it.profileNotes != null }
 
         /** [kept] with each of [incoming]'s kept sections merged in; a section [incoming] does not carry stays as it was. */
         fun merged(kept: BackupDocument, incoming: BackupDocument): BackupDocument = BackupDocument(
@@ -82,9 +107,7 @@ class KeptSections(dir: StoreDir) {
             ehHistory = upsert(kept.ehHistory, incoming.ehHistory) { it.gallery.gid },
             stockSubscriptions = upsert(kept.stockSubscriptions, incoming.stockSubscriptions) { it.id },
             groups = upsert(kept.groups, incoming.groups) { it.id },
-            repostFilters = upsert(kept.repostFilters, incoming.repostFilters) { it.userId },
-            replyFilters = upsert(kept.replyFilters, incoming.replyFilters) { it.userId },
-            profileNotes = upsert(kept.profileNotes, incoming.profileNotes) { it.profileId },
+            pluginSections = incoming.pluginSections?.let { kept.pluginSections.orEmpty() + it } ?: kept.pluginSections,
         )
 
         /**

@@ -15,19 +15,13 @@
     <string name="pinned">Закріплено</string>
     <string name="reposted_by">%1$s поширює</string>
     <string name="replying_to">Відповідаючи на</string>
-    <string name="views">%1$s перегляду</string>
     <string name="stat_reposts">Поширення</string>
     <string name="stat_quotes">Цитати</string>
     <string name="stat_likes">Вподобання</string>
-    <string name="stat_bookmarks">Закладки</string>
 
     <string name="ago_seconds">%1$d с</string>
     <string name="ago_minutes">%1$d хв</string>
     <string name="ago_hours">%1$d год</string>
-
-    <string name="joined">Приєднався %1$s</string>
-    <string name="following_count">Слідкує</string>
-    <string name="followers_count">Підписники</string>
 
     <string name="feed_nobody_followed">Нікого з тих, за ким ви стежите, ще немає в стрічці «Стежу». Відкрийте профіль, наприклад знайшовши @ім’я, і стежте за ним.</string>
     <string name="feed_empty">Поки немає дописів від облікових записів, за якими ви стежите.</string>
@@ -40,45 +34,17 @@
     <string name="problem_refused">X відхилив запит (%1$d).</string>
     <string name="problem_other">Під час читання X щось пішло не так.</string>
 
-    <string name="search_x">Пошук в X</string>
-    <string name="search_top">Популярне</string>
-    <string name="search_latest">Найновіше</string>
-    <string name="search_nothing">Нічого не знайдено за запитом «%1$s».</string>
-    <string name="search_go_to">Перейти до @%1$s</string>
-
     <string name="import_intro">XTA Native — це XTA, написаний лише для Android, щоб порівняти його з XTA. Він читає X через облікові записи, які ви вже використовуєте в XTA.</string>
     <string name="import_steps">У XTA відкрийте Налаштування → Дані → Експорт, увімкніть «Експортувати облікові записи», експортуйте й виберіть цей файл тут.</string>
     <string name="import_choose">Вибрати резервну копію XTA</string>
     <string name="import_choose_another">Вибрати інший файл</string>
-    <string name="import_not_a_backup">Цей файл не є резервною копією, експортованою з XTA.</string>
     <string name="import_no_accounts">У цій резервній копії немає облікових записів X: експортуйте її знову з увімкненим «Експортувати облікові записи».</string>
     <string name="import_use">Використати цю копію</string>
     <string name="import_privacy">Резервна копія містить ваші сеанси X. XTA Native зберігає їх на цьому телефоні, надсилає лише до X і ніколи нічого там не публікує, не вподобує й ні за ким не стежить.</string>
-    <plurals name="import_found_accounts">
-        <item quantity="one">%1$d обліковий запис X</item>
-        <item quantity="few">%1$d облікові записи X</item>
-        <item quantity="many">%1$d облікових записів X</item>
-        <item quantity="other">%1$d облікового запису X</item>
-    </plurals>
-    <plurals name="import_found_following">
-        <item quantity="one">Ви стежите за %1$d обліковим записом, %2$d — у стрічці «Стежу»</item>
-        <item quantity="few">Ви стежите за %1$d обліковими записами, %2$d — у стрічці «Стежу»</item>
-        <item quantity="many">Ви стежите за %1$d обліковими записами, %2$d — у стрічці «Стежу»</item>
-        <item quantity="other">Ви стежите за %1$d облікового запису, %2$d — у стрічці «Стежу»</item>
-    </plurals>
 
-    <string name="settings_feed">Стрічка «Стежу»</string>
-    <string name="settings_replies">Показувати відповіді</string>
-    <string name="settings_reposts">Показувати поширення</string>
-    <string name="settings_accounts">Облікові записи X</string>
-    <string name="settings_following">Відстежуваних облікових записів: %1$d, у стрічці: %2$d</string>
-    <string name="settings_import_again">Знову імпортувати резервну копію XTA</string>
     <string name="settings_clear">Вилучити все</string>
     <string name="settings_clear_explained">Вилучає з XTA Native сеанси X і відстежувані облікові записи. Сам XTA зберігає все.</string>
     <string name="settings_clear_confirm">Вилучити</string>
-    <string name="settings_about">Про застосунок</string>
-    <string name="settings_version">XTA Native %1$s</string>
-    <string name="settings_prototype">Прототип поруч із XTA, для порівняння. Його можуть відкликати.</string>
 
     <string name="card_from">Джерело: %1$s</string>
     <string name="poll_final">Остаточні результати</string>
@@ -112,13 +78,6 @@
         <item quantity="many">%1$d нових дописів</item>
         <item quantity="other">%1$d нового допису</item>
     </plurals>
-    <string name="settings_autoplay">Відтворювати відео в стрічці без звуку</string>
-    <string name="profile_posts">Дописи</string>
-    <string name="profile_replies">Відповіді</string>
-    <string name="profile_media">Медіа</string>
-    <string name="profile_nothing">Тут поки нічого немає.</string>
-    <string name="profile_follow">Стежити</string>
-    <string name="profile_following">Стежу</string>
     <string name="follow_here_only">Ви стежите лише в XTA Native: X про це не дізнається.</string>
     <string name="follow_in_feed">У стрічці «Стежу»</string>
     <string name="follow_groups">Групи</string>

@@ -11,6 +11,7 @@ import com.aimdi.xtanative.store.settings.DiscoverPrefs
 import com.aimdi.xtanative.ui.search.SEARCH_SCOPE_X
 import com.aimdi.xtanative.ui.search.SearchTiming
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -36,6 +38,8 @@ data class TrendsUi(
     val textSet: Int = 0,
     /** What the bar settled on; while it is empty, the recent searches show. */
     val committed: String = "",
+    /** The network the bar searches: X, or a plugin's id ([DiscoverScopes]). */
+    val scope: String = SEARCH_SCOPE_X,
 )
 
 /** The place picker: the places X has trends for, read when it opens. */
@@ -43,9 +47,10 @@ data class PlacesUi(val rows: List<PlaceRow> = emptyList(), val loading: Boolean
 
 /**
  * XTA's Discover for X: the trends of the place shown, the places kept as
- * tabs (in XTA's settings, so they travel in its backup), the search bar
- * and its recent searches.
+ * tabs (in XTA's settings, so they travel in its backup), the search bar,
+ * the network it searches and that network's recent searches.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 class TrendsViewModel(private val graph: AppGraph) : ViewModel() {
     private val state = MutableStateFlow(TrendsUi())
     val ui: StateFlow<TrendsUi> = state.asStateFlow()
@@ -53,8 +58,9 @@ class TrendsViewModel(private val graph: AppGraph) : ViewModel() {
     private val picker = MutableStateFlow(PlacesUi())
     val places: StateFlow<PlacesUi> = picker.asStateFlow()
 
-    val recent: StateFlow<List<String>> =
-        graph.recentSearches.of(SEARCH_SCOPE_X).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+    val recent: StateFlow<List<String>> = state.map { it.scope }.distinctUntilChanged()
+        .flatMapLatest { graph.recentSearches.of(it) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     private var reading: Job? = null
     private var settling: Job? = null
@@ -133,16 +139,23 @@ class TrendsViewModel(private val graph: AppGraph) : ViewModel() {
         }
     }
 
+    /** A scope chip: the bar searches [scope] now, with what it holds. */
+    fun select(scope: String) {
+        settling?.cancel()
+        state.update { it.copy(scope = scope, committed = it.text.trim()) }
+    }
+
     /**
      * The bar's search key or magnifier: the query to search, kept among
-     * the recent searches; null for an empty bar, which only takes focus.
+     * the scope's recent searches; null for an empty bar, which only takes focus.
      */
     fun submit(): String? {
         settling?.cancel()
         val query = state.value.text.trim()
         state.update { it.copy(committed = query) }
         if (query.isEmpty()) return null
-        viewModelScope.launch { graph.recentSearches.remember(SEARCH_SCOPE_X, query) }
+        val scope = state.value.scope
+        viewModelScope.launch { graph.recentSearches.remember(scope, query) }
         return query
     }
 
@@ -158,10 +171,12 @@ class TrendsViewModel(private val graph: AppGraph) : ViewModel() {
     }
 
     fun removeRecent(query: String) {
-        viewModelScope.launch { graph.recentSearches.remove(SEARCH_SCOPE_X, query) }
+        val scope = state.value.scope
+        viewModelScope.launch { graph.recentSearches.remove(scope, query) }
     }
 
     fun clearRecent() {
-        viewModelScope.launch { graph.recentSearches.clear(SEARCH_SCOPE_X) }
+        val scope = state.value.scope
+        viewModelScope.launch { graph.recentSearches.clear(scope) }
     }
 }

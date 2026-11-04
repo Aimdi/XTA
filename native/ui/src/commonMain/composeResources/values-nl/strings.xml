@@ -15,19 +15,13 @@
     <string name="pinned">Vastgezet</string>
     <string name="reposted_by">%1$s heeft gerepost</string>
     <string name="replying_to">Antwoord aan</string>
-    <string name="views">%1$s weergaven</string>
     <string name="stat_reposts">Reposts</string>
     <string name="stat_quotes">Citaten</string>
     <string name="stat_likes">Likes</string>
-    <string name="stat_bookmarks">Bladwijzers</string>
 
     <string name="ago_seconds">%1$d s</string>
     <string name="ago_minutes">%1$d min</string>
     <string name="ago_hours">%1$d u</string>
-
-    <string name="joined">Lid sinds %1$s</string>
-    <string name="following_count">Volgend</string>
-    <string name="followers_count">Volgers</string>
 
     <string name="feed_nobody_followed">Niemand die je volgt staat al in de feed Volgend. Open een profiel, bijvoorbeeld door op @naam te zoeken, en volg het.</string>
     <string name="feed_empty">Nog geen posts van de accounts die je volgt.</string>
@@ -40,41 +34,17 @@
     <string name="problem_refused">X heeft het verzoek geweigerd (%1$d).</string>
     <string name="problem_other">Er ging iets mis bij het lezen van X.</string>
 
-    <string name="search_x">Zoeken op X</string>
-    <string name="search_top">Populair</string>
-    <string name="search_latest">Nieuwste</string>
-    <string name="search_nothing">Geen resultaten voor ‘%1$s’.</string>
-    <string name="search_go_to">Ga naar @%1$s</string>
-
     <string name="import_intro">XTA Native is XTA, geschreven voor alleen Android, om met XTA te vergelijken. Het leest X met de accounts die je al in XTA gebruikt.</string>
     <string name="import_steps">Open in XTA Instellingen → Gegevens → Exporteren, zet ‘Accounts exporteren’ aan, exporteer en kies dat bestand hier.</string>
     <string name="import_choose">XTA-back-up kiezen</string>
     <string name="import_choose_another">Ander bestand kiezen</string>
-    <string name="import_not_a_backup">Dit bestand is geen back-up die XTA heeft geëxporteerd.</string>
     <string name="import_no_accounts">Deze back-up bevat geen X-accounts: exporteer opnieuw met ‘Accounts exporteren’ aan.</string>
     <string name="import_use">Deze back-up gebruiken</string>
     <string name="import_privacy">De back-up bevat je X-sessies. XTA Native bewaart ze op deze telefoon, stuurt ze alleen naar X en post, liket of volgt daar nooit iets.</string>
-    <plurals name="import_found_accounts">
-        <item quantity="one">%1$d X-account</item>
-        <item quantity="other">%1$d X-accounts</item>
-    </plurals>
-    <plurals name="import_found_following">
-        <item quantity="one">%1$d gevolgd account, %2$d in de feed Volgend</item>
-        <item quantity="other">%1$d gevolgde accounts, %2$d in de feed Volgend</item>
-    </plurals>
 
-    <string name="settings_feed">Feed Volgend</string>
-    <string name="settings_replies">Antwoorden tonen</string>
-    <string name="settings_reposts">Reposts tonen</string>
-    <string name="settings_accounts">X-accounts</string>
-    <string name="settings_following">Gevolgde accounts: %1$d, in de feed: %2$d</string>
-    <string name="settings_import_again">Opnieuw een XTA-back-up importeren</string>
     <string name="settings_clear">Alles verwijderen</string>
     <string name="settings_clear_explained">Verwijdert de X-sessies en de gevolgde accounts uit XTA Native. XTA zelf houdt alles.</string>
     <string name="settings_clear_confirm">Verwijderen</string>
-    <string name="settings_about">Over</string>
-    <string name="settings_version">XTA Native %1$s</string>
-    <string name="settings_prototype">Een prototype naast XTA, om te vergelijken. Het kan worden ingetrokken.</string>
 
     <string name="card_from">Van %1$s</string>
     <string name="poll_final">Eindresultaten</string>
@@ -98,13 +68,6 @@
         <item quantity="one">%1$d nieuwe post</item>
         <item quantity="other">%1$d nieuwe posts</item>
     </plurals>
-    <string name="settings_autoplay">Video’s in de feed afspelen, zonder geluid</string>
-    <string name="profile_posts">Posts</string>
-    <string name="profile_replies">Antwoorden</string>
-    <string name="profile_media">Media</string>
-    <string name="profile_nothing">Hier staat nog niets.</string>
-    <string name="profile_follow">Volgen</string>
-    <string name="profile_following">Volgend</string>
     <string name="follow_here_only">Alleen in XTA Native gevolgd: X weet het niet.</string>
     <string name="follow_in_feed">In de feed Volgend</string>
     <string name="follow_groups">Groepen</string>

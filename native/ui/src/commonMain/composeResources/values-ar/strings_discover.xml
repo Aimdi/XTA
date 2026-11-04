@@ -76,6 +76,7 @@
     <string name="discover_add_location">إضافة مكان</string>
     <string name="discover_country">البلد</string>
     <string name="discover_trends_empty">لا توجد مواضيع رائجة هنا بعد. ابحث أعلاه أو أضف مكانًا آخر.</string>
+    <string name="discover_plugin_empty">ابحث في %1$s عن المنشورات والأشخاص والمجتمعات.</string>
     <plurals name="discover_trend_posts">
         <item quantity="zero">%1$s تغريدة</item>
         <item quantity="one">%1$s تغريدة</item>

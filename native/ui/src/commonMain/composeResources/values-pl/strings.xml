@@ -15,19 +15,13 @@
     <string name="pinned">Przypięty</string>
     <string name="reposted_by">%1$s podaje dalej</string>
     <string name="replying_to">W odpowiedzi do</string>
-    <string name="views">%1$s wyświetlenia</string>
     <string name="stat_reposts">Podania dalej</string>
     <string name="stat_quotes">Cytaty</string>
     <string name="stat_likes">Polubienia</string>
-    <string name="stat_bookmarks">Zakładki</string>
 
     <string name="ago_seconds">%1$d s</string>
     <string name="ago_minutes">%1$d min</string>
     <string name="ago_hours">%1$d godz.</string>
-
-    <string name="joined">Dołączył(a): %1$s</string>
-    <string name="following_count">Obserwowani</string>
-    <string name="followers_count">Obserwujący</string>
 
     <string name="feed_nobody_followed">Nikogo z obserwowanych nie ma jeszcze w kanale Obserwowani. Otwórz profil, na przykład wyszukując @nazwa, i zacznij go obserwować.</string>
     <string name="feed_empty">Obserwowane konta nie mają jeszcze wpisów.</string>
@@ -40,45 +34,17 @@
     <string name="problem_refused">X odrzucił żądanie (%1$d).</string>
     <string name="problem_other">Coś poszło nie tak podczas odczytu X.</string>
 
-    <string name="search_x">Szukaj w X</string>
-    <string name="search_top">Najlepsze</string>
-    <string name="search_latest">Najnowsze</string>
-    <string name="search_nothing">Brak wyników dla „%1$s”.</string>
-    <string name="search_go_to">Przejdź do @%1$s</string>
-
     <string name="import_intro">XTA Native to XTA napisane tylko na Androida, żeby porównać je z XTA. Czyta X kontami, których już używasz w XTA.</string>
     <string name="import_steps">W XTA otwórz Ustawienia → Dane → Eksportuj, włącz „Eksportuj konta”, wyeksportuj, a potem wybierz tutaj ten plik.</string>
     <string name="import_choose">Wybierz kopię zapasową XTA</string>
     <string name="import_choose_another">Wybierz inny plik</string>
-    <string name="import_not_a_backup">Ten plik nie jest kopią zapasową wyeksportowaną przez XTA.</string>
     <string name="import_no_accounts">Ta kopia zapasowa nie zawiera kont X: wyeksportuj ją ponownie z włączonym „Eksportuj konta”.</string>
     <string name="import_use">Użyj tej kopii</string>
     <string name="import_privacy">Kopia zapasowa zawiera Twoje sesje X. XTA Native trzyma je na tym telefonie, wysyła je tylko do X i nigdy niczego tam nie publikuje, nie lubi ani nie obserwuje.</string>
-    <plurals name="import_found_accounts">
-        <item quantity="one">%1$d konto X</item>
-        <item quantity="few">%1$d konta X</item>
-        <item quantity="many">%1$d kont X</item>
-        <item quantity="other">%1$d konta X</item>
-    </plurals>
-    <plurals name="import_found_following">
-        <item quantity="one">%1$d obserwowane konto, %2$d w kanale Obserwowani</item>
-        <item quantity="few">%1$d obserwowane konta, %2$d w kanale Obserwowani</item>
-        <item quantity="many">%1$d obserwowanych kont, %2$d w kanale Obserwowani</item>
-        <item quantity="other">%1$d obserwowanego konta, %2$d w kanale Obserwowani</item>
-    </plurals>
 
-    <string name="settings_feed">Kanał Obserwowani</string>
-    <string name="settings_replies">Pokazuj odpowiedzi</string>
-    <string name="settings_reposts">Pokazuj podania dalej</string>
-    <string name="settings_accounts">Konta X</string>
-    <string name="settings_following">Obserwowane konta: %1$d, w kanale: %2$d</string>
-    <string name="settings_import_again">Zaimportuj ponownie kopię zapasową XTA</string>
     <string name="settings_clear">Usuń wszystko</string>
     <string name="settings_clear_explained">Usuwa z XTA Native sesje X i obserwowane konta. Samo XTA zachowuje wszystko.</string>
     <string name="settings_clear_confirm">Usuń</string>
-    <string name="settings_about">Informacje</string>
-    <string name="settings_version">XTA Native %1$s</string>
-    <string name="settings_prototype">Prototyp obok XTA, do porównania. Może zostać wycofany.</string>
 
     <string name="card_from">Z %1$s</string>
     <string name="poll_final">Wyniki końcowe</string>
@@ -112,13 +78,6 @@
         <item quantity="many">%1$d nowych wpisów</item>
         <item quantity="other">%1$d nowego wpisu</item>
     </plurals>
-    <string name="settings_autoplay">Odtwarzaj filmy w kanale bez dźwięku</string>
-    <string name="profile_posts">Wpisy</string>
-    <string name="profile_replies">Odpowiedzi</string>
-    <string name="profile_media">Multimedia</string>
-    <string name="profile_nothing">Nic tu jeszcze nie ma.</string>
-    <string name="profile_follow">Obserwuj</string>
-    <string name="profile_following">Obserwujesz</string>
     <string name="follow_here_only">Obserwowane tylko w XTA Native: X się o tym nie dowie.</string>
     <string name="follow_in_feed">W kanale Obserwowani</string>
     <string name="follow_groups">Grupy</string>

@@ -115,6 +115,8 @@ import com.aimdi.xtanative.ui.media.rememberInlinePlayer
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.ThreadRows
 import com.aimdi.xtanative.ui.post.hasVideo
+import com.aimdi.xtanative.ui.search.LoadedFeedSearchScreen
+import com.aimdi.xtanative.ui.search.LoadedSearchButton
 import com.aimdi.xtanative.ui.subscriptions.GroupEditSheet
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import com.aimdi.xtanative.ui.subscriptions.rememberPackSaver
@@ -128,8 +130,9 @@ private const val UNRELATED_INFO = "https://github.com/Teskann/QuaX/issues/26"
 /**
  * A group's feed (group_screen.dart, _feed.dart, _feed_shell.dart): its
  * title opens the group switcher, which swaps the group in place so Back
- * returns to wherever the first one was opened from; its bar has the
- * filters, a way to the top and a refresh; its chips pick the order.
+ * returns to wherever the first one was opened from; its bar has the search
+ * of the posts loaded, the filters, a way to the top and a refresh; its
+ * chips pick the order.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -144,6 +147,7 @@ fun GroupFeedScreen(groupId: String, actions: PostActions, onBack: () -> Unit) {
     var custom by rememberSaveable { mutableStateOf(false) }
     var switcher by rememberSaveable { mutableStateOf(false) }
     var creating by rememberSaveable { mutableStateOf(false) }
+    var searchingLoaded by rememberSaveable { mutableStateOf(false) }
     val savePack = rememberPackSaver()
     val reduced = LocalReducedMotion.current
     BackHandling(enabled = custom) { custom = false }
@@ -157,6 +161,7 @@ fun GroupFeedScreen(groupId: String, actions: PostActions, onBack: () -> Unit) {
                         navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } },
                         title = { GroupFeedTitle(state, onClick = { switcher = true }) },
                         actions = {
+                            LoadedSearchButton { searchingLoaded = true }
                             IconButton(onClick = { settings = true }) { Icon(GroupIcons.Build, stringResource(Res.string.groups_filters)) }
                             IconButton(onClick = { scope.launch { list.scrollToTop(reduced) } }) {
                                 Icon(GroupIcons.ArrowUpward, stringResource(Res.string.groups_scroll_to_top))
@@ -177,6 +182,7 @@ fun GroupFeedScreen(groupId: String, actions: PostActions, onBack: () -> Unit) {
             }
         }
         if (custom) CustomSettingsScreen(state, vm.settingsActions, onBack = { custom = false })
+        if (searchingLoaded) LoadedFeedSearchScreen(state.run.shown.threads, actions, onBack = { searchingLoaded = false })
     }
 
     if (settings) {

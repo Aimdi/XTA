@@ -31,7 +31,9 @@ import com.aimdi.xtanative.store.settings.CrashReportPrefs
 import com.aimdi.xtanative.store.settings.SettingsStore
 import com.aimdi.xtanative.ui.downloads.PlatformFiles
 import com.aimdi.xtanative.ui.settings.CrashReports
+import com.aimdi.xtanative.ui.settings.DeviceBackup
 import com.aimdi.xtanative.ui.settings.KeptSections
+import com.aimdi.xtanative.ui.settings.PluginBackups
 import com.aimdi.xtanative.ui.settings.SettingsStart
 import com.aimdi.xtanative.ui.settings.StoredWebDavBaselines
 import java.io.File
@@ -101,6 +103,9 @@ class AppGraph(
 
     /** What a restored XTA backup carried that no store here holds yet, kept for the next export. */
     val kept = KeptSections(store)
+
+    /** The running plugins' sections of the full backup, which the screens attach as the plugins run. */
+    val pluginBackups = PluginBackups(kept)
     val webDavBaselines = StoredWebDavBaselines(store)
 
     /** Crash reports, written down on the device only while the reader has them on. */
@@ -159,6 +164,7 @@ class AppGraph(
         // XTA's launch steps on the settings, once; then the feeds' switches follow the settings.
         scope.launch { SettingsStart.keepSessionInStep(settings, sessions) }
         scope.launch { SettingsStart.keepAccountsOffInStep(settings) { accountsOff = it } }
+        scope.launch { DeviceBackup(this@AppGraph).adoptKeptProfiles() }
         if (mockX == null) scope.launch { SettingsStart.refreshEndpoints(settings, client) }
         scope.launch {
             repairs.applyKept()

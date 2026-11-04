@@ -10,10 +10,12 @@ import com.aimdi.xtanative.store.backup.AntennaRow
 import com.aimdi.xtanative.store.backup.ArchiveAnnotationRow
 import com.aimdi.xtanative.store.backup.BackupDocument
 import com.aimdi.xtanative.store.backup.ExportChoice
+import com.aimdi.xtanative.store.backup.FeedFilterRow
 import com.aimdi.xtanative.store.backup.GroupMemberRow
 import com.aimdi.xtanative.store.backup.GroupRow
 import com.aimdi.xtanative.store.backup.LikedPostRow
 import com.aimdi.xtanative.store.backup.LocalPostRow
+import com.aimdi.xtanative.store.backup.ProfileNoteRow
 import com.aimdi.xtanative.store.backup.ReadPositionRow
 import com.aimdi.xtanative.store.backup.SavedFolderRow
 import com.aimdi.xtanative.store.backup.SavedPostRow
@@ -53,6 +55,13 @@ data class DeviceContent(
     val readPlaces: Map<String, FeedPlace> = emptyMap(),
     val journal: Map<String, ArticleReadPoint> = emptyMap(),
     val appearance: ReadingAppearance? = null,
+    /** The private notes on profiles. */
+    val profileNotes: List<ProfileNoteRow> = emptyList(),
+    /** The accounts whose reposts, and whose replies, the feeds hide. */
+    val repostFilters: List<FeedFilterRow> = emptyList(),
+    val replyFilters: List<FeedFilterRow> = emptyList(),
+    /** What the running plugins keep, by section name ([PluginBackups.exported]). */
+    val pluginSections: Map<String, String> = emptyMap(),
     /** What was restored that no store here holds yet. */
     val kept: BackupDocument = BackupDocument(),
 )
@@ -88,6 +97,8 @@ object BackupExport {
             ehFavorites = kept.ehFavorites.orEmpty(),
             ehHistory = kept.ehHistory.orEmpty(),
             stockSubscriptions = kept.stockSubscriptions.orEmpty(),
+            // A running plugin's own section over the one kept for it.
+            pluginSections = (kept.pluginSections.orEmpty() + content.pluginSections).takeIf { it.isNotEmpty() },
             searchSubscriptions = session.searches.map { SearchSubscriptionRow(it.query, sqlite(it.followedAt)) },
             subscriptions = session.following.map { account ->
                 UserSubscriptionRow(
@@ -107,13 +118,13 @@ object BackupExport {
             savedPosts = content.library.posts.map { SavedPostRow(it.id, it.authorId, it.content?.toString(), it.folderId, it.note) },
             savedFolders = content.library.folders.mapNotNull { SavedFolderRow.from(J(XtaRows.row(it))) },
             likedPosts = content.likes.map { LikedPostRow(it.id, it.authorId, it.content?.toString()) },
-            repostFilters = kept.repostFilters.orEmpty(),
-            replyFilters = kept.replyFilters.orEmpty(),
+            repostFilters = content.repostFilters,
+            replyFilters = content.replyFilters,
             readPositions = content.readPlaces.map { (key, place) -> ReadPositionRow(key, place.postId) },
             accounts = session.accounts.map { account ->
                 AccountRow(account.id, JsonPrimitive(JsonObject(account.headers.mapValues { JsonPrimitive(it.value) }).toString()), account.screenName)
             },
-            profileNotes = kept.profileNotes.orEmpty(),
+            profileNotes = content.profileNotes,
             antennas = content.antennas.map { antenna ->
                 AntennaRow(antenna.id, antenna.name, antenna.includeTerms, antenna.excludeTerms, antenna.scope.stored, XtaTime.iso(Instant.ofEpochMilli(antenna.createdAt)))
             },

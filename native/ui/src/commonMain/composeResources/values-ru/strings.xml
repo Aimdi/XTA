@@ -15,19 +15,13 @@
     <string name="pinned">Закреплено</string>
     <string name="reposted_by">%1$s сделал(а) репост</string>
     <string name="replying_to">В ответ</string>
-    <string name="views">%1$s просмотра</string>
     <string name="stat_reposts">Репосты</string>
     <string name="stat_quotes">Цитаты</string>
     <string name="stat_likes">Нравится</string>
-    <string name="stat_bookmarks">Закладки</string>
 
     <string name="ago_seconds">%1$d с</string>
     <string name="ago_minutes">%1$d мин</string>
     <string name="ago_hours">%1$d ч</string>
-
-    <string name="joined">Регистрация: %1$s</string>
-    <string name="following_count">Читает</string>
-    <string name="followers_count">Читатели</string>
 
     <string name="feed_nobody_followed">Никого из тех, кого вы читаете, пока нет в ленте «Читаю». Откройте профиль, например найдя @имя, и подпишитесь.</string>
     <string name="feed_empty">Пока нет постов от аккаунтов, которые вы читаете.</string>
@@ -40,45 +34,17 @@
     <string name="problem_refused">X отклонил запрос (%1$d).</string>
     <string name="problem_other">При чтении X что-то пошло не так.</string>
 
-    <string name="search_x">Поиск в X</string>
-    <string name="search_top">Популярное</string>
-    <string name="search_latest">Последнее</string>
-    <string name="search_nothing">Ничего не найдено по запросу «%1$s».</string>
-    <string name="search_go_to">Перейти к @%1$s</string>
-
     <string name="import_intro">XTA Native — это XTA, написанный только для Android, чтобы сравнить его с XTA. Он читает X через аккаунты, которые вы уже используете в XTA.</string>
     <string name="import_steps">В XTA откройте Настройки → Данные → Экспортировать, включите «Экспортировать аккаунты», экспортируйте и выберите этот файл здесь.</string>
     <string name="import_choose">Выбрать резервную копию XTA</string>
     <string name="import_choose_another">Выбрать другой файл</string>
-    <string name="import_not_a_backup">Этот файл не является резервной копией, экспортированной из XTA.</string>
     <string name="import_no_accounts">В этой резервной копии нет аккаунтов X: экспортируйте её заново с включённым «Экспортировать аккаунты».</string>
     <string name="import_use">Использовать эту копию</string>
     <string name="import_privacy">В резервной копии хранятся ваши сеансы X. XTA Native держит их на этом телефоне, отправляет только в X и никогда ничего там не публикует, не лайкает и ни на кого не подписывается.</string>
-    <plurals name="import_found_accounts">
-        <item quantity="one">%1$d аккаунт X</item>
-        <item quantity="few">%1$d аккаунта X</item>
-        <item quantity="many">%1$d аккаунтов X</item>
-        <item quantity="other">%1$d аккаунта X</item>
-    </plurals>
-    <plurals name="import_found_following">
-        <item quantity="one">Вы читаете %1$d аккаунт, %2$d — в ленте «Читаю»</item>
-        <item quantity="few">Вы читаете %1$d аккаунта, %2$d — в ленте «Читаю»</item>
-        <item quantity="many">Вы читаете %1$d аккаунтов, %2$d — в ленте «Читаю»</item>
-        <item quantity="other">Вы читаете %1$d аккаунта, %2$d — в ленте «Читаю»</item>
-    </plurals>
 
-    <string name="settings_feed">Лента «Читаю»</string>
-    <string name="settings_replies">Показывать ответы</string>
-    <string name="settings_reposts">Показывать репосты</string>
-    <string name="settings_accounts">Аккаунты X</string>
-    <string name="settings_following">Читаемых аккаунтов: %1$d, в ленте: %2$d</string>
-    <string name="settings_import_again">Снова импортировать резервную копию XTA</string>
     <string name="settings_clear">Удалить всё</string>
     <string name="settings_clear_explained">Удаляет из XTA Native сеансы X и читаемые аккаунты. Сам XTA сохраняет всё.</string>
     <string name="settings_clear_confirm">Удалить</string>
-    <string name="settings_about">О приложении</string>
-    <string name="settings_version">XTA Native %1$s</string>
-    <string name="settings_prototype">Прототип рядом с XTA, для сравнения. Его могут отозвать.</string>
 
     <string name="card_from">Источник: %1$s</string>
     <string name="poll_final">Окончательные результаты</string>
@@ -112,13 +78,6 @@
         <item quantity="many">%1$d новых постов</item>
         <item quantity="other">%1$d нового поста</item>
     </plurals>
-    <string name="settings_autoplay">Воспроизводить видео в ленте без звука</string>
-    <string name="profile_posts">Посты</string>
-    <string name="profile_replies">Ответы</string>
-    <string name="profile_media">Медиа</string>
-    <string name="profile_nothing">Здесь пока ничего нет.</string>
-    <string name="profile_follow">Читать</string>
-    <string name="profile_following">Читаю</string>
     <string name="follow_here_only">Вы читаете только в XTA Native: X об этом не узнаёт.</string>
     <string name="follow_in_feed">В ленте «Читаю»</string>
     <string name="follow_groups">Группы</string>

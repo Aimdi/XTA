@@ -12,7 +12,9 @@ import com.aimdi.xtanative.store.antenna.Antenna
 import com.aimdi.xtanative.store.antenna.AntennaScope
 import com.aimdi.xtanative.store.backup.AccountRow
 import com.aimdi.xtanative.store.backup.BackupDocument
+import com.aimdi.xtanative.store.backup.FeedFilterRow
 import com.aimdi.xtanative.store.backup.GroupRow
+import com.aimdi.xtanative.store.backup.ProfileNoteRow
 import com.aimdi.xtanative.store.backup.XtaTime
 import com.aimdi.xtanative.store.reading.ArticleReadPoint
 import com.aimdi.xtanative.store.reading.ReadingAppearance
@@ -175,6 +177,18 @@ object BackupRestore {
     fun annotations(document: BackupDocument): Map<String, ArchiveAnnotation>? {
         val section = document.archiveAnnotations ?: return null
         return XtaRows.annotations(J(JsonObject(section.mapValues { it.value.toJson() })))
+    }
+
+    /** The private notes on profiles with the backup's: a note replaces the one on its profile, every other stays. */
+    fun profileNotes(notes: List<ProfileNoteRow>, document: BackupDocument): List<ProfileNoteRow>? =
+        document.profileNotes?.let { rows -> KeptSections.upsert(notes, rows) { it.profileId }.orEmpty() }
+
+    /** The hidden reposts and replies with the backup's, by account; null when the file carries neither. */
+    fun profileFilters(filters: Pair<List<FeedFilterRow>, List<FeedFilterRow>>, document: BackupDocument): Pair<List<FeedFilterRow>, List<FeedFilterRow>>? {
+        if (document.repostFilters == null && document.replyFilters == null) return null
+        val (reposts, replies) = filters
+        return KeptSections.upsert(reposts, document.repostFilters) { it.userId }.orEmpty() to
+            KeptSections.upsert(replies, document.replyFilters) { it.userId }.orEmpty()
     }
 
     fun antennas(document: BackupDocument, now: Long): List<Antenna>? = document.antennas?.map { row ->

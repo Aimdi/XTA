@@ -71,6 +71,7 @@
     <string name="discover_add_location">添加地点</string>
     <string name="discover_country">国家</string>
     <string name="discover_trends_empty">此地暂无热门话题。请在上方搜索，或添加其他地点。</string>
+    <string name="discover_plugin_empty">在 %1$s 搜索帖子、用户和社区。</string>
     <plurals name="discover_trend_posts">
         <item quantity="other">%1$s 条推文</item>
     </plurals>

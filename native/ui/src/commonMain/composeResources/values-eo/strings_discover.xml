@@ -72,6 +72,7 @@
     <string name="discover_add_location">Aldoni lokon</string>
     <string name="discover_country">Lando</string>
     <string name="discover_trends_empty">Ankoraŭ neniuj tendencoj por ĉi tiu loko. Serĉu supre, aŭ aldonu alian lokon.</string>
+    <string name="discover_plugin_empty">Serĉu ĉe %1$s afiŝojn, homojn kaj komunumojn.</string>
     <plurals name="discover_trend_posts">
         <item quantity="one">%1$s pepo</item>
         <item quantity="other">%1$s pepoj</item>

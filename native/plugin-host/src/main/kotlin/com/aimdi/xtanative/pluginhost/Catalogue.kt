@@ -65,13 +65,22 @@ data class LocalizedText(val byTag: Map<String, String>) {
 
         private fun normalized(tag: String) = tag.trim().replace('_', '-').lowercase()
 
-        private fun candidates(locale: Locale): List<String> = listOfNotNull(
-            locale.toLanguageTag(),
-            locale.script.takeIf { it.isNotEmpty() }?.let { "${locale.language}-$it" },
-            locale.country.takeIf { it.isNotEmpty() }?.let { "${locale.language}-$it" },
-            locale.language,
-            "en",
-        ).map(::normalized)
+        /**
+         * The language is read off the BCP 47 tag, which says "id", "he" and
+         * "yi" as the catalogue does, where Android's Locale still says "in",
+         * "iw" and "ji".
+         */
+        private fun candidates(locale: Locale): List<String> {
+            val tag = locale.toLanguageTag()
+            val language = tag.substringBefore('-')
+            return listOfNotNull(
+                tag,
+                locale.script.takeIf { it.isNotEmpty() }?.let { "$language-$it" },
+                locale.country.takeIf { it.isNotEmpty() }?.let { "$language-$it" },
+                language,
+                "en",
+            ).map(::normalized)
+        }
     }
 }
 

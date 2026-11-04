@@ -31,6 +31,9 @@ enum class BackupCategory(val xtaName: String) {
     PROFILE_NOTES("profileNotes"),
     ANTENNAS("antennas"),
     LOCAL_POSTS("localPosts"),
+
+    /** XTA Native's downloadable plugins' sections, one each; XTA has no such category. */
+    PLUGINS("plugins"),
 }
 
 /**

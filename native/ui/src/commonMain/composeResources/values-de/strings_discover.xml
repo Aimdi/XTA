@@ -72,6 +72,7 @@
     <string name="discover_add_location">Ort hinzufügen</string>
     <string name="discover_country">Land</string>
     <string name="discover_trends_empty">Hier gibt es noch keine Trends. Suche oben, oder füge einen anderen Ort hinzu.</string>
+    <string name="discover_plugin_empty">Suche in %1$s nach Beiträgen, Personen und Communitys.</string>
     <plurals name="discover_trend_posts">
         <item quantity="one">%1$s Tweet</item>
         <item quantity="other">%1$s Tweets</item>

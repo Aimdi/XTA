@@ -15,19 +15,13 @@
     <string name="pinned">Замацавана</string>
     <string name="reposted_by">%1$s зрабіў(-ла) рэпост</string>
     <string name="replying_to">У адказ</string>
-    <string name="views">%1$s прагляду</string>
     <string name="stat_reposts">Рэпосты</string>
     <string name="stat_quotes">Цытаты</string>
     <string name="stat_likes">Упадабанае</string>
-    <string name="stat_bookmarks">Закладкі</string>
 
     <string name="ago_seconds">%1$d с</string>
     <string name="ago_minutes">%1$d хв</string>
     <string name="ago_hours">%1$d гадз</string>
-
-    <string name="joined">Рэгістрацыя: %1$s</string>
-    <string name="following_count">Чытае</string>
-    <string name="followers_count">Чытачы</string>
 
     <string name="feed_nobody_followed">Нікога з тых, каго вы чытаеце, пакуль няма ў стужцы «Чытаю». Адкрыйце профіль, напрыклад знайшоўшы @імя, і падпішыцеся.</string>
     <string name="feed_empty">Пакуль няма допісаў ад акаўнтаў, якія вы чытаеце.</string>
@@ -40,45 +34,17 @@
     <string name="problem_refused">X адхіліў запыт (%1$d).</string>
     <string name="problem_other">Пры чытанні X нешта пайшло не так.</string>
 
-    <string name="search_x">Пошук у X</string>
-    <string name="search_top">Папулярнае</string>
-    <string name="search_latest">Апошняе</string>
-    <string name="search_nothing">Нічога не знойдзена па запыце «%1$s».</string>
-    <string name="search_go_to">Перайсці да @%1$s</string>
-
     <string name="import_intro">XTA Native — гэта XTA, напісаны толькі для Android, каб параўнаць яго з XTA. Ён чытае X праз акаўнты, якімі вы ўжо карыстаецеся ў XTA.</string>
     <string name="import_steps">У XTA адкрыйце Налады → Дадзеныя → Экспартаваць, уключыце «Экспартаваць уліковыя запісы», экспартуйце і выберыце гэты файл тут.</string>
     <string name="import_choose">Выбраць рэзервовую копію XTA</string>
     <string name="import_choose_another">Выбраць іншы файл</string>
-    <string name="import_not_a_backup">Гэты файл не з’яўляецца рэзервовай копіяй, экспартаванай з XTA.</string>
     <string name="import_no_accounts">У гэтай рэзервовай копіі няма акаўнтаў X: экспартуйце яе зноў з уключаным «Экспартаваць уліковыя запісы».</string>
     <string name="import_use">Выкарыстаць гэту копію</string>
     <string name="import_privacy">Рэзервовая копія змяшчае вашы сеансы X. XTA Native трымае іх на гэтым тэлефоне, адпраўляе толькі ў X і ніколі нічога там не публікуе, не ўпадабае і ні на каго не падпісваецца.</string>
-    <plurals name="import_found_accounts">
-        <item quantity="one">%1$d акаўнт X</item>
-        <item quantity="few">%1$d акаўнты X</item>
-        <item quantity="many">%1$d акаўнтаў X</item>
-        <item quantity="other">%1$d акаўнта X</item>
-    </plurals>
-    <plurals name="import_found_following">
-        <item quantity="one">Вы чытаеце %1$d акаўнт, %2$d — у стужцы «Чытаю»</item>
-        <item quantity="few">Вы чытаеце %1$d акаўнты, %2$d — у стужцы «Чытаю»</item>
-        <item quantity="many">Вы чытаеце %1$d акаўнтаў, %2$d — у стужцы «Чытаю»</item>
-        <item quantity="other">Вы чытаеце %1$d акаўнта, %2$d — у стужцы «Чытаю»</item>
-    </plurals>
 
-    <string name="settings_feed">Стужка «Чытаю»</string>
-    <string name="settings_replies">Паказваць адказы</string>
-    <string name="settings_reposts">Паказваць рэпосты</string>
-    <string name="settings_accounts">Акаўнты X</string>
-    <string name="settings_following">Акаўнтаў, якія вы чытаеце: %1$d, у стужцы: %2$d</string>
-    <string name="settings_import_again">Зноў імпартаваць рэзервовую копію XTA</string>
     <string name="settings_clear">Выдаліць усё</string>
     <string name="settings_clear_explained">Выдаляе з XTA Native сеансы X і акаўнты, якія вы чытаеце. Сам XTA захоўвае ўсё.</string>
     <string name="settings_clear_confirm">Выдаліць</string>
-    <string name="settings_about">Пра праграму</string>
-    <string name="settings_version">XTA Native %1$s</string>
-    <string name="settings_prototype">Прататып побач з XTA, для параўнання. Яго могуць адклікаць.</string>
 
     <string name="card_from">Крыніца: %1$s</string>
     <string name="poll_final">Канчатковыя вынікі</string>
@@ -112,13 +78,6 @@
         <item quantity="many">%1$d новых допісаў</item>
         <item quantity="other">%1$d новага допісу</item>
     </plurals>
-    <string name="settings_autoplay">Прайграваць відэа ў стужцы без гуку</string>
-    <string name="profile_posts">Допісы</string>
-    <string name="profile_replies">Адказы</string>
-    <string name="profile_media">Медыя</string>
-    <string name="profile_nothing">Тут пакуль нічога няма.</string>
-    <string name="profile_follow">Чытаць</string>
-    <string name="profile_following">Чытаю</string>
     <string name="follow_here_only">Вы чытаеце толькі ў XTA Native: X пра гэта не даведаецца.</string>
     <string name="follow_in_feed">У стужцы «Чытаю»</string>
     <string name="follow_groups">Групы</string>

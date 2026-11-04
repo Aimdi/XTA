@@ -15,19 +15,13 @@
     <string name="pinned">مثبَّت</string>
     <string name="reposted_by">أعاد %1$s النشر</string>
     <string name="replying_to">ردًا على</string>
-    <string name="views">%1$s مشاهدة</string>
     <string name="stat_reposts">إعادات النشر</string>
     <string name="stat_quotes">الاقتباسات</string>
     <string name="stat_likes">الإعجابات</string>
-    <string name="stat_bookmarks">العلامات المرجعية</string>
 
     <string name="ago_seconds">%1$d ث</string>
     <string name="ago_minutes">%1$d د</string>
     <string name="ago_hours">%1$d س</string>
-
-    <string name="joined">انضم في %1$s</string>
-    <string name="following_count">المتابَعون</string>
-    <string name="followers_count">المتابِعون</string>
 
     <string name="feed_nobody_followed">لا أحد ممن تتابعهم في موجز «المتابَعون» بعد. افتح ملفًا شخصيًا، مثلًا بالبحث عن ‎@الاسم، وتابِعه.</string>
     <string name="feed_empty">لا منشورات بعد من الحسابات التي تتابعها.</string>
@@ -40,44 +34,17 @@
     <string name="problem_refused">رفض X الطلب (%1$d).</string>
     <string name="problem_other">حدث خطأ أثناء قراءة X.</string>
 
-    <string name="search_x">البحث في X</string>
-    <string name="search_top">الأبرز</string>
-    <string name="search_latest">الأحدث</string>
-    <string name="search_nothing">لا نتائج لـ «%1$s».</string>
-    <string name="search_go_to">الانتقال إلى ‎@%1$s</string>
-
     <string name="import_intro">XTA Native هو XTA مكتوبًا لنظام Android وحده، للمقارنة مع XTA. يقرأ X بالحسابات التي تستخدمها في XTA.</string>
     <string name="import_steps">في XTA، افتح الإعدادات ← البيانات ← تصدير، وفعّل «تصدير الحسابات»، ثم صدّر واختر ذلك الملف هنا.</string>
     <string name="import_choose">اختيار نسخة XTA الاحتياطية</string>
     <string name="import_choose_another">اختيار ملف آخر</string>
-    <string name="import_not_a_backup">هذا الملف ليس نسخة احتياطية صدّرها XTA.</string>
     <string name="import_no_accounts">لا تحتوي هذه النسخة الاحتياطية على حسابات X: صدّرها مجددًا مع تفعيل «تصدير الحسابات».</string>
     <string name="import_use">استخدام هذه النسخة</string>
     <string name="import_privacy">تحتوي النسخة الاحتياطية على جلسات X الخاصة بك. يحتفظ بها XTA Native على هذا الهاتف، ولا يرسلها إلا إلى X، ولا ينشر أو يُعجب أو يتابع أي شيء هناك أبدًا.</string>
-    <plurals name="import_found_accounts">
-        <item quantity="zero">لا حسابات على X</item>
-        <item quantity="one">حساب واحد على X</item>
-        <item quantity="two">حسابان على X</item>
-        <item quantity="few">%1$d حسابات على X</item>
-        <item quantity="many">%1$d حسابًا على X</item>
-        <item quantity="other">%1$d حساب على X</item>
-    </plurals>
-    <plurals name="import_found_following">
-        <item quantity="other">الحسابات المتابَعة: %1$d، في موجز «المتابَعون»: %2$d</item>
-    </plurals>
 
-    <string name="settings_feed">موجز «المتابَعون»</string>
-    <string name="settings_replies">إظهار الردود</string>
-    <string name="settings_reposts">إظهار إعادات النشر</string>
-    <string name="settings_accounts">حسابات X</string>
-    <string name="settings_following">الحسابات المتابَعة: %1$d، في الموجز: %2$d</string>
-    <string name="settings_import_again">استيراد نسخة XTA الاحتياطية من جديد</string>
     <string name="settings_clear">إزالة كل شيء</string>
     <string name="settings_clear_explained">يزيل جلسات X والحسابات المتابَعة من XTA Native. أما XTA نفسه فيحتفظ بكل شيء.</string>
     <string name="settings_clear_confirm">إزالة</string>
-    <string name="settings_about">حول</string>
-    <string name="settings_version">XTA Native %1$s</string>
-    <string name="settings_prototype">نموذج أولي بجانب XTA للمقارنة. قد يُسحب.</string>
 
     <string name="card_from">من %1$s</string>
     <string name="poll_final">النتائج النهائية</string>
@@ -121,13 +88,6 @@
         <item quantity="many">%1$d منشورًا جديدًا</item>
         <item quantity="other">%1$d منشور جديد</item>
     </plurals>
-    <string name="settings_autoplay">تشغيل الفيديوهات في الموجز بلا صوت</string>
-    <string name="profile_posts">المنشورات</string>
-    <string name="profile_replies">الردود</string>
-    <string name="profile_media">الوسائط</string>
-    <string name="profile_nothing">لا شيء هنا بعد.</string>
-    <string name="profile_follow">متابعة</string>
-    <string name="profile_following">تتابعه</string>
     <string name="follow_here_only">متابَع في XTA Native فقط: لا يُبلَّغ X بذلك.</string>
     <string name="follow_in_feed">في موجز «المتابَعون»</string>
     <string name="follow_groups">المجموعات</string>

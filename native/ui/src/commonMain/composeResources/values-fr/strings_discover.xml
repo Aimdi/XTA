@@ -72,6 +72,7 @@
     <string name="discover_add_location">Ajouter un lieu</string>
     <string name="discover_country">Pays</string>
     <string name="discover_trends_empty">Rien n’est en tendance ici pour l’instant. Cherchez plus haut, ou ajoutez un autre lieu.</string>
+    <string name="discover_plugin_empty">Cherchez sur %1$s des posts, des personnes et des communautés.</string>
     <plurals name="discover_trend_posts">
         <item quantity="one">%1$s tweet</item>
         <item quantity="other">%1$s tweets</item>

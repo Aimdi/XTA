@@ -68,9 +68,12 @@ import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.ProblemView
 import com.aimdi.xtanative.ui.common.problemText
+import com.aimdi.xtanative.ui.common.scrollToTop
+import com.aimdi.xtanative.ui.common.turnTo
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.dismiss
 import com.aimdi.xtanative.ui.generated.resources.feed_empty
@@ -85,6 +88,8 @@ import com.aimdi.xtanative.ui.media.rememberInlinePlayer
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.ThreadRows
 import com.aimdi.xtanative.ui.post.hasVideo
+import com.aimdi.xtanative.ui.search.LoadedFeedSearchScreen
+import com.aimdi.xtanative.ui.search.LoadedSearchButton
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -103,67 +108,82 @@ fun FeedScreen(actions: PostActions, openSearch: () -> Unit, openSettings: () ->
     val scope = rememberCoroutineScope()
     val bar = TopAppBarDefaults.enterAlwaysScrollBehavior()
     var toTop by remember { mutableStateOf(ToTop(0, 0)) }
+    var searchingLoaded by rememberSaveable { mutableStateOf(false) }
     val following = stringResource(Res.string.following)
+    val reduced = LocalReducedMotion.current
 
-    Scaffold(
-        modifier = Modifier.nestedScroll(bar.nestedScrollConnection),
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            Column {
-                TopAppBar(
-                    title = {
-                        Text(
-                            tabs.getOrNull(pager.currentPage)?.let(::tabLabel) ?: following,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.clickable { toTop = ToTop(pager.currentPage, toTop.count + 1) },
-                        )
-                    },
-                    actions = {
-                        IconButton(onClick = openSearch) { Icon(Icons.Filled.Search, stringResource(Res.string.search)) }
-                        IconButton(onClick = openSettings) { Icon(Icons.Filled.Settings, stringResource(Res.string.settings)) }
-                    },
-                    scrollBehavior = bar,
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        scrolledContainerColor = MaterialTheme.colorScheme.background,
-                    ),
-                )
-                if (tabs.size > 1) {
-                    ScrollableTabRow(
-                        selectedTabIndex = pager.currentPage.coerceIn(0, tabs.lastIndex),
-                        edgePadding = 8.dp,
-                        containerColor = MaterialTheme.colorScheme.background,
-                        divider = { Hairline() },
-                    ) {
-                        tabs.forEachIndexed { index, group ->
-                            Tab(
-                                selected = pager.currentPage == index,
-                                onClick = {
-                                    if (pager.currentPage == index) {
-                                        toTop = ToTop(index, toTop.count + 1)
-                                    } else {
-                                        scope.launch { pager.animateScrollToPage(index) }
-                                    }
-                                },
-                                text = { Text(group?.let(::tabLabel) ?: following, maxLines = 1) },
-                                selectedContentColor = MaterialTheme.colorScheme.onBackground,
-                                unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+    Box(Modifier.fillMaxSize()) {
+        Scaffold(
+            modifier = Modifier.nestedScroll(bar.nestedScrollConnection),
+            containerColor = MaterialTheme.colorScheme.background,
+            topBar = {
+                Column {
+                    TopAppBar(
+                        title = {
+                            Text(
+                                tabs.getOrNull(pager.currentPage)?.let(::tabLabel) ?: following,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.clickable { toTop = ToTop(pager.currentPage, toTop.count + 1) },
                             )
+                        },
+                        actions = {
+                            LoadedSearchButton { searchingLoaded = true }
+                            IconButton(onClick = openSearch) { Icon(Icons.Filled.Search, stringResource(Res.string.search)) }
+                            IconButton(onClick = openSettings) { Icon(Icons.Filled.Settings, stringResource(Res.string.settings)) }
+                        },
+                        scrollBehavior = bar,
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = MaterialTheme.colorScheme.background,
+                            scrolledContainerColor = MaterialTheme.colorScheme.background,
+                        ),
+                    )
+                    if (tabs.size > 1) {
+                        ScrollableTabRow(
+                            selectedTabIndex = pager.currentPage.coerceIn(0, tabs.lastIndex),
+                            edgePadding = 8.dp,
+                            containerColor = MaterialTheme.colorScheme.background,
+                            divider = { Hairline() },
+                        ) {
+                            tabs.forEachIndexed { index, group ->
+                                Tab(
+                                    selected = pager.currentPage == index,
+                                    onClick = {
+                                        if (pager.currentPage == index) {
+                                            toTop = ToTop(index, toTop.count + 1)
+                                        } else {
+                                            scope.launch { pager.turnTo(index, reduced) }
+                                        }
+                                    },
+                                    text = { Text(group?.let(::tabLabel) ?: following, maxLines = 1) },
+                                    selectedContentColor = MaterialTheme.colorScheme.onBackground,
+                                    unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
                         }
                     }
                 }
+            },
+        ) { padding ->
+            HorizontalPager(
+                state = pager,
+                key = { page -> tabs.getOrNull(page)?.id ?: FOLLOWING },
+                modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding()),
+            ) { page ->
+                FeedPage(tabs.getOrNull(page)?.id, page, toTop, actions, PaddingValues(bottom = padding.calculateBottomPadding()))
             }
-        },
-    ) { padding ->
-        HorizontalPager(
-            state = pager,
-            key = { page -> tabs.getOrNull(page)?.id ?: FOLLOWING },
-            modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding()),
-        ) { page ->
-            FeedPage(tabs.getOrNull(page)?.id, page, toTop, actions, PaddingValues(bottom = padding.calculateBottomPadding()))
         }
+        if (searchingLoaded) LoadedPostsSearch(tabs.getOrNull(pager.currentPage)?.id, actions) { searchingLoaded = false }
     }
+}
+
+/** The search of what the feed of the tab shown has loaded, over the screen. */
+@Composable
+private fun LoadedPostsSearch(groupId: String?, actions: PostActions, onClose: () -> Unit) {
+    val graph = LocalGraph.current
+    val vm: FeedViewModel = viewModel(key = feedViewModelKey(groupId)) { FeedViewModel(graph, groupId) }
+    val state by vm.ui.collectAsStateWithLifecycle()
+    LoadedFeedSearchScreen(state.threads, actions, onClose)
 }
 
 private const val FOLLOWING = "following"
@@ -182,12 +202,13 @@ internal fun FeedPage(groupId: String?, page: Int, toTop: ToTop, actions: PostAc
     val state by vm.ui.collectAsStateWithLifecycle()
     val list = rememberLazyListState()
     val scope = rememberCoroutineScope()
+    val reduced = LocalReducedMotion.current
     // A page swiped back into view must not answer a tap it already answered.
     var answeredTap by rememberSaveable { mutableIntStateOf(toTop.count) }
     LaunchedEffect(toTop) {
         if (toTop.page == page && toTop.count > answeredTap) {
             answeredTap = toTop.count
-            list.animateScrollToItem(0)
+            list.scrollToTop(reduced)
         }
     }
     // Back at the last place on launch; at the top after a pull.
@@ -230,7 +251,7 @@ internal fun FeedPage(groupId: String?, page: Int, toTop: ToTop, actions: PostAc
             modifier = Modifier.align(Alignment.TopCenter).padding(top = 12.dp),
         ) {
             NewPostsPill(state.newAbove) {
-                scope.launch { list.animateScrollToItem(0) }
+                scope.launch { list.scrollToTop(reduced) }
                 vm.seenNew()
             }
         }

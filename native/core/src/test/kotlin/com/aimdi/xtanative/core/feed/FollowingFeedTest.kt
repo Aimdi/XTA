@@ -134,6 +134,19 @@ class FollowingFeedTest {
         assertEquals(listOf(100L), ids(first))
     }
 
+    @Test
+    fun theAccountsWhoseRepostsOrRepliesTheReaderHidStayOut(): Unit = runBlocking {
+        val reads = FakeReads(
+            mapOf(
+                ("a" to null) to page(post(100, a), post(90, a, repostOf = post(10, b)), post(80, a, replyTo = "c"), post(70, a, replyTo = a.screenName), next = null),
+                ("b" to null) to page(post(95, b, repostOf = post(11, a)), post(85, b, replyTo = "c"), next = null),
+            ),
+        )
+        val hidden = FeedShaping(hiddenReposts = setOf(a.screenName), hiddenReplies = setOf(a.screenName, b.screenName))
+        val first = FollowingFeed(listOf(a, b), reads, concurrency = 1, shaping = hidden).first()
+        assertEquals(listOf(100L, 95, 70), ids(first), "an own thread is no reply, and b's reposts are not hidden")
+    }
+
     private val original = mapOf(
         ("a" to null) to page(post(100, a), post(90, a), post(80, a), next = "a2"),
         ("a" to "a2") to page(post(70, a), post(60, a), next = "a3"),

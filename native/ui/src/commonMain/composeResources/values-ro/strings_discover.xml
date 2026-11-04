@@ -73,6 +73,7 @@
     <string name="discover_add_location">Adaugă o locație</string>
     <string name="discover_country">Țară</string>
     <string name="discover_trends_empty">Nicio tendință pentru acest loc. Caută mai sus sau adaugă altă locație.</string>
+    <string name="discover_plugin_empty">Caută pe %1$s postări, persoane și comunități.</string>
     <plurals name="discover_trend_posts">
         <item quantity="one">%1$s postare</item>
         <item quantity="few">%1$s postări</item>

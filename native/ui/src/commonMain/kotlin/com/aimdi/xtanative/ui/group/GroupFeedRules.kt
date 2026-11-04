@@ -12,8 +12,10 @@ import com.aimdi.xtanative.core.feed.MutedKeywords
 import com.aimdi.xtanative.core.feed.PostFacts
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.core.x.model.XPost
+import com.aimdi.xtanative.store.saved.ProfileFilters
 import com.aimdi.xtanative.store.settings.PostsPrefs
 import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.ui.feed.HiddenPosts
 import java.time.Duration
 import java.time.Instant
 
@@ -51,13 +53,14 @@ object GroupFeedRules {
     val THRESHOLDS = listOf(0, 10, 50, 100, 500, 1000)
 
     /**
-     * [groupId]'s plan, with [alsoRead] read alongside, the language filter
-     * and zen mode added, and the rules reading what X says of each post.
+     * [groupId]'s plan, with [alsoRead] read alongside, the language filter,
+     * zen mode and the reposts and replies the reader hid on profiles
+     * ([hidden]) added, and the rules reading what X says of each post.
      */
-    fun plan(session: Session, prefs: FeedPrefs, groupId: String, alsoRead: Set<String>): GroupFeedPlan {
+    fun plan(session: Session, prefs: FeedPrefs, groupId: String, alsoRead: Set<String>, hidden: ProfileFilters = ProfileFilters()): GroupFeedPlan {
         val plan = session.feedPlan(groupId, alsoRead - groupId)
         val language = LanguageFilter(LanguageFilter.parseLanguages(prefs.languages), prefs.languageAction)
-        return plan.copy(shaping = plan.shaping.copy(language = language, zen = prefs.zen, facts = XPostFacts))
+        return plan.copy(shaping = HiddenPosts.shaping(hidden, plan.shaping.copy(language = language, zen = prefs.zen, facts = XPostFacts)))
     }
 
     /** What the rules read of a post, as XTA reads a tweet: whether X marks it sensitive, and its language; a repost's are the reposted post's. */

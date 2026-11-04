@@ -74,6 +74,7 @@
     <string name="discover_add_location">Добавить место</string>
     <string name="discover_country">Страна</string>
     <string name="discover_trends_empty">Пока нет трендов для этого места. Ищите выше или добавьте другую локацию.</string>
+    <string name="discover_plugin_empty">Ищите в %1$s посты, людей и сообщества.</string>
     <plurals name="discover_trend_posts">
         <item quantity="one">%1$s твит</item>
         <item quantity="few">%1$s твита</item>

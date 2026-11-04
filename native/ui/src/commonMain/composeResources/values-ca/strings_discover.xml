@@ -72,6 +72,7 @@
     <string name="discover_add_location">Afegeix una ubicació</string>
     <string name="discover_country">País</string>
     <string name="discover_trends_empty">Encara no hi ha tendències en aquest lloc. Cerca a dalt o afegeix una altra ubicació.</string>
+    <string name="discover_plugin_empty">Cerca a %1$s publicacions, persones i comunitats.</string>
     <plurals name="discover_trend_posts">
         <item quantity="one">%1$s tuit</item>
         <item quantity="other">%1$s tuits</item>

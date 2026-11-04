@@ -11,14 +11,15 @@ import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.data.FeedCache
 import com.aimdi.xtanative.data.Problem
+import com.aimdi.xtanative.store.saved.ProfileFilters
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -45,7 +46,10 @@ data class FeedUi(
     val jump: Jump? = null,
 )
 
-/** The Following feed for a null [groupId], else that group's feed. */
+/**
+ * The Following feed for a null [groupId], else that group's feed, without
+ * the reposts and replies the reader hid on profiles ([HiddenPosts]).
+ */
 class FeedViewModel(private val graph: AppGraph, private val groupId: String?) : ViewModel() {
     private val cache = graph.feedCache(groupId)
     private val state = MutableStateFlow(FeedUi())
@@ -59,25 +63,25 @@ class FeedViewModel(private val graph: AppGraph, private val groupId: String?) :
     private var resets = 0
     private var jumps = 0
 
-    private data class Shape(val members: List<FeedMember>, val replies: Boolean, val reposts: Boolean)
+    private data class Shape(val members: List<FeedMember>, val replies: Boolean, val reposts: Boolean, val hidden: ProfileFilters)
 
     init {
         viewModelScope.launch { retryWhenBackOnline() }
         viewModelScope.launch {
             var saved = restoreFromDisk()
-            graph.sessions.state.filterNotNull()
-                .map { Shape(it.membersOf(groupId), it.includeReplies, it.includeReposts) }
-                .distinctUntilChanged()
-                .collect { shape ->
-                    val next = FollowingFeed(shape.members, graph.client.feedReads(), shape.replies, shape.reposts)
-                    // The saved reading is good for the follows and switches it was saved with only.
-                    val savedState = saved?.state
-                    continuous = savedState != null && next.restore(savedState, state.value.threads.map { it.id })
-                    saved = null
-                    feed = next
-                    state.update { it.copy(followed = shape.members.size, hasMore = continuous && savedState?.hasMore == true) }
-                    refresh(byReader = false)
-                }
+            combine(graph.sessions.state.filterNotNull(), HiddenPosts.of(graph.profileFilters)) { session, hidden ->
+                Shape(session.membersOf(groupId), session.includeReplies, session.includeReposts, hidden)
+            }.distinctUntilChanged().collect { shape ->
+                val shaping = HiddenPosts.shaping(shape.hidden)
+                val next = FollowingFeed(shape.members, graph.client.feedReads(), shape.replies, shape.reposts, graph.feedConcurrency(), shaping = shaping)
+                // The saved reading is good for the follows and switches it was saved with only.
+                val savedState = saved?.state
+                continuous = savedState != null && next.restore(savedState, state.value.threads.map { it.id })
+                saved = null
+                feed = next
+                state.update { it.copy(followed = shape.members.size, hasMore = continuous && savedState?.hasMore == true) }
+                refresh(byReader = false)
+            }
         }
     }
 
@@ -95,17 +99,18 @@ class FeedViewModel(private val graph: AppGraph, private val groupId: String?) :
         }
     }
 
-    /** The posts and place of the last run, shown at once. */
+    /** The posts and place of the last run, shown at once, without what the reader hid since. */
     private suspend fun restoreFromDisk(): SavedFeed? {
         val saved = cache.read()?.takeIf { it.threads.isNotEmpty() } ?: return null
+        val threads = HiddenPosts.visible(saved.threads, graph.profileFilters.filters())
         val place = cache.readPlace()
-        graph.posts.remember(saved.threads)
-        val index = place?.let { p -> saved.threads.indexOfFirst { it.id == p.postId } } ?: -1
+        graph.posts.remember(threads)
+        val index = place?.let { p -> threads.indexOfFirst { it.id == p.postId } } ?: -1
         state.update {
             if (it.threads.isNotEmpty()) {
                 it
             } else {
-                it.copy(threads = saved.threads, fromCache = true, jump = if (index >= 0 && place != null) Jump(index, place.offset, ++jumps) else null)
+                it.copy(threads = threads, fromCache = true, jump = if (index >= 0 && place != null) Jump(index, place.offset, ++jumps) else null)
             }
         }
         return saved

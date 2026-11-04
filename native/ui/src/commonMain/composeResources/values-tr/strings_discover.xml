@@ -72,6 +72,7 @@
     <string name="discover_add_location">Konum ekle</string>
     <string name="discover_country">Ülke</string>
     <string name="discover_trends_empty">Bu yer için henüz bir gündem yok. Yukarıdan arayın veya başka bir konum ekleyin.</string>
+    <string name="discover_plugin_empty">%1$s içinde gönderi, kişi ve topluluk ara.</string>
     <plurals name="discover_trend_posts">
         <item quantity="one">%1$s tweet</item>
         <item quantity="other">%1$s tweet</item>
