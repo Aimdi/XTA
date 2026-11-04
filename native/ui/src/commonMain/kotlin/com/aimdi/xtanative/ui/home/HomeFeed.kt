@@ -41,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
@@ -224,7 +225,8 @@ private fun TimelineTopBar(
 private fun PickerMark(tab: HomeTab, ui: HomeUi, networks: HomeNetworks, unread: Boolean, onClick: () -> Unit) {
     val label = listOfNotNull(tabLabel(tab, ui), stringResource(Res.string.home_unread).takeIf { unread }, stringResource(Res.string.home_networks)).joinToString(", ")
     IconButton(onClick = onClick, modifier = Modifier.semantics { contentDescription = label }) {
-        UnreadDot(unread) { TimelineMark(tab, networks, 24.dp) }
+        // The label says the dot already.
+        Box(Modifier.clearAndSetSemantics {}) { UnreadDot(unread) { TimelineMark(tab, networks, 24.dp) } }
     }
 }
 

@@ -479,15 +479,16 @@ makes it with its platform (Android's `ApkSignatureVerifier` and
 `DexClassLoaderFactory`, the desktop's `JarSignatureVerifier`), loads what is
 installed at start and after each install, casts it to `XtaPlugin`, attaches
 its `PluginHost`, and erases what it kept on uninstall (its folder, its place
-on Home's strip and its top bar's pins, its accounts' group memberships). In
+among Home's timelines and its top bar's pins, its accounts' group memberships). In
 the screens:
 
 - the **store** is the route `plugins`, from Settings and the account menu:
   installed plugins first, then what is on offer by category, with install,
   update and uninstall in XTA's words, progress, failures in plain words, the
   show-private switch, each plugin's settings, and its pin on Home;
-- a plugin's **home tab** sits on Home's strip (`LocalHomeNetworks`) once the
-  reader pins it there, in the strip's sheet or the store;
+- a plugin's **home tab** is one of Home's timelines (`LocalHomeNetworks`),
+  turned to by a drag or picked in the timeline picker, once the reader pins
+  it, in the plugin timelines sheet or the store;
 - a **link** goes to a plugin's screen before any other rule
   (`LinkScreens.plugin`, asked by the app's `LinkOpener`);
 - its **screens** (client, settings, search, its own routes) are pushed on
@@ -521,7 +522,7 @@ Android, `XTA_NATIVE_PLUGIN_CATALOGUE` on the desktop.
   the screen to open (`plugins`, `plugin:<id>`); a screenshot of each start;
 - **screens** builds the APK with `-PpluginCatalogue` naming the runner's
   catalogue and walks the chain on the emulator (`tool/plugin_screens.sh`):
-  install from the store, open, pin, Home's strip, uninstall; it fails on a
+  install from the store, open, pin, Home's timeline picker, uninstall; it fails on a
   crash or a plugin that was not loaded and uninstalled;
 - **prerelease** (`[prerelease]`) writes `plugins.json` and uploads it with the
   plugins to the `native-plugins` release (`gh release upload --clobber`),

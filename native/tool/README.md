@@ -124,7 +124,7 @@ still in `networks/`.
 plugins build made (`--android`, `--desktop`, `--base-url`, `--copy-to`):
 CI's prerelease publishes it, and the emulator and desktop checks serve one of
 their own. `plugin_screens.sh` is the emulator's walk through the store
-(install, open, Home's strip, uninstall), after `screens.sh`.
+(install, open, Home's timeline picker, uninstall), after `screens.sh`.
 
 `plugin_abi.py` says whether plugins built before still link against this
 tree: every class, method and field a plugin uses from the app's modules has
