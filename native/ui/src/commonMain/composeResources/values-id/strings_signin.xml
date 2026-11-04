@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Signing in to X as XTA does (lib/client/login_webview.dart, x_cookie_login.dart). -->
+<resources>
+    <string name="signin_add_account">Tambah akun</string>
+    <string name="signin_logging_in_title">Masuk ke XTA</string>
+    <string name="signin_logging_in_text">Akun mana yang Anda pakai untuk masuk tidak mengubah apa yang Anda lihat. Langganan, grup, dan postingan tersimpan tetap di perangkat ini dan tidak menyentuh akun asli Anda. XTA masuk hanya untuk membaca — ia tidak bisa menyukai, memposting ulang, atau membalas.\n\nAnda bisa menambahkan beberapa akun. XTA memilih akun yang belum kena batas permintaan pada endpoint yang dibutuhkan dan yang tidak baru saja gagal masuk. Itulah yang menahan galat "Terlalu banyak permintaan".</string>
+    <string name="signin_import_title">Impor langganan</string>
+    <string name="signin_import_text">Langganan bersifat lokal di XTA dan terpisah dari langganan di akun X asli Anda. Masuk tidak memengaruhi langganan XTA.\n\nApakah Anda ingin mengimpor langganan dari @%1$s ke XTA?</string>
+    <string name="signin_cookie_help">Masuk ke x.com di browser, buka alat pengembang (F12), lalu salin cookie auth_token dan ct0 dari Penyimpanan → Cookie. Tempelkan di bawah dengan format auth_token=…; ct0=…. Cookie ini hanya disimpan di komputer ini dan tidak pernah dibagikan.</string>
+    <string name="signin_open_in_browser">Buka di browser</string>
+    <string name="signin_username">Nama pengguna</string>
+    <string name="signin_cookies">Cookie dari x.com</string>
+</resources>

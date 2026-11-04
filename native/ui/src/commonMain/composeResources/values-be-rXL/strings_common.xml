@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Read failures as XTA's full-page errors say them (lib/ui/errors.dart), and closing the app. -->
+<resources>
+    <string name="problem_no_account_title">Zaraz niama dastupnaha akaŭnta</string>
+    <string name="problem_no_account_text">XTA patrabuje chacia b adzin akaŭnt 𝕏, kab pracavać. Dadajcie akaŭnt, kab pačać.</string>
+    <string name="problem_rate_limited_title">𝕏 abmiežavaŭ častatu zapytaŭ</string>
+    <string name="problem_rate_limited_text">Vy zrabili zanadta šmat zapytaŭ za karotki čas. Pasprabujcie paźniej abo dadajcie inšy akaŭnt, kab praciahvać karystacca XTA.</string>
+    <string name="problem_no_working_account_title">Vašy akaŭnty nie pracujuć</string>
+    <string name="problem_no_working_account_text">Zdajecca, ni adzin z vašych akaŭntaŭ zaraz nie pracuje. Uvajdzicie z inšym akaŭntam abo pasprabujcie paźniej.</string>
+    <string name="problem_endpoint_refused_title">𝕏 adchiliŭ hety zapyt</string>
+    <string name="problem_endpoint_refused_text">Usie ŭlikovyja zapisy atrymali admovu ŭ hetaj častcy 𝕏, tamu sprava naŭrad ci ŭ ich. Chutčej za ŭsio 𝕏 nešta zmianiŭ; prahrama vypraŭlajecca sama, kali moža. Pasprabujcie praz chvilinu.</string>
+    <string name="problem_signing_title">Podpis zapytaŭ da X niedastupny</string>
+    <string name="problem_signing_text">XTA nie zmoh vyviesci token tranzakcyi, jakoha ciapier patrabuje X. Z vašymi ŭlikovymi zapisami ŭsio moža być u paradku; pasprabujcie krychu paźniej abo zazirnicie ŭ Dyjahnostyku.</string>
+    <string name="problem_offline_title">Nie atrymoŭvajecca zviazacca z X</string>
+    <string name="problem_offline_text">Kali łaska, praviercie vašaje sietkavaje padłučennie.</string>
+    <string name="problem_timed_out_title">Čas vyjšaŭ</string>
+    <string name="problem_timed_out_text">Zahruzka zaniała zašmat času. Kali łaska, praviercie vaša sietkavaje padkliučennie!</string>
+    <string name="problem_service_unavailable_title">X časova niedastupny</string>
+    <string name="problem_service_unavailable_text">X viarnuŭ pamyłku servera. Možna čytać dopisy z keša i pasprabavać paźniej.</string>
+    <string name="problem_request_unavailable_title">Hety zapyt niedastupny</string>
+    <string name="problem_request_unavailable_text">X adchiliŭ hety zapyt. Mahčyma, jon časova niedastupny, abo hetaja častka servisu źmianiłasia.</string>
+    <string name="problem_oops">Oj! Nešta pajšło nie tak 🥲</string>
+    <string name="problem_http_text">X viarnuŭ HTTP %1$d.</string>
+    <string name="problem_retry_in">Paŭtaryć praz %1$s</string>
+    <string name="close_app_confirm">Vy sapraŭdy chočacie zakryć XTA?</string>
+</resources>

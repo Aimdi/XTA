@@ -346,11 +346,11 @@
     <string name="settings_crash_keep">Giữ báo cáo sự cố trên thiết bị này</string>
     <string name="settings_crash_keep_description">Khi XTA Native dừng vì lỗi, một báo cáo về lỗi đó được ghi trên thiết bị này và không được gửi đi đâu cả. Tắt theo mặc định.</string>
     <string name="settings_crash_none">Không có báo cáo sự cố nào được lưu</string>
-    <string name="settings_image_cache_size">%1$s trên thiết bị này.</string>
+    <string name="settings_image_cache_size">%1$s trên thiết bị này. Hình ảnh cũ hơn %2$d ngày sẽ tự động bị xóa.</string>
     <string name="settings_move_up">Di chuyển lên</string>
     <string name="settings_move_down">Di chuyển xuống</string>
     <string name="intro_device_footnote">Báo cáo sự cố vẫn tắt cho đến khi bạn bật trong Cài đặt, và không bao giờ rời khỏi thiết bị này.</string>
-    <string name="intro_account_body">XTA Native đọc X bằng các tài khoản bạn đã dùng trong XTA: hãy nhập bản sao lưu của XTA để chuyển chúng sang. Bạn cũng có thể bắt đầu mà không cần tài khoản.</string>
+    <string name="intro_account_body">XTA chỉ đăng nhập để đọc. Dùng tài khoản nào cũng không thay đổi những gì bạn thấy — và bạn có thể bắt đầu mà không cần tài khoản.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="other">Bị giới hạn yêu cầu ở %1$d điểm cuối</item>
     </plurals>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Signing in to X as XTA does (lib/client/login_webview.dart, x_cookie_login.dart). -->
+<resources>
+    <string name="signin_add_account">Lisa konto</string>
+    <string name="signin_logging_in_title">XTAi sisselogimine</string>
+    <string name="signin_logging_in_text">See, millise kontoga sa sisse logid, ei muuda seda, mida näed. Tellimused, rühmad ja salvestatud postitused jäävad siia seadmesse ega puuduta su päris kontot. XTA logib sisse ainult lugemiseks — meeldivaks märkida, jagada ega vastata ta ei saa.\n\nVõid lisada mitu kontot. XTA valib selle, mille päringulimiit vajalikus otspunktis pole täis ja mille sisselogimine just äsja ei nurjunud — just see hoiab tõrke „Liiga palju päringuid“ eemal.</string>
+    <string name="signin_import_title">Tellimuste import</string>
+    <string name="signin_import_text">Tellimused on XTA-s kohalikud. Need ei sõltu sinu päris X-i konto tellimustest. Sisselogimine ei mõjuta XTA tellimusi.\n\nKas soovid importida XTA-sse konto @%1$s tellimused?</string>
+    <string name="signin_cookie_help">Logi brauseris sisse x.com-i, ava arendaja tööriistad (F12) ja kopeeri küpsised auth_token ja ct0 jaotisest Salvestusruum → Küpsised. Kleebi need allapoole kujul auth_token=…; ct0=…. Need salvestatakse ainult sellesse arvutisse ja neid ei jagata kunagi.</string>
+    <string name="signin_open_in_browser">Ava brauseris</string>
+    <string name="signin_username">Kasutajanimi</string>
+    <string name="signin_cookies">x.com-i küpsised</string>
+</resources>

@@ -346,11 +346,11 @@
     <string name="settings_crash_keep">Zachoŭvać spravazdačy pra zboi na hetaj pryladzie</string>
     <string name="settings_crash_keep_description">Kali XTA Native spyniajecca praz pamyłku, spravazdača pra jaje zapisvajecca na hetaj pryladzie i nikudy nie adpraŭlajecca. Pa zmaŭčanni vyklučana.</string>
     <string name="settings_crash_none">Spravazdač pra zboi niama</string>
-    <string name="settings_image_cache_size">%1$s na hetaj pryladzie.</string>
+    <string name="settings_image_cache_size">%1$s na hetaj pryladzie. Vyjavy, starejšyja za %2$d dzion, vydalajucca sami.</string>
     <string name="settings_move_up">Pieramiascić vyšej</string>
     <string name="settings_move_down">Pieramiascić nižej</string>
     <string name="intro_device_footnote">Spravazdačy pra zboi vyklučany, pakul vy nie ŭklučycie ich u naladach, i nikoli nie pakidajuć hetuju pryladu.</string>
-    <string name="intro_account_body">XTA Native čytaje X z ulikovymi zapisami, jakimi vy ŭžo karystajeciesia ŭ XTA: impartujcie rezervovuju kopiju XTA, kab pieraniesci ich. Pačać možna i biez ich.</string>
+    <string name="intro_account_body">XTA uvachodzić tolki kab čytać. Jaki ŭlikovy zapis vy vykarystoŭvajecie, nie mianiaje taho, što vy bačycie — i pačać možna biez jaho.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">Abmiežavannie zapytaŭ na %1$d kančatkovaj kropcy</item>
         <item quantity="few">Abmiežavannie zapytaŭ na %1$d kančatkovych kropkach</item>

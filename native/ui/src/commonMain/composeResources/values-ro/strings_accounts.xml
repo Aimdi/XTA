@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Accounts' avatar and Diagnostics' account health and recent reads, in XTA's words. -->
+<resources>
+    <string name="settings_avatar_title">Avatarul tău</string>
+    <string name="settings_avatar_change">Atinge pentru a schimba imaginea din stânga sus</string>
+    <string name="settings_avatar_description">Imaginea din stânga sus și din meniu — rămâne pe acest dispozitiv</string>
+    <string name="settings_avatar_choose">Alege de pe dispozitiv</string>
+    <string name="settings_avatar_from_account">Folosește fotografia de profil X</string>
+    <string name="settings_avatar_error">Nu s-a putut încărca acea fotografie de profil</string>
+    <string name="settings_avatar_clear">Folosește monograma</string>
+    <string name="settings_diagnostics_recent_reads">Operațiuni de citire recente</string>
+    <string name="settings_diagnostics_sign_in_broken">Autentificarea pare să nu mai fie valabilă, pauză până la %1$s</string>
+</resources>

@@ -346,11 +346,11 @@
     <string name="settings_crash_keep">الاحتفاظ بتقارير الأعطال على هذا الجهاز</string>
     <string name="settings_crash_keep_description">عندما يتوقف XTA Native بسبب خطأ، يُكتب تقرير عنه على هذا الجهاز ولا يُرسل إلى أي مكان. متوقف افتراضيًا.</string>
     <string name="settings_crash_none">لا يوجد تقرير أعطال محفوظ</string>
-    <string name="settings_image_cache_size">%1$s على هذا الجهاز.</string>
+    <string name="settings_image_cache_size">%1$s على هذا الجهاز. تُحذف الصور الأقدم من %2$d يومًا تلقائيًا.</string>
     <string name="settings_move_up">نقل لأعلى</string>
     <string name="settings_move_down">نقل لأسفل</string>
     <string name="intro_device_footnote">تبقى تقارير الأعطال متوقفة حتى تفعّلها في الإعدادات، ولا تغادر هذا الجهاز أبدًا.</string>
-    <string name="intro_account_body">يقرأ XTA Native منصة X بالحسابات التي تستخدمها في XTA: استورد النسخة الاحتياطية من XTA لنقلها. ويمكنك أيضًا البدء بدون حساب.</string>
+    <string name="intro_account_body">يسجّل XTA الدخول للقراءة فقط. الحساب الذي تستخدمه لا يغيّر ما تراه — ويمكنك البدء بدون حساب.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="zero">لا توجد قيود على الطلبات</item>
         <item quantity="one">تم تجاوز حد الطلبات على نقطة وصول واحدة</item>

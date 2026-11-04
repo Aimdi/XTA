@@ -23,7 +23,6 @@
     <string name="ago_minutes">%1$d min</string>
     <string name="ago_hours">%1$d h</string>
 
-    <string name="problem_no_account">Žádný účet X. Importujte zálohu XTA i s jejími účty.</string>
     <string name="problem_rate_limited">X tu omezuje všechny účty. Zkuste to znovu za pár minut.</string>
     <string name="problem_offline">Žádné připojení k X.</string>
     <string name="problem_signing">Podepisování požadavků pro X se nepodařilo připravit. Zkuste to znovu za chvíli.</string>

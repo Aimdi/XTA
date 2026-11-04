@@ -1,19 +1,30 @@
 package com.aimdi.xtanative.ui.settings
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.AssistChip
@@ -36,12 +47,17 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.session.Session
+import com.aimdi.xtanative.core.x.XAccount
+import com.aimdi.xtanative.core.x.XAccountHealth
 import com.aimdi.xtanative.services.ai.AiProvider
 import com.aimdi.xtanative.store.settings.AccountPrefs
 import com.aimdi.xtanative.store.settings.AiPrefs
@@ -49,6 +65,8 @@ import com.aimdi.xtanative.store.settings.HomePrefs
 import com.aimdi.xtanative.store.settings.NetworkPrefs
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.*
+import com.aimdi.xtanative.ui.home.AccountMark
+import com.aimdi.xtanative.ui.signin.forgetWebSessions
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -116,16 +134,19 @@ internal fun AccountSettings(title: String, vm: SettingsViewModel, onBack: () ->
     val session by vm.session.collectAsStateWithLifecycle()
     var deleting by remember { mutableStateOf<String?>(null) }
     var clearing by remember { mutableStateOf(false) }
+    var avatar by remember { mutableStateOf(false) }
     val hidden = settings[AccountPrefs.disabledAccountIds]
     val ids = session.accounts.map { it.id }
     SettingsPage(
         title,
         onBack,
         actions = {
-            IconButton(onClick = { onOpen(SettingsRoutes.IMPORT) }) { Icon(Icons.Outlined.Add, stringResource(Res.string.settings_import_backup)) }
+            IconButton(onClick = { onOpen(SettingsRoutes.SIGN_IN) }) { Icon(Icons.Outlined.Add, stringResource(Res.string.signin_add_account)) }
         },
     ) { padding ->
         SettingsList(padding) {
+            AvatarRow(session.accounts.firstOrNull(), settings[AccountPrefs.avatarRevision]) { avatar = true }
+            SettingsDivider()
             if (session.accounts.isEmpty()) {
                 Text(stringResource(Res.string.settings_accounts_empty), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(24.dp))
             } else {
@@ -137,23 +158,11 @@ internal fun AccountSettings(title: String, vm: SettingsViewModel, onBack: () ->
                 )
                 session.accounts.forEach { account ->
                     val on = ForYouAccounts.isOn(account.id, hidden)
-                    Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 4.dp, top = 4.dp, bottom = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            account.screenName?.let { "@$it" } ?: stringResource(Res.string.settings_unknown_username),
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.weight(1f),
-                        )
-                        Switch(
-                            checked = on,
-                            enabled = !on || ForYouAccounts.canTurnOff(account.id, ids, hidden),
-                            onCheckedChange = { next ->
-                                vm.update { current ->
-                                    ForYouAccounts.toggled(current[AccountPrefs.disabledAccountIds], account.id, next, ids)
-                                        ?.let { current.with(AccountPrefs.disabledAccountIds, it) } ?: current
-                                }
-                            },
-                        )
-                        IconButton(onClick = { deleting = account.id }) { Icon(Icons.Outlined.Delete, stringResource(Res.string.settings_delete)) }
+                    AccountRow(account, on, locked = on && !ForYouAccounts.canTurnOff(account.id, ids, hidden), onDelete = { deleting = account.id }) { next ->
+                        vm.update { current ->
+                            ForYouAccounts.toggled(current[AccountPrefs.disabledAccountIds], account.id, next, ids)
+                                ?.let { current.with(AccountPrefs.disabledAccountIds, it) } ?: current
+                        }
                     }
                 }
             }
@@ -163,6 +172,7 @@ internal fun AccountSettings(title: String, vm: SettingsViewModel, onBack: () ->
             }
         }
     }
+    if (avatar) AvatarSheet(onDismiss = { avatar = false })
     deleting?.let { id ->
         val name = session.accounts.firstOrNull { it.id == id }?.screenName ?: stringResource(Res.string.settings_unknown_username)
         ConfirmDialog(
@@ -176,6 +186,9 @@ internal fun AccountSettings(title: String, vm: SettingsViewModel, onBack: () ->
             deleting = null
             vm.updateSession { it.copy(accounts = it.accounts.filterNot { account -> account.id == id }) }
             vm.update { it.with(AccountPrefs.disabledAccountIds, it[AccountPrefs.disabledAccountIds] - id) }
+            vm.graph.keep { vm.graph.accountHealth.write(id, XAccountHealth()) }
+            // As XTA does: the web view's session goes too, so the next sign-in shows X's form.
+            forgetWebSessions()
         }
     }
     if (clearing) {
@@ -193,8 +206,58 @@ internal fun AccountSettings(title: String, vm: SettingsViewModel, onBack: () ->
                 vm.graph.clearFeedCaches()
                 vm.graph.signers.clear()
             }
+            forgetWebSessions()
             onStartOver()
         }
+    }
+}
+
+/** Your avatar (XTA's _ChromeAvatarSettingsTile): the mark as it shows in the upper left, and what a tap does. */
+@Composable
+private fun AvatarRow(account: XAccount?, revision: Int, onClick: () -> Unit) {
+    Row(
+        Modifier.fillMaxWidth().heightIn(min = 72.dp).clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        AccountMark(account, 40.dp)
+        Spacer(Modifier.width(16.dp))
+        Column(Modifier.weight(1f)) {
+            Text(stringResource(Res.string.settings_avatar_title), style = MaterialTheme.typography.bodyLarge)
+            Text(
+                stringResource(if (revision > 0) Res.string.settings_avatar_change else Res.string.settings_avatar_description),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}
+
+/**
+ * One account (XTA's HomeAccountToggleTile): on or off for the feeds, a tap
+ * turning it, and why it cannot be turned off when it is the last one on;
+ * then the way to remove it.
+ */
+@Composable
+private fun AccountRow(account: XAccount, on: Boolean, locked: Boolean, onDelete: () -> Unit, onToggle: (Boolean) -> Unit) {
+    Row(
+        Modifier.fillMaxWidth().heightIn(min = 56.dp)
+            .selectable(selected = on, enabled = !locked, role = Role.Checkbox) { onToggle(!on) }
+            .padding(start = 16.dp, end = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(Modifier.size(32.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primaryContainer), contentAlignment = Alignment.Center) {
+            Icon(if (on) Icons.Filled.Person else Icons.Outlined.Person, null, tint = MaterialTheme.colorScheme.onPrimaryContainer, modifier = Modifier.size(18.dp))
+        }
+        Spacer(Modifier.width(16.dp))
+        Column(Modifier.weight(1f)) {
+            Text(account.screenName ?: stringResource(Res.string.settings_unknown_username), style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            if (locked) {
+                Text(stringResource(Res.string.home_filter_keep_one), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            }
+        }
+        Checkbox(checked = on, onCheckedChange = null, enabled = !locked)
+        IconButton(onClick = onDelete) { Icon(Icons.Outlined.Delete, stringResource(Res.string.settings_delete)) }
     }
 }
 

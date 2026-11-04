@@ -346,11 +346,11 @@
     <string name="settings_crash_keep">Przechowuj raporty o awariach na tym urządzeniu</string>
     <string name="settings_crash_keep_description">Gdy XTA Native zatrzyma się z powodu błędu, raport o tym zostaje zapisany na tym urządzeniu i nigdzie nie jest wysyłany. Domyślnie wyłączone.</string>
     <string name="settings_crash_none">Brak zapisanych raportów o awariach</string>
-    <string name="settings_image_cache_size">%1$s na tym urządzeniu.</string>
+    <string name="settings_image_cache_size">%1$s na tym urządzeniu. Obrazy starsze niż %2$d dni są usuwane automatycznie.</string>
     <string name="settings_move_up">Przesuń w górę</string>
     <string name="settings_move_down">Przesuń w dół</string>
     <string name="intro_device_footnote">Raporty o awariach pozostają wyłączone, dopóki nie włączysz ich w ustawieniach, i nigdy nie opuszczają tego urządzenia.</string>
-    <string name="intro_account_body">XTA Native czyta X za pomocą kont, których już używasz w XTA: zaimportuj kopię zapasową z XTA, aby je przenieść. Możesz też zacząć bez konta.</string>
+    <string name="intro_account_body">XTA loguje się tylko po to, by czytać. To, którego konta użyjesz, nie zmienia tego, co widzisz — możesz też zacząć bez konta.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">Limit żądań na %1$d punkcie końcowym</item>
         <item quantity="few">Limit żądań na %1$d punktach końcowych</item>

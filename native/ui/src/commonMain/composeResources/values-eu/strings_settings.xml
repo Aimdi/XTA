@@ -346,11 +346,11 @@
     <string name="settings_crash_keep">Gorde hutsegite-txostenak gailu honetan</string>
     <string name="settings_crash_keep_description">XTA Native errore baten ondorioz gelditzen denean, horren txosten bat idazten da gailu honetan, eta ez da inora bidaltzen. Desaktibatuta dago lehenespenez.</string>
     <string name="settings_crash_none">Ez dago gordetako hutsegite-txostenik</string>
-    <string name="settings_image_cache_size">%1$s gailu honetan.</string>
+    <string name="settings_image_cache_size">%1$s gailu honetan. %2$d egun baino zaharragoak diren irudiak berez ezabatzen dira.</string>
     <string name="settings_move_up">Eraman gora</string>
     <string name="settings_move_down">Eraman behera</string>
     <string name="intro_device_footnote">Hutsegite-txostenak desaktibatuta egongo dira ezarpenetan aktibatu arte, eta ez dute inoiz gailu hau uzten.</string>
-    <string name="intro_account_body">XTA Nativek XTAn dagoeneko erabiltzen dituzun kontuekin irakurtzen du X: inportatu XTAren babeskopia haiek ekartzeko. Konturik gabe ere has zaitezke.</string>
+    <string name="intro_account_body">XTAk irakurtzeko baino ez du saioa hasten. Erabiltzen duzun kontuak ez du aldatzen ikusten duzuna — eta konturik gabe has zaitezke.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">Eskaera-muga amaiera-puntu %1$dean</item>
         <item quantity="other">Eskaera-muga %1$d amaiera-puntutan</item>

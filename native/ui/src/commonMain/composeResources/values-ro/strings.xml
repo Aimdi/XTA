@@ -23,7 +23,6 @@
     <string name="ago_minutes">%1$d min</string>
     <string name="ago_hours">%1$d h</string>
 
-    <string name="problem_no_account">Niciun cont X. Importă copia de rezervă XTA cu conturile ei.</string>
     <string name="problem_rate_limited">X limitează toate conturile de aici. Reîncearcă peste câteva minute.</string>
     <string name="problem_offline">Nu există conexiune la X.</string>
     <string name="problem_signing">Semnarea cererilor către X nu a putut fi pregătită. Reîncearcă într-o clipă.</string>

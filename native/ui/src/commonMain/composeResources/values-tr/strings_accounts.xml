@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Accounts' avatar and Diagnostics' account health and recent reads, in XTA's words. -->
+<resources>
+    <string name="settings_avatar_title">Avatarın</string>
+    <string name="settings_avatar_change">Sol üstteki resmi değiştirmek için dokunun</string>
+    <string name="settings_avatar_description">Sol üstte ve menüde görünen resim — bu cihazda kalır</string>
+    <string name="settings_avatar_choose">Cihazdan seç</string>
+    <string name="settings_avatar_from_account">X profil fotoğrafını kullan</string>
+    <string name="settings_avatar_error">O profil fotoğrafı yüklenemedi</string>
+    <string name="settings_avatar_clear">Monogram kullan</string>
+    <string name="settings_diagnostics_recent_reads">Son okuma işlemleri</string>
+    <string name="settings_diagnostics_sign_in_broken">Oturum artık geçerli görünmüyor, %1$s saatine kadar duraklatıldı</string>
+</resources>

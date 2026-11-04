@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Read failures as XTA's full-page errors say them (lib/ui/errors.dart), and closing the app. -->
+<resources>
+    <string name="problem_no_account_title">لا يوجد حساب متاح الآن</string>
+    <string name="problem_no_account_text">يحتاج XTA إلى حساب 𝕏 واحد على الأقل ليعمل. أضف حسابًا للبدء.</string>
+    <string name="problem_rate_limited_title">تم تقييدك من قبل 𝕏</string>
+    <string name="problem_rate_limited_text">لقد أرسلت طلبات كثيرة جدًا في وقت قصير جدًا. حاول مرة أخرى لاحقًا أو أضف حسابًا آخر لمواصلة استخدام XTA.</string>
+    <string name="problem_no_working_account_title">حساباتك لا تعمل</string>
+    <string name="problem_no_working_account_text">يبدو أن أيًا من حساباتك لا يعمل حاليًا. سجّل الدخول بحساب آخر أو حاول مرة أخرى لاحقًا.</string>
+    <string name="problem_endpoint_refused_title">رفض 𝕏 هذا الطلب</string>
+    <string name="problem_endpoint_refused_text">رُفضت جميع الحسابات في هذا الجزء من 𝕏، لذا من غير المرجّح أن تكون المشكلة في حساباتك. على الأرجح غيّر 𝕏 شيئًا ما، والتطبيق يصلح نفسه متى استطاع. أعد المحاولة بعد قليل.</string>
+    <string name="problem_signing_title">توقيع طلبات X غير متاح</string>
+    <string name="problem_signing_text">تعذّر على XTA اشتقاق رمز المعاملة الذي يطلبه X حاليًا. قد تكون حساباتك سليمة؛ أعد المحاولة بعد قليل أو راجع التشخيص.</string>
+    <string name="problem_offline_title">تعذّر الاتصال بـ X</string>
+    <string name="problem_offline_text">يرجى التحقق من اتصالك بالإنترنت.</string>
+    <string name="problem_timed_out_title">انتهت المهلة</string>
+    <string name="problem_timed_out_text">استغرق التحميل وقتًا طويلًا. يرجى التحقق من اتصال الشبكة!</string>
+    <string name="problem_service_unavailable_title">X غير متاح مؤقتًا</string>
+    <string name="problem_service_unavailable_text">أعاد X خطأً في الخادم. يمكنك متابعة قراءة المنشورات المحفوظة مؤقتًا وإعادة المحاولة لاحقًا.</string>
+    <string name="problem_request_unavailable_title">هذا الطلب غير متاح</string>
+    <string name="problem_request_unavailable_text">رفض X هذا الطلب. قد يكون غير متاح مؤقتًا أو ربما تغيّر هذا الجزء من الخدمة.</string>
+    <string name="problem_oops">أوبسي! حدث خطأ ما 🥲</string>
+    <string name="problem_http_text">أعاد X رمز HTTP %1$d.</string>
+    <string name="problem_retry_in">إعادة المحاولة بعد %1$s</string>
+    <string name="close_app_confirm">هل أنت متأكد من أنك تريد إغلاق XTA؟</string>
+</resources>

@@ -23,7 +23,6 @@
     <string name="ago_minutes">%1$d min</string>
     <string name="ago_hours">%1$d t</string>
 
-    <string name="problem_no_account">Ingen X-konto. Importer XTA-sikkerhetskopien med kontoene.</string>
     <string name="problem_rate_limited">X begrenser hver konto her. Prøv igjen om noen minutter.</string>
     <string name="problem_offline">Ingen tilkobling til X.</string>
     <string name="problem_signing">Signering av forespørsler til X kunne ikke settes opp. Prøv igjen om et øyeblikk.</string>

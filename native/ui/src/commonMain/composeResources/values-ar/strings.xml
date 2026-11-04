@@ -23,7 +23,6 @@
     <string name="ago_minutes">%1$d د</string>
     <string name="ago_hours">%1$d س</string>
 
-    <string name="problem_no_account">لا يوجد حساب X. استورد النسخة الاحتياطية من XTA مع حساباتها.</string>
     <string name="problem_rate_limited">يقيّد X كل الحسابات هنا. أعد المحاولة بعد بضع دقائق.</string>
     <string name="problem_offline">لا اتصال بـ X.</string>
     <string name="problem_signing">تعذّر إعداد توقيع طلبات X. أعد المحاولة بعد قليل.</string>

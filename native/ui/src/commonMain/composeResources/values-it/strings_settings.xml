@@ -346,11 +346,11 @@
     <string name="settings_crash_keep">Conserva le segnalazioni di crash su questo dispositivo</string>
     <string name="settings_crash_keep_description">Quando XTA Native si arresta per un errore, una segnalazione viene scritta su questo dispositivo e non viene inviata da nessuna parte. Disattivato per impostazione predefinita.</string>
     <string name="settings_crash_none">Nessuna segnalazione di crash conservata</string>
-    <string name="settings_image_cache_size">%1$s su questo dispositivo.</string>
+    <string name="settings_image_cache_size">%1$s su questo dispositivo. Le immagini più vecchie di %2$d giorni vengono rimosse da sole.</string>
     <string name="settings_move_up">Sposta su</string>
     <string name="settings_move_down">Sposta giù</string>
     <string name="intro_device_footnote">Le segnalazioni di crash restano disattivate finché non le attivi nelle impostazioni, e non lasciano mai questo dispositivo.</string>
-    <string name="intro_account_body">XTA Native legge X con gli account che usi già in XTA: importa il backup di XTA per portarli qui. Puoi anche iniziare senza.</string>
+    <string name="intro_account_body">XTA accede solo per leggere. L'account che usi non cambia ciò che vedi, e puoi iniziare anche senza.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">Limite di richieste raggiunto su %1$d endpoint</item>
         <item quantity="many">Limite di richieste raggiunto su %1$d endpoint</item>

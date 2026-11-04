@@ -23,7 +23,6 @@
     <string name="ago_minutes">%1$d phút</string>
     <string name="ago_hours">%1$d giờ</string>
 
-    <string name="problem_no_account">Không có tài khoản X. Hãy nhập bản sao lưu của XTA cùng các tài khoản trong đó.</string>
     <string name="problem_rate_limited">X đang giới hạn mọi tài khoản ở đây. Hãy thử lại sau vài phút.</string>
     <string name="problem_offline">Không có kết nối tới X.</string>
     <string name="problem_signing">Không thể chuẩn bị chữ ký cho yêu cầu tới X. Hãy thử lại sau giây lát.</string>

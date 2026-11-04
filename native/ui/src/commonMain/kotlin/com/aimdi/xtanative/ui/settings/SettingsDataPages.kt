@@ -1,15 +1,19 @@
 package com.aimdi.xtanative.ui.settings
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ExitToApp
@@ -19,6 +23,7 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.Warning
@@ -227,7 +232,7 @@ private fun ImageCacheRow() {
     }
     NavigationRow(
         stringResource(Res.string.settings_image_cache),
-        size?.let { stringResource(Res.string.settings_image_cache_size, formatByteSize(it)) },
+        size?.let { stringResource(Res.string.settings_image_cache_size, formatByteSize(it), ImageCacheAge.MAX_AGE_DAYS) },
         Icons.Outlined.Delete,
         chevron = false,
     ) { confirm = true }
@@ -511,8 +516,19 @@ internal fun DiagnosticsSettings(title: String, vm: SettingsViewModel, onBack: (
     var revision by remember { mutableIntStateOf(0) }
     val crashes by produceState(emptyList<CrashReport>(), revision) { value = withContext(Dispatchers.IO) { graph.crashReports.list() } }
     val report = remember(session.accounts, settings, crashes, revision) {
-        DiagnosticsReport.of(graph.version, session.accounts, graph.client.endpoints, graph.client.rateLimits, settings, crashes.size, Instant.now())
+        DiagnosticsReport.of(
+            graph.version,
+            session.accounts,
+            graph.client.endpoints,
+            graph.client.rateLimits,
+            settings,
+            crashes.size,
+            Instant.now(),
+            health = graph.accountHealth,
+            operations = graph.client.reads.snapshot(),
+        )
     }
+    var readsShown by rememberSaveable { mutableStateOf(false) }
     val copied = stringResource(Res.string.settings_diagnostics_copied)
     SettingsPage(
         title,
@@ -527,20 +543,10 @@ internal fun DiagnosticsSettings(title: String, vm: SettingsViewModel, onBack: (
         },
     ) { padding ->
         SettingsList(padding) {
+            RecentReads(report.operations, readsShown) { readsShown = !readsShown }
             SettingsHeader(stringResource(Res.string.settings_account))
             if (report.accounts.isEmpty()) NavigationRow(stringResource(Res.string.settings_diagnostics_no_accounts), chevron = false, icon = Icons.Outlined.Info) {}
-            report.accounts.forEach { account ->
-                NavigationRow(
-                    account.screenName?.let { "@$it" } ?: stringResource(Res.string.settings_account),
-                    if (account.isHealthy) stringResource(Res.string.settings_diagnostics_ok) else pluralStringResource(
-                        Res.plurals.settings_diagnostics_rate_limited,
-                        account.rateLimited.size,
-                        account.rateLimited.size,
-                    ),
-                    if (account.isHealthy) Icons.Outlined.CheckCircle else Icons.Outlined.Warning,
-                    chevron = false,
-                ) {}
-            }
+            report.accounts.forEach { account -> AccountHealthRow(account, locale) }
             SettingsHeader(stringResource(Res.string.settings_diagnostics_endpoints))
             NavigationRow(
                 report.registryFetchedAt?.let { stringResource(Res.string.settings_diagnostics_checked, shortDateTime(it, locale)) }
@@ -576,6 +582,52 @@ internal fun DiagnosticsSettings(title: String, vm: SettingsViewModel, onBack: (
                     scope.launch { snackbar.showSnackbar(copied) }
                 }
             }
+        }
+    }
+}
+
+/** XTA's "Recent read operations" fold: the reads asked of X lately, one line each, to select and copy. */
+@Composable
+private fun RecentReads(lines: List<String>, shown: Boolean, onToggle: () -> Unit) {
+    Row(
+        Modifier.fillMaxWidth().heightIn(min = 56.dp).clickable(onClick = onToggle).padding(horizontal = 16.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(stringResource(Res.string.settings_diagnostics_recent_reads), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+        Icon(if (shown) Icons.Outlined.KeyboardArrowUp else Icons.Outlined.KeyboardArrowDown, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+    if (shown) {
+        SelectionContainer {
+            Text(lines.joinToString("\n"), style = MaterialTheme.typography.bodySmall, modifier = Modifier.fillMaxWidth().padding(16.dp))
+        }
+    }
+}
+
+/** An account as XTA's diagnostics show it: working, or its sign-in resting until when and the endpoints X limits it on. */
+@Composable
+private fun AccountHealthRow(account: AccountDiagnostics, locale: Locale) {
+    val problems = listOfNotNull(
+        account.signInBrokenUntil?.let { stringResource(Res.string.settings_diagnostics_sign_in_broken, shortDateTime(it, locale)) },
+        account.rateLimited.size.takeIf { it > 0 }?.let { pluralStringResource(Res.plurals.settings_diagnostics_rate_limited, it, it) },
+    )
+    Row(
+        Modifier.fillMaxWidth().heightIn(min = 56.dp).padding(horizontal = 16.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            if (account.isHealthy) Icons.Outlined.CheckCircle else Icons.Outlined.Warning,
+            null,
+            tint = if (account.isHealthy) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error,
+            modifier = Modifier.size(24.dp),
+        )
+        Spacer(Modifier.width(16.dp))
+        Column(Modifier.weight(1f)) {
+            Text(account.screenName?.let { "@$it" } ?: stringResource(Res.string.settings_account), style = MaterialTheme.typography.bodyLarge)
+            Text(
+                if (problems.isEmpty()) stringResource(Res.string.settings_diagnostics_ok) else problems.joinToString("\n"),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }

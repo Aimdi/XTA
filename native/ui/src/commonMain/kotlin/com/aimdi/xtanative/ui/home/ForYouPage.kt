@@ -15,7 +15,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -54,8 +53,6 @@ import com.aimdi.xtanative.ui.feed.rememberPlayingId
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.dismiss
 import com.aimdi.xtanative.ui.generated.resources.home_for_you_empty
-import com.aimdi.xtanative.ui.generated.resources.home_for_you_no_account
-import com.aimdi.xtanative.ui.generated.resources.home_import
 import com.aimdi.xtanative.ui.group.ZenEndCard
 import com.aimdi.xtanative.ui.media.LocalInlinePlayer
 import com.aimdi.xtanative.ui.media.rememberInlinePlayer
@@ -82,7 +79,7 @@ internal fun forYouViewModel(): ForYouViewModel {
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun ForYouPage(toTop: Int, actions: PostActions, contentPadding: PaddingValues, onImport: () -> Unit) {
+internal fun ForYouPage(toTop: Int, actions: PostActions, contentPadding: PaddingValues) {
     val vm = forYouViewModel()
     val state by vm.ui.collectAsStateWithLifecycle()
     val list = rememberLazyListState()
@@ -110,9 +107,8 @@ internal fun ForYouPage(toTop: Int, actions: PostActions, contentPadding: Paddin
     PullToRefreshBox(isRefreshing = state.refreshing, onRefresh = { vm.refresh() }, modifier = Modifier.fillMaxSize()) {
         val problem = state.problem
         when {
-            state.noAccount -> PageMessage(stringResource(Res.string.home_for_you_no_account)) {
-                Button(onClick = onImport) { Text(stringResource(Res.string.home_import)) }
-            }
+            // XTA's no-account screen, whose Add account signs in.
+            state.noAccount -> PageMessage(null) { ProblemView(Problem.NoAccount, { vm.refresh() }) }
             state.threads.isEmpty() && problem != null -> PageMessage(null) { ProblemView(problem, { vm.refresh() }) }
             state.threads.isEmpty() && state.answered && !state.refreshing -> PageMessage(stringResource(Res.string.home_for_you_empty)) {}
             // The pull indicator already says a first load is under way.

@@ -23,7 +23,6 @@
     <string name="ago_minutes">%1$d mnt</string>
     <string name="ago_hours">%1$d j</string>
 
-    <string name="problem_no_account">Tidak ada akun X. Impor cadangan XTA beserta akunnya.</string>
     <string name="problem_rate_limited">X sedang membatasi semua akun di sini. Coba lagi dalam beberapa menit.</string>
     <string name="problem_offline">Tidak ada koneksi ke X.</string>
     <string name="problem_signing">Penandatanganan permintaan X tidak dapat disiapkan. Coba lagi sebentar lagi.</string>

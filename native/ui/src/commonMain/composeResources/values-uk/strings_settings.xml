@@ -346,11 +346,11 @@
     <string name="settings_crash_keep">Зберігати звіти про збої на цьому пристрої</string>
     <string name="settings_crash_keep_description">Коли XTA Native зупиняється через помилку, звіт про неї записується на цьому пристрої й нікуди не надсилається. Типово вимкнено.</string>
     <string name="settings_crash_none">Збережених звітів про збої немає</string>
-    <string name="settings_image_cache_size">%1$s на цьому пристрої.</string>
+    <string name="settings_image_cache_size">%1$s на цьому пристрої. Зображення, старші за %2$d днів, видаляються самі.</string>
     <string name="settings_move_up">Перемістити вгору</string>
     <string name="settings_move_down">Перемістити вниз</string>
     <string name="intro_device_footnote">Звіти про збої вимкнені, доки ви не ввімкнете їх у налаштуваннях, і ніколи не залишають цей пристрій.</string>
-    <string name="intro_account_body">XTA Native читає X з обліковими записами, якими ви вже користуєтеся в XTA: імпортуйте резервну копію XTA, щоб перенести їх. Почати можна й без облікового запису.</string>
+    <string name="intro_account_body">XTA входить лише для читання. Який обліковий запис ви використовуєте, не впливає на те, що ви бачите — і почати можна без нього.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">Обмеження запитів на %1$d кінцевій точці</item>
         <item quantity="few">Обмеження запитів на %1$d кінцевих точках</item>

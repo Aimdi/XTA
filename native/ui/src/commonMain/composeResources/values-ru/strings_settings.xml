@@ -346,11 +346,11 @@
     <string name="settings_crash_keep">Хранить отчёты о сбоях на этом устройстве</string>
     <string name="settings_crash_keep_description">Когда XTA Native останавливается из-за ошибки, отчёт о ней записывается на этом устройстве и никуда не отправляется. По умолчанию выключено.</string>
     <string name="settings_crash_none">Сохранённых отчётов о сбоях нет</string>
-    <string name="settings_image_cache_size">%1$s на этом устройстве.</string>
+    <string name="settings_image_cache_size">%1$s на этом устройстве. Изображения старше %2$d дней удаляются сами.</string>
     <string name="settings_move_up">Переместить вверх</string>
     <string name="settings_move_down">Переместить вниз</string>
     <string name="intro_device_footnote">Отчёты о сбоях выключены, пока вы не включите их в настройках, и никогда не покидают это устройство.</string>
-    <string name="intro_account_body">XTA Native читает X с аккаунтами, которыми вы уже пользуетесь в XTA: импортируйте резервную копию XTA, чтобы перенести их. Начать можно и без аккаунта.</string>
+    <string name="intro_account_body">XTA входит только для чтения. Какой аккаунт вы используете, не влияет на то, что вы видите — и начать можно без него.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">Ограничение запросов на %1$d конечной точке</item>
         <item quantity="few">Ограничение запросов на %1$d конечных точках</item>

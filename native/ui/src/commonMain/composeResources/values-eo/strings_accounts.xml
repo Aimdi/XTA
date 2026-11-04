@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Accounts' avatar and Diagnostics' account health and recent reads, in XTA's words. -->
+<resources>
+    <string name="settings_avatar_title">Via avataro</string>
+    <string name="settings_avatar_change">Tuŝu por ŝanĝi la bildon supre maldekstre</string>
+    <string name="settings_avatar_description">Bildo supre maldekstre kaj en la tirkesto — restas en ĉi tiu aparato</string>
+    <string name="settings_avatar_choose">Elekti el la aparato</string>
+    <string name="settings_avatar_from_account">Uzi profilbildon de X</string>
+    <string name="settings_avatar_error">Ne eblis ŝargi tiun profilbildon</string>
+    <string name="settings_avatar_clear">Uzi monogramon</string>
+    <string name="settings_diagnostics_recent_reads">Lastatempaj legoperacioj</string>
+    <string name="settings_diagnostics_sign_in_broken">La ensaluto ŝajnas ne plu validi, paŭzo ĝis %1$s</string>
+</resources>

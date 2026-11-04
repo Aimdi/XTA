@@ -74,6 +74,9 @@ object SettingsRoutes {
     const val PLUGINS = "plugins"
     const val BACKUP = "backup"
     const val IMPORT = "import"
+
+    /** Adding an X account: X's sign-in (ui.signin). */
+    const val SIGN_IN = "signin"
     const val DOWNLOADS = "downloads"
     const val OFFLINE = "offline"
 

@@ -1,6 +1,8 @@
 package com.aimdi.xtanative.data
 
 import com.aimdi.xtanative.core.session.Session
+import com.aimdi.xtanative.core.x.FileAccountHealthStore
+import com.aimdi.xtanative.core.x.XAccountHealthStore
 import com.aimdi.xtanative.core.x.XClient
 import com.aimdi.xtanative.core.x.XGuest
 import com.aimdi.xtanative.core.x.XSigners
@@ -32,6 +34,7 @@ import com.aimdi.xtanative.store.search.RecentSearches
 import com.aimdi.xtanative.store.settings.CrashReportPrefs
 import com.aimdi.xtanative.store.settings.SettingsStore
 import com.aimdi.xtanative.ui.downloads.PlatformFiles
+import com.aimdi.xtanative.ui.settings.ChromeAvatar
 import com.aimdi.xtanative.ui.settings.CrashReports
 import com.aimdi.xtanative.ui.settings.DeviceBackup
 import com.aimdi.xtanative.ui.settings.KeptSections
@@ -98,6 +101,9 @@ class AppGraph(
     private val mediaHttp = OkHttpMediaHttp()
     val offline = OfflineStore(store, mediaHttp)
 
+    /** The picture the reader chose for the upper left (Settings › Accounts' Your avatar). */
+    val avatar = ChromeAvatar(File(files, "chrome_avatar"), settings, mediaHttp)
+
     /** Partial downloads wait here until they are whole. */
     private val downloadStaging = File(files, "download-parts")
     val downloads = DownloadQueue(
@@ -129,7 +135,17 @@ class AppGraph(
     @Volatile
     var accountsOff: Set<String> = emptySet()
         private set
-    val client = XClient(http, accounts = { sessions.state.value?.accounts.orEmpty() }, signers = signers, guest = XGuest(http), disabledAccounts = { accountsOff })
+    /** Each account's sign-in health, kept across launches as XTA's accounts table keeps it: Diagnostics shows it. */
+    val accountHealth: XAccountHealthStore = FileAccountHealthStore(File(files, "account-health.json"))
+
+    val client = XClient(
+        http,
+        accounts = { sessions.state.value?.accounts.orEmpty() },
+        signers = signers,
+        guest = XGuest(http),
+        health = accountHealth,
+        disabledAccounts = { accountsOff },
+    )
 
     /** The Following feed's cache for null, else the group's. */
     @Synchronized

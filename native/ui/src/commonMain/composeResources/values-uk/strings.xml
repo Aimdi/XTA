@@ -23,7 +23,6 @@
     <string name="ago_minutes">%1$d хв</string>
     <string name="ago_hours">%1$d год</string>
 
-    <string name="problem_no_account">Немає облікового запису X. Імпортуйте резервну копію XTA з її обліковими записами.</string>
     <string name="problem_rate_limited">X обмежує тут усі облікові записи. Спробуйте ще раз за кілька хвилин.</string>
     <string name="problem_offline">Немає з’єднання з X.</string>
     <string name="problem_signing">Не вдалося налаштувати підпис запитів до X. Спробуйте ще раз за мить.</string>

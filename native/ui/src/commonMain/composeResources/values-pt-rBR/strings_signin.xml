@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Signing in to X as XTA does (lib/client/login_webview.dart, x_cookie_login.dart). -->
+<resources>
+    <string name="signin_add_account">Adicionar conta</string>
+    <string name="signin_logging_in_title">Fazendo login no XTA</string>
+    <string name="signin_logging_in_text">A conta com que você entra não muda o que você vê. As assinaturas, os grupos e as publicações salvas ficam neste dispositivo e nunca tocam na sua conta de verdade. O XTA entra apenas para ler: não consegue curtir, republicar nem responder.\n\nVocê pode adicionar várias contas. O XTA escolhe uma que não esteja no limite de requisições do endpoint de que precisa e que não tenha acabado de falhar ao entrar — é isso que mantém o erro "Muitas requisições" longe.</string>
+    <string name="signin_import_title">Importar inscrições</string>
+    <string name="signin_import_text">As inscrições ficam só no XTA. Elas são independentes das inscrições da sua conta X de verdade. Entrar não muda as inscrições do XTA.\n\nVocê quer importar para o XTA as inscrições de @%1$s?</string>
+    <string name="signin_cookie_help">Entre no x.com pelo navegador, abra as ferramentas de desenvolvedor (F12) e copie os cookies auth_token e ct0 em Armazenamento → Cookies. Cole-os abaixo no formato auth_token=…; ct0=…. Eles ficam salvos só neste computador e nunca são compartilhados.</string>
+    <string name="signin_open_in_browser">Abrir no navegador</string>
+    <string name="signin_username">Nome de usuário</string>
+    <string name="signin_cookies">Cookies do x.com</string>
+</resources>

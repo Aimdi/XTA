@@ -23,7 +23,6 @@
     <string name="ago_minutes">%1$d分</string>
     <string name="ago_hours">%1$d時間</string>
 
-    <string name="problem_no_account">X アカウントがありません。アカウントを含む XTA のバックアップをインポートしてください。</string>
     <string name="problem_rate_limited">X がここのすべてのアカウントを制限しています。数分後にもう一度お試しください。</string>
     <string name="problem_offline">X に接続できません。</string>
     <string name="problem_signing">X へのリクエストの署名を準備できませんでした。しばらくしてからもう一度お試しください。</string>

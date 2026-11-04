@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Read failures as XTA's full-page errors say them (lib/ui/errors.dart), and closing the app. -->
+<resources>
+    <string name="problem_no_account_title">Momenteel geen account beschikbaar</string>
+    <string name="problem_no_account_text">XTA heeft minstens één 𝕏-account nodig om te werken. Voeg een account toe om te beginnen.</string>
+    <string name="problem_rate_limited_title">Beperkt door 𝕏</string>
+    <string name="problem_rate_limited_text">Je hebt te veel verzoeken in te korte tijd gedaan. Probeer het later opnieuw of voeg een ander account toe om XTA te blijven gebruiken.</string>
+    <string name="problem_no_working_account_title">Je accounts werken niet</string>
+    <string name="problem_no_working_account_text">Het lijkt erop dat geen van je accounts op dit moment werkt. Log in met een ander account of probeer het later opnieuw.</string>
+    <string name="problem_endpoint_refused_title">𝕏 heeft dit verzoek geweigerd</string>
+    <string name="problem_endpoint_refused_text">Alle accounts werden geweigerd op dit deel van 𝕏, dus het ligt waarschijnlijk niet aan je accounts. 𝕏 heeft vermoedelijk iets gewijzigd; de app herstelt zichzelf zodra dat kan. Probeer het zo meteen opnieuw.</string>
+    <string name="problem_signing_title">Ondertekening van X-verzoeken is niet beschikbaar</string>
+    <string name="problem_signing_text">XTA kon het transactietoken dat X nu vereist niet afleiden. Je accounts zijn mogelijk nog in orde; probeer het zo opnieuw of bekijk Diagnose.</string>
+    <string name="problem_offline_title">Kon geen contact met X krijgen</string>
+    <string name="problem_offline_text">Controleer je internetverbinding.</string>
+    <string name="problem_timed_out_title">Time-out</string>
+    <string name="problem_timed_out_text">Laden duurde te lang. Controleer je internetverbinding!</string>
+    <string name="problem_service_unavailable_title">X is tijdelijk niet beschikbaar</string>
+    <string name="problem_service_unavailable_text">X gaf een serverfout. Je kunt de berichten in de cache blijven lezen en het later opnieuw proberen.</string>
+    <string name="problem_request_unavailable_title">Dit verzoek is niet beschikbaar</string>
+    <string name="problem_request_unavailable_text">X heeft dit verzoek afgewezen. Het is mogelijk tijdelijk niet beschikbaar, of dit deel van de dienst is veranderd.</string>
+    <string name="problem_oops">Oeps! Er ging iets mis 🥲</string>
+    <string name="problem_http_text">X gaf HTTP %1$d terug.</string>
+    <string name="problem_retry_in">Opnieuw proberen over %1$s</string>
+    <string name="close_app_confirm">Weet je zeker dat je XTA wilt sluiten?</string>
+</resources>

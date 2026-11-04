@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Read failures as XTA's full-page errors say them (lib/ui/errors.dart), and closing the app. -->
+<resources>
+    <string name="problem_no_account_title">지금 사용할 수 있는 계정이 없습니다</string>
+    <string name="problem_no_account_text">XTA를 사용하려면 𝕏 계정이 하나 이상 필요합니다. 계정을 추가하여 시작하세요.</string>
+    <string name="problem_rate_limited_title">𝕏의 요청 제한</string>
+    <string name="problem_rate_limited_text">너무 짧은 시간에 너무 많은 요청을 했습니다. 나중에 다시 시도하거나 다른 계정을 추가하여 XTA를 계속 사용하세요.</string>
+    <string name="problem_no_working_account_title">계정이 작동하지 않습니다</string>
+    <string name="problem_no_working_account_text">현재 어떤 계정도 작동하지 않는 것 같습니다. 다른 계정으로 로그인하거나 나중에 다시 시도하세요.</string>
+    <string name="problem_endpoint_refused_title">𝕏 가 이 요청을 거부했습니다</string>
+    <string name="problem_endpoint_refused_text">𝕏 의 이 부분에서 모든 계정이 거부되었으므로 계정 문제일 가능성은 낮습니다. 𝕏 가 무언가를 바꾼 것으로 보이며, 앱은 가능해지는 대로 스스로 복구합니다. 잠시 후 다시 시도해 주세요.</string>
+    <string name="problem_signing_title">X 요청 서명을 사용할 수 없습니다</string>
+    <string name="problem_signing_text">XTA가 X가 현재 요구하는 트랜잭션 토큰을 만들지 못했습니다. 계정은 문제없을 수 있습니다. 잠시 후 다시 시도하거나 진단을 확인하세요.</string>
+    <string name="problem_offline_title">X에 연결할 수 없습니다</string>
+    <string name="problem_offline_text">인터넷 연결을 확인하세요.</string>
+    <string name="problem_timed_out_title">시간 초과</string>
+    <string name="problem_timed_out_text">로드하는 데 너무 오래 걸렸습니다. 네트워크 연결을 확인하세요!</string>
+    <string name="problem_service_unavailable_title">X를 일시적으로 사용할 수 없습니다</string>
+    <string name="problem_service_unavailable_text">X가 서버 오류를 반환했습니다. 캐시된 게시물을 계속 읽다가 나중에 다시 시도할 수 있습니다.</string>
+    <string name="problem_request_unavailable_title">이 요청은 사용할 수 없습니다</string>
+    <string name="problem_request_unavailable_text">X가 이 요청을 거부했습니다. 일시적으로 사용할 수 없거나 서비스의 이 부분이 바뀌었을 수 있습니다.</string>
+    <string name="problem_oops">이런! 문제가 발생했습니다 🥲</string>
+    <string name="problem_http_text">X가 HTTP %1$d을(를) 반환했습니다.</string>
+    <string name="problem_retry_in">%1$s 후 다시 시도</string>
+    <string name="close_app_confirm">XTA를 닫으시겠습니까?</string>
+</resources>

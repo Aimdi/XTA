@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Read failures as XTA's full-page errors say them (lib/ui/errors.dart), and closing the app. -->
+<resources>
+    <string name="problem_no_account_title">Derzeit kein Konto verfügbar</string>
+    <string name="problem_no_account_text">XTA benötigt mindestens ein 𝕏-Konto, um zu funktionieren. Füge ein Konto hinzu, um loszulegen.</string>
+    <string name="problem_rate_limited_title">Von 𝕏 ausgebremst</string>
+    <string name="problem_rate_limited_text">Du hast in zu kurzer Zeit zu viele Anfragen gesendet. Versuche es später erneut oder füge ein weiteres Konto hinzu, um XTA weiterhin zu nutzen.</string>
+    <string name="problem_no_working_account_title">Deine Konten funktionieren nicht</string>
+    <string name="problem_no_working_account_text">Anscheinend funktioniert gerade keines deiner Konten. Melde dich mit einem anderen Konto an oder versuche es später erneut.</string>
+    <string name="problem_endpoint_refused_title">𝕏 hat diese Anfrage abgewiesen</string>
+    <string name="problem_endpoint_refused_text">In diesem Teil von 𝕏 wurden alle Konten abgewiesen, es liegt also vermutlich nicht an deinen Konten. Wahrscheinlich hat 𝕏 etwas geändert; die App repariert sich selbst, sobald sie kann. Versuch es gleich noch einmal.</string>
+    <string name="problem_signing_title">Signieren der X-Anfragen nicht möglich</string>
+    <string name="problem_signing_text">XTA konnte das Transaktions-Token, das X gerade verlangt, nicht ableiten. Deine Konten sind womöglich in Ordnung; versuch es gleich noch einmal oder sieh in der Diagnose nach.</string>
+    <string name="problem_offline_title">Es konnte keine Verbindung zu X aufgebaut werden</string>
+    <string name="problem_offline_text">Bitte überprüfe deine Internetverbindung.</string>
+    <string name="problem_timed_out_title">Zeit abgelaufen</string>
+    <string name="problem_timed_out_text">Das Laden hat zu lange gedauert. Überprüfe deine Internetverbindung!</string>
+    <string name="problem_service_unavailable_title">X ist vorübergehend nicht erreichbar</string>
+    <string name="problem_service_unavailable_text">X hat einen Serverfehler gemeldet. Du kannst die zwischengespeicherten Beiträge weiterlesen und es später erneut versuchen.</string>
+    <string name="problem_request_unavailable_title">Diese Anfrage ist nicht verfügbar</string>
+    <string name="problem_request_unavailable_text">X hat diese Anfrage abgelehnt. Sie ist vielleicht vorübergehend nicht verfügbar, oder dieser Teil des Dienstes hat sich geändert.</string>
+    <string name="problem_oops">Oh nein! Ein Fehler ist aufgetreten 🥲</string>
+    <string name="problem_http_text">X hat HTTP %1$d zurückgegeben.</string>
+    <string name="problem_retry_in">Erneut versuchen in %1$s</string>
+    <string name="close_app_confirm">Willst du XTA wirklich schließen?</string>
+</resources>

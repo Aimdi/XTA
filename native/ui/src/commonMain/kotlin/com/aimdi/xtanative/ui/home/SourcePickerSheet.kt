@@ -41,12 +41,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.onLongClick
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.backup.FollowGroup
+import com.aimdi.xtanative.ui.common.longPressOver
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.close
 import com.aimdi.xtanative.ui.generated.resources.home_alt_microblogging
@@ -57,6 +59,7 @@ import com.aimdi.xtanative.ui.generated.resources.home_no_results
 import com.aimdi.xtanative.ui.generated.resources.home_open_menu
 import com.aimdi.xtanative.ui.generated.resources.home_unread
 import com.aimdi.xtanative.ui.generated.resources.search
+import com.aimdi.xtanative.ui.generated.resources.settings_avatar_title
 import com.aimdi.xtanative.ui.subscriptions.GroupMark
 import org.jetbrains.compose.resources.stringResource
 
@@ -67,6 +70,8 @@ internal class PickerCalls(
     val onAdd: () -> Unit,
     val onMenu: () -> Unit,
     val onDismiss: () -> Unit,
+    /** A long press of the way to the menu: the sheet that sets the reader's mark, as XTA's picker offers it. */
+    val onAvatar: () -> Unit = {},
 )
 
 /** A row of the picker's timelines: one timeline, or Mastodon, Bluesky and Threads as one entry. */
@@ -140,7 +145,11 @@ internal fun SourcePickerSheet(ui: HomeUi, networks: HomeNetworks, shownKey: Str
                 Spacer(Modifier.width(8.dp))
                 Text(stringResource(Res.string.home_add_timeline))
             }
-            TextButton(onClick = calls.onMenu, modifier = Modifier.padding(horizontal = 16.dp)) {
+            val avatar = stringResource(Res.string.settings_avatar_title)
+            TextButton(
+                onClick = calls.onMenu,
+                modifier = Modifier.padding(horizontal = 16.dp).longPressOver { calls.onAvatar() }.semantics { onLongClick(avatar) { calls.onAvatar(); true } },
+            ) {
                 Icon(Icons.Filled.Menu, contentDescription = null)
                 Spacer(Modifier.width(8.dp))
                 Text(stringResource(Res.string.home_open_menu))

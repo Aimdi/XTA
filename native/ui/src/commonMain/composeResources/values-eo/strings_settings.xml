@@ -346,11 +346,11 @@
     <string name="settings_crash_keep">Konservi raportojn pri paneoj en ĉi tiu aparato</string>
     <string name="settings_crash_keep_description">Kiam XTA Native haltas pro eraro, raporto pri ĝi estas skribita en ĉi tiu aparato kaj sendata nenien. Malŝaltita defaŭlte.</string>
     <string name="settings_crash_none">Neniu konservita raporto pri paneo</string>
-    <string name="settings_image_cache_size">%1$s en ĉi tiu aparato.</string>
+    <string name="settings_image_cache_size">%1$s en ĉi tiu aparato. Bildoj pli malnovaj ol %2$d tagoj foriĝas memstare.</string>
     <string name="settings_move_up">Movi supren</string>
     <string name="settings_move_down">Movi malsupren</string>
     <string name="intro_device_footnote">Raportoj pri paneoj restas malŝaltitaj ĝis vi ŝaltas ilin en la agordoj, kaj neniam forlasas ĉi tiun aparaton.</string>
-    <string name="intro_account_body">XTA Native legas X per la kontoj, kiujn vi jam uzas en XTA: importu la sekurkopion de XTA por transporti ilin. Vi ankaŭ povas komenci sen konto.</string>
+    <string name="intro_account_body">XTA ensalutas nur por legi. Kiun konton vi uzas, ne ŝanĝas tion, kion vi vidas — kaj vi povas komenci sen konto.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">Petlimo atingita ĉe %1$d finpunkto</item>
         <item quantity="other">Petlimo atingita ĉe %1$d finpunktoj</item>

@@ -23,7 +23,6 @@
     <string name="ago_minutes">%1$d分鐘</string>
     <string name="ago_hours">%1$d小時</string>
 
-    <string name="problem_no_account">沒有 X 帳號。請匯入含有帳號的 XTA 備份。</string>
     <string name="problem_rate_limited">X 正在限制這裡的所有帳號。請幾分鐘後再試。</string>
     <string name="problem_offline">無法連線到 X。</string>
     <string name="problem_signing">無法準備 X 請求的簽章。請稍後再試。</string>

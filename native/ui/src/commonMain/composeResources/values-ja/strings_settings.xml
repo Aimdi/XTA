@@ -346,11 +346,11 @@
     <string name="settings_crash_keep">クラッシュレポートをこの端末に保存</string>
     <string name="settings_crash_keep_description">XTA Native がエラーで停止すると、そのレポートがこの端末に書き込まれ、どこにも送信されません。初期設定ではオフです。</string>
     <string name="settings_crash_none">保存されたクラッシュレポートはありません</string>
-    <string name="settings_image_cache_size">この端末で %1$s。</string>
+    <string name="settings_image_cache_size">この端末で %1$s。%2$d 日より古い画像は自動的に削除されます。</string>
     <string name="settings_move_up">上へ移動</string>
     <string name="settings_move_down">下へ移動</string>
     <string name="intro_device_footnote">クラッシュレポートは設定でオンにするまでオフのままで、この端末から出ることはありません。</string>
-    <string name="intro_account_body">XTA Native は、XTA ですでに使っているアカウントで X を読みます。XTA のバックアップをインポートして移してください。アカウントなしで始めることもできます。</string>
+    <string name="intro_account_body">XTA は読むためだけにログインします。どのアカウントを使っても表示内容は変わりません — アカウントなしで始めることもできます。</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="other">%1$d 件のエンドポイントでレート制限中</item>
     </plurals>

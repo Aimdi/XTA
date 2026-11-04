@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Read failures as XTA's full-page errors say them (lib/ui/errors.dart), and closing the app. -->
+<resources>
+    <string name="problem_no_account_title">Зараз немає доступних облікових записів</string>
+    <string name="problem_no_account_text">Для роботи XTA потрібен принаймні один обліковий запис 𝕏. Додайте обліковий запис, щоб почати.</string>
+    <string name="problem_rate_limited_title">𝕏 обмежує запити</string>
+    <string name="problem_rate_limited_text">Ви надіслали забагато запитів за надто короткий час. Повторіть спробу пізніше або додайте інший обліковий запис, щоб продовжити користуватися XTA.</string>
+    <string name="problem_no_working_account_title">Ваші облікові записи не працюють</string>
+    <string name="problem_no_working_account_text">Схоже, жоден із ваших облікових записів зараз не працює. Увійдіть з іншим обліковим записом або повторіть спробу пізніше.</string>
+    <string name="problem_endpoint_refused_title">𝕏 відхилив цей запит</string>
+    <string name="problem_endpoint_refused_text">У цій частині 𝕏 відхилено всі облікові записи, тож річ навряд чи в них. Найімовірніше, 𝕏 щось змінив; застосунок лагодить себе сам, щойно зможе. Спробуйте ще раз трохи згодом.</string>
+    <string name="problem_signing_title">Підпис запитів до X недоступний</string>
+    <string name="problem_signing_text">XTA не вдалося отримати токен транзакції, якого зараз вимагає X. З вашими обліковими записами все може бути гаразд; спробуйте трохи згодом або загляньте в «Діагностику».</string>
+    <string name="problem_offline_title">Не вдалося зв'язатися з X</string>
+    <string name="problem_offline_text">Будь ласка, перевірте ваше інтернет-з'єднання.</string>
+    <string name="problem_timed_out_title">Час очікування вичерпано</string>
+    <string name="problem_timed_out_text">Завантаження зайняло надто довго. Будь ласка, перевірте ваше мережеве з'єднання!</string>
+    <string name="problem_service_unavailable_title">X тимчасово недоступний</string>
+    <string name="problem_service_unavailable_text">X повернув помилку сервера. Можна читати дописи з кешу й повторити спробу пізніше.</string>
+    <string name="problem_request_unavailable_title">Цей запит недоступний</string>
+    <string name="problem_request_unavailable_text">X відхилив цей запит. Можливо, він тимчасово недоступний або ця частина сервісу змінилася.</string>
+    <string name="problem_oops">Ой! Щось пішло не так 🥲</string>
+    <string name="problem_http_text">X повернув HTTP %1$d.</string>
+    <string name="problem_retry_in">Повторити через %1$s</string>
+    <string name="close_app_confirm">Ви впевнені, що хочете закрити XTA?</string>
+</resources>

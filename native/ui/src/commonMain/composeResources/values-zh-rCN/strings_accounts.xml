@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Accounts' avatar and Diagnostics' account health and recent reads, in XTA's words. -->
+<resources>
+    <string name="settings_avatar_title">你的头像</string>
+    <string name="settings_avatar_change">点按以更改左上角图片</string>
+    <string name="settings_avatar_description">显示在左上角和侧栏的图片 — 仅保存在此设备</string>
+    <string name="settings_avatar_choose">从设备选择</string>
+    <string name="settings_avatar_from_account">使用 X 头像</string>
+    <string name="settings_avatar_error">无法加载该头像</string>
+    <string name="settings_avatar_clear">改用字母头像</string>
+    <string name="settings_diagnostics_recent_reads">最近的读取操作</string>
+    <string name="settings_diagnostics_sign_in_broken">登录似乎已失效，暂停至 %1$s</string>
+</resources>

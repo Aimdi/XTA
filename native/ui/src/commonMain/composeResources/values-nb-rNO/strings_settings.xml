@@ -346,11 +346,11 @@
     <string name="settings_crash_keep">Behold krasjrapporter på denne enheten</string>
     <string name="settings_crash_keep_description">Når XTA Native stopper på grunn av en feil, skrives en rapport om det på denne enheten, og den sendes ingen steder. Av som standard.</string>
     <string name="settings_crash_none">Ingen krasjrapporter lagret</string>
-    <string name="settings_image_cache_size">%1$s på denne enheten.</string>
+    <string name="settings_image_cache_size">%1$s på denne enheten. Bilder eldre enn %2$d dager fjernes automatisk.</string>
     <string name="settings_move_up">Flytt opp</string>
     <string name="settings_move_down">Flytt ned</string>
     <string name="intro_device_footnote">Krasjrapporter er av til du slår dem på i innstillingene, og de forlater aldri denne enheten.</string>
-    <string name="intro_account_body">XTA Native leser X med kontoene du allerede bruker i XTA: importer sikkerhetskopien fra XTA for å ta dem med. Du kan også starte uten.</string>
+    <string name="intro_account_body">XTA logger bare inn for å lese. Hvilken konto du bruker endrer ikke hva du ser — og du kan starte uten.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">Forespørselsgrense nådd på %1$d endepunkt</item>
         <item quantity="other">Forespørselsgrense nådd på %1$d endepunkter</item>

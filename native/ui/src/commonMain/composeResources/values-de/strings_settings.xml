@@ -346,11 +346,11 @@
     <string name="settings_crash_keep">Absturzberichte auf diesem Gerät behalten</string>
     <string name="settings_crash_keep_description">Wenn XTA Native wegen eines Fehlers stoppt, wird ein Bericht darüber auf diesem Gerät festgehalten und nirgendwohin gesendet. Standardmäßig aus.</string>
     <string name="settings_crash_none">Kein Absturzbericht gespeichert</string>
-    <string name="settings_image_cache_size">%1$s auf diesem Gerät.</string>
+    <string name="settings_image_cache_size">%1$s auf diesem Gerät. Bilder, die älter als %2$d Tage sind, werden automatisch entfernt.</string>
     <string name="settings_move_up">Nach oben</string>
     <string name="settings_move_down">Nach unten</string>
     <string name="intro_device_footnote">Absturzberichte bleiben aus, bis du sie in den Einstellungen einschaltest, und verlassen dieses Gerät nie.</string>
-    <string name="intro_account_body">XTA Native liest X mit den Konten, die du schon in XTA nutzt: Importiere die Sicherung von XTA, um sie mitzunehmen. Du kannst auch ohne starten.</string>
+    <string name="intro_account_body">XTA meldet sich nur zum Lesen an. Welches Konto du nimmst, ändert nichts an dem, was du siehst — du kannst auch ohne starten.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">Anfragelimit an %1$d Endpunkt erreicht</item>
         <item quantity="other">Anfragelimit an %1$d Endpunkten erreicht</item>

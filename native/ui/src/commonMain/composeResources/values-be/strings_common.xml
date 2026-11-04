@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Read failures as XTA's full-page errors say them (lib/ui/errors.dart), and closing the app. -->
+<resources>
+    <string name="problem_no_account_title">Зараз няма даступнага акаўнта</string>
+    <string name="problem_no_account_text">XTA патрабуе хаця б адзін акаўнт 𝕏, каб працаваць. Дадайце акаўнт, каб пачаць.</string>
+    <string name="problem_rate_limited_title">𝕏 абмежаваў частату запытаў</string>
+    <string name="problem_rate_limited_text">Вы зрабілі занадта шмат запытаў за кароткі час. Паспрабуйце пазней або дадайце іншы акаўнт, каб працягваць карыстацца XTA.</string>
+    <string name="problem_no_working_account_title">Вашы акаўнты не працуюць</string>
+    <string name="problem_no_working_account_text">Здаецца, ні адзін з вашых акаўнтаў зараз не працуе. Увайдзіце з іншым акаўнтам або паспрабуйце пазней.</string>
+    <string name="problem_endpoint_refused_title">𝕏 адхіліў гэты запыт</string>
+    <string name="problem_endpoint_refused_text">Усе ўліковыя запісы атрымалі адмову ў гэтай частцы 𝕏, таму справа наўрад ці ў іх. Хутчэй за ўсё 𝕏 нешта змяніў; праграма выпраўляецца сама, калі можа. Паспрабуйце праз хвіліну.</string>
+    <string name="problem_signing_title">Подпіс запытаў да X недаступны</string>
+    <string name="problem_signing_text">XTA не змог вывесці токен транзакцыі, якога цяпер патрабуе X. З вашымі ўліковымі запісамі ўсё можа быць у парадку; паспрабуйце крыху пазней або зазірніце ў Дыягностыку.</string>
+    <string name="problem_offline_title">Не атрымоўваецца звязацца з X</string>
+    <string name="problem_offline_text">Калі ласка, праверце вашае сеткавае падлучэнне.</string>
+    <string name="problem_timed_out_title">Час выйшаў</string>
+    <string name="problem_timed_out_text">Загрузка заняла зашмат часу. Калі ласка, праверце ваша сеткавае падключэнне!</string>
+    <string name="problem_service_unavailable_title">X часова недаступны</string>
+    <string name="problem_service_unavailable_text">X вярнуў памылку сервера. Можна чытаць допісы з кэша і паспрабаваць пазней.</string>
+    <string name="problem_request_unavailable_title">Гэты запыт недаступны</string>
+    <string name="problem_request_unavailable_text">X адхіліў гэты запыт. Магчыма, ён часова недаступны, або гэтая частка сэрвісу змянілася.</string>
+    <string name="problem_oops">Ой! Нешта пайшло не так 🥲</string>
+    <string name="problem_http_text">X вярнуў HTTP %1$d.</string>
+    <string name="problem_retry_in">Паўтарыць праз %1$s</string>
+    <string name="close_app_confirm">Вы сапраўды хочаце закрыць XTA?</string>
+</resources>

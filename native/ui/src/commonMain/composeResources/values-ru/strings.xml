@@ -23,7 +23,6 @@
     <string name="ago_minutes">%1$d мин</string>
     <string name="ago_hours">%1$d ч</string>
 
-    <string name="problem_no_account">Нет аккаунта X. Импортируйте резервную копию XTA с её аккаунтами.</string>
     <string name="problem_rate_limited">X ограничивает здесь все аккаунты. Повторите через несколько минут.</string>
     <string name="problem_offline">Нет соединения с X.</string>
     <string name="problem_signing">Не удалось настроить подпись запросов к X. Повторите чуть позже.</string>

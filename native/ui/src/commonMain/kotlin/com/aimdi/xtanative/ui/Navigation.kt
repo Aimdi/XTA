@@ -33,6 +33,8 @@ import com.aimdi.xtanative.ui.antenna.AntennasScreen
 import com.aimdi.xtanative.ui.archive.ArchiveScreen
 import com.aimdi.xtanative.ui.article.ArticleScreen
 import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.LocalProblemActions
+import com.aimdi.xtanative.ui.common.ProblemActions
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.community.CommunityMembersScreen
 import com.aimdi.xtanative.ui.community.CommunityScreen
@@ -82,8 +84,10 @@ import com.aimdi.xtanative.ui.search.SearchTab
 import com.aimdi.xtanative.ui.settings.AttachPluginBackups
 import com.aimdi.xtanative.ui.settings.BackupScreen
 import com.aimdi.xtanative.ui.settings.SettingsRoutes
+import com.aimdi.xtanative.ui.settings.SettingsSection
 import com.aimdi.xtanative.ui.settings.SettingsScreen
 import com.aimdi.xtanative.ui.settings.SettingsSectionScreen
+import com.aimdi.xtanative.ui.signin.SignInScreen
 import com.aimdi.xtanative.ui.speech.LocalSpeech
 import com.aimdi.xtanative.ui.speech.VoiceSettingsScreen
 import com.aimdi.xtanative.ui.subscriptions.ImportFollowingScreen
@@ -99,6 +103,7 @@ import java.net.URLEncoder
 private object Routes {
     const val ROOT = "root"
     const val IMPORT = "import"
+    const val SIGN_IN = SettingsRoutes.SIGN_IN
     const val HOME = "home"
     const val DECK = "deck"
     const val POST = "post/{id}?media={media}"
@@ -288,7 +293,11 @@ fun XtaNativeRoot() {
 
     // A grid's tiles open the viewer over everything it has loaded (media_grid_lightbox.dart).
     val galleries = remember(nav) { { gallery: MediaGallery, at: Int -> nav.navigate(Routes.gallery(Galleries.put(gallery), at, gallery.pages().getOrNull(at))) } }
-    CompositionLocalProvider(LocalGalleryOpener provides galleries) {
+    // A read failure's Add account opens the sign-in, and its Diagnostics the settings page.
+    val problems = remember(nav) {
+        ProblemActions(addAccount = { nav.navigate(Routes.SIGN_IN) }, diagnostics = { nav.navigate(SettingsRoutes.of(SettingsSection.DIAGNOSTICS)) })
+    }
+    CompositionLocalProvider(LocalGalleryOpener provides galleries, LocalProblemActions provides problems) {
         DesktopNavigation(nav) { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes)) }
     }
 }
@@ -324,11 +333,20 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
         popExitTransition = motion.popExit,
     ) {
         composable(Routes.IMPORT) {
-            ImportScreen(onImported = {
-                // A restored backup is a returning reader's: the first-launch cards are done.
-                graph.keep { graph.settings.update(IntroFlow::finished) }
-                nav.startOver(Routes.HOME)
-            })
+            ImportScreen(
+                onImported = {
+                    // A restored backup is a returning reader's: the first-launch cards are done.
+                    graph.keep { graph.settings.update(IntroFlow::finished) }
+                    nav.startOver(Routes.HOME)
+                },
+                onSignIn = { nav.navigate(Routes.SIGN_IN) },
+            )
+        }
+        composable(Routes.SIGN_IN) {
+            SignInScreen(
+                onBack = { nav.popBackStack() },
+                onImportFollowing = { nav.navigate(Routes.SUBSCRIPTIONS_IMPORT) { popUpTo(Routes.SIGN_IN) { inclusive = true } } },
+            )
         }
         composable(Routes.INTRO) {
             IntroScreen(

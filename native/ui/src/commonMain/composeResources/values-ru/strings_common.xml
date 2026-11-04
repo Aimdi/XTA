@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Read failures as XTA's full-page errors say them (lib/ui/errors.dart), and closing the app. -->
+<resources>
+    <string name="problem_no_account_title">Сейчас нет доступных аккаунтов</string>
+    <string name="problem_no_account_text">Для работы XTA нужен хотя бы один аккаунт 𝕏. Добавьте аккаунт, чтобы начать.</string>
+    <string name="problem_rate_limited_title">𝕏 ограничивает запросы</string>
+    <string name="problem_rate_limited_text">Вы отправили слишком много запросов за слишком короткое время. Повторите попытку позже или добавьте другой аккаунт, чтобы продолжить пользоваться XTA.</string>
+    <string name="problem_no_working_account_title">Ваши аккаунты не работают</string>
+    <string name="problem_no_working_account_text">Похоже, ни один из ваших аккаунтов сейчас не работает. Войдите с другим аккаунтом или повторите попытку позже.</string>
+    <string name="problem_endpoint_refused_title">𝕏 отклонил этот запрос</string>
+    <string name="problem_endpoint_refused_text">В этой части 𝕏 отклонены все аккаунты, так что дело вряд ли в них. Скорее всего, 𝕏 что-то изменил; приложение чинится само, как только может. Попробуйте ещё раз чуть позже.</string>
+    <string name="problem_signing_title">Подпись запросов к X недоступна</string>
+    <string name="problem_signing_text">XTA не удалось получить токен транзакции, который сейчас требует X. С вашими аккаунтами всё может быть в порядке; повторите попытку чуть позже или загляните в «Диагностику».</string>
+    <string name="problem_offline_title">Не удаётся связаться с X</string>
+    <string name="problem_offline_text">Пожалуйста, проверьте ваше сетевое подключение.</string>
+    <string name="problem_timed_out_title">Время вышло</string>
+    <string name="problem_timed_out_text">Загрузка заняла слишком много времени. Пожалуйста, проверьте ваше сетевое подключение!</string>
+    <string name="problem_service_unavailable_title">X временно недоступен</string>
+    <string name="problem_service_unavailable_text">X вернул ошибку сервера. Можно читать посты из кэша и повторить попытку позже.</string>
+    <string name="problem_request_unavailable_title">Этот запрос недоступен</string>
+    <string name="problem_request_unavailable_text">X отклонил этот запрос. Возможно, он временно недоступен или эта часть сервиса изменилась.</string>
+    <string name="problem_oops">Ой! Что-то пошло не так 🥲</string>
+    <string name="problem_http_text">X вернул HTTP %1$d.</string>
+    <string name="problem_retry_in">Повторить через %1$s</string>
+    <string name="close_app_confirm">Вы действительно хотите закрыть XTA?</string>
+</resources>

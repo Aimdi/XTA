@@ -62,12 +62,13 @@ import com.aimdi.xtanative.ui.group.GroupFeedScreen
 import com.aimdi.xtanative.ui.group.groupFeedViewModel
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.search.LoadedFeedSearchScreen
+import com.aimdi.xtanative.ui.settings.AvatarSheet
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
 /** The sheets Home opens over itself. */
-internal enum class HomeSheet { FILTER, STRIP, PICKER, NETWORKS, FOLLOWING_FILTERS }
+internal enum class HomeSheet { FILTER, STRIP, PICKER, NETWORKS, FOLLOWING_FILTERS, AVATAR }
 
 /** What opens over all of Home, its bar included: the search of a timeline's loaded posts, Following's Custom rules. */
 internal enum class HomeLayer { LOADED_SEARCH, FOLLOWING_CUSTOM }
@@ -236,6 +237,7 @@ private fun HomeDrawer(parts: HomeParts, shell: HomeShellState, deckFits: Boolea
                     onGo = ::go,
                     onGroup = { group -> openGroup(group, parts.routes, shell.drawer, scope) },
                     onClose = { scope.launch { shell.drawer.close() } },
+                    onAvatar = { shell.sheet = HomeSheet.AVATAR },
                 )
             }
         },
@@ -462,6 +464,7 @@ private fun HomeSheets(parts: HomeParts, shell: HomeShellState, following: Follo
                     close()
                     scope.launch { shell.drawer.open() }
                 },
+                onAvatar = { shell.sheet = HomeSheet.AVATAR },
                 onDismiss = close,
             ),
         )
@@ -484,6 +487,7 @@ private fun HomeSheets(parts: HomeParts, shell: HomeShellState, following: Follo
                 shell.layer = HomeLayer.FOLLOWING_CUSTOM
             }, onDismiss = close, following = true)
         }
+        HomeSheet.AVATAR -> AvatarSheet(onDismiss = close)
         null -> Unit
     }
 }

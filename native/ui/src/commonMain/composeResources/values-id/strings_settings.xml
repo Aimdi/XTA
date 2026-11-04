@@ -346,11 +346,11 @@
     <string name="settings_crash_keep">Simpan laporan galat di perangkat ini</string>
     <string name="settings_crash_keep_description">Saat XTA Native berhenti karena galat, laporannya ditulis di perangkat ini dan tidak dikirim ke mana pun. Nonaktif secara bawaan.</string>
     <string name="settings_crash_none">Tidak ada laporan galat yang disimpan</string>
-    <string name="settings_image_cache_size">%1$s di perangkat ini.</string>
+    <string name="settings_image_cache_size">%1$s di perangkat ini. Gambar yang lebih lama dari %2$d hari dihapus otomatis.</string>
     <string name="settings_move_up">Pindah ke atas</string>
     <string name="settings_move_down">Pindah ke bawah</string>
     <string name="intro_device_footnote">Laporan galat tetap nonaktif sampai Anda mengaktifkannya di Pengaturan, dan tidak pernah meninggalkan perangkat ini.</string>
-    <string name="intro_account_body">XTA Native membaca X dengan akun yang sudah Anda pakai di XTA: impor cadangan XTA untuk membawanya. Anda juga bisa mulai tanpa akun.</string>
+    <string name="intro_account_body">XTA masuk hanya untuk membaca. Akun mana pun yang dipakai tidak mengubah apa yang Anda lihat — dan Anda bisa mulai tanpa akun.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="other">Batas permintaan tercapai di %1$d endpoint</item>
     </plurals>

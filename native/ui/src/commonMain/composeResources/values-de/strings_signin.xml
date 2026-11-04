@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Signing in to X as XTA does (lib/client/login_webview.dart, x_cookie_login.dart). -->
+<resources>
+    <string name="signin_add_account">Konto hinzufügen</string>
+    <string name="signin_logging_in_title">Anmeldung bei XTA</string>
+    <string name="signin_logging_in_text">Mit welchem Konto du dich anmeldest, ändert nichts an dem, was du siehst. Abos, Gruppen und gespeicherte Beiträge bleiben auf diesem Gerät und rühren dein echtes Konto nicht an. XTA meldet sich nur zum Lesen an — Liken, Teilen und Antworten kann es nicht.\n\nDu kannst mehrere Konten hinterlegen. XTA nimmt eines, das für den benötigten Endpunkt kein Limit erreicht hat und sich nicht gerade nicht anmelden konnte. Genau das hält „Zu viele Anfragen“ fern.</string>
+    <string name="signin_import_title">Abonnements importieren</string>
+    <string name="signin_import_text">Abos gibt es nur lokal in XTA. Sie sind unabhängig von den Abos deines echten X-Kontos. Die Anmeldung ändert nichts an deinen Abos in XTA.\n\nMöchtest du die Abos von @%1$s in XTA importieren?</string>
+    <string name="signin_cookie_help">Melde dich im Browser bei x.com an, öffne die Entwicklertools (F12) und kopiere die Cookies auth_token und ct0 unter Speicher → Cookies. Füge sie unten als auth_token=…; ct0=… ein. Sie bleiben nur auf diesem Computer und werden nie weitergegeben.</string>
+    <string name="signin_open_in_browser">Im Browser öffnen</string>
+    <string name="signin_username">Nutzername</string>
+    <string name="signin_cookies">Cookies von x.com</string>
+</resources>

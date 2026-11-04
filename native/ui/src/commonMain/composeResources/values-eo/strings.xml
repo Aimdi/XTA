@@ -23,7 +23,6 @@
     <string name="ago_minutes">%1$d min</string>
     <string name="ago_hours">%1$d h</string>
 
-    <string name="problem_no_account">Neniu X-konto. Importu la savkopion de XTA kun ĝiaj kontoj.</string>
     <string name="problem_rate_limited">X limigas ĉiun konton ĉi tie. Reprovu post kelkaj minutoj.</string>
     <string name="problem_offline">Neniu konekto al X.</string>
     <string name="problem_signing">Ne eblis prepari la subskribadon de petoj al X. Reprovu post momento.</string>

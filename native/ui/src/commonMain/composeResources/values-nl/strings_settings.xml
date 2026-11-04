@@ -346,11 +346,11 @@
     <string name="settings_crash_keep">Crashrapporten op dit apparaat bewaren</string>
     <string name="settings_crash_keep_description">Als XTA Native door een fout stopt, wordt er een rapport van op dit apparaat geschreven dat nergens heen wordt gestuurd. Standaard uit.</string>
     <string name="settings_crash_none">Geen crashrapporten bewaard</string>
-    <string name="settings_image_cache_size">%1$s op dit apparaat.</string>
+    <string name="settings_image_cache_size">%1$s op dit apparaat. Afbeeldingen ouder dan %2$d dagen worden vanzelf verwijderd.</string>
     <string name="settings_move_up">Omhoog</string>
     <string name="settings_move_down">Omlaag</string>
     <string name="intro_device_footnote">Crashrapporten blijven uit tot je ze in de instellingen aanzet, en verlaten dit apparaat nooit.</string>
-    <string name="intro_account_body">XTA Native leest X met de accounts die je al in XTA gebruikt: importeer de back-up van XTA om ze mee te nemen. Je kunt ook zonder beginnen.</string>
+    <string name="intro_account_body">XTA logt alleen in om te lezen. Welk account je gebruikt, verandert niets aan wat je ziet — en je kunt ook zonder beginnen.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">Verzoeklimiet bereikt op %1$d endpoint</item>
         <item quantity="other">Verzoeklimiet bereikt op %1$d endpoints</item>

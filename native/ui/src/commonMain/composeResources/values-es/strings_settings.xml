@@ -346,11 +346,11 @@
     <string name="settings_crash_keep">Guardar informes de fallos en este dispositivo</string>
     <string name="settings_crash_keep_description">Cuando XTA Native se detiene por un error, se escribe un informe en este dispositivo y no se envía a ningún sitio. Desactivado de forma predeterminada.</string>
     <string name="settings_crash_none">No hay informes de fallos guardados</string>
-    <string name="settings_image_cache_size">%1$s en este dispositivo.</string>
+    <string name="settings_image_cache_size">%1$s en este dispositivo. Las imágenes de hace más de %2$d días se eliminan solas.</string>
     <string name="settings_move_up">Subir</string>
     <string name="settings_move_down">Bajar</string>
     <string name="intro_device_footnote">Los informes de fallos siguen desactivados hasta que los actives en la configuración, y nunca salen de este dispositivo.</string>
-    <string name="intro_account_body">XTA Native lee X con las cuentas que ya usas en XTA: importa la copia de seguridad de XTA para traerlas. También puedes empezar sin ninguna.</string>
+    <string name="intro_account_body">XTA solo inicia sesión para leer. La cuenta que uses no cambia lo que ves, y puedes empezar sin ninguna.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">Límite de peticiones en %1$d punto de acceso</item>
         <item quantity="many">Límite de peticiones en %1$d puntos de acceso</item>

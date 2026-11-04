@@ -1,6 +1,8 @@
 package com.aimdi.xtanative.ui.home
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -56,6 +58,7 @@ import com.aimdi.xtanative.ui.generated.resources.home_saved
 import com.aimdi.xtanative.ui.generated.resources.home_subscriptions
 import com.aimdi.xtanative.ui.generated.resources.search
 import com.aimdi.xtanative.ui.generated.resources.settings
+import com.aimdi.xtanative.ui.generated.resources.settings_avatar_title
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -74,13 +77,14 @@ internal fun AccountMenu(
     onGo: (String) -> Unit,
     onGroup: (FollowGroup) -> Unit,
     onClose: () -> Unit,
+    onAvatar: () -> Unit,
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     val groups = DrawerGroups.listed(ui.session.groups, ui.session.feedGroups, routes.exists(HomeRoutes.GROUP))
     val shown = DrawerGroups.matching(groups, query)
     LazyColumn(Modifier.fillMaxSize()) {
         item(key = "account") {
-            AccountHeader(ui.account, onClose = onClose, onSettings = { onGo(HomeDestination.SETTINGS.route) }.takeIf { routes.exists(HomeDestination.SETTINGS.route) })
+            AccountHeader(ui.account, onClose = onClose, onAvatar = onAvatar, onSettings = { onGo(HomeDestination.SETTINGS.route) }.takeIf { routes.exists(HomeDestination.SETTINGS.route) })
         }
         item(key = "buttons") {
             Row(Modifier.padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -120,13 +124,23 @@ internal fun AccountMenu(
     }
 }
 
-/** The account at the top: its mark, the app's name and the account's handle; a tap opens Settings, as in XTA. */
+/**
+ * The account at the top: its mark, the app's name and the account's handle;
+ * a tap opens Settings and a long press the sheet that sets the mark's
+ * picture, as in XTA.
+ */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun AccountHeader(account: XAccount?, onClose: () -> Unit, onSettings: (() -> Unit)?) {
+private fun AccountHeader(account: XAccount?, onClose: () -> Unit, onAvatar: () -> Unit, onSettings: (() -> Unit)?) {
     Column(
         Modifier
             .fillMaxWidth()
-            .let { if (onSettings != null) it.clickable(onClick = onSettings) else it }
+            .combinedClickable(
+                onClickLabel = stringResource(Res.string.settings),
+                onLongClickLabel = stringResource(Res.string.settings_avatar_title),
+                onLongClick = onAvatar,
+                onClick = { onSettings?.invoke() },
+            )
             .padding(start = 16.dp, top = 12.dp, end = 8.dp, bottom = 16.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {

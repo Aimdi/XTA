@@ -14,6 +14,7 @@ import com.aimdi.xtanative.ui.generated.resources.app_name
 import com.aimdi.xtanative.ui.links.LinksFrame
 import com.aimdi.xtanative.ui.media.VideoFullscreenFrame
 import com.aimdi.xtanative.ui.pluginstore.PluginsFrame
+import com.aimdi.xtanative.ui.settings.trimImageCache
 import com.aimdi.xtanative.ui.speech.SpeechBarScaffold
 import com.aimdi.xtanative.ui.theme.XtaTheme
 import org.jetbrains.compose.resources.stringResource
@@ -35,5 +36,5 @@ fun XtaNativeContent(graph: AppGraph, plugins: AppPlugins) {
 @Composable
 fun appName(): String = stringResource(Res.string.app_name)
 
-/** The one image loader of the process, which each shell installs: pictures fade in. */
-fun appImageLoader(context: PlatformContext): ImageLoader = ImageLoader.Builder(context).crossfade(true).build()
+/** The one image loader of the process, which each shell installs: pictures fade in, and those cached too long ago go. */
+fun appImageLoader(context: PlatformContext): ImageLoader = ImageLoader.Builder(context).crossfade(true).build().also(::trimImageCache)

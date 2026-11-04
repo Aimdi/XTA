@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Signing in to X as XTA does (lib/client/login_webview.dart, x_cookie_login.dart). -->
+<resources>
+    <string name="signin_add_account">계정 추가</string>
+    <string name="signin_logging_in_title">XTA에 로그인 중</string>
+    <string name="signin_logging_in_text">어떤 계정으로 로그인하든 보이는 내용은 달라지지 않습니다. 구독, 그룹, 저장한 게시물은 이 기기에 남고 실제 계정을 건드리지 않습니다. XTA는 읽기 위해서만 로그인합니다 — 좋아요, 리포스트, 답글은 할 수 없습니다.\n\n계정을 여러 개 추가할 수 있습니다. XTA는 필요한 엔드포인트에서 요청 한도에 걸리지 않았고 방금 로그인에 실패하지도 않은 계정을 고릅니다. 그것이 "요청이 너무 많습니다" 오류를 막아 줍니다.</string>
+    <string name="signin_import_title">구독 가져오기</string>
+    <string name="signin_import_text">구독은 XTA 안에만 있으며 실제 X 계정의 구독과는 별개입니다. 로그인해도 XTA 구독은 바뀌지 않습니다.\n\n@%1$s의 구독을 XTA로 가져올까요?</string>
+    <string name="signin_cookie_help">브라우저에서 x.com에 로그인한 뒤 개발자 도구(F12)를 열고 저장소 → 쿠키에서 auth_token과 ct0 쿠키를 복사하세요. 아래에 auth_token=…; ct0=… 형식으로 붙여 넣으세요. 이 컴퓨터에만 저장되며 공유되지 않습니다.</string>
+    <string name="signin_open_in_browser">브라우저에서 열기</string>
+    <string name="signin_username">사용자 이름</string>
+    <string name="signin_cookies">x.com 쿠키</string>
+</resources>

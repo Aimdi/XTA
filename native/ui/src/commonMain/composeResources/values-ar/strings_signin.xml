@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Signing in to X as XTA does (lib/client/login_webview.dart, x_cookie_login.dart). -->
+<resources>
+    <string name="signin_add_account">إضافة حساب</string>
+    <string name="signin_logging_in_title">تسجيل الدخول إلى XTA</string>
+    <string name="signin_logging_in_text">لا يغيّر الحساب الذي تسجّل به ما تراه. تبقى الاشتراكات والمجموعات والمنشورات المحفوظة على هذا الجهاز ولا تمسّ حسابك الحقيقي. يسجّل XTA الدخول للقراءة فقط — لا يمكنه الإعجاب أو إعادة النشر أو الرد.\n\nيمكنك إضافة عدة حسابات. يختار XTA حسابًا غير محدود المعدّل على نقطة الوصول المطلوبة ولم يفشل تسجيل دخوله للتو، وهذا ما يبقي خطأ «طلبات كثيرة جدًا» بعيدًا.</string>
+    <string name="signin_import_title">استيراد الاشتراكات</string>
+    <string name="signin_import_text">الاشتراكات محلية في XTA، وهي مستقلة عن الاشتراكات في حسابك الحقيقي على X. تسجيل الدخول لا يؤثر في اشتراكات XTA.\n\nهل تريد استيراد الاشتراكات من @%1$s إلى XTA؟</string>
+    <string name="signin_cookie_help">سجّل الدخول إلى x.com في متصفحك، ثم افتح أدوات المطوّر (F12) وانسخ ملفَّي تعريف الارتباط auth_token وct0 من قسم التخزين ← ملفات تعريف الارتباط. الصقهما أدناه بالشكل auth_token=…; ct0=…. يُحفظان على هذا الحاسوب فقط ولا تتم مشاركتهما أبدًا.</string>
+    <string name="signin_open_in_browser">فتح في المتصفح</string>
+    <string name="signin_username">اسم المستخدم</string>
+    <string name="signin_cookies">ملفات تعريف الارتباط من x.com</string>
+</resources>

@@ -23,7 +23,6 @@
     <string name="ago_minutes">%1$d min</string>
     <string name="ago_hours">%1$d h</string>
 
-    <string name="problem_no_account">Ez dago X konturik. Inportatu XTAren babeskopia bere kontuekin.</string>
     <string name="problem_rate_limited">X hemengo kontu guztiak mugatzen ari da. Saiatu berriro minutu batzuk barru.</string>
     <string name="problem_offline">Ez dago X-rako konexiorik.</string>
     <string name="problem_signing">Ezin izan da X-ren eskaeren sinadura prestatu. Saiatu berriro une batean.</string>

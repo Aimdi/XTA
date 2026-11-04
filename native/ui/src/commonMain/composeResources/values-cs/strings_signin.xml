@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Signing in to X as XTA does (lib/client/login_webview.dart, x_cookie_login.dart). -->
+<resources>
+    <string name="signin_add_account">Přidat účet</string>
+    <string name="signin_logging_in_title">Přihlašování do XTA</string>
+    <string name="signin_logging_in_text">Na tom, kterým účtem se přihlásíte, nezáleží. Odběry, skupiny a uložené příspěvky zůstávají v tomto zařízení a vašeho skutečného účtu se nedotknou. XTA se přihlašuje jen kvůli čtení — nemůže označovat jako oblíbené, sdílet ani odpovídat.\n\nMůžete přidat několik účtů. XTA vybere ten, který nemá vyčerpaný limit na potřebném koncovém bodu a kterému se právě nezhroutilo přihlášení. Právě to drží chybu „Příliš mnoho požadavků“ dál.</string>
+    <string name="signin_import_title">Importovat odběry</string>
+    <string name="signin_import_text">Odběry jsou uložené jen v XTA. Nezávisí na odběrech vašeho skutečného účtu X. Přihlášení odběry v XTA neovlivní.\n\nChcete do XTA importovat odběry účtu @%1$s?</string>
+    <string name="signin_cookie_help">Přihlaste se na x.com v prohlížeči, otevřete nástroje pro vývojáře (F12) a zkopírujte cookies auth_token a ct0 z části Úložiště → Cookies. Vložte je níže ve tvaru auth_token=…; ct0=…. Uloží se jen v tomto počítači a nikam se neodesílají.</string>
+    <string name="signin_open_in_browser">Otevřít v prohlížeči</string>
+    <string name="signin_username">Uživatelské jméno</string>
+    <string name="signin_cookies">Cookies z x.com</string>
+</resources>

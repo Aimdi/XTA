@@ -83,4 +83,9 @@ class HomeStringsTest {
     fun anXPostsFooterSheetsAndPollStringsAreInEveryLanguage() {
         check("strings_post_actions.xml")
     }
+
+    @Test
+    fun theSignInReadFailureAndAccountStringsAreInEveryLanguage() {
+        listOf("strings_common.xml", "strings_signin.xml", "strings_accounts.xml").forEach { check(it) }
+    }
 }

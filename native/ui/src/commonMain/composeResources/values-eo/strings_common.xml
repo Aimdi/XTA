@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Read failures as XTA's full-page errors say them (lib/ui/errors.dart), and closing the app. -->
+<resources>
+    <string name="problem_no_account_title">Neniu konto disponebla nun</string>
+    <string name="problem_no_account_text">XTA bezonas almenaŭ unu konton de 𝕏 por funkcii. Aldonu konton por komenci.</string>
+    <string name="problem_rate_limited_title">𝕏 limigis la petojn</string>
+    <string name="problem_rate_limited_text">Vi faris tro multajn petojn en tro mallonga tempo. Reprovu poste aŭ aldonu alian konton por daŭrigi uzi XTA.</string>
+    <string name="problem_no_working_account_title">Viaj kontoj ne funkcias</string>
+    <string name="problem_no_working_account_text">Ŝajnas, ke neniu el viaj kontoj funkcias nun. Ensalutu per alia konto aŭ reprovu poste.</string>
+    <string name="problem_endpoint_refused_title">𝕏 rifuzis ĉi tiun peton</string>
+    <string name="problem_endpoint_refused_text">Ĉiuj kontoj estis rifuzitaj en tiu ĉi parto de 𝕏, do verŝajne ne temas pri viaj kontoj. Plej probable 𝕏 ŝanĝis ion; la aplikaĵo riparas sin mem kiam ĝi povas. Reprovu post momento.</string>
+    <string name="problem_signing_title">Subskribado de X-petoj ne disponeblas</string>
+    <string name="problem_signing_text">XTA ne povis derivi la transakcian ĵetonon, kiun X nun postulas. Viaj kontoj eble ankoraŭ estas en ordo; reprovu baldaŭ aŭ rigardu la Diagnozon.</string>
+    <string name="problem_offline_title">Ne eblas kontakti X</string>
+    <string name="problem_offline_text">Bonvolu kontroli vian konekton Interretan.</string>
+    <string name="problem_timed_out_title">Tempolimiĝis</string>
+    <string name="problem_timed_out_text">La ŝarĝado daŭris tro longe. Bonvolu kontroli vian konekton Interretan!</string>
+    <string name="problem_service_unavailable_title">X provizore ne disponeblas</string>
+    <string name="problem_service_unavailable_text">X redonis servilan eraron. Vi povas plu legi kaŝmemorigitajn afiŝojn kaj reprovi poste.</string>
+    <string name="problem_request_unavailable_title">Ĉi tiu peto ne disponeblas</string>
+    <string name="problem_request_unavailable_text">X rifuzis ĉi tiun peton. Eble ĝi provizore ne disponeblas, aŭ ĉi tiu parto de la servo ŝanĝiĝis.</string>
+    <string name="problem_oops">Ups! Io misokazis 🥲</string>
+    <string name="problem_http_text">X redonis HTTP %1$d.</string>
+    <string name="problem_retry_in">Reprovi post %1$s</string>
+    <string name="close_app_confirm">Ĉu vi certas, vi volas fermi XTA-on?</string>
+</resources>

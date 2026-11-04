@@ -346,11 +346,11 @@
     <string name="settings_crash_keep">Захоўваць справаздачы пра збоі на гэтай прыладзе</string>
     <string name="settings_crash_keep_description">Калі XTA Native спыняецца праз памылку, справаздача пра яе запісваецца на гэтай прыладзе і нікуды не адпраўляецца. Па змаўчанні выключана.</string>
     <string name="settings_crash_none">Справаздач пра збоі няма</string>
-    <string name="settings_image_cache_size">%1$s на гэтай прыладзе.</string>
+    <string name="settings_image_cache_size">%1$s на гэтай прыладзе. Выявы, старэйшыя за %2$d дзён, выдаляюцца самі.</string>
     <string name="settings_move_up">Перамясціць вышэй</string>
     <string name="settings_move_down">Перамясціць ніжэй</string>
     <string name="intro_device_footnote">Справаздачы пра збоі выключаны, пакуль вы не ўключыце іх у наладах, і ніколі не пакідаюць гэтую прыладу.</string>
-    <string name="intro_account_body">XTA Native чытае X з уліковымі запісамі, якімі вы ўжо карыстаецеся ў XTA: імпартуйце рэзервовую копію XTA, каб перанесці іх. Пачаць можна і без іх.</string>
+    <string name="intro_account_body">XTA уваходзіць толькі каб чытаць. Які ўліковы запіс вы выкарыстоўваеце, не мяняе таго, што вы бачыце — і пачаць можна без яго.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">Абмежаванне запытаў на %1$d канчатковай кропцы</item>
         <item quantity="few">Абмежаванне запытаў на %1$d канчатковых кропках</item>

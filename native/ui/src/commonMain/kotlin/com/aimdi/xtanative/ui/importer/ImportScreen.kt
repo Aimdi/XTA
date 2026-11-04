@@ -18,8 +18,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,28 +47,37 @@ import com.aimdi.xtanative.ui.generated.resources.import_use
 import com.aimdi.xtanative.ui.generated.resources.settings_import_from
 import com.aimdi.xtanative.ui.generated.resources.settings_import_read_positions
 import com.aimdi.xtanative.ui.generated.resources.settings_import_read_positions_description
+import com.aimdi.xtanative.ui.generated.resources.signin_add_account
 import com.aimdi.xtanative.ui.settings.backupProblem
 import com.aimdi.xtanative.ui.settings.categoryLabel
 import com.aimdi.xtanative.ui.settings.shortDateTime
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * The first screen without an account, and Settings › Accounts' import:
- * a file XTA exported, previewed as XTA previews it, then restored whole
- * (sessions, follows, groups, saved posts, notes, settings and the rest).
+ * The first screen without an account, and the intro's import: a file XTA
+ * exported, previewed as XTA previews it, then restored whole (sessions,
+ * follows, groups, saved posts, notes, settings and the rest); or X's
+ * sign-in ([onSignIn]), after which the app moves on as after an import.
  */
 @Composable
-fun ImportScreen(onImported: () -> Unit) {
+fun ImportScreen(onImported: () -> Unit, onSignIn: () -> Unit) {
     val graph = LocalGraph.current
     val vm: ImportViewModel = viewModel { ImportViewModel(graph) }
     val state by vm.ui.collectAsStateWithLifecycle()
     val choose = rememberBackupChooser(onChosen = vm::read)
+    val session by graph.sessions.state.collectAsStateWithLifecycle()
+    val accounts = session?.accounts?.size ?: 0
+    // The fewest accounts seen here: after Remove everything the session empties once this screen is up.
+    var fewest by rememberSaveable { mutableIntStateOf(accounts) }
 
     LaunchedEffect(state) {
         if (state == ImportUi.Done) {
             vm.reset()
             onImported()
         }
+    }
+    LaunchedEffect(accounts) {
+        if (accounts < fewest) fewest = accounts else if (accounts > fewest) onImported()
     }
 
     Column(
@@ -77,7 +88,10 @@ fun ImportScreen(onImported: () -> Unit) {
         Text(stringResource(Res.string.import_intro), style = MaterialTheme.typography.bodyLarge)
         Text(stringResource(Res.string.import_steps), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         when (val now = state) {
-            ImportUi.Idle, ImportUi.Done -> Button(onClick = choose, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.import_choose)) }
+            ImportUi.Idle, ImportUi.Done -> {
+                Button(onClick = choose, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.import_choose)) }
+                OutlinedButton(onClick = onSignIn, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.signin_add_account)) }
+            }
             ImportUi.Reading, ImportUi.Restoring -> LoadingRow()
             is ImportUi.Refused -> {
                 backupProblem(now.read)?.let { Text(it, color = MaterialTheme.colorScheme.error) }

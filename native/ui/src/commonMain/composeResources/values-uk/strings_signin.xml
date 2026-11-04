@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Signing in to X as XTA does (lib/client/login_webview.dart, x_cookie_login.dart). -->
+<resources>
+    <string name="signin_add_account">Додати обліковий запис</string>
+    <string name="signin_logging_in_title">Вхід у XTA</string>
+    <string name="signin_logging_in_text">Те, під яким обліковим записом ви увійшли, не змінює того, що ви бачите. Підписки, групи та збережені дописи залишаються на цьому пристрої й не торкаються вашого справжнього облікового запису. XTA входить лише щоб читати — вподобати, поширити чи відповісти він не може.\n\nМожна додати кілька облікових записів. XTA бере той, у якого не вичерпано ліміт на потрібній кінцевій точці і в якого щойно не зірвався вхід, — саме це тримає помилку «Забагато запитів» осторонь.</string>
+    <string name="signin_import_title">Імпорт підписок</string>
+    <string name="signin_import_text">Підписки зберігаються лише в XTA. Вони не залежать від підписок вашого справжнього облікового запису X. Вхід не впливає на підписки XTA.\n\nІмпортувати в XTA підписки @%1$s?</string>
+    <string name="signin_cookie_help">Увійдіть на x.com у браузері, відкрийте інструменти розробника (F12) і скопіюйте cookie auth_token і ct0 з розділу «Сховище» → «Cookie». Вставте їх нижче у вигляді auth_token=…; ct0=…. Вони зберігаються лише на цьому комп'ютері й нікому не передаються.</string>
+    <string name="signin_open_in_browser">Відкрити у браузері</string>
+    <string name="signin_username">Ім'я користувача</string>
+    <string name="signin_cookies">Cookie з x.com</string>
+</resources>

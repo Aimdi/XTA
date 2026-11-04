@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Accounts' avatar and Diagnostics' account health and recent reads, in XTA's words. -->
+<resources>
+    <string name="settings_avatar_title">El teu avatar</string>
+    <string name="settings_avatar_change">Toqueu per canviar la imatge de dalt a l’esquerra</string>
+    <string name="settings_avatar_description">Imatge a dalt a l’esquerra i al calaix — es queda en aquest dispositiu</string>
+    <string name="settings_avatar_choose">Tria del dispositiu</string>
+    <string name="settings_avatar_from_account">Fes servir la foto de perfil d’X</string>
+    <string name="settings_avatar_error">No s’ha pogut carregar aquesta foto de perfil</string>
+    <string name="settings_avatar_clear">Fes servir el monograma</string>
+    <string name="settings_diagnostics_recent_reads">Operacions de lectura recents</string>
+    <string name="settings_diagnostics_sign_in_broken">Sembla que la sessió ja no és vàlida; es reprendrà a les %1$s</string>
+</resources>

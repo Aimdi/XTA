@@ -346,11 +346,11 @@
     <string name="settings_crash_keep">충돌 보고서를 이 기기에 보관</string>
     <string name="settings_crash_keep_description">XTA Native가 오류로 멈추면 그 보고서가 이 기기에 기록되며 어디로도 전송되지 않습니다. 기본값은 꺼짐입니다.</string>
     <string name="settings_crash_none">보관된 충돌 보고서 없음</string>
-    <string name="settings_image_cache_size">이 기기에 %1$s.</string>
+    <string name="settings_image_cache_size">이 기기에 %1$s. %2$d일이 지난 이미지는 자동으로 삭제됩니다.</string>
     <string name="settings_move_up">위로 이동</string>
     <string name="settings_move_down">아래로 이동</string>
     <string name="intro_device_footnote">충돌 보고서는 설정에서 켜기 전까지 꺼져 있으며, 이 기기를 벗어나지 않습니다.</string>
-    <string name="intro_account_body">XTA Native는 XTA에서 이미 쓰는 계정으로 X를 읽습니다. XTA의 백업을 가져와 계정을 옮기세요. 계정 없이 시작할 수도 있습니다.</string>
+    <string name="intro_account_body">XTA는 읽기 위해서만 로그인합니다. 어떤 계정을 쓰든 보이는 내용은 같습니다 — 계정 없이 시작할 수도 있습니다.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="other">엔드포인트 %1$d개에서 요청 제한</item>
     </plurals>

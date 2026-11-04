@@ -30,6 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.data.Problem
+import com.aimdi.xtanative.data.inFirstKinds
 import com.aimdi.xtanative.networks.NetworkFailure
 import com.aimdi.xtanative.networks.Page
 import com.aimdi.xtanative.ui.common.LoadingRow
@@ -53,7 +54,8 @@ import org.jetbrains.compose.resources.stringResource
 /**
  * Why a network's read brought nothing, as the shared problem rows explain it:
  * a refusal by its status (429 a rate limit, 200 an answer that could not be
- * used), no connection, or anything else.
+ * used), no connection, or anything else; always one of the plugin API's
+ * first six kinds, which the plugins' own words switch over.
  */
 fun problemOf(error: Throwable): Problem = when (error) {
     is NetworkFailure -> when (val code = error.code) {
@@ -61,17 +63,17 @@ fun problemOf(error: Throwable): Problem = when (error) {
         429 -> Problem.RateLimited
         else -> Problem.Refused(code)
     }
-    else -> Problem.of(error)
+    else -> Problem.of(error).inFirstKinds
 }
 
 /** [problem] in plain words, naming [network] ("Bluesky"). */
 @Composable
-fun networkProblemText(problem: Problem, network: String): String = when (problem) {
+fun networkProblemText(problem: Problem, network: String): String = when (val first = problem.inFirstKinds) {
     Problem.NoAccount -> stringResource(Res.string.plugin_problem_no_account, network)
     Problem.RateLimited -> stringResource(Res.string.plugin_problem_rate_limited, network)
     Problem.Offline -> stringResource(Res.string.plugin_problem_offline, network)
-    is Problem.Refused -> stringResource(Res.string.plugin_problem_refused, network, problem.code)
-    Problem.Signing, Problem.Other -> stringResource(Res.string.plugin_problem_other, network)
+    is Problem.Refused -> stringResource(Res.string.plugin_problem_refused, network, first.code)
+    else -> stringResource(Res.string.plugin_problem_other, network)
 }
 
 /** A read of [network] that brought nothing: why, and a way to try again. */

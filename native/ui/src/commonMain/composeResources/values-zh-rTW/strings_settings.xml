@@ -346,11 +346,11 @@
     <string name="settings_crash_keep">在此裝置上保留當機報告</string>
     <string name="settings_crash_keep_description">XTA Native 因錯誤停止時，會在此裝置上寫下一份報告，不會傳送到任何地方。預設為關閉。</string>
     <string name="settings_crash_none">沒有保留的當機報告</string>
-    <string name="settings_image_cache_size">此裝置上有 %1$s。</string>
+    <string name="settings_image_cache_size">此裝置上有 %1$s。超過 %2$d 天的圖片會自動刪除。</string>
     <string name="settings_move_up">上移</string>
     <string name="settings_move_down">下移</string>
     <string name="intro_device_footnote">當機報告保持關閉，直到你在設定中開啟，而且永遠不會離開此裝置。</string>
-    <string name="intro_account_body">XTA Native 使用你在 XTA 中已在用的帳號讀取 X：匯入 XTA 的備份即可將其帶過來。你也可以不用帳號就開始。</string>
+    <string name="intro_account_body">XTA 登入只是為了讀取。用哪個帳號都不會改變你看到的內容——你也可以不登入就開始。</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="other">已在 %1$d 個端點觸發請求限制</item>
     </plurals>

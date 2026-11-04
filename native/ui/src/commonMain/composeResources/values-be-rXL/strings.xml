@@ -23,7 +23,6 @@
     <string name="ago_minutes">%1$d chv</string>
     <string name="ago_hours">%1$d hadz</string>
 
-    <string name="problem_no_account">Niama akaŭnta X. Impartujcie rezervovuju kopiju XTA z jaje akaŭntami.</string>
     <string name="problem_rate_limited">X abmiažoŭvaje tut usie akaŭnty. Pasprabujcie znoŭ praz niekalki chvilin.</string>
     <string name="problem_offline">Niama złučennia z X.</string>
     <string name="problem_signing">Nie ŭdałosia naładzić podpis zapytaŭ da X. Pasprabujcie znoŭ krychu paźniej.</string>

@@ -23,7 +23,6 @@
     <string name="ago_minutes">%1$d분</string>
     <string name="ago_hours">%1$d시간</string>
 
-    <string name="problem_no_account">X 계정이 없습니다. 계정이 포함된 XTA 백업을 가져오세요.</string>
     <string name="problem_rate_limited">X가 이곳의 모든 계정을 제한하고 있습니다. 몇 분 후에 다시 시도하세요.</string>
     <string name="problem_offline">X에 연결되지 않았습니다.</string>
     <string name="problem_signing">X 요청 서명을 준비하지 못했습니다. 잠시 후 다시 시도하세요.</string>

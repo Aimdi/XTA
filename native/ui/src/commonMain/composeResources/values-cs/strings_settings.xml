@@ -346,11 +346,11 @@
     <string name="settings_crash_keep">Uchovávat hlášení pádů v tomto zařízení</string>
     <string name="settings_crash_keep_description">Když se XTA Native zastaví kvůli chybě, zapíše se o tom hlášení do tohoto zařízení a nikam se neodešle. Ve výchozím stavu vypnuto.</string>
     <string name="settings_crash_none">Žádné uložené hlášení pádu</string>
-    <string name="settings_image_cache_size">%1$s v tomto zařízení.</string>
+    <string name="settings_image_cache_size">%1$s v tomto zařízení. Obrázky starší než %2$d dní se mažou samy.</string>
     <string name="settings_move_up">Posunout nahoru</string>
     <string name="settings_move_down">Posunout dolů</string>
     <string name="intro_device_footnote">Hlášení pádů zůstává vypnuté, dokud ho nezapnete v nastavení, a nikdy neopustí toto zařízení.</string>
-    <string name="intro_account_body">XTA Native čte X s účty, které už používáte v XTA: přeneste je importem zálohy z XTA. Začít můžete i bez účtu.</string>
+    <string name="intro_account_body">XTA se přihlašuje jen ke čtení. Na tom, který účet použijete, nezáleží — a začít můžete i bez něj.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">Omezení počtu požadavků na %1$d koncovém bodu</item>
         <item quantity="few">Omezení počtu požadavků na %1$d koncových bodech</item>

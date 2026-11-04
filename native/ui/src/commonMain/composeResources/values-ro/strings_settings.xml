@@ -346,11 +346,11 @@
     <string name="settings_crash_keep">Păstrează rapoartele de eroare pe acest dispozitiv</string>
     <string name="settings_crash_keep_description">Când XTA Native se oprește din cauza unei erori, un raport despre ea este scris pe acest dispozitiv și nu este trimis nicăieri. Dezactivat implicit.</string>
     <string name="settings_crash_none">Niciun raport de eroare păstrat</string>
-    <string name="settings_image_cache_size">%1$s pe acest dispozitiv.</string>
+    <string name="settings_image_cache_size">%1$s pe acest dispozitiv. Imaginile mai vechi de %2$d zile sunt șterse automat.</string>
     <string name="settings_move_up">Mută în sus</string>
     <string name="settings_move_down">Mută în jos</string>
     <string name="intro_device_footnote">Rapoartele de eroare rămân oprite până le activezi în setări și nu părăsesc niciodată acest dispozitiv.</string>
-    <string name="intro_account_body">XTA Native citește X cu conturile pe care le folosești deja în XTA: importă copia de rezervă din XTA ca să le aduci. Poți începe și fără unul.</string>
+    <string name="intro_account_body">XTA se autentifică doar pentru a citi. Contul folosit nu schimbă ce vezi — și poți începe și fără unul.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">Limită de cereri pe %1$d punct de acces</item>
         <item quantity="few">Limită de cereri pe %1$d puncte de acces</item>

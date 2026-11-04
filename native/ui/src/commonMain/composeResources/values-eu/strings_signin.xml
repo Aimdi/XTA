@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Signing in to X as XTA does (lib/client/login_webview.dart, x_cookie_login.dart). -->
+<resources>
+    <string name="signin_add_account">Gehitu kontua</string>
+    <string name="signin_logging_in_title">XTA-en saioa hasten</string>
+    <string name="signin_logging_in_text">Zein konturekin hasten duzun saioa ez du aldatzen ikusten duzuna. Harpidetzak, taldeak eta gordetako argitalpenak gailu honetan gelditzen dira eta ez dute zure benetako kontua ukitzen. XTAk irakurtzeko soilik hasten du saioa: ezin du atsegin eman, birpartekatu edo erantzun.\n\nHainbat kontu gehi ditzakezu. XTAk behar duen amaiera-puntuan eskaera-mugarik jo ez duena eta saioa hastean huts egin berri ez duena aukeratzen du: horrek uxatzen du «Eskaera gehiegi» errorea.</string>
+    <string name="signin_import_title">Inportatu harpidetzak</string>
+    <string name="signin_import_text">Harpidetzak XTAn bakarrik daude. Zure benetako X kontuko harpidetzetatik independenteak dira. Saioa hasteak ez ditu XTAko harpidetzak ukitzen.\n\n@%1$s kontuaren harpidetzak XTAra inportatu nahi dituzu?</string>
+    <string name="signin_cookie_help">Hasi saioa x.com-en nabigatzailean, ireki garatzaileentzako tresnak (F12) eta kopiatu auth_token eta ct0 cookieak Biltegiratzea → Cookieak ataletik. Itsatsi behean auth_token=…; ct0=… formatuan. Ordenagailu honetan bakarrik gordetzen dira eta ez dira inoiz partekatzen.</string>
+    <string name="signin_open_in_browser">Ireki nabigatzailean</string>
+    <string name="signin_username">Erabiltzaile-izena</string>
+    <string name="signin_cookies">x.com-eko cookieak</string>
+</resources>

@@ -346,11 +346,11 @@
     <string name="settings_crash_keep">Keep crash reports on this device</string>
     <string name="settings_crash_keep_description">When XTA Native stops on an error, a report of it is written down on this device and sent nowhere. Off by default.</string>
     <string name="settings_crash_none">No crash report kept</string>
-    <string name="settings_image_cache_size">%1$s on this device.</string>
+    <string name="settings_image_cache_size">%1$s on this device. Pictures older than %2$d days are removed on their own.</string>
     <string name="settings_move_up">Move up</string>
     <string name="settings_move_down">Move down</string>
     <string name="intro_device_footnote">Crash reports stay off until you turn them on in Settings, and never leave this device.</string>
-    <string name="intro_account_body">XTA Native reads X with the accounts you already use in XTA: import XTA's backup to bring them over. You can also start without one.</string>
+    <string name="intro_account_body">XTA signs in only to read. Which account you use doesn't change what you see — and you can start without one.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">Rate limited on 1 endpoint</item>
         <item quantity="other">Rate limited on %1$d endpoints</item>

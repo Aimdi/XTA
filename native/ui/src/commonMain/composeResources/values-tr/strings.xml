@@ -23,7 +23,6 @@
     <string name="ago_minutes">%1$d dk</string>
     <string name="ago_hours">%1$d sa</string>
 
-    <string name="problem_no_account">X hesabı yok. XTA yedeğini hesaplarıyla birlikte içe aktar.</string>
     <string name="problem_rate_limited">X buradaki her hesabı sınırlıyor. Birkaç dakika sonra yeniden dene.</string>
     <string name="problem_offline">X'e bağlantı yok.</string>
     <string name="problem_signing">X isteklerinin imzalanması hazırlanamadı. Birazdan yeniden dene.</string>

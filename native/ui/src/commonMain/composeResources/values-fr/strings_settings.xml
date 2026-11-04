@@ -346,11 +346,11 @@
     <string name="settings_crash_keep">Conserver les rapports de plantage sur cet appareil</string>
     <string name="settings_crash_keep_description">Quand XTA Native s'arrête sur une erreur, un rapport est écrit sur cet appareil et n'est envoyé nulle part. Désactivé par défaut.</string>
     <string name="settings_crash_none">Aucun rapport de plantage conservé</string>
-    <string name="settings_image_cache_size">%1$s sur cet appareil.</string>
+    <string name="settings_image_cache_size">%1$s sur cet appareil. Les images de plus de %2$d jours sont supprimées automatiquement.</string>
     <string name="settings_move_up">Monter</string>
     <string name="settings_move_down">Descendre</string>
     <string name="intro_device_footnote">Les rapports de plantage restent désactivés tant que vous ne les activez pas dans les paramètres, et ne quittent jamais cet appareil.</string>
-    <string name="intro_account_body">XTA Native lit X avec les comptes que vous utilisez déjà dans XTA : importez la sauvegarde de XTA pour les récupérer. Vous pouvez aussi commencer sans.</string>
+    <string name="intro_account_body">XTA ne se connecte que pour lire. Le compte utilisé ne change rien à ce que vous voyez, et vous pouvez commencer sans.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">Limite de requêtes atteinte sur %1$d point d'accès</item>
         <item quantity="many">Limite de requêtes atteinte sur %1$d points d'accès</item>

@@ -23,7 +23,6 @@
     <string name="ago_minutes">%1$d хв</string>
     <string name="ago_hours">%1$d гадз</string>
 
-    <string name="problem_no_account">Няма акаўнта X. Імпартуйце рэзервовую копію XTA з яе акаўнтамі.</string>
     <string name="problem_rate_limited">X абмяжоўвае тут усе акаўнты. Паспрабуйце зноў праз некалькі хвілін.</string>
     <string name="problem_offline">Няма злучэння з X.</string>
     <string name="problem_signing">Не ўдалося наладзіць подпіс запытаў да X. Паспрабуйце зноў крыху пазней.</string>

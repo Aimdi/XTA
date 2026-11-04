@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Read failures as XTA's full-page errors say them (lib/ui/errors.dart), and closing the app. -->
+<resources>
+    <string name="problem_no_account_title">Tidak ada akun yang tersedia saat ini</string>
+    <string name="problem_no_account_text">XTA memerlukan setidaknya satu akun 𝕏 agar berfungsi. Tambahkan akun untuk memulai.</string>
+    <string name="problem_rate_limited_title">Dibatasi oleh 𝕏</string>
+    <string name="problem_rate_limited_text">Anda membuat terlalu banyak permintaan dalam waktu terlalu singkat. Coba lagi nanti atau tambahkan akun lain untuk terus menggunakan XTA.</string>
+    <string name="problem_no_working_account_title">Akun Anda tidak berfungsi</string>
+    <string name="problem_no_working_account_text">Sepertinya tidak ada akun Anda yang berfungsi saat ini. Masuk dengan akun lain atau coba lagi nanti.</string>
+    <string name="problem_endpoint_refused_title">𝕏 menolak permintaan ini</string>
+    <string name="problem_endpoint_refused_text">Semua akun ditolak di bagian 𝕏 ini, jadi kemungkinan besar bukan akun Anda masalahnya. 𝕏 sepertinya mengubah sesuatu; aplikasi memperbaiki dirinya sendiri bila bisa. Coba lagi sebentar lagi.</string>
+    <string name="problem_signing_title">Penandatanganan permintaan X tidak tersedia</string>
+    <string name="problem_signing_text">XTA tidak dapat menurunkan token transaksi yang kini diwajibkan X. Akun Anda mungkin baik-baik saja; coba lagi sebentar lagi atau periksa Diagnostik.</string>
+    <string name="problem_offline_title">Tidak bisa menghubungi X</string>
+    <string name="problem_offline_text">Mohon periksa koneksi Internet Anda.</string>
+    <string name="problem_timed_out_title">Waktu habis</string>
+    <string name="problem_timed_out_text">Ini perlu waktu lama untuk memuat. Mohon periksa koneksi jaringan Anda!</string>
+    <string name="problem_service_unavailable_title">X untuk sementara tidak tersedia</string>
+    <string name="problem_service_unavailable_text">X mengembalikan galat server. Anda masih bisa membaca postingan yang tersimpan di cache dan mencoba lagi nanti.</string>
+    <string name="problem_request_unavailable_title">Permintaan ini tidak tersedia</string>
+    <string name="problem_request_unavailable_text">X menolak permintaan ini. Mungkin sedang tidak tersedia untuk sementara, atau bagian layanan ini telah berubah.</string>
+    <string name="problem_oops">Aduh! Ada yang tidak beres 🥲</string>
+    <string name="problem_http_text">X mengembalikan HTTP %1$d.</string>
+    <string name="problem_retry_in">Coba lagi dalam %1$s</string>
+    <string name="close_app_confirm">Apakah Anda yakin ingin menutup XTA?</string>
+</resources>

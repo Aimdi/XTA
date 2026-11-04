@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Signing in to X as XTA does (lib/client/login_webview.dart, x_cookie_login.dart). -->
+<resources>
+    <string name="signin_add_account">添加账户</string>
+    <string name="signin_logging_in_title">正在登录XTA</string>
+    <string name="signin_logging_in_text">用哪个账号登录不会改变你看到的内容。订阅、订阅组和保存的帖子都留在本设备上，不会碰到你真正的账号。XTA 登录只为读取——它无法点赞、转帖或回复。\n\n你可以添加多个账号。XTA 会挑一个在所需接口上没有触发速率限制、且刚才没有登录失败的账号，这正是把“请求过多”挡在门外的办法。</string>
+    <string name="signin_import_title">导入订阅</string>
+    <string name="signin_import_text">订阅只保存在 XTA 本地，与你真实 X 账号上的关注互不相干。登录不会影响 XTA 的订阅。\n\n要把 @%1$s 的关注导入 XTA 吗？</string>
+    <string name="signin_cookie_help">在浏览器中登录 x.com，打开开发者工具（F12），从“存储”→“Cookie”中复制 auth_token 和 ct0 两个 Cookie，然后按 auth_token=…; ct0=… 的格式粘贴到下方。它们只保存在这台电脑上，绝不会被分享。</string>
+    <string name="signin_open_in_browser">在浏览器中打开</string>
+    <string name="signin_username">用户名</string>
+    <string name="signin_cookies">来自 x.com 的 Cookie</string>
+</resources>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Read failures as XTA's full-page errors say them (lib/ui/errors.dart), and closing the app. -->
+<resources>
+    <string name="problem_no_account_title">Ingen konto tilgjengelig akkurat nå</string>
+    <string name="problem_no_account_text">XTA trenger minst én 𝕏-konto for å fungere. Legg til en konto for å komme i gang.</string>
+    <string name="problem_rate_limited_title">Begrenset av 𝕏</string>
+    <string name="problem_rate_limited_text">Du har sendt for mange forespørsler på for kort tid. Prøv igjen senere, eller legg til en annen konto for å fortsette å bruke XTA.</string>
+    <string name="problem_no_working_account_title">Kontoene dine fungerer ikke</string>
+    <string name="problem_no_working_account_text">Det ser ut til at ingen av kontoene dine fungerer akkurat nå. Logg inn med en annen konto eller prøv igjen senere.</string>
+    <string name="problem_endpoint_refused_title">𝕏 avviste denne forespørselen</string>
+    <string name="problem_endpoint_refused_text">Alle kontoene ble avvist på denne delen av 𝕏, så det er neppe kontoene dine. 𝕏 har trolig endret noe; appen reparerer seg selv når den kan. Prøv igjen om litt.</string>
+    <string name="problem_signing_title">Signering av X-forespørsler er utilgjengelig</string>
+    <string name="problem_signing_text">XTA klarte ikke å utlede transaksjonstokenet X krever nå. Kontoene dine kan fortsatt være i orden; prøv igjen om litt eller sjekk Diagnostikk.</string>
+    <string name="problem_offline_title">Kunne ikke kontakte X</string>
+    <string name="problem_offline_text">Sjekk at du er tilkoblet Internett.</string>
+    <string name="problem_timed_out_title">Tidsavbrudd</string>
+    <string name="problem_timed_out_text">Dette tok for lang tid å laste. Vennligst sjekk nettverkstilkoblingen din!</string>
+    <string name="problem_service_unavailable_title">X er midlertidig utilgjengelig</string>
+    <string name="problem_service_unavailable_text">X svarte med en serverfeil. Du kan fortsette å lese bufrede innlegg og prøve igjen senere.</string>
+    <string name="problem_request_unavailable_title">Denne forespørselen er utilgjengelig</string>
+    <string name="problem_request_unavailable_text">X avviste denne forespørselen. Den kan være midlertidig utilgjengelig, eller denne delen av tjenesten kan ha endret seg.</string>
+    <string name="problem_oops">Oops! Noe gikk galt 🥲</string>
+    <string name="problem_http_text">X svarte med HTTP %1$d.</string>
+    <string name="problem_retry_in">Prøv igjen om %1$s</string>
+    <string name="close_app_confirm">Lukk XTA?</string>
+</resources>

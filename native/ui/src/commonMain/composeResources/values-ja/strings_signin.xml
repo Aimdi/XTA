@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Signing in to X as XTA does (lib/client/login_webview.dart, x_cookie_login.dart). -->
+<resources>
+    <string name="signin_add_account">アカウントを追加</string>
+    <string name="signin_logging_in_title">XTAにログイン中</string>
+    <string name="signin_logging_in_text">どのアカウントでサインインしても、表示される内容は変わりません。購読・グループ・保存した投稿はこの端末に残り、実際のアカウントには一切触れません。XTA は読むためだけにサインインします。いいね・リポスト・返信はできません。\n\n複数のアカウントを追加できます。XTA は、必要なエンドポイントでレート制限にかかっておらず、直前にサインインへ失敗していないものを選びます。それが「リクエストが多すぎます」を遠ざけている仕組みです。</string>
+    <string name="signin_import_title">登録アカウントをインポートする</string>
+    <string name="signin_import_text">登録アカウントは XTA の中だけにあり、実際の X アカウントのフォローとは別です。ログインしても XTA の登録アカウントは変わりません。\n\n@%1$s のフォローを XTA にインポートしますか？</string>
+    <string name="signin_cookie_help">ブラウザで x.com にログインし、開発者ツール (F12) を開いて、ストレージ → Cookie から auth_token と ct0 をコピーしてください。下に auth_token=…; ct0=… の形式で貼り付けます。このパソコンにだけ保存され、共有されることはありません。</string>
+    <string name="signin_open_in_browser">ブラウザで開く</string>
+    <string name="signin_username">ユーザー名</string>
+    <string name="signin_cookies">x.com の Cookie</string>
+</resources>

@@ -23,7 +23,6 @@
     <string name="ago_minutes">%1$d मि॰</string>
     <string name="ago_hours">%1$d घं॰</string>
 
-    <string name="problem_no_account">कोई X खाता नहीं है। XTA का बैकअप उसके खातों के साथ इंपोर्ट करें।</string>
     <string name="problem_rate_limited">X यहाँ के हर खाते को सीमित कर रहा है। कुछ मिनट बाद फिर कोशिश करें।</string>
     <string name="problem_offline">X से कोई कनेक्शन नहीं है।</string>
     <string name="problem_signing">X के अनुरोधों का हस्ताक्षर तैयार नहीं हो सका। थोड़ी देर में फिर कोशिश करें।</string>

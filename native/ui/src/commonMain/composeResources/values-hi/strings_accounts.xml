@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Accounts' avatar and Diagnostics' account health and recent reads, in XTA's words. -->
+<resources>
+    <string name="settings_avatar_title">आपका अवतार</string>
+    <string name="settings_avatar_change">ऊपर बाएँ चित्र बदलने के लिए टैप करें</string>
+    <string name="settings_avatar_description">ऊपर बाएँ और ड्रॉअर में दिखने वाला चित्र — इसी डिवाइस पर रहता है</string>
+    <string name="settings_avatar_choose">डिवाइस से चुनें</string>
+    <string name="settings_avatar_from_account">X प्रोफ़ाइल फ़ोटो इस्तेमाल करें</string>
+    <string name="settings_avatar_error">वह प्रोफ़ाइल चित्र लोड नहीं हो सका</string>
+    <string name="settings_avatar_clear">मोनोग्राम इस्तेमाल करें</string>
+    <string name="settings_diagnostics_recent_reads">हाल के पढ़ने के कार्य</string>
+    <string name="settings_diagnostics_sign_in_broken">साइन-इन अब मान्य नहीं लगता, %1$s तक विराम</string>
+</resources>

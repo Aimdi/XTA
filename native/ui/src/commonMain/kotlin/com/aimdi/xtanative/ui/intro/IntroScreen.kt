@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,9 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,7 +53,10 @@ import com.aimdi.xtanative.store.settings.NetworkPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.ThemePrefs
 import com.aimdi.xtanative.ui.common.BackHandling
+import com.aimdi.xtanative.ui.common.ConfirmCloseOnBack
 import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.turnTo
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.*
 import com.aimdi.xtanative.ui.settings.AccentPicker
@@ -61,13 +64,15 @@ import com.aimdi.xtanative.ui.settings.BackgroundPicker
 import com.aimdi.xtanative.ui.settings.SettingsRoutes
 import com.aimdi.xtanative.ui.settings.networkName
 import com.aimdi.xtanative.ui.settings.pluginIds
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
 /**
  * XTA's first-launch cards (intro_screen.dart): welcome, what stays on the
- * device, the look, the X accounts (brought over from XTA's backup) and the
- * sources on Home. Next moves on, Skip leaves everything as it is, Back steps
- * to the card before. Finishing or skipping marks the cards seen.
+ * device, the look, the X accounts and the sources on Home. A sideways swipe
+ * or Next moves on, Skip leaves everything as it is, and Back steps to the
+ * card before until the first, where it closes the app as Home does, asking
+ * first while Confirm close is on. Finishing or skipping marks the cards seen.
  */
 @Composable
 fun IntroScreen(onFinished: () -> Unit, onImport: () -> Unit, onOpen: (String) -> Unit) {
@@ -75,71 +80,90 @@ fun IntroScreen(onFinished: () -> Unit, onImport: () -> Unit, onOpen: (String) -
     val stored by graph.settings.state.collectAsStateWithLifecycle()
     val session by graph.sessions.state.collectAsStateWithLifecycle()
     val settings = stored ?: Settings()
-    var index by rememberSaveable { mutableStateOf(0) }
-    val page = IntroPage.entries[index.coerceIn(IntroPage.entries.indices)]
+    val accounts = session?.accounts.orEmpty()
+    val pager = rememberPagerState { IntroPage.entries.size }
+    val scope = rememberCoroutineScope()
+    val reduced = LocalReducedMotion.current
     val change: ((Settings) -> Settings) -> Unit = { transform -> graph.keep { graph.settings.update(transform) } }
     val finish = {
         graph.keep { graph.settings.update(IntroFlow::finished) }
         onFinished()
     }
-    val next = { page.next?.let { index = it.ordinal } ?: finish() }
+    val show: (IntroPage) -> Unit = { page -> scope.launch { pager.turnTo(page.ordinal, reduced) } }
+    val shown = IntroPage.entries[pager.currentPage.coerceIn(IntroPage.entries.indices)]
 
-    BackHandling(enabled = page.previous != null) { page.previous?.let { index = it.ordinal } }
+    BackHandling(enabled = shown.previous != null) { shown.previous?.let(show) }
+    ConfirmCloseOnBack(enabled = shown.previous == null)
 
-    Column(
-        Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).safeDrawingPadding(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
+    HorizontalPager(pager, Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) { index ->
+        val page = IntroPage.entries[index]
+        IntroFrame(
+            page,
+            onSkip = finish,
+            footer = {
+                Footer(
+                    page,
+                    noAccount = accounts.isEmpty(),
+                    onNext = { page.next?.let(show) ?: finish() },
+                    onSignIn = { onOpen(SettingsRoutes.SIGN_IN) },
+                    onImport = onImport,
+                    onFinish = finish,
+                )
+            },
+        ) { CardOf(page, settings, accounts.map { it.screenName.orEmpty() }, change, onOpen) }
+    }
+}
+
+/** One card's page, as XTA's IntroPageFrame lays it out: Skip, the card scrolling when it must, and its buttons under it. */
+@Composable
+private fun IntroFrame(page: IntroPage, onSkip: () -> Unit, footer: @Composable () -> Unit, card: @Composable () -> Unit) {
+    Column(Modifier.fillMaxSize().safeDrawingPadding(), horizontalAlignment = Alignment.CenterHorizontally) {
         Row(Modifier.fillMaxWidth().heightIn(min = 48.dp).padding(horizontal = 8.dp), horizontalArrangement = Arrangement.End) {
-            if (page != IntroPage.SOURCES) TextButton(onClick = finish) { Text(stringResource(Res.string.intro_skip)) }
+            if (page != IntroPage.SOURCES) TextButton(onClick = onSkip) { Text(stringResource(Res.string.intro_skip)) }
         }
         Column(
             Modifier.weight(1f).widthIn(max = 560.dp).fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) { card() }
+        footer()
+    }
+}
+
+@Composable
+private fun CardOf(page: IntroPage, settings: Settings, accounts: List<String>, change: ((Settings) -> Settings) -> Unit, onOpen: (String) -> Unit) {
+    when (page) {
+        IntroPage.WELCOME -> Card(stringResource(Res.string.intro_welcome_title), stringResource(Res.string.intro_welcome_body)) {
+            Mark(Icons.Outlined.Person)
+        }
+        IntroPage.DEVICE -> Card(
+            stringResource(Res.string.intro_device_title),
+            stringResource(Res.string.intro_device_body),
+            stringResource(Res.string.intro_device_footnote),
+        ) { Mark(Icons.Outlined.Lock) }
+        IntroPage.APPEARANCE -> Card(
+            stringResource(Res.string.intro_appearance_title),
+            stringResource(Res.string.intro_appearance_body),
+            label = stringResource(Res.string.intro_looks),
         ) {
-            when (page) {
-                IntroPage.WELCOME -> Card(stringResource(Res.string.intro_welcome_title), stringResource(Res.string.intro_welcome_body)) {
-                    Mark(Icons.Outlined.Person)
-                }
-                IntroPage.DEVICE -> Card(
-                    stringResource(Res.string.intro_device_title),
-                    stringResource(Res.string.intro_device_body),
-                    stringResource(Res.string.intro_device_footnote),
-                ) { Mark(Icons.Outlined.Lock) }
-                IntroPage.APPEARANCE -> Card(
-                    stringResource(Res.string.intro_appearance_title),
-                    stringResource(Res.string.intro_appearance_body),
-                    label = stringResource(Res.string.intro_looks),
-                ) {
-                    Column(Modifier.fillMaxWidth()) {
-                        BackgroundPicker(settings[ThemePrefs.background]) { background -> change { it.with(ThemePrefs.background, background) } }
-                        AccentPicker(settings[ThemePrefs.accent]) { accent -> change { it.with(ThemePrefs.accent, accent) } }
-                    }
-                }
-                IntroPage.ACCOUNT -> {
-                    val accounts = session?.accounts.orEmpty()
-                    Card(
-                        stringResource(Res.string.intro_account_title),
-                        stringResource(Res.string.intro_account_body),
-                        if (accounts.isEmpty()) stringResource(Res.string.intro_account_caption) else null,
-                    ) {
-                        if (accounts.isEmpty()) {
-                            Mark(Icons.Outlined.AccountCircle)
-                        } else {
-                            FlowColumnOfAccounts(accounts.map { it.screenName.orEmpty() })
-                        }
-                    }
-                }
-                IntroPage.SOURCES -> Card(
-                    stringResource(Res.string.intro_sources_title),
-                    stringResource(Res.string.intro_sources_body),
-                    label = stringResource(Res.string.intro_sources_label),
-                ) {
-                    SourcesGrid(settings, change, onOpen)
-                }
+            Column(Modifier.fillMaxWidth()) {
+                BackgroundPicker(settings[ThemePrefs.background]) { background -> change { it.with(ThemePrefs.background, background) } }
+                AccentPicker(settings[ThemePrefs.accent]) { accent -> change { it.with(ThemePrefs.accent, accent) } }
             }
         }
-        Footer(page, session?.accounts.isNullOrEmpty(), onNext = next, onImport = onImport, onFinish = finish)
+        IntroPage.ACCOUNT -> Card(
+            stringResource(Res.string.intro_account_title),
+            stringResource(Res.string.intro_account_body),
+            if (accounts.isEmpty()) stringResource(Res.string.intro_account_caption) else null,
+        ) {
+            if (accounts.isEmpty()) Mark(Icons.Outlined.AccountCircle) else FlowColumnOfAccounts(accounts)
+        }
+        IntroPage.SOURCES -> Card(
+            stringResource(Res.string.intro_sources_title),
+            stringResource(Res.string.intro_sources_body),
+            label = stringResource(Res.string.intro_sources_label),
+        ) {
+            SourcesGrid(settings, change, onOpen)
+        }
     }
 }
 
@@ -236,9 +260,9 @@ private fun Tile(title: String, selected: Boolean, fixed: Boolean = false, icon:
     }
 }
 
-/** The page dots and the card's buttons, pinned under the card. */
+/** The page dots and the card's buttons, pinned under the card: on the account card, XTA's Add account, Not now and Import backup. */
 @Composable
-private fun Footer(page: IntroPage, noAccount: Boolean, onNext: () -> Unit, onImport: () -> Unit, onFinish: () -> Unit) {
+private fun Footer(page: IntroPage, noAccount: Boolean, onNext: () -> Unit, onSignIn: () -> Unit, onImport: () -> Unit, onFinish: () -> Unit) {
     Column(Modifier.fillMaxWidth().widthIn(max = 560.dp).padding(horizontal = 24.dp, vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             IntroPage.entries.forEach { dot ->
@@ -251,8 +275,9 @@ private fun Footer(page: IntroPage, noAccount: Boolean, onNext: () -> Unit, onIm
         when {
             page == IntroPage.SOURCES -> Button(onClick = onFinish, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.intro_start_reading)) }
             page == IntroPage.ACCOUNT && noAccount -> {
-                Button(onClick = onImport, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.settings_import_backup)) }
+                Button(onClick = onSignIn, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.signin_add_account)) }
                 OutlinedButton(onClick = onNext, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.intro_not_now)) }
+                TextButton(onClick = onImport, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.settings_import_backup)) }
             }
             else -> Button(onClick = onNext, modifier = Modifier.fillMaxWidth()) { Text(stringResource(Res.string.intro_next)) }
         }

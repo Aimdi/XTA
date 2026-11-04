@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Accounts' avatar and Diagnostics' account health and recent reads, in XTA's words. -->
+<resources>
+    <string name="settings_avatar_title">Sinu avatar</string>
+    <string name="settings_avatar_change">Puuduta, et muuta ülal vasakul olevat pilti</string>
+    <string name="settings_avatar_description">Pilt ülal vasakul ja sahtlis — jääb sellesse seadmesse</string>
+    <string name="settings_avatar_choose">Vali seadmest</string>
+    <string name="settings_avatar_from_account">Kasuta X-i profiilifotot</string>
+    <string name="settings_avatar_error">Profiilipilti ei õnnestunud laadida</string>
+    <string name="settings_avatar_clear">Kasuta monogrammi</string>
+    <string name="settings_diagnostics_recent_reads">Hiljutised lugemistoimingud</string>
+    <string name="settings_diagnostics_sign_in_broken">Sisselogimine näib olevat aegunud, paus kuni %1$s</string>
+</resources>

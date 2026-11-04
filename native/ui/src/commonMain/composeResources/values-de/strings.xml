@@ -23,7 +23,6 @@
     <string name="ago_minutes">%1$d Min.</string>
     <string name="ago_hours">%1$d Std.</string>
 
-    <string name="problem_no_account">Kein X-Konto. Importiere XTAs Sicherung mit den Konten.</string>
     <string name="problem_rate_limited">X bremst gerade jedes Konto. Versuch es in ein paar Minuten noch einmal.</string>
     <string name="problem_offline">Keine Verbindung zu X.</string>
     <string name="problem_signing">Die Anfragesignatur für X ließ sich nicht einrichten. Versuch es gleich noch einmal.</string>

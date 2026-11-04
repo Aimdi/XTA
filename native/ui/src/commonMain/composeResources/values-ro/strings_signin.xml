@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Signing in to X as XTA does (lib/client/login_webview.dart, x_cookie_login.dart). -->
+<resources>
+    <string name="signin_add_account">Adaugă cont</string>
+    <string name="signin_logging_in_title">Autentificare în XTA</string>
+    <string name="signin_logging_in_text">Contul cu care te autentifici nu schimbă ce vezi. Abonamentele, grupurile și postările salvate rămân pe acest dispozitiv și nu ating niciodată contul tău real. XTA se autentifică doar ca să citească: nu poate aprecia, reposta sau răspunde.\n\nPoți adăuga mai multe conturi. XTA îl alege pe cel care nu a atins limita de cereri pe punctul final de care are nevoie și căruia nu tocmai i-a eșuat autentificarea — asta ține departe eroarea „Prea multe cereri”.</string>
+    <string name="signin_import_title">Importați abonamente</string>
+    <string name="signin_import_text">Abonamentele sunt locale în XTA. Sunt independente de abonamentele contului tău real X. Autentificarea nu afectează abonamentele din XTA.\n\nVrei să imporți în XTA abonamentele lui @%1$s?</string>
+    <string name="signin_cookie_help">Conectează-te la x.com în browser, deschide instrumentele pentru dezvoltatori (F12) și copiază cookie-urile auth_token și ct0 din Stocare → Cookie-uri. Lipește-le mai jos sub forma auth_token=…; ct0=…. Sunt păstrate doar pe acest computer și nu sunt partajate niciodată.</string>
+    <string name="signin_open_in_browser">Deschide în browser</string>
+    <string name="signin_username">Nume de utilizator</string>
+    <string name="signin_cookies">Cookie-uri de la x.com</string>
+</resources>

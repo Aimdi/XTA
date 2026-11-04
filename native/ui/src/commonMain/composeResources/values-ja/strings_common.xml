@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Read failures as XTA's full-page errors say them (lib/ui/errors.dart), and closing the app. -->
+<resources>
+    <string name="problem_no_account_title">現在利用できるアカウントがありません</string>
+    <string name="problem_no_account_text">XTA を使うには 𝕏 のアカウントが少なくとも 1 つ必要です。アカウントを追加して始めましょう。</string>
+    <string name="problem_rate_limited_title">𝕏 によりレート制限中</string>
+    <string name="problem_rate_limited_text">短時間にリクエストが多すぎました。しばらくしてからもう一度お試しいただくか、別のアカウントを追加して XTA を引き続きご利用ください。</string>
+    <string name="problem_no_working_account_title">アカウントが機能していません</string>
+    <string name="problem_no_working_account_text">現在、どのアカウントも機能していないようです。別のアカウントでログインするか、後でもう一度お試しください。</string>
+    <string name="problem_endpoint_refused_title">𝕏 にこのリクエストを断られました</string>
+    <string name="problem_endpoint_refused_text">𝕏 のこの部分ではすべてのアカウントが拒否されたため、アカウント側の問題ではなさそうです。𝕏 が何かを変更した可能性が高く、アプリは可能になり次第自動で修復します。しばらくしてからもう一度お試しください。</string>
+    <string name="problem_signing_title">X のリクエスト署名を利用できません</string>
+    <string name="problem_signing_text">XTA は、X が現在求めているトランザクション トークンを導出できませんでした。アカウントには問題がないかもしれません。少し待ってから再試行するか、診断を確認してください。</string>
+    <string name="problem_offline_title">X にアクセスできませんでした</string>
+    <string name="problem_offline_text">インターネット接続を確認してください。</string>
+    <string name="problem_timed_out_title">タイムアウト</string>
+    <string name="problem_timed_out_text">読み込みに時間がかかり過ぎています。ネットワーク接続を確認してください！</string>
+    <string name="problem_service_unavailable_title">X は一時的に利用できません</string>
+    <string name="problem_service_unavailable_text">X がサーバーエラーを返しました。キャッシュ済みの投稿を読み続けて、後で再試行できます。</string>
+    <string name="problem_request_unavailable_title">このリクエストは利用できません</string>
+    <string name="problem_request_unavailable_text">X はこのリクエストを拒否しました。一時的に利用できないか、サービスのこの部分が変わった可能性があります。</string>
+    <string name="problem_oops">問題が発生しました🥲</string>
+    <string name="problem_http_text">X が HTTP %1$d を返しました。</string>
+    <string name="problem_retry_in">%1$s 後に再試行</string>
+    <string name="close_app_confirm">XTA を終了しますか？</string>
+</resources>

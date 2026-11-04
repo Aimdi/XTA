@@ -346,11 +346,11 @@
     <string name="settings_crash_keep">Guardar relatórios de falhas neste dispositivo</string>
     <string name="settings_crash_keep_description">Quando o XTA Native para por causa de um erro, é escrito um relatório neste dispositivo, que não é enviado para lado nenhum. Desligado por predefinição.</string>
     <string name="settings_crash_none">Nenhum relatório de falhas guardado</string>
-    <string name="settings_image_cache_size">%1$s neste dispositivo.</string>
+    <string name="settings_image_cache_size">%1$s neste dispositivo. As imagens com mais de %2$d dias são removidas automaticamente.</string>
     <string name="settings_move_up">Mover para cima</string>
     <string name="settings_move_down">Mover para baixo</string>
     <string name="intro_device_footnote">Os relatórios de falhas ficam desligados até os ligares nas definições, e nunca saem deste dispositivo.</string>
-    <string name="intro_account_body">O XTA Native lê o X com as contas que já usas no XTA: importa a cópia de segurança do XTA para as trazer. Também podes começar sem nenhuma.</string>
+    <string name="intro_account_body">O XTA só inicia sessão para ler. A conta que usares não muda o que vês — e podes começar sem nenhuma.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">Limite de pedidos em %1$d ponto de acesso</item>
         <item quantity="many">Limite de pedidos em %1$d pontos de acesso</item>

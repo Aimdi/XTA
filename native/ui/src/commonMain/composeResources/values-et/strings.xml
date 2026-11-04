@@ -23,7 +23,6 @@
     <string name="ago_minutes">%1$d min</string>
     <string name="ago_hours">%1$d t</string>
 
-    <string name="problem_no_account">X-i kontot pole. Impordi XTA varukoopia koos selle kontodega.</string>
     <string name="problem_rate_limited">X piirab siin kõiki kontosid. Proovi mõne minuti pärast uuesti.</string>
     <string name="problem_offline">X-iga pole ühendust.</string>
     <string name="problem_signing">X-i päringute allkirjastamist ei õnnestunud seadistada. Proovi kohe uuesti.</string>

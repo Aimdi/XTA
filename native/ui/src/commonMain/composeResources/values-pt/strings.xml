@@ -23,7 +23,6 @@
     <string name="ago_minutes">%1$d min</string>
     <string name="ago_hours">%1$d h</string>
 
-    <string name="problem_no_account">Nenhuma conta X. Importe a cópia de segurança do XTA com as respetivas contas.</string>
     <string name="problem_rate_limited">O X está a limitar todas as contas aqui. Tente novamente dentro de alguns minutos.</string>
     <string name="problem_offline">Sem ligação ao X.</string>
     <string name="problem_signing">Não foi possível preparar a assinatura dos pedidos ao X. Tente novamente daqui a pouco.</string>

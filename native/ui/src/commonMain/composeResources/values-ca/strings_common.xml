@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Read failures as XTA's full-page errors say them (lib/ui/errors.dart), and closing the app. -->
+<resources>
+    <string name="problem_no_account_title">No hi ha cap compte disponible ara mateix</string>
+    <string name="problem_no_account_text">XTA necessita com a mínim un compte de 𝕏 per funcionar. Afegiu un compte per començar.</string>
+    <string name="problem_rate_limited_title">𝕏 ha limitat les peticions</string>
+    <string name="problem_rate_limited_text">Heu fet massa peticions en massa poc temps. Torneu-ho a provar més tard o afegiu un altre compte per continuar utilitzant XTA.</string>
+    <string name="problem_no_working_account_title">Els vostres comptes no funcionen</string>
+    <string name="problem_no_working_account_text">Sembla que cap dels vostres comptes no funciona ara mateix. Inicieu la sessió amb un altre compte o torneu-ho a provar més tard.</string>
+    <string name="problem_endpoint_refused_title">𝕏 ha rebutjat aquesta petició</string>
+    <string name="problem_endpoint_refused_text">Tots els comptes han estat rebutjats en aquesta part d'𝕏, així que probablement no són els teus comptes. Segurament 𝕏 ha canviat alguna cosa; l'aplicació es repara sola quan pot. Torna-ho a provar d'aquí a una estona.</string>
+    <string name="problem_signing_title">La signatura de les peticions a X no està disponible</string>
+    <string name="problem_signing_text">XTA no ha pogut obtenir el testimoni de transacció que X demana ara. Potser els teus comptes estan bé; torna-ho a provar d'aquí a poc o consulta el Diagnòstic.</string>
+    <string name="problem_offline_title">No s'ha pogut contactar amb X</string>
+    <string name="problem_offline_text">Comprova la connexió a Internet.</string>
+    <string name="problem_timed_out_title">Temps excedit</string>
+    <string name="problem_timed_out_text">Ha trigat massa a carregar-se. Comprova la connexió de xarxa!</string>
+    <string name="problem_service_unavailable_title">X no està disponible temporalment</string>
+    <string name="problem_service_unavailable_text">X ha retornat un error del servidor. Pots continuar llegint les publicacions de la memòria cau i tornar-ho a provar més tard.</string>
+    <string name="problem_request_unavailable_title">Aquesta petició no està disponible</string>
+    <string name="problem_request_unavailable_text">X ha rebutjat aquesta petició. Potser no està disponible temporalment o aquesta part del servei ha canviat.</string>
+    <string name="problem_oops">Ui! Alguna cosa ha anat malament 🥲</string>
+    <string name="problem_http_text">X ha retornat HTTP %1$d.</string>
+    <string name="problem_retry_in">Torna-ho a provar d’aquí a %1$s</string>
+    <string name="close_app_confirm">Segur que vols tancar XTA?</string>
+</resources>

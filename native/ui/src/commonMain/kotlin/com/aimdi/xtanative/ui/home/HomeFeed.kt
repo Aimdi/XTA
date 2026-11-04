@@ -135,7 +135,7 @@ internal fun HomeFeedPage(
             if (current != null) {
                 holder.SaveableStateProvider(current.key) {
                     val toTop = if (timelines.toTop.page == timelines.index) timelines.toTop.count else 0
-                    TimelinePage(current, toTop, following.mediaOnly, actions, routes, networks, PaddingValues(bottom = padding.calculateBottomPadding()))
+                    TimelinePage(current, toTop, following.mediaOnly, actions, networks, PaddingValues(bottom = padding.calculateBottomPadding()))
                 }
             }
         }
@@ -159,7 +159,6 @@ private fun TimelinePage(
     toTop: Int,
     followingMedia: Boolean,
     actions: PostActions,
-    routes: HomeRoutes,
     networks: HomeNetworks,
     bottom: PaddingValues,
 ) {
@@ -169,7 +168,7 @@ private fun TimelinePage(
             val state by vm.ui.collectAsStateWithLifecycle()
             GroupFeedBody(state, vm, actions, rememberLazyListState(), bottom, mediaOnly = followingMedia, toTop = toTop)
         }
-        HomeTab.ForYou -> ForYouPage(toTop, actions, bottom, onImport = { routes.openIfExists(HomeRoutes.IMPORT) })
+        HomeTab.ForYou -> ForYouPage(toTop, actions, bottom)
         is HomeTab.Network -> networks.Page(tab.id, bottom, toTop)
         is HomeTab.Group -> Unit
     }

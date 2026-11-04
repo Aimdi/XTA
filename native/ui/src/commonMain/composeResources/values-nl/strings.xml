@@ -23,7 +23,6 @@
     <string name="ago_minutes">%1$d min</string>
     <string name="ago_hours">%1$d u</string>
 
-    <string name="problem_no_account">Geen X-account. Importeer de back-up van XTA met de accounts erin.</string>
     <string name="problem_rate_limited">X beperkt hier elk account. Probeer het over een paar minuten opnieuw.</string>
     <string name="problem_offline">Geen verbinding met X.</string>
     <string name="problem_signing">Het ondertekenen van verzoeken aan X kon niet worden ingesteld. Probeer het zo opnieuw.</string>

@@ -346,11 +346,11 @@
     <string name="settings_crash_keep">Hoia tõrketeateid selles seadmes</string>
     <string name="settings_crash_keep_description">Kui XTA Native vea tõttu seiskub, kirjutatakse sellest teade selles seadmes ja seda ei saadeta kuhugi. Vaikimisi välja lülitatud.</string>
     <string name="settings_crash_none">Salvestatud tõrketeateid pole</string>
-    <string name="settings_image_cache_size">%1$s selles seadmes.</string>
+    <string name="settings_image_cache_size">%1$s selles seadmes. Üle %2$d päeva vanad pildid eemaldatakse ise.</string>
     <string name="settings_move_up">Liiguta üles</string>
     <string name="settings_move_down">Liiguta alla</string>
     <string name="intro_device_footnote">Tõrketeated jäävad välja lülitatuks, kuni lülitad need seadetes sisse, ega lahku kunagi sellest seadmest.</string>
-    <string name="intro_account_body">XTA Native loeb X-i kontodega, mida juba XTA-s kasutad: impordi XTA varukoopia, et need üle tuua. Alustada saab ka kontota.</string>
+    <string name="intro_account_body">XTA logib sisse ainult lugemiseks. See, millist kontot kasutad, ei muuda seda, mida näed — ja alustada saab ka kontota.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">Päringupiirang %1$d lõpp-punktis</item>
         <item quantity="other">Päringupiirang %1$d lõpp-punktis</item>

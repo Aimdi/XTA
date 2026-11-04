@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Signing in to X as XTA does (lib/client/login_webview.dart, x_cookie_login.dart). -->
+<resources>
+    <string name="signin_add_account">खाता जोड़ें</string>
+    <string name="signin_logging_in_title">XTA में लॉग इन हो रहे हैं</string>
+    <string name="signin_logging_in_text">आप किस खाते से साइन इन करते हैं, इससे आपको दिखने वाली चीज़ें नहीं बदलतीं। सदस्यताएँ, समूह और सहेजी गई पोस्ट इसी उपकरण पर रहती हैं और आपके असली खाते को नहीं छूतीं। XTA सिर्फ़ पढ़ने के लिए साइन इन करता है — यह लाइक, रीपोस्ट या जवाब नहीं कर सकता।\n\nआप कई खाते जोड़ सकते हैं। XTA वह खाता चुनता है जिसकी ज़रूरी एंडपॉइंट पर दर सीमा न लगी हो और जिसका साइन इन अभी-अभी विफल न हुआ हो — यही «बहुत ज़्यादा अनुरोध» त्रुटि को दूर रखता है।</string>
+    <string name="signin_import_title">सदस्यताएँ आयात करें</string>
+    <string name="signin_import_text">सदस्यताएँ केवल XTA में रहती हैं। ये आपके असली X खाते की सदस्यताओं से अलग हैं। लॉग इन करने से XTA की सदस्यताओं पर कोई असर नहीं पड़ता।\n\nक्या आप @%1$s की सदस्यताएँ XTA में आयात करना चाहते हैं?</string>
+    <string name="signin_cookie_help">अपने ब्राउज़र में x.com पर साइन इन करें, डेवलपर टूल (F12) खोलें और स्टोरेज → कुकीज़ से auth_token और ct0 कुकीज़ कॉपी करें। उन्हें नीचे auth_token=…; ct0=… के रूप में चिपकाएँ। ये केवल इसी कंप्यूटर पर रहती हैं और कभी साझा नहीं की जातीं।</string>
+    <string name="signin_open_in_browser">ब्राउज़र में खोलें</string>
+    <string name="signin_username">उपयोगकर्ता नाम</string>
+    <string name="signin_cookies">x.com की कुकीज़</string>
+</resources>

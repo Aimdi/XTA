@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Signing in to X as XTA does (lib/client/login_webview.dart, x_cookie_login.dart). -->
+<resources>
+    <string name="signin_add_account">Add account</string>
+    <string name="signin_logging_in_title">Logging in XTA</string>
+    <string name="signin_logging_in_text">Which account you sign in with doesn't change what you see. Subscriptions, groups and saved posts stay on this device and never touch your real account. XTA signs in only to read X — it can't like, repost or reply.\n\nYou can add several accounts. XTA picks one that isn't rate limited on the endpoint it needs and hasn't just failed to sign in, which is what keeps "Too many requests" at bay.</string>
+    <string name="signin_import_title">Import subscriptions</string>
+    <string name="signin_import_text">Subscriptions are local to XTA. They are independent from subscriptions on your real X account. Logging-in does not affect XTA subscriptions.\n\nDo you want to import subscriptions from @%1$s in XTA?</string>
+    <string name="signin_cookie_help">Sign in to x.com in your web browser, open its developer tools (F12) and copy the auth_token and ct0 cookies from Storage → Cookies. Paste them below as auth_token=…; ct0=…. They are stored only on this computer and never shared.</string>
+    <string name="signin_open_in_browser">Open in browser</string>
+    <string name="signin_username">Username</string>
+    <string name="signin_cookies">Cookies from x.com</string>
+</resources>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Accounts' avatar and Diagnostics' account health and recent reads, in XTA's words. -->
+<resources>
+    <string name="settings_avatar_title">Váš avatar</string>
+    <string name="settings_avatar_change">Klepnutím změníte obrázek vlevo nahoře</string>
+    <string name="settings_avatar_description">Obrázek vlevo nahoře a v nabídce — zůstane v tomto zařízení</string>
+    <string name="settings_avatar_choose">Vybrat ze zařízení</string>
+    <string name="settings_avatar_from_account">Použít profilovou fotku z X</string>
+    <string name="settings_avatar_error">Profilový obrázek se nepodařilo načíst</string>
+    <string name="settings_avatar_clear">Použít monogram</string>
+    <string name="settings_diagnostics_recent_reads">Nedávné operace čtení</string>
+    <string name="settings_diagnostics_sign_in_broken">Přihlášení zřejmě přestalo platit, pauza do %1$s</string>
+</resources>

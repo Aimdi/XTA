@@ -23,7 +23,6 @@
     <string name="ago_minutes">%1$d min</string>
     <string name="ago_hours">%1$d h</string>
 
-    <string name="problem_no_account">No hi ha cap compte d'X. Importa la còpia de seguretat de l'XTA amb els seus comptes.</string>
     <string name="problem_rate_limited">X està limitant tots els comptes d'aquí. Torna-ho a provar d'aquí a uns minuts.</string>
     <string name="problem_offline">Sense connexió amb X.</string>
     <string name="problem_signing">No s'ha pogut preparar la signatura de les sol·licituds a X. Torna-ho a provar d'aquí a un moment.</string>

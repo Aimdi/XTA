@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Accounts' avatar and Diagnostics' account health and recent reads, in XTA's words. -->
+<resources>
+    <string name="settings_avatar_title">Ảnh đại diện của bạn</string>
+    <string name="settings_avatar_change">Chạm để đổi ảnh góc trên bên trái</string>
+    <string name="settings_avatar_description">Ảnh góc trên bên trái và trong ngăn kéo — chỉ lưu trên thiết bị này</string>
+    <string name="settings_avatar_choose">Chọn từ thiết bị</string>
+    <string name="settings_avatar_from_account">Dùng ảnh hồ sơ X</string>
+    <string name="settings_avatar_error">Không tải được ảnh hồ sơ đó</string>
+    <string name="settings_avatar_clear">Dùng chữ cái viết tắt</string>
+    <string name="settings_diagnostics_recent_reads">Các thao tác đọc gần đây</string>
+    <string name="settings_diagnostics_sign_in_broken">Đăng nhập có vẻ không còn hiệu lực, tạm dừng đến %1$s</string>
+</resources>

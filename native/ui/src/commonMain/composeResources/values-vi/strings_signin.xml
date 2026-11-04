@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Signing in to X as XTA does (lib/client/login_webview.dart, x_cookie_login.dart). -->
+<resources>
+    <string name="signin_add_account">Thêm tài khoản</string>
+    <string name="signin_logging_in_title">Đang đăng nhập vào XTA</string>
+    <string name="signin_logging_in_text">Bạn đăng nhập bằng tài khoản nào cũng không làm thay đổi những gì bạn thấy. Các mục theo dõi, nhóm và bài đã lưu nằm trên thiết bị này và không hề đụng đến tài khoản thật của bạn. XTA đăng nhập chỉ để đọc — nó không thể thích, đăng lại hay trả lời.\n\nBạn có thể thêm nhiều tài khoản. XTA chọn tài khoản chưa bị giới hạn tần suất ở điểm cuối mà nó cần và vừa rồi không đăng nhập thất bại; đó chính là thứ giữ lỗi "Quá nhiều yêu cầu" ở xa.</string>
+    <string name="signin_import_title">Nhập đăng kí</string>
+    <string name="signin_import_text">Danh sách đăng ký được lưu cục bộ trên XTA và hoàn toàn độc lập với tài khoản X thật của bạn. Việc đăng nhập sẽ không ảnh hưởng đến các đăng ký hiện có trên XTA.\n\nBạn có muốn nhập danh sách người theo dõi từ @%1$s vào XTA?</string>
+    <string name="signin_cookie_help">Đăng nhập x.com trong trình duyệt, mở công cụ dành cho nhà phát triển (F12) và sao chép cookie auth_token và ct0 trong mục Bộ nhớ → Cookie. Dán chúng vào bên dưới theo dạng auth_token=…; ct0=…. Chúng chỉ được lưu trên máy tính này và không bao giờ được chia sẻ.</string>
+    <string name="signin_open_in_browser">Mở trong trình duyệt</string>
+    <string name="signin_username">Tên người dùng</string>
+    <string name="signin_cookies">Cookie từ x.com</string>
+</resources>
