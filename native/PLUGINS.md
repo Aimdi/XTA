@@ -44,7 +44,7 @@ plugin API version it was built against, `PLUGIN_API_VERSION`) and `entry`
 
 ## The plugin API
 
-`PLUGIN_API_VERSION` is 3. Version 1 is what native-0.1.41 shipped; 2,
+`PLUGIN_API_VERSION` is 4. Version 1 is what native-0.1.41 shipped; 2,
 which native-0.1.45 shipped, added `cashtagStrip` and `routeForCashtag` and
 the kit's pieces of that time (the article reader, `FeedReads`, X posts in a
 plugin, the chip tabs, the shelf, the recent searches, the action row,
@@ -332,7 +332,7 @@ A group's Discover (XTA's group_discovery_sources.dart) suggests accounts
 its members point at that the reader does not follow: X's from what the
 group feed kept, the members' latest posts and their Following lists, and
 every other network's through its plugin's `XtaPlugin.discovery`, a
-`PluginDiscovery` (version 3):
+`PluginDiscovery` (version 4):
 
 | Member | What it is |
 |---|---|

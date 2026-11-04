@@ -25,7 +25,7 @@ import kotlinx.serialization.json.JsonElement
  * switch, its tab switch, the tabs' swipes and a long piece of work's
  * progress.
  */
-const val PLUGIN_API_VERSION: Int = 3
+const val PLUGIN_API_VERSION: Int = 4
 
 /**
  * The oldest plugin API whose plugins this app still loads: what they use of
