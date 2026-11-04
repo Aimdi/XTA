@@ -20,18 +20,18 @@ layer is written in `networks/<id>` first, then moves with its screens into
 | XTA | Read | Screens |
 |---|---|---|
 | x (`lib/client`, `plugins/x`) | `core/x`: every read XTA makes | feed, post, profile, search, Discover, communities, list import and antennas done; the rest in the screens wave |
-| reddit | `networks/reddit` ported (237 tests) | screens wave |
-| bluesky | `plugins/bluesky` (the reading layer moved from `networks/bluesky`; 98 tests, live check passes) | the first plugin: Discover and Following on Home's strip, threads, profiles with their tabs, search, its settings |
-| mastodon | `networks/mastodon` ported (146 tests) | screens wave |
+| reddit | `plugins/reddit` (moved from `networks/reddit`; 239 tests) | plugin: XTA's tab, communities, threads, search and settings |
+| bluesky | `plugins/bluesky` (124 tests, live check passes) | plugin: Following, Discover and custom feeds, lists, device likes, threads, profiles, search, imports and settings |
+| mastodon | `plugins/mastodon` (169 tests) | plugin: Explore, Local, Federated and Following, trending tags, profiles, threads, hashtags, search, boosts and quotes, saved posts and settings |
 | threads | `networks/threads` ported (166 tests, live check passes) | screens wave |
-| substack | `networks/substack` ported (153 tests) | screens wave (reader, podcasts) |
-| booru | `networks/booru` ported (151 tests, live check passes) | screens wave |
-| pixiv | `networks/pixiv` ported (216 tests) | screens wave |
+| substack | `plugins/substack` (177 tests) | plugin: XTA's screens, the reader and podcasts |
+| booru | `plugins/booru` (151 tests, live check passes) | plugin: XTA's screens and settings |
+| pixiv | `plugins/pixiv` (220 tests, live check passes) | plugin: Home, Rankings, Favorites and Search, works and novels, profiles, comments, series, Pixivision and settings |
 | ehviewer | `networks/ehviewer` ported (97 tests, live check passes) | screens wave |
 | instagram | `networks/instagram` ported (51 tests) | screens wave |
 | tiktok | `networks/tiktok` ported (52 tests, live check passes) | screens wave |
 | rss | `networks/rss` ported (48 tests) | screens wave |
-| hackernews | `networks/hackernews` ported (18 tests) | screens wave |
+| hackernews | `plugins/hackernews` (29 tests) | plugin: Top, New, Best, Ask, Show and Jobs, Saved and Following, stories with their comments, users, search and settings |
 | websources | `networks/websources` ported (73 tests) | screens wave |
 | stocks | `networks/stocks` ported (161 tests, live check passes) | screens wave |
 | immich | `networks/immich` ported (52 tests): saving to the reader's own library | screens wave |
