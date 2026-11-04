@@ -77,31 +77,33 @@ fun networkProblemText(problem: Problem, network: String): String = when (proble
 /** A read of [network] that brought nothing: why, and a way to try again. */
 @Composable
 fun NetworkProblemView(problem: Problem, network: String, onRetry: () -> Unit, modifier: Modifier = Modifier) {
-    Column(
-        modifier.fillMaxWidth().padding(horizontal = 32.dp, vertical = 40.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        Text(
-            networkProblemText(problem, network),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
-        TextButton(onClick = onRetry) { Text(stringResource(Res.string.retry)) }
-    }
+    RetryMessage(networkProblemText(problem, network), onRetry, modifier)
 }
 
 /** One row in a list: a failed page of [network] under what is already shown. */
 @Composable
 fun NetworkProblemRow(problem: Problem, network: String, onRetry: () -> Unit, modifier: Modifier = Modifier) {
+    RetryRow(networkProblemText(problem, network), onRetry, modifier)
+}
+
+/** In place of a list, [message] about a read that brought nothing, in a network's own words, and a way to try again. */
+@Composable
+fun RetryMessage(message: String, onRetry: () -> Unit, modifier: Modifier = Modifier) {
+    Column(
+        modifier.fillMaxWidth().padding(horizontal = 32.dp, vertical = 40.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Text(message, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
+        TextButton(onClick = onRetry) { Text(stringResource(Res.string.retry)) }
+    }
+}
+
+/** One row in a list: [message] about a page that failed under what is already shown, and a way to try again. */
+@Composable
+fun RetryRow(message: String, onRetry: () -> Unit, modifier: Modifier = Modifier) {
     Column(modifier.fillMaxWidth().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            networkProblemText(problem, network),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
+        Text(message, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
         TextButton(onClick = onRetry) { Text(stringResource(Res.string.retry)) }
     }
 }
@@ -274,11 +276,17 @@ fun ReadsMoreNearEnd(state: LazyListState, paged: PagedState<*>, more: () -> Uni
 /** Scrolls [state] to the top each time [toTop] grows past what it last answered, and not when a list comes back into view. */
 @Composable
 fun ScrollsToTop(state: LazyListState, toTop: Int) {
+    ScrollsToTop(toTop) { state.animateScrollToItem(0) }
+}
+
+/** Runs [scroll] (to the top of a grid, a pager's first page) each time [toTop] grows past what it last answered, and not when a list comes back into view. */
+@Composable
+fun ScrollsToTop(toTop: Int, scroll: suspend () -> Unit) {
     var answered by rememberSaveable { mutableIntStateOf(toTop) }
     LaunchedEffect(toTop) {
         if (toTop > answered) {
             answered = toTop
-            state.animateScrollToItem(0)
+            scroll()
         }
     }
 }

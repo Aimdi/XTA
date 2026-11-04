@@ -17,6 +17,10 @@ class PluginStringsTest {
             "de" to mapOf("hello" to "Hallo", "posts_by" to "Beiträge von %1\$s", "count#one" to "1 Beitrag", "count#other" to "%1\$d Beiträge"),
             "pt-BR" to mapOf("hello" to "Olá do Brasil"),
             "pt" to mapOf("hello" to "Olá"),
+            "ru" to mapOf("count#one" to "%1\$d пост", "count#few" to "%1\$d поста", "count#many" to "%1\$d постов", "count#other" to "%1\$d поста"),
+            "ja" to mapOf("count#other" to "%1\$d件"),
+            "ar" to mapOf("count#zero" to "لا منشورات", "count#two" to "منشوران", "count#other" to "%1\$d منشور"),
+            "fr" to mapOf("count#one" to "%1\$d publication", "count#other" to "%1\$d publications"),
         ),
     ) {
         val hello = text("hello")
@@ -56,6 +60,36 @@ class PluginStringsTest {
         assertEquals("1 Beitrag", Texts.count.get(1, "de", 1))
         assertEquals("3 Beiträge", Texts.count.get(3, "de", 3))
         assertEquals("0 posts", Texts.count.get(0, "en", 0))
+    }
+
+    @Test
+    fun pluralsTakeEachLanguagesOwnCategories() {
+        assertEquals(listOf("1 пост", "3 поста", "5 постов", "11 постов", "21 пост", "22 поста"), listOf(1, 3, 5, 11, 21, 22).map { Texts.count.get(it, "ru", it) })
+        assertEquals(listOf("لا منشورات", "منشوران"), listOf(0, 2).map { Texts.count.get(it, "ar", it) })
+        assertEquals(listOf("few", "many", "other"), listOf(7, 11, 100).map { pluralCategory(it.toLong(), "ar") })
+        assertEquals("0 publication", Texts.count.get(0, "fr", 0))
+    }
+
+    @Test
+    fun aLanguageWithOneFormNeverBorrowsTheDefaultsOne() {
+        assertEquals("1件", Texts.count.get(1, "ja", 1))
+    }
+
+    @Test
+    fun aLanguageWithoutThePluralReadsTheDefaultByItsRule() {
+        assertEquals("1 post", Texts.count.get(1, "it", 1))
+        assertEquals("2 posts", Texts.count.get(2, "pl", 2))
+    }
+
+    @Test
+    fun theCategoriesFollowCldrForWholeNumbers() {
+        assertEquals(listOf("one", "few", "many", "many", "few"), listOf(1, 2, 5, 12, 22).map { pluralCategory(it.toLong(), "pl") })
+        assertEquals(listOf("one", "few", "other"), listOf(1, 3, 5).map { pluralCategory(it.toLong(), "cs") })
+        assertEquals(listOf("one", "one", "other"), listOf(0, 1, 2).map { pluralCategory(it.toLong(), "pt-BR") })
+        assertEquals(listOf("other", "one"), listOf(0, 1).map { pluralCategory(it.toLong(), "pt-PT") })
+        assertEquals(listOf("one", "few", "other"), listOf(1, 19, 20).map { pluralCategory(it.toLong(), "ro") })
+        assertEquals("many", pluralCategory(1_000_000, "es"))
+        assertEquals("other", pluralCategory(1, "zh-TW"))
     }
 
     @Test
