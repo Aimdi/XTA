@@ -103,7 +103,7 @@
     <string name="password_hash_help">Moebooru 需要網站提供的 SHA1 密碼雜湊，而不是密碼本身。</string>
     <string name="per_site_note">每個站點分別保存最高分級、封鎖標籤、登入名稱和金鑰。追蹤的標籤在所有站點間共用。</string>
     <string name="pick_date">選擇日期</string>
-    <string name="plugin_description">瀏覽 Danbooru 系與 Gelbooru 系網站，在這台裝置上追蹤標籤</string>
+    <string name="plugin_description">瀏覽 Danbooru / Gelbooru 類網站，將標籤加入群組</string>
     <string name="plugin_name">Booru</string>
     <string name="pool_size">貼文：%1$d</string>
     <string name="pools">圖集</string>

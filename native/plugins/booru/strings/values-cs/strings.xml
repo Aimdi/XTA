@@ -106,7 +106,7 @@
     <string name="password_hash_help">Moebooru očekává hash hesla SHA1 z webu, ne samotné heslo.</string>
     <string name="per_site_note">Každý web si pamatuje vlastní maximální hodnocení, ztlumené štítky, přihlašovací jméno a klíč. Sledované štítky jsou společné pro všechny weby.</string>
     <string name="pick_date">Vyberte datum</string>
-    <string name="plugin_description">Procházejte weby z rodiny Danbooru a Gelbooru — sledujte štítky v tomto zařízení</string>
+    <string name="plugin_description">Procházejte weby z rodiny Danbooru a Gelbooru — sledujte štítky ve skupinách</string>
     <string name="plugin_name">Booru</string>
     <string name="pool_size">Příspěvky: %1$d</string>
     <string name="pools">Pooly</string>

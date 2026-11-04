@@ -104,7 +104,7 @@
     <string name="password_hash_help">Moebooru atendas la SHA1-haketaĵon de la pasvorto el la retejo, ne la pasvorton mem.</string>
     <string name="per_site_note">Ĉiu retejo konservas sian propran maksimuman taksadon, silentigitajn etikedojn, salutnomon kaj ŝlosilon. Sekvataj etikedoj estas komunaj al ĉiuj retejoj.</string>
     <string name="pick_date">Elekti daton</string>
-    <string name="plugin_description">Foliumu retejojn de la familioj Danbooru kaj Gelbooru — sekvu etikedojn en ĉi tiu aparato</string>
+    <string name="plugin_description">Foliumu retejojn de la familioj Danbooru kaj Gelbooru — sekvu etikedojn en grupoj</string>
     <string name="plugin_name">Booru</string>
     <string name="pool_size">Afiŝoj: %1$d</string>
     <string name="pools">Kolektoj</string>

@@ -104,7 +104,7 @@
     <string name="password_hash_help">Moebooru erwartet den SHA1-Hash der Seite, nicht das Klartextpasswort.</string>
     <string name="per_site_note">Jede Seite behält ihre eigene maximale Bewertung, stummen Tags, Anmeldung und Schlüssel. Gefolgte Tags gelten für alle Seiten.</string>
     <string name="pick_date">Datum wählen</string>
-    <string name="plugin_description">Hosts der Danbooru- und Gelbooru-Familie durchstöbern — Tags auf diesem Gerät folgen</string>
+    <string name="plugin_description">Danbooru- und Gelbooru-Hosts durchsuchen — Tags in Gruppen folgen</string>
     <string name="plugin_name">Booru</string>
     <string name="pool_size">Beiträge: %1$d</string>
     <string name="pools">Pools</string>

@@ -106,7 +106,7 @@
     <string name="password_hash_help">Moebooru čakaje cheš parola SHA1 z sajta, a nie sam parol.</string>
     <string name="per_site_note">Kožny sajt zachoŭvaje svoj maksimalny rejtynh, schavanyja tehi, lahin i kluč. Tehi, na jakija vy padpisany, ahulnyja dla ŭsich sajtaŭ.</string>
     <string name="pick_date">Vybierycie datu</string>
-    <string name="plugin_description">Prahliadajcie sajty siamejstva Danbooru i Gelbooru — padpisvajciesia na tehi na hetaj pryladzie</string>
+    <string name="plugin_description">Prahliadajcie sajty siamejstva Danbooru i Gelbooru — padpisvajciesia na tehi ŭ hrupach</string>
     <string name="plugin_name">Booru</string>
     <string name="pool_size">Dopisaŭ: %1$d</string>
     <string name="pools">Puły</string>

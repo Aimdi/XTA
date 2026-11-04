@@ -105,7 +105,7 @@
     <string name="password_hash_help">Moebooru espera el hash SHA1 de la contrasenya que dona el lloc, no la contrasenya en si.</string>
     <string name="per_site_note">Cada lloc conserva la seva classificació màxima, etiquetes silenciades, usuari i clau. Les etiquetes seguides són comunes a tots els llocs.</string>
     <string name="pick_date">Tria una data</string>
-    <string name="plugin_description">Explora llocs de la família Danbooru i Gelbooru — segueix etiquetes en aquest dispositiu</string>
+    <string name="plugin_description">Explora llocs de la família Danbooru i Gelbooru — segueix etiquetes en grups</string>
     <string name="plugin_name">Booru</string>
     <string name="pool_size">Publicacions: %1$d</string>
     <string name="pools">Col·leccions</string>

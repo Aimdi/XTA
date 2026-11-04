@@ -106,7 +106,7 @@
     <string name="password_hash_help">Moebooru oczekuje skrótu SHA1 hasła z serwisu, a nie samego hasła.</string>
     <string name="per_site_note">Każda witryna ma własną maksymalną klasyfikację, wyciszone tagi, login i klucz. Obserwowane tagi są wspólne dla wszystkich witryn.</string>
     <string name="pick_date">Wybierz datę</string>
-    <string name="plugin_description">Przeglądaj serwisy z rodziny Danbooru i Gelbooru — obserwuj tagi na tym urządzeniu</string>
+    <string name="plugin_description">Przeglądaj serwisy z rodziny Danbooru i Gelbooru — obserwuj tagi w grupach</string>
     <string name="plugin_name">Booru</string>
     <string name="pool_size">Posty: %1$d</string>
     <string name="pools">Pule</string>

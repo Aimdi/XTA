@@ -107,7 +107,7 @@
     <string name="password_hash_help">Moebooru expects the SHA1 password hash from the site, not the plain password.</string>
     <string name="per_site_note">Each site keeps its own maximum rating, muted tags, login and key. Followed tags are shared by every site.</string>
     <string name="pick_date">Pick a date</string>
-    <string name="plugin_description">Browse Danbooru-family and Gelbooru hosts — follow tags on this device</string>
+    <string name="plugin_description">Browse Danbooru-family and Gelbooru hosts — follow tags into groups</string>
     <string name="plugin_name">Booru</string>
     <string name="pool_size">Posts: %1$d</string>
     <string name="pools">Pools</string>

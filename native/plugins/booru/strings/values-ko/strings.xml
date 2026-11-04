@@ -103,7 +103,7 @@
     <string name="password_hash_help">Moebooru는 일반 비밀번호가 아니라 사이트에서 받은 SHA1 비밀번호 해시가 필요합니다.</string>
     <string name="per_site_note">최대 등급, 숨긴 태그, 로그인과 키는 사이트마다 따로 저장됩니다. 팔로우한 태그는 모든 사이트에서 공유됩니다.</string>
     <string name="pick_date">날짜 선택</string>
-    <string name="plugin_description">Danbooru 계열과 Gelbooru 계열 사이트 둘러보기 — 태그는 이 기기에서 팔로우</string>
+    <string name="plugin_description">Danbooru 계열과 Gelbooru 계열 사이트 둘러보기 — 태그를 그룹에 담아 팔로우</string>
     <string name="plugin_name">Booru</string>
     <string name="pool_size">게시물: %1$d개</string>
     <string name="pools">풀</string>

@@ -106,7 +106,7 @@
     <string name="password_hash_help">Moebooru чакае хэш пароля SHA1 з сайта, а не сам пароль.</string>
     <string name="per_site_note">Кожны сайт захоўвае свой максімальны рэйтынг, схаваныя тэгі, лагін і ключ. Тэгі, на якія вы падпісаны, агульныя для ўсіх сайтаў.</string>
     <string name="pick_date">Выберыце дату</string>
-    <string name="plugin_description">Праглядайце сайты сямейства Danbooru і Gelbooru — падпісвайцеся на тэгі на гэтай прыладзе</string>
+    <string name="plugin_description">Праглядайце сайты сямейства Danbooru і Gelbooru — падпісвайцеся на тэгі ў групах</string>
     <string name="plugin_name">Booru</string>
     <string name="pool_size">Допісаў: %1$d</string>
     <string name="pools">Пулы</string>

@@ -103,7 +103,7 @@
     <string name="password_hash_help">Moebooru memerlukan hash SHA1 kata sandi dari situs, bukan kata sandi biasa.</string>
     <string name="per_site_note">Setiap situs menyimpan rating maksimum, tag yang dibisukan, login, dan kuncinya sendiri. Tag yang diikuti berlaku untuk semua situs.</string>
     <string name="pick_date">Pilih tanggal</string>
-    <string name="plugin_description">Jelajahi situs keluarga Danbooru dan Gelbooru — ikuti tag di perangkat ini</string>
+    <string name="plugin_description">Jelajahi situs keluarga Danbooru dan Gelbooru — ikuti tag ke dalam grup</string>
     <string name="plugin_name">Booru</string>
     <string name="pool_size">Postingan: %1$d</string>
     <string name="pools">Kumpulan</string>

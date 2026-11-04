@@ -108,7 +108,7 @@
     <string name="password_hash_help">يتوقع Moebooru تجزئة SHA1 لكلمة المرور من الموقع، لا كلمة المرور نفسها.</string>
     <string name="per_site_note">يحتفظ كل موقع بأقصى تصنيف خاص به وبالوسوم المكتومة وبيانات الدخول والمفتاح. أما الوسوم المتابَعة فمشتركة بين جميع المواقع.</string>
     <string name="pick_date">اختر تاريخًا</string>
-    <string name="plugin_description">تصفّح مواقع عائلة Danbooru وGelbooru — وتابِع الوسوم على هذا الجهاز</string>
+    <string name="plugin_description">تصفّح مواقع عائلة Danbooru وGelbooru — وتابِع الوسوم في المجموعات</string>
     <string name="plugin_name">Booru</string>
     <string name="pool_size">المنشورات: %1$d</string>
     <string name="pools">المجموعات</string>

@@ -103,7 +103,7 @@
     <string name="password_hash_help">Moebooruは平文パスワードではなく、サイトのSHA1ハッシュを要求します。</string>
     <string name="per_site_note">最大レーティング、ミュートタグ、ログイン、キーはサイトごとに保存されます。フォロー中のタグはすべてのサイトで共通です。</string>
     <string name="pick_date">日付を選択</string>
-    <string name="plugin_description">Danbooru 系や Gelbooru 系のサイトを閲覧 — タグはこの端末でフォロー</string>
+    <string name="plugin_description">Danbooru系・Gelbooru系を閲覧し、タグをグループに追加</string>
     <string name="plugin_name">Booru</string>
     <string name="pool_size">投稿: %1$d 件</string>
     <string name="pools">プール</string>

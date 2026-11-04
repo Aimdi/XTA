@@ -103,7 +103,7 @@
     <string name="password_hash_help">Moebooru 需要站点的 SHA1 哈希，不是明文密码。</string>
     <string name="per_site_note">每个站点分别保存最高分级、屏蔽标签、登录名和密钥。关注的标签在所有站点间共享。</string>
     <string name="pick_date">选择日期</string>
-    <string name="plugin_description">浏览 Danbooru 系和 Gelbooru 系站点，在本设备上关注标签</string>
+    <string name="plugin_description">浏览 Danbooru / Gelbooru 类站点，将标签加入分组</string>
     <string name="plugin_name">Booru</string>
     <string name="pool_size">帖子：%1$d</string>
     <string name="pools">图集</string>

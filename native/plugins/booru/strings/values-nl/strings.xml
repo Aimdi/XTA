@@ -104,7 +104,7 @@
     <string name="password_hash_help">Moebooru verwacht de SHA1-hash van het wachtwoord van de site, niet het wachtwoord zelf.</string>
     <string name="per_site_note">Elke site onthoudt zijn eigen maximale classificatie, gedempte tags, login en sleutel. Gevolgde tags gelden voor alle sites.</string>
     <string name="pick_date">Kies een datum</string>
-    <string name="plugin_description">Blader door sites uit de Danbooru- en Gelbooru-familie — volg tags op dit apparaat</string>
+    <string name="plugin_description">Blader door sites uit de Danbooru- en Gelbooru-familie — volg tags in groepen</string>
     <string name="plugin_name">Booru</string>
     <string name="pool_size">Berichten: %1$d</string>
     <string name="pools">Pools</string>

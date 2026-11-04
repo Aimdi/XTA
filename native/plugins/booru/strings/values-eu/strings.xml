@@ -104,7 +104,7 @@
     <string name="password_hash_help">Moebooru-k guneko pasahitzaren SHA1 hasha espero du, ez pasahitza bera.</string>
     <string name="per_site_note">Gune bakoitzak bere sailkapen maximoa, isilarazitako etiketak, saioa eta gakoa gordetzen ditu. Jarraitutako etiketak gune guztientzat dira.</string>
     <string name="pick_date">Aukeratu data</string>
-    <string name="plugin_description">Arakatu Danbooru eta Gelbooru familiako guneak — jarraitu etiketei gailu honetan</string>
+    <string name="plugin_description">Arakatu Danbooru eta Gelbooru familiako guneak — jarraitu etiketei taldeetan</string>
     <string name="plugin_name">Booru</string>
     <string name="pool_size">Argitalpenak: %1$d</string>
     <string name="pools">Bildumak</string>

@@ -104,7 +104,7 @@
     <string name="password_hash_help">Moebooru düz parolayı değil, siteden alınan SHA1 parola karmasını bekler.</string>
     <string name="per_site_note">Her site kendi en yüksek derecelendirmesini, sessize alınan etiketlerini, girişini ve anahtarını saklar. Takip edilen etiketler tüm sitelerde ortaktır.</string>
     <string name="pick_date">Tarih seç</string>
-    <string name="plugin_description">Danbooru ve Gelbooru ailesinden siteleri gezin — etiketleri bu cihazda takip edin</string>
+    <string name="plugin_description">Danbooru ve Gelbooru ailesinden siteleri gezin — etiketleri gruplarda takip edin</string>
     <string name="plugin_name">Booru</string>
     <string name="pool_size">Gönderi: %1$d</string>
     <string name="pools">Havuzlar</string>

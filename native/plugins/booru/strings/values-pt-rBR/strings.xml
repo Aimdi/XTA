@@ -105,7 +105,7 @@
     <string name="password_hash_help">O Moebooru espera o hash SHA1 da senha fornecido pelo site, não a senha em si.</string>
     <string name="per_site_note">Cada site guarda sua própria classificação máxima, tags silenciadas, login e chave. As tags seguidas são compartilhadas por todos os sites.</string>
     <string name="pick_date">Escolha uma data</string>
-    <string name="plugin_description">Navegue por sites da família Danbooru e Gelbooru — siga tags neste dispositivo</string>
+    <string name="plugin_description">Navegue por sites da família Danbooru e Gelbooru — siga tags em grupos</string>
     <string name="plugin_name">Booru</string>
     <string name="pool_size">Postagens: %1$d</string>
     <string name="pools">Coleções</string>

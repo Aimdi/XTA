@@ -104,7 +104,7 @@
     <string name="password_hash_help">Moebooru ootab saidilt saadud parooli SHA1-räsi, mitte parooli ennast.</string>
     <string name="per_site_note">Iga sait jätab meelde oma suurima hinnangu, vaigistatud sildid, kasutajanime ja võtme. Jälgitavad sildid on kõigil saitidel ühised.</string>
     <string name="pick_date">Vali kuupäev</string>
-    <string name="plugin_description">Sirvi Danbooru ja Gelbooru perekonna saite — jälgi silte selles seadmes</string>
+    <string name="plugin_description">Sirvi Danbooru ja Gelbooru perekonna saite — jälgi silte rühmades</string>
     <string name="plugin_name">Booru</string>
     <string name="pool_size">Postitusi: %1$d</string>
     <string name="pools">Kogumikud</string>

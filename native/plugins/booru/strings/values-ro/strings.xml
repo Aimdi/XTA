@@ -105,7 +105,7 @@
     <string name="password_hash_help">Moebooru așteaptă hash-ul SHA1 al parolei dat de site, nu parola în sine.</string>
     <string name="per_site_note">Fiecare site își păstrează propriul rating maxim, etichetele ascunse, autentificarea și cheia. Etichetele urmărite sunt comune tuturor site-urilor.</string>
     <string name="pick_date">Alege o dată</string>
-    <string name="plugin_description">Răsfoiește site-uri din familia Danbooru și Gelbooru — urmărește etichete pe acest dispozitiv</string>
+    <string name="plugin_description">Răsfoiește site-uri din familia Danbooru și Gelbooru — urmărește etichete în grupuri</string>
     <string name="plugin_name">Booru</string>
     <string name="pool_size">Postări: %1$d</string>
     <string name="pools">Colecții</string>

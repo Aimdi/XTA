@@ -104,7 +104,7 @@
     <string name="password_hash_help">Moebooru को साइट से मिला SHA1 पासवर्ड हैश चाहिए, सादा पासवर्ड नहीं।</string>
     <string name="per_site_note">हर साइट अपनी अधिकतम रेटिंग, म्यूट किए गए टैग, लॉगिन और कुंजी अलग रखती है। फ़ॉलो किए गए टैग सभी साइटों में साझा होते हैं।</string>
     <string name="pick_date">तारीख चुनें</string>
-    <string name="plugin_description">Danbooru और Gelbooru परिवार की साइटें देखें — इस डिवाइस पर टैग फ़ॉलो करें</string>
+    <string name="plugin_description">Danbooru और Gelbooru परिवार की साइटें देखें — समूहों में टैग फ़ॉलो करें</string>
     <string name="plugin_name">Booru</string>
     <string name="pool_size">पोस्ट: %1$d</string>
     <string name="pools">पूल</string>

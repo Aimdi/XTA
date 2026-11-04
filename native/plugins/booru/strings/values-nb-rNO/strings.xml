@@ -104,7 +104,7 @@
     <string name="password_hash_help">Moebooru forventer SHA1-hashen av passordet fra nettstedet, ikke selve passordet.</string>
     <string name="per_site_note">Hvert nettsted har sin egen maksimale vurdering, dempede tagger, innlogging og nøkkel. Fulgte tagger deles av alle nettsteder.</string>
     <string name="pick_date">Velg en dato</string>
-    <string name="plugin_description">Bla gjennom nettsteder i Danbooru- og Gelbooru-familien — følg tagger på denne enheten</string>
+    <string name="plugin_description">Bla gjennom nettsteder i Danbooru- og Gelbooru-familien — følg tagger i grupper</string>
     <string name="plugin_name">Booru</string>
     <string name="pool_size">Innlegg: %1$d</string>
     <string name="pools">Samlinger</string>

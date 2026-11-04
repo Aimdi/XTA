@@ -103,7 +103,7 @@
     <string name="password_hash_help">Moebooru cần mã băm SHA1 của mật khẩu từ trang, không phải mật khẩu thường.</string>
     <string name="per_site_note">Mỗi trang giữ mức đánh giá tối đa, thẻ đã ẩn, thông tin đăng nhập và khóa riêng. Các thẻ đang theo dõi được dùng chung cho mọi trang.</string>
     <string name="pick_date">Chọn ngày</string>
-    <string name="plugin_description">Duyệt các trang họ Danbooru và Gelbooru — theo dõi thẻ trên thiết bị này</string>
+    <string name="plugin_description">Duyệt các trang họ Danbooru và Gelbooru — theo dõi thẻ trong nhóm</string>
     <string name="plugin_name">Booru</string>
     <string name="pool_size">Bài đăng: %1$d</string>
     <string name="pools">Bộ sưu tập</string>
