@@ -5,6 +5,7 @@ import com.aimdi.xtanative.core.x.XGuest
 import com.aimdi.xtanative.core.x.XSigners
 import com.aimdi.xtanative.core.x.http.OkHttpXHttp
 import com.aimdi.xtanative.core.x.signing.SigningBootstrap
+import com.aimdi.xtanative.core.x.signing.TransactionSigner
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -92,6 +93,12 @@ class XLiveTest {
                 println("LIVE sign-in script ${src.substringAfterLast('/')}: ${source.length} characters, ondemand.s ${"ondemand.s" in source}")
             }
             walkBundles(http, inline)
+            val jf = http.get("https://x.com/i/jf/".toHttpUrl(), headers, followRedirects = false)
+            val jfPage = Jsoup.parse(jf.body, "https://x.com/i/jf/")
+            println(
+                "LIVE /i/jf/: HTTP ${jf.code}, ${jf.body.length} characters, lacks ${TransactionSigner.missingBootstrapData(jfPage) ?: "nothing"}, " +
+                    "chunk map signer ${SigningBootstrap.chunkMapSigner(jf.body)?.encodedPath}",
+            )
         }.onFailure { println("LIVE sign-in page probe failed: ${it::class.simpleName}: ${it.message?.take(160)}") }
         // A test returns nothing: JUnit passes over a method that returns the Result above.
         Unit

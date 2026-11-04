@@ -50,6 +50,9 @@ class TransactionSigner(
             return TransactionSigner(keyBytes, animationKey(keyBytes, rowIndex, keyIndices, page))
         }
 
+        /** How many of the `(a[N], 16)` calls the indices are read from [script] holds. */
+        fun indexCallsIn(script: String): Int = indicesPattern.findAll(script).count()
+
         /** The frame row index, then the key-byte indices, from the script's `(a[N], 16)` calls. */
         fun indicesOf(script: String): Pair<Int, List<Int>> {
             val indices = indicesPattern.findAll(script).map { it.groupValues[2].toInt() }.toList()

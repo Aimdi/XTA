@@ -24,15 +24,18 @@ class SigningUnavailableException(message: String) : IllegalStateException(messa
 class SigningBootstrap(private val http: XHttp) {
     suspend fun derive(cookie: String?): TransactionSigner {
         val assets = SigningAssets(http)
-        val (page, bundle) = bootstrapPage(assets, cookie)
-        return TransactionSigner.derive(page, assets.read(bundle))
+        val (page, signer) = bootstrapPage(assets, cookie)
+        return TransactionSigner.derive(page, signer.source ?: assets.read(signer.url))
     }
 
-    private suspend fun bootstrapPage(assets: SigningAssets, cookie: String?): Pair<Document, HttpUrl> {
-        // The logged-out home page can omit the signer, and since October 2026
-        // X answers some addresses' /home and /search with a browser check the
-        // sign-in page is spared. That page is for visitors: no session.
+    private suspend fun bootstrapPage(assets: SigningAssets, cookie: String?): Pair<Document, SigningScript> {
+        // Since late September 2026 the logged-out pages are X's new web app,
+        // whose bundles carry no names; /i/jf/ still serves the older one, with
+        // its signer in the chunk map, signed in or not. Since October X answers
+        // some addresses' /home and /search with a browser check the sign-in
+        // page is spared. /i/jf/ and the sign-in page get no session.
         val pages = listOf(
+            JF to null,
             HOME to cookie,
             SEARCH to cookie,
             LOGIN to null,
@@ -52,8 +55,8 @@ class SigningBootstrap(private val http: XHttp) {
                 lacked += "${url.encodedPath}: $missing (${response.body.length} characters, \"${document.title().take(60)}\")"
                 continue
             }
-            val bundle = ondemandUrlOf(response.body, document) ?: assets.discover(document)
-            if (bundle != null) return document to bundle
+            val signer = ondemandUrlOf(response.body, document)?.let(::SigningScript) ?: assets.discover(document)
+            if (signer != null) return document to signer
             lacked += "${url.encodedPath}: no signing script"
         }
         throw SigningUnavailableException("X pages did not contain transaction signing data: ${lacked.joinToString("; ")}")
@@ -75,6 +78,7 @@ class SigningBootstrap(private val http: XHttp) {
     }
 
     companion object {
+        private val JF = "https://x.com/i/jf/".toHttpUrlOrNull()!!
         private val HOME = "https://x.com/home".toHttpUrlOrNull()!!
         private val SEARCH = "https://x.com/search?q=AI&f=live".toHttpUrlOrNull()!!
         private val LOGIN = "https://x.com/i/flow/login".toHttpUrlOrNull()!!
@@ -126,10 +130,18 @@ class SigningBootstrap(private val http: XHttp) {
     }
 }
 
+/** The signing script at [url], with its [source] when the search has read it already. */
+internal class SigningScript(val url: HttpUrl, val source: String? = null)
+
 /**
  * Finds the current signing script without evaluating any JavaScript, as XTA's
  * SigningAssets does: the scripts a page links, then their module imports,
  * importers first, at most [MAX_ASSETS] downloads, [CONCURRENCY] at a time.
+ *
+ * X's new web app names its bundles by hash alone, so there a signer is known
+ * by what it holds: the `(a[N], 16)` calls its indices come from. It sits
+ * behind the bundle that sends the `x-client-transaction-id` header, so the
+ * imports of such a bundle are read first, of the one importing least first.
  */
 internal class SigningAssets(private val http: XHttp) {
     private val visited = HashSet<HttpUrl>()
@@ -143,18 +155,23 @@ internal class SigningAssets(private val http: XHttp) {
         return response.body
     }
 
-    suspend fun discover(page: Document): HttpUrl? {
+    suspend fun discover(page: Document): SigningScript? {
         val linked = LinkedHashSet<HttpUrl>()
         for (element in page.select("script[src]") + page.select("link[rel=modulepreload][href]")) {
             val url = (element.attr("src").ifEmpty { element.attr("href") }).toHttpUrlOrNull()
             if (url != null && trusted(url)) linked.add(url)
         }
         for (script in page.select("script:not([src])")) linked.addAll(references(PAGE, script.data(), literal))
-        linked.firstOrNull { signer(it) }?.let { return it }
+        linked.firstOrNull { signer(it) }?.let { return SigningScript(it) }
         return search(linked)
     }
 
-    private suspend fun search(roots: Collection<HttpUrl>): HttpUrl? = coroutineScope {
+    private class Read(val url: HttpUrl, val depth: Int, val source: String) {
+        val imports by lazy { references(url, source, moduleImport).toList() }
+        val sendsTheHeader get() = TRANSACTION_HEADER in source
+    }
+
+    private suspend fun search(roots: Collection<HttpUrl>): SigningScript? = coroutineScope {
         val queue = ArrayDeque<Pair<HttpUrl, Int>>()
         fun enqueue(urls: Collection<HttpUrl>, depth: Int) {
             if (depth > MAX_IMPORT_DEPTH) return
@@ -176,6 +193,7 @@ internal class SigningAssets(private val http: XHttp) {
                 wave.add(queue.removeFirst())
             }
             val sources = wave.map { (url, _) -> async { runCatching { read(url) } } }.awaitAll()
+            val reads = ArrayList<Read>()
             for ((index, result) in sources.withIndex()) {
                 val (url, depth) = wave[index]
                 val source = result.getOrNull()
@@ -184,10 +202,14 @@ internal class SigningAssets(private val http: XHttp) {
                     continue
                 }
                 loaded++
-                references(url, source, literal).firstOrNull { signer(it) }?.let { return@coroutineScope it }
-                SigningBootstrap.chunkMapSigner(source)?.let { return@coroutineScope it }
-                enqueue(references(url, source, moduleImport).toList(), depth + 1)
+                references(url, source, literal).firstOrNull { signer(it) }?.let { return@coroutineScope SigningScript(it) }
+                SigningBootstrap.chunkMapSigner(source)?.let { return@coroutineScope SigningScript(it) }
+                if (holdsSigner(source)) return@coroutineScope SigningScript(url, source)
+                reads.add(Read(url, depth, source))
             }
+            // Each enqueue goes to the front: the imports wanted first go last.
+            reads.sortedWith(compareBy<Read>({ it.sendsTheHeader }, { -it.imports.size }))
+                .forEach { enqueue(it.imports, it.depth + 1) }
         }
         if (loaded == 0) firstError?.let { throw it }
         null
@@ -197,6 +219,10 @@ internal class SigningAssets(private val http: XHttp) {
         const val MAX_ASSETS = 16
         const val CONCURRENCY = 4
         const val MAX_IMPORT_DEPTH = 3
+        private const val TRANSACTION_HEADER = "x-client-transaction-id"
+
+        /** The row index and at least one key-byte index: what a signer, named or not, holds. */
+        private const val SIGNER_CALLS = 2
         private val PAGE = "https://x.com/".toHttpUrlOrNull()!!
 
         private val trustedPath = Regex("""^/(?:x-web|responsive-web/client-web)/[a-zA-Z0-9_./~-]+\.js$""")
@@ -215,6 +241,8 @@ internal class SigningAssets(private val http: XHttp) {
         fun signer(url: HttpUrl) = trusted(url) && signerName.matches(url.pathSegments.last())
 
         fun importer(url: HttpUrl) = importerName.containsMatchIn(url.pathSegments.last())
+
+        fun holdsSigner(source: String) = TransactionSigner.indexCallsIn(source) >= SIGNER_CALLS
 
         fun references(parent: HttpUrl, source: String, pattern: Regex): Sequence<HttpUrl> =
             pattern.findAll(source).mapNotNull { parent.resolve(it.groupValues[2]) }.filter(::trusted)
