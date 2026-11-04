@@ -118,7 +118,10 @@ private fun WorkStats(illust: PixivIllust) {
         illust.createdAt?.let { Text(dateText(it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
         if (illust.isR18) Text(pluginString(Strings.r18), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.error)
         if (illust.isAi) Stat(GroupIcons.AutoAwesome, pluginString(Strings.ai))
-        Row(Modifier.clip(RoundedCornerShape(6.dp)).clickable { copy("${illust.id}", Strings.illust_id_copied) }.heightIn(min = 48.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            Modifier.clip(RoundedCornerShape(6.dp)).clickable(onClickLabel = pluginString(Strings.copy_illust_id)) { copy("${illust.id}", Strings.illust_id_copied) }.heightIn(min = 48.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             Stat(PixivIcons.Tag, pluginString(Strings.illust_id, "${illust.id}"))
         }
         if (illust.width > 0 && illust.height > 0) Stat(PixivIcons.AspectRatio, pluginString(Strings.resolution, illust.width, illust.height))

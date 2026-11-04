@@ -75,6 +75,7 @@
     <string name="comments_view">Montri komentojn</string>
     <string name="comments_view_count">Montri komentojn (%1$s)</string>
     <string name="copied">Kopiite</string>
+    <string name="copy_illust_id">Kopii verkan ID</string>
     <string name="copy_info">Kopii informojn</string>
     <string name="copy_link">Kopii ligilon</string>
     <string name="copy_template">Ŝablono de „Kopii informojn“</string>
@@ -104,6 +105,7 @@
     <string name="download_index_forget_question">Ĉu forgesi, kiuj paĝoj estis konservitaj? La dosieroj mem restas en via aparato.</string>
     <string name="download_page">Elŝuti ĉi tiun paĝon</string>
     <string name="download_page_saved">Konservita – elŝuti denove</string>
+    <string name="downloading_page">Elŝutas paĝon %1$d el %2$d…</string>
     <string name="downloads_section">Elŝutoj</string>
     <string name="downloads_title">Elŝutoj</string>
     <string name="empty">Ankoraŭ nenio en la sekva fluo</string>
@@ -243,6 +245,8 @@
     <string name="novel_watchlist_empty">Ĉi tie aperas la romanaj serioj, kiujn vi aldonas al via atentolisto</string>
     <string name="open_in_browser">Malfermi en retumilo</string>
     <string name="open_link_failed">Ne eblis malfermi tiun Pixiv-ligilon</string>
+    <string name="open_links_in_app">Malfermi pixiv-ligilojn en XTA</string>
+    <string name="open_links_in_app_description">En la Android-paĝo „Malfermi defaŭlte“, aldonu pixiv.net kaj pixiv.me kiel subtenatajn ligilojn</string>
     <string name="open_on_pixiv">Malfermi ĉe Pixiv</string>
     <string name="original_quality">Originala kvalito</string>
     <string name="page_of">%1$d / %2$d</string>
@@ -325,6 +329,15 @@
     <string name="resolution">%1$d × %2$d px</string>
     <string name="retry">Reprovi</string>
     <string name="reveal">Montri</string>
+    <string name="saucenao_another">Elekti alian bildon</string>
+    <string name="saucenao_empty">Neniu verko de Pixiv kongruas kun ĉi tiu bildo</string>
+    <string name="saucenao_failed">SauceNAO ne povis serĉi per ĉi tiu bildo</string>
+    <string name="saucenao_pick">Elekti bildon</string>
+    <string name="saucenao_preview_unauthorized">Ensalutu denove al Pixiv por vidi antaŭrigardojn</string>
+    <string name="saucenao_privacy">La elektita bildo estas alŝutata al saucenao.com por trovi kongruajn verkojn de Pixiv.</string>
+    <string name="saucenao_searching">Serĉante ĉe SauceNAO…</string>
+    <string name="saucenao_similarity">%1$s simila</string>
+    <string name="saucenao_title">Serĉi per bildo</string>
     <string name="save">Konservi</string>
     <string name="save_again">Konservi denove</string>
     <string name="save_new_only">Nur novajn paĝojn</string>
@@ -406,6 +419,8 @@
     <string name="series_previous">Antaŭa en la serio</string>
     <string name="series_started">Komencita je %1$s</string>
     <string name="settings_intro">Ĉi tiu privata kromprogramo legas Pixiv kiel galeria aplikaĵo: ilustraĵojn, mangaojn, romanojn, rangotabelojn, viajn legosignojn kaj serĉon. Tuŝu Ensaluti por ensaluti per via Pixiv-konto, aŭ algluu refreŝigan ĵetonon sube. Legosignoj, sekvoj kaj historio restas en ĉi tiu aparato: nenio iam ajn estas sendata al via Pixiv-konto, afiŝata aŭ ŝanĝata tie.</string>
+    <string name="share_image">Kunhavigi bildon</string>
+    <string name="share_image_failed">Ne eblis kunhavigi ĉi tiun bildon</string>
     <string name="share_link">Kunhavigi ligilon</string>
     <string name="show_r18">Montri R-18 verkojn</string>
     <string name="show_r18_description">Defaŭlte malŝaltita. Kiam malŝaltita, limigitaj verkoj kaŝiĝas el fluoj.</string>
@@ -417,6 +432,7 @@
     <string name="sign_out_question">Ĉu elsaluti el Pixiv?</string>
     <string name="signed_in">Ensalutita kiel %1$s</string>
     <string name="sort_ungrouped_apply">Apliki</string>
+    <string name="split_divider">Ŝanĝi la grandon de bildoj kaj detaloj</string>
     <string name="start_section">Pixiv malfermiĝas ĉe</string>
     <string name="swipe_works">Ŝovi inter verkoj</string>
     <string name="swipe_works_description">Ŝovu flanken al la sekva verko en la listo. Ĉe verkoj kun pluraj paĝoj, daŭre ŝovu preter la unua aŭ lasta paĝo.</string>
@@ -435,10 +451,15 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Nun furoranta</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_encoding">Kodigas kadron %1$d el %2$d…</string>
     <string name="ugoira_export_failed">Ne eblis konservi la animacion</string>
+    <string name="ugoira_fetching">Prenas kadrojn…</string>
     <string name="ugoira_pause">Paŭzigi la animacion</string>
     <string name="ugoira_play">Ludi la animacion</string>
+    <string name="ugoira_save_gif">Konservi kiel GIF</string>
     <string name="ugoira_save_zip">Konservi kadrojn kiel ZIP</string>
+    <string name="ugoira_saving">Konservado…</string>
+    <string name="ugoira_slow">Kodigado povas daŭri minuton</string>
     <string name="unbookmark">Forigi legosignon</string>
     <string name="unfollow">Ĉesi sekvi</string>
     <string name="unmute">Malsilentigi</string>

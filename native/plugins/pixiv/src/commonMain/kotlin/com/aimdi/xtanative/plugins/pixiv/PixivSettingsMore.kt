@@ -49,13 +49,17 @@ private fun qualityLabel(quality: PixivImageQuality): PluginText = when (quality
     PixivImageQuality.ORIGINAL -> Strings.quality_original
 }
 
-/** Columns per orientation, the work page's layout, swiping between works, the AI badge, the sizes read and the image server. */
+/** The image server, the sizes read, columns per orientation, the work page's layout, swiping between works and the AI badge, as pixiv_settings_viewing.dart orders them. */
 @Composable
 internal fun ViewingSettings() {
     val runtime = LocalPixiv.current
     val settings = pixivSettings()
     var host by remember { mutableStateOf(false) }
     SectionTitle(pluginString(Strings.viewing_section))
+    ActionRow(pluginString(Strings.image_host), { host = true }, subtitle = settings[PixivPrefs.imageHost])
+    QualityRow(Strings.quality_feed, PixivQualitySlot.FEED)
+    QualityRow(Strings.quality_detail, PixivQualitySlot.DETAIL)
+    QualityRow(Strings.quality_reader, PixivQualitySlot.READER)
     val columns = listOf(0, 2, 3, 4).map { it to if (it == 0) pluginString(Strings.columns_auto) else "$it" }
     ChoiceRow(pluginString(Strings.columns_portrait), settings[PixivPrefs.gridColumnsPortrait], columns) { runtime.settings.set(PixivPrefs.gridColumnsPortrait, it) }
     ChoiceRow(pluginString(Strings.columns_landscape), settings[PixivPrefs.gridColumnsLandscape], columns) { runtime.settings.set(PixivPrefs.gridColumnsLandscape, it) }
@@ -70,10 +74,6 @@ internal fun ViewingSettings() {
     ) { runtime.settings.set(PixivPrefs.detailLayout, it) }
     SwitchRow(pluginString(Strings.swipe_works), pluginString(Strings.swipe_works_description), settings[PixivPrefs.swipeBetweenWorks]) { runtime.settings.set(PixivPrefs.swipeBetweenWorks, it) }
     SwitchRow(pluginString(Strings.ai_badge), pluginString(Strings.ai_badge_description), settings[PixivPrefs.aiBadge]) { runtime.settings.set(PixivPrefs.aiBadge, it) }
-    QualityRow(Strings.quality_feed, PixivQualitySlot.FEED)
-    QualityRow(Strings.quality_detail, PixivQualitySlot.DETAIL)
-    QualityRow(Strings.quality_reader, PixivQualitySlot.READER)
-    ActionRow(pluginString(Strings.image_host), { host = true }, subtitle = settings[PixivPrefs.imageHost])
     if (host) ImageHostDialog { host = false }
 }
 

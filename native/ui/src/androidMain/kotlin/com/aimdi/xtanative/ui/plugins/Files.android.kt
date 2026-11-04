@@ -16,13 +16,23 @@ import kotlinx.coroutines.withContext
 
 /** The system's document picker, over any file: an OPML list comes as XML, text or plain bytes. */
 @Composable
-actual fun rememberTextFileChooser(title: String, onChosen: (read: suspend () -> String?) -> Unit): () -> Unit {
+actual fun rememberTextFileChooser(title: String, onChosen: (read: suspend () -> String?) -> Unit): () -> Unit =
+    rememberDocumentChooser(arrayOf("*/*")) { read -> onChosen { read()?.decodeToString() } }
+
+/** The system's document picker, over pictures. */
+@Composable
+actual fun rememberImageChooser(title: String, onChosen: (read: suspend () -> ByteArray?) -> Unit): () -> Unit =
+    rememberDocumentChooser(arrayOf("image/*"), onChosen)
+
+/** The system's document picker over [mimeTypes]; [onChosen] gets a way to read the document picked. */
+@Composable
+private fun rememberDocumentChooser(mimeTypes: Array<String>, onChosen: (read: suspend () -> ByteArray?) -> Unit): () -> Unit {
     val resolver = LocalContext.current.contentResolver
     val chosen = rememberUpdatedState(onChosen)
     val pick = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-        if (uri != null) chosen.value { withContext(Dispatchers.IO) { resolver.openInputStream(uri)?.use { it.readBytes().decodeToString() } } }
+        if (uri != null) chosen.value { withContext(Dispatchers.IO) { resolver.openInputStream(uri)?.use { it.readBytes() } } }
     }
-    return remember(pick) { { pick.launch(arrayOf("*/*")) } }
+    return remember(pick) { { pick.launch(mimeTypes) } }
 }
 
 /** The system's save dialog for a file of [mime]; the text is written where the reader puts it. */

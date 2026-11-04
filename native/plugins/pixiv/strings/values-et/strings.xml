@@ -75,6 +75,7 @@
     <string name="comments_view">Vaata kommentaare</string>
     <string name="comments_view_count">Vaata kommentaare (%1$s)</string>
     <string name="copied">Kopeeritud</string>
+    <string name="copy_illust_id">Kopeeri teose ID</string>
     <string name="copy_info">Kopeeri info</string>
     <string name="copy_link">Kopeeri link</string>
     <string name="copy_template">„Kopeeri info” mall</string>
@@ -104,6 +105,7 @@
     <string name="download_index_forget_question">Kas unustada, millised lehed on salvestatud? Failid ise jäävad seadmesse.</string>
     <string name="download_page">Laadi see leht alla</string>
     <string name="download_page_saved">Salvestatud – laadi uuesti alla</string>
+    <string name="downloading_page">Laadin alla lehte %1$d/%2$d…</string>
     <string name="downloads_section">Allalaadimised</string>
     <string name="downloads_title">Allalaadimised</string>
     <string name="empty">Jälgimisvoos pole veel midagi</string>
@@ -243,6 +245,8 @@
     <string name="novel_watchlist_empty">Siin on romaanisarjad, mille lisad jälgimisnimekirja</string>
     <string name="open_in_browser">Ava brauseris</string>
     <string name="open_link_failed">Seda Pixivi linki ei saanud avada</string>
+    <string name="open_links_in_app">Ava pixivi lingid XTA-s</string>
+    <string name="open_links_in_app_description">Lisa Androidi lehel „Ava vaikimisi” pixiv.net ja pixiv.me toetatud linkidena</string>
     <string name="open_on_pixiv">Ava Pixivis</string>
     <string name="original_quality">Algne kvaliteet</string>
     <string name="page_of">%1$d / %2$d</string>
@@ -325,6 +329,15 @@
     <string name="resolution">%1$d × %2$d px</string>
     <string name="retry">Proovi uuesti</string>
     <string name="reveal">Näita</string>
+    <string name="saucenao_another">Vali teine pilt</string>
+    <string name="saucenao_empty">Selle pildiga ei sobi ükski Pixivi teos</string>
+    <string name="saucenao_failed">SauceNAO ei saanud selle pildiga otsida</string>
+    <string name="saucenao_pick">Vali pilt</string>
+    <string name="saucenao_preview_unauthorized">Eelvaadete nägemiseks logi uuesti Pixivisse sisse</string>
+    <string name="saucenao_privacy">Valitud pilt laaditakse üles saitile saucenao.com, et leida sobivaid Pixivi teoseid.</string>
+    <string name="saucenao_searching">Otsin SauceNAO-st…</string>
+    <string name="saucenao_similarity">%1$s sarnane</string>
+    <string name="saucenao_title">Otsi pildi järgi</string>
     <string name="save">salvesta</string>
     <string name="save_again">Salvesta uuesti</string>
     <string name="save_new_only">Ainult uued lehed</string>
@@ -406,6 +419,8 @@
     <string name="series_previous">Eelmine sarjas</string>
     <string name="series_started">Alustatud %1$s</string>
     <string name="settings_intro">See privaatne pistikprogramm loeb Pixivit nagu galeriirakendus: illustratsioone, mangat, romaane, edetabeleid, sinu järjehoidjaid ja otsingut. Puuduta Logi sisse, et siseneda oma Pixivi kontoga, või kleebi allpool värskendustõend. Järjehoidjad, jälgimised ja ajalugu jäävad sellesse seadmesse: sinu Pixivi kontole ei saadeta, postitata ega muudeta kunagi midagi.</string>
+    <string name="share_image">Jaga pilti</string>
+    <string name="share_image_failed">Pilti ei õnnestunud jagada</string>
     <string name="share_link">Jaga linki</string>
     <string name="show_r18">Näita R-18 teoseid</string>
     <string name="show_r18_description">Vaikimisi väljas. Kui väljas, peidetakse piiratud teosed voogudest.</string>
@@ -417,6 +432,7 @@
     <string name="sign_out_question">Kas logida Pixivist välja?</string>
     <string name="signed_in">Sisse logitud kasutajana %1$s</string>
     <string name="sort_ungrouped_apply">Rakenda</string>
+    <string name="split_divider">Muuda piltide ja üksikasjade suurust</string>
     <string name="start_section">Pixiv avaneb jaotisega</string>
     <string name="swipe_works">Teoste vahel libistamine</string>
     <string name="swipe_works_description">Libista külgsuunas loendi järgmise teose juurde. Mitme lehega teoste puhul libista edasi üle esimese või viimase lehe.</string>
@@ -435,10 +451,15 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Praegu populaarne</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_encoding">Kodeerin kaadrit %1$d/%2$d…</string>
     <string name="ugoira_export_failed">Animatsiooni ei õnnestunud salvestada</string>
+    <string name="ugoira_fetching">Laadin kaadreid…</string>
     <string name="ugoira_pause">Peata animatsioon</string>
     <string name="ugoira_play">Esita animatsioon</string>
+    <string name="ugoira_save_gif">Salvesta GIF-ina</string>
     <string name="ugoira_save_zip">Salvesta kaadrid ZIP-ina</string>
+    <string name="ugoira_saving">Salvestan…</string>
+    <string name="ugoira_slow">Kodeerimine võib võtta minuti</string>
     <string name="unbookmark">Eemalda järjehoidja</string>
     <string name="unfollow">Lõpeta jälgimine</string>
     <string name="unmute">Tühista vaigistus</string>

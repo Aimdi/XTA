@@ -14,13 +14,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -67,11 +69,10 @@ internal fun PixivSeriesScreen(id: Long) {
         SeriesReads<PixivIllustSeries, PixivIllust>(scope, { it.id }, { next -> runtime.discovery.illustSeries(id, next).let { it.series to it.works } }) { runtime.mutes.now.filter(it) }
     }
     val series by reads.series.collectAsState()
-    val outside = rememberOutside()
     PluginScaffold(
         title = series?.title ?: pluginString(Strings.series),
         onBack = runtime.host::back,
-        actions = { series?.let { IconButton(onClick = { outside.open(it.url) }) { Icon(SavedIcons.OpenInNew, pluginString(Strings.open_on_pixiv)) } } },
+        actions = { series?.let { SeriesPageActions(it.url) } },
     ) { padding ->
         Box(Modifier.padding(padding)) {
             PixivWorksGrid(reads.list, pluginString(Strings.series_empty), header = {
@@ -81,19 +82,34 @@ internal fun PixivSeriesScreen(id: Long) {
     }
 }
 
+/** Share link and Open on Pixiv for a series' page (pixiv_series_screen.dart's pixivSeriesPageActions). */
+@Composable
+private fun SeriesPageActions(url: String) {
+    val outside = rememberOutside()
+    IconButton(onClick = { outside.share(url) }) { Icon(Icons.Filled.Share, pluginString(Strings.share_link)) }
+    IconButton(onClick = { outside.open(url) }) { Icon(SavedIcons.OpenInNew, pluginString(Strings.open_on_pixiv)) }
+}
+
+/** A series' own title, as its header shows it over the creator. */
+@Composable
+private fun SeriesTitle(title: String) {
+    if (title.isNotEmpty()) Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold)
+}
+
 @Composable
 private fun IllustSeriesHeader(series: PixivIllustSeries) {
     val runtime = LocalPixiv.current
     val language = currentLanguage()
     Column(Modifier.fillMaxWidth().padding(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         series.coverUrl?.let { PixivPicture(it, Modifier.fillMaxWidth().aspectRatio(16f / 9f).clip(RoundedCornerShape(8.dp))) }
+        SeriesTitle(series.title)
         CreatorLine(series.user.name, series.user.avatarUrl) { runtime.openUser(series.user.id) }
         val counts = listOfNotNull(
             pluginPlural(Strings.works_count, series.workCount.toInt(), series.workCount.toInt(), countText(series.workCount)),
             series.createdAt?.let { Strings.series_started.get(language, mediumDate(it, language)) },
         )
         Text(counts.joinToString(" · "), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        if (series.caption.isNotBlank()) Text(series.caption.trim(), style = MaterialTheme.typography.bodyMedium)
+        if (series.caption.isNotBlank()) SelectionContainer { Text(series.caption.trim(), style = MaterialTheme.typography.bodyMedium) }
     }
 }
 
@@ -117,11 +133,10 @@ internal fun PixivNovelSeriesScreen(id: Long) {
         NovelSeriesReads(scope) { next -> runtime.novels.series(id, next) }
     }
     val series by reads.reads.series.collectAsState()
-    val outside = rememberOutside()
     PluginScaffold(
         title = series?.title ?: pluginString(Strings.novel_series),
         onBack = runtime.host::back,
-        actions = { IconButton(onClick = { outside.open(pixivNovelSeriesUrl(id)) }) { Icon(SavedIcons.OpenInNew, pluginString(Strings.open_on_pixiv)) } },
+        actions = { SeriesPageActions(pixivNovelSeriesUrl(id)) },
     ) { padding ->
         Box(Modifier.padding(padding)) {
             val mutes = pixivMutes()
@@ -155,10 +170,12 @@ private class NovelSeriesReads(scope: CoroutineScope, read: suspend (String?) ->
     }) { it }
 }
 
+/** The series' title, creator, state and size, its caption with Pixiv's links, and Start from #1 and View latest, each waiting for its chapter. */
 @Composable
 private fun NovelSeriesHeader(series: PixivNovelSeries, first: PixivNovel?, latest: PixivNovel?) {
     val runtime = LocalPixiv.current
     Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        SeriesTitle(series.title)
         CreatorLine(series.user.name, series.user.avatarUrl) { runtime.openUser(series.user.id) }
         val summary = listOf(
             pluginString(if (series.isConcluded) Strings.novel_series_concluded else Strings.novel_series_ongoing),
@@ -166,21 +183,17 @@ private fun NovelSeriesHeader(series: PixivNovelSeries, first: PixivNovel?, late
             pluginPlural(Strings.novel_characters, series.totalCharacterCount.toInt(), series.totalCharacterCount.toInt(), countText(series.totalCharacterCount)),
         )
         Text(summary.joinToString(" · "), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        if (series.caption.isNotBlank()) Text(series.caption.trim(), style = MaterialTheme.typography.bodyMedium)
+        if (series.captionHtml.isNotEmpty() || series.caption.isNotEmpty()) PixivHtmlText(series.captionHtml, series.caption)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            first?.let { novel ->
-                Button(onClick = { runtime.openNovel(novel) }) {
-                    Icon(Icons.Filled.PlayArrow, null, Modifier.size(18.dp))
-                    Spacer(Modifier.width(8.dp))
-                    Text(pluginString(Strings.novel_series_start))
-                }
+            Button(onClick = { first?.let(runtime::openNovel) }, enabled = first != null) {
+                Icon(Icons.Filled.PlayArrow, null, Modifier.size(18.dp))
+                Spacer(Modifier.width(8.dp))
+                Text(pluginString(Strings.novel_series_start))
             }
-            latest?.takeIf { it.id != first?.id }?.let { novel ->
-                OutlinedButton(onClick = { runtime.openNovel(novel) }) {
-                    Icon(PixivIcons.MenuBook, null, Modifier.size(18.dp))
-                    Spacer(Modifier.width(8.dp))
-                    Text(pluginString(Strings.watchlist_view_latest))
-                }
+            FilledTonalButton(onClick = { latest?.let(runtime::openNovel) }, enabled = latest != null) {
+                Icon(PixivIcons.MenuBook, null, Modifier.size(18.dp))
+                Spacer(Modifier.width(8.dp))
+                Text(pluginString(Strings.watchlist_view_latest))
             }
         }
     }

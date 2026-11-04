@@ -75,6 +75,7 @@
     <string name="comments_view">عرض التعليقات</string>
     <string name="comments_view_count">عرض التعليقات (%1$s)</string>
     <string name="copied">تم النسخ</string>
+    <string name="copy_illust_id">نسخ معرّف العمل</string>
     <string name="copy_info">نسخ المعلومات</string>
     <string name="copy_link">نسخ الرابط</string>
     <string name="copy_template">قالب «نسخ المعلومات»</string>
@@ -104,6 +105,7 @@
     <string name="download_index_forget_question">هل تريد نسيان الصفحات التي حُفظت؟ تبقى الملفات نفسها على جهازك.</string>
     <string name="download_page">تنزيل هذه الصفحة</string>
     <string name="download_page_saved">محفوظة – نزّلها مرة أخرى</string>
+    <string name="downloading_page">جارٍ تنزيل الصفحة %1$d من %2$d…</string>
     <string name="downloads_section">التنزيلات</string>
     <string name="downloads_title">التنزيلات</string>
     <string name="empty">لا شيء في خلاصة المتابعة بعد</string>
@@ -243,6 +245,8 @@
     <string name="novel_watchlist_empty">تظهر هنا سلاسل الروايات التي تضيفها إلى قائمة المتابعة</string>
     <string name="open_in_browser">فتح في المتصفح</string>
     <string name="open_link_failed">تعذر فتح رابط Pixiv هذا</string>
+    <string name="open_links_in_app">فتح روابط pixiv في XTA</string>
+    <string name="open_links_in_app_description">في صفحة «الفتح تلقائيًا» في Android، أضف pixiv.net وpixiv.me كروابط مدعومة</string>
     <string name="open_on_pixiv">فتح على Pixiv</string>
     <string name="original_quality">الجودة الأصلية</string>
     <string name="page_of">%1$d / %2$d</string>
@@ -325,6 +329,15 @@
     <string name="resolution">%1$d × %2$d بكسل</string>
     <string name="retry">إعادة المحاولة</string>
     <string name="reveal">إظهار</string>
+    <string name="saucenao_another">اختر صورة أخرى</string>
+    <string name="saucenao_empty">لا توجد أعمال على Pixiv تطابق هذه الصورة</string>
+    <string name="saucenao_failed">تعذّر على SauceNAO البحث عن هذه الصورة</string>
+    <string name="saucenao_pick">اختر صورة</string>
+    <string name="saucenao_preview_unauthorized">سجّل الدخول إلى Pixiv مجددًا لعرض المعاينات</string>
+    <string name="saucenao_privacy">تُرفع الصورة التي تختارها إلى saucenao.com للبحث عن أعمال مطابقة على Pixiv.</string>
+    <string name="saucenao_searching">جارٍ البحث في SauceNAO…</string>
+    <string name="saucenao_similarity">تشابه %1$s</string>
+    <string name="saucenao_title">البحث بالصورة</string>
     <string name="save">حفظ</string>
     <string name="save_again">الحفظ مرة أخرى</string>
     <string name="save_new_only">الصفحات الجديدة فقط</string>
@@ -406,6 +419,8 @@
     <string name="series_previous">السابق في السلسلة</string>
     <string name="series_started">بدأت في %1$s</string>
     <string name="settings_intro">تقرأ هذه الإضافة الخاصة Pixiv كتطبيق معرض: الرسوم والمانغا والروايات والتصنيفات وإشاراتك والبحث. انقر «تسجيل الدخول» للدخول بحسابك على Pixiv، أو الصق رمز التحديث أدناه. تبقى الإشارات والمتابعات والسجل على هذا الجهاز: لا يُرسل شيء إلى حسابك على Pixiv ولا يُنشر عليه ولا يُغيَّر فيه أبدًا.</string>
+    <string name="share_image">مشاركة الصورة</string>
+    <string name="share_image_failed">تعذّرت مشاركة هذه الصورة</string>
     <string name="share_link">مشاركة الرابط</string>
     <string name="show_r18">إظهار أعمال R-18</string>
     <string name="show_r18_description">إيقاف افتراضيًا. عند الإيقاف تُخفى الأعمال المقيّدة من الخلاصات.</string>
@@ -417,6 +432,7 @@
     <string name="sign_out_question">هل تريد تسجيل الخروج من Pixiv؟</string>
     <string name="signed_in">تم تسجيل الدخول باسم %1$s</string>
     <string name="sort_ungrouped_apply">تطبيق</string>
+    <string name="split_divider">تغيير حجم الصور والتفاصيل</string>
     <string name="start_section">يفتح Pixiv على</string>
     <string name="swipe_works">التمرير بين الأعمال</string>
     <string name="swipe_works_description">مرّر جانبيًا إلى العمل التالي في القائمة. في الأعمال متعددة الصفحات، واصل التمرير بعد الصفحة الأولى أو الأخيرة.</string>
@@ -435,10 +451,15 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">الرائج الآن</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_encoding">جارٍ ترميز الإطار %1$d من %2$d…</string>
     <string name="ugoira_export_failed">تعذّر حفظ الرسوم المتحركة</string>
+    <string name="ugoira_fetching">جارٍ جلب الإطارات…</string>
     <string name="ugoira_pause">إيقاف الرسم المتحرك مؤقتًا</string>
     <string name="ugoira_play">تشغيل الرسم المتحرك</string>
+    <string name="ugoira_save_gif">حفظ بصيغة GIF</string>
     <string name="ugoira_save_zip">حفظ الإطارات بصيغة ZIP</string>
+    <string name="ugoira_saving">جارٍ الحفظ…</string>
+    <string name="ugoira_slow">قد يستغرق الترميز دقيقة</string>
     <string name="unbookmark">إزالة الإشارة المرجعية</string>
     <string name="unfollow">إلغاء المتابعة</string>
     <string name="unmute">إلغاء الكتم</string>

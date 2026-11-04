@@ -63,6 +63,19 @@
                 <data android:host="www.twitter.com" />
                 <data android:host="mobile.twitter.com" />
             </intent-filter>
+            <!-- Pixiv pages, which the Pixiv plugin reads, as XTA's manifest claims them. From Android 12 they
+                 only come here once the reader adds them under "Open by default" (Pixiv's settings send them
+                 there); a page no plugin reads goes to a browser by name, never back here. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+                <data android:host="pixiv.net" />
+                <data android:host="www.pixiv.net" />
+                <data android:host="pixiv.me" />
+            </intent-filter>
         </activity>
         <!-- Keeps reading aloud and a podcast playing when the app is left, with the media notification
              (XTA's audio_service AudioService); its buttons come back through the receiver. -->

@@ -12,6 +12,16 @@ import androidx.compose.runtime.Composable
 expect fun rememberTextFileChooser(title: String, onChosen: (read: suspend () -> String?) -> Unit): () -> Unit
 
 /**
+ * Asks the reader for a picture (one to search by, XTA's Pixiv's Search by
+ * image), the platform's way: Android's document picker over images, the
+ * desktop's open dialog titled [title] showing pictures. The returned
+ * function opens it; [onChosen] gets a way to read the chosen file's bytes,
+ * to call off the main thread. Backing out calls nothing.
+ */
+@Composable
+expect fun rememberImageChooser(title: String, onChosen: (read: suspend () -> ByteArray?) -> Unit): () -> Unit
+
+/**
  * Saves a text as a file the reader names and places, the platform's way:
  * Android's save dialog (the Files app, Drive, …), the desktop's save dialog
  * titled [title], opened on Downloads. [mime] is the file's type. The returned

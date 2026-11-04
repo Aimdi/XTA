@@ -53,9 +53,12 @@ plugin, the chip tabs, the shelf, the recent searches, the action row,
 `PluginHost.unfollowed` and `RssReads`; 4 adds `contractNetworks` (the
 networks of the contracts a plugin watches, for X posts' text),
 `postCard`, `routeForOffline`, `discovery` with `PluginDiscovery` (its part
-of a group's Discover), `PluginHost.likedOnDevice`, `SwipeToUnfollow` and,
-in `ui.common`, `rememberSwitchedHaptics`. A plugin's `xta-plugin.json`
-names the version it was built against.
+of a group's Discover), `PluginHost.likedOnDevice`, a long piece of work's
+progress (`PluginHost.withProgress` with `PluginProgress`, and `downloadAll`
+with its `progress`), `PluginHost.saveFileAndWait`, `SwipeToUnfollow`,
+`rememberImageChooser`, `rememberAppLinkSettings` and, in `ui.common`,
+`rememberSwitchedHaptics`. A plugin's `xta-plugin.json` names the version
+it was built against.
 
 The app loads the versions from `OLDEST_PLUGIN_API` (2) to its own, so a
 plugin built before keeps working until its update comes, for as long as what
@@ -132,8 +135,8 @@ read again, the desktop's F5: `RefreshesOn`).
 | `addToGroup(account, follow)` | the app's group picker for one of its accounts |
 | `unfollowed(account)` | one of its accounts unfollowed: the app takes it out of every group |
 | `openPostMenu(menu)` | the shared post menu over the screen |
-| `download(media, fileName, subfolder)`, `downloadAll(files, subfolder)`, `queueDownloads(files, subfolder)`, `saveFile(bytes, fileName, mimeType, subfolder)`, `shareFile(bytes, fileName, mimeType)`, `openDownloads()` | the app's downloads (a file, a batch saved together, a batch queued), a file it made saved or shared, the Downloads screen |
-| `tell(text)`, `working(text, work)` | a line at the foot of the window over any screen, as XTA's snack bars; one shown while `work` runs |
+| `download(media, fileName, subfolder)`, `downloadAll(files, subfolder)`, `downloadAll(files, subfolder, progress)`, `queueDownloads(files, subfolder)`, `saveFile(bytes, fileName, mimeType, subfolder)`, `saveFileAndWait(…)`, `shareFile(bytes, fileName, mimeType)`, `openDownloads()` | the app's downloads (a file, a batch saved together, one watched file by file with Cancel, a batch queued), a file it made saved (waited for) or shared, the Downloads screen |
+| `tell(text)`, `working(text, work)`, `withProgress(first, work)` | a line at the foot of the window over any screen, as XTA's snack bars; one shown while `work` runs; one with a ring, a note and Cancel that `work` keeps up to date (`PluginProgress`) |
 
 The shared pieces, in the same package, drawn in the app's theme. Use them
 rather than a copy of your own; a piece two plugins need goes here once,
@@ -179,7 +182,9 @@ with a test.
   a plugin's own sheet) and `PluginSavedScreen` (below), and
   `PluginSearchHistory` (recent searches, as XTA keeps them).
 - Leaving and files: `rememberOpenOutside`, `rememberShareText`,
-  `rememberTextFileChooser` and `rememberTextFileSaver`.
+  `rememberAppLinkSettings` (Android's Open by default page for the app;
+  none on the desktop), `rememberTextFileChooser`, `rememberImageChooser`
+  and `rememberTextFileSaver`.
 - Words: `PluginStrings` with `pluginString` and `pluginPlural`
   (`pluralCategory` gives each language's plural forms).
 
@@ -383,8 +388,10 @@ plugin that lists them its own way reads `savedPosts` itself.
 |---|---|
 | `download(media, fileName, subfolder)` | a `MediaItem` saved through the app's downloads, with their notices: a photo, or a video's own file (a stream has none) |
 | `downloadAll(files, subfolder)` | `PluginDownload`s (an address, a file name) saved together, as XTA saves a work's pages, as many at a time as the download setting allows, with one notice for them all; answers, once each has ended, whether it was saved |
+| `downloadAll(files, subfolder, progress)` | the same, the foot of the window saying which file is on its way in the plugin's words ("Downloading page 2 of 5…") over a ring that fills, with Cancel, which starts no more and cancels those under way; then how many were saved |
 | `queueDownloads(files, subfolder)` | `PluginDownload`s queued to run on their own, as XTA's Download all queues a feed's posts, without those the downloads hold or are saving; answers a `PluginQueued` (how many queued, how many left out), or null where the download setting asks where each file goes |
 | `saveFile(bytes, fileName, mimeType, subfolder)` | a file the plugin made (an exported animation, a novel's text) saved where the download setting says, with the same notices |
+| `saveFileAndWait(bytes, fileName, mimeType, subfolder)` | the same, waited for and without the working notice (the plugin's `withProgress` says what is under way): whether it was saved |
 | `shareFile(bytes, fileName, mimeType)` | such a file handed to the share sheet (Android's, through the app's file provider); the desktop has none, so it is saved instead, the notice saying where |
 | `openDownloads()` | the app's Downloads screen |
 

@@ -75,6 +75,7 @@
     <string name="comments_view">Xem bình luận</string>
     <string name="comments_view_count">Xem bình luận (%1$s)</string>
     <string name="copied">Đã sao chép</string>
+    <string name="copy_illust_id">Sao chép ID tác phẩm</string>
     <string name="copy_info">Sao chép thông tin</string>
     <string name="copy_link">Sao chép liên kết</string>
     <string name="copy_template">Mẫu “Sao chép thông tin”</string>
@@ -104,6 +105,7 @@
     <string name="download_index_forget_question">Quên những trang đã lưu? Bản thân các tệp vẫn ở trên thiết bị của bạn.</string>
     <string name="download_page">Tải trang này xuống</string>
     <string name="download_page_saved">Đã lưu – tải lại</string>
+    <string name="downloading_page">Đang tải trang %1$d/%2$d xuống…</string>
     <string name="downloads_section">Tải xuống</string>
     <string name="downloads_title">Tệp tải xuống</string>
     <string name="empty">Chưa có gì trong bảng tin theo dõi</string>
@@ -243,6 +245,8 @@
     <string name="novel_watchlist_empty">Các bộ tiểu thuyết bạn thêm vào truyện theo dõi sẽ hiện ở đây</string>
     <string name="open_in_browser">Mở trong trình duyệt</string>
     <string name="open_link_failed">Không thể mở liên kết Pixiv đó</string>
+    <string name="open_links_in_app">Mở liên kết pixiv trong XTA</string>
+    <string name="open_links_in_app_description">Trong trang “Mở theo mặc định” của Android, thêm pixiv.net và pixiv.me làm liên kết được hỗ trợ</string>
     <string name="open_on_pixiv">Mở trên Pixiv</string>
     <string name="original_quality">Chất lượng gốc</string>
     <string name="page_of">%1$d / %2$d</string>
@@ -325,6 +329,15 @@
     <string name="resolution">%1$d × %2$d px</string>
     <string name="retry">Thử lại</string>
     <string name="reveal">Hiện</string>
+    <string name="saucenao_another">Chọn ảnh khác</string>
+    <string name="saucenao_empty">Không có tác phẩm Pixiv nào khớp với ảnh này</string>
+    <string name="saucenao_failed">SauceNAO không thể tìm kiếm bằng ảnh này</string>
+    <string name="saucenao_pick">Chọn ảnh</string>
+    <string name="saucenao_preview_unauthorized">Đăng nhập lại Pixiv để xem bản xem trước</string>
+    <string name="saucenao_privacy">Ảnh bạn chọn sẽ được tải lên saucenao.com để tìm các tác phẩm Pixiv khớp với ảnh.</string>
+    <string name="saucenao_searching">Đang tìm trên SauceNAO…</string>
+    <string name="saucenao_similarity">Giống %1$s</string>
+    <string name="saucenao_title">Tìm bằng hình ảnh</string>
     <string name="save">Lưu</string>
     <string name="save_again">Lưu lại</string>
     <string name="save_new_only">Chỉ trang mới</string>
@@ -406,6 +419,8 @@
     <string name="series_previous">Tác phẩm trước trong loạt</string>
     <string name="series_started">Bắt đầu %1$s</string>
     <string name="settings_intro">Plugin riêng tư này đọc Pixiv như một ứng dụng thư viện ảnh: tranh minh họa, manga, tiểu thuyết, bảng xếp hạng, dấu trang của bạn và tìm kiếm. Nhấn Đăng nhập để đăng nhập bằng tài khoản Pixiv, hoặc dán mã làm mới bên dưới. Dấu trang, lượt theo dõi và lịch sử được giữ trên thiết bị này: không có gì được gửi, đăng hay thay đổi trên tài khoản Pixiv của bạn.</string>
+    <string name="share_image">Chia sẻ ảnh</string>
+    <string name="share_image_failed">Không thể chia sẻ ảnh này</string>
     <string name="share_link">Chia sẻ liên kết</string>
     <string name="show_r18">Hiện tác phẩm R-18</string>
     <string name="show_r18_description">Mặc định tắt. Khi tắt, tác phẩm bị hạn chế được ẩn khỏi bảng tin.</string>
@@ -417,6 +432,7 @@
     <string name="sign_out_question">Đăng xuất khỏi Pixiv?</string>
     <string name="signed_in">Đã đăng nhập với tên %1$s</string>
     <string name="sort_ungrouped_apply">Áp dụng</string>
+    <string name="split_divider">Đổi kích thước ảnh và phần chi tiết</string>
     <string name="start_section">Pixiv mở ở</string>
     <string name="swipe_works">Vuốt giữa các tác phẩm</string>
     <string name="swipe_works_description">Vuốt sang ngang để chuyển sang tác phẩm tiếp theo trong danh sách. Với tác phẩm nhiều trang, hãy vuốt tiếp qua trang đầu hoặc trang cuối.</string>
@@ -435,10 +451,15 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Đang thịnh hành</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_encoding">Đang mã hóa khung hình %1$d/%2$d…</string>
     <string name="ugoira_export_failed">Không thể lưu ảnh động</string>
+    <string name="ugoira_fetching">Đang lấy khung hình…</string>
     <string name="ugoira_pause">Tạm dừng hoạt ảnh</string>
     <string name="ugoira_play">Phát hoạt ảnh</string>
+    <string name="ugoira_save_gif">Lưu dưới dạng GIF</string>
     <string name="ugoira_save_zip">Lưu khung hình dưới dạng ZIP</string>
+    <string name="ugoira_saving">Đang lưu…</string>
+    <string name="ugoira_slow">Việc mã hóa có thể mất một phút</string>
     <string name="unbookmark">Bỏ đánh dấu</string>
     <string name="unfollow">Bỏ theo dõi</string>
     <string name="unmute">Bỏ ẩn</string>

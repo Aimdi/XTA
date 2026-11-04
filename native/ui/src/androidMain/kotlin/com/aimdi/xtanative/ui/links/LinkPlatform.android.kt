@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.util.Consumer
 import com.aimdi.xtanative.services.links.InstalledBrowser
 import com.aimdi.xtanative.services.links.LinkLaunch
+import com.aimdi.xtanative.services.links.LinkOpening
 import com.aimdi.xtanative.ui.common.findActivity
 
 @Composable
@@ -30,8 +31,8 @@ internal actual fun rememberLinkPlatform(): LinkPlatform {
 
 /**
  * The text another app shares here (an ACTION_SEND of text/plain, which the
- * app's manifest takes): the one the activity was started with, once, and
- * each one that reaches it afterwards.
+ * app's manifest takes), or a Pixiv page it opens here ([sharedText]): the
+ * one the activity was started with, once, and each one that reaches it afterwards.
  */
 @Composable
 internal actual fun SharedTextEffect(onText: (String) -> Unit) {
@@ -50,9 +51,19 @@ internal actual fun SharedTextEffect(onText: (String) -> Unit) {
     }
 }
 
+/**
+ * What another app hands here: text it shares, or a Pixiv page Android opens
+ * here once the reader added Pixiv's links under "Open by default" (X's go to
+ * their screens through the navigation's own links), which opens as a shared
+ * link does: in the plugin that reads it, else in a browser by name.
+ */
 private fun sharedText(intent: Intent?): String? {
-    if (intent?.action != Intent.ACTION_SEND) return null
-    return intent.getCharSequenceExtra(Intent.EXTRA_TEXT)?.toString() ?: intent.getStringExtra(Intent.EXTRA_TEXT) ?: ""
+    val handed = intent ?: return null
+    return when (handed.action) {
+        Intent.ACTION_SEND -> handed.getCharSequenceExtra(Intent.EXTRA_TEXT)?.toString() ?: handed.getStringExtra(Intent.EXTRA_TEXT) ?: ""
+        Intent.ACTION_VIEW -> handed.dataString?.takeIf(LinkOpening::onClaimedHost)
+        else -> null
+    }
 }
 
 /**

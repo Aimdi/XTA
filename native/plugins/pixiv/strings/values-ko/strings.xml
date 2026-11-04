@@ -75,6 +75,7 @@
     <string name="comments_view">댓글 보기</string>
     <string name="comments_view_count">댓글 보기 (%1$s)</string>
     <string name="copied">복사했습니다</string>
+    <string name="copy_illust_id">작품 ID 복사</string>
     <string name="copy_info">정보 복사</string>
     <string name="copy_link">링크 복사</string>
     <string name="copy_template">‘정보 복사’ 템플릿</string>
@@ -104,6 +105,7 @@
     <string name="download_index_forget_question">저장한 페이지 기록을 지울까요? 파일은 기기에 그대로 남습니다.</string>
     <string name="download_page">이 페이지 다운로드</string>
     <string name="download_page_saved">저장됨 – 다시 다운로드</string>
+    <string name="downloading_page">%2$d페이지 중 %1$d페이지 다운로드 중…</string>
     <string name="downloads_section">다운로드</string>
     <string name="downloads_title">다운로드</string>
     <string name="empty">팔로잉 피드에 아직 아무것도 없습니다</string>
@@ -243,6 +245,8 @@
     <string name="novel_watchlist_empty">관심 목록에 추가한 소설 시리즈가 여기에 표시됩니다</string>
     <string name="open_in_browser">브라우저에서 열기</string>
     <string name="open_link_failed">해당 Pixiv 링크를 열 수 없습니다</string>
+    <string name="open_links_in_app">XTA에서 pixiv 링크 열기</string>
+    <string name="open_links_in_app_description">Android의 ‘기본으로 열기’ 페이지에서 pixiv.net과 pixiv.me를 지원되는 링크로 추가하세요</string>
     <string name="open_on_pixiv">Pixiv에서 열기</string>
     <string name="original_quality">원본 화질</string>
     <string name="page_of">%1$d / %2$d</string>
@@ -325,6 +329,15 @@
     <string name="resolution">%1$d × %2$d픽셀</string>
     <string name="retry">재시도</string>
     <string name="reveal">표시</string>
+    <string name="saucenao_another">다른 이미지 선택</string>
+    <string name="saucenao_empty">이 이미지와 일치하는 Pixiv 작품이 없습니다</string>
+    <string name="saucenao_failed">SauceNAO에서 이 이미지를 검색하지 못했습니다</string>
+    <string name="saucenao_pick">이미지 선택</string>
+    <string name="saucenao_preview_unauthorized">미리보기를 보려면 Pixiv에 다시 로그인하세요</string>
+    <string name="saucenao_privacy">선택한 이미지는 일치하는 Pixiv 작품을 찾기 위해 saucenao.com에 업로드됩니다.</string>
+    <string name="saucenao_searching">SauceNAO에서 검색 중…</string>
+    <string name="saucenao_similarity">유사도 %1$s</string>
+    <string name="saucenao_title">이미지로 검색</string>
     <string name="save">저장</string>
     <string name="save_again">다시 저장</string>
     <string name="save_new_only">새 페이지만</string>
@@ -406,6 +419,8 @@
     <string name="series_previous">시리즈의 이전 작품</string>
     <string name="series_started">%1$s 시작</string>
     <string name="settings_intro">이 비공개 플러그인은 Pixiv를 갤러리 앱처럼 읽습니다: 일러스트, 만화, 소설, 랭킹, 북마크, 검색. 로그인을 탭해 Pixiv 계정으로 로그인하거나 아래에 리프레시 토큰을 붙여 넣으세요. 북마크, 팔로우, 기록은 이 기기에만 남으며, Pixiv 계정으로 무엇도 보내거나 게시하거나 변경하지 않습니다.</string>
+    <string name="share_image">이미지 공유</string>
+    <string name="share_image_failed">이 이미지를 공유할 수 없습니다</string>
     <string name="share_link">링크 공유</string>
     <string name="show_r18">R-18 작품 표시</string>
     <string name="show_r18_description">기본값은 끔. 끄면 제한된 작품이 피드에서 숨겨집니다.</string>
@@ -417,6 +432,7 @@
     <string name="sign_out_question">Pixiv에서 로그아웃할까요?</string>
     <string name="signed_in">%1$s(으)로 로그인됨</string>
     <string name="sort_ungrouped_apply">적용</string>
+    <string name="split_divider">이미지와 정보 크기 조절</string>
     <string name="start_section">Pixiv 시작 화면</string>
     <string name="swipe_works">스와이프로 작품 넘기기</string>
     <string name="swipe_works_description">옆으로 스와이프하면 목록의 다음 작품으로 이동합니다. 여러 페이지로 된 작품은 첫 페이지나 마지막 페이지에서 한 번 더 스와이프하세요.</string>
@@ -435,10 +451,15 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">지금 인기 태그</string>
     <string name="ugoira">우고이라</string>
+    <string name="ugoira_encoding">%2$d개 중 %1$d번째 프레임 인코딩 중…</string>
     <string name="ugoira_export_failed">애니메이션을 저장하지 못했습니다</string>
+    <string name="ugoira_fetching">프레임 가져오는 중…</string>
     <string name="ugoira_pause">애니메이션 일시정지</string>
     <string name="ugoira_play">애니메이션 재생</string>
+    <string name="ugoira_save_gif">GIF로 저장</string>
     <string name="ugoira_save_zip">프레임을 ZIP으로 저장</string>
+    <string name="ugoira_saving">저장 중…</string>
+    <string name="ugoira_slow">인코딩에 1분 정도 걸릴 수 있습니다</string>
     <string name="unbookmark">북마크 해제</string>
     <string name="unfollow">팔로우 취소</string>
     <string name="unmute">뮤트 해제</string>

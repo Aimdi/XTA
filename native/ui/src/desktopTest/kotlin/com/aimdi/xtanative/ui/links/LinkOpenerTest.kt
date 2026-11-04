@@ -300,9 +300,12 @@ class LinkOpenerTest {
     }
 
     @Test
-    fun theAppClaimsOnlyXHosts() {
+    fun theAppClaimsXsHostsAndPixivsPages() {
         assertTrue(LinkSteps.claimedByApp("https://www.x.com/home"))
         assertTrue(LinkSteps.claimedByApp("https://mobile.twitter.com/a"))
+        assertTrue(LinkSteps.claimedByApp("https://www.pixiv.net/artworks/1"))
+        assertTrue(LinkSteps.claimedByApp("https://pixiv.me/someone"))
+        assertFalse(LinkSteps.claimedByApp("https://i.pximg.net/a.png"), "Pixiv's pictures are not claimed")
         assertFalse(LinkSteps.claimedByApp("https://example.com"))
         assertFalse(LinkSteps.claimedByApp("not a link"))
         assertNull(LinkSteps.hostOf("mailto:someone@example.com"))

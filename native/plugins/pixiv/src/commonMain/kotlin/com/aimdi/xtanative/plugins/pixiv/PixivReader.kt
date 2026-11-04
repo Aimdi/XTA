@@ -8,7 +8,10 @@ import androidx.compose.foundation.gestures.calculatePan
 import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +27,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
@@ -51,14 +55,25 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChanged
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import coil3.PlatformContext
+import coil3.SingletonImageLoader
+import coil3.compose.LocalPlatformContext
 import com.aimdi.xtanative.networks.pixiv.PixivIllust
 import com.aimdi.xtanative.networks.pixiv.PixivImageQuality
+import com.aimdi.xtanative.networks.pixiv.PixivImages
+import com.aimdi.xtanative.store.downloads.OkHttpMediaHttp
+import com.aimdi.xtanative.store.settings.PixivPrefs
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
+import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
+import java.io.IOException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /** The reader of a work's pages: the work handed over, else read by its id. */
 @Composable
@@ -105,11 +120,60 @@ private fun Reader(illust: PixivIllust, start: Int, verticalFirst: Boolean) {
         Box(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
             val urls = remember(illust, hd) { illust.viewerUrls.indices.map { if (hd) illust.downloadUrlAt(it) else illust.viewerUrls[it] } }
             if (vertical) ColumnPages(illust, urls, surface) else SwipedPages(illust, urls, surface)
-            ReaderBar(illust.viewerUrls.size, surface, hd, onHd = { hd = !hd }, modifier = Modifier.align(Alignment.BottomCenter))
+            val share = rememberShareImage(illust)
+            val shown = urls.getOrNull(surface.page)
+            ReaderBar(
+                illust.viewerUrls.size,
+                surface,
+                hd,
+                onHd = { hd = !hd },
+                onShare = shown?.takeIf { it in surface.loaded }?.let { url -> { share(surface.page, url) } },
+                modifier = Modifier.align(Alignment.BottomCenter),
+            )
         }
     }
     OverviewHost(surface, illust)
 }
+
+/**
+ * Share image (pixiv_share_image.dart): the page's picture, as the image
+ * cache holds it or else fetched again with Pixiv's Referer, handed to the
+ * share sheet under Pixiv's own name for it; the desktop, which has none,
+ * saves it instead.
+ */
+@Composable
+private fun rememberShareImage(illust: PixivIllust): (page: Int, url: String) -> Unit {
+    val runtime = LocalPixiv.current
+    val context = LocalPlatformContext.current
+    val language = currentLanguage()
+    return remember(illust, runtime, context, language) {
+        { page, url ->
+            runtime.launch {
+                val shown = PixivImages.url(url, runtime.settings[PixivPrefs.imageHost])
+                val bytes = runCatching { pictureBytes(context, shown) }.getOrNull()
+                if (bytes == null) {
+                    runtime.tell(Strings.share_image_failed.get(language))
+                } else {
+                    val (name, type) = PixivDownloads.sharedName(illust, page, shown)
+                    runtime.host.shareFile(bytes, name, type)
+                }
+            }
+        }
+    }
+}
+
+/** The picture at [url]: the copy Coil's disk cache keeps of what is on screen, else downloaded again with Pixiv's Referer. */
+private suspend fun pictureBytes(context: PlatformContext, url: String): ByteArray = withContext(Dispatchers.IO) {
+    cachedPicture(context, url) ?: OkHttpMediaHttp().get(url, PixivImages.HEADERS).use { response ->
+        if (response.code !in 200..299) throw IOException("picture: HTTP ${response.code}")
+        response.body.readBytes()
+    }
+}
+
+private fun cachedPicture(context: PlatformContext, url: String): ByteArray? = runCatching {
+    val cache = SingletonImageLoader.get(context).diskCache ?: return null
+    cache.openSnapshot(url)?.use { snapshot -> cache.fileSystem.read(snapshot.data) { readByteArray() } }
+}.getOrNull()
 
 /** The reader's page and its way between pages, which the bar, the sheets and the overview move. */
 internal class ReaderSurface(private val pages: Int, start: Int, private val flip: () -> Unit) : PixivOverviewSurface {
@@ -117,6 +181,14 @@ internal class ReaderSurface(private val pages: Int, start: Int, private val fli
 
     /** A jump asked for, which the page list answers by scrolling there. */
     var jump by mutableStateOf<Int?>(null)
+
+    /** The pictures shown so far, which Share image waits for, as XTA's reader does. */
+    var loaded by mutableStateOf(emptySet<String>())
+        private set
+
+    fun shown(url: String) {
+        if (url !in loaded) loaded = loaded + url
+    }
 
     override var overviewRequest by mutableStateOf<Boolean?>(null)
         private set
@@ -165,6 +237,7 @@ private fun ColumnPages(illust: PixivIllust, urls: List<String>, surface: Reader
                 }),
                 ContentScale.FillWidth,
                 contentDescription = pluginString(Strings.page_of, index + 1, urls.size),
+                onLoaded = { surface.shown(urls[index]) },
             )
         }
     }
@@ -186,7 +259,7 @@ private fun SwipedPages(illust: PixivIllust, urls: List<String>, surface: Reader
         }
     }
     HorizontalPager(pager, Modifier.fillMaxSize()) { index ->
-        ZoomablePage(urls[index], onLongPress = {
+        ZoomablePage(urls[index], onLoaded = { surface.shown(urls[index]) }, onLongPress = {
             haptics.medium()
             sheets.show(PixivSheet.PageActions(illust, index, surface))
         })
@@ -194,7 +267,7 @@ private fun SwipedPages(illust: PixivIllust, urls: List<String>, surface: Reader
 }
 
 @Composable
-internal fun ZoomablePage(url: String, onLongPress: () -> Unit) {
+internal fun ZoomablePage(url: String, onLoaded: (() -> Unit)? = null, onLongPress: () -> Unit) {
     var scale by remember { mutableFloatStateOf(1f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
     Box(
@@ -234,39 +307,57 @@ internal fun ZoomablePage(url: String, onLongPress: () -> Unit) {
                 translationY = offset.y
             },
     ) {
-        PixivPicture(url, Modifier.fillMaxSize(), ContentScale.Fit)
+        PixivPicture(url, Modifier.fillMaxSize(), ContentScale.Fit, onLoaded = onLoaded)
     }
 }
 
-/** Original quality for the page on screen and, for a work of many pages, a slider and the counter that opens every page. */
+/** Share image (once the page on screen is in) and original quality for it and, for a work of many pages, a slider and the counter that opens every page. */
 @Composable
-private fun ReaderBar(pages: Int, surface: ReaderSurface, hd: Boolean, onHd: () -> Unit, modifier: Modifier) {
+private fun ReaderBar(pages: Int, surface: ReaderSurface, hd: Boolean, onHd: () -> Unit, onShare: (() -> Unit)?, modifier: Modifier) {
     var scrub by remember { mutableStateOf<Float?>(null) }
     val shown = scrub?.toInt() ?: surface.page
+    val commands: @Composable () -> Unit = {
+        IconButton(onClick = { onShare?.invoke() }, enabled = onShare != null) { Icon(Icons.Filled.Share, pluginString(Strings.share_image)) }
+        IconToggleButton(checked = hd, onCheckedChange = { onHd() }) {
+            Icon(PixivIcons.Hd, pluginString(Strings.original_quality), tint = if (hd) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
+    val pager: @Composable RowScope.() -> Unit = {
+        Slider(
+            value = shown.toFloat(),
+            onValueChange = { scrub = it },
+            onValueChangeFinished = {
+                scrub?.let { surface.showPage(it.toInt()) }
+                scrub = null
+            },
+            valueRange = 0f..(pages - 1).toFloat(),
+            steps = (pages - 2).coerceAtLeast(0),
+            modifier = Modifier.weight(1f),
+        )
+        Spacer(Modifier.width(8.dp))
+        OutlinedButton(onClick = { surface.openOverview(false) }) {
+            Icon(GroupIcons.GridView, null, modifier = Modifier.size(18.dp))
+            Spacer(Modifier.width(6.dp))
+            Text(pluginString(Strings.page_of, shown + 1, pages))
+        }
+    }
     Surface(modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.background.copy(alpha = 0.92f)) {
-        Row(Modifier.fillMaxWidth().navigationBarsPadding().padding(start = 4.dp, end = 12.dp, bottom = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-            IconToggleButton(checked = hd, onCheckedChange = { onHd() }) {
-                Icon(PixivIcons.Hd, pluginString(Strings.original_quality), tint = if (hd) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-            if (pages > 1) {
-                Slider(
-                    value = shown.toFloat(),
-                    onValueChange = { scrub = it },
-                    onValueChangeFinished = {
-                        scrub?.let { surface.showPage(it.toInt()) }
-                        scrub = null
-                    },
-                    valueRange = 0f..(pages - 1).toFloat(),
-                    steps = (pages - 2).coerceAtLeast(0),
-                    modifier = Modifier.weight(1f),
-                )
-                Spacer(Modifier.width(8.dp))
-                OutlinedButton(onClick = { surface.openOverview(false) }) {
-                    Icon(GroupIcons.GridView, null, modifier = Modifier.size(18.dp))
-                    Spacer(Modifier.width(6.dp))
-                    Text(pluginString(Strings.page_of, shown + 1, pages))
+        BoxWithConstraints(Modifier.fillMaxWidth().navigationBarsPadding().padding(start = 4.dp, end = 12.dp, bottom = 4.dp)) {
+            // Below this width in text-sized units the page controls get a line of their own (pixiv_reader_bar.dart).
+            val oneRow = maxWidth / LocalDensity.current.fontScale >= ONE_ROW_WIDTH
+            when {
+                pages < 2 -> Row(verticalAlignment = Alignment.CenterVertically) { commands() }
+                oneRow -> Row(verticalAlignment = Alignment.CenterVertically) {
+                    commands()
+                    pager()
+                }
+                else -> Column {
+                    Row(verticalAlignment = Alignment.CenterVertically, content = pager)
+                    Row(verticalAlignment = Alignment.CenterVertically) { commands() }
                 }
             }
         }
     }
 }
+
+private val ONE_ROW_WIDTH = 300.dp

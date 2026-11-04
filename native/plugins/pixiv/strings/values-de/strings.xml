@@ -75,6 +75,7 @@
     <string name="comments_view">Kommentare anzeigen</string>
     <string name="comments_view_count">Kommentare anzeigen (%1$s)</string>
     <string name="copied">Kopiert</string>
+    <string name="copy_illust_id">Werk-ID kopieren</string>
     <string name="copy_info">Infos kopieren</string>
     <string name="copy_link">Link kopieren</string>
     <string name="copy_template">Vorlage für „Infos kopieren“</string>
@@ -104,6 +105,7 @@
     <string name="download_index_forget_question">Vergessen, welche Seiten gespeichert wurden? Die Dateien selbst bleiben auf deinem Gerät.</string>
     <string name="download_page">Diese Seite herunterladen</string>
     <string name="download_page_saved">Gespeichert – erneut herunterladen</string>
+    <string name="downloading_page">Seite %1$d von %2$d wird heruntergeladen…</string>
     <string name="downloads_section">Downloads</string>
     <string name="downloads_title">Downloads</string>
     <string name="empty">Noch nichts im Following-Feed</string>
@@ -243,6 +245,8 @@
     <string name="novel_watchlist_empty">Roman-Reihen auf deiner Merkliste erscheinen hier</string>
     <string name="open_in_browser">Im Browser öffnen</string>
     <string name="open_link_failed">Dieser Pixiv-Link konnte nicht geöffnet werden</string>
+    <string name="open_links_in_app">Pixiv-Links in XTA öffnen</string>
+    <string name="open_links_in_app_description">Füge auf Androids Seite „Standardmäßig öffnen“ pixiv.net und pixiv.me als unterstützte Links hinzu</string>
     <string name="open_on_pixiv">Auf Pixiv öffnen</string>
     <string name="original_quality">Originalqualität</string>
     <string name="page_of">%1$d / %2$d</string>
@@ -325,6 +329,15 @@
     <string name="resolution">%1$d × %2$d px</string>
     <string name="retry">Erneut versuchen</string>
     <string name="reveal">Anzeigen</string>
+    <string name="saucenao_another">Anderes Bild wählen</string>
+    <string name="saucenao_empty">Keine Pixiv-Werke passen zu diesem Bild</string>
+    <string name="saucenao_failed">SauceNAO konnte dieses Bild nicht durchsuchen</string>
+    <string name="saucenao_pick">Bild wählen</string>
+    <string name="saucenao_preview_unauthorized">Melde dich erneut bei Pixiv an, um Vorschauen zu sehen</string>
+    <string name="saucenao_privacy">Das gewählte Bild wird auf saucenao.com hochgeladen, um passende Pixiv-Werke zu finden.</string>
+    <string name="saucenao_searching">SauceNAO wird durchsucht …</string>
+    <string name="saucenao_similarity">%1$s ähnlich</string>
+    <string name="saucenao_title">Mit Bild suchen</string>
     <string name="save">Speichern</string>
     <string name="save_again">Erneut speichern</string>
     <string name="save_new_only">Nur neue Seiten</string>
@@ -406,6 +419,8 @@
     <string name="series_previous">Vorheriges der Reihe</string>
     <string name="series_started">Begonnen am %1$s</string>
     <string name="settings_intro">Dieses private Plugin liest Pixiv wie eine Galerie-App: Illustrationen, Manga, Romane, Rankings, deine Lesezeichen und die Suche. Tippe auf Anmelden, um dich mit deinem Pixiv-Konto anzumelden, oder füge unten ein Refresh-Token ein. Lesezeichen, Follows und Verlauf bleiben auf diesem Gerät: An dein Pixiv-Konto wird nie etwas gesendet, dort nie etwas gepostet oder geändert.</string>
+    <string name="share_image">Bild teilen</string>
+    <string name="share_image_failed">Das Bild konnte nicht geteilt werden</string>
     <string name="share_link">Link teilen</string>
     <string name="show_r18">R-18-Werke anzeigen</string>
     <string name="show_r18_description">Standardmäßig aus. Wenn aus, werden eingeschränkte Werke in Feeds ausgeblendet.</string>
@@ -417,6 +432,7 @@
     <string name="sign_out_question">Von Pixiv abmelden?</string>
     <string name="signed_in">Angemeldet als %1$s</string>
     <string name="sort_ungrouped_apply">Übernehmen</string>
+    <string name="split_divider">Größe von Bildern und Details ändern</string>
     <string name="start_section">Pixiv startet mit</string>
     <string name="swipe_works">Zwischen Werken wischen</string>
     <string name="swipe_works_description">Seitlich wischen, um zum nächsten Werk der Liste zu gelangen. Bei Werken mit mehreren Seiten über die erste oder letzte Seite hinaus weiterwischen.</string>
@@ -435,10 +451,15 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Gerade angesagt</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_encoding">Einzelbild %1$d von %2$d wird kodiert…</string>
     <string name="ugoira_export_failed">Die Animation konnte nicht gespeichert werden</string>
+    <string name="ugoira_fetching">Einzelbilder werden geladen…</string>
     <string name="ugoira_pause">Animation anhalten</string>
     <string name="ugoira_play">Animation abspielen</string>
+    <string name="ugoira_save_gif">Als GIF speichern</string>
     <string name="ugoira_save_zip">Einzelbilder als ZIP speichern</string>
+    <string name="ugoira_saving">Wird gespeichert…</string>
+    <string name="ugoira_slow">Das Kodieren kann eine Minute dauern</string>
     <string name="unbookmark">Lesezeichen entfernen</string>
     <string name="unfollow">Entfolgen</string>
     <string name="unmute">Stummschaltung aufheben</string>

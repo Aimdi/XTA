@@ -83,7 +83,7 @@ internal fun pixivMutes(): PixivMutes {
 /**
  * A Pixiv picture from the image server the reader picked, asked for with
  * Pixiv's Referer, which Pixiv's server wants. Nothing to show draws the
- * surface the picture would cover.
+ * surface the picture would cover. [onLoaded] hears it shown.
  */
 @Composable
 internal fun PixivPicture(
@@ -91,6 +91,7 @@ internal fun PixivPicture(
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Crop,
     contentDescription: String? = null,
+    onLoaded: (() -> Unit)? = null,
 ) {
     if (url.isNullOrEmpty()) {
         Box(modifier.background(MaterialTheme.colorScheme.surfaceVariant))
@@ -102,6 +103,7 @@ internal fun PixivPicture(
         model = rememberImageRequest(shown, PixivImages.HEADERS),
         contentDescription = contentDescription,
         contentScale = contentScale,
+        onSuccess = if (onLoaded == null) null else { _ -> onLoaded() },
         modifier = modifier.background(MaterialTheme.colorScheme.surfaceVariant),
     )
 }

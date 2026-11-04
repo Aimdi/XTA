@@ -44,6 +44,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -107,13 +108,13 @@ private fun FavoriteTagList(tags: List<PixivTag>, editing: Boolean) {
     }
 }
 
-/** One muted thing as a chip: a long press copies what it can, the cross unmutes after asking. */
+/** One muted thing as a chip: a tap unmutes it after asking, the cross at once, a long press copies what it can. */
 private class MuteChip(val label: String, val copy: String?, val unmute: () -> Unit)
 
 /**
- * Everything muted on this device: the field to mute a tag (a pattern too,
- * written r'…'), then the tags, creators, works, comments and novels muted,
- * each unmuted after asking.
+ * Everything muted on this device (pixiv_settings_mute.dart): the tags with
+ * the field to mute one (a pattern too, written r'…'), then the creators,
+ * works, comments and novels muted.
  */
 @Composable
 internal fun PixivMuteScreen() {
@@ -121,13 +122,11 @@ internal fun PixivMuteScreen() {
     val mutes = pixivMutes()
     PluginScaffold(title = pluginString(Strings.mute_settings), onBack = runtime.host::back) { padding ->
         Column(Modifier.padding(padding).fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) {
-            TagField()
-            Spacer(Modifier.height(16.dp))
             Text(pluginString(Strings.muted_section), style = MaterialTheme.typography.titleSmall)
             if (mutes.isEmpty) Text(pluginString(Strings.muted_empty), modifier = Modifier.padding(top = 8.dp))
-            MuteGroup(pluginString(Strings.mute_tags), PixivIcons.Label, mutes.tags.sorted().map { MuteChip(PixivMuteTags.label(it), it) { runtime.mutes.unmuteTag(it) } })
+            MuteGroup(pluginString(Strings.mute_tags), PixivIcons.Label, mutes.tags.sorted().map { MuteChip(PixivMuteTags.label(it), it) { runtime.mutes.unmuteTag(it) } }) { TagField() }
             MuteGroup(pluginString(Strings.mute_users), GroupIcons.PersonRemove, mutes.authorIds.sorted().map { id ->
-                MuteChip(mutes.authorNames[id]?.ifEmpty { null } ?: "$id", null) { runtime.mutes.unmuteAuthor(id) }
+                MuteChip(mutes.authorNames[id]?.ifEmpty { null }?.let { "$it · $id" } ?: "$id", null) { runtime.mutes.unmuteAuthor(id) }
             })
             MuteGroup(pluginString(Strings.mute_works), PostIcons.VisibilityOff, mutes.illustIds.sorted().map { id -> MuteChip("$id", null) { runtime.mutes.unmuteIllust(id) } })
             MuteGroup(pluginString(Strings.mute_comments), PixivIcons.VolumeOff, mutes.commentIds.sorted().map { id -> MuteChip("$id", null) { runtime.mutes.unmuteComment(id) } })
@@ -165,10 +164,11 @@ private fun TagField() {
     )
 }
 
+/** A titled group of muted things, shown once it holds one, or always with a [leading] field. */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun MuteGroup(title: String, icon: ImageVector, chips: List<MuteChip>) {
-    if (chips.isEmpty()) return
+private fun MuteGroup(title: String, icon: ImageVector, chips: List<MuteChip>, leading: (@Composable () -> Unit)? = null) {
+    if (chips.isEmpty() && leading == null) return
     val sheets = LocalPixivSheets.current
     val copy = rememberCopy()
     val language = currentLanguage()
@@ -177,18 +177,24 @@ private fun MuteGroup(title: String, icon: ImageVector, chips: List<MuteChip>) {
         Spacer(Modifier.size(8.dp))
         Text(title, style = MaterialTheme.typography.labelLarge)
     }
+    leading?.let {
+        it()
+        if (chips.isNotEmpty()) Spacer(Modifier.height(8.dp))
+    }
     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         chips.forEach { chip ->
+            val shape = RoundedCornerShape(8.dp)
             Surface(
-                shape = RoundedCornerShape(8.dp),
+                shape = shape,
                 color = MaterialTheme.colorScheme.secondaryContainer,
-                modifier = Modifier.combinedClickable(onClick = {}, onLongClick = chip.copy?.let { text -> { copy(text, Strings.copied) } }),
+                modifier = Modifier.clip(shape).combinedClickable(
+                    onClick = { sheets.ask.ask(Strings.unmute_question.get(language, chip.label), Strings.unmute.get(language), chip.unmute) },
+                    onLongClick = chip.copy?.let { text -> { copy(text, Strings.copied) } },
+                ),
             ) {
                 Row(Modifier.padding(start = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(chip.label, style = MaterialTheme.typography.labelLarge)
-                    IconButton(onClick = {
-                        sheets.ask.ask(Strings.unmute_question.get(language, chip.label), Strings.unmute.get(language), chip.unmute)
-                    }) { Icon(Icons.Filled.Close, pluginString(Strings.unmute), Modifier.size(18.dp)) }
+                    IconButton(onClick = chip.unmute) { Icon(Icons.Filled.Close, pluginString(Strings.unmute), Modifier.size(18.dp)) }
                 }
             }
         }

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
@@ -37,7 +38,6 @@ import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
@@ -45,16 +45,13 @@ import com.aimdi.xtanative.networks.Page
 import com.aimdi.xtanative.networks.pixiv.PixivComment
 import com.aimdi.xtanative.networks.pixiv.PixivCommentPart
 import com.aimdi.xtanative.networks.pixiv.PixivCommentTarget
+import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
-import java.util.Locale
 
 /** Whether a comment shows: neither it nor its author is muted. */
 internal fun PixivMutes.shows(comment: PixivComment): Boolean = comment.id !in commentIds && (comment.user?.id ?: 0L) !in authorIds
@@ -76,7 +73,7 @@ internal fun PixivCommentsScreen(kind: PixivKind, id: Long, parent: PixivComment
         Box(Modifier.padding(padding).fillMaxSize()) {
             PixivRows(list, { it.id }, pluginString(if (parent == null) Strings.comments_empty else Strings.comments_replies_empty), shown = { it.filter(mutes::shows) }, header = {
                 parent?.let { item(key = "parent") { CommentTile(it, kind, id, pinned = true) } }
-            }) { comment -> CommentTile(comment, kind, id, pinned = false) }
+            }) { comment -> CommentTile(comment, kind, id, pinned = false, reply = parent != null) }
         }
     }
 }
@@ -84,21 +81,29 @@ internal fun PixivCommentsScreen(kind: PixivKind, id: Long, parent: PixivComment
 private suspend fun readComments(runtime: PixivRuntime, target: PixivCommentTarget, parent: PixivComment?, next: String?): Page<PixivComment> =
     if (parent == null) runtime.comments.comments(target, next).comments else runtime.comments.replies(target, parent.id, next).comments
 
+/**
+ * One comment: who wrote it, whom it answers and when, then its words with
+ * their emoji and its sticker, or the note hiding a link out of Pixiv
+ * (pixiv_comment_tile.dart); a [reply] a step in under the comment it answers.
+ */
 @Composable
-private fun CommentTile(comment: PixivComment, kind: PixivKind, workId: Long, pinned: Boolean) {
+private fun CommentTile(comment: PixivComment, kind: PixivKind, workId: Long, pinned: Boolean, reply: Boolean = false) {
     val runtime = LocalPixiv.current
     var revealed by remember(comment.id) { mutableStateOf(false) }
     val hidden = comment.linksOutsidePixiv && !revealed
-    Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 4.dp, top = 12.dp, bottom = 8.dp)) {
+    Row(Modifier.fillMaxWidth().padding(start = if (reply) 22.dp else 10.dp, end = 4.dp, top = 8.dp, bottom = 8.dp)) {
         val user = comment.user
-        PixivAvatar(user?.avatarUrl, comment.authorName.orEmpty(), size = 36.dp, modifier = Modifier.clip(RoundedCornerShape(50)).clickable(enabled = user != null) { user?.let { runtime.openUser(it.id) } })
-        Spacer(Modifier.width(12.dp))
-        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Box(Modifier.size(48.dp).clip(RoundedCornerShape(50)).clickable(enabled = user != null) { user?.let { runtime.openUser(it.id) } }, contentAlignment = Alignment.Center) {
+            PixivAvatar(user?.avatarUrl, comment.authorName.orEmpty(), size = 36.dp)
+        }
+        Spacer(Modifier.width(6.dp))
+        Column(Modifier.weight(1f).padding(top = 4.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             CommentByline(comment)
-            when {
-                comment.stampUrl != null -> PixivPicture(comment.stampUrl, Modifier.size(96.dp), ContentScale.Fit, pluginString(Strings.comment_sticker))
-                hidden -> HiddenLink { revealed = true }
-                else -> CommentText(comment.parts)
+            if (hidden) {
+                HiddenLink { revealed = true }
+            } else {
+                if (comment.parts.isNotEmpty()) SelectionContainer { CommentText(comment.parts) }
+                comment.stampUrl?.let { PixivPicture(it, Modifier.size(100.dp), ContentScale.Fit, pluginString(Strings.comment_sticker)) }
             }
             if (!pinned && comment.hasReplies) {
                 TextButton(onClick = { runtime.open(PixivRoute.Comments(kind, workId, runtime.shelf.put(comment))) }) {
@@ -112,22 +117,22 @@ private fun CommentTile(comment: PixivComment, kind: PixivKind, workId: Long, pi
     }
 }
 
+/** "Name · To someone · 3h", the name set apart, so a thread reads by speaker. */
 @Composable
 private fun CommentByline(comment: PixivComment) {
     val language = currentLanguage()
     val name = comment.authorName ?: pluginString(Strings.comment_unknown_user)
     val replyTo = comment.replyTo?.let { it.name.ifEmpty { "@" + it.account } }
-    val date = comment.date?.let { DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT).withLocale(Locale.forLanguageTag(language)).format(it.atZone(ZoneId.systemDefault())) }
+    val date = comment.date?.let { agoText(it) }
     Text(
         buildAnnotatedString {
-            withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append(name) }
+            withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)) { append(name) }
             replyTo?.let { append(" · " + Strings.comment_reply_to.get(language, it)) }
+            date?.let { append(" · $it") }
         },
-        style = MaterialTheme.typography.bodyMedium,
-        maxLines = 2,
-        overflow = TextOverflow.Ellipsis,
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
-    date?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
 }
 
 /** A comment's words with Pixiv's emoji drawn where their codes were. */

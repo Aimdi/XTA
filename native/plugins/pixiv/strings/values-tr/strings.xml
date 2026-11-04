@@ -75,6 +75,7 @@
     <string name="comments_view">Yorumları gör</string>
     <string name="comments_view_count">Yorumları gör (%1$s)</string>
     <string name="copied">Kopyalandı</string>
+    <string name="copy_illust_id">Eser kimliğini kopyala</string>
     <string name="copy_info">Bilgileri kopyala</string>
     <string name="copy_link">Bağlantıyı kopyala</string>
     <string name="copy_template">“Bilgileri kopyala” şablonu</string>
@@ -104,6 +105,7 @@
     <string name="download_index_forget_question">Hangi sayfaların kaydedildiği unutulsun mu? Dosyaların kendisi cihazınızda kalır.</string>
     <string name="download_page">Bu sayfayı indir</string>
     <string name="download_page_saved">Kaydedildi – tekrar indir</string>
+    <string name="downloading_page">Sayfa %1$d/%2$d indiriliyor…</string>
     <string name="downloads_section">İndirmeler</string>
     <string name="downloads_title">İndirilenler</string>
     <string name="empty">Takip akışında henüz bir şey yok</string>
@@ -243,6 +245,8 @@
     <string name="novel_watchlist_empty">İzleme listenize eklediğiniz roman serileri burada görünür</string>
     <string name="open_in_browser">Tarayıcıda aç</string>
     <string name="open_link_failed">Bu Pixiv bağlantısı açılamadı</string>
+    <string name="open_links_in_app">pixiv bağlantılarını XTA'da aç</string>
+    <string name="open_links_in_app_description">Android'in “Varsayılan olarak aç” sayfasında pixiv.net ve pixiv.me'yi desteklenen bağlantı olarak ekleyin</string>
     <string name="open_on_pixiv">Pixiv’de aç</string>
     <string name="original_quality">Orijinal kalite</string>
     <string name="page_of">%1$d / %2$d</string>
@@ -325,6 +329,15 @@
     <string name="resolution">%1$d × %2$d piksel</string>
     <string name="retry">Yeniden dene</string>
     <string name="reveal">Göster</string>
+    <string name="saucenao_another">Başka bir görsel seç</string>
+    <string name="saucenao_empty">Bu görselle eşleşen Pixiv eseri yok</string>
+    <string name="saucenao_failed">SauceNAO bu görselle arama yapamadı</string>
+    <string name="saucenao_pick">Görsel seç</string>
+    <string name="saucenao_preview_unauthorized">Önizlemeleri görmek için Pixiv’e yeniden giriş yapın</string>
+    <string name="saucenao_privacy">Seçtiğiniz görsel, eşleşen Pixiv eserlerini bulmak için saucenao.com’a yüklenir.</string>
+    <string name="saucenao_searching">SauceNAO’da aranıyor…</string>
+    <string name="saucenao_similarity">%1$s benzerlik</string>
+    <string name="saucenao_title">Görselle ara</string>
     <string name="save">Kaydet</string>
     <string name="save_again">Tekrar kaydet</string>
     <string name="save_new_only">Yalnızca yeni sayfalar</string>
@@ -406,6 +419,8 @@
     <string name="series_previous">Serideki önceki</string>
     <string name="series_started">Başlangıç: %1$s</string>
     <string name="settings_intro">Bu özel eklenti Pixiv'i bir galeri uygulaması gibi okur: çizimler, manga, romanlar, sıralamalar, yer imlerin ve arama. Pixiv hesabınla giriş yapmak için Giriş yap'a dokun ya da aşağıya bir yenileme belirteci yapıştır. Yer imleri, takipler ve geçmiş bu cihazda kalır: Pixiv hesabına hiçbir şey gönderilmez, paylaşılmaz veya orada değiştirilmez.</string>
+    <string name="share_image">Görseli paylaş</string>
+    <string name="share_image_failed">Bu görsel paylaşılamadı</string>
     <string name="share_link">Bağlantıyı paylaş</string>
     <string name="show_r18">R-18 eserleri göster</string>
     <string name="show_r18_description">Varsayılan olarak kapalı. Kapalıyken kısıtlı eserler akışlardan gizlenir.</string>
@@ -417,6 +432,7 @@
     <string name="sign_out_question">Pixiv oturumu kapatılsın mı?</string>
     <string name="signed_in">%1$s olarak oturum açıldı</string>
     <string name="sort_ungrouped_apply">Uygula</string>
+    <string name="split_divider">Görsellerin ve ayrıntıların boyutunu değiştir</string>
     <string name="start_section">Pixiv şurada açılır</string>
     <string name="swipe_works">Eserler arasında kaydır</string>
     <string name="swipe_works_description">Listedeki sonraki esere geçmek için yana kaydırın. Çok sayfalı eserlerde ilk veya son sayfadan sonra kaydırmaya devam edin.</string>
@@ -435,10 +451,15 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Şu an gündemde</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_encoding">Kare %1$d/%2$d kodlanıyor…</string>
     <string name="ugoira_export_failed">Animasyon kaydedilemedi</string>
+    <string name="ugoira_fetching">Kareler alınıyor…</string>
     <string name="ugoira_pause">Animasyonu duraklat</string>
     <string name="ugoira_play">Animasyonu oynat</string>
+    <string name="ugoira_save_gif">GIF olarak kaydet</string>
     <string name="ugoira_save_zip">Kareleri ZIP olarak kaydet</string>
+    <string name="ugoira_saving">Kaydediliyor…</string>
+    <string name="ugoira_slow">Kodlama bir dakika sürebilir</string>
     <string name="unbookmark">Yer imini kaldır</string>
     <string name="unfollow">Takibi bırak</string>
     <string name="unmute">Sessizi kaldır</string>

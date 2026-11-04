@@ -57,16 +57,22 @@ object Downloading {
     fun made(graph: AppGraph, bytes: ByteArray, fileName: String, subfolder: String? = null) {
         scope.launch {
             KeepNotices.show(KeepNotice.Downloading)
-            val notice = try {
-                saveMade(graph, bytes, fileName, subfolder)
-            } catch (e: CancellationException) {
-                throw e
-            } catch (_: Exception) {
-                KeepNotice.DownloadFailed
-            }
-            KeepNotices.endWorking()
-            notice?.let(KeepNotices::show)
+            madeNow(graph, bytes, fileName, subfolder)
         }
+    }
+
+    /** [made], waited for and without its working notice, which the plugin saying what is under way has put up: whether the file was saved. */
+    suspend fun madeNow(graph: AppGraph, bytes: ByteArray, fileName: String, subfolder: String? = null): Boolean {
+        val notice = try {
+            saveMade(graph, bytes, fileName, subfolder)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: Exception) {
+            KeepNotice.DownloadFailed
+        }
+        KeepNotices.endWorking()
+        notice?.let(KeepNotices::show)
+        return notice is KeepNotice.SavedTo || notice == KeepNotice.MediaSaved
     }
 
     /** Hands a file made on the device to the share sheet; where the platform has none (the desktop), saves it as [made] does. */

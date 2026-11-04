@@ -212,8 +212,8 @@ object LinkSteps {
     /** The host of [url] in lower case, or null when it has none. */
     fun hostOf(url: String): String? = runCatching { URI(url.trim()).host?.lowercase() }.getOrNull()?.ifEmpty { null }
 
-    /** Whether the app claims [url]'s host, so that a plain VIEW of it could land back in the app. */
-    fun claimedByApp(url: String): Boolean = hostOf(url) in XLinks.HOSTS
+    /** Whether the app claims [url]'s host (X's, and Pixiv's pages, as XTA's manifest claims them), so that a plain VIEW of it could land back in the app. */
+    fun claimedByApp(url: String): Boolean = hostOf(url) in XLinks.HOSTS || LinkOpening.onClaimedHost(url)
 }
 
 /**

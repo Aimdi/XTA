@@ -25,3 +25,12 @@ class PluginNotices {
         const val KEPT = 4
     }
 }
+
+/**
+ * What a long piece of work says at the foot of the window while it runs
+ * ([PluginHost.withProgress]), as XTA's working snack bar does: [text], what
+ * it is doing; [fraction], how far it has come (0 to 1; null while it cannot
+ * say, which turns the ring round and round); [note], a line under it; and
+ * Cancel while [cancellable].
+ */
+data class PluginProgress(val text: String, val fraction: Float? = null, val note: String? = null, val cancellable: Boolean = true)

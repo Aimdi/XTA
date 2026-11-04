@@ -38,6 +38,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -99,12 +100,20 @@ internal fun PixivSearchBody(kind: PixivSearchKind, initial: String, padding: Pa
     var text by remember(model) { mutableStateOf(model.view.value.typed.ifEmpty { initial }.let { TextFieldValue(it, TextRange(it.length)) }) }
     val show = { value: String -> text = TextFieldValue(value, TextRange(value.length)) }
     val submit = rememberSubmit(model, show)
+    var byImage by rememberSaveable { mutableStateOf(false) }
     Column(Modifier.fillMaxSize()) {
         SearchField(kind, text, autofocus = !embedded && initial.isEmpty(), onChange = { value ->
             if (value.text != text.text) model.type(value.text)
             text = value
-        }, onPaste = { pasted -> pasteInto(model, text, pasted, show, submit)?.let { text = it } }) { submit(text.text) }
+        }, onPaste = { pasted -> pasteInto(model, text, pasted, show, submit)?.let { text = it } }, onImageSearch = { byImage = true }) { submit(text.text) }
         SearchBody(model, padding, typing = SearchTyping(view.picking, onPick = { tag -> show(model.pick(tag)) }, onSearch = submit))
+    }
+    if (byImage && kind.isWorks) {
+        val sauce = rememberSauceSearch()
+        SauceNaoSheet(sauce) {
+            byImage = false
+            sauce.reset()
+        }
     }
 }
 
@@ -163,8 +172,17 @@ private fun pasteInto(model: PixivSearchModel, value: TextFieldValue, pasted: St
     return TextFieldValue(text, TextRange(start + clean.length))
 }
 
+/** The field: Paste, Search by image for works (pixiv_search_screen.dart), then Search. */
 @Composable
-private fun SearchField(kind: PixivSearchKind, value: TextFieldValue, autofocus: Boolean, onChange: (TextFieldValue) -> Unit, onPaste: (String) -> Unit, onSubmit: () -> Unit) {
+private fun SearchField(
+    kind: PixivSearchKind,
+    value: TextFieldValue,
+    autofocus: Boolean,
+    onChange: (TextFieldValue) -> Unit,
+    onPaste: (String) -> Unit,
+    onImageSearch: () -> Unit,
+    onSubmit: () -> Unit,
+) {
     val clipboard = LocalClipboardManager.current
     val focus = remember { FocusRequester() }
     TextField(
@@ -177,6 +195,7 @@ private fun SearchField(kind: PixivSearchKind, value: TextFieldValue, autofocus:
         trailingIcon = {
             Row {
                 IconButton(onClick = { clipboard.getText()?.text?.let(onPaste) }) { Icon(PixivIcons.ContentPaste, pluginString(Strings.search_paste)) }
+                if (kind.isWorks) IconButton(onClick = onImageSearch) { Icon(PixivIcons.ImageSearch, pluginString(Strings.saucenao_title)) }
                 IconButton(onClick = onSubmit) { Icon(Icons.Filled.Search, pluginString(Strings.search)) }
             }
         },

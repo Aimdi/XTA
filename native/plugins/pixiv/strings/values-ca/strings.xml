@@ -75,6 +75,7 @@
     <string name="comments_view">Mostra els comentaris</string>
     <string name="comments_view_count">Mostra els comentaris (%1$s)</string>
     <string name="copied">Copiat</string>
+    <string name="copy_illust_id">Copia l’ID de l’obra</string>
     <string name="copy_info">Copia la informació</string>
     <string name="copy_link">Copia l’enllaç</string>
     <string name="copy_template">Plantilla de «Copia la informació»</string>
@@ -104,6 +105,7 @@
     <string name="download_index_forget_question">Vols oblidar quines pàgines s’han desat? Els fitxers es queden al dispositiu.</string>
     <string name="download_page">Baixa aquesta pàgina</string>
     <string name="download_page_saved">Desada: torna-la a baixar</string>
+    <string name="downloading_page">S’està baixant la pàgina %1$d de %2$d…</string>
     <string name="downloads_section">Baixades</string>
     <string name="downloads_title">Baixades</string>
     <string name="empty">Encara no hi ha res al fil de seguiments</string>
@@ -243,6 +245,8 @@
     <string name="novel_watchlist_empty">Aquí apareixen les sèries de novel·les que afegeixis a la llista de seguiment</string>
     <string name="open_in_browser">Obre al navegador</string>
     <string name="open_link_failed">No s'ha pogut obrir aquest enllaç de Pixiv</string>
+    <string name="open_links_in_app">Obre els enllaços de pixiv a XTA</string>
+    <string name="open_links_in_app_description">A la pàgina «Obre de manera predeterminada» d'Android, afegeix pixiv.net i pixiv.me com a enllaços compatibles</string>
     <string name="open_on_pixiv">Obre a Pixiv</string>
     <string name="original_quality">Qualitat original</string>
     <string name="page_of">%1$d / %2$d</string>
@@ -325,6 +329,15 @@
     <string name="resolution">%1$d × %2$d px</string>
     <string name="retry">Reintentar</string>
     <string name="reveal">Mostra</string>
+    <string name="saucenao_another">Tria una altra imatge</string>
+    <string name="saucenao_empty">Cap obra de Pixiv no coincideix amb aquesta imatge</string>
+    <string name="saucenao_failed">SauceNAO no ha pogut cercar aquesta imatge</string>
+    <string name="saucenao_pick">Tria una imatge</string>
+    <string name="saucenao_preview_unauthorized">Torna a iniciar la sessió a Pixiv per veure les previsualitzacions</string>
+    <string name="saucenao_privacy">La imatge que triïs es puja a saucenao.com per buscar obres de Pixiv que hi coincideixin.</string>
+    <string name="saucenao_searching">S’està cercant a SauceNAO…</string>
+    <string name="saucenao_similarity">%1$s de similitud</string>
+    <string name="saucenao_title">Cerca per imatge</string>
     <string name="save">Desa</string>
     <string name="save_again">Torna a desar</string>
     <string name="save_new_only">Només pàgines noves</string>
@@ -406,6 +419,8 @@
     <string name="series_previous">Anterior de la sèrie</string>
     <string name="series_started">Iniciada el %1$s</string>
     <string name="settings_intro">Aquest connector privat llegeix Pixiv com una aplicació de galeria: il·lustracions, manga, novel·les, rànquings, els teus marcadors i la cerca. Toca Inicia la sessió per entrar amb el teu compte de Pixiv, o enganxa un testimoni d’actualització a sota. Els marcadors, els seguiments i l’historial es queden en aquest dispositiu: mai no s’envia, es publica ni es canvia res al teu compte de Pixiv.</string>
+    <string name="share_image">Comparteix la imatge</string>
+    <string name="share_image_failed">No s'ha pogut compartir la imatge</string>
     <string name="share_link">Comparteix l’enllaç</string>
     <string name="show_r18">Mostra obres R-18</string>
     <string name="show_r18_description">Desactivat per defecte. Quan està desactivat, les obres restringides s’amaguen dels fils.</string>
@@ -417,6 +432,7 @@
     <string name="sign_out_question">Vols tancar la sessió de Pixiv?</string>
     <string name="signed_in">Sessió iniciada com a %1$s</string>
     <string name="sort_ungrouped_apply">Aplica</string>
+    <string name="split_divider">Redimensiona les imatges i els detalls</string>
     <string name="start_section">Obre Pixiv a</string>
     <string name="swipe_works">Llisca entre obres</string>
     <string name="swipe_works_description">Llisqueu cap al costat per anar a la següent obra de la llista. En obres de diverses pàgines, continueu lliscant més enllà de la primera o l'última pàgina.</string>
@@ -435,10 +451,15 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Tendències ara</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_encoding">S’està codificant el fotograma %1$d de %2$d…</string>
     <string name="ugoira_export_failed">No s’ha pogut desar l’animació</string>
+    <string name="ugoira_fetching">S’estan obtenint els fotogrames…</string>
     <string name="ugoira_pause">Posa en pausa l’animació</string>
     <string name="ugoira_play">Reprodueix l’animació</string>
+    <string name="ugoira_save_gif">Desa com a GIF</string>
     <string name="ugoira_save_zip">Desa els fotogrames com a ZIP</string>
+    <string name="ugoira_saving">S’està desant…</string>
+    <string name="ugoira_slow">La codificació pot trigar un minut</string>
     <string name="unbookmark">Treu el marcador</string>
     <string name="unfollow">Deixa de seguir</string>
     <string name="unmute">Deixa de silenciar</string>

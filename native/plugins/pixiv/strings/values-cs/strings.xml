@@ -75,6 +75,7 @@
     <string name="comments_view">Zobrazit komentáře</string>
     <string name="comments_view_count">Zobrazit komentáře (%1$s)</string>
     <string name="copied">Zkopírováno</string>
+    <string name="copy_illust_id">Zkopírovat ID díla</string>
     <string name="copy_info">Kopírovat informace</string>
     <string name="copy_link">Kopírovat odkaz</string>
     <string name="copy_template">Šablona pro „Kopírovat informace“</string>
@@ -104,6 +105,7 @@
     <string name="download_index_forget_question">Zapomenout, které stránky byly uloženy? Samotné soubory zůstanou ve vašem zařízení.</string>
     <string name="download_page">Stáhnout tuto stránku</string>
     <string name="download_page_saved">Uloženo – stáhnout znovu</string>
+    <string name="downloading_page">Stahuje se stránka %1$d z %2$d…</string>
     <string name="downloads_section">Stahování</string>
     <string name="downloads_title">Stahování</string>
     <string name="empty">Ve feedu sledování zatím nic není</string>
@@ -243,6 +245,8 @@
     <string name="novel_watchlist_empty">Zde se objeví série románů, které přidáte do sledovaných</string>
     <string name="open_in_browser">Otevřít v prohlížeči</string>
     <string name="open_link_failed">Tento odkaz Pixiv se nepodařilo otevřít</string>
+    <string name="open_links_in_app">Otevírat odkazy pixiv v XTA</string>
+    <string name="open_links_in_app_description">Na stránce Androidu „Otevírat ve výchozím nastavení“ přidejte pixiv.net a pixiv.me jako podporované odkazy</string>
     <string name="open_on_pixiv">Otevřít na Pixiv</string>
     <string name="original_quality">Původní kvalita</string>
     <string name="page_of">%1$d / %2$d</string>
@@ -325,6 +329,15 @@
     <string name="resolution">%1$d × %2$d px</string>
     <string name="retry">Zkusit znovu</string>
     <string name="reveal">Zobrazit</string>
+    <string name="saucenao_another">Vybrat jiný obrázek</string>
+    <string name="saucenao_empty">Tomuto obrázku neodpovídají žádná díla z Pixivu</string>
+    <string name="saucenao_failed">SauceNAO nedokázal tento obrázek vyhledat</string>
+    <string name="saucenao_pick">Vybrat obrázek</string>
+    <string name="saucenao_preview_unauthorized">Pro zobrazení náhledů se znovu přihlaste k Pixivu</string>
+    <string name="saucenao_privacy">Vybraný obrázek se nahraje na saucenao.com, aby se našla odpovídající díla z Pixivu.</string>
+    <string name="saucenao_searching">Hledání na SauceNAO…</string>
+    <string name="saucenao_similarity">Podobnost %1$s</string>
+    <string name="saucenao_title">Hledat podle obrázku</string>
     <string name="save">Uložit</string>
     <string name="save_again">Uložit znovu</string>
     <string name="save_new_only">Jen nové stránky</string>
@@ -406,6 +419,8 @@
     <string name="series_previous">Předchozí v sérii</string>
     <string name="series_started">Zahájeno %1$s</string>
     <string name="settings_intro">Tento soukromý plugin čte Pixiv jako aplikace galerie: ilustrace, mangu, romány, žebříčky, vaše záložky a vyhledávání. Klepněte na Přihlásit se a přihlaste se účtem Pixiv, nebo níže vložte obnovovací token. Záložky, sledování a historie zůstávají v tomto zařízení: do vašeho účtu Pixiv se nikdy nic neodesílá, nepublikuje ani v něm nic nemění.</string>
+    <string name="share_image">Sdílet obrázek</string>
+    <string name="share_image_failed">Obrázek se nepodařilo sdílet</string>
     <string name="share_link">Sdílet odkaz</string>
     <string name="show_r18">Zobrazit díla R-18</string>
     <string name="show_r18_description">Ve výchozím stavu vypnuto. Když je vypnuto, omezená díla se ve feedech skrývají.</string>
@@ -417,6 +432,7 @@
     <string name="sign_out_question">Odhlásit se z Pixivu?</string>
     <string name="signed_in">Přihlášen jako %1$s</string>
     <string name="sort_ungrouped_apply">Použít</string>
+    <string name="split_divider">Změnit velikost obrázků a podrobností</string>
     <string name="start_section">Pixiv se otevře na</string>
     <string name="swipe_works">Přecházet mezi díly přejetím</string>
     <string name="swipe_works_description">Přejetím do strany přejdete na další dílo v seznamu. U děl s více stránkami přejeďte za první nebo poslední stránku.</string>
@@ -435,10 +451,15 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Právě populární</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_encoding">Kóduje se snímek %1$d z %2$d…</string>
     <string name="ugoira_export_failed">Animaci se nepodařilo uložit</string>
+    <string name="ugoira_fetching">Načítají se snímky…</string>
     <string name="ugoira_pause">Pozastavit animaci</string>
     <string name="ugoira_play">Přehrát animaci</string>
+    <string name="ugoira_save_gif">Uložit jako GIF</string>
     <string name="ugoira_save_zip">Uložit snímky jako ZIP</string>
+    <string name="ugoira_saving">Ukládá se…</string>
+    <string name="ugoira_slow">Kódování může trvat minutu</string>
     <string name="unbookmark">Odebrat záložku</string>
     <string name="unfollow">Přestat sledovat</string>
     <string name="unmute">Zrušit ztlumení</string>

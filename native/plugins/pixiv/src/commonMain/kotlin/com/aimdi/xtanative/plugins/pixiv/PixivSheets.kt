@@ -25,9 +25,11 @@ import com.aimdi.xtanative.networks.pixiv.PixivUgoira
 import com.aimdi.xtanative.store.settings.PixivPrefs
 import com.aimdi.xtanative.ui.plugins.MediaItem
 import com.aimdi.xtanative.ui.plugins.PluginDownload
+import com.aimdi.xtanative.ui.plugins.PluginProgress
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
 /** What a screen of the plugin has open over it: a sheet of actions, the bookmark editor, a question. One at a time. */
@@ -47,8 +49,11 @@ internal sealed interface PixivSheet {
 
     data class NovelActions(val novel: PixivNovel) : PixivSheet
 
-    data class Resave(val illust: PixivIllust, val pages: List<Int>, val saved: List<Int>, val zip: Boolean) : PixivSheet
+    data class Resave(val illust: PixivIllust, val pages: List<Int>, val saved: List<Int>, val kind: PixivSaveKind) : PixivSheet
 }
+
+/** What a save writes: the pages themselves, or an ugoira's frames as a ZIP or as a GIF made here, each named as the first page. */
+internal enum class PixivSaveKind { PAGES, ZIP, GIF }
 
 /** What a screen showing a work's pages can be asked to do from its page sheets. */
 internal interface PixivPageSurface {
@@ -118,29 +123,59 @@ internal class PixivSheets(private val runtime: PixivRuntime, private val langua
     fun saveImage(url: String) = runtime.host.download(MediaItem(PixivImages.url(url, runtime.settings[PixivPrefs.imageHost])))
 
     /** Saves [pages] of [illust], asking first when some were saved before. */
-    fun savePages(illust: PixivIllust, pages: List<Int>) {
-        val saved = PixivSavedPages.savedAmong(PixivSavedPages.of(runtime.settings.now), illust, pages)
-        if (saved.isEmpty()) startSaving(illust, pages) else show(PixivSheet.Resave(illust, pages, saved, zip = false))
-    }
+    fun savePages(illust: PixivIllust, pages: List<Int>) = save(illust, pages, PixivSaveKind.PAGES)
 
     /** Saves an ugoira's frame archive, named as its first page, asking first when it was saved before. */
-    fun saveZip(illust: PixivIllust) {
-        val saved = PixivSavedPages.savedAmong(PixivSavedPages.of(runtime.settings.now), illust, listOf(0))
-        if (saved.isEmpty()) startZip(illust) else show(PixivSheet.Resave(illust, listOf(0), saved, zip = true))
+    fun saveZip(illust: PixivIllust) = save(illust, listOf(0), PixivSaveKind.ZIP)
+
+    /** Saves an ugoira as a GIF made here (pixiv_ugoira_save.dart), named as its first page, asking first when it was saved before. */
+    fun saveGif(illust: PixivIllust) = save(illust, listOf(0), PixivSaveKind.GIF)
+
+    private fun save(illust: PixivIllust, pages: List<Int>, kind: PixivSaveKind) {
+        val saved = PixivSavedPages.savedAmong(PixivSavedPages.of(runtime.settings.now), illust, pages)
+        if (saved.isEmpty()) start(illust, pages, kind) else show(PixivSheet.Resave(illust, pages, saved, kind))
     }
 
     fun answerResave(sheet: PixivSheet.Resave, choice: PixivResave?) {
         close()
         val pages = pagesToSave(sheet.pages, sheet.saved, choice)
-        if (pages.isEmpty()) return
-        if (sheet.zip) startZip(sheet.illust) else startSaving(sheet.illust, pages)
+        if (pages.isNotEmpty()) start(sheet.illust, pages, sheet.kind)
     }
 
+    private fun start(illust: PixivIllust, pages: List<Int>, kind: PixivSaveKind) = when (kind) {
+        PixivSaveKind.PAGES -> startSaving(illust, pages)
+        PixivSaveKind.ZIP -> startZip(illust)
+        PixivSaveKind.GIF -> startGif(illust)
+    }
+
+    /** One page as any picture is saved; several together, the foot of the window saying which page is on its way, with Cancel (pixiv_download.dart). */
     private fun startSaving(illust: PixivIllust, pages: List<Int>) {
         runtime.launch {
             val naming = PixivSaveNaming.of(runtime.settings.now)
-            val saved = runtime.host.downloadAll(PixivDownloads.pageFiles(runtime, illust, pages), naming.subfolder(illust))
+            val files = PixivDownloads.pageFiles(runtime, illust, pages)
+            val language = language()
+            val saved = if (files.size > 1) {
+                runtime.host.downloadAll(files, naming.subfolder(illust)) { current, total -> Strings.downloading_page.get(language, current, total) }
+            } else {
+                runtime.host.downloadAll(files, naming.subfolder(illust))
+            }
             afterSave(illust, pages.filterIndexed { index, _ -> saved.getOrElse(index) { false } })
+        }
+    }
+
+    /** The GIF fetched, encoded and saved under the foot of the window's progress, with Cancel until it is being saved. */
+    private fun startGif(illust: PixivIllust) {
+        runtime.launch {
+            val language = language()
+            val saved = try {
+                runtime.host.withProgress(PluginProgress(Strings.ugoira_fetching.get(language))) { say -> PixivUgoiraExport.gif(runtime, illust, language, say) }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                runtime.host.tell(Strings.ugoira_export_failed.get(language))
+                null
+            }
+            if (saved == true) afterSave(illust, listOf(0))
         }
     }
 

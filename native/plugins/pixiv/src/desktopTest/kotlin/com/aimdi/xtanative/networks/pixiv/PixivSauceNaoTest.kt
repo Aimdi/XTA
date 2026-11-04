@@ -4,6 +4,14 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlinx.coroutines.runBlocking
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Protocol
+import okhttp3.Request
+import okhttp3.Response
+import okhttp3.ResponseBody.Companion.toResponseBody
+import okio.Buffer
 
 class PixivSauceNaoTest {
     @Test
@@ -35,6 +43,35 @@ class PixivSauceNaoTest {
     fun brokenJsonAndEmptyPagesGiveNoMatches() {
         assertTrue(PixivSauceNao.parse("""{"results": [""").isEmpty())
         assertTrue(PixivSauceNao.parse("").isEmpty())
+    }
+
+    /** saucenao.com as an interceptor answers it, keeping what was asked. */
+    private fun saucenao(code: Int, body: String, asked: MutableList<Request>): OkHttpClient = OkHttpClient.Builder().addInterceptor { chain ->
+        asked += chain.request()
+        Response.Builder().request(chain.request()).protocol(Protocol.HTTP_1_1).code(code).message("answer")
+            .body(body.toResponseBody("text/html; charset=utf-8".toMediaType())).build()
+    }.build()
+
+    @Test
+    fun thePictureGoesUpAsAFormToSauceNaoAloneAndItsMatchesAreRead(): Unit = runBlocking {
+        val asked = mutableListOf<Request>()
+        val matches = PixivSauceNao.search(byteArrayOf(1, 2, 3), saucenao(200, Fixtures.text("saucenao.html"), asked))
+        assertEquals(listOf(81234567L, 99887766L), matches.map { it.illustId })
+        val request = asked.single()
+        assertEquals("POST", request.method)
+        assertEquals(PixivSauceNao.SEARCH_URL, request.url.toString())
+        assertNull(request.header("Authorization"), "no Pixiv token goes with it")
+        val form = Buffer().also { request.body!!.writeTo(it) }.readUtf8()
+        assertTrue("name=\"file\"; filename=\"image.png\"" in form, form)
+        assertTrue("Content-Type: image/png" in form, form)
+    }
+
+    @Test
+    fun aRateLimitIsSaidSoAndAnyOtherRefusalIsAnAnswerOfNoUse(): Unit = runBlocking {
+        val limited = runCatching { PixivSauceNao.search(byteArrayOf(1), saucenao(429, "", mutableListOf())) }.exceptionOrNull()
+        assertEquals(PixivFailure.RATE_LIMITED, PixivFailure.of(limited!!))
+        val refused = runCatching { PixivSauceNao.search(byteArrayOf(1), saucenao(403, "", mutableListOf())) }.exceptionOrNull()
+        assertEquals(PixivFailure.BAD_RESPONSE, PixivFailure.of(refused!!), "a refusal of SauceNAO's says nothing of the Pixiv account")
     }
 
     @Test

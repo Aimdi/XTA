@@ -203,6 +203,39 @@ interface PluginHost {
      * each file goes and a batch needs a folder (the app says so).
      */
     suspend fun queueDownloads(files: List<PluginDownload>, subfolder: String? = null): PluginQueued? = null
+
+    /**
+     * [files] saved as [downloadAll] saves them, the notice at the foot of the
+     * window saying which one is being fetched in the plugin's words
+     * ([progress] of its place counted from 1 and how many there are: XTA's
+     * Pixiv's "Downloading page 2 of 5…"), over a ring that fills as they
+     * end, with Cancel, which starts no more of them and cancels those under
+     * way; then how many were saved. Answers, file by file, whether it was saved.
+     */
+    suspend fun downloadAll(files: List<PluginDownload>, subfolder: String?, progress: (current: Int, total: Int) -> String): List<Boolean> =
+        downloadAll(files, subfolder)
+
+    /**
+     * [saveFile], waited for: the file saved where the download setting says,
+     * saying how it went as [saveFile] does but without its working notice
+     * (the plugin says what is under way, [withProgress]). Answers whether it
+     * was saved.
+     */
+    suspend fun saveFileAndWait(bytes: ByteArray, fileName: String, mimeType: String, subfolder: String? = null): Boolean {
+        saveFile(bytes, fileName, mimeType, subfolder)
+        return true
+    }
+
+    /**
+     * [work] run while the notice at the foot of the window says how it goes,
+     * as XTA's working snack bar does with its ring and Cancel: [first] at
+     * once, then each [PluginProgress] [work] says. Cancel, while the line
+     * offers it, stops [work] and says it was cancelled. Answers what [work]
+     * answered, or null once the reader cancelled it; what [work] throws
+     * comes out of here, the notice taken away.
+     */
+    suspend fun <T : Any> withProgress(first: PluginProgress, work: suspend (say: (PluginProgress) -> Unit) -> T): T? =
+        working(first.text) { work {} }
 }
 
 /** What [PluginHost.savedPosts] holds where a host keeps no Saved: nothing. */

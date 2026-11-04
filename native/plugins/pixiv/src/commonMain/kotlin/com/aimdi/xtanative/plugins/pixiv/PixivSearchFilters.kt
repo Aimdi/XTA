@@ -20,6 +20,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
@@ -155,18 +156,22 @@ private fun FilterPill(icon: ImageVector, label: String, active: Boolean, onClic
     }
 }
 
-/** A pill opening a menu of [choices], the one picked marked. */
+/** A pill opening a menu of [choices], the [current] one marked, as XTA's menus start on it. */
 @Composable
-private fun <T> MenuPill(icon: ImageVector, label: String, active: Boolean, choices: List<Pair<T, String>>, onPick: (T) -> Unit) {
+private fun <T> MenuPill(icon: ImageVector, label: String, active: Boolean, choices: List<Pair<T, String>>, current: T, onPick: (T) -> Unit) {
     var open by remember { mutableStateOf(false) }
     Box {
         FilterPill(icon, label, active) { open = true }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             choices.forEach { (value, text) ->
-                DropdownMenuItem(text = { Text(text) }, onClick = {
-                    open = false
-                    onPick(value)
-                })
+                DropdownMenuItem(
+                    text = { Text(text) },
+                    trailingIcon = if (value == current) ({ Icon(Icons.Filled.Check, null) }) else null,
+                    onClick = {
+                        open = false
+                        onPick(value)
+                    },
+                )
             }
         }
     }
@@ -183,7 +188,7 @@ private fun DateMenu(filter: PixivSearchFilter, onChange: (PixivSearchFilter) ->
         preset == PixivDatePreset.CUSTOM && range != null -> rangeLabel(range)
         else -> pluginString(dateLabel(preset))
     }
-    MenuPill(Icons.Filled.DateRange, label, preset != PixivDatePreset.ANY, PixivDatePreset.entries.map { it to pluginString(dateLabel(it)) }) { choice ->
+    MenuPill(Icons.Filled.DateRange, label, preset != PixivDatePreset.ANY, PixivDatePreset.entries.map { it to pluginString(dateLabel(it)) }, preset) { choice ->
         if (choice == PixivDatePreset.CUSTOM) picking = true else onChange(filter.withDates(choice))
     }
     if (picking) DateRangeDialog(range, onClose = { picking = false }) { picked -> onChange(filter.withDates(PixivDatePreset.CUSTOM, picked)) }
@@ -232,14 +237,14 @@ private fun dateOf(millis: Long): LocalDate = Instant.ofEpochMilli(millis).atZon
 private fun PopularityMenu(filter: PixivSearchFilter, onChange: (PixivSearchFilter) -> Unit) {
     val threshold = filter.usersIri
     val choices = listOf<Pair<Int?, String>>(null to pluginString(Strings.search_popularity_any)) + PixivSearchFilter.USERS_IRI_THRESHOLDS.map { it to usersIriLabel(it) }
-    MenuPill(PixivIcons.Whatshot, threshold?.let { usersIriLabel(it) } ?: pluginString(Strings.search_popularity), threshold != null, choices) { onChange(filter.copy(usersIri = it)) }
+    MenuPill(PixivIcons.Whatshot, threshold?.let { usersIriLabel(it) } ?: pluginString(Strings.search_popularity), threshold != null, choices, threshold) { onChange(filter.copy(usersIri = it)) }
 }
 
 @Composable
 private fun BookmarksMenu(filter: PixivSearchFilter, onChange: (PixivSearchFilter) -> Unit) {
     val range = filter.bookmarks
     val choices = listOf<Pair<PixivBookmarkRange?, String>>(null to pluginString(Strings.search_bookmarks_any)) + PixivSearchFilter.BOOKMARK_RANGES.map { it to bookmarksLabel(it) }
-    MenuPill(Icons.Filled.Star, range?.let { bookmarksLabel(it) } ?: pluginString(Strings.search_bookmarks), range != null, choices) { onChange(filter.copy(bookmarks = it)) }
+    MenuPill(Icons.Filled.Star, range?.let { bookmarksLabel(it) } ?: pluginString(Strings.search_bookmarks), range != null, choices, range) { onChange(filter.copy(bookmarks = it)) }
 }
 
 /**

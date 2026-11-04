@@ -138,6 +138,7 @@ internal fun PageActionsSheet(sheet: PixivSheet.PageActions, sheets: PixivSheets
             SheetRow(GroupIcons.GridView, pluginString(Strings.all_pages), { sheets.close(); sheet.surface.openOverview(selecting = false) })
         }
         if (illust.isUgoira && sheet.page == 0) {
+            SheetRow(PixivIcons.Gif, pluginString(Strings.ugoira_save_gif), { sheets.close(); sheets.saveGif(illust) }, subtitle = pluginString(Strings.ugoira_slow))
             SheetRow(SavedIcons.Folder, pluginString(Strings.ugoira_save_zip), { sheets.close(); sheets.saveZip(illust) })
         }
         SheetRow(XIcons.Link, pluginString(Strings.copy_link), { sheets.close(); copy(illust.url, Strings.link_copied) })

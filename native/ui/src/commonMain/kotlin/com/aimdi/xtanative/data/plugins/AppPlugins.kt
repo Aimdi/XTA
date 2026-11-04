@@ -40,6 +40,7 @@ import com.aimdi.xtanative.ui.plugins.PluginFolderOption
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginPostArchive
 import com.aimdi.xtanative.ui.plugins.PluginPostMenu
+import com.aimdi.xtanative.ui.plugins.PluginProgress
 import com.aimdi.xtanative.ui.plugins.PluginQueued
 import com.aimdi.xtanative.ui.plugins.PluginSavedPost
 import com.aimdi.xtanative.ui.plugins.PluginSettings
@@ -666,6 +667,15 @@ class AppPlugins(
 
         override suspend fun queueDownloads(files: List<PluginDownload>, subfolder: String?): PluginQueued? =
             PluginBatches.queueAll(plugins.graph, files, subfolder)
+
+        override suspend fun downloadAll(files: List<PluginDownload>, subfolder: String?, progress: (current: Int, total: Int) -> String): List<Boolean> =
+            PluginBatches.saveAllShowing(plugins.graph, files, subfolder, progress)
+
+        override suspend fun saveFileAndWait(bytes: ByteArray, fileName: String, mimeType: String, subfolder: String?): Boolean =
+            Downloading.madeNow(plugins.graph, bytes, PluginDownloads.named(fileName, mimeType), subfolder)
+
+        override suspend fun <T : Any> withProgress(first: PluginProgress, work: suspend (say: (PluginProgress) -> Unit) -> T): T? =
+            PluginProgressing.run(first, work)
     }
 
     private companion object {

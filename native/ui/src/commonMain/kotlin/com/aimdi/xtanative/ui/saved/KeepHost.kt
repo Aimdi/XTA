@@ -1,9 +1,16 @@
 package com.aimdi.xtanative.ui.saved
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
@@ -14,6 +21,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
@@ -27,7 +35,9 @@ import androidx.compose.ui.window.PopupProperties
 import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.downloads.PlatformFilesHost
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.cancel
 import com.aimdi.xtanative.ui.generated.resources.downloads_batch
+import com.aimdi.xtanative.ui.generated.resources.downloads_cancelled
 import com.aimdi.xtanative.ui.generated.resources.downloads_downloading
 import com.aimdi.xtanative.ui.generated.resources.downloads_failed
 import com.aimdi.xtanative.ui.generated.resources.downloads_open_failed
@@ -102,9 +112,32 @@ private fun KeepNoticeHost() {
         }
     }
     val position = remember(lift) { FootOfWindow(lift) }
+    val notice = current.notice
     Popup(popupPositionProvider = position, properties = PopupProperties(focusable = false)) {
-        Snackbar(modifier = Modifier.padding(horizontal = 16.dp).widthIn(max = 560.dp), action = open) {
-            Text(noticeText(current.notice))
+        Snackbar(modifier = Modifier.padding(horizontal = 16.dp).widthIn(max = 560.dp), action = open ?: (notice as? KeepNotice.Progress)?.onCancel?.let(::cancelButton)) {
+            if (notice is KeepNotice.Progress) ProgressLine(notice) else Text(noticeText(notice))
+        }
+    }
+}
+
+private fun cancelButton(onCancel: () -> Unit): @Composable () -> Unit = {
+    TextButton(onClick = onCancel) { Text(stringResource(Res.string.cancel), color = MaterialTheme.colorScheme.inversePrimary) }
+}
+
+/** A long piece of work: a small ring, filling as it goes once it can say how far, what it does, and its note under it (XTA's PixivWorkingRow). */
+@Composable
+private fun ProgressLine(notice: KeepNotice.Progress) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        val ring = Modifier.size(16.dp)
+        val color = MaterialTheme.colorScheme.inversePrimary
+        val track = LocalContentColor.current.copy(alpha = 0.16f)
+        val fraction = notice.fraction
+        if (fraction == null) CircularProgressIndicator(ring, color = color, strokeWidth = 2.dp, trackColor = track)
+        else CircularProgressIndicator(progress = { fraction }, modifier = ring, color = color, strokeWidth = 2.dp, trackColor = track)
+        Spacer(Modifier.width(12.dp))
+        Column {
+            Text(notice.text)
+            notice.note?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
         }
     }
 }
@@ -141,6 +174,8 @@ fun noticeText(notice: KeepNotice): String = when (notice) {
     is KeepNotice.Said -> notice.text
     is KeepNotice.ChangesSaved -> stringResource(Res.string.groups_changes_saved)
     KeepNotice.UndoFailed -> stringResource(Res.string.groups_undo_failed)
+    is KeepNotice.Progress -> notice.text
+    KeepNotice.Cancelled -> stringResource(Res.string.downloads_cancelled)
 }
 
 /** The line behind the lock: what the open tab keeps stays on this device. */

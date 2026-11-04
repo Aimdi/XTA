@@ -75,6 +75,7 @@
     <string name="comments_view">Паказаць каментарыі</string>
     <string name="comments_view_count">Паказаць каментарыі (%1$s)</string>
     <string name="copied">Скапіявана</string>
+    <string name="copy_illust_id">Скапіяваць ID працы</string>
     <string name="copy_info">Капіяваць звесткі</string>
     <string name="copy_link">Скапіяваць спасылку</string>
     <string name="copy_template">Шаблон «Капіяваць звесткі»</string>
@@ -104,6 +105,7 @@
     <string name="download_index_forget_question">Забыць, якія старонкі былі захаваны? Самі файлы застануцца на прыладзе.</string>
     <string name="download_page">Спампаваць гэту старонку</string>
     <string name="download_page_saved">Захавана — спампаваць зноў</string>
+    <string name="downloading_page">Спампоўваецца старонка %1$d з %2$d…</string>
     <string name="downloads_section">Спампоўкі</string>
     <string name="downloads_title">Спампоўкі</string>
     <string name="empty">У стужцы падпісак пакуль нічога няма</string>
@@ -243,6 +245,8 @@
     <string name="novel_watchlist_empty">Тут з’явяцца серыі раманаў, якія вы дадасце ў спіс назірання</string>
     <string name="open_in_browser">Адкрыць у браўзеры</string>
     <string name="open_link_failed">Не ўдалося адкрыць гэтую спасылку Pixiv</string>
+    <string name="open_links_in_app">Адкрываць спасылкі pixiv у XTA</string>
+    <string name="open_links_in_app_description">На старонцы Android «Адкрываць па змаўчанні» дадайце pixiv.net і pixiv.me як падтрымліваемыя спасылкі</string>
     <string name="open_on_pixiv">Адкрыць на Pixiv</string>
     <string name="original_quality">Арыгінальная якасць</string>
     <string name="page_of">%1$d / %2$d</string>
@@ -325,6 +329,15 @@
     <string name="resolution">%1$d × %2$d пкс</string>
     <string name="retry">Паўтарыць</string>
     <string name="reveal">Паказаць</string>
+    <string name="saucenao_another">Выбраць іншы відарыс</string>
+    <string name="saucenao_empty">Няма твораў Pixiv, падобных да гэтага відарыса</string>
+    <string name="saucenao_failed">SauceNAO не змог шукаць па гэтым відарысе</string>
+    <string name="saucenao_pick">Выбраць відарыс</string>
+    <string name="saucenao_preview_unauthorized">Увайдзіце ў Pixiv зноў, каб бачыць мініяцюры</string>
+    <string name="saucenao_privacy">Выбраны відарыс запампоўваецца на saucenao.com, каб знайсці падобныя творы на Pixiv.</string>
+    <string name="saucenao_searching">Пошук у SauceNAO…</string>
+    <string name="saucenao_similarity">Падабенства %1$s</string>
+    <string name="saucenao_title">Пошук па відарысе</string>
     <string name="save">Захаваць</string>
     <string name="save_again">Захаваць зноў</string>
     <string name="save_new_only">Толькі новыя старонкі</string>
@@ -406,6 +419,8 @@
     <string name="series_previous">Папярэдняя ў серыі</string>
     <string name="series_started">Пачата %1$s</string>
     <string name="settings_intro">Гэты прыватны плагін чытае Pixiv як праграма-галерэя: ілюстрацыі, мангу, раманы, рэйтынгі, вашы закладкі і пошук. Націсніце «Увайсці», каб увайсці з акаўнтам Pixiv, або ўстаўце токен абнаўлення ніжэй. Закладкі, падпіскі і гісторыя застаюцца на гэтай прыладзе: у ваш акаўнт Pixiv нічога не адпраўляецца, там нічога не публікуецца і не змяняецца.</string>
+    <string name="share_image">Падзяліцца выявай</string>
+    <string name="share_image_failed">Не ўдалося падзяліцца выявай</string>
     <string name="share_link">Падзяліцца спасылкай</string>
     <string name="show_r18">Паказваць працы R-18</string>
     <string name="show_r18_description">Па змаўчанні выключана. Калі выключана, абмежаваныя працы хаваюцца са стужак.</string>
@@ -417,6 +432,7 @@
     <string name="sign_out_question">Выйсці з Pixiv?</string>
     <string name="signed_in">Увайшлі як %1$s</string>
     <string name="sort_ungrouped_apply">Ужыць</string>
+    <string name="split_divider">Змяніць памер выяў і падрабязнасцей</string>
     <string name="start_section">Pixiv адкрываецца на</string>
     <string name="swipe_works">Перагортваць працы</string>
     <string name="swipe_works_description">Гартайце ўбок да наступнай працы ў спісе. У працах з некалькімі старонкамі працягвайце гартаць за першую або апошнюю старонку.</string>
@@ -435,10 +451,15 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Актуальнае цяпер</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_encoding">Кадзіраванне кадра %1$d з %2$d…</string>
     <string name="ugoira_export_failed">Не ўдалося захаваць анімацыю</string>
+    <string name="ugoira_fetching">Атрыманне кадраў…</string>
     <string name="ugoira_pause">Прыпыніць анімацыю</string>
     <string name="ugoira_play">Прайграць анімацыю</string>
+    <string name="ugoira_save_gif">Захаваць як GIF</string>
     <string name="ugoira_save_zip">Захаваць кадры ў ZIP</string>
+    <string name="ugoira_saving">Захаванне…</string>
+    <string name="ugoira_slow">Кадзіраванне можа заняць хвіліну</string>
     <string name="unbookmark">Прыбраць закладку</string>
     <string name="unfollow">Адпісацца</string>
     <string name="unmute">Паказваць зноў</string>

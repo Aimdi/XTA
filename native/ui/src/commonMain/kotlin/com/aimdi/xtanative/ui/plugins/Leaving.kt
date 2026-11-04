@@ -21,6 +21,15 @@ fun rememberOpenOutside(): (String) -> Unit {
 }
 
 /**
+ * Android's "Open by default" page for the app, where the reader lets it open
+ * the links it claims (Pixiv's pixiv.net and pixiv.me, as XTA's Pixiv
+ * settings send the reader there), or the app's info page on a system without
+ * that page; null on the desktop, which has neither, so a plugin offers no row.
+ */
+@Composable
+expect fun rememberAppLinkSettings(): (() -> Unit)?
+
+/**
  * Hands a text to the system's share sheet (Android's); where there is none,
  * the desktop's, it is copied instead. The function answers whether it was
  * shared, so a caller can say "Copied" otherwise.

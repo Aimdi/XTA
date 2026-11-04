@@ -75,6 +75,7 @@
     <string name="comments_view">Vis kommentarer</string>
     <string name="comments_view_count">Vis kommentarer (%1$s)</string>
     <string name="copied">Kopiert</string>
+    <string name="copy_illust_id">Kopier verk-ID</string>
     <string name="copy_info">Kopier info</string>
     <string name="copy_link">Kopier lenke</string>
     <string name="copy_template">Mal for «Kopier info»</string>
@@ -104,6 +105,7 @@
     <string name="download_index_forget_question">Vil du glemme hvilke sider som er lagret? Selve filene blir liggende på enheten.</string>
     <string name="download_page">Last ned denne siden</string>
     <string name="download_page_saved">Lagret – last ned på nytt</string>
+    <string name="downloading_page">Laster ned side %1$d av %2$d …</string>
     <string name="downloads_section">Nedlastinger</string>
     <string name="downloads_title">Nedlastinger</string>
     <string name="empty">Ingenting i følgefeeden ennå</string>
@@ -243,6 +245,8 @@
     <string name="novel_watchlist_empty">Romanserier du legger til i følgelisten, vises her</string>
     <string name="open_in_browser">Åpne i nettleser</string>
     <string name="open_link_failed">Kunne ikke åpne denne Pixiv-lenken</string>
+    <string name="open_links_in_app">Åpne pixiv-lenker i XTA</string>
+    <string name="open_links_in_app_description">På Android-siden «Åpne som standard» legger du til pixiv.net og pixiv.me som støttede lenker</string>
     <string name="open_on_pixiv">Åpne på Pixiv</string>
     <string name="original_quality">Originalkvalitet</string>
     <string name="page_of">%1$d / %2$d</string>
@@ -325,6 +329,15 @@
     <string name="resolution">%1$d × %2$d px</string>
     <string name="retry">Prøv på nytt</string>
     <string name="reveal">Vis</string>
+    <string name="saucenao_another">Velg et annet bilde</string>
+    <string name="saucenao_empty">Ingen Pixiv-verk samsvarer med dette bildet</string>
+    <string name="saucenao_failed">SauceNAO kunne ikke søke etter dette bildet</string>
+    <string name="saucenao_pick">Velg et bilde</string>
+    <string name="saucenao_preview_unauthorized">Logg på Pixiv igjen for å se forhåndsvisninger</string>
+    <string name="saucenao_privacy">Bildet du velger, lastes opp til saucenao.com for å finne samsvarende Pixiv-verk.</string>
+    <string name="saucenao_searching">Søker i SauceNAO …</string>
+    <string name="saucenao_similarity">%1$s likhet</string>
+    <string name="saucenao_title">Søk med bilde</string>
     <string name="save">Lagre</string>
     <string name="save_again">Lagre på nytt</string>
     <string name="save_new_only">Bare nye sider</string>
@@ -406,6 +419,8 @@
     <string name="series_previous">Forrige i serien</string>
     <string name="series_started">Startet %1$s</string>
     <string name="settings_intro">Denne private utvidelsen leser Pixiv som en galleri-app: illustrasjoner, manga, romaner, rangeringer, bokmerkene dine og søk. Trykk Logg inn for å logge inn med Pixiv-kontoen din, eller lim inn et oppdateringstoken nedenfor. Bokmerker, følginger og historikk blir på denne enheten: ingenting sendes noen gang til, publiseres på eller endres på Pixiv-kontoen din.</string>
+    <string name="share_image">Del bilde</string>
+    <string name="share_image_failed">Kunne ikke dele dette bildet</string>
     <string name="share_link">Del lenke</string>
     <string name="show_r18">Vis R-18-verk</string>
     <string name="show_r18_description">Av som standard. Når av, skjules begrensede verk fra feeder.</string>
@@ -417,6 +432,7 @@
     <string name="sign_out_question">Logge ut av Pixiv?</string>
     <string name="signed_in">Innlogget som %1$s</string>
     <string name="sort_ungrouped_apply">Bruk</string>
+    <string name="split_divider">Endre størrelse på bilder og detaljer</string>
     <string name="start_section">Pixiv åpner på</string>
     <string name="swipe_works">Sveip mellom verk</string>
     <string name="swipe_works_description">Sveip sidelengs til neste verk i listen. I verk med flere sider sveiper du videre forbi første eller siste side.</string>
@@ -435,10 +451,15 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Populært nå</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_encoding">Koder bilde %1$d av %2$d …</string>
     <string name="ugoira_export_failed">Kunne ikke lagre animasjonen</string>
+    <string name="ugoira_fetching">Henter bilder …</string>
     <string name="ugoira_pause">Sett animasjonen på pause</string>
     <string name="ugoira_play">Spill av animasjonen</string>
+    <string name="ugoira_save_gif">Lagre som GIF</string>
     <string name="ugoira_save_zip">Lagre bildene som ZIP</string>
+    <string name="ugoira_saving">Lagrer …</string>
+    <string name="ugoira_slow">Kodingen kan ta et minutt</string>
     <string name="unbookmark">Fjern bokmerke</string>
     <string name="unfollow">Slutt å følge</string>
     <string name="unmute">Opphev demping</string>

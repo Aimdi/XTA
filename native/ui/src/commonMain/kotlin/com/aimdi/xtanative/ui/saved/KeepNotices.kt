@@ -75,6 +75,18 @@ sealed interface KeepNotice {
 
     /** The undo could not be made: what it would have put back changed since. */
     data object UndoFailed : KeepNotice
+
+    /**
+     * A long piece of work in a plugin's words, as XTA's working snack bar
+     * with its ring: what it does, how far (0 to 1, null while it cannot
+     * say), a note under it, and Cancel while [onCancel] is there.
+     */
+    data class Progress(val text: String, val fraction: Float?, val note: String?, val onCancel: (() -> Unit)?) : KeepNotice {
+        override val working get() = true
+    }
+
+    /** The reader stopped a long piece of work. */
+    data object Cancelled : KeepNotice
 }
 
 /** The notice showing now, one at a time: a new one replaces it. [serial] tells two of the same apart. */

@@ -75,6 +75,7 @@
     <string name="comments_view">Reacties bekijken</string>
     <string name="comments_view_count">Reacties bekijken (%1$s)</string>
     <string name="copied">Gekopieerd</string>
+    <string name="copy_illust_id">Werk-ID kopiëren</string>
     <string name="copy_info">Info kopiëren</string>
     <string name="copy_link">Link kopiëren</string>
     <string name="copy_template">Sjabloon voor ‘Info kopiëren’</string>
@@ -104,6 +105,7 @@
     <string name="download_index_forget_question">Vergeten welke pagina’s zijn opgeslagen? De bestanden zelf blijven op je apparaat.</string>
     <string name="download_page">Deze pagina downloaden</string>
     <string name="download_page_saved">Opgeslagen – opnieuw downloaden</string>
+    <string name="downloading_page">Pagina %1$d van %2$d downloaden…</string>
     <string name="downloads_section">Downloads</string>
     <string name="downloads_title">Downloads</string>
     <string name="empty">Nog niets in je volgfeed</string>
@@ -243,6 +245,8 @@
     <string name="novel_watchlist_empty">Romanreeksen die je aan je volglijst toevoegt, verschijnen hier</string>
     <string name="open_in_browser">Openen in browser</string>
     <string name="open_link_failed">Kan die Pixiv-link niet openen</string>
+    <string name="open_links_in_app">Pixiv-links openen in XTA</string>
+    <string name="open_links_in_app_description">Voeg op de Android-pagina ‘Standaard openen’ pixiv.net en pixiv.me toe als ondersteunde links</string>
     <string name="open_on_pixiv">Openen op Pixiv</string>
     <string name="original_quality">Originele kwaliteit</string>
     <string name="page_of">%1$d / %2$d</string>
@@ -325,6 +329,15 @@
     <string name="resolution">%1$d × %2$d px</string>
     <string name="retry">Opnieuw</string>
     <string name="reveal">Tonen</string>
+    <string name="saucenao_another">Kies een andere afbeelding</string>
+    <string name="saucenao_empty">Geen Pixiv-werken komen overeen met deze afbeelding</string>
+    <string name="saucenao_failed">SauceNAO kon niet zoeken met deze afbeelding</string>
+    <string name="saucenao_pick">Kies een afbeelding</string>
+    <string name="saucenao_preview_unauthorized">Log opnieuw in bij Pixiv om voorbeelden te zien</string>
+    <string name="saucenao_privacy">De gekozen afbeelding wordt geüpload naar saucenao.com om bijpassende Pixiv-werken te vinden.</string>
+    <string name="saucenao_searching">Zoeken op SauceNAO…</string>
+    <string name="saucenao_similarity">%1$s gelijkenis</string>
+    <string name="saucenao_title">Zoeken met afbeelding</string>
     <string name="save">Veilig</string>
     <string name="save_again">Opnieuw opslaan</string>
     <string name="save_new_only">Alleen nieuwe pagina’s</string>
@@ -406,6 +419,8 @@
     <string name="series_previous">Vorige in de reeks</string>
     <string name="series_started">Gestart op %1$s</string>
     <string name="settings_intro">Deze privé-plug-in leest Pixiv als een galerij-app: illustraties, manga, romans, ranglijsten, je bladwijzers en zoeken. Tik op Inloggen om in te loggen met je Pixiv-account, of plak hieronder een vernieuwingstoken. Bladwijzers, gevolgde makers en geschiedenis blijven op dit apparaat: er wordt nooit iets naar je Pixiv-account gestuurd, op geplaatst of in gewijzigd.</string>
+    <string name="share_image">Afbeelding delen</string>
+    <string name="share_image_failed">Kan deze afbeelding niet delen</string>
     <string name="share_link">Link delen</string>
     <string name="show_r18">R-18-werken tonen</string>
     <string name="show_r18_description">Standaard uit. Als uit, worden beperkte werken in feeds verborgen.</string>
@@ -417,6 +432,7 @@
     <string name="sign_out_question">Afmelden bij Pixiv?</string>
     <string name="signed_in">Aangemeld als %1$s</string>
     <string name="sort_ungrouped_apply">Toepassen</string>
+    <string name="split_divider">Formaat van afbeeldingen en details wijzigen</string>
     <string name="start_section">Pixiv opent op</string>
     <string name="swipe_works">Tussen werken vegen</string>
     <string name="swipe_works_description">Veeg opzij naar het volgende werk in de lijst. Bij werken met meerdere pagina's veeg je door voorbij de eerste of laatste pagina.</string>
@@ -435,10 +451,15 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Nu populair</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_encoding">Frame %1$d van %2$d coderen…</string>
     <string name="ugoira_export_failed">Kan de animatie niet opslaan</string>
+    <string name="ugoira_fetching">Frames ophalen…</string>
     <string name="ugoira_pause">Animatie pauzeren</string>
     <string name="ugoira_play">Animatie afspelen</string>
+    <string name="ugoira_save_gif">Opslaan als GIF</string>
     <string name="ugoira_save_zip">Frames opslaan als ZIP</string>
+    <string name="ugoira_saving">Opslaan…</string>
+    <string name="ugoira_slow">Coderen kan een minuut duren</string>
     <string name="unbookmark">Bladwijzer verwijderen</string>
     <string name="unfollow">Ontvolgen</string>
     <string name="unmute">Dempen opheffen</string>

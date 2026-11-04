@@ -75,6 +75,7 @@
     <string name="comments_view">查看留言</string>
     <string name="comments_view_count">查看留言（%1$s）</string>
     <string name="copied">已複製</string>
+    <string name="copy_illust_id">複製作品 ID</string>
     <string name="copy_info">複製作品資訊</string>
     <string name="copy_link">複製連結</string>
     <string name="copy_template">「複製作品資訊」範本</string>
@@ -104,6 +105,7 @@
     <string name="download_index_forget_question">要清除已儲存頁面的記錄嗎？檔案本身仍保留在裝置上。</string>
     <string name="download_page">下載本頁</string>
     <string name="download_page_saved">已儲存 – 再次下載</string>
+    <string name="downloading_page">正在下載第 %1$d 頁，共 %2$d 頁…</string>
     <string name="downloads_section">下載</string>
     <string name="downloads_title">下載</string>
     <string name="empty">追蹤動態裡還沒有內容</string>
@@ -243,6 +245,8 @@
     <string name="novel_watchlist_empty">加入追更清單的小說系列會顯示在這裡</string>
     <string name="open_in_browser">在瀏覽器中開啟</string>
     <string name="open_link_failed">無法開啟該 Pixiv 連結</string>
+    <string name="open_links_in_app">在 XTA 中開啟 pixiv 連結</string>
+    <string name="open_links_in_app_description">在 Android 的「預設開啟」頁面中，將 pixiv.net 和 pixiv.me 新增為支援的連結</string>
     <string name="open_on_pixiv">在 Pixiv 開啟</string>
     <string name="original_quality">原圖畫質</string>
     <string name="page_of">%1$d / %2$d</string>
@@ -325,6 +329,15 @@
     <string name="resolution">%1$d × %2$d 像素</string>
     <string name="retry">重試</string>
     <string name="reveal">顯示</string>
+    <string name="saucenao_another">選擇其他圖片</string>
+    <string name="saucenao_empty">沒有與這張圖片相符的 Pixiv 作品</string>
+    <string name="saucenao_failed">SauceNAO 無法搜尋這張圖片</string>
+    <string name="saucenao_pick">選擇圖片</string>
+    <string name="saucenao_preview_unauthorized">重新登入 Pixiv 即可查看預覽</string>
+    <string name="saucenao_privacy">你選擇的圖片會上傳到 saucenao.com，用來尋找相符的 Pixiv 作品。</string>
+    <string name="saucenao_searching">正在 SauceNAO 上搜尋…</string>
+    <string name="saucenao_similarity">相似度 %1$s</string>
+    <string name="saucenao_title">以圖搜尋</string>
     <string name="save">儲存</string>
     <string name="save_again">再次儲存</string>
     <string name="save_new_only">僅新頁面</string>
@@ -406,6 +419,8 @@
     <string name="series_previous">系列中的上一篇</string>
     <string name="series_started">始於 %1$s</string>
     <string name="settings_intro">這個私人外掛像圖庫應用程式一樣瀏覽 Pixiv：插畫、漫畫、小說、排行榜、你的收藏和搜尋。點按「登入」以你的 Pixiv 帳號登入，或在下方貼上更新權杖。收藏、追蹤和瀏覽紀錄都保存在本裝置上：絕不會向你的 Pixiv 帳號傳送、發布或變更任何內容。</string>
+    <string name="share_image">分享圖片</string>
+    <string name="share_image_failed">無法分享此圖片</string>
     <string name="share_link">分享連結</string>
     <string name="show_r18">顯示 R-18 作品</string>
     <string name="show_r18_description">預設關閉。關閉時，受限作品會從動態中隱藏。</string>
@@ -417,6 +432,7 @@
     <string name="sign_out_question">登出 Pixiv？</string>
     <string name="signed_in">已登入為 %1$s</string>
     <string name="sort_ungrouped_apply">套用</string>
+    <string name="split_divider">調整圖片與詳情的大小</string>
     <string name="start_section">Pixiv 啟動頁</string>
     <string name="swipe_works">滑動切換作品</string>
     <string name="swipe_works_description">左右滑動切換到列表中的下一件作品。多頁作品需在第一頁或最後一頁繼續滑動。</string>
@@ -435,10 +451,15 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">當前熱門</string>
     <string name="ugoira">動圖</string>
+    <string name="ugoira_encoding">正在編碼第 %1$d 個影格，共 %2$d 個…</string>
     <string name="ugoira_export_failed">無法儲存動圖</string>
+    <string name="ugoira_fetching">正在取得影格…</string>
     <string name="ugoira_pause">暫停動圖</string>
     <string name="ugoira_play">播放動圖</string>
+    <string name="ugoira_save_gif">儲存為 GIF</string>
     <string name="ugoira_save_zip">將影格儲存為 ZIP</string>
+    <string name="ugoira_saving">正在儲存…</string>
+    <string name="ugoira_slow">編碼可能需要一分鐘</string>
     <string name="unbookmark">取消收藏</string>
     <string name="unfollow">取消追蹤</string>
     <string name="unmute">取消封鎖</string>

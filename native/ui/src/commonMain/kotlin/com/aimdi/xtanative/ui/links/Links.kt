@@ -46,7 +46,7 @@ fun rememberOpenLink(): (String) -> Unit {
 @Composable
 internal expect fun rememberLinkPlatform(): LinkPlatform
 
-/** Hands [onText] whatever another app shares to this one. Only Android is shared to. */
+/** Hands [onText] whatever another app shares to this one, and the Pixiv pages it opens here. Only Android is shared to. */
 @Composable
 internal expect fun SharedTextEffect(onText: (String) -> Unit)
 

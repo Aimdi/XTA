@@ -39,12 +39,14 @@ import com.aimdi.xtanative.networks.pixiv.PixivIllust
 import com.aimdi.xtanative.networks.pixiv.PixivImages
 import com.aimdi.xtanative.store.downloads.OkHttpMediaHttp
 import com.aimdi.xtanative.store.settings.PixivPrefs
+import com.aimdi.xtanative.ui.plugins.PluginProgress
 import com.aimdi.xtanative.ui.plugins.pluginString
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 
 /** Where an ugoira stands in its player. */
@@ -129,7 +131,7 @@ internal suspend fun ugoiraFrames(runtime: PixivRuntime, illust: PixivIllust): L
         OkHttpMediaHttp().get(url, PixivImages.HEADERS).use { response ->
             if (response.code !in 200..299) throw IOException("ugoira archive: HTTP ${response.code}")
             if ((response.contentLength ?: 0) > MAX_ARCHIVE) throw IOException("ugoira archive too large")
-            readCapped(response.body)
+            readCapped(response.body) { ensureActive() }
         }
     }
     return withContext(Dispatchers.Default) { meta.framesIn(archive) }
@@ -137,14 +139,39 @@ internal suspend fun ugoiraFrames(runtime: PixivRuntime, illust: PixivIllust): L
 
 private const val MAX_ARCHIVE = 64 * 1024 * 1024
 
-/** [input] read whole, refusing more than [MAX_ARCHIVE]. */
-private fun readCapped(input: InputStream): ByteArray {
+/** [input] read whole, refusing more than [MAX_ARCHIVE]; [check] runs between reads, so a cancelled export stops on its way. */
+private fun readCapped(input: InputStream, check: () -> Unit = {}): ByteArray {
     val out = ByteArrayOutputStream()
     val buffer = ByteArray(64 * 1024)
     while (true) {
+        check()
         val read = input.read(buffer)
         if (read < 0) return out.toByteArray()
         out.write(buffer, 0, read)
         if (out.size() > MAX_ARCHIVE) throw IOException("ugoira archive too large")
     }
+}
+
+/** An ugoira saved as a looping GIF (pixiv_ugoira_export.dart): its frames fetched, then encoded a frame at a time, then saved where downloads go. */
+internal object PixivUgoiraExport {
+    const val GIF_TYPE = "image/gif"
+
+    /** Says each step through [say]: fetching, the frame being encoded with XTA's note that it can take a minute, then saving, which no Cancel stops. Whether the file was saved. */
+    suspend fun gif(runtime: PixivRuntime, illust: PixivIllust, language: String, say: (PluginProgress) -> Unit): Boolean {
+        val frames = ugoiraFrames(runtime, illust)
+        say(encoding(language, 0, frames.size))
+        val gif = withContext(Dispatchers.Default) {
+            PixivGifWriter.encode(frames, decode = { decodePixels(it, atLeastWidth = null) }) { done -> say(encoding(language, done, frames.size)) }
+        }
+        say(PluginProgress(Strings.ugoira_saving.get(language), cancellable = false))
+        val naming = PixivSaveNaming.of(runtime.settings.now)
+        return runtime.host.saveFileAndWait(gif, naming.workName(illust, ".gif"), GIF_TYPE, naming.subfolder(illust))
+    }
+
+    /** "Encoding frame 3 of 40…" for the frame after the [done] ones, its ring filled that far. */
+    private fun encoding(language: String, done: Int, total: Int) = PluginProgress(
+        Strings.ugoira_encoding.get(language, (done + 1).coerceIn(1, maxOf(total, 1)), total),
+        fraction = if (total > 0) done.toFloat() / total else null,
+        note = Strings.ugoira_slow.get(language),
+    )
 }

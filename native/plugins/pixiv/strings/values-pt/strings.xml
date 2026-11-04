@@ -75,6 +75,7 @@
     <string name="comments_view">Ver comentários</string>
     <string name="comments_view_count">Ver comentários (%1$s)</string>
     <string name="copied">Copiado</string>
+    <string name="copy_illust_id">Copiar ID da obra</string>
     <string name="copy_info">Copiar informações</string>
     <string name="copy_link">Copiar link</string>
     <string name="copy_template">Modelo de «Copiar informações»</string>
@@ -104,6 +105,7 @@
     <string name="download_index_forget_question">Esquecer que páginas foram guardadas? Os ficheiros continuam no seu dispositivo.</string>
     <string name="download_page">Descarregar esta página</string>
     <string name="download_page_saved">Guardada – descarregar novamente</string>
+    <string name="downloading_page">A descarregar a página %1$d de %2$d…</string>
     <string name="downloads_section">Descargas</string>
     <string name="downloads_title">Transferências</string>
     <string name="empty">Ainda não há nada no feed de seguidos</string>
@@ -243,6 +245,8 @@
     <string name="novel_watchlist_empty">As séries de romances que adicionar à lista de acompanhamento aparecem aqui</string>
     <string name="open_in_browser">Abrir no navegador</string>
     <string name="open_link_failed">Não foi possível abrir essa ligação Pixiv</string>
+    <string name="open_links_in_app">Abrir ligações do pixiv no XTA</string>
+    <string name="open_links_in_app_description">Na página «Abrir por predefinição» do Android, adicione pixiv.net e pixiv.me como ligações suportadas</string>
     <string name="open_on_pixiv">Abrir no Pixiv</string>
     <string name="original_quality">Qualidade original</string>
     <string name="page_of">%1$d / %2$d</string>
@@ -325,6 +329,15 @@
     <string name="resolution">%1$d × %2$d px</string>
     <string name="retry">Tentar novamente</string>
     <string name="reveal">Mostrar</string>
+    <string name="saucenao_another">Escolher outra imagem</string>
+    <string name="saucenao_empty">Nenhuma obra do Pixiv corresponde a esta imagem</string>
+    <string name="saucenao_failed">O SauceNAO não conseguiu pesquisar esta imagem</string>
+    <string name="saucenao_pick">Escolher uma imagem</string>
+    <string name="saucenao_preview_unauthorized">Inicie sessão novamente no Pixiv para ver as pré-visualizações</string>
+    <string name="saucenao_privacy">A imagem escolhida é carregada para saucenao.com para procurar obras do Pixiv correspondentes.</string>
+    <string name="saucenao_searching">A pesquisar no SauceNAO…</string>
+    <string name="saucenao_similarity">%1$s de semelhança</string>
+    <string name="saucenao_title">Pesquisar por imagem</string>
     <string name="save">Gravar</string>
     <string name="save_again">Guardar novamente</string>
     <string name="save_new_only">Só páginas novas</string>
@@ -406,6 +419,8 @@
     <string name="series_previous">Anterior da série</string>
     <string name="series_started">Iniciada a %1$s</string>
     <string name="settings_intro">Este plugin privado lê o Pixiv como uma aplicação de galeria: ilustrações, manga, romances, rankings, os seus favoritos e a pesquisa. Toque em Iniciar sessão para entrar com a sua conta Pixiv, ou cole abaixo um token de atualização. Favoritos, seguidos e histórico ficam neste dispositivo: nada é alguma vez enviado, publicado ou alterado na sua conta Pixiv.</string>
+    <string name="share_image">Partilhar imagem</string>
+    <string name="share_image_failed">Não foi possível partilhar esta imagem</string>
     <string name="share_link">Partilhar ligação</string>
     <string name="show_r18">Mostrar obras R-18</string>
     <string name="show_r18_description">Desativado por predefinição. Quando desativado, as obras restritas são ocultadas dos feeds.</string>
@@ -417,6 +432,7 @@
     <string name="sign_out_question">Terminar sessão no Pixiv?</string>
     <string name="signed_in">Sessão iniciada como %1$s</string>
     <string name="sort_ungrouped_apply">Aplicar</string>
+    <string name="split_divider">Redimensionar imagens e detalhes</string>
     <string name="start_section">Abrir o Pixiv em</string>
     <string name="swipe_works">Deslizar entre obras</string>
     <string name="swipe_works_description">Deslize para o lado para passar à obra seguinte da lista. Em obras com várias páginas, continue a deslizar para lá da primeira ou da última página.</string>
@@ -435,10 +451,15 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Tendências do momento</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_encoding">A codificar a imagem %1$d de %2$d…</string>
     <string name="ugoira_export_failed">Não foi possível guardar a animação</string>
+    <string name="ugoira_fetching">A obter as imagens…</string>
     <string name="ugoira_pause">Pausar animação</string>
     <string name="ugoira_play">Reproduzir animação</string>
+    <string name="ugoira_save_gif">Guardar como GIF</string>
     <string name="ugoira_save_zip">Guardar as imagens como ZIP</string>
+    <string name="ugoira_saving">A guardar…</string>
+    <string name="ugoira_slow">A codificação pode demorar um minuto</string>
     <string name="unbookmark">Remover dos favoritos</string>
     <string name="unfollow">Deixar de seguir</string>
     <string name="unmute">Deixar de silenciar</string>

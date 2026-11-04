@@ -75,6 +75,7 @@
     <string name="comments_view">Pakazać kamentaryi</string>
     <string name="comments_view_count">Pakazać kamentaryi (%1$s)</string>
     <string name="copied">Skapijavana</string>
+    <string name="copy_illust_id">Skapijavać ID pracy</string>
     <string name="copy_info">Kapijavać zviestki</string>
     <string name="copy_link">Skapijavać spasyłku</string>
     <string name="copy_template">Šablon «Kapijavać zviestki»</string>
@@ -104,6 +105,7 @@
     <string name="download_index_forget_question">Zabyć, jakija staronki byli zachavany? Sami fajły zastanucca na pryladzie.</string>
     <string name="download_page">Sćahnuć hetu staronku</string>
     <string name="download_page_saved">Zachavana — spampavać znoŭ</string>
+    <string name="downloading_page">Spampoŭvajecca staronka %1$d z %2$d…</string>
     <string name="downloads_section">Spampoŭki</string>
     <string name="downloads_title">Spampoŭki</string>
     <string name="empty">U stužcy padpisak pakul ničoha niama</string>
@@ -243,6 +245,8 @@
     <string name="novel_watchlist_empty">Tut zjaviacca seryi ramanaŭ, jakija vy dadascie ŭ spis nazirańnia</string>
     <string name="open_in_browser">Adčynić u braŭzery</string>
     <string name="open_link_failed">Nie ŭdałosia adkryć hetuju spasyłku Pixiv</string>
+    <string name="open_links_in_app">Adkryvać spasyłki pixiv u XTA</string>
+    <string name="open_links_in_app_description">Na staroncy Android «Adkryvać pa zmaŭčanni» dadajcie pixiv.net i pixiv.me jak padtrymlivajemyja spasyłki</string>
     <string name="open_on_pixiv">Adkryć na Pixiv</string>
     <string name="original_quality">Aryhinalnaja jakasć</string>
     <string name="page_of">%1$d / %2$d</string>
@@ -325,6 +329,15 @@
     <string name="resolution">%1$d × %2$d pks</string>
     <string name="retry">Paŭtaryć</string>
     <string name="reveal">Pakazać</string>
+    <string name="saucenao_another">Vybrać inšy vidarys</string>
+    <string name="saucenao_empty">Niama tvoraŭ Pixiv, padobnych da hetaha vidarysa</string>
+    <string name="saucenao_failed">SauceNAO nie zmoh šukać pa hetym vidarysie</string>
+    <string name="saucenao_pick">Vybrać vidarys</string>
+    <string name="saucenao_preview_unauthorized">Uvajdzicie ŭ Pixiv znoŭ, kab bačyć minijaciury</string>
+    <string name="saucenao_privacy">Vybrany vidarys zapampoŭvajecca na saucenao.com, kab znajści padobnyja tvory na Pixiv.</string>
+    <string name="saucenao_searching">Pošuk u SauceNAO…</string>
+    <string name="saucenao_similarity">Padabienstva %1$s</string>
+    <string name="saucenao_title">Pošuk pa vidarysie</string>
     <string name="save">Zachavać</string>
     <string name="save_again">Zachavać znoŭ</string>
     <string name="save_new_only">Tolki novyja staronki</string>
@@ -406,6 +419,8 @@
     <string name="series_previous">Papiaredniaja ŭ seryi</string>
     <string name="series_started">Pačata %1$s</string>
     <string name="settings_intro">Hety pryvatny plahin čytaje Pixiv jak prahrama-halereja: iliustracyi, manhu, ramany, rejtynhi, vašy zakladki i pošuk. Nacisnicie «Uvajsci», kab uvajsci z akaŭntam Pixiv, abo ŭstaŭcie token abnaŭlennia nižej. Zakladki, padpiski i historyja zastajucca na hetaj pryladzie: u vaš akaŭnt Pixiv ničoha nie adpraŭlajecca, tam ničoha nie publikujecca i nie źmianiajecca.</string>
+    <string name="share_image">Padzialicca vyjavaj</string>
+    <string name="share_image_failed">Nie ŭdałosia padzialicca vyjavaj</string>
     <string name="share_link">Padzialicca spasyłkaj</string>
     <string name="show_r18">Pakazvać pracy R-18</string>
     <string name="show_r18_description">Pa zmaŭčanni vyklučana. Kali vyklučana, abmiežavanyja pracy chavajucca.</string>
@@ -417,6 +432,7 @@
     <string name="sign_out_question">Vyjsci z Pixiv?</string>
     <string name="signed_in">Uvajšli jak %1$s</string>
     <string name="sort_ungrouped_apply">Užyć</string>
+    <string name="split_divider">Zmianić pamier vyjaŭ i padrabiaznasciej</string>
     <string name="start_section">Pixiv adkryvajecca na</string>
     <string name="swipe_works">Pierahortvać pracy</string>
     <string name="swipe_works_description">Hartajcie ŭbok da nastupnaj pracy ŭ spisie. U pracach z niekalkimi staronkami praciahvajcie hartać za pieršuju abo apošniuju staronku.</string>
@@ -435,10 +451,15 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Aktualnaje ciapier</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_encoding">Kadziravańnie kadra %1$d z %2$d…</string>
     <string name="ugoira_export_failed">Nie ŭdałosia zachavać animacyju</string>
+    <string name="ugoira_fetching">Atrymańnie kadraŭ…</string>
     <string name="ugoira_pause">Prypynić animacyju</string>
     <string name="ugoira_play">Prajhrać animacyju</string>
+    <string name="ugoira_save_gif">Zachavać jak GIF</string>
     <string name="ugoira_save_zip">Zachavać kadry ŭ ZIP</string>
+    <string name="ugoira_saving">Zachavannie…</string>
+    <string name="ugoira_slow">Kadziravańnie moža zaniać chvilinu</string>
     <string name="unbookmark">Prybrać zakladku</string>
     <string name="unfollow">Adpisacca</string>
     <string name="unmute">Pakazvać znoŭ</string>

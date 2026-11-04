@@ -75,6 +75,7 @@
     <string name="comments_view">コメントを見る</string>
     <string name="comments_view_count">コメントを見る（%1$s）</string>
     <string name="copied">コピーしました</string>
+    <string name="copy_illust_id">作品IDをコピー</string>
     <string name="copy_info">作品情報をコピー</string>
     <string name="copy_link">リンクをコピー</string>
     <string name="copy_template">「作品情報をコピー」のテンプレート</string>
@@ -104,6 +105,7 @@
     <string name="download_index_forget_question">保存したページの記録を消去しますか？ファイル自体は端末に残ります。</string>
     <string name="download_page">このページを保存</string>
     <string name="download_page_saved">保存済み – もう一度保存</string>
+    <string name="downloading_page">%1$d / %2$d ページを保存中…</string>
     <string name="downloads_section">ダウンロード</string>
     <string name="downloads_title">ダウンロード</string>
     <string name="empty">フォローフィードにまだ何もありません</string>
@@ -243,6 +245,8 @@
     <string name="novel_watchlist_empty">ウォッチリストに追加した小説シリーズがここに表示されます</string>
     <string name="open_in_browser">ブラウザで開く</string>
     <string name="open_link_failed">そのPixivリンクを開けませんでした</string>
+    <string name="open_links_in_app">pixiv のリンクを XTA で開く</string>
+    <string name="open_links_in_app_description">Android の「デフォルトで開く」画面で、pixiv.net と pixiv.me を対応リンクとして追加してください</string>
     <string name="open_on_pixiv">Pixiv で開く</string>
     <string name="original_quality">オリジナル画質</string>
     <string name="page_of">%1$d / %2$d</string>
@@ -325,6 +329,15 @@
     <string name="resolution">%1$d × %2$d px</string>
     <string name="retry">再試行</string>
     <string name="reveal">表示</string>
+    <string name="saucenao_another">別の画像を選ぶ</string>
+    <string name="saucenao_empty">この画像に一致するPixivの作品はありません</string>
+    <string name="saucenao_failed">SauceNAOでこの画像を検索できませんでした</string>
+    <string name="saucenao_pick">画像を選ぶ</string>
+    <string name="saucenao_preview_unauthorized">プレビューを表示するにはPixivに再ログインしてください</string>
+    <string name="saucenao_privacy">選んだ画像は、一致するPixivの作品を探すためにsaucenao.comへアップロードされます。</string>
+    <string name="saucenao_searching">SauceNAOで検索中…</string>
+    <string name="saucenao_similarity">類似度 %1$s</string>
+    <string name="saucenao_title">画像で検索</string>
     <string name="save">保存</string>
     <string name="save_again">もう一度保存</string>
     <string name="save_new_only">新しいページのみ</string>
@@ -406,6 +419,8 @@
     <string name="series_previous">シリーズの前の作品</string>
     <string name="series_started">%1$s 開始</string>
     <string name="settings_intro">この非公開プラグインは Pixiv をギャラリーアプリのように閲覧します：イラスト、マンガ、小説、ランキング、ブックマーク、検索。「ログイン」をタップして Pixiv アカウントでログインするか、下にリフレッシュトークンを貼り付けてください。ブックマーク、フォロー、閲覧履歴はこの端末に保存され、Pixiv アカウントへ送信・投稿・変更されることは一切ありません。</string>
+    <string name="share_image">画像を共有</string>
+    <string name="share_image_failed">この画像を共有できませんでした</string>
     <string name="share_link">リンクを共有</string>
     <string name="show_r18">R-18 作品を表示</string>
     <string name="show_r18_description">既定ではオフ。オフのとき、制限付き作品はフィードから隠されます。</string>
@@ -417,6 +432,7 @@
     <string name="sign_out_question">Pixiv からサインアウトしますか？</string>
     <string name="signed_in">%1$s としてサインイン中</string>
     <string name="sort_ungrouped_apply">適用</string>
+    <string name="split_divider">画像と詳細のサイズを変更</string>
     <string name="start_section">Pixiv の起動画面</string>
     <string name="swipe_works">スワイプで作品を切り替える</string>
     <string name="swipe_works_description">横にスワイプしてリストの次の作品に移動します。複数ページの作品では、最初か最後のページからさらにスワイプします。</string>
@@ -435,10 +451,15 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">急上昇タグ</string>
     <string name="ugoira">うごイラ</string>
+    <string name="ugoira_encoding">フレーム %1$d / %2$d をエンコード中…</string>
     <string name="ugoira_export_failed">アニメーションを保存できませんでした</string>
+    <string name="ugoira_fetching">フレームを取得中…</string>
     <string name="ugoira_pause">アニメーションを一時停止</string>
     <string name="ugoira_play">アニメーションを再生</string>
+    <string name="ugoira_save_gif">GIF で保存</string>
     <string name="ugoira_save_zip">フレームを ZIP で保存</string>
+    <string name="ugoira_saving">保存中…</string>
+    <string name="ugoira_slow">エンコードには 1 分ほどかかることがあります</string>
     <string name="unbookmark">ブックマークを外す</string>
     <string name="unfollow">フォロー解除</string>
     <string name="unmute">ミュート解除</string>

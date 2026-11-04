@@ -35,10 +35,12 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.store.settings.PixivPrefs
 import com.aimdi.xtanative.store.settings.PixivSection
+import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
+import com.aimdi.xtanative.ui.plugins.rememberAppLinkSettings
 import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import kotlinx.coroutines.CancellationException
@@ -183,7 +185,7 @@ private fun AccountAiRow(userId: Long) {
 
 private const val VIEWING_SETTINGS_URL = "https://www.pixiv.net/settings/viewing"
 
-/** Where the plugin opens, the history and its pause, and the copy template. */
+/** Where the plugin opens, the history and its pause, the copy template and, on Android, opening Pixiv's links here (pixiv_settings_browsing.dart). */
 @Composable
 private fun BrowsingSettings() {
     val runtime = LocalPixiv.current
@@ -201,6 +203,9 @@ private fun BrowsingSettings() {
     ActionRow(pluginString(Strings.history), { runtime.open(PixivRoute.History(PixivKind.WORK)) }, icon = PostIcons.History)
     SwitchRow(pluginString(Strings.history_pause), pluginString(Strings.history_pause_description), settings[PixivPrefs.historyPaused]) { runtime.settings.set(PixivPrefs.historyPaused, it) }
     ActionRow(pluginString(Strings.copy_template), { runtime.open(PixivRoute.CopyTemplate) }, icon = PixivIcons.ContentCopy)
+    rememberAppLinkSettings()?.let { open ->
+        ActionRow(pluginString(Strings.open_links_in_app), open, icon = XIcons.Link, subtitle = pluginString(Strings.open_links_in_app_description))
+    }
 }
 
 /** Bookmarks kept on this device: the work's tags, following, saving and the other way round; and haptics. */

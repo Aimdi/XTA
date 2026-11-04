@@ -75,6 +75,7 @@
     <string name="comments_view">Ikusi iruzkinak</string>
     <string name="comments_view_count">Ikusi iruzkinak (%1$s)</string>
     <string name="copied">Kopiatu da</string>
+    <string name="copy_illust_id">Kopiatu lanaren IDa</string>
     <string name="copy_info">Kopiatu informazioa</string>
     <string name="copy_link">Kopiatu esteka</string>
     <string name="copy_template">«Kopiatu informazioa» txantiloia</string>
@@ -104,6 +105,7 @@
     <string name="download_index_forget_question">Zein orrialde gorde diren ahaztu nahi duzu? Fitxategiak gailuan geratuko dira.</string>
     <string name="download_page">Deskargatu orrialde hau</string>
     <string name="download_page_saved">Gordeta – deskargatu berriro</string>
+    <string name="downloading_page">%1$d. orrialdea deskargatzen, guztira %2$d…</string>
     <string name="downloads_section">Deskargak</string>
     <string name="downloads_title">Deskargak</string>
     <string name="empty">Oraindik ez dago ezer jarraipen-jarioan</string>
@@ -243,6 +245,8 @@
     <string name="novel_watchlist_empty">Jarraipen-zerrendara gehitzen dituzun eleberri-serieak hemen agertzen dira</string>
     <string name="open_in_browser">Ireki nabigatzailean</string>
     <string name="open_link_failed">Ezin izan da Pixiv esteka hori ireki</string>
+    <string name="open_links_in_app">Ireki pixiv estekak XTAn</string>
+    <string name="open_links_in_app_description">Androideko «Ireki modu lehenetsian» orrian, gehitu pixiv.net eta pixiv.me esteka onartu gisa</string>
     <string name="open_on_pixiv">Ireki Pixiven</string>
     <string name="original_quality">Jatorrizko kalitatea</string>
     <string name="page_of">%1$d / %2$d</string>
@@ -325,6 +329,15 @@
     <string name="resolution">%1$d × %2$d px</string>
     <string name="retry">Saiatu berriro</string>
     <string name="reveal">Erakutsi</string>
+    <string name="saucenao_another">Aukeratu beste irudi bat</string>
+    <string name="saucenao_empty">Ez dago irudi honekin bat datorren Pixiv lanik</string>
+    <string name="saucenao_failed">SauceNAO-k ezin izan du irudi hau bilatu</string>
+    <string name="saucenao_pick">Aukeratu irudi bat</string>
+    <string name="saucenao_preview_unauthorized">Hasi saioa berriro Pixiv-en aurrebistak ikusteko</string>
+    <string name="saucenao_privacy">Aukeratzen duzun irudia saucenao.com-era igotzen da, bat datozen Pixiv lanak bilatzeko.</string>
+    <string name="saucenao_searching">SauceNAO-n bilatzen…</string>
+    <string name="saucenao_similarity">%1$s antzekoa</string>
+    <string name="saucenao_title">Bilatu irudiaren bidez</string>
     <string name="save">Gorde</string>
     <string name="save_again">Gorde berriro</string>
     <string name="save_new_only">Orrialde berriak soilik</string>
@@ -406,6 +419,8 @@
     <string name="series_previous">Serieko aurrekoa</string>
     <string name="series_started">Hasiera: %1$s</string>
     <string name="settings_intro">Plugin pribatu honek Pixiv galeria-aplikazio baten moduan irakurtzen du: ilustrazioak, mangak, eleberriak, sailkapenak, zure laster-markak eta bilaketa. Sakatu Hasi saioa zure Pixiv kontuarekin sartzeko, edo itsatsi freskatze-token bat behean. Laster-markak, jarraipenak eta historia gailu honetan geratzen dira: ez da inoiz ezer bidaltzen, argitaratzen edo aldatzen zure Pixiv kontuan.</string>
+    <string name="share_image">Partekatu irudia</string>
+    <string name="share_image_failed">Ezin izan da irudia partekatu</string>
     <string name="share_link">Partekatu esteka</string>
     <string name="show_r18">Erakutsi R-18 lanak</string>
     <string name="show_r18_description">Desaktibatuta lehenespenez. Desaktibatuta dagoenean, lan murriztuak ezkutatzen dira jarioetan.</string>
@@ -417,6 +432,7 @@
     <string name="sign_out_question">Pixiv-eko saioa itxi nahi duzu?</string>
     <string name="signed_in">Saioa hasita %1$s gisa</string>
     <string name="sort_ungrouped_apply">Aplikatu</string>
+    <string name="split_divider">Aldatu irudien eta xehetasunen tamaina</string>
     <string name="start_section">Pixiv hemen irekitzen da</string>
     <string name="swipe_works">Irristatu lanen artean</string>
     <string name="swipe_works_description">Irristatu alboetara zerrendako hurrengo lanera joateko. Orrialde anitzeko lanetan, jarraitu irristatzen lehen edo azken orrialdetik haratago.</string>
@@ -435,10 +451,15 @@
     <string name="title">Pixiv</string>
     <string name="trending_title">Joerak orain</string>
     <string name="ugoira">Ugoira</string>
+    <string name="ugoira_encoding">%1$d. fotograma kodetzen, guztira %2$d…</string>
     <string name="ugoira_export_failed">Ezin izan da animazioa gorde</string>
+    <string name="ugoira_fetching">Fotogramak eskuratzen…</string>
     <string name="ugoira_pause">Pausatu animazioa</string>
     <string name="ugoira_play">Erreproduzitu animazioa</string>
+    <string name="ugoira_save_gif">Gorde GIF gisa</string>
     <string name="ugoira_save_zip">Gorde fotogramak ZIP gisa</string>
+    <string name="ugoira_saving">Gordetzen…</string>
+    <string name="ugoira_slow">Kodetzeak minutu bat iraun dezake</string>
     <string name="unbookmark">Kendu laster-marka</string>
     <string name="unfollow">Jarraitzeari utzi</string>
     <string name="unmute">Kendu isilaraztea</string>

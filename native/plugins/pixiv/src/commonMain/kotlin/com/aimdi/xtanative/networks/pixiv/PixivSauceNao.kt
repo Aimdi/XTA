@@ -1,6 +1,22 @@
 package com.aimdi.xtanative.networks.pixiv
 
 import com.aimdi.xtanative.core.json.J
+import com.aimdi.xtanative.core.x.http.OkHttpXHttp
+import com.aimdi.xtanative.networks.NetworkRequestException
+import java.io.IOException
+import java.util.concurrent.TimeUnit
+import kotlin.coroutines.resumeWithException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
@@ -14,14 +30,46 @@ data class PixivSauceMatch(
 )
 
 /**
- * SauceNAO's answers to a reverse image search, read for the Pixiv works they
- * name. XTA uploads the picture to [SEARCH_URL] as a multipart form (a PNG in
- * the field `file`, no Pixiv token with it); that upload is binary, which
- * [com.aimdi.xtanative.core.x.http.XHttp] cannot send yet, so only the reading
- * of the answer lives here.
+ * SauceNAO's reverse image search, read for the Pixiv works it names: the
+ * picture goes to [SEARCH_URL] as a multipart form (a PNG in the field
+ * `file`), to saucenao.com and nowhere else, with no Pixiv token, as XTA's
+ * PixivSauceNaoApi sends it. [com.aimdi.xtanative.core.x.http.XHttp] sends
+ * no binary body, so the upload goes through the app's OkHttp client itself.
  */
 object PixivSauceNao {
     const val SEARCH_URL = "https://saucenao.com/search.php"
+
+    /** How long the whole exchange may take, the upload included. */
+    private const val TIMEOUT_SECONDS = 45L
+
+    /**
+     * [png] searched for: the Pixiv works SauceNAO finds, best first. A rate
+     * limit comes back as Pixiv's 429 would, any other refusal as an answer
+     * of no use; no answer at all as the IOException it was.
+     */
+    suspend fun search(png: ByteArray, client: OkHttpClient = OkHttpXHttp.defaultClient): List<PixivSauceMatch> {
+        val form = MultipartBody.Builder().setType(MultipartBody.FORM)
+            .addFormDataPart("file", "image.png", png.toRequestBody("image/png".toMediaType()))
+            .build()
+        val call = client.newBuilder().callTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS).build().newCall(Request.Builder().url(SEARCH_URL).post(form).build())
+        return call.answer().use { response ->
+            when {
+                response.code == 429 -> throw NetworkRequestException(PIXIV_NETWORK, 429, "saucenao: 429")
+                !response.isSuccessful -> throw unusableAnswer("saucenao: ${response.code}")
+                else -> parse(withContext(Dispatchers.IO) { response.body?.string().orEmpty() })
+            }
+        }
+    }
+
+    /** The call's answer, the call itself cancelled when the coroutine waiting for it is. */
+    private suspend fun Call.answer(): Response = suspendCancellableCoroutine { continuation ->
+        continuation.invokeOnCancellation { cancel() }
+        enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) = continuation.resumeWithException(e)
+
+            override fun onResponse(call: Call, response: Response) = continuation.resume(response) { _, _, _ -> response.close() }
+        })
+    }
 
     /** The Pixiv work a link names, from `artworks/<id>` or `illust_id=<id>`; null for any other site. */
     fun idFromLink(link: String): Long? {

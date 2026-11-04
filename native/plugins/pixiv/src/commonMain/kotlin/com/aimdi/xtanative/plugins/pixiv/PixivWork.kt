@@ -56,6 +56,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.pixiv.PixivIllust
@@ -336,8 +338,9 @@ private fun SplitDetail(model: PixivWorkModel, state: PixivWorkState, illust: Pi
             PageViewer(illust, state.page, surface, Modifier.fillMaxWidth().weight(1f))
             if (illust.viewerUrls.size > 1) PageBar(state.page, illust.viewerUrls.size, surface)
         }
+        val handle = pluginString(Strings.split_divider)
         Box(
-            Modifier.width(PixivLayout.SPLIT_GUTTER.dp).fillMaxHeight().draggable(
+            Modifier.width(PixivLayout.SPLIT_GUTTER.dp).fillMaxHeight().semantics { contentDescription = handle }.draggable(
                 drag,
                 Orientation.Horizontal,
                 onDragStopped = { runtime.settings.set(PixivPrefs.detailSplit, fraction.toDouble()) },
