@@ -59,7 +59,10 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.close
+import com.aimdi.xtanative.ui.generated.resources.reader_download
+import com.aimdi.xtanative.ui.downloads.PluginDownloads
 import com.aimdi.xtanative.ui.media.LocalInlinePlayer
+import com.aimdi.xtanative.ui.media.ReaderIcons
 import com.aimdi.xtanative.ui.media.VideoQuality
 import com.aimdi.xtanative.ui.post.PlayBadge
 import org.jetbrains.compose.resources.stringResource
@@ -152,20 +155,22 @@ private fun duration(ms: Long): String {
 /**
  * [items] full screen from [start], as the app's viewer shows X's: swipe
  * between them, pinch or double-tap a photo to zoom; videos play, GIFs loop.
+ * A video may play another of the files its network offers: [qualities]
+ * holds, item by item, a video's files highest first, named as the quality
+ * menu lists them ("720p"); one with more than one has the menu and starts
+ * on [MediaItem.videoUrl]. With [onDownload], the bar saves the one shown
+ * where it has a file of its own (a photo, a video's file; never a stream).
  * With nothing to show, it closes.
- */
-@Composable
-fun MediaPager(items: List<MediaItem>, start: Int, onClose: () -> Unit) = MediaPager(items, start, onClose, emptyList())
-
-/**
- * [MediaPager] whose videos may play another of the files their network
- * offers: [qualities] holds, item by item, a video's files highest first,
- * named as the quality menu lists them ("720p"). A video with more than one
- * has the menu; it starts on [MediaItem.videoUrl].
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun MediaPager(items: List<MediaItem>, start: Int, onClose: () -> Unit, qualities: List<List<VideoQuality>>) {
+fun MediaPager(
+    items: List<MediaItem>,
+    start: Int,
+    onClose: () -> Unit,
+    qualities: List<List<VideoQuality>> = emptyList(),
+    onDownload: ((MediaItem) -> Unit)? = null,
+) {
     Box(Modifier.fillMaxSize().background(Color.Black)) {
         if (items.isEmpty()) {
             LaunchedEffect(Unit) { onClose() }
@@ -182,12 +187,12 @@ fun MediaPager(items: List<MediaItem>, start: Int, onClose: () -> Unit, qualitie
         IconButton(onClick = onClose, modifier = Modifier.statusBarsPadding().padding(8.dp).align(Alignment.TopStart)) {
             Icon(Icons.Filled.Close, stringResource(Res.string.close), tint = Color.White)
         }
-        if (items.size > 1) {
-            Text(
-                "${pager.currentPage + 1} / ${items.size}",
-                color = Color.White,
-                modifier = Modifier.statusBarsPadding().padding(20.dp).align(Alignment.TopEnd),
-            )
+        Row(Modifier.statusBarsPadding().padding(8.dp).align(Alignment.TopEnd), verticalAlignment = Alignment.CenterVertically) {
+            if (items.size > 1) Text("${pager.currentPage + 1} / ${items.size}", color = Color.White, modifier = Modifier.padding(horizontal = 12.dp))
+            val shown = items.getOrNull(pager.currentPage)
+            if (onDownload != null && shown != null && PluginDownloads.url(shown) != null) {
+                IconButton(onClick = { onDownload(shown) }) { Icon(ReaderIcons.Download, stringResource(Res.string.reader_download), tint = Color.White) }
+            }
         }
     }
 }

@@ -253,6 +253,7 @@
     <string name="settings_net_immich">Immich</string>
     <string name="settings_show_as_tab">Показывать как вкладку</string>
     <string name="settings_in_home_timeline">Показывать в главной ленте</string>
+    <string name="settings_in_home_timeline_description">Добавляет записи того, на что вы подписаны в %1$s, в «Читаю» и «Для вас»</string>
     <string name="settings_threads_instance">Экземпляр RSSHub</string>
     <string name="settings_threads_instance_hint">Например http://192.168.1.10:1200 или https://rsshub.example.org</string>
     <string name="settings_bluesky_instance">AppView</string>

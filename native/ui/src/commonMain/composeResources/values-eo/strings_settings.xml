@@ -253,6 +253,7 @@
     <string name="settings_net_immich">Immich</string>
     <string name="settings_show_as_tab">Montri kiel langeton</string>
     <string name="settings_in_home_timeline">Montri en la hejma tempolinio</string>
+    <string name="settings_in_home_timeline_description">Miksas afiŝojn de tio, kion vi sekvas en %1$s, en «Abonoj» kaj «Por vi»</string>
     <string name="settings_threads_instance">RSSHub-nodo</string>
     <string name="settings_threads_instance_hint">Ekzemple http://192.168.1.10:1200 aŭ https://rsshub.example.org</string>
     <string name="settings_bluesky_instance">AppView</string>

@@ -92,4 +92,58 @@ interface PluginHost {
 
     /** The plugin's settings. */
     fun openSettings()
+
+    // The reader's archive and groups, on this device alone: nothing reaches the network.
+
+    /** The ids filed in Saved, as they change: what draws a bookmark filled. */
+    val saved: StateFlow<Set<String>>
+
+    /** The bookmark tapped: [post] saved in Saved where a plain tap files (the folder remembered, else unfiled), or taken out once saved. */
+    fun toggleSaved(post: PluginPostArchive)
+
+    /** The app's save sheet for [post], as a long press on a bookmark opens it: its folders, a new one, Remember this folder. */
+    fun chooseFolder(post: PluginPostArchive)
+
+    /** The note on [post] in Saved, in the app's note editor; writing one saves the post first, where a plain tap files. */
+    fun editNote(post: PluginPostArchive)
+
+    /** [post] in the archive's likes (Saved › Likes), or out of them: a network's own like mirrored there, as XTA mirrors Reddit's upvotes. */
+    fun setLiked(post: PluginPostArchive, liked: Boolean)
+
+    /**
+     * The app's group picker for [account], one of the plugin's (as its
+     * [PluginFeed] reads it): the groups picked hold it as "<plugin id>:<account>",
+     * and their feeds read its posts. [follow] runs first once a group is
+     * picked, for the plugin to follow it, as XTA's picker does.
+     */
+    fun addToGroup(account: String, follow: suspend () -> Unit = {})
+
+    /** The shared post menu over the screen: [menu]'s post saved or taken out, its note, its author's groups, its link shared or opened. */
+    fun openPostMenu(menu: PluginPostMenu)
+
+    /**
+     * [media] saved through the app's downloads, where the download setting
+     * says and with their notices: a photo, or a video's own file (a stream
+     * has none to save). [fileName] and [subfolder] are for a plugin that
+     * names its files itself; else it is named after the plugin and the file.
+     */
+    fun download(media: MediaItem, fileName: String? = null, subfolder: String? = null)
+
+    /**
+     * A file the plugin made itself ([bytes] as [fileName], of [mimeType]: an
+     * animation it put together, a novel's text) saved where the download
+     * setting says, with the downloads' notices; a name without an extension
+     * gets the one [mimeType] stands for.
+     */
+    fun saveFile(bytes: ByteArray, fileName: String, mimeType: String, subfolder: String? = null)
+
+    /**
+     * Such a file handed to the system's share sheet: Android's, through the
+     * app's file provider. The desktop has none, so there it is saved as
+     * [saveFile] saves it, the notice saying where and opening it.
+     */
+    fun shareFile(bytes: ByteArray, fileName: String, mimeType: String)
+
+    /** The app's Downloads screen: what was saved, what is under way, and retries. */
+    fun openDownloads()
 }

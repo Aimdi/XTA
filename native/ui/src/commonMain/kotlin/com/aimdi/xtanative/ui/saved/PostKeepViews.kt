@@ -94,11 +94,18 @@ internal fun likedHere(postId: String): Boolean {
     return postId in liked
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun DeviceSaveButton(post: XPost, modifier: Modifier, tint: Color) {
+    val item = remember(post) { Keepable.of(post) }
+    KeepableSaveButton(item, modifier, tint)
+}
+
+/** The bookmark of any network's kept post: a tap saves [item] where plain taps file or removes it, a long press opens the save sheet. */
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+internal fun KeepableSaveButton(item: Keepable, modifier: Modifier, tint: Color) {
     val graph = LocalGraph.current
-    val saved = savedHere(post.shown.id)
+    val saved = savedHere(item.id)
     var sheetFor by remember { mutableStateOf<Keepable?>(null) }
     val label = stringResource(if (saved) Res.string.saved_unsave else Res.string.saved_save_here)
     Box(
@@ -108,8 +115,8 @@ internal fun DeviceSaveButton(post: XPost, modifier: Modifier, tint: Color) {
             .combinedClickable(
                 role = Role.Button,
                 onClickLabel = label,
-                onClick = { Keeping.toggleSave(graph, Keepable.of(post)) },
-                onLongClick = { sheetFor = Keepable.of(post) },
+                onClick = { Keeping.toggleSave(graph, item) },
+                onLongClick = { sheetFor = item },
             ),
         contentAlignment = Alignment.Center,
     ) {

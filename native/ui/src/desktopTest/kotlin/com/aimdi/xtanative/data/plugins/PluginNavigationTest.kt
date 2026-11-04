@@ -3,15 +3,17 @@ package com.aimdi.xtanative.data.plugins
 import com.aimdi.xtanative.ui.plugins.MediaItem
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import kotlin.test.assertNull
 
 class PluginNavigationTest {
     @Test
-    fun theShelfKeepsTheLastMediaOpened() {
+    fun theShelfKeepsTheLastMediaOpenedWithThePluginThatOpenedThem() {
         val shelf = MediaShelf()
-        val keys = (1..20).map { shelf.put(listOf(MediaItem("https://example.com/$it.jpg"))) }
-        assertEquals("https://example.com/20.jpg", shelf.get(keys.last()).single().imageUrl)
-        assertTrue(shelf.get(keys.first()).isEmpty(), "the oldest went")
-        assertTrue(shelf.get("never").isEmpty())
+        val keys = (1..20).map { shelf.put("bluesky", listOf(MediaItem("https://example.com/$it.jpg"))) }
+        val last = shelf.get(keys.last())
+        assertEquals("https://example.com/20.jpg", last?.items?.single()?.imageUrl)
+        assertEquals("bluesky", last?.source)
+        assertNull(shelf.get(keys.first()), "the oldest went")
+        assertNull(shelf.get("never"))
     }
 }

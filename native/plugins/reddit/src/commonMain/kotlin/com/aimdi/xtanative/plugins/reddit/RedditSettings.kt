@@ -39,6 +39,7 @@ import com.aimdi.xtanative.store.settings.RedditNsfwMode
 import com.aimdi.xtanative.store.settings.RedditPrefs
 import com.aimdi.xtanative.store.settings.RedditSource
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.plugins.HomeTimelineSwitch
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
@@ -72,6 +73,7 @@ internal fun RedditSettingsBody(app: RedditApp, frame: PluginFrame) {
         item(key = "public") { SourceRow(app, RedditSource.PUBLIC, RedditGlyphs.VisibilityOff, Strings.source_public, Strings.source_public_description, choices.preferPublic) }
         item(key = "feed") { SectionHeader(pluginString(Strings.feed)) }
         item(key = "sort") { SettingRow(sortIcon(choices.sort), pluginString(Strings.sort), sortTitle(choices)) { sorting = true } }
+        item(key = "home") { HomeTimelineSwitch(app.host.settings, pluginString(Strings.plugin_name)) }
         item(key = "nsfw") { SectionHeader(pluginString(Strings.nsfw_display)) }
         RedditNsfwMode.entries.forEach { mode -> item(key = "nsfw-" + mode.stored) { NsfwRow(app, mode, choices.nsfw == mode) } }
         item(key = "spoiler") { SectionHeader(pluginString(Strings.spoiler)) }

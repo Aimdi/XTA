@@ -65,6 +65,16 @@ class DownloadNamingTest {
     }
 
     @Test
+    fun aMadeTextIsFiledAsTextAndATypeNamesItsFirstExtension() {
+        assertEquals("text/plain", mimeTypeFor("novel.txt"))
+        assertEquals(SharedDownloadFolder.DOWNLOADS, SharedDownloadFolder.of("novel.txt"))
+        assertEquals("application/octet-stream", mimeTypeFor("README"))
+        assertEquals("jpg", extensionFor("image/jpeg"))
+        assertEquals("txt", extensionFor("Text/Plain; charset=utf-8"))
+        assertNull(extensionFor("application/x-unknown"))
+    }
+
+    @Test
     fun onlyAFinishedBackgroundSaveReportsItsFolder() {
         val saved = DownloadEntry("j", "https://example.org/cat.jpg", "cat.jpg", background = true, savedUri = "content://media/external_primary/images/media/7")
         assertEquals("Pictures/XTA", sharedFolderOf(saved))

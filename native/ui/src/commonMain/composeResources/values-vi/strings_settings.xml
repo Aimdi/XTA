@@ -253,6 +253,7 @@
     <string name="settings_net_immich">Immich</string>
     <string name="settings_show_as_tab">Hiển thị dưới dạng tab</string>
     <string name="settings_in_home_timeline">Hiển thị trong dòng thời gian chính</string>
+    <string name="settings_in_home_timeline_description">Trộn bài viết từ những gì bạn theo dõi trên %1$s vào Đang theo dõi và Dành cho bạn</string>
     <string name="settings_threads_instance">Máy chủ RSSHub</string>
     <string name="settings_threads_instance_hint">Ví dụ http://192.168.1.10:1200 hoặc https://rsshub.example.org</string>
     <string name="settings_bluesky_instance">AppView</string>

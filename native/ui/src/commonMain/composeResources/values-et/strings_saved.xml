@@ -114,6 +114,7 @@
     <string name="saved_like">Meeldi selles seadmes</string>
     <string name="saved_unlike">Eemalda meeldimine sellest seadmest</string>
     <string name="saved_save_here">Salvesta selles seadmes</string>
+    <string name="saved_save_to_folder">Salvesta kausta…</string>
     <string name="saved_unsave">Eemalda sellest seadmest</string>
     <string name="saved_bookmarks">Järjehoidjad</string>
     <string name="saved_sensitive_profile">Selles profiilis võib leiduda ebasobilikke pilte, sõnakasutust või muud sisu. Ka sa siiski soovid seda vaadata?</string>

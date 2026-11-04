@@ -97,6 +97,9 @@
     <string name="photos">Photos</string>
     <string name="save_post">Enregistrer la publication</string>
     <string name="unsave_post">Retirer des enregistrements</string>
+    <string name="save_to_folder">Enregistrer dans un dossier…</string>
+    <string name="add_note">Ajouter une note à ce post enregistré</string>
+    <string name="add_to_group">Ajouter au groupe</string>
     <string name="collapse_all">Tout replier</string>
     <string name="expand_all">Tout développer</string>
     <string name="sign_in_needs_android">La connexion ici nécessite le navigateur intégré de l\'app Android, que l\'app de bureau n\'a pas.</string>

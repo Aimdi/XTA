@@ -253,6 +253,7 @@
     <string name="settings_net_immich">Immich</string>
     <string name="settings_show_as_tab">Afficher comme onglet</string>
     <string name="settings_in_home_timeline">Afficher dans le fil principal</string>
+    <string name="settings_in_home_timeline_description">Intègre les publications de ce que vous suivez sur %1$s dans « Abonnements » et « Pour vous »</string>
     <string name="settings_threads_instance">Instance RSSHub</string>
     <string name="settings_threads_instance_hint">Par exemple http://192.168.1.10:1200 ou https://rsshub.example.org</string>
     <string name="settings_bluesky_instance">AppView</string>

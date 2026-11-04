@@ -97,6 +97,9 @@
     <string name="photos">Fotky</string>
     <string name="save_post">Uložit příspěvek</string>
     <string name="unsave_post">Odebrat z uložených</string>
+    <string name="save_to_folder">Uložit do složky…</string>
+    <string name="add_note">Přidat poznámku k tomuto uloženému příspěvku</string>
+    <string name="add_to_group">Přidat do skupiny</string>
     <string name="collapse_all">Sbalit vše</string>
     <string name="expand_all">Rozbalit vše</string>
     <string name="sign_in_needs_android">Přihlášení zde vyžaduje vestavěný prohlížeč aplikace pro Android, který desktopová aplikace nemá.</string>

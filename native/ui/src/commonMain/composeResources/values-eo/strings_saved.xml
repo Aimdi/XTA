@@ -114,6 +114,7 @@
     <string name="saved_like">Ŝati en ĉi tiu aparato</string>
     <string name="saved_unlike">Forigi ŝaton el ĉi tiu aparato</string>
     <string name="saved_save_here">Konservi en ĉi tiu aparato</string>
+    <string name="saved_save_to_folder">Konservi en dosierujo…</string>
     <string name="saved_unsave">Forigi el ĉi tiu aparato</string>
     <string name="saved_bookmarks">Legosignoj</string>
     <string name="saved_sensitive_profile">Tiu ĉi profilo eble enhavas eble sentemajn bildojn, idiomon, aŭ alian enhavon. Ĉu vi ankoraŭ deziras vidi ĝin?</string>

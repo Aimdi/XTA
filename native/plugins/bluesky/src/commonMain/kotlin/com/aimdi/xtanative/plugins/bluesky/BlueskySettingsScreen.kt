@@ -38,6 +38,8 @@ import com.aimdi.xtanative.networks.bluesky.BlueskyUrls
 import com.aimdi.xtanative.store.settings.BlueskyPrefs
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.plugins.AddToGroupButton
+import com.aimdi.xtanative.ui.plugins.HomeTimelineSwitch
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -47,15 +49,17 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
- * The plugin's settings, in XTA's order (bluesky_settings.dart): the AppView
- * reads go to (tested here, or back to Bluesky's), the reader's own handle,
- * the imports, and the accounts followed here, each to open or unfollow.
+ * The plugin's settings, in XTA's order (bluesky_settings.dart): whether the
+ * accounts followed here join Home's timelines, the AppView reads go to
+ * (tested here, or back to Bluesky's), the reader's own handle, the imports,
+ * and the accounts followed here, each to open, put in groups or unfollow.
  */
 @Composable
 internal fun BlueskySettingsBody(app: BlueskyApp, frame: PluginFrame) {
     val follows by app.follows.state.collectAsState()
     LaunchedEffect(Unit) { app.follows.load() }
     LazyColumn(contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+        item(key = "home") { HomeTimelineSwitch(app.host.settings, pluginString(Strings.plugin_name)) }
         item(key = "intro") { Text(pluginString(Strings.settings_intro), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(16.dp)) }
         item(key = "appview") { AppViewSetting(app) }
         item(key = "handle") { HandleSetting(app) }
@@ -159,6 +163,7 @@ private fun FollowRow(app: BlueskyApp, follow: BlueskyFollow) {
             Text(follow.name, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text("@" + follow.shownHandle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
         }
+        AddToGroupButton(app.host, follow.actor)
         TextButton(onClick = { app.launch { app.follows.unfollow(follow.actor) } }) { Text(pluginString(Strings.unfollow)) }
     }
     Hairline()

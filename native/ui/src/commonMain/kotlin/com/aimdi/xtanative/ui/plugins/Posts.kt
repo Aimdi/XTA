@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.ui.plugins
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -31,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -49,6 +51,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.core.x.model.XCard
+import com.aimdi.xtanative.data.plugins.keepable
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.XIcons
@@ -66,25 +69,8 @@ import com.aimdi.xtanative.ui.generated.resources.stat_quotes
 import com.aimdi.xtanative.ui.generated.resources.stat_reposts
 import com.aimdi.xtanative.ui.post.AuthorLine
 import com.aimdi.xtanative.ui.post.CardView
-import java.time.Instant
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import com.aimdi.xtanative.ui.saved.KeepableSaveButton
 import org.jetbrains.compose.resources.stringResource
-
-/** A piece of a post's text as the shared text draws it, whatever network it comes from. */
-sealed interface TextRun {
-    val text: String
-
-    data class Plain(override val text: String) : TextRun
-
-    /** Opens [url]: in a plugin that opens such links, else in the browser. */
-    data class Link(override val text: String, val url: String) : TextRun
-
-    /** Names an account: [who] is what its network finds it by (a handle, a DID). */
-    data class Mention(override val text: String, val who: String) : TextRun
-
-    /** A hashtag or cashtag: [query] is what a search for it asks ("#kotlin", "$TSLA"). */
-    data class Tag(override val text: String, val query: String) : TextRun
-}
 
 /**
  * Text with its links, mentions and tags in the theme's blue, as the app
@@ -119,65 +105,6 @@ private fun annotated(runs: List<TextRun>, linkColor: Color, onMention: (String)
         }
     }
 
-/** A link preview under a post: the page's picture, title and description, opening [url]. */
-data class LinkCard(
-    val url: String,
-    val title: String? = null,
-    val description: String? = null,
-    val imageUrl: String? = null,
-) {
-    /** The site, as the card names it: "example.com". */
-    val domain: String? get() = url.toHttpUrlOrNull()?.host?.removePrefix("www.")
-}
-
-/**
- * A post from any network as the shared row and the shared opened post draw
- * it. [id] tells rows apart in a list and is what the plugin opens it by;
- * [authorId] is what it opens the author by (a DID, a user id), and
- * [authorHandle] is shown as "@handle".
- */
-data class NetworkPost(
-    val id: String,
-    val authorId: String,
-    val authorName: String,
-    val authorHandle: String,
-    val avatarUrl: String? = null,
-    val createdAt: Instant? = null,
-    val text: List<TextRun> = emptyList(),
-    val media: List<MediaItem> = emptyList(),
-    val card: LinkCard? = null,
-    val quoted: NetworkPost? = null,
-    val replies: Long = 0,
-    val reposts: Long = 0,
-    val quotes: Long = 0,
-    val likes: Long = 0,
-    /** Views, where the network counts them. */
-    val views: Long? = null,
-    /** Who reposted it into the list it is shown in. */
-    val repostedBy: String? = null,
-    /** Pinned by its author, at the top of their profile. */
-    val pinned: Boolean = false,
-    /** The handle of who it answers, for "Replying to @…". */
-    val replyingTo: String? = null,
-    /** Why its media is hidden until the reader opens it: a content warning, in the reader's language. */
-    val warning: String? = null,
-    /** Where it lives on the web. */
-    val url: String? = null,
-    /** The [warning] keeps its text, link card and quoted post back too, not only its media. */
-    val coversText: Boolean = false,
-)
-
-/** Where a network post's parts lead: its plugin decides. */
-class NetworkPostActions(
-    val open: (NetworkPost) -> Unit,
-    val openAuthor: (NetworkPost) -> Unit,
-    /** A mention, with whom it names ([TextRun.Mention.who]); "Replying to" gives the handle. */
-    val openMention: (String) -> Unit,
-    /** A tag, with its query ([TextRun.Tag.query]). */
-    val openTag: (String) -> Unit,
-    val openMedia: (NetworkPost, Int) -> Unit,
-)
-
 /**
  * What a network adds to the shared row beyond its [NetworkPost], each
  * optional: [repostLine] over the row in the network's own words ("Alice
@@ -205,12 +132,14 @@ class NetworkPostExtras(
 
 /**
  * A post as a list row, as the app draws X's: who reposted or pinned it, the
- * author, whom it answers, its text, media, link card and quoted post, and its
- * counts. [continues] draws it as part of a thread going on below; [indent]
- * moves a reply under the one it answers; with [playing], its first video
- * plays in place. What a network adds to the row (its own glyph on the
- * author line, its own row in place of the counts, a long press) comes in
- * [NetworkPostExtras].
+ * author, whom it answers, its title and text, media, link card and quoted
+ * post, and its counts, ending with the bookmark of a post the archive keeps
+ * ([NetworkPostActions.archive]); a long press opens its menu
+ * ([NetworkPostActions.more]). [continues] draws it as part of a thread going
+ * on below; [indent] moves a reply under the one it answers; with [playing],
+ * its first video plays in place. What a network adds to the row (its own
+ * glyph on the author line, its own row in place of the counts, a long
+ * press) comes in [NetworkPostExtras].
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -223,7 +152,11 @@ fun NetworkPostCard(
     playing: Boolean = false,
 ) = NetworkPostCard(post, actions, NetworkPostExtras.None, modifier, continues, indent, playing)
 
-/** [NetworkPostCard] with what the network adds to it ([extras]). */
+/**
+ * [NetworkPostCard] with what the network adds to it ([extras]); [mark] in
+ * [markColor] on the avatar says which network it comes from, as a timeline
+ * mixing networks shows it.
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NetworkPostCard(
@@ -234,12 +167,15 @@ fun NetworkPostCard(
     continues: Boolean = false,
     indent: Int = 0,
     playing: Boolean = false,
+    mark: ImageVector? = null,
+    markColor: Color = Color.Unspecified,
 ) {
     var revealed by rememberSaveable(post.id) { mutableStateOf(false) }
+    val more = actions.more
     Column(
         modifier
             .fillMaxWidth()
-            .combinedClickable(onClick = { actions.open(post) }, onLongClick = extras.onLongPress)
+            .combinedClickable(onClick = { actions.open(post) }, onLongClick = extras.onLongPress ?: more?.let { open -> { open(post) } })
             .padding(start = 16.dp + IndentStep * indent.coerceIn(0, MAX_INDENT), end = 16.dp, top = 12.dp, bottom = if (continues) 4.dp else 12.dp),
     ) {
         val repostedBy = post.repostedBy
@@ -250,7 +186,7 @@ fun NetworkPostCard(
             repostedBy != null -> ContextLine(XIcons.Repost, stringResource(Res.string.reposted_by, repostedBy))
         }
         Row {
-            Avatar(post.avatarUrl, 40.dp) { actions.openAuthor(post) }
+            MarkedAvatar(post.avatarUrl, mark, markColor) { actions.openAuthor(post) }
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.Top) {
@@ -258,12 +194,13 @@ fun NetworkPostCard(
                     extras.trailing?.invoke()
                 }
                 post.replyingTo?.let { handle -> ReplyLine(handle) { actions.openMention(handle) } }
+                post.title?.let { PostTitle(it, Modifier.padding(top = 2.dp)) }
                 extras.above?.invoke()
                 if (!post.textCovered(revealed)) LinkedText(post.text, actions.openMention, actions.openTag, Modifier.padding(top = 2.dp))
                 Attachments(post, actions, revealed, onReveal = { revealed = true }, gap = 10.dp, playing = playing)
                 extras.below?.invoke()
                 val footer = extras.footer
-                if (footer != null) footer() else CountsLine(post)
+                if (footer != null) footer() else CountsLine(post, rememberArchive(post, actions))
             }
         }
     }
@@ -272,11 +209,47 @@ fun NetworkPostCard(
 /** Whether [this] keeps its text back behind its warning while it is not [revealed]. */
 private fun NetworkPost.textCovered(revealed: Boolean): Boolean = coversText && warning != null && !revealed
 
+/** The avatar, with the network's [mark] at its foot when the row is among other networks'. */
+@Composable
+private fun MarkedAvatar(url: String?, mark: ImageVector?, color: Color, onClick: () -> Unit) {
+    Box {
+        Avatar(url, 40.dp, onClick = onClick)
+        if (mark != null) {
+            Icon(
+                mark,
+                contentDescription = null,
+                tint = color.takeOrElse { MaterialTheme.colorScheme.primary },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .offset(x = 4.dp, y = 4.dp)
+                    .size(18.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(2.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun PostTitle(title: String, modifier: Modifier = Modifier, style: TextStyle = MaterialTheme.typography.bodyLarge) {
+    Text(title, style = style, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface, modifier = modifier)
+}
+
+/** How the archive keeps [post], as its plugin says; null when it does not. */
+@Composable
+private fun rememberArchive(post: NetworkPost, actions: NetworkPostActions): PluginPostArchive? =
+    remember(post, actions) { runCatching { actions.archive?.invoke(post) }.getOrNull() }
+
 /** The opened post, larger, with its full time and its counts spelled out, as the app's opened X post; the line under it closes it off. */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NetworkFocalPost(post: NetworkPost, actions: NetworkPostActions, modifier: Modifier = Modifier) {
     var revealed by rememberSaveable(post.id) { mutableStateOf(false) }
-    Column(modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
+    val archive = rememberArchive(post, actions)
+    val more = actions.more
+    val pressable = if (more == null) modifier else modifier.combinedClickable(onClick = {}, onLongClick = { more(post) })
+    Column(pressable.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Avatar(post.avatarUrl, 44.dp) { actions.openAuthor(post) }
             Spacer(Modifier.width(12.dp))
@@ -286,16 +259,20 @@ fun NetworkFocalPost(post: NetworkPost, actions: NetworkPostActions, modifier: M
             }
         }
         post.replyingTo?.let { handle -> ReplyLine(handle) { actions.openMention(handle) } }
+        post.title?.let { PostTitle(it, Modifier.padding(top = 12.dp), MaterialTheme.typography.titleLarge) }
         if (!post.textCovered(revealed)) {
             LinkedText(post.text, actions.openMention, actions.openTag, Modifier.padding(top = 12.dp), style = TextStyle(fontSize = 17.sp, lineHeight = 24.sp))
         }
         Attachments(post, actions, revealed, onReveal = { revealed = true }, gap = 12.dp, playing = false)
-        Text(
-            fullTimeText(post.createdAt),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 12.dp),
-        )
+        Row(Modifier.fillMaxWidth().padding(top = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                fullTimeText(post.createdAt),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.weight(1f),
+            )
+            if (archive != null) NetworkBookmark(archive)
+        }
         FocalCounts(post)
     }
     Hairline()
@@ -318,6 +295,7 @@ fun QuotedNetworkPost(post: NetworkPost, actions: NetworkPostActions, modifier: 
             Spacer(Modifier.width(6.dp))
             AuthorLine(post.authorName, post.authorHandle, agoText(post.createdAt), verified = false, modifier = Modifier.weight(1f))
         }
+        post.title?.let { PostTitle(it, Modifier.padding(top = 4.dp)) }
         val warning = post.warning
         if (post.coversText && warning != null) {
             // Its own screen is where the reader opens it.
@@ -398,11 +376,15 @@ private fun ReplyLine(handle: String, onClick: () -> Unit) {
     }
 }
 
-/** Replies, reposts and quotes, likes, and views where the network counts them: numbers to read, nothing is sent. */
+/**
+ * Replies, reposts and quotes, likes, and views where the network counts
+ * them: numbers to read, nothing is sent. The bookmark of a post the archive
+ * keeps ends them.
+ */
 @Composable
-private fun CountsLine(post: NetworkPost) {
+private fun CountsLine(post: NetworkPost, archive: PluginPostArchive?) {
     Row(
-        Modifier.fillMaxWidth().padding(top = 10.dp, end = 24.dp).height(20.dp),
+        Modifier.fillMaxWidth().padding(top = 10.dp, end = if (archive == null) 24.dp else 0.dp).height(if (archive == null) 20.dp else 40.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -410,7 +392,20 @@ private fun CountsLine(post: NetworkPost) {
         Count(XIcons.Repost, post.reposts + post.quotes)
         Count(XIcons.Like, post.likes)
         post.views?.let { Count(XIcons.Views, it) }
+        if (archive != null) NetworkBookmark(archive)
     }
+}
+
+/**
+ * A post's bookmark, as the app's footers draw it: a tap saves [archive] on
+ * this device where plain taps file, or takes it out; a long press opens the
+ * save sheet with its folders. For a network that draws its own footer
+ * ([NetworkPostExtras.footer]), as XTA's PluginPostBookmark.
+ */
+@Composable
+fun NetworkBookmark(archive: PluginPostArchive, modifier: Modifier = Modifier) {
+    val item = remember(archive) { archive.keepable() }
+    KeepableSaveButton(item, modifier, Color.Unspecified)
 }
 
 @Composable

@@ -111,6 +111,7 @@
     <string name="saved_like">Suka di perangkat ini</string>
     <string name="saved_unlike">Hapus suka dari perangkat ini</string>
     <string name="saved_save_here">Simpan di perangkat ini</string>
+    <string name="saved_save_to_folder">Simpan ke folder…</string>
     <string name="saved_unsave">Hapus dari perangkat ini</string>
     <string name="saved_bookmarks">Markah</string>
     <string name="saved_sensitive_profile">Profil ini mungkin mengandung gambar, bahasa, atau konten lain yang kemungkinan sensitif. Apakah Anda masih ingin melihatnya?</string>

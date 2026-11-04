@@ -18,12 +18,21 @@ import com.aimdi.xtanative.store.reading.ReadingAppearanceStore
 import com.aimdi.xtanative.store.reading.ReadingJournal
 import com.aimdi.xtanative.store.settings.HomePrefs
 import com.aimdi.xtanative.store.settings.SettingsStore
+import com.aimdi.xtanative.ui.downloads.Downloading
+import com.aimdi.xtanative.ui.downloads.PluginDownloads
+import com.aimdi.xtanative.ui.feed.PluginFeeds
+import com.aimdi.xtanative.ui.feed.SourceAsk
 import com.aimdi.xtanative.ui.home.StripNetwork
 import com.aimdi.xtanative.ui.plugins.MediaItem
+import com.aimdi.xtanative.ui.plugins.NetworkPost
 import com.aimdi.xtanative.ui.plugins.PLUGIN_API_VERSION
 import com.aimdi.xtanative.ui.plugins.PluginHost
+import com.aimdi.xtanative.ui.plugins.PluginPostArchive
+import com.aimdi.xtanative.ui.plugins.PluginPostMenu
 import com.aimdi.xtanative.ui.plugins.PluginSettings
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
+import com.aimdi.xtanative.ui.saved.Keeping
+import com.aimdi.xtanative.ui.subscriptions.GroupActions
 import java.io.File
 import java.io.IOException
 import java.util.Locale
@@ -71,7 +80,7 @@ data class PluginUse(val items: Int, val dataBytes: Long, val codeBytes: Long)
  */
 class AppPlugins(
     private val files: File,
-    graph: AppGraph,
+    internal val graph: AppGraph,
     platform: HostPlatform,
     catalogueUrl: String = PluginManager.CATALOGUE_URL,
 ) {
@@ -106,6 +115,19 @@ class AppPlugins(
     /** The media a plugin opened full screen, for the viewer to show. */
     val media = MediaShelf()
 
+    /** The ids filed in Saved, for the plugins' bookmarks. */
+    val savedIds: StateFlow<Set<String>> = graph.saved.state
+        .map { library -> library?.posts?.mapTo(HashSet()) { it.id }.orEmpty() }
+        .stateIn(scope, SharingStarted.Eagerly, emptySet())
+
+    private val mutableSheet = MutableStateFlow<PluginSheet?>(null)
+
+    /** The sheet a plugin opened over the screens, which the window shows ([com.aimdi.xtanative.ui.pluginstore.PluginSheetHost]). */
+    val sheet: StateFlow<PluginSheet?> = mutableSheet.asStateFlow()
+
+    /** The group changes the plugins' group picker makes, written to their end whatever screen asked. */
+    internal val groups = GroupActions(graph, scope)
+
     /** Where the screens go once they are up, instead of staying on Home: CI's desktop check opens the store or a plugin so. */
     @Volatile
     var openAtStart: Destination? = null
@@ -114,6 +136,9 @@ class AppPlugins(
 
     /** The plugins running now, by id. */
     val running: StateFlow<List<RunningPlugin>> = mutableRunning.asStateFlow()
+
+    /** The running plugins' feeds, for the timelines that mix them in (Home's, the groups'). */
+    val feeds: PluginFeeds = RunningFeeds()
 
     private val mutableProblems = MutableStateFlow<Map<String, String>>(emptyMap())
 
@@ -134,6 +159,7 @@ class AppPlugins(
 
     /** Reads what is installed and starts it, then follows every install, update and uninstall. */
     fun start() {
+        scope.launch { guarded { graph.saved.library() } }
         scope.launch {
             prefs.load()
             manager.showPrivate(prefs.state.value.showPrivate)
@@ -208,6 +234,51 @@ class AppPlugins(
     }
 
     internal fun dataOf(id: String): File = File(files, "plugin-data/$id")
+
+    /** Opens [sheet] over the screens, in place of the one open. */
+    fun show(sheet: PluginSheet) {
+        mutableSheet.value = sheet
+    }
+
+    fun dismissSheet() {
+        mutableSheet.value = null
+    }
+
+    /**
+     * The groups picked for [sheet]'s member, as the picker closed on [chosen]
+     * from [initial]: the plugin follows it first when it joins a group, as
+     * XTA's picker does, then the memberships are written.
+     */
+    fun putInGroups(sheet: PluginSheet.Groups, initial: Set<String>, chosen: Set<String>) {
+        scope.launch {
+            if (chosen.isNotEmpty()) guarded { sheet.follow() }
+            groups.setMemberships(sheet.memberId, initial, chosen)
+        }
+    }
+
+    /** Saves [media] of plugin [id] through the downloads, as [PluginHost.download] and the plugins' media viewer do. */
+    fun download(id: String, media: MediaItem, fileName: String? = null, subfolder: String? = null) =
+        Downloading.pluginMedia(graph, id, media, fileName, subfolder)
+
+    /** The feeds of the running plugins that have one. */
+    private inner class RunningFeeds : PluginFeeds {
+        override val ids: StateFlow<Set<String>> = running
+            .map { list -> list.filter { guardedNow { it.plugin.feed } != null }.mapTo(HashSet()) { it.plugin.id } }
+            .stateIn(scope, SharingStarted.Eagerly, emptySet())
+
+        /** Off the screen's thread: a plugin parses what it reads where it is called. */
+        override suspend fun posts(id: String, ask: SourceAsk, force: Boolean): List<NetworkPost> = withContext(Dispatchers.Default) {
+            val feed = runningOf(id)?.plugin?.feed ?: return@withContext emptyList()
+            try {
+                val following = if (ask.followed) feed.followed() else emptyList()
+                val accounts = ask.accounts(following)
+                if (accounts.isEmpty()) emptyList() else feed.posts(accounts, ask.kinds, force)
+            } catch (e: LinkageError) {
+                // Built against an API this app does not have after all: its posts do not come, and the others do.
+                throw IllegalStateException(e)
+            }
+        }
+    }
 
     private suspend fun reconcile(installed: List<InstalledPlugin>) = changing.withLock {
         val wanted = installed.associateBy { it.id }
@@ -308,10 +379,35 @@ class AppPlugins(
 
         override fun openProfile(screenName: String) = plugins.navigator.go(Destination.XProfile(screenName))
 
-        override fun openMedia(media: List<MediaItem>, start: Int) = plugins.navigator.go(Destination.Media(plugins.media.put(media), start))
+        override fun openMedia(media: List<MediaItem>, start: Int) = plugins.navigator.go(Destination.Media(plugins.media.put(id, media), start))
 
         override fun openSearch(query: String?) = plugins.navigator.go(Destination.PluginSearch(id, query))
 
         override fun openSettings() = plugins.navigator.go(Destination.PluginSettings(id))
+
+        override val saved: StateFlow<Set<String>> get() = plugins.savedIds
+
+        override fun toggleSaved(post: PluginPostArchive) = Keeping.toggleSave(plugins.graph, post.keepable())
+
+        override fun chooseFolder(post: PluginPostArchive) = plugins.show(PluginSheet.Folders(post))
+
+        override fun editNote(post: PluginPostArchive) = plugins.show(PluginSheet.Note(post))
+
+        override fun setLiked(post: PluginPostArchive, liked: Boolean) = Keeping.setLiked(plugins.graph, post.keepable(), liked)
+
+        override fun addToGroup(account: String, follow: suspend () -> Unit) =
+            plugins.show(PluginSheet.Groups(PluginMembers.memberId(id, account), follow))
+
+        override fun openPostMenu(menu: PluginPostMenu) = plugins.show(PluginSheet.Menu(id, menu))
+
+        override fun download(media: MediaItem, fileName: String?, subfolder: String?) = plugins.download(id, media, fileName, subfolder)
+
+        override fun saveFile(bytes: ByteArray, fileName: String, mimeType: String, subfolder: String?) =
+            Downloading.made(plugins.graph, bytes, PluginDownloads.named(fileName, mimeType), subfolder)
+
+        override fun shareFile(bytes: ByteArray, fileName: String, mimeType: String) =
+            Downloading.shareMade(plugins.graph, bytes, PluginDownloads.named(fileName, mimeType), mimeType)
+
+        override fun openDownloads() = plugins.navigator.go(Destination.Downloads)
     }
 }

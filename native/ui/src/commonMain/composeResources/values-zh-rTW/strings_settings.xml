@@ -253,6 +253,7 @@
     <string name="settings_net_immich">Immich</string>
     <string name="settings_show_as_tab">顯示為分頁</string>
     <string name="settings_in_home_timeline">顯示在主時間軸中</string>
+    <string name="settings_in_home_timeline_description">將你在 %1$s 追蹤的內容的貼文混入「追蹤中」和「為您推薦」</string>
     <string name="settings_threads_instance">RSSHub 執行個體</string>
     <string name="settings_threads_instance_hint">例如 http://192.168.1.10:1200 或 https://rsshub.example.org</string>
     <string name="settings_bluesky_instance">AppView</string>

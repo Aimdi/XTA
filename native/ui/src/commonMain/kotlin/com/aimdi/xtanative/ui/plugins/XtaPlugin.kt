@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import kotlinx.serialization.json.JsonElement
 
 /**
  * The plugin API this app is built with (PLUGINS.md). A plugin's
@@ -139,6 +140,27 @@ abstract class XtaPlugin {
 
     /** What it keeps on the device now. */
     open suspend fun footprint(): PluginFootprint = PluginFootprint(0)
+
+    /**
+     * Its followed accounts' posts in the app's timelines: Home's Following
+     * and For you while its "show in the home timeline" switch is on, and the
+     * groups that hold its accounts. Null when it has none to mix in.
+     */
+    open val feed: PluginFeed? get() = null
+
+    /**
+     * Where its posts lead where the app draws them (Home's timelines, the
+     * groups, Saved), with their bookmark and their menu; null leaves a post
+     * opening its link, as the app opens links.
+     */
+    open val postActions: NetworkPostActions? get() = null
+
+    /**
+     * One of its posts the archive kept ([PluginPostArchive.content]), as
+     * Saved draws it with the shared row: null for a record it does not read,
+     * which Saved draws as its own card.
+     */
+    open fun archived(content: JsonElement): NetworkPost? = null
 
     /** The store's groups, in the order XTA's store shows them; [key] as the catalogue writes it. */
     enum class Category(val key: String) {

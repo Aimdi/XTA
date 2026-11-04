@@ -114,6 +114,7 @@
     <string name="saved_like">Curtir neste dispositivo</string>
     <string name="saved_unlike">Remover curtida deste dispositivo</string>
     <string name="saved_save_here">Salvar neste dispositivo</string>
+    <string name="saved_save_to_folder">Salvar em uma pasta…</string>
     <string name="saved_unsave">Remover deste dispositivo</string>
     <string name="saved_bookmarks">Favoritos</string>
     <string name="saved_sensitive_profile">Este perfil pode conter imagens, idiomas, ou outros conteúdos potencialmente sensíveis. Você ainda quer vê-lo?</string>

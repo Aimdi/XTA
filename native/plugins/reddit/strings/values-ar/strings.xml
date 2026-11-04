@@ -97,6 +97,9 @@
     <string name="photos">صور</string>
     <string name="save_post">حفظ المنشور</string>
     <string name="unsave_post">إزالة من المحفوظات</string>
+    <string name="save_to_folder">الحفظ في مجلد…</string>
+    <string name="add_note">أضف ملاحظة إلى هذا المنشور المحفوظ</string>
+    <string name="add_to_group">أضف إلى المجموعة</string>
     <string name="collapse_all">طي الكل</string>
     <string name="expand_all">توسيع الكل</string>
     <string name="sign_in_needs_android">يتطلب تسجيل الدخول هنا المتصفح المدمج في تطبيق Android، وهو غير متوفر في تطبيق سطح المكتب.</string>

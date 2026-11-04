@@ -97,6 +97,9 @@
     <string name="photos">Fotoj</string>
     <string name="save_post">Konservi la afiŝon</string>
     <string name="unsave_post">Forigi el konservitaj</string>
+    <string name="save_to_folder">Konservi en dosierujo…</string>
+    <string name="add_note">Aldoni noton al ĉi tiu konservita afiŝo</string>
+    <string name="add_to_group">Aldoni al grupo</string>
     <string name="collapse_all">Faldi ĉiujn</string>
     <string name="expand_all">Malfaldi ĉiujn</string>
     <string name="sign_in_needs_android">Por ensaluti ĉi tie necesas la enkonstruita retumilo de la Android-aplikaĵo, kiun la labortabla aplikaĵo ne havas.</string>

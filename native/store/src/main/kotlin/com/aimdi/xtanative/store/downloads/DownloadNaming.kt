@@ -90,20 +90,33 @@ fun downloadRequestHeaders(url: String): Map<String, String> {
 
 private val pixivImageHeaders = mapOf("Referer" to "https://www.pixiv.net/", "User-Agent" to "Mozilla/5.0")
 
+/** The content type each extension a download may end in stands for; a type's first extension is the one a file of it is given. */
+private val downloadMimeTypes = linkedMapOf(
+    "jpg" to "image/jpeg",
+    "jpeg" to "image/jpeg",
+    "png" to "image/png",
+    "gif" to "image/gif",
+    "webp" to "image/webp",
+    "mp4" to "video/mp4",
+    "m4v" to "video/x-m4v",
+    "mov" to "video/quicktime",
+    "webm" to "video/webm",
+    "mp3" to "audio/mpeg",
+    "m4a" to "audio/mp4",
+    "zip" to "application/zip",
+    "epub" to "application/epub+zip",
+    "json" to "application/json",
+    "txt" to "text/plain",
+    "html" to "text/html",
+)
+
 /** A file's content type from its extension: stored with the file, it decides whether a gallery shows it. */
-fun mimeTypeFor(fileName: String): String = when (fileName.substringAfterLast('.', "").lowercase()) {
-    "jpg", "jpeg" -> "image/jpeg"
-    "png" -> "image/png"
-    "gif" -> "image/gif"
-    "webp" -> "image/webp"
-    "mp4" -> "video/mp4"
-    "m4v" -> "video/x-m4v"
-    "mov" -> "video/quicktime"
-    "webm" -> "video/webm"
-    "mp3" -> "audio/mpeg"
-    "m4a" -> "audio/mp4"
-    "zip" -> "application/zip"
-    else -> "application/octet-stream"
+fun mimeTypeFor(fileName: String): String = downloadMimeTypes[fileName.substringAfterLast('.', "").lowercase()] ?: "application/octet-stream"
+
+/** The extension a file of [mimeType] is given, its parameters (`; charset=utf-8`) aside; null for a type downloads do not name. */
+fun extensionFor(mimeType: String): String? {
+    val type = mimeType.substringBefore(';').trim().lowercase()
+    return downloadMimeTypes.entries.firstOrNull { it.value == type }?.key
 }
 
 /** Where a download saved without a picker lands: the shared folder for its type, with an XTA folder in it. */

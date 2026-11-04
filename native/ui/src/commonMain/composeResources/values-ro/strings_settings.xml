@@ -253,6 +253,7 @@
     <string name="settings_net_immich">Immich</string>
     <string name="settings_show_as_tab">Afișează ca filă</string>
     <string name="settings_in_home_timeline">Afișează în cronologia principală</string>
+    <string name="settings_in_home_timeline_description">Adaugă postările din ce urmărești pe %1$s în „Urmăresc” și „Pentru tine”</string>
     <string name="settings_threads_instance">Instanță RSSHub</string>
     <string name="settings_threads_instance_hint">De exemplu http://192.168.1.10:1200 sau https://rsshub.example.org</string>
     <string name="settings_bluesky_instance">AppView</string>

@@ -111,6 +111,7 @@
     <string name="saved_like">この端末でいいね</string>
     <string name="saved_unlike">この端末のいいねを取り消す</string>
     <string name="saved_save_here">この端末に保存</string>
+    <string name="saved_save_to_folder">フォルダーに保存…</string>
     <string name="saved_unsave">この端末から削除</string>
     <string name="saved_bookmarks">ブックマーク</string>
     <string name="saved_sensitive_profile">プロフィールにセンシティブな画像、言語、その他のコンテンツが含まれる可能性があります。表示しますか？</string>

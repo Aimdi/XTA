@@ -114,6 +114,7 @@
     <string name="saved_like">इस डिवाइस पर पसंद करें</string>
     <string name="saved_unlike">इस डिवाइस से पसंद हटाएँ</string>
     <string name="saved_save_here">इस डिवाइस पर सहेजें</string>
+    <string name="saved_save_to_folder">फ़ोल्डर में सहेजें…</string>
     <string name="saved_unsave">इस डिवाइस से हटाएँ</string>
     <string name="saved_bookmarks">बुकमार्क</string>
     <string name="saved_sensitive_profile">इस प्रोफ़ाइल में संभावित रूप से संवेदनशील छवियाँ, भाषा या अन्य सामग्री हो सकती है। क्या आप फिर भी इसे देखना चाहते हैं?</string>

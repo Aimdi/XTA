@@ -110,7 +110,16 @@ import com.aimdi.xtanative.ui.generated.resources.groups_retry
 import com.aimdi.xtanative.ui.generated.resources.groups_scroll_to_top
 import com.aimdi.xtanative.ui.generated.resources.groups_zen_end
 import com.aimdi.xtanative.ui.generated.resources.groups_zen_load_more
+import com.aimdi.xtanative.ui.feed.FeedMix
+import com.aimdi.xtanative.ui.feed.NewPostsPill
+import com.aimdi.xtanative.ui.feed.Placed
+import com.aimdi.xtanative.ui.feed.PluginPostsOnly
+import com.aimdi.xtanative.ui.feed.SourceProblems
+import com.aimdi.xtanative.ui.feed.SourcedPost
+import com.aimdi.xtanative.ui.feed.rememberRunningPlugins
 import com.aimdi.xtanative.ui.media.LocalInlinePlayer
+import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
+import com.aimdi.xtanative.ui.plugins.XtaPlugin
 import com.aimdi.xtanative.ui.media.rememberInlinePlayer
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.ThreadRows
@@ -139,7 +148,8 @@ private const val UNRELATED_INFO = "https://github.com/Teskann/QuaX/issues/26"
 fun GroupFeedScreen(groupId: String, actions: PostActions, onBack: () -> Unit) {
     var shownId by rememberSaveable { mutableStateOf(groupId) }
     val graph = LocalGraph.current
-    val vm: GroupFeedViewModel = viewModel(key = "group-feed-$shownId") { GroupFeedViewModel(graph, shownId) }
+    val feeds = LocalPlugins.current.feeds
+    val vm: GroupFeedViewModel = viewModel(key = "group-feed-$shownId") { GroupFeedViewModel(graph, shownId, feeds) }
     val state by vm.ui.collectAsStateWithLifecycle()
     val list = rememberLazyListState()
     val scope = rememberCoroutineScope()
@@ -257,6 +267,10 @@ fun contentFilterLabel(filter: ContentFilter): String = stringResource(
 @Composable
 private fun GroupFeedBody(state: GroupFeedUi, vm: GroupFeedViewModel, actions: PostActions, list: LazyListState, contentPadding: PaddingValues) {
     val graph = LocalGraph.current
+    val plugin by vm.plugin.collectAsStateWithLifecycle()
+    val plugins = rememberRunningPlugins()
+    val scope = rememberCoroutineScope()
+    val reduced = LocalReducedMotion.current
     val run = state.run
     val leading = if (run.stale != null && run.shown.threads.isNotEmpty()) 1 else 0
     LaunchedEffect(run.jump) {
@@ -275,17 +289,20 @@ private fun GroupFeedBody(state: GroupFeedUi, vm: GroupFeedViewModel, actions: P
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { inline?.pause() }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { inline?.resume() }
 
+    val buckets = remember(run.shown.threads, plugin.shown) { FeedMix.place(run.shown.threads, plugin.shown) }
     PullToRefreshBox(isRefreshing = run.refreshing, onRefresh = { vm.refresh() }, modifier = Modifier.fillMaxSize()) {
         val problem = run.problem
         val threads = run.shown.threads
         when {
             state.loaded && state.memberCount == 0 -> Whole { Message(stringResource(Res.string.groups_no_members)) }
+            threads.isEmpty() && plugin.shown.isNotEmpty() -> PluginPostsOnly(plugin.shown, plugins, list, contentPadding, problem) { vm.refresh() }
             threads.isEmpty() && problem != null -> Whole { ProblemView(problem, { vm.refresh() }) }
+            threads.isEmpty() && plugin.loading -> Whole { LoadingRow() }
             threads.isEmpty() && run.answered && run.shown.pause == FeedPause.CAUGHT_UP -> Whole { CaughtUpCard(run.shown.catchUpMessage, run, vm) }
             threads.isEmpty() && run.answered && !run.refreshing -> Whole { Message(stringResource(Res.string.groups_feed_empty)) }
             threads.isEmpty() -> Whole { if (!run.refreshing) LoadingRow() }
             else -> CompositionLocalProvider(LocalInlinePlayer provides inline.takeIf { session?.autoplay ?: true }) {
-                FeedList(state, vm, actions, list, contentPadding)
+                FeedList(state, vm, actions, list, contentPadding, buckets, plugins)
             }
         }
         val progress = state.progress
@@ -295,12 +312,27 @@ private fun GroupFeedBody(state: GroupFeedUi, vm: GroupFeedViewModel, actions: P
         Column(Modifier.align(Alignment.TopCenter).padding(top = 12.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
             if (state.unrelatedNotice) UnrelatedPill(vm)
             if (progress.canRetry) RetryPill(progress.answered, progress.total, vm::retryFailed)
+            if (plugin.newHeld > 0) {
+                NewPostsPill(plugin.newHeld) {
+                    scope.launch { list.scrollToTop(reduced) }
+                    vm.revealPlugins()
+                }
+            }
+            SourceProblems(plugin, plugins, onRetry = vm::retryPlugin, modifier = Modifier.padding(horizontal = 16.dp))
         }
     }
 }
 
 @Composable
-private fun FeedList(state: GroupFeedUi, vm: GroupFeedViewModel, actions: PostActions, list: LazyListState, contentPadding: PaddingValues) {
+private fun FeedList(
+    state: GroupFeedUi,
+    vm: GroupFeedViewModel,
+    actions: PostActions,
+    list: LazyListState,
+    contentPadding: PaddingValues,
+    buckets: List<List<SourcedPost>>,
+    plugins: Map<String, XtaPlugin>,
+) {
     val run = state.run
     val threads = run.shown.threads
     val nearEnd by remember(list) {
@@ -326,7 +358,9 @@ private fun FeedList(state: GroupFeedUi, vm: GroupFeedViewModel, actions: PostAc
         itemsIndexed(threads, key = { _, thread -> thread.id }, contentType = { _, _ -> "thread" }) { index, thread ->
             if (index == divider) CaughtUpDivider()
             val reason = run.shown.folds[thread.id]
-            if (reason != null) FoldedThread(thread, reason, actions, thread.id == playingId) else ThreadRows(thread, actions, playing = thread.id == playingId)
+            Placed(buckets, index, plugins) {
+                if (reason != null) FoldedThread(thread, reason, actions, thread.id == playingId) else ThreadRows(thread, actions, playing = thread.id == playingId)
+            }
         }
         item(key = "footer", contentType = "footer") {
             val more = run.moreProblem

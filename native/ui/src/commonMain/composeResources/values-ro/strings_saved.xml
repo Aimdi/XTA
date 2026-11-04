@@ -117,6 +117,7 @@
     <string name="saved_like">Apreciază pe acest dispozitiv</string>
     <string name="saved_unlike">Elimină aprecierea de pe acest dispozitiv</string>
     <string name="saved_save_here">Salvează pe acest dispozitiv</string>
+    <string name="saved_save_to_folder">Salvează în dosar…</string>
     <string name="saved_unsave">Elimină de pe acest dispozitiv</string>
     <string name="saved_bookmarks">Marcaje</string>
     <string name="saved_sensitive_profile">Acest profil poate include imagini, limbaj sau alt conținut posibil sensibil. Doriți totuși să îl vizualizați?</string>

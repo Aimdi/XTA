@@ -127,10 +127,10 @@ private fun Badge(label: String, fill: Color, ink: Color) {
 @Composable
 private fun CardFooter(app: RedditApp, post: RedditPost) {
     val votes by app.votes.state.collectAsState()
-    val saved by app.saved.collectAsState()
+    val archived by app.host.saved.collectAsState()
     val outside = rememberOpenOutside()
     val upvoted = post.id in votes
-    val isSaved = RedditSaved.isSaved(saved, post)
+    val isSaved = RedditArchive.id(post) in archived
     val accent = MaterialTheme.colorScheme.primary
     Row(Modifier.fillMaxWidth().padding(top = 4.dp, bottom = 4.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
         FooterAction(
@@ -138,24 +138,26 @@ private fun CardFooter(app: RedditApp, post: RedditPost) {
             countText((post.score + if (upvoted) 1 else 0).toLong()),
             pluginString(Strings.upvote),
             if (upvoted) accent else null,
-        ) { app.toggleVote(post.id) }
+        ) { app.upvote(post) }
         FooterAction(RedditGlyphs.Comment, countText(post.commentCount.toLong()), pluginPlural(Strings.comment_count, post.commentCount, post.commentCount)) { app.openThread(post) }
         FooterAction(
             if (isSaved) RedditGlyphs.Bookmark else RedditGlyphs.BookmarkBorder,
             null,
             pluginString(if (isSaved) Strings.unsave_post else Strings.save_post),
             if (isSaved) accent else null,
+            onLongClick = { app.chooseFolder(post) },
         ) { app.toggleSaved(post) }
         FooterAction(RedditGlyphs.OpenInNew, null, pluginString(Strings.open_in_browser)) { outside(RedditThreadRules.postUrl(post)) }
     }
 }
 
-/** One of a card's actions: its icon, its number when it has one, at a touch target's size. */
+/** One of a card's actions: its icon, its number when it has one, at a touch target's size; [onLongClick] where a long press does more. */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun FooterAction(icon: ImageVector, label: String?, description: String, tint: Color? = null, onClick: () -> Unit) {
+private fun FooterAction(icon: ImageVector, label: String?, description: String, tint: Color? = null, onLongClick: (() -> Unit)? = null, onClick: () -> Unit) {
     val colour = tint ?: MaterialTheme.colorScheme.onSurfaceVariant
     Row(
-        Modifier.heightIn(min = 40.dp).clip(RoundedCornerShape(20.dp)).clickable(onClick = onClick).padding(horizontal = 8.dp),
+        Modifier.heightIn(min = 40.dp).clip(RoundedCornerShape(20.dp)).combinedClickable(onClick = onClick, onLongClick = onLongClick).padding(horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(icon, contentDescription = description, tint = colour, modifier = Modifier.size(18.dp))

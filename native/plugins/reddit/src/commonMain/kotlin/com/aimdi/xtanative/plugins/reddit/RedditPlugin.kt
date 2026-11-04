@@ -2,13 +2,17 @@ package com.aimdi.xtanative.plugins.reddit
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.aimdi.xtanative.ui.plugins.NetworkPost
+import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.PluginBackupSection
+import com.aimdi.xtanative.ui.plugins.PluginFeed
 import com.aimdi.xtanative.ui.plugins.PluginBody
 import com.aimdi.xtanative.ui.plugins.PluginFootprint
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginScreen
 import com.aimdi.xtanative.ui.plugins.PluginSearch
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
+import kotlinx.serialization.json.JsonElement
 
 /**
  * Reddit as a downloadable plugin, read-only as XTA's Reddit plugin reads it:
@@ -44,6 +48,13 @@ class RedditPlugin : XtaPlugin() {
     override val search: PluginSearch by lazy { RedditSearch(app) }
 
     override fun routeFor(url: String): String? = RedditRoutes.forUrl(url)
+
+    override val feed: PluginFeed get() = app.shared
+
+    override val postActions: NetworkPostActions get() = app.actions
+
+    /** A post kept in XTA's record, as Saved draws it; one of another network is none of its. */
+    override fun archived(content: JsonElement): NetworkPost? = RedditArchive.post(content)?.let { app.shown(it) }
 
     override fun screen(route: String): PluginScreen? = when (val opened = RedditRoutes.parse(route)) {
         is RedditRoute.Thread -> screenOf { ThreadScreen(app, opened) }

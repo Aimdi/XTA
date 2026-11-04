@@ -111,6 +111,7 @@
     <string name="saved_like">Thích trên thiết bị này</string>
     <string name="saved_unlike">Bỏ thích khỏi thiết bị này</string>
     <string name="saved_save_here">Lưu trên thiết bị này</string>
+    <string name="saved_save_to_folder">Lưu vào thư mục…</string>
     <string name="saved_unsave">Xóa khỏi thiết bị này</string>
     <string name="saved_bookmarks">Dấu trang</string>
     <string name="saved_sensitive_profile">Trang cá nhân này có thể chứa những nội dung nhạy cảm hoặc gây khó chịu cho một số người, bạn có chắc muốn xem nó không </string>

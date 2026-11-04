@@ -31,12 +31,24 @@ class SavedContent private constructor(
     val post: J,
     /** Lowercased once, so a search does not re-case every post per keystroke. */
     val haystack: String,
+    /** The whole record as it was kept, which the plugin of its network reads back. */
+    val record: J = J(null),
 ) {
     /** The format the post is kept in; [NONE] when nothing readable was kept. */
     enum class Kind { NONE, X, REDDIT, MASTODON, BLUESKY, THREADS, LINK }
 
     /** For [Kind.LINK], the network the link was kept from. */
     val linkSource: String? get() = if (kind == Kind.LINK) post["source"].string else null
+
+    /** The plugin a kept post of another network came from, as its record names it ("bluesky", a link's source); null for X's. */
+    val network: String? get() = when (kind) {
+        Kind.BLUESKY -> "bluesky"
+        Kind.REDDIT -> "reddit"
+        Kind.MASTODON -> "mastodon"
+        Kind.THREADS -> THREADS
+        Kind.LINK -> linkSource
+        Kind.X, Kind.NONE -> null
+    }
 
     /** A Threads post kept as a link, before Threads posts were kept whole, is still a Threads post. */
     val source: SavedSource get() = when {
@@ -93,7 +105,7 @@ class SavedContent private constructor(
         fun of(content: JsonElement?): SavedContent {
             val root = J(content)
             if (root.raw !is JsonObject) return EMPTY
-            return when (root["xtaPlugin"].string) {
+            val read = when (root["xtaPlugin"].string) {
                 null -> x(root)
                 "link" -> link(root)
                 "bluesky" -> bluesky(root["post"])
@@ -101,7 +113,8 @@ class SavedContent private constructor(
                 "mastodon" -> mastodon(root["post"])
                 "reddit" -> reddit(root["post"])
                 else -> null
-            } ?: EMPTY
+            } ?: return EMPTY
+            return SavedContent(read.kind, read.post, read.haystack, root)
         }
 
         private fun x(tweet: J) = SavedContent(

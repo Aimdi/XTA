@@ -97,6 +97,9 @@
     <string name="photos">Foto</string>
     <string name="save_post">Simpan postingan</string>
     <string name="unsave_post">Hapus dari simpanan</string>
+    <string name="save_to_folder">Simpan ke folder…</string>
+    <string name="add_note">Tambahkan catatan ke postingan tersimpan ini</string>
+    <string name="add_to_group">Tambah ke grup</string>
     <string name="collapse_all">Ciutkan semua</string>
     <string name="expand_all">Bentangkan semua</string>
     <string name="sign_in_needs_android">Masuk di sini memerlukan browser bawaan aplikasi Android, yang tidak dimiliki aplikasi desktop.</string>

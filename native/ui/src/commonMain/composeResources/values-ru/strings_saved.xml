@@ -120,6 +120,7 @@
     <string name="saved_like">Нравится на этом устройстве</string>
     <string name="saved_unlike">Убрать отметку «нравится» с этого устройства</string>
     <string name="saved_save_here">Сохранить на этом устройстве</string>
+    <string name="saved_save_to_folder">Сохранить в папку…</string>
     <string name="saved_unsave">Удалить с этого устройства</string>
     <string name="saved_bookmarks">Закладки</string>
     <string name="saved_sensitive_profile">Этот профиль может содержать потенциально чувствительные изображения, высказывания или другое содержимое. Вы все еще хотите просмотреть его?</string>

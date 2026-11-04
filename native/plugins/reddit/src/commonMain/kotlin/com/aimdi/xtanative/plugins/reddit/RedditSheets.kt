@@ -67,6 +67,8 @@ import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
+import com.aimdi.xtanative.ui.post.PostIcons
+import com.aimdi.xtanative.ui.saved.SavedIcons
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 import com.aimdi.xtanative.store.settings.RedditSort as StoredSort
 import com.aimdi.xtanative.store.settings.RedditTimeFilter as StoredWindow
@@ -74,13 +76,14 @@ import com.aimdi.xtanative.store.settings.RedditTimeFilter as StoredWindow
 /**
  * Everywhere a post can lead, without opening it (XTA's post sheet): its
  * author, its community, following that community, saving the post on this
- * device, and leaving for Reddit.
+ * device and its folder, the note on it, its community's groups, and leaving
+ * for Reddit.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun PostSheet(app: RedditApp, post: RedditPost, onDismiss: () -> Unit) {
     val followed by app.followed.collectAsState()
-    val saved by app.saved.collectAsState()
+    val archived by app.host.saved.collectAsState()
     val outside = rememberOpenOutside()
     val share = rememberShareLink()
     val url = RedditThreadRules.postUrl(post)
@@ -102,10 +105,22 @@ internal fun PostSheet(app: RedditApp, post: RedditPost, onDismiss: () -> Unit) 
                 app.follow(post.subreddit, !following)
                 onDismiss()
             }
-            val isSaved = RedditSaved.isSaved(saved, post)
+            val isSaved = RedditArchive.id(post) in archived
             SheetAction(if (isSaved) RedditGlyphs.Bookmark else RedditGlyphs.BookmarkBorder, pluginString(if (isSaved) Strings.unsave_post else Strings.save_post)) {
                 app.toggleSaved(post)
                 onDismiss()
+            }
+            SheetAction(SavedIcons.Folder, pluginString(Strings.save_to_folder)) {
+                onDismiss()
+                app.chooseFolder(post)
+            }
+            SheetAction(SavedIcons.EditNote, pluginString(Strings.add_note)) {
+                onDismiss()
+                app.editNote(post)
+            }
+            SheetAction(PostIcons.People, pluginString(Strings.add_to_group)) {
+                onDismiss()
+                app.addToGroup(post.subreddit)
             }
             SheetAction(RedditGlyphs.OpenInNew, pluginString(Strings.open_in_browser)) {
                 outside(url)

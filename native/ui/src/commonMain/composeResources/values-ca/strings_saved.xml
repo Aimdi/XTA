@@ -114,6 +114,7 @@
     <string name="saved_like">M’agrada en aquest dispositiu</string>
     <string name="saved_unlike">Treu el m’agrada d’aquest dispositiu</string>
     <string name="saved_save_here">Desa en aquest dispositiu</string>
+    <string name="saved_save_to_folder">Desa a una carpeta…</string>
     <string name="saved_unsave">Treu d’aquest dispositiu</string>
     <string name="saved_bookmarks">Adreces d’interès</string>
     <string name="saved_sensitive_profile">Aquest perfil pot incloure imatges, vocabulari o contingut potencialment sensible. Segur que vols veure'l?</string>

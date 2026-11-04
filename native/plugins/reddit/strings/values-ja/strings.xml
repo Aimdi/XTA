@@ -97,6 +97,9 @@
     <string name="photos">写真</string>
     <string name="save_post">投稿を保存</string>
     <string name="unsave_post">保存から削除</string>
+    <string name="save_to_folder">フォルダーに保存…</string>
+    <string name="add_note">保存した投稿にメモを追加</string>
+    <string name="add_to_group">グループに追加</string>
     <string name="collapse_all">すべて折りたたむ</string>
     <string name="expand_all">すべて展開</string>
     <string name="sign_in_needs_android">ここでのログインには Android アプリの内蔵ブラウザが必要ですが、デスクトップ版にはありません。</string>

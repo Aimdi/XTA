@@ -97,6 +97,9 @@
     <string name="photos">Fotos</string>
     <string name="save_post">Salvar o post</string>
     <string name="unsave_post">Remover dos salvos</string>
+    <string name="save_to_folder">Salvar em uma pasta…</string>
+    <string name="add_note">Adicionar uma nota a esta publicação salva</string>
+    <string name="add_to_group">Adicionar ao grupo</string>
     <string name="collapse_all">Recolher tudo</string>
     <string name="expand_all">Expandir tudo</string>
     <string name="sign_in_needs_android">Entrar aqui exige o navegador integrado do app para Android, que o app para computador não tem.</string>

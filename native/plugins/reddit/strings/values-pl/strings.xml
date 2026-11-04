@@ -97,6 +97,9 @@
     <string name="photos">Zdjęcia</string>
     <string name="save_post">Zapisz post</string>
     <string name="unsave_post">Usuń z zapisanych</string>
+    <string name="save_to_folder">Zapisz w folderze…</string>
+    <string name="add_note">Dodaj notatkę do tego zapisanego wpisu</string>
+    <string name="add_to_group">Dodaj do grupy</string>
     <string name="collapse_all">Zwiń wszystko</string>
     <string name="expand_all">Rozwiń wszystko</string>
     <string name="sign_in_needs_android">Logowanie tutaj wymaga wbudowanej przeglądarki aplikacji na Androida, której nie ma aplikacja na komputer.</string>

@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -72,7 +73,7 @@ internal fun PostMediaView(app: RedditApp, post: RedditPost, choices: RedditChoi
         when (media) {
             is PostMedia.Video -> Covered(post, gate, ratioOf(post)) { VideoTile(app, post, media.stream) }
             is PostMedia.Gallery -> Covered(post, gate, 1f) { Gallery(media.images) { app.openPictures(media.images, it) } }
-            is PostMedia.Image -> Covered(post, gate) { Picture(media.url) { app.openPictures(listOf(media.url), 0) } }
+            is PostMedia.Image -> Covered(post, gate) { Picture(media.url, onSave = { app.host.download(MediaItem(media.url)) }) { app.openPictures(listOf(media.url), 0) } }
             is PostMedia.GalleryLink -> GalleryLink(app, post, gate, media.url, thread)
             is PostMedia.Link -> LinkCard(app, post, gate, media.url, thread)
         }
@@ -94,14 +95,15 @@ private fun VideoTile(app: RedditApp, post: RedditPost, stream: String) {
     MediaTiles(listOf(item), onOpen = { app.openVideo(post, stream) })
 }
 
-/** One picture at whatever height it turns out to be, within the frame's bounds, cropped beyond them. */
+/** One picture at whatever height it turns out to be, within the frame's bounds, cropped beyond them; a long press saves it, as XTA's does. */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun Picture(url: String, onOpen: () -> Unit) {
+private fun Picture(url: String, onSave: (() -> Unit)? = null, onOpen: () -> Unit) {
     AsyncImage(
         model = url,
         contentDescription = pluginString(Strings.media),
         contentScale = ContentScale.Crop,
-        modifier = Modifier.fillMaxWidth().heightIn(min = MinHeight, max = MaxHeight).framed().clickable(onClick = onOpen),
+        modifier = Modifier.fillMaxWidth().heightIn(min = MinHeight, max = MaxHeight).framed().combinedClickable(onClick = onOpen, onLongClick = onSave),
     )
 }
 

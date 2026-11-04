@@ -253,6 +253,7 @@
     <string name="settings_net_immich">Immich</string>
     <string name="settings_show_as_tab">Sekme olarak göster</string>
     <string name="settings_in_home_timeline">Ana akışta göster</string>
+    <string name="settings_in_home_timeline_description">%1$s üzerinde takip ettiklerinin gönderilerini Takip edilenler ve Senin için akışlarına karıştırır</string>
     <string name="settings_threads_instance">RSSHub örneği</string>
     <string name="settings_threads_instance_hint">Örneğin http://192.168.1.10:1200 veya https://rsshub.example.org</string>
     <string name="settings_bluesky_instance">AppView</string>

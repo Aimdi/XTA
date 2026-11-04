@@ -22,10 +22,18 @@ import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.data.FeedCache
 import com.aimdi.xtanative.data.Problem
+import com.aimdi.xtanative.data.plugins.PluginMembers
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.SubscriptionPrefs
+import com.aimdi.xtanative.ui.feed.FeedSources
 import com.aimdi.xtanative.ui.feed.HiddenPosts
+import com.aimdi.xtanative.ui.feed.MixedSources
+import com.aimdi.xtanative.ui.feed.PluginFeeds
+import com.aimdi.xtanative.ui.feed.PluginPostsState
+import com.aimdi.xtanative.ui.feed.SourceAsk
 import com.aimdi.xtanative.ui.feed.feedConcurrency
+import com.aimdi.xtanative.ui.plugins.FeedKinds
+import com.aimdi.xtanative.ui.plugins.problemOf
 import com.aimdi.xtanative.ui.subscriptions.GroupActions
 import com.aimdi.xtanative.ui.subscriptions.GroupBoardModel
 import com.aimdi.xtanative.ui.subscriptions.SubscriptionList
@@ -135,10 +143,11 @@ object FeedPlaces {
  * failed to retry, folded posts, the unrelated-posts pill, the read position
  * and catch-up mode. A change of members or settings, or of the reposts and
  * replies the reader hid on profiles, refreshes it, held while the reader is
- * scrolled down.
+ * scrolled down. Its members of other networks are read by their plugins
+ * ([feeds]) and mixed in by time, with the group's reply and repost settings.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
-class GroupFeedViewModel(private val graph: AppGraph, private val groupId: String) : ViewModel() {
+class GroupFeedViewModel(private val graph: AppGraph, private val groupId: String, private val feeds: PluginFeeds = PluginFeeds.None) : ViewModel() {
     private val cache: FeedCache = graph.feedCache(groupId)
     private val marks = ReadMarks(graph.feedCache(ReadMarks.key(groupId)))
     private val run = MutableStateFlow(FeedRun())
@@ -167,9 +176,19 @@ class GroupFeedViewModel(private val graph: AppGraph, private val groupId: Strin
         graph.settings.settings,
         Combinations.state,
         run,
-        current.flatMapLatest { it?.progress ?: flowOf(FeedProgress()) },
-    ) { session, settings, combined, run, progress -> build(session, settings, combined, run, progress) }
+        combine(current.flatMapLatest { it?.progress ?: flowOf(FeedProgress()) }, feeds.ids, ::Pair),
+    ) { session, settings, combined, run, (progress, plugins) -> build(session, settings, combined, run, progress, plugins) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), GroupFeedUi())
+
+    private val mixed = MixedSources(
+        viewModelScope,
+        feeds,
+        combine(feeds.ids, graph.sessions.state.filterNotNull(), Combinations.state) { ids, session, combined -> asksOf(ids, session, combined) },
+        ::problemOf,
+    )
+
+    /** The group's members of other networks' posts, as their plugins read them. */
+    val plugin: StateFlow<PluginPostsState> = mixed.posts.state
 
     init {
         Combinations.state.update { it.released(groupId) }
@@ -187,10 +206,19 @@ class GroupFeedViewModel(private val graph: AppGraph, private val groupId: Strin
         }
     }
 
-    private fun build(session: Session, settings: Settings, combined: CombinedGroups, run: FeedRun, progress: FeedProgress): GroupFeedUi {
+    /** What the group asks of the plugins with a feed ([ids]): its members of theirs, with the group's reply and repost settings. */
+    private fun asksOf(ids: Set<String>, session: Session, combined: CombinedGroups): Map<String, SourceAsk> {
+        val alsoRead = combined.ids - groupId
+        val plan = session.feedPlan(groupId, alsoRead)
+        val members = PluginMembers.of(session, groupId, alsoRead, ids)
+        return FeedSources.asks(ids, members, home = false, inHome = { false }, kinds = FeedKinds(plan.includeReplies, plan.includeReposts))
+    }
+
+    private fun build(session: Session, settings: Settings, combined: CombinedGroups, run: FeedRun, progress: FeedProgress, plugins: Set<String>): GroupFeedUi {
         val feedSettings = session.settingsOf(groupId)
         val alsoRead = combined.ids - groupId
         val memberIds = session.membersOf(groupId, alsoRead).mapTo(HashSet()) { it.id }
+        val pluginMembers = PluginMembers.of(session, groupId, alsoRead, plugins).values.sumOf { it.size }
         val rows = SubscriptionList.ordered(
             SubscriptionList.rows(session),
             settings[SubscriptionPrefs.order],
@@ -200,7 +228,7 @@ class GroupFeedViewModel(private val graph: AppGraph, private val groupId: Strin
         return GroupFeedUi(
             loaded = true,
             group = session.groups.firstOrNull { it.id == groupId },
-            memberCount = memberIds.size,
+            memberCount = memberIds.size + pluginMembers,
             settings = feedSettings,
             includeReplies = feedSettings.includeReplies ?: session.includeReplies,
             includeReposts = feedSettings.includeReposts ?: session.includeReposts,
@@ -265,6 +293,7 @@ class GroupFeedViewModel(private val graph: AppGraph, private val groupId: Strin
 
     /** The newest posts from the top. [byReader] is a pull or the refresh button: the reader goes to the top. */
     fun refresh(byReader: Boolean = true) {
+        if (byReader) mixed.refresh(force = true)
         nextFeed?.let {
             current.value = it
             nextFeed = null
@@ -405,6 +434,7 @@ class GroupFeedViewModel(private val graph: AppGraph, private val groupId: Strin
      * catch-up mode everything loaded counts as read.
      */
     fun atTop(top: Boolean) {
+        mixed.posts.readingAway(!top)
         if (top == atTop) return
         atTop = top
         if (!top) return
@@ -431,6 +461,12 @@ class GroupFeedViewModel(private val graph: AppGraph, private val groupId: Strin
     fun dismissStale() = run.update { it.copy(stale = null) }
 
     fun dismissUnrelated() = run.update { it.copy(unrelatedDismissed = true) }
+
+    /** Shows the members' posts of other networks that waited while the reader was down the list. */
+    fun revealPlugins() = mixed.posts.reveal()
+
+    /** Reads plugin [source] again, as its failure's retry does. */
+    fun retryPlugin(source: String) = mixed.posts.retry(source)
 
 
     // ---- groups read alongside ----

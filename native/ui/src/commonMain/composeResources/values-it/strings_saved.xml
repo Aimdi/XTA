@@ -114,6 +114,7 @@
     <string name="saved_like">Mi piace su questo dispositivo</string>
     <string name="saved_unlike">Rimuovi il mi piace da questo dispositivo</string>
     <string name="saved_save_here">Salva su questo dispositivo</string>
+    <string name="saved_save_to_folder">Salva in una cartella…</string>
     <string name="saved_unsave">Rimuovi da questo dispositivo</string>
     <string name="saved_bookmarks">Segnalibri</string>
     <string name="saved_sensitive_profile">Questo profilo può includere immagini, linguaggio o altri contenuti potenzialmente sensibili. Desideri comunque vederlo?</string>

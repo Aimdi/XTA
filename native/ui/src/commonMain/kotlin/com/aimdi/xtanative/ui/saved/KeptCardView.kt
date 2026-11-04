@@ -28,21 +28,25 @@ import androidx.compose.ui.layout.ContentScale
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.saved_open_in_browser
 import com.aimdi.xtanative.ui.generated.resources.saved_too_large
+import com.aimdi.xtanative.ui.links.LocalLinks
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * A kept post of another network, until that network's own card is here:
- * its network, who wrote it, its title and text, up to four pictures, and a
- * tap that opens it where it lives.
+ * A kept post of another network, while no plugin draws it: its network, who
+ * wrote it, its title and text, up to four pictures, and a tap that opens it
+ * as the app opens links, in its plugin's screen once that is installed.
  */
 @Composable
 fun KeptCardView(card: KeptCard, modifier: Modifier = Modifier) {
     val uri = LocalUriHandler.current
+    val links = LocalLinks.current
     val open = stringResource(Res.string.saved_open_in_browser)
+    // As the app opens links: in the screen of the plugin that reads it, once installed, else on the web.
+    val go = { url: String -> if (links != null) links.open(url) else runCatching { uri.openUri(url) }.let {} }
     Column(
         modifier
             .fillMaxWidth()
-            .let { if (card.url != null) it.clickable(onClickLabel = open) { runCatching { uri.openUri(card.url) } } else it }
+            .let { if (card.url != null) it.clickable(onClickLabel = open) { go(card.url) } else it }
             .padding(horizontal = 16.dp, vertical = 12.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {

@@ -253,6 +253,7 @@
     <string name="settings_net_immich">Immich</string>
     <string name="settings_show_as_tab">탭으로 표시</string>
     <string name="settings_in_home_timeline">홈 타임라인에 표시</string>
+    <string name="settings_in_home_timeline_description">%1$s에서 팔로우한 항목의 게시물을 팔로잉과 추천에 함께 표시합니다</string>
     <string name="settings_threads_instance">RSSHub 인스턴스</string>
     <string name="settings_threads_instance_hint">예: http://192.168.1.10:1200 또는 https://rsshub.example.org</string>
     <string name="settings_bluesky_instance">AppView</string>

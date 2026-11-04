@@ -97,6 +97,9 @@
     <string name="photos">Bilder</string>
     <string name="save_post">Lagre innlegget</string>
     <string name="unsave_post">Fjern fra lagrede</string>
+    <string name="save_to_folder">Lagre i mappe…</string>
+    <string name="add_note">Legg til et notat på dette lagrede innlegget</string>
+    <string name="add_to_group">Legg til i gruppe</string>
     <string name="collapse_all">Skjul alle</string>
     <string name="expand_all">Utvid alle</string>
     <string name="sign_in_needs_android">Innlogging her krever den innebygde nettleseren i Android-appen, som skrivebordsappen ikke har.</string>

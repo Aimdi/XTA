@@ -120,6 +120,7 @@
     <string name="saved_like">Падабаецца на гэтай прыладзе</string>
     <string name="saved_unlike">Прыбраць «падабаецца» з гэтай прылады</string>
     <string name="saved_save_here">Захаваць на гэтай прыладзе</string>
+    <string name="saved_save_to_folder">Захаваць у тэчку…</string>
     <string name="saved_unsave">Выдаліць з гэтай прылады</string>
     <string name="saved_bookmarks">Закладкі</string>
     <string name="saved_sensitive_profile">Гэты профіль можа змяшчаць патэнцыйна чуллівыя выявы, выказванні або іншае змесціва. Вы ўсё яшчэ хочаце прагледзець яго?</string>

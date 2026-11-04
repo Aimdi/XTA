@@ -97,6 +97,9 @@
     <string name="photos">Fotos</string>
     <string name="save_post">Guardar la publicación</string>
     <string name="unsave_post">Quitar de guardados</string>
+    <string name="save_to_folder">Guardar en una carpeta…</string>
+    <string name="add_note">Añade una nota a esta publicación guardada</string>
+    <string name="add_to_group">Añadir al grupo</string>
     <string name="collapse_all">Contraer todo</string>
     <string name="expand_all">Expandir todo</string>
     <string name="sign_in_needs_android">Para iniciar sesión aquí hace falta el navegador integrado de la app de Android, que la app de escritorio no tiene.</string>

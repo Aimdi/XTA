@@ -253,6 +253,7 @@
     <string name="settings_net_immich">Immich</string>
     <string name="settings_show_as_tab">Näita vahekaardina</string>
     <string name="settings_in_home_timeline">Näita avalehe voos</string>
+    <string name="settings_in_home_timeline_description">Lisab sinu jälgitava sisu postitused teenusest %1$s voogudesse „Jälgin“ ja „Sinu jaoks“</string>
     <string name="settings_threads_instance">RSSHubi aadress</string>
     <string name="settings_threads_instance_hint">Näiteks http://192.168.1.10:1200 või https://rsshub.example.org</string>
     <string name="settings_bluesky_instance">AppView</string>

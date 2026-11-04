@@ -61,16 +61,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.session.DeckGroups
-import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.turnTo
 import com.aimdi.xtanative.ui.feed.FeedPage
-import com.aimdi.xtanative.ui.feed.FeedViewModel
 import com.aimdi.xtanative.ui.feed.ToTop
-import com.aimdi.xtanative.ui.feed.feedViewModelKey
+import com.aimdi.xtanative.ui.feed.feedViewModel
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.following
 import com.aimdi.xtanative.ui.generated.resources.home_add_timeline
@@ -432,12 +430,11 @@ private fun NetworkActions(id: String, ui: HomeUi, networks: HomeNetworks, onPin
  */
 @Composable
 private fun unreadKeys(ui: HomeUi, visited: Set<String>, networks: HomeNetworks): Set<String> {
-    val graph = LocalGraph.current
     return buildSet {
         ui.tabs.forEach { tab ->
             val lit = key(tab.key) {
                 when (tab) {
-                    HomeTab.Following, is HomeTab.Group -> tab.key in visited && feedUnread(tab, ui, graph)
+                    HomeTab.Following, is HomeTab.Group -> tab.key in visited && feedUnread(tab, ui)
                     is HomeTab.Network -> networks.unread(tab.id)
                     HomeTab.ForYou -> false
                 }
@@ -448,9 +445,9 @@ private fun unreadKeys(ui: HomeUi, visited: Set<String>, networks: HomeNetworks)
 }
 
 @Composable
-private fun feedUnread(tab: HomeTab, ui: HomeUi, graph: AppGraph): Boolean {
+private fun feedUnread(tab: HomeTab, ui: HomeUi): Boolean {
     val groupId = (tab as? HomeTab.Group)?.id
-    val vm: FeedViewModel = viewModel(key = feedViewModelKey(groupId)) { FeedViewModel(graph, groupId) }
+    val vm = feedViewModel(groupId)
     // Only the count above the reader: the feed's other changes need not redraw Home.
     val newAbove by remember(vm) { vm.ui.map { it.newAbove }.distinctUntilChanged() }.collectAsStateWithLifecycle(vm.ui.value.newAbove)
     return HomeUnread.unread(HomeUnread.tracks(ui.session, tab, ui.readingPosition), newAbove)
@@ -459,16 +456,15 @@ private fun feedUnread(tab: HomeTab, ui: HomeUi, graph: AppGraph): Boolean {
 /** What refreshing [tab] does: its feed read again, the desktop's button and F5. */
 @Composable
 private fun rememberRefresh(tab: HomeTab?, networks: HomeNetworks): () -> Unit {
-    val graph = LocalGraph.current
     return key(tab?.key) {
         when (tab) {
             HomeTab.Following, is HomeTab.Group -> {
                 val groupId = (tab as? HomeTab.Group)?.id
-                val vm: FeedViewModel = viewModel(key = feedViewModelKey(groupId)) { FeedViewModel(graph, groupId) }
+                val vm = feedViewModel(groupId)
                 remember(vm) { { vm.refresh() } }
             }
             HomeTab.ForYou -> {
-                val vm: ForYouViewModel = viewModel(key = FOR_YOU_VIEW_MODEL) { ForYouViewModel(graph) }
+                val vm = forYouViewModel()
                 remember(vm) { { vm.refresh() } }
             }
             is HomeTab.Network -> remember(tab.id) { { networks.refresh(tab.id) } }

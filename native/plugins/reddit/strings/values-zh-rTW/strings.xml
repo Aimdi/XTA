@@ -97,6 +97,9 @@
     <string name="photos">照片</string>
     <string name="save_post">儲存貼文</string>
     <string name="unsave_post">從收藏中移除</string>
+    <string name="save_to_folder">儲存到資料夾…</string>
+    <string name="add_note">為這則已儲存的貼文新增筆記</string>
+    <string name="add_to_group">新增至群組</string>
     <string name="collapse_all">全部收合</string>
     <string name="expand_all">全部展開</string>
     <string name="sign_in_needs_android">在此登入需要 Android 應用程式的內建瀏覽器，桌面版沒有這個瀏覽器。</string>

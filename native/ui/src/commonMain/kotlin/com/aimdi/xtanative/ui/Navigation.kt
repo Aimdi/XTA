@@ -53,6 +53,7 @@ import com.aimdi.xtanative.ui.media.MediaViewer
 import com.aimdi.xtanative.ui.offline.OfflineLibraryScreen
 import com.aimdi.xtanative.ui.offline.OfflineMediaScreen
 import com.aimdi.xtanative.ui.pluginstore.AttachPluginNavigation
+import com.aimdi.xtanative.ui.pluginstore.PluginSheetHost
 import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
 import com.aimdi.xtanative.ui.pluginstore.pluginScreens
 import com.aimdi.xtanative.ui.post.PostActions
@@ -267,7 +268,7 @@ fun XtaNativeRoot() {
     }
     BindLinkScreens(linkScreens)
     // Where a plugin asks to go lands here too (PLUGINS.md).
-    AttachPluginNavigation(nav, linkScreens)
+    AttachPluginNavigation(nav, linkScreens, Routes.DOWNLOADS)
     AttachPluginBackups()
 
     DesktopNavigation(nav) { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes)) }
@@ -539,6 +540,8 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
     }
     // The foot-of-window notices of saves, likes and downloads, and the platform's save dialog (ui/saved).
     KeepHost()
+    // The sheets plugins open over the screens: a post's folders, its note, its menu, an account's groups.
+    PluginSheetHost()
 }
 
 /** An x.com or twitter.com link opens here, as it opens XTA. Only Android is handed links. */

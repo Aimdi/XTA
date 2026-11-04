@@ -114,6 +114,7 @@
     <string name="saved_like">Auf diesem Gerät liken</string>
     <string name="saved_unlike">Like von diesem Gerät entfernen</string>
     <string name="saved_save_here">Auf diesem Gerät speichern</string>
+    <string name="saved_save_to_folder">In Ordner speichern…</string>
     <string name="saved_unsave">Von diesem Gerät entfernen</string>
     <string name="saved_bookmarks">Lesezeichen</string>
     <string name="saved_sensitive_profile">Auf diesem Profil befinden sich potentiell anstößige Bilder, Sprache oder anderes Material. Willst du es wirklich sehen?</string>

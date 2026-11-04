@@ -97,6 +97,9 @@
     <string name="photos">Фота</string>
     <string name="save_post">Захаваць допіс</string>
     <string name="unsave_post">Выдаліць з захаваных</string>
+    <string name="save_to_folder">Захаваць у тэчку…</string>
+    <string name="add_note">Дадаць нататку да гэтага захаванага допісу</string>
+    <string name="add_to_group">Дадаць у групу</string>
     <string name="collapse_all">Згарнуць усё</string>
     <string name="expand_all">Разгарнуць усё</string>
     <string name="sign_in_needs_android">Для ўваходу тут патрэбны ўбудаваны браўзер праграмы для Android, якога няма ў версіі для камп\'ютара.</string>

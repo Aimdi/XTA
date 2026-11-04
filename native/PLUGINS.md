@@ -65,6 +65,9 @@ against one it supports.
 | `screen(route)` | its own whole screen for a route (`PluginScreen`), or null |
 | `backupSections` | `PluginBackupSection`s (name, export, import) of what it keeps |
 | `footprint()` | what it keeps on the device, counted in the store |
+| `feed` | a `PluginFeed`: its followed accounts' posts for Home's timelines and the groups ([below](#posts-in-homes-timelines)), or none |
+| `postActions` | where its posts lead where the app draws them (Home, groups, Saved), with their bookmark and menu, or none |
+| `archived(content)` | one of its posts the archive kept, read back as a `NetworkPost` for Saved ([below](#saved-notes-and-likes)), or null |
 
 A `PluginBody` is drawn in a `PluginFrame`: `padding` (the list's content
 padding, clear of the app's bars), `toTop` (grows when the reader asks for
@@ -86,14 +89,131 @@ read again, the desktop's F5: `RefreshesOn`).
 | `openPost(id)`, `openProfile(screenName)` | X's post and profile screens |
 | `openMedia(media, start)` | the media viewer for `MediaItem`s |
 | `openSearch(query)`, `openSettings()` | its own search and settings |
+| `settings` | the app's settings, all to read and its own (`plugin.<id>.*`) to change; `inHomeFeed()`, `setInHomeFeed(on)` |
+| `saved`, `toggleSaved(post)`, `chooseFolder(post)`, `editNote(post)`, `setLiked(post, liked)` | the reader's archive: what is in Saved, the bookmark, the save sheet, the note, the likes |
+| `addToGroup(account, follow)` | the app's group picker for one of its accounts |
+| `openPostMenu(menu)` | the shared post menu over the screen |
+| `download(media, fileName, subfolder)`, `saveFile(bytes, fileName, mimeType, subfolder)`, `shareFile(bytes, fileName, mimeType)`, `openDownloads()` | the app's downloads, a file it made saved or shared, the Downloads screen |
 
 The shared pieces, in the same package, drawn in the app's theme:
 `NetworkPostCard`, `NetworkFocalPost`, `QuotedNetworkPost` (a `NetworkPost`),
 `MediaTiles`, `PagedItems` with `PagedList`, `NetworkProblemView`,
 `problemOf`, `MessageText`, `PluginScaffold`, `rememberKept` (state kept per
-screen across recompositions), and `PluginStrings` with `pluginString` and
+screen across recompositions), `HomeTimelineSwitch`, `AddToGroupButton` and
+`NetworkBookmark` (below), and `PluginStrings` with `pluginString` and
 `pluginPlural`. `:ui`'s `ui.common` (avatar, hairline, loading row, times) is
-there too.
+there too. Their words are the app's, in all its languages: a plugin draws
+them without strings of its own.
+
+### Posts in Home's timelines
+
+XTA mixes the posts of what a network follows into Following and For you
+when the reader turns on its "show in the home timeline" switch, and the
+posts of a group's members of other networks into that group's feed
+(`SubscriptionSource`). A plugin offers them with `XtaPlugin.feed`, a
+`PluginFeed`:
+
+| Member | What it is |
+|---|---|
+| `followed()` | the accounts followed in the plugin, as `posts` reads them and its group members name them |
+| `posts(accounts, kinds, force)` | the newest posts of `accounts`, newest first, as `NetworkPost`s with their `createdAt` |
+
+`kinds` is a `FeedKinds` (the feed's reply and repost settings, XTA's
+`FeedPostKinds`: `takes(isReply, isRepost)`); `force` reads past the plugin's
+caches, as a pull does. A plugin reads a page of each account a few at a
+time, keeps only a few posts (Reddit ten of each community, Bluesky ten in
+all, as XTA), lets an account that fails add nothing and throws only when
+none answered, and reads through the same pages and caches as its own tab.
+
+The switch is the app's setting `plugin.<id>.in_home_feed`, where XTA keeps
+it (`:store`'s `NetworkPrefs.inHomeFeed`): `PluginSettings.inHomeFeed()` reads
+it, and `HomeTimelineSwitch(host.settings, name)` is the row a plugin's
+settings show for it, in XTA's words. Off until the reader turns it on.
+
+The app does the rest, as XTA does (`ui/feed`'s `FeedSources`, `PluginPosts`,
+`FeedMix`):
+
+- **Who is asked**: on Following and For you, every running plugin with a
+  feed whose switch is on, for its followed accounts; on a group's feed (its
+  screen and its tab on Home), each plugin for its members in the group, its
+  nested groups and those read alongside. For you takes every kind of post;
+  Following and the groups their own reply and repost settings.
+- **Its place**: a post goes above the first X thread older than it (a
+  thread sits at its newest post); one older than every thread read so far
+  rides at the end until paging reaches it. With nothing from X, or X failing,
+  the plugins' posts are shown alone under why.
+- **What is new**: what a plugin answers while the reader is down the list
+  is held, counted in the new-posts pill, and shown when they come back to
+  the top or tap the pill, so nothing moves under their eyes.
+- **Failures**: each plugin is read on its own; one that fails says so in a
+  pill naming it, with a retry, and the others' posts stay. A plugin that is
+  uninstalled, switched off, or loses its members leaves with its posts.
+- **Reading again**: a pull or the refresh button reads every plugin past its
+  caches; the connection coming back reads the ones that failed.
+
+A post is drawn with the shared row, the plugin's mark on its avatar, and
+leads where `postActions` says (its link otherwise).
+
+### Accounts in the app's groups
+
+XTA's groups hold other networks' accounts. A group member written
+`<plugin id>:<account>` is a plugin's (a saved search with a colon stays a
+search); the account is what the plugin's feed reads it by (Bluesky's DID,
+a community's name in lower case). `host.addToGroup(account, follow)` opens the
+app's group picker (XTA's group membership sheet) for it; the choice applies
+as it closes, and `follow` runs first once a group is picked, for the plugin
+to follow the account, as XTA's picker does. `AddToGroupButton(host,
+account, follow)` is that as a bar's button; the shared post menu offers it
+for a post's author. The group's feed reads its members through their
+plugins ([above](#posts-in-homes-timelines)), and counts them among its
+members; uninstalling a plugin takes its members out of every group.
+
+### Saved, notes and likes
+
+The reader's archive is the app's: Saved with its folders and the note on a
+post, and the likes. A plugin files a post there as a `PluginPostArchive`:
+`id` unique across networks (`bluesky:<uri>`, `reddit:<id>`), `authorId` whose
+it is, and `content`, XTA's record of such a post where XTA has one
+(`{"xtaPlugin": "bluesky", "post": …}`), else XTA's link record,
+`PluginPostArchive.link(source, url, author, text, images)`, so a backup
+reads the same in XTA. Nothing reaches the network.
+
+| `PluginHost` | What it does |
+|---|---|
+| `saved` | the ids in Saved, as they change |
+| `toggleSaved(post)` | the bookmark: saved where a plain tap files (the folder remembered), or taken out |
+| `chooseFolder(post)` | the save sheet, as a long press on the bookmark opens it |
+| `editNote(post)` | the note on it in Saved, in the app's editor; writing one saves the post first |
+| `setLiked(post, liked)` | in the archive's likes or out of them: a network's own like mirrored there, as XTA mirrors Reddit's upvotes |
+| `openPostMenu(menu)` | the shared post menu (XTA's plugin post actions): save or remove, the note, Add to group for its author, Share link, Save to folder…, Reposted by and Quotes where the plugin lists them (`PluginPostMenu.reposts`, `quotes`), Open in browser |
+
+The shared row does this by itself when a plugin's `NetworkPostActions` say
+how: `archive` (a post's record) puts the bookmark at the end of its counts,
+a tap saving and a long press opening the save sheet, and `more` is what a
+long press on the row opens (`host.openPostMenu`). A plugin that draws its
+own footer (`NetworkPostExtras.footer`) puts `NetworkBookmark(archive)` in it,
+where XTA's footer has its bookmark, and its `onLongPress` comes before
+`more`. The sheets open over the app's screens, one at a time.
+
+Saved draws a plugin's post through its plugin: `XtaPlugin.archived(content)`
+reads the record back, and the shared row draws it with the plugin's
+`postActions`. A record the plugin does not read, or a plugin that is not
+installed, gets Saved's own card, whose link opens as the app opens links,
+in the plugin's screen once it is there (`routeFor`, `screen`).
+
+### Downloads and files
+
+| `PluginHost` | What it does |
+|---|---|
+| `download(media, fileName, subfolder)` | a `MediaItem` saved through the app's downloads, with their notices: a photo, or a video's own file (a stream has none) |
+| `saveFile(bytes, fileName, mimeType, subfolder)` | a file the plugin made (an exported animation, a novel's text) saved where the download setting says, with the same notices |
+| `shareFile(bytes, fileName, mimeType)` | such a file handed to the share sheet (Android's, through the app's file provider); the desktop has none, so it is saved instead, the notice saying where |
+| `openDownloads()` | the app's Downloads screen |
+
+A file is named `<plugin>-<its own name>` unless the plugin names it, as
+XTA names a plugin's media; a made file without an extension gets the one
+its type stands for. The media viewer a plugin opens (`openMedia`) has the
+same Download in its bar.
 
 ## A plugin module
 

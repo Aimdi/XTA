@@ -97,6 +97,9 @@
     <string name="photos">Foto\'s</string>
     <string name="save_post">Bericht opslaan</string>
     <string name="unsave_post">Uit opgeslagen verwijderen</string>
+    <string name="save_to_folder">Opslaan in map…</string>
+    <string name="add_note">Voeg een notitie toe aan dit opgeslagen bericht</string>
+    <string name="add_to_group">Aan groep toevoegen</string>
     <string name="collapse_all">Alles samenvouwen</string>
     <string name="expand_all">Alles uitvouwen</string>
     <string name="sign_in_needs_android">Inloggen kan hier alleen met de ingebouwde browser van de Android-app, en die heeft de desktopapp niet.</string>

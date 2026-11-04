@@ -16,7 +16,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -49,6 +50,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -85,6 +87,8 @@ import com.aimdi.xtanative.ui.generated.resources.search
 import com.aimdi.xtanative.ui.generated.resources.settings
 import com.aimdi.xtanative.ui.media.LocalInlinePlayer
 import com.aimdi.xtanative.ui.media.rememberInlinePlayer
+import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
+import com.aimdi.xtanative.ui.plugins.XtaPlugin
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.ThreadRows
 import com.aimdi.xtanative.ui.post.hasVideo
@@ -180,8 +184,7 @@ fun FeedScreen(actions: PostActions, openSearch: () -> Unit, openSettings: () ->
 /** The search of what the feed of the tab shown has loaded, over the screen. */
 @Composable
 private fun LoadedPostsSearch(groupId: String?, actions: PostActions, onClose: () -> Unit) {
-    val graph = LocalGraph.current
-    val vm: FeedViewModel = viewModel(key = feedViewModelKey(groupId)) { FeedViewModel(graph, groupId) }
+    val vm = feedViewModel(groupId)
     val state by vm.ui.collectAsStateWithLifecycle()
     LoadedFeedSearchScreen(state.threads, actions, onClose)
 }
@@ -193,13 +196,23 @@ private fun tabLabel(group: FollowGroup): String = listOfNotNull(group.emoji, gr
 /** The key [FeedPage] keeps the view model of [groupId]'s feed under, the Following feed's for null. */
 internal fun feedViewModelKey(groupId: String?): String = "feed-" + (groupId ?: FOLLOWING)
 
+/** The view model of [groupId]'s feed, the Following feed's for null, with the plugins' posts it mixes in. */
+@Composable
+internal fun feedViewModel(groupId: String?): FeedViewModel {
+    val graph = LocalGraph.current
+    val feeds = LocalPlugins.current.feeds
+    return viewModel(key = feedViewModelKey(groupId)) { FeedViewModel(graph, groupId, feeds) }
+}
+
 /** One tab: a feed with its own pull to refresh, place and cache. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun FeedPage(groupId: String?, page: Int, toTop: ToTop, actions: PostActions, contentPadding: PaddingValues) {
     val graph = LocalGraph.current
-    val vm: FeedViewModel = viewModel(key = feedViewModelKey(groupId)) { FeedViewModel(graph, groupId) }
+    val vm = feedViewModel(groupId)
     val state by vm.ui.collectAsStateWithLifecycle()
+    val plugin by vm.plugin.collectAsStateWithLifecycle()
+    val plugins = rememberRunningPlugins()
     val list = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val reduced = LocalReducedMotion.current
@@ -231,36 +244,53 @@ internal fun FeedPage(groupId: String?, page: Int, toTop: ToTop, actions: PostAc
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { inline?.resume() }
     val atTop by remember(list) { derivedStateOf { list.firstVisibleItemIndex == 0 } }
     LaunchedEffect(atTop) { if (atTop) vm.seenNew() }
+    ReadingAway(list) { away -> vm.readingAway(away) }
+    val buckets = remember(state.threads, plugin.shown) { FeedMix.place(state.threads, plugin.shown) }
+    val newCount = state.newAbove + plugin.newHeld
 
     PullToRefreshBox(isRefreshing = state.refreshing, onRefresh = { vm.refresh() }, modifier = Modifier.fillMaxSize()) {
         val problem = state.problem
         when {
+            state.threads.isEmpty() && plugin.shown.isNotEmpty() -> PluginPostsOnly(plugin.shown, plugins, list, contentPadding, problem) { vm.refresh() }
             state.threads.isEmpty() && problem != null -> Whole { ProblemView(problem, { vm.refresh() }) }
+            state.threads.isEmpty() && plugin.loading -> Whole { LoadingRow() }
             state.threads.isEmpty() && state.followed == 0 -> Whole { Message(stringResource(Res.string.feed_nobody_followed)) }
             state.threads.isEmpty() && state.answered && !state.refreshing -> Whole { Message(stringResource(Res.string.feed_empty)) }
             // The pull indicator already says a first load is under way.
             state.threads.isEmpty() -> Whole { if (!state.refreshing) LoadingRow() }
             else -> CompositionLocalProvider(LocalInlinePlayer provides inline.takeIf { autoplay }) {
-                FeedList(state, vm, actions, list, contentPadding)
+                FeedList(state, vm, actions, list, contentPadding, buckets, plugins)
             }
         }
-        AnimatedVisibility(
-            visible = state.newAbove > 0 && !atTop,
-            enter = fadeIn() + slideInVertically { -it },
-            exit = fadeOut() + slideOutVertically { -it },
-            modifier = Modifier.align(Alignment.TopCenter).padding(top = 12.dp),
-        ) {
-            NewPostsPill(state.newAbove) {
-                scope.launch { list.scrollToTop(reduced) }
-                vm.seenNew()
+        Column(Modifier.align(Alignment.TopCenter).padding(top = 12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            AnimatedVisibility(
+                visible = newCount > 0 && !atTop,
+                enter = fadeIn() + slideInVertically { -it },
+                exit = fadeOut() + slideOutVertically { -it },
+            ) {
+                NewPostsPill(newCount) {
+                    scope.launch { list.scrollToTop(reduced) }
+                    vm.seenNew()
+                }
             }
+            SourceProblems(plugin, plugins, onRetry = vm::retryPlugin, modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp))
         }
     }
 }
 
-/** "↑ 12 new posts": the posts a refresh put above the reader. */
+/** Says whether the reader is down [list], past its first few pixels, as that changes: what the plugins bring then waits. */
 @Composable
-private fun NewPostsPill(count: Int, onClick: () -> Unit) {
+internal fun ReadingAway(list: LazyListState, onChange: (Boolean) -> Unit) {
+    val away by remember(list) { derivedStateOf { list.firstVisibleItemIndex > 0 || list.firstVisibleItemScrollOffset > AWAY_PIXELS } }
+    val latest by rememberUpdatedState(onChange)
+    LaunchedEffect(away) { latest(away) }
+}
+
+private const val AWAY_PIXELS = 8
+
+/** "↑ 12 new posts": the posts a refresh put above the reader, and the plugins' that wait for them. */
+@Composable
+internal fun NewPostsPill(count: Int, onClick: () -> Unit) {
     Row(
         Modifier
             .clip(RoundedCornerShape(50))
@@ -284,8 +314,10 @@ private fun FeedList(
     state: FeedUi,
     vm: FeedViewModel,
     actions: PostActions,
-    list: androidx.compose.foundation.lazy.LazyListState,
+    list: LazyListState,
     contentPadding: PaddingValues,
+    buckets: List<List<SourcedPost>>,
+    plugins: Map<String, XtaPlugin>,
 ) {
     val nearEnd by remember(list) {
         derivedStateOf {
@@ -311,8 +343,8 @@ private fun FeedList(
         state.partial?.let { partial ->
             item(key = "partial", contentType = "notice") { PartialNotice(partial, vm::dismissPartial) }
         }
-        items(state.threads, key = { it.id }, contentType = { "thread" }) { thread ->
-            ThreadRows(thread, actions, playing = thread.id == playingId)
+        itemsIndexed(state.threads, key = { _, thread -> thread.id }, contentType = { _, _ -> "thread" }) { index, thread ->
+            Placed(buckets, index, plugins) { ThreadRows(thread, actions, playing = thread.id == playingId) }
         }
         item(key = "footer", contentType = "footer") {
             val more = state.moreProblem

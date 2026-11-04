@@ -253,6 +253,7 @@
     <string name="settings_net_immich">Immich</string>
     <string name="settings_show_as_tab">Tampilkan sebagai tab</string>
     <string name="settings_in_home_timeline">Tampilkan di lini masa beranda</string>
+    <string name="settings_in_home_timeline_description">Menggabungkan kiriman dari yang Anda ikuti di %1$s ke Mengikuti dan Untuk Anda</string>
     <string name="settings_threads_instance">Instans RSSHub</string>
     <string name="settings_threads_instance_hint">Misalnya http://192.168.1.10:1200 atau https://rsshub.example.org</string>
     <string name="settings_bluesky_instance">AppView</string>

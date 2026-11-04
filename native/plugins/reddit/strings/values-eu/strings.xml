@@ -97,6 +97,9 @@
     <string name="photos">Argazkiak</string>
     <string name="save_post">Gorde argitalpena</string>
     <string name="unsave_post">Kendu gordetakoetatik</string>
+    <string name="save_to_folder">Gorde karpeta batean…</string>
+    <string name="add_note">Gehitu ohar bat gordetako argitalpen honi</string>
+    <string name="add_to_group">Gehitu taldera</string>
     <string name="collapse_all">Tolestu guztiak</string>
     <string name="expand_all">Zabaldu guztiak</string>
     <string name="sign_in_needs_android">Hemen saioa hasteko Android aplikazioaren nabigatzaile integratua behar da, eta mahaigaineko aplikazioak ez du.</string>

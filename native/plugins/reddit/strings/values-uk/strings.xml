@@ -97,6 +97,9 @@
     <string name="photos">Фото</string>
     <string name="save_post">Зберегти допис</string>
     <string name="unsave_post">Вилучити зі збережених</string>
+    <string name="save_to_folder">Зберегти в теку…</string>
+    <string name="add_note">Додати нотатку до цього збереженого допису</string>
+    <string name="add_to_group">Додати до групи</string>
     <string name="collapse_all">Згорнути всі</string>
     <string name="expand_all">Розгорнути всі</string>
     <string name="sign_in_needs_android">Для входу тут потрібен вбудований браузер застосунку для Android, якого немає у версії для комп\'ютера.</string>

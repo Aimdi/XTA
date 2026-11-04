@@ -114,6 +114,7 @@
     <string name="saved_like">Bu cihazda beğen</string>
     <string name="saved_unlike">Beğeniyi bu cihazdan kaldır</string>
     <string name="saved_save_here">Bu cihaza kaydet</string>
+    <string name="saved_save_to_folder">Klasöre kaydet…</string>
     <string name="saved_unsave">Bu cihazdan kaldır</string>
     <string name="saved_bookmarks">Yer imleri</string>
     <string name="saved_sensitive_profile">Bu profil hassas olabilecek görüntüler, dil veya başka içerikler içerebilir. Yine de görüntülemek istiyor musunuz?</string>

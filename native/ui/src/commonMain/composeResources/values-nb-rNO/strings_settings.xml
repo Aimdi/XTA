@@ -253,6 +253,7 @@
     <string name="settings_net_immich">Immich</string>
     <string name="settings_show_as_tab">Vis som fane</string>
     <string name="settings_in_home_timeline">Vis i hovedstrømmen</string>
+    <string name="settings_in_home_timeline_description">Blander innlegg fra det du følger på %1$s inn i Følger og For deg</string>
     <string name="settings_threads_instance">RSSHub-instans</string>
     <string name="settings_threads_instance_hint">For eksempel http://192.168.1.10:1200 eller https://rsshub.example.org</string>
     <string name="settings_bluesky_instance">AppView</string>

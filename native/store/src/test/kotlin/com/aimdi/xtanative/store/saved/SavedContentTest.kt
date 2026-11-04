@@ -120,6 +120,20 @@ class SavedContentTest {
     }
 
     @Test
+    fun aKeptPostOfAnotherNetworkNamesThePluginThatReadsItAndKeepsItsWholeRecord() {
+        assertEquals("bluesky", SavedContent.of(bluesky).network)
+        assertEquals("reddit", SavedContent.of(reddit).network)
+        assertEquals("mastodon", SavedContent.of(mastodon).network)
+        assertEquals("threads", SavedContent.of(threads).network)
+        val link = json("""{"xtaPlugin":"link","source":"pixiv","url":"https://www.pixiv.net/artworks/1","author":"A","text":"t"}""")
+        assertEquals("pixiv", SavedContent.of(link).network)
+        assertNull(SavedContent.of(tweet).network)
+        assertNull(SavedContent.EMPTY.network)
+        assertEquals("abc", SavedContent.of(reddit).record["post"]["id"].string, "the record is the whole blob, not its post")
+        assertEquals("reddit", SavedContent.of(reddit).record["xtaPlugin"].string)
+    }
+
+    @Test
     fun aRedditPostWithAPictureLinkHasMedia() {
         val picture = json("""{"xtaPlugin":"reddit","post":{"id":"p","title":"t","subreddit":"s","permalink":"/r/s/p","url":"https://i.redd.it/x.png"}}""")
         assertTrue(SavedContent.of(picture).hasMedia)

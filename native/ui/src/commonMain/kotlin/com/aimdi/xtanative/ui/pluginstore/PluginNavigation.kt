@@ -71,15 +71,16 @@ fun PluginsFrame(plugins: AppPlugins, content: @Composable () -> Unit) {
 
 /**
  * Hooks the app's navigation [nav] up for the plugins: where a plugin asks
- * to go is opened there, X's screens through [x] and a link the way the app
- * opens links; and the screen the shell asked to open at start is opened once.
+ * to go is opened there, X's screens through [x], a link the way the app
+ * opens links, the Downloads screen at its route [downloads]; and the screen
+ * the shell asked to open at start is opened once.
  */
 @Composable
-fun AttachPluginNavigation(nav: NavHostController, x: LinkScreens) {
+fun AttachPluginNavigation(nav: NavHostController, x: LinkScreens, downloads: String) {
     val plugins = LocalPlugins.current
     val links = LocalLinks.current
     val uri = LocalUriHandler.current
-    val target = remember(nav, x, links, uri) { PluginNavTarget(nav, x, links, uri) }
+    val target = remember(nav, x, links, uri, downloads) { PluginNavTarget(nav, x, links, uri, downloads) }
     DisposableEffect(plugins, target) {
         plugins.navigator.attach(target)
         onDispose { plugins.navigator.detach(target) }
@@ -141,8 +142,13 @@ fun NavGraphBuilder.pluginScreens(
     ) { entry ->
         val plugins = LocalPlugins.current
         val key = entry.text("key").orEmpty()
-        val items = remember(key) { plugins.media.get(key) }
-        MediaPager(items, entry.arguments?.read { getIntOrNull("index") } ?: 0, onClose = { nav.popBackStack() })
+        val shelved = remember(key) { plugins.media.get(key) }
+        MediaPager(
+            shelved?.items.orEmpty(),
+            entry.arguments?.read { getIntOrNull("index") } ?: 0,
+            onClose = { nav.popBackStack() },
+            onDownload = shelved?.let { media -> { item -> plugins.download(media.source, item) } },
+        )
     }
 }
 
@@ -152,6 +158,7 @@ private class PluginNavTarget(
     private val x: LinkScreens,
     private val links: LinkOpener?,
     private val uri: UriHandler,
+    private val downloads: String,
 ) : NavTarget {
     override fun go(destination: Destination) {
         when (destination) {
@@ -165,6 +172,7 @@ private class PluginNavTarget(
             is Destination.PluginSearch -> nav.navigate(PluginRoutes.search(destination.pluginId, destination.query))
             is Destination.PluginSettings -> nav.navigate(PluginRoutes.settings(destination.pluginId))
             is Destination.Media -> nav.navigate(PluginRoutes.media(destination.key, destination.start))
+            Destination.Downloads -> nav.navigate(downloads)
             Destination.Back -> nav.popBackStack()
         }
     }

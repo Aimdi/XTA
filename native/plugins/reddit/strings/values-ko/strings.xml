@@ -97,6 +97,9 @@
     <string name="photos">사진</string>
     <string name="save_post">게시물 저장</string>
     <string name="unsave_post">저장에서 삭제</string>
+    <string name="save_to_folder">폴더에 저장…</string>
+    <string name="add_note">저장한 이 게시물에 메모 추가</string>
+    <string name="add_to_group">그룹에 추가</string>
     <string name="collapse_all">모두 접기</string>
     <string name="expand_all">모두 펼치기</string>
     <string name="sign_in_needs_android">여기서 로그인하려면 Android 앱의 내장 브라우저가 필요하지만 데스크톱 앱에는 없습니다.</string>

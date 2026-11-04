@@ -12,6 +12,13 @@ import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.store.settings.AccountPrefs
 import com.aimdi.xtanative.store.settings.PostsPrefs
+import com.aimdi.xtanative.ui.feed.FeedSources
+import com.aimdi.xtanative.ui.feed.MixedSources
+import com.aimdi.xtanative.ui.feed.PluginFeeds
+import com.aimdi.xtanative.ui.feed.PluginPostsState
+import com.aimdi.xtanative.ui.plugins.FeedKinds
+import com.aimdi.xtanative.ui.plugins.PluginSettings
+import com.aimdi.xtanative.ui.plugins.problemOf
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,11 +54,25 @@ data class ForYouUi(
  * For you (XTA's `x` source on the strip): the home timelines of the X
  * accounts left on in Home feed accounts, merged newest first, without
  * replies, without the posts of the groups kept off the home feeds, and in
- * zen mode paused after its pages.
+ * zen mode paused after its pages; with the posts of what is followed in each
+ * plugin whose "show in the home timeline" switch is on mixed in by time
+ * ([feeds]), all of them, as XTA's For you takes them.
  */
-class ForYouViewModel(private val graph: AppGraph) : ViewModel() {
+class ForYouViewModel(private val graph: AppGraph, feeds: PluginFeeds = PluginFeeds.None) : ViewModel() {
     private val state = MutableStateFlow(ForYouUi())
     val ui: StateFlow<ForYouUi> = state.asStateFlow()
+
+    private val mixed = MixedSources(
+        viewModelScope,
+        feeds,
+        combine(feeds.ids, graph.settings.settings) { ids, settings ->
+            FeedSources.asks(ids, emptyMap(), home = true, inHome = { PluginSettings.inHomeFeed(settings, it) }, kinds = FeedKinds.ALL)
+        },
+        ::problemOf,
+    )
+
+    /** The plugins' posts For you mixes in. */
+    val plugin: StateFlow<PluginPostsState> = mixed.posts.state
 
     private data class Shape(val accounts: List<XAccount>, val off: Set<String>, val excluded: Set<String>, val pageCap: Int?)
 
@@ -83,6 +104,7 @@ class ForYouViewModel(private val graph: AppGraph) : ViewModel() {
     private suspend fun retryWhenBackOnline() {
         graph.online.collect { online ->
             if (!online) return@collect
+            mixed.retryFailed()
             refreshJob?.join()
             val now = state.value
             if (now.problem == Problem.Offline || now.notice == Problem.Offline) refresh(byReader = false)
@@ -91,6 +113,7 @@ class ForYouViewModel(private val graph: AppGraph) : ViewModel() {
 
     /** The newest page, in place of what is shown; [byReader] is a pull, which also goes back to the top. */
     fun refresh(byReader: Boolean = true) {
+        if (byReader) mixed.refresh(force = true)
         val shape = shape ?: return
         refreshJob?.cancel()
         resets++
@@ -169,6 +192,15 @@ class ForYouViewModel(private val graph: AppGraph) : ViewModel() {
     }
 
     fun dismissNotice() = state.update { it.copy(notice = null) }
+
+    /** Whether the reader is down the list, where the plugins' new posts wait until they come back up or ask for them. */
+    fun readingAway(away: Boolean) = mixed.posts.readingAway(away)
+
+    /** Shows the plugins' posts that waited, as the new-posts pill does. */
+    fun revealPlugins() = mixed.posts.reveal()
+
+    /** Reads plugin [source] again, as its failure's retry does. */
+    fun retryPlugin(source: String) = mixed.posts.retry(source)
 
     private suspend fun read(shape: Shape, cursor: String?): ForYouPage {
         val page = ForYou.page(shape.accounts, shape.off, cursor, reads, ForYouRules.PAGE_SIZE, shape.excluded)

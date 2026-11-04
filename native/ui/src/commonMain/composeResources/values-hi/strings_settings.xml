@@ -253,6 +253,7 @@
     <string name="settings_net_immich">Immich</string>
     <string name="settings_show_as_tab">टैब के रूप में दिखाएँ</string>
     <string name="settings_in_home_timeline">होम टाइमलाइन में दिखाएँ</string>
+    <string name="settings_in_home_timeline_description">आप %1$s पर जो फ़ॉलो करते हैं उसकी पोस्ट को “फ़ॉलोइंग” और “आपके लिए” में मिलाता है</string>
     <string name="settings_threads_instance">RSSHub इंस्टेंस</string>
     <string name="settings_threads_instance_hint">उदाहरण के लिए http://192.168.1.10:1200 या https://rsshub.example.org</string>
     <string name="settings_bluesky_instance">AppView</string>

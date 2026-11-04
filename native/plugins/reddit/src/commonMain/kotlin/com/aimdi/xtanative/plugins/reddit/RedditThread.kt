@@ -199,16 +199,16 @@ private fun PostAuthor(app: RedditApp, post: RedditPost) {
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun PostActions(app: RedditApp, post: RedditPost, comments: Int, onComments: () -> Unit) {
-    val saved by app.saved.collectAsState()
+    val archived by app.host.saved.collectAsState()
     val share = rememberShareLink()
-    val isSaved = RedditSaved.isSaved(saved, post)
+    val isSaved = RedditArchive.id(post) in archived
     FlowRow(
         Modifier.fillMaxWidth().padding(start = 16.dp, end = 12.dp, top = 12.dp, bottom = 14.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-            UpvoteButton(app, post.id, post.score, filled = true)
+            UpvoteButton(app, post.id, post.score, filled = true) { app.upvote(post) }
             Pill(filled = true, onClick = onComments) {
                 Icon(RedditGlyphs.Comment, contentDescription = pluginPlural(Strings.comment_count, comments, comments), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(19.dp))
                 Spacer(Modifier.width(8.dp))

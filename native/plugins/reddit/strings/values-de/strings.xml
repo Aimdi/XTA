@@ -97,6 +97,9 @@
     <string name="photos">Fotos</string>
     <string name="save_post">Beitrag speichern</string>
     <string name="unsave_post">Aus Gespeichertem entfernen</string>
+    <string name="save_to_folder">In Ordner speichern…</string>
+    <string name="add_note">Notiz zu diesem gespeicherten Beitrag</string>
+    <string name="add_to_group">Zu Gruppe hinzufügen</string>
     <string name="collapse_all">Alle einklappen</string>
     <string name="expand_all">Alle ausklappen</string>
     <string name="sign_in_needs_android">Die Anmeldung hier braucht den integrierten Browser der Android-App, den die Desktop-App nicht hat.</string>

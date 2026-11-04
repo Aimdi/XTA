@@ -97,6 +97,9 @@
     <string name="photos">照片</string>
     <string name="save_post">保存帖子</string>
     <string name="unsave_post">从收藏中移除</string>
+    <string name="save_to_folder">保存到文件夹…</string>
+    <string name="add_note">为这条收藏添加备注</string>
+    <string name="add_to_group">添加到订阅组</string>
     <string name="collapse_all">全部折叠</string>
     <string name="expand_all">全部展开</string>
     <string name="sign_in_needs_android">在此登录需要 Android 应用的内置浏览器，桌面版没有这个浏览器。</string>

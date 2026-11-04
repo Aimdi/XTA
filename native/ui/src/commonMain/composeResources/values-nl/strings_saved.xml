@@ -114,6 +114,7 @@
     <string name="saved_like">Vind ik leuk op dit apparaat</string>
     <string name="saved_unlike">Like van dit apparaat verwijderen</string>
     <string name="saved_save_here">Opslaan op dit apparaat</string>
+    <string name="saved_save_to_folder">Opslaan in map…</string>
     <string name="saved_unsave">Van dit apparaat verwijderen</string>
     <string name="saved_bookmarks">Bladwijzers</string>
     <string name="saved_sensitive_profile">Dit profiel kan mogelijk gevoelige afbeeldingen, taal of andere inhoud bevatten. Wil je het toch bekijken?</string>

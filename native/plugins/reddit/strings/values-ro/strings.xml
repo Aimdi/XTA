@@ -97,6 +97,9 @@
     <string name="photos">Fotografii</string>
     <string name="save_post">Salvează postarea</string>
     <string name="unsave_post">Elimină din cele salvate</string>
+    <string name="save_to_folder">Salvează în dosar…</string>
+    <string name="add_note">Adaugă o notiță la această postare salvată</string>
+    <string name="add_to_group">Adăugați la grup</string>
     <string name="collapse_all">Restrânge tot</string>
     <string name="expand_all">Extinde tot</string>
     <string name="sign_in_needs_android">Conectarea aici necesită browserul integrat al aplicației Android, pe care aplicația pentru desktop nu îl are.</string>

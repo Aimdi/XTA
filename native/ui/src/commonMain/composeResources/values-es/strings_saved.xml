@@ -114,6 +114,7 @@
     <string name="saved_like">Me gusta en este dispositivo</string>
     <string name="saved_unlike">Quitar el me gusta de este dispositivo</string>
     <string name="saved_save_here">Guardar en este dispositivo</string>
+    <string name="saved_save_to_folder">Guardar en una carpeta…</string>
     <string name="saved_unsave">Quitar de este dispositivo</string>
     <string name="saved_bookmarks">Marcadores</string>
     <string name="saved_sensitive_profile">Este perfil puede incluir imágenes, lenguaje u otro contenido posiblemente sensible. ¿Aún deseas verlo?</string>

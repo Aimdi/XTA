@@ -126,6 +126,7 @@
     <string name="saved_like">إعجاب على هذا الجهاز</string>
     <string name="saved_unlike">إزالة الإعجاب من هذا الجهاز</string>
     <string name="saved_save_here">حفظ على هذا الجهاز</string>
+    <string name="saved_save_to_folder">الحفظ في مجلد…</string>
     <string name="saved_unsave">إزالة من هذا الجهاز</string>
     <string name="saved_bookmarks">الإشارات المرجعية</string>
     <string name="saved_sensitive_profile">قد يتضمن ملف التعريف هذا صورًا أو لغة أو محتوى آخر يحتمل أن يكون حساسًا. هل مازلت تريد مشاهدته؟</string>

@@ -40,6 +40,7 @@ import com.aimdi.xtanative.ui.plugins.ReadsMoreNearEnd
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.pluginString
+import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.plugins.rememberKept
 
 /** Where a list of posts comes from: a community (Reddit's rails `popular` and `all` among them), or an account. */
@@ -131,7 +132,7 @@ private fun PagedFooter(paged: PagedState<*>, pages: PagedItems<*>) {
 /**
  * A community's or an account's own screen (XTA's `RedditListingScreen`):
  * its posts under its name; a community's with search within it, what it
- * says about itself, and following it on this device.
+ * says about itself, its groups, and following it on this device.
  */
 @Composable
 internal fun ListingScreen(app: RedditApp, listing: Listing) {
@@ -147,6 +148,7 @@ internal fun ListingScreen(app: RedditApp, listing: Listing) {
             if (listing is Listing.Subreddit) {
                 IconButton(onClick = { app.host.open(RedditRoutes.search(name)) }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) }
                 IconButton(onClick = { about = true }) { Icon(Icons.Outlined.Info, pluginString(Strings.about_community)) }
+                IconButton(onClick = { app.addToGroup(name) }) { Icon(PostIcons.People, pluginString(Strings.add_to_group)) }
                 FollowButton(app, name)
             }
         },

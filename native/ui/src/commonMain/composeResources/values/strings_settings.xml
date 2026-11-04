@@ -253,6 +253,7 @@
     <string name="settings_net_immich">Immich</string>
     <string name="settings_show_as_tab">Show as a tab</string>
     <string name="settings_in_home_timeline">Show in the home timeline</string>
+    <string name="settings_in_home_timeline_description">Mixes posts from what you follow on %1$s into Following and For you</string>
     <string name="settings_threads_instance">RSSHub instance</string>
     <string name="settings_threads_instance_hint">For example http://192.168.1.10:1200 or https://rsshub.example.org</string>
     <string name="settings_bluesky_instance">AppView</string>

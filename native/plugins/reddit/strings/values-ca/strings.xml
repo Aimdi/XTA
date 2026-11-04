@@ -97,6 +97,9 @@
     <string name="photos">Fotos</string>
     <string name="save_post">Desa la publicació</string>
     <string name="unsave_post">Treu dels desats</string>
+    <string name="save_to_folder">Desa a una carpeta…</string>
+    <string name="add_note">Afegeix una nota a aquesta publicació desada</string>
+    <string name="add_to_group">Afegir al grup</string>
     <string name="collapse_all">Replega-ho tot</string>
     <string name="expand_all">Desplega-ho tot</string>
     <string name="sign_in_needs_android">Per iniciar la sessió aquí cal el navegador integrat de l\'app d\'Android, que l\'app d\'escriptori no té.</string>

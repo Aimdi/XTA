@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -31,6 +31,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -49,7 +50,17 @@ import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.ProblemView
 import com.aimdi.xtanative.ui.common.problemText
 import com.aimdi.xtanative.ui.common.scrollToTop
+import com.aimdi.xtanative.ui.feed.FeedMix
+import com.aimdi.xtanative.ui.feed.NewPostsPill
+import com.aimdi.xtanative.ui.feed.Placed
+import com.aimdi.xtanative.ui.feed.PluginPostsOnly
+import com.aimdi.xtanative.ui.feed.ReadingAway
+import com.aimdi.xtanative.ui.feed.SourceProblems
+import com.aimdi.xtanative.ui.feed.SourcedPost
 import com.aimdi.xtanative.ui.feed.ToTop
+import com.aimdi.xtanative.ui.feed.rememberRunningPlugins
+import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
+import com.aimdi.xtanative.ui.plugins.XtaPlugin
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.dismiss
 import com.aimdi.xtanative.ui.generated.resources.home_for_you_empty
@@ -62,19 +73,31 @@ import com.aimdi.xtanative.ui.media.rememberInlinePlayer
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.ThreadRows
 import com.aimdi.xtanative.ui.post.hasVideo
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
 /** The key For you's view model is kept under on Home. */
 internal const val FOR_YOU_VIEW_MODEL = "for-you"
+
+/** For you's view model, with the plugins' posts it mixes in. */
+@Composable
+internal fun forYouViewModel(): ForYouViewModel {
+    val graph = LocalGraph.current
+    val feeds = LocalPlugins.current.feeds
+    return viewModel(key = FOR_YOU_VIEW_MODEL) { ForYouViewModel(graph, feeds) }
+}
 
 /** For you as a page of the strip, [page] in the pager: pulled to refresh, read on as it is scrolled. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ForYouPage(page: Int, toTop: ToTop, actions: PostActions, contentPadding: PaddingValues, onImport: () -> Unit) {
     val graph = LocalGraph.current
-    val vm: ForYouViewModel = viewModel(key = FOR_YOU_VIEW_MODEL) { ForYouViewModel(graph) }
+    val vm = forYouViewModel()
     val state by vm.ui.collectAsStateWithLifecycle()
+    val plugin by vm.plugin.collectAsStateWithLifecycle()
+    val plugins = rememberRunningPlugins()
     val list = rememberLazyListState()
+    val scope = rememberCoroutineScope()
     // A page swiped back into view must not answer a request it already answered.
     var answeredTap by rememberSaveable { mutableIntStateOf(toTop.count) }
     val reduced = LocalReducedMotion.current
@@ -96,9 +119,14 @@ internal fun ForYouPage(page: Int, toTop: ToTop, actions: PostActions, contentPa
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { inline?.pause() }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { inline?.resume() }
 
+    val atTop by remember(list) { derivedStateOf { list.firstVisibleItemIndex == 0 } }
+    ReadingAway(list) { away -> vm.readingAway(away) }
+    val buckets = remember(state.threads, plugin.shown) { FeedMix.place(state.threads, plugin.shown) }
+
     PullToRefreshBox(isRefreshing = state.refreshing, onRefresh = { vm.refresh() }, modifier = Modifier.fillMaxSize()) {
         val problem = state.problem
         when {
+            state.threads.isEmpty() && plugin.shown.isNotEmpty() -> PluginPostsOnly(plugin.shown, plugins, list, contentPadding, problem) { vm.refresh() }
             state.noAccount -> PageMessage(stringResource(Res.string.home_for_you_no_account)) {
                 Button(onClick = onImport) { Text(stringResource(Res.string.home_import)) }
             }
@@ -107,14 +135,31 @@ internal fun ForYouPage(page: Int, toTop: ToTop, actions: PostActions, contentPa
             // The pull indicator already says a first load is under way.
             state.threads.isEmpty() -> PageMessage(null) { if (!state.refreshing) LoadingRow() }
             else -> CompositionLocalProvider(LocalInlinePlayer provides inline.takeIf { session?.autoplay ?: true }) {
-                ForYouList(state, vm, actions, list, contentPadding)
+                ForYouList(state, vm, actions, list, contentPadding, buckets, plugins)
             }
+        }
+        Column(Modifier.align(Alignment.TopCenter).padding(top = 12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            if (plugin.newHeld > 0 && !atTop) {
+                NewPostsPill(plugin.newHeld) {
+                    scope.launch { list.scrollToTop(reduced) }
+                    vm.revealPlugins()
+                }
+            }
+            SourceProblems(plugin, plugins, onRetry = vm::retryPlugin, modifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp))
         }
     }
 }
 
 @Composable
-private fun ForYouList(state: ForYouUi, vm: ForYouViewModel, actions: PostActions, list: LazyListState, contentPadding: PaddingValues) {
+private fun ForYouList(
+    state: ForYouUi,
+    vm: ForYouViewModel,
+    actions: PostActions,
+    list: LazyListState,
+    contentPadding: PaddingValues,
+    buckets: List<List<SourcedPost>>,
+    plugins: Map<String, XtaPlugin>,
+) {
     val nearEnd by remember(list) {
         derivedStateOf {
             val info = list.layoutInfo
@@ -139,8 +184,8 @@ private fun ForYouList(state: ForYouUi, vm: ForYouViewModel, actions: PostAction
         state.notice?.let { notice ->
             item(key = "notice", contentType = "notice") { RefreshNotice(notice, vm::dismissNotice) }
         }
-        items(state.threads, key = { it.id }, contentType = { "thread" }) { thread ->
-            ThreadRows(thread, actions, playing = thread.id == playingId)
+        itemsIndexed(state.threads, key = { _, thread -> thread.id }, contentType = { _, _ -> "thread" }) { index, thread ->
+            Placed(buckets, index, plugins) { ThreadRows(thread, actions, playing = thread.id == playingId) }
         }
         item(key = "footer", contentType = "footer") {
             val more = state.moreProblem

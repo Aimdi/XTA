@@ -111,6 +111,7 @@
     <string name="saved_like">在此设备点赞</string>
     <string name="saved_unlike">从此设备取消点赞</string>
     <string name="saved_save_here">保存在此设备</string>
+    <string name="saved_save_to_folder">保存到文件夹…</string>
     <string name="saved_unsave">从此设备移除</string>
     <string name="saved_bookmarks">书签</string>
     <string name="saved_sensitive_profile">该个人资料可能包含潜在的敏感图像、语言或其他内容。是否仍要浏览？</string>

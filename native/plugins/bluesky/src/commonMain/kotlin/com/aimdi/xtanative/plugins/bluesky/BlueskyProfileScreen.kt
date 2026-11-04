@@ -77,6 +77,7 @@ import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.monthText
+import com.aimdi.xtanative.ui.plugins.AddToGroupButton
 import com.aimdi.xtanative.ui.plugins.LinkedText
 import com.aimdi.xtanative.ui.plugins.MediaItem
 import com.aimdi.xtanative.ui.plugins.MessageText
@@ -111,7 +112,7 @@ internal enum class ProfileTab(val read: BlueskyProfileTab?, val label: PluginTe
 
 /**
  * A Bluesky profile, as XTA shows one: its banner and picture (each opening
- * in the viewer), Follow here, its name, handle, description, when it joined
+ * in the viewer), Add to group and Follow here, its name, handle, description, when it joined
  * and its counts (following and followers open their lists), then its tabs.
  * Its bar searches its posts and shares its link.
  */
@@ -190,9 +191,16 @@ private fun Header(app: BlueskyApp, profile: BlueskyProfile?, actor: String, fol
                 onClick = profile?.avatarUrl?.let { url -> { app.host.openMedia(listOf(MediaItem(url)), 0) } },
             )
         }
-        // Beside the picture's lower half, as X places it.
-        Box(Modifier.fillMaxWidth().height(52.dp).padding(start = 120.dp, end = 16.dp), contentAlignment = Alignment.CenterEnd) {
-            if (profile != null) FollowButton(followed) { app.toggleFollow(profile) }
+        // Beside the picture's lower half, as X places it; Add to group before Follow, as XTA's.
+        Row(
+            Modifier.fillMaxWidth().height(52.dp).padding(start = 120.dp, end = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (profile != null) {
+                AddToGroupButton(app.host, profile.actor) { app.ensureFollowed(profile) }
+                FollowButton(followed) { app.toggleFollow(profile) }
+            }
         }
         Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Column {

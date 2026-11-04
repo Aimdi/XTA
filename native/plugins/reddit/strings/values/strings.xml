@@ -97,6 +97,9 @@
     <string name="photos">Photos</string>
     <string name="save_post">Save post</string>
     <string name="unsave_post">Remove from saved</string>
+    <string name="save_to_folder">Save to folder…</string>
+    <string name="add_note">Add a note to this saved post</string>
+    <string name="add_to_group">Add to group</string>
     <string name="collapse_all">Collapse all</string>
     <string name="expand_all">Expand all</string>
     <string name="sign_in_needs_android">Signing in here needs the Android app\'s built-in browser, which the desktop app doesn\'t have.</string>

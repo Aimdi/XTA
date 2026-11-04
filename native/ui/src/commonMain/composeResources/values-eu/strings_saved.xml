@@ -114,6 +114,7 @@
     <string name="saved_like">Atsegin gailu honetan</string>
     <string name="saved_unlike">Kendu atsegina gailu honetatik</string>
     <string name="saved_save_here">Gorde gailu honetan</string>
+    <string name="saved_save_to_folder">Gorde karpeta batean…</string>
     <string name="saved_unsave">Kendu gailu honetatik</string>
     <string name="saved_bookmarks">Laster-markak</string>
     <string name="saved_sensitive_profile">Baliteke profil honek irudi, hizkuntz edo bestelako eduki sentikorrak izan ditzazkeela. Hala ere ikusi nahi al duzu?</string>

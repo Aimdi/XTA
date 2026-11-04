@@ -7,11 +7,17 @@ import com.aimdi.xtanative.core.feed.FeedPlace
 import com.aimdi.xtanative.core.feed.FollowingFeed
 import com.aimdi.xtanative.core.feed.SavedFeed
 import com.aimdi.xtanative.core.feed.feedReads
+import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.data.FeedCache
 import com.aimdi.xtanative.data.Problem
+import com.aimdi.xtanative.data.plugins.PluginMembers
 import com.aimdi.xtanative.store.saved.ProfileFilters
+import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.ui.plugins.FeedKinds
+import com.aimdi.xtanative.ui.plugins.PluginSettings
+import com.aimdi.xtanative.ui.plugins.problemOf
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -48,12 +54,25 @@ data class FeedUi(
 
 /**
  * The Following feed for a null [groupId], else that group's feed, without
- * the reposts and replies the reader hid on profiles ([HiddenPosts]).
+ * the reposts and replies the reader hid on profiles ([HiddenPosts]), with
+ * the plugins' posts mixed in by time ([feeds]): on the Following feed those
+ * of every plugin whose "show in the home timeline" switch is on, on a group's
+ * its members of other networks.
  */
-class FeedViewModel(private val graph: AppGraph, private val groupId: String?) : ViewModel() {
+class FeedViewModel(private val graph: AppGraph, private val groupId: String?, feeds: PluginFeeds = PluginFeeds.None) : ViewModel() {
     private val cache = graph.feedCache(groupId)
     private val state = MutableStateFlow(FeedUi())
     val ui: StateFlow<FeedUi> = state.asStateFlow()
+
+    private val mixed = MixedSources(
+        viewModelScope,
+        feeds,
+        combine(feeds.ids, graph.settings.settings, graph.sessions.state.filterNotNull()) { ids, settings, session -> asksOf(ids, settings, session) },
+        ::problemOf,
+    )
+
+    /** The plugins' posts this feed mixes in. */
+    val plugin: StateFlow<PluginPostsState> = mixed.posts.state
 
     private var feed: FollowingFeed? = null
 
@@ -88,15 +107,24 @@ class FeedViewModel(private val graph: AppGraph, private val groupId: String?) :
     /**
      * Reads again when the connection comes back and the feed said there was
      * none, once the refresh under way has ended: the phone may have come
-     * online while it was failing.
+     * online while it was failing. The plugins that failed are read again too.
      */
     private suspend fun retryWhenBackOnline() {
         graph.online.collect { online ->
             if (!online) return@collect
+            mixed.retryFailed()
             refreshJob?.join()
             val now = state.value
             if (now.problem == Problem.Offline || now.partial == Problem.Offline) refresh(byReader = false)
         }
+    }
+
+    /** What the feed asks of the plugins with a feed ([ids]): on the Following feed their followed accounts while their switch is on, on a group's its members of theirs. */
+    private fun asksOf(ids: Set<String>, settings: Settings, session: Session): Map<String, SourceAsk> {
+        val plan = session.feedPlan(groupId)
+        val members = groupId?.let { PluginMembers.of(session, it, emptySet(), ids) }.orEmpty()
+        val kinds = FeedKinds(plan.includeReplies, plan.includeReposts)
+        return FeedSources.asks(ids, members, home = groupId == null, inHome = { PluginSettings.inHomeFeed(settings, it) }, kinds = kinds)
     }
 
     /** The posts and place of the last run, shown at once, without what the reader hid since. */
@@ -122,6 +150,7 @@ class FeedViewModel(private val graph: AppGraph, private val groupId: String?) :
      * their place and is told how many there are.
      */
     fun refresh(byReader: Boolean = true) {
+        if (byReader) mixed.refresh(force = true)
         val feed = feed ?: return
         refreshJob?.cancel()
         refreshJob = viewModelScope.launch {
@@ -247,7 +276,16 @@ class FeedViewModel(private val graph: AppGraph, private val groupId: String?) :
 
     fun jumped() = state.update { it.copy(jump = null) }
 
-    fun seenNew() = state.update { if (it.newAbove == 0) it else it.copy(newAbove = 0) }
+    fun seenNew() {
+        state.update { if (it.newAbove == 0) it else it.copy(newAbove = 0) }
+        mixed.posts.reveal()
+    }
+
+    /** Whether the reader is down the list, where the plugins' new posts wait until they come back up or ask for them. */
+    fun readingAway(away: Boolean) = mixed.posts.readingAway(away)
+
+    /** Reads plugin [source] again, as its failure's retry does. */
+    fun retryPlugin(source: String) = mixed.posts.retry(source)
 
     fun dismissPartial() = state.update { it.copy(partial = null) }
 }

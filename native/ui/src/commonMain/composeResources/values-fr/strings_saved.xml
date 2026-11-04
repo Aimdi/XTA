@@ -114,6 +114,7 @@
     <string name="saved_like">Aimer sur cet appareil</string>
     <string name="saved_unlike">Retirer le j’aime de cet appareil</string>
     <string name="saved_save_here">Enregistrer sur cet appareil</string>
+    <string name="saved_save_to_folder">Enregistrer dans un dossier…</string>
     <string name="saved_unsave">Retirer de cet appareil</string>
     <string name="saved_bookmarks">Signets</string>
     <string name="saved_sensitive_profile">Ce profil peut contenir des images, un langage ou d'autres contenus potentiellement sensibles. Voulez-vous quand même le consulter ?</string>

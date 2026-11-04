@@ -97,6 +97,9 @@
     <string name="photos">Фото</string>
     <string name="save_post">Сохранить пост</string>
     <string name="unsave_post">Удалить из сохранённых</string>
+    <string name="save_to_folder">Сохранить в папку…</string>
+    <string name="add_note">Добавить заметку к этому сохранённому посту</string>
+    <string name="add_to_group">Добавить в группу</string>
     <string name="collapse_all">Свернуть все</string>
     <string name="expand_all">Развернуть все</string>
     <string name="sign_in_needs_android">Для входа здесь нужен встроенный браузер приложения для Android, которого нет в версии для компьютера.</string>

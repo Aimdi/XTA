@@ -120,6 +120,7 @@
     <string name="saved_like">Líbí se na tomto zařízení</string>
     <string name="saved_unlike">Odebrat like z tohoto zařízení</string>
     <string name="saved_save_here">Uložit na toto zařízení</string>
+    <string name="saved_save_to_folder">Uložit do složky…</string>
     <string name="saved_unsave">Odebrat z tohoto zařízení</string>
     <string name="saved_bookmarks">Záložky</string>
     <string name="saved_sensitive_profile">Tento profil může obsahovat potenciálně citlivé obrázky, jazyk nebo jiný obsah. Chcete jej přesto zobrazit?</string>

@@ -114,6 +114,7 @@
     <string name="saved_like">Lik på denne enheten</string>
     <string name="saved_unlike">Fjern likerklikk fra denne enheten</string>
     <string name="saved_save_here">Lagre på denne enheten</string>
+    <string name="saved_save_to_folder">Lagre i mappe…</string>
     <string name="saved_unsave">Fjern fra denne enheten</string>
     <string name="saved_bookmarks">Bokmerker</string>
     <string name="saved_sensitive_profile">Muligens sensitiv profil</string>

@@ -97,6 +97,9 @@
     <string name="photos">Fotod</string>
     <string name="save_post">Salvesta postitus</string>
     <string name="unsave_post">Eemalda salvestatutest</string>
+    <string name="save_to_folder">Salvesta kausta…</string>
+    <string name="add_note">Lisa sellele salvestatud postitusele märge</string>
+    <string name="add_to_group">Lisa gruppi</string>
     <string name="collapse_all">Ahenda kõik</string>
     <string name="expand_all">Laienda kõik</string>
     <string name="sign_in_needs_android">Siin sisselogimiseks on vaja Androidi rakenduse sisseehitatud brauserit, mida töölauarakendusel pole.</string>

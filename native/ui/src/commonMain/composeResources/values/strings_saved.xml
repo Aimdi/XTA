@@ -114,6 +114,7 @@
     <string name="saved_like">Like on this device</string>
     <string name="saved_unlike">Remove like from this device</string>
     <string name="saved_save_here">Save on this device</string>
+    <string name="saved_save_to_folder">Save to folder…</string>
     <string name="saved_unsave">Remove from this device</string>
     <string name="saved_bookmarks">Bookmarks</string>
     <string name="saved_sensitive_profile">This profile may include potentially sensitive images, language, or other content. Do you still want to view it?</string>

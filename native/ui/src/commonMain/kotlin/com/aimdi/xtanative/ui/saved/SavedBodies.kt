@@ -61,6 +61,8 @@ import com.aimdi.xtanative.store.saved.SavedEmptyKind
 import com.aimdi.xtanative.store.saved.SavedPost
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.feed.rememberLinkActions
+import com.aimdi.xtanative.ui.feed.rememberRunningPlugins
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.offline_title
 import com.aimdi.xtanative.ui.generated.resources.saved_add_note
@@ -76,6 +78,7 @@ import com.aimdi.xtanative.ui.generated.resources.saved_likes_ungrouped
 import com.aimdi.xtanative.ui.generated.resources.saved_no_media
 import com.aimdi.xtanative.ui.generated.resources.saved_note_button
 import com.aimdi.xtanative.ui.offline.OfflineSavedAction
+import com.aimdi.xtanative.ui.plugins.NetworkPostCard
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.PostCard
 import org.jetbrains.compose.resources.stringResource
@@ -210,8 +213,9 @@ private fun NoteLine(note: String?, offline: Boolean, onEdit: () -> Unit, onOffl
 
 /**
  * A kept post as the device has it: an X post as a feed row (opening the
- * post, its author and its media), another network's as a card that opens
- * where it lives, and one too large to keep as a line saying so.
+ * post, its author and its media), another network's as its plugin draws and
+ * opens it, or as a card that opens where it lives, and one too large to keep
+ * as a line saying so.
  */
 @Composable
 fun KeptPost(content: SavedContent, actions: PostActions) {
@@ -223,7 +227,25 @@ fun KeptPost(content: SavedContent, actions: PostActions) {
             PostCard(post, actions)
         }
         content.kind == SavedContent.Kind.NONE -> TooLarge()
-        else -> KeptCard.of(content)?.let { KeptCardView(it) } ?: TooLarge()
+        else -> KeptNetworkPost(content)
+    }
+}
+
+/**
+ * A kept post of another network: the shared row, drawn from its record and
+ * leading where its plugin says, while that plugin runs and reads the record
+ * ([com.aimdi.xtanative.ui.plugins.XtaPlugin.archived]); else Saved's own
+ * card, whose link opens in the plugin's screen once it is installed.
+ */
+@Composable
+private fun KeptNetworkPost(content: SavedContent) {
+    val plugin = content.network?.let(rememberRunningPlugins()::get)
+    val record = content.record.raw
+    val shown = remember(plugin, content) { if (plugin == null || record == null) null else runCatching { plugin.archived(record) }.getOrNull() }
+    if (plugin != null && shown != null) {
+        NetworkPostCard(shown, plugin.postActions ?: rememberLinkActions(plugin.id))
+    } else {
+        KeptCard.of(content)?.let { KeptCardView(it) } ?: TooLarge()
     }
 }
 

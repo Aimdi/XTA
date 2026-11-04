@@ -253,6 +253,7 @@
     <string name="settings_net_immich">Immich</string>
     <string name="settings_show_as_tab">Erakutsi fitxa gisa</string>
     <string name="settings_in_home_timeline">Erakutsi hasierako denbora-lerroan</string>
+    <string name="settings_in_home_timeline_description">%1$s-en jarraitzen duzunaren bidalketak «Jarraitzen» eta «Zuretzat» ataletan tartekatzen ditu</string>
     <string name="settings_threads_instance">RSSHub instantzia</string>
     <string name="settings_threads_instance_hint">Adibidez http://192.168.1.10:1200 edo https://rsshub.example.org</string>
     <string name="settings_bluesky_instance">AppView</string>

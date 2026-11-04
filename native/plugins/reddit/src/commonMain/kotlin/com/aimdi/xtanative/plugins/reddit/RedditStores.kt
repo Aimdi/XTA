@@ -223,6 +223,14 @@ internal object RedditSaved {
 
     fun isSaved(posts: List<RedditPost>, post: RedditPost): Boolean = posts.any { it.id == post.id }
 
+    /**
+     * [posts] as filing [post] in the app's archive leaves them (XTA's
+     * _mirrorRedditSaved): filed there, it is saved here too; taken out
+     * there, it goes from here too.
+     */
+    fun mirrored(posts: List<RedditPost>, post: RedditPost, filed: Boolean): List<RedditPost> =
+        if (isSaved(posts, post) == filed) posts else toggled(posts, post)
+
     /** [posts] with [post] taken out when saved, else put first. */
     fun toggled(posts: List<RedditPost>, post: RedditPost): List<RedditPost> =
         if (isSaved(posts, post)) posts.filter { it.id != post.id } else (listOf(post) + posts.filter { it.id != post.id }).take(CAP)

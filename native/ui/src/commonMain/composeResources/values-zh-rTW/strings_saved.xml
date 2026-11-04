@@ -111,6 +111,7 @@
     <string name="saved_like">在此裝置按讚</string>
     <string name="saved_unlike">從此裝置取消按讚</string>
     <string name="saved_save_here">儲存在此裝置</string>
+    <string name="saved_save_to_folder">儲存到資料夾…</string>
     <string name="saved_unsave">從此裝置移除</string>
     <string name="saved_bookmarks">書籤</string>
     <string name="saved_sensitive_profile">此個人資料可能包含潛在敏感的圖片、語言或其他內容。您仍要檢視嗎？</string>

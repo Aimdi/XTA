@@ -14,26 +14,37 @@ import com.aimdi.xtanative.networks.reddit.RedditSubredditAbout
 import com.aimdi.xtanative.networks.reddit.RedditSubredditResult
 import com.aimdi.xtanative.networks.reddit.RedditThread
 import com.aimdi.xtanative.networks.reddit.RedditUserResult
+import com.aimdi.xtanative.networks.reddit.normaliseSubreddit
 import com.aimdi.xtanative.store.settings.RedditFeedMode
 import com.aimdi.xtanative.store.settings.RedditPrefs
 import com.aimdi.xtanative.store.settings.RedditSource
 import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.ui.plugins.FeedKinds
 import com.aimdi.xtanative.ui.plugins.MediaItem
+import com.aimdi.xtanative.ui.plugins.NetworkPost
+import com.aimdi.xtanative.ui.plugins.NetworkPostActions
+import com.aimdi.xtanative.ui.plugins.PluginFeed
 import com.aimdi.xtanative.ui.plugins.PluginHost
+import com.aimdi.xtanative.ui.plugins.PluginPostMenu
 import java.time.Instant
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * What the Reddit plugin's screens share while it runs: its readers under
@@ -66,7 +77,10 @@ internal class RedditApp(val host: PluginHost) {
     /** Grows each time what a listing reads changes (the sort, the route, the sign-in, the NSFW display): open listings read again. */
     val generation: StateFlow<Int> = changes.asStateFlow()
 
-    private val shelf = RedditShelf()
+    private val shelf = RedditShelf { it.permalink }
+
+    /** The posts the app's shared rows drew lately, by id, so their bookmark and their menu file the post itself. */
+    private val drawn = RedditShelf { it.id }
 
     init {
         launch {
@@ -169,7 +183,95 @@ internal class RedditApp(val host: PluginHost) {
 
     fun toggleVote(id: String) = launch { votes.toggle(id) }
 
-    fun toggleSaved(post: RedditPost) = launch { prefs.update { RedditSaved.with(it, RedditSaved.toggled(RedditSaved.posts(it), post)) } }
+    /** The device's upvote of [post], mirrored in the archive's likes as XTA's syncRedditLikeToArchive does. Reddit is never told. */
+    fun upvote(post: RedditPost) {
+        val upvoted = post.id !in votes.state.value
+        toggleVote(post.id)
+        host.setLiked(RedditArchive.of(post), upvoted)
+    }
+
+    /**
+     * The bookmark (XTA's fileRedditPost and unfileRedditPost): [post] filed
+     * in the app's Saved where a plain tap files, or taken out; the plugin's
+     * own saved list follows.
+     */
+    fun toggleSaved(post: RedditPost) {
+        val filed = RedditArchive.id(post) !in host.saved.value
+        host.toggleSaved(RedditArchive.of(post))
+        mirrorSaved(post, filed)
+    }
+
+    /** The app's save sheet for [post] (XTA's pickRedditPostFolder); once it is filed, the plugin's saved list has it too. */
+    fun chooseFolder(post: RedditPost) {
+        host.chooseFolder(RedditArchive.of(post))
+        launch { withTimeoutOrNull(FILING_WAIT_MILLIS) { host.saved.first { RedditArchive.id(post) in it } }?.let { mirrorSaved(post, filed = true) } }
+    }
+
+    /** The note on [post] in the app's Saved. */
+    fun editNote(post: RedditPost) = host.editNote(RedditArchive.of(post))
+
+    /** [subreddit] in the app's groups, followed here first, as XTA's addRedditSubredditToGroup does. */
+    fun addToGroup(subreddit: String) {
+        val name = normaliseSubreddit(subreddit) ?: subreddit
+        host.addToGroup(name.lowercase()) { followNow(name) }
+    }
+
+    private suspend fun followNow(name: String) {
+        if (followed.value.follows(name)) return
+        subscriptions.add(name)
+        feed.refresh(RedditSubscriptions.names(subscriptions.load()))
+    }
+
+    private fun mirrorSaved(post: RedditPost, filed: Boolean) =
+        launch { prefs.update { RedditSaved.with(it, RedditSaved.mirrored(RedditSaved.posts(it), post, filed)) } }
+
+    /** [post] as the app's shared row draws it, its community's picture when it is known. */
+    fun shown(post: RedditPost, iconUrl: String? = null): NetworkPost {
+        drawn.put(post)
+        return RedditShared.post(post, iconUrl, choices.value, host.language)
+    }
+
+    /** Where a post the app draws leads: its thread, its community, the viewer; its bookmark and the shared menu. */
+    val actions = NetworkPostActions(
+        open = { shown -> drawn.get(shown.id)?.let(::openThread) ?: shown.url?.let(host::openLink) },
+        openAuthor = { shown -> openSubreddit(shown.authorId) },
+        openMention = { who -> openUser(who.removePrefix("u/")) },
+        openTag = { query -> host.openSearch(query) },
+        openMedia = { shown, index -> host.openMedia(shown.media, index) },
+        archive = { shown -> drawn.get(shown.id)?.let(RedditArchive::of) },
+        more = { shown -> drawn.get(shown.id)?.let { host.openPostMenu(menuOf(it)) } },
+    )
+
+    private fun menuOf(post: RedditPost) =
+        PluginPostMenu(RedditArchive.of(post), RedditThreadRules.postUrl(post), author = post.subreddit.lowercase()) { followNow(post.subreddit) }
+
+    /** The followed communities in Home's timelines and the groups' (XTA's loadRedditInterleaved). */
+    val shared: PluginFeed = SharedFeed()
+
+    private inner class SharedFeed : PluginFeed() {
+        override suspend fun followed(): List<String> = RedditSubscriptions.names(subscriptions.load())
+
+        /** Through the tab's listings and their cache, at most [SHARED_PER_COMMUNITY] of each, as XTA mixes Reddit in. */
+        override suspend fun posts(accounts: List<String>, kinds: FeedKinds, force: Boolean): List<NetworkPost> {
+            val choices = RedditChoices.of(prefs.load())
+            val posts = reading().feed.posts(
+                accounts,
+                sort = choices.sort.listing(),
+                timeFilter = choices.window.listing(),
+                hideNsfw = choices.hidesNsfw,
+                limit = SHARED_PER_COMMUNITY,
+                forceRefresh = force,
+                session = session(),
+            )
+            val faces = iconsOf(posts.map { it.subreddit.lowercase() }.distinct())
+            return posts.map { shown(it, faces[it.subreddit.lowercase()]) }
+        }
+    }
+
+    /** The communities' pictures, as far as they come quickly: a row without one shows the plain circle. */
+    private suspend fun iconsOf(names: List<String>): Map<String, String?> = coroutineScope {
+        names.map { name -> async { name to withTimeoutOrNull(ICON_WAIT_MILLIS) { attempt { icons.icon(name) }.getOrNull() } } }.awaitAll().toMap()
+    }
 
     fun selectMode(mode: RedditFeedMode) = launch { prefs.update { RedditHomeSource.selectingMode(it, mode) } }
 
@@ -226,6 +328,15 @@ internal class RedditApp(val host: PluginHost) {
         feed.refresh(RedditSubscriptions.names(subscriptions.load()), force = true)
     }
 
+    private companion object {
+        /** XTA's kRedditInterleavedPageSize. */
+        const val SHARED_PER_COMMUNITY = 10
+        const val ICON_WAIT_MILLIS = 3_000L
+
+        /** How long a save sheet opened for a post waits to see it filed before the plugin's saved list stops following it. */
+        const val FILING_WAIT_MILLIS = 10 * 60 * 1000L
+    }
+
     /** Opens [post]'s thread with all a list knew of it. */
     fun openThread(post: RedditPost) {
         shelf.put(post)
@@ -257,17 +368,18 @@ internal class RedditApp(val host: PluginHost) {
 
 }
 
-/** The posts a list opened lately, by permalink, so their thread starts with all the list knew. */
-internal class RedditShelf(private val capacity: Int = 64) {
+/** The posts a list showed lately, by [keyOf] (a thread's permalink, a row's id), so what opens or files them has all the list knew. */
+internal class RedditShelf(private val capacity: Int = 200, private val keyOf: (RedditPost) -> String) {
     private val posts = LinkedHashMap<String, RedditPost>()
 
     @Synchronized
     fun put(post: RedditPost) {
-        posts.remove(post.permalink)
-        posts[post.permalink] = post
+        val key = keyOf(post)
+        posts.remove(key)
+        posts[key] = post
         while (posts.size > capacity) posts.remove(posts.keys.first())
     }
 
     @Synchronized
-    fun get(permalink: String): RedditPost? = posts[permalink]
+    fun get(key: String): RedditPost? = posts[key]
 }

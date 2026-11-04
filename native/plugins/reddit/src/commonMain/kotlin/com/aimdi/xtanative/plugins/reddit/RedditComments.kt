@@ -264,15 +264,15 @@ private fun MenuItem(icon: ImageVector, label: String, close: () -> Unit, action
 /**
  * The up arrow and the score with this device's vote, in Reddit's orange
  * once upvoted (XTA's `RedditUpvoteButton`); [filled] as a pill under the
- * post, else a quiet button in a comment. Reddit is never told.
+ * post, else a quiet button in a comment; [onToggle] turns it. Reddit is never told.
  */
 @Composable
-internal fun UpvoteButton(app: RedditApp, id: String, score: Int?, filled: Boolean) {
+internal fun UpvoteButton(app: RedditApp, id: String, score: Int?, filled: Boolean, onToggle: () -> Unit = { app.toggleVote(id) }) {
     val votes by app.votes.state.collectAsState()
     val upvoted = id in votes
     val idle = if (filled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
     val colour = if (upvoted) readable(Upvote) else idle
-    Pill(filled = filled, onClick = { app.toggleVote(id) }) {
+    Pill(filled = filled, onClick = onToggle) {
         Icon(RedditGlyphs.ArrowUpwardRounded, contentDescription = pluginString(Strings.upvote), tint = if (upvoted) colour else MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(if (filled) 20.dp else 18.dp))
         if (score != null) {
             Spacer(Modifier.width(6.dp))

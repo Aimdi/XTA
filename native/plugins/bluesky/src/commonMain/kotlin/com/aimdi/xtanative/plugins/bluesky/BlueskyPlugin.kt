@@ -6,23 +6,30 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.bluesky.BlueskyXtaRows
+import com.aimdi.xtanative.ui.plugins.NetworkPost
+import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.PluginBackupSection
 import com.aimdi.xtanative.ui.plugins.PluginBody
+import com.aimdi.xtanative.ui.plugins.PluginFeed
 import com.aimdi.xtanative.ui.plugins.PluginFootprint
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginScreen
 import com.aimdi.xtanative.ui.plugins.PluginSearch
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
 import java.time.Instant
+import kotlinx.serialization.json.JsonElement
 
 /**
  * Bluesky as a downloadable plugin, read through the public AppView with no
  * account, as XTA's Bluesky plugin reads it: Following (the accounts followed
  * here), custom feeds, lists and the posts liked here on its home tab;
  * threads, profiles with their tabs, people, reposts and quotes; search;
- * imports of follows; its settings. Nothing is posted, liked, reposted or
- * followed on Bluesky: follows and likes stay on the device (in the plugin's
- * folder, and in XTA's backup rows), its preferences in the app's settings.
+ * imports of follows; its settings; the accounts followed here in Home's
+ * timelines when the reader asks, its accounts in the app's groups, and its
+ * posts in the app's Saved with their folders and notes. Nothing is posted,
+ * liked, reposted or followed on Bluesky: follows and likes stay on the
+ * device (in the plugin's folder, and in XTA's backup rows), its preferences
+ * in the app's settings.
  */
 class BlueskyPlugin : XtaPlugin() {
     private lateinit var app: BlueskyApp
@@ -63,6 +70,13 @@ class BlueskyPlugin : XtaPlugin() {
     }
 
     private fun screen(content: PluginScreen): PluginScreen = content
+
+    override val feed: PluginFeed get() = app.feed
+
+    override val postActions: NetworkPostActions get() = app.actions
+
+    /** A post kept in XTA's record, as Saved draws it; one of another network is none of its. */
+    override fun archived(content: JsonElement): NetworkPost? = BlueskyArchive.post(content)?.let { app.shown(it) }
 
     /**
      * What it keeps, as XTA's backup carries it: the accounts followed here

@@ -5,6 +5,7 @@ import com.aimdi.xtanative.store.downloads.MediaHttp
 import com.aimdi.xtanative.store.downloads.OkHttpMediaHttp
 import com.aimdi.xtanative.store.downloads.downloadRequestHeaders
 import com.aimdi.xtanative.store.downloads.mimeTypeFor
+import com.aimdi.xtanative.store.downloads.safeDownloadName
 import com.aimdi.xtanative.ui.media.MediaSave
 import java.io.File
 import kotlinx.coroutines.CancellationException
@@ -36,15 +37,25 @@ object MediaSharing {
     suspend fun fetch(http: MediaHttp, url: String, folder: File, name: String): File? = try {
         http.get(url, downloadRequestHeaders(url)).use { response ->
             if (response.code !in 200..299) return null
-            withContext(Dispatchers.IO) {
-                folder.mkdirs()
-                folder.listFiles()?.forEach { it.delete() }
-                File(folder, name).also { file -> file.outputStream().use { response.body.copyTo(it) } }
-            }
+            withContext(Dispatchers.IO) { freshIn(folder, name).also { file -> file.outputStream().use { response.body.copyTo(it) } } }
         }
     } catch (error: CancellationException) {
         throw error
     } catch (_: Exception) {
         null
+    }
+
+    /** A file a plugin made ([bytes] as [name], of [mime]) handed to the share sheet; false where the platform shares no files. */
+    suspend fun shareBytes(files: PlatformFiles, bytes: ByteArray, name: String, mime: String): Boolean {
+        val folder = files.shareFolder() ?: return false
+        val file = withContext(Dispatchers.IO) { freshIn(folder, safeDownloadName(name)).also { it.writeBytes(bytes) } }
+        return files.shareFile(file, mime)
+    }
+
+    /** Where [name] goes in [folder], which keeps only the file shared last. */
+    private fun freshIn(folder: File, name: String): File {
+        folder.mkdirs()
+        folder.listFiles()?.forEach { it.delete() }
+        return File(folder, name)
     }
 }

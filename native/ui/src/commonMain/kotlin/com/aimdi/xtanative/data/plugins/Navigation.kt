@@ -24,6 +24,9 @@ sealed interface Destination {
     /** The media [MediaShelf] keeps under [key], from [start]. */
     data class Media(val key: String, val start: Int) : Destination
 
+    /** The app's Downloads screen. */
+    data object Downloads : Destination
+
     data object Back : Destination
 }
 
@@ -55,19 +58,22 @@ class AppNavigator {
     }
 }
 
+/** Media a plugin opened full screen: [items], of plugin [source], whose name a download takes. */
+class ShelvedMedia(val source: String, val items: List<MediaItem>)
+
 /** The media plugins opened full screen, the last few kept: a route names them by key, as it cannot carry them. */
 class MediaShelf {
-    private val shelf = object : LinkedHashMap<String, List<MediaItem>>(16, 0.75f, true) {
-        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, List<MediaItem>>?): Boolean = size > KEPT
+    private val shelf = object : LinkedHashMap<String, ShelvedMedia>(16, 0.75f, true) {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, ShelvedMedia>?): Boolean = size > KEPT
     }
     private var last = 0
 
     @Synchronized
-    fun put(items: List<MediaItem>): String = (++last).toString().also { shelf[it] = items }
+    fun put(source: String, items: List<MediaItem>): String = (++last).toString().also { shelf[it] = ShelvedMedia(source, items) }
 
     /** What [key] names; nothing once it was let go, as after the app was restarted. */
     @Synchronized
-    fun get(key: String): List<MediaItem> = shelf[key].orEmpty()
+    fun get(key: String): ShelvedMedia? = shelf[key]
 
     private companion object {
         const val KEPT = 16

@@ -120,6 +120,7 @@
     <string name="saved_like">Polub na tym urządzeniu</string>
     <string name="saved_unlike">Usuń polubienie z tego urządzenia</string>
     <string name="saved_save_here">Zapisz na tym urządzeniu</string>
+    <string name="saved_save_to_folder">Zapisz w folderze…</string>
     <string name="saved_unsave">Usuń z tego urządzenia</string>
     <string name="saved_bookmarks">Zakładki</string>
     <string name="saved_sensitive_profile">Ten profil może zawierać potencjalnie wrażliwe obrazy, język lub inne treści. Czy nadal chcesz go wyświetlić?</string>

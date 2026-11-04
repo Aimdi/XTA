@@ -120,6 +120,7 @@
     <string name="saved_like">Вподобати на цьому пристрої</string>
     <string name="saved_unlike">Прибрати вподобання з цього пристрою</string>
     <string name="saved_save_here">Зберегти на цьому пристрої</string>
+    <string name="saved_save_to_folder">Зберегти в теку…</string>
     <string name="saved_unsave">Видалити з цього пристрою</string>
     <string name="saved_bookmarks">Закладки</string>
     <string name="saved_sensitive_profile">Цей профіль може містити потенційно чутливі зображення, мову або інший вміст. Ви все одно хочете його переглянути?</string>
