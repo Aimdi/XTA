@@ -1,0 +1,441 @@
+package com.aimdi.xtanative.ui.group
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.aimdi.xtanative.core.backup.FollowGroup
+import com.aimdi.xtanative.core.backup.FollowedAccount
+import com.aimdi.xtanative.core.feed.ChunkConcurrency
+import com.aimdi.xtanative.core.feed.ContentFilter
+import com.aimdi.xtanative.core.feed.FeedPage
+import com.aimdi.xtanative.core.feed.FeedProgress
+import com.aimdi.xtanative.core.feed.FeedSettings
+import com.aimdi.xtanative.core.feed.FirstPageAction
+import com.aimdi.xtanative.core.feed.GroupFeed
+import com.aimdi.xtanative.core.feed.GroupFeedPlan
+import com.aimdi.xtanative.core.feed.HeldRefresh
+import com.aimdi.xtanative.core.feed.ReadPosition
+import com.aimdi.xtanative.core.feed.SavedFeed
+import com.aimdi.xtanative.core.feed.feedReads
+import com.aimdi.xtanative.core.session.CombinedGroups
+import com.aimdi.xtanative.core.session.ProfileRefresh
+import com.aimdi.xtanative.core.session.Session
+import com.aimdi.xtanative.core.x.model.XThread
+import com.aimdi.xtanative.data.AppGraph
+import com.aimdi.xtanative.data.FeedCache
+import com.aimdi.xtanative.data.Problem
+import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.store.settings.SubscriptionPrefs
+import com.aimdi.xtanative.ui.subscriptions.GroupActions
+import com.aimdi.xtanative.ui.subscriptions.GroupBoardModel
+import com.aimdi.xtanative.ui.subscriptions.SubscriptionList
+import com.aimdi.xtanative.ui.subscriptions.SubscriptionRow
+import java.time.Instant
+import java.util.concurrent.ConcurrentHashMap
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+
+/** Where to put the reader, once: [token] tells two jumps to the same place apart. */
+data class FeedJump(val threadIndex: Int, val offset: Int, val token: Int)
+
+/** How a group feed's reading stands. */
+data class FeedRun(
+    val shown: FeedShown = FeedShown(),
+    /** The posts are the ones kept from the last time, until X answers. */
+    val fromCache: Boolean = false,
+    val refreshing: Boolean = false,
+    val loadingMore: Boolean = false,
+    /** Nothing to show, and why. */
+    val problem: Problem? = null,
+    /** The first page failed; what is shown is from before. */
+    val stale: Problem? = null,
+    val moreProblem: Problem? = null,
+    val answered: Boolean = false,
+    val tracks: Boolean = false,
+    val catchUp: Boolean = false,
+    /** The last read post as the feed opened: the divider stays where it was for the whole visit. */
+    val lastSeen: ReadPosition? = null,
+    val unrelatedDismissed: Boolean = false,
+    val jump: FeedJump? = null,
+) {
+    val divider: Int? get() = GroupFeedPaging.dividerIndex(shown.threads, lastSeen, tracks, catchUp)
+}
+
+/** A group feed at one moment: the group, its settings and what its reading has shown. */
+data class GroupFeedUi(
+    val loaded: Boolean = false,
+    val group: FollowGroup? = null,
+    /** Every member the feed reads, nested groups' and those read alongside included. */
+    val memberCount: Int = 0,
+    val settings: FeedSettings = FeedSettings(),
+    val includeReplies: Boolean = true,
+    val includeReposts: Boolean = true,
+    val prefs: FeedPrefs = FeedPrefs(),
+    val inDeck: Boolean = false,
+    val alsoRead: Set<String> = emptySet(),
+    /** The groups in the board's order, for the switcher. */
+    val groups: List<FollowGroup> = emptyList(),
+    /** The feed's accounts, for their post caps. */
+    val accounts: List<FollowedAccount> = emptyList(),
+    val postCaps: Map<String, Int> = emptyMap(),
+    /** Everything followed, for the edit sheet's member list. */
+    val people: List<SubscriptionRow> = emptyList(),
+    val session: Session = Session(),
+    val run: FeedRun = FeedRun(),
+    val progress: FeedProgress = FeedProgress(),
+) {
+    val activeFilters: Int get() = GroupFeedRules.activeFilters(settings)
+
+    val contentChip: ContentFilter? get() = GroupFeedRules.contentChip(settings)
+
+    /** The unrelated-posts pill: X mixed in posts from outside the group, and the reader has not turned the warning off. */
+    val unrelatedNotice: Boolean get() = run.shown.unrelated && !prefs.hideUnrelatedWarning && !run.unrelatedDismissed
+}
+
+/** Groups read together for as long as the reader looks at them: one combination for whichever feed is open, gone with the app. */
+object Combinations {
+    val state = MutableStateFlow(CombinedGroups())
+}
+
+/** Where the reader left a group feed: the post at the top and how far past it, and whether that was the top of the feed. */
+data class KeptPlace(val postId: String, val offset: Int, val atTop: Boolean)
+
+/**
+ * Where each group feed was left in this run of the app, as XTA's feed session
+ * cache keeps a pushed feed's scroll offset: reopening a group goes back
+ * there; a cold start begins at the reader's last read post instead.
+ */
+object FeedPlaces {
+    private val places = ConcurrentHashMap<String, KeptPlace>()
+
+    operator fun get(groupId: String): KeptPlace? = places[groupId]
+
+    operator fun set(groupId: String, place: KeptPlace) {
+        places[groupId] = place
+    }
+}
+
+/**
+ * A group's feed (_feed.dart, group_screen.dart): the session's plan for it,
+ * read with core's [GroupFeed], shown with its progress, the sources that
+ * failed to retry, folded posts, the unrelated-posts pill, the read position
+ * and catch-up mode. A change of members or settings refreshes it, held while
+ * the reader is scrolled down.
+ */
+@OptIn(ExperimentalCoroutinesApi::class)
+class GroupFeedViewModel(private val graph: AppGraph, private val groupId: String) : ViewModel() {
+    private val cache: FeedCache = graph.feedCache(groupId)
+    private val marks = ReadMarks(graph.feedCache(ReadMarks.key(groupId)))
+    private val run = MutableStateFlow(FeedRun())
+    private val current = MutableStateFlow<GroupFeed?>(null)
+    val groupActions = GroupActions(graph, viewModelScope)
+    val settingsActions = GroupSettingsActions(graph, groupId, viewModelScope)
+
+    private var plan: GroupFeedPlan? = null
+    private var prefs = FeedPrefs()
+
+    /** The feed for a changed plan, read from its first page once the refresh it waits for runs. */
+    private var nextFeed: GroupFeed? = null
+    private var refreshJob: Job? = null
+    private var pending: Job? = null
+    private val held = HeldRefresh()
+    private var atTop = true
+    private var evaluated = false
+    private val place: KeptPlace? = FeedPlaces[groupId]
+    private var jumps = 0
+    private var resets = 0
+
+    private data class Inputs(val plan: GroupFeedPlan, val prefs: FeedPrefs)
+
+    val ui: StateFlow<GroupFeedUi> = combine(
+        graph.sessions.state.filterNotNull(),
+        graph.settings.settings,
+        Combinations.state,
+        run,
+        current.flatMapLatest { it?.progress ?: flowOf(FeedProgress()) },
+    ) { session, settings, combined, run, progress -> build(session, settings, combined, run, progress) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), GroupFeedUi())
+
+    init {
+        Combinations.state.update { it.released(groupId) }
+        viewModelScope.launch {
+            run.update { it.copy(lastSeen = marks.position()) }
+            combine(graph.sessions.state.filterNotNull(), graph.settings.settings, Combinations.state) { session, settings, combined ->
+                val prefs = FeedPrefs.of(settings)
+                Inputs(GroupFeedRules.plan(session, prefs, groupId, combined.ids), prefs)
+            }.distinctUntilChanged().collect(::read)
+        }
+    }
+
+    private fun build(session: Session, settings: Settings, combined: CombinedGroups, run: FeedRun, progress: FeedProgress): GroupFeedUi {
+        val feedSettings = session.settingsOf(groupId)
+        val alsoRead = combined.ids - groupId
+        val memberIds = session.membersOf(groupId, alsoRead).mapTo(HashSet()) { it.id }
+        val rows = SubscriptionList.ordered(
+            SubscriptionList.rows(session),
+            settings[SubscriptionPrefs.order],
+            settings[SubscriptionPrefs.ascending],
+            settings[SubscriptionPrefs.customOrder],
+        )
+        return GroupFeedUi(
+            loaded = true,
+            group = session.groups.firstOrNull { it.id == groupId },
+            memberCount = memberIds.size,
+            settings = feedSettings,
+            includeReplies = feedSettings.includeReplies ?: session.includeReplies,
+            includeReposts = feedSettings.includeReposts ?: session.includeReposts,
+            prefs = FeedPrefs.of(settings),
+            inDeck = groupId in session.deck,
+            alsoRead = alsoRead,
+            groups = GroupBoardModel.ordered(session.groups, settings[SubscriptionPrefs.groupsOrder], settings[SubscriptionPrefs.groupsAscending]),
+            accounts = session.following.filter { it.id in memberIds },
+            postCaps = session.postCaps,
+            people = rows,
+            session = session,
+            run = run,
+            progress = progress,
+        )
+    }
+
+    /** A plan read for the first time, or changed: a new feed, refreshed at once, or once the reader is back at the top. */
+    private suspend fun read(inputs: Inputs) {
+        val first = plan == null
+        plan = inputs.plan
+        prefs = inputs.prefs
+        val feed = GroupFeed(inputs.plan, graph.client.feedReads(), concurrency())
+        if (first) current.value = feed else nextFeed = feed
+        run.update {
+            it.copy(tracks = GroupFeedRules.tracks(inputs.plan, inputs.prefs), catchUp = GroupFeedRules.catchUp(inputs.plan))
+        }
+        if (first) {
+            showCached(inputs.plan)
+            refresh(byReader = false)
+            return
+        }
+        // A burst of changes (several members added) makes one refresh.
+        pending?.cancel()
+        pending = viewModelScope.launch {
+            delay(CHANGE_DEBOUNCE_MILLIS)
+            if (held.request(atTop)) refresh(byReader = false)
+        }
+    }
+
+    private fun concurrency(): Int = ChunkConcurrency.forAccounts(ChunkConcurrency.usableAccounts(graph.sessions.state.value?.accounts.orEmpty(), emptySet()))
+
+    /** What the feed showed the last time, at once, shaped by the rules as they are now. */
+    private suspend fun showCached(plan: GroupFeedPlan) {
+        val saved = cache.read()?.threads?.takeIf { it.isNotEmpty() } ?: return
+        graph.posts.remember(saved)
+        val preview = GroupFeedPaging.preview(saved, plan.shaping, Instant.now())
+        val index = place?.let { p -> preview.threads.indexOfFirst { it.id == p.postId } } ?: -1
+        run.update {
+            if (it.shown.threads.isNotEmpty()) it else it.copy(
+                shown = preview,
+                fromCache = true,
+                jump = place?.takeIf { index >= 0 }?.let { p -> FeedJump(index, p.offset, ++jumps) },
+            )
+        }
+    }
+
+    private fun isSeen(): ((XThread) -> Boolean)? {
+        val now = run.value
+        val seen = now.lastSeen ?: return null
+        return if (now.catchUp) seen::isSeen else null
+    }
+
+    /** The newest posts from the top. [byReader] is a pull or the refresh button: the reader goes to the top. */
+    fun refresh(byReader: Boolean = true) {
+        nextFeed?.let {
+            current.value = it
+            nextFeed = null
+        }
+        val feed = current.value ?: return
+        refreshJob?.cancel()
+        refreshJob = viewModelScope.launch {
+            resets++
+            run.update { it.copy(refreshing = true, problem = null, moreProblem = null) }
+            val page = try {
+                feed.first()
+            } catch (error: CancellationException) {
+                throw error
+            } catch (error: Throwable) {
+                failed(Problem.of(error))
+                return@launch
+            }
+            val failure = Problem.of(page.failures)
+            if (page.threads.isEmpty() && failure != null) {
+                // An empty answer from a failing X is not an empty feed: what was shown stays.
+                failed(failure)
+                return@launch
+            }
+            shownFirst(page, byReader)
+        }
+    }
+
+    private fun failed(problem: Problem) = run.update {
+        it.copy(refreshing = false, problem = problem.takeIf { _ -> it.shown.threads.isEmpty() }, stale = problem)
+    }
+
+    private suspend fun shownFirst(page: FeedPage, byReader: Boolean) {
+        val shown = GroupFeedPaging.first(page, prefs.pageCap, isSeen())
+        graph.posts.remember(page.threads)
+        refreshProfiles(page.threads)
+        val action = firstPageAction(shown.threads)
+        run.update {
+            it.copy(
+                shown = shown,
+                fromCache = false,
+                refreshing = false,
+                problem = null,
+                // Sources that failed while others answered are the retry pill's, not a stale feed.
+                stale = null,
+                answered = true,
+                unrelatedDismissed = false,
+                jump = when {
+                    action is FirstPageAction.RestoreToBoundary -> FeedJump(action.index, 0, ++jumps)
+                    byReader -> FeedJump(0, 0, ++jumps)
+                    else -> it.jump
+                },
+            )
+        }
+        if (action is FirstPageAction.RecordPosition) marks.record(action.thread, System.currentTimeMillis())
+        page.threads.firstOrNull()?.let { marks.noteNewest(it) }
+        persist()
+    }
+
+    /** What a first page does with the read position, decided once per visit: back to the divider, or a record of where the reader is. */
+    private fun firstPageAction(threads: List<XThread>): FirstPageAction? {
+        val now = run.value
+        if (!now.tracks || now.catchUp) return null
+        val offset = place?.let { if (it.atTop) 0.0 else 1.0 }
+        val action = FirstPageAction.of(threads, now.lastSeen, evaluated, offset, atTop)
+        evaluated = true
+        return action
+    }
+
+    /** Followed accounts as the posts X just sent show them: a new handle, name or picture. */
+    private suspend fun refreshProfiles(threads: List<XThread>) {
+        val users = ProfileRefresh.postAuthors(threads)
+        val session = graph.sessions.state.value ?: return
+        if (ProfileRefresh.refreshed(session.following, users).isNotEmpty()) graph.sessions.update { it.withProfilesFrom(users) }
+    }
+
+    fun loadMore() {
+        val feed = current.value ?: return
+        val now = run.value
+        if (!now.shown.canLoadMore || now.loadingMore || now.refreshing || now.fromCache) return
+        val reset = resets
+        viewModelScope.launch {
+            run.update { it.copy(loadingMore = true, moreProblem = null) }
+            val page = try {
+                feed.more()
+            } catch (error: CancellationException) {
+                throw error
+            } catch (error: Throwable) {
+                run.update { it.copy(loadingMore = false, moreProblem = Problem.of(error)) }
+                return@launch
+            }
+            if (reset != resets) {
+                run.update { it.copy(loadingMore = false) }
+                return@launch
+            }
+            graph.posts.remember(page.threads)
+            refreshProfiles(page.threads)
+            run.update {
+                it.copy(
+                    shown = GroupFeedPaging.more(it.shown, page, isSeen()),
+                    loadingMore = false,
+                    moreProblem = if (page.threads.isEmpty()) Problem.of(page.failures) else null,
+                )
+            }
+            persist()
+        }
+    }
+
+    /** Reads again only the sources that failed. */
+    fun retryFailed() {
+        val feed = current.value ?: return
+        val popular = plan?.popular == true
+        viewModelScope.launch {
+            val page = try {
+                feed.retryFailed()
+            } catch (error: CancellationException) {
+                throw error
+            } catch (error: Throwable) {
+                run.update { it.copy(stale = Problem.of(error)) }
+                return@launch
+            }
+            graph.posts.remember(page.threads)
+            run.update { it.copy(shown = GroupFeedPaging.retried(it.shown, page, popular), stale = null) }
+            persist()
+        }
+    }
+
+    /** Reads on past catch-up's end or zen mode's last page. */
+    fun continuePastPause() = run.update { it.copy(shown = GroupFeedPaging.resumed(it.shown)) }
+
+    /** The reader reached the end of what was new: the only moment catch-up mode moves the read position. */
+    fun caughtUp() {
+        val newest = ReadPosition.newestRecordable(run.value.shown.threads) ?: return
+        viewModelScope.launch { marks.record(newest, System.currentTimeMillis()) }
+    }
+
+    /**
+     * Whether the reader is at the top: a held refresh runs then, and outside
+     * catch-up mode everything loaded counts as read.
+     */
+    fun atTop(top: Boolean) {
+        if (top == atTop) return
+        atTop = top
+        if (!top) return
+        if (held.returnedToTop()) refresh(byReader = false)
+        val now = run.value
+        if (now.tracks && !now.catchUp && !now.fromCache) {
+            ReadPosition.newestRecordable(now.shown.threads)?.let { viewModelScope.launch { marks.record(it, System.currentTimeMillis()) } }
+        }
+    }
+
+    private fun persist() {
+        val threads = run.value.shown.threads.take(FeedCache.KEPT)
+        viewModelScope.launch { cache.write(SavedFeed(threads, null, savedAt = System.currentTimeMillis())) }
+    }
+
+    /** The post at the top of the screen, kept as the feed closes, for the next visit in this run of the app. */
+    fun keepPlace(threadIndex: Int, offset: Int) {
+        val thread = run.value.shown.threads.getOrNull(threadIndex) ?: return
+        FeedPlaces[groupId] = KeptPlace(thread.id, offset, atTop = threadIndex == 0 && offset == 0)
+    }
+
+    fun jumped() = run.update { it.copy(jump = null) }
+
+    fun dismissStale() = run.update { it.copy(stale = null) }
+
+    fun dismissUnrelated() = run.update { it.copy(unrelatedDismissed = true) }
+
+
+    // ---- groups read alongside ----
+
+    fun toggleAlongside(otherId: String) {
+        if (otherId != groupId) Combinations.state.update { it.toggled(otherId) }
+    }
+
+    fun clearAlongside() = Combinations.state.update { it.cleared() }
+
+    private companion object {
+        /** A burst of member or filter changes makes one refresh. */
+        const val CHANGE_DEBOUNCE_MILLIS = 600L
+    }
+}

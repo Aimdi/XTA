@@ -30,6 +30,7 @@ import com.aimdi.xtanative.ui.community.CommunityMembersScreen
 import com.aimdi.xtanative.ui.community.CommunityScreen
 import com.aimdi.xtanative.ui.downloads.DownloadsScreen
 import com.aimdi.xtanative.ui.feed.FeedScreen
+import com.aimdi.xtanative.ui.group.GroupFeedScreen
 import com.aimdi.xtanative.ui.home.DeckScreen
 import com.aimdi.xtanative.ui.home.DesktopNavigation
 import com.aimdi.xtanative.ui.home.HomeRoutes
@@ -40,7 +41,6 @@ import com.aimdi.xtanative.ui.intro.IntroScreen
 import com.aimdi.xtanative.ui.links.BindLinkScreens
 import com.aimdi.xtanative.ui.links.LinkBrowserScreen
 import com.aimdi.xtanative.ui.links.LinkScreens
-import com.aimdi.xtanative.ui.lists.ListImportScreen
 import com.aimdi.xtanative.ui.media.MediaViewer
 import com.aimdi.xtanative.ui.offline.OfflineLibraryScreen
 import com.aimdi.xtanative.ui.offline.OfflineMediaScreen
@@ -59,6 +59,12 @@ import com.aimdi.xtanative.ui.settings.BackupScreen
 import com.aimdi.xtanative.ui.settings.SettingsScreen
 import com.aimdi.xtanative.ui.settings.SettingsSectionScreen
 import com.aimdi.xtanative.ui.speech.VoiceSettingsScreen
+import com.aimdi.xtanative.ui.subscriptions.ImportFollowingScreen
+import com.aimdi.xtanative.ui.subscriptions.ListImportScreen
+import com.aimdi.xtanative.ui.subscriptions.SortUngroupedScreen
+import com.aimdi.xtanative.ui.subscriptions.SubscriptionsNavigation
+import com.aimdi.xtanative.ui.subscriptions.SubscriptionsScreen
+import com.aimdi.xtanative.ui.subscriptions.UngroupedSorterScreen
 import com.aimdi.xtanative.ui.trends.TrendsActions
 import com.aimdi.xtanative.ui.trends.TrendsScreen
 import java.net.URLEncoder
@@ -93,6 +99,12 @@ private object Routes {
     const val INTRO = "intro"
     const val BROWSER = "browser?url={url}&from={from}"
     const val SPEECH_SETTINGS = "speech/settings"
+    const val SUBSCRIPTIONS = "subscriptions"
+    const val SUBSCRIPTIONS_IMPORT = "subscriptions/import"
+    const val SUBSCRIPTIONS_IMPORT_LIST = "subscriptions/import-list?list={list}"
+    const val SUBSCRIPTIONS_SORT = "subscriptions/sort"
+    const val SUBSCRIPTIONS_SORT_ONE = "subscriptions/sort-one?ids={ids}"
+    const val GROUP = "group/{id}"
 
     fun post(id: String) = "post/$id"
     fun profile(screenName: String) = "profile/" + encoded(screenName)
@@ -111,6 +123,9 @@ private object Routes {
     fun offlineMedia(id: String) = "offline/media?id=" + encoded(id)
     fun archive(id: String) = "archive?id=" + encoded(id)
     fun browser(url: String, from: String?) = "browser?url=" + encoded(url) + (from?.let { "&from=" + encoded(it) } ?: "")
+    fun group(id: String) = "group/" + encoded(id)
+    fun importList(list: String?) = if (list.isNullOrBlank()) "subscriptions/import-list" else "subscriptions/import-list?list=" + encoded(list)
+    fun sortOne(ids: List<String>) = "subscriptions/sort-one?ids=" + encoded(ids.joinToString(","))
 
     /** [text] escaped for a route, which is matched as a URI: a space as %20, which every platform decodes. */
     private fun encoded(text: String): String = URLEncoder.encode(text, "UTF-8").replace("+", "%20")
@@ -302,6 +317,20 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
                 onBack = { nav.popBackStack() },
             )
         }
+        composable(Routes.SUBSCRIPTIONS) {
+            SubscriptionsScreen(
+                SubscriptionsNavigation(
+                    openProfile = actions.openProfile,
+                    search = actions.search,
+                    openGroup = { id -> nav.navigate(Routes.group(id)) },
+                    importFollowing = { nav.navigate(Routes.SUBSCRIPTIONS_IMPORT) },
+                    importList = { nav.navigate(Routes.importList(null)) },
+                    sortUngrouped = { nav.navigate(Routes.SUBSCRIPTIONS_SORT) },
+                    settings = { nav.navigate(Routes.SETTINGS) },
+                ),
+                onBack = { nav.popBackStack() },
+            )
+        }
         composable(Routes.SAVED_FOLDERS) { SavedFoldersScreen(onBack = { nav.popBackStack() }) }
         composable(
             Routes.NOTE_THREAD,
@@ -346,6 +375,41 @@ private fun Screens(nav: NavHostController, start: String, all: ScreenActions) {
         }
         composable(Routes.BACKUP) {
             BackupScreen(onBack = { nav.popBackStack() })
+        }
+        composable(Routes.SUBSCRIPTIONS_IMPORT) {
+            ImportFollowingScreen(onBack = { nav.popBackStack() }, onSortUngrouped = { nav.navigate(Routes.SUBSCRIPTIONS_SORT) })
+        }
+        composable(
+            Routes.SUBSCRIPTIONS_IMPORT_LIST,
+            arguments = listOf(navArgument("list") { type = NavType.StringType; nullable = true; defaultValue = null }),
+        ) { entry ->
+            ListImportScreen(entry.text("list"), onBack = { nav.popBackStack() })
+        }
+        composable(Routes.SUBSCRIPTIONS_SORT) {
+            SortUngroupedScreen(
+                onBack = { nav.popBackStack() },
+                onSortOneByOne = { ids -> nav.navigate(Routes.sortOne(ids)) },
+                onApplied = { leftovers ->
+                    if (leftovers.isEmpty()) {
+                        nav.popBackStack()
+                    } else {
+                        nav.navigate(Routes.sortOne(leftovers)) { popUpTo(Routes.SUBSCRIPTIONS_SORT) { inclusive = true } }
+                    }
+                },
+            )
+        }
+        composable(
+            Routes.SUBSCRIPTIONS_SORT_ONE,
+            arguments = listOf(navArgument("ids") { type = NavType.StringType; nullable = true; defaultValue = null }),
+        ) { entry ->
+            UngroupedSorterScreen(
+                entry.text("ids").orEmpty().split(',').filter { it.isNotEmpty() },
+                openProfile = actions.openProfile,
+                onDone = { nav.popBackStack() },
+            )
+        }
+        composable(Routes.GROUP, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
+            GroupFeedScreen(entry.text("id").orEmpty(), actions, onBack = { nav.popBackStack() })
         }
     }
     // The foot-of-window notices of saves, likes and downloads, and the platform's save dialog (ui/saved).

@@ -145,4 +145,13 @@ class SessionTest {
         )
         assertEquals(full, Session.decode(Session.encode(full)))
     }
+
+    @Test
+    fun aGroupsColourMarkDateAndPlaceReadBackAsWritten() {
+        val marked = session.updatingGroup("g2") {
+            it.copy(color = 0xFF1D9BF0, icon = """{"pack":"custom","key":"star"}""", markStyle = 2, createdAt = 1_700_000_000_000, position = 4)
+        }
+        assertEquals(marked, Session.decode(Session.encode(marked)))
+        assertEquals(session.groups, Session.decode(Session.encode(session))!!.groups, "a group without them reads with XTA's defaults")
+    }
 }

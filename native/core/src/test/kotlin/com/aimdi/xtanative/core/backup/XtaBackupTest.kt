@@ -40,7 +40,31 @@ class XtaBackupTest {
         assertTrue(!esa.verified && !esa.inFeed)
         assertTrue(esa.followedAt < nasa.followedAt, "both date formats XTA wrote are read")
 
-        assertEquals(listOf(FollowGroup("g1", "Space", listOf("1", "2"), emoji = "🚀", pinned = true)), backup.groups, "XTA's own everyone row is no group")
+        assertEquals(
+            listOf(FollowGroup("g1", "Space", listOf("1", "2"), emoji = "🚀", pinned = true, icon = "rocket")),
+            backup.groups,
+            "XTA's own everyone row is no group",
+        )
+    }
+
+    @Test
+    fun aGroupKeepsItsColourMarkDateAndPlace() {
+        val backup = XtaBackup.parse(
+            """
+            {"formatVersion": 2, "subscriptionGroups": [
+              {"id": "g1", "name": "Art", "icon": "{\"pack\":\"custom\",\"key\":\"palette\"}", "color": 4294198070,
+               "mark_style": 2, "created_at": "2024-03-01 10:00:00", "position": 3},
+              {"id": "g2", "name": "Plain", "color": null}
+            ]}
+            """.trimIndent(),
+        )!!
+        val (art, plain) = backup.groups
+        assertEquals(4294198070, art.color)
+        assertEquals("""{"pack":"custom","key":"palette"}""", art.icon)
+        assertEquals(2, art.markStyle)
+        assertEquals(XtaBackup.millisOf("2024-03-01 10:00:00"), art.createdAt)
+        assertEquals(3, art.position)
+        assertEquals(FollowGroup("g2", "Plain", emptyList()), plain, "what a row leaves out reads as XTA's defaults")
     }
 
     @Test

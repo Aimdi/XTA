@@ -31,6 +31,16 @@ data class FollowGroup(
     val emoji: String? = null,
     val pinned: Boolean = false,
     val nsfw: Boolean = false,
+    /** The colour the reader gave it (ARGB, as XTA stores it); null for the one made from its name. */
+    val color: Long? = null,
+    /** The icon its mark carries: XTA's icon JSON (`{"pack":"custom","key":"star",…}`); null for none. */
+    val icon: String? = null,
+    /** How its mark is chosen, XTA's `mark_style`: 0 automatic, 1 emoji, 2 icon, 3 generated. */
+    val markStyle: Int = 0,
+    /** When it was made, in epoch milliseconds; 0 when not known. */
+    val createdAt: Long = 0,
+    /** Its place in the reader's own order; null until the groups are put in one. */
+    val position: Int? = null,
 ) {
     companion object {
         /** XTA's order: NSFW groups last, pinned ones first within each part, then by name. */
@@ -67,6 +77,11 @@ data class XtaBackup(val accounts: List<XAccount>, val following: List<FollowedA
                         emoji = row["emoji"].string?.takeIf { it.isNotBlank() },
                         pinned = row["pinned"].long == 1L,
                         nsfw = row["nsfw"].long == 1L,
+                        color = row["color"].long,
+                        icon = row["icon"].string?.takeIf { it.isNotBlank() },
+                        markStyle = row["mark_style"].int ?: 0,
+                        createdAt = millisOf(row["created_at"].string),
+                        position = row["position"].int,
                     )
                 },
             )

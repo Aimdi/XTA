@@ -80,6 +80,11 @@ internal object SessionCodec {
         group.emoji?.let { put("emoji", it) }
         put("pinned", group.pinned)
         put("nsfw", group.nsfw)
+        group.color?.let { put("color", it) }
+        group.icon?.let { put("icon", it) }
+        if (group.markStyle != 0) put("markStyle", group.markStyle)
+        if (group.createdAt != 0L) put("createdAt", group.createdAt)
+        group.position?.let { put("position", it) }
     }
 
     private fun group(row: J): FollowGroup? {
@@ -91,6 +96,11 @@ internal object SessionCodec {
             emoji = row["emoji"].string,
             pinned = row["pinned"].boolean ?: false,
             nsfw = row["nsfw"].boolean ?: false,
+            color = row["color"].long,
+            icon = row["icon"].string,
+            markStyle = row["markStyle"].int ?: 0,
+            createdAt = row["createdAt"].long ?: 0,
+            position = row["position"].int,
         )
     }
 
