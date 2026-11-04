@@ -22,21 +22,21 @@ layer is written in `networks/<id>` first, then moves with its screens into
 | x (`lib/client`, `plugins/x`) | `core/x`: every read XTA makes | feed, post, profile, search, Discover, communities, list import and antennas done; the rest in the screens wave |
 | reddit | `plugins/reddit` (moved from `networks/reddit`; 239 tests) | plugin: XTA's tab, communities, threads, search and settings |
 | bluesky | `plugins/bluesky` (124 tests, live check passes) | plugin: Following, Discover and custom feeds, lists, device likes, threads, profiles, search, imports and settings |
-| mastodon | `plugins/mastodon` (169 tests) | plugin: Explore, Local, Federated and Following, trending tags, profiles, threads, hashtags, search, boosts and quotes, saved posts and settings |
-| threads | `plugins/threads` (169 tests, live check passes) | plugin: Home and Liked, the post card, conversations with their orders, profiles with honest counts, search, every video rendition, settings |
+| mastodon | `plugins/mastodon` (169 tests) | plugin: Explore, Local, Federated and Following, trending tags, profiles, threads, hashtags, search, boosts and quotes, saved posts and settings; Home's timelines, groups and Saved through the host |
+| threads | `plugins/threads` (174 tests, live check passes) | plugin: Home and Liked, the post card, conversations with their orders, profiles with honest counts, search, every video rendition, settings; Home's timelines (ten posts an account), groups, Saved and downloads, retries by Meta's advice |
 | substack | `plugins/substack` (177 tests) | plugin: XTA's screens, the reader and podcasts |
 | booru | `plugins/booru` (151 tests, live check passes) | plugin: XTA's screens and settings |
 | pixiv | `plugins/pixiv` (220 tests, live check passes) | plugin: Home, Rankings, Favorites and Search, works and novels, profiles, comments, series, Pixivision and settings |
 | ehviewer | `plugins/ehviewer` (97 tests, live check passes) | plugin, private as in XTA: Popular, the front page, the toplists, Watched, history and favourites, search with XTA's categories and the site's tag suggestions, galleries with tags, comments and previews, the reader in its three modes with downloads, settings |
-| instagram | `plugins/instagram` (55 tests) | plugin: For you and Following, profiles, the accounts followed here, search, the post card with its carousel, settings |
+| instagram | `plugins/instagram` (56 tests) | plugin: For you and Following, profiles, the accounts followed here, search, the post card with its carousel, settings; groups and the shared post sheet |
 | tiktok | `plugins/tiktok` (61 tests, live check passes) | plugin, private as in XTA: Following and Accounts, trending, discover, search for people and videos, profiles, the player in XTA's renditions or TikTok's own, groups, settings |
 | rss | `plugins/rss` (24 tests; its parsing, shared with the web sources, at `:networks`' top level) | plugin: the timeline with unread and tag filters, feeds and their tags, a site's feeds discovered, OPML import and export, the reader with its place and offline copy, Home's timelines and groups, settings |
 | hackernews | `plugins/hackernews` (29 tests) | plugin: Top, New, Best, Ask, Show and Jobs, Saved and Following, stories with their comments, users, search and settings |
 | websources | `plugins/websources` (80 tests) | plugin: the published catalogue, adding a source with its consent, its lists, search and follows, Home's timelines and groups |
 | stocks | `plugins/stocks` (171 tests, live check passes) | plugin: the watchlist, posts about it, trending and markets, a ticker's and a token's pages with the chart, the price strip under X posts and cashtags opening the ticker |
-| immich | `networks/immich` ported (52 tests): saving to the reader's own library | screens wave |
-| deepmarks | `networks/deepmarks` ported (30 tests): saving bookmarks | screens wave |
-| karakeep | `networks/karakeep` ported (23 tests): saving links | screens wave |
+| immich | `plugins/immich` (52 tests): the reader's own library | plugin: "Upload media to Immich" in Saved's folders, an album per folder, its settings and connection test |
+| deepmarks | `plugins/deepmarks` (30 tests): bookmarks signed on the device | plugin: "Save to Deepmarks" in the post sheets, its settings and connection test |
+| karakeep | `plugins/karakeep` (18 tests): the reader's own bookmarks | plugin: "Save to Karakeep" in the post sheets, its settings and connection test |
 
 ## The app (`lib/`)
 

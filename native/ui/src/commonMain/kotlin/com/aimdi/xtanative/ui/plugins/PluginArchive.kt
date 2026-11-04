@@ -71,6 +71,17 @@ class PluginPostMenu(
     val author: String? = null,
     val reposts: (() -> Unit)? = null,
     val quotes: (() -> Unit)? = null,
-    val follow: suspend () -> Unit = {},
     val title: String? = null,
-)
+    val follow: suspend () -> Unit = {},
+) {
+    /** API 1's menu, which had no [title]: plugins built for it still make one this way. */
+    @Deprecated("Plugins built for plugin API 1 call it; others pass title", level = DeprecationLevel.HIDDEN)
+    constructor(
+        post: PluginPostArchive,
+        url: String,
+        author: String? = null,
+        reposts: (() -> Unit)? = null,
+        quotes: (() -> Unit)? = null,
+        follow: suspend () -> Unit = {},
+    ) : this(post, url, author, reposts, quotes, null, follow)
+}

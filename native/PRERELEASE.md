@@ -10,9 +10,9 @@ Like XTA, it only reads: nothing is posted, liked or followed on X or on any oth
 
 ### The other networks
 
-Every network but X is a plugin you add from **Settings → Plugin store**, and remove there just as easily. In this prerelease: **Bluesky, Mastodon, Threads, Instagram, Reddit, Hacker News, Pixiv, Substack, Booru, RSS, the web sources and Stocks**, each with XTA's screens and settings, and **EhViewer and TikTok**, private as in XTA: the store lists them once **Show private plugins** is on, in its menu. With Stocks, X posts show the price strip under their cashtags, and a cashtag opens its ticker. The Immich, Karakeep and Deepmarks saves come in a later prerelease.
+Every network but X is a plugin you add from **Settings → Plugin store**, and remove there just as easily. In this prerelease: **Bluesky, Mastodon, Threads, Instagram, Reddit, Hacker News, Pixiv, Substack, Booru, RSS, the web sources and Stocks**, each with XTA's screens and settings, and **EhViewer and TikTok**, private as in XTA: the store lists them once **Show private plugins** is on, in its menu. With Stocks, X posts show the price strip under their cashtags, and a cashtag opens its ticker. **Karakeep and Deepmarks** add "Save to …" to a post's sheets and **Immich** an upload switch to Saved's folders, sending to your own servers, as in XTA.
 
-A network's follows in your XTA backup wait for its plugin and arrive when you add it; an export from XTA Native writes them where XTA reads them back. Where XTA lets a network join Home's timelines, groups, Saved and downloads, its plugin can too; Reddit, Bluesky, RSS and the web sources already do, TikTok joins the groups, and the others follow.
+A network's follows in your XTA backup wait for its plugin and arrive when you add it; an export from XTA Native writes them where XTA reads them back. Where XTA lets a network join Home's timelines, groups, Saved and downloads, its plugin does too: Reddit, Bluesky, Mastodon, Threads, RSS and the web sources join Home's timelines and the groups, Instagram and TikTok the groups; Hacker News, Booru, Pixiv and Substack follow.
 
 ### On Linux
 
@@ -23,7 +23,7 @@ It keeps its data in `~/.local/share/xta-native`, a folder only you can open. Vi
 
 ### What is in it
 
-- Home as in XTA: Following, For you and a tab per group, merged in time order, opening where you left off; the deck of columns on the desktop
+- Home as in XTA: the bottom bar with the pages you pick in Settings › Home; Following with its own bar (Posts or Media, the order, filters and the timeline picker), For you and a tab per group, merged in time order, opening where you left off; a group's Media and Discover; the deck of columns on the desktop
 - Posts as XTA draws them: threads, quotes, polls, link cards, community notes, translation, read aloud, and the media viewer with zoom and video
 - Profiles with their tabs and filters, notes on accounts, follows and groups kept on the device
 - Search with its tabs and advanced search; Discover with trends; communities, lists and antennas
@@ -31,7 +31,7 @@ It keeps its data in `~/.local/share/xta-native`, a folder only you can open. Vi
 - Every section of XTA's settings, its backup export and import, WebDAV sync, and 28 languages
 - Links open in the app's own browser on Android, or in the browser you pick; x.com and the networks' links open in the app
 
-Still to come: the networks above, Home's bottom bar and some of Following's controls, downloaded voices speaking (they download but do not speak yet) and lock-screen media controls.
+Still to come: the rest of the networks' shared features above, downloaded voices speaking (they download but do not speak yet) and lock-screen media controls.
 
 ### Comparing it with XTA
 
