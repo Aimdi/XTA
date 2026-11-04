@@ -43,30 +43,30 @@ layer is written in `networks/<id>` first, then moves with its screens into
 |---|---|
 | client | `core/x` (done) |
 | database | `store` (no SQLite migrations: XTA's data arrives through its backup) |
-| tweet | `ui/post` (done in part); translation in `services` |
-| home | `ui/home`: a tab per followed network and group, deck, For you, saved |
-| profile | `ui/profile` (done in part): follows lists, saved tab, filters, followed by |
+| tweet | `ui/post` (done: post card, opened post, conversation and its orders, quotes and reposters, polls, cards, translation) |
+| home | `ui/home` (done: strip of Following, For you, groups and pinned networks; the deck; the account menu; desktop navigation) |
+| profile | `ui/profile` (done: header, filters, follows lists, followed by, note, Posts/Replies/Media/Saved tabs, gates) |
 | search | `ui/search` (done: tabs, advanced search, languages, recent searches, media grid, search in a loaded feed); `store` recent searches |
 | trends | `ui/trends` (done: Discover with places, trends, shortcuts) |
-| subscriptions | `core/session` + `store`; `ui/subscriptions` (list, import, cleanup, groups) |
-| group | `core/feed` and `core/session` rules (done: custom rules, post caps, saved searches, batch read, rotation, nesting, combined and deck groups, packs); `ui/group` |
-| saved | `store/saved` (done: saved posts, folders, device likes, local notes and posts); `ui/saved` |
-| archive | `store/saved` (done: notes, highlights, tags); `ui/archive` |
-| offline | `store/offline` (done) + `services`; `ui/offline` |
-| downloads | `store/downloads` (done: queue, resume, history, naming); platform save in `:app` / `:desktop`; `ui/downloads` |
+| subscriptions | `ui/subscriptions` (done: groups board, people list, imports of handles, lists and packs, cleanup, sort ungrouped by hand or AI) |
+| group | `core/feed` and `core/session` rules; `ui/group` (done: the group feed with progress, retries, folds, catch-up; feed settings) |
+| saved | `store/saved`; `ui/saved` (done: tabs, folders, save sheet, device likes, notes and their editor, profile Saved tab) |
+| archive | `store/saved`; `ui/archive` (done: highlights, tags, AI transcription) |
+| offline | `store/offline`; `ui/offline` (done: collection and media) |
+| downloads | `store/downloads`; `ui/downloads` (done; MediaStore on Android, `~/Downloads` on the desktop) |
 | reading | `store/reading` (done: reading places, journal, appearance) |
-| article | `services/article` (done) |
-| links | `services/links` (done: opening rules, routing, previews, shared links); `ui/links` |
-| speech | `services/speech` (done: text, languages, chunks, offline voices and their downloads); engines per platform; `ui/speech` |
-| media | per platform (players, continuity, podcasts, audio session); `ui/media` |
+| article | `services/article`; `ui/article` (done) |
+| links | `services/links`; `ui/links` (done: opening rules, in-app browser on Android, previews, post context bar, shared links) |
+| speech | `services/speech`; `ui/speech` (done: the bar, system voices on Android, voice settings and downloads; offline voices download but cannot speak yet) |
+| media | `ui/media` (done: viewer with zoom and video controls, continuity player); lock-screen controls need media3-session |
 | antenna | `store` (antennas) + `ui/antenna` (done: list, editor, feed) |
 | community | `ui/community` (done: posts, about, members, links) |
-| intro | `ui/intro` |
-| settings | `store` (every setting); `ui/settings`; the plugin store in `plugin-host` + `ui/plugins` |
-| catcher | crash reports per platform; a switch in settings |
+| intro | `ui/intro` (done) |
+| settings | `store/settings`; `ui/settings` (done: every section, backup export and restore, WebDAV, theme); the plugin store in `plugin-host` + `ui/pluginstore` |
+| catcher | crash reports kept on the device (done; a switch in settings) |
 | utils | `services` (AI client, translation, sizes, debounce, cached pages) and the platform modules |
 | ui | `ui/common` (the whole UI is now one Compose Multiplatform module for Android and Linux) |
-| l10n | `ui` resources in all 29 of XTA's languages (`SCREENS.md`) |
+| l10n | `ui` resources in all 29 of XTA's languages (done for every screen so far, `SCREENS.md`) |
 | generated | not needed |
 
 ## Platforms
