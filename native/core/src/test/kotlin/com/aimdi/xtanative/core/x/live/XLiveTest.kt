@@ -87,6 +87,8 @@ class XLiveTest {
                 println("LIVE sign-in script ${src.substringAfterLast('/')}: ${source.length} characters, ondemand.s ${"ondemand.s" in source}")
             }
         }.onFailure { println("LIVE sign-in page probe failed: ${it::class.simpleName}: ${it.message?.take(160)}") }
+        // A test returns nothing: JUnit passes over a method that returns the Result above.
+        Unit
     }
 
     private suspend fun probe(what: String, read: suspend () -> Int) {

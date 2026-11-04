@@ -54,7 +54,15 @@ else
   cp -r "$here/$module/src/test/resources/." "$out/test/" 2> /dev/null || true
 fi
 
+runtime="$out/test:$classes:$cp:$K/lib/kotlin-stdlib.jar:$K/lib/kotlin-test.jar:$K/lib/kotlin-test-junit5.jar"
+
+# A test that returns a value is never run by JUnit, and nothing says so: list them first.
+compile "$out/returns" "$K/lib/kotlin-stdlib.jar" "" "$here/tool/TestReturns.kt"
+if ! report=$(java -cp "$out/returns:$runtime:$junit" TestReturnsKt "$out/test" 2>&1); then returns=failed; fi
+printf '%s\n' "$report" | grep -v JAVA_TOOL_OPTIONS || true
+
 select=(--scan-class-path)
 [ -n "$package" ] && select=(--select-package "$package")
-java -jar "$junit" execute --class-path "$out/test:$classes:$cp:$K/lib/kotlin-stdlib.jar:$K/lib/kotlin-test.jar:$K/lib/kotlin-test-junit5.jar" \
+java -jar "$junit" execute --class-path "$runtime" \
   "${select[@]}" --details=tree --disable-banner 2>&1 | grep -v JAVA_TOOL_OPTIONS | tail -60
+[ "${returns:-}" != failed ] || { echo "SOME TESTS NEVER RUN: see NOT RUN BY JUNIT above"; exit 1; }
