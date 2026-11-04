@@ -22,15 +22,24 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import androidx.savedstate.read
+import com.aimdi.xtanative.ui.antenna.AntennaFeedScreen
+import com.aimdi.xtanative.ui.antenna.AntennasScreen
 import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.community.CommunityMembersScreen
+import com.aimdi.xtanative.ui.community.CommunityScreen
 import com.aimdi.xtanative.ui.feed.FeedScreen
 import com.aimdi.xtanative.ui.importer.ImportScreen
+import com.aimdi.xtanative.ui.lists.ListImportScreen
 import com.aimdi.xtanative.ui.media.MediaViewer
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.PostScreen
 import com.aimdi.xtanative.ui.profile.ProfileScreen
+import com.aimdi.xtanative.ui.search.SearchActions
 import com.aimdi.xtanative.ui.search.SearchScreen
+import com.aimdi.xtanative.ui.search.SearchTab
 import com.aimdi.xtanative.ui.settings.SettingsScreen
+import com.aimdi.xtanative.ui.trends.TrendsActions
+import com.aimdi.xtanative.ui.trends.TrendsScreen
 import java.net.URLEncoder
 
 private object Routes {
@@ -40,13 +49,29 @@ private object Routes {
     const val POST = "post/{id}"
     const val PROFILE = "profile/{screenName}"
     const val MEDIA = "media/{postId}/{index}"
-    const val SEARCH = "search?q={q}"
+    const val SEARCH = "search?q={q}&tab={tab}"
     const val SETTINGS = "settings"
+    const val TRENDS = "trends"
+    const val COMMUNITY = "community/{id}"
+    const val COMMUNITY_ABOUT = "community/{id}/about"
+    const val COMMUNITY_MEMBERS = "community/{id}/members"
+    const val LIST = "list/{id}"
+    const val ANTENNAS = "antennas"
+    const val ANTENNA = "antenna/{id}"
 
     fun post(id: String) = "post/$id"
     fun profile(screenName: String) = "profile/" + encoded(screenName)
     fun media(postId: String, index: Int) = "media/$postId/$index"
-    fun search(query: String?) = if (query.isNullOrBlank()) "search" else "search?q=" + encoded(query)
+    fun search(query: String?) = search(query, null)
+
+    /** The search of [query] on [tab] (a [SearchTab.routeName]); either may be left out. */
+    fun search(query: String?, tab: String?): String {
+        val params = listOfNotNull(query?.takeIf { it.isNotBlank() }?.let { "q=" + encoded(it) }, tab?.let { "tab=$it" })
+        return if (params.isEmpty()) "search" else "search?" + params.joinToString("&")
+    }
+    fun community(id: String) = "community/" + encoded(id)
+    fun communityMembers(id: String) = "community/" + encoded(id) + "/members"
+    fun antenna(id: String) = "antenna/" + encoded(id)
 
     /** [text] escaped for a route, which is matched as a URI: a space as %20, which every platform decodes. */
     private fun encoded(text: String): String = URLEncoder.encode(text, "UTF-8").replace("+", "%20")
@@ -73,6 +98,16 @@ fun XtaNativeRoot() {
             openProfile = { name -> nav.navigate(Routes.profile(name)) },
             openMedia = { postId, index -> nav.navigate(Routes.media(postId, index)) },
             search = { query -> nav.navigate(Routes.search(query)) },
+        )
+    }
+    val searchActions = remember(nav) {
+        SearchActions(openCommunity = { id -> nav.navigate(Routes.community(id)) }, openAntennas = { nav.navigate(Routes.ANTENNAS) })
+    }
+    val trendsActions = remember(nav) {
+        TrendsActions(
+            openSearch = { query -> nav.navigate(Routes.search(query)) },
+            openPeople = { nav.navigate(Routes.search(null, SearchTab.PEOPLE.routeName)) },
+            openAntennas = { nav.navigate(Routes.ANTENNAS) },
         )
     }
 
@@ -118,10 +153,34 @@ fun XtaNativeRoot() {
         }
         composable(
             Routes.SEARCH,
-            arguments = listOf(navArgument("q") { type = NavType.StringType; nullable = true; defaultValue = null }),
+            arguments = listOf(
+                navArgument("q") { type = NavType.StringType; nullable = true; defaultValue = null },
+                navArgument("tab") { type = NavType.StringType; nullable = true; defaultValue = null },
+            ),
             deepLinks = xLinks("search?q={q}"),
         ) { entry ->
-            SearchScreen(entry.text("q"), actions, onBack = { nav.popBackStack() })
+            SearchScreen(entry.text("q"), SearchTab.of(entry.text("tab")), actions, searchActions, onBack = { nav.popBackStack() })
+        }
+        composable(Routes.TRENDS) {
+            TrendsScreen(trendsActions, onBack = { nav.popBackStack() })
+        }
+        composable(Routes.COMMUNITY, arguments = listOf(navArgument("id") { type = NavType.StringType }), deepLinks = xLinks("i/communities/{id}")) { entry ->
+            CommunityScreen(entry.text("id").orEmpty(), about = false, actions, openMembers = { id -> nav.navigate(Routes.communityMembers(id)) }, onBack = { nav.popBackStack() })
+        }
+        composable(Routes.COMMUNITY_ABOUT, arguments = listOf(navArgument("id") { type = NavType.StringType }), deepLinks = xLinks("i/communities/{id}/about")) { entry ->
+            CommunityScreen(entry.text("id").orEmpty(), about = true, actions, openMembers = { id -> nav.navigate(Routes.communityMembers(id)) }, onBack = { nav.popBackStack() })
+        }
+        composable(Routes.COMMUNITY_MEMBERS, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
+            CommunityMembersScreen(entry.text("id").orEmpty(), actions, onBack = { nav.popBackStack() })
+        }
+        composable(Routes.LIST, arguments = listOf(navArgument("id") { type = NavType.StringType }), deepLinks = xLinks("i/lists/{id}")) { entry ->
+            ListImportScreen(entry.text("id"), onBack = { nav.popBackStack() })
+        }
+        composable(Routes.ANTENNAS) {
+            AntennasScreen(openAntenna = { id -> nav.navigate(Routes.antenna(id)) }, onBack = { nav.popBackStack() })
+        }
+        composable(Routes.ANTENNA, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
+            AntennaFeedScreen(entry.text("id").orEmpty(), actions, onBack = { nav.popBackStack() })
         }
         composable(Routes.SETTINGS) {
             SettingsScreen(

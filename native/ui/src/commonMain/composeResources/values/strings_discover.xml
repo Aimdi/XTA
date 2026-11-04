@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Search, trends, communities, X lists and antennas. Positional placeholders (%1$s, %1$d). -->
+<resources>
+    <string name="discover_search">Search</string>
+    <string name="discover_search_x">Search X</string>
+    <string name="discover_clear">Clear</string>
+    <string name="discover_close">Close</string>
+    <string name="discover_ok">OK</string>
+    <string name="discover_cancel">Cancel</string>
+    <string name="discover_delete">Delete</string>
+    <string name="discover_settings">Settings</string>
+    <string name="discover_no_results">No results</string>
+    <string name="discover_go_to">Go to @%1$s</string>
+    <string name="discover_filter_value">%1$s: %2$s</string>
+
+    <string name="discover_popular">Popular</string>
+    <string name="discover_recent">Recent</string>
+    <string name="discover_media">Media</string>
+    <string name="discover_accounts">Accounts</string>
+    <string name="discover_communities">Communities</string>
+
+    <string name="discover_recent_searches">Recent searches</string>
+    <string name="discover_clear_recent_searches">Clear recent searches</string>
+
+    <string name="discover_subscribe">Subscribe</string>
+    <string name="discover_unsubscribe">Unsubscribe</string>
+    <string name="discover_add_to_group">Add to group</string>
+    <string name="discover_hide_from_main_feed">Hide from main feed</string>
+    <string name="discover_show_in_main_feed">Show in main feed</string>
+    <string name="discover_search_or_create">Search or create</string>
+    <string name="discover_group_create">Create “%1$s” and add</string>
+    <string name="discover_no_groups_yet">No groups yet</string>
+    <string name="discover_no_group_found">No group found</string>
+    <string name="discover_in_no_group">Not in a group</string>
+    <string name="discover_in_group">In %1$s</string>
+    <string name="discover_in_two_groups">In %1$s and %2$s</string>
+    <plurals name="discover_in_groups">
+        <item quantity="one">In %1$d group</item>
+        <item quantity="other">In %1$d groups</item>
+    </plurals>
+
+    <string name="discover_advanced_search">Advanced search</string>
+    <string name="discover_search_term">Search term</string>
+    <string name="discover_all_of_these_words">All of these words</string>
+    <string name="discover_this_exact_phrase">This exact phrase</string>
+    <string name="discover_any_of_these_words">Any of these words</string>
+    <string name="discover_none_of_these_words">None of these words</string>
+    <string name="discover_these_hashtags">These hashtags</string>
+    <string name="discover_language">Language</string>
+    <string name="discover_any_language">Any language</string>
+    <string name="discover_from_these_accounts">From these accounts</string>
+    <string name="discover_to_these_accounts">To these accounts</string>
+    <string name="discover_mentioning_these_accounts">Mentioning these accounts</string>
+    <string name="discover_content_filter">Content filter</string>
+    <string name="discover_all">All</string>
+    <string name="discover_photos">Photos</string>
+    <string name="discover_videos">Videos</string>
+    <string name="discover_only_media">Only show posts with media</string>
+    <string name="discover_include_replies">Include replies</string>
+    <string name="discover_only_replies">Only replies</string>
+    <string name="discover_hide_replies">Hide replies</string>
+    <string name="discover_include_links">Include links</string>
+    <string name="discover_only_links">Only links</string>
+    <string name="discover_hide_links">Hide links</string>
+    <string name="discover_include_reposts">Include reposts</string>
+    <string name="discover_hide_retweets">Hide retweets</string>
+    <string name="discover_filters">Filters</string>
+    <string name="discover_minimum_replies">Minimum replies</string>
+    <string name="discover_minimum_likes">Minimum likes</string>
+    <string name="discover_minimum_reposts">Minimum reposts</string>
+    <string name="discover_since">Since</string>
+    <string name="discover_until">Until</string>
+    <string name="discover_not_set">Not set</string>
+
+    <string name="discover_loaded_title">Search loaded posts</string>
+    <string name="discover_loaded_hint">Search text, links or authors in posts already loaded.</string>
+
+    <string name="discover_find_people">Find people</string>
+    <string name="discover_add_location">Add a location</string>
+    <string name="discover_country">Country</string>
+    <string name="discover_trends_empty">Nothing trending for this place yet. Search above, or add another location.</string>
+    <plurals name="discover_trend_posts">
+        <item quantity="one">%1$s post</item>
+        <item quantity="other">%1$s posts</item>
+    </plurals>
+
+    <string name="discover_community_about">About</string>
+    <string name="discover_community_rules">Rules</string>
+    <string name="discover_community_created">Created %1$s</string>
+    <string name="discover_community_members">Members</string>
+    <plurals name="discover_member_count">
+        <item quantity="one">%1$d member</item>
+        <item quantity="other">%1$d members</item>
+    </plurals>
+
+    <string name="discover_list_import_title">Import an X list as a group</string>
+    <string name="discover_list_import_intro">To import an X list as a subscription group, enter the list link or its ID below</string>
+    <string name="discover_list_import_rate_limited">Please note that the method used to import list members is heavily rate limited by Twitter, so this may fail if the list has a lot of members</string>
+    <string name="discover_list_label">List link or ID</string>
+    <string name="discover_list_hint">x.com/i/lists/…</string>
+    <string name="discover_list_invalid">This does not look like a list link or a list ID</string>
+    <string name="discover_list_not_found">List not found. It may have been deleted, or it is private.</string>
+    <string name="discover_list_unable">Unable to import</string>
+    <string name="discover_list_progress">%1$s users imported so far</string>
+    <string name="discover_list_finished">Finished with %1$s users</string>
+    <string name="discover_import">Import</string>
+
+    <string name="discover_antennas">Antennas</string>
+    <string name="discover_antenna_new">New antenna</string>
+    <string name="discover_antenna_empty">No antennas yet</string>
+    <string name="discover_antenna_name">Name</string>
+    <string name="discover_antenna_include">Include terms</string>
+    <string name="discover_antenna_exclude">Exclude terms</string>
+    <string name="discover_antenna_scope_search">All of search</string>
+    <string name="discover_antenna_scope_following">Only accounts you follow</string>
+    <string name="discover_are_you_sure">Are you sure?</string>
+    <string name="discover_show_menu">Show menu</string>
+    <string name="discover_no_posts_match">No posts match your search</string>
+</resources>
