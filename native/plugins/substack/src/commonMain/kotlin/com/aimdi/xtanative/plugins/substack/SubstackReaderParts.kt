@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
@@ -31,7 +30,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -45,7 +43,6 @@ import com.aimdi.xtanative.networks.substack.SubstackPassage
 import com.aimdi.xtanative.networks.substack.SubstackPost
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberShareText
-import kotlinx.coroutines.launch
 
 /** What opens over the article: its contents (or find), its highlights, a footnote. */
 internal sealed interface ReaderSheet : java.io.Serializable {
@@ -60,20 +57,26 @@ internal sealed interface ReaderSheet : java.io.Serializable {
 
 /**
  * A selection over [content] whose menu also offers [label] for what is
- * selected: the desktop's right-click menu, Android's selection toolbar.
- * [onHighlight] gets the selected text.
+ * selected, and [speakLabel] ("Speak from here") when [onSpeak] is given:
+ * the desktop's right-click menu, Android's selection toolbar. [onHighlight]
+ * gets the selected text; [onSpeak] reads aloud from the paragraph held.
  */
 @Composable
-internal expect fun HighlightingSelection(label: String, onHighlight: (String) -> Unit, content: @Composable () -> Unit)
+internal expect fun HighlightingSelection(
+    label: String,
+    onHighlight: (String) -> Unit,
+    speakLabel: String,
+    onSpeak: (() -> Unit)?,
+    content: @Composable () -> Unit,
+)
 
-/** The sheets over an article: contents and find, its highlights, a footnote. */
+/** The sheets over an article: contents and find (a passage chosen goes to [onJump]), its highlights, a footnote. */
 @Composable
-internal fun ReaderSheets(app: SubstackApp, post: SubstackPost, article: ReaderContent.Article, list: LazyListState, sheet: ReaderSheet?, onDismiss: () -> Unit) {
-    val scope = rememberCoroutineScope()
+internal fun ReaderSheets(app: SubstackApp, post: SubstackPost, article: ReaderContent.Article, sheet: ReaderSheet?, onDismiss: () -> Unit, onJump: (SubstackPassage) -> Unit) {
     when (sheet) {
         is ReaderSheet.Contents -> ContentsSheet(article, sheet.find, onDismiss) { passage ->
             onDismiss()
-            article.article.blockOf(passage)?.let { block -> scope.launch { list.animateScrollToItem(ROWS_BEFORE_BLOCKS + block) } }
+            onJump(passage)
         }
         ReaderSheet.Highlights -> HighlightsSheet(app, post, onDismiss)
         is ReaderSheet.Footnote -> FootnoteSheet(app, article, sheet.number, onDismiss)

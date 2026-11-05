@@ -149,4 +149,7 @@
     <string name="videos">Videod</string>
     <string name="web_only_block">See osa postitusest on nähtav ainult veebis.</string>
     <string name="search_posts_hint">Otsi artikleid väljaannetest, mida jälgid</string>
+    <string name="native_reader">Omalugeja (eelvaade)</string>
+    <string name="native_reader_description">Näita artikleid ilma veebivaateta: teksti saab valida ja kopeerida ning manustatud mängijad avanevad brauseris. Mõni paigutus võib välja näha teistmoodi.</string>
+    <string name="speak_from_here">Speak from here</string>
 </resources>

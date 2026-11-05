@@ -152,4 +152,7 @@
     <string name="videos">Videa</string>
     <string name="web_only_block">Tato část příspěvku se zobrazí jen na webu.</string>
     <string name="search_posts_hint">Hledat články v publikacích, které sledujete</string>
+    <string name="native_reader">Nativní čtečka (náhled)</string>
+    <string name="native_reader_description">Zobrazovat články bez webového zobrazení: text lze označit a kopírovat a vložené přehrávače se otevřou v prohlížeči. Některá rozvržení mohou vypadat jinak.</string>
+    <string name="speak_from_here">Speak from here</string>
 </resources>

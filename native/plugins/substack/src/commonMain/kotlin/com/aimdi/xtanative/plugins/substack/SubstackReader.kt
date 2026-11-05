@@ -30,9 +30,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -47,6 +49,8 @@ import com.aimdi.xtanative.networks.substack.SubstackPost
 import com.aimdi.xtanative.networks.substack.SubstackPostLink
 import com.aimdi.xtanative.networks.substack.SubstackPosts
 import com.aimdi.xtanative.networks.substack.SubstackReading
+import com.aimdi.xtanative.networks.substack.SubstackSpeakFrom
+import com.aimdi.xtanative.networks.substack.SubstackWebPage
 import com.aimdi.xtanative.store.settings.SubstackPrefs
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.offline.OfflineArticleAction
@@ -61,17 +65,22 @@ import com.aimdi.xtanative.ui.plugins.problemOf
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 import com.aimdi.xtanative.ui.plugins.rememberShareText
+import com.aimdi.xtanative.ui.speech.LocalSpeech
 import com.aimdi.xtanative.ui.speech.ReadAloudButton
 import com.aimdi.xtanative.ui.speech.VoiceSettingsSheet
 import kotlinx.coroutines.launch
 
 /**
- * A post in the reader, as XTA's SubstackReaderScreen in its native mode:
- * the article as blocks, kept where the reader left it, with the type every
- * reader shares; its episode's player; contents and find; highlights; Listen;
- * kept offline; saved, liked and marked read on this device; its discussion,
- * its publication, and its page in the browser. A paid post without a body
- * shows the paid pane, never the publisher's scripts.
+ * A post in the reader, as XTA's SubstackReaderScreen: on Android the
+ * article in a web view unless "Native reader (preview)" is on, as XTA's
+ * default; on the desktop, and with that switch, the article as blocks.
+ * Either way it is kept where the reader left it, with the type every reader
+ * shares; its episode's player; contents and find; highlights (native);
+ * Listen, and "Speak from here" on a paragraph held; kept offline; saved,
+ * liked and marked read on this device; its discussion, its publication, and
+ * its page in the browser. A post with no body but an address shows the
+ * publication's page in the web view, or offers it in the browser. A paid
+ * post without a body shows the paid pane, never the publisher's scripts.
  */
 @Composable
 internal fun SubstackReaderScreen(app: SubstackApp, link: SubstackPostLink, key: String?) {
@@ -81,39 +90,57 @@ internal fun SubstackReaderScreen(app: SubstackApp, link: SubstackPostLink, key:
     val scope = rememberCoroutineScope()
     val article = state.content as? ReaderContent.Article
     var sheet by rememberSaveable { mutableStateOf<ReaderSheet?>(null) }
+    val nativeReader by app.host.settings.observe(SubstackPrefs.nativeReader).collectAsState(SubstackPrefs.nativeReader.default)
+    val web = articleWebView && !nativeReader
+    val page = remember { WebPageControl() }
     val reading = state.reading
     DisposableEffect(reading, article != null) {
         reading?.setActive(article != null)
         onDispose { reading?.setActive(false) }
     }
-    PluginScaffold(title = state.post.title, onBack = app.host::back, actions = { ReaderActions(app, model, state, onSheet = { sheet = it }) }) { padding ->
+    PluginScaffold(title = state.post.title, onBack = app.host::back, actions = { ReaderActions(app, model, state, web, onSheet = { sheet = it }) }) { padding ->
         Column(Modifier.fillMaxSize().padding(padding)) {
             if (article?.preview == true) {
                 Text(pluginString(Strings.preview_badge), style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
             }
-            reading?.let { ArticleReaderControls(it, supportsAppearance = article != null, canComplete = state.content !is ReaderContent.Loading) { scope.launch { list.scrollToItem(0) } } }
+            reading?.let {
+                ArticleReaderControls(it, supportsAppearance = article != null, canComplete = state.content !is ReaderContent.Loading) {
+                    if (web) page.run(SubstackWebPage.START_OVER) else scope.launch { list.scrollToItem(0) }
+                }
+            }
             Box(Modifier.weight(1f)) {
-                ReaderBody(app, model, state, list) { sheet = it }
+                ReaderBody(app, model, state, list, web, page) { sheet = it }
                 if (state.refreshing) LinearProgressIndicator(Modifier.fillMaxWidth())
                 state.refreshError?.let { FailureRow(it, { model.load(force = true) }, Modifier.align(Alignment.TopCenter)) }
             }
         }
     }
-    article?.let { ReaderSheets(app, state.post, it, list, sheet) { sheet = null } }
+    article?.let { content ->
+        ReaderSheets(app, state.post, content, sheet, onDismiss = { sheet = null }) { passage ->
+            if (web) {
+                page.run(SubstackWebPage.jump(passage.anchor))
+            } else {
+                content.article.blockOf(passage)?.let { block -> scope.launch { list.animateScrollToItem(ROWS_BEFORE_BLOCKS + block) } }
+            }
+        }
+    }
 }
 
 @Composable
-private fun ReaderBody(app: SubstackApp, model: ReaderModel, state: ReaderModel.State, list: LazyListState, onSheet: (ReaderSheet) -> Unit) {
+private fun ReaderBody(app: SubstackApp, model: ReaderModel, state: ReaderModel.State, list: LazyListState, web: Boolean, page: WebPageControl, onSheet: (ReaderSheet) -> Unit) {
     val post = state.post
     when (val content = state.content) {
         ReaderContent.Loading -> LoadingRow()
         is ReaderContent.Failed -> ReaderFailure(post, content.error) { model.load(force = false) }
         ReaderContent.Paywall -> PostPane(post, Icons.Outlined.Lock, Strings.paywalled_title, Strings.paywalled_description)
-        ReaderContent.Live -> PostPane(post, SubstackIcons.OpenInNew, null, null)
+        ReaderContent.Live -> {
+            val url = post.canonicalUrl
+            if (articleWebView && url != null) WebLive(app, model, post, url, page, Modifier.fillMaxSize()) else PostPane(post, SubstackIcons.OpenInNew, null, null)
+        }
         ReaderContent.Empty -> EmptyState(pluginString(Strings.no_content))
         is ReaderContent.Article -> Column(Modifier.fillMaxSize()) {
             post.audioUrl?.takeIf { post.isPodcast }?.let { SubstackAudioPlayer(app, it, post.title) }
-            ReaderArticle(app, state, content, list, onSheet, Modifier.weight(1f))
+            if (web) WebArticle(app, model, state, content, page, Modifier.weight(1f)) else ReaderArticle(app, state, content, list, onSheet, Modifier.weight(1f))
         }
     }
 }
@@ -128,15 +155,24 @@ private fun ReaderArticle(app: SubstackApp, state: ReaderModel.State, content: R
     val highlights by app.highlights.state.collectAsState()
     val blocks = content.article.blocks
     val images = remember(blocks) { blocks.filterIsInstance<SubstackImageBlock>() }
+    val speech = LocalSpeech.current
+    val speakText by rememberUpdatedState(state.speakText)
+    var pressed by remember(blocks) { mutableIntStateOf(-1) }
     val taps = remember(app, post, images) {
         ArticleTaps(
             onLink = { url -> if (SubstackReading.articleFragment(url, post.canonicalUrl) == null) app.openLink(url) },
             onFootnote = { number -> onSheet(ReaderSheet.Footnote(number)) },
             onImage = { image -> app.host.openMedia(images.map(::mediaOf), images.indexOf(image).coerceAtLeast(0)) },
+            onPress = { pressed = it },
         )
     }
     KeepsReaderPlace(reading, list, before = ROWS_BEFORE_BLOCKS, blocks = blocks.size)
-    HighlightingSelection(pluginString(Strings.highlight), onHighlight = { selected -> app.launch { app.highlights.add(post, SubstackHighlights.quotes(selected)) } }) {
+    HighlightingSelection(
+        pluginString(Strings.highlight),
+        onHighlight = { selected -> app.launch { app.highlights.add(post, SubstackHighlights.quotes(selected)) } },
+        speakLabel = pluginString(Strings.speak_from_here),
+        onSpeak = speech?.let { voice -> { voice.speak(post.title, SubstackSpeakFrom.fromBlock(speakText, blocks, pressed)) } },
+    ) {
         ArticleList(
             post = post,
             blocks = blocks,
@@ -161,7 +197,7 @@ private fun mediaOf(image: SubstackImageBlock): MediaItem {
 
 /** A post that could not be read: why, again, and its page in the browser. */
 @Composable
-private fun ReaderFailure(post: SubstackPost, error: Throwable, onRetry: () -> Unit) {
+internal fun ReaderFailure(post: SubstackPost, error: Throwable, onRetry: () -> Unit) {
     val outside = rememberOpenOutside()
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally) {
         NetworkProblemView(problemOf(error), NETWORK, onRetry)
@@ -197,7 +233,7 @@ private fun PostPane(post: SubstackPost, icon: ImageVector, title: PluginText?, 
 
 /** The reader's bar: keep offline, save, Listen, and its menu, in XTA's order. */
 @Composable
-private fun ReaderActions(app: SubstackApp, model: ReaderModel, state: ReaderModel.State, onSheet: (ReaderSheet) -> Unit) {
+private fun ReaderActions(app: SubstackApp, model: ReaderModel, state: ReaderModel.State, web: Boolean, onSheet: (ReaderSheet) -> Unit) {
     val post = state.post
     val saves by app.saves.state.collectAsState()
     val saved = saves.any { SubstackPosts.same(it, post) }
@@ -209,12 +245,12 @@ private fun ReaderActions(app: SubstackApp, model: ReaderModel, state: ReaderMod
         Icon(if (saved) SubstackIcons.Bookmark else SubstackIcons.BookmarkBorder, pluginString(if (saved) Strings.unsave else Strings.save))
     }
     if (canSpeak) ReadAloudButton(post.title, { state.speakText })
-    ReaderMenu(app, model, state, canSpeak, onSheet) { voices = true }
+    ReaderMenu(app, model, state, canSpeak, web, onSheet) { voices = true }
     if (voices) VoiceSettingsSheet { voices = false }
 }
 
 @Composable
-private fun ReaderMenu(app: SubstackApp, model: ReaderModel, state: ReaderModel.State, canSpeak: Boolean, onSheet: (ReaderSheet) -> Unit, onVoices: () -> Unit) {
+private fun ReaderMenu(app: SubstackApp, model: ReaderModel, state: ReaderModel.State, canSpeak: Boolean, web: Boolean, onSheet: (ReaderSheet) -> Unit, onVoices: () -> Unit) {
     var open by remember { mutableStateOf(false) }
     val likes by app.likes.state.collectAsState()
     val share = rememberShareText()
@@ -226,7 +262,7 @@ private fun ReaderMenu(app: SubstackApp, model: ReaderModel, state: ReaderModel.
         DropdownMenuItem(text = { Text(label) }, leadingIcon = { Icon(icon, null) }, onClick = { open = false; action() })
     }
     val items = buildList {
-        if (article) add(item(SubstackIcons.Quote, pluginString(Strings.highlights)) { onSheet(ReaderSheet.Highlights) })
+        if (article && !web) add(item(SubstackIcons.Quote, pluginString(Strings.highlights)) { onSheet(ReaderSheet.Highlights) })
         if (article) add(item(SubstackIcons.Contents, pluginString(Strings.contents)) { onSheet(ReaderSheet.Contents(find = false)) })
         if (article) add(item(SubstackIcons.Find, pluginString(Strings.find)) { onSheet(ReaderSheet.Contents(find = true)) })
         if (state.content !is ReaderContent.Loading && !state.refreshing) add(item(Icons.Default.Refresh, pluginString(Strings.refresh)) { model.load(force = true) })

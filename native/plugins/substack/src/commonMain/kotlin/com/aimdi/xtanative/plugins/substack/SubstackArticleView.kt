@@ -34,6 +34,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -79,8 +82,13 @@ internal data class ArticleLook(val font: SubstackReaderFont, val column: Substa
     val columnWidth: Dp get() = (column.rem * 16).dp
 }
 
-/** Where an article's taps lead. */
-internal class ArticleTaps(val onLink: (String) -> Unit, val onFootnote: (Int) -> Unit, val onImage: (SubstackImageBlock) -> Unit)
+/** Where an article's taps lead; [onPress] is told which block a press (a long one, a right click) landed on, -1 for the header. */
+internal class ArticleTaps(
+    val onLink: (String) -> Unit,
+    val onFootnote: (Int) -> Unit,
+    val onImage: (SubstackImageBlock) -> Unit,
+    val onPress: (Int) -> Unit = {},
+)
 
 /**
  * A post's body as XTA's SubstackNativeArticle draws it, without a web view:
@@ -106,11 +114,20 @@ internal fun ArticleList(
     val body = MaterialTheme.typography.bodyLarge.copy(fontSize = look.fontSize.sp, lineHeight = (look.fontSize * look.lineHeight).sp, fontFamily = look.family)
     val column = Modifier.fillMaxWidth().wrapContentWidth().padding(horizontal = 20.dp).widthIn(max = look.columnWidth).fillMaxWidth()
     LazyColumn(state = list, modifier = modifier.fillMaxSize()) {
-        item(key = "header") { ArticleHeader(post, readMinutes, column.padding(top = 16.dp, bottom = 24.dp)) }
-        itemsIndexed(blocks, key = { index, _ -> "block-$index" }) { _, block ->
-            Box(column.padding(bottom = 16.dp)) { BlockView(block, body, highlights, keptImages, post.canonicalUrl, taps) }
+        item(key = "header") { ArticleHeader(post, readMinutes, column.pressed(-1, taps).padding(top = 16.dp, bottom = 24.dp)) }
+        itemsIndexed(blocks, key = { index, _ -> "block-$index" }) { index, block ->
+            Box(column.pressed(index, taps).padding(bottom = 16.dp)) { BlockView(block, body, highlights, keptImages, post.canonicalUrl, taps) }
         }
         item(key = "footer") { ArticleFooter(post, preview, body, taps, column.padding(bottom = 48.dp)) }
+    }
+}
+
+/** Tells [taps] of each press on block [index], seen before the selection takes it. */
+private fun Modifier.pressed(index: Int, taps: ArticleTaps): Modifier = pointerInput(index, taps) {
+    awaitPointerEventScope {
+        while (true) {
+            if (awaitPointerEvent(PointerEventPass.Initial).type == PointerEventType.Press) taps.onPress(index)
+        }
     }
 }
 

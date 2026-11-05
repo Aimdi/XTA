@@ -388,7 +388,7 @@ internal class RedditApp(val host: PluginHost) {
     /** The picture at [url] saved through the app's downloads, as a long press on a post's, a gallery's or a comment's picture saves it (XTA's downloadRedditImage). */
     fun savePicture(url: String) = host.download(MediaItem(url))
 
-    /** A video in the app's viewer; the desktop, with no player of its own, opens the post on the web. */
+    /** A video in the app's viewer, played there on Android and, through libmpv, on the desktop; a desktop without libmpv opens the post on the web. */
     fun openVideo(post: RedditPost, stream: String) = host.openMedia(
         listOf(
             MediaItem(

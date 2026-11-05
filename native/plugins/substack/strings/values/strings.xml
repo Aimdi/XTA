@@ -149,4 +149,7 @@
     <string name="videos">Videos</string>
     <string name="web_only_block">This part of the post shows only on the web.</string>
     <string name="search_posts_hint">Search articles in publications you follow</string>
+    <string name="native_reader">Native reader (preview)</string>
+    <string name="native_reader_description">Show articles without a web view: text can be selected and copied, and embedded players open in the browser. Some layouts may look different.</string>
+    <string name="speak_from_here">Speak from here</string>
 </resources>

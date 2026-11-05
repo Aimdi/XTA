@@ -149,4 +149,7 @@
     <string name="videos">Videolar</string>
     <string name="web_only_block">Gönderinin bu bölümü yalnızca web’de görünür.</string>
     <string name="search_posts_hint">Takip ettiğiniz yayınlardaki makaleleri arayın</string>
+    <string name="native_reader">Yerel okuyucu (önizleme)</string>
+    <string name="native_reader_description">Makaleleri web görünümü olmadan göster: metin seçilip kopyalanabilir, gömülü oynatıcılar tarayıcıda açılır. Bazı düzenler farklı görünebilir.</string>
+    <string name="speak_from_here">Speak from here</string>
 </resources>

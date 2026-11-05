@@ -52,22 +52,29 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 /**
- * Substack's settings, as XTA's SubstackSettingsScreen: marking posts read
- * as they scroll past, the follows to OPML and back, and the reader's font
- * and column. They are the app's settings under XTA's keys (SubstackPrefs),
- * so the app's backup carries them. XTA's "Native reader (preview)" switch
- * chooses between its web view and its native reader; every article here is
- * native, so it is not offered.
+ * Substack's settings, as XTA's SubstackSettingsScreen: "Native reader
+ * (preview)", marking posts read as they scroll past, the follows to OPML
+ * and back, and the reader's font and column. They are the app's settings
+ * under XTA's keys (SubstackPrefs), so the app's backup carries them. The
+ * native reader switch chooses between the web view and the native reader on
+ * Android; the desktop, which has no web view, always reads natively and
+ * does not offer it.
  */
 @Composable
 internal fun SubstackSettingsBody(app: SubstackApp, frame: PluginFrame) {
     val settings = app.host.settings
+    val nativeReader by settings.observe(SubstackPrefs.nativeReader).collectAsState(SubstackPrefs.nativeReader.default)
     val markOnScroll by settings.observe(SubstackPrefs.markReadOnScroll).collectAsState(SubstackPrefs.markReadOnScroll.default)
     val font by settings.observe(SubstackPrefs.readerFont).collectAsState(SubstackPrefs.readerFont.default)
     val column by settings.observe(SubstackPrefs.columnWidth).collectAsState(SubstackPrefs.columnWidth.default)
     val notices = rememberNotices()
     WithNotices(notices) {
         LazyColumn(contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+            if (articleWebView) {
+                item(key = "native") {
+                    SwitchRow(Strings.native_reader, Strings.native_reader_description, nativeReader) { on -> set(app, SubstackPrefs.nativeReader, on) }
+                }
+            }
             item(key = "scroll") {
                 SwitchRow(Strings.mark_read_on_scroll, Strings.mark_read_on_scroll_description, markOnScroll) { on -> set(app, SubstackPrefs.markReadOnScroll, on) }
                 HorizontalDivider()

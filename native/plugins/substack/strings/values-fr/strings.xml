@@ -149,4 +149,7 @@
     <string name="videos">Vidéos</string>
     <string name="web_only_block">Cette partie de l’article ne s’affiche que sur le web.</string>
     <string name="search_posts_hint">Rechercher des articles dans les publications que vous suivez</string>
+    <string name="native_reader">Lecteur natif (aperçu)</string>
+    <string name="native_reader_description">Affiche les articles sans vue web : le texte peut être sélectionné et copié, et les lecteurs intégrés s’ouvrent dans le navigateur. Certaines mises en page peuvent différer.</string>
+    <string name="speak_from_here">Speak from here</string>
 </resources>

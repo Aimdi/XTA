@@ -17,21 +17,37 @@ import androidx.compose.ui.platform.TextToolbar
 import androidx.compose.ui.platform.TextToolbarStatus
 
 /**
- * Android's selection: its floating toolbar offers Copy, [label] and Select
- * all. Compose hands a toolbar no selected text, so [label] copies the
- * selection and reads it back from the clipboard once the copy lands there.
+ * Android's selection: its floating toolbar offers Copy, [label], [speakLabel]
+ * and Select all. Compose hands a toolbar no selected text, so [label] copies
+ * the selection and reads it back from the clipboard once the copy lands there.
  */
 @Composable
-internal actual fun HighlightingSelection(label: String, onHighlight: (String) -> Unit, content: @Composable () -> Unit) {
+internal actual fun HighlightingSelection(
+    label: String,
+    onHighlight: (String) -> Unit,
+    speakLabel: String,
+    onSpeak: (() -> Unit)?,
+    content: @Composable () -> Unit,
+) {
     val view = LocalView.current
     val highlight = rememberUpdatedState(onHighlight)
-    val toolbar = remember(view, label) { HighlightToolbar(view, label) { highlight.value(it) } }
+    val speak = rememberUpdatedState(onSpeak)
+    val speaks = onSpeak != null
+    val toolbar = remember(view, label, speakLabel, speaks) {
+        HighlightToolbar(view, label, speakLabel.takeIf { speaks }, onHighlight = { highlight.value(it) }, onSpeak = { speak.value?.invoke() })
+    }
     CompositionLocalProvider(LocalTextToolbar provides toolbar) {
         SelectionContainer { content() }
     }
 }
 
-private class HighlightToolbar(private val view: View, private val label: String, private val onHighlight: (String) -> Unit) : TextToolbar {
+private class HighlightToolbar(
+    private val view: View,
+    private val label: String,
+    private val speakLabel: String?,
+    private val onHighlight: (String) -> Unit,
+    private val onSpeak: () -> Unit,
+) : TextToolbar {
     private var mode: ActionMode? = null
     private var area = Rect.Zero
     private var copy: (() -> Unit)? = null
@@ -81,7 +97,8 @@ private class HighlightToolbar(private val view: View, private val label: String
                 menu.add(0, COPY, 0, android.R.string.copy).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 menu.add(0, HIGHLIGHT, 1, label).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
             }
-            if (selectAll != null) menu.add(0, SELECT_ALL, 2, android.R.string.selectAll).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
+            speakLabel?.let { menu.add(0, SPEAK, 2, it).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM) }
+            if (selectAll != null) menu.add(0, SELECT_ALL, 3, android.R.string.selectAll).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
             return true
         }
 
@@ -89,6 +106,7 @@ private class HighlightToolbar(private val view: View, private val label: String
             when (item.itemId) {
                 COPY -> copy?.invoke()
                 HIGHLIGHT -> highlight()
+                SPEAK -> onSpeak()
                 SELECT_ALL -> selectAll?.invoke()
                 else -> return false
             }
@@ -109,5 +127,6 @@ private class HighlightToolbar(private val view: View, private val label: String
         const val COPY = 1
         const val HIGHLIGHT = 2
         const val SELECT_ALL = 3
+        const val SPEAK = 4
     }
 }

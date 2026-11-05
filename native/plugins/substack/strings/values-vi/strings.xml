@@ -146,4 +146,7 @@
     <string name="videos">Video</string>
     <string name="web_only_block">Phần này của bài viết chỉ hiển thị trên web.</string>
     <string name="search_posts_hint">Tìm bài viết trong các ấn phẩm bạn theo dõi</string>
+    <string name="native_reader">Trình đọc gốc (xem trước)</string>
+    <string name="native_reader_description">Hiển thị bài viết không qua chế độ xem web: có thể chọn và sao chép văn bản, trình phát nhúng mở trong trình duyệt. Một số bố cục có thể trông khác.</string>
+    <string name="speak_from_here">Speak from here</string>
 </resources>

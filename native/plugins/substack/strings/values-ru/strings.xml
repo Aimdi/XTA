@@ -155,4 +155,7 @@
     <string name="videos">Видео</string>
     <string name="web_only_block">Эта часть публикации отображается только в вебе.</string>
     <string name="search_posts_hint">Поиск статей в изданиях, на которые вы подписаны</string>
+    <string name="native_reader">Встроенный просмотр (тест)</string>
+    <string name="native_reader_description">Показывать статьи без веб-просмотра: текст можно выделять и копировать, а встроенные плееры открываются в браузере. Некоторые макеты могут выглядеть иначе.</string>
+    <string name="speak_from_here">Speak from here</string>
 </resources>

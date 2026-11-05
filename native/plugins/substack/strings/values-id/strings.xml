@@ -146,4 +146,7 @@
     <string name="videos">Video</string>
     <string name="web_only_block">Bagian kiriman ini hanya tampil di web.</string>
     <string name="search_posts_hint">Cari artikel dalam publikasi yang Anda ikuti</string>
+    <string name="native_reader">Pembaca bawaan (pratinjau)</string>
+    <string name="native_reader_description">Tampilkan artikel tanpa tampilan web: teks bisa dipilih dan disalin, dan pemutar sematan dibuka di browser. Beberapa tata letak mungkin terlihat berbeda.</string>
+    <string name="speak_from_here">Speak from here</string>
 </resources>
