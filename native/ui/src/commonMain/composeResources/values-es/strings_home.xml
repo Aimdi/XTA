@@ -61,4 +61,8 @@
     <string name="home_alt_microblogging_group_detail">Mostrar Mastodon, Bluesky y Threads en una sola sección de Inicio. Desactiva esta opción para separarlos. Tus datos y ajustes se conservan.</string>
     <string name="home_posts">Publicaciones</string>
     <string name="home_media">Multimedia</string>
+    <string name="home_missing_page">Página faltante</string>
+    <string name="home_two_pages_required">Necesitas tener al menos 2 páginas en la pantalla de inicio.</string>
+    <string name="home_choose_pages">Elegir páginas</string>
+    <string name="home_unable_to_load_pages">No se pueden cargar las páginas de inicio</string>
 </resources>

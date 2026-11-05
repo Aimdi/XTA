@@ -184,7 +184,7 @@
     <string name="groups_yes">Bai</string>
     <string name="groups_zen_end">Hori da dena oraingoz</string>
     <string name="groups_zen_load_more">Kargatu gehiago hala ere</string>
-    <string name="groups_add_member_hint">Bilatu X-n kontu bat harpidetzeko eta gehitzeko</string>
+    <string name="groups_add_member_hint">Bilatu X-en, edo idatzi subreddit bat, Threads edo Bluesky izen bat, Fedibertsoko helbide bat edo buletin bat</string>
     <string name="groups_menu">Erakutsi menua</string>
     <string name="groups_refresh">Freskatu</string>
     <plurals name="groups_member_count">

@@ -184,7 +184,7 @@
     <string name="groups_yes">Evet</string>
     <string name="groups_zen_end">Şimdilik hepsi bu</string>
     <string name="groups_zen_load_more">Yine de daha fazla yükle</string>
-    <string name="groups_add_member_hint">Abone olup eklemek için X'te bir hesap arayın</string>
+    <string name="groups_add_member_hint">X’te arayın ya da bir subreddit, Threads veya Bluesky kullanıcı adı, Fediverse adresi veya bülten yazın</string>
     <string name="groups_menu">Menüyü göster</string>
     <string name="groups_refresh">Yenile</string>
     <plurals name="groups_member_count">

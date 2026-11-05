@@ -359,4 +359,8 @@
         <item quantity="one">%1$d क्रैश रिपोर्ट सहेजी गई</item>
         <item quantity="other">%1$d क्रैश रिपोर्ट सहेजी गईं</item>
     </plurals>
+    <string name="intro_illustration_orbit">XTA चिह्न के चारों ओर घूमते स्रोत लोगो</string>
+    <string name="intro_illustration_phone">फ़ोन के अंदर पोस्ट, लाइक और सहेजी गई चीज़ें</string>
+    <string name="intro_illustration_flow">पोस्ट X से आपके फ़ोन तक आती हैं, कभी वापस नहीं</string>
+    <string name="intro_page_of">पृष्ठ %1$d / %2$d</string>
 </resources>

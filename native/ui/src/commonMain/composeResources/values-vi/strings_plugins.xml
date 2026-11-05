@@ -52,4 +52,5 @@
     <string name="plugin_problem_other">Đã xảy ra lỗi khi đọc %1$s.</string>
     <string name="plugin_store_search">Tìm plugin</string>
     <string name="plugin_store_no_results">Không có kết quả</string>
+    <string name="plugin_open_client">Mở %1$s</string>
 </resources>

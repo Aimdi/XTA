@@ -184,7 +184,7 @@
     <string name="groups_yes">Jah</string>
     <string name="groups_zen_end">Praegu on see kõik</string>
     <string name="groups_zen_load_more">Laadi ikkagi rohkem</string>
-    <string name="groups_add_member_hint">Otsi X-ist kontot, mida tellida ja lisada</string>
+    <string name="groups_add_member_hint">Otsi X-ist või sisesta subreddit, Threadsi või Bluesky nimi, Fediversumi aadress või uudiskiri</string>
     <string name="groups_menu">Kuva menüü</string>
     <string name="groups_refresh">Värskenda</string>
     <plurals name="groups_member_count">

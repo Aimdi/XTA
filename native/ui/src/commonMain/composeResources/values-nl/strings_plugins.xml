@@ -52,4 +52,5 @@
     <string name="plugin_problem_other">Er ging iets mis bij het lezen van %1$s.</string>
     <string name="plugin_store_search">Plugins zoeken</string>
     <string name="plugin_store_no_results">Geen resultaten</string>
+    <string name="plugin_open_client">%1$s openen</string>
 </resources>

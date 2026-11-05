@@ -184,7 +184,7 @@
     <string name="groups_yes">Có</string>
     <string name="groups_zen_end">Tạm thời chỉ có vậy</string>
     <string name="groups_zen_load_more">Vẫn tải thêm</string>
-    <string name="groups_add_member_hint">Tìm trên X một tài khoản để đăng kí và thêm vào</string>
+    <string name="groups_add_member_hint">Tìm trên X, hoặc nhập một subreddit, tên Threads hay Bluesky, địa chỉ Fediverse, hoặc một bản tin</string>
     <string name="groups_menu">Hiển thị trình đơn</string>
     <string name="groups_refresh">Làm mới</string>
     <plurals name="groups_member_count">

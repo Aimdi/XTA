@@ -357,4 +357,8 @@
     <plurals name="settings_crash_count">
         <item quantity="other">已保留 %1$d 份崩溃报告</item>
     </plurals>
+    <string name="intro_illustration_orbit">来源图标环绕 XTA 标志</string>
+    <string name="intro_illustration_phone">手机里的帖子、点赞和书签</string>
+    <string name="intro_illustration_flow">帖子从 X 流向你的手机，从不回传</string>
+    <string name="intro_page_of">第 %1$d 页，共 %2$d 页</string>
 </resources>

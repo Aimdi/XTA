@@ -184,7 +184,7 @@
     <string name="groups_yes">نعم</string>
     <string name="groups_zen_end">هذا كل شيء حتى الآن</string>
     <string name="groups_zen_load_more">تحميل المزيد على أي حال</string>
-    <string name="groups_add_member_hint">ابحث في X عن حساب للاشتراك فيه وإضافته</string>
+    <string name="groups_add_member_hint">ابحث في X، أو اكتب اسم سبريديت، أو معرّف Threads أو Bluesky، أو عنوانًا في الفدرالية، أو نشرة بريدية</string>
     <string name="groups_menu">عرض القائمة</string>
     <string name="groups_refresh">تحديث</string>
     <plurals name="groups_member_count">

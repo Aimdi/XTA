@@ -52,6 +52,7 @@ import com.aimdi.xtanative.core.session.DeckGroups
 import com.aimdi.xtanative.ui.common.BackHandling
 import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.rememberScreenReaderOn
 import com.aimdi.xtanative.ui.feed.MediaModes
 import com.aimdi.xtanative.ui.feed.ToTop
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -63,6 +64,8 @@ import com.aimdi.xtanative.ui.group.groupFeedViewModel
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.search.LoadedFeedSearchScreen
 import com.aimdi.xtanative.ui.settings.AvatarSheet
+import com.aimdi.xtanative.ui.settings.SettingsRoutes
+import com.aimdi.xtanative.ui.settings.SettingsSection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -91,9 +94,15 @@ class HomeBarScreens(
 fun HomeScreen(actions: PostActions, routes: HomeRoutes, screens: HomeBarScreens) {
     val graph = LocalGraph.current
     val networks = LocalHomeNetworks.current
-    val vm: HomeViewModel = viewModel { HomeViewModel(graph, networks.available) }
+    val vm: HomeViewModel = viewModel { HomeViewModel(graph, networks.available, networks.missing) }
     val loaded by vm.ui.collectAsStateWithLifecycle()
+    val failure by vm.failure.collectAsStateWithLifecycle()
     val ui = loaded
+    val failed = failure
+    if (ui == null && failed != null) {
+        Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) { PagesFailed(failed, vm::resetPages) }
+        return
+    }
     if (ui == null) {
         // The settings are read in a few milliseconds; until then, the theme's background.
         Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
@@ -164,7 +173,8 @@ private class HomeShellState(
 @Composable
 private fun rememberShell(ui: HomeUi): HomeShellState {
     val drawer = rememberDrawerState(DrawerValue.Closed)
-    val bars = rememberHomeBars(ui.hideOnScroll)
+    // A screen reader keeps the bars put, as XTA's does.
+    val bars = rememberHomeBars(ui.hideOnScroll && !rememberScreenReaderOn())
     val bar = rememberSaveable { mutableStateOf(ui.bar.getOrElse(ui.initialBarIndex) { ui.bar.first() }.id) }
     val shown = rememberSaveable { mutableStateOf(ui.tabs.getOrNull(ui.initialIndex)?.key ?: HomeTab.Following.key) }
     return remember(drawer, bars) { HomeShellState(drawer, bars, bar, shown) }
@@ -225,7 +235,7 @@ private fun HomeDrawer(parts: HomeParts, shell: HomeShellState, deckFits: Boolea
     LaunchedEffect(shell.drawer.isOpen) { if (shell.drawer.isOpen) parts.vm.reloadUnread() }
     ModalNavigationDrawer(
         drawerState = shell.drawer,
-        // Swipes belong to the timelines; the drawer opens from the picker, and closes with a swipe too.
+        // Swipes belong to the timelines: the drawer opens from the picker or a drag from the edge, and closes with a swipe too.
         gesturesEnabled = shell.drawer.isOpen,
         drawerContent = {
             ModalDrawerSheet(drawerContainerColor = MaterialTheme.colorScheme.background) {
@@ -241,7 +251,7 @@ private fun HomeDrawer(parts: HomeParts, shell: HomeShellState, deckFits: Boolea
                 )
             }
         },
-        content = content,
+        content = { Box(Modifier.fillMaxSize().drawerEdge(shell.drawer)) { content() } },
     )
 }
 
@@ -282,7 +292,11 @@ private fun HomeBody(parts: HomeParts, shell: HomeShellState, page: BarPage, fol
                     BarPage.Subscriptions -> parts.screens.subscriptions()
                     BarPage.Trending -> parts.screens.trends()
                     BarPage.Saved -> parts.screens.saved()
-                    is BarPage.Network -> NetworkPage(shown.id, ui, parts.networks, shell.networkTop, refresh, parts.vm::setTopBarPins)
+                    is BarPage.Network -> if (shown.id in ui.missing) {
+                        MissingPage(onChoose = { if (parts.routes.exists(HomeDestination.SETTINGS.route)) parts.routes.open(SettingsRoutes.of(SettingsSection.HOME)) })
+                    } else {
+                        NetworkPage(shown.id, ui, parts.networks, shell.networkTop, refresh, parts.vm::setTopBarPins)
+                    }
                     is BarPage.Group -> GroupFeedScreen(shown.groupId, parts.actions, onBack = null)
                 }
             }

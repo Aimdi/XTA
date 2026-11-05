@@ -8,12 +8,14 @@ import com.aimdi.xtanative.networks.bluesky.BlueskyProfile
 import com.aimdi.xtanative.networks.bluesky.BlueskyQuoteSort
 import com.aimdi.xtanative.networks.bluesky.BlueskyReplySort
 import com.aimdi.xtanative.networks.bluesky.BlueskySearchKind
+import com.aimdi.xtanative.networks.bluesky.BlueskyUrls
 import com.aimdi.xtanative.networks.bluesky.BlueskyXtaRows
 import com.aimdi.xtanative.ui.plugins.FeedKinds
 import com.aimdi.xtanative.ui.plugins.NetworkPost
 import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.NetworkPostExtras
 import com.aimdi.xtanative.ui.plugins.PluginFeed
+import com.aimdi.xtanative.ui.plugins.PluginFollowable
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginPostMenu
 import com.aimdi.xtanative.ui.plugins.PluginSubscription
@@ -104,6 +106,20 @@ internal class BlueskyApp(val host: PluginHost) {
     /** [profile] followed here unless it is, as putting an account in a group follows it first (XTA's ensureFollowed). */
     suspend fun ensureFollowed(profile: BlueskyProfile) {
         if (!followed(profile)) follows.follow(profile, now())
+    }
+
+    /**
+     * [text] as a handle or DID for a group's add box ("@handle"): its profile
+     * read, as XTA's box reads it, so that one that does not exist says so,
+     * then followed here and named as the groups hold it.
+     */
+    fun followable(text: String): PluginFollowable? {
+        val actor = BlueskyUrls.handle(text) ?: return null
+        return PluginFollowable("@$actor") {
+            val profile = client.profile(actor)
+            ensureFollowed(profile)
+            profile.did.ifEmpty { profile.handle }
+        }
     }
 
     private fun followed(profile: BlueskyProfile) = follows.follows(profile.did) || follows.follows(profile.handle)

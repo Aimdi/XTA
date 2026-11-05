@@ -44,7 +44,7 @@ plugin API version it was built against, `PLUGIN_API_VERSION`) and `entry`
 
 ## The plugin API
 
-`PLUGIN_API_VERSION` is 4. Version 1 is what native-0.1.41 shipped; 2,
+`PLUGIN_API_VERSION` is 5. Version 1 is what native-0.1.41 shipped; 2,
 which native-0.1.45 shipped, added `cashtagStrip` and `routeForCashtag` and
 the kit's pieces of that time (the article reader, `FeedReads`, X posts in a
 plugin, the chip tabs, the shelf, the recent searches, the action row,
@@ -66,7 +66,9 @@ with `PluginRecentSearchRow`, `settingsTitle`, the viewer's Open post
 `ShowTabSwitch` and `PluginSettings.pluginId`; and in `ui.common`
 `rememberSwitchedHaptics`, the tabs' swipes (`swipeTabs`,
 `LocalParentTurnsPages`, `TabSwipes`), `AltBadge` with `AltTextDialog`,
-and the search pill's look. A plugin's `xta-plugin.json` names the
+and the search pill's look (native-0.1.54); 5 adds `followable` with
+`PluginFollowable`, what a group's add box can follow on the plugin's
+network. A plugin's `xta-plugin.json` names the
 version it was built against.
 
 The app loads the versions from `OLDEST_PLUGIN_API` (2) to its own, so a
@@ -104,6 +106,7 @@ its plugins have to link against that prerelease's app.
 | `footprint()` | what it keeps on the device, counted in the store |
 | `feed` | a `PluginFeed`: its followed accounts' posts for Home's timelines and the groups ([below](#posts-in-homes-timelines)), or none |
 | `subscriptions` | the accounts it follows, as they change, for the app's Subscriptions list ([below](#accounts-in-the-apps-groups)), or none |
+| `followable(text)` | what a reader typed into a group's add box names on its network (a subreddit, a handle, a Fediverse address, a feed's or a newsletter's address), as a `PluginFollowable` (its row's `label`, and `follow`, which follows it in the plugin and answers it as its group members name it, throwing when the network has none); asked only of the plugins the text could belong to, as XTA's group_add_sources.dart reads it; or null |
 | `discovery` | its part of a group's Discover: the accounts its members in a group point at on its network (a `PluginDiscovery`, [below](#a-groups-discover)), or none |
 | `postActions` | where its posts lead where the app draws them (Home, groups, Saved), with their bookmark and menu, or none |
 | `postExtras(post)` | what it adds to the shared row where the app draws one of its posts (a `NetworkPostExtras`: Mastodon's poll results), or none |

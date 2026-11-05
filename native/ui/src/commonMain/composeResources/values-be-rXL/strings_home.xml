@@ -63,4 +63,8 @@
     <string name="home_alt_microblogging_group_detail">Pakazvać Mastodon, Bluesky i Threads u adnym razdziele hałoŭnaha ekrana. Vyklučycie, kab pakazvać ich asobna. Danyja i nalady zastanucca biez zmien.</string>
     <string name="home_posts">Tvity</string>
     <string name="home_media">Medyja</string>
+    <string name="home_missing_page">Staronka adsutničaje</string>
+    <string name="home_two_pages_required">Patrabujecca nie mienš za dzvie hałoŭnych staronki</string>
+    <string name="home_choose_pages">Vybierycie staronki</string>
+    <string name="home_unable_to_load_pages">Niemahčyma zahruzić hałoŭnuju staronku</string>
 </resources>

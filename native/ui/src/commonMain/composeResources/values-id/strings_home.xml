@@ -60,4 +60,8 @@
     <string name="home_alt_microblogging_group_detail">Tampilkan Mastodon, Bluesky, dan Threads dalam satu bagian di Beranda. Nonaktifkan untuk memisahkannya. Data dan pengaturan Anda tetap tersimpan.</string>
     <string name="home_posts">Cuitan</string>
     <string name="home_media">Media</string>
+    <string name="home_missing_page">Halaman hilang</string>
+    <string name="home_two_pages_required">Kamu perlu setidaknya 2 halaman beranda.</string>
+    <string name="home_choose_pages">Pilih halaman</string>
+    <string name="home_unable_to_load_pages">Tidak bisa memuat beranda Anda</string>
 </resources>

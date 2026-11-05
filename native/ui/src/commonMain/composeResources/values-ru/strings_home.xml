@@ -63,4 +63,8 @@
     <string name="home_alt_microblogging_group_detail">Показывать Mastodon, Bluesky и Threads в одном разделе главного экрана. Выключите, чтобы снова показывать их отдельно. Данные и настройки сохранятся.</string>
     <string name="home_posts">Твиты</string>
     <string name="home_media">Медиа</string>
+    <string name="home_missing_page">Страница отсутствует</string>
+    <string name="home_two_pages_required">Требуется не менее двух домашних страниц</string>
+    <string name="home_choose_pages">Выберите страницы</string>
+    <string name="home_unable_to_load_pages">Невозможно загрузить вашу главную страницу</string>
 </resources>

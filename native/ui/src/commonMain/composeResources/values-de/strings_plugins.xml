@@ -53,4 +53,5 @@
     <string name="plugin_problem_other">Beim Lesen von %1$s ist etwas schiefgegangen.</string>
     <string name="plugin_store_search">Plugins suchen</string>
     <string name="plugin_store_no_results">Keine Ergebnisse</string>
+    <string name="plugin_open_client">%1$s öffnen</string>
 </resources>

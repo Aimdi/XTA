@@ -52,4 +52,5 @@
     <string name="plugin_problem_other">При чтении %1$s что-то пошло не так.</string>
     <string name="plugin_store_search">Искать плагины</string>
     <string name="plugin_store_no_results">Ничего не найдено</string>
+    <string name="plugin_open_client">Открыть %1$s</string>
 </resources>

@@ -52,4 +52,5 @@
     <string name="plugin_problem_other">Un problème est survenu lors de la lecture de %1$s.</string>
     <string name="plugin_store_search">Rechercher des extensions</string>
     <string name="plugin_store_no_results">Aucun résultat</string>
+    <string name="plugin_open_client">Ouvrir %1$s</string>
 </resources>

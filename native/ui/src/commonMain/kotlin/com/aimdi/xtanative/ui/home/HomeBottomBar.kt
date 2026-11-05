@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -308,7 +309,7 @@ private fun BarPageIcon(page: BarPage, selected: Boolean, ui: HomeUi, networks: 
         BarPage.Subscriptions -> BarIcon(if (selected) HomeIcons.People else HomeIcons.PeopleOutlined)
         BarPage.Trending -> BarIcon(if (selected) Icons.Filled.Search else Icons.Outlined.Search)
         BarPage.Saved -> BarIcon(if (selected) HomeIcons.BookmarkFilled else HomeIcons.Bookmark)
-        is BarPage.Network -> networks.Mark(page.id, 22.dp)
+        is BarPage.Network -> if (page.id in ui.missing) BarIcon(Icons.Outlined.Warning) else networks.Mark(page.id, 22.dp)
         is BarPage.Group -> ui.session.groups.firstOrNull { it.id == page.groupId }?.let { GroupMark(it, 24.dp) }
     }
 }

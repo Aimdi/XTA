@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.Dp
 import com.aimdi.xtanative.data.plugins.AppPlugins
 import com.aimdi.xtanative.data.plugins.Destination
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.plugin_open_client
 import com.aimdi.xtanative.ui.generated.resources.search
 import com.aimdi.xtanative.ui.generated.resources.settings
 import com.aimdi.xtanative.ui.home.HomeNetworks
@@ -31,12 +32,15 @@ import org.jetbrains.compose.resources.stringResource
  * The plugins' timelines for Home's strip: every running plugin with a home
  * tab can sit there (the reader pins it in the strip's sheet, or in the
  * store). Its page is its home tab, its mark its icon in its brand colour, and
- * its options its search and its settings, where it has them.
+ * its options its search and its settings, where it has them, and "Open
+ * ‹plugin›", its whole client, as XTA's dock menu offers it.
  */
 internal class PluginHomeNetworks(private val plugins: AppPlugins) : HomeNetworks {
     private val refreshes = MutableStateFlow<Map<String, Int>>(emptyMap())
 
     override val available: StateFlow<List<StripNetwork>> get() = plugins.stripNetworks
+
+    override val missing: StateFlow<Set<String>> get() = plugins.missingNetworks
 
     @Composable
     override fun Mark(id: String, size: Dp) {
@@ -57,7 +61,9 @@ internal class PluginHomeNetworks(private val plugins: AppPlugins) : HomeNetwork
         val language = currentLanguage()
         val searchLabel = stringResource(Res.string.search)
         val settings = stringResource(Res.string.settings)
-        return remember(plugin, language, searchLabel, settings) {
+        val name = runCatching { plugin.title(language) }.getOrNull() ?: id
+        val open = stringResource(Res.string.plugin_open_client, name)
+        return remember(plugin, language, searchLabel, settings, open) {
             listOfNotNull(
                 plugin.search?.let { search ->
                     val label = runCatching { search.hint(language) }.getOrNull() ?: searchLabel
@@ -66,6 +72,7 @@ internal class PluginHomeNetworks(private val plugins: AppPlugins) : HomeNetwork
                 plugin.settings?.let {
                     NetworkOption(SETTINGS, settings, Icons.Filled.Settings) { plugins.navigator.go(Destination.PluginSettings(id)) }
                 },
+                NetworkOption(CLIENT, open, plugin.icon) { plugins.navigator.go(Destination.PluginClient(id)) },
             )
         }
     }
@@ -82,5 +89,6 @@ internal class PluginHomeNetworks(private val plugins: AppPlugins) : HomeNetwork
         /** The options' ids, which the top bar's pins keep. */
         const val SEARCH = "search"
         const val SETTINGS = "settings"
+        const val CLIENT = "client"
     }
 }

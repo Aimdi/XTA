@@ -61,4 +61,8 @@
     <string name="home_alt_microblogging_group_detail">Erakutsi Mastodon, Bluesky eta Threads hasierako pantailako atal bakarrean. Desaktibatu bereizita erakusteko. Datuak eta ezarpenak bere horretan mantenduko dira.</string>
     <string name="home_posts">Txioak</string>
     <string name="home_media">Multimedia</string>
+    <string name="home_missing_page">Orria falta da</string>
+    <string name="home_two_pages_required">Gutxienez 2 hasiera-orri behar dituzu</string>
+    <string name="home_choose_pages">Aukeratu orriak</string>
+    <string name="home_unable_to_load_pages">Ezin dira hasierako orriak kargatu</string>
 </resources>

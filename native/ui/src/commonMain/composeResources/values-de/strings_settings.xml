@@ -359,4 +359,8 @@
         <item quantity="one">%1$d Absturzbericht gespeichert</item>
         <item quantity="other">%1$d Absturzberichte gespeichert</item>
     </plurals>
+    <string name="intro_illustration_orbit">Quellen-Logos kreisen um das XTA-Zeichen</string>
+    <string name="intro_illustration_phone">Beiträge, Likes und Gespeichertes in einem Handy</string>
+    <string name="intro_illustration_flow">Beiträge fließen von X auf dein Handy, nie zurück</string>
+    <string name="intro_page_of">Seite %1$d von %2$d</string>
 </resources>

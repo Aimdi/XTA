@@ -55,4 +55,5 @@
     <string name="plugin_problem_other">Something went wrong reading %1$s.</string>
     <string name="plugin_store_search">Search plugins</string>
     <string name="plugin_store_no_results">No results</string>
+    <string name="plugin_open_client">Open %1$s</string>
 </resources>

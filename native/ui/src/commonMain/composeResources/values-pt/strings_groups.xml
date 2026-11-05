@@ -184,7 +184,7 @@
     <string name="groups_yes">Sim</string>
     <string name="groups_zen_end">Por agora é tudo</string>
     <string name="groups_zen_load_more">Carregar mais mesmo assim</string>
-    <string name="groups_add_member_hint">Pesquise no X uma conta para se inscrever e adicionar</string>
+    <string name="groups_add_member_hint">Pesquisa no X ou escreve um subreddit, um nome do Threads ou do Bluesky, um endereço do Fediverso ou uma newsletter</string>
     <string name="groups_menu">Mostrar menu</string>
     <string name="groups_refresh">Atualizar</string>
     <plurals name="groups_member_count">

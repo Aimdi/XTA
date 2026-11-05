@@ -184,7 +184,7 @@
     <string name="groups_yes">Ja</string>
     <string name="groups_zen_end">Das ist erstmal alles</string>
     <string name="groups_zen_load_more">Trotzdem mehr laden</string>
-    <string name="groups_add_member_hint">Suche auf X nach einem Konto, das du abonnieren und hinzufügen möchtest</string>
+    <string name="groups_add_member_hint">Auf X suchen oder ein Subreddit, einen Threads- oder Bluesky-Namen, eine Fediverse-Adresse oder einen Newsletter eingeben</string>
     <string name="groups_menu">Menü anzeigen</string>
     <string name="groups_refresh">Aktualisieren</string>
     <plurals name="groups_member_count">

@@ -184,7 +184,7 @@
     <string name="groups_yes">Jes</string>
     <string name="groups_zen_end">Jen ĉio nuntempe</string>
     <string name="groups_zen_load_more">Tamen ŝargi pli</string>
-    <string name="groups_add_member_hint">Serĉu en X konton por aboni kaj aldoni ĝin</string>
+    <string name="groups_add_member_hint">Serĉu en X, aŭ tajpu subredditon, Threads- aŭ Bluesky-nomon, Fediverse-adreson aŭ bultenon</string>
     <string name="groups_menu">Montri menuon</string>
     <string name="groups_refresh">Aktualigi</string>
     <plurals name="groups_member_count">

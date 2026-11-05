@@ -23,9 +23,10 @@ import kotlinx.serialization.json.JsonElement
  * settings' title, the viewer's Open post and a picture's own download and
  * share, the tiles' ALT, a plugin's own words for its home timeline
  * switch, its tab switch, the tabs' swipes and a long piece of work's
- * progress.
+ * progress (native-0.1.54); 5 adds what a group's add box can follow on a
+ * plugin's network.
  */
-const val PLUGIN_API_VERSION: Int = 4
+const val PLUGIN_API_VERSION: Int = 5
 
 /**
  * The oldest plugin API whose plugins this app still loads: what they use of
@@ -258,6 +259,16 @@ abstract class XtaPlugin {
      * (XTA's SubscriptionSource). Null when it follows none.
      */
     open val subscriptions: Flow<List<PluginSubscription>>? get() = null
+
+    /**
+     * What [text], typed into a group's add box, names on its network (a
+     * subreddit, a handle, a feed's address), to follow there and add to the
+     * group, as XTA's box offers a row per network ([PluginFollowable]); null
+     * when it can name nothing there. The app asks only the plugins the text
+     * could belong to, as XTA reads it; asked as the reader types, so quick:
+     * the network is read by [PluginFollowable.follow].
+     */
+    open fun followable(text: String): PluginFollowable? = null
 
     /**
      * Its part of a group's Discover: the accounts its members in the group

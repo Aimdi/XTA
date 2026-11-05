@@ -184,7 +184,7 @@
     <string name="groups_yes">Tak</string>
     <string name="groups_zen_end">Pakul heta ŭsio</string>
     <string name="groups_zen_load_more">Usio roŭna zahruzić jašče</string>
-    <string name="groups_add_member_hint">Šukajcie ŭ X ulikovy zapis, kab čytać jaho i dadać u hrupu</string>
+    <string name="groups_add_member_hint">Šukajcie ŭ X abo ŭviadzicie sabredyt, imia ŭ Threads ci Bluesky, adras u Fiedziviersumie abo rassylku</string>
     <string name="groups_menu">Pakazać mieniu</string>
     <string name="groups_refresh">Abnavić</string>
     <plurals name="groups_member_count">

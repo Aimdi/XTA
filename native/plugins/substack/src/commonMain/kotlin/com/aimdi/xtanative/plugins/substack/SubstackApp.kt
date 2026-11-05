@@ -29,6 +29,7 @@ import com.aimdi.xtanative.ui.plugins.FeedReads
 import com.aimdi.xtanative.ui.plugins.NetworkPost
 import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.PluginFeed
+import com.aimdi.xtanative.ui.plugins.PluginFollowable
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginPostArchive
 import com.aimdi.xtanative.ui.plugins.PluginPostMenu
@@ -210,6 +211,21 @@ internal class SubstackApp(val host: PluginHost) {
 
     /** [publication]'s groups, followed here first once a group is picked (substack_group.dart). */
     fun addToGroup(publication: SubstackPublication) = host.addToGroup(publication.id) { followHere(publication) }
+
+    /**
+     * [text] as a newsletter for a group's add box (its site's host): found as
+     * XTA's box finds it, so that a site that is none says so, then followed
+     * here and named as the groups hold it.
+     */
+    fun followable(text: String): PluginFollowable? {
+        val base = SubstackHosts.base(text) ?: return null
+        if (SubstackHosts.subdomainOf(base.host).isEmpty()) return null
+        return PluginFollowable(base.host) {
+            val publication = client.resolve(text)
+            followHere(publication)
+            (SubstackFollows.followOf(follows.load().map { it.publication }, publication) ?: publication).id
+        }
+    }
 
     private suspend fun followHere(publication: SubstackPublication) {
         if (SubstackFollows.followOf(follows.load().map { it.publication }, publication) == null) follows.follow(publication)

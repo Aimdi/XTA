@@ -52,4 +52,5 @@
     <string name="plugin_problem_other">%1$s을(를) 읽는 중 문제가 발생했습니다.</string>
     <string name="plugin_store_search">플러그인 검색</string>
     <string name="plugin_store_no_results">결과 없음</string>
+    <string name="plugin_open_client">%1$s 열기</string>
 </resources>

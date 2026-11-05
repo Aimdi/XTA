@@ -8,6 +8,7 @@ import com.aimdi.xtanative.networks.rss.RssTags
 import com.aimdi.xtanative.store.settings.Pref
 import com.aimdi.xtanative.store.settings.RssPrefs
 import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.ui.plugins.PluginFollowable
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginSubscription
 import com.aimdi.xtanative.ui.plugins.RssReads
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
 /**
  * What the RSS plugin's screens share while it runs: the client, the feeds
@@ -89,6 +91,21 @@ internal class RssApp(val host: PluginHost) {
 
     /** [feed] in the groups the reader picks (XTA's addRssFeedToGroup), followed first once one is picked. */
     fun addToGroup(feed: RssFeed) = host.addToGroup(feed.id) { followIfNeeded(feed) }
+
+    /**
+     * [text], an address, as a feed for a group's add box (its host): found
+     * and read once, as XTA's box looks it up, so that one without a feed
+     * says so, then followed here and named as the groups hold it.
+     */
+    fun followable(text: String): PluginFollowable? {
+        val address = text.trim()
+        val host = address.toHttpUrlOrNull()?.host ?: return null
+        return PluginFollowable(host) {
+            val feed = client.lookup(address)
+            if (loadedFeeds().none { it.id == feed.id }) follow(feed)
+            feed.id
+        }
+    }
 
     suspend fun followIfNeeded(feed: RssFeed) {
         if (!isFollowing(feed.id)) follow(feed)

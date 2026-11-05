@@ -61,4 +61,8 @@
     <string name="home_alt_microblogging_group_detail">Montri Mastodon, Bluesky kaj Threads en unu sekcio de la hejma ekrano. Malŝaltu por apartigi ilin. Viaj datumoj kaj agordoj restas senŝanĝaj.</string>
     <string name="home_posts">Pepoj</string>
     <string name="home_media">Plurmedio</string>
+    <string name="home_missing_page">Paĝo manka</string>
+    <string name="home_two_pages_required">Vi bezonas havi malpleje 2 paĝojn de hejmekrano.</string>
+    <string name="home_choose_pages">Elekti paĝojn</string>
+    <string name="home_unable_to_load_pages">Ne eblas ŝarĝi viajn hejmpaĝojn</string>
 </resources>

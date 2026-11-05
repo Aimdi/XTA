@@ -361,4 +361,8 @@
         <item quantity="many">%1$d d'informes d'errors desats</item>
         <item quantity="other">%1$d informes d'errors desats</item>
     </plurals>
+    <string name="intro_illustration_orbit">Logotips de fonts orbitant al voltant de la marca XTA</string>
+    <string name="intro_illustration_phone">Publicacions, m'agrada i elements desats dins d'un telèfon</string>
+    <string name="intro_illustration_flow">Les publicacions van d'X al teu telèfon, mai al revés</string>
+    <string name="intro_page_of">Pàgina %1$d de %2$d</string>
 </resources>

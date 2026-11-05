@@ -184,7 +184,7 @@
     <string name="groups_yes">Sí</string>
     <string name="groups_zen_end">Això és tot per ara</string>
     <string name="groups_zen_load_more">Carrega'n més igualment</string>
-    <string name="groups_add_member_hint">Cerca a X un compte per subscriure-t'hi i afegir-lo</string>
+    <string name="groups_add_member_hint">Cerca a X, o escriu un subreddit, un compte de Threads o Bluesky, una adreça del Fedivers o un butlletí</string>
     <string name="groups_menu">Mostra el menú</string>
     <string name="groups_refresh">Actualitza</string>
     <plurals name="groups_member_count">

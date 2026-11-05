@@ -363,4 +363,8 @@
         <item quantity="many">%1$d звітів про збої збережено</item>
         <item quantity="other">%1$d звіту про збої збережено</item>
     </plurals>
+    <string name="intro_illustration_orbit">Логотипи джерел обертаються навколо знака XTA</string>
+    <string name="intro_illustration_phone">Дописи, вподобання та збережене всередині телефона</string>
+    <string name="intro_illustration_flow">Дописи йдуть з X на ваш телефон і ніколи назад</string>
+    <string name="intro_page_of">Сторінка %1$d з %2$d</string>
 </resources>

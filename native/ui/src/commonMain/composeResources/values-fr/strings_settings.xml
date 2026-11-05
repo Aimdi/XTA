@@ -361,4 +361,8 @@
         <item quantity="many">%1$d de rapports de plantage conservés</item>
         <item quantity="other">%1$d rapports de plantage conservés</item>
     </plurals>
+    <string name="intro_illustration_orbit">Logos de sources en orbite autour de la marque XTA</string>
+    <string name="intro_illustration_phone">Publications, J'aime et éléments enregistrés dans un téléphone</string>
+    <string name="intro_illustration_flow">Les publications vont de X vers votre téléphone, jamais dans l'autre sens</string>
+    <string name="intro_page_of">Page %1$d sur %2$d</string>
 </resources>

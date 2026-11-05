@@ -363,4 +363,8 @@
         <item quantity="many">%1$d zapisanych raportów o awariach</item>
         <item quantity="other">%1$d zapisanego raportu o awariach</item>
     </plurals>
+    <string name="intro_illustration_orbit">Logotypy źródeł krążące wokół znaku XTA</string>
+    <string name="intro_illustration_phone">Wpisy, polubienia i zapisane elementy wewnątrz telefonu</string>
+    <string name="intro_illustration_flow">Wpisy płyną z X do twojego telefonu, nigdy z powrotem</string>
+    <string name="intro_page_of">Strona %1$d z %2$d</string>
 </resources>

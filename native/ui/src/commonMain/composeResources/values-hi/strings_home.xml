@@ -61,4 +61,8 @@
     <string name="home_alt_microblogging_group_detail">होम पर Mastodon, Bluesky और Threads को एक ही सेक्शन में दिखाएँ। उन्हें अलग-अलग दिखाने के लिए इसे बंद करें। आपका डेटा और सेटिंग्स सुरक्षित रहेंगे।</string>
     <string name="home_posts">पोस्ट</string>
     <string name="home_media">मीडिया</string>
+    <string name="home_missing_page">लापता पृष्ठ</string>
+    <string name="home_two_pages_required">आपके पास कम से कम 2 होम स्क्रीन पृष्ठ होने चाहिए।</string>
+    <string name="home_choose_pages">पृष्ठ चुनें</string>
+    <string name="home_unable_to_load_pages">होम पृष्ठ लोड नहीं किए जा सके</string>
 </resources>

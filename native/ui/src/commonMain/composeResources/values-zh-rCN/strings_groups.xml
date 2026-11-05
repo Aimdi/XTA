@@ -184,7 +184,7 @@
     <string name="groups_yes">好</string>
     <string name="groups_zen_end">暂时就这些了</string>
     <string name="groups_zen_load_more">仍然加载更多</string>
-    <string name="groups_add_member_hint">在 X 上搜索要订阅并添加的账号</string>
+    <string name="groups_add_member_hint">在 X 上搜索，或输入版块、Threads 或 Bluesky 用户名、联邦宇宙地址，或一份订阅通讯</string>
     <string name="groups_menu">显示菜单</string>
     <string name="groups_refresh">刷新</string>
     <plurals name="groups_member_count">

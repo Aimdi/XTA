@@ -23,6 +23,8 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -40,23 +42,32 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.groups_add_member_failed
 import com.aimdi.xtanative.ui.generated.resources.groups_add_member_hint
 import com.aimdi.xtanative.ui.generated.resources.groups_no_results
 import com.aimdi.xtanative.ui.generated.resources.groups_ok
 import com.aimdi.xtanative.ui.generated.resources.groups_search
 import com.aimdi.xtanative.ui.generated.resources.groups_search_failed
+import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
+import com.aimdi.xtanative.ui.pluginstore.PluginMark
+import com.aimdi.xtanative.ui.plugins.currentLanguage
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 
-/** The add box as it stands: what was typed, what X found for it, and who was added. */
+/**
+ * The add box as it stands: what was typed, what X found for it, who was
+ * added (their member ids), and which of the other networks' rows were.
+ */
 private data class AddMemberUi(
     val query: String = "",
     val users: List<XUser>? = null,
@@ -64,19 +75,23 @@ private data class AddMemberUi(
     val searching: Boolean = false,
     val adding: Boolean = false,
     val added: Set<String> = emptySet(),
+    val addedRows: Set<String> = emptySet(),
 )
 
 /**
- * Adding someone new to a group without leaving it (_group_add_member.dart):
- * an X search, and a tap follows the account here and ticks it. [onDone]
- * hears the ids added. XTA's box takes other networks' handles too; those
- * networks' follows are not in XTA Native's session, so this one searches X.
+ * Adding something new to a group without leaving it (_group_add_member.dart):
+ * an X search, and, as it is typed, a row for each running plugin's network
+ * the text could name (a subreddit, a Threads or Bluesky handle, a Fediverse
+ * address, a newsletter or a feed: [PluginFollows.followables]). A tap follows
+ * it here and ticks it; [onDone] hears the member ids added.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddMemberSheet(actions: GroupActions, onDone: (Set<String>) -> Unit) {
     val graph = LocalGraph.current
+    val follows = LocalPlugins.current.follows
     var state by remember { mutableStateOf(AddMemberUi()) }
+    val snackbars = remember { SnackbarHostState() }
     var search by remember { mutableStateOf<Job?>(null) }
     val scope = rememberCoroutineScope()
     val focus = remember { FocusRequester() }
@@ -109,6 +124,26 @@ fun AddMemberSheet(actions: GroupActions, onDone: (Set<String>) -> Unit) {
         }
     }
 
+    fun add(row: FollowableRow) {
+        if (state.adding || row.key in state.addedRows) return
+        state = state.copy(adding = true)
+        scope.launch {
+            val member = try {
+                row.follow()
+            } catch (error: CancellationException) {
+                throw error
+            } catch (error: Throwable) {
+                null
+            }
+            state = if (member == null) {
+                state.copy(adding = false)
+            } else {
+                state.copy(adding = false, added = state.added + member, addedRows = state.addedRows + row.key)
+            }
+            if (member == null) snackbars.showSnackbar(getString(Res.string.groups_add_member_failed))
+        }
+    }
+
     ModalBottomSheet(onDismissRequest = { onDone(state.added) }, sheetState = sheet, containerColor = MaterialTheme.colorScheme.surface) {
         Column(Modifier.fillMaxHeight(0.85f).imePadding().padding(horizontal = 16.dp)) {
             OutlinedTextField(
@@ -126,7 +161,9 @@ fun AddMemberSheet(actions: GroupActions, onDone: (Set<String>) -> Unit) {
             )
             Box(Modifier.weight(1f).padding(top = 8.dp)) {
                 if (state.adding) LinearProgressIndicator(Modifier.fillMaxWidth())
-                Results(state, ::add)
+                val rows = remember(state.query, follows) { follows.followables(state.query) }
+                Results(state, rows, ::add, ::add)
+                SnackbarHost(snackbars, Modifier.align(Alignment.BottomCenter))
             }
             Row(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
                 Box(Modifier.weight(1f))
@@ -137,22 +174,26 @@ fun AddMemberSheet(actions: GroupActions, onDone: (Set<String>) -> Unit) {
 }
 
 @Composable
-private fun Results(state: AddMemberUi, onAdd: (XUser) -> Unit) {
+private fun Results(state: AddMemberUi, rows: List<FollowableRow>, onAdd: (XUser) -> Unit, onFollow: (FollowableRow) -> Unit) {
     val users = state.users
-    when {
-        state.query.isBlank() -> Text(
+    if (state.query.isBlank()) {
+        Text(
             stringResource(Res.string.groups_add_member_hint),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 24.dp),
         )
-        state.failed -> Text(stringResource(Res.string.groups_search_failed), modifier = Modifier.padding(24.dp))
-        state.searching -> LoadingRow()
-        users != null && users.isEmpty() -> Box(Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) {
-            Text(stringResource(Res.string.groups_no_results))
-        }
-        users != null -> LazyColumn {
-            items(users, key = { it.id }) { user ->
+        return
+    }
+    LazyColumn {
+        items(rows, key = { "row:" + it.key }) { row -> NetworkRow(row, added = row.key in state.addedRows, enabled = !state.adding, onFollow) }
+        when {
+            state.failed -> item(key = "failed") { Text(stringResource(Res.string.groups_search_failed), modifier = Modifier.padding(24.dp)) }
+            state.searching -> item(key = "searching") { LoadingRow() }
+            users.isNullOrEmpty() && rows.isEmpty() -> item(key = "none") {
+                Box(Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) { Text(stringResource(Res.string.groups_no_results)) }
+            }
+            else -> items(users.orEmpty(), key = { it.id }) { user ->
                 val added = user.id in state.added
                 Row(
                     Modifier
@@ -171,5 +212,29 @@ private fun Results(state: AddMemberUi, onAdd: (XUser) -> Unit) {
                 }
             }
         }
+    }
+}
+
+/** Another network's row: its mark, what it would follow, the network's name, and its tick once followed. */
+@Composable
+private fun NetworkRow(row: FollowableRow, added: Boolean, enabled: Boolean, onFollow: (FollowableRow) -> Unit) {
+    val running by LocalPlugins.current.running.collectAsStateWithLifecycle()
+    val owner = running.firstOrNull { it.plugin.id == row.plugin }
+    val language = currentLanguage()
+    val network = owner?.let { runCatching { it.plugin.title(language) }.getOrNull() } ?: row.plugin
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .heightIn(min = 64.dp)
+            .clickable(enabled = enabled && !added) { onFollow(row) }
+            .padding(horizontal = 8.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        PluginMark(owner, network, 40.dp)
+        Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
+            Text(row.label, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(network, maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        Icon(if (added) Icons.Filled.Check else Icons.Filled.Add, contentDescription = null)
     }
 }

@@ -12,6 +12,7 @@ import com.aimdi.xtanative.ui.plugins.PluginBackupSection
 import com.aimdi.xtanative.ui.plugins.PluginBody
 import com.aimdi.xtanative.ui.plugins.PluginDiscovery
 import com.aimdi.xtanative.ui.plugins.PluginFeed
+import com.aimdi.xtanative.ui.plugins.PluginFollowable
 import com.aimdi.xtanative.ui.plugins.PluginFootprint
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginScreen
@@ -68,6 +69,9 @@ class MastodonPlugin : XtaPlugin() {
     override val feed: PluginFeed get() = app.shared
 
     override val subscriptions: Flow<List<PluginSubscription>> get() = app.subscriptions
+
+    /** A Fediverse address typed into a group's add box, followed here as XTA's box follows it. */
+    override fun followable(text: String): PluginFollowable? = app.followable(text)
 
     override val discovery: PluginDiscovery by lazy { MastodonDiscovery(app) }
 

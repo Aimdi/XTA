@@ -357,4 +357,8 @@
     <plurals name="settings_crash_count">
         <item quantity="other">%1$d laporan galat disimpan</item>
     </plurals>
+    <string name="intro_illustration_orbit">Logo sumber mengorbit di sekitar tanda XTA</string>
+    <string name="intro_illustration_phone">Postingan, suka, dan item tersimpan di dalam ponsel</string>
+    <string name="intro_illustration_flow">Postingan mengalir dari X ke ponsel Anda, tidak pernah sebaliknya</string>
+    <string name="intro_page_of">Halaman %1$d dari %2$d</string>
 </resources>

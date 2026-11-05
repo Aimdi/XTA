@@ -52,4 +52,5 @@
     <string name="plugin_problem_other">Noe gikk galt under lesing fra %1$s.</string>
     <string name="plugin_store_search">Søk etter tillegg</string>
     <string name="plugin_store_no_results">Ingen resultater</string>
+    <string name="plugin_open_client">Åpne %1$s</string>
 </resources>

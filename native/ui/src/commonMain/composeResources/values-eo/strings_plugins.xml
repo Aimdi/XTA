@@ -52,4 +52,5 @@
     <string name="plugin_problem_other">Io misfunkciis dum legado de %1$s.</string>
     <string name="plugin_store_search">Serĉi kromprogramojn</string>
     <string name="plugin_store_no_results">Ne rezultoj</string>
+    <string name="plugin_open_client">Malfermi %1$s</string>
 </resources>

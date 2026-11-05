@@ -11,6 +11,7 @@ import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.PluginBackupSection
 import com.aimdi.xtanative.ui.plugins.PluginBody
 import com.aimdi.xtanative.ui.plugins.PluginFeed
+import com.aimdi.xtanative.ui.plugins.PluginFollowable
 import com.aimdi.xtanative.ui.plugins.PluginFootprint
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginScreen
@@ -83,6 +84,9 @@ class SubstackPlugin : XtaPlugin() {
     override val feed: PluginFeed get() = app.feed
 
     override val subscriptions: Flow<List<PluginSubscription>> get() = app.subscriptions
+
+    /** A newsletter typed or pasted into a group's add box, followed here as XTA's box follows it. */
+    override fun followable(text: String): PluginFollowable? = app.followable(text)
 
     override val postActions: NetworkPostActions get() = app.actions
 

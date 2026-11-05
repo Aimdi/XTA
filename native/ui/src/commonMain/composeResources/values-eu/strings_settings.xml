@@ -359,4 +359,8 @@
         <item quantity="one">Hutsegite-txosten %1$d gordeta</item>
         <item quantity="other">%1$d hutsegite-txosten gordeta</item>
     </plurals>
+    <string name="intro_illustration_orbit">Iturrien logoak XTA markaren inguruan biraka</string>
+    <string name="intro_illustration_phone">Argitalpenak, atsegin dut-ak eta gordetako elementuak telefono baten barruan</string>
+    <string name="intro_illustration_flow">Argitalpenak X-etik zure telefonora doaz, inoiz ez atzera</string>
+    <string name="intro_page_of">Orria %1$d / %2$d</string>
 </resources>

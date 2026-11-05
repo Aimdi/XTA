@@ -52,4 +52,5 @@
     <string name="plugin_problem_other">Alguna cosa ha anat malament en llegir %1$s.</string>
     <string name="plugin_store_search">Cercar connectors</string>
     <string name="plugin_store_no_results">Sense resultats</string>
+    <string name="plugin_open_client">Obre %1$s</string>
 </resources>

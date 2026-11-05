@@ -184,7 +184,7 @@
     <string name="groups_yes">はい</string>
     <string name="groups_zen_end">今はここまでです</string>
     <string name="groups_zen_load_more">それでももっと読み込む</string>
-    <string name="groups_add_member_hint">登録して追加するアカウントを X で検索</string>
+    <string name="groups_add_member_hint">X を検索するか、サブレディット、Threads や Bluesky のハンドル、Fediverse のアドレス、ニュースレターを入力してください</string>
     <string name="groups_menu">メニューを表示</string>
     <string name="groups_refresh">更新</string>
     <plurals name="groups_member_count">

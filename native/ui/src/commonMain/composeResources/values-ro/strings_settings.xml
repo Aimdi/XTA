@@ -361,4 +361,8 @@
         <item quantity="few">%1$d rapoarte de eroare păstrate</item>
         <item quantity="other">%1$d de rapoarte de eroare păstrate</item>
     </plurals>
+    <string name="intro_illustration_orbit">Siglele surselor orbitând în jurul mărcii XTA</string>
+    <string name="intro_illustration_phone">Postări, aprecieri și elemente salvate într-un telefon</string>
+    <string name="intro_illustration_flow">Postările curg de la X spre telefonul tău, niciodată înapoi</string>
+    <string name="intro_page_of">Pagina %1$d din %2$d</string>
 </resources>

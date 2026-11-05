@@ -60,4 +60,8 @@
     <string name="home_alt_microblogging_group_detail">Hiển thị Mastodon, Bluesky và Threads trong một mục trên Trang chủ. Tắt để hiển thị riêng từng dịch vụ. Dữ liệu và cài đặt của bạn vẫn được giữ nguyên.</string>
     <string name="home_posts">Bài viết</string>
     <string name="home_media">Đa phương tiện</string>
+    <string name="home_missing_page">Thiếu trang</string>
+    <string name="home_two_pages_required">Bạn phải để ít nhất hai trang trên màn hình chính.</string>
+    <string name="home_choose_pages">Chọn trang</string>
+    <string name="home_unable_to_load_pages">Không thể tải trang chủ của bạn</string>
 </resources>

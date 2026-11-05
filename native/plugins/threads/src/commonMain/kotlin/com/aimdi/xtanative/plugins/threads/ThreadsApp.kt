@@ -24,6 +24,7 @@ import com.aimdi.xtanative.ui.plugins.MergedFeed
 import com.aimdi.xtanative.ui.plugins.NetworkPost
 import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.PluginFeed
+import com.aimdi.xtanative.ui.plugins.PluginFollowable
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginNotices
 import com.aimdi.xtanative.ui.plugins.PluginPostMenu
@@ -210,6 +211,19 @@ internal class ThreadsApp(val host: PluginHost) {
         if (ThreadsAccounts.follows(accounts.load(), account.handle)) return
         accounts.add(account)
         feed.refresh()
+    }
+
+    /**
+     * [text] as a handle for a group's add box ("@handle"), followed here
+     * without a read, as XTA's box follows it: the handle is its id either way,
+     * and its name comes with its first posts.
+     */
+    fun followable(text: String): PluginFollowable? {
+        val handle = ThreadsLinks.normaliseHandle(text) ?: return null
+        return PluginFollowable("@$handle") {
+            ensureFollowed(ThreadsAccount(handle, handle))
+            handle
+        }
     }
 
     /** [account] in the app's groups, followed here first once a group is picked. */

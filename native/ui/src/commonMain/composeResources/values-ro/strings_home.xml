@@ -62,4 +62,8 @@
     <string name="home_alt_microblogging_group_detail">Afișează Mastodon, Bluesky și Threads într-o singură secțiune pe ecranul principal. Dezactivează pentru a le separa. Datele și setările se păstrează.</string>
     <string name="home_posts">Postări</string>
     <string name="home_media">Media</string>
+    <string name="home_missing_page">Pagină lipsă</string>
+    <string name="home_two_pages_required">Trebuie să aveți cel puțin 2 pagini de ecran de start.</string>
+    <string name="home_choose_pages">Alegeți pagini</string>
+    <string name="home_unable_to_load_pages">Nu se pot încărca paginile de start</string>
 </resources>
