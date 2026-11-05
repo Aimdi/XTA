@@ -6,7 +6,7 @@
 2. Sign in to X in the app, from its first screen or **Settings → Accounts → +**: X's own sign-in page on Android, XTA's cookie form on Linux.
 3. Or bring everything over from XTA: in XTA, open **Settings → Data → Export**, switch on **"Export accounts?"**, and export; then choose that file in XTA Native (later, **Settings → Data → Import**). Your X accounts, the accounts you follow, your groups, saved posts, notes and settings come with it.
 
-Like XTA, it only reads: nothing is posted, liked or followed on X or on any other network. Follows, likes and saves stay on the device. Your sessions stay on the phone, in storage that Android neither backs up nor moves to a new phone.
+Like XTA, it only reads: nothing is posted, liked or followed on X or on the other networks, and follows, likes and saves stay on the device. The one exception is XTA's too: once you sign in with Pixiv, your bookmarks, follows and watchlist changes go to your Pixiv account. Your sessions stay on the phone, in storage that Android neither backs up nor moves to a new phone.
 
 ### The other networks
 
@@ -31,7 +31,17 @@ It keeps its data in `~/.local/share/xta-native`, a folder only you can open. Vi
 - Search with its tabs and advanced search; Discover with trends; communities, lists and antennas
 - Saved posts with folders, likes on this device, notes, the archive, the offline collection and downloads
 - Every section of XTA's settings, its backup export and import, WebDAV sync, and 29 languages; an opened post that swipes back as XTA's card, confirm close, the check for a newer prerelease and the licences page
-- Links open in the app's own browser on Android, or in the browser you pick; x.com and the networks' links open in the app
+- Links open in the app's own browser on Android, or in the browser you pick; x.com and the networks' links open in the app, and so do t.co, fxtwitter, vxtwitter and fixupx links; a link nothing reads says so
+- New in this prerelease:
+  - Live broadcasts and Spaces play in the app
+  - The networks' posts in Home's timelines show at once from the last visit while they load again; a source that fails says why, offers what fixes it, and tries again by itself; a feed shown from disk says when it was saved; posts load under skeletons
+  - Profiles open by account, so a renamed one still opens, and show the copy kept on the device while X is read again; profile links open their tab; people lists carry every badge
+  - Add to group takes a subreddit, a Bluesky, Threads or Mastodon handle, a newsletter or a feed; a network's timeline on Home opens its plugin from its menu; the drawer opens with a swipe from the edge
+  - The intro installs the networks you pick, with its drawings and page dots back
+  - Pixiv's bookmarks (private ones too), follows and watchlists on your Pixiv account
+  - Substack's articles in the web reader on Android, with the native reader a switch away, and "Speak from here"
+  - Long-press a hashtag to follow the topic; crash reports filed on GitHub when you set them up; headset buttons; the phone's fastest refresh rate
+  - Without an X account the app opens on Home and asks once, as XTA does
 
 ### Comparing it with XTA
 
