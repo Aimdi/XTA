@@ -25,7 +25,11 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
  * Exchanging a code and minting a token are POSTs to Reddit's token
  * endpoint: they sign the reader in, they write nothing to Reddit.
  */
-class RedditAuth(private val http: XHttp) {
+class RedditAuth(
+    private val http: XHttp,
+    /** How long a token request may wait for its answer: XTA's `_tokenTimeout`, 15 seconds. */
+    private val timeoutMillis: Long = TOKEN_TIMEOUT_MILLIS,
+) {
     /** Trades the one-time code from the redirect for the refresh token the app keeps. */
     suspend fun exchangeCode(clientId: String, code: String): String =
         tokenRequest(clientId, mapOf("grant_type" to "authorization_code", "code" to code, "redirect_uri" to REDIRECT_URI), "refresh_token")
@@ -58,7 +62,12 @@ class RedditAuth(private val http: XHttp) {
             "User-Agent" to RedditClient.API_USER_AGENT,
         )
         val body = form.entries.joinToString("&") { (name, value) -> "$name=${encodeComponent(value)}" }
-        val response = http.post(RedditTransport.TOKEN_URL, headers, body, RedditTransport.FORM)
+        // A token request must not hold every Reddit surface indefinitely;
+        // XTA bounds it at fifteen seconds and keeps the shared client usable
+        // for the retry, which the next read makes on its own.
+        val response = withDeadline(timeoutMillis, "Reddit token request") {
+            http.post(RedditTransport.TOKEN_URL, headers, body, RedditTransport.FORM)
+        }
         if (response.code == 401) throw refused(401, "Reddit rejected the client id")
         val answer = J.parse(response.body)
         if (answer["error"].string == "invalid_grant") throw refused(401, "Reddit no longer accepts this session")
@@ -80,6 +89,9 @@ class RedditAuth(private val http: XHttp) {
 
         /** Read listings, and the account's name. No write scope at all. */
         const val SCOPES = "read,identity"
+
+        /** XTA's `_tokenTimeout`: a stalled token endpoint must not hold every Reddit surface. */
+        private const val TOKEN_TIMEOUT_MILLIS = 15_000L
 
         private val ME_URL = "${RedditHosts.OAUTH}/api/v1/me".toHttpUrl()
 
