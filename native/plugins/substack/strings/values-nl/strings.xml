@@ -149,4 +149,7 @@
     <string name="videos">Video\'s</string>
     <string name="web_only_block">Dit deel van het bericht is alleen op het web te zien.</string>
     <string name="search_posts_hint">Zoek artikelen in publicaties die je volgt</string>
+    <string name="native_reader">Native lezer (voorproef)</string>
+    <string name="native_reader_description">Toon artikelen zonder webweergave: tekst kan worden geselecteerd en gekopieerd, en ingesloten spelers openen in de browser. Sommige opmaak kan er anders uitzien.</string>
+    <string name="speak_from_here">Speak from here</string>
 </resources>

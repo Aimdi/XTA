@@ -146,4 +146,7 @@
     <string name="videos">動画</string>
     <string name="web_only_block">投稿のこの部分はウェブでのみ表示されます。</string>
     <string name="search_posts_hint">フォロー中の出版物の記事を検索</string>
+    <string name="native_reader">ネイティブリーダー（プレビュー）</string>
+    <string name="native_reader_description">ウェブビューを使わずに記事を表示します。テキストを選択・コピーでき、埋め込みプレーヤーはブラウザで開きます。一部のレイアウトは見た目が異なる場合があります。</string>
+    <string name="speak_from_here">Speak from here</string>
 </resources>

@@ -149,4 +149,7 @@
     <string name="videos">Vídeos</string>
     <string name="web_only_block">Esta parte de la publicación solo se muestra en la web.</string>
     <string name="search_posts_hint">Busca artículos en publicaciones que sigues</string>
+    <string name="native_reader">Lector nativo (vista previa)</string>
+    <string name="native_reader_description">Muestra los artículos sin vista web: el texto se puede seleccionar y copiar, y los reproductores insertados se abren en el navegador. Algunos diseños pueden verse distintos.</string>
+    <string name="speak_from_here">Speak from here</string>
 </resources>

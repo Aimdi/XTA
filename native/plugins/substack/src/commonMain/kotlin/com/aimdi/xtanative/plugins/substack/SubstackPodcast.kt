@@ -36,11 +36,12 @@ internal data class SubstackPlayback(
 
 /**
  * The podcast episode of a post, playing beyond the screen it was started
- * on, as XTA's PodcastStore: one player (Media3's on Android), the system's
- * media session, and where it was left: the episode playing in
- * `plugin.substack.podcast.v1`, each episode's place in `podcast.places` and
- * the speed in `podcast.speed`. The desktop has no player: its row opens the
- * episode in the browser instead.
+ * on, as XTA's PodcastStore: one player (Media3's on Android, libmpv's on
+ * the desktop), the system's media session on Android, and where it was
+ * left: the episode playing in `plugin.substack.podcast.v1`, each episode's
+ * place in `podcast.places` and the speed in `podcast.speed`. A desktop
+ * without libmpv has no player: its row opens the episode in the browser
+ * instead.
  */
 internal class SubstackPodcast(private val settings: PluginSettings, private val scope: CoroutineScope) {
     private val mutable = MutableStateFlow(SubstackPlayback())

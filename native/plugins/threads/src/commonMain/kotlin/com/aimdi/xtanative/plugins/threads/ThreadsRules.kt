@@ -57,8 +57,9 @@ internal enum class ThreadsCount { FOLLOWERS, FOLLOWING, POSTS }
  * A post's pictures and videos for the app's viewer (threads_media.dart): a
  * video plays the file the video-quality setting picks among every one Meta
  * offers, and its quality menu lists those named by their lines ("720p"); a
- * post kept before renditions were plays its one file. The desktop, which
- * has no player of its own, opens the post on the web.
+ * post kept before renditions were plays its one file. The viewer plays it
+ * on Android and, through libmpv, on the desktop; a desktop without libmpv
+ * opens the post on the web.
  */
 internal object ThreadsMediaItems {
     fun items(post: ThreadsPost, quality: MediaQuality): List<MediaItem> = post.media.map { media -> item(post, media, quality) }

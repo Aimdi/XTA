@@ -149,4 +149,7 @@
     <string name="videos">Vídeos</string>
     <string name="web_only_block">Aquesta part de la publicació només es mostra al web.</string>
     <string name="search_posts_hint">Cerca articles a les publicacions que segueixes</string>
+    <string name="native_reader">Lector natiu (prova)</string>
+    <string name="native_reader_description">Mostra els articles sense vista web: el text es pot seleccionar i copiar, i els reproductors incrustats s’obren al navegador. Algunes maquetacions poden veure’s diferents.</string>
+    <string name="speak_from_here">Speak from here</string>
 </resources>

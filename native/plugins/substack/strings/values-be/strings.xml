@@ -155,4 +155,7 @@
     <string name="videos">Відэа</string>
     <string name="web_only_block">Гэтая частка допісу паказваецца толькі ў вэбе.</string>
     <string name="search_posts_hint">Пошук артыкулаў у выданнях, на якія вы падпісаны</string>
+    <string name="native_reader">Убудаваны чытальнік (папярэдні прагляд)</string>
+    <string name="native_reader_description">Паказваць артыкулы без вэб-прагляду: тэкст можна вылучаць і капіяваць, а ўбудаваныя прайгравальнікі адкрываюцца ў браўзеры. Некаторыя макеты могуць выглядаць інакш.</string>
+    <string name="speak_from_here">Speak from here</string>
 </resources>

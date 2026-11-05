@@ -146,4 +146,7 @@
     <string name="videos">동영상</string>
     <string name="web_only_block">게시물의 이 부분은 웹에서만 표시됩니다.</string>
     <string name="search_posts_hint">팔로우하는 발행물에서 글 검색</string>
+    <string name="native_reader">기본 리더(미리 보기)</string>
+    <string name="native_reader_description">웹 보기 없이 글을 표시합니다. 텍스트를 선택하고 복사할 수 있으며, 삽입된 플레이어는 브라우저에서 열립니다. 일부 레이아웃은 다르게 보일 수 있습니다.</string>
+    <string name="speak_from_here">Speak from here</string>
 </resources>

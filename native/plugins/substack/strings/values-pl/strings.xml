@@ -155,4 +155,7 @@
     <string name="videos">Filmy</string>
     <string name="web_only_block">Ta część wpisu wyświetla się tylko w sieci.</string>
     <string name="search_posts_hint">Szukaj artykułów w obserwowanych publikacjach</string>
+    <string name="native_reader">Natywny czytnik (podgląd)</string>
+    <string name="native_reader_description">Wyświetlaj artykuły bez widoku WWW: tekst można zaznaczać i kopiować, a osadzone odtwarzacze otwierają się w przeglądarce. Niektóre układy mogą wyglądać inaczej.</string>
+    <string name="speak_from_here">Speak from here</string>
 </resources>

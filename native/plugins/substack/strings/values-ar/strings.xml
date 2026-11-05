@@ -161,4 +161,7 @@
     <string name="videos">مقاطع فيديو</string>
     <string name="web_only_block">لا يظهر هذا الجزء من المنشور إلا على الويب.</string>
     <string name="search_posts_hint">ابحث عن مقالات في المنشورات التي تتابعها</string>
+    <string name="native_reader">القارئ الأصلي (معاينة)</string>
+    <string name="native_reader_description">عرض المقالات دون عارض ويب: يمكن تحديد النص ونسخه، وتُفتح المشغلات المضمّنة في المتصفح. قد يبدو بعض التنسيق مختلفًا.</string>
+    <string name="speak_from_here">Speak from here</string>
 </resources>

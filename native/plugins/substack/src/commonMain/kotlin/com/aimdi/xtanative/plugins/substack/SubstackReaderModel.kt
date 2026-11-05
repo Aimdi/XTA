@@ -31,7 +31,7 @@ internal sealed interface ReaderContent {
     /** A paid post without a body: the paid pane, never the publisher's page. */
     data object Paywall : ReaderContent
 
-    /** No body but an address: the post's page, which the browser opens, as there is no web view here. */
+    /** No body but an address: the post's page, in the web view where there is one (Android), else in the browser. */
     data object Live : ReaderContent
 
     data object Empty : ReaderContent
@@ -53,9 +53,17 @@ internal class ReaderModel(private val app: SubstackApp, opened: SubstackPost, p
         val refreshing: Boolean = false,
         val refreshError: Throwable? = null,
         val reading: ArticleReading? = null,
+        /** The prose of the publication's live page, once the web view has it. */
+        val liveText: String? = null,
     ) {
         val speakText: String
-            get() = SubstackHtml.speakText(post.title, post.excerpt, post.authorName, post.publicationName, bodyPlain = (content as? ReaderContent.Article)?.article?.plainText)
+            get() = SubstackHtml.speakText(
+                post.title,
+                post.excerpt,
+                post.authorName,
+                post.publicationName,
+                bodyPlain = (content as? ReaderContent.Article)?.article?.plainText ?: liveText.takeIf { content is ReaderContent.Live },
+            )
     }
 
     private val mutable = MutableStateFlow(State(opened))
@@ -121,12 +129,18 @@ internal class ReaderModel(private val app: SubstackApp, opened: SubstackPost, p
         allowAutomaticCompletion = false,
     )
 
+    /** What the live page reads as, for Listen; too little to be the article is ignored. */
+    fun liveText(text: String) {
+        if (text.trim().length >= MIN_LIVE_TEXT) mutable.update { it.copy(liveText = text) }
+    }
+
     /** The reader came into view, or left it: only time in view counts toward finishing, and leaving writes the place. */
     fun active(active: Boolean) {
         state.value.reading?.setActive(active)
     }
 
     private companion object {
+        const val MIN_LIVE_TEXT = 40
         val parsed = SubstackParsedArticles()
     }
 }

@@ -42,8 +42,8 @@ import java.util.Locale
  * A podcast post's episode above its show notes, as XTA's
  * SubstackAudioPlayer: play and pause, where it is, and its speed. The
  * playing lives in [SubstackPodcast], so leaving the article changes nothing
- * about what is heard. Where the platform plays nothing here (the desktop),
- * the episode opens in the browser.
+ * about what is heard. Where the platform plays nothing here (a desktop
+ * without libmpv), the episode opens in the browser.
  */
 @Composable
 internal fun SubstackAudioPlayer(app: SubstackApp, url: String, title: String) {
@@ -100,7 +100,7 @@ private fun PlayButton(loading: Boolean, failed: Boolean, playing: Boolean, titl
     }
 }
 
-/** The desktop's row: the episode in the browser. */
+/** The row of a desktop without libmpv: the episode in the browser. */
 @Composable
 private fun RowScope.OutsidePlayer(url: String, title: String) {
     val outside = rememberOpenOutside()
