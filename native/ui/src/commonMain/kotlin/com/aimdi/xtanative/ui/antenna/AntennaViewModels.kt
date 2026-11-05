@@ -4,11 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.data.AppGraph
+import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.store.antenna.Antenna
 import com.aimdi.xtanative.store.antenna.AntennaQuery
 import com.aimdi.xtanative.ui.search.Page
 import com.aimdi.xtanative.ui.search.PageEnd
 import com.aimdi.xtanative.ui.search.PagedRead
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -28,11 +31,40 @@ data class AntennasUi(
 
 /** XTA's antennas: the list, newest first, the editor for a new one or a changed one, and Delete. */
 class AntennasViewModel(private val graph: AppGraph) : ViewModel() {
+    private val list = MutableStateFlow<List<Antenna>?>(null)
+
     /** Null until the store has been read. */
-    val antennas: StateFlow<List<Antenna>?> = graph.antennas.antennas.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+    val antennas: StateFlow<List<Antenna>?> = list.asStateFlow()
+
+    private val failed = MutableStateFlow<Problem?>(null)
+
+    /** Why the list could not be read, until [retry] reads it again. */
+    val problem: StateFlow<Problem?> = failed.asStateFlow()
 
     private val state = MutableStateFlow(AntennasUi())
     val ui: StateFlow<AntennasUi> = state.asStateFlow()
+
+    private var reading: Job? = null
+
+    init {
+        retry()
+    }
+
+    /** Reads the list again, as the error's Retry asks (antenna_screen.dart's listAntennas). */
+    fun retry() {
+        reading?.cancel()
+        failed.value = null
+        reading = viewModelScope.launch {
+            try {
+                graph.antennas.antennas.collect { list.value = it }
+            } catch (error: CancellationException) {
+                throw error
+            } catch (_: Exception) {
+                // The device's own file, not X: no network or account advice applies.
+                failed.value = Problem.Other
+            }
+        }
+    }
 
     /** The editor for [antenna], or for a new antenna. */
     fun edit(antenna: Antenna? = null) = state.update { it.copy(editing = AntennaDraft.of(antenna)) }

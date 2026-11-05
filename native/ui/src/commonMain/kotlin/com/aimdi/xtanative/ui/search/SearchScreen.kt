@@ -75,6 +75,7 @@ import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.community.CommunityRow
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_next_page_of_tweets
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.discover_accounts
 import com.aimdi.xtanative.ui.generated.resources.discover_advanced_search
@@ -350,7 +351,7 @@ private fun PostResults(read: PagedRead<XThread, String>, list: LazyListState, a
     WithReadingColumn(padding) { column ->
         LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
             feedThreads(paged.items, layout, actions)
-            pageStatus(paged, Res.string.discover_no_results, onRetry, onMore)
+            pageStatus(paged, Res.string.discover_no_results, onRetry, onMore, moreFailed = Res.string.problem_unable_to_load_the_next_page_of_tweets)
         }
     }
 }
@@ -364,7 +365,7 @@ private fun MediaResults(vm: SearchViewModel, list: LazyListState, actions: Post
     LaunchedEffect(paged.loading) { if (paged.loading) list.scrollToItem(0) }
     LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
         mediaGrid(grid)
-        pageStatus(paged, Res.string.discover_no_results, onRetry, onMore)
+        pageStatus(paged, Res.string.discover_no_results, onRetry, onMore, moreFailed = Res.string.problem_unable_to_load_the_next_page_of_tweets)
     }
 }
 
@@ -374,7 +375,7 @@ private fun PeopleResults(vm: SearchViewModel, list: LazyListState, actions: Pos
     LaunchedEffect(paged.loading) { if (paged.loading) list.scrollToItem(0) }
     LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
         itemsIndexed(paged.items, key = { _, user -> user.id }, contentType = { _, _ -> "person" }) { index, user ->
-            PersonRow(user, onOpen = { actions.openProfile(user.screenName) })
+            PersonRow(user, onOpen = { actions.openUser(user.screenName, user.id) })
             if (index < paged.items.lastIndex) PersonDivider()
         }
         pageStatus(paged, Res.string.discover_no_results, onRetry, onMore, icon = DiscoverIcons.PersonSearch)

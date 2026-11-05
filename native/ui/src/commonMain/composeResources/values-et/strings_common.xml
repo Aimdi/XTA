@@ -23,4 +23,11 @@
     <string name="problem_http_text">X tagastas HTTP %1$d.</string>
     <string name="problem_retry_in">Proovi uuesti %1$s pärast</string>
     <string name="close_app_confirm">Kas sa oled kindel, et soovid panna XTA'i kinni?</string>
+    <string name="problem_unable_to_load_the_community">Kogukonda ei õnnestunud laadida</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">Ei õnnestu laadida riike ja piirkondi, mille kohta kuvada hetkel populaarsemaid viiteid ja otsinguid.</string>
+    <string name="problem_unable_to_load_the_members">Liikmeid ei õnnestunud laadida</string>
+    <string name="problem_unable_to_load_the_list_of_follows">Jälgijate loendi laadimine ei õnnestu</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">Jälgijate loendi järgmise lehe laadimine ei õnnestu</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">Säutsude järgmise lehe laadimine ei õnnestu</string>
+    <string name="problem_unable_to_load_the_tweets">Säutsude laadimine ei õnnestu</string>
 </resources>

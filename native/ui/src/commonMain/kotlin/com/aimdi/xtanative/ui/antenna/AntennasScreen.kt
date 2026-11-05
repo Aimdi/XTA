@@ -71,7 +71,9 @@ import com.aimdi.xtanative.store.antenna.AntennaScope
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.ProblemView
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_tweets
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.discover_antenna_empty
 import com.aimdi.xtanative.ui.generated.resources.discover_antenna_exclude
@@ -108,6 +110,7 @@ fun AntennasScreen(openAntenna: (String) -> Unit, onBack: () -> Unit) {
     val vm: AntennasViewModel = viewModel { AntennasViewModel(graph) }
     val antennas by vm.antennas.collectAsStateWithLifecycle()
     val state by vm.ui.collectAsStateWithLifecycle()
+    val problem by vm.problem.collectAsStateWithLifecycle()
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
@@ -124,8 +127,10 @@ fun AntennasScreen(openAntenna: (String) -> Unit, onBack: () -> Unit) {
         },
     ) { padding ->
         val list = antennas
+        val failed = problem
         Box(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding()), contentAlignment = Alignment.TopCenter) {
             when {
+                failed != null -> ProblemView(failed, vm::retry, context = stringResource(Res.string.problem_unable_to_load_the_tweets))
                 list == null -> LoadingRow()
                 list.isEmpty() -> EmptyAntennas(onNew = { vm.edit() })
                 else -> LazyColumn(

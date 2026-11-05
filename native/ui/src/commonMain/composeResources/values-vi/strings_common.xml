@@ -23,4 +23,11 @@
     <string name="problem_http_text">X trả về HTTP %1$d.</string>
     <string name="problem_retry_in">Thử lại sau %1$s</string>
     <string name="close_app_confirm">Bạn có muốn đóng XTA không?</string>
+    <string name="problem_unable_to_load_the_community">Không thể tải cộng đồng</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">Không thể tìm được xu hướng theo địa điểm</string>
+    <string name="problem_unable_to_load_the_members">Không thể tải danh sách thành viên</string>
+    <string name="problem_unable_to_load_the_list_of_follows">Không thể tải danh sách những người đã theo dõi</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">Không thể tải danh sách tiếp những người đã theo dõi</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">Không thể tải trang tiếp theo của bài viết</string>
+    <string name="problem_unable_to_load_the_tweets">Không thể tải bài viết</string>
 </resources>

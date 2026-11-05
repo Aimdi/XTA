@@ -9,6 +9,7 @@ import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.core.x.model.XUser
+import com.aimdi.xtanative.services.links.XProfileTab
 import com.aimdi.xtanative.store.follows.RememberedFollows
 import com.aimdi.xtanative.store.settings.ProfileTab as StoredTab
 import com.aimdi.xtanative.ui.media.MediaGridItem
@@ -36,6 +37,16 @@ class ProfileRulesTest {
         assertEquals(listOf("POSTS", "REPLIES", "MEDIA", "SAVED"), ProfileTab.entries.map { it.name })
         assertEquals(ProfileTab.REPLIES, ProfileTab.opening(StoredTab.POSTS_AND_REPLIES))
         assertEquals(ProfileTab.SAVED, ProfileTab.opening(StoredTab.SAVED))
+    }
+
+    @Test
+    fun aLinksTabOpensAndSurvivesTheRoute() {
+        assertEquals(ProfileTab.MEDIA, ProfileTab.of(XProfileTab.MEDIA))
+        assertEquals(ProfileTab.REPLIES, ProfileTab.of(XProfileTab.POSTS_AND_REPLIES))
+        assertNull(ProfileTab.of(null))
+        ProfileTab.entries.forEach { assertEquals(it, ProfileTab.ofRoute(it.routeName)) }
+        assertNull(ProfileTab.ofRoute(null))
+        assertNull(ProfileTab.ofRoute("highlights"))
     }
 
     @Test

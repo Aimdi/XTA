@@ -80,7 +80,7 @@ class LibrarySearchTest {
         assertEquals(LibraryTarget.XPost("100"), targets["saved:100"])
         assertEquals(LibraryTarget.Saved, targets["saved:reddit:r1"], "another network's post is in Saved")
         assertEquals(LibraryTarget.NoteThread("n1"), targets["note:n2"], "a reply opens its thread from the start")
-        assertEquals(LibraryTarget.Profile("maya"), targets["account:1"])
+        assertEquals(LibraryTarget.Profile("maya", "1"), targets["account:1"], "an account opens by its id")
         assertEquals(LibraryTarget.Search("kotlin coroutines"), targets["search:kotlin coroutines"])
         assertEquals(LibraryTarget.Group("a"), targets["group:a"])
         assertEquals(LibraryTarget.Article("art"), targets["article:art"])

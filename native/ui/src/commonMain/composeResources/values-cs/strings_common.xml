@@ -23,4 +23,11 @@
     <string name="problem_http_text">X vrátil HTTP %1$d.</string>
     <string name="problem_retry_in">Zkusit znovu za %1$s</string>
     <string name="close_app_confirm">Opravdu chcete zavřít XTA?</string>
+    <string name="problem_unable_to_load_the_community">Komunitu se nepodařilo načíst</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">Nepodařilo se nalézt umístění trendů.</string>
+    <string name="problem_unable_to_load_the_members">Členy se nepodařilo načíst</string>
+    <string name="problem_unable_to_load_the_list_of_follows">Nepodařilo se načíst seznam sledování</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">Nepodařilo se načíst další stránku sledování</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">Nepodařilo se načíst další stránku tweetů</string>
+    <string name="problem_unable_to_load_the_tweets">Nepodařilo se načíst tweety</string>
 </resources>

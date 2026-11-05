@@ -80,6 +80,7 @@ import com.aimdi.xtanative.ui.feed.rememberNearEnd
 import com.aimdi.xtanative.ui.feed.rememberPlayingId
 import com.aimdi.xtanative.ui.feed.rememberRunningPlugins
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_next_page_of_tweets
 import com.aimdi.xtanative.ui.generated.resources.close
 import com.aimdi.xtanative.ui.generated.resources.dismiss
 import com.aimdi.xtanative.ui.generated.resources.groups_batch_progress
@@ -245,7 +246,7 @@ private fun FeedList(state: GroupFeedUi, vm: GroupFeedViewModel, actions: PostAc
                 val more = run.moreProblem
                 when {
                     run.loadingMore -> LoadingRow()
-                    more != null -> ProblemRow(more, { vm.loadMore() })
+                    more != null -> ProblemRow(more, { vm.loadMore() }, context = stringResource(Res.string.problem_unable_to_load_the_next_page_of_tweets))
                     run.shown.pause == FeedPause.CAUGHT_UP -> CaughtUpCard(run.shown.catchUpMessage, run, vm)
                     run.shown.pause == FeedPause.PAGE_CAP -> ZenEndCard(vm::continuePastPause)
                     else -> Spacer(Modifier.heightIn(min = 48.dp))

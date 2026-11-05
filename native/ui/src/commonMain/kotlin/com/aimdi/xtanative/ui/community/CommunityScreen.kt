@@ -56,6 +56,10 @@ import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.common.datePattern
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_community
+import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_members
+import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_tweets
+import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_next_page_of_tweets
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.discover_community_about
 import com.aimdi.xtanative.ui.generated.resources.discover_community_created
@@ -105,7 +109,7 @@ fun CommunityScreen(id: String, about: Boolean, actions: PostActions, openMember
         val problem = state.problem
         val below = Modifier.padding(top = padding.calculateTopPadding())
         when {
-            community == null && problem != null -> ProblemView(problem, vm::load, below)
+            community == null && problem != null -> ProblemView(problem, vm::load, below, context = stringResource(Res.string.problem_unable_to_load_the_community))
             community == null -> LoadingRow(below)
             // Padding, not content padding: the tabs stick below the bar, not under it.
             else -> LazyColumn(
@@ -118,7 +122,7 @@ fun CommunityScreen(id: String, about: Boolean, actions: PostActions, openMember
                 when (state.tab) {
                     CommunityTab.TOP -> {
                         feedThreads(posts.items, layout, actions, keyOf = { "post-" + it.id }) { thread -> ThreadRows(thread, actions, pinnedIds = state.pinnedIds) }
-                        pageStatus(posts, Res.string.discover_no_results, vm::retryPosts, vm::morePosts)
+                        pageStatus(posts, Res.string.discover_no_results, vm::retryPosts, vm::morePosts, firstFailed = Res.string.problem_unable_to_load_the_tweets, moreFailed = Res.string.problem_unable_to_load_the_next_page_of_tweets)
                     }
                     CommunityTab.ABOUT -> item(key = "about", contentType = "about") { CommunityAbout(community) }
                 }
@@ -150,10 +154,18 @@ fun CommunityMembersScreen(id: String, actions: PostActions, onBack: () -> Unit)
     ) { padding ->
         LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
             itemsIndexed(members.items, key = { _, user -> user.id }, contentType = { _, _ -> "person" }) { index, user ->
-                PersonRow(user, onOpen = { actions.openProfile(user.screenName) })
+                PersonRow(user, onOpen = { actions.openUser(user.screenName, user.id) })
                 if (index < members.items.lastIndex) PersonDivider()
             }
-            pageStatus(members, Res.string.discover_no_results, vm::retry, vm::more, icon = DiscoverIcons.Groups)
+            pageStatus(
+                members,
+                Res.string.discover_no_results,
+                vm::retry,
+                vm::more,
+                icon = DiscoverIcons.Groups,
+                firstFailed = Res.string.problem_unable_to_load_the_members,
+                moreFailed = Res.string.problem_unable_to_load_the_members,
+            )
         }
     }
 }

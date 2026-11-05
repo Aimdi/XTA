@@ -23,4 +23,11 @@
     <string name="problem_http_text">X svarte med HTTP %1$d.</string>
     <string name="problem_retry_in">Prøv igjen om %1$s</string>
     <string name="close_app_confirm">Lukk XTA?</string>
+    <string name="problem_unable_to_load_the_community">Kunne ikke laste inn fellesskapet</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">Kan ikke finne tilgjengelige trendplasseringer.</string>
+    <string name="problem_unable_to_load_the_members">Kunne ikke laste inn medlemmene</string>
+    <string name="problem_unable_to_load_the_list_of_follows">Kan ikke laste inn listen over følger</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">Kunne ikke laste inn neste side med følgere</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">Kan ikke laste inn neste side med tweets</string>
+    <string name="problem_unable_to_load_the_tweets">Kunne ikke laste inn tvitringene</string>
 </resources>

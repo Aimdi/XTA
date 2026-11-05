@@ -23,4 +23,11 @@
     <string name="problem_http_text">X 傳回了 HTTP %1$d。</string>
     <string name="problem_retry_in">%1$s 後重試</string>
     <string name="close_app_confirm">您確定要關閉 XTA 嗎？</string>
+    <string name="problem_unable_to_load_the_community">無法載入社群</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">找不到可用的趨勢地點。</string>
+    <string name="problem_unable_to_load_the_members">無法載入成員</string>
+    <string name="problem_unable_to_load_the_list_of_follows">無法載入追蹤中清單</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">無法載入下一頁的追蹤中清單</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">無法載入下一頁的推文</string>
+    <string name="problem_unable_to_load_the_tweets">無法載入推文</string>
 </resources>

@@ -23,4 +23,11 @@
     <string name="problem_http_text">X ने HTTP %1$d लौटाया।</string>
     <string name="problem_retry_in">%1$s बाद फिर प्रयास करें</string>
     <string name="close_app_confirm">क्या आप XTA बंद करना चाहते हैं?</string>
+    <string name="problem_unable_to_load_the_community">समुदाय लोड नहीं हो सका</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">उपलब्ध ट्रेंड स्थान नहीं मिले।</string>
+    <string name="problem_unable_to_load_the_members">सदस्य लोड नहीं हो सके</string>
+    <string name="problem_unable_to_load_the_list_of_follows">अनुसरण की सूची लोड नहीं की जा सकी</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">अनुसरण का अगला पृष्ठ लोड नहीं किया जा सका</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">पोस्ट का अगला पृष्ठ लोड नहीं किया जा सका</string>
+    <string name="problem_unable_to_load_the_tweets">पोस्ट लोड नहीं की जा सकीं</string>
 </resources>

@@ -217,7 +217,7 @@ private class PluginNavTarget(
         when (destination) {
             is Destination.Link -> links?.open(destination.url) ?: runCatching { uri.openUri(destination.url) }
             is Destination.XPost -> x.post(destination.id)
-            is Destination.XProfile -> x.profile(destination.screenName)
+            is Destination.XProfile -> x.profile(destination.screenName, null)
             is Destination.XSearch -> x.search(destination.query)
             Destination.PluginStore -> nav.navigate(PluginRoutes.STORE)
             is Destination.PluginClient -> nav.navigate(PluginRoutes.client(destination.pluginId))

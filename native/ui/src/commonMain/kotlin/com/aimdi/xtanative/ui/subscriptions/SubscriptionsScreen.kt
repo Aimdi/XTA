@@ -78,7 +78,8 @@ import org.jetbrains.compose.resources.stringResource
 
 /** Where the Subscriptions tab leads; a destination this build has no screen for yet is null. */
 class SubscriptionsNavigation(
-    val openProfile: (screenName: String) -> Unit,
+    /** An X account's profile, read by its id. */
+    val openProfile: (screenName: String, userId: String?) -> Unit,
     val search: (query: String) -> Unit,
     val openGroup: (groupId: String) -> Unit,
     val importFollowing: () -> Unit,
@@ -176,7 +177,7 @@ fun SubscriptionsScreen(navigation: SubscriptionsNavigation, onBack: (() -> Unit
                             when {
                                 row.search -> navigation.search(row.id)
                                 row.plugin != null -> vm.openInPlugin(row)
-                                else -> navigation.openProfile(row.screenName)
+                                else -> navigation.openProfile(row.screenName, row.id)
                             }
                         },
                         unfollow = vm::unfollow,

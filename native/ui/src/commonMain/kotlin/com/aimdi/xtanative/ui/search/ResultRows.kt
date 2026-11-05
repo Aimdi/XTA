@@ -19,7 +19,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -31,7 +30,7 @@ import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.ProblemView
-import com.aimdi.xtanative.ui.common.XIcons
+import com.aimdi.xtanative.ui.post.VerifiedBadges
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -56,9 +55,7 @@ fun PersonRow(user: XUser, onOpen: () -> Unit, modifier: Modifier = Modifier) {
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f, fill = false),
                 )
-                if (user.verified) {
-                    Icon(XIcons.Verified, contentDescription = null, tint = Color.Unspecified, modifier = Modifier.padding(start = 4.dp).size(16.dp))
-                }
+                VerifiedBadges(user, 16.dp, Modifier.padding(start = 4.dp))
             }
             Text(
                 "@" + user.screenName,
@@ -81,7 +78,7 @@ fun PersonDivider() {
 /**
  * What a paged list shows after its rows: the first page loading, failing
  * or bringing nothing ([icon] and [empty] say so), then the next page
- * loading or failing.
+ * loading or failing; [firstFailed] and [moreFailed] name what failed.
  */
 fun LazyListScope.pageStatus(
     paged: Paged<*>,
@@ -89,18 +86,20 @@ fun LazyListScope.pageStatus(
     onRetry: () -> Unit,
     onMore: () -> Unit,
     icon: ImageVector? = null,
+    firstFailed: StringResource? = null,
+    moreFailed: StringResource? = null,
 ) {
     val problem = paged.problem
     when {
         paged.loading -> item(key = "status-loading", contentType = "status") { LoadingRow() }
-        problem != null -> item(key = "status-problem", contentType = "status") { ProblemView(problem, onRetry) }
+        problem != null -> item(key = "status-problem", contentType = "status") { ProblemView(problem, onRetry, context = firstFailed?.let { stringResource(it) }) }
         paged.empty -> item(key = "status-empty", contentType = "status") { EmptyNote(stringResource(empty), icon) }
     }
     item(key = "status-footer", contentType = "footer") {
         val more = paged.moreProblem
         when {
             paged.loadingMore -> LoadingRow()
-            more != null -> ProblemRow(more, onMore)
+            more != null -> ProblemRow(more, onMore, context = moreFailed?.let { stringResource(it) })
             else -> Spacer(Modifier.padding(bottom = 48.dp))
         }
     }

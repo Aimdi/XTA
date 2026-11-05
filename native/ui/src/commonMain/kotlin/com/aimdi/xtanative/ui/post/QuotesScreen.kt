@@ -47,6 +47,7 @@ import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_next_page_of_tweets
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.posts_no_quotes
 import com.aimdi.xtanative.ui.generated.resources.posts_no_retweets
@@ -216,7 +217,7 @@ private fun QuotesList(state: QuotesUi, vm: QuotesViewModel, actions: PostAction
             item(key = "sort") {
                 SortChip(state.quoteSort, Sorts.X_QUOTES, { quoteSortLabel(it) }, ::quoteSortIcon, vm::selectQuotes, Modifier.padding(start = 4.dp))
             }
-            listState(quotes, { vm.loadQuotes() }, { quotes.cursor?.let(vm::loadQuotes) }, Res.string.posts_no_quotes) {
+            listState(quotes, { vm.loadQuotes() }, { quotes.cursor?.let(vm::loadQuotes) }, Res.string.posts_no_quotes, moreFailed = Res.string.problem_unable_to_load_the_next_page_of_tweets) {
                 feedThreads(quotes.items, layout, actions, keyOf = { "quote-" + it.id })
             }
         }
@@ -247,6 +248,7 @@ private fun <T> androidx.compose.foundation.lazy.LazyListScope.listState(
     retry: () -> Unit,
     retryMore: () -> Unit,
     empty: org.jetbrains.compose.resources.StringResource,
+    moreFailed: org.jetbrains.compose.resources.StringResource? = null,
     rows: androidx.compose.foundation.lazy.LazyListScope.() -> Unit,
 ) {
     val problem = paged.problem
@@ -267,7 +269,7 @@ private fun <T> androidx.compose.foundation.lazy.LazyListScope.listState(
         val more = paged.moreProblem
         when {
             paged.loadingMore -> LoadingRow()
-            more != null -> ProblemRow(more, retryMore)
+            more != null -> ProblemRow(more, retryMore, context = moreFailed?.let { stringResource(it) })
         }
     }
 }

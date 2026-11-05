@@ -85,6 +85,7 @@ import com.aimdi.xtanative.ui.post.PostScreen
 import com.aimdi.xtanative.ui.post.QuotesScreen
 import com.aimdi.xtanative.ui.profile.FollowsScreen
 import com.aimdi.xtanative.ui.profile.ProfileScreen
+import com.aimdi.xtanative.ui.profile.ProfileTab
 import com.aimdi.xtanative.ui.saved.KeepHost
 import com.aimdi.xtanative.ui.saved.NoteThreadScreen
 import com.aimdi.xtanative.ui.saved.SavedFoldersScreen
@@ -125,7 +126,7 @@ private object Routes {
     const val HOME = "home"
     const val DECK = "deck"
     const val POST = "post/{id}?media={media}"
-    const val PROFILE = "profile/{screenName}"
+    const val PROFILE = "profile/{screenName}?id={id}&tab={tab}"
     const val MEDIA = "media/{postId}/{index}"
     const val GALLERY = "gallery/{key}/{index}?post={post}&at={at}"
     const val SEARCH = "search?q={q}&tab={tab}&focus={focus}"
@@ -168,7 +169,11 @@ private object Routes {
 
     /** Post [id], its media's row at picture [media]: the one a grid's viewer was on. */
     fun post(id: String, media: Int = 0) = if (media > 0) "post/$id?media=$media" else "post/$id"
-    fun profile(screenName: String) = "profile/" + encoded(screenName)
+    /** [screenName]'s profile, read by [id] when known, opening on [tab] when one is named. */
+    fun profile(screenName: String, id: String? = null, tab: ProfileTab? = null): String {
+        val params = listOfNotNull(id?.takeIf { it.isNotBlank() }?.let { "id=" + encoded(it) }, tab?.let { "tab=" + it.routeName })
+        return "profile/" + encoded(screenName) + if (params.isEmpty()) "" else "?" + params.joinToString("&")
+    }
     fun media(postId: String, index: Int) = "media/$postId/$index"
 
     /** The viewer over the gallery kept as [key], from [index]; [page] is where it falls back to once the gallery is gone. */
@@ -218,7 +223,7 @@ private object Routes {
         is LibraryTarget.XPost -> post(target.id)
         LibraryTarget.Saved -> SAVED
         is LibraryTarget.NoteThread -> noteThread(target.rootId)
-        is LibraryTarget.Profile -> profile(target.screenName)
+        is LibraryTarget.Profile -> profile(target.screenName, target.id)
         is LibraryTarget.Search -> search(target.query)
         is LibraryTarget.Group -> group(target.id)
         is LibraryTarget.Article -> archive(target.id)
@@ -303,6 +308,7 @@ fun XtaNativeRoot() {
             openLink = { url -> links?.open(url) },
             openInBrowser = { url -> links?.openOutside(url) },
             openImage = { url, name -> nav.navigate(Routes.image(url, name)) },
+            openUser = { name, id -> nav.navigate(Routes.profile(name, id)) },
         )
     }
     val searchActions = remember(nav) {
@@ -326,7 +332,7 @@ fun XtaNativeRoot() {
     val linkScreens = remember(nav, actions, plugins) {
         LinkScreens(
             post = actions.openPost,
-            profile = actions.openProfile,
+            profile = { name, tab -> nav.navigate(Routes.profile(name, tab = ProfileTab.of(tab))) },
             search = actions.search,
             browser = { url, from -> nav.navigate(Routes.browser(url, from)) },
             community = { id, about -> true.also { nav.navigate(if (about) Routes.communityAbout(id) else Routes.community(id)) } },
@@ -447,10 +453,20 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
         }
         composable(
             Routes.PROFILE,
-            arguments = listOf(navArgument("screenName") { type = NavType.StringType }),
+            arguments = listOf(
+                navArgument("screenName") { type = NavType.StringType },
+                navArgument("id") { type = NavType.StringType; nullable = true; defaultValue = null },
+                navArgument("tab") { type = NavType.StringType; nullable = true; defaultValue = null },
+            ),
             deepLinks = xLinks("{screenName}"),
         ) { entry ->
-            ProfileScreen(entry.text("screenName").orEmpty(), actions, onBack = { nav.popBackStack() }) { query ->
+            ProfileScreen(
+                entry.text("screenName").orEmpty(),
+                actions,
+                onBack = { nav.popBackStack() },
+                userId = entry.text("id"),
+                openingTab = ProfileTab.ofRoute(entry.text("tab")),
+            ) { query ->
                 nav.navigate(Routes.search(query, SearchTab.LATEST.routeName, focus = true))
             }
         }
@@ -725,7 +741,7 @@ private fun NavHostController.backToHome() {
 
 /** Where Subscriptions leads, whether it is a page of Home's bar or a screen of its own. */
 private fun subscriptionsNavigation(nav: NavHostController, actions: PostActions) = SubscriptionsNavigation(
-    openProfile = actions.openProfile,
+    openProfile = actions.openUser,
     search = actions.search,
     openGroup = { id -> nav.navigate(Routes.group(id)) },
     importFollowing = { nav.navigate(Routes.SUBSCRIPTIONS_IMPORT) },

@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.ui.settings
 
 import com.aimdi.xtanative.core.feed.FeedPlace
+import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.core.x.XClient
 import com.aimdi.xtanative.data.AppGraph
@@ -13,6 +14,7 @@ import com.aimdi.xtanative.store.backup.XtaTime
 import com.aimdi.xtanative.store.settings.AccountPrefs
 import com.aimdi.xtanative.store.settings.DataPrefs
 import com.aimdi.xtanative.store.settings.SettingsStore
+import java.time.Duration
 import java.time.Instant
 
 /** The XTA backup against the app's stores: what an export reads and where a restore writes each section. */
@@ -131,12 +133,33 @@ object SettingsStart {
         settings.observe(AccountPrefs.disabledAccountIds).collect { gate(it.toSet()) }
     }
 
-    /** Rotated X query ids repaired from the published list, unless the reader turned that off; when it answered is noted. */
-    suspend fun refreshEndpoints(settings: SettingsStore, client: XClient, now: () -> Instant = Instant::now) {
+    /**
+     * Rotated X query ids repaired as XTA's EndpointRegistry does: the copy
+     * of the published list kept from the last read applied first, so the
+     * launch is repaired before X is asked anything; then, unless the reader
+     * turned that off, the list read again at most once a day ([fetch]) and
+     * kept with when it answered.
+     */
+    suspend fun refreshEndpoints(
+        settings: SettingsStore,
+        client: XClient,
+        now: () -> Instant = Instant::now,
+        fetch: suspend (url: String) -> String? = client::refreshEndpoints,
+    ) {
         val current = settings.load()
+        current[DataPrefs.endpointRegistryCache].takeIf { it.isNotBlank() }?.let { kept -> apply(client, kept) }
         if (!current[DataPrefs.endpointRegistryEnabled]) return
-        if (client.refreshEndpoints(current[DataPrefs.endpointRegistryUrl]) != null) {
-            settings.set(DataPrefs.endpointRegistryFetchedAt, XtaTime.iso(now()))
-        }
+        val fetchedAt = XtaTime.parse(current[DataPrefs.endpointRegistryFetchedAt])
+        if (fetchedAt != null && Duration.between(fetchedAt, now()) < ENDPOINTS_EVERY) return
+        val body = fetch(current[DataPrefs.endpointRegistryUrl]) ?: return
+        apply(client, body)
+        settings.update { it.with(DataPrefs.endpointRegistryCache, body).with(DataPrefs.endpointRegistryFetchedAt, XtaTime.iso(now())) }
     }
+
+    private fun apply(client: XClient, registry: String) {
+        runCatching { client.endpoints.applyOverrides(J.parse(registry)) }
+    }
+
+    /** How often the published list is read: it changes only when X rotates an id. */
+    private val ENDPOINTS_EVERY: Duration = Duration.ofHours(24)
 }

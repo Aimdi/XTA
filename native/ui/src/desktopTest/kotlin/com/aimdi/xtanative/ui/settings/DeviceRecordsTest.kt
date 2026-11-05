@@ -2,8 +2,13 @@ package com.aimdi.xtanative.ui.settings
 
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.core.x.XAccount
+import com.aimdi.xtanative.core.x.XClient
 import com.aimdi.xtanative.core.x.XEndpoints
 import com.aimdi.xtanative.core.x.XRateLimits
+import com.aimdi.xtanative.core.x.XSigners
+import com.aimdi.xtanative.core.x.http.XHttp
+import com.aimdi.xtanative.core.x.http.XResponse
+import com.aimdi.xtanative.core.x.signing.TransactionSigner
 import com.aimdi.xtanative.data.SessionStore
 import com.aimdi.xtanative.store.StoreDir
 import com.aimdi.xtanative.store.settings.AccountPrefs
@@ -123,5 +128,42 @@ class SettingsStartTest {
         settings.set(AccountPrefs.disabledAccountIds, listOf("3"))
         withTimeout(5_000) { while (off != setOf("3")) delay(10) }
         keeping.cancel()
+    }
+
+    private fun client() = XClient(
+        http = XHttp { _, _, _ -> XResponse(500, "") },
+        accounts = { emptyList() },
+        signers = XSigners({ TransactionSigner(IntArray(48) { it }, "animation") }),
+    )
+
+    private fun registry(id: String) = """{"endpoints":{"${XEndpoints.SEARCH}":"$id"}}"""
+
+    @Test
+    fun theKeptEndpointsApplyFirstAndThePublishedOnesAreReadOnceADayAndKept(): Unit = runBlocking {
+        val settings = SettingsStore(StoreDir(File(dir, "store")))
+        val now = Instant.parse("2026-11-05T12:00:00Z")
+        val asked = ArrayList<String>()
+        val first = client()
+        SettingsStart.refreshEndpoints(settings, first, { now }) { url -> registry("Fresh_Id_123456789012").also { asked += url } }
+        assertEquals("Fresh_Id_123456789012", first.endpoints.queryId(XEndpoints.SEARCH))
+        assertEquals(registry("Fresh_Id_123456789012"), settings.get(DataPrefs.endpointRegistryCache))
+
+        // The next launch, within the day: the kept copy is in force without asking again.
+        val next = client()
+        SettingsStart.refreshEndpoints(settings, next, { now.plusSeconds(3_600) }) { url -> null.also { asked += url } }
+        assertEquals("Fresh_Id_123456789012", next.endpoints.queryId(XEndpoints.SEARCH))
+        assertEquals(1, asked.size, "read at most once a day")
+
+        // A day later it is read again; a failure keeps the copy and its time.
+        SettingsStart.refreshEndpoints(settings, client(), { now.plusSeconds(25 * 3_600) }) { url -> null.also { asked += url } }
+        assertEquals(2, asked.size)
+        assertEquals(registry("Fresh_Id_123456789012"), settings.get(DataPrefs.endpointRegistryCache))
+
+        // Turned off: the kept copy still applies, as XTA's applyCached, but nothing is read.
+        settings.set(DataPrefs.endpointRegistryEnabled, false)
+        val off = client()
+        SettingsStart.refreshEndpoints(settings, off, { now.plusSeconds(50 * 3_600) }) { url -> null.also { asked += url } }
+        assertEquals(2, asked.size)
+        assertEquals("Fresh_Id_123456789012", off.endpoints.queryId(XEndpoints.SEARCH))
     }
 }

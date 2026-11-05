@@ -14,6 +14,7 @@ import com.aimdi.xtanative.services.links.NetworkLink
 import com.aimdi.xtanative.services.links.NetworkLinks
 import com.aimdi.xtanative.services.links.XLink
 import com.aimdi.xtanative.services.links.XLinks
+import com.aimdi.xtanative.services.links.XProfileTab
 import com.aimdi.xtanative.store.settings.GeneralPrefs
 import com.aimdi.xtanative.store.settings.Pref
 import com.aimdi.xtanative.store.settings.Settings
@@ -32,7 +33,8 @@ import kotlinx.coroutines.flow.asSharedFlow
  */
 class LinkScreens(
     val post: (id: String) -> Unit,
-    val profile: (screenName: String) -> Unit,
+    /** An X profile, on the tab its link named (`/media`, `/with_replies`) when it named one. */
+    val profile: (screenName: String, tab: XProfileTab?) -> Unit,
     val search: (query: String) -> Unit,
     /** XTA's browser screen at [url]; [from] finds the post it was opened from, see [LinkOpener.opening]. */
     val browser: (url: String, from: String?) -> Unit,
@@ -95,7 +97,7 @@ class BrowserOpening(val from: LinkFrom?, val title: String?)
 sealed interface LinkStep {
     data class Post(val id: String) : LinkStep
 
-    data class Profile(val screenName: String) : LinkStep
+    data class Profile(val screenName: String, val tab: XProfileTab? = null) : LinkStep
 
     /** A network's screen, the live player, a community or a list: opened when the app has one, else [orElse]. */
     data class Screen(val route: NativeRoute, val orElse: LinkLaunch) : LinkStep
@@ -131,7 +133,7 @@ object LinkSteps {
             null -> LinkStep.Web(web)
             is NativeRoute.X -> when (val link = route.link) {
                 is XLink.Post -> LinkStep.Post(link.id)
-                is XLink.Profile -> LinkStep.Profile(link.screenName)
+                is XLink.Profile -> LinkStep.Profile(link.screenName, link.tab)
                 else -> LinkStep.Screen(route, web)
             }
             is NativeRoute.Live, is NativeRoute.Network -> LinkStep.Screen(route, web)
@@ -310,7 +312,7 @@ class LinkOpener(
         val current = settings()
         return when (val step = LinkSteps.step(url, LinkSteps.route(router(current), url), LinkSteps.settingsOf(current), platform.desktop, false, inPost = false)) {
             is LinkStep.Post -> true.also { screens.post(step.id) }
-            is LinkStep.Profile -> true.also { screens.profile(step.screenName) }
+            is LinkStep.Profile -> true.also { screens.profile(step.screenName, step.tab) }
             is LinkStep.Screen -> openScreen(screens, step.route)
             is LinkStep.Web -> false
         }
@@ -340,7 +342,7 @@ class LinkOpener(
         val step = LinkSteps.step(url, LinkSteps.route(router(current), url), LinkSteps.settingsOf(current), platform.desktop, reopensApp(url), inPost)
         when (step) {
             is LinkStep.Post -> screens.post(step.id)
-            is LinkStep.Profile -> screens.profile(step.screenName)
+            is LinkStep.Profile -> screens.profile(step.screenName, step.tab)
             is LinkStep.Screen -> if (!openScreen(screens, step.route)) web(screens, step.orElse, from, title)
             is LinkStep.Web -> web(screens, step.launch, from, title)
         }
@@ -351,7 +353,7 @@ class LinkOpener(
         is NativeRoute.Live -> screens.live(route.live)
         is NativeRoute.X -> when (val link = route.link) {
             is XLink.Post -> true.also { screens.post(link.id) }
-            is XLink.Profile -> true.also { screens.profile(link.screenName) }
+            is XLink.Profile -> true.also { screens.profile(link.screenName, link.tab) }
             is XLink.Community -> screens.community(link.id, link.about)
             is XLink.XList -> screens.list(link.id)
             else -> false
