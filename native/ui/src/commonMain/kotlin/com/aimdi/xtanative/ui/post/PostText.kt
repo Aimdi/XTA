@@ -81,7 +81,7 @@ fun PostText(
     RunsText(runs, actions, modifier, style, maxLines)
 }
 
-/** Text runs drawn with their links, mentions and tags in blue: a post's text, or a bio. A long press on a cashtag opens its sheet. */
+/** Text runs drawn with their links, mentions and tags in blue: a post's text, or a bio. A long press on a cashtag opens its sheet, on a hashtag its topic sheet. */
 @Composable
 fun RunsText(
     runs: List<XRun>,
@@ -96,9 +96,11 @@ fun RunsText(
     val text = remember(runs, linkColor, actions, cashtags, contracts) { annotated(runs, linkColor, actions, cashtags, contracts) }
     if (text.isEmpty()) return
     val layout = remember { TextLayoutHolder() }
+    var topic by remember { mutableStateOf<String?>(null) }
+    topic?.let { TopicSheet(it) { topic = null } }
     Text(
         text,
-        modifier = modifier.cashtagPresses(text, layout),
+        modifier = modifier.tagPresses(text, layout) { topic = it },
         style = style,
         color = MaterialTheme.colorScheme.onSurface,
         maxLines = maxLines,
@@ -131,6 +133,8 @@ fun ExpandablePostText(
     var folds by remember(post.id, post.text, maxLines) { mutableStateOf(false) }
     val clipped = maxLines != null && !expanded
     val laidOut = remember { TextLayoutHolder() }
+    var topic by remember { mutableStateOf<String?>(null) }
+    topic?.let { TopicSheet(it) { topic = null } }
     Column(modifier.animateContentSize()) {
         val drawn: @Composable () -> Unit = {
             Text(
@@ -143,7 +147,7 @@ fun ExpandablePostText(
                     laidOut.take(layout)
                     if (clipped && layout.hasVisualOverflow) folds = true
                 },
-                modifier = (if (clipped && folds) Modifier.fadingBottom() else Modifier).cashtagPresses(text, laidOut),
+                modifier = (if (clipped && folds) Modifier.fadingBottom() else Modifier).tagPresses(text, laidOut) { topic = it },
             )
         }
         if (selectable) SelectionContainer { drawn() } else drawn()

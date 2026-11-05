@@ -14,6 +14,7 @@ import android.media.session.MediaSession
 import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
+import android.view.KeyEvent
 
 /** The framework's drawings the media notification uses, so the app carries none of its own. */
 internal object PlaybackIcons {
@@ -199,9 +200,15 @@ class PlaybackService : Service() {
     }
 }
 
-/** The media notification's buttons and its swipe: each presses its control on what is bound. */
+/** The media notification's buttons and its swipe, and a headset's buttons: each presses its control on what is bound. */
 class PlaybackButtons : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
+        if (intent.action == Intent.ACTION_MEDIA_BUTTON) {
+            @Suppress("DEPRECATION")
+            val event = intent.getParcelableExtra<KeyEvent>(Intent.EXTRA_KEY_EVENT) ?: return
+            frameworkSessions(context).mediaButton(event)
+            return
+        }
         val control = intent.action?.removePrefix(PREFIX)?.let { name -> PlaybackControl.entries.firstOrNull { it.name == name } } ?: return
         frameworkSessions(context).press(control)
     }

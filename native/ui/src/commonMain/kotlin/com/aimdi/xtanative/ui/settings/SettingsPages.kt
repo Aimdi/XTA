@@ -6,8 +6,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,6 +28,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -35,6 +36,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -46,6 +48,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.aimdi.xtanative.store.downloads.DownloadDestination
 import com.aimdi.xtanative.store.settings.AccessibilityPrefs
 import com.aimdi.xtanative.store.settings.CrashReportPrefs
 import com.aimdi.xtanative.store.settings.DownloadType
@@ -61,15 +64,17 @@ import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.ThemeAccent
 import com.aimdi.xtanative.store.settings.ThemeBackground
 import com.aimdi.xtanative.store.settings.ThemePrefs
-import com.aimdi.xtanative.store.downloads.DownloadDestination
-import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.*
+import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.links.BrowserPickerRow
 import com.aimdi.xtanative.ui.speech.VoiceSettingsSheet
 import com.aimdi.xtanative.ui.theme.Contrast
 import com.aimdi.xtanative.ui.theme.XLookTokens
 import java.util.Locale
 import kotlin.math.roundToInt
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -84,7 +89,8 @@ private fun PrefSwitch(settings: Settings, pref: Pref<Boolean>, title: String, d
 @Composable
 internal fun GeneralSettings(title: String, vm: SettingsViewModel, focus: String?, onBack: () -> Unit) {
     val settings by vm.settings.collectAsStateWithLifecycle()
-    SettingsPage(title, onBack) { padding ->
+    val snackbar = remember { SnackbarHostState() }
+    SettingsPage(title, onBack, snackbar) { padding ->
         SettingsList(padding) {
             SettingsHeader(stringResource(Res.string.settings_general))
             val languages = listOf(SettingsChoices.SYSTEM_LANGUAGE) + SettingsChoices.languages.map { it.code }
@@ -139,21 +145,53 @@ internal fun GeneralSettings(title: String, vm: SettingsViewModel, focus: String
             ) { vm.set(GeneralPrefs.shareBaseUrl, it.trim()) }
 
             SettingsHeader(stringResource(Res.string.settings_crash_title))
-            CrashReportRows(settings, vm)
+            CrashReportRows(settings, vm, snackbar)
         }
     }
 }
 
-/** The crash-report switch, and the reports kept. */
+/**
+ * XTA's crash reports (_crash_reports.dart): the switch, the GitHub
+ * repository and token, which only count while it is on, the test report,
+ * and the reports kept on the device.
+ */
 @Composable
-private fun CrashReportRows(settings: Settings, vm: SettingsViewModel) {
+private fun CrashReportRows(settings: Settings, vm: SettingsViewModel, snackbar: SnackbarHostState) {
+    val scope = rememberCoroutineScope()
     var cleared by remember { mutableIntStateOf(0) }
     val kept by produceState(0, cleared, settings[CrashReportPrefs.enabled]) { value = vm.graph.crashReports.list().size }
+    val on = settings[CrashReportPrefs.enabled]
     SwitchRow(
-        stringResource(Res.string.settings_crash_keep),
-        stringResource(Res.string.settings_crash_keep_description),
-        settings[CrashReportPrefs.enabled],
+        stringResource(Res.string.crash_reports_enabled),
+        stringResource(Res.string.crash_reports_enabled_description),
+        on,
     ) { vm.set(CrashReportPrefs.enabled, it) }
+    TextRow(
+        stringResource(Res.string.crash_reports_repo),
+        stringResource(Res.string.crash_reports_repo_description),
+        CrashReporter.repository(settings),
+        hint = CrashReportPrefs.githubRepo.default,
+        enabled = on,
+    ) { vm.set(CrashReportPrefs.githubRepo, it.trim()) }
+    TextRow(
+        stringResource(Res.string.crash_reports_token),
+        stringResource(Res.string.crash_reports_token_description),
+        settings[CrashReportPrefs.githubToken],
+        hint = stringResource(Res.string.crash_reports_token_hint),
+        secret = true,
+        enabled = on,
+    ) { vm.set(CrashReportPrefs.githubToken, it.trim()) }
+    NavigationRow(
+        stringResource(Res.string.crash_reports_send_test),
+        stringResource(Res.string.crash_reports_send_test_description),
+        enabled = on,
+        chevron = false,
+    ) {
+        scope.launch {
+            val result = vm.graph.crashReporter.sendTestReport()
+            snackbar.showSnackbar(getString(crashResultText(result)))
+        }
+    }
     NavigationRow(
         stringResource(Res.string.settings_image_cache_clear),
         if (kept == 0) stringResource(Res.string.settings_crash_none) else pluralStringResource(Res.plurals.settings_crash_count, kept, kept),
@@ -163,6 +201,18 @@ private fun CrashReportRows(settings: Settings, vm: SettingsViewModel) {
         vm.graph.crashReports.clear()
         cleared++
     }
+}
+
+/** What the test report's [result] says, in XTA's words. */
+private fun crashResultText(result: CrashReportResult): StringResource = when (result) {
+    CrashReportResult.SENT -> Res.string.crash_reports_test_sent
+    CrashReportResult.MISSING_TOKEN -> Res.string.crash_reports_missing_token
+    CrashReportResult.AUTH_FAILED -> Res.string.crash_reports_auth_failed
+    CrashReportResult.INVALID_REPO -> Res.string.crash_reports_invalid_repo
+    CrashReportResult.RATE_LIMITED -> Res.string.crash_reports_rate_limited
+    CrashReportResult.DUPLICATE -> Res.string.crash_reports_duplicate
+    CrashReportResult.DISABLED -> Res.string.crash_reports_disabled_toast
+    CrashReportResult.IGNORED, CrashReportResult.FAILED -> Res.string.crash_reports_test_failed
 }
 
 // ---- Posts (_posts.dart) ----

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Crash reports and the screens shown when something breaks: XTA's own wording (lib/l10n), placeholders positional. -->
+<resources>
+    <string name="crash_reports_auth_failed">GitHub がトークンを拒否しました（権限を確認）</string>
+    <string name="crash_reports_disabled_toast">先にクラッシュ報告を有効にしてください</string>
+    <string name="crash_reports_duplicate">このクラッシュは既に報告済みです</string>
+    <string name="crash_reports_enabled">クラッシュ報告を GitHub に送信</string>
+    <string name="crash_reports_enabled_description">有効にすると、未処理のクラッシュが GitHub の Issue として報告されます。既定ではオフです。Issues 書き込み権限のある個人アクセストークンが必要です。アプリにトークンは埋め込みません。</string>
+    <string name="crash_reports_invalid_repo">リポジトリは owner/name 形式にしてください</string>
+    <string name="crash_reports_missing_token">先に GitHub アクセストークンを追加してください</string>
+    <string name="crash_reports_rate_limited">短時間に送信したクラッシュ報告が多すぎます</string>
+    <string name="crash_reports_repo">GitHub リポジトリ</string>
+    <string name="crash_reports_repo_description">クラッシュ Issue を受け取るリポジトリ（owner/name）</string>
+    <string name="crash_reports_send_test">テスト用クラッシュ報告を送信</string>
+    <string name="crash_reports_send_test_description">トークンとリポジトリを確認するサンプル Issue を作成します</string>
+    <string name="crash_reports_test_failed">クラッシュ報告を送信できませんでした</string>
+    <string name="crash_reports_test_sent">テスト用クラッシュ報告を送信しました</string>
+    <string name="crash_reports_token">GitHub アクセストークン</string>
+    <string name="crash_reports_token_description">Issue 作成権限のある fine-grained またはクラシック PAT。この端末のみに保存され、バックアップからは除外されます。</string>
+    <string name="crash_reports_token_hint">ghp_… または github_pat_…</string>
+    <string name="crash_something_broke">Quackerに異常が発生しました。</string>
+    <string name="crash_start_failed">データベース移行ができませんでした</string>
+</resources>

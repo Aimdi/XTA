@@ -35,7 +35,10 @@ import com.aimdi.xtanative.store.settings.CrashReportPrefs
 import com.aimdi.xtanative.store.settings.SettingsStore
 import com.aimdi.xtanative.ui.downloads.PlatformFiles
 import com.aimdi.xtanative.ui.settings.ChromeAvatar
+import com.aimdi.xtanative.ui.settings.CrashReport
+import com.aimdi.xtanative.ui.settings.CrashReporter
 import com.aimdi.xtanative.ui.settings.CrashReports
+import com.aimdi.xtanative.ui.settings.OkHttpCrashReports
 import com.aimdi.xtanative.ui.settings.DeviceBackup
 import com.aimdi.xtanative.ui.settings.KeptSections
 import com.aimdi.xtanative.ui.settings.PluginBackups
@@ -47,6 +50,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.shareIn
@@ -120,8 +126,23 @@ class AppGraph(
     val pluginBackups = PluginBackups(kept, sessions)
     val webDavBaselines = StoredWebDavBaselines(store)
 
-    /** Crash reports, written down on the device only while the reader has them on. */
+    /** Crash reports, written down on the device only while the reader has them on, and filed on GitHub with their token. */
     val crashReports = CrashReports(File(files, "crash-reports"))
+    val crashReporter = CrashReporter(OkHttpCrashReports(), { settings.load() }, crashReports, version)
+
+    private val lastCrashShown = MutableStateFlow<CrashReport?>(null)
+
+    /** The crash that broke a screen when the app last ran, until the reader dismisses it ([dismissLastCrash]). */
+    val lastCrash: StateFlow<CrashReport?> = lastCrashShown.asStateFlow()
+
+    fun dismissLastCrash() {
+        lastCrashShown.value = null
+    }
+
+    private val startFailed = MutableStateFlow<Throwable?>(null)
+
+    /** Why the device's data could not be opened at start (XTA's failed database migrations); null while it opened. */
+    val startFailure: StateFlow<Throwable?> = startFailed.asStateFlow()
 
     /** Whether there is a connection, as it changes: the present state first. */
     val online: SharedFlow<Boolean> = connection.shareIn(scope, SharingStarted.WhileSubscribed(5_000), replay = 1)
@@ -181,13 +202,28 @@ class AppGraph(
     val repairs = RepairsRegistry(PublishedDocument(http, PublishedDocument.REPAIRS_URL, store.file("published/repairs.json")))
 
     fun start() {
-        crashReports.install({ settings.state.value?.get(CrashReportPrefs.enabled) == true }, version)
+        lastCrashShown.value = crashReports.takeLastCrash()
+        // A crash the app outlives (the desktop's) is filed at once; one that ends it, at the next start.
+        crashReports.install({ settings.state.value?.get(CrashReportPrefs.enabled) == true }, version) {
+            if (mockX == null) scope.launch { crashReporter.sendKept() }
+        }
         scope.launch { sessions.load() }
-        // XTA's launch steps on the settings, once; then the feeds' switches follow the settings.
-        scope.launch { SettingsStart.keepSessionInStep(settings, sessions) }
-        scope.launch { SettingsStart.keepAccountsOffInStep(settings) { accountsOff = it } }
-        scope.launch { DeviceBackup(this@AppGraph).adoptKeptProfiles() }
-        if (mockX == null) scope.launch { SettingsStart.refreshEndpoints(settings, client) }
+        scope.launch {
+            try {
+                settings.load()
+            } catch (e: Exception) {
+                startFailed.value = e
+                return@launch
+            }
+            // XTA's launch steps on the settings, once; then the feeds' switches follow the settings.
+            scope.launch { SettingsStart.keepSessionInStep(settings, sessions) }
+            scope.launch { SettingsStart.keepAccountsOffInStep(settings) { accountsOff = it } }
+            scope.launch { DeviceBackup(this@AppGraph).adoptKeptProfiles() }
+            if (mockX == null) {
+                scope.launch { SettingsStart.refreshEndpoints(settings, client) }
+                scope.launch { crashReporter.sendKept() }
+            }
+        }
         scope.launch {
             repairs.applyKept()
             if (mockX == null) repairs.refresh()

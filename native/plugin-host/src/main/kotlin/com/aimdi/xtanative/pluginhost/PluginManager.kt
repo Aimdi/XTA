@@ -90,7 +90,9 @@ class PluginManager(
     directory: File,
     store: StoreDir,
     private val erase: suspend (id: String) -> Unit,
-    private val catalogueUrl: String = CATALOGUE_URL,
+    catalogueUrl: String = CATALOGUE_URL,
+    /** Where the catalogue is read from at each refresh: [catalogueUrl], unless the app finds another in its settings. */
+    private val catalogueAddress: suspend () -> String = { catalogueUrl },
     private val http: XHttp = OkHttpXHttp(),
     artifacts: ArtifactSource = OkHttpArtifactSource(),
     private val now: () -> Long = System::currentTimeMillis,
@@ -246,7 +248,7 @@ class PluginManager(
 
     /** The catalogue and the text it came as; null when it cannot be read, or what came is no catalogue. */
     private suspend fun readCatalogue(): Pair<PluginCatalogue, String>? {
-        val url = catalogueUrl.toHttpUrlOrNull() ?: return null
+        val url = catalogueAddress().toHttpUrlOrNull() ?: return null
         return try {
             val response = http.get(url, emptyMap(), followRedirects = true)
             response.body.takeIf { response.isSuccessful }?.let { body -> PluginCatalogue.parse(body)?.let { it to body } }

@@ -79,7 +79,7 @@ class CardHand {
         val settling = hold as? Settling
         val caught = settling?.let { pose }
         val fresh = caught == null || caught.offset.distance < 0.5f
-        val grip = if (fresh || settling == null) gripOf(start, size, mirrored, tilt, flat) else settling.grip
+        val grip = if (settling == null || fresh) gripOf(start, size, mirrored, tilt, flat) else settling.grip
         hold = Held(
             grip,
             base = caught?.offset ?: CardVec.ZERO,

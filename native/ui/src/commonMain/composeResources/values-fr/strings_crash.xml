@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Crash reports and the screens shown when something breaks: XTA's own wording (lib/l10n), placeholders positional. -->
+<resources>
+    <string name="crash_reports_auth_failed">GitHub a rejeté le jeton (vérifiez les permissions)</string>
+    <string name="crash_reports_disabled_toast">Activez d’abord les rapports de plantage</string>
+    <string name="crash_reports_duplicate">Ce plantage a déjà été signalé</string>
+    <string name="crash_reports_enabled">Envoyer les rapports de plantage à GitHub</string>
+    <string name="crash_reports_enabled_description">Si activé, les plantages non gérés ouvrent une issue GitHub dans votre dépôt. Désactivé par défaut. Nécessite un jeton d’accès personnel avec droit d’écriture sur les Issues. Aucun jeton n’est intégré dans l’application.</string>
+    <string name="crash_reports_invalid_repo">Le dépôt doit ressembler à owner/name</string>
+    <string name="crash_reports_missing_token">Ajoutez d’abord un jeton d’accès GitHub</string>
+    <string name="crash_reports_rate_limited">Trop de rapports de plantage ont été envoyés récemment</string>
+    <string name="crash_reports_repo">Dépôt GitHub</string>
+    <string name="crash_reports_repo_description">owner/name du dépôt qui reçoit les issues de plantage</string>
+    <string name="crash_reports_send_test">Envoyer un rapport de plantage test</string>
+    <string name="crash_reports_send_test_description">Crée une issue d’exemple pour vérifier le jeton et le dépôt</string>
+    <string name="crash_reports_test_failed">Impossible d’envoyer le rapport de plantage</string>
+    <string name="crash_reports_test_sent">Rapport de plantage test envoyé</string>
+    <string name="crash_reports_token">Jeton d’accès GitHub</string>
+    <string name="crash_reports_token_description">PAT classique ou à granularité fine autorisé à créer des issues. Stocké uniquement sur cet appareil et exclu des sauvegardes.</string>
+    <string name="crash_reports_token_hint">ghp_… ou github_pat_…</string>
+    <string name="crash_something_broke">Quelque chose s'est cassé dans XTA.</string>
+    <string name="crash_start_failed">Impossible d'exécuter les migrations de la base de données</string>
+</resources>

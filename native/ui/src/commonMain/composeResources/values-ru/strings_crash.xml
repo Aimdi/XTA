@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Crash reports and the screens shown when something breaks: XTA's own wording (lib/l10n), placeholders positional. -->
+<resources>
+    <string name="crash_reports_auth_failed">GitHub отклонил токен (проверьте права)</string>
+    <string name="crash_reports_disabled_toast">Сначала включите отчёты о сбоях</string>
+    <string name="crash_reports_duplicate">Об этом сбое уже сообщали</string>
+    <string name="crash_reports_enabled">Отправлять отчёты о сбоях в GitHub</string>
+    <string name="crash_reports_enabled_description">Если включено, необработанные сбои создают issue в вашем репозитории. По умолчанию выключено. Нужен персональный токен с правом писать Issues. Токен в приложение не встраивается.</string>
+    <string name="crash_reports_invalid_repo">Репозиторий должен быть в формате owner/name</string>
+    <string name="crash_reports_missing_token">Сначала добавьте токен доступа GitHub</string>
+    <string name="crash_reports_rate_limited">Слишком много отчётов о сбоях отправлено недавно</string>
+    <string name="crash_reports_repo">Репозиторий GitHub</string>
+    <string name="crash_reports_repo_description">owner/name репозитория для issue о сбоях</string>
+    <string name="crash_reports_send_test">Отправить тестовый отчёт о сбое</string>
+    <string name="crash_reports_send_test_description">Создаёт пример issue для проверки токена и репозитория</string>
+    <string name="crash_reports_test_failed">Не удалось отправить отчёт о сбое</string>
+    <string name="crash_reports_test_sent">Тестовый отчёт о сбое отправлен</string>
+    <string name="crash_reports_token">Токен доступа GitHub</string>
+    <string name="crash_reports_token_description">Fine-grained или классический PAT с правом создавать issue. Хранится только на этом устройстве и исключается из резервных копий.</string>
+    <string name="crash_reports_token_hint">ghp_… или github_pat_…</string>
+    <string name="crash_something_broke">Что-то пошло не так.</string>
+    <string name="crash_start_failed">Не удалось произвести перемещение базы данных</string>
+</resources>

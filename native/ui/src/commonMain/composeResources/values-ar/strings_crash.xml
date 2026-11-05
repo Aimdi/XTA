@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Crash reports and the screens shown when something breaks: XTA's own wording (lib/l10n), placeholders positional. -->
+<resources>
+    <string name="crash_reports_auth_failed">رفض GitHub الرمز (تحقق من الصلاحيات)</string>
+    <string name="crash_reports_disabled_toast">فعّل تقارير الأعطال أولاً</string>
+    <string name="crash_reports_duplicate">تم الإبلاغ عن هذا العطل مسبقًا</string>
+    <string name="crash_reports_enabled">إرسال تقارير الأعطال إلى GitHub</string>
+    <string name="crash_reports_enabled_description">عند التفعيل، تُفتح مشكلة GitHub عند حدوث أعطال غير معالجة. معطّل افتراضيًا. يتطلب رمز وصول شخصيًا بصلاحية كتابة Issues. لا يُضمَّن أي رمز في التطبيق.</string>
+    <string name="crash_reports_invalid_repo">يجب أن يكون المستودع بالشكل owner/name</string>
+    <string name="crash_reports_missing_token">أضف رمز وصول GitHub أولاً</string>
+    <string name="crash_reports_rate_limited">أُرسل عدد كبير جدًا من تقارير الأعطال مؤخرًا</string>
+    <string name="crash_reports_repo">مستودع GitHub</string>
+    <string name="crash_reports_repo_description">owner/name للمستودع الذي يستقبل تقارير الأعطال</string>
+    <string name="crash_reports_send_test">إرسال تقرير أعطال تجريبي</string>
+    <string name="crash_reports_send_test_description">ينشئ مشكلة GitHub نموذجية للتحقق من الرمز والمستودع</string>
+    <string name="crash_reports_test_failed">تعذّر إرسال تقرير الأعطال</string>
+    <string name="crash_reports_test_sent">تم إرسال تقرير الأعطال التجريبي</string>
+    <string name="crash_reports_token">رمز وصول GitHub</string>
+    <string name="crash_reports_token_description">رمز PAT بصلاحية إنشاء Issues. يُخزَّن على هذا الجهاز فقط ويُستثنى من النسخ الاحتياطية.</string>
+    <string name="crash_reports_token_hint">ghp_… أو github_pat_…</string>
+    <string name="crash_something_broke">حدث خطأ ما في فريتر.</string>
+    <string name="crash_start_failed">غير قادر على تشغيل تحديث قاعدة البيانات</string>
+</resources>

@@ -54,14 +54,13 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.common.turnTo
 import com.aimdi.xtanative.ui.downloads.MediaSharing
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -140,7 +139,7 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
     val reduced = LocalReducedMotion.current
     val saver = LocalMediaSaver.current
     val links = LocalLinks.current
-    val clipboard = LocalClipboardManager.current
+    val copyText = rememberCopyText()
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val copied = stringResource(Res.string.reader_link_copied)
@@ -159,7 +158,7 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
     fun share(save: MediaSave) {
         scope.launch {
             if (MediaSharing.share(graph.platformFiles, save) || links?.share(save.url) == true) return@launch
-            clipboard.setText(AnnotatedString(save.url))
+            copyText(save.url)
             snackbar.showSnackbar(copied)
         }
     }

@@ -48,9 +48,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.store.settings.AccessibilityPrefs
@@ -59,6 +57,7 @@ import com.aimdi.xtanative.store.settings.MediaPrefs
 import com.aimdi.xtanative.store.settings.PostsPrefs
 import com.aimdi.xtanative.store.settings.ThemePrefs
 import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.*
 import com.aimdi.xtanative.ui.intro.IntroFlow
@@ -180,13 +179,13 @@ private fun sectionIcon(section: SettingsSection): ImageVector = when (section) 
 /** Settings › App info (_about.dart): the version, where XTA lives, its licences, and the first-launch cards again. */
 @Composable
 private fun AboutRows(onOpen: (String) -> Unit, onIntroAgain: () -> Unit, snackbar: SnackbarHostState, vm: SettingsViewModel) {
-    val clipboard = LocalClipboardManager.current
+    val copyText = rememberCopyText()
     val links = LocalUriHandler.current
     val scope = rememberCoroutineScope()
     val version = vm.graph.version.ifEmpty { "dev" }
     val copied = stringResource(Res.string.settings_version_copied)
     NavigationRow(stringResource(Res.string.settings_version_label), version, Icons.Outlined.Info, chevron = false) {
-        clipboard.setText(AnnotatedString(version))
+        copyText(version)
         scope.launch { snackbar.showSnackbar(copied) }
     }
     NavigationRow(stringResource(Res.string.settings_contribute), stringResource(Res.string.settings_contribute_description), Icons.Outlined.Favorite, chevron = false) {

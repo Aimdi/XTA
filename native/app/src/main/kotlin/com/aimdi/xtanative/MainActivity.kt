@@ -29,6 +29,11 @@ class MainActivity : ComponentActivity() {
             XtaNativeContent(graph, app.plugins)
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        preferFastestRefreshRate()
+    }
 }
 
 /** The extra CI starts the activity with to run the voice check. */

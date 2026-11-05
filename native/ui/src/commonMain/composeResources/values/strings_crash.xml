@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Crash reports and the screens shown when something breaks: XTA's own wording (lib/l10n), placeholders positional. -->
+<resources>
+    <string name="crash_reports_auth_failed">GitHub rejected the token (check permissions)</string>
+    <string name="crash_reports_disabled_toast">Enable crash reports first</string>
+    <string name="crash_reports_duplicate">This crash was already reported</string>
+    <string name="crash_reports_enabled">Send crash reports to GitHub</string>
+    <string name="crash_reports_enabled_description">When enabled, uncaught crashes open a GitHub issue in your repo. Off by default. Requires a personal access token with Issues write access. Never embeds a token in the app.</string>
+    <string name="crash_reports_invalid_repo">Repository must look like owner/name</string>
+    <string name="crash_reports_missing_token">Add a GitHub access token first</string>
+    <string name="crash_reports_rate_limited">Too many crash reports were sent recently</string>
+    <string name="crash_reports_repo">GitHub repository</string>
+    <string name="crash_reports_repo_description">owner/name of the repository that should receive crash issues</string>
+    <string name="crash_reports_send_test">Send test crash report</string>
+    <string name="crash_reports_send_test_description">Creates a sample GitHub issue to verify the token and repository</string>
+    <string name="crash_reports_test_failed">Could not send the crash report</string>
+    <string name="crash_reports_test_sent">Test crash report sent</string>
+    <string name="crash_reports_token">GitHub access token</string>
+    <string name="crash_reports_token_description">Fine-grained or classic PAT with permission to create issues. Stored only on this device and excluded from backups.</string>
+    <string name="crash_reports_token_hint">ghp_… or github_pat_…</string>
+    <string name="crash_something_broke">Something broke in XTA.</string>
+    <string name="crash_start_failed">Unable to run the database migrations</string>
+</resources>

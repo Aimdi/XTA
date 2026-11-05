@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Crash reports and the screens shown when something breaks: XTA's own wording (lib/l10n), placeholders positional. -->
+<resources>
+    <string name="crash_reports_auth_failed">O GitHub rejeitou o token (verifique as permissões)</string>
+    <string name="crash_reports_disabled_toast">Ative primeiro os relatórios de falha</string>
+    <string name="crash_reports_duplicate">Esta falha já foi reportada</string>
+    <string name="crash_reports_enabled">Enviar relatórios de falha para o GitHub</string>
+    <string name="crash_reports_enabled_description">Se ativado, falhas não tratadas abrem uma issue no GitHub. Desativado por padrão. Requer um token de acesso pessoal com permissão de escrita em Issues. Nenhum token é embutido no app.</string>
+    <string name="crash_reports_invalid_repo">O repositório deve ter o formato owner/name</string>
+    <string name="crash_reports_missing_token">Adicione primeiro um token de acesso do GitHub</string>
+    <string name="crash_reports_rate_limited">Foram enviados demasiados relatórios de falha recentemente</string>
+    <string name="crash_reports_repo">Repositório do GitHub</string>
+    <string name="crash_reports_repo_description">owner/name do repositório que receberá as issues de falha</string>
+    <string name="crash_reports_send_test">Enviar relatório de falha de teste</string>
+    <string name="crash_reports_send_test_description">Cria uma issue de exemplo para verificar o token e o repositório</string>
+    <string name="crash_reports_test_failed">Não foi possível enviar o relatório de falha</string>
+    <string name="crash_reports_test_sent">Relatório de falha de teste enviado</string>
+    <string name="crash_reports_token">Token de acesso do GitHub</string>
+    <string name="crash_reports_token_description">PAT clássico ou de granularidade fina com permissão para criar issues. Guardado só neste dispositivo e excluído dos backups.</string>
+    <string name="crash_reports_token_hint">ghp_… ou github_pat_…</string>
+    <string name="crash_something_broke">Algo quebrou no XTA.</string>
+    <string name="crash_start_failed">Não é possível executar as migrações de banco de dados</string>
+</resources>

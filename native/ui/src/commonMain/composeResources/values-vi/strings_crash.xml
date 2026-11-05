@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Crash reports and the screens shown when something breaks: XTA's own wording (lib/l10n), placeholders positional. -->
+<resources>
+    <string name="crash_reports_auth_failed">GitHub từ chối token (kiểm tra quyền)</string>
+    <string name="crash_reports_disabled_toast">Hãy bật báo cáo sự cố trước</string>
+    <string name="crash_reports_duplicate">Sự cố này đã được báo cáo</string>
+    <string name="crash_reports_enabled">Gửi báo cáo sự cố tới GitHub</string>
+    <string name="crash_reports_enabled_description">Khi bật, sự cố chưa xử lý sẽ tạo issue GitHub. Mặc định tắt. Cần personal access token có quyền ghi Issues. Ứng dụng không nhúng token.</string>
+    <string name="crash_reports_invalid_repo">Kho phải có dạng owner/name</string>
+    <string name="crash_reports_missing_token">Hãy thêm token truy cập GitHub trước</string>
+    <string name="crash_reports_rate_limited">Đã gửi quá nhiều báo cáo sự cố gần đây</string>
+    <string name="crash_reports_repo">Kho GitHub</string>
+    <string name="crash_reports_repo_description">owner/name của kho nhận issue sự cố</string>
+    <string name="crash_reports_send_test">Gửi báo cáo sự cố thử</string>
+    <string name="crash_reports_send_test_description">Tạo issue mẫu để kiểm tra token và kho</string>
+    <string name="crash_reports_test_failed">Không gửi được báo cáo sự cố</string>
+    <string name="crash_reports_test_sent">Đã gửi báo cáo sự cố thử</string>
+    <string name="crash_reports_token">Token truy cập GitHub</string>
+    <string name="crash_reports_token_description">PAT fine-grained hoặc cổ điển có quyền tạo issue. Chỉ lưu trên thiết bị này và bị loại khỏi bản sao lưu.</string>
+    <string name="crash_reports_token_hint">ghp_… hoặc github_pat_…</string>
+    <string name="crash_something_broke">Có gì đó đã hỏng trong XTA.</string>
+    <string name="crash_start_failed">Không thể thực hiện việc di chuyển dữ liệu trong cơ sở dữ liệu</string>
+</resources>

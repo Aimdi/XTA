@@ -87,14 +87,19 @@
             </intent-filter>
         </activity>
         <!-- Keeps reading aloud and a podcast playing when the app is left, with the media notification
-             (XTA's audio_service AudioService); its buttons come back through the receiver. -->
+             (XTA's audio_service AudioService); its buttons come back through the receiver, and a headset's
+             buttons too, as XTA's MediaButtonReceiver takes them. -->
         <service
             android:name="com.aimdi.xtanative.ui.media.PlaybackService"
             android:exported="false"
             android:foregroundServiceType="mediaPlayback" />
         <receiver
             android:name="com.aimdi.xtanative.ui.media.PlaybackButtons"
-            android:exported="false" />
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
         <!-- A note's attachment or the photo the media viewer shares, handed to another app one file at a time. -->
         <provider
             android:name="androidx.core.content.FileProvider"
