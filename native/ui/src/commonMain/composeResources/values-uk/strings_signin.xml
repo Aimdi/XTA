@@ -10,4 +10,8 @@
     <string name="signin_open_in_browser">Відкрити у браузері</string>
     <string name="signin_username">Ім'я користувача</string>
     <string name="signin_cookies">Cookie з x.com</string>
+    <string name="signin_not_logged_in">Не увійшли</string>
+    <string name="signin_why_needed">X відхиляє більшість запитів, що надходять не від облікового запису. XTA спершу пробує як гість, і подеколи це спрацьовує, але без облікового запису очікуйте радше помилок, ніж дописів.\n\nВхід дозволяє XTA лише читати X. Застосунок ніколи не публікує, не вподобає, не поширює і не підписується за вас.</string>
+    <string name="signin_import_backup">Імпортувати резервну копію</string>
+    <string name="signin_login">Увійти</string>
 </resources>

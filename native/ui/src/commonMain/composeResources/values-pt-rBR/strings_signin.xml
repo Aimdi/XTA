@@ -10,4 +10,8 @@
     <string name="signin_open_in_browser">Abrir no navegador</string>
     <string name="signin_username">Nome de usuário</string>
     <string name="signin_cookies">Cookies do x.com</string>
+    <string name="signin_not_logged_in">Não conectado</string>
+    <string name="signin_why_needed">O X recusa a maioria das requisições que não vêm de uma conta. O XTA tenta primeiro como visitante, e às vezes dá certo, mas sem uma conta espere ver mais erros do que publicações.\n\nEntrar só permite que o XTA leia o X. Ele nunca publica, curte, republica nem segue por você.</string>
+    <string name="signin_import_backup">Importar backup</string>
+    <string name="signin_login">Entrar</string>
 </resources>

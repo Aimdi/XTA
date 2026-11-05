@@ -10,4 +10,8 @@
     <string name="signin_open_in_browser">Openen in browser</string>
     <string name="signin_username">Gebruikersnaam</string>
     <string name="signin_cookies">Cookies van x.com</string>
+    <string name="signin_not_logged_in">Niet ingelogd</string>
+    <string name="signin_why_needed">X weigert de meeste verzoeken die niet van een account komen. XTA probeert het eerst als gast, en soms lukt dat, maar zonder account kun je meer fouten dan berichten verwachten.\n\nInloggen laat XTA alleen X lezen. De app plaatst, liket, deelt of volgt nooit namens jou.</string>
+    <string name="signin_import_backup">Back-up importeren</string>
+    <string name="signin_login">Inloggen</string>
 </resources>

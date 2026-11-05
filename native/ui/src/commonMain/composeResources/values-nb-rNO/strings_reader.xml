@@ -98,4 +98,6 @@
     <string name="reader_video_fit">Tilpass skjermen</string>
     <string name="reader_video_fill">Fyll skjermen</string>
     <string name="reader_video_seconds">%1$d s</string>
+    <string name="reader_link_unable_details">Lenken kunne ikke åpnes. Vennligst prøv igjen.</string>
+    <string name="reader_link_report">Rapporter</string>
 </resources>

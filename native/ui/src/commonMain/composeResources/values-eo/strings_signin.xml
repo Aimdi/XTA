@@ -10,4 +10,8 @@
     <string name="signin_open_in_browser">Malfermi en retumilo</string>
     <string name="signin_username">Uzantnomo</string>
     <string name="signin_cookies">Kuketoj de x.com</string>
+    <string name="signin_not_logged_in">Ne ensalutita</string>
+    <string name="signin_why_needed">X rifuzas plej multajn petojn, kiuj ne venas de konto. XTA unue provas kiel gasto, kaj tio foje funkcias, sed sen konto atendu pli da eraroj ol da afiŝoj.\n\nEnsaluto permesas al XTA nur legi X. Ĝi neniam afiŝas, ŝatas, respafas aŭ sekvas anstataŭ vi.</string>
+    <string name="signin_import_backup">Importi sekurkopion</string>
+    <string name="signin_login">Ensaluti</string>
 </resources>

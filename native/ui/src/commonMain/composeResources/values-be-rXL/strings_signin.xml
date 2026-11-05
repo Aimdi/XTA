@@ -10,4 +10,8 @@
     <string name="signin_open_in_browser">Adčynić u braŭzery</string>
     <string name="signin_username">Imia karystalnika</string>
     <string name="signin_cookies">Cookie z x.com</string>
+    <string name="signin_not_logged_in">Nie ŭvajšli</string>
+    <string name="signin_why_needed">X adchilaje bolšasć zapytaŭ, jakija nie iduć ad ulikovaha zapisu. XTA spačatku sprabuje jak hosć, i časam heta pracuje, ale biez ulikovaha zapisu čakajcie chutčej pamyłak, čym dopisaŭ.\n\nUvachod dazvalaje XTA tolki čytać X. Jon nikoli nie publikuje, nie stavić adznak, nie repostyć i nie padpisvajecca za vas.</string>
+    <string name="signin_import_backup">Impartavać rezervovuju kopiju</string>
+    <string name="signin_login">Uvajsci</string>
 </resources>

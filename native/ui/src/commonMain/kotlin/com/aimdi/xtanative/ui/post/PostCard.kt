@@ -20,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
@@ -28,7 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -55,8 +53,9 @@ import com.aimdi.xtanative.ui.generated.resources.posts_subscribers_only_of_auth
 import com.aimdi.xtanative.ui.generated.resources.posts_thread
 import com.aimdi.xtanative.ui.generated.resources.posts_unavailable
 import com.aimdi.xtanative.ui.generated.resources.posts_view_quoted
+import com.aimdi.xtanative.ui.media.LiveRooms
+import com.aimdi.xtanative.ui.media.LocalLivePlayer
 import com.aimdi.xtanative.ui.saved.KeepNotices
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -304,22 +303,14 @@ internal fun PostAttachments(shown: XPost, scope: PostScope, actions: PostAction
     if (symbols.isNotEmpty()) LocalCashtagStrip.current?.invoke(symbols)
 }
 
-/** A broadcast or Space: its stream handed to the platform's player once X gives it, else its page in the browser. */
+/** A broadcast or Space: the live player, or its page in a browser when X cannot be asked for its stream or no player is at hand. */
 @Composable
 private fun LiveOpener(post: XPost, actions: PostActions, modifier: Modifier) {
     val live = post.live ?: return
-    val client = LocalGraph.current.client
-    val uri = LocalUriHandler.current
-    val coroutines = rememberCoroutineScope()
+    val player = LocalLivePlayer.current
     LiveBlock(
         live,
-        onOpen = {
-            coroutines.launch {
-                val stream = client.livePlaybackUrl(live)
-                val opened = stream != null && runCatching { uri.openUri(stream) }.isSuccess
-                if (!opened) live.watchUrl?.let(actions.openInBrowser)
-            }
-        },
+        onOpen = { LiveRooms.open(live, player = player ?: { room -> room.watchUrl?.let(actions.openInBrowser) ?: Unit }, browser = actions.openInBrowser) },
         modifier = modifier,
     )
 }

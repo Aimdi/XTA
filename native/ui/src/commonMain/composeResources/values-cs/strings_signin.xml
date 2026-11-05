@@ -10,4 +10,8 @@
     <string name="signin_open_in_browser">Otevřít v prohlížeči</string>
     <string name="signin_username">Uživatelské jméno</string>
     <string name="signin_cookies">Cookies z x.com</string>
+    <string name="signin_not_logged_in">Nepřihlášen</string>
+    <string name="signin_why_needed">X odmítá většinu požadavků, které nepřicházejí z účtu. XTA to nejdřív zkusí jako host a někdy to vyjde, ale bez účtu čekejte spíš chyby než příspěvky.\n\nPřihlášení umožní XTA jen číst X. Nikdy za vás nic nepublikuje, neoznačí to jako oblíbené, nesdílí ani nesleduje.</string>
+    <string name="signin_import_backup">Importovat zálohu</string>
+    <string name="signin_login">Přihlásit se</string>
 </resources>

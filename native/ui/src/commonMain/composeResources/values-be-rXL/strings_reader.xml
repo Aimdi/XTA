@@ -98,4 +98,6 @@
     <string name="reader_video_fit">Upisać u ekran</string>
     <string name="reader_video_fill">Zapoŭnić ekran</string>
     <string name="reader_video_seconds">%1$d s</string>
+    <string name="reader_link_unable_details">Nie atrymałasia adkryć spasyłku. Kali łaska, pasprabujcie jašče raz.</string>
+    <string name="reader_link_report">Pavedamić</string>
 </resources>

@@ -129,7 +129,7 @@ class MediaGridRows(
  * A grid of [items] in [look], whose tiles open the viewer over every one
  * loaded, at the one tapped (media_grid_lightbox.dart), paging on into what
  * [updates] brings as the viewer asks for more ([loadMore]); a broadcast
- * with nothing to play here opens its post. [onLongPress] is what a long
+ * with no recording opens in the live player, else its post. [onLongPress] is what a long
  * press on a tile does, if anything.
  */
 @Composable
@@ -144,12 +144,15 @@ fun rememberMediaGridRows(
     val plan = rememberMediaGridPlan(items, look)
     val state = rememberMediaGridState()
     val opener = LocalGalleryOpener.current
+    val livePlayer = LocalLivePlayer.current
     val more by rememberUpdatedState(loadMore)
-    val open = remember(items, updates, actions, opener) {
+    val open = remember(items, updates, actions, opener, livePlayer) {
         { item: MediaGridItem ->
             val gallery = MediaGallery.ofGrid(items, updates ?: flowOf(items)) { more() }
             val start = gallery.startOf(item)
+            val live = LiveRooms.ofTile(item)
             when {
+                live != null && livePlayer != null -> livePlayer(live)
                 start == null -> actions.openPost(item.post.id)
                 opener != null -> opener(gallery, start)
                 else -> actions.openMedia(item.post.id, item.mediaIndex)

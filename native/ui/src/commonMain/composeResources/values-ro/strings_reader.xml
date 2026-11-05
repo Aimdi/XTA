@@ -98,4 +98,6 @@
     <string name="reader_video_fit">Încadrează în ecran</string>
     <string name="reader_video_fill">Umple ecranul</string>
     <string name="reader_video_seconds">%1$d s</string>
+    <string name="reader_link_unable_details">Linkul nu a putut fi deschis. Vă rugăm să încercați din nou.</string>
+    <string name="reader_link_report">Raportați</string>
 </resources>

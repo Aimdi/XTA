@@ -10,4 +10,8 @@
     <string name="signin_open_in_browser">Otwórz w przeglądarce</string>
     <string name="signin_username">Nazwa użytkownika</string>
     <string name="signin_cookies">Pliki cookie z x.com</string>
+    <string name="signin_not_logged_in">Nie zalogowano</string>
+    <string name="signin_why_needed">X odrzuca większość żądań, które nie pochodzą z konta. XTA najpierw próbuje jako gość i czasem się udaje, ale bez konta spodziewaj się raczej błędów niż wpisów.\n\nLogowanie pozwala XTA jedynie czytać X. Aplikacja nigdy nie publikuje, nie polubia, nie udostępnia ani nie obserwuje w twoim imieniu.</string>
+    <string name="signin_import_backup">Importuj kopię zapasową</string>
+    <string name="signin_login">Zaloguj się</string>
 </resources>

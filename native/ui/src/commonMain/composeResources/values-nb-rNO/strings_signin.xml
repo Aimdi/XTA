@@ -10,4 +10,8 @@
     <string name="signin_open_in_browser">Åpne i nettleser</string>
     <string name="signin_username">Brukernavn</string>
     <string name="signin_cookies">Informasjonskapsler fra x.com</string>
+    <string name="signin_not_logged_in">Ikke innlogget</string>
+    <string name="signin_why_needed">X avviser de fleste forespørsler som ikke kommer fra en konto. XTA prøver først som gjest, og det går av og til bra, men uten en konto bør du vente deg feil oftere enn innlegg.\n\nÅ logge inn lar bare XTA lese X. Appen publiserer, liker, deler eller følger aldri på dine vegne.</string>
+    <string name="signin_import_backup">Importer sikkerhetskopi</string>
+    <string name="signin_login">Logg inn</string>
 </resources>

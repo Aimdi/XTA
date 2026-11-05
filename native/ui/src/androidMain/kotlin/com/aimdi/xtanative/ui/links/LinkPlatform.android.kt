@@ -20,7 +20,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.util.Consumer
 import com.aimdi.xtanative.services.links.InstalledBrowser
 import com.aimdi.xtanative.services.links.LinkLaunch
-import com.aimdi.xtanative.services.links.LinkOpening
 import com.aimdi.xtanative.ui.common.findActivity
 
 @Composable
@@ -31,40 +30,45 @@ internal actual fun rememberLinkPlatform(): LinkPlatform {
 
 /**
  * The text another app shares here (an ACTION_SEND of text/plain, which the
- * app's manifest takes), or a Pixiv page it opens here ([sharedText]): the
- * one the activity was started with, once, and each one that reaches it afterwards.
+ * app's manifest takes): the one the activity was started with, once, and
+ * each one that reaches it afterwards.
  */
 @Composable
-internal actual fun SharedTextEffect(onText: (String) -> Unit) {
+internal actual fun SharedTextEffect(onText: (String) -> Unit) = IntentEffect(::sharedText, onText)
+
+/**
+ * A link another app opens here (an ACTION_VIEW of a host the manifest
+ * claims: X's, its short links and mirrors, Pixiv's pages), as
+ * [SharedTextEffect] hands shared text.
+ */
+@Composable
+internal actual fun IncomingLinkEffect(onLink: (String) -> Unit) = IntentEffect(::viewedLink, onLink)
+
+/** Hands [onFound] what [read] finds in the intent the activity was started with, once, and in each one that reaches it afterwards. */
+@Composable
+private fun IntentEffect(read: (Intent?) -> String?, onFound: (String) -> Unit) {
     val activity = LocalContext.current.findActivity() as? ComponentActivity ?: return
-    val latest by rememberUpdatedState(onText)
-    // A share is handled once: the activity keeps its intent when it is made again for a new configuration.
+    val latest by rememberUpdatedState(onFound)
+    // An intent is handled once: the activity keeps it when it is made again for a new configuration.
     var handled by rememberSaveable { mutableStateOf(false) }
     DisposableEffect(activity) {
         if (!handled) {
             handled = true
-            sharedText(activity.intent)?.let(latest)
+            read(activity.intent)?.let(latest)
         }
-        val listener = Consumer<Intent> { intent -> sharedText(intent)?.let(latest) }
+        val listener = Consumer<Intent> { intent -> read(intent)?.let(latest) }
         activity.addOnNewIntentListener(listener)
         onDispose { activity.removeOnNewIntentListener(listener) }
     }
 }
 
-/**
- * What another app hands here: text it shares, or a Pixiv page Android opens
- * here once the reader added Pixiv's links under "Open by default" (X's go to
- * their screens through the navigation's own links), which opens as a shared
- * link does: in the plugin that reads it, else in a browser by name.
- */
 private fun sharedText(intent: Intent?): String? {
-    val handed = intent ?: return null
-    return when (handed.action) {
-        Intent.ACTION_SEND -> handed.getCharSequenceExtra(Intent.EXTRA_TEXT)?.toString() ?: handed.getStringExtra(Intent.EXTRA_TEXT) ?: ""
-        Intent.ACTION_VIEW -> handed.dataString?.takeIf(LinkOpening::onClaimedHost)
-        else -> null
-    }
+    val handed = intent?.takeIf { it.action == Intent.ACTION_SEND } ?: return null
+    return handed.getCharSequenceExtra(Intent.EXTRA_TEXT)?.toString() ?: handed.getStringExtra(Intent.EXTRA_TEXT) ?: ""
 }
+
+private fun viewedLink(intent: Intent?): String? =
+    intent?.takeIf { it.action == Intent.ACTION_VIEW }?.dataString?.takeIf { it.startsWith("https://") || it.startsWith("http://") }
 
 /**
  * Links leaving the app on Android (urls.dart, browsers.dart): Custom Tabs

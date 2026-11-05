@@ -54,7 +54,7 @@ import com.aimdi.xtanative.ui.settings.shortDateTime
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * The first screen without an account, and the intro's import: a file XTA
+ * XTA's backup import, from the intro and from "You are not logged in": a file XTA
  * exported, previewed as XTA previews it, then restored whole (sessions,
  * follows, groups, saved posts, notes, settings and the rest); or X's
  * sign-in ([onSignIn]), after which the app moves on as after an import.

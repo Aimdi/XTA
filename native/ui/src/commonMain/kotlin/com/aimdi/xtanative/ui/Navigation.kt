@@ -15,20 +15,24 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavDeepLink
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import androidx.navigation.navDeepLink
 import androidx.savedstate.read
+import com.aimdi.xtanative.core.x.model.XLive
 import com.aimdi.xtanative.ui.antenna.AntennaFeedScreen
 import com.aimdi.xtanative.ui.antenna.AntennasScreen
 import com.aimdi.xtanative.ui.archive.ArchiveScreen
@@ -63,7 +67,10 @@ import com.aimdi.xtanative.ui.links.LocalLinks
 import com.aimdi.xtanative.ui.media.Galleries
 import com.aimdi.xtanative.ui.media.GalleryViewer
 import com.aimdi.xtanative.ui.media.ImageViewer
+import com.aimdi.xtanative.ui.media.LivePlayerScreen
+import com.aimdi.xtanative.ui.media.LiveRooms
 import com.aimdi.xtanative.ui.media.LocalGalleryOpener
+import com.aimdi.xtanative.ui.media.LocalLivePlayer
 import com.aimdi.xtanative.ui.media.MediaGallery
 import com.aimdi.xtanative.ui.media.MediaViewer
 import com.aimdi.xtanative.ui.media.ViewerPage
@@ -96,6 +103,8 @@ import com.aimdi.xtanative.ui.settings.SettingsRoutes
 import com.aimdi.xtanative.ui.settings.SettingsSection
 import com.aimdi.xtanative.ui.settings.SettingsScreen
 import com.aimdi.xtanative.ui.settings.SettingsSectionScreen
+import com.aimdi.xtanative.ui.signin.NotLoggedInDialog
+import com.aimdi.xtanative.ui.signin.SignInReminder
 import com.aimdi.xtanative.ui.signin.SignInScreen
 import com.aimdi.xtanative.ui.speech.LocalSpeech
 import com.aimdi.xtanative.ui.speech.VoiceSettingsScreen
@@ -155,6 +164,7 @@ private object Routes {
     const val FOLLOWERS = "profile/{screenName}/followers"
     const val ARTICLE = "article/{postId}"
     const val LIBRARY = "library?q={q}"
+    const val LIVE = "live?broadcast={broadcast}&space={space}&key={key}&image={image}&ratio={ratio}"
 
     /** Post [id], its media's row at picture [media]: the one a grid's viewer was on. */
     fun post(id: String, media: Int = 0) = if (media > 0) "post/$id?media=$media" else "post/$id"
@@ -190,6 +200,18 @@ private object Routes {
     fun follows(screenName: String, followers: Boolean) = "profile/" + encoded(screenName) + if (followers) "/followers" else "/following"
     fun article(postId: String) = "article/$postId"
     fun library(query: String?) = if (query.isNullOrBlank()) "library" else "library?q=" + encoded(query.trim())
+
+    /** The live player on [live]: what X is asked its stream with, and its picture and shape meanwhile. */
+    fun live(live: XLive): String {
+        val params = listOfNotNull(
+            live.broadcastId?.let { "broadcast=" + encoded(it) },
+            live.spaceId?.let { "space=" + encoded(it) },
+            live.mediaKey?.let { "key=" + encoded(it) },
+            live.imageUrl?.let { "image=" + encoded(it) },
+            "ratio=" + live.aspectRatio,
+        )
+        return "live?" + params.joinToString("&")
+    }
 
     /** The screen a result of the library search opens in. */
     fun of(target: LibraryTarget): String = when (target) {
@@ -244,7 +266,11 @@ private class ScreenMotion(private val reduced: State<Boolean>) {
     private fun NavBackStackEntry.isCard(): Boolean = destination.route == Routes.POST
 }
 
-/** The app's screens. The first is the import until XTA's backup has given it an account. */
+/**
+ * The app's screens, from Home, or the intro's cards on a first launch. With
+ * no X account, XTA's "You are not logged in" asks once a launch; Cancel
+ * leaves the app to X as a guest and the plugins.
+ */
 @Composable
 fun XtaNativeRoot() {
     val graph = LocalGraph.current
@@ -257,13 +283,8 @@ fun XtaNativeRoot() {
         Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
         return
     }
-    val start = remember {
-        when {
-            IntroFlow.opensOn(prefs, hasAccounts = loaded.accounts.isNotEmpty()) -> Routes.INTRO
-            loaded.accounts.isEmpty() -> Routes.IMPORT
-            else -> Routes.HOME
-        }
-    }
+    val start = remember { if (IntroFlow.opensOn(prefs, hasAccounts = loaded.accounts.isNotEmpty())) Routes.INTRO else Routes.HOME }
+    var askSignIn by rememberSaveable { mutableStateOf(SignInReminder.launch.ask(loaded.accounts.isNotEmpty(), onIntro = start == Routes.INTRO)) }
     val nav = rememberNavController()
     val links = LocalLinks.current
     val backs = remember { CardBacks() }
@@ -299,6 +320,7 @@ fun XtaNativeRoot() {
             openLibrary = { query -> nav.navigate(Routes.library(query)) },
         )
     }
+    val livePlayer = remember(nav) { { live: XLive -> nav.navigate(Routes.live(live)) } }
     val homeRoutes = remember(nav) { HomeRoutes(exists = nav::hasRoute, open = { route -> nav.navigate(route) }) }
     val plugins = LocalPlugins.current
     val linkScreens = remember(nav, actions, plugins) {
@@ -309,6 +331,7 @@ fun XtaNativeRoot() {
             browser = { url, from -> nav.navigate(Routes.browser(url, from)) },
             community = { id, about -> true.also { nav.navigate(if (about) Routes.communityAbout(id) else Routes.community(id)) } },
             list = { id -> true.also { nav.navigate(Routes.list(id)) } },
+            live = { link -> true.also { LiveRooms.open(LiveRooms.of(link), livePlayer, browser = { url -> links?.openOutside(url) }) } },
             plugin = plugins::openOnScreen,
         )
     }
@@ -324,8 +347,11 @@ fun XtaNativeRoot() {
     val problems = remember(nav) {
         ProblemActions(addAccount = { nav.navigate(Routes.SIGN_IN) }, diagnostics = { nav.navigate(SettingsRoutes.of(SettingsSection.DIAGNOSTICS)) })
     }
-    CompositionLocalProvider(LocalGalleryOpener provides galleries, LocalProblemActions provides problems) {
+    CompositionLocalProvider(LocalGalleryOpener provides galleries, LocalProblemActions provides problems, LocalLivePlayer provides livePlayer) {
         DesktopNavigation(nav) { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes, backs)) }
+    }
+    if (askSignIn) {
+        NotLoggedInDialog(onImportBackup = { nav.navigate(Routes.IMPORT) }, onLogin = { nav.navigate(Routes.SIGN_IN) }, onDismiss = { askSignIn = false })
     }
     ConfirmClose()
     UpdateCheck()
@@ -411,7 +437,6 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
         composable(
             Routes.POST,
             arguments = listOf(navArgument("id") { type = NavType.StringType }, navArgument("media") { type = NavType.IntType; defaultValue = 0 }),
-            deepLinks = xLinks(".*/status/{id}"),
             enterTransition = motion.cardEnter,
             popExitTransition = motion.cardExit,
         ) { entry ->
@@ -468,23 +493,22 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
                 navArgument("tab") { type = NavType.StringType; nullable = true; defaultValue = null },
                 navArgument("focus") { type = NavType.StringType; nullable = true; defaultValue = null },
             ),
-            deepLinks = xLinks("search?q={q}"),
         ) { entry ->
             SearchScreen(entry.text("q"), SearchTab.of(entry.text("tab")), actions, searchActions, onBack = { nav.popBackStack() }, focusOnOpen = entry.text("focus") == "1")
         }
         composable(Routes.TRENDS) {
             TrendsScreen(trendsActions, onBack = { nav.popBackStack() })
         }
-        composable(Routes.COMMUNITY, arguments = listOf(navArgument("id") { type = NavType.StringType }), deepLinks = xLinks("i/communities/{id}")) { entry ->
+        composable(Routes.COMMUNITY, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
             CommunityScreen(entry.text("id").orEmpty(), about = false, actions, openMembers = { id -> nav.navigate(Routes.communityMembers(id)) }, onBack = { nav.popBackStack() })
         }
-        composable(Routes.COMMUNITY_ABOUT, arguments = listOf(navArgument("id") { type = NavType.StringType }), deepLinks = xLinks("i/communities/{id}/about")) { entry ->
+        composable(Routes.COMMUNITY_ABOUT, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
             CommunityScreen(entry.text("id").orEmpty(), about = true, actions, openMembers = { id -> nav.navigate(Routes.communityMembers(id)) }, onBack = { nav.popBackStack() })
         }
         composable(Routes.COMMUNITY_MEMBERS, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
             CommunityMembersScreen(entry.text("id").orEmpty(), actions, onBack = { nav.popBackStack() })
         }
-        composable(Routes.LIST, arguments = listOf(navArgument("id") { type = NavType.StringType }), deepLinks = xLinks("i/lists/{id}")) { entry ->
+        composable(Routes.LIST, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
             ListImportScreen(entry.text("id"), onBack = { nav.popBackStack() })
         }
         composable(Routes.ANTENNAS) {
@@ -647,16 +671,36 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
         composable(Routes.ARTICLE, arguments = listOf(navArgument("postId") { type = NavType.StringType })) { entry ->
             ArticleScreen(entry.text("postId").orEmpty(), actions, onBack = { nav.popBackStack() })
         }
+        composable(
+            Routes.LIVE,
+            arguments = listOf("broadcast", "space", "key", "image", "ratio").map { name ->
+                navArgument(name) { type = NavType.StringType; nullable = true; defaultValue = null }
+            },
+        ) { entry ->
+            val live = remember(entry.id) {
+                XLive(
+                    mediaKey = entry.text("key"),
+                    broadcastId = entry.text("broadcast"),
+                    spaceId = entry.text("space"),
+                    imageUrl = entry.text("image"),
+                    aspectRatio = entry.text("ratio")?.toFloatOrNull()?.takeIf { it > 0f } ?: (16f / 9f),
+                )
+            }
+            LivePlayerScreen(live, onBack = { nav.popBackStack() })
+        }
         // A plugin's media viewer fades as the app's does, and not at all while animations are off.
         pluginScreens(nav, motion.fadeEnter, motion.fadeExit)
     }
 }
 
-/** An x.com or twitter.com link opens here, as it opens XTA. Only Android is handed links. */
-private fun xLinks(path: String) =
-    listOf("x.com", "www.x.com", "twitter.com", "www.twitter.com", "mobile.twitter.com", "mobile.x.com").map { host ->
-        navDeepLink { uriPattern = "https://$host/$path" }
-    }
+/**
+ * None: no route takes a link another app opens here by itself, or the link
+ * would open twice. It goes through the app's link opener
+ * (ui/links' IncomingLinks), which also knows the live player, short links
+ * and plugins.
+ */
+@Suppress("UNUSED_PARAMETER")
+private fun xLinks(path: String): List<NavDeepLink> = emptyList()
 
 /** Whether the app has a screen at [route] yet: Home leads only to those. */
 private fun NavHostController.hasRoute(route: String): Boolean = runCatching { graph.findNode(route) != null }.getOrDefault(false)

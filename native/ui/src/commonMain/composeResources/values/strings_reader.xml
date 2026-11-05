@@ -104,4 +104,6 @@
     <string name="reader_video_fit">Fit the screen</string>
     <string name="reader_video_fill">Fill the screen</string>
     <string name="reader_video_seconds">%1$d s</string>
+    <string name="reader_link_unable_details">The link you clicked could not be opened in XTA. Either the link is actually invalid or this is an error that should be reported.</string>
+    <string name="reader_link_report">Report</string>
 </resources>

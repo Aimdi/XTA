@@ -10,4 +10,8 @@
     <string name="signin_open_in_browser">Buka di browser</string>
     <string name="signin_username">Nama pengguna</string>
     <string name="signin_cookies">Cookie dari x.com</string>
+    <string name="signin_not_logged_in">Belum masuk</string>
+    <string name="signin_why_needed">X menolak sebagian besar permintaan yang tidak berasal dari sebuah akun. XTA mencoba dulu sebagai tamu, dan itu kadang berhasil, tetapi tanpa akun bersiaplah melihat lebih banyak galat daripada postingan.\n\nMasuk hanya membuat XTA bisa membaca X. Aplikasi ini tidak pernah memposting, menyukai, memposting ulang, atau mengikuti atas nama Anda.</string>
+    <string name="signin_import_backup">Impor cadangan</string>
+    <string name="signin_login">Masuk</string>
 </resources>

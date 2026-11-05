@@ -98,4 +98,6 @@
     <string name="reader_video_fit">Přizpůsobit obrazovce</string>
     <string name="reader_video_fill">Vyplnit obrazovku</string>
     <string name="reader_video_seconds">%1$d s</string>
+    <string name="reader_link_unable_details">Odkaz se nepodařilo otevřít. Zkuste to prosím znovu.</string>
+    <string name="reader_link_report">Nahlásit</string>
 </resources>

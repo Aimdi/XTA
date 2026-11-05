@@ -98,4 +98,6 @@
     <string name="reader_video_fit">Mahuta ekraanile</string>
     <string name="reader_video_fill">Täida ekraan</string>
     <string name="reader_video_seconds">%1$d s</string>
+    <string name="reader_link_unable_details">Linki ei õnnestunud avada. Palun proovige uuesti.</string>
+    <string name="reader_link_report">Teata veast</string>
 </resources>

@@ -98,4 +98,6 @@
     <string name="reader_video_fit">Ajusta a la pantalla</string>
     <string name="reader_video_fill">Omple la pantalla</string>
     <string name="reader_video_seconds">%1$d s</string>
+    <string name="reader_link_unable_details">No s'ha pogut obrir l'enllaç. Si us plau, torna-ho a intentar.</string>
+    <string name="reader_link_report">Reportar</string>
 </resources>

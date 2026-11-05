@@ -12,6 +12,10 @@ internal actual fun rememberLinkPlatform(): LinkPlatform = DesktopLinks
 @Composable
 internal actual fun SharedTextEffect(onText: (String) -> Unit) = Unit
 
+/** No link is opened in the desktop app from outside. */
+@Composable
+internal actual fun IncomingLinkEffect(onLink: (String) -> Unit) = Unit
+
 /**
  * The desktop's one browser, its default: java.awt.Desktop, or xdg-open where
  * that cannot (desktops without GNOME's libraries). Only web links leave: a

@@ -98,4 +98,6 @@
     <string name="reader_video_fit">Sesuaikan layar</string>
     <string name="reader_video_fill">Penuhi layar</string>
     <string name="reader_video_seconds">%1$d dtk</string>
+    <string name="reader_link_unable_details">Tautan tidak dapat dibuka. Silakan coba lagi.</string>
+    <string name="reader_link_report">Lapor</string>
 </resources>
