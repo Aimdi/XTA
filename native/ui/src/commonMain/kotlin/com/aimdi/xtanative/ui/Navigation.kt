@@ -343,7 +343,7 @@ fun XtaNativeRoot() {
     }
     BindLinkScreens(linkScreens)
     // Where a plugin asks to go lands here too (PLUGINS.md).
-    AttachPluginNavigation(nav, linkScreens, Routes.DOWNLOADS)
+    AttachPluginNavigation(nav, linkScreens, Routes.DOWNLOADS, actions)
     AttachPluginBackups()
     OpenVoiceSettingsWhenAsked(nav)
 

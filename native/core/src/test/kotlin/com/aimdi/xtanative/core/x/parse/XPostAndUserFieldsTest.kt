@@ -82,6 +82,8 @@ class XPostAndUserFieldsTest {
         ).quotedWithheld!!
         assertEquals("3" to "This Post is unavailable.", tombstone.id to tombstone.reason)
         assertNull(post("").quotedWithheld, "a post that quotes nothing")
+        val unnamed = post("", ""","is_quote_status":true""").quotedWithheld
+        assertEquals("", unnamed?.id, "a quote that names nothing can only say it could not be read")
     }
 
     @Test

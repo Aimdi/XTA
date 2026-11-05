@@ -110,4 +110,6 @@
     <string name="posts_translation_failed">X 無法翻譯這則貼文。</string>
     <string name="posts_translation_not_ready">譯文尚未準備好。請稍後再試。</string>
     <string name="posts_translation_other">翻譯失敗。請再試一次。</string>
+    <string name="posts_quote_unavailable">無法取得引用的貼文</string>
+    <string name="posts_no_text">推文不包含任何文字。這不應該發生</string>
 </resources>

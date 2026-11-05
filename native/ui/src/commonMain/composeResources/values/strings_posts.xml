@@ -112,4 +112,6 @@
     <string name="posts_translation_failed">X couldn't translate this post.</string>
     <string name="posts_translation_not_ready">The translation isn't ready yet. Try again shortly.</string>
     <string name="posts_translation_other">The translation didn't work. Try again.</string>
+    <string name="posts_quote_unavailable">Could not retrieve quoted tweet</string>
+    <string name="posts_no_text">The post did not contain any text. This is unexpected</string>
 </resources>

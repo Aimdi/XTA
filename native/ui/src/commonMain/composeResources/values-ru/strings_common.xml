@@ -30,4 +30,14 @@
     <string name="problem_unable_to_load_the_next_page_of_follows">Не удаётся загрузить следующую страницу читаемых</string>
     <string name="problem_unable_to_load_the_next_page_of_tweets">Не удаётся загрузить следующую страницу твитов</string>
     <string name="problem_unable_to_load_the_tweets">Не удаётся загрузить твиты</string>
+    <string name="problem_connection_failed">Ошибка соединения</string>
+    <string name="problem_sign_in_needed">Войдите снова, чтобы продолжить</string>
+    <string name="problem_rate_limit_hint">Этот источник ограничивает запросы. Повторите позже.</string>
+    <string name="problem_more_info">Подробнее</string>
+    <string name="problem_auto_retry_seconds">Повтор через %1$d с…</string>
+    <string name="problem_auto_retry_in">Повтор через %1$s…</string>
+    <string name="problem_cached_content">Пока источник обновляется, показана сохранённая копия.</string>
+    <string name="problem_source_loading">Этот источник ещё загружается. Другие публикации уже доступны.</string>
+    <string name="problem_saved_at">Показаны посты, сохранённые в %1$s</string>
+    <string name="problem_saved_earlier">Показаны ранее сохранённые посты</string>
 </resources>

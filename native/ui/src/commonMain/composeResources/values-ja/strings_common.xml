@@ -30,4 +30,14 @@
     <string name="problem_unable_to_load_the_next_page_of_follows">フォローの次のページを読み込めませんでした</string>
     <string name="problem_unable_to_load_the_next_page_of_tweets">ツイートの次のページ読み込みに失敗しました</string>
     <string name="problem_unable_to_load_the_tweets">ツイートを読み込めませんでした</string>
+    <string name="problem_connection_failed">接続に失敗しました</string>
+    <string name="problem_sign_in_needed">続けるには再ログインしてください</string>
+    <string name="problem_rate_limit_hint">このソースではリクエストが制限されています。後でもう一度お試しください。</string>
+    <string name="problem_more_info">More info</string>
+    <string name="problem_auto_retry_seconds">%1$d 秒後に再試行します…</string>
+    <string name="problem_auto_retry_in">%1$s 後に再試行します…</string>
+    <string name="problem_cached_content">ソースの更新中は保存済みの内容を表示しています。</string>
+    <string name="problem_source_loading">このソースは読み込み中です。他の投稿はすでに読めます。</string>
+    <string name="problem_saved_at">%1$s に保存された投稿を表示しています</string>
+    <string name="problem_saved_earlier">以前に保存された投稿を表示しています</string>
 </resources>

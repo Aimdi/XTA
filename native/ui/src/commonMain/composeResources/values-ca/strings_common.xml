@@ -30,4 +30,14 @@
     <string name="problem_unable_to_load_the_next_page_of_follows">No es pot carregar la pàgina següent de Seguint</string>
     <string name="problem_unable_to_load_the_next_page_of_tweets">No es pot carregar la següent pàgina de tuits</string>
     <string name="problem_unable_to_load_the_tweets">No s\'han pogut carregar els tweets</string>
+    <string name="problem_connection_failed">Ha fallat la connexió</string>
+    <string name="problem_sign_in_needed">Torna a iniciar la sessió per continuar</string>
+    <string name="problem_rate_limit_hint">Aquesta font limita les sol·licituds. Torna-ho a provar més tard.</string>
+    <string name="problem_more_info">Més informació</string>
+    <string name="problem_auto_retry_seconds">Es tornarà a provar d’aquí a %1$d s…</string>
+    <string name="problem_auto_retry_in">Es tornarà a provar d’aquí a %1$s…</string>
+    <string name="problem_cached_content">Es mostra una còpia desada mentre s’actualitza la font.</string>
+    <string name="problem_source_loading">Aquesta font encara es carrega. Les altres publicacions ja estan disponibles.</string>
+    <string name="problem_saved_at">Es mostren publicacions desades a les %1$s</string>
+    <string name="problem_saved_earlier">Es mostren publicacions desades anteriorment</string>
 </resources>

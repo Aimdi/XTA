@@ -118,4 +118,6 @@
     <string name="posts_translation_failed">X nie zdoleŭ pierakłaści hety dopis.</string>
     <string name="posts_translation_not_ready">Pierakład jašče nie hatovy. Pasprabujcie krychu paźniej.</string>
     <string name="posts_translation_other">Nie ŭdałosia pierakłaści. Pasprabujcie jašče raz.</string>
+    <string name="posts_quote_unavailable">Nie ŭdałosia atrymać cytavany post</string>
+    <string name="posts_no_text">Tvit nie źmiaščaŭ nijakaha tekstu. Heta niečakana</string>
 </resources>

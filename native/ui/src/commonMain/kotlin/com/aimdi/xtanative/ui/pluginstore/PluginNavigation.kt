@@ -39,6 +39,7 @@ import com.aimdi.xtanative.ui.post.LocalCashtagOpener
 import com.aimdi.xtanative.ui.post.LocalCashtagSheet
 import com.aimdi.xtanative.ui.post.LocalCashtagStrip
 import com.aimdi.xtanative.ui.post.LocalContractNetworks
+import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.settings.SettingsRoutes
 import java.net.URLEncoder
 import kotlinx.coroutines.flow.first
@@ -127,11 +128,11 @@ private class PluginCashtags(private val plugins: AppPlugins, private val runnin
  * the shell asked to open at start is opened once.
  */
 @Composable
-fun AttachPluginNavigation(nav: NavHostController, x: LinkScreens, downloads: String) {
+fun AttachPluginNavigation(nav: NavHostController, x: LinkScreens, downloads: String, posts: PostActions? = null) {
     val plugins = LocalPlugins.current
     val links = LocalLinks.current
     val uri = LocalUriHandler.current
-    val target = remember(nav, x, links, uri, downloads) { PluginNavTarget(nav, x, links, uri, downloads) }
+    val target = remember(nav, x, links, uri, downloads, posts) { PluginNavTarget(nav, x, links, uri, downloads, posts) }
     DisposableEffect(plugins, target) {
         plugins.navigator.attach(target)
         onDispose { plugins.navigator.detach(target) }
@@ -205,13 +206,18 @@ fun NavGraphBuilder.pluginScreens(
     }
 }
 
-/** Where the plugins' navigation lands: the app's navigation controller, its X screens and its way of opening links. */
+/**
+ * Where the plugins' navigation lands: the app's navigation controller, its X
+ * screens, its post actions ([posts]: an X post's quotes, reposters and
+ * article, else the post itself) and its way of opening links.
+ */
 private class PluginNavTarget(
     private val nav: NavHostController,
     private val x: LinkScreens,
     private val links: LinkOpener?,
     private val uri: UriHandler,
     private val downloads: String,
+    private val posts: PostActions?,
 ) : NavTarget {
     override fun go(destination: Destination) {
         when (destination) {
@@ -219,6 +225,9 @@ private class PluginNavTarget(
             is Destination.XPost -> x.post(destination.id)
             is Destination.XProfile -> x.profile(destination.screenName, null)
             is Destination.XSearch -> x.search(destination.query)
+            is Destination.XQuotes -> posts?.openQuotes?.invoke(destination.id) ?: x.post(destination.id)
+            is Destination.XReposters -> posts?.openReposters?.invoke(destination.id) ?: x.post(destination.id)
+            is Destination.XArticle -> posts?.openArticle?.invoke(destination.id) ?: x.post(destination.id)
             Destination.PluginStore -> nav.navigate(PluginRoutes.STORE)
             is Destination.PluginClient -> nav.navigate(PluginRoutes.client(destination.pluginId))
             is Destination.PluginRoute -> nav.navigate(PluginRoutes.screen(destination.pluginId, destination.route))

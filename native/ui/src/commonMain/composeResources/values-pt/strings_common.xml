@@ -30,4 +30,14 @@
     <string name="problem_unable_to_load_the_next_page_of_follows">Não foi possível carregar a próxima página de seguidores</string>
     <string name="problem_unable_to_load_the_next_page_of_tweets">Não foi possível carregar a próxima página de tweets</string>
     <string name="problem_unable_to_load_the_tweets">Não foi possível carregar os tweets</string>
+    <string name="problem_connection_failed">Falha na ligação</string>
+    <string name="problem_sign_in_needed">Inicie sessão novamente para continuar</string>
+    <string name="problem_rate_limit_hint">Esta fonte limita os pedidos. Tente mais tarde.</string>
+    <string name="problem_more_info">Mais informações</string>
+    <string name="problem_auto_retry_seconds">Nova tentativa dentro de %1$d s…</string>
+    <string name="problem_auto_retry_in">Nova tentativa dentro de %1$s…</string>
+    <string name="problem_cached_content">É apresentada uma cópia guardada durante a atualização.</string>
+    <string name="problem_source_loading">Esta fonte ainda está a carregar. As outras publicações estão disponíveis.</string>
+    <string name="problem_saved_at">A mostrar publicações guardadas às %1$s</string>
+    <string name="problem_saved_earlier">A mostrar publicações guardadas anteriormente</string>
 </resources>

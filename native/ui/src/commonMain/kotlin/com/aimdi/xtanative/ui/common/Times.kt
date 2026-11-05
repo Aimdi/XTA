@@ -8,8 +8,11 @@ import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.ago_hours
 import com.aimdi.xtanative.ui.generated.resources.ago_minutes
 import com.aimdi.xtanative.ui.generated.resources.ago_seconds
+import com.aimdi.xtanative.ui.generated.resources.problem_saved_at
+import com.aimdi.xtanative.ui.generated.resources.problem_saved_earlier
 import java.text.DecimalFormatSymbols
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -67,4 +70,21 @@ fun countText(n: Long): String {
     val locale = currentLocale()
     val decimal = remember(locale) { DecimalFormatSymbols.getInstance(locale).decimalSeparator }
     return Formats.count(n, decimal)
+}
+
+/**
+ * "Showing posts saved at 14:05" for posts kept today, with the date for
+ * older ones, or "Showing posts saved earlier" when it is not known (XTA's
+ * StaleFeedBanner.ageLineOf): what a reader needs to judge whether a kept
+ * feed is worth reading.
+ */
+@Composable
+fun savedAtText(savedAt: Instant?): String {
+    if (savedAt == null) return stringResource(Res.string.problem_saved_earlier)
+    val locale = currentLocale()
+    val zone = ZoneId.systemDefault()
+    val time = timeOfDayText(savedAt, locale)
+    val today = savedAt.atZone(zone).toLocalDate() == LocalDate.now(zone)
+    val shown = if (today) time else DateTimeFormatter.ofPattern(datePattern(locale, "yMMMd"), locale).format(savedAt.atZone(zone)) + " " + time
+    return stringResource(Res.string.problem_saved_at, shown)
 }

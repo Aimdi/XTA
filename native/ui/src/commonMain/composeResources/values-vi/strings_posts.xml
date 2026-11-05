@@ -110,4 +110,6 @@ Bấm để xem thêm</string>
     <string name="posts_translation_failed">X không dịch được bài đăng này.</string>
     <string name="posts_translation_not_ready">Bản dịch chưa sẵn sàng. Hãy thử lại sau ít phút.</string>
     <string name="posts_translation_other">Không dịch được. Hãy thử lại.</string>
+    <string name="posts_quote_unavailable">Không thể lấy bài đăng được trích dẫn</string>
+    <string name="posts_no_text">Bài viết này không có chữ nào, điều này không bình thường</string>
 </resources>

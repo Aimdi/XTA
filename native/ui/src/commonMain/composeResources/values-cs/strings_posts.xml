@@ -118,4 +118,6 @@
     <string name="posts_translation_failed">X tento příspěvek nedokázal přeložit.</string>
     <string name="posts_translation_not_ready">Překlad ještě není hotový. Zkuste to za chvíli.</string>
     <string name="posts_translation_other">Překlad se nezdařil. Zkuste to znovu.</string>
+    <string name="posts_quote_unavailable">Citovaný tweet se nepodařilo načíst</string>
+    <string name="posts_no_text">Tweety neobsahoval žádný text. Toto je neočekávané</string>
 </resources>

@@ -30,4 +30,14 @@
     <string name="problem_unable_to_load_the_next_page_of_follows">Ne eblas ŝarĝi la sekvan paĝon de abonoj</string>
     <string name="problem_unable_to_load_the_next_page_of_tweets">Ne eblas ŝarĝi la sekvan paĝon de pepoj</string>
     <string name="problem_unable_to_load_the_tweets">Ne eblas ŝarĝi la pepojn</string>
+    <string name="problem_connection_failed">Konekto malsukcesis</string>
+    <string name="problem_sign_in_needed">Ensalutu denove por daŭrigi</string>
+    <string name="problem_rate_limit_hint">Ĉi tiu fonto limigas petojn. Provu denove poste.</string>
+    <string name="problem_more_info">Pli da informoj</string>
+    <string name="problem_auto_retry_seconds">Reprovos post %1$d s…</string>
+    <string name="problem_auto_retry_in">Reprovos post %1$s…</string>
+    <string name="problem_cached_content">Konservita kopio estas montrata dum la fonto ĝisdatiĝas.</string>
+    <string name="problem_source_loading">Ĉi tiu fonto ankoraŭ ŝargiĝas. Aliaj afiŝoj jam estas legeblaj.</string>
+    <string name="problem_saved_at">Montriĝas afiŝoj konservitaj je %1$s</string>
+    <string name="problem_saved_earlier">Montriĝas pli frue konservitaj afiŝoj</string>
 </resources>

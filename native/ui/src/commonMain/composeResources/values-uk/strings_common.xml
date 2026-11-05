@@ -30,4 +30,14 @@
     <string name="problem_unable_to_load_the_next_page_of_follows">Не вдається завантажити наступну сторінку з підписниками</string>
     <string name="problem_unable_to_load_the_next_page_of_tweets">Не вдається завантажити наступну сторінку твітів</string>
     <string name="problem_unable_to_load_the_tweets">Не вдається завантажити твіти</string>
+    <string name="problem_connection_failed">Помилка з’єднання</string>
+    <string name="problem_sign_in_needed">Увійдіть знову, щоб продовжити</string>
+    <string name="problem_rate_limit_hint">Це джерело обмежує запити. Спробуйте пізніше.</string>
+    <string name="problem_more_info">Детальніше</string>
+    <string name="problem_auto_retry_seconds">Повтор через %1$d с…</string>
+    <string name="problem_auto_retry_in">Повтор через %1$s…</string>
+    <string name="problem_cached_content">Поки джерело оновлюється, показано збережену копію.</string>
+    <string name="problem_source_loading">Це джерело ще завантажується. Інші дописи вже доступні.</string>
+    <string name="problem_saved_at">Показано дописи, збережені о %1$s</string>
+    <string name="problem_saved_earlier">Показано раніше збережені дописи</string>
 </resources>

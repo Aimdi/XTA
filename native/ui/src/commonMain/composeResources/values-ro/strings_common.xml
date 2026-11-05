@@ -30,4 +30,14 @@
     <string name="problem_unable_to_load_the_next_page_of_follows">Nu se poate încărca pagina următoare de urmăriți</string>
     <string name="problem_unable_to_load_the_next_page_of_tweets">Nu se poate încărca următoarea pagină de tweet-uri</string>
     <string name="problem_unable_to_load_the_tweets">Nu se pot încărca postările</string>
+    <string name="problem_connection_failed">Conexiune eșuată</string>
+    <string name="problem_sign_in_needed">Autentifică-te din nou pentru a continua</string>
+    <string name="problem_rate_limit_hint">Această sursă limitează cererile. Încearcă mai târziu.</string>
+    <string name="problem_more_info">Mai multe informații</string>
+    <string name="problem_auto_retry_seconds">Se reîncearcă în %1$d s…</string>
+    <string name="problem_auto_retry_in">Se reîncearcă în %1$s…</string>
+    <string name="problem_cached_content">Se afișează o copie salvată în timpul actualizării sursei.</string>
+    <string name="problem_source_loading">Această sursă încă se încarcă. Celelalte postări sunt disponibile.</string>
+    <string name="problem_saved_at">Se afișează postări salvate la %1$s</string>
+    <string name="problem_saved_earlier">Se afișează postări salvate anterior</string>
 </resources>

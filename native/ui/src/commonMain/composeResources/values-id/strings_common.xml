@@ -30,4 +30,14 @@
     <string name="problem_unable_to_load_the_next_page_of_follows">Tidak bisa memuat halaman pengikut selanjutnya</string>
     <string name="problem_unable_to_load_the_next_page_of_tweets">Tidak dapat memuat halaman cuitan selanjutnya</string>
     <string name="problem_unable_to_load_the_tweets">Tidak bisa memuat cuitan</string>
+    <string name="problem_connection_failed">Koneksi gagal</string>
+    <string name="problem_sign_in_needed">Masuk lagi untuk melanjutkan</string>
+    <string name="problem_rate_limit_hint">Sumber ini membatasi permintaan. Coba lagi nanti.</string>
+    <string name="problem_more_info">Informasi lebih lanjut</string>
+    <string name="problem_auto_retry_seconds">Mencoba lagi dalam %1$d dtk…</string>
+    <string name="problem_auto_retry_in">Mencoba lagi dalam %1$s…</string>
+    <string name="problem_cached_content">Menampilkan salinan tersimpan saat sumber diperbarui.</string>
+    <string name="problem_source_loading">Sumber ini masih dimuat. Postingan lain sudah bisa dibaca.</string>
+    <string name="problem_saved_at">Menampilkan postingan yang disimpan pada %1$s</string>
+    <string name="problem_saved_earlier">Menampilkan postingan yang disimpan sebelumnya</string>
 </resources>

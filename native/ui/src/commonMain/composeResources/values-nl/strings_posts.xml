@@ -112,4 +112,6 @@
     <string name="posts_translation_failed">X kon dit bericht niet vertalen.</string>
     <string name="posts_translation_not_ready">De vertaling is nog niet klaar. Probeer het zo opnieuw.</string>
     <string name="posts_translation_other">De vertaling is mislukt. Probeer het opnieuw.</string>
+    <string name="posts_quote_unavailable">Kon de geciteerde post niet ophalen</string>
+    <string name="posts_no_text">De tweet bevat geen tekst. Dit is onverwacht</string>
 </resources>

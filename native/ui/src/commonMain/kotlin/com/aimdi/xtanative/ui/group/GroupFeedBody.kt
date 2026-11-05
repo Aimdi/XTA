@@ -18,8 +18,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -54,13 +52,16 @@ import com.aimdi.xtanative.core.feed.CatchUpMessage
 import com.aimdi.xtanative.core.feed.FeedPause
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.data.Problem
-import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.FeedSkeleton
+import com.aimdi.xtanative.ui.common.PostSkeleton
+import com.aimdi.xtanative.ui.common.ReadFailureNotice
 import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.ProblemView
 import com.aimdi.xtanative.ui.common.WithReadingColumn
-import com.aimdi.xtanative.ui.common.problemText
+import com.aimdi.xtanative.ui.common.readFailureText
+import com.aimdi.xtanative.ui.common.savedAtText
 import com.aimdi.xtanative.ui.common.scrollToTop
 import com.aimdi.xtanative.ui.feed.CaughtUpDivider
 import com.aimdi.xtanative.ui.feed.FeedLayout
@@ -73,7 +74,8 @@ import com.aimdi.xtanative.ui.feed.NewPostsPill
 import com.aimdi.xtanative.ui.feed.Placed
 import com.aimdi.xtanative.ui.feed.PluginPostRow
 import com.aimdi.xtanative.ui.feed.PluginPostsOnly
-import com.aimdi.xtanative.ui.feed.SourceProblems
+import com.aimdi.xtanative.ui.feed.SourceChips
+import com.aimdi.xtanative.ui.feed.SourceLoadingHairline
 import com.aimdi.xtanative.ui.feed.SourcedPost
 import com.aimdi.xtanative.ui.feed.rememberFeedLayout
 import com.aimdi.xtanative.ui.feed.rememberNearEnd
@@ -82,7 +84,6 @@ import com.aimdi.xtanative.ui.feed.rememberRunningPlugins
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_next_page_of_tweets
 import com.aimdi.xtanative.ui.generated.resources.close
-import com.aimdi.xtanative.ui.generated.resources.dismiss
 import com.aimdi.xtanative.ui.generated.resources.groups_batch_progress
 import com.aimdi.xtanative.ui.generated.resources.groups_catch_up_end
 import com.aimdi.xtanative.ui.generated.resources.groups_catch_up_incomplete
@@ -105,6 +106,7 @@ import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
+import java.time.Instant
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -177,10 +179,10 @@ fun GroupFeedBody(
             state.loaded && state.memberCount == 0 && plugin.shown.isEmpty() && !plugin.loading -> Whole { Message(stringResource(Res.string.groups_no_members)) }
             threads.isEmpty() && plugin.shown.isNotEmpty() -> PluginPostsOnly(plugin.shown, plugins, list, contentPadding, problem) { vm.refresh() }
             threads.isEmpty() && problem != null -> Whole { ProblemView(problem, { vm.refresh() }) }
-            threads.isEmpty() && plugin.loading -> Whole { LoadingRow() }
+            threads.isEmpty() && plugin.loading -> SkeletonPage(contentPadding)
             threads.isEmpty() && run.answered && run.shown.pause == FeedPause.CAUGHT_UP -> Whole { CaughtUpCard(run.shown.catchUpMessage, run, vm) }
             threads.isEmpty() && run.answered && !run.refreshing -> Whole { Message(stringResource(Res.string.groups_feed_empty)) }
-            threads.isEmpty() -> Whole { if (!run.refreshing) LoadingRow() }
+            threads.isEmpty() -> SkeletonPage(contentPadding)
             mediaOnly -> FeedMediaGrid(
                 threads,
                 canLoadMore = run.shown.canLoadMore && run.moreProblem == null && !run.fromCache,
@@ -199,6 +201,7 @@ fun GroupFeedBody(
         if (progress.loading && progress.total > 0) {
             LinearProgressIndicator(progress = { progress.answered.toFloat() / progress.total }, modifier = Modifier.fillMaxWidth().align(Alignment.TopCenter))
         }
+        SourceLoadingHairline(plugin.loading, Modifier.align(Alignment.TopCenter))
         Column(Modifier.align(Alignment.TopCenter).padding(top = 12.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
             if (state.unrelatedNotice) UnrelatedPill(vm)
             if (progress.canRetry) RetryPill(progress.answered, progress.total, vm::retryFailed)
@@ -208,7 +211,7 @@ fun GroupFeedBody(
                     vm.revealPlugins()
                 }
             }
-            SourceProblems(plugin, plugins, onRetry = vm::retryPlugin, modifier = Modifier.padding(horizontal = 16.dp))
+            SourceChips(plugin, plugins, onRetry = vm::retryPlugin, modifier = Modifier.padding(horizontal = 16.dp))
         }
     }
 }
@@ -235,7 +238,7 @@ private fun FeedList(state: GroupFeedUi, vm: GroupFeedViewModel, actions: PostAc
     val divider = run.divider
     WithReadingColumn(contentPadding) { padding ->
         LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
-            run.stale?.let { stale -> item(key = "stale", contentType = "notice") { StaleNotice(stale, vm) } }
+            run.stale?.let { stale -> item(key = "stale", contentType = "notice") { StaleNotice(stale, run.savedAt, vm) } }
             itemsIndexed(threads, key = { _, thread -> thread.id }, contentType = { _, _ -> "thread" }) { index, thread ->
                 if (index == divider) CaughtUpDivider()
                 Placed(mixed.buckets, index, mixed.plugins, layout, posts, drawKey) {
@@ -245,7 +248,7 @@ private fun FeedList(state: GroupFeedUi, vm: GroupFeedViewModel, actions: PostAc
             item(key = "footer", contentType = "footer") {
                 val more = run.moreProblem
                 when {
-                    run.loadingMore -> LoadingRow()
+                    run.loadingMore -> PostSkeleton()
                     more != null -> ProblemRow(more, { vm.loadMore() }, context = stringResource(Res.string.problem_unable_to_load_the_next_page_of_tweets))
                     run.shown.pause == FeedPause.CAUGHT_UP -> CaughtUpCard(run.shown.catchUpMessage, run, vm)
                     run.shown.pause == FeedPause.PAGE_CAP -> ZenEndCard(vm::continuePastPause)
@@ -296,13 +299,27 @@ internal fun ZenEndCard(onLoadMore: () -> Unit) {
     }
 }
 
-/** The first page failed: the posts shown are from before, and why it failed. */
+/**
+ * The first page failed: why, how old the posts shown are (XTA's
+ * StaleFeedBanner.ageLineOf), and its Retry, ⓘ and Close (ReaderFailureNotice).
+ */
 @Composable
-private fun StaleNotice(problem: Problem, vm: GroupFeedViewModel) {
+private fun StaleNotice(problem: Problem, savedAt: Long?, vm: GroupFeedViewModel) {
+    val age = savedAtText(savedAt?.let(Instant::ofEpochMilli))
     Row(Modifier.fillMaxWidth().padding(start = 16.dp, top = 4.dp, bottom = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text(problemText(problem), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f))
-        TextButton(onClick = { vm.refresh() }) { Text(stringResource(Res.string.groups_retry)) }
-        IconButton(onClick = vm::dismissStale) { Icon(Icons.Filled.Close, stringResource(Res.string.dismiss)) }
+        Column(Modifier.weight(1f)) {
+            Text(readFailureText(problem), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(age, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        ReadFailureNotice(problem, { vm.refresh() }, contextMessage = age, onDismiss = vm::dismissStale)
+    }
+}
+
+/** The first page on its way: post-shaped bones, still pulled to refresh (XTA's TweetFeedSkeleton). */
+@Composable
+private fun SkeletonPage(contentPadding: PaddingValues) {
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(top = contentPadding.calculateTopPadding())) {
+        FeedSkeleton()
     }
 }
 

@@ -30,4 +30,14 @@
     <string name="problem_unable_to_load_the_next_page_of_follows">Nepodařilo se načíst další stránku sledování</string>
     <string name="problem_unable_to_load_the_next_page_of_tweets">Nepodařilo se načíst další stránku tweetů</string>
     <string name="problem_unable_to_load_the_tweets">Nepodařilo se načíst tweety</string>
+    <string name="problem_connection_failed">Připojení selhalo</string>
+    <string name="problem_sign_in_needed">Pro pokračování se znovu přihlaste</string>
+    <string name="problem_rate_limit_hint">Tento zdroj omezuje požadavky. Zkuste to později.</string>
+    <string name="problem_more_info">Více informací</string>
+    <string name="problem_auto_retry_seconds">Další pokus za %1$d s…</string>
+    <string name="problem_auto_retry_in">Další pokus za %1$s…</string>
+    <string name="problem_cached_content">Během aktualizace zdroje se zobrazuje uložená kopie.</string>
+    <string name="problem_source_loading">Tento zdroj se stále načítá. Ostatní příspěvky jsou k dispozici.</string>
+    <string name="problem_saved_at">Zobrazují se příspěvky uložené v %1$s</string>
+    <string name="problem_saved_earlier">Zobrazují se dříve uložené příspěvky</string>
 </resources>

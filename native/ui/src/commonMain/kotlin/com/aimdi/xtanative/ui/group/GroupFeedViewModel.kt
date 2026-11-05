@@ -29,6 +29,7 @@ import com.aimdi.xtanative.store.settings.SubscriptionPrefs
 import com.aimdi.xtanative.ui.feed.FeedSources
 import com.aimdi.xtanative.ui.feed.HiddenPosts
 import com.aimdi.xtanative.ui.feed.MixedSources
+import com.aimdi.xtanative.ui.feed.StoredSnapshots
 import com.aimdi.xtanative.ui.feed.PluginFeeds
 import com.aimdi.xtanative.ui.feed.PluginPostsState
 import com.aimdi.xtanative.ui.feed.SourceAsk
@@ -73,6 +74,8 @@ data class FeedRun(
     val problem: Problem? = null,
     /** The first page failed; what is shown is from before. */
     val stale: Problem? = null,
+    /** When the posts shown were read (epoch milliseconds): what the stale notice says of them; null when not known. */
+    val savedAt: Long? = null,
     val moreProblem: Problem? = null,
     val answered: Boolean = false,
     val tracks: Boolean = false,
@@ -194,6 +197,7 @@ class GroupFeedViewModel(private val graph: AppGraph, private val groupId: Strin
             asksOf(ids, session, alsoReadOf(combined), settings)
         },
         ::problemOf,
+        StoredSnapshots(graph.feedSnapshots),
     )
 
     /** The group's members of other networks' posts, as their plugins read them. */
@@ -288,7 +292,8 @@ class GroupFeedViewModel(private val graph: AppGraph, private val groupId: Strin
 
     /** What the feed showed the last time, at once, shaped by the rules as they are now. */
     private suspend fun showCached(plan: GroupFeedPlan) {
-        val saved = cache.read()?.threads?.takeIf { it.isNotEmpty() } ?: return
+        val kept = cache.read() ?: return
+        val saved = kept.threads.takeIf { it.isNotEmpty() } ?: return
         graph.posts.remember(saved)
         val preview = GroupFeedPaging.preview(saved, plan.shaping, Instant.now())
         val index = place?.let { p -> preview.threads.indexOfFirst { it.id == p.postId } } ?: -1
@@ -296,6 +301,7 @@ class GroupFeedViewModel(private val graph: AppGraph, private val groupId: Strin
             if (it.shown.threads.isNotEmpty()) it else it.copy(
                 shown = preview,
                 fromCache = true,
+                savedAt = kept.savedAt,
                 jump = place?.takeIf { index >= 0 }?.let { p -> FeedJump(index, p.offset, ++jumps) },
             )
         }
@@ -350,6 +356,7 @@ class GroupFeedViewModel(private val graph: AppGraph, private val groupId: Strin
             it.copy(
                 shown = shown,
                 fromCache = false,
+                savedAt = System.currentTimeMillis(),
                 refreshing = false,
                 problem = null,
                 // Sources that failed while others answered are the retry pill's, not a stale feed.

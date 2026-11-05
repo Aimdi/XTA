@@ -30,4 +30,14 @@
     <string name="problem_unable_to_load_the_next_page_of_follows">Takip edenlerin sonraki sayfası yüklenemiyor</string>
     <string name="problem_unable_to_load_the_next_page_of_tweets">Tweet\'lerin sonraki sayfası yüklenemiyor</string>
     <string name="problem_unable_to_load_the_tweets">Tweet\'ler yüklenemedi</string>
+    <string name="problem_connection_failed">Bağlantı başarısız</string>
+    <string name="problem_sign_in_needed">Devam etmek için yeniden giriş yapın</string>
+    <string name="problem_rate_limit_hint">Bu kaynak istekleri sınırlandırıyor. Daha sonra tekrar deneyin.</string>
+    <string name="problem_more_info">Daha fazla bilgi</string>
+    <string name="problem_auto_retry_seconds">%1$d sn sonra yeniden denenecek…</string>
+    <string name="problem_auto_retry_in">%1$s sonra yeniden denenecek…</string>
+    <string name="problem_cached_content">Kaynak güncellenirken kaydedilmiş bir kopya gösteriliyor.</string>
+    <string name="problem_source_loading">Bu kaynak hâlâ yükleniyor. Diğer gönderiler okunabilir.</string>
+    <string name="problem_saved_at">%1$s tarihinde kaydedilen gönderiler gösteriliyor</string>
+    <string name="problem_saved_earlier">Daha önce kaydedilen gönderiler gösteriliyor</string>
 </resources>

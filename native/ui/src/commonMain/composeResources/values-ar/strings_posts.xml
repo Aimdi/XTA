@@ -124,4 +124,6 @@
     <string name="posts_translation_failed">تعذّر على X ترجمة هذا المنشور.</string>
     <string name="posts_translation_not_ready">الترجمة ليست جاهزة بعد. حاول مجددًا بعد قليل.</string>
     <string name="posts_translation_other">لم تنجح الترجمة. حاول مجددًا.</string>
+    <string name="posts_quote_unavailable">تعذر استرداد التغريدة المقتبسة</string>
+    <string name="posts_no_text">التغريدة لا تحتوي على أي نص. هذا غير متوقع</string>
 </resources>

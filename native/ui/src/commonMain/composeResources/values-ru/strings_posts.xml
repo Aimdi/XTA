@@ -118,4 +118,6 @@
     <string name="posts_translation_failed">X не смог перевести этот пост.</string>
     <string name="posts_translation_not_ready">Перевод ещё не готов. Попробуйте чуть позже.</string>
     <string name="posts_translation_other">Перевести не получилось. Попробуйте ещё раз.</string>
+    <string name="posts_quote_unavailable">Не удалось получить цитируемый пост</string>
+    <string name="posts_no_text">Твит не содержал никакого текста. Это неожиданно</string>
 </resources>

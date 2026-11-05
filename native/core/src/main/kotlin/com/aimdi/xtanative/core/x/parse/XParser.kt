@@ -233,15 +233,17 @@ object XParser {
 
     /**
      * The post a quote names when X would not give it: its id, and its author
-     * from the link X keeps, which is what finding it elsewhere takes.
+     * from the link X keeps, which is what finding it elsewhere takes. A
+     * quote that names nothing at all keeps an empty id: the card can only
+     * say it could not be read.
      */
     private fun quotedWithheld(legacy: J, quoted: J): XWithheld? {
         val link = legacy["quoted_status_permalink"]["expanded"].string?.let(postLink::find)
-        val id = legacy["quoted_status_id_str"].string ?: link?.groupValues?.get(2) ?: return null
+        val id = legacy["quoted_status_id_str"].string ?: link?.groupValues?.get(2)
         val screenName = link?.groupValues?.get(1)
         return when {
-            quoted.exists -> withheld(quoted, id).copy(screenName = screenName)
-            legacy["is_quote_status"].boolean == true -> XWithheld(id, null, screenName = screenName)
+            id != null && quoted.exists -> withheld(quoted, id).copy(screenName = screenName)
+            legacy["is_quote_status"].boolean == true -> XWithheld(id.orEmpty(), null, screenName = screenName)
             else -> null
         }
     }

@@ -15,6 +15,7 @@ import com.aimdi.xtanative.store.downloads.DownloadQueue
 import com.aimdi.xtanative.store.downloads.DownloadTransfer
 import com.aimdi.xtanative.store.downloads.FileDownloadHistory
 import com.aimdi.xtanative.store.downloads.OkHttpMediaHttp
+import com.aimdi.xtanative.store.feed.FeedSnapshots
 import com.aimdi.xtanative.store.follows.DiscoveryFeedbackStore
 import com.aimdi.xtanative.store.follows.FollowsCache
 import com.aimdi.xtanative.store.offline.KeptProfiles
@@ -101,6 +102,9 @@ class AppGraph(
 
     /** Profiles as X last gave them, shown for a week while X is read again. */
     val keptProfiles = KeptProfiles(store)
+
+    /** What each plugin last gave the mixed timelines, shown at once the next time while it is asked again. */
+    val feedSnapshots = FeedSnapshots(store)
     val noteDrafts = NoteDrafts(store)
 
     /** Whom followed accounts follow, as last read: "Followed by" on a profile, and a group's Discover. */
@@ -181,6 +185,7 @@ class AppGraph(
 
     /** Every feed's cache: after an import the follows they showed may be gone. */
     suspend fun clearFeedCaches() {
+        feedSnapshots.clear()
         withContext(Dispatchers.IO) {
             files.listFiles { file -> file.name.startsWith("feed") && file.name.endsWith(".json") }?.forEach { it.delete() }
         }

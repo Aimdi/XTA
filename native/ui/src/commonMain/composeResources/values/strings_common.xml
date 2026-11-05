@@ -30,4 +30,14 @@
     <string name="problem_unable_to_load_the_next_page_of_follows">Unable to load the next page of follows</string>
     <string name="problem_unable_to_load_the_next_page_of_tweets">Unable to load the next page of posts</string>
     <string name="problem_unable_to_load_the_tweets">Unable to load the posts</string>
+    <string name="problem_connection_failed">Connection failed</string>
+    <string name="problem_sign_in_needed">Sign in again to continue</string>
+    <string name="problem_rate_limit_hint">This source is limiting requests. Try again later.</string>
+    <string name="problem_more_info">More info</string>
+    <string name="problem_auto_retry_seconds">Trying again in %1$d s …</string>
+    <string name="problem_auto_retry_in">Trying again in %1$s …</string>
+    <string name="problem_cached_content">Showing a saved copy while this source updates.</string>
+    <string name="problem_source_loading">This source is still loading. Other posts are ready to read.</string>
+    <string name="problem_saved_at">Showing posts saved at %1$s</string>
+    <string name="problem_saved_earlier">Showing posts saved earlier</string>
 </resources>

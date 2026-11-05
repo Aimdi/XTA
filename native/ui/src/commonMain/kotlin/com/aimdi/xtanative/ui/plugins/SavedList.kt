@@ -19,7 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.store.saved.SavedContent
 import com.aimdi.xtanative.ui.common.Hairline
-import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.FeedSkeleton
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.home_no_results
 import com.aimdi.xtanative.ui.generated.resources.saved_notice_saves
@@ -49,7 +49,7 @@ fun <T : Any> PluginSavedScreen(host: PluginHost, read: (PluginPostArchive) -> T
             modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding()),
         ) {
             item(key = "notice") { SavedNotice(empty = rows?.isEmpty() == true) }
-            if (rows == null) item(key = "loading") { LoadingRow() }
+            if (rows == null) item(key = "loading") { FeedSkeleton(count = 3) }
             items(rows.orEmpty(), key = { it.kept.post.id }, contentType = { "saved" }) { listed ->
                 val post = listed.post
                 if (post != null) row(post) else listed.card?.let { KeptCardView(it) }

@@ -112,4 +112,6 @@
     <string name="posts_translation_failed">X ei suutnud seda postitust tõlkida.</string>
     <string name="posts_translation_not_ready">Tõlge pole veel valmis. Proovi varsti uuesti.</string>
     <string name="posts_translation_other">Tõlkimine ebaõnnestus. Proovi uuesti.</string>
+    <string name="posts_quote_unavailable">Tsiteeritud postitust ei õnnestunud laadida</string>
+    <string name="posts_no_text">Säutsus puudus sisu. See on nüüd küll ootamatu</string>
 </resources>

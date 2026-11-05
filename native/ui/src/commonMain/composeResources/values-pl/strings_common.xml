@@ -30,4 +30,14 @@
     <string name="problem_unable_to_load_the_next_page_of_follows">Nie można załadować następnej strony z obserwowanymi</string>
     <string name="problem_unable_to_load_the_next_page_of_tweets">Nie można załadować następnej strony z tweetami</string>
     <string name="problem_unable_to_load_the_tweets">Nie można załadować tweetów</string>
+    <string name="problem_connection_failed">Błąd połączenia</string>
+    <string name="problem_sign_in_needed">Zaloguj się ponownie, aby kontynuować</string>
+    <string name="problem_rate_limit_hint">To źródło ogranicza żądania. Spróbuj ponownie później.</string>
+    <string name="problem_more_info">Więcej informacji</string>
+    <string name="problem_auto_retry_seconds">Ponowna próba za %1$d s…</string>
+    <string name="problem_auto_retry_in">Ponowna próba za %1$s…</string>
+    <string name="problem_cached_content">Podczas aktualizacji źródła wyświetlana jest zapisana kopia.</string>
+    <string name="problem_source_loading">To źródło nadal się ładuje. Inne wpisy są już dostępne.</string>
+    <string name="problem_saved_at">Wyświetlane są posty zapisane o %1$s</string>
+    <string name="problem_saved_earlier">Wyświetlane są wcześniej zapisane posty</string>
 </resources>

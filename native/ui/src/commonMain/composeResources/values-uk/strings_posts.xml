@@ -118,4 +118,6 @@
     <string name="posts_translation_failed">X не зміг перекласти цей допис.</string>
     <string name="posts_translation_not_ready">Переклад ще не готовий. Спробуйте трохи згодом.</string>
     <string name="posts_translation_other">Не вдалося перекласти. Спробуйте ще раз.</string>
+    <string name="posts_quote_unavailable">Не вдалося отримати цитований допис</string>
+    <string name="posts_no_text">Публікація не містила жодного тексту. Це неочікувано</string>
 </resources>

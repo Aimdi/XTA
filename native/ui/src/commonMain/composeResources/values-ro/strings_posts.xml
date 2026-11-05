@@ -115,4 +115,6 @@
     <string name="posts_translation_failed">X nu a reușit să traducă această postare.</string>
     <string name="posts_translation_not_ready">Traducerea nu este încă gata. Încearcă din nou în curând.</string>
     <string name="posts_translation_other">Traducerea nu a reușit. Încearcă din nou.</string>
+    <string name="posts_quote_unavailable">Nu s-a putut prelua postarea citată</string>
+    <string name="posts_no_text">Postarea nu conținea niciun text. Asta e neașteptat</string>
 </resources>

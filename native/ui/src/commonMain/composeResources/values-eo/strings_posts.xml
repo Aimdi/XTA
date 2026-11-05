@@ -112,4 +112,6 @@
     <string name="posts_translation_failed">X ne sukcesis traduki ĉi tiun afiŝon.</string>
     <string name="posts_translation_not_ready">La traduko ankoraŭ ne pretas. Reprovu baldaŭ.</string>
     <string name="posts_translation_other">La traduko ne funkciis. Reprovu.</string>
+    <string name="posts_quote_unavailable">Ne eblis ricevi la cititan pecon</string>
+    <string name="posts_no_text">La pepo ne enhavas iun ajn tekston. Estas ne atendite</string>
 </resources>

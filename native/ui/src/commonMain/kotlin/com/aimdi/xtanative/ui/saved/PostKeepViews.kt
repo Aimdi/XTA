@@ -1,5 +1,8 @@
 package com.aimdi.xtanative.ui.saved
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
@@ -14,6 +17,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,14 +29,19 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.store.saved.XtaTweetJson
+import com.aimdi.xtanative.store.settings.PostsPrefs
+import com.aimdi.xtanative.ui.common.HEART_BURST_MILLIS
+import com.aimdi.xtanative.ui.common.HeartBurst
 import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.saved_like
 import com.aimdi.xtanative.ui.generated.resources.saved_save_here
 import com.aimdi.xtanative.ui.generated.resources.saved_unlike
 import com.aimdi.xtanative.ui.generated.resources.saved_unsave
-import com.aimdi.xtanative.ui.plugins.NetworkCount
+import com.aimdi.xtanative.ui.plugins.CountButton
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
 /** The bookmark: a tap saves the post on this device where plain taps file, or removes it; a long press opens the save sheet. */
@@ -146,13 +155,50 @@ internal fun KeepableSaveButton(item: Keepable, modifier: Modifier, tint: Color)
     sheetFor?.let { item -> SaveSheet(item) { sheetFor = null } }
 }
 
+/**
+ * The device's like under an X post (XTA's LikeButton): liking plays X's
+ * burst ([HeartBurst]) in the colour of a device like, unless motion is
+ * reduced or calm or zen mode keeps actions quiet; X's count beside it rolls.
+ */
 @Composable
 internal fun DeviceLikeButton(post: XPost, modifier: Modifier, tint: Color, count: Long) {
     val graph = LocalGraph.current
     val liked = likedHere(post.shown.id)
     val label = stringResource(if (liked) Res.string.saved_unlike else Res.string.saved_like)
-    val color = if (liked) MaterialTheme.colorScheme.primary else tint.takeOrElse { MaterialTheme.colorScheme.onSurfaceVariant }
+    val rest = tint.takeOrElse { MaterialTheme.colorScheme.onSurfaceVariant }
+    val active = MaterialTheme.colorScheme.primary
+    val burst = remember { Animatable(0f) }
+    val scope = rememberCoroutineScope()
+    val still = LocalReducedMotion.current || quietActions()
     Box(modifier) {
-        NetworkCount(if (liked) Icons.Filled.Favorite else XIcons.Like, count, label, color) { Keeping.toggleLike(graph, Keepable.of(post)) }
+        CountButton(
+            glyph = {
+                HeartBurst(
+                    burst.value,
+                    active,
+                    17.dp,
+                    filledAtRest = liked,
+                    outline = { Icon(XIcons.Like, contentDescription = null, tint = rest, modifier = Modifier.size(17.dp)) },
+                    filled = { Icon(Icons.Filled.Favorite, contentDescription = null, tint = active, modifier = Modifier.size(17.dp)) },
+                )
+            },
+            n = count,
+            label = label,
+            tint = if (liked) active else rest,
+            onLongClick = null,
+        ) {
+            scope.launch {
+                burst.snapTo(0f)
+                if (!liked && !still) burst.animateTo(1f, tween(HEART_BURST_MILLIS, easing = LinearEasing))
+            }
+            Keeping.toggleLike(graph, Keepable.of(post))
+        }
     }
+}
+
+/** Calm or zen mode is on, which keep actions quiet (XTA's quietActions). */
+@Composable
+private fun quietActions(): Boolean {
+    val settings by LocalGraph.current.settings.state.collectAsStateWithLifecycle()
+    return settings?.let { it[PostsPrefs.calmMode] || it[PostsPrefs.zenMode] } ?: false
 }

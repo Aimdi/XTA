@@ -10,15 +10,17 @@ import kotlinx.coroutines.launch
  * The plugin side of one timeline: what it asks of the plugins ([asks]),
  * followed as plugins come and go, their switches turn and its groups
  * change, and read again whenever the timeline is refreshed. Its [posts]
- * are what the timeline places among X's ([FeedMix]).
+ * are what the timeline places among X's ([FeedMix]); each plugin's last
+ * answer is kept in [snapshots] for the next launch.
  */
 class MixedSources(
     scope: CoroutineScope,
     feeds: PluginFeeds,
     asks: Flow<Map<String, SourceAsk>>,
     problemOf: (Throwable) -> Problem = Problem::of,
+    snapshots: SourceSnapshots = SourceSnapshots.None,
 ) {
-    val posts = PluginPosts(scope, feeds::posts, problemOf)
+    val posts = PluginPosts(scope, feeds::posts, problemOf, snapshots)
 
     init {
         scope.launch { asks.distinctUntilChanged().collect { posts.load(it) } }

@@ -30,4 +30,14 @@
     <string name="problem_unable_to_load_the_next_page_of_follows">Die weiteren Follower können nicht geladen werden</string>
     <string name="problem_unable_to_load_the_next_page_of_tweets">Die nächsten Tweets können nicht geladen werden</string>
     <string name="problem_unable_to_load_the_tweets">Die Tweets können nicht geladen werden</string>
+    <string name="problem_connection_failed">Verbindung fehlgeschlagen</string>
+    <string name="problem_sign_in_needed">Zum Fortfahren erneut anmelden</string>
+    <string name="problem_rate_limit_hint">Diese Quelle begrenzt Anfragen. Versuche es später erneut.</string>
+    <string name="problem_more_info">Mehr Informationen</string>
+    <string name="problem_auto_retry_seconds">Versuche es in %1$d s erneut …</string>
+    <string name="problem_auto_retry_in">Versuche es in %1$s erneut …</string>
+    <string name="problem_cached_content">Während der Aktualisierung wird eine gespeicherte Kopie angezeigt.</string>
+    <string name="problem_source_loading">Diese Quelle lädt noch. Andere Beiträge sind bereits verfügbar.</string>
+    <string name="problem_saved_at">Angezeigt werden Beiträge, die um %1$s gespeichert wurden</string>
+    <string name="problem_saved_earlier">Angezeigt werden früher gespeicherte Beiträge</string>
 </resources>

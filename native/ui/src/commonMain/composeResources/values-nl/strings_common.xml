@@ -30,4 +30,14 @@
     <string name="problem_unable_to_load_the_next_page_of_follows">Kan de volgende pagina van gevolgde gebruikers niet laden</string>
     <string name="problem_unable_to_load_the_next_page_of_tweets">Meer tweets laden is mislukt</string>
     <string name="problem_unable_to_load_the_tweets">Kan de berichten niet laden</string>
+    <string name="problem_connection_failed">Verbinding mislukt</string>
+    <string name="problem_sign_in_needed">Log opnieuw in om door te gaan</string>
+    <string name="problem_rate_limit_hint">Deze bron beperkt verzoeken. Probeer het later opnieuw.</string>
+    <string name="problem_more_info">Meer informatie</string>
+    <string name="problem_auto_retry_seconds">Nieuwe poging over %1$d s…</string>
+    <string name="problem_auto_retry_in">Nieuwe poging over %1$s…</string>
+    <string name="problem_cached_content">Een opgeslagen kopie wordt getoond terwijl deze bron wordt bijgewerkt.</string>
+    <string name="problem_source_loading">Deze bron wordt nog geladen. Andere berichten zijn al beschikbaar.</string>
+    <string name="problem_saved_at">Berichten opgeslagen om %1$s</string>
+    <string name="problem_saved_earlier">Eerder opgeslagen berichten</string>
 </resources>

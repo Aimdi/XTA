@@ -38,7 +38,8 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.data.Problem
-import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.FeedSkeleton
+import com.aimdi.xtanative.ui.common.PostSkeleton
 import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.ProblemRow
@@ -113,8 +114,7 @@ internal fun ForYouPage(toTop: Int, actions: PostActions, contentPadding: Paddin
             state.noAccount -> PageMessage(null) { ProblemView(Problem.NoAccount, { vm.refresh() }) }
             state.threads.isEmpty() && problem != null -> PageMessage(null) { ProblemView(problem, { vm.refresh() }, context = stringResource(Res.string.problem_unable_to_load_the_tweets)) }
             state.threads.isEmpty() && state.answered && !state.refreshing -> PageMessage(stringResource(Res.string.home_for_you_empty)) {}
-            // The pull indicator already says a first load is under way.
-            state.threads.isEmpty() -> PageMessage(null) { if (!state.refreshing) LoadingRow() }
+            state.threads.isEmpty() -> Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(top = contentPadding.calculateTopPadding())) { FeedSkeleton() }
             else -> CompositionLocalProvider(LocalInlinePlayer provides inline) {
                 ForYouList(state, vm, actions, list, contentPadding)
             }
@@ -141,7 +141,7 @@ private fun ForYouList(state: ForYouUi, vm: ForYouViewModel, actions: PostAction
             item(key = "footer", contentType = "footer") {
                 val more = state.moreProblem
                 when {
-                    state.loadingMore -> LoadingRow()
+                    state.loadingMore -> PostSkeleton()
                     more != null -> ProblemRow(more, { vm.loadMore() }, context = stringResource(Res.string.problem_unable_to_load_the_next_page_of_tweets))
                     state.paused -> ZenEndCard(vm::readOn)
                     else -> Box(Modifier.padding(bottom = 48.dp))
