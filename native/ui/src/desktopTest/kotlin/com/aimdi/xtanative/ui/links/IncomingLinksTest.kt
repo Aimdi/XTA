@@ -14,7 +14,7 @@ class IncomingLinksTest {
         val seen = ArrayList<String>()
         val screens = LinkScreens(
             post = { seen += "post $it" },
-            profile = { seen += "profile $it" },
+            profile = { name, _ -> seen += "profile $name" },
             search = { seen += "search $it" },
             browser = { url, _ -> seen += "browser $url" },
             live = { link -> liveScreen.also { if (it) seen += "live ${link.url}" } },

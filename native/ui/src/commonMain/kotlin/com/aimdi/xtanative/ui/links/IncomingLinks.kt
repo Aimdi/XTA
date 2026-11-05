@@ -64,7 +64,7 @@ object IncomingLinks {
             is IncomingStep.Unable -> unable(step.url)
             is IncomingStep.Screen -> when (val link = step.link) {
                 is XLink.Post -> screens.post(link.id)
-                is XLink.Profile -> screens.profile(link.screenName)
+                is XLink.Profile -> screens.profile(link.screenName, link.tab)
                 is XLink.Community -> if (!screens.community(link.id, link.about)) outside(step.url)
                 is XLink.XList -> if (!screens.list(link.id)) outside(step.url)
                 is XLink.Live -> if (!screens.live(link)) outside(link.url)

@@ -24,7 +24,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavDeepLink
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -458,7 +457,6 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
                 navArgument("id") { type = NavType.StringType; nullable = true; defaultValue = null },
                 navArgument("tab") { type = NavType.StringType; nullable = true; defaultValue = null },
             ),
-            deepLinks = xLinks("{screenName}"),
         ) { entry ->
             ProfileScreen(
                 entry.text("screenName").orEmpty(),
@@ -708,15 +706,6 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
         pluginScreens(nav, motion.fadeEnter, motion.fadeExit)
     }
 }
-
-/**
- * None: no route takes a link another app opens here by itself, or the link
- * would open twice. It goes through the app's link opener
- * (ui/links' IncomingLinks), which also knows the live player, short links
- * and plugins.
- */
-@Suppress("UNUSED_PARAMETER")
-private fun xLinks(path: String): List<NavDeepLink> = emptyList()
 
 /** Whether the app has a screen at [route] yet: Home leads only to those. */
 private fun NavHostController.hasRoute(route: String): Boolean = runCatching { graph.findNode(route) != null }.getOrDefault(false)
