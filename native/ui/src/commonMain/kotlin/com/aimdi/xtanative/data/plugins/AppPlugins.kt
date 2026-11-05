@@ -101,7 +101,8 @@ class SheetEntry(val icon: ImageVector, val label: String, val run: () -> Unit)
  * The app's downloadable plugins (PLUGINS.md), beside [graph], made by the
  * shell with how its platform checks and loads a plugin ([platform]) and
  * where the store reads what is on offer ([catalogueUrl]; a stand-in build
- * names a local one), then started. [manager] installs, updates and
+ * names a local one, and the address in Settings goes first, [CatalogueAddress]),
+ * then started. [manager] installs, updates and
  * uninstalls them; what is installed is loaded at start and after each
  * install, cast to [XtaPlugin], given its [PluginHost] and listed in
  * [running], which Home's strip, the links and the plugin screens read
@@ -146,6 +147,7 @@ class AppPlugins(
         store = store,
         erase = ::erase,
         catalogueUrl = catalogueUrl,
+        catalogueAddress = { CatalogueAddress.of(graph.settings.load(), catalogueUrl) },
         http = http,
     )
 

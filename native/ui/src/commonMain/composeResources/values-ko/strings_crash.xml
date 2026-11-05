@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Crash reports and the screens shown when something breaks: XTA's own wording (lib/l10n), placeholders positional. -->
+<resources>
+    <string name="crash_reports_auth_failed">GitHub가 토큰을 거부했습니다(권한 확인)</string>
+    <string name="crash_reports_disabled_toast">먼저 충돌 보고를 사용하세요</string>
+    <string name="crash_reports_duplicate">이 충돌은 이미 보고되었습니다</string>
+    <string name="crash_reports_enabled">충돌 보고서를 GitHub로 보내기</string>
+    <string name="crash_reports_enabled_description">사용 시 처리되지 않은 충돌이 GitHub Issue로 보고됩니다. 기본값은 끔입니다. Issues 쓰기 권한이 있는 개인 액세스 토큰이 필요합니다. 앱에 토큰을 넣지 않습니다.</string>
+    <string name="crash_reports_invalid_repo">저장소는 owner/name 형식이어야 합니다</string>
+    <string name="crash_reports_missing_token">먼저 GitHub 액세스 토큰을 추가하세요</string>
+    <string name="crash_reports_rate_limited">최근에 보낸 충돌 보고서가 너무 많습니다</string>
+    <string name="crash_reports_repo">GitHub 저장소</string>
+    <string name="crash_reports_repo_description">충돌 Issue를 받을 저장소(owner/name)</string>
+    <string name="crash_reports_send_test">테스트 충돌 보고서 보내기</string>
+    <string name="crash_reports_send_test_description">토큰과 저장소를 확인하는 샘플 Issue를 만듭니다</string>
+    <string name="crash_reports_test_failed">충돌 보고서를 보낼 수 없습니다</string>
+    <string name="crash_reports_test_sent">테스트 충돌 보고서를 보냈습니다</string>
+    <string name="crash_reports_token">GitHub 액세스 토큰</string>
+    <string name="crash_reports_token_description">Issue 생성 권한이 있는 fine-grained 또는 클래식 PAT. 이 기기에만 저장되며 백업에서 제외됩니다.</string>
+    <string name="crash_reports_token_hint">ghp_… 또는 github_pat_…</string>
+    <string name="crash_something_broke">XTA에서 문제가 발생했습니다.</string>
+    <string name="crash_start_failed">데이터베이스 마이그레이션을 실행할 수 없습니다</string>
+</resources>

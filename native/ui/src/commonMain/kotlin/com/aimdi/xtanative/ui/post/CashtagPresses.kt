@@ -20,25 +20,35 @@ internal class TextLayoutHolder {
 }
 
 /**
- * A long press on a cashtag in [text], as [layout] holds it laid out,
- * opening its sheet ([LocalCashtagSheet]) as XTA's does; a tap on it still
- * goes where it goes, and a press elsewhere in the text is left to the post.
+ * A long press on a cashtag or a hashtag in [text], as [layout] holds it
+ * laid out, as XTA's rich text takes it: a cashtag opens its sheet
+ * ([LocalCashtagSheet]), a hashtag goes to [onHashtag] (its topic sheet,
+ * [TopicSheet]); a tap on either still goes where it goes, and a press
+ * elsewhere in the text is left to the post.
  */
 @Composable
-internal fun Modifier.cashtagPresses(text: AnnotatedString, layout: TextLayoutHolder): Modifier {
-    val sheet = LocalCashtagSheet.current ?: return this
-    val any = remember(text) { text.getLinkAnnotations(0, text.length).any { symbolOf(it.item) != null } }
+internal fun Modifier.tagPresses(text: AnnotatedString, layout: TextLayoutHolder, onHashtag: (String) -> Unit): Modifier {
+    val sheet = LocalCashtagSheet.current
+    val pressable: (String?) -> Boolean = { tag -> TopicLinks.topicOf(tag) != null || (sheet != null && CashtagLinks.symbolOf(tag) != null) }
+    val any = remember(text, sheet) { text.getLinkAnnotations(0, text.length).any { pressable(tagOf(it.item)) } }
     if (!any) return this
-    return longPressOver(accepts = { cashtagAt(text, layout.result, it) != null }) { position -> cashtagAt(text, layout.result, position)?.let(sheet) }
+    return longPressOver(accepts = { tagAt(text, layout.result, it, pressable) != null }) { position ->
+        val tag = tagAt(text, layout.result, position, pressable)
+        val symbol = CashtagLinks.symbolOf(tag)
+        when {
+            symbol != null -> sheet?.invoke(symbol)
+            tag != null -> TopicLinks.topicOf(tag)?.let(onHashtag)
+        }
+    }
 }
 
-/** The cashtag of [text] under [position], laid out as [layout]; null where the press is off one. */
-internal fun cashtagAt(text: AnnotatedString, layout: TextLayoutResult?, position: Offset): String? {
+/** The tag of the link of [text] under [position] that [accepts] takes, laid out as [layout]; null where the press is off one. */
+private fun tagAt(text: AnnotatedString, layout: TextLayoutResult?, position: Offset, accepts: (String?) -> Boolean): String? {
     if (layout == null || text.isEmpty()) return null
     val offset = layout.getOffsetForPosition(position).coerceIn(0, text.length - 1)
-    val link = text.getLinkAnnotations(offset, offset + 1).firstOrNull { symbolOf(it.item) != null } ?: return null
+    val link = text.getLinkAnnotations(offset, offset + 1).firstOrNull { accepts(tagOf(it.item)) } ?: return null
     if (!layout.getPathForRange(link.start, link.end).getBounds().contains(position)) return null
-    return symbolOf(link.item)
+    return tagOf(link.item)
 }
 
-private fun symbolOf(link: LinkAnnotation): String? = CashtagLinks.symbolOf((link as? LinkAnnotation.Clickable)?.tag)
+private fun tagOf(link: LinkAnnotation): String? = (link as? LinkAnnotation.Clickable)?.tag

@@ -39,10 +39,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -52,6 +50,7 @@ import com.aimdi.xtanative.services.links.LinkBrowserSession
 import com.aimdi.xtanative.services.links.LinkBrowserState
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.XIcons
+import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_close
 import com.aimdi.xtanative.ui.generated.resources.reader_link_copied
@@ -99,12 +98,12 @@ fun LinkBrowserScreen(url: String, from: String?, onClose: () -> Unit) {
     val state by session.state.collectAsStateWithLifecycle()
     val control = remember { LinkPageControl() }
     val snackbar = remember { SnackbarHostState() }
-    val clipboard = LocalClipboardManager.current
+    val copyText = rememberCopyText()
     val scope = rememberCoroutineScope()
     val copied = stringResource(Res.string.reader_link_copied)
 
     fun copy(text: String) {
-        clipboard.setText(AnnotatedString(text))
+        copyText(text)
         scope.launch { snackbar.showSnackbar(copied) }
     }
 

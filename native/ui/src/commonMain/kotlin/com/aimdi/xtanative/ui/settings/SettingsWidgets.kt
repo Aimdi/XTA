@@ -338,10 +338,11 @@ internal fun TextRow(
     secret: Boolean = false,
     url: Boolean = false,
     focused: Boolean = false,
+    enabled: Boolean = true,
     onSave: (String) -> Unit,
 ) {
     var open by remember { mutableStateOf(false) }
-    NavigationRow(title, description, chevron = false, focused = focused) { open = true }
+    NavigationRow(title, description, enabled = enabled, chevron = false, focused = focused) { open = true }
     if (open) {
         TextFieldDialog(title, value, hint, secret, url, onDismiss = { open = false }) {
             open = false

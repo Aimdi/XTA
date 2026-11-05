@@ -7,6 +7,7 @@ import android.media.session.PlaybackState
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.KeyEvent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
@@ -113,6 +114,11 @@ internal class FrameworkAudioSessions(context: Context) : AudioSessions {
             },
             main,
         )
+    }
+
+    /** A headset's button the system broadcast to the app: the session's callback turns it into its control. */
+    fun mediaButton(event: KeyEvent) {
+        main.post { session.controller.dispatchMediaButtonEvent(event) }
     }
 
     /** A control pressed on the notification, the lock screen or a headset; stop also takes the session down. */

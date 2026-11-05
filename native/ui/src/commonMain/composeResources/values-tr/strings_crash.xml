@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Crash reports and the screens shown when something breaks: XTA's own wording (lib/l10n), placeholders positional. -->
+<resources>
+    <string name="crash_reports_auth_failed">GitHub belirteci reddetti (izinleri kontrol edin)</string>
+    <string name="crash_reports_disabled_toast">Önce çökme raporlarını etkinleştirin</string>
+    <string name="crash_reports_duplicate">Bu çökme zaten bildirildi</string>
+    <string name="crash_reports_enabled">Çökme raporlarını GitHub’a gönder</string>
+    <string name="crash_reports_enabled_description">Etkinleştirildiğinde yakalanmayan çökmeler GitHub issue’su açar. Varsayılan olarak kapalıdır. Issues yazma yetkili bir kişisel erişim belirteci gerekir. Uygulamaya belirteç gömülmez.</string>
+    <string name="crash_reports_invalid_repo">Depo owner/name biçiminde olmalı</string>
+    <string name="crash_reports_missing_token">Önce bir GitHub erişim belirteci ekleyin</string>
+    <string name="crash_reports_rate_limited">Kısa sürede çok fazla çökme raporu gönderildi</string>
+    <string name="crash_reports_repo">GitHub deposu</string>
+    <string name="crash_reports_repo_description">Çökme issue’larını alacak depo (owner/name)</string>
+    <string name="crash_reports_send_test">Test çökme raporu gönder</string>
+    <string name="crash_reports_send_test_description">Belirteç ve depoyu doğrulamak için örnek bir issue oluşturur</string>
+    <string name="crash_reports_test_failed">Çökme raporu gönderilemedi</string>
+    <string name="crash_reports_test_sent">Test çökme raporu gönderildi</string>
+    <string name="crash_reports_token">GitHub erişim belirteci</string>
+    <string name="crash_reports_token_description">Issue oluşturma yetkili fine-grained veya klasik PAT. Yalnızca bu cihazda saklanır ve yedeklerden çıkarılır.</string>
+    <string name="crash_reports_token_hint">ghp_… veya github_pat_…</string>
+    <string name="crash_something_broke">XTA'da bir şey bozuldu.</string>
+    <string name="crash_start_failed">Veritabanı geçişleri çalıştırılamıyor</string>
+</resources>

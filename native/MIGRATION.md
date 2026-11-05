@@ -64,7 +64,7 @@ layer is written in `networks/<id>` first, then moves with its screens into
 | community | `ui/community` (done: posts, about, members, links) |
 | intro | `ui/intro` (done) |
 | settings | `store/settings`; `ui/settings` (done: every section, backup export and restore, WebDAV, theme, the licences of every library the build resolves, `gradle/licences.gradle.kts`); the plugin store in `plugin-host` + `ui/pluginstore` (done), the plugin API in `ui/plugins` (done) |
-| catcher | crash reports kept on the device (done; a switch in settings) |
+| catcher | crash reports kept on the device and filed as GitHub issues with the reader's own token, as XTA files them (done: the switch, repository, token and test report in Settings › General); a screen that broke shown at the next start |
 | utils | `services` (AI client, translation, sizes, debounce, cached pages) and the platform modules |
 | ui | `ui/common` (the whole UI is now one Compose Multiplatform module for Android and Linux) |
 | l10n | `ui` resources and the plugins' strings in all 29 of XTA's languages (done for every screen so far, `SCREENS.md`), Latin Belarusian (`values-be-rXL`) filled in by `tool/belarusian_latin.py` |

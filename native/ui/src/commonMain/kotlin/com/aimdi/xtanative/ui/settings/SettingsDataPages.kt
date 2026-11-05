@@ -51,9 +51,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -71,6 +69,7 @@ import com.aimdi.xtanative.store.settings.DataPrefs
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.currentLocale
+import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.*
 import com.aimdi.xtanative.ui.importer.rememberBackupChooser
@@ -509,7 +508,7 @@ internal fun DiagnosticsSettings(title: String, vm: SettingsViewModel, onBack: (
     val graph = vm.graph
     val session by vm.session.collectAsStateWithLifecycle()
     val settings by vm.settings.collectAsStateWithLifecycle()
-    val clipboard = LocalClipboardManager.current
+    val copyText = rememberCopyText()
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val locale = currentLocale()
@@ -537,7 +536,7 @@ internal fun DiagnosticsSettings(title: String, vm: SettingsViewModel, onBack: (
         actions = {
             IconButton(onClick = { revision++ }) { Icon(Icons.Outlined.Refresh, null) }
             IconButton(onClick = {
-                clipboard.setText(AnnotatedString((listOf(report.toPlainText()) + crashes.map { it.text }).joinToString("\n\n")))
+                copyText((listOf(report.toPlainText()) + crashes.map { it.text }).joinToString("\n\n"))
                 scope.launch { snackbar.showSnackbar(copied) }
             }) { Icon(Icons.Outlined.Share, stringResource(Res.string.settings_diagnostics_copy)) }
         },
@@ -578,7 +577,7 @@ internal fun DiagnosticsSettings(title: String, vm: SettingsViewModel, onBack: (
                     Icons.Outlined.Warning,
                     chevron = false,
                 ) {
-                    clipboard.setText(AnnotatedString(crash.text))
+                    copyText(crash.text)
                     scope.launch { snackbar.showSnackbar(copied) }
                 }
             }

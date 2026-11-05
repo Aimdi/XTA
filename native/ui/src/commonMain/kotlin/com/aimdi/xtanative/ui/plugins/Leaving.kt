@@ -2,9 +2,8 @@ package com.aimdi.xtanative.ui.plugins
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.text.AnnotatedString
+import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.links.LocalLinks
 
 /**
@@ -37,11 +36,11 @@ expect fun rememberAppLinkSettings(): (() -> Unit)?
 @Composable
 fun rememberShareText(): (String) -> Boolean {
     val links = LocalLinks.current
-    val clipboard = LocalClipboardManager.current
-    return remember(links, clipboard) {
+    val copyText = rememberCopyText()
+    return remember(links, copyText) {
         { text ->
             val shared = links?.share(text) == true
-            if (!shared) clipboard.setText(AnnotatedString(text))
+            if (!shared) copyText(text)
             shared
         }
     }

@@ -11,8 +11,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -115,7 +115,7 @@ fun LazyListScope.profileSaved(state: ProfileSavedState, user: XUser?, actions: 
 fun ProfileSavedFilter(selected: ArchiveFilter, onSelect: (ArchiveFilter) -> Unit) {
     Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         listOf(
-            Triple(ArchiveFilter.ALL, Icons.Filled.List, Res.string.saved_tab_all),
+            Triple(ArchiveFilter.ALL, Icons.AutoMirrored.Filled.List, Res.string.saved_tab_all),
             Triple(ArchiveFilter.LIKES, Icons.Filled.FavoriteBorder, Res.string.saved_tab_likes),
             Triple(ArchiveFilter.BOOKMARKS, SavedIcons.BookmarkBorder, Res.string.saved_bookmarks),
         ).forEach { (filter, icon, label) ->
