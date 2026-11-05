@@ -10,4 +10,8 @@
     <string name="signin_open_in_browser">Deschide în browser</string>
     <string name="signin_username">Nume de utilizator</string>
     <string name="signin_cookies">Cookie-uri de la x.com</string>
+    <string name="signin_not_logged_in">Neautentificat</string>
+    <string name="signin_why_needed">X refuză majoritatea cererilor care nu vin de la un cont. XTA încearcă mai întâi ca vizitator și uneori merge, dar fără un cont te poți aștepta la mai multe erori decât postări.\n\nAutentificarea îi permite lui XTA doar să citească X. Nu publică, nu apreciază, nu repostează și nu urmărește niciodată în locul tău.</string>
+    <string name="signin_import_backup">Importați copie de rezervă</string>
+    <string name="signin_login">Autentificare</string>
 </resources>

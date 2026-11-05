@@ -10,4 +10,8 @@
     <string name="signin_open_in_browser">Abrir no navegador</string>
     <string name="signin_username">Nome de utilizador</string>
     <string name="signin_cookies">Cookies de x.com</string>
+    <string name="signin_not_logged_in">Sessão não iniciada</string>
+    <string name="signin_why_needed">O X recusa a maioria dos pedidos que não vêm de uma conta. O XTA tenta primeiro como convidado, e às vezes resulta, mas sem uma conta é mais provável veres erros do que publicações.\n\nIniciar sessão só permite ao XTA ler o X. Nunca publica, gosta, repartilha nem segue por ti.</string>
+    <string name="signin_import_backup">Importar cópia de segurança</string>
+    <string name="signin_login">Iniciar sessão</string>
 </resources>

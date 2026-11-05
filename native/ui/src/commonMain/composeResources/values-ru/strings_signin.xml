@@ -10,4 +10,8 @@
     <string name="signin_open_in_browser">Открыть в браузере</string>
     <string name="signin_username">Имя пользователя</string>
     <string name="signin_cookies">Cookie с x.com</string>
+    <string name="signin_not_logged_in">Не выполнен вход</string>
+    <string name="signin_why_needed">X отклоняет большинство запросов, приходящих не от аккаунта. XTA сначала пробует как гость, и иногда это срабатывает, но без аккаунта ошибок будет больше, чем постов.\n\nВход позволяет XTA только читать X. Приложение никогда не публикует, не ставит отметки, не репостит и не подписывается за вас.</string>
+    <string name="signin_import_backup">Импортировать резервную копию</string>
+    <string name="signin_login">Войти</string>
 </resources>

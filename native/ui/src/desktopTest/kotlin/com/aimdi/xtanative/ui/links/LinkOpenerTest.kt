@@ -303,6 +303,11 @@ class LinkOpenerTest {
     fun theAppClaimsXsHostsAndPixivsPages() {
         assertTrue(LinkSteps.claimedByApp("https://www.x.com/home"))
         assertTrue(LinkSteps.claimedByApp("https://mobile.twitter.com/a"))
+        assertTrue(LinkSteps.claimedByApp("http://t.co/abc"))
+        assertTrue(LinkSteps.claimedByApp("https://fxtwitter.com/maya/status/1"))
+        assertTrue(LinkSteps.claimedByApp("https://d.vxtwitter.com/maya/status/1"))
+        assertTrue(LinkSteps.claimedByApp("https://fixupx.com/maya/status/1"))
+        assertFalse(LinkSteps.claimedByApp("https://www.fxtwitter.com/maya"), "only fxtwitter.com itself, as XTA's manifest")
         assertTrue(LinkSteps.claimedByApp("https://www.pixiv.net/artworks/1"))
         assertTrue(LinkSteps.claimedByApp("https://pixiv.me/someone"))
         assertFalse(LinkSteps.claimedByApp("https://i.pximg.net/a.png"), "Pixiv's pictures are not claimed")

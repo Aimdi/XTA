@@ -98,4 +98,6 @@
     <string name="reader_video_fit">符合螢幕</string>
     <string name="reader_video_fill">填滿螢幕</string>
     <string name="reader_video_seconds">%1$d 秒</string>
+    <string name="reader_link_unable_details">無法開啟連結。請再試一次。</string>
+    <string name="reader_link_report">回報</string>
 </resources>

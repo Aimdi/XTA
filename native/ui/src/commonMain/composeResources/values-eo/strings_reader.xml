@@ -98,4 +98,6 @@
     <string name="reader_video_fit">Adapti al la ekrano</string>
     <string name="reader_video_fill">Plenigi la ekranon</string>
     <string name="reader_video_seconds">%1$d s</string>
+    <string name="reader_link_unable_details">Ne eblis malfermi la ligilon. Bonvolu provi denove.</string>
+    <string name="reader_link_report">Raporti</string>
 </resources>

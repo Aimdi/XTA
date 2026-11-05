@@ -10,4 +10,8 @@
     <string name="signin_open_in_browser">ブラウザで開く</string>
     <string name="signin_username">ユーザー名</string>
     <string name="signin_cookies">x.com の Cookie</string>
+    <string name="signin_not_logged_in">ログインしていません</string>
+    <string name="signin_why_needed">X はアカウントから来ていないリクエストのほとんどを拒否します。XTA はまずゲストとして試み、それで通ることもありますが、アカウントがなければ投稿よりエラーを見ることのほうが多いと考えてください。\n\nサインインは XTA が X を読むためだけのものです。あなたの代わりに投稿・いいね・リポスト・フォローをすることはありません。</string>
+    <string name="signin_import_backup">バックアップのインポート</string>
+    <string name="signin_login">ログイン</string>
 </resources>

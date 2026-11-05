@@ -98,4 +98,6 @@
     <string name="reader_video_fit">ملاءمة الشاشة</string>
     <string name="reader_video_fill">ملء الشاشة</string>
     <string name="reader_video_seconds">%1$d ث</string>
+    <string name="reader_link_unable_details">تعذر فتح الرابط. يرجى المحاولة مرة أخرى.</string>
+    <string name="reader_link_report">إبلاغ</string>
 </resources>

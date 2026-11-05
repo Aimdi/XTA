@@ -98,4 +98,6 @@
     <string name="reader_video_fit">Ins Bild einpassen</string>
     <string name="reader_video_fill">Bildschirm ausfüllen</string>
     <string name="reader_video_seconds">%1$d s</string>
+    <string name="reader_link_unable_details">Der Link konnte nicht geöffnet werden. Bitte versuche es erneut.</string>
+    <string name="reader_link_report">Bericht</string>
 </resources>

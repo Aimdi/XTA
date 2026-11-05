@@ -10,4 +10,8 @@
     <string name="signin_open_in_browser">Ireki nabigatzailean</string>
     <string name="signin_username">Erabiltzaile-izena</string>
     <string name="signin_cookies">x.com-eko cookieak</string>
+    <string name="signin_not_logged_in">Ez zaude saioa hasita</string>
+    <string name="signin_why_needed">X-k kontu batetik ez datozen eskaera gehienak ukatzen ditu. XTAk gonbidatu gisa saiatzen da lehenik, eta batzuetan funtzionatzen du, baina konturik gabe erroreak espero behar dituzu argitalpenak baino gehiago.\n\nSaioa hasteak X irakurtzeko baimena baino ez dio ematen XTAri. Ez du inoiz argitaratzen, atsegin ematen, birpartekatzen edo jarraitzen zure izenean.</string>
+    <string name="signin_import_backup">Inportatu babeskopia</string>
+    <string name="signin_login">Hasi saioa</string>
 </resources>

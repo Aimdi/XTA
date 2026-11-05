@@ -98,4 +98,6 @@
     <string name="reader_video_fit">Ajustar a la pantalla</string>
     <string name="reader_video_fill">Llenar la pantalla</string>
     <string name="reader_video_seconds">%1$d s</string>
+    <string name="reader_link_unable_details">No se pudo abrir el enlace. Por favor, inténtalo de nuevo.</string>
+    <string name="reader_link_report">Reportar</string>
 </resources>

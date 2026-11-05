@@ -98,4 +98,6 @@
     <string name="reader_video_fit">Упісаць у экран</string>
     <string name="reader_video_fill">Запоўніць экран</string>
     <string name="reader_video_seconds">%1$d с</string>
+    <string name="reader_link_unable_details">Не атрымалася адкрыць спасылку. Калі ласка, паспрабуйце яшчэ раз.</string>
+    <string name="reader_link_report">Паведаміць</string>
 </resources>

@@ -98,4 +98,6 @@
     <string name="reader_video_fit">画面に合わせる</string>
     <string name="reader_video_fill">画面いっぱいに</string>
     <string name="reader_video_seconds">%1$d 秒</string>
+    <string name="reader_link_unable_details">リンクを開くことができませんでした。もう一度お試しください。</string>
+    <string name="reader_link_report">レポート</string>
 </resources>

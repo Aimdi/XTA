@@ -10,4 +10,8 @@
     <string name="signin_open_in_browser">Im Browser öffnen</string>
     <string name="signin_username">Nutzername</string>
     <string name="signin_cookies">Cookies von x.com</string>
+    <string name="signin_not_logged_in">Nicht angemeldet</string>
+    <string name="signin_why_needed">X weist die meisten Anfragen ab, die nicht von einem Konto kommen. XTA versucht es zuerst als Gast, was manchmal klappt — ohne Konto sind Fehler aber wahrscheinlicher als Beiträge.\n\nDie Anmeldung erlaubt XTA nur, X zu lesen. Es postet, liked, teilt und folgt nie in deinem Namen.</string>
+    <string name="signin_import_backup">Sicherung importieren</string>
+    <string name="signin_login">Anmelden</string>
 </resources>

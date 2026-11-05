@@ -98,4 +98,6 @@
     <string name="reader_video_fit">화면에 맞추기</string>
     <string name="reader_video_fill">화면 채우기</string>
     <string name="reader_video_seconds">%1$d초</string>
+    <string name="reader_link_unable_details">링크를 열 수 없습니다. 다시 시도해 주세요.</string>
+    <string name="reader_link_report">신고</string>
 </resources>

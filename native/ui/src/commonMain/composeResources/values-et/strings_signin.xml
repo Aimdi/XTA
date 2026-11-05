@@ -10,4 +10,8 @@
     <string name="signin_open_in_browser">Ava brauseris</string>
     <string name="signin_username">Kasutajanimi</string>
     <string name="signin_cookies">x.com-i küpsised</string>
+    <string name="signin_not_logged_in">Pole sisse logitud</string>
+    <string name="signin_why_needed">X keeldub enamikust päringutest, mis ei tule kontolt. XTA proovib kõigepealt külalisena ja vahel see töötab, aga kontota tasub oodata pigem tõrkeid kui postitusi.\n\nSisselogimine lubab XTA-l ainult X-i lugeda. See ei postita, ei meeldi, ei jaga ega jälgi kunagi sinu eest.</string>
+    <string name="signin_import_backup">Impordi varukoopia</string>
+    <string name="signin_login">Logi sisse</string>
 </resources>

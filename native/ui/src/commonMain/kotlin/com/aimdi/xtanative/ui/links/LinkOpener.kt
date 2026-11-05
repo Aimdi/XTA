@@ -212,8 +212,21 @@ object LinkSteps {
     /** The host of [url] in lower case, or null when it has none. */
     fun hostOf(url: String): String? = runCatching { URI(url.trim()).host?.lowercase() }.getOrNull()?.ifEmpty { null }
 
-    /** Whether the app claims [url]'s host (X's, and Pixiv's pages, as XTA's manifest claims them), so that a plain VIEW of it could land back in the app. */
-    fun claimedByApp(url: String): Boolean = hostOf(url) in XLinks.HOSTS || LinkOpening.onClaimedHost(url)
+    /**
+     * Whether the app claims [url]'s host (X's, its short links, the embed
+     * mirrors and Pixiv's pages, as XTA's manifest claims them), so that a
+     * plain VIEW of it could land back in the app.
+     */
+    fun claimedByApp(url: String): Boolean {
+        val host = hostOf(url) ?: return false
+        return host in XLinks.HOSTS || host in MIRROR_HOSTS || MIRROR_FAMILIES.any(host::endsWith) || LinkOpening.onClaimedHost(url)
+    }
+
+    /** X's short links and the embed fixers' mirrors of X, which the manifest claims too. */
+    private val MIRROR_HOSTS = setOf("t.co", "fxtwitter.com")
+
+    /** Mirrors claimed with every host before them (the manifest's `*vxtwitter.com`). */
+    private val MIRROR_FAMILIES = listOf("vxtwitter.com", "fixupx.com")
 }
 
 /**

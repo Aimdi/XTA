@@ -10,4 +10,8 @@
     <string name="signin_open_in_browser">在浏览器中打开</string>
     <string name="signin_username">用户名</string>
     <string name="signin_cookies">来自 x.com 的 Cookie</string>
+    <string name="signin_not_logged_in">未登录</string>
+    <string name="signin_why_needed">X 会拒绝大多数并非来自账号的请求。XTA 会先以访客身份尝试，有时能成功，但没有账号时，你看到错误的次数多半会超过看到帖子。\n\n登录只是让 XTA 能读取 X，它绝不会代你发帖、点赞、转帖或关注。</string>
+    <string name="signin_import_backup">导入备份</string>
+    <string name="signin_login">登录</string>
 </resources>

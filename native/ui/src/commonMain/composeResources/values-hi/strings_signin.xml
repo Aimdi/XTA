@@ -10,4 +10,8 @@
     <string name="signin_open_in_browser">ब्राउज़र में खोलें</string>
     <string name="signin_username">उपयोगकर्ता नाम</string>
     <string name="signin_cookies">x.com की कुकीज़</string>
+    <string name="signin_not_logged_in">लॉग इन नहीं है</string>
+    <string name="signin_why_needed">X ऐसे अधिकांश अनुरोध ठुकरा देता है जो किसी खाते से नहीं आते। XTA पहले अतिथि के रूप में कोशिश करता है और कभी-कभी वह चल जाता है, पर खाते के बिना पोस्ट से ज़्यादा त्रुटियाँ मिलने की उम्मीद रखें।\n\nसाइन इन करने से XTA सिर्फ़ X पढ़ पाता है। यह आपकी ओर से कभी पोस्ट, लाइक, रीपोस्ट या फ़ॉलो नहीं करता।</string>
+    <string name="signin_import_backup">बैकअप आयात करें</string>
+    <string name="signin_login">लॉग इन करें</string>
 </resources>

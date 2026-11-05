@@ -98,4 +98,6 @@
     <string name="reader_video_fit">स्क्रीन में फ़िट करें</string>
     <string name="reader_video_fill">स्क्रीन भरें</string>
     <string name="reader_video_seconds">%1$d सेकंड</string>
+    <string name="reader_link_unable_details">लिंक नहीं खोला जा सका। कृपया पुनः प्रयास करें।</string>
+    <string name="reader_link_report">रिपोर्ट करें</string>
 </resources>

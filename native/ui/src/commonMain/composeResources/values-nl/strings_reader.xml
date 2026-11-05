@@ -98,4 +98,6 @@
     <string name="reader_video_fit">In beeld passen</string>
     <string name="reader_video_fill">Scherm vullen</string>
     <string name="reader_video_seconds">%1$d s</string>
+    <string name="reader_link_unable_details">De link kon niet worden geopend. Probeer het opnieuw.</string>
+    <string name="reader_link_report">Rapporteer</string>
 </resources>

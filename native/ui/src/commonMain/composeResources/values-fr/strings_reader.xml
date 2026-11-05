@@ -98,4 +98,6 @@
     <string name="reader_video_fit">Ajuster à l'écran</string>
     <string name="reader_video_fill">Remplir l'écran</string>
     <string name="reader_video_seconds">%1$d s</string>
+    <string name="reader_link_unable_details">XTA n'a pas pu ouvrir le lien sur lequel vous avez cliqué. Soit le lien est invalide, soit il s'agit d'une erreur qui devrait être signalée.</string>
+    <string name="reader_link_report">Signaler</string>
 </resources>
