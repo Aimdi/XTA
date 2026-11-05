@@ -184,7 +184,7 @@
     <string name="groups_yes">हाँ</string>
     <string name="groups_zen_end">अभी के लिए बस इतना ही</string>
     <string name="groups_zen_load_more">फिर भी और लोड करें</string>
-    <string name="groups_add_member_hint">सदस्यता लेने और जोड़ने के लिए X पर कोई खाता खोजें</string>
+    <string name="groups_add_member_hint">X पर खोजें, या कोई सबरेडिट, Threads या Bluesky हैंडल, फ़ेडिवर्स पता, या न्यूज़लेटर लिखें</string>
     <string name="groups_menu">मेन्यू दिखाएं</string>
     <string name="groups_refresh">रीफ़्रेश करें</string>
     <plurals name="groups_member_count">

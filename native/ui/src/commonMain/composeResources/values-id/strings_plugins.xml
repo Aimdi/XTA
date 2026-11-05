@@ -52,4 +52,5 @@
     <string name="plugin_problem_other">Terjadi kesalahan saat membaca %1$s.</string>
     <string name="plugin_store_search">Cari plugin</string>
     <string name="plugin_store_no_results">Tidak ada hasil</string>
+    <string name="plugin_open_client">Buka %1$s</string>
 </resources>

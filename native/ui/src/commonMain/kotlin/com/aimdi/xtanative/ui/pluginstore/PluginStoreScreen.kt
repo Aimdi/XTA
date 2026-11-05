@@ -411,7 +411,7 @@ private fun offerStatus(status: PluginStatus, locale: Locale): String? = when (s
 
 /** Why an install, update or uninstall did not happen, in plain words. */
 @Composable
-private fun failureText(reason: PluginFailure): String = when (reason) {
+internal fun failureText(reason: PluginFailure): String = when (reason) {
     PluginFailure.NotOffered, PluginFailure.NotInstalled -> stringResource(Res.string.plugin_failed_not_offered)
     is PluginFailure.NeedsNewerApp -> stringResource(Res.string.plugin_needs_newer_app)
     is PluginFailure.NeedsNewerPlugin -> stringResource(Res.string.plugin_failed_newer_plugin)

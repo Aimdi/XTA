@@ -60,4 +60,8 @@
     <string name="home_alt_microblogging_group_detail">在首頁的同一個區塊中顯示 Mastodon、Bluesky 和 Threads。關閉後恢復個別顯示。資料和設定維持不變。</string>
     <string name="home_posts">推文</string>
     <string name="home_media">媒體</string>
+    <string name="home_missing_page">遺失頁面</string>
+    <string name="home_two_pages_required">您需要至少有 2 個主畫面頁面。</string>
+    <string name="home_choose_pages">選擇頁面</string>
+    <string name="home_unable_to_load_pages">無法載入您的主頁</string>
 </resources>

@@ -52,4 +52,5 @@
     <string name="plugin_problem_other">%1$s の読み込み中に問題が発生しました。</string>
     <string name="plugin_store_search">プラグインを検索</string>
     <string name="plugin_store_no_results">結果なし</string>
+    <string name="plugin_open_client">%1$sを開く</string>
 </resources>

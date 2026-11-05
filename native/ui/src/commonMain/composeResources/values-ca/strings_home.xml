@@ -61,4 +61,8 @@
     <string name="home_alt_microblogging_group_detail">Mostra Mastodon, Bluesky i Threads en una sola secció a Inici. Desactiva-ho per separar-los. Les dades i la configuració es conserven.</string>
     <string name="home_posts">Tuits</string>
     <string name="home_media">Mèdia</string>
+    <string name="home_missing_page">Pàgina no trobada</string>
+    <string name="home_two_pages_required">Necessites almenys 2 pàgines d'inici</string>
+    <string name="home_choose_pages">Tria les pàgines</string>
+    <string name="home_unable_to_load_pages">No s'ha pogut carregar la pàgina d'inici</string>
 </resources>

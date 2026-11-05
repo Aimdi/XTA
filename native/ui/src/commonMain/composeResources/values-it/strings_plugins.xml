@@ -52,4 +52,5 @@
     <string name="plugin_problem_other">Qualcosa è andato storto durante la lettura di %1$s.</string>
     <string name="plugin_store_search">Cerca plugin</string>
     <string name="plugin_store_no_results">Nessun risultato</string>
+    <string name="plugin_open_client">Apri %1$s</string>
 </resources>

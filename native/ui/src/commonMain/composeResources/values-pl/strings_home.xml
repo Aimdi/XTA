@@ -63,4 +63,8 @@
     <string name="home_alt_microblogging_group_detail">Pokazuj Mastodon, Bluesky i Threads w jednej sekcji na ekranie głównym. Wyłącz, aby znów wyświetlać je osobno. Dane i ustawienia pozostaną bez zmian.</string>
     <string name="home_posts">Tweety</string>
     <string name="home_media">Multimedia</string>
+    <string name="home_missing_page">Brakująca karta</string>
+    <string name="home_two_pages_required">Musisz mieć co najmniej 2 karty.</string>
+    <string name="home_choose_pages">Wybierz karty</string>
+    <string name="home_unable_to_load_pages">Nie można załadować Twoich kart</string>
 </resources>

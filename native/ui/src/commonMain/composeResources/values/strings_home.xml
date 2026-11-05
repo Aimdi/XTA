@@ -61,4 +61,8 @@
     <string name="home_alt_microblogging_group_detail">Show Mastodon, Bluesky and Threads in one Home section. Turn off to separate them. Your data and settings stay unchanged.</string>
     <string name="home_posts">Posts</string>
     <string name="home_media">Media</string>
+    <string name="home_missing_page">Missing page</string>
+    <string name="home_two_pages_required">You need to have at least 2 home screen pages.</string>
+    <string name="home_choose_pages">Choose pages</string>
+    <string name="home_unable_to_load_pages">Unable to load your home pages</string>
 </resources>

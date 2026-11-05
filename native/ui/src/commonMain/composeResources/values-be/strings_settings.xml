@@ -363,4 +363,8 @@
         <item quantity="many">%1$d справаздач пра збоі</item>
         <item quantity="other">%1$d справаздачы пра збоі</item>
     </plurals>
+    <string name="intro_illustration_orbit">Знакі крыніц кружаць вакол знака XTA</string>
+    <string name="intro_illustration_phone">Допісы, лайкі і захаванае ўнутры тэлефона</string>
+    <string name="intro_illustration_flow">Допісы ідуць з X на ваш тэлефон і ніколі назад</string>
+    <string name="intro_page_of">Старонка %1$d з %2$d</string>
 </resources>

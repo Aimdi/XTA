@@ -357,4 +357,8 @@
     <plurals name="settings_crash_count">
         <item quantity="other">충돌 보고서 %1$d개 보관됨</item>
     </plurals>
+    <string name="intro_illustration_orbit">XTA 마크 주위를 도는 소스 로고</string>
+    <string name="intro_illustration_phone">휴대폰 안의 게시물, 좋아요, 저장한 항목</string>
+    <string name="intro_illustration_flow">게시물은 X에서 휴대폰으로만 흐르고, 되돌아가지 않습니다</string>
+    <string name="intro_page_of">%2$d페이지 중 %1$d페이지</string>
 </resources>

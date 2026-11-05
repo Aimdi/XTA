@@ -52,4 +52,5 @@
     <string name="plugin_problem_other">Не ўдалося прачытаць %1$s.</string>
     <string name="plugin_store_search">Шукаць плагіны</string>
     <string name="plugin_store_no_results">Нічога не знойдзена</string>
+    <string name="plugin_open_client">Адкрыць %1$s</string>
 </resources>

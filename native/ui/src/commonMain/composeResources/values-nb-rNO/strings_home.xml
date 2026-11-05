@@ -61,4 +61,8 @@
     <string name="home_alt_microblogging_group_detail">Vis Mastodon, Bluesky og Threads i én seksjon på Hjem. Slå av for å vise dem hver for seg. Data og innstillinger beholdes.</string>
     <string name="home_posts">Tvitringer</string>
     <string name="home_media">Media</string>
+    <string name="home_missing_page">Manglende side</string>
+    <string name="home_two_pages_required">Du trenger minst 2 startsider</string>
+    <string name="home_choose_pages">Velg sider</string>
+    <string name="home_unable_to_load_pages">Kunne ikke laste startsider</string>
 </resources>

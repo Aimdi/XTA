@@ -21,7 +21,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -68,7 +67,7 @@ import org.jetbrains.compose.resources.stringResource
  * An article kept offline, annotated (archive_document_screen.dart): its
  * tags, the AI transcription of a screenshot when an AI is set, the passages
  * highlighted with their notes, and the text, in which a selected passage is
- * highlighted with a note.
+ * copied, or highlighted with a note, from the selection's menu.
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -90,15 +89,6 @@ fun ArchiveScreen(id: String, onBack: () -> Unit) {
                 navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )
-        },
-        floatingActionButton = {
-            if (passage != null) {
-                ExtendedFloatingActionButton(onClick = { highlighting = passage }) {
-                    Icon(SavedIcons.EditNote, contentDescription = null)
-                    Spacer(Modifier.width(8.dp))
-                    Text(stringResource(Res.string.archive_highlight))
-                }
-            }
         },
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp)) {
@@ -129,14 +119,16 @@ fun ArchiveScreen(id: String, onBack: () -> Unit) {
                 }
             }
             Spacer(Modifier.size(12.dp))
-            // Read-only, so its text can be selected but not changed: a selection is a passage to highlight.
-            BasicTextField(
-                value = selection,
-                onValueChange = { selection = it.copy(text = state.text, selection = clamp(it.selection, state.text.length)) },
-                readOnly = true,
-                textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface, fontSize = MaterialTheme.typography.bodyLarge.fontSize, lineHeight = MaterialTheme.typography.bodyLarge.lineHeight),
-                modifier = Modifier.fillMaxWidth().padding(bottom = 88.dp),
-            )
+            // Read-only, so its text can be selected but not changed: the selection's menu copies it, or highlights it with a note.
+            HighlightMenu(stringResource(Res.string.archive_highlight), passage?.let { { highlighting = it } }) {
+                BasicTextField(
+                    value = selection,
+                    onValueChange = { selection = it.copy(text = state.text, selection = clamp(it.selection, state.text.length)) },
+                    readOnly = true,
+                    textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface, fontSize = MaterialTheme.typography.bodyLarge.fontSize, lineHeight = MaterialTheme.typography.bodyLarge.lineHeight),
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
+                )
+            }
         }
     }
 

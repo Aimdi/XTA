@@ -357,4 +357,8 @@
     <plurals name="settings_crash_count">
         <item quantity="other">已保留 %1$d 份當機報告</item>
     </plurals>
+    <string name="intro_illustration_orbit">來源圖示環繞 XTA 標誌</string>
+    <string name="intro_illustration_phone">手機裡的貼文、按讚和已儲存項目</string>
+    <string name="intro_illustration_flow">貼文從 X 流向你的手機，從不回傳</string>
+    <string name="intro_page_of">第 %1$d 頁，共 %2$d 頁</string>
 </resources>

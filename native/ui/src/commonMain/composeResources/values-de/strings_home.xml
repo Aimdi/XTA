@@ -61,4 +61,8 @@
     <string name="home_alt_microblogging_group_detail">Mastodon, Bluesky und Threads in einem Bereich auf der Startseite anzeigen. Ausschalten, um sie wieder einzeln anzuzeigen. Daten und Einstellungen bleiben erhalten.</string>
     <string name="home_posts">Tweets</string>
     <string name="home_media">Medien</string>
+    <string name="home_missing_page">Fehlende Seite</string>
+    <string name="home_two_pages_required">Du musst mindestens 2 Tabs auf der Startseite haben.</string>
+    <string name="home_choose_pages">Wähle Seiten</string>
+    <string name="home_unable_to_load_pages">Laden der Startseite nicht möglich</string>
 </resources>

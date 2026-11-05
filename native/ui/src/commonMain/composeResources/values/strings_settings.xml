@@ -359,4 +359,8 @@
         <item quantity="one">%1$d crash report kept</item>
         <item quantity="other">%1$d crash reports kept</item>
     </plurals>
+    <string name="intro_illustration_orbit">Source marks orbiting the XTA mark</string>
+    <string name="intro_illustration_phone">Posts, likes and saved items inside a phone</string>
+    <string name="intro_illustration_flow">Posts flow from X to your phone, never back</string>
+    <string name="intro_page_of">Page %1$d of %2$d</string>
 </resources>

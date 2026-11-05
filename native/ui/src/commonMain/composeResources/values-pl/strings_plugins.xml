@@ -52,4 +52,5 @@
     <string name="plugin_problem_other">Coś poszło nie tak podczas odczytu z %1$s.</string>
     <string name="plugin_store_search">Szukaj wtyczek</string>
     <string name="plugin_store_no_results">Brak wyników</string>
+    <string name="plugin_open_client">Otwórz %1$s</string>
 </resources>

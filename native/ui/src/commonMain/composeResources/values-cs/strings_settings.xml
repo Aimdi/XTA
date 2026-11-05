@@ -363,4 +363,8 @@
         <item quantity="many">%1$d uloženého hlášení pádů</item>
         <item quantity="other">%1$d uložených hlášení pádů</item>
     </plurals>
+    <string name="intro_illustration_orbit">Loga zdrojů obíhající kolem značky XTA</string>
+    <string name="intro_illustration_phone">Příspěvky, lajky a uložené položky v telefonu</string>
+    <string name="intro_illustration_flow">Příspěvky proudí z X do vašeho telefonu, nikdy zpět</string>
+    <string name="intro_page_of">Stránka %1$d z %2$d</string>
 </resources>

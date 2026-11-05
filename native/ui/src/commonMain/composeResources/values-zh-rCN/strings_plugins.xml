@@ -52,4 +52,5 @@
     <string name="plugin_problem_other">读取 %1$s 时出了问题。</string>
     <string name="plugin_store_search">搜索插件</string>
     <string name="plugin_store_no_results">没有结果</string>
+    <string name="plugin_open_client">打开%1$s</string>
 </resources>

@@ -61,4 +61,8 @@
     <string name="home_alt_microblogging_group_detail">Toon Mastodon, Bluesky en Threads in één onderdeel op Start. Schakel dit uit om ze apart te tonen. Je gegevens en instellingen blijven behouden.</string>
     <string name="home_posts">Berichten</string>
     <string name="home_media">Media</string>
+    <string name="home_missing_page">Ontbrekende pagina</string>
+    <string name="home_two_pages_required">Je moet minimaal 2 startschermpagina's hebben.</string>
+    <string name="home_choose_pages">Pagina's kiezen</string>
+    <string name="home_unable_to_load_pages">Kan de startpagina's niet laden</string>
 </resources>

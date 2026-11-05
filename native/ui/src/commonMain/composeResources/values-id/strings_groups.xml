@@ -184,7 +184,7 @@
     <string name="groups_yes">Ya</string>
     <string name="groups_zen_end">Itu saja untuk saat ini</string>
     <string name="groups_zen_load_more">Tetap muat lebih banyak</string>
-    <string name="groups_add_member_hint">Cari akun di X untuk dilanggan dan ditambahkan</string>
+    <string name="groups_add_member_hint">Cari di X, atau ketik subreddit, nama Threads atau Bluesky, alamat Fediverse, atau buletin</string>
     <string name="groups_menu">Tampilkan menu</string>
     <string name="groups_refresh">Muat ulang</string>
     <plurals name="groups_member_count">

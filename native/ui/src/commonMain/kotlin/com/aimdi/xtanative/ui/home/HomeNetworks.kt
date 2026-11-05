@@ -19,6 +19,14 @@ interface HomeNetworks {
     /** The installed, enabled networks that can sit on the strip, in the plugin registry's order. */
     val available: StateFlow<List<StripNetwork>>
 
+    /**
+     * The installed networks that have no timeline to show: their plugin
+     * could not be started, or runs without one. Their page on the bottom bar
+     * stays, and says it is missing, as XTA's does when a plugin has no home
+     * screen to give.
+     */
+    val missing: StateFlow<Set<String>>
+
     /** The network's mark, [size] square, beside its name on the strip and in the sheet. */
     @Composable
     fun Mark(id: String, size: Dp)
@@ -46,6 +54,8 @@ interface HomeNetworks {
         /** No plugin networks: Following and For you alone. */
         val None: HomeNetworks = object : HomeNetworks {
             override val available: StateFlow<List<StripNetwork>> = MutableStateFlow(emptyList())
+
+            override val missing: StateFlow<Set<String>> = MutableStateFlow(emptySet())
 
             @Composable
             override fun Mark(id: String, size: Dp) = Unit

@@ -61,4 +61,8 @@
     <string name="home_alt_microblogging_group_detail">Mostrar Mastodon, Bluesky e Threads numa única secção do Início. Desative para os separar. Os seus dados e definições são mantidos.</string>
     <string name="home_posts">Tweets</string>
     <string name="home_media">Mídia</string>
+    <string name="home_missing_page">Página ausente</string>
+    <string name="home_two_pages_required">Precisa ter pelo menos 2 páginas iniciais.</string>
+    <string name="home_choose_pages">Escolha as páginas</string>
+    <string name="home_unable_to_load_pages">Não foi possível carregar as suas páginas iniciais</string>
 </resources>

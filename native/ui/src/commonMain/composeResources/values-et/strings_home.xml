@@ -61,4 +61,8 @@
     <string name="home_alt_microblogging_group_detail">Kuva Mastodon, Bluesky ja Threads avakuval ühes jaotises. Eraldi kuvamiseks lülita see välja. Andmed ja seaded jäävad alles.</string>
     <string name="home_posts">Säutsud</string>
     <string name="home_media">Meedia</string>
+    <string name="home_missing_page">Puuduv lehekülg</string>
+    <string name="home_two_pages_required">Sul peab olema vähemalt 2 avalehte.</string>
+    <string name="home_choose_pages">Vali lehed</string>
+    <string name="home_unable_to_load_pages">Sinu kodulehtede laadimine ei õnnestunud</string>
 </resources>

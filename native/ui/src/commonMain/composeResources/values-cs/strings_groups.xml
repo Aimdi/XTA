@@ -184,7 +184,7 @@
     <string name="groups_yes">Ano</string>
     <string name="groups_zen_end">To je prozatím vše</string>
     <string name="groups_zen_load_more">Přesto načíst další</string>
-    <string name="groups_add_member_hint">Vyhledejte na X účet, který chcete odebírat a přidat</string>
+    <string name="groups_add_member_hint">Hledejte na X, nebo zadejte subreddit, jméno na Threads či Bluesky, adresu ve Fediverse nebo newsletter</string>
     <string name="groups_menu">Zobrazit nabídku</string>
     <string name="groups_refresh">Obnovit</string>
     <plurals name="groups_member_count">

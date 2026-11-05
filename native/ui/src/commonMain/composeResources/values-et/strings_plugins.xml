@@ -52,4 +52,5 @@
     <string name="plugin_problem_other">%1$s lugemisel läks midagi valesti.</string>
     <string name="plugin_store_search">Otsi pluginaid</string>
     <string name="plugin_store_no_results">Tulemusi pole</string>
+    <string name="plugin_open_client">Ava %1$s</string>
 </resources>

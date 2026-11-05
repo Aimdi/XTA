@@ -13,6 +13,7 @@ import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.ThemePrefs
 import com.aimdi.xtanative.ui.group.ReadMarks
 import com.aimdi.xtanative.ui.settings.HomePages
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,6 +32,8 @@ data class HomeUi(
     val initialIndex: Int,
     /** The networks plugins offer for the strip, pinned or not. */
     val networks: List<StripNetwork>,
+    /** The installed networks with no timeline to show ([HomeNetworks.missing]): their bar page says it is missing. */
+    val missing: Set<String> = emptySet(),
     /** The networks the reader put on the strip, in their order. */
     val pins: List<String>,
     val filter: HomeFilterDraft,
@@ -59,9 +62,15 @@ data class HomeUi(
 /**
  * Home's timelines and bar, from the session, the settings (pins, opening
  * page and timeline, filter, Home pages, Theme's switches) and the plugins'
- * networks; and which feeds have posts the reader has not read.
+ * networks; and which feeds have posts the reader has not read. When the
+ * pages cannot be built, [failure] says why, as XTA's Home shows "Unable to
+ * load your home pages" with Reset pages to default.
  */
-class HomeViewModel(private val graph: AppGraph, networks: StateFlow<List<StripNetwork>>) : ViewModel() {
+class HomeViewModel(
+    private val graph: AppGraph,
+    networks: StateFlow<List<StripNetwork>>,
+    missing: StateFlow<Set<String>> = MutableStateFlow(emptySet()),
+) : ViewModel() {
     private var opening: Pair<Int, Int>? = null
     private val unreadKeys = MutableStateFlow<Set<String>>(emptySet())
     private var unreadJob: Job? = null
@@ -69,23 +78,36 @@ class HomeViewModel(private val graph: AppGraph, networks: StateFlow<List<StripN
     /** The keys of the feeds with unread posts ([HomeTab.key]): Following, For you and the groups. */
     val unread: StateFlow<Set<String>> = unreadKeys.asStateFlow()
 
-    /** Null until the session and the settings are read. */
-    val ui: StateFlow<HomeUi?> = combine(graph.sessions.state.filterNotNull(), graph.settings.settings, networks) { session, settings, available ->
-        build(session, settings, available)
+    private val failed = MutableStateFlow<Throwable?>(null)
+
+    /** Why Home's pages could not be built, or null. */
+    val failure: StateFlow<Throwable?> = failed.asStateFlow()
+
+    /** Null until the session and the settings are read, and while they cannot be built ([failure]). */
+    val ui: StateFlow<HomeUi?> = combine(graph.sessions.state.filterNotNull(), graph.settings.settings, networks, missing) { session, settings, available, broken ->
+        try {
+            build(session, settings, available, broken).also { failed.value = null }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            failed.value = e
+            null
+        }
     }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
-    private fun build(session: Session, settings: Settings, available: List<StripNetwork>): HomeUi {
+    private fun build(session: Session, settings: Settings, available: List<StripNetwork>, missing: Set<String>): HomeUi {
         val ids = available.mapTo(HashSet()) { it.id }
         val pins = settings[HomePrefs.feedStripNetworks]
         // XTA's Home turns between Following, X and the pinned networks; a group opens on its own screen.
         val tabs = HomeStrip.tabs(pins, ids::contains, emptyList())
-        val bar = barOf(session, settings, ids)
+        val bar = barOf(session, settings, ids + missing)
         val (index, barIndex) = opening ?: openingOf(tabs, bar, settings).also { opening = it }
         return HomeUi(
             session = session,
             tabs = tabs,
             initialIndex = index,
             networks = available,
+            missing = missing,
             pins = pins,
             filter = HomeFilter.draftOf(session, settings),
             readingPosition = settings[PostsPrefs.rememberReadingPosition],
@@ -158,6 +180,11 @@ class HomeViewModel(private val graph: AppGraph, networks: StateFlow<List<StripN
                 ReadMarks(graph.feedCache(ReadMarks.key(key))).unread(HomeUnread.tracks(session, tab, reading))
             }.mapTo(HashSet()) { it.key }
         }
+    }
+
+    /** Home's pages back to its four, as XTA's Reset pages to default puts them. */
+    fun resetPages() {
+        viewModelScope.launch { graph.settings.set(HomePrefs.pages, HomePages.DEFAULTS) }
     }
 
     /** The options [networkId] keeps pinned to its top bar, in their order. */

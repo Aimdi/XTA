@@ -33,3 +33,14 @@ class PluginSubscription(
         fun siteOf(url: String): String = url.toHttpUrlOrNull()?.host ?: url
     }
 }
+
+/**
+ * Something typed into a group's add box that a plugin can follow
+ * ([XtaPlugin.followable], XTA's GroupAddCandidate): [label] as its row shows
+ * it ("r/dartlang", "@alice.bsky.social", a newsletter's site), and [follow],
+ * which follows it in the plugin, looking it up on the network where it has
+ * to, and answers it as the plugin's group members name it
+ * ([PluginHost.addToGroup]). [follow] throws when the network has no such
+ * account or feed, for the box to say so. Nothing is followed on the network.
+ */
+class PluginFollowable(val label: String, val follow: suspend () -> String)

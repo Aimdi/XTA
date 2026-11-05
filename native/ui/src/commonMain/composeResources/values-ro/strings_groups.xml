@@ -184,7 +184,7 @@
     <string name="groups_yes">Da</string>
     <string name="groups_zen_end">Asta e tot deocamdată</string>
     <string name="groups_zen_load_more">Încarcă mai mult oricum</string>
-    <string name="groups_add_member_hint">Caută pe X un cont la care să te abonezi și pe care să-l adaugi</string>
+    <string name="groups_add_member_hint">Caută pe X sau scrie un subreddit, un nume de pe Threads ori Bluesky, o adresă din Fedivers sau un buletin informativ</string>
     <string name="groups_menu">Afișați meniul</string>
     <string name="groups_refresh">Actualizează</string>
     <plurals name="groups_member_count">

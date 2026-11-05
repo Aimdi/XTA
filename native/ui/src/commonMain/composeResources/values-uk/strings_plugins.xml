@@ -52,4 +52,5 @@
     <string name="plugin_problem_other">Під час читання %1$s щось пішло не так.</string>
     <string name="plugin_store_search">Шукати плагіни</string>
     <string name="plugin_store_no_results">Немає результатів</string>
+    <string name="plugin_open_client">Відкрити %1$s</string>
 </resources>

@@ -50,8 +50,10 @@ object IntroFlow {
 /**
  * The sources card (intro_sources_page.dart): the networks that can sit on
  * Home and that the store lists openly, in XTA's registry order. A tile turned
- * on switches its network on and pins it on Home's strip; turned off, it
- * comes off the strip and is switched off, keeping what it stored.
+ * on switches its network on and pins it on Home's strip, and installs its
+ * plugin from the catalogue when it is not installed, as XTA's built-in
+ * networks are there already; turned off, it comes off the strip and is
+ * switched off, keeping what it stored (and its plugin).
  */
 object IntroSources {
     /** The networks the store keeps behind "Show private plugins". */
@@ -71,6 +73,13 @@ object IntroSources {
         }
     }
 
+    /** Whether turning [network]'s tile in [settings] installs its plugin: turned on, and not [installed]. */
+    fun installs(settings: Settings, network: NetworkPrefs, installed: Boolean): Boolean = !selected(settings, network) && !installed
+
+    /** [settings] with [network]'s tile back off, as its plugin could not be installed; as they are when it is off already. */
+    fun withdrawn(settings: Settings, network: NetworkPrefs): Settings =
+        if (selected(settings, network)) toggled(settings, network) else settings
+
     /** A chosen network that shows nothing until it is set up: Mastodon without an instance, RSS without a feed. */
     fun needsSetup(settings: Settings, network: NetworkPrefs): Boolean = when (network) {
         MastodonPrefs -> settings[MastodonPrefs.instance].isBlank()
@@ -85,5 +94,39 @@ object IntroSources {
      */
     fun toSetUp(settings: Settings, plugins: PluginIds = PluginIds()): List<NetworkPrefs> = networks.filter {
         selected(settings, it) && needsSetup(settings, it) && NetworkSections.place(it.id, plugins) != NetworkSettingsPlace.NONE
+    }
+}
+
+/** The measures of the intro's drawings (intro_phone_illustration.dart, xta_mark.dart), in the units they are drawn in. */
+object IntroDrawing {
+    /** The launcher mark's ellipses as shares of its square: half their long and short axes, and the stroke. */
+    const val MARK_SEMI_MAJOR = 0.608
+    const val MARK_SEMI_MINOR = 0.229
+    const val MARK_STROKE = 0.089
+
+    /** The phone's module: an avatar's size, which every other measure follows, as a share of its width. */
+    const val PHONE_UNIT = 0.135
+
+    /**
+     * The placeholder posts that fit between the phone's notch and its
+     * bottom edge (IntroPhone.rowsFor): a row is its two bars (1.25 units)
+     * and a one-unit gap; never fewer than two or more than five.
+     */
+    fun phoneRows(width: Double, height: Double): Int {
+        val unit = width * PHONE_UNIT
+        val screen = height - unit * 3.45 - 4
+        return ((screen + unit) / (2.25 * unit)).toInt().coerceIn(2, 5)
+    }
+
+    /**
+     * A point on the centre line of one of the mark's ellipses, from the
+     * mark's centre ([xtaMarkOrbitPoint]): [angle] (radians) picks the
+     * ellipse, [t] from 0 to 1 walks round it; [mark] is the mark's size.
+     */
+    fun orbitPoint(mark: Double, angle: Double, t: Double): Pair<Double, Double> {
+        val theta = 2 * Math.PI * t
+        val x = MARK_SEMI_MAJOR * mark * kotlin.math.cos(theta)
+        val y = MARK_SEMI_MINOR * mark * kotlin.math.sin(theta)
+        return (x * kotlin.math.cos(angle) - y * kotlin.math.sin(angle)) to (x * kotlin.math.sin(angle) + y * kotlin.math.cos(angle))
     }
 }

@@ -53,7 +53,9 @@ import com.aimdi.xtanative.ui.saved.KeepNotice
 import com.aimdi.xtanative.ui.saved.KeepNotices
 import com.aimdi.xtanative.ui.saved.Keepable
 import com.aimdi.xtanative.ui.saved.Keeping
+import com.aimdi.xtanative.ui.subscriptions.FollowableRow
 import com.aimdi.xtanative.ui.subscriptions.GroupActions
+import com.aimdi.xtanative.ui.subscriptions.GroupAddSources
 import com.aimdi.xtanative.ui.subscriptions.PluginFollows
 import com.aimdi.xtanative.ui.subscriptions.SubscriptionList
 import com.aimdi.xtanative.ui.subscriptions.SubscriptionRow
@@ -217,6 +219,11 @@ class AppPlugins(
     val stripNetworks: StateFlow<List<StripNetwork>> = combine(running, language) { list, tag ->
         list.filter { it.plugin.homeTab != null }.map { StripNetwork(it.plugin.id, guardedNow { it.plugin.title(tag) } ?: it.plugin.id) }
     }.stateIn(scope, SharingStarted.Eagerly, emptyList())
+
+    /** The installed plugins Home has no timeline of: those that could not be started, and those running without a home tab. */
+    val missingNetworks: StateFlow<Set<String>> = combine(running, startProblems) { list, problems ->
+        problems.keys + list.filter { guardedNow { it.plugin.homeTab } == null }.map { it.plugin.id }
+    }.stateIn(scope, SharingStarted.Eagerly, emptySet())
 
     /** The plugins the reader put on Home's strip, in their order. */
     val stripPins: Flow<List<String>> = settings.settings.map { it[HomePrefs.feedStripNetworks] }.distinctUntilChanged()
@@ -490,6 +497,19 @@ class AppPlugins(
 
         override suspend fun accounts(): List<NetworkAccount> = running.value.flatMap { running ->
             subscriptionsOf(running.plugin).orEmpty().map { NetworkAccount(running.plugin.id, it.backupId, it.id) }
+        }
+
+        override fun followables(text: String): List<FollowableRow> = GroupAddSources.pluginsFor(text).mapNotNull { id ->
+            val plugin = runningOf(id)?.plugin ?: return@mapNotNull null
+            val followable = guardedNow { plugin.followable(text) } ?: return@mapNotNull null
+            FollowableRow(id, followable.label) {
+                val account = try {
+                    withContext(Dispatchers.Default) { followable.follow() }
+                } catch (e: LinkageError) {
+                    throw IllegalStateException(e)
+                }
+                PluginMembers.memberId(id, account)
+            }
         }
 
         /** What [plugin] follows now, or null when it cannot say in [ASKED_MILLIS]. */

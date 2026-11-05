@@ -184,7 +184,7 @@
     <string name="groups_yes">Так</string>
     <string name="groups_zen_end">Пакуль гэта ўсё</string>
     <string name="groups_zen_load_more">Усё роўна загрузіць яшчэ</string>
-    <string name="groups_add_member_hint">Шукайце ў X уліковы запіс, каб чытаць яго і дадаць у групу</string>
+    <string name="groups_add_member_hint">Шукайце ў X або ўвядзіце сабрэдыт, імя ў Threads ці Bluesky, адрас у Федзіверсуме або рассылку</string>
     <string name="groups_menu">Паказаць меню</string>
     <string name="groups_refresh">Абнавіць</string>
     <plurals name="groups_member_count">

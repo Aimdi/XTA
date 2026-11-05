@@ -359,4 +359,8 @@
         <item quantity="one">%1$d crashrapport bewaard</item>
         <item quantity="other">%1$d crashrapporten bewaard</item>
     </plurals>
+    <string name="intro_illustration_orbit">Bronlogo's die om het XTA-merk draaien</string>
+    <string name="intro_illustration_phone">Berichten, likes en opgeslagen items in een telefoon</string>
+    <string name="intro_illustration_flow">Berichten gaan van X naar je telefoon, nooit terug</string>
+    <string name="intro_page_of">Pagina %1$d van %2$d</string>
 </resources>

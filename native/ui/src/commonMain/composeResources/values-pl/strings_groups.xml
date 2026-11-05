@@ -184,7 +184,7 @@
     <string name="groups_yes">Tak</string>
     <string name="groups_zen_end">To na razie wszystko</string>
     <string name="groups_zen_load_more">Mimo to wczytaj więcej</string>
-    <string name="groups_add_member_hint">Wyszukaj w X konto, które chcesz subskrybować i dodać</string>
+    <string name="groups_add_member_hint">Szukaj na X albo wpisz subreddit, nazwę na Threads lub Bluesky, adres w fediwersum czy newsletter</string>
     <string name="groups_menu">Pokaż menu</string>
     <string name="groups_refresh">Odśwież</string>
     <plurals name="groups_member_count">

@@ -52,4 +52,5 @@
     <string name="plugin_problem_other">Algo correu mal ao ler %1$s.</string>
     <string name="plugin_store_search">Pesquisar plugins</string>
     <string name="plugin_store_no_results">Nenhum resultado</string>
+    <string name="plugin_open_client">Abrir %1$s</string>
 </resources>

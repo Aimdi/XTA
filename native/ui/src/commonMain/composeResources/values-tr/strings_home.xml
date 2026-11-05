@@ -61,4 +61,8 @@
     <string name="home_alt_microblogging_group_detail">Mastodon, Bluesky ve Threads’i ana ekranda tek bir bölümde gösterir. Ayrı göstermek için kapatın. Verileriniz ve ayarlarınız korunur.</string>
     <string name="home_posts">Tweet'ler</string>
     <string name="home_media">Medya</string>
+    <string name="home_missing_page">Eksik sayfa</string>
+    <string name="home_two_pages_required">En az 2 ana ekran sayfanızın olması gerekir.</string>
+    <string name="home_choose_pages">Sayfaları seçin</string>
+    <string name="home_unable_to_load_pages">Ana sayfalarınız yüklenemiyor</string>
 </resources>

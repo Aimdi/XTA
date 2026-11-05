@@ -63,4 +63,8 @@
     <string name="home_alt_microblogging_group_detail">Zobrazit Mastodon, Bluesky a Threads v jedné sekci na hlavní obrazovce. Vypnutím je znovu oddělíte. Data a nastavení zůstanou zachována.</string>
     <string name="home_posts">Tweety</string>
     <string name="home_media">Média</string>
+    <string name="home_missing_page">Chybějící stránka</string>
+    <string name="home_two_pages_required">Musíte mít alespoň 2 stránky domovské obrazovky.</string>
+    <string name="home_choose_pages">Vybrat stránky</string>
+    <string name="home_unable_to_load_pages">Nepodařilo se načíst vaše domovské stránky</string>
 </resources>

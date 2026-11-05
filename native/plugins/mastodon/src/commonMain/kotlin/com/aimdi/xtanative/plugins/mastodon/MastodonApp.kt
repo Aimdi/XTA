@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.plugins.mastodon
 
+import com.aimdi.xtanative.networks.mastodon.MastodonAcct
 import com.aimdi.xtanative.networks.mastodon.MastodonClient
 import com.aimdi.xtanative.networks.mastodon.MastodonExploreReader
 import com.aimdi.xtanative.networks.mastodon.MastodonFollow
@@ -21,6 +22,7 @@ import com.aimdi.xtanative.ui.plugins.NetworkPost
 import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.NetworkPostExtras
 import com.aimdi.xtanative.ui.plugins.PluginFeed
+import com.aimdi.xtanative.ui.plugins.PluginFollowable
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginPostMenu
 import com.aimdi.xtanative.ui.plugins.PluginSubscription
@@ -135,6 +137,21 @@ internal class MastodonApp(val host: PluginHost) {
         throw e
     } catch (e: Exception) {
         e
+    }
+
+    /**
+     * [text] as a Fediverse address for a group's add box ("@user@domain"):
+     * looked up where it lives, as XTA's box looks it up, so that one no
+     * instance knows says so, then followed here and named as the groups hold it.
+     */
+    fun followable(text: String): PluginFollowable? {
+        val acct = MastodonAcct.normalise(text) ?: return null
+        return PluginFollowable("@$acct") {
+            val profile = client.lookupAnywhere(candidates(acct), acct)
+            if (!follows.load().any { it.isOf(profile.acct) }) follows.follow(profile, XtaTime.sqlite(Instant.now()))
+            following.refresh(force = false)
+            profile.acct
+        }
     }
 
     /** [profile] followed here, or no longer; Following read again. */

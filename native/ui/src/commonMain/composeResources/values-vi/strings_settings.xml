@@ -357,4 +357,8 @@
     <plurals name="settings_crash_count">
         <item quantity="other">Đã lưu %1$d báo cáo sự cố</item>
     </plurals>
+    <string name="intro_illustration_orbit">Logo các nguồn xoay quanh biểu tượng XTA</string>
+    <string name="intro_illustration_phone">Bài viết, lượt thích và mục đã lưu bên trong một chiếc điện thoại</string>
+    <string name="intro_illustration_flow">Bài viết đi từ X đến điện thoại của bạn, không bao giờ ngược lại</string>
+    <string name="intro_page_of">Trang %1$d / %2$d</string>
 </resources>

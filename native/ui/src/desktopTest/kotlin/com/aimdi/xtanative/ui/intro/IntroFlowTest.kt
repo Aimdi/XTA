@@ -66,4 +66,33 @@ class IntroFlowTest {
         val installed = offered.copy(installed = setOf("mastodon"))
         assertEquals(listOf("mastodon", "rss"), IntroSources.toSetUp(chosen, installed).map { it.id })
     }
+
+    @Test
+    fun turningOnANetworkNotInstalledInstallsItAndAFailedInstallTakesItOffAgain() {
+        val off = Settings()
+        assertTrue(IntroSources.installs(off, BlueskyPrefs, installed = false))
+        assertFalse(IntroSources.installs(off, BlueskyPrefs, installed = true))
+        val on = IntroSources.toggled(off, BlueskyPrefs)
+        assertFalse(IntroSources.installs(on, BlueskyPrefs, installed = false))
+        val withdrawn = IntroSources.withdrawn(on, BlueskyPrefs)
+        assertFalse(IntroSources.selected(withdrawn, BlueskyPrefs))
+        assertFalse("bluesky" in withdrawn[HomePrefs.feedStripNetworks])
+        assertEquals(off, IntroSources.withdrawn(off, BlueskyPrefs))
+    }
+
+    @Test
+    fun aPhoneHoldsTheRowsThatFitItsScreen() {
+        assertEquals(5, IntroDrawing.phoneRows(100.0, 190.0))
+        assertEquals(2, IntroDrawing.phoneRows(100.0, 100.0))
+        assertEquals(2, IntroDrawing.phoneRows(100.0, 10.0))
+    }
+
+    @Test
+    fun theOrbitWalksRoundTheMarksEllipses() {
+        val (x, y) = IntroDrawing.orbitPoint(100.0, 0.0, 0.0)
+        assertEquals(60.8, x, 1e-9)
+        assertEquals(0.0, y, 1e-9)
+        val (_, top) = IntroDrawing.orbitPoint(100.0, 0.0, 0.25)
+        assertEquals(22.9, top, 1e-9)
+    }
 }

@@ -363,4 +363,8 @@
         <item quantity="many">%1$d spravazdač pra zboi</item>
         <item quantity="other">%1$d spravazdačy pra zboi</item>
     </plurals>
+    <string name="intro_illustration_orbit">Znaki krynic kružać vakoł znaka XTA</string>
+    <string name="intro_illustration_phone">Dopisy, lajki i zachavanaje ŭnutry telefona</string>
+    <string name="intro_illustration_flow">Dopisy iduć z X na vaš telefon i nikoli nazad</string>
+    <string name="intro_page_of">Staronka %1$d z %2$d</string>
 </resources>

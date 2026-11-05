@@ -361,4 +361,8 @@
         <item quantity="many">%1$d de relatórios de falhas salvos</item>
         <item quantity="other">%1$d relatórios de falhas salvos</item>
     </plurals>
+    <string name="intro_illustration_orbit">Logotipos de fontes orbitando a marca XTA</string>
+    <string name="intro_illustration_phone">Publicações, curtidas e itens salvos dentro de um celular</string>
+    <string name="intro_illustration_flow">As publicações vão do X para o seu celular, nunca o contrário</string>
+    <string name="intro_page_of">Página %1$d de %2$d</string>
 </resources>

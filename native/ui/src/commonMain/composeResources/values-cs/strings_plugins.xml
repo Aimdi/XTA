@@ -52,4 +52,5 @@
     <string name="plugin_problem_other">Při čtení z %1$s se něco pokazilo.</string>
     <string name="plugin_store_search">Hledat pluginy</string>
     <string name="plugin_store_no_results">Žádné výsledky</string>
+    <string name="plugin_open_client">Otevřít %1$s</string>
 </resources>

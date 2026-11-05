@@ -184,7 +184,7 @@
     <string name="groups_yes">是</string>
     <string name="groups_zen_end">目前就這些了</string>
     <string name="groups_zen_load_more">仍要載入更多</string>
-    <string name="groups_add_member_hint">在 X 上搜尋要訂閱並加入的帳號</string>
+    <string name="groups_add_member_hint">在 X 上搜尋，或輸入版塊、Threads 或 Bluesky 使用者名稱、聯邦宇宙位址，或一份電子報</string>
     <string name="groups_menu">顯示選單</string>
     <string name="groups_refresh">重新整理</string>
     <plurals name="groups_member_count">

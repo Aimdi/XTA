@@ -61,4 +61,8 @@
     <string name="home_alt_microblogging_group_detail">Mostra Mastodon, Bluesky e Threads in una sola sezione della Home. Disattiva per separarli. I dati e le impostazioni restano invariati.</string>
     <string name="home_posts">Tweet</string>
     <string name="home_media">Contenuti</string>
+    <string name="home_missing_page">Pagina mancante</string>
+    <string name="home_two_pages_required">È necessario avere almeno due pagine nella home.</string>
+    <string name="home_choose_pages">Scegli le pagine</string>
+    <string name="home_unable_to_load_pages">Impossibile caricare le tue pagine della home</string>
 </resources>

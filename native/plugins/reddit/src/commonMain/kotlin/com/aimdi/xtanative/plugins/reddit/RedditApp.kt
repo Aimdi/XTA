@@ -26,6 +26,7 @@ import com.aimdi.xtanative.ui.plugins.MediaItem
 import com.aimdi.xtanative.ui.plugins.NetworkPost
 import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.PluginFeed
+import com.aimdi.xtanative.ui.plugins.PluginFollowable
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginPostMenu
 import com.aimdi.xtanative.ui.plugins.PluginSubscription
@@ -241,6 +242,15 @@ internal class RedditApp(val host: PluginHost) {
     fun addToGroup(subreddit: String) {
         val name = normaliseSubreddit(subreddit) ?: subreddit
         host.addToGroup(name.lowercase()) { followNow(name) }
+    }
+
+    /** [text] as a subreddit for a group's add box ("r/name"), followed here and named as the groups hold it; null when it names none. */
+    fun followable(text: String): PluginFollowable? {
+        val name = normaliseSubreddit(text) ?: return null
+        return PluginFollowable("r/$name") {
+            followNow(name)
+            name.lowercase()
+        }
     }
 
     private suspend fun followNow(name: String) {

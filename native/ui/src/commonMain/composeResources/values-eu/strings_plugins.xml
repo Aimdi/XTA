@@ -52,4 +52,5 @@
     <string name="plugin_problem_other">Zerbait gaizki joan da %1$s irakurtzean.</string>
     <string name="plugin_store_search">Bilatu pluginak</string>
     <string name="plugin_store_no_results">Ez dago emaitzarik</string>
+    <string name="plugin_open_client">Ireki %1$s</string>
 </resources>

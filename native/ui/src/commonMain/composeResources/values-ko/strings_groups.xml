@@ -184,7 +184,7 @@
     <string name="groups_yes">예</string>
     <string name="groups_zen_end">지금은 여기까지입니다</string>
     <string name="groups_zen_load_more">그래도 더 불러오기</string>
-    <string name="groups_add_member_hint">구독하고 추가할 계정을 X에서 검색하세요</string>
+    <string name="groups_add_member_hint">X에서 검색하거나 서브레딧, Threads·Bluesky 핸들, 페디버스 주소, 뉴스레터를 입력하세요</string>
     <string name="groups_menu">메뉴 표시</string>
     <string name="groups_refresh">새로고침</string>
     <plurals name="groups_member_count">

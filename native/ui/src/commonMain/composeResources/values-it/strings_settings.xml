@@ -361,4 +361,8 @@
         <item quantity="many">%1$d di segnalazioni di crash conservate</item>
         <item quantity="other">%1$d segnalazioni di crash conservate</item>
     </plurals>
+    <string name="intro_illustration_orbit">Loghi delle fonti in orbita attorno al marchio XTA</string>
+    <string name="intro_illustration_phone">Post, Mi piace ed elementi salvati dentro un telefono</string>
+    <string name="intro_illustration_flow">I post vanno da X al tuo telefono, mai indietro</string>
+    <string name="intro_page_of">Pagina %1$d di %2$d</string>
 </resources>

@@ -184,7 +184,7 @@
     <string name="groups_yes">Ja</string>
     <string name="groups_zen_end">Dat is alles voor nu</string>
     <string name="groups_zen_load_more">Toch meer laden</string>
-    <string name="groups_add_member_hint">Zoek op X naar een account om op te abonneren en toe te voegen</string>
+    <string name="groups_add_member_hint">Zoek op X, of typ een subreddit, een Threads- of Bluesky-naam, een Fediverse-adres of een nieuwsbrief</string>
     <string name="groups_menu">Menu tonen</string>
     <string name="groups_refresh">Vernieuwen</string>
     <plurals name="groups_member_count">

@@ -359,4 +359,8 @@
         <item quantity="one">%1$d konservita raporto pri paneo</item>
         <item quantity="other">%1$d konservitaj raportoj pri paneoj</item>
     </plurals>
+    <string name="intro_illustration_orbit">Fontaj markoj orbitantaj ĉirkaŭ la XTA-marko</string>
+    <string name="intro_illustration_phone">Afiŝoj, ŝatoj kaj konservitaĵoj en telefono</string>
+    <string name="intro_illustration_flow">Afiŝoj fluas de X al via telefono, neniam reen</string>
+    <string name="intro_page_of">Paĝo %1$d el %2$d</string>
 </resources>

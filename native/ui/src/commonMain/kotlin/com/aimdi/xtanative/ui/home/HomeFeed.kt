@@ -55,6 +55,7 @@ import com.aimdi.xtanative.core.feed.FeedSort
 import com.aimdi.xtanative.core.feed.FeedStrip
 import com.aimdi.xtanative.ui.common.LocalParentTurnsPages
 import com.aimdi.xtanative.ui.common.XIcons
+import com.aimdi.xtanative.ui.common.rememberScreenReaderOn
 import com.aimdi.xtanative.ui.feed.MediaModes
 import com.aimdi.xtanative.ui.feed.ToTop
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -116,7 +117,7 @@ internal fun HomeFeedPage(
     calls: FeedPageCalls,
 ) {
     val tabs = ui.tabs
-    val bar = if (ui.hideOnScroll) TopAppBarDefaults.enterAlwaysScrollBehavior() else TopAppBarDefaults.pinnedScrollBehavior()
+    val bar = if (ui.hideOnScroll && !rememberScreenReaderOn()) TopAppBarDefaults.enterAlwaysScrollBehavior() else TopAppBarDefaults.pinnedScrollBehavior()
     val current = tabs.getOrNull(timelines.index)
     val desktop = LocalDesktopActions.current != null
     val anyUnread = SourcePicker.sources(tabs).any { it.key in timelines.unread }

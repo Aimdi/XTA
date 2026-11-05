@@ -367,4 +367,8 @@
         <item quantity="many">%1$d تقريرًا للأعطال محفوظًا</item>
         <item quantity="other">%1$d تقرير أعطال محفوظ</item>
     </plurals>
+    <string name="intro_illustration_orbit">شعارات المصادر تدور حول علامة XTA</string>
+    <string name="intro_illustration_phone">منشورات وإعجابات وعناصر محفوظة داخل هاتف</string>
+    <string name="intro_illustration_flow">المنشورات تتدفق من X إلى هاتفك، ولا تعود أبدًا</string>
+    <string name="intro_page_of">الصفحة %1$d من %2$d</string>
 </resources>

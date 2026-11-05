@@ -184,7 +184,7 @@
     <string name="groups_yes">Ja</string>
     <string name="groups_zen_end">Det var alt for nå</string>
     <string name="groups_zen_load_more">Last inn mer likevel</string>
-    <string name="groups_add_member_hint">Søk på X etter en konto du vil abonnere på og legge til</string>
+    <string name="groups_add_member_hint">Søk på X, eller skriv inn en subreddit, et Threads- eller Bluesky-navn, en Fedivers-adresse eller et nyhetsbrev</string>
     <string name="groups_menu">Vis meny</string>
     <string name="groups_refresh">Oppdater</string>
     <plurals name="groups_member_count">
