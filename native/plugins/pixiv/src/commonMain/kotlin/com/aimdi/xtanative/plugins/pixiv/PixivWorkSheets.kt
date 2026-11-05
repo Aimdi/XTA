@@ -98,14 +98,14 @@ internal fun rememberOutside(): PixivOutside {
 
 /**
  * A work's long-press sheet (pixiv_post_actions.dart's showPixivPostActions):
- * Pixiv's own entries (save, the bookmark kept here, copy link, muting its
+ * Pixiv's own entries (save, its bookmark on Pixiv, copy link, muting its
  * creator or the work itself) above the shared post sheet's.
  */
 @Composable
 internal fun WorkActionsSheet(illust: PixivIllust, sheets: PixivSheets) {
     val runtime = LocalPixiv.current
-    val marks by runtime.bookmarks.state.collectAsState()
-    val bookmarked = marks.orEmpty().any { it.kind == PixivKind.WORK && it.kept.id == illust.id }
+    val marks by runtime.bookmarking.works.state.collectAsState()
+    val bookmarked = marks.on(illust.id, illust.isBookmarked)
     val haptics = rememberHaptics()
     val copy = rememberCopy()
     PixivSheetFrame(sheets) {
@@ -213,14 +213,14 @@ internal fun TagSheet(sheet: PixivSheet.Tag, sheets: PixivSheets) {
 
 /**
  * A novel's long-press sheet (pixiv_novel_actions.dart): Pixiv's own entries
- * (the bookmark kept here, its comments, copy link, muting its author or the
+ * (its bookmark on Pixiv, its comments, copy link, muting its author or the
  * novel) above the shared post sheet's.
  */
 @Composable
 internal fun NovelActionsSheet(novel: PixivNovel, sheets: PixivSheets) {
     val runtime = LocalPixiv.current
-    val marks by runtime.bookmarks.state.collectAsState()
-    val bookmarked = marks.orEmpty().any { it.kind == PixivKind.NOVEL && it.kept.id == novel.id }
+    val marks by runtime.bookmarking.novels.state.collectAsState()
+    val bookmarked = marks.on(novel.id, novel.isBookmarked)
     val haptics = rememberHaptics()
     val copy = rememberCopy()
     val language = currentLanguage()

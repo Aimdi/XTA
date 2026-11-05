@@ -220,7 +220,7 @@ internal class PixivHistory(private val file: StoreFile, private val kind: Pixiv
     }
 }
 
-/** A work or novel bookmarked on this device, under the reader's own [tags]. Nothing is bookmarked on Pixiv. */
+/** A work or novel this device kept bookmarked, under the reader's own [tags], before bookmarks went to Pixiv. */
 internal data class PixivDeviceBookmark(val kind: PixivKind, val kept: PixivKept, val tags: List<String>, val at: Instant) {
     val key: String get() = key(kind, kept.id)
 
@@ -230,8 +230,9 @@ internal data class PixivDeviceBookmark(val kind: PixivKind, val kept: PixivKept
 }
 
 /**
- * What the reader bookmarked on this device, newest first: the heart on a
- * work or a novel files it here, never on Pixiv. The backup keeps them.
+ * What the reader bookmarked on this device, newest first, from before the
+ * heart bookmarked on Pixiv as XTA's does: still listed, taken away when the
+ * bookmark is removed, and kept by the backup.
  */
 internal class PixivDeviceBookmarks(private val file: StoreFile) {
     private val mutable = MutableStateFlow<List<PixivDeviceBookmark>?>(null)

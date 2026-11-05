@@ -35,14 +35,36 @@ data class PixivBookmarkDetail(
 }
 
 /**
- * The reader's bookmarks as XTA reads them: how one work is bookmarked, and
- * the tags they file bookmarks under. The bookmarked works themselves are
- * [PixivClient.bookmarks]. Nothing is bookmarked on Pixiv from here.
+ * The reader's bookmarks as XTA keeps them: how one work is bookmarked, the
+ * tags they file bookmarks under, and the one place a work's bookmark is
+ * written to Pixiv. The bookmarked works themselves are [PixivClient.bookmarks].
  */
 class PixivBookmarkApi(private val client: PixivClient) {
     /** Whether and how the reader bookmarked [illustId], and the tags it is or could be filed under. */
     suspend fun detail(illustId: Long): PixivBookmarkDetail =
         PixivBookmarkDetail.parse(client.getJson("/v2/illust/bookmark/detail", mapOf("illust_id" to "$illustId")))
+
+    /**
+     * Bookmarks [illustId] with [restrict] (`public` or `private`), or files
+     * the bookmark it has again. Pixiv's form takes the whole tag list
+     * space-joined in a single `tags[]` field; a tag holding spaces is the
+     * tags it would become anyway.
+     */
+    suspend fun add(illustId: Long, restrict: String, tags: List<String> = emptyList()) {
+        val joined = tags.flatMap { it.split(whitespace) }.filter { it.isNotEmpty() }.distinct().joinToString(" ")
+        client.postForm(
+            "/v2/illust/bookmark/add",
+            buildMap {
+                put("illust_id", "$illustId")
+                put("restrict", restrict)
+                if (joined.isNotEmpty()) put("tags[]", joined)
+            },
+        )
+    }
+
+    suspend fun delete(illustId: Long) {
+        client.postForm("/v1/illust/bookmark/delete", mapOf("illust_id" to "$illustId"))
+    }
 
     /** One page of the reader's [restrict] bookmark tags, with their counts. */
     suspend fun tags(restrict: String, next: String? = null): Page<PixivBookmarkTag> {
@@ -66,6 +88,8 @@ class PixivBookmarkApi(private val client: PixivClient) {
     )
 
     companion object {
+        private val whitespace = Regex("\\s+")
+
         /** How many pages of tags [allTags] reads by default. */
         const val KNOWN_TAG_PAGE_LIMIT = 10
     }

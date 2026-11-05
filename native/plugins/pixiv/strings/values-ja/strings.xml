@@ -29,10 +29,14 @@
     <string name="bookmark_auto_tag">ブックマークに自動でタグを付ける</string>
     <string name="bookmark_auto_tag_description">エディタを使わずに付けたブックマークには作品自身のタグが付きます。1000users入りのような人気タグは除きます。</string>
     <string name="bookmark_clear_all">すべて外す</string>
+    <string name="bookmark_default_private">非公開でブックマーク</string>
+    <string name="bookmark_default_private_description">エディタを使わずに付けたブックマークは非公開になります。エディタで公開に変えることもできます。</string>
     <string name="bookmark_edit">ブックマークを編集</string>
     <string name="bookmark_follow_after">ブックマーク時にフォロー</string>
-    <string name="bookmark_follow_after_description">新しくブックマークすると、まだフォローしていない作者をこの端末でフォローします。</string>
+    <string name="bookmark_follow_after_description">新しくブックマークすると、まだフォローしていない作者を公開でフォローします。</string>
     <string name="bookmark_followed_author">%1$s をフォローしました</string>
+    <string name="bookmark_private">非公開ブックマーク</string>
+    <string name="bookmark_private_hint">自分だけが見られます</string>
     <string name="bookmark_save_after">ブックマーク時に保存</string>
     <string name="bookmark_save_after_description">新しくブックマークすると、作品の全ページも保存します。</string>
     <string name="bookmark_select_all">すべて選択</string>
@@ -131,12 +135,13 @@
     <string name="folder_r18_description">R-18 作品をダウンロードフォルダ内の「R-18」フォルダに保存します</string>
     <string name="follow">フォローする</string>
     <string name="follow_private">非公開</string>
+    <string name="follow_privately">非公開でフォロー</string>
+    <string name="follow_privately_hint">フォローしていることはあなたにしか見えません</string>
     <string name="follow_public">公開</string>
     <string name="follow_restrict_all">フォロー中のすべてのクリエイター</string>
     <string name="follow_restrict_device">この端末でフォロー中のクリエイター</string>
     <string name="follow_restrict_private">非公開フォロー中のクリエイター</string>
     <string name="follow_restrict_public">公開フォロー中のクリエイター</string>
-    <string name="followed_on_pixiv">Pixivでフォロー中</string>
     <string name="following">フォロー</string>
     <plurals name="following_count"><item quantity="other">フォロー %2$s</item></plurals>
     <string name="follows_here">この端末</string>
@@ -208,12 +213,14 @@
     <string name="not_configured">Pixivにログインしてフォロー・ランキング・ブックマークを見る</string>
     <string name="novel">小説</string>
     <string name="novel_author_novels">この作者の小説を見る</string>
+    <string name="novel_bookmark_private">非公開でブックマーク</string>
     <string name="novel_bookmarks_empty">公開でブックマークした小説がここに表示されます</string>
     <string name="novel_bookmarks_private_empty">非公開でブックマークした小説がここに表示されます</string>
     <string name="novel_chapter_number">第%1$d話</string>
     <plurals name="novel_chapters_count"><item quantity="other">%2$s話</item></plurals>
     <plurals name="novel_characters"><item quantity="other">%2$s文字</item></plurals>
     <string name="novel_export">テキストとして書き出す</string>
+    <string name="novel_export_failed">小説を書き出せませんでした</string>
     <string name="novel_export_markup">Pixivのタグ付き</string>
     <string name="novel_export_markup_hint">Pixivに保存されているままの本文（[newpage]などのタグを含む）</string>
     <string name="novel_export_plain">プレーンテキスト</string>
@@ -418,7 +425,7 @@
     <string name="series_position">全%2$d件中 %1$d件目</string>
     <string name="series_previous">シリーズの前の作品</string>
     <string name="series_started">%1$s 開始</string>
-    <string name="settings_intro">この非公開プラグインは Pixiv をギャラリーアプリのように閲覧します：イラスト、マンガ、小説、ランキング、ブックマーク、検索。「ログイン」をタップして Pixiv アカウントでログインするか、下にリフレッシュトークンを貼り付けてください。ブックマーク、フォロー、閲覧履歴はこの端末に保存され、Pixiv アカウントへ送信・投稿・変更されることは一切ありません。</string>
+    <string name="settings_intro">このプライベートプラグインはギャラリーアプリのようにPixivを読みます。イラスト、マンガ、小説、ランキング、ブックマーク、検索。サインインでブラウザからPixivにログインするか、下にリフレッシュトークンを貼ってください。Pixivアカウントに送られるのは、あなた自身が行ったブックマーク、フォロー、ウォッチリストの変更だけです。ここから投稿・コメント・通報をすることはありません。</string>
     <string name="share_image">画像を共有</string>
     <string name="share_image_failed">この画像を共有できませんでした</string>
     <string name="share_link">リンクを共有</string>
@@ -458,6 +465,8 @@
     <string name="ugoira_play">アニメーションを再生</string>
     <string name="ugoira_save_gif">GIF で保存</string>
     <string name="ugoira_save_zip">フレームを ZIP で保存</string>
+    <string name="ugoira_saved_gif">アニメーションを GIF で保存しました</string>
+    <string name="ugoira_saved_zip">フレームを ZIP で保存しました</string>
     <string name="ugoira_saving">保存中…</string>
     <string name="ugoira_slow">エンコードには 1 分ほどかかることがあります</string>
     <string name="unbookmark">ブックマークを外す</string>
@@ -467,7 +476,9 @@
     <string name="viewing_section">表示</string>
     <string name="walkthrough_sign_in">この作品を開くにはサインインしてください</string>
     <string name="walkthrough_title">Pixiv で人気</string>
+    <string name="watchlist_add">ウォッチリストに追加</string>
     <string name="watchlist_empty">ウォッチリストに追加したマンガシリーズがここに表示されます</string>
+    <string name="watchlist_remove">ウォッチリストから削除</string>
     <string name="watchlist_updated">%1$sに更新</string>
     <string name="watchlist_view_latest">最新話を見る</string>
     <plurals name="works_count"><item quantity="other">作品 %2$s</item></plurals>

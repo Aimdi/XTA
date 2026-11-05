@@ -18,10 +18,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import com.aimdi.xtanative.networks.pixiv.PixivIllust
+import com.aimdi.xtanative.networks.pixiv.PixivFailure
 import com.aimdi.xtanative.networks.pixiv.PixivImages
 import com.aimdi.xtanative.networks.pixiv.PixivNovel
 import com.aimdi.xtanative.networks.pixiv.PixivTag
 import com.aimdi.xtanative.networks.pixiv.PixivUgoira
+import com.aimdi.xtanative.networks.pixiv.PixivUser
 import com.aimdi.xtanative.store.settings.PixivPrefs
 import com.aimdi.xtanative.ui.plugins.MediaItem
 import com.aimdi.xtanative.ui.plugins.PluginDownload
@@ -45,7 +47,8 @@ internal sealed interface PixivSheet {
 
     data class EditWork(val illust: PixivIllust) : PixivSheet
 
-    data class EditNovel(val novel: PixivNovel) : PixivSheet
+    /** The follow dialog: follow privately or publicly, change the follow, or unfollow. */
+    data class Follow(val user: PixivUser) : PixivSheet
 
     data class NovelActions(val novel: PixivNovel) : PixivSheet
 
@@ -89,32 +92,63 @@ internal class PixivSheets(private val runtime: PixivRuntime, private val langua
         open = null
     }
 
-    /** The heart: bookmarks [illust] on this device with the defaults, or takes the bookmark away. */
-    fun toggleBookmark(illust: PixivIllust, haptics: PixivHaptics) = runtime.launch {
-        report(illust.userName, runtime.bookmarking.toggle(illust), haptics)?.let { if (it.saveAll) saveAll(illust) }
+    /** The heart: bookmarks [illust] on Pixiv with the defaults, or takes the bookmark away. */
+    fun toggleBookmark(illust: PixivIllust, haptics: PixivHaptics) = write(haptics, { runtime.bookmarking.toggle(illust) }) { landed(illust, it) }
+
+    /** A novel's heart: bookmarks it on Pixiv with the default visibility, or takes the bookmark away. */
+    fun toggleBookmark(novel: PixivNovel, haptics: PixivHaptics) = write(haptics, { runtime.bookmarking.toggle(novel) }) {}
+
+    /** A novel's long press: bookmarks it privately on Pixiv. */
+    fun bookmarkPrivately(novel: PixivNovel, haptics: PixivHaptics) = write(haptics, { runtime.bookmarking.bookmarkPrivately(novel) }) {}
+
+    /**
+     * One of the bookmark editor's writes: [done] hears null once it landed,
+     * else why it failed while the editor is still open; once the editor has
+     * gone, the reader hears why at the foot of the screen.
+     */
+    fun editBookmark(sheet: PixivSheet.EditWork, haptics: PixivHaptics, edit: suspend (PixivBookmarking) -> PixivBookmarkOutcome?, done: (Throwable?) -> Unit) = runtime.launch {
+        val outcome = try {
+            edit(runtime.bookmarking)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            if (open === sheet) done(e) else runtime.tell(failureText(PixivFailure.of(e)).get(language()))
+            return@launch
+        }
+        if (outcome != null) {
+            haptics.light()
+            landed(sheet.illust, outcome)
+        }
+        done(null)
     }
 
-    fun toggleBookmark(novel: PixivNovel, haptics: PixivHaptics) = runtime.launch {
-        report(novel.user.name, runtime.bookmarking.toggle(novel), haptics)
+    /** A follow button's tap: follows [user] publicly on Pixiv, or unfollows. */
+    fun toggleFollow(user: PixivUser, haptics: PixivHaptics) = write(haptics, { runtime.following.toggle(user) }) {}
+
+    /** What the follow dialog was closed with: follow with [restrict], or unfollow when it is null. */
+    fun answerFollow(user: PixivUser, restrict: String?, haptics: PixivHaptics) {
+        close()
+        write(haptics, { if (restrict == null) runtime.following.unfollow(user) else runtime.following.follow(user, restrict) }) {}
     }
 
-    fun saveBookmark(illust: PixivIllust, tags: List<String>, haptics: PixivHaptics) = runtime.launch {
-        report(illust.userName, runtime.bookmarking.bookmark(illust, tags), haptics)?.let { if (it.saveAll) saveAll(illust) }
-    }
-
-    fun saveBookmark(novel: PixivNovel, tags: List<String>, haptics: PixivHaptics) = runtime.launch {
-        report(novel.user.name, runtime.bookmarking.bookmark(novel, tags), haptics)
-    }
-
-    fun removeBookmark(kind: PixivKind, id: Long, haptics: PixivHaptics) = runtime.launch {
-        runtime.bookmarking.remove(kind, id)
+    /** Runs a write to Pixiv, a light buzz once it landed, the reason at the foot when it fails; null from [send] means nothing was written. */
+    private fun <T : Any> write(haptics: PixivHaptics, send: suspend () -> T?, after: (T) -> Unit) = runtime.launch {
+        val outcome = try {
+            send()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            runtime.tell(failureText(PixivFailure.of(e)).get(language()))
+            return@launch
+        } ?: return@launch
         haptics.light()
+        after(outcome)
     }
 
-    private fun report(author: String, outcome: PixivBookmarkOutcome, haptics: PixivHaptics): PixivBookmarkOutcome {
-        haptics.light()
-        if (outcome.followedAuthor) runtime.tell(Strings.bookmark_followed_author.get(language(), author))
-        return outcome
+    /** Says whom the bookmark followed, and saves the work when the reader asked for that. */
+    private fun landed(illust: PixivIllust, outcome: PixivBookmarkOutcome) {
+        if (outcome.followedAuthor) runtime.tell(Strings.bookmark_followed_author.get(language(), illust.userName))
+        if (outcome.saveAll) saveAll(illust)
     }
 
     fun saveAll(illust: PixivIllust) = savePages(illust, illust.viewerUrls.indices.toList())
@@ -175,7 +209,10 @@ internal class PixivSheets(private val runtime: PixivRuntime, private val langua
                 runtime.host.tell(Strings.ugoira_export_failed.get(language))
                 null
             }
-            if (saved == true) afterSave(illust, listOf(0))
+            if (saved == true) {
+                runtime.host.tell(Strings.ugoira_saved_gif.get(language))
+                afterSave(illust, listOf(0))
+            }
         }
     }
 
@@ -184,8 +221,9 @@ internal class PixivSheets(private val runtime: PixivRuntime, private val langua
             val archive: PixivUgoira = runCatching { runtime.client.ugoiraMetadata(illust.id) }.getOrNull() ?: return@launch runtime.tell(Strings.ugoira_export_failed.get(language()))
             val naming = PixivSaveNaming.of(runtime.settings.now)
             val file = PluginDownload(archive.archiveUrl(runtime.settings[PixivPrefs.imageHost]), naming.workName(illust, ".zip"))
-            val saved = runtime.host.downloadAll(listOf(file), naming.subfolder(illust))
-            afterSave(illust, if (saved.firstOrNull() == true) listOf(0) else emptyList())
+            val saved = runtime.host.downloadAll(listOf(file), naming.subfolder(illust)).firstOrNull() == true
+            if (saved) runtime.host.tell(Strings.ugoira_saved_zip.get(language()))
+            afterSave(illust, if (saved) listOf(0) else emptyList())
         }
     }
 
@@ -193,7 +231,14 @@ internal class PixivSheets(private val runtime: PixivRuntime, private val langua
     private suspend fun afterSave(illust: PixivIllust, saved: List<Int>) {
         if (saved.isEmpty()) return
         runtime.settings.update { PixivSavedPages.recorded(it, illust.id, saved) }
-        val outcome = runtime.bookmarking.afterSave(illust) ?: return
+        val outcome = try {
+            runtime.bookmarking.afterSave(illust)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            runtime.tell(failureText(PixivFailure.of(e)).get(language()))
+            null
+        } ?: return
         if (outcome.followedAuthor) runtime.tell(Strings.bookmark_followed_author.get(language(), illust.userName))
     }
 }
@@ -223,12 +268,8 @@ private fun PixivSheetHost(sheets: PixivSheets) {
         is PixivSheet.PageActions -> PageActionsSheet(sheet, sheets)
         is PixivSheet.Mute -> MuteSheet(sheet.illust, sheets)
         is PixivSheet.Tag -> TagSheet(sheet, sheets)
-        is PixivSheet.EditWork -> BookmarkEditor(PixivKind.WORK, sheet.illust.id, sheet.illust.title, sheet.illust.tags.map { it.name }, sheets) { tags, haptics ->
-            sheets.saveBookmark(sheet.illust, tags, haptics)
-        }
-        is PixivSheet.EditNovel -> BookmarkEditor(PixivKind.NOVEL, sheet.novel.id, sheet.novel.title, sheet.novel.tags.map { it.name }, sheets) { tags, haptics ->
-            sheets.saveBookmark(sheet.novel, tags, haptics)
-        }
+        is PixivSheet.EditWork -> BookmarkEditor(sheet, sheets)
+        is PixivSheet.Follow -> FollowDialog(sheet.user, sheets)
         is PixivSheet.NovelActions -> NovelActionsSheet(sheet.novel, sheets)
         is PixivSheet.Resave -> ResaveDialog(sheet, sheets)
         null -> Unit

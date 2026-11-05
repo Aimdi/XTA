@@ -29,10 +29,14 @@
     <string name="bookmark_auto_tag">Yer imlerini otomatik etiketle</string>
     <string name="bookmark_auto_tag_description">Düzenleyici olmadan eklediğin yer imleri eserin kendi etiketlerini alır; 1000users入り gibi popülerlik etiketleri hariç.</string>
     <string name="bookmark_clear_all">Tümünü kaldır</string>
+    <string name="bookmark_default_private">Varsayılan olarak özel yer imleri</string>
+    <string name="bookmark_default_private_description">Düzenleyici olmadan eklediğin yer imleri özeldir. Düzenleyicide istediğini herkese açık yapabilirsin.</string>
     <string name="bookmark_edit">Yer imini düzenle</string>
     <string name="bookmark_follow_after">Yer imine eklerken takip et</string>
-    <string name="bookmark_follow_after_description">Yeni bir yer imi, henüz takip etmiyorsan sanatçıyı bu cihazda da takip eder.</string>
+    <string name="bookmark_follow_after_description">Yeni bir yer imi, henüz takip etmiyorsan sanatçıyı herkese açık olarak da takip eder.</string>
     <string name="bookmark_followed_author">%1$s takip edildi</string>
+    <string name="bookmark_private">Özel yer imi</string>
+    <string name="bookmark_private_hint">Yalnızca sen görebilirsin</string>
     <string name="bookmark_save_after">Yer imine eklerken kaydet</string>
     <string name="bookmark_save_after_description">Yeni bir yer imi eserin tüm sayfalarını da kaydeder.</string>
     <string name="bookmark_select_all">Tümünü seç</string>
@@ -131,12 +135,13 @@
     <string name="folder_r18_description">R-18 eserlerini indirme klasöründeki “R-18” klasörüne koyar</string>
     <string name="follow">Takip et</string>
     <string name="follow_private">Özel</string>
+    <string name="follow_privately">Gizlice takip et</string>
+    <string name="follow_privately_hint">Takip ettiğinizi yalnızca siz görürsünüz</string>
     <string name="follow_public">Herkese açık</string>
     <string name="follow_restrict_all">Takip edilen tüm yaratıcılar</string>
     <string name="follow_restrict_device">Bu cihazda takip edilen yaratıcılar</string>
     <string name="follow_restrict_private">Gizli takip edilen yaratıcılar</string>
     <string name="follow_restrict_public">Herkese açık takip edilen yaratıcılar</string>
-    <string name="followed_on_pixiv">Pixiv'de takip ediliyor</string>
     <string name="following">Takip ediyor</string>
     <plurals name="following_count"><item quantity="one">%2$s takip edilen</item><item quantity="other">%2$s takip edilen</item></plurals>
     <string name="follows_here">Bu cihazda</string>
@@ -208,12 +213,14 @@
     <string name="not_configured">Takip, sıralama ve yer imlerini görmek için Pixiv’e giriş yapın</string>
     <string name="novel">Roman</string>
     <string name="novel_author_novels">Romanlarını gör</string>
+    <string name="novel_bookmark_private">Özel yer imlerine ekle</string>
     <string name="novel_bookmarks_empty">Herkese açık yer imlerine eklediğiniz romanlar burada görünür</string>
     <string name="novel_bookmarks_private_empty">Özel yer imlerine eklediğiniz romanlar burada görünür</string>
     <string name="novel_chapter_number">%1$d. bölüm</string>
     <plurals name="novel_chapters_count"><item quantity="one">%2$s bölüm</item><item quantity="other">%2$s bölüm</item></plurals>
     <plurals name="novel_characters"><item quantity="one">%2$s karakter</item><item quantity="other">%2$s karakter</item></plurals>
     <string name="novel_export">Metin olarak dışa aktar</string>
+    <string name="novel_export_failed">Roman dışa aktarılamadı</string>
     <string name="novel_export_markup">Pixiv biçimlendirmesiyle</string>
     <string name="novel_export_markup_hint">Metin, Pixiv'in sakladığı haliyle, [newpage] gibi etiketlerle birlikte</string>
     <string name="novel_export_plain">Düz metin</string>
@@ -418,7 +425,7 @@
     <string name="series_position">%2$d eserden %1$d.</string>
     <string name="series_previous">Serideki önceki</string>
     <string name="series_started">Başlangıç: %1$s</string>
-    <string name="settings_intro">Bu özel eklenti Pixiv'i bir galeri uygulaması gibi okur: çizimler, manga, romanlar, sıralamalar, yer imlerin ve arama. Pixiv hesabınla giriş yapmak için Giriş yap'a dokun ya da aşağıya bir yenileme belirteci yapıştır. Yer imleri, takipler ve geçmiş bu cihazda kalır: Pixiv hesabına hiçbir şey gönderilmez, paylaşılmaz veya orada değiştirilmez.</string>
+    <string name="settings_intro">Bu özel eklenti Pixiv’i bir galeri uygulaması gibi okur: illüstrasyonlar, mangalar, romanlar, sıralamalar, yer imleriniz ve arama. Giriş Yap’a dokunup tarayıcıda Pixiv hesabınızla oturum açın veya aşağıya yenileme jetonu yapıştırın. Pixiv hesabınıza yalnızca kendi yaptığınız yer imleri, takipler ve izleme listesi değişiklikleri gönderilir. Buradan asla gönderi paylaşılmaz, yorum yapılmaz veya şikâyette bulunulmaz.</string>
     <string name="share_image">Görseli paylaş</string>
     <string name="share_image_failed">Bu görsel paylaşılamadı</string>
     <string name="share_link">Bağlantıyı paylaş</string>
@@ -458,6 +465,8 @@
     <string name="ugoira_play">Animasyonu oynat</string>
     <string name="ugoira_save_gif">GIF olarak kaydet</string>
     <string name="ugoira_save_zip">Kareleri ZIP olarak kaydet</string>
+    <string name="ugoira_saved_gif">Animasyon GIF olarak kaydedildi</string>
+    <string name="ugoira_saved_zip">Kareler ZIP olarak kaydedildi</string>
     <string name="ugoira_saving">Kaydediliyor…</string>
     <string name="ugoira_slow">Kodlama bir dakika sürebilir</string>
     <string name="unbookmark">Yer imini kaldır</string>
@@ -467,7 +476,9 @@
     <string name="viewing_section">Görüntüleme</string>
     <string name="walkthrough_sign_in">Bu eseri açmak için oturum açın</string>
     <string name="walkthrough_title">Pixiv’de popüler</string>
+    <string name="watchlist_add">İzleme listesine ekle</string>
     <string name="watchlist_empty">İzleme listenize eklediğiniz manga serileri burada görünür</string>
+    <string name="watchlist_remove">İzleme listesinden çıkar</string>
     <string name="watchlist_updated">Güncellendi: %1$s</string>
     <string name="watchlist_view_latest">En yenisini gör</string>
     <plurals name="works_count"><item quantity="one">%2$s eser</item><item quantity="other">%2$s eser</item></plurals>

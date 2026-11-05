@@ -119,7 +119,7 @@ internal fun NovelExportSheet(onPick: (PixivNovelExportFormat) -> Unit, onClose:
 /**
  * Export as text: the novel's text as the format picked, in a file the
  * reader names and places through the system's save dialog, saying where it
- * went. Remembered by the reader's screen, so the dialog's answer outlives the sheet.
+ * went, or that it could not be exported when there is no text to write. Remembered by the reader's screen, so the dialog's answer outlives the sheet.
  */
 @Composable
 internal fun rememberNovelExport(novel: PixivNovel, reading: PixivNovelReading): (PixivNovelExportFormat) -> Unit {
@@ -129,7 +129,10 @@ internal fun rememberNovelExport(novel: PixivNovel, reading: PixivNovelReading):
         if (saved != null) runtime.tell(Strings.novel_exported.get(language, saved))
     }
     val markup = reading.content?.text
-    return { format -> if (markup != null) save(PixivNovelExport.fileName(novel.title, novel.id), PixivNovelExport.text(markup, reading.blocks, format)) }
+    return { format ->
+        val text = markup?.let { runCatching { PixivNovelExport.text(it, reading.blocks, format) }.getOrNull() }
+        if (text == null) runtime.tell(Strings.novel_export_failed.get(language)) else save(PixivNovelExport.fileName(novel.title, novel.id), text)
+    }
 }
 
 /** The app's reading appearance, which its article reader shares: text size and line spacing. */

@@ -178,7 +178,7 @@ private fun PaddingValues.plus(extra: Dp): PaddingValues = PaddingValues(
 /**
  * One cell of a works grid, picture first: its page count, ugoira, R-18 and
  * AI marks over it, a check once a page is saved here and the heart that
- * bookmarks it on this device; title, series, creator and Pixiv's bookmark
+ * bookmarks it on Pixiv; title, series, creator and Pixiv's bookmark
  * count under it. A long press opens the work's actions.
  */
 @OptIn(ExperimentalFoundationApi::class)
@@ -225,17 +225,19 @@ private fun SavedMark(illust: PixivIllust, modifier: Modifier) {
     }
 }
 
-/** The round heart over a tile: a tap bookmarks the work on this device or takes the bookmark away, a long press opens the editor. */
+/** The round heart over a tile: a tap bookmarks the work on Pixiv or takes the bookmark away, a long press opens the editor; faded while its write is on its way. */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun TileHeart(illust: PixivIllust, modifier: Modifier) {
     val runtime = LocalPixiv.current
     val sheets = LocalPixivSheets.current
     val haptics = rememberHaptics()
-    val marks by runtime.bookmarks.state.collectAsState()
-    val bookmarked = marks.orEmpty().any { it.kind == PixivKind.WORK && it.kept.id == illust.id }
+    val marks by runtime.bookmarking.works.state.collectAsState()
+    val bookmarked = marks.on(illust.id, illust.isBookmarked)
+    val busy = marks.isBusy(illust.id)
     Box(
         modifier.size(48.dp).clip(CircleShape).combinedClickable(
+            enabled = !busy,
             onClick = { sheets.toggleBookmark(illust, haptics) },
             onLongClick = {
                 haptics.medium()
@@ -248,7 +250,7 @@ private fun TileHeart(illust: PixivIllust, modifier: Modifier) {
             Icon(
                 if (bookmarked) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                 pluginString(if (bookmarked) Strings.unbookmark else Strings.bookmark),
-                tint = if (bookmarked) MaterialTheme.colorScheme.primary else Color.White,
+                tint = (if (bookmarked) MaterialTheme.colorScheme.primary else Color.White).let { if (busy) it.copy(alpha = 0.5f) else it },
                 modifier = Modifier.size(22.dp),
             )
         }
@@ -258,6 +260,8 @@ private fun TileHeart(illust: PixivIllust, modifier: Modifier) {
 /** Title, series, creator and Pixiv's bookmark count, filled when the reader bookmarked it on Pixiv. */
 @Composable
 private fun TileCaption(illust: PixivIllust) {
+    val marks by LocalPixiv.current.bookmarking.works.state.collectAsState()
+    val bookmarked = marks.on(illust.id, illust.isBookmarked)
     Column(Modifier.padding(start = 8.dp, end = 8.dp, top = 6.dp, bottom = 8.dp)) {
         if (illust.title.isNotEmpty()) {
             Text(illust.title, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, maxLines = 2, overflow = TextOverflow.Ellipsis)
@@ -274,13 +278,13 @@ private fun TileCaption(illust: PixivIllust) {
                 modifier = Modifier.weight(1f),
             )
             Icon(
-                if (illust.isBookmarked) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                if (bookmarked) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                 contentDescription = null,
-                tint = if (illust.isBookmarked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                tint = if (bookmarked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(12.dp),
             )
             Spacer(Modifier.width(2.dp))
-            Text(countText(illust.totalBookmarks), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(countText(marks.count(illust.id, illust.isBookmarked, illust.totalBookmarks)), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }

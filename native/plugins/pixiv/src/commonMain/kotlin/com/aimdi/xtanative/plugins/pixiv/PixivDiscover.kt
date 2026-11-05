@@ -43,7 +43,7 @@ internal class PixivDiscover(private val runtime: PixivRuntime) : PluginDiscover
             postedAt = work?.createdAt,
             post = work?.let(runtime::shown),
             route = PixivRoutes.of(PixivRoute.User(user.id)),
-            follow = { if (!runtime.isFollowedHere(user.id)) runtime.toggleFollow(user) },
+            follow = { if (!runtime.isFollowedHere(user.id)) runtime.followHere(user) },
         )
     }
 }

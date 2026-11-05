@@ -29,10 +29,14 @@
     <string name="bookmark_auto_tag">Etichetează automat semnele de carte</string>
     <string name="bookmark_auto_tag_description">Semnele de carte create fără editor primesc etichetele lucrării, fără cele de popularitate precum 1000users入り.</string>
     <string name="bookmark_clear_all">Debifează tot</string>
+    <string name="bookmark_default_private">Semne de carte private implicit</string>
+    <string name="bookmark_default_private_description">Semnele de carte create fără editor sunt private. Din editor poți face oricare public.</string>
     <string name="bookmark_edit">Editează semnul de carte</string>
     <string name="bookmark_follow_after">Urmărește la adăugarea în semne de carte</string>
-    <string name="bookmark_follow_after_description">Un semn de carte nou îl urmărește și pe artist pe acest dispozitiv, dacă nu îl urmărești deja.</string>
+    <string name="bookmark_follow_after_description">Un semn de carte nou îl urmărește public și pe artist, dacă nu îl urmărești deja.</string>
     <string name="bookmark_followed_author">Acum îl urmărești pe %1$s</string>
+    <string name="bookmark_private">Semn de carte privat</string>
+    <string name="bookmark_private_hint">Doar tu îl poți vedea</string>
     <string name="bookmark_save_after">Salvează la adăugarea în semne de carte</string>
     <string name="bookmark_save_after_description">Un semn de carte nou salvează și toate paginile lucrării.</string>
     <string name="bookmark_select_all">Bifează tot</string>
@@ -131,12 +135,13 @@
     <string name="folder_r18_description">Pune lucrările R-18 într-un dosar „R-18”, în dosarul de descărcări</string>
     <string name="follow">Urmărește</string>
     <string name="follow_private">Private</string>
+    <string name="follow_privately">Urmărește în privat</string>
+    <string name="follow_privately_hint">Doar tu vezi că îl urmărești</string>
     <string name="follow_public">Publice</string>
     <string name="follow_restrict_all">Toți creatorii urmăriți</string>
     <string name="follow_restrict_device">Creatori urmăriți pe acest dispozitiv</string>
     <string name="follow_restrict_private">Creatori urmăriți privat</string>
     <string name="follow_restrict_public">Creatori urmăriți public</string>
-    <string name="followed_on_pixiv">Urmărit pe Pixiv</string>
     <string name="following">Urmăritori</string>
     <plurals name="following_count"><item quantity="one">%2$s urmărit</item><item quantity="few">%2$s urmăriți</item><item quantity="other">%2$s de urmăriți</item></plurals>
     <string name="follows_here">Pe acest dispozitiv</string>
@@ -208,12 +213,14 @@
     <string name="not_configured">Conectați-vă la Pixiv pentru a vedea urmăriți, clasamente și semne de carte</string>
     <string name="novel">Roman</string>
     <string name="novel_author_novels">Vezi romanele sale</string>
+    <string name="novel_bookmark_private">Salvează privat ca semn de carte</string>
     <string name="novel_bookmarks_empty">Romanele salvate public ca semne de carte apar aici</string>
     <string name="novel_bookmarks_private_empty">Romanele salvate privat ca semne de carte apar aici</string>
     <string name="novel_chapter_number">Nr. %1$d</string>
     <plurals name="novel_chapters_count"><item quantity="one">%2$s capitol</item><item quantity="few">%2$s capitole</item><item quantity="other">%2$s de capitole</item></plurals>
     <plurals name="novel_characters"><item quantity="one">%2$s caracter</item><item quantity="few">%2$s caractere</item><item quantity="other">%2$s de caractere</item></plurals>
     <string name="novel_export">Exportă ca text</string>
+    <string name="novel_export_failed">Romanul nu a putut fi exportat</string>
     <string name="novel_export_markup">Cu marcajele Pixiv</string>
     <string name="novel_export_markup_hint">Textul exact cum îl păstrează Pixiv, cu etichete precum [newpage]</string>
     <string name="novel_export_plain">Text simplu</string>
@@ -418,7 +425,7 @@
     <string name="series_position">Nr. %1$d din %2$d</string>
     <string name="series_previous">Anterioara din serie</string>
     <string name="series_started">Începută pe %1$s</string>
-    <string name="settings_intro">Acest plugin privat citește Pixiv ca o aplicație de galerie: ilustrații, manga, romane, clasamente, semnele tale de carte și căutarea. Atinge Conectează-te pentru a intra cu contul tău Pixiv sau lipește mai jos un token de reîmprospătare. Semnele de carte, urmăririle și istoricul rămân pe acest dispozitiv: nimic nu este trimis, publicat sau schimbat vreodată în contul tău Pixiv.</string>
+    <string name="settings_intro">Acest plugin privat citește Pixiv ca o aplicație-galerie: ilustrații, manga, romane, clasamente, semnele dvs. de carte și căutarea. Atingeți Conectare pentru a intra cu contul Pixiv în browser sau lipiți un token de reîmprospătare mai jos. În contul dvs. Pixiv ajung doar semnele de carte, urmăririle și modificările listei de urmărire pe care le faceți dvs. De aici nu se publică, nu se comentează și nu se raportează niciodată nimic.</string>
     <string name="share_image">Partajează imaginea</string>
     <string name="share_image_failed">Imaginea nu a putut fi partajată</string>
     <string name="share_link">Distribuie linkul</string>
@@ -458,6 +465,8 @@
     <string name="ugoira_play">Redă animația</string>
     <string name="ugoira_save_gif">Salvează ca GIF</string>
     <string name="ugoira_save_zip">Salvează cadrele ca ZIP</string>
+    <string name="ugoira_saved_gif">Animație salvată ca GIF</string>
+    <string name="ugoira_saved_zip">Cadre salvate ca ZIP</string>
     <string name="ugoira_saving">Se salvează…</string>
     <string name="ugoira_slow">Codificarea poate dura un minut</string>
     <string name="unbookmark">Elimină semnul de carte</string>
@@ -467,7 +476,9 @@
     <string name="viewing_section">Vizualizare</string>
     <string name="walkthrough_sign_in">Conectează-te pentru a deschide această lucrare</string>
     <string name="walkthrough_title">Populare pe Pixiv</string>
+    <string name="watchlist_add">Adaugă în lista de urmărire</string>
     <string name="watchlist_empty">Seriile manga adăugate în lista de urmărire apar aici</string>
+    <string name="watchlist_remove">Elimină din lista de urmărire</string>
     <string name="watchlist_updated">Actualizată %1$s</string>
     <string name="watchlist_view_latest">Vezi cel mai recent</string>
     <plurals name="works_count"><item quantity="one">%2$s lucrare</item><item quantity="few">%2$s lucrări</item><item quantity="other">%2$s de lucrări</item></plurals>

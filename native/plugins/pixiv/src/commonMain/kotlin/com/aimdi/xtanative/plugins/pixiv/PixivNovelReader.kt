@@ -172,14 +172,14 @@ private fun NovelHeader(novel: PixivNovel) {
     }
 }
 
-/** The bookmark kept here and Pixiv's count, views, date, length and the R-18 and AI marks. */
+/** Whether it is bookmarked on Pixiv and its count, views, date, length and the R-18 and AI marks. */
 @Composable
 private fun NovelStats(novel: PixivNovel) {
     val runtime = LocalPixiv.current
-    val marks by runtime.bookmarks.state.collectAsState()
-    val bookmarked = marks.orEmpty().any { it.kind == PixivKind.NOVEL && it.kept.id == novel.id }
+    val marks by runtime.bookmarking.novels.state.collectAsState()
+    val bookmarked = marks.on(novel.id, novel.isBookmarked)
     FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Stat(if (bookmarked) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder, countText(novel.totalBookmarks))
+        Stat(if (bookmarked) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder, countText(marks.count(novel.id, novel.isBookmarked, novel.totalBookmarks)))
         Stat(SavedIcons.Visibility, countText(novel.totalViews))
         novel.createdAt?.let { Text(dateText(it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
         Stat(PixivIcons.Notes, pluginPlural(Strings.novel_characters, novel.textLength.toInt(), novel.textLength.toInt(), countText(novel.textLength)))

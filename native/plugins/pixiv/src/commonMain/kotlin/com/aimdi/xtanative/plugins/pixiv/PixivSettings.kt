@@ -208,13 +208,14 @@ private fun BrowsingSettings() {
     }
 }
 
-/** Bookmarks kept on this device: the work's tags, following, saving and the other way round; and haptics. */
+/** Bookmarking (pixiv_settings_bookmarks.dart): how the heart files a bookmark on Pixiv, what else a bookmark or a save sets off; and haptics. */
 @Composable
 private fun BookmarkSettings() {
     val runtime = LocalPixiv.current
     val settings = pixivSettings()
     SectionTitle(pluginString(Strings.bookmark_settings))
     listOf(
+        Triple(PixivPrefs.defaultPrivateBookmark, Strings.bookmark_default_private, Strings.bookmark_default_private_description),
         Triple(PixivPrefs.autoTagBookmarks, Strings.bookmark_auto_tag, Strings.bookmark_auto_tag_description),
         Triple(PixivPrefs.followAfterBookmark, Strings.bookmark_follow_after, Strings.bookmark_follow_after_description),
         Triple(PixivPrefs.downloadAfterBookmark, Strings.bookmark_save_after, Strings.bookmark_save_after_description),

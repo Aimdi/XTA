@@ -16,6 +16,7 @@ internal object PixivSession {
         val tokens = runtime.client.exchangeCode(code, verifier)
         runtime.settings.update(PixivAccounts::keepingActive)
         val user = runtime.client.applyLoginTokens(tokens)
+        runtime.accountChanged()
         runtime.settings.update { PixivAccounts.remembered(it, user) }
         return user
     }
@@ -24,6 +25,7 @@ internal object PixivSession {
         runtime.settings.update(PixivAccounts::keepingActive)
         val known = PixivAccounts.of(runtime.settings.now).firstOrNull { it.userId == account.userId } ?: account
         runtime.client.switchTo(known.userId, known.refreshToken, known.isPremium)
+        runtime.accountChanged()
     }
 
     /** Puts a typed or pasted token in use: it may be another account's, so it is a switch. */
@@ -31,6 +33,7 @@ internal object PixivSession {
         if (token == runtime.settings[PixivPrefs.refreshToken].trim()) return
         runtime.settings.update(PixivAccounts::keepingActive)
         runtime.client.useRefreshToken(token)
+        runtime.accountChanged()
     }
 
     fun remove(runtime: PixivRuntime, account: PixivAccount) = runtime.settings.update { PixivAccounts.without(it, account.userId) }
@@ -41,6 +44,7 @@ internal object PixivSession {
         if (id > 0) runtime.settings.update { PixivAccounts.without(it, id) }
         val next = PixivAccounts.of(runtime.settings.now).firstOrNull()
         if (next == null) runtime.client.signOut() else runtime.client.switchTo(next.userId, next.refreshToken, next.isPremium)
+        runtime.accountChanged()
         return next
     }
 
