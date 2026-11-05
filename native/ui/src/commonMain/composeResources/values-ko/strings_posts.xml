@@ -109,4 +109,6 @@
     <string name="posts_translation_failed">X가 이 게시물을 번역하지 못했습니다.</string>
     <string name="posts_translation_not_ready">번역이 아직 준비되지 않았습니다. 잠시 후 다시 시도하세요.</string>
     <string name="posts_translation_other">번역하지 못했습니다. 다시 시도하세요.</string>
+    <string name="posts_quote_unavailable">인용된 게시물을 불러올 수 없습니다</string>
+    <string name="posts_no_text">게시물에 텍스트가 없습니다. 예상치 못한 일입니다</string>
 </resources>

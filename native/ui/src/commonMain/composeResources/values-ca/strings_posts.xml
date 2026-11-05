@@ -112,4 +112,6 @@
     <string name="posts_translation_failed">X no ha pogut traduir aquesta publicació.</string>
     <string name="posts_translation_not_ready">La traducció encara no és a punt. Torna-ho a provar d'aquí a poc.</string>
     <string name="posts_translation_other">La traducció no ha funcionat. Torna-ho a provar.</string>
+    <string name="posts_quote_unavailable">No s'ha pogut recuperar el tuit citat</string>
+    <string name="posts_no_text">El tuit no contenia text. Això és inesperat</string>
 </resources>

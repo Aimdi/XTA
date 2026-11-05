@@ -110,4 +110,6 @@ Click to show more..</string>
     <string name="posts_translation_failed">X はこの投稿を翻訳できませんでした。</string>
     <string name="posts_translation_not_ready">翻訳はまだ準備できていません。しばらくしてからもう一度お試しください。</string>
     <string name="posts_translation_other">翻訳できませんでした。もう一度お試しください。</string>
+    <string name="posts_quote_unavailable">引用ポストを取得できませんでした</string>
+    <string name="posts_no_text">ツイートのテキストがありません。予期せぬ結果です</string>
 </resources>

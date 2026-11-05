@@ -23,4 +23,14 @@
     <string name="problem_http_text">X viarnuŭ HTTP %1$d.</string>
     <string name="problem_retry_in">Paŭtaryć praz %1$s</string>
     <string name="close_app_confirm">Vy sapraŭdy chočacie zakryć XTA?</string>
+    <string name="problem_connection_failed">Pamyłka złučennia</string>
+    <string name="problem_sign_in_needed">Uvajdzicie znoŭ, kab praciahnuć</string>
+    <string name="problem_rate_limit_hint">Hetaja krynica abmiažoŭvaje zapyty. Pasprabujcie paźniej.</string>
+    <string name="problem_more_info">Bolš infarmacyji</string>
+    <string name="problem_auto_retry_seconds">Paŭtor praz %1$d s…</string>
+    <string name="problem_auto_retry_in">Paŭtor praz %1$s…</string>
+    <string name="problem_cached_content">Pakul krynica abnaŭlajecca, pakazvajecca zachavanaja kopija.</string>
+    <string name="problem_source_loading">Hetaja krynica jašče zahružajecca. Inšyja dopisy ŭžo dastupnyja.</string>
+    <string name="problem_saved_at">Pakazvajucca dopisy, zachavanyja ŭ %1$s</string>
+    <string name="problem_saved_earlier">Pakazvajucca raniej zachavanyja dopisy</string>
 </resources>

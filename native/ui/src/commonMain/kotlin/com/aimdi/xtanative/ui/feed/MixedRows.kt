@@ -1,26 +1,37 @@
 package com.aimdi.xtanative.ui.feed
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -28,16 +39,22 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.data.plugins.Destination
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.ProblemRow
+import com.aimdi.xtanative.ui.common.ReadFailureSheet
+import com.aimdi.xtanative.ui.common.ReadRetries
+import com.aimdi.xtanative.ui.common.ReadSource
 import com.aimdi.xtanative.ui.common.WithReadingColumn
+import com.aimdi.xtanative.ui.common.rememberReadRecovery
 import com.aimdi.xtanative.ui.generated.resources.Res
-import com.aimdi.xtanative.ui.generated.resources.retry
+import com.aimdi.xtanative.ui.generated.resources.problem_cached_content
+import com.aimdi.xtanative.ui.generated.resources.problem_source_loading
 import com.aimdi.xtanative.ui.links.LocalLinks
 import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
 import com.aimdi.xtanative.ui.plugins.NetworkPost
@@ -46,7 +63,8 @@ import com.aimdi.xtanative.ui.plugins.NetworkPostCard
 import com.aimdi.xtanative.ui.plugins.NetworkPostExtras
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
 import com.aimdi.xtanative.ui.plugins.currentLanguage
-import com.aimdi.xtanative.ui.plugins.networkProblemText
+import com.aimdi.xtanative.ui.search.DiscoverIcons
+import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import org.jetbrains.compose.resources.stringResource
 
 /** The running plugins by id, as they come and go: who draws and opens each plugin's posts. */
@@ -152,28 +170,75 @@ fun PluginPostsOnly(
     }
 }
 
-/** The plugins whose posts did not come, each with why and a retry, floating over the timeline as XTA's source chips do. */
+/**
+ * The plugins worth a word over the timeline (XTA's source chips), in one
+ * pill: a chip for each whose read failed, retried on its own with its clock
+ * counting down, opening why in a sheet with Retry and the plugin's settings;
+ * and for each showing the copy kept from before, opening what that means.
+ */
 @Composable
-fun SourceProblems(state: PluginPostsState, plugins: Map<String, XtaPlugin>, onRetry: (String) -> Unit, modifier: Modifier = Modifier) {
-    val failed = state.failed
-    if (failed.isEmpty()) return
-    val language = currentLanguage()
-    Column(modifier, horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        failed.forEach { (id, problem) ->
-            val name = remember(id, language, plugins[id]) { runCatching { plugins[id]?.title(language) }.getOrNull() ?: id }
-            Surface(shape = RoundedCornerShape(50), color = MaterialTheme.colorScheme.surfaceContainerHigh, shadowElevation = 3.dp) {
-                Row(Modifier.padding(start = 16.dp, end = 4.dp).widthIn(max = 480.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        networkProblemText(problem, name),
-                        style = MaterialTheme.typography.bodyMedium,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f, fill = false),
-                    )
-                    TextButton(onClick = { onRetry(id) }) { Text(stringResource(Res.string.retry)) }
-                }
-            }
+fun SourceChips(state: PluginPostsState, plugins: Map<String, XtaPlugin>, onRetry: (String) -> Unit, modifier: Modifier = Modifier) {
+    val chips = state.chips
+    if (chips.isEmpty()) return
+    Surface(modifier, shape = RoundedCornerShape(50), color = MaterialTheme.colorScheme.surfaceContainerHigh, shadowElevation = 3.dp) {
+        Row(Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+            chips.forEach { (id, read) -> key(id) { SourceChip(id, read, plugins[id], onRetry) } }
         }
+    }
+}
+
+@Composable
+private fun SourceChip(id: String, read: SourceRead, plugin: XtaPlugin?, onRetry: (String) -> Unit) {
+    val language = currentLanguage()
+    val name = remember(id, language, plugin) { runCatching { plugin?.title(language) }.getOrNull() ?: id }
+    val navigator = LocalPlugins.current.navigator
+    val problem = read.problem
+    val seconds = rememberReadRecovery(ReadRetries.recoverable(problem), read.loading) { onRetry(id) }
+    var open by remember { mutableStateOf(false) }
+    AssistChip(
+        onClick = { open = true },
+        label = { Text(name) },
+        leadingIcon = {
+            val icon = when {
+                problem == null -> DiscoverIcons.History
+                seconds > 0 -> GroupIcons.ScheduleOutlined
+                else -> GroupIcons.ErrorOutline
+            }
+            Icon(icon, contentDescription = null, modifier = Modifier.size(16.dp))
+        },
+        modifier = Modifier.padding(horizontal = 4.dp),
+    )
+    if (!open) return
+    if (problem != null) {
+        val settings = plugin?.takeIf { runCatching { it.settings != null }.getOrDefault(false) }?.let { { navigator.go(Destination.PluginSettings(id)) } }
+        ReadFailureSheet(ReadSource(name, isX = false, openSettings = settings), problem, { onRetry(id) }) { open = false }
+    } else {
+        CachedCopySheet { open = false }
+    }
+}
+
+/** What a chip over a kept copy says (XTA's reader_cached_content). */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CachedCopySheet(onDismiss: () -> Unit) {
+    ModalBottomSheet(onDismissRequest = onDismiss) {
+        Text(stringResource(Res.string.problem_cached_content), modifier = Modifier.padding(16.dp))
+    }
+}
+
+/**
+ * A line over the timeline's top edge while some plugin is still reading
+ * (XTA's LoadingHairline): it takes no room, so nothing moves as it comes
+ * and goes, and says that the posts shown are ready to read.
+ */
+@Composable
+fun SourceLoadingHairline(loading: Boolean, modifier: Modifier = Modifier) {
+    val label = stringResource(Res.string.problem_source_loading)
+    AnimatedVisibility(loading, modifier, enter = fadeIn(), exit = fadeOut()) {
+        LinearProgressIndicator(
+            modifier = Modifier.fillMaxWidth().height(2.dp).semantics { contentDescription = label },
+            trackColor = Color.Transparent,
+        )
     }
 }
 

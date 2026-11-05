@@ -23,4 +23,14 @@
     <string name="problem_http_text">O X retornou HTTP %1$d.</string>
     <string name="problem_retry_in">Tentar novamente em %1$s</string>
     <string name="close_app_confirm">Tem certeza de que deseja fechar o XTA?</string>
+    <string name="problem_connection_failed">Falha na conexão</string>
+    <string name="problem_sign_in_needed">Entre novamente para continuar</string>
+    <string name="problem_rate_limit_hint">Esta fonte limita as solicitações. Tente mais tarde.</string>
+    <string name="problem_more_info">Mais informações</string>
+    <string name="problem_auto_retry_seconds">Tentando novamente em %1$d s…</string>
+    <string name="problem_auto_retry_in">Tentando novamente em %1$s…</string>
+    <string name="problem_cached_content">Uma cópia salva é exibida durante a atualização.</string>
+    <string name="problem_source_loading">Esta fonte ainda está carregando. As outras publicações estão disponíveis.</string>
+    <string name="problem_saved_at">Exibindo posts salvos às %1$s</string>
+    <string name="problem_saved_earlier">Exibindo posts salvos anteriormente</string>
 </resources>

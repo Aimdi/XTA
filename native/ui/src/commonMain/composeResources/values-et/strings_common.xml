@@ -23,4 +23,14 @@
     <string name="problem_http_text">X tagastas HTTP %1$d.</string>
     <string name="problem_retry_in">Proovi uuesti %1$s pärast</string>
     <string name="close_app_confirm">Kas sa oled kindel, et soovid panna XTA'i kinni?</string>
+    <string name="problem_connection_failed">Ühendus nurjus</string>
+    <string name="problem_sign_in_needed">Jätkamiseks logi uuesti sisse</string>
+    <string name="problem_rate_limit_hint">See allikas piirab päringuid. Proovi hiljem uuesti.</string>
+    <string name="problem_more_info">Lisateave</string>
+    <string name="problem_auto_retry_seconds">Proovin uuesti %1$d s pärast…</string>
+    <string name="problem_auto_retry_in">Proovin uuesti %1$s pärast…</string>
+    <string name="problem_cached_content">Allika uuendamise ajal kuvatakse salvestatud koopiat.</string>
+    <string name="problem_source_loading">See allikas alles laadib. Teised postitused on juba loetavad.</string>
+    <string name="problem_saved_at">Kuvatakse postitusi, mis salvestati kell %1$s</string>
+    <string name="problem_saved_earlier">Kuvatakse varem salvestatud postitusi</string>
 </resources>

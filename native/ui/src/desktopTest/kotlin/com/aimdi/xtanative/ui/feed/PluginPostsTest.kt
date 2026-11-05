@@ -12,7 +12,11 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 
 class PluginPostsTest {
     /** Each plugin's answers, given when the test says, read on the thread that gives them. */
@@ -125,6 +129,68 @@ class PluginPostsTest {
             answers.pending.getValue("bluesky").complete(listOf(NetworkPost("undated", "a", "A", "a"), NetworkPost("dated", "a", "A", "a", createdAt = Instant.EPOCH)))
             assertEquals(listOf("dated"), posts.state.value.shown.map { it.post.id })
             assertEquals(2, answers.asked.size)
+        }
+    }
+
+    /** What the device kept, in memory: what each source last answered, and what was written. */
+    private class Kept(var answer: SavedAnswer? = null) : SourceSnapshots {
+        val written = ArrayList<List<NetworkPost>>()
+
+        override suspend fun read(source: String, ask: SourceAsk): SavedAnswer? = answer
+
+        override suspend fun write(source: String, ask: SourceAsk, posts: List<NetworkPost>) {
+            written += posts
+        }
+    }
+
+    @Test
+    fun whatAPluginGaveLastTimeShowsAtOnceUntilItAnswersAndItsAnswerIsKept() {
+        val answers = Answers()
+        val kept = Kept(SavedAnswer(42, listOf(NetworkPost("saved", "a", "A", "a", createdAt = Instant.ofEpochSecond(9)))))
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
+        try {
+            val posts = PluginPosts(scope, answers::read, snapshots = kept)
+            posts.load(mapOf("bluesky" to ask))
+            val waiting = posts.state.value
+            assertEquals(listOf("saved"), waiting.shown.map { it.post.id })
+            assertEquals(SourceRead(waiting.sources.getValue("bluesky").posts, loading = true, cachedAt = 42), waiting.sources["bluesky"])
+            assertTrue(waiting.chips.isEmpty(), "a copy shown while the plugin reads is no chip")
+            answers.answer("bluesky", "new" to 20)
+            assertEquals(listOf("new"), posts.state.value.shown.map { it.post.id })
+            assertNull(posts.state.value.sources.getValue("bluesky").cachedAt)
+            assertEquals(listOf("new"), kept.written.single().map { it.id })
+        } finally {
+            scope.cancel()
+        }
+    }
+
+    @Test
+    fun aPluginThatFailsKeepsItsCopyAndIsAChip() {
+        val answers = Answers()
+        val kept = Kept(SavedAnswer(42, listOf(NetworkPost("saved", "a", "A", "a", createdAt = Instant.ofEpochSecond(9)))))
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
+        try {
+            val posts = PluginPosts(scope, answers::read, snapshots = kept)
+            posts.load(mapOf("bluesky" to ask))
+            answers.fail("bluesky", IOException("offline"))
+            assertEquals(listOf("saved"), posts.state.value.shown.map { it.post.id })
+            assertEquals(setOf("bluesky"), posts.state.value.chips.keys)
+            assertEquals(42, posts.state.value.sources.getValue("bluesky").cachedAt)
+        } finally {
+            scope.cancel()
+        }
+    }
+
+    @Test
+    fun aPluginTakingLongerThanTheTimelineWaitsHasTimedOut() = runBlocking {
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+        try {
+            val posts = PluginPosts(scope, { _, _, _ -> awaitCancellation() }, timeoutMillis = 50)
+            posts.load(mapOf("bluesky" to ask))
+            val failed = withTimeout(5_000) { posts.state.first { it.failed.isNotEmpty() } }
+            assertEquals(mapOf("bluesky" to Problem.TimedOut), failed.failed)
+        } finally {
+            scope.cancel()
         }
     }
 }

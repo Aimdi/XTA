@@ -23,4 +23,14 @@
     <string name="problem_http_text">X vrátil HTTP %1$d.</string>
     <string name="problem_retry_in">Zkusit znovu za %1$s</string>
     <string name="close_app_confirm">Opravdu chcete zavřít XTA?</string>
+    <string name="problem_connection_failed">Připojení selhalo</string>
+    <string name="problem_sign_in_needed">Pro pokračování se znovu přihlaste</string>
+    <string name="problem_rate_limit_hint">Tento zdroj omezuje požadavky. Zkuste to později.</string>
+    <string name="problem_more_info">Více informací</string>
+    <string name="problem_auto_retry_seconds">Další pokus za %1$d s…</string>
+    <string name="problem_auto_retry_in">Další pokus za %1$s…</string>
+    <string name="problem_cached_content">Během aktualizace zdroje se zobrazuje uložená kopie.</string>
+    <string name="problem_source_loading">Tento zdroj se stále načítá. Ostatní příspěvky jsou k dispozici.</string>
+    <string name="problem_saved_at">Zobrazují se příspěvky uložené v %1$s</string>
+    <string name="problem_saved_earlier">Zobrazují se dříve uložené příspěvky</string>
 </resources>

@@ -72,6 +72,7 @@ import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.post
 import com.aimdi.xtanative.ui.generated.resources.posts_continue_thread
 import com.aimdi.xtanative.ui.generated.resources.posts_more
+import com.aimdi.xtanative.ui.generated.resources.posts_no_text
 import com.aimdi.xtanative.ui.generated.resources.posts_replies_missing
 import com.aimdi.xtanative.ui.generated.resources.posts_retry
 import com.aimdi.xtanative.ui.generated.resources.posts_show_additional_replies
@@ -338,7 +339,9 @@ private fun FocalPost(post: XPost, actions: PostActions, startMedia: Int) {
             HeaderButton(PostIcons.MoreHoriz, stringResource(Res.string.posts_more)) { menu = true }
         }
         PostView.replyingTo(shown, quoted = false, midThread = false)?.let { ReplyingTo(it, shown.replyToPostId, actions) }
-        if (shown.article == null) {
+        if (PostView.textMissing(shown)) {
+            StateTile(stringResource(Res.string.posts_no_text), null, Modifier.padding(top = 12.dp))
+        } else if (shown.article == null) {
             ExpandablePostText(
                 drawn,
                 actions,

@@ -112,4 +112,6 @@
     <string name="posts_translation_failed">O X não conseguiu traduzir este post.</string>
     <string name="posts_translation_not_ready">A tradução ainda não está pronta. Tente novamente em instantes.</string>
     <string name="posts_translation_other">A tradução não funcionou. Tente novamente.</string>
+    <string name="posts_quote_unavailable">Não foi possível obter o post citado</string>
+    <string name="posts_no_text">O tweet não continha nenhum texto. Isso é inesperado</string>
 </resources>

@@ -54,6 +54,8 @@ import com.aimdi.xtanative.ui.generated.resources.posts_reposted
 import com.aimdi.xtanative.ui.generated.resources.posts_subscribers_only_of_author
 import com.aimdi.xtanative.ui.generated.resources.posts_thread
 import com.aimdi.xtanative.ui.generated.resources.posts_unavailable
+import com.aimdi.xtanative.ui.generated.resources.posts_no_text
+import com.aimdi.xtanative.ui.generated.resources.posts_quote_unavailable
 import com.aimdi.xtanative.ui.generated.resources.posts_view_quoted
 import com.aimdi.xtanative.ui.saved.KeepNotices
 import kotlinx.coroutines.launch
@@ -164,7 +166,10 @@ fun PostCard(
             Column(Modifier.weight(1f)) {
                 PostHeader(post, scope, translation, actions)
                 PostView.replyingTo(shown, quoted = false, midThread = midThread)?.let { ReplyingTo(it, shown.replyToPostId, actions) }
-                if (shown.article == null) ExpandablePostText(drawn, actions, Modifier.padding(top = 2.dp))
+                when {
+                    PostView.textMissing(shown) -> StateTile(stringResource(Res.string.posts_no_text), null, Modifier.padding(top = 2.dp))
+                    shown.article == null -> ExpandablePostText(drawn, actions, Modifier.padding(top = 2.dp))
+                }
                 TranslationFailure(translation)
                 PostAttachments(shown, scope, actions, playing = playing, gap = 10.dp)
                 PostFooter(shown, actions, FooterCounts.of(shown, scope.prefs, showViews = true), picture = picture)
@@ -292,6 +297,7 @@ internal fun PostAttachments(shown: XPost, scope: PostScope, actions: PostAction
             Modifier.padding(top = gap),
         )
         is QuoteBlock.Unsent -> StateTile(stringResource(Res.string.posts_view_quoted), { actions.openPost(quote.id) }, Modifier.padding(top = gap))
+        QuoteBlock.Missing -> StateTile(stringResource(Res.string.posts_quote_unavailable), null, Modifier.padding(top = gap))
         null -> Unit
     }
     shown.card?.let { CardView(it, shown, actions, Modifier.padding(top = gap)) }

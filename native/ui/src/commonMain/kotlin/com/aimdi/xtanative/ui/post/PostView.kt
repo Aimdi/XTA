@@ -39,6 +39,9 @@ sealed interface QuoteBlock {
 
     /** X named the quoted post without sending it: a tap opens it. */
     data class Unsent(val id: String) : QuoteBlock
+
+    /** X said the post quotes another and named none: it could not be read. */
+    data object Missing : QuoteBlock
 }
 
 /** The decisions behind one post card, as XTA's tweet.dart makes them. */
@@ -74,12 +77,23 @@ object PostView {
         if (quoted) return null
         shown.quoted?.let { return QuoteBlock.Shown(it) }
         val withheld = shown.quotedWithheld ?: return null
-        return if (withheld.reason == null && !withheld.subscribersOnly) {
+        return if (withheld.id.isEmpty()) {
+            QuoteBlock.Missing
+        } else if (withheld.reason == null && !withheld.subscribersOnly) {
             QuoteBlock.Unsent(withheld.id)
         } else {
             QuoteBlock.Withheld(withheld.reason, withheld.subscribersOnly, withheld.screenName?.let { XLinks.waybackUrl(it, withheld.id) })
         }
     }
+
+    /**
+     * Whether X sent a post with nothing to draw: no text and nothing under
+     * it, which XTA says ("did not contain any text") rather than leave an
+     * empty card.
+     */
+    fun textMissing(shown: XPost): Boolean =
+        shown.text.isBlank() && shown.media.isEmpty() && shown.card == null && shown.quoted == null && shown.quotedWithheld == null &&
+            shown.article == null && shown.live == null && shown.grokShare == null && shown.note == null
 
     /** Whether a post offers translation into [appLanguage]: never an article, nor a post already in it. */
     /**

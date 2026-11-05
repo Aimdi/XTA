@@ -81,6 +81,14 @@ class PostRulesTest {
     }
 
     @Test
+    fun aQuoteNamingNothingAndAPostWithNothingToDrawSaySo() {
+        assertEquals(QuoteBlock.Missing, PostView.quote(post("1").copy(quotedWithheld = XWithheld("", null)), quoted = false))
+        assertTrue(PostView.textMissing(post("1", text = " ")))
+        assertFalse(PostView.textMissing(post("1")))
+        assertFalse(PostView.textMissing(post("1", text = "").copy(media = listOf(XMedia(XMedia.Kind.PHOTO, "https://pbs.twimg.com/a.jpg", 1, 1)))), "a picture alone is a post")
+    }
+
+    @Test
     fun anArticleLinkWithoutItsArticleIsACardAndCashtagsAreTheFirstFourOnce() {
         val link = XEntity.Link(0, 5, "https://t.co/a", "https://x.com/i/article/42", "x.com/i/article/42")
         assertEquals("https://x.com/i/article/42", PostView.articleLink(post("1").copy(entities = listOf(link))))

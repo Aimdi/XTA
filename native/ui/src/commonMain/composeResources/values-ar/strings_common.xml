@@ -23,4 +23,14 @@
     <string name="problem_http_text">أعاد X رمز HTTP %1$d.</string>
     <string name="problem_retry_in">إعادة المحاولة بعد %1$s</string>
     <string name="close_app_confirm">هل أنت متأكد من أنك تريد إغلاق XTA؟</string>
+    <string name="problem_connection_failed">فشل الاتصال</string>
+    <string name="problem_sign_in_needed">سجّل الدخول مجددًا للمتابعة</string>
+    <string name="problem_rate_limit_hint">يحد هذا المصدر من الطلبات. حاول لاحقًا.</string>
+    <string name="problem_more_info">مزيد من المعلومات</string>
+    <string name="problem_auto_retry_seconds">ستتم إعادة المحاولة بعد %1$d ث…</string>
+    <string name="problem_auto_retry_in">ستتم إعادة المحاولة بعد %1$s…</string>
+    <string name="problem_cached_content">تُعرض نسخة محفوظة أثناء تحديث هذا المصدر.</string>
+    <string name="problem_source_loading">لا يزال هذا المصدر قيد التحميل. المنشورات الأخرى جاهزة للقراءة.</string>
+    <string name="problem_saved_at">تُعرض منشورات محفوظة في %1$s</string>
+    <string name="problem_saved_earlier">تُعرض منشورات محفوظة سابقًا</string>
 </resources>

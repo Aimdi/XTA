@@ -23,4 +23,14 @@
     <string name="problem_http_text">X trả về HTTP %1$d.</string>
     <string name="problem_retry_in">Thử lại sau %1$s</string>
     <string name="close_app_confirm">Bạn có muốn đóng XTA không?</string>
+    <string name="problem_connection_failed">Kết nối thất bại</string>
+    <string name="problem_sign_in_needed">Đăng nhập lại để tiếp tục</string>
+    <string name="problem_rate_limit_hint">Nguồn này đang giới hạn yêu cầu. Hãy thử lại sau.</string>
+    <string name="problem_more_info">Thêm thông tin</string>
+    <string name="problem_auto_retry_seconds">Sẽ thử lại sau %1$d giây…</string>
+    <string name="problem_auto_retry_in">Sẽ thử lại sau %1$s…</string>
+    <string name="problem_cached_content">Đang hiển thị bản đã lưu trong khi cập nhật nguồn.</string>
+    <string name="problem_source_loading">Nguồn này vẫn đang tải. Bạn có thể đọc các bài đăng khác.</string>
+    <string name="problem_saved_at">Đang hiển thị bài đăng đã lưu lúc %1$s</string>
+    <string name="problem_saved_earlier">Đang hiển thị bài đăng đã lưu trước đó</string>
 </resources>

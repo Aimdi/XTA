@@ -23,4 +23,14 @@
     <string name="problem_http_text">X вярнуў HTTP %1$d.</string>
     <string name="problem_retry_in">Паўтарыць праз %1$s</string>
     <string name="close_app_confirm">Вы сапраўды хочаце закрыць XTA?</string>
+    <string name="problem_connection_failed">Памылка злучэння</string>
+    <string name="problem_sign_in_needed">Увайдзіце зноў, каб працягнуць</string>
+    <string name="problem_rate_limit_hint">Гэта крыніца абмяжоўвае запыты. Паспрабуйце пазней.</string>
+    <string name="problem_more_info">Падрабязней</string>
+    <string name="problem_auto_retry_seconds">Паўтор праз %1$d с…</string>
+    <string name="problem_auto_retry_in">Паўтор праз %1$s…</string>
+    <string name="problem_cached_content">Пакуль крыніца абнаўляецца, паказваецца захаваная копія.</string>
+    <string name="problem_source_loading">Гэта крыніца яшчэ загружаецца. Іншыя допісы ўжо даступныя.</string>
+    <string name="problem_saved_at">Паказваюцца допісы, захаваныя ў %1$s</string>
+    <string name="problem_saved_earlier">Паказваюцца раней захаваныя допісы</string>
 </resources>

@@ -12,6 +12,15 @@ sealed interface Destination {
     data class XProfile(val screenName: String) : Destination
     data class XSearch(val query: String) : Destination
 
+    /** An X post's Quotes tab, as its footer's quote count opens it. */
+    data class XQuotes(val id: String) : Destination
+
+    /** An X post's Reposted by tab. */
+    data class XReposters(val id: String) : Destination
+
+    /** The X article post [id] carries, in the app's article reader. */
+    data class XArticle(val id: String) : Destination
+
     /** A link to open as the app opens links: on a screen of the app or a plugin that reads it, else on the web. */
     data class Link(val url: String) : Destination
 

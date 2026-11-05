@@ -112,4 +112,6 @@
     <string name="posts_translation_failed">X-ek ezin izan du argitalpen hau itzuli.</string>
     <string name="posts_translation_not_ready">Itzulpena ez dago prest oraindik. Saiatu berriro laster.</string>
     <string name="posts_translation_other">Itzulpenak ez du funtzionatu. Saiatu berriro.</string>
+    <string name="posts_quote_unavailable">Ezin izan da aipatutako txioa berreskuratu</string>
+    <string name="posts_no_text">Txioak ez zuen testurik</string>
 </resources>

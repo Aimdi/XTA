@@ -23,4 +23,14 @@
     <string name="problem_http_text">X a renvoyé HTTP %1$d.</string>
     <string name="problem_retry_in">Réessayer dans %1$s</string>
     <string name="close_app_confirm">Êtes-vous sûr de vouloir fermer XTA ?</string>
+    <string name="problem_connection_failed">Échec de la connexion</string>
+    <string name="problem_sign_in_needed">Reconnectez-vous pour continuer</string>
+    <string name="problem_rate_limit_hint">Cette source limite les requêtes. Réessayez plus tard.</string>
+    <string name="problem_more_info">En savoir plus</string>
+    <string name="problem_auto_retry_seconds">Nouvel essai dans %1$d s…</string>
+    <string name="problem_auto_retry_in">Nouvel essai dans %1$s…</string>
+    <string name="problem_cached_content">Une copie enregistrée est affichée pendant la mise à jour.</string>
+    <string name="problem_source_loading">Cette source charge encore. Les autres publications sont disponibles.</string>
+    <string name="problem_saved_at">Publications enregistrées à %1$s</string>
+    <string name="problem_saved_earlier">Publications enregistrées précédemment</string>
 </resources>

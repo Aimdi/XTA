@@ -23,4 +23,14 @@
     <string name="problem_http_text">X-k HTTP %1$d itzuli du.</string>
     <string name="problem_retry_in">Saiatu berriro %1$s barru</string>
     <string name="close_app_confirm">Ziur al zaude XTA itxi nahi duzula?</string>
+    <string name="problem_connection_failed">Konexioak huts egin du</string>
+    <string name="problem_sign_in_needed">Hasi saioa berriro jarraitzeko</string>
+    <string name="problem_rate_limit_hint">Iturri honek eskaerak mugatzen ditu. Saiatu geroago.</string>
+    <string name="problem_more_info">Informazio gehiago</string>
+    <string name="problem_auto_retry_seconds">%1$d s barru saiatuko da berriro…</string>
+    <string name="problem_auto_retry_in">%1$s barru saiatuko da berriro…</string>
+    <string name="problem_cached_content">Gordetako kopia bat erakusten da iturria eguneratzen den bitartean.</string>
+    <string name="problem_source_loading">Iturri hau kargatzen ari da oraindik. Beste argitalpenak irakurgai daude.</string>
+    <string name="problem_saved_at">%1$s(e)an gordetako argitalpenak erakusten dira</string>
+    <string name="problem_saved_earlier">Lehenago gordetako argitalpenak erakusten dira</string>
 </resources>

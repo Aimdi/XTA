@@ -118,4 +118,6 @@
     <string name="posts_translation_failed">X nie zdołał przetłumaczyć tego wpisu.</string>
     <string name="posts_translation_not_ready">Tłumaczenie nie jest jeszcze gotowe. Spróbuj ponownie za chwilę.</string>
     <string name="posts_translation_other">Tłumaczenie się nie udało. Spróbuj ponownie.</string>
+    <string name="posts_quote_unavailable">Nie udało się pobrać cytowanego posta</string>
+    <string name="posts_no_text">Tweet nie zawierał żadnego tekstu. To nieoczekiwane!</string>
 </resources>

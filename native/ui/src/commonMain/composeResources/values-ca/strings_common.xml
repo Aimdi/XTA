@@ -23,4 +23,14 @@
     <string name="problem_http_text">X ha retornat HTTP %1$d.</string>
     <string name="problem_retry_in">Torna-ho a provar d’aquí a %1$s</string>
     <string name="close_app_confirm">Segur que vols tancar XTA?</string>
+    <string name="problem_connection_failed">Ha fallat la connexió</string>
+    <string name="problem_sign_in_needed">Torna a iniciar la sessió per continuar</string>
+    <string name="problem_rate_limit_hint">Aquesta font limita les sol·licituds. Torna-ho a provar més tard.</string>
+    <string name="problem_more_info">Més informació</string>
+    <string name="problem_auto_retry_seconds">Es tornarà a provar d’aquí a %1$d s…</string>
+    <string name="problem_auto_retry_in">Es tornarà a provar d’aquí a %1$s…</string>
+    <string name="problem_cached_content">Es mostra una còpia desada mentre s’actualitza la font.</string>
+    <string name="problem_source_loading">Aquesta font encara es carrega. Les altres publicacions ja estan disponibles.</string>
+    <string name="problem_saved_at">Es mostren publicacions desades a les %1$s</string>
+    <string name="problem_saved_earlier">Es mostren publicacions desades anteriorment</string>
 </resources>

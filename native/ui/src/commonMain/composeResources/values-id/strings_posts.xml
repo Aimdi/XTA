@@ -109,4 +109,6 @@
     <string name="posts_translation_failed">X tidak dapat menerjemahkan postingan ini.</string>
     <string name="posts_translation_not_ready">Terjemahan belum siap. Coba lagi sebentar lagi.</string>
     <string name="posts_translation_other">Terjemahan gagal. Coba lagi.</string>
+    <string name="posts_quote_unavailable">Tidak dapat mengambil tweet yang dikutip</string>
+    <string name="posts_no_text">Cuitan tidak mengandung teks apa pun. Ini tidak diduga</string>
 </resources>

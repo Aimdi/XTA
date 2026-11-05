@@ -112,4 +112,6 @@
     <string name="posts_translation_failed">X klarte ikke å oversette dette innlegget.</string>
     <string name="posts_translation_not_ready">Oversettelsen er ikke klar ennå. Prøv igjen om litt.</string>
     <string name="posts_translation_other">Oversettelsen mislyktes. Prøv igjen.</string>
+    <string name="posts_quote_unavailable">Kunne ikke hente det siterte innlegget</string>
+    <string name="posts_no_text">Tweeten inneholdt ingen tekst. Dette er uventet</string>
 </resources>

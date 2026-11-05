@@ -111,4 +111,6 @@
     <string name="posts_translation_failed">X bu gönderiyi çeviremedi.</string>
     <string name="posts_translation_not_ready">Çeviri henüz hazır değil. Birazdan tekrar deneyin.</string>
     <string name="posts_translation_other">Çeviri başarısız oldu. Tekrar deneyin.</string>
+    <string name="posts_quote_unavailable">Alıntılanan gönderi alınamadı</string>
+    <string name="posts_no_text">Tweet'te herhangi bir metin yoktu. Bu beklenmedik bir şey</string>
 </resources>

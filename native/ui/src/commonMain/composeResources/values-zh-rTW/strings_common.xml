@@ -23,4 +23,14 @@
     <string name="problem_http_text">X 傳回了 HTTP %1$d。</string>
     <string name="problem_retry_in">%1$s 後重試</string>
     <string name="close_app_confirm">您確定要關閉 XTA 嗎？</string>
+    <string name="problem_connection_failed">連線失敗</string>
+    <string name="problem_sign_in_needed">請重新登入以繼續</string>
+    <string name="problem_rate_limit_hint">此來源正在限制請求。請稍後再試。</string>
+    <string name="problem_more_info">更多資訊</string>
+    <string name="problem_auto_retry_seconds">%1$d 秒後重試…</string>
+    <string name="problem_auto_retry_in">%1$s 後重試…</string>
+    <string name="problem_cached_content">正在更新此來源，暫時顯示已儲存的副本。</string>
+    <string name="problem_source_loading">此來源仍在載入。其他貼文已可閱讀。</string>
+    <string name="problem_saved_at">顯示於 %1$s 儲存的貼文</string>
+    <string name="problem_saved_earlier">顯示先前儲存的貼文</string>
 </resources>

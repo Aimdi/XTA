@@ -23,4 +23,14 @@
     <string name="problem_http_text">X svarte med HTTP %1$d.</string>
     <string name="problem_retry_in">Prøv igjen om %1$s</string>
     <string name="close_app_confirm">Lukk XTA?</string>
+    <string name="problem_connection_failed">Tilkoblingen mislyktes</string>
+    <string name="problem_sign_in_needed">Logg inn på nytt for å fortsette</string>
+    <string name="problem_rate_limit_hint">Denne kilden begrenser forespørsler. Prøv igjen senere.</string>
+    <string name="problem_more_info">Mer informasjon</string>
+    <string name="problem_auto_retry_seconds">Prøver igjen om %1$d s…</string>
+    <string name="problem_auto_retry_in">Prøver igjen om %1$s…</string>
+    <string name="problem_cached_content">Viser en lagret kopi mens denne kilden oppdateres.</string>
+    <string name="problem_source_loading">Denne kilden lastes fortsatt. Andre innlegg er klare til å leses.</string>
+    <string name="problem_saved_at">Viser innlegg lagret %1$s</string>
+    <string name="problem_saved_earlier">Viser tidligere lagrede innlegg</string>
 </resources>

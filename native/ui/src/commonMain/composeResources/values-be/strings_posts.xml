@@ -118,4 +118,6 @@
     <string name="posts_translation_failed">X не здолеў перакласці гэты допіс.</string>
     <string name="posts_translation_not_ready">Пераклад яшчэ не гатовы. Паспрабуйце крыху пазней.</string>
     <string name="posts_translation_other">Не ўдалося перакласці. Паспрабуйце яшчэ раз.</string>
+    <string name="posts_quote_unavailable">Не ўдалося атрымаць цытаваны пост</string>
+    <string name="posts_no_text">Твіт не змяшчаў ніякага тэксту. Гэта нечакана</string>
 </resources>

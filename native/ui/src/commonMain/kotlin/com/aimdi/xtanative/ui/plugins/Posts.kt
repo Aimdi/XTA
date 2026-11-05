@@ -54,6 +54,7 @@ import com.aimdi.xtanative.core.x.model.XCard
 import com.aimdi.xtanative.data.plugins.keepable
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.RollingCount
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.common.countText
@@ -430,6 +431,18 @@ fun NetworkCount(
     tint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     onLongClick: (() -> Unit)? = null,
     onClick: (() -> Unit)? = null,
+) = CountButton({ Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(17.dp)) }, n, label, tint, onLongClick, onClick)
+
+/** [NetworkCount] with a [glyph] of its own, as the device's like draws its heart burst; its number rolls as it changes ([RollingCount]). */
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+internal fun CountButton(
+    glyph: @Composable () -> Unit,
+    n: Long,
+    label: String?,
+    tint: Color,
+    onLongClick: (() -> Unit)?,
+    onClick: (() -> Unit)?,
 ) {
     val clickable = if (onClick != null) {
         Modifier.clip(CircleShape).combinedClickable(role = Role.Button, onClick = onClick, onLongClick = onLongClick).padding(4.dp)
@@ -440,9 +453,9 @@ fun NetworkCount(
         clickable.let { if (label != null) it.semantics { contentDescription = label } else it },
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(17.dp))
+        glyph()
         if (n > 0) {
-            Text(countText(n), style = MaterialTheme.typography.labelMedium, color = tint, modifier = Modifier.padding(start = 4.dp))
+            RollingCount(countText(n), n, MaterialTheme.typography.labelMedium, tint, Modifier.padding(start = 4.dp))
         }
     }
 }
