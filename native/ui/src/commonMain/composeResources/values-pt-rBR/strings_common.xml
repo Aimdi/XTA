@@ -23,4 +23,11 @@
     <string name="problem_http_text">O X retornou HTTP %1$d.</string>
     <string name="problem_retry_in">Tentar novamente em %1$s</string>
     <string name="close_app_confirm">Tem certeza de que deseja fechar o XTA?</string>
+    <string name="problem_unable_to_load_the_community">Não foi possível carregar a comunidade</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">Não foi possível encontrar os locais de tendências disponíveis.</string>
+    <string name="problem_unable_to_load_the_members">Não foi possível carregar os membros</string>
+    <string name="problem_unable_to_load_the_list_of_follows">Não foi possível carregar a lista de seguidores</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">Não foi possível carregar a próxima página de seguidores</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">Não foi possível carregar a próxima página de tweets</string>
+    <string name="problem_unable_to_load_the_tweets">Não foi possível carregar os tweets</string>
 </resources>

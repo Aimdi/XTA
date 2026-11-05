@@ -17,6 +17,7 @@ import com.aimdi.xtanative.store.downloads.FileDownloadHistory
 import com.aimdi.xtanative.store.downloads.OkHttpMediaHttp
 import com.aimdi.xtanative.store.follows.DiscoveryFeedbackStore
 import com.aimdi.xtanative.store.follows.FollowsCache
+import com.aimdi.xtanative.store.offline.KeptProfiles
 import com.aimdi.xtanative.store.offline.OfflineStore
 import com.aimdi.xtanative.store.offline.TimelineCache
 import com.aimdi.xtanative.store.published.PublishedDocument
@@ -91,6 +92,9 @@ class AppGraph(
     val readingJournal = ReadingJournal(store)
     val readingAppearance = ReadingAppearanceStore(store)
     val timelineCache = TimelineCache(store)
+
+    /** Profiles as X last gave them, shown for a week while X is read again. */
+    val keptProfiles = KeptProfiles(store)
     val noteDrafts = NoteDrafts(store)
 
     /** Whom followed accounts follow, as last read: "Followed by" on a profile, and a group's Discover. */

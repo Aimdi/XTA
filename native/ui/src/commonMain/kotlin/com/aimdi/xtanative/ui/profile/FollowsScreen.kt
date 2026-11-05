@@ -33,6 +33,8 @@ import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_list_of_follows
+import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_next_page_of_follows
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.posts_followers
 import com.aimdi.xtanative.ui.generated.resources.posts_following
@@ -127,7 +129,7 @@ fun FollowsScreen(screenName: String, followers: Boolean, actions: PostActions, 
             val problem = state.problem
             when {
                 state.loading -> item(key = "loading") { LoadingRow() }
-                problem != null -> item(key = "problem") { ProblemRow(problem, { vm.load() }) }
+                problem != null -> item(key = "problem") { ProblemRow(problem, { vm.load() }, context = stringResource(Res.string.problem_unable_to_load_the_list_of_follows)) }
                 state.people.isEmpty() -> item(key = "empty") {
                     Text(
                         stringResource(if (followers) Res.string.posts_no_followers else Res.string.posts_no_follows),
@@ -142,7 +144,7 @@ fun FollowsScreen(screenName: String, followers: Boolean, actions: PostActions, 
                 val more = state.moreProblem
                 when {
                     state.loadingMore -> LoadingRow()
-                    more != null -> ProblemRow(more, { state.cursor?.let(vm::load) })
+                    more != null -> ProblemRow(more, { state.cursor?.let(vm::load) }, context = stringResource(Res.string.problem_unable_to_load_the_next_page_of_follows))
                 }
             }
         }

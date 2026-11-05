@@ -23,4 +23,11 @@
     <string name="problem_http_text">X вернул HTTP %1$d.</string>
     <string name="problem_retry_in">Повторить через %1$s</string>
     <string name="close_app_confirm">Вы действительно хотите закрыть XTA?</string>
+    <string name="problem_unable_to_load_the_community">Не удалось загрузить сообщество</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">Не удается найти доступные страны для актуального.</string>
+    <string name="problem_unable_to_load_the_members">Не удалось загрузить участников</string>
+    <string name="problem_unable_to_load_the_list_of_follows">Не удаётся загрузить список читаемых</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">Не удаётся загрузить следующую страницу читаемых</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">Не удаётся загрузить следующую страницу твитов</string>
+    <string name="problem_unable_to_load_the_tweets">Не удаётся загрузить твиты</string>
 </resources>

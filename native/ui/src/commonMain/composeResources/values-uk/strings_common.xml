@@ -23,4 +23,11 @@
     <string name="problem_http_text">X повернув HTTP %1$d.</string>
     <string name="problem_retry_in">Повторити через %1$s</string>
     <string name="close_app_confirm">Ви впевнені, що хочете закрити XTA?</string>
+    <string name="problem_unable_to_load_the_community">Не вдалося завантажити спільноту</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">Не вдалося знайти доступні місцеположення трендів.</string>
+    <string name="problem_unable_to_load_the_members">Не вдалося завантажити учасників</string>
+    <string name="problem_unable_to_load_the_list_of_follows">Не вдається завантажити список підписників</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">Не вдається завантажити наступну сторінку з підписниками</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">Не вдається завантажити наступну сторінку твітів</string>
+    <string name="problem_unable_to_load_the_tweets">Не вдається завантажити твіти</string>
 </resources>

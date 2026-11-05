@@ -23,4 +23,11 @@
     <string name="problem_http_text">X, HTTP %1$d döndürdü.</string>
     <string name="problem_retry_in">%1$s sonra yeniden dene</string>
     <string name="close_app_confirm">XTA'ı kapatmak istediğinizden emin misiniz?</string>
+    <string name="problem_unable_to_load_the_community">Topluluk yüklenemedi</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">Mevcut trend konumları bulunamadı.</string>
+    <string name="problem_unable_to_load_the_members">Üyeler yüklenemedi</string>
+    <string name="problem_unable_to_load_the_list_of_follows">Aşağıdakilerin listesi yüklenemiyor</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">Takip edenlerin sonraki sayfası yüklenemiyor</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">Tweet\'lerin sonraki sayfası yüklenemiyor</string>
+    <string name="problem_unable_to_load_the_tweets">Tweet\'ler yüklenemedi</string>
 </resources>

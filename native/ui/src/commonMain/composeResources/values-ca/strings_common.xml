@@ -23,4 +23,11 @@
     <string name="problem_http_text">X ha retornat HTTP %1$d.</string>
     <string name="problem_retry_in">Torna-ho a provar d’aquí a %1$s</string>
     <string name="close_app_confirm">Segur que vols tancar XTA?</string>
+    <string name="problem_unable_to_load_the_community">No s\'ha pogut carregar la comunitat</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">No s\'han pogut trobar les ubicacions de tendència disponibles.</string>
+    <string name="problem_unable_to_load_the_members">No s\'han pogut carregar els membres</string>
+    <string name="problem_unable_to_load_the_list_of_follows">No es pot carregar la llista de Seguint</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">No es pot carregar la pàgina següent de Seguint</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">No es pot carregar la següent pàgina de tuits</string>
+    <string name="problem_unable_to_load_the_tweets">No s\'han pogut carregar els tweets</string>
 </resources>

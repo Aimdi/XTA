@@ -23,4 +23,11 @@
     <string name="problem_http_text">أعاد X رمز HTTP %1$d.</string>
     <string name="problem_retry_in">إعادة المحاولة بعد %1$s</string>
     <string name="close_app_confirm">هل أنت متأكد من أنك تريد إغلاق XTA؟</string>
+    <string name="problem_unable_to_load_the_community">تعذّر تحميل المجتمع</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">غير قادر على تحديد موقع الترندات.</string>
+    <string name="problem_unable_to_load_the_members">تعذّر تحميل الأعضاء</string>
+    <string name="problem_unable_to_load_the_list_of_follows">غير قادر على تحميل قائمة المتابَعون</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">غير قادر على تحميل الصفحة المتابَعون التالية</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">غير قادر على تحميل الصفحة التالية من التغريدات</string>
+    <string name="problem_unable_to_load_the_tweets">غير قادر على تحميل التغريدات</string>
 </resources>

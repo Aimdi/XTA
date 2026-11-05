@@ -51,6 +51,8 @@ import com.aimdi.xtanative.ui.feed.rememberFeedLayout
 import com.aimdi.xtanative.ui.feed.rememberNearEnd
 import com.aimdi.xtanative.ui.feed.rememberPlayingId
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_tweets
+import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_next_page_of_tweets
 import com.aimdi.xtanative.ui.generated.resources.dismiss
 import com.aimdi.xtanative.ui.generated.resources.home_for_you_empty
 import com.aimdi.xtanative.ui.group.ZenEndCard
@@ -109,7 +111,7 @@ internal fun ForYouPage(toTop: Int, actions: PostActions, contentPadding: Paddin
         when {
             // XTA's no-account screen, whose Add account signs in.
             state.noAccount -> PageMessage(null) { ProblemView(Problem.NoAccount, { vm.refresh() }) }
-            state.threads.isEmpty() && problem != null -> PageMessage(null) { ProblemView(problem, { vm.refresh() }) }
+            state.threads.isEmpty() && problem != null -> PageMessage(null) { ProblemView(problem, { vm.refresh() }, context = stringResource(Res.string.problem_unable_to_load_the_tweets)) }
             state.threads.isEmpty() && state.answered && !state.refreshing -> PageMessage(stringResource(Res.string.home_for_you_empty)) {}
             // The pull indicator already says a first load is under way.
             state.threads.isEmpty() -> PageMessage(null) { if (!state.refreshing) LoadingRow() }
@@ -140,7 +142,7 @@ private fun ForYouList(state: ForYouUi, vm: ForYouViewModel, actions: PostAction
                 val more = state.moreProblem
                 when {
                     state.loadingMore -> LoadingRow()
-                    more != null -> ProblemRow(more, { vm.loadMore() })
+                    more != null -> ProblemRow(more, { vm.loadMore() }, context = stringResource(Res.string.problem_unable_to_load_the_next_page_of_tweets))
                     state.paused -> ZenEndCard(vm::readOn)
                     else -> Box(Modifier.padding(bottom = 48.dp))
                 }

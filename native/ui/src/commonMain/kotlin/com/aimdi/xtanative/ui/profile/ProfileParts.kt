@@ -204,7 +204,7 @@ internal fun FollowedBySheet(followedBy: FollowedBy, actions: PostActions, onDis
                 Row(
                     Modifier.fillMaxWidth().clickable {
                         onDismiss()
-                        actions.openProfile(member.screenName)
+                        actions.openUser(member.screenName, member.id)
                     }.padding(horizontal = 16.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {

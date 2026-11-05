@@ -23,4 +23,6 @@ class PostActions(
     val openInBrowser: (url: String) -> Unit = {},
     /** One picture in the media viewer, saved under [username]'s name: a profile's banner or face. */
     val openImage: (url: String, username: String) -> Unit = { _, _ -> },
+    /** A profile read by its account id when known, so a renamed account still opens; by its handle otherwise. */
+    val openUser: (screenName: String, userId: String?) -> Unit = { screenName, _ -> openProfile(screenName) },
 )

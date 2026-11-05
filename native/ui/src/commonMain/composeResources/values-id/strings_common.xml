@@ -23,4 +23,11 @@
     <string name="problem_http_text">X mengembalikan HTTP %1$d.</string>
     <string name="problem_retry_in">Coba lagi dalam %1$s</string>
     <string name="close_app_confirm">Apakah Anda yakin ingin menutup XTA?</string>
+    <string name="problem_unable_to_load_the_community">Tidak dapat memuat komunitas</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">Tidak bisa menemukan lokasi tren yang tersedia.</string>
+    <string name="problem_unable_to_load_the_members">Tidak dapat memuat anggota</string>
+    <string name="problem_unable_to_load_the_list_of_follows">Tidak bisa memuat daftar pengikut</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">Tidak bisa memuat halaman pengikut selanjutnya</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">Tidak dapat memuat halaman cuitan selanjutnya</string>
+    <string name="problem_unable_to_load_the_tweets">Tidak bisa memuat cuitan</string>
 </resources>

@@ -23,4 +23,11 @@
     <string name="problem_http_text">X viarnuŭ HTTP %1$d.</string>
     <string name="problem_retry_in">Paŭtaryć praz %1$s</string>
     <string name="close_app_confirm">Vy sapraŭdy chočacie zakryć XTA?</string>
+    <string name="problem_unable_to_load_the_community">Nie ŭdałosia zahruzić supolnasć</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">Niemahčyma znajści dastupnyja krainy dla aktualnaha.</string>
+    <string name="problem_unable_to_load_the_members">Nie ŭdałosia zahruzić udzielnikaŭ</string>
+    <string name="problem_unable_to_load_the_list_of_follows">Nie atrymoŭvajecca zahruzić spis padpisak</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">Nie atrymoŭvajecca zahruzić nastupnuju staronku čytajemych</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">Niemahčyma zahruzić nastupnuju staronku tvitaŭ</string>
+    <string name="problem_unable_to_load_the_tweets">Nie atrymoŭvajecca zahruzić tvity</string>
 </resources>

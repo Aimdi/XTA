@@ -90,11 +90,13 @@ fun problemText(problem: Problem): String = when (problem) {
 /**
  * A read that brought nothing, as XTA's full-page errors say it: its mark,
  * what happened, what to do about it, and the buttons for that, Retry
- * counting down while X has said when a rate limit ends.
+ * counting down while X has said when a rate limit ends. [context] names
+ * what failed ("Unable to load the community"), under a failure XTA has no
+ * words of its own for, as its FullPageErrorWidget's prefix.
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun ProblemView(problem: Problem, onRetry: () -> Unit, modifier: Modifier = Modifier) {
+fun ProblemView(problem: Problem, onRetry: () -> Unit, modifier: Modifier = Modifier, context: String? = null) {
     val look = ProblemLook.of(problem)
     val actions = LocalProblemActions.current
     Column(modifier.fillMaxWidth().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -106,6 +108,9 @@ fun ProblemView(problem: Problem, onRetry: () -> Unit, modifier: Modifier = Modi
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = 12.dp),
         )
+        if (context != null && look == ProblemLook.OTHER) {
+            Text(context, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 12.dp))
+        }
         FlowRow(
             Modifier.padding(top = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
@@ -124,10 +129,11 @@ fun ProblemView(problem: Problem, onRetry: () -> Unit, modifier: Modifier = Modi
     }
 }
 
-/** One row in a list: a failed page under what is already shown. */
+/** One row in a list: a failed page under what is already shown; [context] names what failed ("Unable to load the next page of posts"). */
 @Composable
-fun ProblemRow(problem: Problem, onRetry: () -> Unit, modifier: Modifier = Modifier) {
+fun ProblemRow(problem: Problem, onRetry: () -> Unit, modifier: Modifier = Modifier, context: String? = null) {
     Column(modifier.fillMaxWidth().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        if (context != null) Text(context, style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center)
         Text(problemText(problem), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
         RetryButton(problem, onRetry, raised = false)
     }

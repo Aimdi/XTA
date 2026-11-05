@@ -195,7 +195,7 @@ private fun ContextLines(post: XPost, actions: PostActions, pinned: Boolean, fir
     PostView.contextLines(post, pinned, firstOfThread, quoted = false).forEach { line ->
         when (line) {
             is ContextLine.Reposted -> ContextRow(XIcons.Repost, stringResource(Res.string.posts_reposted, line.by.name, agoText(post.createdAt))) {
-                actions.openProfile(line.by.screenName)
+                actions.openUser(line.by.screenName, line.by.id)
             }
             ContextLine.Pinned -> ContextRow(XIcons.Pin, stringResource(Res.string.posts_pinned))
             ContextLine.Thread -> ContextRow(PostIcons.Forum, stringResource(Res.string.posts_thread))
@@ -211,7 +211,7 @@ internal fun PostAvatar(post: XPost, scope: PostScope, actions: PostActions, siz
         Icon(Icons.Filled.AccountCircle, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(size))
         return
     }
-    val open = { actions.openProfile(post.author.screenName) }
+    val open = { actions.openUser(post.author.screenName, post.author.id) }
     if (!scope.prefs.followBadge) {
         Avatar(post.author.largeAvatarUrl, size, onClick = open)
         return

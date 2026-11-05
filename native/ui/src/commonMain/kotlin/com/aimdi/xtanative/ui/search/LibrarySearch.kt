@@ -29,7 +29,7 @@ sealed interface LibraryTarget {
     /** A note, in its thread from the first note of it. */
     data class NoteThread(val rootId: String) : LibraryTarget
 
-    data class Profile(val screenName: String) : LibraryTarget
+    data class Profile(val screenName: String, val id: String? = null) : LibraryTarget
 
     /** A search followed here, searched on X again. */
     data class Search(val query: String) : LibraryTarget
@@ -117,7 +117,7 @@ object LibrarySearch {
 
     /** The X accounts followed here, by name and handle, then the searches followed. */
     fun accounts(session: Session): List<LibraryDocument> =
-        session.following.map { LibraryDocument("account:${it.id}", it.name, it.screenName, LibraryKind.ACCOUNT, LibraryTarget.Profile(it.screenName)) } +
+        session.following.map { LibraryDocument("account:${it.id}", it.name, it.screenName, LibraryKind.ACCOUNT, LibraryTarget.Profile(it.screenName, it.id)) } +
             session.searches.map { LibraryDocument("search:${it.query}", it.query, it.query, LibraryKind.ACCOUNT, LibraryTarget.Search(it.query)) }
 
     /** The groups, in XTA's order. */

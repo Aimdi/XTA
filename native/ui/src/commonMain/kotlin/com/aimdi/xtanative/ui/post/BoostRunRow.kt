@@ -93,7 +93,7 @@ private fun BoostCard(thread: XThread, actions: PostActions) {
             .padding(10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Avatar(shown.author.largeAvatarUrl, 32.dp) { actions.openProfile(shown.author.screenName) }
+        Avatar(shown.author.largeAvatarUrl, 32.dp) { actions.openUser(shown.author.screenName, shown.author.id) }
         Column(Modifier.padding(start = 8.dp)) {
             Text(shown.author.name, style = MaterialTheme.typography.labelLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
             if (preview.isNotEmpty()) {

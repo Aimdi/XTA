@@ -23,4 +23,11 @@
     <string name="problem_http_text">X redonis HTTP %1$d.</string>
     <string name="problem_retry_in">Reprovi post %1$s</string>
     <string name="close_app_confirm">Ĉu vi certas, vi volas fermi XTA-on?</string>
+    <string name="problem_unable_to_load_the_community">Ne eblis ŝargi la komunumon</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">Ne eblas trovi la lokojn disponeblajn de tendencoj.</string>
+    <string name="problem_unable_to_load_the_members">Ne eblis ŝargi la membrojn</string>
+    <string name="problem_unable_to_load_the_list_of_follows">Ne eblas ŝarĝi la liston de abonoj</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">Ne eblas ŝarĝi la sekvan paĝon de abonoj</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">Ne eblas ŝarĝi la sekvan paĝon de pepoj</string>
+    <string name="problem_unable_to_load_the_tweets">Ne eblas ŝarĝi la pepojn</string>
 </resources>

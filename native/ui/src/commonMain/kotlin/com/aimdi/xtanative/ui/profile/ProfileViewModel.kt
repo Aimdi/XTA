@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.aimdi.xtanative.core.feed.MergedTimeline
 import com.aimdi.xtanative.core.feed.TimelineSource
 import com.aimdi.xtanative.core.json.J
+import com.aimdi.xtanative.core.session.ProfileRefresh
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.core.x.model.XTimelinePage
@@ -12,6 +13,7 @@ import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.store.follows.RememberedFollows
+import com.aimdi.xtanative.store.offline.KeptProfile
 import com.aimdi.xtanative.store.saved.ArchiveFilter
 import com.aimdi.xtanative.store.saved.ProfileFilters
 import com.aimdi.xtanative.store.saved.XtaTweetJson
@@ -102,19 +104,29 @@ data class FollowUi(
  * the device's Saved among them; the reader's note and feed filters for it.
  * Posts holds what it posted and what it reposted, in time order, as XTA
  * shows them; X keeps the two apart.
+ *
+ * The account is read by [userId] when the caller knows it, so a renamed
+ * account still opens, else by [screenName]; the copy kept on the device
+ * shows with its tabs at once while X is asked again. [openingTab] is the
+ * tab a link named, before the reader's default.
  */
-class ProfileViewModel(private val graph: AppGraph, private val screenName: String) : ViewModel() {
-    private val state = MutableStateFlow(ProfileUi(user = graph.posts.user(screenName)))
+class ProfileViewModel(
+    private val graph: AppGraph,
+    private val screenName: String,
+    private val userId: String? = null,
+    private val openingTab: ProfileTab? = null,
+) : ViewModel() {
+    private val state = MutableStateFlow(ProfileUi(user = graph.posts.user(screenName)?.takeIf { userId == null || it.id == userId }))
     val ui: StateFlow<ProfileUi> = state.asStateFlow()
 
     val follow: StateFlow<FollowUi> =
-        combine(graph.sessions.state.filterNotNull(), state.map { it.user?.id }.distinctUntilChanged()) { session, userId ->
-            FollowUi.of(session, userId, screenName, graph.follows.remembered())
+        combine(graph.sessions.state.filterNotNull(), state.map { it.user?.id ?: userId }.distinctUntilChanged()) { session, id ->
+            FollowUi.of(session, id, screenName, graph.follows.remembered())
         }.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
             // From the session already read, so Follow never flashes before Following.
-            FollowUi.of(graph.sessions.state.value ?: Session(), state.value.user?.id, screenName),
+            FollowUi.of(graph.sessions.state.value ?: Session(), state.value.user?.id ?: userId, screenName),
         )
 
     private var posts: MergedTimeline? = null
@@ -135,7 +147,7 @@ class ProfileViewModel(private val graph: AppGraph, private val screenName: Stri
 
     init {
         viewModelScope.launch {
-            val opening = ProfileTab.opening(runCatching { graph.settings.get(GeneralPrefs.defaultProfileTab) }.getOrNull() ?: StoredTab.POSTS)
+            val opening = openingTab ?: ProfileTab.opening(runCatching { graph.settings.get(GeneralPrefs.defaultProfileTab) }.getOrNull() ?: StoredTab.POSTS)
             state.update { it.copy(tab = opening) }
             load()
         }
@@ -149,25 +161,58 @@ class ProfileViewModel(private val graph: AppGraph, private val screenName: Stri
         load()
     }
 
+    /**
+     * The profile from X. Opened for the first time, the copy kept on the
+     * device shows first with its tabs; when X then fails, that copy stays
+     * with the problem above its tabs.
+     */
     fun load() {
         viewModelScope.launch {
             state.update { it.copy(loading = true, problem = null, failure = null) }
+            val kept = if (state.value.complete) null else kept()
+            if (kept != null) show(kept.user, kept.pinned, reloadTabs = true)
             try {
-                val (user, pins) = graph.client.profile(screenName)
-                pinnedIds = pins.toSet()
-                graph.posts.remember(user)
-                posts = null
-                state.update { it.copy(user = user, complete = true, loading = false, tabs = emptyMap()) }
-                readNote(user)
-                loadTab(state.value.tab)
+                val (user, pins) = if (userId != null) graph.client.profileById(userId) else graph.client.profile(screenName)
+                graph.keep { graph.keptProfiles.remember(user, pins) }
+                refreshFollowed(user)
+                show(user, pins, reloadTabs = kept?.user?.id != user.id)
             } catch (error: CancellationException) {
                 throw error
             } catch (error: Throwable) {
                 val failure = ProfileFailure.of(error)
                 bypassCache = false
-                state.update { it.copy(loading = false, refreshing = false, failure = failure, problem = if (failure == null) Problem.of(error) else null) }
+                state.update {
+                    when {
+                        it.complete -> it.copy(loading = false, refreshing = false, problem = Problem.of(error))
+                        else -> it.copy(loading = false, refreshing = false, failure = failure, problem = if (failure == null) Problem.of(error) else null)
+                    }
+                }
             }
         }
+    }
+
+    private suspend fun kept(): KeptProfile? = runCatching {
+        if (userId != null) graph.keptProfiles.byId(userId) else graph.keptProfiles.byName(screenName)
+    }.getOrNull()
+
+    /** [user] on the page; with [reloadTabs], its tabs read afresh, else the ones shown stay. */
+    private suspend fun show(user: XUser, pins: List<String>, reloadTabs: Boolean) {
+        pinnedIds = pins.toSet()
+        graph.posts.remember(user)
+        if (!reloadTabs) {
+            state.update { it.copy(user = user, complete = true, loading = false) }
+            return
+        }
+        posts = null
+        state.update { it.copy(user = user, complete = true, loading = false, tabs = emptyMap()) }
+        readNote(user)
+        loadTab(state.value.tab)
+    }
+
+    /** A followed account's handle, name and picture as X now gives them (subscriptions.refreshProfiles). */
+    private suspend fun refreshFollowed(user: XUser) {
+        val session = graph.sessions.state.value ?: return
+        if (ProfileRefresh.refreshed(session.following, listOf(user)).isNotEmpty()) graph.sessions.update { it.withProfilesFrom(listOf(user)) }
     }
 
     fun select(tab: ProfileTab) {

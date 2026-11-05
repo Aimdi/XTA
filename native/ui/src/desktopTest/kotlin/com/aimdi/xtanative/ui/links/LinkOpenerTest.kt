@@ -35,7 +35,7 @@ class LinkOpenerTest {
         var pluginHosts = emptySet<String>()
         val screens = LinkScreens(
             post = { opened += "post $it" },
-            profile = { opened += "profile $it" },
+            profile = { name, tab -> opened += listOfNotNull("profile", name, tab?.name).joinToString(" ") },
             search = { opened += "search $it" },
             browser = { url, from -> opened += "browser $url ${from ?: "-"}" },
             network = { link -> readsNetworks.also { if (it) opened += "network ${link.network}" } },
@@ -65,6 +65,16 @@ class LinkOpenerTest {
         opener.open("https://twitter.com/maya")
         opener.openPostLink("https://mobile.x.com/nasa/status/456/photo/1")
         assertEquals(listOf("post 123", "profile maya", "post 456"), screens.opened)
+    }
+
+    @Test
+    fun aProfileLinkOpensTheTabItNames() {
+        val screens = Screens()
+        val opener = opener(Platform()).also { it.bind(screens.screens) }
+        opener.open("https://x.com/maya/media")
+        opener.open("https://x.com/maya/with_replies")
+        opener.open("https://x.com/maya/highlights")
+        assertEquals(listOf("profile maya MEDIA", "profile maya POSTS_AND_REPLIES", "profile maya"), screens.opened)
     }
 
     @Test

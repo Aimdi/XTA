@@ -82,6 +82,8 @@ import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.monthText
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_tweets
+import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_next_page_of_tweets
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.posts_account_suspended
 import com.aimdi.xtanative.ui.generated.resources.posts_filter_all
@@ -139,13 +141,21 @@ import org.jetbrains.compose.resources.stringResource
  * private note), then Posts, Replies, Media and Saved, each with its
  * filter. A protected account's posts and a sensitive profile wait behind
  * their gates. Its bar's Search opens [searchPosts] on "from:@name", its
- * Share hands the profile's link on.
+ * Share hands the profile's link on. [userId], when known, is what it is
+ * read by; [openingTab] is the tab a link named.
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun ProfileScreen(screenName: String, actions: PostActions, onBack: () -> Unit, searchPosts: (query: String) -> Unit = actions.search) {
+fun ProfileScreen(
+    screenName: String,
+    actions: PostActions,
+    onBack: () -> Unit,
+    userId: String? = null,
+    openingTab: ProfileTab? = null,
+    searchPosts: (query: String) -> Unit = actions.search,
+) {
     val graph = LocalGraph.current
-    val vm: ProfileViewModel = viewModel(key = "profile-" + screenName.lowercase()) { ProfileViewModel(graph, screenName) }
+    val vm: ProfileViewModel = viewModel(key = "profile-" + (userId ?: screenName.lowercase())) { ProfileViewModel(graph, screenName, userId, openingTab) }
     val state by vm.ui.collectAsStateWithLifecycle()
     val follow by vm.follow.collectAsStateWithLifecycle()
     val session by graph.sessions.state.collectAsStateWithLifecycle()
@@ -284,8 +294,8 @@ private fun LazyListScope.tabFooter(state: ProfileUi, tab: TabUi, vm: ProfileVie
         val empty = tab.loaded && tab.threads.isEmpty() && tab.tiles.isEmpty() && (state.tab != ProfileTab.POSTS || state.pinned.isEmpty())
         when {
             tab.loading || tab.loadingMore -> LoadingRow()
-            failed != null -> ProblemRow(failed, { vm.select(state.tab) })
-            more != null -> ProblemRow(more, { vm.loadMore() })
+            failed != null -> ProblemRow(failed, { vm.select(state.tab) }, context = stringResource(Res.string.problem_unable_to_load_the_tweets))
+            more != null -> ProblemRow(more, { vm.loadMore() }, context = stringResource(Res.string.problem_unable_to_load_the_next_page_of_tweets))
             empty -> Gated(
                 stringResource(
                     when {

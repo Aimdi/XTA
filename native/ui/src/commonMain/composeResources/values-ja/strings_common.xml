@@ -23,4 +23,11 @@
     <string name="problem_http_text">X が HTTP %1$d を返しました。</string>
     <string name="problem_retry_in">%1$s 後に再試行</string>
     <string name="close_app_confirm">XTA を終了しますか？</string>
+    <string name="problem_unable_to_load_the_community">コミュニティを読み込めませんでした</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">利用可能なトレンドの地域が見つかりませんでした。</string>
+    <string name="problem_unable_to_load_the_members">メンバーを読み込めませんでした</string>
+    <string name="problem_unable_to_load_the_list_of_follows">フォローリストを読み込めませんでした</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">フォローの次のページを読み込めませんでした</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">ツイートの次のページ読み込みに失敗しました</string>
+    <string name="problem_unable_to_load_the_tweets">ツイートを読み込めませんでした</string>
 </resources>

@@ -5,6 +5,7 @@ import com.aimdi.xtanative.core.x.XAnswerException
 import com.aimdi.xtanative.core.x.XUserUnavailableException
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.core.x.model.XUser
+import com.aimdi.xtanative.services.links.XProfileTab
 import com.aimdi.xtanative.store.follows.KnownFollow
 import com.aimdi.xtanative.store.follows.RememberedFollows
 import com.aimdi.xtanative.store.offline.TimelineCache
@@ -14,7 +15,20 @@ import com.aimdi.xtanative.ui.media.MediaGridItem
 /** A profile's tabs, in XTA's order: Posts, Replies (X's name for posts and replies), Media, and the device's Saved. */
 enum class ProfileTab { POSTS, REPLIES, MEDIA, SAVED;
 
+    /** The tab's name in a route. */
+    val routeName: String get() = name.lowercase()
+
     companion object {
+        /** The tab a route names; null for none or one unknown. */
+        fun ofRoute(name: String?): ProfileTab? = entries.firstOrNull { it.routeName == name }
+
+        /** The tab an X profile link names (`/with_replies`, `/media`), as XTA opens it. */
+        fun of(link: XProfileTab?): ProfileTab? = when (link) {
+            XProfileTab.POSTS_AND_REPLIES -> REPLIES
+            XProfileTab.MEDIA -> MEDIA
+            null -> null
+        }
+
         /** The tab a profile opens on: the reader's "default profile tab". */
         fun opening(stored: StoredTab): ProfileTab = when (stored) {
             StoredTab.POSTS -> POSTS

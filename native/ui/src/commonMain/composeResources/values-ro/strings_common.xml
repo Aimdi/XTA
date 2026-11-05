@@ -23,4 +23,11 @@
     <string name="problem_http_text">X a returnat HTTP %1$d.</string>
     <string name="problem_retry_in">Încearcă din nou peste %1$s</string>
     <string name="close_app_confirm">Ești sigur că vrei să închizi XTA?</string>
+    <string name="problem_unable_to_load_the_community">Comunitatea nu a putut fi încărcată</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">Nu se pot găsi locațiile de tendințe disponibile.</string>
+    <string name="problem_unable_to_load_the_members">Membrii nu au putut fi încărcați</string>
+    <string name="problem_unable_to_load_the_list_of_follows">Nu se poate încărca lista urmăriților</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">Nu se poate încărca pagina următoare de urmăriți</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">Nu se poate încărca următoarea pagină de tweet-uri</string>
+    <string name="problem_unable_to_load_the_tweets">Nu se pot încărca postările</string>
 </resources>

@@ -23,4 +23,11 @@
     <string name="problem_http_text">X gaf HTTP %1$d terug.</string>
     <string name="problem_retry_in">Opnieuw proberen over %1$s</string>
     <string name="close_app_confirm">Weet je zeker dat je XTA wilt sluiten?</string>
+    <string name="problem_unable_to_load_the_community">Kan de community niet laden</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">Kan de beschikbare trendlocaties niet vinden.</string>
+    <string name="problem_unable_to_load_the_members">Kan de leden niet laden</string>
+    <string name="problem_unable_to_load_the_list_of_follows">Kan de lijst van gevolgde gebruikers niet laden</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">Kan de volgende pagina van gevolgde gebruikers niet laden</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">Meer tweets laden is mislukt</string>
+    <string name="problem_unable_to_load_the_tweets">Kan de berichten niet laden</string>
 </resources>

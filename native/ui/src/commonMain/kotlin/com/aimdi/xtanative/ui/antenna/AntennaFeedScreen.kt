@@ -27,6 +27,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_next_page_of_tweets
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.discover_no_posts_match
 import com.aimdi.xtanative.ui.generated.resources.discover_no_results
@@ -67,7 +68,7 @@ fun AntennaFeedScreen(id: String, actions: PostActions, onBack: () -> Unit) {
                 val layout = rememberFeedLayout(posts.items)
                 LazyColumn(state = list, contentPadding = column, modifier = Modifier.fillMaxSize()) {
                     feedThreads(posts.items, layout, actions)
-                    pageStatus(posts, Res.string.discover_no_posts_match, vm::retry, vm::more)
+                    pageStatus(posts, Res.string.discover_no_posts_match, vm::retry, vm::more, moreFailed = Res.string.problem_unable_to_load_the_next_page_of_tweets)
                 }
             }
         }

@@ -23,4 +23,11 @@
     <string name="problem_http_text">X-k HTTP %1$d itzuli du.</string>
     <string name="problem_retry_in">Saiatu berriro %1$s barru</string>
     <string name="close_app_confirm">Ziur al zaude XTA itxi nahi duzula?</string>
+    <string name="problem_unable_to_load_the_community">Ezin izan da komunitatea kargatu</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">Ezin dira aurkitu eskuragarri dauden joera-kokapenak.</string>
+    <string name="problem_unable_to_load_the_members">Ezin izan dira kideak kargatu</string>
+    <string name="problem_unable_to_load_the_list_of_follows">Ezin da jarraipenen zerrenda kargatu</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">Ezin da jarraipenen hurrengo orrialdea kargatu</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">Ezin da txioen hurrengo orria kargatu</string>
+    <string name="problem_unable_to_load_the_tweets">Ezin da txioa kargatu</string>
 </resources>
