@@ -29,10 +29,14 @@
     <string name="bookmark_auto_tag">Aŭtamatyčna dadavać tehi da zakladak</string>
     <string name="bookmark_auto_tag_description">Zakladki, zroblenyja biez redaktara, atrymlivajuć tehi samoj pracy, akramia tehaŭ papuliarnasci nakštałt 1000users入り.</string>
     <string name="bookmark_clear_all">Zniać usie</string>
+    <string name="bookmark_default_private">Pryvatnyja zakladki pa zmaŭčanni</string>
+    <string name="bookmark_default_private_description">Zakladki, zroblenyja biez redaktara, pryvatnyja. U redaktary liubuju možna zrabić publičnaj.</string>
     <string name="bookmark_edit">Zmianić zakladku</string>
     <string name="bookmark_follow_after">Padpisvacca pry dadanni ŭ zakladki</string>
     <string name="bookmark_follow_after_description">Novaja zakladka taksama padpisvaje vas na mastaka na hetaj pryladzie, kali vy jašče nie padpisany.</string>
     <string name="bookmark_followed_author">Vy padpisalisia na %1$s</string>
+    <string name="bookmark_private">Pryvatnaja zakladka</string>
+    <string name="bookmark_private_hint">Bačycie tolki vy</string>
     <string name="bookmark_save_after">Zachoŭvać pry dadanni ŭ zakladki</string>
     <string name="bookmark_save_after_description">Novaja zakladka taksama zachoŭvaje ŭsie staronki pracy.</string>
     <string name="bookmark_select_all">Vybrać usie</string>
@@ -131,12 +135,13 @@
     <string name="folder_r18_description">Składvaje tvory R-18 u papku «R-18» unutry papki spampovak</string>
     <string name="follow">Padpisacca</string>
     <string name="follow_private">Pryvatnyja</string>
+    <string name="follow_privately">Padpisacca pryvatna</string>
+    <string name="follow_privately_hint">Pra hetuju padpisku viedajecie tolki vy</string>
     <string name="follow_public">Publičnyja</string>
     <string name="follow_restrict_all">Usie padpiski</string>
     <string name="follow_restrict_device">Padpiski na hetaj pryladzie</string>
     <string name="follow_restrict_private">Pryvatnyja padpiski</string>
     <string name="follow_restrict_public">Publičnyja padpiski</string>
-    <string name="followed_on_pixiv">Padpiska na Pixiv</string>
     <string name="following">Čytaje</string>
     <plurals name="following_count"><item quantity="one">%2$s padpiska</item><item quantity="few">%2$s padpiski</item><item quantity="many">%2$s padpisak</item><item quantity="other">%2$s padpiski</item></plurals>
     <string name="follows_here">Na hetaj pryladzie</string>
@@ -208,12 +213,14 @@
     <string name="not_configured">Uvajdzicie ŭ Pixiv, kab hladzieć stužku, rejtynh i zakladki</string>
     <string name="novel">Raman</string>
     <string name="novel_author_novels">Ramany aŭtara</string>
+    <string name="novel_bookmark_private">Dadać u pryvatnyja zakladki</string>
     <string name="novel_bookmarks_empty">Tut zjaviacca ramany, jakija vy publična dadascie ŭ zakladki</string>
     <string name="novel_bookmarks_private_empty">Tut zjaviacca ramany, jakija vy pryvatna dadascie ŭ zakladki</string>
     <string name="novel_chapter_number">№ %1$d</string>
     <plurals name="novel_chapters_count"><item quantity="one">%2$s razdziel</item><item quantity="few">%2$s razdziely</item><item quantity="many">%2$s razdzielaŭ</item><item quantity="other">%2$s razdzieła</item></plurals>
     <plurals name="novel_characters"><item quantity="one">%2$s znak</item><item quantity="few">%2$s znaki</item><item quantity="many">%2$s znakaŭ</item><item quantity="other">%2$s znaka</item></plurals>
     <string name="novel_export">Ekspartavać jak tekst</string>
+    <string name="novel_export_failed">Nie ŭdałosia ekspartavać raman</string>
     <string name="novel_export_markup">Z razmietkaj Pixiv</string>
     <string name="novel_export_markup_hint">Tekst roŭna tak, jak jaho zachoŭvaje Pixiv, z tehami nakštałt [newpage]</string>
     <string name="novel_export_plain">Prosty tekst</string>
@@ -458,6 +465,8 @@
     <string name="ugoira_play">Prajhrać animacyju</string>
     <string name="ugoira_save_gif">Zachavać jak GIF</string>
     <string name="ugoira_save_zip">Zachavać kadry ŭ ZIP</string>
+    <string name="ugoira_saved_gif">Animacyja zachavana jak GIF</string>
+    <string name="ugoira_saved_zip">Kadry zachavany ŭ ZIP</string>
     <string name="ugoira_saving">Zachavannie…</string>
     <string name="ugoira_slow">Kadziravańnie moža zaniać chvilinu</string>
     <string name="unbookmark">Prybrać zakladku</string>
@@ -467,7 +476,9 @@
     <string name="viewing_section">Prahliad</string>
     <string name="walkthrough_sign_in">Uvajdzicie, kab adkryć hetuju pracu</string>
     <string name="walkthrough_title">Papuliarnaje na Pixiv</string>
+    <string name="watchlist_add">Dadać u spis nazirańnia</string>
     <string name="watchlist_empty">Tut zjaviacca seryi manhi, jakija vy dadascie ŭ spis nazirańnia</string>
+    <string name="watchlist_remove">Vydalić sa spisu nazirańnia</string>
     <string name="watchlist_updated">Abnoŭlena %1$s</string>
     <string name="watchlist_view_latest">Adkryć apošniuju</string>
     <plurals name="works_count"><item quantity="one">%2$s praca</item><item quantity="few">%2$s pracy</item><item quantity="many">%2$s prac</item><item quantity="other">%2$s pracy</item></plurals>

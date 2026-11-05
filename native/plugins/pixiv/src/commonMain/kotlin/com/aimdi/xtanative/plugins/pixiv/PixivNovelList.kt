@@ -139,7 +139,7 @@ internal fun PixivNovelFeed(list: PixivList<PixivNovel>, empty: String, padding:
 
 /**
  * One novel in a list: cover, title, author, length, ratings, series, tags,
- * and its heart, which bookmarks it on this device. A tap opens the novel, a
+ * and its heart, which bookmarks it on Pixiv. A tap opens the novel, a
  * long press its actions.
  */
 @OptIn(ExperimentalFoundationApi::class)
@@ -213,21 +213,24 @@ internal fun NovelCover(url: String?, width: Dp = 80.dp) {
     }
 }
 
-/** A novel's heart: a tap bookmarks it on this device or takes the bookmark away, a long press opens the editor; Pixiv's count under it. */
+/** A novel's heart: a tap bookmarks it on Pixiv or takes the bookmark away, a long press bookmarks it privately; Pixiv's count under it. */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun NovelHeart(novel: PixivNovel) {
     val runtime = LocalPixiv.current
     val sheets = LocalPixivSheets.current
     val haptics = rememberHaptics()
-    val marks by runtime.bookmarks.state.collectAsState()
-    val bookmarked = marks.orEmpty().any { it.kind == PixivKind.NOVEL && it.kept.id == novel.id }
+    val marks by runtime.bookmarking.novels.state.collectAsState()
+    val bookmarked = marks.on(novel.id, novel.isBookmarked)
+    val busy = marks.isBusy(novel.id)
     Column(
         Modifier.width(48.dp).clip(CircleShape).combinedClickable(
+            enabled = !busy,
+            onLongClickLabel = pluginString(Strings.novel_bookmark_private),
             onClick = { sheets.toggleBookmark(novel, haptics) },
             onLongClick = {
                 haptics.medium()
-                sheets.show(PixivSheet.EditNovel(novel))
+                sheets.bookmarkPrivately(novel, haptics)
             },
         ).padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -235,9 +238,9 @@ private fun NovelHeart(novel: PixivNovel) {
         Icon(
             if (bookmarked) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
             pluginString(if (bookmarked) Strings.unbookmark else Strings.bookmark),
-            tint = if (bookmarked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+            tint = (if (bookmarked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant).let { if (busy) it.copy(alpha = 0.5f) else it },
         )
         Spacer(Modifier.size(2.dp))
-        Text(countText(novel.totalBookmarks), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(countText(marks.count(novel.id, novel.isBookmarked, novel.totalBookmarks)), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }

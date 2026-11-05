@@ -29,10 +29,14 @@
     <string name="bookmark_auto_tag">Bladwijzers automatisch taggen</string>
     <string name="bookmark_auto_tag_description">Bladwijzers die je zonder de editor maakt krijgen de eigen tags van het werk, zonder populariteitstags zoals 1000users入り.</string>
     <string name="bookmark_clear_all">Alles deselecteren</string>
+    <string name="bookmark_default_private">Standaard privébladwijzers</string>
+    <string name="bookmark_default_private_description">Bladwijzers die je zonder de editor maakt zijn privé. In de editor kun je er toch een openbaar maken.</string>
     <string name="bookmark_edit">Bladwijzer bewerken</string>
     <string name="bookmark_follow_after">Volgen bij bladwijzer maken</string>
-    <string name="bookmark_follow_after_description">Een nieuwe bladwijzer volgt de artiest ook op dit apparaat, als je die nog niet volgt.</string>
+    <string name="bookmark_follow_after_description">Een nieuwe bladwijzer volgt ook openbaar de artiest, als je die nog niet volgt.</string>
     <string name="bookmark_followed_author">Je volgt nu %1$s</string>
+    <string name="bookmark_private">Privébladwijzer</string>
+    <string name="bookmark_private_hint">Alleen jij kunt hem zien</string>
     <string name="bookmark_save_after">Opslaan bij bladwijzer maken</string>
     <string name="bookmark_save_after_description">Een nieuwe bladwijzer slaat ook alle pagina’s van het werk op.</string>
     <string name="bookmark_select_all">Alles selecteren</string>
@@ -131,12 +135,13 @@
     <string name="folder_r18_description">Zet R-18-werken in een map ‘R-18’ binnen de downloadmap</string>
     <string name="follow">Volgen</string>
     <string name="follow_private">Privé</string>
+    <string name="follow_privately">Privé volgen</string>
+    <string name="follow_privately_hint">Alleen jij ziet dat je volgt</string>
     <string name="follow_public">Openbaar</string>
     <string name="follow_restrict_all">Alle gevolgde makers</string>
     <string name="follow_restrict_device">Op dit apparaat gevolgde makers</string>
     <string name="follow_restrict_private">Privé gevolgde makers</string>
     <string name="follow_restrict_public">Openbaar gevolgde makers</string>
-    <string name="followed_on_pixiv">Gevolgd op Pixiv</string>
     <string name="following">Volgend</string>
     <plurals name="following_count"><item quantity="one">%2$s volgend</item><item quantity="other">%2$s volgend</item></plurals>
     <string name="follows_here">Op dit apparaat</string>
@@ -208,12 +213,14 @@
     <string name="not_configured">Meld je aan bij Pixiv om volgend, ranglijst en bladwijzers te bekijken</string>
     <string name="novel">Roman</string>
     <string name="novel_author_novels">Hun romans bekijken</string>
+    <string name="novel_bookmark_private">Privé een bladwijzer maken</string>
     <string name="novel_bookmarks_empty">Romans met een openbare bladwijzer verschijnen hier</string>
     <string name="novel_bookmarks_private_empty">Romans met een privébladwijzer verschijnen hier</string>
     <string name="novel_chapter_number">Nr. %1$d</string>
     <plurals name="novel_chapters_count"><item quantity="one">%2$s hoofdstuk</item><item quantity="other">%2$s hoofdstukken</item></plurals>
     <plurals name="novel_characters"><item quantity="one">%2$s teken</item><item quantity="other">%2$s tekens</item></plurals>
     <string name="novel_export">Exporteren als tekst</string>
+    <string name="novel_export_failed">Kan de roman niet exporteren</string>
     <string name="novel_export_markup">Met Pixiv-opmaakcodes</string>
     <string name="novel_export_markup_hint">De tekst precies zoals Pixiv hem opslaat, met codes zoals [newpage]</string>
     <string name="novel_export_plain">Platte tekst</string>
@@ -418,7 +425,7 @@
     <string name="series_position">Nr. %1$d van %2$d</string>
     <string name="series_previous">Vorige in de reeks</string>
     <string name="series_started">Gestart op %1$s</string>
-    <string name="settings_intro">Deze privé-plug-in leest Pixiv als een galerij-app: illustraties, manga, romans, ranglijsten, je bladwijzers en zoeken. Tik op Inloggen om in te loggen met je Pixiv-account, of plak hieronder een vernieuwingstoken. Bladwijzers, gevolgde makers en geschiedenis blijven op dit apparaat: er wordt nooit iets naar je Pixiv-account gestuurd, op geplaatst of in gewijzigd.</string>
+    <string name="settings_intro">Deze privéplug-in leest Pixiv als een galerij-app: illustraties, manga, romans, ranglijsten, je bladwijzers en zoeken. Tik op Aanmelden om in de browser in te loggen met je Pixiv-account, of plak hieronder een refresh-token. Alleen de bladwijzers, follows en wijzigingen in de volglijst die je zelf maakt, gaan naar je Pixiv-account. Vanuit hier wordt nooit iets gepost, becommentarieerd of gemeld.</string>
     <string name="share_image">Afbeelding delen</string>
     <string name="share_image_failed">Kan deze afbeelding niet delen</string>
     <string name="share_link">Link delen</string>
@@ -458,6 +465,8 @@
     <string name="ugoira_play">Animatie afspelen</string>
     <string name="ugoira_save_gif">Opslaan als GIF</string>
     <string name="ugoira_save_zip">Frames opslaan als ZIP</string>
+    <string name="ugoira_saved_gif">Animatie opgeslagen als GIF</string>
+    <string name="ugoira_saved_zip">Frames opgeslagen als ZIP</string>
     <string name="ugoira_saving">Opslaan…</string>
     <string name="ugoira_slow">Coderen kan een minuut duren</string>
     <string name="unbookmark">Bladwijzer verwijderen</string>
@@ -467,7 +476,9 @@
     <string name="viewing_section">Weergave</string>
     <string name="walkthrough_sign_in">Meld je aan om dit werk te openen</string>
     <string name="walkthrough_title">Populair op Pixiv</string>
+    <string name="watchlist_add">Aan volglijst toevoegen</string>
     <string name="watchlist_empty">Mangareeksen die je aan je volglijst toevoegt, verschijnen hier</string>
+    <string name="watchlist_remove">Van volglijst verwijderen</string>
     <string name="watchlist_updated">Bijgewerkt %1$s</string>
     <string name="watchlist_view_latest">Nieuwste bekijken</string>
     <plurals name="works_count"><item quantity="one">%2$s werk</item><item quantity="other">%2$s werken</item></plurals>

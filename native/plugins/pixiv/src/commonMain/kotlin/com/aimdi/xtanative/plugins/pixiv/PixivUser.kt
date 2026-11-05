@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
@@ -130,7 +131,7 @@ private fun ProfileView(scope: PixivProfileScope, initialTab: String?) {
     )
 }
 
-/** Share, and the menu: copy their info, mute or unmute them, open them on Pixiv. */
+/** Share, and the menu: follow them privately, copy their info, mute or unmute them, open them on Pixiv. */
 @Composable
 private fun ProfileActions(scope: PixivProfileScope) {
     val runtime = LocalPixiv.current
@@ -150,6 +151,7 @@ private fun ProfileActions(scope: PixivProfileScope) {
                     run()
                 })
             }
+            if (!scope.own) item(Icons.Outlined.Lock, Strings.follow_privately) { sheets.show(PixivSheet.Follow(profile.user)) }
             item(PixivIcons.ContentCopy, Strings.profile_copy_info) { copy("${profile.user.name}\n@${profile.user.account}\n${profile.url}", Strings.profile_info_copied) }
             if (!scope.own && !scope.muted) {
                 item(GroupIcons.PersonRemove, Strings.mute_author) {

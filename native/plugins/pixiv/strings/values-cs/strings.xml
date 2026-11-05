@@ -29,10 +29,14 @@
     <string name="bookmark_auto_tag">Automaticky štítkovat záložky</string>
     <string name="bookmark_auto_tag_description">Záložky vytvořené bez editoru dostanou štítky samotného díla, kromě štítků oblíbenosti jako 1000users入り.</string>
     <string name="bookmark_clear_all">Zrušit vše</string>
+    <string name="bookmark_default_private">Soukromé záložky ve výchozím stavu</string>
+    <string name="bookmark_default_private_description">Záložky vytvořené bez editoru jsou soukromé. V editoru můžete kteroukoli zveřejnit.</string>
     <string name="bookmark_edit">Upravit záložku</string>
     <string name="bookmark_follow_after">Při přidání do záložek sledovat autora</string>
-    <string name="bookmark_follow_after_description">Nová záložka zároveň začne sledovat autora v tomto zařízení, pokud ho ještě nesledujete.</string>
+    <string name="bookmark_follow_after_description">Nová záložka zároveň veřejně začne sledovat autora, pokud ho ještě nesledujete.</string>
     <string name="bookmark_followed_author">Sledujete %1$s</string>
+    <string name="bookmark_private">Soukromá záložka</string>
+    <string name="bookmark_private_hint">Vidíte ji jen vy</string>
     <string name="bookmark_save_after">Při přidání do záložek uložit</string>
     <string name="bookmark_save_after_description">Nová záložka zároveň uloží všechny stránky díla.</string>
     <string name="bookmark_select_all">Vybrat vše</string>
@@ -131,12 +135,13 @@
     <string name="folder_r18_description">Ukládá díla R-18 do složky „R-18“ uvnitř složky pro stahování</string>
     <string name="follow">Sledovat</string>
     <string name="follow_private">Soukromé</string>
+    <string name="follow_privately">Sledovat soukromě</string>
+    <string name="follow_privately_hint">Že sledujete, uvidíte jen vy</string>
     <string name="follow_public">Veřejné</string>
     <string name="follow_restrict_all">Všichni sledovaní tvůrci</string>
     <string name="follow_restrict_device">Tvůrci sledovaní v tomto zařízení</string>
     <string name="follow_restrict_private">Soukromě sledovaní tvůrci</string>
     <string name="follow_restrict_public">Veřejně sledovaní tvůrci</string>
-    <string name="followed_on_pixiv">Sledujete na Pixivu</string>
     <string name="following">Sledování</string>
     <plurals name="following_count"><item quantity="one">%2$s sledovaný</item><item quantity="few">%2$s sledovaní</item><item quantity="many">%2$s sledovaného</item><item quantity="other">%2$s sledovaných</item></plurals>
     <string name="follows_here">V tomto zařízení</string>
@@ -208,12 +213,14 @@
     <string name="not_configured">Přihlaste se k Pixivu a prohlížejte sledování, žebříčky a záložky</string>
     <string name="novel">Román</string>
     <string name="novel_author_novels">Romány autora</string>
+    <string name="novel_bookmark_private">Uložit do soukromých záložek</string>
     <string name="novel_bookmarks_empty">Zde se objeví romány, které si veřejně uložíte do záložek</string>
     <string name="novel_bookmarks_private_empty">Zde se objeví romány, které si soukromě uložíte do záložek</string>
     <string name="novel_chapter_number">Č. %1$d</string>
     <plurals name="novel_chapters_count"><item quantity="one">%2$s kapitola</item><item quantity="few">%2$s kapitoly</item><item quantity="many">%2$s kapitoly</item><item quantity="other">%2$s kapitol</item></plurals>
     <plurals name="novel_characters"><item quantity="one">%2$s znak</item><item quantity="few">%2$s znaky</item><item quantity="many">%2$s znaku</item><item quantity="other">%2$s znaků</item></plurals>
     <string name="novel_export">Exportovat jako text</string>
+    <string name="novel_export_failed">Román se nepodařilo exportovat</string>
     <string name="novel_export_markup">Se značkami Pixivu</string>
     <string name="novel_export_markup_hint">Text přesně tak, jak ho ukládá Pixiv, se značkami jako [newpage]</string>
     <string name="novel_export_plain">Prostý text</string>
@@ -418,7 +425,7 @@
     <string name="series_position">Č. %1$d z %2$d</string>
     <string name="series_previous">Předchozí v sérii</string>
     <string name="series_started">Zahájeno %1$s</string>
-    <string name="settings_intro">Tento soukromý plugin čte Pixiv jako aplikace galerie: ilustrace, mangu, romány, žebříčky, vaše záložky a vyhledávání. Klepněte na Přihlásit se a přihlaste se účtem Pixiv, nebo níže vložte obnovovací token. Záložky, sledování a historie zůstávají v tomto zařízení: do vašeho účtu Pixiv se nikdy nic neodesílá, nepublikuje ani v něm nic nemění.</string>
+    <string name="settings_intro">Tento soukromý plugin čte Pixiv jako galerii: ilustrace, manga, romány, žebříčky, vaše záložky a vyhledávání. Klepněte na Přihlásit a přihlaste se účtem Pixiv v prohlížeči, nebo níže vložte refresh token. Do vašeho účtu Pixiv se odesílají jen záložky, sledování a změny sledovaných sérií, které sami provedete. Odtud se nikdy nic nepublikuje, nekomentuje ani nenahlašuje.</string>
     <string name="share_image">Sdílet obrázek</string>
     <string name="share_image_failed">Obrázek se nepodařilo sdílet</string>
     <string name="share_link">Sdílet odkaz</string>
@@ -458,6 +465,8 @@
     <string name="ugoira_play">Přehrát animaci</string>
     <string name="ugoira_save_gif">Uložit jako GIF</string>
     <string name="ugoira_save_zip">Uložit snímky jako ZIP</string>
+    <string name="ugoira_saved_gif">Animace uložena jako GIF</string>
+    <string name="ugoira_saved_zip">Snímky uloženy jako ZIP</string>
     <string name="ugoira_saving">Ukládá se…</string>
     <string name="ugoira_slow">Kódování může trvat minutu</string>
     <string name="unbookmark">Odebrat záložku</string>
@@ -467,7 +476,9 @@
     <string name="viewing_section">Zobrazení</string>
     <string name="walkthrough_sign_in">Pro otevření díla se přihlaste</string>
     <string name="walkthrough_title">Oblíbené na Pixivu</string>
+    <string name="watchlist_add">Přidat do sledovaných</string>
     <string name="watchlist_empty">Zde se objeví série mangy, které přidáte do sledovaných</string>
+    <string name="watchlist_remove">Odebrat ze sledovaných</string>
     <string name="watchlist_updated">Aktualizováno %1$s</string>
     <string name="watchlist_view_latest">Zobrazit nejnovější</string>
     <plurals name="works_count"><item quantity="one">%2$s dílo</item><item quantity="few">%2$s díla</item><item quantity="many">%2$s díla</item><item quantity="other">%2$s děl</item></plurals>

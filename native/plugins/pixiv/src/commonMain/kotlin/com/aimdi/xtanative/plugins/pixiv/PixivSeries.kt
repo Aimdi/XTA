@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -19,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -27,12 +29,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.Page
+import com.aimdi.xtanative.networks.pixiv.PixivFailure
 import com.aimdi.xtanative.networks.pixiv.PixivIllust
 import com.aimdi.xtanative.networks.pixiv.PixivIllustSeries
 import com.aimdi.xtanative.networks.pixiv.PixivNovel
@@ -52,6 +58,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Locale
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -76,7 +83,7 @@ internal fun PixivSeriesScreen(id: Long) {
     ) { padding ->
         Box(Modifier.padding(padding)) {
             PixivWorksGrid(reads.list, pluginString(Strings.series_empty), header = {
-                series?.let { item(key = "series", span = StaggeredGridItemSpan.FullLine) { IllustSeriesHeader(it) } }
+                series?.let { item(key = "series", span = StaggeredGridItemSpan.FullLine) { IllustSeriesHeader(it) { watched -> reads.series.value = it.copy(watchlistAdded = watched) } } }
             })
         }
     }
@@ -96,8 +103,9 @@ private fun SeriesTitle(title: String) {
     if (title.isNotEmpty()) Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold)
 }
 
+/** The series' cover, title, creator, size and caption, and the watchlist toggle; [onWatched] hears where the watchlist change left it. */
 @Composable
-private fun IllustSeriesHeader(series: PixivIllustSeries) {
+private fun IllustSeriesHeader(series: PixivIllustSeries, onWatched: (Boolean) -> Unit) {
     val runtime = LocalPixiv.current
     val language = currentLanguage()
     Column(Modifier.fillMaxWidth().padding(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -110,6 +118,43 @@ private fun IllustSeriesHeader(series: PixivIllustSeries) {
         )
         Text(counts.joinToString(" · "), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         if (series.caption.isNotBlank()) SelectionContainer { Text(series.caption.trim(), style = MaterialTheme.typography.bodyMedium) }
+        WatchlistButton(series.watchlistAdded, { watch -> if (watch) runtime.discovery.addToWatchlist(series.id) else runtime.discovery.removeFromWatchlist(series.id) }, onWatched)
+    }
+}
+
+/**
+ * Add to watchlist or Remove from watchlist on Pixiv, a ring while the change
+ * is on its way (pixiv_series_screen.dart's PixivWatchlistButton); [onChanged]
+ * once it landed, the reason at the foot when it fails.
+ */
+@Composable
+private fun WatchlistButton(added: Boolean, write: suspend (watch: Boolean) -> Unit, onChanged: (Boolean) -> Unit) {
+    val runtime = LocalPixiv.current
+    val language = currentLanguage()
+    var busy by remember { mutableStateOf(false) }
+    FilledTonalButton(
+        onClick = {
+            busy = true
+            runtime.launch {
+                val watch = !added
+                try {
+                    write(watch)
+                    onChanged(watch)
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    runtime.tell(failureText(PixivFailure.of(e)).get(language))
+                } finally {
+                    busy = false
+                }
+            }
+        },
+        enabled = !busy,
+        modifier = Modifier.heightIn(min = 48.dp),
+    ) {
+        if (busy) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp) else Icon(if (added) PixivIcons.BookmarkRemove else PixivIcons.BookmarkAdd, null, Modifier.size(18.dp))
+        Spacer(Modifier.width(8.dp))
+        Text(pluginString(if (added) Strings.watchlist_remove else Strings.watchlist_add))
     }
 }
 
@@ -141,7 +186,7 @@ internal fun PixivNovelSeriesScreen(id: Long) {
         Box(Modifier.padding(padding)) {
             val mutes = pixivMutes()
             PixivRows(reads.reads.list, { it.novel.id }, pluginString(Strings.novel_series_empty), shown = { chapters -> mutes.filterNovelsOf(chapters) { it.novel } }, header = {
-                series?.let { item(key = "series") { NovelSeriesHeader(it, reads.first, reads.latest) } }
+                series?.let { item(key = "series") { NovelSeriesHeader(it, reads.first, reads.latest) { watched -> reads.reads.series.value = it.copy(watchlistAdded = watched) } } }
             }) { chapter -> NovelCard(chapter.novel, order = chapter.order, showSeries = false) }
         }
     }
@@ -170,9 +215,9 @@ private class NovelSeriesReads(scope: CoroutineScope, read: suspend (String?) ->
     }) { it }
 }
 
-/** The series' title, creator, state and size, its caption with Pixiv's links, and Start from #1 and View latest, each waiting for its chapter. */
+/** The series' title, creator, state and size, its caption with Pixiv's links, Start from #1 and View latest, each waiting for its chapter, and the watchlist toggle. */
 @Composable
-private fun NovelSeriesHeader(series: PixivNovelSeries, first: PixivNovel?, latest: PixivNovel?) {
+private fun NovelSeriesHeader(series: PixivNovelSeries, first: PixivNovel?, latest: PixivNovel?, onWatched: (Boolean) -> Unit) {
     val runtime = LocalPixiv.current
     Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         SeriesTitle(series.title)
@@ -195,6 +240,7 @@ private fun NovelSeriesHeader(series: PixivNovelSeries, first: PixivNovel?, late
                 Spacer(Modifier.width(8.dp))
                 Text(pluginString(Strings.watchlist_view_latest))
             }
+            WatchlistButton(series.watchlistAdded, { watch -> if (watch) runtime.novels.addToWatchlist(series.id) else runtime.novels.removeFromWatchlist(series.id) }, onWatched)
         }
     }
 }

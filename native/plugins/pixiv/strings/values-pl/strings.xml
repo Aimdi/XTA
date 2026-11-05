@@ -29,10 +29,14 @@
     <string name="bookmark_auto_tag">Automatycznie taguj zakładki</string>
     <string name="bookmark_auto_tag_description">Zakładki dodane bez edytora dostają tagi samej pracy, z pominięciem tagów popularności, takich jak 1000users入り.</string>
     <string name="bookmark_clear_all">Odznacz wszystko</string>
+    <string name="bookmark_default_private">Domyślnie prywatne zakładki</string>
+    <string name="bookmark_default_private_description">Zakładki dodane bez edytora są prywatne. W edytorze nadal możesz upublicznić dowolną.</string>
     <string name="bookmark_edit">Edytuj zakładkę</string>
     <string name="bookmark_follow_after">Obserwuj przy dodawaniu do zakładek</string>
-    <string name="bookmark_follow_after_description">Nowa zakładka sprawia też, że obserwujesz autora na tym urządzeniu, jeśli jeszcze go nie obserwujesz.</string>
+    <string name="bookmark_follow_after_description">Nowa zakładka sprawia też, że publicznie obserwujesz autora, jeśli jeszcze go nie obserwujesz.</string>
     <string name="bookmark_followed_author">Obserwujesz: %1$s</string>
+    <string name="bookmark_private">Prywatna zakładka</string>
+    <string name="bookmark_private_hint">Widzisz ją tylko ty</string>
     <string name="bookmark_save_after">Zapisuj przy dodawaniu do zakładek</string>
     <string name="bookmark_save_after_description">Nowa zakładka zapisuje też wszystkie strony pracy.</string>
     <string name="bookmark_select_all">Zaznacz wszystko</string>
@@ -131,12 +135,13 @@
     <string name="folder_r18_description">Umieszcza prace R-18 w folderze „R-18” wewnątrz folderu pobierania</string>
     <string name="follow">Obserwuj</string>
     <string name="follow_private">Prywatne</string>
+    <string name="follow_privately">Obserwuj prywatnie</string>
+    <string name="follow_privately_hint">Tylko ty widzisz, że obserwujesz</string>
     <string name="follow_public">Publiczne</string>
     <string name="follow_restrict_all">Wszyscy obserwowani twórcy</string>
     <string name="follow_restrict_device">Twórcy obserwowani na tym urządzeniu</string>
     <string name="follow_restrict_private">Twórcy obserwowani prywatnie</string>
     <string name="follow_restrict_public">Twórcy obserwowani publicznie</string>
-    <string name="followed_on_pixiv">Obserwowany na Pixivie</string>
     <string name="following">Obserwowani</string>
     <plurals name="following_count"><item quantity="one">%2$s obserwowany</item><item quantity="few">%2$s obserwowanych</item><item quantity="many">%2$s obserwowanych</item><item quantity="other">%2$s obserwowanego</item></plurals>
     <string name="follows_here">Na tym urządzeniu</string>
@@ -208,12 +213,14 @@
     <string name="not_configured">Zaloguj się do Pixiv, aby przeglądać obserwowanych, rankingi i zakładki</string>
     <string name="novel">Powieść</string>
     <string name="novel_author_novels">Zobacz powieści tej osoby</string>
+    <string name="novel_bookmark_private">Dodaj do prywatnych zakładek</string>
     <string name="novel_bookmarks_empty">Tu pojawią się powieści dodane do publicznych zakładek</string>
     <string name="novel_bookmarks_private_empty">Tu pojawią się powieści dodane do prywatnych zakładek</string>
     <string name="novel_chapter_number">Nr %1$d</string>
     <plurals name="novel_chapters_count"><item quantity="one">%2$s rozdział</item><item quantity="few">%2$s rozdziały</item><item quantity="many">%2$s rozdziałów</item><item quantity="other">%2$s rozdziału</item></plurals>
     <plurals name="novel_characters"><item quantity="one">%2$s znak</item><item quantity="few">%2$s znaki</item><item quantity="many">%2$s znaków</item><item quantity="other">%2$s znaku</item></plurals>
     <string name="novel_export">Eksportuj jako tekst</string>
+    <string name="novel_export_failed">Nie udało się wyeksportować powieści</string>
     <string name="novel_export_markup">Ze znacznikami Pixiv</string>
     <string name="novel_export_markup_hint">Tekst dokładnie tak, jak przechowuje go Pixiv, ze znacznikami takimi jak [newpage]</string>
     <string name="novel_export_plain">Zwykły tekst</string>
@@ -418,7 +425,7 @@
     <string name="series_position">Nr %1$d z %2$d</string>
     <string name="series_previous">Poprzednia w serii</string>
     <string name="series_started">Rozpoczęta %1$s</string>
-    <string name="settings_intro">Ta prywatna wtyczka czyta Pixiv jak aplikacja galerii: ilustracje, mangę, powieści, rankingi, twoje zakładki i wyszukiwanie. Stuknij Zaloguj się, aby zalogować się kontem Pixiv, albo wklej poniżej token odświeżania. Zakładki, obserwowani i historia zostają na tym urządzeniu: nic nigdy nie jest wysyłane na twoje konto Pixiv, publikowane ani zmieniane.</string>
+    <string name="settings_intro">Ta prywatna wtyczka czyta Pixiv jak aplikację-galerię: ilustracje, mangę, powieści, rankingi, twoje zakładki i wyszukiwanie. Dotknij Zaloguj się, aby wejść kontem Pixiv w przeglądarce, albo wklej refresh token poniżej. Na twoje konto Pixiv trafiają tylko zakładki, obserwowania i zmiany na liście obserwowanych, które wprowadzasz samodzielnie. Stąd nigdy nic nie jest publikowane, komentowane ani zgłaszane.</string>
     <string name="share_image">Udostępnij obraz</string>
     <string name="share_image_failed">Nie udało się udostępnić obrazu</string>
     <string name="share_link">Udostępnij link</string>
@@ -458,6 +465,8 @@
     <string name="ugoira_play">Odtwórz animację</string>
     <string name="ugoira_save_gif">Zapisz jako GIF</string>
     <string name="ugoira_save_zip">Zapisz klatki jako ZIP</string>
+    <string name="ugoira_saved_gif">Animację zapisano jako GIF</string>
+    <string name="ugoira_saved_zip">Klatki zapisano jako ZIP</string>
     <string name="ugoira_saving">Zapisywanie…</string>
     <string name="ugoira_slow">Kodowanie może potrwać minutę</string>
     <string name="unbookmark">Usuń zakładkę</string>
@@ -467,7 +476,9 @@
     <string name="viewing_section">Wyświetlanie</string>
     <string name="walkthrough_sign_in">Zaloguj się, aby otworzyć tę pracę</string>
     <string name="walkthrough_title">Popularne na Pixiv</string>
+    <string name="watchlist_add">Dodaj do listy obserwowanych</string>
     <string name="watchlist_empty">Tu pojawią się serie mangi dodane do listy obserwowanych</string>
+    <string name="watchlist_remove">Usuń z listy obserwowanych</string>
     <string name="watchlist_updated">Zaktualizowano %1$s</string>
     <string name="watchlist_view_latest">Zobacz najnowszy</string>
     <plurals name="works_count"><item quantity="one">%2$s praca</item><item quantity="few">%2$s prace</item><item quantity="many">%2$s prac</item><item quantity="other">%2$s pracy</item></plurals>

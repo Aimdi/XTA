@@ -29,10 +29,14 @@
     <string name="bookmark_auto_tag">Tự động gắn thẻ cho đánh dấu</string>
     <string name="bookmark_auto_tag_description">Các đánh dấu tạo không qua trình chỉnh sửa sẽ mang thẻ của chính tác phẩm, trừ thẻ độ nổi tiếng như 1000users入り.</string>
     <string name="bookmark_clear_all">Bỏ chọn tất cả</string>
+    <string name="bookmark_default_private">Mặc định đánh dấu riêng tư</string>
+    <string name="bookmark_default_private_description">Các đánh dấu tạo không qua trình chỉnh sửa sẽ ở chế độ riêng tư. Bạn vẫn có thể đặt công khai trong trình chỉnh sửa.</string>
     <string name="bookmark_edit">Sửa đánh dấu</string>
     <string name="bookmark_follow_after">Theo dõi khi đánh dấu</string>
-    <string name="bookmark_follow_after_description">Đánh dấu mới cũng sẽ theo dõi tác giả trên thiết bị này, nếu bạn chưa theo dõi.</string>
+    <string name="bookmark_follow_after_description">Đánh dấu mới cũng sẽ theo dõi công khai tác giả, nếu bạn chưa theo dõi.</string>
     <string name="bookmark_followed_author">Đã theo dõi %1$s</string>
+    <string name="bookmark_private">Đánh dấu riêng tư</string>
+    <string name="bookmark_private_hint">Chỉ bạn có thể xem</string>
     <string name="bookmark_save_after">Lưu khi đánh dấu</string>
     <string name="bookmark_save_after_description">Đánh dấu mới cũng lưu mọi trang của tác phẩm.</string>
     <string name="bookmark_select_all">Chọn tất cả</string>
@@ -131,12 +135,13 @@
     <string name="folder_r18_description">Đặt tác phẩm R-18 vào thư mục “R-18” bên trong thư mục tải xuống</string>
     <string name="follow">Theo dõi</string>
     <string name="follow_private">Riêng tư</string>
+    <string name="follow_privately">Theo dõi riêng tư</string>
+    <string name="follow_privately_hint">Chỉ bạn biết mình đang theo dõi</string>
     <string name="follow_public">Công khai</string>
     <string name="follow_restrict_all">Mọi người sáng tạo đang theo dõi</string>
     <string name="follow_restrict_device">Người sáng tạo theo dõi trên thiết bị này</string>
     <string name="follow_restrict_private">Người sáng tạo theo dõi riêng tư</string>
     <string name="follow_restrict_public">Người sáng tạo theo dõi công khai</string>
-    <string name="followed_on_pixiv">Đang theo dõi trên Pixiv</string>
     <string name="following">Đang theo dõi</string>
     <plurals name="following_count"><item quantity="other">%2$s đang theo dõi</item></plurals>
     <string name="follows_here">Trên thiết bị này</string>
@@ -208,12 +213,14 @@
     <string name="not_configured">Đăng nhập Pixiv để xem đang theo dõi, xếp hạng và dấu trang</string>
     <string name="novel">Tiểu thuyết</string>
     <string name="novel_author_novels">Xem tiểu thuyết của tác giả</string>
+    <string name="novel_bookmark_private">Đánh dấu riêng tư</string>
     <string name="novel_bookmarks_empty">Tiểu thuyết bạn đánh dấu công khai sẽ hiện ở đây</string>
     <string name="novel_bookmarks_private_empty">Tiểu thuyết bạn đánh dấu riêng tư sẽ hiện ở đây</string>
     <string name="novel_chapter_number">Chương %1$d</string>
     <plurals name="novel_chapters_count"><item quantity="other">%2$s chương</item></plurals>
     <plurals name="novel_characters"><item quantity="other">%2$s ký tự</item></plurals>
     <string name="novel_export">Xuất dạng văn bản</string>
+    <string name="novel_export_failed">Không thể xuất tiểu thuyết</string>
     <string name="novel_export_markup">Kèm mã định dạng của Pixiv</string>
     <string name="novel_export_markup_hint">Văn bản đúng như Pixiv lưu, kèm các thẻ như [newpage]</string>
     <string name="novel_export_plain">Văn bản thuần</string>
@@ -418,7 +425,7 @@
     <string name="series_position">Phần %1$d/%2$d</string>
     <string name="series_previous">Tác phẩm trước trong loạt</string>
     <string name="series_started">Bắt đầu %1$s</string>
-    <string name="settings_intro">Plugin riêng tư này đọc Pixiv như một ứng dụng thư viện ảnh: tranh minh họa, manga, tiểu thuyết, bảng xếp hạng, dấu trang của bạn và tìm kiếm. Nhấn Đăng nhập để đăng nhập bằng tài khoản Pixiv, hoặc dán mã làm mới bên dưới. Dấu trang, lượt theo dõi và lịch sử được giữ trên thiết bị này: không có gì được gửi, đăng hay thay đổi trên tài khoản Pixiv của bạn.</string>
+    <string name="settings_intro">Plugin riêng này đọc Pixiv như một ứng dụng thư viện: tranh minh họa, manga, tiểu thuyết, xếp hạng, dấu trang của bạn và tìm kiếm. Chạm Đăng nhập để vào tài khoản Pixiv trên trình duyệt, hoặc dán mã làm mới bên dưới. Chỉ những dấu trang, lượt theo dõi và thay đổi trong danh sách truyện theo dõi do chính bạn thực hiện mới được gửi lên tài khoản Pixiv của bạn. Từ đây không bao giờ đăng bài, bình luận hay báo cáo gì.</string>
     <string name="share_image">Chia sẻ ảnh</string>
     <string name="share_image_failed">Không thể chia sẻ ảnh này</string>
     <string name="share_link">Chia sẻ liên kết</string>
@@ -458,6 +465,8 @@
     <string name="ugoira_play">Phát hoạt ảnh</string>
     <string name="ugoira_save_gif">Lưu dưới dạng GIF</string>
     <string name="ugoira_save_zip">Lưu khung hình dưới dạng ZIP</string>
+    <string name="ugoira_saved_gif">Đã lưu ảnh động dưới dạng GIF</string>
+    <string name="ugoira_saved_zip">Đã lưu khung hình dưới dạng ZIP</string>
     <string name="ugoira_saving">Đang lưu…</string>
     <string name="ugoira_slow">Việc mã hóa có thể mất một phút</string>
     <string name="unbookmark">Bỏ đánh dấu</string>
@@ -467,7 +476,9 @@
     <string name="viewing_section">Hiển thị</string>
     <string name="walkthrough_sign_in">Đăng nhập để mở tác phẩm này</string>
     <string name="walkthrough_title">Phổ biến trên Pixiv</string>
+    <string name="watchlist_add">Thêm vào truyện theo dõi</string>
     <string name="watchlist_empty">Các bộ manga bạn thêm vào truyện theo dõi sẽ hiện ở đây</string>
+    <string name="watchlist_remove">Bỏ khỏi truyện theo dõi</string>
     <string name="watchlist_updated">Cập nhật %1$s</string>
     <string name="watchlist_view_latest">Xem phần mới nhất</string>
     <plurals name="works_count"><item quantity="other">%2$s tác phẩm</item></plurals>

@@ -29,10 +29,14 @@
     <string name="bookmark_auto_tag">Étiqueter les favoris automatiquement</string>
     <string name="bookmark_auto_tag_description">Les favoris ajoutés sans l’éditeur reprennent les étiquettes de l’œuvre, sans les étiquettes de popularité comme 1000users入り.</string>
     <string name="bookmark_clear_all">Tout désélectionner</string>
+    <string name="bookmark_default_private">Favoris privés par défaut</string>
+    <string name="bookmark_default_private_description">Les favoris ajoutés sans l’éditeur sont privés. L’éditeur permet toujours d’en rendre un public.</string>
     <string name="bookmark_edit">Modifier le favori</string>
     <string name="bookmark_follow_after">Suivre en ajoutant aux favoris</string>
-    <string name="bookmark_follow_after_description">Un nouveau favori suit aussi l’artiste sur cet appareil, si vous ne le suivez pas encore.</string>
+    <string name="bookmark_follow_after_description">Un nouveau favori suit aussi l’artiste publiquement, si vous ne le suivez pas encore.</string>
     <string name="bookmark_followed_author">Vous suivez %1$s</string>
+    <string name="bookmark_private">Favori privé</string>
+    <string name="bookmark_private_hint">Vous seul pouvez le voir</string>
     <string name="bookmark_save_after">Enregistrer en ajoutant aux favoris</string>
     <string name="bookmark_save_after_description">Un nouveau favori enregistre aussi toutes les pages de l’œuvre.</string>
     <string name="bookmark_select_all">Tout sélectionner</string>
@@ -131,12 +135,13 @@
     <string name="folder_r18_description">Range les œuvres R-18 dans un dossier « R-18 », dans le dossier de téléchargement</string>
     <string name="follow">Suivre</string>
     <string name="follow_private">Privés</string>
+    <string name="follow_privately">Suivre en privé</string>
+    <string name="follow_privately_hint">Vous seul saurez que vous le suivez</string>
     <string name="follow_public">Publics</string>
     <string name="follow_restrict_all">Tous les créateurs suivis</string>
     <string name="follow_restrict_device">Créateurs suivis sur cet appareil</string>
     <string name="follow_restrict_private">Créateurs suivis en privé</string>
     <string name="follow_restrict_public">Créateurs suivis publiquement</string>
-    <string name="followed_on_pixiv">Suivi sur Pixiv</string>
     <string name="following">Abonnements</string>
     <plurals name="following_count"><item quantity="one">%2$s abonnement</item><item quantity="other">%2$s abonnements</item></plurals>
     <string name="follows_here">Sur cet appareil</string>
@@ -208,12 +213,14 @@
     <string name="not_configured">Connectez-vous à Pixiv pour parcourir le suivi, les classements et les favoris</string>
     <string name="novel">Roman</string>
     <string name="novel_author_novels">Voir ses romans</string>
+    <string name="novel_bookmark_private">Ajouter aux favoris privés</string>
     <string name="novel_bookmarks_empty">Les romans ajoutés à vos favoris publics apparaissent ici</string>
     <string name="novel_bookmarks_private_empty">Les romans ajoutés à vos favoris privés apparaissent ici</string>
     <string name="novel_chapter_number">N° %1$d</string>
     <plurals name="novel_chapters_count"><item quantity="one">%2$s chapitre</item><item quantity="other">%2$s chapitres</item></plurals>
     <plurals name="novel_characters"><item quantity="one">%2$s caractère</item><item quantity="other">%2$s caractères</item></plurals>
     <string name="novel_export">Exporter en texte</string>
+    <string name="novel_export_failed">Impossible d’exporter le roman</string>
     <string name="novel_export_markup">Avec le balisage Pixiv</string>
     <string name="novel_export_markup_hint">Le texte tel que Pixiv l’enregistre, avec des balises comme [newpage]</string>
     <string name="novel_export_plain">Texte brut</string>
@@ -418,7 +425,7 @@
     <string name="series_position">N° %1$d sur %2$d</string>
     <string name="series_previous">Précédent de la série</string>
     <string name="series_started">Commencée le %1$s</string>
-    <string name="settings_intro">Ce plugin privé lit Pixiv comme une application de galerie : illustrations, mangas, romans, classements, vos favoris et la recherche. Touchez Se connecter pour vous connecter avec votre compte Pixiv, ou collez un jeton d’actualisation ci-dessous. Les favoris, les abonnements et l’historique restent sur cet appareil : rien n’est jamais envoyé à votre compte Pixiv, publié ni modifié sur celui-ci.</string>
+    <string name="settings_intro">Ce greffon privé lit Pixiv comme une galerie : illustrations, mangas, romans, classements, vos favoris et la recherche. Appuyez sur Se connecter pour vous identifier avec votre compte Pixiv dans le navigateur, ou collez un jeton d’actualisation ci-dessous. Seuls les favoris, abonnements et changements de liste de suivi que vous faites vous-même sont envoyés à votre compte Pixiv. Rien n’est jamais publié, commenté ni signalé depuis ici.</string>
     <string name="share_image">Partager l'image</string>
     <string name="share_image_failed">Impossible de partager cette image</string>
     <string name="share_link">Partager le lien</string>
@@ -458,6 +465,8 @@
     <string name="ugoira_play">Lire l’animation</string>
     <string name="ugoira_save_gif">Enregistrer en GIF</string>
     <string name="ugoira_save_zip">Enregistrer les images en ZIP</string>
+    <string name="ugoira_saved_gif">Animation enregistrée en GIF</string>
+    <string name="ugoira_saved_zip">Images enregistrées en ZIP</string>
     <string name="ugoira_saving">Enregistrement…</string>
     <string name="ugoira_slow">L’encodage peut prendre une minute</string>
     <string name="unbookmark">Retirer des favoris</string>
@@ -467,7 +476,9 @@
     <string name="viewing_section">Affichage</string>
     <string name="walkthrough_sign_in">Connectez-vous pour ouvrir cette œuvre</string>
     <string name="walkthrough_title">Populaire sur Pixiv</string>
+    <string name="watchlist_add">Ajouter à la liste de suivi</string>
     <string name="watchlist_empty">Les séries de manga ajoutées à votre liste de suivi apparaissent ici</string>
+    <string name="watchlist_remove">Retirer de la liste de suivi</string>
     <string name="watchlist_updated">Mise à jour %1$s</string>
     <string name="watchlist_view_latest">Voir le dernier</string>
     <plurals name="works_count"><item quantity="one">%2$s œuvre</item><item quantity="other">%2$s œuvres</item></plurals>

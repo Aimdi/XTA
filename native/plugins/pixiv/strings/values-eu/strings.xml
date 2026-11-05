@@ -29,10 +29,14 @@
     <string name="bookmark_auto_tag">Etiketatu laster-markak automatikoki</string>
     <string name="bookmark_auto_tag_description">Editorerik gabe egiten dituzun laster-markek lanaren etiketak dituzte, 1000users入り bezalako ospe-etiketak kenduta.</string>
     <string name="bookmark_clear_all">Desautatu guztiak</string>
+    <string name="bookmark_default_private">Laster-marka pribatuak lehenespenez</string>
+    <string name="bookmark_default_private_description">Editorerik gabe egiten dituzun laster-markak pribatuak dira. Editorean edozein publiko egin dezakezu.</string>
     <string name="bookmark_edit">Editatu laster-marka</string>
     <string name="bookmark_follow_after">Jarraitu laster-marka gehitzean</string>
-    <string name="bookmark_follow_after_description">Laster-marka berri batek artista gailu honetan ere jarraitzen du, oraindik jarraitzen ez badiozu.</string>
+    <string name="bookmark_follow_after_description">Laster-marka berri batek artista publikoki jarraitzen du, oraindik jarraitzen ez badiozu.</string>
     <string name="bookmark_followed_author">%1$s jarraitzen ari zara</string>
+    <string name="bookmark_private">Laster-marka pribatua</string>
+    <string name="bookmark_private_hint">Zuk bakarrik ikus dezakezu</string>
     <string name="bookmark_save_after">Gorde laster-marka gehitzean</string>
     <string name="bookmark_save_after_description">Laster-marka berri batek lanaren orri guztiak ere gordetzen ditu.</string>
     <string name="bookmark_select_all">Hautatu guztiak</string>
@@ -131,12 +135,13 @@
     <string name="folder_r18_description">R-18 lanak «R-18» karpetan jartzen ditu, deskargen karpetaren barruan</string>
     <string name="follow">Jarraitu</string>
     <string name="follow_private">Pribatuak</string>
+    <string name="follow_privately">Jarraitu modu pribatuan</string>
+    <string name="follow_privately_hint">Zuk bakarrik ikusiko duzu jarraitzen diozula</string>
     <string name="follow_public">Publikoak</string>
     <string name="follow_restrict_all">Jarraitutako sortzaile guztiak</string>
     <string name="follow_restrict_device">Gailu honetan jarraitutako sortzaileak</string>
     <string name="follow_restrict_private">Pribatuan jarraitutako sortzaileak</string>
     <string name="follow_restrict_public">Publikoki jarraitutako sortzaileak</string>
-    <string name="followed_on_pixiv">Pixiven jarraitua</string>
     <string name="following">Jarraitzen</string>
     <plurals name="following_count"><item quantity="one">%2$s jarraitzen</item><item quantity="other">%2$s jarraitzen</item></plurals>
     <string name="follows_here">Gailu honetan</string>
@@ -208,12 +213,14 @@
     <string name="not_configured">Hasi saioa Pixiv-en jarraipena, sailkapena eta laster-markak ikusteko</string>
     <string name="novel">Eleberria</string>
     <string name="novel_author_novels">Ikusi bere eleberriak</string>
+    <string name="novel_bookmark_private">Gorde laster-marka pribatu gisa</string>
     <string name="novel_bookmarks_empty">Laster-marka publiko gisa gordetzen dituzun eleberriak hemen agertzen dira</string>
     <string name="novel_bookmarks_private_empty">Laster-marka pribatu gisa gordetzen dituzun eleberriak hemen agertzen dira</string>
     <string name="novel_chapter_number">%1$d. zatia</string>
     <plurals name="novel_chapters_count"><item quantity="one">kapitulu %2$s</item><item quantity="other">%2$s kapitulu</item></plurals>
     <plurals name="novel_characters"><item quantity="one">karaktere %2$s</item><item quantity="other">%2$s karaktere</item></plurals>
     <string name="novel_export">Esportatu testu gisa</string>
+    <string name="novel_export_failed">Ezin izan da eleberria esportatu</string>
     <string name="novel_export_markup">Pixiv-en markaketarekin</string>
     <string name="novel_export_markup_hint">Testua Pixiv-ek gordetzen duen bezala, [newpage] bezalako etiketekin</string>
     <string name="novel_export_plain">Testu soila</string>
@@ -418,7 +425,7 @@
     <string name="series_position">%1$d. zatia, guztira %2$d</string>
     <string name="series_previous">Serieko aurrekoa</string>
     <string name="series_started">Hasiera: %1$s</string>
-    <string name="settings_intro">Plugin pribatu honek Pixiv galeria-aplikazio baten moduan irakurtzen du: ilustrazioak, mangak, eleberriak, sailkapenak, zure laster-markak eta bilaketa. Sakatu Hasi saioa zure Pixiv kontuarekin sartzeko, edo itsatsi freskatze-token bat behean. Laster-markak, jarraipenak eta historia gailu honetan geratzen dira: ez da inoiz ezer bidaltzen, argitaratzen edo aldatzen zure Pixiv kontuan.</string>
+    <string name="settings_intro">Plugin pribatu honek Pixiv galeria-aplikazio gisa irakurtzen du: ilustrazioak, manga, eleberriak, sailkapenak, zure laster-markak eta bilaketa. Sakatu Hasi saioa Pixiv kontuarekin nabigatzailean sartzeko, edo itsatsi freskatze-token bat behean. Zuk zeuk egiten dituzun laster-markak, jarraipenak eta jarraipen-zerrendako aldaketak soilik bidaltzen dira zure Pixiv kontura. Hemendik ez da inoiz ezer argitaratzen, iruzkintzen edo salatzen.</string>
     <string name="share_image">Partekatu irudia</string>
     <string name="share_image_failed">Ezin izan da irudia partekatu</string>
     <string name="share_link">Partekatu esteka</string>
@@ -458,6 +465,8 @@
     <string name="ugoira_play">Erreproduzitu animazioa</string>
     <string name="ugoira_save_gif">Gorde GIF gisa</string>
     <string name="ugoira_save_zip">Gorde fotogramak ZIP gisa</string>
+    <string name="ugoira_saved_gif">Animazioa GIF gisa gorde da</string>
+    <string name="ugoira_saved_zip">Fotogramak ZIP gisa gorde dira</string>
     <string name="ugoira_saving">Gordetzen…</string>
     <string name="ugoira_slow">Kodetzeak minutu bat iraun dezake</string>
     <string name="unbookmark">Kendu laster-marka</string>
@@ -467,7 +476,9 @@
     <string name="viewing_section">Ikustea</string>
     <string name="walkthrough_sign_in">Hasi saioa lan hau irekitzeko</string>
     <string name="walkthrough_title">Ezagunak Pixiven</string>
+    <string name="watchlist_add">Gehitu jarraipen-zerrendara</string>
     <string name="watchlist_empty">Jarraipen-zerrendara gehitzen dituzun manga-serieak hemen agertzen dira</string>
+    <string name="watchlist_remove">Kendu jarraipen-zerrendatik</string>
     <string name="watchlist_updated">Eguneratua: %1$s</string>
     <string name="watchlist_view_latest">Ikusi azkena</string>
     <plurals name="works_count"><item quantity="one">lan %2$s</item><item quantity="other">%2$s lan</item></plurals>

@@ -29,10 +29,14 @@
     <string name="bookmark_auto_tag">Tag bookmarks automatically</string>
     <string name="bookmark_auto_tag_description">Bookmarks you make without the editor carry the work's own tags, leaving out popularity tags such as 1000users入り.</string>
     <string name="bookmark_clear_all">Clear all</string>
+    <string name="bookmark_default_private">Bookmark privately</string>
+    <string name="bookmark_default_private_description">Bookmarks you make without the editor are private. The editor can still make one public.</string>
     <string name="bookmark_edit">Edit bookmark</string>
     <string name="bookmark_follow_after">Follow when bookmarking</string>
-    <string name="bookmark_follow_after_description">A new bookmark also follows the artist on this device, if you don't follow them yet.</string>
+    <string name="bookmark_follow_after_description">A new bookmark also follows the artist publicly, if you don't follow them yet.</string>
     <string name="bookmark_followed_author">Followed %1$s</string>
+    <string name="bookmark_private">Private bookmark</string>
+    <string name="bookmark_private_hint">Only you can see it</string>
     <string name="bookmark_save_after">Save when bookmarking</string>
     <string name="bookmark_save_after_description">A new bookmark also saves every page of the work.</string>
     <string name="bookmark_select_all">Select all</string>
@@ -131,12 +135,13 @@
     <string name="folder_r18_description">Puts R-18 works in an “R-18” folder inside the download folder</string>
     <string name="follow">Follow</string>
     <string name="follow_private">Private</string>
+    <string name="follow_privately">Follow privately</string>
+    <string name="follow_privately_hint">Only you can see that you follow them</string>
     <string name="follow_public">Public</string>
     <string name="follow_restrict_all">All followed creators</string>
     <string name="follow_restrict_device">Creators followed on this device</string>
     <string name="follow_restrict_private">Privately followed creators</string>
     <string name="follow_restrict_public">Publicly followed creators</string>
-    <string name="followed_on_pixiv">Followed on Pixiv</string>
     <string name="following">Following</string>
     <plurals name="following_count"><item quantity="one">%2$s following</item><item quantity="other">%2$s following</item></plurals>
     <string name="follows_here">On this device</string>
@@ -208,12 +213,14 @@
     <string name="not_configured">Sign in with Pixiv to browse following, ranking and bookmarks</string>
     <string name="novel">Novel</string>
     <string name="novel_author_novels">See their novels</string>
+    <string name="novel_bookmark_private">Bookmark privately</string>
     <string name="novel_bookmarks_empty">Novels you bookmark publicly show up here</string>
     <string name="novel_bookmarks_private_empty">Novels you bookmark privately show up here</string>
     <string name="novel_chapter_number">#%1$d</string>
     <plurals name="novel_chapters_count"><item quantity="one">%2$s chapter</item><item quantity="other">%2$s chapters</item></plurals>
     <plurals name="novel_characters"><item quantity="one">%2$s character</item><item quantity="other">%2$s characters</item></plurals>
     <string name="novel_export">Export as text</string>
+    <string name="novel_export_failed">Couldn't export the novel</string>
     <string name="novel_export_markup">With Pixiv markup</string>
     <string name="novel_export_markup_hint">The text exactly as Pixiv stores it, with tags like [newpage]</string>
     <string name="novel_export_plain">Plain text</string>
@@ -418,7 +425,7 @@
     <string name="series_position">#%1$d of %2$d</string>
     <string name="series_previous">Previous in series</string>
     <string name="series_started">Started %1$s</string>
-    <string name="settings_intro">This private plugin reads Pixiv like a gallery app: illustrations, manga, novels, rankings, your bookmarks and search. Tap Sign in to log in with your Pixiv account, or paste a refresh token below. Bookmarks, follows and history stay on this device: nothing is ever sent to, posted on or changed on your Pixiv account.</string>
+    <string name="settings_intro">This private plugin reads Pixiv like a gallery app: illustrations, manga, novels, rankings, your bookmarks and search. Tap Sign in to log in with your Pixiv account in the browser, or paste a refresh token below. Only the bookmarks, follows and watchlist changes you make are sent to your Pixiv account. Nothing is ever posted, commented on or reported from here.</string>
     <string name="share_image">Share image</string>
     <string name="share_image_failed">Couldn't share this image</string>
     <string name="share_link">Share link</string>
@@ -458,6 +465,8 @@
     <string name="ugoira_play">Play animation</string>
     <string name="ugoira_save_gif">Save as GIF</string>
     <string name="ugoira_save_zip">Save frames as ZIP</string>
+    <string name="ugoira_saved_gif">Animation saved as GIF</string>
+    <string name="ugoira_saved_zip">Frames saved as ZIP</string>
     <string name="ugoira_saving">Saving…</string>
     <string name="ugoira_slow">Encoding can take a minute</string>
     <string name="unbookmark">Remove bookmark</string>
@@ -467,7 +476,9 @@
     <string name="viewing_section">Viewing</string>
     <string name="walkthrough_sign_in">Sign in to open this work</string>
     <string name="walkthrough_title">Popular on Pixiv</string>
+    <string name="watchlist_add">Add to watchlist</string>
     <string name="watchlist_empty">Manga series you add to your watchlist show up here</string>
+    <string name="watchlist_remove">Remove from watchlist</string>
     <string name="watchlist_updated">Updated %1$s</string>
     <string name="watchlist_view_latest">View latest</string>
     <plurals name="works_count"><item quantity="one">%2$s work</item><item quantity="other">%2$s works</item></plurals>

@@ -48,7 +48,7 @@ internal class PixivNovelModel(private val runtime: PixivRuntime, private val sc
                 remember(novel)
                 val content = runtime.novels.content(id)
                 val blocks = PixivNovelMarkup.parse(content.text)
-                val resume = runtime.novelPlaces.point("$id")?.takeIf { !it.completed }?.paragraph
+                val resume = runtime.novelPlaces.point(id)?.takeIf { !it.completed }?.paragraph
                 mutable.value = PixivNovelReading(novel, content, blocks, PixivNovelMarkup.pageStarts(blocks), resume, loading = false)
             } catch (e: CancellationException) {
                 throw e
@@ -72,6 +72,6 @@ internal class PixivNovelModel(private val runtime: PixivRuntime, private val sc
             completed = block >= total - 1,
             updatedAt = System.currentTimeMillis(),
         )
-        runtime.launch { runtime.novelPlaces.put("$id", point) }
+        runtime.novelPlaces.put(id, point)
     }
 }

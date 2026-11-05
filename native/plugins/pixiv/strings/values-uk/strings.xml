@@ -29,10 +29,14 @@
     <string name="bookmark_auto_tag">Автоматично додавати теги до закладок</string>
     <string name="bookmark_auto_tag_description">Закладки, додані без редактора, отримують теги самої роботи, окрім тегів популярності на кшталт 1000users入り.</string>
     <string name="bookmark_clear_all">Зняти всі</string>
+    <string name="bookmark_default_private">Приватні закладки за замовчуванням</string>
+    <string name="bookmark_default_private_description">Закладки, додані без редактора, приватні. У редакторі будь-яку можна зробити публічною.</string>
     <string name="bookmark_edit">Змінити закладку</string>
     <string name="bookmark_follow_after">Підписуватися під час додавання в закладки</string>
-    <string name="bookmark_follow_after_description">Нова закладка також підписує вас на автора на цьому пристрої, якщо ви ще не підписані.</string>
+    <string name="bookmark_follow_after_description">Нова закладка також публічно підписує вас на автора, якщо ви ще не підписані.</string>
     <string name="bookmark_followed_author">Ви підписалися на %1$s</string>
+    <string name="bookmark_private">Приватна закладка</string>
+    <string name="bookmark_private_hint">Бачите лише ви</string>
     <string name="bookmark_save_after">Зберігати під час додавання в закладки</string>
     <string name="bookmark_save_after_description">Нова закладка також зберігає всі сторінки роботи.</string>
     <string name="bookmark_select_all">Вибрати всі</string>
@@ -131,12 +135,13 @@
     <string name="folder_r18_description">Складає роботи R-18 у папку «R-18» усередині папки завантажень</string>
     <string name="follow">Підписатися</string>
     <string name="follow_private">Приватні</string>
+    <string name="follow_privately">Підписатися приватно</string>
+    <string name="follow_privately_hint">Про підписку знатимете лише ви</string>
     <string name="follow_public">Публічні</string>
     <string name="follow_restrict_all">Усі підписки</string>
     <string name="follow_restrict_device">Підписки на цьому пристрої</string>
     <string name="follow_restrict_private">Приватні підписки</string>
     <string name="follow_restrict_public">Публічні підписки</string>
-    <string name="followed_on_pixiv">Підписка на Pixiv</string>
     <string name="following">Слідкує</string>
     <plurals name="following_count"><item quantity="one">%2$s підписка</item><item quantity="few">%2$s підписки</item><item quantity="many">%2$s підписок</item><item quantity="other">%2$s підписки</item></plurals>
     <string name="follows_here">На цьому пристрої</string>
@@ -208,12 +213,14 @@
     <string name="not_configured">Увійдіть у Pixiv, щоб переглядати стрічку, рейтинг і закладки</string>
     <string name="novel">Роман</string>
     <string name="novel_author_novels">Романи автора</string>
+    <string name="novel_bookmark_private">Додати до приватних закладок</string>
     <string name="novel_bookmarks_empty">Тут з’являться романи, додані до публічних закладок</string>
     <string name="novel_bookmarks_private_empty">Тут з’являться романи, додані до приватних закладок</string>
     <string name="novel_chapter_number">№ %1$d</string>
     <plurals name="novel_chapters_count"><item quantity="one">%2$s розділ</item><item quantity="few">%2$s розділи</item><item quantity="many">%2$s розділів</item><item quantity="other">%2$s розділу</item></plurals>
     <plurals name="novel_characters"><item quantity="one">%2$s знак</item><item quantity="few">%2$s знаки</item><item quantity="many">%2$s знаків</item><item quantity="other">%2$s знака</item></plurals>
     <string name="novel_export">Експортувати як текст</string>
+    <string name="novel_export_failed">Не вдалося експортувати роман</string>
     <string name="novel_export_markup">З розміткою Pixiv</string>
     <string name="novel_export_markup_hint">Текст точно так, як його зберігає Pixiv, з тегами на кшталт [newpage]</string>
     <string name="novel_export_plain">Звичайний текст</string>
@@ -418,7 +425,7 @@
     <string name="series_position">№ %1$d з %2$d</string>
     <string name="series_previous">Попередня в серії</string>
     <string name="series_started">Розпочато %1$s</string>
-    <string name="settings_intro">Цей приватний плагін читає Pixiv як застосунок-галерея: ілюстрації, мангу, романи, рейтинги, ваші закладки й пошук. Натисніть «Увійти», щоб увійти з акаунтом Pixiv, або вставте токен оновлення нижче. Закладки, підписки та історія залишаються на цьому пристрої: до вашого акаунта Pixiv нічого не надсилається, там нічого не публікується і не змінюється.</string>
+    <string name="settings_intro">Цей приватний плагін читає Pixiv як галерею: ілюстрації, манґа, романи, рейтинги, ваші закладки й пошук. Натисніть «Увійти», щоб увійти в Pixiv у браузері, або вставте refresh-токен нижче. До вашого облікового запису Pixiv надсилаються лише закладки, підписки й зміни списку відстеження, які ви робите самі. Публікації, коментарі й скарги звідси ніколи не надсилаються.</string>
     <string name="share_image">Поділитися зображенням</string>
     <string name="share_image_failed">Не вдалося поділитися зображенням</string>
     <string name="share_link">Поділитися посиланням</string>
@@ -458,6 +465,8 @@
     <string name="ugoira_play">Відтворити анімацію</string>
     <string name="ugoira_save_gif">Зберегти як GIF</string>
     <string name="ugoira_save_zip">Зберегти кадри в ZIP</string>
+    <string name="ugoira_saved_gif">Анімацію збережено як GIF</string>
+    <string name="ugoira_saved_zip">Кадри збережено в ZIP</string>
     <string name="ugoira_saving">Збереження…</string>
     <string name="ugoira_slow">Кодування може тривати хвилину</string>
     <string name="unbookmark">Прибрати з закладок</string>
@@ -467,7 +476,9 @@
     <string name="viewing_section">Перегляд</string>
     <string name="walkthrough_sign_in">Увійдіть, щоб відкрити цю роботу</string>
     <string name="walkthrough_title">Популярне на Pixiv</string>
+    <string name="watchlist_add">Додати до списку відстеження</string>
     <string name="watchlist_empty">Тут з’являться серії манґи, додані до списку відстеження</string>
+    <string name="watchlist_remove">Прибрати зі списку відстеження</string>
     <string name="watchlist_updated">Оновлено %1$s</string>
     <string name="watchlist_view_latest">Відкрити останню</string>
     <plurals name="works_count"><item quantity="one">%2$s робота</item><item quantity="few">%2$s роботи</item><item quantity="many">%2$s робіт</item><item quantity="other">%2$s роботи</item></plurals>

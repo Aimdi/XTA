@@ -173,7 +173,7 @@ private fun NoTags() {
 
 /**
  * What this device keeps bookmarked, newest first: works in the grid (under
- * [tag] when one is picked) or novels in their list. Pixiv is never asked.
+ * [tag] when one is picked) or novels in their list, as the device kept them before bookmarks went to Pixiv.
  */
 @Composable
 internal fun DeviceBookmarks(kind: PixivKind, tag: String?, padding: PaddingValues, toTop: Int) {

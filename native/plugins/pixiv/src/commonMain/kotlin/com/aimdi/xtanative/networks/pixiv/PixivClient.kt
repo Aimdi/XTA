@@ -35,8 +35,9 @@ internal const val ANDROID = "for_android"
 internal const val CLIENT_HASH_SALT = "28c1fdd170a5204386cb1313c7077b34f83e4aaf4aa829ce78c231e05b0bae2c"
 
 /**
- * Pixiv's app API (`app-api.pixiv.net`), read as XTA reads it. Read-only:
- * nothing is bookmarked, followed, commented on or liked on Pixiv.
+ * Pixiv's app API (`app-api.pixiv.net`), read as XTA reads it. The only
+ * writes are XTA's: the reader's bookmarks, follows and watchlist changes
+ * ([postForm]); nothing is posted, commented on or reported.
  *
  * Every request carries the signed time pair the official app sends; the
  * signed-in ones also carry a bearer token, traded for the stored refresh
@@ -101,6 +102,19 @@ class PixivClient(
     suspend fun getText(path: String, query: Map<String, String> = emptyMap(), auth: Boolean = true): String {
         val url = requireNotNull(pixivUrl(path, query)) { "Not a Pixiv address: $path" }
         return call(url, auth, mapOf("Accept" to "text/html")).body
+    }
+
+    /**
+     * POSTs [fields] as a form to an app-API [path], signed in like any read:
+     * the bookmark, follow and watchlist writes. An empty answer reads as an
+     * empty object.
+     */
+    suspend fun postForm(path: String, fields: Map<String, String>): J {
+        val url = requireNotNull(pixivUrl(path)) { "Not a Pixiv address: $path" }
+        val form = formOf(fields.toList())
+        val response = send(url, auth = true) { headers -> http.post(url, headers, form, FORM) }
+        if (response.body.isBlank()) return J(JsonObject(emptyMap()))
+        return J.parse(response.body).takeIf(::isAnswer) ?: throw NetworkRequestException(PIXIV_NETWORK, response.code, "${url.encodedPath}: not JSON")
     }
 
     /** A list payload as the reader's filters show it; [ownList] keeps all the reader saved or posted, R-18 and AI works included. */
@@ -244,11 +258,15 @@ class PixivClient(
         return NetworkRequestException(PIXIV_NETWORK, response.code, "token endpoint: $detail (HTTP ${response.code})")
     }
 
-    private suspend fun call(url: HttpUrl, auth: Boolean, extra: Map<String, String> = emptyMap()): XResponse {
-        if (!auth || url.host != API_HOST) return checked(url, http.get(url, baseHeaders() + extra, true))
+    private suspend fun call(url: HttpUrl, auth: Boolean, extra: Map<String, String> = emptyMap()): XResponse =
+        send(url, auth) { headers -> http.get(url, headers + extra, true) }
+
+    /** Sends [request] with the bearer token, refreshing once and replaying when Pixiv refuses it; the token only ever goes to the app API's own host. */
+    private suspend fun send(url: HttpUrl, auth: Boolean, request: suspend (Map<String, String>) -> XResponse): XResponse {
+        if (!auth || url.host != API_HOST) return checked(url, request(baseHeaders()))
         val token = accessToken()
-        val first = http.get(url, bearer(token) + extra, true)
-        val answer = if (isTokenRefused(first)) http.get(url, bearer(reauthorize(token)) + extra, true) else first
+        val first = request(bearer(token))
+        val answer = if (isTokenRefused(first)) request(bearer(reauthorize(token))) else first
         return checked(url, answer)
     }
 

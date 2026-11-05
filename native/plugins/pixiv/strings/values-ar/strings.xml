@@ -29,10 +29,14 @@
     <string name="bookmark_auto_tag">وسم الإشارات تلقائيًا</string>
     <string name="bookmark_auto_tag_description">الإشارات التي تضيفها دون المحرر تحمل وسوم العمل نفسه، باستثناء وسوم الشعبية مثل 1000users入り.</string>
     <string name="bookmark_clear_all">إلغاء تحديد الكل</string>
+    <string name="bookmark_default_private">إشارات خاصة افتراضيًا</string>
+    <string name="bookmark_default_private_description">الإشارات التي تضيفها دون المحرر تكون خاصة. يمكنك جعل أي منها عامة من المحرر.</string>
     <string name="bookmark_edit">تعديل الإشارة</string>
     <string name="bookmark_follow_after">المتابعة عند الإضافة إلى الإشارات</string>
-    <string name="bookmark_follow_after_description">الإشارة الجديدة تتابع الفنان أيضًا على هذا الجهاز إن لم تكن تتابعه بعد.</string>
+    <string name="bookmark_follow_after_description">الإشارة الجديدة تتابع الفنان علنًا أيضًا إن لم تكن تتابعه بعد.</string>
     <string name="bookmark_followed_author">تمت متابعة %1$s</string>
+    <string name="bookmark_private">إشارة خاصة</string>
+    <string name="bookmark_private_hint">لا يراها أحد غيرك</string>
     <string name="bookmark_save_after">الحفظ عند الإضافة إلى الإشارات</string>
     <string name="bookmark_save_after_description">الإشارة الجديدة تحفظ أيضًا كل صفحات العمل.</string>
     <string name="bookmark_select_all">تحديد الكل</string>
@@ -131,12 +135,13 @@
     <string name="folder_r18_description">يضع أعمال R-18 في مجلد «R-18» داخل مجلد التنزيلات</string>
     <string name="follow">متابعة</string>
     <string name="follow_private">خاصة</string>
+    <string name="follow_privately">متابعة بشكل خاص</string>
+    <string name="follow_privately_hint">لن يرى أحد غيرك أنك تتابعه</string>
     <string name="follow_public">عامة</string>
     <string name="follow_restrict_all">كل المبدعين المتابَعين</string>
     <string name="follow_restrict_device">المبدعون المتابَعون على هذا الجهاز</string>
     <string name="follow_restrict_private">المبدعون المتابَعون بشكل خاص</string>
     <string name="follow_restrict_public">المبدعون المتابَعون علنًا</string>
-    <string name="followed_on_pixiv">تتابعه على Pixiv</string>
     <string name="following">المتابَعون</string>
     <plurals name="following_count"><item quantity="zero">لا متابَعين</item><item quantity="one">متابَع واحد</item><item quantity="two">متابَعان</item><item quantity="few">%2$s متابَعين</item><item quantity="many">%2$s متابَعًا</item><item quantity="other">%2$s متابَع</item></plurals>
     <string name="follows_here">على هذا الجهاز</string>
@@ -208,12 +213,14 @@
     <string name="not_configured">سجّل الدخول إلى Pixiv لتصفح المتابعة والترتيب والإشارات</string>
     <string name="novel">رواية</string>
     <string name="novel_author_novels">عرض رواياته</string>
+    <string name="novel_bookmark_private">إضافة إشارة مرجعية خاصة</string>
     <string name="novel_bookmarks_empty">تظهر هنا الروايات التي تضيف لها إشارة مرجعية عامة</string>
     <string name="novel_bookmarks_private_empty">تظهر هنا الروايات التي تضيف لها إشارة مرجعية خاصة</string>
     <string name="novel_chapter_number">الفصل %1$d</string>
     <plurals name="novel_chapters_count"><item quantity="zero">لا فصول</item><item quantity="one">فصل واحد</item><item quantity="two">فصلان</item><item quantity="few">%2$s فصول</item><item quantity="many">%2$s فصلًا</item><item quantity="other">%2$s فصل</item></plurals>
     <plurals name="novel_characters"><item quantity="zero">لا أحرف</item><item quantity="one">حرف واحد</item><item quantity="two">حرفان</item><item quantity="few">%2$s أحرف</item><item quantity="many">%2$s حرفًا</item><item quantity="other">%2$s حرف</item></plurals>
     <string name="novel_export">تصدير كنص</string>
+    <string name="novel_export_failed">تعذّر تصدير الرواية</string>
     <string name="novel_export_markup">مع تنسيق Pixiv</string>
     <string name="novel_export_markup_hint">النص كما يخزّنه Pixiv تمامًا، مع وسوم مثل [newpage]</string>
     <string name="novel_export_plain">نص عادي</string>
@@ -418,7 +425,7 @@
     <string name="series_position">رقم %1$d من %2$d</string>
     <string name="series_previous">السابق في السلسلة</string>
     <string name="series_started">بدأت في %1$s</string>
-    <string name="settings_intro">تقرأ هذه الإضافة الخاصة Pixiv كتطبيق معرض: الرسوم والمانغا والروايات والتصنيفات وإشاراتك والبحث. انقر «تسجيل الدخول» للدخول بحسابك على Pixiv، أو الصق رمز التحديث أدناه. تبقى الإشارات والمتابعات والسجل على هذا الجهاز: لا يُرسل شيء إلى حسابك على Pixiv ولا يُنشر عليه ولا يُغيَّر فيه أبدًا.</string>
+    <string name="settings_intro">تقرأ هذه الإضافة الخاصة Pixiv كتطبيق معرض: الرسوم والمانجا والروايات والترتيب وإشاراتك المرجعية والبحث. اضغط تسجيل الدخول لتسجيل الدخول بحساب Pixiv في المتصفح، أو الصق رمز التحديث أدناه. لا يُرسَل إلى حسابك على Pixiv إلا ما تُجريه بنفسك من إشارات ومتابعات وتغييرات على قائمة المتابعة. ولا يُنشَر من هنا أي شيء ولا يُعلَّق عليه ولا يُبلَّغ عنه أبدًا.</string>
     <string name="share_image">مشاركة الصورة</string>
     <string name="share_image_failed">تعذّرت مشاركة هذه الصورة</string>
     <string name="share_link">مشاركة الرابط</string>
@@ -458,6 +465,8 @@
     <string name="ugoira_play">تشغيل الرسم المتحرك</string>
     <string name="ugoira_save_gif">حفظ بصيغة GIF</string>
     <string name="ugoira_save_zip">حفظ الإطارات بصيغة ZIP</string>
+    <string name="ugoira_saved_gif">حُفظت الرسوم المتحركة بصيغة GIF</string>
+    <string name="ugoira_saved_zip">حُفظت الإطارات بصيغة ZIP</string>
     <string name="ugoira_saving">جارٍ الحفظ…</string>
     <string name="ugoira_slow">قد يستغرق الترميز دقيقة</string>
     <string name="unbookmark">إزالة الإشارة المرجعية</string>
@@ -467,7 +476,9 @@
     <string name="viewing_section">العرض</string>
     <string name="walkthrough_sign_in">سجّل الدخول لفتح هذا العمل</string>
     <string name="walkthrough_title">الرائج على Pixiv</string>
+    <string name="watchlist_add">إضافة إلى قائمة المتابعة</string>
     <string name="watchlist_empty">تظهر هنا سلاسل المانجا التي تضيفها إلى قائمة المتابعة</string>
+    <string name="watchlist_remove">إزالة من قائمة المتابعة</string>
     <string name="watchlist_updated">آخر تحديث %1$s</string>
     <string name="watchlist_view_latest">عرض الأحدث</string>
     <plurals name="works_count"><item quantity="zero">لا أعمال</item><item quantity="one">عمل واحد</item><item quantity="two">عملان</item><item quantity="few">%2$s أعمال</item><item quantity="many">%2$s عملًا</item><item quantity="other">%2$s عمل</item></plurals>

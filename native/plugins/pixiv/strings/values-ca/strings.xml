@@ -29,10 +29,14 @@
     <string name="bookmark_auto_tag">Etiqueta els marcadors automàticament</string>
     <string name="bookmark_auto_tag_description">Els marcadors que fas sense l’editor porten les etiquetes de l’obra, sense les de popularitat com 1000users入り.</string>
     <string name="bookmark_clear_all">Desmarca-ho tot</string>
+    <string name="bookmark_default_private">Marcadors privats per defecte</string>
+    <string name="bookmark_default_private_description">Els marcadors que fas sense l’editor són privats. Amb l’editor en pots fer públic qualsevol.</string>
     <string name="bookmark_edit">Edita el marcador</string>
     <string name="bookmark_follow_after">Segueix en afegir als marcadors</string>
-    <string name="bookmark_follow_after_description">Un marcador nou també segueix l’artista en aquest dispositiu, si encara no el segueixes.</string>
+    <string name="bookmark_follow_after_description">Un marcador nou també segueix l’artista públicament, si encara no el segueixes.</string>
     <string name="bookmark_followed_author">Ara segueixes %1$s</string>
+    <string name="bookmark_private">Marcador privat</string>
+    <string name="bookmark_private_hint">Només tu el pots veure</string>
     <string name="bookmark_save_after">Desa en afegir als marcadors</string>
     <string name="bookmark_save_after_description">Un marcador nou també desa totes les pàgines de l’obra.</string>
     <string name="bookmark_select_all">Marca-ho tot</string>
@@ -131,12 +135,13 @@
     <string name="folder_r18_description">Desa les obres R-18 en una carpeta «R-18» dins de la carpeta de baixades</string>
     <string name="follow">Segueix</string>
     <string name="follow_private">Privats</string>
+    <string name="follow_privately">Segueix en privat</string>
+    <string name="follow_privately_hint">Només tu sabràs que el segueixes</string>
     <string name="follow_public">Públics</string>
     <string name="follow_restrict_all">Tots els creadors seguits</string>
     <string name="follow_restrict_device">Creadors seguits en aquest dispositiu</string>
     <string name="follow_restrict_private">Creadors seguits en privat</string>
     <string name="follow_restrict_public">Creadors seguits públicament</string>
-    <string name="followed_on_pixiv">Seguit a Pixiv</string>
     <string name="following">Seguint</string>
     <plurals name="following_count"><item quantity="one">%2$s seguit</item><item quantity="other">%2$s seguits</item></plurals>
     <string name="follows_here">En aquest dispositiu</string>
@@ -208,12 +213,14 @@
     <string name="not_configured">Inicieu la sessió a Pixiv per veure el seguiment, el rànquing i els marcadors</string>
     <string name="novel">Novel·la</string>
     <string name="novel_author_novels">Mostra les seves novel·les</string>
+    <string name="novel_bookmark_private">Desa com a marcador privat</string>
     <string name="novel_bookmarks_empty">Aquí apareixen les novel·les que desis com a marcadors públics</string>
     <string name="novel_bookmarks_private_empty">Aquí apareixen les novel·les que desis com a marcadors privats</string>
     <string name="novel_chapter_number">Núm. %1$d</string>
     <plurals name="novel_chapters_count"><item quantity="one">%2$s capítol</item><item quantity="other">%2$s capítols</item></plurals>
     <plurals name="novel_characters"><item quantity="one">%2$s caràcter</item><item quantity="other">%2$s caràcters</item></plurals>
     <string name="novel_export">Exporta com a text</string>
+    <string name="novel_export_failed">No s’ha pogut exportar la novel·la</string>
     <string name="novel_export_markup">Amb el marcatge de Pixiv</string>
     <string name="novel_export_markup_hint">El text tal com el desa Pixiv, amb etiquetes com [newpage]</string>
     <string name="novel_export_plain">Text sense format</string>
@@ -418,7 +425,7 @@
     <string name="series_position">Núm. %1$d de %2$d</string>
     <string name="series_previous">Anterior de la sèrie</string>
     <string name="series_started">Iniciada el %1$s</string>
-    <string name="settings_intro">Aquest connector privat llegeix Pixiv com una aplicació de galeria: il·lustracions, manga, novel·les, rànquings, els teus marcadors i la cerca. Toca Inicia la sessió per entrar amb el teu compte de Pixiv, o enganxa un testimoni d’actualització a sota. Els marcadors, els seguiments i l’historial es queden en aquest dispositiu: mai no s’envia, es publica ni es canvia res al teu compte de Pixiv.</string>
+    <string name="settings_intro">Aquest connector privat llegeix Pixiv com una galeria: il·lustracions, manga, novel·les, rànquings, els vostres marcadors i la cerca. Tocau Inicia la sessió per entrar amb el compte de Pixiv al navegador, o enganxeu un token de renovació a sota. Al vostre compte de Pixiv només s’envien els marcadors, els seguiments i els canvis a la llista de seguiment que feu vosaltres. Des d’aquí mai no es publica, es comenta ni es denuncia res.</string>
     <string name="share_image">Comparteix la imatge</string>
     <string name="share_image_failed">No s'ha pogut compartir la imatge</string>
     <string name="share_link">Comparteix l’enllaç</string>
@@ -458,6 +465,8 @@
     <string name="ugoira_play">Reprodueix l’animació</string>
     <string name="ugoira_save_gif">Desa com a GIF</string>
     <string name="ugoira_save_zip">Desa els fotogrames com a ZIP</string>
+    <string name="ugoira_saved_gif">Animació desada com a GIF</string>
+    <string name="ugoira_saved_zip">Fotogrames desats com a ZIP</string>
     <string name="ugoira_saving">S’està desant…</string>
     <string name="ugoira_slow">La codificació pot trigar un minut</string>
     <string name="unbookmark">Treu el marcador</string>
@@ -467,7 +476,9 @@
     <string name="viewing_section">Visualització</string>
     <string name="walkthrough_sign_in">Inicia sessió per obrir aquesta obra</string>
     <string name="walkthrough_title">Popular a Pixiv</string>
+    <string name="watchlist_add">Afegeix a la llista de seguiment</string>
     <string name="watchlist_empty">Aquí apareixen les sèries de manga que afegeixis a la llista de seguiment</string>
+    <string name="watchlist_remove">Treu de la llista de seguiment</string>
     <string name="watchlist_updated">Actualitzada %1$s</string>
     <string name="watchlist_view_latest">Mostra el més recent</string>
     <plurals name="works_count"><item quantity="one">%2$s obra</item><item quantity="other">%2$s obres</item></plurals>

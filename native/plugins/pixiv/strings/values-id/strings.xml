@@ -29,10 +29,14 @@
     <string name="bookmark_auto_tag">Beri tag markah secara otomatis</string>
     <string name="bookmark_auto_tag_description">Markah yang Anda buat tanpa editor memakai tag karya itu sendiri, tanpa tag popularitas seperti 1000users入り.</string>
     <string name="bookmark_clear_all">Hapus semua pilihan</string>
+    <string name="bookmark_default_private">Markah pribadi secara bawaan</string>
+    <string name="bookmark_default_private_description">Markah yang Anda buat tanpa editor bersifat pribadi. Di editor Anda tetap bisa menjadikannya publik.</string>
     <string name="bookmark_edit">Edit markah</string>
     <string name="bookmark_follow_after">Ikuti saat memarkahi</string>
-    <string name="bookmark_follow_after_description">Markah baru juga mengikuti seniman di perangkat ini, jika Anda belum mengikutinya.</string>
+    <string name="bookmark_follow_after_description">Markah baru juga mengikuti seniman secara publik, jika Anda belum mengikutinya.</string>
     <string name="bookmark_followed_author">Mengikuti %1$s</string>
+    <string name="bookmark_private">Markah pribadi</string>
+    <string name="bookmark_private_hint">Hanya Anda yang dapat melihatnya</string>
     <string name="bookmark_save_after">Simpan saat memarkahi</string>
     <string name="bookmark_save_after_description">Markah baru juga menyimpan semua halaman karya.</string>
     <string name="bookmark_select_all">Pilih semua</string>
@@ -131,12 +135,13 @@
     <string name="folder_r18_description">Menaruh karya R-18 dalam folder “R-18” di dalam folder unduhan</string>
     <string name="follow">Ikuti</string>
     <string name="follow_private">Pribadi</string>
+    <string name="follow_privately">Ikuti secara pribadi</string>
+    <string name="follow_privately_hint">Hanya Anda yang tahu bahwa Anda mengikutinya</string>
     <string name="follow_public">Publik</string>
     <string name="follow_restrict_all">Semua kreator yang diikuti</string>
     <string name="follow_restrict_device">Kreator yang diikuti di perangkat ini</string>
     <string name="follow_restrict_private">Kreator yang diikuti secara pribadi</string>
     <string name="follow_restrict_public">Kreator yang diikuti secara publik</string>
-    <string name="followed_on_pixiv">Diikuti di Pixiv</string>
     <string name="following">Mengikuti</string>
     <plurals name="following_count"><item quantity="other">%2$s mengikuti</item></plurals>
     <string name="follows_here">Di perangkat ini</string>
@@ -208,12 +213,14 @@
     <string name="not_configured">Masuk ke Pixiv untuk melihat mengikuti, peringkat, dan penanda</string>
     <string name="novel">Novel</string>
     <string name="novel_author_novels">Lihat novelnya</string>
+    <string name="novel_bookmark_private">Tandai secara pribadi</string>
     <string name="novel_bookmarks_empty">Novel yang kamu tandai secara publik muncul di sini</string>
     <string name="novel_bookmarks_private_empty">Novel yang kamu tandai secara pribadi muncul di sini</string>
     <string name="novel_chapter_number">Bab %1$d</string>
     <plurals name="novel_chapters_count"><item quantity="other">%2$s bab</item></plurals>
     <plurals name="novel_characters"><item quantity="other">%2$s karakter</item></plurals>
     <string name="novel_export">Ekspor sebagai teks</string>
+    <string name="novel_export_failed">Tidak dapat mengekspor novel</string>
     <string name="novel_export_markup">Dengan markup Pixiv</string>
     <string name="novel_export_markup_hint">Teks persis seperti yang disimpan Pixiv, dengan tag seperti [newpage]</string>
     <string name="novel_export_plain">Teks biasa</string>
@@ -418,7 +425,7 @@
     <string name="series_position">#%1$d dari %2$d</string>
     <string name="series_previous">Sebelumnya dalam seri</string>
     <string name="series_started">Dimulai %1$s</string>
-    <string name="settings_intro">Plugin pribadi ini membaca Pixiv seperti aplikasi galeri: ilustrasi, manga, novel, peringkat, markah Anda, dan pencarian. Ketuk Masuk untuk masuk dengan akun Pixiv Anda, atau tempel refresh token di bawah. Markah, ikutan, dan riwayat tetap di perangkat ini: tidak ada yang pernah dikirim, diposting, atau diubah di akun Pixiv Anda.</string>
+    <string name="settings_intro">Plugin pribadi ini membaca Pixiv seperti aplikasi galeri: ilustrasi, manga, novel, peringkat, penanda Anda, dan pencarian. Ketuk Masuk untuk masuk dengan akun Pixiv di peramban, atau tempel token penyegaran di bawah. Hanya penanda, ikutan, dan perubahan daftar pantau yang Anda buat sendiri yang dikirim ke akun Pixiv Anda. Dari sini tidak pernah ada yang diposting, dikomentari, atau dilaporkan.</string>
     <string name="share_image">Bagikan gambar</string>
     <string name="share_image_failed">Tidak dapat membagikan gambar ini</string>
     <string name="share_link">Bagikan tautan</string>
@@ -458,6 +465,8 @@
     <string name="ugoira_play">Putar animasi</string>
     <string name="ugoira_save_gif">Simpan sebagai GIF</string>
     <string name="ugoira_save_zip">Simpan bingkai sebagai ZIP</string>
+    <string name="ugoira_saved_gif">Animasi disimpan sebagai GIF</string>
+    <string name="ugoira_saved_zip">Bingkai disimpan sebagai ZIP</string>
     <string name="ugoira_saving">Menyimpan…</string>
     <string name="ugoira_slow">Pengodean bisa memakan waktu semenit</string>
     <string name="unbookmark">Hapus markah</string>
@@ -467,7 +476,9 @@
     <string name="viewing_section">Tampilan</string>
     <string name="walkthrough_sign_in">Masuk untuk membuka karya ini</string>
     <string name="walkthrough_title">Populer di Pixiv</string>
+    <string name="watchlist_add">Tambahkan ke daftar pantau</string>
     <string name="watchlist_empty">Seri manga yang kamu tambahkan ke daftar pantau muncul di sini</string>
+    <string name="watchlist_remove">Hapus dari daftar pantau</string>
     <string name="watchlist_updated">Diperbarui %1$s</string>
     <string name="watchlist_view_latest">Lihat terbaru</string>
     <plurals name="works_count"><item quantity="other">%2$s karya</item></plurals>

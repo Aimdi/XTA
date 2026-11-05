@@ -8,9 +8,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 /**
- * The novel side of Pixiv, read: feeds, rankings, bookmarks, the series
+ * The novel side of Pixiv: feeds, rankings, bookmarks, the series
  * watchlist, series, search, trending tags, a creator's novels, and a
- * novel's text. Lists follow the reader's Show R-18 and Hide AI choices,
+ * novel's text; and XTA's writes, a novel's bookmark and the watchlist. Lists follow the reader's Show R-18 and Hide AI choices,
  * except the reader's own, which keep what they saved or wrote.
  */
 class PixivNovelApi(private val client: PixivClient) {
@@ -59,10 +59,27 @@ class PixivNovelApi(private val client: PixivClient) {
     suspend fun ownBookmarks(restrict: String = "public", next: String? = null): Page<PixivNovel> =
         bookmarks(client.ensureUserId(), restrict, next)
 
+    /** Bookmarks [novelId] with [restrict] (`public` or `private`), or files the bookmark it has again. */
+    suspend fun addBookmark(novelId: Long, restrict: String) {
+        client.postForm("/v2/novel/bookmark/add", mapOf("novel_id" to "$novelId", "restrict" to restrict))
+    }
+
+    suspend fun deleteBookmark(novelId: Long) {
+        client.postForm("/v1/novel/bookmark/delete", mapOf("novel_id" to "$novelId"))
+    }
+
     /** The novel series the reader watches; rows that do not parse are skipped. */
     suspend fun watchlist(next: String? = null): Page<PixivWatchlistSeries> {
         val json = client.getPage("/v1/watchlist/novel", emptyMap(), next)
         return Page(PixivWatchlistSeries.list(json), nextOf(json))
+    }
+
+    suspend fun addToWatchlist(seriesId: Long) {
+        client.postForm("/v1/watchlist/novel/add", mapOf("series_id" to "$seriesId"))
+    }
+
+    suspend fun removeFromWatchlist(seriesId: Long) {
+        client.postForm("/v1/watchlist/novel/delete", mapOf("series_id" to "$seriesId"))
     }
 
     /** One novel's card, for a novel opened by its id alone; a 404 when Pixiv no longer has it or withholds it. */

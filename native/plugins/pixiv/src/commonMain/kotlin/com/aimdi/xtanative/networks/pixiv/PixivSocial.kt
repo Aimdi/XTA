@@ -97,8 +97,8 @@ data class PixivFollowDetail(
 
 /**
  * Profiles: a creator's detail, works and bookmarks, the people they follow
- * and who follows them, whether the reader follows them, and the reader's own
- * AI display setting. Read-only: following happens in XTA Native alone.
+ * and who follows them, whether the reader follows them (and following or
+ * unfollowing them on Pixiv, as XTA does), and the reader's own AI display setting.
  */
 class PixivSocialApi(private val client: PixivClient) {
     private fun isSelf(userId: Long) = userId == client.storedUserId
@@ -139,6 +139,15 @@ class PixivSocialApi(private val client: PixivClient) {
     /** Whether, and how visibly, the reader follows [userId] on Pixiv. */
     suspend fun followDetail(userId: Long): PixivFollowDetail =
         PixivFollowDetail.parse(client.getJson("/v1/user/follow/detail", mapOf("user_id" to "$userId")))
+
+    /** Follows [userId] with [restrict] (`public` or `private`), or moves an existing follow there. */
+    suspend fun follow(userId: Long, restrict: String = "public") {
+        client.postForm("/v1/user/follow/add", mapOf("user_id" to "$userId", "restrict" to restrict))
+    }
+
+    suspend fun unfollow(userId: Long) {
+        client.postForm("/v1/user/follow/delete", mapOf("user_id" to "$userId"))
+    }
 
     /** Whether the signed-in account shows AI-generated works (true) or partly hides them (false) everywhere on Pixiv; it is changed on pixiv.net. */
     suspend fun showsAiWorks(): Boolean =

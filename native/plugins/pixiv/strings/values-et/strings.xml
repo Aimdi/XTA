@@ -29,10 +29,14 @@
     <string name="bookmark_auto_tag">Sildista järjehoidjad automaatselt</string>
     <string name="bookmark_auto_tag_description">Ilma redaktorita tehtud järjehoidjad saavad teose enda sildid, välja arvatud populaarsussildid nagu 1000users入り.</string>
     <string name="bookmark_clear_all">Tühista kõik</string>
+    <string name="bookmark_default_private">Vaikimisi privaatsed järjehoidjad</string>
+    <string name="bookmark_default_private_description">Ilma redaktorita tehtud järjehoidjad on privaatsed. Redaktoris saad mis tahes neist avalikuks teha.</string>
     <string name="bookmark_edit">Muuda järjehoidjat</string>
     <string name="bookmark_follow_after">Jälgi järjehoidjasse lisamisel</string>
-    <string name="bookmark_follow_after_description">Uus järjehoidja hakkab kunstnikku ka selles seadmes jälgima, kui sa teda veel ei jälgi.</string>
+    <string name="bookmark_follow_after_description">Uus järjehoidja hakkab ka kunstnikku avalikult jälgima, kui sa teda veel ei jälgi.</string>
     <string name="bookmark_followed_author">Jälgid nüüd: %1$s</string>
+    <string name="bookmark_private">Privaatne järjehoidja</string>
+    <string name="bookmark_private_hint">Seda näed ainult sina</string>
     <string name="bookmark_save_after">Salvesta järjehoidjasse lisamisel</string>
     <string name="bookmark_save_after_description">Uus järjehoidja salvestab ka teose kõik leheküljed.</string>
     <string name="bookmark_select_all">Vali kõik</string>
@@ -131,12 +135,13 @@
     <string name="folder_r18_description">Paneb R-18 teosed allalaadimiste kausta sees olevasse kausta „R-18”</string>
     <string name="follow">Jälgi</string>
     <string name="follow_private">Privaatsed</string>
+    <string name="follow_privately">Jälgi privaatselt</string>
+    <string name="follow_privately_hint">Ainult sina näed, et jälgid</string>
     <string name="follow_public">Avalikud</string>
     <string name="follow_restrict_all">Kõik jälgitavad loojad</string>
     <string name="follow_restrict_device">Selles seadmes jälgitavad loojad</string>
     <string name="follow_restrict_private">Privaatselt jälgitavad loojad</string>
     <string name="follow_restrict_public">Avalikult jälgitavad loojad</string>
-    <string name="followed_on_pixiv">Jälgid Pixivis</string>
     <string name="following">Jälgitavaid</string>
     <plurals name="following_count"><item quantity="one">%2$s jälgitav</item><item quantity="other">%2$s jälgitavat</item></plurals>
     <string name="follows_here">Selles seadmes</string>
@@ -208,12 +213,14 @@
     <string name="not_configured">Logi Pixivisse sisse, et sirvida jälgimist, edetabelit ja järjehoidjaid</string>
     <string name="novel">Romaan</string>
     <string name="novel_author_novels">Vaata tema romaane</string>
+    <string name="novel_bookmark_private">Lisa privaatselt järjehoidjatesse</string>
     <string name="novel_bookmarks_empty">Siin on romaanid, mille lisad avalikult järjehoidjatesse</string>
     <string name="novel_bookmarks_private_empty">Siin on romaanid, mille lisad privaatselt järjehoidjatesse</string>
     <string name="novel_chapter_number">Nr %1$d</string>
     <plurals name="novel_chapters_count"><item quantity="one">%2$s peatükk</item><item quantity="other">%2$s peatükki</item></plurals>
     <plurals name="novel_characters"><item quantity="one">%2$s märk</item><item quantity="other">%2$s märki</item></plurals>
     <string name="novel_export">Ekspordi tekstina</string>
+    <string name="novel_export_failed">Romaani ei õnnestunud eksportida</string>
     <string name="novel_export_markup">Pixivi märgendusega</string>
     <string name="novel_export_markup_hint">Tekst täpselt nii, nagu Pixiv selle salvestab, koos siltidega nagu [newpage]</string>
     <string name="novel_export_plain">Lihttekst</string>
@@ -418,7 +425,7 @@
     <string name="series_position">Nr %1$d / %2$d</string>
     <string name="series_previous">Eelmine sarjas</string>
     <string name="series_started">Alustatud %1$s</string>
-    <string name="settings_intro">See privaatne pistikprogramm loeb Pixivit nagu galeriirakendus: illustratsioone, mangat, romaane, edetabeleid, sinu järjehoidjaid ja otsingut. Puuduta Logi sisse, et siseneda oma Pixivi kontoga, või kleebi allpool värskendustõend. Järjehoidjad, jälgimised ja ajalugu jäävad sellesse seadmesse: sinu Pixivi kontole ei saadeta, postitata ega muudeta kunagi midagi.</string>
+    <string name="settings_intro">See privaatne plugin loeb Pixivi nagu galeriiäppi: illustratsioonid, manga, romaanid, edetabelid, sinu järjehoidjad ja otsing. Puuduta Logi sisse, et Pixivi kontole brauseris sisse logida, või kleebi allpool värskendustõend. Sinu Pixivi kontole saadetakse ainult järjehoidjad, jälgimised ja jälgimisnimekirja muudatused, mille ise teed. Siit ei postitata, kommenteerita ega teatata kunagi midagi.</string>
     <string name="share_image">Jaga pilti</string>
     <string name="share_image_failed">Pilti ei õnnestunud jagada</string>
     <string name="share_link">Jaga linki</string>
@@ -458,6 +465,8 @@
     <string name="ugoira_play">Esita animatsioon</string>
     <string name="ugoira_save_gif">Salvesta GIF-ina</string>
     <string name="ugoira_save_zip">Salvesta kaadrid ZIP-ina</string>
+    <string name="ugoira_saved_gif">Animatsioon salvestati GIF-ina</string>
+    <string name="ugoira_saved_zip">Kaadrid salvestati ZIP-ina</string>
     <string name="ugoira_saving">Salvestan…</string>
     <string name="ugoira_slow">Kodeerimine võib võtta minuti</string>
     <string name="unbookmark">Eemalda järjehoidja</string>
@@ -467,7 +476,9 @@
     <string name="viewing_section">Vaatamine</string>
     <string name="walkthrough_sign_in">Selle teose avamiseks logi sisse</string>
     <string name="walkthrough_title">Populaarne Pixivis</string>
+    <string name="watchlist_add">Lisa jälgimisnimekirja</string>
     <string name="watchlist_empty">Siin on mangasarjad, mille lisad jälgimisnimekirja</string>
+    <string name="watchlist_remove">Eemalda jälgimisnimekirjast</string>
     <string name="watchlist_updated">Uuendatud %1$s</string>
     <string name="watchlist_view_latest">Vaata uusimat</string>
     <plurals name="works_count"><item quantity="one">%2$s teos</item><item quantity="other">%2$s teost</item></plurals>

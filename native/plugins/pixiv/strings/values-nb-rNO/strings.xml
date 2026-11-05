@@ -29,10 +29,14 @@
     <string name="bookmark_auto_tag">Merk bokmerker automatisk</string>
     <string name="bookmark_auto_tag_description">Bokmerker du lager uten redigeringsvinduet får verkets egne tagger, uten populæritetstagger som 1000users入り.</string>
     <string name="bookmark_clear_all">Fjern alle</string>
+    <string name="bookmark_default_private">Private bokmerker som standard</string>
+    <string name="bookmark_default_private_description">Bokmerker du lager uten redigeringsvinduet er private. I redigeringsvinduet kan du fortsatt gjøre et offentlig.</string>
     <string name="bookmark_edit">Rediger bokmerke</string>
     <string name="bookmark_follow_after">Følg når du legger til bokmerke</string>
-    <string name="bookmark_follow_after_description">Et nytt bokmerke følger også kunstneren på denne enheten hvis du ikke følger vedkommende ennå.</string>
+    <string name="bookmark_follow_after_description">Et nytt bokmerke følger også kunstneren offentlig hvis du ikke følger vedkommende ennå.</string>
     <string name="bookmark_followed_author">Du følger nå %1$s</string>
+    <string name="bookmark_private">Privat bokmerke</string>
+    <string name="bookmark_private_hint">Bare du kan se det</string>
     <string name="bookmark_save_after">Lagre når du legger til bokmerke</string>
     <string name="bookmark_save_after_description">Et nytt bokmerke lagrer også alle sidene i verket.</string>
     <string name="bookmark_select_all">Velg alle</string>
@@ -131,12 +135,13 @@
     <string name="folder_r18_description">Legger R-18-verk i en «R-18»-mappe i nedlastingsmappen</string>
     <string name="follow">Følg</string>
     <string name="follow_private">Private</string>
+    <string name="follow_privately">Følg privat</string>
+    <string name="follow_privately_hint">Bare du ser at du følger</string>
     <string name="follow_public">Offentlige</string>
     <string name="follow_restrict_all">Alle skapere du følger</string>
     <string name="follow_restrict_device">Skapere du følger på denne enheten</string>
     <string name="follow_restrict_private">Skapere du følger privat</string>
     <string name="follow_restrict_public">Skapere du følger offentlig</string>
-    <string name="followed_on_pixiv">Følges på Pixiv</string>
     <string name="following">Følger</string>
     <plurals name="following_count"><item quantity="one">følger %2$s</item><item quantity="other">følger %2$s</item></plurals>
     <string name="follows_here">På denne enheten</string>
@@ -208,12 +213,14 @@
     <string name="not_configured">Logg inn på Pixiv for å se følging, rangering og bokmerker</string>
     <string name="novel">Roman</string>
     <string name="novel_author_novels">Se romanene deres</string>
+    <string name="novel_bookmark_private">Bokmerk privat</string>
     <string name="novel_bookmarks_empty">Romaner du bokmerker offentlig, vises her</string>
     <string name="novel_bookmarks_private_empty">Romaner du bokmerker privat, vises her</string>
     <string name="novel_chapter_number">Nr. %1$d</string>
     <plurals name="novel_chapters_count"><item quantity="one">%2$s kapittel</item><item quantity="other">%2$s kapitler</item></plurals>
     <plurals name="novel_characters"><item quantity="one">%2$s tegn</item><item quantity="other">%2$s tegn</item></plurals>
     <string name="novel_export">Eksporter som tekst</string>
+    <string name="novel_export_failed">Kunne ikke eksportere romanen</string>
     <string name="novel_export_markup">Med Pixiv-markering</string>
     <string name="novel_export_markup_hint">Teksten nøyaktig slik Pixiv lagrer den, med koder som [newpage]</string>
     <string name="novel_export_plain">Ren tekst</string>
@@ -418,7 +425,7 @@
     <string name="series_position">Nr. %1$d av %2$d</string>
     <string name="series_previous">Forrige i serien</string>
     <string name="series_started">Startet %1$s</string>
-    <string name="settings_intro">Denne private utvidelsen leser Pixiv som en galleri-app: illustrasjoner, manga, romaner, rangeringer, bokmerkene dine og søk. Trykk Logg inn for å logge inn med Pixiv-kontoen din, eller lim inn et oppdateringstoken nedenfor. Bokmerker, følginger og historikk blir på denne enheten: ingenting sendes noen gang til, publiseres på eller endres på Pixiv-kontoen din.</string>
+    <string name="settings_intro">Denne private utvidelsen leser Pixiv som en galleriapp: illustrasjoner, manga, romaner, rangeringer, bokmerkene dine og søk. Trykk Logg inn for å logge inn med Pixiv-kontoen i nettleseren, eller lim inn en oppfriskningstoken nedenfor. Bare bokmerkene, følgingene og endringene i følgelisten som du selv gjør, sendes til Pixiv-kontoen din. Herfra blir ingenting noen gang postet, kommentert eller rapportert.</string>
     <string name="share_image">Del bilde</string>
     <string name="share_image_failed">Kunne ikke dele dette bildet</string>
     <string name="share_link">Del lenke</string>
@@ -458,6 +465,8 @@
     <string name="ugoira_play">Spill av animasjonen</string>
     <string name="ugoira_save_gif">Lagre som GIF</string>
     <string name="ugoira_save_zip">Lagre bildene som ZIP</string>
+    <string name="ugoira_saved_gif">Animasjonen er lagret som GIF</string>
+    <string name="ugoira_saved_zip">Bildene er lagret som ZIP</string>
     <string name="ugoira_saving">Lagrer …</string>
     <string name="ugoira_slow">Kodingen kan ta et minutt</string>
     <string name="unbookmark">Fjern bokmerke</string>
@@ -467,7 +476,9 @@
     <string name="viewing_section">Visning</string>
     <string name="walkthrough_sign_in">Logg inn for å åpne dette verket</string>
     <string name="walkthrough_title">Populært på Pixiv</string>
+    <string name="watchlist_add">Legg til i følgelisten</string>
     <string name="watchlist_empty">Mangaserier du legger til i følgelisten, vises her</string>
+    <string name="watchlist_remove">Fjern fra følgelisten</string>
     <string name="watchlist_updated">Oppdatert %1$s</string>
     <string name="watchlist_view_latest">Se nyeste</string>
     <plurals name="works_count"><item quantity="one">%2$s verk</item><item quantity="other">%2$s verk</item></plurals>

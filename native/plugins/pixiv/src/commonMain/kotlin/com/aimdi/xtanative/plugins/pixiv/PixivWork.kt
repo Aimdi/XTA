@@ -200,14 +200,14 @@ private fun WorkScaffold(model: PixivWorkModel, state: PixivWorkState, illust: P
     OverviewHost(surface, illust)
 }
 
-/** The bar's heart (kept on this device), Save this page, and the work's menu. */
+/** The bar's heart (on Pixiv; a long press opens the editor), Save this page, and the work's menu. */
 @Composable
 private fun WorkActions(illust: PixivIllust, page: Int, sheets: PixivSheets) {
     val runtime = LocalPixiv.current
     val haptics = rememberHaptics()
-    val marks by runtime.bookmarks.state.collectAsState()
-    val bookmarked = marks.orEmpty().any { it.kind == PixivKind.WORK && it.kept.id == illust.id }
-    IconButton(onClick = { sheets.toggleBookmark(illust, haptics) }) {
+    val marks by runtime.bookmarking.works.state.collectAsState()
+    val bookmarked = marks.on(illust.id, illust.isBookmarked)
+    IconButton(onClick = { sheets.toggleBookmark(illust, haptics) }, enabled = !marks.isBusy(illust.id)) {
         Icon(
             if (bookmarked) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
             pluginString(if (bookmarked) Strings.unbookmark else Strings.bookmark),

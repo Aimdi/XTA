@@ -29,10 +29,14 @@
     <string name="bookmark_auto_tag">बुकमार्क पर अपने आप टैग लगाएँ</string>
     <string name="bookmark_auto_tag_description">एडिटर के बिना बनाए गए बुकमार्क पर कृति के अपने टैग लगते हैं, 1000users入り जैसे लोकप्रियता टैग छोड़कर।</string>
     <string name="bookmark_clear_all">सभी हटाएँ</string>
+    <string name="bookmark_default_private">डिफ़ॉल्ट रूप से निजी बुकमार्क</string>
+    <string name="bookmark_default_private_description">एडिटर के बिना बनाए गए बुकमार्क निजी होते हैं। एडिटर में आप किसी को भी सार्वजनिक कर सकते हैं।</string>
     <string name="bookmark_edit">बुकमार्क संपादित करें</string>
     <string name="bookmark_follow_after">बुकमार्क करते समय फ़ॉलो करें</string>
-    <string name="bookmark_follow_after_description">नया बुकमार्क कलाकार को इस डिवाइस पर फ़ॉलो भी करता है, अगर आप उन्हें अभी फ़ॉलो नहीं करते।</string>
+    <string name="bookmark_follow_after_description">नया बुकमार्क कलाकार को सार्वजनिक रूप से फ़ॉलो भी करता है, अगर आप उन्हें अभी फ़ॉलो नहीं करते।</string>
     <string name="bookmark_followed_author">%1$s को फ़ॉलो किया</string>
+    <string name="bookmark_private">निजी बुकमार्क</string>
+    <string name="bookmark_private_hint">इसे केवल आप देख सकते हैं</string>
     <string name="bookmark_save_after">बुकमार्क करते समय सहेजें</string>
     <string name="bookmark_save_after_description">नया बुकमार्क कृति के सभी पेज भी सहेजता है।</string>
     <string name="bookmark_select_all">सभी चुनें</string>
@@ -131,12 +135,13 @@
     <string name="folder_r18_description">R-18 कामों को डाउनलोड फ़ोल्डर के अंदर “R-18” फ़ोल्डर में रखता है</string>
     <string name="follow">फ़ॉलो करें</string>
     <string name="follow_private">निजी</string>
+    <string name="follow_privately">निजी रूप से फ़ॉलो करें</string>
+    <string name="follow_privately_hint">सिर्फ़ आप देख पाएँगे कि आप इन्हें फ़ॉलो करते हैं</string>
     <string name="follow_public">सार्वजनिक</string>
     <string name="follow_restrict_all">सभी फ़ॉलो किए गए रचनाकार</string>
     <string name="follow_restrict_device">इस डिवाइस पर फ़ॉलो किए गए रचनाकार</string>
     <string name="follow_restrict_private">निजी रूप से फ़ॉलो किए गए रचनाकार</string>
     <string name="follow_restrict_public">सार्वजनिक रूप से फ़ॉलो किए गए रचनाकार</string>
-    <string name="followed_on_pixiv">Pixiv पर फ़ॉलो किया गया</string>
     <string name="following">अनुसरण कर रहे हैं</string>
     <plurals name="following_count"><item quantity="one">%2$s फ़ॉलोइंग</item><item quantity="other">%2$s फ़ॉलोइंग</item></plurals>
     <string name="follows_here">इस डिवाइस पर</string>
@@ -208,12 +213,14 @@
     <string name="not_configured">फ़ॉलोइंग, रैंकिंग और बुकमार्क देखने के लिए Pixiv में साइन इन करें</string>
     <string name="novel">उपन्यास</string>
     <string name="novel_author_novels">इनके उपन्यास देखें</string>
+    <string name="novel_bookmark_private">निजी रूप से बुकमार्क करें</string>
     <string name="novel_bookmarks_empty">जिन उपन्यासों को आप सार्वजनिक रूप से बुकमार्क करते हैं, वे यहाँ दिखते हैं</string>
     <string name="novel_bookmarks_private_empty">जिन उपन्यासों को आप निजी रूप से बुकमार्क करते हैं, वे यहाँ दिखते हैं</string>
     <string name="novel_chapter_number">अध्याय %1$d</string>
     <plurals name="novel_chapters_count"><item quantity="one">%2$s अध्याय</item><item quantity="other">%2$s अध्याय</item></plurals>
     <plurals name="novel_characters"><item quantity="one">%2$s अक्षर</item><item quantity="other">%2$s अक्षर</item></plurals>
     <string name="novel_export">टेक्स्ट के रूप में निर्यात करें</string>
+    <string name="novel_export_failed">उपन्यास निर्यात नहीं हो सका</string>
     <string name="novel_export_markup">Pixiv मार्कअप के साथ</string>
     <string name="novel_export_markup_hint">टेक्स्ट ठीक वैसा ही जैसा Pixiv उसे सहेजता है, [newpage] जैसे टैग के साथ</string>
     <string name="novel_export_plain">सादा टेक्स्ट</string>
@@ -418,7 +425,7 @@
     <string name="series_position">%2$d में से #%1$d</string>
     <string name="series_previous">शृंखला में पिछली</string>
     <string name="series_started">%1$s को शुरू हुई</string>
-    <string name="settings_intro">यह निजी प्लगइन Pixiv को गैलरी ऐप की तरह पढ़ता है: चित्र, मंगा, उपन्यास, रैंकिंग, आपके बुकमार्क और खोज। अपने Pixiv खाते से लॉग इन करने के लिए साइन इन पर टैप करें, या नीचे रिफ़्रेश टोकन चिपकाएँ। बुकमार्क, फ़ॉलो और इतिहास इसी डिवाइस पर रहते हैं: आपके Pixiv खाते पर कभी कुछ भेजा, पोस्ट या बदला नहीं जाता।</string>
+    <string name="settings_intro">यह निजी प्लगिन Pixiv को गैलरी ऐप की तरह पढ़ता है: चित्र, मांगा, उपन्यास, रैंकिंग, आपके बुकमार्क और खोज। साइन इन पर टैप करके ब्राउज़र में अपने Pixiv खाते से लॉग इन करें, या नीचे रीफ़्रेश टोकन चिपकाएँ। आपके Pixiv खाते पर केवल वे बुकमार्क, फ़ॉलो और वॉचलिस्ट बदलाव भेजे जाते हैं जो आप खुद करते हैं। यहाँ से कभी कुछ पोस्ट, टिप्पणी या रिपोर्ट नहीं किया जाता।</string>
     <string name="share_image">छवि साझा करें</string>
     <string name="share_image_failed">यह छवि साझा नहीं की जा सकी</string>
     <string name="share_link">लिंक साझा करें</string>
@@ -458,6 +465,8 @@
     <string name="ugoira_play">एनिमेशन चलाएँ</string>
     <string name="ugoira_save_gif">GIF के रूप में सहेजें</string>
     <string name="ugoira_save_zip">फ़्रेम ZIP के रूप में सहेजें</string>
+    <string name="ugoira_saved_gif">एनिमेशन GIF के रूप में सहेजा गया</string>
+    <string name="ugoira_saved_zip">फ़्रेम ZIP के रूप में सहेजे गए</string>
     <string name="ugoira_saving">सहेजा जा रहा है…</string>
     <string name="ugoira_slow">एन्कोडिंग में एक मिनट लग सकता है</string>
     <string name="unbookmark">बुकमार्क हटाएँ</string>
@@ -467,7 +476,9 @@
     <string name="viewing_section">देखना</string>
     <string name="walkthrough_sign_in">यह कृति खोलने के लिए साइन इन करें</string>
     <string name="walkthrough_title">Pixiv पर लोकप्रिय</string>
+    <string name="watchlist_add">वॉचलिस्ट में जोड़ें</string>
     <string name="watchlist_empty">वॉचलिस्ट में जोड़ी गई मांगा शृंखलाएँ यहाँ दिखती हैं</string>
+    <string name="watchlist_remove">वॉचलिस्ट से हटाएँ</string>
     <string name="watchlist_updated">%1$s अपडेट हुई</string>
     <string name="watchlist_view_latest">नवीनतम देखें</string>
     <plurals name="works_count"><item quantity="one">%2$s कृति</item><item quantity="other">%2$s कृतियाँ</item></plurals>

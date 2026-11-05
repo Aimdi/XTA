@@ -1,9 +1,12 @@
 package com.aimdi.xtanative.plugins.pixiv
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,26 +19,39 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.networks.pixiv.PixivFollowDetail
 import com.aimdi.xtanative.networks.pixiv.PixivIllust
 import com.aimdi.xtanative.networks.pixiv.PixivNovel
 import com.aimdi.xtanative.networks.pixiv.PixivUser
@@ -44,6 +60,7 @@ import com.aimdi.xtanative.ui.plugins.addToGroupText
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
+import kotlinx.coroutines.CancellationException
 
 /** How many works or novels a creator's card shows. */
 private const val PREVIEWS = 3
@@ -98,35 +115,51 @@ internal fun GroupIconButton(user: PixivUser) {
 }
 
 /**
- * Follow or Unfollow on this device: the creator's works join Following's
- * "On this device" and Pixiv is never told. [prominent] is the profile's
- * full-width button, outlined once followed. Whether the reader follows them
- * on Pixiv itself shows under it.
+ * Follow or Unfollow on Pixiv (pixiv_user_card.dart's PixivFollowButton): a
+ * tap follows publicly or unfollows, a long press opens the follow dialog to
+ * follow privately; a ring while Pixiv answers. [prominent] is the profile's
+ * full-width button, outlined once followed.
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun FollowButton(user: PixivUser, modifier: Modifier = Modifier, prominent: Boolean = false) {
     val runtime = LocalPixiv.current
+    val sheets = LocalPixivSheets.current
     val haptics = rememberHaptics()
-    val followed = PixivFollows.isFollowed(pixivSettings(), user.id)
-    val toggle = {
-        runtime.toggleFollow(user)
-        haptics.light()
+    val marks by runtime.following.marks.state.collectAsState()
+    val followed = marks.on(user.id, user.isFollowed)
+    val busy = marks.isBusy(user.id)
+    val scheme = MaterialTheme.colorScheme
+    val (background, content) = when {
+        !prominent -> scheme.secondaryContainer to scheme.onSecondaryContainer
+        followed -> Color.Transparent to scheme.primary
+        else -> scheme.primary to scheme.onPrimary
     }
-    val label: @Composable () -> Unit = {
-        Icon(if (followed) GroupIcons.PersonRemove else GroupIcons.PersonAddOutlined, null, Modifier.size(18.dp))
-        Spacer(Modifier.width(8.dp))
-        Text(pluginString(if (followed) Strings.unfollow else Strings.follow), maxLines = 1, overflow = TextOverflow.Ellipsis)
-    }
-    val shape = RoundedCornerShape(8.dp)
-    val size = if (prominent) Modifier.fillMaxWidth().heightIn(min = 48.dp) else Modifier.heightIn(min = 48.dp)
-    Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        when {
-            !prominent -> FilledTonalButton(onClick = toggle, modifier = size) { label() }
-            followed -> OutlinedButton(onClick = toggle, shape = shape, border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline), modifier = size) { label() }
-            else -> Button(onClick = toggle, shape = shape, modifier = size, colors = ButtonDefaults.buttonColors()) { label() }
-        }
-        if (user.isFollowed) {
-            Text(pluginString(Strings.followed_on_pixiv), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    val shape = if (prominent) RoundedCornerShape(8.dp) else CircleShape
+    Surface(
+        shape = shape,
+        color = background,
+        contentColor = content,
+        border = if (prominent && followed) BorderStroke(1.dp, scheme.outline) else null,
+        modifier = modifier.heightIn(min = 48.dp).clip(shape).combinedClickable(
+            enabled = !busy,
+            role = Role.Button,
+            onLongClickLabel = pluginString(Strings.follow_privately),
+            onClick = { sheets.toggleFollow(user, haptics) },
+            onLongClick = {
+                haptics.medium()
+                sheets.show(PixivSheet.Follow(user))
+            },
+        ),
+    ) {
+        Row(Modifier.padding(start = 16.dp, end = 24.dp), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+            if (busy) {
+                CircularProgressIndicator(Modifier.size(18.dp), color = content, strokeWidth = 2.dp)
+            } else {
+                Icon(if (followed) GroupIcons.PersonRemove else GroupIcons.PersonAddOutlined, null, Modifier.size(18.dp))
+            }
+            Spacer(Modifier.width(8.dp))
+            Text(pluginString(if (followed) Strings.unfollow else Strings.follow), style = MaterialTheme.typography.labelLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
     }
 }
@@ -233,4 +266,58 @@ internal fun PixivUsersFeed(list: PixivList<PixivUserPreview>, empty: String, pa
     PixivRows(list, { it.user.id }, empty, padding, toTop, shown = { previews -> mutes.withoutMutedAuthors(previews) { it.user.id } }, divided = false) { preview ->
         Column(Modifier.fillMaxSize().padding(horizontal = 12.dp, vertical = 4.dp)) { UserPreviewCard(preview, novels, grouped) }
     }
+}
+
+/**
+ * The follow dialog (pixiv_follow_dialog.dart): how the reader follows [user]
+ * on Pixiv, read first; Follow privately, which starts on for a creator not
+ * followed yet (a tap already follows publicly), then Unfollow while
+ * followed, Cancel, and Follow or Save.
+ */
+@Composable
+internal fun FollowDialog(user: PixivUser, sheets: PixivSheets) {
+    val runtime = LocalPixiv.current
+    val haptics = rememberHaptics()
+    var attempt by remember { mutableIntStateOf(0) }
+    var detail by remember(user.id) { mutableStateOf<PixivFollowDetail?>(null) }
+    var failure by remember(user.id) { mutableStateOf<Throwable?>(null) }
+    var private by remember(user.id) { mutableStateOf(true) }
+    LaunchedEffect(user.id, attempt) {
+        failure = null
+        try {
+            val read = runtime.social.followDetail(user.id)
+            private = if (read.isFollowed) read.isPrivate else true
+            detail = read
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            failure = e
+        }
+    }
+    val read = detail
+    AlertDialog(
+        onDismissRequest = sheets::close,
+        title = { Text(user.name, maxLines = 2, overflow = TextOverflow.Ellipsis) },
+        text = {
+            when {
+                read != null -> SwitchRow(pluginString(Strings.follow_privately), pluginString(Strings.follow_privately_hint), private) { private = it }
+                failure != null -> Column {
+                    Text(pixivErrorText(failure))
+                    TextButton(onClick = { attempt++ }) { Text(pluginString(Strings.retry)) }
+                }
+                else -> Box(Modifier.fillMaxWidth().heightIn(min = 96.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
+            }
+        },
+        confirmButton = {
+            Button(onClick = { sheets.answerFollow(user, if (private) PixivRestrict.PRIVATE else PixivRestrict.PUBLIC, haptics) }, enabled = read != null) {
+                Text(pluginString(if (read?.isFollowed == true) Strings.save else Strings.follow))
+            }
+        },
+        dismissButton = {
+            if (read?.isFollowed == true) {
+                TextButton(onClick = { sheets.answerFollow(user, null, haptics) }) { Text(pluginString(Strings.unfollow), color = MaterialTheme.colorScheme.error) }
+            }
+            TextButton(onClick = sheets::close) { Text(pluginString(Strings.cancel)) }
+        },
+    )
 }

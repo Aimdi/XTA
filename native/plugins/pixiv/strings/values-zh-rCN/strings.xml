@@ -29,10 +29,14 @@
     <string name="bookmark_auto_tag">自动为收藏添加标签</string>
     <string name="bookmark_auto_tag_description">不通过编辑器添加的收藏会带上作品自己的标签，但不包括 1000users入り 这类人气标签。</string>
     <string name="bookmark_clear_all">全部取消</string>
+    <string name="bookmark_default_private">默认私密收藏</string>
+    <string name="bookmark_default_private_description">不通过编辑器添加的收藏为私密收藏。你仍可在编辑器中将其设为公开。</string>
     <string name="bookmark_edit">编辑收藏</string>
     <string name="bookmark_follow_after">收藏时关注</string>
-    <string name="bookmark_follow_after_description">新收藏时，如果尚未关注作者，也会在本设备上关注。</string>
+    <string name="bookmark_follow_after_description">新收藏时，如果尚未关注作者，也会公开关注。</string>
     <string name="bookmark_followed_author">已关注 %1$s</string>
+    <string name="bookmark_private">私密收藏</string>
+    <string name="bookmark_private_hint">仅自己可见</string>
     <string name="bookmark_save_after">收藏时保存</string>
     <string name="bookmark_save_after_description">新收藏时也会保存作品的所有页面。</string>
     <string name="bookmark_select_all">全选</string>
@@ -131,12 +135,13 @@
     <string name="folder_r18_description">将 R-18 作品存入下载文件夹中的“R-18”文件夹</string>
     <string name="follow">关注</string>
     <string name="follow_private">私密</string>
+    <string name="follow_privately">悄悄关注</string>
+    <string name="follow_privately_hint">只有你能看到这次关注</string>
     <string name="follow_public">公开</string>
     <string name="follow_restrict_all">全部关注的创作者</string>
     <string name="follow_restrict_device">在本设备上关注的创作者</string>
     <string name="follow_restrict_private">私密关注的创作者</string>
     <string name="follow_restrict_public">公开关注的创作者</string>
-    <string name="followed_on_pixiv">已在 Pixiv 关注</string>
     <string name="following">正在关注</string>
     <plurals name="following_count"><item quantity="other">关注 %2$s</item></plurals>
     <string name="follows_here">本设备</string>
@@ -208,12 +213,14 @@
     <string name="not_configured">登录 Pixiv 以浏览关注、排行榜与收藏</string>
     <string name="novel">小说</string>
     <string name="novel_author_novels">查看作者的小说</string>
+    <string name="novel_bookmark_private">私密收藏</string>
     <string name="novel_bookmarks_empty">公开收藏的小说会显示在这里</string>
     <string name="novel_bookmarks_private_empty">私密收藏的小说会显示在这里</string>
     <string name="novel_chapter_number">第 %1$d 章</string>
     <plurals name="novel_chapters_count"><item quantity="other">%2$s 章</item></plurals>
     <plurals name="novel_characters"><item quantity="other">%2$s 字</item></plurals>
     <string name="novel_export">导出为文本</string>
+    <string name="novel_export_failed">无法导出小说</string>
     <string name="novel_export_markup">保留 Pixiv 标记</string>
     <string name="novel_export_markup_hint">与 Pixiv 存储的原文完全一致，包含 [newpage] 等标记</string>
     <string name="novel_export_plain">纯文本</string>
@@ -418,7 +425,7 @@
     <string name="series_position">第 %1$d 篇，共 %2$d 篇</string>
     <string name="series_previous">系列中的上一篇</string>
     <string name="series_started">始于 %1$s</string>
-    <string name="settings_intro">这个私有插件像图库应用一样浏览 Pixiv：插画、漫画、小说、排行榜、你的收藏和搜索。点按“登录”用你的 Pixiv 账号登录，或在下方粘贴刷新令牌。收藏、关注和浏览记录都保存在本设备上：不会向你的 Pixiv 账号发送、发布或更改任何内容。</string>
+    <string name="settings_intro">此私有插件像图库应用一样阅读 Pixiv：插画、漫画、小说、排行榜、你的收藏与搜索。点登录在浏览器中用 Pixiv 账号登录，或在下方粘贴刷新令牌。只有你亲自进行的收藏、关注和追更列表更改会发送到你的 Pixiv 账号。此处绝不会发帖、评论或举报。</string>
     <string name="share_image">分享图片</string>
     <string name="share_image_failed">无法分享此图片</string>
     <string name="share_link">分享链接</string>
@@ -458,6 +465,8 @@
     <string name="ugoira_play">播放动图</string>
     <string name="ugoira_save_gif">保存为 GIF</string>
     <string name="ugoira_save_zip">将帧保存为 ZIP</string>
+    <string name="ugoira_saved_gif">动图已保存为 GIF</string>
+    <string name="ugoira_saved_zip">帧已保存为 ZIP</string>
     <string name="ugoira_saving">正在保存…</string>
     <string name="ugoira_slow">编码可能需要一分钟</string>
     <string name="unbookmark">取消收藏</string>
@@ -467,7 +476,9 @@
     <string name="viewing_section">浏览</string>
     <string name="walkthrough_sign_in">登录后才能打开此作品</string>
     <string name="walkthrough_title">Pixiv 热门</string>
+    <string name="watchlist_add">加入追更列表</string>
     <string name="watchlist_empty">加入追更列表的漫画系列会显示在这里</string>
+    <string name="watchlist_remove">移出追更列表</string>
     <string name="watchlist_updated">%1$s更新</string>
     <string name="watchlist_view_latest">查看最新话</string>
     <plurals name="works_count"><item quantity="other">%2$s 件作品</item></plurals>

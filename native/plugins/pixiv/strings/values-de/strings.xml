@@ -29,10 +29,14 @@
     <string name="bookmark_auto_tag">Lesezeichen automatisch taggen</string>
     <string name="bookmark_auto_tag_description">Lesezeichen, die du ohne den Editor setzt, bekommen die Tags des Werks – ohne Beliebtheits-Tags wie 1000users入り.</string>
     <string name="bookmark_clear_all">Alle abwählen</string>
+    <string name="bookmark_default_private">Lesezeichen privat anlegen</string>
+    <string name="bookmark_default_private_description">Lesezeichen, die du ohne den Editor setzt, sind privat. Im Editor kannst du jedes trotzdem öffentlich machen.</string>
     <string name="bookmark_edit">Lesezeichen bearbeiten</string>
     <string name="bookmark_follow_after">Beim Merken folgen</string>
-    <string name="bookmark_follow_after_description">Ein neues Lesezeichen folgt dem Künstler auch auf diesem Gerät, falls du ihm noch nicht folgst.</string>
+    <string name="bookmark_follow_after_description">Ein neues Lesezeichen folgt auch öffentlich dem Künstler, falls du ihm noch nicht folgst.</string>
     <string name="bookmark_followed_author">Du folgst jetzt %1$s</string>
+    <string name="bookmark_private">Privates Lesezeichen</string>
+    <string name="bookmark_private_hint">Nur du kannst es sehen</string>
     <string name="bookmark_save_after">Beim Merken speichern</string>
     <string name="bookmark_save_after_description">Ein neues Lesezeichen speichert auch alle Seiten des Werks.</string>
     <string name="bookmark_select_all">Alle auswählen</string>
@@ -131,12 +135,13 @@
     <string name="folder_r18_description">Legt R-18-Werke in einem Ordner „R-18“ im Download-Ordner ab</string>
     <string name="follow">Folgen</string>
     <string name="follow_private">Privat</string>
+    <string name="follow_privately">Privat folgen</string>
+    <string name="follow_privately_hint">Nur du siehst, dass du folgst</string>
     <string name="follow_public">Öffentlich</string>
     <string name="follow_restrict_all">Alle Künstler, denen du folgst</string>
     <string name="follow_restrict_device">Auf diesem Gerät gefolgte Künstler</string>
     <string name="follow_restrict_private">Privat gefolgte Künstler</string>
     <string name="follow_restrict_public">Öffentlich gefolgte Künstler</string>
-    <string name="followed_on_pixiv">Auf Pixiv gefolgt</string>
     <string name="following">Folgt</string>
     <plurals name="following_count"><item quantity="one">%2$s gefolgt</item><item quantity="other">%2$s gefolgt</item></plurals>
     <string name="follows_here">Auf diesem Gerät</string>
@@ -208,12 +213,14 @@
     <string name="not_configured">Melde dich bei Pixiv an, um Folge-Feed, Ranking und Lesezeichen zu sehen</string>
     <string name="novel">Roman</string>
     <string name="novel_author_novels">Weitere Romane ansehen</string>
+    <string name="novel_bookmark_private">Privat als Lesezeichen speichern</string>
     <string name="novel_bookmarks_empty">Romane mit öffentlichem Lesezeichen erscheinen hier</string>
     <string name="novel_bookmarks_private_empty">Romane mit privatem Lesezeichen erscheinen hier</string>
     <string name="novel_chapter_number">Nr. %1$d</string>
     <plurals name="novel_chapters_count"><item quantity="one">%2$s Kapitel</item><item quantity="other">%2$s Kapitel</item></plurals>
     <plurals name="novel_characters"><item quantity="one">%2$s Zeichen</item><item quantity="other">%2$s Zeichen</item></plurals>
     <string name="novel_export">Als Text exportieren</string>
+    <string name="novel_export_failed">Roman konnte nicht exportiert werden</string>
     <string name="novel_export_markup">Mit Pixiv-Markup</string>
     <string name="novel_export_markup_hint">Der Text genau so, wie Pixiv ihn speichert, mit Tags wie [newpage]</string>
     <string name="novel_export_plain">Reiner Text</string>
@@ -418,7 +425,7 @@
     <string name="series_position">Nr. %1$d von %2$d</string>
     <string name="series_previous">Vorheriges der Reihe</string>
     <string name="series_started">Begonnen am %1$s</string>
-    <string name="settings_intro">Dieses private Plugin liest Pixiv wie eine Galerie-App: Illustrationen, Manga, Romane, Rankings, deine Lesezeichen und die Suche. Tippe auf Anmelden, um dich mit deinem Pixiv-Konto anzumelden, oder füge unten ein Refresh-Token ein. Lesezeichen, Follows und Verlauf bleiben auf diesem Gerät: An dein Pixiv-Konto wird nie etwas gesendet, dort nie etwas gepostet oder geändert.</string>
+    <string name="settings_intro">Dieses private Plugin liest Pixiv wie eine Galerie-App: Illustrationen, Manga, Romane, Rankings, deine Lesezeichen und Suche. Tippe auf Anmelden, um dich im Browser bei Pixiv anzumelden, oder füge unten einen Refresh-Token ein. An dein Pixiv-Konto gehen nur die Lesezeichen, Follows und Änderungen an der Merkliste, die du selbst vornimmst. Von hier aus wird nie etwas gepostet, kommentiert oder gemeldet.</string>
     <string name="share_image">Bild teilen</string>
     <string name="share_image_failed">Das Bild konnte nicht geteilt werden</string>
     <string name="share_link">Link teilen</string>
@@ -458,6 +465,8 @@
     <string name="ugoira_play">Animation abspielen</string>
     <string name="ugoira_save_gif">Als GIF speichern</string>
     <string name="ugoira_save_zip">Einzelbilder als ZIP speichern</string>
+    <string name="ugoira_saved_gif">Animation als GIF gespeichert</string>
+    <string name="ugoira_saved_zip">Einzelbilder als ZIP gespeichert</string>
     <string name="ugoira_saving">Wird gespeichert…</string>
     <string name="ugoira_slow">Das Kodieren kann eine Minute dauern</string>
     <string name="unbookmark">Lesezeichen entfernen</string>
@@ -467,7 +476,9 @@
     <string name="viewing_section">Ansicht</string>
     <string name="walkthrough_sign_in">Melde dich an, um dieses Werk zu öffnen</string>
     <string name="walkthrough_title">Beliebt auf Pixiv</string>
+    <string name="watchlist_add">Zur Merkliste hinzufügen</string>
     <string name="watchlist_empty">Manga-Reihen auf deiner Merkliste erscheinen hier</string>
+    <string name="watchlist_remove">Von der Merkliste entfernen</string>
     <string name="watchlist_updated">Aktualisiert %1$s</string>
     <string name="watchlist_view_latest">Neuesten Teil ansehen</string>
     <plurals name="works_count"><item quantity="one">%2$s Werk</item><item quantity="other">%2$s Werke</item></plurals>

@@ -11,7 +11,7 @@ import com.aimdi.xtanative.networks.pixiv.PixivSearchApi
 import com.aimdi.xtanative.networks.pixiv.PixivSocialApi
 import com.aimdi.xtanative.networks.pixiv.PixivUser
 import com.aimdi.xtanative.store.backup.XtaTime
-import com.aimdi.xtanative.store.reading.ReadingJournal
+import com.aimdi.xtanative.store.settings.PostsPrefs
 import com.aimdi.xtanative.store.settings.PixivPrefs
 import com.aimdi.xtanative.ui.plugins.DrawnPosts
 import com.aimdi.xtanative.ui.plugins.FeedKinds
@@ -40,10 +40,11 @@ import kotlinx.serialization.json.JsonElement
 /**
  * What the Pixiv plugin's screens share while it runs: its settings (XTA's
  * Pixiv preferences, in the app's settings), the client reading as the signed-in account with
- * XTA's published repairs in force, the reads beside it, what the device
- * keeps (mutes, history, its own bookmarks and follows), and the works the
- * app's shared rows drew, which their bookmark and menu file in the app's
- * Saved. Nothing is written to Pixiv.
+ * XTA's published repairs in force, the reads beside it, XTA's writes to that
+ * account (bookmarks, follows, the watchlist), what the device keeps (mutes,
+ * history, where novels were left, the creators in the app's groups and the
+ * bookmarks it kept before), and the works the app's shared rows drew, which
+ * their bookmark and menu file in the app's Saved.
  */
 internal class PixivRuntime(val host: PluginHost) {
     val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
@@ -70,10 +71,13 @@ internal class PixivRuntime(val host: PluginHost) {
     val novelHistory = PixivHistory(host.store.file("history-novels.json"), PixivKind.NOVEL)
     val bookmarks = PixivDeviceBookmarks(host.store.file("bookmarks.json"))
 
-    /** Where the reader stopped in each novel: viewing history, so it stays in the plugin's folder. */
-    val novelPlaces = ReadingJournal(host.store, "novels")
+    /** Where the reader stopped in each novel, in XTA's preference for it. */
+    val novelPlaces = PixivNovelPlaces(settings) { host.settings.state.value?.get(PostsPrefs.rememberReadingPosition) ?: true }
 
-    val bookmarking = PixivBookmarking(bookmarks, { settings.now }, ::followHere, { client.storedUserId })
+    /** Following creators on Pixiv. */
+    val following = PixivFollowing({ id, restrict -> social.follow(id, restrict) }, { id -> social.unfollow(id) })
+
+    val bookmarking = PixivBookmarking(bookmarkApi, novels, following, { settings.now }, { client.storedUserId }, bookmarks)
 
     /** What a screen hands the next one it opens (the work as its list had it, the list itself), by key. */
     val shelf = PixivShelf()
@@ -105,12 +109,14 @@ internal class PixivRuntime(val host: PluginHost) {
     /** The reader's own Pixiv id, once a token response named it. */
     val ownId: Long? get() = client.storedUserId
 
-    fun isFollowedHere(id: Long): Boolean = PixivFollows.isFollowed(settings.now, id)
-
-    /** Follows [user] on this device, or stops: Pixiv is never told. */
-    fun toggleFollow(user: PixivUser) {
-        if (isFollowedHere(user.id)) unfollow(user.id) else followHere(user)
+    /** Forgets what this session changed on Pixiv, for another account (pixiv_accounts.dart's pixivAccountDataForgetter). */
+    fun accountChanged() {
+        bookmarking.clear()
+        following.marks.clear()
     }
+
+    /** Whether [id] is among the creators kept for the app's groups (XTA's Pixiv group subscriptions). */
+    fun isFollowedHere(id: Long): Boolean = PixivFollows.isFollowed(settings.now, id)
 
     /** [id] no longer followed here and out of the app's groups, as XTA's PixivGroupSubscriptionsStore.remove takes it out of them. */
     fun unfollow(id: Long) {
@@ -131,7 +137,8 @@ internal class PixivRuntime(val host: PluginHost) {
         unfollow = { unfollow(follow.id) },
     )
 
-    private fun followHere(user: PixivUser) = settings.update { PixivFollows.followed(it, user, Instant.now().toString()) }
+    /** Keeps [user] for the app's groups, as XTA's PixivGroupSubscriptionsStore.add: Pixiv is not told. */
+    fun followHere(user: PixivUser) = settings.update { PixivFollows.followed(it, user, Instant.now().toString()) }
 
     /** [user]'s groups, followed here first once a group is picked (pixiv_group.dart's addPixivToGroup). */
     fun addToGroup(user: PixivUser) = host.addToGroup("${user.id}") { if (!isFollowedHere(user.id)) followHere(user) }

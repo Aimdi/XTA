@@ -135,8 +135,8 @@ data class PixivWatchlistSeries(
 
 /**
  * Pixiv's browse surfaces: rankings, recommended manga and creators,
- * Pixivision, series, the manga watchlist, and the showcase readable without
- * an account. The Following feed is [PixivClient.following].
+ * Pixivision, series, the manga watchlist (and XTA's changes to it), and the
+ * showcase readable without an account. The Following feed is [PixivClient.following].
  */
 class PixivDiscoveryApi(private val client: PixivClient) {
     /** Manga Pixiv recommends, under the reader's choices like any feed. */
@@ -186,6 +186,14 @@ class PixivDiscoveryApi(private val client: PixivClient) {
     suspend fun mangaWatchlist(next: String? = null): Page<PixivWatchlistSeries> {
         val json = client.getPage("/v1/watchlist/manga", emptyMap(), next)
         return Page(PixivWatchlistSeries.list(json), nextOf(json))
+    }
+
+    suspend fun addToWatchlist(seriesId: Long) {
+        client.postForm("/v1/watchlist/manga/add", mapOf("series_id" to "$seriesId"))
+    }
+
+    suspend fun removeFromWatchlist(seriesId: Long) {
+        client.postForm("/v1/watchlist/manga/delete", mapOf("series_id" to "$seriesId"))
     }
 
     /** The showcase Pixiv offers before sign-in: the one read that takes no token. */

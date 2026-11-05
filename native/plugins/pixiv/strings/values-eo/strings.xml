@@ -29,10 +29,14 @@
     <string name="bookmark_auto_tag">Aŭtomate etikedi legosignojn</string>
     <string name="bookmark_auto_tag_description">Legosignoj, kiujn vi faras sen la redaktilo, ricevas la proprajn etikedojn de la verko, krom popularecaj etikedoj kiel 1000users入り.</string>
     <string name="bookmark_clear_all">Malelekti ĉiujn</string>
+    <string name="bookmark_default_private">Privataj legosignoj defaŭlte</string>
+    <string name="bookmark_default_private_description">Legosignoj, kiujn vi faras sen la redaktilo, estas privataj. En la redaktilo vi ankoraŭ povas publikigi iun ajn.</string>
     <string name="bookmark_edit">Redakti legosignon</string>
     <string name="bookmark_follow_after">Sekvi dum aldono de legosigno</string>
-    <string name="bookmark_follow_after_description">Nova legosigno ankaŭ sekvas la artiston en ĉi tiu aparato, se vi ankoraŭ ne sekvas lin.</string>
+    <string name="bookmark_follow_after_description">Nova legosigno ankaŭ publike sekvas la artiston, se vi ankoraŭ ne sekvas lin.</string>
     <string name="bookmark_followed_author">Vi nun sekvas %1$s</string>
+    <string name="bookmark_private">Privata legosigno</string>
+    <string name="bookmark_private_hint">Nur vi povas vidi ĝin</string>
     <string name="bookmark_save_after">Konservi dum aldono de legosigno</string>
     <string name="bookmark_save_after_description">Nova legosigno ankaŭ konservas ĉiujn paĝojn de la verko.</string>
     <string name="bookmark_select_all">Elekti ĉiujn</string>
@@ -131,12 +135,13 @@
     <string name="folder_r18_description">Metas R-18-verkojn en dosierujon “R-18” ene de la elŝuta dosierujo</string>
     <string name="follow">Sekvi</string>
     <string name="follow_private">Privataj</string>
+    <string name="follow_privately">Sekvi private</string>
+    <string name="follow_privately_hint">Nur vi vidas, ke vi sekvas</string>
     <string name="follow_public">Publikaj</string>
     <string name="follow_restrict_all">Ĉiuj sekvataj kreintoj</string>
     <string name="follow_restrict_device">Kreintoj sekvataj en ĉi tiu aparato</string>
     <string name="follow_restrict_private">Private sekvataj kreintoj</string>
     <string name="follow_restrict_public">Publike sekvataj kreintoj</string>
-    <string name="followed_on_pixiv">Sekvata ĉe Pixiv</string>
     <string name="following">Abonoj</string>
     <plurals name="following_count"><item quantity="one">%2$s abono</item><item quantity="other">%2$s abonoj</item></plurals>
     <string name="follows_here">En ĉi tiu aparato</string>
@@ -208,12 +213,14 @@
     <string name="not_configured">Ensalutu al Pixiv por foliumi sekvadon, rangigon kaj legosignojn</string>
     <string name="novel">Romano</string>
     <string name="novel_author_novels">Vidi ties romanojn</string>
+    <string name="novel_bookmark_private">Legosigni private</string>
     <string name="novel_bookmarks_empty">Ĉi tie aperas romanoj, kiujn vi publike legosignas</string>
     <string name="novel_bookmarks_private_empty">Ĉi tie aperas romanoj, kiujn vi private legosignas</string>
     <string name="novel_chapter_number">N-ro %1$d</string>
     <plurals name="novel_chapters_count"><item quantity="one">%2$s ĉapitro</item><item quantity="other">%2$s ĉapitroj</item></plurals>
     <plurals name="novel_characters"><item quantity="one">%2$s signo</item><item quantity="other">%2$s signoj</item></plurals>
     <string name="novel_export">Eksporti kiel tekston</string>
+    <string name="novel_export_failed">Ne eblis eksporti la romanon</string>
     <string name="novel_export_markup">Kun la marklingvo de Pixiv</string>
     <string name="novel_export_markup_hint">La teksto ĝuste kiel Pixiv konservas ĝin, kun etikedoj kiel [newpage]</string>
     <string name="novel_export_plain">Simpla teksto</string>
@@ -418,7 +425,7 @@
     <string name="series_position">N-ro %1$d el %2$d</string>
     <string name="series_previous">Antaŭa en la serio</string>
     <string name="series_started">Komencita je %1$s</string>
-    <string name="settings_intro">Ĉi tiu privata kromprogramo legas Pixiv kiel galeria aplikaĵo: ilustraĵojn, mangaojn, romanojn, rangotabelojn, viajn legosignojn kaj serĉon. Tuŝu Ensaluti por ensaluti per via Pixiv-konto, aŭ algluu refreŝigan ĵetonon sube. Legosignoj, sekvoj kaj historio restas en ĉi tiu aparato: nenio iam ajn estas sendata al via Pixiv-konto, afiŝata aŭ ŝanĝata tie.</string>
+    <string name="settings_intro">Ĉi tiu privata kromprogramo legas Pixiv kiel galerio: ilustraĵoj, mangaoj, romanoj, rangigoj, viaj legosignoj kaj serĉo. Tuŝu Ensaluti por ensaluti per via Pixiv-konto en la retumilo, aŭ algluu refreŝigan ĵetonon sube. Al via Pixiv-konto iras nur la legosignoj, sekvoj kaj ŝanĝoj de la atentolisto, kiujn vi mem faras. De ĉi tie nenio iam estas afiŝita, komentita aŭ raportita.</string>
     <string name="share_image">Kunhavigi bildon</string>
     <string name="share_image_failed">Ne eblis kunhavigi ĉi tiun bildon</string>
     <string name="share_link">Kunhavigi ligilon</string>
@@ -458,6 +465,8 @@
     <string name="ugoira_play">Ludi la animacion</string>
     <string name="ugoira_save_gif">Konservi kiel GIF</string>
     <string name="ugoira_save_zip">Konservi kadrojn kiel ZIP</string>
+    <string name="ugoira_saved_gif">Animacio konservita kiel GIF</string>
+    <string name="ugoira_saved_zip">Kadroj konservitaj kiel ZIP</string>
     <string name="ugoira_saving">Konservado…</string>
     <string name="ugoira_slow">Kodigado povas daŭri minuton</string>
     <string name="unbookmark">Forigi legosignon</string>
@@ -467,7 +476,9 @@
     <string name="viewing_section">Rigardado</string>
     <string name="walkthrough_sign_in">Ensalutu por malfermi ĉi tiun verkon</string>
     <string name="walkthrough_title">Popularaj ĉe Pixiv</string>
+    <string name="watchlist_add">Aldoni al atentolisto</string>
     <string name="watchlist_empty">Ĉi tie aperas la mangaaj serioj, kiujn vi aldonas al via atentolisto</string>
+    <string name="watchlist_remove">Forigi el atentolisto</string>
     <string name="watchlist_updated">Ĝisdatigita %1$s</string>
     <string name="watchlist_view_latest">Vidi la plej novan</string>
     <plurals name="works_count"><item quantity="one">%2$s verko</item><item quantity="other">%2$s verkoj</item></plurals>
