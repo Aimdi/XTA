@@ -62,9 +62,21 @@ private fun IntentEffect(read: (Intent?) -> String?, onFound: (String) -> Unit) 
     }
 }
 
+/**
+ * Shared text as XTA's SharedTextChannel reads it: not again when the app is
+ * reopened from the recent apps with the share's intent, the clip's text or
+ * URI (as text, never opened) when the share has no EXTRA_TEXT, and nothing
+ * the sender's extras could throw on.
+ */
 private fun sharedText(intent: Intent?): String? {
-    val handed = intent?.takeIf { it.action == Intent.ACTION_SEND } ?: return null
-    return handed.getCharSequenceExtra(Intent.EXTRA_TEXT)?.toString() ?: handed.getStringExtra(Intent.EXTRA_TEXT) ?: ""
+    val handed = intent?.takeIf { it.action == Intent.ACTION_SEND && it.type == "text/plain" } ?: return null
+    if (handed.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY != 0) return null
+    return try {
+        val clip = handed.clipData?.takeIf { it.itemCount > 0 }?.getItemAt(0)
+        SharedText.handed(handed.getCharSequenceExtra(Intent.EXTRA_TEXT), clip?.text, clip?.uri?.toString())
+    } catch (_: RuntimeException) {
+        ""
+    }
 }
 
 private fun viewedLink(intent: Intent?): String? =

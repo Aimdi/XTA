@@ -18,7 +18,8 @@ import com.aimdi.xtanative.ui.speech.VoiceSources
  * it the plugins, kept in the private files' plugins/, offered by the
  * published catalogue or the one a -PpluginCatalogue build names. Where
  * voices download from is this build's: its prerelease's, or the server a
- * -PvoiceServer build names.
+ * -PvoiceServer build names. A watchdog writes down where the main thread
+ * stalls, as XTA's does (MainThreadWatchdog).
  */
 class XtaNativeApp : Application(), SingletonImageLoader.Factory {
     lateinit var graph: AppGraph
@@ -28,6 +29,7 @@ class XtaNativeApp : Application(), SingletonImageLoader.Factory {
 
     override fun onCreate() {
         super.onCreate()
+        MainThreadWatchdog(this).start()
         System.setProperty(VoiceSources.RELEASE_TAG_PROPERTY, BuildConfig.RELEASE_TAG)
         if (BuildConfig.VOICE_SERVER.isNotEmpty()) System.setProperty(VoiceSources.SERVER_PROPERTY, BuildConfig.VOICE_SERVER)
         graph = AppGraph(

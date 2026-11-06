@@ -85,6 +85,24 @@ class DiagnosticsTest {
         assertTrue(text.contains("last checked 2026-11-01T00:00:00Z"))
         assertTrue(text.contains("crash reports kept: 2"))
         assertEquals(XEndpoints.shipped.size, report.endpoints.size)
+        assertFalse(text.contains("local checks:"), "no watchdog, no local checks")
+    }
+
+    @Test
+    fun theWatchdogsRecordShowsItsLatestLinesInTheReport() {
+        val dir = Files.createTempDirectory("stalls").toFile()
+        val file = File(dir, MainThreadStalls.FILE)
+        assertEquals("not watched on this platform", MainThreadStalls.summary(null))
+        assertEquals("no stall recorded", MainThreadStalls.summary(file))
+        file.parentFile.mkdirs()
+        file.writeText((1..70).joinToString("\n") { "line $it" } + "\n\n")
+        val summary = MainThreadStalls.summary(file)
+        assertTrue(summary.startsWith("\n  line 11\n"))
+        assertTrue(summary.endsWith("  line 70"))
+        assertEquals("no stall recorded", MainThreadStalls.describe(" \n\n"))
+        val report = DiagnosticsReport.of("1.0", emptyList(), XEndpoints(), XRateLimits(), Settings(), 0, Instant.EPOCH, mainThreadStalls = "no stall recorded")
+        assertTrue(report.toPlainText().contains("local checks:\n  android main thread: no stall recorded"))
+        dir.deleteRecursively()
     }
 }
 

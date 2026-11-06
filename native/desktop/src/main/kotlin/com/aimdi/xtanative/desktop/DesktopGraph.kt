@@ -20,7 +20,7 @@ internal class DesktopApp(val graph: AppGraph, val plugins: AppPlugins)
  * The app graph on the Linux desktop: its files in ~/.local/share/xta-native,
  * always online, XTA's stand-in for X instead of x.com when
  * XTA_NATIVE_MOCK_X names its address (as CI's desktop check does), and
- * downloads in ~/Downloads/XTA Native.
+ * downloads in XTA in the XDG Pictures, Videos or Downloads folder by type.
  *
  * Plugins are JARs signed by the certificate the build named, kept in the
  * same folder's plugins/. CI's desktop check, which cannot tap, also names a
@@ -36,8 +36,7 @@ internal class DesktopApp(val graph: AppGraph, val plugins: AppPlugins)
  * libmpv, which plays videos and podcasts in the app, opens on a thread of
  * its own at start, as XTA opens it right after its first frame.
  */
-internal fun desktopApp(): DesktopApp {
-    val files = dataFolder()
+internal fun desktopApp(files: File = dataFolder()): DesktopApp {
     val graph = AppGraph(
         files = files,
         connection = flowOf(true),
@@ -73,7 +72,7 @@ private fun ids(name: String): List<String> = env(name)?.split(',')?.map { it.tr
  * xta-native under $XDG_DATA_HOME, ~/.local/share where that is not set. Only
  * its user may open it: the session in it holds X cookies.
  */
-private fun dataFolder(): File {
+internal fun dataFolder(): File {
     val base = System.getenv("XDG_DATA_HOME")?.takeIf { it.isNotBlank() }?.let(::File)
         ?: File(System.getProperty("user.home"), ".local/share")
     return File(base, "xta-native").apply {

@@ -7,6 +7,7 @@ import com.aimdi.xtanative.core.x.model.XVideoVariant
 import com.aimdi.xtanative.store.downloads.DownloadDestination
 import com.aimdi.xtanative.store.downloads.DownloadEntry
 import com.aimdi.xtanative.store.downloads.DownloadStatus
+import com.aimdi.xtanative.store.downloads.SharedDownloadFolder
 import com.aimdi.xtanative.store.settings.DownloadType
 import com.aimdi.xtanative.store.settings.MediaPrefs
 import com.aimdi.xtanative.store.settings.Settings
@@ -102,8 +103,23 @@ class DownloadRulesTest {
         File(home, ".config").mkdirs()
         File(home, ".config/user-dirs.dirs").writeText("# made by xdg-user-dirs-update\nXDG_DESKTOP_DIR=\"\$HOME/Desktop\"\nXDG_DOWNLOAD_DIR=\"\$HOME/Téléchargements\"\n")
         assertEquals(File(home, "Téléchargements"), DesktopFolders.downloads(home, none))
-        assertNull(DesktopFolders.userDirsDownload("XDG_DOWNLOAD_DIR=\"\$HOME/\"", home), "the home folder is no download folder")
-        assertNull(DesktopFolders.userDirsDownload(null, home))
+        assertNull(DesktopFolders.userDirsEntry("XDG_DOWNLOAD_DIR=\"\$HOME/\"", "DOWNLOAD", home), "the home folder is no download folder")
+        assertNull(DesktopFolders.userDirsEntry(null, "DOWNLOAD", home))
+    }
+
+    @Test
+    fun aDownloadSavedWithoutAskingGoesToTheXdgFolderForItsType() {
+        val home = Files.createTempDirectory("home").toFile()
+        val none: (String) -> String? = { null }
+        assertEquals(File(home, "Pictures/XTA"), DesktopFolders.shared(SharedDownloadFolder.PICTURES, home, none))
+        assertEquals(File(home, "Videos/XTA"), DesktopFolders.shared(SharedDownloadFolder.MOVIES, home, none))
+        assertEquals(File(home, "Downloads/XTA"), DesktopFolders.shared(SharedDownloadFolder.DOWNLOADS, home, none))
+        File(home, ".config").mkdirs()
+        File(home, ".config/user-dirs.dirs").writeText("XDG_PICTURES_DIR=\"\$HOME/Bilder\"\nXDG_VIDEOS_DIR=\"\$HOME/Videos\"\nXDG_DOWNLOAD_DIR=\"\$HOME/\"\n")
+        assertEquals(File(home, "Bilder/XTA"), DesktopFolders.shared(SharedDownloadFolder.of("a.jpg"), home, none))
+        assertEquals(File(home, "Videos/XTA"), DesktopFolders.shared(SharedDownloadFolder.of("a.mp4"), home, none))
+        assertEquals(File(home, "Downloads/XTA"), DesktopFolders.shared(SharedDownloadFolder.of("a.mp3"), home, none), "the home folder is no download folder")
+        assertEquals(File("/data/pics/XTA"), DesktopFolders.shared(SharedDownloadFolder.PICTURES, home) { if (it == "XDG_PICTURES_DIR") "/data/pics" else null })
     }
 
     @Test
@@ -123,7 +139,7 @@ class DownloadRulesTest {
         assertEquals(File("/media/usb"), DesktopFolders.localFolder("/media/usb"))
         assertEquals(File("/media/usb"), DesktopFolders.localFolder("file:///media/usb"))
         assertNull(DesktopFolders.localFolder("content://com.android.externalstorage.documents/tree/primary%3ADownload"))
-        assertEquals("~/Downloads/XTA Native", DesktopFolders.shown(File("/home/ann/Downloads/XTA Native"), home))
+        assertEquals("~/Pictures/XTA", DesktopFolders.shown(File("/home/ann/Pictures/XTA"), home))
         assertEquals("/srv/files", DesktopFolders.shown(File("/srv/files"), home))
         assertEquals(File("/tmp/a b.jpg"), DesktopFolders.fileOf(File("/tmp/a b.jpg").toURI().toString()))
         assertNull(DesktopFolders.fileOf("content://media/1"))

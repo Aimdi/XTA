@@ -41,4 +41,13 @@ class SharedTextTest {
         assertEquals(SharedStep.Search("12345"), step("12345", pixiv = false))
         assertEquals(SharedStep.Outside("https://www.pixiv.net/en/artworks/1"), step("https://www.pixiv.net/en/artworks/1", pixiv = true))
     }
+
+    @Test
+    fun aShareIsReadFromItsTextThenItsClipCutTo64KCharacters() {
+        assertEquals("text", SharedText.handed("text", "clip", "content://a"))
+        assertEquals("clip", SharedText.handed(null, "clip", "content://a"))
+        assertEquals("content://a", SharedText.handed(null, null, "content://a"))
+        assertEquals("", SharedText.handed(null, null, null))
+        assertEquals(SharedText.MAX_CHARS, SharedText.handed("a".repeat(100_000), null, null).length)
+    }
 }

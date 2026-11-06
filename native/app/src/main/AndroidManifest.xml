@@ -33,10 +33,12 @@
         android:theme="@style/Theme.XtaNative"
         android:usesCleartextTraffic="${cleartext}">
         <!-- A video full screen turns the screen to its shape and may shrink into picture-in-picture, as in XTA:
-             the activity takes those changes itself, so what plays goes on through them. -->
+             the activity takes those changes itself, so what plays goes on through them. So it does a new text
+             size, display size, dark mode or keyboard, which the screens follow as they draw (MainActivity).
+             A new language still makes the activity again: the screens' strings are looked up anew only then. -->
         <activity
             android:name=".MainActivity"
-            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|fontScale|screenLayout|density|uiMode"
             android:exported="true"
             android:supportsPictureInPicture="true"
             android:windowSoftInputMode="adjustResize">

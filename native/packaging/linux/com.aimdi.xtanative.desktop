@@ -9,3 +9,4 @@ Terminal=false
 Categories=Network;News;
 Keywords=X;Twitter;Reader;
 StartupWMClass=com-aimdi-xtanative-desktop-MainKt
+StartupNotify=true

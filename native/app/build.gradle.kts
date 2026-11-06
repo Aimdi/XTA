@@ -43,6 +43,10 @@ android {
     defaultConfig {
         // Beside XTA, never over it: another id, so trying this changes nothing in XTA.
         applicationId = "com.aimdi.xtanative"
+        // XTA runs from Android 7 (24); this stays at 8 (26): the code throughout, the plugins'
+        // included, uses java.time, java.util.Base64 and java.nio.file, which Android has from 8,
+        // and desugaring them for 7 would rename java.time in the app but not in the plugin APKs
+        // that call it (plugins/android.gradle), so no plugin would link.
         minSdk = 26
         targetSdk = 35
         versionCode = (System.getenv("NATIVE_VERSION_CODE") ?: "1").toInt()

@@ -44,6 +44,7 @@ import com.aimdi.xtanative.ui.settings.CrashReports
 import com.aimdi.xtanative.ui.settings.OkHttpCrashReports
 import com.aimdi.xtanative.ui.settings.DeviceBackup
 import com.aimdi.xtanative.ui.settings.KeptSections
+import com.aimdi.xtanative.ui.settings.MainThreadStalls
 import com.aimdi.xtanative.ui.settings.PluginBackups
 import com.aimdi.xtanative.ui.settings.SettingsStart
 import com.aimdi.xtanative.ui.settings.StoredWebDavBaselines
@@ -140,6 +141,8 @@ class AppGraph(
 
     /** Crash reports, written down on the device only while the reader has them on, and filed on GitHub with their token. */
     val crashReports = CrashReports(File(files, "crash-reports"))
+    /** Where the Android app's main-thread watchdog writes down stalls; Diagnostics reads it. */
+    val mainThreadStallFile = File(files, MainThreadStalls.FILE)
     val crashReporter = CrashReporter(OkHttpCrashReports(), { settings.load() }, crashReports, version)
 
     private val lastCrashShown = MutableStateFlow<CrashReport?>(null)
