@@ -141,7 +141,10 @@ fun GroupFeedScreen(groupId: String, actions: PostActions, onBack: (() -> Unit)?
             }
         }
         if (layer == GroupLayer.CUSTOM) CustomSettingsScreen(state, vm.settingsActions, onBack = { layer = null })
-        if (layer == GroupLayer.LOADED_SEARCH) LoadedFeedSearchScreen(state.run.shown.threads, actions, onBack = { layer = null })
+        if (layer == GroupLayer.LOADED_SEARCH) {
+            val plugin by vm.plugin.collectAsStateWithLifecycle()
+            LoadedFeedSearchScreen(state.run.shown.threads, actions, onBack = { layer = null }, posts = plugin.shown)
+        }
     }
     GroupSheets(layer, state, vm, onLayer = { layer = it }, onSwitch = { id -> if (id != shownId) shownId = id })
 }

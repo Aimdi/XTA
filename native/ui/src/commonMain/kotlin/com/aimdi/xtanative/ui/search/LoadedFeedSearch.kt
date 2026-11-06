@@ -31,6 +31,9 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.ui.common.BackHandling
+import com.aimdi.xtanative.ui.feed.PluginPostRow
+import com.aimdi.xtanative.ui.feed.SourcedPost
+import com.aimdi.xtanative.ui.feed.rememberRunningPlugins
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.discover_loaded_hint
@@ -50,17 +53,20 @@ fun LoadedSearchButton(onClick: () -> Unit) {
 
 /**
  * XTA's search of a feed's loaded posts: typing filters [threads], what the
- * feed has already shown, by text, links and authors. Nothing is asked of X,
- * and scrolling loads nothing more. A feed opens it over itself from its
- * bar ([LoadedSearchButton]) with the rows it holds; Back closes it.
+ * feed has already shown, and the plugins' [posts] among them, by text, links
+ * and authors. Nothing is asked of X, and scrolling loads nothing more. A
+ * feed opens it over itself from its bar ([LoadedSearchButton]) with the
+ * rows it holds; Back closes it.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoadedFeedSearchScreen(threads: List<XThread>, actions: PostActions, onBack: () -> Unit) {
+fun LoadedFeedSearchScreen(threads: List<XThread>, actions: PostActions, onBack: () -> Unit, posts: List<SourcedPost> = emptyList()) {
     BackHandling(enabled = true, onBack = onBack)
-    val index = remember(threads) { LoadedFeed.Index(threads) }
+    val index = remember(threads, posts) { LoadedFeed.Index(threads, posts) }
     var query by rememberSaveable { mutableStateOf("") }
     val matches = remember(index, query) { index.matching(query) }
+    val matchingPosts = remember(index, query) { index.matchingPosts(query) }
+    val plugins = rememberRunningPlugins()
     val focus = remember { FocusRequester() }
     LaunchedEffect(Unit) { focus.requestFocus() }
     Scaffold(
@@ -85,11 +91,12 @@ fun LoadedFeedSearchScreen(threads: List<XThread>, actions: PostActions, onBack:
                 supportingText = { Text(stringResource(Res.string.discover_loaded_hint)) },
                 modifier = Modifier.fillMaxWidth().padding(12.dp).focusRequester(focus),
             )
-            if (matches.isEmpty()) {
+            if (matches.isEmpty() && matchingPosts.isEmpty()) {
                 EmptyNote(stringResource(Res.string.discover_no_results))
             } else {
                 LazyColumn(Modifier.fillMaxSize()) {
                     items(matches, key = { it.id }, contentType = { "thread" }) { thread -> ThreadRows(thread, actions) }
+                    items(matchingPosts, key = { it.key }, contentType = { "plugin" }) { post -> PluginPostRow(post, plugins[post.source]) }
                 }
             }
         }

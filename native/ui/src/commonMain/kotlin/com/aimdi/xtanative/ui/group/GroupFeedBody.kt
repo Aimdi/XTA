@@ -36,16 +36,21 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.currentStateAsState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.core.feed.CatchUpMessage
@@ -171,7 +176,7 @@ fun GroupFeedBody(
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { inline?.resume() }
 
     val buckets = remember(run.shown.threads, plugin.shown) { FeedMix.place(run.shown.threads, plugin.shown) }
-    PullToRefreshBox(isRefreshing = run.refreshing, onRefresh = { vm.refresh() }, modifier = Modifier.fillMaxSize()) {
+    PullToRefreshBox(isRefreshing = run.refreshing, onRefresh = { vm.refresh() }, modifier = Modifier.fillMaxSize().readVisibility(vm::visible)) {
         val problem = run.problem
         val threads = run.shown.threads
         when {
@@ -380,6 +385,26 @@ private fun UnrelatedPill(vm: GroupFeedViewModel) {
                 }) { Text(stringResource(Res.string.groups_more_info)) }
             },
         )
+    }
+}
+
+/**
+ * Tells [onChange] whether what it modifies can be seen, as XTA's
+ * ReadVisibility: some of it inside the window (a deck column or a page of
+ * the bar scrolled away is not), in an app that is not in the background,
+ * and still on screen at all.
+ */
+@Composable
+private fun Modifier.readVisibility(onChange: (Boolean) -> Unit): Modifier {
+    val lifecycle by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
+    var inView by remember { mutableStateOf(true) }
+    val seen = inView && lifecycle.isAtLeast(Lifecycle.State.STARTED)
+    val latest by rememberUpdatedState(onChange)
+    LaunchedEffect(seen) { latest(seen) }
+    DisposableEffect(Unit) { onDispose { latest(false) } }
+    return onGloballyPositioned { coordinates ->
+        val bounds = coordinates.boundsInWindow()
+        inView = bounds.width > 0f && bounds.height > 0f
     }
 }
 

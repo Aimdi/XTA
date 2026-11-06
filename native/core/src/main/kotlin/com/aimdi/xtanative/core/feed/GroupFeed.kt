@@ -8,6 +8,7 @@ import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.core.x.model.XTimelinePage
 import com.aimdi.xtanative.core.x.signing.SigningUnavailableException
 import java.io.IOException
+import java.io.InterruptedIOException
 import java.time.Instant
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.cancellation.CancellationException
@@ -44,6 +45,15 @@ data class GroupFeedPlan(
 
     val popular: Boolean get() = shaping.sort == FeedSort.POPULAR
 
+    /**
+     * What decides which posts the feed reads and in what order: its searches
+     * (the members and the reply and repost choices), its order and its rules,
+     * as XTA's chunk hashes and rules key. Only a change of it reads the feed
+     * again; the rest (the language filter, zen mode, the profiles' hidden
+     * reposts and replies, the post caps) applies from the next load on.
+     */
+    val readKey: String get() = (chunks.map(::queryOf) + shaping.sort.name + shaping.rules.toString()).joinToString("\n")
+
     /** Whether this feed keeps a read position, with the reader's [readingPosition] switch. */
     fun tracksReadPosition(readingPosition: Boolean, mediaOnly: Boolean = false): Boolean =
         Unread.tracks(popular, readingPosition, catchUp, mediaOnly)
@@ -54,8 +64,12 @@ interface FeedReads {
     /** A chunk's search; without [includeReplies] it keeps no reply, as XTA's searchTweets. */
     suspend fun search(query: String, cursor: String?, includeReplies: Boolean): XTimelinePage
 
-    suspend fun userPosts(userId: String): XTimelinePage
+    /** An account's own timeline, with its replies when [includeReplies], as XTA's fallback asks for it. */
+    suspend fun userPosts(userId: String, includeReplies: Boolean): XTimelinePage
 }
+
+/** A chunk's search gave no answer in its time ([GroupFeed]'s searchMillis): its accounts' own posts are asked for instead. */
+class SearchTimeoutException(millis: Long) : InterruptedIOException("The search gave no answer within ${millis}ms")
 
 /**
  * A group's feed (or the Following feed), as XTA's group feed reads it: the
@@ -65,16 +79,23 @@ interface FeedReads {
  * so it never takes a place on a page, then ordered, folded and capped per load.
  *
  * Unlike XTA, the chunks are merged in time order ([MergedTimeline]), so
- * loading more never puts a newer post under an older one.
+ * loading more never puts a newer post under an older one. A search takes at
+ * most [searchMillis], its fallback at most [fallbackMillis], as XTA's.
  */
 class GroupFeed(
-    val plan: GroupFeedPlan,
+    plan: GroupFeedPlan,
     private val reads: FeedReads,
     concurrency: Int = ChunkConcurrency.MIN,
     pageSize: Int = 20,
     private val fallbackMillis: Long = 12_000,
     private val clock: () -> Instant = Instant::now,
+    private val searchMillis: Long = 20_000,
 ) : FeedTimeline {
+    /** What the feed does with what it reads: the plan it was made with, or the one [replan] gave it since. */
+    @Volatile
+    var plan: GroupFeedPlan = plan
+        private set
+
     private val chunks = plan.chunks
     private val unrelated = AtomicBoolean(false)
     private val mutex = Mutex()
@@ -92,10 +113,54 @@ class GroupFeed(
 
     override val progress: StateFlow<FeedProgress> get() = timeline.progress
 
-    /** A first page starts the unrelated-posts notice again; later loads keep it up until then. */
-    override suspend fun first(): FeedPage = mutex.withLock {
+    /**
+     * Takes [next] for what is read from now on, without reading anything
+     * again: refused (false) when it reads otherwise ([GroupFeedPlan.readKey]).
+     */
+    fun replan(next: GroupFeedPlan): Boolean {
+        if (next.readKey != plan.readKey) return false
+        plan = next
+        return true
+    }
+
+    /**
+     * A first page starts the unrelated-posts notice again; later loads keep
+     * it up until then. [onArrived] gets the posts as the chunks answer.
+     */
+    override suspend fun first(onArrived: ((FeedPage) -> Unit)?): FeedPage = mutex.withLock {
         unrelated.set(false)
-        shaped(timeline.first())
+        shaped(timeline.first(onArrived?.let { arrived -> { page -> arrived(shaped(page)) } }))
+    }
+
+    /**
+     * The first page of a feed opened again from [saved], as XTA's first page
+     * shows each chunk's stored posts under its fresh ones: every chunk reads
+     * on from where it was left, the posts written since are read down to the
+     * newest one kept (at most [GapFill.MAX_FILLS] pages more a chunk), and the
+     * kept ones follow under them, read again under the rules as they are now.
+     * [FeedPage.gap] says the posts written since were not all read. Null when
+     * [saved] cannot be read on from: no state, nothing kept, or another
+     * feed's ([SavedFeed.key]).
+     */
+    suspend fun reopen(saved: SavedFeed): FeedPage? {
+        val state = saved.state ?: return null
+        if (saved.threads.isEmpty() || saved.key != plan.readKey) return null
+        return mutex.withLock {
+            if (!timeline.restore(state, saved.threads.map { it.id })) return@withLock null
+            unrelated.set(false)
+            val newer = timeline.newer(saved.threads.maxOf(FeedOrder::timeOf), 1 + GapFill.MAX_FILLS)
+            val now = clock()
+            val fresh = plan.shaping.page(newer.threads, now)
+            val kept = plan.shaping.again(saved.threads, now)
+            FeedPage(
+                threads = FeedOrder.dedupe(fresh.threads + kept.threads),
+                failures = newer.failures,
+                hasMore = timeline.state().hasMore,
+                foldReasons = kept.foldReasons + fresh.foldReasons,
+                unrelated = unrelated.get(),
+                gap = !newer.bridged,
+            )
+        }
     }
 
     override suspend fun more(): FeedPage = mutex.withLock { shaped(timeline.more()) }
@@ -124,14 +189,15 @@ class GroupFeed(
     }
 
     /**
-     * A chunk's search; when its first page fails, its accounts' own posts as
-     * one last page, as XTA does: two at a time, within [fallbackMillis].
+     * A chunk's search, within [searchMillis]; when it fails, on any page, its
+     * accounts' own posts as the chunk's last page, as XTA's
+     * fetchChunkWithFallback: two at a time, within [fallbackMillis].
      */
     private suspend fun readChunk(chunk: List<FeedMember>, query: String, cursor: String?): XTimelinePage {
         val page = try {
-            reads.search(query, cursor, plan.includeReplies)
+            withTimeoutOrNull(searchMillis) { reads.search(query, cursor, plan.includeReplies) } ?: throw SearchTimeoutException(searchMillis)
         } catch (error: Throwable) {
-            if (error is CancellationException || cursor != null || !fallsBack(error)) throw error
+            if (error is CancellationException || !fallsBack(error)) throw error
             val own = ownPosts(chunk.filterNot(FeedMember::search))
             if (own.isEmpty()) throw error
             return XTimelinePage(own, bottomCursor = null, topCursor = null)
@@ -148,7 +214,7 @@ class GroupFeed(
             coroutineScope {
                 accounts.map { member ->
                     async {
-                        gate.withPermit { runCatching { reads.userPosts(member.id) }.getOrNull() }?.let { page -> synchronized(pages) { pages += page } }
+                        gate.withPermit { runCatching { reads.userPosts(member.id, plan.includeReplies) }.getOrNull() }?.let { page -> synchronized(pages) { pages += page } }
                     }
                 }.awaitAll()
             }
@@ -162,10 +228,11 @@ class GroupFeed(
 
         /**
          * Whether profiles are worth asking for after a failed search: not when
-         * there is no connection, no account, or no way to sign requests.
+         * there is no connection, no account, or no way to sign requests. A
+         * search that timed out is no lost connection: profiles may answer.
          */
         fun fallsBack(error: Throwable): Boolean =
-            error !is IOException && error !is XNoAccountException && error !is SigningUnavailableException
+            (error !is IOException || error is InterruptedIOException) && error !is XNoAccountException && error !is SigningUnavailableException
     }
 }
 

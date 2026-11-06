@@ -132,15 +132,28 @@ data class FeedShaping(
 
     /** One load's threads, already kept, as the feed shows them: ordered, folded where asked, capped. */
     fun page(threads: List<XThread>, now: Instant): Shaped {
-        val active = MutedKeywords.active(rules.mutedKeywords, now)
         val ordered = if (sort == FeedSort.POPULAR) FeedOrder.byLikes(FeedOrder.newestFirst(threads)) else FeedOrder.newestFirst(threads)
         val capped = PostCaps.perAuthor(ordered, postCaps).let { if (zen) PostCaps.zen(it) else it }
-        val folds = capped.mapNotNull { thread ->
+        return Shaped(capped, folds(capped, now))
+    }
+
+    /**
+     * Threads earlier loads shaped, read again under the rules as they are
+     * now: what the rules hide since goes and the folds are worked out again;
+     * the order and each load's caps stay as they were.
+     */
+    fun again(threads: List<XThread>, now: Instant): Shaped {
+        val kept = FeedOrder.dedupe(threads).filter { keeps(it, now) }
+        return Shaped(kept, folds(kept, now))
+    }
+
+    private fun folds(threads: List<XThread>, now: Instant): Map<String, String> {
+        val active = MutedKeywords.active(rules.mutedKeywords, now)
+        return threads.mapNotNull { thread ->
             // A language's reason takes the place of a keyword's, as in XTA.
             val reason = (language.verdict(thread, facts) as? Verdict.Fold ?: rules.verdict(thread, active, facts) as? Verdict.Fold)?.reason
             reason?.let { thread.id to it }
         }.toMap()
-        return Shaped(capped, folds)
     }
 
     /** XTA's whole pass over one load: deduplicated, hidden, then [page]. */
