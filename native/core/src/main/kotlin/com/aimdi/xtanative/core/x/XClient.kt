@@ -328,6 +328,11 @@ class XClient(
 
     // ---- search ----
 
+    /** The search as plugins built against plugin API 5 and before link to it (Stocks), kept for them; new code calls the one below. */
+    @Deprecated("Kept for plugins already published", level = DeprecationLevel.HIDDEN)
+    suspend fun search(query: String, cursor: String? = null, count: Int = 20, product: String = "Latest"): XTimelinePage =
+        search(query, cursor, count, product, includeReplies = true)
+
     /**
      * Posts for a search: [product] is `Latest`, `Top` or `Media` (a thread per
      * post of the media grid). As XTA's searchTweets, the posts of one
