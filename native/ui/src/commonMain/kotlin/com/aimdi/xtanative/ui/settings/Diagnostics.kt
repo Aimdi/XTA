@@ -26,7 +26,9 @@ data class EndpointDiagnostics(val name: String, val host: String, val queryId: 
 /**
  * Why the app is or is not talking to X (diagnostics_report.dart): the
  * accounts, the endpoints and their query ids, the endpoint list, the crash
- * reports kept, and the reads asked of X lately ([operations], one line each).
+ * reports kept, what Android's main-thread watchdog wrote down
+ * ([mainThreadStalls], [MainThreadStalls.summary]; null leaves the local
+ * checks out), and the reads asked of X lately ([operations], one line each).
  */
 data class DiagnosticsReport(
     val appVersion: String,
@@ -37,6 +39,7 @@ data class DiagnosticsReport(
     val registryFetchedAt: Instant?,
     val crashReports: Int,
     val operations: List<String> = emptyList(),
+    val mainThreadStalls: String? = null,
 ) {
     val overriddenCount: Int get() = endpoints.count { it.overridden }
 
@@ -64,6 +67,11 @@ data class DiagnosticsReport(
         endpoints.forEach { add("  ${it.name.padEnd(22)} ${it.host.padEnd(12)} ${it.queryId}${if (it.overridden) " (overridden)" else ""}") }
         add("")
         add("crash reports kept: $crashReports")
+        if (mainThreadStalls != null) {
+            add("")
+            add("local checks:")
+            add("  android main thread: $mainThreadStalls")
+        }
         add("")
         add("recent reads (local timing, no request content):")
         addAll(operations)
@@ -80,6 +88,7 @@ data class DiagnosticsReport(
             now: Instant,
             health: XAccountHealthStore = XAccountHealthStore.inMemory(),
             operations: List<String> = emptyList(),
+            mainThreadStalls: String? = null,
         ): DiagnosticsReport {
             val paths = XEndpoints.shipped.keys.associateWith { endpoints.url(it, emptyMap()).encodedPath }
             return DiagnosticsReport(
@@ -96,6 +105,7 @@ data class DiagnosticsReport(
                 registryFetchedAt = XtaTime.parse(settings[DataPrefs.endpointRegistryFetchedAt]),
                 crashReports = crashReports,
                 operations = operations,
+                mainThreadStalls = mainThreadStalls,
             )
         }
 

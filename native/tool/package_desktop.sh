@@ -6,8 +6,10 @@
 #                                                       the voice engine tool/voice_engine.py
 #                                                       put in the build and the video engine's
 #                                                       shim the build made, which plays through
-#                                                       the system's libmpv) and, under share/,
-#                                                       its menu entry and icon
+#                                                       the system's libmpv), install.sh, which
+#                                                       adds it to the user's menu, and, under
+#                                                       share/, its menu entry, icon and
+#                                                       AppStream data
 #   <out>/PKGBUILD                                       the Arch package of that tarball
 # With --makepkg (on Arch, or in an archlinux container) it also builds
 #   <out>/xta-native-<version>-1-x86_64.pkg.tar.zst
@@ -40,8 +42,10 @@ trap 'rm -rf "$stage"' EXIT
 mkdir -p "$stage/$name" "$out"
 cp -a "$app/bin" "$app/lib" "$stage/$name/"
 install -m644 "$root/LICENSE" "$stage/$name/"
+install -m755 "$here/packaging/linux/install.sh" "$stage/$name/"
 install -Dm644 "$here/packaging/linux/com.aimdi.xtanative.desktop" "$stage/$name/share/applications/com.aimdi.xtanative.desktop"
 install -Dm644 "$here/packaging/linux/com.aimdi.xtanative.svg" "$stage/$name/share/icons/hicolor/scalable/apps/com.aimdi.xtanative.svg"
+install -Dm644 "$here/packaging/linux/com.aimdi.xtanative.metainfo.xml" "$stage/$name/share/metainfo/com.aimdi.xtanative.metainfo.xml"
 
 # Same bytes for the same app: fixed order, owners and times.
 epoch=${SOURCE_DATE_EPOCH:-$(git -C "$root" log -1 --format=%ct)}

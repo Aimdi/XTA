@@ -32,6 +32,17 @@ sealed interface SharedStep {
  * a post points to, else a search.
  */
 object SharedText {
+    /** The most of a share that is read: 64 K characters, as XTA's SharedTextChannel. */
+    const val MAX_CHARS = 65_536
+
+    /**
+     * The text a share hands over (SharedTextChannel.kt): its EXTRA_TEXT, else
+     * the first clip's text, else that clip's URI as text (never opened), cut
+     * to [MAX_CHARS]; empty when it carries none.
+     */
+    fun handed(extra: CharSequence?, clipText: CharSequence?, clipUri: String?): String =
+        (extra ?: clipText ?: clipUri)?.let { it.subSequence(0, minOf(it.length, MAX_CHARS)).toString() }.orEmpty()
+
     /**
      * [openOnNetwork] opens a link on a network's screen when one reads it and
      * answers whether it did; [resolve] follows an X short link

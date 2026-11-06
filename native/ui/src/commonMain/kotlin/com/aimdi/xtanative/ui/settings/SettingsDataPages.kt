@@ -514,7 +514,11 @@ internal fun DiagnosticsSettings(title: String, vm: SettingsViewModel, onBack: (
     val locale = currentLocale()
     var revision by remember { mutableIntStateOf(0) }
     val crashes by produceState(emptyList<CrashReport>(), revision) { value = withContext(Dispatchers.IO) { graph.crashReports.list() } }
-    val report = remember(session.accounts, settings, crashes, revision) {
+    // Only the Android app runs the watchdog, as only XTA's Android app does.
+    val stalls by produceState<String?>(null, revision) {
+        value = withContext(Dispatchers.IO) { MainThreadStalls.summary(graph.mainThreadStallFile.takeUnless { isDesktop }) }
+    }
+    val report = remember(session.accounts, settings, crashes, stalls, revision) {
         DiagnosticsReport.of(
             graph.version,
             session.accounts,
@@ -525,6 +529,7 @@ internal fun DiagnosticsSettings(title: String, vm: SettingsViewModel, onBack: (
             Instant.now(),
             health = graph.accountHealth,
             operations = graph.client.reads.snapshot(),
+            mainThreadStalls = stalls,
         )
     }
     var readsShown by rememberSaveable { mutableStateOf(false) }

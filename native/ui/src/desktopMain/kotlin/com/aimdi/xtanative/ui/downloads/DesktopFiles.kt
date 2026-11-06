@@ -2,6 +2,7 @@ package com.aimdi.xtanative.ui.downloads
 
 import com.aimdi.xtanative.store.downloads.DownloadCancellation
 import com.aimdi.xtanative.store.downloads.DownloadEntry
+import com.aimdi.xtanative.store.downloads.SharedDownloadFolder
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.downloads_choose_location
 import java.awt.Desktop
@@ -14,22 +15,22 @@ import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.getString
 
 /**
- * The desktop's files: a download goes into `XTA Native` in the Downloads
- * folder (XDG's when set), into the folder picked for downloads when it is
- * one of this computer's, or where the save dialog says; files open in the
- * desktop's own apps.
+ * The desktop's files, as XTA's desktop_download_directory.dart saves them: a
+ * download saved without asking goes into `XTA` in the XDG folder for its
+ * type (Pictures, Videos, else Downloads), one for a picked folder into that
+ * folder when it is one of this computer's, and any other where the save
+ * dialog says; files open in the desktop's own apps.
  */
 class DesktopFiles(
     private val home: File = File(System.getProperty("user.home")),
     private val env: (String) -> String? = System::getenv,
 ) : PlatformFiles {
-    private val root: File get() = File(DesktopFolders.downloads(home, env), DesktopFolders.APP_FOLDER)
-
     override suspend fun save(entry: DownloadEntry, file: File, cancellation: DownloadCancellation): String? {
         val tree = entry.treeUri
+        val shared = DesktopFolders.shared(SharedDownloadFolder.of(entry.fileName), home, env)
         val folder = when {
-            tree != null -> DesktopFolders.localFolder(tree) ?: root
-            entry.background -> root
+            tree != null -> DesktopFolders.localFolder(tree) ?: shared
+            entry.background -> shared
             else -> return ask(entry.fileName)?.let { target -> withContext(Dispatchers.IO) { write(file, target, cancellation) } }
         }
         return withContext(Dispatchers.IO) {
@@ -64,9 +65,9 @@ class DesktopFiles(
     private suspend fun ask(name: String): File? {
         val title = getString(Res.string.downloads_choose_location)
         return withContext(Dispatchers.IO) {
-            val start = root.apply { mkdirs() }
+            val start = DesktopFolders.downloads(home, env)
             val dialog = FileDialog(null as Frame?, title, FileDialog.SAVE)
-            dialog.directory = start.path
+            if (start.isDirectory) dialog.directory = start.path
             dialog.file = name
             dialog.isVisible = true
             val chosen = dialog.file?.let { File(dialog.directory ?: start.path, it) }
