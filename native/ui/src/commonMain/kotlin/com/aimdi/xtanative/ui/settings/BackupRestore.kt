@@ -3,11 +3,15 @@ package com.aimdi.xtanative.ui.settings
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.backup.FollowedAccount
 import com.aimdi.xtanative.core.feed.FeedKeys
-import com.aimdi.xtanative.core.feed.FeedPlace
+import com.aimdi.xtanative.core.feed.ReadPosition
 import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.core.session.SavedSearch
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.core.x.XAccount
+import com.aimdi.xtanative.core.x.XAccountHealth
+import com.aimdi.xtanative.core.x.model.XPost
+import com.aimdi.xtanative.core.x.model.XThread
+import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.store.antenna.Antenna
 import com.aimdi.xtanative.store.antenna.AntennaScope
 import com.aimdi.xtanative.store.backup.AccountRow
@@ -28,6 +32,7 @@ import com.aimdi.xtanative.store.saved.LocalPost
 import com.aimdi.xtanative.store.saved.SavedLibrary
 import com.aimdi.xtanative.store.saved.XtaRows
 import com.aimdi.xtanative.store.settings.HomePrefs
+import com.aimdi.xtanative.store.settings.PluginStorePrefs
 import com.aimdi.xtanative.store.settings.ReadingPrefs
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -72,7 +77,7 @@ object BackupRestore {
      */
     fun session(session: Session, document: BackupDocument, accounts: List<NetworkAccount> = NetworkMembers.accounts(document)): Session {
         val restored = listOf(::withAccounts, ::withFollows, ::withSearches, ::withGroups).fold(session) { current, step -> step(current, document) }
-        return withHomeGroups(withMembers(restored, document, accounts), document)
+        return withCatchUp(withHomeGroups(withMembers(restored, document, accounts), document), document)
     }
 
     /**
@@ -96,11 +101,20 @@ object BackupRestore {
         return session.copy(accounts = session.accounts.filterNot { it.id in incoming } + incoming.values)
     }
 
-    /** An X session from its row; one without a cookie cannot read anything and is left out, as XtaBackup leaves it. */
+    /**
+     * An X session from its row. One without a cookie (a bearer or OAuth
+     * sign-in) is kept, as XTA imports it: both send its headers as they are,
+     * XTA Native's client signing it as no session. Only a row with no
+     * header at all, which could sign nothing in, is left out.
+     */
     fun accountOf(row: AccountRow): XAccount? {
-        val headers = row.headers
-        if (headers.keys.none { it.equals("cookie", ignoreCase = true) }) return null
-        return XAccount(row.id, row.screenName, headers)
+        val headers = row.headers.takeIf { it.isNotEmpty() } ?: return null
+        return row.id.takeIf { it.isNotEmpty() }?.let { XAccount(it, row.screenName, headers) }
+    }
+
+    /** Each account's sign-in health the backup carries, by account id, as XTA's accounts table keeps it; null when it carries no accounts. */
+    fun accountHealth(document: BackupDocument): Map<String, XAccountHealth>? = document.accounts?.filter { it.id.isNotEmpty() }?.associate { row ->
+        row.id to XAccountHealth(row.consecutiveNotFound.coerceAtLeast(0), XtaTime.parse(row.lastNotFoundAt)?.toEpochMilli())
     }
 
     private fun withFollows(session: Session, document: BackupDocument): Session {
@@ -135,11 +149,36 @@ object BackupRestore {
                 emoji = row.emoji?.takeIf { it.isNotBlank() },
                 pinned = row.pinned,
                 nsfw = row.nsfw,
+                color = row.color,
+                icon = row.icon,
+                markStyle = row.markStyle,
+                createdAt = millis(row.createdAt),
+                position = known[row.id]?.position,
             )
         }
         val grouped = session.copy(groups = session.groups.filterNot { it.id in incoming } + groups)
         return rows.fold(grouped) { current, row -> current.nestedIn(row.id, row.parentId?.takeIf { it != row.id }) ?: current }
     }
+
+    /**
+     * [session]'s groups given the look and creation time [rows] carry, the
+     * rows an older build kept aside on restoring them: only groups that do
+     * not know when they were made, which no build since leaves so.
+     */
+    fun withKeptLooks(session: Session, rows: List<GroupRow>): Session {
+        val byId = rows.associateBy { it.id }
+        return session.copy(groups = session.groups.map { group ->
+            val row = byId[group.id]?.takeIf { group.createdAt == 0L } ?: return@map group
+            group.copy(color = row.color, icon = row.icon, markStyle = row.markStyle, createdAt = millis(row.createdAt))
+        })
+    }
+
+    /**
+     * A thread standing for [position] in a feed's read marks, which keep the
+     * last read thread: its id, and a first post carrying the time.
+     */
+    fun markedThread(position: ReadPosition): XThread =
+        XThread(position.threadId, listOf(XPost(id = position.threadId, author = XUser("", "", ""), createdAt = position.createdAt, text = "")))
 
     /** The backup's members added to their groups, its accounts' as XTA Native's groups name them; its searches as they are. */
     private fun withMembers(session: Session, document: BackupDocument, accounts: List<NetworkAccount>): Session {
@@ -172,7 +211,42 @@ object BackupRestore {
         )
     }
 
-    /** The saved posts and folders with the backup's; posts new to the device are saved in the file's order, newest first. */
+    /**
+     * Each feed's catch-up mode, which XTA keeps in its preferences
+     * (`feed.catch_up_mode.<group id>`, `-1` for Following) and XTA Native
+     * in the feed's settings. A feed the file names no key for keeps its own.
+     */
+    private fun withCatchUp(session: Session, document: BackupDocument): Session {
+        val settings = document.settings ?: return session
+        val groupIds = session.groups.mapTo(HashSet()) { it.id }
+        return settings.entries.fold(session) { current, (key, value) ->
+            val id = key.removePrefix(CATCH_UP_PREFIX).takeIf { key.startsWith(CATCH_UP_PREFIX) } ?: return@fold current
+            val feed = catchUpFeed(id)?.takeIf { it == FeedKeys.FOLLOWING || it in groupIds } ?: return@fold current
+            val on = (value as? JsonPrimitive)?.takeUnless { it.isString }?.content == "true"
+            current.withSettings(feed, current.settingsOf(feed).copy(catchUp = on))
+        }
+    }
+
+    /** XTA's preference key prefix for a feed's catch-up mode. */
+    val CATCH_UP_PREFIX: String = FeedKeys.catchUpPreference("")
+
+    /** The feed a catch-up preference's id names: XTA's `-1` (or `following`) is Following. */
+    private fun catchUpFeed(id: String): String? = when {
+        id.isEmpty() -> null
+        id == FeedKeys.LEGACY_FOLLOWING || id == FeedKeys.FOLLOWING -> FeedKeys.FOLLOWING
+        else -> id
+    }
+
+    /** Whether the plugin store offers private plugins, under XTA's `plugin_store.show_private`; null when the file does not say. */
+    fun showPrivate(document: BackupDocument): Boolean? =
+        (document.settings?.get(PluginStorePrefs.showPrivate.key) as? JsonPrimitive)?.takeUnless { it.isString }?.content?.toBooleanStrictOrNull()
+
+    /**
+     * The saved posts and folders with the backup's; posts new to the device
+     * are saved in the file's order, newest first. XTA's rows carry no time
+     * they were saved (its table's `saved_at` stays out of the backup, which
+     * it writes newest first), so the file's order is all there is to keep.
+     */
     fun library(library: SavedLibrary, document: BackupDocument, now: Long): SavedLibrary? {
         if (document.savedPosts == null && document.savedFolders == null) return null
         val known = library.posts.associateBy { it.id }
@@ -186,6 +260,7 @@ object BackupRestore {
         )
     }
 
+    /** The likes with the backup's, as [library] takes saved posts: in the file's order, newest first, XTA's rows carrying no time. */
     fun likes(likes: List<LikedPost>, document: BackupDocument, now: Long): List<LikedPost>? {
         val rows = document.likedPosts ?: return null
         val known = likes.associateBy { it.id }
@@ -225,17 +300,15 @@ object BackupRestore {
     }
 
     /**
-     * Where each feed was left, by the group whose feed it is (null for
-     * Following): only feeds this device has. XTA's `-1` is Following.
+     * The last post read in each feed, by XTA's feed key (Following, For you
+     * or a group's id): only feeds this device has. XTA's `-1` is Following.
+     * The post's time goes with it: it is what tells the posts read from the
+     * new ones once the post itself is gone (XTA's isChainSeen).
      */
-    fun readPlaces(document: BackupDocument, groupIds: Set<String>): Map<String?, FeedPlace> =
+    fun readPositions(document: BackupDocument, groupIds: Set<String>): Map<String, ReadPosition> =
         document.readPositions.orEmpty().filter { it.chainId.isNotEmpty() }.mapNotNull { row ->
             val key = FeedKeys.readPositionKey(row.groupId)
-            when {
-                key == FeedKeys.FOLLOWING -> null to FeedPlace(row.chainId, 0)
-                key in groupIds -> key to FeedPlace(row.chainId, 0)
-                else -> null
-            }
+            if (key == FeedKeys.FOLLOWING || key == FeedKeys.FOR_YOU || key in groupIds) key to ReadPosition(row.chainId, XtaTime.parse(row.chainCreatedAt)) else null
         }.distinctBy { it.first }.toMap()
 
     /** The article places in the backup's settings; null when it carries none. */

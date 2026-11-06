@@ -2,7 +2,7 @@ package com.aimdi.xtanative.ui.settings
 
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.backup.FollowedAccount
-import com.aimdi.xtanative.core.feed.FeedPlace
+import com.aimdi.xtanative.core.feed.ReadPosition
 import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.core.session.SavedSearch
 import com.aimdi.xtanative.core.session.Session
@@ -46,6 +46,7 @@ import com.aimdi.xtanative.store.settings.ReadingPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.ThemeBackground
 import com.aimdi.xtanative.store.settings.ThemePrefs
+import com.aimdi.xtanative.ui.group.ReadMarks
 import java.io.File
 import java.nio.file.Files
 import java.time.Instant
@@ -138,8 +139,8 @@ class BackupRestoreTest {
     @Test
     fun rowsReplaceTheOnesWithTheirKeyAndEveryOtherStays() {
         val restored = BackupRestore.session(session, backup())
-        assertEquals(listOf("c2", "c1"), restored.accounts.map { it.id })
-        assertEquals("reader", restored.accounts.last().screenName)
+        assertEquals(listOf("c2", "c1", "nocookie"), restored.accounts.map { it.id }, "one without a cookie is kept, as XTA keeps it")
+        assertEquals("reader", restored.accounts.first { it.id == "c1" }.screenName)
         assertEquals(listOf("9", "1", "2"), restored.following.map { it.id })
         assertFalse(restored.following.last().inFeed)
         assertEquals(mapOf("1" to 3), restored.postCaps)
@@ -220,8 +221,8 @@ class BackupRestoreTest {
 
     @Test
     fun readingPositionsGoToTheFeedsThisDeviceHas() {
-        val places = BackupRestore.readPlaces(backup(), setOf("g1"))
-        assertEquals(mapOf(null to FeedPlace("c0", 0), "g1" to FeedPlace("c1", 0)), places)
+        val positions = BackupRestore.readPositions(backup(), setOf("g1"))
+        assertEquals(mapOf("following" to ReadPosition("c0", null), "g1" to ReadPosition("c1", null)), positions)
         assertEquals(ArticleReadPoint(0.5, 3, 0.0, false, 7), BackupRestore.journal(backup())!!["art"])
     }
 }
@@ -361,7 +362,7 @@ class DeviceBackupTest {
         assertFalse(settings.isSet(com.aimdi.xtanative.store.settings.AiPrefs.apiKey))
         val session = graph.sessions.state.value!!
         assertFalse(session.includeReplies)
-        assertEquals(listOf("c1"), session.accounts.map { it.id })
+        assertEquals(listOf("c1", "nocookie"), session.accounts.map { it.id })
         assertEquals(listOf("1", "2"), session.following.map { it.id })
         assertEquals(listOf("t1", "t2"), graph.saved.library().posts.map { it.id })
         assertEquals("t3", graph.likes.likes().single().id)
@@ -371,8 +372,8 @@ class DeviceBackupTest {
         assertEquals(listOf("read"), graph.archiveNotes.of("a1").tags.toList())
         assertEquals(0.5, graph.readingJournal.point("art")!!.fraction)
         assertEquals("v1", graph.kept.get().redditLocalVotes!!.single().id)
-        assertEquals(FeedPlace("c1", 0), graph.feedCache("g1").readPlace())
-        assertEquals(FeedPlace("c0", 0), graph.feedCache(null).readPlace())
+        assertEquals(ReadPosition("c1", null), ReadMarks(graph.feedCache(ReadMarks.key("g1"))).position())
+        assertEquals(ReadPosition("c0", null), ReadMarks(graph.feedCache(ReadMarks.key("following"))).position())
         assertEquals("met at a conference", graph.profileNotes.of("1")?.note)
         assertTrue(graph.profileFilters.filters().repostsHidden("1"))
         assertEquals(setOf("other"), graph.profileFilters.filters().hiddenReplyHandles)
@@ -476,7 +477,7 @@ class DeviceBackupTest {
     fun readingPositionsAreRestoredOnlyWhenAskedFor(): Unit = runBlocking {
         val graph = AppGraph(dir, flowOf(true), "test")
         DeviceBackup(graph).restore(backup(), includeReadPositions = false)
-        assertNull(graph.feedCache("g1").readPlace())
+        assertNull(ReadMarks(graph.feedCache(ReadMarks.key("g1"))).position())
     }
 
     /** XTA's rows as a plugin keeps them: the text of their list. */

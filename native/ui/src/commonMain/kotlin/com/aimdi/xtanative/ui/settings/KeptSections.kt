@@ -10,8 +10,9 @@ import kotlinx.coroutines.sync.withLock
  * The parts of a restored XTA backup no store of XTA Native holds yet: each
  * network's follows, likes, votes and galleries as XTA wrote them, and the
  * sections of plugins that are not running, each until the plugin that keeps
- * it runs and takes it (see [PluginBackups]); and what a group's row carries
- * beyond the session's groups (its icon, colour, mark and when it was made).
+ * it runs and takes it (see [PluginBackups]); and the groups' rows as
+ * restored, which give a group an older build restored without its look its
+ * icon, colour, mark and creation time ([DeviceBackup.adoptKeptGroups]).
  * They are kept in `backup/kept.json`, so the next export carries them again
  * and nothing a reader restored is lost.
  */
