@@ -68,6 +68,15 @@ class XtaBackupTest {
     }
 
     @Test
+    fun anAccountSignedInWithoutACookieIsKeptAsXtaKeepsIt() {
+        val backup = XtaBackup.parse("""{"accounts": [{"id": "oauth", "auth_header": "{\"authorization\":\"Bearer B\"}"}, {"id": "empty", "auth_header": "{}"}]}""")!!
+        val account = backup.accounts.single()
+        assertEquals("oauth", account.id)
+        assertNull(account.cookie)
+        assertEquals("Bearer B", account.headers["authorization"])
+    }
+
+    @Test
     fun aFileThatIsNotABackupIsRefused() {
         assertNull(XtaBackup.parse("not json"))
         assertNull(XtaBackup.parse("""{"hello": "world"}"""))

@@ -75,6 +75,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -140,7 +141,7 @@ class AppPlugins(
     private val store = StoreDir(File(files, "store"))
 
     /** What the app keeps of the plugins itself: whether private plugins are offered. */
-    val prefs = PluginPrefs(store.file("plugins/prefs.json"))
+    val prefs: PluginPrefs = graph.pluginPrefs
 
     val manager = PluginManager(
         host = platform,
@@ -240,6 +241,8 @@ class AppPlugins(
         scope.launch {
             prefs.load()
             manager.showPrivate(prefs.state.value.showPrivate)
+            // A restored backup may change it while the app runs.
+            launch { prefs.state.map { it.showPrivate }.distinctUntilChanged().drop(1).collect { manager.showPrivate(it) } }
             manager.installed()
             manager.state
                 .map { state -> state.installed.mapNotNull { it.installed } }

@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.ui.settings
 
-import com.aimdi.xtanative.core.feed.FeedPlace
+import com.aimdi.xtanative.core.feed.FeedKeys
+import com.aimdi.xtanative.core.feed.ReadPosition
 import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.core.x.XClient
@@ -14,6 +15,7 @@ import com.aimdi.xtanative.store.backup.XtaTime
 import com.aimdi.xtanative.store.settings.AccountPrefs
 import com.aimdi.xtanative.store.settings.DataPrefs
 import com.aimdi.xtanative.store.settings.SettingsStore
+import com.aimdi.xtanative.ui.group.ReadMarks
 import java.time.Duration
 import java.time.Instant
 
@@ -23,9 +25,9 @@ class DeviceBackup(private val graph: AppGraph, private val clock: () -> Instant
     suspend fun read(): DeviceContent {
         graph.sessions.load()
         val session = graph.sessions.state.value ?: Session()
-        val places = buildMap<String, FeedPlace> {
-            (listOf<String?>(null) + session.groups.map { it.id }).forEach { group ->
-                graph.feedCache(group).readPlace()?.let { put(BackupExport.readPlaceKey(group), it) }
+        val positions = buildMap<String, ReadPosition> {
+            (listOf(FeedKeys.FOLLOWING, FeedKeys.FOR_YOU) + session.groups.map { it.id }).forEach { key ->
+                marksOf(key).position()?.let { put(key, it) }
             }
         }
         val (reposts, replies) = graph.profileFilters.content()
@@ -37,7 +39,9 @@ class DeviceBackup(private val graph: AppGraph, private val clock: () -> Instant
             localPosts = graph.localPosts.content(),
             annotations = graph.archiveNotes.content(),
             antennas = graph.antennas.load(),
-            readPlaces = places,
+            readPositions = positions,
+            accountHealth = session.accounts.associate { it.id to graph.accountHealth.read(it.id) },
+            showPrivate = graph.pluginPrefs.also { it.load() }.state.value.showPrivate,
             journal = graph.readingJournal.content(),
             appearance = graph.readingAppearance.get(),
             profileNotes = graph.profileNotes.content(),
@@ -59,8 +63,11 @@ class DeviceBackup(private val graph: AppGraph, private val clock: () -> Instant
      * ([networkAccounts]), the saved posts, likes, notes, article notes,
      * antennas, profile notes and filters and reading places, each network's
      * rows and each plugin's sections into the running plugin that keeps
-     * them, and what no store here holds yet into [KeptSections]. Reading
-     * positions only when [includeReadPositions].
+     * them, and what no store here holds yet into [KeptSections]. The
+     * accounts' health goes to the client's store, the plugin store's private
+     * plugins to its own. Reading positions, Following's, For you's and the
+     * groups', only when [includeReadPositions], into the read marks the
+     * feeds keep ([ReadMarks]).
      */
     suspend fun restore(document: BackupDocument, includeReadPositions: Boolean) {
         val restoring = document.forRestore(includeReadPositions)
@@ -70,6 +77,8 @@ class DeviceBackup(private val graph: AppGraph, private val clock: () -> Instant
         graph.sessions.load()
         val accounts = networkAccounts(restoring)
         graph.sessions.update { FeedSwitches.mirrored(BackupRestore.session(it, restoring, accounts), settings) }
+        BackupRestore.accountHealth(restoring)?.forEach { (id, health) -> graph.accountHealth.write(id, health) }
+        BackupRestore.showPrivate(restoring)?.let { show -> graph.pluginPrefs.update { it.copy(showPrivate = show) } }
         BackupRestore.library(graph.saved.library(), restoring, now)?.let { graph.saved.replace(it) }
         BackupRestore.likes(graph.likes.likes(), restoring, now)?.let { graph.likes.replace(it) }
         BackupRestore.localPosts(graph.localPosts.notes(), restoring, now)?.let { graph.localPosts.replace(it) }
@@ -83,8 +92,11 @@ class DeviceBackup(private val graph: AppGraph, private val clock: () -> Instant
         // The feeds shown last may hold accounts no longer followed.
         if (restoring.subscriptions != null || restoring.groups != null || restoring.groupMembers != null) graph.clearFeedCaches()
         val groups = graph.sessions.state.value?.groups.orEmpty().mapTo(HashSet()) { it.id }
-        BackupRestore.readPlaces(restoring, groups).forEach { (group, place) -> graph.feedCache(group).writePlace(place) }
+        BackupRestore.readPositions(restoring, groups).forEach { (key, position) -> marksOf(key).record(BackupRestore.markedThread(position), now) }
     }
+
+    /** The read marks of the feed [key] names, where the feeds keep them. */
+    private fun marksOf(key: String) = ReadMarks(graph.feedCache(ReadMarks.key(key)))
 
     /**
      * The networks' accounts a restore of [restoring] knows, as XTA's groups
@@ -99,6 +111,14 @@ class DeviceBackup(private val graph: AppGraph, private val clock: () -> Instant
 
     /** The profile notes and filters an older build kept aside on restoring a backup, put into their stores once. */
     suspend fun adoptKeptProfiles() = graph.kept.adoptProfiles(::restoreProfiles)
+
+    /** The look and creation time an older build kept aside for restored groups, given to the groups that lack them. */
+    suspend fun adoptKeptGroups() {
+        val rows = graph.kept.get().groups?.takeIf { it.isNotEmpty() } ?: return
+        graph.sessions.load()
+        val session = graph.sessions.state.value ?: return
+        if (BackupRestore.withKeptLooks(session, rows) != session) graph.sessions.update { BackupRestore.withKeptLooks(it, rows) }
+    }
 
     private suspend fun restoreProfiles(document: BackupDocument) {
         BackupRestore.profileNotes(graph.profileNotes.content(), document)?.let { graph.profileNotes.replace(it) }

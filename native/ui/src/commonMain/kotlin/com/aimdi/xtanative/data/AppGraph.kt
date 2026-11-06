@@ -9,6 +9,7 @@ import com.aimdi.xtanative.core.x.XSigners
 import com.aimdi.xtanative.core.x.http.OkHttpXHttp
 import com.aimdi.xtanative.core.x.signing.FileSignerStore
 import com.aimdi.xtanative.core.x.signing.SigningBootstrap
+import com.aimdi.xtanative.data.plugins.PluginPrefs
 import com.aimdi.xtanative.store.StoreDir
 import com.aimdi.xtanative.store.antenna.AntennaStore
 import com.aimdi.xtanative.store.downloads.DownloadQueue
@@ -130,6 +131,9 @@ class AppGraph(
     /** What a restored XTA backup carried that no store here holds yet, kept for the next export. */
     val kept = KeptSections(store)
 
+    /** What the app keeps of the plugin store itself, which a backup carries under XTA's preference. */
+    val pluginPrefs = PluginPrefs(store.file("plugins/prefs.json"))
+
     /** The running plugins' sections of the full backup, which the screens attach as the plugins run. */
     val pluginBackups = PluginBackups(kept, sessions)
     val webDavBaselines = StoredWebDavBaselines(store)
@@ -227,7 +231,10 @@ class AppGraph(
             // XTA's launch steps on the settings, once; then the feeds' switches follow the settings.
             scope.launch { SettingsStart.keepSessionInStep(settings, sessions) }
             scope.launch { SettingsStart.keepAccountsOffInStep(settings) { accountsOff = it } }
-            scope.launch { DeviceBackup(this@AppGraph).adoptKeptProfiles() }
+            scope.launch {
+                DeviceBackup(this@AppGraph).adoptKeptProfiles()
+                DeviceBackup(this@AppGraph).adoptKeptGroups()
+            }
             if (mockX == null) {
                 scope.launch { SettingsStart.refreshEndpoints(settings, client) }
                 scope.launch { crashReporter.sendKept() }

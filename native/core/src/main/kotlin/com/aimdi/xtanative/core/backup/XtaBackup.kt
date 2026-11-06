@@ -99,7 +99,8 @@ data class XtaBackup(val accounts: List<XAccount>, val following: List<FollowedA
             val headers = (stored.string?.let { J.parse(it) } ?: stored).let { object_ ->
                 object_.keys.mapNotNull { key -> object_[key].string?.let { key to it } }.toMap()
             }
-            if (headers.keys.none { it.equals("cookie", ignoreCase = true) }) return null
+            // One without a cookie (a bearer or OAuth sign-in) is kept, as XTA keeps it; one with no header at all signs nothing in.
+            if (headers.isEmpty()) return null
             return XAccount(id, row["screen_name"].string, headers)
         }
 
