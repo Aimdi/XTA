@@ -55,14 +55,15 @@ fun XtaTheme(content: @Composable () -> Unit) {
     val scheme = remember(tokens) { XLook.scheme(tokens) }
     val density = LocalDensity.current
     val textScale = settings[AccessibilityPrefs.textScale].toFloat()
-    // The language the app was started in: as in XTA, a new one takes effect at the next start.
-    val language = remember(stored != null) { SettingsChoices.localeOf(settings[GeneralPrefs.locale]) }
-    ProvideAppLanguage(language) {
-        CompositionLocalProvider(
-            LocalXLook provides scheme,
-            LocalReducedMotion provides settings[AccessibilityPrefs.disableAnimations],
-            LocalDensity provides Density(density.density, density.fontScale * textScale),
-        ) {
+    // As in XTA, a new language takes effect at once.
+    val language = SettingsChoices.localeOf(settings[GeneralPrefs.locale])
+    CompositionLocalProvider(
+        LocalXLook provides scheme,
+        LocalReducedMotion provides settings[AccessibilityPrefs.disableAnimations],
+        LocalDensity provides Density(density.density, density.fontScale * textScale),
+    ) {
+        // Inside the reader's text size: the desktop marks the density with the language.
+        ProvideAppLanguage(language) {
             MaterialTheme(colorScheme = colorSchemeOf(scheme), typography = Type, content = content)
         }
     }

@@ -8,6 +8,7 @@ import com.aimdi.xtanative.networks.bluesky.BlueskyListInfo
 import com.aimdi.xtanative.networks.bluesky.BlueskyLocal
 import com.aimdi.xtanative.networks.bluesky.BlueskyPost
 import com.aimdi.xtanative.networks.bluesky.BlueskyProfile
+import com.aimdi.xtanative.networks.bluesky.BlueskyReadPoint
 import com.aimdi.xtanative.networks.bluesky.BlueskyReading
 import com.aimdi.xtanative.networks.bluesky.BlueskyReadingPrefs
 import com.aimdi.xtanative.networks.bluesky.BlueskySearchRules
@@ -154,6 +155,19 @@ internal class BlueskyPreferences(private val settings: PluginSettings, private 
     val reading: StateFlow<BlueskyReading> = read(BlueskyPrefs.readerPlaces, BlueskyReadingPrefs::parse)
 
     val searches: StateFlow<List<String>> = read(BlueskyPrefs.searchHistory) { it }
+
+    /** Settings › Posts' Remember reading position, which keeps where Following was left. */
+    val keepPlace: StateFlow<Boolean> = settings.state.map { it?.get(PostsPrefs.rememberReadingPosition) ?: PostsPrefs.rememberReadingPosition.default }
+        .distinctUntilChanged().stateIn(scope, started, value(PostsPrefs.rememberReadingPosition))
+
+    /** Whether the settings have been read yet. */
+    val loaded: Boolean get() = settings.state.value != null
+
+    /** Where Following was left on [source], when it was kept. */
+    fun place(source: String): BlueskyReadPoint? = BlueskyReadingPrefs.point(value(BlueskyPrefs.readerPlaces), source)
+
+    suspend fun place(source: String, point: BlueskyReadPoint?) =
+        settings.update { it.with(BlueskyPrefs.readerPlaces, BlueskyReadingPrefs.write(it[BlueskyPrefs.readerPlaces], source, point)) }
 
     /** Zen or calm mode is on: posts show their glyphs without counts, as XTA's Bluesky card does then. */
     val hideCounts: StateFlow<Boolean> = settings.state.map { it != null && (it[PostsPrefs.zenMode] || it[PostsPrefs.calmMode]) }

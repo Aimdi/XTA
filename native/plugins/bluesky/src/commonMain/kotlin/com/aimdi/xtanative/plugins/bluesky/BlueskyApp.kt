@@ -49,6 +49,7 @@ internal class BlueskyApp(val host: PluginHost) {
     val following = FollowingTimeline(this, scope)
     val feeds = BlueskyFeeds(this, scope)
     val lists = BlueskyLists(this, scope)
+    val place = BlueskyPlace(prefs, scope)
     private val shelf = BlueskyShelf()
 
     /** The reply order of every thread, and the quotes' order, for the rest of the session (XTA's ConversationSortStore). */

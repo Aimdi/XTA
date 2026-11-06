@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.ui.common
 
 import androidx.compose.runtime.Composable
+import com.aimdi.xtanative.ui.settings.LocalLanguage
 import java.time.Instant
 import java.time.ZoneId
 import java.time.chrono.IsoChronology
@@ -9,8 +10,12 @@ import java.time.format.DateTimeFormatterBuilder
 import java.time.format.FormatStyle
 import java.util.Locale
 
+/** The JVM's default, which the reader's language sets; read again when that changes. */
 @Composable
-internal actual fun currentLocale(): Locale = Locale.getDefault()
+internal actual fun currentLocale(): Locale {
+    LocalLanguage.current
+    return Locale.getDefault()
+}
 
 /**
  * Java 17, which the app ships with, has no date skeletons: the locale's own

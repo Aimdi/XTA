@@ -36,6 +36,18 @@ internal data class VideoSource(
             return VideoSource(url, loop = gif || prefs[MediaPrefs.loop], muted = gif || VideoMute.muted(prefs[MediaPrefs.mute]), gif = gif)
         }
 
+        /**
+         * A network's video offering [qualities] (highest first; [url] its
+         * own file where it offers none) as Settings › Media plays it: at the
+         * video quality's pick among them, with the quality menu where there
+         * are several. Null with nothing to play.
+         */
+        fun of(url: String?, qualities: List<VideoQuality>, gif: Boolean, settings: Settings?): VideoSource? {
+            val prefs = settings ?: Settings()
+            val picked = VideoRules.defaultUrl(qualities, url, prefs[MediaPrefs.videoQuality]) ?: return null
+            return of(picked, gif, settings).copy(qualities = qualities.takeIf { it.size > 1 }.orEmpty())
+        }
+
         /** The silent looping preview at [url] a plugin's tile plays in a feed. */
         fun looping(url: String) = VideoSource(url, loop = true, muted = true, gif = true)
     }

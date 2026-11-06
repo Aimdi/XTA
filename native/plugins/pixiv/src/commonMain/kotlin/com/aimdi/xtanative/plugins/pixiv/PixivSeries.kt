@@ -118,17 +118,18 @@ private fun IllustSeriesHeader(series: PixivIllustSeries, onWatched: (Boolean) -
         )
         Text(counts.joinToString(" · "), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         if (series.caption.isNotBlank()) SelectionContainer { Text(series.caption.trim(), style = MaterialTheme.typography.bodyMedium) }
-        WatchlistButton(series.watchlistAdded, { watch -> if (watch) runtime.discovery.addToWatchlist(series.id) else runtime.discovery.removeFromWatchlist(series.id) }, onWatched)
+        WatchlistButton(series.watchlistAdded, novels = false, { watch -> if (watch) runtime.discovery.addToWatchlist(series.id) else runtime.discovery.removeFromWatchlist(series.id) }, onWatched)
     }
 }
 
 /**
  * Add to watchlist or Remove from watchlist on Pixiv, a ring while the change
  * is on its way (pixiv_series_screen.dart's PixivWatchlistButton); [onChanged]
- * once it landed, the reason at the foot when it fails.
+ * once it landed, when the watchlist of [novels] or of illustrations reads
+ * itself again too, the reason at the foot when it fails.
  */
 @Composable
-private fun WatchlistButton(added: Boolean, write: suspend (watch: Boolean) -> Unit, onChanged: (Boolean) -> Unit) {
+private fun WatchlistButton(added: Boolean, novels: Boolean, write: suspend (watch: Boolean) -> Unit, onChanged: (Boolean) -> Unit) {
     val runtime = LocalPixiv.current
     val language = currentLanguage()
     var busy by remember { mutableStateOf(false) }
@@ -140,6 +141,7 @@ private fun WatchlistButton(added: Boolean, write: suspend (watch: Boolean) -> U
                 try {
                     write(watch)
                     onChanged(watch)
+                    runtime.watchlistChanged(novels)
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {
@@ -240,7 +242,7 @@ private fun NovelSeriesHeader(series: PixivNovelSeries, first: PixivNovel?, late
                 Spacer(Modifier.width(8.dp))
                 Text(pluginString(Strings.watchlist_view_latest))
             }
-            WatchlistButton(series.watchlistAdded, { watch -> if (watch) runtime.novels.addToWatchlist(series.id) else runtime.novels.removeFromWatchlist(series.id) }, onWatched)
+            WatchlistButton(series.watchlistAdded, novels = true, { watch -> if (watch) runtime.novels.addToWatchlist(series.id) else runtime.novels.removeFromWatchlist(series.id) }, onWatched)
         }
     }
 }

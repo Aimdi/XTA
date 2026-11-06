@@ -91,6 +91,15 @@ internal class PixivRuntime(val host: PluginHost) {
         said.tryEmit(message)
     }
 
+    private val watched = MutableSharedFlow<Boolean>(extraBufferCapacity = 4, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+
+    /** A series added to or taken off the watchlist on its page: true for a novel series. Home's watchlist reads itself again, as XTA's does. */
+    val watchlistChanges: SharedFlow<Boolean> = watched.asSharedFlow()
+
+    fun watchlistChanged(novels: Boolean) {
+        watched.tryEmit(novels)
+    }
+
     /** Reads what every screen needs before it draws: the settings and the bookmarks kept here. */
     suspend fun ready() {
         settings.load()

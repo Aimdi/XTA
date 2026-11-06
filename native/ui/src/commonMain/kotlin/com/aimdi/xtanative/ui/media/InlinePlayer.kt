@@ -7,10 +7,10 @@ import androidx.compose.ui.Modifier
 /**
  * One player for a whole feed, which its tiles take turns at: an X video
  * plays in its tile under XTA's controls ([TileVideo]), a GIF loops there
- * ([TileGif]), and a plugin's tile loops a silent preview in it ([Video]).
+ * ([TileGif]), and a network's tile plays as an X video does.
  */
 interface InlinePlayer {
-    /** [url] looping silently in its tile while Autoplay videos is on, over the tile's poster until the first frame. */
+    /** [url] looping silently in its tile while Autoplay videos is on and media loads by itself. */
     @Composable
     fun Video(url: String, modifier: Modifier)
 

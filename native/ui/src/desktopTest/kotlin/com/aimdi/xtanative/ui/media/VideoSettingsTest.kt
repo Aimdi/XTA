@@ -56,6 +56,20 @@ class VideoSettingsTest {
     }
 
     @Test
+    fun aNetworksQualitiesStartAtTheVideoQualitysPick() {
+        val qualities = listOf(VideoQuality("https://cdn/1080.mp4", "1080p"), VideoQuality("https://cdn/720.mp4", "720p"), VideoQuality("https://cdn/360.mp4", "360p"))
+        val large = VideoSource.of("https://cdn/own.mp4", qualities, gif = false, Settings().with(MediaPrefs.videoQuality, MediaQuality.LARGE))!!
+        assertEquals("https://cdn/1080.mp4", large.url)
+        assertEquals(qualities, large.qualities)
+        assertEquals("https://cdn/360.mp4", VideoSource.of("https://cdn/own.mp4", qualities, gif = false, Settings().with(MediaPrefs.videoQuality, MediaQuality.THUMB))!!.url)
+        val own = VideoSource.of("https://cdn/own.mp4", emptyList(), gif = false, Settings().with(MediaPrefs.loop, true))!!
+        assertEquals("https://cdn/own.mp4", own.url)
+        assertTrue(own.loop && own.qualities.isEmpty())
+        assertTrue(VideoSource.of("https://cdn/own.mp4", qualities.take(1), gif = false, null)!!.qualities.isEmpty())
+        assertNull(VideoSource.of(null, emptyList(), gif = false, null))
+    }
+
+    @Test
     fun aGifLoopsSilentlyWhateverTheSettings() {
         val source = VideoSource.of(gif, Settings().with(MediaPrefs.loop, false).with(MediaPrefs.mute, false))!!
         assertTrue(source.loop && source.muted && source.gif)

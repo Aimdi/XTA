@@ -85,9 +85,21 @@ import com.aimdi.xtanative.ui.generated.resources.reader_download
 import com.aimdi.xtanative.ui.downloads.PluginDownloads
 import com.aimdi.xtanative.ui.generated.resources.reader_link_copied
 import com.aimdi.xtanative.ui.generated.resources.reader_link_share
-import com.aimdi.xtanative.ui.media.LocalInlinePlayer
+import com.aimdi.xtanative.store.settings.MediaPrefs
+import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.ShowMediaTile
+import com.aimdi.xtanative.ui.common.mediaShown
+import com.aimdi.xtanative.ui.generated.resources.reader_media
+import com.aimdi.xtanative.ui.media.MediaIcons
 import com.aimdi.xtanative.ui.media.ReaderIcons
+import com.aimdi.xtanative.ui.media.SourceVideoPage
+import com.aimdi.xtanative.ui.media.TileGif
+import com.aimdi.xtanative.ui.media.TileVideo
 import com.aimdi.xtanative.ui.media.VideoQuality
+import com.aimdi.xtanative.ui.media.VideoRules
+import com.aimdi.xtanative.ui.media.VideoSource
+import com.aimdi.xtanative.ui.media.rememberVideoPlayers
 import com.aimdi.xtanative.ui.post.PlayBadge
 import com.aimdi.xtanative.ui.post.PostIcons
 import kotlinx.coroutines.launch
@@ -104,8 +116,10 @@ val LocalMediaSave = staticCompositionLocalOf<((MediaItem) -> Unit)?> { null }
 
 /**
  * Photos and videos laid out as the app lays out X's: one at its shape, two
- * side by side, three, or four in a square. With [playing], the first video
- * or GIF plays in its tile, muted; with [hidden], the pictures are blurred.
+ * side by side, three, or four in a square. Videos play in their tiles as X's
+ * do, under Settings › Media (with [playing], the first plays by itself where
+ * Autoplay videos says), GIFs loop, and while media loads manually a video
+ * waits behind "Tap to show Media"; with [hidden], the pictures are blurred.
  * A described one carries "ALT", and a long press shows its description, or
  * saves a photo where the screen saves them ([LocalMediaSave]), as XTA's
  * tiles (plugin_post_media.dart).
@@ -158,16 +172,21 @@ fun MediaTiles(items: List<MediaItem>, onOpen: (Int) -> Unit, modifier: Modifier
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun MediaTile(item: MediaItem, playing: Boolean, hidden: Boolean, modifier: Modifier, onClick: () -> Unit, onHold: (() -> Unit)?, onDescribe: (() -> Unit)?) {
+    val moving = item.kind != MediaItem.Kind.PHOTO
+    var revealed by rememberSaveable(item.tileUrl) { mutableStateOf(false) }
+    // A video and its poster wait for a tap while media loads manually, as XTA's PluginVideoGate holds them back.
+    if (!mediaShown(item.tileUrl.takeIf { moving }, revealed) { revealed = true }) {
+        ShowMediaTile(stringResource(Res.string.reader_media), MediaIcons.ImageOutlined, onShow = { if (hidden) onClick() else revealed = true }, modifier = modifier)
+        return
+    }
+    val poster = rememberPicture(item.tileUrl)
     Box(modifier.background(MaterialTheme.colorScheme.surfaceVariant).combinedClickable(onClick = onClick, onLongClick = onHold)) {
         AsyncImage(
-            model = rememberPicture(item.tileUrl),
+            model = poster,
             contentDescription = item.alt,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize().let { if (hidden) it.blur(24.dp) else it },
         )
-        val player = LocalInlinePlayer.current
-        val playable = item.inlineVideoUrl ?: item.videoUrl
-        if (playing && player != null && playable != null) player.Video(playable, Modifier.fillMaxSize())
         when (item.kind) {
             MediaItem.Kind.PHOTO -> Unit
             MediaItem.Kind.VIDEO -> {
@@ -176,8 +195,29 @@ private fun MediaTile(item: MediaItem, playing: Boolean, hidden: Boolean, modifi
             }
             MediaItem.Kind.GIF -> TileLabel("GIF", Modifier.align(Alignment.BottomStart))
         }
+        if (moving && !hidden) TileClip(item, poster, playing, Modifier.matchParentSize())
         // XTA's badge sits at the start; a video's own label holds that corner.
         onDescribe?.let { AltBadge(it, Modifier.align(if (item.kind == MediaItem.Kind.PHOTO) Alignment.BottomStart else Alignment.BottomEnd)) }
+    }
+}
+
+/**
+ * A video playing in its tile as the app's X videos do (XTA's
+ * PluginPostVideo in TweetVideo): with XTA's controls, Autoplay, Mute, Loop
+ * and the player's settings; a GIF loops silently. Where nothing plays in
+ * place it draws nothing, and the tile's tap opens the viewer.
+ */
+@Composable
+private fun TileClip(item: MediaItem, poster: Any, playing: Boolean, modifier: Modifier) {
+    val url = item.inlineVideoUrl ?: item.videoUrl ?: return
+    val graph = LocalGraph.current
+    if (item.kind == MediaItem.Kind.GIF) {
+        val source = remember(url) { VideoSource.of(url, true, graph.settings.state.value) }
+        return TileGif(source, poster, playing, modifier)
+    }
+    val save = LocalMediaSave.current
+    TileVideo({ VideoSource.of(url, false, it) }, item.alt, item.aspectRatio, poster, playing, modifier) {
+        save?.takeIf { PluginDownloads.url(item) != null }?.let { saves -> { saves(item) } }
     }
 }
 
@@ -303,13 +343,30 @@ private fun PagerBar(items: List<MediaItem>, pager: PagerState, onDownload: ((Me
     describing?.let { AltTextDialog(it) { describing = null } }
 }
 
-/** A video page playing the quality chosen in its menu, the item's own file until one is. */
+/**
+ * A video page in the app's player as its X videos play (XTA's TweetVideo):
+ * at the quality Settings › Media picks among [qualities], the others in the
+ * controls' menu, with Mute, Loop and the player's settings. Where the
+ * platform has no player, the item's own file or the quality chosen in a
+ * menu of its own, played outside the app ([ItemVideoOutside]).
+ */
 @Composable
 private fun QualityVideoPage(item: MediaItem, qualities: List<VideoQuality>, active: Boolean) {
-    var chosen by rememberSaveable(item.videoUrl) { mutableStateOf(item.videoUrl) }
+    val graph = LocalGraph.current
+    val players = rememberVideoPlayers()
+    if (players != null) {
+        val source = remember(item, qualities) { VideoSource.of(item.videoUrl, qualities, item.kind == MediaItem.Kind.GIF, graph.settings.state.value) }
+        val poster = rememberPicture(item.imageUrl)
+        return SourceVideoPage(source, item.aspectRatio, active, players, onPlaying = {}, onDownload = null) {
+            AsyncImage(model = poster, contentDescription = item.alt, contentScale = ContentScale.Fit, modifier = Modifier.fillMaxSize())
+        }
+    }
+    var chosen by rememberSaveable(item.videoUrl) {
+        mutableStateOf(VideoRules.defaultUrl(qualities, item.videoUrl, (graph.settings.state.value ?: Settings())[MediaPrefs.videoQuality]))
+    }
     val url = playedUrl(item, qualities, chosen)
     Box(Modifier.fillMaxSize()) {
-        key(url) { ItemVideoPage(item.copy(videoUrl = url), active) }
+        key(url) { ItemVideoOutside(item.copy(videoUrl = url)) }
         if (qualities.size > 1) {
             QualityMenu(qualities, url, { chosen = it }, Modifier.align(Alignment.TopEnd).statusBarsPadding().padding(top = 52.dp, end = 8.dp))
         }
@@ -401,6 +458,6 @@ fun ZoomableImage(
     )
 }
 
-/** A video or GIF in the viewer, playing while it is the page shown; each platform plays it its own way. */
+/** A video or GIF in the viewer where the platform has no player of its own: its poster, and on the desktop a click that plays it outside the app. */
 @Composable
-internal expect fun ItemVideoPage(item: MediaItem, active: Boolean)
+internal expect fun ItemVideoOutside(item: MediaItem)

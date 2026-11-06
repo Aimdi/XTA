@@ -58,4 +58,40 @@ class BlueskyReadingTest {
         val lists = """[{"uri":"at://did:plc:a/app.bsky.graph.list/l","name":"Friends","itemCount":2,"description":"","avatarUrl":null,"creatorHandle":null}]"""
         assertEquals(BlueskySnapshot.lists(lists), BlueskySnapshot.lists(BlueskySnapshot.listsJson(BlueskySnapshot.lists(lists))))
     }
+
+    @Test
+    fun followingsPlaceIsKeptForItsAppViewAsXtaKeepsIt() {
+        val source = "https://public.api.bsky.app"
+        val posts = (1..3).map { bluePost("p$it") }
+        val written = BlueskyReadingPrefs.write(xta, source, BlueskyReadPoint(posts, uriOf("p2"), -40.0))
+        assertEquals(BlueskyTab.LIKED, BlueskyReadingPrefs.parse(written).tab, "the tab and filters stay")
+        val point = BlueskyReadingPrefs.point(written, source)!!
+        assertEquals(posts.map { it.uri }, point.posts.map { it.uri })
+        assertEquals(uriOf("p2"), point.anchor)
+        assertEquals(-40.0, point.leading)
+        assertNull(BlueskyReadingPrefs.point(written, "https://appview.example"), "another AppView's place is not restored")
+        assertNull(BlueskyReadingPrefs.point(xta, source), "a place without posts restores nothing")
+        assertNull(BlueskyReadingPrefs.point(BlueskyReadingPrefs.write(written, source, null), source))
+        val far = """{"version":1,"source":"$source","leading":1e9,"posts":[${BlueskySnapshot.json(posts[0])}]}"""
+        assertEquals(10_000.0, BlueskyReadingPrefs.point(far, source)!!.leading)
+        assertEquals(posts[0].uri, BlueskyReadingPrefs.point(far, source)!!.anchor, "no anchor is the first post")
+    }
+
+    @Test
+    fun aPlaceKeepsTwoDozenBeforeItsAnchorAndAtMostItsLimit() {
+        val posts = (0 until 300).map { bluePost("p$it") }
+        val window = BlueskyReadingPrefs.window(posts, uriOf("p100"))
+        assertEquals(uriOf("p76"), window.first().uri)
+        assertEquals(BlueskyReadingPrefs.POSTS, window.size)
+        assertEquals(uriOf("p0"), BlueskyReadingPrefs.window(posts, uriOf("p3")).first().uri)
+    }
+
+    @Test
+    fun onlyPostsByOrRepostedByFollowedAccountsAreRestored() {
+        val mine = bluePost("a")
+        val reposted = bluePost("b", did = "did:plc:other", repostedByHandle = "maya.bsky.social")
+        val gone = bluePost("c", did = "did:plc:gone")
+        val kept = BlueskyReadingPrefs.kept(listOf(mine, reposted, gone)) { it == "maya.bsky.social" || it == "did:plc:maya" }
+        assertEquals(listOf(mine, reposted), kept)
+    }
 }
