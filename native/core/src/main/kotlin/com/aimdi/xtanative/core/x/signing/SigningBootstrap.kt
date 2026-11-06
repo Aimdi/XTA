@@ -14,7 +14,7 @@ import org.jsoup.nodes.Document
  * X's pages had no signing data, or the signer could not be found or read.
  * Not an IOException: it is no network blip, and is not retried at once.
  */
-class SigningUnavailableException(message: String) : IllegalStateException(message)
+class SigningUnavailableException(message: String, cause: Throwable? = null) : IllegalStateException(message, cause)
 
 /**
  * Derives a [TransactionSigner] from what x.com serves, as XTA's

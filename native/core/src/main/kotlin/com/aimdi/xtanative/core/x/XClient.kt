@@ -2,6 +2,8 @@ package com.aimdi.xtanative.core.x
 
 import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.core.x.http.XHttp
+import com.aimdi.xtanative.core.x.http.XRequestBudget
+import com.aimdi.xtanative.core.x.http.withRequestBudget
 import com.aimdi.xtanative.core.x.model.XAudioSpace
 import com.aimdi.xtanative.core.x.model.XCommunity
 import com.aimdi.xtanative.core.x.model.XCommunityPage
@@ -55,8 +57,10 @@ class XClient(
     health: XAccountHealthStore = XAccountHealthStore.inMemory(),
     /** Accounts the reader turned off for feeds: asked only when every account is off, as XTA's AccountFetchGate. */
     disabledAccounts: () -> Set<String> = { emptySet() },
+    /** How long a read may take in all, every account, signer and retry it tries included (XTA's 30 seconds). */
+    requestTimeoutMillis: Long = XRequestBudget.READ_MILLIS,
 ) {
-    private val transport = XTransport(http, accounts, signers, endpoints, clock, guest, health, disabledAccounts)
+    private val transport = XTransport(http, accounts, signers, endpoints, clock, guest, health, disabledAccounts, requestTimeoutMillis)
     private val kept = ConcurrentHashMap<String, Pair<Long, Any>>()
 
     /** What X said of each account's limits: when a rate-limited read may be tried again. */
@@ -108,8 +112,18 @@ class XClient(
         )
     }
 
-    private fun profileOf(body: J, who: String): Pair<XUser, List<String>> =
-        XParser.profile(body) ?: throw XParser.error(body) ?: XUserUnavailableException(who, body["data"]["user"]["result"]["reason"].string)
+    /**
+     * The profile in [body], in the order XTA's _getProfile reads it: X's own
+     * error first, even beside an account; then no account at all (not found);
+     * then one X will not show, by its reason (`Suspended`, or another).
+     */
+    private fun profileOf(body: J, who: String): Pair<XUser, List<String>> {
+        if (body["errors"].exists) throw XParser.error(body) ?: XAnswerException(0, "Unknown error")
+        val result = body["data"]["user"]["result"]
+        if (!result.exists) throw XUserUnavailableException(who, null)
+        if (result["__typename"].string == "UserUnavailable") throw XUserUnavailableException(who, result["reason"].string ?: "UserUnavailable")
+        return XParser.profile(body) ?: throw XUserUnavailableException(who, null)
+    }
 
     /** Whom a profile follows, newest follow first. */
     suspend fun following(userId: String, cursor: String? = null, count: Int = 200): XUserPage = follows(XEndpoints.FOLLOWING, userId, cursor, count)
@@ -275,9 +289,9 @@ class XClient(
         XParser.users(instructions)
     }
 
-    /** The posts quoting [postId], as XTA's quotes tab reads them: a search, one row per quote. */
+    /** The posts quoting [postId], as XTA's quotes tab reads them: a search, one row per quote, never folded into conversations. */
     suspend fun quotes(postId: String, cursor: String? = null, order: XQuoteOrder = XQuoteOrder.LATEST): XTimelinePage =
-        search("quoted_tweet_id:$postId", cursor, product = order.product)
+        search("quoted_tweet_id:$postId", cursor, product = order.product, conversations = false)
 
     /**
      * [postId]'s text in [language] (a tag such as `de` or `pt-BR`), as X's
@@ -314,8 +328,20 @@ class XClient(
 
     // ---- search ----
 
-    /** Posts for a search: [product] is `Latest`, `Top` or `Media` (a thread per post of the media grid). */
-    suspend fun search(query: String, cursor: String? = null, count: Int = 20, product: String = "Latest"): XTimelinePage =
+    /**
+     * Posts for a search: [product] is `Latest`, `Top` or `Media` (a thread per
+     * post of the media grid). As XTA's searchTweets, the posts of one
+     * conversation are one thread unless [conversations] is off (see
+     * [XParser.conversations]), and without [includeReplies] no reply is kept.
+     */
+    suspend fun search(
+        query: String,
+        cursor: String? = null,
+        count: Int = 20,
+        product: String = "Latest",
+        includeReplies: Boolean = true,
+        conversations: Boolean = true,
+    ): XTimelinePage =
         parsing {
             val body = transport.graphql(
                 XEndpoints.SEARCH,
@@ -335,7 +361,8 @@ class XClient(
             )
             // An error must not read as "nothing found", as XTA learnt on its quotes tab.
             if (!body["data"]["search_by_raw_query"]["search_timeline"].exists) XParser.error(body)?.let { throw it }
-            XParser.timeline(body)
+            val page = XParser.timeline(body)
+            if (product == "Media") page else XParser.conversations(page, includeReplies, group = conversations)
         }
 
     /** Accounts for a search (people search), under SearchTimeline's own registry key. */
@@ -393,7 +420,7 @@ class XClient(
         XCommunityParser.header(body) ?: throw XCommunityUnavailableException(id)
     }
 
-    /** A community's Top tab, as the web opens it, its pinned post marked. */
+    /** A community's Top tab, as the web opens it, its pinned post marked, the posts of one conversation one thread (as XTA). */
     suspend fun communityPosts(id: String, cursor: String? = null): XTimelinePage = parsing {
         XCommunityParser.posts(
             transport.graphql(
@@ -500,7 +527,7 @@ class XClient(
     suspend fun refreshEndpoints(url: String = XEndpoints.OVERRIDES_URL): String? {
         val registry = url.trim().toHttpUrlOrNull()?.takeIf { it.isHttps } ?: return null
         return try {
-            val response = http.get(registry, emptyMap(), followRedirects = true)
+            val response = withRequestBudget(XRequestBudget.REGISTRY_MILLIS, "endpoint registry") { http.get(registry, emptyMap(), followRedirects = true) }
             response.body.takeIf { response.isSuccessful }?.also { endpoints.applyOverrides(J.parse(it)) }
         } catch (error: CancellationException) {
             throw error

@@ -30,9 +30,10 @@ class GroupFeedTest {
     ) : FeedReads {
         val searches = ArrayList<Pair<String, String?>>()
         val profileReads = ArrayList<String>()
+        val withReplies = ArrayList<Boolean>()
 
-        override suspend fun search(query: String, cursor: String?): XTimelinePage {
-            synchronized(searches) { searches += query to cursor }
+        override suspend fun search(query: String, cursor: String?, includeReplies: Boolean): XTimelinePage {
+            synchronized(searches) { searches += query to cursor; withReplies += includeReplies }
             failing.entries.firstOrNull { query.contains(it.key) }?.let { throw it.value }
             return pages.entries.firstOrNull { (key, _) -> query.contains(key.first) && key.second == cursor }?.value ?: page()
         }
@@ -65,6 +66,14 @@ class GroupFeedTest {
         val failed = GroupFeed(GroupFeedPlan("g", listOf(FeedMember.search("list:9"))), onlySearch).first()
         assertIs<XRequestException>(failed.failures.single())
         assertTrue(onlySearch.profileReads.isEmpty())
+    }
+
+    @Test
+    fun aFeedWithoutRepliesAsksItsSearchesToKeepNone() = runBlocking {
+        val reads = Reads()
+        GroupFeed(GroupFeedPlan("g", listOf(a), includeReplies = false), reads).first()
+        GroupFeed(GroupFeedPlan("g", listOf(b)), reads).first()
+        assertEquals(listOf(false, true), reads.withReplies)
     }
 
     @Test

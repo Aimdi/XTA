@@ -2,7 +2,9 @@ package com.aimdi.xtanative.core.x
 
 import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.core.x.http.XHttp
+import com.aimdi.xtanative.core.x.http.XRequestBudget
 import com.aimdi.xtanative.core.x.http.XResponse
+import com.aimdi.xtanative.core.x.http.withRequestBudget
 import java.util.concurrent.atomic.AtomicInteger
 import okhttp3.HttpUrl
 
@@ -13,7 +15,8 @@ import okhttp3.HttpUrl
  * resets and asks the next; a refusal (401, 403, 404) is tried on one more
  * account, and is only held against the account that gave it once another
  * account was answered on the same endpoint. Any other failure is surfaced at
- * once: another account would get the same.
+ * once: another account would get the same. Every read, whatever it tries,
+ * has [budgetMillis] in all, as XTA's RequestBudget gives it.
  */
 internal class XTransport(
     private val http: XHttp,
@@ -24,6 +27,7 @@ internal class XTransport(
     private val guest: XGuest?,
     private val health: XAccountHealthStore,
     private val disabled: () -> Set<String>,
+    private val budgetMillis: Long = XRequestBudget.READ_MILLIS,
 ) {
     val limits = XRateLimits()
     private val load = XAccountLoad()
@@ -42,18 +46,14 @@ internal class XTransport(
     suspend fun graphql(endpoint: String, params: Map<String, String>): J = get(endpoints.url(endpoint, params), endpoint)
 
     suspend fun get(url: HttpUrl, what: String): J = reads.track(what) {
-        val pool = pool()
-        if (pool.isEmpty()) return@track asGuest(what, url)
-        when (val first = rotate(pool, url, what)) {
-            is Outcome.Answer -> first.body
-            // Every account tried was refused with 404: X answers a stale
-            // signature that way, so the signers are derived again once.
-            is Outcome.Refused -> {
-                signers.clear()
-                when (val second = rotate(pool, url, what)) {
-                    is Outcome.Answer -> second.body
-                    is Outcome.Refused -> throw refusal(second.accounts, what)
-                }
+        withRequestBudget(budgetMillis, what) {
+            val pool = pool()
+            if (pool.isEmpty()) return@withRequestBudget asGuest(what, url)
+            // Every account tried refused with 404: surfaced at once, as XTA
+            // does; a signer is derived again only when its lifetime ends.
+            when (val outcome = rotate(pool, url, what)) {
+                is Outcome.Answer -> outcome.body
+                is Outcome.Refused -> throw refusal(outcome.accounts, what)
             }
         }
     }
@@ -62,10 +62,12 @@ internal class XTransport(
      * [url] read with [account] alone, as XTA's fetchAs reads a chosen
      * account's own home timeline: no other account stands in for it.
      */
-    suspend fun getAs(account: XAccount, url: HttpUrl, what: String): J = reads.track(what) {
+    suspend fun getAs(account: XAccount, url: HttpUrl, what: String): J = reads.track(what) { withRequestBudget(budgetMillis, what) { readAs(account, url, what) } }
+
+    private suspend fun readAs(account: XAccount, url: HttpUrl, what: String): J {
         val path = url.encodedPath
         val response = send(account, url, path)
-        when {
+        return when {
             response.isSuccessful -> answered(account, emptyList(), path, response)
             response.code == 429 -> {
                 limits.flag(account.id, path, resetOf(response))
@@ -77,16 +79,16 @@ internal class XTransport(
 
     /**
      * A POST of [body] with one healthy account, as XTA's one-shot requests
-     * (translation) pick one. XTA signs it as a GET, as every request it
-     * makes; so does this.
+     * (translation) pick one; with no account, the same request without an
+     * account's headers, signed without a session, as XTA sends it then. XTA
+     * signs it as a GET, as every request it makes; so does this.
      */
-    suspend fun post(url: HttpUrl, body: String, contentType: String): XResponse {
+    suspend fun post(url: HttpUrl, body: String, contentType: String): XResponse = withRequestBudget(budgetMillis, url.encodedPath) {
         val now = clock()
         val account = XAccountSelector(accounts(), flagged = { health.read(it.id).flagged(now) }).pick(emptySet(), turn.getAndIncrement())
-            ?: throw XNoAccountException()
-        val signer = signers.forSession(account.cookie)
-        val headers = (BASE_HEADERS - "content-type") + account.headers + ("x-client-transaction-id" to signer.transactionId("GET", url.encodedPath))
-        return http.post(url, headers, body, contentType)
+        val signer = signers.forSession(account?.cookie)
+        val headers = (BASE_HEADERS - "content-type") + account?.headers.orEmpty() + ("x-client-transaction-id" to signer.transactionId("GET", url.encodedPath))
+        http.post(url, headers, body, contentType)
     }
 
     /** The accounts to read with: those the reader left on for feeds, or all when none is. */
@@ -166,30 +168,20 @@ internal class XTransport(
     }
 
     /**
-     * The read as a guest: X's logged-out bearer, a guest token, and a
-     * signature derived without a session. A refused token is replaced once;
-     * the quota X reports decides whether the token is kept for the next read.
+     * The read as a guest, with what XTA's fetchUnauthenticated sends and no
+     * more: X's logged-out bearer, a guest token, and no signature. A refused
+     * token is replaced once; the quota X reports decides whether the token is
+     * kept for the next read. Any answer but X's content, a 429 too, means an
+     * account has to be added.
      */
     private suspend fun asGuest(what: String, url: HttpUrl): J {
         val guest = guest ?: throw XNoAccountException()
-        val signer = signers.forSession(null)
-        suspend fun send(fresh: Boolean) = http.get(
-            url,
-            BASE_HEADERS + mapOf(
-                "authorization" to XGuest.BEARER,
-                "x-guest-token" to guest.token(fresh),
-                "x-client-transaction-id" to signer.transactionId("GET", url.encodedPath),
-            ),
-            followRedirects = true,
-        )
+        suspend fun send(fresh: Boolean) = http.get(url, GUEST_HEADERS + ("x-guest-token" to guest.token(fresh)), followRedirects = true)
         val first = send(fresh = false)
         val response = if (first.code == 401 || first.code == 403) send(fresh = true) else first
         guest.observe(response::header)
-        return when {
-            response.isSuccessful -> J.parse(response.body)
-            response.code == 429 -> throw XRateLimitedException()
-            else -> throw XNoAccountException("X did not answer $what for a guest (${response.code})")
-        }
+        if (!response.isSuccessful) throw XNoAccountException("X did not answer $what for a guest (${response.code})")
+        return J.parse(response.body)
     }
 
     companion object {
@@ -214,6 +206,13 @@ internal class XTransport(
             "user-agent" to "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Mobile Safari/537.3",
             "x-twitter-active-user" to "yes",
             "x-twitter-client-language" to "en",
+        )
+
+        /** What a guest read carries beside its token (XTA's fetchUnauthenticated). */
+        private val GUEST_HEADERS = mapOf(
+            "authorization" to XGuest.BEARER,
+            "x-twitter-active-user" to "yes",
+            "user-agent" to BASE_HEADERS.getValue("user-agent"),
         )
     }
 }

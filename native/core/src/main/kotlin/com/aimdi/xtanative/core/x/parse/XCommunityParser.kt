@@ -35,9 +35,9 @@ object XCommunityParser {
     /** A `CommunityQuery` answer; null when X sent no community. */
     fun header(body: J): XCommunity? = community(body["data"]["communityResults"]["result"])
 
-    /** A `CommunityTweetsTimeline` answer: the Top tab, its pinned post marked. */
+    /** A `CommunityTweetsTimeline` answer: the Top tab, its pinned post marked, chained by conversation as XTA chains it. */
     fun posts(body: J): XTimelinePage =
-        XParser.timelineOf(body["data"]["communityResults"]["result"]["ranked_community_timeline"]["timeline"]["instructions"])
+        XParser.conversations(XParser.timelineOf(body["data"]["communityResults"]["result"]["ranked_community_timeline"]["timeline"]["instructions"]))
 
     /** One page of `membersSliceTimeline_Query`. A member without a handle could not be opened, so it is left out. */
     fun members(body: J): XUserPage {

@@ -51,7 +51,8 @@ data class GroupFeedPlan(
 
 /** The two reads the feed makes. */
 interface FeedReads {
-    suspend fun search(query: String, cursor: String?): XTimelinePage
+    /** A chunk's search; without [includeReplies] it keeps no reply, as XTA's searchTweets. */
+    suspend fun search(query: String, cursor: String?, includeReplies: Boolean): XTimelinePage
 
     suspend fun userPosts(userId: String): XTimelinePage
 }
@@ -128,7 +129,7 @@ class GroupFeed(
      */
     private suspend fun readChunk(chunk: List<FeedMember>, query: String, cursor: String?): XTimelinePage {
         val page = try {
-            reads.search(query, cursor)
+            reads.search(query, cursor, plan.includeReplies)
         } catch (error: Throwable) {
             if (error is CancellationException || cursor != null || !fallsBack(error)) throw error
             val own = ownPosts(chunk.filterNot(FeedMember::search))

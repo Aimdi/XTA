@@ -189,7 +189,7 @@ data class XPost(
 ) {
     val shown: XPost get() = reposted ?: this
     val isRepost: Boolean get() = reposted != null
-    val url: String get() = "https://x.com/${author.screenName}/status/$id"
+    val url: String get() = "https://x.com/${author.screenName.ifEmpty { "i" }}/status/$id"
 }
 
 /**
