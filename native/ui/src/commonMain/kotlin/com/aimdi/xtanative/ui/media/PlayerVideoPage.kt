@@ -29,10 +29,31 @@ import com.aimdi.xtanative.ui.common.LocalGraph
 @Composable
 internal fun PlayerVideoPage(media: XMedia, active: Boolean, players: VideoPlayers, onPlaying: (String) -> Unit, onDownload: ((playingUrl: String) -> Unit)?) {
     val graph = LocalGraph.current
-    val opened = remember(media, players) {
-        val settings = graph.settings.state.value
-        VideoSource.of(media, settings)?.let { source ->
-            val player = players.make(VideoOptions.of(settings)).apply { open(source) }
+    val source = remember(media) { VideoSource.of(media, graph.settings.state.value) }
+    SourceVideoPage(source, media.aspectRatio, active, players, onPlaying, onDownload) {
+        AsyncImage(model = photoUrl(media.url, PhotoSize.LARGE), contentDescription = media.alt, contentScale = ContentScale.Fit, modifier = Modifier.fillMaxSize())
+    }
+}
+
+/**
+ * [PlayerVideoPage] for any video: [source] in a player of [players], null
+ * for nothing to play; [aspectRatio] its shape full screen, and [poster]
+ * what covers it until its first frame and while full screen has it.
+ */
+@Composable
+internal fun SourceVideoPage(
+    source: VideoSource?,
+    aspectRatio: Float?,
+    active: Boolean,
+    players: VideoPlayers,
+    onPlaying: (String) -> Unit,
+    onDownload: ((playingUrl: String) -> Unit)?,
+    poster: @Composable () -> Unit,
+) {
+    val graph = LocalGraph.current
+    val opened = remember(source, players) {
+        source?.let {
+            val player = players.make(VideoOptions.of(graph.settings.state.value)).apply { open(it) }
             player to KeptPlayer(player::release)
         }
     } ?: return
@@ -43,10 +64,7 @@ internal fun PlayerVideoPage(media: XMedia, active: Boolean, players: VideoPlaye
     val state by player.state.collectAsState()
     LaunchedEffect(state.url) { onPlaying(state.url) }
     val fullscreen = LocalVideoFullscreen.current
-    val gif = media.kind == XMedia.Kind.GIF
-    val poster: @Composable () -> Unit = {
-        AsyncImage(model = photoUrl(media.url, PhotoSize.LARGE), contentDescription = media.alt, contentScale = ContentScale.Fit, modifier = Modifier.fillMaxSize())
-    }
+    val gif = source?.gif == true
     Box(Modifier.fillMaxSize().navigationBarsPadding()) {
         // Full screen has it: the page keeps its poster meanwhile.
         if (fullscreen?.shows(player) == true) return@Box poster()
@@ -56,7 +74,7 @@ internal fun PlayerVideoPage(media: XMedia, active: Boolean, players: VideoPlaye
             val open: (() -> Unit)? = fullscreen?.let { screen ->
                 {
                     kept.enteredFullscreen()
-                    screen.open(FullscreenVideo(player, media.aspectRatio ?: (16f / 9f), download, onClosed = kept::leftFullscreen))
+                    screen.open(FullscreenVideo(player, aspectRatio ?: (16f / 9f), download, onClosed = kept::leftFullscreen))
                 }
             }
             VideoControls(player, VideoChrome(onFullscreen = open, onDownload = download), Modifier.fillMaxSize())

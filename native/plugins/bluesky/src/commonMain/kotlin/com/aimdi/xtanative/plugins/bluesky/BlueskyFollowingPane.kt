@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -30,7 +31,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -58,6 +63,10 @@ import com.aimdi.xtanative.ui.search.DiscoverIcons
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -84,6 +93,7 @@ internal fun FollowingPane(app: BlueskyApp, frame: PluginFrame) {
     val people = remember(state.posts, follows) { BlueskyTimeline.peopleToFollow(state.posts, app.follows::follows) }
     val list = rememberLazyListState()
     ScrollsToTop(list, frame.toTop)
+    KeepsPlace(app, list, shown, state.posts)
     RefreshesOn(frame.refresh) { timeline.refresh(force = true) }
     PullToRefreshBox(isRefreshing = state.loading && state.loaded, onRefresh = { timeline.refresh(force = true) }, modifier = Modifier.fillMaxSize()) {
         LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
@@ -97,6 +107,40 @@ internal fun FollowingPane(app: BlueskyApp, frame: PluginFrame) {
         }
     }
 }
+
+/**
+ * Following opened where it was left, the first time it is drawn this
+ * session, once that post is shown; then where the list stands, kept a
+ * moment after it settles, with the posts around it of all it holds.
+ */
+@Composable
+private fun KeepsPlace(app: BlueskyApp, list: LazyListState, shown: List<BlueskyPost>, posts: List<BlueskyPost>) {
+    val currentShown by rememberUpdatedState(shown)
+    val currentPosts by rememberUpdatedState(posts)
+    var opening by remember { mutableStateOf(true) }
+    LaunchedEffect(Unit) {
+        try {
+            val point = app.place.takePosition() ?: return@LaunchedEffect
+            val start = withTimeoutOrNull(OPEN_WAIT_MS) {
+                snapshotFlow { FollowingPlaces.start(currentShown, point, list.layoutInfo.visibleItemsInfo.map { it.key to it.index }) }.first { it != null }
+            } ?: return@LaunchedEffect
+            list.scrollToItem(start.first, start.second)
+        } finally {
+            opening = false
+        }
+    }
+    LaunchedEffect(opening) {
+        if (opening) return@LaunchedEffect
+        snapshotFlow { list.firstVisibleItemIndex to list.firstVisibleItemScrollOffset }.collectLatest {
+            delay(SETTLE_MS)
+            val visible = list.layoutInfo.visibleItemsInfo.map { it.key to it.offset }
+            FollowingPlaces.place(visible, currentPosts)?.let(app.place::remember)
+        }
+    }
+}
+
+private const val OPEN_WAIT_MS = 10_000L
+private const val SETTLE_MS = 350L
 
 /** Why Following shows no posts, or that its last read failed over the posts it kept. */
 private fun LazyListScope.followingStatus(app: BlueskyApp, state: FollowingTimeline.State) {
@@ -217,7 +261,8 @@ private fun LikedEmpty() {
 /**
  * The Following timeline, shared by the plugin's screens as XTA's feed store
  * is: read the first time it is shown, then whenever the accounts followed
- * here or the AppView change, and when the reader asks. A public AppView has
+ * here or the AppView change, and when the reader asks; its first read
+ * this session starts from the posts kept where it was left ([BlueskyPlace]). A public AppView has
  * no "my timeline", so each account's own feed is read (with its replies) by
  * [com.aimdi.xtanative.networks.bluesky.BlueskyFollowing], a few dozen
  * accounts a read; the filters hide what the reader does not want.
@@ -258,6 +303,10 @@ internal class FollowingTimeline(private val app: BlueskyApp, private val scope:
         val actors = app.follows.state.value?.map { it.actor } ?: return
         job?.cancel()
         job = scope.launch {
+            if (!force && mutable.value.posts.isEmpty()) {
+                val left = app.place.takePosts(app.follows::follows)
+                if (left.isNotEmpty()) mutable.update { it.copy(posts = left) }
+            }
             mutable.update { it.copy(loading = true, followed = actors.size) }
             if (actors.isEmpty()) {
                 mutable.value = State(followed = 0, loading = false, loaded = true)

@@ -4,8 +4,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -16,24 +14,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.links.LocalLinks
 import com.aimdi.xtanative.ui.post.PlayBadge
-
-/**
- * [source] playing in the app while [active] (a page shown) in a libmpv
- * player of its own, as the plugins' pager plays a network's video: paused
- * when the app is left unless Background play keeps a video heard going.
- */
-@Composable
-internal fun PlayingVideo(source: VideoSource, poster: Any?, alt: String?, active: Boolean) {
-    val graph = LocalGraph.current
-    val player = remember(source) { MpvVideoPlayer(VideoOptions.of(graph.settings.state.value)).apply { open(source) } }
-    DisposableEffect(player) { onDispose(player::release) }
-    LaunchedEffect(player, active) { player.setActive(active) }
-    PausesWhenLeft(player)
-    EngineVideo(player, poster, alt, controls = !source.gif, onDownload = null)
-}
 
 /** [player]'s picture, its [poster] over it until the first frame, and the viewer's [controls] (none for a GIF). */
 @Composable

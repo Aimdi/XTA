@@ -32,6 +32,7 @@ import coil3.compose.AsyncImage
 import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.store.settings.MediaPrefs
+import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -51,13 +52,30 @@ import org.jetbrains.compose.resources.stringResource
  * nothing plays in place, it draws nothing and the tile's tap opens the viewer.
  */
 @Composable
-internal fun TileVideo(media: XMedia, poster: Any?, post: XPost?, playing: Boolean, modifier: Modifier = Modifier) {
+internal fun TileVideo(media: XMedia, poster: Any?, post: XPost?, playing: Boolean, modifier: Modifier = Modifier) =
+    TileVideo({ VideoSource.of(media, it) }, media.alt, media.aspectRatio, poster, playing, modifier) { player -> rememberTileDownload(media, post, player) }
+
+/**
+ * [TileVideo] for any video: [source] what it plays as the settings given
+ * say, [alt] its description, [aspectRatio] its shape full screen, and
+ * [download] the ⋮ menu's Download of what [VideoPlayer] plays, null for none.
+ */
+@Composable
+internal fun TileVideo(
+    source: (Settings?) -> VideoSource?,
+    alt: String?,
+    aspectRatio: Float?,
+    poster: Any?,
+    playing: Boolean,
+    modifier: Modifier = Modifier,
+    download: @Composable (VideoPlayer) -> (() -> Unit)?,
+) {
     val tiles = rememberTilePlayer() ?: return
     val settings by LocalGraph.current.settings.state.collectAsStateWithLifecycle()
     val key = remember { Any() }
     var seen by remember { mutableStateOf(false) }
     val autoplay = settings?.get(MediaPrefs.autoplay) == true
-    val ask by rememberUpdatedState<() -> Unit> { VideoSource.of(media, settings)?.let { tiles.ask(key, it) } }
+    val ask by rememberUpdatedState<() -> Unit> { source(settings)?.let { tiles.ask(key, it) } }
     val byItself = autoplay && seen && (playing || !tiles.shared)
     LaunchedEffect(tiles, byItself) {
         if (!byItself) return@LaunchedEffect
@@ -74,14 +92,14 @@ internal fun TileVideo(media: XMedia, poster: Any?, post: XPost?, playing: Boole
         // Full screen has it: the tile keeps its poster meanwhile.
         fullscreen?.shows(player) == true -> Box(placed)
         else -> {
-            val download = rememberTileDownload(media, post, player)
+            val save = download(player)
             val open: (() -> Unit)? = fullscreen?.let { screen ->
                 {
                     tiles.pin(key)
-                    screen.open(FullscreenVideo(player, media.aspectRatio ?: (16f / 9f), download) { tiles.unpin(key) })
+                    screen.open(FullscreenVideo(player, aspectRatio ?: (16f / 9f), save) { tiles.unpin(key) })
                 }
             }
-            PlayingTile(player, media, poster, seen, own = !tiles.shared, chrome = VideoChrome(onFullscreen = open, onDownload = download), modifier = placed)
+            PlayingTile(player, alt, poster, seen, own = !tiles.shared, chrome = VideoChrome(onFullscreen = open, onDownload = save), modifier = placed)
         }
     }
 }
@@ -89,8 +107,15 @@ internal fun TileVideo(media: XMedia, poster: Any?, post: XPost?, playing: Boole
 /** A GIF looping silently in its tile while it is seen (in a feed, while its row is the one the feed plays), as XTA's GIFs loop whatever Autoplay says. */
 @Composable
 internal fun TileGif(media: XMedia, poster: Any?, playing: Boolean, modifier: Modifier = Modifier) {
-    val tiles = rememberTilePlayer() ?: return
     val graph = LocalGraph.current
+    val source = remember(media) { VideoSource.of(media, graph.settings.state.value) }
+    TileGif(source, poster, playing, modifier)
+}
+
+/** [TileGif] for any GIF: [source] what loops, null for nothing. */
+@Composable
+internal fun TileGif(source: VideoSource?, poster: Any?, playing: Boolean, modifier: Modifier = Modifier) {
+    val tiles = rememberTilePlayer() ?: return
     var seen by remember { mutableStateOf(false) }
     var settled by remember { mutableStateOf(false) }
     val wanted = seen && (playing || !tiles.shared)
@@ -100,7 +125,6 @@ internal fun TileGif(media: XMedia, poster: Any?, playing: Boolean, modifier: Mo
         delay(VideoRules.SETTLE_MS)
         settled = true
     }
-    val source = remember(media) { VideoSource.of(media, graph.settings.state.value) }
     Box(modifier.onGloballyPositioned { seen = VideoRules.mostlySeen(it.boundsInWindow().height, it.size.height) }) {
         if (settled && source != null) LoopingVideo(tiles, source, poster, Modifier.matchParentSize())
     }
@@ -159,7 +183,7 @@ private fun IdleTile(autoplay: Boolean, muteSetting: Boolean, onPlay: () -> Unit
 
 /** The video playing in its tile: the picture filling it, the controls, the poster until the first frame, and the mute corner. */
 @Composable
-private fun PlayingTile(player: VideoPlayer, media: XMedia, poster: Any?, seen: Boolean, own: Boolean, chrome: VideoChrome, modifier: Modifier) {
+private fun PlayingTile(player: VideoPlayer, alt: String?, poster: Any?, seen: Boolean, own: Boolean, chrome: VideoChrome, modifier: Modifier) {
     val state by player.state.collectAsState()
     PausesUnseen(player, seen)
     // A feed's own player stops and starts again with its screen (InlinePlayer.pause).
@@ -168,7 +192,7 @@ private fun PlayingTile(player: VideoPlayer, media: XMedia, poster: Any?, seen: 
         player.Picture(fill = true, Modifier.matchParentSize())
         VideoControls(player, chrome, Modifier.matchParentSize())
         // Over the controls, as XTA's poster lies over its player; taps reach the controls through it.
-        PosterUntilStarted(state, Modifier.matchParentSize()) { TilePoster(poster, media.alt) }
+        PosterUntilStarted(state, Modifier.matchParentSize()) { TilePoster(poster, alt) }
         MuteCorner(state.muted, onToggle = { toggleMute(player, state.muted) }, Modifier.align(Alignment.BottomEnd))
     }
 }

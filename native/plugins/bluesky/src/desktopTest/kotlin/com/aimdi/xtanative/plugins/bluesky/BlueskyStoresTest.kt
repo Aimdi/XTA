@@ -3,10 +3,12 @@ package com.aimdi.xtanative.plugins.bluesky
 import com.aimdi.xtanative.networks.bluesky.BlueskyFollow
 import com.aimdi.xtanative.networks.bluesky.BlueskyPost
 import com.aimdi.xtanative.networks.bluesky.BlueskyProfile
+import com.aimdi.xtanative.networks.bluesky.BlueskyReadPoint
 import com.aimdi.xtanative.networks.bluesky.BlueskyReaderFilter
 import com.aimdi.xtanative.networks.bluesky.BlueskyTab
 import com.aimdi.xtanative.store.StoreFile
 import com.aimdi.xtanative.store.settings.BlueskyPrefs
+import com.aimdi.xtanative.store.settings.PostsPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.plugins.PluginSettings
 import java.io.File
@@ -15,6 +17,7 @@ import java.time.Instant
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -120,6 +123,37 @@ class BlueskyStoresTest {
         assertEquals(BlueskyTab.LISTS, prefs.prefs.reading.value.tab)
         assertEquals(BlueskyReaderFilter(hideReplies = true), prefs.prefs.reading.value.following)
         prefs.scope.cancel()
+    }
+
+    @Test
+    fun followingsPlaceIsRestoredOnceASessionWhileRememberReadingPositionIsOn(): Unit = runBlocking {
+        val prefs = Prefs()
+        val source = prefs.prefs.appView.value
+        prefs.prefs.place(source, BlueskyReadPoint(listOf(post("1"), post("2")), post("2").uri, -12.0))
+        val place = BlueskyPlace(prefs.prefs, prefs.scope)
+        assertEquals(listOf(post("1"), post("2")).map { it.uri }, place.takePosts { it == "did:plc:maya" }.map { it.uri })
+        assertTrue(place.takePosts { true }.isEmpty(), "once a session")
+        assertEquals(post("2").uri, place.takePosition()?.anchor)
+        assertNull(place.takePosition())
+
+        prefs.values.value = prefs.values.value!!.with(PostsPrefs.rememberReadingPosition, false)
+        assertNull(BlueskyPlace(prefs.prefs, prefs.scope).takePosition(), "nothing is restored with the setting off")
+        prefs.scope.cancel()
+    }
+
+    @Test
+    fun followingsListOpensAtItsAnchorAndKeepsTheFirstPostOnScreen() {
+        val posts = (1..40).map { post("$it") }
+        val point = BlueskyReadPoint(posts, post("30").uri, -25.0)
+        assertNull(FollowingPlaces.start(posts, point, listOf("bar" to 0)), "not until the first post is laid out")
+        assertEquals(30 to 25, FollowingPlaces.start(posts, point, listOf("bar" to 0, post("1").uri to 1)))
+        assertNull(FollowingPlaces.start(posts.take(10), point, listOf(post("1").uri to 1)), "not while its post is not shown")
+
+        val shown = FollowingPlaces.place(listOf("bar" to -60, post("30").uri to -8, post("31").uri to 300), posts)!!
+        assertEquals(post("30").uri, shown.anchor)
+        assertEquals(-8.0, shown.leading)
+        assertEquals(post("6").uri, shown.posts.first().uri, "two dozen before it")
+        assertNull(FollowingPlaces.place(listOf("bar" to 0), posts))
     }
 
     @Test

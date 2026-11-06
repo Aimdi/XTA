@@ -97,6 +97,9 @@ internal class PixivHomeModel(private val runtime: PixivRuntime, private val sco
             runtime.ready()
             runtime.settings.state.map(PixivSessionKey::of).distinctUntilChanged().drop(1).collect { forget() }
         }
+        scope.launch {
+            runtime.watchlistChanges.collect { novels -> (if (novels) novelWatchlist else watchlist).takeIf { it.state.value.loaded }?.refresh() }
+        }
     }
 
     /** The lists the section on show reads, each read when it has nothing yet. */

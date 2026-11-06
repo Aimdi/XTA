@@ -12,14 +12,15 @@ import com.aimdi.xtanative.ui.common.LocalGraph
 /**
  * A feed's one player (XTA's video pool, kept to one): its tiles take turns
  * at it ([turns]), an X video under XTA's controls ([TileVideo]), a GIF
- * looping ([TileGif]); a plugin's tile loops a silent preview in it ([Video])
- * while Autoplay videos is on, as before.
+ * looping ([TileGif]); a network's tile plays as an X video does
+ * (`ui/plugins`' MediaTiles). [Video], a silent looping preview while
+ * Autoplay videos is on and media loads by itself, stays for what calls it.
  */
 internal class FeedPlayer(val turns: PlayerTurns<VideoPlayer>) : InlinePlayer {
     @Composable
     override fun Video(url: String, modifier: Modifier) {
         val settings by LocalGraph.current.settings.state.collectAsStateWithLifecycle()
-        if (settings?.get(MediaPrefs.autoplay) != true) return
+        if (settings?.get(MediaPrefs.autoplay) != true || settings?.get(MediaPrefs.loadManually) == true) return
         LoopingVideo(turns, VideoSource.looping(url), poster = null, modifier)
     }
 
