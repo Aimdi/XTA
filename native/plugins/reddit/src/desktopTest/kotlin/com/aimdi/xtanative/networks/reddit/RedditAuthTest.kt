@@ -3,6 +3,7 @@ package com.aimdi.xtanative.networks.reddit
 import com.aimdi.xtanative.core.x.http.XResponse
 import com.aimdi.xtanative.networks.NetworkRequestException
 import java.net.SocketException
+import java.net.SocketTimeoutException
 import java.util.Base64
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -13,6 +14,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 
 /** Signing in, as XTA's reddit_auth_test and reddit_read_session_test hold it: read scopes only, and a session every read shares. */
@@ -184,5 +186,38 @@ class RedditAuthTest {
         now += RedditSignIn.TOKEN_TTL_MILLIS
         assertEquals("token-2", signIn.resolve("cid", "refresh", false).session.userToken)
         assertEquals("token-3", signIn.resolve("cid", "another", false).session.userToken, "another sign-in is another token")
+    }
+
+    @Test
+    fun aStalledTokenRequestIsANetworkFailureAndARetrySucceeds() = runBlocking {
+        var calls = 0
+        val fake = FakeReddit {
+            if (++calls == 1) delay(5_000)
+            page("""{"access_token":"fresh"}""")
+        }
+        val auth = RedditAuth(fake, timeoutMillis = 50)
+
+        assertFailsWith<SocketTimeoutException> { auth.accessToken("cid", "refresh") }
+        assertEquals("fresh", auth.accessToken("cid", "refresh"), "the stalled request must not poison the next one")
+        assertEquals(2, fake.asked.size)
+    }
+
+    @Test
+    fun aStalledSharedRenewalLetsEverySurfaceFallBackAndRetriesLater() = runBlocking {
+        var calls = 0
+        val fake = FakeReddit {
+            if (++calls <= 2) delay(5_000)
+            page("""{"access_token":"token-$calls"}""")
+        }
+        val signIn = RedditSignIn(RedditAuth(fake, timeoutMillis = 50))
+
+        val results = listOf(
+            async { signIn.resolve("cid", "refresh", false) },
+            async { signIn.resolve("cid", "refresh", false) },
+        ).awaitAll()
+
+        assertTrue(results.all { it.session.userToken == null && !it.signedOut }, "a deadline must hand both surfaces the public fallback, not sign them out")
+        assertEquals("token-3", signIn.resolve("cid", "refresh", false).session.userToken, "the stalled shared mint must be cleared")
+        assertEquals(3, fake.asked.size)
     }
 }

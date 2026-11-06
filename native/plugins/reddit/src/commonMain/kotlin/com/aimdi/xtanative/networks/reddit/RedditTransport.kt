@@ -21,6 +21,8 @@ internal class RedditTransport(
     private val http: XHttp,
     private val webUserAgent: String,
     private val clock: () -> Long,
+    /** How long one request may wait for its answer: XTA's `_timeout`, 20 seconds. */
+    private val timeoutMillis: Long = REQUEST_TIMEOUT_MILLIS,
 ) {
     /**
      * Cookies the public hosts set, kept for the client's life: a client that
@@ -53,12 +55,14 @@ internal class RedditTransport(
     suspend fun authorize(clientId: String): String {
         token?.takeIf { hasToken }?.let { return it }
         require(clientId.isNotBlank()) { "Missing client id" }
-        val response = http.post(
-            TOKEN_URL,
-            mapOf("Authorization" to basicAuth(clientId), "User-Agent" to RedditClient.API_USER_AGENT),
-            "grant_type=https://oauth.reddit.com/grants/installed_client&device_id=${RedditClient.DEVICE_ID}",
-            FORM,
-        )
+        val response = withDeadline(timeoutMillis, TOKEN_URL) {
+            http.post(
+                TOKEN_URL,
+                mapOf("Authorization" to basicAuth(clientId), "User-Agent" to RedditClient.API_USER_AGENT),
+                "grant_type=https://oauth.reddit.com/grants/installed_client&device_id=${RedditClient.DEVICE_ID}",
+                FORM,
+            )
+        }
         if (response.code != 200) throw failureOf(response)
         val answer = objectOf(response)
         val fresh = answer["access_token"].string?.ifEmpty { null } ?: throw unreadable("No access_token in the token response", response.code)
@@ -86,7 +90,7 @@ internal class RedditTransport(
             }
             if (public && jar.isNotEmpty()) put("Cookie", cookieHeader(jar))
         }
-        val response = http.get(url, headers, followRedirects = true)
+        val response = withDeadline(timeoutMillis, url) { http.get(url, headers, followRedirects = true) }
         remember(response, consent)
         if (response.code == 401) forgetToken()
         if (token != null && response.code != 200) throw failureOf(response, url)
@@ -104,7 +108,7 @@ internal class RedditTransport(
             if (jar.isNotEmpty()) put("Cookie", cookieHeader(jar))
         }
         val body = form.entries.joinToString("&") { (name, value) -> "${formEncode(name)}=${formEncode(value)}" }
-        val response = http.post(url, headers, body, "$FORM; charset=utf-8")
+        val response = withDeadline(timeoutMillis, url) { http.post(url, headers, body, "$FORM; charset=utf-8") }
         remember(response, emptyMap())
         return response
     }
@@ -152,6 +156,10 @@ internal class RedditTransport(
     companion object {
         val TOKEN_URL = "${RedditHosts.WWW}/api/v1/access_token".toHttpUrl()
         const val FORM = "application/x-www-form-urlencoded"
+
+        /** XTA's `RedditClient._timeout`: no read may wait longer than this. */
+        const val REQUEST_TIMEOUT_MILLIS = 20_000L
+
         private const val LANGUAGE = "en-US,en;q=0.9"
         private val cookieSeparator = Regex(",(?=[^;]+=)")
     }
