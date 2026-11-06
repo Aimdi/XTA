@@ -75,4 +75,14 @@ class DesktopWindowTest {
             first.close()
         }
     }
+
+    @Test
+    fun aStartThatTheEndingCopyDoesNotAnswerRunsOnceItHasEnded() {
+        val folder = Files.createTempDirectory("xta-instance").toFile()
+        val ending = assertNotNull(SingleInstance.claim(folder))
+        // The first copy never answers (it is ending) and lets go of its lock a moment later.
+        Thread { Thread.sleep(500); ending.close() }.start()
+        val next = assertNotNull(SingleInstance.claim(folder), "the start runs once the ending copy is gone")
+        next.close()
+    }
 }
