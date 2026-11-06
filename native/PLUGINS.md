@@ -68,7 +68,8 @@ with `PluginRecentSearchRow`, `settingsTitle`, the viewer's Open post
 `LocalParentTurnsPages`, `TabSwipes`), `AltBadge` with `AltTextDialog`,
 and the search pill's look (native-0.1.54); 5 adds `followable` with
 `PluginFollowable`, what a group's add box can follow on the plugin's
-network. A plugin's `xta-plugin.json` names the
+network (native-0.1.56); 6 adds X's search with its `includeReplies` and
+`conversations` switches (`XClient.search`). A plugin's `xta-plugin.json` names the
 version it was built against.
 
 The app loads the versions from `OLDEST_PLUGIN_API` (2) to its own, so a
