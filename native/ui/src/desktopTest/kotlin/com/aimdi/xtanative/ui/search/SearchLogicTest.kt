@@ -7,6 +7,10 @@ import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.core.x.search.XAdvancedSearch
 import com.aimdi.xtanative.core.x.search.XAdvancedSearch.Filter
 import com.aimdi.xtanative.core.x.search.XSearchView
+import com.aimdi.xtanative.ui.feed.SourcedPost
+import com.aimdi.xtanative.ui.plugins.LinkCard
+import com.aimdi.xtanative.ui.plugins.NetworkPost
+import com.aimdi.xtanative.ui.plugins.TextRun
 import java.time.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -88,6 +92,28 @@ class SearchLogicTest {
         val other = XThread("40", listOf(XPost("40", jo, null, "Cats")))
         assertEquals(listOf(other), LoadedFeed.Index(listOf(thread, other)).matching("cats"))
         assertEquals(listOf(thread, other), LoadedFeed.Index(listOf(thread, other)).matching(""))
+    }
+
+    @Test
+    fun thePluginsPostsAmongTheLoadedOnesAreFoundToo() {
+        val story = SourcedPost(
+            "rss",
+            NetworkPost(
+                "s1", "alice", "Alice", "alice@example.org",
+                text = listOf(TextRun.Plain("Offline "), TextRun.Link("notes", "https://example.org/notes")),
+                card = LinkCard("https://example.org/story", title = "Field guide"),
+                url = "https://example.org/s1",
+                title = "Winter reading",
+            ),
+        )
+        assertTrue(LoadedFeed.matches(LoadedFeed.textOf(story), "alice offline notes"))
+        assertTrue(LoadedFeed.matches(LoadedFeed.textOf(story), "example.org/notes field"))
+        assertTrue(LoadedFeed.matches(LoadedFeed.textOf(story), "winter rss"))
+        assertFalse(LoadedFeed.matches(LoadedFeed.textOf(story), "summer"))
+        val index = LoadedFeed.Index(listOf(XThread("40", listOf(XPost("40", jo, null, "Cats")))), listOf(story))
+        assertEquals(listOf(story), index.matchingPosts("guide"))
+        assertTrue(index.matching("guide").isEmpty())
+        assertEquals(listOf(story), index.matchingPosts(" "))
     }
 }
 

@@ -63,8 +63,8 @@ class CatchUpTest {
         assertNull(ReadPosition.newestRecordable(emptyList()))
     }
 
-    private fun action(threads: List<XThread>, lastSeen: ReadPosition?, evaluated: Boolean = false, offset: Double? = null, atTop: Boolean = true) =
-        FirstPageAction.of(threads, lastSeen, evaluated, offset, atTop)
+    private fun action(threads: List<XThread>, lastSeen: ReadPosition?, evaluated: Boolean = false, offset: Double? = null, atTop: Boolean = true, reaches: Boolean = true) =
+        FirstPageAction.of(threads, lastSeen, evaluated, offset, atTop, reaches)
 
     @Test
     fun unreadPostsAboveTheLastReadOneBringTheReaderBackToIt() {
@@ -80,6 +80,18 @@ class CatchUpTest {
         assertIs<FirstPageAction.RecordPosition>(action(listOf(at("c", day(5))), null))
         assertEquals(FirstPageAction.DoNothing, action(emptyList(), null))
         assertEquals(FirstPageAction.DoNothing, action(listOf(at("c", null)), null), "undated posts have nothing to record")
+    }
+
+    @Test
+    fun aFirstPageMarksNothingReadPastPostsItDidNotLoad() {
+        val page = listOf(at("d", day(7)), at("c", day(5)))
+        val lastSeen = ReadPosition("a", day(1))
+        assertFalse(FirstPageAction.reaches(page, lastSeen, hasMore = true, gap = false), "the posts between were never read from X")
+        assertEquals(FirstPageAction.DoNothing, action(page, lastSeen, evaluated = true, reaches = false))
+        assertTrue(FirstPageAction.reaches(page, lastSeen, hasMore = false, gap = false), "with nothing more to read, everything was loaded")
+        assertTrue(FirstPageAction.reaches(page + at("a", day(1)), lastSeen, hasMore = true, gap = false))
+        assertFalse(FirstPageAction.reaches(page + at("a", day(1)), lastSeen, hasMore = true, gap = true), "a hole above the kept posts")
+        assertTrue(FirstPageAction.reaches(page, null, hasMore = true, gap = true), "a feed never read here has nothing to lose")
     }
 
     @Test

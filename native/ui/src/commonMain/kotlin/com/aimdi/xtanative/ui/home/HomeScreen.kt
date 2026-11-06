@@ -426,10 +426,15 @@ private fun HomeLayers(parts: HomeParts, shell: HomeShellState, following: Follo
 /** The search of what [tab]'s feed has loaded (XTA's LoadedSearchButton): Following's or X's. */
 @Composable
 private fun LoadedPostsSearch(tab: HomeTab?, actions: PostActions, onClose: () -> Unit) {
+    if (tab == HomeTab.Following) {
+        val vm = groupFeedViewModel(null)
+        val threads = vm.ui.collectAsStateWithLifecycle().value.run.shown.threads
+        LoadedFeedSearchScreen(threads, actions, onClose, posts = vm.plugin.collectAsStateWithLifecycle().value.shown)
+        return
+    }
     val threads = when (tab) {
         HomeTab.ForYou -> forYouViewModel().ui.collectAsStateWithLifecycle().value.threads
-        HomeTab.Following -> groupFeedViewModel(null).ui.collectAsStateWithLifecycle().value.run.shown.threads
-        is HomeTab.Network, is HomeTab.Group, null -> emptyList()
+        HomeTab.Following, is HomeTab.Network, is HomeTab.Group, null -> emptyList()
     }
     LoadedFeedSearchScreen(threads, actions, onClose)
 }

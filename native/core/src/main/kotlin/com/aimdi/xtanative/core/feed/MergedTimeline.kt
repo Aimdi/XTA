@@ -2,6 +2,7 @@ package com.aimdi.xtanative.core.feed
 
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.core.x.model.XTimelinePage
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -18,7 +19,9 @@ import kotlinx.coroutines.sync.withPermit
  * What a load adds. [failures] are the sources that brought nothing; [hasMore]
  * is false once every source has run out. [foldReasons] says why a folded
  * thread is folded, by its id; [unrelated] that X answered a search with posts
- * by accounts outside it, as it sometimes does.
+ * by accounts outside it, as it sometimes does. [gap]: a first page put over
+ * the posts kept from before, whose posts written since were not all read, so
+ * a hole lies between them ([GroupFeed.reopen]).
  */
 data class FeedPage(
     val threads: List<XThread>,
@@ -26,6 +29,7 @@ data class FeedPage(
     val hasMore: Boolean,
     val foldReasons: Map<String, String> = emptyMap(),
     val unrelated: Boolean = false,
+    val gap: Boolean = false,
 )
 
 /**
@@ -75,16 +79,21 @@ interface FeedTimeline {
     /** How far the load under way has come. */
     val progress: StateFlow<FeedProgress>
 
-    /** The newest posts: every source is read from the top again. */
-    suspend fun first(): FeedPage
+    /**
+     * The newest posts: every source is read from the top again. [onArrived]
+     * gets, as each source answers, what those that answered hold down to
+     * where all of them have been read: a preview while the rest are read.
+     */
+    suspend fun first(onArrived: ((FeedPage) -> Unit)? = null): FeedPage
 
     /** The next posts in time order, reading on in the sources that hold the rest back. */
     suspend fun more(): FeedPage
 
     /**
      * Reads again only the sources whose last read failed; the others keep
-     * their place. What they bring may be newer than posts already shown:
-     * the caller places it by time.
+     * their place. A source whose read of the newer posts ([newer]) failed
+     * reads them again. What they bring may be newer than posts already
+     * shown: the caller places it by time.
      */
     suspend fun retryFailed(): FeedPage
 
@@ -141,12 +150,18 @@ class MergedTimeline(
     private val batch = BatchRead<Throwable?>(readMillis, loadMillis)
     private val loading = MutableStateFlow(FeedProgress())
 
+    /** The top the last [newer] read down to, and the sources whose read of it failed, for a retry. */
+    private var newerThan: Long? = null
+    private var newerPages = 1
+    private val newerFailed = HashSet<Int>()
+
     override val progress: StateFlow<FeedProgress> = loading.asStateFlow()
 
-    override suspend fun first(): FeedPage = mutex.withLock {
+    override suspend fun first(onArrived: ((FeedPage) -> Unit)?): FeedPage = mutex.withLock {
         clearShown()
+        forgetNewer()
         readings.forEach { it.cursor = null; it.exhausted = false; it.oldest = null; it.unread.clear(); it.failure = null }
-        val failures = read(readings)
+        val failures = read(readings, onArrived)
         FeedPage(drain(), failures, hasMore())
     }
 
@@ -154,11 +169,17 @@ class MergedTimeline(
         val threads = ArrayList<XThread>()
         val failures = ArrayList<Throwable>()
         var rounds = 0
-        while (threads.size < pageSize && hasMore() && rounds < MAX_ROUNDS) {
-            val limiting = readings.filter { !it.exhausted }.sortedByDescending { it.oldest ?: Long.MAX_VALUE }.take(concurrency)
-            failures += read(limiting)
-            threads += drain()
-            rounds++
+        try {
+            while (threads.size < pageSize && hasMore() && rounds < MAX_ROUNDS) {
+                val limiting = readings.filter { !it.exhausted }.sortedByDescending { it.oldest ?: Long.MAX_VALUE }.take(concurrency)
+                failures += read(limiting)
+                threads += drain()
+                rounds++
+            }
+        } catch (cancelled: CancellationException) {
+            // A load stopped halfway (a feed scrolled out of sight) loses nothing it took: the next one shows it.
+            unshow(threads)
+            throw cancelled
         }
         if (!hasMore()) threads += drain()
         FeedPage(threads, failures, hasMore())
@@ -167,20 +188,62 @@ class MergedTimeline(
     override suspend fun retryFailed(): FeedPage = mutex.withLock {
         val failed = readings.filter { it.failure != null }
         failed.forEach { it.exhausted = false; it.failure = null }
-        val failures = read(failed)
-        FeedPage(drain(), failures, hasMore())
+        val failures = read(failed).toMutableList()
+        val drained = drain()
+        val than = newerThan
+        val fresh = if (than == null || newerFailed.isEmpty()) {
+            emptyList()
+        } else {
+            val again = readings.filter { it.index in newerFailed }
+            val results = readNewer(again, than, newerPages)
+            failures += results.mapNotNull { it.failure }
+            results.flatMap { it.threads }.filter(::firstShowing)
+        }
+        FeedPage((drained + fresh).sortedByDescending(FeedOrder::timeOf), failures, hasMore())
     }
 
     override suspend fun newer(than: Long, pagesPerChunk: Int): NewerPage = mutex.withLock {
-        val results = coroutineScope {
-            val gate = Semaphore(concurrency)
-            readings.map { reading -> async { gate.withPermit { newerIn(reading.source, than, pagesPerChunk) } } }.awaitAll()
-        }
+        newerThan = than
+        newerPages = pagesPerChunk
+        newerFailed.clear()
+        val results = readNewer(readings, than, pagesPerChunk)
         NewerPage(
             threads = results.flatMap { it.threads }.filter(::firstShowing).sortedByDescending(FeedOrder::timeOf),
             bridged = results.all { it.bridged },
             failures = results.mapNotNull { it.failure },
         )
+    }
+
+    /** Each of [targets] read from its top down to [than], with the progress of it; those that failed are kept for a retry. */
+    private suspend fun readNewer(targets: List<Reading>, than: Long, pages: Int): List<SourceNewer> {
+        if (targets.isEmpty()) return emptyList()
+        val answered = AtomicInteger()
+        val failed = AtomicInteger()
+        loading.value = FeedProgress(0, targets.size, 0, loading = true)
+        val results = try {
+            coroutineScope {
+                val gate = Semaphore(concurrency)
+                targets.map { reading ->
+                    async {
+                        gate.withPermit { newerIn(reading.source, than, pages) }.also { result ->
+                            if (result.failure != null) failed.incrementAndGet()
+                            loading.value = FeedProgress(answered.incrementAndGet(), targets.size, failed.get(), loading = true)
+                        }
+                    }
+                }.awaitAll()
+            }
+        } catch (cancelled: CancellationException) {
+            loading.value = loading.value.copy(loading = false)
+            throw cancelled
+        }
+        targets.zip(results).forEach { (reading, result) -> if (result.failure != null) newerFailed += reading.index else newerFailed -= reading.index }
+        loading.value = FeedProgress(targets.size, targets.size, results.count { it.failure != null }, loading = false)
+        return results
+    }
+
+    private fun forgetNewer() {
+        newerThan = null
+        newerFailed.clear()
     }
 
     private class SourceNewer(val threads: List<XThread>, val bridged: Boolean, val failure: Throwable?)
@@ -224,7 +287,10 @@ class MergedTimeline(
             reading.failure = if (saved.failed) NotReadYet() else null
         }
         clearShown()
+        forgetNewer()
         shownThreads += shownIds
+        val failed = readings.count { it.failure != null }
+        loading.value = FeedProgress(readings.size, readings.size, failed, loading = false)
         true
     }
 
@@ -233,6 +299,28 @@ class MergedTimeline(
     private fun clearShown() {
         shownThreads.clear()
         shownPosts.clear()
+    }
+
+    /** [threads] taken but never shown: back among the unread, to be shown by the next load. */
+    private fun unshow(threads: List<XThread>) {
+        if (threads.isEmpty()) return
+        threads.forEach { thread ->
+            shownThreads -= thread.id
+            thread.posts.firstOrNull()?.id?.let(shownPosts::remove)
+        }
+        readings.firstOrNull()?.unread?.addAll(threads)
+    }
+
+    /**
+     * What the sources that answered so far hold, newest first, down to where
+     * every one of them that reads on has been read: a first load's preview.
+     */
+    private fun arrived(): List<XThread> = synchronized(readings) {
+        val answered = readings.filter { it.oldest != null || it.exhausted }
+        val open = answered.filter { !it.exhausted }
+        val cutoff = if (open.isEmpty()) Long.MIN_VALUE else open.maxOf { it.oldest ?: Long.MAX_VALUE }
+        val ready = answered.flatMap { reading -> reading.unread.filter { FeedOrder.timeOf(it) >= cutoff } }
+        FeedOrder.dedupe(ready.sortedByDescending(FeedOrder::timeOf)).filter { it.id !in shownThreads }
     }
 
     /** True the first time [thread], or the post it starts with, is shown. */
@@ -257,8 +345,11 @@ class MergedTimeline(
         return ready.sortedByDescending(FeedOrder::timeOf).filter(::firstShowing)
     }
 
-    /** Reads one more page of each of [targets]; returns why the ones that brought nothing did not. */
-    private suspend fun read(targets: List<Reading>): List<Throwable> {
+    /**
+     * Reads one more page of each of [targets]; returns why the ones that
+     * brought nothing did not. [onArrived] gets [arrived] as each answers.
+     */
+    private suspend fun read(targets: List<Reading>, onArrived: ((FeedPage) -> Unit)? = null): List<Throwable> {
         if (targets.isEmpty()) return emptyList()
         val keys = targets.map { it.index.toString() }
         loading.value = FeedProgress(0, keys.size, 0, loading = true)
@@ -269,7 +360,10 @@ class MergedTimeline(
                 onError = { it },
                 failed = { it != null },
                 concurrency = concurrency,
-                onProgress = { done -> loading.value = FeedProgress(done.size, keys.size, done.count { it != null }, loading = true) },
+                onProgress = { done ->
+                    loading.value = FeedProgress(done.size, keys.size, done.count { it != null }, loading = true)
+                    onArrived?.invoke(FeedPage(arrived(), emptyList(), hasMore = true))
+                },
             )
         } catch (cancelled: CancellationException) {
             loading.value = loading.value.copy(loading = false)
@@ -293,12 +387,15 @@ class MergedTimeline(
             if (error is CancellationException) throw error
             return error
         }
-        reading.failure = null
-        reading.unread += page.threads.filter(wanted)
-        reading.cursor = page.bottomCursor
-        reading.exhausted = page.threads.isEmpty() || page.bottomCursor == null
-        // From every post read, filtered or not: the source has been read down to it.
-        page.threads.minOfOrNull(FeedOrder::timeOf)?.let { reading.oldest = it }
+        val kept = page.threads.filter(wanted)
+        synchronized(readings) {
+            reading.failure = null
+            reading.unread += kept
+            reading.cursor = page.bottomCursor
+            reading.exhausted = page.threads.isEmpty() || page.bottomCursor == null
+            // From every post read, filtered or not: the source has been read down to it.
+            page.threads.minOfOrNull(FeedOrder::timeOf)?.let { reading.oldest = it }
+        }
         return null
     }
 

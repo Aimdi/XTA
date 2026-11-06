@@ -41,7 +41,7 @@ class FollowingFeedTest {
             return pages[who to cursor] ?: XTimelinePage(emptyList(), null, null)
         }
 
-        override suspend fun userPosts(userId: String): XTimelinePage {
+        override suspend fun userPosts(userId: String, includeReplies: Boolean): XTimelinePage {
             synchronized(profileReads) { profileReads += userId }
             return profiles[userId] ?: XTimelinePage(emptyList(), null, null)
         }

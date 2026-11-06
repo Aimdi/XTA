@@ -8,7 +8,8 @@ fun XClient.feedReads(): FeedReads {
     return object : FeedReads {
         override suspend fun search(query: String, cursor: String?) = client.search(query, cursor)
 
-        override suspend fun userPosts(userId: String) = client.userPosts(userId)
+        override suspend fun userPosts(userId: String, includeReplies: Boolean) =
+            if (includeReplies) client.userReplies(userId) else client.userPosts(userId)
     }
 }
 

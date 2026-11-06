@@ -62,7 +62,9 @@ sealed interface FirstPageAction {
          * so the divider never moves under the reader. A place the reader was
          * scrolled to ([sessionOffset]) outranks it. Only a reader at the top
          * ([atTop]) has read everything above: a refresh fired mid-scroll
-         * records nothing.
+         * records nothing. Nor does a page that does not reach down to the
+         * last read post without a hole ([reachesLastSeen]): the posts between
+         * were never on screen.
          */
         fun of(
             threads: List<XThread>,
@@ -70,13 +72,23 @@ sealed interface FirstPageAction {
             caughtUpAlreadyEvaluated: Boolean,
             sessionOffset: Double?,
             atTop: Boolean,
+            reachesLastSeen: Boolean = true,
         ): FirstPageAction {
             if (!caughtUpAlreadyEvaluated && lastSeen != null && (sessionOffset == null || sessionOffset <= 0)) {
                 lastSeen.boundaryIndex(threads)?.let { return RestoreToBoundary(it) }
             }
-            if (!atTop) return DoNothing
+            if (!atTop || !reachesLastSeen) return DoNothing
             return ReadPosition.newestRecordable(threads)?.let(::RecordPosition) ?: DoNothing
         }
+
+        /**
+         * Whether a first page of [threads] reaches down to [lastSeen] with
+         * nothing missing above it: no [gap] between fresh and kept posts, and
+         * the last read post loaded, or nothing more to read. Never read here
+         * reaches everywhere.
+         */
+        fun reaches(threads: List<XThread>, lastSeen: ReadPosition?, hasMore: Boolean, gap: Boolean): Boolean =
+            lastSeen == null || (!gap && (!hasMore || threads.any(lastSeen::isSeen)))
     }
 }
 

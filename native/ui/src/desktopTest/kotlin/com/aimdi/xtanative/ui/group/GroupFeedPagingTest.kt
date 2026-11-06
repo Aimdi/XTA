@@ -110,4 +110,44 @@ class GroupFeedPagingTest {
         assertNull(GroupFeedPaging.dividerIndex(threads, seen, tracks = true, catchUp = true), "catch-up mode ends on a card instead")
         assertNull(GroupFeedPaging.dividerIndex(threads, seen, tracks = false, catchUp = false))
     }
+
+    @Test
+    fun aRetryInCatchUpModeHoldsWhatWasReadBeforeUnderTheStop() {
+        val seen = ReadPosition.of(thread(7))::isSeen
+        val shown = GroupFeedPaging.first(page(9, 8, 7, 6, failures = listOf(IOException("x"))), pageCap = null, isSeen = seen)
+        assertEquals(listOf(9L, 8L), ids(shown))
+        val retried = GroupFeedPaging.retried(shown, FeedPage(listOf(thread(10), thread(5)), emptyList(), hasMore = false), popular = false, isSeen = seen)
+        assertEquals(listOf(10L, 9L, 8L), ids(retried), "what is new goes on screen")
+        assertEquals(listOf(7L, 6L, 5L), retried.stops.held.map { it.id.toLong() }, "what was read waits under the card")
+        assertEquals(listOf(10L, 9L, 8L, 7L, 6L, 5L), ids(GroupFeedPaging.resumed(retried)))
+
+        val plain = GroupFeedPaging.first(page(9, 8), pageCap = null, isSeen = seen)
+        val stopped = GroupFeedPaging.retried(plain, FeedPage(listOf(thread(6)), emptyList(), hasMore = true), popular = false, isSeen = seen)
+        assertEquals(listOf(9L, 8L), ids(stopped))
+        assertEquals(FeedPause.CAUGHT_UP, stopped.pause, "a retry that reaches the read posts stops there")
+        assertTrue(stopped.stops.canContinue)
+
+        val passed = GroupFeedPaging.resumed(shown)
+        val after = GroupFeedPaging.retried(passed, FeedPage(listOf(thread(5)), emptyList(), hasMore = false), popular = false, isSeen = seen)
+        assertEquals(listOf(9L, 8L, 7L, 6L, 5L), ids(after), "read past the stop, it stops no more")
+    }
+
+    @Test
+    fun aHoleBetweenTheNewPostsAndTheKeptOnesKeepsTheCardFromSayingTheReaderIsDone() {
+        val seen = ReadPosition.of(thread(7))::isSeen
+        val shown = GroupFeedPaging.first(FeedPage(listOf(thread(9), thread(7)), emptyList(), hasMore = true, gap = true), pageCap = null, isSeen = seen)
+        assertEquals(CatchUpMessage.MAY_BE_INCOMPLETE, shown.catchUpMessage)
+    }
+
+    @Test
+    fun aFirstLoadsPreviewKeepsItsOrderOnceTheReaderScrolled() {
+        val first = GroupFeedPaging.arrived(emptyList(), page(9, 5), scrolled = false)
+        assertEquals(listOf(9L, 5L), ids(first))
+        val unscrolled = GroupFeedPaging.arrived(first.threads, page(9, 7, 5), scrolled = false)
+        assertEquals(listOf(9L, 7L, 5L), ids(unscrolled), "until the reader scrolls, the preview is the newest order")
+        val scrolled = GroupFeedPaging.arrived(first.threads, page(9, 7, 5), scrolled = true)
+        assertEquals(listOf(9L, 5L, 7L), ids(scrolled), "then what arrives goes under what is on screen")
+        val final = GroupFeedPaging.inPreviewOrder(scrolled.threads, listOf(thread(9), thread(8), thread(7), thread(5)))
+        assertEquals(listOf(9L, 5L, 7L, 8L), final.map { it.id.toLong() })
+    }
 }
