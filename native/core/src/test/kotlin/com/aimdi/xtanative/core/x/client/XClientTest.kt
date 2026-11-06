@@ -102,19 +102,15 @@ class XClientTest {
     }
 
     @Test
-    fun aRefusalWith404DerivesTheSignerAgainOnce() = runBlocking {
-        val x = FakeX { call, _ -> if (call == 1) XResponse(404, "") else XResponse(200, profileBody) }
-        client(x, listOf(account("a"))).profile("quax_tests")
-        assertEquals(2, x.asked.size)
-        assertEquals(2, derived, "the stale signer was replaced")
-    }
-
-    @Test
-    fun a404ThatStaysIsSurfaced() {
+    fun a404FromTheOnlyAccountIsSurfacedAtOnceWithoutDerivingTheSignerAgain() {
         val x = FakeX { _, _ -> XResponse(404, "") }
-        val error = assertFailsWith<XRequestException> { runBlocking { client(x, listOf(account("a"))).profile("quax_tests") } }
-        assertEquals(404, error.code)
-        assertEquals(2, x.asked.size)
+        val reader = client(x, listOf(account("a")))
+        repeat(3) {
+            val error = assertFailsWith<XRequestException> { runBlocking { reader.profile("quax_tests") } }
+            assertEquals(404, error.code)
+        }
+        assertEquals(3, x.asked.size, "one request per read, as XTA's transport")
+        assertEquals(1, derived, "a refusal never throws the signer away")
     }
 
     @Test

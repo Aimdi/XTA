@@ -42,7 +42,8 @@ object XParser {
         val legacy = result["legacy"]
         val core = result["core"]
         val id = result["rest_id"].string ?: legacy["id_str"].string ?: return null
-        val screenName = core["screen_name"].string ?: legacy["screen_name"].string ?: return null
+        // An account without a handle is kept with an empty one, as XTA keeps it.
+        val screenName = core["screen_name"].string ?: legacy["screen_name"].string ?: ""
         val verifiedType = verifiedTypeOf(result)
         return XUser(
             id = id,
@@ -320,7 +321,7 @@ object XParser {
             url = url,
             width = item["original_info"]["width"].int ?: item["sizes"]["large"]["w"].int,
             height = item["original_info"]["height"].int ?: item["sizes"]["large"]["h"].int,
-            alt = nonEmpty(item["ext_alt_text"].string),
+            alt = nonEmpty(item["ext_alt_text"].string) ?: nonEmpty(item["additional_media_info"]["description"].string),
             variants = info["variants"].list.mapNotNull { variant ->
                 XVideoVariant(
                     url = variant["url"].string ?: return@mapNotNull null,
@@ -382,6 +383,29 @@ object XParser {
         }
         return page.build()
     }
+
+    /**
+     * [page]'s posts chained as XTA's createUnconversationedChainsGraphql
+     * chains a search's or a community's: with [group] the posts of one
+     * conversation are one thread, else a thread per post; the newest
+     * conversation (or post) first, a thread's posts oldest first. Without
+     * [includeReplies] a reply is left out before anything is chained. A
+     * pinned post keeps its own thread at the top.
+     */
+    fun conversations(page: XTimelinePage, includeReplies: Boolean = true, group: Boolean = true): XTimelinePage {
+        val pinned = page.threads.filter { it.id in page.pinnedIds }
+        val chains = page.threads.filterNot { it.id in page.pinnedIds }
+            .flatMap { it.posts }
+            .distinctBy { it.id }
+            .filter { includeReplies || (it.replyToPostId == null && it.replyToScreenName == null) }
+            .groupBy { if (group) it.conversationId ?: it.id else it.id }
+            .entries.sortedWith(compareBy(idOrder.reversed()) { it.key })
+            .map { (id, posts) -> XThread(id, posts.sortedWith(compareBy(idOrder) { it.id })) }
+        return page.copy(threads = pinned + chains)
+    }
+
+    /** X's ids in the order they were given: a longer one is newer, as numbers are. */
+    private val idOrder: Comparator<String> = compareBy<String> { it.length }.thenBy { it }
 
     /** A page from a bare list of timeline entries. */
     fun entries(entries: List<J>): XTimelinePage = TimelineBuilder(keepWithheld = false).apply { entries.forEach { entry(it) } }.build()

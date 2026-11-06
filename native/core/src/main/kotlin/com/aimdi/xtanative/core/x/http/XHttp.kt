@@ -1,7 +1,10 @@
 package com.aimdi.xtanative.core.x.http
 
 import java.io.IOException
+import java.io.InterruptedIOException
+import java.net.SocketTimeoutException
 import java.util.concurrent.TimeUnit
+import kotlin.coroutines.coroutineContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -38,42 +41,61 @@ fun interface XHttp {
 
 /**
  * [XHttp] over one shared OkHttp client, so every request reuses the
- * connection pool. A request that fails before an answer, or that X answers
- * with 502–504, is tried once more, as XTA's getXResponse does.
+ * connection pool. A GET that fails before an answer, or that X answers with
+ * 502–504, is tried once more, as XTA's getXResponse does; not one that timed
+ * out, nor when the read's [XRequestBudget] has no time left for it. Each call
+ * waits no longer than what is left of that budget.
  */
 class OkHttpXHttp(private val client: OkHttpClient = defaultClient) : XHttp {
     private val noRedirects = client.newBuilder().followRedirects(false).followSslRedirects(false).build()
 
-    override suspend fun get(url: HttpUrl, headers: Map<String, String>, followRedirects: Boolean): XResponse =
-        withContext(Dispatchers.IO) {
-            val caller = if (followRedirects) client else noRedirects
-            val request = Request.Builder().url(url).apply { headers.forEach { (name, value) -> header(name, value) } }.build()
-            try {
-                val first = caller.newCall(request).execute().use { it.toXResponse() }
-                if (first.code !in 502..504) return@withContext first
-            } catch (_: IOException) {
-                // tried again below
-            }
-            delay(200)
-            caller.newCall(request).execute().use { it.toXResponse() }
+    override suspend fun get(url: HttpUrl, headers: Map<String, String>, followRedirects: Boolean): XResponse {
+        val budget = coroutineContext[XRequestBudget]
+        val caller = if (followRedirects) client else noRedirects
+        val request = Request.Builder().url(url).apply { headers.forEach { (name, value) -> header(name, value) } }.build()
+        try {
+            val first = caller.send(request, budget)
+            if (first.code !in 502..504 || !hasTimeToRetry(budget)) return first
+        } catch (error: InterruptedIOException) {
+            throw error
+        } catch (error: IOException) {
+            if (!hasTimeToRetry(budget)) throw error
         }
-
-    override suspend fun post(url: HttpUrl, headers: Map<String, String>): XResponse = withContext(Dispatchers.IO) {
-        val request = Request.Builder().url(url).post(ByteArray(0).toRequestBody(null))
-            .apply { headers.forEach { (name, value) -> header(name, value) } }.build()
-        client.newCall(request).execute().use { it.toXResponse() }
+        delay(RETRY_DELAY_MILLIS)
+        return caller.send(request, budget)
     }
 
-    override suspend fun post(url: HttpUrl, headers: Map<String, String>, body: String, contentType: String): XResponse =
-        withContext(Dispatchers.IO) {
-            val request = Request.Builder().url(url).post(body.toRequestBody(contentType.toMediaType()))
-                .apply { headers.forEach { (name, value) -> header(name, value) } }.build()
-            client.newCall(request).execute().use { it.toXResponse() }
+    override suspend fun post(url: HttpUrl, headers: Map<String, String>): XResponse {
+        val request = Request.Builder().url(url).post(ByteArray(0).toRequestBody(null))
+            .apply { headers.forEach { (name, value) -> header(name, value) } }.build()
+        return client.send(request, coroutineContext[XRequestBudget])
+    }
+
+    override suspend fun post(url: HttpUrl, headers: Map<String, String>, body: String, contentType: String): XResponse {
+        val request = Request.Builder().url(url).post(body.toRequestBody(contentType.toMediaType()))
+            .apply { headers.forEach { (name, value) -> header(name, value) } }.build()
+        return client.send(request, coroutineContext[XRequestBudget])
+    }
+
+    private suspend fun OkHttpClient.send(request: Request, budget: XRequestBudget?): XResponse = withContext(Dispatchers.IO) {
+        val call = newCall(request)
+        if (budget != null) {
+            val left = budget.remainingMillis
+            if (left < 1) throw SocketTimeoutException("The request's time is spent")
+            val timeout = call.timeout()
+            val millis = if (timeout.timeoutNanos() == 0L) left else minOf(left, TimeUnit.NANOSECONDS.toMillis(timeout.timeoutNanos()))
+            timeout.timeout(millis, TimeUnit.MILLISECONDS)
         }
+        call.execute().use { it.toXResponse() }
+    }
+
+    private fun hasTimeToRetry(budget: XRequestBudget?) = budget == null || budget.remainingMillis > RETRY_DELAY_MILLIS
 
     private fun okhttp3.Response.toXResponse() = XResponse(code, body?.string().orEmpty(), headers.toMultimap())
 
     companion object {
+        private const val RETRY_DELAY_MILLIS = 200L
+
         val defaultClient: OkHttpClient = OkHttpClient.Builder()
             .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)

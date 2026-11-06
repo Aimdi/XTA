@@ -34,7 +34,7 @@ class FollowingFeedTest {
         val searches = ArrayList<Pair<String, String?>>()
         val profileReads = ArrayList<String>()
 
-        override suspend fun search(query: String, cursor: String?): XTimelinePage {
+        override suspend fun search(query: String, cursor: String?, includeReplies: Boolean): XTimelinePage {
             val who = Regex("from:(\\w)").find(query)!!.groupValues[1]
             synchronized(searches) { searches += who to cursor }
             failing[who]?.let { throw it }

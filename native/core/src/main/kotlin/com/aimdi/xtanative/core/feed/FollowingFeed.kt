@@ -6,7 +6,7 @@ import com.aimdi.xtanative.core.x.XClient
 fun XClient.feedReads(): FeedReads {
     val client = this
     return object : FeedReads {
-        override suspend fun search(query: String, cursor: String?) = client.search(query, cursor)
+        override suspend fun search(query: String, cursor: String?, includeReplies: Boolean) = client.search(query, cursor, includeReplies = includeReplies)
 
         override suspend fun userPosts(userId: String) = client.userPosts(userId)
     }

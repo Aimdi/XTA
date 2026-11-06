@@ -168,10 +168,13 @@ private object Routes {
 
     /** Post [id], its media's row at picture [media]: the one a grid's viewer was on. */
     fun post(id: String, media: Int = 0) = if (media > 0) "post/$id?media=$media" else "post/$id"
-    /** [screenName]'s profile, read by [id] when known, opening on [tab] when one is named. */
+    /**
+     * [screenName]'s profile, read by [id] when known, opening on [tab] when one is named.
+     * An account X sent without a handle goes by its id: the route needs a name.
+     */
     fun profile(screenName: String, id: String? = null, tab: ProfileTab? = null): String {
         val params = listOfNotNull(id?.takeIf { it.isNotBlank() }?.let { "id=" + encoded(it) }, tab?.let { "tab=" + it.routeName })
-        return "profile/" + encoded(screenName) + if (params.isEmpty()) "" else "?" + params.joinToString("&")
+        return "profile/" + encoded(screenName.ifEmpty { id.orEmpty() }) + if (params.isEmpty()) "" else "?" + params.joinToString("&")
     }
     fun media(postId: String, index: Int) = "media/$postId/$index"
 

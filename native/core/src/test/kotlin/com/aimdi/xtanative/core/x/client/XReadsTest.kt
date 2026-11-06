@@ -5,7 +5,6 @@ import com.aimdi.xtanative.core.x.XAccount
 import com.aimdi.xtanative.core.x.XAnswerException
 import com.aimdi.xtanative.core.x.XClient
 import com.aimdi.xtanative.core.x.XCommunityUnavailableException
-import com.aimdi.xtanative.core.x.XNoAccountException
 import com.aimdi.xtanative.core.x.XQuoteOrder
 import com.aimdi.xtanative.core.x.XReplyRanking
 import com.aimdi.xtanative.core.x.XSigners
@@ -311,7 +310,24 @@ class XReadsTest {
         assertEquals(XTranslationException.Kind.TOO_MANY_REQUESTS, refusal(429, "{}").kind)
         assertEquals(XTranslationException.Kind.FAILED, refusal(500, "{}").kind)
         assertEquals("nope", refusal(200, """{"error":{"message":"nope"}}""").message)
-        assertFailsWith<XNoAccountException> { runBlocking { XClient(FakeX { XResponse(200, "{}") }, { emptyList() }, XSigners({ TransactionSigner(IntArray(48) { it }, "a") })).translate("1", "de") } }
+    }
+
+    @Test
+    fun aTranslationWithoutAnAccountIsAskedWithoutAnAccountsHeaders() = runBlocking {
+        val asked = ArrayList<Map<String, String>>()
+        val x = object : XHttp {
+            override suspend fun get(url: HttpUrl, headers: Map<String, String>, followRedirects: Boolean) = XResponse(404, "")
+            override suspend fun post(url: HttpUrl, headers: Map<String, String>, body: String, contentType: String): XResponse {
+                asked += headers
+                return XResponse(200, """{"result":{"text":"Hallo"}}""")
+            }
+        }
+        val translation = XClient(x, { emptyList() }, XSigners({ TransactionSigner(IntArray(48) { it }, "a") })).translate("1", "de")
+        assertEquals("Hallo", translation.text)
+        val headers = asked.single()
+        assertEquals(XClient.BASE_HEADERS["authorization"], headers["authorization"], "the signed-in bearer, as XTA's base headers carry")
+        assertNull(headers["Cookie"])
+        assertTrue(headers["x-client-transaction-id"]!!.isNotEmpty(), "signed without a session")
     }
 
     @Test

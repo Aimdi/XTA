@@ -110,7 +110,7 @@ class XTransportTest {
         val x = FakeX { _, _ -> XResponse(404, "") }
         val error = assertFailsWith<XEndpointRefusedException> { read(client(x, listOf(account("a"), account("b")))) }
         assertEquals(404, error.code)
-        assertEquals(4, x.asked.size, "the signers are derived again once, then both accounts asked again")
+        assertEquals(2, x.asked.size, "surfaced once each account was asked, as XTA's transport does")
         assertTrue(listOf("id-a", "id-b").all { health.read(it).isClean })
     }
 
