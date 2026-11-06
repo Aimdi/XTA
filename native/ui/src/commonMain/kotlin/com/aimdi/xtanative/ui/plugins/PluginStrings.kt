@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.plugins
 
+import androidx.compose.runtime.Immutable
 import java.util.Locale
 
 /**
@@ -58,11 +59,13 @@ open class PluginStrings(tables: Map<String, Map<String, String>>) {
 }
 
 /** One of a plugin's texts: [get] it in a language, or [pluginString] it in a composable. */
+@Immutable
 class PluginText internal constructor(val strings: PluginStrings, val name: String) {
     fun get(language: String, vararg args: Any): String = strings.format(name, language, *args)
 }
 
 /** One of a plugin's plurals: [get] it for a count, or [pluginPlural] it in a composable. */
+@Immutable
 class PluginPlural internal constructor(val strings: PluginStrings, val name: String) {
     fun get(count: Int, language: String, vararg args: Any): String = strings.plural(name, count, language, *args)
 }

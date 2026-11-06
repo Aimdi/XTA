@@ -33,6 +33,13 @@ It keeps its data in `~/.local/share/xta-native`, a folder only you can open. Vi
 - Every section of XTA's settings, its backup export and import, WebDAV sync, and 29 languages; an opened post that swipes back as XTA's card, confirm close, the check for a newer prerelease and the licences page
 - Links open in the app's own browser on Android, or in the browser you pick; x.com and the networks' links open in the app, and so do t.co, fxtwitter, vxtwitter and fixupx links; a link nothing reads says so
 - New in this prerelease:
+  - Group feeds bring you back to your last read post after a long absence and never mark posts read past a gap; a feed reopened in the same session comes back as you left it, without reading X again; chunks show as they answer; a feed out of sight reads nothing; a search that stalls falls back to the members' profiles
+  - Reads from X keep to one 30-second budget, a changed endpoint is reported at once instead of retried, reading without an account no longer needs request signing, and search results come grouped by conversation
+  - The networks' videos follow Settings › Media (manual loading, mute, loop, quality, autoplay) as X's do; Bluesky remembers where you left Following; the language switches without a restart
+  - Backups carry groups' icons and colours, read positions with their time (For you too), accounts' health and each feed's catch-up mode both ways between XTA and XTA Native
+  - On Linux: one copy at a time (a second start raises the window), the window's size remembered, automatic downloads in Pictures, Videos or Downloads by type, and software centres can list the app
+  - On Android: shared text handled as XTA does, and a record of main-thread stalls in the diagnostics report
+- In 0.1.56:
   - Live broadcasts and Spaces play in the app
   - The networks' posts in Home's timelines show at once from the last visit while they load again; a source that fails says why, offers what fixes it, and tries again by itself; a feed shown from disk says when it was saved; posts load under skeletons
   - Profiles open by account, so a renamed one still opens, and show the copy kept on the device while X is read again; profile links open their tab; people lists carry every badge
