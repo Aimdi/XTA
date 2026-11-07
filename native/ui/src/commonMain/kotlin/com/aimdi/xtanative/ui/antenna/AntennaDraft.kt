@@ -26,6 +26,15 @@ data class AntennaDraft(
     val canSave: Boolean get() = Antenna.canSave(name, includeTerms)
 
     companion object {
+        /** The narrowest editor, in dp, that shows the two scopes side by side. */
+        const val SEGMENTED_FROM_DP = 480f
+
+        /** The text size from which the scopes stand one under the other, however wide the editor. */
+        const val STACKED_FROM_FONT_SCALE = 1.3f
+
+        /** Whether the scopes sit side by side: on a wide enough editor at ordinary text sizes; at 200 % they stack. */
+        fun scopesSideBySide(widthDp: Float, fontScale: Float): Boolean = widthDp >= SEGMENTED_FROM_DP && fontScale < STACKED_FROM_FONT_SCALE
+
         /** The editor for [antenna], or an empty one for a new antenna. */
         fun of(antenna: Antenna?): AntennaDraft = antenna?.let {
             AntennaDraft(it.id, it.name, Antenna.typed(it.includeTerms), Antenna.typed(it.excludeTerms), it.scope)

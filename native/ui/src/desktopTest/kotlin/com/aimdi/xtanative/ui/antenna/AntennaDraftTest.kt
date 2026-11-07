@@ -25,6 +25,13 @@ class AntennaDraftTest {
     }
 
     @Test
+    fun theScopesSitSideBySideWhenTheyFitAndStackAtLargeText() {
+        assertTrue(AntennaDraft.scopesSideBySide(widthDp = 600f, fontScale = 1f), "the compact segmented choice when it fits")
+        assertFalse(AntennaDraft.scopesSideBySide(widthDp = 600f, fontScale = 2f), "at 200 percent text the choices stack")
+        assertFalse(AntennaDraft.scopesSideBySide(widthDp = 320f, fontScale = 1f), "a narrow editor stacks them")
+    }
+
+    @Test
     fun okNeedsANameAndATerm() {
         assertFalse(AntennaDraft(name = "Rockets").canSave)
         assertFalse(AntennaDraft(name = "  ", include = "starship").canSave)

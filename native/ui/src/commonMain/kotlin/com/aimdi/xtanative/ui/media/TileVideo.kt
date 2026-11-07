@@ -76,7 +76,7 @@ internal fun TileVideo(
     var seen by remember { mutableStateOf(false) }
     val autoplay = settings?.get(MediaPrefs.autoplay) == true
     val ask by rememberUpdatedState<() -> Unit> { source(settings)?.let { tiles.ask(key, it) } }
-    val byItself = autoplay && seen && (playing || !tiles.shared)
+    val byItself = VideoRules.startsByItself(autoplay, seen, playing, tiles.shared)
     LaunchedEffect(tiles, byItself) {
         if (!byItself) return@LaunchedEffect
         delay(VideoRules.SETTLE_MS)
@@ -118,7 +118,7 @@ internal fun TileGif(source: VideoSource?, poster: Any?, playing: Boolean, modif
     val tiles = rememberTilePlayer() ?: return
     var seen by remember { mutableStateOf(false) }
     var settled by remember { mutableStateOf(false) }
-    val wanted = seen && (playing || !tiles.shared)
+    val wanted = VideoRules.gifLoops(seen, playing, tiles.shared)
     LaunchedEffect(wanted) {
         settled = false
         if (!wanted) return@LaunchedEffect
