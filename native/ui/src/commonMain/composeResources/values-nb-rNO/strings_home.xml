@@ -65,4 +65,5 @@
     <string name="home_two_pages_required">Du trenger minst 2 startsider</string>
     <string name="home_choose_pages">Velg sider</string>
     <string name="home_unable_to_load_pages">Kunne ikke laste startsider</string>
+    <string name="feed_strip_unavailable">Denne tidslinjen er ikke lenger tilgjengelig</string>
 </resources>

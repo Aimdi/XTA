@@ -349,7 +349,7 @@
     <string name="settings_image_cache_size">此裝置上有 %1$s。超過 %2$d 天的圖片會自動刪除。</string>
     <string name="settings_move_up">上移</string>
     <string name="settings_move_down">下移</string>
-    <string name="intro_device_footnote">當機報告保持關閉，直到你在設定中開啟，而且永遠不會離開此裝置。</string>
+    <string name="intro_device_footnote">當機回報保持關閉，直到你在設定中加入自己的 GitHub 權杖。</string>
     <string name="intro_account_body">XTA 登入只是為了讀取。用哪個帳號都不會改變你看到的內容——你也可以不登入就開始。</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="other">已在 %1$d 個端點觸發請求限制</item>

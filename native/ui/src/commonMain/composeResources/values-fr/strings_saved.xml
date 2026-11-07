@@ -73,7 +73,6 @@
     <string name="saved_create">Créer</string>
     <string name="saved_save">Enregistrer</string>
     <string name="saved_media_saved">Média enregistré avec succès !</string>
-    <string name="saved_needs_download_folder">Définissez un dossier de téléchargement dans Paramètres &gt; Médias pour le téléchargement automatique.</string>
     <string name="saved_sheet_title">Enregistrer dans</string>
     <string name="saved_sheet_all_folders">Tous les dossiers</string>
     <string name="saved_sheet_no_match">Aucun dossier trouvé</string>
@@ -168,4 +167,5 @@
     <string name="downloads_interrupted">Interrompu · Réessayez pour continuer</string>
     <string name="downloads_batch">Fichiers enregistrés : %1$d / %2$d</string>
     <string name="downloads_saved_to">Enregistré dans %1$s</string>
+    <string name="set_a_download_folder_to_auto_download">Définissez un dossier de téléchargement dans Paramètres &gt; Médias pour le téléchargement automatique.</string>
 </resources>

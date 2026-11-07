@@ -73,7 +73,6 @@
     <string name="saved_create">Erstellen</string>
     <string name="saved_save">Speichern</string>
     <string name="saved_media_saved">Datei gespeichert!</string>
-    <string name="saved_needs_download_folder">Lege für den automatischen Download einen Download-Ordner unter Einstellungen &gt; Medien fest.</string>
     <string name="saved_sheet_title">Speichern in</string>
     <string name="saved_sheet_all_folders">Alle Ordner</string>
     <string name="saved_sheet_no_match">Kein Ordner gefunden</string>
@@ -168,4 +167,5 @@
     <string name="downloads_interrupted">Unterbrochen · Zum Fortfahren erneut versuchen</string>
     <string name="downloads_batch">Gespeicherte Dateien: %1$d / %2$d</string>
     <string name="downloads_saved_to">Gespeichert in %1$s</string>
+    <string name="set_a_download_folder_to_auto_download">Lege für den automatischen Download einen Download-Ordner unter Einstellungen &gt; Medien fest.</string>
 </resources>

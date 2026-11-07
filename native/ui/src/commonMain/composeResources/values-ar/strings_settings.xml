@@ -349,7 +349,7 @@
     <string name="settings_image_cache_size">%1$s على هذا الجهاز. تُحذف الصور الأقدم من %2$d يومًا تلقائيًا.</string>
     <string name="settings_move_up">نقل لأعلى</string>
     <string name="settings_move_down">نقل لأسفل</string>
-    <string name="intro_device_footnote">تبقى تقارير الأعطال متوقفة حتى تفعّلها في الإعدادات، ولا تغادر هذا الجهاز أبدًا.</string>
+    <string name="intro_device_footnote">تبقى تقارير الأعطال متوقفة حتى تضيف رمز GitHub الخاص بك في الإعدادات.</string>
     <string name="intro_account_body">يسجّل XTA الدخول للقراءة فقط. الحساب الذي تستخدمه لا يغيّر ما تراه — ويمكنك البدء بدون حساب.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="zero">لا توجد قيود على الطلبات</item>

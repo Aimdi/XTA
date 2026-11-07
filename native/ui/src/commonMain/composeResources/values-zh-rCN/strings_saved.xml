@@ -70,7 +70,6 @@
     <string name="saved_create">创建</string>
     <string name="saved_save">保存</string>
     <string name="saved_media_saved">已保存媒体文件！</string>
-    <string name="saved_needs_download_folder">在设置 &gt; 媒体中设置下载文件夹以自动下载。</string>
     <string name="saved_sheet_title">保存到</string>
     <string name="saved_sheet_all_folders">全部文件夹</string>
     <string name="saved_sheet_no_match">未找到文件夹</string>
@@ -165,4 +164,5 @@
     <string name="downloads_interrupted">已中断 · 点按重试以继续</string>
     <string name="downloads_batch">已保存文件：%1$d / %2$d</string>
     <string name="downloads_saved_to">已保存到 %1$s</string>
+    <string name="set_a_download_folder_to_auto_download">在设置 &gt; 媒体中设置下载文件夹以自动下载。</string>
 </resources>

@@ -65,4 +65,5 @@
     <string name="home_two_pages_required">È necessario avere almeno due pagine nella home.</string>
     <string name="home_choose_pages">Scegli le pagine</string>
     <string name="home_unable_to_load_pages">Impossibile caricare le tue pagine della home</string>
+    <string name="feed_strip_unavailable">Questa timeline non è più disponibile</string>
 </resources>

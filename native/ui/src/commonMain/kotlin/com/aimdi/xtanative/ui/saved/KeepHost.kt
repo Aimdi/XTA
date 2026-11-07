@@ -53,7 +53,6 @@ import com.aimdi.xtanative.ui.generated.resources.offline_media_count
 import com.aimdi.xtanative.ui.generated.resources.offline_unavailable
 import com.aimdi.xtanative.ui.generated.resources.saved_long_press_hint
 import com.aimdi.xtanative.ui.generated.resources.saved_media_saved
-import com.aimdi.xtanative.ui.generated.resources.saved_needs_download_folder
 import com.aimdi.xtanative.ui.generated.resources.saved_no_media_file
 import com.aimdi.xtanative.ui.generated.resources.saved_note_save_error
 import com.aimdi.xtanative.ui.generated.resources.saved_note_saved
@@ -61,6 +60,7 @@ import com.aimdi.xtanative.ui.generated.resources.saved_notice_likes
 import com.aimdi.xtanative.ui.generated.resources.saved_notice_notes
 import com.aimdi.xtanative.ui.generated.resources.saved_notice_saves
 import com.aimdi.xtanative.ui.generated.resources.saved_something_wrong
+import com.aimdi.xtanative.ui.generated.resources.set_a_download_folder_to_auto_download
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -157,7 +157,7 @@ fun noticeText(notice: KeepNotice): String = when (notice) {
     KeepNotice.RetryHint -> stringResource(Res.string.downloads_retry_hint)
     KeepNotice.DownloadFailed -> stringResource(Res.string.downloads_failed)
     KeepNotice.NoMediaFile -> stringResource(Res.string.saved_no_media_file)
-    KeepNotice.NeedsDownloadFolder -> stringResource(Res.string.saved_needs_download_folder)
+    KeepNotice.NeedsDownloadFolder -> stringResource(Res.string.set_a_download_folder_to_auto_download)
     is KeepNotice.Batch -> stringResource(Res.string.downloads_batch, notice.saved, notice.total)
     KeepNotice.FolderHint -> stringResource(Res.string.saved_long_press_hint)
     KeepNotice.LikesStayHere -> stringResource(Res.string.saved_notice_likes)

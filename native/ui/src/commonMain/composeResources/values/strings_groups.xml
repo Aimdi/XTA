@@ -243,4 +243,7 @@
     </plurals>
     <string name="groups_changes_saved">Changes saved</string>
     <string name="groups_undo_failed">Could not undo. The data may have changed.</string>
+    <string name="group_discovery_suggested_for">Bluesky suggests this for %1$s</string>
+    <string name="unable_to_load_the_group">Unable to load the group</string>
+    <string name="unable_to_refresh_the_subscriptions">Unable to refresh the subscriptions</string>
 </resources>

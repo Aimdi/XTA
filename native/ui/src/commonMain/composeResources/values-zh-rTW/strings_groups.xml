@@ -236,4 +236,7 @@
     </plurals>
     <string name="groups_changes_saved">變更已儲存</string>
     <string name="groups_undo_failed">無法復原。資料可能已變更。</string>
+    <string name="group_discovery_suggested_for">Bluesky 為 %1$s 推薦</string>
+    <string name="unable_to_load_the_group">無法載入群組</string>
+    <string name="unable_to_refresh_the_subscriptions">無法重新整理訂閱</string>
 </resources>

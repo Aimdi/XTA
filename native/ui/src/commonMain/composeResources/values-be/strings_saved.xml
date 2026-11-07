@@ -79,7 +79,6 @@
     <string name="saved_create">Стварыць</string>
     <string name="saved_save">Захаваць</string>
     <string name="saved_media_saved">Файл захаваны!</string>
-    <string name="saved_needs_download_folder">Задайце тэчку спамповак у Налады &gt; Медыя для аўтаспампоўкі.</string>
     <string name="saved_sheet_title">Захаваць у</string>
     <string name="saved_sheet_all_folders">Усе тэчкі</string>
     <string name="saved_sheet_no_match">Тэчка не знойдзена</string>
@@ -174,4 +173,5 @@
     <string name="downloads_interrupted">Перапынена · Паўтарыце спробу, каб працягнуць</string>
     <string name="downloads_batch">Захаваныя файлы: %1$d / %2$d</string>
     <string name="downloads_saved_to">Захавана ў %1$s</string>
+    <string name="set_a_download_folder_to_auto_download">Задайце тэчку спамповак у Налады &gt; Медыя для аўтаспампоўкі.</string>
 </resources>

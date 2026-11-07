@@ -65,4 +65,5 @@
     <string name="home_two_pages_required">Je moet minimaal 2 startschermpagina's hebben.</string>
     <string name="home_choose_pages">Pagina's kiezen</string>
     <string name="home_unable_to_load_pages">Kan de startpagina's niet laden</string>
+    <string name="feed_strip_unavailable">Deze tijdlijn is niet meer beschikbaar</string>
 </resources>

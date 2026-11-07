@@ -349,7 +349,7 @@
     <string name="settings_image_cache_size">%1$s selles seadmes. Üle %2$d päeva vanad pildid eemaldatakse ise.</string>
     <string name="settings_move_up">Liiguta üles</string>
     <string name="settings_move_down">Liiguta alla</string>
-    <string name="intro_device_footnote">Tõrketeated jäävad välja lülitatuks, kuni lülitad need seadetes sisse, ega lahku kunagi sellest seadmest.</string>
+    <string name="intro_device_footnote">Tõrketeated jäävad välja lülitatuks, kuni lisad seadetes oma GitHubi tunnuse.</string>
     <string name="intro_account_body">XTA logib sisse ainult lugemiseks. See, millist kontot kasutad, ei muuda seda, mida näed — ja alustada saab ka kontota.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">Päringupiirang %1$d lõpp-punktis</item>

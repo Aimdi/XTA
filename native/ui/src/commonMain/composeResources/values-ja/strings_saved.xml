@@ -70,7 +70,6 @@
     <string name="saved_create">作成</string>
     <string name="saved_save">保存</string>
     <string name="saved_media_saved">メディアを保存しました！</string>
-    <string name="saved_needs_download_folder">自動ダウンロードするには、設定 &gt; メディアでダウンロードフォルダーを設定してください。</string>
     <string name="saved_sheet_title">保存先</string>
     <string name="saved_sheet_all_folders">すべてのフォルダー</string>
     <string name="saved_sheet_no_match">フォルダーが見つかりません</string>
@@ -165,4 +164,5 @@
     <string name="downloads_interrupted">中断 · 再試行して続行</string>
     <string name="downloads_batch">保存したファイル数: %1$d / %2$d</string>
     <string name="downloads_saved_to">%1$s に保存しました</string>
+    <string name="set_a_download_folder_to_auto_download">自動ダウンロードするには、設定 &gt; メディアでダウンロードフォルダーを設定してください。</string>
 </resources>

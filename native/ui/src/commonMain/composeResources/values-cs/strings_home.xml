@@ -67,4 +67,5 @@
     <string name="home_two_pages_required">Musíte mít alespoň 2 stránky domovské obrazovky.</string>
     <string name="home_choose_pages">Vybrat stránky</string>
     <string name="home_unable_to_load_pages">Nepodařilo se načíst vaše domovské stránky</string>
+    <string name="feed_strip_unavailable">Tato timeline už není dostupná</string>
 </resources>

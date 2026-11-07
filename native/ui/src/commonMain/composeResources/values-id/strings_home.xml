@@ -64,4 +64,5 @@
     <string name="home_two_pages_required">Kamu perlu setidaknya 2 halaman beranda.</string>
     <string name="home_choose_pages">Pilih halaman</string>
     <string name="home_unable_to_load_pages">Tidak bisa memuat beranda Anda</string>
+    <string name="feed_strip_unavailable">Timeline ini tidak lagi tersedia</string>
 </resources>

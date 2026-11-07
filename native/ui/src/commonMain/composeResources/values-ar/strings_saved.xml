@@ -85,7 +85,6 @@
     <string name="saved_create">إنشاء</string>
     <string name="saved_save">حفظ</string>
     <string name="saved_media_saved">تم حفظ الوسائط!</string>
-    <string name="saved_needs_download_folder">عيّن مجلد تنزيل في الإعدادات &gt; الوسائط للتنزيل التلقائي.</string>
     <string name="saved_sheet_title">حفظ في</string>
     <string name="saved_sheet_all_folders">كل المجلدات</string>
     <string name="saved_sheet_no_match">لم يُعثر على مجلد</string>
@@ -180,4 +179,5 @@
     <string name="downloads_interrupted">انقطع التنزيل · أعد المحاولة للمتابعة</string>
     <string name="downloads_batch">الملفات المحفوظة: %1$d / %2$d</string>
     <string name="downloads_saved_to">تم الحفظ في %1$s</string>
+    <string name="set_a_download_folder_to_auto_download">عيّن مجلد تنزيل في الإعدادات &gt; الوسائط للتنزيل التلقائي.</string>
 </resources>

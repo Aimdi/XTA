@@ -349,7 +349,7 @@
     <string name="settings_image_cache_size">%1$s na hetaj pryladzie. Vyjavy, starejšyja za %2$d dzion, vydalajucca sami.</string>
     <string name="settings_move_up">Pieramiascić vyšej</string>
     <string name="settings_move_down">Pieramiascić nižej</string>
-    <string name="intro_device_footnote">Spravazdačy pra zboi vyklučany, pakul vy nie ŭklučycie ich u naladach, i nikoli nie pakidajuć hetuju pryladu.</string>
+    <string name="intro_device_footnote">Spravazdačy pra zboi vyklučany, pakul vy nie dadaście svoj ułasny token GitHub u naładach.</string>
     <string name="intro_account_body">XTA uvachodzić tolki kab čytać. Jaki ŭlikovy zapis vy vykarystoŭvajecie, nie mianiaje taho, što vy bačycie — i pačać možna biez jaho.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">Abmiežavannie zapytaŭ na %1$d kančatkovaj kropcy</item>

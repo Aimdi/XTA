@@ -236,4 +236,7 @@
     </plurals>
     <string name="groups_changes_saved">Perubahan disimpan</string>
     <string name="groups_undo_failed">Tidak dapat mengurungkan. Data mungkin telah berubah.</string>
+    <string name="group_discovery_suggested_for">Bluesky menyarankan ini untuk %1$s</string>
+    <string name="unable_to_load_the_group">Tidak bisa memuat grup</string>
+    <string name="unable_to_refresh_the_subscriptions">Tidak bisa menyegarkan langganan</string>
 </resources>

@@ -73,7 +73,6 @@
     <string name="saved_create">Crea</string>
     <string name="saved_save">Desa</string>
     <string name="saved_media_saved">Suport desat!</string>
-    <string name="saved_needs_download_folder">Defineix una carpeta de baixades a Configuració &gt; Multimèdia per baixar automàticament.</string>
     <string name="saved_sheet_title">Desa a</string>
     <string name="saved_sheet_all_folders">Totes les carpetes</string>
     <string name="saved_sheet_no_match">No s'ha trobat cap carpeta</string>
@@ -168,4 +167,5 @@
     <string name="downloads_interrupted">Interromput · Torna-ho a provar per continuar</string>
     <string name="downloads_batch">Fitxers desats: %1$d / %2$d</string>
     <string name="downloads_saved_to">S'ha desat a %1$s</string>
+    <string name="set_a_download_folder_to_auto_download">Defineix una carpeta de baixades a Configuració &gt; Multimèdia per baixar automàticament.</string>
 </resources>

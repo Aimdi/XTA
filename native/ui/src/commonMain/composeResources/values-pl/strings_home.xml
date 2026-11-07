@@ -67,4 +67,5 @@
     <string name="home_two_pages_required">Musisz mieć co najmniej 2 karty.</string>
     <string name="home_choose_pages">Wybierz karty</string>
     <string name="home_unable_to_load_pages">Nie można załadować Twoich kart</string>
+    <string name="feed_strip_unavailable">Ta oś czasu jest już niedostępna</string>
 </resources>

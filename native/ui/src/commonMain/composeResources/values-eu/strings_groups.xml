@@ -243,4 +243,7 @@
     </plurals>
     <string name="groups_changes_saved">Aldaketak gorde dira</string>
     <string name="groups_undo_failed">Ezin izan da desegin. Baliteke datuak aldatu izana.</string>
+    <string name="group_discovery_suggested_for">Bluesky-k %1$s erabiltzailearentzat proposatua</string>
+    <string name="unable_to_load_the_group">Ezin da taldea kargatu</string>
+    <string name="unable_to_refresh_the_subscriptions">Harpidetzak ezin dira eguneratu</string>
 </resources>

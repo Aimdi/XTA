@@ -73,7 +73,6 @@
     <string name="saved_create">Crea</string>
     <string name="saved_save">Salva</string>
     <string name="saved_media_saved">Contenuto salvato!</string>
-    <string name="saved_needs_download_folder">Imposta una cartella di download in Impostazioni &gt; Media per il download automatico.</string>
     <string name="saved_sheet_title">Salva in</string>
     <string name="saved_sheet_all_folders">Tutte le cartelle</string>
     <string name="saved_sheet_no_match">Nessuna cartella trovata</string>
@@ -168,4 +167,5 @@
     <string name="downloads_interrupted">Interrotto · Riprova per continuare</string>
     <string name="downloads_batch">File salvati: %1$d / %2$d</string>
     <string name="downloads_saved_to">Salvato in %1$s</string>
+    <string name="set_a_download_folder_to_auto_download">Imposta una cartella di download in Impostazioni &gt; Media per il download automatico.</string>
 </resources>

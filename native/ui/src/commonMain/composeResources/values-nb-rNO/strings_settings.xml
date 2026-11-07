@@ -349,7 +349,7 @@
     <string name="settings_image_cache_size">%1$s på denne enheten. Bilder eldre enn %2$d dager fjernes automatisk.</string>
     <string name="settings_move_up">Flytt opp</string>
     <string name="settings_move_down">Flytt ned</string>
-    <string name="intro_device_footnote">Krasjrapporter er av til du slår dem på i innstillingene, og de forlater aldri denne enheten.</string>
+    <string name="intro_device_footnote">Krasjrapporter er av til du legger inn ditt eget GitHub-token i innstillingene.</string>
     <string name="intro_account_body">XTA logger bare inn for å lese. Hvilken konto du bruker endrer ikke hva du ser — og du kan starte uten.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">Forespørselsgrense nådd på %1$d endepunkt</item>

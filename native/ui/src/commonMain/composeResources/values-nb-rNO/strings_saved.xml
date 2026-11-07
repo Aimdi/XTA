@@ -73,7 +73,6 @@
     <string name="saved_create">Opprett</string>
     <string name="saved_save">Lagre</string>
     <string name="saved_media_saved">Media lagret.</string>
-    <string name="saved_needs_download_folder">Angi en nedlastingsmappe i Innstillinger &gt; Medier for automatisk nedlasting.</string>
     <string name="saved_sheet_title">Lagre i</string>
     <string name="saved_sheet_all_folders">Alle mapper</string>
     <string name="saved_sheet_no_match">Fant ingen mappe</string>
@@ -168,4 +167,5 @@
     <string name="downloads_interrupted">Avbrutt · Prøv på nytt for å fortsette</string>
     <string name="downloads_batch">Lagrede filer: %1$d / %2$d</string>
     <string name="downloads_saved_to">Lagret i %1$s</string>
+    <string name="set_a_download_folder_to_auto_download">Angi en nedlastingsmappe i Innstillinger &gt; Medier for automatisk nedlasting.</string>
 </resources>

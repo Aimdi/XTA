@@ -1,20 +1,25 @@
 package com.aimdi.xtanative.ui.pluginstore
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import com.aimdi.xtanative.data.plugins.AppPlugins
 import com.aimdi.xtanative.data.plugins.Destination
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.feed_strip_unavailable
 import com.aimdi.xtanative.ui.generated.resources.plugin_open_client
 import com.aimdi.xtanative.ui.generated.resources.search
 import com.aimdi.xtanative.ui.generated.resources.settings
@@ -50,7 +55,7 @@ internal class PluginHomeNetworks(private val plugins: AppPlugins) : HomeNetwork
 
     @Composable
     override fun Page(id: String, contentPadding: PaddingValues, toTop: Int) {
-        val body = runningPlugin(id)?.plugin?.homeTab ?: return
+        val body = runningPlugin(id)?.plugin?.homeTab ?: return Unavailable()
         val refreshed by refreshes.collectAsState()
         SavesMediaOf(id) { body(PluginFrame(contentPadding, toTop, refreshed[id] ?: 0)) }
     }
@@ -75,6 +80,12 @@ internal class PluginHomeNetworks(private val plugins: AppPlugins) : HomeNetwork
                 NetworkOption(CLIENT, open, plugin.icon) { plugins.navigator.go(Destination.PluginClient(id)) },
             )
         }
+    }
+
+    /** XTA's page for a pinned timeline whose plugin gives none any more. */
+    @Composable
+    private fun Unavailable() {
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text(stringResource(Res.string.feed_strip_unavailable)) }
     }
 
     /** A plugin does not say what its reader has not seen: no dot. */

@@ -349,7 +349,7 @@
     <string name="settings_image_cache_size">%1$s trên thiết bị này. Hình ảnh cũ hơn %2$d ngày sẽ tự động bị xóa.</string>
     <string name="settings_move_up">Di chuyển lên</string>
     <string name="settings_move_down">Di chuyển xuống</string>
-    <string name="intro_device_footnote">Báo cáo sự cố vẫn tắt cho đến khi bạn bật trong Cài đặt, và không bao giờ rời khỏi thiết bị này.</string>
+    <string name="intro_device_footnote">Báo cáo sự cố vẫn tắt cho đến khi bạn thêm mã thông báo GitHub của riêng mình trong Cài đặt.</string>
     <string name="intro_account_body">XTA chỉ đăng nhập để đọc. Dùng tài khoản nào cũng không thay đổi những gì bạn thấy — và bạn có thể bắt đầu mà không cần tài khoản.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="other">Bị giới hạn yêu cầu ở %1$d điểm cuối</item>

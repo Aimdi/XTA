@@ -87,6 +87,7 @@ import com.aimdi.xtanative.ui.feed.rememberRunningPlugins
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.close
+import com.aimdi.xtanative.ui.generated.resources.group_discovery_suggested_for
 import com.aimdi.xtanative.ui.generated.resources.groups_add_member_failed
 import com.aimdi.xtanative.ui.generated.resources.groups_ai_fallback
 import com.aimdi.xtanative.ui.generated.resources.groups_discover
@@ -519,7 +520,7 @@ private fun reasonText(candidate: Candidate, plugins: Map<String, XtaPlugin>): S
         DiscoverySignal.QUOTED -> stringResource(Res.string.groups_discovery_quoted_by, names)
         DiscoverySignal.REPLIED -> stringResource(Res.string.groups_discovery_replied_by, names)
         DiscoverySignal.MENTIONED -> stringResource(Res.string.groups_discovery_mentioned_by, names)
-        DiscoverySignal.SUGGESTED -> stringResource(
+        DiscoverySignal.SUGGESTED -> if (candidate.source == BLUESKY) stringResource(Res.string.group_discovery_suggested_for, names) else stringResource(
             Res.string.groups_discovery_suggested_for,
             plugins[candidate.source]?.let { runCatching { it.title(language) }.getOrNull() } ?: candidate.source,
             names,
@@ -611,3 +612,6 @@ private fun DiscoverySkeleton() {
         }
     }
 }
+
+/** The one network whose discovery suggests accounts, XTA saying its name in the reason. */
+private const val BLUESKY = "bluesky"

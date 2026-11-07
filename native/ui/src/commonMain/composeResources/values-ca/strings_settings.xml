@@ -349,7 +349,7 @@
     <string name="settings_image_cache_size">%1$s en aquest dispositiu. Les imatges de fa més de %2$d dies s'eliminen soles.</string>
     <string name="settings_move_up">Mou amunt</string>
     <string name="settings_move_down">Mou avall</string>
-    <string name="intro_device_footnote">Els informes d'errors queden desactivats fins que els activis a la configuració, i mai surten d'aquest dispositiu.</string>
+    <string name="intro_device_footnote">Els informes d\'errors queden desactivats fins que afegeixis el teu propi token de GitHub a la configuració.</string>
     <string name="intro_account_body">XTA només inicia sessió per llegir. El compte que facis servir no canvia el que veus, i pots començar sense cap.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">Límit de peticions en %1$d punt d'accés</item>

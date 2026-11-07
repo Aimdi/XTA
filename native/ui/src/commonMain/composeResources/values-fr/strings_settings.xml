@@ -349,7 +349,7 @@
     <string name="settings_image_cache_size">%1$s sur cet appareil. Les images de plus de %2$d jours sont supprimées automatiquement.</string>
     <string name="settings_move_up">Monter</string>
     <string name="settings_move_down">Descendre</string>
-    <string name="intro_device_footnote">Les rapports de plantage restent désactivés tant que vous ne les activez pas dans les paramètres, et ne quittent jamais cet appareil.</string>
+    <string name="intro_device_footnote">Les rapports de plantage restent désactivés tant que vous n\'ajoutez pas votre propre jeton GitHub dans les paramètres.</string>
     <string name="intro_account_body">XTA ne se connecte que pour lire. Le compte utilisé ne change rien à ce que vous voyez, et vous pouvez commencer sans.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">Limite de requêtes atteinte sur %1$d point d'accès</item>

@@ -65,4 +65,5 @@
     <string name="home_two_pages_required">Necessites almenys 2 pàgines d'inici</string>
     <string name="home_choose_pages">Tria les pàgines</string>
     <string name="home_unable_to_load_pages">No s'ha pogut carregar la pàgina d'inici</string>
+    <string name="feed_strip_unavailable">Aquesta cronologia ja no està disponible</string>
 </resources>

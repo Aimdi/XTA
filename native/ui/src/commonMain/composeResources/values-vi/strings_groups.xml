@@ -236,4 +236,7 @@
     </plurals>
     <string name="groups_changes_saved">Đã lưu thay đổi</string>
     <string name="groups_undo_failed">Không thể hoàn tác. Dữ liệu có thể đã thay đổi.</string>
+    <string name="group_discovery_suggested_for">Bluesky gợi ý cho %1$s</string>
+    <string name="unable_to_load_the_group">Không thể tải nhóm</string>
+    <string name="unable_to_refresh_the_subscriptions">Không thể làm mới người đang theo dõi</string>
 </resources>

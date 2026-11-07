@@ -73,7 +73,6 @@
     <string name="saved_create">Krei</string>
     <string name="saved_save">Konservi</string>
     <string name="saved_media_saved">Konservis la plurmedion!</string>
-    <string name="saved_needs_download_folder">Agordu elŝut-dosierujon en Agordoj &gt; Aŭdvidaĵoj por aŭtomata elŝuto.</string>
     <string name="saved_sheet_title">Konservi en</string>
     <string name="saved_sheet_all_folders">Ĉiuj dosierujoj</string>
     <string name="saved_sheet_no_match">Neniu dosierujo trovita</string>
@@ -168,4 +167,5 @@
     <string name="downloads_interrupted">Interrompita · Reprovu por daŭrigi</string>
     <string name="downloads_batch">Konservitaj dosieroj: %1$d / %2$d</string>
     <string name="downloads_saved_to">Konservita en %1$s</string>
+    <string name="set_a_download_folder_to_auto_download">Agordu elŝut-dosierujon en Agordoj &gt; Aŭdvidaĵoj por aŭtomata elŝuto.</string>
 </resources>

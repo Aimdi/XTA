@@ -243,4 +243,7 @@
     </plurals>
     <string name="groups_changes_saved">Muudatused salvestatud</string>
     <string name="groups_undo_failed">Tagasivõtmine ebaõnnestus. Andmed võivad olla muutunud.</string>
+    <string name="group_discovery_suggested_for">Bluesky soovitab seda kasutajale %1$s</string>
+    <string name="unable_to_load_the_group">Grupi laadimine ei õnnestu</string>
+    <string name="unable_to_refresh_the_subscriptions">Tellimuste sisu ei saa hetkel laadida</string>
 </resources>

@@ -65,4 +65,5 @@
     <string name="home_two_pages_required">You need to have at least 2 home screen pages.</string>
     <string name="home_choose_pages">Choose pages</string>
     <string name="home_unable_to_load_pages">Unable to load your home pages</string>
+    <string name="feed_strip_unavailable">This timeline is no longer available</string>
 </resources>

@@ -349,7 +349,7 @@
     <string name="settings_image_cache_size">%1$s v tomto zařízení. Obrázky starší než %2$d dní se mažou samy.</string>
     <string name="settings_move_up">Posunout nahoru</string>
     <string name="settings_move_down">Posunout dolů</string>
-    <string name="intro_device_footnote">Hlášení pádů zůstává vypnuté, dokud ho nezapnete v nastavení, a nikdy neopustí toto zařízení.</string>
+    <string name="intro_device_footnote">Hlášení pádů zůstává vypnuté, dokud v nastavení nepřidáte vlastní token GitHubu.</string>
     <string name="intro_account_body">XTA se přihlašuje jen ke čtení. Na tom, který účet použijete, nezáleží — a začít můžete i bez něj.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">Omezení počtu požadavků na %1$d koncovém bodu</item>

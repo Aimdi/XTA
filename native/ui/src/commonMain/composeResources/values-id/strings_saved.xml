@@ -70,7 +70,6 @@
     <string name="saved_create">Buat</string>
     <string name="saved_save">Simpan</string>
     <string name="saved_media_saved">Media disimpan!</string>
-    <string name="saved_needs_download_folder">Atur folder unduhan di Pengaturan &gt; Media untuk mengunduh otomatis.</string>
     <string name="saved_sheet_title">Simpan ke</string>
     <string name="saved_sheet_all_folders">Semua folder</string>
     <string name="saved_sheet_no_match">Folder tidak ditemukan</string>
@@ -165,4 +164,5 @@
     <string name="downloads_interrupted">Terputus · Coba lagi untuk melanjutkan</string>
     <string name="downloads_batch">File tersimpan: %1$d / %2$d</string>
     <string name="downloads_saved_to">Disimpan ke %1$s</string>
+    <string name="set_a_download_folder_to_auto_download">Atur folder unduhan di Pengaturan &gt; Media untuk mengunduh otomatis.</string>
 </resources>

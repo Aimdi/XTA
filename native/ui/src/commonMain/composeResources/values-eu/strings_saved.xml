@@ -73,7 +73,6 @@
     <string name="saved_create">Sortu</string>
     <string name="saved_save">Gorde</string>
     <string name="saved_media_saved">Multimedia gorde da!</string>
-    <string name="saved_needs_download_folder">Automatikoki deskargatzeko, ezarri deskarga-karpeta bat Ezarpenak &gt; Multimedia atalean.</string>
     <string name="saved_sheet_title">Gorde karpetan</string>
     <string name="saved_sheet_all_folders">Karpeta guztiak</string>
     <string name="saved_sheet_no_match">Ez da karpetarik aurkitu</string>
@@ -168,4 +167,5 @@
     <string name="downloads_interrupted">Etenda · Saiatu berriro jarraitzeko</string>
     <string name="downloads_batch">Gordetako fitxategiak: %1$d / %2$d</string>
     <string name="downloads_saved_to">%1$s karpetan gorde da</string>
+    <string name="set_a_download_folder_to_auto_download">Automatikoki deskargatzeko, ezarri deskarga-karpeta bat Ezarpenak &gt; Multimedia atalean.</string>
 </resources>

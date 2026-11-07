@@ -349,7 +349,7 @@
     <string name="settings_image_cache_size">इस डिवाइस पर %1$s। %2$d दिन से पुरानी तस्वीरें अपने-आप हट जाती हैं।</string>
     <string name="settings_move_up">ऊपर ले जाएँ</string>
     <string name="settings_move_down">नीचे ले जाएँ</string>
-    <string name="intro_device_footnote">क्रैश रिपोर्ट तब तक बंद रहती हैं जब तक आप उन्हें सेटिंग में चालू नहीं करते, और वे कभी इस डिवाइस से बाहर नहीं जातीं।</string>
+    <string name="intro_device_footnote">क्रैश रिपोर्ट तब तक बंद रहती हैं जब तक आप सेटिंग में अपना GitHub टोकन नहीं जोड़ते।</string>
     <string name="intro_account_body">XTA सिर्फ़ पढ़ने के लिए साइन इन करता है। आप कौन सा खाता इस्तेमाल करते हैं, इससे दिखने वाली सामग्री नहीं बदलती — और आप बिना खाते के भी शुरू कर सकते हैं।</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">%1$d एंडपॉइंट पर अनुरोध सीमा लागू</item>

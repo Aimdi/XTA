@@ -65,4 +65,5 @@
     <string name="home_two_pages_required">Du musst mindestens 2 Tabs auf der Startseite haben.</string>
     <string name="home_choose_pages">Wähle Seiten</string>
     <string name="home_unable_to_load_pages">Laden der Startseite nicht möglich</string>
+    <string name="feed_strip_unavailable">Diese Timeline ist nicht mehr verfügbar</string>
 </resources>

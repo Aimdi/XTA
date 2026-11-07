@@ -349,7 +349,7 @@
     <string name="settings_image_cache_size">此设备上有 %1$s。超过 %2$d 天的图片会自动删除。</string>
     <string name="settings_move_up">上移</string>
     <string name="settings_move_down">下移</string>
-    <string name="intro_device_footnote">崩溃报告保持关闭，直到你在设置中开启，并且永远不会离开此设备。</string>
+    <string name="intro_device_footnote">崩溃报告保持关闭，直到你在设置中添加自己的 GitHub 令牌。</string>
     <string name="intro_account_body">XTA 登录只是为了读取。用哪个账号都不会改变你看到的内容——你也可以不登录就开始。</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="other">已在 %1$d 个接口上触发请求限制</item>

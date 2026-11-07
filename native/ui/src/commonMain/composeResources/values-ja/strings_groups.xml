@@ -236,4 +236,7 @@
     </plurals>
     <string name="groups_changes_saved">変更を保存しました</string>
     <string name="groups_undo_failed">元に戻せませんでした。データが変更された可能性があります。</string>
+    <string name="group_discovery_suggested_for">Bluesky が %1$s に関連しておすすめ</string>
+    <string name="unable_to_load_the_group">グループの読み込みに失敗しました</string>
+    <string name="unable_to_refresh_the_subscriptions">Unable to refresh the subscriptions</string>
 </resources>

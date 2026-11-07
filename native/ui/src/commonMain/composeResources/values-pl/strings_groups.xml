@@ -257,4 +257,7 @@
     </plurals>
     <string name="groups_changes_saved">Zapisano zmiany</string>
     <string name="groups_undo_failed">Nie udało się cofnąć. Dane mogły się zmienić.</string>
+    <string name="group_discovery_suggested_for">Bluesky proponuje to dla %1$s</string>
+    <string name="unable_to_load_the_group">Nie można załadować grupy</string>
+    <string name="unable_to_refresh_the_subscriptions">Nie można odświeżyć subskrypcji</string>
 </resources>

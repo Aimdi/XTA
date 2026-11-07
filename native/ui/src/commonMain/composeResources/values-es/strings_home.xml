@@ -65,4 +65,5 @@
     <string name="home_two_pages_required">Necesitas tener al menos 2 páginas en la pantalla de inicio.</string>
     <string name="home_choose_pages">Elegir páginas</string>
     <string name="home_unable_to_load_pages">No se pueden cargar las páginas de inicio</string>
+    <string name="feed_strip_unavailable">Esta cronología ya no está disponible</string>
 </resources>

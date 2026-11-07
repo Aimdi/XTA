@@ -55,9 +55,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.ui.common.BackHandling
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.ProblemView
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.groups_create
@@ -70,6 +72,8 @@ import com.aimdi.xtanative.ui.generated.resources.groups_search
 import com.aimdi.xtanative.ui.generated.resources.groups_search_subscriptions
 import com.aimdi.xtanative.ui.generated.resources.groups_subscriptions
 import com.aimdi.xtanative.ui.generated.resources.groups_sort_applied
+import com.aimdi.xtanative.ui.generated.resources.unable_to_load_the_group
+import com.aimdi.xtanative.ui.generated.resources.unable_to_refresh_the_subscriptions
 import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getPluralString
@@ -159,7 +163,13 @@ fun SubscriptionsScreen(navigation: SubscriptionsNavigation, onBack: (() -> Unit
         HorizontalPager(state = pager, modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) { page ->
             val content = PaddingValues(bottom = padding.calculateBottomPadding())
             if (!state.loaded) return@HorizontalPager
-            when (SubscriptionsTab.entries[page]) {
+            val tab = SubscriptionsTab.entries[page]
+            if (state.unreadable) {
+                val context = if (tab == SubscriptionsTab.GROUPS) Res.string.unable_to_load_the_group else Res.string.unable_to_refresh_the_subscriptions
+                ProblemView(Problem.Other, vm::retryRead, Modifier.padding(content), context = stringResource(context))
+                return@HorizontalPager
+            }
+            when (tab) {
                 SubscriptionsTab.GROUPS -> GroupsPage(
                     state,
                     onOpen = navigation.openGroup,
