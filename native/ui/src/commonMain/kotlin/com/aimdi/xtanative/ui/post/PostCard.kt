@@ -8,6 +8,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -113,8 +116,8 @@ val XPost.hasVideo: Boolean get() = shown.media.any { it.kind != XMedia.Kind.PHO
 
 val XThread.hasVideo: Boolean get() = posts.any { it.hasVideo }
 
-private val AvatarSize = 40.dp
-private val RailStart = 16.dp
+private val AvatarSize = PostGeometry.AVATAR_SIZE.dp
+private val RailStart = PostGeometry.AVATAR_START.dp
 
 /** How far a post's media row runs past its column: the post's own margin, to the screen's edge. */
 private val MediaBleed = 16.dp
@@ -150,29 +153,48 @@ fun PostCard(
             .recordedIn(picture)
             .opening(rememberDoubleTapLike(shown, scope.prefs, actions)) { actions.openPost(shown.id) }
             .drawBehind {
-                val x = (RailStart + AvatarSize / 2).toPx()
-                val width = 2.dp.toPx()
-                val top = 12.dp.toPx()
+                val x = PostGeometry.RAIL_CENTER.dp.toPx()
+                val width = PostGeometry.RAIL_WIDTH.dp.toPx()
+                val top = PostGeometry.AVATAR_TOP.dp.toPx()
                 if (midThread) drawLine(railColor, Offset(x, 0f), Offset(x, top), width)
                 if (continues) drawLine(railColor, Offset(x, top + AvatarSize.toPx()), Offset(x, size.height), width)
             }
-            .padding(start = RailStart, end = 16.dp, top = 12.dp, bottom = if (continues) 4.dp else 12.dp),
+            .padding(start = RailStart, top = PostGeometry.COLUMN_TOP.dp, bottom = if (continues) 4.dp else 12.dp),
     ) {
-        ContextLines(post, actions, pinned, firstOfThread)
+        Column(Modifier.padding(end = PostGeometry.END_PADDING.dp)) { ContextLines(post, actions, pinned, firstOfThread) }
         Row {
-            PostAvatar(shown, scope, actions, AvatarSize)
-            Spacer(Modifier.width(12.dp))
-            Column(Modifier.weight(1f)) {
-                PostHeader(post, scope, translation, actions)
-                PostView.replyingTo(shown, quoted = false, midThread = midThread)?.let { ReplyingTo(it, shown.replyToPostId, actions) }
-                when {
-                    PostView.textMissing(shown) -> StateTile(stringResource(Res.string.posts_no_text), null, Modifier.padding(top = 2.dp))
-                    shown.article == null -> ExpandablePostText(drawn, actions, Modifier.padding(top = 2.dp))
+            // The avatar in its 48 dp target, which opens the author as the avatar does.
+            val inset = PostGeometry.AVATAR_TARGET_INSET.dp
+            Box(
+                Modifier
+                    .offset(-inset, -inset)
+                    .size(PostGeometry.TOUCH_TARGET.dp)
+                    .clip(CircleShape)
+                    .clickable(enabled = PostView.showsAuthor(shown, scope.prefs, scope.profileScreenName)) { actions.openUser(shown.author.screenName, shown.author.id) },
+                contentAlignment = Alignment.Center,
+            ) { PostAvatar(shown, scope, actions, AvatarSize) }
+            Spacer(Modifier.width((PostGeometry.COLUMN_START - PostGeometry.AVATAR_START - PostGeometry.TOUCH_TARGET).dp))
+            var menu by rememberSaveable(shown.id) { mutableStateOf(false) }
+            val buttons = if (translation != null) 2 else 1
+            Box(Modifier.weight(1f)) {
+                Column(Modifier.padding(end = PostGeometry.END_PADDING.dp)) {
+                    PostAuthor(shown, scope, Modifier.padding(top = PostGeometry.TEXT_GAP.dp, end = PostGeometry.authorLineEnd(buttons).dp))
+                    PostView.replyingTo(shown, quoted = false, midThread = midThread)?.let { ReplyingTo(it, shown.replyToPostId, actions) }
+                    when {
+                        PostView.textMissing(shown) -> StateTile(stringResource(Res.string.posts_no_text), null, Modifier.padding(top = 2.dp))
+                        shown.article == null -> ExpandablePostText(drawn, actions, Modifier.padding(top = 2.dp))
+                    }
+                    TranslationFailure(translation)
+                    PostAttachments(shown, scope, actions, playing = playing, gap = 10.dp)
+                    PostFooter(shown, actions, FooterCounts.of(shown, scope.prefs, showViews = true), picture = picture)
                 }
-                TranslationFailure(translation)
-                PostAttachments(shown, scope, actions, playing = playing, gap = 10.dp)
-                PostFooter(shown, actions, FooterCounts.of(shown, scope.prefs, showViews = true), picture = picture)
+                // Translate and ⋯ at the end of the author line, reaching over the text under it as X's ⋯ does.
+                Row(Modifier.align(Alignment.TopEnd)) {
+                    translation?.let { TranslateButton(it, scope) }
+                    HeaderButton(PostIcons.MoreHoriz, stringResource(Res.string.posts_more)) { menu = true }
+                }
             }
+            if (menu) PostMenu(post, actions, onDismiss = { menu = false })
         }
     }
 }
@@ -221,19 +243,6 @@ internal fun PostAvatar(post: XPost, scope: PostScope, actions: PostActions, siz
         return
     }
     FollowBadge(post.author, size) { Avatar(post.author.largeAvatarUrl, size, onClick = open) }
-}
-
-/** The author line with the translate control and the ⋯ menu at its end, where X keeps them. */
-@Composable
-private fun PostHeader(post: XPost, scope: PostScope, translation: PostTranslation?, actions: PostActions) {
-    val shown = post.shown
-    var menu by rememberSaveable(shown.id) { mutableStateOf(false) }
-    Row(verticalAlignment = Alignment.Top) {
-        Box(Modifier.weight(1f).padding(top = 2.dp)) { PostAuthor(shown, scope) }
-        translation?.let { TranslateButton(it, scope) }
-        HeaderButton(PostIcons.MoreHoriz, stringResource(Res.string.posts_more)) { menu = true }
-    }
-    if (menu) PostMenu(post, actions, onDismiss = { menu = false })
 }
 
 /** "Name ✓ @handle · 3h", or the time alone when the author is not shown. */

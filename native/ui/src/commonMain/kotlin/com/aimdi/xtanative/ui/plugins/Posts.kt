@@ -171,6 +171,25 @@ fun NetworkPostCard(
     playing: Boolean = false,
     mark: ImageVector? = null,
     markColor: Color = Color.Unspecified,
+) = NetworkPostCard(post, actions, extras, modifier, continues, indent, playing, mark, markColor, markLabel = null)
+
+/**
+ * [NetworkPostCard] whose [mark] a screen reader hears as [markLabel], the
+ * network's name, as XTA's provenance badge is heard.
+ */
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun NetworkPostCard(
+    post: NetworkPost,
+    actions: NetworkPostActions,
+    extras: NetworkPostExtras,
+    modifier: Modifier = Modifier,
+    continues: Boolean = false,
+    indent: Int = 0,
+    playing: Boolean = false,
+    mark: ImageVector? = null,
+    markColor: Color = Color.Unspecified,
+    markLabel: String?,
 ) {
     var revealed by rememberSaveable(post.id) { mutableStateOf(false) }
     val more = actions.more
@@ -188,7 +207,7 @@ fun NetworkPostCard(
             repostedBy != null -> ContextLine(XIcons.Repost, stringResource(Res.string.reposted_by, repostedBy))
         }
         Row {
-            MarkedAvatar(post.avatarUrl, mark, markColor, onClick = { actions.openAuthor(post) })
+            MarkedAvatar(post.avatarUrl, mark, markColor, onClick = { actions.openAuthor(post) }, label = markLabel)
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.Top) {
@@ -217,13 +236,13 @@ private fun NetworkPost.textCovered(revealed: Boolean): Boolean = coversText && 
  * server wants, as the shared tiles ask for theirs.
  */
 @Composable
-internal fun MarkedAvatar(url: String?, mark: ImageVector?, color: Color, size: Dp = 40.dp, onClick: (() -> Unit)? = null) {
+internal fun MarkedAvatar(url: String?, mark: ImageVector?, color: Color, size: Dp = 40.dp, onClick: (() -> Unit)? = null, label: String? = null) {
     Box {
         Avatar(url, size, onClick = onClick)
         if (mark != null) {
             Icon(
                 mark,
-                contentDescription = null,
+                contentDescription = label,
                 tint = color.takeOrElse { MaterialTheme.colorScheme.primary },
                 modifier = Modifier
                     .align(Alignment.BottomEnd)

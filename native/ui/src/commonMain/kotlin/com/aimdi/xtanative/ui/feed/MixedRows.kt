@@ -120,12 +120,14 @@ fun PluginPostRow(post: SourcedPost, plugin: XtaPlugin?) {
     val card = rememberPostCard(plugin, post.post)
     if (card != null) return SourceStrip(provenanceColor(markColor), card)
     val fallback = rememberLinkActions(post.source)
+    val language = currentLanguage()
     NetworkPostCard(
         post.post,
         plugin?.postActions ?: fallback,
         rememberPostExtras(plugin, post.post),
         mark = plugin?.icon,
         markColor = markColor,
+        markLabel = remember(plugin, language) { plugin?.let { runCatching { it.title(language) }.getOrNull() } },
     )
     Hairline()
 }

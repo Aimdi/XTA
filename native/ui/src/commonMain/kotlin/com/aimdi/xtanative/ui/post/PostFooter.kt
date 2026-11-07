@@ -224,20 +224,31 @@ private fun rememberPictureShare(post: XPost, picture: PostPicture?): (() -> Uni
     }
 }
 
-/** A glyph at a post's top-right, beside the author: translate and ⋯. */
+/**
+ * A glyph at a post's top-right, beside the author: translate and ⋯, each a
+ * [PostGeometry.TOUCH_TARGET] target. In a timeline the glyph sits at the
+ * target's top, level with the author line, and the target reaches down over
+ * the text as X's ⋯ does ([glyphTop]); elsewhere it is centred.
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-internal fun HeaderButton(icon: ImageVector, label: String, tint: Color = MaterialTheme.colorScheme.onSurfaceVariant, onLongClick: (() -> Unit)? = null, onClick: () -> Unit) {
+internal fun HeaderButton(
+    icon: ImageVector,
+    label: String,
+    tint: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    onLongClick: (() -> Unit)? = null,
+    glyphTop: Boolean = true,
+    onClick: () -> Unit,
+) {
     Box(
         Modifier
-            .offset(y = (-4).dp)
-            .size(32.dp)
+            .size(PostGeometry.TOUCH_TARGET.dp)
             .clip(CircleShape)
             .combinedClickable(role = Role.Button, onClick = onClick, onLongClick = onLongClick)
             .semantics { contentDescription = label },
-        contentAlignment = Alignment.Center,
+        contentAlignment = if (glyphTop) Alignment.TopCenter else Alignment.Center,
     ) {
-        Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(18.dp))
+        Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.padding(top = if (glyphTop) PostGeometry.GLYPH_TOP.dp else 0.dp).size(18.dp))
     }
 }
 
@@ -246,13 +257,21 @@ internal fun HeaderButton(icon: ImageVector, label: String, tint: Color = Materi
  * X refused; a long press translates every post of the screen.
  */
 @Composable
-internal fun TranslateButton(translation: PostTranslation, scope: PostScope) {
+internal fun TranslateButton(translation: PostTranslation, scope: PostScope, glyphTop: Boolean = true) {
     val coroutines = rememberCoroutineScope()
     when (translation.status) {
-        TranslationStatus.TRANSLATING -> Box(Modifier.offset(y = (-4).dp).size(32.dp), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(Modifier.size(16.dp), strokeWidth = 2.dp)
+        TranslationStatus.TRANSLATING -> Box(
+            Modifier.size(PostGeometry.TOUCH_TARGET.dp),
+            contentAlignment = if (glyphTop) Alignment.TopCenter else Alignment.Center,
+        ) {
+            CircularProgressIndicator(Modifier.padding(top = if (glyphTop) PostGeometry.GLYPH_TOP.dp else 0.dp).size(16.dp), strokeWidth = 2.dp)
         }
-        TranslationStatus.TRANSLATED -> HeaderButton(PostIcons.Translate, stringResource(Res.string.posts_show_original), MaterialTheme.colorScheme.primary) {
+        TranslationStatus.TRANSLATED -> HeaderButton(
+            PostIcons.Translate,
+            stringResource(Res.string.posts_show_original),
+            MaterialTheme.colorScheme.primary,
+            glyphTop = glyphTop,
+        ) {
             translation.showOriginal()
         }
         TranslationStatus.ORIGINAL, TranslationStatus.FAILED -> HeaderButton(
@@ -260,6 +279,7 @@ internal fun TranslateButton(translation: PostTranslation, scope: PostScope) {
             stringResource(Res.string.posts_translate),
             if (translation.status == TranslationStatus.FAILED) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
             onLongClick = { scope.translateAll?.request() ?: coroutines.launch { translation.translate() } },
+            glyphTop = glyphTop,
         ) {
             coroutines.launch { translation.translate() }
         }

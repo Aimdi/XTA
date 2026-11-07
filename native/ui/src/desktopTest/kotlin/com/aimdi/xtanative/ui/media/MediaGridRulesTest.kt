@@ -97,6 +97,31 @@ class MediaGridRulesTest {
         assertEquals(16f / 9f, MediaGridLook.BROADCASTS.aspectOf(tile(photo(100, 400))))
     }
 
+    @Test
+    fun theThreeLayoutsStayDistinctInColumnsSpacingAndCorners() {
+        // media_grid_design_test.dart: the masonry's 2 dp gap, the timeline's 12 dp and 16 dp corners, two per row's 8 dp.
+        val masonry = MediaGridLook.of(MediaGridLayout.MASONRY, 4)
+        val timeline = MediaGridLook.of(MediaGridLayout.FEED, 4)
+        val two = MediaGridLook.of(MediaGridLayout.TWO_COLUMNS, 4)
+        assertEquals(4, masonry.columns)
+        assertEquals(2f, masonry.spacing)
+        assertEquals(1, timeline.columns)
+        assertEquals(12f, timeline.spacing)
+        assertEquals(16f, timeline.radius)
+        assertEquals(2, two.columns)
+        assertEquals(8f, two.spacing)
+    }
+
+    @Test
+    fun browseThumbnailsBoundInvalidAndExtremeRatios() {
+        val timeline = MediaGridLook.of(MediaGridLayout.FEED, 3)
+        fun ratio(value: Float) = timeline.aspectOf(MediaGridItem(post("1"), 0, MediaGridItem.Kind.PHOTO, null, null, value))
+        assertEquals(1f, ratio(Float.NaN))
+        assertEquals(1f, ratio(0f))
+        assertEquals(0.8f, ratio(0.1f))
+        assertEquals(1.91f, ratio(9f))
+    }
+
     // ---- the masonry ----
 
     @Test

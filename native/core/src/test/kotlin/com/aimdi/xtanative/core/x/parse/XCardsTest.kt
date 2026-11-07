@@ -86,6 +86,45 @@ class XCardsTest {
         assertTrue(onlySmall.choices.all { it.imageUrl == null && it.fullImageUrl == null }, "a choice without an image keeps its place")
     }
 
+    /** A poll with a picture per choice, as X sends one: the pictures as image values, each at the [sizes] given. */
+    private fun imagePoll(sizes: Map<Int, List<String>>): XCard.Poll? {
+        val values = (1..3).flatMap { i ->
+            listOf(
+                """{"key":"choice${i}_label","value":{"string_value":"Option $i"}}""",
+                """{"key":"choice${i}_count","value":{"string_value":"$i"}}""",
+            ) + sizes[i].orEmpty().map { size -> """{"key":"choice${i}_image$size","value":{"image_value":{"url":"https://pbs.twimg.com/card_img/$i$size"}}}""" }
+        } + """{"key":"choice_count","value":{"string_value":"3"}}"""
+        return XCards.card(J.parse("""{"name":"1906814671912599552:poll_choice_images","binding_values":[${values.joinToString(",")}]}"""), emptyList()) as XCard.Poll?
+    }
+
+    @Test
+    fun anOptionWithoutAnImageKeepsItsPlaceAmongTheOthers() {
+        val both = listOf("", "_original")
+        val poll = imagePoll(mapOf(1 to both, 3 to both))!!
+        assertEquals(listOf("Option 1", "Option 2", "Option 3"), poll.choices.map { it.label })
+        assertEquals(listOf(null, null), listOf(poll.choices[1].imageUrl, poll.choices[1].fullImageUrl))
+        assertEquals(listOf("Option 1", "Option 3"), poll.choices.filter { it.imageUrl != null }.map { it.label })
+    }
+
+    @Test
+    fun eitherSizeOfAnImageStandsInForTheOther() {
+        val poll = imagePoll(mapOf(1 to listOf("_original"), 2 to listOf("", "_original"), 3 to listOf("")))!!
+        assertEquals("https://pbs.twimg.com/card_img/1_original", poll.choices.first().imageUrl)
+        assertEquals("https://pbs.twimg.com/card_img/3", poll.choices.last().fullImageUrl)
+    }
+
+    @Test
+    fun aTextPollHasNoImages() {
+        val poll = poll("poll2choice_text_only", mapOf("choice1_label" to "Yes", "choice1_count" to "1", "choice2_label" to "No", "choice2_count" to "2"))!!
+        assertTrue(poll.choices.none { it.imageUrl != null || it.fullImageUrl != null })
+    }
+
+    @Test
+    fun theMostVotedOptionLeadsTiesIncluded() {
+        val poll = poll("poll3choice_text_only", mapOf("choice1_label" to "Yes", "choice1_count" to "3", "choice2_label" to "No", "choice2_count" to "3", "choice3_label" to "Maybe", "choice3_count" to "1"))!!
+        assertEquals(listOf(true, true, false), poll.choices.map(poll::leads))
+    }
+
     // ---- website cards X builds itself ----
 
     @Test
