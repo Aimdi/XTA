@@ -231,6 +231,49 @@ class GroupFeedTest {
     }
 
     @Test
+    fun theProfilesFallbackDropsRepostsTheFeedLeavesOutAndSkipsSavedSearches() = runBlocking {
+        val repost = thread(post(60, by = "a", repostOf = post(5, by = "z")))
+        val reads = Reads(
+            failing = mutableMapOf("from:a" to XRateLimitedException()),
+            profiles = mapOf("a" to page(thread(70, by = "a"), repost)),
+        )
+        val members = listOf(a, FeedMember.search("list:1", followedAt = 3))
+        val first = GroupFeed(GroupFeedPlan("g", members, includeReposts = false), reads).first()
+        assertEquals(listOf("70"), ids(first.threads), "-filter:retweets holds for the profiles too")
+        assertEquals(listOf("a"), reads.profileReads, "a saved search has no profile")
+    }
+
+    @Test
+    fun theProfilesFallbackAsksTwoAtATimeAndKeepsWhatAnsweredInItsTime() = runBlocking {
+        var inFlight = 0
+        var peak = 0
+        val members = (1..6).map { FeedMember("m$it", "m$it", it.toLong()) }
+        val slow = object : FeedReads {
+            override suspend fun search(query: String, cursor: String?, includeReplies: Boolean): XTimelinePage = throw XRateLimitedException()
+
+            override suspend fun userPosts(userId: String, includeReplies: Boolean): XTimelinePage {
+                synchronized(this) { inFlight++; peak = maxOf(peak, inFlight) }
+                try {
+                    if (userId == "m1") return page(thread(10, by = "m1"))
+                    delay(if (userId == "m2") 20 else Long.MAX_VALUE)
+                    return page(thread(20, by = userId))
+                } finally {
+                    synchronized(this) { inFlight-- }
+                }
+            }
+        }
+        val first = GroupFeed(GroupFeedPlan("g", members), slow, fallbackMillis = 300).first()
+        assertEquals(GroupFeed.FALLBACK_CONCURRENCY, peak)
+        assertEquals(setOf("10", "20"), ids(first.threads).toSet(), "what answered before the budget ran out stays")
+    }
+
+    @Test
+    fun anEmptyStoredCursorIsAFreshSearch() {
+        val text = """{"v":1,"threads":[],"chunks":[{"query":"from:a","cursor":"","exhausted":false},{"query":"from:b","cursor":"c2","exhausted":false}]}"""
+        assertEquals(listOf(null, "c2"), SavedFeed.decode(text)!!.state!!.chunks.map { it.cursor })
+    }
+
+    @Test
     fun aLaterPageWhoseSearchFailsFallsBackToo() = runBlocking {
         val reads = Reads(
             mapOf(("from:a" to null) to page(thread(100, by = "a"), thread(90, by = "a"), next = "a2")),

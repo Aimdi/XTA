@@ -56,7 +56,7 @@ data class SavedFeed(val threads: List<XThread>, val state: FeedState?, val save
                     chunks.list.mapNotNull { chunk ->
                         ChunkState(
                             query = chunk["query"].string ?: return@mapNotNull null,
-                            cursor = chunk["cursor"].string,
+                            cursor = chunk["cursor"].string?.ifEmpty { null },
                             exhausted = chunk["exhausted"].boolean ?: true,
                             oldest = chunk["oldest"].long,
                             unread = chunk["unread"].list.mapNotNull(XCodec::threadOf),
