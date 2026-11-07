@@ -5,8 +5,9 @@ package com.aimdi.xtanative.store.settings
  * is done once (behind its own flag) or changes nothing the second time, so
  * running them all again is always safe.
  *
- * Left to the networks' own stores: Home's feed strip from before it was
- * hand-picked (it asks every network whether it is on and has a tab) and the
+ * Home's feed strip from before it was hand-picked runs when a backup is
+ * restored ([FeedStripMigration]), not at every launch, so this app never
+ * adds a network to Home on its own. Left to the networks' own stores: the
  * booru credentials' host (it needs the booru's host rules).
  */
 object SettingsMigrations {

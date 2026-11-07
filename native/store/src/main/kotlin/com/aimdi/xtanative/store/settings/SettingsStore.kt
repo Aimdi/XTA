@@ -63,7 +63,7 @@ class SettingsStore(private val dir: StoreDir) {
 
     /** A backup's settings section applied as XTA applies it, then XTA's launch steps, as its next launch would run them. */
     suspend fun restore(preferences: Map<String, JsonElement>): Settings =
-        update { SettingsMigrations.apply(it.restoring(preferences)) }
+        update { SettingsMigrations.apply(FeedStripMigration.of(it.restoring(preferences))) }
 
     /** The settings section for a backup; see [Settings.exported]. */
     suspend fun exported(includeSettings: Boolean = true, includeSubscriptions: Boolean = true): Map<String, JsonElement>? =
