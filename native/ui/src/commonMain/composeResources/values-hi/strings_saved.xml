@@ -73,7 +73,6 @@
     <string name="saved_create">बनाएँ</string>
     <string name="saved_save">सहेजें</string>
     <string name="saved_media_saved">मीडिया सहेजा गया!</string>
-    <string name="saved_needs_download_folder">स्वतः डाउनलोड के लिए सेटिंग्स &gt; मीडिया में डाउनलोड फ़ोल्डर सेट करें।</string>
     <string name="saved_sheet_title">फ़ोल्डर में सहेजें</string>
     <string name="saved_sheet_all_folders">सभी फ़ोल्डर</string>
     <string name="saved_sheet_no_match">कोई फ़ोल्डर नहीं मिला</string>
@@ -168,4 +167,5 @@
     <string name="downloads_interrupted">बीच में रुका · जारी रखने के लिए फिर कोशिश करें</string>
     <string name="downloads_batch">सहेजी गई फ़ाइलें: %1$d / %2$d</string>
     <string name="downloads_saved_to">%1$s में सहेजा गया</string>
+    <string name="set_a_download_folder_to_auto_download">स्वतः डाउनलोड के लिए सेटिंग्स &gt; मीडिया में डाउनलोड फ़ोल्डर सेट करें।</string>
 </resources>

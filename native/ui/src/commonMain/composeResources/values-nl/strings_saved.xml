@@ -73,7 +73,6 @@
     <string name="saved_create">Maken</string>
     <string name="saved_save">Veilig</string>
     <string name="saved_media_saved">Media opgeslagen!</string>
-    <string name="saved_needs_download_folder">Stel een downloadmap in bij Instellingen &gt; Media om automatisch te downloaden.</string>
     <string name="saved_sheet_title">Opslaan in</string>
     <string name="saved_sheet_all_folders">Alle mappen</string>
     <string name="saved_sheet_no_match">Geen map gevonden</string>
@@ -168,4 +167,5 @@
     <string name="downloads_interrupted">Onderbroken · Probeer opnieuw om door te gaan</string>
     <string name="downloads_batch">Opgeslagen bestanden: %1$d / %2$d</string>
     <string name="downloads_saved_to">Opgeslagen in %1$s</string>
+    <string name="set_a_download_folder_to_auto_download">Stel een downloadmap in bij Instellingen &gt; Media om automatisch te downloaden.</string>
 </resources>

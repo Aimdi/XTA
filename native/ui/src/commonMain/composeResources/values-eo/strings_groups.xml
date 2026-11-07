@@ -243,4 +243,7 @@
     </plurals>
     <string name="groups_changes_saved">Ŝanĝoj konservitaj</string>
     <string name="groups_undo_failed">Ne eblis malfari. La datumoj eble ŝanĝiĝis.</string>
+    <string name="group_discovery_suggested_for">Bluesky proponas ĉi tion por %1$s</string>
+    <string name="unable_to_load_the_group">Ne eblas ŝarĝi la grupon</string>
+    <string name="unable_to_refresh_the_subscriptions">Ne eblas aktualigi la abonojn</string>
 </resources>

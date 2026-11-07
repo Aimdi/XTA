@@ -104,6 +104,7 @@ import com.aimdi.xtanative.ui.generated.resources.groups_no_members
 import com.aimdi.xtanative.ui.generated.resources.groups_retry
 import com.aimdi.xtanative.ui.generated.resources.groups_zen_end
 import com.aimdi.xtanative.ui.generated.resources.groups_zen_load_more
+import com.aimdi.xtanative.ui.generated.resources.unable_to_load_the_group
 import com.aimdi.xtanative.ui.media.LocalInlinePlayer
 import com.aimdi.xtanative.ui.media.rememberInlinePlayer
 import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
@@ -180,6 +181,7 @@ fun GroupFeedBody(
         val problem = run.problem
         val threads = run.shown.threads
         when {
+            state.missing -> Whole { ProblemView(Problem.Other, { vm.refresh() }, context = stringResource(Res.string.unable_to_load_the_group)) }
             // A group is empty when it has nothing from any network: the Following feed may have the plugins' alone.
             state.loaded && state.memberCount == 0 && plugin.shown.isEmpty() && !plugin.loading -> Whole { Message(stringResource(Res.string.groups_no_members)) }
             threads.isEmpty() && plugin.shown.isNotEmpty() -> PluginPostsOnly(plugin.shown, plugins, list, contentPadding, problem) { vm.refresh() }

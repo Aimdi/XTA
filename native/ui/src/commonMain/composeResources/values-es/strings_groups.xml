@@ -243,4 +243,7 @@
     </plurals>
     <string name="groups_changes_saved">Cambios guardados</string>
     <string name="groups_undo_failed">No se pudo deshacer. Puede que los datos hayan cambiado.</string>
+    <string name="group_discovery_suggested_for">Bluesky lo sugiere para %1$s</string>
+    <string name="unable_to_load_the_group">No es posible cargar el grupo</string>
+    <string name="unable_to_refresh_the_subscriptions">No se pueden actualizar las suscripciones</string>
 </resources>

@@ -349,7 +349,7 @@
     <string name="settings_image_cache_size">%1$s neste dispositivo. As imagens com mais de %2$d dias são removidas automaticamente.</string>
     <string name="settings_move_up">Mover para cima</string>
     <string name="settings_move_down">Mover para baixo</string>
-    <string name="intro_device_footnote">Os relatórios de falhas ficam desligados até os ligares nas definições, e nunca saem deste dispositivo.</string>
+    <string name="intro_device_footnote">Os relatórios de falhas ficam desligados até adicionares o teu próprio token do GitHub nas definições.</string>
     <string name="intro_account_body">O XTA só inicia sessão para ler. A conta que usares não muda o que vês — e podes começar sem nenhuma.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">Limite de pedidos em %1$d ponto de acesso</item>

@@ -64,4 +64,6 @@
     <string name="home_two_pages_required">你需要有至少 2 个主屏页面。</string>
     <string name="home_choose_pages">选择页面</string>
     <string name="home_unable_to_load_pages">无法加载主页</string>
+    <string name="feed_strip_unavailable">此时间线已不可用</string>
+    <string name="home_feed_accounts_empty">添加账号以加载“推荐”。</string>
 </resources>

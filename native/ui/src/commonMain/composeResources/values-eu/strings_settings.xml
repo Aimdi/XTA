@@ -349,7 +349,7 @@
     <string name="settings_image_cache_size">%1$s gailu honetan. %2$d egun baino zaharragoak diren irudiak berez ezabatzen dira.</string>
     <string name="settings_move_up">Eraman gora</string>
     <string name="settings_move_down">Eraman behera</string>
-    <string name="intro_device_footnote">Hutsegite-txostenak desaktibatuta egongo dira ezarpenetan aktibatu arte, eta ez dute inoiz gailu hau uzten.</string>
+    <string name="intro_device_footnote">Hutsegite-txostenak desaktibatuta egongo dira ezarpenetan zure GitHub tokena gehitu arte.</string>
     <string name="intro_account_body">XTAk irakurtzeko baino ez du saioa hasten. Erabiltzen duzun kontuak ez du aldatzen ikusten duzuna — eta konturik gabe has zaitezke.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">Eskaera-muga amaiera-puntu %1$dean</item>

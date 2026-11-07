@@ -84,4 +84,30 @@ class GroupLookTest {
         assertTrue(GroupLook.COLOR_CHOICES.all { it ushr 24 == 0xFFL })
         assertEquals(GroupLook.ICON_KEYS.size, GroupLook.ICON_KEYS.distinct().size)
     }
+
+    @Test
+    fun aFacesColourIsStableNeverOutOfRangeAndNeverGrey() {
+        assertEquals(GroupLook.faceColor("user-42"), GroupLook.faceColor("user-42"))
+        assertTrue(listOf("alice", "bob", "carol", "dave").map(GroupLook::faceColor).toSet().size > 1)
+        listOf("a", "a very long screen name that overflows the hash badly", "1234567890", "").forEach { GroupLook.faceColor(it) }
+        GroupLook.FACE_COLORS.forEach { colour ->
+            val r = (colour shr 16 and 0xFF) / 255.0
+            val g = (colour shr 8 and 0xFF) / 255.0
+            val b = (colour and 0xFF) / 255.0
+            val max = maxOf(r, g, b)
+            val min = minOf(r, g, b)
+            val light = (max + min) / 2
+            val saturation = if (max == min) 0.0 else (max - min) / (1 - kotlin.math.abs(2 * light - 1))
+            assertTrue(saturation > 0.2, "a missing picture must look deliberate: ${colour.toString(16)}")
+        }
+    }
+
+    @Test
+    fun aFacesInitialIsTheFirstLetterOrDigitOfItsNameElseItsSeedElseHash() {
+        assertEquals("A", GroupLook.faceInitial("Anime", "x"))
+        assertEquals("E", GroupLook.faceInitial("  \", elon", "x"))
+        assertEquals("Z", GroupLook.faceInitial("", "zebra"))
+        assertEquals("#", GroupLook.faceInitial("", ""))
+        assertEquals("4", GroupLook.faceInitial("42 things", "x"))
+    }
 }

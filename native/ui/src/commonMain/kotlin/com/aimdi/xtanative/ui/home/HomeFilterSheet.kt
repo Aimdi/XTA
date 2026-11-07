@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
@@ -40,12 +41,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.backup.FollowGroup
+import com.aimdi.xtanative.ui.common.LocalProblemActions
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.close
 import com.aimdi.xtanative.ui.generated.resources.home_feed_accounts
+import com.aimdi.xtanative.ui.generated.resources.home_feed_accounts_empty
 import com.aimdi.xtanative.ui.generated.resources.home_filter_accounts
 import com.aimdi.xtanative.ui.generated.resources.home_filter_accounts_explained
 import com.aimdi.xtanative.ui.generated.resources.home_filter_all
@@ -60,6 +64,7 @@ import com.aimdi.xtanative.ui.generated.resources.home_group_members
 import com.aimdi.xtanative.ui.generated.resources.home_groups
 import com.aimdi.xtanative.ui.generated.resources.home_no_results
 import com.aimdi.xtanative.ui.generated.resources.search
+import com.aimdi.xtanative.ui.generated.resources.signin_add_account
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -121,7 +126,9 @@ internal fun HomeFilterSheet(ui: HomeUi, onApply: (HomeFilterDraft) -> Unit, onD
                 )
             }
             LazyColumn(Modifier.weight(1f)) {
-                if ((groupsShown && shownGroups.isEmpty()) || (!groupsShown && shownAccounts.isEmpty())) {
+                if (!groupsShown && accounts.isEmpty()) {
+                    item(key = "no-accounts") { NoAccounts() }
+                } else if ((groupsShown && shownGroups.isEmpty()) || (!groupsShown && shownAccounts.isEmpty())) {
                     item(key = "none") {
                         Text(stringResource(Res.string.home_no_results), color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(24.dp))
                     }
@@ -159,6 +166,21 @@ internal fun HomeFilterSheet(ui: HomeUi, onApply: (HomeFilterDraft) -> Unit, onD
                 Button(onClick = { onApply(draft) }, enabled = draft.keepsAnAccount(accountIds), modifier = Modifier.weight(1f)) {
                     Text(stringResource(Res.string.home_filter_apply))
                 }
+            }
+        }
+    }
+}
+
+/** No account to choose from: XTA's line, and Add account where the app can sign one in. */
+@Composable
+private fun NoAccounts() {
+    val actions = LocalProblemActions.current
+    Column(Modifier.fillMaxWidth().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(stringResource(Res.string.home_feed_accounts_empty), textAlign = TextAlign.Center)
+        if (actions != null) {
+            Button(onClick = actions.addAccount, modifier = Modifier.padding(top = 12.dp)) {
+                Icon(Icons.Filled.Add, contentDescription = null)
+                Text(stringResource(Res.string.signin_add_account), modifier = Modifier.padding(start = 8.dp))
             }
         }
     }

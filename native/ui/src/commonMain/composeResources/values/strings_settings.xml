@@ -349,7 +349,7 @@
     <string name="settings_image_cache_size">%1$s on this device. Pictures older than %2$d days are removed on their own.</string>
     <string name="settings_move_up">Move up</string>
     <string name="settings_move_down">Move down</string>
-    <string name="intro_device_footnote">Crash reports stay off until you turn them on in Settings, and never leave this device.</string>
+    <string name="intro_device_footnote">Crash reports stay off until you add your own GitHub token in Settings.</string>
     <string name="intro_account_body">XTA signs in only to read. Which account you use doesn't change what you see — and you can start without one.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">Rate limited on 1 endpoint</item>

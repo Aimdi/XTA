@@ -67,4 +67,6 @@
     <string name="home_two_pages_required">Patrabujecca nie mienš za dzvie hałoŭnych staronki</string>
     <string name="home_choose_pages">Vybierycie staronki</string>
     <string name="home_unable_to_load_pages">Niemahčyma zahruzić hałoŭnuju staronku</string>
+    <string name="feed_strip_unavailable">Heta stužka bolš niedastupnaja</string>
+    <string name="home_feed_accounts_empty">Dadajcie akaŭnt, kab zahruzić «Dla vas».</string>
 </resources>

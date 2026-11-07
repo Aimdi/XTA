@@ -2,6 +2,7 @@ package com.aimdi.xtanative.ui.home
 
 import com.aimdi.xtanative.ui.common.TabSwipes
 import com.aimdi.xtanative.ui.settings.HomePages
+import kotlin.math.roundToInt
 
 /** One page of Home's bottom bar (home_screen.dart's NavigationPage), by the id Settings › Home keeps it under. */
 sealed interface BarPage {
@@ -172,6 +173,12 @@ class BarHiding(private val hideAfter: Float, private val showAfter: Float) {
         /** XTA's hideAfter and showAfter, in dp. */
         const val HIDE_AFTER_DP = 24f
         const val SHOW_AFTER_DP = 12f
+
+        /** XTA's settle: 250 ms for the whole way, in proportion for less, never under 120 ms. */
+        fun settleMillis(distance: Float): Int = (SETTLE_MS * distance).roundToInt().coerceAtLeast(MIN_SETTLE_MS)
+
+        private const val SETTLE_MS = 250f
+        private const val MIN_SETTLE_MS = 120
 
         /** Where bars [hidden] away are after the content moved [delta] pixels, with [travel] to go. */
         fun followed(hidden: Float, delta: Float, travel: Float): Float = if (travel <= 0f) hidden else (hidden + delta / travel).coerceIn(0f, 1f)

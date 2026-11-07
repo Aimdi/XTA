@@ -349,7 +349,7 @@
     <string name="settings_image_cache_size">%1$s pe acest dispozitiv. Imaginile mai vechi de %2$d zile sunt șterse automat.</string>
     <string name="settings_move_up">Mută în sus</string>
     <string name="settings_move_down">Mută în jos</string>
-    <string name="intro_device_footnote">Rapoartele de eroare rămân oprite până le activezi în setări și nu părăsesc niciodată acest dispozitiv.</string>
+    <string name="intro_device_footnote">Rapoartele de eroare rămân oprite până adaugi propriul token GitHub în setări.</string>
     <string name="intro_account_body">XTA se autentifică doar pentru a citi. Contul folosit nu schimbă ce vezi — și poți începe și fără unul.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">Limită de cereri pe %1$d punct de acces</item>

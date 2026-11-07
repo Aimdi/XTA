@@ -349,7 +349,7 @@
     <string name="settings_image_cache_size">%1$s na tym urządzeniu. Obrazy starsze niż %2$d dni są usuwane automatycznie.</string>
     <string name="settings_move_up">Przesuń w górę</string>
     <string name="settings_move_down">Przesuń w dół</string>
-    <string name="intro_device_footnote">Raporty o awariach pozostają wyłączone, dopóki nie włączysz ich w ustawieniach, i nigdy nie opuszczają tego urządzenia.</string>
+    <string name="intro_device_footnote">Raporty o awariach pozostają wyłączone, dopóki nie dodasz własnego tokena GitHub w ustawieniach.</string>
     <string name="intro_account_body">XTA loguje się tylko po to, by czytać. To, którego konta użyjesz, nie zmienia tego, co widzisz — możesz też zacząć bez konta.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">Limit żądań na %1$d punkcie końcowym</item>

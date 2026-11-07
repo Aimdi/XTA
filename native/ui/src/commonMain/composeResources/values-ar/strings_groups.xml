@@ -271,4 +271,7 @@
     </plurals>
     <string name="groups_changes_saved">تم حفظ التغييرات</string>
     <string name="groups_undo_failed">تعذّر التراجع. ربما تغيّرت البيانات.</string>
+    <string name="group_discovery_suggested_for">يقترحه Bluesky لـ %1$s</string>
+    <string name="unable_to_load_the_group">غير قادر على تحميل المجموعة</string>
+    <string name="unable_to_refresh_the_subscriptions">غير قادر على تحديث الاشتراكات</string>
 </resources>

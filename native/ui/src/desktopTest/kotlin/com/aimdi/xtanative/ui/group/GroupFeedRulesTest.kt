@@ -141,4 +141,11 @@ class GroupFeedRulesTest {
         assertEquals("en,fr" to LanguageAction.HIDE, GroupFeedRules.languagePrefs(" en,fr ", LanguageAction.HIDE))
         assertEquals("" to LanguageAction.OFF, GroupFeedRules.languagePrefs("  ", LanguageAction.FOLD))
     }
+
+    @Test
+    fun pickingTheOrderAGroupAlreadyHasChangesNothing() {
+        val custom = FeedSettings(sort = FeedSort.CUSTOM)
+        assertSame(custom, GroupFeedRules.withSort(custom, FeedSort.CUSTOM))
+        assertEquals(FeedSort.RECENT, GroupFeedRules.withSort(custom, FeedSort.RECENT).sort)
+    }
 }

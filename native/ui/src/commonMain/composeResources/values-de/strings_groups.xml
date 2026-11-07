@@ -243,4 +243,7 @@
     </plurals>
     <string name="groups_changes_saved">Änderungen gespeichert</string>
     <string name="groups_undo_failed">Rückgängig machen nicht möglich. Die Daten wurden möglicherweise geändert.</string>
+    <string name="group_discovery_suggested_for">Bluesky schlägt dies für %1$s vor</string>
+    <string name="unable_to_load_the_group">Die Abo-Gruppe konnte nicht geladen werden</string>
+    <string name="unable_to_refresh_the_subscriptions">Abonnements konnten nicht aktualisiert werden</string>
 </resources>

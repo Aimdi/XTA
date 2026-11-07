@@ -115,6 +115,41 @@ class HomeBarTest {
     }
 
     @Test
+    fun theBarsSwipeRulesAreXtasPageAfterNavigationSwipe() {
+        assertEquals(2, HomeBar.swiped(1, 4, distance = -32f, velocity = -800f), "a leftward flick advances")
+        assertEquals(0, HomeBar.swiped(1, 4, distance = 32f, velocity = 800f), "a rightward one goes back")
+        assertEquals(0, HomeBar.swiped(0, 4, distance = 32f, velocity = 800f), "the ends clamp")
+        assertEquals(3, HomeBar.swiped(3, 4, distance = -32f, velocity = -800f))
+        assertEquals(1, HomeBar.swiped(1, 4, distance = 0f, velocity = -50f), "a mis-tap")
+        assertEquals(1, HomeBar.swiped(1, 4, distance = -4f, velocity = -50f))
+        assertEquals(2, HomeBar.swiped(1, 4, distance = -120f, velocity = 0f), "a slow but long drag counts")
+        assertEquals(0, HomeBar.swiped(1, 4, distance = 120f, velocity = 0f))
+        assertEquals(0, HomeBar.swiped(0, 4, distance = 120f, velocity = 0f), "a long drag still clamps")
+        assertEquals(3, HomeBar.swiped(3, 4, distance = -120f, velocity = 0f))
+        assertEquals(1, HomeBar.swiped(1, 4, distance = 60f, velocity = -800f), "an opposing release cancels")
+        assertEquals(1, HomeBar.swiped(1, 4, distance = -8f, velocity = -1600f), "a fast but tiny movement")
+        assertEquals(1, HomeBar.swiped(1, 4, distance = -100f, velocity = 500f), "a moderate opposing release")
+        assertEquals(0, HomeBar.swiped(0, 1, distance = 0f, velocity = -800f), "a single tab")
+        assertEquals(0, HomeBar.swiped(0, 1, distance = -400f, velocity = 0f))
+    }
+
+    @Test
+    fun settlingTakesUpTo250MsNeverUnder120() {
+        assertEquals(250, BarHiding.settleMillis(1f))
+        assertEquals(150, BarHiding.settleMillis(0.6f))
+        assertEquals(120, BarHiding.settleMillis(0.1f))
+    }
+
+    @Test
+    fun aStoppedBarRestsByTheLastDirectionAndHowFarItWent() {
+        val hiding = BarHiding(hideAfter = 24f, showAfter = 12f)
+        assertFalse(hiding.restsHidden(10f, 100f, movingDown = true), "under 24 down springs back")
+        assertTrue(hiding.restsHidden(24f, 100f, movingDown = true))
+        assertTrue(hiding.restsHidden(95f, 100f, movingDown = false), "under 12 up drops away again")
+        assertFalse(hiding.restsHidden(88f, 100f, movingDown = false))
+    }
+
+    @Test
     fun theMenuLeavesOutThePagesOnTheBar() {
         val all = HomeMenu.shown(HomeMenu.list, { true }, deckFits = true, onBar = setOf("feed", "subscriptions", "saved")).map { it.route }
         assertEquals(listOf("trends", "downloads", "antennas", "plugins", "deck"), all)

@@ -70,7 +70,6 @@
     <string name="saved_create">Tạo</string>
     <string name="saved_save">Lưu</string>
     <string name="saved_media_saved">Đã lưu</string>
-    <string name="saved_needs_download_folder">Đặt thư mục tải xuống trong Cài đặt &gt; Đa phương tiện để tự động tải.</string>
     <string name="saved_sheet_title">Lưu vào</string>
     <string name="saved_sheet_all_folders">Tất cả thư mục</string>
     <string name="saved_sheet_no_match">Không tìm thấy thư mục</string>
@@ -165,4 +164,5 @@
     <string name="downloads_interrupted">Bị gián đoạn · Thử lại để tiếp tục</string>
     <string name="downloads_batch">Số tệp đã lưu: %1$d / %2$d</string>
     <string name="downloads_saved_to">Đã lưu vào %1$s</string>
+    <string name="set_a_download_folder_to_auto_download">Đặt thư mục tải xuống trong Cài đặt &gt; Đa phương tiện để tự động tải.</string>
 </resources>

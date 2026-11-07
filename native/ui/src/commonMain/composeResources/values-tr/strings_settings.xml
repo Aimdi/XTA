@@ -349,7 +349,7 @@
     <string name="settings_image_cache_size">Bu cihazda %1$s. %2$d günden eski görseller kendiliğinden silinir.</string>
     <string name="settings_move_up">Yukarı taşı</string>
     <string name="settings_move_down">Aşağı taşı</string>
-    <string name="intro_device_footnote">Çökme raporları, Ayarlar'da açana kadar kapalı kalır ve bu cihazdan asla çıkmaz.</string>
+    <string name="intro_device_footnote">Çökme raporları, Ayarlar\'a kendi GitHub belirtecinizi ekleyene kadar kapalı kalır.</string>
     <string name="intro_account_body">XTA yalnızca okumak için oturum açar. Hangi hesabı kullandığınız gördüklerinizi değiştirmez — hesapsız da başlayabilirsiniz.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">%1$d uç noktada istek sınırına ulaşıldı</item>

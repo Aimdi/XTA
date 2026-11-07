@@ -57,6 +57,8 @@ data class SubscriptionsUi(
     val recentPicks: String = "",
     /** The reader configured an AI, which sorts ungrouped accounts. */
     val aiReady: Boolean = false,
+    /** The stored subscriptions could not be read: the pages say so, with Retry. */
+    val unreadable: Boolean = false,
 ) {
     val canDragPeople: Boolean get() = query.isBlank()
 
@@ -95,7 +97,7 @@ class SubscriptionsViewModel(private val graph: AppGraph, private val follows: P
     val ui: StateFlow<SubscriptionsUi> =
         combine(graph.sessions.state.filterNotNull(), graph.settings.settings, view, unread, follows.rows) { session, settings, view, unread, plugins ->
             build(session, settings, view, unread, plugins)
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SubscriptionsUi())
+        }.combine(graph.sessions.failure) { ui, failure -> ui.copy(unreadable = failure != null) }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SubscriptionsUi())
 
     private fun build(session: Session, settings: Settings, view: View, unread: Set<String>, plugins: List<SubscriptionRow>): SubscriptionsUi {
         val groupsOrder = settings[SubscriptionPrefs.groupsOrder]
@@ -128,6 +130,11 @@ class SubscriptionsViewModel(private val graph: AppGraph, private val follows: P
             recentPicks = settings[SubscriptionPrefs.groupsRecentPicks],
             aiReady = ai.isConfigured,
         )
+    }
+
+    /** Reads the stored subscriptions again, after they could not be. */
+    fun retryRead() {
+        viewModelScope.launch { graph.sessions.retry() }
     }
 
     fun select(tab: SubscriptionsTab) = view.update { it.copy(tab = tab) }

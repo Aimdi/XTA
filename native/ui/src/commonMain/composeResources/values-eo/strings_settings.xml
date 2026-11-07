@@ -349,7 +349,7 @@
     <string name="settings_image_cache_size">%1$s en ĉi tiu aparato. Bildoj pli malnovaj ol %2$d tagoj foriĝas memstare.</string>
     <string name="settings_move_up">Movi supren</string>
     <string name="settings_move_down">Movi malsupren</string>
-    <string name="intro_device_footnote">Raportoj pri paneoj restas malŝaltitaj ĝis vi ŝaltas ilin en la agordoj, kaj neniam forlasas ĉi tiun aparaton.</string>
+    <string name="intro_device_footnote">Raportoj pri paneoj restas malŝaltitaj ĝis vi aldonas vian propran GitHub-ĵetonon en la agordoj.</string>
     <string name="intro_account_body">XTA ensalutas nur por legi. Kiun konton vi uzas, ne ŝanĝas tion, kion vi vidas — kaj vi povas komenci sen konto.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">Petlimo atingita ĉe %1$d finpunkto</item>

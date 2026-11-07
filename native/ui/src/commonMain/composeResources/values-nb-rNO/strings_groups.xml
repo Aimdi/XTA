@@ -243,4 +243,7 @@
     </plurals>
     <string name="groups_changes_saved">Endringer lagret</string>
     <string name="groups_undo_failed">Kunne ikke angre. Dataene kan ha blitt endret.</string>
+    <string name="group_discovery_suggested_for">Bluesky foreslår dette for %1$s</string>
+    <string name="unable_to_load_the_group">Kan ikke laste inn gruppen</string>
+    <string name="unable_to_refresh_the_subscriptions">Kunne ikke oppdatere abonnementene</string>
 </resources>

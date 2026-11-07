@@ -65,4 +65,6 @@
     <string name="home_two_pages_required">Sul peab olema vähemalt 2 avalehte.</string>
     <string name="home_choose_pages">Vali lehed</string>
     <string name="home_unable_to_load_pages">Sinu kodulehtede laadimine ei õnnestunud</string>
+    <string name="feed_strip_unavailable">See ajajoon pole enam saadaval</string>
+    <string name="home_feed_accounts_empty">Lisa konto, et laadida Sulle.</string>
 </resources>

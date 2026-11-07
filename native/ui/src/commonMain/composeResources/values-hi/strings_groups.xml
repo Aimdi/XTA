@@ -243,4 +243,7 @@
     </plurals>
     <string name="groups_changes_saved">बदलाव सहेजे गए</string>
     <string name="groups_undo_failed">पूर्ववत नहीं किया जा सका। डेटा बदल गया हो सकता है।</string>
+    <string name="group_discovery_suggested_for">Bluesky इसे %1$s के लिए सुझाता है</string>
+    <string name="unable_to_load_the_group">समूह लोड नहीं किया जा सका</string>
+    <string name="unable_to_refresh_the_subscriptions">सदस्यताएँ ताज़ा नहीं की जा सकीं</string>
 </resources>

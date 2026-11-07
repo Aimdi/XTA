@@ -92,6 +92,8 @@ data class FeedRun(
 data class GroupFeedUi(
     val loaded: Boolean = false,
     val group: FollowGroup? = null,
+    /** A group's feed whose group is gone: XTA says it is unable to load the group. */
+    val missing: Boolean = false,
     /** Every member the feed reads, nested groups' and those read alongside included. */
     val memberCount: Int = 0,
     val settings: FeedSettings = FeedSettings(),
@@ -261,6 +263,7 @@ class GroupFeedViewModel(
         return GroupFeedUi(
             loaded = true,
             group = session.groups.firstOrNull { it.id == groupId },
+            missing = groupId != null && session.groups.none { it.id == groupId },
             memberCount = memberIds.size + pluginMembers,
             settings = feedSettings,
             includeReplies = feedSettings.includeReplies ?: session.includeReplies,

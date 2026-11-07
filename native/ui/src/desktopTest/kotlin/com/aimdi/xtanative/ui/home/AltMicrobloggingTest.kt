@@ -44,6 +44,16 @@ class AltMicrobloggingTest {
     }
 
     @Test
+    fun thePickerListsTheMicroblogsAsOneRowAndEveryOneOfThemOnceUngrouped() {
+        val sources = listOf(HomeTab.Following, HomeTab.ForYou, HomeTab.Network("substack"), HomeTab.Network("bluesky"), HomeTab.Network("threads"), HomeTab.Network("mastodon"))
+        val grouped = entriesOf(sources, grouped = true)
+        assertEquals(listOf(HomeTab.Following.key, HomeTab.ForYou.key, HomeTab.Network("substack").key, AltMicroblogging.SECTION), grouped.map { it.key })
+        assertEquals(listOf("bluesky", "threads", "mastodon"), (grouped.last() as PickerEntry.Microblogs).members)
+        assertEquals(sources.map { it.key }, entriesOf(sources, grouped = false).map { it.key }, "the switch restores every row at once")
+        assertEquals(listOf(HomeTab.Following.key), entriesOf(listOf(HomeTab.Following), grouped = true).map { it.key }, "no member, no entry")
+    }
+
+    @Test
     fun aDragNamesTheNextTimelineInTheWayItGoes() {
         assertEquals(2, TimelineSwipe.target(1, 3, distance = -30f))
         assertEquals(0, TimelineSwipe.target(1, 3, distance = 30f))

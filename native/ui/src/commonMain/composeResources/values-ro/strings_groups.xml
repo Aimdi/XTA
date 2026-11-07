@@ -250,4 +250,7 @@
     </plurals>
     <string name="groups_changes_saved">Modificări salvate</string>
     <string name="groups_undo_failed">Nu s-a putut anula. Este posibil ca datele să se fi schimbat.</string>
+    <string name="group_discovery_suggested_for">Bluesky sugerează asta pentru %1$s</string>
+    <string name="unable_to_load_the_group">Nu se poate încărca grupul</string>
+    <string name="unable_to_refresh_the_subscriptions">Nu se pot reîmprospăta abonamentele</string>
 </resources>

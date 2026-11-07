@@ -129,6 +129,19 @@ class GroupFeedViewModelTest {
     }
 
     @Test
+    fun aFeedOfAGroupThatIsGoneSaysItIsUnableToLoadTheGroup() = withGraph {
+        val gone = open(Reads(), groupId = "deleted")
+        assertTrue(gone.until { it.loaded }.missing)
+        gone.close()
+        val there = open(Reads())
+        assertFalse(there.until { it.loaded }.missing)
+        there.close()
+        val following = open(Reads(), groupId = null)
+        assertFalse(following.until { it.loaded }.missing, "the Following feed has no group of its own")
+        following.close()
+    }
+
+    @Test
     fun aFirstPageThatDoesNotReachTheLastReadPostMarksNothingRead() = withGraph {
         graph.feedCache("g1").write(SavedFeed(listOf(thread(60)), null, savedAt = 1))
         ReadMarks(graph.feedCache(ReadMarks.key("g1"))).record(thread(50), 1)

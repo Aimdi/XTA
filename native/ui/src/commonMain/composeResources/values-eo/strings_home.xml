@@ -65,4 +65,6 @@
     <string name="home_two_pages_required">Vi bezonas havi malpleje 2 paĝojn de hejmekrano.</string>
     <string name="home_choose_pages">Elekti paĝojn</string>
     <string name="home_unable_to_load_pages">Ne eblas ŝarĝi viajn hejmpaĝojn</string>
+    <string name="feed_strip_unavailable">Tiu tempolinio ne plu disponeblas</string>
+    <string name="home_feed_accounts_empty">Aldonu konton por ŝargi Por vi.</string>
 </resources>

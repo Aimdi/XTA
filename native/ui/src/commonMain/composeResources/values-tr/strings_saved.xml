@@ -73,7 +73,6 @@
     <string name="saved_create">Oluştur</string>
     <string name="saved_save">Kaydet</string>
     <string name="saved_media_saved">Medya kaydedildi!</string>
-    <string name="saved_needs_download_folder">Otomatik indirmek için Ayarlar &gt; Medya bölümünde bir indirme klasörü belirleyin.</string>
     <string name="saved_sheet_title">Şuraya kaydet</string>
     <string name="saved_sheet_all_folders">Tüm klasörler</string>
     <string name="saved_sheet_no_match">Klasör bulunamadı</string>
@@ -168,4 +167,5 @@
     <string name="downloads_interrupted">Kesildi · Devam etmek için yeniden deneyin</string>
     <string name="downloads_batch">Kaydedilen dosyalar: %1$d / %2$d</string>
     <string name="downloads_saved_to">%1$s klasörüne kaydedildi</string>
+    <string name="set_a_download_folder_to_auto_download">Otomatik indirmek için Ayarlar &gt; Medya bölümünde bir indirme klasörü belirleyin.</string>
 </resources>

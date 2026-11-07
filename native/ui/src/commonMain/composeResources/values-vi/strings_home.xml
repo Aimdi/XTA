@@ -64,4 +64,6 @@
     <string name="home_two_pages_required">Bạn phải để ít nhất hai trang trên màn hình chính.</string>
     <string name="home_choose_pages">Chọn trang</string>
     <string name="home_unable_to_load_pages">Không thể tải trang chủ của bạn</string>
+    <string name="feed_strip_unavailable">Dòng thời gian này không còn khả dụng</string>
+    <string name="home_feed_accounts_empty">Thêm tài khoản để tải Dành cho bạn.</string>
 </resources>

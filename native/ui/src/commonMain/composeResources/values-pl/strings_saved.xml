@@ -79,7 +79,6 @@
     <string name="saved_create">Utwórz</string>
     <string name="saved_save">Zapisz</string>
     <string name="saved_media_saved">Zapisano multimedia!</string>
-    <string name="saved_needs_download_folder">Aby pobierać automatycznie, ustaw folder pobierania w Ustawienia &gt; Multimedia.</string>
     <string name="saved_sheet_title">Zapisz w</string>
     <string name="saved_sheet_all_folders">Wszystkie foldery</string>
     <string name="saved_sheet_no_match">Nie znaleziono folderu</string>
@@ -174,4 +173,5 @@
     <string name="downloads_interrupted">Przerwano · Ponów, aby kontynuować</string>
     <string name="downloads_batch">Zapisane pliki: %1$d / %2$d</string>
     <string name="downloads_saved_to">Zapisano w %1$s</string>
+    <string name="set_a_download_folder_to_auto_download">Aby pobierać automatycznie, ustaw folder pobierania w Ustawienia &gt; Multimedia.</string>
 </resources>

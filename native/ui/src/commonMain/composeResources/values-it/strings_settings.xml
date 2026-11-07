@@ -349,7 +349,7 @@
     <string name="settings_image_cache_size">%1$s su questo dispositivo. Le immagini più vecchie di %2$d giorni vengono rimosse da sole.</string>
     <string name="settings_move_up">Sposta su</string>
     <string name="settings_move_down">Sposta giù</string>
-    <string name="intro_device_footnote">Le segnalazioni di crash restano disattivate finché non le attivi nelle impostazioni, e non lasciano mai questo dispositivo.</string>
+    <string name="intro_device_footnote">Le segnalazioni di crash restano disattivate finché non aggiungi il tuo token GitHub nelle impostazioni.</string>
     <string name="intro_account_body">XTA accede solo per leggere. L'account che usi non cambia ciò che vedi, e puoi iniziare anche senza.</string>
     <plurals name="settings_diagnostics_rate_limited">
         <item quantity="one">Limite di richieste raggiunto su %1$d endpoint</item>

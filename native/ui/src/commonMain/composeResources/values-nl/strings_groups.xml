@@ -243,4 +243,7 @@
     </plurals>
     <string name="groups_changes_saved">Wijzigingen opgeslagen</string>
     <string name="groups_undo_failed">Ongedaan maken mislukt. De gegevens zijn mogelijk gewijzigd.</string>
+    <string name="group_discovery_suggested_for">Bluesky stelt dit voor bij %1$s</string>
+    <string name="unable_to_load_the_group">Groep laden mislukt</string>
+    <string name="unable_to_refresh_the_subscriptions">Kan de abonnementen niet vernieuwen</string>
 </resources>

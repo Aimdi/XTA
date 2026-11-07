@@ -79,7 +79,6 @@
     <string name="saved_create">Vytvořit</string>
     <string name="saved_save">Uložit</string>
     <string name="saved_media_saved">Média uložena!</string>
-    <string name="saved_needs_download_folder">Nastavte složku stahování v Nastavení &gt; Média pro automatické stahování.</string>
     <string name="saved_sheet_title">Uložit do</string>
     <string name="saved_sheet_all_folders">Všechny složky</string>
     <string name="saved_sheet_no_match">Žádná složka nenalezena</string>
@@ -174,4 +173,5 @@
     <string name="downloads_interrupted">Přerušeno · Pokračujte opakováním</string>
     <string name="downloads_batch">Uložené soubory: %1$d / %2$d</string>
     <string name="downloads_saved_to">Uloženo do %1$s</string>
+    <string name="set_a_download_folder_to_auto_download">Nastavte složku stahování v Nastavení &gt; Média pro automatické stahování.</string>
 </resources>

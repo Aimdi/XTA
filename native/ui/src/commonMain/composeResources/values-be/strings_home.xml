@@ -67,4 +67,6 @@
     <string name="home_two_pages_required">Патрабуецца не менш за дзве галоўных старонкі</string>
     <string name="home_choose_pages">Выберыце старонкі</string>
     <string name="home_unable_to_load_pages">Немагчыма загрузіць галоўную старонку</string>
+    <string name="feed_strip_unavailable">Гэта стужка больш недаступная</string>
+    <string name="home_feed_accounts_empty">Дадайце акаўнт, каб загрузіць «Для вас».</string>
 </resources>

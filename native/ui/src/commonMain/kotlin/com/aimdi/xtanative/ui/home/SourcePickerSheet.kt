@@ -75,7 +75,7 @@ internal class PickerCalls(
 )
 
 /** A row of the picker's timelines: one timeline, or Mastodon, Bluesky and Threads as one entry. */
-private sealed interface PickerEntry {
+internal sealed interface PickerEntry {
     val key: String
 
     class Timeline(val tab: HomeTab) : PickerEntry {
@@ -88,7 +88,7 @@ private sealed interface PickerEntry {
 }
 
 /** [sources] as the picker lists them: with [grouped], the microblogs as one entry where the first of them stood. */
-private fun entriesOf(sources: List<HomeTab>, grouped: Boolean): List<PickerEntry> {
+internal fun entriesOf(sources: List<HomeTab>, grouped: Boolean): List<PickerEntry> {
     val byId = sources.associateBy(HomeStrip::idOf)
     val members = AltMicroblogging.members(byId.keys.toList())
     return AltMicroblogging.listed(byId.keys.toList(), grouped && members.isNotEmpty()).mapNotNull { id ->
