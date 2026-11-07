@@ -251,3 +251,38 @@ missing/different | substack_opml_test › an import whose settings screen close
 covered | substack_pins_test › pinned publications sort ahead of the A–Z rest | plugins/substack/.../SubstackFollowing.kt (ordered) | SubstackLocalTest.followsListPinnedFirstThenByNameAndPlaceANewOneUnderItsOwnHost
 covered | substack_pins_test › unknown pin ids are skipped | plugins/substack/.../SubstackFollowing.kt | same test ("gone")
 covered | substack_pins_test › empty pins leave the list alone | plugins/substack/.../SubstackFollowing.kt | ordered() sorts by name as XTA's follows table is read, then pins nothing; same test
+
+## test/substack_plugin_test.dart
+covered | substack_plugin_test › resolveSubstackBase accepts handle and URL | plugins/substack/.../SubstackHosts.kt | SubstackHostsTest.aTypedHandleOrAddressNamesItsPublication
+covered | substack_plugin_test › resolveSubstackBase reads share links and @profiles | plugins/substack/.../SubstackHosts.kt | SubstackHostsTest.shareLinksAndProfilesBecomeTheSubdomainAndSubstacksOwnPagesNameNothing
+covered | substack_plugin_test › resolveSubstackPostRef parses /p/slug and share URLs | plugins/substack/.../SubstackHosts.kt (postRef) | SubstackHostsTest.aPastedPostGivesItsPublicationAndSlug
+covered | substack_plugin_test › publicationFromPostJson keeps the host that served the posts | plugins/substack/.../SubstackParser.kt | SubstackParserTest.aBylineOfAnotherShapeStillGivesThePublicationAtTheHostThatServedIt
+covered | substack_plugin_test › publicationFetchBases tries leftover custom domains then Substack | plugins/substack/.../SubstackHosts.kt (fetchBases) | SubstackHostsTest.aFollowedCustomDomainIsReadAtItsHostThenItsTwin
+covered | substack_plugin_test › subdomainOf does not turn a custom domain into www | plugins/substack/.../SubstackHosts.kt, SubstackModels.kt (displayName) | SubstackHostsTest.wwwIsNeverAPublicationTitleOrSubdomain
+covered | substack_plugin_test › substackHostCandidates adds the Substack twin for a custom domain | plugins/substack/.../SubstackHosts.kt (candidates, requested, leftover) | SubstackHostsTest.aFollowedCustomDomainIsReadAtItsHostThenItsTwin
+covered | substack_plugin_test › a stored subdomain replaces the guessed twin; only apex domains guess | plugins/substack/.../SubstackHosts.kt | SubstackHostsTest.aStoredSubdomainReplacesTheGuessedTwinAndOnlyApexDomainsGuess
+covered | substack_plugin_test › a deep host found without JSON is followed under its host | plugins/substack/.../SubstackHosts.kt | SubstackHostsTest.aDeepHostFoundWithoutJsonIsFollowedUnderItsHost
+covered | substack_plugin_test › a twin must not name another custom domain or subdomain | plugins/substack/.../SubstackHosts.kt | SubstackHostsTest.aTwinMustNotNameAnotherCustomDomainOrSubdomain
+covered | substack_plugin_test › publicationFromHomepageHtml reads the real title and avatar | plugins/substack/.../SubstackPages.kt | SubstackRssTest.aHomePagesOpenGraphTagsNameAPublicationThatLeftSubstacksJson
+covered | substack_plugin_test › looksLikeBeehiivPostsJson requires the /posts listing shape | plugins/substack/.../SubstackParser.kt | SubstackParserTest.beehiivPostsMapPremiumToPaidAndTheirSlugToTheCanonicalUrl
+covered | substack_plugin_test › postFromBeehiivJson maps premium audience and the /p/slug URL | plugins/substack/.../SubstackParser.kt | same test
+covered | substack_plugin_test › postFromBeehiivHtml reads OG article tags | plugins/substack/.../SubstackPages.kt | SubstackRssTest.aBeehiivPostPageIsReadFromRemixThenJsonLdThenOpenGraph
+covered | substack_plugin_test › postFromBeehiivHtml reads JSON-LD, and an odd JSON-LD shape falls through to OG tags | plugins/substack/.../SubstackPages.kt | same test
+covered | substack_plugin_test › publicationFromBeehiivRemix reads name and logo | plugins/substack/.../SubstackPages.kt | SubstackRssTest.aBeehiivSiteIsReadFromItsRemixStateElseItsTags
+covered | substack_plugin_test › jsonObjectLiteralAt does not end on a brace inside a string | plugins/substack/.../SubstackPages.kt (jsonObjectAt, remixContext) | same test
+covered | substack_plugin_test › publicationFromProfileJson reads primaryPublication | plugins/substack/.../SubstackParser.kt | SubstackParserTest.aProfileGivesItsPrimaryPublicationElseItsFirstPublication
+covered | substack_plugin_test › isPaywalled recognizes live only_paid audience | plugins/substack/.../SubstackModels.kt | SubstackParserTest.paidAudiencesArePaywalledAndAPaidPostMayStillCarryItsOpening
+covered | substack_plugin_test › SubstackClient.fetchPosts parses public JSON without body | plugins/substack/.../SubstackClient.kt | SubstackClientTest.aPublicationsPostsAreReadFromItsPublicJsonWithoutBodies
+covered | substack_plugin_test › SubstackClient.fetchPost loads full body and paywall flag | plugins/substack/.../SubstackClient.kt | SubstackClientTest.aPostIsReadWholeWithItsPaywallFlag
+untested | substack_plugin_test › wrapSubstackHtml is theme-aware and sanitizes chrome | plugins/substack/.../SubstackWebPage.kt | SubstackPageThemeTest.thePageFollowsTheThemeAndCarriesOnlyTheSanitizedBody
+covered | substack_plugin_test › sanitize and plain text keep readable content | plugins/substack/.../SubstackHtml.kt | SubstackHtmlTest.plainTextKeepsParagraphBreaksAndSkipsFootnoteNumbers, scriptsFormsAndSubstacksChromeAreRemovedOutright
+covered | substack_plugin_test › SubstackClient.fetchSimilarPublications prefers recs then search | plugins/substack/.../SubstackClient.kt | SubstackClientTest.similarPublicationsAreTheAuthorsRecommendationsThenSearchHits
+covered | substack_plugin_test › fetchPublication refuses a site that is not Substack | plugins/substack/.../SubstackClient.kt | SubstackClientTest.aSiteThatIsNotSubstackIsNotAPublication
+covered | substack_plugin_test › fetchPosts falls back to the Substack host after a leftover domain | plugins/substack/.../SubstackClient.kt | SubstackClientTest.aLeftoverCustomDomainIsReadOnItsSubstackTwinUnderTheFollowedAddress
+covered | substack_plugin_test › a follow saved as www on a custom domain still loads the Substack twin | plugins/substack/.../SubstackClient.kt | SubstackClientTest.aFollowSavedAsWwwStillReadsTheTwinAndTakesItsNameFromTheByline
+covered | substack_plugin_test › fetchPublication prefers a living Beehiiv host over the leftover Substack | plugins/substack/.../SubstackClient.kt | SubstackClientTest.aLivingBeehiivSiteIsReadThereAndItsLeftoverTwinNeverAsked
+covered | substack_plugin_test › fetchPost reads a Beehiiv /p/slug page instead of leftover Substack | plugins/substack/.../SubstackClient.kt | SubstackClientTest.aBeehiivPostIsReadFromItsPageNotFromTheLeftoverTwin
+covered | substack_plugin_test › fetchPosts uses /api/v1/archive when /posts is gone | plugins/substack/.../SubstackClient.kt | SubstackClientTest.theArchiveListingAnswersWhenPostsIsGone
+covered | substack_plugin_test › resolvePublication follows open.substack.com share links | plugins/substack/.../SubstackClient.kt | SubstackClientTest.aShareLinkResolvesToItsPublication
+covered | substack_plugin_test › resolvePublication maps a leftover custom domain to its Substack twin | plugins/substack/.../SubstackClient.kt | SubstackClientTest.aLeftoverCustomDomainResolvesThroughItsTwinUnderItsOwnAddress
+covered | substack_plugin_test › SubstackPublication prefs round-trip | plugins/substack/.../SubstackPostJson.kt (publications) | SubstackHighlightsTest.aSnapshotReadsBackAsThePostWithoutItsBody (publications line)
