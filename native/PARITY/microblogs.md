@@ -420,3 +420,205 @@ covered | threads_test › builds endpoints under the configured base, trailing 
 covered | threads_time_to_content_test › the first account's posts appear before the slow ones answer | ThreadsReaderTest.theFirstAccountsThreadsArriveBeforeTheSlowOnesAnswer
 covered | threads_time_to_content_test › a known account with a fresh LSD costs one request, not two | ThreadsDirectClientTest.aKnownAccountWithAFreshTokenCostsOneRequestNotTwo
 covered | threads_time_to_content_test › guest departures leave sooner than the session floor | ThreadsPacingTest.guestReadsLeaveSoonerThanTheSessionFloor
+
+## test/mastodon_archive_test.dart
+covered | mastodon_archive_test › Saved combines network, folder and note search, then opens the stored conversation | MastodonDeviceTest.savedKeepsAPostByItsAddress; store/saved SavedContentTest
+covered | mastodon_archive_test › same status id from two servers never collides in Saved | MastodonDeviceTest.savedKeepsAPostByItsAddress (keyed by address)
+covered | mastodon_archive_test › the shared index retains warning, author and searchable text | MastodonDeviceTest.aSnapshotKeepsEverythingACardShows
+covered | mastodon_archive_test › folder media extraction preserves server URLs and unique asset ids | MastodonDeviceTest.aSnapshotKeepsEverythingACardShows
+covered | mastodon_archive_test › bookmark writes the shared archive and can undo it | MastodonDeviceTest.savedKeepsAPostByItsAddress
+
+## test/mastodon_client_journeys_test.dart
+covered | mastodon_client_journeys_test › full client loads only chosen feeds and restores their positions | MastodonReadersTest.restoredPostsShowAtOnceAndGoOnBelowTheLast; MastodonDeviceTest.readingPlacesComeBackForTheirInstancesOnly
+untested → ported | mastodon_client_journeys_test › Home controls stay hidden until the top, reduced motion | Compose (Mastodon Home) | Compose only
+covered | mastodon_client_journeys_test › Following exposes people, profiles, and a working add action | MastodonReadersTest.followingShowsAccountsAsTheyAnswer | the add action is Compose-only
+untested → ported | mastodon_client_journeys_test › search keeps query, result type and position after profile and back | Compose (Mastodon search) | Compose only
+untested → ported | mastodon_client_journeys_test › failed search can be retried without losing the query | Compose (Mastodon search) | Compose only
+untested → ported | mastodon_client_journeys_test › new search wins over a slower old response, including old errors | Compose (Mastodon search model) | the rule is in the Compose model
+untested → ported | mastodon_client_journeys_test › a search result arriving after disposal is ignored | Compose (Mastodon search model) | Compose only
+
+## test/mastodon_client_layout_test.dart
+untested → ported | mastodon_client_layout_test › populated Mastodon $variant | Compose (Mastodon screens) | layout is Compose-only
+
+## test/mastodon_client_test.dart
+covered | mastodon_client_test › verify prefers /api/v2/instance | MastodonClientTest.verifyAsksTheV2InstanceEndpoint
+covered | mastodon_client_test › verify falls back to /api/v1/instance | MastodonClientTest.verifyFallsBackToV1WhereV2IsMissing
+covered | mastodon_client_test › lookup parses a public account payload | MastodonClientTest.aLookupSendsXtasHeadersAndReadsTheAccount
+covered | mastodon_client_test › getStatuses returns parsed posts | MastodonClientTest.statusesAskForTheirLimitAndParseThePosts
+covered | mastodon_client_test › fetchAccount reuses the looked-up id on the next page | MastodonClientTest.accountPostsLookTheIdUpOnceAndReadTheStatusesAgain
+covered | mastodon_client_test › fetchThread resolves a status URL then loads context | MastodonClientTest.aThreadResolvesTheStatusAddressThenReadsItsContext
+covered | mastodon_client_test › maps 404 and 429 to typed errors | MastodonClientTest.answersOtherThan200AreTypedByTheirCode
+covered | mastodon_client_test › fetchThread on origin skips a search 401 and uses the URL snowflake | MastodonClientTest.onItsOriginAThreadIsReadByTheIdInItsAddressWhenSearchIsRefused
+covered | mastodon_client_test › fetchThreadAnywhere rediscovers a remote post via account statuses when search is closed | MastodonClientTest.aRemotePostIsFoundAmongItsAuthorsStatusesWhenSearchIsClosed
+covered | mastodon_client_test › getPublicTimeline reads /timelines/public?local=true | MastodonClientTest.theLocalTimelineAsksLocalTrue
+covered | mastodon_client_test › getPublicTimeline falls back to Misskey featured | MastodonClientTest.aPublicTimelineTheMastodonApiRefusesIsReadAsMisskeyFeaturedNotes
+covered | mastodon_client_test › getPublicTimeline pages with max_id | MastodonClientTest.theFederatedTimelinePagesWithMaxId
+covered | mastodon_client_test › getStatuses asks only_media and max_id | MastodonClientTest.statusesAskForMediaPinsAndAnOlderPage
+covered | mastodon_client_test › Misskey local-timeline pages with untilId | MastodonClientTest.misskeysLocalTimelinePagesWithUntilId
+covered | mastodon_client_test › getStatuses asks pinned=true | MastodonClientTest.statusesAskForMediaPinsAndAnOlderPage
+covered | mastodon_client_test › search reads accounts, statuses, and hashtags | MastodonClientTest.aSearchReadsAccountsStatusesAndHashtags
+
+## test/mastodon_content_warning_test.dart
+covered | mastodon_content_warning_test › a content warning is labelled and hides the post body | MastodonPluginRulesTest.aContentWarningHoldsEverythingBackUntilOpened; MastodonParserTest.aContentWarningStaysOutOfTheBody
+covered | mastodon_content_warning_test › the warning stays visible once the body is shown | MastodonPluginRulesTest.aContentWarningHoldsEverythingBackUntilOpened
+untested → ported | mastodon_content_warning_test › a long warning in German does not overflow a 320dp phone | Compose (Mastodon card) | layout is Compose-only
+
+## test/mastodon_feed_reliability_test.dart
+covered | mastodon_feed_reliability_test › collapses remote aliases and keeps same ids from separate origins | MastodonFeedsTest.copiesOnOtherInstancesCollapseButTheSameIdOnAnotherOriginStays
+covered | mastodon_feed_reliability_test › prefers originals at the first public position, boost first | MastodonFeedsTest.anOriginalTakesTheFirstPlaceOfABoostOfIt
+covered | mastodon_feed_reliability_test › newest refresh owns both timeline and source | MastodonFollowingTest.anOlderReadCannotOverwriteWhatANewerOneFound
+covered | mastodon_feed_reliability_test › forget invalidates a pending refresh and resets source | MastodonFollowingTest.aForgottenReadDeliversNothing
+covered | mastodon_feed_reliability_test › destroy ignores a pending read and prevents new ones | MastodonFollowingTest.aForgottenReadDeliversNothing
+covered | mastodon_feed_reliability_test › uses raw timeline cursor after boost deduplication | MastodonClientTest.aTimelinePagesBelowABoostsOwnIdAfterBoostsCollapse
+covered | mastodon_feed_reliability_test › paging failures preserve posts and notify a retryable state | MastodonFollowingTest.oneFailingAccountLeavesTheOthersAndWhatItSaidLast
+covered | mastodon_feed_reliability_test › an old page cannot append to a refreshed feed or clear newer loading | MastodonFollowingTest.anOlderReadCannotOverwriteWhatANewerOneFound
+covered | mastodon_feed_reliability_test › failed refresh retains original source and cursor | MastodonFollowingTest.aForgottenReadDeliversNothing
+covered | mastodon_feed_reliability_test › repeated cursor stops an unbounded duplicate paging loop | MastodonClientTest.aPageThatRepeatsItsCursorEndsPaging
+covered | mastodon_feed_reliability_test › forget also invalidates a pending page | MastodonFollowingTest.aForgottenReadDeliversNothing
+covered | mastodon_feed_reliability_test › hide boosts keeps original followed posts in date order | MastodonFeedsTest.hidingBoostsKeepsTheFollowedAuthorsOwnPost
+covered | mastodon_feed_reliability_test › new refresh wins and an older request cannot contaminate its cache | MastodonFollowingTest.anOlderReadCannotOverwriteWhatANewerOneFound
+covered | mastodon_feed_reliability_test › mixed Home and group reads leave dedicated Following state intact | MastodonFollowingTest.followedAccountsAreMergedNewestFirst
+covered | mastodon_feed_reliability_test › forget discards pending partials and prevents cache resurrection | MastodonFollowingTest.aForgottenReadDeliversNothing
+covered | mastodon_feed_reliability_test › forgotten mixed-feed reads do not deliver stale results | MastodonFollowingTest.aForgottenReadDeliversNothing
+covered | mastodon_feed_reliability_test › instance change invalidates an older mixed-feed request | MastodonFollowingTest.otherInstancesOvertakeAnOlderRead
+covered | mastodon_feed_reliability_test › failed forced refresh keeps all prior posts, including cached partials | MastodonFollowingTest.oneFailingAccountLeavesTheOthersAndWhatItSaidLast
+covered | mastodon_feed_reliability_test › destroy ignores pending following partials | MastodonFollowingTest.aForgottenReadDeliversNothing
+covered | mastodon_feed_reliability_test › newer refresh wins even when the old request finishes last | MastodonFollowingTest.anOlderReadCannotOverwriteWhatANewerOneFound
+covered | mastodon_feed_reliability_test › forget and destroy invalidate pending Explore responses | MastodonFollowingTest.aForgottenReadDeliversNothing
+covered | mastodon_feed_reliability_test › failed refresh preserves posts and reports a recoverable error | MastodonFollowingTest.oneFailingAccountLeavesTheOthersAndWhatItSaidLast
+covered | mastodon_feed_reliability_test › post errors are handled immediately while tags are still pending | MastodonClientTest.exploreKeepsItsPostsWhenTheTagsFail
+
+## test/mastodon_instances_test.dart
+covered | mastodon_instances_test › asks the account's own instance first — it is the only complete one | MastodonClientTest.anAddressIsLookedUpWhereItLivesAndAnythingElseSearched
+covered | mastodon_instances_test › the reader's instances come between the origin and the defaults | MastodonDeviceTest.theReadersInstancesAreTheHomeOneThenTheOthers
+covered | mastodon_instances_test › a bare local name has no origin, so the reader's home leads | MastodonXtaCasesTest.instancesAreAskedInXtasOrder
+covered | mastodon_instances_test › never asks the same instance twice, however many ways it was named | MastodonXtaCasesTest.instancesAreAskedInXtasOrder
+covered | mastodon_instances_test › with nothing configured there is still a full list — that is the point | MastodonDeviceTest.theReadersInstancesAreTheHomeOneThenTheOthers
+covered | mastodon_instances_test › junk in the configured list is dropped rather than asked | MastodonXtaCasesTest.instancesAreAskedInXtasOrder
+covered | mastodon_instances_test › keeps the origin and at most one built-in default | MastodonXtaCasesTest.instancesAreAskedInXtasOrder
+covered | mastodon_instances_test › keeps every instance the reader configured | MastodonDeviceTest.theReadersInstancesAreTheHomeOneThenTheOthers
+covered | mastodon_instances_test › an origin that is already a default is not asked twice | MastodonXtaCasesTest.instancesAreAskedInXtasOrder
+covered | mastodon_instances_test › a miss on one instance moves to the next, and the winner's answer is returned | MastodonClientTest.aMissOnOneInstanceMovesToTheNext
+covered | mastodon_instances_test › when every instance fails, the most telling failure is the one reported | MastodonClientTest.whenEveryInstanceFailsTheMostTellingFailureIsReported
+covered | mastodon_instances_test › an empty candidate list is not configured, not a crash | MastodonClientTest.noInstanceToAskIsNotConfigured
+covered | mastodon_instances_test › a hanging first instance fails over instead of blocking | MastodonClientTest.aHangingFirstInstanceFailsOverInsteadOfBlocking
+covered | mastodon_instances_test › a later load asks the instance that already answered first | MastodonClientTest.theInstanceThatAnsweredIsAskedFirstNextTime
+covered | mastodon_instances_test › home first, then the added list, in order | MastodonDeviceTest.theReadersInstancesAreTheHomeOneThenTheOthers
+covered | mastodon_instances_test › nothing configured is an empty list, and corrupt storage reads the same | MastodonDeviceTest.theReadersInstancesAreTheHomeOneThenTheOthers
+covered | mastodon_instances_test › keeps order and drops ids already shown | MastodonFeedsTest.uniqueKeepsTheOrderAndDropsWhatIsAlreadyThere
+
+## test/mastodon_models_test.dart
+covered | mastodon_models_test › adds https and strips a trailing slash | MastodonXtaCasesTest.instancesNormaliseAsInXta
+covered | mastodon_models_test › refuses empty or scheme-less garbage | MastodonClientTest.onlyBadAddressesFailAsNotConfiguredWhereXtaHitANullCheck
+covered | mastodon_models_test › accepts bare users, @users, user@domain and profile URLs | MastodonXtaCasesTest.acctsNormaliseAsInXta
+covered | mastodon_models_test › refuses what is not an address | MastodonClientTest.anAcctThatIsNoAddressIsNotFoundWithoutAsking
+covered | mastodon_models_test › attaches the home domain to a local username | MastodonXtaCasesTest.acctsGetTheirDomainAsInXta
+covered | mastodon_models_test › reads /@user/id and /users/user/statuses/id | MastodonXtaCasesTest.statusIdsComeOutOfAddressesAsInXta
+covered | mastodon_models_test › ignores profile URLs and junk | MastodonXtaCasesTest.statusAddressesMatchAsInXta
+covered | mastodon_models_test › treats trailing slashes and host case as the same post | MastodonXtaCasesTest.statusAddressesMatchAsInXta
+covered | mastodon_models_test › reads text, author, images, counts, link card and unwraps a boost | MastodonParserTest.aStatusReadsItsTextAuthorMediaCountsAndCard
+covered | mastodon_models_test › keeps a link-only status that has no text or images | MastodonParserTest.aLinkOnlyStatusIsKept
+covered | mastodon_models_test › drops empty items and tolerates a reshaped payload | MastodonParserTest.emptyStatusesAndOnesWithoutAnIdOrAddressAreDropped
+covered | mastodon_models_test › reads documented fields and becomes a followable account | MastodonParserTest.aProfileReadsItsFieldsHeaderAndEmoji
+covered | mastodon_models_test › reads profile fields and bot flag | MastodonParserTest.aProfileReadsItsFieldsHeaderAndEmoji
+covered | mastodon_models_test › sums uses across history days | MastodonClientTest.trendingTagsAddUpTheirHistory
+covered | mastodon_models_test › keeps spoiler out of the body and parses a poll | MastodonParserTest.aContentWarningStaysOutOfTheBody, aPollIsReadForItsResults
+covered | mastodon_models_test › reads who boosted and who a reply is to | MastodonParserTest.aBoostIsUnwrappedToThePostItShares, aReplyNamesTheFirstAccountItMentions
+covered | mastodon_models_test › reads an edited quote and mention list | MastodonParserTest.anEditedPostReadsItsQuoteOneLevelDeep
+covered | mastodon_models_test › splits mentions and tags and resolves a local @name | MastodonTextTest.mentionsAndTagsAreSplitAndALocalNameResolved
+covered | mastodon_models_test › reads accounts, statuses, and hashtags | MastodonClientTest.aSearchReadsAccountsStatusesAndHashtags
+covered | mastodon_models_test › puts pinned first and drops the duplicate from the timeline | MastodonFeedsTest.pinsComeFirstWithoutRepeating
+covered | mastodon_models_test › maps a featured note onto MastodonPost | MastodonClientTest.aPublicTimelineTheMastodonApiRefusesIsReadAsMisskeyFeaturedNotes
+covered | mastodon_models_test › unwraps a pure renote onto the original author | MastodonParserTest.aBoostIsUnwrappedToThePostItShares
+covered | mastodon_models_test › keeps a quote-renote as the comment plus the original | MastodonParserTest.anEditedPostReadsItsQuoteOneLevelDeep
+covered | mastodon_models_test › a video plays its MP4 with the preview as poster | MastodonParserTest.mediaCarriesItsMeta
+covered | mastodon_models_test › gifv is a looping clip; pictures keep their preview | MastodonParserTest.aGifvPlaysTheRemoteFileUntilTheInstanceHasCachedIt
+covered | mastodon_models_test › remote_url stands in while the instance has not cached it | MastodonParserTest.aGifvPlaysTheRemoteFileUntilTheInstanceHasCachedIt
+covered | mastodon_models_test › a quoted status keeps its video | MastodonParserTest.anEditedPostReadsItsQuoteOneLevelDeep
+covered | mastodon_models_test › the GIF flag survives a saved snapshot | MastodonDeviceTest.aSnapshotKeepsEverythingACardShows
+
+## test/mastodon_profile_reader_test.dart
+covered | mastodon_profile_reader_test › three tabs load independently and cache their own responses | MastodonClientTest.aProfilesTabsAskForTheirOwnStatuses; MastodonReadersTest.aProfileOpensOnItsPostsPinnedFirstAndReadsATabWhenShown
+covered | mastodon_profile_reader_test › pins do not change the raw page cursor or hide later timeline entries | MastodonClientTest.aProfileOpensOnItsPinsThenItsTimeline
+covered | mastodon_profile_reader_test › a profile with only pinned posts does not claim another timeline page | MastodonClientTest.aProfileWithOnlyPinsHasNoFurtherPage
+covered | mastodon_profile_reader_test › failed replies remain retryable without polluting the media tab | MastodonClientTest.pinsThatFailLeaveTheProfileStandingUnlessTheInstanceIsThrottling
+untested → ported | mastodon_profile_reader_test › refresh invalidates every outstanding tab response | Compose (Mastodon profile model) | Compose only
+covered | mastodon_profile_reader_test › a repeated page cannot create an endless pagination loop | MastodonClientTest.aPageThatRepeatsItsCursorEndsPaging
+untested → ported | mastodon_profile_reader_test › disposed stores ignore in-flight replies | Compose (Mastodon profile model) | Compose only
+covered | mastodon_profile_reader_test › profile metadata links, verified status and enlarged text remain readable | MastodonParserTest.aProfileFieldLinksOnlyToExactlyOneSafeAddress | the enlarged layout is Compose-only
+untested → ported | mastodon_profile_reader_test › profile exposes replies and accessible profile actions on a compact screen | Compose (Mastodon profile) | Compose only
+covered | mastodon_profile_reader_test › profile browser actions reject malformed and non-web destinations | MastodonParserTest.aProfileFieldLinksOnlyToExactlyOneSafeAddress
+
+## test/mastodon_reader_metadata_test.dart
+covered | mastodon_reader_metadata_test › Misskey renotes retain followed booster identity across reading snapshots | MastodonParserTest.aBoostKeepsItsWrapperCursorAndDateApartFromTheOriginal
+covered | mastodon_reader_metadata_test › boost preserves wrapper cursor/date independently of original identity | MastodonParserTest.aBoostKeepsItsWrapperCursorAndDateApartFromTheOriginal
+covered | mastodon_reader_metadata_test › old snapshots retain the original cursor and publication date fallback | MastodonDeviceTest.xtasOwnSnapshotReads
+covered | mastodon_reader_metadata_test › quote warnings survive parsing, snapshots and opening the quote | MastodonParserTest.aContentWarningStaysOutOfTheBody; MastodonDeviceTest.aSnapshotKeepsEverythingACardShows
+covered | mastodon_reader_metadata_test › poll does not present unpublished option totals as zero votes | MastodonParserTest.aPollThatHoldsItsResultsBackDoesNotClaimZeroVotes
+covered | mastodon_reader_metadata_test › profile fields retain exactly one safe link and server verification | MastodonParserTest.aProfileFieldLinksOnlyToExactlyOneSafeAddress
+covered | mastodon_reader_metadata_test › malformed optional metadata never blocks a profile or post | MastodonParserTest.malformedOptionalMetadataNeverBlocksAProfileOrAPost
+covered | mastodon_reader_metadata_test › canonical identity preserves path case and ports but ignores query/fragment | MastodonXtaCasesTest.statusAddressesMatchAsInXta
+
+## test/mastodon_reading_cards_test.dart
+covered | mastodon_reading_cards_test › URLs retain fragments and balanced parentheses; entities drop punctuation | MastodonTextTest.addressesKeepFragmentsAndBalancedBracketsAndLoseTrailingPunctuation
+covered | mastodon_reading_cards_test › email addresses and embedded fragments do not turn into mentions or tags | MastodonTextTest.anEntityGluedToAWordStaysText
+covered | mastodon_reading_cards_test › empty hosts, embedded schemes and URL credentials are not links | MastodonTextTest.addressesWithoutAHostOrWithCredentialsAreNoLinks
+covered | mastodon_reading_cards_test › links, mentions and hashtags dispatch to their own destinations | MastodonXtaCasesTest.linksOpenInTheAppAsInXta
+covered | mastodon_reading_cards_test › sensitive attachments are not built until revealed and can be hidden again | MastodonPluginRulesTest.sensitiveMediaWaitsBehindXtasNotice
+covered | mastodon_reading_cards_test › a recycled card does not inherit another post reveal choice | MastodonPluginRulesTest.sensitiveMediaWaitsBehindXtasNotice
+covered | mastodon_reading_cards_test › quoted warning text remains visible without exposing the quoted body | MastodonPluginRulesTest.aContentWarningHoldsEverythingBackUntilOpened
+untested → ported | mastodon_reading_cards_test › hidden counts retain accessible action names | Compose accessibility (Mastodon card) | Compose only
+covered | mastodon_reading_cards_test › multi-choice percentages use voters and malformed counts remain bounded | MastodonParserTest.pollSharesAreBoundedAndNeedATotal
+covered | mastodon_reading_cards_test › hidden poll results do not falsely claim zero votes | MastodonParserTest.aPollThatHoldsItsResultsBackDoesNotClaimZeroVotes
+untested → ported | mastodon_reading_cards_test › poll status and totals remain readable with enlarged text on a narrow phone | Compose (Mastodon card) | Compose only
+covered | mastodon_reading_cards_test › the media grid does not expose alt text before a sensitive reveal | MastodonPluginRulesTest.sensitiveMediaWaitsBehindXtasNotice
+untested → ported | mastodon_reading_cards_test › the media grid exposes descriptions separately from opening an image | Compose (Mastodon media grid) | Compose only
+
+## test/mastodon_reading_experience_test.dart
+covered | mastodon_reading_experience_test › a fresh client session restores the visible post without fetching a new page | MastodonDeviceTest.readingPlacesComeBackForTheirInstancesOnly
+covered | mastodon_reading_experience_test › branches retain sibling order and collapse only their descendants | MastodonThreadsTest.branchesKeepTheirSiblingOrderAndFoldOnlyTheirOwnReplies
+covered | mastodon_reading_experience_test › cyclic and duplicate replies cannot loop or duplicate a card | MastodonThreadsTest.cyclicAndDuplicateRepliesNeitherLoopNorRepeat
+covered | mastodon_reading_experience_test › status snapshots retain warnings, reply links, polls and quoted media | MastodonDeviceTest.aSnapshotKeepsEverythingACardShows
+covered | mastodon_reading_experience_test › restart restores choice, content and anchor only for its server scope | MastodonDeviceTest.readingPlacesComeBackForTheirInstancesOnly
+covered | mastodon_reading_experience_test › disabled reading memory and malformed snapshots are safe | MastodonDeviceTest.aSnapshotWithoutAnAuthorOrAWebAddressIsNone
+untested → ported | mastodon_reading_experience_test › switching to media during posts pagination keeps both responses in their own tab | Compose (Mastodon profile model) | Compose only
+covered | mastodon_reading_experience_test › sensitive media tiles expose a warning without fetching the image | MastodonPluginRulesTest.sensitiveMediaWaitsBehindXtasNotice
+
+## test/mastodon_search_hashtag_test.dart
+covered | mastodon_search_hashtag_test › search body swipes change result sections without another request | MastodonReadersTest.aSearchOpensOnTheFirstTabThatFoundSomething
+covered | mastodon_search_hashtag_test › post URL recognition accepts exact Mastodon paths and rejects ambiguous URLs | MastodonXtaCasesTest.pastedStatusAddressesAreRecognisedAsInXta
+covered | mastodon_search_hashtag_test › post search reads the origin directly before account lookup or guest search | MastodonClientTest.aPastedStatusAddressIsReadFromItsOriginFirst
+untested → ported | mastodon_search_hashtag_test › direct post failures remain retryable and an old URL cannot replace a newer search | Compose (Mastodon search model) | Compose only
+untested → ported | mastodon_search_hashtag_test › closed search routes neither update from direct reads nor start new reads | Compose (Mastodon search model) | Compose only
+covered | mastodon_search_hashtag_test › hashtag refresh keeps loaded posts and provides a recoverable error | MastodonReadersTest.aFailedRefreshKeepsWhatWasShown
+covered | mastodon_search_hashtag_test › hashtag pagination uses wrapper cursors, deduplicates URLs and stops repeated pages | MastodonClientTest.aPageThatRepeatsItsCursorEndsPaging
+untested → ported | mastodon_search_hashtag_test › hashtag pagination can retry after failure without losing the current page | Compose (Mastodon hashtag model) | Compose only
+untested → ported | mastodon_search_hashtag_test › refresh invalidates older hashtag pagination and overlapping refreshes | Compose (Mastodon hashtag model) | Compose only
+untested → ported | mastodon_search_hashtag_test › closing a hashtag route ignores its pending request | Compose (Mastodon hashtag model) | Compose only
+untested → ported | mastodon_search_hashtag_test › hashtag reader retries an initial failure and offers manual page retry | Compose (Mastodon hashtag model) | Compose only
+
+## test/mastodon_thread_reader_test.dart
+covered | mastodon_thread_reader_test › author focus keeps connecting replies and excludes unrelated branches | MastodonThreadsTest.authorFocusKeepsTheRepliesLeadingToTheAuthorsOwn
+covered | mastodon_thread_reader_test › author identity is case insensitive and does not match another server | MastodonThreadsTest.theAuthorIsMatchedWithoutCaseAndNotOnAnotherServer
+covered | mastodon_thread_reader_test › ancestors follow actual parent links without repeating the selected post | MastodonThreadsTest.ancestorsFollowTheirReplyLinksWithoutRepeatingTheOpenedPost
+covered | mastodon_thread_reader_test › malformed duplicate, cyclic, orphan, and ancestor replies remain finite | MastodonThreadsTest.duplicateCyclicOrphanAndAncestorRepliesStayFinite
+covered | mastodon_thread_reader_test › a deeply nested conversation avoids recursive stack growth | MastodonThreadsTest.aDeepConversationIsWalkedWithoutRecursion
+covered | mastodon_thread_reader_test › author mode and expansion changes survive refresh; vanished IDs are pruned | MastodonReadersTest.aThreadFoldsItsRepliesAndAuthorFocusUnfoldsThem
+untested → ported | mastodon_thread_reader_test › failed refresh keeps the conversation readable and a retry clears the error | Compose (Mastodon thread) | Compose only
+untested → ported | mastodon_thread_reader_test › superseded reads and disposal cannot replace current conversation state | Compose (Mastodon thread) | Compose only
+covered | mastodon_thread_reader_test › author focus, fold-all, and selected-post return work in the conversation | MastodonReadersTest.aThreadFoldsItsRepliesAndAuthorFocusUnfoldsThem
+untested → ported | mastodon_thread_reader_test › a reload keeps the replies in place under the loading line | Compose (Mastodon thread) | Compose only
+untested → ported | mastodon_thread_reader_test › empty public context has a clear finished state | Compose (Mastodon thread) | Compose only
+untested → ported | mastodon_thread_reader_test › an empty author filter explains its scope and can return to all replies | Compose (Mastodon thread) | Compose only
+untested → ported | mastodon_thread_reader_test › thread controls fit a compact enlarged-text RTL layout | Compose (Mastodon thread) | Compose only
+
+## test/mastodon_timeline_controls_test.dart
+covered | mastodon_timeline_controls_test › combined filters use all query words and preserve source ordering | MastodonFeedsTest.filtersUseEveryQueryWordAndKeepTheInstancesOrder
+covered | mastodon_timeline_controls_test › links match URL-only posts and embedded cards but not ordinary text | MastodonFeedsTest.linksMatchAddressesInTheTextAndPreviewCardsButNotOrdinaryText
+covered | mastodon_timeline_controls_test › dates sort by boost time with stable ties and unknown dates last | MastodonFeedsTest.datesSortByBoostTimeWithStableTiesAndUndatedLast
+covered | mastodon_timeline_controls_test › canonical duplicates collapse without colliding between hosts | MastodonFeedsTest.copiesCollapseWithoutCollidingAcrossHosts
+covered | mastodon_timeline_controls_test › preferences persist per timeline across surfaces but never save search text | MastodonDeviceTest.timelineOptionsAreKeptPerTimelineWithoutTheSearch
+covered | mastodon_timeline_controls_test › malformed stored choices keep all posts visible | MastodonDeviceTest.damagedTimelineOptionsLeaveTheTimelinesWhole
+covered | mastodon_timeline_controls_test › filter sheet applies locally and preserves complete reading snapshot | MastodonDeviceTest.aSnapshotKeepsEverythingACardShows
+untested → ported | mastodon_timeline_controls_test › empty local results offer reset and preserve the underlying feed | Compose (Mastodon filter sheet) | Compose only
+untested → ported | mastodon_timeline_controls_test › timeline controls and sheet fit compact RTL at enlarged text | Compose (Mastodon filter sheet) | Compose only
