@@ -190,3 +190,18 @@ untested | bluesky_profile_upgrade_test › a removed pin and disposed late pin 
 covered | bluesky_profile_upgrade_test › bio links preserve UTF-8 offsets and balanced URL punctuation | networks/bluesky BlueskyFacets.profileLinks | BlueskyFacetsTest.bioLinksKeepUtf8OffsetsAndBalancedPunctuation
 untested | bluesky_profile_upgrade_test › profile metadata fits narrow large text and exposes posts count | BlueskyProfileScreen.kt (ProfileDetails: post_count plural, Count ≥ 48 dp) | UI only, read in code (the bio is LinkedText, not selectable)
 untested | bluesky_profile_upgrade_test › Posts identifies and renders the pinned card once | BlueskyProfileScreen.postRows, NetworkPost.pinned | UI; the once-only rule is BlueskyTimelineTest.profileTabsShow…PinOnce
+
+## test/bluesky_protocol_regression_test.dart
+covered | bluesky_protocol_regression_test › leading whitespace and Unicode retain the exact linked facet span | networks/bluesky BlueskyFacets.kt | BlueskyFacetsTest.leadingWhitespaceAndUnicodeKeepTheExactMentionSpan
+covered | bluesky_protocol_regression_test › repost activity date remains separate from publication through offline snapshots | BlueskySnapshot.kt, BlueskyParser.kt | BlueskyParserTest.aRepostKeepsWhoRepostedItAndWhen, BlueskySnapshotTest.whatThisAppWritesReadsBackTheSame
+untested | bluesky_protocol_regression_test › malformed optional cached fields cannot discard other saved posts | BlueskySnapshot.post/posts | BlueskySnapshotTest.damagedOptionalFieldsOfOnePostLoseNeitherItNorTheOthers
+covered | bluesky_protocol_regression_test › cached quote nesting is bounded without losing the outer post | BlueskySnapshot.post (depth) | BlueskySnapshotTest.deepQuotesStopWhereXtaStops (the post and four quotes)
+covered | bluesky_protocol_regression_test › profile pin reads its strong-reference URI safely | BlueskyParser.profile | BlueskyParserTest.aProfileReadsItsCountsBannerJoinDateAndPin, blankProfileFieldsAreNull… (pinnedPost: true → none)
+covered | bluesky_protocol_regression_test › post links fall back to the stable DID when the handle is missing | BlueskyUrls.webUrl | BlueskyUrlsTest.aPostsWebLinkUsesItsHandleElseTheDidInItsUri
+covered | bluesky_protocol_regression_test › pinned generator metadata survives a flat preference round trip | BlueskySnapshot.feed | BlueskySnapshotTest.pinnedFeedsAndListsReadAsXtaKeptThem, BlueskyReadingTest.pinsReadAsXtaWroteThem
+covered | bluesky_protocol_regression_test › pinned list counts and metadata survive a flat preference round trip | BlueskySnapshot.list | same tests
+covered | bluesky_protocol_regression_test › getPosts sends repeated URI parameters in deduplicated batches of at most 25 | BlueskyClient.posts | BlueskyClientTest.postsAreAskedInDeduplicatedBatchesOf25
+covered | bluesky_protocol_regression_test › post search carries encoded author, tags, order and cursor parameters | BlueskyClient.searchPosts | BlueskyClientTest.postSearchOnAnotherAppViewCarriesItsParametersAndItsCursor
+covered | bluesky_protocol_regression_test › post search from Bluesky's AppView goes to its API and pages by time, not by cursor | BlueskyClient.searchPosts | BlueskyClientTest.postSearchFromBlueskysAppViewGoesToItsApiAndPagesByTime
+covered | bluesky_protocol_regression_test › post search stops where the API has no further page | BlueskyParser.searchCursor | BlueskyParserTest.theSearchCursorAsksForPostsOlderThanTheOldestShown
+covered | bluesky_protocol_regression_test › actor search carries cursor and reads the next public page | BlueskyClient.searchActorsPage | BlueskyClientTest.feedsListsAndTheGraphAreReadAtTheirOwnEndpoints (cursor "second/page=")

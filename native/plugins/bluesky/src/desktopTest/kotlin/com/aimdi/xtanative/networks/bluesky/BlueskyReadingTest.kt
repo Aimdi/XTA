@@ -94,4 +94,20 @@ class BlueskyReadingTest {
         val kept = BlueskyReadingPrefs.kept(listOf(mine, reposted, gone)) { it == "maya.bsky.social" || it == "did:plc:maya" }
         assertEquals(listOf(mine, reposted), kept)
     }
+
+    @Test
+    fun aRestoredPlaceMatchesFollowsByDidOrHandleAndEmptyNamesMatchNothing() {
+        val maya = BlueskyFollow("did:plc:maya", "maya.bsky.social", "Maya", null, 1)
+        val posts = listOf(
+            bluePost("original"),
+            bluePost("renamed", handle = "renamed.example"),
+            bluePost("boosted", did = "did:plc:other", handle = "other.example", repostedByDid = "did:plc:maya"),
+            bluePost("boost-handle", did = "did:plc:other", handle = "other.example", repostedByHandle = "MAYA.BSKY.SOCIAL"),
+            bluePost("unfollowed", did = "did:plc:other", handle = "other.example"),
+        )
+        assertEquals(listOf("original", "renamed", "boosted", "boost-handle"), BlueskyReadingPrefs.kept(posts, maya::isOf).map { it.text })
+        assertEquals(emptyList(), BlueskyReadingPrefs.kept(posts) { false })
+        val nameless = BlueskyFollow("did:plc:elsewhere", "", "", null, 1)
+        assertEquals(emptyList(), BlueskyReadingPrefs.kept(listOf(bluePost("unrelated", did = "", handle = "")), nameless::isOf))
+    }
 }

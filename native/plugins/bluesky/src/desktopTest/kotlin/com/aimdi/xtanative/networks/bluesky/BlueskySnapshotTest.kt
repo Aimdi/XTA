@@ -80,4 +80,24 @@ class BlueskySnapshotTest {
         assertEquals(list, BlueskySnapshot.list(J(BlueskySnapshot.json(list))))
         assertNull(BlueskySnapshot.feed(J.parse("""{"displayName": "no uri"}""")))
     }
+
+    @Test
+    fun damagedOptionalFieldsOfOnePostLoseNeitherItNorTheOthers() {
+        val damaged = """{"uri":"at://did:plc:a/app.bsky.feed.post/damaged","handle":"alice.test","text":"d","avatarUrl":false,"replyCount":-20,
+            "likeCount":"not-a-number","images":["https://example.org/one.jpg",12,null],
+            "facets":[{"kind":{},"byteStart":"bad","byteEnd":8,"value":[]}],
+            "quotedPost":{"uri":"at://did:plc:a/app.bsky.feed.post/quote","authorName":24,"text":false},
+            "linkCard":{"url":"https://example.org/story","title":3,"imageUrl":false}}"""
+        val intact = """{"uri":"at://did:plc:a/app.bsky.feed.post/intact","handle":"alice.test","text":"i"}"""
+        val posts = BlueskySnapshot.posts("[$damaged,$intact]")
+        assertEquals(listOf("at://did:plc:a/app.bsky.feed.post/damaged", "at://did:plc:a/app.bsky.feed.post/intact"), posts.map { it.uri })
+        val first = posts.first()
+        assertNull(first.avatarUrl)
+        assertEquals(0L, first.replyCount)
+        assertEquals(0L, first.likeCount)
+        assertEquals(listOf("https://example.org/one.jpg"), first.images)
+        assertEquals(emptyList(), first.facets)
+        assertEquals("", first.quotedPost?.text)
+        assertNull(first.linkCard?.title)
+    }
 }

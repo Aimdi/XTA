@@ -178,4 +178,17 @@ class BlueskyStoresTest {
         assertTrue(prefs.values.value!!.values.keys.all { it.startsWith("plugin.bluesky.") })
         prefs.scope.cancel()
     }
+
+    @Test
+    fun withRememberReadingPositionOffNoPlaceIsWrittenButTheFiltersAre(): Unit = runBlocking {
+        val prefs = Prefs()
+        prefs.values.value = prefs.values.value!!.with(PostsPrefs.rememberReadingPosition, false)
+        val place = BlueskyPlace(prefs.prefs, prefs.scope)
+        place.remember(BlueskyReadPoint(listOf(post("1")), post("1").uri, 0.0))
+        Thread.sleep(50)
+        assertNull(prefs.prefs.place(prefs.prefs.appView.value), "no post is kept")
+        prefs.prefs.reading { it.copy(tab = BlueskyTab.LIKED) }
+        assertEquals(BlueskyTab.LIKED, prefs.prefs.reading.value.tab)
+        prefs.scope.cancel()
+    }
 }
