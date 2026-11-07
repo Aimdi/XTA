@@ -46,3 +46,91 @@ untested | test/feed_ink_test.dart › holds the filter icon with its count, Fee
 untested | test/feed_ink_test.dart › has no dot when nothing is turned off | ui home/HomeMarks.kt OffDot, FollowingBarView.kt Counted | visual: no badge at 0
 covered | test/feed_ink_test.dart › the filter icon opens order and filters | ui home/FollowingRules.kt | FollowingBarTest.theOrderMenuKeepsXtasOrderAndCustomOpensItsRules
 untested | test/feed_ink_test.dart › the selected tab has its 4 dp marker under its name | ui home/FollowingBarView.kt ModeTab | visual: 4 dp accent marker spanning the label
+
+## test/x_controls_test.dart
+untested | x_controls_test › is a pill, not a Material SearchBar | ui/search (X field) | Compose only
+untested | x_controls_test › offers a clear affordance only while there is a query | ui/search (X field) | Compose only
+covered | x_controls_test › takes its accent from the X-look tokens when present | ui/theme/XLook.kt | XLookTest.theAccentTintsEveryBackground
+untested | x_controls_test › ${entry.key} renders a stadium, not a rounded rectangle | ui/search (X field) | Compose only
+
+## test/x_look_axes_test.dart
+covered | x_look_axes_test › each background resolves to its own palette | ui/theme/XLook.kt | XLookTest.aNamedBackgroundIgnoresTheDevice, lightsOutKeepsThePageBlackAndLiftsWhatFloats
+covered | x_look_axes_test › the accent is applied without disturbing the background | XLook.kt | XLookTest.theAccentTintsEveryBackground
+covered | x_look_axes_test › every accent is offered on every background | XLook.kt | XLookTest.theAccentTintsEveryBackground
+covered | x_look_axes_test › an accent we no longer recognise falls back to blue rather than crashing | store/settings ThemeAccent.parse | SettingsTest/ChoicesTest (stored choice fallback)
+covered | x_look_axes_test › Dim darkens to Dim, everything else to Lights Out | XLook.kt | XLookTest.systemFollowsTheDeviceAndDarkensToLightsOut
+covered | x_look_axes_test › a light-mode reader on System is never dragged into a black UI | XLook.kt | XLookTest.aNamedBackgroundIgnoresTheDevice
+covered | x_look_axes_test › only System defers to the phone | XLook.kt | XLookTest.systemFollowsTheDeviceAndDarkensToLightsOut
+covered | x_look_axes_test › the three X Look presets keep the look they had | XLook.kt | XLookTest.swatchesNameTheirPage
+covered | x_look_axes_test › the retired presets have no equivalent, so they follow the system | store/settings ThemeAccent.parse | the stored fallback reads as System
+covered | x_look_axes_test › never inverts to a light slab in a dark theme | XLook.kt | XLookTest.lightsOutKeepsThePageBlackAndLiftsWhatFloats
+covered | x_look_axes_test › is visible against the screen behind it, even on pure black | XLook.kt | XLookTest.anAccentThatDoesNotReadOnThePageIsCorrected
+covered | x_look_axes_test › the light theme keeps its dark-on-light the right way round | XLook.kt | XLookTest.aNamedBackgroundIgnoresTheDevice
+covered | x_look_axes_test › spinner and action text keep the chosen accent readable | XLook.kt | XLookTest.anAccentThatDoesNotReadOnThePageIsCorrected
+covered | x_look_axes_test › carries the tokens, so widgets reading XLookTokens still find them | ui/theme/Theme.kt LocalXLook | XLookTest.swatchesNameTheirPage
+covered | x_look_axes_test › brightness follows the background, not the accent | XLook.kt | XLookTest.systemFollowsTheDeviceAndDarkensToLightsOut
+
+## test/x_look_theme_test.dart
+covered | x_look_theme_test › XLookTokens light/dim/lightsOut keep accent blue | XLook.kt | XLookTest.aNamedBackgroundIgnoresTheDevice
+covered | x_look_theme_test › xLookThemeData exposes tokens extension | ui/theme/Theme.kt | XLookTest.swatchesNameTheirPage
+covered | x_look_theme_test › Lights Out preserves black reading surfaces with restrained depth | XLook.kt | XLookTest.lightsOutKeepsThePageBlackAndLiftsWhatFloats
+untested | x_look_theme_test › Lights Out inputs are quieter than dialogs and sheets | Compose (X look scheme) | Compose only
+untested | x_look_theme_test › Lights Out skeletons do not use the divider as a solid fill | ui/common/Skeletons.kt | Compose only
+untested | x_look_theme_test › buttons share the stadium pill, including leftover ElevatedButtons | Compose (X look scheme) | Compose only
+covered | x_look_theme_test › isXLookPreset recognizes the three presets | XLook.kt | XLookTest.swatchesNameTheirPage
+covered | x_look_theme_test › runtime themes keep every accent state contrast-safe | XLook.kt | XLookTest.anAccentThatDoesNotReadOnThePageIsCorrected
+covered | x_look_theme_test › XLookTokens.of reads from Theme | XLook.kt | XLookTest.swatchesNameTheirPage
+
+## test/x_motion_lift_and_chart_test.dart
+untested | x_motion_lift_and_chart_test › lifts: it grows, rises on a shadow and takes the raised surface | Compose (motion) | Compose only
+untested | x_motion_lift_and_chart_test › settles back flat when dropped | Compose (motion) | Compose only
+covered | x_motion_lift_and_chart_test › with reduced motion rises without growing | ui/common/MotionTest.kt | MotionTest.withMotionDisabledAListJumpsToItsTopAtOnce
+untested | x_motion_lift_and_chart_test › every reorderable list lifts its rows | Compose (motion) | Compose only
+untested | x_motion_lift_and_chart_test › draws its line in from the left when it appears | Compose (chart) | Compose only
+untested | x_motion_lift_and_chart_test › draws it again for another range, not for a refreshed quote | Compose (chart) | Compose only
+covered | x_motion_lift_and_chart_test › with reduced motion the line is there at once | MotionTest | MotionTest.withMotionDisabledAListJumpsToItsTopAtOnce
+
+## test/x_motion_render_test.dart
+untested | x_motion_render_test › counts roll from the copy to X's numbers | Compose (motion) | Compose only
+untested | x_motion_render_test › the profile bar takes the banner as the header scrolls away | Compose (profile chrome) | Compose only
+untested | x_motion_render_test › a dragged row lifts | Compose (motion) | Compose only
+untested | x_motion_render_test › the price line draws itself in | Compose (chart) | Compose only
+untested | x_motion_render_test › a notice drops in and lifts away | Compose (motion) | Compose only
+untested | x_motion_render_test › new posts drop in over the feed, above its chips | Compose (feed motion) | Compose only
+untested | x_motion_render_test › an opened post's poll fills in | Compose (poll) | Compose only; poll parsing is PollTest
+untested | x_motion_render_test › saving pops the bookmark | Compose (motion) | Compose only
+untested | x_motion_render_test › scroll to top grows in and shrinks away | Compose (motion) | Compose only
+untested | x_motion_render_test › a photo fades in over its placeholder | Compose (images) | Compose only
+untested | x_motion_render_test › a translation fades in as the post eases to its height | Compose (motion) | Compose only
+untested | x_motion_render_test › the loading line glides, fills and fades | Compose (skeletons) | Compose only
+
+## test/x_query_id_record_test.dart
+covered | x_query_id_record_test › the record's ids are read by operation; entries without one are left out | core/x/client/XEndpointsTest | XEndpointsTest.everyOperationXtaCallsIsShippedWithItsIdAndHost
+covered | x_query_id_record_test › a published id replaces a shipped one; an unknown endpoint or a malformed id changes nothing | XEndpointsTest | XEndpointsTest.anOverrideReplacesTheIdButKeepsOperationAndHost, unknownEndpointsAndMalformedIdsAreRejected
+covered | x_query_id_record_test › each id in force names who applies it | XEndpointsTest | XEndpointsTest.aRegistryOfAnotherShapeAppliesNothing
+covered | x_query_id_record_test › is current when the newest version has the id | store/published PublishedDocumentTest | PublishedDocumentTest
+covered | x_query_id_record_test › counts the days since the newest version that has it | PublishedDocumentTest | PublishedDocumentTest
+covered | x_query_id_record_test › is older than the record when no version read has it | PublishedDocumentTest | PublishedDocumentTest
+covered | x_query_id_record_test › the published files must match: a differing entry is named | PublishedDocumentTest | PublishedDocumentTest
+
+## test/x_request_recovery_test.dart
+covered | x_request_recovery_test › recovers from $status with one GET retry | core/x/client/XTransportTest | XTransportTest (one retry)
+covered | x_request_recovery_test › does not retry HTTP $status | XTransportTest | XClientParityTest
+covered | x_request_recovery_test › a dropped connection recovers and persistent failures retry only once | XTransportTest | XTransportTest
+covered | x_request_recovery_test › an exhausted budget never starts another request | XTransportTest | XTransportTest
+covered | x_request_recovery_test › a step that timed out leaves no time to start another | XTransportTest | XTransportTest
+covered | x_request_recovery_test › pinned HomeTimeline times out and aborts its own request | XTransportTest | XTransportTest
+covered | x_request_recovery_test › a stalled response body is bounded too | XTransportTest | XTransportTest
+covered | x_request_recovery_test › 429 rotates to another account and remembers the limited one | core/x/client/XAccountsTest | XAccountsTest.aRateLimitedAccountIsSkippedUntilXSaysItResets
+covered | x_request_recovery_test › a 404 is blamed on an account only after another account succeeds | XTransportTest | XTransportTest.a404IsBlamedOnAnAccountOnlyAfterAnotherAccountIsAnswered
+covered | x_request_recovery_test › a 401 from a signed-out account moves on to another account | XTransportTest | XTransportTest.a401FromEveryAccountIsSurfacedWithoutBlamingAnyone
+covered | x_request_recovery_test › all-account 401s surface the 401 without poisoning accounts | XTransportTest | XTransportTest.a401FromEveryAccountIsSurfacedWithoutBlamingAnyone
+covered | x_request_recovery_test › all-account 404s surface endpoint refusal without poisoning accounts | XTransportTest | XTransportTest.a404FromEveryAccountIsTheEndpointsRefusalNotTheAccounts
+covered | x_request_recovery_test › a 403 from a locked account moves on to another account | XTransportTest | XTransportTest.a403FromEveryAccountIsTriedOnOneMoreAccountOnly
+covered | x_request_recovery_test › a 403 from every account surfaces after one more try without flagging anyone | XTransportTest | XTransportTest.a403FromEveryAccountIsTriedOnOneMoreAccountOnly
+covered | x_request_recovery_test › a 400 is surfaced without trying another account | XTransportTest | XTransportTest
+covered | x_request_recovery_test › all-account 429s surface a rate limit instead of an empty feed | XTransportTest | XTransportTest.a429FromEveryAccountIsARateLimitWithTheFirstReset
+covered | x_request_recovery_test › a successful fetch clears an old endpoint rate-limit flag | core/x/client/XReadLogTest | XReadLogTest
+covered | x_request_recovery_test › an account whose quota X reports spent is set aside for the next request | XAccountsTest | XAccountsTest
+covered | x_request_recovery_test › a spent quota on every account still sends the request | XAccountsTest | XAccountsTest.flaggedAccountsAreStillAskedWhenNoneIsHealthy
+covered | x_request_recovery_test › malformed rate limit reset $reset preserves the rate limit error | XTransportTest | XTransportTest (reset parsing)
