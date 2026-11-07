@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.plugins.substack
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,6 +19,7 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -59,7 +61,7 @@ internal fun HomeFeedPane(app: SubstackApp, state: HomeState, frame: PluginFrame
     val markOnScroll by app.host.settings.observe(SubstackPrefs.markReadOnScroll).collectAsState(false)
     if (markOnScroll) MarksReadScrolledPast(app, list, visible)
     FeedList(state.feed, feed, list, frame) {
-        item(key = "toolbar") { ReadingToolbar(app, state, HomePane.HOME, followed) }
+        pinnedToolbar { ReadingToolbar(app, state, HomePane.HOME, followed) }
         if (visible.isEmpty()) {
             item(key = "empty") { EmptyFeed(state, HomePane.HOME) }
         } else {
@@ -83,7 +85,7 @@ internal fun InboxPane(app: SubstackApp, state: HomeState, frame: PluginFrame) {
     val unread = SubstackHomeRules.inbox(feed.posts, followed, marks.readIds, options)
     val list = rememberLazyListState()
     FeedList(state.feed, feed, list, frame) {
-        item(key = "toolbar") { ReadingToolbar(app, state, HomePane.INBOX, followed) }
+        pinnedToolbar { ReadingToolbar(app, state, HomePane.INBOX, followed) }
         if (unread.isEmpty()) {
             item(key = "empty") { EmptyInbox(state) }
         } else {
@@ -109,6 +111,17 @@ private fun FeedList(feed: SubstackHomeFeed, state: SubstackHomeFeed.State, list
                 else -> rows()
             }
         }
+    }
+}
+
+/**
+ * The feed's toolbar, pinned above its posts: its search and filters stay in
+ * reach however far the reader scrolls, as XTA keeps them in the home's dock.
+ */
+@OptIn(ExperimentalFoundationApi::class)
+private fun LazyListScope.pinnedToolbar(toolbar: @Composable () -> Unit) {
+    stickyHeader(key = "toolbar", contentType = "toolbar") {
+        Surface(color = MaterialTheme.colorScheme.background) { toolbar() }
     }
 }
 

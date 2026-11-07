@@ -9,9 +9,10 @@ import com.aimdi.xtanative.ui.media.PodcastCheckpoint
 import com.aimdi.xtanative.ui.media.PodcastPlaces
 import com.aimdi.xtanative.ui.plugins.PluginSettings
 import java.util.Locale
-import kotlin.math.abs
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -54,8 +55,11 @@ internal class SubstackPodcast(private val settings: PluginSettings, private val
     private var frames: Job? = null
     private var loadedUrl: String? = null
     private var places = PodcastPlaces.EMPTY
-    private var writtenAt = 0L
+    private var pendingWrite: Job? = null
     private var restored = false
+
+    /** The episode last asked for: an open it has replaced, or a stop has ended, neither seeks nor plays. */
+    @Volatile private var wanted: String? = null
 
     /** Whether this platform plays episodes here. */
     val canPlay: Boolean get() = makePlayer != null
@@ -84,6 +88,7 @@ internal class SubstackPodcast(private val settings: PluginSettings, private val
     /** Plays or pauses [url]; another episode is left where it is, and [url] resumes where it was left. */
     fun toggle(url: String, title: String) {
         if (!PodcastCheckpoint.validUrl(url)) return
+        wanted = url
         scope.launch {
             commands.withLock {
                 val now = state.value
@@ -96,8 +101,13 @@ internal class SubstackPodcast(private val settings: PluginSettings, private val
         scope.launch {
             commands.withLock {
                 val now = state.value
-                if (loadedUrl == null || loadedUrl != now.url) return@withLock
                 val target = PlaybackRestore.resumeTarget(positionMs, now.durationMs).coerceAtLeast(0)
+                if (loadedUrl == null && now.url != null && !now.loading) {
+                    // A restored episode not playing yet: its place moves, and it opens there.
+                    mutable.update { it.copy(positionMs = target) }
+                    return@withLock checkpoint(force = true)
+                }
+                if (loadedUrl == null || loadedUrl != now.url) return@withLock
                 if (attempt { player?.seek(target) }) mutable.update { it.copy(positionMs = target) } else failed()
                 checkpoint(force = true)
             }
@@ -113,9 +123,15 @@ internal class SubstackPodcast(private val settings: PluginSettings, private val
         }
     }
 
-    /** Stops the episode; a finished one forgets its place, another keeps it. */
+    /**
+     * Stops the episode; a finished one forgets its place, another keeps it.
+     * The row is cleared at once, even while an open has not answered yet.
+     */
     fun stop(finished: Boolean = false) {
-        scope.launch { commands.withLock { stopNow(finished) } }
+        wanted = null
+        val now = state.value
+        mutable.value = SubstackPlayback(speed = now.speed)
+        scope.launch { commands.withLock { stopNow(finished, now) } }
     }
 
     /** The player is let go: the plugin stops. */
@@ -131,14 +147,17 @@ internal class SubstackPodcast(private val settings: PluginSettings, private val
 
     private suspend fun open(url: String, title: String, before: SubstackPlayback) {
         val make = makePlayer ?: return
+        if (wanted != url) return
         before.url?.takeIf { it != url && before.positionMs > 0 }?.let { places = places.leftAt(it, before.positionMs, before.durationMs) }
         val start = if (before.url == url) before.positionMs else places.of(url)?.positionMs ?: 0
         val duration = if (before.url == url) before.durationMs else places.of(url)?.durationMs ?: 0
         mutable.value = SubstackPlayback(url, title, loading = true, positionMs = start, durationMs = duration, speed = before.speed)
         val player = player ?: make().also { listen(it) }.also { player = it }
         loadedUrl = null
-        val opened = attempt { player.open(url) } && PlaybackRestore.restore(player, start, isCurrent = { state.value.url == url })
-        if (!opened || state.value.url != url) return failed()
+        val current = { wanted == url && state.value.url == url }
+        val opened = attempt { player.open(url) } && PlaybackRestore.restore(player, start, isCurrent = current)
+        if (!current()) return
+        if (!opened) return failed()
         loadedUrl = url
         mutable.update { it.copy(loading = false, failed = false) }
         sessions.bind(title, binding = AudioSessionBinding(onPlay = { toggleIf(true) }, onPause = { toggleIf(false) }, onStop = { stop() }, onSeek = ::seek))
@@ -156,19 +175,21 @@ internal class SubstackPodcast(private val settings: PluginSettings, private val
         checkpoint(force = !play)
     }
 
-    private suspend fun stopNow(finished: Boolean) {
-        val now = state.value
+    private suspend fun stopNow(finished: Boolean, now: SubstackPlayback = state.value) {
         now.url?.let { url -> places = if (finished || now.positionMs <= 0) places.without(url) else places.leftAt(url, now.positionMs, now.durationMs) }
         loadedUrl = null
+        pendingWrite?.cancel()
+        pendingWrite = null
         player?.let { attempt { it.stop() } }
-        mutable.value = SubstackPlayback(speed = now.speed)
+        mutable.update { if (it.url == null || it.url == now.url) SubstackPlayback(speed = it.speed) else it }
         sessions.clear()
         keep(checkpoint = "")
     }
 
     private fun listen(player: ContinuityPlayer) {
         frames?.cancel()
-        frames = scope.launch { player.changes.collect { received(player) } }
+        // Subscribed before the player is first told anything, so its first changes are not missed.
+        frames = scope.launch(start = CoroutineStart.UNDISPATCHED) { player.changes.collect { received(player) } }
     }
 
     private suspend fun received(player: ContinuityPlayer) {
@@ -193,13 +214,30 @@ internal class SubstackPodcast(private val settings: PluginSettings, private val
         checkpoint(force = true)
     }
 
-    /** Where the episode stands, written at most every few seconds while it plays, and at once when [force]d. */
+    /**
+     * Where the episode stands: written at once when [force]d, else a moment
+     * after the first change since the last write, so that continuous playback,
+     * which never pauses for a debounce, is still written every few seconds.
+     */
     private suspend fun checkpoint(force: Boolean) {
+        if (!force) {
+            if (pendingWrite?.isActive != true) {
+                pendingWrite = scope.launch {
+                    delay(CHECKPOINT_MS)
+                    pendingWrite = null
+                    writeCheckpoint()
+                }
+            }
+            return
+        }
+        pendingWrite?.cancel()
+        pendingWrite = null
+        writeCheckpoint()
+    }
+
+    private suspend fun writeCheckpoint() {
         val now = state.value
         val url = now.url ?: return
-        val clock = System.currentTimeMillis()
-        if (!force && abs(clock - writtenAt) < CHECKPOINT_MS) return
-        writtenAt = clock
         val checkpoint = PodcastCheckpoint(url, now.title, now.positionMs, now.durationMs)
         if (now.positionMs > 0) places = places.leftAt(url, now.positionMs, now.durationMs)
         attempt { keep(checkpoint.encode()) }
@@ -223,7 +261,7 @@ internal class SubstackPodcast(private val settings: PluginSettings, private val
     companion object {
         val SPEEDS = listOf(0.8, 1.0, 1.25, 1.5, 1.75, 2.0)
         private const val COMMAND_MS = 8_000L
-        private const val CHECKPOINT_MS = 10_000L
+        private const val CHECKPOINT_MS = 2_000L
 
         /** A position as the row shows it: m:ss, or h:mm:ss past an hour. */
         fun clock(ms: Long): String {
