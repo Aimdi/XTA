@@ -130,3 +130,124 @@ covered | substack_discussion_reader_test › compact enlarged RTL discussion co
 n/a | substack_discussion_reader_test › Substack discussion layout comments | – | golden render
 n/a | substack_discussion_reader_test › Substack discussion layout comments-rtl | – | golden render
 n/a | substack_discussion_reader_test › Substack discussion layout note-rtl | – | golden render
+
+## test/substack_features_test.dart
+covered | substack_features_test › what a podcast post carries › the episode file makes it a podcast | plugins/substack/.../SubstackParser.kt (podcast_url) | SubstackParserTest.aListingKeepsPostsAroundRowsOfAnotherShapeAndDropsTheBody (episode.isPodcast)
+covered | substack_features_test › what a podcast post carries › a newsletter is not one, and an empty URL is no episode | plugins/substack/.../SubstackParser.kt | SubstackParserTest.badOptionalScalarsAreNullWithoutLosingThePost ("an empty URL is no episode")
+covered | substack_features_test › what a post has gathered › the totals are read when carried | plugins/substack/.../SubstackParser.kt | SubstackParserTest.aWholePostGivesItsBodyBylineCountsAndPublication
+covered | substack_features_test › what a post has gathered › the per-emoji map is summed when there is no total | plugins/substack/.../SubstackParser.kt (reactionSum) | SubstackParserTest.aListingKeepsPostsAroundRowsOfAnotherShapeAndDropsTheBody
+covered | substack_features_test › what a post has gathered › nothing carried is null, which is not the same as zero | plugins/substack/.../SubstackParser.kt | SubstackParserTest.badOptionalScalarsAreNullWithoutLosingThePost
+covered | substack_features_test › reading a discussion › the tree flattens in reading order, children under their parent | plugins/substack/.../SubstackParser.kt (comments) | SubstackParserTest.theDiscussionFlattensInReadingOrderWithDeletedCommentsSkipped
+covered | substack_features_test › reading a discussion › a deleted comment vanishes but its children keep their place | plugins/substack/.../SubstackParser.kt | same test ("a deleted comment vanishes, its reply keeps its place")
+covered | substack_features_test › reading a discussion › a payload that no longer fits is an empty discussion, not a throw | plugins/substack/.../SubstackParser.kt | SubstackParserTest.aPayloadThatNoLongerFitsIsAnEmptyDiscussion
+covered | substack_features_test › reading a discussion › a runaway thread stops indenting at the cap | plugins/substack/.../SubstackParser.kt | SubstackParserTest.aRunawayThreadStopsIndentingAtTheCapButKeepsEveryReply
+
+## test/substack_feed_fresh_test.dart
+covered | substack_feed_fresh_test › a second home-strip open inside the TTL does not refetch | plugins/substack/.../SubstackFeeds.kt | SubstackFeedsTest.aRefreshThatIsNotForcedSkipsPublicationsAnsweredWithinTheWindow
+covered | substack_feed_fresh_test › pull-to-refresh asks again even inside the TTL | plugins/substack/.../SubstackFeeds.kt | same test (forced refresh asks again)
+
+## test/substack_feed_memory_test.dart
+covered | substack_feed_memory_test › the memory keeps first pages without bodies, and an odd value is empty | plugins/substack/.../SubstackHomeFeed.kt (SubstackFeedMemory) | SubstackHomeTest.theRememberedFeedReadsBackAsItWasWrittenAndADamagedOneAsNothing
+covered | substack_feed_memory_test › a restart inside the cache window paints the feed and asks Substack nothing | plugins/substack/.../SubstackHomeFeed.kt | SubstackHomeTest.aRestoredFeedPaintsAtOnceAndReadsOnlyThePublicationsThatAreNoLongerFresh
+covered | substack_feed_memory_test › only publications that answered too long ago are asked again; a forced refresh asks all | plugins/substack/.../SubstackHomeFeed.kt | same test
+covered | substack_feed_memory_test › resetting the plugin forgets the feed | ui/.../data/plugins/AppPlugins.kt (erase deletes plugin-data/<id>, where feed.json lives) | native keeps the memory in the plugin's folder, not in a preference, so uninstalling erases it (PluginPrefsTest's uninstall tests); XTA has no other reset of it
+
+## test/substack_feed_order_test.dart
+covered | substack_feed_order_test › the feed is newest first, ties by feed key, undated posts last | plugins/substack/.../SubstackFeeds.kt | SubstackFeedsTest.theFeedIsNewestFirstTiesByFeedKeyUndatedLast
+
+## test/substack_follow_identity_test.dart
+untested | substack_follow_identity_test › BUG-16: a publication page never rewrites another follow that shares its guessed id | plugins/substack/.../SubstackPublicationScreen.kt (enrich → refreshFollow only for app.followOf), SubstackFollowing.refreshed | SubstackFollowIdentityTest.aPublicationPageNeverRewritesAnotherFollowThatSharesItsGuessedId
+untested | substack_follow_identity_test › a publication page refreshes its own follow, under that follow's id | plugins/substack/.../SubstackFollowing.kt (refreshed) | SubstackFollowIdentityTest.aPublicationPageRefreshesItsOwnFollowUnderThatFollowsId
+covered | substack_follow_identity_test › BUG-06: following two sites whose hosts share a first label keeps both | plugins/substack/.../SubstackFollowing.kt | SubstackLocalTest.followsListPinnedFirstThenByNameAndPlaceANewOneUnderItsOwnHost ("a guessed id another follow holds goes under its host")
+untested | substack_follow_identity_test › following the same site again updates its follow in place | plugins/substack/.../SubstackFollowing.kt (followed) | SubstackFollowIdentityTest.followingTheSameSiteAgainUpdatesItsFollowInPlace
+covered | substack_follow_identity_test › substackFollowOf › the same host is the same follow, whatever the ids say | plugins/substack/.../SubstackIdentity.kt (SubstackFollows.followOf) | SubstackHostsTest.theSameHostIsTheSameFollowWhateverTheIdsSay
+covered | substack_follow_identity_test › substackFollowOf › among follows on one host, the one with the same id wins | plugins/substack/.../SubstackIdentity.kt | same test (garbageday)
+covered | substack_follow_identity_test › substackFollowOf › equal ids on two hosts match only when neither is a guess | plugins/substack/.../SubstackIdentity.kt | SubstackHostsTest.equalIdsOnTwoHostsMatchOnlyWhenNeitherIsAGuess
+covered | substack_follow_identity_test › substackFollowOf › placing keeps the follow's id, or moves a taken id to the host | plugins/substack/.../SubstackIdentity.kt (place) | SubstackHostsTest.placingKeepsTheFollowsIdOrMovesATakenIdToTheHost
+untested | substack_follow_identity_test › a publication found under its own subdomain on another host is the same follow | plugins/substack/.../SubstackFollowing.kt (followed) | SubstackFollowIdentityTest.aPublicationFoundUnderItsOwnSubdomainOnAnotherHostIsTheSameFollow
+
+## test/substack_highlights_test.dart
+covered | substack_highlights_test › a selection over two blocks is two quotes; a stray letter is none | plugins/substack/.../SubstackHighlights.kt (quotes) | SubstackHighlightsTest.aSelectionIsOneQuotePerLineWithItsSpacesCollapsed
+untested | substack_highlights_test › highlighted text is split out of its runs, keeping their styles | plugins/substack/.../SubstackHighlights.kt (shown) | SubstackHighlightRulesTest.highlightedTextIsSplitOutOfItsRunsKeepingTheirStyles
+untested | substack_highlights_test › a short quote is highlighted as a word, not inside other words; Chinese matches anywhere | plugins/substack/.../SubstackHighlights.kt | SubstackHighlightRulesTest.aShortQuoteIsAWordNotInsideOtherWordsAndChineseMatchesAnywhere
+covered | substack_highlights_test › highlights are kept by post, survive a restart, drop the oldest beyond the limit | plugins/substack/.../SubstackHighlights.kt | SubstackHighlightsTest.highlightsAreKeptByPostNewestLastAndBoundedOldestPostFirst
+covered | substack_highlights_test › a damaged preference reads as no highlights | plugins/substack/.../SubstackHighlights.kt | SubstackLocalTest.aDamagedPreferenceReadsAsNothingKept
+covered | substack_highlights_test › the Markdown names the post and quotes each highlight | plugins/substack/.../SubstackHighlights.kt (markdown) | SubstackHighlightsTest.highlightsShareAsMarkdownWithTheirSourceAndQuoteMarksTrimmed
+covered | substack_highlights_test › the sheet lists, removes and shares highlights | plugins/substack/.../SubstackReaderParts.kt (HighlightsSheet: remove, share markdown) | remove and markdown are tested in SubstackHighlightsTest; the sheet only calls them
+untested | substack_highlights_test › two readers open on two posts keep each other's highlights | plugins/substack/.../SubstackHighlights.kt (one store per plugin) | SubstackHighlightRulesTest.twoPostsReadOneAfterTheOtherKeepEachOthersHighlights
+
+## test/substack_home_controls_test.dart
+n/a | substack_home_controls_test › assembled Substack Home 390 1 RTL=false dark=false | plugins/substack/.../SubstackHome.kt | golden render and pixel heights of XTA's slim header inside Flutter's Home; the local search it also checks is SubstackHomeControlsTest.eachFeedKeepsItsOwnSearchAndAResetClearsHomesFilterToo
+n/a | substack_home_controls_test › assembled Substack Home 390 1 RTL=false dark=true | plugins/substack/.../SubstackHome.kt | as above (dark)
+n/a | substack_home_controls_test › assembled Substack Home 320 2 RTL=true dark=true | plugins/substack/.../SubstackHome.kt | as above (RTL, text scale 2)
+n/a | substack_home_controls_test › section icons and reading actions share one slim bar | plugins/substack/.../SubstackHome.kt (HomeHeader) | button geometry in Flutter's bar; native's header has the four panes and Search on one row, and Notes are read only when their pane is chosen (LaunchedEffect(selected))
+n/a | substack_home_controls_test › pushed narrow reader keeps every section and respects Back and safe areas | plugins/substack/.../SubstackHome.kt | safe areas and Back of a pushed Flutter route; native's Notes pane has no Home filters (NotesPane has no ReadingToolbar)
+untested | substack_home_controls_test › loaded search combines publication, author and article terms without mutating source | plugins/substack/.../SubstackFilters.kt (loaded) | SubstackHomeControlsTest.theLoadedSearchCombinesPublicationAuthorAndArticleWordsWithoutChangingTheList
+untested | substack_home_controls_test › oldest and popular are stable and missing dates follow dated articles | plugins/substack/.../SubstackFilters.kt (comparator) | SubstackHomeControlsTest.oldestAndPopularAreStableAndUndatedPostsComeLast
+untested | substack_home_controls_test › Home search stays local and survives a lazy tab switch | plugins/substack/.../SubstackHome.kt (HomeControls in the kept HomeState) | SubstackHomeControlsTest.eachFeedKeepsItsOwnSearchAndAResetClearsHomesFilterToo
+n/a | substack_home_controls_test › embedded German Home starts with articles instead of stacked controls | – | golden render and toolbar height
+untested | substack_home_controls_test › sort and reset work locally and show an active options indicator | plugins/substack/.../SubstackReadingToolbar.kt (Marked badge from SubstackHomeRules.filtered), HomeControls.reset | SubstackHomeControlsTest.eachFeedKeepsItsOwnSearchAndAResetClearsHomesFilterToo
+covered | substack_home_controls_test › Following opens a named publication list and its archive | plugins/substack/.../SubstackReadingToolbar.kt (PublicationPicker, "Unread" from withUnread) | SubstackHomeTest.homeShowsTheFollowedPublicationsPostsThroughItsFilterAndInboxOnlyTheUnread (withUnread); route: routesNameEachScreenAndReadBackWhatTheyNamed
+covered | substack_home_controls_test › partial failure stays compact and can be retried from its details | plugins/substack/.../SubstackReadingToolbar.kt (warning icon named by partial_error, retry dialog), SubstackFeeds.kt | SubstackFeedsTest.failedPublicationPagesKeepTheirOffsetWhileOthersProgress / aFailedRefreshKeepsWhatWasShownAndAFreshOneReplacesIt
+n/a | substack_home_controls_test › a loaded feed ends at its last post, and a refresh shows on the line over it | plugins/substack/.../SubstackFeedPanes.kt (PullToRefreshBox, LoadMoreRow) | footer heights in pixels; native shows a refresh in the pull indicator at the top, not after the last post
+n/a | substack_home_controls_test › a page that failed to load more is one compact row at the end | ui/.../plugins (LoadMoreRow) | row height in pixels; native's end row shows the failure with Retry
+covered | substack_home_controls_test › pulling Home refreshes a freshly cached feed | plugins/substack/.../SubstackFeedPanes.kt (onRefresh = refresh(force = true)) | SubstackFeedsTest.aRefreshThatIsNotForcedSkipsPublicationsAnsweredWithinTheWindow ("pull to refresh asks again")
+covered | substack_home_controls_test › pulling Notes refreshes a freshly cached public stream | plugins/substack/.../SubstackNotesUi.kt (onRefresh = refresh(force = true)), SubstackNotesFeed.kt | SubstackFeedsTest.notePagesKeepTheirIssuingHostAndARefreshAsksTheNextHost
+untested | substack_home_controls_test › individual read toggle is reversible and current unread filter updates | plugins/substack/.../SubstackHomeRules.kt, SubstackLocal.kt (read marks) | SubstackHomeControlsTest.theSavedAndUnreadFiltersFollowTheMarksAtOnce
+untested | substack_home_controls_test › the Saved filter shows the saved posts on Home, and follows an unsave | plugins/substack/.../SubstackHomeRules.kt | SubstackHomeControlsTest.theSavedAndUnreadFiltersFollowTheMarksAtOnce
+covered | substack_home_controls_test › an empty loaded Inbox can page to older unread articles | plugins/substack/.../SubstackFeedPanes.kt (InboxPane keeps its LoadMoreRow under the empty state), SubstackHomeFeed.loadMore | SubstackFeedsTest.overlappingPagesUpdateTheirPostsAndAPageWithNothingNewStops (paging)
+untested | substack_home_controls_test › Library choice and query survive returning from Home | plugins/substack/.../SubstackHome.kt (HomeControls.librarySection/libraryQuery) | SubstackHomeControlsTest.theLibrarysChoiceAndSearchStayWhileTheHomeTabIsKept
+untested | substack_home_controls_test › Home and card actions fit narrow enlarged RTL text | plugins/substack/.../SubstackHome.kt (HomeMenu: Add publication, Mark all as read) | layout is Flutter's; the menu's rule is SubstackHomeControlsTest.theSavedAndUnreadFiltersFollowTheMarksAtOnce (anyUnread)
+
+## test/substack_links_test.dart
+covered | substack_links_test › parseSubstackPostLink › reads a post on a publication subdomain | plugins/substack/.../SubstackLinks.kt | SubstackLinksTest.aPostOnAPublicationSubdomainOrTheShareHostIsALink
+covered | substack_links_test › parseSubstackPostLink › reads the share host Substack uses in its emails | plugins/substack/.../SubstackLinks.kt | same test
+covered | substack_links_test › parseSubstackPostLink › keeps the post when the link points at its comments | plugins/substack/.../SubstackLinks.kt | same test
+covered | substack_links_test › parseSubstackPostLink › ignores query strings and fragments | plugins/substack/.../SubstackLinks.kt | same test
+covered | substack_links_test › parseSubstackPostLink › a custom domain is only claimed when the reader follows it | plugins/substack/.../SubstackLinks.kt | SubstackLinksTest.aCustomDomainIsOnlyClaimedWhenItIsFollowed
+covered | substack_links_test › parseSubstackPostLink › publication pages are not posts | plugins/substack/.../SubstackLinks.kt | SubstackLinksTest.pagesOfAPublicationSubstacksOwnPagesAndOtherSitesAreNoPost
+covered | substack_links_test › parseSubstackPostLink › Substack's own pages are not posts | plugins/substack/.../SubstackLinks.kt | same test
+covered | substack_links_test › parseSubstackPostLink › non-Substack links are left alone | plugins/substack/.../SubstackLinks.kt | same test
+covered | substack_links_test › parseSubstackPostLink › a lookalike host cannot impersonate a publication | plugins/substack/.../SubstackLinks.kt | same test
+covered | substack_links_test › substackPostStub › carries what the reader needs to fetch the real post | plugins/substack/.../SubstackLinks.kt (stub) | SubstackLinksTest.aStubCarriesWhatTheReaderNeedsToLoadTheRealPost
+covered | substack_links_test › substackPostStub › prefers the followed publication's own name when known | plugins/substack/.../SubstackLinks.kt | same test
+covered | substack_links_test › custom-domain candidates › a /p/ link on an unknown domain is a candidate on its own host | plugins/substack/.../SubstackLinks.kt (customDomainCandidate) | SubstackLinksTest.aPostLinkOnAnUnknownDomainIsACandidateOnItsOwnHost
+covered | substack_links_test › custom-domain candidates › Substack hosts, followed domains, other shapes and Instagram are not candidates | plugins/substack/.../SubstackLinks.kt | same test
+
+## test/substack_local_library_test.dart
+covered | substack_local_library_test › local like/save snapshots › round-trip omits body but keeps what the library needs | plugins/substack/.../SubstackPostJson.kt | SubstackHighlightsTest.aSnapshotReadsBackAsThePostWithoutItsBody
+covered | substack_local_library_test › local like/save snapshots › corrupt prefs become an empty library, not a throw | plugins/substack/.../SubstackLocal.kt (SubstackPostShelf) | SubstackLocalTest.aDamagedPreferenceReadsAsNothingKept
+
+## test/substack_native_article_test.dart
+covered | substack_native_article_test › a post reads natively: header, text, embeds as links, web-only gaps and footnotes | plugins/substack/.../SubstackArticleView.kt (ArticleHeader "Publication · Author", heading semantics, embed/web-only rows), SubstackBlocks.kt | the blocks are SubstackArticleTest.imagesHeldEmbedsWebOnlyGapsAndFootnotesAreTheirOwnBlocks and paragraphsKeepTheirStylesLinksAndFootnoteMarkers; taps go to ArticleTaps.onLink (no Compose UI harness)
+untested | substack_native_article_test › a paid preview ends with the note and the way to the site | plugins/substack/.../SubstackArticleView.kt (ArticleFooter), SubstackArticle.kt (isPreview) | SubstackNativeArticleTest.aPaidPostWithItsOpeningIsAPreviewThatEndsWithTheWayToTheSite
+n/a | substack_native_article_test › the long post scrolls on a narrow screen at 200 % text without overflow | – | Flutter overflow check
+untested | substack_native_article_test › the setting is off by default, switches on, and a reset turns it off | store/.../settings/NetworkPrefs.kt (SubstackPrefs.nativeReader, readerFont, columnWidth), ui/.../data/plugins/PluginErase.kt | SubstackNativeArticleTest.theNativeReaderIsOffByDefaultAndItsFontAndColumnStartAtSerifAndMedium (native has no reset apart from uninstalling, which erases the plugin.substack.* keys)
+covered | substack_native_article_test › a footnote marker opens its note in a sheet; an image opens the viewer | plugins/substack/.../SubstackReaderParts.kt (FootnoteSheet, footnotesOf), SubstackArticleView.kt (onImage) | footnote markers carry their number: SubstackArticleTest.paragraphsKeepTheirStylesLinksAndFootnoteMarkers
+covered | substack_native_article_test › the place reached is kept by block and comes back on reopening | store/.../reading/ArticleReading.kt (firstVisibleBlock, journal) | ArticleReadingTest.theFirstBlockStillShowingIsWhereANativeReaderIs and openingIsNotFinishingAndThePlaceAndTypeSurviveARestart
+covered | substack_native_article_test › a jump from the contents puts its block at the top | plugins/substack/.../SubstackArticle.kt (blockOf) → list.scrollToItem(ROWS_BEFORE_BLOCKS + index) | SubstackArticleTest.everyPassageContentsOrFindCanNameLeadsToTheBlockItIsDrawnIn
+covered | substack_native_article_test › a kept post shows its images from their files, the rest from the network | plugins/substack/.../SubstackArticleView.kt (model = keptImages[src] ?: src), SubstackReaderModel.kt | a one-line choice in the view; the kept files come from the app's offline store (its own tests)
+untested | substack_native_article_test › on a wide screen the text keeps its column width and font | store/.../settings/Choices.kt (SubstackColumnWidth.rem) | SubstackNativeArticleTest.theColumnIsNarrowOrWideInRem
+covered | substack_native_article_test › highlights show behind their text, and the selection menu saves a new one | plugins/substack/.../SubstackHighlights.kt (shown, quotes) | SubstackHighlightsTest.quotesAreMarkedOnWholeWordsUnlessThatIsTheOnlyPlaceTheyOccur and aSelectionIsOneQuotePerLineWithItsSpacesCollapsed
+
+## test/substack_open_parse_test.dart
+covered | substack_open_parse_test › one parse gives the same page and speech text: synthetic long post | plugins/substack/.../SubstackArticle.kt | SubstackArticleTest.oneParseGivesTheSameSpeechTextAsReadingTheBodyAlone (the page half is Dart's sanitized flag: native's wrap always takes the parsed body)
+covered | substack_open_parse_test › one parse gives the same page and speech text: bare text | plugins/substack/.../SubstackArticle.kt | same test
+covered | substack_open_parse_test › one parse gives the same page and speech text: line breaks and lists | plugins/substack/.../SubstackArticle.kt | same test
+covered | substack_open_parse_test › one parse gives the same page and speech text: tables | plugins/substack/.../SubstackArticle.kt | same test
+covered | substack_open_parse_test › one parse gives the same page and speech text: stripped parts | plugins/substack/.../SubstackArticle.kt | same test
+covered | substack_open_parse_test › one parse gives the same page and speech text: hidden and footnotes | plugins/substack/.../SubstackArticle.kt | same test
+covered | substack_open_parse_test › an embed is held behind a button until the reader asks for it | plugins/substack/.../SubstackArticle.kt, SubstackWebPage.kt (label escaped, replaceWith) | SubstackArticleTest.anEmbedIsHeldBehindAPlaceholderUntilTheReaderAsksForIt; SubstackWebPageTest.theLabelsCannotCloseTheirScript
+covered | substack_open_parse_test › a parsed article is reused only for the same post, date and body | plugins/substack/.../SubstackArticle.kt (SubstackParsedArticles) | SubstackArticleTest.aParsedArticleIsReusedOnlyForTheSamePostDateAndBody
+
+## test/substack_opml_test.dart
+covered | substack_opml_test › an export reads back as the same sites, names escaped | plugins/substack/.../SubstackOpml.kt | SubstackOpmlTest.anExportReadsBackAsTheSameSitesWithNamesEscaped
+covered | substack_opml_test › another reader's OPML: nested outlines, feed-only entries, duplicates and junk | plugins/substack/.../SubstackOpml.kt | SubstackOpmlTest.anotherReadersOpmlWithNestedOutlinesFeedOnlyEntriesDuplicatesAndJunk
+covered | substack_opml_test › an import adds the new, leaves the followed and counts the rest; a rate limit stops it | plugins/substack/.../SubstackOpml.kt | SubstackOpmlTest.anImportAddsTheNewLeavesTheFollowedAndARateLimitStopsIt
+covered | substack_opml_test › the settings rows export the follows and import a file | plugins/substack/.../SubstackSettings.kt (OpmlRows: export to substack-follows.opml, import, opml_result notice) | export/import themselves are the tests above; the rows only call them
+missing/different | substack_opml_test › an import whose settings screen closed stops asking | plugins/substack/.../SubstackSettings.kt (OpmlRows) | native ran the import in the plugin's scope, beyond the screen; now in the settings screen's scope, so leaving stops it. SubstackOpmlStopTest.anImportWhoseScreenClosedStopsAsking
+
+## test/substack_pins_test.dart
+covered | substack_pins_test › pinned publications sort ahead of the A–Z rest | plugins/substack/.../SubstackFollowing.kt (ordered) | SubstackLocalTest.followsListPinnedFirstThenByNameAndPlaceANewOneUnderItsOwnHost
+covered | substack_pins_test › unknown pin ids are skipped | plugins/substack/.../SubstackFollowing.kt | same test ("gone")
+covered | substack_pins_test › empty pins leave the list alone | plugins/substack/.../SubstackFollowing.kt | ordered() sorts by name as XTA's follows table is read, then pins nothing; same test
