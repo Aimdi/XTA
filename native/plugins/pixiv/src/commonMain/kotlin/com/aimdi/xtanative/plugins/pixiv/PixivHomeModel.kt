@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -48,14 +47,18 @@ internal data class PixivHomeView(
 )
 
 /** What the lists were read for: the account, and the Show R-18 and Hide AI choices, which drop works as each page is read. */
-internal data class PixivSessionKey(val userId: Long, val token: String, val showR18: Boolean, val hideAi: Boolean) {
+internal data class PixivSessionKey(val userId: Long, val showR18: Boolean, val hideAi: Boolean) {
+    /**
+     * Whether lists read under [before] no longer fit (XTA's
+     * PixivSessionAccountStore): another account, signing out, or another
+     * choice. Learning the id of the account in use (a pasted token's first
+     * check) is no switch, and neither is Pixiv rotating its token.
+     */
+    fun switchedFrom(before: PixivSessionKey): Boolean =
+        showR18 != before.showR18 || hideAi != before.hideAi || (userId != before.userId && before.userId != 0L)
+
     companion object {
-        fun of(settings: Settings) = PixivSessionKey(
-            settings[PixivPrefs.userId],
-            settings[PixivPrefs.refreshToken].trim(),
-            settings[PixivPrefs.showR18],
-            settings[PixivPrefs.hideAi],
-        )
+        fun of(settings: Settings) = PixivSessionKey(settings[PixivPrefs.userId], settings[PixivPrefs.showR18], settings[PixivPrefs.hideAi])
     }
 }
 
@@ -95,7 +98,11 @@ internal class PixivHomeModel(private val runtime: PixivRuntime, private val sco
     init {
         scope.launch {
             runtime.ready()
-            runtime.settings.state.map(PixivSessionKey::of).distinctUntilChanged().drop(1).collect { forget() }
+            var read = PixivSessionKey.of(runtime.settings.now)
+            runtime.settings.state.map(PixivSessionKey::of).distinctUntilChanged().collect { key ->
+                if (key.switchedFrom(read)) forget()
+                read = key
+            }
         }
         scope.launch {
             runtime.watchlistChanges.collect { novels -> (if (novels) novelWatchlist else watchlist).takeIf { it.state.value.loaded }?.refresh() }
