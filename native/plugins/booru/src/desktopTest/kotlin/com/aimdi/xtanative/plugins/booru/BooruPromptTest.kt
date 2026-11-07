@@ -47,4 +47,11 @@ class BooruPromptTest {
         )
         assertEquals("hatsune miku, vocaloid, smile, ^_^, kagamine rin \\(cosplay\\)", BooruPrompt.text(tags, kinds, BooruPrompt.order("")))
     }
+
+    @Test
+    fun switchingMetaOnKeepsItInThePromptAfterTheOthers() {
+        val stored = BooruPrompt.stored(BooruPrompt.toggled(BooruPrompt.kinds(""), BooruTagCategory.META, included = true))
+        assertEquals("character,copyright,artist,species,general,meta", stored)
+        assertEquals(BooruTagCategory.META, BooruPrompt.order(stored).last())
+    }
 }

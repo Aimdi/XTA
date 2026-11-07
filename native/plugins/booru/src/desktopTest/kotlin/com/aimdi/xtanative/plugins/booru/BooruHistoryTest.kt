@@ -47,4 +47,19 @@ class BooruHistoryTest {
         assertFalse(BooruVisits.isNew(since, post(id = "10", host = a)))
         assertFalse(BooruVisits.isNew(since, post(id = "99", host = b)))
     }
+
+    @Test
+    fun nothingIsNewOnASiteNotVisitedBeforeNorAPostWithoutANumber() {
+        assertFalse(BooruVisits.isNew(emptyMap(), post(id = "9", host = a)))
+        assertFalse(BooruVisits.isNew(mapOf(a to 10L), post(id = "abc", host = a)))
+    }
+
+    @Test
+    fun seeingNothingChangesNothingAndABrokenRecordIsNoVisit() {
+        val seen = mapOf(a to 20L)
+        assertEquals(seen, BooruVisits.marked(seen, emptyList()))
+        assertEquals(emptyMap(), BooruVisits.seen("nope"))
+        assertEquals(mapOf("c" to 4L), BooruVisits.seen("""{"a":"b","c":4}"""))
+        assertEquals(emptyMap(), BooruVisits.seen(""))
+    }
 }

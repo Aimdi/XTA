@@ -49,13 +49,21 @@ internal fun BooruLinkedPostScreen(app: BooruApp, ref: BooruPostRef) = Bound(app
 @Composable
 private fun MissingPost(app: BooruApp, ref: BooruPostRef, error: Throwable?, onRetry: () -> Unit) {
     val outside = rememberOutside()
+    val page = BooruRoutes.pageUrl(ref)
+    // A post the viewer cannot show is left to the browser, as XTA leaves the link to it.
+    if (error == null && page != null) {
+        LaunchedEffect(ref) {
+            outside.open(page)
+            app.host.back()
+        }
+    }
     PluginScaffold("#" + ref.id, onBack = app.host::back) { padding ->
         Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
             if (error != null) {
                 RetryMessage(errorText(error), onRetry)
             } else {
                 EmptyPane(BooruIcons.BrokenImage, pluginString(Strings.error_not_found)) {
-                    BooruRoutes.pageUrl(ref)?.let { page -> Button(onClick = { outside.open(page) }) { Text(pluginString(Strings.open_on_host)) } }
+                    page?.let { Button(onClick = { outside.open(it) }) { Text(pluginString(Strings.open_on_host)) } }
                 }
             }
         }

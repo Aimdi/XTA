@@ -61,4 +61,14 @@ class BooruViewingTest {
         assertEquals(3, lookups.remember("notes:1") { ++asked })
         scope.cancel()
     }
+
+    @Test
+    fun onlyTheMostRecentlyUsedAnswersAreKept(): Unit = runBlocking {
+        val scope = CoroutineScope(SupervisorJob())
+        val lookups = BooruLookups(scope, capacity = 2)
+        var asked = 0
+        listOf("a", "b", "a", "c", "a", "b").forEach { key -> lookups.remember(key) { ++asked } }
+        assertEquals(4, asked, "b was the least recent when c came in, so it was asked again")
+        scope.cancel()
+    }
 }

@@ -9,6 +9,8 @@ import java.nio.file.Files
 import java.time.Instant
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 class BooruFollowsTest {
@@ -68,5 +70,24 @@ class BooruFollowsTest {
     fun aDamagedFileReadsAsNoFollows(): Unit = runBlocking {
         val path = file().apply { writeText("{\"rows\": [3, {\"name\": 4}]") }
         assertEquals(emptyList(), BooruFollows(StoreFile(path)).load())
+    }
+
+    @Test
+    fun aFollowedTagReadsBackAsAMemberNamedByItsTagWhoseTapSearchesIt() {
+        val member = booruSubscription(NamedSubscriptionRow("blue_eyes solo", "blue_eyes solo")) {}
+        assertEquals("blue_eyes solo", member.name)
+        assertEquals("tag:blue_eyes solo", member.subtitle)
+        assertEquals(BooruRoutes.search("blue_eyes solo"), member.route)
+    }
+
+    @Test
+    fun aSaveIsNotLostWhenAReloadStartsRightAfterIt(): Unit = runBlocking {
+        val path = file()
+        val follows = BooruFollows(StoreFile(path))
+        coroutineScope {
+            launch { follows.add("kept_tag") }
+            launch { follows.load() }
+        }
+        assertEquals(listOf("kept_tag"), BooruFollows(StoreFile(path)).load())
     }
 }

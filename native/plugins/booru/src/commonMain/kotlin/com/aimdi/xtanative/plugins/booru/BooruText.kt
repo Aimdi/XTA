@@ -18,6 +18,7 @@ import com.aimdi.xtanative.networks.booru.BooruQueryToken
 import com.aimdi.xtanative.networks.booru.BooruRating
 import com.aimdi.xtanative.networks.booru.BooruTagCategory
 import com.aimdi.xtanative.networks.booru.BooruTagOperator
+import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
 import java.util.Locale
@@ -57,14 +58,14 @@ internal fun engineLabel(engine: BooruEngine): String = pluginString(
 )
 
 @Composable
-internal fun ratingLabel(rating: BooruRating): String = pluginString(
-    when (rating) {
-        BooruRating.GENERAL -> Strings.rating_general
-        BooruRating.SENSITIVE -> Strings.rating_sensitive
-        BooruRating.QUESTIONABLE -> Strings.rating_questionable
-        BooruRating.EXPLICIT -> Strings.rating_explicit
-    },
-)
+internal fun ratingLabel(rating: BooruRating): String = pluginString(ratingText(rating))
+
+internal fun ratingText(rating: BooruRating): PluginText = when (rating) {
+    BooruRating.GENERAL -> Strings.rating_general
+    BooruRating.SENSITIVE -> Strings.rating_sensitive
+    BooruRating.QUESTIONABLE -> Strings.rating_questionable
+    BooruRating.EXPLICIT -> Strings.rating_explicit
+}
 
 /** A group of tags' heading; null is a host that said no kinds. */
 @Composable

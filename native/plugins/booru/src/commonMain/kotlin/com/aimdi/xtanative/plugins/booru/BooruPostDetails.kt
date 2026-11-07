@@ -36,9 +36,11 @@ import com.aimdi.xtanative.networks.booru.BooruTagGroups
 import com.aimdi.xtanative.networks.booru.BooruTagInfo
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.XIcons
-import com.aimdi.xtanative.ui.plugins.pluginPlural
+import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
+import java.time.ZoneId
+import java.util.Locale
 
 /**
  * Everything about one post (booru_post_screen.dart): the picture, its facts,
@@ -88,13 +90,13 @@ private fun SourceRow(source: String) {
 }
 
 /** One thing the host said about a post, its [label] read aloud where the text alone is unclear. */
-private data class Fact(val icon: ImageVector, val text: String, val label: String?)
+internal data class Fact(val icon: ImageVector, val text: String, val label: String?)
 
 /** Score, votes, favourites, rating, size, file and who posted it when (booru_post_facts.dart): each one the host sent. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun PostFacts(post: BooruPost) {
-    val facts = facts(post)
+    val facts = postFacts(post, currentLanguage(), readerLocale())
     FlowRow(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 4.dp), horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(16.dp)) {
         facts.forEach { fact ->
             Row(Modifier.padding(vertical = 4.dp).clearAndSetSemantics { contentDescription = fact.label ?: fact.text }, verticalAlignment = Alignment.CenterVertically) {
@@ -106,24 +108,23 @@ private fun PostFacts(post: BooruPost) {
     }
 }
 
-@Composable
-private fun facts(post: BooruPost): List<Fact> {
-    val locale = readerLocale()
+/** What the host said about [post] in [language], numbers and times in [locale]; nothing it did not send. */
+internal fun postFacts(post: BooruPost, language: String, locale: Locale, zone: ZoneId = ZoneId.systemDefault()): List<Fact> {
     val number = { n: Int -> BooruFormats.number(n.toLong(), locale) }
-    val created = post.createdAt?.let { BooruFormats.dateTime(it, locale) }
+    val created = post.createdAt?.let { BooruFormats.dateTime(it, locale, zone) }
     // A change time alone is not when the post went up, so it says what it is.
-    val changed = post.updatedAt?.takeIf { post.createdAt == null }?.let { BooruFormats.dateTime(it, locale) }
+    val changed = post.updatedAt?.takeIf { post.createdAt == null }?.let { BooruFormats.dateTime(it, locale, zone) }
     val up = post.upScore
     val down = post.downScore
     return listOfNotNull(
-        post.score?.let { Fact(Icons.Outlined.ThumbUp, number(it), pluginString(Strings.score, it)) },
-        if (up != null && down != null) Fact(BooruIcons.Votes, "+${number(up)} −${number(down)}", pluginString(Strings.votes, up, down)) else null,
-        post.favCount?.let { Fact(Icons.Filled.FavoriteBorder, number(it), pluginPlural(Strings.favorites, it, it)) },
-        post.rating?.let { Fact(BooruIcons.Rating, ratingLabel(it), null) },
+        post.score?.let { Fact(Icons.Outlined.ThumbUp, number(it), Strings.score.get(language, it)) },
+        if (up != null && down != null) Fact(BooruIcons.Votes, "+${number(up)} −${number(down)}", Strings.votes.get(language, up, down)) else null,
+        post.favCount?.let { Fact(Icons.Filled.FavoriteBorder, number(it), Strings.favorites.get(it, language, it)) },
+        post.rating?.let { Fact(BooruIcons.Rating, ratingText(it).get(language), null) },
         if (post.width > 0 && post.height > 0) Fact(BooruIcons.Size, "${post.width} × ${post.height}", null) else null,
         BooruFormats.file(post)?.let { Fact(BooruIcons.File, it, null) },
-        created?.let { Fact(GroupIcons.ScheduleOutlined, it, pluginString(Strings.posted_on, it)) },
-        changed?.let { Fact(BooruIcons.Updated, pluginString(Strings.updated_on, it), null) },
-        post.uploader?.let { Fact(BooruIcons.Person, it, pluginString(Strings.uploaded_by, it)) },
+        created?.let { Fact(GroupIcons.ScheduleOutlined, it, Strings.posted_on.get(language, it)) },
+        changed?.let { Fact(BooruIcons.Updated, Strings.updated_on.get(language, it), null) },
+        post.uploader?.let { Fact(BooruIcons.Person, it, Strings.uploaded_by.get(language, it)) },
     )
 }

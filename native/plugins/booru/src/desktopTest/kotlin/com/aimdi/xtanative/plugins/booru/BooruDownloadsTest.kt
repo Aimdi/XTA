@@ -2,7 +2,9 @@ package com.aimdi.xtanative.plugins.booru
 
 import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.networks.booru.BooruTagCategory
+import com.aimdi.xtanative.networks.booru.BooruEngine
 import com.aimdi.xtanative.networks.booru.post
+import com.aimdi.xtanative.store.downloads.safeDownloadName
 import com.aimdi.xtanative.ui.plugins.MediaItem
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -28,6 +30,17 @@ class BooruDownloadsTest {
     fun withoutATemplateTheFileKeepsItsOwnName() {
         assertEquals("booru-abcd1234.PNG", BooruDownloads.fileName(picture, ""))
         assertEquals("booru-abcd1234.PNG", BooruDownloads.fileName(picture, "{copyright}"))
+    }
+
+    @Test
+    fun aMoebooruDownloadIsNamedAfterTheSiteThePostAndItsTags() {
+        val yandere = post(
+            id = "123456",
+            engine = BooruEngine.MOEBOORU,
+            host = "https://yande.re",
+            fileUrl = "https://files.yande.re/image/0f1e/yande.re%20123456%20blue_eyes%20re:zero.jpg",
+        )
+        assertEquals("booru-yande.re 123456 blue_eyes re_zero.jpg", safeDownloadName(BooruDownloads.fileName(yandere, "")))
     }
 
     @Test
@@ -61,5 +74,11 @@ class BooruDownloadsTest {
         assertEquals("booru", content["source"].string)
         assertEquals("hatsune_miku solo kei_(keigarou)", content["text"].string)
         assertEquals(listOf("https://cdn.donmai.us/original/ab/cd/abcd1234.PNG"), content["images"].list.map { it.string })
+    }
+
+    @Test
+    fun downloadAllAsksWithTheCountLoadedThenSaysWhatWasQueuedAndSkipped() {
+        assertEquals("Posts loaded so far: 3. Files already in your downloads are skipped.", Strings.download_all_body.get("en", 3))
+        assertEquals("Queued: 2. Already downloaded: 1.", Strings.download_all_result.get("en", 2, 1))
     }
 }

@@ -10,7 +10,11 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import com.aimdi.xtanative.networks.booru.BooruRating
+import com.aimdi.xtanative.networks.booru.BooruSettings
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.yield
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
@@ -204,5 +208,85 @@ class BooruFeedTest {
         assertEquals(listOf("a:1", "b:1"), asked)
         assertFalse(feed.isStale)
         feed.close()
+    }
+
+    @Test
+    fun aNewRatingCapOrBlacklistEntryMakesAFeedStale() {
+        val before = BooruSettings(maxRating = BooruRating.GENERAL)
+        assertTrue(before.feedKey != before.copy(maxRating = BooruRating.EXPLICIT).feedKey)
+        assertTrue(before.feedKey != before.copy(muted = setOf("gore")).feedKey)
+    }
+
+    @Test
+    fun aPageAskedForBeforeARefreshNeverLandsAfterIt(): Unit = runBlocking {
+        val second = CompletableDeferred<BooruPostPage>()
+        var refreshed = false
+        val feed = BooruFeed(this, { "site" }) { number ->
+            when {
+                number == 2 -> second.await()
+                refreshed -> page(7)
+                else -> page(1)
+            }
+        }
+        feed.refresh()
+        landed(feed)
+        feed.loadMore()
+        yield()
+        refreshed = true
+        feed.refresh()
+        second.complete(page(2))
+        val state = landed(feed)
+        assertEquals(listOf("7"), ids(state))
+        assertEquals(BooruPaging.IDLE, state.paging, "the footer can ask for the next page again")
+        feed.close()
+    }
+
+    @Test
+    fun ofTwoOverlappingRefreshesTheNewerDecides(): Unit = runBlocking {
+        var answer = 1
+        val feed = BooruFeed(this, { "site" }) { page(answer) }
+        feed.refresh()
+        landed(feed)
+        answer = 2
+        feed.refresh()
+        answer = 3
+        feed.refresh()
+        assertEquals(listOf("3"), ids(landed(feed)))
+        feed.close()
+    }
+
+    @Test
+    fun noNextPageIsAskedForWhileARefreshIsOnItsWay(): Unit = runBlocking {
+        val asked = mutableListOf<Int>()
+        val feed = BooruFeed(this, { "site" }) { number ->
+            asked += number
+            page(number)
+        }
+        feed.refresh()
+        feed.loadMore()
+        landed(feed)
+        assertEquals(listOf(1), asked)
+        feed.close()
+    }
+
+    @Test
+    fun aClosedFeedAsksForNoMorePagesAndDropsWhatWasOnItsWay(): Unit = runBlocking {
+        val first = CompletableDeferred<BooruPostPage>()
+        val asked = mutableListOf<Int>()
+        val feed = BooruFeed(this, { "site" }) { number ->
+            asked += number
+            first.await()
+        }
+        feed.refresh()
+        yield()
+        feed.close()
+        first.complete(page(1))
+        yield()
+        assertEquals(emptyList(), ids(feed.state.value), "its late answer is ignored")
+        feed.refresh()
+        feed.loadMore()
+        yield()
+        assertEquals(listOf(1), asked)
+        assertTrue(feed.isClosed)
     }
 }
