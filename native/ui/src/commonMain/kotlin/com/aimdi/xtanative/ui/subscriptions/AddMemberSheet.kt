@@ -31,10 +31,8 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -57,26 +55,9 @@ import com.aimdi.xtanative.ui.generated.resources.groups_search_failed
 import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
 import com.aimdi.xtanative.ui.pluginstore.PluginMark
 import com.aimdi.xtanative.ui.plugins.currentLanguage
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeout
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
-
-/**
- * The add box as it stands: what was typed, what X found for it, who was
- * added (their member ids), and which of the other networks' rows were.
- */
-private data class AddMemberUi(
-    val query: String = "",
-    val users: List<XUser>? = null,
-    val failed: Boolean = false,
-    val searching: Boolean = false,
-    val adding: Boolean = false,
-    val added: Set<String> = emptySet(),
-    val addedRows: Set<String> = emptySet(),
-)
 
 /**
  * Adding something new to a group without leaving it (_group_add_member.dart):
@@ -90,57 +71,24 @@ private data class AddMemberUi(
 fun AddMemberSheet(actions: GroupActions, onDone: (Set<String>) -> Unit) {
     val graph = LocalGraph.current
     val follows = LocalPlugins.current.follows
-    var state by remember { mutableStateOf(AddMemberUi()) }
-    val snackbars = remember { SnackbarHostState() }
-    var search by remember { mutableStateOf<Job?>(null) }
     val scope = rememberCoroutineScope()
+    val model = remember { AddMemberModel(scope) }
+    val state by model.state.collectAsStateWithLifecycle()
+    val snackbars = remember { SnackbarHostState() }
     val focus = remember { FocusRequester() }
     val sheet = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
 
-    fun find() {
-        val query = state.query.trim()
-        if (query.isEmpty()) return
-        search?.cancel()
-        state = state.copy(searching = true, failed = false, users = null)
-        search = scope.launch {
-            state = try {
-                val users = withTimeout(30_000) { graph.client.searchUsers(query, count = 20).users }
-                if (state.query.trim() == query) state.copy(users = users, searching = false) else state
-            } catch (error: CancellationException) {
-                throw error
-            } catch (error: Throwable) {
-                state.copy(failed = true, searching = false)
-            }
-        }
-    }
+    fun find() = model.find { query -> graph.client.searchUsers(query, count = 20).users }
 
     fun add(user: XUser) {
-        if (state.adding || user.id in state.added) return
-        state = state.copy(adding = true)
-        scope.launch {
-            actions.follow(user)
-            state = state.copy(adding = false, added = state.added + user.id)
-        }
+        scope.launch { model.add(user.id) { actions.follow(user); user.id } }
     }
 
     fun add(row: FollowableRow) {
         if (state.adding || row.key in state.addedRows) return
-        state = state.copy(adding = true)
         scope.launch {
-            val member = try {
-                row.follow()
-            } catch (error: CancellationException) {
-                throw error
-            } catch (error: Throwable) {
-                null
-            }
-            state = if (member == null) {
-                state.copy(adding = false)
-            } else {
-                state.copy(adding = false, added = state.added + member, addedRows = state.addedRows + row.key)
-            }
-            if (member == null) snackbars.showSnackbar(getString(Res.string.groups_add_member_failed))
+            if (!model.add(row.key, row.follow)) snackbars.showSnackbar(getString(Res.string.groups_add_member_failed))
         }
     }
 
@@ -148,10 +96,7 @@ fun AddMemberSheet(actions: GroupActions, onDone: (Set<String>) -> Unit) {
         Column(Modifier.fillMaxHeight(0.85f).imePadding().padding(horizontal = 16.dp)) {
             OutlinedTextField(
                 value = state.query,
-                onValueChange = {
-                    search?.cancel()
-                    state = state.copy(query = it, users = null, failed = false, searching = false)
-                },
+                onValueChange = model::type,
                 singleLine = true,
                 leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
                 placeholder = { Text(stringResource(Res.string.groups_search)) },

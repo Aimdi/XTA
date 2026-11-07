@@ -129,3 +129,89 @@ n/a | database_indexes_test.dart › a missing table does not stop the upgrade |
 n/a | database_indexes_test.dart › migration 39 is reachable from an older database | - | SQLite indexes/migrations/query plans; native keeps its data in files, no SQLite
 n/a | database_indexes_test.dart › the saved and liked lists read newest-first by index, not by sorting | - | SQLite indexes/migrations/query plans; native keeps its data in files, no SQLite
 n/a | database_indexes_test.dart › the weekly cleanup finds old chunks by index | - | SQLite indexes/migrations/query plans; native keeps its data in files, no SQLite
+n/a | feed_cache_decode_test.dart › async chunk decode matches the sync path | - | decoding off the UI isolate must equal the sync path: Dart isolate mechanics
+untested→ported | feed_cache_decode_test.dart › an empty store is nothing to decode | core/feed/SavedFeed.kt; SavedFeedTest | 
+untested→ported | feed_cache_decode_test.dart › a corrupt or null chunk is skipped instead of aborting | core/feed/SavedFeed.kt decode; SavedFeedTest | native keeps one file: a damaged thread is skipped, an unreadable file is no feed
+n/a | feed_cache_decode_test.dart › chunk encode matches the former UI-isolate jsonEncode | - | decoding off the UI isolate must equal the sync path: Dart isolate mechanics
+n/a | feed_cache_timestamp_test.dart › reads SQLite CURRENT_TIMESTAMP as the UTC it is | core/feed/SavedFeed.kt savedAt | SQLite CURRENT_TIMESTAMP text parsing; native stores savedAt as epoch millis, so the zone mistake cannot happen
+n/a | feed_cache_timestamp_test.dart › leaves an explicit zone alone | core/feed/SavedFeed.kt savedAt | SQLite CURRENT_TIMESTAMP text parsing; native stores savedAt as epoch millis, so the zone mistake cannot happen
+n/a | feed_cache_timestamp_test.dart › returns null for anything it cannot read | core/feed/SavedFeed.kt savedAt | SQLite CURRENT_TIMESTAMP text parsing; native stores savedAt as epoch millis, so the zone mistake cannot happen
+n/a | feed_cache_timestamp_test.dart › picks the most recent row | core/feed/SavedFeed.kt savedAt | SQLite CURRENT_TIMESTAMP text parsing; native stores savedAt as epoch millis, so the zone mistake cannot happen
+n/a | feed_cache_timestamp_test.dart › ignores rows it cannot read | core/feed/SavedFeed.kt savedAt | SQLite CURRENT_TIMESTAMP text parsing; native stores savedAt as epoch millis, so the zone mistake cannot happen
+n/a | feed_cache_timestamp_test.dart › is null when nothing is readable | core/feed/SavedFeed.kt savedAt | SQLite CURRENT_TIMESTAMP text parsing; native stores savedAt as epoch millis, so the zone mistake cannot happen
+covered | feed_chunk_concurrency_test.dart › a guest or a single account keeps the old three | core/feed/GroupFeed.kt ChunkConcurrency; GroupFeedTest | 
+covered | feed_chunk_concurrency_test.dart › each account adds about two searches, never more than six | core/feed/GroupFeed.kt ChunkConcurrency; GroupFeedTest | 
+covered | feed_chunk_concurrency_test.dart › counts accounts on for home feeds with a working sign-in | core/feed/GroupFeed.kt ChunkConcurrency; GroupFeedTest | 
+covered | feed_chunk_concurrency_test.dart › with every account off for home feeds, all working ones count | core/feed/GroupFeed.kt ChunkConcurrency; GroupFeedTest | 
+covered | feed_chunk_concurrency_test.dart › an account rate-limited on search does not count | core/feed/GroupFeed.kt ChunkConcurrency; GroupFeedTest | 
+covered | feed_chunk_concurrency_test.dart › no accounts means none usable | core/feed/GroupFeed.kt ChunkConcurrency; GroupFeedTest | 
+covered | feed_defaults_test.dart › a new group follows the global default instead of pinning a value | core/session/Session.kt ownChoices/withoutOwnChoices; GroupSessionTest | 
+covered | feed_defaults_test.dart › countIncludeOverrides counts only feeds that pinned a choice | core/session/Session.kt ownChoices/withoutOwnChoices; GroupSessionTest | 
+covered | feed_defaults_test.dart › a group keeps its own choice when only the replies overrides are cleared | core/session/Session.kt ownChoices/withoutOwnChoices; GroupSessionTest | 
+covered | feed_defaults_test.dart › the All group is not counted as a feed with its own choice | core/session/Session.kt ownChoices/withoutOwnChoices; GroupSessionTest | 
+covered | feed_read_position_test.dart › feedReadPositionKey maps Following group id to following | core/feed/CatchUp.kt FeedKeys/ReadPosition; CatchUpTest | 
+covered | feed_read_position_test.dart › isChainSeen matches by id and by timestamp | core/feed/CatchUp.kt FeedKeys/ReadPosition; CatchUpTest | 
+covered | feed_read_position_test.dart › caughtUpBoundaryIndex finds the first seen chain below new ones | core/feed/CatchUp.kt FeedKeys/ReadPosition; CatchUpTest | 
+covered | feed_read_position_test.dart › newestRecordableChain skips chains without timestamps | core/feed/CatchUp.kt FeedKeys/ReadPosition; CatchUpTest | 
+covered | feed_read_position_test.dart › caught-up boundary treats equal timestamps as seen | core/feed/CatchUp.kt FeedKeys/ReadPosition; CatchUpTest | 
+covered | feed_search_query_test.dart › an account is searched by its name | core/feed FeedQueries; FeedQueriesTest | 
+covered | feed_search_query_test.dart › a saved search keeps its operators in brackets instead of quotes | core/feed FeedQueries; FeedQueriesTest | 
+covered | feed_search_query_test.dart › brackets the members so the filters cover all of them | core/feed FeedQueries; FeedQueriesTest | 
+covered | feed_search_query_test.dart › asks for native reposts when the feed shows reposts | core/feed FeedQueries; FeedQueriesTest | 
+covered | feed_search_query_test.dart › mixes accounts and saved searches | core/feed FeedQueries; FeedQueriesTest | 
+covered | feed_search_query_test.dart › leaves the brackets out when there is no member | core/feed FeedQueries; FeedQueriesTest | 
+covered | feed_search_query_test.dart › fills every search as far as X reads it (replies $replies, reposts $reposts) | core/feed FeedQueries; FeedQueriesTest | 
+covered | feed_search_query_test.dart › a search narrowing another counts its length, and fills it as far as X reads | core/feed FeedQueries; FeedQueriesTest | 
+covered | feed_search_query_test.dart › puts more typical accounts in one search than the old 16 | core/feed FeedQueries; FeedQueriesTest | 
+covered | feed_search_query_test.dart › a new member only changes the last chunk | core/feed FeedQueries; FeedQueriesTest | 
+covered | feed_search_query_test.dart › a member too long to share a search gets its own chunk | core/feed FeedQueries; FeedQueriesTest | 
+untested→ported | feed_session_cache_test.dart › the same key keeps the same controller | ui/group/FeedSessions.kt FeedSessionCache; FeedSessionCacheTest | 
+untested→ported | feed_session_cache_test.dart › stops growing once it is full | ui/group/FeedSessions.kt FeedSessionCache; FeedSessionCacheTest | 
+untested→ported | feed_session_cache_test.dart › drops the least recently used, not the oldest created | ui/group/FeedSessions.kt FeedSessionCache; FeedSessionCacheTest | 
+untested→ported | feed_session_cache_test.dart › an evicted key loses its offset and media filter too | ui/group/FeedSessions.kt; FeedSessionCacheTest | place goes with the feed; the media switch lives in MediaModes for the run (holds no pages, so nothing to bound)
+untested→ported | feed_session_cache_test.dart › evict drops one key so the next get is a fresh controller | ui/group/FeedSessions.kt FeedSessionCache; FeedSessionCacheTest | 
+untested→ported | feed_session_cache_test.dart › invalidateAll empties it | ui/group/FeedSessions.kt FeedSessionCache; FeedSessionCacheTest | 
+covered | feed_source_reload_test.dart › a source whose last member was removed is asked again, so its posts leave | ui/feed/PluginPosts.kt load + FeedSources.asks; PluginPostsTest, FeedMixTest | 
+covered | feed_source_reload_test.dart › a source that gained its first member is asked | ui/feed/PluginPosts.kt load + FeedSources.asks; PluginPostsTest, FeedMixTest | 
+covered | feed_source_reload_test.dart › a source whose members changed is asked | ui/feed/PluginPosts.kt load + FeedSources.asks; PluginPostsTest, FeedMixTest | 
+covered | feed_source_reload_test.dart › nothing changed means nothing is refetched | ui/feed/PluginPosts.kt load + FeedSources.asks; PluginPostsTest, FeedMixTest | 
+covered | feed_source_reload_test.dart › are the group members, for an ordinary group | ui/feed/PluginPosts.kt load + FeedSources.asks; PluginPostsTest, FeedMixTest | 
+covered | feed_source_reload_test.dart › include every followed one on the combined feed, when asked for there | ui/feed/PluginPosts.kt load + FeedSources.asks; PluginPostsTest, FeedMixTest | 
+covered | feed_source_reload_test.dart › are the home-feed ones even when the group has no members of its own | ui/feed/PluginPosts.kt load + FeedSources.asks; PluginPostsTest, FeedMixTest | 
+covered | feed_source_reload_test.dart › are only the members when the source is not in the home feed | ui/feed/PluginPosts.kt load + FeedSources.asks; PluginPostsTest, FeedMixTest | 
+covered | feed_source_reload_test.dart › never repeat an id that is both a member and followed | ui/feed/PluginPosts.kt load + FeedSources.asks; PluginPostsTest, FeedMixTest | 
+covered | feed_source_reload_test.dart › are empty when there is nothing to ask for | ui/feed/PluginPosts.kt load + FeedSources.asks; PluginPostsTest, FeedMixTest | 
+covered | future_pool_test.dart › mapWithConcurrency preserves order | core/feed/BatchRead.kt mapWithConcurrency; BatchReadTest | 
+covered | future_pool_test.dart › mapWithConcurrency caps in-flight work | core/feed/BatchRead.kt mapWithConcurrency; BatchReadTest | 
+covered | future_pool_test.dart › mapWithConcurrency handles empty input | core/feed/BatchRead.kt mapWithConcurrency; BatchReadTest | 
+covered | future_pool_test.dart › mapWithConcurrency treats non-positive concurrency as 1 | core/feed/BatchRead.kt mapWithConcurrency; BatchReadTest | 
+missing→implemented | group_add_member_store_test.dart › failed addition releases busy state and can be retried | ui/subscriptions/AddMemberModel.kt; AddMemberModelTest | an X follow that threw left the sheet busy; now released, retry possible
+untested→ported | group_add_member_store_test.dart › double tap does not repeat a follow while pending or after success | ui/subscriptions/AddMemberModel.kt; AddMemberModelTest | 
+missing→implemented | group_add_member_store_test.dart › dismissal while adding does not update a disposed store | ui/subscriptions/AddMemberModel.kt; AddMemberModelTest | dismissing cancelled a follow mid-write; it now runs to its end
+untested→ported | group_add_member_store_test.dart › an earlier search cannot replace the latest result for the same query | ui/subscriptions/AddMemberModel.kt; AddMemberModelTest | 
+missing→implemented | group_add_member_store_test.dart › a hanging search times out and allows a new search | ui/subscriptions/AddMemberModel.kt; AddMemberModelTest | the 30 s timeout was rethrown as a cancellation and left the spinner forever; now it fails and a new search runs
+covered | group_add_sources_test.dart › nothing typed offers nothing | ui/subscriptions/GroupAddSources.kt; GroupAddSourcesTest | 
+covered | group_add_sources_test.dart › a bare name could be any of three, so all three are offered | ui/subscriptions/GroupAddSources.kt; GroupAddSourcesTest | 
+covered | group_add_sources_test.dart › r/ names a subreddit and nothing else | GroupAddSources + each plugin's followable() label from its tested normaliser (RedditClientTest, ThreadsLinksTest, BlueskyUrlsTest, MastodonXtaCasesTest, SubstackHostsTest) | 
+covered | group_add_sources_test.dart › a Threads address names a Threads account | GroupAddSources + each plugin's followable() label from its tested normaliser (RedditClientTest, ThreadsLinksTest, BlueskyUrlsTest, MastodonXtaCasesTest, SubstackHostsTest) | 
+covered | group_add_sources_test.dart › a Reddit address names a subreddit | ui/subscriptions/GroupAddSources.kt; GroupAddSourcesTest | 
+covered | group_add_sources_test.dart › a bsky.app profile names a Bluesky account | GroupAddSources + each plugin's followable() label from its tested normaliser (RedditClientTest, ThreadsLinksTest, BlueskyUrlsTest, MastodonXtaCasesTest, SubstackHostsTest) | 
+covered | group_add_sources_test.dart › user@instance is a Fediverse address and nothing else | GroupAddSources + each plugin's followable() label from its tested normaliser (RedditClientTest, ThreadsLinksTest, BlueskyUrlsTest, MastodonXtaCasesTest, SubstackHostsTest) | 
+covered | group_add_sources_test.dart › a Fediverse profile URL is read from its path, whatever the domain | ui/subscriptions/GroupAddSources.kt; GroupAddSourcesTest | 
+covered | group_add_sources_test.dart › a dotted name could be a Bluesky handle or a newsletter on its own domain | ui/subscriptions/GroupAddSources.kt; GroupAddSourcesTest | 
+covered | group_add_sources_test.dart › a feed URL is offered as RSS, not as a newsletter | GroupAddSources + each plugin's followable() label from its tested normaliser (RedditClientTest, ThreadsLinksTest, BlueskyUrlsTest, MastodonXtaCasesTest, SubstackHostsTest) | 
+covered | group_add_sources_test.dart › a publication address is offered as its host | GroupAddSources + each plugin's followable() label from its tested normaliser (RedditClientTest, ThreadsLinksTest, BlueskyUrlsTest, MastodonXtaCasesTest, SubstackHostsTest) | 
+covered | group_add_sources_test.dart › a bare name is offered as its Substack address | GroupAddSources + each plugin's followable() label from its tested normaliser (RedditClientTest, ThreadsLinksTest, BlueskyUrlsTest, MastodonXtaCasesTest, SubstackHostsTest) | 
+covered | group_add_sources_test.dart › a source the reader turned off is never offered | data/plugins/AppPlugins.kt followables (running plugins only); GroupAddSourcesTest | a plugin that is off is not running, so offers no row
+covered | group_add_sources_test.dart › nothing is offered when every source is off | data/plugins/AppPlugins.kt followables (running plugins only); GroupAddSourcesTest | a plugin that is off is not running, so offers no row
+covered | group_add_sources_test.dart › every source knows its plugin and its switch | GroupAddSources ids are the plugin ids | native has no separate switch: the plugin is installed and running or not
+covered | group_board_layout_test.dart › a phone keeps the reader's two or three columns | core/session GroupBoard; GroupsTest | 
+covered | group_board_layout_test.dart › a value outside two or three falls back into range | core/session GroupBoard; GroupsTest | 
+covered | group_board_layout_test.dart › a wide window adds columns so no tile passes the maximum width | core/session GroupBoard; GroupsTest | 
+covered | group_board_layout_test.dart › a phone keeps the aspect ratio | core/session GroupBoard; GroupsTest | 
+covered | group_board_layout_test.dart › a widened board gets content-height tiles that grow with large text | core/session GroupBoard; GroupsTest | 
+covered | group_board_layout_test.dart › two columns are landscape tiles, more are square | core/session GroupBoard; GroupsTest | 
+n/a | group_loading_lifecycle_test.dart › a stalled group snapshot times out and a retry can load the feed | core/session/Session.kt (in-memory StateFlow) | a group's membership snapshot is an async SQLite read in XTA that can stall; native reads it from the in-memory session at once
+n/a | group_loading_lifecycle_test.dart › a soft reload cancels the old snapshot and preserves current results | core/session/Session.kt (in-memory StateFlow) | a group's membership snapshot is an async SQLite read in XTA that can stall; native reads it from the in-memory session at once
+n/a | group_loading_lifecycle_test.dart › a failed membership reload keeps an already readable group visible | core/session/Session.kt (in-memory StateFlow) | a group's membership snapshot is an async SQLite read in XTA that can stall; native reads it from the in-memory session at once
+n/a | group_loading_lifecycle_test.dart › destroy releases pending group reads and ignores late completion | core/session/Session.kt (in-memory StateFlow) | a group's membership snapshot is an async SQLite read in XTA that can stall; native reads it from the in-memory session at once
