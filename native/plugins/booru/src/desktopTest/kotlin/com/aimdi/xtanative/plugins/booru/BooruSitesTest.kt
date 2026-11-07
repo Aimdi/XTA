@@ -89,4 +89,21 @@ class BooruSitesTest {
         assertEquals(BooruPresets.DEFAULT.id, removed[BooruPrefs.preset])
         assertFalse("board.example" in removed[BooruPrefs.siteSettings])
     }
+
+    @Test
+    fun stayingOnASiteSwapsNothing() {
+        val settings = BooruConfig.withMuted(Settings(), "gore")
+        val host = BooruConfig.host(settings)
+        assertEquals(settings to false, BooruSites.swap(settings, from = host, to = host))
+    }
+
+    @Test
+    fun aRemovedSiteTakesItsLoginWithIt() {
+        val withLogin = BooruConfig.withCredential(BooruConfig.withCredential(Settings(), BooruPrefs.login, "reader"), BooruPrefs.apiKey, "secret-key")
+        val away = chosen(withLogin, "e621")
+        assertTrue("secret-key" in away[BooruPrefs.siteCredentials])
+        val forgotten = BooruSites.forget(away, BooruConfig.host(withLogin))
+        assertFalse("secret-key" in forgotten[BooruPrefs.siteCredentials])
+        assertFalse(BooruSites.swap(forgotten, from = BooruConfig.host(forgotten), to = BooruConfig.host(withLogin)).second)
+    }
 }

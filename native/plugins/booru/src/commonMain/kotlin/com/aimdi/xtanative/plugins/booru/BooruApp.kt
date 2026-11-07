@@ -120,14 +120,7 @@ internal class BooruApp(val host: PluginHost) {
     /** The tags and searches followed here as the app's Subscriptions list shows them (XTA's Booru subscriptions): "tag:…", a tap searches it. */
     val subscriptions: Flow<List<PluginSubscription>> = follows.rows.onStart { follows.load() }.filterNotNull().map { rows -> rows.map(::subscriptionOf) }
 
-    private fun subscriptionOf(row: NamedSubscriptionRow) = PluginSubscription(
-        id = row.id,
-        name = row.name,
-        subtitle = "tag:${row.name}",
-        route = BooruRoutes.search(row.name),
-        followedAt = XtaTime.parse(row.createdAt)?.toEpochMilli() ?: 0,
-        unfollow = { unfollow(row.name) },
-    )
+    private fun subscriptionOf(row: NamedSubscriptionRow) = booruSubscription(row) { unfollow(row.name) }
 
     private val drawn = DrawnPosts<BooruPost> { it.key }
     private val records = DrawnPosts<PluginPostArchive> { it.id }
@@ -182,3 +175,13 @@ internal class BooruApp(val host: PluginHost) {
         const val SHARED_PER_TAG = 8
     }
 }
+
+/** A followed tag or search as the app's Subscriptions list and groups show it: "tag:…" under its name, a tap searches it. */
+internal fun booruSubscription(row: NamedSubscriptionRow, unfollow: suspend () -> Unit) = PluginSubscription(
+    id = row.id,
+    name = row.name,
+    subtitle = "tag:${row.name}",
+    route = BooruRoutes.search(row.name),
+    followedAt = XtaTime.parse(row.createdAt)?.toEpochMilli() ?: 0,
+    unfollow = unfollow,
+)

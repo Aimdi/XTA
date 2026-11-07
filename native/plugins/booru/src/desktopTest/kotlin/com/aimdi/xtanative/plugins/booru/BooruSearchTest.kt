@@ -135,4 +135,40 @@ class BooruSearchTest {
         assertEquals("solo", search.state.value.input)
         search.close()
     }
+
+    @Test
+    fun aNewSearchStopsTheOneItReplaces(): Unit = runBlocking {
+        val search = Fixture(this).search
+        search.run("cat_ears")
+        val first = search.current.value!!.feed
+        search.run("blue_eyes")
+        assertTrue(first.isClosed, "its remaining pages are not wanted any more")
+        assertFalse(search.current.value!!.feed.isClosed)
+        search.close()
+    }
+
+    @Test
+    fun everySearchIsRememberedHoweverItStarted(): Unit = runBlocking {
+        val fixture = Fixture(this)
+        fixture.search.type("from_a_post ")
+        fixture.search.search()
+        fixture.search.type("typed ")
+        fixture.search.search()
+        fixture.search.run("from history")
+        fixture.search.refine("related")
+        assertEquals(listOf("from_a_post", "from_a_post typed", "from history", "from history related"), fixture.remembered)
+        assertEquals("from history related", fixture.search.state.value.query)
+        assertTrue(fixture.search.state.value.showsResults)
+        fixture.search.close()
+    }
+
+    @Test
+    fun aPickedMetatagValueBecomesAChip(): Unit = runBlocking {
+        val search = Fixture(this).search
+        search.type("cat_ears rat")
+        assertEquals("rating:", search.pick(BooruTagSuggestion("rating:")))
+        assertEquals("", search.pick(BooruTagSuggestion("rating:g")))
+        assertEquals(listOf("cat_ears", "rating:g"), search.state.value.tags)
+        search.close()
+    }
 }

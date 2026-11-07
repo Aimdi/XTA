@@ -83,6 +83,9 @@ internal class BooruFeed(
     private var showMuted = false
     private var closed = false
 
+    /** Whether [close] stopped the feed: it asks for no more pages. */
+    internal val isClosed: Boolean get() = closed
+
     /** Whether the site, rating cap or blacklist changed since the feed loaded. */
     val isStale: Boolean get() = loadedFor != null && loadedFor != feedKey()
 
