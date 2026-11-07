@@ -10,6 +10,7 @@
     <string name="home_refresh">Aktualisieren</string>
     <string name="home_open_group">Gruppe öffnen</string>
     <string name="home_more_options">Weitere Optionen</string>
+        <string name="home_pin_to_bar_hint">Angeheftete Einträge erscheinen neben den Bereichen, sobald die Leiste Platz hat. Alles bleibt auch in diesem Menü.</string>
     <string name="home_pin_to_bar">An obere Leiste anheften</string>
 
     <string name="home_strip_title">Plugin-Timelines</string>

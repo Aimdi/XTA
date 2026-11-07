@@ -10,6 +10,7 @@
     <string name="home_refresh">रीफ़्रेश करें</string>
     <string name="home_open_group">समूह खोलें</string>
     <string name="home_more_options">और विकल्प</string>
+        <string name="home_pin_to_bar_hint">जब भी बार में जगह हो, पिन की गई चीज़ें सेक्शन के बगल में दिखती हैं। सब कुछ इस मेन्यू में भी रहता है।</string>
     <string name="home_pin_to_bar">ऊपरी बार में पिन करें</string>
 
     <string name="home_strip_title">प्लगइन टाइमलाइन</string>

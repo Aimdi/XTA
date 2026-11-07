@@ -10,6 +10,7 @@
     <string name="home_refresh">Reîmprospătează</string>
     <string name="home_open_group">Deschide grupul</string>
     <string name="home_more_options">Mai multe opțiuni</string>
+        <string name="home_pin_to_bar_hint">Elementele fixate apar lângă secțiuni ori de câte ori bara are loc. Totul rămâne și în acest meniu.</string>
     <string name="home_pin_to_bar">Fixează în bara de sus</string>
 
     <string name="home_strip_title">Timeline-uri plugin</string>

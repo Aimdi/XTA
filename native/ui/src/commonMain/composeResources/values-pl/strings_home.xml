@@ -10,6 +10,7 @@
     <string name="home_refresh">Odśwież</string>
     <string name="home_open_group">Otwórz grupę</string>
     <string name="home_more_options">Więcej opcji</string>
+        <string name="home_pin_to_bar_hint">Przypięte pozycje pojawiają się obok sekcji, gdy na pasku jest miejsce. Wszystko zostaje też w tym menu.</string>
     <string name="home_pin_to_bar">Przypnij do górnego paska</string>
 
     <string name="home_strip_title">Osie czasu wtyczek</string>

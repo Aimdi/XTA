@@ -10,6 +10,7 @@
     <string name="home_refresh">새로고침</string>
     <string name="home_open_group">그룹 열기</string>
     <string name="home_more_options">옵션 더보기</string>
+        <string name="home_pin_to_bar_hint">고정한 항목은 바에 공간이 있을 때 섹션 옆에 표시됩니다. 모든 항목은 이 메뉴에도 그대로 남습니다.</string>
     <string name="home_pin_to_bar">상단 바에 고정</string>
 
     <string name="home_strip_title">플러그인 타임라인</string>

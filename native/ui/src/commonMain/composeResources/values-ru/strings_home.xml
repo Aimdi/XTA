@@ -10,6 +10,7 @@
     <string name="home_refresh">Обновить</string>
     <string name="home_open_group">Открыть группу</string>
     <string name="home_more_options">Другие параметры</string>
+        <string name="home_pin_to_bar_hint">Закреплённые пункты появляются рядом с разделами, когда на панели есть место. Всё остаётся и в этом меню.</string>
     <string name="home_pin_to_bar">Закрепить на верхней панели</string>
 
     <string name="home_strip_title">Ленты плагинов</string>

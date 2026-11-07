@@ -10,6 +10,7 @@
     <string name="home_refresh">تحديث</string>
     <string name="home_open_group">فتح المجموعة</string>
     <string name="home_more_options">خيارات أخرى</string>
+        <string name="home_pin_to_bar_hint">تظهر العناصر المثبتة بجوار الأقسام كلما اتسع الشريط لها، وتبقى كلها في هذه القائمة أيضًا.</string>
     <string name="home_pin_to_bar">التثبيت في الشريط العلوي</string>
 
     <string name="home_strip_title">موجزات الإضافات</string>

@@ -10,6 +10,7 @@
     <string name="home_refresh">Vernieuwen</string>
     <string name="home_open_group">Groep openen</string>
     <string name="home_more_options">Meer opties</string>
+        <string name="home_pin_to_bar_hint">Vastgezette items staan naast de secties zodra de balk ruimte heeft. Alles blijft ook in dit menu staan.</string>
     <string name="home_pin_to_bar">Vastzetten in bovenbalk</string>
 
     <string name="home_strip_title">Plugin-tijdlijnen</string>

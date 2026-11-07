@@ -10,6 +10,7 @@
     <string name="home_refresh">Yenile</string>
     <string name="home_open_group">Grubu aç</string>
     <string name="home_more_options">Diğer seçenekler</string>
+        <string name="home_pin_to_bar_hint">Sabitlenen öğeler, çubukta yer olduğunda bölümlerin yanında görünür. Hepsi bu menüde de kalır.</string>
     <string name="home_pin_to_bar">Üst çubuğa sabitle</string>
 
     <string name="home_strip_title">Eklenti zaman çizelgeleri</string>

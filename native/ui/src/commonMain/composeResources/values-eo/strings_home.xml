@@ -10,6 +10,7 @@
     <string name="home_refresh">Aktualigi</string>
     <string name="home_open_group">Malfermi la grupon</string>
     <string name="home_more_options">Pliaj elektoj</string>
+        <string name="home_pin_to_bar_hint">Fiksitaj eroj aperas apud la sekcioj kiam la breto havas lokon. Ĉio restas ankaŭ en ĉi tiu menuo.</string>
     <string name="home_pin_to_bar">Fiksi al la supra breto</string>
 
     <string name="home_strip_title">Kromaĵaj tempolinioj</string>

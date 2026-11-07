@@ -66,6 +66,7 @@ import com.aimdi.xtanative.ui.generated.resources.home_filter_accounts
 import com.aimdi.xtanative.ui.generated.resources.home_more_options
 import com.aimdi.xtanative.ui.generated.resources.home_networks
 import com.aimdi.xtanative.ui.generated.resources.home_pin_to_bar
+import com.aimdi.xtanative.ui.generated.resources.home_pin_to_bar_hint
 import com.aimdi.xtanative.ui.generated.resources.home_refresh
 import com.aimdi.xtanative.ui.generated.resources.home_saved
 import com.aimdi.xtanative.ui.generated.resources.home_search_in
@@ -374,6 +375,17 @@ private fun PinnedOptions(id: String, options: List<NetworkOption>, pins: List<S
         }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             val pinLabel = stringResource(Res.string.home_pin_to_bar)
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        stringResource(Res.string.home_pin_to_bar_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                },
+                onClick = {},
+                enabled = false,
+            )
             options.forEach { option ->
                 DropdownMenuItem(
                     text = { Text(option.label) },

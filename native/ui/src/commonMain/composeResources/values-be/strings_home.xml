@@ -10,6 +10,7 @@
     <string name="home_refresh">Абнавіць</string>
     <string name="home_open_group">Адкрыць групу</string>
     <string name="home_more_options">Іншыя параметры</string>
+        <string name="home_pin_to_bar_hint">Замацаваныя пункты з\'яўляюцца побач з раздзеламі, калі на панэлі хапае месца. Усе яны застаюцца і ў гэтым меню.</string>
     <string name="home_pin_to_bar">Замацаваць на верхняй панэлі</string>
 
     <string name="home_strip_title">Стужкі плагінаў</string>

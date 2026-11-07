@@ -10,6 +10,7 @@
     <string name="home_refresh">Oppdater</string>
     <string name="home_open_group">Åpne gruppen</string>
     <string name="home_more_options">Flere alternativer</string>
+        <string name="home_pin_to_bar_hint">Festede elementer vises ved siden av seksjonene når linjen har plass. Alt blir også værende i denne menyen.</string>
     <string name="home_pin_to_bar">Fest til topplinjen</string>
 
     <string name="home_strip_title">Programtilleggets tidslinjer</string>

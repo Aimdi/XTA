@@ -10,6 +10,7 @@
     <string name="home_refresh">Actualiser</string>
     <string name="home_open_group">Ouvrir le groupe</string>
     <string name="home_more_options">Plus d'options</string>
+        <string name="home_pin_to_bar_hint">Les éléments épinglés s’affichent à côté des sections dès que la barre a la place. Tout reste aussi dans ce menu.</string>
     <string name="home_pin_to_bar">Épingler dans la barre du haut</string>
 
     <string name="home_strip_title">Fils des plugins</string>

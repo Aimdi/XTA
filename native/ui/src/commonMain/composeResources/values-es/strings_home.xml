@@ -10,6 +10,7 @@
     <string name="home_refresh">Actualizar</string>
     <string name="home_open_group">Abrir grupo</string>
     <string name="home_more_options">Más opciones</string>
+        <string name="home_pin_to_bar_hint">Los elementos fijados aparecen junto a las secciones siempre que haya espacio en la barra. Todo sigue también en este menú.</string>
     <string name="home_pin_to_bar">Fijar en la barra superior</string>
 
     <string name="home_strip_title">Cronologías de plugins</string>

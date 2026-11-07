@@ -10,6 +10,7 @@
     <string name="home_refresh">Làm mới</string>
     <string name="home_open_group">Mở nhóm</string>
     <string name="home_more_options">Tùy chọn khác</string>
+        <string name="home_pin_to_bar_hint">Mục đã ghim hiện cạnh các phần khi thanh còn chỗ. Mọi thứ vẫn nằm trong menu này.</string>
     <string name="home_pin_to_bar">Ghim lên thanh trên cùng</string>
 
     <string name="home_strip_title">Dòng thời gian plugin</string>
