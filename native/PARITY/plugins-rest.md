@@ -6,8 +6,10 @@ Flutter widget/timing assertion has no Compose widget harness, the rule or store
 unit-tested), different → fixed (native deliberately differs), n/a (Flutter-only).
 
 This batch is the 62 files the other ledgers did not cover. The booru batch (`test/booru_*`,
-273 tests; its perf harness is in `widgets.md`), the EH batch (`test/eh*`, 89 tests) and the
-stocks batch (`test/stocks_*`, 101 tests) are below; the shared `test/plugin_*` files follow.
+273 tests; its perf harness is in `widgets.md`), the EH batch (`test/eh*`, 89 tests), the
+stocks batch (`test/stocks_*`, 101 tests), the shared `test/plugin_*` files and the
+cross-cutting files below are all led here. `home_reading_controls_test.dart` is in
+`app.md` (it was led with the Home reading controls).
 
 ## test/booru_danbooru_search_test.dart
 
@@ -585,3 +587,198 @@ untested → ported | stocks_widgets_test › a range that fails to load says so
 untested → ported | stocks_widgets_test › a failed price load offers a retry instead of a blank | QuoteRowsTest.nothingYetIsLoadingAFailedLookupOrAQuoteWithoutAPriceIsNoData | the button is Compose-only |
 untested → ported | stocks_widgets_test › header fits 320dp at 2x text in ${entry.key} | ui/stocks ticker page | layout is Compose-only |
 covered | stocks_widgets_test › a pasted address lists the token by network and short address | QuoteRowsTest.aWatchlistRowIsATokenByItsSymbolAndNetworkOrATickerByItsName; StocksSearchTest.aPastedAddressSwitchesToTokensAtOnceAndAsksForNoStock |
+
+## test/plugin_activity_footer_test.dart
+
+untested → ported | plugin_activity_footer_test › a fully loaded list ends at its last item | ui/plugins Lists.kt pagedRows (footer) | the footer is Compose-only; PagedState.next null ends the list |
+untested → ported | plugin_activity_footer_test › a page that failed with items shown is one compact row | ui/plugins Lists.kt pagedRows (RetryRow) | the compact row is Compose-only |
+
+## test/plugin_catalogue_test.dart
+
+covered | plugin_catalogue_test › offers the ids it lists, in the order it lists them | plugin-host CatalogueTest.theDocumentPluginsMdDescribesReadsWhole, anEntryWithoutAnIdOrVersionOrWithOneThatCouldNotBeAFolderIsIgnored |
+covered | plugin_catalogue_test › an entry marked unavailable is held back rather than offered | CatalogueTest.onlyFalseItselfHoldsAnEntryBackAndOnlyTrueMakesOnePrivate |
+covered | plugin_catalogue_test › every id it names is one this build actually has | plugin-host StoreListingTest.aPluginWithoutAFileForThisPlatformIsNotOfferedOnIt; the plugin build's manifest |
+covered | plugin_catalogue_test › a document that no longer fits gives up rather than throwing | CatalogueTest.aDocumentThatNoLongerFitsIsNoCatalogueRatherThanAThrow |
+covered | plugin_catalogue_test › an entry with no id is skipped, not counted as one | CatalogueTest.anEntryWithoutAnIdOrVersionOrWithOneThatCouldNotBeAFolderIsIgnored |
+covered | plugin_catalogue_test › a stale catalogue still offers a plugin this build compiled in | StoreListingTest.anInstalledPluginStaysWhenTheCatalogueDropsItOrCannotBeRead |
+untested → ported | plugin_catalogue_test › bytes are shown whole, larger units to one decimal | ui/pluginstore StoreRows.kt (bytes) | the size formatting has no separate unit test |
+untested → ported | plugin_catalogue_test › it does not run out of units | ui/pluginstore StoreRows.kt (bytes) | same |
+
+## test/plugin_category_test.dart
+
+covered | plugin_category_test › every built-in plugin has a store category | plugin-host CatalogueTest.aCategoryThisAppDoesNotKnowIsListedAsOther; every plugin's manifest names one |
+covered | plugin_category_test › the store groups plugins under focused categories | plugin-host StoreListingTest.installedPluginsComeFirstThenWhatIsOnOfferByCategoryInTheCataloguesOrder |
+covered | plugin_category_test › the store lists installed plugins above available categories | StoreListingTest.installedPluginsComeFirstThenWhatIsOnOfferByCategoryInTheCataloguesOrder |
+covered | plugin_category_test › store search finds Hacker News by name or id | ui/pluginstore StoreSearchTest |
+
+## test/plugin_compact_header_test.dart
+
+untested → ported | plugin_compact_header_test › compact host preserves source, sections and primary action at $width | ui/plugins Scaffold.kt (PluginChrome) | layout is Compose-only |
+untested → ported | plugin_compact_header_test › a bar with filters keeps the sliders and a sheet with its sections | Scaffold.kt; ui/plugins SheetActions.kt | layout is Compose-only |
+untested → ported | plugin_compact_header_test › crowded standalone navigation leaves room for posts and every section at $width/$scale | Scaffold.kt | layout is Compose-only |
+untested → ported | plugin_compact_header_test › combined options preserve primary, secondary and wrapped actions and full client | Scaffold.kt | layout is Compose-only |
+untested → ported | plugin_compact_header_test › entries pinned from the options sheet join the top bar and persist | Scaffold.kt; ui/plugins PluginSettings.kt | the pin's storage is unit-tested; the bar is Compose-only |
+untested → ported | plugin_compact_header_test › pins that do not fit stay in the sheet instead of crowding the bar | Scaffold.kt | layout is Compose-only |
+
+## test/plugin_counts_test.dart
+
+covered | plugin_counts_test › a count is written the way the reader's language writes it | StockNumbersTest.theReadersLocaleGroupsDigitsAndOneIntlLacksIsEnglish (the shared number writing) |
+covered | plugin_counts_test › a language intl has no number symbols for gets English digits | StockNumbersTest.theReadersLocaleGroupsDigitsAndOneIntlLacksIsEnglish |
+untested → ported | plugin_counts_test › the same locale is not re-parsed for every card in a feed | ui/plugins Rows.kt PluginCounts | the memoised locale is a Compose-side cache |
+
+## test/plugin_feed_insets_test.dart
+
+untested → ported | plugin_feed_insets_test › standalone lists keep a short gutter | ui/plugins Panes.kt, Lists.kt (content padding) | layout is Compose-only |
+untested → ported | plugin_feed_insets_test › embedded lists clear the floating home pill | Panes.kt (frame padding) | layout is Compose-only |
+untested → ported | plugin_feed_insets_test › embedded lists clear a floating bar taller than the fixed clearance | Panes.kt | layout is Compose-only |
+different → fixed | plugin_feed_insets_test › embedded lists do not reuse the requested outer controller | ui/plugins Lists.kt | Compose lists own their LazyListState; there is no outer controller to share |
+
+## test/plugin_home_chrome_test.dart
+
+untested → ported | plugin_home_chrome_test › chrome has readable sections in a 48dp row | ui/plugins Scaffold.kt | layout is Compose-only |
+untested → ported | plugin_home_chrome_test › embedded chrome skips a second SafeArea | Scaffold.kt (WindowInsets) | layout is Compose-only |
+untested → ported | plugin_home_chrome_test › standalone chrome keeps a top SafeArea for the status bar | Scaffold.kt | layout is Compose-only |
+untested → ported | plugin_home_chrome_test › selected tab uses accent when provided | Scaffold.kt | colour is Compose-only |
+untested → ported | plugin_home_chrome_test › tab AppBar has no plugin-name title | Scaffold.kt | layout is Compose-only |
+untested → ported | plugin_home_chrome_test › crowded Home sections stay labelled and every destination dispatches once | Scaffold.kt | layout is Compose-only |
+untested → ported | plugin_home_chrome_test › wide Home keeps direct tabs and responds to external section selection | Scaffold.kt | layout is Compose-only |
+untested → ported | plugin_home_chrome_test › Home filter row saves padding but retains 48dp controls | Scaffold.kt; ui/home HomeFilterSheet.kt | layout is Compose-only |
+untested → ported | plugin_home_chrome_test › Home suggestions collapse without losing profile or follow actions | ui/home HomeSuggestions | layout is Compose-only |
+untested → ported | plugin_home_chrome_test › expanded people and compact filters allow large RTL text | Scaffold.kt; ui/home HomeFilterSheet.kt | layout is Compose-only |
+
+## test/plugin_home_dock_test.dart
+
+untested → ported | plugin_home_dock_test › late disposal cannot remove replacement or another source | ui/plugins PluginHost.kt (docked contributions) | the host's registration is unit-tested; the late disposal is Compose-only |
+untested → ported | plugin_home_dock_test › hosted contributions disappear with owner; fallback stays standalone | PluginHost.kt | same |
+untested → ported | plugin_home_dock_test › single header keeps section and right-side actions reachable $width/$scale/$rtl | ui/home HomeHeader | layout is Compose-only |
+untested → ported | plugin_home_dock_test › large-text reading labels receive their own row only when needed at $width | HomeHeader | layout is Compose-only |
+
+## test/plugin_home_tab_test.dart
+
+covered | plugin_home_tab_test › Substack declares its tab optional; a plugin without a feed does not | ui/plugins XtaPlugin.kt (tab declaration); data/plugins PluginPrefsTest |
+covered | plugin_home_tab_test › the tab is shown unless the preference says otherwise | PluginPrefsTest |
+covered | plugin_home_tab_test › an unset preference keeps the current behaviour | PluginPrefsTest |
+covered | plugin_home_tab_test › a plugin with no optional tab always reports true | XtaPlugin.kt; PluginPrefsTest |
+covered | plugin_home_tab_test › every plugin offering to hide its tab actually has a tab screen | plugin manifests; XtaPlugin.kt |
+
+## test/plugin_lazy_tabs_test.dart
+
+untested → ported | plugin_lazy_tabs_test › only the selected tab is built on the first frame | ui/plugins Tabs.kt | Compose builds only the shown pane; the lazy rule is Compose-only |
+untested → ported | plugin_lazy_tabs_test › switching away unmounts the previous tab | Tabs.kt | same |
+
+## test/plugin_links_test.dart
+
+covered | plugin_links_test › openWithPlugins ignores plugin URLs when plugins are off | ui/links LinkOpeningTest |
+covered | plugin_links_test › openNativeLink handles X profiles without browser fallback | LinkOpeningTest; XLinksTest |
+covered | plugin_links_test › openNativeLink leaves ordinary web links for the caller | LinkOpeningTest |
+
+## test/plugin_navigation_gestures_test.dart
+
+untested → ported | plugin_navigation_gestures_test › Saved source filter swipes retain the source menu | ui/saved SavedScreen.kt | layout and gesture are Compose-only |
+untested → ported | plugin_navigation_gestures_test › profile section swipes keep segmented buttons accessible | ui/plugins Swipes.kt, SwipeRules.kt | the swipe rule is unit-tested; the gesture is Compose-only |
+untested → ported | plugin_navigation_gestures_test › standalone lazy readers swipe once without building inactive panes | Tabs.kt, Swipes.kt | layout is Compose-only |
+untested → ported | plugin_navigation_gestures_test › embedded lazy readers leave body swipes to Home source navigation | Swipes.kt | layout is Compose-only |
+untested → ported | plugin_navigation_gestures_test › repeated header swipes before selection rebuild are accepted once | SwipeRules.kt | the repeated-swipe rule is unit-tested; the gesture is Compose-only |
+untested → ported | plugin_navigation_gestures_test › plugin ${compact ? "icons" : "picker"} switches on release and retains tap | ui/home HomeBar | layout is Compose-only |
+
+## test/plugin_post_media_test.dart
+
+covered | plugin_post_media_test › defaults when the ratio is missing or nonsense | ui/plugins MediaItemTest |
+covered | plugin_post_media_test › clamps extreme portraits and banners | MediaItemTest |
+covered | plugin_post_media_test › reads width/height and a precomputed aspect | MediaItemTest |
+covered | plugin_post_media_test › pluginMediaItemsFrom pairs urls with aspect, video and alt metadata | MediaItemTest; XPostMediaTest.aPhotoIsShownAsXServesIt |
+covered | plugin_post_media_test › visiblePluginMedia keeps the tapped surviving item selected | MediaItemTest |
+untested → ported | plugin_post_media_test › plugin media filename strips query strings and prefixes the source | store/downloads DownloadNaming.kt | the naming rule is unit-tested; the plugin prefix is shared by PluginBatchesTest |
+untested → ported | plugin_post_media_test › plugin media filename is decoded, keeps its start and fits Android | DownloadNaming.kt | same |
+covered | plugin_post_media_test › pluginMediaItemsFrom carries the stream and GIF flag | MediaItemTest |
+covered | plugin_post_media_test › a poster without a stream is not playable | MediaItemTest |
+covered | plugin_post_media_test › an MP4 is offered for download, an HLS playlist is not | MediaItemTest |
+covered | plugin_post_media_test › isHlsPlaylistUrl reads the path, not the query | MediaItemTest |
+
+## test/plugin_reader_accessibility_test.dart
+
+untested → ported | plugin_reader_accessibility_test › reader controls fit $tokens $direction embedded=$embedded at $size and 200% text | ui/plugins Reader.kt | layout is Compose-only |
+untested → ported | plugin_reader_accessibility_test › gallery columns preserve room for artwork and large captions | ui/plugins Gallery columns (Booru/EH/Pixiv grids) | layout is Compose-only |
+
+## test/plugin_search_history_test.dart
+
+covered | plugin_search_history_test › remembers newest first, dedupes, and caps | ui/plugins PluginSearchHistoryTest |
+
+## test/plugin_tag_chip_test.dart
+
+untested → ported | plugin_tag_chip_test › a long tag and its translation wrap instead of running off the edge | plugins/mastodon MastodonSearch.kt AssistChip; plugins/ehviewer EhGalleryContent.kt TagChip | layout is Compose-only |
+untested → ported | plugin_tag_chip_test › a short tag stays one line with a full-size touch target | same | layout is Compose-only |
+untested → ported | plugin_tag_chip_test › a weak tag is dashed and unfilled, at full colour and touch target | EhGalleryContent.kt TagChip (dashedOutline) | the dashed style is Compose-only; weakTag parsing is EhParserTest.dashedTagsAreWeak |
+
+## test/account_posts_test.dart
+
+covered | account_posts_test › no accounts asks nobody | RotationTest.membersMergeNewestFirstAPageEachAndUndatedLast (empty list) |
+covered | account_posts_test › merges every account newest first | RotationTest.membersMergeNewestFirstAPageEachAndUndatedLast |
+covered | account_posts_test › takes only a page of each account | RotationTest.membersMergeNewestFirstAPageEachAndUndatedLast |
+covered | account_posts_test › one account failing does not empty the others | RotationTest.oneMemberFailingKeepsTheOthersAndTheFailureShowsOnlyWhenNothingWasRead |
+covered | account_posts_test › the error surfaces only when nothing at all could be read | RotationTest.oneMemberFailingKeepsTheOthersAndTheFailureShowsOnlyWhenNothingWasRead |
+covered | account_posts_test › a second read inside the window does not ask again | RotationTest.aMemberIsAskedAgainOnlyOnARefreshOrOnceItsAnswerIsOld |
+covered | account_posts_test › a refresh asks again even inside the window | RotationTest.aMemberIsAskedAgainOnlyOnARefreshOrOnceItsAnswerIsOld |
+covered | account_posts_test › an expired entry is asked for again | RotationTest.aMemberIsAskedAgainOnlyOnARefreshOrOnceItsAnswerIsOld |
+covered | account_posts_test › clearing forgets what was cached | Rotation.clear; RotationTest.aMemberIsAskedAgainOnlyOnARefreshOrOnceItsAnswerIsOld |
+covered | account_posts_test › only so many accounts are asked for on one call | RotationTest.onlySoManyMembersAreAskedPerCallAndTheRestOnTheNext |
+covered | account_posts_test › the accounts left over are read on the next call | RotationTest.onlySoManyMembersAreAskedPerCallAndTheRestOnTheNext |
+covered | account_posts_test › a cached account never counts against the budget | RotationTest.aCachedMemberIsFreeAndARefreshPastTheBudgetKeepsWhatIsHeld |
+covered | account_posts_test › a forced refresh past the budget keeps what the cache holds | RotationTest.aCachedMemberIsFreeAndARefreshPastTheBudgetKeepsWhatIsHeld |
+covered | account_posts_test › a forced refresh still refetches inside the budget | RotationTest.aCachedMemberIsFreeAndARefreshPastTheBudgetKeepsWhatIsHeld |
+covered | account_posts_test › pendingCount is what the cache cannot answer yet | RotationTest.aMemberIsAskedAgainOnlyOnARefreshOrOnceItsAnswerIsOld (pendingCount) |
+covered | account_posts_test › onPartial paints the first account immediately and coalesces the rest | RotationTest.aRefreshPaintsWhatWasHeldAndAFailedMemberKeepsWhatItSaidLast |
+covered | account_posts_test › forceRefresh with onPartial paints stale posts first | RotationTest.aRefreshPaintsWhatWasHeldAndAFailedMemberKeepsWhatItSaidLast |
+covered | account_posts_test › a post with no date sorts last rather than being dropped | RotationTest.membersMergeNewestFirstAPageEachAndUndatedLast |
+covered | account_posts_test › a refresh never paints fewer accounts than it held | RotationTest.aRefreshPaintsWhatWasHeldAndAFailedMemberKeepsWhatItSaidLast |
+covered | account_posts_test › an account whose refresh fails keeps what it said last | RotationTest.aRefreshPaintsWhatWasHeldAndAFailedMemberKeepsWhatItSaidLast |
+covered | account_posts_test › a refresh where every account fails still reports the failure | RotationTest.oneMemberFailingKeepsTheOthersAndTheFailureShowsOnlyWhenNothingWasRead |
+covered | account_posts_test › seeded accounts answer from the seed inside the window | RotationTest.aSeedAnswersWithinItsTimeAndNeverReplacesSomethingNewer |
+covered | account_posts_test › a seed never replaces something newer | RotationTest.aSeedAnswersWithinItsTimeAndNeverReplacesSomethingNewer |
+covered | account_posts_test › prioritize puts never-asked accounts first, then the longest unasked | RotationTest.theNeverAskedComeFirstThenTheLongestUnasked |
+
+## test/x_reader_hub_test.dart
+
+untested → ported | x_reader_hub_test › X advertises its existing search capability | ui/plugins XtaPlugin.kt (search) | the declaration is Compose-side |
+untested → ported | x_reader_hub_test › X search routes with query/focus preserved: $query | ui/search (route) | the route is Compose-only |
+untested → ported | x_reader_hub_test › reader exposes search and a heading without a dead tab | ui/plugins Reader.kt | layout is Compose-only |
+untested → ported | x_reader_hub_test › reader menu dispatches every named library destination | Reader.kt | the menu is Compose-only |
+untested → ported | x_reader_hub_test › real reader destinations inherit stores and return safely | Reader.kt | storage is unit-tested elsewhere; navigation is Compose-only |
+untested → ported | x_reader_hub_test › reader tools fit narrow screens with larger text | Reader.kt | layout is Compose-only |
+
+## test/alt_microblogging_mark_test.dart
+
+covered | alt_microblogging_mark_test › Bluesky sits top left and Mastodon bottom right, over it | ui/subscriptions GroupBoardModelTest.aPluginsAccountsShowTheirFacesAfterTheXAccountsInTheGroupsOrder |
+covered | alt_microblogging_mark_test › the section is named after Mastodon and Bluesky only | ui/subscriptions GroupBoardModelTest; GroupLookTest |
+
+## test/home_x_reddit_headers_test.dart
+
+untested → ported | home_x_reddit_headers_test › X uses the compact Home header and moves its actions into options $name | ui/home HomeHeader | layout is Compose-only |
+untested → ported | home_x_reddit_headers_test › Reddit uses the compact Home header with its sections and options $name | plugins/reddit RedditHome.kt | layout is Compose-only |
+untested → ported | home_x_reddit_headers_test › Reddit sort and route changes in Home refetch the visible feed | RedditHome.kt; plugins/reddit RedditApp.kt | the refetch is unit-tested; the Home wiring is Compose-only |
+untested → ported | home_x_reddit_headers_test › a filtered account marks X options without adding a row | ui/home HomeHeader | layout is Compose-only |
+untested → ported | home_x_reddit_headers_test › Following keeps its own bar, picker and actions next to docked sources | ui/home HomeBar | layout is Compose-only |
+
+## test/group_member_preview_test.dart
+
+covered | group_member_preview_test › a Threads account brings its avatar | plugins/threads ThreadsParserTest (profile avatar) |
+covered | group_member_preview_test › a Bluesky account brings its avatar | plugins/bluesky BlueskyParserTest.aProfileIsReadFromThePublicAppViewWithXtasHeaders |
+covered | group_member_preview_test › a Fediverse account brings its avatar | plugins/mastodon MastodonParserTest (profile avatar) |
+covered | group_member_preview_test › a subreddit is marked as one instead of carrying a URL | ui/subscriptions GroupBoardModelTest.aTileCountsEveryMemberAndShowsFourFacesByHandle |
+covered | group_member_preview_test › a publication brings its logo | plugins/substack Substack tests (publication logo) |
+covered | group_member_preview_test › every source can describe one of its members | store/backup NetworkMembersTest; ui/subscriptions GroupBoardModelTest |
+
+## test/rss_plugin_test.dart
+
+covered | rss_plugin_test › RSS is a built-in newsletter plugin with a subscription table | plugins/rss RssPlugin.kt; plugin-host PluginManagerTest (built-in registration) |
+
+## test/subscription_source_test.dart
+
+covered | subscription_source_test › every network that can join a group is one | NetworkMembersTest.theAccountsAreTheRowsOfTheNetworksXtasGroupsNameByTheirIdAlone |
+covered | subscription_source_test › exactly one source owns a given subscription | NetworkMembersTest.theAccountsAreTheRowsOfTheNetworksXtasGroupsNameByTheirIdAlone |
+covered | subscription_source_test › no source claims X's own subscriptions | NetworkMembersTest.aBareMemberXOrAnotherNetworkKeepsTooIsEachOfThem |
+covered | subscription_source_test › a stored row round-trips through the source that owns it | NetworkMembersTest.anExportWritesThemBackAsXtaWritesThem |
+covered | subscription_source_test › comes from the source that owns it | NetworkMembersTest.anExportWritesThemBackAsXtaWritesThem |
+covered | subscription_source_test › falls back to a handle for X accounts | NetworkMembersTest.xtasListNamesABareNetworksAccountByItsIdAndTheOthersAsTheirGroupsDo |
+untested → ported | subscription_source_test › every source leads somewhere when tapped | ui/plugins XtaPlugin.kt (route) | the tap is Compose-only |
+untested → ported | subscription_source_test › an X account has no plugin screen to open | XtaPlugin.kt | the absence is Compose-only |
