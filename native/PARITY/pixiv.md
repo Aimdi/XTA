@@ -230,3 +230,37 @@ covered | pixiv_comments_store_test › a failed first page is an error, a faile
 covered | pixiv_comments_store_test › a later page that failed is announced, and clears once one arrives | PixivPaging.kt (moreFailed, retryMore) | PixivPagingTest.aFailedNextPageKeepsTheListAndRetries
 ported | pixiv_comments_store_test › the first load counts as loading from the start, not as an empty list | PixivPaging.kt (waiting) | PixivCommentsListTest.theFirstLoadCountsAsLoading…
 ported | pixiv_comments_store_test › hides a muted comment and everything by a muted author | PixivComments.kt (shows) | PixivCommentsListTest.aMutedCommentAndEverythingByAMutedAuthorAreHidden
+
+## pixiv_copy_info_test.dart
+covered | pixiv_copy_info_test › fills every placeholder | PixivSearchMemory.kt (PixivCopyInfo.filled) | PixivSearchMemoryTest + PixivDetailTest.copyInfoFillsEveryPlaceholder (the two links)
+covered | pixiv_copy_info_test › leaves unknown braces and a title that looks like a placeholder as written | PixivCopyInfo.filled | PixivSearchMemoryTest; PixivDetailTest.unknownBraces…
+ported | pixiv_copy_info_test › the default template names title, artist and work id | PixivWorkSheets.kt (defaultCopyTemplate) | PixivDetailTest.theDefaultTemplateNamesTitleArtistAndWorkId
+ported | pixiv_copy_info_test › the editor inserts placeholders, saves as it goes and resets to the default | PixivSettingsMore.kt (PixivCopyTemplateScreen, inserted) | PixivDetailTest.theEditorInsertsPlaceholders… (the screen saving as it goes is Compose)
+untested | pixiv_copy_info_test › Copy info puts the filled template on the clipboard | PixivWork.kt (WorkMenu COPY_INFO, info_copied) | Compose clipboard; the filled text is tested
+
+## pixiv_detail_caption_test.dart
+ported | pixiv_detail_caption_test › keeps line breaks, bold and links, and reads other tags for their text | PixivOpen.kt (PixivHtml.parts) | PixivDetailTest.aCaptionKeepsLineBreaks…
+missing | pixiv_detail_caption_test › makes Pixiv paths absolute and unwraps jump.php | PixivOpen.kt (PixivHtml.href) | implemented: `javascript:` and other schemes were made Pixiv paths; now no link. PixivDetailTest.pixivPathsAreMadeAbsolute…
+ported | pixiv_detail_caption_test › an empty or broken caption is no parts rather than an error | PixivHtml.parts | PixivDetailTest.anEmptyOrBrokenCaption…
+ported | pixiv_detail_caption_test › a Pixiv link in the caption opens in XTA, and the caption is selectable | PixivOpen.kt (openHref), PixivWorkParts.kt (PixivHtmlText in a SelectionContainer) | PixivDetailTest.aPixivLinkInTheCaptionOpensInTheApp…
+untested | pixiv_detail_caption_test › a plain-text caption still shows when Pixiv sent no HTML | PixivWorkParts.kt (PixivHtmlText plain fallback) | Compose
+
+## pixiv_detail_parts_test.dart
+ported | pixiv_detail_parts_test › the overflow menu offers every entry, downloading all only for many pages | PixivWork.kt (PixivWorkMenu, now a testable list) | PixivDetailTest.theMenuOffersEveryEntry…
+untested | pixiv_detail_parts_test › muting the author asks first, mutes and leaves the work | PixivWorkSheets.kt (MuteSheet → MuteRows leave), PixivSheets.onMutedHere | Compose
+untested | pixiv_detail_parts_test › cancelling the mute keeps the work open and mutes nothing | PixivWorkSheets.kt | Compose
+untested | pixiv_detail_parts_test › a similar work leaves at once when it is muted | PixivWork.kt (related list's mutes filter) | Compose; mute filtering tested in PixivMutesTest
+untested | pixiv_detail_parts_test › a work that cannot load keeps its picture, says why and recovers on retry | PixivWork.kt (DetailGrid PixivProblem) | Compose
+untested | pixiv_detail_parts_test › a Pixiv link opens the work or the creator, and says when the work will not load | PixivPlugin.kt (link screen: open_link_failed with Retry) | Compose; link parsing tested in PixivLinksTest
+n/a | pixiv_detail_parts_test › the detail fits a narrow phone with large text | PixivWork.kt | Flutter overflow assertion
+
+## pixiv_detail_split_test.dart
+ported | pixiv_detail_split_test › automatic splits from 840dp, stacked never does, side by side wherever both panes fit | PixivRules.kt (PixivLayout.splits) | PixivDetailTest.automaticSplitsFrom840…; PixivRulesTest
+ported | pixiv_detail_split_test › the details keep 320dp and the pictures 240dp whatever the divider says | PixivLayout.splitImageWidth | PixivDetailTest.theDetailsKeep320…
+ported | pixiv_detail_split_test › the layout and divider read from preferences, with defaults for anything unusable | store PixivPrefs.detailLayout/detailSplit | PixivDetailTest.theLayoutAndDividerRead…
+untested | pixiv_detail_split_test › a tablet puts the pictures left and the details right, at least 320dp wide | PixivWork.kt (SplitDetail) | Compose layout; widths tested
+untested | pixiv_detail_split_test › a phone stacks them, and so does a tablet set to stacked | PixivWork.kt | Compose; splits() tested
+untested | pixiv_detail_split_test › side by side applies to a landscape phone too | PixivWork.kt | Compose; splits(SPLIT) tested
+untested | pixiv_detail_split_test › turning the device keeps the page on screen | PixivWork.kt (page in PixivWorkModel state) | Compose
+untested | pixiv_detail_split_test › dragging the divider resizes the panes, keeps 320dp of details and is remembered | PixivWork.kt (SplitDetail draggable → detailSplit) | Compose; clamping tested
+n/a | pixiv_detail_split_test › holding the divider keeps the pictures as they were decoded instead of loading them again | PixivWork.kt | Flutter image cache keys; Coil keeps its memory cache
