@@ -286,3 +286,188 @@ covered | substack_plugin_test › fetchPosts uses /api/v1/archive when /posts i
 covered | substack_plugin_test › resolvePublication follows open.substack.com share links | plugins/substack/.../SubstackClient.kt | SubstackClientTest.aShareLinkResolvesToItsPublication
 covered | substack_plugin_test › resolvePublication maps a leftover custom domain to its Substack twin | plugins/substack/.../SubstackClient.kt | SubstackClientTest.aLeftoverCustomDomainResolvesThroughItsTwinUnderItsOwnAddress
 covered | substack_plugin_test › SubstackPublication prefs round-trip | plugins/substack/.../SubstackPostJson.kt (publications) | SubstackHighlightsTest.aSnapshotReadsBackAsThePostWithoutItsBody (publications line)
+
+## test/substack_post_identity_test.dart
+covered | substack_post_identity_test › is the canonical URL without scheme, www, query, fragment or trailing slash | SubstackCommentsTest.aPostOnAPublicationSubdomainOrTheShareHostIsALink
+covered | substack_post_identity_test › falls back to the publication host and slug, then to the id | SubstackCommentsTest.aPostOnAPublicationSubdomainOrTheShareHostIsALink
+covered | substack_post_identity_test › tells apart two publications that use the same slug | SubstackFeedsTest.aSearchMergesNewestFirstWithoutConfusingEqualIdsOnTwoPublications
+covered | substack_post_identity_test › the API copy and the RSS copy of a post are the same post | SubstackFeedsTest.anRssPageAfterAnApiPageRepeatsNoPostAndTheApiCopyStays
+covered | substack_post_identity_test › reading one copy marks the other, and unread clears both | SubstackFeedsTest.feedFiltersAreLocalAndTheSavedFilterAsksTheLibrary
+covered | substack_post_identity_test › ids stored before the change still count | SubstackHomeTest.theRememberedFeedReadsBackAsItWasWrittenAndADamagedOneAsNothing
+covered | substack_post_identity_test › a like or a save on one copy is on the other, also for entries stored before | SubstackHomeTest.theRememberedFeedReadsBackAsItWasWrittenAndADamagedOneAsNothing
+covered | substack_post_identity_test › an RSS page after an API page repeats no post, and the API copy stays | SubstackFeedsTest.anRssPageAfterAnApiPageRepeatsNoPostAndTheApiCopyStays
+covered | substack_post_identity_test › comments of an RSS copy are asked for under the numeric id | SubstackClientTest.anRssCopysCommentsAreAskedUnderTheApisNumber
+
+## test/substack_preview_test.dart
+covered | substack_preview_test › a paid post can still arrive with the part it gives away | SubstackClientTest.aPostIsReadWholeWithItsPaywallFlag
+covered | substack_preview_test › a paid post with nothing attached has nothing to show | SubstackArticleTest.aPaidPostWithoutABodyGetsThePaidPaneNotTheLiveSite
+covered | substack_preview_test › a free post is not marked paid | SubstackClientTest.aPostIsReadWholeWithItsPaywallFlag
+covered | substack_preview_test › a paid post without a body gets the paid pane, not the live site | SubstackArticleTest.aPaidPostWithoutABodyGetsThePaidPaneNotTheLiveSite
+covered | substack_preview_test › a paid post with its free opening is rendered as an article | SubstackArticleTest.aPaidPostWithoutABodyGetsThePaidPaneNotTheLiveSite
+untested → ported | substack_preview_test › a free post without a body opens its page, or says it is empty | Compose (Substack reader) | Compose only
+covered | substack_preview_test › is rendered with the article when there is one | SubstackArticleTest.paragraphsKeepTheirStylesLinksAndFootnoteMarkers
+untested → ported | substack_preview_test › a free article gets no note at all | Compose (Substack reader) | Compose only
+untested → ported | substack_preview_test › a note with nowhere to continue is still shown | Compose (Substack reader) | Compose only
+
+## test/substack_profile_nav_test.dart
+covered | substack_profile_nav_test › www is never a publication title | SubstackClientTest.aFollowSavedAsWwwStillReadsTheTwinAndTakesItsNameFromTheByline
+covered | substack_profile_nav_test › garbageday.email probes the leftover Substack host | SubstackClientTest.aLeftoverCustomDomainIsReadOnItsSubstackTwinUnderTheFollowedAddress
+untested → ported | substack_profile_nav_test › publicationForPost keeps a tappable in-app profile | Compose (Substack publication) | Compose only
+covered | substack_profile_nav_test › resolvePublication follows garbageday via the leftover host | SubstackClientTest.aLeftoverCustomDomainResolvesThroughItsTwinUnderItsOwnAddress
+covered | substack_profile_nav_test › resolvePublication follows a living Beehiiv custom domain | SubstackClientTest.aLivingBeehiivSiteIsReadThereAndItsLeftoverTwinNeverAsked
+untested → ported | substack_profile_nav_test › tapping the publication name opens the in-app profile | Compose (Substack publication) | Compose only
+untested → ported | substack_profile_nav_test › the publication profile scrolls header and posts together | Compose (Substack publication) | Compose only
+
+## test/substack_protocol_regression_test.dart
+covered | substack_protocol_regression_test › publication search preserves query, offset, limit and followed source base | SubstackClientTest.anArchiveSearchKeepsItsQueryOffsetLimitAndTheFollowedAddress
+covered | substack_protocol_regression_test › search bounds its page size and normalizes negative offsets | SubstackClientTest.aSearchBoundsItsPageAndAValidEmptyAnswerStopsTheHosts
+covered | substack_protocol_regression_test › a valid empty search result stops fallback while all-host failures remain errors | SubstackClientTest.aSearchBoundsItsPageAndAValidEmptyAnswerStopsTheHosts
+covered | substack_protocol_regression_test › malformed 200 search shapes retry hosts instead of reporting no matches | SubstackClientTest.anotherShapeHandsTheSearchToTheNextHost
+covered | substack_protocol_regression_test › pagination preserves a valid empty page and rejects inaccessible or malformed archives | SubstackClientTest.aValidEmptyLaterPageIsAnAnswerButAnUnreadableArchiveIsAnError
+covered | substack_protocol_regression_test › RSS fallback pages locally without repeating requests and retains post metadata | SubstackClientTest.theRssFallbackPagesLocallyWithoutAskingAgainAndKeepsEachPostsMetadata
+covered | substack_protocol_regression_test › RSS paging cache is isolated by source even when publication IDs match | SubstackClientTest.theRssPagingMemoryBelongsToOneSourceEvenWhenIdsMatch
+covered | substack_protocol_regression_test › a successful JSON refresh replaces the previous RSS paging cache | SubstackClientTest.aSuccessfulJsonReadReplacesTheRssPagingMemory
+covered | substack_protocol_regression_test › a valid empty JSON refresh cannot leave stale RSS posts available for pagination | SubstackClientTest.aValidEmptyJsonReadLeavesNoStaleRssPagesButAFailedOneKeepsThem
+covered | substack_protocol_regression_test › a failed refresh preserves previously downloaded RSS pages for offline reading | SubstackClientTest.aValidEmptyJsonReadLeavesNoStaleRssPagesButAFailedOneKeepsThem
+covered | substack_protocol_regression_test › bad optional article scalars do not remove valid search siblings | SubstackFeedsTest.aSearchMergesNewestFirstWithoutConfusingEqualIdsOnTwoPublications
+covered | substack_protocol_regression_test › bad optional byline publication metadata cannot discard an entire archive page | SubstackFeedsTest.publicationFiltersAndOrdersLeaveTheLoadedPostsAlone
+covered | substack_protocol_regression_test › snapshot lists retain valid rows around wrongly typed optional fields | SubstackHomeTest.theRememberedFeedReadsBackAsItWasWrittenAndADamagedOneAsNothing
+covered | substack_protocol_regression_test › Notes tolerate missing author, malformed counts and unsupported bodies without losing siblings | SubstackClientTest.notesComeFromAHostsReaderFeedWithTheirCursor
+covered | substack_protocol_regression_test › non-finite counters remain safe and negative counters never display as negative | SubstackFeedsTest.aCursorSeenBeforeEndsThePagingAndANoteSeenAgainReplacesItselfInPlace
+covered | substack_protocol_regression_test › comments retain parent IDs and malformed/deleted parents preserve readable descendants | SubstackCommentsTest.theOutlineHonoursParentIdsAndKeepsDuplicateOrphanAndCyclicInputsSafe
+covered | substack_protocol_regression_test › comment cycles, repeated identities and very deep deleted chains terminate safely | SubstackCommentsTest.tenThousandNestedCommentsAreCountedAndWalkedWithoutRecursion
+covered | substack_protocol_regression_test › comments distinguish a readable empty discussion from exhausted transport failures | SubstackCommentsTest.theOutlineHonoursParentIdsAndKeepsDuplicateOrphanAndCyclicInputsSafe
+
+## test/substack_publication_reader_test.dart
+covered | substack_publication_reader_test › a failed next page keeps articles and retry uses the failed offset | SubstackFeedsTest.aFailedNextPageKeepsTheArticlesAndRetryAsksTheFailedOffset
+covered | substack_publication_reader_test › failed refresh retains articles and retries the first page | SubstackFeedsTest.aFailedFirstPageKeepsTheArticlesAndRetryAsksTheFirstPage
+covered | substack_publication_reader_test › duplicate page requests are suppressed and refresh supersedes an old page | SubstackFeedsTest.overlappingPagesUpdateTheirPostsAndAPageWithNothingNewStops
+covered | substack_publication_reader_test › repeated server pages stop paging while updating metadata | SubstackFeedsTest.repeatedServerPagesStopPagingAndDuplicatesShowOnce
+covered | substack_publication_reader_test › duplicates inside the first server page only appear once | SubstackFeedsTest.repeatedServerPagesStopPagingAndDuplicatesShowOnce
+covered | substack_publication_reader_test › search has separate pagination and clearing it restores the archive | SubstackFeedsTest.anArchiveAndItsSearchAskTheirOwnEndpointsAndOffsets
+covered | substack_publication_reader_test › late results cannot replace the newer query, even after returning to the same query | SubstackFeedsTest.aNewerLoadSupersedesAnOlderOnesLateResults
+untested → ported | substack_publication_reader_test › search failure is retryable and does not empty the archive | Compose (Substack archive model) | Compose only
+untested → ported | substack_publication_reader_test › disposing while a request is in flight ignores completion | Compose (Substack archive model) | Compose only
+untested → ported | substack_publication_reader_test › publication search waits for a pause in typing | Compose (Substack archive model) | Compose only
+covered | substack_publication_reader_test › metadata enrichment preserves local identity and custom-domain address | SubstackClientTest.enrichingKeepsTheFollowsIdAndAddressAndFailsQuietly
+covered | substack_publication_reader_test › a failed metadata lookup leaves the archive usable | SubstackClientTest.enrichingKeepsTheFollowsIdAndAddressAndFailsQuietly
+covered | substack_publication_reader_test › filters distinguish unread, paid, audio and video without changing loaded pages | SubstackFeedsTest.feedFiltersAreLocalAndTheSavedFilterAsksTheLibrary
+covered | substack_publication_reader_test › orders dates chronologically with unknown dates last and stable ties | SubstackFeedsTest.theFeedIsNewestFirstTiesByFeedKeyUndatedLast
+covered | substack_publication_reader_test › similar recommendations suppress duplicate loads and exclude seed/duplicates | SubstackClientTest.similarPublicationsAreTheAuthorsRecommendationsThenSearchHits
+untested → ported | substack_publication_reader_test › similar recommendation errors are retryable | Compose (Substack recommendations) | Compose only
+covered | substack_publication_reader_test › a publication filter keeps paging available when its current page has no matches | SubstackFeedsTest.publicationFiltersAndOrdersLeaveTheLoadedPostsAlone
+untested → ported | substack_publication_reader_test › publication controls fit a narrow RTL screen with large text | Compose (Substack publication) | Compose only
+untested → ported | substack_publication_reader_test › recommendation rows fit a narrow RTL screen with large text | Compose (Substack publication) | Compose only
+
+## test/substack_read_time_test.dart
+covered | substack_read_time_test › read time is the words at 230 a minute, rounded up, at least one minute | SubstackArticleTest.readTimeIsTheWordsAt230AMinuteRoundedUpAtLeastOne
+covered | substack_read_time_test › the body, when at hand, counts instead of the API figure | SubstackArticleTest.readTimeIsTheWordsAt230AMinuteRoundedUpAtLeastOne
+covered | substack_read_time_test › no estimate for an episode, a video, or a post with no count | SubstackArticleTest.readTimeIsTheWordsAt230AMinuteRoundedUpAtLeastOne
+covered | substack_read_time_test › the API word count is read, survives a saved snapshot, and a bad one is ignored | SubstackArticleTest.readTimeIsTheWordsAt230AMinuteRoundedUpAtLeastOne
+untested → ported | substack_read_time_test › the article page names the read time with the byline | Compose (Substack reader) | Compose only
+
+## test/substack_reader_recovery_test.dart
+untested → ported | substack_reader_recovery_test › refresh keeps the existing readable document after a network failure | Compose (Substack reader model) | Compose only
+untested → ported | substack_reader_recovery_test › latest request wins when older reads finish last | Compose (Substack reader model) | Compose only
+untested → ported | substack_reader_recovery_test › initial failure is retryable and stale errors cannot replace success | Compose (Substack reader model) | Compose only
+untested → ported | substack_reader_recovery_test › in-flight reads safely stop after store disposal | Compose (Substack reader model) | Compose only
+covered | substack_reader_recovery_test › navigation store restores contents after clearing a local query | SubstackArticleNavigationTest.contentsBecomeMatchingPassagesAndClearingTheSearchBringsBackTheHeadings
+covered | substack_reader_recovery_test › article cache isolates full custom domain, scheme and case-sensitive slug | SubstackHomeTest.theArticleCacheKeepsTheNewestWithinItsLimitsAndForgetsTheStale
+covered | substack_reader_recovery_test › cache preserves the paid-preview boundary and rejects the wrong article | SubstackArticleTest.aParsedArticleIsReusedOnlyForTheSamePostDateAndBody
+covered | substack_reader_recovery_test › the article cache keeps the 200 most recently read articles | SubstackHomeTest.theArticleCacheKeepsTheNewestWithinItsLimitsAndForgetsTheStale
+covered | substack_reader_recovery_test › the article cache drops the least recently read first, by count and by size | SubstackHomeTest.theArticleCacheKeepsTheNewestWithinItsLimitsAndForgetsTheStale
+covered | substack_reader_recovery_test › a cached copy is used only while the listed post keeps its date and title | SubstackArticleTest.aParsedArticleIsReusedOnlyForTheSamePostDateAndBody
+covered | substack_reader_recovery_test › the newest article stays even when it alone is over the size limit | SubstackHomeTest.theArticleCacheKeepsTheNewestWithinItsLimitsAndForgetsTheStale
+covered | substack_reader_recovery_test › malformed or unavailable optional cache never breaks reading | SubstackHomeTest.theArticleCacheKeepsTheNewestWithinItsLimitsAndForgetsTheStale
+
+## test/substack_reader_style_test.dart
+untested → ported | substack_reader_style_test › the defaults keep the look the reader had: Georgia in a 42rem column | Compose (Substack reader style) | Compose only
+untested → ported | substack_reader_style_test › the chosen font and width reach the page; unknown values read as the defaults | Compose (Substack reader style) | Compose only
+
+## test/substack_rss_test.dart
+covered | substack_rss_test › reads channel metadata and items | SubstackClientTest.theRssFallbackPagesLocallyWithoutAskingAgainAndKeepsEachPostsMetadata
+covered | substack_rss_test › recognises Substack RSS and rejects Ghost | SubstackCommentsTest.pagesOfAPublicationSubstacksOwnPagesAndOtherSitesAreNoPost
+covered | substack_rss_test › unread / free / podcast | SubstackClientTest.theRssFallbackPagesLocallyWithoutAskingAgainAndKeepsEachPostsMetadata
+covered | substack_rss_test › builds a note URL and publication | SubstackClientTest.notesComeFromAHostsReaderFeedWithTheirCursor
+
+## test/substack_sanitize_test.dart
+covered | substack_sanitize_test › event handlers do not survive, whatever element they are on | SubstackArticleTest.findSeesOnlySanitizedVisibleWritingWithAllWordsInAnyOrder
+covered | substack_sanitize_test › a link whose destination is code loses the destination, not the text | SubstackArticleTest.findSeesOnlySanitizedVisibleWritingWithAllWordsInAnyOrder
+covered | substack_sanitize_test › a document smuggled in as a URL is refused | SubstackArticleNavigationTest.theJumpCarriesAnUntrustedTargetAsDataNotCode
+covered | substack_sanitize_test › scripts are still removed outright | SubstackArticleTest.findSeesOnlySanitizedVisibleWritingWithAllWordsInAnyOrder
+covered | substack_sanitize_test › ordinary writing and its markup come through untouched | SubstackArticleTest.paragraphsKeepTheirStylesLinksAndFootnoteMarkers
+covered | substack_sanitize_test › an embed keeps the host it points at | SubstackArticleTest.anEmbedIsHeldBehindAPlaceholderUntilTheReaderAsksForIt
+covered | substack_sanitize_test › the spoken version never reads out a handler | SubstackArticleTest.oneParseGivesTheSameSpeechTextAsReadingTheBodyAlone
+
+## test/substack_scrolled_past_test.dart
+untested → ported | substack_scrolled_past_test › only cards fully above the top are reported, once a second, and only scrolling down | Compose (Substack feed) | Compose only
+untested → ported | substack_scrolled_past_test › a fast fling past many cards still reports each one | Compose (Substack feed) | Compose only
+
+## test/substack_search_upgrade_test.dart
+untested → ported | substack_search_upgrade_test › late category list cannot replace a submitted search | Compose (Substack discovery model) | Compose only
+untested → ported | substack_search_upgrade_test › late category results cannot overwrite a newer category | Compose (Substack discovery model) | Compose only
+covered | substack_search_upgrade_test › late query failure cannot overwrite a newer query | SubstackFeedsTest.aNewerLoadSupersedesAnOlderOnesLateResults
+covered | substack_search_upgrade_test › name results page, deduplicate, and stop repeated pages | SubstackFeedsTest.nameResultsPageDeduplicateAndStopAtARepeatedPage
+covered | substack_search_upgrade_test › failed page retains prior results and retries the same page | SubstackFeedsTest.aFailedDiscoveryPageKeepsTheListAndAsksThatPageAgain
+covered | substack_search_upgrade_test › category paging stays on its selected category | SubstackFeedsTest.aCategoryLeaderboardPagesWithinItsCategory
+covered | substack_search_upgrade_test › punctuated publication names remain name searches | SubstackClientTest.findingPublicationsResolvesAddressesAndHandlesButSearchesNames
+untested → ported | substack_search_upgrade_test › refresh failure retains the last readable category page | Compose (Substack discovery model) | Compose only
+covered | substack_search_upgrade_test › publication URL resolves without a name search | SubstackClientTest.aShareLinkResolvesToItsPublication
+covered | substack_search_upgrade_test › handle resolution can recover when search is unavailable | SubstackClientTest.anEmptyNameSearchIsAnAnswerAndAMultiWordNameIsNeverAHandle
+covered | substack_search_upgrade_test › empty publication search stays distinct from a failed request | SubstackClientTest.publicationSearchAsksSubstackAndKeepsOnlyAddressablePublications
+covered | substack_search_upgrade_test › pasted post resolves its publication before fetching article | SubstackClientTest.aPostTheJsonCannotGiveComesFromTheFeedElseIsNotFound
+untested → ported | substack_search_upgrade_test › pasted article failure preserves publication preview | Compose (Substack discovery model) | Compose only
+untested → ported | substack_search_upgrade_test › disposal prevents late publication results and further requests | Compose (Substack discovery model) | Compose only
+covered | substack_search_upgrade_test › merges newest-first without confusing equal IDs on different publications | SubstackFeedsTest.aSearchMergesNewestFirstWithoutConfusingEqualIdsOnTwoPublications
+covered | substack_search_upgrade_test › partial failure retains other articles and retries only the failed publication | SubstackFeedsTest.aPartialFailureKeepsTheOtherArticlesAndRetriesOnlyTheFailedPublication
+covered | substack_search_upgrade_test › paging uses independent offsets and stops an unchanged result page | SubstackFeedsTest.pagingUsesEachPublicationsOwnOffsetAndStopsAnUnchangedPage
+covered | substack_search_upgrade_test › failed refresh keeps earlier readable article results | SubstackFeedsTest.aFailedRefreshKeepsWhatWasShownAndAFreshOneReplacesIt
+untested → ported | substack_search_upgrade_test › a changed followed publication host cannot commit an older search | Compose (Substack discovery model) | Compose only
+covered | substack_search_upgrade_test › load more resets to the current followed set instead of paging a removed source | SubstackFeedsTest.followingAnotherSetDropsOnlyTheRemovedPublicationsPostsAndLateResults
+covered | substack_search_upgrade_test › overlapping article pages update metadata without duplicating rows | SubstackFeedsTest.overlappingPagesUpdateTheirPostsAndAPageWithNothingNewStops
+covered | substack_search_upgrade_test › only four publication searches run before the next batch starts | SubstackFeedsTest.onlyFourPublicationSearchesRunBeforeTheNextBatchStarts
+untested → ported | substack_search_upgrade_test › changing query prevents the old search from starting further batches | Compose (Substack discovery model) | Compose only
+untested → ported | substack_search_upgrade_test › failed replacement lookup cannot reuse the prior publication | Compose (Substack discovery model) | Compose only
+covered | substack_search_upgrade_test › looking up an article never silently follows it | SubstackClientTest.aPostTheJsonCannotGiveComesFromTheFeedElseIsNotFound
+untested → ported | substack_search_upgrade_test › new lookup supersedes a slow earlier preview | Compose (Substack discovery model) | Compose only
+untested → ported | substack_search_upgrade_test › follow return state remains changed across subsequent previews | Compose (Substack discovery model) | Compose only
+untested → ported | substack_search_upgrade_test › pending follow serializes user writes and blocks a new lookup | Compose (Substack discovery model) | Compose only
+untested → ported | substack_search_upgrade_test › closing a preview prevents late lookup from starting article fetch | Compose (Substack discovery model) | Compose only
+untested → ported | substack_search_upgrade_test › article failure leaves preview followable and independently retryable | Compose (Substack discovery model) | Compose only
+untested → ported | substack_search_upgrade_test › compact enlarged-text $mode remains usable | Compose (Substack discovery) | Compose only
+
+## test/substack_store_recovery_test.dart
+covered | substack_store_recovery_test › successful empty results are cached and failed results can retry immediately | SubstackHomeTest.aRestoredFeedPaintsAtOnceAndReadsOnlyThePublicationsThatAreNoLongerFresh
+covered | substack_store_recovery_test › failed publication pages retain their offset while other publications progress | SubstackFeedsTest.failedPublicationPagesKeepTheirOffsetWhileOthersProgress
+covered | substack_store_recovery_test › refresh failure keeps readable rows and a page retry clears the refresh error | SubstackFeedsTest.aFailedRefreshKeepsWhatWasShownAndAFreshOneReplacesIt
+covered | substack_store_recovery_test › a refresh reads every publication within the concurrency bound; paging passes rotate failures | SubstackFeedsTest.aRefreshStaysWithinTheConcurrencyBoundAndPagingRotatesFailures
+covered | substack_store_recovery_test › a duplicate paging request is coalesced and refresh supersedes the old page | SubstackFeedsTest.overlappingPagesUpdateTheirPostsAndAPageWithNothingNewStops
+untested → ported | substack_store_recovery_test › changing a publication host rejects old results even when its id is unchanged | Compose (Substack feed model) | Compose only
+covered | substack_store_recovery_test › source identity normalizes host spelling and trailing slashes while preserving paths | SubstackCommentsTest.aCustomDomainIsOnlyClaimedWhenItIsFollowed
+covered | substack_store_recovery_test › removing a followed publication removes only its cached rows | SubstackFeedsTest.followingAnotherSetDropsOnlyTheRemovedPublicationsPostsAndLateResults
+covered | substack_store_recovery_test › overlapping pages update metadata and cyclic duplicate pages stop | SubstackFeedsTest.overlappingPagesUpdateTheirPostsAndAPageWithNothingNewStops
+covered | substack_store_recovery_test › read changes repaint all articles and unread filtering stays local | SubstackFeedsTest.feedFiltersAreLocalAndTheSavedFilterAsksTheLibrary
+covered | substack_store_recovery_test › the paid filter keeps paid posts; the saved filter follows the Saved library | SubstackFeedsTest.feedFiltersAreLocalAndTheSavedFilterAsksTheLibrary
+untested → ported | substack_store_recovery_test › disposed feeds ignore pending requests | Compose (Substack feed model) | Compose only
+covered | substack_store_recovery_test › pages keep the issuing host and refresh rotates discovery hosts | SubstackFeedsTest.notePagesKeepTheirIssuingHostAndARefreshAsksTheNextHost
+covered | substack_store_recovery_test › failed pages keep visible notes and retry the same cursor | SubstackFeedsTest.aFailedNotesPageKeepsTheNotesAndRetriesTheSameCursor
+covered | substack_store_recovery_test › cyclic cursors stop and overlapping notes replace counts without duplicated rows | SubstackFeedsTest.aCursorSeenBeforeEndsThePagingAndANoteSeenAgainReplacesItselfInPlace
+covered | substack_store_recovery_test › successful empty results are fresh and a failed refresh remains retryable | SubstackHomeTest.aRestoredFeedPaintsAtOnceAndReadsOnlyThePublicationsThatAreNoLongerFresh
+untested → ported | substack_store_recovery_test › source changes supersede pending discovery and disposal ignores late responses | Compose (Substack feed model) | Compose only
+covered | substack_store_recovery_test › refresh keeps notes while offline and replaces a pending older page | SubstackFeedsTest.aFailedNotesPageKeepsTheNotesAndRetriesTheSameCursor
+covered | substack_store_recovery_test › rapid read changes preserve ids and explicit unread survives reload | SubstackHomeTest.theRememberedFeedReadsBackAsItWasWrittenAndADamagedOneAsNothing
+covered | substack_store_recovery_test › read ids are deduplicated before history capacity is applied | SubstackHomeTest.theRememberedFeedReadsBackAsItWasWrittenAndADamagedOneAsNothing
+untested → ported | substack_store_recovery_test › rapid likes use the latest committed state and repeated toggles cancel | Compose (Substack state) | Compose only
+untested → ported | substack_store_recovery_test › rapid saved changes persist before disposal and later actions do nothing | Compose (Substack state) | Compose only
+untested → ported | substack_store_recovery_test › a thrown preference write keeps state and allows the next action | Compose (Substack state) | Compose only
+covered | substack_store_recovery_test › rapid pin changes preserve both publications and repeated toggles unpin | SubstackHomeTest.theRememberedFeedReadsBackAsItWasWrittenAndADamagedOneAsNothing
+
+## test/substack_transport_test.dart
+covered | substack_transport_test › Substack hosts share one rate bucket; other hosts have their own | SubstackClientTest.aRateLimitEndsTheFallbackChainAndSaysSo
+covered | substack_transport_test › Retry-After is read as seconds or as an HTTP date, and nothing else | shared transport: BooruRequestGateTest.retryAfterInSecondsIsReadADateIsLeftToTheDoublingPause
+covered | substack_transport_test › a 429 backs off with growing jittered waits, then reports the rate limit | SubstackClientTest.aRateLimitEndsTheFallbackChainAndSaysSo
+untested → ported | substack_transport_test › a Retry-After answer is waited out, and the next answer is read | shared transport (services) | the retry waits are in the shared client
+untested → ported | substack_transport_test › a long wait fails at once and holds back every host in the bucket | shared transport (services) | same
+untested → ported | substack_transport_test › a server error is retried once after a short jittered pause | shared transport (services) | same
+untested → ported | substack_transport_test › a success clears the strikes, so the next rate limit starts small again | shared transport (services) | same
+untested → ported | substack_transport_test › no more than four requests are in flight per bucket | shared transport (services) | same
