@@ -178,10 +178,14 @@ internal class PixivHomeModel(private val runtime: PixivRuntime, private val sco
         ensureShown()
     }
 
-    /** Picks whose bookmarks Favorites shows and under which tag; another source starts on every tag. */
-    fun favorites(source: PixivFavoritesSource, tag: String?) {
+    /**
+     * Picks whose bookmarks Favorites shows and under which tag; another
+     * source starts on every tag, unless the tag was [picked] for it, as the
+     * tag picker's Private tab picks a private tag.
+     */
+    fun favorites(source: PixivFavoritesSource, tag: String?, picked: Boolean = false) {
         val now = mutable.value
-        change { it.copy(favorites = source, tag = if (source == now.favorites) tag else null) }
+        change { it.copy(favorites = source, tag = if (picked || source == now.favorites) tag else null) }
         if (source != PixivFavoritesSource.DEVICE) {
             bookmarks.clear()
             ensureShown()

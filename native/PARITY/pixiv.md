@@ -110,3 +110,123 @@ untested | pixiv_bookmark_editor_test › Edit bookmark in the detail menu opens
 untested | pixiv_bookmark_editor_test › is a 48 dp labelled button with tap and long-press actions | PixivGrid.kt (heart) | Compose semantics
 ported | pixiv_bookmark_editor_test › a tap bookmarks with the defaults and buzzes lightly; a long press buzzes firmer | PixivSheets.toggleBookmark, PixivHaptics | PixivBookmarkEditorTest.aTapBookmarksWithTheDefaultsAndBuzzesLightly (the long press's medium buzz is in Compose)
 ported | pixiv_bookmark_editor_test › following the author after a bookmark says so | PixivSheets.landed | PixivBookmarkEditorTest.followingTheAuthorAfterABookmarkSaysSo
+
+## pixiv_bookmark_store_test.dart
+covered | pixiv_bookmark_store_test › isBookmarked uses the illust flag until a write is recorded | PixivMarks.kt (PixivMarks.on/count) | PixivBookmarkingTest.theCountMovesWithWhatThisSessionChanged
+covered | pixiv_bookmark_store_test › a recorded bookmark or removal adjusts the count | PixivMarks.kt | PixivBookmarkingTest.theCountMovesWithWhatThisSessionChanged
+covered | pixiv_bookmark_store_test › a removal never drives the count below zero | PixivMarks.kt | PixivBookmarkingTest.theCountMovesWithWhatThisSessionChanged
+covered | pixiv_bookmark_store_test › one write per work at a time; a second one is skipped | PixivMarks.kt (exclusive) | PixivBookmarkingTest.aSecondTapWaitsForTheFirstWrite
+covered | pixiv_bookmark_store_test › a failed write frees the work and rethrows | PixivMarks.kt | PixivBookmarkActionsTest.aFailedWriteLeavesTheBookmarkAsItWasAndFreesTheWork
+
+## pixiv_bookmark_tag_picker_test.dart
+ported | pixiv_bookmark_tag_picker_test › lists All, Uncategorized and the reader's tags with counts, and returns the one picked | PixivFavorites.kt (BookmarkTagPicker), PixivSections.kt (tagLabel) | PixivFavoritesTest.theChipAndThePickerSay…; the list itself is Compose
+ported | pixiv_bookmark_tag_picker_test › Uncategorized filters by Pixiv's 未分類 tag | PixivKept.kt (UNTAGGED) | PixivFavoritesTest.theChipAndThePickerSay…
+untested | pixiv_bookmark_tag_picker_test › typing suggests at most eight matches, ignoring case, and takes any typed tag | PixivFavorites.kt (TagRows, "Use …") | Compose; matching tested in PixivBookmarkEditorTest
+missing | pixiv_bookmark_tag_picker_test › the Private tab lists private tags and picks privately | PixivHomeModel.favorites(picked), PixivSections.kt | implemented: a tag picked on the Private tab was dropped as the visibility changed; PixivFavoritesTest.theFavoritesListLoadsTheVisibilityAndTagPicked
+n/a | pixiv_bookmark_tag_picker_test › large text on a small screen still lays out | PixivFavorites.kt | Flutter overflow assertion
+n/a | pixiv_bookmark_tag_picker_test › landscape with large text and the keyboard up does not overflow | PixivFavorites.kt | Flutter overflow assertion
+untested | pixiv_bookmark_tag_picker_test › scrolling pages on through next_url | PixivFavorites.kt (TagRows nearEnd → PixivList.more) | Compose scroll; PixivList paging tested in PixivPagingTest
+untested | pixiv_bookmark_tag_picker_test › a first page that does not fill the sheet asks for the next by itself | PixivFavorites.kt (nearEnd while all rows show) | Compose
+untested | pixiv_bookmark_tag_picker_test › a search pages on until it finds what is typed | PixivFavorites.kt (PixivTagList LaunchedEffect) | Compose
+untested | pixiv_bookmark_tag_picker_test › a page that fails stops a search from asking until the next keystroke | PixivFavorites.kt | Compose; a failed more() sets moreFailed and hasMore stays, the effect keys on query/size/hasMore so it does not loop
+n/a | pixiv_bookmark_tag_picker_test › closing it while the tags load throws nothing | PixivFavorites.kt | Flutter setState-after-dispose; the list's scope ends with the sheet
+untested | pixiv_bookmark_tag_picker_test › opens on the visibility being shown, with its tag selected | PixivFavorites.kt (shown = sources.indexOf) | Compose
+ported | pixiv_bookmark_tag_picker_test › the tag chip shows All and opens the picker | PixivSections.kt (FavoritesSection chip, tagLabel) | PixivFavoritesTest.theChipAndThePickerSay…
+ported | pixiv_bookmark_tag_picker_test › a chosen tag shows on the chip, which clears back to All | PixivHomeModel.favorites | PixivFavoritesTest.aChosenTagClearsBackToAll…
+missing | pixiv_bookmark_tag_picker_test › the Favorites list loads the visibility and tag picked | PixivHomeModel.favorites(picked = true) | implemented (same fix); PixivFavoritesTest.theFavoritesListLoadsTheVisibilityAndTagPicked
+
+## pixiv_client_test.dart
+covered | pixiv_client_test › refreshAccessToken stores tokens and returns the user | networks/PixivClient.kt | PixivClientTest.aRefreshKeepsBothTokensAndNamesTheAccount
+covered | pixiv_client_test › following uses the access token and parses illusts | networks/PixivClient.kt | PixivAuthTest.signingInPutsTheTokens…, PixivClientTest.aSwitchedAccountRefreshesBeforeItsFirstRead
+covered | pixiv_client_test › missing refresh token is notConfigured | networks/PixivClient.kt | PixivClientTest.withoutARefreshTokenThereIsNoAccount…
+covered | pixiv_client_test › every request carries the time and its hash, and they agree | networks/PixivClient.kt | PixivClientTest.everyRequestCarriesTheTimeAndItsHash…
+covered | pixiv_client_test › the API requests are signed the same way | networks/PixivClient.kt | PixivClientTest.theApiReadsAreSignedTheSameWay…
+covered | pixiv_client_test › ranking and search hit the expected paths and query parameters | networks/PixivDiscovery.kt, PixivSearch.kt | PixivDiscoveryTest, PixivSearchTest
+covered | pixiv_client_test › followUser posts to the follow-add endpoint | networks/PixivSocial.kt | PixivWritesTest.aCreatorIsFollowedAndUnfollowed
+covered | pixiv_client_test › Pixiv's "Rate Limit" answer reads as rate limiting, not a refused token | networks/PixivClient.kt, PixivErrors.kt | PixivClientTest.pixivsRateLimitAnswerReadsAsRateLimiting…
+covered | pixiv_client_test › a refused token surfaces what Pixiv actually said | networks/PixivClient.kt | PixivClientTest.aRefusedRefreshSaysWhatPixivSaid
+covered | pixiv_client_test › concurrent refreshAccessToken calls share one network round-trip | networks/PixivClient.kt | PixivClientTest.refreshesAskedForTogetherShareOneRoundTrip
+covered | pixiv_client_test › ensureUserId reuses a stored id without forcing another refresh | networks/PixivClient.kt | PixivClientTest.ensureUserIdReusesAStoredId…
+covered | pixiv_client_test › related keeps R-18 when the opened illust is R-18 | networks/PixivClient.kt | PixivClientTest.relatedWorksOfAnR18SeedKeepR18
+covered | pixiv_client_test › ranking is /v1/illust/ranking; likes are bookmarks with user_id | networks/PixivClient.kt, PixivDiscovery.kt | PixivClientTest.theCoreReadsAskTheirOwnPaths…, PixivDiscoveryTest
+
+## pixiv_client_transport_test.dart
+covered | pixiv_client_transport_test › maps XTA locales onto the five languages Pixiv answers in | networks/PixivClient.kt | PixivClientTest.acceptLanguageMapsLocales…
+covered | pixiv_client_transport_test › every request carries the active locale, token requests included | networks/PixivClient.kt | PixivClientTest.everyRequestCarriesTheActiveLocale…
+covered | pixiv_client_transport_test › a 400 about the OAuth process refreshes once and replays the request | networks/PixivClient.kt | PixivClientTest.aTokenRefusedWithA400AboutOAuth…
+covered | pixiv_client_transport_test › requests refused together share one refresh | networks/PixivClient.kt | PixivClientTest.requestsRefusedTogetherShareOneRefresh
+covered | pixiv_client_transport_test › a refusal after the refresh is reported, not retried forever | networks/PixivClient.kt | PixivClientTest.aRefusalAfterTheRefreshIsReported…
+covered | pixiv_client_transport_test › any other 400 is a bad response and leaves the token alone | networks/PixivClient.kt | PixivClientTest.anyOther400IsABadResponse…
+covered | pixiv_client_transport_test › a connection closed before any header is sent again once | core XHttp.kt (OkHttpXHttp.get) | core XClientParityTest.aFailedRequestIsTriedOnceMoreButNotOneThatTimedOut (the app's shared transport)
+covered | pixiv_client_transport_test › a second drop is a network error | core XHttp.kt, networks/PixivErrors.kt | same core test; an IOException reads as NETWORK (PixivBookmarkEditorTest)
+missing | pixiv_client_transport_test › other failures are not retried | core XHttp.kt | not changed: the app's shared transport retries any failed GET once (as XTA's X client does), a refused connection too; changing it would change X. Writes are never retried, as in XTA
+covered | pixiv_client_transport_test › getJson without auth sends no token and never refreshes | networks/PixivClient.kt | PixivClientTest.aReadWithoutAuthSendsNoTokenAndNeverRefreshes
+covered | pixiv_client_transport_test › the token never leaves the app API host | networks/PixivClient.kt | PixivClientTest.theTokenNeverLeavesTheAppApiHost
+covered | pixiv_client_transport_test › getText returns an HTML body as text | networks/PixivClient.kt | PixivClientTest.getTextReturnsAnHtmlBodyAsText
+ported | pixiv_client_transport_test › postForm sends a form and reads an empty answer as null | networks/PixivClient.kt (postForm: an empty object) | PixivTransportTest.postFormSendsAForm…
+covered | pixiv_client_transport_test › illustPageFrom follows the reader's filters unless it is their own list | networks/PixivClient.kt | PixivClientTest.illustPageFollowsTheReadersFilters…
+covered | pixiv_client_transport_test › is stored from the token response and cleared on sign-out | networks/PixivClient.kt | PixivClientTest.premiumIsKeptFromTheTokenResponseAndClearedOnSignOut
+covered | pixiv_client_transport_test › a token response without a user keeps what was known | networks/PixivClient.kt | PixivClientTest.aTokenResponseWithoutAUserKeepsWhatWasKnown
+
+## pixiv_comment_emoji_test.dart
+covered | pixiv_comment_emoji_test › numbers every set the way Pixiv serves the images | networks/PixivComments.kt (PixivCommentText.emojiIds) | PixivCommentsTest.emojiAreNumberedTheWayPixivServesTheirPictures
+covered | pixiv_comment_emoji_test › (normal) and (heart) become emoji between the words | networks/PixivComments.kt (parts) | PixivCommentsTest.emojiCodesSplitTheText…
+covered | pixiv_comment_emoji_test › an unknown code stays text | networks/PixivComments.kt | same test
+covered | pixiv_comment_emoji_test › adjacent codes are separate emoji with nothing between | networks/PixivComments.kt | same test
+covered | pixiv_comment_emoji_test › parentheses inside ordinary text are left alone | networks/PixivComments.kt | same test
+covered | pixiv_comment_emoji_test › empty text has no parts and an emoji-only comment has no text part | networks/PixivComments.kt | same test
+covered | pixiv_comment_emoji_test › an emoji part knows its code and image | networks/PixivComments.kt | PixivCommentsTest.emojiAreNumbered…
+
+## pixiv_comment_models_test.dart
+covered | pixiv_comment_models_test › reads a full comment | networks/PixivComments.kt | PixivCommentsTest.aPageReadsItsCommentsTheTotalAndTheNextPage
+covered | pixiv_comment_models_test › reads a sticker comment with no text | networks/PixivComments.kt | same test
+covered | pixiv_comment_models_test › keeps a comment whose author is missing or withdrawn | networks/PixivComments.kt | same test
+covered | pixiv_comment_models_test › reads whom a reply answers from parent_comment | networks/PixivComments.kt | same test
+covered | pixiv_comment_models_test › survives a reshaped payload without throwing | networks/PixivComments.kt | PixivCommentsTest.aReshapedCommentSurvives…
+covered | pixiv_comment_models_test › reads the comments, the total and the next page | networks/PixivComments.kt | PixivCommentsTest.aPageReadsItsComments…
+covered | pixiv_comment_models_test › an empty or reshaped page is simply empty | networks/PixivComments.kt | PixivCommentsTest.anEmptyOrReshapedPageIsSimplyEmpty
+covered | pixiv_comment_models_test › prefers the name, then the account | networks/PixivComments.kt (authorName) | PixivCommentsTest.aPageReadsItsComments… (sticker's @account)
+covered | pixiv_comment_models_test › Pixiv links and plain text pass | networks/PixivComments.kt (linksOutside) | PixivCommentsTest.pixivLinksAndPlainTextPassTheSpamGuard
+covered | pixiv_comment_models_test › a link anywhere else is caught, however it is written | networks/PixivComments.kt | PixivCommentsTest.aLinkAnywhereElseIsCaught…
+covered | pixiv_comment_models_test › each target asks its own endpoints | networks/PixivComments.kt (PixivCommentTarget) | PixivCommentsTest.eachKindOfWorkAsksItsOwnEndpoints
+
+## pixiv_comments_api_test.dart
+covered | pixiv_comments_api_test › an artwork target reads /v3/illust/comments with the token | networks/PixivComments.kt (PixivCommentsApi) | PixivCommentsTest.anArtworksCommentsAreReadWithTheToken
+covered | pixiv_comments_api_test › a novel target reads /v3/novel/comments | networks/PixivComments.kt | PixivCommentsTest.novelCommentsRepliesAndLaterPages…
+covered | pixiv_comments_api_test › replies come from each kind's own replies endpoint | networks/PixivComments.kt | same test
+covered | pixiv_comments_api_test › a later page follows next_url as Pixiv wrote it | networks/PixivComments.kt | same test
+covered | pixiv_comments_api_test › only reads: no request posts anything | networks/PixivComments.kt | same test (every request is a GET)
+
+## pixiv_comments_screen_test.dart
+untested | pixiv_comments_screen_test › shows text with inline emoji, a sticker and whom a reply answers, and offers no composer | PixivComments.kt (CommentTile, CommentText, CommentByline) | Compose; the parts and reply-to are tested in PixivCommentsTest
+untested | pixiv_comments_screen_test › View replies opens the thread with its comment on top | PixivComments.kt (pinned parent header) | Compose
+untested | pixiv_comments_screen_test › a thread without replies says so under its comment | PixivComments.kt (comments_replies_empty) | Compose
+untested | pixiv_comments_screen_test › a comment linking outside Pixiv waits behind Show | PixivComments.kt (HiddenLink) | Compose; linksOutside tested
+missing | pixiv_comments_screen_test › a comment shown past its link note stays shown in its thread | PixivRuntime.revealedComments, PixivComments.kt | implemented: Show was kept per row, so the thread's pinned comment hid it again; PixivCommentsListTest.aCommentShownPastItsLinkNote…
+untested | pixiv_comments_screen_test › copying a comment keeps its emoji as their codes | PixivComments.kt (inline emoji's alternate text is the code) | Compose selection
+untested | pixiv_comments_screen_test › muting a comment asks first and hides it | PixivComments.kt (CommentMenu), PixivMutes.kt | Compose ask; hiding tested in PixivCommentsListTest
+ported | pixiv_comments_screen_test › muting an author hides every comment they wrote | PixivComments.kt (PixivMutes.shows) | PixivCommentsListTest.aMutedCommentAndEverythingByAMutedAuthorAreHidden
+untested | pixiv_comments_screen_test › a comment without an author can only be muted itself | PixivComments.kt (CommentMenu: the author's line only with a user) | Compose
+missing | pixiv_comments_screen_test › muting the comment a thread hangs off leaves the thread | PixivComments.kt (leavesThread → back) | implemented; PixivCommentsListTest.mutingTheCommentAThreadHangsOff…
+ported | pixiv_comments_screen_test › opening shows the skeleton, never a passing "No comments yet" or "No replies yet" | PixivPaging.kt (PixivListState.waiting) | PixivCommentsListTest.theFirstLoadCountsAsLoading…
+covered | pixiv_comments_screen_test › a later page that fails keeps the comments and offers Retry instead of a spinner | PixivPaging.kt (moreFailed) | PixivPagingTest.aFailedNextPageKeepsTheListAndRetries
+untested | pixiv_comments_screen_test › scrolling toward the end of a long page asks for the next | PixivUi.kt (PixivRows) | Compose scroll
+untested | pixiv_comments_screen_test › pulling down reloads the comments | PixivUi.kt (PixivRows refresh) | Compose; refresh tested in PixivPagingTest
+untested | pixiv_comments_screen_test › a short first page reaches for the next one by itself | PixivUi.kt (PixivRows) | Compose
+untested | pixiv_comments_screen_test › no comments says so, and a failed load offers Retry | PixivUi.kt (PixivRows empty/problem rows) | Compose
+ported | pixiv_comments_screen_test › the novel target reads the novel's comments and replies | PixivComments.kt (readComments), networks/PixivComments.kt | PixivCommentsListTest.theNovelTargetReads…
+n/a | pixiv_comments_screen_test › large text keeps every comment inside the screen | PixivComments.kt | Flutter overflow assertion
+untested | pixiv_comments_screen_test › every control is a labelled, finger-sized target | PixivComments.kt (IconButtons with descriptions) | Flutter's tap-target guideline; Compose's IconButton is 48 dp
+untested | pixiv_comments_screen_test › the artwork detail shows the comment count and opens the comments | PixivWorkParts.kt (comments_view_count) | Compose
+
+## pixiv_comments_store_test.dart
+covered | pixiv_comments_store_test › pages through a work's comments without repeats | PixivPaging.kt (PixivList) | PixivPagingTest.pagesJoinInOrderWithoutRepeatsToTheEnd
+covered | pixiv_comments_store_test › a thread reads the replies under its parent | PixivComments.kt (readComments), networks/PixivComments.kt | PixivCommentsTest.novelCommentsRepliesAndLaterPages…
+ported | pixiv_comments_store_test › novel comments and replies use the novel target | PixivComments.kt | PixivCommentsListTest.theNovelTargetReads…
+ported | pixiv_comments_store_test › leaves out muted comments and muted authors, as they are when each page lands | PixivComments.kt (visible filter reads mutes.now) | PixivCommentsListTest.theMutesAreTakenAsEachPageLands
+ported | pixiv_comments_store_test › skips pages the mutes empty instead of stopping on them | PixivPaging.kt (PixivPages.visiblePage) | PixivCommentsListTest.pagesTheMutesEmptyAreSkipped…
+ported | pixiv_comments_store_test › a last page the mutes empty still ends the paging for the list | PixivPaging.kt | same test
+covered | pixiv_comments_store_test › a failed first page is an error, a failed later page keeps the list | PixivPaging.kt | PixivPagingTest.aFirstPageThatFailsSaysWhy…, aFailedNextPageKeepsTheList…
+covered | pixiv_comments_store_test › a later page that failed is announced, and clears once one arrives | PixivPaging.kt (moreFailed, retryMore) | PixivPagingTest.aFailedNextPageKeepsTheListAndRetries
+ported | pixiv_comments_store_test › the first load counts as loading from the start, not as an empty list | PixivPaging.kt (waiting) | PixivCommentsListTest.theFirstLoadCountsAsLoading…
+ported | pixiv_comments_store_test › hides a muted comment and everything by a muted author | PixivComments.kt (shows) | PixivCommentsListTest.aMutedCommentAndEverythingByAMutedAuthorAreHidden

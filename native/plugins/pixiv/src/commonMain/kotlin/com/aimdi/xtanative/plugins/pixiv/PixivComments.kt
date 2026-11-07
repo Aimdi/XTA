@@ -25,6 +25,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,6 +58,9 @@ import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 /** Whether a comment shows: neither it nor its author is muted. */
 internal fun PixivMutes.shows(comment: PixivComment): Boolean = comment.id !in commentIds && (comment.user?.id ?: 0L) !in authorIds
 
+/** Whether a thread's screen leaves: the comment it hangs off is muted now, or its author is. */
+internal fun PixivMutes.leavesThread(parent: PixivComment?): Boolean = parent != null && !shows(parent)
+
 /**
  * A work's or a novel's comments, newest first, or the replies to [parent]
  * under it: emoji drawn inline, stickers as pictures, and links leaving
@@ -69,6 +74,7 @@ internal fun PixivCommentsScreen(kind: PixivKind, id: Long, parent: PixivComment
         PixivList<PixivComment>(scope, { it.id }, { next -> readComments(runtime, target, parent, next) }) { comments -> comments.filter(runtime.mutes.now::shows) }
     }
     val mutes = pixivMutes()
+    LaunchedEffect(mutes, parent) { if (mutes.leavesThread(parent)) runtime.host.back() }
     PluginScaffold(title = pluginString(if (parent == null) Strings.comments_title else Strings.comments_replies_title), onBack = runtime.host::back) { padding ->
         Box(Modifier.padding(padding).fillMaxSize()) {
             PixivRows(list, { it.id }, pluginString(if (parent == null) Strings.comments_empty else Strings.comments_replies_empty), shown = { it.filter(mutes::shows) }, header = {
@@ -89,8 +95,8 @@ private suspend fun readComments(runtime: PixivRuntime, target: PixivCommentTarg
 @Composable
 private fun CommentTile(comment: PixivComment, kind: PixivKind, workId: Long, pinned: Boolean, reply: Boolean = false) {
     val runtime = LocalPixiv.current
-    var revealed by remember(comment.id) { mutableStateOf(false) }
-    val hidden = comment.linksOutsidePixiv && !revealed
+    val revealed by runtime.revealedComments.collectAsState()
+    val hidden = comment.linksOutsidePixiv && comment.id !in revealed
     Row(Modifier.fillMaxWidth().padding(start = if (reply) 22.dp else 10.dp, end = 4.dp, top = 8.dp, bottom = 8.dp)) {
         val user = comment.user
         Box(Modifier.size(48.dp).clip(RoundedCornerShape(50)).clickable(enabled = user != null) { user?.let { runtime.openUser(it.id) } }, contentAlignment = Alignment.Center) {
@@ -100,7 +106,7 @@ private fun CommentTile(comment: PixivComment, kind: PixivKind, workId: Long, pi
         Column(Modifier.weight(1f).padding(top = 4.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             CommentByline(comment)
             if (hidden) {
-                HiddenLink { revealed = true }
+                HiddenLink { runtime.revealComment(comment.id) }
             } else {
                 if (comment.parts.isNotEmpty()) SelectionContainer { CommentText(comment.parts) }
                 comment.stampUrl?.let { PixivPicture(it, Modifier.size(100.dp), ContentScale.Fit, pluginString(Strings.comment_sticker)) }
