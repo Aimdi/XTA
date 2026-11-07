@@ -297,3 +297,126 @@ covered | pixiv_discovery_test › suggests tags with their translations | netwo
 covered | pixiv_discovery_test › an empty word suggests nothing without asking | networks/PixivClient.kt | PixivClientTest.aBlankWordSuggestsNothingWithoutAsking
 covered | pixiv_discovery_test › recommended illusts hit /v1/illust/recommended | networks/PixivClient.kt | PixivClientTest.theCoreReadsAskTheirOwnPaths…
 covered | pixiv_discovery_test › recommended users parse user_previews | networks/PixivDiscovery.kt | PixivDiscoveryTest.recommendedCreatorsKeepTheirPreviews…
+
+## pixiv_download_index_test.dart
+covered | pixiv_download_index_test › records pages and answers what is saved | PixivSaving.kt (PixivSavedPages) | PixivSavingTest.savedPagesAreRememberedNewestLastWithoutRepeats
+covered | pixiv_download_index_test › is kept in settings, newest last, and read back on the next launch | PixivSaving.kt | PixivSavingTest.savedPagesAreRememberedNewestLastWithoutRepeats, PixivSettingsStoreTest.aBackupRestoredIntoTheAppShowsHere
+covered | pixiv_download_index_test › forgets the oldest pages beyond the cap | PixivSaving.kt | PixivSavingTest.onlyTheNewestPagesAreKept
+untested | pixiv_download_index_test › a broken or reshaped stored list reads as what it validly holds | PixivSaving.kt (decode) | the decode is tolerant; no separate test
+covered | pixiv_download_index_test › clear forgets everything, in memory and in settings | PixivSaving.kt | PixivSavingTest.savedPagesAreRememberedNewestLastWithoutRepeats
+covered | pixiv_download_index_test › a write from outside the store shows at once, and the next save keeps it | PixivSettingsStoreTest.aBackupRestoredIntoTheAppShowsHere
+untested | pixiv_download_index_test › a reset of the setting empties the index, and a closed index stops following it | PixivSaving.kt (close) | Compose-side lifetime
+covered | pixiv_download_index_test › cappedPixivIndex folds repeats and keeps the newest | PixivSaving.kt | PixivSavingTest.onlyTheNewestPagesAreKept
+
+## pixiv_download_naming_test.dart
+covered | pixiv_download_naming_test › fills every placeholder and keeps the extension | PixivSaving.kt (template) | PixivSavingTest.aPageIsNamedByTheTemplateItsExtensionKept
+covered | pixiv_download_naming_test › replaces characters no file system accepts, from the template and the work alike | PixivSaving.kt | PixivSavingTest.aPageIsNamedByTheTemplateItsExtensionKept
+untested | pixiv_download_naming_test › a title that reads like a placeholder stays as written | PixivSaving.kt (one-pass fill) | PixivSearchMemoryTest.theCopyTemplateIsFilledInOnePass covers the one-pass rule for copy; the file naming has no separate test
+untested | pixiv_download_naming_test › unknown placeholders are kept, outer dots and spaces trimmed, long names cut | PixivSaving.kt | no separate test
+untested | pixiv_download_naming_test › a long name is cut to a byte budget between whole characters | PixivSaving.kt | no separate test
+untested | pixiv_download_naming_test › a name that ends up empty falls back to the work and page | PixivSaving.kt | no separate test
+covered | pixiv_download_naming_test › the extension comes from the original file, else .jpg | PixivSaving.kt | PixivSavingTest.theExtensionComesFromTheFileElseJpg
+covered | pixiv_download_naming_test › {part} is required | PixivSaving.kt | PixivSavingTest.aTemplateThatLostItsPartIsNotUsed
+covered | pixiv_download_naming_test › reads the template and both folder settings | PixivSaving.kt | PixivSavingTest.foldersArePerCreatorAndForR18AsAsked
+covered | pixiv_download_naming_test › a stored template without {part} is not used | PixivSaving.kt | PixivSavingTest.aTemplateThatLostItsPartIsNotUsed
+covered | pixiv_download_naming_test › R-18 works alone go to R-18, and an artist name cannot leave its folder | PixivSaving.kt | PixivSavingTest.foldersArePerCreatorAndForR18AsAsked
+untested | pixiv_download_naming_test › an artist folder never starts with a dot, which Android would hide from the gallery | PixivSaving.kt | no separate test
+covered | pixiv_download_naming_test › nothing set means no subfolder | PixivSaving.kt | PixivSavingTest.foldersArePerCreatorAndForR18AsAsked
+covered | pixiv_download_naming_test › batch requests carry the template name and the subfolder | PixivSaving.kt, ui/downloads/PluginBatches.kt | PixivSavingTest.aPageIsNamedByTheTemplateItsExtensionKept, PluginBatchesTest.aWorksPagesAreSavedTogetherAndEachSaysHowItEnded
+
+## pixiv_download_test.dart
+covered | pixiv_download_test › requests every page in order and a failed page does not stop the rest | ui/downloads/PluginBatches.kt | PluginBatchesTest.aWorksPagesAreSavedTogetherAndEachSaysHowItEnded
+covered | pixiv_download_test › publishes progress after each page | ui/downloads/PluginBatches.kt | PluginBatchesTest.watchedBatchCountsThePageOnItsWayFromOne
+covered | pixiv_download_test › cancelling stops before the next page and cancels the page in flight | PluginBatches.kt | PluginBatchesTest.aStoppedBatchStartsNoMoreAndWhatIsUnderWayIsCancelled
+covered | pixiv_download_test › keeps as many pages in flight as the queue allows and remembers which saved | PluginBatches.kt; PixivSaving.kt | PluginBatchesTest.aWorksPagesAreSavedTogether…, PixivSavingTest.savedPagesAreRemembered…
+covered | pixiv_download_test › cancelling stops every page in flight | PluginBatches.kt | PluginBatchesTest.aStoppedBatchStartsNoMoreAndWhatIsUnderWayIsCancelled
+covered | pixiv_download_test › download all shows page progress with a cancel button and reports the final count | PluginBatches.kt | PluginBatchesTest.watchedBatchCountsThePageOnItsWayFromOne
+covered | pixiv_download_test › cancelling a download-all from the snackbar stops the remaining pages | PluginBatches.kt | PluginBatchesTest.aStoppedBatchStartsNoMoreAndWhatIsUnderWayIsCancelled
+untested | pixiv_download_test › declining the folder for a whole work downloads nothing | PixivSaving.kt (folder choice) | the system dialog is Compose-side
+covered | pixiv_download_test › the reader download button and a long-press save the page on screen, asking the second time | PixivSaving.kt (resave) | PixivSavingTest.aResaveTakesAllTheNewOnesOrNone
+covered | pixiv_download_test › page requests save the originals under the default {illust_id}_p{part} names | PixivSaving.kt | PixivSavingTest.aPageIsNamedByTheTemplateItsExtensionKept
+covered | pixiv_download_test › only the Pixiv image host is sent the Pixiv referer | networks/PixivImages.kt | PixivImagesTest.everyPictureRequestCarriesPixivsReferer
+untested | pixiv_download_test › the shared transfer sends that referer when it fetches the file | store/downloads/DownloadNaming.kt (pixivImageHeaders) | the headers are wired; no separate test
+covered | pixiv_download_test › a manga page saves its original and previews its medium image | PixivModelsTest.aMangaShowsItsLargePagesAndSavesItsOriginals
+covered | pixiv_download_test › a single image saves the original from meta_single_page | networks/PixivImages.kt | PixivImagesTest.aPageComesInEachSizeFallingBackToWhatPixivSent
+covered | pixiv_download_test › an illust built without per-page lists falls back to the viewer pages | PixivImages.kt | PixivImagesTest.aPageComesInEachSizeFallingBackToWhatPixivSent
+
+## pixiv_ugoira_export_test.dart
+covered | pixiv_ugoira_export_test › delays become hundredths of a second, never under two | PixivGif.kt | PixivGifTest.delaysAreHundredthsOfASecondAsXtaRoundsThem
+covered | pixiv_ugoira_export_test › keeps every frame and its own delay, and loops | PixivGif.kt | PixivGifTest.framesKeepTheirOrderAndDelays, anAnimationIsEncodedAFrameAtATime
+covered | pixiv_ugoira_export_test › an unreadable frame fails instead of saving a broken file | PixivGif.kt | PixivGifTest.aFrameThatWillNotDecodeFailsTheExport
+untested | pixiv_ugoira_export_test › runs on a background isolate and reports each frame | PixivGif.kt (Dispatchers) | the encode is off the main thread; the isolate itself is not tested
+untested | pixiv_ugoira_export_test › cancelling stops the background encode | PixivGif.kt | no separate test
+covered | pixiv_ugoira_export_test › frames come out of the archive in the metadata order | PixivUgoira.kt | PixivUgoiraTest.framesComeInTheMetadatasOrderWithTheirDelays
+covered | pixiv_ugoira_export_test › the ZIP path saves the archive bytes as fetched, without encoding | PixivUgoira.kt | PixivUgoiraTest.theArchiveComesFromTheServerTheReaderPicked
+covered | pixiv_ugoira_export_test › the GIF path encodes with progress, then saves the GIF | PixivGif.kt | PixivGifTest.anAnimationIsEncodedAFrameAtATime
+untested | pixiv_ugoira_export_test › cancel during encoding stops it and saves nothing | PixivGif.kt | no separate test
+untested | pixiv_ugoira_export_test › cancel while fetching ends the export at once and ignores the late response | PixivUgoira.kt | no separate test
+untested | pixiv_ugoira_export_test › a failed fetch or a refused write ends as failed | PixivUgoira.kt | no separate test
+untested | pixiv_ugoira_export_test › the page sheet of an ugoira offers GIF, with a slow note, and ZIP | PixivUi/Sheets (Compose) | Compose only
+covered | pixiv_ugoira_export_test › Save frames as ZIP writes the archive under the template and marks the work saved | PixivUgoira.kt; PixivSaving.kt | PixivUgoiraTest.theArchiveComesFromTheServer…, PixivSavingTest.aPageIsNamedByTheTemplate…
+covered | pixiv_ugoira_export_test › Save as GIF encodes the fetched frames and saves a .gif | PixivGif.kt; PixivSaving.kt | PixivGifTest.anAnimationIsEncodedAFrameAtATime
+covered | pixiv_ugoira_export_test › exporting a work saved before asks first, and Cancel saves nothing | PixivSaving.kt | PixivSavingTest.aResaveTakesAllTheNewOnesOrNone
+untested | pixiv_ugoira_export_test › declining the folder saves nothing | PixivSaving.kt (folder choice) | the system dialog is Compose-side
+untested | pixiv_ugoira_export_test › the progress row shows the frame, the slow note and Cancel only while it can stop | Compose (PixivUi) | Compose only
+
+## pixiv_haptics_test.dart
+untested | pixiv_haptics_test › buzzes are at least the gap apart | ui/common Haptics.kt | Compose-side timing
+untested | pixiv_haptics_test › plays only when the reader left haptics on, and spaces a burst out | Haptics.kt | Compose-side
+untested | pixiv_haptics_test › XTA's Haptic feedback switch silences Pixiv's too | Haptics.kt (the app's pref) | Compose-side
+untested | pixiv_haptics_test › the reader's page sheet buzzes when a long press opens it, not from its button | PixivReader/Sheets (Compose) | Compose only
+covered | pixiv_haptics_test › a follow from a creator's button buzzes lightly once Pixiv took it | PixivBookmarkingTest.aFollowButtonFollowsPubliclyThenUnfollows | the buzz is Compose-only
+untested | pixiv_haptics_test › a private follow from the follow dialog buzzes lightly once Pixiv took it | PixivBookmarkingTest.aNovelsHeartUsesTheDefaultVisibilityAndItsLongPressBookmarksPrivately | the buzz is Compose-only
+
+## pixiv_history_screen_test.dart
+covered | pixiv_history_screen_test › lists the newest first and filters by title or artist | PixivKept.kt | PixivKeptTest.theHistoryPutsTheLatestFirstOnceEach
+covered | pixiv_history_screen_test › a long press forgets one work after asking | PixivKept.kt | PixivKeptTest.theHistoryPutsTheLatestFirstOnceEach
+covered | pixiv_history_screen_test › Clear all asks first, then empties the history | PixivKept.kt | PixivKeptTest.theHistoryPutsTheLatestFirstOnceEach
+untested | pixiv_history_screen_test › the pause switch stops recording, and a tile reopens its work | PixivKept.kt (pause); PixivSettingsStore | the pause is stored; the switch is Compose-only
+untested | pixiv_history_screen_test › large text keeps the tiles inside the screen | Compose (PixivHistoryScreen) | Compose only
+untested | pixiv_history_screen_test › a narrow screen with large text scrolls the filter away to reach the works | Compose | Compose only
+
+## pixiv_history_store_test.dart
+covered | pixiv_history_store_test › puts the newest first and moves a reopened work to the top | PixivKept.kt | PixivKeptTest.theHistoryPutsTheLatestFirstOnceEach
+covered | pixiv_history_store_test › keeps at most 500 works, dropping the oldest | PixivKept.kt | PixivKeptTest.theHistoryPutsTheLatestFirstOnceEach
+untested | pixiv_history_store_test › filters by title or artist, ignoring case | PixivHistory screen (Compose) | the filter runs in the screen
+covered | pixiv_history_store_test › round-trips every field | PixivKept.kt | PixivKeptTest.theHistoryIsReadBackFromItsFile
+covered | pixiv_history_store_test › an R-18 or AI work keeps its rating through the file, so its tile keeps the badges | PixivKept.kt | PixivKeptTest.aKeptWorkShowsAsTheWorkItWas
+covered | pixiv_history_store_test › drops entries without an id or thumbnail and tolerates the rest missing | PixivKept.kt (decode) | PixivKeptTest.aKeptWorkShowsAsTheWorkItWas
+covered | pixiv_history_store_test › opens as a stub the detail fills in, keeping tags for the mute gate | PixivKept.kt; PixivMutes.kt | PixivKeptTest.aKeptWorkShowsAsTheWorkItWas, PixivMutesTest.aMutedWorkCreatorOrTagHidesTheWorkAndSaysWhy
+covered | pixiv_history_store_test › records, removes and clears, keeping the file in step | PixivKept.kt | PixivKeptTest.theHistoryIsReadBackFromItsFile
+covered | pixiv_history_store_test › a record made before the file was read keeps what the file held | PixivKept.kt (serialised write) | PixivKeptTest.theHistoryIsReadBackFromItsFile
+covered | pixiv_history_store_test › keeps novels apart under their own key | PixivKept.kt | PixivKeptTest.aKeptNovelShowsAsTheNovelItWas
+covered | pixiv_history_store_test › a novel without a cover keeps its row after a restart | PixivKept.kt | PixivKeptTest.aKeptNovelShowsAsTheNovelItWas
+
+## pixiv_mute_gate_test.dart
+covered | pixiv_mute_gate_test › a muted work waits behind a notice that says why, until shown this time | PixivMutes.kt | PixivMutesTest.aMutedWorkCreatorOrTagHidesTheWorkAndSaysWhy | the notice is Compose-only
+untested | pixiv_mute_gate_test › the notice opens the mute settings, and unmuting there shows the work | PixivMutes.kt; PixivSettings (Compose link) | Compose only
+covered | pixiv_mute_gate_test › an unmuted work opens straight away and joins the history unless paused | PixivMutes.kt; PixivKept.kt | PixivMutesTest.aMutedWorkCreatorOrTagHidesTheWorkAndSaysWhy
+untested | pixiv_mute_gate_test › a work whose detail does not load stays out of the history | PixivRuntime/PixivHistory (Compose) | Compose only
+untested | pixiv_mute_gate_test › a paused history records nothing | PixivKept.kt (pause); PixivSettingsStore | the pause is stored; the switch is Compose-only
+untested | pixiv_mute_gate_test › swiping between works, each work swiped to joins the history and a muted one waits behind its notice | Compose (PixivPager) | Compose only
+
+## pixiv_mute_store_test.dart
+covered | pixiv_mute_store_test › filters muted authors, tags and illust ids | PixivMutes.kt | PixivMutesTest.aMutedWorkCreatorOrTagHidesTheWorkAndSaysWhy
+covered | pixiv_mute_store_test › an r'pattern' entry matches single tags, ignoring case | PixivMutes.kt | PixivMutesTest.aNameMatchesWhateverItsCaseAPatternTheTagsTogether
+covered | pixiv_mute_store_test › a pattern sees every tag joined as #a#b, so it can ask for several together | PixivMutes.kt | PixivMutesTest.aNameMatchesWhateverItsCaseAPatternTheTagsTogether
+covered | pixiv_mute_store_test › plain entries still match whole tags only | PixivMutes.kt | PixivMutesTest.aNameMatchesWhateverItsCaseAPatternTheTagsTogether
+covered | pixiv_mute_store_test › patterns keep their case; plain names are lower-cased | PixivMutes.kt | PixivMutesTest.aTagIsKeptWithoutItsHashAndCaseAPatternAsWritten
+covered | pixiv_mute_store_test › an invalid pattern or a blank entry is refused | PixivMutes.kt | PixivMutesTest.onlyNamesAndPatternsThatCompileCanBeMuted
+covered | pixiv_mute_store_test › legacy bare author ids still load, without names | PixivMutes.kt | PixivMutesTest.xtasOlderListOfBareCreatorIdsStillReads
+covered | pixiv_mute_store_test › authors round-trip with the name they were muted under | PixivMutes.kt | PixivMutesTest.theMutesComeBackFromXtasPreferences
+covered | pixiv_mute_store_test › a typed pattern is kept as written; an invalid one is refused and not saved | PixivMutes.kt | PixivMutesTest.aTagIsKeptWithoutItsHashAndCaseAPatternAsWritten, onlyNamesAndPatternsThatCompileCanBeMuted
+covered | pixiv_mute_store_test › a change builds on the stored mutes, so an import is never saved over | PixivMutes.kt; PixivSettingsStore | PixivSettingsStoreTest.changesMadeBeforeTheSettingsArrivedAreKeptOverThem
+covered | pixiv_mute_store_test › a settings import reloads the mutes and the searches the app holds | PixivSettingsStore | PixivSettingsStoreTest.aBackupRestoredIntoTheAppShowsHere
+covered | pixiv_mute_store_test › a damaged preference reads as nothing muted | PixivMutes.kt | PixivMutesTest.theMutesComeBackFromXtasPreferences
+covered | pixiv_mute_store_test › names the work, then the author by name, then the matching tag | PixivMutes.kt | PixivMutesTest.aMutedWorkCreatorOrTagHidesTheWorkAndSaysWhy
+
+## pixiv_favorite_tags_store_test.dart
+covered | pixiv_favorite_tags_store_test › adding and removing build on the stored tags, so an import is never saved over | PixivSearchMemory.kt; PixivSettingsStore | PixivSettingsStoreTest.changesMadeBeforeTheSettingsArrivedAreKeptOverThem
+covered | pixiv_favorite_tags_store_test › a reorder over a list that changed underneath shows the stored list instead | PixivSearchMemory.kt | PixivSearchMemoryTest.favouriteTagsKeepTheReadersOrderOnceEach
+covered | pixiv_favorite_tags_store_test › adds at the end, and a tag differing only in case replaces the old one | PixivSearchMemory.kt | PixivSearchMemoryTest.favouriteTagsKeepTheReadersOrderOnceEach
+covered | pixiv_favorite_tags_store_test › reorders to the index the row was dropped at, and removes | PixivSearchMemory.kt | PixivSearchMemoryTest.favouriteTagsKeepTheReadersOrderOnceEach
+covered | pixiv_favorite_tags_store_test › persists in order with translations, for the next screen and the backup | PixivSearchMemory.kt; PixivSettingsStore | PixivSearchMemoryTest.favouriteTagsKeepTheReadersOrderOnceEach
+covered | pixiv_favorite_tags_store_test › reads bare names, skips blanks and survives garbage | PixivSearchMemory.kt | PixivSearchMemoryTest.favouriteTagsKeepTheReadersOrderOnceEach
+untested | pixiv_favorite_tags_store_test › pixivMoved leaves the list alone for an index outside it | PixivSearchMemory.kt (moved) | no separate test
