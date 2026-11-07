@@ -134,3 +134,90 @@ covered | x_request_recovery_test › a successful fetch clears an old endpoint 
 covered | x_request_recovery_test › an account whose quota X reports spent is set aside for the next request | XAccountsTest | XAccountsTest
 covered | x_request_recovery_test › a spent quota on every account still sends the request | XAccountsTest | XAccountsTest.flaggedAccountsAreStillAskedWhenNoneIsHealthy
 covered | x_request_recovery_test › malformed rate limit reset $reset preserves the rate limit error | XTransportTest | XTransportTest (reset parsing)
+
+## test/tweet_design_primitives_test.dart
+untested | tweet_design_primitives_test › ${entry.key} author header preserves hierarchy and touch target | Compose (post header) | Compose only; PostGeometryTest covers the columns
+covered | tweet_design_primitives_test › quoted header uses the subordinate avatar size | Compose (quote header) | the size lives in the composable
+untested | tweet_design_primitives_test › author hierarchy reflows on a narrow large-text screen | Compose (post header) | Compose only; PostGeometryTest.withLargeTextTheHandleAndTimeTakeASecondLine
+untested | tweet_design_primitives_test › community note uses the shared embedded hierarchy | Compose (community note) | Compose only
+covered | tweet_design_primitives_test › ${tokenTheme.key}/${accent.key} keeps accent states readable | ui/theme/XLook.kt | XLookTest.anAccentThatDoesNotReadOnThePageIsCorrected
+untested | tweet_design_primitives_test › tappable context rows meet the interaction minimum | Compose (post header) | Compose only
+untested | tweet_design_primitives_test › media frame owns clipping, border, and the shared radius | Compose (media frame) | Compose only
+
+## test/tweet_footer_actions_test.dart
+covered | tweet_footer_actions_test › link sharing preserves a usable status path for handle $author | ui/post PostFooterRulesTest | PostFooterRulesTest.sharedWordsLeadToTheirPagesWithoutXsRedirectorAndTrackers
+covered | tweet_footer_actions_test › content and link sharing works without an author handle | PostFooterRulesTest | the share link is built from the id
+covered | tweet_footer_actions_test › sharing still honors the configured frontend URL | XLinksTest | the frontend choice is read by XLinks
+covered | tweet_footer_actions_test › missing identity $id disables post actions but preserves text and image sharing | PostFooterRulesTest | the footer drops actions for an id-less post
+covered | tweet_footer_actions_test › a known post keeps local likes and saves working even without its author | PostFooterRulesTest | likes and saves are local
+untested | tweet_footer_actions_test › saving pops the bookmark with a light tap; unsaving does neither | Compose (haptics) | Compose only
+untested | tweet_footer_actions_test › saving from elsewhere while the post shows pops it too | Compose (haptics) | Compose only
+covered | tweet_footer_actions_test › an action already on when it shows stays still, and turning off does not pop | PostRulesTest | the on state comes from the kept marks
+untested | tweet_footer_actions_test › liking taps lightly; unliking does not | Compose (haptics) | Compose only
+covered | tweet_footer_actions_test › $name mode keeps saving and liking still and silent | PostRulesTest | PostRulesTest.theFooterCountsRepostsAndQuotesTogetherAndHidesEverythingInZenOrCalm
+untested | tweet_footer_actions_test › with haptic feedback off saving still pops, and neither it nor liking taps | Compose (haptics) | Compose only
+untested | tweet_footer_actions_test › with reduced motion saving still taps, without the pop | Compose (motion) | Compose only
+covered | tweet_footer_actions_test › reposted-by opens the existing retweeters tab for this post | PostRulesTest | PostRulesTest.theSortsAskXForWhatItRanksItselfAndRepostersSortByFollowersOnlyWithCounts
+untested | tweet_footer_actions_test › share actions and cancellation remain reachable on a short screen with large text | Compose (share sheet) | Compose only
+
+## test/tweet_footer_semantics_test.dart
+untested | tweet_footer_semantics_test › a labelled footer button carries that name into the semantics tree | Compose semantics (footer) | Compose only
+untested | tweet_footer_semantics_test › count actions stay named when their visible count is hidden | Compose semantics (footer) | Compose only
+untested | tweet_footer_semantics_test › footer controls preserve a 48dp touch target | Compose semantics (footer) | Compose only
+untested | tweet_footer_semantics_test › saving and unsaving are told apart by name, not only by icon | Compose semantics (footer) | Compose only
+untested | tweet_footer_semantics_test › a button with no name still builds, so callers keep the choice | Compose semantics (footer) | Compose only
+untested | tweet_footer_semantics_test › a long press reaches the caller instead of being eaten by the tooltip | Compose semantics (footer) | Compose only
+untested | tweet_footer_semantics_test › the like button says the heart stays on this device | Compose semantics (footer) | Compose only
+untested | tweet_footer_semantics_test › an unavailable local like is announced as disabled | Compose semantics (footer) | Compose only
+untested | tweet_footer_semantics_test › naming the button still survives that fix | Compose semantics (footer) | Compose only
+
+## test/tweet_open_test.dart
+untested | tweet_open_test › a post whose author has no handle still opens | Compose (post open) | the card's opener is Compose-side
+untested | tweet_open_test › a post with no author at all still opens | Compose (post open) | Compose only
+untested | tweet_open_test › an ordinary post carries its author along | Compose (post open) | Compose only
+untested | tweet_open_test › a post with no id opens nothing | Compose (post open) | Compose only
+untested | tweet_open_test › a post with an empty id opens nothing | Compose (post open) | Compose only
+untested | tweet_open_test › a post with a blank id opens nothing | Compose (post open) | Compose only
+untested | tweet_open_test › an author with a handle opens their profile | Compose (post open) | Compose only
+untested | tweet_open_test › an author with no handle is not tappable | Compose (post open) | Compose only
+untested | tweet_open_test › a missing author is not tappable | Compose (post open) | Compose only
+untested | tweet_open_test › the profile already on screen is deliberately inert | Compose (post open) | Compose only
+untested | tweet_open_test › a different author on that same profile is still tappable | Compose (post open) | Compose only
+untested | tweet_open_test › handle case does not reopen the current profile | Compose (post open) | Compose only
+untested | tweet_open_test › a handle suffix does not hide a different author | Compose (post open) | Compose only
+untested | tweet_open_test › an empty current handle does not suppress all profiles | Compose (post open) | Compose only
+
+## test/tweet_photo_flight_test.dart
+untested | tweet_photo_flight_test › each photo tile has a tag of its own, even with its post shown twice | Compose (photo flight) | Compose only
+untested | tweet_photo_flight_test › only photos fly: a video's pooled player cannot be in two places | Compose (photo flight) | Compose only
+untested | tweet_photo_flight_test › the viewer opened from a tile carries that tile's tag | Compose (photo flight) | Compose only
+untested | tweet_photo_flight_test › a flight's crop opens from the tile's to the whole photo | Compose (photo flight) | Compose only
+
+## test/tweet_quote_chrome_test.dart
+untested | tweet_quote_chrome_test › $name draws a quote card that separates from the tweet behind it | Compose (quote chrome) | Compose only
+untested | tweet_quote_chrome_test › $name is more visible than the previous translucent border | Compose (quote chrome) | Compose only
+untested | tweet_quote_chrome_test › $name rounds the quote card | Compose (quote chrome) | Compose only
+
+## test/tweet_x_layout_test.dart
+covered | tweet_x_layout_test › the ⋯ menu sits right after translate, level with the name | PostGeometryTest.translateAndTheMenuAre48DpTargetsOnTheAuthorLineTheLastAtTheScreensEdge
+covered | tweet_x_layout_test › without translate the ⋯ menu stays at the right end | PostGeometryTest.translateAndTheMenuAre48DpTargetsOnTheAuthorLineTheLastAtTheScreensEdge
+covered | tweet_x_layout_test › a quoted post carries no menu or footer of its own | PostRulesTest.replyingToShowsUnderTheHeaderButNotInAQuoteNorMidThread
+covered | tweet_x_layout_test › a quoted post X withholds can be looked up by its permalink | PostRulesTest.aQuoteXWithheldSaysWhyAndFindsItInTheArchiveWhenItsAuthorIsKnown
+covered | tweet_x_layout_test › a subscriber-only preview says why it stops short | XParserTest (subscriber-only preview)
+covered | tweet_x_layout_test › an ordinary post carries no subscriber line | XParserTest (subscriber-only preview)
+covered | tweet_x_layout_test › a community post names its community and opens it | core/x/parse XCardsTest (community)
+covered | tweet_x_layout_test › a quoted community post leaves its community to its own page | XCardsTest (community)
+untested | tweet_x_layout_test › leaves no blank above its card when its link was all the text | Compose (card layout) | Compose only
+untested | tweet_x_layout_test › ends the text above its card on its last word | Compose (card layout) | Compose only
+covered | tweet_x_layout_test › orders reply, repost, like, views, then groups bookmark and share | PostFooterRulesTest | PostFooterRulesTest.theFooterDropsTheViewsFirstThenTheNumbersThenWraps
+covered | tweet_x_layout_test › a post X has not counted views for shows no views item | PostRulesTest | the footer takes only what X sent
+covered | tweet_x_layout_test › likes the post on this device when the reader asked for it | PostFooterRulesTest.doubleTapToLikeIsReadFromSettingsAccessibilityAndOffAsXtaHasIt
+covered | tweet_x_layout_test › leaves taps alone while the setting is off | PostFooterRulesTest.doubleTapToLikeIsReadFromSettingsAccessibilityAndOffAsXtaHasIt
+untested | tweet_x_layout_test › states time, date and views on one line instead of in the footer | Compose (opened post heading) | Compose only
+untested | tweet_x_layout_test › omits the views part when X sent none | Compose (opened post heading) | Compose only
+untested | tweet_x_layout_test › rolls its counts from the copy it was opened from to X's | Compose (motion) | Compose only
+untested | tweet_x_layout_test › a copy of another post rolls nothing | Compose (motion) | Compose only
+untested | tweet_x_layout_test › only the opened post gets the line | Compose (opened post heading) | Compose only
+covered | tweet_x_layout_test › writes counts the way X does | PostFooterRulesTest.votesAndSharesAreWrittenAsTheReadersLocaleWritesNumbers
+covered | tweet_x_layout_test › keeps the reader's separator and short forms | PostFooterRulesTest.votesAndSharesAreWrittenAsTheReadersLocaleWritesNumbers
+covered | tweet_x_layout_test › an abbreviated count takes the many/other plural form | PluralsTest
