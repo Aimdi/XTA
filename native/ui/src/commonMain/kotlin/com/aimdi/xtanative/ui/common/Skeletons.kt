@@ -56,10 +56,17 @@ fun PostSkeleton(modifier: Modifier = Modifier) {
     Box(modifier) { PostSkeletonBones(rememberSkeletonPulse()) }
 }
 
+/** Whether the bones pulse: not while the reader switched animations off (XTA's optionDisableAnimations); then they hold [STILL]. */
+internal object SkeletonMotion {
+    const val STILL = 1f
+
+    fun pulses(reducedMotion: Boolean): Boolean = !reducedMotion
+}
+
 /** The pulse every bone follows, 0 to 1 and back; still at its end with reduced motion. */
 @Composable
 private fun rememberSkeletonPulse(): State<Float> {
-    if (LocalReducedMotion.current) return remember { mutableFloatStateOf(1f) }
+    if (!SkeletonMotion.pulses(LocalReducedMotion.current)) return remember { mutableFloatStateOf(SkeletonMotion.STILL) }
     return rememberInfiniteTransition(label = "skeleton").animateFloat(
         initialValue = 0f,
         targetValue = 1f,

@@ -88,6 +88,26 @@ internal class RedditFeed(
 }
 
 /**
+ * What the followed communities' feed shows (reddit_feed_list.dart): where to
+ * start while nothing is followed or nothing posted, why a first read failed,
+ * post-shaped bones while it is on its way (never a bare spinner), or the posts.
+ */
+internal enum class RedditFeedBody {
+    NOTHING_FOLLOWED, PROBLEM, BONES, EMPTY, POSTS;
+
+    companion object {
+        /** [listed]: the followed communities have been read; [none]: and there are none. */
+        fun of(listed: Boolean, none: Boolean, state: RedditFeed.State): RedditFeedBody = when {
+            listed && none -> NOTHING_FOLLOWED
+            state.posts.isNotEmpty() -> POSTS
+            state.problem != null -> PROBLEM
+            !listed || state.loading || !state.loaded -> BONES
+            else -> EMPTY
+        }
+    }
+}
+
+/**
  * One thread as its screen shows it (XTA's `RedditThreadScreen`): the post,
  * filled in when it arrived with only a title, its comments in the order
  * chosen, what is folded, and the held-back comments loading in place.

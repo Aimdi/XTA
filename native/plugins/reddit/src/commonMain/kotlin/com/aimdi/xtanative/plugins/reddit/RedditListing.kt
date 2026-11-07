@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.Page
 import com.aimdi.xtanative.networks.reddit.RedditPost
+import com.aimdi.xtanative.ui.common.FeedSkeleton
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PagedItems
@@ -113,7 +114,7 @@ private fun LazyListScope.pagedState(paged: PagedState<*>, retry: () -> Unit, em
     when {
         paged.items.isEmpty() && problem != null -> item(key = "problem") { RedditProblemView(troubleOf(problem), detailOf(problem), retry) }
         paged.items.isEmpty() && paged.loaded && !paged.loading -> if (empty != null) item(key = "empty") { MessageText(empty) }
-        paged.items.isEmpty() -> item(key = "loading") { LoadingRow() }
+        paged.items.isEmpty() -> item(key = "loading") { FeedSkeleton() }
         problem != null -> item(key = "problem") { RedditProblemView(troubleOf(problem), detailOf(problem), retry, compact = true) }
     }
 }

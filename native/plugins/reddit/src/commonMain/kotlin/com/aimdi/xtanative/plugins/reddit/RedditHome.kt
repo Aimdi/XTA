@@ -46,7 +46,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.store.settings.RedditFeedMode
 import com.aimdi.xtanative.store.settings.RedditPrefs
 import com.aimdi.xtanative.store.settings.RedditSource
-import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.FeedSkeleton
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginText
@@ -207,11 +207,11 @@ private fun FollowingFeed(app: RedditApp, frame: PluginFrame) {
     PullToRefreshBox(isRefreshing = state.loading && state.posts.isNotEmpty(), onRefresh = { app.feed.refresh(names, force = true) }, modifier = Modifier.fillMaxSize()) {
         LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
             val problem = state.problem
-            when {
-                rows != null && names.isEmpty() -> item(key = "nothing") { AddFirst(app) }
-                state.posts.isEmpty() && problem != null -> item(key = "problem") { RedditProblemView(problem, onRetry = { app.feed.refresh(names, force = true) }) }
-                state.posts.isEmpty() && (rows == null || state.loading || !state.loaded) -> item(key = "loading") { LoadingRow() }
-                state.posts.isEmpty() -> item(key = "empty") { AddFirst(app) }
+            when (RedditFeedBody.of(rows != null, names.isEmpty(), state)) {
+                RedditFeedBody.NOTHING_FOLLOWED, RedditFeedBody.EMPTY -> item(key = "nothing") { AddFirst(app) }
+                RedditFeedBody.PROBLEM -> item(key = "problem") { RedditProblemView(problem!!, onRetry = { app.feed.refresh(names, force = true) }) }
+                RedditFeedBody.BONES -> item(key = "loading") { FeedSkeleton() }
+                RedditFeedBody.POSTS -> Unit
             }
             items(state.posts, key = { "post:" + it.id }, contentType = { "post" }) { post -> RedditPostCard(app, post) }
         }

@@ -191,4 +191,15 @@ class RedditStatesTest {
         assertEquals(3, lookups.get(), "a miss is not kept on the device: the next session asks again")
         scope.cancel()
     }
+
+    @Test
+    fun aLoadingFeedShowsBonesNotABareSpinner() {
+        val waiting = RedditFeed.State(loading = true, following = true)
+        assertEquals(RedditFeedBody.BONES, RedditFeedBody.of(listed = false, none = false, state = RedditFeed.State()), "the communities are still being read")
+        assertEquals(RedditFeedBody.BONES, RedditFeedBody.of(listed = true, none = false, state = waiting))
+        assertEquals(RedditFeedBody.NOTHING_FOLLOWED, RedditFeedBody.of(listed = true, none = true, state = RedditFeed.State(loaded = true)))
+        assertEquals(RedditFeedBody.PROBLEM, RedditFeedBody.of(listed = true, none = false, state = RedditFeed.State(loaded = true, problem = IllegalStateException())))
+        assertEquals(RedditFeedBody.EMPTY, RedditFeedBody.of(listed = true, none = false, state = RedditFeed.State(loaded = true)))
+        assertEquals(RedditFeedBody.POSTS, RedditFeedBody.of(listed = true, none = false, state = waiting.copy(posts = listOf(post("a")))), "a reread keeps the posts shown")
+    }
 }
