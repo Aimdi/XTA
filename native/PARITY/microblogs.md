@@ -205,3 +205,218 @@ covered | bluesky_protocol_regression_test › post search carries encoded autho
 covered | bluesky_protocol_regression_test › post search from Bluesky's AppView goes to its API and pages by time, not by cursor | BlueskyClient.searchPosts | BlueskyClientTest.postSearchFromBlueskysAppViewGoesToItsApiAndPagesByTime
 covered | bluesky_protocol_regression_test › post search stops where the API has no further page | BlueskyParser.searchCursor | BlueskyParserTest.theSearchCursorAsksForPostsOlderThanTheOldestShown
 covered | bluesky_protocol_regression_test › actor search carries cursor and reads the next public page | BlueskyClient.searchActorsPage | BlueskyClientTest.feedsListsAndTheGraphAreReadAtTheirOwnEndpoints (cursor "second/page=")
+
+## test/threads_account_safety_test.dart
+covered | threads_account_safety_test › two reads started together do not reach Meta together | ThreadsPacingTest.twoSessionReadsStartedTogetherLeaveTheSessionGapApart
+covered | threads_account_safety_test › a second read reuses the stored id instead of searching again | ThreadsDirectClientTest.anAccountsIdIsSearchedForOnceAndRemembered
+covered | threads_account_safety_test › the id survives a restart, so a fresh client does not search either | ThreadsDirectClientTest.aGuestCardRemembersItsAccountsId
+covered | threads_account_safety_test › a throttle is remembered past a restart | ThreadsFailuresTest.aThrottleIsRememberedPastARestart
+covered | threads_account_safety_test › an expired cooldown lets reading resume and clears itself | ThreadsFailuresTest.anEndedCooldownLetsReadingResumeAndClearsItself
+
+## test/threads_conversation_test.dart
+covered | threads_conversation_test › splits the focus chain into ancestors, the post and its continuation | ThreadsConversationTest.theFocusChainSplitsIntoWhatItAnswersThePostAndItsContinuation
+covered | threads_conversation_test › a link stub finds its post by short code, whatever the host | ThreadsConversationTest.aLinkStubFindsItsPostByShortCodeWhateverTheHost
+covered | threads_conversation_test › a short link whose code is not on the page focuses the first root | ThreadsConversationTest.aShortLinkWhoseCodeIsNotOnThePageFocusesTheFirstRoot
+covered | threads_conversation_test › an opened repost keeps saying who reposted it | ThreadsConversationTest.anOpenedRepostKeepsSayingWhoRepostedIt
+covered | threads_conversation_test › an empty page keeps the seed | ThreadsConversationTest.anEmptyPageKeepsTheSeed
+covered | threads_conversation_test › long reply threads are cut until opened | ThreadsConversationTest.aLongReplyThreadIsCutUntilItIsOpened
+covered | threads_conversation_test › an opened thread shows everything | ThreadsConversationTest.anOpenedThreadShowsEverything
+covered | threads_conversation_test › author-only keeps the threads the author took part in | ThreadsConversationTest.theAuthorsRepliesAreTheThreadsTheAuthorTookPartIn
+covered | threads_conversation_test › Top keeps the order Meta sent | ThreadsConversationTest.topKeepsTheOrderMetaSent
+covered | threads_conversation_test › Newest and Oldest move each reply thread whole, by its first reply | ThreadsConversationTest.newestAndOldestMoveEachReplyThreadWholeByItsFirstReply
+covered | threads_conversation_test › an order Threads does not offer keeps Meta's | ThreadsConversationTest.topKeepsTheOrderMetaSent
+covered | threads_conversation_test › the order applies to the author's replies too | ThreadsConversationTest.theOrderAppliesToTheAuthorsRepliesToo
+covered | threads_conversation_test › choosing an order keeps the rest of the view | ThreadsConversationTest.aRealPageSortsItsReplyThreadsByTheirFirstReply
+covered | threads_conversation_test › reads the page once and reuses it on the next open | ThreadsReaderTest.aConversationIsReadOnceAndReusedOnTheNextOpen
+covered | threads_conversation_test › a failed read keeps the tapped post on screen | ThreadsReaderTest.aFailedConversationReadSaysWhy
+covered | threads_conversation_test › a post without a permalink needs no network | ThreadsReaderTest.aPostWithoutALinkHasNoConversationToRead
+
+## test/threads_direct_test.dart
+covered | threads_direct_test › splits a Cookie header into a map | ThreadsSessionTest.aPastedCookieHeaderSplitsIntoItsCookies
+covered | threads_direct_test › rejects incomplete cookies | ThreadsSessionTest.incompleteCookiesAreNoSession
+covered | threads_direct_test › accepts IGT:2 with or without Bearer prefix | ThreadsSessionTest.aBearerIsAnIgt2TokenWithOrWithoutItsPrefix
+covered | threads_direct_test › reads caption, user and permalink from thread_items | ThreadsParserTest.aRootCarriesItsAuthorCountsAndPermalink
+covered | threads_direct_test › picks the largest image candidate and reply_to_author | ThreadsParserTest.theLargestCandidateWinsAndTheOriginalSizeIsTheFallbackShape
+covered | threads_direct_test › reads likes, replies, reposts and a link preview | ThreadsParserTest.aRootCarriesItsAuthorCountsAndPermalink
+covered | threads_direct_test › unwraps share_info.reposted_post and keeps the reposter | ThreadsParserTest.aRepostIsReadAsTheOriginalRepostedAtTheRepostsTime
+covered | threads_direct_test › pulls posts out of data-sjs blobs | ThreadsPagesTest.aProfilePageKeepsTheThreadsTheProfileWroteOrRepostedWithTheirLength
+covered | threads_direct_test › profile parse keeps only the root of each thread_items list | ThreadsPagesTest.aProfilePageKeepsOnlyTheRootOfEachChain
+covered | threads_direct_test › keeps reposts when matching the reposter handle | ThreadsParserTest.aRepostIsReadAsTheOriginalRepostedAtTheRepostsTime
+covered | threads_direct_test › keeps every reply in the thread_items chain | ThreadsPagesTest.eachThreadItemsListIsAChainAndARepeatedPostStaysWhereItFirstAppeared
+covered | threads_direct_test › extractThreadsLsd reads the LSD token blob | ThreadsPagesTest.theLsdTokenAndTheOwnersIdAreReadOffThePage
+covered | threads_direct_test › extractThreadsUserIdFromHtml prefers props.user_id on logged-out pages | ThreadsPagesTest.theOwnersIdIsPropsUserIdElseAPkNearTheHandleElseTheMostNamedUserId
+covered | threads_direct_test › extractThreadsUserIdFromHtml falls back to pk near username | ThreadsPagesTest.theOwnersIdIsPropsUserIdElseAPkNearTheHandleElseTheMostNamedUserId
+covered | threads_direct_test › extractThreadsUserIdFromHtml falls back to modal userID and ignores 0 | ThreadsPagesTest.theOwnersIdIsPropsUserIdElseAPkNearTheHandleElseTheMostNamedUserId
+covered | threads_direct_test › threadsProfileFromPosts builds a card when OG scrape is empty | ThreadsPagesTest.aProfilePiecedTogetherFromPostsKnowsNoCount
+covered | threads_direct_test › threadsProfileFromGuestHtml reads OG title, description and image | ThreadsPagesTest.aProfilePageGivesTheCardAGuestIsShown
+covered | threads_direct_test › parseThreadsCompactCount reads K/M suffixes | ThreadsPagesTest.compactCountsReadTheirSuffixes
+covered | threads_direct_test › parseThreadsGraphqlFeed reads mediaData.threads | ThreadsParserTest.aGraphqlProfileTabGivesEachThreadsRootAndSkipsAPostWithoutAnAuthor
+covered | threads_direct_test › fetchFollowingTimeline sends Bearer to Instagram API | ThreadsDirectClientTest.theBearerReadsItsHomeTimelineFromTheAppApi
+covered | threads_direct_test › maps login_required to sessionSuspended | ThreadsFailuresTest.aLostSessionWaitsForTheReaderAndIsParked
+covered | threads_direct_test › fetchGuestAccount uses GraphQL after reading LSD and user id from HTML | ThreadsDirectClientTest.aGuestReadsAProfilesThreadsThroughGraphqlWithTheTokenAndIdOfItsPage
+covered | threads_direct_test › profile + posts for one handle share a single HTML GET | ThreadsDirectClientTest.aProfilesCardAndThreadsAskedTogetherShareOnePageRead
+covered | threads_direct_test › fetchUserThreads falls back to guest GraphQL when cookies are refused | ThreadsDirectClientTest.whenTheCookieApiRefusesTheGuestReadStandsIn
+covered | threads_direct_test › guest GraphQL still works while a cookie session is cooling down | ThreadsFailuresTest.guestReadsGoOnWhileTheSessionCoolsDown
+covered | threads_direct_test › fetchGuestAccount falls back to SSR when GraphQL returns empty | ThreadsDirectClientTest.whenGraphqlComesBackEmptyOrAsAPageThePagesOwnThreadsStandIn
+covered | threads_direct_test › fetchGuestPostThread scrapes root and replies from a post URL | ThreadsDirectClientTest.aPostPageIsReadOnceAndSharedByItsShortCodeForTenMinutes; ThreadsPagesTest.aPostPageFlattensToItsRootAndReplies
+covered | threads_direct_test › pasted cookies do not hit cookie REST unless the reader opts in | ThreadsDirectClientTest.pastedCookiesAreNotSpentOnAnAccountUnlessTheReaderOptsIn
+covered | threads_direct_test › cookie REST uses a browser UA, not the official app UA | ThreadsDirectClientTest.withSessionReadsTheCookieApiReadsTheAccountAsABrowserWould
+
+## test/threads_discovery_test.dart
+covered | threads_discovery_test › reposted original authors come first and skip follows | ThreadsDiscoveryTest.repostedAuthorsComeFirstAndFollowedOnesAreSkipped
+covered | threads_discovery_test › caps the strip and ignores empty handles | ThreadsDiscoveryTest.theStripIsCappedAndEmptyHandlesAreIgnored
+covered | threads_discovery_test › starter handles are the public ones a guest can try | ThreadsDiscoveryTest.theStarterHandlesAreThePublicOnesAGuestCanTry
+
+## test/threads_feed_snapshot_test.dart
+covered | threads_feed_snapshot_test › showing everything changes nothing | ThreadsFeedTest.theFiltersAreReadAsXtaWritesThemAndHideWhatTheyName
+covered | threads_feed_snapshot_test › hides replies and reposts independently | ThreadsFeedTest.theFiltersAreReadAsXtaWritesThemAndHideWhatTheyName
+covered | threads_feed_snapshot_test › media and links narrow to what carries them | ThreadsFeedTest.theFiltersAreReadAsXtaWritesThemAndHideWhatTheyName
+covered | threads_feed_snapshot_test › choices survive a restart and a bad stored value reads as none | ThreadsFeedTest.theFiltersAreReadAsXtaWritesThemAndHideWhatTheyName
+covered | threads_feed_snapshot_test › a restart inside the cache window paints at once and asks Meta nothing | ThreadsReaderTest.aFeedKeptAcrossARestartAsksMetaNothingWithinTenMinutes
+covered | threads_feed_snapshot_test › an account unfollowed since is not restored | ThreadsFeedTest.theSnapshotKeepsTheNewestPostsAndWhenEachAccountAnswered
+covered | threads_feed_snapshot_test › a reposted post belongs to the account that reposted it | ThreadsSharedTest.aMixedFeedTakesTenOfEachAccountARepostCountingForItsReposter
+covered | threads_feed_snapshot_test › forgetting empties the feed and its snapshot | ThreadsFeedTest.theSnapshotKeepsTheNewestPostsAndWhenEachAccountAnswered
+covered | threads_feed_snapshot_test › a damaged snapshot restores nothing | ThreadsFeedTest.aSnapshotOfAnotherShapeIsNoSnapshot
+
+## test/threads_feed_store_test.dart
+covered | threads_feed_store_test › refresh loads Accounts even when a Bearer is pasted | ThreadsReaderTest.aPastedBearerDoesNotHideTheFollowedAccounts
+covered | threads_feed_store_test › refresh falls back to guest when RSSHub returns nothing | ThreadsReaderTest.anRssHubInstanceIsAskedFirstAndTheGuestReadStandsInWhenItHasNothing
+covered | threads_feed_store_test › soft refresh failure keeps prior posts on screen | ThreadsReaderTest.aRefreshShowsWhatEachAccountSaidLastWhileItWaits
+covered | threads_feed_store_test › refresh with cookies still uses guest unless session APIs are opted in | ThreadsReaderTest.cookiesAloneDoNotSpendTheSessionOnFollowedAccounts
+
+## test/threads_feeds_parity_test.dart
+covered | threads_feeds_parity_test › each followed account brings up to ten posts, in the order they came | ThreadsSharedTest.aMixedFeedTakesTenOfEachAccountARepostCountingForItsReposter
+covered | threads_feeds_parity_test › a repost counts for the account that reposted it | ThreadsSharedTest.aMixedFeedTakesTenOfEachAccountARepostCountingForItsReposter
+covered | threads_feeds_parity_test › a feed read offline shows a Threads post as a Threads card | ThreadsSharedTest.theSharedRowShowsWhoRepostedWhomItAnswersAndOnlyTheCountsMetaGave
+covered | threads_feeds_parity_test › a link post kept before still reads back as a link post | ThreadsPostJsonTest.aPostKeptReadsBackAsItWasEveryRenditionAndAQuoteOneLevelDeep
+covered | threads_feeds_parity_test › take the name and picture their posts show now | ThreadsKeptTest.followedAccountsKeepTheNameAndPictureTheirNewestPostsShow
+covered | threads_feeds_parity_test › nothing changes when the posts show them as kept, or show nothing | ThreadsKeptTest.followedAccountsKeepTheNameAndPictureTheirNewestPostsShow
+covered | threads_feeds_parity_test › a saved Threads post offers its pictures and videos to keep offline | ThreadsSharedTest.aSavedPostIsXtasThreadsRecordUnderItsLinkAndReadsBack
+
+## test/threads_likes_snapshot_test.dart
+covered | threads_likes_snapshot_test › ThreadsPost snapshot round-trips all liked-post fields | ThreadsPostJsonTest.aPostKeptReadsBackAsItWasEveryRenditionAndAQuoteOneLevelDeep; ThreadsKeptTest.aLikeIsKeptHereItsPostInXtasPreferenceNewestFirst
+
+## test/threads_parity_render_test.dart
+untested → ported | threads_parity_render_test › (render sweeps) | Compose (Threads reader) | golden/layout sweeps; no Compose golden pipeline
+
+## test/threads_parse_test.dart
+covered | threads_parse_test › a video keeps its poster and the largest playable rendition | ThreadsParserTest.aVideoKeepsEveryFileLargestFirstOneFileAndOneQualityEach
+covered | threads_parse_test › every rendition is kept, largest first, one file and one quality each | ThreadsParserTest.aVideoKeepsEveryFileLargestFirstOneFileAndOneQualityEach
+covered | threads_parse_test › a carousel mixes stills and videos, each with its description | ThreadsParserTest.aCarouselKeepsEachPicturesLargestFileItsShapeAndDescriptionAndItsVideos
+covered | threads_parse_test › reads the quoted post one level deep | ThreadsParserTest.aQuoteIsReadOneLevelDeepAndANumericIdIsKept
+covered | threads_parse_test › a quote with no words of its own is still a post | ThreadsParserTest.aQuoteWithNoWordsOfItsOwnIsStillAPostUnderEitherName
+covered | threads_parse_test › reads the topic tag without its hash | ThreadsParserTest.metasFragmentsResolveMentionsUnwrappedLinksAndTags
+covered | threads_parse_test › ids sent as numbers by the app API are kept | ThreadsParserTest.aQuoteIsReadOneLevelDeepAndANumericIdIsKept
+covered | threads_parse_test › resolves mentions, unwrapped links and tags | ThreadsParserTest.metasFragmentsResolveMentionsUnwrappedLinksAndTags
+covered | threads_parse_test › a split that does not spell the caption is ignored | ThreadsParserTest.aSplitThatDoesNotSpellTheCaptionOrIsOnlyTextIsIgnored
+covered | threads_parse_test › plain-text-only fragments add nothing over the caption | ThreadsParserTest.aSplitThatDoesNotSpellTheCaptionOrIsOnlyTextIsIgnored
+covered | threads_parse_test › caption runs fall back to patterns without fragments | ThreadsCaptionTest.withoutMetasFragmentsTheRunsComeFromPatternsAndSpellTheCaption
+covered | threads_parse_test › a profile bucket counts the author's continuation only | ThreadsParserTest.theAuthorsContinuationIsCountedAndAReplyFromAnyoneElseEndsIt
+covered | threads_parse_test › SSR profile scrape keeps the chain length too | ThreadsPagesTest.aProfilePageKeepsTheThreadsTheProfileWroteOrRepostedWithTheirLength
+covered | threads_parse_test › threadsSsrChains keeps each thread_items list as a chain | ThreadsPagesTest.eachThreadItemsListIsAChainAndARepeatedPostStaysWhereItFirstAppeared
+covered | threads_parse_test › the replies page keeps only the profile's own replies | ThreadsPagesTest.theRepliesPageKeepsOnlyTheProfilesOwnReplies
+covered | threads_parse_test › every new field survives a round trip, quotes one level deep | ThreadsPostJsonTest.aPostKeptReadsBackAsItWasEveryRenditionAndAQuoteOneLevelDeep
+covered | threads_parse_test › an old snapshot without the new fields still reads | ThreadsPostJsonTest.aPostXtaKeptBeforeRenditionsPlaysItsOneVideo
+covered | threads_parse_test › threadsShortcodeOf reads post and short links on either host | ThreadsLinksTest.theShortCodeIsReadOffPostAndShortLinksOnEitherHost
+
+## test/threads_profile_card_test.dart
+covered | threads_profile_card_test › knows the counts the page gave, not whom it follows, and does not link to itself | ThreadsRulesTest.aProfileShowsTheCountsMetaToldAndNoLinkToItself
+covered | threads_profile_card_test › pieced together from posts knows no count | ThreadsPagesTest.aProfilePiecedTogetherFromPostsKnowsNoCount
+covered | threads_profile_card_test › a guest profile shows the counts it knows, no following count and no link to itself | ThreadsPagesTest.aGuestCardKnowsNoFollowingCountAndNoLink
+covered | threads_profile_card_test › a profile that knows no count shows none | ThreadsPagesTest.aProfilePiecedTogetherFromPostsKnowsNoCount
+covered | threads_profile_card_test › the bio's @mentions and links can be tapped | ThreadsCaptionTest.metasOwnFragmentsWinOverPatterns
+
+## test/threads_profile_store_test.dart
+covered | threads_profile_store_test › tabs split posts, replies and media, without repeats | ThreadsReaderTest.tabsSplitThreadsRepliesAndMediaWithoutRepeatsNewestFirst
+covered | threads_profile_store_test › the replies page is asked for once, and a failure falls back to the posts | ThreadsReaderTest.aRepliesPageThatFailsLeavesTheRepliesTheThreadsCarried
+covered | threads_profile_store_test › a failed refresh keeps the profile already on screen | ThreadsReaderTest.aProfileIsItsCardAndItsThreadsReadTogetherFromOnePage
+covered | threads_profile_store_test › nothing at all to show surfaces the error | ThreadsReaderTest.aProfileWithNeitherCardNorThreadsSurfacesTheFailure
+
+## test/threads_reader_widget_test.dart
+untested → ported | threads_reader_widget_test › a quoting, tagged, chained card fits a narrow phone in German | Compose (Threads card) | layout is Compose-only
+untested → ported | threads_reader_widget_test › the conversation shows context, the author's thread and cut reply threads | ThreadsConversationTest.theFocusChainSplitsIntoWhatItAnswersThePostAndItsContinuation | the drawing is Compose-only
+untested → ported | threads_reader_widget_test › replies can be sorted, each reply thread moving whole, and the order holds for the session | ThreadsConversationTest.newestAndOldestMoveEachReplyThreadWholeByItsFirstReply | the gesture is Compose-only
+untested → ported | threads_reader_widget_test › the replies header, author filter and order fit a narrow phone in German | Compose (Threads reader) | layout is Compose-only
+covered | threads_reader_widget_test › every file Meta offers is a quality named by its lines; a post kept before plays its one file | ThreadsRulesTest.aVideoPlaysWhatTheQualitySettingPicksAndOffersEveryRenditionByItsLines
+covered | threads_reader_widget_test › several pictures lie along one row at one height, the next one in view | ThreadsRulesTest.severalPicturesShareOneRowTheNextOnesEdgeInView
+untested → ported | threads_reader_widget_test › one picture keeps its own shape, and opens in X's viewer | Compose (Threads card) | the viewer is shared; Compose-only
+untested → ported | threads_reader_widget_test › a card follows the absolute-time setting | Compose (Threads card) | Compose only
+untested → ported | threads_reader_widget_test › the opened post says its time and date under it, and its text can be selected | Compose (Threads reader) | Compose only
+covered | threads_reader_widget_test › a conversation opens on the post that was tapped, what it answers a scroll up | ThreadsConversationTest.theFocusChainSplitsIntoWhatItAnswersThePostAndItsContinuation
+untested → ported | threads_reader_widget_test › a tapped card opens as the card that is dragged back | Compose (Threads reader) | Compose only
+untested → ported | threads_reader_widget_test › a ⋯ button in the header opens the actions a long press opened | Compose (Threads reader) | Compose only
+untested → ported | threads_reader_widget_test › the buttons are named for screen readers, and small targets are 48 dp | Compose accessibility (Threads) | Compose only
+covered | threads_reader_widget_test › a quoted post shows its link card, as the post itself does | ThreadsParserTest.aQuoteIsReadOneLevelDeepAndANumericIdIsKept
+covered | threads_reader_widget_test › a #tag in a caption Meta sent as plain text opens the posts under it | ThreadsCaptionTest.tagsAreFoundInPlainTextButNotInsideALinkOrAWord
+untested → ported | threads_reader_widget_test › with the gesture on, a double-tap likes the post here and a tap still opens it | Compose (Threads card setting) | Compose only
+untested → ported | threads_reader_widget_test › with the gesture off, a double-tap likes nothing and a tap opens the post at once | Compose (Threads card setting) | Compose only
+
+## test/threads_refresh_order_test.dart
+covered | threads_refresh_order_test › successive pulls to refresh reach every followed account | ThreadsReaderTest.successivePullsToRefreshReachEveryFollowedAccount
+
+## test/threads_retry_test.dart
+covered | threads_retry_test › a session throttle waits for the cooldown Meta's answer armed, and so does the next read | ThreadsFailuresTest.aSessionThrottleWaitsForTheCooldownMetasAnswerArmedAndSoDoesTheNextRead
+covered | threads_retry_test › a lost session waits for the reader | ThreadsFailuresTest.aLostSessionWaitsForTheReaderAndIsParked
+covered | threads_retry_test › a guest throttle waits as long as any limit without a stated reset | ThreadsFailuresTest.aGuestThrottleWaitsAsLongAsAnyLimitWithoutAStatedResetAndParksNoSession
+covered | threads_retry_test › a host that did not answer is tried again on the usual backoff | ThreadsFailuresTest.aHostThatDidNotAnswerIsTriedAgainOnTheUsualBackoff
+covered | threads_retry_test › without a setup, or with the session refused, nothing retries on its own | ThreadsFailuresTest.withoutASetupOrWithTheSessionRefusedNothingRetriesOnItsOwn
+
+## test/threads_rich_text_test.dart
+covered | threads_rich_text_test › finds @handles and http(s) URLs | ThreadsCaptionTest.handlesAndWebAddressesAreFound
+covered | threads_rich_text_test › finds #tags in plain text, not inside a link or a word | ThreadsCaptionTest.tagsAreFoundInPlainTextButNotInsideALinkOrAWord
+covered | threads_rich_text_test › ignores email-shaped text as a mention | ThreadsCaptionTest.emailShapedTextIsNoMention
+covered | threads_rich_text_test › trimThreadsCaptionUrl drops trailing punctuation | ThreadsCaptionTest.trailingPunctuationIsNotPartOfAnAddress
+
+## test/threads_saving_test.dart
+covered | threads_saving_test › keeps the whole post and is filed under Threads | ThreadsSharedTest.aSavedPostIsXtasThreadsRecordUnderItsLinkAndReadsBack
+covered | threads_saving_test › keeps the id a link save used, and an old link save is filed under Threads too | ThreadsSharedTest.aSavedPostIsXtasThreadsRecordUnderItsLinkAndReadsBack
+covered | threads_saving_test › offers its pictures, not its video, to the saved media | ThreadsSharedTest.aSavedPostIsXtasThreadsRecordUnderItsLinkAndReadsBack
+covered | threads_saving_test › a damaged blob is nothing rather than a crash | ThreadsPostJsonTest.aRowWithoutAnIdIsDropped
+covered | threads_saving_test › a post offers the bookmark in its actions | ThreadsSharedTest.aSavedPostIsXtasThreadsRecordUnderItsLinkAndReadsBack | the action row is Compose-only
+covered | threads_saving_test › Saved shows a saved Threads post as a Threads card | ThreadsSharedTest.theSharedRowShowsWhoRepostedWhomItAnswersAndOnlyTheCountsMetaGave
+
+## test/threads_search_query_test.dart
+covered | threads_search_query_test › a post link names the post, and is not kept in the history | ThreadsLinksTest.aPostLinkNamesThePostAndIsNotKeptInTheHistory
+covered | threads_search_query_test › a #tag names the posts filed under it, spaces and all | ThreadsLinksTest.aTagNamesThePostsFiledUnderItSpacesAndAll
+covered | threads_search_query_test › an @handle or a profile link names the profile | ThreadsLinksTest.anAtHandleOrAProfileLinkNamesTheProfile
+covered | threads_search_query_test › other words search posts, offering the handle they also spell | ThreadsLinksTest.otherWordsSearchPostsOfferingTheHandleTheyAlsoSpell
+covered | threads_search_query_test › the field shows a tag with its # | ThreadsLinksTest.theFieldShowsATagWithItsHash
+
+## test/threads_search_sheet_test.dart
+covered | threads_search_sheet_test › a guest typing $typed gets the page it names | ThreadsDirectClientTest.aGuestSearchReadsThePublicSearchPageAsALoggedOutBrowser
+
+## test/threads_search_test.dart
+covered | threads_search_test › takes, in each chain, the post the page found it for | ThreadsPagesTest.aSearchPageGivesInEachChainThePostItFoundTheChainFor
+covered | threads_search_test › takes a tag search by the topic the post is filed under | ThreadsLinksTest.aTagNamesThePostsFiledUnderItSpacesAndAll
+covered | threads_search_test › asks the public search page: top, recent, or a tag | ThreadsLinksTest.theSearchPageIsAskedForTopRecentOrATag
+covered | threads_search_test › a guest search reads the page as a logged-out browser and returns its posts | ThreadsDirectClientTest.aGuestSearchReadsThePublicSearchPageAsALoggedOutBrowser
+covered | threads_search_test › shows the top posts as Threads cards, and Recent when chosen | ThreadsLinksTest.theSearchPageIsAskedForTopRecentOrATag
+untested → ported | threads_search_test › says so when nothing is found | Compose (Threads search) | Compose only
+untested → ported | threads_search_test › a failed read offers to try again | Compose (Threads search) | Compose only
+covered | threads_search_test › words that also spell a handle offer that profile on top | ThreadsLinksTest.otherWordsSearchPostsOfferingTheHandleTheyAlsoSpell
+untested → ported | threads_search_test › the title holds the query, and other words search again on the page, in the order chosen | Compose (Threads search) | Compose only
+covered | threads_search_test › a #tag searches its posts on the page; an @handle or a post link opens its page | ThreadsLinksTest.aTagNamesThePostsFiledUnderItSpacesAndAll, anAtHandleOrAProfileLinkNamesTheProfile, aPostLinkNamesThePostAndIsNotKeptInTheHistory
+
+## test/threads_test.dart
+covered | threads_test › unwraps l.threads.com redirects and leaves other URLs alone | ThreadsLinksTest.threadsOutboundRedirectIsUnwrappedAndOtherLinksAreLeftAlone
+covered | threads_test › takes a bare handle, an @handle and a profile link alike | ThreadsLinksTest.aBareHandleAnAtHandleAndAProfileLinkAreTheSameAccount
+covered | threads_test › keeps the dots and underscores handles are allowed | ThreadsLinksTest.aBareHandleAnAtHandleAndAProfileLinkAreTheSameAccount
+covered | threads_test › refuses what is not a handle at all | ThreadsLinksTest.whatIsNotAHandleAtAllIsRefused
+covered | threads_test › asks the instance for JSON, whatever trailing slashes it was given | ThreadsRssHubTest.theInstanceIsAskedForJsonWhateverTrailingSlashesItWasGiven
+covered | threads_test › reads text, link and date off an item | ThreadsRssHubTest.anItemGivesItsWordsLinkDateAndPictures
+covered | threads_test › takes the author from the feed title, without the site suffix | ThreadsRssHubTest.theAuthorIsTheFeedsTitleWithoutTheSiteUnlessAnItemNamesItsOwn
+covered | threads_test › falls back to the handle when the feed titles itself uselessly | ThreadsRssHubTest.theAuthorIsTheFeedsTitleWithoutTheSiteUnlessAnItemNamesItsOwn
+covered | threads_test › collects the pictures the html embeds and the attachments declare | ThreadsRssHubTest.anItemGivesItsWordsLinkDateAndPictures
+covered | threads_test › keeps a picture-only post but drops an empty one | ThreadsRssHubTest.aPictureOnlyItemIsKeptAndAnEmptyOneOrOneWithoutAnyIdIsNot
+covered | threads_test › a reshaped feed yields nothing rather than throwing | ThreadsRssHubTest.aReshapedFeedYieldsNothingRatherThanThrowing
+covered | threads_test › reads every documented field | ThreadsXyTest.aProfileReadsEveryDocumentedField
+covered | threads_test › external_url is nullable, and blank counts as absent | ThreadsXyTest.aLinkIsOptionalAndABlankOneIsNone
+covered | threads_test › a field that stopped being sent leaves a blank, not a crash | ThreadsXyTest.aFieldThatStoppedBeingSentLeavesABlankNotACrash
+covered | threads_test › a reshaped response yields an empty profile rather than throwing | ThreadsXyTest.aProfileReadsEveryDocumentedField
+covered | threads_test › a profile becomes a followable account, carrying its face | ThreadsKeptTest.accountsAreXtasRowsListedByNameWhateverTheCase
+covered | threads_test › builds endpoints under the configured base, trailing slashes and all | ThreadsXyTest.endpointsLieUnderTheConfiguredBaseTrailingSlashesAndAll
+
+## test/threads_time_to_content_test.dart
+covered | threads_time_to_content_test › the first account's posts appear before the slow ones answer | ThreadsReaderTest.theFirstAccountsThreadsArriveBeforeTheSlowOnesAnswer
+covered | threads_time_to_content_test › a known account with a fresh LSD costs one request, not two | ThreadsDirectClientTest.aKnownAccountWithAFreshTokenCostsOneRequestNotTwo
+covered | threads_time_to_content_test › guest departures leave sooner than the session floor | ThreadsPacingTest.guestReadsLeaveSoonerThanTheSessionFloor
