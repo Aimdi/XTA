@@ -33,6 +33,16 @@ It keeps its data in `~/.local/share/xta-native`, a folder only you can open. Vi
 - Every section of XTA's settings, its backup export and import, WebDAV sync, and 29 languages; an opened post that swipes back as XTA's card, confirm close, the check for a newer prerelease and the licences page
 - Links open in the app's own browser on Android, or in the browser you pick; x.com and the networks' links open in the app, and so do t.co, fxtwitter, vxtwitter and fixupx links; a link nothing reads says so
 - New in this prerelease:
+  - On Android, a post link on a site you do not follow is checked before the browser opens. It shows "Checking the link…", and opens in Substack's reader only when the site confirms it
+  - X's own answers are said in X's words: a private profile, a missing page, a missing account, a suspended account, and access forbidden. Those are not tried again. A thrown-away guest token still says so, and is tried again
+  - A failed load names what failed: the post, the next page of replies, who reposted, and the trends for a place
+  - A failed refresh of a Substack article leaves the copy you are reading, and says you can keep reading it
+  - Moving someone between groups can be undone. Home's account filter offers Add account when you have none
+  - Pixiv keeps a private tag you picked, and a caption no longer turns a javascript link into a Pixiv page
+  - Bluesky's Following opens where you left it, keeps what it showed when a read fails, and drops an old account's posts when a handle names someone else
+  - A loading Reddit feed shows bones. A thread's buttons are easier to hit, and an upvote says whether it is on
+  - Substack's podcast keeps its place more closely, and leaving an import stops it
+- In 0.1.60:
   - Group feeds bring you back to your last read post after a long absence and never mark posts read past a gap; a feed reopened in the same session comes back as you left it, without reading X again; chunks show as they answer; a feed out of sight reads nothing; a search that stalls falls back to the members' profiles
   - Reads from X keep to one 30-second budget, a changed endpoint is reported at once instead of retried, reading without an account no longer needs request signing, and search results come grouped by conversation
   - The networks' videos follow Settings › Media (manual loading, mute, loop, quality, autoplay) as X's do; Bluesky remembers where you left Following; the language switches without a restart

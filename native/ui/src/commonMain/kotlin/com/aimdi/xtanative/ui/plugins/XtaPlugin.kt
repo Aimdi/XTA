@@ -26,9 +26,10 @@ import kotlinx.serialization.json.JsonElement
  * progress (native-0.1.54); 5 adds what a group's add box can follow on a
  * plugin's network (native-0.1.56); 6 adds X's search with its replies and
  * conversations switches (`XClient.search`), which the Stocks plugin reads
- * through.
+ * through; 7 adds [XtaPlugin.mightRouteLater] and [XtaPlugin.routeForLater],
+ * a link a plugin can claim only after asking the network.
  */
-const val PLUGIN_API_VERSION: Int = 6
+const val PLUGIN_API_VERSION: Int = 7
 
 /**
  * The oldest plugin API whose plugins this app still loads: what they use of

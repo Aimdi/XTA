@@ -44,7 +44,7 @@ plugin API version it was built against, `PLUGIN_API_VERSION`) and `entry`
 
 ## The plugin API
 
-`PLUGIN_API_VERSION` is 5. Version 1 is what native-0.1.41 shipped; 2,
+`PLUGIN_API_VERSION` is 7. Version 1 is what native-0.1.41 shipped; 2,
 which native-0.1.45 shipped, added `cashtagStrip` and `routeForCashtag` and
 the kit's pieces of that time (the article reader, `FeedReads`, X posts in a
 plugin, the chip tabs, the shelf, the recent searches, the action row,
@@ -69,9 +69,9 @@ with `PluginRecentSearchRow`, `settingsTitle`, the viewer's Open post
 and the search pill's look (native-0.1.54); 5 adds `followable` with
 `PluginFollowable`, what a group's add box can follow on the plugin's
 network (native-0.1.56); 6 adds X's search with its `includeReplies` and
-`conversations` switches (`XClient.search`). A plugin may also say a link needs a
-network check before it opens (`mightRouteLater`, `routeForLater`, both
-defaulting to no): the app asks only off the desktop, for a few seconds, and
+`conversations` switches (`XClient.search`); 7 adds a link a plugin may claim
+only after asking the network (`mightRouteLater`, `routeForLater`, both
+defaulting to no). The app asks only off the desktop, for a few seconds, and
 a plugin built before simply never is. A plugin's `xta-plugin.json` names the
 version it was built against.
 
