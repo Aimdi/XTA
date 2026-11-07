@@ -46,6 +46,20 @@ class UnfollowingTest {
     }
 
     @Test
+    fun movingAMemberBetweenGroupsIsUndoneWithoutTouchingOtherMembers() {
+        val previous = MembershipUndo.groupsOf(session, "3")
+        assertEquals(setOf("g2"), previous)
+        val moved = session.withMemberships("3", setOf("g1")).addingTo("1", listOf("g2"))
+        val back = MembershipUndo.restored(moved, "3", previous)
+        assertEquals(setOf("g2"), MembershipUndo.groupsOf(back, "3"))
+        assertEquals(setOf("g2"), MembershipUndo.groupsOf(back, "1"), "a member added since stays")
+        assertEquals(setOf("g1", "g2"), MembershipUndo.groupsOf(back, "2"))
+        val deleted = MembershipUndo.restored(moved.withoutGroup("g2"), "3", previous)
+        assertTrue(deleted.groups.none { it.id == "g2" }, "a group deleted since stays deleted")
+        assertTrue(MembershipUndo.groupsOf(deleted, "3").isEmpty())
+    }
+
+    @Test
     fun anUnsubscribedSearchComesBackToo() {
         val (gone, taken) = Unfollows.search(session, " cats ")
         assertEquals(listOf("dogs"), gone.searches.map { it.query })

@@ -127,6 +127,13 @@ class LinkOpeningTest {
     }
 
     @Test
+    fun theReaderScreenTakesOnlyOrdinaryWebAddresses() {
+        assertTrue(LinkOpening.isBrowsable("https://example.com/story"))
+        assertTrue(LinkOpening.isBrowsable("http://example.com/story"))
+        listOf("mailto:reader@example.com", "javascript:alert(1)", "not a url").forEach { assertFalse(LinkOpening.isBrowsable(it), it) }
+    }
+
+    @Test
     fun thePageMayFollowWebLinksAndItsOwnFramesButNoOtherScheme() {
         assertEquals(LinkNavigation.ASK_APP, linkNavigation("https://bsky.app/profile/a"))
         listOf("about:blank", "data:text/html,x", "blob:https://a/b").forEach { assertEquals(LinkNavigation.ALLOW, linkNavigation(it), it) }

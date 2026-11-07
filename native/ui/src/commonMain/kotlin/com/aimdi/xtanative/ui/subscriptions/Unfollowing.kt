@@ -62,6 +62,17 @@ object Unfollows {
 }
 
 /**
+ * Moving one member between groups, with XTA's undo of it (local_undo.dart's
+ * membership slice): the undo puts back that member's groups and touches no
+ * other member; a group deleted since stays deleted.
+ */
+object MembershipUndo {
+    fun groupsOf(session: Session, memberId: String): Set<String> = session.groups.filter { memberId in it.memberIds }.mapTo(LinkedHashSet()) { it.id }
+
+    fun restored(session: Session, memberId: String, previous: Set<String>): Session = session.withMemberships(memberId, previous)
+}
+
+/**
  * Unsubscribing here with XTA's undo (subscription_unfollow.dart, UndoHost):
  * the account or search goes, and "Changes saved" offers it back while it is
  * shown. Nothing reaches X.

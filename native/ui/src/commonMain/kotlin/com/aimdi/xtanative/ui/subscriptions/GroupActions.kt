@@ -52,9 +52,25 @@ class GroupActions(private val graph: AppGraph, private val scope: CoroutineScop
         return id
     }
 
-    /** [memberId] in exactly [groupIds], the groups added remembered for the picker. */
+    /**
+     * [memberId] in exactly [groupIds], the groups added remembered for the
+     * picker; "Changes saved" offers to put its groups back as they were.
+     */
     fun setMemberships(memberId: String, initial: Set<String>, groupIds: Set<String>) {
-        change { it.withMemberships(memberId, groupIds) }
+        scope.launch {
+            var before: Set<String>? = null
+            graph.sessions.update { session ->
+                before = MembershipUndo.groupsOf(session, memberId)
+                session.withMemberships(memberId, groupIds)
+            }
+            val previous = before ?: return@launch
+            if (previous != groupIds) {
+                Unfollowing.offer {
+                    graph.sessions.update { MembershipUndo.restored(it, memberId, previous) }
+                    true
+                }
+            }
+        }
         rememberPicks(initial, groupIds)
     }
 

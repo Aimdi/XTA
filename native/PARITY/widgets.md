@@ -289,3 +289,74 @@ untested→ported | json_test.dart › numbers tolerate the string-wrapped digit
 untested→ported | json_test.dart › words are not numbers, however hopefully read | core/json/J.kt; JTest | 
 untested→ported | json_test.dart › a list wraps its elements; anything else is an empty one | core/json/J.kt; JTest | 
 untested→ported | json_test.dart › exists tells presence apart from a readable value | core/json/J.kt; JTest | 
+covered | language_filter_test.dart › splits CSV prefixes | core/feed/FeedRules.kt LanguageFilter; FeedRulesTest | 
+covered | language_filter_test.dart › off passes everything through | core/feed/FeedRules.kt LanguageFilter; FeedRulesTest | 
+covered | language_filter_test.dart › hide drops non-matching languages | core/feed/FeedRules.kt LanguageFilter; FeedRulesTest | 
+covered | language_filter_test.dart › fold keeps chain with reason and merges prior folds | core/feed/FeedRules.kt LanguageFilter; FeedRulesTest | 
+covered | likes_by_group_test.dart › each group gets its own section, in the order given | store/saved/LikesStore.kt likesByGroup; LikesStoreTest | 
+covered | likes_by_group_test.dart › an author in two groups appears under both | store/saved/LikesStore.kt likesByGroup; LikesStoreTest | 
+covered | likes_by_group_test.dart › a like from nobody's group lands in the ungrouped section, last | store/saved/LikesStore.kt likesByGroup; LikesStoreTest | 
+covered | likes_by_group_test.dart › a like with no author recorded is ungrouped rather than dropped | store/saved/LikesStore.kt likesByGroup; LikesStoreTest | 
+covered | likes_by_group_test.dart › a group nobody in it has liked from is left out entirely | store/saved/LikesStore.kt likesByGroup; LikesStoreTest | 
+covered | likes_by_group_test.dart › an author whose only group is not being shown counts as ungrouped | store/saved/LikesStore.kt likesByGroup; LikesStoreTest | native takes the shown groups only, so an author of a hidden group is ungrouped by construction
+covered | likes_by_group_test.dart › no likes means no sections at all | store/saved/LikesStore.kt likesByGroup; LikesStoreTest | 
+covered | likes_by_group_test.dart › no groups puts everything under ungrouped | store/saved/LikesStore.kt likesByGroup; LikesStoreTest | 
+covered | list_url_test.dart › extractListId accepts list URLs and bare ids | services/links/XLinks.kt; XLinksTest | 
+untested→ported | list_url_test.dart › rich-card reader accepts only normal web URLs | services/links/LinkOpening.kt isBrowsable; LinkOpeningTest | 
+covered | list_url_test.dart › parseUri routes list links, profiles and posts correctly | services/links/XLinks.kt; XLinksTest | 
+covered | list_url_test.dart › parseUri routes broadcasts and Spaces instead of failing open | services/links/XLinks.kt; XLinksTest | 
+covered | list_url_test.dart › isLiveWatchUrl covers broadcasts, Spaces, and Periscope | services/links/XLinks.kt; XLinksTest | 
+covered | local_post_logic_test.dart › rejects blank notes | store/saved/LocalPosts.kt, XtaRows; LocalPostsTest | 
+covered | local_post_logic_test.dart › trims and keeps the text | store/saved/LocalPosts.kt, XtaRows; LocalPostsTest | 
+covered | local_post_logic_test.dart › clips bodies longer than the cap | store/saved/LocalPosts.kt, XtaRows; LocalPostsTest | 
+covered | local_post_logic_test.dart › a blank note with no media is empty | store/saved/LocalPosts.kt, XtaRows; LocalPostsTest | 
+covered | local_post_logic_test.dart › media alone is enough | store/saved/LocalPosts.kt, XtaRows; LocalPostsTest | 
+covered | local_post_logic_test.dart › empty query matches everything | store/saved/LocalPosts.kt, XtaRows; LocalPostsTest | 
+covered | local_post_logic_test.dart › matches case-insensitively | store/saved/LocalPosts.kt, XtaRows; LocalPostsTest | 
+covered | local_post_logic_test.dart › keeps a real mime | store/saved/LocalPosts.kt, XtaRows; LocalPostsTest | 
+covered | local_post_logic_test.dart › fills in from the extension | store/saved/LocalPosts.kt, XtaRows; LocalPostsTest | 
+covered | local_post_logic_test.dart › round-trips through toMap/fromMap | store/saved/LocalPosts.kt, XtaRows; LocalPostsTest | 
+covered | local_post_logic_test.dart › a backup map keeps media bytes and fromMap reads them | store/saved/LocalPosts.kt, XtaRows; LocalPostsTest | 
+covered | local_post_logic_test.dart › legacy rows without media columns still parse | store/saved/LocalPosts.kt, XtaRows; LocalPostsTest | 
+covered | local_post_logic_test.dart › round-trips a reply id | store/saved/LocalPosts.kt, XtaRows; LocalPostsTest | 
+covered | local_post_logic_test.dart › null and junk yield null | store/saved/SavedContent.kt of; SavedContentTest aDamagedBlobIsNothing... | a note's quote is read through SavedContent
+covered | local_post_logic_test.dart › roots skip replies whose parent is still around | store/saved/LocalPosts.kt, XtaRows; LocalPostsTest | 
+covered | local_post_logic_test.dart › a reply whose parent is gone becomes a root | store/saved/LocalPosts.kt, XtaRows; LocalPostsTest | 
+covered | local_post_logic_test.dart › direct reply count ignores nested grandchildren | store/saved/LocalPosts.kt, XtaRows; LocalPostsTest | 
+covered | local_post_logic_test.dart › thread walks replies under each parent, oldest first | store/saved/LocalPosts.kt, XtaRows; LocalPostsTest | 
+covered | local_post_logic_test.dart › thread root walks up to the oldest living ancestor | store/saved/LocalPosts.kt, XtaRows; LocalPostsTest | 
+covered | local_post_logic_test.dart › a cycle does not hang the thread walk | store/saved/LocalPosts.kt, XtaRows; LocalPostsTest | 
+covered | local_undo_test.dart › undo restores exact subscription metadata and memberships once | ui/subscriptions/Unfollowing.kt; UnfollowingTest | 
+covered | local_undo_test.dart › undo refuses to overwrite a subsequent refollow | ui/subscriptions/Unfollowing.kt; UnfollowingTest | 
+covered | local_undo_test.dart › undo does not resurrect deleted groups or disturb unrelated people | ui/subscriptions/Unfollowing.kt; UnfollowingTest | 
+missing→implemented | local_undo_test.dart › moving between groups can be undone without changing other members | ui/subscriptions/GroupActions.kt setMemberships + MembershipUndo; UnfollowingTest | native offered no undo after moving a member between groups; now Changes saved · Undo puts that member's groups back
+covered | main_thread_stalls_test.dart › an empty record means the thread never stalled | ui/settings/MainThreadStalls.kt; DeviceRecordsTest theWatchdogsRecordShowsItsLatestLinesInTheReport | 
+covered | main_thread_stalls_test.dart › keeps the stall line, its frames and the resume line, indented under the probe | ui/settings/MainThreadStalls.kt; DeviceRecordsTest theWatchdogsRecordShowsItsLatestLinesInTheReport | 
+covered | main_thread_stalls_test.dart › only the newest lines survive a long record | ui/settings/MainThreadStalls.kt; DeviceRecordsTest theWatchdogsRecordShowsItsLatestLinesInTheReport | 
+covered | main_thread_stalls_test.dart › reads the watchdog file from the files directory | ui/settings/MainThreadStalls.kt; DeviceRecordsTest theWatchdogsRecordShowsItsLatestLinesInTheReport | 
+covered | main_thread_stalls_test.dart › a missing file is no stall, and a directory lookup that never answers is bounded | ui/settings/MainThreadStalls.kt summary; DeviceRecordsTest | a missing file is no stall; native's files directory is known at once, so no lookup to bound
+untested→ported | media_alt_text_test.dart › extracts ext_alt_text keyed by media id_str | core/x/parse/XParser.kt mediaItem; XClientParityTest | assertion added: no description is none
+covered | media_alt_text_test.dart › fromData plumbs mediaAltText from extended_entities | core/x/parse/XParser.kt mediaItem alt; XClientParityTest altTextFallsBackToTheMediasDescription | 
+untested→ported | media_quality_test.dart › each stored word finds its quality | store/settings/Choices.kt MediaQuality, MediaPrefs.imageQuality; SettingsTest | 
+untested→ported | media_quality_test.dart › a word the vocabulary does not know is the fallback, not a guess | store/settings/Choices.kt MediaQuality, MediaPrefs.imageQuality; SettingsTest | 
+untested→ported | media_quality_test.dart › the retired disabled value reads as the fallback too | store/settings/Choices.kt MediaQuality, MediaPrefs.imageQuality; SettingsTest | 
+untested→ported | media_quality_test.dart › what is stored round-trips through the enum unchanged | store/settings/Choices.kt MediaQuality, MediaPrefs.imageQuality; SettingsTest | 
+covered | media_strip_test.dart › an ordinary photo keeps its own | ui/post/MediaStrip.kt; MediaStripTest | 
+covered | media_strip_test.dart › a sliver is cropped to the nearest end rather than shown as one | ui/post/MediaStrip.kt; MediaStripTest | 
+covered | media_strip_test.dart › a size the response did not carry is treated as square | ui/post/MediaStrip.kt; MediaStripTest | 
+covered | media_strip_test.dart › one photo takes the full width and keeps its own shape, unclamped | ui/post/MediaStrip.kt; MediaStripTest | 
+covered | media_strip_test.dart › a single photo with no usable size falls back to a square | ui/post/MediaStrip.kt; MediaStripTest | 
+covered | media_strip_test.dart › several share one height | ui/post/MediaStrip.kt; MediaStripTest | 
+covered | media_strip_test.dart › tall photos are narrower than wide ones, so more of them fit | ui/post/MediaStrip.kt; MediaStripTest | 
+covered | media_strip_test.dart › no card fills the row, so the next one always shows an edge | ui/post/MediaStrip.kt; MediaStripTest | 
+covered | media_strip_test.dart › nothing attached lays out as nothing | ui/post/MediaStrip.kt; MediaStripTest | 
+covered | media_strip_test.dart › the first one needs no scrolling | ui/post/MediaStrip.kt; MediaStripTest | 
+covered | media_strip_test.dart › a later one counts the cards and the gaps before it | ui/post/MediaStrip.kt; MediaStripTest | 
+covered | media_strip_test.dart › an index past the end stops at the last card rather than throwing | ui/post/MediaStrip.kt startOf; MediaStripTest aRowOpenedAtAPictureStartsThereWithinTheRow | native scrolls the row to the card's index, clamped to the last
+covered | media_strip_test.dart › a video uses videoInfo, not the thumbnail size | ui/post/MediaStrip.kt startOf; MediaStripTest aRowOpenedAtAPictureStartsThereWithinTheRow | native scrolls the row to the card's index, clamped to the last
+covered | media_strip_test.dart › a broadcast with no sizes is 16:9, not a square | ui/post/MediaStrip.kt startOf; MediaStripTest aRowOpenedAtAPictureStartsThereWithinTheRow | native scrolls the row to the card's index, clamped to the last
+covered | media_strip_test.dart › a photo still uses its pixel size | core/x/parse/XParser.kt mediaItem (original_info is the video frame's own size); MediaStripTest | 
+covered | muted_keyword_storage_test.dart › reads legacy CSV as hide keywords | core/feed/FeedRules.kt MutedKeywords; FeedRulesTest | 
+covered | muted_keyword_storage_test.dart › reads JSON with until and action | core/feed/FeedRules.kt MutedKeywords; FeedRulesTest | 
+covered | muted_keyword_storage_test.dart › encode round-trips through JSON storage | core/feed/FeedRules.kt MutedKeywords; FeedRulesTest | 
+covered | muted_keyword_storage_test.dart › drops expired terms | core/feed/FeedRules.kt MutedKeywords; FeedRulesTest | 

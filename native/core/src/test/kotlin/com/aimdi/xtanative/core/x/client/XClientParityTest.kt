@@ -253,6 +253,7 @@ class XClientParityTest {
         assertEquals("A cat", media.alt)
         val both = XParser.mediaItem(J.parse("""{"media_url_https":"u","ext_alt_text":"Alt","additional_media_info":{"description":"A cat"}}"""))!!
         assertEquals("Alt", both.alt)
+        assertNull(XParser.mediaItem(J.parse("""{"media_url_https":"u","type":"photo"}"""))!!.alt, "a picture without a description has none")
     }
 
     @Test
