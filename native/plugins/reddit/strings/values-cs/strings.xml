@@ -11,6 +11,7 @@
     <string name="empty">Přidejte subreddit a začněte číst</string>
     <string name="error_blocked">Reddit odmítl požadavek. Většinou to znamená, že blokuje síť, kterou používáte.</string>
     <string name="error_client_id">Reddit odmítl client ID</string>
+    <string name="not_configured">Nejdřív zadejte své Reddit client ID</string>
     <string name="error_network">Reddit není dostupný</string>
     <string name="error_not_found">Takový subreddit neexistuje nebo je privátní</string>
     <string name="error_rate_limited">Příliš mnoho požadavků, zkuste to za chvíli</string>

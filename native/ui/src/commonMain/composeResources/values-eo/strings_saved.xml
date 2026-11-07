@@ -163,6 +163,7 @@
     <string name="downloads_saving">Konservante dosieron…</string>
     <string name="downloads_completed">Konservita</string>
     <string name="downloads_failed">Elŝuto malsukcesis</string>
+    <string name="saved_media_status">Ne eblas konservi la plurmedion. Twitter revenigis staton de %1$d</string>
     <string name="downloads_cancelled">Nuligita</string>
     <string name="downloads_interrupted">Interrompita · Reprovu por daŭrigi</string>
     <string name="downloads_batch">Konservitaj dosieroj: %1$d / %2$d</string>

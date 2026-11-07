@@ -163,6 +163,7 @@
     <string name="downloads_saving">Dosya kaydediliyor…</string>
     <string name="downloads_completed">Kaydedildi</string>
     <string name="downloads_failed">İndirme başarısız</string>
+    <string name="saved_media_status">Medya kaydedilemiyor. Twitter %1$d durumuyla döndü</string>
     <string name="downloads_cancelled">İptal edildi</string>
     <string name="downloads_interrupted">Kesildi · Devam etmek için yeniden deneyin</string>
     <string name="downloads_batch">Kaydedilen dosyalar: %1$d / %2$d</string>

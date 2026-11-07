@@ -160,6 +160,7 @@
     <string name="downloads_saving">파일 저장 중…</string>
     <string name="downloads_completed">저장됨</string>
     <string name="downloads_failed">다운로드 실패</string>
+    <string name="saved_media_status">미디어를 저장할 수 없습니다. X가 %1$d 상태를 반환했습니다</string>
     <string name="downloads_cancelled">취소됨</string>
     <string name="downloads_interrupted">중단됨 · 다시 시도하여 계속</string>
     <string name="downloads_batch">저장된 파일: %1$d / %2$d</string>

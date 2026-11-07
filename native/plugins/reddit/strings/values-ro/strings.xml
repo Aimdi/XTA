@@ -11,6 +11,7 @@
     <string name="empty">Adaugă un subreddit pentru a începe</string>
     <string name="error_blocked">Reddit a refuzat cererea. De obicei asta înseamnă că blochează rețeaua folosită.</string>
     <string name="error_client_id">Reddit a respins client ID-ul</string>
+    <string name="not_configured">Adaugă mai întâi client ID-ul Reddit</string>
     <string name="error_network">Reddit nu poate fi contactat</string>
     <string name="error_not_found">Acest subreddit nu există sau este privat</string>
     <string name="error_rate_limited">Prea multe cereri, încearcă din nou în scurt timp</string>

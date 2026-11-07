@@ -169,6 +169,7 @@
     <string name="downloads_saving">Zapisywanie pliku…</string>
     <string name="downloads_completed">Zapisano</string>
     <string name="downloads_failed">Pobieranie nie powiodło się</string>
+    <string name="saved_media_status">Nie można zapisać multimediów. Twitter zwrócił status %1$d</string>
     <string name="downloads_cancelled">Anulowano</string>
     <string name="downloads_interrupted">Przerwano · Ponów, aby kontynuować</string>
     <string name="downloads_batch">Zapisane pliki: %1$d / %2$d</string>

@@ -10,6 +10,7 @@ import com.aimdi.xtanative.store.settings.MediaPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.saved.KeepNotice
 import java.net.URI
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
 /** Where the download setting (Settings › Media) sends a new download. */
 fun downloadDestination(settings: Settings): DownloadDestination =
@@ -83,6 +84,12 @@ fun downloadNotice(entry: DownloadEntry, folder: String?): KeepNotice? = when {
     entry.status == DownloadStatus.COMPLETED && folder != null && entry.savedUri != null ->
         KeepNotice.SavedTo(folder, entry.savedUri!!, entry.fileName)
     entry.status == DownloadStatus.COMPLETED -> KeepNotice.MediaSaved
-    entry.status == DownloadStatus.FAILED -> KeepNotice.RetryHint
+    entry.status == DownloadStatus.FAILED -> entry.httpStatus?.takeIf { xMedia(entry.url) }?.let(KeepNotice::MediaRefused) ?: KeepNotice.RetryHint
     else -> null
+}
+
+/** Whether [url] is a picture or video X serves, the saves whose failure names the status X returned. */
+internal fun xMedia(url: String): Boolean {
+    val host = url.toHttpUrlOrNull()?.host?.lowercase() ?: return false
+    return host == "x.com" || host.endsWith(".x.com") || host == "twitter.com" || host.endsWith(".twitter.com") || host.endsWith("twimg.com")
 }

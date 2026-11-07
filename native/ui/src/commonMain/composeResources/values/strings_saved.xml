@@ -163,6 +163,7 @@
     <string name="downloads_saving">Saving file…</string>
     <string name="downloads_completed">Saved</string>
     <string name="downloads_failed">Download failed</string>
+    <string name="saved_media_status">Unable to save the media. X returned a status of %1$d</string>
     <string name="downloads_cancelled">Cancelled</string>
     <string name="downloads_interrupted">Interrupted · tap retry to continue</string>
     <string name="downloads_batch">Files saved: %1$d / %2$d</string>

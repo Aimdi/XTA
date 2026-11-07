@@ -11,6 +11,7 @@
     <string name="empty">Thêm một subreddit để bắt đầu đọc</string>
     <string name="error_blocked">Reddit đã từ chối yêu cầu. Thường là do nó chặn mạng bạn đang dùng.</string>
     <string name="error_client_id">Reddit đã từ chối client ID</string>
+    <string name="not_configured">Hãy nhập client ID Reddit của bạn trước</string>
     <string name="error_network">Không thể kết nối tới Reddit</string>
     <string name="error_not_found">Subreddit này không tồn tại hoặc ở chế độ riêng tư</string>
     <string name="error_rate_limited">Quá nhiều yêu cầu, hãy thử lại sau ít phút</string>

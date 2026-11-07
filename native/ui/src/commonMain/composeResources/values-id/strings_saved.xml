@@ -160,6 +160,7 @@
     <string name="downloads_saving">Menyimpan file…</string>
     <string name="downloads_completed">Disimpan</string>
     <string name="downloads_failed">Unduhan gagal</string>
+    <string name="saved_media_status">Tidak dapat menyimpan media. Twitter mengembalikan status %1$d</string>
     <string name="downloads_cancelled">Dibatalkan</string>
     <string name="downloads_interrupted">Terputus · Coba lagi untuk melanjutkan</string>
     <string name="downloads_batch">File tersimpan: %1$d / %2$d</string>

@@ -11,6 +11,7 @@
     <string name="empty">पढ़ना शुरू करने के लिए एक सबरेडिट जोड़ें</string>
     <string name="error_blocked">Reddit ने अनुरोध अस्वीकार किया। आमतौर पर इसका अर्थ है कि वह आपके नेटवर्क को रोक रहा है।</string>
     <string name="error_client_id">Reddit ने client ID अस्वीकार कर दी</string>
+    <string name="not_configured">पहले अपना Reddit client ID जोड़ें</string>
     <string name="error_network">Reddit तक पहुँच नहीं हो सकी</string>
     <string name="error_not_found">ऐसा सबरेडिट नहीं है या वह निजी है</string>
     <string name="error_rate_limited">बहुत अधिक अनुरोध, कुछ देर बाद प्रयास करें</string>

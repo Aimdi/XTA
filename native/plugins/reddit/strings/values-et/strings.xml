@@ -11,6 +11,7 @@
     <string name="empty">Lisa subreddit, et lugemist alustada</string>
     <string name="error_blocked">Reddit keeldus päringust. Sageli tähendab see, et ta blokeerib sinu võrgu.</string>
     <string name="error_client_id">Reddit lükkas client ID tagasi</string>
+    <string name="not_configured">Lisa esmalt oma Redditi client ID</string>
     <string name="error_network">Redditini ei õnnestunud jõuda</string>
     <string name="error_not_found">Sellist subredditit pole või see on privaatne</string>
     <string name="error_rate_limited">Liiga palju päringuid, proovi veidi hiljem</string>

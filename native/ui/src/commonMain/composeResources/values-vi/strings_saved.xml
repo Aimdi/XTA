@@ -160,6 +160,7 @@
     <string name="downloads_saving">Đang lưu tệp…</string>
     <string name="downloads_completed">Đã lưu</string>
     <string name="downloads_failed">Tải xuống thất bại</string>
+    <string name="saved_media_status">Không thể lưu, X đã trả về lỗi %1$d</string>
     <string name="downloads_cancelled">Đã hủy</string>
     <string name="downloads_interrupted">Bị gián đoạn · Thử lại để tiếp tục</string>
     <string name="downloads_batch">Số tệp đã lưu: %1$d / %2$d</string>

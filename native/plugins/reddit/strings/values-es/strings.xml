@@ -11,6 +11,7 @@
     <string name="empty">Añade un subreddit para empezar a leer</string>
     <string name="error_blocked">Reddit rechazó la petición. Normalmente significa que bloquea la red que usas.</string>
     <string name="error_client_id">Reddit rechazó el client ID</string>
+    <string name="not_configured">Añade primero tu client ID de Reddit</string>
     <string name="error_network">No se pudo contactar con Reddit</string>
     <string name="error_not_found">Ese subreddit no existe o es privado</string>
     <string name="error_rate_limited">Demasiadas peticiones, inténtalo en un momento</string>

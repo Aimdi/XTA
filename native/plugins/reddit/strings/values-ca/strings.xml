@@ -11,6 +11,7 @@
     <string name="empty">Afegeix un subreddit per començar a llegir</string>
     <string name="error_blocked">Reddit ha refusat la petició. Sovint vol dir que bloqueja la xarxa que fas servir.</string>
     <string name="error_client_id">Reddit ha rebutjat el client ID</string>
+    <string name="not_configured">Afegeix primer el teu client ID de Reddit</string>
     <string name="error_network">No s’ha pogut contactar amb Reddit</string>
     <string name="error_not_found">Aquest subreddit no existeix o és privat</string>
     <string name="error_rate_limited">Massa peticions, torna-ho a provar aviat</string>

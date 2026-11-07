@@ -11,6 +11,7 @@
     <string name="empty">読み始めるにはサブレディットを追加してください</string>
     <string name="error_blocked">Reddit がリクエストを拒否しました。多くの場合、利用中のネットワークを遮断しています。</string>
     <string name="error_client_id">Reddit が client ID を拒否しました</string>
+    <string name="not_configured">先に Reddit の client ID を設定してください</string>
     <string name="error_network">Reddit に接続できません</string>
     <string name="error_not_found">そのサブレディットは存在しないか非公開です</string>
     <string name="error_rate_limited">リクエストが多すぎます。しばらくしてから試してください</string>

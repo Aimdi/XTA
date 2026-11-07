@@ -152,6 +152,7 @@ internal data class RedditHomeSource(val mode: RedditFeedMode = RedditFeedMode.F
 /** How a Reddit read failed, in terms the reader can act on (XTA's `RedditErrorKind`). */
 internal enum class RedditTrouble {
     CLIENT_ID,
+    NOT_CONFIGURED,
     BLOCKED,
     NOT_FOUND,
     RATE_LIMITED,
@@ -160,11 +161,16 @@ internal enum class RedditTrouble {
     ;
 
     companion object {
-        fun of(error: Throwable): RedditTrouble = when (error) {
-            is NetworkFailure -> ofStatus(error.code)
-            is IOException -> NETWORK
+        fun of(error: Throwable): RedditTrouble = when {
+            error is NetworkFailure -> ofStatus(error.code)
+            missingClientId(error) -> NOT_CONFIGURED
+            error is IOException -> NETWORK
             else -> RESPONSE
         }
+
+        /** A sign-in or an app-only read that was asked for before a client id was entered. */
+        fun missingClientId(error: Throwable): Boolean =
+            error is IllegalArgumentException && error.message.orEmpty().contains("client id", ignoreCase = true)
 
         fun ofStatus(code: Int?): RedditTrouble = when (code) {
             401 -> CLIENT_ID

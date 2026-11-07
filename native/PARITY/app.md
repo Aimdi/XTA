@@ -104,7 +104,7 @@ covered | home_navigation_visibility_test › a short scroll down springs back, 
 untested | home_navigation_visibility_test › with reduced motion the settle is instant | HomeBarsState.moveTo (reduced → snap) | Compose state holder
 different → fixed | home_navigation_visibility_test › the top, the end of a list and a tab change bring it back | HomeBarsState.connection onPostScroll | native showed the bar only past the top; now past the end too (any leftover scroll); no Compose test harness
 covered | home_navigation_visibility_test › a programmatic jump or a sideways scroll does not move it | HomeBarsState (nested scroll only sees drags; available.y == 0 ignored) | by construction
-open | home_navigation_visibility_test › a screen reader keeps it on screen | HomeBottomBar.kt | Compose Multiplatform gives commonMain no "screen reader on" signal; not implemented
+missing → implemented | home_navigation_visibility_test › a screen reader keeps it on screen | ui/common/ScreenReader.kt, HomeScreen.kt rememberShell | Android's touch exploration keeps the bars put (rememberScreenReaderOn); the desktop has none. HomeBarTest covers the hide rule the switch turns off
 untested | home_navigation_visibility_test › with the setting off the bar stays | rememberHomeBars(enabled) | Compose state holder
 untested | home_navigation_visibility_test › the bar tracks the finger, then settles away when it lifts | HomeBarsState | rule in BarHiding (HomeBarTest)
 untested | home_navigation_visibility_test › a hidden bar lets taps through, a shown one takes them | HomeBottomBar.kt hiding() (bar laid out 0 high when gone) | Compose layout
@@ -423,7 +423,7 @@ untested | profile_followed_by_line_test › a long German line wraps on a narro
 untested → ported | group_board_test › colour is deterministic for a seed and stable across calls | ui/subscriptions/GroupLook.kt faceColor | GroupLookTest.aFacesColourIsStableNeverOutOfRangeAndNeverGrey
 untested → ported | group_board_test › different seeds land on different colours | GroupLook.faceColor | GroupLookTest.aFacesColourIsStable…
 untested → ported | group_board_test › index is never negative even for hash overflow | GroupLook.faceColor (floorMod) | GroupLookTest.aFacesColourIsStable…
-open | group_board_test › palette is never grey — a missing avatar must look deliberate | GroupLook.FACE_COLORS | never grey: ported (GroupLookTest); XTA also harmonises the palette towards the accent (HCT), native keeps the base palette — not ported (needs Material colour utilities)
+missing → implemented | group_board_test › palette is never grey — a missing avatar must look deliberate | GroupLook.harmonize, GroupMarks.kt MemberFaceView | never grey: GroupLookTest.aFacesColourIsStable…; a face is rotated at most 15° toward the theme accent, as Material's harmonize does, keeping its saturation
 untested → ported | group_board_test › initial uses the first alphanumeric of the name, else the seed | GroupLook.faceInitial | GroupLookTest.aFacesInitialIsTheFirstLetterOrDigit…
 untested | group_board_test › renders a single initial at the requested size | ui/subscriptions/GroupIcons.kt / GroupsPage.kt Face | Compose
 untested | group_board_test › an empty group falls back to its own initial | GroupsPage.kt tile mark | Compose; rule GroupLookTest.onlyAMarkTheReaderPicked…

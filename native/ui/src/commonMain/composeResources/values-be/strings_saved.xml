@@ -169,6 +169,7 @@
     <string name="downloads_saving">Захаванне файла…</string>
     <string name="downloads_completed">Захавана</string>
     <string name="downloads_failed">Не ўдалося спампаваць</string>
+    <string name="saved_media_status">Немагчыма захаваць мэдыяфайл. Twitter вярнуў статус %1$d</string>
     <string name="downloads_cancelled">Скасавана</string>
     <string name="downloads_interrupted">Перапынена · Паўтарыце спробу, каб працягнуць</string>
     <string name="downloads_batch">Захаваныя файлы: %1$d / %2$d</string>

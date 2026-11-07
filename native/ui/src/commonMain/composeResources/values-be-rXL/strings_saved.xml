@@ -169,6 +169,7 @@
     <string name="downloads_saving">Zachavannie fajła…</string>
     <string name="downloads_completed">Zachavana</string>
     <string name="downloads_failed">Nie ŭdałosia spampavać</string>
+    <string name="saved_media_status">Niemahčyma zachavać medyjafajł. Twitter viarnuŭ status %1$d</string>
     <string name="downloads_cancelled">Skasavana</string>
     <string name="downloads_interrupted">Pierapyniena · Paŭtarycie sprobu, kab praciahnuć</string>
     <string name="downloads_batch">Zachavanyja fajły: %1$d / %2$d</string>

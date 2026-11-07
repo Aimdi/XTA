@@ -11,6 +11,7 @@
     <string name="empty">Voeg een subreddit toe om te beginnen</string>
     <string name="error_blocked">Reddit weigerde het verzoek. Vaak blokkeert het het netwerk dat je gebruikt.</string>
     <string name="error_client_id">Reddit weigerde de client ID</string>
+    <string name="not_configured">Vul eerst je Reddit client ID in</string>
     <string name="error_network">Kan Reddit niet bereiken</string>
     <string name="error_not_found">Dat subreddit bestaat niet of is privé</string>
     <string name="error_rate_limited">Te veel verzoeken, probeer het straks opnieuw</string>

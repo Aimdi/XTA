@@ -163,6 +163,7 @@
     <string name="downloads_saving">Faili salvestamine…</string>
     <string name="downloads_completed">Salvestatud</string>
     <string name="downloads_failed">Allalaadimine nurjus</string>
+    <string name="saved_media_status">Meedia salvestamine ei õnnestu. Twitter\'i vastus päringule: %1$d</string>
     <string name="downloads_cancelled">Tühistatud</string>
     <string name="downloads_interrupted">Katkes · Jätkamiseks proovi uuesti</string>
     <string name="downloads_batch">Salvestatud failid: %1$d / %2$d</string>

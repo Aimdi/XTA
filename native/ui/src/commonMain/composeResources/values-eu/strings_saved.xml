@@ -163,6 +163,7 @@
     <string name="downloads_saving">Fitxategia gordetzen…</string>
     <string name="downloads_completed">Gordeta</string>
     <string name="downloads_failed">Deskargak huts egin du</string>
+    <string name="saved_media_status">Ezin da multimedia gorde. Twitter-ek %1$d egoerara itzuli du</string>
     <string name="downloads_cancelled">Bertan behera utzita</string>
     <string name="downloads_interrupted">Etenda · Saiatu berriro jarraitzeko</string>
     <string name="downloads_batch">Gordetako fitxategiak: %1$d / %2$d</string>

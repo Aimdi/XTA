@@ -160,6 +160,7 @@
     <string name="downloads_saving">正在儲存檔案…</string>
     <string name="downloads_completed">已儲存</string>
     <string name="downloads_failed">下載失敗</string>
+    <string name="saved_media_status">無法儲存媒體。X 傳回狀態為 %1$d</string>
     <string name="downloads_cancelled">已取消</string>
     <string name="downloads_interrupted">已中斷 · 點選重試以繼續</string>
     <string name="downloads_batch">已儲存檔案：%1$d / %2$d</string>

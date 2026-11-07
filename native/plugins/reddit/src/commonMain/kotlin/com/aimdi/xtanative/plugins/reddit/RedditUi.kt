@@ -52,6 +52,7 @@ import com.aimdi.xtanative.ui.plugins.rememberShareText
 internal fun troubleText(trouble: RedditTrouble): String = pluginString(
     when (trouble) {
         RedditTrouble.CLIENT_ID -> Strings.error_client_id
+        RedditTrouble.NOT_CONFIGURED -> Strings.not_configured
         RedditTrouble.BLOCKED -> Strings.error_blocked
         RedditTrouble.NOT_FOUND -> Strings.error_not_found
         RedditTrouble.RATE_LIMITED -> Strings.error_rate_limited

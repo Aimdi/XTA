@@ -11,6 +11,7 @@
     <string name="empty">Add a subreddit to start reading</string>
     <string name="error_blocked">Reddit refused the request. This often means it is blocking the network you are on.</string>
     <string name="error_client_id">Reddit rejected the client ID</string>
+    <string name="not_configured">Add your Reddit client ID first</string>
     <string name="error_network">Could not reach Reddit</string>
     <string name="error_not_found">No such subreddit, or it is private</string>
     <string name="error_rate_limited">Too many requests, try again shortly</string>

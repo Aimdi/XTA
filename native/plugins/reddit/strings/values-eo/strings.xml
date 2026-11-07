@@ -11,6 +11,7 @@
     <string name="empty">Aldonu subredditon por komenci legi</string>
     <string name="error_blocked">Reddit rifuzis la peton. Ofte tio signifas ke ĝi blokas vian reton.</string>
     <string name="error_client_id">Reddit malakceptis la client ID</string>
+    <string name="not_configured">Unue aldonu vian Reddit-client ID</string>
     <string name="error_network">Ne eblis atingi Reddit</string>
     <string name="error_not_found">Tia subreddit ne ekzistas aŭ estas privata</string>
     <string name="error_rate_limited">Tro da petoj; reprovu post momento</string>

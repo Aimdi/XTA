@@ -160,6 +160,7 @@
     <string name="downloads_saving">ファイルを保存中…</string>
     <string name="downloads_completed">保存済み</string>
     <string name="downloads_failed">ダウンロード失敗</string>
+    <string name="saved_media_status">メディアを保存できませんでした。Twitterから返されたステータス：%1$d</string>
     <string name="downloads_cancelled">キャンセル済み</string>
     <string name="downloads_interrupted">中断 · 再試行して続行</string>
     <string name="downloads_batch">保存したファイル数: %1$d / %2$d</string>

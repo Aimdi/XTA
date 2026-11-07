@@ -40,6 +40,7 @@ import com.aimdi.xtanative.ui.generated.resources.downloads_batch
 import com.aimdi.xtanative.ui.generated.resources.downloads_cancelled
 import com.aimdi.xtanative.ui.generated.resources.downloads_downloading
 import com.aimdi.xtanative.ui.generated.resources.downloads_failed
+import com.aimdi.xtanative.ui.generated.resources.saved_media_status
 import com.aimdi.xtanative.ui.generated.resources.downloads_open_failed
 import com.aimdi.xtanative.ui.generated.resources.groups_changes_saved
 import com.aimdi.xtanative.ui.generated.resources.groups_undo
@@ -156,6 +157,7 @@ fun noticeText(notice: KeepNotice): String = when (notice) {
     is KeepNotice.SavedTo -> stringResource(Res.string.downloads_saved_to, notice.folder)
     KeepNotice.RetryHint -> stringResource(Res.string.downloads_retry_hint)
     KeepNotice.DownloadFailed -> stringResource(Res.string.downloads_failed)
+    is KeepNotice.MediaRefused -> stringResource(Res.string.saved_media_status, notice.status)
     KeepNotice.NoMediaFile -> stringResource(Res.string.saved_no_media_file)
     KeepNotice.NeedsDownloadFolder -> stringResource(Res.string.set_a_download_folder_to_auto_download)
     is KeepNotice.Batch -> stringResource(Res.string.downloads_batch, notice.saved, notice.total)

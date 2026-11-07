@@ -11,6 +11,7 @@
     <string name="empty">Adicione um subreddit para começar a ler</string>
     <string name="error_blocked">O Reddit recusou o pedido. Muitas vezes significa que está a bloquear a rede que usa.</string>
     <string name="error_client_id">O Reddit recusou o client ID</string>
+    <string name="not_configured">Indique primeiro o seu client ID do Reddit</string>
     <string name="error_network">Não foi possível contactar o Reddit</string>
     <string name="error_not_found">Esse subreddit não existe ou é privado</string>
     <string name="error_rate_limited">Demasiados pedidos, tente novamente em breve</string>

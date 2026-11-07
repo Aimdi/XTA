@@ -90,6 +90,15 @@ class GroupLookTest {
         assertEquals(GroupLook.faceColor("user-42"), GroupLook.faceColor("user-42"))
         assertTrue(listOf("alice", "bob", "carol", "dave").map(GroupLook::faceColor).toSet().size > 1)
         listOf("a", "a very long screen name that overflows the hash badly", "1234567890", "").forEach { GroupLook.faceColor(it) }
+        val blue = 0xFF1D9BF0
+        GroupLook.FACE_COLORS.forEach { colour ->
+            val pulled = GroupLook.harmonize(colour, blue)
+            assertEquals(pulled, GroupLook.harmonize(colour, blue))
+            assertTrue(pulled ushr 24 == 0xFFL)
+        }
+        val pink = 0xFFF91880
+        val towardBlue = GroupLook.harmonize(pink, blue)
+        assertTrue(towardBlue != pink, "a colour whose hue is far from the accent moves toward it")
         GroupLook.FACE_COLORS.forEach { colour ->
             val r = (colour shr 16 and 0xFF) / 255.0
             val g = (colour shr 8 and 0xFF) / 255.0

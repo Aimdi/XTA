@@ -129,6 +129,8 @@ class RedditRulesTest {
         assertEquals(RedditTrouble.RESPONSE, RedditTrouble.of(NetworkRequestException("reddit", 200, "x")))
         assertEquals(RedditTrouble.NETWORK, RedditTrouble.of(IOException("down")))
         assertEquals(RedditTrouble.RESPONSE, RedditTrouble.of(IllegalStateException()))
+        assertEquals(RedditTrouble.NOT_CONFIGURED, RedditTrouble.of(IllegalArgumentException("Signing in still needs a client id")))
+        assertEquals(RedditTrouble.NOT_CONFIGURED, RedditTrouble.of(IllegalArgumentException("Missing client id")))
     }
 
     @Test

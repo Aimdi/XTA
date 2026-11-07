@@ -40,6 +40,8 @@ data class DownloadEntry(
     val total: Long? = null,
     /** Where it was saved, once it was. */
     val savedUri: String? = null,
+    /** The HTTP status a failed fetch came back with, when the host answered. */
+    val httpStatus: Int? = null,
 ) {
     val active: Boolean get() = status in ACTIVE
 
@@ -63,6 +65,7 @@ data class DownloadEntry(
         put("received", received)
         put("total", total)
         put("saved", savedUri)
+        httpStatus?.let { put("http", it) }
     }
 
     companion object {
@@ -93,6 +96,7 @@ data class DownloadEntry(
                 received = (row["received"].long ?: 0).coerceIn(0, MAX_COUNT),
                 total = row["total"].long?.coerceIn(0, MAX_COUNT),
                 savedUri = row["saved"].string,
+                httpStatus = row["http"].int?.takeIf { it in 100..599 },
             )
             return if (entry.active) entry.copy(status = DownloadStatus.INTERRUPTED) else entry
         }

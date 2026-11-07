@@ -175,6 +175,7 @@
     <string name="downloads_saving">جارٍ حفظ الملف…</string>
     <string name="downloads_completed">تم الحفظ</string>
     <string name="downloads_failed">فشل التنزيل</string>
+    <string name="saved_media_status">تعذر حفظ الوسائط. أعاد تويتر حالة %1$d</string>
     <string name="downloads_cancelled">تم الإلغاء</string>
     <string name="downloads_interrupted">انقطع التنزيل · أعد المحاولة للمتابعة</string>
     <string name="downloads_batch">الملفات المحفوظة: %1$d / %2$d</string>

@@ -11,6 +11,7 @@
     <string name="empty">Добавьте сабреддит, чтобы начать читать</string>
     <string name="error_blocked">Reddit отклонил запрос. Обычно это значит, что он блокирует вашу сеть.</string>
     <string name="error_client_id">Reddit отклонил client ID</string>
+    <string name="not_configured">Сначала укажите client ID Reddit</string>
     <string name="error_network">Не удалось связаться с Reddit</string>
     <string name="error_not_found">Такого сабреддита нет или он закрытый</string>
     <string name="error_rate_limited">Слишком много запросов, повторите чуть позже</string>

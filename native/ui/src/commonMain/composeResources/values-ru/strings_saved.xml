@@ -169,6 +169,7 @@
     <string name="downloads_saving">Сохранение файла…</string>
     <string name="downloads_completed">Сохранено</string>
     <string name="downloads_failed">Не удалось скачать</string>
+    <string name="saved_media_status">Невозможно сохранить медиафайл. Twitter вернул статус %1$d</string>
     <string name="downloads_cancelled">Отменено</string>
     <string name="downloads_interrupted">Прервано · Повторите попытку, чтобы продолжить</string>
     <string name="downloads_batch">Сохранённые файлы: %1$d / %2$d</string>

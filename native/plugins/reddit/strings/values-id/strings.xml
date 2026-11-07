@@ -11,6 +11,7 @@
     <string name="empty">Tambahkan subreddit untuk mulai membaca</string>
     <string name="error_blocked">Reddit menolak permintaan. Ini biasanya berarti jaringan Anda diblokir.</string>
     <string name="error_client_id">Reddit menolak client ID</string>
+    <string name="not_configured">Tambahkan dulu client ID Reddit Anda</string>
     <string name="error_network">Tidak dapat menghubungi Reddit</string>
     <string name="error_not_found">Subreddit itu tidak ada atau bersifat privat</string>
     <string name="error_rate_limited">Terlalu banyak permintaan, coba lagi sebentar</string>

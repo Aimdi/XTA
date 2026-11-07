@@ -160,6 +160,7 @@
     <string name="downloads_saving">正在保存文件…</string>
     <string name="downloads_completed">已保存</string>
     <string name="downloads_failed">下载失败</string>
+    <string name="saved_media_status">无法保存媒体。Twitter 返回的状态是 %1$d</string>
     <string name="downloads_cancelled">已取消</string>
     <string name="downloads_interrupted">已中断 · 点按重试以继续</string>
     <string name="downloads_batch">已保存文件：%1$d / %2$d</string>

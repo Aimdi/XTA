@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
 import com.aimdi.xtanative.core.backup.FollowGroup
+import com.aimdi.xtanative.ui.theme.LocalXLook
 
 /** [argb] as a Compose colour. */
 fun groupColor(argb: Long): Color = Color(argb.toInt())
@@ -69,7 +70,8 @@ private fun Initial(name: String, color: Color, size: Dp) {
 @Composable
 fun MemberFaceView(face: MemberFace, size: Dp, modifier: Modifier = Modifier) {
     val fallback = @Composable {
-        Box(Modifier.size(size).clip(CircleShape).background(groupColor(GroupLook.faceColor(face.id))), contentAlignment = Alignment.Center) {
+        val colour = GroupLook.harmonize(GroupLook.faceColor(face.id), LocalXLook.current.accentFill)
+        Box(Modifier.size(size).clip(CircleShape).background(groupColor(colour)), contentAlignment = Alignment.Center) {
             Text(
                 GroupLook.faceInitial(face.name, face.id),
                 color = Color.White,

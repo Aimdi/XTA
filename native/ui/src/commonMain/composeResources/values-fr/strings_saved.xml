@@ -163,6 +163,7 @@
     <string name="downloads_saving">Enregistrement du fichier…</string>
     <string name="downloads_completed">Enregistré</string>
     <string name="downloads_failed">Échec du téléchargement</string>
+    <string name="saved_media_status">Impossible d\'enregistrer le média. Twitter a retourné un statut de %1$d</string>
     <string name="downloads_cancelled">Annulé</string>
     <string name="downloads_interrupted">Interrompu · Réessayez pour continuer</string>
     <string name="downloads_batch">Fichiers enregistrés : %1$d / %2$d</string>

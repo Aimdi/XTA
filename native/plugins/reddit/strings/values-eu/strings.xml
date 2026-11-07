@@ -11,6 +11,7 @@
     <string name="empty">Gehitu subreddit bat irakurtzen hasteko</string>
     <string name="error_blocked">Redditek eskaera ukatu du. Askotan erabiltzen duzun sarea blokeatzen duela esan nahi du.</string>
     <string name="error_client_id">Redditek client ID-a ez du onartu</string>
+    <string name="not_configured">Gehitu lehenik zure Reddit client ID-a</string>
     <string name="error_network">Ezin izan da Reddit-era iritsi</string>
     <string name="error_not_found">Subreddit hori ez dago edo pribatua da</string>
     <string name="error_rate_limited">Eskaera gehiegi; saiatu berriro laster</string>

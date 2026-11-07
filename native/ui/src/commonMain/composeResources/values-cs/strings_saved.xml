@@ -169,6 +169,7 @@
     <string name="downloads_saving">Ukládání souboru…</string>
     <string name="downloads_completed">Uloženo</string>
     <string name="downloads_failed">Stažení se nezdařilo</string>
+    <string name="saved_media_status">Nepodařilo se uložit média. Twitter vrátil stav %1$d</string>
     <string name="downloads_cancelled">Zrušeno</string>
     <string name="downloads_interrupted">Přerušeno · Pokračujte opakováním</string>
     <string name="downloads_batch">Uložené soubory: %1$d / %2$d</string>

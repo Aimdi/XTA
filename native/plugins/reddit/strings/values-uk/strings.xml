@@ -11,6 +11,7 @@
     <string name="empty">Додайте сабредит, щоб почати читати</string>
     <string name="error_blocked">Reddit відхилив запит. Зазвичай це означає, що він блокує вашу мережу.</string>
     <string name="error_client_id">Reddit відхилив client ID</string>
+    <string name="not_configured">Спочатку вкажіть client ID Reddit</string>
     <string name="error_network">Не вдалося зв’язатися з Reddit</string>
     <string name="error_not_found">Такого сабредита немає або він приватний</string>
     <string name="error_rate_limited">Занадто багато запитів, спробуйте трохи пізніше</string>

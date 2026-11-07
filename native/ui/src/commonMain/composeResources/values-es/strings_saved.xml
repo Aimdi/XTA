@@ -163,6 +163,7 @@
     <string name="downloads_saving">Guardando archivo…</string>
     <string name="downloads_completed">Guardado</string>
     <string name="downloads_failed">Error de descarga</string>
+    <string name="saved_media_status">No se puede guardar el contenido. X devolvió el estado %1$d</string>
     <string name="downloads_cancelled">Cancelado</string>
     <string name="downloads_interrupted">Interrumpido · Reintenta para continuar</string>
     <string name="downloads_batch">Archivos guardados: %1$d / %2$d</string>

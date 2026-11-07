@@ -11,6 +11,7 @@
     <string name="empty">Дадайце сабрэдыт, каб пачаць чытаць</string>
     <string name="error_blocked">Reddit адмовіў у запросе. Звычайна гэта значыць, што ён блакуе вашу сетку.</string>
     <string name="error_client_id">Reddit адмовіў client ID</string>
+    <string name="not_configured">Спачатку дадайце свой client ID Reddit</string>
     <string name="error_network">Не ўдалося звязацца з Reddit</string>
     <string name="error_not_found">Такога сабрэдыта няма або ён прыватны</string>
     <string name="error_rate_limited">Занадта многа запытаў, паспрабуйце пазней</string>

@@ -91,6 +91,8 @@ class DownloadRulesTest {
         assertEquals(KeepNotice.SavedTo("Pictures/XTA", "content://media/external/images/media/1", "a.jpg"), downloadNotice(shared, "Pictures/XTA"))
         assertEquals(KeepNotice.MediaSaved, downloadNotice(shared, null))
         assertEquals(KeepNotice.RetryHint, downloadNotice(entry(DownloadStatus.FAILED), null))
+        assertEquals(KeepNotice.MediaRefused(404), downloadNotice(entry(DownloadStatus.FAILED).copy(httpStatus = 404), null))
+        assertEquals(KeepNotice.RetryHint, downloadNotice(entry(DownloadStatus.FAILED).copy(url = "https://example.com/a.jpg", httpStatus = 404), null))
         assertNull(downloadNotice(entry(DownloadStatus.CANCELLED), null))
     }
 

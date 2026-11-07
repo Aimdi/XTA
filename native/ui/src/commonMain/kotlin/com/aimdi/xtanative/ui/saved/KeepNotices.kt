@@ -31,6 +31,9 @@ sealed interface KeepNotice {
 
     data object DownloadFailed : KeepNotice
 
+    /** A save of X's media the host answered, naming the status it returned. */
+    data class MediaRefused(val status: Int) : KeepNotice
+
     /** The media is a stream with no file to save. */
     data object NoMediaFile : KeepNotice
 

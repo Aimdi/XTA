@@ -11,6 +11,7 @@
     <string name="empty">Legg til en subreddit for å begynne å lese</string>
     <string name="error_blocked">Reddit avviste forespørselen. Ofte betyr det at det blokkerer nettverket du er på.</string>
     <string name="error_client_id">Reddit avviste client ID-en</string>
+    <string name="not_configured">Legg inn Reddit-client ID-en først</string>
     <string name="error_network">Kunne ikke nå Reddit</string>
     <string name="error_not_found">Denne subredditen finnes ikke, eller den er privat</string>
     <string name="error_rate_limited">For mange forespørsler, prøv igjen om litt</string>

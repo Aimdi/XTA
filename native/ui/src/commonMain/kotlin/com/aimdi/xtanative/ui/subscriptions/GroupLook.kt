@@ -170,6 +170,48 @@ object GroupLook {
         return FACE_COLORS[Math.floorMod(hash, FACE_COLORS.size.toLong()).toInt()]
     }
 
+    /**
+     * [color] rotated toward [accent], as Material's harmonize does: at most
+     * 15 degrees, half the hue gap, keeping its own saturation and lightness
+     * so a missing picture stays a deliberate colour of the theme.
+     */
+    fun harmonize(color: Long, accent: Long): Long {
+        val from = hslOf(color)
+        val toward = hslOf(accent)
+        val gap = hueGap(from.hue, toward.hue)
+        val turn = minOf(gap * 0.5, 15.0) * hueDirection(from.hue, toward.hue)
+        return hsl((from.hue + turn + 360.0) % 360.0, from.saturation, from.lightness)
+    }
+
+    private data class Hsl(val hue: Double, val saturation: Double, val lightness: Double)
+
+    private fun hslOf(argb: Long): Hsl {
+        val red = ((argb shr 16) and 0xFF) / 255.0
+        val green = ((argb shr 8) and 0xFF) / 255.0
+        val blue = (argb and 0xFF) / 255.0
+        val max = maxOf(red, green, blue)
+        val min = minOf(red, green, blue)
+        val light = (max + min) / 2.0
+        if (max == min) return Hsl(0.0, 0.0, light)
+        val delta = max - min
+        val saturation = delta / (1.0 - abs(2.0 * light - 1.0))
+        val hue = when (max) {
+            red -> ((green - blue) / delta + if (green < blue) 6 else 0) * 60
+            green -> ((blue - red) / delta + 2) * 60
+            else -> ((red - green) / delta + 4) * 60
+        }
+        return Hsl(hue, saturation, light)
+    }
+
+    /** The shorter turn from [from] to [to], in degrees. */
+    private fun hueGap(from: Double, to: Double): Double = 180.0 - abs(abs(from - to) - 180.0)
+
+    /** +1 when the shorter turn from [from] to [to] is clockwise. */
+    private fun hueDirection(from: Double, to: Double): Double {
+        val increasing = (to - from + 360.0) % 360.0
+        return if (increasing <= 180.0) 1.0 else -1.0
+    }
+
     /** A face's letter: the first letter or digit of [name], else of [seed], else `#`. */
     fun faceInitial(name: String, seed: String): String =
         (letterOrDigit.find(name) ?: letterOrDigit.find(seed))?.value?.uppercase() ?: "#"

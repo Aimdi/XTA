@@ -11,6 +11,7 @@
     <string name="empty">Füge ein Subreddit hinzu, um zu lesen</string>
     <string name="error_blocked">Reddit hat die Anfrage abgelehnt. Meist blockiert es das Netzwerk, in dem du gerade bist.</string>
     <string name="error_client_id">Reddit hat die Client-ID abgelehnt</string>
+    <string name="not_configured">Bitte zuerst die Reddit-Client-ID eintragen</string>
     <string name="error_network">Reddit ist nicht erreichbar</string>
     <string name="error_not_found">Dieses Subreddit gibt es nicht oder es ist privat</string>
     <string name="error_rate_limited">Zu viele Anfragen, bitte kurz warten</string>

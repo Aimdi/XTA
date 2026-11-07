@@ -11,6 +11,7 @@
     <string name="empty">添加一个 subreddit 开始阅读</string>
     <string name="error_blocked">Reddit 拒绝了请求。这通常意味着它屏蔽了你所在的网络。</string>
     <string name="error_client_id">Reddit 拒绝了该 client ID</string>
+    <string name="not_configured">请先填写 Reddit client ID</string>
     <string name="error_network">无法连接到 Reddit</string>
     <string name="error_not_found">该 subreddit 不存在或为私密</string>
     <string name="error_rate_limited">请求过多，请稍后再试</string>

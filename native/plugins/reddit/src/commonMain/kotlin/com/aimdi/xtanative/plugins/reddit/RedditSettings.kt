@@ -193,10 +193,12 @@ internal fun SignInScreen(app: RedditApp) {
     var working by remember { mutableStateOf(false) }
     var failure by remember { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()
+    val needsClientId = pluginString(Strings.not_configured)
     PluginScaffold(title = pluginString(Strings.sign_in), onBack = app.host::back) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
             val failed = failure
             when {
+                clientId.isBlank() -> SignInFailed(needsClientId)
                 failed != null -> SignInFailed(failed)
                 working -> LoadingRow()
                 else -> RedditSignInPage(url, Modifier.fillMaxSize()) { address ->
@@ -210,7 +212,7 @@ internal fun SignInScreen(app: RedditApp) {
                         scope.launch {
                             attempt { app.signIn(clientId, code) }
                                 .onSuccess { app.host.back() }
-                                .onFailure { failure = it.message.orEmpty() }
+                                .onFailure { failure = if (RedditTrouble.missingClientId(it)) needsClientId else it.message.orEmpty() }
                             working = false
                         }
                     }

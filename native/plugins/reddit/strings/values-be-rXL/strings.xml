@@ -11,6 +11,7 @@
     <string name="empty">Dadajcie sabredyt, kab pačać čytać</string>
     <string name="error_blocked">Reddit admoviŭ u zaprosie. Zvyčajna heta značyć, što jon blakuje vašu sietku.</string>
     <string name="error_client_id">Reddit admoviŭ client ID</string>
+    <string name="not_configured">Spačatku dadajcie svoj client ID Reddit</string>
     <string name="error_network">Nie ŭdałosia zviazacca z Reddit</string>
     <string name="error_not_found">Takoha sabredyta niama abo jon pryvatny</string>
     <string name="error_rate_limited">Zanadta mnoha zapytaŭ, pasprabujcie paźniej</string>

@@ -11,6 +11,7 @@
     <string name="empty">Okumaya başlamak için bir subreddit ekleyin</string>
     <string name="error_blocked">Reddit isteği reddetti. Bu genelde kullandığınız ağı engellediği anlamına gelir.</string>
     <string name="error_client_id">Reddit client ID’yi reddetti</string>
+    <string name="not_configured">Önce Reddit client ID’nizi girin</string>
     <string name="error_network">Reddit’e ulaşılamadı</string>
     <string name="error_not_found">Böyle bir subreddit yok veya özel</string>
     <string name="error_rate_limited">Çok fazla istek, biraz sonra tekrar deneyin</string>

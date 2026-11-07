@@ -163,6 +163,7 @@
     <string name="downloads_saving">Datei wird gespeichert…</string>
     <string name="downloads_completed">Gespeichert</string>
     <string name="downloads_failed">Download fehlgeschlagen</string>
+    <string name="saved_media_status">Medien konnten nicht gespeichert werden. Twitter gab folgenden Statuscode zurück: %1$d</string>
     <string name="downloads_cancelled">Abgebrochen</string>
     <string name="downloads_interrupted">Unterbrochen · Zum Fortfahren erneut versuchen</string>
     <string name="downloads_batch">Gespeicherte Dateien: %1$d / %2$d</string>

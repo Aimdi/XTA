@@ -11,6 +11,7 @@
     <string name="empty">أضف سبريديت لتبدأ القراءة</string>
     <string name="error_blocked">رفض Reddit الطلب. غالبًا يعني ذلك أنه يحجب الشبكة التي تستخدمها.</string>
     <string name="error_client_id">رفض Reddit مُعرِّف العميل</string>
+    <string name="not_configured">أضف أولًا مُعرِّف عميل Reddit</string>
     <string name="error_network">تعذّر الوصول إلى Reddit</string>
     <string name="error_not_found">هذا السبريديت غير موجود أو خاص</string>
     <string name="error_rate_limited">طلبات كثيرة جدًا، أعد المحاولة قريبًا</string>

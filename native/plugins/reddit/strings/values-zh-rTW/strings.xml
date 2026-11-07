@@ -11,6 +11,7 @@
     <string name="empty">新增一個 subreddit 開始閱讀</string>
     <string name="error_blocked">Reddit 拒絕了請求。這通常表示它封鎖了你所在的網路。</string>
     <string name="error_client_id">Reddit 拒絕了該 client ID</string>
+    <string name="not_configured">請先填寫 Reddit client ID</string>
     <string name="error_network">無法連線到 Reddit</string>
     <string name="error_not_found">該 subreddit 不存在或為私人</string>
     <string name="error_rate_limited">請求過多，請稍後再試</string>

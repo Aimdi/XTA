@@ -11,6 +11,7 @@
     <string name="empty">Dodaj subreddit, aby zacząć czytać</string>
     <string name="error_blocked">Reddit odrzucił żądanie. Zwykle oznacza to, że blokuje używaną sieć.</string>
     <string name="error_client_id">Reddit odrzucił client ID</string>
+    <string name="not_configured">Najpierw podaj client ID Reddita</string>
     <string name="error_network">Nie udało się połączyć z Redditem</string>
     <string name="error_not_found">Taki subreddit nie istnieje lub jest prywatny</string>
     <string name="error_rate_limited">Zbyt wiele żądań, spróbuj za chwilę</string>

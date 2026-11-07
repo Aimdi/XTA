@@ -163,6 +163,7 @@
     <string name="downloads_saving">S’està desant el fitxer…</string>
     <string name="downloads_completed">Desat</string>
     <string name="downloads_failed">La baixada ha fallat</string>
+    <string name="saved_media_status">No s\'ha pogut desar el suport. Twitter ha retornat un estat de %1$d</string>
     <string name="downloads_cancelled">Cancel·lat</string>
     <string name="downloads_interrupted">Interromput · Torna-ho a provar per continuar</string>
     <string name="downloads_batch">Fitxers desats: %1$d / %2$d</string>

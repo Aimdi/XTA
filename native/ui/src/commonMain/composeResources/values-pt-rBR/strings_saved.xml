@@ -163,6 +163,7 @@
     <string name="downloads_saving">Salvando arquivo…</string>
     <string name="downloads_completed">Salvo</string>
     <string name="downloads_failed">Falha no download</string>
+    <string name="saved_media_status">Não foi possível salvar a mídia. O Twitter retornou um status de %1$d</string>
     <string name="downloads_cancelled">Cancelado</string>
     <string name="downloads_interrupted">Interrompido · Tente novamente para continuar</string>
     <string name="downloads_batch">Arquivos salvos: %1$d / %2$d</string>

@@ -11,6 +11,7 @@
     <string name="empty">Ajoutez un subreddit pour commencer à lire</string>
     <string name="error_blocked">Reddit a refusé la requête. Cela signifie souvent qu’il bloque le réseau utilisé.</string>
     <string name="error_client_id">Reddit a refusé le client ID</string>
+    <string name="not_configured">Renseignez d’abord votre client ID Reddit</string>
     <string name="error_network">Impossible de joindre Reddit</string>
     <string name="error_not_found">Ce subreddit n’existe pas ou est privé</string>
     <string name="error_rate_limited">Trop de requêtes, réessayez dans un instant</string>

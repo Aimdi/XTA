@@ -206,7 +206,7 @@ class DownloadQueue(
             val entry = find(id)
             if (closed || entry == null || !entry.canRetry) return@withContext
             attempts[id] = (attempts[id] ?: 0) + 1
-            replace(entry.copy(status = DownloadStatus.QUEUED))
+            replace(entry.copy(status = DownloadStatus.QUEUED, httpStatus = null))
             try {
                 persist()
                 pump()
@@ -306,10 +306,11 @@ class DownloadQueue(
             finish(now.copy(status = if (savedUri == null) DownloadStatus.CANCELLED else DownloadStatus.COMPLETED, savedUri = savedUri))
         } catch (e: CancellationException) {
             throw e
-        } catch (_: Exception) {
+        } catch (e: Exception) {
             if (!isCurrent()) return
             val now = find(entry.id) ?: entry
-            finish(now.copy(status = if (token.cancelled) DownloadStatus.CANCELLED else DownloadStatus.FAILED))
+            val refused = !token.cancelled
+            finish(now.copy(status = if (refused) DownloadStatus.FAILED else DownloadStatus.CANCELLED, httpStatus = (e as? DownloadHttpException)?.code?.takeIf { refused }))
         } finally {
             if (cancellation[entry.id] === token) cancellation.remove(entry.id)
             withContext(NonCancellable) { persistQuietly() }
