@@ -12,7 +12,7 @@ internal data class RedditFace(val rows: List<String>, val background: Int, val 
  * always has the same face and colour, and a thread can be followed by shape.
  */
 internal object RedditFaces {
-    private val backgrounds = longArrayOf(
+    val backgrounds = longArrayOf(
         0xFFB25400, 0xFFE84462, 0xFFE9E9E9, 0xFFFF2D20, 0xFF1D9BF0, 0xFF00BA7C,
         0xFF7856FF, 0xFFFFB300, 0xFF00838F, 0xFFD81B60, 0xFF5D4037, 0xFF37474F,
     )
@@ -35,22 +35,25 @@ internal object RedditFaces {
     )
 
     /** A stable FNV-1a hash of the name, lowercased: not [String.hashCode], so the face is XTA's for the same name. */
-    fun seed(name: String): Int {
+    fun seed(name: String): Int = hash(name).toInt()
+
+    /** The hash as XTA's 64-bit int holds it: an empty name keeps the offset basis, above [Int.MAX_VALUE]. */
+    private fun hash(name: String): Long {
         var hash = 0x811c9dc5L
         for (unit in name.lowercase()) {
             hash = hash xor unit.code.toLong()
             hash = (hash * 0x01000193L) and 0x7fffffffL
         }
-        return hash.toInt()
+        return hash
     }
 
     /** Each part from another part of the hash, so two names sharing a face rarely share a colour too. */
     fun of(name: String): RedditFace {
-        val seed = seed(name)
+        val seed = hash(name)
         return RedditFace(
-            rows = faces[seed % faces.size],
-            background = backgrounds[(seed / 7) % backgrounds.size].toInt(),
-            accent = accents[(seed / 101) % accents.size].toInt(),
+            rows = faces[(seed % faces.size).toInt()],
+            background = backgrounds[((seed / 7) % backgrounds.size).toInt()].toInt(),
+            accent = accents[((seed / 101) % accents.size).toInt()].toInt(),
         )
     }
 }

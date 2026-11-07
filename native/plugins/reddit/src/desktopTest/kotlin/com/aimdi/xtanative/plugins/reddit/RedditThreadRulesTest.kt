@@ -34,6 +34,13 @@ class RedditThreadRulesTest {
     }
 
     @Test
+    fun collapsingALeafHidesNothingButKeepsItsRow() {
+        val rows = RedditThreadRules.visible(tree, setOf("c"))
+        assertEquals(tree.map { it.comment.id }, rows.map { it.entry.comment.id })
+        assertEquals(0, rows.single { it.entry.comment.id == "c" }.hidden)
+    }
+
+    @Test
     fun collapseAllFoldsTheTopLevelCommentsWithRepliesAndExpandAllUndoesIt() {
         assertEquals(setOf("a", "f"), RedditThreadRules.foldable(tree))
         assertEquals(false, RedditThreadRules.allFolded(tree, setOf("a")))
@@ -118,5 +125,44 @@ class RedditThreadRulesTest {
         assertEquals("Look at this", RedditThreadRules.visibleSelfText(picture, "Look at this https://i.redd.it/x.jpg"))
         assertEquals("Plain words", RedditThreadRules.visibleSelfText(post, "Plain words"))
         assertNull(RedditThreadRules.visibleSelfText(post, ""))
+    }
+
+    @Test
+    fun repliesSitAColumnFurtherInPerLevelWithLinesUpToTheCap() {
+        assertEquals(20, RedditThreadRules.LINE_COLUMN_DP)
+        assertEquals(listOf(0, 1, 2), listOf(0, 1, 2).map(RedditThreadRules::lines))
+        assertEquals(RedditThreadRules.MAX_LINES, RedditThreadRules.lines(30), "a deep reply keeps room for its words")
+    }
+
+    @Test
+    fun eachLevelHasItsColourAtThreeToOneAgainstEveryPage() {
+        // XTA's light, dim and lights-out pages.
+        listOf(0xFFFFFFFF.toInt(), 0xFF15202B.toInt(), 0xFF000000.toInt()).forEach { page ->
+            val colours = (0 until 4).map { RedditThreadRules.lineColour(it, page) }
+            assertEquals(4, colours.toSet().size)
+            colours.forEach { assertTrue(RedditContrast.ratio(it, page) >= 3.0, "%08x on %08x".format(it, page)) }
+            assertEquals(RedditThreadRules.lineColour(0, page), RedditThreadRules.lineColour(4, page), "the colours repeat")
+        }
+    }
+
+    @Test
+    fun aHairlineSeparatesTopLevelThreadsButNotTheFirst() {
+        assertFalse(RedditThreadRules.divided(depth = 0, index = 0))
+        assertFalse(RedditThreadRules.divided(depth = 1, index = 1))
+        assertTrue(RedditThreadRules.divided(depth = 0, index = 3))
+    }
+
+    @Test
+    fun theJumpShowsOnlyOnceThereAreTwoTopLevelComments() {
+        val one = RedditThreadRules.visible(flattenComments(listOf(comment("a", comment("b")))), emptySet())
+        assertFalse(RedditThreadRules.showsJump(one))
+        assertTrue(RedditThreadRules.showsJump(RedditThreadRules.visible(tree, emptySet())))
+    }
+
+    @Test
+    fun everyTargetIsFortyEightDpAndAnUpvoteCountsOneMore() {
+        assertEquals(48, RedditThreadRules.TOUCH_TARGET_DP)
+        assertEquals(30, RedditThreadRules.shownScore(30, upvoted = false))
+        assertEquals(31, RedditThreadRules.shownScore(30, upvoted = true))
     }
 }

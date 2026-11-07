@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -46,8 +47,12 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.toggleableState
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -64,15 +69,14 @@ import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 
-/** The thread lines by level, blue, violet, amber and green, repeating; each at 3:1 against the page. */
-private val LineColours = listOf(Color(0xFF3F78C4), Color(0xFF9A7FE0), Color(0xFFD9A646), Color(0xFF56B88A))
-
 /** Reddit's orange for an upvote. */
 private val Upvote = Color(0xFFFF8B4D)
 
-/** How far a reply sits in per level, and the most levels drawn, so a deep reply keeps room for its words. */
-private val LineColumn = 20.dp
-private const val MAX_LINES = 6
+/** How far a reply sits in per level ([RedditThreadRules.LINE_COLUMN_DP]). */
+private val LineColumn = RedditThreadRules.LINE_COLUMN_DP.dp
+
+/** Every target in a thread ([RedditThreadRules.TOUCH_TARGET_DP]). */
+private val Target = RedditThreadRules.TOUCH_TARGET_DP.dp
 
 /** A thread's body text: 15 on 22. */
 @Composable
@@ -81,8 +85,9 @@ internal fun threadBodyStyle() = MaterialTheme.typography.bodyMedium.copy(fontSi
 /** The lines of the levels above a reply, a column each, with [content] after them. */
 @Composable
 private fun ThreadLines(depth: Int, content: @Composable () -> Unit) {
-    val lines = minOf(depth, MAX_LINES)
-    val colours = (0 until lines).map { readable(LineColours[it % LineColours.size], 3.0) }
+    val lines = RedditThreadRules.lines(depth)
+    val page = MaterialTheme.colorScheme.background.toArgb()
+    val colours = (0 until lines).map { Color(RedditThreadRules.lineColour(it, page)) }
     Box(
         Modifier.fillMaxWidth().drawBehind {
             colours.forEachIndexed { level, colour ->
@@ -149,7 +154,7 @@ private fun removedText(comment: RedditComment): String = pluginString(
 private fun CommentHeader(app: RedditApp, comment: RedditComment, folded: Boolean, isNew: Boolean, onToggle: () -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         FlowRow(
-            Modifier.weight(1f).heightIn(min = 44.dp).clickable(onClick = onToggle).padding(vertical = 4.dp),
+            Modifier.weight(1f).heightIn(min = Target).clickable(onClick = onToggle).padding(vertical = 4.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterVertically),
         ) {
@@ -272,26 +277,26 @@ internal fun UpvoteButton(app: RedditApp, id: String, score: Int?, filled: Boole
     val upvoted = id in votes
     val idle = if (filled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
     val colour = if (upvoted) readable(Upvote) else idle
-    Pill(filled = filled, onClick = onToggle) {
+    Pill(filled = filled, onClick = onToggle, modifier = Modifier.semantics { toggleableState = ToggleableState(upvoted) }) {
         Icon(RedditGlyphs.ArrowUpwardRounded, contentDescription = pluginString(Strings.upvote), tint = if (upvoted) colour else MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(if (filled) 20.dp else 18.dp))
         if (score != null) {
             Spacer(Modifier.width(6.dp))
-            Text(countText((score + if (upvoted) 1 else 0).toLong()), fontSize = if (filled) 14.sp else 13.sp, fontWeight = FontWeight.SemiBold, color = colour)
+            Text(countText(RedditThreadRules.shownScore(score, upvoted).toLong()), fontSize = if (filled) 14.sp else 13.sp, fontWeight = FontWeight.SemiBold, color = colour)
         }
     }
 }
 
 /** A rounded touch target the thread's actions share: filled, a pill under the post; unfilled, a quiet button in a comment. */
 @Composable
-internal fun Pill(filled: Boolean, onClick: () -> Unit, content: @Composable () -> Unit) {
+internal fun Pill(filled: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     Surface(
         onClick = onClick,
         shape = CircleShape,
         color = if (filled) MaterialTheme.colorScheme.surfaceContainerHigh else Color.Transparent,
-        modifier = Modifier.heightIn(min = 44.dp),
+        modifier = modifier.heightIn(min = Target).widthIn(min = Target),
     ) {
         Row(
-            Modifier.heightIn(min = 44.dp).padding(horizontal = if (filled) 14.dp else 10.dp),
+            Modifier.heightIn(min = Target).padding(horizontal = if (filled) 14.dp else 10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) { content() }
     }
@@ -305,7 +310,7 @@ internal fun Pill(filled: Boolean, onClick: () -> Unit, content: @Composable () 
 internal fun HeldBackRow(depth: Int, action: HeldBack, loading: Boolean, onTap: () -> Unit) {
     val accent = MaterialTheme.colorScheme.primary
     ThreadLines(depth) {
-        TextButton(onClick = onTap, enabled = !loading && action != HeldBack.NOTHING) {
+        TextButton(onClick = onTap, enabled = !loading && action != HeldBack.NOTHING, modifier = Modifier.heightIn(min = Target)) {
             if (loading) {
                 CircularProgressIndicator(Modifier.size(16.dp), strokeWidth = 2.dp, color = accent)
                 Spacer(Modifier.width(8.dp))

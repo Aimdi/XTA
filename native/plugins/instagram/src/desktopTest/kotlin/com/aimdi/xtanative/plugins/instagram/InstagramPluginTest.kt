@@ -10,6 +10,7 @@ import com.aimdi.xtanative.networks.instagram.InstagramProfile
 import com.aimdi.xtanative.store.StoreFile
 import com.aimdi.xtanative.store.settings.InstagramPrefs
 import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.store.settings.ThreadsPrefs
 import java.io.IOException
 import java.nio.file.Files
 import java.time.Instant
@@ -95,5 +96,14 @@ class InstagramPluginTest {
     @Test
     fun everyGlyphDraws() {
         InstagramIcons.all.forEach { assertTrue(it.root.iterator().hasNext(), it.name) }
+    }
+
+    @Test
+    fun threadsCookiesAreCopiedAsInstagramsSession() {
+        val session = "sessionid=s1; csrftoken=c1; ds_user_id=9; mid=m1; ig_did=d1"
+        assertNull(InstagramThreadsSession.of(Settings()), "Threads holds none")
+        val copied = InstagramThreadsSession.of(Settings().with(ThreadsPrefs.directCookies, " $session "))
+        assertEquals(session, copied)
+        assertTrue(InstagramClient.hasSession(copied!!), "the names are shared: Instagram reads with them")
     }
 }

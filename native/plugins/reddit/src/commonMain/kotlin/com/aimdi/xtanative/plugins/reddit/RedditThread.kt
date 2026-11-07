@@ -98,7 +98,7 @@ internal fun ThreadScreen(app: RedditApp, route: RedditRoute.Thread) {
                     commentRows(app, thread, state, rows)
                 }
             }
-            if (rows != null && RedditThreadRules.topLevelRows(rows).size >= 2) {
+            if (rows != null && RedditThreadRules.showsJump(rows)) {
                 JumpButton(Modifier.align(Alignment.BottomEnd).padding(end = 16.dp, bottom = padding.calculateBottomPadding() + 16.dp)) { jump(scope, list, rows) }
             }
         }
@@ -121,7 +121,7 @@ private fun LazyListScope.commentRows(app: RedditApp, thread: RedditThreadState,
                     app,
                     row,
                     folded = comment.id in state.collapsed,
-                    divided = row.entry.depth == 0 && index > 0,
+                    divided = RedditThreadRules.divided(row.entry.depth, index),
                     isNew = RedditVisits.isNew(comment, state.lastVisit),
                     onToggle = { thread.toggle(comment.id) },
                 )
