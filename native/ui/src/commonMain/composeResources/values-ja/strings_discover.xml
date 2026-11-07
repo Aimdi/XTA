@@ -94,4 +94,6 @@
     <string name="discover_are_you_sure">確認</string>
     <string name="discover_show_menu">メニューを表示</string>
     <string name="discover_no_posts_match">検索に一致する投稿はありません</string>
+    <string name="discover_trends_unable">%1$sのトレンドを読み込めませんでした</string>
+    <string name="discover_trends_none">トレンドが返されませんでした。予期せぬ動作です！可能でしたらバグとして報告ください。</string>
 </resources>

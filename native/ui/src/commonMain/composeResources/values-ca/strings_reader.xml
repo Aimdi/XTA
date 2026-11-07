@@ -100,4 +100,5 @@
     <string name="reader_video_seconds">%1$d s</string>
     <string name="reader_link_unable_details">No s'ha pogut obrir l'enllaç. Si us plau, torna-ho a intentar.</string>
     <string name="reader_link_report">Reportar</string>
+    <string name="reader_checking_link">S’està comprovant l’enllaç…</string>
 </resources>

@@ -48,4 +48,10 @@
     <plurals name="new_posts">
         <item quantity="other">%1$d 則新貼文</item>
     </plurals>
+    <string name="problem_x_private">私人個人資料</string>
+    <string name="problem_x_missing">X 表示該頁面不存在，但這可能不是真的</string>
+    <string name="problem_x_user_missing">找不到使用者</string>
+    <string name="problem_x_suspended">帳號已遭停權</string>
+    <string name="problem_x_forbidden">X 表示禁止存取此內容</string>
+    <string name="problem_x_guest">X 已使我們的存取權杖失效。請嘗試重新開啟 XTA！</string>
 </resources>

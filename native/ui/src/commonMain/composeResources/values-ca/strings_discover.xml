@@ -96,4 +96,6 @@
     <string name="discover_are_you_sure">N'estàs segur?</string>
     <string name="discover_show_menu">Mostra el menú</string>
     <string name="discover_no_posts_match">Cap publicació coincideix amb la cerca</string>
+    <string name="discover_trends_unable">No s\'han pogut carregar les tendències per %1$s</string>
+    <string name="discover_trends_none">No s\'han retornat les tendències. Això és inesperat! Si us plau, informeu-ho com a error, si és possible.</string>
 </resources>

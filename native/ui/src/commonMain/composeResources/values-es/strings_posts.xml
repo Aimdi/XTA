@@ -114,4 +114,8 @@
     <string name="posts_translation_other">La traducción no ha funcionado. Vuelve a intentarlo.</string>
     <string name="posts_quote_unavailable">No se pudo recuperar el tuit citado</string>
     <string name="posts_no_text">La publicación no contenía texto. Esto es inesperado</string>
+    <string name="posts_unable_to_load_the_tweet">No se ha podido cargar el tuit</string>
+    <string name="posts_unable_to_load_the_next_page_of_replies">No se puede cargar la siguiente página de respuestas</string>
+    <string name="posts_unable_to_load_who_retweeted">No se puede cargar quién retuiteó este tweet</string>
+    <string name="posts_unable_to_load_more_retweets">No se pueden cargar más personas que retuitearon este tweet</string>
 </resources>

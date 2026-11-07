@@ -54,4 +54,10 @@
         <item quantity="many">%1$d новых допісаў</item>
         <item quantity="other">%1$d новага допісу</item>
     </plurals>
+    <string name="problem_x_private">Прыватны профіль</string>
+    <string name="problem_x_missing">Twitter кажа, што гэтая старонка не існуе, але гэта можа быць няпраўдай</string>
+    <string name="problem_x_user_missing">Карыстальнік не знойдзены</string>
+    <string name="problem_x_suspended">Уліковы запіс прыпынены</string>
+    <string name="problem_x_forbidden">Twitter кажа, што доступ да гэтага забаронены</string>
+    <string name="problem_x_guest">Twitter прызнаў несапраўдным наш маркер доступу. Калі ласка, паспрабуйце зноў адкрыць XTA!</string>
 </resources>

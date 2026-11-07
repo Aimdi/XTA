@@ -112,4 +112,8 @@ Bấm để xem thêm</string>
     <string name="posts_translation_other">Không dịch được. Hãy thử lại.</string>
     <string name="posts_quote_unavailable">Không thể lấy bài đăng được trích dẫn</string>
     <string name="posts_no_text">Bài viết này không có chữ nào, điều này không bình thường</string>
+    <string name="posts_unable_to_load_the_tweet">Không thể tải bài viết</string>
+    <string name="posts_unable_to_load_the_next_page_of_replies">Không thể tải trang tiếp theo của phản hồi</string>
+    <string name="posts_unable_to_load_who_retweeted">Không thể tải những người đã đăng lại bài viết này</string>
+    <string name="posts_unable_to_load_more_retweets">Không thể tải thêm người đã đăng lại bài viết này</string>
 </resources>

@@ -50,4 +50,10 @@
         <item quantity="one">Argitalpen berri %1$d</item>
         <item quantity="other">%1$d argitalpen berri</item>
     </plurals>
+    <string name="problem_x_private">Profil pribatua</string>
+    <string name="problem_x_missing">Twitterrek dio orria ez dela existitzen, baina baliteke hori egia ez izatea</string>
+    <string name="problem_x_user_missing">Ez da erabiltzailea aurkitu</string>
+    <string name="problem_x_suspended">Etendako kontua</string>
+    <string name="problem_x_forbidden">Twitterrek dio horretarako sarbidea debekatuta dagoela</string>
+    <string name="problem_x_guest">Twitterrek sarbide-tokena baliogabetu du. Mesedez, saiatu XTA berriro irekitzen!</string>
 </resources>

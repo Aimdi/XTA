@@ -114,4 +114,8 @@
     <string name="posts_translation_other">La traduko ne funkciis. Reprovu.</string>
     <string name="posts_quote_unavailable">Ne eblis ricevi la cititan pecon</string>
     <string name="posts_no_text">La pepo ne enhavas iun ajn tekston. Estas ne atendite</string>
+    <string name="posts_unable_to_load_the_tweet">Ne eblas ŝarĝi la pepon</string>
+    <string name="posts_unable_to_load_the_next_page_of_replies">Ne eblas ŝarĝi la sekvan paĝon de respondoj</string>
+    <string name="posts_unable_to_load_who_retweeted">Ne eblas ŝarĝi, kiu repepis ĉi tiun pepon</string>
+    <string name="posts_unable_to_load_more_retweets">Ne eblas ŝarĝi pliajn homojn, kiuj repepis ĉi tiun pepon</string>
 </resources>

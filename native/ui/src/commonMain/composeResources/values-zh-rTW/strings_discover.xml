@@ -94,4 +94,6 @@
     <string name="discover_are_you_sure">您確定嗎？</string>
     <string name="discover_show_menu">顯示選單</string>
     <string name="discover_no_posts_match">沒有符合搜尋的貼文</string>
+    <string name="discover_trends_unable">無法載入 %1$s 的趨勢</string>
+    <string name="discover_trends_none">沒有傳回任何趨勢。這不應該發生！如果可能，請回報此錯誤。</string>
 </resources>

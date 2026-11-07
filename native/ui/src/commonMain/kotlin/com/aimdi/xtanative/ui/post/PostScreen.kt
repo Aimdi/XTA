@@ -73,6 +73,8 @@ import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.post
 import com.aimdi.xtanative.ui.generated.resources.posts_continue_thread
+import com.aimdi.xtanative.ui.generated.resources.posts_unable_to_load_the_next_page_of_replies
+import com.aimdi.xtanative.ui.generated.resources.posts_unable_to_load_the_tweet
 import com.aimdi.xtanative.ui.generated.resources.posts_more
 import com.aimdi.xtanative.ui.generated.resources.posts_no_text
 import com.aimdi.xtanative.ui.generated.resources.posts_replies_missing
@@ -149,7 +151,7 @@ fun PostScreen(id: String, actions: PostActions, onBack: () -> Unit, startMedia:
                     val problem = state.problem
                     when {
                         state.loading && state.replies.isEmpty() -> item(key = "loading") { LoadingRow() }
-                        problem != null -> item(key = "problem") { ProblemRow(problem, { vm.load() }) }
+                        problem != null -> item(key = "problem") { ProblemRow(problem, { vm.load() }, context = stringResource(Res.string.posts_unable_to_load_the_tweet)) }
                     }
                     if (zenHidden) {
                         item(key = "zen") { ZenReplies(vm::revealReplies) }
@@ -239,7 +241,7 @@ private fun ThreadEnd(state: PostUi, vm: PostViewModel) {
     val more = state.moreProblem
     when {
         state.loadingMore -> LoadingRow()
-        more != null -> ProblemRow(more, vm::loadMore)
+        more != null -> ProblemRow(more, vm::loadMore, context = stringResource(Res.string.posts_unable_to_load_the_next_page_of_replies))
         state.showMore != null -> Box(Modifier.fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center) {
             TextButton(onClick = vm::showMoreReplies) {
                 Icon(PostIcons.MoreHoriz, null, modifier = Modifier.size(18.dp))

@@ -47,9 +47,11 @@ import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.generated.resources.Res
-import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_next_page_of_tweets
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.posts_no_quotes
+import com.aimdi.xtanative.ui.generated.resources.posts_unable_to_load_more_retweets
+import com.aimdi.xtanative.ui.generated.resources.posts_unable_to_load_the_next_page_of_replies
+import com.aimdi.xtanative.ui.generated.resources.posts_unable_to_load_who_retweeted
 import com.aimdi.xtanative.ui.generated.resources.posts_no_retweets
 import com.aimdi.xtanative.ui.generated.resources.posts_quotes
 import com.aimdi.xtanative.ui.generated.resources.posts_retweets
@@ -217,7 +219,7 @@ private fun QuotesList(state: QuotesUi, vm: QuotesViewModel, actions: PostAction
             item(key = "sort") {
                 SortChip(state.quoteSort, Sorts.X_QUOTES, { quoteSortLabel(it) }, ::quoteSortIcon, vm::selectQuotes, Modifier.padding(start = 4.dp))
             }
-            listState(quotes, { vm.loadQuotes() }, { quotes.cursor?.let(vm::loadQuotes) }, Res.string.posts_no_quotes, moreFailed = Res.string.problem_unable_to_load_the_next_page_of_tweets) {
+            listState(quotes, { vm.loadQuotes() }, { quotes.cursor?.let(vm::loadQuotes) }, Res.string.posts_no_quotes, moreFailed = Res.string.posts_unable_to_load_the_next_page_of_replies) {
                 feedThreads(quotes.items, layout, actions, keyOf = { "quote-" + it.id })
             }
         }
@@ -236,7 +238,14 @@ private fun RepostersList(state: QuotesUi, vm: QuotesViewModel, actions: PostAct
         if (options.size > 1) {
             item(key = "sort") { SortChip(sort, options, { reposterSortLabel(it) }, ::reposterSortIcon, vm::selectReposters, Modifier.padding(start = 4.dp)) }
         }
-        listState(reposters, { vm.loadReposters() }, { reposters.cursor?.let(vm::loadReposters) }, Res.string.posts_no_retweets) {
+        listState(
+            reposters,
+            { vm.loadReposters() },
+            { reposters.cursor?.let(vm::loadReposters) },
+            Res.string.posts_no_retweets,
+            failed = Res.string.posts_unable_to_load_who_retweeted,
+            moreFailed = Res.string.posts_unable_to_load_more_retweets,
+        ) {
             items(people, key = { "user-" + it.id }) { user -> UserRow(user, actions) }
         }
     }
@@ -248,13 +257,14 @@ private fun <T> androidx.compose.foundation.lazy.LazyListScope.listState(
     retry: () -> Unit,
     retryMore: () -> Unit,
     empty: org.jetbrains.compose.resources.StringResource,
+    failed: org.jetbrains.compose.resources.StringResource? = null,
     moreFailed: org.jetbrains.compose.resources.StringResource? = null,
     rows: androidx.compose.foundation.lazy.LazyListScope.() -> Unit,
 ) {
     val problem = paged.problem
     when {
         paged.loading -> item(key = "loading") { LoadingRow() }
-        problem != null -> item(key = "problem") { ProblemRow(problem, retry) }
+        problem != null -> item(key = "problem") { ProblemRow(problem, retry, context = failed?.let { stringResource(it) }) }
         paged.items.isEmpty() -> item(key = "empty") {
             Text(
                 stringResource(empty),

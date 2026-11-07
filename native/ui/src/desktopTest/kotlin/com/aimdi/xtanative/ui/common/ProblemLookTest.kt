@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.common
 
+import com.aimdi.xtanative.core.x.XAnswerException
 import com.aimdi.xtanative.core.x.XEndpointRefusedException
 import com.aimdi.xtanative.core.x.XNoAccountException
 import com.aimdi.xtanative.core.x.XNoWorkingAccountException
@@ -8,6 +9,7 @@ import com.aimdi.xtanative.core.x.XRequestException
 import com.aimdi.xtanative.core.x.XUserUnavailableException
 import com.aimdi.xtanative.core.x.signing.SigningUnavailableException
 import com.aimdi.xtanative.data.Problem
+import com.aimdi.xtanative.data.XAnswers
 import com.aimdi.xtanative.data.inFirstKinds
 import com.aimdi.xtanative.data.isRateLimit
 import java.io.IOException
@@ -33,6 +35,11 @@ class ProblemLookTest {
         assertEquals(Problem.TimedOut, Problem.of(SocketTimeoutException("timeout")))
         assertEquals(Problem.Offline, Problem.of(UnknownHostException("x.com")))
         assertEquals(Problem.Other, Problem.of(IllegalStateException()))
+        assertEquals(Problem.Answer(200), Problem.of(XAnswerException(200, "Forbidden")))
+        assertEquals(Problem.Answer(239), Problem.of(XAnswerException(239, "Bad guest token")))
+        assertEquals(Problem.Other, Problem.of(XAnswerException(88, "Rate limit")), "a code XTA does not explain stays the generic failure")
+        assertEquals("⛔", XAnswers.emoji(200))
+        assertEquals("💩", XAnswers.emoji(239))
     }
 
     @Test
@@ -53,6 +60,7 @@ class ProblemLookTest {
         assertEquals(Problem.Refused(404), Problem.EndpointRefused.inFirstKinds)
         assertEquals(Problem.Offline, Problem.TimedOut.inFirstKinds)
         assertEquals(Problem.Refused(503), Problem.Refused(503).inFirstKinds)
+        assertEquals(Problem.Other, Problem.Answer(200).inFirstKinds, "a plugin built before this code still sees the generic failure")
     }
 
     @Test
@@ -63,6 +71,10 @@ class ProblemLookTest {
         assertEquals(ProblemLook.SERVICE_UNAVAILABLE, ProblemLook.of(Problem.Refused(503)))
         assertEquals(ProblemLook.REQUEST_UNAVAILABLE, ProblemLook.of(Problem.Refused(403)))
         assertEquals(ProblemLook.HTTP, ProblemLook.of(Problem.Refused(400)))
+        assertEquals(ProblemLook.OTHER, ProblemLook.of(Problem.Answer(63)))
+        assertEquals(ReadRetry.MANUAL, ReadRetries.of(Problem.Answer(200)), "forbidden does not retry itself")
+        assertEquals(ReadRetry.MANUAL, ReadRetries.of(Problem.Answer(22)))
+        assertEquals(ReadRetry.BACKOFF, ReadRetries.of(Problem.Answer(239)), "a thrown-away guest token is tried again")
         assertEquals(ProblemLook.TIMED_OUT, ProblemLook.of(Problem.TimedOut))
     }
 

@@ -50,4 +50,10 @@
         <item quantity="one">%1$d publicació nova</item>
         <item quantity="other">%1$d publicacions noves</item>
     </plurals>
+    <string name="problem_x_private">Perfil privat</string>
+    <string name="problem_x_missing">Twitter diu que la pàgina no existeix, però pot ser que no sigui veritat</string>
+    <string name="problem_x_user_missing">Usuari no trobat</string>
+    <string name="problem_x_suspended">Compte suspés</string>
+    <string name="problem_x_forbidden">El Twitter diu que l\'accés a això està prohibit</string>
+    <string name="problem_x_guest">El Twitter ha invalidat el testimoni d\'accés. Si us plau, proveu de tornar a obrir XTA!</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.ui.common
 
 import com.aimdi.xtanative.data.Problem
+import com.aimdi.xtanative.data.XAnswers
 
 /** One taxonomy of read failures, as XTA's read_failure_kind.dart names them for a notice and its sheet. */
 enum class ReadFailureKind {
@@ -30,6 +31,7 @@ enum class ReadFailureKind {
                 403, 404 -> UNAVAILABLE
                 else -> UNKNOWN
             }
+            is Problem.Answer -> UNKNOWN
             Problem.Other -> UNKNOWN
         }
     }
@@ -52,10 +54,13 @@ object ReadRetries {
     /** The growing waits between automatic retries of a transient failure. */
     val DELAYS_MS: List<Long> = listOf(2_000, 5_000, 15_000, 30_000, 60_000)
 
-    fun of(problem: Problem): ReadRetry = when (ReadFailureKind.of(problem)) {
-        ReadFailureKind.SESSION, ReadFailureKind.ENDPOINT_REFUSED -> ReadRetry.MANUAL
-        ReadFailureKind.RATE_LIMITED -> ReadRetry.AT_RESET
-        else -> ReadRetry.BACKOFF
+    fun of(problem: Problem): ReadRetry = when {
+        problem is Problem.Answer && problem.code in XAnswers.DEFINITIVE -> ReadRetry.MANUAL
+        else -> when (ReadFailureKind.of(problem)) {
+            ReadFailureKind.SESSION, ReadFailureKind.ENDPOINT_REFUSED -> ReadRetry.MANUAL
+            ReadFailureKind.RATE_LIMITED -> ReadRetry.AT_RESET
+            else -> ReadRetry.BACKOFF
+        }
     }
 
     /** [problem] when it may be retried on its own, else null. */

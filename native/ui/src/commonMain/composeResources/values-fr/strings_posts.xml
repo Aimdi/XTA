@@ -114,4 +114,8 @@
     <string name="posts_translation_other">La traduction n'a pas fonctionné. Réessayez.</string>
     <string name="posts_quote_unavailable">Impossible de récupérer le post cité</string>
     <string name="posts_no_text">Le tweet ne contient aucun texte. C'est inattendu.</string>
+    <string name="posts_unable_to_load_the_tweet">Impossible de charger le tweet</string>
+    <string name="posts_unable_to_load_the_next_page_of_replies">Impossible de charger la page suivante des réponses</string>
+    <string name="posts_unable_to_load_who_retweeted">Impossible de charger qui a retweeté ce tweet</string>
+    <string name="posts_unable_to_load_more_retweets">Impossible de charger plus de personnes ayant retweeté ce tweet</string>
 </resources>

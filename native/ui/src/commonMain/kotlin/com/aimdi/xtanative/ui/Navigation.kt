@@ -341,6 +341,8 @@ fun XtaNativeRoot() {
             list = { id -> true.also { nav.navigate(Routes.list(id)) } },
             live = { link -> true.also { LiveRooms.open(LiveRooms.of(link), livePlayer, browser = { url -> links?.openOutside(url) }) } },
             plugin = plugins::openOnScreen,
+            mightAskPlugin = plugins::mightOpenLater,
+            pluginLater = plugins::openLater,
         )
     }
     BindLinkScreens(linkScreens)

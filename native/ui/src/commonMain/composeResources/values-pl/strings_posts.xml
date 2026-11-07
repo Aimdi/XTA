@@ -120,4 +120,8 @@
     <string name="posts_translation_other">Tłumaczenie się nie udało. Spróbuj ponownie.</string>
     <string name="posts_quote_unavailable">Nie udało się pobrać cytowanego posta</string>
     <string name="posts_no_text">Tweet nie zawierał żadnego tekstu. To nieoczekiwane!</string>
+    <string name="posts_unable_to_load_the_tweet">Nie można załadować tweeta</string>
+    <string name="posts_unable_to_load_the_next_page_of_replies">Nie można załadować następnej strony z odpowiedziami</string>
+    <string name="posts_unable_to_load_who_retweeted">Nie można załadować osób, które retweetnęły ten tweet</string>
+    <string name="posts_unable_to_load_more_retweets">Nie można załadować kolejnych osób, które retweetnęły ten tweet</string>
 </resources>

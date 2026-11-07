@@ -97,6 +97,7 @@ import com.aimdi.xtanative.ui.generated.resources.discover_plugin_empty
 import com.aimdi.xtanative.ui.generated.resources.discover_search
 import com.aimdi.xtanative.ui.generated.resources.discover_trend_posts
 import com.aimdi.xtanative.ui.generated.resources.discover_trends_empty
+import com.aimdi.xtanative.ui.generated.resources.discover_trends_unable
 import com.aimdi.xtanative.ui.generated.resources.saved_search_library
 import com.aimdi.xtanative.ui.generated.resources.saved_source_x
 import com.aimdi.xtanative.ui.plugins.PluginFrame
@@ -372,7 +373,9 @@ private fun TrendsBody(state: TrendsUi, list: LazyListState, onRefresh: () -> Un
     val problem = state.problem
     PullToRefreshBox(isRefreshing = state.loading && state.loaded, onRefresh = onRefresh, modifier = Modifier.fillMaxSize()) {
         when {
-            problem != null -> Whole { ProblemView(problem, onRefresh) }
+            problem != null -> Whole {
+                ProblemView(problem, onRefresh, context = stringResource(Res.string.discover_trends_unable, state.places.active.name))
+            }
             !state.loaded -> Whole { LoadingRow() }
             state.trends.isEmpty() -> Whole { EmptyTrends(onAddLocation) }
             // Room under the last trend for the button over it.

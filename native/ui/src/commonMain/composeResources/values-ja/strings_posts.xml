@@ -112,4 +112,8 @@ Click to show more..</string>
     <string name="posts_translation_other">翻訳できませんでした。もう一度お試しください。</string>
     <string name="posts_quote_unavailable">引用ポストを取得できませんでした</string>
     <string name="posts_no_text">ツイートのテキストがありません。予期せぬ結果です</string>
+    <string name="posts_unable_to_load_the_tweet">ツイートの読み込みに失敗しました</string>
+    <string name="posts_unable_to_load_the_next_page_of_replies">返信の次のページ読み込みに失敗しました</string>
+    <string name="posts_unable_to_load_who_retweeted">このツイートをリツイートした人を読み込めませんでした</string>
+    <string name="posts_unable_to_load_more_retweets">このツイートをリツイートした人をさらに読み込めませんでした</string>
 </resources>

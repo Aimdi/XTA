@@ -100,4 +100,5 @@
     <string name="reader_video_seconds">%1$d ث</string>
     <string name="reader_link_unable_details">تعذر فتح الرابط. يرجى المحاولة مرة أخرى.</string>
     <string name="reader_link_report">إبلاغ</string>
+    <string name="reader_checking_link">جارٍ التحقق من الرابط…</string>
 </resources>

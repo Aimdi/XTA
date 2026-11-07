@@ -50,4 +50,10 @@
         <item quantity="one">%1$d नई पोस्ट</item>
         <item quantity="other">%1$d नई पोस्ट</item>
     </plurals>
+    <string name="problem_x_private">निजी प्रोफ़ाइल</string>
+    <string name="problem_x_missing">X का कहना है कि पृष्ठ मौजूद नहीं है, लेकिन यह सच नहीं हो सकता</string>
+    <string name="problem_x_user_missing">उपयोगकर्ता नहीं मिला</string>
+    <string name="problem_x_suspended">अकाउंट निलंबित</string>
+    <string name="problem_x_forbidden">X का कहना है कि इस तक पहुँच प्रतिबंधित है</string>
+    <string name="problem_x_guest">X ने हमारा एक्सेस टोकन अमान्य कर दिया है। कृपया XTA को फिर से खोलने का प्रयास करें!</string>
 </resources>

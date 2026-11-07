@@ -113,4 +113,8 @@
     <string name="posts_translation_other">Çeviri başarısız oldu. Tekrar deneyin.</string>
     <string name="posts_quote_unavailable">Alıntılanan gönderi alınamadı</string>
     <string name="posts_no_text">Tweet'te herhangi bir metin yoktu. Bu beklenmedik bir şey</string>
+    <string name="posts_unable_to_load_the_tweet">Tweet yüklenemedi</string>
+    <string name="posts_unable_to_load_the_next_page_of_replies">Yanıtların bir sonraki sayfası yüklenemedi</string>
+    <string name="posts_unable_to_load_who_retweeted">Bu tweeti retweetleyenler yüklenemiyor</string>
+    <string name="posts_unable_to_load_more_retweets">Bu tweeti retweetleyen diğer kişiler yüklenemiyor</string>
 </resources>

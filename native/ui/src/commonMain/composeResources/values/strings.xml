@@ -30,6 +30,12 @@
     <string name="problem_signing">X's request signing couldn't be set up. Try again in a moment.</string>
     <string name="problem_refused">X refused the request (%1$d).</string>
     <string name="problem_other">Something went wrong reading X.</string>
+    <string name="problem_x_private">Private profile</string>
+    <string name="problem_x_missing">X says the page does not exist, but that may not be true</string>
+    <string name="problem_x_user_missing">User not found</string>
+    <string name="problem_x_suspended">Account suspended</string>
+    <string name="problem_x_forbidden">X says access to this is forbidden</string>
+    <string name="problem_x_guest">X has invalidated our access token. Please try re-opening XTA!</string>
 
     <string name="import_intro">XTA Native is XTA written for Android alone, to compare with XTA. It reads X with the accounts you already use in XTA.</string>
     <string name="import_steps">In XTA, open Settings → Data → Export, switch on “Export accounts?”, export, then choose that file here.</string>

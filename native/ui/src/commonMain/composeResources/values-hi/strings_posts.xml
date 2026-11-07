@@ -114,4 +114,8 @@
     <string name="posts_translation_other">अनुवाद नहीं हो सका। फिर से कोशिश करें।</string>
     <string name="posts_quote_unavailable">उद्धृत पोस्ट प्राप्त नहीं किया जा सका</string>
     <string name="posts_no_text">पोस्ट में कोई टेक्स्ट नहीं था। यह अप्रत्याशित है</string>
+    <string name="posts_unable_to_load_the_tweet">पोस्ट लोड नहीं की जा सकी</string>
+    <string name="posts_unable_to_load_the_next_page_of_replies">उत्तरों का अगला पृष्ठ लोड नहीं किया जा सका</string>
+    <string name="posts_unable_to_load_who_retweeted">इस पोस्ट को रीट्वीट करने वालों को लोड नहीं किया जा सका</string>
+    <string name="posts_unable_to_load_more_retweets">इस पोस्ट को रीट्वीट करने वाले और लोगों को लोड नहीं किया जा सका</string>
 </resources>

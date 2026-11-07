@@ -100,4 +100,6 @@
     <string name="discover_are_you_sure">Vy ŭpeŭnieny?</string>
     <string name="discover_show_menu">Pakazać mieniu</string>
     <string name="discover_no_posts_match">Niama pastoŭ, jakija adpaviadajuć vašamu zapytu</string>
+    <string name="discover_trends_unable">Niemahčyma zahruzić aktualnaje dla %1$s</string>
+    <string name="discover_trends_none">Nie było viernuta ničoha z aktualnaha. Heta niečakana! Kali łaska, pavedamicie ab hetym jak ab pamyłcy, kali heta mahčyma.</string>
 </resources>

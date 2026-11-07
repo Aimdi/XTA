@@ -50,4 +50,10 @@
         <item quantity="one">%1$d uus postitus</item>
         <item quantity="other">%1$d uut postitust</item>
     </plurals>
+    <string name="problem_x_private">Privaatne profiil</string>
+    <string name="problem_x_missing">Twitter ütleb, et lehte pole olemas, kuid see ei pruugi tõsi olla</string>
+    <string name="problem_x_user_missing">Kasutajat ei leidu</string>
+    <string name="problem_x_suspended">Kasutajakonto on ajutiselt peatatud</string>
+    <string name="problem_x_forbidden">Twitter ütleb, et juurdepääs sellele sisule on keelatud</string>
+    <string name="problem_x_guest">Twitter on meie juurdepääsutunnuse kehtetuks tunnistanud. Palun proovi uuesti avada XTA!</string>
 </resources>

@@ -96,4 +96,6 @@
     <string name="discover_are_you_sure">Tem certeza?</string>
     <string name="discover_show_menu">Mostrar menu</string>
     <string name="discover_no_posts_match">Nenhuma publicação corresponde à sua pesquisa</string>
+    <string name="discover_trends_unable">Não foi possível carregar as tendências para %1$s</string>
+    <string name="discover_trends_none">Não houve tendências devolvidas. Isso é inesperado! Por favor, reporte como um bug, se possível.</string>
 </resources>

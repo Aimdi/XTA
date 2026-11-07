@@ -96,4 +96,6 @@
     <string name="discover_are_you_sure">क्या आप सुनिश्चित हैं?</string>
     <string name="discover_show_menu">मेन्यू दिखाएं</string>
     <string name="discover_no_posts_match">आपकी खोज से मेल खाती कोई पोस्ट नहीं है</string>
+    <string name="discover_trends_unable">%1$s के लिए ट्रेंड लोड नहीं किए जा सके</string>
+    <string name="discover_trends_none">कोई ट्रेंड नहीं लौटाया गया। यह अप्रत्याशित है! यदि संभव हो तो कृपया बग रिपोर्ट करें।</string>
 </resources>

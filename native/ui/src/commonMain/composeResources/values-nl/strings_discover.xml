@@ -96,4 +96,6 @@
     <string name="discover_are_you_sure">Weet je het zeker?</string>
     <string name="discover_show_menu">Menu tonen</string>
     <string name="discover_no_posts_match">Geen berichten komen overeen met je zoekopdracht</string>
+    <string name="discover_trends_unable">Kan de trends voor %1$s niet laden</string>
+    <string name="discover_trends_none">Er werden geen trends geretourneerd. Dit is onverwacht! Meld dit als een bug indien mogelijk.</string>
 </resources>

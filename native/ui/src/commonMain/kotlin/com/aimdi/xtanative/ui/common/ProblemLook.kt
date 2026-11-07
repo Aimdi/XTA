@@ -32,6 +32,7 @@ enum class ProblemLook(val emoji: String?, val addAccount: Boolean = false, val 
             Problem.Offline -> OFFLINE
             Problem.TimedOut -> TIMED_OUT
             is Problem.Refused -> ofStatus(problem.code)
+            is Problem.Answer -> OTHER
             Problem.Other -> OTHER
         }
 

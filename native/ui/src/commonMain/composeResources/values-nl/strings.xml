@@ -50,4 +50,10 @@
         <item quantity="one">%1$d nieuwe post</item>
         <item quantity="other">%1$d nieuwe posts</item>
     </plurals>
+    <string name="problem_x_private">Privé profiel</string>
+    <string name="problem_x_missing">Twitter meldt dat deze pagina niet bestaat, maar dit hoeft niet te kloppen</string>
+    <string name="problem_x_user_missing">Gebruiker niet gevonden</string>
+    <string name="problem_x_suspended">Account uitgeschakeld</string>
+    <string name="problem_x_forbidden">Twitter zegt dat de toegang verboden is</string>
+    <string name="problem_x_guest">Twitter heeft onze toegangssleutel ongeldig gemaakt. Probeer XTA opnieuw te starten!</string>
 </resources>

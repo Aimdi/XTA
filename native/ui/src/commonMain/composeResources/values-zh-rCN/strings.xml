@@ -48,4 +48,10 @@
     <plurals name="new_posts">
         <item quantity="other">%1$d 条新帖子</item>
     </plurals>
+    <string name="problem_x_private">个人简介</string>
+    <string name="problem_x_missing">Twitter 说该页面不存在，但这可能不是真的</string>
+    <string name="problem_x_user_missing">未找到用户</string>
+    <string name="problem_x_suspended">账号已被冻结</string>
+    <string name="problem_x_forbidden">Twitter 表示禁止访问此内容</string>
+    <string name="problem_x_guest">Twitter 使我们的访问令牌无效。请尝试重新打开 XTA！</string>
 </resources>

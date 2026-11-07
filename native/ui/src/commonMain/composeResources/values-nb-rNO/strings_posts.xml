@@ -114,4 +114,8 @@
     <string name="posts_translation_other">Oversettelsen mislyktes. Prøv igjen.</string>
     <string name="posts_quote_unavailable">Kunne ikke hente det siterte innlegget</string>
     <string name="posts_no_text">Tweeten inneholdt ingen tekst. Dette er uventet</string>
+    <string name="posts_unable_to_load_the_tweet">Kan ikke laste tweeten</string>
+    <string name="posts_unable_to_load_the_next_page_of_replies">Kan ikke laste inn neste side med svar</string>
+    <string name="posts_unable_to_load_who_retweeted">Kan ikke laste inn hvem som har retweetet denne tweeten</string>
+    <string name="posts_unable_to_load_more_retweets">Kan ikke laste inn flere som har retweetet denne tweeten</string>
 </resources>

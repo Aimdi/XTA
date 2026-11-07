@@ -100,4 +100,5 @@
     <string name="reader_video_seconds">%1$d 秒</string>
     <string name="reader_link_unable_details">リンクを開くことができませんでした。もう一度お試しください。</string>
     <string name="reader_link_report">レポート</string>
+    <string name="reader_checking_link">リンクを確認しています…</string>
 </resources>

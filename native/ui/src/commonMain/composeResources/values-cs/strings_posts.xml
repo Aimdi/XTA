@@ -120,4 +120,8 @@
     <string name="posts_translation_other">Překlad se nezdařil. Zkuste to znovu.</string>
     <string name="posts_quote_unavailable">Citovaný tweet se nepodařilo načíst</string>
     <string name="posts_no_text">Tweety neobsahoval žádný text. Toto je neočekávané</string>
+    <string name="posts_unable_to_load_the_tweet">Nepodařilo se načíst tweet</string>
+    <string name="posts_unable_to_load_the_next_page_of_replies">Nepodařilo se načíst další stránku odpovědí</string>
+    <string name="posts_unable_to_load_who_retweeted">Nepodařilo se načíst, kdo retweetnul tento tweet</string>
+    <string name="posts_unable_to_load_more_retweets">Nepodařilo se načíst další lidi, kteří retweetnuli tento tweet</string>
 </resources>

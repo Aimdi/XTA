@@ -96,4 +96,6 @@
     <string name="discover_are_you_sure">Emin misiniz?</string>
     <string name="discover_show_menu">Menüyü göster</string>
     <string name="discover_no_posts_match">Aramanızla eşleşen gönderi yok</string>
+    <string name="discover_trends_unable">%1$s için trendler yüklenemiyor</string>
+    <string name="discover_trends_none">Geri dönen trend yoktu. Bu beklenmedik! Mümkünse lütfen bir hata olarak bildirin.</string>
 </resources>

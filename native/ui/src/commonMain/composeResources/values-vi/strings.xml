@@ -48,4 +48,10 @@
     <plurals name="new_posts">
         <item quantity="other">%1$d bài đăng mới</item>
     </plurals>
+    <string name="problem_x_private">Trang cá nhân riêng tư</string>
+    <string name="problem_x_missing">X đã không tìm thấy bài này, có lẽ vậy</string>
+    <string name="problem_x_user_missing">Không tìm thấy người dùng</string>
+    <string name="problem_x_suspended">Tài khoản đã dừng hoạt động</string>
+    <string name="problem_x_forbidden">Không thể truy cập theo X</string>
+    <string name="problem_x_guest">X đã xóa quyền truy cập theo token, vui lòng đóng ứng dụng và mở lại</string>
 </resources>

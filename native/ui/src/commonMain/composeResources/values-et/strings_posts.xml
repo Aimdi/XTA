@@ -114,4 +114,8 @@
     <string name="posts_translation_other">Tõlkimine ebaõnnestus. Proovi uuesti.</string>
     <string name="posts_quote_unavailable">Tsiteeritud postitust ei õnnestunud laadida</string>
     <string name="posts_no_text">Säutsus puudus sisu. See on nüüd küll ootamatu</string>
+    <string name="posts_unable_to_load_the_tweet">Säutsu laadimine ei õnnestu</string>
+    <string name="posts_unable_to_load_the_next_page_of_replies">Vastuste järgmise lehe laadimine ei õnnestu</string>
+    <string name="posts_unable_to_load_who_retweeted">Selle säutsu kordussäutsijate laadimine ei õnnestu</string>
+    <string name="posts_unable_to_load_more_retweets">Rohkemate kordussäutsijate laadimine ei õnnestu</string>
 </resources>

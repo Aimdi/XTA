@@ -96,4 +96,6 @@
     <string name="discover_are_you_sure">Ĉu vi certas?</string>
     <string name="discover_show_menu">Montri menuon</string>
     <string name="discover_no_posts_match">Neniu afiŝo kongruas kun via serĉo</string>
+    <string name="discover_trends_unable">Ne eblas ŝarĝi la tendencaĵojn el %1$s</string>
+    <string name="discover_trends_none">Ne tendencaĵoj revenis. Estas ne atendite! Bonvolu raporti kiel cimo, se eble.</string>
 </resources>

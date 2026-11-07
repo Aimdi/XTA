@@ -10,6 +10,9 @@ import com.aimdi.xtanative.store.settings.BlueskyPrefs
 import com.aimdi.xtanative.store.settings.GeneralPrefs
 import com.aimdi.xtanative.store.settings.PostsPrefs
 import com.aimdi.xtanative.store.settings.Settings
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -33,6 +36,8 @@ class LinkOpenerTest {
         var readsNetworks = false
         var hasXScreens = false
         var pluginHosts = emptySet<String>()
+        var mightAsk: (String) -> Boolean = { false }
+        var later: (suspend (String) -> Boolean)? = null
         val screens = LinkScreens(
             post = { opened += "post $it" },
             profile = { name, tab -> opened += listOfNotNull("profile", name, tab?.name).joinToString(" ") },
@@ -42,6 +47,8 @@ class LinkOpenerTest {
             community = { id, about -> hasXScreens.also { if (it) opened += listOfNotNull("community", id, "about".takeIf { about }).joinToString(" ") } },
             list = { id -> hasXScreens.also { if (it) opened += "list $id" } },
             plugin = { url -> (LinkSteps.hostOf(url) in pluginHosts).also { if (it) opened += "plugin $url" } },
+            mightAskPlugin = { mightAsk(it) },
+            pluginLater = { later?.invoke(it) == true },
         )
     }
 
@@ -55,7 +62,8 @@ class LinkOpenerTest {
         }
     }
 
-    private fun opener(platform: Platform, settings: Settings? = Settings()) = LinkOpener(platform, { settings })
+    private fun opener(platform: Platform, settings: Settings? = Settings()) =
+        LinkOpener(platform, { settings }, scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined))
 
     @Test
     fun xPostsAndProfilesOpenTheirScreens() {
@@ -348,5 +356,37 @@ class LinkOpenerTest {
         val settings = Settings().with(GeneralPrefs.shareBaseUrl, "https://fxtwitter.com/")
         assertEquals("https://fxtwitter.com/maya/status/5", LinkFrom.x(post, settings, null).post.postUrl)
         assertIs<LinkFrom>(LinkFrom.x(post, null, null))
+    }
+
+    @Test
+    fun anUnknownDomainIsAskedBeforeTheBrowserAndGivenUpOnWhenItIsNotAPost() {
+        val platform = Platform()
+        val screens = Screens()
+        var asked = false
+        screens.mightAsk = { it.contains("/p/") }
+        screens.later = { asked = true; false }
+        val opener = opener(platform, settings("inApp" to false)).also { it.bind(screens.screens) }
+        opener.open("https://news.example.org/p/hello")
+        assertTrue(asked)
+        assertEquals(1, platform.launched.size)
+        opener.open("https://example.org/about")
+        assertEquals(2, platform.launched.size, "a link no plugin might read is not asked")
+    }
+
+    @Test
+    fun aDomainThatConfirmsOpensInTheAppAndTheDesktopNeverAsks() {
+        val screens = Screens()
+        screens.mightAsk = { true }
+        screens.later = { screens.opened += "later $it"; true }
+        val phone = Platform()
+        opener(phone).also { it.bind(screens.screens) }.open("https://news.example.org/p/hello")
+        assertEquals(listOf("later https://news.example.org/p/hello"), screens.opened)
+        assertTrue(phone.launched.isEmpty())
+        val desktop = Platform(desktop = true)
+        val again = Screens()
+        again.mightAsk = { true }
+        again.later = { error("the desktop does not ask") }
+        opener(desktop, settings("inApp" to false)).also { it.bind(again.screens) }.open("https://news.example.org/p/hello")
+        assertEquals(1, desktop.launched.size)
     }
 }

@@ -100,4 +100,5 @@
     <string name="reader_video_seconds">%1$d s</string>
     <string name="reader_link_unable_details">Ezin izan da esteka ireki. Mesedez, saiatu berriro.</string>
     <string name="reader_link_report">Txostena</string>
+    <string name="reader_checking_link">Esteka egiaztatzen…</string>
 </resources>

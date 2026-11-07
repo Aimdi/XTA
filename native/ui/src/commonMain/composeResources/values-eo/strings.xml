@@ -50,4 +50,10 @@
         <item quantity="one">%1$d nova afiŝo</item>
         <item quantity="other">%1$d novaj afiŝoj</item>
     </plurals>
+    <string name="problem_x_private">Profilo privata</string>
+    <string name="problem_x_missing">Twitter diras, la paĝo ne ekzistas, sed tio eble ne estas vere</string>
+    <string name="problem_x_user_missing">Uzanto ne troviĝis</string>
+    <string name="problem_x_suspended">Konto haltiĝis</string>
+    <string name="problem_x_forbidden">Twitter diras, atingo estas malpermesita</string>
+    <string name="problem_x_guest">Twitter malvalidigis la ĵetonon de atingo. Bonvolu provi remalfermi XTA-on!</string>
 </resources>

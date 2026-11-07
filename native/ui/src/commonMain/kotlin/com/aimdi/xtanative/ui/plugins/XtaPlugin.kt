@@ -189,6 +189,22 @@ abstract class XtaPlugin {
      */
     open fun routeFor(url: String): String? = null
 
+    /**
+     * Whether [url] might be one of its screens only after asking the network,
+     * as Substack asks an unknown domain whether a `/p/` link is a post.
+     * Quick: no request. The app then calls [routeForLater], and only off the
+     * desktop, where XTA asks. False by default, so a plugin already built is
+     * unchanged.
+     */
+    open fun mightRouteLater(url: String): Boolean = false
+
+    /**
+     * The route of the screen [url] opens once the network has been asked, or
+     * null when it does not. Called only after [mightRouteLater], and given up
+     * on after a few seconds. Null by default.
+     */
+    open suspend fun routeForLater(url: String): String? = null
+
     /** Its own screen named [route] (one [PluginHost.open] pushes, or [routeFor] gave); null when it has none by that name. */
     open fun screen(route: String): PluginScreen? = null
 

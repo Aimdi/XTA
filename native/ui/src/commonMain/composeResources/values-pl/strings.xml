@@ -54,4 +54,10 @@
         <item quantity="many">%1$d nowych wpisów</item>
         <item quantity="other">%1$d nowego wpisu</item>
     </plurals>
+    <string name="problem_x_private">Profil prywatny</string>
+    <string name="problem_x_missing">Twitter twierdzi, że strona nie istnieje, ale to może nie być prawda</string>
+    <string name="problem_x_user_missing">Nie znaleziono użytkownika</string>
+    <string name="problem_x_suspended">Konto zawieszone</string>
+    <string name="problem_x_forbidden">Twitter mówi, że dostęp do tego jest zabroniony</string>
+    <string name="problem_x_guest">Twitter unieważnił nasz token dostępu. Spróbuj ponownie otworzyć Quackera!</string>
 </resources>

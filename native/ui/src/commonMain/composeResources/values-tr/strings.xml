@@ -50,4 +50,10 @@
         <item quantity="one">%1$d yeni gönderi</item>
         <item quantity="other">%1$d yeni gönderi</item>
     </plurals>
+    <string name="problem_x_private">Gizli profil</string>
+    <string name="problem_x_missing">Twitter sayfanın mevcut olmadığını söylüyor, ancak bu doğru olmayabilir</string>
+    <string name="problem_x_user_missing">Kullanıcı bulunamadı</string>
+    <string name="problem_x_suspended">Hesap askıya alındı</string>
+    <string name="problem_x_forbidden">Twitter buna erişimin yasak olduğunu söylüyor</string>
+    <string name="problem_x_guest">Twitter erişim belirtecimizi geçersiz kıldı. Lütfen XTA\'ı yeniden açmayı deneyin!</string>
 </resources>

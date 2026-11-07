@@ -52,4 +52,10 @@
         <item quantity="few">%1$d postări noi</item>
         <item quantity="other">%1$d de postări noi</item>
     </plurals>
+    <string name="problem_x_private">Profil privat</string>
+    <string name="problem_x_missing">X spune că pagina nu există, dar poate că nu este adevărat</string>
+    <string name="problem_x_user_missing">Utilizatorul nu a fost găsit</string>
+    <string name="problem_x_suspended">Cont suspendat</string>
+    <string name="problem_x_forbidden">X spune că accesul la aceasta este interzis</string>
+    <string name="problem_x_guest">X a invalidat tokenul nostru de acces. Vă rugăm să încercați să redeschideți XTA!</string>
 </resources>

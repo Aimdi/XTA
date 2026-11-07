@@ -120,4 +120,8 @@
     <string name="posts_translation_other">Не вдалося перекласти. Спробуйте ще раз.</string>
     <string name="posts_quote_unavailable">Не вдалося отримати цитований допис</string>
     <string name="posts_no_text">Публікація не містила жодного тексту. Це неочікувано</string>
+    <string name="posts_unable_to_load_the_tweet">Не вдається завантажити твіт</string>
+    <string name="posts_unable_to_load_the_next_page_of_replies">Не вдається завантажити наступну сторінку відповідей</string>
+    <string name="posts_unable_to_load_who_retweeted">Не вдається завантажити тих, хто ретвітнув цей твіт</string>
+    <string name="posts_unable_to_load_more_retweets">Не вдається завантажити більше людей, які ретвітнули цей твіт</string>
 </resources>

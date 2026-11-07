@@ -126,4 +126,8 @@
     <string name="posts_translation_other">لم تنجح الترجمة. حاول مجددًا.</string>
     <string name="posts_quote_unavailable">تعذر استرداد التغريدة المقتبسة</string>
     <string name="posts_no_text">التغريدة لا تحتوي على أي نص. هذا غير متوقع</string>
+    <string name="posts_unable_to_load_the_tweet">غير قادر على تحميل التغريدات</string>
+    <string name="posts_unable_to_load_the_next_page_of_replies">غير قادر على تحميل الصفحة التالية من الردود</string>
+    <string name="posts_unable_to_load_who_retweeted">غير قادر على تحميل من أعاد تغريد هذه التغريدة</string>
+    <string name="posts_unable_to_load_more_retweets">غير قادر على تحميل المزيد من الأشخاص الذين أعادوا تغريد هذه التغريدة</string>
 </resources>

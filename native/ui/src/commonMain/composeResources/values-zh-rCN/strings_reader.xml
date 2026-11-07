@@ -100,4 +100,5 @@
     <string name="reader_video_seconds">%1$d 秒</string>
     <string name="reader_link_unable_details">无法打开链接。请重试。</string>
     <string name="reader_link_report">报告</string>
+    <string name="reader_checking_link">正在检查链接…</string>
 </resources>

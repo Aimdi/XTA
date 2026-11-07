@@ -50,4 +50,10 @@
         <item quantity="one">%1$d post nuevo</item>
         <item quantity="other">%1$d posts nuevos</item>
     </plurals>
+    <string name="problem_x_private">Perfil privado</string>
+    <string name="problem_x_missing">X dice que la página no existe, pero puede que no sea cierto</string>
+    <string name="problem_x_user_missing">Usuario no encontrado</string>
+    <string name="problem_x_suspended">Cuenta suspendida</string>
+    <string name="problem_x_forbidden">X dice que el acceso a esto está prohibido</string>
+    <string name="problem_x_guest">X ha invalidado nuestro token de acceso. ¡Por favor, intenta reabrir XTA!</string>
 </resources>

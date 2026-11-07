@@ -100,4 +100,6 @@
     <string name="discover_are_you_sure">Вы ўпэўнены?</string>
     <string name="discover_show_menu">Паказаць меню</string>
     <string name="discover_no_posts_match">Няма пастоў, якія адпавядаюць вашаму запыту</string>
+    <string name="discover_trends_unable">Немагчыма загрузіць актуальнае для %1$s</string>
+    <string name="discover_trends_none">Не было вернута нічога з актуальнага. Гэта нечакана! Калі ласка, паведаміце аб гэтым як аб памылцы, калі гэта магчыма.</string>
 </resources>

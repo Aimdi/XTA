@@ -150,4 +150,5 @@
     </plurals>
     <string name="in_home_feed">Pakazvać u hałoŭnaj stužcy</string>
     <string name="in_home_feed_description">Dadaje zapisy z akaŭntaŭ Bluesky, na jakija vy padpisany, u «Padpiski» i «Dla vas»</string>
+    <string name="media">Medyja</string>
 </resources>

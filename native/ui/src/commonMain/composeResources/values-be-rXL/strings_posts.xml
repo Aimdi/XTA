@@ -120,4 +120,8 @@
     <string name="posts_translation_other">Nie ŭdałosia pierakłaści. Pasprabujcie jašče raz.</string>
     <string name="posts_quote_unavailable">Nie ŭdałosia atrymać cytavany post</string>
     <string name="posts_no_text">Tvit nie źmiaščaŭ nijakaha tekstu. Heta niečakana</string>
+    <string name="posts_unable_to_load_the_tweet">Nie ŭdajecca zahruzić tvit</string>
+    <string name="posts_unable_to_load_the_next_page_of_replies">Nie ŭdajecca zahruzić nastupnuju staronku adkazaŭ</string>
+    <string name="posts_unable_to_load_who_retweeted">Nie atrymoŭvajecca zahruzić, chto retvitnuŭ hety tvit</string>
+    <string name="posts_unable_to_load_more_retweets">Nie atrymoŭvajecca zahruzić bolš liudziej, jakija retvitnuli hety tvit</string>
 </resources>

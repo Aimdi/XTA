@@ -96,4 +96,6 @@
     <string name="discover_are_you_sure">Ziur zaude?</string>
     <string name="discover_show_menu">Erakutsi menua</string>
     <string name="discover_no_posts_match">Ez dago zure bilaketarekin bat datorren argitalpenik</string>
+    <string name="discover_trends_unable">Ezin dira joerak kargatu %1$s</string>
+    <string name="discover_trends_none">Ez da joerarik itzuli. Hau ezustekoa! Mesedez, jakinarazi akats gisa, ahal baduzu.</string>
 </resources>

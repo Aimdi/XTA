@@ -114,4 +114,8 @@
     <string name="posts_translation_other">De vertaling is mislukt. Probeer het opnieuw.</string>
     <string name="posts_quote_unavailable">Kon de geciteerde post niet ophalen</string>
     <string name="posts_no_text">De tweet bevat geen tekst. Dit is onverwacht</string>
+    <string name="posts_unable_to_load_the_tweet">Laden van de tweet is mislukt</string>
+    <string name="posts_unable_to_load_the_next_page_of_replies">Laden van meer reacties is mislukt</string>
+    <string name="posts_unable_to_load_who_retweeted">Kan niet laden wie deze tweet heeft geretweet</string>
+    <string name="posts_unable_to_load_more_retweets">Kan niet meer mensen laden die deze tweet hebben geretweet</string>
 </resources>

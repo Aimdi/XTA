@@ -96,4 +96,6 @@
     <string name="discover_are_you_sure">Sei sicuro?</string>
     <string name="discover_show_menu">Mostra il menu</string>
     <string name="discover_no_posts_match">Nessun post corrisponde alla tua ricerca</string>
+    <string name="discover_trends_unable">Impossibile caricare le tendenze per %1$s</string>
+    <string name="discover_trends_none">Non è stata restituita alcuna tendenza. Questo è inaspettato! Si prega di segnalare un errore, se possibile.</string>
 </resources>

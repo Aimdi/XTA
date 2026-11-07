@@ -100,4 +100,6 @@
     <string name="discover_are_you_sure">Ви впевнені?</string>
     <string name="discover_show_menu">Показати меню</string>
     <string name="discover_no_posts_match">Немає дописів, що відповідають вашому запиту</string>
+    <string name="discover_trends_unable">Не вдалося завантажити тренди для %1$s</string>
+    <string name="discover_trends_none">Немає повернених трендів. Це неочікувано! Будь ласка, повідомте про помилку, якщо можливо.</string>
 </resources>

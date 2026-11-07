@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.data.Problem
+import com.aimdi.xtanative.data.XAnswers
 import com.aimdi.xtanative.data.isRateLimit
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.problem_endpoint_refused_text
@@ -56,6 +57,12 @@ import com.aimdi.xtanative.ui.generated.resources.problem_signing_text
 import com.aimdi.xtanative.ui.generated.resources.problem_signing_title
 import com.aimdi.xtanative.ui.generated.resources.problem_timed_out_text
 import com.aimdi.xtanative.ui.generated.resources.problem_timed_out_title
+import com.aimdi.xtanative.ui.generated.resources.problem_x_forbidden
+import com.aimdi.xtanative.ui.generated.resources.problem_x_guest
+import com.aimdi.xtanative.ui.generated.resources.problem_x_missing
+import com.aimdi.xtanative.ui.generated.resources.problem_x_private
+import com.aimdi.xtanative.ui.generated.resources.problem_x_suspended
+import com.aimdi.xtanative.ui.generated.resources.problem_x_user_missing
 import com.aimdi.xtanative.ui.generated.resources.retry
 import com.aimdi.xtanative.ui.generated.resources.settings_diagnostics
 import com.aimdi.xtanative.ui.generated.resources.signin_add_account
@@ -81,6 +88,7 @@ fun problemText(problem: Problem): String = when (problem) {
     Problem.Offline -> stringResource(Res.string.problem_offline)
     Problem.Signing -> stringResource(Res.string.problem_signing)
     is Problem.Refused -> stringResource(Res.string.problem_refused, problem.code)
+    is Problem.Answer -> xAnswerText(problem.code)
     Problem.Other -> stringResource(Res.string.problem_other)
     Problem.NoWorkingAccount -> stringResource(Res.string.problem_no_working_account_title)
     Problem.EndpointRefused -> stringResource(Res.string.problem_endpoint_refused_title)
@@ -99,10 +107,11 @@ fun problemText(problem: Problem): String = when (problem) {
 fun ProblemView(problem: Problem, onRetry: () -> Unit, modifier: Modifier = Modifier, context: String? = null) {
     val look = ProblemLook.of(problem)
     val actions = LocalProblemActions.current
+    val answered = (problem as? Problem.Answer)?.code
     Column(modifier.fillMaxWidth().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        ProblemMark(look)
-        Text(stringResource(titleOf(look)), fontSize = 18.sp, textAlign = TextAlign.Center)
-        Text(
+        ProblemMark(look, answered?.let(XAnswers::emoji))
+        Text(answered?.let { xAnswerText(it) } ?: stringResource(titleOf(look)), fontSize = 18.sp, textAlign = TextAlign.Center)
+        if (answered == null) Text(
             detailsOf(look, problem),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -140,8 +149,7 @@ fun ProblemRow(problem: Problem, onRetry: () -> Unit, modifier: Modifier = Modif
 }
 
 @Composable
-private fun ProblemMark(look: ProblemLook) {
-    val emoji = look.emoji
+private fun ProblemMark(look: ProblemLook, emoji: String? = look.emoji) {
     if (emoji == null) {
         Icon(Icons.Outlined.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.padding(bottom = 16.dp).size(36.dp))
     } else {
@@ -183,6 +191,17 @@ private fun RetryButton(problem: Problem, onRetry: () -> Unit, raised: Boolean) 
         }
         else -> TextButton(onClick = onRetry) { Text(label) }
     }
+}
+
+@Composable
+private fun xAnswerText(code: Int): String = when (code) {
+    22 -> stringResource(Res.string.problem_x_private)
+    34 -> stringResource(Res.string.problem_x_missing)
+    50 -> stringResource(Res.string.problem_x_user_missing)
+    63 -> stringResource(Res.string.problem_x_suspended)
+    200 -> stringResource(Res.string.problem_x_forbidden)
+    239 -> stringResource(Res.string.problem_x_guest)
+    else -> stringResource(Res.string.problem_other)
 }
 
 private fun titleOf(look: ProblemLook): StringResource = when (look) {

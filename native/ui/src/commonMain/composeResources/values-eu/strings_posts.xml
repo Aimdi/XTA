@@ -114,4 +114,8 @@
     <string name="posts_translation_other">Itzulpenak ez du funtzionatu. Saiatu berriro.</string>
     <string name="posts_quote_unavailable">Ezin izan da aipatutako txioa berreskuratu</string>
     <string name="posts_no_text">Txioak ez zuen testurik</string>
+    <string name="posts_unable_to_load_the_tweet">Ezin da txioa kargatu</string>
+    <string name="posts_unable_to_load_the_next_page_of_replies">Ezin da hurrengo erantzunen orria kargatu</string>
+    <string name="posts_unable_to_load_who_retweeted">Ezin da kargatu nork birtxiotu duen txio hau</string>
+    <string name="posts_unable_to_load_more_retweets">Ezin da kargatu txio hau birtxiotu duten pertsona gehiago</string>
 </resources>

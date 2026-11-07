@@ -96,4 +96,6 @@
     <string name="discover_are_you_sure">Er du sikker?</string>
     <string name="discover_show_menu">Vis meny</string>
     <string name="discover_no_posts_match">Ingen innlegg samsvarer med søket ditt</string>
+    <string name="discover_trends_unable">Kunne ikke laste ned tendenser for %1$s</string>
+    <string name="discover_trends_none">Det var ingen trender tilbake. Dette er uventet! Vennligst rapporter som en feil, hvis mulig.</string>
 </resources>

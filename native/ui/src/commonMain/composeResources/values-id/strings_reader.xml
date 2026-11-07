@@ -100,4 +100,5 @@
     <string name="reader_video_seconds">%1$d dtk</string>
     <string name="reader_link_unable_details">Tautan tidak dapat dibuka. Silakan coba lagi.</string>
     <string name="reader_link_report">Lapor</string>
+    <string name="reader_checking_link">Memeriksa tautan…</string>
 </resources>

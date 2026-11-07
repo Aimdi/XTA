@@ -96,4 +96,6 @@
     <string name="discover_are_you_sure">Bist du dir sicher?</string>
     <string name="discover_show_menu">Menü anzeigen</string>
     <string name="discover_no_posts_match">Keine Beiträge entsprechen deiner Suche</string>
+    <string name="discover_trends_unable">Trends für %1$s konnten nicht geladen werden</string>
+    <string name="discover_trends_none">Keine Trends gefunden. Das kommt unerwartet! Bitte, falls möglich, Fehler melden.</string>
 </resources>

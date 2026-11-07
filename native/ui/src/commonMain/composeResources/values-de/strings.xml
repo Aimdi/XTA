@@ -50,4 +50,10 @@
         <item quantity="one">%1$d neuer Post</item>
         <item quantity="other">%1$d neue Posts</item>
     </plurals>
+    <string name="problem_x_private">Privates Profil</string>
+    <string name="problem_x_missing">Twitter behauptet diese Seite existiere nicht</string>
+    <string name="problem_x_user_missing">Nutzer wurde nicht gefunden</string>
+    <string name="problem_x_suspended">Nutzerkonto gesperrt</string>
+    <string name="problem_x_forbidden">Zugang zu diesem Inhalt laut Twitter nicht gestattet</string>
+    <string name="problem_x_guest">Der Zugangs-Token ist nicht mehr gültig. Versuche XTA erneut zu öffnen!</string>
 </resources>

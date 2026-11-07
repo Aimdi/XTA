@@ -48,4 +48,10 @@
     <plurals name="new_posts">
         <item quantity="other">%1$d postingan baru</item>
     </plurals>
+    <string name="problem_x_private">Profil privat</string>
+    <string name="problem_x_missing">Twitter mengatakan halaman ini tidak ada, tetapi mungkin itu tidak benar</string>
+    <string name="problem_x_user_missing">Pengguna tidak ditemukan</string>
+    <string name="problem_x_suspended">Akun ditangguhkan</string>
+    <string name="problem_x_forbidden">Twitter mengatakan bahwa akses ke sini terlarang</string>
+    <string name="problem_x_guest">Twitter telah membatalkan token akses kami. Coba buka ulang XTA!</string>
 </resources>

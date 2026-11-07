@@ -94,4 +94,6 @@
     <string name="discover_are_you_sure">Apakah Anda yakin?</string>
     <string name="discover_show_menu">Tampilkan menu</string>
     <string name="discover_no_posts_match">Tidak ada postingan yang cocok dengan pencarian Anda</string>
+    <string name="discover_trends_unable">Tidak bisa memuat tren untuk %1$s</string>
+    <string name="discover_trends_none">Tidak ada tren yang dikembalikan. Ini tidak terduga! Mohon laporkan sebagai masalah, jika mungkin.</string>
 </resources>

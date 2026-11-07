@@ -3,6 +3,7 @@ package com.aimdi.xtanative.plugins.substack
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.aimdi.xtanative.networks.substack.SubstackLinks
 import com.aimdi.xtanative.networks.substack.SubstackRoute
 import com.aimdi.xtanative.networks.substack.SubstackRoutes
 import com.aimdi.xtanative.store.offline.OfflineArticle
@@ -56,7 +57,19 @@ class SubstackPlugin : XtaPlugin() {
 
     override val search: PluginSearch by lazy { SubstackSearchUi(app) }
 
-    override fun routeFor(url: String): String? = SubstackRoutes.forUrl(url, app.publications.value.orEmpty().map { it.baseUrl })
+    override fun routeFor(url: String): String? = SubstackRoutes.forUrl(url, knownBases())
+
+    /** A `/p/` link on a host nobody follows: only asking that host can tell whether it is a post. */
+    override fun mightRouteLater(url: String): Boolean = SubstackLinks.customDomainCandidate(url, knownBases()) != null
+
+    /** The reader, once the host answered Substack's post API for this slug; null, and the browser has the link, otherwise. */
+    override suspend fun routeForLater(url: String): String? {
+        val candidate = SubstackLinks.customDomainCandidate(url, knownBases()) ?: return null
+        val post = app.client.probeCustomDomainPost(candidate.publicationBase, candidate.slug) ?: return null
+        return if (post.slug == candidate.slug) SubstackRoutes.post(post) else null
+    }
+
+    private fun knownBases(): List<String> = app.publications.value.orEmpty().map { it.baseUrl }
 
     /** A post kept offline, in the reader, as XTA's offline library opens it. */
     override fun routeForOffline(article: OfflineArticle): String? = app.routeForKept(article)

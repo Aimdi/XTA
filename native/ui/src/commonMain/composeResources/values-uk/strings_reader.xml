@@ -100,4 +100,5 @@
     <string name="reader_video_seconds">%1$d с</string>
     <string name="reader_link_unable_details">Не вдалося відкрити посилання. Будь ласка, спробуйте ще раз.</string>
     <string name="reader_link_report">Повідомити</string>
+    <string name="reader_checking_link">Перевіряємо посилання…</string>
 </resources>

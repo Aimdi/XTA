@@ -25,6 +25,7 @@
     <string name="reader_link_reposts">Reposts: %1$s</string>
     <string name="reader_link_share_post">Share post link</string>
     <string name="reader_link_unable">Unable to open link</string>
+    <string name="reader_checking_link">Checking the link…</string>
     <string name="reader_link_opened_outside">This page opened in your browser.</string>
     <string name="reader_links_open_in">Open links in</string>
     <string name="reader_links_open_in_description">The in-app browser, the system default, or one you pick</string>

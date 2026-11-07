@@ -54,4 +54,10 @@
         <item quantity="many">%1$d нових дописів</item>
         <item quantity="other">%1$d нового допису</item>
     </plurals>
+    <string name="problem_x_private">Приватний профіль</string>
+    <string name="problem_x_missing">X повідомляє, що сторінка не існує, але це може бути неправда</string>
+    <string name="problem_x_user_missing">Користувача не знайдено</string>
+    <string name="problem_x_suspended">Акаунт призупинено</string>
+    <string name="problem_x_forbidden">X повідомляє, що доступ до цього заборонено</string>
+    <string name="problem_x_guest">X анулював наш токен доступу. Будь ласка, спробуйте перезапустити XTA!</string>
 </resources>

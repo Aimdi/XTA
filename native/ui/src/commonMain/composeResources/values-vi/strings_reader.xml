@@ -100,4 +100,5 @@
     <string name="reader_video_seconds">%1$d giây</string>
     <string name="reader_link_unable_details">Liên kết của bạn không hợp lệ hoặc không được hỗ trợ trong XTA, có thể đây là một lỗi</string>
     <string name="reader_link_report">Báo cáo</string>
+    <string name="reader_checking_link">Đang kiểm tra liên kết…</string>
 </resources>

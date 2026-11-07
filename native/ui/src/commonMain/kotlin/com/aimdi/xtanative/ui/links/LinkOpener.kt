@@ -20,10 +20,15 @@ import com.aimdi.xtanative.store.settings.Pref
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.XtaPrefs
 import java.net.URI
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * The screens a link can land on, bound by the app's navigation. A network,
@@ -47,6 +52,13 @@ class LinkScreens(
     val pixivWork: ((id: String) -> Unit)? = null,
     /** An installed plugin's screen for [url] (PLUGINS.md), asked before any other rule: true when one opened it. */
     val plugin: (url: String) -> Boolean = { false },
+    /**
+     * Whether a plugin may still open [url] after asking the network. Quick,
+     * and only then is [pluginLater] called. XTA asks only off the desktop.
+     */
+    val mightAskPlugin: (url: String) -> Boolean = { false },
+    /** Opens [url] on a plugin's screen after asking the network; false when none did, and the browser has it. */
+    val pluginLater: (suspend (url: String) -> Boolean)? = null,
 )
 
 /** What only the platform can do with a link that leaves the app for the web. */
@@ -67,7 +79,7 @@ interface LinkPlatform {
 }
 
 /** What the app says about a link it was handed, where the screen it came from cannot. */
-enum class LinkNotice { UNABLE_TO_OPEN }
+enum class LinkNotice { UNABLE_TO_OPEN, CHECKING_LINK, CHECKING_DONE }
 
 /**
  * The post a link was opened from, for the bar under XTA's browser screen.
@@ -244,6 +256,7 @@ class LinkOpener(
     private val platform: LinkPlatform,
     private val settings: () -> Settings?,
     private val router: (Settings?) -> LinkRouter = { current -> defaultRouter(current, platform.desktop) },
+    private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined),
 ) {
     @Volatile
     private var screens: LinkScreens? = null
@@ -343,8 +356,27 @@ class LinkOpener(
         when (step) {
             is LinkStep.Post -> screens.post(step.id)
             is LinkStep.Profile -> screens.profile(step.screenName, step.tab)
-            is LinkStep.Screen -> if (!openScreen(screens, step.route)) web(screens, step.orElse, from, title)
-            is LinkStep.Web -> web(screens, step.launch, from, title)
+            is LinkStep.Screen -> if (!openScreen(screens, step.route)) leave(screens, url, step.orElse, from, title)
+            is LinkStep.Web -> leave(screens, url, step.launch, from, title)
+        }
+    }
+
+    /**
+     * Leaves for the web, unless a plugin may still open [url] after asking
+     * the network. XTA asks only off the desktop, shows why nothing opened
+     * yet, and gives the domain a few seconds before the browser has the link.
+     */
+    private fun leave(screens: LinkScreens, url: String, launch: LinkLaunch, from: LinkFrom?, title: String?) {
+        val later = screens.pluginLater
+        if (platform.desktop || later == null || !screens.mightAskPlugin(url)) {
+            web(screens, launch, from, title)
+            return
+        }
+        notify(LinkNotice.CHECKING_LINK)
+        scope.launch {
+            val opened = withTimeoutOrNull(PLUGIN_ASK_MILLIS) { later(url) } == true
+            notify(LinkNotice.CHECKING_DONE)
+            if (!opened) web(screens, launch, from, title)
         }
     }
 
@@ -381,6 +413,9 @@ class LinkOpener(
     companion object {
         /** Browser screens whose post is still in reach: the ones on the back stack, in practice a few. */
         private const val KEPT_OPENINGS = 32
+
+        /** How long a tapped link waits to learn whether a plugin reads it, as XTA waits on an unknown domain. */
+        const val PLUGIN_ASK_MILLIS = 4_000L
 
         /**
          * XTA's link order over the networks switched on in [settings]. A

@@ -104,4 +104,6 @@
     <string name="discover_are_you_sure">هل أنت متأكد؟</string>
     <string name="discover_show_menu">عرض القائمة</string>
     <string name="discover_no_posts_match">لا توجد منشورات مطابقة لبحثك</string>
+    <string name="discover_trends_unable">غير قادر على تحميل الترندات لـ%1$s</string>
+    <string name="discover_trends_none">لم يتم إرجاع أي ترند. هذا غير متوقع! رجائاً أبلغ عن خطأ، إذا كان ممكناً.</string>
 </resources>

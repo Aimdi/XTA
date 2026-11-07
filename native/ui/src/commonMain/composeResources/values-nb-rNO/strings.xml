@@ -50,4 +50,10 @@
         <item quantity="one">%1$d nytt innlegg</item>
         <item quantity="other">%1$d nye innlegg</item>
     </plurals>
+    <string name="problem_x_private">Privat profil</string>
+    <string name="problem_x_missing">Siden ble ikke funnet</string>
+    <string name="problem_x_user_missing">Bruker ikke funnet</string>
+    <string name="problem_x_suspended">Kontoen er suspendert</string>
+    <string name="problem_x_forbidden">Forbudt</string>
+    <string name="problem_x_guest">Ugyldig gjestetoken</string>
 </resources>

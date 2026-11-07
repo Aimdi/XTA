@@ -351,6 +351,24 @@ class AppPlugins(
         return true
     }
 
+    /** Whether a running plugin may still open [url] after asking the network. Quick: no request. */
+    fun mightOpenLater(url: String): Boolean = running.value.any { running ->
+        guardedNow { running.plugin.mightRouteLater(url) } == true
+    }
+
+    /**
+     * Opens [url] on the screen a running plugin has for it once the network
+     * has been asked, answering whether one did. The link opener gives this a
+     * few seconds, then the browser has the link.
+     */
+    suspend fun openLater(url: String): Boolean {
+        val destination = running.value.firstNotNullOfOrNull { running ->
+            guarded { running.plugin.routeForLater(url) }?.let { Destination.PluginRoute(running.plugin.id, it) }
+        } ?: return false
+        navigator.go(destination)
+        return true
+    }
+
     internal fun dataOf(id: String): File = File(files, "plugin-data/$id")
 
     /** Opens [sheet] over the screens, in place of the one open. */

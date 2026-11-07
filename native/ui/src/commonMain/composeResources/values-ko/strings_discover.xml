@@ -94,4 +94,6 @@
     <string name="discover_are_you_sure">확실합니까?</string>
     <string name="discover_show_menu">메뉴 표시</string>
     <string name="discover_no_posts_match">검색과 일치하는 게시물이 없습니다</string>
+    <string name="discover_trends_unable">%1$s의 트렌드를 불러올 수 없습니다</string>
+    <string name="discover_trends_none">반환된 트렌드가 없습니다. 예상치 못한 일입니다! 가능하다면 버그로 보고해 주세요.</string>
 </resources>

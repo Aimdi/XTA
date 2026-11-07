@@ -48,4 +48,10 @@
     <plurals name="new_posts">
         <item quantity="other">新しいポスト %1$d 件</item>
     </plurals>
+    <string name="problem_x_private">非公開プロフィール</string>
+    <string name="problem_x_missing">Twitterはページがないと表示しているが、本当ではないかもしれない</string>
+    <string name="problem_x_user_missing">ユーザーが見つかりません</string>
+    <string name="problem_x_suspended">凍結済みアカウント</string>
+    <string name="problem_x_forbidden">Twitterによればアクセス禁止</string>
+    <string name="problem_x_guest">X has invalidated our access token. Please try re-opening XTA!</string>
 </resources>

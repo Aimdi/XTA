@@ -112,4 +112,8 @@
     <string name="posts_translation_other">翻譯失敗。請再試一次。</string>
     <string name="posts_quote_unavailable">無法取得引用的貼文</string>
     <string name="posts_no_text">推文不包含任何文字。這不應該發生</string>
+    <string name="posts_unable_to_load_the_tweet">無法載入推文</string>
+    <string name="posts_unable_to_load_the_next_page_of_replies">無法載入下一頁的回覆</string>
+    <string name="posts_unable_to_load_who_retweeted">無法載入轉推此推文的使用者</string>
+    <string name="posts_unable_to_load_more_retweets">無法載入更多轉推此推文的使用者</string>
 </resources>

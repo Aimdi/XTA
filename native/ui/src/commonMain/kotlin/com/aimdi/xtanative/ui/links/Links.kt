@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -18,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
@@ -30,6 +32,7 @@ import com.aimdi.xtanative.services.links.NetworkLink
 import com.aimdi.xtanative.services.links.SharedLinks
 import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.reader_checking_link
 import com.aimdi.xtanative.ui.generated.resources.reader_link_open_in_browser
 import com.aimdi.xtanative.ui.generated.resources.reader_link_report
 import com.aimdi.xtanative.ui.generated.resources.reader_link_unable
@@ -75,7 +78,8 @@ internal expect fun IncomingLinkEffect(onLink: (String) -> Unit)
 fun LinksFrame(content: @Composable () -> Unit) {
     val graph = LocalGraph.current
     val platform = rememberLinkPlatform()
-    val opener = remember(graph, platform) { LinkOpener(platform, { graph.settings.state.value }) }
+    val scope = rememberCoroutineScope()
+    val opener = remember(graph, platform, scope) { LinkOpener(platform, { graph.settings.state.value }, scope = scope) }
     val handler = remember(opener) {
         object : UriHandler {
             override fun openUri(uri: String) = opener.open(uri)
@@ -83,11 +87,14 @@ fun LinksFrame(content: @Composable () -> Unit) {
     }
     val snackbar = remember { SnackbarHostState() }
     val unable = stringResource(Res.string.reader_link_unable)
+    val checking = stringResource(Res.string.reader_checking_link)
     LaunchedEffect(graph) { runCatching { graph.settings.load() } }
     LaunchedEffect(opener) {
         opener.notices.collect { notice ->
             when (notice) {
                 LinkNotice.UNABLE_TO_OPEN -> snackbar.showSnackbar(unable)
+                LinkNotice.CHECKING_LINK -> launch { snackbar.showSnackbar(checking, duration = SnackbarDuration.Short) }
+                LinkNotice.CHECKING_DONE -> snackbar.currentSnackbarData?.dismiss()
             }
         }
     }

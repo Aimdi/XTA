@@ -117,4 +117,8 @@
     <string name="posts_translation_other">Traducerea nu a reușit. Încearcă din nou.</string>
     <string name="posts_quote_unavailable">Nu s-a putut prelua postarea citată</string>
     <string name="posts_no_text">Postarea nu conținea niciun text. Asta e neașteptat</string>
+    <string name="posts_unable_to_load_the_tweet">Nu se poate încărca tweet-ul</string>
+    <string name="posts_unable_to_load_the_next_page_of_replies">Nu se poate încărca următoarea pagină de răspunsuri</string>
+    <string name="posts_unable_to_load_who_retweeted">Nu se poate încărca cine a retweetat acest tweet</string>
+    <string name="posts_unable_to_load_more_retweets">Nu se pot încărca mai multe persoane care au retweetat acest tweet</string>
 </resources>

@@ -111,4 +111,8 @@
     <string name="posts_translation_other">Terjemahan gagal. Coba lagi.</string>
     <string name="posts_quote_unavailable">Tidak dapat mengambil tweet yang dikutip</string>
     <string name="posts_no_text">Cuitan tidak mengandung teks apa pun. Ini tidak diduga</string>
+    <string name="posts_unable_to_load_the_tweet">Tidak bisa memuat cuitan</string>
+    <string name="posts_unable_to_load_the_next_page_of_replies">Tidak bisa memuat halaman balasan selanjutnya</string>
+    <string name="posts_unable_to_load_who_retweeted">Tidak bisa memuat siapa yang mencuit ulang cuitan ini</string>
+    <string name="posts_unable_to_load_more_retweets">Tidak bisa memuat lebih banyak orang yang mencuit ulang cuitan ini</string>
 </resources>

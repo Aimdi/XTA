@@ -94,4 +94,6 @@
     <string name="discover_are_you_sure">你确定吗？</string>
     <string name="discover_show_menu">显示菜单</string>
     <string name="discover_no_posts_match">没有与搜索匹配的帖子</string>
+    <string name="discover_trends_unable">无法加载 %1$s 的趋势</string>
+    <string name="discover_trends_none">没有返回的趋势。这是出乎意料的！如果可能，请反馈错误。</string>
 </resources>

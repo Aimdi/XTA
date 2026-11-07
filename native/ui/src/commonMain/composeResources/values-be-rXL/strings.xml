@@ -54,4 +54,10 @@
         <item quantity="many">%1$d novych dopisaŭ</item>
         <item quantity="other">%1$d novaha dopisu</item>
     </plurals>
+    <string name="problem_x_private">Pryvatny profil</string>
+    <string name="problem_x_missing">Twitter kaža, što hetaja staronka nie isnuje, ale heta moža być niapraŭdaj</string>
+    <string name="problem_x_user_missing">Karystalnik nie znojdzieny</string>
+    <string name="problem_x_suspended">Ulikovy zapis prypynieny</string>
+    <string name="problem_x_forbidden">Twitter kaža, što dostup da hetaha zabaronieny</string>
+    <string name="problem_x_guest">Twitter pryznaŭ niesapraŭdnym naš markier dostupu. Kali łaska, pasprabujcie znoŭ adkryć XTA!</string>
 </resources>

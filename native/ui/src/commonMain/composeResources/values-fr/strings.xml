@@ -50,4 +50,10 @@
         <item quantity="one">%1$d nouveau post</item>
         <item quantity="other">%1$d nouveaux posts</item>
     </plurals>
+    <string name="problem_x_private">Profil privé</string>
+    <string name="problem_x_missing">Twitter indique que la page n\'existe pas, ce qui pourrait ne pas être vrai</string>
+    <string name="problem_x_user_missing">Utilisateur introuvable</string>
+    <string name="problem_x_suspended">Compte suspendu</string>
+    <string name="problem_x_forbidden">Twitter indique que l\'accès est interdit</string>
+    <string name="problem_x_guest">Twitter a invalidé le jeton d\'accès. Essayez de redémarrer XTA !</string>
 </resources>

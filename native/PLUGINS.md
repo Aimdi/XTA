@@ -69,7 +69,10 @@ with `PluginRecentSearchRow`, `settingsTitle`, the viewer's Open post
 and the search pill's look (native-0.1.54); 5 adds `followable` with
 `PluginFollowable`, what a group's add box can follow on the plugin's
 network (native-0.1.56); 6 adds X's search with its `includeReplies` and
-`conversations` switches (`XClient.search`). A plugin's `xta-plugin.json` names the
+`conversations` switches (`XClient.search`). A plugin may also say a link needs a
+network check before it opens (`mightRouteLater`, `routeForLater`, both
+defaulting to no): the app asks only off the desktop, for a few seconds, and
+a plugin built before simply never is. A plugin's `xta-plugin.json` names the
 version it was built against.
 
 The app loads the versions from `OLDEST_PLUGIN_API` (2) to its own, so a

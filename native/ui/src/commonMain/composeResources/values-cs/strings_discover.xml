@@ -100,4 +100,6 @@
     <string name="discover_are_you_sure">Opravdu?</string>
     <string name="discover_show_menu">Zobrazit nabídku</string>
     <string name="discover_no_posts_match">Vašemu hledání neodpovídají žádné příspěvky</string>
+    <string name="discover_trends_unable">Nepodařilo se načíst trendy pro %1$s</string>
+    <string name="discover_trends_none">Nebyly vráceny žádné trendy. Toto je neočekávané! Pokud je to možné, nahlaste to prosím jako chybu.</string>
 </resources>

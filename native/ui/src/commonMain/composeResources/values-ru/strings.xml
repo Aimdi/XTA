@@ -54,4 +54,10 @@
         <item quantity="many">%1$d новых постов</item>
         <item quantity="other">%1$d нового поста</item>
     </plurals>
+    <string name="problem_x_private">Приватный профиль</string>
+    <string name="problem_x_missing">Twiiter говорит, что эта страница не существует, но это может оказаться неправдой</string>
+    <string name="problem_x_user_missing">Пользователь не найден</string>
+    <string name="problem_x_suspended">Учётная запись приостановлена</string>
+    <string name="problem_x_forbidden">Twitter говорит, что доступ к этому запрещен</string>
+    <string name="problem_x_guest">Twitter признал недействительным наш маркер доступа. Пожалуйста, попробуйте снова открыть XTA!</string>
 </resources>

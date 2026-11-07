@@ -98,4 +98,6 @@
     <string name="discover_are_you_sure">Ești sigur?</string>
     <string name="discover_show_menu">Afișează meniul</string>
     <string name="discover_no_posts_match">Nicio postare nu corespunde căutării tale</string>
+    <string name="discover_trends_unable">Nu se pot încărca tendințele pentru %1$s</string>
+    <string name="discover_trends_none">Nu au fost returnate tendințe. Asta e neașteptat! Raportați ca eroare dacă este posibil.</string>
 </resources>

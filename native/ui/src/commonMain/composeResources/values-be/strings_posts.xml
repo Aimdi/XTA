@@ -120,4 +120,8 @@
     <string name="posts_translation_other">Не ўдалося перакласці. Паспрабуйце яшчэ раз.</string>
     <string name="posts_quote_unavailable">Не ўдалося атрымаць цытаваны пост</string>
     <string name="posts_no_text">Твіт не змяшчаў ніякага тэксту. Гэта нечакана</string>
+    <string name="posts_unable_to_load_the_tweet">Не ўдаецца загрузіць твіт</string>
+    <string name="posts_unable_to_load_the_next_page_of_replies">Не ўдаецца загрузіць наступную старонку адказаў</string>
+    <string name="posts_unable_to_load_who_retweeted">Не атрымоўваецца загрузіць, хто рэтвітнуў гэты твіт</string>
+    <string name="posts_unable_to_load_more_retweets">Не атрымоўваецца загрузіць больш людзей, якія рэтвітнулі гэты твіт</string>
 </resources>
