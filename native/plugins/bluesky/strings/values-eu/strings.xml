@@ -148,4 +148,5 @@
     </plurals>
     <string name="in_home_feed">Erakutsi hasierako denbora-lerroan</string>
     <string name="in_home_feed_description">Jarraitzen dituzun Bluesky kontuen bidalketak «Jarraitzen» eta «Zuretzat» ataletan tartekatzen ditu</string>
+    <string name="media">Multimedia</string>
 </resources>

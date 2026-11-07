@@ -148,4 +148,5 @@
     </plurals>
     <string name="in_home_feed">Weergeven in de hoofdtijdlijn</string>
     <string name="in_home_feed_description">Mengt berichten van de Bluesky-accounts die je volgt in Volgend en Voor jou</string>
+    <string name="media">Media</string>
 </resources>

@@ -148,4 +148,5 @@
     </plurals>
     <string name="in_home_feed">Montri en la hejma tempolinio</string>
     <string name="in_home_feed_description">Miksas afiŝojn el la Bluesky-kontoj kiujn vi sekvas en «Sekvataj» kaj «Por vi»</string>
+    <string name="media">Plurmedio</string>
 </resources>

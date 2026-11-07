@@ -54,6 +54,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -88,6 +92,7 @@ import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.ReadsMoreNearEnd
 import com.aimdi.xtanative.ui.plugins.RetryRow
+import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pagedRows
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -332,10 +337,11 @@ private fun MediaGridRow(app: BlueskyApp, row: List<BlueskyMediaTile>, columns: 
 private fun MediaTile(app: BlueskyApp, tile: BlueskyMediaTile, modifier: Modifier) {
     val colors = MaterialTheme.colorScheme
     val post = tile.post
+    val label = tile.label(currentLanguage())
     Box(
         modifier.aspectRatio(1f).clip(RoundedCornerShape(6.dp)).background(colors.surfaceContainerHighest).clickable {
             if (tile.opensPost) app.openPost(post.uri) else app.host.openMedia(post.media.map { it.toMediaItem(post.url) }, 0) { app.openPost(post.uri) }
-        },
+        }.clearAndSetSemantics { contentDescription = label; role = Role.Button },
     ) {
         if (tile.covered) {
             Column(Modifier.align(Alignment.Center).padding(8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -350,13 +356,21 @@ private fun MediaTile(app: BlueskyApp, tile: BlueskyMediaTile, modifier: Modifie
                 )
             }
         } else {
-            AsyncImage(model = tile.imageUrl, contentDescription = tile.alt, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
+            AsyncImage(model = tile.imageUrl, contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
             if (tile.isVideo) TileBadge(Modifier.align(Alignment.Center)) { Icon(Icons.Filled.PlayArrow, contentDescription = null, tint = Color.White) }
             if (tile.alt != null) TileBadge(Modifier.align(Alignment.BottomStart)) { Text(pluginString(Strings.alt_badge), color = Color.White, fontSize = 12.sp) }
         }
         if (tile.many) TileBadge(Modifier.align(Alignment.TopEnd)) { Icon(PostIcons.Layers, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp)) }
     }
 }
+
+/**
+ * What a tile is announced as, as XTA's grid says it: its author, then its
+ * picture's description, "Media" without one, and only "Content warning"
+ * for what is covered, whose description is not read out either.
+ */
+internal fun BlueskyMediaTile.label(language: String): String =
+    post.authorName + " · " + (if (covered) Strings.content_warning.get(language) else alt ?: Strings.media.get(language))
 
 /** A mark over a tile, white on a dark ground: a video, a picture's description, more than one picture. */
 @Composable

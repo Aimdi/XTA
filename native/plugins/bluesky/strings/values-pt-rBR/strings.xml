@@ -148,4 +148,5 @@
     </plurals>
     <string name="in_home_feed">Mostrar na linha do tempo principal</string>
     <string name="in_home_feed_description">Mistura as publicações das contas do Bluesky que você segue em «Seguindo» e «Para você»</string>
+    <string name="media">Mídia</string>
 </resources>

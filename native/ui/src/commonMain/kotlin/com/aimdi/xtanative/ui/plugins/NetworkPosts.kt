@@ -69,7 +69,14 @@ data class NetworkPost(
     val coversText: Boolean = false,
     /** Its title above its text, where the network gives posts one: a Reddit post, a story, an article. */
     val title: String? = null,
-)
+) {
+    /**
+     * What a reveal behind its [warning] holds for: the same post read again
+     * with another text, media, warning or quote is covered again, as XTA's
+     * content warning hides itself when the post's revision changes.
+     */
+    val revision: Int get() = listOf<Any?>(text, media.map { it.imageUrl }, warning, coversText, quoted?.id, quoted?.text).hashCode()
+}
 
 /** Where a network post's parts lead: its plugin decides. */
 class NetworkPostActions(

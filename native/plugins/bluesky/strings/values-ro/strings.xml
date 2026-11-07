@@ -149,4 +149,5 @@
     </plurals>
     <string name="in_home_feed">Afișează în cronologia principală</string>
     <string name="in_home_feed_description">Adaugă postările din conturile Bluesky urmărite în „Urmăriți” și „Pentru tine”</string>
+    <string name="media">Media</string>
 </resources>

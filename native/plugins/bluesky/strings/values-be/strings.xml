@@ -150,4 +150,5 @@
     </plurals>
     <string name="in_home_feed">Паказваць у галоўнай стужцы</string>
     <string name="in_home_feed_description">Дадае запісы з акаўнтаў Bluesky, на якія вы падпісаны, у «Падпіскі» і «Для вас»</string>
+    <string name="media">Медыя</string>
 </resources>
