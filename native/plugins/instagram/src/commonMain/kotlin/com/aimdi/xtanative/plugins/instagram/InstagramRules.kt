@@ -5,6 +5,8 @@ import com.aimdi.xtanative.networks.NetworkRequestException
 import com.aimdi.xtanative.networks.instagram.InstagramClient
 import com.aimdi.xtanative.networks.instagram.InstagramLink
 import com.aimdi.xtanative.networks.instagram.InstagramPost
+import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.store.settings.ThreadsPrefs
 import com.aimdi.xtanative.ui.plugins.MediaItem
 import com.aimdi.xtanative.ui.plugins.PluginText
 import java.net.URLDecoder
@@ -52,4 +54,13 @@ internal object InstagramRoutes {
 /** A post's pictures for the app's viewer: a carousel's slides, else its cover. Videos play on instagram.com. */
 internal object InstagramMedia {
     fun photos(post: InstagramPost): List<MediaItem> = post.displayUrls.map { MediaItem(imageUrl = it, aspectRatio = 1f) }
+}
+
+/**
+ * The Instagram-family session Threads holds (XTA's importThreadsCookies):
+ * the two plugins share the cookies' names, not a client, so Instagram
+ * copies the header Threads keeps; null when Threads has none.
+ */
+internal object InstagramThreadsSession {
+    fun of(settings: Settings): String? = settings[ThreadsPrefs.directCookies].trim().ifEmpty { null }
 }

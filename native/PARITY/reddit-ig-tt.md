@@ -2,7 +2,7 @@
 
 One line per XTA test: `status | test file › test name | native place (file) | note`.
 Statuses: covered (native does it, a native test checks it), untested→ported (native did it, test added now),
-missing→implemented (native lacked it or differed, implemented and tested now), n/a (Flutter-only, reason given).
+missing→implemented (native lacked it or differed, implemented and tested now), implemented (UI-only) (native draws it, only a Compose UI test could check it and native has no Compose test harness), n/a (Flutter-only, reason given).
 
 Native test paths are under `native/plugins/<id>/src/desktopTest/kotlin/com/aimdi/xtanative/`
 (`networks/<id>/…` or `plugins/<id>/…`) and `native/ui/src/desktopTest/…`, `native/store/src/test/…`.
@@ -39,8 +39,8 @@ covered | reddit_auth_test › authorizeUrl › asks for a code against the regi
 covered | reddit_auth_test › authorizeUrl › asks for a lasting session, or the reader would log in again hourly | RedditAuth.kt | RedditAuthTest.theLoginAsksForACodeAgainstTheRegisteredApp (duration=permanent)
 covered | reddit_auth_test › authorizeUrl › asks only for read scopes: XTA never posts, votes or subscribes | RedditAuth.kt | RedditAuthTest.theLoginAsksForReadScopesOnly
 covered | reddit_auth_test › reading the redirect › takes the code Reddit sent back | RedditAuth.codeFrom | RedditAuthTest.theCodeRedditSentBackIsTakenOnlyWithTheStateItWasAskedWith
-covered | reddit_auth_test › reading the redirect › refuses a code whose state does not match, so none can be injected | RedditAuth.codeFrom | same test
-covered | reddit_auth_test › reading the redirect › ignores every other page the login walks through | RedditAuth.codeFrom | same test (forEach of other pages)
+covered | reddit_auth_test › reading the redirect › refuses a code whose state does not match, so none can be injected | RedditAuth.codeFrom | RedditAuthTest.theCodeRedditSentBackIsTakenOnlyWithTheStateItWasAskedWith
+covered | reddit_auth_test › reading the redirect › ignores every other page the login walks through | RedditAuth.codeFrom | RedditAuthTest.theCodeRedditSentBackIsTakenOnlyWithTheStateItWasAskedWith (forEach of other pages)
 covered | reddit_auth_test › reading the redirect › a refusal is recognised, so declining closes quietly | RedditAuth.deniedIn | RedditAuthTest.aRefusalIsRecognisedSoDecliningClosesQuietly
 covered | reddit_auth_test › exchanging the code › posts the documented grant with the client id as basic auth | RedditAuth.exchangeCode | RedditAuthTest.theCodeIsExchangedWithTheDocumentedGrantAndTheClientIdAsBasicAuth
 covered | reddit_auth_test › exchanging the code › a refresh token buys an access token without asking the reader again | RedditAuth.accessToken | RedditAuthTest.aRefreshTokenBuysAnAccessTokenWithoutAskingTheReaderAgain
@@ -62,8 +62,8 @@ untested→ported | reddit_avatar_test › choosing an avatar › different name
 untested→ported | reddit_avatar_test › choosing an avatar › every face and background gets used across enough names | RedditFaces.kt (backgrounds now visible to tests) | RedditFacesTest.everyFaceAndBackgroundGetsUsedAcrossEnoughNames
 missing→implemented | reddit_avatar_test › choosing an avatar › an empty name still resolves rather than throwing | RedditFaces.kt | native crashed (the FNV offset basis overflowed Int → negative index); the hash is now kept as a Long as Dart does; RedditFacesTest.anEmptyNameStillResolves
 untested→ported | reddit_avatar_test › the faces themselves › are all the same square grid | RedditFaces.kt | RedditFacesTest.theFacesAreAllAnEightByEightGridOfTheThreeKnownCellsAndDrawSomething
-untested→ported | reddit_avatar_test › the faces themselves › use only the three known cells | RedditFaces.kt | same test
-untested→ported | reddit_avatar_test › the faces themselves › every face actually draws something | RedditFaces.kt | same test
+untested→ported | reddit_avatar_test › the faces themselves › use only the three known cells | RedditFaces.kt | RedditFacesTest.theFacesAreAllAnEightByEightGridOfTheThreeKnownCellsAndDrawSomething
+untested→ported | reddit_avatar_test › the faces themselves › every face actually draws something | RedditFaces.kt | RedditFacesTest.theFacesAreAllAnEightByEightGridOfTheThreeKnownCellsAndDrawSomething
 covered | reddit_avatar_test › ink › is dark on a light background and light on a dark one | RedditFaces.kt RedditFace.ink | RedditRulesTest.aNameAlwaysHasTheSameFaceWhateverItsCase; RedditFacesTest
 untested→ported | reddit_avatar_test › ink › every background gets ink that contrasts with it | RedditFaces.kt | RedditFacesTest.theInkIsDarkOnALightBackgroundLightOnADarkOneAndAlwaysContrasts
 
@@ -405,7 +405,7 @@ n/a | reddit_thread_render_test › reddit-thread-de-320-x1.3 | native/tool/plug
 
 ## test/reddit_thread_test.dart
 covered | reddit_thread_test › header and post › the bar names the subreddit and its menu opens the post sheet | plugins/reddit/RedditThread.kt ThreadScreen (PluginScaffold title "r/<community>", ⋮ → PostSheet with Open in browser / Share link) | UI-only (no Compose test harness); the sheet's targets: RedditThreadRulesTest.linksLeadToReddit
-covered | reddit_thread_test › header and post › the author row has a round avatar, then the title at 21 | RedditThread.kt PostAuthor (FaceAvatar 22dp round) and title at 21sp | UI-only visual spec, as XTA; no Compose test harness
+implemented (UI-only) | reddit_thread_test › header and post › the author row has a round avatar, then the title at 21 | RedditThread.kt PostAuthor (FaceAvatar 22dp round) and title at 21sp | UI-only visual spec, as XTA; no Compose test harness
 covered | reddit_thread_test › header and post › a link with a preview is a card with the picture over the domain | plugins/reddit/RedditMediaViews.kt (thread link card: picture over the domain row with open-in-new) | RedditRulesTest.aPostShowsItsVideoThenItsGalleryThenItsPictureThenItsLink, aLinkCardNamesTheSite (which card); drawing UI-only
 covered | reddit_thread_test › header and post › a link without a preview is one row: initial, domain, Open in browser | RedditMediaViews.kt (no preview: initial, domain, "Open in browser", min 56dp) | RedditRulesTest.aLinkCardNamesTheSite; drawing UI-only
 missing→implemented | reddit_thread_test › actions under the post › the vote pill upvotes on this device and says so | RedditComments.kt UpvoteButton (device vote, score+1, now toggleable semantics), RedditThreadRules.shownScore | native had no toggled state for screen readers; RedditThreadRulesTest.everyTargetIsFortyEightDpAndAnUpvoteCountsOneMore; RedditStoresTest.anUpvoteIsKeptOnTheDeviceAndGoesInTheBackupAsXtasRows
@@ -421,7 +421,7 @@ covered | reddit_thread_test › comment rows › flair shows beside the name | 
 covered | reddit_thread_test › comment rows › a comment upvotes on this device from its action row | RedditComments.kt CommentContent UpvoteButton (RedditVotes.commentId) | RedditStoresTest.anUpvoteIsKeptOnTheDeviceAndGoesInTheBackupAsXtasRows; RedditThreadRulesTest.everyTargetIsFortyEightDpAndAnUpvoteCountsOneMore
 covered | reddit_thread_test › comment rows › removed comments say what happened, without an upvote or menu | RedditComments.kt CommentContent/CommentHeader (removed: italic reason, no upvote, no menu) | RedditThreadRulesTest.aRemovedCommentSaysWhoTookItsWords; RedditCommentsTest.aRemovedCommentIsToldApartFromAStubAndFromAGoneAuthor
 covered | reddit_thread_test › comment rows › a comment written since the last visit says it is new | RedditComments.kt Age (", new"), RedditVisits, RedditThreadState (visit noted on open) | RedditStoresTest.aCommentIsNewOnlyWhenWrittenAfterTheLastVisit, aVisitIsKeptPerThreadForTheNewestTwoHundred
-covered | reddit_thread_test › comment rows › the menu reaches the author and copies the words | RedditComments.kt CommentMenu (u/author, Copy, Open in browser) | UI-only menu; no Compose test harness
+implemented (UI-only) | reddit_thread_test › comment rows › the menu reaches the author and copies the words | RedditComments.kt CommentMenu (u/author, Copy, Open in browser) | UI-only menu; no Compose test harness
 covered | reddit_thread_test › held-back comments › deeper ones continue on their own page | RedditThreadRules.heldBack (OPEN_SUBTREE → its own page), RedditComments.kt HeldBackRow (now min 48dp) | RedditThreadRulesTest.heldBackCommentsLoadHereUntilRedditRefusesThenOpenOnReddit
 covered | reddit_thread_test › held-back comments › the next top-level ones load into the thread | RedditThreadState.loadMore, RedditThreadRules.replacing | RedditThreadRulesTest.aLoadedPageOfHeldBackCommentsTakesTheStubsPlace; RedditStatesTest.heldBackCommentsLoadInPlaceOrSendTheReaderToReddit
 covered | reddit_thread_test › jump to the next comment › lands each top-level comment at the top in turn, then the end | RedditThread.kt jump, RedditThreadRules.nextTopLevel | RedditThreadRulesTest.theJumpLandsOnTheNextTopLevelCommentAndStopsAfterTheLast
@@ -437,3 +437,115 @@ covered | reddit_thread_test › every size › 320dp, 2x text, rtl, lights out 
 covered | reddit_thread_test › last visits › keep the most recent threads | plugins/reddit RedditVisits | RedditStoresTest.aVisitIsKeptPerThreadForTheNewestTwoHundred
 covered | reddit_thread_test › last visits › one thread however its permalink ends | plugins/reddit RedditVisits | RedditStoresTest.aVisitIsKeptPerThreadForTheNewestTwoHundred
 covered | reddit_thread_test › last visits › nothing is new on a first visit | plugins/reddit RedditVisits | RedditStoresTest.aCommentIsNewOnlyWhenWrittenAfterTheLastVisit
+
+## test/reddit_www_test.dart
+covered | reddit_www_test › a feed page › reads a picture post out of its attributes | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.aPicturePostIsReadOutOfItsAttributes
+covered | reddit_www_test › a feed page › a post its media marks NSFW or pinned is read as such, as is one in an NSFW community | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.aPostItsMediaMarksNsfwOrPinnedIsReadSoAsIsOneInAnNsfwCommunity
+covered | reddit_www_test › a feed page › a post in an NSFW community, or behind a blur, is marked as Reddit marks it | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.aPostInAnNsfwCommunityOrBehindABlurIsMarkedAsRedditMarksIt
+covered | reddit_www_test › a feed page › a gallery carries every picture, in order, at the size its feed shows | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.aGalleryCarriesEveryPictureInOrderAtTheSizeItsFeedShows
+covered | reddit_www_test › a feed page › a crosspost of one picture links the picture, of a gallery the original | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.aCrosspostOfOnePictureLinksThePictureAndOfAGalleryTheOriginal
+covered | reddit_www_test › a feed page › a video plays its stream, under its poster frame | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.aVideoPlaysItsStreamUnderItsPosterFrame
+covered | reddit_www_test › a feed page › a self post carries its text, links kept | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.aSelfPostCarriesItsTextWithItsLinks
+covered | reddit_www_test › a feed page › a link post links its article, with its thumbnail | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.aLinkPostLinksItsArticleWithItsThumbnail
+covered | reddit_www_test › a feed page › the next page starts after the fullname its partial names | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.theNextPageStartsAfterTheFullnameItsPartialNames
+covered | reddit_www_test › a feed page › a profile names its next page on its posts instead | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.aProfileNamesItsNextPageOnItsPostsInstead
+covered | reddit_www_test › a feed page › a community with nothing in it reads as empty, not as a failure | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.aCommunityWithNothingInItReadsAsEmptyNotAsAFailure
+covered | reddit_www_test › a feed page › a post missing what every post has is skipped, not guessed at | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.aPostMissingWhatEveryPostHasIsSkippedNotGuessedAt
+covered | reddit_www_test › what www.reddit.com answered with › its browser check is recognised | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.whatWwwAnsweredWithIsRecognised
+covered | reddit_www_test › what www.reddit.com answered with › its network block is recognised | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.whatWwwAnsweredWithIsRecognised
+covered | reddit_www_test › what www.reddit.com answered with › a page with posts is read, whatever a title on it says | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.whatWwwAnsweredWithIsRecognised
+covered | reddit_www_test › what www.reddit.com answered with › a page of the site it does not know, or no page of it at all, is unreadable | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.whatWwwAnsweredWithIsRecognised
+covered | reddit_www_test › paging cursors › are base64 of the fullname, with or without padding | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.pagingCursorsAreBase64OfTheFullnameWithOrWithoutPadding
+covered | reddit_www_test › paging cursors › anything else is no cursor | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.anythingElseIsNoCursor
+covered | reddit_www_test › a thread › nests replies under the comment they answer | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.aThreadNestsRepliesUnderTheCommentTheyAnswer
+covered | reddit_www_test › a thread › reads a comment out of its attributes and its own words | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.aCommentIsReadOutOfItsAttributesAndItsOwnWords
+covered | reddit_www_test › a thread › replies held back are a stub that opens their parent's page | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.repliesHeldBackAreAStubThatOpensTheirParentsPage
+covered | reddit_www_test › a thread › top-level comments held back are said so | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.topLevelCommentsHeldBackAreSaidSo
+covered | reddit_www_test › a thread › a comment's own page keeps that comment and its replies | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.aCommentsOwnPageKeepsThatCommentAndItsReplies
+covered | reddit_www_test › a thread › a comment whose words are gone keeps its row for its replies | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.aCommentWhoseWordsAreGoneKeepsItsRowForItsReplies
+covered | reddit_www_test › a thread › a big thread keeps the comments Reddit renders as the reader scrolls, and where the rest are | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.aBigThreadKeepsTheCommentsRedditRendersLateAndWhereTheRestAre
+covered | reddit_www_test › a thread › the browser check holds no thread | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.theBrowserCheckHoldsNoThread
+covered | reddit_www_test › cutting a page down › templates go whole, nested ones too, unless they hold the page's own content | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.templatesGoWholeNestedOnesTooUnlessTheyHoldThePagesOwnContent
+covered | reddit_www_test › more comments › the next comments come with where the ones after them are | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.theNextCommentsComeWithWhereTheOnesAfterThemAre
+covered | reddit_www_test › more comments › the last of them, or a page that is not them, names nothing further | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.theLastOfThemOrAPageThatIsNotThemNamesNothingFurther
+covered | reddit_www_test › search › posts come from their tracking JSON and their counter row | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.searchPostsComeFromTheirTrackingJsonAndTheirCounterRow
+covered | reddit_www_test › search › communities carry their picture and description | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.searchedCommunitiesCarryTheirPictureAndDescription
+covered | reddit_www_test › search › people carry their karma | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.searchedPeopleCarryTheirKarma
+covered | reddit_www_test › search › a page that is not a search yields nothing rather than throwing | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.aPageThatIsNotASearchYieldsNothingRatherThanThrowing
+covered | reddit_www_test › an embed card › a self post brings its words, author, counts and age | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.anEmbeddedSelfPostBringsItsWordsAuthorCountsAndAge
+covered | reddit_www_test › an embed card › a long post arrives whole, not cut where the card fades it out | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.aLongEmbeddedPostArrivesWholeNotCutWhereTheCardFadesIt
+covered | reddit_www_test › an embed card › a picture post links its picture, under the scaled copy | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.anEmbeddedPicturePostLinksItsPictureUnderTheScaledCopy
+covered | reddit_www_test › an embed card › a gallery brings every picture in order | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.anEmbeddedGalleryBringsEveryPictureInOrder
+covered | reddit_www_test › an embed card › a video brings its stream and poster frame | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.anEmbeddedVideoBringsItsStreamAndPosterFrame
+covered | reddit_www_test › an embed card › a link post links its article | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.anEmbeddedLinkPostLinksItsArticle
+covered | reddit_www_test › an embed card › a crosspost's title is read from its own element, and it links the original's pictures | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.anEmbeddedCrosspostsTitleIsItsOwnAndItLinksTheOriginalsPictures
+covered | reddit_www_test › an embed card › a post that is gone, and a page that is not a card, yield nothing | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.aPostThatIsGoneAndAPageThatIsNotACardYieldNothing
+covered | reddit_www_test › a page names its community › a community post, a profile post in either spelling, and anything else | networks/reddit/RedditWww.kt, RedditWwwPages.kt | RedditWwwTest.aPageNamesItsCommunity
+
+## test/instagram_client_test.dart
+covered | instagram_client_test › profile warms the homepage then hits i.instagram.com | networks/instagram/InstagramClient.kt profile | InstagramClientTest.aProfileWarmsTheHomepageThenAsksTheApiHost
+covered | instagram_client_test › web_profile_info falls back to www after 429 | InstagramClient.profile | InstagramClientTest.webProfileInfoFallsBackToWwwWhenTheApiHostLimitsOrWantsALogin
+covered | instagram_client_test › homepage HTML is accepted when warming the guest session | InstagramClient (warm-up) | InstagramClientTest.aProfileWarmsTheHomepageThenAsksTheApiHost, theHomepagesCookiesAreKeptAndHeard
+covered | instagram_client_test › HTML app shell is loginRequired, not a parse crash | InstagramClient | InstagramClientTest.theLoginPageInPlaceOfJsonIsLoginRequired, anAnswerThatIsNotJsonIsUnreadable
+covered | instagram_client_test › private empty profile is returned for the lock screen | InstagramClient | InstagramClientTest.aPrivateProfileIsReturnedForItsLock
+covered | instagram_client_test › guestDiscover throws when every seed fails | InstagramClient guest mix | InstagramClientTest.theGuestMixFailsWithTheRateLimitWhenEveryAccountFails
+untested→ported | instagram_client_test › setCookies and importThreadsCookies share names, not a client | InstagramClient.setCookies, plugins/instagram InstagramRules.kt InstagramThreadsSession (InstagramApp.importThreadsCookies) | InstagramClientTest.aSessionIsAllFiveCookies; InstagramPluginTest.threadsCookiesAreCopiedAsInstagramsSession
+covered | instagram_client_test › forYou uses explore_grid when the session answers | InstagramClient.forYou | InstagramClientTest.forYouIsExploreWhenTheSessionReadsIt
+covered | instagram_client_test › forYou skips Explore without a session | InstagramClient.forYou | InstagramClientTest.forYouSkipsExploreWithoutASession
+covered | instagram_client_test › forYou falls back to public seeds when Explore needs a login | InstagramClient.forYou | InstagramClientTest.forYouFallsBackToThePublicAccountsWhenExploreWantsALogin
+covered | instagram_client_test › invalid handle is notFound before any request | InstagramClient / InstagramLink | InstagramClientTest.aNameThatCannotBeAUsernameIsNotFoundBeforeAnyRequest
+
+## test/instagram_discovery_test.dart
+covered | instagram_discovery_test › interleaveInstagramDiscover round-robins and dedupes | networks/instagram/InstagramDiscovery.kt | InstagramDiscoveryTest.interleaveTakesARoundFromEachPageAndEachPostOnce, fixedFromXtaARoundOfOnlyRepeatsNoLongerEndsTheMix
+covered | instagram_discovery_test › instagramSearchOpensHandle is guest-only for a real handle | InstagramDiscovery.kt | InstagramDiscoveryTest.aTypedUsernameOpensAsAProfileForAGuestOnly
+covered | instagram_discovery_test › peopleToFollowFromInstagram skips followed authors | InstagramDiscovery.kt | InstagramDiscoveryTest.peopleToFollowSkipsAuthorsAlreadyFollowed, peopleToFollowStopsAtItsCap
+covered | instagram_discovery_test › parseInstagramExplore walks sectional media grids | networks/instagram/InstagramParser.kt explore | InstagramParserTest.exploreFindsPostsWhereverItsSectionsHoldThem
+covered | instagram_discovery_test › parseInstagramExplore ignores a reshaped empty payload | InstagramParser.kt explore | InstagramParserTest.anExploreAnswerWithoutPostsIsEmpty
+
+## test/instagram_parse_test.dart
+covered | instagram_parse_test › normaliseInstagramHandle strips @ and URLs, rejects paths | networks/instagram InstagramLink / handle normalising | InstagramParserTest.aUsernameIsTypedWithAnAtWithoutOneOrAsAProfileLink; InstagramLinkTest
+covered | instagram_parse_test › parseInstagramProfileJson reads web_profile_info | InstagramParser.kt | InstagramParserTest.webProfileInfoDescribesTheAccount
+covered | instagram_parse_test › parseInstagramProfileMedia reads the first page of posts | InstagramParser.kt | InstagramParserTest.webProfileInfoCarriesTheNewestPostsByTheProfile, aGridWithoutEdgesFallsBackToItsMediaNodes
+covered | instagram_parse_test › parseInstagramMediaNode reads GraphQL sidecar slides | InstagramParser.kt | InstagramParserTest.aSidecarHoldsEverySlideInOrder
+covered | instagram_parse_test › parseInstagramUserFeed reads items and video flags | InstagramParser.kt | InstagramParserTest.theFeedReadsReelsAndCarouselsWithTheirOwnAuthors, aVideoIsAReelShownByItsPoster, aFeedThatHasNoMoreHasNoNextPage
+covered | instagram_parse_test › parseInstagramTopSearch dedupes users | InstagramParser.kt | InstagramParserTest.topsearchListsEachUsernameOnce
+covered | instagram_parse_test › missing fields do not throw | InstagramParser.kt | InstagramParserTest.missingFieldsDoNotThrow
+covered | instagram_parse_test › instagramLoginRequired reads fail messages | InstagramParser.kt | InstagramParserTest.loginRequiredIsReadFromFailMessages
+
+## test/plugin_repairs_test.dart
+covered | plugin_repairs_test › a value fits its kind › ids and numbers | core repairs/Repairs.kt | core RepairsTest.idsAndNumbersAreDigitsOnly
+covered | plugin_repairs_test › a value fits its kind › tokens | core Repairs.kt | core RepairsTest.tokensHoldNoDotsOrSlashes
+covered | plugin_repairs_test › a value fits its kind › versions | core Repairs.kt | core RepairsTest.versionsAreNumbersJoinedByDots
+covered | plugin_repairs_test › a value fits its kind › header text: one line of printable ASCII, no edge spaces | core Repairs.kt | core RepairsTest.headerTextIsOneLineOfPrintableAsciiWithNoEdgeSpaces
+covered | plugin_repairs_test › a published file › puts known values that fit in force, and nothing else | core Repairs.kt | core RepairsTest.onlyKnownValuesThatFitAreInForce
+covered | plugin_repairs_test › a published file › replaces the repairs before it, so one withdrawn goes back to the shipped value | core Repairs.kt | core RepairsTest.aSlotTakesAPublishedValueOfItsKindAndOtherwiseKeepsTheShippedOne; StocksRepairsTest/ThreadsRepairsTest.aWithdrawnRepairGoesBackToTheShippedValue; TikTokRepairsTest.whatFitsIsTakenAndAWithdrawnRepairGoesBackToTheShippedValue
+covered | plugin_repairs_test › a published file › that does not read changes nothing | core Repairs.kt | core RepairsTest.aFileThatDoesNotReadAsRepairsHoldsNone
+covered | plugin_repairs_test › PluginRepairsRegistry › applies the copy last read before reading again | store published/PublishedDocument.kt RepairsRegistry | store PublishedDocumentTest.theCopyLastReadIsInForceBeforeAnyRead
+covered | plugin_repairs_test › PluginRepairsRegistry › reads the file at most once a day, and keeps what it read | store PublishedDocument.kt | store PublishedDocumentTest.theFileIsReadAtMostOnceADayAndKept
+covered | plugin_repairs_test › PluginRepairsRegistry › keeps what is in force when the file cannot be read | store PublishedDocument.kt | store PublishedDocumentTest.whatIsInForceStaysWhenTheFileCannotBeRead
+covered | plugin_repairs_test › repairs.json names only known values that fit, each the one this build ships | each plugin's *Repairs; repairs.json | InstagramRepairsTest/TikTokRepairsTest/ThreadsRepairsTest/PixivRepairsTest/StocksRepairsTest.repairsJsonNamesOnly…, RedditRepairsTest.repairsJsonNamesExactlyRedditsSlots…; networks NetworkRepairsTest.everyPublishedValueBelongsToAPluginThatChecksIt
+covered | plugin_repairs_test › every shipped value fits its own kind | each plugin's *Repairs | InstagramRepairsTest/TikTokRepairsTest/….everyShippedValueFitsItsKindAndIsDeclaredOnce; RedditRepairsTest.everyShippedValueFitsItsKindAndEachKeyIsDeclaredOnce
+covered | plugin_repairs_test › each network sends the value in force › Instagram: app id and user agent | networks/instagram InstagramClient (repairs) | InstagramClientTest.theAppIdAndUserAgentInForceAreSent; InstagramRepairsTest.theClientTakesWhatFitsAndKeepsTheRest
+covered | plugin_repairs_test › each network sends the value in force › TikTok: aid | networks/tiktok TikTokClient (repairs) | TikTokClientTest.theAidAndUserAgentInForceAreSent; TikTokRepairsTest.aRepairPublishedMeanwhileReachesTheNextRequest
+covered | plugin_repairs_test › each network sends the value in force › Threads, Pixiv, Reddit and Stocks read their slots | threads/pixiv/reddit/stocks repairs slots | ThreadsRepairsTest.aWithdrawnRepairGoesBackToTheShippedValue; PixivRepairsTest.theAppTakesWhatFitsFromThePublishedEntriesAndKeepsTheRest; RedditRepairsTest.theAgentInForceIsTheRepairedOneWhenItFitsElseTheShippedOne; StocksRepairsTest.aRepairPublishedMeanwhileReachesTheNextRequest
+
+## test/tiktok_client_test.dart
+covered | tiktok_client_test › search resolves a display name via profile HTML and discover | networks/tiktok/TikTokClient.kt, TikTokSearch.kt | TikTokClientTest.aSearchFindsADisplayNameThroughProfilePagesAndDiscover
+covered | tiktok_client_test › suggest and trending parse unsigned preview endpoints | TikTokClient.kt suggestions/trending | TikTokClientTest.suggestionsAskThePreviewWithTheWordsTyped, trendingAsksTheGuide; TikTokParserTest.suggestionsAsTypedAndTrendingAreReadTogether
+
+## test/tiktok_parse_test.dart
+covered | tiktok_parse_test › normaliseTikTokHandle strips @ and rejects junk | networks/tiktok TikTokLink / handle normalising | TikTokParserTest.aUsernameIsTypedWithAnAtWithoutOneOrAsALink
+covered | tiktok_parse_test › parseTikTokProfileHtml reads user-detail rehydration | networks/tiktok/TikTokParser.kt | TikTokParserTest.aProfilePageCarriesTheAccount
+covered | tiktok_parse_test › HTML entities in rehydration JSON are unescaped | TikTokParser.kt | TikTokParserTest.htmlEntitiesInThePagesJsonAreUndone
+covered | tiktok_parse_test › private account is parsed without throwing | TikTokParser.kt | TikTokParserTest.aPrivateAccountIsReadNotRefused
+covered | tiktok_parse_test › parseTikTokVideoHtml reads object playAddr | TikTokParser.kt | TikTokParserTest.aVideoPageCarriesTheVideoAndEveryFile
+covered | tiktok_parse_test › parseTikTokItemList reads unsigned creator list | TikTokParser.kt | TikTokParserTest.theCreatorListReadsVideosAndPhotoPosts, theListsOwnCursorWinsAndMayBeANumber
+covered | tiktok_parse_test › empty itemList preserves hasMore | TikTokParser.kt | TikTokParserTest.anEmptyListKeepsItsHasMore
+covered | tiktok_parse_test › imagePost cover is used when video cover is missing | TikTokParser.kt | TikTokParserTest.aPhotoPostsCoverStandsInWhenTheVideoHasNone
+covered | tiktok_parse_test › drops www.tiktok.com play URLs and missing fields | TikTokParser.kt | TikTokParserTest.tiktoksOwnPlayerLinksAreNoFilesAndAVideoWithoutAnAuthorIsLeftOut
+covered | tiktok_parse_test › status 10201 is preserved for the client | TikTokParser.kt | TikTokParserTest.noSuchAccountsStatusIsKeptForTheClient
+covered | tiktok_parse_test › missing rehydration is null, not an exception | TikTokParser.kt | TikTokParserTest.aPageWithoutTheAppsJsonIsNull
+covered | tiktok_parse_test › formatTikTokDuration formats minutes and hides zero | TikTokParser.kt / plugins/tiktok TikTokText.kt | TikTokParserTest.theDurationShowsMinutesAndHidesZero
+covered | tiktok_parse_test › handle candidates glue a display name into likely usernames | networks/tiktok/TikTokSearch.kt | TikTokSearchTest.aDisplayNameIsGluedIntoLikelyUsernames (+ the other candidate tests)
+covered | tiktok_parse_test › discover cards of type 2 become search users | TikTokParser.kt | TikTokParserTest.discoverCardsOfPeopleBecomeSearchUsers, aDiscoverCardNamesItsPersonByLinkOrSubtitle
+covered | tiktok_parse_test › suggest preview and guide lists are parsed together | TikTokParser.kt | TikTokParserTest.suggestionsAsTypedAndTrendingAreReadTogether

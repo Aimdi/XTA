@@ -10,7 +10,6 @@ import com.aimdi.xtanative.store.backup.InstagramSubscriptionRow
 import com.aimdi.xtanative.store.backup.XtaTime
 import com.aimdi.xtanative.store.settings.InstagramPrefs
 import com.aimdi.xtanative.store.settings.Settings
-import com.aimdi.xtanative.store.settings.ThreadsPrefs
 import com.aimdi.xtanative.ui.plugins.DrawnPosts
 import com.aimdi.xtanative.ui.plugins.FeedKinds
 import com.aimdi.xtanative.ui.plugins.MergedFeed
@@ -170,8 +169,7 @@ internal class InstagramApp(val host: PluginHost) {
 
     /** Reads with the Instagram-family session pasted in Threads, as XTA copies it; false when Threads has none. */
     suspend fun importThreadsCookies(): Boolean {
-        val raw = settings()[ThreadsPrefs.directCookies].trim()
-        if (raw.isEmpty()) return false
+        val raw = InstagramThreadsSession.of(settings()) ?: return false
         setCookies(raw)
         return true
     }
