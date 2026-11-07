@@ -951,3 +951,212 @@ covered | ticker_session_test › under one unit, four significant digits; from 
 covered | ticker_session_test › a screen reader hears the zeros written out | StockNumbersTest.aScreenReaderHearsTheZerosWrittenOut
 covered | ticker_session_test › the reader's locale groups digits; one intl lacks falls back | StockNumbersTest.theReadersLocaleGroupsDigitsAndOneIntlLacksIsEnglish
 covered | ticker_session_test › gain and loss colours stay readable and unknown is neutral | StockNumbersTest.aGainIsUpALossDownAndUnknownOrFlatIsNeutral
+
+## test/plugin_account_groups_test.dart
+covered | plugin_account_groups_test › same handle stays separate across all newly groupable sources | NetworkMembersTest.theAccountsAreTheRowsOfTheNetworksXtasGroupsNameByTheirIdAlone
+covered | plugin_account_groups_test › Pixiv selection survives settings round-trip and a real group reload | ui/subscriptions GroupPickerTest
+covered | plugin_account_groups_test › removing plugin data preserves an equal handle in another source | NetworkMembersTest.aBareMemberXOrAnotherNetworkKeepsTooIsEachOfThem
+covered | plugin_account_groups_test › malformed local data does not prevent loading other subscriptions | ui/subscriptions SubscriptionListTest
+covered | plugin_account_groups_test › membership toggles never mutate the original selection | ui/subscriptions GroupDraftTest
+
+## test/plugin_card_overflow_test.dart
+untested → ported | plugin_card_overflow_test › a Reddit card in German does not overflow a 320dp phone | plugins/reddit RedditCard.kt | layout is Compose-only
+untested → ported | plugin_card_overflow_test › a Mastodon card in German does not overflow a 320dp phone | plugins/mastodon MastodonCard.kt | layout is Compose-only
+untested → ported | plugin_card_overflow_test › a Hacker News card in German does not overflow | plugins/hackernews HnStoryRow.kt | layout is Compose-only
+untested → ported | plugin_card_overflow_test › an RSS card in German does not overflow | plugins/rss RssRows.kt | layout is Compose-only
+untested → ported | plugin_card_overflow_test › a Bluesky card in German does not overflow | plugins/bluesky BlueskyCard.kt | layout is Compose-only
+untested → ported | plugin_card_overflow_test › a Threads card in German does not overflow | plugins/threads ThreadsCard.kt | layout is Compose-only
+untested → ported | plugin_card_overflow_test › a Booru card in German does not overflow | plugins/booru BooruParts.kt | layout is Compose-only
+
+## test/plugin_connection_journeys_test.dart
+covered | plugin_connection_journeys_test › $id settings: large text, reachable test/save, stale probe invalidation | PluginConnectionTest (six tests)
+
+## test/plugin_feed_chips_test.dart
+covered | plugin_feed_chips_test › hidden-tab plugins are not site-switcher chips on Groups | ui/subscriptions GroupBoardModelTest, GroupAddSourcesTest
+covered | plugin_feed_chips_test › a plugin that still has a home tab is not on the Groups board | ui/subscriptions GroupBoardModelTest
+untested → ported | plugin_feed_chips_test › the board is not wrapped in AnimatedSwitcher | ui/subscriptions GroupBoard | Compose has no AnimatedSwitcher wrapper
+
+## test/plugin_feed_fresh_test.dart
+untested → ported | plugin_feed_fresh_test › a feed that has never been fetched is not fresh | ui/plugins FeedReads.kt (freshness) | the TTL rule has no separate native test
+untested → ported | plugin_feed_fresh_test › a feed fetched inside the TTL is reused | ui/plugins FeedReads.kt | same
+untested → ported | plugin_feed_fresh_test › a feed older than the TTL is fetched again | ui/plugins FeedReads.kt | same
+untested → ported | plugin_feed_fresh_test › a timestamp in the future is not treated as fresh | ui/plugins FeedReads.kt | same
+
+## test/plugin_home_crash_sweep_test.dart
+different → fixed | plugin_home_crash_sweep_test › FeedListView empty does not attach the outer controller | ui/plugins Lists.kt | Compose lists own their LazyListState; the Flutter outer-controller hazard does not exist
+different → fixed | plugin_home_crash_sweep_test › FeedListView with one row does not attach the outer | ui/plugins Lists.kt | same
+different → fixed | plugin_home_crash_sweep_test › FeedListView with a filled page does not attach the outer | ui/plugins Lists.kt | same
+different → fixed | plugin_home_crash_sweep_test › PluginLazyTabs keeps one filled list on the inner controller | ui/plugins Tabs.kt | same
+different → fixed | plugin_home_crash_sweep_test › EmptyPane keeps the outer on NestedScrollView only | ui/plugins Panes.kt | same
+different → fixed | plugin_home_crash_sweep_test › a ListView without a controller uses the inner one | ui/plugins Lists.kt | same
+different → fixed | plugin_home_crash_sweep_test › EhGalleryGrid empty and one tile stay off the outer | plugins/ehviewer EhLists.kt | same
+different → fixed | plugin_home_crash_sweep_test › BooruPostGrid empty and one tile stay off the outer | plugins/booru BooruGrid.kt | same
+different → fixed | plugin_home_crash_sweep_test › BooruPostGrid filled page stays off the outer | plugins/booru BooruGrid.kt | same
+different → fixed | plugin_home_crash_sweep_test › PixivIllustGrid filled page stays off the outer | plugins/pixiv PixivGrid.kt | same
+different → fixed | plugin_home_crash_sweep_test › zero feeds does not enter loading | Compose (plugin feeds) | Compose state
+different → fixed | plugin_home_crash_sweep_test › empty Following paints and does not attach the outer | Compose (plugin feeds) | Compose state
+different → fixed | plugin_home_crash_sweep_test › one feed row does not attach the outer | Compose (plugin feeds) | Compose state
+different → fixed | plugin_home_crash_sweep_test › Für dich → RSS remount does not attach two controllers | Compose (plugin feeds) | Compose state
+different → fixed | plugin_home_crash_sweep_test › zero publications does not enter loading | Compose (plugin feeds) | Compose state
+different → fixed | plugin_home_crash_sweep_test › empty Following paints and does not attach the outer (second) | Compose (plugin feeds) | Compose state
+different → fixed | plugin_home_crash_sweep_test › empty Following paints and does not attach the outer (third) | Compose (plugin feeds) | Compose state
+different → fixed | plugin_home_crash_sweep_test › add-account cancel leaves the empty pane mounted | Compose (plugin dialogs) | Compose state
+different → fixed | plugin_home_crash_sweep_test › empty watchlist paints and does not attach the outer | Compose (stocks) | Compose state
+different → fixed | plugin_home_crash_sweep_test › Bluesky add cancel disposes with the dialog | Compose (plugin dialogs) | Compose state
+different → fixed | plugin_home_crash_sweep_test › Mastodon add cancel disposes with the dialog | Compose (plugin dialogs) | Compose state
+different → fixed | plugin_home_crash_sweep_test › Reddit client-id cancel disposes with the dialog | Compose (plugin dialogs) | Compose state
+different → fixed | plugin_home_crash_sweep_test › EH page-jump cancel disposes with the dialog | Compose (plugin dialogs) | Compose state
+different → fixed | plugin_home_crash_sweep_test › Stocks add sheet cancel leaves the host mounted | Compose (plugin dialogs) | Compose state
+different → fixed | plugin_home_crash_sweep_test › Add timeline after Networks pop stays mounted | Compose (plugin host) | Compose state
+different → fixed | plugin_home_crash_sweep_test › feed-strip add sheet cancel leaves the host | Compose (plugin host) | Compose state
+different → fixed | plugin_home_crash_sweep_test › PluginLazyTabs remount does not keep two panes | ui/plugins Tabs.kt | Compose state
+
+## test/plugin_marks_test.dart
+untested → ported | plugin_marks_test › plugin marks are glyphs, not the old generic icons | ui/plugins PathIcons.kt | drawing is Compose-only
+untested → ported | plugin_marks_test › every plugin mark keeps its size inside a bigger tight box | ui/plugins PathIcons.kt | drawing is Compose-only
+untested → ported | plugin_marks_test › every plugin mark paints across the same centred live area | ui/plugins PathIcons.kt | drawing is Compose-only
+
+## test/plugin_post_video_test.dart
+untested → ported | plugin_post_video_test › a video with a stream builds the X video player | ui/media (player) | Compose/media player
+untested → ported | plugin_post_video_test › a GIF autoplays and loops without controls | ui/media (GIF) | Compose/media player
+untested → ported | plugin_post_video_test › videos in a multi-item pager play too | ui/media (pager) | Compose/media player
+untested → ported | plugin_post_video_test › a poster without a stream stays a thumbnail | ui/media Media.kt | Compose/media player
+untested → ported | plugin_post_video_test › manual loading waits for a tap | ui/media (autoplay setting) | Compose/media player
+untested → ported | plugin_post_video_test › a Mastodon card plays its video attachment | plugins/mastodon MastodonCard.kt | Compose/media player
+untested → ported | plugin_post_video_test › a Bluesky card plays its HLS video | plugins/bluesky BlueskyCard.kt | Compose/media player
+
+## test/plugin_store_row_test.dart
+covered | plugin_store_row_test › a non-matching store query produces no result | ui/pluginstore StoreSearchTest
+covered | plugin_store_row_test › an available plugin is one compact row with Install | ui/pluginstore StoreRowsTest
+covered | plugin_store_row_test › an installed plugin keeps Open and settings, with tab visibility in its menu | StoreRowsTest
+untested → ported | plugin_store_row_test › installed plugin icon actions keep 48dp touch targets | Compose (plugin store row) | layout is Compose-only
+covered | plugin_store_row_test › available plugins start open so a new plugin is visible | StoreRowsTest
+untested → ported | plugin_store_row_test › plugin tile stacks actions on a narrow large-text layout | Compose (plugin store row) | layout is Compose-only
+untested → ported | plugin_store_row_test › plugin tile keeps actions inline when enough width is available | Compose (plugin store row) | layout is Compose-only
+untested → ported | plugin_store_row_test › store body is centered, width-bounded, and lazy | Compose (plugin store) | layout is Compose-only
+covered | plugin_store_row_test › empty store search state announces the localized result | StoreSearchTest
+
+## test/plugin_url_test.dart
+covered | plugin_url_test › parses a profile and a post (Bluesky) | BlueskyUrlsTest
+covered | plugin_url_test › parses a DID profile | BlueskyUrlsTest
+covered | plugin_url_test › parses a profile and a post (Mastodon) | networks/mastodon MastodonLinks; MastodonClientTest
+covered | plugin_url_test › opens short /t/ links as posts whose author is read later | ThreadsLinksTest.aShortLinkOpensAPostWhoseAuthorIsReadLater
+covered | plugin_url_test › parses a profile and ignores posts (Threads) | ThreadsLinksTest.aLinkOpensAProfileOrAPost
+covered | plugin_url_test › parses a profile and a video (TikTok) | TikTokLinkTest
+covered | plugin_url_test › ignores short links (TikTok) | TikTokLinkTest
+covered | plugin_url_test › parses a subreddit, a thread, a user, and redd.it | plugins/reddit RedditRulesTest
+covered | plugin_url_test › ignores media CDNs (Reddit) | plugins/reddit RedditRulesTest
+covered | plugin_url_test › parses artwork and user URLs but not bare ids | PixivLinksTest
+covered | plugin_url_test › opens the pixiv:// app scheme and i.pximg.net image files | PixivLinksTest.pixivsAppLinksAreRead
+covered | plugin_url_test › opens pixivision.net articles and series pages | PixivLinksTest.seriesNovelsAndPixivisionKnowThePageABrowserOpens
+covered | plugin_url_test › leaves pixivision.net pages that are not articles alone | PixivLinksTest.unsupportedLinksNameNothing
+covered | plugin_url_test › leaves other hosts and schemes alone | PixivLinksTest.unsupportedLinksNameNothing
+covered | plugin_url_test › parses a known instance and ignores Medium-style hosts | networks/mastodon MastodonLinks; MastodonXtaCasesTest
+covered | plugin_url_test › parses a story and a user (HN) | plugins/hackernews HnRoutes
+covered | plugin_url_test › ignores the front page and other hosts (HN) | plugins/hackernews HnRoutes
+covered | plugin_url_test › parsePluginLink tries networks in order | ui/plugins AppPlugins link dispatch; PluginRouteTest
+
+## test/rss_cover_performance_test.dart
+untested → ported | rss_cover_performance_test › RSS thumbnail decodes at its painted width | plugins/rss cover request (Coil) | Compose/Coil only
+
+## test/rss_merge_test.dart
+covered | rss_merge_test › sorts newest first and drops duplicate ids | RssModelsTest (merge)
+covered | rss_merge_test › items without a date sink below dated ones | RssModelsTest
+covered | rss_merge_test › unread hides ids already marked read | RssKeptTest; ui/plugins RssReadsTest
+covered | rss_merge_test › tag keeps only items from tagged feeds | RssModelsTest (tags)
+covered | rss_merge_test › normalises host case and trailing slashes | RssClientTest; RssModelsTest
+covered | rss_merge_test › listFromPrefs accepts a restored List, not only a JSON string | RssKeptTest (prefs)
+covered | rss_merge_test › recognises feed paths and not site homes | RssClientTest.lookup
+
+## test/rss_parser_test.dart
+covered | rss_parser_test › reads RSS 2.0 channel metadata and items | RssModelsTest
+covered | rss_parser_test › reads Atom entries and html links | RssModelsTest
+covered | rss_parser_test › skips items that have no title, link or guid | RssModelsTest
+covered | rss_parser_test › does not throw on mangled markup | RssModelsTest
+covered | rss_parser_test › reads RFC 822 and ISO-8601 | RssModelsTest
+covered | rss_parser_test › resolves alternate rss and atom links against the page | RssClientTest.lookup
+
+## test/microblog_reader_layout_test.dart
+untested → ported | microblog_reader_layout_test › a narrow pushed reader respects system insets and returns with Back | Compose (microblog readers) | layout is Compose-only
+untested → ported | microblog_reader_layout_test › Mastodon has one slim reader header, large=$large | Compose (Mastodon reader) | layout is Compose-only
+untested → ported | microblog_reader_layout_test › Bluesky keeps one header and local state, large=$large | Compose (Bluesky reader) | layout is Compose-only
+untested → ported | microblog_reader_layout_test › Threads accounts move out of the feed and remain manageable, large=$large | Compose (Threads reader) | layout is Compose-only
+
+## test/web_source_client_test.dart
+covered | web_source_client_test › asks a listed site for the page, with GET only and its own name | WebSourceClientTest
+covered | web_source_client_test › refuses an unlisted site and plain HTTP without asking | WebSourceClientTest
+covered | web_source_client_test › follows a redirect on its sites, and not one that leaves them | WebSourceClientTest
+covered | web_source_client_test › stops after three redirects | WebSourceClientTest
+covered | web_source_client_test › reports another status, a page too large, and no answer | WebSourceClientTest
+covered | web_source_client_test › waits between two requests of the same source | WebSourceClientTest
+covered | web_source_client_test › reads a source file from any HTTPS address, and not over HTTP | WebSourceClientTest
+
+## test/web_source_definition_test.dart
+covered | web_source_definition_test › a valid source is read with its defaults merged into each list | WebSourceDefinitionTest
+covered | web_source_definition_test › every fixture shape is a valid source | WebSourceDefinitionTest
+covered | web_source_definition_test › a list overrides the fields it names and keeps the rest | WebSourceDefinitionTest
+covered | web_source_definition_test › what is not a source file | WebSourceDefinitionTest
+covered | web_source_definition_test › a newer format, and a missing one | WebSourceDefinitionTest
+covered | web_source_definition_test › a bad id, version, name or layout | WebSourceDefinitionTest
+covered | web_source_definition_test › hosts that are missing, too many or malformed | WebSourceDefinitionTest
+covered | web_source_definition_test › an address off its hosts, without HTTPS, or with a port or credentials | WebSourceDefinitionTest
+covered | web_source_definition_test › a subdomain only when its hosts allow subdomains | WebSourceDefinitionTest
+covered | web_source_definition_test › lists that are missing, too many, repeated or unknown in their address | WebSourceDefinitionTest
+covered | web_source_definition_test › a search without a query | WebSourceDefinitionTest
+covered | web_source_definition_test › fields that cannot name or find a post, or a gallery without pictures | WebSourceDefinitionTest
+covered | web_source_definition_test › a rule this page type cannot read | WebSourceDefinitionTest
+covered | web_source_definition_test › a rule longer than 300 characters, or one written to fail slowly | WebSourceDefinitionTest
+covered | web_source_definition_test › an article address that names no field of the post | WebSourceDefinitionTest
+covered | web_source_definition_test › a host check takes listed hosts and their subdomains when asked | WebSourceDefinitionTest
+
+## test/web_source_items_test.dart
+covered | web_source_items_test › starts at the first page | WebSourceItemsTest
+covered | web_source_items_test › gives a post per element that has an id or link and a title | WebSourceItemsTest
+covered | web_source_items_test › reads every field, decoding entities and numbers | WebSourceItemsTest
+covered | web_source_items_test › names the next page by number | WebSourceItemsTest
+covered | web_source_items_test › an empty page has no next page, and a broken one no posts | WebSourceItemsTest
+covered | web_source_items_test › a long page is read the same off the UI thread | WebSourceItemsTest
+covered | web_source_items_test › search fills the query | WebSourceItemsTest
+covered | web_source_items_test › starts with an empty cursor | WebSourceItemsTest
+covered | web_source_items_test › builds links from templates and resolves relative pictures | WebSourceItemsTest
+covered | web_source_items_test › names the next page by its cursor | WebSourceItemsTest
+covered | web_source_items_test › finds the full text where the article rule says | WebSourceItemsTest
+covered | web_source_items_test › gives a post per matching element with a title | WebSourceItemsTest
+covered | web_source_items_test › follows the next page link | WebSourceItemsTest
+covered | web_source_items_test › an article rule reads markup | WebSourceItemsTest
+covered | web_source_items_test › a gallery page gives pictures | WebSourceItemsTest
+covered | web_source_items_test › an RSS page is read by the RSS parser | WebSourceItemsTest
+covered | web_source_items_test › dates in each form sites write them | WebSourceItemsTest
+
+## test/web_source_paths_test.dart
+covered | web_source_paths_test › read keys, indexes and every element | WebSourcePathsTest
+covered | web_source_paths_test › a path that leads nowhere gives nothing | WebSourcePathsTest
+covered | web_source_paths_test › numbers and booleans are text; maps and lists are not | WebSourcePathsTest
+covered | web_source_paths_test › only well-formed paths are paths | WebSourcePathsTest
+covered | web_source_paths_test › keys may follow an index without a dot | WebSourcePathsTest
+covered | web_source_paths_test › a long path that is not one is refused at once | WebSourcePathsTest
+covered | web_source_paths_test › fill every placeholder, or give nothing | WebSourcePathsTest
+covered | web_source_paths_test › escape values inside an address, but not a whole address | WebSourcePathsTest
+covered | web_source_paths_test › read text, attributes, the item itself and markup | WebSourcePathsTest
+covered | web_source_paths_test › split a rule at its attribute only | WebSourcePathsTest
+covered | web_source_paths_test › a selector this parser cannot read matches nothing | WebSourcePathsTest
+
+## test/web_sources_screen_test.dart
+untested → ported | web_sources_screen_test › the tab offers Add source while nothing is installed | Compose (web sources tab) | Compose only
+untested → ported | web_sources_screen_test › an update asking for a new site waits for the reader to agree | WebSourcesKeptTest | the sheet is Compose-only
+untested → ported | web_sources_screen_test › a source has a tab per list, its posts, and Follow | Compose (web sources) | Compose only
+untested → ported | web_sources_screen_test › a gallery list is a grid of pictures | Compose (web sources) | Compose only
+untested → ported | web_sources_screen_test › posts stay readable at large text sizes | Compose (web sources) | Compose only
+untested → ported | web_sources_screen_test › Add source lists the published sources and adds one once agreed, fetching nothing from it before | WebSourceCatalogueTest | the sheet is Compose-only
+untested → ported | web_sources_screen_test › a refused source file says why and where | WebSourceDefinitionTest | the wording is Compose-only
+
+## test/web_sources_store_test.dart
+covered | web_sources_store_test › resolves files against the list and leaves out bad entries | WebSourceCatalogueTest
+covered | web_sources_store_test › on agreed sites replaces the source | WebSourcesKeptTest
+covered | web_sources_store_test › asking for a new site waits for agreement | WebSourcesKeptTest
+covered | web_sources_store_test › that is not newer, is another source, or does not read changes nothing | WebSourcesKeptTest
+covered | web_sources_store_test › keeps installed sources, removes them and takes a waiting update | WebSourcesKeptTest
+covered | web_sources_store_test › reads sources again at most once a day, and holds back new sites | WebSourceCatalogueTest
+covered | web_sources_store_test › follows lists as subscriptions and drops them with their source | WebSourcesKeptTest
+covered | web_sources_store_test › names a followed list by its parts | WebSourcesKeptTest
+covered | web_sources_store_test › loads pages until one brings nothing new | WebSourceClientTest; WebSourcesKeptTest

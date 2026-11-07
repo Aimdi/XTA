@@ -1098,3 +1098,13 @@ untested | pixiv_viewer_controls_test › says so when the page cannot be had | 
 untested | pixiv_viewer_controls_test › holding stops playback and resuming plays again; a reader's own pause stays | Compose (ugoira player) | Compose only
 untested | pixiv_viewer_controls_test › covered while the frames download, it waits paused until shown again | Compose (ugoira player) | Compose only
 untested | pixiv_viewer_controls_test › the view pauses while its ticker is off and plays on when it comes back | Compose (ugoira player) | Compose only
+
+## pixivision_parser_test.dart
+covered | pixivision_parser_test › reads the title, the description as the intro and the cover | PixivisionTest.theEnglishLayoutGivesTheTitleTheDescriptionAsIntroAndTheCover
+covered | pixivision_parser_test › lists each featured work once, with its artist, and nothing outside the article | PixivisionTest.eachFeaturedWorkComesOnceWithItsArtistAndNothingOutsideTheArticle
+covered | pixivision_parser_test › takes the opening paragraphs as the intro when there is no description | PixivisionTest.theChineseLayoutTakesTheOpeningParagraphsAsIntro
+covered | pixivision_parser_test › reads lazy images, tracking queries and the older member links | PixivisionTest.lazyPicturesTrackingQueriesAndOldMemberLinksAreRead
+covered | pixivision_parser_test › a page with no article reads as empty rather than throwing | PixivisionTest.aPageWithNoArticleReadsAsEmptyRatherThanThrowing
+covered | pixivision_parser_test › a work without an artist link is left out instead of borrowing a neighbour | PixivisionTest.aWorkWithoutAnArtistLinkIsLeftOutInsteadOfBorrowingANeighbours
+covered | pixivision_parser_test › a block missing its title and pictures still yields the ids | PixivisionTest.aBlockMissingItsTitleAndPicturesStillGivesTheIds
+covered | pixivision_parser_test › the page language follows the XTA locale | PixivisionTest.thePageLanguageFollowsTheLocale
