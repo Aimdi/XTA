@@ -120,6 +120,7 @@
     </plurals>
     <string name="reader_font">Шрифт статей</string>
     <string name="recent_searches">Недавні пошуки</string>
+        <string name="refresh_failed">Не вдалося оновити. Ви можете продовжити читати цю копію.</string>
     <string name="refresh">Оновити статтю</string>
     <string name="reset_filters">Скинути фільтри</string>
     <string name="retry">Повторити</string>

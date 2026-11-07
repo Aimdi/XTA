@@ -114,6 +114,7 @@
     </plurals>
     <string name="reader_font">Fonte dos artigos</string>
     <string name="recent_searches">Pesquisas recentes</string>
+        <string name="refresh_failed">Não foi possível atualizar. Você pode continuar lendo esta cópia.</string>
     <string name="refresh">Atualizar artigo</string>
     <string name="reset_filters">Redefinir filtros</string>
     <string name="retry">Tentar novamente</string>

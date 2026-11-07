@@ -114,6 +114,7 @@
     </plurals>
     <string name="reader_font">Artikuluen letra-tipoa</string>
     <string name="recent_searches">Azken bilaketak</string>
+        <string name="refresh_failed">Ezin izan da freskatu. Kopia hau irakurtzen jarrai dezakezu.</string>
     <string name="refresh">Freskatu artikulua</string>
     <string name="reset_filters">Berrezarri iragazkiak</string>
     <string name="retry">Saiatu berriro</string>

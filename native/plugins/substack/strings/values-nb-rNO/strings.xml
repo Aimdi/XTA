@@ -114,6 +114,7 @@
     </plurals>
     <string name="reader_font">Skrift i artikler</string>
     <string name="recent_searches">Nylige søk</string>
+        <string name="refresh_failed">Kunne ikke oppdatere. Du kan fortsette å lese denne kopien.</string>
     <string name="refresh">Oppdater artikkelen</string>
     <string name="reset_filters">Nullstill filtre</string>
     <string name="retry">Prøv på nytt</string>

@@ -120,6 +120,7 @@
     </plurals>
     <string name="reader_font">Šryft artykułaŭ</string>
     <string name="recent_searches">Niadaŭnija pošuki</string>
+        <string name="refresh_failed">Nie ŭdałosia abnavić. Vy možacie praciahnuć čytać hetuju kopiju.</string>
     <string name="refresh">Abnavić artykuł</string>
     <string name="reset_filters">Skinuć filtry</string>
     <string name="retry">Paŭtaryć</string>

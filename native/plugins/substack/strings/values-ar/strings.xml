@@ -126,6 +126,7 @@
     </plurals>
     <string name="reader_font">خط المقالات</string>
     <string name="recent_searches">عمليات البحث الأخيرة</string>
+        <string name="refresh_failed">تعذّر التحديث. يمكنك مواصلة قراءة هذه النسخة.</string>
     <string name="refresh">تحديث المقال</string>
     <string name="reset_filters">إعادة ضبط الفلاتر</string>
     <string name="retry">إعادة المحاولة</string>

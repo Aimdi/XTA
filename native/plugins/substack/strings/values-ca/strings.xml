@@ -114,6 +114,7 @@
     </plurals>
     <string name="reader_font">Tipus de lletra dels articles</string>
     <string name="recent_searches">Cerques recents</string>
+        <string name="refresh_failed">No s’ha pogut actualitzar. Pots continuar llegint aquesta còpia.</string>
     <string name="refresh">Actualitza l’article</string>
     <string name="reset_filters">Restableix els filtres</string>
     <string name="retry">Reintentar</string>

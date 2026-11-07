@@ -111,6 +111,7 @@
     </plurals>
     <string name="reader_font">記事のフォント</string>
     <string name="recent_searches">最近の検索</string>
+        <string name="refresh_failed">更新できませんでした。このコピーを引き続き読むことができます。</string>
     <string name="refresh">記事を更新</string>
     <string name="reset_filters">フィルターをリセット</string>
     <string name="retry">再試行</string>

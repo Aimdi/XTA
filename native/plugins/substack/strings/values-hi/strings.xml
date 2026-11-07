@@ -114,6 +114,7 @@
     </plurals>
     <string name="reader_font">लेख का फ़ॉन्ट</string>
     <string name="recent_searches">हाल की खोजें</string>
+        <string name="refresh_failed">रीफ़्रेश नहीं हो सका। आप इस प्रति को पढ़ना जारी रख सकते हैं।</string>
     <string name="refresh">लेख रीफ़्रेश करें</string>
     <string name="reset_filters">फ़िल्टर रीसेट करें</string>
     <string name="retry">पुनः प्रयास करें</string>

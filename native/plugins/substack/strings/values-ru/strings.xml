@@ -120,6 +120,7 @@
     </plurals>
     <string name="reader_font">Шрифт статей</string>
     <string name="recent_searches">Недавние поиски</string>
+        <string name="refresh_failed">Не удалось обновить. Вы можете продолжить чтение этой копии.</string>
     <string name="refresh">Обновить статью</string>
     <string name="reset_filters">Сбросить фильтры</string>
     <string name="retry">Повторить</string>

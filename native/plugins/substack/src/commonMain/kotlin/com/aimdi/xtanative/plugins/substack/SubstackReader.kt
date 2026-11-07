@@ -111,7 +111,9 @@ internal fun SubstackReaderScreen(app: SubstackApp, link: SubstackPostLink, key:
             Box(Modifier.weight(1f)) {
                 ReaderBody(app, model, state, list, web, page) { sheet = it }
                 if (state.refreshing) LinearProgressIndicator(Modifier.fillMaxWidth())
-                state.refreshError?.let { FailureRow(it, { model.load(force = true) }, Modifier.align(Alignment.TopCenter)) }
+                state.refreshError?.let {
+                    FailureRow(it, { model.load(force = true) }, Modifier.align(Alignment.TopCenter), pluginString(Strings.refresh_failed))
+                }
             }
         }
     }

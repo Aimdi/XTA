@@ -95,12 +95,16 @@ internal fun EmptyState(title: String, modifier: Modifier = Modifier, icon: Imag
     }
 }
 
-/** A failure in a row where what failed would have been: why, in plain words, and a way to try again. */
+/**
+ * A failure in a row where what failed would have been: why, in plain words,
+ * and a way to try again. [message] is XTA's own sentence when the row is a
+ * reload over something the reader can keep reading.
+ */
 @Composable
-internal fun FailureRow(error: Throwable, onRetry: () -> Unit, modifier: Modifier = Modifier) {
+internal fun FailureRow(error: Throwable, onRetry: () -> Unit, modifier: Modifier = Modifier, message: String? = null) {
     Column(modifier.fillMaxWidth().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
-            networkProblemText(problemOf(error), NETWORK),
+            message ?: networkProblemText(problemOf(error), NETWORK),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,

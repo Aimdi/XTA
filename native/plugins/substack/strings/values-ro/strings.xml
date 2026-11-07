@@ -117,6 +117,7 @@
     </plurals>
     <string name="reader_font">Fontul articolelor</string>
     <string name="recent_searches">Căutări recente</string>
+        <string name="refresh_failed">Reîncărcarea a eșuat. Poți continua să citești această copie.</string>
     <string name="refresh">Reîncarcă articolul</string>
     <string name="reset_filters">Resetează filtrele</string>
     <string name="retry">Reîncercați</string>

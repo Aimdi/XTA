@@ -117,6 +117,7 @@
     </plurals>
     <string name="reader_font">Písmo článků</string>
     <string name="recent_searches">Nedávná hledání</string>
+        <string name="refresh_failed">Obnovení se nezdařilo. Můžete pokračovat ve čtení této kopie.</string>
     <string name="refresh">Obnovit článek</string>
     <string name="reset_filters">Obnovit filtry</string>
     <string name="retry">Zkusit znovu</string>

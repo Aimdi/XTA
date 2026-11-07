@@ -111,6 +111,7 @@
     </plurals>
     <string name="reader_font">Phông chữ bài viết</string>
     <string name="recent_searches">Tìm kiếm gần đây</string>
+        <string name="refresh_failed">Không thể làm mới. Bạn có thể tiếp tục đọc bản này.</string>
     <string name="refresh">Làm mới bài viết</string>
     <string name="reset_filters">Đặt lại bộ lọc</string>
     <string name="retry">Thử lại</string>

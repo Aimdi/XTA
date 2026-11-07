@@ -114,6 +114,7 @@
     </plurals>
     <string name="reader_font">Artiklite kiri</string>
     <string name="recent_searches">Hiljutised otsingud</string>
+        <string name="refresh_failed">Värskendamine ebaõnnestus. Saad selle koopia lugemist jätkata.</string>
     <string name="refresh">Värskenda artiklit</string>
     <string name="reset_filters">Lähtesta filtrid</string>
     <string name="retry">Proovi uuesti</string>

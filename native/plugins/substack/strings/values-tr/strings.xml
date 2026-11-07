@@ -114,6 +114,7 @@
     </plurals>
     <string name="reader_font">Makale yazı tipi</string>
     <string name="recent_searches">Son aramalar</string>
+        <string name="refresh_failed">Yenilenemedi. Bu kopyayı okumaya devam edebilirsiniz.</string>
     <string name="refresh">Makaleyi yenile</string>
     <string name="reset_filters">Filtreleri sıfırla</string>
     <string name="retry">Yeniden dene</string>

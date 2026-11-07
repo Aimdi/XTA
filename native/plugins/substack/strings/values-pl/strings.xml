@@ -120,6 +120,7 @@
     </plurals>
     <string name="reader_font">Czcionka artykułów</string>
     <string name="recent_searches">Ostatnie wyszukiwania</string>
+        <string name="refresh_failed">Nie udało się odświeżyć. Możesz dalej czytać tę kopię.</string>
     <string name="refresh">Odśwież artykuł</string>
     <string name="reset_filters">Wyczyść filtry</string>
     <string name="retry">Ponów</string>

@@ -114,6 +114,7 @@
     </plurals>
     <string name="reader_font">Lettertype van artikelen</string>
     <string name="recent_searches">Recente zoekopdrachten</string>
+        <string name="refresh_failed">Vernieuwen mislukt. Je kunt deze kopie blijven lezen.</string>
     <string name="refresh">Artikel vernieuwen</string>
     <string name="reset_filters">Filters herstellen</string>
     <string name="retry">Opnieuw</string>

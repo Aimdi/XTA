@@ -115,6 +115,7 @@
     <string name="reader_font">Article font</string>
     <string name="recent_searches">Recent searches</string>
     <string name="refresh">Refresh article</string>
+    <string name="refresh_failed">Could not refresh. You can keep reading this copy.</string>
     <string name="reset_filters">Reset filters</string>
     <string name="retry">Retry</string>
     <string name="save">Save</string>

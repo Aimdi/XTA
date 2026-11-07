@@ -114,6 +114,7 @@
     </plurals>
     <string name="reader_font">Tiparo de artikoloj</string>
     <string name="recent_searches">Lastatempaj serĉoj</string>
+        <string name="refresh_failed">Ne eblis aktualigi. Vi povas daŭrigi la legadon de ĉi tiu kopio.</string>
     <string name="refresh">Aktualigi la artikolon</string>
     <string name="reset_filters">Restarigi filtrilojn</string>
     <string name="retry">Reprovi</string>

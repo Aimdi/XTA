@@ -111,6 +111,7 @@
     </plurals>
     <string name="reader_font">Font artikel</string>
     <string name="recent_searches">Pencarian terbaru</string>
+        <string name="refresh_failed">Tidak dapat memuat ulang. Anda dapat terus membaca salinan ini.</string>
     <string name="refresh">Muat ulang artikel</string>
     <string name="reset_filters">Atur ulang filter</string>
     <string name="retry">Ulang</string>

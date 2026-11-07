@@ -111,6 +111,7 @@
     </plurals>
     <string name="reader_font">文章字型</string>
     <string name="recent_searches">最近搜尋</string>
+        <string name="refresh_failed">無法重新整理。你可以繼續閱讀此副本。</string>
     <string name="refresh">重新整理文章</string>
     <string name="reset_filters">重設篩選</string>
     <string name="retry">重試</string>
