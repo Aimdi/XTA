@@ -554,3 +554,86 @@ covered | export_preferences_test › subscription export includes preference-ba
 covered | export_preferences_test › group membership ids still resolve after subscription-only export round trip | BackupTest
 covered | export_preferences_test › settings choice keeps normal preferences and still strips credentials | BackupTest
 covered | export_preferences_test › excluding both settings and subscriptions exports no preferences | BackupTest
+
+## test/video_controller_pool_test.dart
+untested | video_controller_pool_test › stalled URL resolution ends the spinner and offers manual restart | Compose (player) | Compose only
+covered | video_controller_pool_test › stalled native startup exposes retry and retains capacity until disposal | ui/media PlayerTurnsTest.retry
+covered | video_controller_pool_test › eviction retains capacity until the native player is actually disposed | PlayerTurnsTest.release
+untested | video_controller_pool_test › abandoned startup cannot allocate more decoders and late completion is disposed | ui/media (pool) | no pure rule
+untested | video_controller_pool_test › a late release cannot release a replacement with the same key | ui/media (pool) | no pure rule
+covered | video_controller_pool_test › reattaching to a cached key shares one acquisition | PlayerTurnsTest.aFeedKeepsItsPlayerForTheNextTileAndATilesOwnLetsItGo
+covered | video_controller_pool_test › a player keyed to its widget alone goes with the widget | PlayerTurnsTest.aFeedKeepsItsPlayerForTheNextTileAndATilesOwnLetsItGo
+covered | video_controller_pool_test › a player keyed to its post stays cached for the next screen | PlayerTurnsTest.aFeedKeepsItsPlayerForTheNextTileAndATilesOwnLetsItGo
+untested | video_controller_pool_test › play no more at once than the pool can host | ui/media (pool) | no pure rule
+untested | video_controller_pool_test › are keyed like the same GIF in a post | Compose (player keys) | Compose only
+
+## test/video_download_variant_test.dart
+covered | video_download_variant_test › saves the quality being watched | MediaRulesTest.aDownloadSavesTheVariantWatchedOrTheBest
+covered | video_download_variant_test › falls back to the best file when the player is on HLS or nothing known | MediaRulesTest.aDownloadSavesTheVariantWatchedOrTheBest
+covered | video_download_variant_test › a stream without an MP4 variant has nothing to save | MediaRulesTest.qualitiesAreTheMp4sHighestFirstNamedByTheirHeight
+
+## test/video_driver_properties_test.dart
+untested | video_driver_properties_test › Android gets AAudio with an OpenSL ES fallback, and MediaCodec decoding | Android media driver | platform-specific; Compose/Android only
+covered | video_driver_properties_test › elsewhere libmpv keeps its own audio output and decoder | ui/media MpvOptionsTest, MpvEngineTest
+
+## test/video_fullscreen_handoff_test.dart
+covered | video_fullscreen_handoff_test › a tile gone under its full-screen player gives the slot back once that closes | PlayerTurnsTest.fullScreenKeepsThePlayerThroughADropAndARelease
+covered | video_fullscreen_handoff_test › a tile still there when full screen closes keeps its player until it goes | PlayerTurnsTest.fullScreenKeepsThePlayerThroughADropAndARelease
+
+## test/video_memory_pressure_test.dart
+covered | video_memory_pressure_test › system memory pressure releases idle players and preserves attached players | PlayerTurnsTest.release
+untested | video_memory_pressure_test › idle creation finishing after a memory warning is disposed once | ui/media (pool) | no pure rule
+covered | video_memory_pressure_test › a visible token protects a released player until the view hides | PlayerTurnsTest.release
+
+## test/video_mute_badge_test.dart
+untested | video_mute_badge_test › a loading inline video keeps its poster, with no spinner | Compose (media tile) | Compose only
+untested | video_mute_badge_test › a full-screen player that opts in still shows it is loading | Compose (media tile) | Compose only
+untested | video_mute_badge_test › a video waiting for a free player shows no spinner either | Compose (media tile) | Compose only
+covered | video_mute_badge_test › the mute badge toggles sound at once, without controls shown | VideoSettingsTest.theAppsMuteIsTheSettingUntilTheReaderChooses
+untested | video_mute_badge_test › with animations on, the badge cross-fades from one icon to the other | Compose (motion) | Compose only
+untested | video_mute_badge_test › the badge is a labelled toggle | Compose semantics | Compose only
+untested | video_mute_badge_test › the badge sits in the bottom-end corner with a full touch target | Compose (media tile) | Compose only
+untested | video_mute_badge_test › right-to-left puts the badge in the bottom-left corner | Compose (media tile) | Compose only
+covered | video_mute_badge_test › a GIF has no sound, so no badge and no spinner | VideoSettingsTest.aGifLoopsSilentlyWhateverTheSettings
+untested | video_mute_badge_test › a tap-to-play poster keeps its play button and no badge | Compose (media tile) | Compose only
+untested | video_mute_badge_test › a Mastodon or Bluesky video loads without a spinner and shows the badge | Compose (plugin card) | Compose only
+untested | video_mute_badge_test › a plugin GIF shows no badge | Compose (plugin card) | Compose only
+
+## test/video_playback_policy_test.dart
+covered | video_playback_policy_test › a plain video waits for a tap | VideoSettingsTest.aPlainVideoWaitsForATapAndAnUnseenGifHoldsNoPlayer
+covered | video_playback_policy_test › autoplay, GIFs, a tap and a cached player all skip it | VideoSettingsTest.aPlainVideoWaitsForATapAndAnUnseenGifHoldsNoPlayer
+covered | video_playback_policy_test › an off-screen GIF allocates nothing | VideoSettingsTest.aPlainVideoWaitsForATapAndAnUnseenGifHoldsNoPlayer
+covered | video_playback_policy_test › an off-screen autoplay video allocates nothing | VideoSettingsTest.aPlainVideoWaitsForATapAndAnUnseenGifHoldsNoPlayer
+covered | video_playback_policy_test › the same GIF allocates once it has been on screen | VideoSettingsTest.aPlainVideoWaitsForATapAndAnUnseenGifHoldsNoPlayer
+covered | video_playback_policy_test › a tap creates the player as soon as it is on screen | VideoSettingsTest.aPlainVideoWaitsForATapAndAnUnseenGifHoldsNoPlayer
+covered | video_playback_policy_test › an already pooled player reattaches without waiting for visibility | PlayerTurnsTest.aFeedKeepsItsPlayerForTheNextTileAndATilesOwnLetsItGo
+untested | video_playback_policy_test › a cached player is not reattached by a tile that is off screen | ui/media (pool) | no pure rule
+covered | video_playback_policy_test › a GIF that has been let go stays let go until it is back on screen | VideoSettingsTest.aPlainVideoWaitsForATapAndAnUnseenGifHoldsNoPlayer
+covered | video_playback_policy_test › a video still showing its play button never allocates, visible or not | VideoSettingsTest.aPlainVideoWaitsForATapAndAnUnseenGifHoldsNoPlayer
+covered | video_playback_policy_test › fullscreen never reclaims, even when the tile looks fully hidden | PlayerTurnsTest.fullScreenKeepsThePlayerThroughADropAndARelease
+untested | video_playback_policy_test › a truly off-screen tile may reclaim | ui/media (pool) | no pure rule
+covered | video_playback_policy_test › a half-visible tile, or one still marked visible elsewhere, stays | VideoSettingsTest.aTileIsSeenWhileHalfOfItIsOnScreen
+covered | video_playback_policy_test › reattaching to a cached player is always allowed | PlayerTurnsTest.aFeedKeepsItsPlayerForTheNextTileAndATilesOwnLetsItGo
+untested | video_playback_policy_test › a new player is refused when the pool is full and nothing is free | ui/media (pool) | no pure rule
+untested | video_playback_policy_test › a new player is allowed when an unused entry can be evicted | ui/media (pool) | no pure rule
+untested | video_playback_policy_test › acquire at capacity must drop unused entries to free a slot | ui/media (pool) | no pure rule
+untested | video_playback_policy_test › release leaves unused entries cached up to maxSize | ui/media (pool) | no pure rule
+
+## test/video_quality_continuity_test.dart
+covered | video_quality_continuity_test › quality switch preserves position, volume, rate and active play intent | PlaybackTest.aRestoredSourceIsSoughtOnceItKnowsItsLength
+covered | video_quality_continuity_test › paused video remains paused after a quality switch | PlaybackTest.pause
+covered | video_quality_continuity_test › if native start is ignored seek waits until new duration arrives | PlaybackTest.aRestoredSourceIsSoughtOnceItKnowsItsLength
+covered | video_quality_continuity_test › unacknowledged seek falls back once to a playable start | PlaybackTest.aFailedReplacedOrStuckSourceIsNotRestored
+untested | video_quality_continuity_test › missing duration times out without seeking an unready decoder | ui/media (player) | no pure rule
+untested | video_quality_continuity_test › rapid quality choices serialize native opens and latest choice wins | ui/media (player) | no pure rule
+untested | video_quality_continuity_test › new choice cancels a duration wait rather than waiting for timeout | ui/media (player) | no pure rule
+covered | video_quality_continuity_test › disposal cancels restoration before any seek or playback command | PlaybackTest.dispose
+untested | video_quality_continuity_test › hiding the video during restoration suppresses delayed automatic play | ui/media (player) | no pure rule
+covered | video_quality_continuity_test › mute and speed changes made while loading take precedence | VideoSettingsTest.aVideoPlaysAsTheMediaSettingsSay
+covered | video_quality_continuity_test › failed variant restores the original source and remains retryable | MpvVideoRulesTest.aFailedChangeOfQualityGoesBackToTheVariantBefore
+covered | video_quality_continuity_test › completed videos start paused and invalid rate or volume is not applied | PlaybackTest.theResumePlaceStopsShortOfTheEnd
+covered | video_quality_continuity_test › resume target stays within a shorter variant and does not seek EOF | PlaybackTest.theResumePlaceStopsShortOfTheEnd
+untested | video_quality_continuity_test › stalled native seek fails promptly without overlapping a fallback open | ui/media (player) | no pure rule
+untested | video_quality_continuity_test › stalled native open fails promptly and disposal waits for its late completion | ui/media (player) | no pure rule
+untested | video_quality_continuity_test › latest choice unblocks when an uncancellable open is still stalled | ui/media (player) | no pure rule
+covered | video_quality_continuity_test › latest choice cannot receive the seek of an abandoned earlier source | MpvVideoRulesTest.aFailedChangeOfQualityGoesBackToTheVariantBefore
