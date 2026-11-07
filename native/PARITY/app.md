@@ -524,3 +524,33 @@ untested | home_reading_controls_test › real viewport retains controls for foc
 untested | home_reading_controls_test › real viewport retains controls for keyboard | HomeFeedPage | the keyboard inset is passed as protected; the store's protected path is tested
 untested | home_reading_controls_test › real viewport retains controls for accessibility | HomeFeedPage | the screen reader is passed as protected; the store's protected path is tested
 untested | home_reading_controls_test › real viewport retains controls for short | ReadingScroll.of | ReadingControlsTest.aListThatFitsIsShortAndOneThatRunsPastIsNot
+
+## test/offline_library_test.dart
+covered | offline_library_test › article snapshots preserve identity, body, author and media metadata | store/offline OfflineSavedTest
+covered | offline_library_test › cold restart reports exact partial images and renders without remote fetches | OfflineStoreTest
+covered | offline_library_test › a kept article hands its images over as files, for readers that need no page | OfflineStoreTest
+covered | offline_library_test › missing files downgrade actual availability and storage bytes | OfflineStoreTest
+covered | offline_library_test › Substack slug links find numeric-ID retained articles without a fetch | OfflineSavedTest
+covered | offline_library_test › empty bodies never become available and SVG is not embeddable | OfflineStoreTest
+covered | offline_library_test › storage and per-image limits apply before publication | OfflineStoreTest
+covered | offline_library_test › streamed size overflow cannot create an available file | OfflineStoreTest
+covered | offline_library_test › interrupted response cleans staging and is never available | OfflineStoreTest
+covered | offline_library_test › remove cancels an in-flight copy before publication | OfflineStoreTest
+covered | offline_library_test › a failed replacement keeps the previous durable copy | OfflineStoreTest
+covered | offline_library_test › failed manifest write after remove cannot leave a ready state | OfflineStoreTest
+covered | offline_library_test › failed manifest write after clear cannot leave ready entries | OfflineStoreTest
+covered | offline_library_test › clear removes copies and startup removes interrupted staging | OfflineStoreTest
+covered | offline_library_test › malformed manifest reports an error and explicit retry recovers | OfflineStoreTest
+
+## test/backup_coverage_test.dart
+n/a | backup_coverage_test › every table in the schema is either backed up or deliberately not | - | XTA's SQLite schema guard; native keeps no SQLite (files), BackupDocumentTest covers the sections
+n/a | backup_coverage_test › every table a plugin owns is either backed up or excused | - | XTA's SQLite schema guard; native keeps no SQLite
+covered | backup_coverage_test › no two sections claim the same key or table | store/backup BackupDocumentTest
+covered | backup_coverage_test › the newly covered sections survive an actual import | BackupDocumentTest
+n/a | backup_coverage_test › nothing is excluded that no longer exists | - | XTA's SQLite schema guard; native keeps no SQLite
+
+## test/export_preferences_test.dart
+covered | export_preferences_test › subscription export includes preference-backed authors without other settings | ui/settings BackupTest
+covered | export_preferences_test › group membership ids still resolve after subscription-only export round trip | BackupTest
+covered | export_preferences_test › settings choice keeps normal preferences and still strips credentials | BackupTest
+covered | export_preferences_test › excluding both settings and subscriptions exports no preferences | BackupTest

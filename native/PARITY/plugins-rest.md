@@ -1160,3 +1160,104 @@ covered | web_sources_store_test › reads sources again at most once a day, and
 covered | web_sources_store_test › follows lists as subscriptions and drops them with their source | WebSourcesKeptTest
 covered | web_sources_store_test › names a followed list by its parts | WebSourcesKeptTest
 covered | web_sources_store_test › loads pages until one brings nothing new | WebSourceClientTest; WebSourcesKeptTest
+
+## test/feed_ink_networks_test.dart
+untested → ported | feed_ink_networks_test › takes two columns: the avatar at 16 dp, everything else at 68 dp | ui/feed (network rows) | layout is Compose-only
+untested → ported | feed_ink_networks_test › names the author, handle and short time on one line | ui/feed | layout is Compose-only
+untested → ported | feed_ink_networks_test › with large text on a narrow phone takes a second author line and fits | ui/feed | layout is Compose-only
+untested → ported | feed_ink_networks_test › says the author and, in a mixed timeline, the network on the avatar | ui/feed | layout is Compose-only
+untested → ported | feed_ink_networks_test › dims the server in the handle | ui/feed | layout is Compose-only
+untested → ported | feed_ink_networks_test › says "Edited" after the time | ui/feed | layout is Compose-only
+untested → ported | feed_ink_networks_test › a boost and a pinned post have their context lines at 68 dp; the boost opens the booster | ui/feed | layout is Compose-only
+untested → ported | feed_ink_networks_test › says who it replies to under the author line, at 68 dp | ui/feed | layout is Compose-only
+untested → ported | feed_ink_networks_test › offers Follow as a 48 dp icon at the end of the author line until followed | ui/feed | layout is Compose-only
+untested → ported | feed_ink_networks_test › a repost has its context line at 68 dp and it opens the reposter | ui/feed | layout is Compose-only
+untested → ported | feed_ink_networks_test › says who it replies to under the author line | ui/feed | layout is Compose-only
+untested → ported | feed_ink_networks_test › carries the verified check on the author line | ui/feed | layout is Compose-only
+untested → ported | feed_ink_networks_test › offers Follow as a 48 dp icon until followed, before the ⋯ at the end | ui/feed | layout is Compose-only
+untested → ported | feed_ink_networks_test › a repost has its context line at 68 dp and it opens the reposter (second) | ui/feed | layout is Compose-only
+untested → ported | feed_ink_networks_test › puts its topic under the author line, at 68 dp | ui/feed | layout is Compose-only
+untested → ported | feed_ink_networks_test › a conversation's rail is drawn inside the card, through the avatar | ui/feed | layout is Compose-only
+untested → ported | feed_ink_networks_test › the last post of a conversation, and a post outside one, keep their hairline | ui/feed | layout is Compose-only
+untested → ported | feed_ink_networks_test › a mixed timeline, $name | ui/feed | layout is Compose-only
+untested → ported | feed_ink_networks_test › a Threads conversation | ui/feed | layout is Compose-only
+
+## test/group_plugin_post_kinds_test.dart
+covered | group_plugin_post_kinds_test › everything passes when the group takes everything | GroupFeedTest (kinds)
+covered | group_plugin_post_kinds_test › replies off drops replies and keeps reposts, even of replies | GroupFeedTest
+covered | group_plugin_post_kinds_test › reposts off drops reposts and keeps replies | GroupFeedTest
+covered | group_plugin_post_kinds_test › each choice caches apart, and the existing names still read | GroupFeedTest
+covered | group_plugin_post_kinds_test › replies off drops reply posts | GroupFeedTest
+covered | group_plugin_post_kinds_test › replies on shows them | GroupFeedTest
+covered | group_plugin_post_kinds_test › reposts off drops reposts | GroupFeedTest
+covered | group_plugin_post_kinds_test › hidden replies do not use up the page | GroupFeedTest
+covered | group_plugin_post_kinds_test › a self-thread continuation is a reply, as on X | GroupFeedTest
+covered | group_plugin_post_kinds_test › a repost reason is read as a repost | GroupFeedTest
+covered | group_plugin_post_kinds_test › the AppView is asked for posts without replies, apart from the tab | BlueskyClientTest (author feed filter)
+covered | group_plugin_post_kinds_test › a reply to yourself is a reply, though it mentions nobody | GroupFeedTest
+covered | group_plugin_post_kinds_test › replies off and reposts off drop replies and boosts | GroupFeedTest
+covered | group_plugin_post_kinds_test › replies off and reposts off drop replies and reposts | GroupFeedTest
+
+## test/home_feed_sources_test.dart
+untested → ported | home_feed_sources_test › $name joins it only when the plugin is on and the switch is on | ui/home HomeFeed (sources) | Compose-only wiring
+untested → ported | home_feed_sources_test › $name stays out when the reader has not asked for it | ui/home HomeFeed | Compose-only wiring
+untested → ported | home_feed_sources_test › $name stays out when the plugin is off, however the switch is set | ui/home HomeFeed | Compose-only wiring
+untested → ported | home_feed_sources_test › $name stays out of a feed that has never been configured | ui/home HomeFeed | Compose-only wiring
+
+## test/home_plugin_evidence_test.dart
+untested → ported | home_plugin_evidence_test › RSS production screen render ${dark ? 'dark' : 'light'} | Compose (render sweep) | golden/layout sweep
+untested → ported | home_plugin_evidence_test › pilot production section controls render | Compose (render sweep) | golden/layout sweep
+
+## test/home_plugin_journeys_test.dart
+untested → ported | home_plugin_journeys_test › real Home keeps source, sections, loaded pages and scroll through full client and pin edits | Compose (Home journey) | Compose only
+
+## test/published_sources_test.dart
+covered | published_sources_test › the published list names sources | WebSourceCatalogueTest
+covered | published_sources_test › ${listing.id} is a valid source, published next to the list | WebSourceCatalogueTest
+
+## test/source_tables_test.dart
+n/a | source_tables_test › RSS is a subscription source whose table is rss_subscription | - | XTA's SQLite schema; native keeps subscriptions in files (store/backup), no SQLite
+n/a | source_tables_test › querySourceTable returns nothing when the table is missing | - | SQLite schema; native keeps no tables
+n/a | source_tables_test › querySourceTable reads rows once the table exists | - | SQLite schema; native keeps no tables
+n/a | source_tables_test › readRssFeedsTable is empty when rss_subscription is missing | - | SQLite schema; native keeps no tables
+n/a | source_tables_test › syncRssFeedsTable does not throw when the table is missing | - | SQLite schema; native keeps no tables
+
+## test/enabled_subscription_sources_test.dart
+covered | enabled_subscription_sources_test › disabled plugins stay out of mixed-feed fan-out | core/feed FollowingFeedTest, GroupFeedTest (disabled sources)
+
+## test/social_post_activity_test.dart
+covered | social_post_activity_test › Bluesky reads repost actors and quote posts with opaque paging cursors | BlueskyFollowingTest, BlueskyClientTest
+covered | social_post_activity_test › Bluesky retains stable repost identity when a handle is absent | BlueskyParserTest
+covered | social_post_activity_test › Mastodon uses Link cursor rather than the last account ID | MastodonClientTest.boostersArePagedFromTheLinkHeaderOfTheInstanceThatHasThePost
+covered | social_post_activity_test › Mastodon unauthorized quote lists stay errors rather than empty results | MastodonClientTest (quote refusal)
+covered | social_post_activity_test › Activity pagination rejects another server and endpoint | MastodonClientTest.aCursorForAnotherListOrInstanceIsRefusedUnread
+covered | social_post_activity_test › Activity store keeps prior pages on failure, retries cursor and deduplicates | MastodonFollowingTest; BlueskyFollowingTest
+
+## test/read_recovery_backoff_test.dart
+covered | read_recovery_backoff_test › $kind failures retry on a growing backoff and stop at the budget | ReadRetriesTest (Threads waits)
+covered | read_recovery_backoff_test › a success renews the budget for the next failure | ReadRetriesTest
+covered | read_recovery_backoff_test › sign-in, endpoint and definitive account failures stay manual | ReadRetriesTest.aLongWaitAndWhatOnlyTheReaderCanMendAreNotWaitedFor
+covered | read_recovery_backoff_test › a rate limit retries once, after its known reset | ReadRetriesTest.aWaitMetaAskedForIsSatOutOnceASecondPastItsReset
+covered | read_recovery_backoff_test › a Threads throttle waits for its cooldown, not seconds | ThreadsFailuresTest.aSessionThrottleWaitsForTheCooldownMetasAnswerArmedAndSoDoesTheNextRead
+covered | read_recovery_backoff_test › a Threads read without a setup or a session waits for the reader | ThreadsFailuresTest.withoutASetupOrWithTheSessionRefusedNothingRetriesOnItsOwn
+covered | read_recovery_backoff_test › a rate limit without a known reset stays manual | ReadRetriesTest.aLongWaitAndWhatOnlyTheReaderCanMendAreNotWaitedFor
+covered | read_recovery_backoff_test › nothing retries while loading | ReadRetriesTest
+untested → ported | read_recovery_backoff_test › nothing retries while the surface is out of view | Compose (read recovery) | Compose only
+covered | read_recovery_backoff_test › a reported offline network pauses retries until it reconnects | ReadRetriesTest
+covered | read_recovery_backoff_test › an unknown network does not block a cold-start retry | ReadRetriesTest
+untested → ported | read_recovery_backoff_test › nothing retries while backgrounded; resume retries again | Compose (read recovery) | Compose only
+untested → ported | read_recovery_backoff_test › nothing retries under a sheet | Compose (read recovery) | Compose only
+covered | read_recovery_backoff_test › a retry that throws, synchronously or later, neither crashes nor loops | ReadRetriesTest
+covered | read_recovery_backoff_test › new error objects for the same failing request never renew the budget | ReadRetriesTest
+untested → ported | read_recovery_backoff_test › the notice shows the countdown, keeps manual retry, then falls back to it | Compose (read notice) | Compose only
+untested → ported | read_recovery_backoff_test › a rate-limited notice counts down to the reset instead of a disabled button | Compose (read notice) | Compose only
+untested → ported | read_recovery_backoff_test › a notice counting down keeps one row on a small phone | Compose (read notice) | Compose only
+untested → ported | read_recovery_backoff_test › countdown, its details sheet and large text fit a narrow screen | Compose (read notice) | Compose only
+untested → ported | read_recovery_backoff_test › visibility reported between frames schedules the frame that delivers it | Compose (read recovery) | Compose only
+covered | read_recovery_backoff_test › the budget spends each backoff step once and the reset retry once | ReadRetriesTest
+
+## test/discover_reading_test.dart
+untested → ported | discover_reading_test › a recent search fills the field and submits the same query | Compose (Discover) | Compose only
+untested → ported | discover_reading_test › recent searches are bounded, deduplicated and isolated by network | ui/plugins PluginSearchHistoryTest (rules) | the Discover wiring is Compose-only
+untested → ported | discover_reading_test › empty Mastodon Discover shows followed people and live topics | Compose (Discover) | Compose only
+untested → ported | discover_reading_test › inline search keeps its results after opening a profile | Compose (Discover) | Compose only
