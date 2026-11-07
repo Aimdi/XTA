@@ -98,6 +98,7 @@
     <string name="paywalled_description">這篇文章在 Substack 付費牆之後。如果有權限，請在瀏覽器中開啟。</string>
     <string name="paywalled_title">訂閱者專屬文章</string>
     <string name="pin">置頂</string>
+    <string name="playback_speed">播放速度</string>
     <string name="plugin_description">追蹤電子報、瀏覽公開 Notes，並閱讀免費的 Substack 文章</string>
     <string name="plugin_name">Substack</string>
     <string name="preview_badge">試讀</string>

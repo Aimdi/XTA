@@ -98,6 +98,7 @@
     <string name="paywalled_description">この記事は Substack の有料壁の向こうにあります。アクセス権がある場合はブラウザで開いてください。</string>
     <string name="paywalled_title">購読者限定の記事</string>
     <string name="pin">ピン留め</string>
+    <string name="playback_speed">再生速度</string>
     <string name="plugin_description">ニュースレターをフォローし、公開 Notes を眺め、無料の Substack 記事を読む</string>
     <string name="plugin_name">Substack</string>
     <string name="preview_badge">試し読み</string>

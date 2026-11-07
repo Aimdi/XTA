@@ -100,6 +100,7 @@
     <string name="paywalled_description">Questo post è dietro un paywall di Substack. Aprilo nel browser se hai accesso.</string>
     <string name="paywalled_title">Post solo per abbonati</string>
     <string name="pin">Fissa</string>
+    <string name="playback_speed">Velocità di riproduzione</string>
     <string name="plugin_description">Segui newsletter, sfoglia le Notes pubbliche e leggi i post Substack gratuiti</string>
     <string name="plugin_name">Substack</string>
     <string name="preview_badge">Anteprima</string>

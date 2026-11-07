@@ -42,3 +42,91 @@ untested | podcast_continuity_test › a chosen speed applies now, survives a re
 untested | podcast_continuity_test › a stored speed that is not offered reads as normal speed | store/.../settings/NetworkPrefs.kt (podcastSpeed choices) | SubstackPodcastTest.aStoredSpeedThatIsNotOfferedReadsAsNormal
 untested | podcast_continuity_test › each episode resumes where it was left, and a finished one starts over | plugins/substack/.../SubstackPodcast.kt, ui/.../media/Podcasts.kt | SubstackPodcastTest.eachEpisodeResumesWhereItWasLeftAndAFinishedOneStartsOver
 untested | podcast_continuity_test › normal speed is set on open too, so a rate the player kept is not carried over | plugins/substack/.../SubstackPodcast.kt | SubstackPodcastTest.normalSpeedIsSetOnOpenTooSoAKeptRateIsNotCarriedOver
+
+## test/substack_article_navigation_layout_test.dart
+untested | substack_article_navigation_layout_test › contents become matching passages and clearing search restores headings | plugins/substack/.../SubstackArticle.kt (contents), SubstackReaderParts.kt (ContentsSheet) | the sheet's rule moved into SubstackArticle.contents; SubstackArticleNavigationTest.contentsBecomeMatchingPassagesAndClearingTheSearchBringsBackTheHeadings (empty → Strings.no_matches)
+untested | substack_article_navigation_layout_test › an article without headings still allows full local find | plugins/substack/.../SubstackArticle.kt (contents) | SubstackArticleNavigationTest.anArticleWithoutHeadingsStillFindsEverything (empty → Strings.no_headings)
+untested | substack_article_navigation_layout_test › selecting a passage returns its precise document target | plugins/substack/.../SubstackReaderParts.kt (onJump), SubstackArticle.blockOf | SubstackArticleNavigationTest.aChosenHeadingLeadsToItsOwnPlace
+n/a | substack_article_navigation_layout_test › article navigation renders contents and results | – | golden render of Flutter's sheet
+n/a | substack_article_navigation_layout_test › article navigation renders compact large-text RTL | – | golden render and overflow check of Flutter's sheet at text scale 2 with a keyboard inset
+
+## test/substack_article_navigation_test.dart
+covered | substack_article_navigation_test › contents retain publisher targets and distinguish duplicate heading titles | plugins/substack/.../SubstackArticle.kt | SubstackArticleTest.contentsKeepPublisherTargetsAndTellDuplicateHeadingsApart
+covered | substack_article_navigation_test › nested paragraphs are indexed once, while plain text still supports find | plugins/substack/.../SubstackArticle.kt | SubstackArticleTest.nestedParagraphsAreIndexedOnceAndBareTextStillReads
+covered | substack_article_navigation_test › search only sees sanitized visible writing, with all words in any order | plugins/substack/.../SubstackArticle.kt | SubstackArticleTest.findSeesOnlySanitizedVisibleWritingWithAllWordsInAnyOrder
+covered | substack_article_navigation_test › publisher-injected navigation markers cannot collide with reader targets | plugins/substack/.../SubstackArticle.kt | SubstackArticleTest.markersAPublisherLeftCannotCollideWithTheReadersOwn
+covered | substack_article_navigation_test › results excerpt around a match without making huge rows | plugins/substack/.../SubstackArticle.kt (SubstackPassage.excerpt) | SubstackArticleTest.aResultIsCutAroundItsMatchWithoutMakingHugeRows
+covered | substack_article_navigation_test › article fragment routing › resolves relative, encoded and canonical fragment targets | plugins/substack/.../SubstackArticle.kt (SubstackReading.articleFragment) | SubstackArticleTest.aLinkJumpsInsideTheArticleOnlyWhenItIsThisArticle
+covered | substack_article_navigation_test › article fragment routing › never claims other articles or external origins | plugins/substack/.../SubstackArticle.kt | SubstackArticleTest.aLinkJumpsInsideTheArticleOnlyWhenItIsThisArticle
+untested | substack_article_navigation_test › jump code serializes untrusted targets instead of interpolating executable text | plugins/substack/.../SubstackWebPage.kt (jump) | SubstackArticleNavigationTest.theJumpCarriesAnUntrustedTargetAsDataNotCode
+untested | substack_article_navigation_test › native article jumps stop initial restoration without reporting a reading scroll | plugins/substack/.../SubstackWebPage.kt (readingBridge) | SubstackArticleNavigationTest.aJumpStopsTheFirstRestoringWithoutCountingAsReading
+covered | substack_article_navigation_test › literal top-level HTML examples remain text through sanitizing and navigation indexing | plugins/substack/.../SubstackArticle.kt | SubstackArticleTest.markersAPublisherLeftCannotCollideWithTheReadersOwn (literal part)
+untested | substack_article_navigation_test › reader document supports RTL, compact tables and passage focus | plugins/substack/.../SubstackWebPage.kt (wrap) | SubstackArticleNavigationTest.thePageReadsRightToLeftWithScrollingTablesAndAMarkedPassage
+
+## test/substack_audio_player_test.dart
+missing/different | substack_audio_player_test › the player row picks the playback speed from the offered ones | plugins/substack/.../SubstackAudioPlayer.kt (SpeedMenu), SubstackPodcast.kt (SPEEDS) | the menu offers SubstackPodcast.SPEEDS and shows "1.5×"; its button had no name: now labelled "Playback speed" (new plugin string, translated from XTA's playback_speed). Choosing is SubstackPodcastTest.aChosenSpeedAppliesNowSurvivesARestartAndOpensTheNextEpisode
+
+## test/substack_audit_probes_test.dart
+covered | substack_audit_probes_test › BUG-01 (fixed): replies nested deeper than nine levels are kept at the deepest indent | plugins/substack/.../SubstackComments.kt | SubstackParserTest.aRunawayThreadStopsIndentingAtTheCapButKeepsEveryReply
+covered | substack_audit_probes_test › BUG-02 (fixed): one post read through RSS and through the API is one post | plugins/substack/.../SubstackIdentity.kt | SubstackHostsTest.theApiCopyAndTheRssCopyOfAPostAreOnePost
+covered | substack_audit_probes_test › BUG-03 (fixed): a rate limit ends the fallback chain and says so | plugins/substack/.../SubstackClient.kt | SubstackClientTest.aRateLimitEndsTheFallbackChainAndSaysSo
+covered | substack_audit_probes_test › BUG-04 (fixed): an unreachable custom domain never borrows another publication's posts | plugins/substack/.../SubstackClient.kt | SubstackClientTest.anUnreachableCustomDomainNeverBorrowsAnotherPublicationsPosts
+covered | substack_audit_probes_test › BUG-04 (fixed): a followed custom domain looks itself up on its stored subdomain only | plugins/substack/.../SubstackClient.kt | SubstackClientTest.aFollowedCustomDomainLooksItselfUpOnItsStoredSubdomainOnly
+covered | substack_audit_probes_test › BUG-05 (fixed): a refresh reads all 30 followed publications | plugins/substack/.../SubstackFeeds.kt | SubstackFeedsTest.aRefreshReadsAllThirtyFollowedPublications
+covered | substack_audit_probes_test › BUG-06 (fixed): two deep custom domains resolved from RSS get their own ids | plugins/substack/.../SubstackClient.kt | SubstackClientTest.twoDeepCustomDomainsFoundThroughRssGetTheirOwnIds
+covered | substack_audit_probes_test › BUG-07 (fixed; reconstructed markup): no live form survives in an article | plugins/substack/.../SubstackHtml.kt | SubstackHtmlTest.scriptsFormsAndSubstacksChromeAreRemovedOutright
+covered | substack_audit_probes_test › BUG-08 (gap marked; reconstructed markup): client-rendered blocks leave a placeholder | plugins/substack/.../SubstackHtml.kt | SubstackHtmlTest.blocksDrawnOnlyBySubstacksScriptsLeaveAPlaceholderAndOtherEmptiesGo
+untested | substack_audit_probes_test › BUG-09 (fixed): the article cache remembers that a post is a video | plugins/substack/.../SubstackArticleCache.kt, SubstackPostJson.kt | SubstackAuditProbesTest.theArticleCacheRemembersThatAPostIsAVideo
+covered | substack_audit_probes_test › BUG-10 (link shape unverified): an app share link is not read in-app | plugins/substack/.../SubstackHosts.kt (postRef) | SubstackHostsTest (BUG-10 assertion)
+
+## test/substack_blocks_test.dart
+covered | substack_blocks_test › paragraphs keep their styles, links and footnote markers | plugins/substack/.../SubstackBlocks.kt | SubstackArticleTest.paragraphsKeepTheirStylesLinksAndFootnoteMarkers
+covered | substack_blocks_test › headings, quotes, nested lists, code, dividers and tables come out in order | plugins/substack/.../SubstackBlocks.kt | SubstackArticleTest.headingsQuotesNestedListsCodeDividersAndTablesComeOutInOrder
+covered | substack_blocks_test › images, held embeds, web-only gaps and footnotes are their own blocks | plugins/substack/.../SubstackBlocks.kt | SubstackArticleTest.imagesHeldEmbedsWebOnlyGapsAndFootnotesAreTheirOwnBlocks
+covered | substack_blocks_test › the synthetic long post loses no text and no image | plugins/substack/.../SubstackBlocks.kt | SubstackArticleTest.theSyntheticLongPostLosesNoTextAndNoImage
+covered | substack_blocks_test › every passage the contents or find can name leads to the block it is drawn in | plugins/substack/.../SubstackBlocks.kt | SubstackArticleTest.everyPassageContentsOrFindCanNameLeadsToTheBlockItIsDrawnIn
+covered | substack_blocks_test › a passage folded into no block of its own leads to the one before it | plugins/substack/.../SubstackBlocks.kt | SubstackArticleTest.aPassageFoldedIntoNoBlockOfItsOwnLeadsToTheOneBeforeIt
+
+## test/substack_body_search_test.dart
+covered | substack_body_search_test › a passage is cut around the first match, marked where it was cut | plugins/substack/.../SubstackBodySearch.kt | SubstackOpmlTest.aPassageIsCutAroundTheFirstMatchMarkedWhereItWasCut
+covered | substack_body_search_test › kept bodies are searched once read, and only posts with a kept body match | plugins/substack/.../SubstackBodySearch.kt | SubstackOpmlTest.keptBodiesAreSearchedOnceReadAndOnlyPostsWithAKeptBodyMatch
+covered | substack_body_search_test › a post kept after a search is found once the search is cleared and typed again | plugins/substack/.../SubstackBodySearch.kt | SubstackOpmlTest.aPostKeptAfterASearchIsFoundOnceTheSearchIsClearedAndTypedAgain
+n/a | substack_body_search_test › a search still reading bodies when the store goes away does not touch it | plugins/substack/.../SubstackBodySearch.kt | Dart store lifetime: native's search keeps no state of its own and returns its answer to a caller whose scope cancels it
+
+## test/substack_custom_domain_test.dart
+covered | substack_custom_domain_test › a domain that answers the Substack post API for the slug is a post; one request only | plugins/substack/.../SubstackClient.kt (probeCustomDomainPost) | SubstackClientTest.aDomainThatAnswersThePostApiForTheSlugIsAPostAskedOnce
+covered | substack_custom_domain_test › a page, an error, or another slug is not a post, and nothing else is asked | plugins/substack/.../SubstackClient.kt | SubstackClientTest.aDomainThatAnswersThePostApiForTheSlugIsAPostAskedOnce (second half)
+missing/different | substack_custom_domain_test › a link the domain does not confirm is left to the browser | – (SubstackLinks.customDomainCandidate and SubstackClient.probeCustomDomainPost exist but nothing calls them) | NOT DONE: XTA (Android only) asks an unknown domain's /api/v1/posts/<slug> whether a /p/ link is a Substack post, with a "Checking link" note, before leaving it to the browser. Native's link opener asks plugins synchronously (XtaPlugin.routeFor), so this needs an asynchronous plugin hook in ui/links' LinkOpener; left for the merge (touches the app's link opener other batches change)
+
+## test/substack_discovery_tts_test.dart
+covered | substack_discovery_tts_test › publicationFromDiscoveryJson › maps category / search publication fields | plugins/substack/.../SubstackParser.kt (discovered) | SubstackParserTest.discoveredPublicationsTakeTheirAddressFromBaseUrlCustomDomainOrSubdomain
+covered | substack_discovery_tts_test › publicationFromDiscoveryJson › builds a substack.com base when only subdomain is present | plugins/substack/.../SubstackParser.kt | same test (platformer)
+covered | substack_discovery_tts_test › publicationFromDiscoveryJson › returns null when nothing identifies the publication | plugins/substack/.../SubstackParser.kt | same test (orphan)
+covered | substack_discovery_tts_test › parseSubstackRecommendations › reads recommendedPublication and blurb from _preloads HTML | plugins/substack/.../SubstackPages.kt | SubstackParserTest.recommendationsComeFromThePreloadsEachPublicationOnce
+covered | substack_discovery_tts_test › parseSubstackRecommendations › returns empty on missing or reshaped HTML | plugins/substack/.../SubstackPages.kt | same test
+covered | substack_discovery_tts_test › mergeSubstackSimilar › drops the seed, prefers recs, then pads with search | plugins/substack/.../SubstackParser.kt (mergeSimilar) | SubstackParserTest.similarDropsTheSeedPrefersRecommendationsThenPadsWithSearch
+covered | substack_discovery_tts_test › buildSubstackSpeakText › speaks title and excerpt when there is no body yet | plugins/substack/.../SubstackHtml.kt (speakText) | SubstackHtmlTest.speechIsTheTitleWhereItIsFromTheExcerptThenTheBody
+covered | substack_discovery_tts_test › buildSubstackSpeakText › prefers plain body over HTML when both are given | plugins/substack/.../SubstackHtml.kt | same test
+covered | substack_discovery_tts_test › buildSubstackSpeakText › strips markup for speech | plugins/substack/.../SubstackHtml.kt | same test
+covered | substack_discovery_tts_test › substackHtmlToPlainText › keeps paragraph breaks | plugins/substack/.../SubstackHtml.kt (plainText) | SubstackHtmlTest.plainTextKeepsParagraphBreaksAndSkipsFootnoteNumbers
+covered | substack_discovery_tts_test › substackHtmlToPlainText › skips footnote markers and keeps the notes | plugins/substack/.../SubstackHtml.kt | same test
+untested | substack_discovery_tts_test › the article page leaves long-press to text selection and reads from a selection | plugins/substack/.../SubstackWebPage.kt | SubstackDiscoveryTtsTest.thePageLeavesLongPressToSelectionAndReadsFromASelection
+
+## test/substack_discussion_reader_test.dart
+covered | substack_discussion_reader_test › comment outline honors parent IDs and keeps duplicate, orphan and cyclic inputs safe | plugins/substack/.../networks/substack/SubstackComments.kt | SubstackCommentsTest.theOutlineHonoursParentIdsAndKeepsDuplicateOrphanAndCyclicInputsSafe
+covered | substack_discussion_reader_test › legacy depth rows preserve nesting without a parent field | plugins/substack/.../SubstackComments.kt | SubstackCommentsTest.depthAloneNestsCommentsThatCarryNoParent
+covered | substack_discussion_reader_test › local search matches author and body while retaining connector context | plugins/substack/.../SubstackComments.kt | SubstackCommentsTest.aSearchMatchesAuthorAndBodyAndKeepsTheCommentsAboveAsContext
+covered | substack_discussion_reader_test › date order sorts siblings stably without detaching replies | plugins/substack/.../SubstackComments.kt | SubstackCommentsTest.dateOrderSortsSiblingsStablyWithoutDetachingReplies
+covered | substack_discussion_reader_test › ten thousand nested comments use iterative counting and traversal | plugins/substack/.../SubstackComments.kt | SubstackCommentsTest.tenThousandNestedCommentsAreCountedAndWalkedWithoutRecursion
+untested | substack_discussion_reader_test › failed refresh retains comments and controls, retry prunes removed collapse IDs | plugins/substack/.../plugins/substack/SubstackComments.kt (CommentsModel, now given its loader) | SubstackDiscussionTest.aFailedRefreshKeepsTheCommentsAndControlsAndARetryForgetsRemovedFolds
+untested | substack_discussion_reader_test › newer comment request wins and disposal ignores late data and actions | plugins/substack/.../SubstackComments.kt (CommentsModel) | SubstackDiscussionTest.theNewerReadWinsAndAGoneScreenIgnoresLateAnswers (late actions on a gone model change nothing anyone sees)
+covered | substack_discussion_reader_test › discussion link parsing preserves punctuation and rejects non-web schemes | plugins/substack/.../SubstackLinks.kt (textParts) | SubstackCommentsTest.linksInADiscussionKeepTheirTextAndLeavePunctuationOut
+covered | substack_discussion_reader_test › discussion text opens the tapped URL and updates link targets | plugins/substack/.../SubstackComments.kt (CommentRow → LinkAnnotation per part) | the parts and their URLs are SubstackCommentsTest.linksInADiscussionKeepTheirTextAndLeavePunctuationOut; a tap in Compose has no test harness here
+covered | substack_discussion_reader_test › discussion supports collapsing, searching and clearing with parent context | plugins/substack/.../SubstackComments.kt (rows with collapsed/query/contextOnly; comment_no_match; Clear) | rules in SubstackCommentsTest (outline, search with context) and SubstackDiscussionTest (search clears folds)
+untested | substack_discussion_reader_test › missing Note author metadata is safe and local Follow updates visibly | plugins/substack/.../SubstackNotesUi.kt (noteAsPost, NotePublication) | SubstackDiscussionTest.aNoteWithoutItsAuthorIsByUnknownAndItsPictureIsItsMedia; the Follow chip turns to "Following" from app.followOf (follow store: SubstackLocalTest)
+untested | substack_discussion_reader_test › Note reactions respect calm mode and have readable semantics | plugins/substack/.../SubstackNotesUi.kt (noteLikes; label "Likes: n") | SubstackDiscussionTest.aNotesHeartsAreCountedExceptInCalmOrZenMode
+untested | substack_discussion_reader_test › Note images open the shared fullscreen viewer | plugins/substack/.../SubstackNotesUi.kt (openMedia → host.openMedia) | the picture is the post's media (SubstackDiscussionTest.aNoteWithoutItsAuthorIsByUnknownAndItsPictureIsItsMedia), which the shared card opens full screen
+covered | substack_discussion_reader_test › compact enlarged RTL discussion controls remain usable | plugins/substack/.../SubstackComments.kt (sort menu, BranchesMenu collapse all) | expandAll(false) folds every branch: SubstackDiscussionTest.aFailedRefresh…; layout at scale 1.7 is Flutter's
+n/a | substack_discussion_reader_test › Substack discussion layout comments | – | golden render
+n/a | substack_discussion_reader_test › Substack discussion layout comments-rtl | – | golden render
+n/a | substack_discussion_reader_test › Substack discussion layout note-rtl | – | golden render

@@ -28,6 +28,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.ui.media.rememberAudioSessions
@@ -117,8 +119,11 @@ private fun RowScope.OutsidePlayer(url: String, title: String) {
 private fun SpeedMenu(speed: Double, onSelect: (Double) -> Unit) {
     var open by remember { mutableStateOf(false) }
     val format = NumberFormat.getNumberInstance(Locale.forLanguageTag(currentLanguage()))
+    val label = pluginString(Strings.playback_speed)
     Box {
-        TextButton(onClick = { open = true }) { Text(format.format(speed) + "×", style = MaterialTheme.typography.labelLarge) }
+        TextButton(onClick = { open = true }, modifier = Modifier.semantics { contentDescription = label }) {
+            Text(format.format(speed) + "×", style = MaterialTheme.typography.labelLarge)
+        }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             SubstackPodcast.SPEEDS.forEach { value ->
                 DropdownMenuItem(

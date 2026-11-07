@@ -100,6 +100,7 @@
     <string name="paywalled_description">Dette innlegget er bak en Substack-betalingsmur. Åpne det i en nettleser hvis du har tilgang.</string>
     <string name="paywalled_title">Kun for abonnenter</string>
     <string name="pin">Fest</string>
+    <string name="playback_speed">Avspillingshastighet</string>
     <string name="plugin_description">Følg nyhetsbrev, se offentlige Notes og les gratis Substack-innlegg</string>
     <string name="plugin_name">Substack</string>
     <string name="preview_badge">Smakebit</string>

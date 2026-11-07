@@ -104,6 +104,7 @@
     <string name="paywalled_description">Цей пост за paywall Substack. Відкрийте його в браузері, якщо маєте доступ.</string>
     <string name="paywalled_title">Лише для підписників</string>
     <string name="pin">Закріпити</string>
+    <string name="playback_speed">Швидкість відтворення</string>
     <string name="plugin_description">Стежте за розсилками, переглядайте публічні Notes і читайте безкоштовні пости Substack</string>
     <string name="plugin_name">Substack</string>
     <string name="preview_badge">Фрагмент</string>

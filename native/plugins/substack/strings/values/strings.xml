@@ -100,6 +100,7 @@
     <string name="paywalled_description">This post is behind a Substack paywall. Open it in a browser if you have access.</string>
     <string name="paywalled_title">Subscriber-only post</string>
     <string name="pin">Pin</string>
+    <string name="playback_speed">Playback speed</string>
     <string name="plugin_description">Follow newsletters, skim public Notes, and read free Substack posts</string>
     <string name="plugin_name">Substack</string>
     <string name="preview_badge">Preview</string>

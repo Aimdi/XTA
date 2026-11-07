@@ -98,6 +98,7 @@
     <string name="paywalled_description">Postingan ini berada di balik paywall Substack. Buka di peramban jika Anda punya akses.</string>
     <string name="paywalled_title">Postingan khusus pelanggan</string>
     <string name="pin">Sematkan</string>
+    <string name="playback_speed">Kecepatan pemutaran</string>
     <string name="plugin_description">Ikuti buletin, lihat Notes publik, dan baca pos Substack gratis</string>
     <string name="plugin_name">Substack</string>
     <string name="preview_badge">Cuplikan</string>

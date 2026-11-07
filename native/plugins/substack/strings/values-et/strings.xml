@@ -100,6 +100,7 @@
     <string name="paywalled_description">See postitus on Substacki maksumüüri taga. Ava see brauseris, kui sul on juurdepääs.</string>
     <string name="paywalled_title">Ainult tellijatele</string>
     <string name="pin">Kinnita</string>
+    <string name="playback_speed">Esituskiirus</string>
     <string name="plugin_description">Jälgi uudiskirju, sirvi avalikke Notes’e ja loe tasuta Substacki postitusi</string>
     <string name="plugin_name">Substack</string>
     <string name="preview_badge">Eelvaade</string>

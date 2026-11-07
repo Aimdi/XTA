@@ -104,6 +104,7 @@
     <string name="paywalled_description">Этот пост закрыт paywall Substack. Откройте его в браузере, если у вас есть доступ.</string>
     <string name="paywalled_title">Только для подписчиков</string>
     <string name="pin">Закрепить</string>
+    <string name="playback_speed">Скорость воспроизведения</string>
     <string name="plugin_description">Подписывайтесь на рассылки, смотрите публичные Notes и читайте бесплатные посты Substack</string>
     <string name="plugin_name">Substack</string>
     <string name="preview_badge">Фрагмент</string>
