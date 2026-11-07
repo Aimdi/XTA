@@ -12,9 +12,15 @@ import androidx.compose.runtime.compositionLocalOf
  */
 val LocalReducedMotion = compositionLocalOf { false }
 
+/** How a list goes back to its top. Reduced motion jumps; otherwise it slides. */
+enum class TopJump { INSTANT, ANIMATED }
+
+/** [reduced] motion never animates the jump, as XTA's scrollToTop. */
+fun topJump(reduced: Boolean): TopJump = if (reduced) TopJump.INSTANT else TopJump.ANIMATED
+
 /** Back to the list's top: scrolled there, or at once while motion is [reduced], as XTA's scrollToTop. */
 suspend fun LazyListState.scrollToTop(reduced: Boolean) {
-    if (reduced) scrollToItem(0) else animateScrollToItem(0)
+    if (topJump(reduced) == TopJump.INSTANT) scrollToItem(0) else animateScrollToItem(0)
 }
 
 /** The pager on [page]: slid there, or at once while motion is [reduced], as XTA's home turns its pages. */
