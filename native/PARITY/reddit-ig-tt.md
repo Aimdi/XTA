@@ -263,3 +263,177 @@ covered | reddit_home_empty_test › tapping add opens a sheet and cancel leaves
 covered | reddit_home_empty_test › switching off Reddit and back does not refetch or freeze | RedditFeed (fresh feed shown again without reading; no names no read) | RedditStatesTest.theFeedIsReadOnceAndShownAgainWhileFresh, zeroFollowsReadNothingNeverLoadAndARemountRefreshStaysANoOp
 untested→ported | reddit_home_empty_test › an empty chip strip is not a list | RedditRules.kt RedditHomeSource.showsStrip, RedditHome.kt | RedditStatesTest.anEmptyStripOfCommunitiesIsNotShown
 n/a | reddit_home_empty_test › EmptyPane under the home strip does not reuse the outer controller | RedditHome.kt | Flutter ScrollController attachment under a NestedScrollView
+
+## test/reddit_html_test.dart
+covered | reddit_html_test › reading a listing › takes a link post out of its data attributes | networks/reddit/RedditOldReddit.kt RedditOldListing | RedditOldRedditTest.aLinkPostIsTakenOutOfItsDataAttributes
+covered | reddit_html_test › reading a listing › a protocol-relative thumbnail is given a scheme | RedditOldListing | RedditOldRedditTest.aProtocolRelativeThumbnailIsGivenAScheme
+covered | reddit_html_test › reading a listing › a self post is recognised by its domain and keeps its body | RedditOldListing | RedditOldRedditTest.aSelfPostIsRecognisedByItsDomainAndKeepsItsBody
+covered | reddit_html_test › reading a listing › several posts keep their order | RedditOldListing | RedditOldRedditTest.postsKeepTheirOrderAndAnAdvertIsLeftOut
+covered | reddit_html_test › reading a listing › an advert is left out | RedditOldListing | RedditOldRedditTest.postsKeepTheirOrderAndAnAdvertIsLeftOut
+covered | reddit_html_test › reading a listing › a pinned post is marked | RedditOldListing | RedditOldRedditTest.pinnedOver18AndSpoilerPostsCarryTheirFlags
+covered | reddit_html_test › reading a listing › the domain comes through so the card can say where a link leads | RedditOldListing | RedditOldRedditTest.aLinkPostIsTakenOutOfItsDataAttributes (domain)
+covered | reddit_html_test › reading a listing › flair is read, preferring the full label over the abbreviated one | RedditOldListing | RedditOldRedditTest.flairPrefersTheFullLabelOverTheAbbreviatedOne
+covered | reddit_html_test › reading a listing › an over-18 post carries the flag | RedditOldListing | RedditOldRedditTest.pinnedOver18AndSpoilerPostsCarryTheirFlags
+covered | reddit_html_test › reading a listing › a spoiler post carries the flag | RedditOldListing | RedditOldRedditTest.pinnedOver18AndSpoilerPostsCarryTheirFlags
+covered | reddit_html_test › pagination › takes the after cursor off the next link | RedditOldListing | RedditOldRedditTest.theAfterCursorComesOffTheNextLinkAndTheLastPageHasNone, aRelNextLinkOutsideTheButtonStillPagesOn
+covered | reddit_html_test › pagination › the last page has no cursor | RedditOldListing | RedditOldRedditTest.theAfterCursorComesOffTheNextLinkAndTheLastPageHasNone
+covered | reddit_html_test › markup that cannot be read › a post with no title or permalink is skipped, not guessed at | RedditOldListing | RedditOldRedditTest.markupThatCannotBeReadIsSkippedRatherThanFatal
+covered | reddit_html_test › markup that cannot be read › a page with no posts at all yields none rather than throwing | RedditOldListing | RedditOldRedditTest.markupThatCannotBeReadIsSkippedRatherThanFatal
+covered | reddit_html_test › markup that cannot be read › an unreadable score is zero rather than fatal | RedditOldListing | RedditOldRedditTest.markupThatCannotBeReadIsSkippedRatherThanFatal (score 0)
+covered | reddit_html_test › a subreddit picture › comes from the header image the old site does have | RedditOldListing.subredditIcon | RedditOldRedditTest.aCommunitysPictureComesFromItsHeaderImageNotTheSitesLogo
+covered | reddit_html_test › a subreddit picture › falls back to og:image when it is community artwork | RedditOldListing.subredditIcon | RedditOldRedditTest.aCommunitysPictureFallsBackToItsOgImageWhenThatIsCommunityArtwork
+covered | reddit_html_test › a subreddit picture › a subreddit with no artwork has none to find | RedditOldListing.subredditIcon | RedditOldRedditTest.aCommunitysPictureFallsBackToItsOgImageWhenThatIsCommunityArtwork (null)
+covered | reddit_html_test › the over-18 gate › is recognised so it can be answered with a cookie | RedditOldListing.isOver18Gate | RedditOldRedditTest.theOver18GateIsRecognisedSoItCanBeAnsweredWithACookie
+covered | reddit_html_test › the over-18 gate › an ordinary listing is not the gate | RedditOldListing.isOver18Gate | RedditOldRedditTest.theOver18GateIsRecognisedSoItCanBeAnsweredWithACookie
+
+## test/reddit_listing_cache_test.dart
+covered | reddit_listing_cache_test › RedditListingCache › a listing fetched for one surface is handed to the next | networks/reddit/RedditFeeds.kt RedditListingCache | RedditFeedsTest.aListingFetchedForOneSurfaceIsHandedToTheNext
+covered | reddit_listing_cache_test › RedditListingCache › surfaces mounting at the same moment join one request | RedditListingCache | RedditFeedsTest.surfacesAskingAtTheSameMomentJoinOneRequest
+covered | reddit_listing_cache_test › RedditListingCache › a sort of its own is a listing of its own | RedditListingCache | RedditFeedsTest.aSortOrAWindowOfItsOwnIsAListingOfItsOwn
+covered | reddit_listing_cache_test › RedditListingCache › a time filter of its own is a listing of its own | RedditListingCache | RedditFeedsTest.aSortOrAWindowOfItsOwnIsAListingOfItsOwn
+covered | reddit_listing_cache_test › RedditListingCache › a forced refresh goes past it, or the reader can never get new posts | RedditListingCache | RedditFeedsTest.aForcedRefreshGoesPastItAndIsWhatTheNextReaderIsHanded
+covered | reddit_listing_cache_test › RedditListingCache › it is fetched again once the entry is old | RedditListingCache | RedditFeedsTest.anOldEntryIsFetchedAgainAndReplacedNotAccumulatedHoweverFastItSettled
+covered | reddit_listing_cache_test › RedditListingCache › a subreddit that failed is left alone briefly, then asked again | RedditListingCache | RedditFeedsTest.aFailureIsHandedToTheNextSurfaceThenForgottenSoonerThanASuccess
+covered | reddit_listing_cache_test › RedditListingCache › a failure is forgotten sooner than a success | RedditListingCache | RedditFeedsTest.aFailureIsHandedToTheNextSurfaceThenForgottenSoonerThanASuccess
+covered | reddit_listing_cache_test › RedditListingCache › it stops growing, dropping the least recently used | RedditListingCache | RedditFeedsTest.itStopsGrowingDroppingTheLeastRecentlyUsed
+covered | reddit_listing_cache_test › RedditListingCache › clear empties it | RedditListingCache.clear | RedditFeedsTest.itStopsGrowingDroppingTheLeastRecentlyUsed (clear)
+covered | reddit_listing_cache_test › RedditPostSource › Following, For you and the Reddit tab pay for one fetch between them | RedditFeeds.kt RedditFollowingFeed | RedditFeedsTest.everySurfaceReadingTheSameCommunitiesPaysForOneFetchBetweenThem
+covered | reddit_listing_cache_test › RedditPostSource › a group that shares a subreddit with the tab does not fetch it again | RedditFollowingFeed | RedditFeedsTest.aGroupSharingACommunityWithTheTabDoesNotFetchItAgainAndOneNamedTwiceIsReadOnce
+covered | reddit_listing_cache_test › RedditPostSource › a forced read reaches Reddit again | RedditFollowingFeed | RedditFeedsTest.aForcedReadReachesRedditAgain
+covered | reddit_listing_cache_test › RedditPostSource › one bad subreddit does not empty the feed | RedditFollowingFeed | RedditFeedsTest.oneBadCommunityDoesNotEmptyTheFeedAndIsNotAskedAgainByTheNextSurface
+covered | reddit_listing_cache_test › RedditPostSource › and it is not asked again by the next surface | RedditFollowingFeed | RedditFeedsTest.oneBadCommunityDoesNotEmptyTheFeedAndIsNotAskedAgainByTheNextSurface
+covered | reddit_listing_cache_test › RedditPostSource › nothing to show is a real answer, not a reason to keep the old posts | RedditFollowingFeed | RedditFeedsTest.nothingToShowIsARealAnswerNotAReasonToKeepTheOldPosts
+covered | reddit_listing_cache_test › RedditPostSource › newest first, stickied dropped, trimmed to what the surface shows | RedditFollowingFeed | RedditFeedsTest.newestFirstPinnedDroppedTrimmedToWhatTheSurfaceShows
+covered | reddit_listing_cache_test › RedditPostSource › one access token for every surface rather than one per read | networks/reddit RedditSignIn | RedditAuthTest.oneAccessTokenServesEveryReadForFiftyMinutes
+covered | reddit_listing_cache_test › RedditPostSource › a refresh token Reddit rejects ends the session rather than the read | RedditSignIn, plugins/reddit RedditApp.session (signs out) | RedditAuthTest.aDeadRefreshTokenSignsTheReaderOutButAPassingFailureDoesNot
+covered | reddit_listing_cache_test › RedditPostSource › signing in throws away what was cached for the old credentials | RedditFollowingFeed (forgetOnSessionChange) | RedditFeedsTest.anotherSessionThrowsAwayWhatWasCachedForTheOldOne
+untested→ported | reddit_listing_cache_test › RedditPostSource › asking for the account-free route does the same | RedditFollowingFeed (RedditSession includes preferPublic) | RedditFeedsTest.anotherSessionThrowsAwayWhatWasCachedForTheOldOne (account-free half added)
+covered | reddit_listing_cache_test › RedditPostSource › the stored sort is what every surface reads | RedditFollowingFeed; plugins/reddit RedditApp.readFeed (RedditChoices) | RedditFeedsTest.theSortAndItsWindowAreWhatTheFeedAsksFor; RedditRulesTest.theChoicesAreReadFromThePreferencesWithXtasDefaults
+covered | reddit_listing_cache_test › RedditPostSource › the stored time filter is sent for top listings | RedditFollowingFeed | RedditFeedsTest.theSortAndItsWindowAreWhatTheFeedAsksFor
+covered | reddit_listing_cache_test › RedditPostSource › NSFW hide mode filters the merged feed | RedditFollowingFeed | RedditFeedsTest.hidingNsfwFiltersTheMergedFeed
+covered | reddit_listing_cache_test › RedditPostSource › a subreddit named twice is read once | RedditFollowingFeed | RedditFeedsTest.aGroupSharingACommunityWithTheTabDoesNotFetchItAgainAndOneNamedTwiceIsReadOnce
+covered | reddit_listing_cache_test › RedditSavedStore › round-trips post snapshots through prefs | plugins/reddit RedditSaved, RedditPostJson | RedditStoresTest.theSavedPostsAreKeptInTheirPreference; RedditPostJsonTest.aPostComesBackAsItWasKept
+
+## test/reddit_listing_page_test.dart
+covered | reddit_listing_page_test › appendRedditPosts › appends new posts in order | networks/reddit appendRedditPosts | RedditPostsTest.aNextPageIsAppendedInOrderEachPostOnce
+covered | reddit_listing_page_test › appendRedditPosts › skips duplicates by id, keeping the first | appendRedditPosts | RedditPostsTest.aNextPageIsAppendedInOrderEachPostOnce
+covered | reddit_listing_page_test › appendRedditPosts › returns existing unchanged when next is empty | appendRedditPosts | RedditPostsTest.aNextPageIsAppendedInOrderEachPostOnce (empty next)
+
+## test/reddit_media_urls_test.dart
+covered | reddit_media_urls_test › what a URL points at › a picture host serves a picture whatever the path looks like | networks/reddit/RedditMedia.kt embeddableImage | RedditPostsTest.aPictureHostServesAPictureWhateverThePathAndAnImageExtensionIsEnoughAnywhere
+covered | reddit_media_urls_test › what a URL points at › an image extension is enough on any host | RedditMedia.embeddableImage | RedditPostsTest.aPictureHostServesAPictureWhateverThePathAndAnImageExtensionIsEnoughAnywhere
+covered | reddit_media_urls_test › what a URL points at › imgur's gifv is a video player; the gif beside it is the animation | RedditMedia | RedditPostsTest.imgursGifvIsAVideoPlayerAndTheGifBesideItTheAnimation
+covered | reddit_media_urls_test › what a URL points at › a page is not a picture | RedditMedia | RedditPostsTest.aPageIsNotAPicture
+covered | reddit_media_urls_test › what a URL points at › a giphy share link resolves to the file behind it | RedditMedia.embeddableImage | RedditPostsTest.aGiphyShareLinkAndASingleImgurPageResolveToTheirFiles
+covered | reddit_media_urls_test › what a URL points at › a single imgur page resolves; an album does not | RedditMedia.embeddableImage | RedditPostsTest.aGiphyShareLinkAndASingleImgurPageResolveToTheirFiles
+covered | reddit_media_urls_test › what a URL points at › a host that needs a key or a round trip is left alone | RedditMedia.embeddableImage | RedditPostsTest.aHostThatNeedsAKeyOrARoundTripIsLeftALink
+covered | reddit_media_urls_test › what a URL points at › Reddit's own media token names the file the old site never rendered | RedditMedia.tokenImage | RedditPostsTest.redditsMediaTokenNamesAGiphyFileAndAnEmoteNone
+covered | reddit_media_urls_test › what a URL points at › an emote token names no public file, so it resolves to nothing | RedditMedia.tokenImage | RedditPostsTest.redditsMediaTokenNamesAGiphyFileAndAnEmoteNone
+covered | reddit_media_urls_test › what a URL points at › video hosts are known regardless of www | RedditMedia.isVideoHost | RedditPostsTest.videoHostsAreKnownWithOrWithoutWww
+covered | reddit_media_urls_test › collapseRedditImageUrls › different widths of the same path collapse to the larger width | RedditMedia.collapseImageUrls | RedditPostsTest.copiesOfOnePictureCollapseAndDifferentPicturesStayInOrder
+covered | reddit_media_urls_test › collapseRedditImageUrls › preview and i.redd.it of the same file collapse to i.redd.it | RedditMedia.collapseImageUrls | RedditPostsTest.copiesOfOnePictureCollapseAndDifferentPicturesStayInOrder
+covered | reddit_media_urls_test › collapseRedditImageUrls › different filenames stay separate, in first-seen order | RedditMedia.collapseImageUrls | RedditPostsTest.copiesOfOnePictureCollapseAndDifferentPicturesStayInOrder
+covered | reddit_media_urls_test › collapseRedditImageUrls › exact duplicate URLs collapse to one | RedditMedia.collapseImageUrls | RedditPostsTest.copiesOfOnePictureCollapseAndDifferentPicturesStayInOrder
+covered | reddit_media_urls_test › media placeholder titles › common image placeholders match | RedditMedia.isPlaceholderTitle | RedditPostsTest.titlesThatOnlyAnnounceAPictureAreRecognisedAndRealOnesAreNot
+covered | reddit_media_urls_test › media placeholder titles › wrapped leftovers are stripped from a longer body | RedditMedia.stripPlaceholderTokens | RedditPostsTest.placeholderLeftoversAreStrippedFromALongerBody
+covered | reddit_media_urls_test › media placeholder titles › real titles do not match | RedditMedia.isPlaceholderTitle | RedditPostsTest.titlesThatOnlyAnnounceAPictureAreRecognisedAndRealOnesAreNot
+covered | reddit_media_urls_test › stripRedditMediaLinksFromText › drops a preview.redd.it URL left in a meme title | RedditMedia.stripMediaLinks | RedditPostsTest.aPicturesCdnLinkIsDroppedFromTheTextButAPageLinkIsKept
+covered | reddit_media_urls_test › stripRedditMediaLinksFromText › a title that is only the CDN URL becomes empty | RedditMedia.stripMediaLinks | RedditPostsTest.aPicturesCdnLinkIsDroppedFromTheTextButAPageLinkIsKept
+covered | reddit_media_urls_test › stripRedditMediaLinksFromText › keeps a non-image link | RedditMedia.stripMediaLinks | RedditPostsTest.aPicturesCdnLinkIsDroppedFromTheTextButAPageLinkIsKept
+covered | reddit_media_urls_test › redditVRedditDashUrl › builds the DASH playlist from a bare v.redd.it id | RedditMedia.vRedditDashUrl | RedditPostsTest.aBareVRedditLinkGetsItsDashManifest
+covered | reddit_media_urls_test › redditVRedditDashUrl › ignores non-video hosts and file paths | RedditMedia.vRedditDashUrl | RedditPostsTest.aBareVRedditLinkGetsItsDashManifest
+
+## test/reddit_read_session_test.dart
+covered | reddit_read_session_test › RedditReadSession.resolve › public source never exchanges a refresh token | networks/reddit RedditSignIn.resolve | RedditAuthTest.theAccountFreeRouteNeverMintsAToken
+covered | reddit_read_session_test › RedditReadSession.resolve › auto source with a refresh token yields a user access token | RedditSignIn.resolve | RedditAuthTest.aRefreshTokenGivesTheSessionAnAccessToken
+covered | reddit_read_session_test › RedditReadSession.resolve › a dead refresh token is cleared and the session falls back | RedditSignIn.resolve; plugins/reddit RedditApp.session clears the refresh token | RedditAuthTest.aDeadRefreshTokenSignsTheReaderOutButAPassingFailureDoesNot
+covered | reddit_read_session_test › RedditReadSession.resolve › auto without a refresh token keeps the client id for app-only | RedditSignIn.resolve | RedditAuthTest.withoutARefreshTokenTheClientIdIsKeptForAppOnlyReads
+covered | reddit_read_session_test › RedditReadSession.fetchSubreddit › threads userToken into the client so oauth.reddit.com is used | RedditClient.listing | RedditClientTest.aUserTokenGoesToTheApiAsItIsWithoutMintingAnother
+covered | reddit_read_session_test › RedditReadSession.fetchSubreddit › passes top listing time filters through to the client | RedditClient.listing | RedditClientTest.theTimeWindowGoesWithTopAndControversialOnly
+covered | reddit_read_session_test › RedditReadSession.fetchComments › threads credentials so oauth.reddit.com serves the thread JSON | RedditClient.thread | RedditClientTest.aSignedInReaderReadsAThreadFromTheApi
+
+## test/reddit_search_html_test.dart
+covered | reddit_search_html_test › post results › are read out of the search markup | networks/reddit/RedditOldReddit.kt RedditOldSearch | RedditOldRedditTest.searchedPostsAreReadOutOfTheSearchMarkup
+covered | reddit_search_html_test › post results › a page rendered as a listing is read by the listing parser instead | RedditOldSearch | RedditOldRedditTest.aSearchPageRenderedAsAListingIsReadAsOne
+covered | reddit_search_html_test › post results › the id survives a result with no data-fullname | RedditOldSearch | RedditOldRedditTest.aSearchedPostsIdSurvivesWithoutItsFullnameAndItsScoreWithAComma
+covered | reddit_search_html_test › post results › a score with a comma is still a number | RedditOldSearch | RedditOldRedditTest.aSearchedPostsIdSurvivesWithoutItsFullnameAndItsScoreWithAComma
+covered | reddit_search_html_test › post results › a spoiler result carries the flag | RedditOldSearch | RedditOldRedditTest.searchedPostsAreReadOutOfTheSearchMarkup (spoiler)
+covered | reddit_search_html_test › post results › a result with no title is skipped rather than guessed at | RedditOldSearch | RedditOldRedditTest.aSearchResultWithNoTitleIsSkipped
+covered | reddit_search_html_test › subreddit results › are read from either markup, without repeating one | RedditOldSearch | RedditOldRedditTest.searchedCommunitiesAreReadFromEitherMarkupEachOnce
+covered | reddit_search_html_test › subreddit results › an entry with no name is skipped | RedditOldSearch | RedditOldRedditTest.searchedCommunitiesAreReadFromEitherMarkupEachOnce (nameless entry)
+covered | reddit_search_html_test › user results › are read and deduplicated | RedditOldSearch | RedditOldRedditTest.searchedAccountsAreReadEachOnce
+covered | reddit_search_html_test › user results › a page with no users yields none rather than throwing | RedditOldSearch | RedditOldRedditTest.searchedAccountsAreReadEachOnce (empty page)
+untested→ported | reddit_search_html_test › JSON search listings › posts are read from t3 children | networks/reddit/RedditJson.kt searchPosts | new RedditSearchJsonTest.postsAreReadFromT3Children
+untested→ported | reddit_search_html_test › JSON search listings › subreddits are read from t5 children | RedditJson.searchSubreddits | RedditSearchJsonTest.subredditsAreReadFromT5Children
+untested→ported | reddit_search_html_test › JSON search listings › users are read from t2 children | RedditJson.searchUsers | RedditSearchJsonTest.usersAreReadFromT2Children
+untested→ported | reddit_search_html_test › JSON search listings › a missing listing yields none rather than throwing | RedditJson.search* | RedditSearchJsonTest.aMissingListingYieldsNoneRatherThanThrowing
+
+## test/reddit_signin_survival_test.dart
+covered | reddit_signin_survival_test › what a failed token refresh does to the sign-in › a network error keeps the session | networks/reddit/RedditAuth.kt RedditSignIn (signedOut only on 401) | RedditAuthTest.aDeadRefreshTokenSignsTheReaderOutButAPassingFailureDoesNot, onlyRedditRefusingTheGrantEndsTheSession
+untested→ported | reddit_signin_survival_test › what a failed token refresh does to the sign-in › a 500 from the token endpoint keeps the session | RedditSignIn | RedditAuthTest.onlyRedditRefusingTheGrantEndsTheSession (500)
+covered | reddit_signin_survival_test › what a failed token refresh does to the sign-in › a rate limit keeps the session | RedditSignIn | RedditAuthTest.aDeadRefreshTokenSignsTheReaderOutButAPassingFailureDoesNot (429)
+untested→ported | reddit_signin_survival_test › what a failed token refresh does to the sign-in › a block page keeps the session, as a Reddit error rather than a crash | RedditSignIn | RedditAuthTest.onlyRedditRefusingTheGrantEndsTheSession (block page)
+untested→ported | reddit_signin_survival_test › what a failed token refresh does to the sign-in › a rejected client id ends the session | RedditSignIn | RedditAuthTest.onlyRedditRefusingTheGrantEndsTheSession (401)
+covered | reddit_signin_survival_test › what a failed token refresh does to the sign-in › invalid_grant ends the session | RedditSignIn; RedditAuth (invalid_grant → 401) | RedditAuthTest.aDeadRefreshTokenSignsTheReaderOutButAPassingFailureDoesNot, aRejectedClientIdOrARevokedSessionIsUnauthorised
+
+## test/reddit_spoiler_pref_test.dart
+covered | reddit_spoiler_pref_test › spoilers stay covered until the setting is on | plugins/reddit/RedditRules.kt RedditChoices.gate | RedditRulesTest.aSpoilerIsCoveredFirstThenOver18PostsAsTheReaderChose
+covered | reddit_spoiler_pref_test › showing spoilers still covers NSFW when that mode asks for a tap | RedditChoices.gate | RedditRulesTest.aSpoilerIsCoveredFirstThenOver18PostsAsTheReaderChose
+covered | reddit_spoiler_pref_test › always-show NSFW and spoilers leaves ordinary media uncovered | RedditChoices.gate | RedditRulesTest.aSpoilerIsCoveredFirstThenOver18PostsAsTheReaderChose
+
+## test/reddit_subreddit_switch_test.dart
+covered | reddit_subreddit_switch_test › redditHomeFeedKey › a followed community is not the Following rail | plugins/reddit/RedditRules.kt RedditHomeSource.key/railSelected | RedditRulesTest.theTabShowsARailOrOneFollowedCommunity
+covered | reddit_subreddit_switch_test › RedditHomeStore › selecting a followed subreddit changes the feed source | RedditHomeSource.selectingSubreddit/selectingMode | RedditRulesTest.theTabShowsARailOrOneFollowedCommunity
+covered | reddit_subreddit_switch_test › RedditHomeStore › an unfollowed persisted community falls back to the rail | RedditHomeSource.reconciled | RedditRulesTest.aCommunityNoLongerFollowedDoesNotOpenAgain
+covered | reddit_subreddit_switch_test › tapping a followed chip leaves Home and opens that community | RedditHome.kt CommunityStrip (chip → app.selectSubreddit), RedditHomeSource.isSelected | RedditRulesTest.theTabShowsARailOrOneFollowedCommunity
+
+## test/reddit_text_test.dart
+covered | reddit_text_test › redditTextParts › keeps ordinary words as one run | networks/reddit redditTextParts | RedditPostsTest.ordinaryWordsAreOneRun
+covered | reddit_text_test › redditTextParts › a markdown link uses the label, not the URL | redditTextParts | RedditPostsTest.aMarkdownLinkIsShownByItsLabelNotItsUrl
+covered | reddit_text_test › redditTextParts › the GirlsFrontline2 sticker comment keeps short labels | redditTextParts | RedditPostsTest.aLabelEndingInASpaceKeepsItsShortName
+covered | reddit_text_test › redditTextParts › a bare Drive URL shrinks to the host | redditTextParts | RedditPostsTest.bareLinksShrinkToTheirHostOrTheAccountTheyName
+covered | reddit_text_test › redditTextParts › a bare X status shrinks to x.com/handle | redditTextParts | RedditPostsTest.bareLinksShrinkToTheirHostOrTheAccountTheyName
+covered | reddit_text_test › compactRedditLinkLabel › prefers a non-URL markdown label | redditTextParts (label choice) | RedditPostsTest.aLabelIsPreferredUnlessItIsTheUrlItself
+covered | reddit_text_test › compactRedditLinkLabel › does not print a label that is itself the URL | redditTextParts (label choice) | RedditPostsTest.aLabelIsPreferredUnlessItIsTheUrlItself
+covered | reddit_text_test › paints Drive and X markdown as short blue labels | plugins/reddit RedditUi.kt (redditTextParts → TextRun.Link, drawn by ui LinkedText in the link colour) | RedditPostsTest.bareLinksShrinkToTheirHostOrTheAccountTheyName; RedditSharedTest.aDiscussionPostShowsItsTitleAndTheStartOfItsWordsWithTheirLinks
+
+## test/reddit_thread_render_test.dart
+n/a | reddit_thread_render_test › reddit-thread-de-390-lightsout | native/tool/plugin_screens.sh | golden render for the owner's review boards, skipped unless RENDER_REDDIT_THREAD; native renders its screens with its own screenshot tool
+n/a | reddit_thread_render_test › reddit-thread-en-390-light | native/tool/plugin_screens.sh | same golden render
+n/a | reddit_thread_render_test › reddit-thread-comments-en-390-lightsout | native/tool/plugin_screens.sh | same golden render
+n/a | reddit_thread_render_test › reddit-thread-de-320-x1.3 | native/tool/plugin_screens.sh | same golden render
+
+## test/reddit_thread_test.dart
+covered | reddit_thread_test › header and post › the bar names the subreddit and its menu opens the post sheet | plugins/reddit/RedditThread.kt ThreadScreen (PluginScaffold title "r/<community>", ⋮ → PostSheet with Open in browser / Share link) | UI-only (no Compose test harness); the sheet's targets: RedditThreadRulesTest.linksLeadToReddit
+covered | reddit_thread_test › header and post › the author row has a round avatar, then the title at 21 | RedditThread.kt PostAuthor (FaceAvatar 22dp round) and title at 21sp | UI-only visual spec, as XTA; no Compose test harness
+covered | reddit_thread_test › header and post › a link with a preview is a card with the picture over the domain | plugins/reddit/RedditMediaViews.kt (thread link card: picture over the domain row with open-in-new) | RedditRulesTest.aPostShowsItsVideoThenItsGalleryThenItsPictureThenItsLink, aLinkCardNamesTheSite (which card); drawing UI-only
+covered | reddit_thread_test › header and post › a link without a preview is one row: initial, domain, Open in browser | RedditMediaViews.kt (no preview: initial, domain, "Open in browser", min 56dp) | RedditRulesTest.aLinkCardNamesTheSite; drawing UI-only
+missing→implemented | reddit_thread_test › actions under the post › the vote pill upvotes on this device and says so | RedditComments.kt UpvoteButton (device vote, score+1, now toggleable semantics), RedditThreadRules.shownScore | native had no toggled state for screen readers; RedditThreadRulesTest.everyTargetIsFortyEightDpAndAnUpvoteCountsOneMore; RedditStoresTest.anUpvoteIsKeptOnTheDeviceAndGoesInTheBackupAsXtasRows
+covered | reddit_thread_test › actions under the post › the comments pill counts the comments and scrolls to them | RedditThread.kt PostActions (comments pill → scrolls to the comments header), RedditThreadRules.commentCount | RedditThreadRulesTest.theCountIsRedditsOrWhatLoadedWhenThatIsMore; scrolling UI-only
+covered | reddit_thread_test › actions under the post › share and save sit at the end | RedditThread.kt PostActions (share, then save with long-press folder, at the end) | UI-only; saving: RedditSharedTest.aPostIsFiledInXtasRecordAndReadBack
+covered | reddit_thread_test › comments header › counts the comments, sorts from a menu and folds all | RedditComments.kt CommentsHeader; RedditThreadState.resort/toggleAll | RedditStatesTest.aThreadReadsItsCommentsInTheOrderChosenAndFoldsThem; RedditThreadRulesTest.collapseAllFoldsTheTopLevelCommentsWithRepliesAndExpandAllUndoesIt; RedditClientTest.theChosenOrderRidesTheCommentsPieceInItsSpelling
+untested→ported | reddit_thread_test › comment rows › replies hang off thread lines, a column further in, not in bubbles | RedditComments.kt ThreadLines, RedditThreadRules.lines/LINE_COLUMN_DP | RedditThreadRulesTest.repliesSitAColumnFurtherInPerLevelWithLinesUpToTheCap
+untested→ported | reddit_thread_test › comment rows › each level has its colour, at 3:1 against the page | RedditThreadRules.lineColour/LINE_COLOURS (moved out of the composable) | RedditThreadRulesTest.eachLevelHasItsColourAtThreeToOneAgainstEveryPage
+untested→ported | reddit_thread_test › comment rows › a hairline separates top-level threads, not the first | RedditThreadRules.divided, RedditThread.kt | RedditThreadRulesTest.aHairlineSeparatesTopLevelThreadsButNotTheFirst
+covered | reddit_thread_test › comment rows › the header folds the comment and counts the replies it holds | RedditComments.kt CommentHeader (folds, "+N replies" chip), RedditThreadRules.visible | RedditThreadRulesTest.aFoldedCommentKeepsItsRowAndHidesEverythingUnderIt
+covered | reddit_thread_test › comment rows › the post author reads in the accent with OP and a round avatar | RedditComments.kt Name (OP in the accent, round avatar for the submitter, OP chip) | RedditCommentsTest.theSubmitterAndTheAuthorsFlairAreReadOffTheTagline, theSubmitterFlagAndMediaTokensAreRead; drawing UI-only
+covered | reddit_thread_test › comment rows › flair shows beside the name | RedditComments.kt CommentHeader (flair chip) | RedditCommentsTest.theAuthorsFlairComesWithTheCommentAndAnEmptyOneNotAtAll; drawing UI-only
+covered | reddit_thread_test › comment rows › a comment upvotes on this device from its action row | RedditComments.kt CommentContent UpvoteButton (RedditVotes.commentId) | RedditStoresTest.anUpvoteIsKeptOnTheDeviceAndGoesInTheBackupAsXtasRows; RedditThreadRulesTest.everyTargetIsFortyEightDpAndAnUpvoteCountsOneMore
+covered | reddit_thread_test › comment rows › removed comments say what happened, without an upvote or menu | RedditComments.kt CommentContent/CommentHeader (removed: italic reason, no upvote, no menu) | RedditThreadRulesTest.aRemovedCommentSaysWhoTookItsWords; RedditCommentsTest.aRemovedCommentIsToldApartFromAStubAndFromAGoneAuthor
+covered | reddit_thread_test › comment rows › a comment written since the last visit says it is new | RedditComments.kt Age (", new"), RedditVisits, RedditThreadState (visit noted on open) | RedditStoresTest.aCommentIsNewOnlyWhenWrittenAfterTheLastVisit, aVisitIsKeptPerThreadForTheNewestTwoHundred
+covered | reddit_thread_test › comment rows › the menu reaches the author and copies the words | RedditComments.kt CommentMenu (u/author, Copy, Open in browser) | UI-only menu; no Compose test harness
+covered | reddit_thread_test › held-back comments › deeper ones continue on their own page | RedditThreadRules.heldBack (OPEN_SUBTREE → its own page), RedditComments.kt HeldBackRow (now min 48dp) | RedditThreadRulesTest.heldBackCommentsLoadHereUntilRedditRefusesThenOpenOnReddit
+covered | reddit_thread_test › held-back comments › the next top-level ones load into the thread | RedditThreadState.loadMore, RedditThreadRules.replacing | RedditThreadRulesTest.aLoadedPageOfHeldBackCommentsTakesTheStubsPlace; RedditStatesTest.heldBackCommentsLoadInPlaceOrSendTheReaderToReddit
+covered | reddit_thread_test › jump to the next comment › lands each top-level comment at the top in turn, then the end | RedditThread.kt jump, RedditThreadRules.nextTopLevel | RedditThreadRulesTest.theJumpLandsOnTheNextTopLevelCommentAndStopsAfterTheLast
+untested→ported | reddit_thread_test › jump to the next comment › shows only once there are two top-level comments | RedditThreadRules.showsJump, RedditThread.kt | RedditThreadRulesTest.theJumpShowsOnlyOnceThereAreTwoTopLevelComments
+covered | reddit_thread_test › jump to the next comment › the next target is the nearest one below the top | RedditThreadRules.nextTopLevel | RedditThreadRulesTest.theJumpLandsOnTheNextTopLevelCommentAndStopsAfterTheLast
+missing→implemented | reddit_thread_test › every size › every target is 48 dp | RedditComments.kt (comment header, pills and held-back rows were 44dp/40dp; now RedditThreadRules.TOUCH_TARGET_DP = 48 in both directions) | RedditThreadRulesTest.everyTargetIsFortyEightDpAndAnUpvoteCountsOneMore
+covered | reddit_thread_test › every size › 320dp, 2x text, ltr, light | RedditComments.kt ThreadLines (capped at MAX_LINES, mirrored for RTL), HeldBackRow "Continue thread" | RedditThreadRulesTest.repliesSitAColumnFurtherInPerLevelWithLinesUpToTheCap, eachLevelHasItsColourAtThreeToOneAgainstEveryPage; layout at 320dp/2x is UI-only
+covered | reddit_thread_test › every size › 320dp, 2x text, ltr, dim | RedditComments.kt ThreadLines (capped at MAX_LINES, mirrored for RTL), HeldBackRow "Continue thread" | RedditThreadRulesTest.repliesSitAColumnFurtherInPerLevelWithLinesUpToTheCap, eachLevelHasItsColourAtThreeToOneAgainstEveryPage; layout at 320dp/2x is UI-only
+covered | reddit_thread_test › every size › 320dp, 2x text, ltr, lights out | RedditComments.kt ThreadLines (capped at MAX_LINES, mirrored for RTL), HeldBackRow "Continue thread" | RedditThreadRulesTest.repliesSitAColumnFurtherInPerLevelWithLinesUpToTheCap, eachLevelHasItsColourAtThreeToOneAgainstEveryPage; layout at 320dp/2x is UI-only
+covered | reddit_thread_test › every size › 320dp, 2x text, rtl, light | RedditComments.kt ThreadLines (capped at MAX_LINES, mirrored for RTL), HeldBackRow "Continue thread" | RedditThreadRulesTest.repliesSitAColumnFurtherInPerLevelWithLinesUpToTheCap, eachLevelHasItsColourAtThreeToOneAgainstEveryPage; layout at 320dp/2x is UI-only
+covered | reddit_thread_test › every size › 320dp, 2x text, rtl, dim | RedditComments.kt ThreadLines (capped at MAX_LINES, mirrored for RTL), HeldBackRow "Continue thread" | RedditThreadRulesTest.repliesSitAColumnFurtherInPerLevelWithLinesUpToTheCap, eachLevelHasItsColourAtThreeToOneAgainstEveryPage; layout at 320dp/2x is UI-only
+covered | reddit_thread_test › every size › 320dp, 2x text, rtl, lights out | RedditComments.kt ThreadLines (capped at MAX_LINES, mirrored for RTL), HeldBackRow "Continue thread" | RedditThreadRulesTest.repliesSitAColumnFurtherInPerLevelWithLinesUpToTheCap, eachLevelHasItsColourAtThreeToOneAgainstEveryPage; layout at 320dp/2x is UI-only
+covered | reddit_thread_test › last visits › keep the most recent threads | plugins/reddit RedditVisits | RedditStoresTest.aVisitIsKeptPerThreadForTheNewestTwoHundred
+covered | reddit_thread_test › last visits › one thread however its permalink ends | plugins/reddit RedditVisits | RedditStoresTest.aVisitIsKeptPerThreadForTheNewestTwoHundred
+covered | reddit_thread_test › last visits › nothing is new on a first visit | plugins/reddit RedditVisits | RedditStoresTest.aCommentIsNewOnlyWhenWrittenAfterTheLastVisit

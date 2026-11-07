@@ -218,6 +218,9 @@ class RedditFeedsTest {
         reddit.feed.posts(listOf("dartlang"), session = RedditSession(userToken = "another"))
 
         assertEquals(2, reddit.requests.size, "the cached listing answered a different Reddit")
+
+        reddit.feed.posts(listOf("dartlang"), session = RedditSession(userToken = "another", preferPublic = true))
+        assertTrue(reddit.requests.size > 2, "asking for the account-free route throws it away too")
     }
 
     @Test

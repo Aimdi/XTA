@@ -175,6 +175,18 @@ class RedditAuthTest {
     }
 
     @Test
+    fun onlyRedditRefusingTheGrantEndsTheSession() = runBlocking {
+        suspend fun after(answer: () -> XResponse) = RedditSignIn(RedditAuth(minting(answer))).resolve("cid", "refresh_abc", false)
+
+        assertFalse(after { throw SocketException("offline") }.signedOut, "a network error")
+        assertFalse(after { page("server error", 500) }.signedOut, "a 500 from the token endpoint")
+        assertFalse(after { page("too many", 429) }.signedOut, "a rate limit")
+        assertFalse(after { page("<html>checking your browser</html>") }.signedOut, "a block page is not a verdict on the token")
+        assertTrue(after { page("unauthorized", 401) }.signedOut, "a rejected client id")
+        assertTrue(after { page("""{"error": "invalid_grant"}""", 400) }.signedOut, "invalid_grant")
+    }
+
+    @Test
     fun oneAccessTokenServesEveryReadForFiftyMinutes() = runBlocking {
         var now = 0L
         var minted = 0

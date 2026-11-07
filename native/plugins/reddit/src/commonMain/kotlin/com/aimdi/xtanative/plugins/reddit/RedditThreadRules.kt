@@ -64,6 +64,33 @@ internal object RedditThreadRules {
     /** The rows of the top-level comments, in order: where the jump button lands. */
     fun topLevelRows(rows: List<VisibleComment>): List<Int> = rows.indices.filter { rows[it].entry.depth == 0 && !rows[it].entry.comment.isStub }
 
+    /** The jump button shows once there are two top-level comments to jump between. */
+    fun showsJump(rows: List<VisibleComment>): Boolean = topLevelRows(rows).size >= 2
+
+    /** A hairline above each top-level comment but the first: [index] is the row's place among the comments. */
+    fun divided(depth: Int, index: Int): Boolean = depth == 0 && index > 0
+
+    /** Every target in a thread is at least this tall and wide, in dp (XTA's kTweetTouchTarget). */
+    const val TOUCH_TARGET_DP = 48
+
+    /** How far a reply sits in per level, in dp (kRedditThreadColumn). */
+    const val LINE_COLUMN_DP = 20
+
+    /** The most levels of lines drawn, so a deep reply keeps room for its words (kRedditThreadMaxLines). */
+    const val MAX_LINES = 6
+
+    /** The thread lines by level, blue, violet, amber and green, repeating (kRedditThreadLineColours). */
+    val LINE_COLOURS: List<Int> = listOf(0xFF3F78C4.toInt(), 0xFF9A7FE0.toInt(), 0xFFD9A646.toInt(), 0xFF56B88A.toInt())
+
+    /** The lines drawn beside a reply at [depth]: one per level above it, no more than [MAX_LINES]. */
+    fun lines(depth: Int): Int = minOf(depth, MAX_LINES)
+
+    /** The line of [level] on a [page] of that colour: its colour, darkened or lightened to 3:1 against the page. */
+    fun lineColour(level: Int, page: Int): Int = RedditContrast.ensure(LINE_COLOURS[level % LINE_COLOURS.size], page, 3.0)
+
+    /** The score an upvote button shows: Reddit's, one more once this device upvoted. */
+    fun shownScore(score: Int, upvoted: Boolean): Int = score + if (upvoted) 1 else 0
+
     /** The first top-level row after [from], the row at the top of the screen; null when none is left. */
     fun nextTopLevel(rows: List<VisibleComment>, from: Int): Int? = topLevelRows(rows).firstOrNull { it > from }
 
