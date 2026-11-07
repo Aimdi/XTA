@@ -66,4 +66,13 @@ class GroupPickerTest {
         assertEquals("g2,g1", GroupPicker.remembered("g2,g1", initial = setOf("g1"), chosen = emptySet()))
         assertEquals(listOf("a", "b"), GroupPicker.recent("a,,b"))
     }
+
+    @Test
+    fun recentPicksPutTheGroupsAddedFirstTwelveAtMost() {
+        val twelve = (0 until 12).joinToString(",") { "g$it" }
+        assertEquals(
+            listOf("new", "g3", "g0", "g1", "g2", "g4", "g5", "g6", "g7", "g8", "g9", "g10"),
+            GroupPicker.recent(GroupPicker.remembered(twelve, initial = emptySet(), chosen = linkedSetOf("new", "g3"))),
+        )
+    }
 }

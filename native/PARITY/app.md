@@ -364,3 +364,151 @@ untested | group_discovery_test › following during a source request excludes i
 untested | group_discovery_test › closing discovery retires pending sources | DiscoveryViewModel (scan job in viewModelScope) | view model
 untested | group_discovery_test › a finished source paints before a stalled one times out, and survives it | DiscoveryViewModel per-source publish, Discovery.SOURCE_MILLIS | view model; time share in DiscoveryTest.eachListAndEachPageMayTakeItsShareOfAMinute
 untested | group_discovery_test › reporting a setup failure retires an older pending request | DiscoveryViewModel (generation) | view model
+
+## group_feed_title_test.dart
+untested | group_feed_title_test › the member count and the group mark sit in the app bar | ui/group/GroupFeedScreen.kt GroupTopBar | Compose layout
+untested | group_feed_title_test › a pushed group keeps the switcher, now with a full-height touch target | GroupFeedScreen.kt / GroupSwitcher.kt | Compose layout
+untested | group_feed_title_test › both lines fit the toolbar at the largest text size (switchable: false/true) | GroupTopBar | Compose layout
+untested | group_feed_title_test › the name does not move when the count arrives | GroupTopBar | Compose layout
+untested | group_feed_title_test › a pushed group on a 360dp phone keeps its name and drops the mark instead | GroupTopBar | Compose layout
+untested | group_feed_title_test › a narrow deck column title does not overflow | ui/home/DeckScreen.kt | Compose layout
+untested | group_feed_title_test › the combined-groups count matches the name it follows | GroupFeedUi.memberCount (session.membersOf(groupId, alsoRead)) | count rule: GroupSessionTest.groupsReadTogetherBringWhatIsNestedInEach
+
+## group_members_test.dart
+covered | group_members_test › a mixed group keeps X members for search and plugin members for their own fetch | core Session.membersOf (X accounts + searches), data/plugins PluginMembers.of | PluginMembersTest.aGroupsPluginMembersAreItsAndItsNestedGroups…, GroupSessionTest
+covered | group_members_test › Reddit and Substack members are never searched on X | Session.membersOf (plugin ids are no followed account) | PluginMembersTest, GroupSessionTest.aGroupReadsEverythingNestedInIt…
+covered | group_members_test › other add-to-group plugins split the same way | PluginMembers.accounts | PluginMembersTest.aMemberIsThePluginsIdAndItsAccount
+covered | group_members_test › an X-only group has no plugin slots | PluginMembers.of / FeedSources.asks (no ask without members) | FeedMixTest.theHomeTimelinesAskTheFollowedAccounts…AndGroupsTheirMembers
+covered | group_members_test › are the group members, so adding a subreddit or publication is enough | FeedSources.asks(home = false) | FeedMixTest.theHomeTimelinesAsk…AndGroupsTheirMembers
+covered | group_members_test › X members still have ids of their own for the search query | core GroupFeedPlan.queryOf (from:handle) | GroupFeedTest.aSavedSearchIsSearchedInBrackets…, FeedQueriesTest
+
+## group_switcher_test.dart
+untested | group_switcher_test › the title shows the group and hints that it opens something | ui/group/GroupSwitcher.kt | Compose
+covered | group_switcher_test › the menu offers the home feeds and a way to every group | GroupSwitcher.kt | DiscoveryTest.theTitlesMenuOffersAFewPinnedGroupsButTheOneOpen
+covered | group_switcher_test › a pinned group is one tap, without opening the full list | GroupSwitcher.kt | DiscoveryTest.theTitlesMenuOffersAFewPinnedGroups…
+untested | group_switcher_test › tapping it lists every group with the current one checked | GroupSwitcher.kt sheet | Compose
+untested | group_switcher_test › choosing another group reports it and closes the sheet | GroupFeedScreen.kt onSwitch | Compose
+untested | group_switcher_test › choosing the group you are already in changes nothing | GroupFeedScreen.kt (onSwitch ignores the shown id) | Compose
+untested | group_switcher_test › with no groups the sheet says so instead of showing an empty list | GroupSwitcher.kt | Compose
+
+## group_unread_test.dart
+n/a | group_unread_test › feedChunkHash matches SubscriptionGroupFeedChunk.hash | — | XTA's SQLite chunk-row hash; native keys a feed by GroupFeedPlan.readKey (GroupFeedTest.aPlanThatReadsTheSame…)
+covered | group_unread_test › members pack into hashes by the length of their search | core FeedQueries.pack | FeedQueriesTest.everySearchIsFilledAsFarAsXReadsIt, aMemberTooLongToShareASearch…
+covered | group_unread_test › groupHasUnread is false when tracking is off | core Unread.has | CatchUpTest.aFeedIsUnreadOnlyWhenTracked…
+covered | group_unread_test › groupHasUnread is false when nothing is cached | Unread.has | CatchUpTest.aFeedIsUnreadOnlyWhenTracked…
+covered | group_unread_test › groupHasUnread is true when tracking, cached, and never marked | Unread.has | CatchUpTest.aFeedIsUnreadOnlyWhenTracked…
+covered | group_unread_test › groupHasUnread is true when the cache is newer than last read | Unread.has | CatchUpTest.aFeedIsUnreadOnlyWhenTracked…
+covered | group_unread_test › groupHasUnread is false when the cache is not newer | Unread.has | CatchUpTest.aFeedIsUnreadOnlyWhenTracked…
+covered | group_unread_test › popular feeds do not track even when the global switch is on | Unread.tracks | CatchUpTest.popularFeedsAndTheMediaGridKeepNoReadPosition
+covered | group_unread_test › a parent group hashes the union of nested members | Session.membersOf (nested) → plan key | GroupSessionTest.aGroupReadsEverythingNestedInIt…
+untested | group_unread_test › an unread board tile exposes Unread in semantics | ui/subscriptions GroupsPage tiles | Compose semantics
+
+## home_feed_unread_test.dart
+covered | home_feed_unread_test › Following hashes match the live -1 chunk and skip out-of-feed users | Session.feedMembers (inFeed only) | SessionTest.theFeedReadsOnlyTheAccountsXtaShowsInIt
+covered | home_feed_unread_test › Following last-read prefers following over the legacy -1 key | Unread.lastReadForFollowing | CatchUpTest.theFollowingFeedsLastReadPrefersItsKeyOverXtasOlderOne
+covered | home_feed_unread_test › Following is unread when its cached chunk is newer than last read | Unread.has, ui/home/HomeUnread.kt | CatchUpTest, HomeFilterTest.onlyFeedsThatKeepAPositionLightUp
+covered | home_feed_unread_test › For You newest-cached pref round-trips | store FeedPrefs forYouNewestCachedAt | XtaPrefsTest (declared prefs), SettingsTest
+untested | home_feed_unread_test › an unread strip tab exposes Unread in semantics | SourcePickerSheet.kt PickerRow (home_unread description) | Compose semantics
+
+## profile_followed_by_line_test.dart
+covered | profile_followed_by_line_test › no known follower shows nothing | ui/profile FollowedBy.label (null) | ProfileRulesTest.followedByNamesWhoFollows…
+untested | profile_followed_by_line_test › the row grows and fades in once its followers are known | ui/profile/ProfileParts.kt | Compose animation
+covered | profile_followed_by_line_test › one follower | FollowedBy.Label.Names, posts_followed_by_one | ProfileRulesTest.followedByNamesWhoFollows…
+covered | profile_followed_by_line_test › two followers | FollowedBy.Label.Names, posts_followed_by_two | ProfileRulesTest
+covered | profile_followed_by_line_test › three followers | FollowedBy.Label.Names, posts_followed_by_three | ProfileRulesTest
+covered | profile_followed_by_line_test › many followers cap the avatars and open the list | FollowedBy.Label.Many, FollowedBySheet (posts_followed_by_basis) | ProfileRulesTest (Many("A","B",2))
+untested | profile_followed_by_line_test › a long German line wraps on a narrow screen | ProfileParts.kt | Compose layout
+
+## group_board_test.dart
+untested → ported | group_board_test › colour is deterministic for a seed and stable across calls | ui/subscriptions/GroupLook.kt faceColor | GroupLookTest.aFacesColourIsStableNeverOutOfRangeAndNeverGrey
+untested → ported | group_board_test › different seeds land on different colours | GroupLook.faceColor | GroupLookTest.aFacesColourIsStable…
+untested → ported | group_board_test › index is never negative even for hash overflow | GroupLook.faceColor (floorMod) | GroupLookTest.aFacesColourIsStable…
+open | group_board_test › palette is never grey — a missing avatar must look deliberate | GroupLook.FACE_COLORS | never grey: ported (GroupLookTest); XTA also harmonises the palette towards the accent (HCT), native keeps the base palette — not ported (needs Material colour utilities)
+untested → ported | group_board_test › initial uses the first alphanumeric of the name, else the seed | GroupLook.faceInitial | GroupLookTest.aFacesInitialIsTheFirstLetterOrDigit…
+untested | group_board_test › renders a single initial at the requested size | ui/subscriptions/GroupIcons.kt / GroupsPage.kt Face | Compose
+untested | group_board_test › an empty group falls back to its own initial | GroupsPage.kt tile mark | Compose; rule GroupLookTest.onlyAMarkTheReaderPicked…
+covered | group_board_test › lays out {0..5} member(s) without overflow (one per count) | GroupBoardModel.tiles (≤ 4 faces) | GroupBoardModelTest.aTileCountsEveryMemberAndShowsFourFacesByHandle
+covered | group_board_test › never renders more than four avatars | GroupLook.FACES = 4 | GroupBoardModelTest.aTileCountsEveryMember…
+untested | group_board_test › an unreachable image degrades to a same-size monogram | GroupsPage.kt Face (Coil error → monogram) | Compose
+untested | group_board_test › shows name, localized count and a semantics label | GroupsPage.kt tile | Compose
+untested | group_board_test › is flat and rippleless — no Card, no InkWell | GroupsPage.kt tile | Compose drawing
+untested | group_board_test › the card is a flat surface: no colour wash, no accent bar | GroupsPage.kt tile | Compose drawing
+untested | group_board_test › marks a pinned group | GroupsPage.kt tile (pin glyph) | Compose
+untested | group_board_test › survives a 2x text scale without overflowing | GroupsPage.kt | Compose layout; tile height rule GroupsTest.aWidenedBoardHasContentHeightTilesThatGrowWithLargeText
+untested | group_board_test › lays the faces beside the name and count in 60 dp (compact) | GroupsPage.kt compact row | Compose layout
+untested | group_board_test › keeps the name clear of the discovery button | GroupsPage.kt | Compose layout
+untested | group_board_test › grows with 2x text instead of overflowing | GroupsPage.kt | Compose layout
+untested | group_board_test › tapping calls onTap | GroupsPage.kt | Compose
+untested | group_board_test › light/dim/lights out keeps tile text legible (per theme) | GroupsPage.kt colours from the theme | Compose; contrast rule XLookTest
+
+## group_editor_loading_test.dart
+n/a | group_editor_loading_test › read failure shows Retry and can load the editor again | ui/subscriptions/GroupEditSheet.kt | native's editor opens on the in-memory session (no read that can fail); a missing group shows unable_to_load_the_group on its feed instead
+n/a | group_editor_loading_test › closing the editor during loading ignores the late result | GroupEditSheet.kt | no asynchronous read
+n/a | group_editor_loading_test › a stalled read leaves loading and offers Retry | GroupEditSheet.kt | no asynchronous read
+n/a | group_editor_loading_test › idle stores can be disposed outside the widget clock | — | flutter_triple store disposal
+
+## group_mark_test.dart
+covered | group_mark_test › groupFallbackColor is deterministic per name | GroupLook | GroupLookTest.aGroupWithoutAColourGetsTheSameOneFromItsNameAsInXta
+covered | group_mark_test › groupInitial is a single letter and skips leading non-letters | GroupLook | GroupLookTest.theInitialIsTheFirstLetterWithItsAccentsElseTheFirstGrapheme
+covered | group_mark_test › resolveGroupMarkKind follows style plus stored fields | GroupLook | GroupLookTest.theMarkIsTheEmojiTheIconOrTheInitialAsTheStyleAndWhatIsSetAllow
+covered | group_mark_test › hasExplicitGroupMark is false until the user picks emoji or icon | GroupLook | GroupLookTest.onlyAMarkTheReaderPickedTakesThePlaceOfTheMembersFaces
+untested | group_mark_test › GroupMark shows one initial by default | ui/subscriptions/GroupIcons.kt GroupMark | Compose
+untested | group_mark_test › GroupMark is a solid disc in the group colour, not a tonal chip | GroupMark | Compose drawing
+covered | group_mark_test › the glyph stays legible on both pale and saturated colours | GroupLook.isDark | GroupLookTest.whiteGoesOnDarkColoursAndBlackOnPaleOnes
+untested | group_mark_test › GroupMark shows the chosen emoji | GroupMark | Compose; kind rule in GroupLookTest
+untested | group_mark_test › GroupMark shows the chosen icon | GroupMark | Compose; GroupLookTest.anIconIsReadFromXtasJsonOrAsABareKey
+covered | group_mark_test › board tile keeps the member mosaic when no mark was chosen | GroupLook explicit mark rule | GroupLookTest.onlyAMarkTheReaderPicked…
+covered | group_mark_test › an explicit emoji outranks the member mosaic on the board | GroupLook | GroupLookTest.onlyAMarkTheReaderPicked…
+covered | group_mark_test › an explicit icon outranks the member mosaic on the board | GroupLook | GroupLookTest.onlyAMarkTheReaderPicked…
+untested | group_mark_test › an explicit mark still fits at 2x text scale | GroupMark | Compose layout
+
+## group_membership_sheet_test.dart
+covered | group_membership_sheet_test › the account's groups lead, then the groups picked last, then the rest | ui/subscriptions/GroupPicker.kt | GroupPickerTest.theSheetOpensOnTheAccountsGroupsThenTheRecentThenTheRest
+untested → ported | group_membership_sheet_test › recent picks put the groups added first, twelve at most | core GroupPicks.remembered (RECENT_LIMIT 12) | GroupPickerTest.recentPicksPutTheGroupsAddedFirstTwelveAtMost
+covered | group_membership_sheet_test › ticking changes the status line, and closing gives the choice | GroupPicker.status/answer | GroupPickerTest.theLineUnderTheChipsSaysWhereTheAccountIs, closingUntouched…
+covered | group_membership_sheet_test › closing with the groups it opened with gives nothing | GroupPicker.answer | GroupPickerTest.closingUntouchedChangesNothing…
+covered | group_membership_sheet_test › a typed name creates a group, ticks it and empties the field | GroupPicker (create row) | GroupPickerTest.aSearchOffersToMakeTheGroupItDoesNotFind
+covered | group_membership_sheet_test › a name a group has offers no create row | GroupPicker | GroupPickerTest.aSearchOffersToMakeTheGroup…
+covered | group_membership_sheet_test › All groups shows the groups beyond the first six | GroupPicker | GroupPickerTest.theFirstSixShowUntilAll…
+covered | group_membership_sheet_test › an account in more groups than six shows them all first | GroupPicker | GroupPickerTest.theSheetOpensOnTheAccountsGroups…, theFirstSixShow…
+untested | group_membership_sheet_test › with no groups yet it says so and offers to create one | MembershipSheet.kt (groups_none_yet) | Compose
+covered | group_membership_sheet_test › follows a new account and saves its groups once the sheet closes changed | GroupPicker.answer + Session.addingTo | GroupPickerTest.closingUntouched…, GroupSessionTest
+covered | group_membership_sheet_test › closing the sheet unchanged neither follows nor saves | GroupPicker.answer (null) | GroupPickerTest.closingUntouched…
+
+## group_ungrouped_sorter_render_test.dart
+n/a | group_ungrouped_sorter_render_test › sorter-card-{tag} (render) | — | golden render job, skipped unless rendering; no rule
+n/a | group_ungrouped_sorter_render_test › sorter-end-{tag} (render) | — | same
+n/a | group_ungrouped_sorter_render_test › sorter-plan-{tag} (render) | — | same
+
+## group_ungrouped_sorter_test.dart
+covered | group_ungrouped_sorter_test › placing and skipping move on, one choice for each account | ui/subscriptions UngroupedSorter | UngroupedSorterTest.eachChoiceMovesToTheNextAccountAndTheRoundEnds
+covered | group_ungrouped_sorter_test › undo makes the last account current again and forgets its choice | UngroupedSorter | UngroupedSorterTest.undoBringsTheLastAccountBack…
+covered | group_ungrouped_sorter_test › a round of the skipped holds only them, from the start | UngroupedSorter | UngroupedSorterTest.theSkippedGetARoundOfTheirOwn
+untested | group_ungrouped_sorter_test › only placing writes, and undo removes what its choice added | ui/subscriptions/SortViewModels.kt | view model over AppGraph
+untested | group_ungrouped_sorter_test › a failed save throws and keeps the account | SortViewModels.kt | view model
+untested | group_ungrouped_sorter_test › a tap while a choice is saved is ignored | SortViewModels.kt | view model
+covered | group_ungrouped_sorter_test › nothing to place in puts nothing | UngroupedSorter | UngroupedSorterTest
+untested | group_ungrouped_sorter_test › a tap on a group puts the account in it and shows the next | ui/subscriptions/SortScreens.kt | Compose
+untested | group_ungrouped_sorter_test › Skip leaves the account where it is; Undo takes each choice back | SortScreens.kt | Compose; rules in UngroupedSorterTest
+untested | group_ungrouped_sorter_test › Several groups places the account in every group ticked | SortScreens.kt | Compose
+untested | group_ungrouped_sorter_test › closing Several groups with nothing ticked changes nothing | SortScreens.kt | Compose
+untested | group_ungrouped_sorter_test › one group needs no Several groups | SortScreens.kt | Compose
+untested | group_ungrouped_sorter_test › Create group asks for a name and puts the account in the new group | SortScreens.kt | Compose
+untested | group_ungrouped_sorter_test › the skipped ones can be sorted again | SortScreens.kt | Compose; UngroupedSorterTest.theSkippedGetARound…
+untested | group_ungrouped_sorter_test › a failed save keeps the card and says so | SortScreens.kt | Compose
+untested | group_ungrouped_sorter_test › placing an account clicks once; skipping does not | SortScreens.kt (haptic on place) | Compose
+untested | group_ungrouped_sorter_test › Open profile leads to the account | SortScreens.kt | Compose
+untested | group_ungrouped_sorter_test › with nobody to sort it says everyone is in a group | SortScreens.kt | Compose
+untested | group_ungrouped_sorter_test › Left ungrouped leads to the sorter, and the plan is made again after it | SortScreens.kt | Compose
+untested | group_ungrouped_sorter_test › with no match by name the main button sorts one by one | SortScreens.kt | Compose
+untested | group_ungrouped_sorter_test › Apply places the plan, then goes on to the accounts left over | SortScreens.kt, UngroupedPlans.applied | UngroupedPlansTest.applyingMakesTheSuggestedGroups…
+untested | group_ungrouped_sorter_test › Apply closes the screen when it placed everyone | SortScreens.kt | Compose
+
+## group_ungrouped_test.dart
+covered | group_ungrouped_test › skips saved searches and anyone already in a group | ui/subscriptions/UngroupedPlans.kt | UngroupedPlansTest.onlyTheAccountsInNoGroupAreSorted
+covered | group_ungrouped_test › assigns an ungrouped account to the group with shared name tokens | UngroupedPlans | UngroupedPlansTest.anAccountGoesWhereItSharesMostWords…
+covered | group_ungrouped_test › suggests a new group when leftovers share a long token | UngroupedPlans | UngroupedPlansTest.aClusterNeedsAWordOfFourLettersOrMore
+covered | group_ungrouped_test › parses an AI reply and drops unknown ids | services/ai AiPrompts.groupingPlan | AiClientTest
+covered | group_ungrouped_test › AI assignments win; heuristic fills the rest | AiPrompts GroupingPlan.mergedWith | AiClientTest
+covered | group_ungrouped_test › the store prefers a valid AI plan and falls back on a blank reply | SortViewModels.askAi (empty parse → heuristic) | AiClientTest (groupingPlan of "no json" is unused)
+covered | group_ungrouped_test › opening the sorter does not send accounts to a configured AI | SortViewModels.plan(useAi = false) by default | by construction (AI only on its own button)
