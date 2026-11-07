@@ -3,6 +3,7 @@ package com.aimdi.xtanative.plugins.bluesky
 import com.aimdi.xtanative.core.x.http.XResponse
 import com.aimdi.xtanative.networks.bluesky.BlueskyFollowing
 import com.aimdi.xtanative.networks.bluesky.BlueskyProfile
+import com.aimdi.xtanative.networks.bluesky.BlueskyReadPoint
 import com.aimdi.xtanative.networks.bluesky.bluePost
 import com.aimdi.xtanative.networks.bluesky.ok
 import com.aimdi.xtanative.networks.bluesky.postView
@@ -180,5 +181,22 @@ class BlueskyFollowingTimelineTest {
     fun aNewCountOrLabelOfTheSamePostIsAChange() {
         assertNotEquals(bluePost("same"), bluePost("same", likes = 3))
         assertNotEquals(bluePost("same"), bluePost("same", labels = listOf("!warn")))
+    }
+
+    @Test
+    fun aFreshSessionShowsThePostsWhereFollowingWasLeftWithoutReadingTheAccounts() = runBlocking {
+        val host = FakeHost { page("new", did = "did:plc:alice") }
+        val app = BlueskyApp(host)
+        val kept = listOf(bluePost("1", did = "did:plc:alice", handle = "alice.bsky.social"), bluePost("2", did = "did:plc:alice", handle = "alice.bsky.social"))
+        app.prefs.place(app.prefs.appView.value, BlueskyReadPoint(kept, kept[1].uri, -12.0))
+        app.follows.follow(alice, at = 1)
+        app.following.start()
+        eventually { app.following.state.value.loaded }
+        assertEquals(listOf("1", "2"), app.following.state.value.posts.map { it.text })
+        assertTrue(host.asked.isEmpty(), "no account is read until the reader pulls")
+        app.following.refresh(force = true)
+        eventually { host.asked.isNotEmpty() && !app.following.state.value.loading }
+        assertEquals(listOf("new"), app.following.state.value.posts.map { it.text })
+        app.close()
     }
 }

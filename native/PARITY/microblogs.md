@@ -114,3 +114,24 @@ untested | bluesky_following_recovery_test › older forced refresh cannot overw
 missing/different | bluesky_following_recovery_test › response from an old AppView cannot appear in the new source | networks/bluesky BlueskyFollowing.kt (era) | an account's page asked of the old AppView could still be kept after the change (its request number restarted); now each AppView change starts a new era and older answers are not kept. BlueskyFollowingTimelineTest.anAnswerFromTheAppViewLeftIsNeverKept
 untested | bluesky_following_recovery_test › follow-set change discards the old pending request | FollowingTimeline.refresh (cancels) | BlueskyFollowingTimelineTest.aChangeOfWhoIsFollowedDropsTheReadUnderWay…
 untested | bluesky_following_recovery_test › disposal ignores late reads and leaves no loading work | BlueskyApp.close (ends its scope) | same test, second half
+
+## test/bluesky_home_recovery_test.dart
+missing/different | bluesky_home_recovery_test › fresh Bluesky session restores the visible Following anchor without an author read | plugins/bluesky BlueskyFollowingPane.kt (FollowingTimeline.refresh, KeepsPlace), BlueskyPlace.kt | the anchor was restored but every account was read again at once; now the kept posts are shown and nothing is read until a pull, as XTA. BlueskyFollowingTimelineTest.aFreshSessionShowsThePostsWhereFollowingWasLeft…; anchor: BlueskyStoresTest.followingsListOpensAtItsAnchor…
+covered | bluesky_home_recovery_test › Liked tab selection survives a fresh mounted session | BlueskyStores.kt (reading prefs: tab) | BlueskyStoresTest.theFiltersAndTheTabAreKeptAsXtaKeepsThem; the Liked tab reads only the device's likes (BlueskyLocalTest.theLikedTabShowsTheNewestKeptPosts…)
+covered | bluesky_home_recovery_test › Following exposes local filter controls and reset without another network read | BlueskyFilters.kt, networks BlueskyReaderFilter.kt | the filter applies to the posts held (no read); BlueskyTimelineTest.theReaderQueryNeedsEveryWord…, replyAndRepostSwitchesCompose…; the golden image is Flutter's
+n/a | bluesky_home_recovery_test › Following filter sheet fits a narrow RTL screen at double text size | BlueskyFilters.kt | a Flutter golden render and RenderFlex overflow check; Compose has no overflow exception to assert
+
+## test/bluesky_import_test.dart
+covered | bluesky_import_test › a bare name is not a Bluesky handle | networks/bluesky BlueskyUrls.handle | BlueskyUrlsTest.whatIsNoHandleIsRefused ("elios")
+covered | bluesky_import_test › a dotted handle is | BlueskyUrls.handle | BlueskyUrlsTest.handlesComeBareWithAnAtOrInAProfileLink
+covered | bluesky_import_test › so is a DID | BlueskyUrls.handle | BlueskyUrlsTest.handlesComeBare… (did:plc:abc234)
+covered | bluesky_import_test › so is a pasted profile URL | BlueskyUrls.handle | BlueskyUrlsTest.handlesComeBare…
+covered | bluesky_import_test › nothing typed is nothing | BlueskyUrls.handle | BlueskyUrlsTest.whatIsNoHandleIsRefused
+untested | bluesky_import_test › a handle it cannot read is said so, not ignored | plugins/bluesky BlueskyImport.kt (ImportRun.start false → the field shows invalid_handle) | BlueskyImportTest.aHandleItCannotReadIsRefusedAndAsksNothing
+untested | bluesky_import_test › correcting the field clears the complaint | BlueskyImport.kt (onValueChange clears `refused`) | UI only, read in code
+## test/bluesky_interleaved_test.dart
+untested | bluesky_interleaved_test › blueskyInterleavedItems keeps dated posts up to the limit | plugins/bluesky BlueskyApp.kt (HomeFeed.posts, SHARED = 10) | BlueskyImportTest.homeTakesTenDatedPostsAndLeavesRepliesOutWhereTheyAreOff
+untested | bluesky_interleaved_test › blueskyInterleavedItems drops posts without a date | HomeFeed.posts | same test
+untested | bluesky_interleaved_test › a group with replies off leaves Bluesky replies out, and keeps them when on | HomeFeed.posts (FeedKinds) | same test
+## test/bluesky_likes_snapshot_test.dart
+covered | bluesky_likes_snapshot_test › BlueskyPost snapshot round-trips all liked-post fields | networks/bluesky BlueskySnapshot.kt | BlueskySnapshotTest.whatThisAppWritesReadsBackTheSame, aPostXtaKeptReadsWholly
