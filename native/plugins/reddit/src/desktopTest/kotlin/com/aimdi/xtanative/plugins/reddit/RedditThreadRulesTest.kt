@@ -34,6 +34,13 @@ class RedditThreadRulesTest {
     }
 
     @Test
+    fun collapsingALeafHidesNothingButKeepsItsRow() {
+        val rows = RedditThreadRules.visible(tree, setOf("c"))
+        assertEquals(tree.map { it.comment.id }, rows.map { it.entry.comment.id })
+        assertEquals(0, rows.single { it.entry.comment.id == "c" }.hidden)
+    }
+
+    @Test
     fun collapseAllFoldsTheTopLevelCommentsWithRepliesAndExpandAllUndoesIt() {
         assertEquals(setOf("a", "f"), RedditThreadRules.foldable(tree))
         assertEquals(false, RedditThreadRules.allFolded(tree, setOf("a")))

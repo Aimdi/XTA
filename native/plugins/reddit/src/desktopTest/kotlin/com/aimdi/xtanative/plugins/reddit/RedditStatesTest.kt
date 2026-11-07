@@ -13,6 +13,8 @@ import java.time.Instant
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertSame
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -201,5 +203,26 @@ class RedditStatesTest {
         assertEquals(RedditFeedBody.PROBLEM, RedditFeedBody.of(listed = true, none = false, state = RedditFeed.State(loaded = true, problem = IllegalStateException())))
         assertEquals(RedditFeedBody.EMPTY, RedditFeedBody.of(listed = true, none = false, state = RedditFeed.State(loaded = true)))
         assertEquals(RedditFeedBody.POSTS, RedditFeedBody.of(listed = true, none = false, state = waiting.copy(posts = listOf(post("a")))), "a reread keeps the posts shown")
+    }
+
+    @Test
+    fun zeroFollowsReadNothingNeverLoadAndARemountRefreshStaysANoOp(): Unit = runBlocking {
+        val reads = AtomicInteger()
+        val feed = RedditFeed(scope, read = { names, _ -> reads.incrementAndGet(); names.map(::post) })
+        assertFalse(feed.state.value.loading)
+        feed.refresh(emptyList())
+        val nothing = feed.state.value
+        assertTrue(nothing.loaded && !nothing.loading && nothing.posts.isEmpty())
+        feed.refresh(emptyList())
+        feed.refresh(emptyList(), force = true)
+        assertSame(nothing, feed.state.value, "nothing new to show: no state change for a remount")
+        assertEquals(0, reads.get())
+        scope.cancel()
+    }
+
+    @Test
+    fun anEmptyStripOfCommunitiesIsNotShown() {
+        assertFalse(RedditHomeSource.showsStrip(emptyList()))
+        assertTrue(RedditHomeSource.showsStrip(listOf("dartlang")))
     }
 }

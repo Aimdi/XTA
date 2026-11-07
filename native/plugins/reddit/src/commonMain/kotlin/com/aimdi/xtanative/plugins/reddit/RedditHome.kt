@@ -44,8 +44,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.store.settings.RedditFeedMode
-import com.aimdi.xtanative.store.settings.RedditPrefs
-import com.aimdi.xtanative.store.settings.RedditSource
 import com.aimdi.xtanative.ui.common.FeedSkeleton
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.PluginFrame
@@ -66,7 +64,7 @@ internal fun RedditHome(app: RedditApp, frame: PluginFrame) {
     val followed by app.followed.collectAsState()
     Column(Modifier.fillMaxSize()) {
         HomeBar(app, home)
-        if (followed.isNotEmpty()) CommunityStrip(app, followed, home)
+        if (RedditHomeSource.showsStrip(followed)) CommunityStrip(app, followed, home)
         // A community picked from the strip is no section of its own: the swipes turn Following, Popular and All.
         val modes = if (home.subreddit == null) RedditFeedMode.entries else emptyList()
         Box(Modifier.weight(1f).swipeTabs(modes, home.mode) { app.selectMode(it) }) {
@@ -92,9 +90,13 @@ private fun HomeBar(app: RedditApp, home: RedditHomeSource) {
             Rail(app, home, RedditFeedMode.POPULAR, RedditGlyphs.Popular, Strings.feed_popular)
             Rail(app, home, RedditFeedMode.ALL, RedditGlyphs.All, Strings.feed_all)
         }
-        IconButton(onClick = { app.host.openSearch(null) }) { Icon(Icons.Filled.Search, contentDescription = pluginString(Strings.search_hint)) }
-        IconButton(onClick = { sorting = true }) { Icon(sortIcon(choices.sort), contentDescription = pluginString(Strings.sort)) }
-        HomeMenu(app, choices)
+        RedditHomeChrome.actions.forEach { action ->
+            when (action) {
+                RedditHomeChrome.Action.SEARCH -> IconButton(onClick = { app.host.openSearch(null) }) { Icon(Icons.Filled.Search, contentDescription = pluginString(Strings.search_hint)) }
+                RedditHomeChrome.Action.SORT -> IconButton(onClick = { sorting = true }) { Icon(sortIcon(choices.sort), contentDescription = pluginString(Strings.sort)) }
+                RedditHomeChrome.Action.MENU -> HomeMenu(app, choices)
+            }
+        }
     }
     if (sorting) SortSheet(app) { sorting = false }
 }
@@ -123,13 +125,21 @@ private fun HomeMenu(app: RedditApp, choices: RedditChoices) {
         IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, contentDescription = pluginString(Strings.more_options)) }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             val close = { open = false }
-            MenuRow(RedditGlyphs.BookmarkBorder, pluginString(Strings.saved)) { close(); app.host.open(RedditRoutes.SAVED) }
-            MenuRow(Icons.AutoMirrored.Filled.List, pluginString(Strings.subscriptions)) { close(); communities = true }
-            HorizontalDivider()
-            SourceRow(app, RedditSource.AUTO, Strings.source_auto, Strings.source_auto_description, !choices.preferPublic, close)
-            SourceRow(app, RedditSource.PUBLIC, Strings.source_public, Strings.source_public_description, choices.preferPublic, close)
-            HorizontalDivider()
-            MenuRow(Icons.Outlined.Settings, pluginString(Strings.plugin_name) + " · " + pluginString(Strings.settings)) { close(); app.host.openSettings() }
+            RedditHomeChrome.menu.forEach { item ->
+                when (item) {
+                    RedditHomeChrome.MenuItem.SAVED -> MenuRow(RedditGlyphs.BookmarkBorder, pluginString(Strings.saved)) { close(); app.host.open(RedditRoutes.SAVED) }
+                    RedditHomeChrome.MenuItem.SUBSCRIPTIONS -> MenuRow(Icons.AutoMirrored.Filled.List, pluginString(Strings.subscriptions)) { close(); communities = true }
+                    RedditHomeChrome.MenuItem.SOURCE_AUTO -> {
+                        HorizontalDivider()
+                        SourceRow(app, item, Strings.source_auto, Strings.source_auto_description, RedditHomeChrome.checked(item, choices), close)
+                    }
+                    RedditHomeChrome.MenuItem.SOURCE_PUBLIC -> SourceRow(app, item, Strings.source_public, Strings.source_public_description, RedditHomeChrome.checked(item, choices), close)
+                    RedditHomeChrome.MenuItem.SETTINGS -> {
+                        HorizontalDivider()
+                        MenuRow(Icons.Outlined.Settings, pluginString(Strings.plugin_name) + " · " + pluginString(Strings.settings)) { close(); app.host.openSettings() }
+                    }
+                }
+            }
         }
     }
     if (communities) CommunitiesSheet(app) { communities = false }
@@ -143,7 +153,7 @@ private fun MenuRow(icon: ImageVector, label: String, onClick: () -> Unit) {
 @Composable
 private fun SourceRow(
     app: RedditApp,
-    source: RedditSource,
+    item: RedditHomeChrome.MenuItem,
     label: PluginText,
     description: PluginText,
     selected: Boolean,
@@ -160,7 +170,7 @@ private fun SourceRow(
         onClick = {
             close()
             if (!selected) {
-                app.change { it.with(RedditPrefs.source, source) }
+                app.change { RedditHomeChrome.choosing(it, item) ?: it }
             }
         },
     )

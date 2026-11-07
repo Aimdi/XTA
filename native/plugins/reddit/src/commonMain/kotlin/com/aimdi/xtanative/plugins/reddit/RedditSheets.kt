@@ -280,7 +280,7 @@ private fun CommunityTile(app: RedditApp, name: String, onOpen: () -> Unit) {
     ListItem(
         headlineContent = { Text("r/$name", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis) },
         supportingContent = about?.subscribers?.let { count -> { FollowersLine(count) } },
-        leadingContent = { SubredditAvatar(app, name, 44.dp, known = about?.let { it.iconUrl.orEmpty() }) },
+        leadingContent = { SubredditAvatar(app, name, 44.dp, known = RedditAboutIcon.of(about != null, about?.iconUrl)) },
         trailingContent = {
             IconButton(onClick = { app.follow(name, follow = false) }) { Icon(Icons.Outlined.Delete, contentDescription = pluginString(Strings.delete)) }
         },
@@ -366,7 +366,7 @@ internal fun AboutSheet(app: RedditApp, subreddit: String, onDismiss: () -> Unit
 private fun AboutContent(app: RedditApp, about: RedditSubredditAbout) {
     Column(Modifier.verticalScroll(rememberScrollState()).padding(start = 24.dp, end = 24.dp, top = 8.dp, bottom = 24.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            SubredditAvatar(app, about.name, 48.dp, known = about.iconUrl.orEmpty())
+            SubredditAvatar(app, about.name, 48.dp, known = RedditAboutIcon.of(true, about.iconUrl))
             Spacer(Modifier.width(12.dp))
             Text("r/" + about.name, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
         }

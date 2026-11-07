@@ -132,6 +132,9 @@ internal data class RedditHomeSource(val mode: RedditFeedMode = RedditFeedMode.F
             subreddit = settings[RedditPrefs.selectedSubreddit].takeIf { it.isNotEmpty() }?.let(::normaliseSubreddit),
         )
 
+        /** The strip of followed communities shows only when one is followed: an empty strip is no list. */
+        fun showsStrip(followed: List<String>): Boolean = followed.isNotEmpty()
+
         fun selectingMode(settings: Settings, mode: RedditFeedMode): Settings =
             settings.with(RedditPrefs.feedMode, mode).with(RedditPrefs.selectedSubreddit, "")
 
@@ -203,4 +206,47 @@ internal object RedditContrast {
 
     private const val BLACK = 0xFF000000.toInt()
     private const val WHITE = 0xFFFFFFFF.toInt()
+}
+
+/**
+ * The picture a community's about page gives its avatar (XTA's
+ * `redditAvatarUrlFromAbout`): null while it is being read, so a picture
+ * already kept can still be painted; empty once it said it has none, so the
+ * picture is not looked up again; else its picture.
+ */
+internal object RedditAboutIcon {
+    fun of(read: Boolean, iconUrl: String?): String? = if (read) iconUrl.orEmpty() else null
+}
+
+/**
+ * The Reddit tab's bar and menu (reddit_actions.dart, reddit_home_chrome.dart):
+ * search first, then the order, then one menu; no plus, since the communities
+ * live in the menu, which holds no Reddit sign-in (in Reddit's settings) and
+ * no app settings (in the drawer).
+ */
+internal object RedditHomeChrome {
+    enum class Action { SEARCH, SORT, MENU }
+
+    enum class MenuItem { SAVED, SUBSCRIPTIONS, SOURCE_AUTO, SOURCE_PUBLIC, SETTINGS }
+
+    val actions: List<Action> = listOf(Action.SEARCH, Action.SORT, Action.MENU)
+
+    val menu: List<MenuItem> = MenuItem.entries
+
+    /** Whether [item] carries the check: the route in force. */
+    fun checked(item: MenuItem, choices: RedditChoices): Boolean = when (item) {
+        MenuItem.SOURCE_AUTO -> !choices.preferPublic
+        MenuItem.SOURCE_PUBLIC -> choices.preferPublic
+        else -> false
+    }
+
+    /** The settings with the route [item] names, which the app stores and reads the open feed again with; null for another item or the route in force. */
+    fun choosing(settings: Settings, item: MenuItem): Settings? {
+        val source = when (item) {
+            MenuItem.SOURCE_AUTO -> RedditSource.AUTO
+            MenuItem.SOURCE_PUBLIC -> RedditSource.PUBLIC
+            else -> return null
+        }
+        return if (settings[RedditPrefs.source] == source) null else settings.with(RedditPrefs.source, source)
+    }
 }

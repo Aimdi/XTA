@@ -155,4 +155,42 @@ class RedditRulesTest {
         assertEquals(0xFFFFFFFF.toInt(), RedditFace(face.rows, 0xFF37474F.toInt(), 0).ink)
         assertEquals(0xFF15202B.toInt(), RedditFace(face.rows, 0xFFE9E9E9.toInt(), 0).ink)
     }
+
+    @Test
+    fun aboutsPictureIsNothingWhileReadEmptyAfterAMissElseThePicture() {
+        assertNull(RedditAboutIcon.of(read = false, iconUrl = null), "while loading, so a kept picture can still paint")
+        assertNull(RedditAboutIcon.of(read = false, iconUrl = "https://styles.redditmedia.com/a.png"))
+        assertEquals("", RedditAboutIcon.of(read = true, iconUrl = null), "a miss is not looked up again")
+        assertEquals("", RedditAboutIcon.of(read = true, iconUrl = ""))
+        assertEquals("https://styles.redditmedia.com/a.png", RedditAboutIcon.of(read = true, iconUrl = "https://styles.redditmedia.com/a.png"))
+    }
+
+    @Test
+    fun theBarLeadsWithSearchThenTheOrderThenOneMenuAndNoPlus() {
+        assertEquals(listOf(RedditHomeChrome.Action.SEARCH, RedditHomeChrome.Action.SORT, RedditHomeChrome.Action.MENU), RedditHomeChrome.actions)
+    }
+
+    @Test
+    fun theMenuOffersSavedCommunitiesTheRoutesAndRedditsSettingsNotASignIn() {
+        assertEquals(
+            listOf(
+                RedditHomeChrome.MenuItem.SAVED,
+                RedditHomeChrome.MenuItem.SUBSCRIPTIONS,
+                RedditHomeChrome.MenuItem.SOURCE_AUTO,
+                RedditHomeChrome.MenuItem.SOURCE_PUBLIC,
+                RedditHomeChrome.MenuItem.SETTINGS,
+            ),
+            RedditHomeChrome.menu,
+        )
+    }
+
+    @Test
+    fun choosingHowRedditIsReadStoresItAndTheChosenRouteIsChecked() {
+        val chosen = RedditHomeChrome.choosing(Settings(), RedditHomeChrome.MenuItem.SOURCE_PUBLIC)!!
+        assertEquals(RedditSource.PUBLIC, chosen[RedditPrefs.source])
+        assertTrue(RedditHomeChrome.checked(RedditHomeChrome.MenuItem.SOURCE_PUBLIC, RedditChoices.of(chosen)))
+        assertFalse(RedditHomeChrome.checked(RedditHomeChrome.MenuItem.SOURCE_AUTO, RedditChoices.of(chosen)))
+        assertNull(RedditHomeChrome.choosing(chosen, RedditHomeChrome.MenuItem.SOURCE_PUBLIC), "the route in force: nothing to read again")
+        assertNull(RedditHomeChrome.choosing(chosen, RedditHomeChrome.MenuItem.SAVED))
+    }
 }
