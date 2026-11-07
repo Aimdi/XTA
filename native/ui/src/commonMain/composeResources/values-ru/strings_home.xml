@@ -68,4 +68,5 @@
     <string name="home_choose_pages">Выберите страницы</string>
     <string name="home_unable_to_load_pages">Невозможно загрузить вашу главную страницу</string>
     <string name="feed_strip_unavailable">Эта лента больше недоступна</string>
+    <string name="home_feed_accounts_empty">Добавьте аккаунт, чтобы загрузить «Для вас».</string>
 </resources>

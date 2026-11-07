@@ -66,4 +66,5 @@
     <string name="home_choose_pages">पृष्ठ चुनें</string>
     <string name="home_unable_to_load_pages">होम पृष्ठ लोड नहीं किए जा सके</string>
     <string name="feed_strip_unavailable">यह टाइमलाइन अब उपलब्ध नहीं है</string>
+    <string name="home_feed_accounts_empty">आपके लिए लोड करने हेतु खाता जोड़ें।</string>
 </resources>

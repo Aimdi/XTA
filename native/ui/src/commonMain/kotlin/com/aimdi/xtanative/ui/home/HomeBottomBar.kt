@@ -136,8 +136,8 @@ internal class HomeBarsState(private val scope: CoroutineScope, density: Density
 
         override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset {
             if (!enabled) return Offset.Zero
-            // Pulled on past the top: the bars belong on screen there.
-            if (available.y > 0f) show() else settleSoon()
+            // Pulled on past the top or the end: the bars belong on screen there.
+            if (available.y != 0f) show() else settleSoon()
             return Offset.Zero
         }
 
@@ -171,17 +171,13 @@ internal class HomeBarsState(private val scope: CoroutineScope, density: Density
         }
         val distance = abs(target - hidden)
         motion = scope.launch {
-            animate(hidden, target, animationSpec = tween((SETTLE_MS * distance).roundToInt().coerceAtLeast(MIN_SETTLE_MS))) { value, _ ->
+            animate(hidden, target, animationSpec = tween(BarHiding.settleMillis(distance))) { value, _ ->
                 hidden = value
                 hiding.moved(value)
             }
         }
     }
 
-    private companion object {
-        const val SETTLE_MS = 280f
-        const val MIN_SETTLE_MS = 120
-    }
 }
 
 @Composable

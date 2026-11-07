@@ -115,6 +115,22 @@ class HomeBarTest {
     }
 
     @Test
+    fun settlingTakesUpTo250MsNeverUnder120() {
+        assertEquals(250, BarHiding.settleMillis(1f))
+        assertEquals(150, BarHiding.settleMillis(0.6f))
+        assertEquals(120, BarHiding.settleMillis(0.1f))
+    }
+
+    @Test
+    fun aStoppedBarRestsByTheLastDirectionAndHowFarItWent() {
+        val hiding = BarHiding(hideAfter = 24f, showAfter = 12f)
+        assertFalse(hiding.restsHidden(10f, 100f, movingDown = true), "under 24 down springs back")
+        assertTrue(hiding.restsHidden(24f, 100f, movingDown = true))
+        assertTrue(hiding.restsHidden(95f, 100f, movingDown = false), "under 12 up drops away again")
+        assertFalse(hiding.restsHidden(88f, 100f, movingDown = false))
+    }
+
+    @Test
     fun theMenuLeavesOutThePagesOnTheBar() {
         val all = HomeMenu.shown(HomeMenu.list, { true }, deckFits = true, onBar = setOf("feed", "subscriptions", "saved")).map { it.route }
         assertEquals(listOf("trends", "downloads", "antennas", "plugins", "deck"), all)

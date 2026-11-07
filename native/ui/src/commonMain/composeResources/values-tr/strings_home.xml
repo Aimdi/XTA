@@ -66,4 +66,5 @@
     <string name="home_choose_pages">Sayfaları seçin</string>
     <string name="home_unable_to_load_pages">Ana sayfalarınız yüklenemiyor</string>
     <string name="feed_strip_unavailable">Bu zaman çizelgesi artık yok</string>
+    <string name="home_feed_accounts_empty">Sana özel’i yüklemek için bir hesap ekleyin.</string>
 </resources>

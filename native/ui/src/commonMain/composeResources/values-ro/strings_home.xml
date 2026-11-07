@@ -67,4 +67,5 @@
     <string name="home_choose_pages">Alegeți pagini</string>
     <string name="home_unable_to_load_pages">Nu se pot încărca paginile de start</string>
     <string name="feed_strip_unavailable">Această timeline nu mai este disponibilă</string>
+    <string name="home_feed_accounts_empty">Adaugă un cont pentru a încărca Pentru tine.</string>
 </resources>

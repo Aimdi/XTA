@@ -70,4 +70,5 @@
     <string name="home_choose_pages">اختيار الصفحات</string>
     <string name="home_unable_to_load_pages">تعذر تحميل الصفحات الرئيسية الخاصة بك</string>
     <string name="feed_strip_unavailable">هذا الموجز لم يعد متاحًا</string>
+    <string name="home_feed_accounts_empty">أضف حساباً لتحميل «لك».</string>
 </resources>

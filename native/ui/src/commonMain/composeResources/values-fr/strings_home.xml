@@ -66,4 +66,5 @@
     <string name="home_choose_pages">Choisir les pages</string>
     <string name="home_unable_to_load_pages">Impossible de charger vos pages d'accueil</string>
     <string name="feed_strip_unavailable">Ce fil n’est plus disponible</string>
+    <string name="home_feed_accounts_empty">Ajoutez un compte pour charger Pour vous.</string>
 </resources>
