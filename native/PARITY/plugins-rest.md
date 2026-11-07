@@ -6,8 +6,8 @@ Flutter widget/timing assertion has no Compose widget harness, the rule or store
 unit-tested), different → fixed (native deliberately differs), n/a (Flutter-only).
 
 This batch is the 62 files the other ledgers did not cover. The booru batch (`test/booru_*`,
-273 tests; its perf harness is in `widgets.md`) and the EH batch (`test/eh*`, 89 tests) are
-below; stocks and the shared `test/plugin_*` files follow.
+273 tests; its perf harness is in `widgets.md`), the EH batch (`test/eh*`, 89 tests) and the
+stocks batch (`test/stocks_*`, 101 tests) are below; the shared `test/plugin_*` files follow.
 
 ## test/booru_danbooru_search_test.dart
 
@@ -454,3 +454,134 @@ covered | eh_search_test › the longest term the site knows wins, and only that
 covered | eh_search_test › searches are remembered; a changed filter runs the search again | EhSearchTest.searchesAreRememberedAndAChangedFilterRunsTheSearchAgainUnawaited |
 covered | eh_search_test › the last category cannot be switched off | EhSearchTest.theLastCategoryCannotBeSwitchedOff |
 covered | eh_search_test › a suggestion fills the field and history entries can be removed | EhSearchTest.aSearchForNothingRunsNothingAndAFinishedTermAsksForNoTags; EhApp.forgetSearch (PluginSearchHistoryTest) |
+
+## test/stocks_crypto_address_test.dart
+
+covered | stocks_crypto_address_test › an EVM address is recognised whatever its checksum casing | CryptoAssetTest.evmCasingCanonicalisesWhileOtherAddressesKeepTheirCase |
+covered | stocks_crypto_address_test › a Solana mint is recognised and keeps its case | CryptoAssetTest.aSolanaMintDifferingOnlyInCaseIsADifferentToken |
+covered | stocks_crypto_address_test › a cashtag prefix and explorer links are looked through | CryptoAssetTest.aSearchKeepsTheContractsCaseAndDropsOnlyTheCashtagSign |
+covered | stocks_crypto_address_test › things that only look close are not addresses | CryptoAssetTest.evmCasingCanonicalisesWhileOtherAddressesKeepTheirCase, aRealFigureIsFiniteAndAtLeastItsFloor | a malformed address invents no token |
+covered | stocks_crypto_address_test › rows show the network and a shortened address | QuoteRowsTest.aWatchlistRowIsATokenByItsSymbolAndNetworkOrATickerByItsName |
+covered | stocks_crypto_address_test › addresses compare case-insensitively only on EVM | CryptoAssetTest.evmCasingCanonicalisesWhileOtherAddressesKeepTheirCase |
+covered | stocks_crypto_address_test › one market per network, from either side of a pair | CryptoAssetTest.oneMarketPerNetworkFromEitherSideOfAPair |
+covered | stocks_crypto_address_test › pool figures are read with the price | CryptoAssetTest.poolFiguresAreReadWithThePrice |
+covered | stocks_crypto_address_test › a Solana mint differing only in case is a different token | CryptoAssetTest.aSolanaMintDifferingOnlyInCaseIsADifferentToken |
+covered | stocks_crypto_address_test › the client searches the address and prices quote-only networks | CryptoClientTest.aPastedContractIsSearchedAndItsQuoteOnlyNetworksArePricedThroughTheirPools |
+covered | stocks_crypto_address_test › pasting an address switches the add sheet to crypto at once | StocksSearchTest.aPastedAddressSwitchesToTokensAtOnceAndAsksForNoStock |
+covered | stocks_crypto_address_test › search the contract alone unless the cashtag is chosen | CryptoAssetTest.postsForATokenSearchTheContractAloneUnlessTheCashtagIsChosen |
+covered | stocks_crypto_address_test › a symbol X cannot write as a cashtag is never added | WatchlistTest.anythingElseIsNoTicker |
+covered | stocks_crypto_address_test › the cashtag choice survives encoding; old rows read as off | CryptoAssetTest.theCashtagChoiceSurvivesTheStoredFormAndOldRowsReadAsOff |
+covered | stocks_crypto_address_test › the watchlist feed follows each token's choice | WatchlistTest.theWatchlistFeedFollowsEachTokensCashtagChoice |
+
+## test/stocks_crypto_storage_test.dart
+
+covered | stocks_crypto_storage_test › legacy stocks and equal-symbol tokens survive reload and backup mapping | WatchlistRowsTest.theRowsAreXtasBackupRowsAndReadBack; WatchlistTest.storedRowsReadAsTokensByIdAndTickersAsStoredByLabelThenInTheReadersOrder |
+covered | stocks_crypto_storage_test › duplicate add preserves feed choice; removal preserves case-sensitive identity | WatchlistRowsTest.aTickerOrATokenIsWatchedOnceAsXtasTableKeepsIt, aTickerIsRemovedByItsSymbolAndATokenByItsIdAndItsCashtagChoiceIsKept |
+covered | stocks_crypto_storage_test › a token added by contract keeps its cashtag choice across reloads and backups | CryptoAssetTest.theCashtagChoiceSurvivesTheStoredFormAndOldRowsReadAsOff; WatchlistRowsTest.theRowsAreXtasBackupRowsAndReadBack |
+
+## test/stocks_crypto_test.dart
+
+covered | stocks_crypto_test › same symbol keeps separate network and contract identities | CryptoAssetTest.theSameSymbolKeepsSeparateNetworkAndContractIdentities |
+covered | stocks_crypto_test › only identical contracts merge, retaining the more liquid base pair | CryptoAssetTest.onlyIdenticalContractsMergeKeepingTheMoreLiquidPool |
+covered | stocks_crypto_test › EVM casing canonicalizes while non-EVM addresses preserve case | CryptoAssetTest.evmCasingCanonicalisesWhileOtherAddressesKeepTheirCase |
+covered | stocks_crypto_test › versioned metadata preserves network, contract, name and symbol | CryptoAssetTest.theStoredFormKeepsNetworkContractNameAndSymbol |
+covered | stocks_crypto_test › malformed payloads cannot invent tokens or infinite prices | CryptoAssetTest.malformedPayloadsCannotInventTokensOrInfinitePrices |
+covered | stocks_crypto_test › mixed feeds search contracts literally and keep legacy cashtags | WatchlistTest.mixedFeedsSearchContractsLiterallyAndKeepCashtags |
+covered | stocks_crypto_test › token quote rejects a pool where the selected token is quote currency | CryptoClientTest.aTokensQuoteRejectsAPoolWhereTheTokenIsTheQuoteCurrency |
+covered | stocks_crypto_test › contract search retains case and removes only the cashtag prefix | CryptoAssetTest.aSearchKeepsTheContractsCaseAndDropsOnlyTheCashtagSign |
+covered | stocks_crypto_test › a token is named by its symbol, else its name, else its address cut in the middle | CryptoAssetTest.aTokenIsNamedByItsSymbolElseItsNameElseItsAddressCutInTheMiddle |
+covered | stocks_crypto_test › tiny token prices remain nonzero and useful | CryptoAssetTest.aRealFigureIsFiniteAndAtLeastItsFloor; StockNumbersTest.underOneUnitFourSignificantDigitsAndFromThreeZerosOnTheZerosAreCounted |
+covered | stocks_crypto_test › clearing a search invalidates the request already in flight | StocksSearchTest.anEmptyQueryAsksNothing | the model cancels the search it replaces |
+
+## test/stocks_followed_first_test.dart
+
+covered | stocks_followed_first_test › reads the search's cashtags and quoted addresses | FollowedFirstTest.theTermsAreTheSearchsCashtagsAndQuotedAddresses |
+covered | stocks_followed_first_test › a cashtag by its entity, not its letters | FollowedFirstTest.aCashtagNamesTheTickerByItsEntityNotItsLetters |
+covered | stocks_followed_first_test › an EVM address in either case, any other exactly | FollowedFirstTest.anEvmAddressNamesItInEitherCaseAnyOtherExactly |
+covered | stocks_followed_first_test › a followed account must have written it: a repost is left out | FollowedFirstTest.aFollowedAccountMustHaveWrittenItARepostIsLeftOut |
+covered | stocks_followed_first_test › newest first, each post once, only followed posts naming the ticker | FollowedFirstTest.theTopPartIsNewestFirstEachPostOnceOnlyFollowedPostsNamingTheTicker |
+covered | stocks_followed_first_test › at most ten, from the last seven days | FollowedFirstTest.atMostTenFromTheLastSevenDays |
+covered | stocks_followed_first_test › a later chain repeating a post of the top part is left out | FollowedFirstTest.aLaterThreadRepeatingAPostOfTheTopPartIsLeftOut |
+covered | stocks_followed_first_test › narrow the ticker search to followed accounts, packed within 512 characters | FollowedFirstTest.theSearchesNarrowTheTickerSearchToFollowedAccountsPackedWithin512Characters |
+covered | stocks_followed_first_test › accounts seen posting the ticker go first | FollowedFirstTest.accountsSeenPostingTheTickerGoFirst |
+covered | stocks_followed_first_test › keeps a ticker's searches for five minutes, and a failed one adds nothing | FollowedFirstTest.aTickersSearchesAreKeptFiveMinutesAndAFailedOneAddsNothing |
+covered | stocks_followed_first_test › the device answers nothing when its cache cannot be read | FollowedFirstTest.theDeviceAnswersNothingWhenItsPostsCannotBeRead |
+covered | stocks_followed_first_test › the first page puts the followed posts on top, a later page leaves them out | FollowedFirstTest.theFirstPagePutsTheFollowedPostsOnTopALaterPageLeavesThemOut |
+covered | stocks_followed_first_test › without followed posts the page is as before, with no labels | FollowedFirstTest.withoutFollowedPostsThePageIsAsBeforeWithNoLabels |
+covered | stocks_followed_first_test › the first page does not wait past its time for X | FollowedFirstTest.theFirstPageDoesNotWaitPastItsTimeForX |
+covered | stocks_followed_first_test › sit above where each part starts, and read as headings | FollowedFirstTest.whenTheFirstPageHadNoOtherPostTheNextPagesFirstStartsTheSecondPart |
+
+## test/stocks_post_extras_test.dart
+
+untested → ported | stocks_post_extras_test › is cut in the middle, in the secondary colour, and copies whole on tap | Cashtags.kt cashtag chip | the middle cut is in the label; the colour and copy are Compose-only |
+covered | stocks_post_extras_test › a long word without a digit is only a word | CashtagsTest.cashtagsOnAPostAreUpperCasedAndUnique |
+covered | stocks_post_extras_test › a watched token's address leads with its network | QuoteRowsTest.aWatchlistRowIsATokenByItsSymbolAndNetworkOrATickerByItsName |
+covered | stocks_post_extras_test › reads as a plain link, without its move | QuoteRowsTest.aRowSaysWhatItIsAndAPickedListingGoesByTheQuotesNameAlone |
+untested → ported | stocks_post_extras_test › is drawn at the size of the words around it, at any text size | Cashtags.kt | inline text size is Compose-only |
+covered | stocks_post_extras_test › lists the first four cashtags in order, each with its price and move | CashtagsTest.theStripListsTheFirstFourCashtagsInOrderEachWithItsPriceAndMove |
+covered | stocks_post_extras_test › a grey bar while loading, No price without one, a closed market in grey | CashtagsTest.aGreyBarWhileLoadingNoPriceWithoutOneAndAClosedMarketMuted |
+untested → ported | stocks_post_extras_test › a tap opens the ticker page | WatchlistRowsTest.aRouteNamesATickerOrAToken | the tap is Compose-only |
+untested → ported | stocks_post_extras_test › fits 320 dp at 1.3x text, scrolling sideways | Cashtags.kt | layout is Compose-only |
+covered | stocks_post_extras_test › a post without cashtags has none | CashtagsTest.aRepostsStripIsTheOriginalsAndAPostWithoutCashtagsHasNone |
+covered | stocks_post_extras_test › sits over a signal post; Hide folds the post behind the line, a tap opens it | CashtagsTest.aTelegramInviteWithThreeOrMoreCashtagsIsASignalGroupPostEitherAloneIsNot | the fold is Compose-only |
+covered | stocks_post_extras_test › with Fold signal-group posts on, they arrive folded | CashtagsTest.aTelegramInviteWithThreeOrMoreCashtagsIsASignalGroupPostEitherAloneIsNot | the setting decides the fold in Cashtags.kt |
+covered | stocks_post_extras_test › any other post is left as it is | CashtagsTest.signalGroupPostsGoToTheEndOfTheirPageBothGroupsInTheirOrderNothingHidden |
+covered | stocks_post_extras_test › reads in $name | QuoteRowsTest.aRowSaysWhatItIsAndAPickedListingGoesByTheQuotesNameAlone |
+covered | stocks_post_extras_test › a Telegram invite with three or more cashtags is one; either alone is not | CashtagsTest.aTelegramInviteWithThreeOrMoreCashtagsIsASignalGroupPostEitherAloneIsNot |
+covered | stocks_post_extras_test › go to the end of their page, both groups in their order, nothing hidden | CashtagsTest.signalGroupPostsGoToTheEndOfTheirPageBothGroupsInTheirOrderNothingHidden |
+
+## test/stocks_render_test.dart
+
+untested → ported | stocks_render_test › stocks-$board-$variant | ui/stocks screens | golden render of each board and variant; Compose has no golden pipeline, the rows and figures it draws are unit-tested |
+
+## test/stocks_store_test.dart
+
+covered | stocks_store_test › accepts what a reader is likely to type | WatchlistTest.aTickerIsWhatAReaderIsLikelyToType |
+covered | stocks_store_test › rejects anything that is not a symbol | WatchlistTest.anythingElseIsNoTicker |
+
+## test/stocks_token_sources_test.dart
+
+covered | stocks_token_sources_test › is asked under its own name for the network | CryptoClientTest.geckoTerminalIsAskedUnderItsOwnNameForTheNetwork |
+covered | stocks_token_sources_test › prices the token from the first pool it is the base of, with that pool's figures | CryptoClientTest.geckoTerminalPricesTheTokenFromTheFirstPoolItIsTheBaseOfWithThatPoolsFigures |
+covered | stocks_token_sources_test › has no market when the token is no pool's base, or the pool has no price | CryptoClientTest.geckoTerminalHasNoMarketWhenTheTokenIsNoPoolsBaseOrThePoolHasNoPrice |
+covered | stocks_token_sources_test › asks DexScreener first, and GeckoTerminal not at all when it answers | CryptoClientTest.dexScreenerIsAskedFirstAndGeckoTerminalNotAtAllWhenItAnswers |
+covered | stocks_token_sources_test › asks GeckoTerminal when DexScreener refuses, and leaves DexScreener resting | CryptoClientTest.geckoTerminalAnswersWhenDexScreenerRefusesWhichLeavesDexScreenerResting |
+covered | stocks_token_sources_test › asks GeckoTerminal when DexScreener has no market for the token, without resting it | CryptoClientTest.geckoTerminalAnswersWhenDexScreenerHasNoMarketWithoutRestingIt |
+covered | stocks_token_sources_test › no market anywhere is no market; no answer anywhere is a failure | CryptoClientTest.noMarketAnywhereIsNoMarketAndNoAnswerAnywhereIsAFailure |
+
+## test/stocks_watchlist_query_test.dart
+
+covered | stocks_watchlist_query_test › one symbol is a bare cashtag | WatchlistTest.oneSymbolIsABareCashtagAndSeveralAnOrGroup |
+covered | stocks_watchlist_query_test › several symbols become an OR group | WatchlistTest.oneSymbolIsABareCashtagAndSeveralAnOrGroup |
+covered | stocks_watchlist_query_test › an empty watchlist is no query | WatchlistTest.oneSymbolIsABareCashtagAndSeveralAnOrGroup | an empty list builds no query |
+covered | stocks_watchlist_query_test › the feed caps how many symbols share one search | WatchlistTest.theFeedCapsHowManySymbolsShareOneSearch |
+
+## test/stocks_widgets_test.dart
+
+untested → ported | stocks_widgets_test › the Stocks home leads with the watchlist under its title and count | ui/stocks StocksHome.kt | layout is Compose-only |
+untested → ported | stocks_widgets_test › is the title, + and the settings over the four tabs as text | StocksHome.kt | layout is Compose-only |
+untested → ported | stocks_widgets_test › becomes the labelled section picker when the tabs do not fit | StocksHome.kt | layout is Compose-only |
+untested → ported | stocks_widgets_test › in Home: the title opens the sources, the sliders Home's sheet for Stocks | ui/plugins PluginChrome | the host's chrome is shared; the sheet is Compose-only |
+untested → ported | stocks_widgets_test › fits 320dp at ${scale}x text in ${entry.key} | ui/stocks rows | layout is Compose-only |
+untested → ported | stocks_widgets_test › German fits 320dp at 1.3x text in ${entry.key} | ui/stocks rows | layout is Compose-only |
+untested → ported | stocks_widgets_test › a long press lifts a row to move it, and copies nothing | WatchlistRowsTest.theStarAsksByUpperCaseAndADraggedRowMoves | the drag is Compose-only |
+covered | stocks_widgets_test › keeps the order it was dragged into, and files anything new after it | WatchlistTest.theOrderTheReaderDraggedIsKeptAndAnythingNewFiledAfterIt |
+covered | stocks_widgets_test › a row dropped elsewhere is still there after a reload | WatchlistRowsTest.theRowsAreXtasBackupRowsAndReadBack |
+covered | stocks_widgets_test › nothing yet is loading; a failed lookup, or a quote without a price, is no data | QuoteRowsTest.nothingYetIsLoadingAFailedLookupOrAQuoteWithoutAPriceIsNoData |
+covered | stocks_widgets_test › outside every session the market is closed; a coin never is | QuoteRowsTest.outsideEverySessionTheMarketIsClosedACoinNeverIs |
+untested → ported | stocks_widgets_test › loading: grey bars where the figures go, the row already named | QuoteRowsTest.aRowSaysWhatItIsAndAPickedListingGoesByTheQuotesNameAlone | the bars are Compose-only |
+untested → ported | stocks_widgets_test › market closed: the close and its day, price and move in the secondary colour | QuoteRowsTest.aClosedMarketShowsTheWeekdayOfItsCloseOrItsDateOnceAWeekOld | the colour is Compose-only |
+untested → ported | stocks_widgets_test › no data: the reason, no figures, and a retry button | QuoteRowsTest.nothingYetIsLoadingAFailedLookupOrAQuoteWithoutAPriceIsNoData | the button is Compose-only |
+covered | stocks_widgets_test › a live move is coloured and says what it is measured over | StockNumbersTest.aGainIsUpALossDownAndUnknownOrFlatIsNeutral |
+untested → ported | stocks_widgets_test › two readings: the amber line and both choices, the one shown in the accent | QuoteRowsTest.aCoinFirstCashtagWithAListingOffersBothReadingsTheCoinFirst | the accent and amber are Compose-only |
+covered | stocks_widgets_test › a coin-first cashtag on the watchlist finds its listing, once | QuoteCachesTest.aCoinFirstCashtagOnTheWatchlistFindsItsListingOnce |
+covered | stocks_widgets_test › the pick is kept, and decides what the symbol is asked for as | QuoteCachesTest.thePickIsKeptAndDecidesWhatTheSymbolIsAskedForAs |
+untested → ported | stocks_widgets_test › Markets: Indices and Crypto, each saying its state, and the row without data retries | QuoteRowsTest.aSectionSaysWhetherItsMarketsTrade | the row and retry are Compose-only |
+untested → ported | stocks_widgets_test › the strip is flat: symbol over figures, No price, a bar while loading, the filter in the accent | CashtagsTest.aGreyBarWhileLoadingNoPriceWithoutOneAndAClosedMarketMuted | the layout and accent are Compose-only |
+untested → ported | stocks_widgets_test › shows price, session and key stats at 320dp and 2x text in ${entry.key} | ui/stocks ticker page | layout is Compose-only |
+untested → ported | stocks_widgets_test › a new range loads under the line over the chart before, so nothing below it moves | TickerClientTest.aTickerPageShowsTheRangeAndKeepsTodaysQuoteForItsFigures | the chart placement is Compose-only |
+untested → ported | stocks_widgets_test › a silent refresh never overtakes a new range the reader is waiting on | QuoteCachesTest.theReadingsKeptOnTheDeviceArriveLateAndASymbolWhoseReadingChangedIsAskedAgain | the chart's model rule is unit-tested |
+untested → ported | stocks_widgets_test › a range that fails to load says so rather than keeping the chart before | TickerClientTest.aRefusalIsUnavailableAndA200ThatIsNotJsonIsABadResponse | the message is Compose-only |
+untested → ported | stocks_widgets_test › a failed price load offers a retry instead of a blank | QuoteRowsTest.nothingYetIsLoadingAFailedLookupOrAQuoteWithoutAPriceIsNoData | the button is Compose-only |
+untested → ported | stocks_widgets_test › header fits 320dp at 2x text in ${entry.key} | ui/stocks ticker page | layout is Compose-only |
+covered | stocks_widgets_test › a pasted address lists the token by network and short address | QuoteRowsTest.aWatchlistRowIsATokenByItsSymbolAndNetworkOrATickerByItsName; StocksSearchTest.aPastedAddressSwitchesToTokensAtOnceAndAsksForNoStock |

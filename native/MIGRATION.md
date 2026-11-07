@@ -40,10 +40,11 @@ layer is written in `networks/<id>` first, then moves with its screens into
 
 ### Plugin parity still to do
 
-The ledgers under `PARITY/` map 246 of XTA's 650 test files. The booru and
-EH halves of the outstanding 62-file batch (`test/booru_*`, 273 tests;
-`test/eh*`, 89) are now led in `PARITY/plugins-rest.md`; its stocks and
-shared `test/plugin_*` files still are not. Measured shortfalls, native kt
+The ledgers under `PARITY/` map 246 of XTA's 650 test files. The booru, EH and
+stocks halves of the outstanding 62-file batch (`test/booru_*`, 273 tests;
+`test/eh*`, 89; `test/stocks_*`, 101) are now led in
+`PARITY/plugins-rest.md`; its shared `test/plugin_*` files still are not.
+Measured shortfalls, native kt
 lines against Flutter dart lines, are pixiv 0.82 (34 Flutter source files
 with no native counterpart token: `detail_*`, `accounts`, `avatar`,
 `confirm`, `copy_info`, `haptics`, `in_flight`, `lru_cache`, `paged_feed`,
