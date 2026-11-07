@@ -59,7 +59,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -95,9 +98,6 @@ import org.jetbrains.compose.resources.stringResource
 
 /** XTA's antennas list and editor are no wider than this on a wide screen. */
 private val ContentWidth = 720.dp
-
-/** The editor's scope switch is side by side from this width, at normal text sizes. */
-private val SegmentedFrom = 480.dp
 
 /**
  * XTA's antennas: saved keyword listeners, newest first, each opening its
@@ -205,7 +205,11 @@ private fun EmptyAntennas(onNew: () -> Unit) {
         verticalArrangement = Arrangement.Center,
     ) {
         Icon(DiscoverIcons.Radar, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(48.dp))
-        Text(stringResource(Res.string.discover_antenna_empty), textAlign = TextAlign.Center, modifier = Modifier.padding(vertical = 16.dp))
+        Text(
+            stringResource(Res.string.discover_antenna_empty),
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(vertical = 16.dp).semantics { liveRegion = LiveRegionMode.Polite },
+        )
         Button(onClick = onNew, modifier = Modifier.heightIn(min = 48.dp)) {
             Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
             Text(stringResource(Res.string.discover_antenna_new), modifier = Modifier.padding(start = 8.dp))
@@ -283,7 +287,7 @@ private fun EditorField(
 private fun ScopeChoice(scope: AntennaScope, onChange: (AntennaScope) -> Unit) {
     val scopes = listOf(AntennaScope.SEARCH, AntennaScope.FOLLOWING)
     BoxWithConstraints(Modifier.fillMaxWidth().padding(top = 4.dp)) {
-        if (maxWidth >= SegmentedFrom && LocalDensity.current.fontScale < 1.3f) {
+        if (AntennaDraft.scopesSideBySide(maxWidth.value, LocalDensity.current.fontScale)) {
             SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
                 scopes.forEachIndexed { index, choice ->
                     SegmentedButton(

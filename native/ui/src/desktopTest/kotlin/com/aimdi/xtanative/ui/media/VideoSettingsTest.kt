@@ -123,6 +123,17 @@ class VideoSettingsTest {
     }
 
     @Test
+    fun aPlainVideoWaitsForATapAndAnUnseenGifHoldsNoPlayer() {
+        assertFalse(VideoRules.startsByItself(autoplay = false, seen = true, playing = true, shared = true), "without Autoplay the play button waits")
+        assertTrue(VideoRules.startsByItself(autoplay = true, seen = true, playing = true, shared = true))
+        assertFalse(VideoRules.startsByItself(autoplay = true, seen = false, playing = true, shared = true), "an off-screen autoplay video allocates nothing")
+        assertFalse(VideoRules.startsByItself(autoplay = true, seen = true, playing = false, shared = true), "not the row the feed plays")
+        assertTrue(VideoRules.startsByItself(autoplay = true, seen = true, playing = false, shared = false))
+        assertFalse(VideoRules.gifLoops(seen = false, playing = true, shared = true), "an off-screen GIF allocates nothing")
+        assertTrue(VideoRules.gifLoops(seen = true, playing = true, shared = true), "the same GIF once it is on screen")
+    }
+
+    @Test
     fun onlyAVideoThatIsHeardPlaysOnWhenTheAppIsLeft() {
         assertFalse(VideoRules.pausesWhenLeft(backgroundPlay = true, heard = true))
         assertTrue(VideoRules.pausesWhenLeft(backgroundPlay = true, heard = false))

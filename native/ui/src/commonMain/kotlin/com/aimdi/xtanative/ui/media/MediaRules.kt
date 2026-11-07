@@ -77,6 +77,17 @@ object VideoRules {
     fun mostlySeen(visibleHeight: Float, height: Int): Boolean = height > 0 && visibleHeight >= height / 2f
 
     /**
+     * Whether a video starts without a tap (XTA's showsPlayButton): only with
+     * Autoplay videos on, once it is seen, and in a feed only while its row is
+     * the one the feed plays ([playing]); a player of its own ([shared] false)
+     * needs no such turn. Otherwise its play button waits.
+     */
+    fun startsByItself(autoplay: Boolean, seen: Boolean, playing: Boolean, shared: Boolean): Boolean = autoplay && seen && (playing || !shared)
+
+    /** Whether a GIF loops (XTA's shouldCreatePlayer): only while it is seen, whatever Autoplay says; off screen it holds no player. */
+    fun gifLoops(seen: Boolean, playing: Boolean, shared: Boolean): Boolean = seen && (playing || !shared)
+
+    /**
      * Whether a video stops when the app is left: unless Background play
      * lets it go on, and only one that is [heard] has anything to go on with.
      */

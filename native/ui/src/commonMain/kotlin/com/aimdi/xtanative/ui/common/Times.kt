@@ -12,7 +12,6 @@ import com.aimdi.xtanative.ui.generated.resources.problem_saved_at
 import com.aimdi.xtanative.ui.generated.resources.problem_saved_earlier
 import java.text.DecimalFormatSymbols
 import java.time.Instant
-import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -84,7 +83,10 @@ fun savedAtText(savedAt: Instant?): String {
     val locale = currentLocale()
     val zone = ZoneId.systemDefault()
     val time = timeOfDayText(savedAt, locale)
-    val today = savedAt.atZone(zone).toLocalDate() == LocalDate.now(zone)
+    val today = sameCalendarDay(savedAt, Instant.now(), zone)
     val shown = if (today) time else DateTimeFormatter.ofPattern(datePattern(locale, "yMMMd"), locale).format(savedAt.atZone(zone)) + " " + time
     return stringResource(Res.string.problem_saved_at, shown)
 }
+
+/** Whether [a] and [b] fall on the same day in [zone]: the calendar day, not 24 hours apart (XTA's sameCalendarDay). */
+fun sameCalendarDay(a: Instant, b: Instant, zone: ZoneId): Boolean = a.atZone(zone).toLocalDate() == b.atZone(zone).toLocalDate()

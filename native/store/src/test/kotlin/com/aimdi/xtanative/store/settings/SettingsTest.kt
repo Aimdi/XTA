@@ -82,6 +82,14 @@ class SettingsTest {
     }
 
     @Test
+    fun theMediaQualityReadsEachStoredWordAndTheDefaultForAnyOther() {
+        fun quality(raw: String) = Settings(mapOf("media.size" to PrefValue.Text(raw)))[MediaPrefs.imageQuality]
+        MediaQuality.entries.forEach { assertEquals(it, quality(it.stored)) }
+        listOf("meduim", "", "disabled").forEach { assertEquals(MediaQuality.MEDIUM, quality(it), it) }
+        assertEquals(listOf("thumb", "small", "medium", "large"), MediaQuality.entries.map { it.stored })
+    }
+
+    @Test
     fun aJsonListIsWrittenAsTheJsonXtaWrites() {
         val settings = Settings().with(AccountPrefs.disabledAccountIds, listOf("a", "b"))
         assertEquals(PrefValue.Text("""["a","b"]"""), settings.values["home.feed_disabled_account_ids"])

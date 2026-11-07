@@ -143,6 +143,12 @@ class XClientParityTest {
     private val url = "https://x.com/i/api/graphql/q/Op".toHttpUrl()
 
     @Test
+    fun everyReaderSharesOneClientSoConnectionsArePooled() {
+        assertTrue(OkHttpXHttp.defaultClient === OkHttpXHttp.defaultClient)
+        assertTrue(OkHttpXHttp.defaultClient.connectionPool === OkHttpXHttp.defaultClient.newBuilder().build().connectionPool)
+    }
+
+    @Test
     fun aFailedRequestIsTriedOnceMoreButNotOneThatTimedOut() = runBlocking {
         val blip = Counting { if (it == 1) throw IOException("reset") else response(200) }
         assertEquals(200, blip.http.get(url, emptyMap(), true).code)
@@ -195,6 +201,9 @@ class XClientParityTest {
         client(x, accounts = emptyList(), guest = XGuest(x)).profile("quax_tests")
         assertEquals(setOf("authorization", "x-guest-token", "x-twitter-active-user", "user-agent"), x.sent.single().keys)
         assertEquals(XGuest.BEARER, x.sent.single()["authorization"])
+        assertTrue(XGuest.BEARER.startsWith("Bearer "))
+        val agent = x.sent.single().getValue("user-agent")
+        assertTrue(agent.startsWith("Mozilla/") && "Pragma" !in agent, "the user agent is the header's value, not a printed map")
         assertEquals(0, derived, "no signer is derived for a guest")
     }
 
@@ -244,6 +253,7 @@ class XClientParityTest {
         assertEquals("A cat", media.alt)
         val both = XParser.mediaItem(J.parse("""{"media_url_https":"u","ext_alt_text":"Alt","additional_media_info":{"description":"A cat"}}"""))!!
         assertEquals("Alt", both.alt)
+        assertNull(XParser.mediaItem(J.parse("""{"media_url_https":"u","type":"photo"}"""))!!.alt, "a picture without a description has none")
     }
 
     @Test
