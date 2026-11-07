@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.store.backup.TikTokSubscriptionRow
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.FeedSkeleton
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.swipeTabs
@@ -120,7 +121,7 @@ private fun FollowingTab(app: TikTokApp, follows: List<TikTokSubscriptionRow>?, 
     val state by app.feed.state.collectAsState()
     val error = state.problem
     when {
-        state.items.isEmpty() && (state.loading || !state.loaded || follows == null) -> LoadingRow()
+        state.items.isEmpty() && (state.loading || !state.loaded || follows == null) -> FeedSkeleton(Modifier.padding(padding))
         state.items.isEmpty() && error != null -> RetryMessage(pluginString(TikTokText.error(error)), { app.feed.refresh(force = true) }, Modifier.padding(padding))
         state.items.isEmpty() -> NothingFollowed(app, hasAccounts = !follows.isNullOrEmpty(), padding)
         else -> {

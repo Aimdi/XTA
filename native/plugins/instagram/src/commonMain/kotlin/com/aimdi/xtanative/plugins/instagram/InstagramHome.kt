@@ -59,6 +59,7 @@ import com.aimdi.xtanative.networks.instagram.InstagramAuthor
 import com.aimdi.xtanative.networks.instagram.InstagramDiscovery
 import com.aimdi.xtanative.networks.instagram.InstagramPost
 import com.aimdi.xtanative.ui.common.Avatar
+import com.aimdi.xtanative.ui.common.FeedSkeleton
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.EmptyPane
@@ -153,7 +154,7 @@ private fun ForYou(app: InstagramApp, pages: PagedItems<InstagramPost>, frame: P
             val problem = paged.problem
             when {
                 paged.items.isEmpty() && problem != null -> item(key = "problem") { RetryMessage(pluginString(InstagramFailures.of(problem)), onRetry = pages::refresh) }
-                paged.items.isEmpty() && !paged.loaded -> item(key = "loading") { LoadingRow() }
+                paged.items.isEmpty() && !paged.loaded -> item(key = "loading") { FeedSkeleton() }
                 paged.items.isEmpty() -> item(key = "empty") { EmptyForYou(pages::refresh, onSearch) }
             }
             if (people.isNotEmpty()) item(key = "people") { PeopleStrip(app, people) }
@@ -235,7 +236,7 @@ private fun Following(app: InstagramApp, frame: PluginFrame, onSearch: () -> Uni
             when {
                 state.items.isNotEmpty() -> items(state.items.distinctBy { it.id }, key = { "post:" + it.id }, contentType = { "post" }) { InstagramPostCard(app, it) }
                 problem != null -> item(key = "problem") { RetryMessage(pluginString(InstagramFailures.of(problem)), onRetry = { app.following.refresh(force = true) }) }
-                !state.loaded -> item(key = "loading") { LoadingRow() }
+                !state.loaded -> item(key = "loading") { FeedSkeleton() }
                 else -> item(key = "empty") { EmptyFollowing(!rows.isNullOrEmpty(), onRetry = { app.following.refresh(force = true) }, onSearch = onSearch) }
             }
         }
