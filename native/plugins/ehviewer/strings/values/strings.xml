@@ -27,6 +27,7 @@
     <string name="empty_comments">No comments</string>
     <string name="error_network">Could not reach E-Hentai</string>
     <string name="error_unauthorized">Access refused — check cookies / ExHentai toggle</string>
+    <string name="error_not_configured">EH is not ready — check settings</string>
     <string name="error_rate_limited">The site is rate limiting — try again later</string>
     <string name="error_not_found">That gallery was not found</string>
     <string name="error_response">The site returned something unexpected</string>

@@ -26,6 +26,7 @@
     <string name="empty_comments">暂无评论</string>
     <string name="error_network">无法连接 E-Hentai</string>
     <string name="error_unauthorized">访问被拒绝 — 请检查 Cookies / ExHentai</string>
+    <string name="error_not_configured">EH 尚未就绪 — 请检查设置</string>
     <string name="error_rate_limited">站点正在限流，请稍后再试</string>
     <string name="error_not_found">找不到该图库</string>
     <string name="error_response">站点返回了意外响应</string>

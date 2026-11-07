@@ -32,6 +32,7 @@
     <string name="download_all_body">Wczytane dotąd posty: %1$d. Pliki, które już są w pobranych, zostaną pominięte.</string>
     <string name="download_all_result">W kolejce: %1$d. Już pobrane: %2$d.</string>
     <string name="edit_as_text">Edytuj jako tekst</string>
+    <string name="edit_tag">Dotknij, aby edytować</string>
     <string name="either_tag">Lub</string>
     <string name="empty_following">Obserwuj tagi z wyszukiwania lub wpisu, aby wypełnić tę kartę</string>
     <string name="empty_following_posts">Brak nowych wpisów z obserwowanymi tagami</string>
@@ -47,6 +48,7 @@
     <string name="error_forbidden">Serwis odmówił dostępu — może być wymagane logowanie lub weryfikacja w przeglądarce</string>
     <string name="error_needs_key">Ten serwis wymaga loginu i klucza API — dodaj je w ustawieniach</string>
     <string name="error_network">Nie udało się połączyć z serwisem booru</string>
+    <string name="error_not_configured">Choose a booru host in settings first</string>
     <string name="error_not_found">Nie znaleziono tej strony w serwisie</string>
     <string name="error_rate_limited">Serwis ogranicza liczbę zapytań — spróbuj później</string>
     <string name="error_response">Serwis zwrócił nieoczekiwaną odpowiedź</string>

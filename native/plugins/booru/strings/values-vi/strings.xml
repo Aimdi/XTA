@@ -32,6 +32,7 @@
     <string name="download_all_body">Số bài đăng đã tải: %1$d. Các tệp đã có trong mục tải xuống sẽ được bỏ qua.</string>
     <string name="download_all_result">Đã xếp hàng: %1$d. Đã tải trước đó: %2$d.</string>
     <string name="edit_as_text">Sửa dạng văn bản</string>
+    <string name="edit_tag">Chạm để sửa</string>
     <string name="either_tag">Hoặc</string>
     <string name="empty_following">Theo dõi thẻ từ tìm kiếm hoặc một bài đăng để lấp đầy tab này</string>
     <string name="empty_following_posts">Không có bài đăng mới cho các thẻ bạn theo dõi</string>
@@ -47,6 +48,7 @@
     <string name="error_forbidden">Trang đã từ chối truy cập — có thể cần đăng nhập hoặc xác minh trên trình duyệt</string>
     <string name="error_needs_key">Trang này cần tên đăng nhập và khóa API — hãy thêm chúng trong phần cài đặt</string>
     <string name="error_network">Không thể kết nối tới trang booru</string>
+    <string name="error_not_configured">Choose a booru host in settings first</string>
     <string name="error_not_found">Không tìm thấy trang đó trên trang web</string>
     <string name="error_rate_limited">Trang đang giới hạn số yêu cầu — hãy thử lại sau</string>
     <string name="error_response">Trang trả về dữ liệu không mong đợi</string>

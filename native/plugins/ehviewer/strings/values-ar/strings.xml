@@ -26,6 +26,7 @@
     <string name="empty_comments">لا تعليقات</string>
     <string name="error_network">تعذّر الوصول إلى E-Hentai</string>
     <string name="error_unauthorized">رُفض الوصول — تحقّق من ملفات تعريف الارتباط ومفتاح ExHentai</string>
+    <string name="error_not_configured">EH is not ready — check settings</string>
     <string name="error_rate_limited">يحدّ الموقع من عدد الطلبات — أعد المحاولة لاحقًا</string>
     <string name="error_not_found">لم يُعثر على هذا المعرض</string>
     <string name="error_response">أعاد الموقع ردًّا غير متوقّع</string>

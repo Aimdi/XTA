@@ -26,6 +26,7 @@
     <string name="empty_comments">कोई टिप्पणी नहीं</string>
     <string name="error_network">E-Hentai तक नहीं पहुँच सके</string>
     <string name="error_unauthorized">पहुँच अस्वीकार — कुकीज़ और ExHentai स्विच जाँचें</string>
+    <string name="error_not_configured">EH is not ready — check settings</string>
     <string name="error_rate_limited">साइट अनुरोध सीमित कर रही है — बाद में फिर कोशिश करें</string>
     <string name="error_not_found">वह गैलरी नहीं मिली</string>
     <string name="error_response">साइट ने कुछ अनपेक्षित लौटाया</string>

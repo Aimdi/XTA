@@ -4,6 +4,13 @@ import com.aimdi.xtanative.networks.NetworkRequestException
 
 /** Why a read failed, as XTA tells the reader: one message for each. */
 enum class EhErrorKind {
+    /**
+     * No site chosen: XTA's table keeps the kind for a plugin asked for before
+     * it is set up, though its client never throws it either. Native keeps the
+     * same table, and so the sentence.
+     */
+    NOT_CONFIGURED,
+
     /** No answer: no connection, or it broke off. */
     NETWORK,
 

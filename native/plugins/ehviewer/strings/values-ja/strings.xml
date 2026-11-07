@@ -26,6 +26,7 @@
     <string name="empty_comments">コメントはありません</string>
     <string name="error_network">E-Hentaiに接続できません</string>
     <string name="error_unauthorized">アクセス拒否 — Cookie / ExHentai設定を確認</string>
+    <string name="error_not_configured">EHの準備ができていません。設定を確認してください</string>
     <string name="error_rate_limited">サイトがレート制限中です。しばらくしてから再試行してください</string>
     <string name="error_not_found">ギャラリーが見つかりません</string>
     <string name="error_response">サイトから予期しない応答がありました</string>

@@ -12,6 +12,7 @@ import java.util.Locale
 internal object EhText {
     /** Why a read failed, as XTA says it: anything that is not the site's own answer reads as no connection. */
     fun error(error: Throwable?): PluginText = when (error?.let(EhErrorKind::of) ?: EhErrorKind.NETWORK) {
+        EhErrorKind.NOT_CONFIGURED -> Strings.error_not_configured
         EhErrorKind.NETWORK -> Strings.error_network
         EhErrorKind.UNAUTHORIZED -> Strings.error_unauthorized
         EhErrorKind.RATE_LIMITED -> Strings.error_rate_limited

@@ -32,6 +32,7 @@
     <string name="download_all_body">已加载的帖子：%1$d。下载记录中已有的文件会被跳过。</string>
     <string name="download_all_result">已加入队列：%1$d。已下载过：%2$d。</string>
     <string name="edit_as_text">以文本编辑</string>
+    <string name="edit_tag">点按以编辑</string>
     <string name="either_tag">或</string>
     <string name="empty_following">从搜索或帖子关注标签以填充此页</string>
     <string name="empty_following_posts">关注的标签暂无近期帖子</string>
@@ -47,6 +48,7 @@
     <string name="error_forbidden">站点拒绝访问，可能需要登录或在浏览器中验证</string>
     <string name="error_needs_key">该站点需要登录名和 API 密钥，请在设置中添加</string>
     <string name="error_network">无法连接 Booru 站点</string>
+    <string name="error_not_configured">请先在设置中选择 Booru 站点</string>
     <string name="error_not_found">站点上找不到该页面</string>
     <string name="error_rate_limited">站点正在限流，请稍后再试</string>
     <string name="error_response">站点返回了意外响应</string>

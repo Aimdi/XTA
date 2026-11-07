@@ -32,6 +32,7 @@
     <string name="download_all_body">読み込み済みの投稿: %1$d 件。ダウンロード済みのファイルはスキップされます。</string>
     <string name="download_all_result">キューに追加: %1$d 件。ダウンロード済み: %2$d 件。</string>
     <string name="edit_as_text">テキストとして編集</string>
+    <string name="edit_tag">タップして編集</string>
     <string name="either_tag">または</string>
     <string name="empty_following">検索や投稿からタグをフォローすると、ここに表示されます</string>
     <string name="empty_following_posts">フォロー中のタグの最近の投稿がありません</string>
@@ -47,6 +48,7 @@
     <string name="error_forbidden">アクセスが拒否されました。ログインまたはブラウザでの確認が必要かもしれません</string>
     <string name="error_needs_key">このサイトにはログインと API キーが必要です。設定で追加してください</string>
     <string name="error_network">Booruホストに接続できません</string>
+    <string name="error_not_configured">先に設定でBooruホストを選んでください</string>
     <string name="error_not_found">ホスト上にそのページがありません</string>
     <string name="error_rate_limited">ホストがレート制限中です。しばらくしてから再試行してください</string>
     <string name="error_response">ホストから予期しない応答がありました</string>

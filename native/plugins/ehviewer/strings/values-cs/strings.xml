@@ -26,6 +26,7 @@
     <string name="empty_comments">Žádné komentáře</string>
     <string name="error_network">E-Hentai se nepodařilo zastihnout</string>
     <string name="error_unauthorized">Přístup odepřen — zkontrolujte cookies a přepínač ExHentai</string>
+    <string name="error_not_configured">EH is not ready — check settings</string>
     <string name="error_rate_limited">Stránka omezuje počet požadavků — zkuste to později</string>
     <string name="error_not_found">Tato galerie nebyla nalezena</string>
     <string name="error_response">Stránka vrátila něco neočekávaného</string>

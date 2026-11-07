@@ -43,6 +43,7 @@ internal fun errorMessage(error: Throwable?, language: String): String =
         BooruErrorKind.TOO_DEEP -> Strings.end_of_results
         BooruErrorKind.TAG_LIMIT -> Strings.error_tag_limit
         BooruErrorKind.TIMED_OUT -> Strings.error_timed_out
+        BooruErrorKind.NOT_CONFIGURED -> Strings.error_not_configured
         BooruErrorKind.NOT_FOUND -> Strings.error_not_found
         BooruErrorKind.BAD_RESPONSE -> Strings.error_response
     }.get(language)

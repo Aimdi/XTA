@@ -35,6 +35,7 @@
     <string name="download_all_body">Posts loaded so far: %1$d. Files already in your downloads are skipped.</string>
     <string name="download_all_result">Queued: %1$d. Already downloaded: %2$d.</string>
     <string name="edit_as_text">Edit as text</string>
+    <string name="edit_tag">Tap to edit</string>
     <string name="either_tag">Or</string>
     <string name="empty_following">Follow tags from search or a post to fill this tab</string>
     <string name="empty_following_posts">No recent posts for your followed tags</string>
@@ -50,6 +51,7 @@
     <string name="error_forbidden">The host refused access — it may need a login or a browser check</string>
     <string name="error_needs_key">This host needs a login and API key — add them in settings</string>
     <string name="error_network">Could not reach the booru host</string>
+    <string name="error_not_configured">Choose a booru host in settings first</string>
     <string name="error_not_found">That page was not found on the host</string>
     <string name="error_rate_limited">The host is rate limiting — try again later</string>
     <string name="error_response">The host returned something unexpected</string>

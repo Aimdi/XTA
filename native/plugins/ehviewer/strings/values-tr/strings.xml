@@ -26,6 +26,7 @@
     <string name="empty_comments">Yorum yok</string>
     <string name="error_network">E-Hentai\'ye ulaşılamadı</string>
     <string name="error_unauthorized">Erişim reddedildi — çerezleri ve ExHentai anahtarını kontrol edin</string>
+    <string name="error_not_configured">EH is not ready — check settings</string>
     <string name="error_rate_limited">Site istekleri sınırlıyor — daha sonra yeniden deneyin</string>
     <string name="error_not_found">Bu galeri bulunamadı</string>
     <string name="error_response">Site beklenmedik bir yanıt verdi</string>

@@ -32,6 +32,7 @@
     <string name="download_all_body">지금까지 불러온 게시물: %1$d개. 이미 다운로드한 파일은 건너뜁니다.</string>
     <string name="download_all_result">대기열에 추가: %1$d개. 이미 다운로드됨: %2$d개.</string>
     <string name="edit_as_text">텍스트로 편집</string>
+    <string name="edit_tag">탭하여 편집</string>
     <string name="either_tag">또는</string>
     <string name="empty_following">검색이나 게시물에서 태그를 팔로우하면 이 탭이 채워집니다</string>
     <string name="empty_following_posts">팔로우한 태그의 최근 게시물이 없습니다</string>
@@ -47,6 +48,7 @@
     <string name="error_forbidden">사이트에서 접근을 거부했습니다. 로그인이나 브라우저 확인이 필요할 수 있습니다</string>
     <string name="error_needs_key">이 사이트는 로그인과 API 키가 필요합니다. 설정에서 추가하세요</string>
     <string name="error_network">부루 사이트에 연결할 수 없습니다</string>
+    <string name="error_not_configured">Choose a booru host in settings first</string>
     <string name="error_not_found">사이트에서 해당 페이지를 찾을 수 없습니다</string>
     <string name="error_rate_limited">사이트에서 요청을 제한하고 있습니다. 나중에 다시 시도하세요</string>
     <string name="error_response">사이트가 예상치 못한 응답을 보냈습니다</string>

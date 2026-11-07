@@ -26,6 +26,7 @@
     <string name="empty_comments">Niama kamentaryjaŭ</string>
     <string name="error_network">Nie ŭdałosia zviazacca z E-Hentai</string>
     <string name="error_unauthorized">Dostup zabaronieny — praviercie cookie i pieraklučalnik ExHentai</string>
+    <string name="error_not_configured">EH is not ready — check settings</string>
     <string name="error_rate_limited">Sajt abmiažoŭvaje kolkasć zapytaŭ — pasprabujcie paźniej</string>
     <string name="error_not_found">Hetuju halereju nie znojdziena</string>
     <string name="error_response">Sajt viarnuŭ nešta niečakanaje</string>

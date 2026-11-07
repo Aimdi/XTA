@@ -32,6 +32,7 @@
     <string name="download_all_body">Postingan yang dimuat sejauh ini: %1$d. File yang sudah ada di unduhan dilewati.</string>
     <string name="download_all_result">Dalam antrean: %1$d. Sudah diunduh: %2$d.</string>
     <string name="edit_as_text">Edit sebagai teks</string>
+    <string name="edit_tag">Ketuk untuk mengedit</string>
     <string name="either_tag">Atau</string>
     <string name="empty_following">Ikuti tag dari pencarian atau postingan untuk mengisi tab ini</string>
     <string name="empty_following_posts">Belum ada postingan baru untuk tag yang Anda ikuti</string>
@@ -47,6 +48,7 @@
     <string name="error_forbidden">Situs menolak akses — mungkin perlu login atau verifikasi di browser</string>
     <string name="error_needs_key">Situs ini memerlukan login dan kunci API — tambahkan di pengaturan</string>
     <string name="error_network">Tidak dapat menjangkau situs booru</string>
+    <string name="error_not_configured">Choose a booru host in settings first</string>
     <string name="error_not_found">Halaman itu tidak ditemukan di situs</string>
     <string name="error_rate_limited">Situs membatasi permintaan — coba lagi nanti</string>
     <string name="error_response">Situs mengembalikan sesuatu yang tidak terduga</string>

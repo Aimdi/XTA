@@ -26,6 +26,7 @@
     <string name="empty_comments">Niciun comentariu</string>
     <string name="error_network">E-Hentai nu a putut fi accesat</string>
     <string name="error_unauthorized">Acces refuzat — verifică cookie-urile și comutatorul ExHentai</string>
+    <string name="error_not_configured">EH is not ready — check settings</string>
     <string name="error_rate_limited">Site-ul limitează cererile — încearcă mai târziu</string>
     <string name="error_not_found">Galeria nu a fost găsită</string>
     <string name="error_response">Site-ul a răspuns cu ceva neașteptat</string>

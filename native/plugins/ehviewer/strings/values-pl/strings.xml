@@ -26,6 +26,7 @@
     <string name="empty_comments">Brak komentarzy</string>
     <string name="error_network">Nie udało się połączyć z E-Hentai</string>
     <string name="error_unauthorized">Odmowa dostępu — sprawdź pliki cookie i przełącznik ExHentai</string>
+    <string name="error_not_configured">EH is not ready — check settings</string>
     <string name="error_rate_limited">Strona ogranicza liczbę zapytań — spróbuj później</string>
     <string name="error_not_found">Nie znaleziono tej galerii</string>
     <string name="error_response">Strona zwróciła coś nieoczekiwanego</string>

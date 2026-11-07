@@ -32,6 +32,7 @@
     <string name="download_all_body">المنشورات المحمّلة حتى الآن: %1$d. تُتخطّى الملفات الموجودة في تنزيلاتك.</string>
     <string name="download_all_result">في قائمة الانتظار: %1$d. مُنزَّلة مسبقًا: %2$d.</string>
     <string name="edit_as_text">تعديل كنص</string>
+    <string name="edit_tag">انقر للتعديل</string>
     <string name="either_tag">أو</string>
     <string name="empty_following">تابِع وسومًا من البحث أو من منشور لملء هذا التبويب</string>
     <string name="empty_following_posts">لا منشورات حديثة للوسوم التي تتابعها</string>
@@ -47,6 +48,7 @@
     <string name="error_forbidden">رفض الموقع الوصول — قد يتطلب تسجيل الدخول أو تحققًا عبر المتصفح</string>
     <string name="error_needs_key">يتطلب هذا الموقع اسم مستخدم ومفتاح API — أضفهما في الإعدادات</string>
     <string name="error_network">تعذّر الوصول إلى موقع البورو</string>
+    <string name="error_not_configured">Choose a booru host in settings first</string>
     <string name="error_not_found">لم يُعثر على هذه الصفحة على الموقع</string>
     <string name="error_rate_limited">الموقع يحدّ من عدد الطلبات — حاول مرة أخرى لاحقًا</string>
     <string name="error_response">أعاد الموقع ردًّا غير متوقع</string>

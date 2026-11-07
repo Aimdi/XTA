@@ -19,12 +19,17 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -108,17 +113,24 @@ internal fun TagField(search: BooruSearch, state: BooruSearchState, field: Mutab
     }
 }
 
-/** A finished tag in the field, coloured by the kind its suggestion said: a tap edits it, its cross removes it. */
+/** A finished tag in the field, coloured by the kind its suggestion said: a tap edits it, its cross removes it, and a tooltip says so (XTA's `plugin_booru_edit_tag`). */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun FieldChip(tag: String, state: BooruSearchState, onEdit: () -> Unit, onRemove: () -> Unit) {
-    InputChip(
-        selected = false,
-        onClick = onEdit,
-        label = { Text(tokenText(tag, state.categories[BooruQueryToken.parse(tag).value])) },
-        trailingIcon = {
-            IconButton(onClick = onRemove, modifier = Modifier.size(24.dp)) {
-                Icon(Icons.Filled.Close, pluginString(Strings.delete), modifier = Modifier.size(18.dp))
-            }
-        },
-    )
+    TooltipBox(
+        positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+        tooltip = { PlainTooltip { Text(pluginString(Strings.edit_tag)) } },
+        state = rememberTooltipState(),
+    ) {
+        InputChip(
+            selected = false,
+            onClick = onEdit,
+            label = { Text(tokenText(tag, state.categories[BooruQueryToken.parse(tag).value])) },
+            trailingIcon = {
+                IconButton(onClick = onRemove, modifier = Modifier.size(24.dp)) {
+                    Icon(Icons.Filled.Close, pluginString(Strings.delete), modifier = Modifier.size(18.dp))
+                }
+            },
+        )
+    }
 }

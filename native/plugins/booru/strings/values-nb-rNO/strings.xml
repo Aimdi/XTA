@@ -32,6 +32,7 @@
     <string name="download_all_body">Innlegg lastet så langt: %1$d. Filer som allerede er i nedlastingene dine, hoppes over.</string>
     <string name="download_all_result">I kø: %1$d. Allerede lastet ned: %2$d.</string>
     <string name="edit_as_text">Rediger som tekst</string>
+    <string name="edit_tag">Trykk for å redigere</string>
     <string name="either_tag">Eller</string>
     <string name="empty_following">Følg tagger fra søket eller et innlegg for å fylle denne fanen</string>
     <string name="empty_following_posts">Ingen nye innlegg for taggene du følger</string>
@@ -47,6 +48,7 @@
     <string name="error_forbidden">Nettstedet nektet tilgang — det kan kreve innlogging eller en kontroll i nettleseren</string>
     <string name="error_needs_key">Dette nettstedet krever innlogging og API-nøkkel — legg dem til i innstillingene</string>
     <string name="error_network">Fikk ikke kontakt med booru-nettstedet</string>
+    <string name="error_not_configured">Choose a booru host in settings first</string>
     <string name="error_not_found">Fant ikke siden på nettstedet</string>
     <string name="error_rate_limited">Nettstedet begrenser forespørslene — prøv igjen senere</string>
     <string name="error_response">Nettstedet svarte noe uventet</string>

@@ -32,6 +32,7 @@
     <string name="download_all_body">Загружана допісаў: %1$d. Файлы, што ўжо ёсць у спамповках, прапускаюцца.</string>
     <string name="download_all_result">У чарзе: %1$d. Ужо спампавана: %2$d.</string>
     <string name="edit_as_text">Змяніць як тэкст</string>
+    <string name="edit_tag">Націсніце, каб змяніць</string>
     <string name="either_tag">Або</string>
     <string name="empty_following">Падпішыцеся на тэгі з пошуку або з допісу, каб запоўніць гэтую ўкладку</string>
     <string name="empty_following_posts">Няма новых допісаў па вашых тэгах</string>
@@ -47,6 +48,7 @@
     <string name="error_forbidden">Сайт адмовіў у доступе — магчыма, патрэбны ўваход або праверка ў браўзеры</string>
     <string name="error_needs_key">Гэты сайт патрабуе лагін і ключ API — дадайце іх у наладах</string>
     <string name="error_network">Не ўдалося звязацца з сайтам буру</string>
+    <string name="error_not_configured">Choose a booru host in settings first</string>
     <string name="error_not_found">Гэтая старонка не знойдзена на сайце</string>
     <string name="error_rate_limited">Сайт абмяжоўвае колькасць запытаў — паспрабуйце пазней</string>
     <string name="error_response">Сайт вярнуў нечаканы адказ</string>

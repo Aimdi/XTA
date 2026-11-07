@@ -26,6 +26,7 @@
     <string name="empty_comments">Нет комментариев</string>
     <string name="error_network">Не удалось связаться с E-Hentai</string>
     <string name="error_unauthorized">Доступ запрещён — проверьте cookie и переключатель ExHentai</string>
+    <string name="error_not_configured">EH is not ready — check settings</string>
     <string name="error_rate_limited">Сайт ограничивает число запросов — попробуйте позже</string>
     <string name="error_not_found">Эта галерея не найдена</string>
     <string name="error_response">Сайт вернул что-то неожиданное</string>

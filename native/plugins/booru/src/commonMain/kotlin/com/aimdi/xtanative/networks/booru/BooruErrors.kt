@@ -30,6 +30,13 @@ enum class BooruErrorKind {
     /** A 500 saying the host's database gave up on the search: too many posts to sort (Danbooru's `order:score` on a big tag). */
     TIMED_OUT,
 
+    /**
+     * No host was chosen. XTA keeps the kind for a read asked for before a site
+     * is set, though its host falls back to the first preset, so no read meets
+     * it. Native keeps the same table, and so the sentence.
+     */
+    NOT_CONFIGURED,
+
     NOT_FOUND,
 
     /** Any other refusal, or an answer that cannot be read. */

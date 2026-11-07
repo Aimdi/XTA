@@ -26,6 +26,7 @@
     <string name="empty_comments">Kommentaare pole</string>
     <string name="error_network">E-Hentaiga ei saanud ühendust</string>
     <string name="error_unauthorized">Juurdepääs keelatud — kontrolli küpsiseid ja ExHentai lülitit</string>
+    <string name="error_not_configured">EH is not ready — check settings</string>
     <string name="error_rate_limited">Sait piirab päringuid — proovi hiljem uuesti</string>
     <string name="error_not_found">Seda galeriid ei leitud</string>
     <string name="error_response">Sait vastas millegi ootamatuga</string>

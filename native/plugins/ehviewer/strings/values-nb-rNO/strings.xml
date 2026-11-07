@@ -26,6 +26,7 @@
     <string name="empty_comments">Ingen kommentarer</string>
     <string name="error_network">Får ikke kontakt med E-Hentai</string>
     <string name="error_unauthorized">Tilgang nektet — sjekk informasjonskapslene og ExHentai-bryteren</string>
+    <string name="error_not_configured">EH is not ready — check settings</string>
     <string name="error_rate_limited">Nettstedet begrenser forespørsler — prøv igjen senere</string>
     <string name="error_not_found">Fant ikke galleriet</string>
     <string name="error_response">Nettstedet svarte med noe uventet</string>

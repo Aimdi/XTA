@@ -32,6 +32,7 @@
     <string name="download_all_body">Tot nu toe geladen berichten: %1$d. Bestanden die al in je downloads staan, worden overgeslagen.</string>
     <string name="download_all_result">In de wachtrij: %1$d. Al gedownload: %2$d.</string>
     <string name="edit_as_text">Als tekst bewerken</string>
+    <string name="edit_tag">Tik om te bewerken</string>
     <string name="either_tag">Of</string>
     <string name="empty_following">Volg tags vanuit zoeken of een bericht om dit tabblad te vullen</string>
     <string name="empty_following_posts">Geen recente berichten voor de tags die je volgt</string>
@@ -47,6 +48,7 @@
     <string name="error_forbidden">De site weigerde de toegang — mogelijk is inloggen of een controle in de browser nodig</string>
     <string name="error_needs_key">Deze site vereist een login en API-sleutel — voeg ze toe in de instellingen</string>
     <string name="error_network">Kon de booru-site niet bereiken</string>
+    <string name="error_not_configured">Choose a booru host in settings first</string>
     <string name="error_not_found">Die pagina is niet gevonden op de site</string>
     <string name="error_rate_limited">De site beperkt het aantal verzoeken — probeer het later opnieuw</string>
     <string name="error_response">De site gaf een onverwacht antwoord</string>

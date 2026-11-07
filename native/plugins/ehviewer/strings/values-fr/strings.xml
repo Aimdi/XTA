@@ -26,6 +26,7 @@
     <string name="empty_comments">Aucun commentaire</string>
     <string name="error_network">Impossible de joindre E-Hentai</string>
     <string name="error_unauthorized">Accès refusé — vérifiez les cookies / ExHentai</string>
+    <string name="error_not_configured">EH n’est pas prêt — vérifiez les réglages</string>
     <string name="error_rate_limited">Le site limite le débit — réessayez plus tard</string>
     <string name="error_not_found">Galerie introuvable</string>
     <string name="error_response">Le site a renvoyé une réponse inattendue</string>

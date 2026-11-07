@@ -32,6 +32,7 @@
     <string name="download_all_body">Publicacions carregades fins ara: %1$d. Els fitxers que ja tens a les baixades s\'ometen.</string>
     <string name="download_all_result">A la cua: %1$d. Ja baixats: %2$d.</string>
     <string name="edit_as_text">Edita com a text</string>
+    <string name="edit_tag">Toca per editar</string>
     <string name="either_tag">O</string>
     <string name="empty_following">Segueix etiquetes des de la cerca o una publicació per omplir aquesta pestanya</string>
     <string name="empty_following_posts">No hi ha publicacions recents de les etiquetes que segueixes</string>
@@ -47,6 +48,7 @@
     <string name="error_forbidden">El lloc ha denegat l’accés — potser cal iniciar la sessió o una comprovació al navegador</string>
     <string name="error_needs_key">Aquest lloc necessita un usuari i una clau API — afegeix-los a la configuració</string>
     <string name="error_network">No s’ha pogut connectar amb el lloc booru</string>
+    <string name="error_not_configured">Choose a booru host in settings first</string>
     <string name="error_not_found">No s’ha trobat aquesta pàgina al lloc</string>
     <string name="error_rate_limited">El lloc limita les peticions — torna-ho a provar més tard</string>
     <string name="error_response">El lloc ha respost una cosa inesperada</string>

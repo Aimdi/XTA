@@ -1,10 +1,20 @@
 package com.aimdi.xtanative.networks.ehviewer
 
+import com.aimdi.xtanative.plugins.ehviewer.EhText
+import com.aimdi.xtanative.plugins.ehviewer.Strings
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class EhModelsTest {
+    @Test
+    fun aSiteNotSetUpSaysToCheckSettings() {
+        assertEquals(
+            Strings.error_not_configured.get("en"),
+            EhText.error(EhException(EhErrorKind.NOT_CONFIGURED, "not set up")).get("en"),
+        )
+        assertEquals(Strings.error_network.get("en"), EhText.error(null).get("en"))
+    }
     @Test
     fun theJapaneseTitleOnlyWhenAskedFor() {
         val gallery = EhGallery(gid = 1, token = "t", title = "English", titleJpn = "日本語")

@@ -26,6 +26,7 @@
     <string name="empty_comments">Ez dago iruzkinik</string>
     <string name="error_network">Ezin izan da E-Hentai-ra iritsi</string>
     <string name="error_unauthorized">Sarbidea ukatu da — egiaztatu cookieak eta ExHentai aukera</string>
+    <string name="error_not_configured">EH is not ready — check settings</string>
     <string name="error_rate_limited">Guneak eskaerak mugatzen ditu — saiatu geroago</string>
     <string name="error_not_found">Ez da galeria hori aurkitu</string>
     <string name="error_response">Guneak ustekabeko zerbait itzuli du</string>

@@ -32,6 +32,7 @@
     <string name="download_all_body">अब तक लोड की गई पोस्ट: %1$d। जो फ़ाइलें पहले से डाउनलोड में हैं, वे छोड़ दी जाती हैं।</string>
     <string name="download_all_result">कतार में: %1$d। पहले से डाउनलोड: %2$d।</string>
     <string name="edit_as_text">टेक्स्ट के रूप में संपादित करें</string>
+    <string name="edit_tag">संपादित करने के लिए टैप करें</string>
     <string name="either_tag">या</string>
     <string name="empty_following">इस टैब को भरने के लिए खोज या किसी पोस्ट से टैग फ़ॉलो करें</string>
     <string name="empty_following_posts">फ़ॉलो किए गए टैग की कोई हाल की पोस्ट नहीं</string>
@@ -47,6 +48,7 @@
     <string name="error_forbidden">साइट ने एक्सेस देने से मना कर दिया — शायद लॉग इन या ब्राउज़र में जाँच ज़रूरी है</string>
     <string name="error_needs_key">इस साइट के लिए लॉगिन और API कुंजी ज़रूरी है — उन्हें सेटिंग में जोड़ें</string>
     <string name="error_network">बूरू साइट तक नहीं पहुँच सके</string>
+    <string name="error_not_configured">Choose a booru host in settings first</string>
     <string name="error_not_found">यह पेज साइट पर नहीं मिला</string>
     <string name="error_rate_limited">साइट अनुरोधों को सीमित कर रही है — बाद में फिर कोशिश करें</string>
     <string name="error_response">साइट ने कुछ अनपेक्षित लौटाया</string>

@@ -32,6 +32,7 @@
     <string name="download_all_body">Dosud načtené příspěvky: %1$d. Soubory, které už máte ve stažených, se přeskočí.</string>
     <string name="download_all_result">Ve frontě: %1$d. Již staženo: %2$d.</string>
     <string name="edit_as_text">Upravit jako text</string>
+    <string name="edit_tag">Klepnutím upravíte</string>
     <string name="either_tag">Nebo</string>
     <string name="empty_following">Sledujte štítky z hledání nebo z příspěvku a tato karta se naplní</string>
     <string name="empty_following_posts">Žádné nové příspěvky se sledovanými štítky</string>
@@ -47,6 +48,7 @@
     <string name="error_forbidden">Web odepřel přístup — možná vyžaduje přihlášení nebo ověření v prohlížeči</string>
     <string name="error_needs_key">Tento web vyžaduje přihlašovací jméno a klíč API — přidejte je v nastavení</string>
     <string name="error_network">Web booru se nepodařilo kontaktovat</string>
+    <string name="error_not_configured">Choose a booru host in settings first</string>
     <string name="error_not_found">Tato stránka na webu nebyla nalezena</string>
     <string name="error_rate_limited">Web omezuje počet požadavků — zkuste to později</string>
     <string name="error_response">Web vrátil nečekanou odpověď</string>

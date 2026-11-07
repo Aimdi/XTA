@@ -32,6 +32,7 @@
     <string name="download_all_body">Postagens carregadas até agora: %1$d. Arquivos que já estão nos seus downloads são ignorados.</string>
     <string name="download_all_result">Na fila: %1$d. Já baixados: %2$d.</string>
     <string name="edit_as_text">Editar como texto</string>
+    <string name="edit_tag">Toque para editar</string>
     <string name="either_tag">Ou</string>
     <string name="empty_following">Siga tags pela busca ou por uma publicação para preencher esta aba</string>
     <string name="empty_following_posts">Nenhuma publicação recente das tags que você segue</string>
@@ -47,6 +48,7 @@
     <string name="error_forbidden">O site recusou o acesso — pode ser preciso fazer login ou uma verificação no navegador</string>
     <string name="error_needs_key">Este site precisa de login e chave de API — adicione-os nas configurações</string>
     <string name="error_network">Não foi possível acessar o site booru</string>
+    <string name="error_not_configured">Choose a booru host in settings first</string>
     <string name="error_not_found">Essa página não foi encontrada no site</string>
     <string name="error_rate_limited">O site está limitando as solicitações — tente mais tarde</string>
     <string name="error_response">O site retornou algo inesperado</string>

@@ -32,6 +32,7 @@
     <string name="download_all_body">Seni laaditud postitusi: %1$d. Juba allalaaditud failid jäetakse vahele.</string>
     <string name="download_all_result">Järjekorras: %1$d. Juba alla laaditud: %2$d.</string>
     <string name="edit_as_text">Muuda tekstina</string>
+    <string name="edit_tag">Puuduta muutmiseks</string>
     <string name="either_tag">Või</string>
     <string name="empty_following">Selle vahekaardi täitmiseks jälgi silte otsingust või postitusest</string>
     <string name="empty_following_posts">Jälgitavate siltidega pole uusi postitusi</string>
@@ -47,6 +48,7 @@
     <string name="error_forbidden">Sait keelas juurdepääsu — võib-olla tuleb sisse logida või läbida brauseris kontroll</string>
     <string name="error_needs_key">See sait vajab kasutajanime ja API-võtit — lisa need seadetes</string>
     <string name="error_network">Booru-saidiga ei õnnestunud ühendust saada</string>
+    <string name="error_not_configured">Choose a booru host in settings first</string>
     <string name="error_not_found">Seda lehte saidilt ei leitud</string>
     <string name="error_rate_limited">Sait piirab päringute arvu — proovi hiljem uuesti</string>
     <string name="error_response">Sait vastas midagi ootamatut</string>

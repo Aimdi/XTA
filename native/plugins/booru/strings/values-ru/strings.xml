@@ -32,6 +32,7 @@
     <string name="download_all_body">Загружено постов: %1$d. Файлы, которые уже есть в загрузках, пропускаются.</string>
     <string name="download_all_result">В очереди: %1$d. Уже скачано: %2$d.</string>
     <string name="edit_as_text">Изменить как текст</string>
+    <string name="edit_tag">Нажмите, чтобы изменить</string>
     <string name="either_tag">Или</string>
     <string name="empty_following">Подпишитесь на теги из поиска или публикации, чтобы заполнить эту вкладку</string>
     <string name="empty_following_posts">Нет новых публикаций по вашим тегам</string>
@@ -47,6 +48,7 @@
     <string name="error_forbidden">Сайт отказал в доступе — возможно, нужен вход или проверка в браузере</string>
     <string name="error_needs_key">Этому сайту нужны логин и ключ API — добавьте их в настройках</string>
     <string name="error_network">Не удалось связаться с сайтом буру</string>
+    <string name="error_not_configured">Choose a booru host in settings first</string>
     <string name="error_not_found">Эта страница не найдена на сайте</string>
     <string name="error_rate_limited">Сайт ограничивает число запросов — попробуйте позже</string>
     <string name="error_response">Сайт вернул неожиданный ответ</string>

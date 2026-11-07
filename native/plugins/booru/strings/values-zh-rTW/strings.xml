@@ -32,6 +32,7 @@
     <string name="download_all_body">已載入的貼文：%1$d。下載紀錄中已有的檔案會被略過。</string>
     <string name="download_all_result">已加入佇列：%1$d。已下載過：%2$d。</string>
     <string name="edit_as_text">以文字編輯</string>
+    <string name="edit_tag">輕觸即可編輯</string>
     <string name="either_tag">或</string>
     <string name="empty_following">從搜尋或貼文追蹤標籤，即可填滿這個分頁</string>
     <string name="empty_following_posts">你追蹤的標籤沒有新貼文</string>
@@ -47,6 +48,7 @@
     <string name="error_forbidden">網站拒絕存取，可能需要登入或在瀏覽器中驗證</string>
     <string name="error_needs_key">此網站需要登入名稱和 API 金鑰，請在設定中新增</string>
     <string name="error_network">無法連線到 booru 網站</string>
+    <string name="error_not_configured">Choose a booru host in settings first</string>
     <string name="error_not_found">在網站上找不到該頁面</string>
     <string name="error_rate_limited">網站正在限制請求次數，請稍後再試</string>
     <string name="error_response">網站傳回了非預期的內容</string>

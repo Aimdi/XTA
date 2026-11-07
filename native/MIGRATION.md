@@ -38,6 +38,30 @@ layer is written in `networks/<id>` first, then moves with its screens into
 | deepmarks | `plugins/deepmarks` (30 tests): bookmarks signed on the device | plugin: "Save to Deepmarks" in the post sheets, its settings and connection test |
 | karakeep | `plugins/karakeep` (18 tests): the reader's own bookmarks | plugin: "Save to Karakeep" in the post sheets, its settings and connection test |
 
+### Plugin parity still to do
+
+The ledgers under `PARITY/` map 246 of XTA's 650 test files. The batch for
+booru, ehviewer, stocks and the other plugin tests (`test/booru_*`,
+`test/eh*`, …, 62 files) has no ledger yet. Measured shortfalls, native kt
+lines against Flutter dart lines, are pixiv 0.82 (34 Flutter source files
+with no native counterpart token: `detail_*`, `accounts`, `avatar`,
+`confirm`, `copy_info`, `haptics`, `in_flight`, `lru_cache`, `paged_feed`,
+`post_actions`, `quality`, `resave_dialog`, `segmented_switch`,
+`tile_badges`, `downloaded_badge`, `fetch_store`, `group*`, `illust_*`,
+`login_webview`), rss 0.85, reddit 0.95 and instagram 0.99; every other
+plugin is at or above 1.0.
+
+XTA's error tables keep a few kinds its own code never throws. Native now
+keeps the same tables: Booru's `notConfigured` ("Choose a booru host in
+settings first") and EH's (`"EH is not ready — check settings"`), alongside
+Reddit's "Add your Reddit client ID first". A booru tag chip says "Tap to
+edit", as XTA's tooltip does. XTA's search sheet offers "Load more results"
+as a button; native's shared paged lists read more as the end comes into
+view, so the sentence is not needed. XTA's add-account dialogs carry a
+lookup mode no screen opens, and its Instagram/TikTok private-account error
+is never thrown (both apps show the profile's own `profile_private`
+sentence), so native leaves both out.
+
 ## The app (`lib/`)
 
 | XTA | Goes to |

@@ -26,6 +26,7 @@
     <string name="empty_comments">尚無留言</string>
     <string name="error_network">無法連線到 E-Hentai</string>
     <string name="error_unauthorized">存取遭拒 — 請檢查 Cookie 與 ExHentai 開關</string>
+    <string name="error_not_configured">EH is not ready — check settings</string>
     <string name="error_rate_limited">網站正在限制請求 — 請稍後再試</string>
     <string name="error_not_found">找不到這個圖庫</string>
     <string name="error_response">網站傳回了非預期的內容</string>

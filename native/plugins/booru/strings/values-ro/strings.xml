@@ -32,6 +32,7 @@
     <string name="download_all_body">Postări încărcate până acum: %1$d. Fișierele aflate deja în descărcări sunt sărite.</string>
     <string name="download_all_result">În coadă: %1$d. Descărcate deja: %2$d.</string>
     <string name="edit_as_text">Editează ca text</string>
+    <string name="edit_tag">Atinge pentru a edita</string>
     <string name="either_tag">Sau</string>
     <string name="empty_following">Urmărește etichete din căutare sau dintr-o postare ca să umpli această filă</string>
     <string name="empty_following_posts">Nicio postare recentă pentru etichetele urmărite</string>
@@ -47,6 +48,7 @@
     <string name="error_forbidden">Site-ul a refuzat accesul — poate fi nevoie de autentificare sau de o verificare în browser</string>
     <string name="error_needs_key">Acest site necesită un nume de utilizator și o cheie API — adaugă-le în setări</string>
     <string name="error_network">Site-ul booru nu a putut fi accesat</string>
+    <string name="error_not_configured">Choose a booru host in settings first</string>
     <string name="error_not_found">Pagina nu a fost găsită pe site</string>
     <string name="error_rate_limited">Site-ul limitează cererile — încearcă mai târziu</string>
     <string name="error_response">Site-ul a răspuns cu ceva neașteptat</string>

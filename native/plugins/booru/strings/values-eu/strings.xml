@@ -32,6 +32,7 @@
     <string name="download_all_body">Orain arte kargatutako argitalpenak: %1$d. Deskargetan dauden fitxategiak saltatu egiten dira.</string>
     <string name="download_all_result">Ilaran: %1$d. Dagoeneko deskargatuta: %2$d.</string>
     <string name="edit_as_text">Editatu testu gisa</string>
+    <string name="edit_tag">Sakatu editatzeko</string>
     <string name="either_tag">Edo</string>
     <string name="empty_following">Jarraitu etiketei bilaketatik edo argitalpen batetik fitxa hau betetzeko</string>
     <string name="empty_following_posts">Ez dago argitalpen berririk jarraitzen dituzun etiketekin</string>
@@ -47,6 +48,7 @@
     <string name="error_forbidden">Guneak sarbidea ukatu du — baliteke saioa hasi edo nabigatzailean egiaztatu behar izatea</string>
     <string name="error_needs_key">Gune honek erabiltzaile-izena eta API gakoa behar ditu — gehitu ezarpenetan</string>
     <string name="error_network">Ezin izan da booru gunera konektatu</string>
+    <string name="error_not_configured">Choose a booru host in settings first</string>
     <string name="error_not_found">Orri hori ez da aurkitu gunean</string>
     <string name="error_rate_limited">Guneak eskaerak mugatzen ditu — saiatu berriro geroago</string>
     <string name="error_response">Guneak ustekabeko zerbait itzuli du</string>

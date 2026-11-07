@@ -26,6 +26,7 @@
     <string name="empty_comments">Geen reacties</string>
     <string name="error_network">E-Hentai is niet bereikbaar</string>
     <string name="error_unauthorized">Toegang geweigerd — controleer de cookies en de ExHentai-schakelaar</string>
+    <string name="error_not_configured">EH is not ready — check settings</string>
     <string name="error_rate_limited">De site beperkt het aantal verzoeken — probeer het later opnieuw</string>
     <string name="error_not_found">Die galerij is niet gevonden</string>
     <string name="error_response">De site gaf iets onverwachts terug</string>

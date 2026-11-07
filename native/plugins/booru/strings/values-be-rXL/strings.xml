@@ -32,6 +32,7 @@
     <string name="download_all_body">Zahružana dopisaŭ: %1$d. Fajły, što ŭžo jość u spampoŭkach, prapuskajucca.</string>
     <string name="download_all_result">U čarzie: %1$d. Užo spampavana: %2$d.</string>
     <string name="edit_as_text">Zmianić jak tekst</string>
+    <string name="edit_tag">Nacisnicie, kab zmianić</string>
     <string name="either_tag">Abo</string>
     <string name="empty_following">Padpišyciesia na tehi z pošuku abo z dopisu, kab zapoŭnić hetuju ŭkładku</string>
     <string name="empty_following_posts">Niama novych dopisaŭ pa vašych tehach</string>
@@ -47,6 +48,7 @@
     <string name="error_forbidden">Sajt admoviŭ u dostupie — mahčyma, patrebny ŭvachod abo pravierka ŭ braŭzery</string>
     <string name="error_needs_key">Hety sajt patrabuje lahin i kluč API — dadajcie ich u naladach</string>
     <string name="error_network">Nie ŭdałosia zviazacca z sajtam buru</string>
+    <string name="error_not_configured">Choose a booru host in settings first</string>
     <string name="error_not_found">Hetaja staronka nie znojdziena na sajcie</string>
     <string name="error_rate_limited">Sajt abmiažoŭvaje kolkasć zapytaŭ — pasprabujcie paźniej</string>
     <string name="error_response">Sajt viarnuŭ niečakany adkaz</string>

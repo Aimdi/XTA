@@ -2,6 +2,8 @@ package com.aimdi.xtanative.networks.booru
 
 import com.aimdi.xtanative.core.x.http.XResponse
 import com.aimdi.xtanative.networks.NetworkRequestException
+import com.aimdi.xtanative.plugins.booru.Strings
+import com.aimdi.xtanative.plugins.booru.errorMessage
 import com.aimdi.xtanative.networks.booru.BooruEngine.DANBOORU
 import com.aimdi.xtanative.networks.booru.BooruEngine.E621
 import com.aimdi.xtanative.networks.booru.BooruEngine.GELBOORU_V2
@@ -49,6 +51,13 @@ class BooruClientTest {
         assertIs<Throwable>(runCatching { read() }.exceptionOrNull(), "the read should fail")
 
     private suspend fun refusalOf(read: suspend () -> Any?): NetworkRequestException = assertIs<NetworkRequestException>(failureOf(read))
+
+    @Test
+    fun noHostReadsAsChooseOneInSettings() {
+        val failure = booruRefusal(BooruErrorKind.NOT_CONFIGURED, 200, "No booru host configured")
+        assertEquals(BooruErrorKind.NOT_CONFIGURED, BooruErrorKind.of(failure))
+        assertEquals(Strings.error_not_configured.get("en"), errorMessage(failure, "en"))
+    }
 
     @Test
     fun aDanbooruSearchAsksForItsTagsAndPageWithTheCapAndSaysWhoItIs() = runBlocking {

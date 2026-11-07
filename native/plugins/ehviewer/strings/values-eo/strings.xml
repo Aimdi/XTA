@@ -26,6 +26,7 @@
     <string name="empty_comments">Neniuj komentoj</string>
     <string name="error_network">Ne eblis atingi E-Hentai</string>
     <string name="error_unauthorized">Aliro rifuzita — kontrolu la kuketojn kaj la ŝaltilon de ExHentai</string>
+    <string name="error_not_configured">EH is not ready — check settings</string>
     <string name="error_rate_limited">La retejo limigas petojn — reprovu poste</string>
     <string name="error_not_found">Tiu galerio ne troviĝis</string>
     <string name="error_response">La retejo respondis ion neatenditan</string>

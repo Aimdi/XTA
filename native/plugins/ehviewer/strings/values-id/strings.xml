@@ -26,6 +26,7 @@
     <string name="empty_comments">Tidak ada komentar</string>
     <string name="error_network">Tidak dapat menjangkau E-Hentai</string>
     <string name="error_unauthorized">Akses ditolak — periksa cookie dan sakelar ExHentai</string>
+    <string name="error_not_configured">EH is not ready — check settings</string>
     <string name="error_rate_limited">Situs sedang membatasi permintaan — coba lagi nanti</string>
     <string name="error_not_found">Galeri itu tidak ditemukan</string>
     <string name="error_response">Situs mengembalikan sesuatu yang tidak terduga</string>

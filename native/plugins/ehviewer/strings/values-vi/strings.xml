@@ -26,6 +26,7 @@
     <string name="empty_comments">Chưa có bình luận</string>
     <string name="error_network">Không thể kết nối tới E-Hentai</string>
     <string name="error_unauthorized">Bị từ chối truy cập — hãy kiểm tra cookie và tùy chọn ExHentai</string>
+    <string name="error_not_configured">EH is not ready — check settings</string>
     <string name="error_rate_limited">Trang đang giới hạn yêu cầu — hãy thử lại sau</string>
     <string name="error_not_found">Không tìm thấy thư viện đó</string>
     <string name="error_response">Trang trả về nội dung không mong đợi</string>
