@@ -76,6 +76,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 /**
@@ -290,8 +291,19 @@ private fun ReplyRow(app: BlueskyApp, row: BlueskyReplyRow, onToggle: (String) -
  * once the screen opens, [load] reads it again; what is folded, whether the
  * context above is open and whether only the author's replies are shown are
  * this screen's.
+ *
+ * Only the newest read lands, as in XTA: an older one answering late is
+ * dropped, and one that answers (or fails) after the AppView was changed is
+ * dropped too and the thread is read again from the AppView now set.
  */
-internal class ThreadState(private val app: BlueskyApp, private val target: PostTarget, private val scope: CoroutineScope) {
+internal class ThreadState(
+    private val scope: CoroutineScope,
+    private val server: () -> String,
+    private val read: suspend () -> BlueskyThread,
+) {
+    constructor(app: BlueskyApp, target: PostTarget, scope: CoroutineScope) :
+        this(scope, { app.client.baseUrl }, { app.client.postThread(target.uri(app.client)) })
+
     data class State(
         val thread: BlueskyThread? = null,
         val collapsed: Set<String> = emptySet(),
@@ -303,24 +315,36 @@ internal class ThreadState(private val app: BlueskyApp, private val target: Post
 
     private val mutable = MutableStateFlow(State())
     val state: StateFlow<State> = mutable.asStateFlow()
+    private var request = 0
 
     init {
         load()
     }
 
     fun load() {
+        if (!scope.isActive) return
+        val asked = ++request
+        val source = server()
+        mutable.update { it.copy(loading = true, problem = null) }
         scope.launch {
-            mutable.update { it.copy(loading = true, problem = null) }
             try {
-                val thread = app.client.postThread(target.uri(app.client))
+                val thread = read()
+                if (!accept(asked, source)) return@launch
                 val known = thread.replies.mapTo(HashSet()) { it.uri }
-                mutable.update { it.copy(thread = thread, collapsed = it.collapsed intersect known, loading = false) }
+                mutable.update { it.copy(thread = thread, collapsed = it.collapsed intersect known, loading = false, problem = null) }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                mutable.update { it.copy(loading = false, problem = problemOf(e)) }
+                if (accept(asked, source)) mutable.update { it.copy(loading = false, problem = problemOf(e)) }
             }
         }
+    }
+
+    private fun accept(asked: Int, source: String): Boolean {
+        if (asked != request) return false
+        if (source == server()) return true
+        load()
+        return false
     }
 
     /** The replies a list draws, in [order], depth first, without what sits under a folded one. */

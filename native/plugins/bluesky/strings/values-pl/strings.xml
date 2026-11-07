@@ -150,4 +150,5 @@
     </plurals>
     <string name="in_home_feed">Pokazuj na osi czasu</string>
     <string name="in_home_feed_description">Dodaje wpisy z obserwowanych kont Bluesky do zakładek „Obserwowane” i „Dla Ciebie”</string>
+    <string name="media">Multimedia</string>
 </resources>

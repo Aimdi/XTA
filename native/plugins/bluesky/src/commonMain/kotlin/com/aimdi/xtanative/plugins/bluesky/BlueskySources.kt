@@ -78,6 +78,7 @@ internal class BlueskyFeeds(private val app: BlueskyApp, private val scope: Coro
     private val pages = SourcePages(scope) { uri, cursor -> app.client.feed(uri, cursor = cursor) }
     private var context: String? = null
     private var catalogRequest = 0
+    private var catalogServer: String? = null
 
     fun pages(server: String, uri: String): PagedItems<BlueskyPost> = pages.of(server, uri)
 
@@ -119,10 +120,14 @@ internal class BlueskyFeeds(private val app: BlueskyApp, private val scope: Coro
 
     /** The catalog's feeds for [query] (the popular ones when it is empty), from the first page, or the next. */
     fun searchCatalog(query: String, more: Boolean = false) {
+        val server = app.prefs.appView.value
+        // A cursor is the AppView's own: after a change, the catalog is read again from its first page.
+        if (more && catalogServer != server) return searchCatalog(query)
         val text = query.trim()
         val before = mutable.value.catalog
         if (more && !before.more) return
         val request = ++catalogRequest
+        catalogServer = server
         val cursor = if (more) before.next else null
         mutable.update { it.copy(query = text, catalog = (if (more || text == it.query) before else Listing()).copy(loading = true, problem = null)) }
         scope.launch {
@@ -174,20 +179,34 @@ internal class BlueskyLists(private val app: BlueskyApp, private val scope: Coro
     private val pages = SourcePages(scope) { uri, cursor -> app.client.listFeed(uri, cursor = cursor) }
     private var context: String? = null
     private var request = 0
+    private var listsServer: String? = null
 
     fun pages(server: String, uri: String): PagedItems<BlueskyPost> = pages.of(server, uri)
 
-    /** The list remembered here and the handle's lists, once per AppView and handle. */
+    /**
+     * The list open, else the one remembered on this AppView, else the first
+     * pinned; and the lists of the account looked up (the handle's, until
+     * another is looked up or the handle changes), once per AppView and handle.
+     * On another AppView, what the last one listed and had open goes.
+     */
     fun ensureLoaded(force: Boolean = false) {
         val server = app.prefs.appView.value
         val handle = app.prefs.handle.value
         val now = "$server\n$handle"
         if (!force && context == now) return
+        val before = context
         context = now
+        val serverChanged = before != null && before.substringBefore('\n') != server
+        val handleChanged = before != null && before.substringAfter('\n') != handle
         val remembered = app.prefs.selection(server, lists = true)
         val first = app.prefs.pinnedLists.value.firstOrNull()?.let { BlueskySelection(it.uri, it.name) }
-        mutable.update { State(selected = remembered ?: it.selected ?: first, actor = handle) }
-        if (handle.isNotEmpty()) lookUp(handle)
+        mutable.update {
+            val actor = if (handleChanged) handle else it.actor.ifEmpty { handle }
+            val selected = if (serverChanged) remembered ?: first else it.selected ?: remembered ?: first
+            State(selected = selected, actor = actor, lists = if (serverChanged || handleChanged) Listing() else it.lists)
+        }
+        val actor = mutable.value.actor
+        if (actor.isNotEmpty()) lookUp(actor)
     }
 
     /** The lists offered in the row: pinned, then those listed, each once. */
@@ -201,9 +220,12 @@ internal class BlueskyLists(private val app: BlueskyApp, private val scope: Coro
 
     /** The lists [actor] made, from the first page or the next. */
     fun lookUp(actor: String, more: Boolean = false) {
+        val server = app.prefs.appView.value
+        if (more && listsServer != server) return lookUp(actor)
         val before = mutable.value
         if (actor.isBlank() || (more && !before.lists.more)) return
         val turn = ++request
+        listsServer = server
         val cursor = if (more) before.lists.next else null
         mutable.update { it.copy(actor = actor, lists = (if (more || actor == it.actor) it.lists else Listing()).copy(loading = true, problem = null)) }
         scope.launch {

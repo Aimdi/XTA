@@ -261,8 +261,9 @@ private fun LikedEmpty() {
 /**
  * The Following timeline, shared by the plugin's screens as XTA's feed store
  * is: read the first time it is shown, then whenever the accounts followed
- * here or the AppView change, and when the reader asks; its first read
- * this session starts from the posts kept where it was left ([BlueskyPlace]). A public AppView has
+ * here or the AppView change, and when the reader asks; the first time this
+ * session it shows the posts kept where it was left ([BlueskyPlace]) instead
+ * of reading, as XTA does. A public AppView has
  * no "my timeline", so each account's own feed is read (with its replies) by
  * [com.aimdi.xtanative.networks.bluesky.BlueskyFollowing], a few dozen
  * accounts a read; the filters hide what the reader does not want.
@@ -289,7 +290,11 @@ internal class FollowingTimeline(private val app: BlueskyApp, private val scope:
 
     /** Reads the timeline once it is first shown, and again on each change of what it reads. */
     fun start() {
-        if (started) return
+        if (started) {
+            // Shown again after a read that failed: it is tried again, as XTA's feed store does on entry.
+            if (mutable.value.problem != null && !mutable.value.loading) refresh(force = false)
+            return
+        }
         started = true
         scope.launch {
             combine(app.follows.state.filterNotNull(), app.prefs.appView) { follows, server -> follows.map { it.actor } to server }
@@ -305,7 +310,11 @@ internal class FollowingTimeline(private val app: BlueskyApp, private val scope:
         job = scope.launch {
             if (!force && mutable.value.posts.isEmpty()) {
                 val left = app.place.takePosts(app.follows::follows)
-                if (left.isNotEmpty()) mutable.update { it.copy(posts = left) }
+                // The posts kept where Following was left are shown as they were, without reading every account again: a pull reads.
+                if (left.isNotEmpty()) {
+                    mutable.value = State(left, actors.size, loading = false, loaded = true, pending = app.reader.pending(actors))
+                    return@launch
+                }
             }
             mutable.update { it.copy(loading = true, followed = actors.size) }
             if (actors.isEmpty()) {
@@ -314,7 +323,9 @@ internal class FollowingTimeline(private val app: BlueskyApp, private val scope:
             }
             try {
                 val read = app.reader.read(actors, force)
-                mutable.value = State(read.posts, actors.size, loading = false, loaded = true, read.error?.let(::problemOf), app.reader.pending(actors))
+                // A read that brought nothing but a failure leaves what is on screen, as XTA's feed store does.
+                val posts = if (read.posts.isEmpty() && read.error != null) mutable.value.posts else read.posts
+                mutable.value = State(posts, actors.size, loading = false, loaded = true, read.error?.let(::problemOf), app.reader.pending(actors))
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {

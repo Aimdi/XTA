@@ -148,4 +148,5 @@
     </plurals>
     <string name="in_home_feed">Ana akışta göster</string>
     <string name="in_home_feed_description">Takip ettiğin Bluesky hesaplarının gönderilerini Takip ve Sana Özel akışlarına karıştırır</string>
+    <string name="media">Medya</string>
 </resources>

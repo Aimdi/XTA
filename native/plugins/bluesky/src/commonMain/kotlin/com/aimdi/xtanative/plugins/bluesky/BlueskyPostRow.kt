@@ -32,6 +32,7 @@ import com.aimdi.xtanative.ui.plugins.NetworkPost
 import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.NetworkPostCard
 import com.aimdi.xtanative.ui.plugins.NetworkPostExtras
+import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.TextRun
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -162,23 +163,41 @@ private fun PostFooter(app: BlueskyApp, post: BlueskyPost, onOpen: () -> Unit, o
     val archive = remember(post) { BlueskyArchive.of(post) }
     val outside = rememberOpenOutside()
     val activity = { quotes: Boolean -> app.host.open(BlueskyRoutes.activity(post.uri, post.url, quotes)) }
-    val count = { n: Long -> if (hidden) 0L else n }
+    val (thread, reposts, quotes, like) = footerCounts(post, liked, hidden)
     Row(
         Modifier.fillMaxWidth().padding(top = 6.dp).height(32.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        NetworkCount(XIcons.Reply, count(post.replyCount), pluginString(Strings.thread)) { onOpen() }
-        NetworkCount(XIcons.Repost, count(post.repostCount), pluginString(Strings.reposted_by), onLongClick = { activity(true) }) { activity(false) }
-        NetworkCount(PostIcons.Quote, count(post.quoteCount), pluginString(Strings.quotes)) { activity(true) }
+        NetworkCount(XIcons.Reply, thread.n, pluginString(thread.label)) { onOpen() }
+        NetworkCount(XIcons.Repost, reposts.n, pluginString(reposts.label), onLongClick = { activity(true) }) { activity(false) }
+        NetworkCount(PostIcons.Quote, quotes.n, pluginString(quotes.label)) { activity(true) }
         NetworkCount(
             if (liked) Icons.Filled.Favorite else XIcons.Like,
-            count(post.likeCount + if (liked) 1 else 0),
-            pluginString(if (liked) Strings.unlike_on_this_device else Strings.like_on_this_device),
+            like.n,
+            pluginString(like.label),
             tint = if (liked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
         ) { app.toggleLike(post) }
         NetworkBookmark(archive, Modifier.size(32.dp))
         NetworkCount(PostIcons.OpenInNew, 0, pluginString(Strings.open_in_browser)) { outside(post.url) }
         NetworkCount(PostIcons.MoreHoriz, 0, pluginString(Strings.more_options), onClick = onMore)
     }
+}
+
+/** One count of a post's footer: the name it is announced by, and its number (none while [footerCounts] hides them). */
+internal data class FooterCount(val label: PluginText, val n: Long)
+
+/**
+ * The thread, reposts, quotes and this device's like under [post], as XTA's
+ * card names them: in zen or calm mode ([countsHidden]) the numbers go and
+ * each keeps its name, so it is still announced for what it does.
+ */
+internal fun footerCounts(post: BlueskyPost, liked: Boolean, countsHidden: Boolean): List<FooterCount> {
+    val count = { n: Long -> if (countsHidden) 0L else n }
+    return listOf(
+        FooterCount(Strings.thread, count(post.replyCount)),
+        FooterCount(Strings.reposted_by, count(post.repostCount)),
+        FooterCount(Strings.quotes, count(post.quoteCount)),
+        FooterCount(if (liked) Strings.unlike_on_this_device else Strings.like_on_this_device, count(post.likeCount + if (liked) 1 else 0)),
+    )
 }

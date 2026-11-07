@@ -148,4 +148,5 @@
     </plurals>
     <string name="in_home_feed">Afficher dans le fil principal</string>
     <string name="in_home_feed_description">Intègre les publications des comptes Bluesky que vous suivez dans « Abonnements » et « Pour vous »</string>
+    <string name="media">Médias</string>
 </resources>

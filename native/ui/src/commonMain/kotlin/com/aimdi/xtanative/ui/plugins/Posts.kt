@@ -172,7 +172,7 @@ fun NetworkPostCard(
     mark: ImageVector? = null,
     markColor: Color = Color.Unspecified,
 ) {
-    var revealed by rememberSaveable(post.id) { mutableStateOf(false) }
+    var revealed by rememberSaveable(post.id, post.revision) { mutableStateOf(false) }
     val more = actions.more
     Column(
         modifier
@@ -251,7 +251,7 @@ private fun rememberArchive(post: NetworkPost, actions: NetworkPostActions): Plu
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NetworkFocalPost(post: NetworkPost, actions: NetworkPostActions, modifier: Modifier = Modifier) {
-    var revealed by rememberSaveable(post.id) { mutableStateOf(false) }
+    var revealed by rememberSaveable(post.id, post.revision) { mutableStateOf(false) }
     val archive = rememberArchive(post, actions)
     val more = actions.more
     val pressable = if (more == null) modifier else modifier.combinedClickable(onClick = {}, onLongClick = { more(post) })
