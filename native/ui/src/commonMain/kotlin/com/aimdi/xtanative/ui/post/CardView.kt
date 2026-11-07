@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,12 +21,18 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -35,6 +43,7 @@ import com.aimdi.xtanative.core.x.model.XCard
 import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.common.rememberLoadsManually
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -209,9 +218,19 @@ private fun CardSite(domain: String?, onOpen: (() -> Unit)? = null) {
 private fun PollCard(poll: XCard.Poll, post: XPost?, modifier: Modifier) {
     val pictures = rememberPollPictures(poll, post)
     val locale = currentLocale()
-    Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        poll.choices.forEach { choice -> PollChoiceBar(poll, choice, locale, pictures) }
-        Text(pollLine(poll, locale), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    // The opened post's poll grows its bars as it opens; anywhere else, and with reduced motion, it is full at once.
+    val reduced = LocalReducedMotion.current
+    val fill = LocalFocalPollFill.current?.takeIf { post != null && post.id == postScope().focalId }
+    if (fill != null) LaunchedEffect(fill, reduced) { fill.start(reduced) }
+    val t = if (fill == null || reduced) 1f else fill.progress
+    Column(modifier.fillMaxWidth()) {
+        poll.choices.forEachIndexed { index, choice -> PollChoiceBar(poll, choice, locale, pictures, PollFill.growth(t, index)) }
+        Text(
+            pollLine(poll, locale),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 4.dp),
+        )
     }
 }
 
@@ -231,49 +250,78 @@ private fun rememberPollPictures(poll: XCard.Poll, post: XPost?): PollPictures {
     }
 }
 
-/** A choice's picture beside its bar (poll_results.dart's PollChoiceImage), or only its sign while media loads manually; a tap opens them all. */
+/** A choice's picture at the start of its bar (poll_results.dart's PollChoiceImage), or only its sign while media loads manually. */
 @Composable
-private fun PollChoiceImage(url: String?, onOpen: (() -> Unit)?) {
+private fun PollChoiceImage(url: String?) {
     val muted = MaterialTheme.colorScheme.onSurfaceVariant
-    val word = stringResource(Res.string.reader_media)
     Box(
         Modifier
-            .padding(end = 8.dp)
-            .size(48.dp)
-            .clip(RoundedCornerShape(6.dp))
-            .background(muted.copy(alpha = 0.12f))
-            .let { if (onOpen != null) it.clickable(onClickLabel = word, onClick = onOpen) else it },
+            .size(PollBar.IMAGE.dp)
+            .clip(RoundedCornerShape(PollBar.RADIUS.dp))
+            .background(muted.copy(alpha = 0.12f)),
         contentAlignment = Alignment.Center,
     ) {
         if (url == null) {
-            Icon(MediaIcons.ImageOutlined, contentDescription = word, tint = muted)
+            Icon(MediaIcons.ImageOutlined, contentDescription = null, tint = muted)
         } else {
-            AsyncImage(model = url, contentDescription = word, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
+            AsyncImage(model = url, contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
         }
     }
 }
 
+/**
+ * One choice's bar, filled to its share as far as it has [grown]: its
+ * picture at the start, as far in as from the top, opening them all on a
+ * tap; the choice; its share at the end. A screen reader hears it as one,
+ * "Media, Yes, 62.5%", a button where it has a picture.
+ */
 @Composable
-private fun PollChoiceBar(poll: XCard.Poll, choice: XCard.Poll.Choice, locale: Locale, pictures: PollPictures) {
+private fun PollChoiceBar(poll: XCard.Poll, choice: XCard.Poll.Choice, locale: Locale, pictures: PollPictures, grown: Float) {
     val share = poll.share(choice)
     val ahead = poll.leads(choice)
-    val shape = RoundedCornerShape(6.dp)
+    val shape = RoundedCornerShape(PollBar.RADIUS.dp)
     val weight = if (ahead) FontWeight.Bold else FontWeight.Normal
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        choice.imageUrl?.let { image -> PollChoiceImage(image.takeIf { pictures.load }, pictures.opener(choice)) }
-        Box(Modifier.weight(1f).heightIn(min = 36.dp).clip(shape)) {
-            Box(Modifier.matchParentSize()) {
-                Box(
-                    Modifier
-                        .fillMaxHeight()
-                        .fillMaxWidth(share.toFloat().coerceAtLeast(0.015f))
-                        .background(if (ahead) MaterialTheme.colorScheme.primary.copy(alpha = 0.35f) else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)),
-                )
+    val percent = PollWords.percent(share, locale)
+    val media = stringResource(Res.string.reader_media)
+    val opener = choice.imageUrl?.let { pictures.opener(choice) }
+    val image = choice.imageUrl?.takeIf { opener != null }
+    val said = if (image != null) "$media\n${choice.label}\n$percent" else "${choice.label}\n$percent"
+    Box(
+        Modifier
+            .padding(vertical = PollBar.GAP.dp)
+            .fillMaxWidth()
+            .heightIn(min = PollBar.MIN_HEIGHT.dp)
+            .clearAndSetSemantics {
+                contentDescription = said
+                if (opener != null) {
+                    role = Role.Button
+                    onClick { opener(); true }
+                }
+            },
+    ) {
+        Box(Modifier.matchParentSize()) {
+            Box(
+                Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth(PollBar.fill(share, grown))
+                    .clip(shape)
+                    .background(if (ahead) MaterialTheme.colorScheme.primary.copy(alpha = 0.35f) else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)),
+            )
+        }
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .heightIn(min = PollBar.MIN_HEIGHT.dp)
+                .padding(start = PollBar.start(image != null).dp, top = PollBar.INSET.dp, end = PollBar.END.dp, bottom = PollBar.INSET.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (image != null && opener != null) {
+                Box(Modifier.clip(RoundedCornerShape(PollBar.RADIUS.dp)).clickable(onClick = opener)) { PollChoiceImage(image.takeIf { pictures.load }) }
+                Spacer(Modifier.width(PollBar.END.dp))
             }
-            Row(Modifier.fillMaxWidth().heightIn(min = 36.dp).padding(horizontal = 10.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text(choice.label, style = MaterialTheme.typography.bodyMedium, fontWeight = weight, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
-                Text(PollWords.percent(share, locale), style = MaterialTheme.typography.bodyMedium, fontWeight = weight, modifier = Modifier.padding(start = 10.dp))
-            }
+            Text(choice.label, style = MaterialTheme.typography.bodyMedium, fontWeight = weight, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+            Spacer(Modifier.width(PollBar.END.dp))
+            Text(percent, style = MaterialTheme.typography.bodyMedium, fontWeight = weight)
         }
     }
 }

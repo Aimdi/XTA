@@ -32,6 +32,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -125,6 +127,9 @@ fun PostScreen(id: String, actions: PostActions, onBack: () -> Unit, startMedia:
         },
     ) { padding ->
         val reveal = remember(vm) { { vm.revealReplies() } }
+        val fillScope = rememberCoroutineScope()
+        val pollFill = remember(fillScope) { FocalPollFill(fillScope, System.currentTimeMillis()) }
+        CompositionLocalProvider(LocalFocalPollFill provides pollFill) {
         PostScopeProvider(focalId = id, translateAll = true, revealReplies = reveal) {
             val prefs = postScope().prefs
             val zenHidden = prefs.zen && !state.repliesRevealed
@@ -154,6 +159,7 @@ fun PostScreen(id: String, actions: PostActions, onBack: () -> Unit, startMedia:
                     }
                 }
             }
+        }
         }
     }
 }
@@ -335,8 +341,8 @@ private fun FocalPost(post: XPost, actions: PostActions, startMedia: Int) {
                     Text("@" + shown.author.screenName, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
-            translation?.let { TranslateButton(it, scope) }
-            HeaderButton(PostIcons.MoreHoriz, stringResource(Res.string.posts_more)) { menu = true }
+            translation?.let { TranslateButton(it, scope, glyphTop = false) }
+            HeaderButton(PostIcons.MoreHoriz, stringResource(Res.string.posts_more), glyphTop = false) { menu = true }
         }
         PostView.replyingTo(shown, quoted = false, midThread = false)?.let { ReplyingTo(it, shown.replyToPostId, actions) }
         if (PostView.textMissing(shown)) {
