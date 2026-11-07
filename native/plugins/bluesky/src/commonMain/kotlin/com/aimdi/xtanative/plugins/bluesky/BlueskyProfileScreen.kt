@@ -125,7 +125,9 @@ internal enum class ProfileTab(val read: BlueskyProfileTab?, val label: PluginTe
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 internal fun BlueskyProfileScreen(app: BlueskyApp, actor: String) {
-    val profile = rememberKept("bluesky-profile:$actor") { scope -> ProfileState(app, actor, scope) }
+    // Another AppView reads the profile anew: what the one left still answers lands in a state no longer shown.
+    val server by app.prefs.appView.collectAsState()
+    val profile = rememberKept("bluesky-profile:$server\n$actor") { scope -> ProfileState(app, actor, scope) }
     val state by profile.state.collectAsState()
     val follows by app.follows.state.collectAsState()
     var tab by rememberSaveable { mutableStateOf(ProfileTab.POSTS) }
@@ -411,6 +413,8 @@ internal class ProfileState(private val app: BlueskyApp, private val actor: Stri
             mutable.update { it.copy(loading = true, problem = null) }
             try {
                 val profile = app.client.profile(actor)
+                // A handle now naming another account: the old one's pages go.
+                if (state.value.profile?.did.let { it != null && it != profile.did }) tabs.clear()
                 mutable.update { State(profile, loading = false, pinned = it.pinned?.takeIf { pin -> pin.uri == profile.pinnedPostUri }) }
                 readPin(profile)
             } catch (e: CancellationException) {

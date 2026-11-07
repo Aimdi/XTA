@@ -135,3 +135,58 @@ untested | bluesky_interleaved_test › blueskyInterleavedItems drops posts with
 untested | bluesky_interleaved_test › a group with replies off leaves Bluesky replies out, and keeps them when on | HomeFeed.posts (FeedKinds) | same test
 ## test/bluesky_likes_snapshot_test.dart
 covered | bluesky_likes_snapshot_test › BlueskyPost snapshot round-trips all liked-post fields | networks/bluesky BlueskySnapshot.kt | BlueskySnapshotTest.whatThisAppWritesReadsBackTheSame, aPostXtaKeptReadsWholly
+
+## test/bluesky_models_test.dart
+covered | bluesky_models_test › accepts bare hosts and trims trailing slashes | networks/bluesky BlueskyUrls.appView | BlueskyUrlsTest.anAppViewIsMadeUsableFromABareHostOrAFullAddress
+covered | bluesky_models_test › refuses empty or non-http values | BlueskyUrls.appView | BlueskyUrlsTest.anUnusableAppViewFallsBackToBlueskysOwn
+covered | bluesky_models_test › blueskyAppViewFromPrefs falls back to the working default | BlueskyUrls.appViewOrDefault | BlueskyUrlsTest.anUnusableAppViewFallsBackToBlueskysOwn
+covered | bluesky_models_test › accepts bare handles, @handles and profile URLs | BlueskyUrls.handle | BlueskyUrlsTest.handlesComeBareWithAnAtOrInAProfileLink
+covered | bluesky_models_test › keeps dotted custom handles | BlueskyUrls.handle | BlueskyUrlsTest.handlesComeBare… (jay.bsky.team)
+covered | bluesky_models_test › accepts did:plc identifiers | BlueskyUrls.handle | BlueskyUrlsTest.handlesComeBare…
+covered | bluesky_models_test › refuses what is not a handle | BlueskyUrls.handle | BlueskyUrlsTest.whatIsNoHandleIsRefused
+covered | bluesky_models_test › builds a bsky.app post URL from handle and at:// URI | BlueskyUrls.webUrl | BlueskyUrlsTest.aPostsWebLinkUsesItsHandleElseTheDidInItsUri
+covered | bluesky_models_test › returns null when the URI has no rkey | BlueskyUrls.webUrl/rkeyOf | BlueskyUrlsTest.aPostsWebLink…, aRecordKeyIsTheLastOfThreeParts
+covered | bluesky_models_test › reads text, author, images and date off a feed item | BlueskyParser.kt | BlueskyParserTest.aFeedItemReadsItsAuthorTextPicturesAndCounts
+covered | bluesky_models_test › drops empty items and tolerates a reshaped feed | BlueskyParser.kt | BlueskyParserTest.postsWithNothingToShowOrNoUriAreDropped, aReshapedFeedIsEmptyNotACrash
+covered | bluesky_models_test › keeps engagement counts and a repost reason | BlueskyParser.kt | BlueskyParserTest.aFeedItemReads…, aRepostKeepsWhoRepostedItAndWhen
+covered | bluesky_models_test › reads a quote embed and an external link card | BlueskyParser.kt | BlueskyParserTest.aQuoteKeepsItsOwnPicturesButNotAQuoteOfItsOwn, anExternalEmbedIsALinkCard…
+covered | bluesky_models_test › prefers fullsize, keeps aspect, and reads a video thumb | BlueskyParser.kt | BlueskyParserTest.picturesPreferTheirFullSizeKeepTheirShapeAndAltAndAppearOnce, aVideoPlaysItsPlaylist…
+covered | bluesky_models_test › reads reply parent handle from a feed item | BlueskyParser.kt | BlueskyParserTest.aReplyNamesWhomAndWhatItAnswers
+covered | bluesky_models_test › quoted viewRecord keeps embeds media | BlueskyParser.kt | BlueskyParserTest.aQuoteKeepsItsOwnPictures…
+covered | bluesky_models_test › flattens parents and nested replies | BlueskyParser.kt | BlueskyParserTest.aThreadFlattensAncestorsRootFirstAndRepliesDepthFirst
+covered | bluesky_models_test › reads documented fields defensively | BlueskyParser.profile | BlueskyParserTest.blankProfileFieldsAreNullAndANameFallsBackToTheHandle
+covered | bluesky_models_test › reads banner and createdAt from the AppView | BlueskyParser.profile | BlueskyParserTest.aProfileReadsItsCountsBannerJoinDateAndPin
+covered | bluesky_models_test › blank banner and createdAt stay null | BlueskyParser.profile | BlueskyParserTest.blankProfileFieldsAreNull…
+covered | bluesky_models_test › reads bsky.app list URLs and AT-URIs | BlueskyUrls.listRef | BlueskyUrlsTest.listsFeedsAndStarterPacksAreNamedByLinkOrUri
+covered | bluesky_models_test › parseBlueskyFollowsPage reads follows and cursor | BlueskyClient.follows | BlueskyClientTest.feedsListsAndTheGraphAreReadAtTheirOwnEndpoints
+covered | bluesky_models_test › parseBlueskyListMembersPage reads subjects | BlueskyParser.listMembers | BlueskyParserTest.aListComesWithItsMembers…
+covered | bluesky_models_test › parseBlueskyFollowersPage reads followers and cursor | BlueskyClient.followers | BlueskyClientTest.feedsListsAndTheGraph…
+covered | bluesky_models_test › a video keeps its HLS playlist alongside the thumbnail | BlueskyParser.kt | BlueskyParserTest.aVideoPlaysItsPlaylistWithItsThumbnailAsThePoster
+covered | bluesky_models_test › a video inside recordWithMedia plays, beside the quote | BlueskyParser.kt | BlueskyParserTest.recordWithMediaCarriesTheQuoteBesideItsClip
+covered | bluesky_models_test › the playlist survives a liked-post snapshot | BlueskySnapshot.kt | BlueskySnapshotTest.aPostXtaKeptReadsWholly / whatThisAppWritesReadsBackTheSame (videoUrls)
+
+## test/bluesky_profile_chrome_test.dart
+covered | bluesky_profile_chrome_test › home remounts with posts already painted do not fetch | networks/bluesky BlueskyFollowing.kt (ten-minute reuse), plugins/bluesky FollowingTimeline | BlueskyFollowingTest.aReadWithinTenMinutesReusesThePagesUnlessForced, BlueskyFollowingTimelineTest.followingAnotherAccount… (one request)
+covered | bluesky_profile_chrome_test › the first empty paint still fetches | FollowingTimeline.start | BlueskyFollowingTimelineTest.anEmptyAnswerIsNotAskedAgainOnEntryButAPullAsks
+covered | bluesky_profile_chrome_test › pull-to-refresh fetches even when posts are on screen | FollowingTimeline.refresh(force) | BlueskyFollowingTimelineTest.anEmptyAnswerIsNotAskedAgain…ButAPullAsks
+untested | bluesky_profile_chrome_test › profile identity matches the X header: name, handle, joined, counts | plugins/bluesky BlueskyProfileScreen.kt (Header, About: name, @handle, description, Joined, following/followers) | UI only, read in code; the parsed fields in BlueskyParserTest.aProfileReadsItsCountsBannerJoinDateAndPin. Native's profile screen carries Follow in the header as XTA's screen does
+## test/bluesky_profile_saved_test.dart
+covered | bluesky_profile_saved_test › Saved on a profile is only that author's local likes | networks/bluesky BlueskyLocal.likedBy | BlueskyLocalTest.aProfilesLikesTabListsOnlyItsAuthorsLikedPosts
+covered | bluesky_profile_saved_test › a DID match still counts after a handle rename | BlueskyLocal.likedBy (DID first) | BlueskyLocalTest.aProfilesLikesTab… (by DID with no handle)
+covered | bluesky_profile_saved_test › handle match is case-insensitive | BlueskyLocal.likedBy | BlueskyLocalTest.aProfilesLikesTab… ("MAYA.bsky.social")
+covered | bluesky_profile_saved_test › blank actor does not dump every local like onto the tab | BlueskyLocal.likedBy | BlueskyLocalTest.aProfilesLikesTab… (blank → empty)
+
+## test/bluesky_profile_upgrade_test.dart
+untested | bluesky_profile_upgrade_test › metadata failure does not block refresh of an already loaded feed | plugins/bluesky BlueskyProfileScreen.kt (ProfileState, tabs on their own PagedItems) | BlueskyProfileStateTest.aFailedProfileReadKeepsWhatWasShownAndItsPostsReadAgain
+untested | bluesky_profile_upgrade_test › failed refresh retries page one without mistaking old cursor for pagination | ui/plugins PagedItems.refresh | BlueskyProfileStateTest.aFailedProfileRead… (page one asked without a cursor), BlueskySourcesTest.aFailedRefreshKeepsThePostsShown…
+untested | bluesky_profile_upgrade_test › failed next page retries its cursor and preserves earlier cards | PagedItems.more/retryMore | BlueskySourcesTest.aFailedPageKeepsItsCursorForATryAgain
+untested | bluesky_profile_upgrade_test › cursor cycles terminate while new posts from the final page survive | PagedItems.more | BlueskySourcesTest.pagingAsksOnceAtATime…StopsAtARepeatedCursor ("third" kept)
+untested | bluesky_profile_upgrade_test › refresh invalidates an older pagination result | PagedItems.refresh (cancels the page under way) | BlueskyProfileStateTest.aRefreshDropsAPageStillComingOfTheListBefore
+missing/different | bluesky_profile_upgrade_test › a handle resolving to a new DID clears old identity feeds and pending pages | ProfileState.load | the tabs kept reading the old DID; now they are dropped when the handle names another account. BlueskyProfileStateTest.aHandleNowNamingAnotherAccountDropsTheOldAccountsPages
+missing/different | bluesky_profile_upgrade_test › switching AppView rejects late results and reloads from the selected source | BlueskyProfileScreen (state kept per AppView and actor) | the profile stayed on the AppView it was opened with; now another AppView reads it anew and the old one's late answers land in a state no longer shown. UI keying only, read in code
+covered | bluesky_profile_upgrade_test › pin is first and appears once only in Posts | networks/bluesky BlueskyProfileTab.withPin | BlueskyTimelineTest.profileTabsShowTheirOwnPostsAndPostsStartsWithThePinOnce
+untested | bluesky_profile_upgrade_test › pin failure retains the feed and has an independent retry | ProfileState.readPin/retryPin | BlueskyProfileStateTest.aPinThatFailsKeepsTheFeedAndIsTriedAgainOnItsOwnAndARemovedPinGoes
+untested | bluesky_profile_upgrade_test › a removed pin and disposed late pin do not remain visible | ProfileState.load (pin kept only while the profile still pins it; scope ends with the screen) | same test, last part
+covered | bluesky_profile_upgrade_test › bio links preserve UTF-8 offsets and balanced URL punctuation | networks/bluesky BlueskyFacets.profileLinks | BlueskyFacetsTest.bioLinksKeepUtf8OffsetsAndBalancedPunctuation
+untested | bluesky_profile_upgrade_test › profile metadata fits narrow large text and exposes posts count | BlueskyProfileScreen.kt (ProfileDetails: post_count plural, Count ≥ 48 dp) | UI only, read in code (the bio is LinkedText, not selectable)
+untested | bluesky_profile_upgrade_test › Posts identifies and renders the pinned card once | BlueskyProfileScreen.postRows, NetworkPost.pinned | UI; the once-only rule is BlueskyTimelineTest.profileTabsShow…PinOnce
