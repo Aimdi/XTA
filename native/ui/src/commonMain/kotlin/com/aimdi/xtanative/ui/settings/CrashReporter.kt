@@ -1,5 +1,7 @@
 package com.aimdi.xtanative.ui.settings
 
+import com.aimdi.xtanative.core.x.XNoAccountException
+import com.aimdi.xtanative.core.x.XRateLimitedException
 import com.aimdi.xtanative.store.settings.CrashReportPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import java.io.IOException
@@ -56,8 +58,15 @@ data class CrashIssue(val error: String, val stack: String, val body: String) {
             return lines.subList(start + 2, end).joinToString("\n")
         }
 
-        /** XTA files no network failure that slipped through, nor a cancelled job: only the app's own faults. */
-        fun shouldReport(error: Throwable): Boolean = error !is IOException && error !is CancellationException
+        /**
+         * XTA files no network failure that slipped through, nor a cancelled
+         * job, nor the account errors the screens explain (no account, none
+         * working, every one rate-limited): only the app's own faults.
+         */
+        fun shouldReport(error: Throwable): Boolean = when (error) {
+            is IOException, is CancellationException, is XNoAccountException, is XRateLimitedException -> false
+            else -> true
+        }
 
         /** The issue's body, as XTA writes it, with the thread and the time here. */
         fun body(error: String, stack: String, appVersion: String, os: String, thread: String, at: Instant, context: String? = null): String = buildString {

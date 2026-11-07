@@ -160,6 +160,10 @@ class PostRulesTest {
         assertEquals("boosts-2", (items[1] as BoostRuns.Item.Run).key)
         assertEquals(">,,< fine", BoostRuns.preview("&gt;,,&lt;\nfine"))
         assertEquals(78, BoostRuns.preview("x".repeat(200)).length)
+        assertTrue(BoostRuns.preview("x".repeat(200)).endsWith("…"))
+        assertEquals("rock & roll", BoostRuns.preview("rock &amp; roll"))
+        assertEquals("", BoostRuns.preview(""))
+        assertEquals("b".repeat(80), BoostRuns.preview("b".repeat(80)), "a post that just fits is left whole")
     }
 
     @Test

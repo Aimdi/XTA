@@ -47,6 +47,8 @@ class XCommunityAndUsersTest {
         assertTrue(page.bottomCursor != null)
         val back = XCodec.decode(XCodec.encode(page.threads)).flatMap(XThread::posts)
         assertEquals(setOf(flutter), back.map { it.communityId }.toSet(), "the community survives the disk cache")
+        val none = XCommunityParser.posts(J.parse("""{"data":{}}"""))
+        assertTrue(none.threads.isEmpty() && none.bottomCursor == null, "a body without a timeline is an empty last page")
     }
 
     @Test

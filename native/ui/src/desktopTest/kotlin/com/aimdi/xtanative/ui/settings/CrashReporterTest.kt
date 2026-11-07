@@ -1,5 +1,9 @@
 package com.aimdi.xtanative.ui.settings
 
+import com.aimdi.xtanative.core.x.XNoAccountException
+import com.aimdi.xtanative.core.x.XNoWorkingAccountException
+import com.aimdi.xtanative.core.x.XRateLimitedException
+
 import com.aimdi.xtanative.store.settings.CrashReportPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import java.io.File
@@ -92,6 +96,22 @@ class CrashReporterTest {
         assertEquals(CrashReportResult.DUPLICATE, reporter.report(issue()))
         assertEquals(CrashReportResult.SENT, reporter.report(issue(frame = "a.B.e(B.kt:9)")))
         assertEquals(2, github.sent.size)
+    }
+
+    @Test
+    fun theAccountErrorsTheScreensExplainAreNotFiled() {
+        assertTrue(CrashIssue.shouldReport(IllegalStateException("boom")))
+        assertFalse(CrashIssue.shouldReport(XNoAccountException()))
+        assertFalse(CrashIssue.shouldReport(XRateLimitedException()))
+        assertFalse(CrashIssue.shouldReport(XNoWorkingAccountException()))
+        assertFalse(CrashIssue.shouldReport(IOException("offline")))
+    }
+
+    @Test
+    fun theRepositoryMustBeOwnerSlashName() {
+        assertEquals("https://api.github.com/repos/Aimdi/XTA-gamma/issues", CrashReporter.issueApiUrl("Aimdi/XTA-gamma"))
+        assertNull(CrashReporter.issueApiUrl("bad"))
+        assertNull(CrashReporter.issueApiUrl("/"))
     }
 
     @Test
