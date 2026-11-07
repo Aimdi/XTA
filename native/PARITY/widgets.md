@@ -425,3 +425,157 @@ covered | reader_state_test.dart › profile shows persisted content while refre
 covered | saved_tab_order_test.dart › built-in Notes tab is always present, after Favorites | store/saved SavedTabs; SavedViewTest | 
 covered | saved_tab_order_test.dart › Notes is a built-in, never a folder id | store/saved SavedTabs; SavedViewTest | 
 covered | saved_tab_order_test.dart › stored order keeps Notes if the reader moved it | store/saved SavedTabs; SavedViewTest | 
+covered | search_scope_test.dart › SearchScopeStore starts on X and select updates it | ui/trends/TrendsViewModel.kt + DiscoverScopes; DiscoverScopesTest | 
+covered | search_scope_test.dart › searchablePlugins lists only enabled search plugins | DiscoverScopes.chips over the running plugins with search; DiscoverScopesTest | a switched-off plugin is not running, so not listed
+covered | search_scope_test.dart › DiscoverQueryStore commit updates immediately | ui/trends/TrendsViewModel.kt + DiscoverScopes; DiscoverScopesTest | 
+covered | search_scope_test.dart › effectiveSearchScope falls back to X when the plugin is off | ui/trends/TrendsViewModel.kt + DiscoverScopes; DiscoverScopesTest | 
+covered | search_users_lifetime_test.dart › an obsolete success cannot replace the latest people results | ui/search/SearchViewModel.kt people = PagedRead; PagedReadTest | 
+covered | search_users_lifetime_test.dart › an obsolete failure cannot stop a newer pending search | ui/search/SearchViewModel.kt people = PagedRead; PagedReadTest | 
+covered | search_users_lifetime_test.dart › clearing people search cancels pending results without another request | ui/search/SearchViewModel.kt people = PagedRead; PagedReadTest | 
+covered | search_users_lifetime_test.dart › a failed people search can be retried and clears its error | ui/search/SearchViewModel.kt people = PagedRead; PagedReadTest | 
+covered | search_users_lifetime_test.dart › disposing cancels the wait and ignores late success and new searches | PagedRead in the view model's scope, cancelled with it | 
+covered | search_users_lifetime_test.dart › a stalled people request times out and permits retry | core XHttp 30 s callTimeout; a stalled call fails and PagedRead.retry reads again (PagedReadTest aFailedFirstPageSaysWhyAndIsReadAgain) | 
+covered | show_more_cursor_test.dart › reads the value X puts directly on content | core/x/parse XParser.conversation; XTimelineParserTest | 
+covered | show_more_cursor_test.dart › reads the operation shape | core/x/parse XParser.conversation; XTimelineParserTest | 
+covered | show_more_cursor_test.dart › reads the itemContent shape | core/x/parse XParser.conversation; XTimelineParserTest | 
+covered | show_more_cursor_test.dart › matches the entry id whatever case X spells it in | core/x/parse XParser.conversation; XTimelineParserTest | 
+covered | show_more_cursor_test.dart › ignores the ordinary bottom cursor, which is automatic paging | core/x/parse XParser.conversation; XTimelineParserTest | 
+covered | show_more_cursor_test.dart › a conversation with nothing withheld offers no cursor | core/x/parse XParser.conversation; XTimelineParserTest | 
+covered | show_more_cursor_test.dart › a shape we do not recognise yields null rather than throwing | core/x/parse XParser.conversation; XTimelineParserTest | 
+covered | show_more_cursor_test.dart › reads a show-more cursor nested inside a conversationthread module | core/x/parse XParser.conversation; XTimelineParserTest | 
+covered | show_more_cursor_test.dart › prefers a top-level show-more cursor over a nested one | core/x/parse XParser.conversation; XTimelineParserTest | 
+covered | show_more_cursor_test.dart › is true when a show-more cursor is present even without reply chains | core/x/parse XParser.conversation; XTimelineParserTest | 
+covered | show_more_cursor_test.dart › is true when a bottom cursor can still load replies | core/x/parse XParser.conversation; XTimelineParserTest | 
+covered | show_more_cursor_test.dart › is true when a reply chain follows the focal tweet | core/x/parse XParser.conversation; XTimelineParserTest | 
+covered | show_more_cursor_test.dart › is true when replies are stacked in the same chain after the focal tweet | core/x/model/XConversation.kt hasReplies/hasRepliesOrMore; XGuestAndRegistryTest | 
+covered | show_more_cursor_test.dart › is false for a focal-only page with no show-more | core/x/model/XConversation.kt hasReplies/hasRepliesOrMore; XGuestAndRegistryTest | 
+covered | show_more_cursor_test.dart › groups AddToModule tweets into conversation chains | core/x/model/XConversation.kt hasReplies/hasRepliesOrMore; XGuestAndRegistryTest | 
+covered | show_more_cursor_test.dart › keeps tweets that omitted itemType but still carry a result | core/x/model/XConversation.kt hasReplies/hasRepliesOrMore; XGuestAndRegistryTest | 
+covered | show_more_cursor_test.dart › reads a show-more cursor from module items | core/x/model/XConversation.kt hasReplies/hasRepliesOrMore; XGuestAndRegistryTest | 
+covered | show_more_cursor_test.dart › reads a bottom cursor from module items | core/x/parse XParser.conversation; XTimelineParserTest | 
+covered | speech_store_test.dart › short text is one utterance | services/speech SpeechText, SpeechReader; SpeechTextTest, SpeechReaderTest | 
+covered | speech_store_test.dart › nothing to read is nothing to say | services/speech SpeechText, SpeechReader; SpeechTextTest, SpeechReaderTest | 
+covered | speech_store_test.dart › long text is broken at sentence ends, never mid-word | services/speech SpeechText, SpeechReader; SpeechTextTest, SpeechReaderTest | 
+covered | speech_store_test.dart › every word survives the split | services/speech SpeechText, SpeechReader; SpeechTextTest, SpeechReaderTest | 
+covered | speech_store_test.dart › one sentence longer than the limit is cut where it has to be | services/speech SpeechText, SpeechReader; SpeechTextTest, SpeechReaderTest | 
+covered | speech_store_test.dart › starts at the held paragraph and keeps the rest | services/speech SpeechText, SpeechReader; SpeechTextTest, SpeechReaderTest | 
+covered | speech_store_test.dart › starts at a needle in the middle of the article | services/speech SpeechText, SpeechReader; SpeechTextTest, SpeechReaderTest | 
+covered | speech_store_test.dart › uses the remainder the web view sent when the article does not match | services/speech SpeechText, SpeechReader; SpeechTextTest, SpeechReaderTest | 
+covered | speech_store_test.dart › empty needle keeps the whole article | services/speech SpeechText, SpeechReader; SpeechTextTest, SpeechReaderTest | 
+covered | speech_store_test.dart › nothing is playing to begin with | services/speech SpeechReader state; SpeechReaderTest theBarShowsWhileReading... | state equality is a Kotlin data class
+covered | speech_store_test.dart › two readings of the same article are the same state | services/speech SpeechReader state; SpeechReaderTest theBarShowsWhileReading... | state equality is a Kotlin data class
+covered | stale_feed_preview_test.dart › separates the failures a reader would act on differently | data/Problem.kt Problem.of; ProblemLookTest | 
+covered | stale_feed_preview_test.dart › anything else stays unknown rather than being guessed at | data/Problem.kt Problem.of; ProblemLookTest | 
+covered | stale_feed_preview_test.dart › a failed first page with cached posts shows them | ui/group/GroupFeedViewModel.kt showCached/stale + data/Problem.kt; GroupFeedViewModelTest, ProblemLookTest | 
+covered | stale_feed_preview_test.dart › no error means the normal list, not the cache | ui/group/GroupFeedViewModel.kt showCached/stale + data/Problem.kt; GroupFeedViewModelTest, ProblemLookTest | 
+covered | stale_feed_preview_test.dart › an empty or absent cache leaves the error page in place | ui/group/GroupFeedViewModel.kt showCached/stale + data/Problem.kt; GroupFeedViewModelTest, ProblemLookTest | 
+covered | stale_feed_preview_test.dart › a later page failing does not replace the posts already loaded | ui/group/GroupFeedViewModel.kt showCached/stale + data/Problem.kt; GroupFeedViewModelTest, ProblemLookTest | 
+untested→ported | stale_feed_preview_test.dart › compares the day, not the elapsed time | ui/common/Times.kt sameCalendarDay (used by savedAtText); TimesTest | 
+untested→ported | stored_date_format_test.dart › saving works in a language intl has no date data for | store/backup/XtaTime.kt sqlite; XtaTimeTest | 
+untested→ported | stored_date_format_test.dart › a stored date keeps the afternoon and reads back the same | store/backup/XtaTime.kt sqlite; XtaTimeTest | 
+covered | subscription_health_test.dart › name connection failure does not run the destructive missing-account fallback | core/session (followed-account checks); FollowsTest aHandleThatCannotBeLookedUp..., missingSuspendedAndRenamed..., rateLimitsAndHungLookups... | 
+covered | subscription_health_test.dart › ID fallback keeps uncertain failures out of deletion candidates: ${error.runtimeType} | core/session (followed-account checks); FollowsTest aHandleThatCannotBeLookedUp..., missingSuspendedAndRenamed..., rateLimitsAndHungLookups... | 
+covered | subscription_health_test.dart › confirmed missing, suspended and renamed accounts stay distinguishable | core/session (followed-account checks); FollowsTest aHandleThatCannotBeLookedUp..., missingSuspendedAndRenamed..., rateLimitsAndHungLookups... | 
+covered | subscription_health_test.dart › rate limits and hung lookups are not deletions | core/session (followed-account checks); FollowsTest aHandleThatCannotBeLookedUp..., missingSuspendedAndRenamed..., rateLimitsAndHungLookups... | 
+covered | subscription_pack_test.dart › round-trips a pack | core/session GroupPack; FollowsTest aPackReadsBackAsWrittenAndAnotherFormatOrVersionIsRefused | 
+covered | subscription_pack_test.dart › rejects unknown format | core/session GroupPack; FollowsTest aPackReadsBackAsWrittenAndAnotherFormatOrVersionIsRefused | 
+covered | subscription_pack_test.dart › rejects unknown version | core/session GroupPack; FollowsTest aPackReadsBackAsWrittenAndAnotherFormatOrVersionIsRefused | 
+covered | threaded_conversation_test.dart › buildCappedThreadList inserts continue markers past depth 2 | ui/post/ConversationRules.kt ThreadTree.rows/skipSubtree; ConversationRulesTest | 
+covered | threaded_conversation_test.dart › skipThreadSubtree jumps past children | ui/post/ConversationRules.kt ThreadTree.rows/skipSubtree; ConversationRulesTest | 
+covered | ticker_client_test.dart › an ordinary share is asked for as written, then as a pair | plugins/stocks TickerClient, YahooFinance; TickerClientTest, TickersTest, YahooFinanceTest | 
+covered | ticker_client_test.dart › an index is asked for under the name the service quotes it by | plugins/stocks TickerClient, YahooFinance; TickerClientTest, TickersTest, YahooFinanceTest | 
+covered | ticker_client_test.dart › a name that is already a pair or an index is not mangled | plugins/stocks TickerClient, YahooFinance; TickerClientTest, TickersTest, YahooFinanceTest | 
+covered | ticker_client_test.dart › falls through to the pair form when the bare name is unknown | plugins/stocks TickerClient, YahooFinance; TickerClientTest, TickersTest, YahooFinanceTest | 
+covered | ticker_client_test.dart › a network failure is not retried under other names | plugins/stocks TickerClient, YahooFinance; TickerClientTest, TickersTest, YahooFinanceTest | 
+covered | ticker_client_test.dart › a name nothing answers for reports not-found | plugins/stocks TickerClient, YahooFinance; TickerClientTest, TickersTest, YahooFinanceTest | 
+covered | ticker_client_test.dart › an index symbol is encoded once | plugins/stocks TickerClient, YahooFinance; TickerClientTest, TickersTest, YahooFinanceTest | 
+covered | ticker_client_test.dart › an index that does not answer never becomes a pair | plugins/stocks TickerClient, YahooFinance; TickerClientTest, TickersTest, YahooFinanceTest | 
+covered | ticker_client_test.dart › the range and interval reach the request | plugins/stocks TickerClient, YahooFinance; TickerClientTest, TickersTest, YahooFinanceTest | 
+covered | ticker_client_test.dart › search and trending go to the public host | plugins/stocks TickerClient, YahooFinance; TickerClientTest, TickersTest, YahooFinanceTest | 
+covered | ticker_client_test.dart › trending symbols are the ones the host listed | plugins/stocks TickerClient, YahooFinance; TickerClientTest, TickersTest, YahooFinanceTest | 
+covered | ticker_search_test.dart › keeps a useful equity and drops a numbered depositary receipt | plugins/stocks YahooFinance search/news/trending; YahooFinanceTest, TickerClientTest | 
+covered | ticker_search_test.dart › a reshaped payload is an empty list, not a throw | plugins/stocks YahooFinance search/news/trending; YahooFinanceTest, TickerClientTest | 
+covered | ticker_search_test.dart › keeps stories that have a title | plugins/stocks YahooFinance search/news/trending; YahooFinanceTest, TickerClientTest | 
+covered | ticker_search_test.dart › reads the symbols the host lists | plugins/stocks YahooFinance search/news/trending; YahooFinanceTest, TickerClientTest | 
+covered | ticker_search_test.dart › a missing result is nothing to show | plugins/stocks YahooFinance search/news/trending; YahooFinanceTest, TickerClientTest | 
+covered | ticker_symbol_test.dart › an ordinary share stays as written | plugins/stocks Tickers; TickersTest | 
+covered | ticker_symbol_test.dart › an index is the name FinTwit uses | plugins/stocks Tickers; TickersTest | 
+covered | ticker_symbol_test.dart › a crypto pair drops the quote currency | plugins/stocks Tickers; TickersTest | 
+covered | ticker_symbol_test.dart › an ordinary share is asked for as written, then as a pair | plugins/stocks Tickers; TickersTest | 
+covered | ticker_symbol_test.dart › an index is asked for under the name the service quotes it by | plugins/stocks Tickers; TickersTest | 
+covered | ticker_symbol_test.dart › an index name asks for its index and nothing else | plugins/stocks Tickers; TickersTest | 
+covered | ticker_symbol_test.dart › index names and ^ symbols are indices | plugins/stocks Tickers; TickersTest | 
+covered | ticker_symbol_test.dart › coins the tape files as pairs are crypto | plugins/stocks Tickers; TickersTest | 
+covered | ticker_symbol_test.dart › anything else is for the price service to say | plugins/stocks Tickers; TickersTest | 
+covered | ticker_symbol_test.dart › indices and the tape coins have names without any data | plugins/stocks Tickers; TickersTest | 
+covered | timeline_cache_trim_test.dart › keeps the newest entries and drops the rest | store/offline TimelineCache trim; TimelineCacheTest clearEmptiesTheCacheAndTrimKeepsTheNewestWithinAWeek | native keeps files, trimmed to the newest
+covered | timeline_cache_trim_test.dart › does nothing when the table is already under the cap | store/offline TimelineCache trim; TimelineCacheTest clearEmptiesTheCacheAndTrimKeepsTheNewestWithinAWeek | native keeps files, trimmed to the newest
+covered | timeline_cache_trim_test.dart › an empty table is not a special case | store/offline TimelineCache trim; TimelineCacheTest clearEmptiesTheCacheAndTrimKeepsTheNewestWithinAWeek | native keeps files, trimmed to the newest
+covered | translation_cache_test.dart › a stored translation is a hit | services/ai/XTranslation.kt TranslationCache; XTranslatorTest | 
+covered | translation_cache_test.dart › nothing stored is a miss | services/ai/XTranslation.kt TranslationCache; XTranslatorTest | 
+covered | translation_cache_test.dart › a value that is not a string is a miss | services/ai/XTranslation.kt TranslationCache; XTranslatorTest | 
+covered | translation_cache_test.dart › an entry that no longer parses is a miss, not a crash | services/ai/XTranslation.kt TranslationCache; XTranslatorTest | 
+covered | translation_cache_test.dart › translations into different languages do not share a key | services/ai/XTranslation.kt TranslationCache; XTranslatorTest | 
+covered | translation_cache_test.dart › the post and its source language still separate keys | services/ai/XTranslation.kt TranslationCache; XTranslatorTest | 
+covered | translation_cache_test.dart › the same request maps to the same key | services/ai/XTranslation.kt TranslationCache; XTranslatorTest | 
+covered | translation_cache_test.dart › a regional locale is kept distinct from its base language | services/ai/XTranslation.kt TranslationCache; XTranslatorTest | 
+covered | translation_cache_test.dart › cached translations expire | services/ai/XTranslation.kt TranslationCache; XTranslatorTest | 
+covered | tts_engines_test.dart › recognises the official package and any sherpa id | services/speech TtsRules; TtsRulesTest | 
+covered | tts_engines_test.dart › recognises Next-gen Kaldi and k2fsa package ids | services/speech TtsRules; TtsRulesTest | 
+covered | tts_engines_test.dart › prefers the official package over a friendly alias | services/speech TtsRules; TtsRulesTest | 
+covered | tts_engines_test.dart › falls back to any sherpa-named engine | services/speech TtsRules; TtsRulesTest | 
+covered | tts_engines_test.dart › is null when Sherpa is not installed | services/speech TtsRules; TtsRulesTest | 
+covered | tts_engines_test.dart › uses the installed package when the platform listed one | services/speech TtsRules; TtsRulesTest | 
+covered | tts_engines_test.dart › keeps the official id so setEngine still has something to try | services/speech TtsRules; TtsRulesTest | 
+covered | tts_engines_test.dart › drops Sherpa so the picker does not list it twice | services/speech TtsRules; TtsRulesTest | 
+covered | tts_engines_test.dart › offers Sherpa when the broken path was the system voice | services/speech TtsRules; TtsRulesTest | 
+covered | tts_engines_test.dart › offers install when Sherpa was already chosen | services/speech TtsRules; TtsRulesTest | 
+covered | tts_engines_test.dart › maps short locales to a BCP 47 tag | services/speech TtsRules; TtsRulesTest | 
+covered | tts_engines_test.dart › tries the chosen voice, then the app, then English | services/speech TtsRules; TtsRulesTest | 
+covered | tts_engines_test.dart › does not insist on German when the app is German | services/speech TtsRules; TtsRulesTest | 
+covered | tts_engines_test.dart › treats Android LANG_AVAILABLE and flutter_tts bools as success | services/speech TtsRules; TtsRulesTest | 
+covered | tts_engines_test.dart › adds the system default when getEngines hid it | services/speech TtsRules; TtsRulesTest | 
+covered | tts_engines_test.dart › skips de-DE when the engine only has English | services/speech TtsRules; TtsRulesTest | 
+covered | tts_engines_test.dart › uses the first installed language when nothing matches | services/speech TtsRules; TtsRulesTest | 
+covered | tweet_footer_fit_test.dart › shows everything when the strip fits | ui/post footer fit; PostFooterRulesTest theFooterDropsTheViewsFirstThenTheNumbersThenWraps | 
+covered | tweet_footer_fit_test.dart › drops the view count first, because it is only a number | ui/post footer fit; PostFooterRulesTest theFooterDropsTheViewsFirstThenTheNumbersThenWraps | 
+covered | tweet_footer_fit_test.dart › drops the labels only once dropping views is not enough | ui/post footer fit; PostFooterRulesTest theFooterDropsTheViewsFirstThenTheNumbersThenWraps | 
+covered | tweet_footer_fit_test.dart › asks to scale down when even bare glyphs overflow | ui/post footer fit; PostFooterRulesTest theFooterDropsTheViewsFirstThenTheNumbersThenWraps | 
+covered | tweet_footer_fit_test.dart › a tweet without a view count never reserves room for one | ui/post footer fit; PostFooterRulesTest theFooterDropsTheViewsFirstThenTheNumbersThenWraps | 
+covered | tweet_footer_fit_test.dart › fits views beside every action on a 360dp phone, as X does | ui/post footer fit; PostFooterRulesTest theFooterDropsTheViewsFirstThenTheNumbersThenWraps | 
+covered | tweet_footer_fit_test.dart › Material default metrics could not fit that phone at all | ui/post footer fit; PostFooterRulesTest theFooterDropsTheViewsFirstThenTheNumbersThenWraps | 
+covered | tweet_footer_fit_test.dart › a viral post keeps its engagement counts and gives up the view count | ui/post footer fit; PostFooterRulesTest theFooterDropsTheViewsFirstThenTheNumbersThenWraps | 
+n/a | updates_test.dart › reads this fork's tags | - | XTA's own release-tag scheme (vX.Y.Z-aimdiNN, bare aimdiNN); native releases are native-X.Y.Z and refuse XTA's tags (NativeUpdatesTest onlyXtaNativesPrereleasesAreVersions...)
+n/a | updates_test.dart › reads a plain upstream tag | - | XTA's own release-tag scheme (vX.Y.Z-aimdiNN, bare aimdiNN); native releases are native-X.Y.Z and refuse XTA's tags (NativeUpdatesTest onlyXtaNativesPrereleasesAreVersions...)
+n/a | updates_test.dart › tolerates a missing v and extra segments | - | XTA's own release-tag scheme (vX.Y.Z-aimdiNN, bare aimdiNN); native releases are native-X.Y.Z and refuse XTA's tags (NativeUpdatesTest onlyXtaNativesPrereleasesAreVersions...)
+covered | updates_test.dart › rejects non-versions | ui/chrome/Updates.kt versionOf; NativeUpdatesTest | a tag that is not native-X.Y.Z is no version and never offered
+covered | updates_test.dart › the installed fork build is not an update to itself | ui/chrome/Updates.kt NativeUpdates; NativeUpdatesTest | 
+covered | updates_test.dart › a newer fork build of the same version is an update | NativeUpdates.isNewer; NativeUpdatesTest theInstalledBuildIsNotAnUpdateToItself | ordered by number
+covered | updates_test.dart › an older fork build is not an update | NativeUpdates.isNewer; NativeUpdatesTest theInstalledBuildIsNotAnUpdateToItself | ordered by number
+covered | updates_test.dart › a higher version is an update even across fork builds | NativeUpdates.isNewer; NativeUpdatesTest theInstalledBuildIsNotAnUpdateToItself | ordered by number
+covered | updates_test.dart › a lower version is never an update | NativeUpdates.isNewer; NativeUpdatesTest theInstalledBuildIsNotAnUpdateToItself | ordered by number
+covered | updates_test.dart › builds without a baked tag ignore fork builds of their own version | ui/chrome/Updates.kt NativeUpdates; NativeUpdatesTest | 
+covered | updates_test.dart › builds without a baked tag still see a real version bump | ui/chrome/Updates.kt NativeUpdates; NativeUpdatesTest | 
+covered | updates_test.dart › a branch name baked in by workflow_dispatch falls back to the version | ui/chrome/Updates.kt versionOf; NativeUpdatesTest | a tag that is not native-X.Y.Z is no version and never offered
+covered | updates_test.dart › an unparseable latest release never nags | ui/chrome/Updates.kt versionOf; NativeUpdatesTest | a tag that is not native-X.Y.Z is no version and never offered
+n/a | updates_test.dart › a bare aimdiNN tag parses | - | XTA's own release-tag scheme (vX.Y.Z-aimdiNN, bare aimdiNN); native releases are native-X.Y.Z and refuse XTA's tags (NativeUpdatesTest onlyXtaNativesPrereleasesAreVersions...)
+n/a | updates_test.dart › the release that changed the scheme is offered | - | XTA's own release-tag scheme (vX.Y.Z-aimdiNN, bare aimdiNN); native releases are native-X.Y.Z and refuse XTA's tags (NativeUpdatesTest onlyXtaNativesPrereleasesAreVersions...)
+n/a | updates_test.dart › later bare builds are offered, earlier ones are not | - | XTA's own release-tag scheme (vX.Y.Z-aimdiNN, bare aimdiNN); native releases are native-X.Y.Z and refuse XTA's tags (NativeUpdatesTest onlyXtaNativesPrereleasesAreVersions...)
+n/a | updates_test.dart › a real version bump still wins over a bare tag | - | XTA's own release-tag scheme (vX.Y.Z-aimdiNN, bare aimdiNN); native releases are native-X.Y.Z and refuse XTA's tags (NativeUpdatesTest onlyXtaNativesPrereleasesAreVersions...)
+covered | updates_test.dart › a branch name is still not a version | ui/chrome/Updates.kt versionOf; NativeUpdatesTest | a tag that is not native-X.Y.Z is no version and never offered
+covered | user_verification_test.dart › is_blue_verified alone is a blue check | core/x/parse/XParser.kt verifiedTypeOf/affiliationOf; XPostAndUserFieldsTest theChecksBadges... | 
+covered | user_verification_test.dart › legacy.verified_type Business is gold, even when also blue | core/x/parse/XParser.kt verifiedTypeOf/affiliationOf; XPostAndUserFieldsTest theChecksBadges... | 
+covered | user_verification_test.dart › verification.verified_type Government is grey without legacy | core/x/parse/XParser.kt verifiedTypeOf/affiliationOf; XPostAndUserFieldsTest theChecksBadges... | 
+covered | user_verification_test.dart › the newer verification object wins over a stale legacy type | core/x/parse/XParser.kt verifiedTypeOf/affiliationOf; XPostAndUserFieldsTest theChecksBadges... | 
+covered | user_verification_test.dart › a legacy verified flag with no type is drawn blue | core/x/parse/XParser.kt verifiedTypeOf/affiliationOf; XPostAndUserFieldsTest theChecksBadges... | 
+covered | user_verification_test.dart › reads the affiliate label at the result level | core/x/parse/XParser.kt verifiedTypeOf/affiliationOf; XPostAndUserFieldsTest theChecksBadges... | 
+covered | user_verification_test.dart › reads the affiliate label under legacy | core/x/parse/XParser.kt verifiedTypeOf/affiliationOf; XPostAndUserFieldsTest theChecksBadges... | 
+covered | user_verification_test.dart › ignores the Automated bot label and labels without a badge | core/x/parse/XParser.kt verifiedTypeOf/affiliationOf; XPostAndUserFieldsTest theChecksBadges... | 
+covered | user_verification_test.dart › missing and misshapen fields read as no badges, never a throw | core/x/parse/XParser.kt verifiedTypeOf/affiliationOf; XPostAndUserFieldsTest theChecksBadges... | 
+covered | user_verification_test.dart › UserByScreenName @X is a gold check | core/x/parse/XParser.kt verifiedTypeOf/affiliationOf; XPostAndUserFieldsTest theChecksBadges... | 
+covered | user_verification_test.dart › a tweet author keeps its gold check through fromGraphqlJson | core/x/parse/XParser.kt verifiedTypeOf/affiliationOf; XPostAndUserFieldsTest theChecksBadges... | 
+covered | user_verification_test.dart › the live affiliate label parses to an openable X profile | core/x/parse/XParser.kt verifiedTypeOf/affiliationOf; XPostAndUserFieldsTest theChecksBadges... | 
+covered | user_verification_test.dart › a cached tweet keeps its author badges and affiliation | core/x/model/XCodec.kt; XModelHelpersTest | badges survive the cache
+covered | user_verification_test.dart › a user cached before badges existed falls back to its verified flag | core/x/model/XCodec.kt; XModelHelpersTest | badges survive the cache
+covered | user_verification_test.dart › a user list round trip keeps the badges | core/x/model/XCodec.kt; XModelHelpersTest | badges survive the cache
+covered | user_verification_test.dart › accepts x.com and twitter.com profile links only | services/links/XLinks.kt profileScreenName; XLinksTest aProfileLinksScreenNameIsReadWithoutResolving | 

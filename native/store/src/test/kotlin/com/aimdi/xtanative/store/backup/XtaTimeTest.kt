@@ -19,6 +19,21 @@ class XtaTimeTest {
     }
 
     @Test
+    fun anAfternoonIsWrittenInTwentyFourHoursAndReadsBackTheSameInAnyLanguage() {
+        val afternoon = Instant.parse("2026-09-04T13:37:05Z")
+        val before = java.util.Locale.getDefault()
+        try {
+            for (language in listOf("eo", "ar", "hi")) {
+                java.util.Locale.setDefault(java.util.Locale.forLanguageTag(language))
+                assertEquals("2026-09-04 13:37:05", XtaTime.sqlite(afternoon, ZoneOffset.UTC), language)
+            }
+        } finally {
+            java.util.Locale.setDefault(before)
+        }
+        assertEquals(afternoon, XtaTime.parse(XtaTime.sqlite(afternoon, berlin), berlin))
+    }
+
+    @Test
     fun aTimeWithoutAZoneIsTheDevicesAsDartReadsIt() {
         assertEquals(instant, XtaTime.parse("2026-01-02 04:04:05", berlin))
         assertEquals(instant, XtaTime.parse("2026-01-02T04:04:05.000", berlin))
