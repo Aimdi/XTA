@@ -360,3 +360,68 @@ covered | muted_keyword_storage_test.dart › reads legacy CSV as hide keywords 
 covered | muted_keyword_storage_test.dart › reads JSON with until and action | core/feed/FeedRules.kt MutedKeywords; FeedRulesTest | 
 covered | muted_keyword_storage_test.dart › encode round-trips through JSON storage | core/feed/FeedRules.kt MutedKeywords; FeedRulesTest | 
 covered | muted_keyword_storage_test.dart › drops expired terms | core/feed/FeedRules.kt MutedKeywords; FeedRulesTest | 
+covered | note_draft_recovery_test.dart › draft restores text, attachment identity and target after interruption | store/saved NoteEditor; NoteEditorTest | 
+covered | note_draft_recovery_test.dart › discard is scoped and cannot be resurrected by a queued write | store/saved NoteEditor; NoteEditorTest | 
+covered | note_editor_store_test.dart › cancel detection includes attachments and restored original body | store/saved NoteEditor; NoteEditorTest | 
+covered | note_editor_store_test.dart › failed save retains draft and attachments and can be retried | store/saved NoteEditor; NoteEditorTest | 
+covered | note_editor_store_test.dart › save blocks duplicate saves and attachment mutation until complete | store/saved NoteEditor; NoteEditorTest | 
+covered | note_editor_store_test.dart › cancelled and failed pickers preserve existing attachments | store/saved NoteEditor; NoteEditorTest | 
+n/a | paging_first_page_test.dart › pagingAwaitingFirstPage is only the in-flight first page | - | infinite_scroll_pagination's first-page state and post-frame fetch scheduling: Flutter package plumbing; native lists start their first read in the view model
+n/a | paging_first_page_test.dart › scheduleFirstPageFetch kicks page 0 once | - | infinite_scroll_pagination's first-page state and post-frame fetch scheduling: Flutter package plumbing; native lists start their first read in the view model
+n/a | paging_recovery_test.dart › leaving a stalled feed cancels its wait and deadline | - | leaving a feed cancels its view model scope (structured concurrency); no timer to release
+covered | paging_recovery_test.dart › stalled page unlocks retry and a late result cannot change its cursor | PagedRead runs counter (PagedReadTest aReadStartedOverDropsTheAnswerOfTheOneBefore) + OkHttp 30 s callTimeout in core XHttp | a stalled call ends as a failure that offers retry
+covered | paging_recovery_test.dart › refresh invalidates the old cursor even when the old page finishes last | ui/search/PagedRead.kt; PagedReadTest aReadStartedOverDropsTheAnswerOfTheOneBefore | 
+covered | paging_recovery_test.dart › shared first page releases a timeout and does not clear an active retry | core/feed/BatchRead.kt; BatchReadTest aBatchPastItsTimeFailsAndALateAnswerChangesNothing | 
+covered | paging_recovery_test.dart › soft refresh times out without losing posts and can retry | ui/plugins Fetch; FetchTest aSoftRefreshKeepsTheItemsShown... and aReadThatFailsKeepsWhatWasShown... | 
+covered | paging_recovery_test.dart › refresh coalesces toolbar/pull requests and blocks old-cursor pagination | ui/profile/ProfileViewModel.kt loadTab cancels the tab's in-flight page; refresh keeps the shown profile on failure | no controller test: the rule lives in loadTab's job cancel
+covered | paging_recovery_test.dart › retry repeats the failed refresh before using the pagination cursor | ui/profile/ProfileViewModel.kt loadTab cancels the tab's in-flight page; refresh keeps the shown profile on failure | no controller test: the rule lives in loadTab's job cancel
+covered | paging_recovery_test.dart › soft refresh cancels an older in-flight page | ui/profile/ProfileViewModel.kt loadTab cancels the tab's in-flight page; refresh keeps the shown profile on failure | no controller test: the rule lives in loadTab's job cancel
+covered | paging_recovery_test.dart › repairing missing first-page batches preserves older pages and cursor | core/feed BatchRead retry of failed batches; BatchReadTest aRetryReadsOnlyTheBatchesThatFailed | 
+covered | paging_recovery_test.dart › failed first-page repair retains visible items | core/feed BatchRead retry of failed batches; BatchReadTest aRetryReadsOnlyTheBatchesThatFailed | 
+covered | podcast_places_test.dart › places keep the newest 50 episodes, newest first, and round-trip | ui/media/Podcasts.kt PodcastPlaces; PlaybackTest placesKeepTheNewestFirstAndAtMostFifty | 
+covered | podcast_places_test.dart › a place at the very start is no place, and damaged entries are skipped | ui/media/Podcasts.kt PodcastPlaces; PlaybackTest placesKeepTheNewestFirstAndAtMostFifty | 
+covered | published_documents_test.dart › the documents are read from the default branch | store/settings/DataPrefs.kt PublishedDocuments, SettingsMigrations.repointPublishedDocuments; SettingsMigrationsTest anEarlierReleasesDocumentAddressPointsAtTodays... | 
+covered | published_documents_test.dart › only an earlier default counts as one | store/settings/DataPrefs.kt PublishedDocuments, SettingsMigrations.repointPublishedDocuments; SettingsMigrationsTest anEarlierReleasesDocumentAddressPointsAtTodays... | 
+covered | published_documents_test.dart › moves $former to the default branch and forgets what it read | store/settings/DataPrefs.kt PublishedDocuments, SettingsMigrations.repointPublishedDocuments; SettingsMigrationsTest anEarlierReleasesDocumentAddressPointsAtTodays... | 
+covered | published_documents_test.dart › moves the plugin catalogue and keeps its list | store/settings/DataPrefs.kt PublishedDocuments, SettingsMigrations.repointPublishedDocuments; SettingsMigrationsTest anEarlierReleasesDocumentAddressPointsAtTodays... | 
+covered | published_documents_test.dart › keeps an address set by hand, and what was read from it | store/settings/DataPrefs.kt PublishedDocuments, SettingsMigrations.repointPublishedDocuments; SettingsMigrationsTest anEarlierReleasesDocumentAddressPointsAtTodays... | 
+covered | published_documents_test.dart › leaves an install already on the default branch alone | store/settings/DataPrefs.kt PublishedDocuments, SettingsMigrations.repointPublishedDocuments; SettingsMigrationsTest anEarlierReleasesDocumentAddressPointsAtTodays... | 
+covered | quick_pick_test.dart › six show until All, which shows every one | store/saved QuickPick + ui/subscriptions/GroupPicker.kt; SaveSheetAndNotesTest, GroupPickerTest | 
+covered | quick_pick_test.dart › a sheet can show more before All | store/saved QuickPick + ui/subscriptions/GroupPicker.kt; SaveSheetAndNotesTest, GroupPickerTest | 
+covered | quick_pick_test.dart › created choices lead, and every choice shows once | store/saved QuickPick + ui/subscriptions/GroupPicker.kt; SaveSheetAndNotesTest, GroupPickerTest | 
+covered | quick_pick_test.dart › a choice gone since the sheet opened is passed over | store/saved QuickPick + ui/subscriptions/GroupPicker.kt; SaveSheetAndNotesTest, GroupPickerTest | 
+covered | quick_pick_test.dart › matches ignore case, and a typed name can become a choice | store/saved QuickPick + ui/subscriptions/GroupPicker.kt; SaveSheetAndNotesTest, GroupPickerTest | 
+covered | quick_pick_test.dart › a name a choice has, whatever its case, cannot be created again | store/saved QuickPick + ui/subscriptions/GroupPicker.kt; SaveSheetAndNotesTest, GroupPickerTest | 
+covered | quick_pick_test.dart › nothing found says so and offers the name | store/saved QuickPick + ui/subscriptions/GroupPicker.kt; SaveSheetAndNotesTest, GroupPickerTest | 
+covered | quick_pick_test.dart › creating empties the search and keeps All as it was | store/saved QuickPick + ui/subscriptions/GroupPicker.kt; SaveSheetAndNotesTest, GroupPickerTest | 
+covered | rate_limit_tracker_test.dart › is not limited when nothing has been flagged | core/x/XAccounts.kt XRateLimits; XAccountsTest | 
+covered | rate_limit_tracker_test.dart › is limited before the reset time | core/x/XAccounts.kt XRateLimits; XAccountsTest | 
+covered | rate_limit_tracker_test.dart › is not limited at or after the reset time | core/x/XAccounts.kt XRateLimits; XAccountsTest | 
+covered | rate_limit_tracker_test.dart › rate limits are per endpoint, not per account globally | core/x/XAccounts.kt XRateLimits; XAccountsTest | 
+covered | rate_limit_tracker_test.dart › rate limits are per account for the same endpoint | core/x/XAccounts.kt XRateLimits; XAccountsTest | 
+covered | rate_limit_tracker_test.dart › clear removes the limit for that account and endpoint | core/x/XAccounts.kt XRateLimits; XAccountsTest | 
+covered | rate_limit_tracker_test.dart › reports the requests left, counting down as they are sent | core/x/XAccounts.kt XRateLimits; XAccountsTest | 
+covered | rate_limit_tracker_test.dart › an answer with quota left keeps the account available | core/x/XAccounts.kt XRateLimits; XAccountsTest | 
+covered | rate_limit_tracker_test.dart › a spent quota sets the account aside until the reset | core/x/XAccounts.kt XRateLimits; XAccountsTest | 
+covered | rate_limit_tracker_test.dart › requests sent count the quota down | core/x/XAccounts.kt XRateLimits; XAccountsTest | 
+covered | rate_limit_tracker_test.dart › an answer written before requests in flight does not hand their credits back | core/x/XAccounts.kt XRateLimits; XAccountsTest | 
+covered | rate_limit_tracker_test.dart › a new window replaces the count | core/x/XAccounts.kt XRateLimits; XAccountsTest | 
+covered | rate_limit_tracker_test.dart › an unknown quota is never counted down | core/x/XAccounts.kt XRateLimits; XAccountsTest | 
+covered | rate_limit_tracker_test.dart › an answer without quota headers lifts a flag, as a success always did | core/x/XAccounts.kt XRateLimits; XAccountsTest | 
+covered | rate_limit_tracker_test.dart › malformed quota headers are ignored | core/x/XAccounts.kt XRateLimits; XAccountsTest | 
+covered | read_failure_kind_test.dart › names the category and the status X answered, never the body | core/x/XReadLog.kt failureOf; XReadLogTest; ui/common/ReadRetries.kt; ReadRetriesTest | 
+covered | read_failure_kind_test.dart › a failure outside the taxonomy names its type, not its message | core/x/XReadLog.kt failureOf; XReadLogTest; ui/common/ReadRetries.kt; ReadRetriesTest | 
+covered | read_failure_kind_test.dart › separates connectivity and timeout failures | core/x/XReadLog.kt failureOf; XReadLogTest; ui/common/ReadRetries.kt; ReadRetriesTest | 
+covered | read_failure_kind_test.dart › separates account, rate limit and endpoint failures | core/x/XReadLog.kt failureOf; XReadLogTest; ui/common/ReadRetries.kt; ReadRetriesTest | 
+covered | read_failure_kind_test.dart › does not confuse raw 404 with a proven endpoint rotation | core/x/XReadLog.kt failureOf; XReadLogTest; ui/common/ReadRetries.kt; ReadRetriesTest | 
+covered | read_failure_kind_test.dart › server failures are distinct and automatically recoverable | core/x/XReadLog.kt failureOf; XReadLogTest; ui/common/ReadRetries.kt; ReadRetriesTest | 
+covered | read_failure_kind_test.dart › session and endpoint failures never auto-retry; rate limits wait for their reset | core/x/XReadLog.kt failureOf; XReadLogTest; ui/common/ReadRetries.kt; ReadRetriesTest | 
+missing (not done) | read_failure_kind_test.dart › every other failure is transient and retried on a backoff | ui/common/ReadRetries.kt, data/Problem.kt | X's definitive error codes (22/34/50/63/200) map to Problem.Other and back off like any failure; telling them apart needs a new kind in the plugin-visible Problem type, left for the API bump
+covered | read_failure_kind_test.dart › X's definitive answers about an account are not retried | core/x/XReadLog.kt failureOf; XReadLogTest; ui/common/ReadRetries.kt; ReadRetriesTest | 
+covered | reader_state_test.dart › local search stays available while archive loads and keeps the latest query | ui/search LibrarySearch; LibrarySearchTest | 
+covered | reader_state_test.dart › highlight notes, selected tags and OCR survive reopening | store/saved ArchiveNotes; ArchiveNotesTest | 
+covered | reader_state_test.dart › dismissal persists per group and undo restores suggestions | store/follows DiscoveryFeedbackStore per group + DiscoveryViewModel undo; FollowsCacheTest, DiscoveryTest | 
+covered | reader_state_test.dart › profile shows persisted content while refresh fails | ui/profile/ProfileViewModel.kt load (kept profile stays, problem beside it); KeptProfilesTest | 
+covered | saved_tab_order_test.dart › built-in Notes tab is always present, after Favorites | store/saved SavedTabs; SavedViewTest | 
+covered | saved_tab_order_test.dart › Notes is a built-in, never a folder id | store/saved SavedTabs; SavedViewTest | 
+covered | saved_tab_order_test.dart › stored order keeps Notes if the reader moved it | store/saved SavedTabs; SavedViewTest | 
