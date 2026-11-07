@@ -215,3 +215,77 @@ n/a | group_loading_lifecycle_test.dart › a stalled group snapshot times out a
 n/a | group_loading_lifecycle_test.dart › a soft reload cancels the old snapshot and preserves current results | core/session/Session.kt (in-memory StateFlow) | a group's membership snapshot is an async SQLite read in XTA that can stall; native reads it from the in-memory session at once
 n/a | group_loading_lifecycle_test.dart › a failed membership reload keeps an already readable group visible | core/session/Session.kt (in-memory StateFlow) | a group's membership snapshot is an async SQLite read in XTA that can stall; native reads it from the in-memory session at once
 n/a | group_loading_lifecycle_test.dart › destroy releases pending group reads and ignores late completion | core/session/Session.kt (in-memory StateFlow) | a group's membership snapshot is an async SQLite read in XTA that can stall; native reads it from the in-memory session at once
+covered | group_membership_writes_test.dart › adding keeps the groups an account is in and takes a repeat quietly | core/session/Session.kt addingTo/removingFrom/withNewGroup; GroupSessionTest | 
+covered | group_membership_writes_test.dart › removing takes the account out of the given groups only | core/session/Session.kt addingTo/removingFrom/withNewGroup; GroupSessionTest | 
+covered | group_membership_writes_test.dart › a created group comes back by its id, empty, with the default mark and no undo | core/session/Session.kt addingTo/removingFrom/withNewGroup; GroupSessionTest | 
+covered | group_membership_writes_test.dart › saving a new group still writes its look and members | ui/subscriptions/GroupDraft.kt; GroupDraftTest savingANewGroupMakesItWithItsMarkMembersAndDate | 
+covered | group_membership_writes_test.dart › a suggested group is created with its accounts | ui/subscriptions UngroupedPlans; UngroupedPlansTest applyingMakesTheSuggestedGroups... | 
+n/a | group_migration_test.dart › migration 34 adds pinned and position, backfilling alphabetical order | - | SQLite schema migrations; native keeps groups in its session file (marks, positions, nsfw read by SessionCodec, see GroupSessionTest/XtaBackupTest)
+n/a | group_migration_test.dart › migration 35 adds emoji/mark_style and backfills symbol for custom icons | - | SQLite schema migrations; native keeps groups in its session file (marks, positions, nsfw read by SessionCodec, see GroupSessionTest/XtaBackupTest)
+n/a | group_migration_test.dart › migration 36 adds the custom-feed rule columns with inert defaults | - | SQLite schema migrations; native keeps groups in its session file (marks, positions, nsfw read by SessionCodec, see GroupSessionTest/XtaBackupTest)
+n/a | group_migration_test.dart › migration 52 adds nsfw with default off | - | SQLite schema migrations; native keeps groups in its session file (marks, positions, nsfw read by SessionCodec, see GroupSessionTest/XtaBackupTest)
+n/a | group_migration_test.dart › migration 53 creates booru_subscription | - | SQLite schema migrations; native keeps groups in its session file (marks, positions, nsfw read by SessionCodec, see GroupSessionTest/XtaBackupTest)
+n/a | group_migration_test.dart › migration 54 creates eh_favorite | - | SQLite schema migrations; native keeps groups in its session file (marks, positions, nsfw read by SessionCodec, see GroupSessionTest/XtaBackupTest)
+n/a | group_migration_test.dart › migration 55 creates tiktok_subscription | - | SQLite schema migrations; native keeps groups in its session file (marks, positions, nsfw read by SessionCodec, see GroupSessionTest/XtaBackupTest)
+n/a | group_migration_test.dart › migration 57 creates instagram_subscription | - | SQLite schema migrations; native keeps groups in its session file (marks, positions, nsfw read by SessionCodec, see GroupSessionTest/XtaBackupTest)
+covered | group_tree_test.dart › a parent takes everything nested inside it, however deep | core/session GroupTree, GroupBoard.sections; GroupsTest | 
+covered | group_tree_test.dart › a middle group takes only its own branch | core/session GroupTree, GroupBoard.sections; GroupsTest | 
+covered | group_tree_test.dart › a group with nothing inside it is just itself | core/session GroupTree, GroupBoard.sections; GroupsTest | 
+covered | group_tree_test.dart › an id nobody has heard of is still itself | core/session GroupTree, GroupBoard.sections; GroupsTest | 
+covered | group_tree_test.dart › a loop in stored data resolves instead of hanging | core/session GroupTree, GroupBoard.sections; GroupsTest | 
+covered | group_tree_test.dart › are the groups directly inside | core/session GroupTree, GroupBoard.sections; GroupsTest | 
+covered | group_tree_test.dart › none for a leaf | core/session GroupTree, GroupBoard.sections; GroupsTest | 
+covered | group_tree_test.dart › only the groups that stand on their own | core/session GroupTree, GroupBoard.sections; GroupsTest | 
+covered | group_tree_test.dart › a group whose parent was deleted comes back to the top rather than vanishing | core/session GroupTree, GroupBoard.sections; GroupsTest | 
+covered | group_tree_test.dart › a group that somehow parents itself is treated as top level | core/session GroupTree, GroupBoard.sections; GroupsTest | 
+covered | group_tree_test.dart › a group cannot go inside itself | core/session GroupTree, GroupBoard.sections; GroupsTest | 
+covered | group_tree_test.dart › a group cannot go inside its own descendant | core/session GroupTree, GroupBoard.sections; GroupsTest | 
+covered | group_tree_test.dart › an unrelated pair is fine | core/session GroupTree, GroupBoard.sections; GroupsTest | 
+covered | group_tree_test.dart › moving a child up to a sibling branch is fine | core/session GroupTree, GroupBoard.sections; GroupsTest | 
+covered | group_tree_test.dart › counts from zero at the top | core/session GroupTree, GroupBoard.sections; GroupsTest | 
+covered | group_tree_test.dart › a loop stops rather than counting forever | core/session GroupTree, GroupBoard.sections; GroupsTest | 
+covered | group_tree_test.dart › a child follows its parent instead of vanishing | core/session GroupTree, GroupBoard.sections; GroupsTest | 
+covered | group_tree_test.dart › depth follows depth, not the order the ids arrived in | core/session GroupTree, GroupBoard.sections; GroupsTest | 
+covered | group_tree_test.dart › every group appears exactly once, cycle or no cycle | core/session GroupTree, GroupBoard.sections; GroupsTest | 
+covered | group_tree_test.dart › a group whose parent is filtered out is still shown | core/session GroupTree, GroupBoard.sections; GroupsTest | 
+covered | group_tree_test.dart › keeps relative order and sinks NSFW to the second list | core/session GroupTree, GroupBoard.sections; GroupsTest | 
+covered | group_tree_test.dart › an all-safe list has an empty NSFW section | core/session GroupTree, GroupBoard.sections; GroupsTest | 
+covered | guest_token_test.dart › a token with no observed rate-limit headers is used | core/x/XGuest.kt; XGuestAndRegistryTest | 
+covered | guest_token_test.dart › a token with quota left inside the window is used | core/x/XGuest.kt; XGuestAndRegistryTest | 
+covered | guest_token_test.dart › an exhausted token inside the window is replaced | core/x/XGuest.kt; XGuestAndRegistryTest | 
+covered | guest_token_test.dart › once the window rolls over the quota has refilled, so the token is used again | core/x/XGuest.kt; XGuestAndRegistryTest | 
+covered | guest_token_test.dart › the boundary is inclusive of the reset instant | core/x/XGuest.kt; XGuestAndRegistryTest | 
+untested→ported | guest_token_test.dart › the guest bearer is a single constant, not repeated inline | core/x/XGuest.kt, XTransport GUEST_HEADERS; XClientParityTest | assertions added
+untested→ported | guest_token_test.dart › the user agent is the header value, not the whole map printed | core/x/XGuest.kt, XTransport GUEST_HEADERS; XClientParityTest | assertions added
+covered | held_refresh_test.dart › runs straight away when they are at the top | core/feed/CatchUp.kt HeldRefresh; CatchUpTest | 
+covered | held_refresh_test.dart › waits when they are reading further down | core/feed/CatchUp.kt HeldRefresh; CatchUpTest | 
+covered | held_refresh_test.dart › runs when they scroll back to the top | core/feed/CatchUp.kt HeldRefresh; CatchUpTest | 
+covered | held_refresh_test.dart › runs only once, however often they return to the top | core/feed/CatchUp.kt HeldRefresh; CatchUpTest | 
+covered | held_refresh_test.dart › returning to the top with nothing held does nothing | core/feed/CatchUp.kt HeldRefresh; CatchUpTest | 
+covered | held_refresh_test.dart › several changes while reading still cost one refresh | core/feed/CatchUp.kt HeldRefresh; CatchUpTest | 
+covered | held_refresh_test.dart › a change while at the top clears anything already held | core/feed/CatchUp.kt HeldRefresh; CatchUpTest | 
+covered | held_refresh_test.dart › uses pixels when the scroll position is attached | core/feed/CatchUp.kt HeldRefresh; CatchUpTest | 
+covered | held_refresh_test.dart › keeps the last known answer when pixels are unavailable | core/feed/CatchUp.kt HeldRefresh; CatchUpTest | 
+covered | held_refresh_test.dart › stops when the widget is gone | core/feed/CatchUp.kt HeldRefresh; CatchUpTest | 
+n/a | held_refresh_test.dart › stops when the inner position is ready | - | retrying a NestedScrollView restore while it has 0 or 2 positions: Flutter scroll plumbing
+n/a | held_refresh_test.dart › waits a few frames while NestedScrollView has 0 or 2 positions | - | retrying a NestedScrollView restore while it has 0 or 2 positions: Flutter scroll plumbing
+n/a | held_refresh_test.dart › gives up instead of scheduling forever | - | retrying a NestedScrollView restore while it has 0 or 2 positions: Flutter scroll plumbing
+n/a | home_observer_lifecycle_test.dart › destroyed home models stop listening to the app group store | - | a destroyed Flutter Store kept listening to another Store; native view models collect in their own scope, which ends with them
+covered | home_strip_restore_test.dart › a restored backup keeps the Home timelines it lists | store/settings/Settings.kt restoring; SettingsTest aRestoreAppliesTheSettingsAsXtasImportDoes | 
+n/a | home_strip_restore_test.dart › without the conversion shared preferences drops those lists | - | shared_preferences refusing List<dynamic>: a Flutter plugin quirk
+covered | home_strip_restore_test.dart › a value is removed from a stored list, and an unset list stays unset | data/plugins/PluginPrefs.kt; PluginPrefsTest | 
+untested→ported | http_client_test.dart › the same instance is handed out, so connections are pooled | core/x/http/XHttp.kt OkHttpXHttp.defaultClient; XClientParityTest | 
+n/a | http_client_test.dart › clearing it hands out a fresh one rather than null | - | resetting the Dart global client to null; native's shared client is never cleared
+covered | import_handles_test.dart › reads @handles, bare names and profile links | core/session ImportHandles; FollowsTest | 
+covered | import_handles_test.dart › dedupes by lowercase and skips junk | core/session ImportHandles; FollowsTest | 
+covered | import_handles_test.dart › accepts a trailing slash on a profile url | core/session ImportHandles; FollowsTest | 
+untested→ported | json_test.dart › a deep path needs no checks along the way | core/json/J.kt; JTest | 
+untested→ported | json_test.dart › a missing key anywhere on the path is null at the end, never a throw | core/json/J.kt; JTest | 
+untested→ported | json_test.dart › lists are stepped into by index, and past the end is null | core/json/J.kt; JTest | 
+untested→ported | json_test.dart › indexing a map or keying a list is a shape mismatch, so null | core/json/J.kt; JTest | 
+untested→ported | json_test.dart › a document that is not JSON at all answers every question with null | core/json/J.kt; JTest | 
+untested→ported | json_test.dart › each getter answers only for its own type | core/json/J.kt; JTest | 
+untested→ported | json_test.dart › numbers tolerate the string-wrapped digits X is fond of | core/json/J.kt; JTest | 
+untested→ported | json_test.dart › words are not numbers, however hopefully read | core/json/J.kt; JTest | 
+untested→ported | json_test.dart › a list wraps its elements; anything else is an empty one | core/json/J.kt; JTest | 
+untested→ported | json_test.dart › exists tells presence apart from a readable value | core/json/J.kt; JTest | 
