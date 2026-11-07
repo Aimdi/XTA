@@ -108,6 +108,7 @@
     <string name="paywalled_description">هذا المنشور خلف جدار دفع Substack. افتحه في المتصفح إذا كان لديك وصول.</string>
     <string name="paywalled_title">منشور للمشتركين فقط</string>
     <string name="pin">تثبيت</string>
+    <string name="playback_speed">سرعة التشغيل</string>
     <string name="plugin_description">تابع النشرات واطّلع على Notes العامة واقرأ منشورات Substack المجانية</string>
     <string name="plugin_name">Substack</string>
     <string name="preview_badge">مقتطف</string>

@@ -98,6 +98,7 @@
     <string name="paywalled_description">这篇文章在 Substack 付费墙之后。如果有权限，请在浏览器中打开。</string>
     <string name="paywalled_title">订阅者专属文章</string>
     <string name="pin">置顶</string>
+    <string name="playback_speed">播放速度</string>
     <string name="plugin_description">关注 newsletter、浏览公开 Notes，并阅读免费的 Substack 文章</string>
     <string name="plugin_name">Substack</string>
     <string name="preview_badge">试读</string>

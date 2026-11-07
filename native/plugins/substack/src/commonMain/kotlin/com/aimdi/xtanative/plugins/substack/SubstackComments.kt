@@ -75,7 +75,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /** A post's discussion as XTA's SubstackCommentsStore holds it: read once, then searched, sorted and folded on the device. */
-internal class CommentsModel(private val app: SubstackApp, val post: SubstackPost, private val scope: CoroutineScope) {
+internal class CommentsModel(private val load: suspend (SubstackPost) -> List<SubstackComment>, val post: SubstackPost, private val scope: CoroutineScope) {
     data class State(
         val comments: List<SubstackComment> = emptyList(),
         val collapsed: Set<String> = emptySet(),
@@ -100,7 +100,7 @@ internal class CommentsModel(private val app: SubstackApp, val post: SubstackPos
         mutable.update { it.copy(loading = true, error = null) }
         job = scope.launch {
             try {
-                val comments = app.client.commentsOf(post)
+                val comments = load(post)
                 val ids = comments.mapTo(HashSet()) { it.id }
                 mutable.update { it.copy(comments = comments, collapsed = it.collapsed.filterTo(HashSet()) { id -> id in ids }, loading = false) }
             } catch (e: CancellationException) {
@@ -127,7 +127,7 @@ internal class CommentsModel(private val app: SubstackApp, val post: SubstackPos
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SubstackCommentsScreen(app: SubstackApp, link: SubstackPostLink, key: String?) {
-    val model = rememberKept("substack-comments-${link.publicationBase}/${link.slug}") { scope -> CommentsModel(app, app.postFor(link, key), scope) }
+    val model = rememberKept("substack-comments-${link.publicationBase}/${link.slug}") { scope -> CommentsModel(app.client::commentsOf, app.postFor(link, key), scope) }
     val state by model.state.collectAsState()
     val outside = rememberOpenOutside()
     val url = SubstackLinks.webUrl(model.post.canonicalUrl) ?: SubstackLinks.webUrl("${model.post.publicationBaseUrl}/p/${model.post.slug}")

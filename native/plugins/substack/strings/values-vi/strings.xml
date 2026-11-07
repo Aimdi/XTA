@@ -98,6 +98,7 @@
     <string name="paywalled_description">Bài này nằm sau paywall Substack. Mở trên trình duyệt nếu bạn có quyền truy cập.</string>
     <string name="paywalled_title">Bài chỉ dành cho người đăng ký</string>
     <string name="pin">Ghim</string>
+    <string name="playback_speed">Tốc độ phát</string>
     <string name="plugin_description">Theo dõi bản tin, xem Notes công khai và đọc bài Substack miễn phí</string>
     <string name="plugin_name">Substack</string>
     <string name="preview_badge">Xem trước</string>

@@ -100,6 +100,7 @@
     <string name="paywalled_description">यह पोस्ट Substack पेवॉल के पीछे है। यदि आपके पास पहुँच है तो ब्राउज़र में खोलें।</string>
     <string name="paywalled_title">केवल सब्सक्राइबरों के लिए पोस्ट</string>
     <string name="pin">पिन करें</string>
+    <string name="playback_speed">प्लेबैक गति</string>
     <string name="plugin_description">न्यूज़लेटर फ़ॉलो करें, सार्वजनिक Notes देखें और मुफ़्त Substack पोस्ट पढ़ें</string>
     <string name="plugin_name">Substack</string>
     <string name="preview_badge">झलक</string>

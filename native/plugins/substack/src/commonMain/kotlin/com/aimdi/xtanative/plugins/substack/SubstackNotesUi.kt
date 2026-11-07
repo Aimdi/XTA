@@ -34,6 +34,7 @@ import com.aimdi.xtanative.networks.substack.SubstackNote
 import com.aimdi.xtanative.networks.substack.SubstackNotesFeed
 import com.aimdi.xtanative.networks.substack.SubstackPublication
 import com.aimdi.xtanative.store.settings.PostsPrefs
+import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.XIcons
@@ -104,21 +105,7 @@ private fun NoteRow(app: SubstackApp, note: SubstackNote, actions: NoteActions) 
  * The author's name opens their profile on substack.com in the browser.
  */
 internal class NoteActions(private val app: SubstackApp, private val unknown: String, private val outside: (String) -> Unit) {
-    fun post(note: SubstackNote): NetworkPost {
-        val handle = note.authorHandle?.trim()?.removePrefix("@").orEmpty()
-        return NetworkPost(
-            id = note.id,
-            authorId = handle,
-            authorName = listOfNotNull(note.authorName, note.authorHandle).firstOrNull { it.isNotBlank() } ?: unknown,
-            authorHandle = handle,
-            avatarUrl = SubstackLinks.webUrl(note.authorPhotoUrl),
-            createdAt = note.at,
-            text = SubstackLinks.textParts(note.body).map { part -> part.url?.let { TextRun.Link(part.text, it) } ?: TextRun.Plain(part.text) },
-            media = listOfNotNull(SubstackLinks.webUrl(note.imageUrl)?.let { MediaItem(it) }),
-            likes = note.reactionCount ?: 0,
-            url = SubstackLinks.webUrl(note.url),
-        )
-    }
+    fun post(note: SubstackNote): NetworkPost = noteAsPost(note, unknown)
 
     fun of(note: SubstackNote) = NetworkPostActions(
         open = { app.openNote(note) },
@@ -133,6 +120,30 @@ internal class NoteActions(private val app: SubstackApp, private val unknown: St
     fun hasMenu(note: SubstackNote): Boolean = SubstackShared.archive(note) != null
 }
 
+/** [note] as the shared post card draws it; a note without a name or handle is by [unknown]. */
+internal fun noteAsPost(note: SubstackNote, unknown: String): NetworkPost {
+    val handle = note.authorHandle?.trim()?.removePrefix("@").orEmpty()
+    return NetworkPost(
+        id = note.id,
+        authorId = handle,
+        authorName = listOfNotNull(note.authorName, note.authorHandle).firstOrNull { it.isNotBlank() } ?: unknown,
+        authorHandle = handle,
+        avatarUrl = SubstackLinks.webUrl(note.authorPhotoUrl),
+        createdAt = note.at,
+        text = SubstackLinks.textParts(note.body).map { part -> part.url?.let { TextRun.Link(part.text, it) } ?: TextRun.Plain(part.text) },
+        media = listOfNotNull(SubstackLinks.webUrl(note.imageUrl)?.let { MediaItem(it) }),
+        likes = note.reactionCount ?: 0,
+        url = SubstackLinks.webUrl(note.url),
+    )
+}
+
+/** How many hearts a note's row counts: none when it has none, or in zen or calm mode. */
+internal fun noteLikes(note: SubstackNote, settings: Settings?): Long? {
+    val count = note.reactionCount ?: 0
+    val quiet = settings?.let { it[PostsPrefs.zenMode] || it[PostsPrefs.calmMode] } == true
+    return count.takeIf { it > 0 && !quiet }
+}
+
 @Composable
 internal fun rememberNoteActions(app: SubstackApp): NoteActions {
     val unknown = pluginString(Strings.unknown)
@@ -144,9 +155,7 @@ internal fun rememberNoteActions(app: SubstackApp): NoteActions {
 @Composable
 private fun NoteReactions(app: SubstackApp, note: SubstackNote) {
     val settings by app.host.settings.state.collectAsState()
-    val count = note.reactionCount ?: 0
-    val quiet = settings?.let { it[PostsPrefs.zenMode] || it[PostsPrefs.calmMode] } == true
-    if (count <= 0 || quiet) return
+    val count = noteLikes(note, settings) ?: return
     Row(Modifier.padding(top = 12.dp)) { NetworkCount(XIcons.Like, count, label = pluginString(Strings.favorites) + ": " + count) }
 }
 

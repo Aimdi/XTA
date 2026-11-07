@@ -91,7 +91,7 @@ private fun ContentsSheet(content: ReaderContent.Article, find: Boolean, onDismi
     var query by rememberSaveable { mutableStateOf("") }
     val focus = remember { FocusRequester() }
     val article = content.article
-    val results = remember(article, query) { if (query.isBlank()) article.headings else article.search(query) }
+    val results = remember(article, query) { article.contents(query) }
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
         Column(Modifier.fillMaxHeight(0.88f)) {
             SheetHeading(pluginString(Strings.contents), onDismiss)

@@ -102,6 +102,7 @@
     <string name="paywalled_description">Tento příspěvek je za paywallem Substack. Otevřete ho v prohlížeči, pokud máte přístup.</string>
     <string name="paywalled_title">Pouze pro předplatitele</string>
     <string name="pin">Připnout</string>
+    <string name="playback_speed">Rychlost přehrávání</string>
     <string name="plugin_description">Sledujte newslettery, prohlížejte veřejné Notes a čtěte volné příspěvky Substack</string>
     <string name="plugin_name">Substack</string>
     <string name="preview_badge">Ukázka</string>

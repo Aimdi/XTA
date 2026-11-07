@@ -43,6 +43,9 @@ class SubstackArticle private constructor(
         return passages.filter { passage -> passage.text.lowercase().let { text -> terms.all { it in text } } }
     }
 
+    /** What the contents sheet lists: the headings while nothing is asked, else the passages found; empty is "no headings" or "no matches". */
+    fun contents(query: String): List<SubstackPassage> = if (query.isBlank()) headings else search(query)
+
     /** The block [passage] is drawn in, for a contents or find result to scroll to. */
     fun blockOf(passage: SubstackPassage): Int? = SubstackBlocks.blockOfPassage(blocks, passages.map { it.anchor }, passage.anchor)
 

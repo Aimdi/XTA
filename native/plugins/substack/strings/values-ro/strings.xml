@@ -102,6 +102,7 @@
     <string name="paywalled_description">Această postare este în spatele unui paywall Substack. Deschide-o în browser dacă ai acces.</string>
     <string name="paywalled_title">Doar pentru abonați</string>
     <string name="pin">Fixează</string>
+    <string name="playback_speed">Viteza de redare</string>
     <string name="plugin_description">Urmărește newslettere, răsfoiește Notes publice și citește postări Substack gratuite</string>
     <string name="plugin_name">Substack</string>
     <string name="preview_badge">Fragment</string>

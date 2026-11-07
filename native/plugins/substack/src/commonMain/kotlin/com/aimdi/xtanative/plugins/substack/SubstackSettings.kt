@@ -130,7 +130,7 @@ private fun <E : PrefChoice> ChoiceRow(title: PluginText, value: E, choices: Lis
     }
 }
 
-/** An OPML import under way, kept beyond the settings screen while it runs. */
+/** An OPML import under way, shown on the settings screen that started it; leaving the screen stops it. */
 internal class OpmlImports {
     private val mutable = MutableStateFlow<SubstackOpmlImport?>(null)
     val progress: StateFlow<SubstackOpmlImport?> = mutable.asStateFlow()
@@ -163,8 +163,9 @@ private fun OpmlRows(app: SubstackApp, notices: Notices) {
     val title = pluginString(Strings.plugin_name)
     val scope = rememberCoroutineScope()
     val save = rememberTextFileSaver(pluginString(Strings.opml_export), "text/x-opml") { name -> if (name != null) notices.show(Strings.data_exported_to.get(language, name)) }
+    // Run in the screen's scope: an import whose settings screen closed stops asking, as XTA's does.
     val choose = rememberTextFileChooser(pluginString(Strings.opml_import)) { read ->
-        app.launch {
+        scope.launch {
             val sites = runCatching { read() }.getOrNull()?.let(SubstackOpml::sites).orEmpty()
             if (sites.isEmpty()) return@launch notices.show(empty)
             val result = app.opml.run(app, sites)
