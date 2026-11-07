@@ -304,3 +304,63 @@ covered | feed_search_fallback_test › skips search subscriptions and surviving
 untested → ported | feed_search_fallback_test › caps in-flight profile fetches | GroupFeed.FALLBACK_CONCURRENCY | GroupFeedTest.theProfilesFallbackAsksTwoAtATime…
 covered | feed_search_fallback_test › an empty chunk is a no-op | GroupFeed.ownPosts (accounts empty) | GroupFeedTest.aSavedSearchIsSearched… (onlySearch: no profile read)
 covered | feed_search_fallback_test › one rate-limited chunk still lets the others return posts | GroupFeed chunks | GroupFeedTest.aRetryReadsOnlyTheChunksThatFailed…
+
+## group_chrome_test.dart
+n/a | group_chrome_test › Group media mode and route selection are Store-backed | — | flutter_triple store plumbing; native keeps them in GroupFeedScreen state/view model
+covered | group_chrome_test › active Group filter count includes every effective custom rule | ui/group/GroupFeedRules.kt activeFilters | GroupFeedRulesTest.theCustomChipCountsTheRulesThatAreOn
+untested | group_chrome_test › Group controls show order and media state in one token-sized row | ui/group/GroupFeedScreen.kt GroupChips/OrderChip | Compose layout
+untested | group_chrome_test › while Discover is open only its chip shows, and its close returns to the feed | GroupFeedScreen.kt GroupChips(discovering) | Compose
+untested → ported | group_chrome_test › picking Discover, or the order a group already has, saves nothing | GroupFeedRules.withSort (same order → same settings, no new session) ; Discover is a view flag, not an order | GroupFeedRulesTest.pickingTheOrderAGroupAlreadyHasChangesNothing
+
+## group_discover_mode_test.dart
+untested | group_discover_mode_test › Discover is its own view: only its chip shows, Back returns to the feed, nothing is saved | GroupFeedScreen.kt (discovering flag, BackHandling) | Compose
+
+## group_discovery_feed_test.dart
+covered | group_discovery_feed_test › every repost, quote, reply and mention by a member points at a candidate the member vouches for | ui/group/DiscoveryReads.kt | DiscoverySourcesTest.aMembersPostPointsAtWhatItRepostsQuotesAnswersAndMentions…
+covered | group_discovery_feed_test › replies are only mined when the group shows them | DiscoveryReads | DiscoverySourcesTest.repliesCountOnlyWhereTheFeedTakesThem…
+covered | group_discovery_feed_test › mined candidates merge across members into one ranked row | ui/group/Discovery.kt merged/ranked | DiscoveryTest.anAccountPointedAtByManyMembersIsOneCandidate…
+
+## group_discovery_follow_test.dart
+covered | group_discovery_follow_test › adding to a group follows first and keeps the memberships the account already has | DiscoveryViewModel.add → Session.addingTo | GroupSessionTest (addingTo keeps other groups)
+untested | group_discovery_follow_test › group rows are keyed the way each network keys its own follows | DiscoveryViewModel.followed (X id; plugins follow through their own PluginFollows) | each plugin keys its follows itself
+untested | group_discovery_follow_test › the add store marks a row as adding, then added, and forgets a failed one | DiscoveryViewModel.add (adding/added sets) | view model over AppGraph; no test harness for DiscoveryViewModel yet
+
+## group_discovery_follows_test.dart
+covered | group_discovery_follows_test › reads never-asked members first, remembers answers across launches and asks again after the TTL | ui/group/DiscoveryReads.kt rotating read | DiscoverySourcesTest.aRotatingReadAsksTheNeverAskedFirstAndKeepsAnswersTenMinutes, FollowsCacheTest
+covered | group_discovery_follows_test › a member whose read fails is reported without losing the others | rotating read | DiscoverySourcesTest.aRotatingReadThatReadsNothingIsAFailure
+covered | group_discovery_follows_test › co-follows become candidates vouched for by each member following them, never a member itself | Discovery.kt | DiscoveryTest.theAccountsMembersFollowAreCandidatesButNotTheMembersThemselves
+
+## group_discovery_mine_test.dart
+covered | group_discovery_mine_test › the plan resolves flags, orders members oldest first and hashes chunks like the live feed | core GroupFeedPlan (same plan as the feed) | GroupFeedTest.aPlanReadsItsMembersOldestFirst…
+covered | group_discovery_mine_test › mining reads the chunks the feed stored and reports which members they covered | DiscoveryReads (kept feed) | DiscoverySourcesTest.theKeptFeedCoversTheMembersOfEachSearchItKept…
+
+## group_discovery_screen_test.dart
+untested | group_discovery_screen_test › inline Discovery renders compact rows with their reason in a pushed group route | ui/group/DiscoveryPane.kt (reasonText) | Compose; reason rule in DiscoveryTest.aRowSaysWhyFromTheSignal…
+untested | group_discovery_screen_test › a setup failure offers Retry and can recover | DiscoveryPane.kt / DiscoveryViewModel.load | Compose
+untested | group_discovery_screen_test › Add to this group follows locally, keeps other memberships and marks the row in place | DiscoveryViewModel.add | Compose
+untested | group_discovery_screen_test › tapping the snippet expands the real post and the header collapses it again | DiscoveryPane.kt Snippet | Compose
+untested | group_discovery_screen_test › Hide removes the row and the snackbar undoes it | DiscoveryViewModel hide/undo (canUndo) | Compose; ranking without hidden in DiscoveryTest.whoTheReaderFollowsAndWhatTheyHid…
+
+## group_discovery_test.dart
+covered | group_discovery_test › deduplicates identities per network and excludes followed aliases | ui/group/Discovery.kt identity/follows | DiscoveryTest.anAccountIsToldApartByItsNetworkAndIdOrHandleWithoutItsAt, whoTheReaderFollows…
+covered | group_discovery_test › merges one account seen through several members and ranks it by how many vouch | Discovery.merged/ranked | DiscoveryTest.anAccountPointedAtByManyMembersIsOneCandidate…, mostMembersComeFirst…
+covered | group_discovery_test › among equally supported accounts the stronger signal, then the newer support, wins | Discovery.ranked | DiscoveryTest.mostMembersComeFirstThenTheStrongestSignalsThen…TheNewest…
+untested → ported | group_discovery_test › the Unicode tokenizer keeps every script while nameTokens stays as it was | Discovery.tokens | DiscoveryTest.theWordsOfANameAreKeptInEveryScript (nameTokens is XTA's legacy helper, not used by native)
+covered | group_discovery_test › the group name only breaks ties, in any script | Discovery.ranked (group tokens last) | DiscoveryTest.mostMembersComeFirst…ThenTheGroupsWords
+covered | group_discovery_test › rejects invented AI ids and preserves candidates omitted by AI | ui/group/DiscoveryAi.kt order | DiscoverySourcesTest.theAiIsAskedAboutTheCandidatesAsDataAndItsAnswerReadSafely
+untested | group_discovery_test › Bluesky candidates come from actual reposts and quotes only | plugins/bluesky BlueskyDiscovery.kt | plugin code (reposts → REPOSTED, quotes → QUOTED); belongs with the microblogs batch's plugin tests
+untested | group_discovery_test › Mastodon candidates come from boosts and quoted authors | plugins/mastodon MastodonDiscovery.kt | same
+covered | group_discovery_test › a failing source keeps the others and names itself | DiscoveryViewModel / DiscoveryBoard | DiscoverySourcesTest.theBoardKeepsEachSourcesLatestAnswer…
+covered | group_discovery_test › rerankWithAi orders what is loaded without fetching again | DiscoveryViewModel.rankWithAi, DiscoveryBoard.aiRanked | DiscoverySourcesTest.theAiOrderLeadsOnceGiven…
+covered | group_discovery_test › unusable AI response keeps verified local candidates and reports fallback | DiscoveryBoard.aiRanked(failed) | DiscoverySourcesTest.theAiOrderLeads…, theAiIsAsked… (null order)
+untested | group_discovery_test › all-followed candidates never trigger the configured AI | DiscoveryViewModel.rankWithAi (nothing ranked → no request) | view model; no harness
+covered | group_discovery_test › Scan more reads another rotating batch and keeps what the first one found | DiscoveryBoard (never reads less), rotating read | DiscoverySourcesTest.theBoardKeepsEachSourcesLatestAnswerAndNeverReadsLess, aRotatingRead…
+covered | group_discovery_test › hiding an account removes it until Undo brings it back | Discovery.visible (HIDE judgement), DiscoveryViewModel.undo | DiscoveryTest.whoTheReaderFollowsAndWhatTheyHidIsLeftOut…
+covered | group_discovery_test › following from a profile removes its cached discovery card without refetch | Discovery.followedExcept / DiscoveryBoard.visible(followed) | DiscoverySourcesTest.theAiOrderLeads… ("the followed leave"), DiscoveryTest.whoTheReaderFollows…
+untested | group_discovery_test › switching from Discover remembers that its pane has been opened | GroupFeedScreen.kt (discovering saved per group) | Compose state
+untested | group_discovery_test › a superseded source request cannot replace newer results | DiscoveryViewModel generation check | view model; no harness
+untested | group_discovery_test › a superseded AI response cannot replace newer discovery | DiscoveryViewModel.rank (run != generation) | view model; no harness
+untested | group_discovery_test › following during a source request excludes its eventual result | DiscoveryViewModel.publish (followed read at publish time) | view model
+untested | group_discovery_test › closing discovery retires pending sources | DiscoveryViewModel (scan job in viewModelScope) | view model
+untested | group_discovery_test › a finished source paints before a stalled one times out, and survives it | DiscoveryViewModel per-source publish, Discovery.SOURCE_MILLIS | view model; time share in DiscoveryTest.eachListAndEachPageMayTakeItsShareOfAMinute
+untested | group_discovery_test › reporting a setup failure retires an older pending request | DiscoveryViewModel (generation) | view model

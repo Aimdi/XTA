@@ -146,4 +146,10 @@ class DiscoveryTest {
         assertEquals(listOf("g3", "g4", "g5", "g6", "g7"), FeedSwitcher.pinned(groups, currentId = "g1").map { it.id })
         assertEquals(listOf("g1", "g3", "g4", "g5", "g6"), FeedSwitcher.pinned(groups, currentId = null).map { it.id })
     }
+
+    @Test
+    fun theWordsOfANameAreKeptInEveryScript() {
+        assertEquals(setOf("künstler", "イラスト", "ai", "art"), Discovery.tokens("Künstler イラスト 🍫 AI art"))
+        assertTrue(Discovery.tokens("🍫").isEmpty())
+    }
 }
