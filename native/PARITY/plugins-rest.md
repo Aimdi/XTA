@@ -782,3 +782,172 @@ covered | subscription_source_test › comes from the source that owns it | Netw
 covered | subscription_source_test › falls back to a handle for X accounts | NetworkMembersTest.xtasListNamesABareNetworksAccountByItsIdAndTheOthersAsTheirGroupsDo |
 untested → ported | subscription_source_test › every source leads somewhere when tapped | ui/plugins XtaPlugin.kt (route) | the tap is Compose-only |
 untested → ported | subscription_source_test › an X account has no plugin screen to open | XtaPlugin.kt | the absence is Compose-only |
+
+## test/deepmarks_client_test.dart
+covered | deepmarks_client_test › posts the signed event to the documented endpoint | DeepmarksClientTest (post)
+covered | deepmarks_client_test › honours a custom API base for self-hosted or local instances | DeepmarksClientTest
+covered | deepmarks_client_test › flags an event that reached the API but no relay | DeepmarksClientTest; DeepmarksSavesTest
+covered | deepmarks_client_test › does not call out when there is no API key | DeepmarksSavesTest.saveWithoutKey
+covered | deepmarks_client_test › maps each documented status to something actionable | DeepmarksClientTest
+covered | deepmarks_client_test › an HTML page is a wrong address, not a success | DeepmarksClientTest
+covered | deepmarks_client_test › an unreachable host is a network failure | DeepmarksClientTest
+covered | deepmarks_client_test › returns the account pubkey when a bookmark reveals it | DeepmarksClientTest.verifyingGivesTheAccountsPubkeyWhenABookmarkRevealsIt
+covered | deepmarks_client_test › returns null — not a mismatch — for an account with no bookmarks yet | DeepmarksClientTest
+covered | deepmarks_client_test › surfaces the lifetime-tier requirement | DeepmarksClientTest
+
+## test/deepmarks_nostr_test.dart
+covered | deepmarks_nostr_test › decodes the NIP-19 nsec test vector | NostrTest
+covered | deepmarks_nostr_test › accepts bare hex, in either case, with surrounding space | NostrTest
+covered | deepmarks_nostr_test › rejects what is not a key, with a reason | NostrTest
+covered | deepmarks_nostr_test › derives the public key from the NIP-19 vector | NostrTest
+covered | deepmarks_nostr_test › is the sha256 of the canonical NIP-01 serialisation | NostrTest
+covered | deepmarks_nostr_test › puts the URL in the d tag, as NIP-B0 requires | NostrTest
+covered | deepmarks_nostr_test › adds title, description and lower-cased topics | NostrTest
+covered | deepmarks_nostr_test › leaves out empty optional tags rather than sending blanks | NostrTest
+covered | deepmarks_nostr_test › produces an event whose signature verifies against its own id | SchnorrTest
+covered | deepmarks_nostr_test › the id matches the event it is sent with, so the server accepts it | NostrTest
+covered | deepmarks_nostr_test › serialises to the shape the API documents | NostrTest
+covered | deepmarks_nostr_test › two saves of the same URL are separately valid events | NostrTest
+
+## test/hackernews_client_test.dart
+covered | hackernews_client_test › hnHtmlToText flattens paragraphs and keeps link text | HackerNewsClientTest
+covered | hackernews_client_test › an Algolia hit becomes a story | HackerNewsClientTest
+covered | hackernews_client_test › Best reads Firebase ids then items | HackerNewsClientTest
+covered | hackernews_client_test › a thread keeps nested comments | HackerNewsClientTest
+covered | hackernews_client_test › a Firebase user keeps karma and about | HackerNewsClientTest
+covered | hackernews_client_test › saved stories round-trip through JSON | HnDeviceTest
+covered | hackernews_client_test › collapsed comments hide their children from the list | HnModelsTest
+
+## test/immich_client_test.dart
+covered | immich_client_test › a bare LAN address is http, because that is what those serve | ImmichServerTest
+covered | immich_client_test › a bare name is assumed to be reachable properly | ImmichServerTest
+covered | immich_client_test › a scheme that was typed is kept | ImmichServerTest
+covered | immich_client_test › an /api copied from Immich is dropped rather than doubled | ImmichServerTest
+covered | immich_client_test › a reverse-proxy prefix is kept | ImmichServerTest
+covered | immich_client_test › a trailing slash changes nothing | ImmichServerTest
+covered | immich_client_test › nothing usable is null rather than a guess | ImmichServerTest
+covered | immich_client_test › goes to /api/assets with the key and the fields Immich needs | ImmichClientTest
+covered | immich_client_test › a file Immich already had is a success, not a failure | ImmichClientTest
+covered | immich_client_test › falls back to the older endpoint when the current one is not there | ImmichClientTest
+covered | immich_client_test › a rejected key is reported as unauthorized | ImmichClientTest
+covered | immich_client_test › no address or key at all never reaches the network | ImmichSavesTest; ImmichClientTest
+covered | immich_client_test › a server that knows the user is a pass | ImmichClientTest
+covered | immich_client_test › an older instance answering on the previous path still passes | ImmichClientTest
+covered | immich_client_test › an HTML page from something that is not Immich is a bad address | ImmichClientTest
+covered | immich_client_test › an unreachable server is a network problem, not a wrong key | ImmichClientTest
+covered | immich_client_test › an album that exists is used rather than made twice | ImmichClientTest
+covered | immich_client_test › an album that does not exist is created | ImmichClientTest
+covered | immich_client_test › a server that will not talk about albums gives null, not a throw | ImmichClientTest
+covered | immich_client_test › filing nothing does not call the server | ImmichUploaderTest
+covered | immich_client_test › filing assets sends their ids | ImmichUploaderTest
+
+## test/immich_media_test.dart
+covered | immich_media_test › the original is asked for, not the display copy | ImmichMediaTest
+covered | immich_media_test › the name is the file, without the size suffix | ImmichMediaTest
+covered | immich_media_test › the id is the plain URL, so :orig does not change it | ImmichMediaTest
+covered | immich_media_test › a photo the response carried no URL for is skipped, not uploaded empty | ImmichMediaTest
+covered | immich_media_test › the best MP4 wins, and the playlist is never chosen | ImmichMediaTest
+covered | immich_media_test › the id is the thumbnail, so it does not move with the variant | ImmichMediaTest
+covered | immich_media_test › a GIF is a video by the time it is a file | ImmichMediaTest
+covered | immich_media_test › a variant list with no usable MP4 is nothing to upload | ImmichMediaTest
+covered | immich_media_test › a video with no thumbnail falls back to its own URL for an id | ImmichMediaTest
+covered | immich_media_test › videos are skipped when only photos are wanted | ImmichMediaTest
+covered | immich_media_test › a kind nobody knows is passed over rather than guessed at | ImmichMediaTest
+covered | immich_media_test › a post with nothing attached is nothing to do | ImmichMediaTest
+covered | immich_media_test › a post with several files keeps them all, in order | ImmichMediaTest
+
+## test/karakeep_client_test.dart
+covered | karakeep_client_test › assumes https when the scheme is left out | KarakeepClientTest
+covered | karakeep_client_test › keeps an explicit scheme, host and port | KarakeepClientTest
+covered | karakeep_client_test › drops a trailing slash and the api path copied from the docs | KarakeepClientTest
+covered | karakeep_client_test › keeps a path prefix from a reverse proxy | KarakeepClientTest
+covered | karakeep_client_test › rejects what is not a server address | KarakeepClientTest
+covered | karakeep_client_test › posts a link bookmark with the API key | KarakeepClientTest
+covered | karakeep_client_test › a 200 means Karakeep already had the URL | KarakeepClientTest
+covered | karakeep_client_test › respects a reverse-proxy path prefix | KarakeepClientTest
+covered | karakeep_client_test › omits an empty title rather than sending a blank one | KarakeepClientTest
+covered | karakeep_client_test › clamps an over-long title to what Karakeep accepts | KarakeepClientTest
+covered | karakeep_client_test › reports missing configuration without making a request | KarakeepSavesTest
+covered | karakeep_client_test › a rejected key is reported as such, not as a generic failure | KarakeepClientTest
+covered | karakeep_client_test › an HTML page means the address is not a Karakeep | KarakeepClientTest
+covered | karakeep_client_test › a dead host is reported as a network problem | KarakeepClientTest
+covered | karakeep_client_test › is true when the bookmarks endpoint answers | KarakeepSavesTest
+covered | karakeep_client_test › surfaces a bad key | KarakeepSavesTest
+
+## test/karakeep_title_test.dart
+covered | karakeep_title_test › names the author, then the post | KarakeepSavesTest (title)
+covered | karakeep_title_test › falls back to the handle when there is no display name | KarakeepSavesTest
+covered | karakeep_title_test › is just the post when the author is unknown | KarakeepSavesTest
+covered | karakeep_title_test › is just the byline for a post with no text, such as a photo | KarakeepSavesTest
+covered | karakeep_title_test › collapses newlines so the bookmark list stays readable | KarakeepSavesTest
+
+## test/subscription_loading_regression_test.dart
+covered | subscription_loading_regression_test › following completes with the person visible and both stores idle | core/session SessionTest.followingHereAddsTheAccountToTheFollowingFeed
+covered | subscription_loading_regression_test › a stalled subscription reload releases queued follows and ignores its late snapshot | core/session SessionTest.importingReplacesSessionsAndFollowsButKeepsTheSwitches
+covered | subscription_loading_regression_test › a stalled group reload releases queued saves and membership changes | core/session SessionTest.groupsTakeMembersInAndOutOnce
+covered | subscription_loading_regression_test › leaving a pending profile does not block local follows or groups | core/session SessionTest.followingHereAddsTheAccountToTheFollowingFeed
+covered | subscription_loading_regression_test › rapid follows and a reload do not cancel a local write | core/session SessionTest.followingAgainKeepsThePlaceAndSwitchesButTakesTheNewName
+covered | subscription_loading_regression_test › saving a group publishes the group before the save future completes | core/session SessionTest.aGroupReadsItsMembersEvenThoseKeptOutOfTheFollowingFeed
+covered | subscription_loading_regression_test › rapid group saves preserve both groups | core/session SessionTest.groupsTakeMembersInAndOutOnce
+covered | subscription_loading_regression_test › repeated follow keeps existing feed settings and memberships | core/session SessionTest.followingAgainKeepsThePlaceAndSwitchesButTakesTheNewName
+covered | subscription_loading_regression_test › a failed write stops loading and does not poison the next follow | core/session SessionTest.followingHereAddsTheAccountToTheFollowingFeed
+
+## test/subscription_profiles_test.dart
+covered | subscription_profiles_test › names each post's author and the authors of what it reposts and quotes | core/session FollowsTest (profile names) — cite FollowsTest
+covered | subscription_profiles_test › picks up a new handle, name or picture and keeps the feed settings | FollowsTest (profile refresh)
+covered | subscription_profiles_test › the same picture at another size is no change | FollowsTest
+covered | subscription_profiles_test › ignores accounts not followed and what X left out | FollowsTest
+covered | subscription_profiles_test › a change of case is the same handle | FollowsTest
+covered | subscription_profiles_test › withProfiles changes only the handle, name and picture | FollowsTest
+covered | subscription_profiles_test › saves a new name in place, without rebuilding the feeds | FollowsTest
+covered | subscription_profiles_test › a new handle reloads the subscriptions and the feeds | FollowsTest
+covered | subscription_profiles_test › nothing new changes nothing | FollowsTest
+
+## test/ticker_quote_test.dart
+covered | ticker_quote_test › takes the closes and their dates in order | TickerQuoteTest.aPriceHistoryIsItsClosesAndTheirDatesInOrder
+covered | ticker_quote_test › a day the market was shut is skipped, not counted as zero | TickerQuoteTest.aDayTheMarketWasShutIsSkippedNotCountedAsZero
+covered | ticker_quote_test › integers and numeric strings are both prices | TickerQuoteTest.integersAndNumericStringsAreBothPricesAndMismatchedListsStopAtTheShorter
+covered | ticker_quote_test › mismatched list lengths stop at the shorter one | TickerQuoteTest.integersAndNumericStringsAreBothPricesAndMismatchedListsStopAtTheShorter
+covered | ticker_quote_test › is measured against the previous close | TickerQuoteTest.theDaysMoveIsMeasuredAgainstThePreviousClose
+covered | ticker_quote_test › a fall is negative and reads as down | StockNumbersTest.aGainIsUpALossDownAndUnknownOrFlatIsNeutral
+covered | ticker_quote_test › falls back to the last close when no live price is quoted | TickerQuoteTest.withoutALivePriceTheLastCloseIsThePriceAndWithoutACloseThereIsNoMove
+covered | ticker_quote_test › no previous close means no move rather than a wrong one | TickerQuoteTest.withoutALivePriceTheLastCloseIsThePriceAndWithoutACloseThereIsNoMove
+covered | ticker_quote_test › a previous close of zero does not divide by it | TickerQuoteTest.withoutALivePriceTheLastCloseIsThePriceAndWithoutACloseThereIsNoMove
+covered | ticker_quote_test › volume and the year's range are read when the response carries them | TickerQuoteTest.theFiguresTheMarketPageShowsAreReadWhenSent
+covered | ticker_quote_test › a pre-market print is reported beside, not instead of, the price | TickerQuoteTest.aPreMarketPrintIsReportedBesideNotInsteadOfThePrice
+covered | ticker_quote_test › a symbol quoted without them still charts | TickerQuoteTest.aDayWithoutBarsIsStillAQuoteWithItsMove
+covered | ticker_quote_test › a price without bars is still a quote, with its move | TickerQuoteTest.aDayWithoutBarsIsStillAQuoteWithItsMove
+covered | ticker_quote_test › neither a price nor bars is no quote | TickerQuoteTest (empty quote)
+covered | ticker_quote_test › the badge reads the host's word for the instrument | TickerQuoteTest.theBadgeReadsTheHostsWordForTheInstrument
+covered | ticker_quote_test › is measured against the bar a day before the last | TickerQuoteTest.aCoinOverTheLast24HoursIsMeasuredAgainstTheBarADayBeforeTheLast
+covered | ticker_quote_test › bars that do not reach back a day leave the quote as it was | TickerQuoteTest.aCoinOverTheLast24HoursIsMeasuredAgainstTheBarADayBeforeTheLast
+covered | ticker_quote_test › gives up rather than throwing | TickerQuoteTest.aPayloadThatNoLongerFitsGivesUpRatherThanThrowing
+covered | ticker_quote_test › history with no usable closes is nothing to draw | TickerQuoteTest.aPriceHistoryIsItsClosesAndTheirDatesInOrder
+covered | ticker_quote_test › the symbol asked for is used when the response omits its own | TickerQuoteTest.aDayWithoutBarsIsStillAQuoteWithItsMove
+covered | ticker_quote_test › asks for the symbol upper-cased, with a range and interval | YahooFinanceTest.theChartIsAskedForUpperCasedWithARangeAndInterval
+covered | ticker_quote_test › an unknown symbol is reported as not found | TickerClientTest.aNameNothingAnswersForIsNotFound
+covered | ticker_quote_test › a refusal is unavailable, not a broken response | TickerClientTest.aRefusalIsUnavailableAndA200ThatIsNotJsonIsABadResponse
+covered | ticker_quote_test › a 200 that is not JSON is a bad response | TickerClientTest.aRefusalIsUnavailableAndA200ThatIsNotJsonIsABadResponse
+covered | ticker_quote_test › a good response becomes a quote, and carries an agent | TickerClientTest.aGoodAnswerBecomesAQuoteAndTheRequestCarriesAnAgent
+
+## test/ticker_session_test.dart
+covered | ticker_session_test › follows the trading periods the chart host sends | TickerQuoteTest.theSessionFollowsTheTradingPeriodsTheHostSends
+covered | ticker_session_test › a coin is never closed | TickerQuoteTest.aCoinIsNeverClosedAndWithoutPeriodsTheSessionIsUnknown
+covered | ticker_session_test › without periods it says nothing rather than guessing | TickerQuoteTest.aCoinIsNeverClosedAndWithoutPeriodsTheSessionIsUnknown
+covered | ticker_session_test › a bar after the close is the after-hours print, apart from the price | TickerQuoteTest.aBarAfterTheCloseIsTheAfterHoursPrintApartFromThePrice
+covered | ticker_session_test › a bar inside today's pre-market is the early print | TickerQuoteTest.aBarInsideTodaysPreMarketIsTheEarlyPrintAndDuringTheSessionThereIsNone
+covered | ticker_session_test › during the regular session there is no extended print | TickerQuoteTest.aBarInsideTodaysPreMarketIsTheEarlyPrintAndDuringTheSessionThereIsNone
+covered | ticker_session_test › a major coin is asked for as the coin first | TickersTest.aMajorCoinIsAskedForAsTheCoinFirstAndTheReaderCanInsistOnEither
+covered | ticker_session_test › the reader can insist on either instrument | TickersTest.aMajorCoinIsAskedForAsTheCoinFirstAndTheReaderCanInsistOnEither
+covered | ticker_session_test › ordinary symbols are unchanged | TickersTest.anOrdinaryShareIsAskedForAsWrittenThenAsAPair
+covered | ticker_session_test › fills every symbol, not only the first few, with one-day quotes | QuoteCachesTest.everySymbolIsFilledNotOnlyTheFirstFewWithOneDayQuotes
+covered | ticker_session_test › remembers a symbol whose lookup failed until it answers | QuoteCachesTest.aSymbolWhoseLookupFailedIsRememberedUntilItAnswers
+covered | ticker_session_test › a coin is asked for over the last 24 hours, not since midnight | QuoteCachesTest.aCoinIsAskedForOverTheLast24HoursNotSinceMidnight
+covered | ticker_session_test › a pair the coin list does not name is asked for again over 24 hours | TickerClientTest.aPairTheCoinListDoesNotNameIsAskedForAgainOver24Hours
+covered | ticker_session_test › the ticker page shares a share's day chart, not a coin's | QuoteCachesTest.theTickerPageSharesAShareDayChartNotACoins
+covered | ticker_session_test › moves are signed, rounded to flat, and use a real minus | StockNumbersTest.movesAreSignedRoundedToFlatAndUseARealMinus
+covered | ticker_session_test › prices keep useful digits at every size | StockNumbersTest.pricesKeepUsefulDigitsAtEverySize
+covered | ticker_session_test › under one unit, four significant digits; from three zeros on, the zeros are counted | StockNumbersTest.underOneUnitFourSignificantDigitsAndFromThreeZerosOnTheZerosAreCounted
+covered | ticker_session_test › a screen reader hears the zeros written out | StockNumbersTest.aScreenReaderHearsTheZerosWrittenOut
+covered | ticker_session_test › the reader's locale groups digits; one intl lacks falls back | StockNumbersTest.theReadersLocaleGroupsDigitsAndOneIntlLacksIsEnglish
+covered | ticker_session_test › gain and loss colours stay readable and unknown is neutral | StockNumbersTest.aGainIsUpALossDownAndUnknownOrFlatIsNeutral
