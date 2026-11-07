@@ -5,6 +5,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -15,6 +16,30 @@ class PixivPagingTest {
 
     private suspend fun <T> PixivList<*>.settled(check: (PixivListState<*>) -> Boolean, value: () -> T): T =
         withTimeout(5_000) { state.first { check(it) }.let { value() } }
+
+    @Test
+    fun aSecondNextPageCallWaitsForTheOneInFlight(): Unit = runBlocking {
+        val scope = CoroutineScope(coroutineContext)
+        var asked = 0
+        val release = CompletableDeferred<Unit>()
+        val list = PixivList<Int>(scope, { it }, { next ->
+            asked++
+            if (next == null) Page(listOf(1), "p2") else {
+                release.await()
+                Page(listOf(2), null)
+            }
+        })
+        list.refresh()
+        list.settled({ it.loaded }) {}
+        list.more()
+        list.more()
+        list.settled({ it.loadingMore }) {}
+        withTimeout(5_000) { while (asked < 2) kotlinx.coroutines.yield() }
+        assertEquals(2, asked, "the first page and one next page only")
+        release.complete(Unit)
+        list.settled({ !it.loadingMore }) {}
+        assertEquals(listOf(1, 2), list.state.value.items)
+    }
 
     @Test
     fun pagesJoinInOrderWithoutRepeatsToTheEnd(): Unit = runBlocking {

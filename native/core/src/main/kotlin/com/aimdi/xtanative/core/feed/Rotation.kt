@@ -56,7 +56,10 @@ class MemberCache<T>(
     /** How many of [keys] would have to be asked right now. */
     fun pendingCount(keys: List<String>): Int = keys.count { fresh(it) == null }
 
-    private fun fresh(key: String): List<T>? = entries[key]?.takeIf { clock() - it.at <= ttlMillis }?.posts
+    private fun fresh(key: String): List<T>? = entries[key]?.let { entry ->
+        val now = clock()
+        entry.takeIf { entry.at <= now && now - entry.at <= ttlMillis }
+    }?.posts
 
     /**
      * The merged timeline of [keys], newest first. At most [maxFetches] members

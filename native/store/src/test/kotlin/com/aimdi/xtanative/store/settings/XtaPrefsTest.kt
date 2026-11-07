@@ -95,7 +95,7 @@ class XtaPrefsTest {
 
     @Test
     fun credentialsAreNamedAndCaughtByTheirShape() {
-        listOf("crash.github_token", "sync.webdav.password", "ai.api_key", "plugin.pixiv.user_id", "plugin.pixiv.download_index", "plugin.tiktok.cookies")
+        listOf("crash.github_token", "sync.webdav.password", "ai.api_key", "plugin.pixiv.user_id", "plugin.pixiv.download_index", "plugin.pixiv.novel_reading", "plugin.tiktok.cookies")
             .forEach { assertTrue(SecretPrefs.isSecret(it), it) }
         listOf("plugin.booru.site_credentials_api_key", "plugin.someday.api_key", "plugin.someday.secret_key", "x.refresh_token", "y.password")
             .forEach { assertTrue(SecretPrefs.isSecret(it), "$it by its shape") }

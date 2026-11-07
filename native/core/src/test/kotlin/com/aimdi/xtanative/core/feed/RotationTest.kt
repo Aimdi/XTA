@@ -24,6 +24,13 @@ class RotationTest {
     }
 
     @Test
+    fun aTimestampInTheFutureIsNotFresh() = runBlocking {
+        val cache = cache()
+        cache.seed("a", listOf(Post("a", day(1))), at = now + 60_000)
+        assertEquals(1, cache.pendingCount(listOf("a")))
+    }
+
+    @Test
     fun membersMergeNewestFirstAPageEachAndUndatedLast() = runBlocking {
         assertTrue(cache().merge(emptyList(), fetch = answering()).isEmpty())
         val merged = cache().merge(listOf("a", "b")) { key -> listOf(Post(key, if (key == "a") day(1) else day(5))) }

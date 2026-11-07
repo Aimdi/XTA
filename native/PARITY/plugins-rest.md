@@ -977,10 +977,10 @@ covered | plugin_feed_chips_test › a plugin that still has a home tab is not o
 untested → ported | plugin_feed_chips_test › the board is not wrapped in AnimatedSwitcher | ui/subscriptions GroupBoard | Compose has no AnimatedSwitcher wrapper
 
 ## test/plugin_feed_fresh_test.dart
-untested → ported | plugin_feed_fresh_test › a feed that has never been fetched is not fresh | ui/plugins FeedReads.kt (freshness) | the TTL rule has no separate native test
-untested → ported | plugin_feed_fresh_test › a feed fetched inside the TTL is reused | ui/plugins FeedReads.kt | same
-untested → ported | plugin_feed_fresh_test › a feed older than the TTL is fetched again | ui/plugins FeedReads.kt | same
-untested → ported | plugin_feed_fresh_test › a timestamp in the future is not treated as fresh | ui/plugins FeedReads.kt | same
+covered | plugin_feed_fresh_test › a feed that has never been fetched is not fresh | core/feed Rotation.kt (MemberCache.fresh) | RotationTest.membersMergeNewestFirstAPageEachAndUndatedLast (empty), pendingCount
+covered | plugin_feed_fresh_test › a feed fetched inside the TTL is reused | MemberCache.fresh | RotationTest.aSeedAnswersWithinItsTimeAndNeverReplacesSomethingNewer
+covered | plugin_feed_fresh_test › a feed older than the TTL is fetched again | MemberCache.fresh | RotationTest.aMemberIsAskedAgainOnlyOnARefreshOrOnceItsAnswerIsOld
+missing → implemented | plugin_feed_fresh_test › a timestamp in the future is not treated as fresh | core/feed Rotation.kt (MemberCache.fresh) | native counted a future timestamp as fresh; it now is not. RotationTest.aTimestampInTheFutureIsNotFresh
 
 ## test/plugin_home_crash_sweep_test.dart
 different → fixed | plugin_home_crash_sweep_test › FeedListView empty does not attach the outer controller | ui/plugins Lists.kt | Compose lists own their LazyListState; the Flutter outer-controller hazard does not exist

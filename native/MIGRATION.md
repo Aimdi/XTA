@@ -65,6 +65,17 @@ lookup mode no screen opens, and its Instagram/TikTok private-account error
 is never thrown (both apps show the profile's own `profile_private`
 sentence), so native leaves both out.
 
+The sweep of XTA's plugin test files found one behaviour bug, now fixed: an
+answer timestamped in the future counted as fresh in `MemberCache.fresh`,
+where XTA rejects it. Tests were added for the pixiv novel reading places
+(gating, restart, the 300 limit, backups), the reader surface (start bounds,
+jump versus page, overview, direction), the download naming edge cases, the
+damaged download index, the paging guard and the favourite-tag move; about
+110 ledger rows that said `untested` while citing a native test were
+corrected to `covered`. The untested plugin rules still left are pixiv's
+ugoira cancel/failure paths, the novel markup's off-thread parse, and the
+reader's Compose visibility callbacks.
+
 ## The app (`lib/`)
 
 | XTA | Goes to |

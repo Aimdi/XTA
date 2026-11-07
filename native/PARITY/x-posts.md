@@ -28,14 +28,14 @@ covered | test/coin_sources_test.dart › a stock is asked of Yahoo alone | plug
 covered | test/coin_sources_test.dart › a name Yahoo does not list as a share is then tried as a coin | plugins/stocks TickerClient.kt | TickerClientTest.…ANameYahooDoesNotListIsThenTriedAsACoin
 
 ## feed_ink_test.dart
-untested | test/feed_ink_test.dart › takes two columns: the avatar at 16 dp, everything else at 68 dp | ui post/PostCard.kt, PostGeometry.kt | the avatar now sits in a 48 dp target as XTA's; ported: PostGeometryTest.aPostTakesTwoColumns…
-untested | test/feed_ink_test.dart › names the author, handle and time on one line | ui post/AuthorLine.kt | ported: AuthorLineLayoutTest.theNameHandleAndTimeShareOneLineWhenTheyFit
+covered | test/feed_ink_test.dart › takes two columns: the avatar at 16 dp, everything else at 68 dp | ui post/PostCard.kt, PostGeometry.kt | the avatar now sits in a 48 dp target as XTA's; ported: PostGeometryTest.aPostTakesTwoColumns…
+covered | test/feed_ink_test.dart › names the author, handle and time on one line | ui post/AuthorLine.kt | ported: AuthorLineLayoutTest.theNameHandleAndTimeShareOneLineWhenTheyFit
 different | test/feed_ink_test.dart › gives way with the handle first, then the name, and keeps the time | ui post/AuthorLine.kt | native cut a handle to "@…"; now left out under 40 dp, and the time keeps 45 % of the line; ported: AuthorLineLayoutTest.theHandleGivesWayFirst…, aLongTimeIsCut…
 missing | test/feed_ink_test.dart › with large text puts the handle and time on a second line | ui post/AuthorLine.kt | implemented (text scale ≥ 1.3); ported: AuthorLineLayoutTest.withLargeTextTheHandleAndTimeTakeASecondLine
 different | test/feed_ink_test.dart › keeps translate and the ⋯ menu at 48 dp, on the author line | ui post/PostCard.kt, PostFooter.kt | were 32 dp inside the margin; now 48 dp targets, glyph at the top, the last reaching the screen's edge, over the text; ported: PostGeometryTest.translateAndTheMenuAre48DpTargets…
 untested | test/feed_ink_test.dart › the opened post keeps its own layout | ui post/PostScreen.kt | visual: the opened post has its own header (name over handle), never PostCard's
 untested | test/feed_ink_test.dart › a quoted post keeps its compact header inside the post | ui post/PostCard.kt QuotedPost | visual: 20 dp avatar and author line inside the frame
-untested | test/feed_ink_test.dart › a self-thread runs its rail through the avatars, in the same columns | ui post/PostCard.kt | ported: PostGeometryTest.aSelfThreadsRailRunsThroughTheAvatarsCentres
+covered | test/feed_ink_test.dart › a self-thread runs its rail through the avatars, in the same columns | ui post/PostCard.kt | ported: PostGeometryTest.aSelfThreadsRailRunsThroughTheAvatarsCentres
 untested | test/feed_ink_test.dart › takes the same two columns with a rounded-square picture | plugins/reddit RedditCard.kt, RedditUi.kt | visual: 16 dp/40 dp/12 dp columns, picture rounded size/4 = 10 dp, title 15 sp regular
 untested | test/feed_ink_test.dart › spreads upvote, comments, save and open across the column | plugins/reddit RedditCard.kt CardFooter | visual: SpaceBetween row, open in browser at the end
 different | test/feed_ink_test.dart › a Reddit post in a mixed timeline carries the badge, not the strip | ui feed/MixedRows.kt, plugins/Posts.kt | badge on the avatar's foot was there, unheard: a screen reader now hears the network's name (NetworkPostCard overload with markLabel)

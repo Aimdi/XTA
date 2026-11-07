@@ -84,7 +84,7 @@ covered | home_group_filter_test › a group can be switched off Following | Hom
 
 ## home_hiding_header_test.dart
 untested | home_hiding_header_test › without the home bar to follow, the header stays | ui/home/HomeScreen.kt / HomeFeed.kt (top bar follows HomeBarsState.hidden only when hideOnScroll) | Compose layout
-untested | home_hiding_header_test › the header leaves with the bottom bar and returns with it | HomeFeed.kt (header uses the same HomeBarsState) | rule itself in BarHiding (HomeBarTest)
+covered | home_hiding_header_test › the header leaves with the bottom bar and returns with it | HomeFeed.kt (header uses the same HomeBarsState) | rule itself in BarHiding (HomeBarTest)
 
 ## home_navigation_bar_test.dart
 untested | home_navigation_bar_test › the light/dim/lights out bar is flat across the bottom with a hairline on top (3 themes) | ui/home/HomeBottomBar.kt (background × 0.88, Hairline, 64 dp) | Compose drawing; constants match XTA (kHomeNavigationBarOpacity 0.88, height 64)
@@ -106,7 +106,7 @@ different → fixed | home_navigation_visibility_test › the top, the end of a 
 covered | home_navigation_visibility_test › a programmatic jump or a sideways scroll does not move it | HomeBarsState (nested scroll only sees drags; available.y == 0 ignored) | by construction
 missing → implemented | home_navigation_visibility_test › a screen reader keeps it on screen | ui/common/ScreenReader.kt, HomeScreen.kt rememberShell | Android's touch exploration keeps the bars put (rememberScreenReaderOn); the desktop has none. HomeBarTest covers the hide rule the switch turns off
 untested | home_navigation_visibility_test › with the setting off the bar stays | rememberHomeBars(enabled) | Compose state holder
-untested | home_navigation_visibility_test › the bar tracks the finger, then settles away when it lifts | HomeBarsState | rule in BarHiding (HomeBarTest)
+covered | home_navigation_visibility_test › the bar tracks the finger, then settles away when it lifts | HomeBarsState | rule in BarHiding (HomeBarTest)
 untested | home_navigation_visibility_test › a hidden bar lets taps through, a shown one takes them | HomeBottomBar.kt hiding() (bar laid out 0 high when gone) | Compose layout
 untested | home_navigation_visibility_test › with reduced motion the lifted finger snaps it away at once | HomeBarsState.moveTo | Compose state holder
 
@@ -146,11 +146,11 @@ untested | home_timeline_layout_test › populated Home layout light/dark/black/
 untested | home_timeline_layout_test › Following keeps its one bar while the feed is read | FollowingBarView.kt (48 dp bar, controls) | Compose layout; FollowingBar.height in FollowingBarTest
 untested | home_timeline_layout_test › The Feeds sheet opens the side menu | SourcePickerSheet.kt (menu row → account menu) | Compose
 untested | home_timeline_layout_test › The last Home post scrolls fully above the floating bar | HomeFeed.kt (contentPadding bottom = bar height) | Compose layout
-untested | home_timeline_layout_test › On the desktop, where a mouse cannot pull it down, Following shows refresh | FollowingBar.actions(desktop) = 4 (refresh) | FollowingBarTest.twoRowsAreTwiceAsTall (actions(desktop))
+covered | home_timeline_layout_test › On the desktop, where a mouse cannot pull it down, Following shows refresh | FollowingBar.actions(desktop) = 4 (refresh) | FollowingBarTest.twoRowsAreTwiceAsTall (actions(desktop))
 untested | home_timeline_layout_test › Home keeps nothing for the status bar under its header | HomeScreen.kt insets | Compose layout
 untested | home_timeline_layout_test › A short scrollable Home keeps its bar stable | HomeBottomBar.kt HomeBarsState (nothing to scroll → no leftover → bar stays) | Compose
 untested | home_timeline_layout_test › Source picker preserves a reading position and opens timeline management | SourcePickerSheet.kt, StripSheet.kt | Compose; pages keep their own LazyListState
-untested | home_timeline_layout_test › reading swipes switch source and return to cached posts and position | TimelineSwipeView.kt, GroupFeedViewModel (FeedSessionCache) | GroupFeedViewModelTest checks a reopened feed shows its kept posts
+covered | home_timeline_layout_test › reading swipes switch source and return to cached posts and position | TimelineSwipeView.kt, GroupFeedViewModel (FeedSessionCache) | GroupFeedViewModelTest checks a reopened feed shows its kept posts
 untested | home_timeline_layout_test › Home media reuses cached posts and survives switching sources | GroupFeedBody.kt mediaOnly over the same run | Compose
 covered | home_timeline_layout_test › Home searches its loaded snapshot and returns to the same feed | ui/search/LoadedFeedSearch.kt LoadedFeed.Index | SearchLogicTest (LoadedFeed matching); the feed keeps its run while the search layer is open
 covered | home_timeline_layout_test › Home order updates the actual Following group and keeps filters reachable | FollowingBarView.kt order menu → session feeds[following] | FollowingBarTest.theOrderMenuKeepsXtasOrder…, GroupFeedRulesTest
@@ -362,7 +362,7 @@ untested | group_discovery_test › a superseded source request cannot replace n
 untested | group_discovery_test › a superseded AI response cannot replace newer discovery | DiscoveryViewModel.rank (run != generation) | view model; no harness
 untested | group_discovery_test › following during a source request excludes its eventual result | DiscoveryViewModel.publish (followed read at publish time) | view model
 untested | group_discovery_test › closing discovery retires pending sources | DiscoveryViewModel (scan job in viewModelScope) | view model
-untested | group_discovery_test › a finished source paints before a stalled one times out, and survives it | DiscoveryViewModel per-source publish, Discovery.SOURCE_MILLIS | view model; time share in DiscoveryTest.eachListAndEachPageMayTakeItsShareOfAMinute
+covered | group_discovery_test › a finished source paints before a stalled one times out, and survives it | DiscoveryViewModel per-source publish, Discovery.SOURCE_MILLIS | view model; time share in DiscoveryTest.eachListAndEachPageMayTakeItsShareOfAMinute
 untested | group_discovery_test › reporting a setup failure retires an older pending request | DiscoveryViewModel (generation) | view model
 
 ## group_feed_title_test.dart
@@ -372,7 +372,7 @@ untested | group_feed_title_test › both lines fit the toolbar at the largest t
 untested | group_feed_title_test › the name does not move when the count arrives | GroupTopBar | Compose layout
 untested | group_feed_title_test › a pushed group on a 360dp phone keeps its name and drops the mark instead | GroupTopBar | Compose layout
 untested | group_feed_title_test › a narrow deck column title does not overflow | ui/home/DeckScreen.kt | Compose layout
-untested | group_feed_title_test › the combined-groups count matches the name it follows | GroupFeedUi.memberCount (session.membersOf(groupId, alsoRead)) | count rule: GroupSessionTest.groupsReadTogetherBringWhatIsNestedInEach
+covered | group_feed_title_test › the combined-groups count matches the name it follows | GroupFeedUi.memberCount (session.membersOf(groupId, alsoRead)) | count rule: GroupSessionTest.groupsReadTogetherBringWhatIsNestedInEach
 
 ## group_members_test.dart
 covered | group_members_test › a mixed group keeps X members for search and plugin members for their own fetch | core Session.membersOf (X accounts + searches), data/plugins PluginMembers.of | PluginMembersTest.aGroupsPluginMembersAreItsAndItsNestedGroups…, GroupSessionTest
@@ -501,7 +501,7 @@ untested | group_ungrouped_sorter_test › Open profile leads to the account | S
 untested | group_ungrouped_sorter_test › with nobody to sort it says everyone is in a group | SortScreens.kt | Compose
 untested | group_ungrouped_sorter_test › Left ungrouped leads to the sorter, and the plan is made again after it | SortScreens.kt | Compose
 untested | group_ungrouped_sorter_test › with no match by name the main button sorts one by one | SortScreens.kt | Compose
-untested | group_ungrouped_sorter_test › Apply places the plan, then goes on to the accounts left over | SortScreens.kt, UngroupedPlans.applied | UngroupedPlansTest.applyingMakesTheSuggestedGroups…
+covered | group_ungrouped_sorter_test › Apply places the plan, then goes on to the accounts left over | SortScreens.kt, UngroupedPlans.applied | UngroupedPlansTest.applyingMakesTheSuggestedGroups…
 untested | group_ungrouped_sorter_test › Apply closes the screen when it placed everyone | SortScreens.kt | Compose
 
 ## group_ungrouped_test.dart
@@ -523,7 +523,7 @@ missing → implemented | home_reading_controls_test › source changes reveal c
 untested | home_reading_controls_test › real viewport retains controls for focus | ui/plugins/ReadingControls.kt ReadingControlsBar | no Compose widget harness; focus on the row calls reveal
 untested | home_reading_controls_test › real viewport retains controls for keyboard | HomeFeedPage | the keyboard inset is passed as protected; the store's protected path is tested
 untested | home_reading_controls_test › real viewport retains controls for accessibility | HomeFeedPage | the screen reader is passed as protected; the store's protected path is tested
-untested | home_reading_controls_test › real viewport retains controls for short | ReadingScroll.of | ReadingControlsTest.aListThatFitsIsShortAndOneThatRunsPastIsNot
+covered | home_reading_controls_test › real viewport retains controls for short | ReadingScroll.of | ReadingControlsTest.aListThatFitsIsShortAndOneThatRunsPastIsNot
 
 ## test/offline_library_test.dart
 covered | offline_library_test › article snapshots preserve identity, body, author and media metadata | store/offline OfflineSavedTest

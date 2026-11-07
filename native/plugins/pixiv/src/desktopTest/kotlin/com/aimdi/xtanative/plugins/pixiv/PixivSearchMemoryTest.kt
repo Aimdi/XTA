@@ -20,6 +20,13 @@ import kotlin.test.assertTrue
 
 class PixivSearchMemoryTest {
     @Test
+    fun movingFromAnIndexOutsideTheListChangesNothing() {
+        val settings = PixivFavoriteTags.added(Settings(), PixivTag("a"))
+        assertEquals(settings, PixivFavoriteTags.moved(settings, 1, 0))
+        assertEquals(settings, PixivFavoriteTags.moved(settings, -1, 0))
+    }
+
+    @Test
     fun aKeptFilterComesBackAsItWasWritten() {
         val filter = PixivSearchFilter(
             target = PixivSearchTarget.TITLE_CAPTION,

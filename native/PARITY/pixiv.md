@@ -302,7 +302,7 @@ covered | pixiv_discovery_test › recommended users parse user_previews | netwo
 covered | pixiv_download_index_test › records pages and answers what is saved | PixivSaving.kt (PixivSavedPages) | PixivSavingTest.savedPagesAreRememberedNewestLastWithoutRepeats
 covered | pixiv_download_index_test › is kept in settings, newest last, and read back on the next launch | PixivSaving.kt | PixivSavingTest.savedPagesAreRememberedNewestLastWithoutRepeats, PixivSettingsStoreTest.aBackupRestoredIntoTheAppShowsHere
 covered | pixiv_download_index_test › forgets the oldest pages beyond the cap | PixivSaving.kt | PixivSavingTest.onlyTheNewestPagesAreKept
-untested | pixiv_download_index_test › a broken or reshaped stored list reads as what it validly holds | PixivSaving.kt (decode) | the decode is tolerant; no separate test
+covered | pixiv_download_index_test › a broken or reshaped stored list reads as what it validly holds | PixivSaving.kt (decode) | PixivSavingTest.aDamagedStoredIndexReadsAsWhatItValidlyHolds
 covered | pixiv_download_index_test › clear forgets everything, in memory and in settings | PixivSaving.kt | PixivSavingTest.savedPagesAreRememberedNewestLastWithoutRepeats
 covered | pixiv_download_index_test › a write from outside the store shows at once, and the next save keeps it | PixivSettingsStoreTest.aBackupRestoredIntoTheAppShowsHere
 untested | pixiv_download_index_test › a reset of the setting empties the index, and a closed index stops following it | PixivSaving.kt (close) | Compose-side lifetime
@@ -311,16 +311,16 @@ covered | pixiv_download_index_test › cappedPixivIndex folds repeats and keeps
 ## pixiv_download_naming_test.dart
 covered | pixiv_download_naming_test › fills every placeholder and keeps the extension | PixivSaving.kt (template) | PixivSavingTest.aPageIsNamedByTheTemplateItsExtensionKept
 covered | pixiv_download_naming_test › replaces characters no file system accepts, from the template and the work alike | PixivSaving.kt | PixivSavingTest.aPageIsNamedByTheTemplateItsExtensionKept
-untested | pixiv_download_naming_test › a title that reads like a placeholder stays as written | PixivSaving.kt (one-pass fill) | PixivSearchMemoryTest.theCopyTemplateIsFilledInOnePass covers the one-pass rule for copy; the file naming has no separate test
-untested | pixiv_download_naming_test › unknown placeholders are kept, outer dots and spaces trimmed, long names cut | PixivSaving.kt | no separate test
-untested | pixiv_download_naming_test › a long name is cut to a byte budget between whole characters | PixivSaving.kt | no separate test
-untested | pixiv_download_naming_test › a name that ends up empty falls back to the work and page | PixivSaving.kt | no separate test
+covered | pixiv_download_naming_test › a title that reads like a placeholder stays as written | PixivSaving.kt (one-pass fill) | PixivSearchMemoryTest.theCopyTemplateIsFilledInOnePass covers the one-pass rule for copy; the file naming has no separate test
+covered | pixiv_download_naming_test › unknown placeholders are kept, outer dots and spaces trimmed, long names cut | PixivSaving.kt | PixivSavingTest.unknownPlaceholdersAreKeptAndOuterDotsAndSpacesTrimmed, aLongNameIsCutToAByteBudgetBetweenWholeCharacters
+covered | pixiv_download_naming_test › a long name is cut to a byte budget between whole characters | PixivSaving.kt | PixivSavingTest.aLongNameIsCutToAByteBudgetBetweenWholeCharacters
+covered | pixiv_download_naming_test › a name that ends up empty falls back to the work and page | PixivSaving.kt | PixivSavingTest.aNameThatEndsUpEmptyFallsBackToTheWorkAndPage
 covered | pixiv_download_naming_test › the extension comes from the original file, else .jpg | PixivSaving.kt | PixivSavingTest.theExtensionComesFromTheFileElseJpg
 covered | pixiv_download_naming_test › {part} is required | PixivSaving.kt | PixivSavingTest.aTemplateThatLostItsPartIsNotUsed
 covered | pixiv_download_naming_test › reads the template and both folder settings | PixivSaving.kt | PixivSavingTest.foldersArePerCreatorAndForR18AsAsked
 covered | pixiv_download_naming_test › a stored template without {part} is not used | PixivSaving.kt | PixivSavingTest.aTemplateThatLostItsPartIsNotUsed
 covered | pixiv_download_naming_test › R-18 works alone go to R-18, and an artist name cannot leave its folder | PixivSaving.kt | PixivSavingTest.foldersArePerCreatorAndForR18AsAsked
-untested | pixiv_download_naming_test › an artist folder never starts with a dot, which Android would hide from the gallery | PixivSaving.kt | no separate test
+covered | pixiv_download_naming_test › an artist folder never starts with a dot, which Android would hide from the gallery | PixivSaving.kt | PixivSavingTest.anArtistFolderNeverStartsWithADot
 covered | pixiv_download_naming_test › nothing set means no subfolder | PixivSaving.kt | PixivSavingTest.foldersArePerCreatorAndForR18AsAsked
 covered | pixiv_download_naming_test › batch requests carry the template name and the subfolder | PixivSaving.kt, ui/downloads/PluginBatches.kt | PixivSavingTest.aPageIsNamedByTheTemplateItsExtensionKept, PluginBatchesTest.aWorksPagesAreSavedTogetherAndEachSaysHowItEnded
 
@@ -419,7 +419,7 @@ covered | pixiv_favorite_tags_store_test › adds at the end, and a tag differin
 covered | pixiv_favorite_tags_store_test › reorders to the index the row was dropped at, and removes | PixivSearchMemory.kt | PixivSearchMemoryTest.favouriteTagsKeepTheReadersOrderOnceEach
 covered | pixiv_favorite_tags_store_test › persists in order with translations, for the next screen and the backup | PixivSearchMemory.kt; PixivSettingsStore | PixivSearchMemoryTest.favouriteTagsKeepTheReadersOrderOnceEach
 covered | pixiv_favorite_tags_store_test › reads bare names, skips blanks and survives garbage | PixivSearchMemory.kt | PixivSearchMemoryTest.favouriteTagsKeepTheReadersOrderOnceEach
-untested | pixiv_favorite_tags_store_test › pixivMoved leaves the list alone for an index outside it | PixivSearchMemory.kt (moved) | no separate test
+covered | pixiv_favorite_tags_store_test › pixivMoved leaves the list alone for an index outside it | PixivFavoriteTags.moved | PixivSearchMemoryTest.movingFromAnIndexOutsideTheListChangesNothing
 
 ## pixiv_novel_api_test.dart
 covered | pixiv_novel_api_test › recommended asks for ranking novels and the Android filter, then follows next_url | PixivNovelTest.recommendedAsksForRankingNovelsThenFollowsNextUrl
@@ -520,15 +520,15 @@ covered | pixiv_novel_reader_test › an export name loses what no file system a
 untested | pixiv_novel_reader_test › sharing from the menu sends the link with the menu button as the sheet's origin | PixivNovelReader.kt | Compose only
 untested | pixiv_novel_reader_test › the series page shares its link from its button | PixivNovelReader.kt | Compose only
 untested | pixiv_novel_reader_test › the author row opens the profile on its Novels tab | PixivNovelReader.kt | Compose only
-untested | pixiv_novel_reader_test › the place reached is kept by passage and comes back on reopening | PixivNovelPlaces.kt | no separate test
-untested | pixiv_novel_reader_test › with reading positions off, the place is not kept | PixivNovelPlaces.kt | no separate test
-untested | pixiv_novel_reader_test › a novel only opened, or one that would not load, leaves no place behind | PixivNovelPlaces.kt | no separate test
-untested | pixiv_novel_reader_test › with the history paused, a novel keeps no place and finds none | PixivNovelPlaces.kt | no separate test
-untested | pixiv_novel_reader_test › places stay out of backups and go with the novel history when the plugin forgets its data | PixivNovelPlaces.kt; backup | no separate test
+covered | pixiv_novel_reader_test › the place reached is kept by passage and comes back on reopening | PixivNovelPlaces.kt | PixivNovelPlacesTest.aPlaceComesBackAfterARestart
+covered | pixiv_novel_reader_test › with reading positions off, the place is not kept | PixivNovelPlaces.kt | PixivNovelPlacesTest.noPlaceIsKeptOrGivenBackWhenPositionsAreOff
+untested | pixiv_novel_reader_test › a novel only opened, or one that would not load, leaves no place behind | Compose (novel reader) | the reader records a place only after a load; Compose-only
+covered | pixiv_novel_reader_test › with the history paused, a novel keeps no place and finds none | PixivNovelPlaces.kt | PixivNovelPlacesTest.noPlaceIsKeptOrGivenBackWhileTheHistoryIsPaused
+covered | pixiv_novel_reader_test › places stay out of backups and go with the novel history when the plugin forgets its data | PixivPrefs.novelReading (secret pref) | XtaPrefsTest.credentialsAreNamedAndCaughtByTheirShape (never exported); uninstalling erases every plugin.pixiv.* key
 untested | pixiv_novel_reader_test › a text size dragged over several steps keeps the passage being read at the top | PixivNovelReader.kt | Compose only
 untested | pixiv_novel_reader_test › large text at 320 dp fits without overflow | PixivNovelReader.kt | Compose only
 untested | pixiv_novel_reader_test › a phone at normal text keeps the chapter buttons side by side | PixivNovelReader.kt | Compose only
-untested | pixiv_novel_reader_test › the first block showing is the first whose bottom is below the top | PixivNovelPlaces.kt | no separate test
+untested | pixiv_novel_reader_test › the first block showing is the first whose bottom is below the top | Compose (reader block anchoring) | layout rule; no pure test
 
 ## pixiv_novel_screens_test.dart
 untested | pixiv_novel_screens_test › the mode button swaps every section to novels and back | PixivNovel screens (Compose) | Compose only
@@ -639,7 +639,7 @@ covered | pixiv_store_test › skips fully filtered pages until something visibl
 ## pixiv_shared_state_test.dart
 covered | pixiv_shared_state_test › are saved, reloaded and removed like the other mutes | PixivMutesTest.theMutesComeBackFromXtasPreferences
 covered | pixiv_shared_state_test › a damaged pref reads as nothing muted | PixivMutesTest.theMutesComeBackFromXtasPreferences
-untested | pixiv_shared_state_test › copyWith keeps every set it was not asked to change | PixivSearchModel.kt (copyWith) | no separate test
+n/a | pixiv_shared_state_test › copyWith keeps every set it was not asked to change | Kotlin data-class copy | Flutter's copyWith has no native counterpart; the model is data classes
 covered | pixiv_shared_state_test › defaults to today's Home, Following and bookmarks | PixivRulesTest.pinsDropUnknownBoardsAndFallBackToTheDefaults
 covered | pixiv_shared_state_test › copyWith sets and clears the bookmark tag and keeps the rest | PixivSearchMemoryTest.aKeptFilterComesBackAsItWasWritten
 covered | pixiv_shared_state_test › keeps what the old Pixiv history stored under the same pref | PixivKeptTest.theHistoryIsReadBackFromItsFile
@@ -773,8 +773,8 @@ covered | pixiv_image_source_test › an ugoira archive comes from the mirror on
 covered | pixiv_image_source_test › a failed archive is fetched again next time | PixivUgoiraTest.aDamagedArchiveReadsAsNone
 covered | pixiv_image_source_test › an image server's refusal is never blamed on the Pixiv token | PixivClientTest.pixivsRateLimitAnswerReadsAsRateLimitingNotARefusedToken
 untested | pixiv_image_source_test › images on screen load from the picked server | Compose (Coil) | Compose only
-untested | pixiv_image_source_test › keeps the most recently used values up to its capacity | PixivImages.kt (cache) | no separate test
-untested | pixiv_image_source_test › a cleanup only drops the value it was meant for | PixivImages.kt (cache) | no separate test
+n/a | pixiv_image_source_test › keeps the most recently used values up to its capacity | Coil disk cache | XTA's LRU is Coil's cache here
+n/a | pixiv_image_source_test › a cleanup only drops the value it was meant for | Coil disk cache | XTA's LRU is Coil's cache here
 
 ## pixiv_loads_test.dart
 untested | pixiv_loads_test › destroys the stores only once the loads tracked so far settle | Compose lifetime (PixivRuntime) | Compose only
@@ -838,7 +838,7 @@ untested | pixiv_illust_pager_test › a push turns once it is far enough, once 
 covered | pixiv_illust_pager_test › the next page joins at the end, then the list says it has no more | PixivPagesTest.aLaterPageIsMergedWithoutRepeats
 covered | pixiv_illust_pager_test › a failed page offers retry, and the retry asks again | PixivPagingTest.aFailedNextPageKeepsTheListAndRetries
 covered | pixiv_illust_pager_test › works muted after opening stay out of the later pages | PixivMutesTest.aMutedWorkCreatorOrTagHidesTheWorkAndSaysWhy
-untested | pixiv_illust_pager_test › a second next-page call waits for the one in flight instead of returning early | PixivPaging.kt (busy guard) | the guard is in the model; no separate test
+covered | pixiv_illust_pager_test › a second next-page call waits for the one in flight instead of returning early | PixivPaging.kt (busy guard) | PixivPagingTest.aSecondNextPageCallWaitsForTheOneInFlight
 covered | pixiv_illust_pager_test › a refresh forgets that the last next page failed | PixivPagingTest.aFailedNextPageKeepsTheListAndRetries
 covered | pixiv_illust_pager_test › next pages that only repeat works already shown are passed over to the next new work | PixivPagesTest.aLaterPageIsMergedWithoutRepeats
 covered | pixiv_illust_pager_test › a list that keeps repeating itself stops asking and offers Retry rather than a spinner | PixivPagesTest.aListThatEndsEmptyEndsWithoutAskingFurther
@@ -911,15 +911,15 @@ untested | pixiv_profile_render_test › (render sweeps) | Compose (PixivUser) |
 untested | pixiv_reader_journey_test › Pixiv descriptor keeps all modes and lazy source/favorites controls reachable | Compose (reader descriptor) | Compose only
 
 ## pixiv_reader_store_test.dart
-untested | pixiv_reader_store_test › a 48-page work retains its page when switching reading direction | PixivReader.kt | no separate test
-untested | pixiv_reader_store_test › page selection cannot escape the artwork bounds | PixivReader.kt; PixivPagesView.kt | no separate test
-untested | pixiv_reader_store_test › continuous progress follows the page occupying most viewport space | PixivReader.kt | no separate test
-untested | pixiv_reader_store_test › late vertical visibility callbacks do not move the horizontal page | PixivReader.kt | no separate test
-untested | pixiv_reader_store_test › a jump retires the former page even when its hidden callback arrives during scrolling | PixivReader.kt | no separate test
-untested | pixiv_reader_store_test › an older scroll completion cannot replace the newest selected page | PixivReader.kt | no separate test
-untested | pixiv_reader_store_test › attaching a horizontal controller cannot publish its old page during restoration | PixivReader.kt | no separate test
-untested | pixiv_reader_store_test › disposing the reader retires pending navigation and visibility callbacks | PixivReader.kt | no separate test
-untested | pixiv_reader_store_test › the slider shows the page under the thumb without moving the reader until released | PixivReader.kt | no separate test
+covered | pixiv_reader_store_test › a 48-page work retains its page when switching reading direction | PixivReader.kt | PixivReaderSurfaceTest.aStartIsHeldInsideTheWork, changingDirectionFlips
+covered | pixiv_reader_store_test › page selection cannot escape the artwork bounds | PixivReader.kt; PixivPagesView.kt | PixivReaderSurfaceTest.aStartIsHeldInsideTheWork, aShownPageIsAJumpNotAMove
+untested | pixiv_reader_store_test › continuous progress follows the page occupying most viewport space | Compose (vertical reader list) | the page in view is the lazy list's layout; no pure rule
+untested | pixiv_reader_store_test › late vertical visibility callbacks do not move the horizontal page | Compose (vertical reader list) | Compose visibility callbacks; no pure rule
+untested | pixiv_reader_store_test › a jump retires the former page even when its hidden callback arrives during scrolling | Compose (pager/visibility) | Compose callback ordering; no pure rule
+untested | pixiv_reader_store_test › an older scroll completion cannot replace the newest selected page | Compose (pager) | Compose scroll completion; no pure rule
+untested | pixiv_reader_store_test › attaching a horizontal controller cannot publish its old page during restoration | Compose (pager restoration) | Compose restoration; no pure rule
+untested | pixiv_reader_store_test › disposing the reader retires pending navigation and visibility callbacks | Compose (reader lifetime) | Compose disposal; no pure rule
+covered | pixiv_reader_store_test › the slider shows the page under the thumb without moving the reader until released | PixivReader.kt | PixivReaderSurfaceTest.aShownPageIsAJumpNotAMove
 
 ## pixiv_search_screen_test.dart
 covered | pixiv_search_screen_test › applies its choices and Remember keeps them | PixivSearchMemoryTest.aKeptFilterComesBackAsItWasWritten
