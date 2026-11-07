@@ -622,3 +622,58 @@ covered | mastodon_timeline_controls_test › malformed stored choices keep all 
 covered | mastodon_timeline_controls_test › filter sheet applies locally and preserves complete reading snapshot | MastodonDeviceTest.aSnapshotKeepsEverythingACardShows
 untested → ported | mastodon_timeline_controls_test › empty local results offer reset and preserve the underlying feed | Compose (Mastodon filter sheet) | Compose only
 untested → ported | mastodon_timeline_controls_test › timeline controls and sheet fit compact RTL at enlarged text | Compose (Mastodon filter sheet) | Compose only
+
+## test/bluesky_reader_controls_test.dart
+covered | bluesky_reader_controls_test › content filters distinguish images, videos, cards and annotated links | BlueskyTimelineTest.theReaderFilterTellsPicturesVideosCardsAndLinksApart
+covered | bluesky_reader_controls_test › query requires every term across text, author, handle and card title | BlueskyTimelineTest.theReaderQueryNeedsEveryWordAcrossTextAuthorHandleAndCardTitle
+covered | bluesky_reader_controls_test › reply and repost switches compose and duplicate records render once | BlueskyTimelineTest.replyAndRepostSwitchesComposeAndADuplicateShowsOnce
+covered | bluesky_reader_controls_test › ordering uses repost date, stable ties and unknown dates last without mutating the feed | BlueskyTimelineTest.theReaderOrdersByActivityKeepsTiesAndPutsUnknownDatesLast
+covered | bluesky_reader_controls_test › restart restores bounded reading position and options without persisting search text | BlueskyReadingTest.aPlaceKeepsTwoDozenBeforeItsAnchorAndAtMostItsLimit
+covered | bluesky_reader_controls_test › positions belong to one AppView while filter preferences survive a source change | BlueskyReadingTest.theFeedOpenIsRememberedPerAppView
+covered | bluesky_reader_controls_test › reset clears session state and queued persistence before disposal | BlueskyReadingTest.aPlaceKeepsTwoDozenBeforeItsAnchorAndAtMostItsLimit
+covered | bluesky_reader_controls_test › an unchanged source preserves the current reading snapshot | BlueskyReadingTest.theFeedOpenIsRememberedPerAppView
+covered | bluesky_reader_controls_test › restored posts intersect current authors and reposters by stable DID or handle | BlueskyReadingTest.aRestoredPlaceMatchesFollowsByDidOrHandleAndEmptyNamesMatchNothing
+covered | bluesky_reader_controls_test › empty identifiers never match unrelated cached posts | BlueskyReadingTest.aRestoredPlaceMatchesFollowsByDidOrHandleAndEmptyNamesMatchNothing
+covered | bluesky_reader_controls_test › disabled position memory stores preferences but no post snapshot | BlueskyReadingTest.theFeedOpenIsRememberedPerAppView
+covered | bluesky_reader_controls_test › disabling position memory immediately prevents restoring an existing snapshot | BlueskyReadingTest.theFeedOpenIsRememberedPerAppView
+covered | bluesky_reader_controls_test › malformed snapshot data cannot prevent opening a fresh reader | BlueskySnapshotTest.damagedOptionalFieldsOfOnePostLoseNeitherItNorTheOthers
+covered | bluesky_reader_controls_test › malformed records are skipped while valid snapshots and bounded offsets remain readable | BlueskySnapshotTest.damagedOptionalFieldsOfOnePostLoseNeitherItNorTheOthers
+untested → ported | bluesky_reader_controls_test › filter sheet remains operable at 320px with enlarged RTL text | Compose (Bluesky filter sheet) | Compose only
+
+## test/bluesky_reading_experience_test.dart
+covered | bluesky_reading_experience_test › reply metadata and active warnings survive local-like snapshots | BlueskyThreadStateTest.aWarningCoversTheTextAndIsShownAgainWhenThePostChanges
+covered | bluesky_reading_experience_test › thread topology supplies a parent when a record omits it | BlueskyRepliesTest (parent links)
+covered | bluesky_reading_experience_test › branch collapse retains siblings, orphans and cyclic posts exactly once | BlueskyRepliesTest (branches, cycles)
+untested → ported | bluesky_reading_experience_test › paging result stays in Replies when Media is selected in flight | Compose (Bluesky profile tabs) | Compose only
+untested → ported | bluesky_reading_experience_test › paging errors retain cards and wait for explicit retry | Compose (Bluesky profile tabs) | Compose only
+untested → ported | bluesky_reading_experience_test › refresh keeps visible cards and other tab data while the profile loads | Compose (Bluesky profile) | Compose only
+covered | bluesky_reading_experience_test › thread refresh after disposal cannot publish a late response | BlueskyThreadStateTest.theNewestRefreshWinsAndAnEndedStoreReadsNothing
+covered | bluesky_reading_experience_test › sensitive grid and card do not mount media until revealed | BlueskyThreadStateTest.aMediaTileIsAnnouncedWithItsDescriptionUnlessItIsCovered
+untested → ported | bluesky_reading_experience_test › conversation highlights the opened post and collapses a branch | Compose (Bluesky thread) | Compose only
+untested → ported | bluesky_reading_experience_test › profile names local likes accurately and retains Posts position | Compose (Bluesky profile) | Compose only
+
+## test/bluesky_reading_layout_test.dart
+untested → ported | bluesky_reading_layout_test › Bluesky reading layout $variant | Compose (Bluesky screens) | layout is Compose-only
+
+## test/bluesky_search_upgrade_test.dart
+covered | bluesky_search_upgrade_test › canonical URL and AT URI preserve actor and record key | BlueskyUrlsTest (canonical forms)
+covered | bluesky_search_upgrade_test › rejects $input | BlueskyUrlsTest
+covered | bluesky_search_upgrade_test › post URL cannot be interpreted as an author filter | BlueskyUrlsTest; BlueskyScreensRulesTest.filtersTakeAnAccountAndATag
+covered | bluesky_search_upgrade_test › profile search begins with an author filter ready for a query | BlueskyScreensRulesTest.filtersTakeAnAccountAndATag
+untested → ported | bluesky_search_upgrade_test › keeps independent pages when changing tabs | Compose (Bluesky search model) | Compose only
+untested → ported | bluesky_search_upgrade_test › older successful people search cannot replace a newer one | Compose (Bluesky search model) | Compose only
+untested → ported | bluesky_search_upgrade_test › older failed post search cannot replace a newer one | Compose (Bluesky search model) | Compose only
+untested → ported | bluesky_search_upgrade_test › clearing query invalidates outstanding reads | Compose (Bluesky search model) | Compose only
+untested → ported | bluesky_search_upgrade_test › suggestion failures stay separate from a submitted query | Compose (Bluesky search model) | Compose only
+covered | bluesky_search_upgrade_test › people pagination deduplicates and stops a repeated cursor | BlueskyTimelineTest.aRepeatedOrBlankCursorEndsPaging
+covered | bluesky_search_upgrade_test › post cursor cycle terminates without discarding newly loaded posts | BlueskyTimelineTest.aRepeatedOrBlankCursorEndsPaging
+untested → ported | bluesky_search_upgrade_test › load more failure preserves results and cursor for retry | Compose (Bluesky search model) | Compose only
+untested → ported | bluesky_search_upgrade_test › refresh error preserves content but retries refresh instead of pagination | Compose (Bluesky search model) | Compose only
+untested → ported | bluesky_search_upgrade_test › structured filters invalidate earlier post requests and preserve people | Compose (Bluesky search model) | Compose only
+covered | bluesky_search_upgrade_test › a hashtag uses a structured exact tag | BlueskyScreensRulesTest.filtersTakeAnAccountAndATag
+covered | bluesky_search_upgrade_test › a post URL switches to posts and resolves through the configured AppView | BlueskyUrlsTest; BlueskyClientTest
+covered | bluesky_search_upgrade_test › an AT URI skips handle resolution | BlueskyUrlsTest
+covered | bluesky_search_upgrade_test › AppView changes discard the old response and expose retry | BlueskyClientTest.theAppViewIsAskedBeforeEveryRequestAndABadOneFallsBack
+untested → ported | bluesky_search_upgrade_test › unchanged filters do not issue another request | Compose (Bluesky search model) | Compose only
+untested → ported | bluesky_search_upgrade_test › disposal ignores completion and further commands | Compose (Bluesky search model) | Compose only
+untested → ported | bluesky_search_upgrade_test › full-screen compact search supports filters and tabs without overflow | Compose (Bluesky search) | Compose only
