@@ -31,7 +31,11 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -78,6 +82,13 @@ internal class PixivRuntime(val host: PluginHost) {
     val following = PixivFollowing({ id, restrict -> social.follow(id, restrict) }, { id -> social.unfollow(id) })
 
     val bookmarking = PixivBookmarking(bookmarkApi, novels, following, { settings.now }, { client.storedUserId }, bookmarks)
+
+    private val revealed = MutableStateFlow<Set<Long>>(emptySet())
+
+    /** The comments whose links out of Pixiv the reader chose to see: shown so in their thread too. */
+    val revealedComments: StateFlow<Set<Long>> = revealed.asStateFlow()
+
+    fun revealComment(id: Long) = revealed.update { it + id }
 
     /** What a screen hands the next one it opens (the work as its list had it, the list itself), by key. */
     val shelf = PixivShelf()

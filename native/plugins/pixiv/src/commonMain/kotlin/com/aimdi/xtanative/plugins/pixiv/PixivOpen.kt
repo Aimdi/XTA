@@ -61,6 +61,9 @@ internal object PixivHtml {
         else -> emptyList()
     }
 
+    /** A link's own scheme, such as `javascript:` or `mailto:`, which is no page to open. */
+    private val scheme = Regex("^[a-zA-Z][a-zA-Z0-9+.-]*:")
+
     /** A link made absolute: Pixiv writes its own pages as paths or `pixiv://` links, and wraps outside ones in `/jump.php?<url>`. */
     fun href(raw: String?): String? {
         val text = raw?.trim().orEmpty()
@@ -70,7 +73,7 @@ internal object PixivHtml {
             text.startsWith("https://") || text.startsWith("http://") -> text
             text.startsWith("//") -> "https:$text"
             text.startsWith("/") -> "https://www.pixiv.net$text"
-            "://" in text -> return null
+            "://" in text || scheme.containsMatchIn(text) -> return null
             else -> "https://www.pixiv.net/$text"
         }
         val uri = PixivUri.parse(absolute) ?: return null

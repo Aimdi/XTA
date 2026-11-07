@@ -140,7 +140,12 @@ internal class PixivFetch<T : Any>(private val scope: CoroutineScope, private va
 
     private var job: Job? = null
 
-    fun load() {
+    fun load() = read(keep = false)
+
+    /** A pull: reads again while what was read stays up, and stays up, without an error, when the read fails. */
+    fun refresh() = read(keep = true)
+
+    private fun read(keep: Boolean) {
         job?.cancel()
         mutable.update { it.copy(loading = true, error = null) }
         job = scope.launch {
@@ -150,7 +155,7 @@ internal class PixivFetch<T : Any>(private val scope: CoroutineScope, private va
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                mutable.update { it.copy(loading = false, error = e) }
+                mutable.update { it.copy(loading = false, error = if (keep && it.value != null) null else e) }
             }
         }
     }

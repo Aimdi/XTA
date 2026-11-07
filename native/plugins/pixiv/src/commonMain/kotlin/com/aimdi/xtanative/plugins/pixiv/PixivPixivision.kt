@@ -17,10 +17,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -54,7 +56,8 @@ internal fun PixivisionListScreen() {
     }
 }
 
-/** A Pixivision article read from its page: cover, title and intro over the works it features, which open here. */
+/** A Pixivision article read from its page: cover, title and intro over the works it features, which open here; a pull reads it again. */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun PixivisionArticleScreen(id: Long, language: String) {
     val runtime = LocalPixiv.current
@@ -73,7 +76,7 @@ internal fun PixivisionArticleScreen(id: Long, language: String) {
         Box(Modifier.padding(padding).fillMaxSize()) {
             val article = state.value
             when {
-                article != null -> Article(article)
+                article != null -> PullToRefreshBox(isRefreshing = state.loading, onRefresh = fetch::refresh, modifier = Modifier.fillMaxSize()) { Article(article) }
                 state.error != null && !state.loading -> PixivProblem(state.error, fetch::load)
                 else -> LoadingRow()
             }
@@ -83,6 +86,8 @@ internal fun PixivisionArticleScreen(id: Long, language: String) {
 
 @Composable
 private fun Article(article: PixivisionArticle) {
+    val mutes = pixivMutes()
+    val works = article.works.filter(mutes::shows)
     LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(16.dp)) {
         item(key = "head") {
             Column {
@@ -90,12 +95,12 @@ private fun Article(article: PixivisionArticle) {
                 Spacer(Modifier.height(12.dp))
                 if (article.title.isNotEmpty()) Text(article.title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                 if (article.intro.isNotEmpty()) Text(article.intro, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 8.dp))
-                if (article.works.isNotEmpty()) {
+                if (works.isNotEmpty()) {
                     Text(pluginString(Strings.pixivision_featured), style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 20.dp, bottom = 8.dp))
                 }
             }
         }
-        items(article.works, key = { it.artworkId }) { work -> FeaturedWork(work) }
+        items(works, key = { it.artworkId }) { work -> FeaturedWork(work) }
     }
 }
 

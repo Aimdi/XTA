@@ -3,6 +3,7 @@ package com.aimdi.xtanative.plugins.pixiv
 import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.networks.pixiv.PixivIllust
 import com.aimdi.xtanative.networks.pixiv.PixivNovel
+import com.aimdi.xtanative.networks.pixiv.PixivisionWork
 import com.aimdi.xtanative.networks.pixiv.PixivTag
 import com.aimdi.xtanative.store.settings.PixivPrefs
 import com.aimdi.xtanative.store.settings.Settings
@@ -81,6 +82,9 @@ internal data class PixivMutes(
     fun filter(illusts: List<PixivIllust>): List<PixivIllust> = if (isEmpty) illusts else illusts.filterNot(::isMuted)
 
     /** [items] without those by a muted creator, [authorOf] naming each one's. */
+    /** Whether a work a Pixivision article features shows: neither it nor its creator is muted. */
+    fun shows(work: PixivisionWork): Boolean = work.userId !in authorIds && work.artworkId !in illustIds
+
     fun <T> withoutMutedAuthors(items: List<T>, authorOf: (T) -> Long): List<T> =
         if (authorIds.isEmpty()) items else items.filterNot { authorOf(it) in authorIds }
 

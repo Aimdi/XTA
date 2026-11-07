@@ -287,7 +287,7 @@ internal fun FavoritesSection(model: PixivHomeModel, view: PixivHomeView, paddin
         }
         Box(Modifier.weight(1f)) { FavoritesList(model, view, source, padding, toTop) }
     }
-    if (picking) BookmarkTagPicker(view.favorites, view.tag, onPick = { source, tag -> model.favorites(source, tag) }) { picking = false }
+    if (picking) BookmarkTagPicker(view.favorites, view.tag, onPick = { source, tag -> model.favorites(source, tag, picked = true) }) { picking = false }
 }
 
 @Composable
@@ -315,8 +315,10 @@ private fun favoritesEmpty(view: PixivHomeView): String = pluginString(
 
 /** What the tag chip says: All, Uncategorized, or the tag. */
 @Composable
-internal fun tagLabel(tag: String?): String = when (tag) {
-    null -> pluginString(Strings.bookmark_tag_all)
-    PixivDeviceBookmarks.UNTAGGED -> pluginString(Strings.bookmark_tag_unclassified)
+internal fun tagLabel(tag: String?): String = tagLabel(tag, currentLanguage())
+
+internal fun tagLabel(tag: String?, language: String): String = when (tag) {
+    null -> Strings.bookmark_tag_all.get(language)
+    PixivDeviceBookmarks.UNTAGGED -> Strings.bookmark_tag_unclassified.get(language)
     else -> tag
 }

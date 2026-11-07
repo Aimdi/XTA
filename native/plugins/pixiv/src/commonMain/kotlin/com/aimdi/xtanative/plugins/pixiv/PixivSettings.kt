@@ -214,17 +214,20 @@ private fun BookmarkSettings() {
     val runtime = LocalPixiv.current
     val settings = pixivSettings()
     SectionTitle(pluginString(Strings.bookmark_settings))
-    listOf(
-        Triple(PixivPrefs.defaultPrivateBookmark, Strings.bookmark_default_private, Strings.bookmark_default_private_description),
-        Triple(PixivPrefs.autoTagBookmarks, Strings.bookmark_auto_tag, Strings.bookmark_auto_tag_description),
-        Triple(PixivPrefs.followAfterBookmark, Strings.bookmark_follow_after, Strings.bookmark_follow_after_description),
-        Triple(PixivPrefs.downloadAfterBookmark, Strings.bookmark_save_after, Strings.bookmark_save_after_description),
-        Triple(PixivPrefs.bookmarkAfterDownload, Strings.bookmark_after_save, Strings.bookmark_after_save_description),
-        Triple(PixivPrefs.haptics, Strings.haptics, Strings.haptics_description),
-    ).forEach { (pref, title, description) ->
+    bookmarkSwitches.forEach { (pref, title, description) ->
         SwitchRow(pluginString(title), pluginString(description), settings[pref]) { runtime.settings.set(pref, it) }
     }
 }
+
+/** Bookmarking's switches in XTA's order: each preference with its title and description. */
+internal val bookmarkSwitches = listOf(
+    Triple(PixivPrefs.defaultPrivateBookmark, Strings.bookmark_default_private, Strings.bookmark_default_private_description),
+    Triple(PixivPrefs.autoTagBookmarks, Strings.bookmark_auto_tag, Strings.bookmark_auto_tag_description),
+    Triple(PixivPrefs.followAfterBookmark, Strings.bookmark_follow_after, Strings.bookmark_follow_after_description),
+    Triple(PixivPrefs.downloadAfterBookmark, Strings.bookmark_save_after, Strings.bookmark_save_after_description),
+    Triple(PixivPrefs.bookmarkAfterDownload, Strings.bookmark_after_save, Strings.bookmark_after_save_description),
+    Triple(PixivPrefs.haptics, Strings.haptics, Strings.haptics_description),
+)
 
 @Composable
 private fun MuteSettingsRow() {

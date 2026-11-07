@@ -54,7 +54,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -242,23 +241,38 @@ private fun WorkMenu(illust: PixivIllust, sheets: PixivSheets) {
     val language = currentLanguage()
     IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, pluginString(Strings.more_actions)) }
     DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
-        fun entry(label: String, icon: ImageVector, run: () -> Unit) = Triple(label, icon, run)
-        listOfNotNull(
-            entry(pluginString(Strings.download_all), SavedIcons.Download) { sheets.saveAll(illust) }.takeIf { illust.viewerUrls.size > 1 },
-            entry(pluginString(Strings.bookmark_edit), Icons.Filled.Edit) { sheets.show(PixivSheet.EditWork(illust)) },
-            entry(pluginString(Strings.copy_link), XIcons.Link) { copy(illust.url, Strings.link_copied) },
-            entry(pluginString(Strings.copy_info), PixivIcons.ContentCopy) {
-                copy(PixivCopyInfo.filled(PixivCopyInfo.template(settings, defaultCopyTemplate(language)), illust), Strings.info_copied)
-            },
-            entry(pluginString(Strings.open_on_pixiv), PostIcons.OpenInNew) { outside.open(illust.url) },
-            entry(pluginString(Strings.mute_illust), PixivIcons.VolumeOff) { sheets.show(PixivSheet.Mute(illust)) },
-            entry(pluginString(Strings.more_actions), PostIcons.MoreHoriz) { runtime.host.openPostMenu(PixivShared.menu(illust)) },
-        ).forEach { (label, icon, run) ->
-            DropdownMenuItem(text = { Text(label) }, leadingIcon = { Icon(icon, null) }, onClick = {
+        PixivWorkMenu.of(illust).forEach { entry ->
+            val (label, icon) = when (entry) {
+                PixivWorkMenu.DOWNLOAD_ALL -> Strings.download_all to SavedIcons.Download
+                PixivWorkMenu.BOOKMARK -> Strings.bookmark_edit to Icons.Filled.Edit
+                PixivWorkMenu.COPY_LINK -> Strings.copy_link to XIcons.Link
+                PixivWorkMenu.COPY_INFO -> Strings.copy_info to PixivIcons.ContentCopy
+                PixivWorkMenu.OPEN -> Strings.open_on_pixiv to PostIcons.OpenInNew
+                PixivWorkMenu.MUTE -> Strings.mute_illust to PixivIcons.VolumeOff
+                PixivWorkMenu.MORE -> Strings.more_actions to PostIcons.MoreHoriz
+            }
+            DropdownMenuItem(text = { Text(pluginString(label)) }, leadingIcon = { Icon(icon, null) }, onClick = {
                 open = false
-                run()
+                when (entry) {
+                    PixivWorkMenu.DOWNLOAD_ALL -> sheets.saveAll(illust)
+                    PixivWorkMenu.BOOKMARK -> sheets.show(PixivSheet.EditWork(illust))
+                    PixivWorkMenu.COPY_LINK -> copy(illust.url, Strings.link_copied)
+                    PixivWorkMenu.COPY_INFO -> copy(PixivCopyInfo.filled(PixivCopyInfo.template(settings, defaultCopyTemplate(language)), illust), Strings.info_copied)
+                    PixivWorkMenu.OPEN -> outside.open(illust.url)
+                    PixivWorkMenu.MUTE -> sheets.show(PixivSheet.Mute(illust))
+                    PixivWorkMenu.MORE -> runtime.host.openPostMenu(PixivShared.menu(illust))
+                }
             })
         }
+    }
+}
+
+/** The entries of a work's ⋯ menu, in XTA's order (pixiv_detail_menu.dart); saving every page only for a work of several. */
+internal enum class PixivWorkMenu {
+    DOWNLOAD_ALL, BOOKMARK, COPY_LINK, COPY_INFO, OPEN, MUTE, MORE;
+
+    companion object {
+        fun of(illust: PixivIllust): List<PixivWorkMenu> = entries.filter { it != DOWNLOAD_ALL || illust.viewerUrls.size > 1 }
     }
 }
 
