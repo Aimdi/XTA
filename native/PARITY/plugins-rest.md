@@ -6,8 +6,8 @@ Flutter widget/timing assertion has no Compose widget harness, the rule or store
 unit-tested), different → fixed (native deliberately differs), n/a (Flutter-only).
 
 This batch is the 62 files the other ledgers did not cover. The booru batch (`test/booru_*`,
-273 tests; its perf harness is in `widgets.md`) is below; EH, stocks and the shared
-`test/plugin_*` files follow.
+273 tests; its perf harness is in `widgets.md`) and the EH batch (`test/eh*`, 89 tests) are
+below; stocks and the shared `test/plugin_*` files follow.
 
 ## test/booru_danbooru_search_test.dart
 
@@ -335,3 +335,122 @@ covered | booru_visits_test › a post above the newest seen on its site is new 
 covered | booru_visits_test › a visit keeps each site's newest post seen | BooruHistoryTest.followingNotesTheNewestPostOfEachSite |
 covered | booru_visits_test › seeing nothing writes nothing | BooruHistoryTest.seeingNothingChangesNothingAndABrokenRecordIsNoVisit |
 covered | booru_visits_test › a broken record reads as no visit | BooruHistoryTest.seeingNothingChangesNothingAndABrokenRecordIsNoVisit |
+
+## test/eh_client_test.dart
+
+covered | eh_client_test › image pages ask EH for 2400px resamples with a desktop UA | EhClientTest.imagePagesAskForTheLargestResamplesAsADesktopBrowser |
+covered | eh_client_test › search and toplist hit the site query shapes EhViewer uses | EhClientTest.searchToplistAndWatchedHitTheSitesQueryShapes |
+
+## test/eh_detail_test.dart
+
+covered | eh_detail_test › tags keep their spaces and their namespaces | EhParserTest.tagsKeepTheirSpacesAndTheirNamespaces |
+covered | eh_detail_test › dashed tags are weak | EhParserTest.dashedTagsAreWeak |
+covered | eh_detail_test › facts from the detail table | EhParserTest.factsFromTheDetailTable |
+covered | eh_detail_test › a bare tag cell falls back to its id | EhParserTest.aBareTagCellFallsBackToItsId |
+covered | eh_detail_test › sizes and favorite counts read as the site writes them | EhParserTest.sizesAndFavoriteCountsReadAsTheSiteWritesThem |
+covered | eh_detail_test › a tag searches for exactly itself | EhModelsTest.aTagSearchesForExactlyItself |
+covered | eh_detail_test › groups follow the site order with namespaceless tags last | EhModelsTest.groupsFollowTheSiteOrderWithNamespacelessTagsLast |
+covered | eh_detail_test › rating stars, tags and language come off the row | EhParserTest.ratingStarsTagsAndLanguageComeOffTheRow |
+covered | eh_detail_test › star sprite offsets | EhParserTest.starSpriteOffsets |
+covered | eh_detail_test › language badges | EhModelsTest.translationMarksAreNoLanguage |
+
+## test/eh_gallery_screen_test.dart
+
+untested → ported | eh_gallery_screen_test › the header and facts show what the site sent, with spoken labels | EhParserTest.detail, factsFromTheDetailTable; EhRoutesTest.sizesBadgesAndStarsAreWrittenAsXtaWritesThem | the spoken labels are Compose-only |
+covered | eh_gallery_screen_test › the uploader opens a search for their galleries | EhQueryTest.anUploadersGalleriesAreASearch |
+untested → ported | eh_gallery_screen_test › on a phone each namespace heads its own tags | plugins/ehviewer EhGalleryContent.kt TagGroup | layout is Compose-only |
+untested → ported | eh_gallery_screen_test › on a wide screen the namespaces form a label column | EhGalleryContent.kt TagGroup (beside) | layout is Compose-only |
+covered | eh_gallery_screen_test › a tag searches for exactly itself and a long press copies it | EhModelsTest.aTagSearchesForExactlyItself | the long press is Compose-only |
+covered | eh_gallery_screen_test › $name opens the reader at page $page | EhRoutesTest.eachScreenOpensFromItsRoute; EhReaderModelTest.theReaderOpensWithinTheGalleryAndSettlesOnlyOnANewPage |
+untested → ported | eh_gallery_screen_test › three comments show, then all of them in a sheet | EhParserTest.commentsReadAuthorBodyScoreAndTheUploadersMark | the sheet is Compose-only |
+untested → ported | eh_gallery_screen_test › bones stand in below the header until the detail arrives | EhGalleryLoaderTest.theFirstLoadReadsTheDetailAndItsFirstPreviewSheet | the skeleton is Compose-only |
+covered | eh_gallery_screen_test › a failed load shows the error with a retry that works | EhGalleryLoaderTest.aFailedLoadKeepsTheErrorUntilARetrySucceeds |
+covered | eh_gallery_screen_test › pulling down reloads; a failed reload keeps the page and says why | EhGalleryLoaderTest.aSheetThatLandsAfterAReloadIsDropped |
+untested → ported | eh_gallery_screen_test › a narrow phone at large text scrolls through without overflow, loading previews | plugins/ehviewer EhGalleryScreen.kt, EhGalleryContent.kt | layout is Compose-only |
+
+## test/eh_gallery_store_test.dart
+
+covered | eh_gallery_store_test › the first load reads the detail and its first preview sheet | EhGalleryLoaderTest.theFirstLoadReadsTheDetailAndItsFirstPreviewSheet |
+covered | eh_gallery_store_test › preview sheets append in order until the last one | EhGalleryLoaderTest.previewSheetsAppendInOrderUntilTheLastOne |
+covered | eh_gallery_store_test › a failed sheet stops the scroll trigger but not the button | EhGalleryLoaderTest.aFailedSheetStopsTheScrollTriggerButNotTheButton |
+covered | eh_gallery_store_test › continue page comes from history, past the first page only | EhGalleryLoaderTest.theContinuePageComesFromHistoryPastTheFirstPageOnly |
+covered | eh_gallery_store_test › a failed load keeps the error until a retry succeeds | EhGalleryLoaderTest.aFailedLoadKeepsTheErrorUntilARetrySucceeds |
+covered | eh_gallery_store_test › a sheet that lands after a reload is dropped | EhGalleryLoaderTest.aSheetThatLandsAfterAReloadIsDropped |
+covered | eh_gallery_store_test › merging keeps each page once, in order | EhGalleryLoaderTest.mergingKeepsEachPageOnceInOrder |
+covered | eh_gallery_store_test › tiles read their sheet offset and size from the style | EhParserTest.tilesReadTheirSheetOffsetAndSizeFromTheStyle |
+covered | eh_gallery_store_test › a lone thumbnail without an offset still has its image | EhParserTest.aLoneThumbnailWithoutAnOffsetStillHasItsImage |
+covered | eh_gallery_store_test › the sprite crop is the tile in sheet pixels, never past the sheet | EhModelsTest.theSpriteCropIsTheTileInSheetPixelsNeverPastTheSheet |
+
+## test/eh_page_resolver_test.dart
+
+covered | eh_page_resolver_test › a full first sheet gives its own length | EhPageResolverTest.aFullFirstSheetGivesItsOwnLength |
+covered | eh_page_resolver_test › a later sheet gives it by the page it starts at | EhPageResolverTest.aLaterSheetGivesItByThePageItStartsAt |
+covered | eh_page_resolver_test › a single sheet, an empty one or one that does not line up says nothing | EhPageResolverTest.aSingleSheetAnEmptyOneOrOneThatDoesNotLineUpSaysNothing |
+covered | eh_page_resolver_test › only the unbroken run from page 1 counts as the first sheets | EhPageResolverTest.onlyTheUnbrokenRunFromPage1CountsAsTheFirstSheets |
+covered | eh_page_resolver_test › fetches the sheet a page sits on, sized from the previews it was given | EhPageResolverTest.fetchesTheSheetAPageSitsOnSizedFromThePreviewsItWasGiven |
+covered | eh_page_resolver_test › a wrong guess at the sheet size corrects itself from the sheet it got | EhPageResolverTest.aWrongGuessAtTheSheetSizeCorrectsItselfFromTheSheetItGot |
+covered | eh_page_resolver_test › caches pages and shares a request already in flight | EhPageResolverTest.cachesPagesAndSharesARequestAlreadyInFlight |
+covered | eh_page_resolver_test › reading on follows the next-page link instead of a preview sheet | EhPageResolverTest.readingOnFollowsTheNextPageLinkInsteadOfAPreviewSheet |
+covered | eh_page_resolver_test › reload asks for another image server with the page nl key | EhPageResolverTest.reloadAsksForAnotherImageServerWithThePagesNlKey |
+covered | eh_page_resolver_test › a failed page stays failed until it is retried | EhPageResolverTest.aFailedPageStaysFailedUntilItIsRetried |
+covered | eh_page_resolver_test › pages outside the gallery are never asked for | EhPageResolverTest.pagesOutsideTheGalleryAreNeverAskedFor |
+covered | eh_page_resolver_test › a page no sheet lists fails as not found | EhPageResolverTest.aPageNoSheetListsFailsAsNotFound |
+
+## test/eh_parse_test.dart
+
+covered | eh_parse_test › prefers Japanese only when asked | EhModelsTest.theJapaneseTitleOnlyWhenAskedFor |
+covered | eh_parse_test › parses labels and builds exclude mask | EhModelsTest.categoriesParseTheSitesLabelsAndXtasStoredNamesAndBuildTheExcludeMask |
+covered | eh_parse_test › extracts galleries from compact list HTML | EhParserTest.aCompactListRowReadsItsGalleryAndTheNextPage |
+covered | eh_parse_test › reads title tags and previews | EhParserTest.aGalleryPageReadsItsTitlesTagsAndPreviews |
+covered | eh_parse_test › reads image and navigation | EhParserTest.anImagePageReadsItsImageNeighboursCounterAndReloadKey |
+covered | eh_parse_test › reads fullimg.php and uses it only when signed in | EhParserTest.fullimgPhpIsTheOriginalAndOnlyASignedInReaderUsesIt |
+covered | eh_parse_test › reads the current /fullimg/gid/page/key/file href | EhParserTest.theCurrentFullimgPathIsTheOriginalToo |
+covered | eh_parse_test › adds a 2400px uconfig when none is present | EhSettingsTest.a2400pxUconfigIsAddedWhenNoneIsThereAndTheConsentGoesAsTheSitesOwnNwCookieToo |
+covered | eh_parse_test › upgrades a mobile-sized uconfig without dropping other flags | EhSettingsTest.aMobileSizedUconfigIsUpgradedWithoutDroppingOtherFlags |
+covered | eh_parse_test › reads author body score and uploader flag | EhParserTest.commentsReadAuthorBodyScoreAndTheUploadersMark |
+covered | eh_parse_test › adds language tag and min rating | EhQueryTest.aSearchAddsItsLanguageTagAndMinimumRating |
+covered | eh_parse_test › appends nl for a broken-image reload | EhParserTest.theReloadKeyComesFromTheNlCall |
+covered | eh_parse_test › reads token gid and page | EhParserTest.aPageLinkReadsTokenGidAndPage |
+covered | eh_parse_test › maps gmetadata JSON | EhParserTest.gdataMapsTheApisGalleriesAndLeavesOutOnesItCouldNotFind |
+
+## test/eh_reader_gestures_test.dart
+
+covered | eh_reader_gestures_test › a loaded page still turns on a tap, and zooms on a double tap | ui/plugins Media.kt ZoomableImage; EhReaderModelTest.tapZonesTurnSmoothlyAndTheSliderJumps | 2.5× double tap, and a single tap is held through the double-tap timeout, as XTA |
+
+## test/eh_reader_screen_test.dart
+
+covered | eh_reader_screen_test › opens at the initial page and remembers it | EhReaderModelTest.theReaderOpensWithinTheGalleryAndSettlesOnlyOnANewPage; EhKeptTest.theHistoryRemembersThePageLastReadAndNeverBeforeTheFirst |
+covered | eh_reader_screen_test › left to right: swipe left and tap the right third for the next page | EhReaderModelTest.theOuterThirdsTurnPagesMirroredRightToLeft |
+covered | eh_reader_screen_test › right to left: swipe right and tap the left third for the next page | EhReaderModelTest.theOuterThirdsTurnPagesMirroredRightToLeft |
+covered | eh_reader_screen_test › tapping the middle hides the bars, and tapping again brings them back | EhReaderModelTest.anotherModeStaysOnThePageAndTheBarsToggle |
+covered | eh_reader_screen_test › the slider previews pages while dragged and jumps once on release | EhReaderModelTest.tapZonesTurnSmoothlyAndTheSliderJumps |
+covered | eh_reader_screen_test › switching to vertical shows the pages in one list from the current page | EhReaderModelTest.anotherModeStaysOnThePageAndTheBarsToggle |
+covered | eh_reader_screen_test › vertical reading opens at the page and follows the scroll | EhReaderModelTest.theColumnIsOnItsTopPageOrTheLastOnceItShowsWhole |
+untested → ported | eh_reader_screen_test › long-press opens the page sheet; reload asks another server | EhPageResolverTest.reloadAsksForAnotherImageServerWithThePagesNlKey | the sheet is Compose-only |
+covered | eh_reader_screen_test › a page that will not load offers retry and another server | EhPageResolverTest.aFailedPageStaysFailedUntilItIsRetried |
+untested → ported | eh_reader_screen_test › the page bar fits a narrow screen with large text | plugins/ehviewer EhReaderChrome.kt | layout is Compose-only |
+
+## test/eh_reader_store_test.dart
+
+covered | eh_reader_store_test › opens at the initial page, held inside the gallery | EhReaderModelTest.theReaderOpensWithinTheGalleryAndSettlesOnlyOnANewPage |
+covered | eh_reader_store_test › turning and jumping stay inside the gallery and settle once per page | EhReaderModelTest.theReaderOpensWithinTheGalleryAndSettlesOnlyOnANewPage, tapZonesTurnSmoothlyAndTheSliderJumps |
+covered | eh_reader_store_test › the slider previews a page without settling, and settles once on release | EhReaderModelTest.tapZonesTurnSmoothlyAndTheSliderJumps |
+covered | eh_reader_store_test › a swipe moves the page but not the vertical anchor; a jump moves both | EhReaderModelTest.aPageTheViewMovedToIsNotJumpedToAgain |
+covered | eh_reader_store_test › the reading mode comes from the pref and is saved back to it | EhConfigTest.theReadingPreferencesHaveXtasDefaults; EhReaderModelTest.anotherModeStaysOnThePageAndTheBarsToggle |
+covered | eh_reader_store_test › the middle third shows and hides the bars | EhReaderModelTest.anotherModeStaysOnThePageAndTheBarsToggle |
+covered | eh_reader_store_test › the outer thirds turn pages, mirrored when reading right to left | EhReaderModelTest.theOuterThirdsTurnPagesMirroredRightToLeft |
+covered | eh_reader_store_test › preloads the next three pages and the one before, inside the gallery | EhPageResolverTest.preloadsTheNextThreePagesAndTheOneBeforeInsideTheGallery |
+covered | eh_reader_store_test › a vertical reader is on the topmost page in view, or on a short last page once whole | EhReaderModelTest.theColumnIsOnItsTopPageOrTheLastOnceItShowsWhole |
+covered | eh_reader_store_test › visibility from a list a jump replaced, or from a paged mode, is ignored | EhReaderModelTest.aPageTheViewMovedToIsNotJumpedToAgain |
+covered | eh_reader_store_test › the page count falls back to the furthest page known | EhPageResolverTest.thePageCountFallsBackToTheFurthestPageKnown |
+
+## test/eh_search_test.dart
+
+covered | eh_search_test › the term being typed starts after the last finished term | EhQueryTest.theTermBeingTypedStartsAfterTheLastFinishedTerm |
+covered | eh_search_test › suggestions are asked for the whole term, then its last words | EhQueryTest.suggestionsAreAskedForTheWholeTermThenItsLastWords |
+covered | eh_search_test › a suggestion replaces its term and keeps a typed operator | EhQueryTest.aSuggestionReplacesItsTermAndKeepsATypedOperator |
+covered | eh_search_test › suggestions read the tag map, prefer master tags and drop repeats | EhParserTest.suggestionsReadTheTagMapPreferMasterTagsAndDropRepeats |
+covered | eh_search_test › the longest term the site knows wins, and only that span is replaced | EhSearchTest.theLongestTermTheSiteKnowsWinsAndOnlyThatSpanIsReplaced |
+covered | eh_search_test › searches are remembered; a changed filter runs the search again | EhSearchTest.searchesAreRememberedAndAChangedFilterRunsTheSearchAgainUnawaited |
+covered | eh_search_test › the last category cannot be switched off | EhSearchTest.theLastCategoryCannotBeSwitchedOff |
+covered | eh_search_test › a suggestion fills the field and history entries can be removed | EhSearchTest.aSearchForNothingRunsNothingAndAFinishedTermAsksForNoTags; EhApp.forgetSearch (PluginSearchHistoryTest) |
