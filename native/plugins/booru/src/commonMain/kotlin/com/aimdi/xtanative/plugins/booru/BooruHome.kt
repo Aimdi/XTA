@@ -44,6 +44,8 @@ import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
+import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
+import com.aimdi.xtanative.ui.plugins.ReportsReadingScroll
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
@@ -63,9 +65,10 @@ internal fun BooruHome(app: BooruApp, frame: PluginFrame, ownActions: Boolean = 
     LaunchedEffect(tab, settings, follows) { feeds.ensure(tab) }
     RefreshesOn(frame.refresh) { feeds.feed(tab).refresh() }
     ScrollsToTop(frame.toTop) { grids.getValue(tab).let { if (reduced) it.scrollToItem(0) else it.animateScrollToItem(0) } }
+    ReportsReadingScroll(grids.getValue(tab))
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
-            HomeBar(tab, onTab = { tab = it }, actions = if (ownActions) HomeActions({ app.openSearch() }, app.host::openSettings) else null)
+            ReadingControlsBar { HomeBar(tab, onTab = { tab = it }, actions = if (ownActions) HomeActions({ app.openSearch() }, app.host::openSettings) else null) }
             Hairline()
             Box(Modifier.weight(1f).swipeTabs(HomeTab.entries, tab) { tab = it }) {
                 when (tab) {

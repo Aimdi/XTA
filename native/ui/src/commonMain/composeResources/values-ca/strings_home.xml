@@ -11,6 +11,7 @@
     <string name="home_open_group">Obre el grup</string>
     <string name="home_more_options">Més opcions</string>
         <string name="home_pin_to_bar_hint">Els elements fixats apareixen al costat de les seccions sempre que hi hagi espai a la barra. Tot continua també en aquest menú.</string>
+    <string name="home_keep_controls_visible">Mantén els controls visibles</string>
     <string name="home_pin_to_bar">Fixa a la barra superior</string>
 
     <string name="home_strip_title">Cronologies de connectors</string>

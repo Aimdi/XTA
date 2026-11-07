@@ -60,6 +60,8 @@ import com.aimdi.xtanative.ui.plugins.PluginNotices
 import com.aimdi.xtanative.ui.plugins.PluginTabs
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
+import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
+import com.aimdi.xtanative.ui.plugins.ReadingControlsPinItem
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import kotlinx.coroutines.delay
@@ -93,7 +95,7 @@ internal fun StocksHome(app: StocksApp, frame: PluginFrame) {
     RefreshesOn(frame.refresh) { model.pull() }
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
-            StocksHeader(app, view.tab, model::select, onAdd = { adding = true }, onManage = { managing = true })
+            ReadingControlsBar { StocksHeader(app, view.tab, model::select, onAdd = { adding = true }, onManage = { managing = true }) }
             Box(Modifier.weight(1f).swipeTabs(StocksTab.entries, view.tab) { model.select(it) }) {
                 val shown = entries
                 when {
@@ -249,6 +251,7 @@ private fun StocksMenu(app: StocksApp, onManage: () -> Unit) {
                 open = false
                 app.toggleFoldSignals()
             }
+            ReadingControlsPinItem()
         }
     }
 }

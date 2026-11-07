@@ -512,3 +512,15 @@ covered | group_ungrouped_test › parses an AI reply and drops unknown ids | se
 covered | group_ungrouped_test › AI assignments win; heuristic fills the rest | AiPrompts GroupingPlan.mergedWith | AiClientTest
 covered | group_ungrouped_test › the store prefers a valid AI plan and falls back on a blank reply | SortViewModels.askAi (empty parse → heuristic) | AiClientTest (groupingPlan of "no json" is unused)
 covered | group_ungrouped_test › opening the sorter does not send accounts to a configured AI | SortViewModels.plan(useAi = false) by default | by construction (AI only on its own button)
+
+## home_reading_controls_test.dart
+missing → implemented | home_reading_controls_test › deliberate down hides, small reversals do not flicker, deliberate up reveals | core/feed/ReadingControls.kt | ReadingControlsTest.deliberateDownHidesSmallReversalsDoNotFlickerAndDeliberateUpReveals
+missing → implemented | home_reading_controls_test › programmatic jumps and stale source notifications cannot hide controls | ReadingControls.observe | ReadingControlsTest.programmaticJumpsAndStaleSourceNotificationsCannotHideControls
+missing → implemented | home_reading_controls_test › short feeds and protected focus, modal or accessible navigation stay visible | ReadingControls.observe | ReadingControlsTest.shortFeedsAndProtectedMomentsStayVisible; Home passes a screen reader and the keyboard as protected
+missing → implemented | home_reading_controls_test › reclaimed space does not create a short-feed hide/reveal loop | ReadingControls.observe | ReadingControlsTest.reclaimedSpaceDoesNotCreateAShortFeedLoop
+missing → implemented | home_reading_controls_test › pin is reversible, persisted, and restored by a new Home session | HomePrefs.keepControlsVisible, ui/plugins/ReadingControls.kt | ReadingControlsTest.pinIsReversiblePersistedAndRestoredByANewSession
+missing → implemented | home_reading_controls_test › source changes reveal controls without changing the global pin setting | ReadingControls.bind | ReadingControlsTest.sourceChangesRevealControlsWithoutChangingThePin
+untested | home_reading_controls_test › real viewport retains controls for focus | ui/plugins/ReadingControls.kt ReadingControlsBar | no Compose widget harness; focus on the row calls reveal
+untested | home_reading_controls_test › real viewport retains controls for keyboard | HomeFeedPage | the keyboard inset is passed as protected; the store's protected path is tested
+untested | home_reading_controls_test › real viewport retains controls for accessibility | HomeFeedPage | the screen reader is passed as protected; the store's protected path is tested
+untested | home_reading_controls_test › real viewport retains controls for short | ReadingScroll.of | ReadingControlsTest.aListThatFitsIsShortAndOneThatRunsPastIsNot

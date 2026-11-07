@@ -60,6 +60,7 @@ import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
+import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.post.PostIcons
@@ -83,7 +84,7 @@ internal fun PixivHome(runtime: PixivRuntime, frame: PluginFrame) {
         RefreshesOn(frame.refresh) { model.refreshShown() }
         val toTop = frame.toTop + reselected
         Column(Modifier.fillMaxSize()) {
-            HomeChrome(view, onTab = { tab -> if (tab == view.tab) reselected++ else model.show(tab) }, onMode = model::switchMode)
+            ReadingControlsBar { HomeChrome(view, onTab = { tab -> if (tab == view.tab) reselected++ else model.show(tab) }, onMode = model::switchMode) }
             HorizontalDivider()
             Box(Modifier.weight(1f).swipeTabs(if (signedIn) PixivTab.entries else emptyList(), view.tab) { model.show(it) }) {
                 val padding = frame.padding

@@ -11,6 +11,7 @@
     <string name="home_open_group">Apri il gruppo</string>
     <string name="home_more_options">Altre opzioni</string>
         <string name="home_pin_to_bar_hint">Gli elementi fissati compaiono accanto alle sezioni quando la barra ha spazio. Tutto resta anche in questo menu.</string>
+    <string name="home_keep_controls_visible">Mantieni visibili i controlli</string>
     <string name="home_pin_to_bar">Fissa nella barra in alto</string>
 
     <string name="home_strip_title">Timeline dei plugin</string>

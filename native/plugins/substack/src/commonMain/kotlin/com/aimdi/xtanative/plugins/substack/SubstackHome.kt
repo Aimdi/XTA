@@ -46,6 +46,8 @@ import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
+import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
+import com.aimdi.xtanative.ui.plugins.ReadingControlsPinItem
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import kotlinx.coroutines.CoroutineScope
@@ -115,7 +117,7 @@ internal fun SubstackHome(app: SubstackApp, frame: PluginFrame) {
         if (selected == HomePane.NOTES) state.notes.refresh() else state.feed.refresh()
     }
     Column(Modifier.fillMaxSize()) {
-        HomeHeader(app, state, selected) { pane = it.ordinal }
+        ReadingControlsBar { HomeHeader(app, state, selected) { pane = it.ordinal } }
         Hairline()
         Box(Modifier.weight(1f).swipeTabs(HomePane.entries, selected) { pane = it.ordinal }) {
             when (selected) {
@@ -159,6 +161,7 @@ private fun HomeMenu(app: SubstackApp, state: HomeState, selected: HomePane) {
             if (selected.ordinal < 2 && SubstackHomeRules.anyUnread(feed.posts, read)) {
                 DropdownMenuItem(text = { Text(pluginString(Strings.mark_all_read)) }, onClick = { open = false; app.launch { app.read.markRead(feed.posts) } })
             }
+            ReadingControlsPinItem()
         }
     }
 }

@@ -11,6 +11,7 @@
     <string name="home_open_group">Adkryć hrupu</string>
     <string name="home_more_options">Inšyja parametry</string>
         <string name="home_pin_to_bar_hint">Zamacavanyja punkty zjaŭlajucca pobač z razdzielami, kali na paneli chapaje miesca. Usie jany zastajucca i ŭ hetym mieniu.</string>
+    <string name="home_keep_controls_visible">Zaŭsiody pakazvać elementy kiravannia</string>
     <string name="home_pin_to_bar">Zamacavać na vierchniaj paneli</string>
 
     <string name="home_strip_title">Stužki plahinaŭ</string>

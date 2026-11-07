@@ -306,6 +306,7 @@ fun ReadsMoreNearEnd(state: LazyListState, paged: PagedState<*>, more: () -> Uni
 /** Scrolls [state] to the top each time [toTop] grows past what it last answered, and not when a list comes back into view. */
 @Composable
 fun ScrollsToTop(state: LazyListState, toTop: Int) {
+    ReportsReadingScroll(state)
     ScrollsToTop(toTop) { state.animateScrollToItem(0) }
 }
 

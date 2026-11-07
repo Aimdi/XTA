@@ -62,6 +62,7 @@ import com.aimdi.xtanative.store.settings.PixivPrefs
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
+import com.aimdi.xtanative.ui.plugins.ReportsReadingScroll
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 
@@ -98,6 +99,7 @@ internal fun PixivWorksGrid(
     val current = pixivMutes()
     val shown = remember(state.items, current, hideMuted) { if (hideMuted) mutes(current).filter(state.items) else state.items }
     val grid = rememberLazyStaggeredGridState()
+    ReportsReadingScroll(grid)
     LaunchedEffect(list) { list.ensure() }
     GridToTop(grid, toTop)
     RefreshesOn(refresh) { list.refresh() }

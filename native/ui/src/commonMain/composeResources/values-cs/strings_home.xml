@@ -11,6 +11,7 @@
     <string name="home_open_group">Otevřít skupinu</string>
     <string name="home_more_options">Další možnosti</string>
         <string name="home_pin_to_bar_hint">Připnuté položky se zobrazí vedle sekcí, kdykoli je na liště místo. Vše zůstává i v této nabídce.</string>
+    <string name="home_keep_controls_visible">Vždy zobrazovat ovládací prvky</string>
     <string name="home_pin_to_bar">Připnout na horní lištu</string>
 
     <string name="home_strip_title">Timeline pluginů</string>

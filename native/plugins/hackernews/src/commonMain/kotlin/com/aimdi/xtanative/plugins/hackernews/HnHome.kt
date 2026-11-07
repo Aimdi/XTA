@@ -51,6 +51,7 @@ import com.aimdi.xtanative.ui.plugins.PluginTabs
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
+import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.problemOf
 import com.aimdi.xtanative.ui.plugins.rememberKept
@@ -74,8 +75,12 @@ internal fun HnHome(app: HnApp, frame: PluginFrame) {
     var tab by rememberSaveable { mutableStateOf(HnTab.TOP) }
     val panes = rememberSaveableStateHolder()
     Column(Modifier.fillMaxSize()) {
-        Header(app)
-        PluginTabs(HnTab.entries.map { pluginString(it.label) }, tab.ordinal, { tab = HnTab.entries[it] })
+        ReadingControlsBar {
+            Column {
+                Header(app)
+                PluginTabs(HnTab.entries.map { pluginString(it.label) }, tab.ordinal, { tab = HnTab.entries[it] })
+            }
+        }
         Box(Modifier.weight(1f).swipeTabs(HnTab.entries, tab) { tab = it }) {
             panes.SaveableStateProvider(tab.name) {
                 val feed = tab.feed

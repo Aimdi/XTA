@@ -11,6 +11,7 @@
     <string name="home_open_group">Buka grup</string>
     <string name="home_more_options">Opsi lainnya</string>
         <string name="home_pin_to_bar_hint">Item yang disematkan muncul di samping bagian setiap kali bilah punya ruang. Semuanya tetap ada di menu ini juga.</string>
+    <string name="home_keep_controls_visible">Selalu tampilkan kontrol</string>
     <string name="home_pin_to_bar">Sematkan di bilah atas</string>
 
     <string name="home_strip_title">Timeline plugin</string>

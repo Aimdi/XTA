@@ -11,6 +11,7 @@
     <string name="home_open_group">Ava grupp</string>
     <string name="home_more_options">Rohkem valikuid</string>
         <string name="home_pin_to_bar_hint">Kinnitatud kirjed on jaotiste kõrval alati, kui ribal on ruumi. Kõik jääb ka sellesse menüüsse alles.</string>
+    <string name="home_keep_controls_visible">Hoia juhtnupud nähtaval</string>
     <string name="home_pin_to_bar">Kinnita ülaribale</string>
 
     <string name="home_strip_title">Pluginate ajajooned</string>

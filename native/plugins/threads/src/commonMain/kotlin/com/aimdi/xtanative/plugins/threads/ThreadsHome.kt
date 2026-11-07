@@ -60,6 +60,8 @@ import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.pluginPlural
+import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
+import com.aimdi.xtanative.ui.plugins.ReadingControlsPinItem
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.saved.SavedIcons
@@ -84,7 +86,7 @@ internal fun ThreadsHome(app: ThreadsApp, frame: PluginFrame) {
     RefreshesOn(frame.refresh) { app.feed.refresh(force = true) }
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
-            HomeBar(app, liked, onLiked = { liked = it }, onSearch = { searching = true }, onAdd = { adding = true })
+            ReadingControlsBar { HomeBar(app, liked, onLiked = { liked = it }, onSearch = { searching = true }, onAdd = { adding = true }) }
             HorizontalDivider()
             Box(Modifier.weight(1f).swipeTabs(if (liked) 1 else 0, 2) { liked = it == 1 }) {
                 if (liked) LikedPane(app, frame) else HomePane(app, frame, onAdd = { adding = true }, onSearch = { searching = true })
@@ -112,6 +114,7 @@ private fun HomeBar(app: ThreadsApp, liked: Boolean, onLiked: (Boolean) -> Unit,
                 MenuRow(ThreadsIcons.PersonAdd, Strings.add_account) { menu = false; onAdd() }
                 MenuRow(SavedIcons.BookmarkBorder, Strings.saved) { menu = false; app.host.open(ThreadsRoutes.SAVED) }
                 MenuRow(Icons.Filled.Settings, Strings.settings) { menu = false; app.host.openSettings() }
+                ReadingControlsPinItem()
             }
         }
     }

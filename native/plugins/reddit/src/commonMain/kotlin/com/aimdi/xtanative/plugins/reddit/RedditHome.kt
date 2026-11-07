@@ -50,6 +50,8 @@ import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
+import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
+import com.aimdi.xtanative.ui.plugins.ReadingControlsPinItem
 import com.aimdi.xtanative.ui.plugins.pluginString
 
 /**
@@ -63,8 +65,12 @@ internal fun RedditHome(app: RedditApp, frame: PluginFrame) {
     val home by app.home.collectAsState()
     val followed by app.followed.collectAsState()
     Column(Modifier.fillMaxSize()) {
-        HomeBar(app, home)
-        if (RedditHomeSource.showsStrip(followed)) CommunityStrip(app, followed, home)
+        ReadingControlsBar {
+            Column {
+                HomeBar(app, home)
+                if (RedditHomeSource.showsStrip(followed)) CommunityStrip(app, followed, home)
+            }
+        }
         // A community picked from the strip is no section of its own: the swipes turn Following, Popular and All.
         val modes = if (home.subreddit == null) RedditFeedMode.entries else emptyList()
         Box(Modifier.weight(1f).swipeTabs(modes, home.mode) { app.selectMode(it) }) {
@@ -140,6 +146,7 @@ private fun HomeMenu(app: RedditApp, choices: RedditChoices) {
                     }
                 }
             }
+            ReadingControlsPinItem()
         }
     }
     if (communities) CommunitiesSheet(app) { communities = false }

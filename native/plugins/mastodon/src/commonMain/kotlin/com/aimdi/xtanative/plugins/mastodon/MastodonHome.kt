@@ -42,6 +42,8 @@ import com.aimdi.xtanative.ui.plugins.AddToGroupButton
 import com.aimdi.xtanative.ui.plugins.NetworkPersonRow
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginText
+import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
+import com.aimdi.xtanative.ui.plugins.ReadingControlsPinItem
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.post.PostIcons
 
@@ -80,12 +82,16 @@ internal fun MastodonHome(app: MastodonApp, frame: PluginFrame, surface: Mastodo
         app.places.select(chosen.ordinal, people)
     }
     Column(Modifier.fillMaxSize()) {
-        SectionBar(app, timeline, select)
-        if (timeline == MastodonTimeline.FOLLOWING) {
-            FollowingControls(people, onSelect = {
-                people = it
-                app.places.select(timeline.ordinal, it)
-            }, onAdd = { adding = true })
+        ReadingControlsBar {
+            Column {
+                SectionBar(app, timeline, select)
+                if (timeline == MastodonTimeline.FOLLOWING) {
+                    FollowingControls(people, onSelect = {
+                        people = it
+                        app.places.select(timeline.ordinal, it)
+                    }, onAdd = { adding = true })
+                }
+            }
         }
         Hairline()
         Box(Modifier.weight(1f).swipeTabs(MastodonTimeline.entries, timeline, select)) {
@@ -143,6 +149,7 @@ private fun MoreMenu(app: MastodonApp) {
                 open = false
                 app.host.openSettings()
             })
+            ReadingControlsPinItem()
         }
     }
 }

@@ -11,6 +11,7 @@
     <string name="home_open_group">打开分组</string>
     <string name="home_more_options">更多选项</string>
         <string name="home_pin_to_bar_hint">顶栏有空间时，已固定的项目会显示在分区旁边。所有项目也仍保留在此菜单中。</string>
+    <string name="home_keep_controls_visible">始终显示控件</string>
     <string name="home_pin_to_bar">固定到顶栏</string>
 
     <string name="home_strip_title">插件时间线</string>

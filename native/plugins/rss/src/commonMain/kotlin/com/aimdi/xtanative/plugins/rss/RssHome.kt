@@ -39,6 +39,8 @@ import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
+import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
+import com.aimdi.xtanative.ui.plugins.ReadingControlsPinItem
 import com.aimdi.xtanative.ui.plugins.pluginString
 
 /** The RSS tab's panes, in XTA's order. */
@@ -62,7 +64,7 @@ internal fun RssHome(app: RssApp, frame: PluginFrame) {
     LaunchedEffect(feeds) { if (feeds != null) app.timeline.refresh() }
     RefreshesOn(frame.refresh) { app.timeline.refresh(force = true) }
     Column(Modifier.fillMaxSize()) {
-        Header(app, selected) { pane = it.ordinal }
+        ReadingControlsBar { Header(app, selected) { pane = it.ordinal } }
         Hairline()
         Box(Modifier.weight(1f).swipeTabs(RssPane.entries, selected) { pane = it.ordinal }) {
             val followed = feeds
@@ -105,6 +107,7 @@ private fun HomeMenu(app: RssApp, selected: RssPane) {
                 DropdownMenuItem(text = { Text(pluginString(Strings.mark_all_read)) }, onClick = { open = false; app.launch { app.markRead(timeline.items.map { it.id }) } })
             }
             DropdownMenuItem(text = { Text(pluginString(Strings.settings)) }, onClick = { open = false; app.host.openSettings() })
+            ReadingControlsPinItem()
         }
     }
 }

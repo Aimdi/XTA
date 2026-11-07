@@ -12,6 +12,7 @@
     <string name="home_more_options">More options</string>
     <string name="home_pin_to_bar">Pin to top bar</string>
     <string name="home_pin_to_bar_hint">Pinned entries sit next to the sections whenever the bar has room. Everything stays in this menu too.</string>
+    <string name="home_keep_controls_visible">Keep controls visible</string>
 
     <string name="home_strip_title">Plugin timelines</string>
     <string name="home_strip_intro">Pin installed plugins next to For you. Drag to reorder. Install more from the plugin store.</string>

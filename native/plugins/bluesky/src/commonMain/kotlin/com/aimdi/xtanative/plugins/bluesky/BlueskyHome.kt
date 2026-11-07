@@ -37,6 +37,8 @@ import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginText
+import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
+import com.aimdi.xtanative.ui.plugins.ReadingControlsPinItem
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.post.PostIcons
 
@@ -55,7 +57,7 @@ internal fun BlueskyHome(app: BlueskyApp, frame: PluginFrame) {
         app.launch { app.prefs.reading { it.copy(tab = chosen) } }
     }
     Column(Modifier.fillMaxSize()) {
-        HomeBar(app, tab, select)
+        ReadingControlsBar { HomeBar(app, tab, select) }
         Hairline()
         Box(Modifier.weight(1f).swipeTabs(BlueskyTab.entries, tab, select)) {
             when (tab) {
@@ -123,6 +125,7 @@ private fun HomeMenu(app: BlueskyApp) {
                     action()
                 })
             }
+            ReadingControlsPinItem()
         }
     }
     if (adding) AddAccountDialog(app) { adding = false }

@@ -60,6 +60,8 @@ import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.SwipeToUnfollow
 import com.aimdi.xtanative.ui.plugins.WithSettings
+import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
+import com.aimdi.xtanative.ui.plugins.ReportsReadingScroll
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.search.DiscoverIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
@@ -83,9 +85,10 @@ internal fun TikTokHome(app: TikTokApp, frame: PluginFrame, ownActions: Boolean 
     LaunchedEffect(follows?.map { it.secUid }) { if (follows != null) app.feed.refresh() }
     RefreshesOn(frame.refresh) { app.feed.refresh(force = true) }
     ScrollsToTop(frame.toTop) { lists.getValue(tab).let { if (reduced) it.scrollToItem(0) else it.animateScrollToItem(0) } }
+    ReportsReadingScroll(lists.getValue(tab))
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
-            TabRow(tab, onTab = { tab = it }, actions = if (ownActions) HomeActions({ app.openSearch() }, app.host::openSettings) else null)
+            ReadingControlsBar { TabRow(tab, onTab = { tab = it }, actions = if (ownActions) HomeActions({ app.openSearch() }, app.host::openSettings) else null) }
             Hairline()
             Box(Modifier.weight(1f).swipeTabs(TikTokTab.entries, tab) { tab = it }) {
                 when (tab) {

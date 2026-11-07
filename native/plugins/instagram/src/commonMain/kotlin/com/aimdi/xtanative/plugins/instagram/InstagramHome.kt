@@ -73,6 +73,7 @@ import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.RetryRow
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.SwipeToUnfollow
+import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.post.PostIcons
@@ -98,7 +99,7 @@ internal fun InstagramHome(app: InstagramApp, frame: PluginFrame) {
     RefreshesOn(frame.refresh) { if (tab == InstagramTab.FOLLOWING) app.following.refresh(force = true) else forYou.refresh() }
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
-            HomeBar(app, tab, onTab = { tab = it }, onSearch = { searching = true })
+            ReadingControlsBar { HomeBar(app, tab, onTab = { tab = it }, onSearch = { searching = true }) }
             HorizontalDivider()
             Box(Modifier.weight(1f).swipeTabs(InstagramTab.entries, tab) { tab = it }) {
                 when (tab) {

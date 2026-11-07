@@ -46,6 +46,8 @@ import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.WithSettings
+import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
+import com.aimdi.xtanative.ui.plugins.ReportsReadingScroll
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.post.PostIcons
@@ -66,10 +68,15 @@ internal fun EhHome(app: EhApp, frame: PluginFrame, ownActions: Boolean = true) 
     LaunchedEffect(tab) { lists.of(tab)?.ensure() }
     RefreshesOn(frame.refresh) { lists.of(tab)?.refresh() }
     ScrollsToTop(frame.toTop) { grids.getValue(tab).let { if (reduced) it.scrollToItem(0) else it.animateScrollToItem(0) } }
+    ReportsReadingScroll(grids.getValue(tab))
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
-            TabRow(tab, onTab = { tab = it }, actions = if (ownActions) HomeActions({ app.openSearch() }, app.host::openSettings) else null)
-            if (tab == EhTab.TOPLIST) PeriodRow(lists)
+            ReadingControlsBar {
+                Column {
+                    TabRow(tab, onTab = { tab = it }, actions = if (ownActions) HomeActions({ app.openSearch() }, app.host::openSettings) else null)
+                    if (tab == EhTab.TOPLIST) PeriodRow(lists)
+                }
+            }
             Hairline()
             val grid = grids.getValue(tab)
             Box(Modifier.weight(1f).swipeTabs(EhTab.entries, tab) { tab = it }) {
