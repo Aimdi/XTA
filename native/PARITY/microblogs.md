@@ -69,3 +69,48 @@ untested | bluesky_feed_browser_test › list lookup ignores stale actors and pa
 untested | bluesky_feed_browser_test › concurrent pins preserve existing preferences and persist the final order | BlueskyStores.kt (pinnedFeeds) | BlueskySourcesTest.pinsMadeTogether…
 untested | bluesky_feed_browser_test › empty feed retains selection, pin, browse and explicit paging | BlueskySourcePanes.kt (FeedsPane: Open a feed, Pin, Find feeds; feed_empty) | UI only; native reads the next page as the list end shows instead of a Load more button; the kept cursor is tested in BlueskySourcesTest.anEmptyFeedKeepsItsCursor…
 untested | bluesky_feed_browser_test › catalog search shows metadata and an accessible pin action | BlueskyFeedCatalog.kt (FeedRow: name, @creator, description, Pin/Unpin button) | UI only, read in code; pin/unpin state in BlueskySourcesTest
+
+## test/bluesky_feed_store_test.dart
+covered | bluesky_feed_store_test › a second page of the same uris is not a replacement | networks/bluesky BlueskyTimeline.kt (stabilize), FollowingTimeline (StateFlow keeps an equal list) | BlueskyTimelineTest.mergedPagesKeepEachPostAndEachPersonOnce; BlueskyFollowingTimelineTest.followingAnotherAccount… (unchanged read leaves the list)
+covered | bluesky_feed_store_test › a cache-walk prefix does not shrink a painted feed | BlueskyFollowing.kt | native never emits a partial walk: accounts not asked or failed keep their last page. BlueskyFollowingTest.aFailedAccountKeepsItsLastPageAndIsAskedAgain, aBoundedReadProgressesPastTheFirstAccounts
+covered | bluesky_feed_store_test › new uris at the top may appear | BlueskyFollowing.kt | BlueskyFollowingTest.eachAccountsPageIsReadAndMergedNewestFirst
+covered | bluesky_feed_store_test › duplicate uris from two accounts collapse to one row | BlueskyTimeline.stabilize | BlueskyFollowingTest.theSamePostFromTwoAccountsIsOneRow, BlueskyTimelineTest.theOriginalWinsADuplicateRepostInEitherOrder
+missing/different | bluesky_feed_store_test › an empty poll does not blank a painted feed | plugins/bluesky BlueskyFollowingPane.kt (FollowingTimeline.refresh) | a read that brought nothing but a failure (e.g. after an AppView change) blanked the list; now it stays with the problem shown. BlueskyFollowingTimelineTest.aReadThatOnlyFailsLeavesThePostsShown
+untested | bluesky_feed_store_test › an empty successful response is not fetched again on entry | FollowingTimeline + BlueskyFollowing (ten-minute reuse) | BlueskyFollowingTimelineTest.anEmptyAnswerIsNotAskedAgainOnEntryButAPullAsks
+covered | bluesky_feed_store_test › re-entry keeps a painted feed while explicit refresh reads changes | BlueskyFollowing.kt | BlueskyFollowingTest.aReadWithinTenMinutesReusesThePagesUnlessForced; BlueskyFollowingTimelineTest.followingAnotherAccount…
+untested | bluesky_feed_store_test › following another account invalidates the entry identity | FollowingTimeline.start (re-reads when the follows change) | BlueskyFollowingTimelineTest.followingAnotherAccountReadsItAndTheSamePostIsOneRow
+covered | bluesky_feed_store_test › a second remount poll does not replace an unchanged first page | BlueskyFollowing.kt (ten-minute reuse) | BlueskyFollowingTest.aReadWithinTenMinutesReusesThePagesUnlessForced
+covered | bluesky_feed_store_test › an empty feed still fetches — remount skip only applies when posts are already there | BlueskyFollowing.kt | BlueskyFollowingTest.eachAccountsPageIsReadAndMergedNewestFirst (first read asks every account)
+covered | bluesky_feed_store_test › the first-page cursor is not reset on a later poll | BlueskyFollowing.kt (no cursor is sent; pages reused) | BlueskyFollowingTest.aReadWithinTenMinutesReusesThePagesUnlessForced
+covered | bluesky_feed_store_test › pull-to-refresh asks again even inside the TTL | BlueskyFollowing.kt | BlueskyFollowingTest.aReadWithinTenMinutesReusesThePagesUnlessForced ("pull-to-refresh asks again")
+untested | bluesky_feed_store_test › force refresh with the same uris does not notify | FollowingTimeline (StateFlow drops an equal state) | BlueskyFollowingTimelineTest.followingAnotherAccount… checks the list is unchanged; native still shows the loading state meanwhile
+covered | bluesky_feed_store_test › the same uri from two followed accounts is one row | BlueskyTimeline.stabilize | BlueskyFollowingTest.theSamePostFromTwoAccountsIsOneRow
+
+## test/bluesky_feeds_test.dart
+covered | bluesky_feeds_test › reads bsky.app feed URLs and AT-URIs | networks/bluesky BlueskyUrls.kt (feedRef) | BlueskyUrlsTest.listsFeedsAndStarterPacksAreNamedByLinkOrUri
+covered | bluesky_feeds_test › reads generatorView rows and a singular view | BlueskyParser.kt (feedGenerators) | BlueskyParserTest.feedGeneratorsFallBackToTheirRecordKeyAndNeedAUri
+covered | bluesky_feeds_test › tolerates a reshaped payload | BlueskyParser.kt | BlueskyParserTest.feedGeneratorsFallBack… ({"feeds":"nope"} is empty), aReshapedFeedIsEmptyNotACrash
+covered | bluesky_feeds_test › getListFeed uses the same feed item shape as getAuthorFeed | BlueskyClient.listFeed | BlueskyClientTest.feedsListsAndTheGraphAreReadAtTheirOwnEndpoints
+covered | bluesky_feeds_test › listView keeps description and creator | BlueskyParser.listMembers | BlueskyParserTest.aListComesWithItsMembersAndPeopleWithoutANameAreDropped
+untested | bluesky_feeds_test › successful empty discovery result survives tab re-entry | plugins/bluesky BlueskySources.kt (SourcePages, PagedItems) | BlueskySourcesTest.anEmptyFeedKeepsItsCursor…, enteringAgainReadsNothingAgain…
+untested | bluesky_feeds_test › opening the same cached feed does not refetch | BlueskyFeeds.ensureLoaded, SourcePages | BlueskySourcesTest.enteringAgainReadsNothingAgainAndAPinIsKeptUntilUnpinned
+untested | bluesky_feeds_test › pin persists and unpin removes the URI | BlueskyFeeds.pin/unpin, BlueskyPreferences.pinnedFeeds | BlueskySourcesTest.enteringAgainReadsNothingAgainAndAPinIsKeptUntilUnpinned
+untested | bluesky_feeds_test › selecting the current empty list does not reload it | BlueskyLists (SourcePages per list) | the same SourcePages as feeds: BlueskySourcesTest.eachFeedKeepsItsOwnPages… (same PagedItems back)
+untested | bluesky_feeds_test › opening the same cached list does not refetch | BlueskyLists (SourcePages) | as above
+covered | bluesky_feeds_test › getFeed and getListFeed hit the AppView paths | BlueskyClient.kt | BlueskyClientTest.feedsListsAndTheGraphAreReadAtTheirOwnEndpoints
+
+## test/bluesky_following_recovery_test.dart
+covered | bluesky_following_recovery_test › new repost activity sorts ahead of newly authored posts | networks/bluesky BlueskyTimeline.kt | BlueskyTimelineTest.aRepostsNewActivitySortsAheadOfNewerOriginals
+covered | bluesky_following_recovery_test › followed original wins a duplicate repost regardless of merge order | BlueskyTimeline.kt | BlueskyTimelineTest.theOriginalWinsADuplicateRepostInEitherOrder
+covered | bluesky_following_recovery_test › newest repost wins among multiple reposters while source rank stays stable | BlueskyTimeline.kt | BlueskyTimelineTest.theNewestRepostWinsWhileTheFirstSeenOrderStays
+untested | bluesky_following_recovery_test › count and moderation updates repaint even when identities match | BlueskyPost (data class equality) | BlueskyFollowingTimelineTest.aNewCountOrLabelOfTheSamePostIsAChange
+missing/different | bluesky_following_recovery_test › failed first load retries on re-entry | plugins/bluesky BlueskyFollowingPane.kt (FollowingTimeline.start) | showing the tab again after a failed read did nothing; now it reads again. BlueskyFollowingTimelineTest.aFailedFirstReadIsTriedAgainWhenTheTabIsShownAgain
+covered | bluesky_following_recovery_test › partial failure preserves failed author posts and retries them | BlueskyFollowing.kt | BlueskyFollowingTest.aFailedAccountKeepsItsLastPageAndIsAskedAgain
+untested | bluesky_following_recovery_test › unfollowing everyone clears the authoritative completed feed | FollowingTimeline.refresh | BlueskyFollowingTimelineTest.unfollowingEveryoneEmptiesTheTimelineAndAGroupsReadLeavesIt
+covered | bluesky_following_recovery_test › forced bounded refresh progresses past first imported accounts | BlueskyFollowing.kt | BlueskyFollowingTest.aBoundedReadProgressesPastTheFirstAccounts
+covered | bluesky_following_recovery_test › failed import batch cannot starve unread accounts | BlueskyFollowing.kt | BlueskyFollowingTest.aFailedBatchCannotStarveTheAccountsNeverAsked
+untested | bluesky_following_recovery_test › group subset read cannot replace Following or freshness | BlueskyFollowing.posts vs FollowingTimeline | BlueskyFollowingTimelineTest.unfollowingEveryone…AndAGroupsReadLeavesIt
+untested | bluesky_following_recovery_test › older forced refresh cannot overwrite a newer result | FollowingTimeline (cancels the older read), BlueskyFollowing (per-account request count) | BlueskyFollowingTimelineTest.anOlderReadNeverOverwritesANewerOne
+missing/different | bluesky_following_recovery_test › response from an old AppView cannot appear in the new source | networks/bluesky BlueskyFollowing.kt (era) | an account's page asked of the old AppView could still be kept after the change (its request number restarted); now each AppView change starts a new era and older answers are not kept. BlueskyFollowingTimelineTest.anAnswerFromTheAppViewLeftIsNeverKept
+untested | bluesky_following_recovery_test › follow-set change discards the old pending request | FollowingTimeline.refresh (cancels) | BlueskyFollowingTimelineTest.aChangeOfWhoIsFollowedDropsTheReadUnderWay…
+untested | bluesky_following_recovery_test › disposal ignores late reads and leaves no loading work | BlueskyApp.close (ends its scope) | same test, second half

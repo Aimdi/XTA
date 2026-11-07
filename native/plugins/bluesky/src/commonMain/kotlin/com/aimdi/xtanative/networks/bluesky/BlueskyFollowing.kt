@@ -40,7 +40,7 @@ class BlueskyFollowing(
     private class Held(val posts: List<BlueskyPost>, val at: Long)
 
     /** One read: the AppView it reads, whether fresh pages are read again, how many requests it may still make, what failed. */
-    private class Run(val server: String, val refresh: Boolean, val budget: AtomicInteger, val errors: ConcurrentLinkedQueue<Throwable>)
+    private class Run(val server: String, val era: Int, val refresh: Boolean, val budget: AtomicInteger, val errors: ConcurrentLinkedQueue<Throwable>)
 
     private val held = ConcurrentHashMap<String, Held>()
     private val attemptedAt = ConcurrentHashMap<String, Long>()
@@ -50,11 +50,15 @@ class BlueskyFollowing(
     @Volatile
     private var appView: String? = null
 
+    /** Grows each time the AppView changes, so an answer from before is never kept. */
+    @Volatile
+    private var era = 0
+
     /** The merged timeline of [actors] (handles or DIDs); [force] asks again even what was just read. */
     suspend fun read(actors: List<String>, force: Boolean = false): Result {
         val server = enter()
         val ordered = prioritized(actors)
-        val run = Run(server, force || ordered.any(failures::containsKey), AtomicInteger(maxFetches), ConcurrentLinkedQueue())
+        val run = Run(server, era, force || ordered.any(failures::containsKey), AtomicInteger(maxFetches), ConcurrentLinkedQueue())
         val gate = Semaphore(CONCURRENCY)
         val pages = coroutineScope {
             ordered.map { actor -> async { gate.withPermit { page(actor, run) } } }.awaitAll()
@@ -89,6 +93,7 @@ class BlueskyFollowing(
             attemptedAt.clear()
             failures.clear()
             requests.clear()
+            era++
             appView = current
         }
         return current
@@ -118,6 +123,7 @@ class BlueskyFollowing(
         return try {
             check(client.baseUrl == run.server) { "Bluesky AppView changed" }
             val posts = client.authorFeed(actor, limit = Bluesky.POSTS_PER_ACCOUNT, filter = filter).items
+            if (era != run.era) return posts
             if (requests[actor] != request) return held[actor]?.posts ?: posts
             held[actor] = Held(posts, clock())
             failures.remove(actor)
@@ -125,7 +131,7 @@ class BlueskyFollowing(
         } catch (cancelled: CancellationException) {
             throw cancelled
         } catch (error: Exception) {
-            if (requests[actor] == request) failures[actor] = error
+            if (era == run.era && requests[actor] == request) failures[actor] = error
             run.errors += error
             null
         }

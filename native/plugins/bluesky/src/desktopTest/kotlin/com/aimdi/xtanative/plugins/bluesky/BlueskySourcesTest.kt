@@ -308,4 +308,28 @@ class BlueskySourcesTest {
         )
         app.close()
     }
+
+    @Test
+    fun enteringAgainReadsNothingAgainAndAPinIsKeptUntilUnpinned() = runBlocking {
+        val host = FakeHost { url -> if (method(url) == "app.bsky.feed.getFeed") feedPage("Algo") else catalog("science") }
+        val app = BlueskyApp(host)
+        app.feeds.ensureLoaded()
+        val discover = app.feeds.pages(app.prefs.appView.value, Bluesky.DISCOVER_FEED_URI)
+        eventually { discover.state.value.loaded && app.feeds.state.value.catalog.loaded }
+        app.feeds.ensureLoaded()
+        assertSame(discover, app.feeds.pages(app.prefs.appView.value, Bluesky.DISCOVER_FEED_URI))
+        Thread.sleep(50)
+        assertEquals(listOf("app.bsky.unspecced.getPopularFeedGenerators", "app.bsky.feed.getFeed"), host.asked.map(::method).sorted().reversed())
+        app.feeds.ensureLoaded(force = true)
+        eventually { host.asked.count { method(it) == "app.bsky.unspecced.getPopularFeedGenerators" } == 2 }
+
+        val cats = BlueskyFeedGenerator("at://did:plc:a/app.bsky.feed.generator/cats", "Cats")
+        app.feeds.pin(cats)
+        app.feeds.pin(cats)
+        eventually { app.prefs.pinnedFeeds.value == listOf(cats) }
+        assertTrue(host.values.value!![BlueskyPrefs.pinnedFeeds].contains("generator/cats"), "kept in the settings")
+        app.feeds.unpin(cats.uri)
+        eventually { app.prefs.pinnedFeeds.value.isEmpty() }
+        app.close()
+    }
 }
