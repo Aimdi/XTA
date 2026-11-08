@@ -956,3 +956,203 @@ covered | subscriptions_menu_sheet_test › Kompakt is a third column choice, an
 
 ## test/subscriptions_render_test.dart
 untested | subscriptions_render_test › (render sweeps) | Compose (subscriptions) | golden/layout sweep
+
+## test/parser_resilience_test.dart
+covered | parser_resilience_test › reads the identity fields X has already moved out of legacy | XPostAndUserFieldsTest
+covered | parser_resilience_test › reads a profile that has finished the legacy migration | XParserTest
+covered | parser_resilience_test › a response with neither legacy nor core is empty, not an exception | XParserTest
+covered | parser_resilience_test › survives a null legacy | XParserTest
+covered | parser_resilience_test › survives losing any single top-level field | XParserTest
+covered | parser_resilience_test › survives losing or nulling any single top-level field | XParserTest
+covered | parser_resilience_test › a container of the wrong shape reads as absent | XParserTest
+covered | parser_resilience_test › an author whose legacy is gone still yields a tweet | XPostAndUserFieldsTest
+covered | parser_resilience_test › an unknown __typename is not a crash | XParserTest
+covered | parser_resilience_test › parses the live entries | XTimelineParserTest
+covered | parser_resilience_test › skips entries whose content X has reshaped | XTimelineParserTest
+covered | parser_resilience_test › an entry with no content at all is skipped, not fatal | XTimelineParserTest
+covered | parser_resilience_test › reads a legacy cursor-bottom value | XTimelineParserTest
+covered | parser_resilience_test › reads an sq-C operation cursor | XTimelineParserTest
+covered | parser_resilience_test › reads a replaceEntry cursor without throwing on sibling junk | XTimelineParserTest
+covered | parser_resilience_test › null entryId and missing content yield null, not a crash | XTimelineParserTest
+covered | parser_resilience_test › a non-string cursor value is ignored | XTimelineParserTest
+covered | parser_resilience_test › keeps good tweets when a sibling entry loses its result | XTimelineParserTest
+covered | parser_resilience_test › parses a minimal timeline wrapper | XTimelineParserTest
+covered | parser_resilience_test › missing timeline / instructions is empty, not fatal | XTimelineParserTest
+covered | parser_resilience_test › one entry with null content does not wipe the page | XTimelineParserTest
+covered | parser_resilience_test › null sortIndex and missing entryId are tolerated | XTimelineParserTest
+covered | parser_resilience_test › missing home_timeline_urt is empty, not a crash | XTimelineParserTest
+
+## test/transaction_key_test.dart
+covered | transaction_key_test › a key that has never been derived is not usable | XTransportTest (key lifetime)
+covered | transaction_key_test › a fresh key is usable | XTransportTest
+covered | transaction_key_test › a key older than its lifetime is re-derived | XTransportTest
+covered | transaction_key_test › the shipped lifetime is well short of a day | TransactionSignerTest; XTransportTest
+covered | transaction_key_test › a stalled setup expires and retry recovers without restarting | XTransportTest
+covered | transaction_key_test › ${failure.runtimeType} keeps its type and the next concurrent requests recover immediately | XTransportTest
+covered | transaction_key_test › synchronous setup failures also respect the retry cooldown | XTransportTest
+covered | transaction_key_test › a successful derivation is reused rather than repeated per request | XTransportTest
+covered | transaction_key_test › a failed derivation is not cached, so a later request retries | XTransportTest
+covered | transaction_key_test › a persistent failure is retried on a cooldown | XTransportTest
+covered | transaction_key_test › the caller still sees the failure while the cooldown suppresses retries | XTransportTest
+covered | transaction_key_test › a retry happens once the cooldown has elapsed | XTransportTest
+covered | transaction_key_test › a success clears the cooldown | XTransportTest
+covered | transaction_key_test › the key is re-derived once its lifetime has passed | XTransportTest
+covered | transaction_key_test › concurrent first requests share one derivation | XTransportTest
+covered | transaction_key_test › anonymous failure cooldown does not block an authenticated context | XTransportTest
+covered | transaction_key_test › cookie contexts isolate failures and reuse keys with any Cookie header casing | XTransportTest
+covered | transaction_key_test › changing the session cookie derives a fresh key | XTransportTest
+covered | transaction_key_test › many session contexts evict old keys without evicting the most recently used one | XTransportTest
+covered | transaction_key_test › no header is asked for when there is no uri | XTransportTest
+covered | transaction_key_test › reset clears diagnostics and a late previous initialization cannot restore its error | XTransportTest
+
+## test/endpoints_test.dart
+covered | endpoints_test › every shipped endpoint is keyed by its own name | XEndpointsTest.everyShippedEndpointIsKeyedByItsOwnNameAndHasAnIdShapedId
+covered | endpoints_test › every shipped query id is query-id shaped | XEndpointsTest.everyShippedEndpointIsKeyedByItsOwnNameAndHasAnIdShapedId
+covered | endpoints_test › builds the URI a call site used to hardcode | XEndpointsTest.aUrlIsTheOperationOnItsHostWithTheParameters
+covered | endpoints_test › the Posts tab is UserOriginalsTimeline and UserTweets is gone | XEndpointsTest.everyOperationXtaCallsIsShippedWithItsIdAndHost
+covered | endpoints_test › reposts come from UserRepostsTimeline, under a key of their own | XEndpointsTest.everyOperationXtaCallsIsShippedWithItsIdAndHost
+covered | endpoints_test › the profile Media tab stays on UserMedia | XEndpointsTest.everyOperationXtaCallsIsShippedWithItsIdAndHost
+covered | endpoints_test › AudioSpaceById is a shipped GraphQL operation | XEndpointsTest.everyOperationXtaCallsIsShippedWithItsIdAndHost
+covered | endpoints_test › the two SearchTimeline call sites keep distinct hosts and registry keys | XEndpointsTest.theTwoSearchTimelineReadsKeepTheirOwnHostsAndKeys
+covered | endpoints_test › an override replaces the query id but keeps operation and host | XEndpointsTest.anOverrideReplacesTheIdButKeepsOperationAndHost
+covered | endpoints_test › unknown endpoints and malformed ids are rejected | XEndpointsTest.unknownEndpointsAndMalformedIdsAreRejected
+covered | endpoints_test › a path separator in an override can never escape the operation | XEndpointsTest.aPathInAnOverrideNeverEscapesTheOperation
+covered | endpoints_test › an unknown endpoint name is a programming error, not a silent 404 | XEndpointsTest.anUnknownEndpointNameIsAMistakeNotASilent404
+covered | endpoints_test › reads the published shape | PublishedDocumentTest
+covered | endpoints_test › tolerates documents that are not the shape we expect | PublishedDocumentTest
+covered | endpoints_test › the published endpoints.json parses and names only known endpoints | PublishedDocumentTest
+covered | endpoints_test › the published endpoints.json names the ids this build ships | PublishedDocumentTest
+
+## test/interleaved_items_test.dart
+untested | interleaved_items_test › takes the newest post in the chain, not the first | core/feed Interleaved | no separate test
+untested | interleaved_items_test › a chain with no dates has none | core/feed Interleaved | no separate test
+untested | interleaved_items_test › an item newer than everything goes above the first chain | core/feed Interleaved | no separate test
+untested | interleaved_items_test › an item lands directly above the first chain older than it | core/feed Interleaved | no separate test
+untested | interleaved_items_test › an item older than every loaded chain waits at the end | core/feed Interleaved | no separate test
+untested | interleaved_items_test › several items keep newest-first order within a bucket | core/feed Interleaved | no separate test
+untested | interleaved_items_test › a chain with no date is passed over rather than guessed at | core/feed Interleaved | no separate test
+untested | interleaved_items_test › no items means empty buckets, one per chain plus the tail | core/feed Interleaved | no separate test
+untested | interleaved_items_test › items with no chains at all still come back | core/feed Interleaved | no separate test
+covered | interleaved_items_test › a group of nothing but plugin members shows only those posts | GroupFeedTest (plugin-only group)
+covered | interleaved_items_test › one X post is enough to use the paged list | GroupFeedTest
+covered | interleaved_items_test › an empty feed is not a plugin-only one | GroupFeedTest
+covered | interleaved_items_test › the first page still loading is neither | GroupFeedTest
+covered | interleaved_items_test › plugin posts stay when X has not answered | GroupFeedTest
+covered | interleaved_items_test › plugin posts stay when X answered with nothing | GroupFeedTest
+covered | interleaved_items_test › an empty plugin slot is not a reason to skip the X error | GroupFeedTest
+covered | interleaved_items_test › X posts already on screen keep the mixed list | GroupFeedTest
+covered | interleaved_items_test › an empty answer does not dirty an already-empty slot | GroupFeedTest
+covered | interleaved_items_test › posts land in the slot | GroupFeedTest
+covered | interleaved_items_test › an empty answer clears a filled slot | GroupFeedTest
+
+## test/conversation_sort_test.dart
+covered | conversation_sort_test › each reply order maps to its TweetDetail rankingMode | ConversationRulesTest.onlyXsOwnOrderIsKeptAndNeverACountWithNothingUnderIt
+covered | conversation_sort_test › TweetDetail variables carry the ranking mode and cursor | XEndpointsTest.aUrlIsTheOperationOnItsHostWithTheParameters
+covered | conversation_sort_test › TweetDetail keeps relevance when no order is given | ConversationRulesTest.onlyXsOwnOrderIsKeptAndNeverACountWithNothingUnderIt
+covered | conversation_sort_test › each quote order maps to its SearchTimeline product | XEndpointsTest.theTwoSearchTimelineReadsKeepTheirOwnHostsAndKeys
+covered | conversation_sort_test › an order the network lacks falls back to its default | ConversationRulesTest.onlyXsOwnOrderIsKeptAndNeverACountWithNothingUnderIt
+covered | conversation_sort_test › the network default keeps the order it sent | ConversationRulesTest.onlyXsOwnOrderIsKeptAndNeverACountWithNothingUnderIt
+covered | conversation_sort_test › recent and oldest sort by date, undated last either way | ConversationRulesTest.repliesNestUnderWhatTheyAnswerOldestFirstAndPastTwoLevelsContinue
+covered | conversation_sort_test › most liked orders by likes and keeps ties in network order | ConversationRulesTest.repliesNestUnderWhatTheyAnswerOldestFirstAndPastTwoLevelsContinue
+covered | conversation_sort_test › oldest is the /context order | ConversationRulesTest.repliesNestUnderWhatTheyAnswerOldestFirstAndPastTwoLevelsContinue
+covered | conversation_sort_test › recent orders siblings at every level and keeps sub-threads | ConversationRulesTest.repliesNestUnderWhatTheyAnswerOldestFirstAndPastTwoLevelsContinue
+covered | conversation_sort_test › most liked keeps ties in server order | ConversationRulesTest.repliesNestUnderWhatTheyAnswerOldestFirstAndPastTwoLevelsContinue
+covered | conversation_sort_test › the thread store starts from the session choice it can honour | ConversationRulesTest
+covered | conversation_sort_test › recent, oldest and most liked sort what is loaded | ConversationRulesTest
+covered | conversation_sort_test › the activity sort offers every device order | PostRulesTest.theSortsAskXForWhatItRanksItselfAndRepostersSortByFollowersOnlyWithCounts
+covered | conversation_sort_test › a single quote needs no control | Compose (quote sort) | the control is Compose-only; sorting is ConversationRulesTest
+covered | conversation_sort_test › recent keeps the order the network returned | ConversationRulesTest.onlyXsOwnOrderIsKept...
+covered | conversation_sort_test › most followers sorts on device, unknown counts last | PostRulesTest.theSortsAskXForWhatItRanksItselfAndRepostersSortByFollowersOnlyWithCounts
+covered | conversation_sort_test › follower order is offered only when counts are present | PostRulesTest.theSortsAskXForWhatItRanksItself...
+covered | conversation_sort_test › the activity sort hides its control without follower counts | PostRulesTest.theSortsAskXForWhatItRanksItself...
+covered | conversation_sort_test › Retweeters users carry the follower count when X sends one | XParserTest (retweeters)
+covered | conversation_sort_test › reordering paged items keeps the page sizes | ConversationRulesTest
+covered | conversation_sort_test › the store remembers each choice independently | ConversationRulesTest
+
+## test/reply_filter_test.dart
+covered | reply_filter_test › a plain post is not a reply | PostRulesTest.replyingToShowsUnderTheHeaderButNotInAQuoteNorMidThread
+covered | reply_filter_test › answering another account is a reply | PostRulesTest.replyingToShowsUnderTheHeaderButNotInAQuoteNorMidThread
+covered | reply_filter_test › answering yourself is a thread, not a reply | PostRulesTest.replyingToShowsUnderTheHeaderButNotInAQuoteNorMidThread
+covered | reply_filter_test › falls back to screen names when ids are missing | XPostAndUserFieldsTest (reply target)
+covered | reply_filter_test › an unidentifiable reply target counts as a reply | PostRulesTest.replyingToShowsUnderTheHeader...
+covered | reply_filter_test › null is not a reply | PostRulesTest.replyingToShowsUnderTheHeader...
+covered | reply_filter_test › keeps everything when nobody is filtered | PostRulesTest.replyingToShowsUnderTheHeader...
+covered | reply_filter_test › drops that user's replies to others | PostRulesTest
+covered | reply_filter_test › matches the screen name case-insensitively | PostRulesTest
+covered | reply_filter_test › keeps their own threads | PostRulesTest
+covered | reply_filter_test › leaves other people's replies alone | PostRulesTest
+covered | reply_filter_test › is independent of the retweet filter | PostRulesTest
+covered | reply_filter_test › the two filters are stored separately | SettingsTest (feed filters)
+
+## test/reply_sort_bar_test.dart
+untested | reply_sort_bar_test › the reply order sits in its own full-width row, closed by a hairline | Compose (reply sort bar) | Compose only
+
+## test/webdav_sync_test.dart
+covered | webdav_sync_test › is incomplete until every field is filled | WebDavSyncTest (isConfigured)
+covered | webdav_sync_test › rejects anything that is not https | WebDavSyncTest (insecure URL)
+covered | webdav_sync_test › sends credentials as HTTP basic auth | WebDavSyncTest
+covered | webdav_sync_test › first upload uses If-None-Match and records the returned validator | WebDavSyncTest
+covered | webdav_sync_test › missing parent collection retains the conditional header on retry | WebDavSyncTest
+covered | webdav_sync_test › an unseen remote version is never overwritten | WebDavSyncTest
+covered | webdav_sync_test › another device changing the file during upload causes 412 after archiving | WebDavSyncTest
+covered | webdav_sync_test › successful replacement preserves a version that can be restored | WebDavSyncTest
+covered | webdav_sync_test › weak or missing validators refuse to overwrite remote backups | WebDavSyncTest
+covered | webdav_sync_test › archive failure prevents replacing the current backup | WebDavSyncTest
+covered | webdav_sync_test › bad credentials and network failures remain distinct | WebDavSyncTest
+covered | webdav_sync_test › no request is made for missing settings or insecure URLs | WebDavSyncTest
+covered | webdav_sync_test › history cannot redirect authenticated reads to another server or path | WebDavSyncTest
+covered | webdav_sync_test › returns the stored document | WebDavSyncTest
+covered | webdav_sync_test › a first sync with nothing uploaded yet reads as notFound | WebDavSyncTest
+covered | webdav_sync_test › a server failure carries the status for the error message | WebDavSyncTest
+covered | webdav_sync_test › the exported settings never carry the sync password | WebDavSyncTest
+covered | webdav_sync_test › status mapping keeps 2xx apart from the failure classes | WebDavSyncTest
+
+## test/background_download_test.dart
+covered | background_download_test › a fresh install saves in the background | DownloadDestinationTest (default)
+covered | background_download_test › resolves each mode, and a directory without a folder still asks | DownloadDestinationTest
+covered | background_download_test › moves the inherited ask default once and keeps deliberate choices | DownloadDestinationTest
+covered | background_download_test › pictures, videos and everything else land in their own XTA folder | DownloadDestinationTest
+covered | background_download_test › the copy carries the staged path, type and folder, never the bytes | DownloadTransferTest; PlatformFiles
+covered | background_download_test › only a finished background save reports its folder | DownloadRulesTest.downloadNotice
+covered | background_download_test › a background download is copied into its shared folder without a dialog | DownloadDestinationTest; DownloadTransferTest
+covered | background_download_test › Android 9 and older fall back to the save dialog | DownloadDestinationTest (platform)
+covered | background_download_test › an explicit ask still opens the dialog | DownloadDestinationTest
+covered | background_download_test › a chosen folder still saves through its document tree | DownloadDestinationTest
+untested | background_download_test › cancelling stops the native copy by operation id | ui/downloads PlatformFiles (Android) | platform boundary
+untested | background_download_test › an item finished after the cancel is deleted again | PlatformFiles | platform boundary
+untested | background_download_test › a failed copy surfaces as an error | PlatformFiles | platform boundary
+covered | background_download_test › background is recorded and survives the history file, unless a folder is named | DownloadHistoryTest
+covered | background_download_test › a Pixiv batch in background mode never opens the folder picker | PluginBatchesTest
+untested | background_download_test › settings offers background saving and explains where files go | Compose (download settings) | Compose only
+
+## test/broadcasts_test.dart
+covered | broadcasts_test › a broadcasts URL marks the tweet | XCardsTest.aBroadcastIsFoundByItsLinkItsCardOrItsText
+covered | broadcasts_test › the broadcast card name marks the tweet | XCardsTest.aBroadcastIsFoundByItsLinkItsCardOrItsText
+covered | broadcasts_test › a broadcast_url on the card is enough, even without the name | XCardsTest.aBroadcastIsFoundByItsLinkItsCardOrItsText
+covered | broadcasts_test › the link in the post body counts when entities omit it | XCardsTest.aBroadcastIsFoundByItsLinkItsCardOrItsText
+covered | broadcasts_test › a video whose expanded_url is the broadcast link is a broadcast | XCardsTest.aBroadcastIsFoundByItsLinkItsCardOrItsText
+covered | broadcasts_test › GraphQL list-shaped card bindings still yield the id | XCardsTest.theCardsMediaKeyAndShapeAreKeptForThePlayer
+covered | broadcasts_test › an ordinary post is not a broadcast | XCardsTest.aLiveLinkTellsASpaceFromABroadcast
+covered | broadcasts_test › video media is detected separately from the link | XCardsTest.theCardsMediaKeyAndShapeAreKeptForThePlayer
+covered | broadcasts_test › a spaces URL marks the tweet as a Space | XCardsTest.aSpaceIsFoundByItsLinkOrItsCard
+covered | broadcasts_test › the audiospace card name and id mark the tweet | XCardsTest.aSpaceIsFoundByItsLinkOrItsCard
+covered | broadcasts_test › broadcastMediaKeyOf reads the card binding | XCardsTest.theCardsMediaKeyAndShapeAreKeptForThePlayer
+covered | broadcasts_test › playbackUrlFromBroadcastStatus reads HLS and ignores junk | LiveRoomsTest
+covered | broadcasts_test › mediaKeyFromAudioSpace and broadcasts/show parsers | LiveRoomsTest
+covered | broadcasts_test › LivePlayRequest.fromUrl distinguishes Spaces from broadcasts | LiveRoomsTest
+covered | broadcasts_test › LivePlayRequest.fromTweet carries the card media_key | LiveRoomsTest
+
+## test/timeline_cache_test.dart
+n/a | timeline_cache_test › migration 38 creates the cache table | store/offline TimelineCacheTest.go | XTA's SQLite migration; native keeps one JSON cache, no SQLite
+covered | timeline_cache_test › a written thread reads back | TimelineCacheTest
+covered | timeline_cache_test › an entry older than maxAge is a miss | TimelineCacheTest
+covered | timeline_cache_test › a stale entry is still readable through readStale | TimelineCacheTest
+covered | timeline_cache_test › writing the same key twice keeps one row, the newer one | TimelineCacheTest
+covered | timeline_cache_test › an empty result never overwrites what is cached | TimelineCacheTest
+covered | timeline_cache_test › the cursor survives the round trip so pagination continues | TimelineCacheTest
+covered | timeline_cache_test › the show-more cursor survives the round trip | TimelineCacheTest
+covered | timeline_cache_test › remove drops a key so the next read misses | TimelineCacheTest
+covered | timeline_cache_test › a missing key is a miss, not an error | TimelineCacheTest
+covered | timeline_cache_test › an entry that no longer decodes is a miss, not a crash | TimelineCacheTest
+covered | timeline_cache_test › threads and profile variants never share a key | TimelineCacheTest
+covered | timeline_cache_test › clear empties the table | TimelineCacheTest
