@@ -221,3 +221,133 @@ untested | tweet_x_layout_test › only the opened post gets the line | Compose 
 covered | tweet_x_layout_test › writes counts the way X does | PostFooterRulesTest.votesAndSharesAreWrittenAsTheReadersLocaleWritesNumbers
 covered | tweet_x_layout_test › keeps the reader's separator and short forms | PostFooterRulesTest.votesAndSharesAreWrittenAsTheReadersLocaleWritesNumbers
 covered | tweet_x_layout_test › an abbreviated count takes the many/other plural form | PluralsTest
+
+## test/client_parser_test.dart
+covered | client_parser_test › fromNonLegacyJson reads live @X profile shape | XParserTest (profile)
+covered | client_parser_test › fromGraphqlJson reads a live Tweet node | XParserTest
+covered | client_parser_test › createTweetChains parses live TimelineAddEntries tweets | XTimelineParserTest
+covered | client_parser_test › fromNonLegacyJson reads the profile from the new containers | XParserTest
+covered | client_parser_test › pinned posts come from pinned_items, else from legacy | XTimelineParserTest (pinned items)
+covered | client_parser_test › legacy values survive when the new containers are absent | XParserTest
+covered | client_parser_test › posts keep their author although it has no legacy | XPostAndUserFieldsTest
+
+## test/client_transaction_bootstrap_test.dart
+covered | client_transaction_bootstrap_test › a complete legacy homepage derives a real signing ID without a fallback | SigningBootstrapTest.theJfPageWithItsSignerDerivesFromTwoRequestsWithoutTheSession
+covered | client_transaction_bootstrap_test › the new logged-out homepage falls back to the public search shell | SigningBootstrapTest.aHomePageWithoutTheKeyFallsBackToTheSearchShell
+covered | client_transaction_bootstrap_test › an unavailable homepage HTTP $status falls back without parsing its body | SigningBootstrapTest.aRefusedJfPageFallsBackToTheHomePageWithTheSession
+covered | client_transaction_bootstrap_test › every public route answering HTTP 403 stops at the sign-in page | SigningBootstrapTest.publicRoutesAnswering403StopAtTheSignInPageWithoutTheSession
+covered | client_transaction_bootstrap_test › an authenticated timeline fetch reaches X with its cookie and a real derived signer | XTransportTest (cookie and derived signer)
+covered | client_transaction_bootstrap_test › failed anonymous and account A bootstraps cannot block account B timeline reads | XTransportTest; XAccountsTest
+covered | client_transaction_bootstrap_test › each account timeline keeps its own derived key and reuses only its matching cookie context | XTransportTest
+covered | client_transaction_bootstrap_test › automatic recovery retries a transient bootstrap failure and sends a signed timeline request | XTransportTest (one retry)
+covered | client_transaction_bootstrap_test › a homepage missing ${incomplete.name} uses the complete fallback page | SigningBootstrapTest.theJfPageNamesItsSignerInTheModuleMapOfItsRuntime
+covered | client_transaction_bootstrap_test › runtime maps support first entries, quoted keys, whitespace and either quote style | TransactionSignerTest.aPageWithoutTheKeyOrFramesIsNotABootstrapPage
+covered | client_transaction_bootstrap_test › the runtime hash map may appear before the chunk names | SigningBootstrapTest.theSignInPageSignerIsFoundThroughTheChunkMapOfTheRuntimeItLoads
+covered | client_transaction_bootstrap_test › an explicitly linked signer is loaded only from the official static host | SigningBootstrapTest.aRedirectAwayFromXIsRefused
+covered | client_transaction_bootstrap_test › untrusted signing URL is never fetched | SigningBootstrapTest.aRedirectAwayFromXIsRefused
+covered | client_transaction_bootstrap_test › no page containing the signer produces a compatibility error after the fallbacks | SigningBootstrapTest.aFailedBootstrapSaysWhatEachPageLacked
+covered | client_transaction_bootstrap_test › an unsuccessful homepage is not parsed even if its body resembles the app | SigningBootstrapTest
+covered | client_transaction_bootstrap_test › homepage HTTP $status remains terminal after existing transient retries | SigningBootstrapTest; XTransportTest
+covered | client_transaction_bootstrap_test › an unsuccessful signing bundle never produces an ID from its body | TransactionSignerTest.aPageWithoutTheKeyOrFramesIsNotABootstrapPage
+covered | client_transaction_bootstrap_test › a stalled homepage times out without starting another request | SigningBootstrapTest; XTransportTest
+
+## test/client_transaction_modern_bootstrap_test.dart
+covered | client_transaction_modern_bootstrap_test › modern modulepreload locates a relative sign.o import and derives an ID | SigningBootstrapTest.theNewWebAppsSignerIsKnownByItsCallsBehindTheBundleThatSendsTheHeader
+covered | client_transaction_modern_bootstrap_test › a directly linked modern signer needs no entry bundle scan | SigningBootstrapTest.theSignerIsFoundThroughItsImporterWithoutEvaluatingScripts
+covered | client_transaction_modern_bootstrap_test › current entry follows static imports before preload tables to a backtick signer | SigningBootstrapTest
+covered | client_transaction_modern_bootstrap_test › a direct backtick signer import is accepted without evaluating JavaScript | SigningBootstrapTest
+covered | client_transaction_modern_bootstrap_test › a cold X home feed loads posts through nested signing discovery and the real timeline parser | SigningBootstrapTest; XTimelineParserTest
+covered | client_transaction_modern_bootstrap_test › an entry script after many preloads is inspected before the preload limit | SigningBootstrapTest
+covered | client_transaction_modern_bootstrap_test › a signed-in bootstrap uses only its cookie and preserves it on same-origin redirects | SigningBootstrapTest
+covered | client_transaction_modern_bootstrap_test › bootstrap refuses unsafe redirect $target without forwarding cookies | SigningBootstrapTest.aRedirectAwayFromXIsRefused
+covered | client_transaction_modern_bootstrap_test › same-origin redirect loops stop after three redirects | SigningBootstrapTest (redirect loops)
+covered | client_transaction_modern_bootstrap_test › legacy search fallback retains the account cookie only on x.com | SigningBootstrapTest
+covered | client_transaction_modern_bootstrap_test › Cloudflare's check on both public routes falls back to the sign-in page, asked for without the session | SigningBootstrapTest.publicRoutesAnswering403StopAtTheSignInPageWithoutTheSession
+covered | client_transaction_modern_bootstrap_test › the importer is fetched first and alone, and the startup bundles are never downloaded | SigningBootstrapTest.theSignerIsFoundThroughItsImporterWithoutEvaluatingScripts
+covered | client_transaction_modern_bootstrap_test › an importer that no longer names the signer lets the other bundles be searched | SigningBootstrapTest
+covered | client_transaction_modern_bootstrap_test › inline scripts name assets only by constant strings on the static host | SigningBootstrapTest
+covered | client_transaction_modern_bootstrap_test › untrusted links and imports never become asset requests | SigningBootstrapTest.aRedirectAwayFromXIsRefused
+covered | client_transaction_modern_bootstrap_test › cyclic module imports are visited once and dynamic templates are not evaluated | SigningBootstrapTest
+covered | client_transaction_modern_bootstrap_test › nested imports share the sixteen-asset budget and four-request concurrency limit | SigningBootstrapTest
+covered | client_transaction_modern_bootstrap_test › a deeply nested graph stops at the import depth limit | SigningBootstrapTest
+covered | client_transaction_modern_bootstrap_test › a CDN redirect is not followed and never receives a cookie | SigningBootstrapTest.aRedirectAwayFromXIsRefused
+covered | client_transaction_modern_bootstrap_test › asset scan deduplicates links and reserves one of sixteen reads for the signer | SigningBootstrapTest
+covered | client_transaction_modern_bootstrap_test › scan runs four at a time and stops starting entries after finding a signer | SigningBootstrapTest
+covered | client_transaction_modern_bootstrap_test › a stalled modern asset scan shares the original initialization deadline | SigningBootstrapTest
+
+## test/poll_fill_test.dart
+covered | poll_fill_test › takes every bar from nothing to its share | PollFillTest
+covered | poll_fill_test › starts each bar a stagger after the one above, and grows it for the same time | PollFillTest
+covered | poll_fill_test › an opened post's poll grows its bars in order to their shares | PollFillTest
+covered | poll_fill_test › a poll rebuilt mid-fill carries on, and one scrolled back into view stays full | PollFillTest
+untested | poll_fill_test › it waits for the conversation screen to slide in | Compose (post screen motion) | Compose only
+untested | poll_fill_test › a feed's poll is full at once | Compose (feed poll) | Compose only
+untested | poll_fill_test › so is another post's on a conversation screen | Compose (conversation poll) | Compose only
+covered | poll_fill_test › with reduced motion an opened post's poll is full at once | MotionTest.withMotionDisabledAListJumpsToItsTopAtOnce
+
+## test/poll_test.dart
+covered | poll_test › shares add up and the leader is the highest count | XCardsTest.aPollsSharesAddUpAndItsLeaderHasTheMostVotes
+covered | poll_test › a poll nobody has voted in divides by nothing | XCardsTest.aPollNobodyVotedInLeadsNothingAndDividesByNothing
+covered | poll_test › four choices are all read | XCardsTest.fourChoicesAreAllRead
+covered | poll_test › a missing choice gives up rather than throwing mid-timeline | XCardsTest.aPollThatDoesNotFitGivesUpRatherThanFailingTheTimeline
+covered | poll_test › binding values of the wrong shape give up | XCardsTest.aPollThatDoesNotFitGivesUpRatherThanFailingTheTimeline
+covered | poll_test › an unparseable count is no votes, not a crash | XCardsTest
+covered | poll_test › an unparseable end date leaves the poll without one | XCardsTest
+covered | poll_test › reads how many options it has, and each option with its image at both sizes | XCardsTest.aPollWithImagesReadsHowManyChoicesItHasAndEachPictureAtBothSizes
+covered | poll_test › an option without an image keeps its place among the others | XCardsTest.anOptionWithoutAnImageKeepsItsPlaceAmongTheOthers
+covered | poll_test › either size of an image stands in for the other | XCardsTest.eitherSizeOfAnImageStandsInForTheOther
+covered | poll_test › a text poll has no images | XCardsTest.aTextPollHasNoImages
+covered | poll_test › a card that gives no usable number of options has none | XCardsTest.aPollWithImagesWithoutAUsableCountIsNoPoll
+untested | poll_test › shows each option beside its image | Compose (poll) | Compose only
+untested | poll_test › opens the full images in the viewer, on the one tapped | Compose (poll viewer) | Compose only
+untested | poll_test › an option without an image keeps its bar, and the viewer skips it | Compose (poll viewer) | Compose only
+untested | poll_test › shows no image when images are disabled | Compose (poll) | Compose only
+untested | poll_test › loads no image before a tap when media load manually | Compose (poll) | Compose only
+covered | poll_test › reads each image as part of its option, and opens it | XCardsTest.aPollWithImagesReadsHowManyChoicesItHasAndEachPictureAtBothSizes
+covered | poll_test › draws nothing for a poll with images that does not say how many options it has | XCardsTest.aPollWithImagesWithoutAUsableCountIsNoPoll
+untested | poll_test › fits 320dp at twice the text size with its images | Compose (poll) | Compose only
+covered | poll_test › the most voted option leads, ties included | XCardsTest.theMostVotedOptionLeadsTiesIncluded
+covered | poll_test › nothing leads a poll nobody voted in | XCardsTest.aPollNobodyVotedInLeadsNothingAndDividesByNothing
+covered | poll_test › fills each bar to its share and picks out the leader | PollFillTest
+untested | poll_test › shares sit at the right end of their bars | Compose (poll) | Compose only
+covered | poll_test › a poll with no votes has no leader | XCardsTest.aPollNobodyVotedInLeadsNothingAndDividesByNothing
+untested | poll_test › fits 320dp at twice the text size (${dark ? 'dark' : 'light'}) | Compose (poll) | Compose only
+
+## test/advanced_search_form_test.dart
+covered | advanced_search_form_test › content chips and exclusions apply on a narrow large-text form | XAdvancedSearchTest.everyOperatorIsComposed | the form's layout is Compose-only
+covered | advanced_search_form_test › reset clears initial content and exclusion choices | XAdvancedSearchTest.everyOperatorIsComposed
+covered | advanced_search_form_test › language, reply, link and repost controls show the typed query and apply | XAdvancedSearchTest.everyOperatorTheFormShowsIsReadWhereverItStands
+covered | advanced_search_form_test › dismissing edited content leaves the original search intact | XAdvancedSearchTest.editingAQueryTheFiltersWroteDropsThem
+
+## test/advanced_search_operators_test.dart
+covered | advanced_search_operators_test › each new filter writes one operator, and its default writes none | XAdvancedSearchTest.eachFilterWritesOneOperatorAndItsDefaultNone
+covered | advanced_search_operators_test › every operator has a fixed place, so the same filters always send the same query | XAdvancedSearchTest.everyOperatorHasAFixedPlace
+covered | advanced_search_operators_test › clearing one of the new filters keeps the others | XAdvancedSearchTest.oneFilterClearsWithoutDisturbingTheRest
+covered | advanced_search_operators_test › including reposts and hiding retweets turn each other off | XAdvancedSearchTest.includingRepostsAndHidingRetweetsTurnEachOtherOff
+covered | advanced_search_operators_test › every operator the form can show is read wherever it stands in the query | XAdvancedSearchTest.everyOperatorTheFormShowsIsReadWhereverItStands
+covered | advanced_search_operators_test › a query the form wrote reads back to the same filters and the same text | XAdvancedSearchTest.aQueryTheFormWroteReadsBackToTheSameFiltersAndText
+covered | advanced_search_operators_test › a typed query in the form order is rebuilt unchanged | XAdvancedSearchTest.aTypedQueryInTheFormsOrderIsRebuiltUnchanged
+covered | advanced_search_operators_test › a typed query in another order is rebuilt once into the form order, then stays | XAdvancedSearchTest.aTypedQueryInAnotherOrderIsRebuiltOnceIntoTheFormsOrder
+covered | advanced_search_operators_test › operators the form cannot show stay in the words as typed | XAdvancedSearchTest.operatorsTheFormCannotShowStayInTheWordsAsTyped
+covered | advanced_search_operators_test › a typed query with operators shows them as filters and keeps its text | XAdvancedSearchTest.aTypedQueryShowsItsOperatorsAsFiltersAndKeepsItsText
+covered | advanced_search_operators_test › editing a typed query drops its filters until it is committed again | XAdvancedSearchTest.editingAQueryTheFiltersWroteDropsThem
+covered | advanced_search_operators_test › an opened saved search shows its filters, and plain words show none | XAdvancedSearchTest.anOpenedSavedSearchShowsItsFiltersAndPlainWordsShowNone
+covered | advanced_search_operators_test › the language picker names each language in its own language, in the order of those names | XAdvancedSearchTest.theLanguagesAreXsCodes
+covered | advanced_search_operators_test › the chips name the filters typed into the query | XAdvancedSearchTest.aTypedQueryShowsItsOperatorsAsFiltersAndKeepsItsText
+
+## test/advanced_search_test.dart
+covered | advanced_search_test › advanced search composes every supported operator | XAdvancedSearchTest.everyOperatorIsComposed
+covered | advanced_search_test › individual filters clear without disturbing the rest of the query | XAdvancedSearchTest.oneFilterClearsWithoutDisturbingTheRest
+covered | advanced_search_test › advanced Store resets the complete form | XAdvancedSearchTest.everyOperatorIsComposed
+covered | advanced_search_test › result state keeps structured filters while the query matches | XAdvancedSearchTest.theFiltersStayWhileTheyStillWriteTheCommittedQuery
+covered | advanced_search_test › editing a structured query clears stale filter metadata | XAdvancedSearchTest.editingAQueryTheFiltersWroteDropsThem
+covered | advanced_search_test › one advanced filter can be removed without clearing the others | XAdvancedSearchTest.oneFilterIsRemovedFromTheResultsWithoutTheOthers
+covered | advanced_search_test › content choices replace the preceding content operator | XAdvancedSearchTest.aContentChoiceReplacesTheOneBefore
+covered | advanced_search_test › legacy media setters still add and remove only the media choice | XAdvancedSearchTest.theMediaSwitchAddsAndRemovesOnlyTheMediaChoice
+covered | advanced_search_test › clearing any content choice retains exclusions and other fields | XAdvancedSearchTest.clearingAContentChoiceKeepsTheExclusionsAndTheOtherFields
+covered | advanced_search_test › clearing an inactive content filter retains the active choice | XAdvancedSearchTest.aContentChoiceReplacesTheOneBefore
+covered | advanced_search_test › reply and repost exclusions toggle and clear independently | XAdvancedSearchTest.includingRepostsAndHidingRetweetsTurnEachOtherOff
+covered | advanced_search_test › result filter removal preserves structured content and exclusions | XAdvancedSearchTest.oneFilterIsRemovedFromTheResultsWithoutTheOthers
+covered | advanced_search_test › reopening history restores filters without conflicting content types | XAdvancedSearchTest.aRecentSearchReopensWithItsFilters
+covered | advanced_search_test › history restoration preserves literals, groups and unsupported text | XAdvancedSearchTest.operatorsTheFormCannotShowStayInTheWordsAsTyped
+covered | advanced_search_test › quoted and grouped prefix stays intact when a trailing filter restores | XAdvancedSearchTest.aQuotedOrGroupedStartStaysWholeWhenATrailingFilterIsRead
