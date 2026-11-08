@@ -7,6 +7,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
@@ -135,5 +136,49 @@ class PlaybackTest {
         assertTrue(PlaybackControls.press(reading, PlaybackControl.STOP))
         assertFalse(PlaybackControls.press(null, PlaybackControl.STOP))
         assertEquals(listOf("pause", "play", "stop reading"), pressed)
+    }
+
+    @Test
+    fun aSourceThatNeverSaysItsLengthTimesOutWithoutSeeking(): Unit = runBlocking {
+        val player = Player(readyAfterMs = 10_000)
+        assertFalse(PlaybackRestore.restore(player, 30_000, readyTimeoutMs = 50))
+        assertEquals(emptyList(), player.sought)
+    }
+
+    @Test
+    fun aStalledSeekFailsPromptly(): Unit = runBlocking {
+        val base = Player()
+        val stalled = object : ContinuityPlayer by base {
+            override suspend fun seek(positionMs: Long) = kotlinx.coroutines.awaitCancellation()
+        }
+        assertFalse(PlaybackRestore.restore(stalled, 30_000, readyTimeoutMs = 1_000, seekTimeoutMs = 50))
+        assertEquals(emptyList(), base.sought)
+    }
+
+    @Test
+    fun aReplacedSourceIsNotSeekedEvenWhenItBecomesReady(): Unit = runBlocking {
+        val player = Player()
+        assertFalse(PlaybackRestore.restore(player, 30_000, isCurrent = { false }))
+        assertEquals(emptyList(), player.sought)
+    }
+
+    @Test
+    fun aSourceThatFailsToOpenIsNotSeeked(): Unit = runBlocking {
+        val player = Player().apply { failsToOpen = true }
+        assertFalse(PlaybackRestore.restore(player, 30_000))
+        assertEquals(emptyList(), player.sought)
+    }
+
+    @Test
+    fun aSourceReplacedWhileWaitingForItIsNotSeeked(): Unit = runBlocking {
+        val player = Player(readyAfterMs = 60)
+        var current = true
+        val restore = async(kotlinx.coroutines.Dispatchers.Default) {
+            PlaybackRestore.restore(player, 30_000, isCurrent = { current }, readyTimeoutMs = 1_000)
+        }
+        delay(20)
+        current = false
+        assertFalse(restore.await())
+        assertEquals(emptyList(), player.sought)
     }
 }

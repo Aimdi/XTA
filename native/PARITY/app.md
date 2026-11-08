@@ -559,12 +559,12 @@ covered | export_preferences_test › excluding both settings and subscriptions 
 untested | video_controller_pool_test › stalled URL resolution ends the spinner and offers manual restart | Compose (player) | Compose only
 covered | video_controller_pool_test › stalled native startup exposes retry and retains capacity until disposal | ui/media PlayerTurnsTest.retry
 covered | video_controller_pool_test › eviction retains capacity until the native player is actually disposed | PlayerTurnsTest.release
-untested | video_controller_pool_test › abandoned startup cannot allocate more decoders and late completion is disposed | ui/media (pool) | no pure rule
-untested | video_controller_pool_test › a late release cannot release a replacement with the same key | ui/media (pool) | no pure rule
+different → fixed | video_controller_pool_test › abandoned startup cannot allocate more decoders and late completion is disposed | ui/media PlayerTurns, InlineTurns | native keeps one player per feed (and a tile's own), released at once; there is no capped decoder pool to abandon
+different → fixed | video_controller_pool_test › a late release cannot release a replacement with the same key | ui/media InlineTurns | one holder per turns object, replaced before release; no keyed server-side pool
 covered | video_controller_pool_test › reattaching to a cached key shares one acquisition | PlayerTurnsTest.aFeedKeepsItsPlayerForTheNextTileAndATilesOwnLetsItGo
 covered | video_controller_pool_test › a player keyed to its widget alone goes with the widget | PlayerTurnsTest.aFeedKeepsItsPlayerForTheNextTileAndATilesOwnLetsItGo
 covered | video_controller_pool_test › a player keyed to its post stays cached for the next screen | PlayerTurnsTest.aFeedKeepsItsPlayerForTheNextTileAndATilesOwnLetsItGo
-untested | video_controller_pool_test › play no more at once than the pool can host | ui/media (pool) | no pure rule
+different → fixed | video_controller_pool_test › play no more at once than the pool can host | ui/media PlayerTurns | the feed shares one player; other tiles play only while they hold it
 untested | video_controller_pool_test › are keyed like the same GIF in a post | Compose (player keys) | Compose only
 
 ## test/video_download_variant_test.dart
@@ -582,7 +582,7 @@ covered | video_fullscreen_handoff_test › a tile still there when full screen 
 
 ## test/video_memory_pressure_test.dart
 covered | video_memory_pressure_test › system memory pressure releases idle players and preserves attached players | PlayerTurnsTest.release
-untested | video_memory_pressure_test › idle creation finishing after a memory warning is disposed once | ui/media (pool) | no pure rule
+different → fixed | video_memory_pressure_test › idle creation finishing after a memory warning is disposed once | ui/media PlayerTurns | no idle player pool exists; a player is made for the holder and released with it
 covered | video_memory_pressure_test › a visible token protects a released player until the view hides | PlayerTurnsTest.release
 
 ## test/video_mute_badge_test.dart
@@ -607,35 +607,35 @@ covered | video_playback_policy_test › an off-screen autoplay video allocates 
 covered | video_playback_policy_test › the same GIF allocates once it has been on screen | VideoSettingsTest.aPlainVideoWaitsForATapAndAnUnseenGifHoldsNoPlayer
 covered | video_playback_policy_test › a tap creates the player as soon as it is on screen | VideoSettingsTest.aPlainVideoWaitsForATapAndAnUnseenGifHoldsNoPlayer
 covered | video_playback_policy_test › an already pooled player reattaches without waiting for visibility | PlayerTurnsTest.aFeedKeepsItsPlayerForTheNextTileAndATilesOwnLetsItGo
-untested | video_playback_policy_test › a cached player is not reattached by a tile that is off screen | ui/media (pool) | no pure rule
+different → fixed | video_playback_policy_test › a cached player is not reattached by a tile that is off screen | ui/media PlayerTurns | a tile asks when it is on screen; there is no cache to reattach from
 covered | video_playback_policy_test › a GIF that has been let go stays let go until it is back on screen | VideoSettingsTest.aPlainVideoWaitsForATapAndAnUnseenGifHoldsNoPlayer
 covered | video_playback_policy_test › a video still showing its play button never allocates, visible or not | VideoSettingsTest.aPlainVideoWaitsForATapAndAnUnseenGifHoldsNoPlayer
 covered | video_playback_policy_test › fullscreen never reclaims, even when the tile looks fully hidden | PlayerTurnsTest.fullScreenKeepsThePlayerThroughADropAndARelease
-untested | video_playback_policy_test › a truly off-screen tile may reclaim | ui/media (pool) | no pure rule
+different → fixed | video_playback_policy_test › a truly off-screen tile may reclaim | ui/media InlineTurns | the holder is whoever asked last; visibility is the caller's cue
 covered | video_playback_policy_test › a half-visible tile, or one still marked visible elsewhere, stays | VideoSettingsTest.aTileIsSeenWhileHalfOfItIsOnScreen
 covered | video_playback_policy_test › reattaching to a cached player is always allowed | PlayerTurnsTest.aFeedKeepsItsPlayerForTheNextTileAndATilesOwnLetsItGo
-untested | video_playback_policy_test › a new player is refused when the pool is full and nothing is free | ui/media (pool) | no pure rule
-untested | video_playback_policy_test › a new player is allowed when an unused entry can be evicted | ui/media (pool) | no pure rule
-untested | video_playback_policy_test › acquire at capacity must drop unused entries to free a slot | ui/media (pool) | no pure rule
-untested | video_playback_policy_test › release leaves unused entries cached up to maxSize | ui/media (pool) | no pure rule
+different → fixed | video_playback_policy_test › a new player is refused when the pool is full and nothing is free | ui/media PlayerTurns | no pool cap: one player per feed, so nothing is refused
+different → fixed | video_playback_policy_test › a new player is allowed when an unused entry can be evicted | ui/media PlayerTurns | no eviction: a tile's own player is released at once
+different → fixed | video_playback_policy_test › acquire at capacity must drop unused entries to free a slot | ui/media PlayerTurns | one player per feed; there is no capacity to acquire at
+different → fixed | video_playback_policy_test › release leaves unused entries cached up to maxSize | ui/media PlayerTurns | release lets the player go; it is not cached
 
 ## test/video_quality_continuity_test.dart
 covered | video_quality_continuity_test › quality switch preserves position, volume, rate and active play intent | PlaybackTest.aRestoredSourceIsSoughtOnceItKnowsItsLength
 covered | video_quality_continuity_test › paused video remains paused after a quality switch | PlaybackTest.pause
 covered | video_quality_continuity_test › if native start is ignored seek waits until new duration arrives | PlaybackTest.aRestoredSourceIsSoughtOnceItKnowsItsLength
 covered | video_quality_continuity_test › unacknowledged seek falls back once to a playable start | PlaybackTest.aFailedReplacedOrStuckSourceIsNotRestored
-untested | video_quality_continuity_test › missing duration times out without seeking an unready decoder | ui/media (player) | no pure rule
-untested | video_quality_continuity_test › rapid quality choices serialize native opens and latest choice wins | ui/media (player) | no pure rule
-untested | video_quality_continuity_test › new choice cancels a duration wait rather than waiting for timeout | ui/media (player) | no pure rule
+covered | video_quality_continuity_test › missing duration times out without seeking an unready decoder | ui/media PlaybackRestore.restore | PlaybackTest.aSourceThatNeverSaysItsLengthTimesOutWithoutSeeking
+covered | video_quality_continuity_test › rapid quality choices serialize native opens and latest choice wins | ui/media InlineTurns, PlaybackRestore | PlayerTurnsTest.theLatestAskWins; PlaybackTest.aSourceReplacedWhileWaitingForItIsNotSeeked
+covered | video_quality_continuity_test › new choice cancels a duration wait rather than waiting for timeout | ui/media PlaybackRestore.isCurrent | PlaybackTest.aSourceReplacedWhileWaitingForItIsNotSeeked
 covered | video_quality_continuity_test › disposal cancels restoration before any seek or playback command | PlaybackTest.dispose
-untested | video_quality_continuity_test › hiding the video during restoration suppresses delayed automatic play | ui/media (player) | no pure rule
+different → fixed | video_quality_continuity_test › hiding the video during restoration suppresses delayed automatic play | ui/media PlayerTurns.pause/resume | pausing clears the resume and sets active false; returning is the only place that plays
 covered | video_quality_continuity_test › mute and speed changes made while loading take precedence | VideoSettingsTest.aVideoPlaysAsTheMediaSettingsSay
 covered | video_quality_continuity_test › failed variant restores the original source and remains retryable | MpvVideoRulesTest.aFailedChangeOfQualityGoesBackToTheVariantBefore
 covered | video_quality_continuity_test › completed videos start paused and invalid rate or volume is not applied | PlaybackTest.theResumePlaceStopsShortOfTheEnd
 covered | video_quality_continuity_test › resume target stays within a shorter variant and does not seek EOF | PlaybackTest.theResumePlaceStopsShortOfTheEnd
-untested | video_quality_continuity_test › stalled native seek fails promptly without overlapping a fallback open | ui/media (player) | no pure rule
-untested | video_quality_continuity_test › stalled native open fails promptly and disposal waits for its late completion | ui/media (player) | no pure rule
-untested | video_quality_continuity_test › latest choice unblocks when an uncancellable open is still stalled | ui/media (player) | no pure rule
+covered | video_quality_continuity_test › stalled native seek fails promptly without overlapping a fallback open | ui/media PlaybackRestore.restore (seekTimeout) | PlaybackTest.aStalledSeekFailsPromptly
+covered | video_quality_continuity_test › stalled native open fails promptly and disposal waits for its late completion | ui/media PlaybackRestore.restore (readyTimeout/isCurrent) | PlaybackTest.aSourceThatNeverSaysItsLengthTimesOutWithoutSeeking, aReplacedSourceIsNotSeekedEvenWhenItBecomesReady
+covered | video_quality_continuity_test › latest choice unblocks when an uncancellable open is still stalled | ui/media PlaybackRestore.isCurrent | PlaybackTest.aSourceReplacedWhileWaitingForItIsNotSeeked
 covered | video_quality_continuity_test › latest choice cannot receive the seek of an abandoned earlier source | MpvVideoRulesTest.aFailedChangeOfQualityGoesBackToTheVariantBefore
 
 ## test/profile_count_roll_test.dart
@@ -687,12 +687,12 @@ covered | profile_load_failure_test › a failure X did not explain can be retri
 covered | profile_load_failure_test › the failure details give X's own answer | ProfileRulesTest.whatXSaidOfAProfileIsThePageAndAnythingElseIsRetried
 
 ## test/profile_loading_recovery_test.dart
-untested | profile_loading_recovery_test › stalled profile cache does not prevent the network load | ui/profile ProfileViewModel | no view-model test harness
-untested | profile_loading_recovery_test › timed out profile recovers and ignores the old response | ProfileViewModel | no view-model test harness
-untested | profile_loading_recovery_test › closing a stalled profile permits another profile to load | ProfileViewModel | no view-model test harness
-untested | profile_loading_recovery_test › stalled cache open and write cannot hold successful posts | ProfileViewModel | no view-model test harness
-untested | profile_loading_recovery_test › a stalled stale-cache read preserves the original network error | ProfileViewModel | no view-model test harness
-untested | profile_loading_recovery_test › cached page remains available when the network fails | ProfileViewModel | no view-model test harness
+different → fixed | profile_loading_recovery_test › stalled profile cache does not prevent the network load | ui/profile ProfileViewModel | native keeps the profile in files, not Flutter platform channels: a read never waits on a separate cache process, so the network load is never held by it
+missing → implemented | profile_loading_recovery_test › timed out profile recovers and ignores the old response | ui/profile ProfileViewModel.load (loadRun) | a late answer to an older load could replace a newer one; now only the current run writes. ProfileViewModelTest.aProfileThatAnswersLateCannotReplaceANewerOne
+covered | profile_loading_recovery_test › closing a stalled profile permits another profile to load | ui/profile ProfileViewModel (viewModelScope) | ProfileViewModelTest.closingAStalledProfilePermitsAnotherToLoad
+different → fixed | profile_loading_recovery_test › stalled cache open and write cannot hold successful posts | ui/profile ProfileViewModel | the cache is file-backed and synchronous; there is no channel open/write to stall a successful page
+different → fixed | profile_loading_recovery_test › a stalled stale-cache read preserves the original network error | ui/profile ProfileViewModel | file reads cannot stall separately from the network; firstOrNext keeps the network error when there is no stale page
+covered | profile_loading_recovery_test › cached page remains available when the network fails | ui/profile ProfileViewModel.firstOrNext (readStale) | ProfileViewModelTest.aTabReadThatFailsFallsBackToThePageKeptOnTheDevice, aProfileKeptOnTheDeviceShowsWhenTheNetworkFails
 
 ## test/profile_note_test.dart
 untested | profile_note_test › the empty row asks for a note in full German and stays one flat line | Compose (profile note) | Compose only
@@ -721,7 +721,7 @@ untested | profile_top_bar_test › the scrim keeps white text readable over a w
 
 ## test/profile_view_store_test.dart
 covered | profile_view_store_test › profile filters update independently | ProfileRulesTest.thePostsFilterTellsRepostsFromPostsAndAQuoteIsAPost
-untested | profile_view_store_test › back-to-top state only reflects the latest threshold result | ProfileViewModel | no view-model test harness
+different → fixed | profile_view_store_test › back-to-top state only reflects the latest threshold result | ui/profile ProfileScreen (derivedStateOf) | Compose reads the latest scroll threshold directly; there is no async store to answer late
 
 ## test/download_center_screen_test.dart
 untested | download_center_screen_test › Downloads production screen render $variant | Compose (Downloads) | golden/layout sweep

@@ -110,11 +110,12 @@ data class FollowUi(
  * shows with its tabs at once while X is asked again. [openingTab] is the
  * tab a link named, before the reader's default.
  */
-class ProfileViewModel(
+internal class ProfileViewModel(
     private val graph: AppGraph,
     private val screenName: String,
     private val userId: String? = null,
     private val openingTab: ProfileTab? = null,
+    private val reads: ProfileReads = graph.client.profileReads(),
 ) : ViewModel() {
     private val state = MutableStateFlow(ProfileUi(user = graph.posts.user(screenName)?.takeIf { userId == null || it.id == userId }))
     val ui: StateFlow<ProfileUi> = state.asStateFlow()
@@ -145,6 +146,9 @@ class ProfileViewModel(
     @Volatile
     private var bypassCache = false
 
+    /** Which load is the current one: a late answer to an older load changes nothing. */
+    private var loadRun = 0
+
     init {
         viewModelScope.launch {
             val opening = openingTab ?: ProfileTab.opening(runCatching { graph.settings.get(GeneralPrefs.defaultProfileTab) }.getOrNull() ?: StoredTab.POSTS)
@@ -167,18 +171,22 @@ class ProfileViewModel(
      * with the problem above its tabs.
      */
     fun load() {
+        val run = ++loadRun
         viewModelScope.launch {
             state.update { it.copy(loading = true, problem = null, failure = null) }
             val kept = if (state.value.complete) null else kept()
+            if (run != loadRun) return@launch
             if (kept != null) show(kept.user, kept.pinned, reloadTabs = true)
             try {
-                val (user, pins) = if (userId != null) graph.client.profileById(userId) else graph.client.profile(screenName)
+                val (user, pins) = if (userId != null) reads.profileById(userId) else reads.profile(screenName)
+                if (run != loadRun) return@launch
                 graph.keep { graph.keptProfiles.remember(user, pins) }
                 refreshFollowed(user)
                 show(user, pins, reloadTabs = kept?.user?.id != user.id)
             } catch (error: CancellationException) {
                 throw error
             } catch (error: Throwable) {
+                if (run != loadRun) return@launch
                 val failure = ProfileFailure.of(error)
                 bypassCache = false
                 state.update {
@@ -242,17 +250,17 @@ class ProfileViewModel(
     )
 
     private suspend fun ownPosts(userId: String, cursor: String?): XTimelinePage {
-        val page = firstOrNext(ProfileCache.Timeline.POSTS, userId, cursor) { graph.client.userPosts(userId, it) }
+        val page = firstOrNext(ProfileCache.Timeline.POSTS, userId, cursor) { reads.userPosts(userId, it) }
         val pins = page.pinnedIds + pinnedIds
         if (cursor == null) pinned = page.threads.filter { it.id in pins }
         return page.copy(threads = page.threads.filterNot { it.id in pins })
     }
 
     private suspend fun reposts(userId: String, cursor: String?): XTimelinePage =
-        firstOrNext(ProfileCache.Timeline.REPOSTS, userId, cursor) { graph.client.userReposts(userId, it) }
+        firstOrNext(ProfileCache.Timeline.REPOSTS, userId, cursor) { reads.userReposts(userId, it) }
 
     private suspend fun replies(userId: String, cursor: String?): XTimelinePage =
-        firstOrNext(ProfileCache.Timeline.REPLIES, userId, cursor) { graph.client.userReplies(userId, it) }
+        firstOrNext(ProfileCache.Timeline.REPLIES, userId, cursor) { reads.userReplies(userId, it) }
 
     /**
      * A page of one of the profile's timelines: the first from the device
@@ -344,8 +352,8 @@ class ProfileViewModel(
                 val (threads, more) = when {
                     tab == ProfileTab.POSTS && filter == PostsFilter.ALL -> posts!!.more().let { it.threads to it.hasMore }
                     tab == ProfileTab.POSTS && filter == PostsFilter.POSTS -> paged(tab, ownPosts(user.id, cursors[tab]))
-                    tab == ProfileTab.POSTS -> paged(tab, graph.client.userReposts(user.id, cursors[tab]))
-                    else -> paged(tab, graph.client.userReplies(user.id, cursors[tab]))
+                    tab == ProfileTab.POSTS -> paged(tab, reads.userReposts(user.id, cursors[tab]))
+                    else -> paged(tab, reads.userReplies(user.id, cursors[tab]))
                 }
                 graph.posts.remember(threads)
                 setTab(tab) {
@@ -377,14 +385,14 @@ class ProfileViewModel(
         val filter = state.value.mediaFilter
         var next = cursor
         var tiles = emptyList<MediaGridItem>()
-        var reads = 0
+        var looked = 0
         do {
-            val page = if (filter.readsPosts) graph.client.userPosts(user.id, next) else graph.client.userMedia(user.id, next)
+            val page = if (filter.readsPosts) reads.userPosts(user.id, next) else reads.userMedia(user.id, next)
             graph.posts.remember(page.threads)
             tiles = MediaGridItems.unseen(MediaGridItems.of(page.threads).filter(filter::accepts), seenTiles)
             next = page.bottomCursor?.takeIf { it != next }
-            reads++
-        } while (tiles.isEmpty() && next != null && reads <= filter.lookahead)
+            looked++
+        } while (tiles.isEmpty() && next != null && looked <= filter.lookahead)
         cursors[ProfileTab.MEDIA] = next
         return tiles to (next != null)
     }
