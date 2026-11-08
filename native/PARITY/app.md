@@ -722,3 +722,102 @@ untested | profile_top_bar_test › the scrim keeps white text readable over a w
 ## test/profile_view_store_test.dart
 covered | profile_view_store_test › profile filters update independently | ProfileRulesTest.thePostsFilterTellsRepostsFromPostsAndAQuoteIsAPost
 untested | profile_view_store_test › back-to-top state only reflects the latest threshold result | ProfileViewModel | no view-model test harness
+
+## test/download_center_screen_test.dart
+untested | download_center_screen_test › Downloads production screen render $variant | Compose (Downloads) | golden/layout sweep
+covered | download_center_screen_test › retry and clear history act on real store without deleting downloaded files | DownloadQueueTest, DownloadHistoryTest
+
+## test/download_center_test.dart
+covered | download_center_test › only the X image host receives original-image normalization | DownloadNamingTest.originalDownloadUrl
+covered | download_center_test › file names cannot escape their chosen destination | DownloadNamingTest (safeDownloadFolder)
+covered | download_center_test › history is atomic and active work becomes retryable after restart | DownloadHistoryTest
+covered | download_center_test › history rejects oversized or malformed metadata and bounds retained entries | DownloadHistoryTest
+covered | download_center_test › streams chunks to disk, reports progress and deletes the staging file | DownloadTransferTest
+covered | download_center_test › a short response never writes an incomplete media file to the destination | DownloadTransferTest
+covered | download_center_test › cancellation closes HTTP and refuses a late response before any destination write | DownloadTransferTest
+covered | download_center_test › server errors never reach the file picker or document provider | DownloadTransferTest; DownloadQueueTest
+covered | download_center_test › queued cancellation never starts HTTP and active cancellation cannot finish as success | DownloadQueueTest
+covered | download_center_test › queued cancellation blocks the pump and retry while partial-file cleanup is pending | DownloadQueueTest
+covered | download_center_test › retry uses the same history entry and batch results count only saved destinations | DownloadQueueTest; PluginBatchesTest
+covered | download_center_test › immediate retry survives the cancelled attempt finishing late | DownloadQueueTest
+covered | download_center_test › a failed history read cannot erase existing records and can be retried | DownloadHistoryTest
+covered | download_center_test › retrying metadata write preserves the current failed download entry | DownloadHistoryTest
+covered | download_center_test › network does not start when the queued work cannot be persisted | DownloadQueueTest
+
+## test/download_directory_test.dart
+covered | download_directory_test › recognises the media X serves | DownloadNamingTest (mime types)
+covered | download_directory_test › labels a saved frame archive as a ZIP | DownloadNamingTest (mime types)
+covered | download_directory_test › falls back to a generic type rather than guessing | DownloadNamingTest (mime types)
+covered | download_directory_test › shows the folder, not the whole tree URI | DownloadDestinationTest
+covered | download_directory_test › copes with an SD card volume and a bare id | DownloadDestinationTest
+untested | download_directory_test › sends the tree, name, bytes and type to the platform | ui/downloads PlatformFiles (Android) | platform boundary, no JVM test
+untested | download_directory_test › a lost grant surfaces as an error the caller can report | PlatformFiles | platform boundary
+untested | download_directory_test › copies a path without channel bytes and carries its cancellable operation id | PlatformFiles | platform boundary
+covered | download_directory_test › a subfolder reaches the platform cleaned, and only when there is one | DownloadDestinationTest; DownloadNamingTest
+untested | download_directory_test › cancel and cleanup identify only the in-flight operation and its new document | PlatformFiles | platform boundary
+untested | download_directory_test › open includes saved document and media type | PlatformFiles | platform boundary
+covered | download_directory_test › is false without asking the platform when nothing is stored | DownloadDestinationTest
+untested | download_directory_test › reports what the platform says about a stored tree | PlatformFiles | platform boundary
+untested | download_directory_test › returns the chosen tree, and null when the user backs out | PlatformFiles | platform boundary
+
+## test/download_queue_limit_test.dart
+covered | download_queue_limit_test › a store left at its default runs one transfer at a time, oldest first | DownloadQueueTest (concurrency 1)
+covered | download_queue_limit_test › with a limit of two, two run and the third waits for a free slot | DownloadQueueTest
+covered | download_queue_limit_test › raising the limit starts queued downloads at once; lowering it stops nothing | DownloadQueueTest
+covered | download_queue_limit_test › downloads without a folder fetch side by side but open the save dialog one at a time | DownloadQueueTest (dialog turn)
+covered | download_queue_limit_test › a download cancelled while it waits for the dialog never opens one | DownloadQueueTest
+covered | download_queue_limit_test › the limit stays within the offered choices | store/settings SettingsTest (MediaPrefs.simultaneous)
+covered | download_queue_limit_test › the Simultaneous downloads setting stores the limit and applies it to the queue | SettingsTest; DownloadQueueTest
+covered | download_queue_limit_test › safeDownloadFolder keeps a path inside the chosen folder | DownloadNamingTest
+covered | download_queue_limit_test › an entry keeps its subfolder in history, and a tampered one is cleaned | DownloadHistoryTest
+covered | download_queue_limit_test › a queued request carries its cleaned subfolder to the transfer | DownloadQueueTest
+covered | download_queue_limit_test › bytes made on the device are staged and copied, never sent through the channel | PluginBatchesTest; Downloading.kt madeNow
+covered | download_queue_limit_test › the transfer hands the subfolder to the platform save | DownloadTransferTest
+
+## test/offline_library_layout_test.dart
+untested | offline_library_layout_test › offline production collection $variant | Compose (Offline) | golden/layout sweep
+
+## test/offline_speech_engine_test.dart
+covered | offline_speech_engine_test › a German article is read by the downloaded German voice | OfflineSpeechEngineTest
+covered | offline_speech_engine_test › an English article falls back to the system engine | OfflineSpeechEngineTest
+covered | offline_speech_engine_test › switched off, the system engine reads | OfflineSpeechEngineTest
+covered | offline_speech_engine_test › a voice that fails to load hands over to the system | OfflineSpeechEngineTest
+covered | offline_speech_engine_test › text of unknown language uses the app language | OfflineSpeechEngineTest
+covered | offline_speech_engine_test › keeps a loaded voice and swaps it for another language | OfflineSpeechEngineTest
+covered | offline_speech_engine_test › a short article is a single clip | OfflineSpeechEngineTest
+covered | offline_speech_engine_test › chunks play in order with the next one prepared early | OfflineSpeechEngineTest
+covered | offline_speech_engine_test › stopping drops what was prepared and plays nothing more | OfflineSpeechEngineTest
+covered | offline_speech_engine_test › the speech rate becomes sherpa speed | SherpaVoiceSynthesizerTest; TtsRulesTest
+covered | offline_speech_engine_test › completes when the clip has played to the end | OfflineSpeechEngineTest
+covered | offline_speech_engine_test › a stale "completed" before playback starts is ignored | OfflineSpeechEngineTest
+covered | offline_speech_engine_test › a player error fails the clip | OfflineSpeechEngineTest
+covered | offline_speech_engine_test › a clip that never starts fails instead of hanging | OfflineSpeechEngineTest
+
+## test/offline_voice_catalog_test.dart
+covered | offline_voice_catalog_test › ids are unique and usable as folder names | VoicesTest
+covered | offline_voice_catalog_test › every voice is pinned to k2-fsa tts-models over https | VoicesTest
+covered | offline_voice_catalog_test › every voice has a confirmed checksum and size | VoicesTest
+covered | offline_voice_catalog_test › names its model files and licence | VoicesTest
+covered | offline_voice_catalog_test › offers German and English | VoicesTest
+covered | offline_voice_catalog_test › reads German with the neutral Thorsten speaker | VoicesTest
+covered | offline_voice_catalog_test › matches the language whatever the region | VoicesTest
+covered | offline_voice_catalog_test › finds nothing for a language no voice speaks | VoicesTest
+covered | offline_voice_catalog_test › prefers the better voice when two speak the language | VoicesTest
+covered | offline_voice_catalog_test › strip the archive folder | StreamTarTest
+covered | offline_voice_catalog_test › refuse anything outside it | StreamTarTest
+covered | offline_voice_catalog_test › speech rate maps onto sherpa speed | TtsRulesTest
+covered | offline_voice_catalog_test › loads VITS voices with their espeak-ng data | SherpaVoiceSynthesizerTest
+covered | offline_voice_catalog_test › loads Kokoro with its speaker embeddings | SherpaVoiceSynthesizerTest
+
+## test/offline_voices_section_test.dart
+untested | offline_voices_section_test › lists every voice with language, size and licence | Compose (voice settings) | Compose only
+untested | offline_voices_section_test › download shows progress and can be cancelled | Compose (voice settings) | Compose only; the download is OfflineVoices
+untested | offline_voices_section_test › installing, ready and failed states | Compose (voice settings) | Compose only; states in OfflineVoices
+untested | offline_voices_section_test › delete asks first, then removes the voice | Compose (voice settings) | Compose only
+untested | offline_voices_section_test › fits 320 dp at large text with full-size tap targets | Compose (voice settings) | Compose only
+untested | offline_voices_section_test › the engine has its own row, and the note says where it comes from | Compose (voice settings) | Compose only
+covered | offline_voices_section_test › a voice on the device without the engine says it needs it | VoicesTest
+untested | offline_voices_section_test › deleting the engine asks first and says what it means for the voices | Compose (voice settings) | Compose only
+covered | offline_voices_section_test › a voice and the engine already on the device show as such when the settings open | VoicesTest
+covered | offline_voices_section_test › where no engine is published, nothing can be downloaded | VoicesTest
+untested | offline_voices_section_test › the engine row fits 320 dp at large text | Compose (voice settings) | Compose only
