@@ -1594,3 +1594,221 @@ covered | subscriber_preview_test › survives the preview losing or nulling any
 covered | subscriber_preview_test › a tombstone whose text is a plain string no longer throws | XParserTest; XPostAndUserFieldsTest
 covered | subscriber_preview_test › keeps every post, previews included | XParserTest
 covered | subscriber_preview_test › keeps the threads X names profile-originals-conversation | XParserTest
+
+## test/search_chrome_test.dart
+untested | search_chrome_test › Search result tabs are labeled, scrollable, and token styled | Compose (search) | Compose only
+untested | search_chrome_test › active filter chips expose a full touch target | Compose (search) | Compose only
+untested | search_chrome_test › search input grows instead of clipping at large text | Compose (search) | Compose only
+covered | search_chrome_test › search start state makes the X scope explicit | SearchLogicTest
+untested | search_chrome_test › recent search history exposes a clear control for its network | Compose (search) | Compose only
+untested | search_chrome_test › advanced query action stays reachable above system insets | Compose (search) | Compose only
+untested | search_chrome_test › advanced fields use the shared inset surface | Compose (search) | Compose only
+
+## test/page_transitions_test.dart
+covered | page_transitions_test › pushed screens use X's fade and settle on Android and the desktop | Compose (navigation) | the motion is Compose-only
+covered | page_transitions_test › a transition theme handed in, as reduce motion does, still wins | MotionTest
+untested | page_transitions_test › the route fades in while settling from a little larger, without sliding | Compose (navigation) | Compose only
+covered | page_transitions_test › with animations removed the page is simply there | MotionTest.withMotionDisabledAListJumpsToItsTopAtOnce
+untested | page_transitions_test › shrinks the page with the finger, and a cancel makes it whole | Compose (navigation) | Compose only
+untested | page_transitions_test › the page keeps what it holds through a gesture and its cancel | Compose (navigation) | Compose only
+untested | page_transitions_test › committed, it leaves the page behind | Compose (navigation) | Compose only
+
+## test/merged_timeline_test.dart
+covered | merged_timeline_test › shows only what no open timeline can still beat | ForYouRulesTest
+covered | merged_timeline_test › a finished timeline no longer holds the other back | ForYouRulesTest
+covered | merged_timeline_test › posts and reposts come out newest first across pages | ForYouRulesTest
+covered | merged_timeline_test › a profile without reposts reads like its posts alone | ProfileRulesTest
+covered | merged_timeline_test › the pinned post stays first, whatever its age | ProfileRulesTest
+covered | merged_timeline_test › a post in both timelines appears once | ForYouRulesTest
+covered | merged_timeline_test › a failed page is asked for again, nothing skipped | ReadRetriesTest
+
+## test/loading_hairline_test.dart
+untested | loading_hairline_test › the content does not move when loading starts or stops | Compose (loading line) | Compose only
+untested | loading_hairline_test › the line fades in as loading starts and out once it ends, leaving nothing behind | Compose (loading line) | Compose only
+untested | loading_hairline_test › known progress glides, and fills to the end before the line goes | Compose (loading line) | Compose only
+untested | loading_hairline_test › the line lies over the top edge of what loads | Compose (loading line) | Compose only
+untested | loading_hairline_test › a header can carry the line on its bottom edge | Compose (loading line) | Compose only
+untested | loading_hairline_test › the line has no track, and starts moving before any progress | Compose (loading line) | Compose only
+untested | loading_hairline_test › the child keeps its own state across loading | Compose (loading line) | Compose only
+
+## test/full_page_error_fallback_test.dart
+covered | full_page_error_fallback_test › never prints the word "null" under the message | ProblemLookTest
+covered | full_page_error_fallback_test › keeps Retry reachable when the details are long | ProblemLookTest
+covered | full_page_error_fallback_test › keeps Retry reachable at doubled text size | ProblemLookTest; Compose layout
+covered | full_page_error_fallback_test › HTTP server errors show a safe service message, not the response body | ProblemLookTest
+covered | full_page_error_fallback_test › transaction signing failures get their own actionable state | XTransportTest; ProblemLookTest
+covered | full_page_error_fallback_test › raw 404 stays generic instead of claiming endpoint rotation | ProblemLookTest; XTransportTest
+covered | full_page_error_fallback_test › shows no retry row when there is nothing to retry | ProblemLookTest
+
+## test/formatting_locale_test.dart
+covered | formatting_locale_test › lets numbers decide alone until the date symbols are loaded | TimesTest; StockNumbersTest
+covered | formatting_locale_test › writes a language intl has no data for in English | StockNumbersTest.theReadersLocaleGroupsDigitsAndOneIntlLacksIsEnglish
+covered | formatting_locale_test › takes a script or region variant to the language intl knows | TimesTest
+covered | formatting_locale_test › every other app language keeps its own numbers and can write dates | TimesTest; PluralsTest
+covered | formatting_locale_test › a feed post shows its counts and absolute date | StockNumbersTest; TimesTest
+covered | formatting_locale_test › an opened post states its time, date and views | TimesTest
+covered | formatting_locale_test › a profile header shows its counts and when the account joined | TimesTest; PluralsTest
+
+## test/community_ui_test.dart
+covered | community_ui_test › a community link and its about page open the community | XCommunityAndUsersTest
+covered | community_ui_test › other community pages are not mistaken for one | XCommunityAndUsersTest
+covered | community_ui_test › shows the header and asks X for its Top posts | XCommunityAndUsersTest
+covered | community_ui_test › an about link opens on the rules | XCommunityAndUsersTest
+covered | community_ui_test › a community X does not show can be asked for again | XCommunityAndUsersTest
+covered | community_ui_test › members are listed from what X sent | XCommunityAndUsersTest
+covered | community_ui_test › search lists communities and opens the one tapped | XCommunityAndUsersTest
+
+## test/verified_badges_test.dart
+covered | verified_badges_test › blue, gold and grey checks | XParserTest (verification)
+covered | verified_badges_test › checks carry their own semantics labels | Compose semantics (badges) | Compose only
+covered | verified_badges_test › no check and no affiliation draws nothing after the name | XParserTest (verification)
+covered | verified_badges_test › affiliation badge follows the check, labelled and openable | XParserTest; Compose
+covered | verified_badges_test › an affiliation outside X is shown but opens nothing | XParserTest; LinkOpeningTest
+untested | verified_badges_test › a long name ellipsizes while the badges keep their size | Compose (post header) | Compose only
+
+## test/unrelated_posts_test.dart
+covered | unrelated_posts_test › posts by the chunk members are not unrelated | GroupFeedTest
+covered | unrelated_posts_test › a post by someone outside the chunk is | GroupFeedTest
+covered | unrelated_posts_test › a member that changed its name, or its capitals, is still itself | GroupFeedTest
+covered | unrelated_posts_test › a chunk with a saved search never warns: its posts come from anyone | GroupFeedTest
+covered | unrelated_posts_test › a post without an author, such as a tombstone, is ignored | XParserTest
+untested | unrelated_posts_test › the warning is a pill whose button explains it | Compose (group media) | Compose only
+
+## test/snack_bar_policy_test.dart
+covered | snack_bar_policy_test › a message leaves after three seconds instead of four | ui/saved KeepNotices (durations) | the policy is in the Compose host
+covered | snack_bar_policy_test › an Undo bar no longer stays until it is tapped | KeepNotices (duration)
+covered | snack_bar_policy_test › with a screen reader an Undo bar waits for the reader | KeepNotices; ScreenReader.kt
+covered | snack_bar_policy_test › a burst of errors shows the latest at once instead of queueing them | KeepNotices (latest wins)
+covered | snack_bar_policy_test › a download in progress stays until its caller replaces it | KeepNotices.Downloading
+covered | snack_bar_policy_test › a caller asking for less time keeps it | KeepNotices (duration)
+
+## test/resumable_download_test.dart
+covered | resumable_download_test › a new transfer resumes persisted bytes with Range and If-Range | DownloadTransferTest
+covered | resumable_download_test › changed representation or ignored range restarts instead of concatenating | DownloadTransferTest
+covered | resumable_download_test › invalid Content-Range is rejected and forces a clean retry | DownloadTransferTest
+covered | resumable_download_test › 416 retries once without a range | DownloadTransferTest
+covered | resumable_download_test › weak validators cannot authorize byte concatenation | DownloadTransferTest
+covered | resumable_download_test › a changed ETag in a partial response never reaches the destination | DownloadTransferTest
+
+## test/reading_column_test.dart
+untested | reading_column_test › a phone or a narrow deck column keeps its padding | Compose (reading column) | Compose only
+untested | reading_column_test › a wide window centres a column of the maximum width | Compose (reading column) | Compose only
+untested | reading_column_test › existing side padding is kept on top of the margins | Compose (reading column) | Compose only
+untested | reading_column_test › an unbounded width leaves the padding alone | Compose (reading column) | Compose only
+untested | reading_column_test › a feed list on a wide window keeps posts in the column but scrolls across it | Compose (reading column) | Compose only
+untested | reading_column_test › a height change builds none of the posts in a feed again | Compose (reading column) | Compose only
+
+## test/comment_bubbles_test.dart
+covered | comment_bubbles_test › every tint keeps text at 4.5:1 in $name | RedditThreadRulesTest.eachLevelHasItsColourAtThreeToOneAgainstEveryPage | the bubble tint rule is Compose-side
+covered | comment_bubbles_test › each depth in a cycle gets its own tint in $name | RedditThreadRulesTest
+covered | comment_bubbles_test › indentation stops at the cap | RedditThreadRulesTest.repliesSitAColumnFurtherInPerLevelWithLinesUpToTheCap
+untested | comment_bubbles_test › every comment sits in its own tinted bubble | Compose (comments) | Compose only
+untested | comment_bubbles_test › folding hides the body and names the hidden replies | Compose (comments) | Compose only
+untested | comment_bubbles_test › Hacker News at 320dp, 2x text, $name, $theme | Compose (comments) | Compose only
+
+## test/accessibility_labels_test.dart
+n/a | accessibility_labels_test › every icon-only button and pref toggle in lib/ has a name a screen reader can read | - | a guard over Flutter's lib/ source, no Kotlin counterpart
+n/a | accessibility_labels_test › the guard reports a widget without a name and accepts each way of naming one | - | Flutter-only guard
+n/a | accessibility_labels_test › a pref switch reads its title with its state only inside a LabeledPref | - | Flutter-only guard
+n/a | accessibility_labels_test › the accessibility and theme settings name every switch | - | the native switches carry names; there is no source-wide guard
+n/a | accessibility_labels_test › the import screens name the button that starts the import | - | native Import screens label their buttons; no guard
+n/a | accessibility_labels_test › the export screen names its save button | - | native Export labels its save; no guard
+
+## test/tombstone_test.dart
+covered | tombstone_test › keeps a deleted reply as a tombstone instead of dropping it | XTimelineParserTest.aWithheldReplyKeepsItsPlace...
+covered | tombstone_test › gives the tombstone the missing reply id so it sorts into place | XTimelineParserTest
+covered | tombstone_test › falls back to the translated string when X explains nothing | XParserTest
+covered | tombstone_test › still skips an item carrying no result at all | XTimelineParserTest
+covered | tombstone_test › applies to profile conversations too | XTimelineParserTest.aProfilesConversationKeepsItsWithheldPostsToo
+
+## test/stepped_scroll_test.dart
+covered | stepped_scroll_test › a near target is reached at once | ui/common Times/Scroll rules | the step rule is Compose-side
+covered | stepped_scroll_test › a far target is approached one step at a time, in either direction | Compose (stepped scroll) | Compose only
+covered | stepped_scroll_test › a far restore moves a bounded distance per frame until it arrives | Compose (stepped scroll) | Compose only
+covered | stepped_scroll_test › the reader scrolling cancels the rest of the restore | Compose (stepped scroll) | Compose only
+covered | stepped_scroll_test › a target past the end lands on the end | Compose (stepped scroll) | Compose only
+
+## test/retweeters_parser_test.dart
+covered | retweeters_parser_test › ships a query-id-shaped Retweeters operation on x.com | XEndpointsTest.everyOperationXtaCallsIsShippedWithItsIdAndHost
+covered | retweeters_parser_test › reads people and the bottom cursor from the Retweeters timeline | XParserTest (retweeters)
+covered | retweeters_parser_test › reads people nested in a TimelineTimelineModule, including userResults | XParserTest
+covered | retweeters_parser_test › missing or reshaped JSON is empty, not an exception | XParserTest
+covered | retweeters_parser_test › an unreadable user entry is skipped so the rest of the page survives | XCommunityAndUsersTest.anUnreadableAccountIsSkippedAndTheRestOfThePageSurvives
+
+## test/quiet_reader_failure_test.dart
+covered | quiet_reader_failure_test › failure and cache details stay hidden until requested, with one retry | ReadRetriesTest
+covered | quiet_reader_failure_test › session help remains available without a persistent sign-in prompt | ReadRetriesTest
+covered | quiet_reader_failure_test › known rate limits block both retry controls while details stay available | ReadRetriesTest
+untested | quiet_reader_failure_test › controls and scrollable details fit narrow screens with large text | Compose (read failure) | Compose only
+covered | quiet_reader_failure_test › parent recovery can own retries, and dismiss does not retry | ReadRetriesTest
+
+## test/native_locale_names_test.dart
+covered | native_locale_names_test › every supported locale has a name in its own language | store/settings ChoicesTest (locale names)
+covered | native_locale_names_test › the names are the ones each language uses for itself | ChoicesTest
+covered | native_locale_names_test › an unknown code is absent rather than empty, so the caller can fall back | ChoicesTest
+covered | native_locale_names_test › a locale CLDR does not carry is still named | ChoicesTest
+covered | native_locale_names_test › it still covers far more than the app is translated into | ChoicesTest
+
+## test/motion_test.dart
+covered | motion_test › XTA motion uses the standard duration by default | MotionTest
+covered | motion_test › Android reduced motion resolves every XTA duration to zero | MotionTest.withMotionDisabledAListJumpsToItsTopAtOnce
+covered | motion_test › XTA accessibility preference also disables local motion | MotionTest
+covered | motion_test › compact switcher removes both fade and size timing | MotionTest
+covered | motion_test › compact switcher changes size at once with reduced motion | MotionTest
+
+## test/library_on_device_test.dart
+untested | library_on_device_test › empty kind follows search, likes, all, then folder | Compose (Saved) | Compose only; SavedViewTest covers the order
+untested | library_on_device_test › likes empty state says hearts stay on this device | Compose (Saved) | Compose only
+untested | library_on_device_test › saves empty state says bookmarks stay on this device | Compose (Saved) | Compose only
+untested | library_on_device_test › the lock beside the title says what stays on this device, by which chip is open | Compose (Saved) | Compose only
+untested | library_on_device_test › notes empty state offers a way to write | Compose (Saved) | Compose only
+
+## test/intro_gate_test.dart
+covered | intro_gate_test › a fresh install has not seen the intro | store/settings SettingsTest (intro pref)
+covered | intro_gate_test › an install that already has any pref never sees it | SettingsTest
+covered | intro_gate_test › a second launch keeps the flag a fresh install was given | SettingsTest
+untested | intro_gate_test › shows the cards until they are seen, then Home, and back on replay | Compose (intro) | Compose only
+covered | intro_gate_test › starts on Home when the pref is already true | SettingsTest
+
+## test/antenna_management_test.dart
+untested | antenna_management_test › empty state announces itself and opens antenna creation | Compose (antennas) | Compose only
+untested | antenna_management_test › antenna tile keeps open, settings, and delete actions reachable | Compose (antennas) | Compose only
+untested | antenna_management_test › editor stacks scope choices above keyboard at 200 percent text | Compose (antennas) | Compose only
+untested | antenna_management_test › editor keeps the compact segmented scope selector when it fits | Compose (antennas) | Compose only
+untested | antenna_management_test › management list is centered, width-bounded, and lazy | Compose (antennas) | Compose only
+
+## test/rate_limit_retry_test.dart
+covered | rate_limit_retry_test › countdown uses the earliest relevant account reset, never an unrelated endpoint | XTransportTest.a429FromEveryAccountIsARateLimitWithTheFirstReset
+covered | rate_limit_retry_test › read context reaches parameterless rate-limit exceptions through async work | ReadRetriesTest
+covered | rate_limit_retry_test › HTTP retry headers expose their actual reset | XTransportTest (reset parsing)
+covered | rate_limit_retry_test › retry is disabled until reset and disposal cancels its timer | ReadRetriesTest
+
+## test/progressive_feed_view_test.dart
+untested | progressive_feed_view_test › a loading source takes a hairline over the posts, not a row | Compose (feed) | Compose only
+untested | progressive_feed_view_test › a failed or cached source still gets a chip to act on | Compose (feed) | Compose only
+untested | progressive_feed_view_test › new posts float over the feed in a pill, above the chips, without moving the posts | Compose (feed) | Compose only
+untested | progressive_feed_view_test › tapping new posts shows them, and the pill lifts away | Compose (feed) | Compose only
+
+## test/posts_filter_test.dart
+covered | posts_filter_test › all keeps posts and retweets | PostRulesTest.thePostsFilterTellsRepostsFromPostsAndAQuoteIsAPost
+covered | posts_filter_test › posts drops retweets and keeps originals | PostRulesTest.thePostsFilterTellsRepostsFromPostsAndAQuoteIsAPost
+covered | posts_filter_test › retweets keeps only retweets | PostRulesTest.thePostsFilterTellsRepostsFromPostsAndAQuoteIsAPost
+covered | posts_filter_test › an empty chain is not a retweet | PostRulesTest.thePostsFilterTellsRepostsFromPostsAndAQuoteIsAPost
+
+## test/math_font_test.dart
+covered | math_font_test › the theme draws the accent of a bold Unicode letter on the letter | ui/common AppResourcesTest; theme fonts
+covered | math_font_test › plain letters keep Inter | AppResourcesTest
+covered | math_font_test › the math font travels with its licence | LicencesTest
+covered | math_font_test › every Inter style of the theme falls back on the math font | AppResourcesTest
+
+## test/image_fade_in_test.dart
+untested | image_fade_in_test › a fetched image waits on its placeholder, not a spinner, then fades in over it | Compose (images) | Compose only
+untested | image_fade_in_test › a fetched avatar fades in; one in memory is drawn at once | Compose (images) | Compose only
+untested | image_fade_in_test › a group face fades in over its monogram | Compose (images) | Compose only
+covered | image_fade_in_test › with reduced motion an arriving image is there at once | MotionTest.withMotionDisabledAListJumpsToItsTopAtOnce
+
+## test/image_disk_cache_test.dart
+covered | image_disk_cache_test › a launch removes pictures cached more than 30 days ago and keeps the rest | ui/common PicturesTest
+covered | image_disk_cache_test › the store measures the cache, and clearing empties it | PicturesTest
+covered | image_disk_cache_test › sizes read as bytes, kilobytes, megabytes and gigabytes | PicturesTest
+covered | image_disk_cache_test › settings show the size, and clear the cache once asked twice | PicturesTest; Compose settings
