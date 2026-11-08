@@ -10,9 +10,9 @@
 
 pluginManagement {
     repositories {
-        // Maven Central through repo1: repo.maven.apache.org answers some
-        // networks with 429.
-        maven("https://repo1.maven.org/maven2")
+        // Maven Central through Google's mirror: repo1.maven.org answered some
+        // artifacts with a redirect to github.com, which returned 504 (2026-11-08).
+        maven("https://maven-central.storage-download.googleapis.com/maven2")
         gradlePluginPortal()
     }
 }
@@ -28,7 +28,7 @@ dependencyResolutionManagement {
                 includeGroup("com.google.testing.platform")
             }
         }
-        maven("https://repo1.maven.org/maven2")
+        maven("https://maven-central.storage-download.googleapis.com/maven2")
     }
 }
 

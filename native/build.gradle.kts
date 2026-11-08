@@ -5,7 +5,8 @@
 buildscript {
     val androidSdk = System.getenv("ANDROID_HOME") != null || System.getenv("ANDROID_SDK_ROOT") != null
     repositories {
-        maven("https://repo1.maven.org/maven2")
+        // Maven Central, as settings.gradle.kts explains.
+        maven("https://maven-central.storage-download.googleapis.com/maven2")
         if (androidSdk) google()
         gradlePluginPortal()
     }
