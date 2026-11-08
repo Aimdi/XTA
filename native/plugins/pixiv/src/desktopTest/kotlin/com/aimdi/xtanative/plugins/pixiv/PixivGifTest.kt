@@ -14,10 +14,37 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 /** The GIF an ugoira is saved as, read back by the JDK's own GIF reader. */
 class PixivGifTest {
+    @Test
+    fun cancellingDuringTheEncodeStopsItAndReportsEachFrameInOrder() = runBlocking {
+        val frames = listOf(
+            PixivFrameBytes(byteArrayOf(1), 100.milliseconds),
+            PixivFrameBytes(byteArrayOf(2), 100.milliseconds),
+            PixivFrameBytes(byteArrayOf(3), 100.milliseconds),
+        )
+        val decoded = mutableListOf<Int>()
+        val reported = mutableListOf<Int>()
+        val job = launch {
+            PixivGifWriter.encode(
+                frames,
+                decode = { bytes -> decoded += bytes[0].toInt(); frame(1, 1) { _, _ -> 0xffffff } },
+                onFrame = { done ->
+                    reported += done
+                    if (done == 2) throw CancellationException("stop")
+                },
+            )
+        }
+        job.join()
+        assertTrue(job.isCancelled)
+        assertEquals(listOf(1, 2), decoded, "the frame being decoded is finished, and no later one starts")
+        assertEquals(listOf(1, 2), reported)
+    }
+
     private fun frame(width: Int, height: Int, color: (x: Int, y: Int) -> Int) =
         PixivPixels(width, height, IntArray(width * height) { at -> (0xff shl 24) or (color(at % width, at / width) and 0xffffff) })
 

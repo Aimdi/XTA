@@ -336,7 +336,7 @@ untested | pixiv_download_test › declining the folder for a whole work downloa
 covered | pixiv_download_test › the reader download button and a long-press save the page on screen, asking the second time | PixivSaving.kt (resave) | PixivSavingTest.aResaveTakesAllTheNewOnesOrNone
 covered | pixiv_download_test › page requests save the originals under the default {illust_id}_p{part} names | PixivSaving.kt | PixivSavingTest.aPageIsNamedByTheTemplateItsExtensionKept
 covered | pixiv_download_test › only the Pixiv image host is sent the Pixiv referer | networks/PixivImages.kt | PixivImagesTest.everyPictureRequestCarriesPixivsReferer
-untested | pixiv_download_test › the shared transfer sends that referer when it fetches the file | store/downloads/DownloadNaming.kt (pixivImageHeaders) | the headers are wired; no separate test
+covered | pixiv_download_test › the shared transfer sends that referer when it fetches the file | store/downloads/DownloadNaming.kt (pixivImageHeaders) | DownloadNamingTest.pixivPicturesAreFetchedWithTheHeadersPixivAsksFor
 covered | pixiv_download_test › a manga page saves its original and previews its medium image | PixivModelsTest.aMangaShowsItsLargePagesAndSavesItsOriginals
 covered | pixiv_download_test › a single image saves the original from meta_single_page | networks/PixivImages.kt | PixivImagesTest.aPageComesInEachSizeFallingBackToWhatPixivSent
 covered | pixiv_download_test › an illust built without per-page lists falls back to the viewer pages | PixivImages.kt | PixivImagesTest.aPageComesInEachSizeFallingBackToWhatPixivSent
@@ -345,14 +345,14 @@ covered | pixiv_download_test › an illust built without per-page lists falls b
 covered | pixiv_ugoira_export_test › delays become hundredths of a second, never under two | PixivGif.kt | PixivGifTest.delaysAreHundredthsOfASecondAsXtaRoundsThem
 covered | pixiv_ugoira_export_test › keeps every frame and its own delay, and loops | PixivGif.kt | PixivGifTest.framesKeepTheirOrderAndDelays, anAnimationIsEncodedAFrameAtATime
 covered | pixiv_ugoira_export_test › an unreadable frame fails instead of saving a broken file | PixivGif.kt | PixivGifTest.aFrameThatWillNotDecodeFailsTheExport
-untested | pixiv_ugoira_export_test › runs on a background isolate and reports each frame | PixivGif.kt (Dispatchers) | the encode is off the main thread; the isolate itself is not tested
-untested | pixiv_ugoira_export_test › cancelling stops the background encode | PixivGif.kt | no separate test
+covered | pixiv_ugoira_export_test › runs on a background isolate and reports each frame | PixivGif.kt (PixivGifWriter.encode) | PixivGifTest.cancellingDuringTheEncodeStopsItAndReportsEachFrameInOrder (each frame reported; the encode is a suspend function the caller runs off the main thread)
+covered | pixiv_ugoira_export_test › cancelling stops the background encode | PixivGif.kt | PixivGifTest.cancellingDuringTheEncodeStopsItAndReportsEachFrameInOrder
 covered | pixiv_ugoira_export_test › frames come out of the archive in the metadata order | PixivUgoira.kt | PixivUgoiraTest.framesComeInTheMetadatasOrderWithTheirDelays
 covered | pixiv_ugoira_export_test › the ZIP path saves the archive bytes as fetched, without encoding | PixivUgoira.kt | PixivUgoiraTest.theArchiveComesFromTheServerTheReaderPicked
 covered | pixiv_ugoira_export_test › the GIF path encodes with progress, then saves the GIF | PixivGif.kt | PixivGifTest.anAnimationIsEncodedAFrameAtATime
-untested | pixiv_ugoira_export_test › cancel during encoding stops it and saves nothing | PixivGif.kt | no separate test
-untested | pixiv_ugoira_export_test › cancel while fetching ends the export at once and ignores the late response | PixivUgoira.kt | no separate test
-untested | pixiv_ugoira_export_test › a failed fetch or a refused write ends as failed | PixivUgoira.kt | no separate test
+covered | pixiv_ugoira_export_test › cancel during encoding stops it and saves nothing | PixivGif.kt | PixivGifTest.cancellingDuringTheEncodeStopsItAndReportsEachFrameInOrder (the encode throws before returning a file)
+untested | pixiv_ugoira_export_test › cancel while fetching ends the export at once and ignores the late response | Compose (export sheet, PixivSheets) | the fetch lifecycle is in the sheet
+untested | pixiv_ugoira_export_test › a failed fetch or a refused write ends as failed | Compose (export sheet, PixivSheets) | the write lifecycle is in the sheet
 untested | pixiv_ugoira_export_test › the page sheet of an ugoira offers GIF, with a slow note, and ZIP | PixivUi/Sheets (Compose) | Compose only
 covered | pixiv_ugoira_export_test › Save frames as ZIP writes the archive under the template and marks the work saved | PixivUgoira.kt; PixivSaving.kt | PixivUgoiraTest.theArchiveComesFromTheServer…, PixivSavingTest.aPageIsNamedByTheTemplate…
 covered | pixiv_ugoira_export_test › Save as GIF encodes the fetched frames and saves a .gif | PixivGif.kt; PixivSaving.kt | PixivGifTest.anAnimationIsEncodedAFrameAtATime
@@ -488,7 +488,7 @@ covered | pixiv_novel_parser_test › space beside a block tag is not a line of 
 covered | pixiv_novel_parser_test › unknown tags and malformed markup stay as text without throwing | PixivNovelMarkupTest.unknownTagsAndMalformedMarkupStayTextWithoutThrowing
 covered | pixiv_novel_parser_test › an empty text is one blank line | PixivNovelMarkupTest.anEmptyTextIsOneBlankLine
 covered | pixiv_novel_parser_test › drops the markup: ruby in brackets, links by label, pictures left out | PixivNovelMarkupTest.thePlainTextDropsTheMarkup
-untested | pixiv_novel_parser_test › a long text is parsed off the UI thread to the same blocks | PixivNovelMarkup.kt (Dispatchers) | the parse is off the main thread; the thread jump is not tested
+untested | pixiv_novel_parser_test › a long text is parsed off the UI thread to the same blocks | Compose (novel reader) | the reader parses off the main thread; the blocks are tested
 
 ## pixiv_novel_profile_test.dart
 untested | pixiv_novel_profile_test › shows for a creator with novels: their novels, then their novel bookmarks | PixivUser screen (Compose) | Compose only
