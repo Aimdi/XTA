@@ -30,7 +30,7 @@ covered | feed_strip_test › skips plugins that are not enabled | FeedStrip.tab
 covered | feed_strip_test › includes an enabled pin | FeedStrip.tabs, HomeStrip.tabs | FeedStripTest, HomeStripTest.followingAndForYouComeFirst…
 covered | feed_strip_test › empty pins show no plugin, even one that hid its bottom tab | FeedStrip.tabs | FeedStripTest.followingAndForYou…
 n/a | feed_strip_test › equality is by id, not identity | — | Dart FeedTab ==; native HomeTab is a data class/object
-untested | feed_strip_test › X tabs use house and spark; plugins reuse XtaPlugin.icon | ui/home/HomeFeed.kt TimelineMark | Following = dynamic_feed, X = X mark, plugins = plugin.icon, as XTA; icon choice lives in a composable
+untested | feed_strip_test › X tabs use house and spark; plugins reuse XtaPlugin.icon | Compose (Home tab icon) | the icon choice lives in a composable
 covered | feed_strip_test › moves a pin to the slot after it is taken out | FeedStrip.reorder | FeedStripTest.pinsAreAddedOnce…
 covered | feed_strip_test › a no-op or out-of-range index leaves the list | FeedStrip.reorder | FeedStripTest.pinsAreAddedOnce…
 covered | feed_strip_test › persists the new pin order | StripPins.moved + HomeViewModel writes HomePrefs.feedStripNetworks | HomeMenuTest.movingAPinKeepsTheNetworksShown
@@ -521,8 +521,8 @@ missing → implemented | home_reading_controls_test › reclaimed space does no
 missing → implemented | home_reading_controls_test › pin is reversible, persisted, and restored by a new Home session | HomePrefs.keepControlsVisible, ui/plugins/ReadingControls.kt | ReadingControlsTest.pinIsReversiblePersistedAndRestoredByANewSession
 missing → implemented | home_reading_controls_test › source changes reveal controls without changing the global pin setting | ReadingControls.bind | ReadingControlsTest.sourceChangesRevealControlsWithoutChangingThePin
 untested | home_reading_controls_test › real viewport retains controls for focus | ui/plugins/ReadingControls.kt ReadingControlsBar | no Compose widget harness; focus on the row calls reveal
-untested | home_reading_controls_test › real viewport retains controls for keyboard | HomeFeedPage | the keyboard inset is passed as protected; the store's protected path is tested
-untested | home_reading_controls_test › real viewport retains controls for accessibility | HomeFeedPage | the screen reader is passed as protected; the store's protected path is tested
+untested | home_reading_controls_test › real viewport retains controls for keyboard | Compose (Home viewport) | the keyboard inset is passed as protected; the store's protected path is tested
+untested | home_reading_controls_test › real viewport retains controls for accessibility | Compose (Home viewport) | the screen reader is passed as protected; the store's protected path is tested
 covered | home_reading_controls_test › real viewport retains controls for short | ReadingScroll.of | ReadingControlsTest.aListThatFitsIsShortAndOneThatRunsPastIsNot
 
 ## test/offline_library_test.dart
