@@ -27,9 +27,12 @@ import kotlinx.serialization.json.JsonElement
  * plugin's network (native-0.1.56); 6 adds X's search with its replies and
  * conversations switches (`XClient.search`), which the Stocks plugin reads
  * through; 7 adds [XtaPlugin.mightRouteLater] and [XtaPlugin.routeForLater],
- * a link a plugin can claim only after asking the network.
+ * a link a plugin can claim only after asking the network; 8 adds a home
+ * timeline's reading controls ([HomeReading], [rememberHomeReading],
+ * [ReadingControlsBar], [ReadingControlsPinItem], [ReportsReadingScroll]), so a
+ * plugin's own timeline keeps them as XTA's does.
  */
-const val PLUGIN_API_VERSION: Int = 7
+const val PLUGIN_API_VERSION: Int = 8
 
 /**
  * The oldest plugin API whose plugins this app still loads: what they use of

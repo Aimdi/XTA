@@ -72,8 +72,11 @@ network (native-0.1.56); 6 adds X's search with its `includeReplies` and
 `conversations` switches (`XClient.search`); 7 adds a link a plugin may claim
 only after asking the network (`mightRouteLater`, `routeForLater`, both
 defaulting to no). The app asks only off the desktop, for a few seconds, and
-a plugin built before simply never is. A plugin's `xta-plugin.json` names the
-version it was built against.
+a plugin built before simply never is; 8 adds a home timeline's reading
+controls (`HomeReading`, `rememberHomeReading`, `ReadingControlsBar`,
+`ReadingControlsPinItem` and `ReportsReadingScroll`'s three lists), so a
+plugin's own timeline keeps them as XTA's does. A plugin's `xta-plugin.json`
+names the version it was built against.
 
 The app loads the versions from `OLDEST_PLUGIN_API` (2) to its own, so a
 plugin built before keeps working until its update comes, for as long as what
