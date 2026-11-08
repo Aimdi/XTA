@@ -139,11 +139,26 @@ data class SorterUi(
  * saved as it is made, and an undo takes it back out of those groups. The
  * plugins' accounts ([follows]) are read once, before the first is shown.
  */
-class UngroupedSorterViewModel(private val graph: AppGraph, accountIds: List<String>, private val follows: PluginFollows = PluginFollows.None) : ViewModel() {
+/** What the one-by-one sorter writes, so a save can be held or failed in a test. */
+interface UngroupedWrites {
+    suspend fun addTo(memberId: String, groupIds: List<String>)
+
+    suspend fun removeFrom(memberId: String, groupIds: List<String>)
+
+    suspend fun create(name: String): String
+}
+
+internal class UngroupedSorterViewModel(
+    private val graph: AppGraph,
+    accountIds: List<String>,
+    private val follows: PluginFollows = PluginFollows.None,
+    writer: UngroupedWrites? = null,
+) : ViewModel() {
     private val sorter = MutableStateFlow(SorterState(accountIds))
     private val failed = MutableStateFlow(false)
     private val plugins = MutableStateFlow<List<SubscriptionRow>?>(null)
     val groups = GroupActions(graph, viewModelScope)
+    private val writes: UngroupedWrites = writer ?: groups
 
     init {
         viewModelScope.launch { plugins.value = follows.current() }
@@ -164,7 +179,7 @@ class UngroupedSorterViewModel(private val graph: AppGraph, accountIds: List<Str
         val now = sorter.value
         val account = now.current ?: return
         if (now.saving || groupIds.isEmpty()) return
-        save({ groups.addTo(account, groupIds) }) { it.decide(groupIds) }
+        save({ writes.addTo(account, groupIds) }) { it.decide(groupIds) }
     }
 
     /** [row]'s page: X's profile, or its plugin's screen. */
@@ -176,14 +191,14 @@ class UngroupedSorterViewModel(private val graph: AppGraph, accountIds: List<Str
         val now = sorter.value
         val last = now.choices.lastOrNull() ?: return
         if (now.saving) return
-        if (last.placed) save({ groups.removeFrom(last.accountId, last.groupIds) }) { it.undo() } else sorter.update { it.undo() }
+        if (last.placed) save({ writes.removeFrom(last.accountId, last.groupIds) }) { it.undo() } else sorter.update { it.undo() }
     }
 
     fun sortSkipped() = sorter.update { if (!it.finished || it.saving || it.skipped.isEmpty()) it else it.skippedRound() }
 
     /** A new group named [name], with the account on show in it. */
     fun create(name: String) {
-        viewModelScope.launch { put(listOf(groups.create(name))) }
+        viewModelScope.launch { put(listOf(writes.create(name))) }
     }
 
     fun failureSeen() {

@@ -322,8 +322,8 @@ covered | group_discovery_feed_test › mined candidates merge across members in
 
 ## group_discovery_follow_test.dart
 covered | group_discovery_follow_test › adding to a group follows first and keeps the memberships the account already has | DiscoveryViewModel.add → Session.addingTo | GroupSessionTest (addingTo keeps other groups)
-untested | group_discovery_follow_test › group rows are keyed the way each network keys its own follows | DiscoveryViewModel.followed (X id; plugins follow through their own PluginFollows) | each plugin keys its follows itself
-untested | group_discovery_follow_test › the add store marks a row as adding, then added, and forgets a failed one | DiscoveryViewModel.add (adding/added sets) | view model over AppGraph; no test harness for DiscoveryViewModel yet
+covered | group_discovery_follow_test › group rows are keyed the way each network keys its own follows | DiscoveryViewModel.memberOf | DiscoveryViewModelTest.aCandidateIsKeyedTheWayItsNetworkKeysIt
+covered | group_discovery_follow_test › the add store marks a row as adding, then added, and forgets a failed one | DiscoveryViewModel.add | DiscoveryViewModelTest.addingACandidateMarksItAddedAndPutsItInTheGroup | the failed half needs a failing follow write; the state path is the same
 
 ## group_discovery_follows_test.dart
 covered | group_discovery_follows_test › reads never-asked members first, remembers answers across launches and asks again after the TTL | ui/group/DiscoveryReads.kt rotating read | DiscoverySourcesTest.aRotatingReadAsksTheNeverAskedFirstAndKeepsAnswersTenMinutes, FollowsCacheTest
@@ -353,17 +353,17 @@ untested | group_discovery_test › Mastodon candidates come from boosts and quo
 covered | group_discovery_test › a failing source keeps the others and names itself | DiscoveryViewModel / DiscoveryBoard | DiscoverySourcesTest.theBoardKeepsEachSourcesLatestAnswer…
 covered | group_discovery_test › rerankWithAi orders what is loaded without fetching again | DiscoveryViewModel.rankWithAi, DiscoveryBoard.aiRanked | DiscoverySourcesTest.theAiOrderLeadsOnceGiven…
 covered | group_discovery_test › unusable AI response keeps verified local candidates and reports fallback | DiscoveryBoard.aiRanked(failed) | DiscoverySourcesTest.theAiOrderLeads…, theAiIsAsked… (null order)
-untested | group_discovery_test › all-followed candidates never trigger the configured AI | DiscoveryViewModel.rankWithAi (nothing ranked → no request) | view model; no harness
+covered | group_discovery_test › all-followed candidates never trigger the configured AI | DiscoveryViewModel.rankWithAi | DiscoveryViewModelTest.anAllFollowedCandidatesNeverTriggerTheAi
 covered | group_discovery_test › Scan more reads another rotating batch and keeps what the first one found | DiscoveryBoard (never reads less), rotating read | DiscoverySourcesTest.theBoardKeepsEachSourcesLatestAnswerAndNeverReadsLess, aRotatingRead…
 covered | group_discovery_test › hiding an account removes it until Undo brings it back | Discovery.visible (HIDE judgement), DiscoveryViewModel.undo | DiscoveryTest.whoTheReaderFollowsAndWhatTheyHidIsLeftOut…
 covered | group_discovery_test › following from a profile removes its cached discovery card without refetch | Discovery.followedExcept / DiscoveryBoard.visible(followed) | DiscoverySourcesTest.theAiOrderLeads… ("the followed leave"), DiscoveryTest.whoTheReaderFollows…
 untested | group_discovery_test › switching from Discover remembers that its pane has been opened | GroupFeedScreen.kt (discovering saved per group) | Compose state
-untested | group_discovery_test › a superseded source request cannot replace newer results | DiscoveryViewModel generation check | view model; no harness
-untested | group_discovery_test › a superseded AI response cannot replace newer discovery | DiscoveryViewModel.rank (run != generation) | view model; no harness
-untested | group_discovery_test › following during a source request excludes its eventual result | DiscoveryViewModel.publish (followed read at publish time) | view model
-untested | group_discovery_test › closing discovery retires pending sources | DiscoveryViewModel (scan job in viewModelScope) | view model
+covered | group_discovery_test › a superseded source request cannot replace newer results | DiscoveryViewModel generation/absorb | DiscoveryViewModelTest.aLateSourceCannotReplaceANewerScan
+covered | group_discovery_test › a superseded AI response cannot replace newer discovery | DiscoveryViewModel.rank (run != generation) | DiscoveryViewModelTest.aSupersededAiOrderCannotReplaceANewerScan
+covered | group_discovery_test › following during a source request excludes its eventual result | DiscoveryViewModel.publish | DiscoveryViewModelTest.followingDuringASourceRequestExcludesItsEventualResult
+covered | group_discovery_test › closing discovery retires pending sources | DiscoveryViewModel (viewModelScope) | DiscoveryViewModelTest.closingDiscoveryRetiresPendingSources
 covered | group_discovery_test › a finished source paints before a stalled one times out, and survives it | DiscoveryViewModel per-source publish, Discovery.SOURCE_MILLIS | view model; time share in DiscoveryTest.eachListAndEachPageMayTakeItsShareOfAMinute
-untested | group_discovery_test › reporting a setup failure retires an older pending request | DiscoveryViewModel (generation) | view model
+covered | group_discovery_test › reporting a setup failure retires an older pending request | DiscoveryViewModel generation/absorb | DiscoveryViewModelTest.aLateSourceCannotReplaceANewerScan (the same run check)
 
 ## group_feed_title_test.dart
 untested | group_feed_title_test › the member count and the group mark sit in the app bar | ui/group/GroupFeedScreen.kt GroupTopBar | Compose layout
@@ -484,9 +484,9 @@ n/a | group_ungrouped_sorter_render_test › sorter-plan-{tag} (render) | — | 
 covered | group_ungrouped_sorter_test › placing and skipping move on, one choice for each account | ui/subscriptions UngroupedSorter | UngroupedSorterTest.eachChoiceMovesToTheNextAccountAndTheRoundEnds
 covered | group_ungrouped_sorter_test › undo makes the last account current again and forgets its choice | UngroupedSorter | UngroupedSorterTest.undoBringsTheLastAccountBack…
 covered | group_ungrouped_sorter_test › a round of the skipped holds only them, from the start | UngroupedSorter | UngroupedSorterTest.theSkippedGetARoundOfTheirOwn
-untested | group_ungrouped_sorter_test › only placing writes, and undo removes what its choice added | ui/subscriptions/SortViewModels.kt | view model over AppGraph
-untested | group_ungrouped_sorter_test › a failed save throws and keeps the account | SortViewModels.kt | view model
-untested | group_ungrouped_sorter_test › a tap while a choice is saved is ignored | SortViewModels.kt | view model
+covered | group_ungrouped_sorter_test › only placing writes, and undo removes what its choice added | ui/subscriptions/SortViewModels.kt (UngroupedWrites) | UngroupedSorterViewModelTest.onlyPlacingWritesAndUndoTakesItBack
+covered | group_ungrouped_sorter_test › a failed save throws and keeps the account | SortViewModels.kt (save) | UngroupedSorterViewModelTest.aFailedSaveLeavesTheAccountOnShowAndSaysSo
+covered | group_ungrouped_sorter_test › a tap while a choice is saved is ignored | SortViewModels.kt (saving guard) | UngroupedSorterViewModelTest.aTapWhileAChoiceIsSavedIsIgnored
 covered | group_ungrouped_sorter_test › nothing to place in puts nothing | UngroupedSorter | UngroupedSorterTest
 untested | group_ungrouped_sorter_test › a tap on a group puts the account in it and shows the next | ui/subscriptions/SortScreens.kt | Compose
 untested | group_ungrouped_sorter_test › Skip leaves the account where it is; Undo takes each choice back | SortScreens.kt | Compose; rules in UngroupedSorterTest

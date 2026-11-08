@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
  * nothing here is sent to X. [scope] is the screen's, and each change is
  * written as soon as it is made.
  */
-class GroupActions(private val graph: AppGraph, private val scope: CoroutineScope) {
+class GroupActions(private val graph: AppGraph, private val scope: CoroutineScope) : UngroupedWrites {
     private fun now() = System.currentTimeMillis()
 
     private fun change(transform: (Session) -> Session) {
@@ -46,7 +46,7 @@ class GroupActions(private val graph: AppGraph, private val scope: CoroutineScop
     fun setInFollowing(groupId: String, shown: Boolean) = change { it.withOffFollowing(groupId, !shown) }
 
     /** A new empty group named [name]; its id. */
-    suspend fun create(name: String): String {
+    override suspend fun create(name: String): String {
         val id = newId()
         graph.sessions.update { GroupEdits.created(it, id, name, now()) }
         return id
@@ -75,9 +75,9 @@ class GroupActions(private val graph: AppGraph, private val scope: CoroutineScop
     }
 
     /** [memberId] in [groupIds] too, as the one-by-one sorter adds them. */
-    suspend fun addTo(memberId: String, groupIds: List<String>) = graph.sessions.update { it.addingTo(memberId, groupIds) }
+    override suspend fun addTo(memberId: String, groupIds: List<String>) = graph.sessions.update { it.addingTo(memberId, groupIds) }
 
-    suspend fun removeFrom(memberId: String, groupIds: List<String>) = graph.sessions.update { it.removingFrom(memberId, groupIds) }
+    override suspend fun removeFrom(memberId: String, groupIds: List<String>) = graph.sessions.update { it.removingFrom(memberId, groupIds) }
 
     /** [user] followed here, as adding someone new to a group follows them first. */
     suspend fun follow(user: XUser) = graph.sessions.update { it.follow(user, now()) }

@@ -68,11 +68,13 @@ enum class DiscoveryNotice { FEEDBACK_SAVED, ADD_FAILED }
  * follows it here (in its plugin, for another network's) and puts it in the
  * group; nothing is sent to any network.
  */
-class DiscoveryViewModel(
+internal class DiscoveryViewModel(
     private val graph: AppGraph,
     private val groupId: String,
     private val plugins: DiscoveryPlugins = DiscoveryPlugins.None,
     private val follows: PluginFollows = PluginFollows.None,
+    private val reads: DiscoveryXReads = graph.client.discoveryXReads(),
+    private val completion: (suspend (AiConfig, String, Long) -> String)? = null,
 ) : ViewModel() {
     private val state = MutableStateFlow(DiscoveryUi())
     val ui: StateFlow<DiscoveryUi> = state.asStateFlow()
@@ -246,10 +248,10 @@ class DiscoveryViewModel(
     }
 
     private suspend fun postsOf(memberId: String): List<XThread> =
-        graph.client.userPosts(memberId, count = Discovery.POSTS_PAGE).threads.also(graph.posts::remember)
+        reads.posts(memberId).also(graph.posts::remember)
 
     private suspend fun followingOf(memberId: String): List<KnownFollow> {
-        val users = graph.client.following(memberId, null, Discovery.FOLLOWS_PAGE).users
+        val users = reads.following(memberId)
         users.forEach(graph.posts::remember)
         return KnownFollows.of(users)
     }
@@ -295,7 +297,10 @@ class DiscoveryViewModel(
         state.update { it.copy(scanning = true) }
         publish()
         val order = try {
-            DiscoveryAi.order(ai.complete(config, DiscoveryAi.prompt(groupName(session()), candidates), timeoutMillis = DiscoveryAi.TIMEOUT_MILLIS), candidates)
+            val prompt = DiscoveryAi.prompt(groupName(session()), candidates)
+            val reply = completion?.invoke(config, prompt, DiscoveryAi.TIMEOUT_MILLIS)
+                ?: ai.complete(config, prompt, timeoutMillis = DiscoveryAi.TIMEOUT_MILLIS)
+            DiscoveryAi.order(reply, candidates)
         } catch (error: CancellationException) {
             throw error
         } catch (_: Throwable) {
