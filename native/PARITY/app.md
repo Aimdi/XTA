@@ -1024,15 +1024,15 @@ covered | endpoints_test › the published endpoints.json parses and names only 
 covered | endpoints_test › the published endpoints.json names the ids this build ships | PublishedDocumentTest
 
 ## test/interleaved_items_test.dart
-untested | interleaved_items_test › takes the newest post in the chain, not the first | core/feed Interleaved | no separate test
-untested | interleaved_items_test › a chain with no dates has none | core/feed Interleaved | no separate test
-untested | interleaved_items_test › an item newer than everything goes above the first chain | core/feed Interleaved | no separate test
-untested | interleaved_items_test › an item lands directly above the first chain older than it | core/feed Interleaved | no separate test
-untested | interleaved_items_test › an item older than every loaded chain waits at the end | core/feed Interleaved | no separate test
-untested | interleaved_items_test › several items keep newest-first order within a bucket | core/feed Interleaved | no separate test
-untested | interleaved_items_test › a chain with no date is passed over rather than guessed at | core/feed Interleaved | no separate test
-untested | interleaved_items_test › no items means empty buckets, one per chain plus the tail | core/feed Interleaved | no separate test
-untested | interleaved_items_test › items with no chains at all still come back | core/feed Interleaved | no separate test
+covered | interleaved_items_test › takes the newest post in the chain, not the first | ui/feed FeedMix.timeOf | FeedMixTest.takesTheNewestPostInTheChainNotTheFirst
+covered | interleaved_items_test › a chain with no dates has none | FeedMix.timeOf | FeedMixTest.aChainWithNoDatesHasNone
+covered | interleaved_items_test › an item newer than everything goes above the first chain | FeedMix.place | FeedMixTest.anItemNewerThanEverythingGoesAboveTheFirstChain
+covered | interleaved_items_test › an item lands directly above the first chain older than it | FeedMix.place | FeedMixTest.anItemLandsDirectlyAboveTheFirstChainOlderThanIt
+covered | interleaved_items_test › an item older than every loaded chain waits at the end | FeedMix.place | FeedMixTest.anItemOlderThanEveryLoadedChainWaitsAtTheEnd
+covered | interleaved_items_test › several items keep newest-first order within a bucket | FeedMix.place | FeedMixTest.severalItemsKeepNewestFirstWithinABucket
+covered | interleaved_items_test › a chain with no date is passed over rather than guessed at | FeedMix.place | FeedMixTest.aChainWithNoDateIsPassedOverRatherThanGuessedAt
+covered | interleaved_items_test › no items means empty buckets, one per chain plus the tail | FeedMix.place | FeedMixTest.noItemsMeansEmptyBucketsOnePerChainPlusTheTail
+covered | interleaved_items_test › items with no chains at all still come back | FeedMix.place | FeedMixTest.itemsWithNoChainsAtAllStillComeBack
 covered | interleaved_items_test › a group of nothing but plugin members shows only those posts | GroupFeedTest (plugin-only group)
 covered | interleaved_items_test › one X post is enough to use the paged list | GroupFeedTest
 covered | interleaved_items_test › an empty feed is not a plugin-only one | GroupFeedTest

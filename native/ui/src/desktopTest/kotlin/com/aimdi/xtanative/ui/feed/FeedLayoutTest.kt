@@ -27,6 +27,9 @@ class FeedLayoutTest {
 
     private fun boost(id: String, at: Long, vararg links: String) = XThread(id, listOf(post(id, at).copy(reposted = post("o$id", at, *links))))
 
+    private fun sourced(source: String, id: String, at: Long) =
+        SourcedPost(source, NetworkPost(id, "a", "A", "a", createdAt = Instant.ofEpochSecond(at)))
+
     @Test
     fun anArticleIsOneKeyForEveryWayOfWritingIt() {
         assertEquals(

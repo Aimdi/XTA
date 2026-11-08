@@ -3,90 +3,83 @@ package com.aimdi.xtanative.ui.feed
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.core.x.model.XUser
-import com.aimdi.xtanative.ui.plugins.FeedKinds
 import com.aimdi.xtanative.ui.plugins.NetworkPost
 import java.time.Instant
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import kotlin.test.assertNull
 
-internal fun xThread(id: String, at: Long?): XThread {
-    val author = XUser(id = "1", screenName = "someone", name = "Some One")
-    return XThread(id, listOf(XPost(id = id, author = author, text = "", createdAt = at?.let(Instant::ofEpochSecond))))
-}
-
-internal fun sourced(source: String, id: String, at: Long?): SourcedPost =
-    SourcedPost(source, NetworkPost(id, "a", "A", "a", createdAt = at?.let(Instant::ofEpochSecond)))
-
+/** XTA's placeInterleaved: where another network's posts sit among X's chains, by time. */
 class FeedMixTest {
+    private fun at(millis: Long?) = millis?.let(Instant::ofEpochMilli)
+
+    private fun post(id: String, millis: Long?) =
+        SourcedPost("booru", NetworkPost(id, "a", "A", "a", createdAt = at(millis)))
+
+    private fun thread(id: String, vararg millis: Long?) =
+        XThread(id, millis.mapIndexed { i, m -> XPost("$id-$i", XUser("u", "a", "A"), at(m), "text") })
+
     @Test
-    fun aPluginPostGoesAboveTheFirstThreadOlderThanIt() {
-        val threads = listOf(xThread("3", 300), xThread("2", 200), xThread("1", 100))
-        val buckets = FeedMix.place(threads, listOf(sourced("bluesky", "b", 250), sourced("reddit", "r", 400), sourced("bluesky", "c", 150)))
-        assertEquals(listOf("r"), buckets[0].map { it.post.id })
-        assertEquals(listOf("b"), buckets[1].map { it.post.id })
-        assertEquals(listOf("c"), buckets[2].map { it.post.id })
-        assertTrue(buckets[3].isEmpty())
+    fun takesTheNewestPostInTheChainNotTheFirst() {
+        val chain = XThread(
+            "t",
+            listOf(
+                XPost("1", XUser("u", "a", "A"), at(5L), "first"),
+                XPost("2", XUser("u", "a", "A"), at(9L), "newest"),
+            ),
+        )
+        assertEquals(9L, FeedMix.timeOf(chain))
     }
 
     @Test
-    fun postsOlderThanEveryThreadRideAtTheEndUntilPagingReachesThem() {
-        val threads = listOf(xThread("2", 200), xThread("1", 100))
-        val buckets = FeedMix.place(threads, listOf(sourced("bluesky", "old", 50), sourced("bluesky", "older", 10)))
-        assertEquals(listOf("old", "older"), buckets.last().map { it.post.id }, "newest first")
-        assertEquals(emptyList<SourcedPost>() to listOf("old", "older"), FeedMix.around(buckets, 1).let { it.first to it.second.map { p -> p.post.id } })
-        assertTrue(FeedMix.around(buckets, 0).second.isEmpty(), "only the last thread carries them")
+    fun aChainWithNoDatesHasNone() {
+        assertNull(FeedMix.timeOf(thread("t", null, null)))
     }
 
     @Test
-    fun aThreadWithoutATimeIsPassedOverAndATieGoesBelow() {
-        val threads = listOf(xThread("9", null), xThread("2", 200))
-        val buckets = FeedMix.place(threads, listOf(sourced("bluesky", "same", 200), sourced("bluesky", "newer", 201)))
-        assertTrue(buckets[0].isEmpty(), "nothing to compare with")
-        assertEquals(listOf("newer"), buckets[1].map { it.post.id })
-        assertEquals(listOf("same"), buckets[2].map { it.post.id }, "not newer than the thread: after it")
+    fun anItemNewerThanEverythingGoesAboveTheFirstChain() {
+        val buckets = FeedMix.place(listOf(thread("a", 10L), thread("b", 5L)), listOf(post("p", 20L)))
+        assertEquals(listOf("p"), buckets[0].map { it.post.id })
+        assertEquals(3, buckets.size)
     }
 
     @Test
-    fun aThreadSitsAtItsNewestPost() {
-        val author = XUser(id = "1", screenName = "someone", name = "Some One")
-        val posts = listOf(100L, 300L).mapIndexed { i, at -> XPost(id = "p$i", author = author, createdAt = Instant.ofEpochSecond(at), text = "") }
-        val thread = XThread("t", posts)
-        assertEquals(300_000L, FeedMix.timeOf(thread))
-        assertEquals(null, FeedMix.timeOf(xThread("x", null)))
+    fun anItemLandsDirectlyAboveTheFirstChainOlderThanIt() {
+        val buckets = FeedMix.place(listOf(thread("a", 10L), thread("b", 5L)), listOf(post("p", 7L)))
+        assertEquals(listOf("p"), buckets[1].map { it.post.id })
+        assertEquals(0, buckets[0].size)
     }
 
     @Test
-    fun withNoThreadsEverythingIsInTheLastBucket() {
-        val buckets = FeedMix.place(emptyList(), listOf(sourced("bluesky", "a", 1)))
+    fun anItemOlderThanEveryLoadedChainWaitsAtTheEnd() {
+        val buckets = FeedMix.place(listOf(thread("a", 10L), thread("b", 5L)), listOf(post("p", 1L)))
+        assertEquals(listOf("p"), buckets.last().map { it.post.id })
+    }
+
+    @Test
+    fun severalItemsKeepNewestFirstWithinABucket() {
+        val buckets = FeedMix.place(listOf(thread("a", 5L)), listOf(post("old", 6L), post("new", 9L)))
+        assertEquals(listOf("new", "old"), buckets[0].map { it.post.id })
+    }
+
+    @Test
+    fun aChainWithNoDateIsPassedOverRatherThanGuessedAt() {
+        val buckets = FeedMix.place(listOf(thread("undated", null), thread("dated", 5L)), listOf(post("p", 9L)))
+        assertEquals(0, buckets[0].size, "the undated chain takes nothing")
+        assertEquals(listOf("p"), buckets[1].map { it.post.id })
+    }
+
+    @Test
+    fun noItemsMeansEmptyBucketsOnePerChainPlusTheTail() {
+        val buckets = FeedMix.place(listOf(thread("a", 10L), thread("b", 5L)), emptyList())
+        assertEquals(3, buckets.size)
+        assertEquals(0, buckets.sumOf { it.size })
+    }
+
+    @Test
+    fun itemsWithNoChainsAtAllStillComeBack() {
+        val buckets = FeedMix.place(emptyList(), listOf(post("a", 1L), post("b", 2L)))
         assertEquals(1, buckets.size)
-        assertEquals(listOf("a"), buckets.single().map { it.post.id })
-    }
-
-    @Test
-    fun theHomeTimelinesAskTheFollowedAccountsOfPluginsSwitchedOnAndGroupsTheirMembers() {
-        val kinds = FeedKinds(replies = false, reposts = true)
-        val home = FeedSources.asks(setOf("reddit", "bluesky"), emptyMap(), home = true, inHome = { it == "bluesky" }, kinds = kinds)
-        assertEquals(mapOf("bluesky" to SourceAsk(followed = true, kinds = kinds)), home)
-        val group = FeedSources.asks(setOf("reddit", "bluesky"), mapOf("reddit" to listOf("kotlin")), home = false, inHome = { true }, kinds = kinds)
-        assertEquals(mapOf("reddit" to SourceAsk(listOf("kotlin"), followed = false, kinds = kinds)), group, "a group reads its members, not the switch")
-        val gone = FeedSources.asks(emptySet(), mapOf("reddit" to listOf("kotlin")), home = false, inHome = { true }, kinds = kinds)
-        assertTrue(gone.isEmpty(), "a plugin that is not running is asked nothing")
-    }
-
-    @Test
-    fun anAccountBothAMemberAndFollowedIsAskedOnce() {
-        val ask = SourceAsk(listOf("alice", "bob"), followed = true)
-        assertEquals(listOf("alice", "bob", "carol"), ask.accounts(listOf("bob", "carol")))
-        assertEquals(listOf("alice"), SourceAsk(listOf("alice")).accounts(listOf("bob")), "not followed: the members alone")
-    }
-
-    @Test
-    fun aRepostFollowsTheRepostSettingAndAReplyTheReplySetting() {
-        val noReplies = FeedKinds(replies = false, reposts = true)
-        assertTrue(noReplies.takes(isReply = true, isRepost = true), "a repost of a reply is a repost")
-        assertEquals(false, noReplies.takes(isReply = true, isRepost = false))
-        assertEquals(false, FeedKinds(replies = true, reposts = false).takes(isReply = false, isRepost = true))
-        assertTrue(FeedKinds.ALL.takes(isReply = true, isRepost = false))
+        assertEquals(listOf("b", "a"), buckets[0].map { it.post.id })
     }
 }
