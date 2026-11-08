@@ -637,3 +637,88 @@ untested | video_quality_continuity_test › stalled native seek fails promptly 
 untested | video_quality_continuity_test › stalled native open fails promptly and disposal waits for its late completion | ui/media (player) | no pure rule
 untested | video_quality_continuity_test › latest choice unblocks when an uncancellable open is still stalled | ui/media (player) | no pure rule
 covered | video_quality_continuity_test › latest choice cannot receive the seek of an abandoned earlier source | MpvVideoRulesTest.aFailedChangeOfQualityGoesBackToTheVariantBefore
+
+## test/profile_count_roll_test.dart
+untested | profile_count_roll_test › a count is plain text until X's copy changes it, then rolls to the new number | Compose (count roll) | Compose only
+untested | profile_count_roll_test › a rolling count is read as one line with its label | Compose semantics | Compose only
+
+## test/profile_design_primitives_test.dart
+untested | profile_design_primitives_test › ${entry.key} missing profile media uses tonal fallbacks | Compose (profile parts) | Compose only
+untested | profile_design_primitives_test › profile count link meets the interaction minimum | Compose (profile parts) | Compose only
+untested | profile_design_primitives_test › profile counts stay side by side and remain tappable | Compose (profile parts) | Compose only
+untested | profile_design_primitives_test › avatar bottom, actions and wrapped counts have separate targets at 320px | Compose (profile parts) | Compose only
+untested | profile_design_primitives_test › profile actions stay flat in one row and remain tappable | Compose (profile parts) | Compose only
+untested | profile_design_primitives_test › profile tabs use one pinned-height selection surface | Compose (profile tabs) | Compose only
+untested | profile_design_primitives_test › profile identity wraps on a narrow large-text screen | Compose (profile header) | Compose only
+untested | profile_design_primitives_test › profile filter shows every choice as an icon and marks the selected one without color alone | Compose (profile filter) | Compose only
+untested | profile_design_primitives_test › flat profile tabs share the width and mark the selected name | Compose (profile tabs) | Compose only
+
+## test/profile_flat_test.dart
+covered | profile_flat_test › groups a count the language writes out, and abbreviates as before | PluralsTest; StockNumbersTest | the same number writing
+untested | profile_flat_test › a blank line is a third of a line, scaled with the text | Compose (bio) | Compose only
+untested | profile_flat_test › keeps the text, so a copy still holds the blank lines | Compose (bio) | Compose only
+untested | profile_flat_test › says Subscribed with a check, and opens the same menu | Compose (profile actions) | Compose only
+untested | profile_flat_test › says Subscribe in the accent when not subscribed | Compose (profile actions) | Compose only
+untested | profile_flat_test › shows an eye-off icon for an account hidden from the main feed | Compose (profile header) | Compose only
+untested | profile_flat_test › drops its label at 320 dp with text ×2 and keeps its tooltip | Compose (profile actions) | Compose only
+untested | profile_flat_test › draws no ring around settings and follow | Compose (profile actions) | Compose only
+untested | profile_flat_test › sets the bio's blank lines tight | Compose (bio) | Compose only
+untested | profile_flat_test › puts the link and the join date on one row | Compose (profile header) | Compose only
+covered | profile_flat_test › writes German counts in full and the date without Twitter | PluralsTest; TimesTest
+covered | profile_flat_test › says when the account joined, with the date, in every language | TimesTest
+untested | profile_flat_test › lays the note across the width between hairlines | Compose (profile note) | Compose only
+covered | profile_flat_test › tabs are names that share the width, the second says Replies, and filters are named icons | ProfileRulesTest.aProfileOpensOnTheTabTheReaderChoseInXtasOrder
+untested | profile_flat_test › scroll from the start when the names do not fit | Compose (profile tabs) | Compose only
+
+## test/profile_followed_by_test.dart
+covered | profile_followed_by_test › orders by how recently each followed, then subscription order | ProfileRulesTest.followedByNamesWhoFollowsMostRecentFirstFromTheListsAlreadyRead
+covered | profile_followed_by_test › counts unread subscriptions as unchecked, not as non-followers | ProfileRulesTest.followedByNamesWhoFollowsMostRecentFirstFromTheListsAlreadyRead
+covered | profile_followed_by_test › ignores former subscriptions, other networks and the profile | ProfileRulesTest.followedByNamesWhoFollowsMostRecentFirstFromTheListsAlreadyRead
+covered | profile_followed_by_test › nothing remembered means nothing to show | ProfileRulesTest.followedByNamesWhoFollowsMostRecentFirstFromTheListsAlreadyRead
+covered | profile_followed_by_test › names up to three, then two and a count | ProfileRulesTest.followedByNamesWhoFollowsMostRecentFirstFromTheListsAlreadyRead
+covered | profile_followed_by_test › keep a month of reads across launches, without asking X | ProfileRulesTest.followedByNamesWhoFollowsMostRecentFirstFromTheListsAlreadyRead
+covered | profile_followed_by_test › a stale read still asks X again for Discover | ProfileRulesTest.followedByNamesWhoFollowsMostRecentFirstFromTheListsAlreadyRead
+covered | profile_followed_by_test › the store answers from what is remembered | ProfileRulesTest.followedByNamesWhoFollowsMostRecentFirstFromTheListsAlreadyRead
+
+## test/profile_load_failure_test.dart
+covered | profile_load_failure_test › an account that does not exist says so instead of offering a retry | ProfileRulesTest.whatXSaidOfAProfileIsThePageAndAnythingElseIsRetried
+covered | profile_load_failure_test › a suspended or private account says which | ProfileRulesTest.whatXSaidOfAProfileIsThePageAndAnythingElseIsRetried
+covered | profile_load_failure_test › a failure X did not explain can be retried | ProfileRulesTest.whatXSaidOfAProfileIsThePageAndAnythingElseIsRetried
+covered | profile_load_failure_test › the failure details give X's own answer | ProfileRulesTest.whatXSaidOfAProfileIsThePageAndAnythingElseIsRetried
+
+## test/profile_loading_recovery_test.dart
+untested | profile_loading_recovery_test › stalled profile cache does not prevent the network load | ui/profile ProfileViewModel | no view-model test harness
+untested | profile_loading_recovery_test › timed out profile recovers and ignores the old response | ProfileViewModel | no view-model test harness
+untested | profile_loading_recovery_test › closing a stalled profile permits another profile to load | ProfileViewModel | no view-model test harness
+untested | profile_loading_recovery_test › stalled cache open and write cannot hold successful posts | ProfileViewModel | no view-model test harness
+untested | profile_loading_recovery_test › a stalled stale-cache read preserves the original network error | ProfileViewModel | no view-model test harness
+untested | profile_loading_recovery_test › cached page remains available when the network fails | ProfileViewModel | no view-model test harness
+
+## test/profile_note_test.dart
+untested | profile_note_test › the empty row asks for a note in full German and stays one flat line | Compose (profile note) | Compose only
+untested | profile_note_test › a saved note replaces the label on the row | Compose (profile note) | Compose only
+untested | profile_note_test › tapping the row opens a sheet that actually saves | ui/profile ProfileParts, store profile notes | the sheet is Compose-only; the store is shared with Saved's note editor
+untested | profile_note_test › clearing the sheet deletes the note and restores the label | Compose (profile note) | Compose only
+
+## test/profile_posts_recovery_test.dart
+covered | profile_posts_recovery_test › a failed first page of posts recovers on its own | ReadRetriesTest
+covered | profile_posts_recovery_test › a posts tab that needs sign-in keeps the manual notice | ProfileRulesTest.aProtectedAccountsPostsAreGatedUnlessItFollowsOrIsTheReadersOwn
+covered | profile_posts_recovery_test › a failed next page recovers on its own below the loaded posts | ReadRetriesTest
+
+## test/profile_reposts_test.dart
+covered | profile_reposts_test › Retweets reads the reposts timeline, not the posts one | ProfileRulesTest.thePostsFilterTellsRepostsFromPostsAndAQuoteIsAPost
+covered | profile_reposts_test › All shows posts and reposts, newest first | ProfileRulesTest.thePostsFilterTellsRepostsFromPostsAndAQuoteIsAPost
+covered | profile_reposts_test › Posts leaves reposts out | ProfileRulesTest.thePostsFilterTellsRepostsFromPostsAndAQuoteIsAPost
+
+## test/profile_top_bar_test.dart
+untested | profile_top_bar_test › with the header in view the bar holds no title and no banner | Compose (profile top bar) | Compose only
+untested | profile_top_bar_test › scrolled, the name rises in over the blurred banner, in white | Compose (profile top bar) | Compose only
+untested | profile_top_bar_test › the actions stay light while the bar turns, never the theme's grey | Compose (profile top bar) | Compose only
+untested | profile_top_bar_test › scrolling back to the top clears the bar again | Compose (profile top bar) | Compose only
+untested | profile_top_bar_test › without a banner the bar keeps its colour and only the title rises in | Compose (profile top bar) | Compose only
+untested | profile_top_bar_test › with reduced motion the bar changes at once | Compose (profile top bar) | Compose only
+untested | profile_top_bar_test › the scrim keeps white text readable over a white banner | Compose (profile top bar) | Compose only
+
+## test/profile_view_store_test.dart
+covered | profile_view_store_test › profile filters update independently | ProfileRulesTest.thePostsFilterTellsRepostsFromPostsAndAQuoteIsAPost
+untested | profile_view_store_test › back-to-top state only reflects the latest threshold result | ProfileViewModel | no view-model test harness
