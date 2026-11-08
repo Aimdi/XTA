@@ -821,3 +821,138 @@ untested | offline_voices_section_test › deleting the engine asks first and sa
 covered | offline_voices_section_test › a voice and the engine already on the device show as such when the settings open | VoicesTest
 covered | offline_voices_section_test › where no engine is published, nothing can be downloaded | VoicesTest
 untested | offline_voices_section_test › the engine row fits 320 dp at large text | Compose (voice settings) | Compose only
+
+## test/reader_feed_test.dart
+covered | reader_feed_test › article identity removes tracking but preserves article parameters | XLinksTest (tracking removal)
+covered | reader_feed_test › one source completes while another waits, fails, and retries independently | BatchReadTest.aBatchThatAnsweredShowsBeforeASlowerOneFinishes, aRetryReadsOnlyTheBatchesThatFailed
+untested | reader_feed_test › new posts are held until requested while reading away from the top | Compose (reader) | Compose only
+covered | reader_feed_test › obsolete source requests cannot replace a newly selected group | BatchReadTest.aCancelledLoadNeitherShowsNorStartsWhatWasQueued
+covered | reader_feed_test › rebuilding an unchanged feed does not restart or cancel pending sources | BatchReadTest; FeedSessionCacheTest
+covered | reader_feed_test › changed members and explicit refresh still reload plugin sources | BatchReadTest
+covered | reader_feed_test › snapshots survive new store instances and damaged rows are ignored | store/offline TimelineCacheTest
+covered | reader_feed_test › queued writes and deletion do not resurrect discarded state | store kept-tests
+
+## test/reader_link_stack_layout_test.dart
+untested | reader_link_stack_layout_test › a link stack eases open and closed | Compose (reader link stack) | Compose only
+untested | reader_link_stack_layout_test › link stack preserves each commentary, dark=$dark scale=$scale | Compose (reader link stack) | Compose only
+
+## test/reader_recovery_controls_test.dart
+covered | reader_recovery_controls_test › network proceeds when cache stalls or throws | BatchReadTest
+covered | reader_recovery_controls_test › deadline covers cache time and cancelled cache cannot publish or start network | BatchReadTest
+covered | reader_recovery_controls_test › concurrent retries coalesce and status changes reuse the sorted list | ReadRetriesTest
+covered | reader_recovery_controls_test › late network result cannot replace a successful manual retry | BatchReadTest
+untested | reader_recovery_controls_test › prefix index discovers existing rows and does not await an unrelated write | store index | no separate test
+untested | reader_recovery_controls_test › coalesced cache trimming preserves newest rows and unrelated data | store cache | no separate test
+
+## test/reader_reliability_test.dart
+covered | reader_reliability_test › completed batch is published before a slower batch finishes | BatchReadTest.aBatchThatAnsweredShowsBeforeASlowerOneFinishes
+covered | reader_reliability_test › selective retry does not refetch successful batches | BatchReadTest.aRetryReadsOnlyTheBatchesThatFailed
+covered | reader_reliability_test › abandoned batch cannot publish or start queued work | BatchReadTest.aCancelledLoadNeitherShowsNorStartsWhatWasQueued
+covered | reader_reliability_test › timed out batch releases its slot and ignores late completion | BatchReadTest.aBatchPastItsTimeFailsAndALateAnswerChangesNothing
+covered | reader_reliability_test › overall deadline retains successes and retries only unfinished batches | BatchReadTest.theLoadsDeadlineKeepsWhatAnsweredAndARetryReadsOnlyWhatDidNot
+covered | reader_reliability_test › read cancellation prevents subsequent fanout after late completion | BatchReadTest.aCancelledLoadNeitherShowsNorStartsWhatWasQueued
+covered | reader_reliability_test › recovery excludes failures that need the reader and coalesces repeated signals | ReadRetriesTest
+untested | reader_reliability_test › diagnostic timings are bounded and do not retain exception messages | ui/settings diagnostics | no separate test
+covered | reader_reliability_test › a failed read says why by category, and a cancelled or slow one says nothing more | ReadRetriesTest; ProblemLookTest
+
+## test/reader_tab_gestures_test.dart
+covered | reader_tab_gestures_test › reader tabs switch only on release and preserve reading position | TabSwipesTest.aSwipeTurnsOneTabWhenItGoesFarOrFastEnough
+untested | reader_tab_gestures_test › cancellation and a second pointer in the header do not change tabs | Compose (tabs) | Compose only
+covered | reader_tab_gestures_test › rapid swipes do not duplicate an unfinished tab change | TabSwipesTest.aSwipeThatTurnsBackLeavesTheTabs
+covered | reader_tab_gestures_test › RTL and reduced motion retain navigation and visible alternatives | TabSwipesTest; MotionTest
+untested | reader_tab_gestures_test › a nested carousel keeps its boundary gestures | Compose (tabs) | Compose only
+untested | reader_tab_gestures_test › changing reduced motion during navigation preserves the selected page | Compose (tabs) | Compose only
+untested | reader_tab_gestures_test › pinch zoom belongs to the image viewer | Compose (viewer) | Compose only
+
+## test/settings_ai_test.dart
+covered | settings_ai_test › the Grok chip fills the xAI server and model | SettingsLogicTest.aPresetFromAnotherProviderClearsTheKeyAndTakesItsModel
+covered | settings_ai_test › OpenRouter saves a custom model ID and restores it | SettingsTest (AiPrefs); SettingsLogicTest
+covered | settings_ai_test › switching provider clears the previous provider key and model | SettingsLogicTest.aPresetFromAnotherProviderClearsTheKeyAndTakesItsModel
+
+## test/settings_backup_test.dart
+covered | settings_backup_test › carries every section the backup covers | BackupTest; BackupRoundTripTest
+covered | settings_backup_test › says which format wrote it, from which build and when | BackupTest.aFileIsABackupXtaCanRestoreOrSaysWhyNot
+covered | settings_backup_test › accepts what it knows and refuses what came after it | BackupTest.aFileIsABackupXtaCanRestoreOrSaysWhyNot
+covered | settings_backup_test › reads a file without a header as the version before the header | BackupTest
+covered | settings_backup_test › imports the sections it does have | BackupTest.aSectionTheFileDoesNotCarryChangesNothing
+covered | settings_backup_test › restores nothing for the sections it never had | BackupTest.aSectionTheFileDoesNotCarryChangesNothing
+covered | settings_backup_test › writes each section to its own table | BackupTest.onlyTheChosenSectionsAreWrittenAndNotesAlwaysAre
+covered | settings_backup_test › never carries a cache | BackupTest.onlyTheChosenSectionsAreWrittenAndNotesAlwaysAre
+covered | settings_backup_test › leaves reading positions out unless they were asked for | BackupTest.readingPositionsGoToTheFeedsThisDeviceHas
+covered | settings_backup_test › adds up the sections behind one category | BackupTest
+covered | settings_backup_test › is empty when there is nothing to restore | BackupTest
+
+## test/settings_design_primitives_test.dart
+covered | settings_design_primitives_test › export selection enforces group-member dependencies | BackupTest.groupsGoOutWithWhatTheirRowsCarried
+untested | settings_design_primitives_test › settings rows retain the established touch target | Compose (settings) | Compose only
+covered | settings_design_primitives_test › preference selector exposes and persists selected state | SettingsTest
+untested | settings_design_primitives_test › theme screen keeps visual selectors and legacy OLED controls | Compose (theme settings) | Compose only
+
+## test/settings_direct_access_test.dart
+untested | settings_direct_access_test › search opens and highlights autoplay below the fold, and the toggle works | Compose (settings search) | Compose only
+covered | settings_direct_access_test › translated control index includes reading position and text size | SettingsLogicTest.sectionsMatchTheirTitleOrDescription
+untested | settings_direct_access_test › installed Mastodon has separate client and settings actions | Compose (plugin settings) | Compose only
+
+## test/settings_hub_test.dart
+untested | settings_hub_test › the hub shows everyday tiles and a collapsed Advanced fold | Compose (settings hub) | Compose only
+untested | settings_hub_test › search flattens Advanced so Diagnostics is findable | Compose (settings hub) | Compose only
+covered | settings_hub_test › search matches a short hint, not the old pref-name dump | SettingsLogicTest.sectionsMatchTheirTitleOrDescription
+covered | settings_hub_test › search finds read-aloud by Sherpa | SettingsLogicTest.everyWordMustBeFoundAndATitleStartingWithTheFirstComesFirst
+untested | settings_hub_test › Data is one tile that opens import, export, and sync | Compose (settings hub) | Compose only
+untested | settings_hub_test › expanding Advanced reveals AI and Diagnostics | Compose (settings hub) | Compose only
+
+## test/home_account_filter_test.dart
+covered | home_account_filter_test › homeFeedDisabledIdsFromPrefs reads JSON string lists | HomeFilterTest.theDraftTogglesOnlyAndResets
+covered | home_account_filter_test › enabledHomeAccounts falls back when every account is disabled | HomeFilterTest.allAccountsOffCannotBeApplied
+covered | home_account_filter_test › mergeHomeTimelineChains dedupes and sorts newest first | ForYouRulesTest (merge)
+covered | home_account_filter_test › dropChainsFromAuthors removes posts by turned-off logins | ForYouRulesTest (authors)
+covered | home_account_filter_test › home timeline cursors round-trip as JSON | store/offline TimelineCacheTest
+covered | home_account_filter_test › canDisableHomeAccount keeps at least one account on | HomeFilterTest.allAccountsOffCannotBeApplied
+covered | home_account_filter_test › setEnabled refuses to turn off the last account | HomeFilterTest.allAccountsOffCannotBeApplied
+covered | home_account_filter_test › homeFollowingCacheKey matches the home tab cache | TimelineCacheTest
+covered | home_account_filter_test › enabled accounts are the ones fetch should prefer | ForYouRulesTest
+covered | home_account_filter_test › toggling evicts Following cache without a parent FeedRefreshController | TimelineCacheTest
+covered | home_account_filter_test › the last account on cannot be switched off | HomeFilterTest.allAccountsOffCannotBeApplied
+covered | home_account_filter_test › a spare account can be excluded from Following and For you | HomeFilterTest.theFilterIsKeptInTheSettingsAndTheSession
+
+## test/home_navigation_test.dart
+untested | home_navigation_test › a tab enabled after the start gets a focus node | Compose (Home tabs) | Compose only
+untested | home_navigation_test › tapping a tab fades its page in | Compose (Home tabs) | Compose only
+untested | home_navigation_test › a tab enabled after the start is highlighted when tapped | Compose (Home tabs) | Compose only
+untested | home_navigation_test › Discover enabled after the start searches the network it was reached from | Compose (Discover) | Compose only
+untested | home_navigation_test › a tab disabled after the start drops its focus node | Compose (Home tabs) | Compose only
+
+## test/home_timeline_nested_scroll_test.dart
+untested | home_timeline_nested_scroll_test › the loading skeleton is the only inner scrollable | Compose (nested scroll) | Compose only
+untested | home_timeline_nested_scroll_test › a nested skeleton does not steal the inner controller from the list | Compose (nested scroll) | Compose only
+untested | home_timeline_nested_scroll_test › cached Following preview does not attach the outer | Compose (nested scroll) | Compose only
+untested | home_timeline_nested_scroll_test › empty Following is a pullable inner list, not a Center | Compose (nested scroll) | Compose only
+covered | home_timeline_nested_scroll_test › jumps immediately when motion is disabled | MotionTest.withMotionDisabledAListJumpsToItsTopAtOnce
+untested | home_timeline_nested_scroll_test › does not animate when NestedScrollView has two positions | Compose (nested scroll) | Compose only
+
+## test/home_timeline_picker_test.dart
+untested | home_timeline_picker_test › Source picker reaches many long names and keeps Add visible (large RTL $large) | Compose (source picker) | Compose only
+
+## test/subscriptions_header_test.dart
+untested | subscriptions_header_test › keeps the icons while they fit, then the names, then takes two rows | Compose (subscriptions header) | Compose only
+untested | subscriptions_header_test › one row holds the switch, search, add and options in ${locale.languageCode} | Compose (subscriptions header) | Compose only
+untested | subscriptions_header_test › drops the tab icons before it gives up the row | Compose (subscriptions header) | Compose only
+untested | subscriptions_header_test › a narrow screen with large text falls back to two rows | Compose (subscriptions header) | Compose only
+untested | subscriptions_header_test › keeps Back when the X reader opens the screen | Compose (subscriptions header) | Compose only
+covered | subscriptions_header_test › filters the groups and closes on Back | SubscriptionListTest.aSearchFindsTheNameOrTheHandle
+covered | subscriptions_header_test › filters the people by name and handle | SubscriptionListTest.aSearchFindsTheNameOrTheHandle
+
+## test/subscriptions_list_test.dart
+covered | subscriptions_list_test › a subscription can be dragged to a new place | SubscriptionListTest.aDraggedRowLandsWhereItWasDropped
+untested | subscriptions_list_test › saving a change keeps the list where the reader had it, with no spinner | Compose (subscriptions list) | Compose only
+untested | subscriptions_list_test › a first load shows the spinner until there is a list | Compose (subscriptions list) | Compose only
+
+## test/subscriptions_menu_sheet_test.dart
+untested | subscriptions_menu_sheet_test › groups sheet shows the board, not a wall of unlabeled rows | Compose (menu sheet) | Compose only
+untested | subscriptions_menu_sheet_test › list layout hides the column picker | Compose (menu sheet) | Compose only
+untested | subscriptions_menu_sheet_test › people sheet has no board, columns, or deck | Compose (menu sheet) | Compose only
+covered | subscriptions_menu_sheet_test › picking list layout updates the pref and hides columns | SettingsTest (subscriptions layout)
+covered | subscriptions_menu_sheet_test › Kompakt is a third column choice, and 2 or 3 turn it off | SettingsTest (column choices)
+
+## test/subscriptions_render_test.dart
+untested | subscriptions_render_test › (render sweeps) | Compose (subscriptions) | golden/layout sweep
