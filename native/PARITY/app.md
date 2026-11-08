@@ -1387,3 +1387,210 @@ untested | feed_list_rebuild_test › a refresh that brings new copies of the po
 untested | feed_reset_reload_test › a feed whose paging controller is reset loads its first page again | Compose (feed controller) | Compose only
 untested | feed_reset_reload_test › a first page that was only cancelled is not started again | Compose (feed controller) | Compose only
 untested | feed_reset_reload_test › a media grid pulled to refresh loads its first page again | Compose (feed controller) | Compose only
+
+## test/shared_links_test.dart
+covered | shared_links_test › extracts X links from captions and surrounding punctuation | SharedLinksTest
+covered | shared_links_test › rejects unsupported shares, deceptive hosts and non-web URLs | SharedLinksTest
+covered | shared_links_test › resolves a shortened X link without automatic redirects | XLinksTest.aShortLinkFollowsOneRedirectByHandToAPixivNetPage (shared rule)
+covered | shared_links_test › rejects short links to other websites and redirect loops | XLinksTest.aShortLinkTrustsOnlyAPixivNetLocation
+covered | shared_links_test › takes Pixiv links only while the Pixiv plugin is on | PluginRouteTest; PixivLinksTest
+covered | shared_links_test › takes Pixiv's image files and app links with the Pixiv plugin, and never hands one to X | PixivLinksTest.pixivsAppLinksAreRead
+covered | shared_links_test › takes pixivision links with the Pixiv plugin, and never hands one to X | PixivLinksTest.seriesNovelsAndPixivisionKnowThePageABrowserOpens
+covered | shared_links_test › a Pixiv page no plugin opened goes to the browser, never to X as a profile | PluginRouteTest
+covered | shared_links_test › a share that is only a number is a Pixiv work id | PixivLinksTest.aBareNumberIsAWork
+covered | shared_links_test › Pixiv shares need no request to resolve; pixiv.me waits for where it opens | PixivLinksTest.aPixivMeNameIsKeptForResolvingButItsOldPhpLinksAreReadAtOnce
+covered | shared_links_test › ordinary X shares do not need a network request to resolve | SharedLinksTest
+covered | shared_links_test › an X link opens on the X screens, even after another link | LinkOpeningTest
+covered | shared_links_test › another network's link is handed to the link opener, caption and all | LinkOpeningTest
+covered | shared_links_test › a link with credentials in it is not opened | SharedLinksTest
+covered | shared_links_test › text without a link becomes a search, its whitespace collapsed | SharedLinksTest
+covered | shared_links_test › a long share is cut to what X search accepts, without splitting a character | SharedLinksTest
+covered | shared_links_test › an empty share opens nothing | SharedLinksTest
+
+## test/expandable_tweet_text_test.dart
+untested | expandable_tweet_text_test › a post that fits shows no expand link | Compose (post text) | Compose only
+untested | expandable_tweet_text_test › a clipped post offers the link and expands on tap | Compose (post text) | Compose only
+untested | expandable_tweet_text_test › a recycled tile resets expansion for different post text | Compose (post text) | Compose only
+untested | expandable_tweet_text_test › expanding does not fire the open-on-tap callback | Compose (post text) | Compose only
+untested | expandable_tweet_text_test › while clipped, taps on the faded text do not open the post | Compose (post text) | Compose only
+untested | expandable_tweet_text_test › show more still expands under a parent open-on-tap detector | Compose (post text) | Compose only
+untested | expandable_tweet_text_test › lines are counted at the painted width, not the screen width | Compose (post text) | Compose only
+untested | expandable_tweet_text_test › the inherited text style is taken into account | Compose (post text) | Compose only
+untested | expandable_tweet_text_test › maxLines null never clips or offers the link | Compose (post text) | Compose only
+untested | expandable_tweet_text_test › a larger text scale can clip text that fits at 1x | Compose (post text) | Compose only
+untested | expandable_tweet_text_test › right-to-left text is measured without throwing | Compose (post text) | Compose only
+untested | expandable_tweet_text_test › a post carrying a WidgetSpan measures instead of crashing | Compose (post text) | Compose only
+untested | expandable_tweet_text_test › a long post still truncates with a WidgetSpan aboard | Compose (post text) | Compose only
+
+## test/diagnostics_report_test.dart
+covered | diagnostics_report_test › an account with no flags is healthy | CrashReporterTest; Diagnostics
+covered | diagnostics_report_test › a rate limit on one endpoint makes it unhealthy | Diagnostics (Endpoint diagnostics) | the report is Compose/management-side
+covered | diagnostics_report_test › a missing public account name never reveals the internal session identifier | Diagnostics
+covered | diagnostics_report_test › reports wrapped bootstrap status and route without request or response secrets | Diagnostics
+covered | diagnostics_report_test › connection, timeout and parse diagnostics never expose their exception text | Diagnostics
+covered | diagnostics_report_test › untrusted URLs and non-bootstrap X paths are omitted | Diagnostics
+covered | diagnostics_report_test › names the endpoint and account behind a failure | Diagnostics
+covered | diagnostics_report_test › says so plainly when there is no account at all | Diagnostics
+covered | diagnostics_report_test › lists every endpoint with the query id actually in force | XEndpointsTest; Diagnostics
+covered | diagnostics_report_test › records whether the registry was ever reached | Diagnostics
+covered | diagnostics_report_test › reports only windows that have not elapsed | Diagnostics
+covered | diagnostics_report_test › an account that has never been limited reports nothing | Diagnostics
+untested | diagnostics_report_test › local checks name a stuck step instead of leaving the report empty | Compose (diagnostics) | Compose only
+
+## test/mock_x_test.dart
+n/a | mock_x_test › an X request goes to the stand-in and comes back as X's | test harness | Flutter's mock X server; native's X tests use FakeHttp
+n/a | mock_x_test › anything not X goes where it was going | test harness | same
+n/a | mock_x_test › answers what it holds and what X says about the rest | test harness | same
+n/a | mock_x_test › ends a list on the page after the recorded one | test harness | same
+n/a | mock_x_test › says what it has instead of guessing | test harness | same
+n/a | mock_x_test › hands out a guest token | test harness | same
+n/a | mock_x_test › open a profile and page through its posts and reposts | test harness | same
+n/a | mock_x_test › say that an account does not exist | test harness | same
+n/a | mock_x_test › open a post | test harness | same
+n/a | mock_x_test › open a community, its posts and members, and find it in search | test harness | same
+n/a | mock_x_test › the app starts past its intro and without the update check | test harness | same
+n/a | mock_x_test › each video starts where Maestro's still start-up ends | test harness | same
+
+## test/group_media_page_test.dart
+covered | group_media_page_test › reuses loaded tweets and does not ask for a fetch | GroupFeedTest
+covered | group_media_page_test › an empty loaded feed is the end, not a reason to Search again | GroupFeedTest
+covered | group_media_page_test › preview media is shown without a first-page Search | GroupFeedTest
+covered | group_media_page_test › nothing in memory leaves the caller to fetch | GroupFeedTest
+covered | group_media_page_test › first open with loaded tweets does not hit Search | GroupFeedTest
+covered | group_media_page_test › switching the image tab back still does not refetch | GroupFeedTest
+covered | group_media_page_test › after a preview seed, a loaded list is reused instead of Search | GroupFeedTest
+covered | group_media_page_test › a cold open with no cache fetches one page, not a fan-out per sub | GroupFeedTest
+covered | group_media_page_test › loaded text-only tweets page from the feed cursor, not page 0 | GroupFeedTest
+covered | group_media_page_test › concurrent first-page loads share one fetch | GroupFeedTest
+covered | group_media_page_test › a later load after the first finishes is a new fetch | GroupFeedTest
+
+## test/floating_notice_test.dart
+untested | floating_notice_test › the content does not move when a notice comes or goes | Compose (notice) | Compose only
+untested | floating_notice_test › a notice drops in from above as it fades in | Compose (motion) | Compose only
+untested | floating_notice_test › one that stays mounted drops in when its pill comes | Compose (motion) | Compose only
+untested | floating_notice_test › it lifts away as it fades out, and cannot be tapped meanwhile | Compose (motion) | Compose only
+untested | floating_notice_test › a notice whose content changes updates in place | Compose (notice) | Compose only
+covered | floating_notice_test › with reduced motion a notice comes and goes at once | MotionTest.withMotionDisabledAListJumpsToItsTopAtOnce
+untested | floating_notice_test › the notice floats centred near the top, as wide as it needs | Compose (notice) | Compose only
+untested | floating_notice_test › it stays below a status bar the content runs under | Compose (notice) | Compose only
+untested | floating_notice_test › a notice with nothing to say draws nothing and blocks nothing | Compose (notice) | Compose only
+untested | floating_notice_test › a notice inside another floats below its pill, and rises when it goes | Compose (notice) | Compose only
+untested | floating_notice_test › a floating notice is announced when it appears | Compose semantics | Compose only
+
+## test/desktop_test.dart
+covered | desktop_test › keeps the suite on the Android paths it mocks | DesktopKeysTest; platform | n/a test harness half
+covered | desktop_test › follows the override a desktop test sets | DesktopKeysTest
+covered | desktop_test › reads a browser Cookie header, ignoring the other cookies | platform cookie parse | platform boundary
+covered | desktop_test › reads the two pairs pasted one per line | platform cookie parse | platform boundary
+covered | desktop_test › keeps an "=" inside a value | platform cookie parse | platform boundary
+covered | desktop_test › is null unless both cookies have a value | platform cookie parse | platform boundary
+covered | desktop_test › normalizeScreenName drops one leading @ and the spaces | XLinksTest (screen name)
+covered | desktop_test › maps each MediaStore collection to its XDG directory | platform paths | platform boundary
+covered | desktop_test › falls back to the usual folders in home without xdg-user-dir | platform paths | platform boundary
+covered | desktop_test › displayName shows a desktop folder as its whole path | platform paths | platform boundary
+covered | desktop_test › copies into the subfolder, never over an earlier save | DownloadDestinationTest
+
+## test/arrival_test.dart
+untested | arrival_test › fades in as it first appears | Compose (motion) | Compose only
+untested | arrival_test › one that is not arriving is drawn as it is, with nothing animating | Compose (motion) | Compose only
+untested | arrival_test › is decided once: rebuilt not arriving, it keeps its place and its state | Compose (motion) | Compose only
+covered | arrival_test › with reduced motion is there at once | MotionTest.withMotionDisabledAListJumpsToItsTopAtOnce
+untested | arrival_test › fades in where the placeholders were | Compose (motion) | Compose only
+untested | arrival_test › is drawn at once over posts kept from last time, and on a first build | Compose (motion) | Compose only
+untested | arrival_test › fades the new content in while it eases to its height | Compose (motion) | Compose only
+untested | arrival_test › keeps what it holds through the swap | Compose (motion) | Compose only
+untested | arrival_test › runs nothing while nothing swaps | Compose (motion) | Compose only
+untested | arrival_test › with reduced motion swaps at once | MotionTest | the swap itself is Compose
+untested | arrival_test › a list's first tiles arrive; those built later, as it scrolls, do not | Compose (feed) | Compose only
+
+## test/protected_profile_test.dart
+covered | protected_profile_test › it does not for a public account | ProfileRulesTest.aProtectedAccountsPostsAreGatedUnlessItFollowsOrIsTheReadersOwn
+covered | protected_profile_test › it does for a protected account the asking account does not follow | ProfileRulesTest.aProtectedAccountsPostsAreGatedUnlessItFollowsOrIsTheReadersOwn
+covered | protected_profile_test › it does not for a protected account the asking account follows | ProfileRulesTest.aProtectedAccountsPostsAreGatedUnlessItFollowsOrIsTheReadersOwn
+covered | protected_profile_test › it does when X does not say who follows, as for a guest | ProfileRulesTest.aProtectedAccountsPostsAreGatedUnlessItFollowsOrIsTheReadersOwn
+covered | protected_profile_test › the older shape says it under legacy, which the newer fields override | XParserTest (protected profile)
+covered | protected_profile_test › a cached profile keeps the answer | ProfileRulesTest.aProfilesTimelinesAreKeptUnderXtasKeysNeverMixed
+covered | protected_profile_test › says the posts are protected, without asking X for them | ProfileRulesTest.aProtectedAccountsPostsAreGatedUnlessItFollowsOrIsTheReadersOwn
+covered | protected_profile_test › loads the posts for an account that follows it | ProfileRulesTest.aProtectedAccountsPostsAreGatedUnlessItFollowsOrIsTheReadersOwn
+covered | protected_profile_test › shows the posts of a protected account that is one of the reader's own | ProfileRulesTest.aProtectedAccountsPostsAreGatedUnlessItFollowsOrIsTheReadersOwn
+covered | protected_profile_test › keeps the posts hidden when the reader's accounts cannot be read | ProfileRulesTest.aProtectedAccountsPostsAreGatedUnlessItFollowsOrIsTheReadersOwn
+
+## test/desktop_navigation_test.dart
+covered | desktop_navigation_test › Esc goes back from a page | DesktopKeysTest (Esc)
+covered | desktop_navigation_test › Esc closes a dialog and leaves the page under it | DesktopKeysTest
+covered | desktop_navigation_test › typing in a page, the first Esc leaves the field and the next goes back | DesktopKeysTest
+covered | desktop_navigation_test › typing in a dialog, Esc closes the dialog as before | DesktopKeysTest
+covered | desktop_navigation_test › Esc on the first page does nothing | DesktopKeysTest
+covered | desktop_navigation_test › Alt+← goes back, a dialog first | DesktopKeysTest
+covered | desktop_navigation_test › the mouse's back button goes back | DesktopKeysTest
+covered | desktop_navigation_test › off the desktop neither keys nor the mouse go back | DesktopKeysTest
+covered | desktop_navigation_test › F5 and Ctrl+R refresh on the desktop | DesktopKeysTest
+covered | desktop_navigation_test › nothing refreshes off the desktop | DesktopKeysTest
+
+## test/save_sheet_test.dart
+covered | save_sheet_test › the latest saved posts lead with their folders, each once, then the rest | SaveSheetAndNotesTest
+covered | save_sheet_test › a post in a folder that is gone is passed over | SavedStoreTest
+covered | save_sheet_test › a tap saves the post in that folder and the status line follows | SaveSheetAndNotesTest
+covered | save_sheet_test › a tap on the checked folder takes the post out of it, still saved | SaveSheetAndNotesTest
+covered | save_sheet_test › a typed name creates its folder and files the post in it | SaveSheetAndNotesTest
+covered | save_sheet_test › a name a folder already has offers no create row | SaveSheetAndNotesTest
+covered | save_sheet_test › All folders shows the folders beyond the first six | SavedViewTest
+covered | save_sheet_test › a pick is remembered while Remember this folder is on | SaveSheetAndNotesTest
+covered | save_sheet_test › filing clicks once | SaveSheetAndNotesTest
+
+## test/rolling_count_test.dart
+untested | rolling_count_test › a rise rolls up, a fall down, an unknown change up | Compose (count roll) | Compose only
+untested | rolling_count_test › a new number rolls in as the old one leaves upwards | Compose (count roll) | Compose only
+untested | rolling_count_test › a count that fell rolls downwards | Compose (count roll) | Compose only
+untested | rolling_count_test › rolls from what it showed before on its first build | Compose (count roll) | Compose only
+untested | rolling_count_test › a count appearing, going away or unchanged does not roll | Compose (count roll) | Compose only
+covered | rolling_count_test › with reduced motion the count changes at once | MotionTest.withMotionDisabledAListJumpsToItsTopAtOnce
+untested | rolling_count_test › a screen reader hears only the new count while it rolls | Compose semantics | Compose only
+untested | rolling_count_test › its width moves from the old number's to the new one's | Compose (count roll) | Compose only
+
+## test/read_recovery_widget_test.dart
+covered | read_recovery_widget_test › automatic recovery has a finite budget across rebuilds and failed attempts | ReadRetriesTest
+covered | read_recovery_widget_test › background recovery waits for resume and a no-op retry stays finite | ReadRetriesTest
+covered | read_recovery_widget_test › resume renews an exhausted budget without letting rebuilds or repeated resume signals loop | ReadRetriesTest
+covered | read_recovery_widget_test › online network handover renews recovery and coalesces a simultaneous resume | ReadRetriesTest
+covered | read_recovery_widget_test › native network events preserve identity and tolerate legacy or malformed events | ReadRetriesTest
+untested | read_recovery_widget_test › hidden routes and disposed views never retry | Compose (read recovery) | Compose only
+untested | read_recovery_widget_test › kept-alive group visibility pauses covered routes and resumes after back | Compose (read recovery) | Compose only
+untested | read_recovery_widget_test › losing focus keeps group reads going, hiding the app pauses them | Compose (read recovery) | Compose only
+
+## test/open_links_test.dart
+covered | open_links_test › with the option off, a link leaves for the default browser | LinkOpenerTest
+covered | open_links_test › with the option on, the same link still launches | LinkOpenerTest
+covered | open_links_test › tracking is stripped by default in both launch modes | XLinksTest (tracking removal)
+covered | open_links_test › turning clean-links off leaves the junk on the URL | LinkOpenerTest
+covered | open_links_test › turning clean-links on still strips in both modes | LinkOpenerTest
+covered | open_links_test › a Spaces link launches instead of bouncing back into XTA | LinkOpeningTest
+covered | open_links_test › a broadcasts link with no named browser still launches | LinkOpeningTest
+covered | open_links_test › prepareUrl follows the switch and defaults to stripping | LinkOpenerTest
+
+## test/unavailable_post_test.dart
+covered | unavailable_post_test › lists the captures of the post under its twitter.com address | PostRulesTest.aQuoteXWithheldSaysWhyAndFindsItInTheArchiveWhenItsAuthorIsKnown
+covered | unavailable_post_test › refuses what is not a handle or a post id | XLinksTest (wayback)
+covered | unavailable_post_test › reads the author and id of a quoted post permalink | XLinksTest
+covered | unavailable_post_test › a profile link is not a post | XLinksTest
+covered | unavailable_post_test › without the author there is nothing to look up | PostRulesTest.aQuoteXWithheldSaysWhy...
+covered | unavailable_post_test › one tap opens its captures through the reader's browser choice | LinkOpenerTest
+untested | unavailable_post_test › fits a 320dp phone at twice the text size ($name) | Compose (unavailable post) | Compose only
+
+## test/thread_rail_test.dart
+untested | thread_rail_test › the opened tweet and its direct replies sit flush left | Compose (thread rail) | Compose only
+untested | thread_rail_test › only a reply-to-a-reply steps in | Compose (thread rail) | Compose only
+untested | thread_rail_test › a tile with a rail below it is as tall as its content | Compose (thread rail) | Compose only
+untested | thread_rail_test › the rail is drawn over the whole tile, not just its top | Compose (thread rail) | Compose only
+untested | thread_rail_test › a nested reply with a rail is as tall as its content | Compose (thread rail) | Compose only
+untested | thread_rail_test › a direct reply lines up with the opened tweet | Compose (thread rail) | Compose only
+untested | thread_rail_test › nested replies indent from the reading edge in RTL | Compose (thread rail) | Compose only
+
+## test/subscriber_preview_test.dart
+covered | subscriber_preview_test › reads the preview X sends as the post itself | XParserTest (subscriber preview)
+covered | subscriber_preview_test › a reply hidden as ExclusiveTweet says so rather than calling it deleted | XParserTest (subscriber preview)
+covered | subscriber_preview_test › the preview survives the feed cache | store/offline TimelineCacheTest
+covered | subscriber_preview_test › survives the preview losing or nulling any single field | XParserTest
+covered | subscriber_preview_test › a tombstone whose text is a plain string no longer throws | XParserTest; XPostAndUserFieldsTest
+covered | subscriber_preview_test › keeps every post, previews included | XParserTest
+covered | subscriber_preview_test › keeps the threads X names profile-originals-conversation | XParserTest
