@@ -1882,3 +1882,76 @@ covered | error_layout_test › at the ordinary text size it still centres rathe
 untested | discover_ia_test › the home Search tab is labeled Discover | Compose (Discover) | Compose only
 untested | discover_ia_test › an empty trends list explains itself instead of going blank | Compose (Discover) | Compose only
 covered | discover_ia_test › Discover offers people search and antennas | SettingsLogicTest; Compose
+
+## test/desktop_pager_test.dart
+untested | desktop_pager_test › the buttons show only where there is a page to turn to | Compose (desktop viewer) | Compose only
+covered | desktop_pager_test › ← and → turn the pages, and stop at either end | DesktopKeysTest (pager keys)
+covered | desktop_pager_test › off the desktop the viewer is as it was | Compose (viewer) | Compose only
+
+## test/custom_reader_gestures_test.dart
+untested | custom_reader_gestures_test › Reddit body defers to Home or switches discovery sections | Compose (plugin reader) | Compose only
+untested | custom_reader_gestures_test › Stocks body defers to Home or switches sections | Compose (plugin reader) | Compose only
+untested | custom_reader_gestures_test › Threads profile body swipes and visible tabs share selection without reloading | Compose (Threads profile) | Compose only
+
+## test/avatar_follow_badge_test.dart
+untested | avatar_follow_badge_test › the badge sits on the avatar rim at the lower-right diagonal ($size) | Compose (avatar) | Compose only
+untested | avatar_follow_badge_test › one tap follows, the plus becomes a check, then the badge leaves | Compose (avatar) | Compose only
+covered | avatar_follow_badge_test › following taps lightly and a long press clicks, unless haptic feedback is off | SwitchedHapticsTest | the gesture is Compose-only
+
+## test/annotation_backup_test.dart
+covered | annotation_backup_test › JSON backup restores annotation text, tags and extraction exactly | store/saved ArchiveNotesTest
+covered | annotation_backup_test › restore preserves current edits and merges additional highlights and tags | ArchiveNotesTest
+covered | annotation_backup_test › legacy backups and unrelated sidecar keys cannot erase existing data | ArchiveNotesTest
+
+## test/search_results_entry_test.dart
+untested | search_results_entry_test › empty X Search reuses recent history and library search access | Compose (search) | Compose only
+untested | search_results_entry_test › compact enlarged search keeps input and actions reachable | Compose (search) | Compose only
+
+## test/save_sheet_render_test.dart
+untested | save_sheet_render_test › save-sheet-$tag | Compose (render sweep) | golden/layout sweep
+untested | save_sheet_render_test › save-sheet-create-$tag | Compose (render sweep) | golden/layout sweep
+
+## test/loaded_feed_search_test.dart
+covered | loaded_feed_search_test › loaded text includes names, handles, expanded URLs and quoted posts | SavedContentTest
+covered | loaded_feed_search_test › plugin snapshots remain searchable without fetching or building posts | SavedContentTest; PluginArchiveTest
+
+## test/group_sheet_render_test.dart
+untested | group_sheet_render_test › group-sheet-$tag | Compose (render sweep) | golden/layout sweep
+untested | group_sheet_render_test › group-sheet-create-$tag | Compose (render sweep) | golden/layout sweep
+
+## test/database_single_connection_test.dart
+n/a | database_single_connection_test › reads and writes share one connection | - | XTA's SQLite; native keeps files
+n/a | database_single_connection_test › adding a timeline author to a group does not lock out every read and write | - | XTA's SQLite; native keeps files
+
+## test/cashtag_quotes_test.dart
+covered | cashtag_quotes_test › cashtags on a post are uppercased and unique | CashtagsTest.cashtagsOnAPostAreUpperCasedAndUnique
+covered | cashtag_quotes_test › a post with no symbols has none | CashtagsTest.aRepostsStripIsTheOriginalsAndAPostWithoutCashtagsHasNone
+
+## test/broadcast_media_card_test.dart
+covered | broadcast_media_card_test › broadcast cards identify the stream and keep open-post context | LiveRoomsTest
+untested | broadcast_media_card_test › Space cards fit a narrow RTL viewport with large text | Compose (live card) | Compose only
+
+## test/boost_card_profile_test.dart
+untested | boost_card_profile_test › a repost card names whose post it is and opens that profile | Compose (post card) | Compose only
+untested | boost_card_profile_test › a tap on the post text still opens the post | Compose (post card) | Compose only
+
+## test/article_reader_controls_test.dart
+covered | article_reader_controls_test › appearance changes are shared, finish is explicit and controls fit narrow large-text RTL | ReadingAppearanceStore (reading/ReadingPlaces); Compose layout
+untested | article_reader_controls_test › production reader controls render $variant | Compose (render sweep) | golden/layout sweep
+
+## test/app_icon_asset_test.dart
+covered | app_icon_asset_test › the app bundles its own icon at 512 px | AppResourcesTest
+covered | app_icon_asset_test › the 2000 px source icon is not bundled | AppResourcesTest
+
+## test/android_secure_window_test.dart
+n/a | android_secure_window_test › the desktop never calls the Android screenshot channel | - | Android platform boundary
+n/a | android_secure_window_test › Android still releases FLAG_SECURE through the channel | - | Android platform boundary
+
+## test/note_post_layout_test.dart
+untested | note_post_layout_test › post-style notes $variant | Compose (render sweep) | golden/layout sweep
+
+## test/locale_delegates_test.dart
+n/a | locale_delegates_test › a Scaffold builds in ${locale.toLanguageTag()} | - | Flutter widget binding
+
+## test/app_reading_layout_test.dart
+untested | app_reading_layout_test › app reading layout $variant | Compose (render sweep) | golden/layout sweep
