@@ -1812,3 +1812,73 @@ covered | image_disk_cache_test › a launch removes pictures cached more than 3
 covered | image_disk_cache_test › the store measures the cache, and clearing empties it | PicturesTest
 covered | image_disk_cache_test › sizes read as bytes, kilobytes, megabytes and gigabytes | PicturesTest
 covered | image_disk_cache_test › settings show the size, and clear the cache once asked twice | PicturesTest; Compose settings
+
+## test/heart_burst_test.dart
+untested | heart_burst_test › liking plays the burst around the heart without moving the footer | Compose (motion) | Compose only
+untested | heart_burst_test › unliking just empties the heart | Compose (motion) | Compose only
+untested | heart_burst_test › $name keeps the heart still | Compose (motion) | Compose only
+untested | heart_burst_test › every stage of the burst paints, and only a new moment repaints | Compose (motion) | Compose only
+
+## test/grow_in_test.dart
+untested | grow_in_test › a floating button grows in as it fades in | Compose (motion) | Compose only
+untested | grow_in_test › it shrinks away as it fades out, and cannot be tapped or read meanwhile | Compose (motion) | Compose only
+untested | grow_in_test › hidden, it does not lift a floating snack bar | Compose (motion) | Compose only
+covered | grow_in_test › with reduced motion it comes and goes at once | MotionTest.withMotionDisabledAListJumpsToItsTopAtOnce
+
+## test/conversation_sort_widget_test.dart
+covered | conversation_sort_widget_test › the reply sort reorders a Bluesky thread for the session | ConversationRulesTest; plugins/bluesky BlueskyRepliesTest
+covered | conversation_sort_widget_test › Mastodon falls back to its own order and sorts on device | MastodonThreadsTest
+covered | conversation_sort_widget_test › a plugin quote list offers device orders above its items | PostRulesTest.theSortsAskXForWhatItRanksItselfAndRepostersSortByFollowersOnlyWithCounts
+covered | conversation_sort_widget_test › X reposters offer follower order only with follower counts | PostRulesTest.theSortsAskXForWhatItRanksItself...
+
+## test/browser_picker_test.dart
+untested | browser_picker_test › the destination tile sits above the clean-links switch | Compose (link settings) | Compose only
+covered | browser_picker_test › picking a named browser turns the in-app view off | LinkOpenerTest (chosen browser)
+covered | browser_picker_test › picking in-app again leaves the last browser stored | LinkOpenerTest
+covered | browser_picker_test › installedBrowsers maps the platform list | platform (Android) | platform boundary
+
+## test/boost_runs_test.dart
+covered | boost_runs_test › detects retweet chains | PostRulesTest.runsOfTwoOrMoreRepostsFoldIntoOneRow
+covered | boost_runs_test › groups consecutive boosts of length >= 2 | PostRulesTest.runsOfTwoOrMoreRepostsFoldIntoOneRow
+covered | boost_runs_test › leaves isolated boosts as single chains | PostRulesTest.runsOfTwoOrMoreRepostsFoldIntoOneRow
+covered | boost_runs_test › returns run length only at the first chain of a run | PostRulesTest.runsOfTwoOrMoreRepostsFoldIntoOneRow
+
+## test/sensitive_media_gate_test.dart
+covered | sensitive_media_gate_test › ordinary media does not rebuild when hideSensitive flips | PostRulesTest.onlyAPostMarkedSensitiveWithMediaIsGated
+covered | sensitive_media_gate_test › gated media appears once hideSensitive is cleared | PostRulesTest.onlyAPostMarkedSensitiveWithMediaIsGated
+covered | sensitive_media_gate_test › sensitive reveal is immediate when motion is disabled | MotionTest.withMotionDisabledAListJumpsToItsTopAtOnce
+
+## test/quotes_retweeters_list_test.dart
+covered | quotes_retweeters_list_test › the retweets tab starts its first fetch without mounting a paged list | ConversationRulesTest
+covered | quotes_retweeters_list_test › an empty first page leaves the spinner for the empty message | ConversationRulesTest
+covered | quotes_retweeters_list_test › a failed first page leaves the spinner for the error | ConversationRulesTest
+
+## test/provenance_accent_test.dart
+covered | provenance_accent_test › maps known plugin ids to their brand colours | ui/feed ProvenanceColorsTest
+covered | provenance_accent_test › provenanceAccent lays out in unbounded height without crashing | ProvenanceColorsTest
+covered | provenance_accent_test › lightens near-black Threads brand on dark theme | ProvenanceColorsTest
+
+## test/haptic_feedback_test.dart
+covered | haptic_feedback_test › XTA's taps play while haptic feedback is on, as it is unless turned off | SwitchedHapticsTest
+covered | haptic_feedback_test › turning haptic feedback off silences every one of them | SwitchedHapticsTest
+covered | haptic_feedback_test › the switch sits in Accessibility, on, and turns haptic feedback off | SwitchedHapticsTest
+
+## test/groups_model_test.dart
+covered | groups_model_test › create group then reload works on a fresh migrated DB | SessionTest; GroupBoardModelTest
+covered | groups_model_test › importing an old-format backup brings groups back | XtaBackupTest
+covered | groups_model_test › NSFW groups sink below safe ones after toggle | GroupBoardModelTest.nsfwGroupsGetASectionOfTheirOwn
+
+## test/gif_download_test.dart
+covered | gif_download_test › a GIF saves its MP4, not the poster frame | MediaRulesTest; DownloadNaming
+covered | gif_download_test › a video saves the variant its player is on, else the best MP4 | MediaRulesTest.aDownloadSavesTheVariantWatchedOrTheBest
+covered | gif_download_test › a photo, or a stream with no MP4, has no video to save | MediaRulesTest.qualitiesAreTheMp4sHighestFirstNamedByTheirHeight
+
+## test/error_layout_test.dart
+covered | error_layout_test › does not overflow, and keeps its actions reachable | ProblemLookTest
+covered | error_layout_test › the emoji screen keeps both of its buttons | ProblemLookTest
+covered | error_layout_test › at the ordinary text size it still centres rather than scrolling | ProblemLookTest
+
+## test/discover_ia_test.dart
+untested | discover_ia_test › the home Search tab is labeled Discover | Compose (Discover) | Compose only
+untested | discover_ia_test › an empty trends list explains itself instead of going blank | Compose (Discover) | Compose only
+covered | discover_ia_test › Discover offers people search and antennas | SettingsLogicTest; Compose
