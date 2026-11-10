@@ -22,15 +22,6 @@ environment:
   sdk: ">=3.12.2 <4.0.0"
   flutter: 3.44.4
 
-# GitHub answered its release downloads with 502/503 on 2026-11-08, and that is
-# where the sqlite3 package's build hook fetches its prebuilt library from. This
-# mirror serves the same archive, and the hook still checks it against the
-# package's published hash. Remove it when GitHub's downloads answer again.
-hooks:
-  user_defines:
-    sqlite3:
-      url_pattern: https://ghfast.top/https://github.com/simolus3/sqlite3.dart/releases/download/$RELEASE_TAG/$FILENAME
-
 dependency_overrides:
   # auto_direction pins an old intl (^0.17/^0.18) that conflicts with
   # dart_twitter_api's intl ^0.20.0. auto_direction only uses the stable
