@@ -758,6 +758,16 @@ native only | an opened long reply thread can be cut again ("Show fewer replies"
 native only | the related posts Threads shows a guest under a post sit after the conversation, under "Related threads" | ThreadsReplyRows.relatedRows | ThreadsConversationPageTest.relatedPostsAreNeverTakenForReplies
 native only | the whole conversation read aloud with the app's voice (the kit's ReadAloudButton, as Substack's reader) | ThreadsConversationScreen, ThreadsConversation.spokenText | ThreadsConversationPageTest.theWholeConversationIsReadAloudPostByPost
 missing/different | translate: the kit's translation is X's (XTranslator asks X by post id); nothing translates a Threads post's words, so there is none here | — | —
+## Threads, round 13: media
+
+Rows as above: state | what | where | test.
+
+native only | a saved picture or video was "threads-<Meta's numbered file>" (471234_1838_n.jpg); it is "threads-<author>-<post's code>-<place>.<kind>", from the viewer's Download, a tile's long press and a video's ⋮ Download alike | ThreadsMediaFiles, ThreadsMediaScreen, ThreadsPostMedia (LocalMediaSave per tile), ThreadsViewed.source | ThreadsMediaTest.aSavedFileIsNamedAfterItsAuthor…, aFileWhoseAddressNamesNoKind…
+native only | a long press on a picture showed its description or saved it at once; it opens a sheet: Image description, Download, Download all (one batch, one notice, beyond the screen), Open post, Copy link, Share link, each only where it applies | ThreadsMediaSheet (ThreadsMediaActions), ThreadsApp.beyondScreen | ThreadsMediaTest.aLongPressOffersOnlyWhatApplies…, downloadAllSaves…
+missing/different | a picture without a description had no name for a screen reader; it is "Picture 2 of 4" (or "Picture"), its long press labelled | ThreadsMedia.MediaTile | Compose only
+native only | media Meta links into a post (`text_post_app_info.linked_inline_media`, seen live) is shown where the post has none of its own | ThreadsMediaParts.of, ThreadsParser.original | ThreadsMediaPartsTest.mediaMetaLinksIntoAPost…
+native only | media Meta lays a cover over (`media_overlay_info`, seen live; what it says is not read) waits behind "Threads put a warning over this media" and Show where Settings hides sensitive media, nothing loaded meanwhile | ThreadsMediaParts.covered, ThreadsPost.mediaCovered, ThreadsMediaCover | ThreadsMediaPartsTest.aPostIsCovered…, ThreadsMediaTest.coveredMediaWaits…
+left out | a liked or snapshotted post keeps no cover (ThreadsPostJson does not write `mediaCovered`); a video's own progress (the kit's player keeps none); captions, audio-only posts and music (`text_app_music_info`), whose shapes no probe has shown yet: ThreadsMediaShapeLiveTest (RUN_LIVE) logs their keys, the DASH manifest's representations and `media_type`s for the next round | n/a | n/a
 
 ## Bluesky and Mastodon, round 10 (the chrome, the covers, the audit's items)
 

@@ -165,4 +165,11 @@
     <string name="more_replies_web">Mais respostas em threads.com</string>
     <string name="thread_on_web">Este tópico continua em threads.com</string>
     <string name="related_threads">Tópicos relacionados</string>
+    <string name="media_description">Descrição da imagem</string>
+    <string name="media_download">Descarregar</string>
+    <string name="media_download_all">Transferir tudo</string>
+    <string name="media_copy_link">Copiar link</string>
+    <string name="media_picture">Imagem</string>
+    <string name="media_picture_of">Imagem %1$d de %2$d</string>
+    <string name="media_covered">O Threads colocou um aviso sobre este conteúdo multimédia</string>
 </resources>

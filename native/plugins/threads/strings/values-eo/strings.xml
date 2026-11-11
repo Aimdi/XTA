@@ -162,4 +162,11 @@
     <string name="more_replies_web">Pliaj respondoj ĉe threads.com</string>
     <string name="thread_on_web">Ĉi tiu fadeno daŭras ĉe threads.com</string>
     <string name="related_threads">Rilataj fadenoj</string>
+    <string name="media_description">Priskribo de la bildo</string>
+    <string name="media_download">Elŝuti</string>
+    <string name="media_download_all">Elŝuti ĉion</string>
+    <string name="media_copy_link">Kopii ligilon</string>
+    <string name="media_picture">Bildo</string>
+    <string name="media_picture_of">Bildo %1$d el %2$d</string>
+    <string name="media_covered">Threads metis averton super ĉi tiun aŭdvidaĵon</string>
 </resources>

@@ -158,4 +158,11 @@
     <string name="more_replies_web">Thêm phản hồi trên threads.com</string>
     <string name="thread_on_web">Chủ đề này tiếp tục trên threads.com</string>
     <string name="related_threads">Chủ đề liên quan</string>
+    <string name="media_description">Mô tả hình ảnh</string>
+    <string name="media_download">Tải xuống</string>
+    <string name="media_download_all">Tải xuống tất cả</string>
+    <string name="media_copy_link">Sao chép liên kết</string>
+    <string name="media_picture">Hình ảnh</string>
+    <string name="media_picture_of">Hình ảnh %1$d/%2$d</string>
+    <string name="media_covered">Threads đã đặt cảnh báo lên nội dung đa phương tiện này</string>
 </resources>

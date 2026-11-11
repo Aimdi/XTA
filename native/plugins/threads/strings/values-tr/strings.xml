@@ -162,4 +162,11 @@
     <string name="more_replies_web">threads.com\'da daha fazla yanıt</string>
     <string name="thread_on_web">Bu konu threads.com\'da devam ediyor</string>
     <string name="related_threads">İlgili konular</string>
+    <string name="media_description">Görsel açıklaması</string>
+    <string name="media_download">İndir</string>
+    <string name="media_download_all">Tümünü indir</string>
+    <string name="media_copy_link">Bağlantıyı kopyala</string>
+    <string name="media_picture">Görsel</string>
+    <string name="media_picture_of">Görsel %1$d/%2$d</string>
+    <string name="media_covered">Threads bu medyanın üzerine bir uyarı koydu</string>
 </resources>

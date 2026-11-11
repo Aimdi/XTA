@@ -170,4 +170,11 @@
     <string name="more_replies_web">Bolš adkazaŭ na threads.com</string>
     <string name="thread_on_web">Hetaja nitka praciahvajecca na threads.com</string>
     <string name="related_threads">Padobnyja nitki</string>
+    <string name="media_description">Apisańnie vyjavy</string>
+    <string name="media_download">Sćahnuć</string>
+    <string name="media_download_all">Spampavać usio</string>
+    <string name="media_copy_link">Skapijavać spasyłku</string>
+    <string name="media_picture">Vyjava</string>
+    <string name="media_picture_of">Vyjava %1$d z %2$d</string>
+    <string name="media_covered">Threads pastaviŭ papiaredžannie na hetyja medyja</string>
 </resources>

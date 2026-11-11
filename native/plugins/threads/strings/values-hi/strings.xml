@@ -162,4 +162,11 @@
     <string name="more_replies_web">threads.com पर और जवाब</string>
     <string name="thread_on_web">यह थ्रेड threads.com पर जारी है</string>
     <string name="related_threads">संबंधित थ्रेड</string>
+    <string name="media_description">चित्र का विवरण</string>
+    <string name="media_download">डाउनलोड</string>
+    <string name="media_download_all">सभी डाउनलोड करें</string>
+    <string name="media_copy_link">लिंक कॉपी करें</string>
+    <string name="media_picture">चित्र</string>
+    <string name="media_picture_of">चित्र %1$d / %2$d</string>
+    <string name="media_covered">Threads ने इस मीडिया पर चेतावनी लगाई है</string>
 </resources>

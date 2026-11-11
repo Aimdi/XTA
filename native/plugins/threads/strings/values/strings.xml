@@ -164,4 +164,11 @@
     <string name="more_replies_web">More replies on threads.com</string>
     <string name="thread_on_web">This thread goes on at threads.com</string>
     <string name="related_threads">Related threads</string>
+    <string name="media_description">Image description</string>
+    <string name="media_download">Download</string>
+    <string name="media_download_all">Download all</string>
+    <string name="media_copy_link">Copy link</string>
+    <string name="media_picture">Picture</string>
+    <string name="media_picture_of">Picture %1$d of %2$d</string>
+    <string name="media_covered">Threads put a warning over this media</string>
 </resources>

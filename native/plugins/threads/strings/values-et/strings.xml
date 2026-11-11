@@ -162,4 +162,11 @@
     <string name="more_replies_web">Rohkem vastuseid saidil threads.com</string>
     <string name="thread_on_web">See lõim jätkub saidil threads.com</string>
     <string name="related_threads">Seotud lõimed</string>
+    <string name="media_description">Pildi kirjeldus</string>
+    <string name="media_download">Laadi alla</string>
+    <string name="media_download_all">Laadi kõik alla</string>
+    <string name="media_copy_link">Kopeeri link</string>
+    <string name="media_picture">Pilt</string>
+    <string name="media_picture_of">Pilt %1$d/%2$d</string>
+    <string name="media_covered">Threads on selle meedia ette hoiatuse pannud</string>
 </resources>

@@ -114,6 +114,8 @@ data class ThreadsPost(
     val replyToHandle: String? = null,
     val isReply: Boolean = false,
     val facts: ThreadsPostFacts = ThreadsPostFacts.NONE,
+    /** Meta lays a cover over the media ([ThreadsMediaParts.covered]): drawn behind a tap where the reader hides sensitive media. */
+    val mediaCovered: Boolean = false,
 ) {
     val hasMedia: Boolean get() = media.isNotEmpty()
 

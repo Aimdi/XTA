@@ -4,8 +4,12 @@ import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.ui.media.VideoQuality
 import com.aimdi.xtanative.ui.plugins.MediaItem
 
-/** A post's pictures and videos as the viewer opens them, each video's qualities, and the [post] its Open post opens, where it offers one. */
-internal data class ThreadsViewed(val items: List<MediaItem>, val qualities: List<List<VideoQuality>>, val post: ThreadsPost? = null)
+/**
+ * A post's pictures and videos as the viewer opens them, each video's
+ * qualities, the [post] its Open post opens, where it offers one, and the
+ * [source] they are from, which names what Download saves.
+ */
+internal data class ThreadsViewed(val items: List<MediaItem>, val qualities: List<List<VideoQuality>>, val post: ThreadsPost? = null, val source: ThreadsPost? = post)
 
 /**
  * What a screen hands the next one it opens (the card that was tapped, the

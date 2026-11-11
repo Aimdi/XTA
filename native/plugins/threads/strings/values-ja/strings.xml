@@ -158,4 +158,11 @@
     <string name="more_replies_web">threads.comで返信をもっと見る</string>
     <string name="thread_on_web">このスレッドの続きはthreads.comで</string>
     <string name="related_threads">関連スレッド</string>
+    <string name="media_description">画像の説明</string>
+    <string name="media_download">ダウンロード</string>
+    <string name="media_download_all">すべてダウンロード</string>
+    <string name="media_copy_link">リンクをコピー</string>
+    <string name="media_picture">画像</string>
+    <string name="media_picture_of">画像 %1$d/%2$d</string>
+    <string name="media_covered">Threads はこのメディアに警告を表示しています</string>
 </resources>

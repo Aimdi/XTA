@@ -162,4 +162,11 @@
     <string name="more_replies_web">Meer reacties op threads.com</string>
     <string name="thread_on_web">Deze draad gaat verder op threads.com</string>
     <string name="related_threads">Gerelateerde draden</string>
+    <string name="media_description">Afbeeldingsbeschrijving</string>
+    <string name="media_download">Downloaden</string>
+    <string name="media_download_all">Alles downloaden</string>
+    <string name="media_copy_link">Link kopiëren</string>
+    <string name="media_picture">Afbeelding</string>
+    <string name="media_picture_of">Afbeelding %1$d van %2$d</string>
+    <string name="media_covered">Threads heeft een waarschuwing over deze media gezet</string>
 </resources>

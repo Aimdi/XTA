@@ -166,4 +166,11 @@
     <string name="more_replies_web">Mai multe răspunsuri pe threads.com</string>
     <string name="thread_on_web">Firul continuă pe threads.com</string>
     <string name="related_threads">Fire asemănătoare</string>
+    <string name="media_description">Descrierea imaginii</string>
+    <string name="media_download">Descarcă</string>
+    <string name="media_download_all">Descarcă tot</string>
+    <string name="media_copy_link">Copiază linkul</string>
+    <string name="media_picture">Imagine</string>
+    <string name="media_picture_of">Imaginea %1$d din %2$d</string>
+    <string name="media_covered">Threads a pus un avertisment peste aceste conținuturi media</string>
 </resources>

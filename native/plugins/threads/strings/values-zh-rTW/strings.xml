@@ -158,4 +158,11 @@
     <string name="more_replies_web">在 threads.com 查看更多回覆</string>
     <string name="thread_on_web">此串文在 threads.com 上繼續</string>
     <string name="related_threads">相關串文</string>
+    <string name="media_description">圖片描述</string>
+    <string name="media_download">下載</string>
+    <string name="media_download_all">全部下載</string>
+    <string name="media_copy_link">複製連結</string>
+    <string name="media_picture">圖片</string>
+    <string name="media_picture_of">第 %1$d 張圖片，共 %2$d 張</string>
+    <string name="media_covered">Threads 為此媒體加上了警告</string>
 </resources>

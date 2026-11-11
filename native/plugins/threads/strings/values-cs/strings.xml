@@ -170,4 +170,11 @@
     <string name="more_replies_web">Další odpovědi na threads.com</string>
     <string name="thread_on_web">Vlákno pokračuje na threads.com</string>
     <string name="related_threads">Související vlákna</string>
+    <string name="media_description">Popis obrázku</string>
+    <string name="media_download">Stáhnout</string>
+    <string name="media_download_all">Stáhnout vše</string>
+    <string name="media_copy_link">Kopírovat odkaz</string>
+    <string name="media_picture">Obrázek</string>
+    <string name="media_picture_of">Obrázek %1$d z %2$d</string>
+    <string name="media_covered">Threads u těchto médií zobrazuje varování</string>
 </resources>

@@ -24,11 +24,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
@@ -49,8 +51,7 @@ import com.aimdi.xtanative.ui.plugins.LocalMediaSave
 import com.aimdi.xtanative.ui.plugins.MediaItem
 import com.aimdi.xtanative.ui.plugins.MediaPager
 import com.aimdi.xtanative.ui.plugins.MediaTiles
-import com.aimdi.xtanative.ui.plugins.TileHold
-import com.aimdi.xtanative.ui.plugins.tileHold
+import com.aimdi.xtanative.ui.plugins.pluginString
 import kotlin.math.roundToInt
 
 private val MediaShape = RoundedCornerShape(16.dp)
@@ -71,30 +72,41 @@ internal fun ThreadsPostMedia(app: ThreadsApp, post: ThreadsPost, modifier: Modi
     val settings by app.prefs.collectAsState()
     val quality = settings[MediaPrefs.videoQuality]
     val gallery = LocalThreadsGallery.current
+    var revealed by rememberSaveable(post.id) { mutableStateOf(false) }
+    if (!revealed && ThreadsMediaCover.covers(post, settings)) return MediaCover(modifier) { revealed = true }
+    var holding by remember(post) { mutableStateOf<Int?>(null) }
+    var describing by remember(post) { mutableStateOf<String?>(null) }
     BoxWithConstraints(modifier.fillMaxWidth()) {
         val density = LocalDensity.current
         val width = with(density) { maxWidth.toPx() }
         val layout = ThreadsStrip.layout(width, media.map { it.aspectRatio })
-        val tile: @Composable (Int, Float, Float, Modifier) -> Unit = { index, wide, tall, sized ->
-            val item = remember(post, index, quality, wide, tall) { ThreadsMediaItems.tile(post, media[index], quality, wide.roundToInt(), tall.roundToInt()) }
-            MediaTile(item, sized) { app.openMedia(post, index, opens, gallery) }
+        val items = remember(post, quality, layout) {
+            media.indices.map { ThreadsMediaItems.tile(post, media[it], quality, layout.widths[it].roundToInt(), layout.height.roundToInt()) }
+        }
+        val tile: @Composable (Int, Modifier) -> Unit = { index, sized ->
+            CompositionLocalProvider(LocalMediaSave provides { item: MediaItem -> app.saveMedia(post, index, item) }) {
+                MediaTile(items[index], index + 1, media.size, sized, onHold = { holding = index }) { app.openMedia(post, index, opens, gallery) }
+            }
         }
         if (media.size == 1) {
-            val shape = ThreadsStrip.plugin(media.single().aspectRatio)
-            tile(0, width, width / shape, Modifier.fillMaxWidth().aspectRatio(shape))
+            tile(0, Modifier.fillMaxWidth().aspectRatio(ThreadsStrip.plugin(media.single().aspectRatio)))
         } else {
             val toDp = { px: Float -> with(density) { px.toDp() } }
             val row = rememberLazyListState()
             Column(Modifier.fillMaxWidth()) {
                 LazyRow(Modifier.fillMaxWidth().height(toDp(layout.height)), state = row, horizontalArrangement = Arrangement.spacedBy(ThreadsStrip.GAP.dp)) {
                     itemsIndexed(media, key = { index, item -> "$index:${item.url}" }) { index, _ ->
-                        tile(index, layout.widths[index], layout.height, Modifier.width(toDp(layout.widths[index])).height(toDp(layout.height)))
+                        tile(index, Modifier.width(toDp(layout.widths[index])).height(toDp(layout.height)))
                     }
                 }
                 StripDots(row, layout.widths)
             }
         }
+        holding?.let { index ->
+            ThreadsMediaSheet(app, post, index, items, opens, onDescribe = { describing = items[index].description }) { holding = null }
+        }
     }
+    describing?.let { AltTextDialog(it) { describing = null } }
 }
 
 /** Which of a row's tiles is in view, as a dot for each: more than XTA draws, so a reader sees how many there are and where they are. */
@@ -115,32 +127,28 @@ private fun StripDots(row: LazyListState, widths: List<Float>) {
 
 /**
  * One tile, as XTA's (plugin_post_media.dart): a video plays in place as
- * the app's X videos do, under Settings › Media; a described picture
- * carries "ALT", and a long press shows its description, or saves a
- * picture that has none where the screen saves them.
+ * the app's X videos do, under Settings › Media, its ⋮ menu's Download
+ * naming the file as [ThreadsMediaFiles] does; a described picture carries
+ * "ALT", one without a description is named by its [place] of [count], and a
+ * long press offers what can be done with it ([ThreadsMediaSheet]).
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun MediaTile(item: MediaItem, modifier: Modifier, onClick: () -> Unit) {
+private fun MediaTile(item: MediaItem, place: Int, count: Int, modifier: Modifier, onHold: () -> Unit, onClick: () -> Unit) {
     if (item.kind != MediaItem.Kind.PHOTO) return MediaTiles(listOf(item), onOpen = { onClick() }, modifier = modifier, playing = true)
-    val save = LocalMediaSave.current
     var describing by remember { mutableStateOf(false) }
     val description = item.description
-    val hold: (() -> Unit)? = when (tileHold(item, save != null)) {
-        TileHold.DESCRIPTION -> { { describing = true } }
-        TileHold.SAVE -> save?.let { { it(item) } }
-        TileHold.NOTHING -> null
-    }
+    val named = description ?: if (count > 1) pluginString(Strings.media_picture_of, place, count) else pluginString(Strings.media_picture)
     Box(
         modifier
             .clip(MediaShape)
             .border(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant, MediaShape)
             .background(MaterialTheme.colorScheme.surfaceVariant)
-            .combinedClickable(onClick = onClick, onLongClick = hold),
+            .combinedClickable(onClick = onClick, onLongClick = onHold, onLongClickLabel = pluginString(Strings.more_info)),
     ) {
         AsyncImage(
             model = item.tileUrl,
-            contentDescription = item.alt,
+            contentDescription = named,
             contentScale = ContentScale.Crop,
             filterQuality = FilterQuality.Medium,
             modifier = Modifier.fillMaxSize(),
@@ -150,7 +158,11 @@ private fun MediaTile(item: MediaItem, modifier: Modifier, onClick: () -> Unit) 
     if (describing && description != null) AltTextDialog(description) { describing = false }
 }
 
-/** The viewer the post's media opened in: the app's, with each video's qualities in its menu and Download saving the one shown through the app's downloads. */
+/**
+ * The viewer the post's media opened in: the app's, with each video's
+ * qualities in its menu and Download saving the one shown through the app's
+ * downloads, named after the post ([ThreadsMediaFiles]).
+ */
 @Composable
 internal fun ThreadsMediaScreen(app: ThreadsApp, route: ThreadsRoute.Media) {
     val viewed = app.shelf.viewed(route.media)
@@ -160,7 +172,7 @@ internal fun ThreadsMediaScreen(app: ThreadsApp, route: ThreadsRoute.Media) {
         route.start,
         onClose = app.host::back,
         qualities = viewed?.qualities.orEmpty(),
-        onDownload = { app.host.download(it) },
+        onDownload = { item -> viewed?.source?.let { app.saveMedia(it, viewed.items.indexOf(item).coerceAtLeast(0), item) } ?: app.host.download(item) },
         onOpenPost = post?.let { { app.openPost(it) } },
     )
 }

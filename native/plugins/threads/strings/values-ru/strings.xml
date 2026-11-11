@@ -170,4 +170,11 @@
     <string name="more_replies_web">Больше ответов на threads.com</string>
     <string name="thread_on_web">Продолжение ветки на threads.com</string>
     <string name="related_threads">Похожие ветки</string>
+    <string name="media_description">Описание изображения</string>
+    <string name="media_download">Скачать</string>
+    <string name="media_download_all">Скачать все</string>
+    <string name="media_copy_link">Копировать ссылку</string>
+    <string name="media_picture">Изображение</string>
+    <string name="media_picture_of">Изображение %1$d из %2$d</string>
+    <string name="media_covered">Threads поставил предупреждение на это медиа</string>
 </resources>

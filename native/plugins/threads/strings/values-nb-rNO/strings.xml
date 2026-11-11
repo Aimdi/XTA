@@ -162,4 +162,11 @@
     <string name="more_replies_web">Flere svar på threads.com</string>
     <string name="thread_on_web">Tråden fortsetter på threads.com</string>
     <string name="related_threads">Relaterte tråder</string>
+    <string name="media_description">Bildebeskrivelse</string>
+    <string name="media_download">Last ned</string>
+    <string name="media_download_all">Last ned alle</string>
+    <string name="media_copy_link">Kopier lenke</string>
+    <string name="media_picture">Bilde</string>
+    <string name="media_picture_of">Bilde %1$d av %2$d</string>
+    <string name="media_covered">Threads har lagt en advarsel over dette mediet</string>
 </resources>

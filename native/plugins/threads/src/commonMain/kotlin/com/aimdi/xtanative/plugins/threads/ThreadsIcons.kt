@@ -47,7 +47,7 @@ internal object ThreadsIcons {
     /** Every glyph, for the test that draws them all. */
     internal val all: List<ImageVector> get() = listOf(Mark, PersonAdd, PersonRemove, Public, PauseCircle)
 
-    private fun icon(name: String, path: String): ImageVector =
+    internal fun icon(name: String, path: String): ImageVector =
         ImageVector.Builder(name = name, defaultWidth = 24.dp, defaultHeight = 24.dp, viewportWidth = 24f, viewportHeight = 24f)
             .addPath(pathData = PathParser().parsePathString(path).toNodes(), fill = SolidColor(Color.Black))
             .build()

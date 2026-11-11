@@ -412,7 +412,7 @@ internal class ThreadsApp(val host: PluginHost) {
     /** [post]'s pictures and videos in the viewer, from [index], each video at the quality the setting picks. */
     fun openMedia(post: ThreadsPost, index: Int, opens: Boolean = true) {
         val quality = current()[MediaPrefs.videoQuality]
-        val viewed = ThreadsViewed(ThreadsMediaItems.items(post, quality), ThreadsMediaItems.qualities(post), post.takeIf { opens })
+        val viewed = ThreadsViewed(ThreadsMediaItems.items(post, quality), ThreadsMediaItems.qualities(post), post.takeIf { opens }, post)
         host.open(ThreadsRoutes.media(shelf.put(viewed), index))
     }
 
@@ -427,6 +427,11 @@ internal class ThreadsApp(val host: PluginHost) {
         val quality = current()[MediaPrefs.videoQuality]
         val viewed = ThreadsViewed(among.flatMap { ThreadsMediaItems.items(it, quality) }, among.flatMap(ThreadsMediaItems::qualities))
         host.open(ThreadsRoutes.media(shelf.put(viewed), start))
+    }
+
+    /** [work] run beyond the screen that started it, as a batch of downloads is. */
+    fun beyondScreen(work: suspend () -> Unit) {
+        scope.launch { work() }
     }
 
     companion object {

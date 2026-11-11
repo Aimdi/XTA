@@ -162,4 +162,11 @@
     <string name="more_replies_web">Erantzun gehiago threads.com-en</string>
     <string name="thread_on_web">Hari honek threads.com-en jarraitzen du</string>
     <string name="related_threads">Lotutako hariak</string>
+    <string name="media_description">Irudiaren deskribapena</string>
+    <string name="media_download">Deskargatu</string>
+    <string name="media_download_all">Deskargatu dena</string>
+    <string name="media_copy_link">Kopiatu esteka</string>
+    <string name="media_picture">Irudia</string>
+    <string name="media_picture_of">%1$d. irudia (%2$d guztira)</string>
+    <string name="media_covered">Threads-ek abisu bat jarri dio multimedia honi</string>
 </resources>

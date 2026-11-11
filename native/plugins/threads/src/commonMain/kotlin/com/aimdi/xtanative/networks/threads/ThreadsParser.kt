@@ -224,7 +224,7 @@ object ThreadsParser {
         val user = post["user"]
         val handle = user["username"].string.orEmpty().trim().lowercase()
         val text = post["caption"]["text"].string.orEmpty().trim()
-        val media = media(post).ifEmpty { media(post["text_post_app_info"]["linked_inline_media"]) }
+        val media = ThreadsMediaParts.of(post)
         val linkCard = linkCard(post)
         val quoted = if (withQuote) quotedPost(post) else null
         if (handle.isEmpty() || (text.isEmpty() && media.isEmpty() && linkCard == null && quoted == null)) return null
@@ -254,6 +254,7 @@ object ThreadsParser {
             replyToHandle = replyTo,
             isReply = replyTo != null || info["is_reply"].boolean == true || info["reply_to_author"].exists,
             facts = ThreadsPostFactsReader.of(post),
+            mediaCovered = ThreadsMediaParts.covered(post),
         )
     }
 

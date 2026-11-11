@@ -162,4 +162,11 @@
     <string name="more_replies_web">Weitere Antworten auf threads.com</string>
     <string name="thread_on_web">Dieser Thread geht auf threads.com weiter</string>
     <string name="related_threads">Ähnliche Threads</string>
+    <string name="media_description">Bildbeschreibung</string>
+    <string name="media_download">Herunterladen</string>
+    <string name="media_download_all">Alle herunterladen</string>
+    <string name="media_copy_link">Link kopieren</string>
+    <string name="media_picture">Bild</string>
+    <string name="media_picture_of">Bild %1$d von %2$d</string>
+    <string name="media_covered">Threads hat diese Medien mit einer Warnung versehen</string>
 </resources>
