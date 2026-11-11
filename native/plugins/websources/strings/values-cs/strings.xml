@@ -60,4 +60,5 @@
     <string name="update_title">Aktualizovat %1$s?</string>
     <string name="in_home_feed">Míchat sledované seznamy do Sleduji</string>
     <string name="in_home_feed_description">Zobrazovat nové příspěvky ze sledovaných seznamů v časové ose Sleduji.</string>
+    <string name="settings">Nastavení</string>
 </resources>

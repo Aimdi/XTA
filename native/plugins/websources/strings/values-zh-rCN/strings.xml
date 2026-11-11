@@ -54,4 +54,5 @@
     <string name="update_title">更新 %1$s？</string>
     <string name="in_home_feed">将已关注的列表混入“正在关注”</string>
     <string name="in_home_feed_description">在“正在关注”时间线中显示已关注列表的新帖子。</string>
+    <string name="settings">设置</string>
 </resources>

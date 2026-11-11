@@ -60,4 +60,5 @@
     <string name="update_title">Atualizar %1$s?</string>
     <string name="in_home_feed">Misturar as listas seguidas em A seguir</string>
     <string name="in_home_feed_description">Mostrar publicações novas das listas seguidas na cronologia A seguir.</string>
+    <string name="settings">Definições</string>
 </resources>

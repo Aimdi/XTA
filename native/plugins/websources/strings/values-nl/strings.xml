@@ -57,4 +57,5 @@
     <string name="update_title">%1$s bijwerken?</string>
     <string name="in_home_feed">Gevolgde lijsten mengen in Volgend</string>
     <string name="in_home_feed_description">Nieuwe berichten van gevolgde lijsten tonen in de tijdlijn Volgend.</string>
+    <string name="settings">Instellingen</string>
 </resources>

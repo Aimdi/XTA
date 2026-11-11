@@ -57,4 +57,5 @@
     <string name="update_title">%1$s eguneratu nahi duzu?</string>
     <string name="in_home_feed">Nahastu jarraitutako zerrendak Jarraitzen atalean</string>
     <string name="in_home_feed_description">Erakutsi jarraitutako zerrendetako argitalpen berriak Jarraitzen denbora-lerroan.</string>
+    <string name="settings">Ezarpenak</string>
 </resources>

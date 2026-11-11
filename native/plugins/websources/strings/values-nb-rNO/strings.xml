@@ -57,4 +57,5 @@
     <string name="update_title">Oppdatere %1$s?</string>
     <string name="in_home_feed">Bland fulgte lister inn i Følger</string>
     <string name="in_home_feed_description">Vis nye innlegg fra fulgte lister i tidslinjen Følger.</string>
+    <string name="settings">Innstillinger</string>
 </resources>

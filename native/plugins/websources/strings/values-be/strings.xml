@@ -63,4 +63,5 @@
     <string name="update_title">Абнавіць %1$s?</string>
     <string name="in_home_feed">Змешваць падпісаныя спісы ў «Чытаю»</string>
     <string name="in_home_feed_description">Паказваць новыя допісы з падпісаных спісаў у стужцы «Чытаю».</string>
+    <string name="settings">Налады</string>
 </resources>

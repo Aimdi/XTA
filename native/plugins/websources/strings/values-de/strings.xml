@@ -57,4 +57,5 @@
     <string name="update_title">%1$s aktualisieren?</string>
     <string name="in_home_feed">Gefolgte Listen in Folgend mischen</string>
     <string name="in_home_feed_description">Neue Beiträge gefolgter Listen in der Folgend-Zeitleiste zeigen.</string>
+    <string name="settings">Einstellungen</string>
 </resources>

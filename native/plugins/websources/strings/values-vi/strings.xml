@@ -54,4 +54,5 @@
     <string name="update_title">Cập nhật %1$s?</string>
     <string name="in_home_feed">Trộn danh sách đã theo dõi vào Đang theo dõi</string>
     <string name="in_home_feed_description">Hiện bài đăng mới từ danh sách đã theo dõi trên dòng thời gian Đang theo dõi.</string>
+    <string name="settings">Cài đặt</string>
 </resources>

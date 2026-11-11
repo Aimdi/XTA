@@ -63,4 +63,5 @@
     <string name="update_title">Оновити %1$s?</string>
     <string name="in_home_feed">Змішувати підписані списки в стрічці «Читаю»</string>
     <string name="in_home_feed_description">Показувати нові дописи з підписаних списків у стрічці «Читаю».</string>
+    <string name="settings">Налаштування</string>
 </resources>

@@ -57,4 +57,5 @@
     <string name="update_title">%1$s güncellensin mi?</string>
     <string name="in_home_feed">Takip edilen listeleri Takip ediliyor’a karıştır</string>
     <string name="in_home_feed_description">Takip edilen listelerdeki yeni gönderileri Takip ediliyor zaman akışında göster.</string>
+    <string name="settings">Ayarlar</string>
 </resources>

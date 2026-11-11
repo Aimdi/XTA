@@ -60,4 +60,5 @@
     <string name="update_title">Aggiornare %1$s?</string>
     <string name="in_home_feed">Mescola gli elenchi seguiti in Seguiti</string>
     <string name="in_home_feed_description">Mostra i nuovi post degli elenchi seguiti nella cronologia Seguiti.</string>
+    <string name="settings">Impostazioni</string>
 </resources>

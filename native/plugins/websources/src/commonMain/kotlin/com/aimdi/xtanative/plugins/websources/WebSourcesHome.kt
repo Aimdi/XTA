@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
@@ -34,9 +35,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.websources.InstalledWebSource
 import com.aimdi.xtanative.ui.common.Hairline
-import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.EmptyPane
+import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
@@ -51,16 +53,17 @@ import com.aimdi.xtanative.ui.plugins.pluginString
 internal fun WebSourcesHome(app: WebSourcesApp, frame: PluginFrame) {
     val installed by app.installed.collectAsState()
     Column(Modifier.fillMaxSize()) {
+        // XTA's chrome here has no tabs and, on Home, no title: Home names the plugin. Add source, then Settings.
         ReadingControlsBar {
-            Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text(pluginString(Strings.plugin_name), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+            PluginHomeTabs(emptyList()) {
                 IconButton(onClick = app::openAdd) { Icon(Icons.Default.Add, pluginString(Strings.add)) }
+                IconButton(onClick = app.host::openSettings) { Icon(Icons.Outlined.Settings, pluginString(Strings.settings)) }
             }
         }
         Hairline()
         val sources = installed
         when {
-            sources == null -> LoadingRow()
+            sources == null -> PluginFeedSkeleton()
             sources.isEmpty() -> EmptySources(app)
             else -> {
                 val list = rememberLazyListState()

@@ -63,4 +63,5 @@
     <string name="update_title">Zaktualizować %1$s?</string>
     <string name="in_home_feed">Mieszaj obserwowane listy w Obserwowane</string>
     <string name="in_home_feed_description">Pokazuj nowe posty z obserwowanych list na osi Obserwowane.</string>
+    <string name="settings">Ustawienia</string>
 </resources>

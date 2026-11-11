@@ -44,7 +44,6 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.websources.WebSourceDefinition
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
-import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 import kotlinx.coroutines.launch
 
 /**
@@ -118,11 +117,10 @@ private fun FollowButton(app: WebSourcesApp, source: WebSourceDefinition, page: 
 private fun SourceMenu(app: WebSourcesApp, source: WebSourceDefinition) {
     var open by remember { mutableStateOf(false) }
     var removing by remember { mutableStateOf(false) }
-    val outside = rememberOpenOutside()
     Box {
         IconButton(onClick = { open = true }) { Icon(Icons.Default.MoreVert, pluginString(Strings.more_options)) }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
-            DropdownMenuItem(text = { Text(pluginString(Strings.open_in_browser)) }, onClick = { open = false; outside(source.homepage.toString()) })
+            DropdownMenuItem(text = { Text(pluginString(Strings.open_in_browser)) }, onClick = { open = false; app.host.openLink(source.homepage.toString()) })
             DropdownMenuItem(text = { Text(pluginString(Strings.remove)) }, onClick = { open = false; removing = true })
         }
     }

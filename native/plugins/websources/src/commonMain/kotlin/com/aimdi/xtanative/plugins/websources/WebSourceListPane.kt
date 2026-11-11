@@ -38,6 +38,8 @@ import com.aimdi.xtanative.networks.websources.WebSourceLayout
 import com.aimdi.xtanative.networks.websources.WebSourceReading
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.EmptyPane
+import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
+import com.aimdi.xtanative.ui.plugins.PluginGridSkeleton
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -56,7 +58,7 @@ internal fun WebSourceListPane(app: WebSourcesApp, feed: WebSourceFeed, padding:
     val error = state.error
     when {
         state.items.isEmpty() && error != null -> return RetryMessage(failureText(error), feed::refresh)
-        state.items.isEmpty() && !state.loaded -> return LoadingRow()
+        state.items.isEmpty() && !state.loaded -> return if (feed.source.layout == WebSourceLayout.GALLERY) PluginGridSkeleton(Modifier.padding(padding)) else PluginFeedSkeleton(Modifier.padding(padding))
     }
     PullToRefreshBox(isRefreshing = state.loading && state.loaded, onRefresh = feed::refresh, modifier = Modifier.fillMaxSize()) {
         when {

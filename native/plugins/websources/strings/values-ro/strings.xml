@@ -60,4 +60,5 @@
     <string name="update_title">Actualizezi %1$s?</string>
     <string name="in_home_feed">Amestecă listele urmărite în Urmăresc</string>
     <string name="in_home_feed_description">Afișează postările noi din listele urmărite în cronologia Urmăresc.</string>
+    <string name="settings">Setări</string>
 </resources>

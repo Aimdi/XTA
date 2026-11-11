@@ -57,4 +57,5 @@
     <string name="update_title">Ĉu ĝisdatigi %1$s?</string>
     <string name="in_home_feed">Miksi sekvatajn listojn en Sekvataj</string>
     <string name="in_home_feed_description">Montri novajn afiŝojn el sekvataj listoj en la templinio Sekvataj.</string>
+    <string name="settings">Agordoj</string>
 </resources>

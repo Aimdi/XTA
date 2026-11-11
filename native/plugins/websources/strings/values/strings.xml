@@ -57,4 +57,5 @@
     <string name="update_title">Update %1$s?</string>
     <string name="in_home_feed">Mix followed lists into Following</string>
     <string name="in_home_feed_description">Show new posts from followed lists in the Following timeline.</string>
+    <string name="settings">Settings</string>
 </resources>

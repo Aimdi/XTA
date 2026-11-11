@@ -69,4 +69,5 @@
     <string name="update_title">تحديث %1$s؟</string>
     <string name="in_home_feed">دمج القوائم المتابَعة في «أتابع»</string>
     <string name="in_home_feed_description">إظهار المنشورات الجديدة من القوائم المتابَعة في الخط الزمني «أتابع».</string>
+    <string name="settings">الإعدادات</string>
 </resources>

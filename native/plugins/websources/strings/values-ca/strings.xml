@@ -60,4 +60,5 @@
     <string name="update_title">Vols actualitzar %1$s?</string>
     <string name="in_home_feed">Combina les llistes seguides a Seguint</string>
     <string name="in_home_feed_description">Mostra publicacions noves de les llistes seguides a la cronologia Seguint.</string>
+    <string name="settings">Configuració</string>
 </resources>
