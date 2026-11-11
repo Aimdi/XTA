@@ -150,9 +150,41 @@ class RssClientTest {
     }
 
     @Test
-    fun aSitePageThatCannotBeReadFailsTheLookup() = runBlocking {
-        val failure = assertFailsWith<NetworkRequestException> { RssClient(FakeWeb(emptyMap())).lookup("https://gone.example/") }
-        assertEquals(404, failure.code)
+    fun aSitePageThatCannotBeReadFailsTheLookupOnceNoUsualPathHasAFeed() = runBlocking {
+        val web = FakeWeb(emptyMap())
+        val failure = assertFailsWith<NetworkRequestException> { RssClient(web).lookup("https://gone.example/") }
+        assertEquals(404, failure.code, "the page's own refusal is what the reader is told")
+        assertEquals(7, web.asked.size, "the page, then the six usual paths")
+    }
+
+    @Test
+    fun aRefusedSitePageStillFindsItsFeedAtAUsualPath() = runBlocking {
+        val walled = FakeWeb(mapOf("https://walled.example/feed" to fixture("slow_boring.xml")))
+        assertEquals("https://walled.example/feed", RssClient(walled).lookup("walled.example").feedUrl)
+
+        val gone = FakeWeb(mapOf("https://moved.example/feed" to fixture("slow_boring.xml")))
+        assertFailsWith<NetworkRequestException> { RssClient(gone).lookup("https://moved.example/old/rss.xml") }
+        assertEquals(listOf("https://moved.example/old/rss.xml"), gone.asked, "a feed's own address that fails is not swapped for another feed")
+    }
+
+    @Test
+    fun theTimelineReadsAFewFeedsAtATime() = runBlocking {
+        var reading = 0
+        var most = 0
+        val web = object : XHttp {
+            override suspend fun get(url: HttpUrl, headers: Map<String, String>, followRedirects: Boolean): XResponse {
+                synchronized(this) { reading++; most = maxOf(most, reading) }
+                kotlinx.coroutines.delay(5)
+                synchronized(this) { reading-- }
+                return XResponse(200, fixture("rdf.xml"))
+            }
+        }
+        val feeds = (1..20).map { RssFeed(id = "f$it", feedUrl = "https://f$it.example/feed", name = "F$it") }
+
+        val timeline = RssClient(web).timeline(feeds)
+
+        assertEquals(0, timeline.failed)
+        assertEquals(RssClient.AT_ONCE, most)
     }
 
     @Test

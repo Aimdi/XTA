@@ -41,4 +41,6 @@
     <string name="unread">Irakurri gabe</string>
     <string name="in_home_feed">Nahastu jarraitutako jarioak Jarraitzen atalean</string>
     <string name="in_home_feed_description">Erakutsi jarraitutako jarioetako elementu berriak Jarraitzen denbora-lerroan.</string>
+    <string name="add_not_a_url">Hori ez da web-helbide bat.</string>
+    <string name="add_no_feed">Ez da RSS edo Atom jariorik aurkitu, ez orrian ez ohiko helbideetan.</string>
 </resources>

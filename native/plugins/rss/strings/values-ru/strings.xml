@@ -41,4 +41,6 @@
     <string name="unread">Непрочитанное</string>
     <string name="in_home_feed">Смешивать подписки в ленте «Читаю»</string>
     <string name="in_home_feed_description">Показывать новые записи из подписок в ленте «Читаю».</string>
+    <string name="add_not_a_url">Это не веб-адрес.</string>
+    <string name="add_no_feed">Там не найдено ленты RSS или Atom — ни на странице, ни по обычным адресам.</string>
 </resources>

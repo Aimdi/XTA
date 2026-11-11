@@ -41,4 +41,6 @@
     <string name="unread">No llegit</string>
     <string name="in_home_feed">Combina les fonts seguides a Seguint</string>
     <string name="in_home_feed_description">Mostra elements nous de les fonts seguides a la cronologia Seguint.</string>
+    <string name="add_not_a_url">Això no és una adreça web.</string>
+    <string name="add_no_feed">No s\'hi ha trobat cap canal RSS o Atom, ni a la pàgina ni a les adreces habituals.</string>
 </resources>

@@ -41,4 +41,6 @@
     <string name="unread">Ulest</string>
     <string name="in_home_feed">Bland fulgte strømmer inn i Følger</string>
     <string name="in_home_feed_description">Vis nye innlegg fra fulgte strømmer i tidslinjen Følger.</string>
+    <string name="add_not_a_url">Det er ikke en nettadresse.</string>
+    <string name="add_no_feed">Fant ingen RSS- eller Atom-strøm der, verken på siden eller på de vanlige adressene.</string>
 </resources>

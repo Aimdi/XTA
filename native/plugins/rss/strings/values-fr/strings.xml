@@ -41,4 +41,6 @@
     <string name="unread">Non lus</string>
     <string name="in_home_feed">Mélanger les flux suivis dans Abonnements</string>
     <string name="in_home_feed_description">Afficher les nouveaux éléments des flux suivis dans le fil Abonnements.</string>
+    <string name="add_not_a_url">Ce n\'est pas une adresse web.</string>
+    <string name="add_no_feed">Aucun flux RSS ou Atom n\'a été trouvé, ni sur la page ni aux adresses habituelles.</string>
 </resources>

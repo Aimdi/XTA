@@ -41,4 +41,6 @@
     <string name="unread">Unread</string>
     <string name="in_home_feed">Mix followed feeds into Following</string>
     <string name="in_home_feed_description">Show new items from followed feeds in the Following timeline.</string>
+    <string name="add_not_a_url">That is not a web address.</string>
+    <string name="add_no_feed">No RSS or Atom feed was found there, on the page or at the usual addresses.</string>
 </resources>

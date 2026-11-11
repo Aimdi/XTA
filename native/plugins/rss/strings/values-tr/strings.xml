@@ -41,4 +41,6 @@
     <string name="unread">Okunmamış</string>
     <string name="in_home_feed">Takip edilen akışları Takip ediliyor’a karıştır</string>
     <string name="in_home_feed_description">Takip edilen akışlardaki yeni öğeleri Takip ediliyor zaman akışında göster.</string>
+    <string name="add_not_a_url">Bu bir web adresi değil.</string>
+    <string name="add_no_feed">Sayfada veya olağan adreslerde RSS ya da Atom akışı bulunamadı.</string>
 </resources>

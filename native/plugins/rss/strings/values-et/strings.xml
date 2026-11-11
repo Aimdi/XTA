@@ -41,4 +41,6 @@
     <string name="unread">Lugemata</string>
     <string name="in_home_feed">Sega jälgitavad vood voogu Jälgin</string>
     <string name="in_home_feed_description">Näita jälgitavate voogude uusi kirjeid ajajoones Jälgin.</string>
+    <string name="add_not_a_url">See pole veebiaadress.</string>
+    <string name="add_no_feed">Sealt ei leitud RSS- ega Atom-voogu, ei lehelt ega tavalistelt aadressidelt.</string>
 </resources>

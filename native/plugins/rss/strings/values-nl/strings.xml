@@ -41,4 +41,6 @@
     <string name="unread">Ongelezen</string>
     <string name="in_home_feed">Gevolgde feeds mengen in Volgend</string>
     <string name="in_home_feed_description">Nieuwe items van gevolgde feeds tonen in de tijdlijn Volgend.</string>
+    <string name="add_not_a_url">Dat is geen webadres.</string>
+    <string name="add_no_feed">Daar is geen RSS- of Atom-feed gevonden, niet op de pagina en niet op de gebruikelijke adressen.</string>
 </resources>

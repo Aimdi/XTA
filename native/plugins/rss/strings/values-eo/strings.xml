@@ -41,4 +41,6 @@
     <string name="unread">Nelegita</string>
     <string name="in_home_feed">Miksi sekvatajn fluojn en Sekvataj</string>
     <string name="in_home_feed_description">Montri novajn erojn el sekvataj fluoj en la templinio Sekvataj.</string>
+    <string name="add_not_a_url">Tio ne estas retadreso.</string>
+    <string name="add_no_feed">Neniu RSS- aŭ Atom-fluo troviĝis tie, nek en la paĝo nek ĉe la kutimaj adresoj.</string>
 </resources>

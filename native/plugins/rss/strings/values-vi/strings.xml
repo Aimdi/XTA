@@ -41,4 +41,6 @@
     <string name="unread">Chưa đọc</string>
     <string name="in_home_feed">Trộn nguồn đã theo dõi vào Đang theo dõi</string>
     <string name="in_home_feed_description">Hiện các mục mới từ nguồn đã theo dõi trên dòng thời gian Đang theo dõi.</string>
+    <string name="add_not_a_url">Đó không phải là địa chỉ web.</string>
+    <string name="add_no_feed">Không tìm thấy nguồn RSS hay Atom nào, cả trên trang lẫn ở các địa chỉ thường dùng.</string>
 </resources>

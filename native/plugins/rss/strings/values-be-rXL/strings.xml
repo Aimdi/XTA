@@ -41,4 +41,6 @@
     <string name="unread">Niepračytanaje</string>
     <string name="in_home_feed">Zmešvać padpisanyja stužki ŭ «Čytaju»</string>
     <string name="in_home_feed_description">Pakazvać novyja zapisy z padpisanych stužak u stužcy «Čytaju».</string>
+    <string name="add_not_a_url">Heta nie veb-adras.</string>
+    <string name="add_no_feed">Tam nie znojdziena stužki RSS abo Atom — ni na staroncy, ni pa zvyčajnych adrasach.</string>
 </resources>

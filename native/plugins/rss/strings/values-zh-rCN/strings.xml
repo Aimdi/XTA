@@ -41,4 +41,6 @@
     <string name="unread">未读</string>
     <string name="in_home_feed">将已关注的订阅源混入“正在关注”</string>
     <string name="in_home_feed_description">在“正在关注”时间线中显示已关注订阅源的新条目。</string>
+    <string name="add_not_a_url">这不是网址。</string>
+    <string name="add_no_feed">在该页面和常用地址上都没有找到 RSS 或 Atom 订阅源。</string>
 </resources>

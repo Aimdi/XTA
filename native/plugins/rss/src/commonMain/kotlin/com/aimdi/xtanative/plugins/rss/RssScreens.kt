@@ -141,7 +141,7 @@ internal fun RssAddScreen(app: RssApp) {
             val error = state.error
             when {
                 state.loading -> Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
-                error != null -> RetryMessage(pluginString(Strings.add_error) + "\n" + networkProblemText(problemOf(error), NETWORK), { lookup.follow(address) })
+                error != null -> RetryMessage(pluginString(Strings.add_error) + "\n" + (RssAddFailures.reasonOf(error)?.let { pluginString(it) } ?: networkProblemText(problemOf(error), NETWORK)), { lookup.follow(address) })
                 else -> state.value?.let { feed -> FoundFeed(feed) { app.addToGroup(feed) } }
             }
         }

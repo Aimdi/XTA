@@ -41,4 +41,6 @@
     <string name="unread">Ungelesen</string>
     <string name="in_home_feed">Gefolgte Feeds in Folgend mischen</string>
     <string name="in_home_feed_description">Neue Einträge gefolgter Feeds in der Folgend-Zeitleiste zeigen.</string>
+    <string name="add_not_a_url">Das ist keine Webadresse.</string>
+    <string name="add_no_feed">Dort wurde kein RSS- oder Atom-Feed gefunden, weder auf der Seite noch unter den üblichen Adressen.</string>
 </resources>

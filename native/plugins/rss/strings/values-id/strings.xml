@@ -41,4 +41,6 @@
     <string name="unread">Belum dibaca</string>
     <string name="in_home_feed">Campur umpan yang diikuti ke Mengikuti</string>
     <string name="in_home_feed_description">Tampilkan item baru dari umpan yang diikuti di linimasa Mengikuti.</string>
+    <string name="add_not_a_url">Itu bukan alamat web.</string>
+    <string name="add_no_feed">Tidak ada feed RSS atau Atom di sana, baik di halaman maupun di alamat yang biasa.</string>
 </resources>

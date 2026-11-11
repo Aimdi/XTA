@@ -11,6 +11,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -55,17 +57,20 @@ class RssClient(private val http: XHttp) {
      * Where the feed of [input] is: the address itself when it answers with a
      * feed; else the first feed its page names in `<link rel="alternate">`;
      * else the first of the usual paths (`/feed`, `/rss`, `/atom.xml`…) that
-     * answers with one. [RssException] when none does.
+     * answers with one, which are tried too when a site's page is refused (a
+     * bot wall, a moved home page) though not a feed's own address. When none
+     * answers, the page's refusal, else [RssException].
      */
     suspend fun resolveFeedUrl(input: String): String = resolve(input).first
 
     /**
      * Every followed feed's items as one list, newest first. Feeds are read
-     * together; one that cannot be read is counted, not thrown, so it does
+     * side by side, [AT_ONCE] at a time; one that cannot be read is counted, not thrown, so it does
      * not empty the rest.
      */
     suspend fun timeline(feeds: List<RssFeed>): RssTimeline = coroutineScope {
-        val read = feeds.map { feed -> async { orNull { items(feed).items } } }.awaitAll()
+        val reading = Semaphore(AT_ONCE)
+        val read = feeds.map { feed -> async { reading.withPermit { orNull { items(feed).items } } } }.awaitAll()
         RssTimeline(Rss.merge(emptyList(), read.filterNotNull().flatten()), failed = read.count { it == null })
     }
 
@@ -73,12 +78,20 @@ class RssClient(private val http: XHttp) {
         val trimmed = input.trim()
         val start = (if ("://" in trimmed) trimmed else "https://$trimmed").toHttpUrlOrNull()
             ?: throw RssException(RssException.Reason.NOT_A_URL, "Not a web address: $input")
-        val body = read(start)
+        val body = try {
+            read(start)
+        } catch (refused: NetworkRequestException) {
+            if (Rss.looksLikeFeedUrl(start.toString())) throw refused
+            return firstFeed(RssParser.commonFeedPaths(start)) ?: throw refused
+        }
         if (RssParser.looksLikeFeed(body)) return start.toString() to body
-        val candidates = (RssParser.discoverFeedUrls(body, start) + RssParser.commonFeedPaths(start)).distinct()
-        return candidates.firstNotNullOfOrNull { candidate -> feedAt(candidate)?.let { candidate to it } }
+        return firstFeed(RssParser.discoverFeedUrls(body, start) + RssParser.commonFeedPaths(start))
             ?: throw RssException(RssException.Reason.NO_FEED, "No RSS or Atom feed at $input")
     }
+
+    /** The first of [candidates] that answers with a feed, with its document. */
+    private suspend fun firstFeed(candidates: List<String>): Pair<String, String>? =
+        candidates.distinct().firstNotNullOfOrNull { candidate -> feedAt(candidate)?.let { candidate to it } }
 
     /** The feed document at [url], or null when it cannot be read or is not a feed. */
     private suspend fun feedAt(url: String): String? =
@@ -107,6 +120,9 @@ class RssClient(private val http: XHttp) {
 
     companion object {
         const val USER_AGENT = "XTA RSS plugin"
+
+        /** How many feeds are read at once: a long list is not asked for all together. */
+        const val AT_ONCE = 6
         const val ACCEPT = "application/rss+xml, application/atom+xml, application/xml, text/xml, text/html;q=0.8, */*;q=0.5"
 
         private val HEADERS = mapOf("User-Agent" to USER_AGENT, "Accept" to ACCEPT)

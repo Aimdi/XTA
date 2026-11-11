@@ -4,6 +4,7 @@ import java.io.IOException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 
 class RssOpmlTest {
@@ -53,5 +54,29 @@ class RssOpmlTest {
         assertEquals(RssOpmlImport(added = 1, alreadyFollowed = 1, failed = 1, total = 3), result)
         assertEquals(listOf(0, 1, 2, 3), heard.map { it.done })
         assertEquals(listOf("https://blog.example/feed", "https://new.example/rss"), followed.map { it.id })
+    }
+
+    @Test
+    fun anImportReadsAFewFeedsAtOnceAndFollowsThemInTheFilesOrder(): Unit = runBlocking {
+        val urls = (1..10).map { "https://f$it.example/feed" }
+        val followed = ArrayList<String>()
+        var reading = 0
+        var most = 0
+
+        RssOpml.import(
+            urls = urls,
+            isFollowed = { false },
+            lookup = { url ->
+                reading++
+                most = maxOf(most, reading)
+                delay(if ("f1." in url) 20L else 1L)
+                reading--
+                RssFeed(id = url, feedUrl = url, name = url)
+            },
+            follow = { followed += it.id },
+        )
+
+        assertEquals(urls, followed)
+        assertEquals(RssOpml.AT_ONCE, most)
     }
 }

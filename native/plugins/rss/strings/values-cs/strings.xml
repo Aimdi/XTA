@@ -41,4 +41,6 @@
     <string name="unread">Nepřečtené</string>
     <string name="in_home_feed">Míchat sledované kanály do Sleduji</string>
     <string name="in_home_feed_description">Zobrazovat nové položky ze sledovaných kanálů v časové ose Sleduji.</string>
+    <string name="add_not_a_url">Toto není webová adresa.</string>
+    <string name="add_no_feed">Nebyl nalezen žádný kanál RSS ani Atom, na stránce ani na obvyklých adresách.</string>
 </resources>

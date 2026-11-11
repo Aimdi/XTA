@@ -41,4 +41,6 @@
     <string name="unread">Непрачытанае</string>
     <string name="in_home_feed">Змешваць падпісаныя стужкі ў «Чытаю»</string>
     <string name="in_home_feed_description">Паказваць новыя запісы з падпісаных стужак у стужцы «Чытаю».</string>
+    <string name="add_not_a_url">Гэта не вэб-адрас.</string>
+    <string name="add_no_feed">Там не знойдзена стужкі RSS або Atom — ні на старонцы, ні па звычайных адрасах.</string>
 </resources>

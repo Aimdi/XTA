@@ -41,4 +41,6 @@
     <string name="unread">未読</string>
     <string name="in_home_feed">フォロー中にフィードを混ぜる</string>
     <string name="in_home_feed_description">フォロー中のタイムラインに、フォローしたフィードの新しい項目を表示します。</string>
+    <string name="add_not_a_url">これはウェブアドレスではありません。</string>
+    <string name="add_no_feed">ページにも一般的なアドレスにも、RSS や Atom のフィードが見つかりませんでした。</string>
 </resources>

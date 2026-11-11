@@ -41,4 +41,6 @@
     <string name="unread">अपठित</string>
     <string name="in_home_feed">फ़ॉलो की गई फ़ीड को फ़ॉलोइंग में मिलाएँ</string>
     <string name="in_home_feed_description">फ़ॉलोइंग टाइमलाइन में फ़ॉलो की गई फ़ीड की नई प्रविष्टियाँ दिखाएँ।</string>
+    <string name="add_not_a_url">यह वेब पता नहीं है।</string>
+    <string name="add_no_feed">वहाँ कोई RSS या Atom फ़ीड नहीं मिली, न पेज पर और न सामान्य पतों पर।</string>
 </resources>

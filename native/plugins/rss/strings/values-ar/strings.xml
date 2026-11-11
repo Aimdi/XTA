@@ -41,4 +41,6 @@
     <string name="unread">غير مقروء</string>
     <string name="in_home_feed">دمج الخلاصات المتابَعة في «أتابع»</string>
     <string name="in_home_feed_description">إظهار العناصر الجديدة من الخلاصات المتابَعة في الخط الزمني «أتابع».</string>
+    <string name="add_not_a_url">هذا ليس عنوان ويب.</string>
+    <string name="add_no_feed">لم يُعثر على موجز RSS أو Atom هناك، لا في الصفحة ولا في العناوين المعتادة.</string>
 </resources>

@@ -41,4 +41,6 @@
     <string name="unread">Nieprzeczytane</string>
     <string name="in_home_feed">Mieszaj obserwowane kanały w Obserwowane</string>
     <string name="in_home_feed_description">Pokazuj nowe pozycje z obserwowanych kanałów na osi Obserwowane.</string>
+    <string name="add_not_a_url">To nie jest adres internetowy.</string>
+    <string name="add_no_feed">Nie znaleziono tam kanału RSS ani Atom — ani na stronie, ani pod typowymi adresami.</string>
 </resources>

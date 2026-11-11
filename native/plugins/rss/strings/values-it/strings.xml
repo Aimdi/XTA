@@ -41,4 +41,6 @@
     <string name="unread">Non letti</string>
     <string name="in_home_feed">Mescola i feed seguiti in Seguiti</string>
     <string name="in_home_feed_description">Mostra i nuovi elementi dei feed seguiti nella cronologia Seguiti.</string>
+    <string name="add_not_a_url">Questo non è un indirizzo web.</string>
+    <string name="add_no_feed">Nessun feed RSS o Atom trovato, né nella pagina né agli indirizzi consueti.</string>
 </resources>

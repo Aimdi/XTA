@@ -41,4 +41,6 @@
     <string name="unread">Não lido</string>
     <string name="in_home_feed">Misturar as fontes seguidas em A seguir</string>
     <string name="in_home_feed_description">Mostrar novos itens das fontes seguidas na cronologia A seguir.</string>
+    <string name="add_not_a_url">Isso não é um endereço web.</string>
+    <string name="add_no_feed">Não foi encontrado nenhum feed RSS ou Atom, nem na página nem nos endereços habituais.</string>
 </resources>
