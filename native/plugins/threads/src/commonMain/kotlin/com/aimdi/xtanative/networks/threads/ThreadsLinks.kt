@@ -10,6 +10,9 @@ sealed interface ThreadsLink {
 
     /** A post; [handle] is empty for a short `/t/` link, whose author is known once its page is read. */
     data class Post(val url: String, val handle: String) : ThreadsLink
+
+    /** What Threads' search page shows: posts for words, or with a tag's `serp_type` the posts filed under it. */
+    data class Search(val terms: ThreadsSearchTerms) : ThreadsLink
 }
 
 /** Handles, post links and addresses on threads.com, read as XTA reads them. */
@@ -55,7 +58,11 @@ object ThreadsLinks {
         return link.queryParameter("u")?.trim()?.ifEmpty { null } ?: url
     }
 
-    /** What a threads.net or threads.com link opens: a profile or a post; null for anything else. */
+    /**
+     * What a threads.net or threads.com link opens: a profile, a post, or a
+     * search or topic page; null for anything else, such as Threads' own
+     * pages (`/login`, `/settings`), which are no one's profile.
+     */
     fun parse(url: String): ThreadsLink? {
         val link = webUrl(url)?.takeIf { hostIs(it.host, "threads.net", "threads.com") } ?: return null
         val parts = segments(link)
@@ -64,6 +71,8 @@ object ThreadsLinks {
         if (first.lowercase() == "t") {
             return parts.getOrNull(1)?.takeIf { it.isNotEmpty() }?.let { ThreadsLink.Post("$WEB/t/$it", "") }
         }
+        if (first.lowercase() == "search") return searchLink(link)
+        if (!first.startsWith("@") && first.lowercase() in SITE_PAGES) return null
         val handle = atHandle(first) ?: return null
         return if (parts.size >= 3 && parts[1] == "post" && parts[2].isNotEmpty()) {
             ThreadsLink.Post(link.toString(), handle)
@@ -80,6 +89,17 @@ object ThreadsLinks {
         "/search",
         listOfNotNull("q" to query, "serp_type" to (if (tag) "tags" else "default"), ("filter" to "recent").takeIf { recent }),
     )
+
+    /** A search page's link as the terms it runs: `serp_type=tags`, or a query starting with `#`, is a topic. */
+    private fun searchLink(link: HttpUrl): ThreadsLink.Search? {
+        val query = link.queryParameter("q")?.trim().orEmpty()
+        val tag = link.queryParameter("serp_type") == "tags" || query.startsWith("#")
+        val words = (if (tag) query.removePrefix("#").trim() else query).ifEmpty { return null }
+        return ThreadsLink.Search(ThreadsSearchTerms(words, tag))
+    }
+
+    /** First path segments that are Threads' own pages, never an account written without its `@`. */
+    private val SITE_PAGES = setOf("login", "logout", "settings", "activity", "saved", "liked", "insights", "about", "legal", "privacy", "terms", "intent", "accounts", "explore")
 
     /** [path] on threads.com with [query], encoded as XTA's requests encode it. */
     internal fun web(path: String, query: List<Pair<String, String>> = emptyList()): HttpUrl = address(WEB, path, query)

@@ -27,6 +27,18 @@ class ThreadsRulesTest {
     }
 
     @Test
+    fun aSearchOrTopicLinkOpensThePluginsSearchAndThreadsOwnPagesOpenNothing() {
+        val topic = ThreadsRoutes.parse(ThreadsRoutes.forUrl("https://www.threads.com/search?q=Keramik&serp_type=tags&tag_id=1234")!!)
+        assertEquals(ThreadsRoute.Search(ThreadsSearchTerms("Keramik", tag = true)), topic)
+        val words = ThreadsRoutes.parse(ThreadsRoutes.forUrl("https://www.threads.net/search?q=glaze+recipes&filter=recent")!!)
+        assertEquals(ThreadsRoute.Search(ThreadsSearchTerms("glaze recipes", tag = false)), words)
+        assertNull(ThreadsRoutes.forUrl("https://www.threads.com/search"), "a search page with nothing asked")
+        assertNull(ThreadsRoutes.forUrl("https://www.threads.com/login?next=%2F%40zuck"))
+        assertNull(ThreadsRoutes.forUrl("https://www.threads.com/settings"))
+        assertEquals(ThreadsRoute.Profile("login"), ThreadsRoutes.parse(ThreadsRoutes.forUrl("https://www.threads.com/@login")!!), "an account by that name, with its @")
+    }
+
+    @Test
     fun aRouteCarriesWhatItsScreenNeeds() {
         val card = ThreadsPost(id = "1", handle = "zuck", authorName = "Mark", text = "hi", url = "https://www.threads.com/@zuck/post/A&B")
         assertEquals(ThreadsRoute.Post(card.url!!, "zuck", "7"), ThreadsRoutes.parse(ThreadsRoutes.post(card, "7")!!))

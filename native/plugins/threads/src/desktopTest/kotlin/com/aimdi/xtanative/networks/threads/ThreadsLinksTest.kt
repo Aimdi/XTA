@@ -117,6 +117,14 @@ class ThreadsLinksTest {
     }
 
     @Test
+    fun aPastedSearchOrTopicLinkSearchesWhatItAsked() {
+        assertEquals(ThreadsQuery.Tag("Keramik"), ThreadsQuery.of("https://www.threads.com/search?q=%23Keramik"))
+        assertEquals(ThreadsQuery.Tag("Book Club"), ThreadsQuery.of("https://www.threads.com/search?q=Book%20Club&serp_type=tags"))
+        assertEquals(ThreadsQuery.Words("cats"), ThreadsQuery.of("https://threads.net/search?q=cats"))
+        assertEquals(ThreadsLink.Search(ThreadsSearchTerms("cats", tag = false)), ThreadsLinks.parse("threads.com/search?q=cats&serp_type=default"))
+    }
+
+    @Test
     fun theFieldShowsATagWithItsHash() {
         assertEquals("#Keramik", ThreadsSearchTerms("Keramik", tag = true).text)
         assertEquals("kiln", ThreadsSearchTerms("kiln", tag = false).text)

@@ -58,10 +58,11 @@ internal object ThreadsRoutes {
         }
     }
 
-    /** The route of the screen showing [url]: a threads.com or threads.net profile or post; null for any other link. */
+    /** The route of the screen showing [url]: a threads.com or threads.net profile, post, search or topic; null for any other link. */
     fun forUrl(url: String): String? = when (val link = ThreadsLinks.parse(url)) {
         is ThreadsLink.Post -> post(link)
         is ThreadsLink.Profile -> profile(link.handle)
+        is ThreadsLink.Search -> search(link.terms)
         null -> null
     }
 

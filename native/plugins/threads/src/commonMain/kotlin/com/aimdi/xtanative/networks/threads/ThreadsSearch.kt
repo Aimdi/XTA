@@ -45,7 +45,11 @@ sealed interface ThreadsQuery {
         fun of(text: String): ThreadsQuery? {
             val query = text.trim()
             if (query.isEmpty()) return null
-            (ThreadsLinks.parse(query) as? ThreadsLink.Post)?.let { return Post(it) }
+            when (val link = ThreadsLinks.parse(query)) {
+                is ThreadsLink.Post -> return Post(link)
+                is ThreadsLink.Search -> return if (link.terms.tag) Tag(link.terms.query) else Words(link.terms.query)
+                else -> Unit
+            }
             val tag = if (query.startsWith("#")) query.substring(1).trim() else ""
             if (tag.isNotEmpty()) return Tag(tag)
             val handle = ThreadsLinks.normaliseHandle(query)
