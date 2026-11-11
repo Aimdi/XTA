@@ -97,7 +97,17 @@ internal class EhApp(val host: PluginHost) {
     /** The search, run for [query] when there is one (a tag, an uploader). */
     fun openSearch(query: String? = null) = host.open(EhRoutes.search(query))
 
-    /** A page's picture through the app's downloads, named after its gallery as XTA names it ("ehviewer-<gid>-<file>"). */
-    fun download(gallery: EhGallery, imageUrl: String) =
-        host.download(MediaItem(imageUrl), fileName = PluginDownloads.fileName("ehviewer-${gallery.gid}", imageUrl))
+    /** Page [page] of [total]'s picture through the app's downloads ([pageFileName]). */
+    fun download(gallery: EhGallery, page: Int, total: Int, imageUrl: String) =
+        host.download(MediaItem(imageUrl), fileName = pageFileName(gallery.gid, page, total, imageUrl))
+
+    companion object {
+        /**
+         * "ehviewer-<gid>-<page>-<file>": named after its gallery as XTA names it, and its page,
+         * padded to the gallery's length, so a gallery's saved pages sort in reading order and
+         * two pages the site names alike do not take each other's name.
+         */
+        fun pageFileName(gid: Long, page: Int, total: Int, imageUrl: String): String =
+            PluginDownloads.fileName("ehviewer-$gid-" + page.toString().padStart(maxOf(total, page).toString().length, '0'), imageUrl)
+    }
 }

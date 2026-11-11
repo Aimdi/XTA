@@ -52,7 +52,6 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.luminance
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -60,7 +59,6 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -72,6 +70,7 @@ import com.aimdi.xtanative.networks.ehviewer.EhGalleryState
 import com.aimdi.xtanative.networks.ehviewer.EhPreview
 import com.aimdi.xtanative.networks.ehviewer.EhTag
 import com.aimdi.xtanative.networks.ehviewer.EhTagGroup
+import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberImageRequest
@@ -138,7 +137,7 @@ private fun NamespaceLabel(group: EhTagGroup, modifier: Modifier) {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun TagChip(app: EhApp, tag: EhTag, group: EhTagGroup, weak: Boolean) {
-    val clipboard = LocalClipboardManager.current
+    val copyText = rememberCopyText()
     val color = namespaceColor(group.namespace)
     val dark = MaterialTheme.colorScheme.surface.luminance() < 0.5f
     val text = color ?: MaterialTheme.colorScheme.onSurface
@@ -162,7 +161,7 @@ private fun TagChip(app: EhApp, tag: EhTag, group: EhTagGroup, weak: Boolean) {
                 .combinedClickable(
                     onClick = { app.openSearch(tag.query) },
                     onLongClick = {
-                        clipboard.setText(AnnotatedString(tag.raw))
+                        copyText(tag.raw)
                         app.notices.tell(copied)
                     },
                     onLongClickLabel = pluginString(Strings.gallery_copy_tag),

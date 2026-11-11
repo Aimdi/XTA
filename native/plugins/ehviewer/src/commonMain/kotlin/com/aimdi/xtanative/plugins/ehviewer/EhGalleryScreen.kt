@@ -28,14 +28,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layout
-import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.ehviewer.EhGallery
 import com.aimdi.xtanative.networks.ehviewer.EhGalleryLoader
 import com.aimdi.xtanative.networks.ehviewer.EhGalleryState
 import com.aimdi.xtanative.networks.ehviewer.EhQuery
 import com.aimdi.xtanative.ui.common.XIcons
+import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.WithSettings
@@ -108,14 +107,14 @@ internal fun EhGalleryScreen(app: EhApp, route: EhRoute.Gallery) = WithSettings(
 private fun GalleryActions(app: EhApp, gallery: EhGallery) {
     val favorites by app.favorites.state.collectAsState()
     val saved = favorites.orEmpty().any { it.gallery.gid == gallery.gid }
-    val clipboard = LocalClipboardManager.current
+    val copyText = rememberCopyText()
     val openOutside = rememberOpenOutside()
     val copied = pluginString(Strings.link_copied)
     IconButton(onClick = { app.launch { app.favorites.toggle(gallery) } }) {
         Icon(if (saved) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder, pluginString(if (saved) Strings.unfavorite else Strings.favorite))
     }
     IconButton(onClick = {
-        clipboard.setText(AnnotatedString(gallery.galleryUrl(app.client.host)))
+        copyText(gallery.galleryUrl(app.client.host))
         app.notices.tell(copied)
     }) { Icon(XIcons.Link, pluginString(Strings.copy_link)) }
     IconButton(onClick = { openOutside(gallery.galleryUrl(app.client.host)) }) { Icon(SavedIcons.Public, pluginString(Strings.open_on_site)) }

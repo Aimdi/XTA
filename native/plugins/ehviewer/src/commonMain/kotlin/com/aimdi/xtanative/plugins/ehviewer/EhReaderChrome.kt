@@ -50,11 +50,9 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -65,6 +63,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.store.settings.EhReadingMode
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.XIcons
+import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
@@ -165,7 +164,7 @@ internal fun PageActions(app: EhApp, open: EhOpenReader, page: Int, onDismiss: (
     val image = open.resolver.imageOf(page)
     val original = image?.originalImageUrl?.trim()?.takeIf { app.client.signedIn && it.isNotEmpty() }
     val preview = open.resolver.previewOf(page)
-    val clipboard = LocalClipboardManager.current
+    val copyText = rememberCopyText()
     val openOutside = rememberOpenOutside()
     val copied = pluginString(Strings.link_copied)
     ModalBottomSheet(onDismissRequest = onDismiss) {
@@ -183,13 +182,13 @@ internal fun PageActions(app: EhApp, open: EhOpenReader, page: Int, onDismiss: (
         if (image != null) {
             ActionRow(GroupIcons.FileDownloadOutlined, pluginString(Strings.download)) {
                 onDismiss()
-                app.download(open.gallery, image.imageUrl)
+                app.download(open.gallery, page, open.model.total, image.imageUrl)
             }
         }
         if (preview != null) {
             ActionRow(XIcons.Link, pluginString(Strings.copy_link)) {
                 onDismiss()
-                clipboard.setText(AnnotatedString(open.gallery.pageUrl(app.client.host, preview.pageToken, page)))
+                copyText(open.gallery.pageUrl(app.client.host, preview.pageToken, page))
                 app.notices.tell(copied)
             }
         }
