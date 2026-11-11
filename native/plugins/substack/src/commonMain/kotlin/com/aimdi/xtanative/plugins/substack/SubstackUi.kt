@@ -67,13 +67,20 @@ internal fun GroupButton(app: SubstackApp, publication: SubstackPublication, out
     }
 }
 
-/** A publication's logo in [shape], or the newspaper mark where it has none. */
+/** A publication's logo in [shape], or [fallback] (the newspaper mark) where it has none. */
 @Composable
-internal fun PublicationLogo(url: String?, size: Dp, modifier: Modifier = Modifier, shape: Shape = RoundedCornerShape(8.dp)) {
+internal fun PublicationLogo(
+    url: String?,
+    size: Dp,
+    modifier: Modifier = Modifier,
+    shape: Shape = RoundedCornerShape(8.dp),
+    fallback: ImageVector = SubstackIcons.Newspaper,
+    fallbackSize: Dp = size / 2,
+) {
     val frame = modifier.size(size).clip(shape).background(MaterialTheme.colorScheme.surfaceContainerHighest)
     if (url.isNullOrEmpty()) {
         Box(frame, contentAlignment = Alignment.Center) {
-            Icon(SubstackIcons.Newspaper, null, Modifier.size(size / 2), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+            Icon(fallback, null, Modifier.size(fallbackSize), tint = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     } else {
         AsyncImage(model = url, contentDescription = null, contentScale = ContentScale.Crop, modifier = frame)

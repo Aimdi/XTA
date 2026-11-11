@@ -173,7 +173,7 @@ private fun OpmlRows(app: SubstackApp, notices: Notices) {
         }
     }
     Column {
-        ActionRow(SubstackIcons.Upload, pluginString(Strings.opml_export), pluginString(Strings.opml_export_description), enabled = !running) {
+        ActionRow(SubstackIcons.UploadFile, pluginString(Strings.opml_export), pluginString(Strings.opml_export_description), enabled = !running) {
             scope.launch { save(FILE_NAME, SubstackOpml.export(app.follows.load().map { it.publication }, title)) }
         }
         val importing = progress?.takeIf { running }

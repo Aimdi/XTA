@@ -116,7 +116,7 @@ private fun Preview(app: SubstackApp, asked: String, retype: String, onAsk: (Str
     }
     state.post?.let { post ->
         Row(Modifier.fillMaxWidth().clickable { app.openPost(post) }.padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-            Icon(SubstackIcons.Notes, null)
+            Icon(SubstackIcons.Article, null)
             Spacer(Modifier.width(16.dp))
             Column(Modifier.weight(1f)) {
                 Text(post.title, style = MaterialTheme.typography.bodyLarge)

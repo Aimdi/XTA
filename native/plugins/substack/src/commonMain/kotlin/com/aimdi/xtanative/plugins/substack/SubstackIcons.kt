@@ -37,6 +37,13 @@ internal object SubstackIcons {
     val PushPin: ImageVector by lazy {
         icon("PushPin", "M16,9V4l1,0c0.55,0 1,-0.45 1,-1v0c0,-0.55 -0.45,-1 -1,-1H7C6.45,2 6,2.45 6,3v0c0,0.55 0.45,1 1,1l1,0v5c0,1.66 -1.34,3 -3,3h0v2h5.97v7l1,1l1,-1v-7H19v-2h0C17.34,12 16,10.66 16,9z")
     }
+    val PushPinOutlined: ImageVector by lazy {
+        icon(
+            "PushPinOutlined",
+            "M14,4v5c0,1.12 0.37,2.16 1,3H9c0.65,-0.86 1,-1.9 1,-3V4H14M17,2H7C6.45,2 6,2.45 6,3c0,0.55 0.45,1 1,1l1,0v5c0,1.66 -1.34,3 -3,3v2h5.97v7l1,1l1,-1v-7H19v-2" +
+                "c-1.66,0 -3,-1.34 -3,-3V4l1,0c0.55,0 1,-0.45 1,-1C18,2.45 17.55,2 17,2L17,2z",
+        )
+    }
     val Comment: ImageVector by lazy { icon("Comment", "M21.99,4c0,-1.1 -0.89,-2 -1.99,-2H4c-1.1,0 -2,0.9 -2,2v12c0,1.1 0.9,2 2,2h14l4,4 -0.01,-18zM20,4v13.17L18.83,16H4V4h16z") }
     val Sort: ImageVector by lazy { icon("Sort", "M3,18h6v-2H3v2zM3,6v2h18V6H3zM3,13h12v-2H3v2z") }
     val Tune: ImageVector by lazy {
@@ -76,7 +83,23 @@ internal object SubstackIcons {
                 "s0.9,-2 2,-2 2,0.9 2,2 -0.9,2 -2,2z",
         )
     }
-    val Upload: ImageVector by lazy { icon("Upload", "M9,16h6v-6h4l-7,-7 -7,7h4zM5,18h14v2H5z") }
+    /** XTA's export row (upload_file). */
+    val UploadFile: ImageVector by lazy {
+        icon(
+            "UploadFile",
+            "M14,2H6C4.9,2 4.01,2.9 4.01,4L4,20c0,1.1 0.89,2 1.99,2H18c1.1,0 2,-0.9 2,-2V8L14,2zM18,20H6V4h7v5h5V20z" +
+                "M8,15.01l1.41,1.41L11,14.84V19h2v-4.16l1.59,1.59L16,15.01L12.01,11L8,15.01z",
+        )
+    }
+
+    /** A pasted post (article_outlined). */
+    val Article: ImageVector by lazy {
+        icon(
+            "Article",
+            "M19,5v14H5V5H19M19,3H5C3.9,3 3,3.9 3,5v14c0,1.1 0.9,2 2,2h14c1.1,0 2,-0.9 2,-2V5C21,3.9 20.1,3 19,3L19,3z" +
+                "M14,17H7v-2h7V17zM17,13H7v-2h10V13zM17,9H7V7h10V9z",
+        )
+    }
     val Download: ImageVector by lazy { icon("Download", "M19,9h-4V3H9v6H5l7,7 7,-7zM5,18v2h14v-2H5z") }
     val MarkRead: ImageVector by lazy {
         icon("MarkRead", "M12,14L3,8v10h9v2H3c-1.1,0 -2,-0.9 -2,-2V6c0,-1.1 0.9,-2 2,-2h16c1.1,0 2,0.9 2,2v7h-2V8L12,14zM12,12l7,-6H5L12,12zM17.34,22l-3.54,-3.54l1.41,-1.41l2.12,2.12l4.24,-4.24L23,16.34L17.34,22z")

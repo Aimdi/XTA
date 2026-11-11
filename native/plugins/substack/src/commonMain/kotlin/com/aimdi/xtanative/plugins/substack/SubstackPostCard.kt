@@ -120,7 +120,7 @@ private fun CardHeader(app: SubstackApp, post: SubstackPost, unread: Boolean, lo
             Modifier.weight(1f).clip(RoundedCornerShape(8.dp)).clickable { app.openPublication(SubstackHomeRules.publicationOf(post, logoUrl)) },
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            PublicationLogo(logoUrl, 48.dp)
+            PublicationLogo(logoUrl, 48.dp, fallback = SubstackIcons.Article, fallbackSize = 20.dp)
             Spacer(Modifier.width(10.dp))
             Column(Modifier.weight(1f)) {
                 Text(post.publicationName, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.ExtraBold, maxLines = 1, overflow = TextOverflow.Ellipsis)

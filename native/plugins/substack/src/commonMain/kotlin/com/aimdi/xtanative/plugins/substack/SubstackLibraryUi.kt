@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilledTonalButton
@@ -141,7 +142,7 @@ private fun FollowRow(app: SubstackApp, publication: SubstackPublication, pinned
             Text(SubstackHomeRules.hostOf(publication), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
         }
         IconButton(onClick = { app.launch { app.pins.toggle(publication.id) } }) {
-            Icon(SubstackIcons.PushPin, pluginString(if (pinned) Strings.unpin else Strings.pin), tint = if (pinned) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline)
+            Icon(if (pinned) SubstackIcons.PushPin else SubstackIcons.PushPinOutlined, pluginString(if (pinned) Strings.unpin else Strings.pin), tint = if (pinned) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline)
         }
         Box {
             IconButton(onClick = { menu = true }) { Icon(Icons.Default.MoreVert, pluginString(Strings.more_options)) }
@@ -156,7 +157,7 @@ private fun FollowRow(app: SubstackApp, publication: SubstackPublication, pinned
             onDismissRequest = { confirm = false },
             title = { Text(pluginString(Strings.unfollow)) },
             text = { Text(publication.name) },
-            confirmButton = { TextButton(onClick = { confirm = false; app.unfollow(publication) }) { Text(pluginString(Strings.unfollow)) } },
+            confirmButton = { Button(onClick = { confirm = false; app.unfollow(publication) }) { Text(pluginString(Strings.unfollow)) } },
             dismissButton = { TextButton(onClick = { confirm = false }) { Text(pluginString(Strings.cancel)) } },
         )
     }

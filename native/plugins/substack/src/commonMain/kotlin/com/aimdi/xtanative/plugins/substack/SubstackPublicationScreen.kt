@@ -3,6 +3,7 @@ package com.aimdi.xtanative.plugins.substack
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -50,6 +51,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -211,14 +213,7 @@ private fun Hero(app: SubstackApp, model: PublicationModel, state: PublicationMo
     val publication = state.publication
     val description = publication.description?.trim().orEmpty()
     Column(Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 8.dp)) {
-        Row(verticalAlignment = Alignment.Top) {
-            PublicationLogo(publication.logoUrl, 64.dp, shape = RoundedCornerShape(12.dp))
-            Spacer(Modifier.width(12.dp))
-            Column(Modifier.weight(1f)) {
-                Text(publication.displayName, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.ExtraBold)
-                SelectionContainer { Text(SubstackHomeRules.hostOf(publication), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 4.dp)) }
-            }
-        }
+        Identity(publication)
         if (description.isNotEmpty()) {
             val long = description.length > LONG_DESCRIPTION
             SelectionContainer {
@@ -245,6 +240,33 @@ private fun Hero(app: SubstackApp, model: PublicationModel, state: PublicationMo
     }
 }
 
+/** Its logo beside its name and site, or above them on a narrow screen or at large text, as XTA's _identity. */
+@Composable
+private fun Identity(publication: SubstackPublication) {
+    val logo = @Composable { PublicationLogo(publication.logoUrl, 64.dp, shape = RoundedCornerShape(12.dp)) }
+    val title = @Composable {
+        Column {
+            Text(publication.displayName, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.ExtraBold)
+            SelectionContainer { Text(SubstackHomeRules.hostOf(publication), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 4.dp)) }
+        }
+    }
+    val largeText = LocalDensity.current.fontScale > STACKED_TEXT_SCALE
+    BoxWithConstraints {
+        if (maxWidth < STACKED_WIDTH || largeText) {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                logo()
+                title()
+            }
+        } else {
+            Row(verticalAlignment = Alignment.Top) {
+                logo()
+                Spacer(Modifier.width(12.dp))
+                Box(Modifier.weight(1f)) { title() }
+            }
+        }
+    }
+}
+
 /** Follows or unfollows [publication] on this device, saying which it is now. */
 @Composable
 internal fun FollowButton(app: SubstackApp, publication: SubstackPublication) {
@@ -264,7 +286,7 @@ private fun PinButton(app: SubstackApp, publication: SubstackPublication) {
     val follow = follows?.let { app.followOf(publication) } ?: return
     val pinned = follow.id in pins
     OutlinedButton(onClick = { app.launch { app.pins.toggle(follow.id) } }) {
-        Icon(SubstackIcons.PushPin, null, Modifier.size(18.dp))
+        Icon(if (pinned) SubstackIcons.PushPin else SubstackIcons.PushPinOutlined, null, Modifier.size(18.dp))
         Spacer(Modifier.width(8.dp))
         Text(pluginString(if (pinned) Strings.unpin else Strings.pin))
     }
@@ -395,3 +417,5 @@ internal class SimilarModel(private val app: SubstackApp, private val publicatio
 }
 
 private const val LONG_DESCRIPTION = 160
+private val STACKED_WIDTH = 360.dp
+private const val STACKED_TEXT_SCALE = 1.3f
