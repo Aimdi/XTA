@@ -250,4 +250,11 @@ class RedditStatesTest {
         assertFalse(RedditHomeSource.showsStrip(emptyList()))
         assertTrue(RedditHomeSource.showsStrip(listOf("dartlang")))
     }
+
+    @Test
+    fun inHomeTheFollowedCommunitiesFoldIntoAMenuAndOnRedditsOwnScreenStayAStrip() {
+        assertEquals(CommunitiesPlace.MENU, RedditHomeSource.communitiesPlace(listOf("dartlang"), inHome = true))
+        assertEquals(CommunitiesPlace.STRIP, RedditHomeSource.communitiesPlace(listOf("dartlang"), inHome = false))
+        assertEquals(CommunitiesPlace.NONE, RedditHomeSource.communitiesPlace(emptyList(), inHome = true))
+    }
 }

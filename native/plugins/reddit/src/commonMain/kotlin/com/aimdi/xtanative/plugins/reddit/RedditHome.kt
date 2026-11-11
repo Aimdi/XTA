@@ -28,6 +28,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -45,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.store.settings.RedditFeedMode
 import com.aimdi.xtanative.ui.common.FeedSkeleton
 import com.aimdi.xtanative.ui.common.swipeTabs
+import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginHomeTab
 import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
@@ -65,14 +67,15 @@ import com.aimdi.xtanative.ui.plugins.pluginString
 internal fun RedditHome(app: RedditApp, frame: PluginFrame) {
     val home by app.home.collectAsState()
     val followed by app.followed.collectAsState()
+    val place = RedditHomeSource.communitiesPlace(followed, inHome = LocalPluginClientBar.current == null)
     Column(Modifier.fillMaxSize()) {
         ReadingControlsBar {
             Column {
-                HomeBar(app, home)
-                if (RedditHomeSource.showsStrip(followed)) CommunityStrip(app, followed, home)
+                HomeBar(app, home, if (place == CommunitiesPlace.MENU) followed else emptyList())
+                if (place == CommunitiesPlace.STRIP) CommunityStrip(app, followed, home)
             }
         }
-        // A community picked from the strip is no section of its own: the swipes turn Following, Popular and All.
+        // A community picked from the strip is no section of its own: the swipes turn Following, Popular and All (Home keeps its swipes to itself).
         val modes = if (home.subreddit == null) RedditFeedMode.entries else emptyList()
         Box(Modifier.weight(1f).swipeTabs(modes, home.mode) { app.selectMode(it) }) {
             val subreddit = home.subreddit
@@ -92,10 +95,11 @@ internal fun RedditHome(app: RedditApp, frame: PluginFrame) {
  * one bar on Reddit's own screen, a strip folding into a section picker in Home.
  */
 @Composable
-private fun HomeBar(app: RedditApp, home: RedditHomeSource) {
+private fun HomeBar(app: RedditApp, home: RedditHomeSource, communities: List<String>) {
     var sorting by remember { mutableStateOf(false) }
     val choices by app.choices.collectAsState()
     PluginHomeTabs(RedditFeedMode.entries.map { mode -> PluginHomeTab(railIcon(mode), pluginString(railLabel(mode)), home.railSelected(mode)) { app.selectMode(mode) } }) {
+        if (communities.isNotEmpty()) CommunitiesMenu(app, communities, home)
         RedditHomeChrome.actions.forEach { action ->
             when (action) {
                 RedditHomeChrome.Action.SEARCH -> IconButton(onClick = { app.host.openSearch(null) }) { Icon(Icons.Filled.Search, contentDescription = pluginString(Strings.search_hint)) }
@@ -202,6 +206,39 @@ private fun CommunityStrip(app: RedditApp, names: List<String>, home: RedditHome
                     selected = selected,
                     onClick = { if (selected) app.selectMode(home.mode) else app.selectSubreddit(name) },
                     label = { Text("r/$name") },
+                )
+            }
+        }
+    }
+}
+
+/**
+ * The followed communities folded in Home, as XTA's dock moves the strip into
+ * Home's options: a menu of them, its button in the accent while one is open
+ * (XTA's attention), the one open again going back to the rail.
+ */
+@Composable
+private fun CommunitiesMenu(app: RedditApp, names: List<String>, home: RedditHomeSource) {
+    var open by remember { mutableStateOf(false) }
+    Box {
+        IconButton(onClick = { open = true }) {
+            Icon(
+                RedditGlyphs.FilterAlt,
+                contentDescription = pluginString(Strings.followed_communities),
+                tint = if (home.viewingSubreddit) MaterialTheme.colorScheme.primary else LocalContentColor.current,
+            )
+        }
+        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+            names.forEach { name ->
+                val selected = home.isSelected(name)
+                DropdownMenuItem(
+                    text = { Text("r/$name") },
+                    leadingIcon = { SubredditAvatar(app, name, 24.dp) },
+                    trailingIcon = if (selected) { { Icon(Icons.Filled.Check, contentDescription = null) } } else null,
+                    onClick = {
+                        open = false
+                        if (selected) app.selectMode(home.mode) else app.selectSubreddit(name)
+                    },
                 )
             }
         }

@@ -158,6 +158,17 @@ internal data class RedditHomeSource(val mode: RedditFeedMode = RedditFeedMode.F
         /** The strip of followed communities shows only when one is followed: an empty strip is no list. */
         fun showsStrip(followed: List<String>): Boolean = followed.isNotEmpty()
 
+        /**
+         * Where the followed communities are offered: folded in Home a menu in
+         * the bar, as XTA moves them out of the feed into Home's options; on
+         * Reddit's own screen the strip above the feed.
+         */
+        fun communitiesPlace(followed: List<String>, inHome: Boolean): CommunitiesPlace = when {
+            !showsStrip(followed) -> CommunitiesPlace.NONE
+            inHome -> CommunitiesPlace.MENU
+            else -> CommunitiesPlace.STRIP
+        }
+
         fun selectingMode(settings: Settings, mode: RedditFeedMode): Settings =
             settings.with(RedditPrefs.feedMode, mode).with(RedditPrefs.selectedSubreddit, "")
 
@@ -171,6 +182,9 @@ internal data class RedditHomeSource(val mode: RedditFeedMode = RedditFeedMode.F
         }
     }
 }
+
+/** Where the Reddit tab offers the followed communities ([RedditHomeSource.communitiesPlace]). */
+internal enum class CommunitiesPlace { NONE, STRIP, MENU }
 
 /** How a Reddit read failed, in terms the reader can act on (XTA's `RedditErrorKind`). */
 internal enum class RedditTrouble {
