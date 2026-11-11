@@ -767,3 +767,13 @@ missing/different | the handle fields of the imports and the add, open-feed and 
 missing/different | Mastodon's thread menu button had no name for a screen reader | MastodonThreadScreen.BranchesMenu | Compose only
 native only | Bluesky's Liked reads again on the desktop's F5 as its other tabs do, and Mastodon's followed accounts go to the top when the tab is tapped again | BlueskyFollowingPane.LikedPane, MastodonHome.PeoplePane | Compose only
 covered | Bluesky's feeds and lists panes (bluesky_feeds_pane.dart), imports (bluesky_import_*_screen.dart, the 200 ms between pages included) and both thread screens (bluesky_thread_screen.dart, mastodon_thread_screen.dart), line by line | BlueskySourcePanes.kt, BlueskyImport.kt, BlueskyThread.kt, MastodonThreadScreen.kt | the rows above
+
+## Threads, round 14: search (past XTA)
+
+Rows as above: state | what | where | test.
+
+native only | a search has People and Topics tabs beside Top and Recent: the accounts that wrote the top posts (those the words name first, with Follow on this device) and, with a session, its people search above them; the topics the posts are filed under, the words themselves offered as a topic. Both come from the page Top already read, so a guest gets them and Meta is asked nothing more | ThreadsSearchReading.people/topics, ThreadsSearchFound.related, ThreadsSearchFoundParts.foundPeople/foundTopics | ThreadsSearchFoundTest
+native only | a topic's page opens under its name with the community's emoji or picture when Meta's `tag_header` carries one (`community_emoji`, `community_favicon_url`, seen in the CI probe; their values were not, so text other than a string, or a link not https, is left out) | ThreadsSearchReading.marks, ThreadsTopicHeader | ThreadsSearchFoundTest.aSearchPageNamesTheTopics…, aMarkThatIsNotText…
+native only | typing in the search sheet or the search page's field suggests recent searches, accounts followed here and topics of the posts read this session, words starting with the typed text first; `@` asks for accounts, `#` for topics; nothing is asked of Meta per key | ThreadsSuggestions, ThreadsSuggestionList/Rows | ThreadsSearchSuggestionsTest
+native only | each search tab keeps its place when another is chosen, and tapping the chosen tab again goes to its top | ThreadsSearchPage.ThreadsSearchBody | Compose only
+missing/different | a search page (about 1 MB) was parsed on the screen's thread; it is now read off it | ThreadsDirectClient.searchFound | ThreadsSearchFoundTest.theClientReadsTheSearchPageOnce…

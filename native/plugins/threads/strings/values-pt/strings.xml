@@ -135,4 +135,9 @@
     <string name="muted_words_description">Oculta publicações com estas palavras. Uma palavra só corresponde a palavras inteiras; uma expressão corresponde em qualquer parte.</string>
     <string name="muted_words_hint">Adicionar uma palavra ou expressão</string>
     <string name="author">Autor</string>
+    <string name="search_people">Pessoas</string>
+    <string name="search_topics">Tópicos</string>
+    <string name="people_in_results">Pessoas nestes resultados</string>
+    <string name="topics_in_results">Tópicos nestes resultados</string>
+    <string name="topic_posts">Publicações arquivadas neste tópico</string>
 </resources>

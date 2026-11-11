@@ -132,4 +132,9 @@
     <string name="muted_words_description">Hitz hauek dituzten argitalpenak ezkutatzen ditu. Hitz bakarrak hitz osoak baino ez ditu bat egiten; esaldi batek edonon.</string>
     <string name="muted_words_hint">Gehitu hitz bat edo esaldi bat</string>
     <string name="author">Egilea</string>
+    <string name="search_people">Pertsonak</string>
+    <string name="search_topics">Gaiak</string>
+    <string name="people_in_results">Emaitza hauetako pertsonak</string>
+    <string name="topics_in_results">Emaitza hauetako gaiak</string>
+    <string name="topic_posts">Gai honetan sailkatutako argitalpenak</string>
 </resources>

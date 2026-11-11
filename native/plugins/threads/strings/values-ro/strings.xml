@@ -136,4 +136,9 @@
     <string name="muted_words_description">Ascunde postările care conțin aceste cuvinte. Un singur cuvânt se potrivește doar cu cuvinte întregi; o expresie se potrivește oriunde.</string>
     <string name="muted_words_hint">Adaugă un cuvânt sau o expresie</string>
     <string name="author">Autor</string>
+    <string name="search_people">Persoane</string>
+    <string name="search_topics">Subiecte</string>
+    <string name="people_in_results">Oameni din aceste rezultate</string>
+    <string name="topics_in_results">Subiecte din aceste rezultate</string>
+    <string name="topic_posts">Postări încadrate la acest subiect</string>
 </resources>

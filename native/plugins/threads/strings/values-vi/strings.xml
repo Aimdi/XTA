@@ -128,4 +128,9 @@
     <string name="muted_words_description">Ẩn bài viết chứa những từ này. Một từ đơn chỉ khớp trọn từ; một cụm từ khớp ở bất kỳ đâu.</string>
     <string name="muted_words_hint">Thêm từ hoặc cụm từ</string>
     <string name="author">Tác giả</string>
+    <string name="search_people">Mọi người</string>
+    <string name="search_topics">Chủ đề</string>
+    <string name="people_in_results">Người trong các kết quả này</string>
+    <string name="topics_in_results">Chủ đề trong các kết quả này</string>
+    <string name="topic_posts">Bài đăng thuộc chủ đề này</string>
 </resources>

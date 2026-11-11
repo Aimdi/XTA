@@ -135,4 +135,9 @@
     <string name="muted_words_description">Nasconde i post che contengono queste parole. Una parola sola corrisponde solo a parole intere, una frase in qualsiasi punto.</string>
     <string name="muted_words_hint">Aggiungi una parola o una frase</string>
     <string name="author">Autore</string>
+    <string name="search_people">Persone</string>
+    <string name="search_topics">Argomenti</string>
+    <string name="people_in_results">Persone in questi risultati</string>
+    <string name="topics_in_results">Argomenti in questi risultati</string>
+    <string name="topic_posts">Post archiviati sotto questo argomento</string>
 </resources>

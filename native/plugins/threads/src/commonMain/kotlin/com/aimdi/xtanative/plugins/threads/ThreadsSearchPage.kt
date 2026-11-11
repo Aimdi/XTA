@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.plugins.threads
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,8 +11,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -41,22 +44,26 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.threads.ThreadsLinks
-import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsQuery
+import com.aimdi.xtanative.networks.threads.ThreadsSearchFound
 import com.aimdi.xtanative.networks.threads.ThreadsSearchTerms
-import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.Fetch
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.NoticeHost
+import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.currentLanguage
@@ -64,9 +71,18 @@ import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 import com.aimdi.xtanative.ui.post.PostIcons
+import kotlinx.coroutines.launch
 
-/** The two orders Threads' public search offers. */
-internal enum class ThreadsSearchOrder { TOP, RECENT }
+/**
+ * The tabs of a search: Threads' two orders of its public search, and the
+ * people and topics found among the top posts (a guest has no search of
+ * either; a session's people search leads the people).
+ */
+internal enum class ThreadsSearchTab {
+    TOP, RECENT, PEOPLE, TOPICS;
+
+    val recent: Boolean get() = this == RECENT
+}
 
 /**
  * What words or a tag find (threads_search_screen.dart): Top and Recent, one
@@ -79,11 +95,14 @@ internal enum class ThreadsSearchOrder { TOP, RECENT }
 internal fun ThreadsSearchScreen(app: ThreadsApp, start: ThreadsSearchTerms) {
     var terms by rememberSaveable(stateSaver = TermsSaver) { mutableStateOf(start) }
     var text by rememberSaveable { mutableStateOf(start.text) }
-    var order by rememberSaveable { mutableStateOf(ThreadsSearchOrder.TOP) }
+    var tab by rememberSaveable { mutableStateOf(ThreadsSearchTab.TOP) }
+    var focused by remember { mutableStateOf(false) }
     val keyboard = LocalSoftwareKeyboardController.current
+    val focus = LocalFocusManager.current
     val outside = rememberOpenOutside()
     val submit: () -> Unit = {
         keyboard?.hide()
+        focus.clearFocus()
         ThreadsQuery.of(text)?.let { query ->
             query.remembered?.let(app::remember)
             val next = query.terms
@@ -95,9 +114,9 @@ internal fun ThreadsSearchScreen(app: ThreadsApp, start: ThreadsSearchTerms) {
         topBar = {
             TopAppBar(
                 navigationIcon = { IconButton(onClick = app.host::back) { Icon(Icons.AutoMirrored.Filled.ArrowBack, pluginString(Strings.back)) } },
-                title = { QueryField(text, onText = { text = it }, onSubmit = submit) },
+                title = { QueryField(text, onText = { text = it }, onSubmit = submit, onFocus = { focused = it }) },
                 actions = {
-                    IconButton(onClick = { outside(ThreadsLinks.searchUrl(terms.query, terms.tag, order == ThreadsSearchOrder.RECENT).toString()) }) {
+                    IconButton(onClick = { outside(ThreadsLinks.searchUrl(terms.query, terms.tag, tab.recent).toString()) }) {
                         Icon(PostIcons.OpenInNew, contentDescription = pluginString(Strings.open_in_browser))
                     }
                 },
@@ -106,7 +125,10 @@ internal fun ThreadsSearchScreen(app: ThreadsApp, start: ThreadsSearchTerms) {
         },
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
-            key(terms) { ThreadsSearchBody(app, terms, PluginFrame(PaddingValues(bottom = padding.calculateBottomPadding())), order) { order = it } }
+            key(terms) { ThreadsSearchBody(app, terms, PluginFrame(PaddingValues(bottom = padding.calculateBottomPadding())), tab) { tab = it } }
+            if (focused && text.trim() != terms.text) {
+                ThreadsSuggestionList(app, text, Modifier.fillMaxWidth()) { picked -> text = picked.text; submit() }
+            }
             NoticeHost(app.notices)
         }
     }
@@ -118,7 +140,7 @@ private val TermsSaver = Saver<ThreadsSearchTerms, List<String>>(
 )
 
 @Composable
-private fun QueryField(text: String, onText: (String) -> Unit, onSubmit: () -> Unit) {
+private fun QueryField(text: String, onText: (String) -> Unit, onSubmit: () -> Unit, onFocus: (Boolean) -> Unit) {
     TextField(
         value = text,
         onValueChange = onText,
@@ -135,33 +157,53 @@ private fun QueryField(text: String, onText: (String) -> Unit, onSubmit: () -> U
             focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         ),
-        modifier = Modifier.fillMaxWidth().padding(end = 4.dp),
+        modifier = Modifier.fillMaxWidth().padding(end = 4.dp).onFocusChanged { onFocus(it.isFocused) },
     )
 }
 
 /**
- * One search's results, Top and Recent, each read when first shown; above
- * them the profile the words also spell, so a handle typed without its @
- * is one tap away.
+ * One search's results: Top and Recent, each read when first shown, and the
+ * people and topics among the top posts; above them the profile the words
+ * also spell, so a handle typed without its @ is one tap away. Each tab keeps
+ * its place, and tapping the chosen one again goes back to its top.
  */
 @Composable
 internal fun ThreadsSearchBody(
     app: ThreadsApp,
     terms: ThreadsSearchTerms,
     frame: PluginFrame,
-    order: ThreadsSearchOrder? = null,
-    onOrder: ((ThreadsSearchOrder) -> Unit)? = null,
+    tab: ThreadsSearchTab? = null,
+    onTab: ((ThreadsSearchTab) -> Unit)? = null,
 ) {
-    var own by rememberSaveable { mutableStateOf(ThreadsSearchOrder.TOP) }
-    val shown = order ?: own
-    Column(Modifier.fillMaxSize()) {
-        Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            listOf(ThreadsSearchOrder.TOP to Strings.sort_top, ThreadsSearchOrder.RECENT to Strings.recent).forEach { (option, label) ->
-                FilterChip(selected = shown == option, onClick = { onOrder?.invoke(option) ?: run { own = option } }, label = { Text(pluginString(label)) })
-            }
+    var own by rememberSaveable { mutableStateOf(ThreadsSearchTab.TOP) }
+    val shown = tab ?: own
+    val lists = ThreadsSearchTab.entries.associateWith { rememberSaveable(it.name, saver = LazyListState.Saver) { LazyListState() } }
+    val scope = rememberCoroutineScope()
+    val choose = { option: ThreadsSearchTab ->
+        when {
+            option == shown -> scope.launch { lists.getValue(option).animateScrollToItem(0) }
+            onTab != null -> onTab(option)
+            else -> own = option
         }
+        Unit
+    }
+    Column(Modifier.fillMaxSize()) {
+        SearchTabs(shown, choose)
         terms.profile?.let { handle -> ProfileRow(app, handle) }
-        Box(Modifier.weight(1f)) { key(shown) { Results(app, terms, shown, frame) } }
+        Box(Modifier.weight(1f)) { key(shown) { Results(app, terms, shown, frame, lists.getValue(shown)) } }
+    }
+}
+
+@Composable
+private fun SearchTabs(shown: ThreadsSearchTab, onChoose: (ThreadsSearchTab) -> Unit) {
+    val labels = listOf(Strings.sort_top, Strings.recent, Strings.search_people, Strings.search_topics)
+    Row(
+        Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        ThreadsSearchTab.entries.zip(labels).forEach { (option, label) ->
+            FilterChip(selected = shown == option, onClick = { onChoose(option) }, label = { Text(pluginString(label)) })
+        }
     }
 }
 
@@ -176,25 +218,39 @@ private fun ProfileRow(app: ThreadsApp, handle: String) {
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+/** The page Threads' public search gives for [terms], newest first with [recent]; People and Topics share Top's. */
 @Composable
-private fun Results(app: ThreadsApp, terms: ThreadsSearchTerms, order: ThreadsSearchOrder, frame: PluginFrame) {
-    val fetch = rememberKept("threads-search-${terms.query}-${terms.tag}-$order") { scope ->
-        Fetch<List<ThreadsPost>>(scope) { app.ready(); app.direct.searchPosts(terms.query, terms.tag, recent = order == ThreadsSearchOrder.RECENT).items.distinctBy { it.id } }
+private fun rememberSearchFound(app: ThreadsApp, terms: ThreadsSearchTerms, recent: Boolean): Fetch<ThreadsSearchFound> {
+    val fetch = rememberKept("threads-search-${terms.query}-${terms.tag}-$recent") { scope ->
+        Fetch(scope) { app.ready(); app.direct.searchFound(terms.query, terms.tag, recent) }
     }
     LaunchedEffect(fetch) { fetch.ensure() }
+    return fetch
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun Results(app: ThreadsApp, terms: ThreadsSearchTerms, tab: ThreadsSearchTab, frame: PluginFrame, list: LazyListState) {
+    val fetch = rememberSearchFound(app, terms, tab.recent)
     val state by fetch.state.collectAsState()
-    val posts = state.value
+    val found = state.value
+    val sessionPeople = if (tab == ThreadsSearchTab.PEOPLE) rememberSessionPeople(app, terms) else emptyList()
     val language = currentLanguage()
-    val list = rememberLazyListState()
-    PullToRefreshBox(isRefreshing = state.loading && posts != null, onRefresh = { fetch.load(force = true) }, modifier = Modifier.fillMaxSize()) {
+    PullToRefreshBox(isRefreshing = state.loading && found != null, onRefresh = { fetch.load(force = true) }, modifier = Modifier.fillMaxSize()) {
         LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
             when {
-                posts == null && state.problem != null -> item(key = "problem") { RetryMessage(ThreadsFailures.search(state.problem, language), onRetry = { fetch.load() }) }
-                posts == null -> item(key = "loading") { PluginFeedSkeleton() }
-                posts.isEmpty() -> item(key = "none") { MessageText(pluginString(Strings.no_results)) }
-                else -> items(posts, key = { "post:" + it.id }, contentType = { "post" }) { ThreadsPostCard(app, it) }
+                found == null && state.problem != null -> item(key = "problem") { RetryMessage(ThreadsFailures.search(state.problem, language), onRetry = { fetch.load() }) }
+                found == null -> item(key = "loading") { PluginFeedSkeleton() }
+                tab == ThreadsSearchTab.PEOPLE -> foundPeople(app, terms, found, sessionPeople)
+                tab == ThreadsSearchTab.TOPICS -> foundTopics(app, terms, found)
+                else -> foundPosts(app, terms, found)
             }
         }
     }
+}
+
+private fun LazyListScope.foundPosts(app: ThreadsApp, terms: ThreadsSearchTerms, found: ThreadsSearchFound) {
+    if (terms.tag) item(key = "topic") { ThreadsTopicHeader(found.topic(terms.query)) }
+    if (found.posts.isEmpty()) item(key = "none") { MessageText(pluginString(Strings.no_results)) }
+    items(found.posts, key = { "post:" + it.id }, contentType = { "post" }) { ThreadsPostCard(app, it) }
 }

@@ -140,4 +140,9 @@
     <string name="muted_words_description">Ukrywa wpisy zawierające te słowa. Jedno słowo pasuje tylko do całych słów, fraza pasuje w dowolnym miejscu.</string>
     <string name="muted_words_hint">Dodaj słowo lub frazę</string>
     <string name="author">Autor</string>
+    <string name="search_people">Osoby</string>
+    <string name="search_topics">Tematy</string>
+    <string name="people_in_results">Osoby w tych wynikach</string>
+    <string name="topics_in_results">Tematy w tych wynikach</string>
+    <string name="topic_posts">Posty przypisane do tego tematu</string>
 </resources>

@@ -140,4 +140,9 @@
     <string name="muted_words_description">Приховує пости з цими словами. Одне слово збігається лише цілком, фраза — будь-де.</string>
     <string name="muted_words_hint">Додати слово або фразу</string>
     <string name="author">Автор</string>
+    <string name="search_people">Люди</string>
+    <string name="search_topics">Теми</string>
+    <string name="people_in_results">Люди в цих результатах</string>
+    <string name="topics_in_results">Теми в цих результатах</string>
+    <string name="topic_posts">Дописи з цією темою</string>
 </resources>

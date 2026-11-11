@@ -132,4 +132,9 @@
     <string name="muted_words_description">इन शब्दों वाली पोस्ट छिपाएँ। एक शब्द केवल पूरे शब्द से मेल खाता है; वाक्यांश कहीं भी मेल खाता है।</string>
     <string name="muted_words_hint">शब्द या वाक्यांश जोड़ें</string>
     <string name="author">लेखक</string>
+    <string name="search_people">लोग</string>
+    <string name="search_topics">विषय</string>
+    <string name="people_in_results">इन परिणामों के लोग</string>
+    <string name="topics_in_results">इन परिणामों के विषय</string>
+    <string name="topic_posts">इस विषय के अंतर्गत पोस्ट</string>
 </resources>

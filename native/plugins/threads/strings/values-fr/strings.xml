@@ -135,4 +135,9 @@
     <string name="muted_words_description">Masquez les publications contenant ces mots. Un mot seul ne correspond qu’aux mots entiers ; une expression correspond partout.</string>
     <string name="muted_words_hint">Ajouter un mot ou une expression</string>
     <string name="author">Auteur</string>
+    <string name="search_people">Personnes</string>
+    <string name="search_topics">Sujets</string>
+    <string name="people_in_results">Personnes dans ces résultats</string>
+    <string name="topics_in_results">Sujets dans ces résultats</string>
+    <string name="topic_posts">Publications classées sous ce sujet</string>
 </resources>

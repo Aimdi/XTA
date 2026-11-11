@@ -134,4 +134,9 @@
     <string name="muted_words_description">Hide posts containing these words. A single word matches whole words only; a phrase matches anywhere.</string>
     <string name="muted_words_hint">Add a word or phrase</string>
     <string name="author">Author</string>
+    <string name="search_people">People</string>
+    <string name="search_topics">Topics</string>
+    <string name="people_in_results">People in these results</string>
+    <string name="topics_in_results">Topics in these results</string>
+    <string name="topic_posts">Posts filed under this topic</string>
 </resources>

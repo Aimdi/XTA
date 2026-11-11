@@ -128,4 +128,9 @@
     <string name="muted_words_description">これらの語を含む投稿を隠します。単語は語全体にのみ一致し、フレーズはどこでも一致します。</string>
     <string name="muted_words_hint">語やフレーズを追加</string>
     <string name="author">投稿者</string>
+    <string name="search_people">ユーザー</string>
+    <string name="search_topics">トピック</string>
+    <string name="people_in_results">この結果のユーザー</string>
+    <string name="topics_in_results">この結果のトピック</string>
+    <string name="topic_posts">このトピックの投稿</string>
 </resources>

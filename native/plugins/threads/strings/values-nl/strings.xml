@@ -132,4 +132,9 @@
     <string name="muted_words_description">Verberg berichten met deze woorden. Eén woord matcht alleen hele woorden; een woordgroep matcht overal.</string>
     <string name="muted_words_hint">Woord of woordgroep toevoegen</string>
     <string name="author">Auteur</string>
+    <string name="search_people">Personen</string>
+    <string name="search_topics">Onderwerpen</string>
+    <string name="people_in_results">Mensen in deze resultaten</string>
+    <string name="topics_in_results">Onderwerpen in deze resultaten</string>
+    <string name="topic_posts">Berichten onder dit onderwerp</string>
 </resources>

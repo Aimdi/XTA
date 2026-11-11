@@ -148,4 +148,9 @@
     <string name="muted_words_description">يخفي المنشورات التي تحتوي هذه الكلمات. الكلمة المفردة تُطابق الكلمات الكاملة فقط، والعبارة تُطابق في أي موضع.</string>
     <string name="muted_words_hint">أضف كلمة أو عبارة</string>
     <string name="author">الكاتب</string>
+    <string name="search_people">أشخاص</string>
+    <string name="search_topics">مواضيع</string>
+    <string name="people_in_results">أشخاص في هذه النتائج</string>
+    <string name="topics_in_results">مواضيع في هذه النتائج</string>
+    <string name="topic_posts">منشورات مصنّفة تحت هذا الموضوع</string>
 </resources>

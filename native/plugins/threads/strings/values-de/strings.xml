@@ -132,4 +132,9 @@
     <string name="muted_words_description">Blende Beiträge mit diesen Wörtern aus. Ein einzelnes Wort trifft nur ganze Wörter, eine Wortgruppe überall.</string>
     <string name="muted_words_hint">Wort oder Wortgruppe hinzufügen</string>
     <string name="author">Autor</string>
+    <string name="search_people">Personen</string>
+    <string name="search_topics">Themen</string>
+    <string name="people_in_results">Personen in diesen Ergebnissen</string>
+    <string name="topics_in_results">Themen in diesen Ergebnissen</string>
+    <string name="topic_posts">Beiträge unter diesem Thema</string>
 </resources>

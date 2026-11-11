@@ -57,6 +57,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsLinks
 import com.aimdi.xtanative.networks.threads.ThreadsProfile
 import com.aimdi.xtanative.networks.threads.ThreadsQuery
 import com.aimdi.xtanative.networks.threads.ThreadsSearchTerms
+import com.aimdi.xtanative.networks.threads.ThreadsSuggestion
 import com.aimdi.xtanative.store.settings.ThreadsPrefs
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.PluginAvatar
@@ -99,7 +100,7 @@ internal fun ThreadsApp.openQuery(query: ThreadsQuery) {
 
 /** Whether people search can be asked: only a session's cookies search people; a guest opens an exact handle. */
 @Composable
-private fun searchesPeople(app: ThreadsApp): Boolean {
+internal fun searchesPeople(app: ThreadsApp): Boolean {
     val settings by app.prefs.collectAsState()
     return ThreadsSessions.of(settings).hasCookies
 }
@@ -223,9 +224,11 @@ internal fun ThreadsSearchSheet(app: ThreadsApp, initial: String?, onDismiss: ()
             Box(Modifier.weight(1f)) {
                 val query = listed
                 if (query == null) {
-                    BeforeSearch(app, text, onOpenProfile = { handle -> app.remember(handle); leave { app.openProfile(handle) } }) { recent ->
-                        text = recent
-                        search(recent)
+                    Column(Modifier.verticalScroll(rememberScrollState())) {
+                        BeforeSearch(app, text, onOpenProfile = { handle -> app.remember(handle); leave { app.openProfile(handle) } }) { recent ->
+                            text = recent
+                            search(recent)
+                        }
                     }
                 } else {
                     SheetPeople(app, query, leave)
@@ -257,6 +260,7 @@ private fun BeforeSearch(app: ThreadsApp, text: String, onOpenProfile: (String) 
     val settings by app.prefs.collectAsState()
     Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         ThreadsLinks.normaliseHandle(text)?.let { handle -> SheetRow(ThreadsIcons.Mark, pluginString(Strings.open_handle, handle)) { onOpenProfile(handle) } }
+        ThreadsSuggestionRows(app, text) { picked -> if (picked is ThreadsSuggestion.Account) onOpenProfile(picked.handle) else onRecent(picked.text) }
         val recent = settings[ThreadsPrefs.searchHistory].take(8)
         if (recent.isNotEmpty()) {
             Text(pluginString(Strings.recent_searches), style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 8.dp))

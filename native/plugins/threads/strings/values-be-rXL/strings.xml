@@ -140,4 +140,9 @@
     <string name="muted_words_description">Chavaje pasty z hetymi słovami. Adno słova supadaje tolki całkam, fraza — u lubym miescy.</string>
     <string name="muted_words_hint">Dadać słova abo frazu</string>
     <string name="author">Aŭtar</string>
+    <string name="search_people">Liudzi</string>
+    <string name="search_topics">Temy</string>
+    <string name="people_in_results">Liudzi ŭ hetych vynikach</string>
+    <string name="topics_in_results">Temy ŭ hetych vynikach</string>
+    <string name="topic_posts">Dopisy z hetaj temaj</string>
 </resources>

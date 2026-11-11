@@ -135,4 +135,9 @@
     <string name="muted_words_description">Oculta las publicaciones con estas palabras. Una sola palabra coincide solo con palabras completas; una frase coincide en cualquier parte.</string>
     <string name="muted_words_hint">Añadir una palabra o frase</string>
     <string name="author">Autor</string>
+    <string name="search_people">Personas</string>
+    <string name="search_topics">Temas</string>
+    <string name="people_in_results">Personas en estos resultados</string>
+    <string name="topics_in_results">Temas en estos resultados</string>
+    <string name="topic_posts">Publicaciones archivadas en este tema</string>
 </resources>

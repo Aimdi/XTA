@@ -132,4 +132,9 @@
     <string name="muted_words_description">Bu kelimeleri içeren gönderileri gizler. Tek kelime yalnızca tam kelimeyle eşleşir; bir ifade her yerde eşleşir.</string>
     <string name="muted_words_hint">Kelime veya ifade ekle</string>
     <string name="author">Yazar</string>
+    <string name="search_people">Kişiler</string>
+    <string name="search_topics">Konular</string>
+    <string name="people_in_results">Bu sonuçlardaki kişiler</string>
+    <string name="topics_in_results">Bu sonuçlardaki konular</string>
+    <string name="topic_posts">Bu konu altındaki gönderiler</string>
 </resources>

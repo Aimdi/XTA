@@ -132,4 +132,9 @@
     <string name="muted_words_description">Skjuler innlegg som inneholder disse ordene. Ett ord treffer bare hele ord; en frase treffer hvor som helst.</string>
     <string name="muted_words_hint">Legg til ord eller frase</string>
     <string name="author">Forfatter</string>
+    <string name="search_people">Personer</string>
+    <string name="search_topics">Emner</string>
+    <string name="people_in_results">Folk i disse resultatene</string>
+    <string name="topics_in_results">Emner i disse resultatene</string>
+    <string name="topic_posts">Innlegg arkivert under dette emnet</string>
 </resources>

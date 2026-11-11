@@ -246,6 +246,12 @@ class ThreadsDirectClient(
     suspend fun searchPosts(query: String, tag: Boolean = false, recent: Boolean = false): Page<ThreadsPost> =
         Page(ThreadsPages.searchResults(guestPage(ThreadsLinks.searchUrl(query, tag, recent)), query, tag), null)
 
+    /** [searchPosts] with the topics its posts are filed under, the page read off the caller's thread. */
+    suspend fun searchFound(query: String, tag: Boolean = false, recent: Boolean = false): ThreadsSearchFound {
+        val body = guestPage(ThreadsLinks.searchUrl(query, tag, recent))
+        return kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) { ThreadsSearchReading.read(body, query, tag) }
+    }
+
     /** A profile's page, read once even when its card and its threads are asked for together. */
     private suspend fun profilePage(handle: String): String {
         val key = handle.trim().lowercase()

@@ -132,4 +132,9 @@
     <string name="muted_words_description">Kaŝas afiŝojn enhavantajn ĉi tiujn vortojn. Unuopa vorto kongruas nur kun tutaj vortoj; frazo kongruas ĉie.</string>
     <string name="muted_words_hint">Aldoni vorton aŭ frazon</string>
     <string name="author">Aŭtoro</string>
+    <string name="search_people">Homoj</string>
+    <string name="search_topics">Temoj</string>
+    <string name="people_in_results">Homoj en ĉi tiuj rezultoj</string>
+    <string name="topics_in_results">Temoj en ĉi tiuj rezultoj</string>
+    <string name="topic_posts">Afiŝoj sub ĉi tiu temo</string>
 </resources>

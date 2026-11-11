@@ -140,4 +140,9 @@
     <string name="muted_words_description">Скрывает посты с этими словами. Одно слово совпадает только целиком, фраза — в любом месте.</string>
     <string name="muted_words_hint">Добавить слово или фразу</string>
     <string name="author">Автор</string>
+    <string name="search_people">Люди</string>
+    <string name="search_topics">Темы</string>
+    <string name="people_in_results">Люди в этих результатах</string>
+    <string name="topics_in_results">Темы в этих результатах</string>
+    <string name="topic_posts">Посты с этой темой</string>
 </resources>

@@ -135,4 +135,9 @@
     <string name="muted_words_description">Amaga les publicacions amb aquestes paraules. Una sola paraula només coincideix amb paraules senceres; una frase coincideix a qualsevol lloc.</string>
     <string name="muted_words_hint">Afegeix una paraula o frase</string>
     <string name="author">Autor</string>
+    <string name="search_people">Persones</string>
+    <string name="search_topics">Temes</string>
+    <string name="people_in_results">Persones en aquests resultats</string>
+    <string name="topics_in_results">Temes en aquests resultats</string>
+    <string name="topic_posts">Publicacions classificades en aquest tema</string>
 </resources>

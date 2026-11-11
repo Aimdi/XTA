@@ -132,4 +132,9 @@
     <string name="muted_words_description">Peidab postitused, mis sisaldavad neid sõnu. Üksik sõna sobib ainult terve sõnaga, fraas kõikjal.</string>
     <string name="muted_words_hint">Lisa sõna või fraas</string>
     <string name="author">Autor</string>
+    <string name="search_people">Inimesed</string>
+    <string name="search_topics">Teemad</string>
+    <string name="people_in_results">Inimesed nendes tulemustes</string>
+    <string name="topics_in_results">Teemad nendes tulemustes</string>
+    <string name="topic_posts">Selle teema alla pandud postitused</string>
 </resources>

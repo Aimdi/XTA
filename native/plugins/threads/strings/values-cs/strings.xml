@@ -140,4 +140,9 @@
     <string name="muted_words_description">Skryje příspěvky s těmito slovy. Jedno slovo odpovídá jen celým slovům, fráze kdekoli.</string>
     <string name="muted_words_hint">Přidat slovo nebo frázi</string>
     <string name="author">Autor</string>
+    <string name="search_people">Lidé</string>
+    <string name="search_topics">Témata</string>
+    <string name="people_in_results">Lidé v těchto výsledcích</string>
+    <string name="topics_in_results">Témata v těchto výsledcích</string>
+    <string name="topic_posts">Příspěvky zařazené pod toto téma</string>
 </resources>

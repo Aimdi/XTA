@@ -128,4 +128,9 @@
     <string name="muted_words_description">Sembunyikan postingan yang memuat kata-kata ini. Satu kata hanya cocok dengan kata utuh; sebuah frasa cocok di mana saja.</string>
     <string name="muted_words_hint">Tambahkan kata atau frasa</string>
     <string name="author">Penulis</string>
+    <string name="search_people">Orang</string>
+    <string name="search_topics">Topik</string>
+    <string name="people_in_results">Orang di hasil ini</string>
+    <string name="topics_in_results">Topik di hasil ini</string>
+    <string name="topic_posts">Postingan dalam topik ini</string>
 </resources>
