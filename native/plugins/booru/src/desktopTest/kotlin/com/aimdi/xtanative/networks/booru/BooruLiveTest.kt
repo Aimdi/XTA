@@ -21,10 +21,15 @@ class BooruLiveTest {
         try {
             readsAsAGuest()
         } catch (e: NetworkRequestException) {
-            // Danbooru down (its 5xx, its maintenance page) says nothing of the app: the check has nothing to read.
-            assumeFalse(e.refusal?.kind == BooruErrorKind.UNAVAILABLE, "Danbooru is unavailable: ${e.message}")
+            // Danbooru down (its 5xx, its maintenance page), throttling or refusing the runner (its 403 bot check)
+            // says nothing of the app: the check has nothing to read. An answer that cannot be read still fails.
+            assumeFalse(e.refusal?.kind in SKIPPED, "Danbooru did not answer this runner: ${e.message}")
             throw e
         }
+    }
+
+    private companion object {
+        val SKIPPED = setOf(BooruErrorKind.UNAVAILABLE, BooruErrorKind.FORBIDDEN, BooruErrorKind.RATE_LIMITED)
     }
 
     private suspend fun readsAsAGuest() {

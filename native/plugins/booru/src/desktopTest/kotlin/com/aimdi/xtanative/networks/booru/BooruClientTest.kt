@@ -316,6 +316,13 @@ class BooruClientTest {
     }
 
     @Test
+    fun aGuestDanbooruRefusesWithItsBotCheckReadsAsARefusalNotAParseFailure() = runBlocking {
+        val refused = refusalOf { client(FakeBooru { XResponse(403, "<html>Just a moment...</html>") }).search("scenery") }
+        assertEquals(FORBIDDEN, BooruErrorKind.of(refused))
+        assertEquals(Strings.error_forbidden.get("en"), errorMessage(refused, "en"))
+    }
+
+    @Test
     fun anAnswerThatIsNotJsonIsABadResponseAndNoAnswerStaysAnIOException() = runBlocking {
         val challenge = refusalOf { client(FakeBooru { ok("<html>Just a moment...</html>") }).latest() }
         assertEquals(BAD_RESPONSE, BooruErrorKind.of(challenge))
