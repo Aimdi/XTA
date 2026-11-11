@@ -59,7 +59,8 @@ import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 
 /**
  * A work's pages side by side at the size the reader picked for work pages,
- * the grid's picture under the first while it loads. A tap opens the reader,
+ * the grid's picture under the first while it loads, the next page asked for
+ * already. A tap opens the reader,
  * a long press the page's actions; an ugoira's first page plays in place.
  * Pushing past the last page moves a pager of works on.
  */
@@ -75,7 +76,7 @@ internal fun PageViewer(illust: PixivIllust, page: Int, surface: WorkSurface, mo
     val pager = rememberPagerState(initialPage = page.coerceIn(0, (pages - 1).coerceAtLeast(0))) { pages }
     LaunchedEffect(pager.currentPage) { surface.showPage(pager.currentPage) }
     LaunchedEffect(page) { if (page != pager.currentPage && page in 0 until pages) pager.scrollToPage(page) }
-    HorizontalPager(pager, modifier = modifier) { index ->
+    HorizontalPager(pager, modifier = modifier, beyondViewportPageCount = 1) { index ->
         val url = PixivImages.pageUrl(illust, index, quality)
         val ugoira = index == 0 && illust.isUgoira
         Box(
@@ -89,7 +90,7 @@ internal fun PageViewer(illust: PixivIllust, page: Int, surface: WorkSurface, mo
             contentAlignment = Alignment.Center,
         ) {
             if (index == 0 && poster != url) PixivPicture(poster, Modifier.fillMaxSize(), ContentScale.Fit)
-            PixivPicture(url, Modifier.fillMaxSize(), ContentScale.Fit, contentDescription = pluginString(Strings.page_of, index + 1, pages))
+            PixivPicture(url, Modifier.fillMaxSize(), ContentScale.Fit, contentDescription = pluginString(Strings.page_of, index + 1, pages), loading = true)
             if (ugoira) UgoiraPlayer(illust, Modifier.fillMaxSize())
         }
     }

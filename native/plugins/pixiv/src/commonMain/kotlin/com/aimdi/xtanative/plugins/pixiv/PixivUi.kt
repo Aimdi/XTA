@@ -19,8 +19,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SnackbarHost
@@ -33,6 +35,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -44,8 +48,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -58,6 +60,7 @@ import com.aimdi.xtanative.networks.pixiv.PixivImages
 import com.aimdi.xtanative.store.settings.PixivPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.Graphemes
+import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.common.rememberSwitchedHaptics
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -92,6 +95,8 @@ internal fun PixivPicture(
     contentScale: ContentScale = ContentScale.Crop,
     contentDescription: String? = null,
     onLoaded: (() -> Unit)? = null,
+    loading: Boolean = false,
+    failed: (@Composable BoxScope.(retry: () -> Unit) -> Unit)? = { retry -> PictureRetry(retry) },
 ) {
     if (url.isNullOrEmpty()) {
         Box(modifier.background(MaterialTheme.colorScheme.surfaceVariant))
@@ -99,13 +104,36 @@ internal fun PixivPicture(
     }
     val host = pixivSettings()[PixivPrefs.imageHost]
     val shown = remember(url, host) { PixivImages.url(url, host) }
-    AsyncImage(
-        model = rememberImageRequest(shown, PixivImages.HEADERS),
-        contentDescription = contentDescription,
-        contentScale = contentScale,
-        onSuccess = if (onLoaded == null) null else { _ -> onLoaded() },
-        modifier = modifier.background(MaterialTheme.colorScheme.surfaceVariant),
-    )
+    var attempt by remember(shown) { mutableIntStateOf(0) }
+    var phase by remember(shown) { mutableStateOf(PicturePhase.LOADING) }
+    Box(modifier.background(MaterialTheme.colorScheme.surfaceVariant), contentAlignment = Alignment.Center) {
+        key(attempt) {
+            AsyncImage(
+                model = rememberImageRequest(shown, PixivImages.HEADERS),
+                contentDescription = contentDescription,
+                contentScale = contentScale,
+                onLoading = { phase = PicturePhase.LOADING },
+                onSuccess = {
+                    phase = PicturePhase.SHOWN
+                    onLoaded?.invoke()
+                },
+                onError = { phase = PicturePhase.FAILED },
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
+        when {
+            phase == PicturePhase.FAILED && failed != null -> failed { attempt++ }
+            phase == PicturePhase.LOADING && loading -> CircularProgressIndicator(Modifier.size(32.dp))
+        }
+    }
+}
+
+private enum class PicturePhase { LOADING, SHOWN, FAILED }
+
+/** A picture that did not load: a tap on the mark asks for it again, the rest of the tile still does what it does (pixiv_image.dart). */
+@Composable
+private fun PictureRetry(retry: () -> Unit) {
+    IconButton(onClick = retry) { Icon(Icons.Filled.Refresh, pluginString(Strings.retry), tint = MaterialTheme.colorScheme.onSurfaceVariant) }
 }
 
 /** A creator's round picture, or the first letter of [name] when Pixiv sends none. */
@@ -113,16 +141,22 @@ internal fun PixivPicture(
 internal fun PixivAvatar(url: String?, name: String, size: Dp = 40.dp, modifier: Modifier = Modifier) {
     val shape = Modifier.size(size).clip(CircleShape)
     if (url.isNullOrEmpty()) {
-        Box(modifier.then(shape).background(MaterialTheme.colorScheme.primaryContainer), contentAlignment = Alignment.Center) {
-            Text(
-                name.trim().takeIf { it.isNotEmpty() }?.let(Graphemes::first).orEmpty().uppercase(),
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                fontWeight = FontWeight.Bold,
-                fontSize = (size.value * 0.42f).sp,
-            )
-        }
+        Box(modifier.then(shape), contentAlignment = Alignment.Center) { Initial(name, size) }
     } else {
-        PixivPicture(url, modifier.then(shape))
+        PixivPicture(url, modifier.then(shape), failed = { Initial(name, size) })
+    }
+}
+
+/** [name]'s first letter on the accent, where a creator's picture is missing or did not load (XTA's initials). */
+@Composable
+private fun BoxScope.Initial(name: String, size: Dp) {
+    Box(Modifier.matchParentSize().background(MaterialTheme.colorScheme.primaryContainer), contentAlignment = Alignment.Center) {
+        Text(
+            name.trim().takeIf { it.isNotEmpty() }?.let(Graphemes::first).orEmpty().uppercase(),
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
+            fontWeight = FontWeight.Bold,
+            fontSize = (size.value * 0.42f).sp,
+        )
     }
 }
 
@@ -193,12 +227,12 @@ internal fun BoxScope.PixivNotices() {
 /** Puts [text] on the clipboard and says [copied]. */
 @Composable
 internal fun rememberCopy(): (text: String, copied: PluginText) -> Unit {
-    val clipboard = LocalClipboardManager.current
+    val copyText = rememberCopyText()
     val runtime = LocalPixiv.current
     val language = com.aimdi.xtanative.ui.plugins.currentLanguage()
-    return remember(clipboard, runtime, language) {
+    return remember(copyText, runtime, language) {
         { text, copied ->
-            clipboard.setText(AnnotatedString(text))
+            copyText(text)
             runtime.tell(copied.get(language))
         }
     }

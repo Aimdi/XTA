@@ -147,7 +147,7 @@ private fun CommentText(parts: List<PixivCommentPart>) {
     val emoji = parts.filterIsInstance<PixivCommentPart.Emoji>().distinctBy { it.id }
     val inline = emoji.associate { part ->
         part.code to InlineTextContent(Placeholder(1.4.em, 1.4.em, PlaceholderVerticalAlign.TextCenter)) {
-            PixivPicture(part.url, Modifier.fillMaxSize(), ContentScale.Fit, part.code)
+            PixivPicture(part.url, Modifier.fillMaxSize(), ContentScale.Fit, part.code, failed = null)
         }
     }
     val text = buildAnnotatedString {

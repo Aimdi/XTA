@@ -210,7 +210,7 @@ private fun ChapterButtons(content: PixivNovelContent) {
 @Composable
 private fun ChapterButton(chapter: PixivNovelNeighbour, label: PluginText, modifier: Modifier) {
     val runtime = LocalPixiv.current
-    OutlinedButton(onClick = { runtime.open(PixivRoute.Novel(chapter.id)) }, enabled = chapter.viewable, modifier = modifier) {
+    OutlinedButton(onClick = { runtime.replace(PixivRoute.Novel(chapter.id)) }, enabled = chapter.viewable, modifier = modifier) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(pluginString(label))
             val name = chapterName(chapter)

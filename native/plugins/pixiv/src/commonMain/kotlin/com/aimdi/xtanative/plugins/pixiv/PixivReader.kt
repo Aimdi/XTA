@@ -10,6 +10,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -55,7 +56,10 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChanged
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
@@ -119,7 +123,9 @@ private fun Reader(illust: PixivIllust, start: Int, verticalFirst: Boolean) {
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
             val urls = remember(illust, hd) { illust.viewerUrls.indices.map { if (hd) illust.downloadUrlAt(it) else illust.viewerUrls[it] } }
-            if (vertical) ColumnPages(illust, urls, surface) else SwipedPages(illust, urls, surface)
+            var barHeight by remember { mutableIntStateOf(0) }
+            val underBar = with(LocalDensity.current) { barHeight.toDp() }
+            if (vertical) ColumnPages(illust, urls, surface, underBar) else SwipedPages(illust, urls, surface)
             val share = rememberShareImage(illust)
             val shown = urls.getOrNull(surface.page)
             ReaderBar(
@@ -128,7 +134,7 @@ private fun Reader(illust: PixivIllust, start: Int, verticalFirst: Boolean) {
                 hd,
                 onHd = { hd = !hd },
                 onShare = shown?.takeIf { it in surface.loaded }?.let { url -> { share(surface.page, url) } },
-                modifier = Modifier.align(Alignment.BottomCenter),
+                modifier = Modifier.align(Alignment.BottomCenter).onSizeChanged { barHeight = it.height },
             )
         }
     }
@@ -212,10 +218,13 @@ internal class ReaderSurface(private val pages: Int, start: Int, private val fli
     }
 }
 
-/** Every page down one column at the screen's width; the page most on screen is the page. */
+/**
+ * Every page down one column at the screen's width, the last one clear of the
+ * bar; the page most on screen is the page. The column zooms as one.
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun ColumnPages(illust: PixivIllust, urls: List<String>, surface: ReaderSurface) {
+private fun ColumnPages(illust: PixivIllust, urls: List<String>, surface: ReaderSurface, underBar: Dp) {
     val sheets = LocalPixivSheets.current
     val haptics = rememberHaptics()
     val list = rememberLazyListState(initialFirstVisibleItemIndex = surface.page)
@@ -227,17 +236,28 @@ private fun ColumnPages(illust: PixivIllust, urls: List<String>, surface: Reader
             surface.jump = null
         }
     }
-    LazyColumn(state = list, modifier = Modifier.fillMaxSize()) {
+    val zoom = remember { ColumnZoom() }
+    var size by remember { mutableStateOf(IntSize.Zero) }
+    LazyColumn(
+        state = list,
+        contentPadding = PaddingValues(bottom = underBar),
+        modifier = Modifier.fillMaxSize().onSizeChanged { size = it }.zoomsColumn(zoom),
+    ) {
         items(urls.size, key = { "page-$it" }) { index ->
             PixivPicture(
                 urls[index],
-                Modifier.fillMaxWidth().aspectRatio(illust.aspectRatio.toFloat().coerceIn(0.2f, 5f)).combinedClickable(onClick = {}, onLongClick = {
-                    haptics.medium()
-                    sheets.show(PixivSheet.PageActions(illust, index, surface))
-                }),
+                Modifier.fillMaxWidth().aspectRatio(illust.aspectRatio.toFloat().coerceIn(0.2f, 5f)).combinedClickable(
+                    onClick = {},
+                    onDoubleClick = { zoom.toggle(size) },
+                    onLongClick = {
+                        haptics.medium()
+                        sheets.show(PixivSheet.PageActions(illust, index, surface))
+                    },
+                ),
                 ContentScale.FillWidth,
                 contentDescription = pluginString(Strings.page_of, index + 1, urls.size),
                 onLoaded = { surface.shown(urls[index]) },
+                loading = true,
             )
         }
     }
@@ -245,7 +265,7 @@ private fun ColumnPages(illust: PixivIllust, urls: List<String>, surface: Reader
 
 private fun visibleHeight(offset: Int, size: Int, end: Int): Int = (minOf(offset + size, end) - maxOf(offset, 0)).coerceAtLeast(0)
 
-/** One page at a time, swiped across; a page zooms with two fingers or a double tap, and a long press opens its actions. */
+/** One page at a time, swiped across, the next one asked for already; a page zooms with two fingers or a double tap, and a long press opens its actions. */
 @Composable
 private fun SwipedPages(illust: PixivIllust, urls: List<String>, surface: ReaderSurface) {
     val sheets = LocalPixivSheets.current
@@ -258,7 +278,7 @@ private fun SwipedPages(illust: PixivIllust, urls: List<String>, surface: Reader
             surface.jump = null
         }
     }
-    HorizontalPager(pager, Modifier.fillMaxSize()) { index ->
+    HorizontalPager(pager, Modifier.fillMaxSize(), beyondViewportPageCount = 1) { index ->
         ZoomablePage(urls[index], onLoaded = { surface.shown(urls[index]) }, onLongPress = {
             haptics.medium()
             sheets.show(PixivSheet.PageActions(illust, index, surface))
@@ -307,7 +327,7 @@ internal fun ZoomablePage(url: String, onLoaded: (() -> Unit)? = null, onLongPre
                 translationY = offset.y
             },
     ) {
-        PixivPicture(url, Modifier.fillMaxSize(), ContentScale.Fit, onLoaded = onLoaded)
+        PixivPicture(url, Modifier.fillMaxSize(), ContentScale.Fit, onLoaded = onLoaded, loading = true)
     }
 }
 

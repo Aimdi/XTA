@@ -28,9 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
@@ -38,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.pixiv.PixivIllust
 import com.aimdi.xtanative.networks.pixiv.PixivNovel
 import com.aimdi.xtanative.ui.common.XIcons
+import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.links.LocalLinks
 import com.aimdi.xtanative.ui.plugins.PluginPostMenuRows
 import com.aimdi.xtanative.ui.plugins.currentLanguage
@@ -81,15 +80,15 @@ internal class PixivOutside(private val openOutside: (String) -> Unit, private v
 internal fun rememberOutside(): PixivOutside {
     val links = LocalLinks.current
     val uri = LocalUriHandler.current
-    val clipboard = LocalClipboardManager.current
+    val copyText = rememberCopyText()
     val runtime = LocalPixiv.current
     val language = currentLanguage()
-    return remember(links, uri, clipboard, runtime, language) {
+    return remember(links, uri, copyText, runtime, language) {
         PixivOutside(
             openOutside = { url -> links?.openOutside(url) ?: uri.openUri(url) },
             share = { text -> links?.share(text) == true },
             copy = { text ->
-                clipboard.setText(AnnotatedString(text))
+                copyText(text)
                 runtime.tell(Strings.link_copied.get(language))
             },
         )

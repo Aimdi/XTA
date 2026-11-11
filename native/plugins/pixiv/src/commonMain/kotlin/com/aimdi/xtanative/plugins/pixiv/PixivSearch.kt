@@ -44,6 +44,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -52,7 +53,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
@@ -69,6 +70,7 @@ import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.post.PostIcons
+import kotlinx.coroutines.launch
 
 /** The app's search over Pixiv works: the app draws the field, this the results of what was sent. */
 internal class PixivAppSearch(private val runtime: () -> PixivRuntime) : PluginSearch() {
@@ -198,7 +200,8 @@ private fun SearchField(
     onImageSearch: () -> Unit,
     onSubmit: () -> Unit,
 ) {
-    val clipboard = LocalClipboardManager.current
+    val clipboard = LocalClipboard.current
+    val scope = rememberCoroutineScope()
     val focus = remember { FocusRequester() }
     TextField(
         value = value,
@@ -209,7 +212,7 @@ private fun SearchField(
         keyboardActions = KeyboardActions(onSearch = { onSubmit() }),
         trailingIcon = {
             Row {
-                IconButton(onClick = { clipboard.getText()?.text?.let(onPaste) }) { Icon(PixivIcons.ContentPaste, pluginString(Strings.search_paste)) }
+                IconButton(onClick = { scope.launch { clipboard.getClipEntry()?.plainText()?.let(onPaste) } }) { Icon(PixivIcons.ContentPaste, pluginString(Strings.search_paste)) }
                 if (kind.isWorks) IconButton(onClick = onImageSearch) { Icon(PixivIcons.ImageSearch, pluginString(Strings.saucenao_title)) }
                 IconButton(onClick = onSubmit) { Icon(Icons.Filled.Search, pluginString(Strings.search)) }
             }

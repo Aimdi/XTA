@@ -71,8 +71,8 @@ internal fun NovelMenu(novel: PixivNovel, content: PixivNovelContent?, onAppeara
                 modifier = Modifier.clickable(enabled = user.id != 0L) { run { runtime.openUser(user.id, "novels") } },
             )
             HorizontalDivider()
-            content?.previous?.let { ChapterRow(it, Strings.novel_previous, Icons.AutoMirrored.Filled.KeyboardArrowLeft) { run { runtime.open(PixivRoute.Novel(it.id)) } } }
-            content?.next?.let { ChapterRow(it, Strings.novel_next, Icons.AutoMirrored.Filled.KeyboardArrowRight) { run { runtime.open(PixivRoute.Novel(it.id)) } } }
+            content?.previous?.let { ChapterRow(it, Strings.novel_previous, Icons.AutoMirrored.Filled.KeyboardArrowLeft) { run { runtime.replace(PixivRoute.Novel(it.id)) } } }
+            content?.next?.let { ChapterRow(it, Strings.novel_next, Icons.AutoMirrored.Filled.KeyboardArrowRight) { run { runtime.replace(PixivRoute.Novel(it.id)) } } }
             MenuRow(PixivIcons.TextFields, Strings.article_reader_appearance) { run(onAppearance) }
             if (content != null) MenuRow(PixivIcons.Description, Strings.novel_export) { run(onExport) }
             MenuRow(Icons.Filled.Share, Strings.share_link) { run { outside.share(pixivNovelUrl(novel.id)) } }

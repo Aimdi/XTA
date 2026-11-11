@@ -124,6 +124,12 @@ internal class PixivRuntime(val host: PluginHost) {
 
     fun open(route: PixivRoute) = host.open(PixivRoutes.of(route))
 
+    /** [route] in place of the screen on top, as a novel's next chapter takes its place (XTA's pushReplacement). */
+    fun replace(route: PixivRoute) {
+        host.back()
+        open(route)
+    }
+
     val signedIn: Boolean get() = PixivAccounts.signedIn(settings.now)
 
     /** The reader's own Pixiv id, once a token response named it. */
