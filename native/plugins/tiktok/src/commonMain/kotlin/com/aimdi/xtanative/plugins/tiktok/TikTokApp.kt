@@ -24,6 +24,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -51,6 +52,9 @@ internal class TikTokApp(val host: PluginHost, private val playsHere: Boolean) {
     private val writing = Mutex()
     private val latestSession = AtomicReference<TikTokSession?>(null)
     private var made: TikTokClient? = null
+
+    /** The tab last chosen, kept while the plugin runs as XTA keeps it for the session ('tiktok/view'). */
+    val tab = MutableStateFlow(TikTokTab.FOLLOWING)
 
     val follows = TikTokFollows(host.store.file("follows.json"))
     val following = TikTokFollowing(read = { secUid -> client().creatorItems(secUid, cursor = "0").items })

@@ -39,6 +39,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -63,6 +64,9 @@ internal class SubstackApp(val host: PluginHost) {
     private val settings = host.settings
 
     val client = SubstackClient(host.http)
+
+    /** The pane last chosen, kept while the plugin runs as XTA keeps it for the session ('substack/view'). */
+    val pane = MutableStateFlow(HomePane.HOME)
     val follows = SubstackFollowStore(host.store.file("follows.json"), settings)
     val pins = SubstackPins(PrefKept(settings, SubstackPrefs.pinnedPublications))
     val read = SubstackReadMarks(PrefKept(settings, SubstackPrefs.readIds))

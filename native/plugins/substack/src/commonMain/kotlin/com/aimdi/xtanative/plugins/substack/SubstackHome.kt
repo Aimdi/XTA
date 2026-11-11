@@ -44,6 +44,7 @@ import com.aimdi.xtanative.networks.substack.postReads
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
@@ -101,8 +102,7 @@ internal class HomeState(app: SubstackApp, scope: CoroutineScope) {
 @Composable
 internal fun SubstackHome(app: SubstackApp, frame: PluginFrame) {
     val state = rememberKept("substack-home") { scope -> HomeState(app, scope) }
-    var pane by rememberSaveable { mutableIntStateOf(0) }
-    val selected = HomePane.entries[pane]
+    val selected by app.pane.collectAsState()
     val publications by app.publications.collectAsState()
     // A change of follows reads what it changed; a pane coming into view refreshes what is stale.
     LaunchedEffect(publications) { publications?.let(state.feed::follow) }
@@ -117,9 +117,9 @@ internal fun SubstackHome(app: SubstackApp, frame: PluginFrame) {
         if (selected == HomePane.NOTES) state.notes.refresh() else state.feed.refresh()
     }
     Column(Modifier.fillMaxSize()) {
-        ReadingControlsBar { HomeHeader(app, state, selected) { pane = it.ordinal } }
+        ReadingControlsBar { HomeHeader(app, state, selected) { app.pane.value = it } }
         Hairline()
-        Box(Modifier.weight(1f).swipeTabs(HomePane.entries, selected) { pane = it.ordinal }) {
+        Box(Modifier.weight(1f).swipeTabs(HomePane.entries, selected) { app.pane.value = it }) {
             when (selected) {
                 HomePane.HOME -> HomeFeedPane(app, state, frame)
                 HomePane.INBOX -> InboxPane(app, state, frame)
@@ -130,19 +130,10 @@ internal fun SubstackHome(app: SubstackApp, frame: PluginFrame) {
     }
 }
 
+/** XTA's chrome for the tab (PluginHomeChrome): its four panes, then the search and the menu. */
 @Composable
 private fun HomeHeader(app: SubstackApp, state: HomeState, selected: HomePane, onSelect: (HomePane) -> Unit) {
-    Row(Modifier.fillMaxWidth().padding(start = 12.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-        Row(Modifier.weight(1f).horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            HomePane.entries.forEach { pane ->
-                FilterChip(
-                    selected = pane == selected,
-                    onClick = { onSelect(pane) },
-                    label = { Text(pluginString(pane.label)) },
-                    leadingIcon = { Icon(pane.icon, null, Modifier.size(18.dp)) },
-                )
-            }
-        }
+    PluginHomeTabs(HomePane.entries, selected, onSelect, icon = { it.icon }, label = { pluginString(it.label) }) {
         IconButton(onClick = app::openDiscover) { Icon(Icons.Default.Search, pluginString(Strings.search)) }
         HomeMenu(app, state, selected)
     }

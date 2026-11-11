@@ -77,7 +77,7 @@ internal enum class TikTokTab { FOLLOWING, ACCOUNTS }
  */
 @Composable
 internal fun TikTokHome(app: TikTokApp, frame: PluginFrame, ownActions: Boolean = true) = WithSettings(app.host.settings) { settings ->
-    var tab by rememberSaveable { mutableStateOf(TikTokTab.FOLLOWING) }
+    val tab by app.tab.collectAsState()
     val follows by app.follows.state.collectAsState()
     val lists = TikTokTab.entries.associateWith { rememberLazyListState() }
     val reduced = LocalReducedMotion.current
@@ -89,9 +89,9 @@ internal fun TikTokHome(app: TikTokApp, frame: PluginFrame, ownActions: Boolean 
     ReportsReadingScroll(lists.getValue(tab))
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
-            ReadingControlsBar { TabRow(tab, onTab = { tab = it }, actions = if (ownActions) HomeActions({ app.openSearch() }, app.host::openSettings) else null) }
+            ReadingControlsBar { TabRow(tab, onTab = { app.tab.value = it }, actions = if (ownActions) HomeActions({ app.openSearch() }, app.host::openSettings) else null) }
             Hairline()
-            Box(Modifier.weight(1f).swipeTabs(TikTokTab.entries, tab) { tab = it }) {
+            Box(Modifier.weight(1f).swipeTabs(TikTokTab.entries, tab) { app.tab.value = it }) {
                 when (tab) {
                     TikTokTab.FOLLOWING -> FollowingTab(app, follows, settings, frame.padding, lists.getValue(tab))
                     TikTokTab.ACCOUNTS -> AccountsTab(app, follows, frame.padding, lists.getValue(tab))
@@ -115,7 +115,7 @@ private fun TabRow(tab: TikTokTab, onTab: (TikTokTab) -> Unit, actions: HomeActi
 }
 
 private fun tabLook(tab: TikTokTab): Pair<ImageVector, PluginText> = when (tab) {
-    TikTokTab.FOLLOWING -> TikTokIcons.Mark to Strings.tab_following
+    TikTokTab.FOLLOWING -> TikTokIcons.MusicVideo to Strings.tab_following
     TikTokTab.ACCOUNTS -> GroupIcons.PeopleOutlined to Strings.tab_accounts
 }
 
@@ -142,7 +142,7 @@ private fun FollowingTab(app: TikTokApp, follows: List<TikTokSubscriptionRow>?, 
 @Composable
 private fun NothingFollowed(app: TikTokApp, hasAccounts: Boolean, padding: PaddingValues) {
     EmptyPane(
-        TikTokIcons.Mark,
+        TikTokIcons.MusicVideo,
         pluginString(if (hasAccounts) Strings.no_posts else Strings.no_accounts),
         Modifier.padding(padding),
         detail = pluginString(Strings.empty_cta),

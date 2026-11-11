@@ -5,9 +5,20 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.ui.plugins.brandMarkIcon
 
 /** The Material icons XTA's Substack screens draw that Compose's core set lacks (24 × 24). */
 internal object SubstackIcons {
+    /** XTA's mark for Substack: its bars over folded paper (plugin_marks.dart's _substack, Simple Icons, CC0), fitted as every mark is. */
+    val Mark: ImageVector by lazy {
+        brandMarkIcon(
+            "Mark",
+            "M1.46,0H22.54V2.836H1.46ZM1.46,5.406H22.54V8.242H1.46ZM1.46,10.812V24L12,18.11L22.54,24V10.812Z",
+            left = 0f,
+            top = 0f,
+            side = 24f,
+        )
+    }
     val Newspaper: ImageVector by lazy {
         icon(
             "Newspaper",

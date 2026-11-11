@@ -38,7 +38,7 @@ class SubstackPlugin : XtaPlugin() {
 
     override val id: String = "substack"
     override val brandColor: Color = Color(0xFFFF6719)
-    override val icon: ImageVector get() = SubstackIcons.Newspaper
+    override val icon: ImageVector get() = SubstackIcons.Mark
     override val category: Category = Category.NEWSLETTERS
 
     override fun title(language: String): String = Strings.plugin_name.get(language)
