@@ -54,10 +54,14 @@ internal object PluginRoutes {
     const val SCREEN = "plugin/{pluginId}/screen?route={route}"
     const val MEDIA = "plugin-media/{key}/{index}"
 
+    /** A plugin's screen that opens as a card (PluginCards). */
+    const val CARD = "plugin/{pluginId}/card?route={route}"
+
     fun client(id: String) = "plugin/$id"
     fun settings(id: String) = "plugin/$id/settings"
     fun search(id: String, query: String?) = if (query.isNullOrBlank()) "plugin/$id/search" else "plugin/$id/search?q=" + encoded(query)
     fun screen(id: String, route: String) = "plugin/$id/screen?route=" + encoded(route)
+    fun card(id: String, route: String) = "plugin/$id/card?route=" + encoded(route)
     fun media(key: String, index: Int) = "plugin-media/" + encoded(key) + "/$index"
 
     /** [text] escaped for a route, which is matched as a URI: a space as %20, which every platform decodes. */
@@ -125,14 +129,15 @@ private class PluginCashtags(private val plugins: AppPlugins, private val runnin
  * Hooks the app's navigation [nav] up for the plugins: where a plugin asks
  * to go is opened there, X's screens through [x], a link the way the app
  * opens links, the Downloads screen at its route [downloads]; and the screen
- * the shell asked to open at start is opened once.
+ * the shell asked to open at start is opened once. With [cards], a screen
+ * its plugin opens as a card is opened as one.
  */
 @Composable
-fun AttachPluginNavigation(nav: NavHostController, x: LinkScreens, downloads: String, posts: PostActions? = null) {
+fun AttachPluginNavigation(nav: NavHostController, x: LinkScreens, downloads: String, posts: PostActions? = null, cards: PluginCards? = null) {
     val plugins = LocalPlugins.current
     val links = LocalLinks.current
     val uri = LocalUriHandler.current
-    val target = remember(nav, x, links, uri, downloads, posts) { PluginNavTarget(nav, x, links, uri, downloads, posts) }
+    val target = remember(nav, x, links, uri, downloads, posts, cards) { PluginNavTarget(nav, x, links, uri, downloads, posts, plugins, cards) }
     DisposableEffect(plugins, target) {
         plugins.navigator.attach(target)
         onDispose { plugins.navigator.detach(target) }
@@ -151,6 +156,7 @@ fun NavGraphBuilder.pluginScreens(
     nav: NavHostController,
     mediaEnter: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition = { fadeIn(tween(180)) },
     mediaExit: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition = { fadeOut(tween(180)) },
+    cards: PluginCards? = null,
 ) {
     val pluginId = navArgument("pluginId") { type = NavType.StringType }
     composable(PluginRoutes.STORE) {
@@ -183,6 +189,17 @@ fun NavGraphBuilder.pluginScreens(
         arguments = listOf(pluginId, navArgument("route") { type = NavType.StringType; nullable = true; defaultValue = null }),
     ) { entry ->
         PluginRouteScreen(entry.text("pluginId").orEmpty(), entry.text("route").orEmpty(), onBack = { nav.popBackStack() })
+    }
+    if (cards != null) {
+        // The card comes and goes by itself, as the app's opened post.
+        composable(
+            PluginRoutes.CARD,
+            arguments = listOf(pluginId, navArgument("route") { type = NavType.StringType; nullable = true; defaultValue = null }),
+            enterTransition = { EnterTransition.None },
+            popExitTransition = { ExitTransition.None },
+        ) { entry ->
+            PluginCardScreen(cards, nav, entry, entry.text("pluginId").orEmpty(), entry.text("route").orEmpty())
+        }
     }
     composable(
         PluginRoutes.MEDIA,
@@ -218,6 +235,8 @@ private class PluginNavTarget(
     private val uri: UriHandler,
     private val downloads: String,
     private val posts: PostActions?,
+    private val plugins: AppPlugins,
+    private val cards: PluginCards?,
 ) : NavTarget {
     override fun go(destination: Destination) {
         when (destination) {
@@ -230,12 +249,28 @@ private class PluginNavTarget(
             is Destination.XArticle -> posts?.openArticle?.invoke(destination.id) ?: x.post(destination.id)
             Destination.PluginStore -> nav.navigate(PluginRoutes.STORE)
             is Destination.PluginClient -> nav.navigate(PluginRoutes.client(destination.pluginId))
-            is Destination.PluginRoute -> nav.navigate(PluginRoutes.screen(destination.pluginId, destination.route))
+            is Destination.PluginRoute -> openRoute(destination.pluginId, destination.route)
             is Destination.PluginSearch -> nav.navigate(PluginRoutes.search(destination.pluginId, destination.query))
             is Destination.PluginSettings -> nav.navigate(PluginRoutes.settings(destination.pluginId))
             is Destination.Media -> nav.navigate(PluginRoutes.media(destination.key, destination.start))
             Destination.Downloads -> nav.navigate(downloads)
-            Destination.Back -> nav.popBackStack()
+            Destination.Back -> back()
+        }
+    }
+
+    /** Back: the card on top slides out, any other screen is taken off. */
+    private fun back() {
+        val slide = cards?.sliding?.of(nav.currentBackStackEntry?.id)
+        if (slide != null) slide() else nav.popBackStack()
+    }
+
+    /** A plugin's own screen, as a card where the plugin opens it as one. */
+    private fun openRoute(pluginId: String, route: String) {
+        val plugin = plugins.running.value.firstOrNull { it.plugin.id == pluginId }?.plugin
+        if (cards != null && opensAsCard(plugin, route)) {
+            cards.open { nav.navigate(PluginRoutes.card(pluginId, route)) }
+        } else {
+            nav.navigate(PluginRoutes.screen(pluginId, route))
         }
     }
 }

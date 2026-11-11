@@ -68,6 +68,9 @@ class ThreadsPlugin : XtaPlugin() {
         null -> null
     }
 
+    /** A conversation opens as XTA's opened post does: a card over the page it came from, dragged or thrown back. */
+    override fun opensAsCard(route: String): Boolean = ThreadsRoutes.parse(route) is ThreadsRoute.Post
+
     override val feed: PluginFeed get() = app.shared
 
     override val subscriptions: Flow<List<PluginSubscription>> get() = app.subscriptions

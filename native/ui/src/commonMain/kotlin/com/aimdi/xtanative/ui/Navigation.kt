@@ -77,6 +77,7 @@ import com.aimdi.xtanative.ui.offline.OfflineLibraryScreen
 import com.aimdi.xtanative.ui.offline.OfflineMediaScreen
 import com.aimdi.xtanative.ui.pluginstore.AttachPluginNavigation
 import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
+import com.aimdi.xtanative.ui.pluginstore.PluginCards
 import com.aimdi.xtanative.ui.pluginstore.PluginSheetHost
 import com.aimdi.xtanative.ui.pluginstore.pluginScreens
 import com.aimdi.xtanative.ui.post.PostActions
@@ -270,7 +271,7 @@ private class ScreenMotion(private val reduced: State<Boolean>) {
 
     private fun leaving(moving: Exit): Exit = { if (reduced.value) ExitTransition.None else moving(this) }
 
-    private fun NavBackStackEntry.isCard(): Boolean = destination.route == Routes.POST
+    private fun NavBackStackEntry.isCard(): Boolean = destination.route == Routes.POST || destination.route == PluginCards.ROUTE
 }
 
 /**
@@ -296,6 +297,7 @@ fun XtaNativeRoot() {
     val links = LocalLinks.current
     val backs = remember { CardBacks() }
     val opening = rememberCoroutineScope()
+    val pluginCards = remember(backs, opening) { PluginCards(backs, opening) }
     val actions = remember(nav, links) {
         PostActions(
             // A post opens as a card over a picture of the screen it is opened from.
@@ -347,7 +349,7 @@ fun XtaNativeRoot() {
     }
     BindLinkScreens(linkScreens)
     // Where a plugin asks to go lands here too (PLUGINS.md).
-    AttachPluginNavigation(nav, linkScreens, Routes.DOWNLOADS, actions)
+    AttachPluginNavigation(nav, linkScreens, Routes.DOWNLOADS, actions, pluginCards)
     AttachPluginBackups()
     OpenVoiceSettingsWhenAsked(nav)
 
@@ -358,7 +360,7 @@ fun XtaNativeRoot() {
         ProblemActions(addAccount = { nav.navigate(Routes.SIGN_IN) }, diagnostics = { nav.navigate(SettingsRoutes.of(SettingsSection.DIAGNOSTICS)) })
     }
     CompositionLocalProvider(LocalGalleryOpener provides galleries, LocalProblemActions provides problems, LocalLivePlayer provides livePlayer) {
-        DesktopNavigation(nav) { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes, backs)) }
+        DesktopNavigation(nav) { Screens(nav, start, ScreenActions(actions, searchActions, trendsActions, homeRoutes, backs, pluginCards)) }
     }
     if (askSignIn) {
         NotLoggedInDialog(onImportBackup = { nav.navigate(Routes.IMPORT) }, onLogin = { nav.navigate(Routes.SIGN_IN) }, onDismiss = { askSignIn = false })
@@ -375,7 +377,7 @@ private fun OpenVoiceSettingsWhenAsked(nav: NavHostController) {
 }
 
 /** What the screens are given to reach one another, and the pictures the opened posts are dragged off. */
-private class ScreenActions(val posts: PostActions, val search: SearchActions, val trends: TrendsActions, val home: HomeRoutes, val backs: CardBacks)
+private class ScreenActions(val posts: PostActions, val search: SearchActions, val trends: TrendsActions, val home: HomeRoutes, val backs: CardBacks, val pluginCards: PluginCards)
 
 /** Every screen, by route; [start] is the first. */
 @Composable
@@ -708,7 +710,7 @@ private fun ScreenHost(nav: NavHostController, start: String, all: ScreenActions
             LivePlayerScreen(live, onBack = { nav.popBackStack() })
         }
         // A plugin's media viewer fades as the app's does, and not at all while animations are off.
-        pluginScreens(nav, motion.fadeEnter, motion.fadeExit)
+        pluginScreens(nav, motion.fadeEnter, motion.fadeExit, all.pluginCards)
     }
 }
 

@@ -236,6 +236,14 @@ abstract class XtaPlugin {
     open fun screen(route: String): PluginScreen? = null
 
     /**
+     * Whether its screen named [route] is an opened post, which the app then
+     * opens as it opens its own (XTA's card_page_route.dart): a card that
+     * slides in over the page it came from and is dragged, thrown or sent
+     * back; [PluginHost.back] slides it out. False by default.
+     */
+    open fun opensAsCard(route: String): Boolean = false
+
+    /**
      * What it draws under an X post that names tickers, as Stocks draws its
      * price strip (cashtag_quotes.dart): [symbols] are the post's first
      * cashtags, upper-cased, each once, and none for a quoted post. Null

@@ -109,6 +109,7 @@ its plugins have to link against that prerelease's app.
 | `search` | a `PluginSearch` (`hint(language)`, `Results(query, frame)`; `Landing(frame, send)`, what its search shows until a query is sent, `landsInDiscover` where Discover shows that too, `sharesRecentSearches` where its recent searches are the app's, `sent(query)` to keep its own, `ownScreen(query)` naming the plugin's own search screen where its field is its own: the app's search of the plugin then opens that route), or none |
 | `routeFor(url)` | the route of its own screen for a link (a post, a profile), or null |
 | `screen(route)` | its own whole screen for a route (`PluginScreen`), or null |
+| `opensAsCard(route)` | whether that screen is an opened post, which the app then opens as its own (XTA's card_page_route.dart): a card that slides in over the page it came from and is dragged, thrown or sent back, `PluginHost.back` sliding it out; false by default (Threads' conversation) |
 | `backupSections` | `PluginBackupSection`s (name, export, import) of what it keeps |
 | `footprint()` | what it keeps on the device, counted in the store |
 | `feed` | a `PluginFeed`: its followed accounts' posts for Home's timelines and the groups ([below](#posts-in-homes-timelines)), or none |
