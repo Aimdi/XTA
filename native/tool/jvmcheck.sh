@@ -7,7 +7,13 @@
 #
 # LIBS holds okhttp, okio, kotlinx-coroutines-core-jvm,
 # kotlinx-serialization-{core,json}-jvm, jsoup and
-# junit-platform-console-standalone. Without a package every test runs.
+# junit-platform-console-standalone (with commons-compress and xz for a plugin
+# that uses :services). Without a package every test runs.
+#
+# A plugin's reading layer and its tests may import :store and :services,
+# compiled here from source. Tests that import :ui need its classes from a
+# uicheck.sh run, UI_CLASSES=<dir>, and COMPOSE_LIBS=<dir> for the jars it
+# runs against.
 set -euo pipefail
 here=$(cd "$(dirname "$0")/.." && pwd)
 module=${1:-core}
@@ -50,12 +56,25 @@ elif [ "${module#plugins/}" != "$module" ]; then
   id=${module#plugins/}
   compile "$out/networks" "$cp:$classes" "" "$here/networks/src/main/kotlin"
   classes="$classes:$out/networks"
-  # :store as well, which the plugin build provides beside :networks, for a
-  # reading layer that keeps XTA's rows (Stocks' watchlist).
+  # :store and :services as well, which the plugin build provides beside
+  # :networks (Stocks' watchlist keeps XTA's rows; Substack reads aloud from a
+  # point), and :ui's classes for tests that use the plugin API.
   layer=("$here/$module/src/commonMain/kotlin/com/aimdi/xtanative/networks/$id" "$here/$module/src/desktopTest/kotlin/com/aimdi/xtanative/networks/$id")
-  if grep -rqs '^import com\.aimdi\.xtanative\.store\.' "${layer[@]}"; then
-    compile "$out/store" "$cp:$classes" "" "$here/store/src/main/kotlin"
-    classes="$classes:$out/store"
+  uses() { grep -rqs "^import com\\.aimdi\\.xtanative\\.$1\\." "${layer[@]}"; }
+  ui=""
+  if uses ui; then
+    ui=${UI_CLASSES:?the tests of $module use :ui: set UI_CLASSES to the OUT of a uicheck.sh run}
+  fi
+  for dep in store services; do
+    if [ -n "$ui" ] || uses "$dep"; then
+      compile "$out/$dep" "$cp:$classes" "" "$here/$dep/src/main/kotlin"
+      classes="$classes:$out/$dep"
+    fi
+  done
+  if [ -n "$ui" ]; then
+    compose=""
+    [ -z "${COMPOSE_LIBS:-}" ] || compose=$(ls "$COMPOSE_LIBS"/*.jar | tr '\n' ':')
+    cp="$cp$ui:$compose"
   fi
   compile "$out/plugin" "$cp:$classes" "" "$here/$module/src/commonMain/kotlin/com/aimdi/xtanative/networks/$id"
   classes="$classes:$out/plugin"
