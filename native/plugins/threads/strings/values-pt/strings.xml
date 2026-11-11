@@ -131,4 +131,7 @@
         <item quantity="one">%1$d nova publicação</item>
         <item quantity="other">%1$d novas publicações</item>
     </plurals>
+    <string name="muted_words">Palavras silenciadas</string>
+    <string name="muted_words_description">Oculta publicações com estas palavras. Uma palavra só corresponde a palavras inteiras; uma expressão corresponde em qualquer parte.</string>
+    <string name="muted_words_hint">Adicionar uma palavra ou expressão</string>
 </resources>

@@ -124,4 +124,7 @@
     <plurals name="new_posts">
         <item quantity="other">%1$d postingan baru</item>
     </plurals>
+    <string name="muted_words">Kata yang dibisukan</string>
+    <string name="muted_words_description">Sembunyikan postingan yang memuat kata-kata ini. Satu kata hanya cocok dengan kata utuh; sebuah frasa cocok di mana saja.</string>
+    <string name="muted_words_hint">Tambahkan kata atau frasa</string>
 </resources>

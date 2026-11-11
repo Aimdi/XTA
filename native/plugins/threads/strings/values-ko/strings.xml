@@ -124,4 +124,7 @@
     <plurals name="new_posts">
         <item quantity="other">새 게시물 %1$d개</item>
     </plurals>
+    <string name="muted_words">뮤트한 단어</string>
+    <string name="muted_words_description">이 단어가 포함된 게시물을 숨깁니다. 한 단어는 온전한 단어에만, 구절은 어디서든 일치합니다.</string>
+    <string name="muted_words_hint">단어 또는 구절 추가</string>
 </resources>

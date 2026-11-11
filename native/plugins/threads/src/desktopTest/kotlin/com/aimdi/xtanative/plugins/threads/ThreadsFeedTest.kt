@@ -50,6 +50,34 @@ class ThreadsFeedTest {
     }
 
     @Test
+    fun aMutedWordHidesAPostWhereverItsWordsShowAndStaysThroughAReset() {
+        val options = ThreadsFeedOptions(hideReplies = true).muting("cat, Black Friday\ncat").muting("CAT")
+        assertEquals(listOf("cat", "Black Friday"), options.mutedWords, "split as typed, a word muted once in any case")
+        assertEquals(2, options.activeCount)
+        assertEquals("""{"content":"all","hideReplies":true,"hideReposts":false,"mutedWords":["cat","Black Friday"]}""", options.encode())
+        assertEquals(options, ThreadsFeedOptions.decode(options.encode()))
+        assertEquals("""{"content":"all","hideReplies":false,"hideReposts":false}""", ThreadsFeedOptions().encode(), "nothing muted: XTA's keys alone")
+
+        val posts = listOf(
+            post("1").copy(text = "My Cat sleeps"),
+            post("2").copy(text = "a category of its own"),
+            post("3").copy(linkCard = ThreadsLinkCard("https://shop.example", title = "black friday deals")),
+            post("4").copy(quoted = post("q").copy(text = "cat!")),
+            post("5").copy(topicTag = "Cat"),
+            post("6"),
+        )
+        assertEquals(listOf("2", "6"), options.unmuted(posts).map { it.id }, "a single word only whole, a phrase anywhere")
+        assertEquals(listOf("2", "6"), options.shown(posts).map { it.id })
+
+        val reset = options.reset()
+        assertEquals(ThreadsFeedOptions(mutedWords = listOf("cat", "Black Friday")), reset)
+        assertEquals(false, reset.resettable)
+        assertEquals(true, reset.filtered)
+        assertEquals(listOf("Black Friday"), reset.unmuting("cat").mutedWords)
+        assertEquals(posts, ThreadsFeedOptions().unmuted(posts))
+    }
+
+    @Test
     fun aPostLinksOutByItsCardItsResolvedLinkOrABareAddress() {
         assertTrue(ThreadsFeedOptions.hasLink(post("1").copy(linkCard = ThreadsLinkCard("https://example.com"))))
         assertTrue(ThreadsFeedOptions.hasLink(post("2").copy(fragments = listOf(ThreadsTextFragment(ThreadsTextFragment.Kind.LINK, "example.com/a…", "https://example.com/a")))))

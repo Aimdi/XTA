@@ -130,4 +130,7 @@
         <item quantity="one">%1$d new post</item>
         <item quantity="other">%1$d new posts</item>
     </plurals>
+    <string name="muted_words">Muted words</string>
+    <string name="muted_words_description">Hide posts containing these words. A single word matches whole words only; a phrase matches anywhere.</string>
+    <string name="muted_words_hint">Add a word or phrase</string>
 </resources>

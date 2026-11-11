@@ -124,4 +124,7 @@
     <plurals name="new_posts">
         <item quantity="other">%1$d 条新帖子</item>
     </plurals>
+    <string name="muted_words">屏蔽词</string>
+    <string name="muted_words_description">隐藏包含这些词的帖子。单个词只匹配完整词，词组在任意位置匹配。</string>
+    <string name="muted_words_hint">添加词或词组</string>
 </resources>

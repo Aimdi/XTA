@@ -192,9 +192,11 @@ private fun FeedOrFiltered(app: ThreadsApp, frame: PluginFrame, posts: List<Thre
         Refreshable(app, frame) {
             item(key = "filtered") {
                 EmptyPane(PostIcons.Tune, pluginString(Strings.empty_filter)) {
-                    FilledTonalButton(onClick = { app.setOptions(ThreadsFeedOptions()) }) {
-                        Icon(Icons.Filled.Clear, contentDescription = null, modifier = Modifier.size(18.dp))
-                        Text(pluginString(Strings.reset_filters), modifier = Modifier.padding(start = 8.dp))
+                    if (options.resettable) {
+                        FilledTonalButton(onClick = { app.setOptions(options.reset()) }) {
+                            Icon(Icons.Filled.Clear, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Text(pluginString(Strings.reset_filters), modifier = Modifier.padding(start = 8.dp))
+                        }
                     }
                 }
             }

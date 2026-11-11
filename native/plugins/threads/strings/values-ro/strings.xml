@@ -132,4 +132,7 @@
         <item quantity="few">%1$d postări noi</item>
         <item quantity="other">%1$d de postări noi</item>
     </plurals>
+    <string name="muted_words">Cuvinte ignorate</string>
+    <string name="muted_words_description">Ascunde postările care conțin aceste cuvinte. Un singur cuvânt se potrivește doar cu cuvinte întregi; o expresie se potrivește oriunde.</string>
+    <string name="muted_words_hint">Adaugă un cuvânt sau o expresie</string>
 </resources>

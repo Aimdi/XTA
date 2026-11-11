@@ -136,4 +136,7 @@
         <item quantity="many">%1$d нових дописів</item>
         <item quantity="other">%1$d нового допису</item>
     </plurals>
+    <string name="muted_words">Приховані слова</string>
+    <string name="muted_words_description">Приховує пости з цими словами. Одне слово збігається лише цілком, фраза — будь-де.</string>
+    <string name="muted_words_hint">Додати слово або фразу</string>
 </resources>

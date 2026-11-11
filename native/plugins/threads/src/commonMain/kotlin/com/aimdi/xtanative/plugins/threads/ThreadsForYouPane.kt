@@ -84,8 +84,10 @@ internal fun ThreadsForYouPane(app: ThreadsApp, frame: PluginFrame) {
 
 /** The posts, with what stands above and under them; the list opens where the reader stopped and tells where they are now. */
 @Composable
-private fun ForYouList(app: ThreadsApp, frame: PluginFrame, state: ThreadsForYouState) {
+private fun ForYouList(app: ThreadsApp, frame: PluginFrame, read: ThreadsForYouState) {
     val followed by app.accounts.state.collectAsState()
+    val options by app.options.collectAsState()
+    val state = remember(read, options.mutedWords) { read.copy(posts = options.unmuted(read.posts)) }
     val people = remember(state.posts, followed) { ThreadsDiscovery.peopleToFollow(state.posts, { ThreadsAccounts.follows(followed, it) }) }
     val rows = remember(state, people) { ThreadsForYouRow.of(state, people) }
     val list = rememberLazyListState(

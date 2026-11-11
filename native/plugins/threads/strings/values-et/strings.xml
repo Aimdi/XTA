@@ -128,4 +128,7 @@
         <item quantity="one">%1$d uus postitus</item>
         <item quantity="other">%1$d uut postitust</item>
     </plurals>
+    <string name="muted_words">Vaigistatud sõnad</string>
+    <string name="muted_words_description">Peidab postitused, mis sisaldavad neid sõnu. Üksik sõna sobib ainult terve sõnaga, fraas kõikjal.</string>
+    <string name="muted_words_hint">Lisa sõna või fraas</string>
 </resources>

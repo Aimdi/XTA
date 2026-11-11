@@ -124,4 +124,7 @@
     <plurals name="new_posts">
         <item quantity="other">%1$d bài đăng mới</item>
     </plurals>
+    <string name="muted_words">Từ đã tắt tiếng</string>
+    <string name="muted_words_description">Ẩn bài viết chứa những từ này. Một từ đơn chỉ khớp trọn từ; một cụm từ khớp ở bất kỳ đâu.</string>
+    <string name="muted_words_hint">Thêm từ hoặc cụm từ</string>
 </resources>

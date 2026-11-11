@@ -124,4 +124,7 @@
     <plurals name="new_posts">
         <item quantity="other">新しいポスト %1$d 件</item>
     </plurals>
+    <string name="muted_words">ミュートする語</string>
+    <string name="muted_words_description">これらの語を含む投稿を隠します。単語は語全体にのみ一致し、フレーズはどこでも一致します。</string>
+    <string name="muted_words_hint">語やフレーズを追加</string>
 </resources>

@@ -136,4 +136,7 @@
         <item quantity="many">%1$d nového příspěvku</item>
         <item quantity="other">%1$d nových příspěvků</item>
     </plurals>
+    <string name="muted_words">Ztišená slova</string>
+    <string name="muted_words_description">Skryje příspěvky s těmito slovy. Jedno slovo odpovídá jen celým slovům, fráze kdekoli.</string>
+    <string name="muted_words_hint">Přidat slovo nebo frázi</string>
 </resources>

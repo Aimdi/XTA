@@ -128,4 +128,7 @@
         <item quantity="one">Argitalpen berri %1$d</item>
         <item quantity="other">%1$d argitalpen berri</item>
     </plurals>
+    <string name="muted_words">Isilarazitako hitzak</string>
+    <string name="muted_words_description">Hitz hauek dituzten argitalpenak ezkutatzen ditu. Hitz bakarrak hitz osoak baino ez ditu bat egiten; esaldi batek edonon.</string>
+    <string name="muted_words_hint">Gehitu hitz bat edo esaldi bat</string>
 </resources>

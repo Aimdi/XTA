@@ -136,4 +136,7 @@
         <item quantity="many">%1$d новых постов</item>
         <item quantity="other">%1$d нового поста</item>
     </plurals>
+    <string name="muted_words">Скрытые слова</string>
+    <string name="muted_words_description">Скрывает посты с этими словами. Одно слово совпадает только целиком, фраза — в любом месте.</string>
+    <string name="muted_words_hint">Добавить слово или фразу</string>
 </resources>

@@ -124,4 +124,7 @@
     <plurals name="new_posts">
         <item quantity="other">%1$d 則新貼文</item>
     </plurals>
+    <string name="muted_words">封鎖字詞</string>
+    <string name="muted_words_description">隱藏包含這些字詞的貼文。單一詞只比對完整詞，詞組則在任意位置比對。</string>
+    <string name="muted_words_hint">新增字詞或詞組</string>
 </resources>

@@ -128,4 +128,7 @@
         <item quantity="one">%1$d yeni gönderi</item>
         <item quantity="other">%1$d yeni gönderi</item>
     </plurals>
+    <string name="muted_words">Sessize alınan kelimeler</string>
+    <string name="muted_words_description">Bu kelimeleri içeren gönderileri gizler. Tek kelime yalnızca tam kelimeyle eşleşir; bir ifade her yerde eşleşir.</string>
+    <string name="muted_words_hint">Kelime veya ifade ekle</string>
 </resources>

@@ -136,4 +136,7 @@
         <item quantity="many">%1$d новых допісаў</item>
         <item quantity="other">%1$d новага допісу</item>
     </plurals>
+    <string name="muted_words">Прыглушаныя словы</string>
+    <string name="muted_words_description">Хавае пасты з гэтымі словамі. Адно слова супадае толькі цалкам, фраза — у любым месцы.</string>
+    <string name="muted_words_hint">Дадаць слова або фразу</string>
 </resources>

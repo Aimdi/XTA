@@ -128,4 +128,7 @@
         <item quantity="one">%1$d nieuwe post</item>
         <item quantity="other">%1$d nieuwe posts</item>
     </plurals>
+    <string name="muted_words">Genegeerde woorden</string>
+    <string name="muted_words_description">Verberg berichten met deze woorden. Eén woord matcht alleen hele woorden; een woordgroep matcht overal.</string>
+    <string name="muted_words_hint">Woord of woordgroep toevoegen</string>
 </resources>

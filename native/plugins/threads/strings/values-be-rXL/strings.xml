@@ -136,4 +136,7 @@
         <item quantity="many">%1$d novych dopisaŭ</item>
         <item quantity="other">%1$d novaha dopisu</item>
     </plurals>
+    <string name="muted_words">Pryhlušanyja słovy</string>
+    <string name="muted_words_description">Chavaje pasty z hetymi słovami. Adno słova supadaje tolki całkam, fraza — u lubym miescy.</string>
+    <string name="muted_words_hint">Dadać słova abo frazu</string>
 </resources>

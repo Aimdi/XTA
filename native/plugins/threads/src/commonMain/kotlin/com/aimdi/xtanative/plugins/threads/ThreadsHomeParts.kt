@@ -4,6 +4,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,8 +17,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.InputChip
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.AlertDialog
@@ -120,13 +126,13 @@ internal fun UnfollowDialog(handle: String, onConfirm: () -> Unit, onDismiss: ()
     )
 }
 
-/** What the tab shows: all posts, only media or only links, with or without replies and reposts. */
+/** What the tab shows: all posts, only media or only links, with or without replies and reposts, and the words muted here. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun FilterSheet(app: ThreadsApp, onDismiss: () -> Unit) {
     val options by app.options.collectAsState()
     ModalBottomSheet(onDismissRequest = onDismiss) {
-        Column(Modifier.navigationBarsPadding().padding(start = 16.dp, end = 16.dp, bottom = 24.dp)) {
+        Column(Modifier.navigationBarsPadding().verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, bottom = 24.dp)) {
             Text(pluginString(Strings.filters), style = MaterialTheme.typography.titleLarge)
             val contents = listOf(ThreadsFeedContent.ALL to Strings.all, ThreadsFeedContent.MEDIA to Strings.media, ThreadsFeedContent.LINKS to Strings.links)
             SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth().padding(top = 16.dp)) {
@@ -141,8 +147,9 @@ private fun FilterSheet(app: ThreadsApp, onDismiss: () -> Unit) {
             }
             SwitchRow(Strings.hide_replies, options.hideReplies) { app.setOptions(options.copy(hideReplies = it)) }
             SwitchRow(Strings.hide_reposts, options.hideReposts) { app.setOptions(options.copy(hideReposts = it)) }
-            if (options.filtered) {
-                TextButton(onClick = { app.setOptions(ThreadsFeedOptions()) }) {
+            MutedWords(options) { app.setOptions(it) }
+            if (options.resettable) {
+                TextButton(onClick = { app.setOptions(options.reset()) }) {
                     Icon(Icons.Filled.Clear, contentDescription = null, modifier = Modifier.size(18.dp))
                     Text(pluginString(Strings.reset_filters), modifier = Modifier.padding(start = 8.dp))
                 }
@@ -158,6 +165,53 @@ private fun SegmentIcon(content: ThreadsFeedContent) {
         ThreadsFeedContent.MEDIA -> Icon(PostIcons.Image, contentDescription = null, modifier = Modifier.size(18.dp))
         ThreadsFeedContent.LINKS -> Icon(XIcons.Link, contentDescription = null, modifier = Modifier.size(18.dp))
     }
+}
+
+/**
+ * The words muted on this device, as the groups' muted words are written
+ * (custom_feed_muted_keywords): a field to add some, and a chip for each,
+ * whose cross takes it out. They hide a post in Home and in For you.
+ */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun MutedWords(options: ThreadsFeedOptions, onChange: (ThreadsFeedOptions) -> Unit) {
+    var typed by rememberSaveable { mutableStateOf("") }
+    val add = {
+        if (typed.isNotBlank()) onChange(options.muting(typed))
+        typed = ""
+    }
+    val hint = pluginString(Strings.muted_words_hint)
+    Column(Modifier.fillMaxWidth().padding(top = 12.dp)) {
+        Text(pluginString(Strings.muted_words), style = MaterialTheme.typography.titleSmall)
+        Text(pluginString(Strings.muted_words_description), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 2.dp))
+        Row(Modifier.padding(top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+            OutlinedTextField(
+                value = typed,
+                onValueChange = { typed = it },
+                singleLine = true,
+                placeholder = { Text(hint) },
+                keyboardOptions = KeyboardOptions(autoCorrectEnabled = false, imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = { add() }),
+                modifier = Modifier.weight(1f),
+            )
+            IconButton(onClick = add) { Icon(Icons.Filled.Add, contentDescription = hint, tint = MaterialTheme.colorScheme.primary) }
+        }
+        if (options.mutedWords.isNotEmpty()) {
+            FlowRow(Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                options.mutedWords.forEach { word -> MutedChip(word) { onChange(options.unmuting(word)) } }
+            }
+        }
+    }
+}
+
+@Composable
+private fun MutedChip(word: String, onRemove: () -> Unit) {
+    InputChip(
+        selected = false,
+        onClick = onRemove,
+        label = { Text(word, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+        trailingIcon = { Icon(Icons.Filled.Close, contentDescription = pluginString(Strings.delete), modifier = Modifier.size(16.dp)) },
+    )
 }
 
 @Composable

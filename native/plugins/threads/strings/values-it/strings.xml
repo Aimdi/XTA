@@ -131,4 +131,7 @@
         <item quantity="one">%1$d nuovo post</item>
         <item quantity="other">%1$d nuovi post</item>
     </plurals>
+    <string name="muted_words">Parole silenziate</string>
+    <string name="muted_words_description">Nasconde i post che contengono queste parole. Una parola sola corrisponde solo a parole intere, una frase in qualsiasi punto.</string>
+    <string name="muted_words_hint">Aggiungi una parola o una frase</string>
 </resources>

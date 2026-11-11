@@ -128,4 +128,7 @@
         <item quantity="one">%1$d nytt innlegg</item>
         <item quantity="other">%1$d nye innlegg</item>
     </plurals>
+    <string name="muted_words">Dempede ord</string>
+    <string name="muted_words_description">Skjuler innlegg som inneholder disse ordene. Ett ord treffer bare hele ord; en frase treffer hvor som helst.</string>
+    <string name="muted_words_hint">Legg til ord eller frase</string>
 </resources>
