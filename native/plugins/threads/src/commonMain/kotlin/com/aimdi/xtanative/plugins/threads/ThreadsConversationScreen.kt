@@ -116,7 +116,7 @@ private fun ConversationList(app: ThreadsApp, conversation: ThreadsConversation,
             statusRows(conversation, state, onRetry)
             if (conversation.replies.isNotEmpty()) {
                 item(key = "replies-header") { RepliesHeader(app, conversation, view, onAuthorOnly = { authorOnly = !authorOnly }) }
-                replyRows(app, conversation.replyRows(view)) { chain -> expanded = expanded + chain.first().id }
+                replyRows(app, conversation, conversation.replyRows(view)) { chain -> expanded = expanded + chain.first().id }
             }
         }
         if (conversation.replies.isNotEmpty()) {
@@ -243,11 +243,11 @@ private fun orderIcon(order: ThreadsReplyOrder): ImageVector = when (order) {
     ThreadsReplyOrder.OLDEST -> PostIcons.History
 }
 
-/** Each reply thread, its posts joined by rails, a long one cut to its first few until "Show N more replies". */
-private fun LazyListScope.replyRows(app: ThreadsApp, rows: List<ThreadsReplyRow>, onExpand: (List<ThreadsPost>) -> Unit) {
+/** Each reply thread, its posts joined by rails, the opened post's author's marked "Author", a long one cut to its first few until "Show N more replies". */
+private fun LazyListScope.replyRows(app: ThreadsApp, conversation: ThreadsConversation, rows: List<ThreadsReplyRow>, onExpand: (List<ThreadsPost>) -> Unit) {
     itemsIndexed(rows, key = { index, row -> "reply:$index:" + keyOf(row) }, contentType = { _, row -> if (row is ThreadsReplyRow.Post) "post" else "more" }) { _, row ->
         when (row) {
-            is ThreadsReplyRow.Post -> ThreadsPostCard(app, row.post, connectTop = row.connectTop, connectBottom = row.connectBottom)
+            is ThreadsReplyRow.Post -> ThreadsPostCard(app, row.post, connectTop = row.connectTop, connectBottom = row.connectBottom, byAuthor = conversation.byAuthor(row.post))
             is ThreadsReplyRow.More -> MoreReplies(row.hidden) { onExpand(row.chain) }
         }
     }

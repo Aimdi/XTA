@@ -139,4 +139,5 @@
     <string name="muted_words">Приховані слова</string>
     <string name="muted_words_description">Приховує пости з цими словами. Одне слово збігається лише цілком, фраза — будь-де.</string>
     <string name="muted_words_hint">Додати слово або фразу</string>
+    <string name="author">Автор</string>
 </resources>

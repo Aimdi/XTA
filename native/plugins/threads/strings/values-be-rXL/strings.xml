@@ -139,4 +139,5 @@
     <string name="muted_words">Pryhlušanyja słovy</string>
     <string name="muted_words_description">Chavaje pasty z hetymi słovami. Adno słova supadaje tolki całkam, fraza — u lubym miescy.</string>
     <string name="muted_words_hint">Dadać słova abo frazu</string>
+    <string name="author">Aŭtar</string>
 </resources>

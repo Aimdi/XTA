@@ -131,4 +131,5 @@
     <string name="muted_words">Dempede ord</string>
     <string name="muted_words_description">Skjuler innlegg som inneholder disse ordene. Ett ord treffer bare hele ord; en frase treffer hvor som helst.</string>
     <string name="muted_words_hint">Legg til ord eller frase</string>
+    <string name="author">Forfatter</string>
 </resources>

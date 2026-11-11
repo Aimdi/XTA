@@ -131,4 +131,5 @@
     <string name="muted_words">म्यूट किए शब्द</string>
     <string name="muted_words_description">इन शब्दों वाली पोस्ट छिपाएँ। एक शब्द केवल पूरे शब्द से मेल खाता है; वाक्यांश कहीं भी मेल खाता है।</string>
     <string name="muted_words_hint">शब्द या वाक्यांश जोड़ें</string>
+    <string name="author">लेखक</string>
 </resources>

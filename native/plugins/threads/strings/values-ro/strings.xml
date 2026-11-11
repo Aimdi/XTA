@@ -135,4 +135,5 @@
     <string name="muted_words">Cuvinte ignorate</string>
     <string name="muted_words_description">Ascunde postările care conțin aceste cuvinte. Un singur cuvânt se potrivește doar cu cuvinte întregi; o expresie se potrivește oriunde.</string>
     <string name="muted_words_hint">Adaugă un cuvânt sau o expresie</string>
+    <string name="author">Autor</string>
 </resources>

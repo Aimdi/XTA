@@ -139,4 +139,5 @@
     <string name="muted_words">Wyciszone słowa</string>
     <string name="muted_words_description">Ukrywa wpisy zawierające te słowa. Jedno słowo pasuje tylko do całych słów, fraza pasuje w dowolnym miejscu.</string>
     <string name="muted_words_hint">Dodaj słowo lub frazę</string>
+    <string name="author">Autor</string>
 </resources>

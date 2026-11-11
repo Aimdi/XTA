@@ -131,4 +131,5 @@
     <string name="muted_words">Silentigitaj vortoj</string>
     <string name="muted_words_description">Kaŝas afiŝojn enhavantajn ĉi tiujn vortojn. Unuopa vorto kongruas nur kun tutaj vortoj; frazo kongruas ĉie.</string>
     <string name="muted_words_hint">Aldoni vorton aŭ frazon</string>
+    <string name="author">Aŭtoro</string>
 </resources>

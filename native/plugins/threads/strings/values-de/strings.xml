@@ -131,4 +131,5 @@
     <string name="muted_words">Stummgeschaltete Wörter</string>
     <string name="muted_words_description">Blende Beiträge mit diesen Wörtern aus. Ein einzelnes Wort trifft nur ganze Wörter, eine Wortgruppe überall.</string>
     <string name="muted_words_hint">Wort oder Wortgruppe hinzufügen</string>
+    <string name="author">Autor</string>
 </resources>

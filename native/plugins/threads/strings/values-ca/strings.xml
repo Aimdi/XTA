@@ -134,4 +134,5 @@
     <string name="muted_words">Paraules silenciades</string>
     <string name="muted_words_description">Amaga les publicacions amb aquestes paraules. Una sola paraula només coincideix amb paraules senceres; una frase coincideix a qualsevol lloc.</string>
     <string name="muted_words_hint">Afegeix una paraula o frase</string>
+    <string name="author">Autor</string>
 </resources>

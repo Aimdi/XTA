@@ -131,4 +131,5 @@
     <string name="muted_words">Vaigistatud sõnad</string>
     <string name="muted_words_description">Peidab postitused, mis sisaldavad neid sõnu. Üksik sõna sobib ainult terve sõnaga, fraas kõikjal.</string>
     <string name="muted_words_hint">Lisa sõna või fraas</string>
+    <string name="author">Autor</string>
 </resources>

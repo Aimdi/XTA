@@ -134,4 +134,5 @@
     <string name="muted_words">Palavras silenciadas</string>
     <string name="muted_words_description">Oculta posts com estas palavras. Uma palavra sozinha corresponde só a palavras inteiras; uma frase corresponde em qualquer lugar.</string>
     <string name="muted_words_hint">Adicionar uma palavra ou frase</string>
+    <string name="author">Autor</string>
 </resources>

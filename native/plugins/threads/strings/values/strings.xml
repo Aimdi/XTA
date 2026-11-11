@@ -133,4 +133,5 @@
     <string name="muted_words">Muted words</string>
     <string name="muted_words_description">Hide posts containing these words. A single word matches whole words only; a phrase matches anywhere.</string>
     <string name="muted_words_hint">Add a word or phrase</string>
+    <string name="author">Author</string>
 </resources>

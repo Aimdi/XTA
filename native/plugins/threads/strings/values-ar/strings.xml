@@ -147,4 +147,5 @@
     <string name="muted_words">كلمات مكتومة</string>
     <string name="muted_words_description">يخفي المنشورات التي تحتوي هذه الكلمات. الكلمة المفردة تُطابق الكلمات الكاملة فقط، والعبارة تُطابق في أي موضع.</string>
     <string name="muted_words_hint">أضف كلمة أو عبارة</string>
+    <string name="author">الكاتب</string>
 </resources>

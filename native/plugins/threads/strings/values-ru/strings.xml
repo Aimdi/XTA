@@ -139,4 +139,5 @@
     <string name="muted_words">Скрытые слова</string>
     <string name="muted_words_description">Скрывает посты с этими словами. Одно слово совпадает только целиком, фраза — в любом месте.</string>
     <string name="muted_words_hint">Добавить слово или фразу</string>
+    <string name="author">Автор</string>
 </resources>

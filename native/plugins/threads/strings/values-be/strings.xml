@@ -139,4 +139,5 @@
     <string name="muted_words">Прыглушаныя словы</string>
     <string name="muted_words_description">Хавае пасты з гэтымі словамі. Адно слова супадае толькі цалкам, фраза — у любым месцы.</string>
     <string name="muted_words_hint">Дадаць слова або фразу</string>
+    <string name="author">Аўтар</string>
 </resources>

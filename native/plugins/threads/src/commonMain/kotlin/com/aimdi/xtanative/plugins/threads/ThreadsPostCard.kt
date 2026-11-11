@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.plugins.threads
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -83,6 +84,7 @@ internal fun ThreadsPostCard(
     connectTop: Boolean = false,
     connectBottom: Boolean = false,
     divider: Boolean = true,
+    byAuthor: Boolean = false,
 ) {
     val settings by app.prefs.collectAsState()
     val liked by app.likes.state.collectAsState()
@@ -106,7 +108,7 @@ internal fun ThreadsPostCard(
             PluginAvatar(post.avatarUrl, post.authorName, post.handle, AvatarSize) { app.openProfile(post.handle) }
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
-                Header(app, post, focal, PostPrefs.of(settings).absoluteTimestamps, menu)
+                Header(app, post, focal, byAuthor, PostPrefs.of(settings).absoluteTimestamps, menu)
                 Body(app, post, openOnTap, focal)
                 Engagement(app, post, isLiked, PostPrefs.of(settings).hideCounts, open)
             }
@@ -154,7 +156,7 @@ private fun RepostLine(app: ThreadsApp, post: ThreadsPost) {
 
 /** The author line, Follow while the author is not followed here, and ⋯. */
 @Composable
-private fun Header(app: ThreadsApp, post: ThreadsPost, focal: Boolean, absolute: Boolean, onMore: () -> Unit) {
+private fun Header(app: ThreadsApp, post: ThreadsPost, focal: Boolean, byAuthor: Boolean, absolute: Boolean, onMore: () -> Unit) {
     val rows by app.accounts.state.collectAsState()
     val time = when {
         focal -> ""
@@ -163,11 +165,29 @@ private fun Header(app: ThreadsApp, post: ThreadsPost, focal: Boolean, absolute:
     }
     Row(verticalAlignment = Alignment.CenterVertically) {
         AuthorLine(post.authorName, post.handle, time, verified = post.isVerified, modifier = Modifier.weight(1f).clickable { app.openProfile(post.handle) })
+        if (byAuthor) AuthorChip()
         if (rows != null && !ThreadsAccounts.follows(rows, post.handle)) {
             SmallIcon(ThreadsIcons.PersonAdd, pluginString(Strings.follow)) { app.follow(ThreadsAccount.of(post), force = false) }
         }
         SmallIcon(PostIcons.MoreHoriz, pluginString(Strings.more_info), onMore)
     }
+}
+
+/** "Author", beside a reply the opened post's author wrote. */
+@Composable
+private fun AuthorChip() {
+    Text(
+        pluginString(Strings.author),
+        style = MaterialTheme.typography.labelSmall,
+        fontWeight = FontWeight.SemiBold,
+        color = MaterialTheme.colorScheme.onSecondaryContainer,
+        maxLines = 1,
+        modifier = Modifier
+            .padding(start = 6.dp)
+            .clip(RoundedCornerShape(6.dp))
+            .background(MaterialTheme.colorScheme.secondaryContainer)
+            .padding(horizontal = 6.dp, vertical = 2.dp),
+    )
 }
 
 /** The topic, whom it answers, the caption, the media, the link card, the quote, the rest of the thread and, opened, the time. */

@@ -30,7 +30,10 @@ data class ThreadsConversation(
     val focusIsStub: Boolean get() = focus.text.isEmpty() && !focus.hasMedia && focus.linkCard == null && focus.quoted == null
 
     /** The reply threads the post's author took part in. */
-    val authorReplies: List<List<ThreadsPost>> get() = replies.filter { chain -> chain.any { it.handle == focus.handle } }
+    val authorReplies: List<List<ThreadsPost>> get() = replies.filter { chain -> chain.any(::byAuthor) }
+
+    /** Whether [post] is the opened post's author's, which a reply marks "Author". */
+    fun byAuthor(post: ThreadsPost): Boolean = focus.handle.isNotEmpty() && post.handle == focus.handle
 
     /** The reply threads in [order], the author's alone with [authorOnly]. */
     fun orderedReplies(order: ThreadsReplyOrder, authorOnly: Boolean = false): List<List<ThreadsPost>> {

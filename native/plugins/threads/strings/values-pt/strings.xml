@@ -134,4 +134,5 @@
     <string name="muted_words">Palavras silenciadas</string>
     <string name="muted_words_description">Oculta publicações com estas palavras. Uma palavra só corresponde a palavras inteiras; uma expressão corresponde em qualquer parte.</string>
     <string name="muted_words_hint">Adicionar uma palavra ou expressão</string>
+    <string name="author">Autor</string>
 </resources>

@@ -134,4 +134,5 @@
     <string name="muted_words">Mots masqués</string>
     <string name="muted_words_description">Masquez les publications contenant ces mots. Un mot seul ne correspond qu’aux mots entiers ; une expression correspond partout.</string>
     <string name="muted_words_hint">Ajouter un mot ou une expression</string>
+    <string name="author">Auteur</string>
 </resources>

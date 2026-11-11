@@ -113,6 +113,13 @@ class ThreadsConversationTest {
         assertEquals(listOf(listOf("6", "7")), ids(long.authorReplies))
     }
 
+    @Test
+    fun theOpenedPostsAuthorsRepliesAreMarkedAndNoOneElses() {
+        val marked = long.replyRows().filterIsInstance<ThreadsReplyRow.Post>().filter { long.byAuthor(it.post) }.map { it.post.id }
+        assertEquals(listOf("7"), marked)
+        assertFalse(ThreadsConversation(focus = post("x", handle = "")).byAuthor(post("y", handle = "")), "a stub names no author")
+    }
+
     private fun on(id: String, day: Int, handle: String = "a") = ThreadsPost(
         id = id,
         handle = handle,
