@@ -54,6 +54,14 @@ class MastodonSharedTest {
     }
 
     @Test
+    fun theSharedRowSaysWhoBoostedAndThatItWasEditedAsXtasCardDoes() {
+        assertEquals("Bob boosted", SharedLines.boosted(post("1", boosted = true), "en"))
+        assertNull(SharedLines.boosted(post("2"), "en"))
+        assertEquals("Edited", SharedLines.edited(post("3").copy(editedAt = Instant.ofEpochSecond(2_000)), "en"))
+        assertNull(SharedLines.edited(post("4"), "en"))
+    }
+
+    @Test
     fun aSavedPostIsXtasMastodonRecordUnderItsAddress() {
         val post = post("9").copy(media = listOf(MastodonMedia(MastodonMedia.Kind.IMAGE, "https://example.social/a.jpg", "https://example.social/a-full.jpg")))
         val archive = MastodonShared.archive(post)

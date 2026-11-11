@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.mastodon.MastodonFollow
@@ -30,12 +31,14 @@ import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.NetworkPersonRow
+import com.aimdi.xtanative.ui.plugins.PluginChipTabs
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginSearch
-import com.aimdi.xtanative.ui.plugins.PluginTabs
+import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
+import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 
 /**
  * XTA's Mastodon search (mastodon_search_sheet.dart): names, #tags,
@@ -119,11 +122,23 @@ private fun SearchResults(app: MastodonApp, query: String, frame: PluginFrame) {
         state.loading -> LoadingRow()
         error != null -> RetryMessage(pluginString(problemText(error)), reader::search)
         else -> Column(Modifier.fillMaxSize()) {
-            val labels = listOf(Strings.accounts, Strings.posts, Strings.hashtags).map { pluginString(it) }
-            PluginTabs(labels, state.tab.ordinal, { reader.select(MastodonSearchTab.entries[it]) })
+            PluginChipTabs(MastodonSearchTab.entries, state.tab, reader::select, icon = { it.icon() }, label = { pluginString(it.label()) })
             Box(Modifier.weight(1f).swipeTabs(MastodonSearchTab.entries, state.tab) { reader.select(it) }) { SearchPane(app, state, frame) }
         }
     }
+}
+
+/** A search tab's glyph and name, as XTA's search tabs carry them (mastodon_search_results.dart's _SearchTabs). */
+private fun MastodonSearchTab.icon(): ImageVector = when (this) {
+    MastodonSearchTab.ACCOUNTS -> GroupIcons.PeopleOutlined
+    MastodonSearchTab.POSTS -> MastodonIcons.Stream
+    MastodonSearchTab.HASHTAGS -> MastodonIcons.Tag
+}
+
+private fun MastodonSearchTab.label(): PluginText = when (this) {
+    MastodonSearchTab.ACCOUNTS -> Strings.accounts
+    MastodonSearchTab.POSTS -> Strings.posts
+    MastodonSearchTab.HASHTAGS -> Strings.hashtags
 }
 
 @Composable

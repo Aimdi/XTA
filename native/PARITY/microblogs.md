@@ -667,7 +667,7 @@ untested → ported | bluesky_search_upgrade_test › clearing query invalidates
 untested → ported | bluesky_search_upgrade_test › suggestion failures stay separate from a submitted query | Compose (Bluesky search model) | Compose only
 covered | bluesky_search_upgrade_test › people pagination deduplicates and stops a repeated cursor | BlueskyTimelineTest.aRepeatedOrBlankCursorEndsPaging
 covered | bluesky_search_upgrade_test › post cursor cycle terminates without discarding newly loaded posts | BlueskyTimelineTest.aRepeatedOrBlankCursorEndsPaging
-untested → ported | bluesky_search_upgrade_test › load more failure preserves results and cursor for retry | Compose (Bluesky search model) | Compose only
+covered | bluesky_search_upgrade_test › load more failure preserves results and cursor for retry | BlueskySearch.kt (ResultList, SearchFoot), ui/plugins PagedItems | the next page is asked by XTA's "Load more results" and the last says "No more results"; a failed page keeps its own retry. BlueskyPartsTest.aSearchOffersItsNextPageThenSaysThereIsNoMore, BlueskySourcesTest.aFailedPageKeepsItsCursorForATryAgain
 untested → ported | bluesky_search_upgrade_test › refresh error preserves content but retries refresh instead of pagination | Compose (Bluesky search model) | Compose only
 untested → ported | bluesky_search_upgrade_test › structured filters invalidate earlier post requests and preserve people | Compose (Bluesky search model) | Compose only
 covered | bluesky_search_upgrade_test › a hashtag uses a structured exact tag | BlueskyScreensRulesTest.filtersTakeAnAccountAndATag
@@ -677,3 +677,10 @@ covered | bluesky_search_upgrade_test › AppView changes discard the old respon
 untested → ported | bluesky_search_upgrade_test › unchanged filters do not issue another request | Compose (Bluesky search model) | Compose only
 untested → ported | bluesky_search_upgrade_test › disposal ignores completion and further commands | Compose (Bluesky search model) | Compose only
 untested → ported | bluesky_search_upgrade_test › full-screen compact search supports filters and tabs without overflow | Compose (Bluesky search) | Compose only
+
+## Screen parity pass (no XTA test of its own)
+missing/different | bluesky_post_card.dart, mastodon_post_card.dart › a link card keeps its post in the browser's bar (LinkPostContext) | ui/plugins Posts.kt (PostLinkCard, LocalPostNetwork), NetworkPosts.kt (linkContext) | the page opened on its own; NetworkPostsTest.aLinkOpenedFromACardCarriesItsPostAsXtasCardsHandIt
+missing/different | bluesky_content_warning.dart, mastodon_post_card.dart › a revealed warning stays a Show/Hide toggle, a covered quote opens in place | ui/plugins Posts.kt (WarningLine, CoverLine, QuotedNetworkPost) | Show was one way and a covered quote only named its warning; NetworkPostsTest.aWarningOverTheMediaAloneIsDrawnAtTheMediaAndOnlyWhereThereIsSome, MastodonPluginRulesTest.aPostIsDrawnWithItsLinksMentionsAndTags
+missing/different | mastodon_interleaved.dart › Home and the groups draw a Mastodon post as the Mastodon card | MastodonPostRow.kt (sharedExtras) | only the poll was added to the shared row; MastodonSharedTest.theSharedRowSaysWhoBoostedAndThatItWasEditedAsXtasCardDoes
+missing/different | bluesky_profile_screen.dart › Bluesky's own error words on every screen | BlueskyParts.kt (errorText(Problem), ProblemView, ProblemRow) | lists said the app's generic words; BlueskyPartsTest.aFailedReadIsToldInBlueskysOwnWordsOnEveryScreen
+missing/different | bluesky_reader_view.dart, plugin_feed_people.dart › the people a feed brings sit under the third post on Home, folded | BlueskyFollowingPane.kt (PeopleStrip, filteredRows), BlueskyPlace.kt (FollowingPlaces.STRIP_AFTER) | they stood open above the posts everywhere; BlueskyStoresTest.followingsListOpensAtItsAnchorAndKeepsTheFirstPostOnScreen

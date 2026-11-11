@@ -109,8 +109,13 @@ class MastodonPluginRulesTest {
         assertEquals("https://example.social/v.mp4", video.videoUrl)
         assertEquals(2500L, video.durationMs)
         assertEquals(post.url, video.webUrl)
-        assertEquals("cw", shown.quoted?.text?.single()?.text)
-        assertEquals("Content warning", shown.quoted?.warning)
+        // A quote behind its warning says so in XTA's words over the author's, and holds its text back until Show.
+        assertEquals("quoted", shown.quoted?.text?.single()?.text)
+        assertEquals("Content warning\ncw", shown.quoted?.warning)
+        assertEquals(true, shown.quoted?.coversText)
+        val sensitive = post.copy(quote = post.quote?.copy(spoilerText = "", sensitive = true)).toNetworkPost("en").quoted
+        assertEquals("Content warning", sensitive?.warning)
+        assertEquals(false, sensitive?.coversText, "only its media waits")
     }
 
     @Test

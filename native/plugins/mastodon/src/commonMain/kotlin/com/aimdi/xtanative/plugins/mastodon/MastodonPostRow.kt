@@ -81,10 +81,35 @@ internal fun MastodonPostRow(
 
 /**
  * What the app's shared row adds to [post] among other networks' posts
- * (XtaPlugin.postExtras), as XTA's card shows it there: its poll's results,
- * behind its content warning with the rest of it.
+ * (XtaPlugin.postExtras), so that Home's timelines and the groups draw it as
+ * XTA draws its Mastodon card there (mastodon_interleaved.dart): "… boosted"
+ * leading to who boosted it, Edited after its time, its poll's results
+ * behind its content warning with the rest of it, XTA's row of replies,
+ * boosts (who boosted it; a long press, its quotes), likes, the bookmark and
+ * the browser, and the post sheet on a long press. [onOpen] opens its thread.
  */
-internal fun sharedExtras(post: MastodonPost): NetworkPostExtras? = post.poll?.let { poll -> NetworkPostExtras(below = { PollResults(poll) }) }
+internal fun sharedExtras(app: MastodonApp, post: MastodonPost, language: String, onOpen: () -> Unit): NetworkPostExtras = NetworkPostExtras(
+    repostLine = SharedLines.boosted(post, language),
+    onRepostLine = post.boostedByAcct?.takeIf { it.isNotEmpty() }?.let { acct -> { app.openProfile(acct) } },
+    timeNote = SharedLines.edited(post, language),
+    below = post.poll?.let { poll -> { PollResults(poll) } },
+    footer = { SharedFooter(app, post, onOpen) },
+    onLongPress = { app.openMenu(post) },
+)
+
+/** The lines XTA's card writes over and beside a post, in [language]: who boosted it, and that it was edited. */
+internal object SharedLines {
+    fun boosted(post: MastodonPost, language: String): String? = if (post.boosted) Strings.boosted.get(language, post.boostedBy ?: post.authorName) else null
+
+    fun edited(post: MastodonPost, language: String): String? = if (post.edited) Strings.edited.get(language) else null
+}
+
+/** XTA's engagement row under a post the app draws, its numbers gone in zen or calm mode as on the plugin's own screens. */
+@Composable
+private fun SharedFooter(app: MastodonApp, post: MastodonPost, onOpen: () -> Unit) {
+    val prefs by app.prefs.collectAsState()
+    EngagementRow(app, post, prefs.hideCounts, onOpen)
+}
 
 /** XTA's read-only replies, boosts and likes (each a count that leads somewhere), the bookmark, and the browser. */
 @Composable

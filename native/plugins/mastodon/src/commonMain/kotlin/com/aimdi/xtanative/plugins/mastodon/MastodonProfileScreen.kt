@@ -1,20 +1,32 @@
 package com.aimdi.xtanative.plugins.mastodon
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,13 +35,15 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.mastodon.MastodonProfileReader
 import com.aimdi.xtanative.networks.mastodon.MastodonProfileTab
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
-import com.aimdi.xtanative.ui.plugins.PluginTabs
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.RetryRow
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -88,10 +102,27 @@ internal fun MastodonProfileScreen(app: MastodonApp, acct: String) {
     }
 }
 
+/** A profile's tabs as XTA draws them (mastodon_profile_screen.dart's _ProfileTabs): pills side by side, the open one filled, scrolling sideways when they do not fit. */
 @Composable
 private fun ProfileTabs(selected: MastodonProfileTab, onSelect: (MastodonProfileTab) -> Unit) {
     val labels = listOf(Strings.profile_posts, Strings.profile_replies, Strings.profile_media).map { pluginString(it) }
-    PluginTabs(labels, selected.ordinal, { onSelect(MastodonProfileTab.entries[it]) })
+    val colors = MaterialTheme.colorScheme
+    Row(
+        Modifier.fillMaxWidth().background(colors.background).horizontalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        MastodonProfileTab.entries.forEachIndexed { index, tab ->
+            val open = tab == selected
+            TextButton(
+                onClick = { onSelect(tab) },
+                colors = ButtonDefaults.textButtonColors(
+                    containerColor = if (open) colors.primaryContainer else Color.Transparent,
+                    contentColor = if (open) colors.onPrimaryContainer else colors.onSurfaceVariant,
+                ),
+                modifier = Modifier.heightIn(min = 48.dp).widthIn(min = 64.dp).semantics { this.selected = open },
+            ) { Text(labels[index], maxLines = 1) }
+        }
+    }
 }
 
 /** The tab shown: its posts (or Media's grid), what is coming, why it stopped, or that there is nothing. */

@@ -42,7 +42,11 @@ internal fun MastodonPost.toNetworkPost(language: String, pinned: Boolean = fals
     )
 }
 
-/** A quoted post: behind its warning, its warning's words in place of its text, its pictures blurred. */
+/**
+ * A quoted post: behind its content warning (XTA's "Content warning" over
+ * the author's words) all of it waits for Show; media marked sensitive
+ * alone waits blurred.
+ */
 private fun MastodonPost.toQuoted(language: String): NetworkPost = NetworkPost(
     id = url,
     authorId = acct,
@@ -50,10 +54,15 @@ private fun MastodonPost.toQuoted(language: String): NetworkPost = NetworkPost(
     authorHandle = acct,
     avatarUrl = avatarUrl,
     createdAt = publishedAt,
-    text = if (hasSpoiler) listOf(TextRun.Plain(spoilerText)) else runs(this),
+    text = runs(this),
     media = media.map { it.toMediaItem(url) },
-    warning = Strings.content_warning.get(language).takeIf { hasSpoiler || sensitive },
+    warning = when {
+        hasSpoiler -> Strings.content_warning.get(language) + "\n" + spoilerText.trim()
+        sensitive -> Strings.content_warning.get(language)
+        else -> null
+    },
     url = url,
+    coversText = hasSpoiler,
 )
 
 /** A post's text cut at its links, mentions (by `user@domain`) and tags (searched with their #). */

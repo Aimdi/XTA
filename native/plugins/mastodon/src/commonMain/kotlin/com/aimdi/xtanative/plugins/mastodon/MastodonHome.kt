@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -109,11 +110,19 @@ private fun Pane(app: MastodonApp, timeline: MastodonTimeline, slot: String, fra
     val follows by app.follows.state.collectAsState()
     TimelinePane(app, timeline, slot, frame) {
         when {
-            timeline != MastodonTimeline.FOLLOWING -> EmptyTimeline(pluginString(Strings.empty_public))
-            follows.isNullOrEmpty() -> EmptyTimeline(pluginString(Strings.empty_following), pluginString(Strings.discover)) { app.host.openSearch(null) }
-            else -> EmptyTimeline(pluginString(Strings.no_posts), pluginString(Strings.retry)) { app.following.refresh(force = true) }
+            timeline != MastodonTimeline.FOLLOWING -> EmptyTimeline(timeline.emptyIcon(), pluginString(Strings.empty_public))
+            follows.isNullOrEmpty() ->
+                EmptyTimeline(MastodonIcons.Public, pluginString(Strings.empty_following), pluginString(Strings.discover), MastodonIcons.Explore) { app.host.openSearch(null) }
+            else -> EmptyTimeline(MastodonIcons.Public, pluginString(Strings.no_posts), pluginString(Strings.retry), Icons.Filled.Refresh) { app.following.refresh(force = true) }
         }
     }
+}
+
+/** The glyph over an empty public timeline, as XTA's panes pick it: Explore's compass, Local's house, the globe for Federated. */
+private fun MastodonTimeline.emptyIcon(): ImageVector = when (this) {
+    MastodonTimeline.EXPLORE -> MastodonIcons.Explore
+    MastodonTimeline.LOCAL -> MastodonIcons.Home
+    else -> MastodonIcons.Public
 }
 
 /** The four timelines as chips, then search, and Saved and Settings in the menu. */
@@ -171,7 +180,7 @@ private fun PeoplePane(app: MastodonApp, frame: PluginFrame, onAdd: () -> Unit) 
     val follows by app.follows.state.collectAsState()
     LaunchedEffect(Unit) { app.follows.load() }
     LazyColumn(contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
-        if (follows?.isEmpty() == true) item(key = "none") { EmptyTimeline(pluginString(Strings.empty_following), pluginString(Strings.add_account), onAdd) }
+        if (follows?.isEmpty() == true) item(key = "none") { EmptyTimeline(MastodonIcons.Public, pluginString(Strings.empty_following), pluginString(Strings.add_account), MastodonIcons.PersonAdd, onAdd) }
         items(follows.orEmpty(), key = MastodonFollow::acct) { follow ->
             NetworkPersonRow(follow.name, follow.acct, follow.avatarUrl, { app.openProfile(follow.acct) }) { AddToGroupButton(app.host, follow.acct) }
         }

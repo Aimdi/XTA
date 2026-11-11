@@ -77,7 +77,7 @@ class MastodonPlugin : XtaPlugin() {
 
     override val postActions: NetworkPostActions get() = app.actions
 
-    /** A poll's results under one of its posts in the app's shared rows, as XTA's card shows them there. */
+    /** What XTA's Mastodon card has where the app draws one of its posts among others': who boosted it, Edited, its poll, its own footer and sheet. */
     override fun postExtras(post: NetworkPost): NetworkPostExtras? = app.extrasOf(post)
 
     /** A post kept in XTA's record, as Saved draws it; one of another network is none of its. */

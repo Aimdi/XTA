@@ -263,8 +263,8 @@ internal class MastodonApp(val host: PluginHost) {
         return MastodonShared.post(post, host.language)
     }
 
-    /** What the app's shared row adds to a post it drew ([shown]): its poll's results. */
-    fun extrasOf(shown: NetworkPost): NetworkPostExtras? = drawn[shown.id]?.let(::sharedExtras)
+    /** What the app's shared row adds to a post it drew ([shown]): all that XTA's Mastodon card has there ([sharedExtras]). */
+    fun extrasOf(shown: NetworkPost): NetworkPostExtras? = drawn[shown.id]?.let { post -> sharedExtras(this, post, host.language) { actions.open(shown) } }
 
     /** Where a post the app draws leads: its conversation, its author, a tag's timeline, the viewer; its bookmark and the shared post sheet. */
     val actions = NetworkPostActions(
