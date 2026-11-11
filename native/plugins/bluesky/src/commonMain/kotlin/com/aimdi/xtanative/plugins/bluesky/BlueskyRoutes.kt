@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.plugins.bluesky
 
 import com.aimdi.xtanative.networks.bluesky.BlueskyClient
+import com.aimdi.xtanative.networks.bluesky.BlueskyPost
 import com.aimdi.xtanative.networks.bluesky.BlueskySearchKind
 import com.aimdi.xtanative.services.links.NetworkLink
 import com.aimdi.xtanative.services.links.NetworkLinks
@@ -24,6 +25,28 @@ internal sealed interface PostTarget {
     suspend fun uri(client: BlueskyClient): String = when (this) {
         is Uri -> uri
         is Key -> "at://" + (if (actor.startsWith("did:")) actor else client.profile(actor).did) + "/app.bsky.feed.post/" + rkey
+    }
+
+    /**
+     * The post as a link names it, on screen while its thread is read
+     * (XTA's _blueskyStub): its author by the link's name, its place on
+     * bsky.app, and nothing else yet. None for a post opened by its URI,
+     * which the list it was tapped in still holds.
+     */
+    fun stub(): BlueskyPost? = when (this) {
+        is Uri -> null
+        is Key -> {
+            val did = actor.takeIf { it.startsWith("did:") }.orEmpty()
+            BlueskyPost(
+                uri = "at://$actor/app.bsky.feed.post/$rkey",
+                cid = "",
+                handle = if (did.isEmpty()) actor else "",
+                did = did,
+                authorName = actor,
+                text = "",
+                url = "https://bsky.app/profile/$actor/post/$rkey",
+            )
+        }
     }
 }
 

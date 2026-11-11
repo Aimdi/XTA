@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -35,6 +36,7 @@ import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.NetworkPostCard
 import com.aimdi.xtanative.ui.plugins.NetworkPostExtras
 import com.aimdi.xtanative.ui.plugins.PluginText
+import com.aimdi.xtanative.ui.plugins.PostCover
 import com.aimdi.xtanative.ui.plugins.TextRun
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -62,7 +64,7 @@ internal fun BlueskyPost.toNetworkPost(language: String, pinned: Boolean = false
         text = if (hidden) listOf(TextRun.Plain(Strings.content_unavailable.get(language))) else runs(text, facets),
         media = if (hidden) emptyList() else media.map { it.toMediaItem(url) },
         card = linkCard?.takeUnless { hidden }?.let { LinkCard(it.url, it.title, it.description, it.imageUrl) },
-        quoted = quotedPost?.takeUnless { hidden }?.toNetworkPost(language),
+        quoted = quotedPost?.takeUnless { hidden }?.toNetworkPost(language)?.copy(card = null, quoted = null),
         replies = replyCount,
         reposts = repostCount,
         quotes = quoteCount,
@@ -145,13 +147,29 @@ private fun PinnedLine() {
  * What XTA's Bluesky card adds to the shared row, here and where the app
  * draws [post] among others' (Home's timelines, the groups): Follow at the
  * end of its author line while its author is not followed here, its footer
- * ([onOpen] opens its thread), and the app's post sheet on a long press.
+ * ([onOpen] opens its thread), the app's post sheet on a long press, its
+ * cover over what a label holds back, and a quoted post's media over its text.
  */
 internal fun extrasOf(app: BlueskyApp, post: BlueskyPost, onOpen: () -> Unit): NetworkPostExtras = NetworkPostExtras(
     trailing = { FollowGlyph(app, post) },
     footer = { PostFooter(app, post, onOpen) },
     onLongPress = { app.openMenu(post) },
+    cover = { ContentCover(it) },
+    quoteMediaFirst = true,
 )
+
+/**
+ * XTA's cover over what a label holds back (BlueskyContentWarning): one
+ * button across the post, "Content warning · Show", then Hide once opened;
+ * nothing it protects is drawn until then.
+ */
+@Composable
+private fun ContentCover(cover: PostCover) {
+    OutlinedButton(onClick = cover.toggle, modifier = Modifier.fillMaxWidth().padding(top = 6.dp)) {
+        Icon(if (cover.revealed) PostIcons.VisibilityOff else BlueskyIcons.Visibility, contentDescription = null, modifier = Modifier.size(18.dp))
+        Text(cover.warning + " · " + pluginString(if (cover.revealed) Strings.hide else Strings.show), modifier = Modifier.padding(start = 8.dp))
+    }
+}
 
 /** Follow, while [post]'s author is not followed here. */
 @Composable

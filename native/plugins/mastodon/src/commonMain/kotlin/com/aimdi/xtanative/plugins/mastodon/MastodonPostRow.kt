@@ -34,6 +34,7 @@ import com.aimdi.xtanative.ui.plugins.NetworkBookmark
 import com.aimdi.xtanative.ui.plugins.NetworkPostCard
 import com.aimdi.xtanative.ui.plugins.NetworkPostExtras
 import com.aimdi.xtanative.ui.plugins.PluginText
+import com.aimdi.xtanative.ui.plugins.PostCover
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
@@ -74,6 +75,7 @@ internal fun MastodonPostRow(
         below = results,
         footer = { EngagementRow(app, post, prefs.hideCounts, onOpen) },
         onLongPress = { app.openMenu(post) },
+        cover = { WarningCover(it) },
     )
     NetworkPostCard(shown, actions, extras, modifier)
     if (divider) Hairline()
@@ -84,7 +86,7 @@ internal fun MastodonPostRow(
  * (XtaPlugin.postExtras), so that Home's timelines and the groups draw it as
  * XTA draws its Mastodon card there (mastodon_interleaved.dart): "… boosted"
  * leading to who boosted it, Edited after its time, its poll's results
- * behind its content warning with the rest of it, XTA's row of replies,
+ * behind its content warning (XTA's cover, with Show and Hide) with the rest of it, XTA's row of replies,
  * boosts (who boosted it; a long press, its quotes), likes, the bookmark and
  * the browser, and the post sheet on a long press. [onOpen] opens its thread.
  */
@@ -95,7 +97,12 @@ internal fun sharedExtras(app: MastodonApp, post: MastodonPost, language: String
     below = post.poll?.let { poll -> { PollResults(poll) } },
     footer = { SharedFooter(app, post, onOpen) },
     onLongPress = { app.openMenu(post) },
+    cover = { WarningCover(it) },
 )
+
+/** A warning the shared row keeps (the post's in Home's timelines, the notice on media marked sensitive) as XTA's Show and Hide cover. */
+@Composable
+private fun WarningCover(cover: PostCover) = ContentWarning(cover.warning, cover.revealed, cover.toggle)
 
 /** The lines XTA's card writes over and beside a post, in [language]: who boosted it, and that it was edited. */
 internal object SharedLines {

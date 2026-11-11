@@ -20,6 +20,18 @@ class BlueskyRoutesTest {
     }
 
     @Test
+    fun aPostOpenedFromALinkIsShownByWhatTheLinkNamesWhileItIsRead() {
+        val stub = PostTarget.Key("bsky.app", "3l6oveex3ii2l").stub()!!
+        assertEquals("at://bsky.app/app.bsky.feed.post/3l6oveex3ii2l", stub.uri)
+        assertEquals("bsky.app" to "", stub.handle to stub.did)
+        assertEquals("bsky.app", stub.authorName)
+        assertEquals("https://bsky.app/profile/bsky.app/post/3l6oveex3ii2l", stub.url)
+        val byDid = PostTarget.Key("did:plc:maya", "3k").stub()!!
+        assertEquals("" to "did:plc:maya", byDid.handle to byDid.did)
+        assertNull(PostTarget.Uri("at://did:plc:maya/app.bsky.feed.post/3k").stub())
+    }
+
+    @Test
     fun aProfileLinkOpensTheProfileAsXtaReadsIt() {
         listOf(
             "https://bsky.app/profile/maya.bsky.social",

@@ -239,6 +239,13 @@ with a test.
   `PluginSwitchRow` with a leading icon, `HomeTimelineIcon`;
   `AddToGroupButton` in a plugin's own words, `AddToGroupIcon`; and
   `XtaPlugin.brandsChrome` (false: its mark on Home follows the text colour).
+- A network's own cover (added after version 9, with defaults):
+  `NetworkPostExtras.cover`, a `PostCover` drawn in place of the shared
+  row's warning line, on the post and on the post it quotes (XTA's Show and
+  Hide covers: Mastodon's "Content warning" box, Bluesky's button), under
+  which nothing held back is drawn until it is opened (`PostCovers`); and
+  `NetworkPostExtras.quoteMediaFirst`, a quoted post's media over its text
+  (Bluesky's).
 - Words: `PluginStrings` with `pluginString` and `pluginPlural`
   (`pluralCategory` gives each language's plural forms).
 

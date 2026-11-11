@@ -95,8 +95,8 @@ internal fun BlueskyThreadScreen(app: BlueskyApp, target: PostTarget) {
     val list = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val reduced = LocalReducedMotion.current
-    // The post tapped stays on screen while its conversation is read, as XTA's thread opens on it.
-    val seed = remember(target) { (target as? PostTarget.Uri)?.let { app.drawn(it.uri) } }
+    // The post tapped, or the one a link names, stays on screen while its conversation is read, as XTA's thread opens on it.
+    val seed = remember(target) { (target as? PostTarget.Uri)?.let { app.drawn(it.uri) } ?: target.stub() }
     PluginScaffold(
         title = pluginString(Strings.thread),
         onBack = app.host::back,

@@ -22,6 +22,10 @@ internal object BlueskyIcons {
         icon("ExploreOutlined", "M12,2C6.48,2 2,6.48 2,12s4.48,10 10,10 10,-4.48 10,-10S17.52,2 12,2zM12,20c-4.41,0 -8,-3.59 -8,-8s3.59,-8 8,-8 8,3.59 8,8 -3.59,8 -8,8zM6.5,17.5l7.51,-3.49L17.5,6.5 9.99,9.99 6.5,17.5zM12,10.9c0.61,0 1.1,0.49 1.1,1.1s-0.49,1.1 -1.1,1.1 -1.1,-0.49 -1.1,-1.1 0.49,-1.1 1.1,-1.1z")
     }
 
+    val Visibility: ImageVector by lazy {
+        icon("Visibility", "M12,6c3.79,0 7.17,2.13 8.82,5.5C19.17,14.87 15.79,17 12,17s-7.17,-2.13 -8.82,-5.5C4.83,8.13 8.21,6 12,6m0,-2C7,4 2.73,7.11 1,11.5 2.73,15.89 7,19 12,19s9.27,-3.11 11,-7.5C21.27,7.11 17,4 12,4zM12,9c1.38,0 2.5,1.12 2.5,2.5S13.38,14 12,14s-2.5,-1.12 -2.5,-2.5S10.62,9 12,9m0,-2c-2.48,0 -4.5,2.02 -4.5,4.5S9.52,16 12,16s4.5,-2.02 4.5,-4.5S14.48,7 12,7z")
+    }
+
     private fun icon(name: String, path: String): ImageVector =
         ImageVector.Builder(name = name, defaultWidth = 24.dp, defaultHeight = 24.dp, viewportWidth = 24f, viewportHeight = 24f)
             .addPath(pathData = PathParser().parsePathString(path).toNodes(), fill = SolidColor(Color.Black))

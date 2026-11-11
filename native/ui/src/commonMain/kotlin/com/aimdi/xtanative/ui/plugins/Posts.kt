@@ -126,7 +126,11 @@ private fun annotated(runs: List<TextRun>, linkColor: Color, onMention: (String)
  * poll's results), held back with them by a warning that covers the post's
  * text ([NetworkPost.coversText]); [footer] in place of the counts (the network's own
  * buttons); [trailing] at the end of the author line (a follow button, see
- * [NetworkHeaderButton]); and what a long press on the row does.
+ * [NetworkHeaderButton]); what a long press on the row does; [cover], the
+ * network's own drawing of the post's warning, and of its quoted post's, in
+ * place of the shared line (XTA's Show and Hide covers, which draw nothing
+ * they hold back); and [quoteMediaFirst], for a network whose quoted post
+ * shows its media over its text.
  */
 class NetworkPostExtras(
     val trailing: (@Composable () -> Unit)? = null,
@@ -137,7 +141,22 @@ class NetworkPostExtras(
     val below: (@Composable () -> Unit)? = null,
     val footer: (@Composable () -> Unit)? = null,
     val onLongPress: (() -> Unit)? = null,
+    val cover: (@Composable (PostCover) -> Unit)? = null,
+    val quoteMediaFirst: Boolean = false,
 ) {
+    /** As the plugins of API 9 make one, before [cover] and [quoteMediaFirst]. */
+    @Deprecated("The constructor of plugin API 9", level = DeprecationLevel.HIDDEN)
+    constructor(
+        trailing: (@Composable () -> Unit)? = null,
+        repostLine: String? = null,
+        onRepostLine: (() -> Unit)? = null,
+        timeNote: String? = null,
+        above: (@Composable () -> Unit)? = null,
+        below: (@Composable () -> Unit)? = null,
+        footer: (@Composable () -> Unit)? = null,
+        onLongPress: (() -> Unit)? = null,
+    ) : this(trailing, repostLine, onRepostLine, timeNote, above, below, footer, onLongPress, null, false)
+
     companion object {
         val None = NetworkPostExtras()
     }
@@ -228,9 +247,9 @@ fun NetworkPostCard(
                 post.replyingTo?.let { handle -> ReplyLine(handle) { actions.openMention(handle) } }
                 post.title?.let { PostTitle(it, Modifier.padding(top = 2.dp)) }
                 extras.above?.invoke()
-                CoverLine(post, revealed) { revealed = !revealed }
+                CoverLine(post, revealed, extras.cover) { revealed = !revealed }
                 if (!post.textCovered(revealed)) LinkedText(post.text, actions.openMention, actions.openTag, Modifier.padding(top = 2.dp))
-                Attachments(post, actions, revealed, onToggle = { revealed = !revealed }, gap = 10.dp, playing = playing, opensPost = true)
+                Attachments(post, actions, revealed, onToggle = { revealed = !revealed }, gap = 10.dp, playing = playing, opensPost = true, extras = extras)
                 if (!post.textCovered(revealed)) extras.below?.invoke()
                 val footer = extras.footer
                 if (footer != null) footer() else CountsLine(post, rememberArchive(post, actions))
@@ -324,7 +343,12 @@ fun NetworkFocalPost(post: NetworkPost, actions: NetworkPostActions, modifier: M
  * link card; behind a warning, Show opens it in place and Hide covers it again.
  */
 @Composable
-fun QuotedNetworkPost(post: NetworkPost, actions: NetworkPostActions, modifier: Modifier = Modifier) {
+fun QuotedNetworkPost(post: NetworkPost, actions: NetworkPostActions, modifier: Modifier = Modifier) =
+    QuotedNetworkPost(post, actions, modifier, NetworkPostExtras.None)
+
+/** [QuotedNetworkPost] as the network of the post quoting it draws its covers and orders it ([extras]). */
+@Composable
+private fun QuotedNetworkPost(post: NetworkPost, actions: NetworkPostActions, modifier: Modifier, extras: NetworkPostExtras) {
     var revealed by rememberSaveable(post.id, post.revision) { mutableStateOf(false) }
     val shape = RoundedCornerShape(16.dp)
     Column(
@@ -338,18 +362,41 @@ fun QuotedNetworkPost(post: NetworkPost, actions: NetworkPostActions, modifier: 
         Text(post.authorName, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
         Text("@" + post.authorHandle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
         post.title?.let { PostTitle(it, Modifier.padding(top = 4.dp)) }
-        CoverLine(post, revealed) { revealed = !revealed }
+        CoverLine(post, revealed, extras.cover) { revealed = !revealed }
         if (!post.textCovered(revealed)) {
-            LinkedText(post.text, actions.openMention, actions.openTag, Modifier.padding(top = 6.dp), maxLines = QUOTE_LINES)
-            val warning = post.mediaWarning()
-            if (warning != null) WarningLine(warning, revealed) { revealed = !revealed }
-            if (post.media.isNotEmpty()) {
-                val hidden = warning != null && !revealed
-                MediaTiles(post.media, { index -> if (hidden) revealed = true else actions.openMedia(post, index) }, Modifier.padding(top = 8.dp), hidden = hidden)
-            }
+            val text = @Composable { LinkedText(post.text, actions.openMention, actions.openTag, Modifier.padding(top = 6.dp), maxLines = QUOTE_LINES) }
+            if (!extras.quoteMediaFirst) text()
+            WarnedMedia(post, actions, revealed, { revealed = !revealed }, 8.dp, playing = false, cover = extras.cover)
+            if (extras.quoteMediaFirst) text()
             PostLinkCard(post, actions, Modifier.padding(top = 8.dp), opensPost = true)
         }
     }
+}
+
+/**
+ * [post]'s media, [gap] below what is above, behind the warning that covers
+ * it alone: the shared line over blurred tiles, or the network's own [cover]
+ * with nothing under it until the reader opens it.
+ */
+@Composable
+private fun WarnedMedia(post: NetworkPost, actions: NetworkPostActions, revealed: Boolean, onToggle: () -> Unit, gap: Dp, playing: Boolean, cover: (@Composable (PostCover) -> Unit)?) {
+    val warning = post.mediaWarning()
+    if (warning != null) Warning(warning, coversText = false, revealed, onToggle, cover)
+    if (post.media.isEmpty() || !PostCovers.drawsMedia(warning != null, revealed, cover != null)) return
+    val hidden = warning != null && !revealed
+    MediaTiles(
+        post.media,
+        { index -> if (hidden) onToggle() else actions.openMedia(post, index) },
+        Modifier.padding(top = gap),
+        playing = playing,
+        hidden = hidden,
+    )
+}
+
+/** A warning as the network draws it ([cover]), else the shared line. */
+@Composable
+private fun Warning(warning: String, coversText: Boolean, revealed: Boolean, onToggle: () -> Unit, cover: (@Composable (PostCover) -> Unit)?) {
+    if (cover == null) WarningLine(warning, revealed, onToggle) else cover(PostCover(warning, coversText, revealed, onToggle))
 }
 
 /**
@@ -360,29 +407,27 @@ fun QuotedNetworkPost(post: NetworkPost, actions: NetworkPostActions, modifier: 
  * leads back to the post.
  */
 @Composable
-private fun Attachments(post: NetworkPost, actions: NetworkPostActions, revealed: Boolean, onToggle: () -> Unit, gap: Dp, playing: Boolean, opensPost: Boolean) {
+private fun Attachments(
+    post: NetworkPost,
+    actions: NetworkPostActions,
+    revealed: Boolean,
+    onToggle: () -> Unit,
+    gap: Dp,
+    playing: Boolean,
+    opensPost: Boolean,
+    extras: NetworkPostExtras = NetworkPostExtras.None,
+) {
     if (post.textCovered(revealed)) return
-    val warning = post.mediaWarning()
-    if (warning != null) WarningLine(warning, revealed, onToggle)
-    if (post.media.isNotEmpty()) {
-        val hidden = warning != null && !revealed
-        MediaTiles(
-            post.media,
-            { index -> if (hidden) onToggle() else actions.openMedia(post, index) },
-            Modifier.padding(top = gap),
-            playing = playing,
-            hidden = hidden,
-        )
-    }
+    WarnedMedia(post, actions, revealed, onToggle, gap, playing, extras.cover)
     PostLinkCard(post, actions, Modifier.padding(top = gap), opensPost)
-    post.quoted?.let { QuotedNetworkPost(it, actions, Modifier.padding(top = gap)) }
+    post.quoted?.let { QuotedNetworkPost(it, actions, Modifier.padding(top = gap), extras) }
 }
 
 /** The warning that keeps all of [post] back, over its text, with Show, or Hide once [revealed]; nothing for a post it does not cover. */
 @Composable
-private fun CoverLine(post: NetworkPost, revealed: Boolean, onToggle: () -> Unit) {
+private fun CoverLine(post: NetworkPost, revealed: Boolean, cover: (@Composable (PostCover) -> Unit)? = null, onToggle: () -> Unit) {
     val warning = post.warning?.takeIf { post.coversText } ?: return
-    WarningLine(warning, revealed, onToggle)
+    Warning(warning, coversText = true, revealed, onToggle, cover)
 }
 
 /**
