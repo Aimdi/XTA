@@ -203,14 +203,16 @@ private fun emptyLabel(tab: ProfileTab): PluginText = when (tab) {
 /**
  * The profile itself: face, name, what they say about themselves (its
  * mentions, links and tags tappable), their link unless it is their own
- * Threads page, the counts Meta told, Add account while not followed here,
- * Add to group, and a word when the profile is private.
+ * Threads page, the counts Meta told, Add account while not followed here
+ * (Unfollow once it is), Add to group, and a word when the profile is private.
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun ThreadsProfileCard(app: ThreadsApp, profile: ThreadsProfile, modifier: Modifier = Modifier) {
     val rows by app.accounts.state.collectAsState()
     val outside = rememberOpenOutside()
+    var unfollowing by remember { mutableStateOf(false) }
+    if (unfollowing) UnfollowDialog(profile.username, onConfirm = { app.unfollow(profile.username) }) { unfollowing = false }
     Column(modifier.fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             val picture = profile.pictureUrl.ifEmpty { null }
@@ -231,7 +233,7 @@ internal fun ThreadsProfileCard(app: ThreadsApp, profile: ThreadsProfile, modifi
         ThreadsProfiles.outsideLink(profile)?.let { link ->
             Row(Modifier.padding(top = 8.dp).clickable { outside(link) }, verticalAlignment = Alignment.CenterVertically) {
                 Icon(XIcons.Link, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(15.dp))
-                Text(link, color = MaterialTheme.colorScheme.primary, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = 6.dp))
+                Text(ThreadsProfiles.linkLabel(link), color = MaterialTheme.colorScheme.primary, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = 6.dp))
             }
         }
         val counts = ThreadsProfiles.counts(profile)
@@ -240,10 +242,18 @@ internal fun ThreadsProfileCard(app: ThreadsApp, profile: ThreadsProfile, modifi
                 counts.forEach { (n, kind) -> CountText(n, countLabel(kind)) }
             }
         }
-        if (rows != null && !ThreadsAccounts.follows(rows, profile.username)) {
+        val followed = ThreadsAccounts.follows(rows, profile.username)
+        if (rows != null && !followed) {
             Button(onClick = { app.followProfile(profile) }, modifier = Modifier.fillMaxWidth().padding(top = 18.dp)) {
                 Icon(ThreadsIcons.PersonAdd, contentDescription = null, modifier = Modifier.size(18.dp))
                 Text(pluginString(Strings.add_account), modifier = Modifier.padding(start = 8.dp))
+            }
+        }
+        // More than XTA's card: an account followed here can be unfollowed from its own page, after the same question.
+        if (followed) {
+            OutlinedButton(onClick = { unfollowing = true }, modifier = Modifier.fillMaxWidth().padding(top = 18.dp)) {
+                Icon(ThreadsIcons.PersonRemove, contentDescription = null, modifier = Modifier.size(18.dp))
+                Text(pluginString(Strings.unfollow), modifier = Modifier.padding(start = 8.dp))
             }
         }
         OutlinedButton(onClick = { app.addToGroup(ThreadsAccount.of(profile)) }, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {

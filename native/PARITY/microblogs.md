@@ -697,5 +697,15 @@ native only | For you: the Bearer's timeline page by page, else threads.com's pu
 missing/different | profile tabs were an underlined tab row; XTA's are one segmented button (plugin_profile_tabs.dart) | ThreadsProfileScreen.ProfileTabs; a second tap goes to the top, a pull reads the replies page too | Compose only
 missing/different | a link card opened without its post (threads_post_card.dart:421-449) | ui/post CardView(card, from, modifier), ThreadsPostCard.ThreadsLink, ThreadsLinkContext | ThreadsSharedTest.aLinkCardOpensWithItsPostBesideIt…
 missing/different | the followed accounts were read behind whichever section was shown | ThreadsHome.HomePane | Compose only
-left out | the conversation as XTA's card that is dragged back (XtaCardPageRoute) | the card belongs to the app's navigation (SwipeBackCard, CardBacks), which draws only X's post that way; a plugin's screen has no way to ask for it without a change to the app's graph and the plugin API | —
+missing/different | the conversation as XTA's card that is dragged back (XtaCardPageRoute) | XtaPlugin.opensAsCard, ui/pluginstore PluginCards.kt (PluginCardScreen over SwipeBackCard and CardBacks; the plugin's back slides the card out), ThreadsPlugin.opensAsCard | SlidingBacksTest; the drag itself is the app's (SwipeBackMathTest, CardDragsTest) and needs a device
+
+## Threads, round 10 (the chrome, the card, the audit, and past XTA)
+
+missing/different | the tab drew its own strip of chips; XTA's is PluginHomeChrome (one bar on its own screen, a section picker when folded in Home) | ThreadsHome.HomeBar over the kit's PluginHomeTabs | Compose only (PluginTabFitTest is the kit's)
+missing/different | a video was a poster that opened the viewer; XTA plays it in place with the app's player, under Settings › Media (threads_media.dart) | ThreadsMedia.MediaTile over the kit's MediaTiles, ThreadsMediaItems.tile (the file the video-quality setting picks) | ThreadsRulesTest.aFeedTileLoadsThePictureThatFillsItAndPlaysTheQualityTheSettingPicks
+missing/different | a described picture carried no ALT and a long press did nothing (plugin_post_media.dart) | ThreadsMedia.MediaTile (AltBadge, AltTextDialog, LocalMediaSave) | the same test (the description); Compose only
+missing/different | a feed's first read showed a spinner; XTA paints PluginFeedSkeleton, and a stub's conversation a skeleton post | ThreadsHome.HomePane, ThreadsForYouPane, ThreadsConversationScreen.threadRows | Compose only
+native only | a dot for each picture of a row, the one in view marked | ThreadsMedia.StripDots, ThreadsStrip.shown | ThreadsRulesTest.theDotsMarkTheTileInViewAndTheLastAtTheRowsEnd
+native only | a followed profile's page offers Unfollow, after XTA's question | ThreadsProfileCard, UnfollowDialog | Compose only
+native only | a profile's link reads without its scheme | ThreadsProfiles.linkLabel | ThreadsRulesTest.aProfilesLinkReadsWithoutItsSchemeAndStillOpensWhole
 

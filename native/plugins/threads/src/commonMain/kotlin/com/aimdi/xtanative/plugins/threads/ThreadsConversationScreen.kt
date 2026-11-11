@@ -54,6 +54,7 @@ import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.Fetch
 import com.aimdi.xtanative.ui.plugins.Fetched
 import com.aimdi.xtanative.ui.plugins.NoticeHost
+import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.RetryMessage
@@ -138,7 +139,7 @@ private fun LandsOnFocus(list: LazyListState, conversation: ThreadsConversation)
 /** The posts it answers, the post, and its author's continuation, joined by rails. */
 private fun LazyListScope.threadRows(app: ThreadsApp, conversation: ThreadsConversation) {
     if (conversation.focusIsStub && !conversation.loaded) {
-        item(key = "focus-loading") { LoadingRow() }
+        item(key = "focus-loading") { PluginFeedSkeleton(count = 1) }
         return
     }
     val chain = conversation.ancestors + conversation.focus + conversation.continuation

@@ -43,6 +43,10 @@ internal object ThreadsProfiles {
         return url.takeIf { !own }
     }
 
+    /** [link] as the card shows it: without its scheme, "www." or a bare trailing slash; the tap still opens the whole address. */
+    fun linkLabel(link: String): String =
+        link.trim().replaceFirst(Regex("^https?://", RegexOption.IGNORE_CASE), "").removePrefix("www.").trimEnd('/').ifEmpty { link.trim() }
+
     /** The counts Meta told, in XTA's order: followers, following, threads; a guest is not told whom a profile follows. */
     fun counts(profile: ThreadsProfile): List<Pair<Long, ThreadsCount>> = listOfNotNull(
         profile.followerCount?.let { it to ThreadsCount.FOLLOWERS },
@@ -74,6 +78,16 @@ internal object ThreadsMediaItems {
 
     fun qualities(media: ThreadsMedia): List<VideoQuality> =
         media.renditions.mapNotNull { rendition -> rendition.lines?.let { VideoQuality(rendition.url, "${it}p") } }
+
+    /**
+     * [media] of [post] as a feed tile [width] by [height] pixels draws it:
+     * the picture at the size that fills the tile, and a video playing in
+     * place the file the video-quality setting picks, as XTA's player does.
+     */
+    fun tile(post: ThreadsPost, media: ThreadsMedia, quality: MediaQuality, width: Int, height: Int): MediaItem {
+        val whole = item(post, media, quality)
+        return whole.copy(thumbUrl = media.tileUrl(width, height), inlineVideoUrl = whole.videoUrl)
+    }
 
     /** A picture or video of [post], the viewer's Share giving the post, as XTA's (threads_models.dart). */
     private fun item(post: ThreadsPost, media: ThreadsMedia, quality: MediaQuality): MediaItem {
@@ -116,6 +130,17 @@ internal object ThreadsStrip {
                 Layout(height, shapes.map { min(height * card(it), width * WIDEST) })
             }
         }
+    }
+
+    /**
+     * Which tile of a row the dots mark: the [first] in view, the next once
+     * more than half of the first ([firstWidth] wide, scrolled [offset]) has
+     * left, and the last when the row cannot scroll further ([atEnd]).
+     */
+    fun shown(first: Int, offset: Int, firstWidth: Float, atEnd: Boolean, count: Int): Int {
+        if (count <= 0) return 0
+        val index = if (atEnd && (first > 0 || offset > 0)) count - 1 else if (offset > firstWidth / 2) first + 1 else first
+        return index.coerceIn(0, count - 1)
     }
 
     /** The shape a lone picture is shown at: its own, within the bounds a plugin's media keeps (clampPluginMediaAspect). */

@@ -122,4 +122,50 @@ class ThreadsRulesTest {
         val plain = ThreadsMediaItems.items(post.copy(media = listOf(ThreadsMedia("https://cdn/only.jpg"))), MediaQuality.LARGE).single()
         assertEquals("https://cdn/only.jpg", plain.tileUrl, "a picture with one address shows it")
     }
+
+    @Test
+    fun aFeedTileLoadsThePictureThatFillsItAndPlaysTheQualityTheSettingPicks() {
+        val picture = ThreadsMedia(
+            "https://cdn/1440.jpg",
+            images = listOf(ThreadsImage("https://cdn/1440.jpg", 1440, 1800), ThreadsImage("https://cdn/640.jpg", 640, 800), ThreadsImage("https://cdn/320.jpg", 320, 400)),
+            alt = " A harbour ",
+        )
+        val video = ThreadsMedia(
+            "https://cdn/poster.jpg",
+            renditions = listOf(
+                ThreadsVideoRendition("https://cdn/1080.mp4", 1080, 1920),
+                ThreadsVideoRendition("https://cdn/720.mp4", 720, 1280),
+                ThreadsVideoRendition("https://cdn/480.mp4", 480, 854),
+            ),
+        )
+        val post = ThreadsPost(id = "1", handle = "zuck", authorName = "Mark", text = "", media = listOf(picture, video), url = "https://www.threads.com/@zuck/post/A")
+
+        val still = ThreadsMediaItems.tile(post, picture, MediaQuality.MEDIUM, 600, 700)
+        assertEquals("https://cdn/640.jpg", still.tileUrl, "the smallest size that fills the tile")
+        assertEquals("https://cdn/1440.jpg", still.imageUrl, "the viewer and a download keep the largest")
+        assertEquals("A harbour", still.description)
+
+        val moving = ThreadsMediaItems.tile(post, video, MediaQuality.MEDIUM, 600, 700)
+        assertEquals(MediaItem.Kind.VIDEO, moving.kind)
+        assertEquals("https://cdn/720.mp4", moving.inlineVideoUrl, "in place, the file the setting picks, not the smallest")
+        assertEquals("https://cdn/480.mp4", ThreadsMediaItems.tile(post, video, MediaQuality.THUMB, 600, 700).inlineVideoUrl)
+    }
+
+    @Test
+    fun theDotsMarkTheTileInViewAndTheLastAtTheRowsEnd() {
+        assertEquals(0, ThreadsStrip.shown(first = 0, offset = 0, firstWidth = 300f, atEnd = false, count = 4))
+        assertEquals(0, ThreadsStrip.shown(first = 0, offset = 140, firstWidth = 300f, atEnd = false, count = 4))
+        assertEquals(1, ThreadsStrip.shown(first = 0, offset = 160, firstWidth = 300f, atEnd = false, count = 4), "more than half of the first has left")
+        assertEquals(3, ThreadsStrip.shown(first = 2, offset = 40, firstWidth = 300f, atEnd = true, count = 4), "the row cannot scroll further")
+        assertEquals(0, ThreadsStrip.shown(first = 0, offset = 0, firstWidth = 300f, atEnd = true, count = 2), "a row that fits whole starts on its first")
+        assertEquals(0, ThreadsStrip.shown(first = 0, offset = 0, firstWidth = 0f, atEnd = false, count = 0))
+    }
+
+    @Test
+    fun aProfilesLinkReadsWithoutItsSchemeAndStillOpensWhole() {
+        assertEquals("example.com/about", ThreadsProfiles.linkLabel("https://www.example.com/about/"))
+        assertEquals("example.com", ThreadsProfiles.linkLabel(" HTTP://example.com "))
+        assertEquals("linktr.ee/zuck", ThreadsProfiles.linkLabel("linktr.ee/zuck"))
+        assertEquals("https://", ThreadsProfiles.linkLabel("https://"), "nothing left to show: the address as it is")
+    }
 }

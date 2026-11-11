@@ -54,10 +54,10 @@ import com.aimdi.xtanative.networks.threads.ThreadsException
 import com.aimdi.xtanative.networks.threads.ThreadsFailure
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.ui.common.Hairline
-import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.EmptyPane
 import com.aimdi.xtanative.ui.plugins.NoticeHost
+import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
 import com.aimdi.xtanative.ui.plugins.PluginText
@@ -164,7 +164,7 @@ private fun HomePane(app: ThreadsApp, frame: PluginFrame, onAdd: () -> Unit, onS
             when {
                 state.items.isNotEmpty() -> FeedOrFiltered(app, frame, state.items, options)
                 problem != null && !notConfigured(problem) -> RetryMessage(pluginString(ThreadsFailures.feed(problem)), onRetry = { app.feed.refresh(force = true) })
-                !state.loaded -> LoadingRow()
+                !state.loaded -> PluginFeedSkeleton()
                 else -> Refreshable(app, frame) { item(key = "empty") { NothingYet(app, onAdd, onSearch) } }
             }
         }

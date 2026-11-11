@@ -35,6 +35,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsFailure
 import com.aimdi.xtanative.networks.threads.ThreadsForYouState
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.EmptyPane
+import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.ReportsReadingScroll
@@ -64,7 +65,7 @@ internal fun ThreadsForYouPane(app: ThreadsApp, frame: PluginFrame) {
         value = true
     }
     if (!restored) {
-        LoadingRow()
+        PluginFeedSkeleton()
         return
     }
     val state by app.forYou.state.collectAsState()
@@ -78,7 +79,7 @@ internal fun ThreadsForYouPane(app: ThreadsApp, frame: PluginFrame) {
         state.throttledUntil != null -> ForYouMessage(app, frame, state) { RateLimited(state.throttledUntil) }
         problem != null -> ForYouMessage(app, frame, state) { RetryMessage(pluginString(ThreadsFailures.forYou(problem)), onRetry = app::refreshForYou) }
         state.needsSignIn -> ForYouMessage(app, frame, state) { NeedsSignIn(app) }
-        !state.loaded -> LoadingRow()
+        !state.loaded -> PluginFeedSkeleton()
         else -> ForYouMessage(app, frame, state) { EmptyPane(PostIcons.Sparkle, pluginString(Strings.no_posts)) }
     }
 }
