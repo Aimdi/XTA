@@ -54,7 +54,10 @@ class BlueskyPlugin : XtaPlugin() {
 
     override fun detach() = app.close()
 
-    override val homeTab: PluginBody = { frame -> BlueskyHome(app, frame) }
+    override val homeTab: PluginBody = { frame -> BlueskyHome(app, frame, onHome = true) }
+
+    /** Opened on its own, as XTA's Bluesky screen outside Home: the people its feed brings stay open above the posts. */
+    override val clientTab: PluginBody = { frame -> BlueskyHome(app, frame, onHome = false) }
 
     override val settings: PluginBody = { frame -> BlueskySettingsBody(app, frame) }
 

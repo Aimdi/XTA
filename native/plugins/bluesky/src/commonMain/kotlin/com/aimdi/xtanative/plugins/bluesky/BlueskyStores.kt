@@ -93,6 +93,9 @@ internal class BlueskyLikes(private val file: StoreFile, private val prefs: Blue
 
     suspend fun load(): List<BlueskyLike> = mutex.withLock { loaded() }
 
+    /** The likes read from the device again, as a pull on Liked reads them. */
+    suspend fun reload(): List<BlueskyLike> = mutex.withLock { BlueskyLocal.likes(file.read().orEmpty()).also { mutable.value = it } }
+
     fun isLiked(uri: String): Boolean = mutable.value.orEmpty().any { it.uri == uri }
 
     /** Likes [post] here, or takes the like back; whether it is liked now. */

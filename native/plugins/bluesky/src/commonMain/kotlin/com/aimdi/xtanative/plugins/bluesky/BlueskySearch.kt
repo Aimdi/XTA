@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -24,14 +25,17 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -53,12 +57,13 @@ import com.aimdi.xtanative.networks.bluesky.BlueskyUrls
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.MessageText
-import com.aimdi.xtanative.ui.plugins.NetworkProblemRow
 import com.aimdi.xtanative.ui.plugins.PagedItems
-import com.aimdi.xtanative.ui.plugins.PagedList
+import com.aimdi.xtanative.ui.plugins.PagedState
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginSearch
+import com.aimdi.xtanative.ui.plugins.ScrollsToTop
+import com.aimdi.xtanative.ui.plugins.pagedRows
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.problemOf
 import com.aimdi.xtanative.ui.plugins.rememberKept
@@ -253,7 +258,7 @@ private fun PeopleResults(app: BlueskyApp, query: String, frame: PluginFrame) {
         PagedItems<BlueskyProfile>(scope, key = { it.identity }) { cursor -> app.client.searchPeople(query, cursor) }
     }
     val follows by app.follows.state.collectAsState()
-    ResultList(app, pages, { it.identity }, pluginString(Strings.people_empty), frame) { person ->
+    ResultList(pages, { it.identity }, pluginString(Strings.people_empty), frame) { person ->
         PersonRow(app, person, follows.orEmpty().any { it.isOf(person.did) || it.isOf(person.handle) })
     }
 }
@@ -264,18 +269,45 @@ private fun PostResults(app: BlueskyApp, query: String, filters: BlueskyPostFilt
     val pages = rememberKept("bluesky-search-posts:$server:${filters.sort}:${filters.author}:${filters.tag}:$query") { scope ->
         PagedItems<BlueskyPost>(scope, key = { it.uri }) { cursor -> app.client.searchPostsFor(query, cursor, filters.sort, filters.author, filters.tag) }
     }
-    ResultList(app, pages, { it.uri }, pluginString(Strings.search_nothing, query), frame) { post -> PostRow(app, post) }
+    ResultList(pages, { it.uri }, pluginString(Strings.search_nothing, query), frame) { post -> PostRow(app, post) }
 }
 
-/** Results read page by page, and once the last is read, that there are no more. */
+/**
+ * Results read page by page as XTA's search reads them (bluesky_search_sheet.dart):
+ * "Load more results" asks for the next page, and once the last is read,
+ * "No more results"; a pull searches again.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun <T : Any> ResultList(app: BlueskyApp, pages: PagedItems<T>, key: (T) -> String, empty: String, frame: PluginFrame, row: @Composable (T) -> Unit) {
+private fun <T : Any> ResultList(pages: PagedItems<T>, key: (T) -> String, empty: String, frame: PluginFrame, row: @Composable (T) -> Unit) {
     val paged by pages.state.collectAsState()
-    PagedList(pages, key = key, network = app.network, empty = empty, contentPadding = frame.padding, toTop = frame.toTop, footer = {
-        if (paged.loaded && paged.next == null && paged.items.isNotEmpty() && !paged.loadingMore) {
-            item(key = "search-end") { MessageText(pluginString(Strings.search_end)) }
+    val list = rememberLazyListState()
+    ScrollsToTop(list, frame.toTop)
+    PullToRefreshBox(isRefreshing = paged.loading && paged.loaded, onRefresh = pages::refresh, modifier = Modifier.fillMaxSize()) {
+        LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+            pagedRows(paged, pages, key, empty, { pluginString(errorText(it)) }, row)
+            when (SearchFoot.of(paged)) {
+                SearchFoot.MORE -> item(key = "search-more") {
+                    OutlinedButton(onClick = pages::more, modifier = Modifier.fillMaxWidth().padding(16.dp)) { Text(pluginString(Strings.search_more)) }
+                }
+                SearchFoot.END -> item(key = "search-end") { MessageText(pluginString(Strings.search_end)) }
+                SearchFoot.NONE -> Unit
+            }
         }
-    }, row = row)
+    }
+}
+
+/** What stands under a search's results: the way to its next page, that there is none, or nothing while a page is read or failed. */
+internal enum class SearchFoot {
+    NONE, MORE, END;
+
+    companion object {
+        fun of(paged: PagedState<*>): SearchFoot = when {
+            paged.items.isEmpty() || paged.loading || paged.loadingMore || paged.moreProblem != null -> NONE
+            paged.next != null -> MORE
+            else -> END
+        }
+    }
 }
 
 /** What the search shows before anything is searched. */
@@ -294,7 +326,7 @@ private fun Landing(app: BlueskyApp, kind: BlueskySearchKind, onSearch: (String)
             item(key = "suggested") { SectionTitle(pluginString(Strings.suggested)) }
             val problem = suggested.problem
             when {
-                problem != null -> item(key = "suggested-problem") { NetworkProblemRow(problem, app.network, onRetry = suggestions::load) }
+                problem != null -> item(key = "suggested-problem") { ProblemRow(problem, onRetry = suggestions::load) }
                 suggested.loading -> item(key = "suggested-loading") { LoadingRow() }
             }
             items(suggested.people, key = { "suggested-" + it.identity }) { person ->

@@ -148,4 +148,5 @@
     <string name="in_home_feed">홈 타임라인에 표시</string>
     <string name="in_home_feed_description">팔로우한 Bluesky 계정의 게시물을 팔로잉과 추천에 함께 표시합니다</string>
     <string name="media">미디어</string>
+    <string name="search_more">검색 결과 더 불러오기</string>
 </resources>

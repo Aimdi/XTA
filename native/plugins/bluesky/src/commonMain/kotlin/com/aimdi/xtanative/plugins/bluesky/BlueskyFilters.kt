@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
@@ -103,10 +104,15 @@ internal fun ReaderBar(filter: BlueskyReaderFilter, onChange: (BlueskyReaderFilt
             }
             DropdownMenu(expanded = orders, onDismissRequest = { orders = false }) {
                 BlueskyReaderFilter.Order.entries.forEach { order ->
-                    DropdownMenuItem(text = { Text(pluginString(order.label)) }, onClick = {
-                        orders = false
-                        onChange(filter.copy(order = order))
-                    })
+                    DropdownMenuItem(
+                        text = { Text(pluginString(order.label)) },
+                        // XTA's CheckedPopupMenuItem: the order in force is ticked, the others keep its room.
+                        leadingIcon = { if (order == filter.order) Icon(Icons.Filled.Check, contentDescription = null) else Spacer(Modifier.size(24.dp)) },
+                        onClick = {
+                            orders = false
+                            onChange(filter.copy(order = order))
+                        },
+                    )
                 }
             }
         }

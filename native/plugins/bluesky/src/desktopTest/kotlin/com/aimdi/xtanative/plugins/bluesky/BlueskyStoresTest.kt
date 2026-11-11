@@ -148,6 +148,10 @@ class BlueskyStoresTest {
         assertNull(FollowingPlaces.start(posts, point, listOf("bar" to 0)), "not until the first post is laid out")
         assertEquals(30 to 25, FollowingPlaces.start(posts, point, listOf("bar" to 0, post("1").uri to 1)))
         assertNull(FollowingPlaces.start(posts.take(10), point, listOf(post("1").uri to 1)), "not while its post is not shown")
+        // On Home the people strip sits under the third post: what is below it is one row further.
+        assertEquals(31 to 25, FollowingPlaces.start(posts, point, listOf("bar" to 0, post("1").uri to 1), stripAfter = 3))
+        val early = BlueskyReadPoint(posts, post("3").uri, 0.0)
+        assertEquals(3 to 0, FollowingPlaces.start(posts, early, listOf("bar" to 0, post("1").uri to 1), stripAfter = 3))
 
         val shown = FollowingPlaces.place(listOf("bar" to -60, post("30").uri to -8, post("31").uri to 300), posts)!!
         assertEquals(post("30").uri, shown.anchor)

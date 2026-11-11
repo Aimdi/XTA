@@ -141,6 +141,9 @@ internal class BlueskyApp(val host: PluginHost) {
         return post.toNetworkPost(language)
     }
 
+    /** The post drawn lately under [uri], which its thread shows while the conversation is read. */
+    fun drawn(uri: String): BlueskyPost? = shelf.get(uri)
+
     /**
      * Where a post's parts lead: the plugin's own post and profile screens,
      * its search for a tag, the app's media viewer; where the app draws it,

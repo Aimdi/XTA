@@ -149,4 +149,5 @@
     <string name="in_home_feed">Näita avalehe voos</string>
     <string name="in_home_feed_description">Lisab jälgitavate Blueskyi kontode postitused voogudesse „Jälgitavad“ ja „Sulle“</string>
     <string name="media">Meedia</string>
+    <string name="search_more">Laadi veel tulemusi</string>
 </resources>

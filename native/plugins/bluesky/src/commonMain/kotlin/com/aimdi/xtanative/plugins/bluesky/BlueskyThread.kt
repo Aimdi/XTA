@@ -61,8 +61,6 @@ import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.scrollToTop
 import com.aimdi.xtanative.ui.plugins.NetworkPostActions
-import com.aimdi.xtanative.ui.plugins.NetworkProblemRow
-import com.aimdi.xtanative.ui.plugins.NetworkProblemView
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -97,6 +95,8 @@ internal fun BlueskyThreadScreen(app: BlueskyApp, target: PostTarget) {
     val list = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val reduced = LocalReducedMotion.current
+    // The post tapped stays on screen while its conversation is read, as XTA's thread opens on it.
+    val seed = remember(target) { (target as? PostTarget.Uri)?.let { app.drawn(it.uri) } }
     PluginScaffold(
         title = pluginString(Strings.thread),
         onBack = app.host::back,
@@ -112,7 +112,7 @@ internal fun BlueskyThreadScreen(app: BlueskyApp, target: PostTarget) {
     ) { padding ->
         PullToRefreshBox(isRefreshing = state.loading && state.thread != null, onRefresh = thread::load, modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
             LazyColumn(state = list, contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + 48.dp), modifier = Modifier.fillMaxSize()) {
-                threadHead(app, thread, state)
+                threadHead(app, thread, state, seed)
                 if (state.thread?.replies.orEmpty().isNotEmpty()) item(key = "controls") { Controls(app, state.authorOnly, order, thread::selectAuthor) }
                 if (!state.loading && state.problem == null && state.thread != null && rows.isEmpty()) {
                     item(key = "no-replies") { EmptyReplies(if (state.authorOnly) Strings.no_author_replies else Strings.no_replies) }
@@ -124,19 +124,19 @@ internal fun BlueskyThreadScreen(app: BlueskyApp, target: PostTarget) {
 }
 
 /** The context above the post, folded until asked for, the post itself, and why it is not there yet or was not read again. */
-private fun LazyListScope.threadHead(app: BlueskyApp, thread: ThreadState, state: ThreadState.State) {
+private fun LazyListScope.threadHead(app: BlueskyApp, thread: ThreadState, state: ThreadState.State, seed: BlueskyPost?) {
     val ancestors = state.thread?.ancestors.orEmpty()
     if (ancestors.isNotEmpty()) item(key = "context") { ContextToggle(ancestors.last().handle, state.contextOpen, thread::toggleContext) }
     if (state.contextOpen) items(ancestors, key = { "above-" + it.uri }, contentType = { "post" }) { post -> PostRow(app, post, continues = true) }
-    val focal = state.thread?.post
+    val focal = state.thread?.post ?: seed
     val problem = state.problem
     when {
         focal != null -> item(key = "focal") { SelectedPost(app, focal) }
-        problem != null -> item(key = "problem") { NetworkProblemView(problem, app.network, onRetry = thread::load) }
-        state.loading -> item(key = "loading") { LoadingRow() }
+        problem != null -> item(key = "problem") { ProblemView(problem, onRetry = thread::load) }
     }
+    if (state.loading && state.thread == null) item(key = "loading") { LoadingRow() }
     // A reload that failed leaves what was read on screen, saying so under the post.
-    if (focal != null && problem != null) item(key = "reload-problem") { NetworkProblemRow(problem, app.network, onRetry = thread::load) }
+    if (focal != null && problem != null) item(key = "reload-problem") { ProblemRow(problem, onRetry = thread::load) }
 }
 
 /** "Replying to @…", folding open the posts the opened one answers. */

@@ -72,16 +72,22 @@ internal object FollowingPlaces {
     /** A post row's key: its URI. */
     private const val POST_KEY = "at://"
 
+    /** How many posts Home draws before the people its feed brings (bluesky_reader_view.dart's headingAfter). */
+    const val STRIP_AFTER = 3
+
     /**
      * The row and offset the list opens at for [point], once its anchor is
      * among [shown] and the first of them is laid out ([visible], each row's
-     * key and index); null until then.
+     * key and index); null until then. [stripAfter] posts are followed by a
+     * row that is no post (the people strip), which the posts under it sit
+     * one row further for.
      */
-    fun start(shown: List<BlueskyPost>, point: BlueskyReadPoint, visible: List<Pair<Any, Int>>): Pair<Int, Int>? {
+    fun start(shown: List<BlueskyPost>, point: BlueskyReadPoint, visible: List<Pair<Any, Int>>, stripAfter: Int? = null): Pair<Int, Int>? {
         val at = shown.indexOfFirst { it.uri == point.anchor }
         if (at < 0) return null
         val first = visible.firstOrNull { (key, _) -> key == shown.first().uri }?.second ?: return null
-        return first + at to (-point.leading).toInt().coerceAtLeast(0)
+        val strip = if (stripAfter != null && at >= stripAfter) 1 else 0
+        return first + at + strip to (-point.leading).toInt().coerceAtLeast(0)
     }
 
     /** The place the list shows: the first post row on screen ([visible], each row's key and where it starts) and the posts kept around it of all Following holds. */

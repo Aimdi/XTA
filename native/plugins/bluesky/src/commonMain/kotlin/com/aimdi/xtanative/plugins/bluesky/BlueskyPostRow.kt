@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -39,6 +41,7 @@ import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.search.DiscoverIcons
+import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 
 /**
  * A Bluesky post as the app's shared row draws it; [pinned] marks the one its
@@ -104,8 +107,8 @@ internal fun BlueskyMedia.toMediaItem(postUrl: String): MediaItem = MediaItem(
  * A post in a list, as XTA's Bluesky card: Follow at the end of its author
  * line while its author is not followed here, and under it the thread, who
  * reposted it (a long press: its quotes), its quotes, the like kept on this
- * device, its bookmark in Saved, Open in browser and the app's post sheet
- * (a long press on the post opens that too). [actions] is where its parts
+ * device, its bookmark in Saved and Open in browser; a long press on the
+ * post opens the app's post sheet. [actions] is where its parts
  * lead; the line under it closes it off unless it [continues], or the list
  * draws its own ([divider] off).
  */
@@ -121,10 +124,21 @@ internal fun PostRow(
     divider: Boolean = true,
 ) {
     val language = currentLanguage()
-    val shown = remember(post, language, pinned) { post.toNetworkPost(language, pinned) }
+    // Kept as drawn, so that its thread opens on it while the conversation is read.
+    val shown = remember(app, post, language) { app.shown(post, language) }
     val extras = remember(app, post, shown, actions) { extrasOf(app, post) { actions.open(shown) } }
+    if (pinned) PinnedLine()
     NetworkPostCard(shown, actions, extras, modifier = modifier, indent = indent, continues = continues)
     if (!continues && divider) Hairline()
+}
+
+/** "Pinned post" over the post its author pinned, as XTA's profile says it. */
+@Composable
+private fun PinnedLine() {
+    Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+        Icon(GroupIcons.PushPinOutlined, contentDescription = null, modifier = Modifier.size(16.dp))
+        Text(pluginString(Strings.pinned_post), style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(start = 6.dp))
+    }
 }
 
 /**
@@ -135,7 +149,7 @@ internal fun PostRow(
  */
 internal fun extrasOf(app: BlueskyApp, post: BlueskyPost, onOpen: () -> Unit): NetworkPostExtras = NetworkPostExtras(
     trailing = { FollowGlyph(app, post) },
-    footer = { PostFooter(app, post, onOpen) { app.openMenu(post) } },
+    footer = { PostFooter(app, post, onOpen) },
     onLongPress = { app.openMenu(post) },
 )
 
@@ -156,7 +170,7 @@ internal fun BlueskyPost.author(): BlueskyProfile = BlueskyProfile(did = did, ha
  * the app's Saved. In zen or calm mode the glyphs stay, without numbers.
  */
 @Composable
-private fun PostFooter(app: BlueskyApp, post: BlueskyPost, onOpen: () -> Unit, onMore: () -> Unit) {
+private fun PostFooter(app: BlueskyApp, post: BlueskyPost, onOpen: () -> Unit) {
     val likes by app.likes.state.collectAsState()
     val hidden by app.prefs.hideCounts.collectAsState()
     val liked = likes.orEmpty().any { it.uri == post.uri }
@@ -180,7 +194,6 @@ private fun PostFooter(app: BlueskyApp, post: BlueskyPost, onOpen: () -> Unit, o
         ) { app.toggleLike(post) }
         NetworkBookmark(archive, Modifier.size(32.dp))
         NetworkCount(PostIcons.OpenInNew, 0, pluginString(Strings.open_in_browser)) { outside(post.url) }
-        NetworkCount(PostIcons.MoreHoriz, 0, pluginString(Strings.more_options), onClick = onMore)
     }
 }
 

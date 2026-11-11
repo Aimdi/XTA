@@ -47,9 +47,11 @@ import com.aimdi.xtanative.ui.post.PostIcons
  * here), Discover (custom feeds), Lists and Liked (the likes kept on this
  * device), the one open kept for the next launch; search, and a menu to
  * add an account, open what was saved, import follows and open the settings.
+ * [onHome] is its page among Home's timelines, where the people its feed
+ * brings fold away under the third post.
  */
 @Composable
-internal fun BlueskyHome(app: BlueskyApp, frame: PluginFrame) {
+internal fun BlueskyHome(app: BlueskyApp, frame: PluginFrame, onHome: Boolean) {
     val reading by app.prefs.reading.collectAsState()
     var tab by rememberSaveable { mutableStateOf(reading.tab) }
     val select: (BlueskyTab) -> Unit = { chosen ->
@@ -61,7 +63,7 @@ internal fun BlueskyHome(app: BlueskyApp, frame: PluginFrame) {
         Hairline()
         Box(Modifier.weight(1f).swipeTabs(BlueskyTab.entries, tab, select)) {
             when (tab) {
-                BlueskyTab.FOLLOWING -> FollowingPane(app, frame)
+                BlueskyTab.FOLLOWING -> FollowingPane(app, frame, onHome)
                 BlueskyTab.DISCOVER -> FeedsPane(app, frame)
                 BlueskyTab.LISTS -> ListsPane(app, frame)
                 BlueskyTab.LIKED -> LikedPane(app, frame)

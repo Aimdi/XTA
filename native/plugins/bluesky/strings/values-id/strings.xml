@@ -148,4 +148,5 @@
     <string name="in_home_feed">Tampilkan di lini masa beranda</string>
     <string name="in_home_feed_description">Menggabungkan kiriman dari akun Bluesky yang Anda ikuti ke Mengikuti dan Untuk Anda</string>
     <string name="media">Media</string>
+    <string name="search_more">Muat hasil lainnya</string>
 </resources>

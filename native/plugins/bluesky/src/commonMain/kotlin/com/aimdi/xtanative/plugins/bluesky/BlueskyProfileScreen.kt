@@ -40,19 +40,21 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -78,6 +80,7 @@ import com.aimdi.xtanative.networks.bluesky.BlueskySearchKind
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.monthText
 import com.aimdi.xtanative.ui.common.swipeTabs
@@ -85,7 +88,6 @@ import com.aimdi.xtanative.ui.plugins.AddToGroupButton
 import com.aimdi.xtanative.ui.plugins.LinkedText
 import com.aimdi.xtanative.ui.plugins.MediaItem
 import com.aimdi.xtanative.ui.plugins.MessageText
-import com.aimdi.xtanative.ui.plugins.NetworkProblemView
 import com.aimdi.xtanative.ui.plugins.PagedItems
 import com.aimdi.xtanative.ui.plugins.PagedState
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
@@ -100,6 +102,7 @@ import com.aimdi.xtanative.ui.plugins.problemOf
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.plugins.rememberShareText
 import com.aimdi.xtanative.ui.post.PostIcons
+import com.aimdi.xtanative.ui.search.DiscoverIcons
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -114,6 +117,16 @@ internal enum class ProfileTab(val read: BlueskyProfileTab?, val label: PluginTe
     REPLIES(BlueskyProfileTab.REPLIES, Strings.profile_replies),
     MEDIA(BlueskyProfileTab.MEDIA, Strings.profile_media),
     LIKES(null, Strings.profile_likes),
+    ;
+
+    /** Its glyph before its name, as XTA's profile tabs carry one. */
+    val icon: ImageVector
+        get() = when (this) {
+            POSTS -> PostIcons.Article
+            REPLIES -> XIcons.Reply
+            MEDIA -> DiscoverIcons.PermMedia
+            LIKES -> PostIcons.Bookmark
+        }
 }
 
 /**
@@ -139,6 +152,9 @@ internal fun BlueskyProfileScreen(app: BlueskyApp, actor: String) {
     val followed = shown != null && follows.orEmpty().any { it.isOf(shown.did) || it.isOf(shown.handle) }
     val share = rememberShareText()
     val noPosts = pluginString(Strings.no_posts)
+    val scope = rememberCoroutineScope()
+    // The open tab tapped again goes back to the top, as XTA's does.
+    val selectTab: (ProfileTab) -> Unit = { chosen -> if (chosen == tab) scope.launch { list.scrollToItem(0) } else tab = chosen }
 
     PluginScaffold(
         title = shown?.displayName ?: actor,
@@ -165,16 +181,16 @@ internal fun BlueskyProfileScreen(app: BlueskyApp, actor: String) {
                     item(key = "header") { Header(app, shown, actor, followed) }
                     val problem = state.problem
                     when {
-                        problem != null -> item(key = "problem") { NetworkProblemView(problem, app.network, onRetry = profile::load) }
+                        problem != null -> item(key = "problem") { ProblemView(problem, onRetry = profile::load) }
                         state.loading && shown == null -> item(key = "loading") { LoadingRow() }
                     }
                     if (shown != null) {
-                        stickyHeader(key = "tabs") { Tabs(tab) { tab = it } }
+                        stickyHeader(key = "tabs") { Tabs(tab, selectTab) }
                         when {
                             tab == ProfileTab.LIKES -> likedRows(app, shown)
                             tab == ProfileTab.MEDIA && pages != null -> mediaRows(app, paged, pages, columns, noPosts)
                             tab == ProfileTab.POSTS && pages != null -> postRows(app, profile, state, paged, pages, noPosts)
-                            pages != null -> pagedRows(paged, pages, key = { it.uri }, network = app.network, empty = noPosts) { post -> PostRow(app, post) }
+                            pages != null -> pagedRows(paged, pages, key = { it.uri }, problemText = { pluginString(errorText(it)) }, empty = noPosts) { post -> PostRow(app, post) }
                         }
                     }
                 }
@@ -282,7 +298,13 @@ private fun Tabs(selected: ProfileTab, onSelect: (ProfileTab) -> Unit) {
             Tab(
                 selected = tab == selected,
                 onClick = { onSelect(tab) },
-                text = { Text(pluginString(tab.label), maxLines = 1) },
+                text = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(tab.icon, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(Modifier.width(6.dp))
+                        Text(pluginString(tab.label), maxLines = 1)
+                    }
+                },
                 selectedContentColor = MaterialTheme.colorScheme.onBackground,
                 unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -300,7 +322,7 @@ private fun LazyListScope.postRows(app: BlueskyApp, profile: ProfileState, state
         item(key = "pin-problem") { RetryRow(pluginString(Strings.pinned_post) + ": " + pluginString(errorText(failure)), profile::retryPin) }
     }
     val listed = if (paged.loaded) paged.copy(items = BlueskyProfileTab.POSTS.withPin(paged.items, state.pinned)) else paged
-    pagedRows(listed, pages, key = { it.uri }, network = app.network, empty = empty) { post -> PostRow(app, post, pinned = post.uri == state.pinned?.uri) }
+    pagedRows(listed, pages, key = { it.uri }, problemText = { pluginString(errorText(it)) }, empty = empty) { post -> PostRow(app, post, pinned = post.uri == state.pinned?.uri) }
 }
 
 /** The posts of [profile] liked on this device, under the reminder that likes stay here. */
@@ -321,7 +343,7 @@ private fun LazyListScope.likedRows(app: BlueskyApp, profile: BlueskyProfile) {
 private fun LazyListScope.mediaRows(app: BlueskyApp, paged: PagedState<BlueskyPost>, pages: PagedItems<BlueskyPost>, columns: Int, empty: String) {
     val rows = BlueskyMediaGrid.rows(paged.items, columns)
     val starts = rows.associateBy { it.first().post.uri }
-    pagedRows(paged, pages, key = { it.uri }, network = app.network, empty = empty) { post ->
+    pagedRows(paged, pages, key = { it.uri }, problemText = { pluginString(errorText(it)) }, empty = empty) { post ->
         starts[post.uri]?.let { row -> MediaGridRow(app, row, columns) }
     }
 }

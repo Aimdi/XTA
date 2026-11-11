@@ -30,12 +30,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.networks.bluesky.BlueskyErrorKind
 import com.aimdi.xtanative.networks.bluesky.BlueskyProfile
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.plugins.AddToGroupButton
 import com.aimdi.xtanative.ui.plugins.PluginText
+import com.aimdi.xtanative.ui.plugins.RetryMessage
+import com.aimdi.xtanative.ui.plugins.RetryRow
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
 import kotlinx.coroutines.CancellationException
@@ -48,6 +51,28 @@ internal fun errorText(error: Throwable): PluginText = when (BlueskyErrorKind.of
     BlueskyErrorKind.RATE_LIMITED -> Strings.error_rate_limited
     BlueskyErrorKind.BAD_RESPONSE -> Strings.error_response
 }
+
+/**
+ * What a read that failed says, from what the shared lists keep of it
+ * ([com.aimdi.xtanative.ui.plugins.problemOf]), in Bluesky's own words as
+ * XTA says them on every Bluesky screen (blueskyErrorMessage): an account or
+ * post that is not there, a rate limit, an answer that could not be used,
+ * and for anything else that Bluesky could not be reached.
+ */
+internal fun errorText(problem: Problem): PluginText = when (problem) {
+    is Problem.Refused -> if (problem.code == 404) Strings.error_not_found else Strings.error_response
+    Problem.RateLimited -> Strings.error_rate_limited
+    Problem.Other -> Strings.error_response
+    else -> Strings.error_network
+}
+
+/** In place of a list: why Bluesky's read brought nothing, in its own words, and a way to try again. */
+@Composable
+internal fun ProblemView(problem: Problem, onRetry: () -> Unit) = RetryMessage(pluginString(errorText(problem)), onRetry)
+
+/** One row in a list: why a read failed under what is already shown, in Bluesky's own words, and a way to try again. */
+@Composable
+internal fun ProblemRow(problem: Problem, onRetry: () -> Unit) = RetryRow(pluginString(errorText(problem)), onRetry)
 
 /** A row of a sheet's menu: its glyph and what it does. */
 @Composable

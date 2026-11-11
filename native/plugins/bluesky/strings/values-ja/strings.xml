@@ -148,4 +148,5 @@
     <string name="in_home_feed">ホームのタイムラインに表示</string>
     <string name="in_home_feed_description">フォロー中の Bluesky アカウントの投稿を「フォロー中」と「おすすめ」に混ぜます</string>
     <string name="media">メディア</string>
+    <string name="search_more">検索結果をさらに読み込む</string>
 </resources>

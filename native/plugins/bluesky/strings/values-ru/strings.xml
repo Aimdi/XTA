@@ -151,4 +151,5 @@
     <string name="in_home_feed">Показывать в главной ленте</string>
     <string name="in_home_feed_description">Добавляет записи из аккаунтов Bluesky, на которые вы подписаны, в «Подписки» и «Для вас»</string>
     <string name="media">Медиа</string>
+    <string name="search_more">Загрузить ещё результаты</string>
 </resources>

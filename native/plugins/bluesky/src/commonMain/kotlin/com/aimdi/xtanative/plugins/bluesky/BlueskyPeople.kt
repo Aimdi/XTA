@@ -51,7 +51,7 @@ internal fun PeopleScreen(app: BlueskyApp, actor: String, kind: PeopleKind) {
         PagedList(
             pages,
             key = { it.identity },
-            network = app.network,
+            problemText = { pluginString(errorText(it)) },
             empty = empty,
             modifier = Modifier.padding(top = padding.calculateTopPadding()),
             contentPadding = PaddingValues(bottom = padding.calculateBottomPadding()),
@@ -84,7 +84,7 @@ internal fun ActivityScreen(app: BlueskyApp, uri: String, url: String, quotes: B
 private fun RepostList(app: BlueskyApp, uri: String, modifier: Modifier, contentPadding: PaddingValues) {
     val pages = rememberKept("bluesky-reposts:$uri") { scope -> PagedItems<BlueskyProfile>(scope, key = { it.identity }) { cursor -> app.client.repostedBy(uri, cursor) } }
     val follows by app.follows.state.collectAsState()
-    PagedList(pages, key = { it.identity }, network = app.network, empty = pluginString(Strings.no_results), modifier = modifier, contentPadding = contentPadding) { person ->
+    PagedList(pages, key = { it.identity }, problemText = { pluginString(errorText(it)) }, empty = pluginString(Strings.no_results), modifier = modifier, contentPadding = contentPadding) { person ->
         PersonRow(app, person, follows.has(person))
     }
 }
@@ -104,7 +104,7 @@ private fun QuoteList(app: BlueskyApp, uri: String, modifier: Modifier, contentP
             if (BlueskyQuoteSort.offered(paged.items)) {
                 item(key = "sort") { SortMenu(order, BlueskyQuoteSort.entries, { it.label to it.icon }, onChoose = { app.quoteSort.value = it }) }
             }
-            pagedRows(sorted, pages, key = { it.uri }, network = app.network, empty = empty) { post -> PostRow(app, post) }
+            pagedRows(sorted, pages, key = { it.uri }, problemText = { pluginString(errorText(it)) }, empty = empty) { post -> PostRow(app, post) }
         }
     }
 }

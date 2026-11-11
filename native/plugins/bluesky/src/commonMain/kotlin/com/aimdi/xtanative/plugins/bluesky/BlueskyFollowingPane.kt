@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.plugins.bluesky
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -20,6 +22,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.AssistChip
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -33,13 +37,18 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.networks.bluesky.BlueskyFeedPerson
@@ -51,30 +60,31 @@ import com.aimdi.xtanative.networks.bluesky.BlueskySearchKind
 import com.aimdi.xtanative.networks.bluesky.BlueskyTimeline
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.plugins.EmptyPane
 import com.aimdi.xtanative.ui.plugins.MessageText
-import com.aimdi.xtanative.ui.plugins.NetworkProblemView
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.RetryRow
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.problemOf
-import com.aimdi.xtanative.ui.search.DiscoverIcons
+import com.aimdi.xtanative.ui.post.PostIcons
+import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * Following: the accounts followed here, merged newest first, each account's
@@ -83,7 +93,7 @@ import kotlinx.coroutines.launch
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun FollowingPane(app: BlueskyApp, frame: PluginFrame) {
+internal fun FollowingPane(app: BlueskyApp, frame: PluginFrame, onHome: Boolean) {
     val timeline = app.following
     LaunchedEffect(timeline) { timeline.start() }
     val state by timeline.state.collectAsState()
@@ -93,14 +103,17 @@ internal fun FollowingPane(app: BlueskyApp, frame: PluginFrame) {
     val people = remember(state.posts, follows) { BlueskyTimeline.peopleToFollow(state.posts, app.follows::follows) }
     val list = rememberLazyListState()
     ScrollsToTop(list, frame.toTop)
-    KeepsPlace(app, list, shown, state.posts)
+    // On Home the strip folds away under the third post; on the plugin's own screen it stays open above them.
+    val strip: (@Composable () -> Unit)? = if (people.isEmpty()) null else { { PeopleStrip(app, people, folded = onHome) } }
+    val stripAfter = if (onHome && strip != null) FollowingPlaces.STRIP_AFTER else null
+    KeepsPlace(app, list, shown, state.posts, stripAfter)
     RefreshesOn(frame.refresh) { timeline.refresh(force = true) }
     PullToRefreshBox(isRefreshing = state.loading && state.loaded, onRefresh = { timeline.refresh(force = true) }, modifier = Modifier.fillMaxSize()) {
         LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
             item(key = "bar") { ReaderBar(filter, setFilter) }
-            if (people.isNotEmpty()) item(key = "people") { PeopleStrip(app, people) }
+            if (strip != null && stripAfter == null) item(key = "people") { strip() }
             followingStatus(app, state)
-            filteredRows(app, state.posts, shown) { setFilter(BlueskyReaderFilter()) }
+            filteredRows(app, state.posts, shown, strip.takeIf { stripAfter != null }) { setFilter(BlueskyReaderFilter()) }
             if (state.pending > 0 && state.posts.isNotEmpty()) {
                 item(key = "more-accounts") { LoadMoreAccounts { timeline.refresh(force = false) } }
             }
@@ -114,15 +127,16 @@ internal fun FollowingPane(app: BlueskyApp, frame: PluginFrame) {
  * moment after it settles, with the posts around it of all it holds.
  */
 @Composable
-private fun KeepsPlace(app: BlueskyApp, list: LazyListState, shown: List<BlueskyPost>, posts: List<BlueskyPost>) {
+private fun KeepsPlace(app: BlueskyApp, list: LazyListState, shown: List<BlueskyPost>, posts: List<BlueskyPost>, stripAfter: Int?) {
     val currentShown by rememberUpdatedState(shown)
     val currentPosts by rememberUpdatedState(posts)
+    val currentStrip by rememberUpdatedState(stripAfter)
     var opening by remember { mutableStateOf(true) }
     LaunchedEffect(Unit) {
         try {
             val point = app.place.takePosition() ?: return@LaunchedEffect
             val start = withTimeoutOrNull(OPEN_WAIT_MS) {
-                snapshotFlow { FollowingPlaces.start(currentShown, point, list.layoutInfo.visibleItemsInfo.map { it.key to it.index }) }.first { it != null }
+                snapshotFlow { FollowingPlaces.start(currentShown, point, list.layoutInfo.visibleItemsInfo.map { it.key to it.index }, currentStrip) }.first { it != null }
             } ?: return@LaunchedEffect
             list.scrollToItem(start.first, start.second)
         } finally {
@@ -148,7 +162,7 @@ private fun LazyListScope.followingStatus(app: BlueskyApp, state: FollowingTimel
     when {
         state.followed == 0 && state.loaded -> item(key = "nobody") { EmptyFollowing(app, nobody = true) }
         state.posts.isEmpty() && problem != null -> item(key = "problem") {
-            NetworkProblemView(problem, app.network, onRetry = { app.following.refresh(force = true) })
+            ProblemView(problem, onRetry = { app.following.refresh(force = true) })
         }
         state.posts.isEmpty() && !state.loaded -> item(key = "loading") { LoadingRow() }
         state.posts.isEmpty() && !state.loading -> item(key = "empty") { EmptyFollowing(app, nobody = false) }
@@ -156,8 +170,18 @@ private fun LazyListScope.followingStatus(app: BlueskyApp, state: FollowingTimel
     }
 }
 
-/** [shown] of [posts] as rows; when the filters leave none of them, that, and a way to reset them. */
-internal fun LazyListScope.filteredRows(app: BlueskyApp, posts: List<BlueskyPost>, shown: List<BlueskyPost>, onReset: () -> Unit) {
+/**
+ * [shown] of [posts] as rows; when the filters leave none of them, that, and
+ * a way to reset them. [strip] is drawn under the third of them (after the
+ * last of fewer), as XTA's Home puts the people a feed brings (headingAfter).
+ */
+internal fun LazyListScope.filteredRows(
+    app: BlueskyApp,
+    posts: List<BlueskyPost>,
+    shown: List<BlueskyPost>,
+    strip: (@Composable () -> Unit)? = null,
+    onReset: () -> Unit,
+) {
     if (posts.isNotEmpty() && shown.isEmpty()) {
         item(key = "filtered-out") {
             Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -166,70 +190,99 @@ internal fun LazyListScope.filteredRows(app: BlueskyApp, posts: List<BlueskyPost
             }
         }
     }
-    items(shown, key = { it.uri }, contentType = { "post" }) { post -> PostRow(app, post) }
+    val head = if (strip == null) shown else shown.take(FollowingPlaces.STRIP_AFTER)
+    items(head, key = { it.uri }, contentType = { "post" }) { post -> PostRow(app, post) }
+    if (strip == null) return
+    if (shown.isNotEmpty()) item(key = "people") { strip() }
+    items(shown.drop(FollowingPlaces.STRIP_AFTER), key = { it.uri }, contentType = { "post" }) { post -> PostRow(app, post) }
 }
 
-/** Following with nothing to show: why, and where to find accounts (XTA's empty pane and its actions). */
+/** Following with nothing to show: why under XTA's cloud, and where to find accounts (bluesky_screen.dart's EmptyPane and its actions). */
 @Composable
 private fun EmptyFollowing(app: BlueskyApp, nobody: Boolean) {
-    Column(Modifier.fillMaxWidth().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            pluginString(if (nobody) Strings.following_empty else Strings.no_posts),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
-        Spacer(Modifier.height(16.dp))
-        Button(onClick = { app.openSearch(kind = BlueskySearchKind.PEOPLE) }) { Text(pluginString(Strings.tab_discover)) }
+    EmptyPane(BlueskyIcons.CloudOutlined, pluginString(if (nobody) Strings.following_empty else Strings.no_posts)) {
+        Button(onClick = { app.openSearch(kind = BlueskySearchKind.PEOPLE) }) { IconLabel(BlueskyIcons.ExploreOutlined, pluginString(Strings.tab_discover)) }
+        Spacer(Modifier.height(8.dp))
         if (nobody) {
-            TextButton(onClick = { app.host.open(BlueskyRoutes.import(ImportKind.FOLLOWING)) }) { Text(pluginString(Strings.import_following)) }
-            TextButton(onClick = { app.host.open(BlueskyRoutes.import(ImportKind.STARTER)) }) { Text(pluginString(Strings.import_starter)) }
+            TextButton(onClick = { app.host.open(BlueskyRoutes.import(ImportKind.FOLLOWING)) }) { IconLabel(PostIcons.GroupAdd, pluginString(Strings.import_following)) }
+            TextButton(onClick = { app.host.open(BlueskyRoutes.import(ImportKind.STARTER)) }) { IconLabel(GroupIcons.AutoAwesomeOutlined, pluginString(Strings.import_starter)) }
         } else {
-            TextButton(onClick = { app.following.refresh(force = false) }) { Text(pluginString(Strings.load_more_accounts)) }
+            TextButton(onClick = { app.following.refresh(force = false) }) { IconLabel(GroupIcons.FileDownloadOutlined, pluginString(Strings.load_more_accounts)) }
         }
     }
+}
+
+/** A button's glyph before its words. */
+@Composable
+private fun IconLabel(icon: ImageVector, label: String) {
+    Icon(icon, contentDescription = null, modifier = Modifier.size(18.dp))
+    Spacer(Modifier.width(8.dp))
+    Text(label)
 }
 
 @Composable
 private fun LoadMoreAccounts(onClick: () -> Unit) {
     Row(Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.Center) {
-        TextButton(onClick = onClick) {
-            Icon(DiscoverIcons.CloudDownload, contentDescription = null, modifier = Modifier.size(18.dp))
-            Spacer(Modifier.width(8.dp))
-            Text(pluginString(Strings.load_more_accounts))
-        }
+        TextButton(onClick = onClick) { IconLabel(GroupIcons.FileDownloadOutlined, pluginString(Strings.load_more_accounts)) }
     }
 }
 
-/** The authors the feed brings that are not followed here, reposted ones first (plugin_feed_people.dart): each to open or follow. */
+/**
+ * The authors the feed brings that are not followed here, reposted ones
+ * first (plugin_feed_people.dart): each to open or follow. [folded], as on
+ * Home, they wait under a line that counts them until the reader opens it.
+ */
 @Composable
-private fun PeopleStrip(app: BlueskyApp, people: List<BlueskyFeedPerson>) {
-    Column(Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 8.dp)) {
-        Text(
-            pluginString(Strings.from_feed),
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(horizontal = 16.dp),
-        )
+private fun PeopleStrip(app: BlueskyApp, people: List<BlueskyFeedPerson>, folded: Boolean) {
+    if (!folded) {
+        Column(Modifier.fillMaxWidth().padding(top = 12.dp, bottom = 8.dp)) {
+            Text(pluginString(Strings.from_feed), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp))
+            PeopleRow(app, people, Modifier.padding(top = 8.dp), start = 16.dp)
+        }
+        return
+    }
+    var open by rememberSaveable { mutableStateOf(false) }
+    Column(Modifier.fillMaxWidth()) {
         Row(
-            Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, top = 4.dp),
+            Modifier.fillMaxWidth().heightIn(min = 48.dp).clickable { open = !open }.padding(horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            people.forEach { person ->
-                AssistChip(
-                    onClick = { app.openProfile(person.handle) },
-                    label = { Text("@" + person.handle, maxLines = 1) },
-                    leadingIcon = { Avatar(person.avatarUrl, 20.dp) },
-                )
-                TextButton(onClick = { app.toggleFollow(BlueskyProfile(did = "", handle = person.handle, displayName = person.name, avatarUrl = person.avatarUrl)) }) {
-                    Text(pluginString(Strings.follow))
-                }
+            BadgedBox(badge = { Badge { Text(people.size.toString()) } }) { Icon(GroupIcons.PeopleOutlined, contentDescription = null, modifier = Modifier.size(20.dp)) }
+            Text(
+                pluginString(Strings.from_feed),
+                style = MaterialTheme.typography.labelLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f).padding(horizontal = 16.dp),
+            )
+            Icon(if (open) GroupIcons.ExpandLess else GroupIcons.ExpandMore, contentDescription = null)
+        }
+        if (open) PeopleRow(app, people, Modifier.padding(bottom = 4.dp), start = 12.dp)
+    }
+}
+
+/** The people side by side, each a chip that opens the profile and Follow after it. */
+@Composable
+private fun PeopleRow(app: BlueskyApp, people: List<BlueskyFeedPerson>, modifier: Modifier, start: Dp) {
+    Row(
+        modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(start = start, end = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        people.forEach { person ->
+            AssistChip(
+                onClick = { app.openProfile(person.handle) },
+                label = { Text("@" + person.handle, maxLines = 1) },
+                leadingIcon = { Avatar(person.avatarUrl, 20.dp) },
+            )
+            TextButton(onClick = { app.toggleFollow(BlueskyProfile(did = "", handle = person.handle, displayName = person.name, avatarUrl = person.avatarUrl)) }) {
+                Text(pluginString(Strings.follow))
             }
         }
     }
 }
 
-/** Liked: the posts liked on this device, newest first, with the same filters as Following. */
+/** Liked: the posts liked on this device, newest first, with the same filters as Following; a pull reads them from the device again. */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun LikedPane(app: BlueskyApp, frame: PluginFrame) {
     val likes by app.likes.state.collectAsState()
@@ -238,13 +291,28 @@ internal fun LikedPane(app: BlueskyApp, frame: PluginFrame) {
     val (filter, setFilter) = rememberReaderFilter(app, likes = true)
     val shown = remember(library, filter) { filter.apply(library) }
     val list = rememberLazyListState()
+    val scope = rememberCoroutineScope()
+    var reading by remember { mutableStateOf(false) }
     ScrollsToTop(list, frame.toTop)
-    LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
-        if (library.isEmpty()) {
-            item(key = "empty") { LikedEmpty() }
-        } else {
-            item(key = "bar") { ReaderBar(filter, setFilter) }
-            filteredRows(app, library, shown) { setFilter(BlueskyReaderFilter()) }
+    val reload = {
+        reading = true
+        scope.launch {
+            try {
+                app.likes.reload()
+            } finally {
+                reading = false
+            }
+        }
+        Unit
+    }
+    PullToRefreshBox(isRefreshing = reading, onRefresh = reload, modifier = Modifier.fillMaxSize()) {
+        LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+            if (library.isEmpty()) {
+                item(key = "empty") { LikedEmpty() }
+            } else {
+                item(key = "bar") { ReaderBar(filter, setFilter) }
+                filteredRows(app, library, shown) { setFilter(BlueskyReaderFilter()) }
+            }
         }
     }
 }

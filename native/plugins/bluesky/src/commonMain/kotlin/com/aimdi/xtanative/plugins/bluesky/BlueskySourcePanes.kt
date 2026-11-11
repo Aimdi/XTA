@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.rememberScrollState
@@ -38,15 +38,14 @@ import com.aimdi.xtanative.networks.bluesky.Bluesky
 import com.aimdi.xtanative.networks.bluesky.BlueskyFeedGenerator
 import com.aimdi.xtanative.networks.bluesky.BlueskyListInfo
 import com.aimdi.xtanative.networks.bluesky.BlueskyPost
-import com.aimdi.xtanative.ui.saved.SavedIcons
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.plugins.MessageText
-import com.aimdi.xtanative.ui.plugins.NetworkProblemRow
 import com.aimdi.xtanative.ui.plugins.PagedItems
 import com.aimdi.xtanative.ui.plugins.PagedList
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.pluginString
+import com.aimdi.xtanative.ui.saved.SavedIcons
 import com.aimdi.xtanative.ui.search.DiscoverIcons
 
 /** A feed or list offered above the posts: its URI and the name it is shown under. */
@@ -92,7 +91,7 @@ internal fun FeedsPane(app: BlueskyApp, frame: PluginFrame) {
                 extra = HeaderExtra(SavedIcons.ManageSearch, pluginString(Strings.find_feeds)) { app.host.open(BlueskyRoutes.FEEDS) },
             )
         }
-        if (problem != null) item(key = "feeds-problem") { NetworkProblemRow(problem, app.network, onRetry = { feeds.ensureLoaded(force = true) }) }
+        if (problem != null) item(key = "feeds-problem") { ProblemRow(problem, onRetry = { feeds.ensureLoaded(force = true) }) }
     }
     if (opening) {
         val invalid = pluginString(Strings.invalid_feed)
@@ -164,7 +163,7 @@ private fun LazyListScope.listsStatus(app: BlueskyApp, state: BlueskyLists.State
     val listing = state.lists
     val problem = listing.problem
     when {
-        problem != null -> item(key = "lists-problem") { NetworkProblemRow(problem, app.network, onRetry = { app.lists.lookUp(state.actor) }) }
+        problem != null -> item(key = "lists-problem") { ProblemRow(problem, onRetry = { app.lists.lookUp(state.actor) }) }
         listing.loaded && listing.items.isEmpty() -> item(key = "no-lists") {
             Text(pluginString(Strings.no_lists_found), modifier = Modifier.padding(16.dp))
         }
@@ -188,7 +187,7 @@ private fun SourceList(
     PagedList(
         pages,
         key = { it.uri },
-        network = app.network,
+        problemText = { pluginString(errorText(it)) },
         empty = empty,
         contentPadding = frame.padding,
         toTop = frame.toTop,

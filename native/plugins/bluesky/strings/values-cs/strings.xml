@@ -151,4 +151,5 @@
     <string name="in_home_feed">Zobrazovat na hlavní nástěnce</string>
     <string name="in_home_feed_description">Přimíchá příspěvky z účtů na Bluesky, které sledujete, do „Sleduji“ a „Pro tebe“</string>
     <string name="media">Média</string>
+    <string name="search_more">Načíst další výsledky</string>
 </resources>
