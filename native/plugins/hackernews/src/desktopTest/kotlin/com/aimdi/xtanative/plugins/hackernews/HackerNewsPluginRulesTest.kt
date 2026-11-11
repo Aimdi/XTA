@@ -1,9 +1,11 @@
 package com.aimdi.xtanative.plugins.hackernews
 
 import com.aimdi.xtanative.networks.hackernews.HnStory
+import com.aimdi.xtanative.networks.hackernews.HnTextLink
 import com.aimdi.xtanative.store.settings.HackerNewsPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.plugins.PagedState
+import com.aimdi.xtanative.ui.plugins.TextRun
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -58,5 +60,17 @@ class HackerNewsPluginRulesTest {
         assertTrue(kept.isFollowing("ALICE"))
         assertFalse(HnKept.of(HnKept.withLike(followed, story)).isLiked(story))
         assertEquals(HnKept(), HnKept.of(null))
+    }
+
+    @Test
+    fun aTextsLinksAreRunsWhereTheyStandAndAnOverlappingOneStaysPlain() {
+        val text = "See this and that"
+        val links = listOf(HnTextLink(13, 17, "https://b.example"), HnTextLink(4, 8, "https://a.example"), HnTextLink(6, 12, "https://c.example"))
+        assertEquals(
+            listOf(TextRun.Plain("See "), TextRun.Link("this", "https://a.example"), TextRun.Plain(" and "), TextRun.Link("that", "https://b.example")),
+            HnRuns.of(text, links),
+        )
+        assertEquals(listOf(TextRun.Plain(text)), HnRuns.of(text, listOf(HnTextLink(10, 40, "https://out.example"))))
+        assertEquals(emptyList(), HnRuns.of("", emptyList()))
     }
 }

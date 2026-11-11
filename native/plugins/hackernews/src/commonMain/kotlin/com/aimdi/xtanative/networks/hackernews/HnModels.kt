@@ -20,6 +20,8 @@ data class HnStory(
     val createdAt: Instant? = null,
     /** `story`, `ask`, `show` or `job` from a list; Hacker News' own type from an item. */
     val type: String = "story",
+    /** The links in [text] and where they lead. */
+    val links: List<HnTextLink> = emptyList(),
 ) {
     /** The story's page on Hacker News, where its comments are. */
     val hnUrl: String get() = "https://news.ycombinator.com/item?id=$id"
@@ -40,6 +42,8 @@ data class HnComment(
     val createdAt: Instant? = null,
     val children: List<HnComment> = emptyList(),
     val deleted: Boolean = false,
+    /** The links in [text] and where they lead. */
+    val links: List<HnTextLink> = emptyList(),
 ) {
     companion object {
         /**
@@ -67,6 +71,8 @@ data class HnUser(
     val createdAt: Instant? = null,
     /** How many stories and comments it has posted. */
     val submittedCount: Int = 0,
+    /** The links in [about] and where they lead. */
+    val aboutLinks: List<HnTextLink> = emptyList(),
 )
 
 /** A Hacker News address the app can open on its own screen. */

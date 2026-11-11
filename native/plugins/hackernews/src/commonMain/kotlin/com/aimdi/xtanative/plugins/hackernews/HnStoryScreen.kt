@@ -37,9 +37,16 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.collapse
+import androidx.compose.ui.semantics.expand
+import androidx.compose.ui.semantics.semantics
 import com.aimdi.xtanative.networks.hackernews.HnComment
 import com.aimdi.xtanative.networks.hackernews.HnStory
+import com.aimdi.xtanative.networks.hackernews.HnTextLink
 import com.aimdi.xtanative.networks.hackernews.HnThreadReader
+import com.aimdi.xtanative.ui.plugins.LinkedText
+import com.aimdi.xtanative.ui.plugins.TextRun
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.FeedSkeleton
 import com.aimdi.xtanative.ui.common.agoText
@@ -102,7 +109,7 @@ private fun Lead(app: HnApp, story: HnStory) {
             }
         }
         Hairline()
-        if (story.text.isNotEmpty()) Text(story.text, modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 8.dp))
+        if (story.text.isNotEmpty()) HnText(story.text, story.links, Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 8.dp))
     }
 }
 
@@ -128,12 +135,13 @@ private fun CommentBubble(comment: HnComment, depth: Int, folded: Boolean, onTog
             .clip(shape)
             .background(fill)
             .border(1.dp, border, shape)
-            .clickable(onClick = onToggle)
+            .clickable(role = Role.Button, onClick = onToggle)
+            .semantics { if (folded) expand { onToggle(); true } else collapse { onToggle(); true } }
             .padding(horizontal = 12.dp, vertical = 10.dp),
     ) {
         Text(header(comment, folded), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         if (!folded && !comment.deleted && comment.text.isNotEmpty()) {
-            Text(comment.text, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(top = 4.dp))
+            HnText(comment.text, comment.links, Modifier.padding(top = 4.dp))
         }
     }
 }
@@ -149,3 +157,24 @@ private fun header(comment: HnComment, folded: Boolean) = buildAnnotatedString {
 
 /** One hue per reply level, cycling: X's own accent family, as XTA's comment bubbles take it. */
 private val Hues = listOf(Color(0xFF1D9BF0), Color(0xFF7856FF), Color(0xFF00BA7C), Color(0xFFFFAD1F), Color(0xFFF91880), Color(0xFFFF7A00))
+
+/** Hacker News text with its links tappable where they stand, opening as the app opens links (a Hacker News one on this plugin's screens). */
+@Composable
+internal fun HnText(text: String, links: List<HnTextLink>, modifier: Modifier = Modifier) {
+    val runs = remember(text, links) { HnRuns.of(text, links) }
+    LinkedText(runs, onMention = {}, onTag = {}, modifier = modifier, style = MaterialTheme.typography.bodyMedium)
+}
+
+internal object HnRuns {
+    /** [text] as runs, each of its [links] a link where it stands; one overlapping another before it stays plain. */
+    fun of(text: String, links: List<HnTextLink>): List<TextRun> {
+        val kept = links.filter { it.start >= 0 && it.end <= text.length && it.end > it.start }.sortedBy { it.start }
+            .fold(emptyList<HnTextLink>()) { taken, link -> if (taken.isNotEmpty() && link.start < taken.last().end) taken else taken + link }
+        val (at, runs) = kept.fold(0 to emptyList<TextRun>()) { (at, runs), link ->
+            link.end to runs + plain(text.substring(at, link.start)) + TextRun.Link(text.substring(link.start, link.end), link.url)
+        }
+        return runs + plain(text.substring(at))
+    }
+
+    private fun plain(text: String): List<TextRun> = if (text.isEmpty()) emptyList() else listOf(TextRun.Plain(text))
+}

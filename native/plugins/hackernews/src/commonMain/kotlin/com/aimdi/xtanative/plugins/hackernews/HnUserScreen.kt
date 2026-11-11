@@ -77,7 +77,7 @@ private fun Lead(user: HnUser, following: Boolean, onFollow: () -> Unit, onGroup
             Icon(PostIcons.GroupAdd, contentDescription = null, modifier = Modifier.size(18.dp))
             Text(addToGroupText(), modifier = Modifier.padding(start = 8.dp))
         }
-        if (user.about.isNotEmpty()) Text(user.about, modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp))
+        if (user.about.isNotEmpty()) HnText(user.about, user.aboutLinks, Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp))
         Hairline()
     }
 }

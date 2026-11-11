@@ -10,20 +10,54 @@ import org.jsoup.nodes.TextNode
 
 /** HN text arrives as HTML (`<p>`, `<i>`, `<a>`): read as plain text, paragraphs kept. */
 object HnHtml {
+    private const val BASE = "https://news.ycombinator.com/"
+
     /** [raw] flattened to text: a blank line for each `<p>` and `<br>`, links as their text. */
-    fun toText(raw: String?): String {
+    fun toText(raw: String?): String = read(raw).text
+
+    /**
+     * [raw] flattened as [toText] does, with where each link stands in the
+     * text and where it leads: Hacker News shortens a long address in the
+     * text, so the address itself is only in the link. A link within the
+     * site (`item?id=…`) leads to news.ycombinator.com.
+     */
+    fun read(raw: String?): HnText {
         val source = raw?.trim().orEmpty()
-        if (source.isEmpty()) return ""
-        return write(Jsoup.parseBodyFragment(source).body()).trim()
+        if (source.isEmpty()) return HnText()
+        val out = StringBuilder()
+        val links = mutableListOf<HnTextLink>()
+        write(Jsoup.parseBodyFragment(source, BASE).body(), out, links)
+        val lead = out.length - out.trimStart().length
+        val text = out.trim().toString()
+        return HnText(text, links.mapNotNull { it.within(lead, text.length) }.sortedBy { it.start })
     }
 
-    private fun write(node: Node): String = when (node) {
-        is TextNode -> node.wholeText
-        is Element -> (if (node.normalName() == "p" || node.normalName() == "br") "\n\n" else "") +
-            node.childNodes().joinToString("") { write(it) }
-        else -> ""
+    private fun write(node: Node, out: StringBuilder, links: MutableList<HnTextLink>) {
+        when (node) {
+            is TextNode -> out.append(node.wholeText)
+            is Element -> {
+                if (node.normalName() == "p" || node.normalName() == "br") out.append("\n\n")
+                val start = out.length
+                node.childNodes().forEach { write(it, out, links) }
+                val url = node.takeIf { it.normalName() == "a" }?.absUrl("href")?.takeIf { it.startsWith("https://") || it.startsWith("http://") }
+                if (url != null && out.length > start) links += HnTextLink(start, out.length, url)
+            }
+        }
     }
 }
+
+/** A link inside a text flattened by [HnHtml]: its characters from [start] until [end] lead to [url]. */
+data class HnTextLink(val start: Int, val end: Int, val url: String) {
+    /** Where it stands once [lead] characters are trimmed off a text [length] long; null when nothing of it is left. */
+    internal fun within(lead: Int, length: Int): HnTextLink? {
+        val from = (start - lead).coerceIn(0, length)
+        val to = (end - lead).coerceIn(0, length)
+        return if (to > from) HnTextLink(from, to, url) else null
+    }
+}
+
+/** A text flattened by [HnHtml], and its links. */
+data class HnText(val text: String = "", val links: List<HnTextLink> = emptyList())
 
 /**
  * Hacker News' two APIs read into stories, comments and users: Algolia's
@@ -39,11 +73,13 @@ object HnParser {
     /** An Algolia search hit; null without an id. */
     fun storyFromHit(hit: J): HnStory? {
         val id = hit["objectID"].long ?: hit["story_id"].long ?: return null
+        val body = HnHtml.read(hit["story_text"].string ?: hit["text"].string)
         return HnStory(
             id = id,
             title = hit["title"].string.orEmpty(),
             url = hit["url"].string,
-            text = HnHtml.toText(hit["story_text"].string ?: hit["text"].string),
+            text = body.text,
+            links = body.links,
             author = hit["author"].string,
             score = hit["points"].int ?: 0,
             commentCount = hit["num_comments"].int ?: 0,
@@ -53,19 +89,22 @@ object HnParser {
     }
 
     /** An Algolia item: the story and its whole comment tree. */
-    fun thread(item: J): HnThread = HnThread(
-        HnStory(
-            id = item["id"].long ?: 0,
-            title = item["title"].string.orEmpty(),
-            url = item["url"].string,
-            text = HnHtml.toText(item["text"].string),
-            author = item["author"].string,
-            score = item["points"].int ?: 0,
-            commentCount = countComments(item["children"]),
-            createdAt = seconds(item["created_at_i"].long),
-            type = item["type"].string ?: "story",
-        ),
-        comments(item["children"]),
+    fun thread(item: J): HnThread {
+        val body = HnHtml.read(item["text"].string)
+        return HnThread(threadStory(item, body), comments(item["children"]))
+    }
+
+    private fun threadStory(item: J, body: HnText) = HnStory(
+        id = item["id"].long ?: 0,
+        title = item["title"].string.orEmpty(),
+        url = item["url"].string,
+        text = body.text,
+        links = body.links,
+        author = item["author"].string,
+        score = item["points"].int ?: 0,
+        commentCount = countComments(item["children"]),
+        createdAt = seconds(item["created_at_i"].long),
+        type = item["type"].string ?: "story",
     )
 
     /** A Firebase list of ids, such as `beststories`. */
@@ -74,11 +113,13 @@ object HnParser {
     /** A Firebase item as a story; null when it is missing or is a comment. */
     fun firebaseStory(item: J, id: Long): HnStory? {
         if (!item.exists || item["type"].string == "comment") return null
+        val body = HnHtml.read(item["text"].string)
         return HnStory(
             id = item["id"].long ?: id,
             title = item["title"].string.orEmpty(),
             url = item["url"].string,
-            text = HnHtml.toText(item["text"].string),
+            text = body.text,
+            links = body.links,
             author = item["by"].string,
             score = item["score"].int ?: 0,
             commentCount = item["descendants"].int ?: 0,
@@ -90,10 +131,12 @@ object HnParser {
     /** A Firebase user; null when Firebase has none by that id (it answers `null`). */
     fun user(json: J, id: String): HnUser? {
         if (!json.exists) return null
+        val about = HnHtml.read(json["about"].string)
         return HnUser(
             id = json["id"].string ?: id,
             karma = json["karma"].int ?: 0,
-            about = HnHtml.toText(json["about"].string),
+            about = about.text,
+            aboutLinks = about.links,
             createdAt = seconds(json["created"].long),
             submittedCount = json["submitted"].list.size,
         )
@@ -103,10 +146,12 @@ object HnParser {
 
     private fun comment(item: J): HnComment? {
         val id = item["id"].long ?: return null
+        val body = HnHtml.read(item["text"].string)
         return HnComment(
             id = id,
             author = item["author"].string,
-            text = HnHtml.toText(item["text"].string),
+            text = body.text,
+            links = body.links,
             createdAt = seconds(item["created_at_i"].long),
             children = comments(item["children"]),
             deleted = item["author"].string == null || item["text"].string == null,
