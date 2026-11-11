@@ -32,4 +32,12 @@ class PluginTabFitTest {
         assertTrue(PluginTabFit.namesSection(104f))
         assertFalse(PluginTabFit.namesSection(103f), "under 104 dp the icon stands alone")
     }
+
+    @Test
+    fun theMarkGivesWayOnlyWhenThatAloneKeepsEveryTabAnIcon() {
+        assertTrue(PluginTabFit.keepsMark(5, 280f), "five tabs and the mark fit")
+        assertFalse(PluginTabFit.keepsMark(5, 279f), "the mark's room is the tabs' then")
+        assertFalse(PluginTabFit.keepsMark(5, 240f))
+        assertTrue(PluginTabFit.keepsMark(5, 239f), "they fold without it too: the mark stays")
+    }
 }

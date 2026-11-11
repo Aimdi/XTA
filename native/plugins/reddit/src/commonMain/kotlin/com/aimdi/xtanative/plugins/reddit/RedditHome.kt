@@ -20,7 +20,6 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -47,6 +46,8 @@ import com.aimdi.xtanative.store.settings.RedditFeedMode
 import com.aimdi.xtanative.ui.common.FeedSkeleton
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginHomeTab
+import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
@@ -85,17 +86,16 @@ internal fun RedditHome(app: RedditApp, frame: PluginFrame) {
     }
 }
 
-/** Following, Popular and All, then Reddit's search, the order and the menu, in XTA's order (reddit_actions.dart). */
+/**
+ * Following, Popular and All, then Reddit's search, the order and the menu,
+ * in XTA's order (reddit_screen.dart's RedditHomeChrome, reddit_actions.dart):
+ * one bar on Reddit's own screen, a strip folding into a section picker in Home.
+ */
 @Composable
 private fun HomeBar(app: RedditApp, home: RedditHomeSource) {
     var sorting by remember { mutableStateOf(false) }
     val choices by app.choices.collectAsState()
-    Row(Modifier.fillMaxWidth().padding(start = 12.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-        Row(Modifier.weight(1f).horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Rail(app, home, RedditFeedMode.FOLLOWING, Icons.Outlined.Home, Strings.feed_following)
-            Rail(app, home, RedditFeedMode.POPULAR, RedditGlyphs.Popular, Strings.feed_popular)
-            Rail(app, home, RedditFeedMode.ALL, RedditGlyphs.All, Strings.feed_all)
-        }
+    PluginHomeTabs(RedditFeedMode.entries.map { mode -> PluginHomeTab(railIcon(mode), pluginString(railLabel(mode)), home.railSelected(mode)) { app.selectMode(mode) } }) {
         RedditHomeChrome.actions.forEach { action ->
             when (action) {
                 RedditHomeChrome.Action.SEARCH -> IconButton(onClick = { app.host.openSearch(null) }) { Icon(Icons.Filled.Search, contentDescription = pluginString(Strings.search_hint)) }
@@ -107,14 +107,16 @@ private fun HomeBar(app: RedditApp, home: RedditHomeSource) {
     if (sorting) SortSheet(app) { sorting = false }
 }
 
-@Composable
-private fun Rail(app: RedditApp, home: RedditHomeSource, mode: RedditFeedMode, icon: ImageVector, label: PluginText) {
-    FilterChip(
-        selected = home.railSelected(mode),
-        onClick = { app.selectMode(mode) },
-        label = { Text(pluginString(label)) },
-        leadingIcon = { Icon(icon, contentDescription = null, modifier = Modifier.size(18.dp)) },
-    )
+private fun railIcon(mode: RedditFeedMode): ImageVector = when (mode) {
+    RedditFeedMode.FOLLOWING -> Icons.Outlined.Home
+    RedditFeedMode.POPULAR -> RedditGlyphs.Popular
+    RedditFeedMode.ALL -> RedditGlyphs.All
+}
+
+private fun railLabel(mode: RedditFeedMode): PluginText = when (mode) {
+    RedditFeedMode.FOLLOWING -> Strings.feed_following
+    RedditFeedMode.POPULAR -> Strings.feed_popular
+    RedditFeedMode.ALL -> Strings.feed_all
 }
 
 /**
@@ -142,7 +144,7 @@ private fun HomeMenu(app: RedditApp, choices: RedditChoices) {
                     RedditHomeChrome.MenuItem.SOURCE_PUBLIC -> SourceRow(app, item, Strings.source_public, Strings.source_public_description, RedditHomeChrome.checked(item, choices), close)
                     RedditHomeChrome.MenuItem.SETTINGS -> {
                         HorizontalDivider()
-                        MenuRow(Icons.Outlined.Settings, pluginString(Strings.plugin_name) + " · " + pluginString(Strings.settings)) { close(); app.host.openSettings() }
+                        MenuRow(RedditGlyphs.Forum, pluginString(Strings.plugin_name) + " · " + pluginString(Strings.settings)) { close(); app.host.openSettings() }
                     }
                 }
             }

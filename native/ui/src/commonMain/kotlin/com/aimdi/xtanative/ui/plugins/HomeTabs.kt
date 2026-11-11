@@ -68,6 +68,7 @@ internal class PluginBarContent(
     val tabs: State<List<PluginHomeTab>>,
     val accent: State<Color?>,
     val actions: State<@Composable RowScope.() -> Unit>,
+    val markGivesWay: Boolean = false,
 )
 
 /** The bar of the plugin screen being drawn, where the app draws a plugin on its own; null on Home, where the strip is the plugin's. */
@@ -88,8 +89,26 @@ fun PluginHomeTabs(
     accent: Color? = null,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
+    PluginHomeTabs(tabs, markGivesWay = false, modifier, accent, actions)
+}
+
+/**
+ * [PluginHomeTabs] for tabs that, with their [actions], are too many for a
+ * phone's one bar: with [markGivesWay] the bar of the plugin opened on its
+ * own leaves the plugin's mark out when that alone keeps every tab an icon
+ * beside the actions (XTA's markGivesWay, as Pixiv's five tabs and its mode
+ * button), each of which must then be an icon button.
+ */
+@Composable
+fun PluginHomeTabs(
+    tabs: List<PluginHomeTab>,
+    markGivesWay: Boolean,
+    modifier: Modifier = Modifier,
+    accent: Color? = null,
+    actions: @Composable RowScope.() -> Unit = {},
+) {
     val bar = LocalPluginClientBar.current
-    if (bar != null) return HandsToBar(bar, tabs, accent, actions)
+    if (bar != null) return HandsToBar(bar, tabs, accent, actions, markGivesWay)
     val color = pluginAccent(accent)
     Row(modifier.fillMaxWidth().heightIn(min = PluginTabFit.TARGET.dp), verticalAlignment = Alignment.CenterVertically) {
         BoxWithConstraints(Modifier.weight(1f)) {
@@ -121,10 +140,10 @@ fun <T> PluginHomeTabs(
 }
 
 @Composable
-private fun HandsToBar(bar: PluginClientBar, tabs: List<PluginHomeTab>, accent: Color?, actions: @Composable RowScope.() -> Unit) {
-    val content = PluginBarContent(rememberUpdatedState(tabs), rememberUpdatedState(accent), rememberUpdatedState(actions))
-    val handed = remember(bar) { content }
-    DisposableEffect(bar) {
+private fun HandsToBar(bar: PluginClientBar, tabs: List<PluginHomeTab>, accent: Color?, actions: @Composable RowScope.() -> Unit, markGivesWay: Boolean) {
+    val content = PluginBarContent(rememberUpdatedState(tabs), rememberUpdatedState(accent), rememberUpdatedState(actions), markGivesWay)
+    val handed = remember(bar, markGivesWay) { content }
+    DisposableEffect(bar, handed) {
         bar.content = handed
         onDispose { if (bar.content === handed) bar.content = null }
     }
@@ -281,15 +300,26 @@ internal fun PluginStandaloneBar(
     val content = bar.content
     Row(modifier.fillMaxWidth().heightIn(min = STANDALONE_BAR.dp).padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
         back()
-        Box(Modifier.width(40.dp).semantics { contentDescription = title }, contentAlignment = Alignment.Center) { mark() }
         val tabs = content?.tabs?.value.orEmpty()
         if (tabs.isEmpty()) {
+            BarMark(title, mark)
             Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f).padding(horizontal = 8.dp))
         } else {
-            PluginCompactTabs(tabs, pluginAccent(content?.accent?.value), Modifier.weight(1f))
+            BoxWithConstraints(Modifier.weight(1f)) {
+                val keepsMark = content?.markGivesWay != true || PluginTabFit.keepsMark(tabs.size, maxWidth.value)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (keepsMark) BarMark(title, mark)
+                    PluginCompactTabs(tabs, pluginAccent(content?.accent?.value), Modifier.weight(1f))
+                }
+            }
         }
         if (content != null) content.actions.value(this) else fallbackActions()
     }
+}
+
+@Composable
+private fun BarMark(title: String, mark: @Composable () -> Unit) {
+    Box(Modifier.width(PluginTabFit.MARK.dp).semantics { contentDescription = title }, contentAlignment = Alignment.Center) { mark() }
 }
 
 /** The standalone bar's height, XTA's pluginToolbarHeight at the default text size. */

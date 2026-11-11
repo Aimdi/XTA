@@ -17,6 +17,17 @@ object PluginTabFit {
     /** Under this width a folded strip shows its section's icon alone. */
     const val ICON_ONLY_BELOW = 104f
 
+    /** The room the plugin's mark takes in the bar of a plugin opened on its own. */
+    const val MARK = 40f
+
+    /**
+     * Whether that bar keeps the mark beside [count] icon tabs in [width]
+     * (what the mark and the tabs share), where the mark may give way: it
+     * stays when the tabs fit beside it, or would not fit without it either
+     * (_keepsMark).
+     */
+    fun keepsMark(count: Int, width: Float): Boolean = (width - count * TARGET).let { spare -> spare >= MARK || spare < 0 }
+
     /** Whether tabs with these [labels]' widths fit [width] as icon and label buttons; they fold into the section picker when not (_tabsFit). */
     fun labelled(labels: List<Float>, width: Float): Boolean = STRIP_PADDING + labels.sumOf { maxOf(TARGET, it + LABEL_CHROME).toDouble() } <= width
 

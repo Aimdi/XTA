@@ -1,6 +1,5 @@
 package com.aimdi.xtanative.plugins.pixiv
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -14,20 +13,18 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -48,10 +45,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.pixiv.PixivIllust
 import com.aimdi.xtanative.networks.pixiv.PixivSearchKind
@@ -59,6 +54,9 @@ import com.aimdi.xtanative.networks.pixiv.PixivUserListKind
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginHomeTab
+import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
+import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -101,15 +99,15 @@ internal fun PixivHome(runtime: PixivRuntime, frame: PluginFrame) {
     }
 }
 
-/** The section tabs, each an icon over its name, and the button switching between illustrations and novels. */
+/**
+ * The section tabs and the button switching between illustrations and novels,
+ * as XTA's PixivHomeChrome: one bar on Pixiv's own screen, a strip folding
+ * into a section picker in Home.
+ */
 @Composable
 private fun HomeChrome(view: PixivHomeView, onTab: (PixivTab) -> Unit, onMode: () -> Unit) {
-    Row(Modifier.fillMaxWidth().padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-        SectionTab(Icons.Filled.Home, pluginString(Strings.home), view.tab == PixivTab.HOME) { onTab(PixivTab.HOME) }
-        SectionTab(XIcons.Views, pluginString(Strings.tab_ranking), view.tab == PixivTab.RANKING) { onTab(PixivTab.RANKING) }
-        SectionTab(Icons.Filled.FavoriteBorder, pluginString(Strings.tab_favorites), view.tab == PixivTab.FAVORITES) { onTab(PixivTab.FAVORITES) }
-        SectionTab(Icons.Filled.Search, pluginString(Strings.search), view.tab == PixivTab.SEARCH) { onTab(PixivTab.SEARCH) }
-        SectionTab(Icons.Filled.Menu, pluginString(Strings.tab_more), view.tab == PixivTab.MORE) { onTab(PixivTab.MORE) }
+    val tabs = PixivTab.entries.map { tab -> PluginHomeTab(tabIcon(tab), pluginString(tabLabel(tab)), view.tab == tab) { onTab(tab) } }
+    PluginHomeTabs(tabs, markGivesWay = true) {
         IconButton(onClick = onMode) {
             Icon(
                 if (view.novels) PostIcons.Image else PixivIcons.MenuBook,
@@ -120,18 +118,20 @@ private fun HomeChrome(view: PixivHomeView, onTab: (PixivTab) -> Unit, onMode: (
     }
 }
 
-@Composable
-private fun RowScope.SectionTab(icon: ImageVector, label: String, selected: Boolean, onClick: () -> Unit) {
-    val color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-    Column(
-        Modifier.weight(1f).clip(RoundedCornerShape(8.dp)).clickable(onClick = onClick).heightIn(min = 48.dp).padding(vertical = 4.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(22.dp))
-        Text(label, style = MaterialTheme.typography.labelSmall, color = color, maxLines = 1, overflow = TextOverflow.Ellipsis)
-        Box(Modifier.padding(top = 2.dp).width(24.dp).height(2.dp).clip(RoundedCornerShape(1.dp)).background(if (selected) color else Color.Transparent))
-    }
+private fun tabIcon(tab: PixivTab): ImageVector = when (tab) {
+    PixivTab.HOME -> Icons.Outlined.Home
+    PixivTab.RANKING -> XIcons.Views
+    PixivTab.FAVORITES -> Icons.Filled.FavoriteBorder
+    PixivTab.SEARCH -> Icons.Filled.Search
+    PixivTab.MORE -> Icons.Filled.Menu
+}
+
+private fun tabLabel(tab: PixivTab): PluginText = when (tab) {
+    PixivTab.HOME -> Strings.home
+    PixivTab.RANKING -> Strings.tab_ranking
+    PixivTab.FAVORITES -> Strings.tab_favorites
+    PixivTab.SEARCH -> Strings.search
+    PixivTab.MORE -> Strings.tab_more
 }
 
 /** A sideways row of choice chips over a list. */
