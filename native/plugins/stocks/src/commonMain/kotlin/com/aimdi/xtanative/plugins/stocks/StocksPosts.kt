@@ -52,6 +52,8 @@ import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.plugins.PagedItems
 import com.aimdi.xtanative.ui.plugins.ReadsMoreNearEnd
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
+import com.aimdi.xtanative.ui.plugins.XThreadRow
+import com.aimdi.xtanative.ui.plugins.rememberXThreadStacks
 import com.aimdi.xtanative.ui.plugins.pagedRows
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -109,6 +111,7 @@ internal fun StocksPostsList(
     val foldsByDefault by app.foldSignals.collectAsState()
     val list = rememberLazyListState()
     val actions = rememberXPostActions(app.host, paged.items)
+    val stacks = rememberXThreadStacks(paged.items)
     val empty = pluginString(Strings.posts_empty)
     ScrollsToTop(list, toTop)
     ReadsMoreNearEnd(list, paged, feed.pages::more)
@@ -124,19 +127,22 @@ internal fun StocksPostsList(
             LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
                 header()
                 pagedRows(paged, feed.pages, XThread::id, X, empty) { thread ->
-                    val signal = if (feed.signals) SignalGroups.cashtags(thread) else null
-                    PostRow(thread, section.partStartingAt(thread.id), signal, folds[thread.id] ?: foldsByDefault, actions) { app.fold(thread.id, it) }
+                    section.partStartingAt(thread.id)?.let { SectionHeader(pluginString(if (it == FollowedPart.FOLLOWED) Strings.posts_followed else Strings.posts_others)) }
+                    // The posts sharing one article stack under the newest, as every list of X posts in XTA.
+                    XThreadRow(thread, stacks) { shown ->
+                        val signal = if (feed.signals) SignalGroups.cashtags(shown) else null
+                        PostRow(shown, signal, folds[shown.id] ?: foldsByDefault, actions) { app.fold(shown.id, it) }
+                    }
                 }
             }
         }
     }
 }
 
-/** A thread under the label of the part it starts, if it starts one, and under the amber banner when it has a signal group's shape ([signal] cashtags). */
+/** A thread, under the amber banner when it has a signal group's shape ([signal] cashtags). */
 @Composable
-private fun PostRow(thread: XThread, part: FollowedPart?, signal: Int?, folded: Boolean, actions: PostActions, onFold: (Boolean) -> Unit) {
+private fun PostRow(thread: XThread, signal: Int?, folded: Boolean, actions: PostActions, onFold: (Boolean) -> Unit) {
     Column {
-        part?.let { SectionHeader(pluginString(if (it == FollowedPart.FOLLOWED) Strings.posts_followed else Strings.posts_others)) }
         if (signal == null) {
             ThreadRows(thread, actions)
         } else {

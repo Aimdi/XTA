@@ -38,6 +38,9 @@ class StocksPlugin : XtaPlugin() {
     /** StockTwits green, the colour of a rising tape on that app. */
     override val brandColor: Color = Color(0xFF00C805)
     override val icon: ImageVector get() = StocksIcons.CandlestickChart
+
+    /** Green is a rising price's, not Stocks' chrome: its mark on Home follows the text colour (XTA's brandsChrome). */
+    override val brandsChrome: Boolean get() = false
     override val category: Category = Category.MARKETS
 
     override fun title(language: String): String = Strings.plugin_name.get(language)

@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
@@ -40,6 +41,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
@@ -53,11 +55,11 @@ import com.aimdi.xtanative.networks.stocks.TickerQuote
 import com.aimdi.xtanative.networks.stocks.Watchlist
 import com.aimdi.xtanative.networks.stocks.WatchlistEntries
 import com.aimdi.xtanative.ui.common.Hairline
-import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.NetworkProblemView
 import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginNotices
-import com.aimdi.xtanative.ui.plugins.PluginTabs
+import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
+import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
@@ -96,11 +98,12 @@ internal fun StocksHome(app: StocksApp, frame: PluginFrame) {
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
             ReadingControlsBar { StocksHeader(app, view.tab, model::select, onAdd = { adding = true }, onManage = { managing = true }) }
+            Hairline()
             Box(Modifier.weight(1f).swipeTabs(StocksTab.entries, view.tab) { model.select(it) }) {
                 val shown = entries
                 when {
                     shown == null && unreadable -> NetworkProblemView(Problem.Other, pluginString(Strings.watchlist), { app.launch { app.watchlist.load() } })
-                    shown == null -> LoadingRow()
+                    shown == null -> PluginFeedSkeleton()
                     else -> StocksTabBody(app, model, view, shown, frame) { adding = true }
                 }
             }
@@ -125,7 +128,7 @@ private fun StocksTabBody(app: StocksApp, model: StocksHomeModel, view: StocksVi
     val trending = view.trending
     when {
         view.tab == StocksTab.MARKETS -> StocksMarketsList(quotes, failed, app::open, model::retry, model::pull, view.refreshing, frame.padding, frame.toTop)
-        view.tab == StocksTab.TRENDING && trending.isEmpty() && view.trendingLoading -> LoadingRow()
+        view.tab == StocksTab.TRENDING && trending.isEmpty() && view.trendingLoading -> PluginFeedSkeleton()
         view.tab == StocksTab.TRENDING && trending.isEmpty() -> EmptyStocks(app, model, view, frame, onAdd)
         view.tab == StocksTab.TRENDING -> PostsHome(app, model, view, trending, entries, quotes, failed, frame)
         entries.ids.isEmpty() -> EmptyStocks(app, model, view, frame, onAdd)
@@ -216,14 +219,24 @@ private fun EmptyStocks(app: StocksApp, model: StocksHomeModel, view: StocksView
     }
 }
 
-/** The four tabs, with Add ticker and the settings at their end. */
+/**
+ * The four tabs with XTA's icons, Add ticker and the settings at their end
+ * (stocks_screen.dart's PluginHomeChrome). The tab shown is underlined in the
+ * app's accent, not Stocks' green, which is a rising price's and not its chrome's.
+ */
 @Composable
 private fun StocksHeader(app: StocksApp, selected: StocksTab, onSelect: (StocksTab) -> Unit, onAdd: () -> Unit, onManage: () -> Unit) {
-    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        PluginTabs(StocksTab.entries.map { pluginString(it.label) }, selected.ordinal, { onSelect(StocksTab.entries[it]) }, Modifier.weight(1f))
+    PluginHomeTabs(StocksTab.entries, selected, onSelect, icon = ::tabIcon, label = { pluginString(it.label) }, accent = MaterialTheme.colorScheme.primary) {
         IconButton(onClick = onAdd) { Icon(Icons.Default.Add, pluginString(Strings.add)) }
         StocksMenu(app, onManage)
     }
+}
+
+private fun tabIcon(tab: StocksTab): ImageVector = when (tab) {
+    StocksTab.WATCHLIST -> Icons.Outlined.Star
+    StocksTab.POSTS -> StocksIcons.ForumOutlined
+    StocksTab.TRENDING -> PostIcons.TrendingUp
+    StocksTab.MARKETS -> StocksIcons.Public
 }
 
 /** The sliders: the watchlist itself, and how Stocks shows things. */
