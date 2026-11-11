@@ -401,7 +401,7 @@ private fun AvailableRow(state: PluginState, locale: Locale, actions: StoreActio
     val status = state.status
     Column(Modifier.fillMaxWidth()) {
         StoreTile(
-            leading = { StoreMark(null, name) },
+            leading = { StoreMark(null, name, state.id) },
             title = name,
             subtitle = {
                 state.description(locale).takeIf { it.isNotBlank() }?.let {
@@ -540,15 +540,18 @@ private fun Progress(status: PluginStatus) {
 /**
  * A plugin's mark (XTA's pluginBrandIcon): its own icon on a [shape] washed
  * in its colour, the colour lightened on a dark theme when it is nearly
- * black, once it runs; before that, the catalogue gives no picture, so its
- * initial. The store draws it as XTA's does, [STORE_MARK] on a rounded square.
+ * black, once it runs; before that XTA's mark for the plugin named [id]
+ * ([KnownMarks]), and for one XTA never had, which the catalogue gives no
+ * picture of, its initial. The store draws it as XTA's does, [STORE_MARK] on
+ * a rounded square.
  */
 @Composable
-internal fun PluginMark(running: RunningPlugin?, name: String, size: Dp, shape: Shape = CircleShape) {
-    val plugin = running?.plugin
+internal fun PluginMark(running: RunningPlugin?, name: String, size: Dp, shape: Shape = CircleShape, id: String? = null) {
+    val known = if (running == null) id?.let(KnownMarks::of) else null
+    val icon = running?.plugin?.icon ?: known?.icon
     val scheme = MaterialTheme.colorScheme
     val dark = scheme.background.luminance() < 0.5f
-    val brand = plugin?.brandColor?.let { Color(ProvenanceColors.brandOn(it.toArgb(), dark)) }
+    val brand = (running?.plugin?.brandColor?.toArgb() ?: known?.color?.toInt())?.let { Color(ProvenanceColors.brandOn(it, dark)) }
     Box(
         Modifier
             .size(size)
@@ -556,8 +559,8 @@ internal fun PluginMark(running: RunningPlugin?, name: String, size: Dp, shape: 
             .background(brand?.copy(alpha = if (dark) 0.22f else 0.14f) ?: scheme.surfaceVariant),
         contentAlignment = Alignment.Center,
     ) {
-        if (plugin != null && brand != null) {
-            Icon(plugin.icon, contentDescription = null, tint = if (brand == scheme.onSurface) scheme.primary else brand, modifier = Modifier.size(size * 0.6f))
+        if (icon != null && brand != null) {
+            Icon(icon, contentDescription = null, tint = if (brand == scheme.onSurface) scheme.primary else brand, modifier = Modifier.size(size * 0.6f))
         } else {
             Text(name.take(1).uppercase(), style = if (size < 40.dp) MaterialTheme.typography.labelLarge else MaterialTheme.typography.titleMedium, color = scheme.onSurfaceVariant)
         }
@@ -566,7 +569,7 @@ internal fun PluginMark(running: RunningPlugin?, name: String, size: Dp, shape: 
 
 /** The store's mark, as XTA's rows draw it: 28 dp, on a square with rounded corners. */
 @Composable
-private fun StoreMark(running: RunningPlugin?, name: String) = PluginMark(running, name, STORE_MARK, RoundedCornerShape(10.dp))
+private fun StoreMark(running: RunningPlugin?, name: String, id: String? = null) = PluginMark(running, name, STORE_MARK, RoundedCornerShape(10.dp), id)
 
 private val STORE_MARK = 28.dp
 
