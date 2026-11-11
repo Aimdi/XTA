@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.mastodon.MastodonTagReader
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.MessageText
+import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.RetryRow
@@ -47,7 +48,7 @@ internal fun MastodonTagScreen(app: MastodonApp, name: String) {
             LazyColumn(state = list, contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + 32.dp), modifier = Modifier.fillMaxSize()) {
                 val error = state.error
                 when {
-                    state.posts.isEmpty() && (state.loading || !state.loaded) -> item(key = "loading") { LoadingRow() }
+                    state.posts.isEmpty() && (state.loading || !state.loaded) -> item(key = "loading") { PluginFeedSkeleton() }
                     state.posts.isEmpty() && error != null -> item(key = "problem") { RetryMessage(pluginString(problemText(error)), reader::refresh) }
                     state.posts.isEmpty() -> item(key = "empty") { MessageText(pluginString(Strings.no_posts)) }
                     error != null -> item(key = "refresh-failed") { RetryRow(pluginString(Strings.refresh_failed), reader::refresh) }

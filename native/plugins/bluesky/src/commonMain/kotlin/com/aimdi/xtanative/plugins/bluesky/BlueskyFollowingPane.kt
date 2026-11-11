@@ -62,6 +62,7 @@ import com.aimdi.xtanative.ui.plugins.PluginAvatar
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.EmptyPane
 import com.aimdi.xtanative.ui.plugins.MessageText
+import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.RetryRow
@@ -163,7 +164,7 @@ private fun LazyListScope.followingStatus(app: BlueskyApp, state: FollowingTimel
         state.posts.isEmpty() && problem != null -> item(key = "problem") {
             ProblemView(problem, onRetry = { app.following.refresh(force = true) })
         }
-        state.posts.isEmpty() && !state.loaded -> item(key = "loading") { LoadingRow() }
+        state.posts.isEmpty() && !state.loaded -> item(key = "loading") { PluginFeedSkeleton() }
         state.posts.isEmpty() && !state.loading -> item(key = "empty") { EmptyFollowing(app, nobody = false) }
         problem != null -> item(key = "refresh-failed") { RetryRow(pluginString(Strings.refresh_failed), onRetry = { app.following.refresh(force = true) }) }
     }

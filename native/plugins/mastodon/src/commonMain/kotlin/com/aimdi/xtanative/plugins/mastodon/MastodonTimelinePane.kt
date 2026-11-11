@@ -46,6 +46,7 @@ import com.aimdi.xtanative.networks.mastodon.MastodonTimelineReader
 import com.aimdi.xtanative.networks.mastodon.MastodonTimelineState
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.EmptyPane
+import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.RetryMessage
@@ -97,7 +98,7 @@ private fun TimelineRowView(app: MastodonApp, reader: MastodonTimelineReader, ro
     when (row) {
         is TimelineRow.RefreshFailed -> RetryRow(pluginString(Strings.refresh_failed), { refresh(reader) })
         TimelineRow.Trending -> TrendingTags(app, tags)
-        TimelineRow.Loading -> LoadingRow()
+        TimelineRow.Loading -> PluginFeedSkeleton()
         is TimelineRow.Problem -> RetryMessage(pluginString(problemText(row.error)), { refresh(reader) })
         TimelineRow.Empty -> empty()
         TimelineRow.Filtered -> FilteredEmpty(onReset)

@@ -41,10 +41,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.data.Problem
@@ -112,7 +116,12 @@ internal fun BlueskySearchScreen(app: BlueskyApp, initial: String, author: Strin
     var text by rememberSaveable { mutableStateOf(initial) }
     var sent by rememberSaveable { mutableStateOf(initial.trim()) }
     var shownKind by rememberSaveable { mutableStateOf(kind) }
+    val keyboard = LocalSoftwareKeyboardController.current
+    val field = remember { FocusRequester() }
+    // XTA's field takes the keyboard when the screen opens on nothing searched, and lets it go on a search.
+    LaunchedEffect(Unit) { if (initial.isEmpty()) field.requestFocus() }
     val send = { query: String ->
+        keyboard?.hide()
         text = query
         sent = query.trim()
         if (sent.isNotEmpty()) app.launch { app.prefs.remember(sent) }
@@ -126,9 +135,9 @@ internal fun BlueskySearchScreen(app: BlueskyApp, initial: String, author: Strin
                 placeholder = { Text(pluginString(if (shownKind == BlueskySearchKind.PEOPLE) Strings.search_people_hint else Strings.search_link_hint)) },
                 leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
                 trailingIcon = { IconButton(onClick = { send(text) }) { Icon(Icons.AutoMirrored.Filled.ArrowForward, pluginString(Strings.search)) } },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                keyboardOptions = KeyboardOptions(autoCorrectEnabled = false, imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(onSearch = { send(text) }),
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp).focusRequester(field),
             )
             val frame = PluginFrame(PaddingValues(bottom = padding.calculateBottomPadding()))
             SearchBody(app, sent, author, kind, frame, onKind = { shownKind = it }) { landingKind -> Landing(app, landingKind, send) }
