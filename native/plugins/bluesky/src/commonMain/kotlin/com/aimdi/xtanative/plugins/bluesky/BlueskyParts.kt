@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.networks.bluesky.BlueskyErrorKind
 import com.aimdi.xtanative.networks.bluesky.BlueskyProfile
-import com.aimdi.xtanative.ui.common.Avatar
+import com.aimdi.xtanative.ui.plugins.PluginAvatar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.plugins.AddToGroupButton
 import com.aimdi.xtanative.ui.plugins.PluginText
@@ -115,7 +115,7 @@ internal fun PersonRow(app: BlueskyApp, person: BlueskyProfile, followed: Boolea
         Modifier.fillMaxWidth().clickable { app.openProfile(person.actor) }.padding(start = 16.dp, end = 8.dp, top = 10.dp, bottom = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Avatar(person.avatarUrl, 40.dp)
+        PluginAvatar(person.avatarUrl, person.displayName, person.handle.ifEmpty { person.did }, 40.dp)
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
             Text(person.displayName, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)

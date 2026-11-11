@@ -36,7 +36,7 @@ import com.aimdi.xtanative.networks.bluesky.Bluesky
 import com.aimdi.xtanative.networks.bluesky.BlueskyFollow
 import com.aimdi.xtanative.networks.bluesky.BlueskyUrls
 import com.aimdi.xtanative.store.settings.BlueskyPrefs
-import com.aimdi.xtanative.ui.common.Avatar
+import com.aimdi.xtanative.ui.plugins.PluginAvatar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.plugins.AddToGroupButton
 import com.aimdi.xtanative.ui.plugins.HomeTimelineSwitch
@@ -157,7 +157,7 @@ private fun FollowRow(app: BlueskyApp, follow: BlueskyFollow) {
         Modifier.fillMaxWidth().clickable { app.openProfile(follow.actor) }.padding(start = 16.dp, end = 8.dp, top = 8.dp, bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Avatar(follow.avatarUrl, 40.dp)
+        PluginAvatar(follow.avatarUrl, follow.name, follow.handle.ifEmpty { follow.did }, 40.dp)
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
             Text(follow.name, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)

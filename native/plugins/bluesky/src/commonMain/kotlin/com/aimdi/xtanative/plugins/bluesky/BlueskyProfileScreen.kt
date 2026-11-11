@@ -78,6 +78,7 @@ import com.aimdi.xtanative.networks.bluesky.BlueskyProfile
 import com.aimdi.xtanative.networks.bluesky.BlueskyProfileTab
 import com.aimdi.xtanative.networks.bluesky.BlueskySearchKind
 import com.aimdi.xtanative.ui.common.Avatar
+import com.aimdi.xtanative.ui.plugins.PluginAvatar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.XIcons
@@ -211,12 +212,14 @@ private fun Header(app: BlueskyApp, profile: BlueskyProfile?, actor: String, fol
                 modifier = Modifier.fillMaxWidth().aspectRatio(3f).background(MaterialTheme.colorScheme.primary.copy(alpha = 0.35f))
                     .clickable(enabled = profile?.bannerUrl != null) { profile?.bannerUrl?.let { app.host.openMedia(listOf(MediaItem(it)), 0) } },
             )
-            Avatar(
-                profile?.avatarUrl,
-                80.dp,
-                Modifier.align(Alignment.BottomStart).offset(x = 16.dp, y = 40.dp).border(4.dp, background, CircleShape),
-                onClick = profile?.avatarUrl?.let { url -> { app.host.openMedia(listOf(MediaItem(url)), 0) } },
-            )
+            val face = Modifier.align(Alignment.BottomStart).offset(x = 16.dp, y = 40.dp).border(4.dp, background, CircleShape)
+            // While the profile is read, a plain disc; then its picture, or XTA's initial without one.
+            if (profile == null) {
+                Avatar(null, 80.dp, face)
+            } else {
+                val open = profile.avatarUrl?.let { url -> { app.host.openMedia(listOf(MediaItem(url)), 0) } }
+                PluginAvatar(profile.avatarUrl, profile.displayName, profile.handle.ifEmpty { actor }, 80.dp, face, open)
+            }
         }
         // Beside the picture's lower half, as X places it; Add to group before Follow, as XTA's.
         Row(

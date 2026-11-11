@@ -47,7 +47,7 @@ import com.aimdi.xtanative.networks.mastodon.MastodonFollow
 import com.aimdi.xtanative.networks.mastodon.MastodonPost
 import com.aimdi.xtanative.networks.mastodon.MastodonProfile
 import com.aimdi.xtanative.networks.mastodon.MastodonUrls
-import com.aimdi.xtanative.ui.common.Avatar
+import com.aimdi.xtanative.ui.plugins.PluginAvatar
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.monthText
 import com.aimdi.xtanative.ui.plugins.LinkedText
@@ -115,7 +115,7 @@ internal fun ProfileCard(app: MastodonApp, profile: MastodonProfile, following: 
 @Composable
 private fun Names(profile: MastodonProfile) {
     Row(verticalAlignment = Alignment.Top) {
-        Avatar(MastodonUrls.web(profile.avatarUrl), 64.dp)
+        PluginAvatar(MastodonUrls.web(profile.avatarUrl), profile.displayName, profile.acct, 64.dp)
         Spacer(Modifier.width(14.dp))
         Column(Modifier.weight(1f)) {
             Text(profile.displayName, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)

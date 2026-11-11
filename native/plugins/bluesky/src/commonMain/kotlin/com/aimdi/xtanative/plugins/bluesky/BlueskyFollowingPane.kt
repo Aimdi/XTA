@@ -58,7 +58,7 @@ import com.aimdi.xtanative.networks.bluesky.BlueskyProfile
 import com.aimdi.xtanative.networks.bluesky.BlueskyReaderFilter
 import com.aimdi.xtanative.networks.bluesky.BlueskySearchKind
 import com.aimdi.xtanative.networks.bluesky.BlueskyTimeline
-import com.aimdi.xtanative.ui.common.Avatar
+import com.aimdi.xtanative.ui.plugins.PluginAvatar
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.EmptyPane
 import com.aimdi.xtanative.ui.plugins.MessageText
@@ -271,7 +271,7 @@ private fun PeopleRow(app: BlueskyApp, people: List<BlueskyFeedPerson>, modifier
             AssistChip(
                 onClick = { app.openProfile(person.handle) },
                 label = { Text("@" + person.handle, maxLines = 1) },
-                leadingIcon = { Avatar(person.avatarUrl, 20.dp) },
+                leadingIcon = { PluginAvatar(person.avatarUrl, person.name, person.handle, 20.dp) },
             )
             TextButton(onClick = { app.toggleFollow(BlueskyProfile(did = "", handle = person.handle, displayName = person.name, avatarUrl = person.avatarUrl)) }) {
                 Text(pluginString(Strings.follow))
