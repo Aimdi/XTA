@@ -10,18 +10,26 @@
       The desktop build carries <out dir> under lib/app/resources/voice-engine
       when it is native/desktop/build/app-resources/linux-x64/voice-engine.
 
+  python3 -I native/tool/voice_engine.py archives <out dir>
+      The engine Android downloads with the first voice, one archive per
+      processor (xta-voice-engine-sherpa-onnx-<version>-<abi>.tar.xz), which a
+      prerelease publishes beside its APK: the two libraries of pub.dev's
+      sherpa_onnx_android_* package for that processor, checked against
+      VoiceEngines.PACKAGES' pins. The same bytes for the same libraries on
+      the same xz.
+
   python3 -I native/tool/voice_engine.py check <dir>
-      Every Android archive in <dir> (scripts/voice_engine_archives.py makes
-      them, as XTA's releases publish them) holds the libraries
-      VoiceEngines.PACKAGES pins, so the app installs what is published.
+      Every Android archive in <dir> holds the libraries VoiceEngines.PACKAGES
+      pins, so the app installs what is published.
 
 The libraries come from the pub cache when one holds the package, else from
-pub.dev's archive of it, checked against the repository's pubspec.lock.
+pub.dev's archive of it, checked against PUB_ARCHIVES below.
 """
 
 from pathlib import Path
 import hashlib
 import io
+import lzma
 import os
 import re
 import shutil
@@ -31,11 +39,24 @@ import tarfile
 import urllib.request
 
 NATIVE = Path(__file__).resolve().parents[1]
-ROOT = NATIVE.parent
 PINS = NATIVE / "services/src/main/kotlin/com/aimdi/xtanative/services/speech/VoiceEngine.kt"
 SHIM = NATIVE / "services/src/main/c/xta_sherpa.c"
-LOCK = ROOT / "pubspec.lock"
 LIBRARIES = ["libonnxruntime.so", "libsherpa-onnx-c-api.so"]
+# The SHA-256 of pub.dev's archive of each package the engine comes from, by the
+# version VoiceEngines.VERSION names: pub.dev never changes a published version.
+# A new engine version adds its line here with the pins in VoiceEngine.kt.
+PUB_ARCHIVES = {
+    "sherpa_onnx_android_arm64-1.13.8": "29db5572735afb1bc29f0f95ab160f7fb38b4b3f926f48e9113457fd740264f4",
+    "sherpa_onnx_android_armeabi-1.13.8": "fe81837bd12f67d136a456c6d2b39876caaba09edd77761cb527cb170dac2d2a",
+    "sherpa_onnx_android_x86_64-1.13.8": "d20c06c0edc92286609f256d04c295cad510bbb270068c0c79877f4a10f00581",
+    "sherpa_onnx_linux-1.13.8": "22fb91a1c50b7bc24d93d0b67c87cf2a3a38f7564d7f14343d704a1201848960",
+}
+# Android's processor names and the pub.dev package carrying each one's libraries.
+ANDROID_PACKAGES = {
+    "arm64-v8a": "sherpa_onnx_android_arm64",
+    "armeabi-v7a": "sherpa_onnx_android_armeabi",
+    "x86_64": "sherpa_onnx_android_x86_64",
+}
 NEWEST_GLIBC = (2, 17)
 
 
@@ -72,32 +93,54 @@ def checked(where, data, size, digest):
     return data
 
 
-def locked_package(name):
-    """(version, archive sha256) the repository's pubspec.lock records for the hosted package [name]."""
-    block = re.search(rf"^  {re.escape(name)}:\n((?:    .*\n|      .*\n)+)", LOCK.read_text(encoding="utf-8"), re.M)
-    version = block and re.search(r'^    version: "?([^"\s]+)"?', block[1], re.M)
-    digest = block and re.search(r'^      sha256: "?([0-9a-f]{64})"?', block[1], re.M)
-    if not version or not digest:
-        raise Refused(f"pubspec.lock does not lock {name}")
-    return version[1], digest[1]
-
-
-def linux_libraries(version):
-    """The Linux x64 libraries of sherpa_onnx_linux [version], from the pub cache or pub.dev's archive."""
-    package = f"sherpa_onnx_linux-{version}"
-    cache = Path(os.environ.get("PUB_CACHE") or Path.home() / ".pub-cache") / "hosted/pub.dev" / package / "linux/x64"
-    if all((cache / name).is_file() for name in LIBRARIES):
-        return {name: (cache / name).read_bytes() for name in LIBRARIES}
-    locked, digest = locked_package("sherpa_onnx_linux")
-    if locked != version:
-        raise Refused(f"pubspec.lock has sherpa_onnx_linux {locked}, the app pins {version}")
-    url = f"https://pub.dev/api/archives/{package}.tar.gz"
+def pub_libraries(package, version, folder):
+    """LIBRARIES out of [folder] of the pub.dev package [package] [version], from the pub cache or pub.dev's archive."""
+    name = f"{package}-{version}"
+    cache = Path(os.environ.get("PUB_CACHE") or Path.home() / ".pub-cache") / "hosted/pub.dev" / name / folder
+    if all((cache / library).is_file() for library in LIBRARIES):
+        return {library: (cache / library).read_bytes() for library in LIBRARIES}
+    digest = PUB_ARCHIVES.get(name)
+    if digest is None:
+        raise Refused(f"{Path(__file__).name} pins no archive of {name}: add it to PUB_ARCHIVES")
+    url = f"https://pub.dev/api/archives/{name}.tar.gz"
     with urllib.request.urlopen(url, timeout=300) as response:
         data = response.read()
     if sha256_of(data) != digest:
-        raise Refused(f"{url} does not match pubspec.lock")
+        raise Refused(f"{url} does not match its pin in {Path(__file__).name}")
     with tarfile.open(fileobj=io.BytesIO(data), mode="r:gz") as archive:
-        return {name: archive.extractfile(archive.getmember(f"linux/x64/{name}")).read() for name in LIBRARIES}
+        return {library: archive.extractfile(archive.getmember(f"{folder}/{library}")).read() for library in LIBRARIES}
+
+
+def linux_libraries(version):
+    """The Linux x64 libraries of sherpa_onnx_linux [version]."""
+    return pub_libraries("sherpa_onnx_linux", version, "linux/x64")
+
+
+def archive_name(version, abi):
+    return f"xta-voice-engine-sherpa-onnx-{version}-{abi}.tar.xz"
+
+
+def write_archive(path, libraries):
+    """A tar.xz of [libraries] as (name, bytes), the same bytes for the same input on the same xz."""
+    buffer = io.BytesIO()
+    with tarfile.open(fileobj=buffer, mode="w", format=tarfile.USTAR_FORMAT) as archive:
+        for name, data in libraries:
+            info = tarfile.TarInfo(name)
+            info.size, info.mode, info.mtime = len(data), 0o644, 0
+            archive.addfile(info, io.BytesIO(data))
+    path.write_bytes(lzma.compress(buffer.getvalue(), preset=9 | lzma.PRESET_EXTREME))
+
+
+def archives(out):
+    version, pins = read_pins(PINS.read_text(encoding="utf-8"))
+    out.mkdir(parents=True, exist_ok=True)
+    for abi in sorted(abi for abi in pins if abi != "linux-x64"):
+        if abi not in ANDROID_PACKAGES:
+            raise Refused(f"{Path(__file__).name} knows no pub.dev package for {abi}")
+        found = pub_libraries(ANDROID_PACKAGES[abi], version, f"android/src/main/jniLibs/{abi}")
+        path = out / archive_name(version, abi)
+        write_archive(path, [(name, checked(f"{abi}/{name}", found[name], size, digest)) for name, size, digest in pins[abi]])
+        print(f"{path.name}: {path.stat().st_size} bytes")
 
 
 def java_home():
@@ -148,7 +191,7 @@ def desktop(out):
 def check(directory):
     version, pins = read_pins(PINS.read_text(encoding="utf-8"))
     for abi in sorted(abi for abi in pins if abi != "linux-x64"):
-        path = directory / f"xta-voice-engine-sherpa-onnx-{version}-{abi}.tar.xz"
+        path = directory / archive_name(version, abi)
         if not path.is_file():
             raise Refused(f"{path.name} is missing")
         with tarfile.open(path, mode="r:xz") as archive:
@@ -164,6 +207,8 @@ def main(arguments):
     try:
         if len(arguments) == 2 and arguments[0] == "desktop":
             desktop(Path(arguments[1]))
+        elif len(arguments) == 2 and arguments[0] == "archives":
+            archives(Path(arguments[1]))
         elif len(arguments) == 2 and arguments[0] == "check":
             check(Path(arguments[1]))
         else:

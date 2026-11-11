@@ -211,14 +211,14 @@ jobs:
           done
           curl -s -o /dev/null -w 'stand-in answers %{http_code}\n' http://127.0.0.1:8787/
 
-      # As XTA's voice-engine job serves its emulator (emulator-qa.yml): the
-      # engine's archives as XTA's releases publish them, checked against the
-      # app's pins, and the English voice, checked against its own.
+      # The engine's archives as a prerelease publishes them, made from
+      # pub.dev's packages and checked against the app's pins
+      # (tool/voice_engine.py), and the English voice, checked against its own.
       - name: Serve the voice engine and a voice
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/voices"
-          python3 scripts/voice_engine_archives.py "$RUNNER_TEMP/voices"
+          python3 -I native/tool/voice_engine.py archives "$RUNNER_TEMP/voices"
           python3 -I native/tool/voice_engine.py check "$RUNNER_TEMP/voices"
           voice=vits-piper-en_US-libritts_r-medium-int8.tar.bz2
           curl -fsSL -o "$RUNNER_TEMP/voices/$voice" "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/$voice"
@@ -333,7 +333,7 @@ jobs:
           fi
 
       # The voice engine downloaded voices read with, which the tarball and the
-      # Arch package carry as XTA's Linux bundle does: pub.dev's
+      # Arch package carry: pub.dev's
       # sherpa_onnx_linux checked against the app's pins, and the app's JNI
       # shim built beside it; the desktop build takes it from here.
       - name: The voice engine the desktop app carries
@@ -650,13 +650,13 @@ jobs:
           name: xta-native-plugins-desktop-${{ env.VERSION_NAME }}
           path: plugins-desktop
 
-      # The voice engine beside the APK, one archive per processor, as XTA's
-      # releases publish it (docs/specs/downloadable-voice-engine.md): the app
-      # downloads its own release's first, then XTA's latest. Checked against
-      # the app's pins before it is published.
+      # The voice engine beside the APK, one archive per processor
+      # (tool/voice_engine.py): the app downloads its own release's first,
+      # then the latest release's. Checked against the app's pins before it
+      # is published.
       - name: The voice engine's archives
         run: |
-          python3 scripts/voice_engine_archives.py voice-engine
+          python3 -I native/tool/voice_engine.py archives voice-engine
           python3 -I native/tool/voice_engine.py check voice-engine
 
       - name: Prerelease
