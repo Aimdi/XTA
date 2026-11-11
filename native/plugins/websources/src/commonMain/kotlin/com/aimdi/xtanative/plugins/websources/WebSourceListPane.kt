@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -33,7 +34,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.websources.WebSourceFailureKind
-import com.aimdi.xtanative.networks.websources.WebSourceItem
 import com.aimdi.xtanative.networks.websources.WebSourceLayout
 import com.aimdi.xtanative.networks.websources.WebSourceReading
 import com.aimdi.xtanative.ui.common.LoadingRow
@@ -41,6 +41,7 @@ import com.aimdi.xtanative.ui.plugins.EmptyPane
 import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginGridSkeleton
 import com.aimdi.xtanative.ui.plugins.RetryMessage
+import com.aimdi.xtanative.ui.plugins.RetryRow
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.pluginString
 
@@ -63,25 +64,37 @@ internal fun WebSourceListPane(app: WebSourcesApp, feed: WebSourceFeed, padding:
     PullToRefreshBox(isRefreshing = state.loading && state.loaded, onRefresh = feed::refresh, modifier = Modifier.fillMaxSize()) {
         when {
             state.items.isEmpty() -> Empty()
-            feed.source.layout == WebSourceLayout.GALLERY -> Gallery(app, feed, state.items, padding, toTop)
-            else -> Posts(feed, state.items, state.loadingMore, actions, padding, toTop)
+            feed.source.layout == WebSourceLayout.GALLERY -> Gallery(app, feed, state, padding, toTop)
+            else -> Posts(feed, state, actions, padding, toTop)
         }
     }
 }
 
 @Composable
-private fun Posts(feed: WebSourceFeed, items: List<WebSourceItem>, loadingMore: Boolean, actions: ItemActions, padding: PaddingValues, toTop: Int) {
+private fun Posts(feed: WebSourceFeed, state: WebSourceFeedState, actions: ItemActions, padding: PaddingValues, toTop: Int) {
+    val items = state.items
     val list = rememberLazyListState()
     ScrollsToTop(list, toTop)
     ReadsMoreNearEnd(list, items.size, feed::more)
     LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
         items(items, key = { it.key }) { item -> WebSourceItemCard(feed.source, item, actions) }
-        item(key = "footer") { if (loadingMore) LoadingRow() }
+        item(key = "footer") { Foot(feed, state) }
+    }
+}
+
+/** The list's foot: the next page coming, or why it did not and a way to ask again. */
+@Composable
+private fun Foot(feed: WebSourceFeed, state: WebSourceFeedState) {
+    val failed = state.moreError
+    when {
+        state.loadingMore -> LoadingRow()
+        failed != null -> RetryRow(failureText(failed), feed::retryMore)
     }
 }
 
 @Composable
-private fun Gallery(app: WebSourcesApp, feed: WebSourceFeed, items: List<WebSourceItem>, padding: PaddingValues, toTop: Int) {
+private fun Gallery(app: WebSourcesApp, feed: WebSourceFeed, state: WebSourceFeedState, padding: PaddingValues, toTop: Int) {
+    val items = state.items
     val grid = rememberLazyGridState()
     val fontScale = LocalDensity.current.fontScale
     ScrollsToTop(toTop) { grid.animateScrollToItem(0) }
@@ -91,6 +104,7 @@ private fun Gallery(app: WebSourcesApp, feed: WebSourceFeed, items: List<WebSour
             items(items, key = { it.key }) { item ->
                 WebSourcePictureTile(item, onMore = { app.host.openPostMenu(app.shared.menu(feed.source, item)) }) { galleryPictures(items, item)?.let { (media, start) -> app.host.openMedia(media, start) } }
             }
+            item(key = "footer", span = { GridItemSpan(maxLineSpan) }) { Foot(feed, state) }
         }
     }
 }

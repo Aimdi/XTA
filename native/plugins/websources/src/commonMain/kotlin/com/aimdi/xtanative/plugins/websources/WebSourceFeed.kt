@@ -22,12 +22,15 @@ internal data class WebSourceFeedState(
     /** Why the first page did not come; what is shown stays when a refresh fails. */
     val error: Throwable? = null,
     val loadingMore: Boolean = false,
+    /** Why the next page did not come: the list's foot offers it again. */
+    val moreError: Throwable? = null,
 )
 
 /**
  * One list of a web source, page by page, as XTA's WebSourceFeedStore: a
  * page that brings nothing new ends the list (the client sees to that), and
- * a page that failed waits [RETRY_AFTER_MS] before scrolling asks for it again.
+ * a page that failed waits [RETRY_AFTER_MS] before scrolling asks for it again,
+ * or is asked for at once with [retryMore].
  * [query] makes it a search's results.
  */
 internal class WebSourceFeed(
@@ -46,7 +49,7 @@ internal class WebSourceFeed(
     fun refresh() {
         job?.cancel()
         job = scope.launch {
-            mutable.update { it.copy(loading = true, error = null) }
+            mutable.update { it.copy(loading = true, error = null, loadingMore = false, moreError = null) }
             try {
                 val page = client.list(source, list, query)
                 failedAt = null
@@ -66,19 +69,24 @@ internal class WebSourceFeed(
         if (now.loading || now.loadingMore || now.items.isEmpty()) return
         failedAt?.let { if (clock() - it < RETRY_AFTER_MS) return }
         job = scope.launch {
-            mutable.update { it.copy(loadingMore = true) }
+            mutable.update { it.copy(loadingMore = true, moreError = null) }
             try {
                 val page = client.list(source, list, query, cursor, shown = now.items.map { it.key }.toSet())
                 failedAt = null
                 mutable.update { it.copy(items = it.items + page.items, next = page.next, loadingMore = false) }
             } catch (e: CancellationException) {
                 throw e
-            } catch (_: Exception) {
-                // The list keeps what it has; the next scroll after a pause tries again.
+            } catch (e: Exception) {
                 failedAt = clock()
-                mutable.update { it.copy(loadingMore = false) }
+                mutable.update { it.copy(loadingMore = false, moreError = e) }
             }
         }
+    }
+
+    /** The next page again now, without the pause a scroll waits. */
+    fun retryMore() {
+        failedAt = null
+        more()
     }
 
     companion object {
