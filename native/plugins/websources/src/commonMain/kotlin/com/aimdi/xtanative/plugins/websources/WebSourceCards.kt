@@ -21,8 +21,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
@@ -56,13 +59,13 @@ internal class ItemActions(
  * A source's post (web_source_item_card.dart) as its layout draws it: a
  * link, an article, or a post with its pictures. [showSource] names the
  * source above it, where several sources' posts mix. A long press opens
- * the shared post menu.
+ * the shared post menu. One [read] to its end in the reader is dimmed.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-internal fun WebSourceItemCard(source: WebSourceDefinition, item: WebSourceItem, actions: ItemActions, showSource: Boolean = false) {
+internal fun WebSourceItemCard(source: WebSourceDefinition, item: WebSourceItem, actions: ItemActions, showSource: Boolean = false, read: Boolean = false) {
     Box {
-        Column(Modifier.fillMaxWidth().combinedClickable(onClick = { actions.open(item) }, onLongClick = { actions.more(item) }).padding(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 12.dp)) {
+        Column(Modifier.fillMaxWidth().alpha(if (read) READ_ALPHA else 1f).combinedClickable(onClick = { actions.open(item) }, onLongClick = { actions.more(item) }).padding(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 12.dp)) {
             when (source.layout) {
                 WebSourceLayout.LINKS -> LinkBody(source, item, showSource, actions)
                 WebSourceLayout.ARTICLES -> ArticleBody(source, item, showSource)
@@ -79,8 +82,13 @@ internal fun WebSourceItemCard(source: WebSourceDefinition, item: WebSourceItem,
  * the source's own lists open it.
  */
 @Composable
-internal fun SharedItemCard(app: WebSourcesApp, source: WebSourceDefinition, item: WebSourceItem) =
-    WebSourceItemCard(source, item, rememberItemActions(app, source), showSource = true)
+internal fun SharedItemCard(app: WebSourcesApp, source: WebSourceDefinition, item: WebSourceItem) {
+    val read by app.read.collectAsState()
+    WebSourceItemCard(source, item, rememberItemActions(app, source), showSource = true, read = item.key in read)
+}
+
+/** How faint a post read to its end is drawn, as a read item in a feed reader. */
+private const val READ_ALPHA = 0.6f
 
 private fun hostOf(link: String?): String? = link?.toHttpUrlOrNull()?.host
 

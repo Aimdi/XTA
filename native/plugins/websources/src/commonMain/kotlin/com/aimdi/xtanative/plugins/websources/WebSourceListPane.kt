@@ -65,19 +65,20 @@ internal fun WebSourceListPane(app: WebSourcesApp, feed: WebSourceFeed, padding:
         when {
             state.items.isEmpty() -> Empty()
             feed.source.layout == WebSourceLayout.GALLERY -> Gallery(app, feed, state, padding, toTop)
-            else -> Posts(feed, state, actions, padding, toTop)
+            else -> Posts(app, feed, state, actions, padding, toTop)
         }
     }
 }
 
 @Composable
-private fun Posts(feed: WebSourceFeed, state: WebSourceFeedState, actions: ItemActions, padding: PaddingValues, toTop: Int) {
+private fun Posts(app: WebSourcesApp, feed: WebSourceFeed, state: WebSourceFeedState, actions: ItemActions, padding: PaddingValues, toTop: Int) {
     val items = state.items
+    val read by app.read.collectAsState()
     val list = rememberLazyListState()
     ScrollsToTop(list, toTop)
     ReadsMoreNearEnd(list, items.size, feed::more)
     LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
-        items(items, key = { it.key }) { item -> WebSourceItemCard(feed.source, item, actions) }
+        items(items, key = { it.key }) { item -> WebSourceItemCard(feed.source, item, actions, read = item.key in read) }
         item(key = "footer") { Foot(feed, state) }
     }
 }
