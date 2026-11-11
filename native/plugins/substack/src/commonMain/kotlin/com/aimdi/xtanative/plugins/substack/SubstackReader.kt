@@ -28,6 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -78,8 +79,9 @@ import kotlinx.coroutines.launch
  * shares; its episode's player; contents and find; highlights (native);
  * Listen, and "Speak from here" on a paragraph held; kept offline; saved,
  * liked and marked read on this device; its discussion, its publication, and
- * its page in the browser. A post with no body but an address shows the
- * publication's page in the web view, or offers it in the browser. A paid
+ * its page in the browser. A post with no body but an address, or one that
+ * could not be read, shows the publication's page in the web view, or on
+ * the desktop opens it in the browser as XTA's desktop does. A paid
  * post without a body shows the paid pane, never the publisher's scripts.
  */
 @Composable
@@ -137,7 +139,11 @@ private fun ReaderBody(app: SubstackApp, model: ReaderModel, state: ReaderModel.
         ReaderContent.Paywall -> PostPane(post, Icons.Outlined.Lock, Strings.paywalled_title, Strings.paywalled_description)
         ReaderContent.Live -> {
             val url = post.canonicalUrl
-            if (articleWebView && url != null) WebLive(app, model, post, url, page, Modifier.fillMaxSize()) else PostPane(post, SubstackIcons.OpenInNew, null, null)
+            when {
+                url == null -> PostPane(post, SubstackIcons.OpenInNew, null, null)
+                articleWebView -> WebLive(app, model, post, url, page, Modifier.fillMaxSize())
+                else -> BrowserLive(post, url)
+            }
         }
         ReaderContent.Empty -> EmptyState(pluginString(Strings.no_content))
         is ReaderContent.Article -> Column(Modifier.fillMaxSize()) {
@@ -205,6 +211,20 @@ internal fun ReaderFailure(post: SubstackPost, error: Throwable, onRetry: () -> 
         NetworkProblemView(problemOf(error), NETWORK, onRetry)
         post.canonicalUrl?.let { url -> Button(onClick = { outside(url) }) { Text(pluginString(Strings.open_in_browser)) } }
     }
+}
+
+/** The desktop's page of a post it cannot draw: opened in the browser once, as XTA's desktop opens it, and offered again. */
+@Composable
+private fun BrowserLive(post: SubstackPost, url: String) {
+    val outside = rememberOpenOutside()
+    var opened by rememberSaveable(url) { mutableStateOf(false) }
+    LaunchedEffect(url) {
+        if (!opened) {
+            opened = true
+            outside(url)
+        }
+    }
+    PostPane(post, SubstackIcons.OpenInNew, null, null)
 }
 
 /**
