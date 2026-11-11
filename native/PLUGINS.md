@@ -663,7 +663,9 @@ Android, `XTA_NATIVE_PLUGIN_CATALOGUE` on the desktop.
 Where Gradle cannot reach Maven Central:
 
 - `tool/jvmcheck.sh plugins/<id>` compiles the reading layer and runs its
-  tests (and fails on a test JUnit would skip);
+  tests (and fails on a test JUnit would skip), with `:store` and `:services`
+  when they import them, and `:ui`'s classes (`UI_CLASSES`, with
+  `COMPOSE_LIBS`) for tests that use the plugin API;
 - `tool/plugincheck.sh <id>` generates `Strings`, compiles `:ui` and then the
   plugin's commonMain with the Compose compiler (`UI_CLASSES` reuses `:ui`'s
   classes from a `uicheck.sh` run).
