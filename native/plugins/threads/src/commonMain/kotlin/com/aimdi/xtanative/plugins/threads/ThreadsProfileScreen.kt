@@ -57,11 +57,11 @@ import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsProfile
 import com.aimdi.xtanative.networks.threads.ThreadsProfilePage
 import com.aimdi.xtanative.networks.threads.ThreadsProfileTab
-import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.swipeTabs
+import com.aimdi.xtanative.ui.plugins.PluginAvatar
 import com.aimdi.xtanative.ui.plugins.Fetch
 import com.aimdi.xtanative.ui.plugins.MediaItem
 import com.aimdi.xtanative.ui.plugins.MessageText
@@ -76,6 +76,7 @@ import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 import com.aimdi.xtanative.ui.plugins.rememberShareText
 import com.aimdi.xtanative.ui.post.PostIcons
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 /** The profile's tabs: its posts, its replies, its media, and the posts of its the reader liked here (XTA's Saved). */
@@ -86,10 +87,15 @@ private enum class ProfileTab(val label: PluginText) {
     SAVED(Strings.saved),
 }
 
-/** One profile as it has been read, and its replies page once its tab asked for it. */
+/** One profile as it has been read, what it showed last time until then, and its replies page once its tab asked for it. */
 internal class ThreadsProfileModel(private val app: ThreadsApp, private val handle: String, scope: CoroutineScope) {
-    val page = Fetch<ThreadsProfilePage>(scope) { force -> app.ready(); app.reader.profile(handle, force) }
+    val kept = MutableStateFlow<ThreadsKeptProfile?>(null)
+    val page = Fetch<ThreadsProfilePage>(scope) { force -> app.ready(); app.reader.profile(handle, force).also { app.keepProfile(handle, it) } }
     val replies = Fetch<List<ThreadsPost>>(scope) { app.reader.replies(handle) }
+
+    init {
+        scope.launch { kept.value = app.keptProfile(handle) }
+    }
 }
 
 /**
@@ -97,7 +103,9 @@ internal class ThreadsProfileModel(private val app: ThreadsApp, private val hand
  * its card, then Posts, Replies, Media and the posts of its the reader liked
  * here. The replies page is asked for only when its tab opens. A read that
  * fails keeps what was shown; only a profile that never had anything to
- * show says why.
+ * show says why. More than XTA's: a profile opened before shows at once
+ * what it showed then, a line at the top while it is read again, and a read
+ * again that fails says so over what is shown.
  */
 @Composable
 internal fun ThreadsProfileScreen(app: ThreadsApp, username: String) {
@@ -105,16 +113,19 @@ internal fun ThreadsProfileScreen(app: ThreadsApp, username: String) {
     val model = rememberKept("threads-profile-$handle") { scope -> ThreadsProfileModel(app, handle, scope) }
     LaunchedEffect(model) { model.page.ensure() }
     val state by model.page.state.collectAsState()
+    val kept by model.kept.collectAsState()
     val url = "${ThreadsLinks.WEB}/@$handle"
     PluginScaffold(title = "@$handle", onBack = app.host::back, actions = { ProfileActions(app, url) }) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
-            val page = state.value
-            val problem = state.problem
+            val page = state.value ?: kept?.page
+            val showingKept = state.value == null && page != null
+            val problem = state.problem?.let { ThreadsFailures.profile(it, currentLanguage()) }
             when {
-                page == null && problem != null -> RetryMessage(ThreadsFailures.page(problem, currentLanguage()), onRetry = { model.page.load() })
+                page == null && problem != null -> RetryMessage(problem, onRetry = { model.page.load() })
                 page?.profile == null -> LoadingRow()
-                else -> ProfileBody(app, model, page, page.profile, state.loading)
+                else -> ProfileBody(app, model, page, page.profile, refreshing = state.loading && !showingKept)
             }
+            if (page?.profile != null) ReloadStatus(state.loading && showingKept, problem, onRetry = { model.page.load(force = true) })
             NoticeHost(app.notices)
         }
     }
@@ -216,7 +227,7 @@ internal fun ThreadsProfileCard(app: ThreadsApp, profile: ThreadsProfile, modifi
     Column(modifier.fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             val picture = profile.pictureUrl.ifEmpty { null }
-            Avatar(picture, 72.dp, onClick = picture?.let { { app.host.openMedia(listOf(MediaItem(imageUrl = it, aspectRatio = 1f, shareUrl = "${ThreadsLinks.WEB}/@${profile.username}")), 0) } })
+            PluginAvatar(picture, profile.displayName, profile.username, 72.dp, onClick = picture?.let { { app.host.openMedia(listOf(MediaItem(imageUrl = it, aspectRatio = 1f, shareUrl = "${ThreadsLinks.WEB}/@${profile.username}")), 0) } })
             Spacer(Modifier.width(14.dp))
             Column(Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {

@@ -35,6 +35,9 @@ internal object ThreadsFailures {
         return xy(error).get(language)
     }
 
+    /** A profile's sentence for [error]. */
+    fun profile(error: Throwable?, language: String): String = page(error, language)
+
     /** The settings' sentence for the Xy server's own failure. */
     fun xy(error: ThreadsXyException): PluginText = when (error.kind) {
         ThreadsXyException.Kind.NOT_CONFIGURED -> Strings.api_not_configured

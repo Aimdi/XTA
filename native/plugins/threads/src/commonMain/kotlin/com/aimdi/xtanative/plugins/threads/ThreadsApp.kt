@@ -6,6 +6,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsForYouFeed
 import com.aimdi.xtanative.networks.threads.ThreadsLinks
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsProfile
+import com.aimdi.xtanative.networks.threads.ThreadsProfilePage
 import com.aimdi.xtanative.networks.threads.ThreadsReader
 import com.aimdi.xtanative.networks.threads.ThreadsRepairs
 import com.aimdi.xtanative.networks.threads.ThreadsReplyOrder
@@ -31,6 +32,7 @@ import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginNotices
 import com.aimdi.xtanative.ui.plugins.PluginPostMenu
 import com.aimdi.xtanative.ui.plugins.PluginSubscription
+import java.time.Instant
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -81,6 +83,7 @@ internal class ThreadsApp(val host: PluginHost) {
     val feed = MergedFeed(scope, ::readFeed)
     val notices = PluginNotices()
     val shelf = ThreadsShelf()
+    private val profiles = ThreadsProfileShelf(host.store.file("profiles.json"))
 
     /** Threads' own recommended feed: the pasted Bearer's For you timeline, else threads.com's public front page. */
     val forYou = ThreadsForYouFeed(ThreadsForYou(direct)::page)
@@ -270,6 +273,20 @@ internal class ThreadsApp(val host: PluginHost) {
     }
 
     fun unfollow(handle: String) = launch { unfollowNow(handle) }
+
+    /** What [handle]'s profile showed when it was last read; null when it was not kept, or cannot be read. */
+    suspend fun keptProfile(handle: String): ThreadsKeptProfile? = attemptKept { profiles.of(handle) }
+
+    /** [page] kept as [handle]'s profile for the next time it opens. */
+    fun keepProfile(handle: String, page: ThreadsProfilePage) = launch { profiles.keep(handle, page, Instant.now()) }
+
+    private suspend fun <T> attemptKept(read: suspend () -> T?): T? = try {
+        read()
+    } catch (e: CancellationException) {
+        throw e
+    } catch (_: Exception) {
+        null
+    }
 
     /** [handle] no longer followed here and out of the app's groups (XTA's ThreadsAccountsStore.remove); the feed read without it. */
     private suspend fun unfollowNow(handle: String) {
