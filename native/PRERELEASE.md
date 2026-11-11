@@ -33,6 +33,11 @@ It keeps its data in `~/.local/share/xta-native`, a folder only you can open. Vi
 - Every section of XTA's settings, its backup export and import, WebDAV sync, and 29 languages; an opened post that swipes back as XTA's card, confirm close, the check for a newer prerelease and the licences page
 - Links open in the app's own browser on Android, or in the browser you pick; x.com and the networks' links open in the app, and so do t.co, fxtwitter, vxtwitter and fixupx links; a link nothing reads says so
 - New in this prerelease:
+  - Threads: a profile you opened before shows at once while it is read again; GIFs loop in place; accounts without a picture get a face with their initial; a reload keeps the conversation and says so in a notice with Retry
+  - Threads search and topic links open in the plugin, and a recent search can be forgotten
+  - Threads says what went wrong in its own words: a missing account or post, when its wait for too many reads ends, and a page it shows only to signed-in readers
+  - On Linux, a Substack post the reader cannot read opens in your browser; Substack's pins, logos and publication header look as XTA draws them
+- In 0.1.72:
   - Threads has a For you feed of its own recommended posts, kept on the device and shown at once on opening, and sharper pictures: the largest Threads offers, scaled down smoothly on Linux
   - Threads plays videos in place, at the quality Settings › Media picks; a row of pictures has its dots; described pictures carry ALT; an opened conversation is a card you drag back
   - Bluesky, Mastodon, Threads, Hacker News, Reddit and Pixiv have one bar on their own screens, their tabs in it, folding into a section picker on Home

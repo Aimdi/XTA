@@ -44,7 +44,7 @@ plugin API version it was built against, `PLUGIN_API_VERSION`) and `entry`
 
 ## The plugin API
 
-`PLUGIN_API_VERSION` is 10. Version 1 is what native-0.1.41 shipped; 2,
+`PLUGIN_API_VERSION` is 11. Version 1 is what native-0.1.41 shipped; 2,
 which native-0.1.45 shipped, added `cashtagStrip` and `routeForCashtag` and
 the kit's pieces of that time (the article reader, `FeedReads`, X posts in a
 plugin, the chip tabs, the shelf, the recent searches, the action row,
@@ -219,7 +219,7 @@ with a test.
 - Marks and first loads: `brandMarkIcon` (a network's own glyph fitted to the
   live area every mark spans, as XTA's PluginBrandMark) and, in `ui.common`,
   `FeedSkeleton` and `GridSkeleton` (post- and tile-shaped bones while a
-  first page loads, in place of a spinner); and since version 10
+  first page loads, in place of a spinner); and since version 11
   `PluginAvatar` (someone's round picture, or without one XTA's fallback
   avatar: their initial on the colour their id picks, `PluginFallbackFace`).
 - XTA's plugin chrome (version 9): `PluginHomeTabs` with `PluginHomeTab` (a home tab's own tabs as icon

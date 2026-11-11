@@ -37,9 +37,10 @@ import kotlinx.serialization.json.JsonElement
  * network's own content-warning cover ([NetworkPostExtras.cover]), a plugin
  * screen opened as a card dragged back ([XtaPlugin.opensAsCard]), a saved
  * picture's name ([PluginHost.openMedia] with a source name) and a home bar
- * whose mark gives way to its tabs.
+ * whose mark gives way to its tabs; 11 adds [PluginAvatar], a face with
+ * the account's initial for one without a picture.
  */
-const val PLUGIN_API_VERSION: Int = 10
+const val PLUGIN_API_VERSION: Int = 11
 
 /**
  * The oldest plugin API whose plugins this app still loads: what they use of
