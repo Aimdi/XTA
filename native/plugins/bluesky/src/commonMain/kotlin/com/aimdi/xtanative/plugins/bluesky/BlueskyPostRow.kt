@@ -27,6 +27,7 @@ import com.aimdi.xtanative.networks.bluesky.BlueskyProfile
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.plugins.LinkCard
+import com.aimdi.xtanative.ui.plugins.LinkedText
 import com.aimdi.xtanative.ui.plugins.MediaItem
 import com.aimdi.xtanative.ui.plugins.NetworkBookmark
 import com.aimdi.xtanative.ui.plugins.NetworkCount
@@ -128,11 +129,26 @@ internal fun PostRow(
     val language = currentLanguage()
     // Kept as drawn, so that its thread opens on it while the conversation is read.
     val shown = remember(app, post, language) { app.shown(post, language) }
-    val extras = remember(app, post, shown, actions) { extrasOf(app, post) { actions.open(shown) } }
+    val covered = remember(shown) { shown.coveringAttachments() }
+    val extras = remember(app, post, shown, covered, actions) {
+        val text: (@Composable () -> Unit)? = covered?.let { { LinkedText(shown.text, actions.openMention, actions.openTag, Modifier.padding(top = 2.dp)) } }
+        extrasOf(app, post, text) { actions.open(shown) }
+    }
     if (pinned) PinnedLine()
-    NetworkPostCard(shown, actions, extras, modifier = modifier, indent = indent, continues = continues)
+    NetworkPostCard(covered ?: shown, actions, extras, modifier = modifier, indent = indent, continues = continues)
     if (!continues && divider) Hairline()
 }
+
+/**
+ * A post whose label covers its media (not its text) and that quotes a post
+ * or carries a link card, as this plugin's rows draw it: XTA's cover holds
+ * back the media, the quote and the card together, under the text
+ * (bluesky_post_card.dart's _body). So the text goes over the cover (the
+ * row's [NetworkPostExtras.above]) and the cover keeps the rest; null for
+ * any other post.
+ */
+internal fun NetworkPost.coveringAttachments(): NetworkPost? =
+    takeIf { warning != null && !coversText && (quoted != null || card != null) }?.copy(text = emptyList(), coversText = true)
 
 /** "Pinned post" over the post its author pinned, as XTA's profile says it. */
 @Composable
@@ -149,10 +165,11 @@ private fun PinnedLine() {
  * end of its author line while its author is not followed here, its footer
  * ([onOpen] opens its thread), the app's post sheet on a long press, its
  * cover over what a label holds back, a quoted post's media over its text,
- * and "… reposted" over it leading to who reposted it.
+ * and "… reposted" over it leading to who reposted it; [above] over the cover.
  */
-internal fun extrasOf(app: BlueskyApp, post: BlueskyPost, onOpen: () -> Unit): NetworkPostExtras = NetworkPostExtras(
+internal fun extrasOf(app: BlueskyApp, post: BlueskyPost, above: (@Composable () -> Unit)? = null, onOpen: () -> Unit): NetworkPostExtras = NetworkPostExtras(
     trailing = { FollowGlyph(app, post) },
+    above = above,
     footer = { PostFooter(app, post, onOpen) },
     onLongPress = { app.openMenu(post) },
     onRepostLine = post.reposterActor?.takeIf { it.isNotEmpty() }?.let { actor -> { app.openProfile(actor) } },

@@ -141,6 +141,19 @@ class BlueskyThreadStateTest {
     }
 
     @Test
+    fun aMediaLabelOnAPostThatQuotesOrLinksCoversTheQuoteAndCardWithTheMediaButNotTheText() {
+        val quote = bluePost("quoted")
+        val covered = bluePost("outer", labels = listOf("nudity"), quote = quote).toNetworkPost("en").coveringAttachments()!!
+        assertTrue(covered.coversText, "one cover holds the quote back")
+        assertEquals(emptyList(), covered.text, "the text is drawn over the cover")
+        assertNotNull(covered.quoted)
+        assertNull(bluePost("plain", quote = quote).toNetworkPost("en").coveringAttachments(), "no label, no cover")
+        assertNull(bluePost("warned", labels = listOf("!warn"), quote = quote).toNetworkPost("en").coveringAttachments(), "!warn covers it all already")
+        assertNull(bluePost("media-only", labels = listOf("nudity"), media = listOf(BlueskyMedia("https://cdn.example/p.jpg"))).toNetworkPost("en").coveringAttachments(), "media alone keeps the media cover")
+        assertNull(bluePost("hidden", labels = listOf("!hide"), quote = quote).toNetworkPost("en").coveringAttachments())
+    }
+
+    @Test
     fun theFooterNamesEachActionWhenItsCountsAreHidden() {
         val post = bluePost("root", likes = 4).copy(replyCount = 2, repostCount = 3, quoteCount = 1)
         val hidden = footerCounts(post, liked = true, countsHidden = true)
