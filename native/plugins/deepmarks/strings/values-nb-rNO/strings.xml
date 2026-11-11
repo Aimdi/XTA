@@ -27,6 +27,7 @@
     <string name="save_action">Lagre i Deepmarks</string>
     <string name="saved">Lagret i Deepmarks</string>
     <string name="saved_no_relay">Sendt til Deepmarks, men ingen relay har tatt imot det ennå</string>
+    <string name="saving">Lagrer i Deepmarks…</string>
     <string name="show">Vis</string>
     <string name="hide">Skjul</string>
     <string name="save">Lagre</string>

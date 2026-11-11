@@ -27,6 +27,7 @@
     <string name="save_action">Salvesta Deepmarksi</string>
     <string name="saved">Deepmarksi salvestatud</string>
     <string name="saved_no_relay">Deepmarksile saadetud, kuid ükski relay pole seda veel vastu võtnud</string>
+    <string name="saving">Deepmarksi salvestamine…</string>
     <string name="show">Näita</string>
     <string name="hide">Peida</string>
     <string name="save">salvesta</string>

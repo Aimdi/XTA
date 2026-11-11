@@ -27,6 +27,7 @@
     <string name="save_action">Deepmarks’a kaydet</string>
     <string name="saved">Deepmarks’a kaydedildi</string>
     <string name="saved_no_relay">Deepmarks’a gönderildi, ancak henüz hiçbir relay kabul etmedi</string>
+    <string name="saving">Deepmarks’a kaydediliyor…</string>
     <string name="show">Göster</string>
     <string name="hide">Gizle</string>
     <string name="save">Kaydet</string>

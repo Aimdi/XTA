@@ -27,6 +27,7 @@
     <string name="save_action">Guardar en Deepmarks</string>
     <string name="saved">Guardado en Deepmarks</string>
     <string name="saved_no_relay">Enviado a Deepmarks, pero ningún relé lo ha aceptado aún</string>
+    <string name="saving">Guardando en Deepmarks…</string>
     <string name="show">Mostrar</string>
     <string name="hide">Ocultar</string>
     <string name="save">Guardar</string>

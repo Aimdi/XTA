@@ -27,6 +27,7 @@
     <string name="save_action">Deepmarks में सहेजें</string>
     <string name="saved">Deepmarks में सहेजा गया</string>
     <string name="saved_no_relay">Deepmarks को भेजा गया, लेकिन अभी किसी relay ने स्वीकार नहीं किया</string>
+    <string name="saving">Deepmarks में सहेजा जा रहा है…</string>
     <string name="show">दिखाएँ</string>
     <string name="hide">छिपाएँ</string>
     <string name="save">सहेजें</string>

@@ -27,6 +27,7 @@
     <string name="save_action">Uložit do Deepmarks</string>
     <string name="saved">Uloženo do Deepmarks</string>
     <string name="saved_no_relay">Odesláno do Deepmarks, ale žádný relay to zatím nepřijal</string>
+    <string name="saving">Ukládání do Deepmarks…</string>
     <string name="show">Zobrazit</string>
     <string name="hide">Skrýt</string>
     <string name="save">Uložit</string>

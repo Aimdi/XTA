@@ -27,6 +27,7 @@
     <string name="save_action">Gorde Deepmarks-en</string>
     <string name="saved">Deepmarks-en gordeta</string>
     <string name="saved_no_relay">Deepmarks-era bidalita, baina relay batek ez du oraindik onartu</string>
+    <string name="saving">Deepmarks-en gordetzen…</string>
     <string name="show">Erakutsi</string>
     <string name="hide">Ezkutatu</string>
     <string name="save">Gorde</string>

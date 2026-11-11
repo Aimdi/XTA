@@ -27,6 +27,7 @@
     <string name="save_action">Simpan ke Deepmarks</string>
     <string name="saved">Tersimpan ke Deepmarks</string>
     <string name="saved_no_relay">Terkirim ke Deepmarks, tetapi belum ada relay yang menerimanya</string>
+    <string name="saving">Menyimpan ke Deepmarks…</string>
     <string name="show">Tampilkan</string>
     <string name="hide">Sembunyikan</string>
     <string name="save">Simpan</string>

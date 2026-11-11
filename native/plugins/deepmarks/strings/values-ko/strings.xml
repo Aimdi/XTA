@@ -27,6 +27,7 @@
     <string name="save_action">Deepmarks에 저장</string>
     <string name="saved">Deepmarks에 저장했습니다</string>
     <string name="saved_no_relay">Deepmarks로 보냈지만 아직 받아준 릴레이가 없습니다</string>
+    <string name="saving">Deepmarks에 저장하는 중…</string>
     <string name="show">표시</string>
     <string name="hide">숨기기</string>
     <string name="save">저장</string>

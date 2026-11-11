@@ -30,6 +30,7 @@
     <string name="save_action">Save to Deepmarks</string>
     <string name="saved">Saved to Deepmarks</string>
     <string name="saved_no_relay">Sent to Deepmarks, but no relay accepted it yet</string>
+    <string name="saving">Saving to Deepmarks…</string>
     <string name="show">Show</string>
     <string name="hide">Hide</string>
     <string name="save">Save</string>

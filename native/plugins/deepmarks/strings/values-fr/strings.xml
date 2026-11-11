@@ -27,6 +27,7 @@
     <string name="save_action">Enregistrer dans Deepmarks</string>
     <string name="saved">Enregistré dans Deepmarks</string>
     <string name="saved_no_relay">Envoyé à Deepmarks, mais aucun relais ne l’a encore accepté</string>
+    <string name="saving">Enregistrement dans Deepmarks…</string>
     <string name="show">Afficher</string>
     <string name="hide">Masquer</string>
     <string name="save">Enregistrer</string>

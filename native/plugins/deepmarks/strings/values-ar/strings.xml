@@ -27,6 +27,7 @@
     <string name="save_action">الحفظ في Deepmarks</string>
     <string name="saved">تم الحفظ في Deepmarks</string>
     <string name="saved_no_relay">أُرسل إلى Deepmarks، لكن لم يقبله أي relay بعد</string>
+    <string name="saving">جارٍ الحفظ في Deepmarks…</string>
     <string name="show">إظهار</string>
     <string name="hide">إخفاء</string>
     <string name="save">حفظ</string>

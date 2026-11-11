@@ -27,6 +27,7 @@
     <string name="save_action">Salva su Deepmarks</string>
     <string name="saved">Salvato su Deepmarks</string>
     <string name="saved_no_relay">Inviato a Deepmarks, ma nessun relay lo ha ancora accettato</string>
+    <string name="saving">Salvataggio su Deepmarks…</string>
     <string name="show">Mostra</string>
     <string name="hide">Nascondi</string>
     <string name="save">Salva</string>

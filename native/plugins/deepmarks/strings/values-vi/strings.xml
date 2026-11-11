@@ -27,6 +27,7 @@
     <string name="save_action">Lưu vào Deepmarks</string>
     <string name="saved">Đã lưu vào Deepmarks</string>
     <string name="saved_no_relay">Đã gửi tới Deepmarks nhưng chưa relay nào nhận</string>
+    <string name="saving">Đang lưu vào Deepmarks…</string>
     <string name="show">Hiện</string>
     <string name="hide">Ẩn</string>
     <string name="save">Lưu</string>

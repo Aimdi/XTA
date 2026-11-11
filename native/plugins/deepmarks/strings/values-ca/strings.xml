@@ -27,6 +27,7 @@
     <string name="save_action">Guarda a Deepmarks</string>
     <string name="saved">Guardat a Deepmarks</string>
     <string name="saved_no_relay">Enviat a Deepmarks, però cap relay no l’ha acceptat encara</string>
+    <string name="saving">S\'està desant a Deepmarks…</string>
     <string name="show">Mostra</string>
     <string name="hide">Amaga</string>
     <string name="save">Desa</string>

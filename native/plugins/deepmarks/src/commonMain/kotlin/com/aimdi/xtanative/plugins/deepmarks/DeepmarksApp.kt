@@ -16,9 +16,15 @@ import com.aimdi.xtanative.ui.plugins.PluginSharedPost
 internal class DeepmarksApp(val host: PluginHost) {
     private val client = DeepmarksClient(host.http)
 
-    /** "Save to Deepmarks": [post]'s link and title as a signed bookmark, and the notice saying how that went. */
+    /**
+     * "Save to Deepmarks": [post]'s link and title as a signed bookmark,
+     * saying so while Deepmarks hands it to the relays, then the notice
+     * saying how that went.
+     */
     suspend fun save(post: PluginSharedPost) {
-        host.tell(DeepmarksSaves.save(client, host.settings.current(), post.url, post.title).get(host.language))
+        val language = host.language
+        val said = host.working(Strings.saving.get(language)) { DeepmarksSaves.save(client, host.settings.current(), post.url, post.title) }
+        host.tell(said.get(language))
     }
 
     /** Test connection, for the fields as they are typed, in [language]. */

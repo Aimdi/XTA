@@ -27,6 +27,7 @@
     <string name="save_action">Deepmarks に保存</string>
     <string name="saved">Deepmarks に保存しました</string>
     <string name="saved_no_relay">Deepmarks に送信しましたが、まだどのリレーも受け取っていません</string>
+    <string name="saving">Deepmarks に保存しています…</string>
     <string name="show">表示</string>
     <string name="hide">非表示</string>
     <string name="save">保存</string>

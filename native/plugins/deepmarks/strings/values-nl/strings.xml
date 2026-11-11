@@ -27,6 +27,7 @@
     <string name="save_action">Opslaan in Deepmarks</string>
     <string name="saved">Opgeslagen in Deepmarks</string>
     <string name="saved_no_relay">Naar Deepmarks gestuurd, maar nog geen relay heeft het aangenomen</string>
+    <string name="saving">Opslaan in Deepmarks…</string>
     <string name="show">Tonen</string>
     <string name="hide">Verbergen</string>
     <string name="save">Veilig</string>

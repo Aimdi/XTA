@@ -27,6 +27,7 @@
     <string name="save_action">儲存到 Deepmarks</string>
     <string name="saved">已儲存到 Deepmarks</string>
     <string name="saved_no_relay">已送出到 Deepmarks，但尚無中繼接收</string>
+    <string name="saving">正在儲存到 Deepmarks…</string>
     <string name="show">顯示</string>
     <string name="hide">隱藏</string>
     <string name="save">儲存</string>
