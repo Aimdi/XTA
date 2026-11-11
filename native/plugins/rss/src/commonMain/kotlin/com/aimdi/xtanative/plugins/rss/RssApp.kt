@@ -18,6 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -45,6 +46,9 @@ internal class RssApp(val host: PluginHost) {
     val tags: StateFlow<Map<String, List<String>>> = observe(RssPrefs.tags, emptyMap()) { RssTags.decode(it) }
     val timeline = RssTimelineModel(client, scope) { feeds.value.orEmpty() }
     val opml = RssOpmlImports()
+
+    /** The pane last chosen, kept while the plugin runs as XTA keeps it for the session ('rss/view'): the home tab and the plugin opened on its own show the same one. */
+    val pane = MutableStateFlow(RssPane.HOME)
 
     /** The followed feeds' items in the app's timelines and groups, and where they lead there. */
     val shared = RssShared(this)

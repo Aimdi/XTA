@@ -41,6 +41,7 @@ internal class EhApp(val host: PluginHost) {
     val history = EhHistory(host.store.file("history.json"))
     val shelf = PluginShelf()
     val notices = PluginNotices()
+    val view = EhView()
 
     /** The app's settings once read; null before. */
     val settings: StateFlow<Settings?> get() = host.settings.state

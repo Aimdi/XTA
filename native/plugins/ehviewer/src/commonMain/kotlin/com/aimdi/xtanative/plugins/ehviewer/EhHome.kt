@@ -61,7 +61,7 @@ import com.aimdi.xtanative.ui.post.PostIcons
  */
 @Composable
 internal fun EhHome(app: EhApp, frame: PluginFrame, ownActions: Boolean = true) = WithSettings(app.host.settings) {
-    var tab by rememberSaveable { mutableStateOf(EhTab.POPULAR) }
+    val tab by app.view.tab.collectAsState()
     val lists = rememberKept("eh-home") { scope -> EhLists(app, scope) }
     val grids = EhTab.entries.associateWith { rememberLazyGridState() }
     val reduced = LocalReducedMotion.current
@@ -74,13 +74,13 @@ internal fun EhHome(app: EhApp, frame: PluginFrame, ownActions: Boolean = true) 
         Column(Modifier.fillMaxSize()) {
             ReadingControlsBar {
                 Column {
-                    TabRow(tab, onTab = { tab = it }, actions = if (ownActions) HomeActions({ app.openSearch() }, app.host::openSettings) else null)
+                    TabRow(tab, onTab = { app.view.tab.value = it }, actions = if (ownActions) HomeActions({ app.openSearch() }, app.host::openSettings) else null)
                     if (tab == EhTab.TOPLIST) PeriodRow(lists)
                 }
             }
             Hairline()
             val grid = grids.getValue(tab)
-            Box(Modifier.weight(1f).swipeTabs(EhTab.entries, tab) { tab = it }) {
+            Box(Modifier.weight(1f).swipeTabs(EhTab.entries, tab) { app.view.tab.value = it }) {
                 when (tab) {
                     EhTab.HISTORY -> HistoryTab(app, frame.padding, grid)
                     EhTab.FAVORITES -> FavoritesTab(app, frame.padding, grid)

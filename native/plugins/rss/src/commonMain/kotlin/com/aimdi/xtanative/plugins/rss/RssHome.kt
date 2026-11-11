@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -48,16 +47,15 @@ internal enum class RssPane(val label: PluginText, val icon: ImageVector) {
  */
 @Composable
 internal fun RssHome(app: RssApp, frame: PluginFrame) {
-    var pane by rememberSaveable { mutableIntStateOf(0) }
+    val selected by app.pane.collectAsState()
     val feeds by app.feeds.collectAsState()
-    val selected = RssPane.entries[pane]
     // XTA reads its feeds, then the timeline once the tab is up, unless it is fresh; other follows read it again.
     LaunchedEffect(feeds) { if (feeds != null) app.timeline.refresh() }
     RefreshesOn(frame.refresh) { app.timeline.refresh(force = true) }
     Column(Modifier.fillMaxSize()) {
-        ReadingControlsBar { Header(app, selected) { pane = it.ordinal } }
+        ReadingControlsBar { Header(app, selected) { app.pane.value = it } }
         Hairline()
-        Box(Modifier.weight(1f).swipeTabs(RssPane.entries, selected) { pane = it.ordinal }) {
+        Box(Modifier.weight(1f).swipeTabs(RssPane.entries, selected) { app.pane.value = it }) {
             val followed = feeds
             when {
                 followed == null -> PluginFeedSkeleton()

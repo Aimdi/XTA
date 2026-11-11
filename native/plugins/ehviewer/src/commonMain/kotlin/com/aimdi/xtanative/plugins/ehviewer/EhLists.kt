@@ -54,9 +54,19 @@ internal object EhLayout {
     fun previewColumns(width: Float): Int = maxOf(3, kotlin.math.ceil(width / 120f).toInt())
 }
 
+/**
+ * The tab and the toplist's window the reader last chose, kept while the
+ * plugin runs: XTA keeps them for the session (its 'ehviewer/view'), so the
+ * home tab and the plugin opened on its own show the same one.
+ */
+internal class EhView {
+    val tab = MutableStateFlow(EhTab.POPULAR)
+    val period = MutableStateFlow(EhToplistPeriod.YESTERDAY)
+}
+
 /** The home's lists: Popular, the front page, the toplist over its [period], and Watched. */
 internal class EhLists(app: EhApp, scope: CoroutineScope) {
-    private val chosenPeriod = MutableStateFlow(EhToplistPeriod.YESTERDAY)
+    private val chosenPeriod = app.view.period
     val period: StateFlow<EhToplistPeriod> = chosenPeriod.asStateFlow()
 
     val popular = EhList(scope) { next -> app.ready(); app.client.popular(next) }
