@@ -44,4 +44,5 @@
         <item quantity="few">%1$d karma</item>
         <item quantity="other">%1$d de karma</item>
     </plurals>
+    <string name="more_options">Mai multe opțiuni</string>
 </resources>

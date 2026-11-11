@@ -51,4 +51,5 @@
     <string name="search_empty">No stories match</string>
 
     <string name="settings_blurb">No login. Votes and comments stay on Hacker News. Hearts and bookmarks stay on this device.</string>
+    <string name="more_options">More options</string>
 </resources>

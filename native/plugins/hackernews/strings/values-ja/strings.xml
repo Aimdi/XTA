@@ -38,4 +38,5 @@
     <plurals name="user_karma">
         <item quantity="other">カルマ %1$d</item>
     </plurals>
+    <string name="more_options">その他のオプション</string>
 </resources>

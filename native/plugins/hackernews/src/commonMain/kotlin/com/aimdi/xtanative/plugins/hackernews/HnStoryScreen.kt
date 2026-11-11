@@ -26,6 +26,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -74,7 +76,11 @@ internal fun HnStoryScreen(app: HnApp, id: Long) {
     PluginScaffold(
         title = pluginString(Strings.comments),
         onBack = app.host::back,
-        actions = { if (url != null) IconButton(onClick = { app.host.openLink(url) }) { Icon(PostIcons.OpenInNew, pluginString(Strings.open_article)) } },
+        actions = {
+            if (url != null) IconButton(onClick = { app.host.openLink(url) }) { Icon(PostIcons.OpenInNew, pluginString(Strings.open_article)) }
+            // The story's sheet, as a long press on its row opens it: Saved, its note, its page shared or opened.
+            thread?.story?.let { story -> IconButton(onClick = { app.openMenu(story) }) { Icon(Icons.Filled.MoreVert, pluginString(Strings.more_options)) } }
+        },
     ) { padding ->
         val rows = remember(thread, collapsed) { HnComment.visible(thread?.comments.orEmpty(), collapsed) }
         PullToRefreshBox(isRefreshing = state.loading && state.loaded, onRefresh = reader::refresh, modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {

@@ -38,4 +38,5 @@
     <plurals name="user_karma">
         <item quantity="other">%1$d karma</item>
     </plurals>
+    <string name="more_options">Opsi lainnya</string>
 </resources>

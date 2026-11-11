@@ -38,4 +38,5 @@
     <plurals name="user_karma">
         <item quantity="other">%1$d 点 karma</item>
     </plurals>
+    <string name="more_options">更多选项</string>
 </resources>

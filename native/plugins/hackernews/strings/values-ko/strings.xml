@@ -38,4 +38,5 @@
     <plurals name="user_karma">
         <item quantity="other">카르마 %1$d</item>
     </plurals>
+    <string name="more_options">옵션 더보기</string>
 </resources>

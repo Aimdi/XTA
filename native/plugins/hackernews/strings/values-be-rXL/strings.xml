@@ -45,4 +45,5 @@
         <item quantity="one">Karma: %1$d</item>
         <item quantity="other">Karma: %1$d</item>
     </plurals>
+    <string name="more_options">Dadatkovyja parametry</string>
 </resources>

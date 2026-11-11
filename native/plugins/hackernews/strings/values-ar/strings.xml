@@ -53,4 +53,5 @@
         <item quantity="many">%1$d كارما</item>
         <item quantity="other">%1$d كارما</item>
     </plurals>
+    <string name="more_options">المزيد من الخيارات</string>
 </resources>
