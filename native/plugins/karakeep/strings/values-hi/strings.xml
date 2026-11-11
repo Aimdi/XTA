@@ -18,6 +18,7 @@
     <string name="save_action">Karakeep में सहेजें</string>
     <string name="saved">Karakeep में सहेजा गया</string>
     <string name="already_saved">पहले से Karakeep में है</string>
+    <string name="saving">Karakeep में सहेजा जा रहा है…</string>
     <string name="show">दिखाएँ</string>
     <string name="hide">छिपाएँ</string>
     <string name="save">सहेजें</string>

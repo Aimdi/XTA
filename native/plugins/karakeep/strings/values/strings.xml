@@ -21,6 +21,7 @@
     <string name="save_action">Save to Karakeep</string>
     <string name="saved">Saved to Karakeep</string>
     <string name="already_saved">Already in Karakeep</string>
+    <string name="saving">Saving to Karakeep…</string>
     <string name="show">Show</string>
     <string name="hide">Hide</string>
     <string name="save">Save</string>

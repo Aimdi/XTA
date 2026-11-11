@@ -48,6 +48,15 @@ class KarakeepClientTest {
     }
 
     @Test
+    fun aLongTitleIsCutWithoutBreakingAnEmojiInTwo() {
+        val emoji = "😀"
+        val title = "a".repeat(KarakeepClient.MAX_TITLE_LENGTH - 1) + emoji + "tail"
+        assertEquals("a".repeat(KarakeepClient.MAX_TITLE_LENGTH - 1), cutTitle(title))
+        assertEquals("b".repeat(KarakeepClient.MAX_TITLE_LENGTH), cutTitle("b".repeat(KarakeepClient.MAX_TITLE_LENGTH + 5)))
+        assertEquals("short $emoji", cutTitle("short $emoji"))
+    }
+
+    @Test
     fun aMissingSchemeIsAssumedToBeHttps() {
         assertEquals("https://karakeep.example.com".toHttpUrl(), karakeepBaseUrl("karakeep.example.com"))
     }

@@ -18,6 +18,7 @@
     <string name="save_action">保存到 Karakeep</string>
     <string name="saved">已保存到 Karakeep</string>
     <string name="already_saved">Karakeep 中已有</string>
+    <string name="saving">正在保存到 Karakeep…</string>
     <string name="show">显示</string>
     <string name="hide">隐藏</string>
     <string name="save">保存</string>

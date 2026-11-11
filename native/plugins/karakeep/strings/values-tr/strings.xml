@@ -18,6 +18,7 @@
     <string name="save_action">Karakeep’e kaydet</string>
     <string name="saved">Karakeep’e kaydedildi</string>
     <string name="already_saved">Karakeep’te zaten var</string>
+    <string name="saving">Karakeep’e kaydediliyor…</string>
     <string name="show">Göster</string>
     <string name="hide">Gizle</string>
     <string name="save">Kaydet</string>

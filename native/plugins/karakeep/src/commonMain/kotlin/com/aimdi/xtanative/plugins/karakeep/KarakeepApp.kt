@@ -15,9 +15,15 @@ import com.aimdi.xtanative.ui.plugins.PluginSharedPost
 internal class KarakeepApp(val host: PluginHost) {
     private val client = KarakeepClient(host.http)
 
-    /** "Save to Karakeep": [post]'s link and title kept in the reader's Karakeep, and the notice saying how that went. */
+    /**
+     * "Save to Karakeep": [post]'s link and title kept in the reader's
+     * Karakeep, saying so while the server answers (a home server can be
+     * slow), then the notice saying how that went.
+     */
     suspend fun save(post: PluginSharedPost) {
-        host.tell(KarakeepSaves.save(client, host.settings.current(), post.url, post.title).get(host.language))
+        val language = host.language
+        val said = host.working(Strings.saving.get(language)) { KarakeepSaves.save(client, host.settings.current(), post.url, post.title) }
+        host.tell(said.get(language))
     }
 
     /** Test connection, for the fields as they are typed, in [language]. */

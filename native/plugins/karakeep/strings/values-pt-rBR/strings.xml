@@ -18,6 +18,7 @@
     <string name="save_action">Salvar no Karakeep</string>
     <string name="saved">Salvo no Karakeep</string>
     <string name="already_saved">Já está no Karakeep</string>
+    <string name="saving">Salvando no Karakeep…</string>
     <string name="show">Mostrar</string>
     <string name="hide">Ocultar</string>
     <string name="save">Salvar</string>

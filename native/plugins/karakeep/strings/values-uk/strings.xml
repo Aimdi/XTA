@@ -18,6 +18,7 @@
     <string name="save_action">Зберегти в Karakeep</string>
     <string name="saved">Збережено в Karakeep</string>
     <string name="already_saved">Уже є в Karakeep</string>
+    <string name="saving">Збереження в Karakeep…</string>
     <string name="show">Показати</string>
     <string name="hide">Сховати</string>
     <string name="save">Зберегти</string>

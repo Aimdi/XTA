@@ -18,6 +18,7 @@
     <string name="save_action">Simpan ke Karakeep</string>
     <string name="saved">Tersimpan ke Karakeep</string>
     <string name="already_saved">Sudah ada di Karakeep</string>
+    <string name="saving">Menyimpan ke Karakeep…</string>
     <string name="show">Tampilkan</string>
     <string name="hide">Sembunyikan</string>
     <string name="save">Simpan</string>

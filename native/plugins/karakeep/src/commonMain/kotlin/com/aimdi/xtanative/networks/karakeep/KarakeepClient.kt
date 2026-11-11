@@ -113,7 +113,7 @@ class KarakeepClient(private val http: XHttp) {
         val body = buildJsonObject {
             put("type", "link")
             put("url", url)
-            title?.trim()?.takeIf { it.isNotEmpty() }?.let { put("title", it.take(MAX_TITLE_LENGTH)) }
+            title?.trim()?.takeIf { it.isNotEmpty() }?.let { put("title", cutTitle(it)) }
             note?.trim()?.takeIf { it.isNotEmpty() }?.let { put("note", it) }
         }
         val response = http.post(server.endpoint("bookmarks"), headers(server), body.toString(), JSON)
@@ -148,6 +148,13 @@ class KarakeepClient(private val http: XHttp) {
 
         private const val JSON = "application/json"
     }
+}
+
+/** [title] cut to [KarakeepClient.MAX_TITLE_LENGTH], never between the halves of an emoji or another character outside the BMP. */
+internal fun cutTitle(title: String): String {
+    if (title.length <= KarakeepClient.MAX_TITLE_LENGTH) return title
+    val end = KarakeepClient.MAX_TITLE_LENGTH
+    return title.take(if (Character.isHighSurrogate(title[end - 1])) end - 1 else end)
 }
 
 /** Whether [response] is an API's JSON: by its type, or by how its body starts when a proxy dropped the type. */

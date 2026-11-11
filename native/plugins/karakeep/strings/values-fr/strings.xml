@@ -18,6 +18,7 @@
     <string name="save_action">Enregistrer dans Karakeep</string>
     <string name="saved">Enregistré dans Karakeep</string>
     <string name="already_saved">Déjà dans Karakeep</string>
+    <string name="saving">Enregistrement dans Karakeep…</string>
     <string name="show">Afficher</string>
     <string name="hide">Masquer</string>
     <string name="save">Enregistrer</string>

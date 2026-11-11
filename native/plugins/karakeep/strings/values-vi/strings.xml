@@ -18,6 +18,7 @@
     <string name="save_action">Lưu vào Karakeep</string>
     <string name="saved">Đã lưu vào Karakeep</string>
     <string name="already_saved">Đã có trong Karakeep</string>
+    <string name="saving">Đang lưu vào Karakeep…</string>
     <string name="show">Hiện</string>
     <string name="hide">Ẩn</string>
     <string name="save">Lưu</string>
