@@ -75,7 +75,7 @@ class RedditPlugin : XtaPlugin() {
         is RedditRoute.Thread -> screenOf { ThreadScreen(app, opened) }
         is RedditRoute.Subreddit -> screenOf { ListingScreen(app, Listing.Subreddit(opened.name)) }
         is RedditRoute.User -> screenOf { ListingScreen(app, Listing.User(opened.name)) }
-        is RedditRoute.Search -> screenOf { ScopedSearchScreen(app, opened) }
+        is RedditRoute.Search -> screenOf { RedditSearchScreen(app, opened) }
         RedditRoute.Saved -> screenOf { SavedScreen(app) }
         RedditRoute.SignIn -> screenOf { SignInScreen(app) }
         null -> null

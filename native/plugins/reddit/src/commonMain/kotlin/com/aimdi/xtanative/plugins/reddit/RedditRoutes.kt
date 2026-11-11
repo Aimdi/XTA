@@ -25,8 +25,8 @@ internal sealed interface RedditRoute {
     /** The posts saved on this device. */
     data object Saved : RedditRoute
 
-    /** Search within [subreddit], starting with [query] when there is one. */
-    data class Search(val subreddit: String, val query: String?) : RedditRoute
+    /** Search, within [subreddit] when there is one, starting with [query] when there is one. */
+    data class Search(val subreddit: String?, val query: String?) : RedditRoute
 
     /** Reddit's sign-in page, watched for its way back. */
     data object SignIn : RedditRoute
@@ -42,7 +42,7 @@ internal object RedditRoutes {
 
     fun user(name: String): String = "u" + params("name" to name)
 
-    fun search(subreddit: String, query: String? = null): String = "search" + params("r" to subreddit, "q" to query)
+    fun search(subreddit: String?, query: String? = null): String = "search" + params("r" to subreddit, "q" to query)
 
     /** The screen [route] names; null for one this plugin does not have. */
     fun parse(route: String): RedditRoute? {
@@ -54,7 +54,7 @@ internal object RedditRoutes {
             "thread" -> query["permalink"]?.let { RedditRoute.Thread(it, query["id"], query["sub"], query["title"]) }
             "r" -> query["name"]?.let(RedditRoute::Subreddit)
             "u" -> query["name"]?.let(RedditRoute::User)
-            "search" -> query["r"]?.let { RedditRoute.Search(it, query["q"]) }
+            "search" -> RedditRoute.Search(query["r"], query["q"])
             SAVED -> RedditRoute.Saved
             SIGN_IN -> RedditRoute.SignIn
             else -> null

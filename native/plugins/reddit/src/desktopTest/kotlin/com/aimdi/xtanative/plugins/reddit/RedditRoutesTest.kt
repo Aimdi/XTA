@@ -53,6 +53,8 @@ class RedditRoutesTest {
         assertEquals(RedditRoute.User("spez"), RedditRoutes.parse(RedditRoutes.user("spez")))
         assertEquals(RedditRoute.Search("dartlang", null), RedditRoutes.parse(RedditRoutes.search("dartlang")))
         assertEquals(RedditRoute.Search("dartlang", "null safety"), RedditRoutes.parse(RedditRoutes.search("dartlang", "null safety")))
+        assertEquals(RedditRoute.Search(null, null), RedditRoutes.parse(RedditRoutes.search(null)))
+        assertEquals(RedditRoute.Search(null, "r/dartlang"), RedditRoutes.parse(RedditRoutes.search(null, "r/dartlang")))
         assertEquals(RedditRoute.Saved, RedditRoutes.parse(RedditRoutes.SAVED))
         assertEquals(RedditRoute.SignIn, RedditRoutes.parse(RedditRoutes.SIGN_IN))
         assertNull(RedditRoutes.parse("thread"))

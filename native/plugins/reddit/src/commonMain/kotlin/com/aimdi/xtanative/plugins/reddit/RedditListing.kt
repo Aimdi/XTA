@@ -88,6 +88,8 @@ private suspend fun read(app: RedditApp, listing: Listing, cursor: String?): Pag
  * [pages] as a list that reads on as its end comes into view and is pulled
  * to read again, failures in XTA's words: [row] draws each item under
  * [header]; [empty] says there is nothing, or nothing at all when null.
+ * The first page comes as post-shaped bones when [posts] are its rows, and
+ * as XTA's spinner for rows of names, which bones of posts would misdraw.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -96,6 +98,7 @@ internal fun <T : Any> RedditPagedList(
     key: (T) -> String,
     frame: PluginFrame,
     empty: String?,
+    posts: Boolean = true,
     header: LazyListScope.() -> Unit = {},
     row: @Composable (T) -> Unit,
 ) {
@@ -106,7 +109,7 @@ internal fun <T : Any> RedditPagedList(
     PullToRefreshBox(isRefreshing = paged.loading && paged.loaded, onRefresh = pages::refresh, modifier = Modifier.fillMaxSize()) {
         LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
             header()
-            pagedState(paged, pages::refresh, empty)
+            pagedState(paged, pages::refresh, empty, posts)
             items(paged.items, key = { "row:" + key(it) }, contentType = { "row" }) { row(it) }
             if (paged.items.isNotEmpty()) item(key = "footer") { PagedFooter(paged, pages) }
         }
@@ -114,12 +117,12 @@ internal fun <T : Any> RedditPagedList(
 }
 
 /** Why the list is empty or failed, or that it is on its way. */
-private fun LazyListScope.pagedState(paged: PagedState<*>, retry: () -> Unit, empty: String?) {
+private fun LazyListScope.pagedState(paged: PagedState<*>, retry: () -> Unit, empty: String?, posts: Boolean) {
     val problem = paged.problem
     when {
         paged.items.isEmpty() && problem != null -> item(key = "problem") { RedditProblemView(troubleOf(problem), detailOf(problem), retry) }
         paged.items.isEmpty() && paged.loaded && !paged.loading -> if (empty != null) item(key = "empty") { MessageText(empty) }
-        paged.items.isEmpty() -> item(key = "loading") { FeedSkeleton() }
+        paged.items.isEmpty() -> item(key = "loading") { if (posts) FeedSkeleton() else LoadingRow(Modifier.padding(vertical = 32.dp)) }
         problem != null -> item(key = "problem") { RedditProblemView(troubleOf(problem), detailOf(problem), retry, compact = true) }
     }
 }

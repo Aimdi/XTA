@@ -21,12 +21,16 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -34,6 +38,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
@@ -59,6 +66,9 @@ internal class RedditSearch(private val app: RedditApp) : PluginSearch() {
 
     @Composable
     override fun Results(query: String, frame: PluginFrame) = SearchResults(app, query, subreddit = null, frame)
+
+    /** Its own screen, for the follow button XTA keeps beside the field while the query names a community. */
+    override fun ownScreen(query: String?): String = RedditRoutes.search(null, query)
 }
 
 /**
@@ -140,6 +150,7 @@ private fun CommunityResults(app: RedditApp, query: String, frame: PluginFrame) 
         key = { "r/" + it.name.lowercase() },
         frame = frame,
         empty = null,
+        posts = false,
         header = {
             item(key = "asked") {
                 NameRow(RedditGlyphs.TravelExplore, "r/$query", onClick = { app.openSubreddit(asked ?: query) }) {
@@ -160,6 +171,7 @@ private fun PeopleResults(app: RedditApp, query: String, frame: PluginFrame) = k
         key = { "u/" + it.name.lowercase() },
         frame = frame,
         empty = null,
+        posts = false,
         header = { item(key = "asked") { NameRow(Icons.Outlined.Person, "u/$query", onClick = { app.openUser(query) }) } },
     ) { person -> NameRow(Icons.Outlined.Person, "u/" + person.name, onClick = { app.openUser(person.name) }) }
 }
@@ -190,30 +202,54 @@ private fun NameRow(icon: ImageVector, label: String, onClick: () -> Unit, trail
     )
 }
 
-/** Search within one community, from its screen: the field under its name, the results under the field. */
+/**
+ * Reddit's own search screen (XTA's `RedditSearchScreen`), within a
+ * community when the route names one: the field in the bar, focused while
+ * nothing was asked yet, and the follow button beside it while what was
+ * searched names a community; the results under the bar.
+ */
 @Composable
-internal fun ScopedSearchScreen(app: RedditApp, route: RedditRoute.Search) {
+internal fun RedditSearchScreen(app: RedditApp, route: RedditRoute.Search) {
     var text by rememberSaveable { mutableStateOf(route.query.orEmpty()) }
     var sent by rememberSaveable { mutableStateOf(route.query.orEmpty().trim()) }
     val keyboard = LocalSoftwareKeyboardController.current
-    PluginScaffold(title = "r/" + route.subreddit, onBack = app.host::back) { padding ->
-        Column(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
-            OutlinedTextField(
-                value = text,
-                onValueChange = { text = it },
-                singleLine = true,
-                placeholder = { Text(pluginString(Strings.search_hint)) },
-                leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                keyboardActions = KeyboardActions(onSearch = {
-                    keyboard?.hide()
-                    sent = text.trim()
-                }),
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-            )
-            if (sent.isNotEmpty()) {
-                Box(Modifier.weight(1f)) { SearchResults(app, sent, route.subreddit, PluginFrame(bottomOnly(padding))) }
+    val send = {
+        keyboard?.hide()
+        sent = text.trim()
+    }
+    val asked = normaliseSubreddit(sent)
+    PluginScaffold(
+        title = { SearchField(text, autofocus = route.query.isNullOrBlank(), onChange = { text = it }, onSend = send) },
+        onBack = app.host::back,
+        actions = { if (asked != null) FollowIconButton(app, asked) },
+    ) { padding ->
+        if (sent.isNotEmpty()) {
+            Box(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
+                SearchResults(app, sent, route.subreddit, PluginFrame(bottomOnly(padding)))
             }
         }
     }
 }
+
+@Composable
+private fun SearchField(text: String, autofocus: Boolean, onChange: (String) -> Unit, onSend: () -> Unit) {
+    val focus = remember { FocusRequester() }
+    TextField(
+        value = text,
+        onValueChange = onChange,
+        singleLine = true,
+        placeholder = { Text(pluginString(Strings.search_hint), maxLines = 1, overflow = TextOverflow.Ellipsis) },
+        trailingIcon = { IconButton(onClick = onSend) { Icon(Icons.Filled.Search, contentDescription = pluginString(Strings.search)) } },
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        keyboardActions = KeyboardActions(onSearch = { onSend() }),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+        ),
+        modifier = Modifier.fillMaxWidth().focusRequester(focus),
+    )
+    if (autofocus) LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
+}
+
