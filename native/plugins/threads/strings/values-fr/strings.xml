@@ -146,4 +146,19 @@
     <string name="profile_note_save">Enregistrer la note</string>
     <string name="profile_guest_end">Threads ne montre à un invité que les publications les plus récentes d’un compte</string>
     <string name="profile_reposts">Republications</string>
+    <string name="show_more">Voir plus</string>
+    <string name="show_less">Voir moins</string>
+    <string name="pinned">Épinglé</string>
+    <string name="pinned_reply">Épinglé par l\'auteur</string>
+    <string name="spoiler">Spoiler</string>
+    <string name="tap_to_show_spoiler">Touchez pour afficher le spoiler</string>
+    <string name="copy_text">Copier le texte</string>
+    <string name="copy_link">Copier le lien</string>
+    <string name="text_copied">Texte copié</string>
+    <string name="ai_info">Infos IA</string>
+    <string name="ai_info_detail">Threads indique que ce post a été créé ou modifié avec l\'IA</string>
+    <string name="sharing_friction">Threads demande de vérifier ce post avant de le partager</string>
+    <string name="quotes">Citations</string>
+    <string name="shares">Partages</string>
+    <string name="exact_time">Afficher l\'heure exacte</string>
 </resources>

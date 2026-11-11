@@ -70,7 +70,7 @@ object ThreadsParser {
         if (raw.isEmpty()) return emptyList()
         val fragments = raw.mapNotNull(::fragment)
         val spelled = fragments.joinToString("") { it.text }.trim()
-        return fragments.takeIf { spelled == caption && fragments.any { it.kind != Kind.TEXT } } ?: emptyList()
+        return fragments.takeIf { spelled == caption && fragments.any { it.kind != Kind.TEXT || it.spoiler } } ?: emptyList()
     }
 
     /**
@@ -224,7 +224,7 @@ object ThreadsParser {
         val user = post["user"]
         val handle = user["username"].string.orEmpty().trim().lowercase()
         val text = post["caption"]["text"].string.orEmpty().trim()
-        val media = media(post)
+        val media = media(post).ifEmpty { media(post["text_post_app_info"]["linked_inline_media"]) }
         val linkCard = linkCard(post)
         val quoted = if (withQuote) quotedPost(post) else null
         if (handle.isEmpty() || (text.isEmpty() && media.isEmpty() && linkCard == null && quoted == null)) return null
@@ -253,6 +253,7 @@ object ThreadsParser {
             isVerified = user["is_verified"].boolean ?: false,
             replyToHandle = replyTo,
             isReply = replyTo != null || info["is_reply"].boolean == true || info["reply_to_author"].exists,
+            facts = ThreadsPostFactsReader.of(post),
         )
     }
 
@@ -264,7 +265,8 @@ object ThreadsParser {
             "tag" -> Kind.TAG to tagTarget(fragment["tag_fragment"], text)
             else -> Kind.TEXT to null
         }
-        return if (kind == Kind.TEXT || target.isNullOrEmpty()) ThreadsTextFragment(Kind.TEXT, text) else ThreadsTextFragment(kind, text, target)
+        val spoiler = fragment["styling_info"]["is_spoiler"].boolean == true
+        return if (kind == Kind.TEXT || target.isNullOrEmpty()) ThreadsTextFragment(Kind.TEXT, text, spoiler = spoiler) else ThreadsTextFragment(kind, text, target, spoiler)
     }
 
     private fun linkTarget(uri: String?): String? {

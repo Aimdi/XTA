@@ -151,4 +151,19 @@
     <string name="profile_note_save">Сохранить заметку</string>
     <string name="profile_guest_end">Threads показывает гостю только самые новые посты аккаунта</string>
     <string name="profile_reposts">Репосты</string>
+    <string name="show_more">Показать больше</string>
+    <string name="show_less">Показать меньше</string>
+    <string name="pinned">Закреплено</string>
+    <string name="pinned_reply">Закреплено автором</string>
+    <string name="spoiler">Спойлер</string>
+    <string name="tap_to_show_spoiler">Нажмите, чтобы показать спойлер</string>
+    <string name="copy_text">Копировать текст</string>
+    <string name="copy_link">Копировать ссылку</string>
+    <string name="text_copied">Текст скопирован</string>
+    <string name="ai_info">Метка ИИ</string>
+    <string name="ai_info_detail">Threads отмечает этот пост как созданный или изменённый с помощью ИИ</string>
+    <string name="sharing_friction">Threads просит проверить этот пост, прежде чем делиться им</string>
+    <string name="quotes">Цитаты</string>
+    <string name="shares">Поделились</string>
+    <string name="exact_time">Показать точное время</string>
 </resources>

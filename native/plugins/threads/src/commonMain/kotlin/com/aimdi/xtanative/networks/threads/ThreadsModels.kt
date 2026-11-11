@@ -59,8 +59,8 @@ data class ThreadsMedia(
  * their real destination, which a pattern cannot tell from a shortened
  * `example.com/a…` display.
  */
-data class ThreadsTextFragment(val kind: Kind, val text: String, val target: String? = null) {
-    /** [target] is the handle for a mention, the unwrapped URL for a link, the tag's name for a tag. */
+data class ThreadsTextFragment(val kind: Kind, val text: String, val target: String? = null, val spoiler: Boolean = false) {
+    /** [target] is the handle for a mention, the unwrapped URL for a link, the tag's name for a tag; a [spoiler] stays covered until tapped. */
     enum class Kind { TEXT, MENTION, LINK, TAG }
 }
 
@@ -113,6 +113,7 @@ data class ThreadsPost(
     val isVerified: Boolean = false,
     val replyToHandle: String? = null,
     val isReply: Boolean = false,
+    val facts: ThreadsPostFacts = ThreadsPostFacts.NONE,
 ) {
     val hasMedia: Boolean get() = media.isNotEmpty()
 
@@ -121,6 +122,8 @@ data class ThreadsPost(
     val hasEngagement: Boolean get() = listOf(likeCount, replyCount, repostCount, quoteCount).any { it != null }
 
     val isRepost: Boolean get() = !repostedByHandle.isNullOrEmpty()
+
+    val hasSpoiler: Boolean get() = fragments.any { it.spoiler }
 
     /** The account whose page this post came from: the reposter for a repost. */
     val sourceHandle: String get() = repostedByHandle?.takeIf { isRepost } ?: handle

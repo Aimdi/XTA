@@ -17,7 +17,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -26,7 +25,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,6 +36,11 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.SemanticsPropertyReceiver
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -63,13 +70,15 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
 /**
  * A Threads post as a timeline card, laid out as an X post is
- * (threads_post_card.dart): who reposted it, the author with Follow and ⋯,
- * the topic, whom it answers, the caption, its pictures and videos, the
- * link card, the quote and "Show N more posts in this thread"; then the
- * counts Meta gave, the like kept on this device, its bookmark in the app's
- * Saved and the way to the web. A long press, or ⋯, opens the app's post
- * sheet. With [focal] it is the opened post: its time and date on a line
- * under it, its text selectable. [connectTop] and [connectBottom] join it to
+ * (threads_post_card.dart): who reposted it or that it is pinned, the
+ * author with Follow and ⋯, the topic, whom it answers, the caption (its
+ * spoilers covered, a long one cut short), its poll's results, Meta's
+ * labels, its pictures and videos, the link card, the quote and "Show N
+ * more posts in this thread"; then the counts Meta gave, the like kept on
+ * this device, its bookmark in the app's Saved and the way to the web. A
+ * long press, or ⋯, opens its sheet: copying its words and link above the
+ * app's post sheet. With [focal] it is the opened post: its time and date
+ * on a line under it with its quotes and shares, its text selectable. [connectTop] and [connectBottom] join it to
  * the posts above and below it through the avatar, as a thread draws them;
  * without [divider] the line under it is left to the list.
  */
@@ -91,19 +100,25 @@ internal fun ThreadsPostCard(
     val doubleTap = settings[AccessibilityPrefs.doubleTapLike]
     val isLiked = liked?.contains(post.id) == true
     val open = { if (openOnTap) app.openPost(post) }
-    val menu = { app.openMenu(post) }
+    var sheet by remember { mutableStateOf(false) }
+    val menu = { sheet = true }
+    val summary = rememberSummary(post, isLiked, menu) { app.toggleLike(post) }
     Column(
         modifier
             .fillMaxWidth()
             .combinedClickable(
+                onClickLabel = pluginString(Strings.open_post),
                 onClick = open,
+                onLongClickLabel = pluginString(Strings.more_options),
                 onLongClick = menu,
                 onDoubleClick = if (doubleTap) { { if (!isLiked) app.toggleLike(post) } } else null,
             )
+            .semantics(properties = summary)
             .padding(start = 16.dp, end = 8.dp),
     ) {
         if (post.isRepost) RepostLine(app, post)
-        val above = if (post.isRepost) 4.dp else 12.dp
+        PinnedLine(post)
+        val above = if (post.isRepost || post.facts.pinnedToProfile || post.facts.pinnedToParent) 4.dp else 12.dp
         Row(Modifier.fillMaxWidth().rails(connectTop, connectBottom, above).padding(top = above, bottom = if (connectBottom) 0.dp else 12.dp)) {
             PluginAvatar(post.avatarUrl, post.authorName, post.handle, AvatarSize) { app.openProfile(post.handle) }
             Spacer(Modifier.width(12.dp))
@@ -115,6 +130,33 @@ internal fun ThreadsPostCard(
         }
     }
     if (divider && !connectBottom) Hairline()
+    if (sheet) ThreadsPostSheet(app, post) { sheet = false }
+}
+
+/**
+ * The card as a screen reader takes it: one description of the whole post
+ * ([ThreadsCardRules.summary]), and the like on this device and the sheet
+ * as its actions.
+ */
+@Composable
+private fun rememberSummary(post: ThreadsPost, liked: Boolean, menu: () -> Unit, like: () -> Unit): SemanticsPropertyReceiver.() -> Unit {
+    val reposted = if (post.isRepost) pluginString(Strings.reposted, post.reposterDisplayName) else null
+    val spoiler = pluginString(Strings.spoiler)
+    val labels = listOfNotNull(
+        pluginString(Strings.ai_info).takeIf { post.facts.aiLabel },
+        pluginString(Strings.sharing_friction).takeIf { post.facts.sharingFriction },
+    )
+    val likeLabel = pluginString(if (liked) Strings.unlike_on_device else Strings.like_on_device)
+    val moreLabel = pluginString(Strings.more_options)
+    val time = fullTimeText(post.publishedAt)
+    val said = remember(post, time, reposted, spoiler, labels) { ThreadsCardRules.summary(post, time, reposted, spoiler, labels) }
+    return {
+        contentDescription = said
+        customActions = listOf(
+            CustomAccessibilityAction(likeLabel) { like(); true },
+            CustomAccessibilityAction(moreLabel) { menu(); true },
+        )
+    }
 }
 
 private val AvatarSize = 40.dp
@@ -154,17 +196,30 @@ private fun RepostLine(app: ThreadsApp, post: ThreadsPost) {
     }
 }
 
-/** The author line, Follow while the author is not followed here, and ⋯. */
+/** The author line (a long press: its exact time), Follow while the author is not followed here, and ⋯. */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun Header(app: ThreadsApp, post: ThreadsPost, focal: Boolean, byAuthor: Boolean, absolute: Boolean, onMore: () -> Unit) {
     val rows by app.accounts.state.collectAsState()
+    var exact by rememberSaveable(post.id) { mutableStateOf(false) }
     val time = when {
         focal -> ""
-        absolute -> fullTimeText(post.publishedAt)
+        absolute || exact -> fullTimeText(post.publishedAt)
         else -> agoText(post.publishedAt)
     }
     Row(verticalAlignment = Alignment.CenterVertically) {
-        AuthorLine(post.authorName, post.handle, time, verified = post.isVerified, modifier = Modifier.weight(1f).clickable { app.openProfile(post.handle) })
+        AuthorLine(
+            post.authorName,
+            post.handle,
+            time,
+            verified = post.isVerified,
+            modifier = Modifier.weight(1f).combinedClickable(
+                onClickLabel = post.authorName,
+                onClick = { app.openProfile(post.handle) },
+                onLongClickLabel = pluginString(Strings.exact_time).takeIf { !focal && !absolute },
+                onLongClick = if (focal || absolute) null else { { exact = !exact } },
+            ),
+        )
         if (byAuthor) AuthorChip()
         if (rows != null && !ThreadsAccounts.follows(rows, post.handle)) {
             SmallIcon(ThreadsIcons.PersonAdd, pluginString(Strings.follow)) { app.follow(ThreadsAccount.of(post), force = false) }
@@ -193,9 +248,11 @@ private fun AuthorChip() {
 /** The topic, whom it answers, the caption, the media, the link card, the quote, the rest of the thread and, opened, the time. */
 @Composable
 private fun Body(app: ThreadsApp, post: ThreadsPost, openOnTap: Boolean, focal: Boolean) {
-    post.topicTag?.let { TopicTag(app, it) }
+    post.topicTag?.let { TopicTag(app, post, it) }
     post.replyToHandle?.takeIf { it.isNotEmpty() }?.let { ReplyingTo(app, it) }
-    ThreadsRichText(app, post.text, post.fragments, Modifier.padding(top = 2.dp), style = if (focal) FocalStyle else threadsBodyStyle(), selectable = focal)
+    ThreadsCaptionText(app, post, Modifier.padding(top = 2.dp), style = if (focal) FocalStyle else threadsBodyStyle(), selectable = focal)
+    post.facts.poll?.let { ThreadsPollView(it, Modifier.partGap()) }
+    FactLines(post)
     ThreadsPostMedia(app, post, Modifier.partGap(), opens = openOnTap)
     post.linkCard?.let { ThreadsLink(app, post, it, Modifier.partGap(), opens = openOnTap) }
     post.quoted?.let { ThreadsQuote(app, it, Modifier.partGap()) }
@@ -212,20 +269,11 @@ private fun Body(app: ThreadsApp, post: ThreadsPost, openOnTap: Boolean, focal: 
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 12.dp),
         )
+        FocalCounts(post, PostPrefs.of(app.current()).hideCounts)
     }
 }
 
 private val FocalStyle = TextStyle(fontSize = 17.sp, lineHeight = 24.sp)
-
-/** The topic the post was filed under, "› Books", opening its posts. */
-@Composable
-private fun TopicTag(app: ThreadsApp, tag: String) {
-    val color = MaterialTheme.colorScheme.onSurfaceVariant
-    Row(Modifier.heightIn(min = 48.dp).clip(RoundedCornerShape(8.dp)).clickable { app.openTag(tag) }, verticalAlignment = Alignment.CenterVertically) {
-        Icon(Icons.Filled.KeyboardArrowRight, contentDescription = null, tint = color, modifier = Modifier.size(14.dp))
-        Text(tag, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.SemiBold, color = color, maxLines = 1, overflow = TextOverflow.Ellipsis)
-    }
-}
 
 @Composable
 private fun ReplyingTo(app: ThreadsApp, handle: String) {
@@ -284,7 +332,8 @@ private fun ThreadsQuote(app: ThreadsApp, quote: ThreadsPost, modifier: Modifier
             Spacer(Modifier.width(8.dp))
             AuthorLine(quote.authorName, quote.handle, agoText(quote.publishedAt), verified = quote.isVerified, modifier = Modifier.weight(1f))
         }
-        ThreadsRichText(app, quote.text, quote.fragments, Modifier.padding(top = 6.dp), style = MaterialTheme.typography.bodyMedium, maxLines = 6)
+        ThreadsCaptionText(app, quote, Modifier.padding(top = 6.dp), style = MaterialTheme.typography.bodyMedium, selectable = false, maxLines = 6)
+        quote.facts.poll?.let { ThreadsPollView(it, Modifier.padding(top = 8.dp)) }
         ThreadsPostMedia(app, quote, Modifier.padding(top = 8.dp))
         quote.linkCard?.let { ThreadsLink(app, quote, it, Modifier.padding(top = 8.dp)) }
     }

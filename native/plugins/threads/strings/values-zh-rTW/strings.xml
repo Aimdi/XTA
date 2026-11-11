@@ -139,4 +139,19 @@
     <string name="profile_note_save">儲存備註</string>
     <string name="profile_guest_end">Threads 只向訪客顯示帳號最新的貼文</string>
     <string name="profile_reposts">轉發</string>
+    <string name="show_more">顯示更多</string>
+    <string name="show_less">收合</string>
+    <string name="pinned">已釘選</string>
+    <string name="pinned_reply">作者已釘選</string>
+    <string name="spoiler">劇透</string>
+    <string name="tap_to_show_spoiler">點按顯示劇透</string>
+    <string name="copy_text">複製文字</string>
+    <string name="copy_link">複製連結</string>
+    <string name="text_copied">文字已複製</string>
+    <string name="ai_info">AI 資訊</string>
+    <string name="ai_info_detail">Threads 標示此貼文由 AI 建立或編輯</string>
+    <string name="sharing_friction">Threads 建議在分享前先查證此貼文</string>
+    <string name="quotes">引用</string>
+    <string name="shares">分享</string>
+    <string name="exact_time">顯示確切時間</string>
 </resources>

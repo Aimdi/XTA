@@ -139,4 +139,19 @@
     <string name="profile_note_save">メモを保存</string>
     <string name="profile_guest_end">Threads はゲストにアカウントの最新の投稿しか表示しません</string>
     <string name="profile_reposts">リポスト</string>
+    <string name="show_more">もっと見る</string>
+    <string name="show_less">表示を減らす</string>
+    <string name="pinned">固定</string>
+    <string name="pinned_reply">投稿者が固定</string>
+    <string name="spoiler">ネタバレ</string>
+    <string name="tap_to_show_spoiler">タップしてネタバレを表示</string>
+    <string name="copy_text">テキストをコピー</string>
+    <string name="copy_link">リンクをコピー</string>
+    <string name="text_copied">テキストをコピーしました</string>
+    <string name="ai_info">AI情報</string>
+    <string name="ai_info_detail">Threadsはこの投稿をAIで作成または編集されたものと表示しています</string>
+    <string name="sharing_friction">Threadsはこの投稿を共有する前に確認するよう求めています</string>
+    <string name="quotes">引用</string>
+    <string name="shares">シェア</string>
+    <string name="exact_time">正確な時刻を表示</string>
 </resources>

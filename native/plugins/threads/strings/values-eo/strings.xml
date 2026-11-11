@@ -143,4 +143,19 @@
     <string name="profile_note_save">Konservi noton</string>
     <string name="profile_guest_end">Threads montras al gasto nur la plej novajn afiŝojn de konto</string>
     <string name="profile_reposts">Rediskonigoj</string>
+    <string name="show_more">Montri pli</string>
+    <string name="show_less">Montri malpli</string>
+    <string name="pinned">Alpinglita</string>
+    <string name="pinned_reply">Alpinglita de la aŭtoro</string>
+    <string name="spoiler">Malkaŝo</string>
+    <string name="tap_to_show_spoiler">Tuŝu por montri la malkaŝon</string>
+    <string name="copy_text">Kopii tekston</string>
+    <string name="copy_link">Kopii ligilon</string>
+    <string name="text_copied">Teksto kopiita</string>
+    <string name="ai_info">AI-informo</string>
+    <string name="ai_info_detail">Threads markas ĉi tiun afiŝon kiel faritan aŭ redaktitan per AI</string>
+    <string name="sharing_friction">Threads petas legantojn kontroli ĉi tiun afiŝon antaŭ ol kunhavigi ĝin</string>
+    <string name="quotes">Citaĵoj</string>
+    <string name="shares">Kunhavigoj</string>
+    <string name="exact_time">Montri la ĝustan horon</string>
 </resources>

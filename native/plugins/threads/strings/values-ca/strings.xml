@@ -146,4 +146,19 @@
     <string name="profile_note_save">Desa la nota</string>
     <string name="profile_guest_end">Threads només mostra a un convidat les publicacions més noves d’un compte</string>
     <string name="profile_reposts">Republicacions</string>
+    <string name="show_more">Mostra\'n més</string>
+    <string name="show_less">Mostra\'n menys</string>
+    <string name="pinned">Fixada</string>
+    <string name="pinned_reply">Fixada per l\'autor</string>
+    <string name="spoiler">Espòiler</string>
+    <string name="tap_to_show_spoiler">Toca per mostrar l\'espòiler</string>
+    <string name="copy_text">Copia el text</string>
+    <string name="copy_link">Copia l\'enllaç</string>
+    <string name="text_copied">Text copiat</string>
+    <string name="ai_info">Informació d\'IA</string>
+    <string name="ai_info_detail">Threads indica que aquesta publicació s\'ha fet o editat amb IA</string>
+    <string name="sharing_friction">Threads demana comprovar aquesta publicació abans de compartir-la</string>
+    <string name="quotes">Citacions</string>
+    <string name="shares">Comparticions</string>
+    <string name="exact_time">Mostra l\'hora exacta</string>
 </resources>

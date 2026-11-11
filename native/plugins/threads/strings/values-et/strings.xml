@@ -143,4 +143,19 @@
     <string name="profile_note_save">Salvesta märkus</string>
     <string name="profile_guest_end">Threads näitab külalisele ainult konto uusimaid postitusi</string>
     <string name="profile_reposts">Jagamised</string>
+    <string name="show_more">Näita rohkem</string>
+    <string name="show_less">Näita vähem</string>
+    <string name="pinned">Kinnitatud</string>
+    <string name="pinned_reply">Autori kinnitatud</string>
+    <string name="spoiler">Rõõmurikkuja</string>
+    <string name="tap_to_show_spoiler">Puuduta, et rõõmurikkujat näha</string>
+    <string name="copy_text">Kopeeri tekst</string>
+    <string name="copy_link">Kopeeri link</string>
+    <string name="text_copied">Tekst kopeeritud</string>
+    <string name="ai_info">Tehisaru teave</string>
+    <string name="ai_info_detail">Threads märgib selle postituse tehisaruga loodud või muudetuks</string>
+    <string name="sharing_friction">Threads palub seda postitust enne jagamist kontrollida</string>
+    <string name="quotes">Tsitaadid</string>
+    <string name="shares">Jagamised</string>
+    <string name="exact_time">Näita täpset aega</string>
 </resources>

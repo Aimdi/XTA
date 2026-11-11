@@ -143,4 +143,19 @@
     <string name="profile_note_save">Notiz speichern</string>
     <string name="profile_guest_end">Threads zeigt Gästen nur die neuesten Beiträge eines Kontos</string>
     <string name="profile_reposts">Reposts</string>
+    <string name="show_more">Mehr anzeigen</string>
+    <string name="show_less">Weniger anzeigen</string>
+    <string name="pinned">Angeheftet</string>
+    <string name="pinned_reply">Vom Autor angeheftet</string>
+    <string name="spoiler">Spoiler</string>
+    <string name="tap_to_show_spoiler">Tippen, um den Spoiler anzuzeigen</string>
+    <string name="copy_text">Text kopieren</string>
+    <string name="copy_link">Link kopieren</string>
+    <string name="text_copied">Text kopiert</string>
+    <string name="ai_info">KI-Info</string>
+    <string name="ai_info_detail">Threads kennzeichnet diesen Beitrag als mit KI erstellt oder bearbeitet</string>
+    <string name="sharing_friction">Threads bittet darum, diesen Beitrag vor dem Teilen zu prüfen</string>
+    <string name="quotes">Zitate</string>
+    <string name="shares">Geteilt</string>
+    <string name="exact_time">Genaue Uhrzeit anzeigen</string>
 </resources>

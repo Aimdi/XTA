@@ -151,4 +151,19 @@
     <string name="profile_note_save">Zachavać natatku</string>
     <string name="profile_guest_end">Threads pakazvaje hosciu toĺki najnoŭšyja dopisy akaŭnta</string>
     <string name="profile_reposts">Reposty</string>
+    <string name="show_more">Pakazać bolš</string>
+    <string name="show_less">Pakazać mienš</string>
+    <string name="pinned">Zamacavana</string>
+    <string name="pinned_reply">Zamacavana aŭtaram</string>
+    <string name="spoiler">Spojler</string>
+    <string name="tap_to_show_spoiler">Nacisnicie, kab pakazać spojler</string>
+    <string name="copy_text">Skapijavać tekst</string>
+    <string name="copy_link">Skapijavać spasyłku</string>
+    <string name="text_copied">Tekst skapijavany</string>
+    <string name="ai_info">Paznaka ŠI</string>
+    <string name="ai_info_detail">Threads paznačaje hety dopis jak stvorany abo zmienieny z dapamohaj ŠI</string>
+    <string name="sharing_friction">Threads prosić pravieryć hety dopis, pierš čym im dzialicca</string>
+    <string name="quotes">Cytaty</string>
+    <string name="shares">Padzialilisia</string>
+    <string name="exact_time">Pakazać dakładny čas</string>
 </resources>

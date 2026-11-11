@@ -11,6 +11,7 @@ import com.aimdi.xtanative.ui.plugins.FeedKinds
 import com.aimdi.xtanative.ui.plugins.LinkCard
 import com.aimdi.xtanative.ui.plugins.NetworkPost
 import com.aimdi.xtanative.ui.plugins.PluginPostArchive
+import com.aimdi.xtanative.ui.plugins.PluginPostMenu
 import com.aimdi.xtanative.ui.plugins.TextRun
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.buildJsonObject
@@ -61,9 +62,11 @@ internal object ThreadsShared {
      * [post] as the shared row draws it among other networks' posts: who
      * reposted it, whom it answers, its caption with its mentions, links and
      * tags, its media at the [quality] the setting picks, its link card and
-     * its quote; a count Meta did not give is none.
+     * its quote; a count Meta did not give is none. A post with a spoiler is
+     * held back behind [spoiler], the word for one, as the row covers a
+     * content warning; a post pinned to its author's profile says so.
      */
-    fun post(post: ThreadsPost, quality: MediaQuality): NetworkPost = NetworkPost(
+    fun post(post: ThreadsPost, quality: MediaQuality, spoiler: String? = null): NetworkPost = NetworkPost(
         id = post.id,
         authorId = post.handle,
         authorName = post.authorName,
@@ -73,7 +76,7 @@ internal object ThreadsShared {
         text = threadsRuns(post.text, post.fragments),
         media = ThreadsMediaItems.items(post, quality),
         card = post.linkCard?.let { LinkCard(it.url, it.title, it.description, it.imageUrl) },
-        quoted = post.quoted?.let { post(it, quality) },
+        quoted = post.quoted?.let { post(it, quality, spoiler) },
         replies = post.replyCount ?: 0,
         reposts = post.repostCount ?: 0,
         quotes = post.quoteCount ?: 0,
@@ -81,6 +84,17 @@ internal object ThreadsShared {
         repostedBy = post.reposterDisplayName.takeIf { post.isRepost },
         replyingTo = post.replyToHandle?.takeIf { it.isNotEmpty() },
         url = post.url,
+        pinned = post.facts.pinnedToProfile,
+        warning = spoiler?.takeIf { post.hasSpoiler },
+        coversText = spoiler != null && post.hasSpoiler,
+    )
+
+    /** XTA's one post sheet for [post] (showPluginPostActions): Saved, its note, its author's groups, its link. */
+    fun menu(app: ThreadsApp, post: ThreadsPost): PluginPostMenu = PluginPostMenu(
+        ThreadsArchive.of(post),
+        post.url ?: post.id,
+        author = post.handle.trim().lowercase(),
+        follow = { app.ensureFollowed(ThreadsAccount.of(post)) },
     )
 }
 

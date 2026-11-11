@@ -151,4 +151,19 @@
     <string name="profile_note_save">Захаваць нататку</string>
     <string name="profile_guest_end">Threads паказвае госцю толькі найноўшыя допісы акаўнта</string>
     <string name="profile_reposts">Рэпосты</string>
+    <string name="show_more">Паказаць больш</string>
+    <string name="show_less">Паказаць менш</string>
+    <string name="pinned">Замацавана</string>
+    <string name="pinned_reply">Замацавана аўтарам</string>
+    <string name="spoiler">Спойлер</string>
+    <string name="tap_to_show_spoiler">Націсніце, каб паказаць спойлер</string>
+    <string name="copy_text">Скапіяваць тэкст</string>
+    <string name="copy_link">Скапіяваць спасылку</string>
+    <string name="text_copied">Тэкст скапіяваны</string>
+    <string name="ai_info">Пазнака ШІ</string>
+    <string name="ai_info_detail">Threads пазначае гэты допіс як створаны або зменены з дапамогай ШІ</string>
+    <string name="sharing_friction">Threads просіць праверыць гэты допіс, перш чым ім дзяліцца</string>
+    <string name="quotes">Цытаты</string>
+    <string name="shares">Падзяліліся</string>
+    <string name="exact_time">Паказаць дакладны час</string>
 </resources>

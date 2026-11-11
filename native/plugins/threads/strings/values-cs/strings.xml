@@ -151,4 +151,19 @@
     <string name="profile_note_save">Uložit poznámku</string>
     <string name="profile_guest_end">Threads ukazuje hostovi jen nejnovější příspěvky účtu</string>
     <string name="profile_reposts">Reposty</string>
+    <string name="show_more">Zobrazit více</string>
+    <string name="show_less">Zobrazit méně</string>
+    <string name="pinned">Připnuto</string>
+    <string name="pinned_reply">Připnuto autorem</string>
+    <string name="spoiler">Spoiler</string>
+    <string name="tap_to_show_spoiler">Klepnutím zobrazíte spoiler</string>
+    <string name="copy_text">Kopírovat text</string>
+    <string name="copy_link">Kopírovat odkaz</string>
+    <string name="text_copied">Text zkopírován</string>
+    <string name="ai_info">Informace o AI</string>
+    <string name="ai_info_detail">Threads označuje tento příspěvek jako vytvořený nebo upravený pomocí AI</string>
+    <string name="sharing_friction">Threads žádá čtenáře, aby tento příspěvek před sdílením ověřili</string>
+    <string name="quotes">Citace</string>
+    <string name="shares">Sdílení</string>
+    <string name="exact_time">Zobrazit přesný čas</string>
 </resources>

@@ -143,4 +143,19 @@
     <string name="profile_note_save">Notu kaydet</string>
     <string name="profile_guest_end">Threads bir misafire bir hesabın yalnızca en yeni gönderilerini gösterir</string>
     <string name="profile_reposts">Yeniden paylaşımlar</string>
+    <string name="show_more">Daha fazla göster</string>
+    <string name="show_less">Daha az göster</string>
+    <string name="pinned">Sabitlendi</string>
+    <string name="pinned_reply">Yazar tarafından sabitlendi</string>
+    <string name="spoiler">Spoiler</string>
+    <string name="tap_to_show_spoiler">Spoiler\'ı göstermek için dokun</string>
+    <string name="copy_text">Metni kopyala</string>
+    <string name="copy_link">Bağlantıyı kopyala</string>
+    <string name="text_copied">Metin kopyalandı</string>
+    <string name="ai_info">Yapay zekâ bilgisi</string>
+    <string name="ai_info_detail">Threads bu gönderiyi yapay zekâyla oluşturulmuş ya da düzenlenmiş olarak etiketliyor</string>
+    <string name="sharing_friction">Threads bu gönderiyi paylaşmadan önce kontrol etmenizi istiyor</string>
+    <string name="quotes">Alıntılar</string>
+    <string name="shares">Paylaşımlar</string>
+    <string name="exact_time">Tam saati göster</string>
 </resources>

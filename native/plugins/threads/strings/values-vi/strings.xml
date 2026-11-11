@@ -139,4 +139,19 @@
     <string name="profile_note_save">Lưu ghi chú</string>
     <string name="profile_guest_end">Threads chỉ cho khách xem các bài đăng mới nhất của một tài khoản</string>
     <string name="profile_reposts">Bài đăng lại</string>
+    <string name="show_more">Xem thêm</string>
+    <string name="show_less">Thu gọn</string>
+    <string name="pinned">Đã ghim</string>
+    <string name="pinned_reply">Tác giả đã ghim</string>
+    <string name="spoiler">Tiết lộ nội dung</string>
+    <string name="tap_to_show_spoiler">Chạm để hiện phần tiết lộ</string>
+    <string name="copy_text">Sao chép văn bản</string>
+    <string name="copy_link">Sao chép liên kết</string>
+    <string name="text_copied">Đã sao chép văn bản</string>
+    <string name="ai_info">Thông tin AI</string>
+    <string name="ai_info_detail">Threads gắn nhãn bài viết này là được tạo hoặc chỉnh sửa bằng AI</string>
+    <string name="sharing_friction">Threads đề nghị kiểm tra bài viết này trước khi chia sẻ</string>
+    <string name="quotes">Trích dẫn</string>
+    <string name="shares">Lượt chia sẻ</string>
+    <string name="exact_time">Hiện thời gian chính xác</string>
 </resources>

@@ -143,4 +143,19 @@
     <string name="profile_note_save">Gorde oharra</string>
     <string name="profile_guest_end">Threads-ek kontu baten argitalpen berrienak baino ez dizkio erakusten gonbidatu bati</string>
     <string name="profile_reposts">Birbidalketak</string>
+    <string name="show_more">Erakutsi gehiago</string>
+    <string name="show_less">Erakutsi gutxiago</string>
+    <string name="pinned">Finkatuta</string>
+    <string name="pinned_reply">Egileak finkatua</string>
+    <string name="spoiler">Spoilerra</string>
+    <string name="tap_to_show_spoiler">Sakatu spoilerra ikusteko</string>
+    <string name="copy_text">Kopiatu testua</string>
+    <string name="copy_link">Kopiatu esteka</string>
+    <string name="text_copied">Testua kopiatu da</string>
+    <string name="ai_info">AA informazioa</string>
+    <string name="ai_info_detail">Threads-ek dio argitalpen hau AArekin egin edo editatu dela</string>
+    <string name="sharing_friction">Threads-ek argitalpen hau partekatu aurretik egiaztatzeko eskatzen du</string>
+    <string name="quotes">Aipamenak</string>
+    <string name="shares">Partekatzeak</string>
+    <string name="exact_time">Erakutsi ordu zehatza</string>
 </resources>

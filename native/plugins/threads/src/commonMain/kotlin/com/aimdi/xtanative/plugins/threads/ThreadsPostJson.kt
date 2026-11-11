@@ -58,6 +58,7 @@ internal object ThreadsPostJson {
             isVerified = row["isVerified"].boolean ?: false,
             replyToHandle = replyTo,
             isReply = row["isReply"].boolean ?: !replyTo.isNullOrEmpty(),
+            facts = ThreadsFactsJson.facts(row["facts"]),
         )
     }
 
@@ -91,6 +92,7 @@ internal object ThreadsPostJson {
             "isVerified" to JsonPrimitive(post.isVerified),
             "replyToHandle" to text(post.replyToHandle),
             "isReply" to JsonPrimitive(post.isReply),
+            "facts" to ThreadsFactsJson.json(post.facts),
         ),
     )
 
@@ -138,13 +140,15 @@ internal object ThreadsPostJson {
         return ThreadsLinkCard(url, row["title"].string, row["description"].string, row["imageUrl"].string, row["providerName"].string)
     }
 
-    fun fragment(fragment: ThreadsTextFragment): JsonObject =
-        JsonObject(mapOf("kind" to text(fragment.kind.name.lowercase()), "text" to text(fragment.text), "target" to text(fragment.target)))
+    fun fragment(fragment: ThreadsTextFragment): JsonObject = JsonObject(
+        mapOf("kind" to text(fragment.kind.name.lowercase()), "text" to text(fragment.text), "target" to text(fragment.target)) +
+            (if (fragment.spoiler) mapOf("spoiler" to JsonPrimitive(true)) else emptyMap()),
+    )
 
     fun fragment(row: J): ThreadsTextFragment? {
         val kind = ThreadsTextFragment.Kind.entries.firstOrNull { it.name.lowercase() == row["kind"].string } ?: return null
         val words = row["text"].string ?: return null
-        return ThreadsTextFragment(kind, words, row["target"].string)
+        return ThreadsTextFragment(kind, words, row["target"].string, spoiler = row["spoiler"].boolean == true)
     }
 
     /** A count as XTA's `_snapshotCount` reads one: any number, cut to its whole part. */

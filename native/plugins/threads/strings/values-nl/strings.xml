@@ -143,4 +143,19 @@
     <string name="profile_note_save">Notitie opslaan</string>
     <string name="profile_guest_end">Threads toont een gast alleen de nieuwste berichten van een account</string>
     <string name="profile_reposts">Reposts</string>
+    <string name="show_more">Meer tonen</string>
+    <string name="show_less">Minder tonen</string>
+    <string name="pinned">Vastgezet</string>
+    <string name="pinned_reply">Vastgezet door de auteur</string>
+    <string name="spoiler">Spoiler</string>
+    <string name="tap_to_show_spoiler">Tik om de spoiler te tonen</string>
+    <string name="copy_text">Tekst kopiëren</string>
+    <string name="copy_link">Link kopiëren</string>
+    <string name="text_copied">Tekst gekopieerd</string>
+    <string name="ai_info">AI-info</string>
+    <string name="ai_info_detail">Threads markeert dit bericht als gemaakt of bewerkt met AI</string>
+    <string name="sharing_friction">Threads vraagt lezers dit bericht te controleren voordat ze het delen</string>
+    <string name="quotes">Citaten</string>
+    <string name="shares">Gedeeld</string>
+    <string name="exact_time">Exacte tijd tonen</string>
 </resources>

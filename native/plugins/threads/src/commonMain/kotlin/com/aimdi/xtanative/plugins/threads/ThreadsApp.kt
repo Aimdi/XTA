@@ -30,7 +30,6 @@ import com.aimdi.xtanative.ui.plugins.PluginFeed
 import com.aimdi.xtanative.ui.plugins.PluginFollowable
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginNotices
-import com.aimdi.xtanative.ui.plugins.PluginPostMenu
 import com.aimdi.xtanative.ui.plugins.PluginSearchHistory
 import com.aimdi.xtanative.ui.plugins.PluginSubscription
 import java.time.Instant
@@ -358,7 +357,7 @@ internal class ThreadsApp(val host: PluginHost) {
     fun shown(post: ThreadsPost): NetworkPost {
         drawn.put(post)
         post.quoted?.let(drawn::put)
-        return ThreadsShared.post(post, current()[MediaPrefs.videoQuality])
+        return ThreadsShared.post(post, current()[MediaPrefs.videoQuality], Strings.spoiler.get(host.language))
     }
 
     /** The post [shown] names, as the app drew it lately; null for one not drawn lately. */
@@ -376,9 +375,7 @@ internal class ThreadsApp(val host: PluginHost) {
     )
 
     /** XTA's one post sheet for [post] (showPluginPostActions): Saved, its note, its author's groups, its link. */
-    fun openMenu(post: ThreadsPost) = host.openPostMenu(
-        PluginPostMenu(ThreadsArchive.of(post), post.url ?: post.id, author = post.handle.trim().lowercase(), follow = { ensureFollowed(ThreadsAccount.of(post)) }),
-    )
+    fun openMenu(post: ThreadsPost) = host.openPostMenu(ThreadsShared.menu(this, post))
 
     /** The accounts followed here in Home's timelines and the groups' (XTA's loadThreadsInterleaved). */
     val shared: PluginFeed = SharedFeed()

@@ -139,4 +139,19 @@
     <string name="profile_note_save">메모 저장</string>
     <string name="profile_guest_end">Threads는 게스트에게 계정의 최신 게시물만 보여 줍니다</string>
     <string name="profile_reposts">리포스트</string>
+    <string name="show_more">더 보기</string>
+    <string name="show_less">간략히 보기</string>
+    <string name="pinned">고정됨</string>
+    <string name="pinned_reply">작성자가 고정함</string>
+    <string name="spoiler">스포일러</string>
+    <string name="tap_to_show_spoiler">탭하여 스포일러 보기</string>
+    <string name="copy_text">텍스트 복사</string>
+    <string name="copy_link">링크 복사</string>
+    <string name="text_copied">텍스트를 복사했습니다</string>
+    <string name="ai_info">AI 정보</string>
+    <string name="ai_info_detail">Threads는 이 게시물이 AI로 만들어지거나 편집되었다고 표시합니다</string>
+    <string name="sharing_friction">Threads는 이 게시물을 공유하기 전에 확인하도록 요청합니다</string>
+    <string name="quotes">인용</string>
+    <string name="shares">공유</string>
+    <string name="exact_time">정확한 시간 보기</string>
 </resources>

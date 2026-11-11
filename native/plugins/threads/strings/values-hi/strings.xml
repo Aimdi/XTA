@@ -143,4 +143,19 @@
     <string name="profile_note_save">नोट सहेजें</string>
     <string name="profile_guest_end">Threads मेहमान को किसी खाते की सिर्फ़ सबसे नई पोस्ट दिखाता है</string>
     <string name="profile_reposts">रीपोस्ट</string>
+    <string name="show_more">और दिखाएँ</string>
+    <string name="show_less">कम दिखाएँ</string>
+    <string name="pinned">पिन किया गया</string>
+    <string name="pinned_reply">लेखक ने पिन किया</string>
+    <string name="spoiler">स्पॉइलर</string>
+    <string name="tap_to_show_spoiler">स्पॉइलर देखने के लिए टैप करें</string>
+    <string name="copy_text">टेक्स्ट कॉपी करें</string>
+    <string name="copy_link">लिंक कॉपी करें</string>
+    <string name="text_copied">टेक्स्ट कॉपी हो गया</string>
+    <string name="ai_info">AI जानकारी</string>
+    <string name="ai_info_detail">Threads इस पोस्ट को AI से बनी या बदली हुई बताता है</string>
+    <string name="sharing_friction">Threads पाठकों से कहता है कि शेयर करने से पहले इस पोस्ट की जाँच करें</string>
+    <string name="quotes">उद्धरण</string>
+    <string name="shares">शेयर</string>
+    <string name="exact_time">सटीक समय दिखाएँ</string>
 </resources>

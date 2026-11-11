@@ -145,4 +145,19 @@
     <string name="profile_note_save">Save note</string>
     <string name="profile_guest_end">Threads shows a guest only an account’s newest posts</string>
     <string name="profile_reposts">Reposts</string>
+    <string name="show_more">Show more</string>
+    <string name="show_less">Show less</string>
+    <string name="pinned">Pinned</string>
+    <string name="pinned_reply">Pinned by the author</string>
+    <string name="spoiler">Spoiler</string>
+    <string name="tap_to_show_spoiler">Tap to show spoiler</string>
+    <string name="copy_text">Copy text</string>
+    <string name="copy_link">Copy link</string>
+    <string name="text_copied">Text copied</string>
+    <string name="ai_info">AI info</string>
+    <string name="ai_info_detail">Threads labels this post as made or edited with AI</string>
+    <string name="sharing_friction">Threads asks readers to check this post before sharing it</string>
+    <string name="quotes">Quotes</string>
+    <string name="shares">Shares</string>
+    <string name="exact_time">Show the exact time</string>
 </resources>

@@ -159,4 +159,19 @@
     <string name="profile_note_save">احفظ الملاحظة</string>
     <string name="profile_guest_end">لا يعرض Threads للزائر إلا أحدث منشورات الحساب</string>
     <string name="profile_reposts">إعادات النشر</string>
+    <string name="show_more">عرض المزيد</string>
+    <string name="show_less">عرض أقل</string>
+    <string name="pinned">مثبّت</string>
+    <string name="pinned_reply">ثبّته الكاتب</string>
+    <string name="spoiler">حرق للأحداث</string>
+    <string name="tap_to_show_spoiler">اضغط لعرض الحرق</string>
+    <string name="copy_text">نسخ النص</string>
+    <string name="copy_link">نسخ الرابط</string>
+    <string name="text_copied">نُسخ النص</string>
+    <string name="ai_info">معلومات الذكاء الاصطناعي</string>
+    <string name="ai_info_detail">تصف Threads هذا المنشور بأنه صُنع أو عُدّل بالذكاء الاصطناعي</string>
+    <string name="sharing_friction">تطلب Threads من القرّاء التحقق من هذا المنشور قبل مشاركته</string>
+    <string name="quotes">الاقتباسات</string>
+    <string name="shares">المشاركات</string>
+    <string name="exact_time">عرض الوقت بالضبط</string>
 </resources>

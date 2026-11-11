@@ -139,4 +139,19 @@
     <string name="profile_note_save">保存备注</string>
     <string name="profile_guest_end">Threads 只向访客显示账号最新的帖子</string>
     <string name="profile_reposts">转发</string>
+    <string name="show_more">显示更多</string>
+    <string name="show_less">收起</string>
+    <string name="pinned">已置顶</string>
+    <string name="pinned_reply">作者已置顶</string>
+    <string name="spoiler">剧透</string>
+    <string name="tap_to_show_spoiler">点按显示剧透</string>
+    <string name="copy_text">复制文字</string>
+    <string name="copy_link">复制链接</string>
+    <string name="text_copied">文字已复制</string>
+    <string name="ai_info">AI 信息</string>
+    <string name="ai_info_detail">Threads 标注此帖子由 AI 创建或编辑</string>
+    <string name="sharing_friction">Threads 建议在分享前先核实此帖子</string>
+    <string name="quotes">引用</string>
+    <string name="shares">分享</string>
+    <string name="exact_time">显示确切时间</string>
 </resources>

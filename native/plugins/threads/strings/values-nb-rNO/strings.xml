@@ -143,4 +143,19 @@
     <string name="profile_note_save">Lagre notat</string>
     <string name="profile_guest_end">Threads viser en gjest bare de nyeste innleggene til en konto</string>
     <string name="profile_reposts">Repostinger</string>
+    <string name="show_more">Vis mer</string>
+    <string name="show_less">Vis mindre</string>
+    <string name="pinned">Festet</string>
+    <string name="pinned_reply">Festet av forfatteren</string>
+    <string name="spoiler">Spoiler</string>
+    <string name="tap_to_show_spoiler">Trykk for å vise spoileren</string>
+    <string name="copy_text">Kopier tekst</string>
+    <string name="copy_link">Kopier lenke</string>
+    <string name="text_copied">Teksten er kopiert</string>
+    <string name="ai_info">KI-info</string>
+    <string name="ai_info_detail">Threads merker dette innlegget som laget eller endret med KI</string>
+    <string name="sharing_friction">Threads ber leserne sjekke dette innlegget før de deler det</string>
+    <string name="quotes">Sitater</string>
+    <string name="shares">Delinger</string>
+    <string name="exact_time">Vis nøyaktig tidspunkt</string>
 </resources>

@@ -147,4 +147,19 @@
     <string name="profile_note_save">Salvează nota</string>
     <string name="profile_guest_end">Threads îi arată unui vizitator doar cele mai noi postări ale unui cont</string>
     <string name="profile_reposts">Repostări</string>
+    <string name="show_more">Arată mai mult</string>
+    <string name="show_less">Arată mai puțin</string>
+    <string name="pinned">Fixată</string>
+    <string name="pinned_reply">Fixată de autor</string>
+    <string name="spoiler">Spoiler</string>
+    <string name="tap_to_show_spoiler">Atinge pentru a afișa spoilerul</string>
+    <string name="copy_text">Copiază textul</string>
+    <string name="copy_link">Copiază linkul</string>
+    <string name="text_copied">Text copiat</string>
+    <string name="ai_info">Informații IA</string>
+    <string name="ai_info_detail">Threads marchează această postare ca fiind creată sau editată cu IA</string>
+    <string name="sharing_friction">Threads cere verificarea acestei postări înainte de a fi distribuită</string>
+    <string name="quotes">Citate</string>
+    <string name="shares">Distribuiri</string>
+    <string name="exact_time">Arată ora exactă</string>
 </resources>
