@@ -305,6 +305,7 @@ internal fun LikedPane(app: BlueskyApp, frame: PluginFrame, filters: ReaderFilte
         }
         Unit
     }
+    RefreshesOn(frame.refresh) { reload() }
     PullToRefreshBox(isRefreshing = reading, onRefresh = reload, modifier = Modifier.fillMaxSize()) {
         LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
             if (library.isEmpty()) {
