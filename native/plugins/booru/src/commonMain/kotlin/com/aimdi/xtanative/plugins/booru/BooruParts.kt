@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -26,6 +27,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -35,7 +38,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -52,6 +54,7 @@ import coil3.compose.AsyncImagePainter
 import com.aimdi.xtanative.networks.booru.BooruTagCategory
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.links.LocalLinks
 import com.aimdi.xtanative.ui.plugins.pluginString
 
@@ -63,21 +66,33 @@ internal fun Bound(app: BooruApp, content: @Composable (Settings) -> Unit) {
     if (loaded == null) LoadingRow() else content(loaded)
 }
 
-/** A booru's picture at [url], or a broken picture when it has none or it does not load. */
+/**
+ * A booru's picture at [url], or a broken picture when it has none; one that
+ * did not load asks again from its mark, the rest of it still doing what it does.
+ */
 @Composable
 internal fun BooruImage(url: String, modifier: Modifier = Modifier, contentScale: ContentScale = ContentScale.Crop, description: String? = null) {
     var failed by remember(url) { mutableStateOf(url.isEmpty()) }
+    var attempt by remember(url) { mutableIntStateOf(0) }
     Box(modifier.background(MaterialTheme.colorScheme.surfaceVariant), contentAlignment = Alignment.Center) {
         if (url.isNotEmpty()) {
-            AsyncImage(
-                model = url,
-                contentDescription = description,
-                contentScale = contentScale,
-                onState = { failed = it is AsyncImagePainter.State.Error },
-                modifier = Modifier.fillMaxSize(),
-            )
+            key(attempt) {
+                AsyncImage(
+                    model = url,
+                    contentDescription = description,
+                    contentScale = contentScale,
+                    onState = { failed = it is AsyncImagePainter.State.Error },
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
         }
-        if (failed) Icon(BooruIcons.BrokenImage, contentDescription = null, tint = MaterialTheme.colorScheme.outline)
+        when {
+            !failed -> Unit
+            url.isEmpty() -> Icon(BooruIcons.BrokenImage, contentDescription = null, tint = MaterialTheme.colorScheme.outline)
+            else -> IconButton(onClick = { attempt++ }) {
+                Icon(BooruIcons.BrokenImage, contentDescription = pluginString(Strings.retry), tint = MaterialTheme.colorScheme.outline)
+            }
+        }
     }
 }
 
@@ -196,12 +211,12 @@ internal class BooruOutside(private val open: (String) -> Unit, private val shar
 internal fun rememberOutside(): BooruOutside {
     val links = LocalLinks.current
     val uri = LocalUriHandler.current
-    val clipboard = LocalClipboardManager.current
-    return remember(links, uri, clipboard) {
+    val copyText = rememberCopyText()
+    return remember(links, uri, copyText) {
         BooruOutside(
             open = { url -> links?.openOutside(url) ?: runCatching { uri.openUri(url) } },
             share = { text -> links?.share(text) == true },
-            copy = { text -> clipboard.setText(AnnotatedString(text)) },
+            copy = copyText,
         )
     }
 }

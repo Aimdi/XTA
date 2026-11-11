@@ -1269,3 +1269,13 @@ missing→implemented | lib/plugins/hackernews/hn_screen.dart › Saved is pulle
 missing→implemented | lib/plugins/hackernews/hn_screen.dart › its own screen has one bar: the tabs, then the search and the settings | plugins/hackernews HnHome.kt (ui/plugins PluginHomeTabs) | the name, search and settings were a row of their own over the tabs; Compose only
 missing→implemented | lib/plugins/hackernews/hn_search_sheet.dart, hn_screen.dart › a list that found nothing draws its glyph (search_off, forum) | plugins/hackernews HnStoryList.kt, HnIcons.SearchOff | HackerNewsPluginRulesTest.theEmptyPaneWaitsForAReadThatFoundNothing
 covered | lib/plugins/hackernews/hn_search_sheet.dart › the searches run before are offered | plugins/hackernews HnSearch.kt Landing, HnApp.rememberSearch | ui/plugins PluginSearchHistoryTest
+
+## EH and booru, round 13
+
+Rows: state | what | where | test.
+
+native only | an EH page saved from the reader is "ehviewer-<gid>-<page>-<file>", the page padded to the gallery's length, so a gallery's pages sort in reading order and pages the site names alike keep their own names (XTA: "ehviewer-<gid>-<file>") | EhApp.pageFileName | EhDownloadNamesTest
+native only | a booru picture that did not load asks again from its broken mark, the rest of the tile still opening the post | BooruParts.BooruImage | Compose only
+covered | a guest Danbooru refuses with its bot check (403) reads as "The host refused access — it may need a login or a browser check", not as a parse failure; the live check skips on that refusal, a throttle or the host being down, and still fails on an answer it cannot read | BooruClient.statusFailure, BooruLiveTest | BooruClientTest.aGuestDanbooruRefusesWithItsBotCheckReadsAsARefusalNotAParseFailure
+covered | EH's and booru's copying go through ui.common's rememberCopyText (LocalClipboard) in place of the deprecated LocalClipboardManager | EhGalleryContent, EhGalleryScreen, EhReaderChrome, BooruParts.rememberOutside | Compose only
+covered | EH's reader reads three pages ahead and one behind and keeps the next page composed; booru's viewer loads its neighbours once the reader stops on a post and asks for more four posts from the end (checked again this round) | EhReaderScreen.ReadsAhead, BooruViewer.Preloads, BooruPager | EhPageResolverTest, BooruViewing tests
