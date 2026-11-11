@@ -53,11 +53,13 @@ import com.aimdi.xtanative.networks.threads.ThreadsDiscovery
 import com.aimdi.xtanative.networks.threads.ThreadsException
 import com.aimdi.xtanative.networks.threads.ThreadsFailure
 import com.aimdi.xtanative.networks.threads.ThreadsPost
+import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.EmptyPane
 import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.RetryMessage
@@ -89,7 +91,7 @@ internal fun ThreadsHome(app: ThreadsApp, frame: PluginFrame) {
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
             ReadingControlsBar { HomeBar(app, section, onSearch = { searching = true }, onAdd = { adding = true }) }
-            HorizontalDivider()
+            Hairline()
             Box(Modifier.weight(1f).swipeTabs(section.ordinal, ThreadsSection.entries.size) { app.show(ThreadsSection.entries[it]) }) {
                 when (section) {
                     ThreadsSection.HOME -> HomePane(app, frame, onAdd = { adding = true }, onSearch = { searching = true })
@@ -104,37 +106,39 @@ internal fun ThreadsHome(app: ThreadsApp, frame: PluginFrame) {
     if (adding) AddAccountDialog(app) { adding = false }
 }
 
-/** Home, For you and Liked (scrolled sideways where a phone is too narrow for the three), then search and the menu: add an account, what was saved from Threads, the settings. */
+/** XTA's chrome for the tab (PluginHomeChrome): Home, For you and Liked, then search and the menu: add an account, what was saved from Threads, the settings. */
 @Composable
 private fun HomeBar(app: ThreadsApp, section: ThreadsSection, onSearch: () -> Unit, onAdd: () -> Unit) {
-    var menu by remember { mutableStateOf(false) }
-    Row(Modifier.fillMaxWidth().padding(start = 12.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-        Row(Modifier.weight(1f).horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Tab(section == ThreadsSection.HOME, Icons.Outlined.Home, Strings.home) { app.show(ThreadsSection.HOME) }
-            Tab(section == ThreadsSection.FOR_YOU, PostIcons.Sparkle, Strings.for_you) { app.show(ThreadsSection.FOR_YOU) }
-            Tab(section == ThreadsSection.LIKED, ThreadsHeart.Outlined, Strings.liked) { app.show(ThreadsSection.LIKED) }
-        }
+    PluginHomeTabs(ThreadsSection.entries, section, app::show, icon = ::iconOf, label = { pluginString(labelOf(it)) }) {
         IconButton(onClick = onSearch) { Icon(Icons.Filled.Search, contentDescription = pluginString(Strings.search)) }
-        Box {
-            IconButton(onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, contentDescription = pluginString(Strings.more_options)) }
-            DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
-                MenuRow(ThreadsIcons.PersonAdd, Strings.add_account) { menu = false; onAdd() }
-                MenuRow(SavedIcons.BookmarkBorder, Strings.saved) { menu = false; app.host.open(ThreadsRoutes.SAVED) }
-                MenuRow(Icons.Filled.Settings, Strings.settings) { menu = false; app.host.openSettings() }
-                ReadingControlsPinItem()
-            }
-        }
+        HomeMenu(app, onAdd)
     }
 }
 
+private fun iconOf(section: ThreadsSection): ImageVector = when (section) {
+    ThreadsSection.HOME -> Icons.Outlined.Home
+    ThreadsSection.FOR_YOU -> PostIcons.Sparkle
+    ThreadsSection.LIKED -> ThreadsHeart.Outlined
+}
+
+private fun labelOf(section: ThreadsSection): PluginText = when (section) {
+    ThreadsSection.HOME -> Strings.home
+    ThreadsSection.FOR_YOU -> Strings.for_you
+    ThreadsSection.LIKED -> Strings.liked
+}
+
 @Composable
-private fun Tab(selected: Boolean, icon: ImageVector, label: PluginText, onClick: () -> Unit) {
-    FilterChip(
-        selected = selected,
-        onClick = onClick,
-        label = { Text(pluginString(label)) },
-        leadingIcon = { Icon(icon, contentDescription = null, modifier = Modifier.size(18.dp)) },
-    )
+private fun HomeMenu(app: ThreadsApp, onAdd: () -> Unit) {
+    var menu by remember { mutableStateOf(false) }
+    Box {
+        IconButton(onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, contentDescription = pluginString(Strings.more_options)) }
+        DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
+            MenuRow(ThreadsIcons.PersonAdd, Strings.add_account) { menu = false; onAdd() }
+            MenuRow(SavedIcons.BookmarkBorder, Strings.saved) { menu = false; app.host.open(ThreadsRoutes.SAVED) }
+            MenuRow(Icons.Filled.Settings, Strings.settings) { menu = false; app.host.openSettings() }
+            ReadingControlsPinItem()
+        }
+    }
 }
 
 @Composable
