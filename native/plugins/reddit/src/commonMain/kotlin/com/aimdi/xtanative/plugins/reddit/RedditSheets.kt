@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -279,7 +280,8 @@ private fun CommunityTile(app: RedditApp, name: String, onOpen: () -> Unit) {
     val about by produceState<RedditSubredditAbout?>(null, name) { value = attempt { app.about(name) }.getOrNull() }
     ListItem(
         headlineContent = { Text("r/$name", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-        supportingContent = about?.subscribers?.let { count -> { FollowersLine(count) } },
+        // The line's room is kept while the count is on its way, as XTA's, so the rows do not jump when it comes.
+        supportingContent = { about?.subscribers?.let { FollowersLine(it) } ?: Spacer(Modifier.height(16.dp)) },
         leadingContent = { SubredditAvatar(app, name, 44.dp, known = RedditAboutIcon.of(about != null, about?.iconUrl)) },
         trailingContent = {
             IconButton(onClick = { app.follow(name, follow = false) }) { Icon(Icons.Outlined.Delete, contentDescription = pluginString(Strings.delete)) }

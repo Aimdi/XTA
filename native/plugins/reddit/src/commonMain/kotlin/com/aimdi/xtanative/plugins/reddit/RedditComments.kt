@@ -50,6 +50,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.collapse
+import androidx.compose.ui.semantics.expand
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.toggleableState
 import androidx.compose.ui.state.ToggleableState
@@ -154,7 +157,9 @@ private fun removedText(comment: RedditComment): String = pluginString(
 private fun CommentHeader(app: RedditApp, comment: RedditComment, folded: Boolean, isNew: Boolean, onToggle: () -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         FlowRow(
-            Modifier.weight(1f).heightIn(min = Target).clickable(onClick = onToggle).padding(vertical = 4.dp),
+            Modifier.weight(1f).heightIn(min = Target).clickable(role = Role.Button, onClick = onToggle)
+                .semantics { if (folded) expand { onToggle(); true } else collapse { onToggle(); true } }
+                .padding(vertical = 4.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterVertically),
         ) {
@@ -172,7 +177,7 @@ private fun CommentHeader(app: RedditApp, comment: RedditComment, folded: Boolea
 private fun Name(comment: RedditComment, muted: Boolean) {
     val author = comment.author
     val colour = when {
-        comment.isSubmitter -> MaterialTheme.colorScheme.primary
+        comment.isSubmitter -> readable(MaterialTheme.colorScheme.primary)
         muted -> MaterialTheme.colorScheme.onSurfaceVariant
         else -> MaterialTheme.colorScheme.onSurface
     }
@@ -202,7 +207,7 @@ private fun Age(comment: RedditComment, isNew: Boolean) {
         if (!isNew) {
             Text(age, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         } else {
-            val accent = MaterialTheme.colorScheme.primary
+            val accent = readable(MaterialTheme.colorScheme.primary)
             Spacer(Modifier.size(7.dp).background(accent, CircleShape))
             Spacer(Modifier.width(6.dp))
             Text(pluginString(Strings.comment_new, age), fontSize = 13.sp, fontWeight = FontWeight.Medium, color = accent)
@@ -215,7 +220,7 @@ private enum class ChipKind { OP, FLAIR, REPLIES }
 
 @Composable
 private fun Chip(label: String, kind: ChipKind) {
-    val accent = MaterialTheme.colorScheme.primary
+    val accent = readable(MaterialTheme.colorScheme.primary)
     val (fill, ink) = when (kind) {
         ChipKind.OP -> accent.copy(alpha = 0.16f) to accent
         ChipKind.FLAIR -> MaterialTheme.colorScheme.surfaceContainerHigh to MaterialTheme.colorScheme.onSurface
@@ -308,7 +313,7 @@ internal fun Pill(filled: Boolean, onClick: () -> Unit, modifier: Modifier = Mod
  */
 @Composable
 internal fun HeldBackRow(depth: Int, action: HeldBack, loading: Boolean, onTap: () -> Unit) {
-    val accent = MaterialTheme.colorScheme.primary
+    val accent = readable(MaterialTheme.colorScheme.primary)
     ThreadLines(depth) {
         TextButton(onClick = onTap, enabled = !loading && action != HeldBack.NOTHING, modifier = Modifier.heightIn(min = Target)) {
             if (loading) {

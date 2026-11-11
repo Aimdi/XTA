@@ -39,7 +39,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -272,7 +274,7 @@ private fun Covered(post: RedditPost, gate: MediaGate?, ratio: Float = 4f / 3f, 
         content()
         return
     }
-    BoxWithConstraints(Modifier.fillMaxWidth().clip(shape).background(MaterialTheme.colorScheme.surfaceContainerHighest).clickable { revealed = true }) {
+    BoxWithConstraints(Modifier.fillMaxWidth().clip(shape).background(MaterialTheme.colorScheme.surfaceContainerHighest).clickable(role = Role.Button) { revealed = true }) {
         Column(
             Modifier.fillMaxWidth().heightIn(min = maxWidth / ratio).padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -280,11 +282,12 @@ private fun Covered(post: RedditPost, gate: MediaGate?, ratio: Float = 4f / 3f, 
         ) {
             val spoiler = gate == MediaGate.SPOILER
             Icon(if (spoiler) RedditGlyphs.WarningAmber else RedditGlyphs.VisibilityOff, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
-            Text(pluginString(if (spoiler) Strings.spoiler else Strings.possibly_sensitive), style = MaterialTheme.typography.titleSmall)
+            Text(pluginString(if (spoiler) Strings.spoiler else Strings.possibly_sensitive), style = MaterialTheme.typography.titleSmall, textAlign = TextAlign.Center)
             Text(
                 pluginString(if (spoiler) Strings.tap_to_show_spoiler else Strings.tap_to_show_media),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
             )
         }
     }

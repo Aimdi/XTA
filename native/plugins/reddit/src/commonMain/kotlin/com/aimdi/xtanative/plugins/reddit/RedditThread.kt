@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.networks.reddit.RedditPost
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
@@ -76,6 +77,7 @@ internal fun ThreadScreen(app: RedditApp, route: RedditRoute.Thread) {
     val rows = remember(state.comments, state.collapsed) { state.comments?.let { RedditThreadRules.visible(it, state.collapsed) } }
     val list = rememberLazyListState()
     val scope = rememberCoroutineScope()
+    val reduced = LocalReducedMotion.current
     var sheet by remember { mutableStateOf(false) }
     PluginScaffold(
         title = "r/" + state.post.subreddit,
@@ -85,7 +87,7 @@ internal fun ThreadScreen(app: RedditApp, route: RedditRoute.Thread) {
         Box(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
             PullToRefreshBox(isRefreshing = state.refreshing, onRefresh = thread::load, modifier = Modifier.fillMaxSize()) {
                 LazyColumn(state = list, contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + 96.dp), modifier = Modifier.fillMaxSize()) {
-                    item(key = "post") { PostBlock(app, state, onComments = { scope.launch { list.animateScrollToItem(1) } }) }
+                    item(key = "post") { PostBlock(app, state, onComments = { scope.launch { list.scrollTo(1, reduced) } }) }
                     item(key = "header") {
                         CommentsHeader(
                             count = RedditThreadRules.commentCount(state.post, state.comments),
@@ -99,7 +101,7 @@ internal fun ThreadScreen(app: RedditApp, route: RedditRoute.Thread) {
                 }
             }
             if (rows != null && RedditThreadRules.showsJump(rows)) {
-                JumpButton(Modifier.align(Alignment.BottomEnd).padding(end = 16.dp, bottom = padding.calculateBottomPadding() + 16.dp)) { jump(scope, list, rows) }
+                JumpButton(Modifier.align(Alignment.BottomEnd).padding(end = 16.dp, bottom = padding.calculateBottomPadding() + 16.dp)) { jump(scope, list, rows, reduced) }
             }
         }
     }
@@ -148,12 +150,15 @@ private fun HeldBack(app: RedditApp, thread: RedditThreadState, state: RedditThr
 }
 
 /** Scrolls to the next top-level comment below the one at the top of the screen, or to the end when none is left. */
-private fun jump(scope: CoroutineScope, list: LazyListState, rows: List<VisibleComment>) {
+private fun jump(scope: CoroutineScope, list: LazyListState, rows: List<VisibleComment>, reduced: Boolean) {
     scope.launch {
         val next = RedditThreadRules.nextTopLevel(rows, list.firstVisibleItemIndex - ABOVE)
-        list.animateScrollToItem(if (next == null) rows.size + ABOVE - 1 else next + ABOVE)
+        list.scrollTo(if (next == null) rows.size + ABOVE - 1 else next + ABOVE, reduced)
     }
 }
+
+/** To the row at [index], at once where the reader asked for less motion, as XTA's jump settles. */
+private suspend fun LazyListState.scrollTo(index: Int, reduced: Boolean) = if (reduced) scrollToItem(index) else animateScrollToItem(index)
 
 /** The post at the head of its thread: who wrote it and when, its title, its media and its words, then its actions. */
 @Composable
