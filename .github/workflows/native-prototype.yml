@@ -11,6 +11,8 @@ on:
     branches: [claude/admiring-mayer-bdfg95]
     paths:
       - 'native/**'
+      # The published repairs, which :networks' and TikTok's tests hold to what the build ships.
+      - 'repairs.json'
       - '.github/workflows/native-prototype.yml'
   workflow_dispatch:
 
