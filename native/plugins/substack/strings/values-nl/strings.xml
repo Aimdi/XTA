@@ -155,4 +155,5 @@
     <string name="native_reader_description">Toon artikelen zonder webweergave: tekst kan worden geselecteerd en gekopieerd, en ingesloten spelers openen in de browser. Sommige opmaak kan er anders uitzien.</string>
     <string name="speak_from_here">Speak from here</string>
     <string name="turned_away">De botcontrole van Substack heeft deze verbinding geweigerd. Open het in je browser of probeer het later opnieuw.</string>
+    <string name="image_view">Volledig scherm bekijken</string>
 </resources>

@@ -155,4 +155,5 @@
     <string name="native_reader_description">Mostra os artigos sem visualização web: o texto pode ser selecionado e copiado, e os players incorporados abrem no navegador. Alguns layouts podem ficar diferentes.</string>
     <string name="speak_from_here">Speak from here</string>
     <string name="turned_away">A verificação anti-robôs do Substack recusou esta conexão. Abra no navegador ou tente de novo mais tarde.</string>
+    <string name="image_view">Ver em tela cheia</string>
 </resources>

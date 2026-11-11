@@ -152,4 +152,5 @@
     <string name="native_reader_description">Hiển thị bài viết không qua chế độ xem web: có thể chọn và sao chép văn bản, trình phát nhúng mở trong trình duyệt. Một số bố cục có thể trông khác.</string>
     <string name="speak_from_here">Speak from here</string>
     <string name="turned_away">Bước kiểm tra bot của Substack đã từ chối kết nối này. Hãy mở trong trình duyệt, hoặc thử lại sau.</string>
+    <string name="image_view">Xem toàn màn hình</string>
 </resources>

@@ -155,4 +155,5 @@
     <string name="native_reader_description">Näita artikleid ilma veebivaateta: teksti saab valida ja kopeerida ning manustatud mängijad avanevad brauseris. Mõni paigutus võib välja näha teistmoodi.</string>
     <string name="speak_from_here">Speak from here</string>
     <string name="turned_away">Substacki robotikontroll lükkas selle ühenduse tagasi. Ava see brauseris või proovi hiljem uuesti.</string>
+    <string name="image_view">Vaata täisekraanil</string>
 </resources>

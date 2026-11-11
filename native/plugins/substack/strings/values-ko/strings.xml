@@ -152,4 +152,5 @@
     <string name="native_reader_description">웹 보기 없이 글을 표시합니다. 텍스트를 선택하고 복사할 수 있으며, 삽입된 플레이어는 브라우저에서 열립니다. 일부 레이아웃은 다르게 보일 수 있습니다.</string>
     <string name="speak_from_here">Speak from here</string>
     <string name="turned_away">Substack의 봇 확인이 이 연결을 거부했습니다. 브라우저에서 열거나 나중에 다시 시도하세요.</string>
+    <string name="image_view">전체 화면으로 보기</string>
 </resources>

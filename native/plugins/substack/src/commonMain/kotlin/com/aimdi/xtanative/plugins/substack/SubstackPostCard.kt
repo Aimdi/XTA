@@ -36,6 +36,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -114,6 +115,7 @@ internal fun SubstackPostCard(app: SubstackApp, post: SubstackPost, marks: PostM
 private fun CardHeader(app: SubstackApp, post: SubstackPost, unread: Boolean, logoUrl: String?) {
     val minutes = SubstackReading.readMinutes(post)
     val meta = listOfNotNull(post.publishedAt?.let { agoText(it) }, minutes?.let { pluginPlural(Strings.read_minutes, it, it) }).joinToString(" · ")
+    val largeText = LocalDensity.current.fontScale > 1.4f
     Row(verticalAlignment = Alignment.CenterVertically) {
         if (unread) Box(Modifier.padding(end = 8.dp).size(8.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primary))
         Row(
@@ -124,10 +126,11 @@ private fun CardHeader(app: SubstackApp, post: SubstackPost, unread: Boolean, lo
             Spacer(Modifier.width(10.dp))
             Column(Modifier.weight(1f)) {
                 Text(post.publicationName, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.ExtraBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                if (meta.isNotEmpty()) Text(meta, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
+                if (meta.isNotEmpty() && !largeText) Text(meta, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
         }
     }
+    if (meta.isNotEmpty() && largeText) Text(meta, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 6.dp))
     if (post.isPaywalled || post.isPodcast) {
         Row(Modifier.padding(top = 6.dp), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
             if (post.isPaywalled) OutlineBadge(pluginString(Strings.paywalled))

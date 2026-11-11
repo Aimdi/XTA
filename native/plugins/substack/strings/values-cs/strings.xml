@@ -158,4 +158,5 @@
     <string name="native_reader_description">Zobrazovat články bez webového zobrazení: text lze označit a kopírovat a vložené přehrávače se otevřou v prohlížeči. Některá rozvržení mohou vypadat jinak.</string>
     <string name="speak_from_here">Speak from here</string>
     <string name="turned_away">Kontrola botů na Substacku toto připojení odmítla. Otevřete to v prohlížeči, nebo to zkuste později.</string>
+    <string name="image_view">Zobrazit na celou obrazovku</string>
 </resources>

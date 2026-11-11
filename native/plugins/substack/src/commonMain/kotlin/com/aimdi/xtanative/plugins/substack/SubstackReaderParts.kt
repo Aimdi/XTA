@@ -12,11 +12,10 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -140,12 +139,12 @@ private fun HighlightsSheet(app: SubstackApp, post: SubstackPost, onDismiss: () 
                     items(quotes, key = { it }) { quote ->
                         Row(Modifier.fillMaxWidth().padding(start = 20.dp, end = 4.dp, top = 4.dp, bottom = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                             Text(quote, fontStyle = FontStyle.Italic, modifier = Modifier.weight(1f))
-                            IconButton(onClick = { app.launch { app.highlights.remove(post, quote) } }) { Icon(Icons.Default.Delete, pluginString(Strings.highlight_remove)) }
+                            IconButton(onClick = { app.launch { app.highlights.remove(post, quote) } }) { Icon(Icons.Outlined.Delete, pluginString(Strings.highlight_remove)) }
                         }
                     }
                 }
-                FilledTonalButton(onClick = { share(SubstackHighlights.markdown(post, quotes)) }, modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 8.dp)) {
-                    Icon(Icons.Default.Share, null, Modifier.padding(end = 8.dp))
+                Button(onClick = { share(SubstackHighlights.markdown(post, quotes)) }, modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, top = 8.dp)) {
+                    Icon(SubstackIcons.IosShare, null, Modifier.padding(end = 8.dp))
                     Text(pluginString(Strings.highlights_share))
                 }
             }

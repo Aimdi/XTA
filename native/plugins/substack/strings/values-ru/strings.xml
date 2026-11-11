@@ -161,4 +161,5 @@
     <string name="native_reader_description">Показывать статьи без веб-просмотра: текст можно выделять и копировать, а встроенные плееры открываются в браузере. Некоторые макеты могут выглядеть иначе.</string>
     <string name="speak_from_here">Speak from here</string>
     <string name="turned_away">Проверка Substack на ботов не пропустила это соединение. Откройте в браузере или попробуйте позже.</string>
+    <string name="image_view">Открыть на весь экран</string>
 </resources>

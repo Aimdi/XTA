@@ -101,6 +101,9 @@ internal object SubstackIcons {
         )
     }
     val Download: ImageVector by lazy { icon("Download", "M19,9h-4V3H9v6H5l7,7 7,-7zM5,18v2h14v-2H5z") }
+    val IosShare: ImageVector by lazy {
+        icon("IosShare", "M16,5l-1.42,1.42 -1.59,-1.59V16h-1.98V4.83L9.42,6.42 8,5l4,-4 4,4zM20,10v11c0,1.1 -0.9,2 -2,2H6c-1.11,0 -2,-0.9 -2,-2V10c0,-1.11 0.89,-2 2,-2h3v2H6v11h12V10h-3V8h3c1.1,0 2,0.89 2,2z")
+    }
     val MarkRead: ImageVector by lazy {
         icon("MarkRead", "M12,14L3,8v10h9v2H3c-1.1,0 -2,-0.9 -2,-2V6c0,-1.1 0.9,-2 2,-2h16c1.1,0 2,0.9 2,2v7h-2V8L12,14zM12,12l7,-6H5L12,12zM17.34,22l-3.54,-3.54l1.41,-1.41l2.12,2.12l4.24,-4.24L23,16.34L17.34,22z")
     }

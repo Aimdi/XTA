@@ -152,4 +152,5 @@
     <string name="native_reader_description">Tampilkan artikel tanpa tampilan web: teks bisa dipilih dan disalin, dan pemutar sematan dibuka di browser. Beberapa tata letak mungkin terlihat berbeda.</string>
     <string name="speak_from_here">Speak from here</string>
     <string name="turned_away">Pemeriksaan bot Substack menolak koneksi ini. Buka di browser Anda, atau coba lagi nanti.</string>
+    <string name="image_view">Lihat layar penuh</string>
 </resources>

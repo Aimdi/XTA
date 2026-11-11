@@ -30,7 +30,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -38,6 +41,7 @@ import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
@@ -204,12 +208,16 @@ private fun ImageBlockView(image: SubstackImageBlock, body: TextStyle, highlight
     val width = image.width
     val height = image.height
     val ratio = if (width != null && height != null && height > 0 && width > 0) width.toFloat() / height else 16f / 9f
+    var drawn by remember(image.src) { mutableStateOf(false) }
+    val box = if (drawn) Modifier else Modifier.background(MaterialTheme.colorScheme.surfaceContainerHighest)
     Column {
         AsyncImage(
             model = keptImages[image.src] ?: image.src,
             contentDescription = image.alt.ifEmpty { null },
             contentScale = ContentScale.Fit,
-            modifier = Modifier.fillMaxWidth().aspectRatio(ratio).background(MaterialTheme.colorScheme.surfaceContainerHighest).clickable { taps.onImage(image) },
+            onSuccess = { drawn = true },
+            modifier = Modifier.fillMaxWidth().aspectRatio(ratio).then(box)
+                .clickable(onClickLabel = pluginString(Strings.image_view), role = Role.Button) { taps.onImage(image) },
         )
         if (image.caption.isNotEmpty()) {
             val caption = body.copy(fontSize = (body.fontSize.value * 0.85).sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
