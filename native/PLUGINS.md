@@ -245,7 +245,9 @@ with a test.
   Hide covers: Mastodon's "Content warning" box, Bluesky's button), under
   which nothing held back is drawn until it is opened (`PostCovers`); and
   `NetworkPostExtras.quoteMediaFirst`, a quoted post's media over its text
-  (Bluesky's).
+  (Bluesky's); `NetworkPostExtras.quoteFirst`, the quoted post over the
+  media and `below` over the link card (Mastodon's); and `onRepostLine`
+  without `repostLine` makes the shared "… reposted" line lead there.
 - Words: `PluginStrings` with `pluginString` and `pluginPlural`
   (`pluralCategory` gives each language's plural forms).
 

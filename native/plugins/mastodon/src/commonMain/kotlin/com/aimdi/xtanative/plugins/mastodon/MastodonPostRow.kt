@@ -76,6 +76,7 @@ internal fun MastodonPostRow(
         footer = { EngagementRow(app, post, prefs.hideCounts, onOpen) },
         onLongPress = { app.openMenu(post) },
         cover = { WarningCover(it) },
+        quoteFirst = true,
     )
     NetworkPostCard(shown, actions, extras, modifier)
     if (divider) Hairline()
@@ -98,6 +99,7 @@ internal fun sharedExtras(app: MastodonApp, post: MastodonPost, language: String
     footer = { SharedFooter(app, post, onOpen) },
     onLongPress = { app.openMenu(post) },
     cover = { WarningCover(it) },
+    quoteFirst = true,
 )
 
 /** A warning the shared row keeps (the post's in Home's timelines, the notice on media marked sensitive) as XTA's Show and Hide cover. */

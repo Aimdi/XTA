@@ -148,12 +148,14 @@ private fun PinnedLine() {
  * draws [post] among others' (Home's timelines, the groups): Follow at the
  * end of its author line while its author is not followed here, its footer
  * ([onOpen] opens its thread), the app's post sheet on a long press, its
- * cover over what a label holds back, and a quoted post's media over its text.
+ * cover over what a label holds back, a quoted post's media over its text,
+ * and "… reposted" over it leading to who reposted it.
  */
 internal fun extrasOf(app: BlueskyApp, post: BlueskyPost, onOpen: () -> Unit): NetworkPostExtras = NetworkPostExtras(
     trailing = { FollowGlyph(app, post) },
     footer = { PostFooter(app, post, onOpen) },
     onLongPress = { app.openMenu(post) },
+    onRepostLine = post.reposterActor?.takeIf { it.isNotEmpty() }?.let { actor -> { app.openProfile(actor) } },
     cover = { ContentCover(it) },
     quoteMediaFirst = true,
 )

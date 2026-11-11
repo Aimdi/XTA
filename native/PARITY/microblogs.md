@@ -709,3 +709,18 @@ native only | a dot for each picture of a row, the one in view marked | ThreadsM
 native only | a followed profile's page offers Unfollow, after XTA's question | ThreadsProfileCard, UnfollowDialog | Compose only
 native only | a profile's link reads without its scheme | ThreadsProfiles.linkLabel | ThreadsRulesTest.aProfilesLinkReadsWithoutItsSchemeAndStillOpensWhole
 
+
+## Bluesky and Mastodon, round 10 (the chrome, the covers, the audit's items)
+
+Rows as above: state | what | where | test.
+
+missing/different | both drew a strip of chips under the app's bar, two bars on their own screens (bluesky_screen.dart's PluginHomeChrome, mastodon_navigation.dart's MastodonCompactBar) | BlueskyHome.HomeBar, MastodonHome.SectionBar over the kit's PluginHomeTabs | Compose only; PluginTabFitTest holds the folding
+missing/different | Mastodon's Following had a second row for posts or accounts and Add account (mastodon_people.dart's one button with a ticked menu) | MastodonHome.FollowingMenu | Compose only
+missing/different | a warning in Home's timelines, the groups and Saved was a line of text over blurred tiles (BlueskyContentWarning, _MastodonContentWarning: nothing drawn until Show) | ui/plugins NetworkPostExtras.cover, PostCover, PostCovers; BlueskyPostRow.ContentCover, MastodonPostRow.WarningCover | PostCoversTest
+missing/different | a quoted Bluesky post showed its text over its media, and its link card (_QuotedPost: media, then text, no card) | NetworkPostExtras.quoteMediaFirst; BlueskyPostRow.toNetworkPost | Compose only
+missing/different | a Bluesky post opened from a link showed a loading row alone (plugin_links.dart's _blueskyStub) | BlueskyRoutes PostTarget.stub, BlueskyThreadScreen's seed | BlueskyRoutesTest.aPostOpenedFromALinkIsShownByWhatTheLinkNamesWhileItIsRead
+missing/different | "… reposted" over a Bluesky post led nowhere (_repostLine opens who reposted it) | NetworkPostExtras.onRepostLine without a line of its own; BlueskyPostRow.extrasOf | Compose only
+missing/different | a Mastodon post drew media, link card, quote, poll (_SpoilerBody: quote, media, poll, link card) | NetworkPostExtras.quoteFirst; MastodonPostRow | Compose only
+left out | XTA's dock (plugin_home_dock.dart): the Filters button and the instance's name inside the bar, and its options sheet | the kit's bar holds tabs and actions; the timeline's toolbar stays the row over the list | n/a
+left out | a quoted Mastodon post as XTA's _QuoteEmbed (a "Media" line for its pictures, a warning that does not open in place) | native shows the pictures and opens the warning in place | n/a
+left out | Bluesky's cover over a sensitive post's quote and link card where it has no media of its own | the shared row covers media (NetworkPost.mediaWarning) | n/a

@@ -129,8 +129,10 @@ private fun annotated(runs: List<TextRun>, linkColor: Color, onMention: (String)
  * [NetworkHeaderButton]); what a long press on the row does; [cover], the
  * network's own drawing of the post's warning, and of its quoted post's, in
  * place of the shared line (XTA's Show and Hide covers, which draw nothing
- * they hold back); and [quoteMediaFirst], for a network whose quoted post
- * shows its media over its text.
+ * they hold back); [quoteMediaFirst], for a network whose quoted post
+ * shows its media over its text; and [quoteFirst], for one whose card puts
+ * the quoted post over the media and [below] over the link card (Mastodon's).
+ * [onRepostLine] alone makes the shared "… reposted" line lead there.
  */
 class NetworkPostExtras(
     val trailing: (@Composable () -> Unit)? = null,
@@ -143,8 +145,9 @@ class NetworkPostExtras(
     val onLongPress: (() -> Unit)? = null,
     val cover: (@Composable (PostCover) -> Unit)? = null,
     val quoteMediaFirst: Boolean = false,
+    val quoteFirst: Boolean = false,
 ) {
-    /** As the plugins of API 9 make one, before [cover] and [quoteMediaFirst]. */
+    /** As the plugins of API 9 make one, before [cover], [quoteMediaFirst] and [quoteFirst]. */
     @Deprecated("The constructor of plugin API 9", level = DeprecationLevel.HIDDEN)
     constructor(
         trailing: (@Composable () -> Unit)? = null,
@@ -155,7 +158,7 @@ class NetworkPostExtras(
         below: (@Composable () -> Unit)? = null,
         footer: (@Composable () -> Unit)? = null,
         onLongPress: (() -> Unit)? = null,
-    ) : this(trailing, repostLine, onRepostLine, timeNote, above, below, footer, onLongPress, null, false)
+    ) : this(trailing, repostLine, onRepostLine, timeNote, above, below, footer, onLongPress, null, false, false)
 
     companion object {
         val None = NetworkPostExtras()
@@ -234,7 +237,7 @@ fun NetworkPostCard(
         when {
             post.pinned -> ContextLine(XIcons.Pin, stringResource(Res.string.pinned))
             repostLine != null -> ContextLine(XIcons.Repost, repostLine, extras.onRepostLine)
-            repostedBy != null -> ContextLine(XIcons.Repost, stringResource(Res.string.reposted_by, repostedBy))
+            repostedBy != null -> ContextLine(XIcons.Repost, stringResource(Res.string.reposted_by, repostedBy), extras.onRepostLine)
         }
         Row {
             MarkedAvatar(post.avatarUrl, mark, markColor, onClick = { actions.openAuthor(post) }, label = markLabel)
@@ -250,7 +253,7 @@ fun NetworkPostCard(
                 CoverLine(post, revealed, extras.cover) { revealed = !revealed }
                 if (!post.textCovered(revealed)) LinkedText(post.text, actions.openMention, actions.openTag, Modifier.padding(top = 2.dp))
                 Attachments(post, actions, revealed, onToggle = { revealed = !revealed }, gap = 10.dp, playing = playing, opensPost = true, extras = extras)
-                if (!post.textCovered(revealed)) extras.below?.invoke()
+                if (!post.textCovered(revealed) && !extras.quoteFirst) extras.below?.invoke()
                 val footer = extras.footer
                 if (footer != null) footer() else CountsLine(post, rememberArchive(post, actions))
             }
@@ -418,9 +421,12 @@ private fun Attachments(
     extras: NetworkPostExtras = NetworkPostExtras.None,
 ) {
     if (post.textCovered(revealed)) return
+    val quote = @Composable { post.quoted?.let { QuotedNetworkPost(it, actions, Modifier.padding(top = gap), extras) } }
+    if (extras.quoteFirst) quote()
     WarnedMedia(post, actions, revealed, onToggle, gap, playing, extras.cover)
+    if (extras.quoteFirst) extras.below?.invoke()
     PostLinkCard(post, actions, Modifier.padding(top = gap), opensPost)
-    post.quoted?.let { QuotedNetworkPost(it, actions, Modifier.padding(top = gap), extras) }
+    if (!extras.quoteFirst) quote()
 }
 
 /** The warning that keeps all of [post] back, over its text, with Show, or Hide once [revealed]; nothing for a post it does not cover. */
