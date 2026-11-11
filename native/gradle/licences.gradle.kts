@@ -185,22 +185,22 @@ fun pomsOf(modules: Collection<ModuleComponentIdentifier>): Map<ModuleComponentI
  * What the app ships beside the libraries Gradle resolves: the voice engine
  * downloaded voices read with, as XTA's page lists it, and the apps XTA
  * Native is XTA written again from, whose MIT licences go with it
- * (the repository's LICENSE and licenses/).
+ * (the repository's LICENSE, and Fritter's and Quacker's in gradle/licences/).
  */
 fun beside(standard: Map<String, String>, texts: MutableMap<String, String>): List<ShippedLibrary> {
     fun kept(text: String): String = textKey(text).also { texts[it] = text }
-    fun repository(path: String): String? = rootProject.file("../$path").takeIf { it.isFile }?.readText()?.trim()?.takeIf { it.isNotEmpty() }
+    fun text(path: String): String? = rootProject.file(path).takeIf { it.isFile }?.readText()?.trim()?.takeIf { it.isNotEmpty() }
     fun mit(name: String, module: String, url: String, path: String): ShippedLibrary? =
-        repository(path)?.let { ShippedLibrary(name, module, "", url, listOf("MIT"), listOf(kept(it))) }
+        text(path)?.let { ShippedLibrary(name, module, "", url, listOf("MIT"), listOf(kept(it))) }
     return listOfNotNull(
         ShippedLibrary("sherpa-onnx", "k2-fsa:sherpa-onnx", "", "https://github.com/k2-fsa/sherpa-onnx", listOf("Apache-2.0"), listOf(kept(standard.getValue("Apache-2.0")))),
         ShippedLibrary("ONNX Runtime", "microsoft:onnxruntime", "", "https://onnxruntime.ai", listOf("MIT"), listOf(kept(rootProject.file("gradle/licences/onnxruntime.txt").readText().trim()))),
-        repository("assets/licenses/espeak-ng.txt")?.let {
+        text("gradle/licences/espeak-ng.txt")?.let {
             ShippedLibrary("espeak-ng", "espeak-ng:espeak-ng", "", "https://github.com/espeak-ng/espeak-ng", listOf("GPL-3.0-or-later"), listOf(kept(it)))
         },
-        mit("XTA", "aimdi:xta", "https://github.com/Aimdi/XTA", "LICENSE"),
-        mit("Fritter", "jonjomckay:fritter", "https://github.com/jonjomckay/fritter", "licenses/fritter.txt"),
-        mit("Quacker", "thehcj:quacker", "https://github.com/TheHCJ/Quacker", "licenses/quacker.txt"),
+        mit("XTA", "aimdi:xta", "https://github.com/Aimdi/XTA", "../LICENSE"),
+        mit("Fritter", "jonjomckay:fritter", "https://github.com/jonjomckay/fritter", "gradle/licences/fritter.txt"),
+        mit("Quacker", "thehcj:quacker", "https://github.com/TheHCJ/Quacker", "gradle/licences/quacker.txt"),
     )
 }
 

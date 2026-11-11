@@ -86,7 +86,8 @@ python3 -I native/tool/belarusian_latin.py [--dry-run]
 fills `values-be-rXL` (XTA's `be_Latn`, `SCREENS.md`) in the app's resources
 and every plugin's strings with each string of `values/` it lacks: XTA's own
 Latin where XTA has the string (the same English in `intl_en.arb` and the
-same Cyrillic in `intl_be.arb` as `values-be`), its misspelt words written
+same Cyrillic in `intl_be.arb` as `values-be`; `tool/l10n/` keeps XTA's three
+files, which it reads), its misspelt words written
 again from the Cyrillic; otherwise `values-be`'s text in Latin letters, as
 XTA's file spells each word's family. It only adds, so run it after strings
 come into the other folders, then read what it lists: strings kept as they
@@ -151,17 +152,21 @@ itself is never in the APK and downloads with the first voice
 
 ```bash
 python3 -I native/tool/voice_engine.py desktop native/desktop/build/app-resources/linux-x64/voice-engine
+python3 -I native/tool/voice_engine.py archives <folder to put the Android archives in>
 python3 -I native/tool/voice_engine.py check <folder of the Android archives>
 ```
 
 `desktop` puts the Linux engine there (pub.dev's `sherpa_onnx_linux`, from
-the pub cache or pub.dev's archive checked against `pubspec.lock`, each
+the pub cache or pub.dev's archive checked against the script's own
+`PUB_ARCHIVES`, each
 library against `VoiceEngines.LINUX_X64`'s pins) with the shim built by `cc`
 against `$JAVA_HOME`'s headers, needing no newer glibc than the engine; the
 desktop build carries that folder in `lib/app/resources/voice-engine`, and
-`XTA_NATIVE_VOICE_ENGINE=<folder>` points a Gradle run at one. `check` says
-whether the archives `scripts/voice_engine_archives.py` makes (as XTA's
-releases publish them) hold what `VoiceEngines.PACKAGES` pins.
+`XTA_NATIVE_VOICE_ENGINE=<folder>` points a Gradle run at one. `archives`
+makes the engine Android downloads with the first voice, one `tar.xz` per
+processor out of pub.dev's `sherpa_onnx_android_*` packages, byte for byte
+what XTA's releases publish; a prerelease publishes them beside its APK.
+`check` says whether such archives hold what `VoiceEngines.PACKAGES` pins.
 
 `voice_screens.sh` is the emulator's voice check, after `screens.sh`, for an
 APK built with `-PvoiceServer=<url>` naming a server of the engine's archives

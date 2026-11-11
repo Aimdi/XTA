@@ -40,7 +40,6 @@ import xml.etree.ElementTree as ET
 
 LATIN_FOLDER = 'values-be-rXL'
 NATIVE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-REPO = os.path.dirname(NATIVE)
 
 # Cyrillic to Łacinka, as XTA's intl_be_Latn.arb writes it.
 VOWELS = 'аеёіоуыэюяи'
@@ -574,7 +573,7 @@ def main(argv):
     parser = argparse.ArgumentParser(description=__doc__.split('\n')[0])
     parser.add_argument('--dry-run', action='store_true', help='say what would be added, write nothing')
     args = parser.parse_args(argv)
-    filler = Filler(Xta(os.path.join(REPO, 'lib', 'l10n')), args.dry_run)
+    filler = Filler(Xta(os.path.join(NATIVE, 'tool', 'l10n')), args.dry_run)
     for folder, android in string_folders():
         filler.fill(folder, android)
     filler.report()
