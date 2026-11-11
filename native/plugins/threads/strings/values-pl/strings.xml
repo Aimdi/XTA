@@ -40,6 +40,9 @@
     <string name="error_throttled">Threads ogranicza tempo — spróbuj później</string>
     <string name="error_unauthorized">Twoja sesja Threads została odrzucona</string>
     <string name="error_unreachable">Nie udało się połączyć z Threads</string>
+    <string name="error_no_post">Nie udało się odczytać tego posta Threads</string>
+    <string name="error_throttled_until">Threads ogranicza tempo — spróbuj ponownie po %1$s</string>
+    <string name="error_sign_in">Threads pokazuje teraz tę stronę tylko zalogowanym</string>
     <string name="filters">Filtry</string>
     <string name="follow">Obserwuj</string>
     <string name="followers">Obserwujący</string>

@@ -42,12 +42,10 @@ import com.aimdi.xtanative.ui.plugins.ReportsReadingScroll
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.RetryRow
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
+import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.post.PostIcons
 import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 /**
@@ -164,7 +162,8 @@ private fun SessionNotice(app: ThreadsApp, problem: ThreadsFailure) {
 /** Meta is refusing for now: said so, with the time it named, and no button that would ask again before it. */
 @Composable
 private fun RateLimited(until: Instant?) {
-    val time = remember(until) { until?.let { DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withZone(ZoneId.systemDefault()).format(it) } }
+    val language = currentLanguage()
+    val time = remember(until, language) { until?.let { ThreadsFailures.time(it, language) } }
     EmptyPane(ThreadsIcons.PauseCircle, pluginString(Strings.error_throttled), detail = time?.let { pluginString(Strings.retry_after, it) })
 }
 

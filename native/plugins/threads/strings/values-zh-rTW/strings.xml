@@ -37,6 +37,9 @@
     <string name="error_throttled">Threads 正在限制請求頻率——請稍後再試</string>
     <string name="error_unauthorized">你的 Threads 工作階段被拒絕</string>
     <string name="error_unreachable">無法連線到 Threads</string>
+    <string name="error_no_post">無法讀取該 Threads 貼文</string>
+    <string name="error_throttled_until">Threads 正在限制請求頻率——請在 %1$s 之後重試</string>
+    <string name="error_sign_in">Threads 目前只向已登入的讀者顯示此頁面</string>
     <string name="filters">篩選器</string>
     <string name="follow">追蹤</string>
     <string name="followers">追蹤者</string>

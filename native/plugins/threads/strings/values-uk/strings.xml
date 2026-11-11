@@ -40,6 +40,9 @@
     <string name="error_throttled">Threads обмежує частоту — спробуйте пізніше</string>
     <string name="error_unauthorized">Вашу сесію Threads відхилено</string>
     <string name="error_unreachable">Не вдалося зв’язатися з Threads</string>
+    <string name="error_no_post">Не вдалося прочитати цей допис Threads</string>
+    <string name="error_throttled_until">Threads обмежує частоту — спробуйте ще раз після %1$s</string>
+    <string name="error_sign_in">Зараз Threads показує цю сторінку лише тим, хто ввійшов</string>
     <string name="filters">Фільтри</string>
     <string name="follow">Підписатися</string>
     <string name="followers">Підписники</string>

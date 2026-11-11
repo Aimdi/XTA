@@ -37,6 +37,9 @@
     <string name="error_throttled">Threads がレート制限しています — 後でもう一度</string>
     <string name="error_unauthorized">Threads セッションが拒否されました</string>
     <string name="error_unreachable">Threads に接続できませんでした</string>
+    <string name="error_no_post">その Threads の投稿を読めませんでした</string>
+    <string name="error_throttled_until">Threads がレート制限しています — %1$s以降にもう一度お試しください</string>
+    <string name="error_sign_in">Threadsは現在、このページをログイン中のユーザーにのみ表示しています</string>
     <string name="filters">フィルタ</string>
     <string name="follow">フォロー</string>
     <string name="followers">フォロワー</string>

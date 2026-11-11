@@ -38,6 +38,9 @@
     <string name="error_throttled">Threads drosselt Anfragen — später erneut versuchen</string>
     <string name="error_unauthorized">Deine Threads-Sitzung wurde abgelehnt</string>
     <string name="error_unreachable">Threads war nicht erreichbar</string>
+    <string name="error_no_post">Dieser Threads-Beitrag konnte nicht gelesen werden</string>
+    <string name="error_throttled_until">Threads drosselt Anfragen — versuche es nach %1$s erneut</string>
+    <string name="error_sign_in">Threads zeigt diese Seite gerade nur angemeldeten Lesern</string>
     <string name="filters">Filter</string>
     <string name="follow">Folgen</string>
     <string name="followers">Follower</string>

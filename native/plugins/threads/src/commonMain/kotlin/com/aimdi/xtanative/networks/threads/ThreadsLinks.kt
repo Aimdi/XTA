@@ -90,6 +90,13 @@ object ThreadsLinks {
         listOfNotNull("q" to query, "serp_type" to (if (tag) "tags" else "default"), ("filter" to "recent").takeIf { recent }),
     )
 
+    /** Whether [url] is Meta's sign-in page, where Threads sends a guest it will not show a page. */
+    fun isSignInPage(url: HttpUrl): Boolean {
+        val first = segments(url).firstOrNull()?.lowercase() ?: return false
+        val meta = hostIs(url.host, "threads.net", "threads.com", "instagram.com")
+        return meta && (first == "login" || (first == "accounts" && segments(url).getOrNull(1) == "login"))
+    }
+
     /** A search page's link as the terms it runs: `serp_type=tags`, or a query starting with `#`, is a topic. */
     private fun searchLink(link: HttpUrl): ThreadsLink.Search? {
         val query = link.queryParameter("q")?.trim().orEmpty()

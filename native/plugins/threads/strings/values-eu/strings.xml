@@ -38,6 +38,9 @@
     <string name="error_throttled">Threads maiztasuna mugatzen ari da — saiatu geroago</string>
     <string name="error_unauthorized">Zure Threads saioa ukatu egin da</string>
     <string name="error_unreachable">Ezin izan da Threads-era iritsi</string>
+    <string name="error_no_post">Ezin izan da Threads argitalpen hori irakurri</string>
+    <string name="error_throttled_until">Threads maiztasuna mugatzen ari da — saiatu berriro %1$s ondoren</string>
+    <string name="error_sign_in">Une honetan Threadsek saioa hasi dutenei bakarrik erakusten die orri hau</string>
     <string name="filters">Filtroak</string>
     <string name="follow">Jarraitu</string>
     <string name="followers">Jarraitzaileak</string>

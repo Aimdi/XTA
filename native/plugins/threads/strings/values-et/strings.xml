@@ -38,6 +38,9 @@
     <string name="error_throttled">Threads piirab sagedust — proovi hiljem uuesti</string>
     <string name="error_unauthorized">Sinu Threadsi seanss lükati tagasi</string>
     <string name="error_unreachable">Threadsi ei õnnestunud kätte saada</string>
+    <string name="error_no_post">Seda Threadsi postitust ei õnnestunud lugeda</string>
+    <string name="error_throttled_until">Threads piirab sagedust — proovi uuesti pärast kella %1$s</string>
+    <string name="error_sign_in">Threads näitab seda lehte praegu ainult sisseloginutele</string>
     <string name="filters">Filtrid</string>
     <string name="follow">Jälgi</string>
     <string name="followers">Jälgijaid</string>

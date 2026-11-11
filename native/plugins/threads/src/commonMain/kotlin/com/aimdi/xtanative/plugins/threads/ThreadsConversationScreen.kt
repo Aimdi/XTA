@@ -120,7 +120,7 @@ private fun ConversationList(app: ThreadsApp, conversation: ThreadsConversation,
             }
         }
         if (conversation.replies.isNotEmpty()) {
-            ReloadStatus(state.loading, state.problem?.let { ThreadsFailures.page(it, currentLanguage()) }, onRetry)
+            ReloadStatus(state.loading, state.problem?.let { ThreadsFailures.post(it, currentLanguage()) }, onRetry)
         }
     }
 }
@@ -163,7 +163,7 @@ private fun LazyListScope.statusRows(conversation: ThreadsConversation, state: F
     when {
         conversation.replies.isNotEmpty() -> Unit
         state.loading -> item(key = "loading") { LoadingRow() }
-        problem != null -> item(key = "problem") { RetryMessage(ThreadsFailures.page(problem, currentLanguage()), onRetry) }
+        problem != null -> item(key = "problem") { RetryMessage(ThreadsFailures.post(problem, currentLanguage()), onRetry) }
         conversation.loaded -> item(key = "no-replies") { NoReplies(conversation.focus.url) }
     }
 }

@@ -40,6 +40,9 @@
     <string name="error_throttled">Threads omezuje frekvenci — zkuste to později</string>
     <string name="error_unauthorized">Vaše relace Threads byla odmítnuta</string>
     <string name="error_unreachable">Threads se nepodařilo kontaktovat</string>
+    <string name="error_no_post">Tento příspěvek Threads se nepodařilo načíst</string>
+    <string name="error_throttled_until">Threads omezuje frekvenci — zkuste to znovu po %1$s</string>
+    <string name="error_sign_in">Threads teď tuto stránku ukazuje jen přihlášeným</string>
     <string name="filters">Filtry</string>
     <string name="follow">Sledovat</string>
     <string name="followers">Sledující</string>

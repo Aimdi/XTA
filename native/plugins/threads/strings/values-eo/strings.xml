@@ -38,6 +38,9 @@
     <string name="error_throttled">Threads limigas la rapidecon — provu denove poste</string>
     <string name="error_unauthorized">Via Threads-seanco estis rifuzita</string>
     <string name="error_unreachable">Ne eblis atingi Threads</string>
+    <string name="error_no_post">Ne eblis legi tiun Threads-afiŝon</string>
+    <string name="error_throttled_until">Threads limigas la rapidecon — reprovu post %1$s</string>
+    <string name="error_sign_in">Threads nun montras ĉi tiun paĝon nur al ensalutintoj</string>
     <string name="filters">Filtriloj</string>
     <string name="follow">Sekvi</string>
     <string name="followers">Abonantoj</string>

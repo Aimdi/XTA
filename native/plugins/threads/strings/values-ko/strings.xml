@@ -37,6 +37,9 @@
     <string name="error_throttled">Threads가 요청을 제한하고 있습니다 — 나중에 다시 시도하세요</string>
     <string name="error_unauthorized">Threads 세션이 거부되었습니다</string>
     <string name="error_unreachable">Threads에 연결할 수 없습니다</string>
+    <string name="error_no_post">해당 Threads 게시물을 읽을 수 없습니다</string>
+    <string name="error_throttled_until">Threads가 요청을 제한하고 있습니다 — %1$s 이후에 다시 시도하세요</string>
+    <string name="error_sign_in">Threads는 지금 이 페이지를 로그인한 사용자에게만 보여 줍니다</string>
     <string name="filters">필터</string>
     <string name="follow">팔로우</string>
     <string name="followers">팔로워</string>

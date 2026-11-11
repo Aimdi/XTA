@@ -7,6 +7,7 @@ import com.aimdi.xtanative.networks.Page
 import com.aimdi.xtanative.networks.threads.ThreadsFailure.NOT_CONFIGURED
 import com.aimdi.xtanative.networks.threads.ThreadsFailure.NO_SUCH_FEED
 import com.aimdi.xtanative.networks.threads.ThreadsFailure.SESSION_SUSPENDED
+import com.aimdi.xtanative.networks.threads.ThreadsFailure.SIGN_IN_REQUIRED
 import com.aimdi.xtanative.networks.threads.ThreadsFailure.THROTTLED
 import com.aimdi.xtanative.networks.threads.ThreadsFailure.UNAUTHORIZED
 import com.aimdi.xtanative.networks.threads.ThreadsFailure.UNREACHABLE
@@ -182,7 +183,12 @@ class ThreadsDirectClient(
      * It spends no session, and its LSD token serves the next profile read.
      */
     suspend fun guestForYou(): Page<ThreadsPost> {
-        val page = guestPage(ThreadsLinks.web("/"))
+        val page = try {
+            guestPage(ThreadsLinks.web("/"))
+        } catch (e: ThreadsException) {
+            if (e.failure != SIGN_IN_REQUIRED) throw e
+            return Page(emptyList(), null)
+        }
         rememberGuestLsd(ThreadsPages.lsd(page))
         return Page(ThreadsPages.recommended(page), null)
     }
@@ -246,20 +252,38 @@ class ThreadsDirectClient(
         return profilePages.run(key) { guestPage(profileUrl(key)) }
     }
 
-    /** A public page as a logged-out browser sees it. It spends no session, so it ignores the session's cooldown. */
+    /**
+     * A public page as a logged-out browser sees it. It spends no session, so
+     * it ignores the session's cooldown. Redirects are followed here, one
+     * departure for all of them, so that one to Meta's sign-in page is told
+     * apart from a page that is missing.
+     */
     private suspend fun guestPage(url: HttpUrl): String {
         val headers = mapOf(
             "User-Agent" to repairs().webUserAgent,
             "Accept" to "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             "Accept-Language" to ACCEPT_LANGUAGE,
         )
-        val response = send(asGuest = true, url) { http.get(url, headers, followRedirects = true) }
+        val response = send(asGuest = true, url) { followed(url, headers) }
         return when (response.code) {
             200 -> response.body
             404 -> throw ThreadsException(NO_SUCH_FEED, "$url: 404", 404)
             429 -> throw guestThrottled(url)
             else -> throw ThreadsException(UNREACHABLE, "$url: ${response.code}", response.code)
         }
+    }
+
+    /** [url]'s answer after at most [MAX_REDIRECTS] redirects; one to the sign-in page is [SIGN_IN_REQUIRED]. */
+    private suspend fun followed(url: HttpUrl, headers: Map<String, String>): XResponse {
+        var at = url
+        repeat(MAX_REDIRECTS + 1) {
+            val response = http.get(at, headers, followRedirects = false)
+            if (response.code !in REDIRECTS) return response
+            val next = response.header("Location")?.let(at::resolve) ?: return response
+            if (ThreadsLinks.isSignInPage(next)) throw ThreadsException(SIGN_IN_REQUIRED, "$url: sent to sign in", response.code)
+            at = next
+        }
+        throw ThreadsException(UNREACHABLE, "$url: too many redirects")
     }
 
     private suspend fun guestThreadsOrNull(handle: String, userId: String, lsd: String): List<ThreadsPost>? = try {
@@ -454,6 +478,8 @@ class ThreadsDirectClient(
         private const val FORM = "application/x-www-form-urlencoded"
         private const val ACCEPT_LANGUAGE = "en-US,en;q=0.9"
         private const val TIMEOUT_MILLIS = 25_000L
+        private const val MAX_REDIRECTS = 4
+        private val REDIRECTS = setOf(301, 302, 303, 307, 308)
         private const val COOLDOWN_MILLIS = 30 * 60 * 1000L
 
         /** XTA's rateLimitFallback: how long a limit without a stated reset is waited out. */

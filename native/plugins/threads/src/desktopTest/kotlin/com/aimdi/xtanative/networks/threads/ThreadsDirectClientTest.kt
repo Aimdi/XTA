@@ -8,6 +8,7 @@ import kotlin.test.assertTrue
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import okhttp3.HttpUrl.Companion.toHttpUrl
 
 /** What the client asks Meta, and how (XTA's threads_direct_test, threads_time_to_content_test, threads_search_test). */
 class ThreadsDirectClientTest {
@@ -162,6 +163,36 @@ class ThreadsDirectClientTest {
         val profile = direct(FakeMeta { ok(fixture("profile_page.html")) }, memory = memory, time = time).guestProfile("Zuck")
         assertEquals("Mark Zuckerberg", profile.fullName)
         assertEquals(mapOf("zuck" to "314216"), memory.kept.userIds)
+    }
+
+    @Test
+    fun aGuestPageSentToTheSignInPageSaysSoAndOtherRedirectsAreFollowedInOneDeparture() = runBlocking {
+        val meta = FakeMeta { asked ->
+            when (asked.path) {
+                "/@hidden" -> XResponse(302, "", mapOf("Location" to listOf("/login?next=%2F%40hidden")))
+                "/@moved" -> XResponse(301, "", mapOf("Location" to listOf("https://www.threads.com/@zuck")))
+                "/@zuck" -> ok(fixture("profile_page.html"))
+                "/" -> XResponse(302, "", mapOf("Location" to listOf("https://www.threads.com/login/")))
+                else -> XResponse(500, "unexpected ${asked.url}")
+            }
+        }
+        val client = direct(meta, time = time, pacing = ThreadsPacing(0, 100, 0, 0, sleep = time.sleep))
+        val wall = assertFailsWith<ThreadsException> { client.guestProfile("hidden") }
+        assertEquals(ThreadsFailure.SIGN_IN_REQUIRED, wall.failure)
+        assertEquals("Mark Zuckerberg", client.guestProfile("moved").fullName)
+        assertEquals(listOf("/@hidden", "/@moved", "/@zuck"), meta.asked.map { it.path })
+        assertTrue(client.guestForYou().items.isEmpty(), "the front page behind a sign-in is For you's own sign-in state")
+        assertEquals(2, time.slept.size, "one paced departure per page, whatever its redirects")
+    }
+
+    @Test
+    fun onlyMetasOwnSignInPageIsTheSignInWall() {
+        listOf("https://www.threads.com/login?next=/", "https://threads.net/login/", "https://www.instagram.com/accounts/login/?next=x").forEach {
+            assertTrue(ThreadsLinks.isSignInPage(it.toHttpUrl()), it)
+        }
+        listOf("https://www.threads.com/@login", "https://example.com/login", "https://www.threads.com/@zuck").forEach {
+            assertTrue(!ThreadsLinks.isSignInPage(it.toHttpUrl()), it)
+        }
     }
 
     @Test

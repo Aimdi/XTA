@@ -37,6 +37,9 @@
     <string name="error_throttled">Threads membatasi laju — coba lagi nanti</string>
     <string name="error_unauthorized">Sesi Threads Anda ditolak</string>
     <string name="error_unreachable">Tidak bisa menjangkau Threads</string>
+    <string name="error_no_post">Tidak bisa membaca postingan Threads itu</string>
+    <string name="error_throttled_until">Threads membatasi laju — coba lagi setelah %1$s</string>
+    <string name="error_sign_in">Saat ini Threads hanya menampilkan halaman ini kepada pembaca yang sudah masuk</string>
     <string name="filters">Filter</string>
     <string name="follow">Ikuti</string>
     <string name="followers">Pengikut</string>

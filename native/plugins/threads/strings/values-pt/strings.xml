@@ -39,6 +39,9 @@
     <string name="error_throttled">O Threads está a limitar o ritmo — tente mais tarde</string>
     <string name="error_unauthorized">A sua sessão do Threads foi rejeitada</string>
     <string name="error_unreachable">Não foi possível contactar o Threads</string>
+    <string name="error_no_post">Não foi possível ler essa publicação do Threads</string>
+    <string name="error_throttled_until">O Threads está a limitar o ritmo — tente novamente depois das %1$s</string>
+    <string name="error_sign_in">De momento, o Threads só mostra esta página a quem iniciou sessão</string>
     <string name="filters">Filtros</string>
     <string name="follow">Seguir</string>
     <string name="followers">Seguidores</string>

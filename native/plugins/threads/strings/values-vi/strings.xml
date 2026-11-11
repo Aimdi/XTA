@@ -37,6 +37,9 @@
     <string name="error_throttled">Threads đang giới hạn tốc độ — thử lại sau</string>
     <string name="error_unauthorized">Phiên Threads của bạn bị từ chối</string>
     <string name="error_unreachable">Không kết nối được tới Threads</string>
+    <string name="error_no_post">Không đọc được bài đăng Threads đó</string>
+    <string name="error_throttled_until">Threads đang giới hạn tốc độ — thử lại sau %1$s</string>
+    <string name="error_sign_in">Hiện Threads chỉ hiển thị trang này cho người đã đăng nhập</string>
     <string name="filters">Bộ lọc</string>
     <string name="follow">Theo dõi</string>
     <string name="followers">Người theo dõi</string>

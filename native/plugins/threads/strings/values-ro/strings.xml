@@ -39,6 +39,9 @@
     <string name="error_throttled">Threads limitează rata — încearcă mai târziu</string>
     <string name="error_unauthorized">Sesiunea ta Threads a fost respinsă</string>
     <string name="error_unreachable">Nu s-a putut contacta Threads</string>
+    <string name="error_no_post">Nu s-a putut citi acea postare Threads</string>
+    <string name="error_throttled_until">Threads limitează rata — încearcă din nou după %1$s</string>
+    <string name="error_sign_in">Threads arată acum această pagină doar cititorilor autentificați</string>
     <string name="filters">Filtre</string>
     <string name="follow">Urmărește</string>
     <string name="followers">Urmăritori</string>

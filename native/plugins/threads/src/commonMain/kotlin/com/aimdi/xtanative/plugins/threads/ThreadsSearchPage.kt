@@ -190,7 +190,7 @@ private fun Results(app: ThreadsApp, terms: ThreadsSearchTerms, order: ThreadsSe
     PullToRefreshBox(isRefreshing = state.loading && posts != null, onRefresh = { fetch.load(force = true) }, modifier = Modifier.fillMaxSize()) {
         LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
             when {
-                posts == null && state.problem != null -> item(key = "problem") { RetryMessage(ThreadsFailures.page(state.problem, language), onRetry = { fetch.load() }) }
+                posts == null && state.problem != null -> item(key = "problem") { RetryMessage(ThreadsFailures.search(state.problem, language), onRetry = { fetch.load() }) }
                 posts == null -> item(key = "loading") { PluginFeedSkeleton() }
                 posts.isEmpty() -> item(key = "none") { MessageText(pluginString(Strings.no_results)) }
                 else -> items(posts, key = { "post:" + it.id }, contentType = { "post" }) { ThreadsPostCard(app, it) }

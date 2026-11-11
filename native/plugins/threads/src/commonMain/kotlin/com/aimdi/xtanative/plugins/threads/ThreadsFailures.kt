@@ -4,6 +4,11 @@ import com.aimdi.xtanative.networks.threads.ThreadsException
 import com.aimdi.xtanative.networks.threads.ThreadsFailure
 import com.aimdi.xtanative.networks.threads.ThreadsXyException
 import com.aimdi.xtanative.ui.plugins.PluginText
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.util.Locale
 
 /** What a failed Threads read says, in XTA's words (threads_screen.dart, threads_settings.dart, threads_profile_screen.dart). */
 internal object ThreadsFailures {
@@ -24,19 +29,39 @@ internal object ThreadsFailures {
         else -> common(error)
     }
 
+    /** A profile's sentence: a profile Meta has no page for is an account that could not be read. */
+    fun profile(error: Throwable?, language: String, zone: ZoneId = ZoneId.systemDefault()): String =
+        page(error, language, Strings.error_no_feed, zone)
+
+    /** A conversation's sentence: a post Meta has no page for is a post that could not be read. */
+    fun post(error: Throwable?, language: String, zone: ZoneId = ZoneId.systemDefault()): String =
+        page(error, language, Strings.error_no_post, zone)
+
+    /** A search's sentence. */
+    fun search(error: Throwable?, language: String, zone: ZoneId = ZoneId.systemDefault()): String =
+        page(error, language, Strings.error_unreachable, zone)
+
     /**
-     * A profile's, a conversation's or a search's sentence: what the Xy server
-     * itself wrote for a person when it wrote it, else XTA's words for its
-     * kind; a Meta failure says what the settings say of it.
+     * What a page says when its read failed, past XTA's words (which named an
+     * RSSHub route for any missing page): what the Xy server itself wrote when
+     * it wrote it; [missing] for a page Meta does not have; a throttle with
+     * the time Meta's wait ends, in [zone]; Meta's sign-in page as such;
+     * otherwise what the settings say.
      */
-    fun page(error: Throwable?, language: String): String {
-        if (error !is ThreadsXyException) return settings(error).get(language)
-        error.serverMessage?.trim()?.ifEmpty { null }?.let { return it }
-        return xy(error).get(language)
+    private fun page(error: Throwable?, language: String, missing: PluginText, zone: ZoneId): String {
+        if (error is ThreadsXyException) return error.serverMessage?.trim()?.ifEmpty { null } ?: xy(error).get(language)
+        val failure = (error as? ThreadsException)?.failure
+        val until = (error as? ThreadsException)?.retryAt
+        return when {
+            failure == ThreadsFailure.NO_SUCH_FEED -> missing.get(language)
+            failure == ThreadsFailure.THROTTLED && until != null -> Strings.error_throttled_until.get(language, time(until, language, zone))
+            else -> settings(error).get(language)
+        }
     }
 
-    /** A profile's sentence for [error]. */
-    fun profile(error: Throwable?, language: String): String = page(error, language)
+    /** [at] as a short time of day in [language], where the reader is. */
+    fun time(at: Instant, language: String, zone: ZoneId = ZoneId.systemDefault()): String =
+        DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(Locale.forLanguageTag(language)).withZone(zone).format(at)
 
     /** The settings' sentence for the Xy server's own failure. */
     fun xy(error: ThreadsXyException): PluginText = when (error.kind) {
@@ -50,6 +75,7 @@ internal object ThreadsFailures {
         ThreadsFailure.THROTTLED -> Strings.error_throttled
         ThreadsFailure.UNAUTHORIZED -> Strings.error_unauthorized
         ThreadsFailure.SESSION_SUSPENDED -> Strings.error_session_suspended
+        ThreadsFailure.SIGN_IN_REQUIRED -> Strings.error_sign_in
         else -> Strings.error_unreachable
     }
 }

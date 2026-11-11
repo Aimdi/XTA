@@ -42,6 +42,9 @@
     <string name="error_throttled">Threads يقيّد المعدل — حاول لاحقًا</string>
     <string name="error_unauthorized">رُفضت جلسة Threads الخاصة بك</string>
     <string name="error_unreachable">تعذّر الوصول إلى Threads</string>
+    <string name="error_no_post">تعذّرت قراءة منشور Threads هذا</string>
+    <string name="error_throttled_until">Threads يقيّد المعدل — حاول مجددًا بعد %1$s</string>
+    <string name="error_sign_in">يعرض Threads هذه الصفحة حاليًا للقراء المسجّلين فقط</string>
     <string name="filters">المرشحات</string>
     <string name="follow">متابعة</string>
     <string name="followers">المتابِعون</string>

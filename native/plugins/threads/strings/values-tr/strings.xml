@@ -38,6 +38,9 @@
     <string name="error_throttled">Threads hızı sınırlıyor — sonra yeniden deneyin</string>
     <string name="error_unauthorized">Threads oturumunuz reddedildi</string>
     <string name="error_unreachable">Threads’e ulaşılamadı</string>
+    <string name="error_no_post">Bu Threads gönderisi okunamadı</string>
+    <string name="error_throttled_until">Threads hızı sınırlıyor — %1$s sonrasında yeniden deneyin</string>
+    <string name="error_sign_in">Threads şu anda bu sayfayı yalnızca oturum açmış okurlara gösteriyor</string>
     <string name="filters">Filtreler</string>
     <string name="follow">Takip et</string>
     <string name="followers">Takipçi</string>

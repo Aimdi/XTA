@@ -38,6 +38,9 @@
     <string name="error_throttled">Threads दर सीमित कर रहा है — बाद में कोशिश करें</string>
     <string name="error_unauthorized">आपका Threads सेशन अस्वीकार कर दिया गया</string>
     <string name="error_unreachable">Threads तक नहीं पहुँचा जा सका</string>
+    <string name="error_no_post">वह Threads पोस्ट पढ़ी नहीं जा सकी</string>
+    <string name="error_throttled_until">Threads दर सीमित कर रहा है — %1$s के बाद फिर कोशिश करें</string>
+    <string name="error_sign_in">Threads अभी यह पेज केवल साइन इन किए पाठकों को दिखाता है</string>
     <string name="filters">फ़िल्टर</string>
     <string name="follow">फ़ॉलो करें</string>
     <string name="followers">अनुसरणकर्ता</string>

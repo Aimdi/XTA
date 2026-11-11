@@ -40,6 +40,9 @@
     <string name="error_throttled">Threads ограничивает частоту — попробуйте позже</string>
     <string name="error_unauthorized">Ваша сессия Threads отклонена</string>
     <string name="error_unreachable">Не удалось связаться с Threads</string>
+    <string name="error_no_post">Не удалось прочитать этот пост Threads</string>
+    <string name="error_throttled_until">Threads ограничивает частоту — повторите попытку после %1$s</string>
+    <string name="error_sign_in">Сейчас Threads показывает эту страницу только вошедшим в аккаунт</string>
     <string name="filters">Фильтры</string>
     <string name="follow">Подписаться</string>
     <string name="followers">Читатели</string>

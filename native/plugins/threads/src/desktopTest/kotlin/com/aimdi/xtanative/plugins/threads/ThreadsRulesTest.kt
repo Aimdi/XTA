@@ -6,12 +6,15 @@ import com.aimdi.xtanative.networks.threads.ThreadsImage
 import com.aimdi.xtanative.networks.threads.ThreadsMedia
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsProfile
+import com.aimdi.xtanative.networks.threads.ThreadsRetry
 import com.aimdi.xtanative.networks.threads.ThreadsSearchTerms
 import com.aimdi.xtanative.networks.threads.ThreadsVideoRendition
 import com.aimdi.xtanative.networks.threads.ThreadsXyException
 import com.aimdi.xtanative.store.settings.MediaQuality
 import com.aimdi.xtanative.ui.plugins.MediaItem
 import java.io.IOException
+import java.time.Instant
+import java.time.ZoneOffset
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -113,8 +116,30 @@ class ThreadsRulesTest {
         assertEquals(Strings.error_throttled, ThreadsFailures.feed(ThreadsException(ThreadsFailure.THROTTLED, "", 429)))
         assertEquals(Strings.error_session_suspended, ThreadsFailures.feed(ThreadsException(ThreadsFailure.SESSION_SUSPENDED, "")))
         assertEquals(Strings.error_unreachable, ThreadsFailures.feed(IOException("offline")))
-        assertEquals("Profile is gone", ThreadsFailures.page(ThreadsXyException(ThreadsXyException.Kind.NOT_FOUND, serverMessage = " Profile is gone "), "en"))
-        assertEquals(Strings.api_unauthorized.get("en"), ThreadsFailures.page(ThreadsXyException(ThreadsXyException.Kind.UNAUTHORIZED), "en"))
+        assertEquals("Profile is gone", ThreadsFailures.profile(ThreadsXyException(ThreadsXyException.Kind.NOT_FOUND, serverMessage = " Profile is gone "), "en"))
+        assertEquals(Strings.api_unauthorized.get("en"), ThreadsFailures.profile(ThreadsXyException(ThreadsXyException.Kind.UNAUTHORIZED), "en"))
+    }
+
+    @Test
+    fun aPageThatFailedSaysWhatIsMissingWhenMetasWaitEndsAndThatItWantsASignIn() {
+        val missing = ThreadsException(ThreadsFailure.NO_SUCH_FEED, "404", 404)
+        assertEquals("Could not read that Threads account", ThreadsFailures.profile(missing, "en"), "not XTA's words for an RSSHub instance")
+        assertEquals("Could not read that Threads post", ThreadsFailures.post(missing, "en"))
+        assertEquals("Dieser Threads-Beitrag konnte nicht gelesen werden", ThreadsFailures.post(missing, "de"))
+        assertEquals(Strings.error_unreachable.get("en"), ThreadsFailures.search(missing, "en"))
+
+        val until = Instant.parse("2026-11-11T14:05:00Z")
+        val throttled = ThreadsException(ThreadsFailure.THROTTLED, "429", 429, retryAt = until)
+        val time = ThreadsFailures.time(until, "en", ZoneOffset.UTC)
+        assertTrue(time.startsWith("2:05"), time)
+        assertEquals("Threads is rate limiting — try again after $time", ThreadsFailures.post(throttled, "en", ZoneOffset.UTC))
+        assertEquals("14:05", ThreadsFailures.time(until, "de", ZoneOffset.UTC))
+        assertEquals(Strings.error_throttled.get("en"), ThreadsFailures.post(ThreadsException(ThreadsFailure.THROTTLED, "429", 429), "en"))
+
+        val wall = ThreadsException(ThreadsFailure.SIGN_IN_REQUIRED, "login")
+        assertEquals("Threads shows this page only to signed-in readers right now", ThreadsFailures.profile(wall, "en"))
+        assertEquals(Strings.error_sign_in, ThreadsFailures.feed(wall))
+        assertEquals(ThreadsRetry.MANUAL, wall.retry, "it waits for the reader")
     }
 
     @Test

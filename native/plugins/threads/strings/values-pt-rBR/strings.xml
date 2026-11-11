@@ -39,6 +39,9 @@
     <string name="error_throttled">O Threads está limitando a taxa — tente mais tarde</string>
     <string name="error_unauthorized">Sua sessão do Threads foi rejeitada</string>
     <string name="error_unreachable">Não foi possível alcançar o Threads</string>
+    <string name="error_no_post">Não foi possível ler essa publicação do Threads</string>
+    <string name="error_throttled_until">O Threads está limitando a taxa — tente novamente depois das %1$s</string>
+    <string name="error_sign_in">No momento, o Threads só mostra esta página a quem entrou na conta</string>
     <string name="filters">Filtros</string>
     <string name="follow">Seguir</string>
     <string name="followers">Seguidores</string>

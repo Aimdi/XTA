@@ -39,6 +39,9 @@
     <string name="error_throttled">Threads sta limitando la frequenza — riprova più tardi</string>
     <string name="error_unauthorized">La tua sessione Threads è stata rifiutata</string>
     <string name="error_unreachable">Impossibile raggiungere Threads</string>
+    <string name="error_no_post">Impossibile leggere quel post di Threads</string>
+    <string name="error_throttled_until">Threads sta limitando la frequenza — riprova dopo le %1$s</string>
+    <string name="error_sign_in">Al momento Threads mostra questa pagina solo a chi ha effettuato l’accesso</string>
     <string name="filters">Filtri</string>
     <string name="follow">Segui</string>
     <string name="followers">Seguaci</string>

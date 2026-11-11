@@ -38,6 +38,9 @@
     <string name="error_throttled">Threads begrenser hastigheten — prøv igjen senere</string>
     <string name="error_unauthorized">Threads-økten din ble avvist</string>
     <string name="error_unreachable">Kunne ikke nå Threads</string>
+    <string name="error_no_post">Kunne ikke lese det Threads-innlegget</string>
+    <string name="error_throttled_until">Threads begrenser hastigheten — prøv igjen etter %1$s</string>
+    <string name="error_sign_in">Threads viser denne siden bare til innloggede lesere akkurat nå</string>
     <string name="filters">Filtre</string>
     <string name="follow">Følg</string>
     <string name="followers">Følgere</string>

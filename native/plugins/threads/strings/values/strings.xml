@@ -40,6 +40,9 @@
     <string name="error_throttled">Threads is rate limiting — try again later</string>
     <string name="error_unauthorized">Your Threads session was rejected</string>
     <string name="error_unreachable">Could not reach Threads</string>
+    <string name="error_no_post">Could not read that Threads post</string>
+    <string name="error_throttled_until">Threads is rate limiting — try again after %1$s</string>
+    <string name="error_sign_in">Threads shows this page only to signed-in readers right now</string>
     <string name="filters">Filters</string>
     <string name="follow">Follow</string>
     <string name="followers">Followers</string>

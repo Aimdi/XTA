@@ -39,6 +39,9 @@
     <string name="error_throttled">Threads limite le débit — réessayez plus tard</string>
     <string name="error_unauthorized">Votre session Threads a été refusée</string>
     <string name="error_unreachable">Impossible d’atteindre Threads</string>
+    <string name="error_no_post">Impossible de lire cette publication Threads</string>
+    <string name="error_throttled_until">Threads limite le débit — réessayez après %1$s</string>
+    <string name="error_sign_in">Threads ne montre cette page qu’aux lecteurs connectés pour le moment</string>
     <string name="filters">Filtres</string>
     <string name="follow">Suivre</string>
     <string name="followers">Abonnés</string>

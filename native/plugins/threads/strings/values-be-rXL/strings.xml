@@ -40,6 +40,9 @@
     <string name="error_throttled">Threads abmiažoŭvaje častatu — pasprabujcie paźniej</string>
     <string name="error_unauthorized">Vaš seans Threads adchileny</string>
     <string name="error_unreachable">Nie ŭdałosia dasiahnuć Threads</string>
+    <string name="error_no_post">Nie ŭdałosia pračytać hety dopis Threads</string>
+    <string name="error_throttled_until">Threads abmiažoŭvaje častatu — pasprabujcie znoŭ pasla %1$s</string>
+    <string name="error_sign_in">Zaraz Threads pakazvaje hetuju staronku tolki tym, chto ŭvajšoŭ</string>
     <string name="filters">Filtry</string>
     <string name="follow">Padpisacca</string>
     <string name="followers">Čytačy</string>

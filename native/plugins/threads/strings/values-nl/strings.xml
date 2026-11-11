@@ -38,6 +38,9 @@
     <string name="error_throttled">Threads beperkt het tempo — probeer later opnieuw</string>
     <string name="error_unauthorized">Je Threads-sessie is geweigerd</string>
     <string name="error_unreachable">Threads was niet bereikbaar</string>
+    <string name="error_no_post">Dat Threads-bericht kon niet worden gelezen</string>
+    <string name="error_throttled_until">Threads beperkt het tempo — probeer het na %1$s opnieuw</string>
+    <string name="error_sign_in">Threads toont deze pagina nu alleen aan ingelogde lezers</string>
     <string name="filters">Filters</string>
     <string name="follow">Volgen</string>
     <string name="followers">Volgers</string>

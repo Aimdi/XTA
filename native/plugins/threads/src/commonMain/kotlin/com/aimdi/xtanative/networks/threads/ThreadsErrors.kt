@@ -24,6 +24,9 @@ enum class ThreadsFailure {
 
     /** Meta parked the session (`login_required`), or it is cooling down after a throttle. */
     SESSION_SUSPENDED,
+
+    /** Meta sent a guest to its sign-in page instead of the page asked for. */
+    SIGN_IN_REQUIRED,
 }
 
 /** How a screen may retry a failure without being asked (XTA's ReadRetry). */
