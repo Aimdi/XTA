@@ -22,12 +22,14 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.InputChip
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -258,7 +260,7 @@ private fun BeforeSearch(app: ThreadsApp, text: String, onOpenProfile: (String) 
         if (recent.isNotEmpty()) {
             Text(pluginString(Strings.recent_searches), style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 8.dp))
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                recent.forEach { item -> AssistChip(onClick = { onRecent(item) }, label = { Text(item) }) }
+                recent.forEach { item -> RecentChip(item, onClick = { onRecent(item) }, onForget = { app.forget(item) }) }
             }
         }
         Text(pluginString(Strings.try_public), style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 12.dp))
@@ -272,4 +274,22 @@ private fun BeforeSearch(app: ThreadsApp, text: String, onOpenProfile: (String) 
             }
         }
     }
+}
+
+/** A recent search, and (more than XTA's Threads sheet, as its other plugins do) a cross that forgets it. */
+@Composable
+private fun RecentChip(query: String, onClick: () -> Unit, onForget: () -> Unit) {
+    val forget = pluginString(Strings.delete) + " " + query
+    InputChip(
+        selected = false,
+        onClick = onClick,
+        label = { Text(query) },
+        trailingIcon = {
+            Icon(
+                Icons.Filled.Close,
+                contentDescription = forget,
+                modifier = Modifier.size(18.dp).clickable(onClickLabel = forget, onClick = onForget),
+            )
+        },
+    )
 }

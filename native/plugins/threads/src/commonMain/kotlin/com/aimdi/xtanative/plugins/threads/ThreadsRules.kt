@@ -20,17 +20,6 @@ internal object ThreadsSessions {
         ThreadsSession(settings[ThreadsPrefs.directCookies], settings[ThreadsPrefs.directBearer], settings[ThreadsPrefs.useSessionApis])
 }
 
-/** The searches kept to offer again (plugin_search_history.dart): newest first, each once, twenty of them. */
-internal object ThreadsSearchHistory {
-    const val CAP = 20
-
-    fun remembered(history: List<String>, query: String): List<String> {
-        val value = query.trim()
-        if (value.isEmpty()) return history
-        return (listOf(value) + history.filter { it != value }).take(CAP)
-    }
-}
-
 /** What a profile card shows, as XTA's ThreadsProfileCard does. */
 internal object ThreadsProfiles {
     /**

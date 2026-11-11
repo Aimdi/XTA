@@ -31,6 +31,7 @@ import com.aimdi.xtanative.ui.plugins.PluginFollowable
 import com.aimdi.xtanative.ui.plugins.PluginHost
 import com.aimdi.xtanative.ui.plugins.PluginNotices
 import com.aimdi.xtanative.ui.plugins.PluginPostMenu
+import com.aimdi.xtanative.ui.plugins.PluginSearchHistory
 import com.aimdi.xtanative.ui.plugins.PluginSubscription
 import java.time.Instant
 import kotlinx.coroutines.CancellationException
@@ -335,7 +336,10 @@ internal class ThreadsApp(val host: PluginHost) {
 
     fun setOptions(options: ThreadsFeedOptions) = update { it.with(ThreadsPrefs.feedOptions, options.encode()) }
 
-    fun remember(query: String) = update { it.with(ThreadsPrefs.searchHistory, ThreadsSearchHistory.remembered(it[ThreadsPrefs.searchHistory], query)) }
+    fun remember(query: String) = update { it.with(ThreadsPrefs.searchHistory, PluginSearchHistory.remembered(it[ThreadsPrefs.searchHistory], query)) }
+
+    /** [query] out of the recent searches, as XTA's other plugins let a reader drop one. */
+    fun forget(query: String) = update { it.with(ThreadsPrefs.searchHistory, PluginSearchHistory.forgotten(it[ThreadsPrefs.searchHistory], query)) }
 
     /** A backup's followed accounts in place of these, and the feed read for them. */
     suspend fun restoreAccounts(text: String) {

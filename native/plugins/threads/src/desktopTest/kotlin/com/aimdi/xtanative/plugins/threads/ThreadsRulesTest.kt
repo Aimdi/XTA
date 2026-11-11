@@ -12,6 +12,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsVideoRendition
 import com.aimdi.xtanative.networks.threads.ThreadsXyException
 import com.aimdi.xtanative.store.settings.MediaQuality
 import com.aimdi.xtanative.ui.plugins.MediaItem
+import com.aimdi.xtanative.ui.plugins.PluginSearchHistory
 import java.io.IOException
 import java.time.Instant
 import java.time.ZoneOffset
@@ -54,11 +55,12 @@ class ThreadsRulesTest {
     }
 
     @Test
-    fun theSearchHistoryPutsTheNewestFirstOnceAndKeepsTwenty() {
+    fun theSearchHistoryPutsTheNewestFirstOnceKeepsTwentyAndForgetsOneOnAsking() {
         val history = (1..20).map { "q$it" }
-        assertEquals(listOf("q5") + history.filter { it != "q5" }, ThreadsSearchHistory.remembered(history, " q5 "))
-        assertEquals(20, ThreadsSearchHistory.remembered(history, "new").size)
-        assertEquals(history, ThreadsSearchHistory.remembered(history, "  "))
+        assertEquals(listOf("q5") + history.filter { it != "q5" }, PluginSearchHistory.remembered(history, " q5 "))
+        assertEquals(20, PluginSearchHistory.remembered(history, "new").size)
+        assertEquals(history, PluginSearchHistory.remembered(history, "  "))
+        assertEquals(history - "q7", PluginSearchHistory.forgotten(history, "q7"))
     }
 
     @Test
