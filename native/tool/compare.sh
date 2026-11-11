@@ -3,6 +3,9 @@
 #
 #   bash native/tool/compare.sh <XTA Native apk> <XTA apk> <output file>
 #
+# Where <XTA apk> is not a file (no XTA release to fetch one from), XTA Native
+# is measured alone.
+#
 # Each app is opened once to set itself up, then started cold five times as
 # installed and five times after Android has compiled it the way a day of use
 # does (speed-profile); the median of each five is reported. XTA Native opens
@@ -53,4 +56,8 @@ measure() {
 
 : > "$out"
 measure "XTA Native" com.aimdi.xtanative "$native_apk"
-measure "XTA" com.aimdi.xta "$xta_apk"
+if [ -f "$xta_apk" ]; then
+  measure "XTA" com.aimdi.xta "$xta_apk"
+else
+  echo "XTA: no APK to compare with" | tee -a "$out"
+fi

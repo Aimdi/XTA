@@ -233,10 +233,15 @@ jobs:
         run: |
           # The latest XTA release's x86_64 build, for the emulator, asked for
           # with the job's token: the API turns away a runner's unauthenticated
-          # calls once its address has made too many.
-          tag=$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName -q .tagName)
-          gh release download "$tag" --repo "$GITHUB_REPOSITORY" --pattern "xta-${tag}_x86_64.apk" --output "$RUNNER_TEMP/xta.apk"
-          echo "XTA $tag: $(stat -c %s "$RUNNER_TEMP/xta.apk") bytes"
+          # calls once its address has made too many. Without such a release
+          # XTA Native is measured alone (tool/compare.sh).
+          tag=$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName -q .tagName || true)
+          if [ -n "$tag" ] && gh release download "$tag" --repo "$GITHUB_REPOSITORY" --pattern "xta-${tag}_x86_64.apk" --output "$RUNNER_TEMP/xta.apk"; then
+            echo "XTA $tag: $(stat -c %s "$RUNNER_TEMP/xta.apk") bytes"
+          else
+            rm -f "$RUNNER_TEMP/xta.apk"
+            echo "No XTA release with an x86_64 APK to compare with${tag:+ (latest: $tag)}"
+          fi
 
       - name: Let the emulator use KVM
         run: |
@@ -261,7 +266,7 @@ jobs:
         run: |
           if [ -f native-screens/compare.txt ]; then
             cat native-screens/compare.txt
-            { echo "### XTA Native against XTA, on the emulator"; echo; echo '```'; cat native-screens/compare.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+            { echo "### Start, memory and size on the emulator"; echo; echo '```'; cat native-screens/compare.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
           fi
 
       - name: Keep the stand-in's log
