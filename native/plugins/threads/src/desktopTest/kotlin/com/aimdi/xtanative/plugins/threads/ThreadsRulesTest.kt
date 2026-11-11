@@ -2,6 +2,7 @@ package com.aimdi.xtanative.plugins.threads
 
 import com.aimdi.xtanative.networks.threads.ThreadsException
 import com.aimdi.xtanative.networks.threads.ThreadsFailure
+import com.aimdi.xtanative.networks.threads.ThreadsImage
 import com.aimdi.xtanative.networks.threads.ThreadsMedia
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsProfile
@@ -107,5 +108,18 @@ class ThreadsRulesTest {
     @Test
     fun everyGlyphDraws() {
         ThreadsIcons.all.forEach { assertTrue(it.root.iterator().hasNext(), it.name) }
+    }
+
+    @Test
+    fun theViewerShowsTheLargestPictureAndATileTheAppDrawsOneAPhoneWide() {
+        val sizes = listOf(ThreadsImage("https://cdn/1440.jpg", 1440, 1800), ThreadsImage("https://cdn/1080.jpg", 1080, 1350), ThreadsImage("https://cdn/320.jpg", 320, 400))
+        val post = ThreadsPost(id = "1", handle = "zuck", authorName = "Mark", text = "", media = listOf(ThreadsMedia("https://cdn/1440.jpg", 0.8, images = sizes)))
+        val item = ThreadsMediaItems.items(post, MediaQuality.LARGE).single()
+        assertEquals("https://cdn/1440.jpg", item.imageUrl, "the viewer's picture, and what a download saves")
+        assertNull(item.downloadUrl)
+        assertEquals("https://cdn/1080.jpg", item.tileUrl)
+
+        val plain = ThreadsMediaItems.items(post.copy(media = listOf(ThreadsMedia("https://cdn/only.jpg"))), MediaQuality.LARGE).single()
+        assertEquals("https://cdn/only.jpg", plain.tileUrl, "a picture with one address shows it")
     }
 }

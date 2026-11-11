@@ -22,10 +22,12 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
@@ -34,6 +36,7 @@ import coil3.compose.AsyncImage
 import com.aimdi.xtanative.networks.threads.ThreadsMedia
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.ui.plugins.MediaPager
+import kotlin.math.roundToInt
 
 private val MediaShape = RoundedCornerShape(16.dp)
 
@@ -41,8 +44,9 @@ private val MediaShape = RoundedCornerShape(16.dp)
  * A post's pictures and videos (threads_media.dart): one at its own shape
  * across the width, several along one row at one height that scrolls
  * sideways, the next one's edge in view. A tap opens the app's viewer at
- * that one, with Open post where the post [opens] on a tap; each picture is
- * decoded at the size it is shown.
+ * that one, with Open post where the post [opens] on a tap. Each tile loads
+ * the size Meta offers that fills its pixels ([ThreadsMedia.tileUrl]); the
+ * viewer shows, and a download saves, the largest.
  */
 @Composable
 internal fun ThreadsPostMedia(app: ThreadsApp, post: ThreadsPost, modifier: Modifier = Modifier, opens: Boolean = true) {
@@ -53,12 +57,15 @@ internal fun ThreadsPostMedia(app: ThreadsApp, post: ThreadsPost, modifier: Modi
         val width = with(density) { maxWidth.toPx() }
         val layout = ThreadsStrip.layout(width, media.map { it.aspectRatio })
         if (media.size == 1) {
-            MediaTile(media.single(), Modifier.fillMaxWidth().aspectRatio(ThreadsStrip.plugin(media.single().aspectRatio))) { app.openMedia(post, 0, opens) }
+            val shape = ThreadsStrip.plugin(media.single().aspectRatio)
+            MediaTile(media.single(), width.roundToInt(), (width / shape).roundToInt(), Modifier.fillMaxWidth().aspectRatio(shape)) { app.openMedia(post, 0, opens) }
         } else {
             val toDp = { px: Float -> with(density) { px.toDp() } }
             LazyRow(Modifier.fillMaxWidth().height(toDp(layout.height)), horizontalArrangement = Arrangement.spacedBy(ThreadsStrip.GAP.dp)) {
                 itemsIndexed(media, key = { index, item -> "$index:${item.url}" }) { index, item ->
-                    MediaTile(item, Modifier.width(toDp(layout.widths[index])).height(toDp(layout.height))) { app.openMedia(post, index, opens) }
+                    MediaTile(item, layout.widths[index].roundToInt(), layout.height.roundToInt(), Modifier.width(toDp(layout.widths[index])).height(toDp(layout.height))) {
+                        app.openMedia(post, index, opens)
+                    }
                 }
             }
         }
@@ -66,7 +73,8 @@ internal fun ThreadsPostMedia(app: ThreadsApp, post: ThreadsPost, modifier: Modi
 }
 
 @Composable
-private fun MediaTile(media: ThreadsMedia, modifier: Modifier, onClick: () -> Unit) {
+private fun MediaTile(media: ThreadsMedia, widthPx: Int, heightPx: Int, modifier: Modifier, onClick: () -> Unit) {
+    val picture = remember(media, widthPx, heightPx) { media.tileUrl(widthPx, heightPx) }
     Box(
         modifier
             .clip(MediaShape)
@@ -74,7 +82,13 @@ private fun MediaTile(media: ThreadsMedia, modifier: Modifier, onClick: () -> Un
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .clickable(onClick = onClick),
     ) {
-        AsyncImage(model = media.url, contentDescription = media.alt, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
+        AsyncImage(
+            model = picture,
+            contentDescription = media.alt,
+            contentScale = ContentScale.Crop,
+            filterQuality = FilterQuality.Medium,
+            modifier = Modifier.fillMaxSize(),
+        )
         if (media.isVideo) PlayBadge(Modifier.align(Alignment.Center))
     }
 }

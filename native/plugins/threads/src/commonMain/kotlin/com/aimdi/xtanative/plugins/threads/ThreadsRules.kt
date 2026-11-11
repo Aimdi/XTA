@@ -59,9 +59,14 @@ internal enum class ThreadsCount { FOLLOWERS, FOLLOWING, POSTS }
  * offers, and its quality menu lists those named by their lines ("720p"); a
  * post kept before renditions were plays its one file. The viewer plays it
  * on Android and, through libmpv, on the desktop; a desktop without libmpv
- * opens the post on the web.
+ * opens the post on the web. The viewer and a download take the largest
+ * picture Meta offers; a tile the app draws (Saved, a note) takes the size
+ * that fills a phone's width, [TILE_WIDTH], rather than the original.
  */
 internal object ThreadsMediaItems {
+    /** As wide as a tile gets where the app lays it out: a large phone's width in pixels. */
+    const val TILE_WIDTH = 1080
+
     fun items(post: ThreadsPost, quality: MediaQuality): List<MediaItem> = post.media.map { media -> item(post, media, quality) }
 
     /** Each item's qualities, highest first, for the viewer's menu. */
@@ -72,9 +77,13 @@ internal object ThreadsMediaItems {
 
     /** A picture or video of [post], the viewer's Share giving the post, as XTA's (threads_models.dart). */
     private fun item(post: ThreadsPost, media: ThreadsMedia, quality: MediaQuality): MediaItem {
-        if (!media.isVideo) return MediaItem(imageUrl = media.url, aspectRatio = media.aspectRatio?.toFloat(), alt = media.alt, shareUrl = post.url)
+        val tile = media.tileUrl(TILE_WIDTH).takeIf { it != media.url }
+        if (!media.isVideo) {
+            return MediaItem(imageUrl = media.url, aspectRatio = media.aspectRatio?.toFloat(), alt = media.alt, thumbUrl = tile, shareUrl = post.url)
+        }
         return MediaItem(
             imageUrl = media.url,
+            thumbUrl = tile,
             kind = MediaItem.Kind.VIDEO,
             videoUrl = VideoRules.defaultUrl(qualities(media), media.videoUrl, quality),
             aspectRatio = media.aspectRatio?.toFloat(),

@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.request.crossfade
+import com.aimdi.xtanative.ui.common.addPlatformPictureDecoders
 import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.data.plugins.AppPlugins
 import com.aimdi.xtanative.ui.common.FullPageError
@@ -71,5 +72,9 @@ private fun RootOrBroken(graph: AppGraph) {
 @Composable
 fun appName(): String = stringResource(Res.string.app_name)
 
-/** The one image loader of the process, which each shell installs: pictures fade in, and those cached too long ago go. */
-fun appImageLoader(context: PlatformContext): ImageLoader = ImageLoader.Builder(context).crossfade(true).build().also(::trimImageCache)
+/** The one image loader of the process, which each shell installs: pictures fade in, the desktop shrinks them smoothly, and those cached too long ago go. */
+fun appImageLoader(context: PlatformContext): ImageLoader = ImageLoader.Builder(context)
+    .components { addPlatformPictureDecoders() }
+    .crossfade(true)
+    .build()
+    .also(::trimImageCache)

@@ -18,9 +18,16 @@ data class ThreadsVideoRendition(val url: String, val width: Int? = null, val he
     val area: Long get() = (width ?: 0).toLong() * (height ?: 0)
 }
 
+/**
+ * One size of a picture Meta offers (a candidate of `image_versions2`). A side
+ * is null when Meta did not say it: the size its address names then stands in
+ * where sizes are compared ([ThreadsImages]), never where a shape is drawn.
+ */
+data class ThreadsImage(val url: String, val width: Int? = null, val height: Int? = null)
+
 /** A picture a post shows, or a video shown by its poster. */
 data class ThreadsMedia(
-    /** The picture, or the video's poster. */
+    /** The picture at the largest size Meta offers, or the video's poster: what the viewer shows and a download saves. */
     val url: String,
     /** Width over height, when Meta gave a size. */
     val aspectRatio: Double? = null,
@@ -28,7 +35,16 @@ data class ThreadsMedia(
     val alt: String? = null,
     /** Every file Meta offers for a video, largest first: empty for a still. */
     val renditions: List<ThreadsVideoRendition> = emptyList(),
+    /** Every size Meta offers of the picture, largest first; empty when only [url] is known. */
+    val images: List<ThreadsImage> = emptyList(),
 ) {
+    /**
+     * The address a tile [width] by [height] pixels loads: the smallest size
+     * that still fills it, so a feed neither blurs a picture nor downloads
+     * the original for a thumbnail; [url] when no size is known to fit.
+     */
+    fun tileUrl(width: Int, height: Int = 0): String = ThreadsImages.fitting(images, width, height)?.url ?: url
+
     /** The file a video plays: the largest Meta offers. */
     val videoUrl: String? get() = renditions.firstOrNull()?.url
 
@@ -143,9 +159,14 @@ data class ThreadsProfile(
     val followingCount: Long? = null,
     val mediaCount: Long? = null,
     val externalUrl: String? = null,
+    /** The largest picture Meta offers of the profile (`hd_profile_pic_versions`); null when it gave only [profilePicUrl]. */
+    val hdPictureUrl: String? = null,
 ) {
     /** The name to show: the display name, or the handle when there is none. */
     val displayName: String get() = fullName.trim().ifEmpty { username }
+
+    /** The picture a profile's own page shows, and its viewer: the largest known. Rows keep [profilePicUrl], the small one. */
+    val pictureUrl: String get() = hdPictureUrl?.trim()?.ifEmpty { null } ?: profilePicUrl
 
     companion object {
         /**

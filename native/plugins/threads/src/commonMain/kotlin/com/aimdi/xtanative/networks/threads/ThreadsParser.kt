@@ -73,19 +73,44 @@ object ThreadsParser {
         return fragments.takeIf { spelled == caption && fragments.any { it.kind != Kind.TEXT } } ?: emptyList()
     }
 
-    /** Every picture or video a post shows, a carousel's in order; posters stand in for videos. */
+    /**
+     * Every picture or video a post shows, a carousel's in order; posters stand
+     * in for videos. Each keeps every size Meta offers, the largest as its own
+     * address, and the largest's shape when Meta sized it.
+     */
     fun media(post: J): List<ThreadsMedia> {
         val seen = HashSet<String>()
         return post["carousel_media"].list.ifEmpty { listOf(post) }.mapNotNull { media ->
-            val (url, aspect) = bestCandidate(media["image_versions2"])
-            if (url.isNullOrEmpty() || !seen.add(url)) return@mapNotNull null
+            val images = images(media["image_versions2"])
+            val largest = images.firstOrNull() ?: return@mapNotNull null
+            if (!seen.add(largest.url)) return@mapNotNull null
             val fallback = aspectOf(
                 media["original_width"].integer ?: post["original_width"].integer,
                 media["original_height"].integer ?: post["original_height"].integer,
             )
-            ThreadsMedia(url, aspect ?: fallback, media["accessibility_caption"].string?.trim()?.ifEmpty { null }, videoRenditions(media))
+            val aspect = aspectOf(largest.width?.toLong(), largest.height?.toLong())
+            ThreadsMedia(largest.url, aspect ?: fallback, media["accessibility_caption"].string?.trim()?.ifEmpty { null }, videoRenditions(media), images)
         }
     }
+
+    /** Every size Meta offers of a picture (`image_versions2.candidates`), largest first, as [ThreadsImages.ordered] ranks them. */
+    fun images(versions: J): List<ThreadsImage> = ThreadsImages.ordered(
+        versions["candidates"].list.mapNotNull { candidate ->
+            candidate["url"].string?.takeIf { it.isNotEmpty() }?.let { url ->
+                ThreadsImage(url, positive(candidate["width"].integer), positive(candidate["height"].integer))
+            }
+        },
+    )
+
+    /**
+     * The largest picture Meta offers of a user: the widest of
+     * `hd_profile_pic_url_info` and `hd_profile_pic_versions`; null when it
+     * sent only the small `profile_pic_url`.
+     */
+    fun hdPicture(user: J): String? = (listOf(user["hd_profile_pic_url_info"]) + user["hd_profile_pic_versions"].list)
+        .mapNotNull { version -> version["url"].string?.takeIf { it.isNotEmpty() }?.let { it to (version["width"].integer ?: 0) } }
+        .maxByOrNull { it.second }
+        ?.first
 
     /**
      * Every file Meta offers for a video, largest first (in Meta's order where
@@ -141,12 +166,13 @@ object ThreadsParser {
             fullName = user["full_name"].string.orEmpty(),
             isVerified = user["is_verified"].boolean ?: false,
             isPrivate = user["is_private"].boolean ?: false,
-            profilePicUrl = user["profile_pic_url"].string ?: user["hd_profile_pic_url_info"]["url"].string.orEmpty(),
+            profilePicUrl = user["profile_pic_url"].string?.ifEmpty { null } ?: hdPicture(user).orEmpty(),
             biography = user["biography"].string.orEmpty(),
             followerCount = user["follower_count"].integer ?: 0,
             followingCount = user["following_count"].integer ?: 0,
             mediaCount = user["media_count"].integer ?: 0,
             externalUrl = user["external_url"].string?.trim()?.ifEmpty { null },
+            hdPictureUrl = hdPicture(user),
         )
     }
 
@@ -191,7 +217,7 @@ object ThreadsParser {
             handle = handle,
             authorName = user["full_name"].string.orEmpty().trim().ifEmpty { handle },
             text = text,
-            avatarUrl = user["profile_pic_url"].string ?: user["hd_profile_pic_url_info"]["url"].string,
+            avatarUrl = user["profile_pic_url"].string?.ifEmpty { null } ?: hdPicture(user),
             media = media,
             publishedAt = takenAt(post),
             url = code?.let { "${ThreadsLinks.WEB}/@$handle/post/$it" },
@@ -227,23 +253,6 @@ object ThreadsParser {
 
     private fun tagTarget(tag: J, text: String): String? =
         (tag["display_name"].string ?: tag["tag_name"].string ?: text).trim().removePrefix("#").ifEmpty { null }
-
-    /** The largest picture Meta offers, and its shape when sized. */
-    private fun bestCandidate(versions: J): Pair<String?, Double?> {
-        var best: String? = null
-        var bestArea = -1L
-        var aspect: Double? = null
-        for (candidate in versions["candidates"].list) {
-            val url = candidate["url"].string?.takeIf { it.isNotEmpty() } ?: continue
-            val width = candidate["width"].integer ?: 0
-            val height = candidate["height"].integer ?: 0
-            if (width * height < bestArea) continue
-            bestArea = width * height
-            best = url
-            if (width > 0 && height > 0) aspect = width.toDouble() / height
-        }
-        return best to aspect
-    }
 
     private fun aspectOf(width: Long?, height: Long?): Double? =
         if (width != null && height != null && width > 0 && height > 0) width.toDouble() / height else null

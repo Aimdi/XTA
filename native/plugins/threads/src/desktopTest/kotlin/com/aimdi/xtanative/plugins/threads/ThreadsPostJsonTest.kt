@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.plugins.threads
 
 import com.aimdi.xtanative.core.json.J
+import com.aimdi.xtanative.networks.threads.ThreadsImage
 import com.aimdi.xtanative.networks.threads.ThreadsLinkCard
 import com.aimdi.xtanative.networks.threads.ThreadsMedia
 import com.aimdi.xtanative.networks.threads.ThreadsPost
@@ -81,5 +82,30 @@ class ThreadsPostJsonTest {
     fun aRowWithoutAnIdIsDropped() {
         assertEquals(emptyList(), ThreadsPostJson.list("""[{"handle":"zuck"},"x",3]"""))
         assertEquals(emptyList(), ThreadsPostJson.list("not json"))
+    }
+
+    @Test
+    fun everySizeOfAPictureIsKeptBesideXtasListsSoAKeptPostsTilesStillFit() {
+        val sizes = listOf(ThreadsImage("https://cdn/big.jpg", 1440, 1800), ThreadsImage("https://cdn/small.jpg", 320, 400))
+        val pictured = post.copy(media = listOf(ThreadsMedia("https://cdn/big.jpg", 0.8, images = sizes)), quoted = null)
+
+        val json = J(ThreadsPostJson.json(pictured))
+        assertEquals("https://cdn/big.jpg", json["images"][0].string, "XTA's own list still names the largest")
+        assertEquals(320L, json["imageSizes"][0][1]["width"].long)
+
+        val back = ThreadsPostJson.post(json)!!
+        assertEquals(sizes, back.media.single().images)
+        assertEquals("https://cdn/small.jpg", back.media.single().tileUrl(300))
+    }
+
+    @Test
+    fun sizesKeptForAnotherAddressAreNotThePictures() {
+        val kept = """{"id":"1","handle":"zuck","images":["https://cdn/new.jpg"],
+            "imageSizes":[[{"url":"https://cdn/old.jpg","width":1440,"height":1800},{"url":"https://cdn/old-small.jpg","width":320,"height":400}]]}"""
+
+        val read = ThreadsPostJson.post(J.parse(kept))!!
+
+        assertEquals(emptyList(), read.media.single().images)
+        assertEquals("https://cdn/new.jpg", read.media.single().tileUrl(300))
     }
 }

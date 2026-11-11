@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.plugins.threads
 
 import com.aimdi.xtanative.core.json.J
+import com.aimdi.xtanative.networks.threads.ThreadsImage
 import com.aimdi.xtanative.networks.threads.ThreadsLinkCard
 import com.aimdi.xtanative.networks.threads.ThreadsMedia
 import com.aimdi.xtanative.networks.threads.ThreadsPost
@@ -18,7 +19,9 @@ import kotlinx.serialization.json.JsonPrimitive
  * `toJson` and `fromSnapshot`): the liked posts and the tab's restart
  * snapshot, in the preferences XTA writes them to, so both apps read each
  * other's. Its media are four lists side by side, every video rendition kept;
- * a quote is kept one level deep.
+ * a quote is kept one level deep. `imageSizes`, a list XTA does not read,
+ * keeps every size Meta offered of each picture, so a kept post's tiles
+ * still load one that fits them.
  */
 internal object ThreadsPostJson {
     fun list(text: String): List<ThreadsPost> = J.parse(text).list.mapNotNull(::post)
@@ -68,6 +71,7 @@ internal object ThreadsPostJson {
             "images" to JsonArray(post.media.map { text(it.url) }),
             "imageAspects" to JsonArray(post.media.map { media -> media.aspectRatio?.let(::JsonPrimitive) ?: JsonNull }),
             "imageAlts" to JsonArray(post.media.map { text(it.alt) }),
+            "imageSizes" to JsonArray(post.media.map { media -> JsonArray(media.images.map(::image)) }),
             "videoUrls" to JsonArray(post.media.map { text(it.videoUrl) }),
             "videoRenditions" to JsonArray(post.media.map { media -> JsonArray(media.renditions.map(::rendition)) }),
             "publishedAt" to text(post.publishedAt?.let(XtaTime::iso)),
@@ -97,7 +101,17 @@ internal object ThreadsPostJson {
         val url = image.string ?: return@mapIndexedNotNull null
         val kept = row["videoRenditions"][index].list.mapNotNull(::rendition)
         val single = row["videoUrls"][index].string?.takeIf { it.isNotEmpty() }?.let { listOf(ThreadsVideoRendition(it)) }.orEmpty()
-        ThreadsMedia(url, row["imageAspects"][index].double, row["imageAlts"][index].string, kept.ifEmpty { single })
+        // Sizes kept for another address are not this picture's: XTA may have rewritten the post since.
+        val sizes = row["imageSizes"][index].list.mapNotNull(::image).takeIf { it.firstOrNull()?.url == url }.orEmpty()
+        ThreadsMedia(url, row["imageAspects"][index].double, row["imageAlts"][index].string, kept.ifEmpty { single }, sizes)
+    }
+
+    private fun image(image: ThreadsImage): JsonObject =
+        JsonObject(mapOf("url" to text(image.url), "width" to number(image.width?.toLong()), "height" to number(image.height?.toLong())))
+
+    private fun image(row: J): ThreadsImage? {
+        val url = row["url"].string?.takeIf { it.isNotEmpty() } ?: return null
+        return ThreadsImage(url, size(row["width"]), size(row["height"]))
     }
 
     private fun rendition(rendition: ThreadsVideoRendition): JsonObject =
