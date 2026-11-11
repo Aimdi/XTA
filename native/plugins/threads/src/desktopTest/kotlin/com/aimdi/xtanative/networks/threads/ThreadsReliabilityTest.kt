@@ -4,7 +4,13 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import com.aimdi.xtanative.core.json.J
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import org.jsoup.Jsoup
 
 /** Reading a page of a megabyte without paying for it twice, and surviving what Meta reshapes. */
@@ -99,5 +105,36 @@ class ThreadsReliabilityTest {
         assertEquals("777", kept["new"])
         assertNull(kept["h1"], "the one learnt longest ago makes room")
         assertEquals("2", kept["h2"])
+    }
+
+    @Test
+    fun anyFieldMetaReshapesIsSkippedNeverThrown() {
+        val kept = ThreadsJson.decode(fixture("graphql_profile_threads.json"))!!
+        val shapes = listOf(JsonNull, JsonPrimitive("x"), JsonPrimitive(-1), JsonPrimitive(1e300), JsonPrimitive(true), JsonArray(listOf(JsonPrimitive(1))), JsonObject(emptyMap()))
+        var reshaped = 0
+        paths(kept).forEach { path ->
+            shapes.forEach { shape ->
+                val drifted = replaced(kept, path, shape)
+                ThreadsParser.graphqlFeed(J(drifted)).forEach { post -> post.media.forEach { it.tileUrl(300) } }
+                reshaped++
+            }
+        }
+        assertTrue(reshaped > 500, "$reshaped reshapes")
+    }
+
+    private fun paths(node: JsonElement, at: List<Any> = emptyList()): List<List<Any>> = when (node) {
+        is JsonObject -> node.flatMap { (key, value) -> listOf(at + key) + paths(value, at + key) }
+        is JsonArray -> node.flatMapIndexed { index, value -> listOf(at + index) + paths(value, at + index) }
+        else -> emptyList()
+    }
+
+    private fun replaced(node: JsonElement, path: List<Any>, with: JsonElement): JsonElement {
+        if (path.isEmpty()) return with
+        val step = path.first()
+        return when {
+            node is JsonObject && step is String -> JsonObject(node.toMutableMap().also { it[step] = replaced(it.getValue(step), path.drop(1), with) })
+            node is JsonArray && step is Int -> JsonArray(node.toMutableList().also { it[step] = replaced(it[step], path.drop(1), with) })
+            else -> node
+        }
     }
 }
