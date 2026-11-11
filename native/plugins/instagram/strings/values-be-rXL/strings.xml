@@ -64,4 +64,5 @@
     <string name="settings_title">Nalady Instagram</string>
     <string name="show_tab">Pakazvać układku Instagram</string>
     <string name="show_tab_description">Dadaje Instagram u nižniuju navihacyju, kali ŭbudova ŭklučana</string>
+    <string name="error_hidden">Instagram nie pakazaŭ hety profil hosciu z vašaj sietki. Ustaŭcie cookies abo skapirujcie ich z Threads, ci pasprabujcie paźniej.</string>
 </resources>

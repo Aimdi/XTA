@@ -64,4 +64,5 @@
     <string name="settings_title">Ajustes de Instagram</string>
     <string name="show_tab">Mostrar pestaña de Instagram</string>
     <string name="show_tab_description">Añade Instagram a la navegación inferior cuando el complemento está activado</string>
+    <string name="error_hidden">Instagram no ha querido mostrar este perfil a un invitado desde tu red. Pega las cookies o cópialas de Threads, o inténtalo más tarde.</string>
 </resources>

@@ -64,4 +64,5 @@
     <string name="settings_title">Réglages Instagram</string>
     <string name="show_tab">Afficher l’onglet Instagram</string>
     <string name="show_tab_description">Ajoute Instagram à la navigation inférieure lorsque le greffon est activé</string>
+    <string name="error_hidden">Instagram n\'a pas voulu montrer ce profil à un invité depuis votre réseau. Collez des cookies ou copiez-les depuis Threads, ou réessayez plus tard.</string>
 </resources>

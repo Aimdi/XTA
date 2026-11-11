@@ -66,4 +66,5 @@
     <string name="settings_title">Instagram settings</string>
     <string name="show_tab">Show Instagram tab</string>
     <string name="show_tab_description">Adds Instagram to the bottom navigation when the plugin is enabled</string>
+    <string name="error_hidden">Instagram would not show this profile to a guest from your network. Paste cookies or copy them from Threads, or try again later.</string>
 </resources>

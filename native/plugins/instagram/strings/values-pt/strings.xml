@@ -64,4 +64,5 @@
     <string name="settings_title">Definições do Instagram</string>
     <string name="show_tab">Mostrar separador do Instagram</string>
     <string name="show_tab_description">Adiciona o Instagram à navegação inferior quando o extra está ativo</string>
+    <string name="error_hidden">O Instagram não quis mostrar este perfil a um convidado a partir da sua rede. Cole os cookies ou copie-os do Threads, ou tente mais tarde.</string>
 </resources>

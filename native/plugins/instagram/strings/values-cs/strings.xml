@@ -64,4 +64,5 @@
     <string name="settings_title">Nastavení Instagramu</string>
     <string name="show_tab">Zobrazit kartu Instagram</string>
     <string name="show_tab_description">Přidá Instagram do spodní navigace, když je zásuvný modul zapnutý</string>
+    <string name="error_hidden">Instagram tento profil hostovi z vaší sítě nezobrazil. Vložte cookies nebo je zkopírujte z Threads, případně to zkuste později.</string>
 </resources>

@@ -64,4 +64,5 @@
     <string name="settings_title">Instagram-Einstellungen</string>
     <string name="show_tab">Instagram-Tab anzeigen</string>
     <string name="show_tab_description">Fügt Instagram zur unteren Navigation hinzu, wenn das Plugin aktiv ist</string>
+    <string name="error_hidden">Instagram zeigt dieses Profil Gästen aus deinem Netzwerk nicht. Cookies einfügen oder aus Threads kopieren, oder später erneut versuchen.</string>
 </resources>

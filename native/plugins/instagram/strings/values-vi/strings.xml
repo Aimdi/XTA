@@ -64,4 +64,5 @@
     <string name="settings_title">Cài đặt Instagram</string>
     <string name="show_tab">Hiện thẻ Instagram</string>
     <string name="show_tab_description">Thêm Instagram vào thanh điều hướng dưới khi plugin được bật</string>
+    <string name="error_hidden">Instagram không hiển thị hồ sơ này cho khách từ mạng của bạn. Hãy dán cookie hoặc sao chép từ Threads, hoặc thử lại sau.</string>
 </resources>

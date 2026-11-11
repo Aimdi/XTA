@@ -64,4 +64,5 @@
     <string name="settings_title">Instagrami seaded</string>
     <string name="show_tab">Näita Instagrami vahekaarti</string>
     <string name="show_tab_description">Lisab Instagrami alumisse navigeerimisse, kui plugin on sisse lülitatud</string>
+    <string name="error_hidden">Instagram ei näidanud seda profiili sinu võrgust tulnud külalisele. Kleebi küpsised või kopeeri need Threadsist, või proovi hiljem uuesti.</string>
 </resources>

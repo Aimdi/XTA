@@ -27,7 +27,9 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
  * A refusal is a [NetworkRequestException] named [NETWORK]: [NOT_FOUND] when
  * there is no such account, [RATE_LIMITED] while Instagram is limiting, 401
  * or 403 when it wants a login (its login page or `login_required`, though
- * answered with 200, is [LOGIN_REQUIRED]), [UNREADABLE] for an answer that is
+ * answered with 200, is [LOGIN_REQUIRED]), [HIDDEN] when it answers a JSON
+ * read with one of its web pages' "Page Not Found" (as it answers datacenter
+ * addresses for accounts that exist), [UNREADABLE] for an answer that is
  * not the JSON asked for, and any other status as Instagram sent it. No
  * connection stays the IOException.
  *
@@ -218,8 +220,9 @@ class InstagramClient(
     }
 
     private fun refusalOf(response: XResponse, url: HttpUrl, html: Boolean): NetworkRequestException? = when {
+        !html && response.code == NOT_FOUND && isWebPage(response.body) -> refusal(HIDDEN, "Instagram answered ${url.encodedPath} with its Page Not Found")
         !response.isSuccessful -> refusal(response.code, "Instagram answered ${response.code} to ${url.encodedPath}")
-        !html && isLoginPage(response.body) -> refusal(LOGIN_REQUIRED, "Instagram answered ${url.encodedPath} with its login page")
+        !html && isWebPage(response.body) -> refusal(LOGIN_REQUIRED, "Instagram answered ${url.encodedPath} with its login page")
         else -> null
     }
 
@@ -261,6 +264,9 @@ class InstagramClient(
         /** Instagram's login wall: its login page or `login_required` where JSON was asked for, both answered with 200. */
         const val LOGIN_REQUIRED = 401
 
+        /** A JSON read answered with Instagram's "Page Not Found" web page: hidden from this network, not missing. */
+        const val HIDDEN = 451
+
         /** An answer that is not the JSON asked for. */
         const val UNREADABLE = 502
 
@@ -284,9 +290,9 @@ class InstagramClient(
 
         private fun refusal(code: Int, message: String) = NetworkRequestException(NETWORK, code, message)
 
-        private fun isWallOrLimit(code: Int): Boolean = code == 401 || code == 403 || code == RATE_LIMITED
+        private fun isWallOrLimit(code: Int): Boolean = code == 401 || code == 403 || code == RATE_LIMITED || code == HIDDEN
 
-        private fun isLoginPage(body: String): Boolean = !body.startsWith("{") && !body.startsWith("[") && "<html" in body
+        private fun isWebPage(body: String): Boolean = !body.startsWith("{") && !body.startsWith("[") && "<html" in body
 
         private fun headerOf(cookies: Map<String, String>): String = cookies.entries.joinToString("; ") { "${it.key}=${it.value}" }
 

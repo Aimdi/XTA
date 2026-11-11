@@ -64,4 +64,5 @@
     <string name="settings_title">Setări Instagram</string>
     <string name="show_tab">Afișează fila Instagram</string>
     <string name="show_tab_description">Adaugă Instagram în navigarea de jos când modulul este activat</string>
+    <string name="error_hidden">Instagram nu a afișat acest profil unui vizitator din rețeaua ta. Lipește cookie-urile sau copiază-le din Threads, ori încearcă mai târziu.</string>
 </resources>

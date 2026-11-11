@@ -79,6 +79,7 @@ class InstagramLiveTest {
         val answers = listOf(
             XResponse(200, "<html><head><title>Instagram</title></head></html>", mapOf("Content-Type" to listOf("text/html"))),
             XResponse(404, "<html><head><title>Page Not Found &bull; Instagram</title></head></html>", mapOf("Content-Type" to listOf("text/html; charset=utf-8"))),
+            XResponse(404, "<html><head><title>Page Not Found &bull; Instagram</title></head></html>", mapOf("Content-Type" to listOf("text/html; charset=utf-8"))),
         ).iterator()
         val routes = RouteLog(
             object : XHttp {
@@ -86,9 +87,10 @@ class InstagramLiveTest {
             },
         )
 
-        runCatching { InstagramClient(routes).profile("instagram") }
+        val failure = runCatching { InstagramClient(routes).profile("instagram") }.exceptionOrNull()
 
         assertTrue(routes.endedOnAPage404())
+        assertEquals(InstagramClient.HIDDEN, (failure as? NetworkRequestException)?.code, "the reader is told the account is hidden, not missing")
     }
 }
 

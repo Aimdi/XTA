@@ -64,4 +64,5 @@
     <string name="settings_title">Configuració d’Instagram</string>
     <string name="show_tab">Mostra la pestanya d’Instagram</string>
     <string name="show_tab_description">Afegeix Instagram a la navegació inferior quan el connector està activat</string>
+    <string name="error_hidden">Instagram no ha volgut mostrar aquest perfil a un convidat des de la teva xarxa. Enganxa les galetes o copia-les de Threads, o torna-ho a provar més tard.</string>
 </resources>

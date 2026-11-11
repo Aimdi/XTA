@@ -64,4 +64,5 @@
     <string name="settings_title">Pengaturan Instagram</string>
     <string name="show_tab">Tampilkan tab Instagram</string>
     <string name="show_tab_description">Menambahkan Instagram ke navigasi bawah saat plugin diaktifkan</string>
+    <string name="error_hidden">Instagram tidak mau menampilkan profil ini kepada tamu dari jaringan Anda. Tempel cookie atau salin dari Threads, atau coba lagi nanti.</string>
 </resources>

@@ -64,4 +64,5 @@
     <string name="settings_title">Configurações do Instagram</string>
     <string name="show_tab">Mostrar aba do Instagram</string>
     <string name="show_tab_description">Adiciona o Instagram à navegação inferior quando o plugin está ativado</string>
+    <string name="error_hidden">O Instagram não quis mostrar este perfil para um visitante da sua rede. Cole os cookies ou copie do Threads, ou tente de novo mais tarde.</string>
 </resources>

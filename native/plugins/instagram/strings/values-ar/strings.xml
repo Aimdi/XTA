@@ -64,4 +64,5 @@
     <string name="settings_title">إعدادات إنستغرام</string>
     <string name="show_tab">إظهار تبويب إنستغرام</string>
     <string name="show_tab_description">يضيف إنستغرام إلى شريط التنقل السفلي عند تفعيل الإضافة</string>
+    <string name="error_hidden">رفض Instagram عرض هذا الملف الشخصي لزائر من شبكتك. الصق ملفات تعريف الارتباط أو انسخها من Threads، أو حاول لاحقًا.</string>
 </resources>

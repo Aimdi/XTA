@@ -64,4 +64,5 @@
     <string name="settings_title">Instagram-innstillinger</string>
     <string name="show_tab">Vis Instagram-fane</string>
     <string name="show_tab_description">Legger Instagram til i bunnnavigasjonen når programtillegget er slått på</string>
+    <string name="error_hidden">Instagram ville ikke vise denne profilen til en gjest fra nettverket ditt. Lim inn informasjonskapsler eller kopier dem fra Threads, eller prøv igjen senere.</string>
 </resources>

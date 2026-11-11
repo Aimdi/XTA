@@ -64,4 +64,5 @@
     <string name="settings_title">Instagram 設定</string>
     <string name="show_tab">顯示 Instagram 分頁</string>
     <string name="show_tab_description">啟用外掛後，將 Instagram 加入底部導覽</string>
+    <string name="error_hidden">Instagram 不向來自你所在網路的訪客顯示此個人檔案。請貼上 Cookie 或從 Threads 複製，或稍後再試。</string>
 </resources>

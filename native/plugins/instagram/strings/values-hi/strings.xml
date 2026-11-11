@@ -64,4 +64,5 @@
     <string name="settings_title">Instagram सेटिंग्स</string>
     <string name="show_tab">Instagram टैब दिखाएँ</string>
     <string name="show_tab_description">प्लगिन चालू होने पर Instagram को निचले नेविगेशन में जोड़ता है</string>
+    <string name="error_hidden">Instagram ने आपके नेटवर्क से आए अतिथि को यह प्रोफ़ाइल नहीं दिखाई। कुकीज़ चिपकाएँ या Threads से कॉपी करें, या बाद में फिर कोशिश करें।</string>
 </resources>

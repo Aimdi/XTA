@@ -64,4 +64,5 @@
     <string name="settings_title">Налаштування Instagram</string>
     <string name="show_tab">Показувати вкладку Instagram</string>
     <string name="show_tab_description">Додає Instagram у нижню навігацію, коли додаток увімкнено</string>
+    <string name="error_hidden">Instagram не показав цей профіль гостю з вашої мережі. Вставте cookies або скопіюйте їх із Threads, чи спробуйте пізніше.</string>
 </resources>

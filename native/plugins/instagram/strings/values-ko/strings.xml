@@ -64,4 +64,5 @@
     <string name="settings_title">Instagram 설정</string>
     <string name="show_tab">Instagram 탭 표시</string>
     <string name="show_tab_description">플러그인이 켜져 있을 때 하단 탐색에 Instagram을 추가합니다</string>
+    <string name="error_hidden">Instagram이 사용자 네트워크의 게스트에게 이 프로필을 보여주지 않았습니다. 쿠키를 붙여넣거나 Threads에서 복사하거나, 나중에 다시 시도하세요.</string>
 </resources>

@@ -125,6 +125,25 @@ class InstagramClientTest {
     }
 
     @Test
+    fun aPageNotFoundInPlaceOfJsonIsTheAccountHiddenAndWwwIsAsked() = runBlocking<Unit> {
+        val page = XResponse(404, "<html><head><title>Page Not Found &bull; Instagram</title></head></html>")
+        val hidden = FakeInstagram { url -> if (url.encodedPath == "/") home else page }
+        val refused = refusal { InstagramClient(hidden).profile("instagram") }
+        assertEquals(InstagramClient.HIDDEN, refused.code)
+        assertEquals(listOf("i.instagram.com", "www.instagram.com"), hidden.urls.filter { isWebProfile(it) }.map { it.host })
+
+        val wwwAnswers = FakeInstagram { url ->
+            when {
+                url.encodedPath == "/" -> home
+                url.host == "i.instagram.com" -> page
+                else -> ok(profileJson())
+            }
+        }
+        assertEquals("25025320", InstagramClient(wwwAnswers).profile("instagram").id)
+        assertEquals(InstagramClient.NOT_FOUND, refusal { InstagramClient(FakeInstagram { missing }).userFeed("1") }.code, "a bare 404 is still no such thing")
+    }
+
+    @Test
     fun loginRequiredJsonIsLoginRequired() {
         val instagram = FakeInstagram { url -> if (url.encodedPath == "/") home else ok(fixture("login_required.json")) }
         assertEquals(InstagramClient.LOGIN_REQUIRED, refusal { InstagramClient(instagram).searchUsers("nasa") }.code)

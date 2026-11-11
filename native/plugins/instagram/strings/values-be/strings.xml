@@ -64,4 +64,5 @@
     <string name="settings_title">Налады Instagram</string>
     <string name="show_tab">Паказваць укладку Instagram</string>
     <string name="show_tab_description">Дадае Instagram у ніжнюю навігацыю, калі ўбудова ўключана</string>
+    <string name="error_hidden">Instagram не паказаў гэты профіль госцю з вашай сеткі. Устаўце cookies або скапіруйце іх з Threads, ці паспрабуйце пазней.</string>
 </resources>

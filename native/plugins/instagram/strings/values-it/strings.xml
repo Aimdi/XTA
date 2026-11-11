@@ -64,4 +64,5 @@
     <string name="settings_title">Impostazioni Instagram</string>
     <string name="show_tab">Mostra scheda Instagram</string>
     <string name="show_tab_description">Aggiunge Instagram alla navigazione in basso quando il plugin è attivo</string>
+    <string name="error_hidden">Instagram non mostra questo profilo a un ospite dalla tua rete. Incolla i cookie o copiali da Threads, oppure riprova più tardi.</string>
 </resources>

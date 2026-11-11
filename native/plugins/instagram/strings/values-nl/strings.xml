@@ -64,4 +64,5 @@
     <string name="settings_title">Instagram-instellingen</string>
     <string name="show_tab">Instagram-tabblad tonen</string>
     <string name="show_tab_description">Voegt Instagram toe aan de onderste navigatie als de plugin aan staat</string>
+    <string name="error_hidden">Instagram wilde dit profiel niet tonen aan een gast vanaf je netwerk. Plak cookies of kopieer ze uit Threads, of probeer het later opnieuw.</string>
 </resources>

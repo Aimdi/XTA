@@ -64,4 +64,5 @@
     <string name="settings_title">Instagram ezarpenak</string>
     <string name="show_tab">Erakutsi Instagram fitxa</string>
     <string name="show_tab_description">Instagram gehitzen du beheko nabigaziora plugin-a gaituta dagoenean</string>
+    <string name="error_hidden">Instagramek ez dio profil hau zure saretik datorren gonbidatu bati erakutsi. Itsatsi cookieak edo kopiatu Threads-etik, edo saiatu berriro geroago.</string>
 </resources>

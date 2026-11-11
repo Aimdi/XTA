@@ -72,6 +72,8 @@ class InstagramPluginTest {
         assertEquals(Strings.error_rate_limited, InstagramFailures.of(refused(429)))
         assertEquals(Strings.error_login, InstagramFailures.of(refused(401)))
         assertEquals(Strings.error_login, InstagramFailures.of(refused(403)))
+        assertEquals(Strings.error_hidden, InstagramFailures.of(refused(InstagramClient.HIDDEN)))
+        assertEquals(Strings.error_hidden, InstagramFailures.of(Problem.Refused(InstagramClient.HIDDEN)))
         assertEquals(Strings.error_response, InstagramFailures.of(refused(502)))
         assertEquals(Strings.error_network, InstagramFailures.of(IOException("offline")))
         assertEquals(Strings.error_rate_limited, InstagramFailures.of(Problem.RateLimited))

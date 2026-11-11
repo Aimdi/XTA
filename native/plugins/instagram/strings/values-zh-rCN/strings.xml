@@ -64,4 +64,5 @@
     <string name="settings_title">Instagram 设置</string>
     <string name="show_tab">显示 Instagram 标签</string>
     <string name="show_tab_description">启用插件后，将 Instagram 加入底部导航</string>
+    <string name="error_hidden">Instagram 不向来自你所在网络的访客显示此主页。请粘贴 Cookie 或从 Threads 复制，或稍后再试。</string>
 </resources>

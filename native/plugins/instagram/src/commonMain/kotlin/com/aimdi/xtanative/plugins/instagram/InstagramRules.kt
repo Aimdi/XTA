@@ -30,6 +30,7 @@ internal object InstagramFailures {
     private fun ofCode(code: Int): PluginText = when (code) {
         InstagramClient.NOT_FOUND -> Strings.error_not_found
         InstagramClient.RATE_LIMITED -> Strings.error_rate_limited
+        InstagramClient.HIDDEN -> Strings.error_hidden
         InstagramClient.LOGIN_REQUIRED, 403 -> Strings.error_login
         else -> Strings.error_response
     }

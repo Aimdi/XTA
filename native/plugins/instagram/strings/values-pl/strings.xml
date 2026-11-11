@@ -64,4 +64,5 @@
     <string name="settings_title">Ustawienia Instagrama</string>
     <string name="show_tab">Pokaż kartę Instagram</string>
     <string name="show_tab_description">Dodaje Instagram do dolnej nawigacji, gdy wtyczka jest włączona</string>
+    <string name="error_hidden">Instagram nie pokazał tego profilu gościowi z Twojej sieci. Wklej ciasteczka lub skopiuj je z Threads albo spróbuj ponownie później.</string>
 </resources>

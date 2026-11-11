@@ -64,4 +64,5 @@
     <string name="settings_title">Instagramの設定</string>
     <string name="show_tab">Instagramタブを表示</string>
     <string name="show_tab_description">プラグインが有効なとき、下部ナビにInstagramを追加します</string>
+    <string name="error_hidden">Instagramはあなたのネットワークからのゲストにこのプロフィールを表示しませんでした。Cookieを貼り付けるかThreadsからコピーするか、後でもう一度お試しください。</string>
 </resources>
