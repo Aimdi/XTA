@@ -14,7 +14,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -46,9 +46,8 @@ import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.EmptyPane
 import com.aimdi.xtanative.ui.plugins.NetworkProblemView
 import com.aimdi.xtanative.ui.plugins.PagedItems
-import com.aimdi.xtanative.ui.plugins.PagedList
 import com.aimdi.xtanative.ui.plugins.PluginFrame
-import com.aimdi.xtanative.ui.plugins.PluginChipTabs
+import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.PullToReload
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
@@ -88,16 +87,16 @@ internal enum class HnTab(val feed: HnFeed?, val label: PluginText) {
         }
 }
 
-/** XTA's Hacker News reader (hn_screen.dart): its name, search and settings, the tabs, and the tab chosen. */
+/** XTA's Hacker News reader (hn_screen.dart): its tabs with the search and the settings beside them (one bar on its own screen), and the tab chosen. */
 @Composable
 internal fun HnHome(app: HnApp, frame: PluginFrame) {
     var tab by rememberSaveable { mutableStateOf(HnTab.TOP) }
     val panes = rememberSaveableStateHolder()
     Column(Modifier.fillMaxSize()) {
         ReadingControlsBar {
-            Column {
-                Header(app)
-                PluginChipTabs(HnTab.entries, tab, { tab = it }, icon = { it.icon }, label = { pluginString(it.label) })
+            PluginHomeTabs(HnTab.entries, tab, { tab = it }, icon = { it.icon }, label = { pluginString(it.label) }, accent = HnBrand) {
+                IconButton(onClick = { app.host.openSearch(null) }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) }
+                IconButton(onClick = app.host::openSettings) { Icon(Icons.Outlined.Settings, pluginString(Strings.settings)) }
             }
         }
         Hairline()
@@ -114,17 +113,6 @@ internal fun HnHome(app: HnApp, frame: PluginFrame) {
     }
 }
 
-@Composable
-private fun Header(app: HnApp) {
-    Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-        Icon(PostIcons.Forum, contentDescription = null, tint = HnBrand, modifier = Modifier.size(24.dp))
-        Spacer(Modifier.width(10.dp))
-        Text(pluginString(Strings.plugin_name), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
-        IconButton(onClick = { app.host.openSearch(null) }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) }
-        IconButton(onClick = app.host::openSettings) { Icon(Icons.Filled.Settings, pluginString(Strings.settings)) }
-    }
-}
-
 /** One of Hacker News' lists, ranked, read page by page as its end comes into view. */
 @Composable
 private fun FeedPane(app: HnApp, feed: HnFeed, frame: PluginFrame) {
@@ -134,7 +122,7 @@ private fun FeedPane(app: HnApp, feed: HnFeed, frame: PluginFrame) {
     val paged by pages.state.collectAsState()
     val ranks = remember(paged.items) { paged.items.withIndex().associate { (index, story) -> story.id to index + 1 } }
     RefreshesOn(frame.refresh) { pages.refresh() }
-    PagedList(pages, key = { "${it.id}" }, network = app.network, empty = pluginString(Strings.feed_empty), contentPadding = frame.padding, toTop = frame.toTop) { story ->
+    HnStoryList(app, pages, PostIcons.Forum, pluginString(Strings.feed_empty), frame) { story ->
         HnStoryRow(app, story, rank = ranks[story.id])
     }
 }

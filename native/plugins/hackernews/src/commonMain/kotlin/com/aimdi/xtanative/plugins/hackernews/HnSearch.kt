@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.hackernews.HnStory
 import com.aimdi.xtanative.store.settings.HackerNewsPrefs
 import com.aimdi.xtanative.ui.plugins.PagedItems
-import com.aimdi.xtanative.ui.plugins.PagedList
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginRecentSearchRow
 import com.aimdi.xtanative.ui.plugins.PluginSearch
@@ -37,7 +36,7 @@ internal class HnSearch(private val app: HnApp) : PluginSearch() {
     @Composable
     override fun Results(query: String, frame: PluginFrame) {
         val pages = rememberKept("hn-search:$query") { scope -> PagedItems<HnStory>(scope, key = { "${it.id}" }) { cursor -> app.client.search(query, cursor) } }
-        PagedList(pages, key = { "${it.id}" }, network = app.network, empty = pluginString(Strings.search_empty), contentPadding = frame.padding, toTop = frame.toTop) { story ->
+        HnStoryList(app, pages, HnIcons.SearchOff, pluginString(Strings.search_empty), frame) { story ->
             HnStoryRow(app, story)
         }
     }

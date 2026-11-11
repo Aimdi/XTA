@@ -63,6 +63,17 @@ internal object HnIcons {
         )
     }
 
+    /** A search that found nothing: search_off. */
+    val SearchOff: ImageVector by lazy {
+        pathIcon(
+            "SearchOff",
+            "M15.5,14h-0.79l-0.28,-0.27C15.41,12.59 16,11.11 16,9.5 16,5.91 13.09,3 9.5,3 6.08,3 3.28,5.64 3.03,9h2.02" +
+                "C5.3,6.75 7.18,5 9.5,5 11.99,5 14,7.01 14,9.5S11.99,14 9.5,14c-0.17,0 -0.33,-0.03 -0.5,-0.05v2.02c0.17,0.02 0.33,0.03 0.5,0.03" +
+                " 1.61,0 3.09,-0.59 4.23,-1.57l0.27,0.28v0.79l5,4.99L20.49,19l-4.99,-5zM6.47,10.82 4,13.29l-2.47,-2.47 -0.71,0.71L3.29,14" +
+                " 0.82,16.47l0.71,0.71L4,14.71l2.47,2.47 0.71,-0.71L4.71,14l2.47,-2.47z",
+        )
+    }
+
     /** Every glyph, for the test that draws them all. */
-    val all: List<ImageVector> get() = listOf(Whatshot, EmojiEvents, HelpOutline, Slideshow, WorkOutline, PersonOutline)
+    val all: List<ImageVector> get() = listOf(Whatshot, EmojiEvents, HelpOutline, Slideshow, WorkOutline, PersonOutline, SearchOff)
 }

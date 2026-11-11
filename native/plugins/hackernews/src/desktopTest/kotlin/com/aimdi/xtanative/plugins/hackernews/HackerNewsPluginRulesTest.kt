@@ -3,6 +3,7 @@ package com.aimdi.xtanative.plugins.hackernews
 import com.aimdi.xtanative.networks.hackernews.HnStory
 import com.aimdi.xtanative.store.settings.HackerNewsPrefs
 import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.ui.plugins.PagedState
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -33,6 +34,14 @@ class HackerNewsPluginRulesTest {
     fun everyTabHasItsGlyphAndEveryGlyphDraws() {
         assertEquals(HnTab.entries.size, HnTab.entries.map { it.icon.name }.toSet().size, "a glyph of its own for each tab, as XTA's strip")
         (HnTab.entries.map { it.icon } + HnIcons.all).forEach { assertTrue(it.root.iterator().hasNext(), it.name) }
+    }
+
+    @Test
+    fun theEmptyPaneWaitsForAReadThatFoundNothing() {
+        assertTrue(HnListRules.nothing(PagedState<HnStory>(loaded = true)))
+        assertFalse(HnListRules.nothing(PagedState<HnStory>()), "not read yet: the skeleton")
+        assertFalse(HnListRules.nothing(PagedState<HnStory>(loaded = true, loading = true)))
+        assertFalse(HnListRules.nothing(PagedState(items = listOf(story), loaded = true)))
     }
 
     @Test
