@@ -1,7 +1,6 @@
 package com.aimdi.xtanative.plugins.mastodon
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -15,15 +14,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -34,6 +30,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -43,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.mastodon.MastodonInstances
+import com.aimdi.xtanative.networks.mastodon.MastodonTimeline
 import com.aimdi.xtanative.networks.mastodon.MastodonTimelineFilter
 import com.aimdi.xtanative.networks.mastodon.MastodonTimelineFilter.Content
 import com.aimdi.xtanative.networks.mastodon.MastodonTimelineFilter.Order
@@ -63,68 +61,45 @@ private fun contentText(content: Content): PluginText = when (content) {
     Content.LINKS -> Strings.content_links
 }
 
+/** How many of [filter]'s controls are set, the order among them, as XTA's dock counts them on its Filters. */
+internal fun filtersSet(filter: MastodonTimelineFilter): Int = filter.activeFilters + if (filter.order == Order.FEED) 0 else 1
+
+/** Where the timeline's sheet names the server it reads: Local's and Federated's instance, as XTA's dock labels them. */
+internal fun sourceOf(timeline: MastodonTimeline, instance: String?): String? =
+    instance?.takeIf { timeline == MastodonTimeline.LOCAL || timeline == MastodonTimeline.FEDERATED }?.let(MastodonInstances::domain)
+
 /**
- * Above a timeline, as XTA's MastodonTimelineToolbar: the instance that
- * served it, where it says, then Filters (with how many are on) and the
- * order, both applied to what is loaded.
+ * [timeline]'s Filters in the reader's bar, as XTA's dock has them
+ * (PluginDockFilterButton): a tune with how many are set, opening the sheet,
+ * which names the instance that served Local and Federated.
  */
 @Composable
-internal fun TimelineToolbar(filter: MastodonTimelineFilter, instance: String?, onChange: (MastodonTimelineFilter) -> Unit) {
+internal fun FiltersButton(app: MastodonApp, timeline: MastodonTimeline) {
+    val prefs by app.prefs.collectAsState()
+    val searched by app.searched.collectAsState()
+    val state by app.reader(timeline).state.collectAsState()
+    val filter = app.filter(timeline, prefs, searched)
     var sheet by rememberSaveable { mutableStateOf(false) }
-    Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-        val source = instance?.let(MastodonInstances::domain)
-        Text(
-            source.orEmpty(),
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f).padding(start = 8.dp),
-        )
-        TextButton(onClick = { sheet = true }) {
-            BadgedBox(badge = { if (filter.activeFilters > 0) Badge { Text("${filter.activeFilters}") } }) {
-                Icon(PostIcons.Tune, contentDescription = null, modifier = Modifier.size(20.dp))
-            }
-            Spacer(Modifier.width(8.dp))
-            Text(pluginString(Strings.filters))
-        }
-        OrderMenu(filter.order) { onChange(filter.copy(order = it)) }
+    IconButton(onClick = { sheet = true }) {
+        val set = filtersSet(filter)
+        BadgedBox(badge = { if (set > 0) Badge { Text("$set") } }) { Icon(PostIcons.Tune, contentDescription = pluginString(Strings.filters)) }
     }
-    if (sheet) FilterSheet(filter, onChange) { sheet = false }
+    if (sheet) FilterSheet(filter, sourceOf(timeline, state.instance), { app.setFilter(timeline, it) }) { sheet = false }
 }
 
-@Composable
-private fun OrderMenu(order: Order, onSelect: (Order) -> Unit) {
-    var open by rememberSaveable { mutableStateOf(false) }
-    Box {
-        TextButton(onClick = { open = true }) {
-            Text(pluginString(orderText(order)), maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Spacer(Modifier.width(4.dp))
-            Icon(MastodonIcons.Sort, contentDescription = pluginString(Strings.sort), modifier = Modifier.size(20.dp))
-        }
-        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
-            Order.entries.forEach { choice ->
-                DropdownMenuItem(
-                    text = { Text(pluginString(orderText(choice))) },
-                    onClick = {
-                        open = false
-                        onSelect(choice)
-                    },
-                    trailingIcon = { if (choice == order) Icon(Icons.Filled.Check, contentDescription = null) },
-                )
-            }
-        }
-    }
-}
-
-/** XTA's Filters sheet: the order, a search of the loaded posts, what they hold, boosts and replies, and Reset filters. */
+/** XTA's Filters sheet: the [source] read, the order, a search of the loaded posts, what they hold, boosts and replies, and Reset filters. */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-private fun FilterSheet(filter: MastodonTimelineFilter, onChange: (MastodonTimelineFilter) -> Unit, onDismiss: () -> Unit) {
+private fun FilterSheet(filter: MastodonTimelineFilter, source: String?, onChange: (MastodonTimelineFilter) -> Unit, onDismiss: () -> Unit) {
     ModalBottomSheet(onDismissRequest = onDismiss) {
         Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, bottom = 24.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(pluginString(Strings.filters), style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f))
+                Column(Modifier.weight(1f)) {
+                    Text(pluginString(Strings.filters), style = MaterialTheme.typography.titleLarge)
+                    if (source != null) {
+                        Text(source, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    }
+                }
                 IconButton(onClick = onDismiss) { Icon(Icons.Filled.Close, pluginString(Strings.close)) }
             }
             Text(pluginString(Strings.loaded_controls), style = MaterialTheme.typography.bodySmall)

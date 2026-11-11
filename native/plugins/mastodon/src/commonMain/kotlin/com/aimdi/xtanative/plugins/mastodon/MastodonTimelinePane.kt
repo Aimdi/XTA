@@ -60,7 +60,7 @@ import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * One of the reader's timelines, as XTA's timeline pane shows it: the
- * toolbar, then the posts its filters keep, read again when pulled, the next
+ * posts its filters (in the reader's bar) keep, read again when pulled, the next
  * page as the end comes into view, a failed read over what it kept; opened
  * where it was left ([slot]), the first time this session, and remembered as
  * it scrolls. [empty] is what an empty timeline says, with what it offers.
@@ -83,13 +83,10 @@ internal fun TimelinePane(app: MastodonApp, timeline: MastodonTimeline, slot: St
     ReadsMore(list, state, reader)
     ScrollsToTop(list, frame.toTop)
     RefreshesOn(frame.refresh) { refresh(reader) }
-    Column(Modifier.fillMaxSize()) {
-        TimelineToolbar(filter, state.instance.takeIf { timeline == MastodonTimeline.LOCAL || timeline == MastodonTimeline.FEDERATED }) { app.setFilter(timeline, it) }
-        PullToRefreshBox(isRefreshing = state.loading && !state.isEmpty, onRefresh = { refresh(reader) }, modifier = Modifier.weight(1f)) {
-            LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
-                items(rows, key = { it.key }, contentType = { if (it is TimelineRow.Post) TimelineRow.POST else it.key }) { row ->
-                    TimelineRowView(app, reader, row, state.tags, empty) { app.setFilter(timeline, MastodonTimelineFilter()) }
-                }
+    PullToRefreshBox(isRefreshing = state.loading && !state.isEmpty, onRefresh = { refresh(reader) }, modifier = Modifier.fillMaxSize()) {
+        LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+            items(rows, key = { it.key }, contentType = { if (it is TimelineRow.Post) TimelineRow.POST else it.key }) { row ->
+                TimelineRowView(app, reader, row, state.tags, empty) { app.setFilter(timeline, MastodonTimelineFilter()) }
             }
         }
     }

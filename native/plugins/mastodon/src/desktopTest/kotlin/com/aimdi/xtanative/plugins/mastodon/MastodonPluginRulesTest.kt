@@ -176,6 +176,16 @@ class MastodonPluginRulesTest {
     }
 
     @Test
+    fun theBarsFiltersCountTheOrderAndTheSheetNamesOnlyLocalAndFederatedsInstance() {
+        assertEquals(0, filtersSet(MastodonTimelineFilter()))
+        assertEquals(2, filtersSet(MastodonTimelineFilter(hideBoosts = true, order = MastodonTimelineFilter.Order.OLDEST)))
+        assertEquals("mastodon.social", sourceOf(MastodonTimeline.LOCAL, "https://Mastodon.social/"))
+        assertEquals("mastodon.social", sourceOf(MastodonTimeline.FEDERATED, "https://mastodon.social"))
+        assertNull(sourceOf(MastodonTimeline.EXPLORE, "https://mastodon.social"))
+        assertNull(sourceOf(MastodonTimeline.LOCAL, null))
+    }
+
+    @Test
     fun quotesAndBoostersAreOrderedOnTheDevice() {
         val old = post.copy(url = "https://example.social/@alice/1", publishedAt = Instant.parse("2026-01-01T00:00:00Z"), favouritesCount = 9)
         val new = post.copy(url = "https://example.social/@alice/2", publishedAt = Instant.parse("2026-02-01T00:00:00Z"), favouritesCount = 1)

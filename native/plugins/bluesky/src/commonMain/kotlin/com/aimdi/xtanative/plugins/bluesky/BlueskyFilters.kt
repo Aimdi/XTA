@@ -3,7 +3,6 @@ package com.aimdi.xtanative.plugins.bluesky
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,15 +13,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -48,9 +44,12 @@ import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.post.PostIcons
 
+/** A list's filter and how to change it. */
+internal typealias ReaderFilter = Pair<BlueskyReaderFilter, (BlueskyReaderFilter) -> Unit>
+
 /** The filter of the Following list, or ([likes]) of the Liked one, and how to change it; its words are this screen's, the rest is kept. */
 @Composable
-internal fun rememberReaderFilter(app: BlueskyApp, likes: Boolean): Pair<BlueskyReaderFilter, (BlueskyReaderFilter) -> Unit> {
+internal fun rememberReaderFilter(app: BlueskyApp, likes: Boolean): ReaderFilter {
     val reading by app.prefs.reading.collectAsState()
     var query by rememberSaveable(likes) { mutableStateOf("") }
     val kept = if (likes) reading.likes else reading.following
@@ -83,39 +82,16 @@ private val BlueskyReaderFilter.Content.label: PluginText
         BlueskyReaderFilter.Content.LINKS -> Strings.content_links
     }
 
-/** Above a list (bluesky_reader_view.dart): Filters, with how many are set, and the order. They apply to what is loaded only. */
+/**
+ * Filters in the tab's bar, as XTA's dock has it (PluginDockFilterButton):
+ * a tune with how many are set, opening the sheet. They apply to what is loaded only.
+ */
 @Composable
-internal fun ReaderBar(filter: BlueskyReaderFilter, onChange: (BlueskyReaderFilter) -> Unit) {
+internal fun FiltersButton(filter: BlueskyReaderFilter, onChange: (BlueskyReaderFilter) -> Unit) {
     var sheet by rememberSaveable { mutableStateOf(false) }
-    var orders by rememberSaveable { mutableStateOf(false) }
-    Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-        TextButton(onClick = { sheet = true }) {
-            val set = filter.setCount()
-            BadgedBox(badge = { if (set > 0) Badge { Text("$set") } }) { Icon(PostIcons.Tune, contentDescription = null, modifier = Modifier.size(20.dp)) }
-            Spacer(Modifier.width(8.dp))
-            Text(pluginString(Strings.filters))
-        }
-        Spacer(Modifier.weight(1f))
-        Box {
-            TextButton(onClick = { orders = true }) {
-                Text(pluginString(filter.order.label), maxLines = 1)
-                Spacer(Modifier.width(4.dp))
-                Icon(BlueskyIcons.Sort, contentDescription = pluginString(Strings.sort_posts), modifier = Modifier.size(20.dp))
-            }
-            DropdownMenu(expanded = orders, onDismissRequest = { orders = false }) {
-                BlueskyReaderFilter.Order.entries.forEach { order ->
-                    DropdownMenuItem(
-                        text = { Text(pluginString(order.label)) },
-                        // XTA's CheckedPopupMenuItem: the order in force is ticked, the others keep its room.
-                        leadingIcon = { if (order == filter.order) Icon(Icons.Filled.Check, contentDescription = null) else Spacer(Modifier.size(24.dp)) },
-                        onClick = {
-                            orders = false
-                            onChange(filter.copy(order = order))
-                        },
-                    )
-                }
-            }
-        }
+    IconButton(onClick = { sheet = true }) {
+        val set = filter.setCount()
+        BadgedBox(badge = { if (set > 0) Badge { Text("$set") } }) { Icon(PostIcons.Tune, contentDescription = pluginString(Strings.filters)) }
     }
     if (sheet) FiltersSheet(filter, onChange) { sheet = false }
 }

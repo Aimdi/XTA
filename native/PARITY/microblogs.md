@@ -737,6 +737,13 @@ missing/different | a quoted Bluesky post showed its text over its media, and it
 missing/different | a Bluesky post opened from a link showed a loading row alone (plugin_links.dart's _blueskyStub) | BlueskyRoutes PostTarget.stub, BlueskyThreadScreen's seed | BlueskyRoutesTest.aPostOpenedFromALinkIsShownByWhatTheLinkNamesWhileItIsRead
 missing/different | "… reposted" over a Bluesky post led nowhere (_repostLine opens who reposted it) | NetworkPostExtras.onRepostLine without a line of its own; BlueskyPostRow.extrasOf | Compose only
 missing/different | a Mastodon post drew media, link card, quote, poll (_SpoilerBody: quote, media, poll, link card) | NetworkPostExtras.quoteFirst; MastodonPostRow | Compose only
-left out | XTA's dock (plugin_home_dock.dart): the Filters button and the instance's name inside the bar, and its options sheet | the kit's bar holds tabs and actions; the timeline's toolbar stays the row over the list | n/a
+left out → round 13 | XTA's dock (plugin_home_dock.dart): the Filters button and the instance's name inside the bar, and its options sheet | Filters and the instance came in round 13 (below); the options sheet stays left out, its entries being the bar's own | n/a
 left out | a quoted Mastodon post as XTA's _QuoteEmbed (a "Media" line for its pictures, a warning that does not open in place) | native shows the pictures and opens the warning in place | n/a
 left out | Bluesky's cover over a sensitive post's quote and link card where it has no media of its own | the shared row covers media (NetworkPost.mediaWarning) | n/a
+
+## Bluesky and Mastodon, round 13 (the dock, the cover, the audit's screens, and past XTA)
+
+Rows as above: state | what | where | test.
+
+missing/different | Filters and the order were a row over the list that scrolled away; XTA's dock (PluginDockFilterButton, on Home and in the microblog reader shell) puts Filters in the bar, a tune with how many are set, the order in its sheet | BlueskyHome.HomeBar, BlueskyFilters.FiltersButton (Following and Liked), MastodonHome.SectionBar, MastodonTimelineControls.FiltersButton (every timeline but Following's accounts), through PluginHomeTabs' actions, no kit change | MastodonPluginRulesTest.theBarsFiltersCountTheOrderAndTheSheetNamesOnlyLocalAndFederatedsInstance; the bar Compose only
+missing/different | Local's and Federated's instance stood at the start of that row; XTA's compact dock shows it as the leading label of its options sheet | MastodonTimelineControls.FilterSheet (under its title), sourceOf | the same test

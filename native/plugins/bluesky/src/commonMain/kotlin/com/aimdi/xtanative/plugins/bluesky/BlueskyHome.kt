@@ -49,15 +49,22 @@ internal fun BlueskyHome(app: BlueskyApp, frame: PluginFrame, onHome: Boolean) {
         tab = chosen
         app.launch { app.prefs.reading { it.copy(tab = chosen) } }
     }
+    val following = rememberReaderFilter(app, likes = false)
+    val liked = rememberReaderFilter(app, likes = true)
+    val filters = when (tab) {
+        BlueskyTab.FOLLOWING -> following
+        BlueskyTab.LIKED -> liked
+        else -> null
+    }
     Column(Modifier.fillMaxSize()) {
-        ReadingControlsBar { HomeBar(app, tab, select) }
+        ReadingControlsBar { HomeBar(app, tab, select, filters) }
         Hairline()
         Box(Modifier.weight(1f).swipeTabs(BlueskyTab.entries, tab, select)) {
             when (tab) {
-                BlueskyTab.FOLLOWING -> FollowingPane(app, frame, onHome)
+                BlueskyTab.FOLLOWING -> FollowingPane(app, frame, onHome, following)
                 BlueskyTab.DISCOVER -> FeedsPane(app, frame)
                 BlueskyTab.LISTS -> ListsPane(app, frame)
-                BlueskyTab.LIKED -> LikedPane(app, frame)
+                BlueskyTab.LIKED -> LikedPane(app, frame, liked)
             }
         }
     }
@@ -79,11 +86,12 @@ private val BlueskyTab.icon: ImageVector
         BlueskyTab.LIKED -> Icons.Filled.FavoriteBorder
     }
 
-/** XTA's chrome for the tab (PluginHomeChrome): its four tabs, then search and the menu. */
+/** XTA's chrome for the tab (PluginHomeChrome with its dock): its four tabs, then search, the list's [filters] where it has some, and the menu. */
 @Composable
-private fun HomeBar(app: BlueskyApp, tab: BlueskyTab, onTab: (BlueskyTab) -> Unit) {
+private fun HomeBar(app: BlueskyApp, tab: BlueskyTab, onTab: (BlueskyTab) -> Unit, filters: ReaderFilter?) {
     PluginHomeTabs(BlueskyTab.entries, tab, onTab, icon = { it.icon }, label = { pluginString(it.label) }) {
         IconButton(onClick = { app.openSearch() }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) }
+        if (filters != null) FiltersButton(filters.first, filters.second)
         HomeMenu(app)
     }
 }

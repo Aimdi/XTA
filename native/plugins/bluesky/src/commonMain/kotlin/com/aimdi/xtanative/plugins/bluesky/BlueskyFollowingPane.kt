@@ -93,12 +93,12 @@ import kotlinx.coroutines.withTimeoutOrNull
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun FollowingPane(app: BlueskyApp, frame: PluginFrame, onHome: Boolean) {
+internal fun FollowingPane(app: BlueskyApp, frame: PluginFrame, onHome: Boolean, filters: ReaderFilter) {
     val timeline = app.following
     LaunchedEffect(timeline) { timeline.start() }
     val state by timeline.state.collectAsState()
     val follows by app.follows.state.collectAsState()
-    val (filter, setFilter) = rememberReaderFilter(app, likes = false)
+    val (filter, setFilter) = filters
     val shown = remember(state.posts, filter) { filter.apply(state.posts) }
     val people = remember(state.posts, follows) { BlueskyTimeline.peopleToFollow(state.posts, app.follows::follows) }
     val list = rememberLazyListState()
@@ -110,7 +110,6 @@ internal fun FollowingPane(app: BlueskyApp, frame: PluginFrame, onHome: Boolean)
     RefreshesOn(frame.refresh) { timeline.refresh(force = true) }
     PullToRefreshBox(isRefreshing = state.loading && state.loaded, onRefresh = { timeline.refresh(force = true) }, modifier = Modifier.fillMaxSize()) {
         LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
-            item(key = "bar") { ReaderBar(filter, setFilter) }
             if (strip != null && stripAfter == null) item(key = "people") { strip() }
             followingStatus(app, state)
             filteredRows(app, state.posts, shown, strip.takeIf { stripAfter != null }) { setFilter(BlueskyReaderFilter()) }
@@ -284,11 +283,11 @@ private fun PeopleRow(app: BlueskyApp, people: List<BlueskyFeedPerson>, modifier
 /** Liked: the posts liked on this device, newest first, with the same filters as Following; a pull reads them from the device again. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun LikedPane(app: BlueskyApp, frame: PluginFrame) {
+internal fun LikedPane(app: BlueskyApp, frame: PluginFrame, filters: ReaderFilter) {
     val likes by app.likes.state.collectAsState()
     val posts by app.prefs.likedPosts.collectAsState()
     val library = remember(posts, likes) { BlueskyLocal.library(posts, likes.orEmpty()) }
-    val (filter, setFilter) = rememberReaderFilter(app, likes = true)
+    val (filter, setFilter) = filters
     val shown = remember(library, filter) { filter.apply(library) }
     val list = rememberLazyListState()
     val scope = rememberCoroutineScope()
@@ -310,7 +309,6 @@ internal fun LikedPane(app: BlueskyApp, frame: PluginFrame) {
             if (library.isEmpty()) {
                 item(key = "empty") { LikedEmpty() }
             } else {
-                item(key = "bar") { ReaderBar(filter, setFilter) }
                 filteredRows(app, library, shown) { setFilter(BlueskyReaderFilter()) }
             }
         }

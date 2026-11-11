@@ -83,6 +83,7 @@ internal fun MastodonHome(app: MastodonApp, frame: PluginFrame, surface: Mastodo
                         app.places.select(timeline.ordinal, it)
                     }, onAdd = { adding = true })
                 }
+                if (timeline != MastodonTimeline.FOLLOWING || !people) FiltersButton(app, timeline)
             }
         }
         Hairline()
@@ -117,9 +118,9 @@ private fun MastodonTimeline.emptyIcon(): ImageVector = when (this) {
 }
 
 /**
- * XTA's one row for the reader (MastodonCompactBar): the four timelines,
- * then what the one shown adds ([extras]: Following's posts or accounts),
- * search, and Saved and Settings in the menu.
+ * XTA's one row for the reader (MastodonCompactBar with its dock): the four
+ * timelines, then what the one shown adds ([extras]: Following's posts or
+ * accounts, the timeline's Filters), search, and Saved and Settings in the menu.
  */
 @Composable
 private fun SectionBar(app: MastodonApp, selected: MastodonTimeline, onSelect: (MastodonTimeline) -> Unit, extras: @Composable () -> Unit) {
