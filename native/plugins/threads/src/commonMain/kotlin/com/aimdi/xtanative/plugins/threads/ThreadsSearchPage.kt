@@ -53,7 +53,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsLinks
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsQuery
 import com.aimdi.xtanative.networks.threads.ThreadsSearchTerms
-import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.Fetch
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.NoticeHost
@@ -191,7 +191,7 @@ private fun Results(app: ThreadsApp, terms: ThreadsSearchTerms, order: ThreadsSe
         LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
             when {
                 posts == null && state.problem != null -> item(key = "problem") { RetryMessage(ThreadsFailures.page(state.problem, language), onRetry = { fetch.load() }) }
-                posts == null -> item(key = "loading") { LoadingRow() }
+                posts == null -> item(key = "loading") { PluginFeedSkeleton() }
                 posts.isEmpty() -> item(key = "none") { MessageText(pluginString(Strings.no_results)) }
                 else -> items(posts, key = { "post:" + it.id }, contentType = { "post" }) { ThreadsPostCard(app, it) }
             }

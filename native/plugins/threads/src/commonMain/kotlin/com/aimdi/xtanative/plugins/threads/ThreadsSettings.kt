@@ -42,7 +42,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsXy
 import com.aimdi.xtanative.networks.threads.ThreadsXyException
 import com.aimdi.xtanative.store.settings.Pref
 import com.aimdi.xtanative.store.settings.ThreadsPrefs
-import com.aimdi.xtanative.ui.common.Avatar
+import com.aimdi.xtanative.ui.plugins.PluginAvatar
 import com.aimdi.xtanative.ui.plugins.AddToGroupButton
 import com.aimdi.xtanative.ui.plugins.HomeTimelineSwitch
 import com.aimdi.xtanative.ui.plugins.NoticeHost
@@ -79,7 +79,7 @@ internal fun ThreadsSettingsBody(app: ThreadsApp, frame: PluginFrame) {
             item(key = "session-apis") {
                 Toggle(Strings.use_session, Strings.use_session_description, settings[ThreadsPrefs.useSessionApis]) { on -> app.update { it.with(ThreadsPrefs.useSessionApis, on) } }
             }
-            if (app.direct.isSessionParked) item(key = "parked") { Paragraph(Strings.session_parked, MaterialTheme.colorScheme.error) }
+            if (app.direct.isSessionParked) item(key = "parked") { Parked() }
             item(key = "accounts") { Section(Strings.accounts) { Accounts(app) } }
             if (loaded) {
                 item(key = "session") { Section(Strings.session_section) { Session(app) } }
@@ -106,6 +106,16 @@ private fun GuestCard() {
 @Composable
 private fun Paragraph(text: PluginText, color: Color = MaterialTheme.colorScheme.onSurface) {
     Text(pluginString(text), style = MaterialTheme.typography.bodyMedium, color = color, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+}
+
+/** That Meta parked the session, with XTA's paused mark in the error colour. */
+@Composable
+private fun Parked() {
+    ListItem(
+        leadingContent = { Icon(ThreadsIcons.PauseCircle, contentDescription = null, tint = MaterialTheme.colorScheme.error) },
+        headlineContent = { Text(pluginString(Strings.session_parked)) },
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+    )
 }
 
 @Composable
@@ -139,7 +149,7 @@ private fun Accounts(app: ThreadsApp) {
     }
     accounts.forEach { account ->
         ListItem(
-            leadingContent = { Avatar(account.avatarUrl, 36.dp) },
+            leadingContent = { PluginAvatar(account.avatarUrl, account.name, account.handle, 36.dp) },
             headlineContent = { Text("@" + account.handle) },
             trailingContent = {
                 Row {

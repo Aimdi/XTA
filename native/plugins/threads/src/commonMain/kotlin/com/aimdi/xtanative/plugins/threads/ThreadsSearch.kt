@@ -56,8 +56,8 @@ import com.aimdi.xtanative.networks.threads.ThreadsProfile
 import com.aimdi.xtanative.networks.threads.ThreadsQuery
 import com.aimdi.xtanative.networks.threads.ThreadsSearchTerms
 import com.aimdi.xtanative.store.settings.ThreadsPrefs
-import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.plugins.PluginAvatar
 import com.aimdi.xtanative.ui.plugins.Fetch
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PluginFrame
@@ -161,7 +161,7 @@ internal fun LazyListScope.people(app: ThreadsApp, users: List<ThreadsProfile>, 
         val rows by app.accounts.state.collectAsState()
         val followed = ThreadsAccounts.follows(rows, user.username)
         ListItem(
-            leadingContent = { Avatar(user.profilePicUrl.ifEmpty { null }, 40.dp) },
+            leadingContent = { PluginAvatar(user.profilePicUrl, user.displayName, user.username, 40.dp) },
             headlineContent = { Text(user.displayName, maxLines = 1, overflow = TextOverflow.Ellipsis) },
             supportingContent = { Text("@" + user.username, maxLines = 1, overflow = TextOverflow.Ellipsis) },
             trailingContent = {

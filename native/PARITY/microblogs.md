@@ -710,6 +710,16 @@ native only | a followed profile's page offers Unfollow, after XTA's question | 
 native only | a profile's link reads without its scheme | ThreadsProfiles.linkLabel | ThreadsRulesTest.aProfilesLinkReadsWithoutItsSchemeAndStillOpensWhole
 
 
+## Threads, round 12 (the audit's last screens, and past XTA)
+
+Rows as above: state | what | where | test.
+
+missing/different | an account without a picture was a blank disc; XTA draws FallbackAvatar (its initial on its colour) on cards, quotes, profiles, people rows, the accounts and the settings | ui/plugins Faces.kt (PluginAvatar, PluginFallbackFace, new), used by every Threads face | PluginFacesTest
+missing/different | a search's results loaded under a spinner; XTA paints TweetFeedSkeleton (threads_search_screen.dart) | ThreadsSearchPage.Results | Compose only
+missing/different | a parked session was a red sentence; XTA's row has the paused mark in the error colour (threads_settings.dart) | ThreadsSettings.Parked | Compose only
+missing/different | a conversation read again over its replies put a bar and a retry row into the list; XTA's ReloadStatus is a line over the top edge and a floating notice with Retry | ThreadsParts.ReloadStatus, ThreadsConversationScreen.ConversationList | Compose only
+covered | the rest of search (the sheet, its people rows with Follow on this device, recent searches, the public accounts to try, Top and Recent, the profile the words spell, empty and failed states) and of the settings, line by line against threads_search_sheet.dart, threads_search_screen.dart and threads_settings.dart | ThreadsSearch.kt, ThreadsSearchPage.kt, ThreadsSettings.kt | the rows above
+
 ## Bluesky and Mastodon, round 10 (the chrome, the covers, the audit's items)
 
 Rows as above: state | what | where | test.

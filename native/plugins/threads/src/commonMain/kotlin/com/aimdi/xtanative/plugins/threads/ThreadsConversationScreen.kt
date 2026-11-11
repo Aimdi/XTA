@@ -28,7 +28,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -58,7 +57,6 @@ import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.RetryMessage
-import com.aimdi.xtanative.ui.plugins.RetryRow
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -121,6 +119,9 @@ private fun ConversationList(app: ThreadsApp, conversation: ThreadsConversation,
                 replyRows(app, conversation.replyRows(view)) { chain -> expanded = expanded + chain.first().id }
             }
         }
+        if (conversation.replies.isNotEmpty()) {
+            ReloadStatus(state.loading, state.problem?.let { ThreadsFailures.page(it, currentLanguage()) }, onRetry)
+        }
     }
 }
 
@@ -156,14 +157,11 @@ private fun LazyListScope.threadRows(app: ThreadsApp, conversation: ThreadsConve
     }
 }
 
-/** While there are no replies: reading, why the page could not be read, or that it has none, with the post on the web. */
+/** While there are no replies: reading, why the page could not be read, or that it has none, with the post on the web. With replies, [ReloadStatus] says it. */
 private fun LazyListScope.statusRows(conversation: ThreadsConversation, state: Fetched<ThreadsConversation>, onRetry: () -> Unit) {
     val problem = state.problem
     when {
-        conversation.replies.isNotEmpty() -> {
-            if (state.loading) item(key = "reloading") { LinearProgressIndicator(Modifier.fillMaxWidth()) }
-            if (problem != null) item(key = "reload-problem") { RetryRow(ThreadsFailures.page(problem, currentLanguage()), onRetry) }
-        }
+        conversation.replies.isNotEmpty() -> Unit
         state.loading -> item(key = "loading") { LoadingRow() }
         problem != null -> item(key = "problem") { RetryMessage(ThreadsFailures.page(problem, currentLanguage()), onRetry) }
         conversation.loaded -> item(key = "no-replies") { NoReplies(conversation.focus.url) }

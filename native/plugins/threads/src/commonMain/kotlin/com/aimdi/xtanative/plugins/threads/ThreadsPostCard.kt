@@ -43,12 +43,12 @@ import com.aimdi.xtanative.core.x.model.XCard
 import com.aimdi.xtanative.networks.threads.ThreadsLinkCard
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.store.settings.AccessibilityPrefs
-import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.fullTimeText
+import com.aimdi.xtanative.ui.plugins.PluginAvatar
 import com.aimdi.xtanative.ui.plugins.NetworkBookmark
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -103,7 +103,7 @@ internal fun ThreadsPostCard(
         if (post.isRepost) RepostLine(app, post)
         val above = if (post.isRepost) 4.dp else 12.dp
         Row(Modifier.fillMaxWidth().rails(connectTop, connectBottom, above).padding(top = above, bottom = if (connectBottom) 0.dp else 12.dp)) {
-            Avatar(post.avatarUrl, AvatarSize) { app.openProfile(post.handle) }
+            PluginAvatar(post.avatarUrl, post.authorName, post.handle, AvatarSize) { app.openProfile(post.handle) }
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Header(app, post, focal, PostPrefs.of(settings).absoluteTimestamps, menu)
@@ -260,7 +260,7 @@ private fun ThreadsQuote(app: ThreadsApp, quote: ThreadsPost, modifier: Modifier
             .padding(12.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Avatar(quote.avatarUrl, 20.dp)
+            PluginAvatar(quote.avatarUrl, quote.authorName, quote.handle, 20.dp)
             Spacer(Modifier.width(8.dp))
             AuthorLine(quote.authorName, quote.handle, agoText(quote.publishedAt), verified = quote.isVerified, modifier = Modifier.weight(1f))
         }

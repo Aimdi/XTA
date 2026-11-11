@@ -52,7 +52,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.threads.ThreadsLinks
 import com.aimdi.xtanative.networks.threads.ThreadsPerson
-import com.aimdi.xtanative.ui.common.Avatar
+import com.aimdi.xtanative.ui.plugins.PluginAvatar
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.post.PostIcons
@@ -91,7 +91,7 @@ private fun FollowingSheet(app: ThreadsApp, onAdd: () -> Unit, onDismiss: () -> 
             item(key = "title") { Text(pluginString(Strings.following), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(16.dp)) }
             items(ThreadsAccounts.accounts(rows), key = { it.handle }) { account ->
                 ListItem(
-                    leadingContent = { Avatar(account.avatarUrl, 40.dp) },
+                    leadingContent = { PluginAvatar(account.avatarUrl, account.name, account.handle, 40.dp) },
                     headlineContent = { Text("@" + account.handle, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     trailingContent = {
                         IconButton(onClick = { unfollowing = account.handle }) {
@@ -201,7 +201,7 @@ private fun PersonChip(app: ThreadsApp, person: ThreadsPerson) {
         AssistChip(
             onClick = { app.openProfile(person.handle) },
             label = { Text("@" + person.handle) },
-            leadingIcon = { Avatar(person.avatarUrl, 20.dp) },
+            leadingIcon = { PluginAvatar(person.avatarUrl, person.name, person.handle, 20.dp) },
         )
         TextButton(onClick = { app.follow(ThreadsAccount(person.handle, person.name, person.avatarUrl), force = false) }) {
             Text(pluginString(Strings.follow))
