@@ -1,24 +1,17 @@
 package com.aimdi.xtanative.plugins.mastodon
 
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -31,10 +24,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.mastodon.MastodonFollow
 import com.aimdi.xtanative.networks.mastodon.MastodonTimeline
 import com.aimdi.xtanative.ui.common.Hairline
@@ -42,6 +33,7 @@ import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.AddToGroupButton
 import com.aimdi.xtanative.ui.plugins.NetworkPersonRow
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
 import com.aimdi.xtanative.ui.plugins.ReadingControlsPinItem
@@ -84,10 +76,9 @@ internal fun MastodonHome(app: MastodonApp, frame: PluginFrame, surface: Mastodo
     }
     Column(Modifier.fillMaxSize()) {
         ReadingControlsBar {
-            Column {
-                SectionBar(app, timeline, select)
+            SectionBar(app, timeline, select) {
                 if (timeline == MastodonTimeline.FOLLOWING) {
-                    FollowingControls(people, onSelect = {
+                    FollowingMenu(people, onSelect = {
                         people = it
                         app.places.select(timeline.ordinal, it)
                     }, onAdd = { adding = true })
@@ -125,20 +116,15 @@ private fun MastodonTimeline.emptyIcon(): ImageVector = when (this) {
     else -> MastodonIcons.Public
 }
 
-/** The four timelines as chips, then search, and Saved and Settings in the menu. */
+/**
+ * XTA's one row for the reader (MastodonCompactBar): the four timelines,
+ * then what the one shown adds ([extras]: Following's posts or accounts),
+ * search, and Saved and Settings in the menu.
+ */
 @Composable
-private fun SectionBar(app: MastodonApp, selected: MastodonTimeline, onSelect: (MastodonTimeline) -> Unit) {
-    Row(Modifier.fillMaxWidth().padding(start = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-        Row(Modifier.weight(1f).horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            MastodonTimeline.entries.forEach { timeline ->
-                FilterChip(
-                    selected = timeline == selected,
-                    onClick = { onSelect(timeline) },
-                    label = { Text(pluginString(timeline.label()), maxLines = 1) },
-                    leadingIcon = { Icon(timeline.icon(), contentDescription = null, modifier = Modifier.size(18.dp)) },
-                )
-            }
-        }
+private fun SectionBar(app: MastodonApp, selected: MastodonTimeline, onSelect: (MastodonTimeline) -> Unit, extras: @Composable () -> Unit) {
+    PluginHomeTabs(MastodonTimeline.entries, selected, onSelect, icon = { it.icon() }, label = { pluginString(it.label()) }) {
+        extras()
         IconButton(onClick = { app.host.openSearch(null) }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) }
         MoreMenu(app)
     }
@@ -163,14 +149,29 @@ private fun MoreMenu(app: MastodonApp) {
     }
 }
 
-/** Following's own row: its posts or its accounts, and Add account. */
+/** Following's own button, as XTA's bar has it: its posts or its accounts, ticked, and Add account. */
 @Composable
-private fun FollowingControls(people: Boolean, onSelect: (Boolean) -> Unit, onAdd: () -> Unit) {
-    Row(Modifier.fillMaxWidth().padding(start = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        FilterChip(selected = !people, onClick = { onSelect(false) }, label = { Text(pluginString(Strings.posts)) }, leadingIcon = { Icon(MastodonIcons.Stream, null, Modifier.size(18.dp)) })
-        FilterChip(selected = people, onClick = { onSelect(true) }, label = { Text(pluginString(Strings.accounts)) }, leadingIcon = { Icon(PostIcons.People, null, Modifier.size(18.dp)) })
-        Box(Modifier.weight(1f))
-        IconButton(onClick = onAdd) { Icon(MastodonIcons.PersonAdd, pluginString(Strings.add_account)) }
+private fun FollowingMenu(people: Boolean, onSelect: (Boolean) -> Unit, onAdd: () -> Unit) {
+    var open by remember { mutableStateOf(false) }
+    val shown = pluginString(if (people) Strings.accounts else Strings.posts)
+    Box {
+        IconButton(onClick = { open = true }) { Icon(if (people) PostIcons.People else MastodonIcons.Stream, shown) }
+        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+            listOf(false to Strings.posts, true to Strings.accounts).forEach { (choice, text) ->
+                DropdownMenuItem(
+                    text = { Text(pluginString(text)) },
+                    leadingIcon = { if (choice == people) Icon(Icons.Filled.Check, contentDescription = null) },
+                    onClick = {
+                        open = false
+                        onSelect(choice)
+                    },
+                )
+            }
+            DropdownMenuItem(text = { Text(pluginString(Strings.add_account)) }, onClick = {
+                open = false
+                onAdd()
+            })
+        }
     }
 }
 
