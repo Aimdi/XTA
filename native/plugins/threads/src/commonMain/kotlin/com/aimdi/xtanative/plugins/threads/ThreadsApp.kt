@@ -418,6 +418,19 @@ internal class ThreadsApp(val host: PluginHost) {
         host.open(ThreadsRoutes.media(shelf.put(viewed), index))
     }
 
+    /**
+     * [post]'s [index]th picture full screen among every picture and video
+     * of [among], a conversation's posts as shown, to swipe through them
+     * all; back on the conversation, each is in its post. [post] alone when
+     * it is not one of them.
+     */
+    fun openMedia(post: ThreadsPost, index: Int, opens: Boolean, among: List<ThreadsPost>?) {
+        val start = among?.let { ThreadsMediaItems.galleryStart(it, post, index) } ?: return openMedia(post, index, opens)
+        val quality = current()[MediaPrefs.videoQuality]
+        val viewed = ThreadsViewed(among.flatMap { ThreadsMediaItems.items(it, quality) }, among.flatMap(ThreadsMediaItems::qualities))
+        host.open(ThreadsRoutes.media(shelf.put(viewed), start))
+    }
+
     companion object {
         /** The network's name where a problem names it. */
         const val NETWORK = "Threads"

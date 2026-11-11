@@ -33,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -101,22 +102,42 @@ private fun ThreadActions(app: ThreadsApp, url: String) {
     IconButton(onClick = { outside(url) }) { Icon(PostIcons.OpenInNew, contentDescription = pluginString(Strings.open_in_browser)) }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+/** The conversation's list; a picture opened in it is viewed among all the pictures shown in it. */
 @Composable
 private fun ConversationList(app: ThreadsApp, conversation: ThreadsConversation, state: Fetched<ThreadsConversation>, onRetry: () -> Unit) {
     val order by app.replyOrder.collectAsState()
     var authorOnly by rememberSaveable { mutableStateOf(false) }
     var expanded by rememberSaveable { mutableStateOf(emptyList<String>()) }
     val view = ThreadsThreadView(authorOnly, expanded.toSet(), order)
+    val rows = remember(conversation, view) { conversation.replyRows(view) }
+    val gallery = remember(conversation, rows) { conversation.ancestors + conversation.focus + conversation.continuation + rows.mapNotNull { (it as? ThreadsReplyRow.Post)?.post } }
     val list = rememberLazyListState()
     LandsOnFocus(list, conversation)
+    CompositionLocalProvider(LocalThreadsGallery provides gallery) {
+        RefreshableConversation(app, conversation, state, list, view, rows, onRetry, onAuthorOnly = { authorOnly = !authorOnly }) { chain -> expanded = expanded + chain.first().id }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun RefreshableConversation(
+    app: ThreadsApp,
+    conversation: ThreadsConversation,
+    state: Fetched<ThreadsConversation>,
+    list: LazyListState,
+    view: ThreadsThreadView,
+    rows: List<ThreadsReplyRow>,
+    onRetry: () -> Unit,
+    onAuthorOnly: () -> Unit,
+    onExpand: (List<ThreadsPost>) -> Unit,
+) {
     PullToRefreshBox(isRefreshing = state.loading && conversation.loaded, onRefresh = onRetry, modifier = Modifier.fillMaxSize()) {
         LazyColumn(state = list, contentPadding = PaddingValues(bottom = 24.dp), modifier = Modifier.fillMaxSize()) {
             threadRows(app, conversation)
             statusRows(conversation, state, onRetry)
             if (conversation.replies.isNotEmpty()) {
-                item(key = "replies-header") { RepliesHeader(app, conversation, view, onAuthorOnly = { authorOnly = !authorOnly }) }
-                replyRows(app, conversation, conversation.replyRows(view)) { chain -> expanded = expanded + chain.first().id }
+                item(key = "replies-header") { RepliesHeader(app, conversation, view, onAuthorOnly) }
+                replyRows(app, conversation, rows, onExpand)
             }
         }
         if (conversation.replies.isNotEmpty()) {

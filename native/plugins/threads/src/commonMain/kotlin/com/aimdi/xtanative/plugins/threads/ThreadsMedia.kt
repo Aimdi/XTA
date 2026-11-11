@@ -30,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -58,7 +59,8 @@ private val MediaShape = RoundedCornerShape(16.dp)
  * A post's pictures and videos (threads_media.dart): one at its own shape
  * across the width, several along one row at one height that scrolls
  * sideways, the next one's edge in view, with a dot for each under it. A tap opens the app's viewer at
- * that one, with Open post where the post [opens] on a tap. Each tile loads
+ * that one, with Open post where the post [opens] on a tap; in a
+ * conversation ([LocalThreadsGallery]) among all its pictures. Each tile loads
  * the size Meta offers that fills its pixels ([ThreadsMediaItems.tile]); the
  * viewer shows, and a download saves, the largest.
  */
@@ -68,13 +70,14 @@ internal fun ThreadsPostMedia(app: ThreadsApp, post: ThreadsPost, modifier: Modi
     if (media.isEmpty()) return
     val settings by app.prefs.collectAsState()
     val quality = settings[MediaPrefs.videoQuality]
+    val gallery = LocalThreadsGallery.current
     BoxWithConstraints(modifier.fillMaxWidth()) {
         val density = LocalDensity.current
         val width = with(density) { maxWidth.toPx() }
         val layout = ThreadsStrip.layout(width, media.map { it.aspectRatio })
         val tile: @Composable (Int, Float, Float, Modifier) -> Unit = { index, wide, tall, sized ->
             val item = remember(post, index, quality, wide, tall) { ThreadsMediaItems.tile(post, media[index], quality, wide.roundToInt(), tall.roundToInt()) }
-            MediaTile(item, sized) { app.openMedia(post, index, opens) }
+            MediaTile(item, sized) { app.openMedia(post, index, opens, gallery) }
         }
         if (media.size == 1) {
             val shape = ThreadsStrip.plugin(media.single().aspectRatio)
@@ -161,6 +164,9 @@ internal fun ThreadsMediaScreen(app: ThreadsApp, route: ThreadsRoute.Media) {
         onOpenPost = post?.let { { app.openPost(it) } },
     )
 }
+
+/** The posts of the conversation on screen, in order, whose pictures a viewer opened there swipes through; null elsewhere. */
+internal val LocalThreadsGallery = staticCompositionLocalOf<List<ThreadsPost>?> { null }
 
 /** A little space under what is above: the gap between a post's parts. */
 internal val PartGap = 10.dp

@@ -65,6 +65,17 @@ internal object ThreadsMediaItems {
     /** Each item's qualities, highest first, for the viewer's menu. */
     fun qualities(post: ThreadsPost): List<List<VideoQuality>> = post.media.map(::qualities)
 
+    /**
+     * Where [post]'s [index]th picture or video sits among every one of
+     * [among], for a viewer that swipes through a whole conversation's; null
+     * when [post] is not one of them (a quote), or they hold nothing more.
+     */
+    fun galleryStart(among: List<ThreadsPost>, post: ThreadsPost, index: Int): Int? {
+        val at = among.indexOfFirst { it.id == post.id }.takeIf { it >= 0 } ?: return null
+        if (among.sumOf { it.media.size } <= post.media.size) return null
+        return among.take(at).sumOf { it.media.size } + index
+    }
+
     /** A GIF's one clip is no quality to choose. */
     fun qualities(media: ThreadsMedia): List<VideoQuality> =
         if (media.isGif) emptyList() else media.renditions.mapNotNull { rendition -> rendition.lines?.let { VideoQuality(rendition.url, "${it}p") } }

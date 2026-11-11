@@ -101,6 +101,20 @@ class ThreadsRulesTest {
     }
 
     @Test
+    fun aPictureOpenedInAConversationIsViewedAmongAllItsPictures() {
+        fun shot(n: Int) = ThreadsMedia("https://cdn/$n.jpg")
+        fun post(id: String, vararg media: ThreadsMedia) = ThreadsPost(id = id, handle = "zuck", authorName = "Mark", text = id, media = media.toList())
+        val shown = listOf(post("a", shot(1), shot(2)), post("b"), post("c", shot(3)), post("d", shot(4), shot(5)))
+
+        assertEquals(0, ThreadsMediaItems.galleryStart(shown, shown[0], 0))
+        assertEquals(1, ThreadsMediaItems.galleryStart(shown, shown[0], 1))
+        assertEquals(2, ThreadsMediaItems.galleryStart(shown, shown[2], 0))
+        assertEquals(4, ThreadsMediaItems.galleryStart(shown, shown[3], 1))
+        assertNull(ThreadsMediaItems.galleryStart(shown, post("quote", shot(9)), 0), "a quote is not one of the conversation's posts")
+        assertNull(ThreadsMediaItems.galleryStart(listOf(shown[0], shown[1]), shown[0], 1), "nothing more to swipe to: the post's own viewer")
+    }
+
+    @Test
     fun severalPicturesShareOneRowTheNextOnesEdgeInView() {
         val one = ThreadsStrip.layout(400f, listOf(0.3))
         assertEquals(400f / 0.45f, one.height, 0.01f)
