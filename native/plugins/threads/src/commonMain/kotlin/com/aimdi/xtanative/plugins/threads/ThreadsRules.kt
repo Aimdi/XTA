@@ -65,8 +65,9 @@ internal object ThreadsMediaItems {
     /** Each item's qualities, highest first, for the viewer's menu. */
     fun qualities(post: ThreadsPost): List<List<VideoQuality>> = post.media.map(::qualities)
 
+    /** A GIF's one clip is no quality to choose. */
     fun qualities(media: ThreadsMedia): List<VideoQuality> =
-        media.renditions.mapNotNull { rendition -> rendition.lines?.let { VideoQuality(rendition.url, "${it}p") } }
+        if (media.isGif) emptyList() else media.renditions.mapNotNull { rendition -> rendition.lines?.let { VideoQuality(rendition.url, "${it}p") } }
 
     /**
      * [media] of [post] as a feed tile [width] by [height] pixels draws it:
@@ -81,6 +82,9 @@ internal object ThreadsMediaItems {
     /** A picture or video of [post], the viewer's Share giving the post, as XTA's (threads_models.dart). */
     private fun item(post: ThreadsPost, media: ThreadsMedia, quality: MediaQuality): MediaItem {
         val tile = media.tileUrl(TILE_WIDTH).takeIf { it != media.url }
+        if (media.isGif && media.isVideo) {
+            return MediaItem(imageUrl = media.url, kind = MediaItem.Kind.GIF, videoUrl = media.videoUrl, aspectRatio = media.aspectRatio?.toFloat(), alt = media.alt, shareUrl = post.url)
+        }
         if (!media.isVideo) {
             return MediaItem(imageUrl = media.url, aspectRatio = media.aspectRatio?.toFloat(), alt = media.alt, thumbUrl = tile, shareUrl = post.url)
         }

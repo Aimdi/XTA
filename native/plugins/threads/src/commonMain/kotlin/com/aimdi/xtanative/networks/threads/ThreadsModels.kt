@@ -37,6 +37,8 @@ data class ThreadsMedia(
     val renditions: List<ThreadsVideoRendition> = emptyList(),
     /** Every size Meta offers of the picture, largest first; empty when only [url] is known. */
     val images: List<ThreadsImage> = emptyList(),
+    /** A GIF from GIPHY: [url] its picture, its one rendition the MP4 that loops silently. */
+    val isGif: Boolean = false,
 ) {
     /**
      * The address a tile [width] by [height] pixels loads: the smallest size

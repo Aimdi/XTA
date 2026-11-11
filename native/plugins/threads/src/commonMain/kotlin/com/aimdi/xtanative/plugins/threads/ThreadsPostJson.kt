@@ -74,6 +74,7 @@ internal object ThreadsPostJson {
             "imageSizes" to JsonArray(post.media.map { media -> JsonArray(media.images.map(::image)) }),
             "videoUrls" to JsonArray(post.media.map { text(it.videoUrl) }),
             "videoRenditions" to JsonArray(post.media.map { media -> JsonArray(media.renditions.map(::rendition)) }),
+            "imageGifs" to JsonArray(post.media.map { JsonPrimitive(it.isGif) }),
             "publishedAt" to text(post.publishedAt?.let(XtaTime::iso)),
             "url" to text(post.url),
             "likeCount" to number(post.likeCount),
@@ -103,7 +104,7 @@ internal object ThreadsPostJson {
         val single = row["videoUrls"][index].string?.takeIf { it.isNotEmpty() }?.let { listOf(ThreadsVideoRendition(it)) }.orEmpty()
         // Sizes kept for another address are not this picture's: XTA may have rewritten the post since.
         val sizes = row["imageSizes"][index].list.mapNotNull(::image).takeIf { it.firstOrNull()?.url == url }.orEmpty()
-        ThreadsMedia(url, row["imageAspects"][index].double, row["imageAlts"][index].string, kept.ifEmpty { single }, sizes)
+        ThreadsMedia(url, row["imageAspects"][index].double, row["imageAlts"][index].string, kept.ifEmpty { single }, sizes, isGif = row["imageGifs"][index].boolean == true)
     }
 
     private fun image(image: ThreadsImage): JsonObject =

@@ -79,6 +79,7 @@ object ThreadsParser {
      * address, and the largest's shape when Meta sized it.
      */
     fun media(post: J): List<ThreadsMedia> {
+        if (post["carousel_media"].list.isEmpty()) gif(post)?.let { return listOf(it) }
         val seen = HashSet<String>()
         return post["carousel_media"].list.ifEmpty { listOf(post) }.mapNotNull { media ->
             val images = images(media["image_versions2"])
@@ -92,6 +93,26 @@ object ThreadsParser {
             ThreadsMedia(largest.url, aspect ?: fallback, media["accessibility_caption"].string?.trim()?.ifEmpty { null }, videoRenditions(media), images)
         }
     }
+
+    /**
+     * The GIF a post carries from GIPHY (`giphy_media_info`, as Instagram's
+     * comments carry one): its largest rendition, its picture as the address
+     * and its MP4 as what loops; null for a post without one. It stands in
+     * for the still Meta may also give.
+     */
+    fun gif(post: J): ThreadsMedia? {
+        val renditions = post["giphy_media_info"]["first_party_cdn_proxied_images"]
+        val best = GIF_RENDITIONS.map { renditions[it] }.filter { (it["url"].string ?: it["webp"].string) != null }
+            .maxByOrNull { it["width"].integer ?: 0 } ?: return null
+        val width = positive(best["width"].integer)
+        val height = positive(best["height"].integer)
+        val picture = (best["url"].string ?: best["webp"].string).orEmpty()
+        val clip = best["mp4"].string?.takeIf { it.isNotEmpty() }?.let { listOf(ThreadsVideoRendition(it, width, height)) }.orEmpty()
+        return ThreadsMedia(picture, aspectOf(width?.toLong(), height?.toLong()), renditions = clip, images = listOf(ThreadsImage(picture, width, height)), isGif = true)
+    }
+
+    /** GIPHY's renditions, the largest of those Meta proxies taken. */
+    private val GIF_RENDITIONS = listOf("original", "fixed_height", "fixed_width", "downsized", "fixed_height_small")
 
     /** Every size Meta offers of a picture (`image_versions2.candidates`), largest first, as [ThreadsImages.ordered] ranks them. */
     fun images(versions: J): List<ThreadsImage> = ThreadsImages.ordered(

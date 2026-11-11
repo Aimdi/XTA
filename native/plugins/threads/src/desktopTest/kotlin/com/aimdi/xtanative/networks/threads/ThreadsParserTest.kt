@@ -93,6 +93,30 @@ class ThreadsParserTest {
     }
 
     @Test
+    fun aGifFromGiphyIsItsLargestRenditionLoopingFromItsMp4InPlaceOfTheStill() {
+        val post = j(mapOf(
+            "image_versions2" to mapOf("candidates" to listOf(mapOf("url" to "https://scontent.cdninstagram.com/gif-still.jpg", "width" to 200, "height" to 200))),
+            "giphy_media_info" to mapOf("first_party_cdn_proxied_images" to mapOf(
+                "fixed_height" to mapOf("url" to "https://i.giphy.example/200.gif", "mp4" to "https://i.giphy.example/200.mp4", "width" to "267", "height" to "200"),
+                "original" to mapOf("url" to "https://i.giphy.example/full.gif", "mp4" to "https://i.giphy.example/full.mp4", "webp" to "https://i.giphy.example/full.webp", "width" to "480", "height" to "360"),
+            )),
+        ))
+        val gif = ThreadsParser.media(post).single()
+        assertTrue(gif.isGif)
+        assertEquals("https://i.giphy.example/full.gif", gif.url)
+        assertEquals("https://i.giphy.example/full.mp4", gif.videoUrl)
+        assertEquals(480.0 / 360, gif.aspectRatio)
+
+        val withoutClip = ThreadsParser.gif(j(mapOf("giphy_media_info" to mapOf("first_party_cdn_proxied_images" to mapOf(
+            "fixed_width" to mapOf("webp" to "https://i.giphy.example/w.webp", "width" to 200, "height" to 100),
+        )))))!!
+        assertEquals("https://i.giphy.example/w.webp", withoutClip.url)
+        assertFalse(withoutClip.isVideo, "a GIF without an MP4 is its picture")
+        assertNull(ThreadsParser.gif(j(mapOf("giphy_media_info" to null))))
+        assertFalse(ThreadsParser.media(j(mapOf("image_versions2" to mapOf("candidates" to listOf(mapOf("url" to "https://cdn/p.jpg")))))).single().isGif)
+    }
+
+    @Test
     fun renditionsWithoutSizesFollowTheSizedOnesAndAQualityIsNamedByItsShorterSide() {
         val renditions = ThreadsParser.videoRenditions(j(mapOf("video_versions" to listOf(
             mapOf("url" to "https://cdn/640.mp4", "width" to 360, "height" to 640, "type" to 101),

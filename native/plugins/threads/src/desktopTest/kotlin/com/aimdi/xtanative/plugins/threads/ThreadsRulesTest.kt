@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.plugins.threads
 
+import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.networks.threads.ThreadsException
 import com.aimdi.xtanative.networks.threads.ThreadsFailure
 import com.aimdi.xtanative.networks.threads.ThreadsImage
@@ -108,6 +109,20 @@ class ThreadsRulesTest {
         assertEquals(listOf(row.height * 0.8f, row.height, 400f * 0.86f, 400f * 0.86f), row.widths)
         assertTrue(row.widths.all { it < 400f })
         assertEquals(0f, ThreadsStrip.layout(400f, emptyList()).height)
+    }
+
+    @Test
+    fun aGifLoopsAsTheAppsGifsDoAndIsKeptAsOne() {
+        val gif = ThreadsMedia(
+            "https://i.giphy.example/full.gif", 4.0 / 3, renditions = listOf(ThreadsVideoRendition("https://i.giphy.example/full.mp4", 480, 360)),
+            images = listOf(ThreadsImage("https://i.giphy.example/full.gif", 480, 360)), isGif = true,
+        )
+        val post = ThreadsPost(id = "1", handle = "zuck", authorName = "Mark", text = "", media = listOf(gif), url = "https://www.threads.com/@zuck/post/G1")
+        val item = ThreadsMediaItems.items(post, MediaQuality.LARGE).single()
+        assertEquals(MediaItem.Kind.GIF, item.kind)
+        assertEquals("https://i.giphy.example/full.mp4", item.videoUrl)
+        assertTrue(ThreadsMediaItems.qualities(post).single().isEmpty(), "no quality to choose")
+        assertEquals(post, ThreadsPostJson.post(J.parse(ThreadsPostJson.json(post).toString())))
     }
 
     @Test
