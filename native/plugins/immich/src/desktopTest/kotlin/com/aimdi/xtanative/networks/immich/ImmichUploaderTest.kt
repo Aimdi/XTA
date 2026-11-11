@@ -114,7 +114,31 @@ class ImmichUploaderTest {
     @Test
     fun aRunWhereNothingWentUpHasFailed() = runBlocking {
         val report = upload(FakeImmich { XResponse(500, "{}") })
-        assertEquals(ImmichUploadReport(ImmichUploadStatus.FAILED, failures = 2), report)
+        assertEquals(ImmichUploadReport(ImmichUploadStatus.FAILED, failures = 2, problem = ImmichProblem.SERVER), report)
+    }
+
+    @Test
+    fun aRefusedKeyStopsTheRunBeforeTheNextFileIsFetched() = runBlocking {
+        val http = FakeImmich { json("""{"message":"Invalid API key"}""", 401) }
+        val report = upload(http)
+        assertEquals(ImmichUploadReport(ImmichUploadStatus.FAILED, failures = 2, problem = ImmichProblem.UNAUTHORIZED), report)
+        assertEquals(1, http.downloaded.size, "the video is not fetched from X only to be refused")
+        assertEquals(1, http.sent.size)
+    }
+
+    @Test
+    fun anUnreachableServerStopsTheRunToo() = runBlocking {
+        val http = FakeImmich { throw IOException("no route to host") }
+        val report = upload(http)
+        assertEquals(ImmichProblem.NETWORK, report.problem)
+        assertEquals(1, http.downloaded.size)
+    }
+
+    @Test
+    fun aFileThatTookTooLongDoesNotStopTheNext() = runBlocking {
+        val http = FakeImmich { throw java.io.InterruptedIOException("timeout") }
+        upload(http)
+        assertEquals(2, http.downloaded.size)
     }
 
     @Test

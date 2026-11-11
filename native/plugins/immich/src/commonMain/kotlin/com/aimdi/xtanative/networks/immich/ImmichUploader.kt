@@ -1,7 +1,9 @@
 package com.aimdi.xtanative.networks.immich
 
 import com.aimdi.xtanative.core.x.model.XMedia
+import java.io.InterruptedIOException
 import java.time.Instant
+import kotlin.coroutines.cancellation.CancellationException
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
 /**
@@ -20,8 +22,26 @@ interface ImmichUploadLog {
 /** How an upload run ended, so the caller can say so without knowing the API. */
 enum class ImmichUploadStatus { NOTHING_TO_DO, NOT_CONFIGURED, DONE, FAILED }
 
-/** An upload run: [uploaded] assets Immich did not have, [duplicates] it recognised (not a failure), and [failures]. */
-data class ImmichUploadReport(val status: ImmichUploadStatus, val uploaded: Int = 0, val duplicates: Int = 0, val failures: Int = 0)
+/**
+ * An upload run: [uploaded] assets Immich did not have, [duplicates] it
+ * recognised (not a failure), and [failures]; [problem] is what the server
+ * (or the way to it) said when it turned a file away, null when only X's
+ * files could not be fetched.
+ */
+data class ImmichUploadReport(
+    val status: ImmichUploadStatus,
+    val uploaded: Int = 0,
+    val duplicates: Int = 0,
+    val failures: Int = 0,
+    val problem: ImmichProblem? = null,
+)
+
+/**
+ * One file's end: what Immich made of it, or why it did not go up ([problem]
+ * null when X's file could not be had), and whether no other file would fare
+ * better ([stops]).
+ */
+private class FileSent(val result: ImmichUploadResult?, val problem: ImmichProblem? = null, val stops: Boolean = false)
 
 /**
  * Sends the photos and videos of a kept post to the user's Immich, as XTA
@@ -54,17 +74,38 @@ class ImmichUploader(
         // A log that cannot be read must not stop an upload: at worst Immich answers "duplicate".
         val pending = orNull { log.pending(ids) } ?: ids
         val todo = candidates.filter { it.id in pending }.ifEmpty { return ImmichUploadReport(ImmichUploadStatus.NOTHING_TO_DO) }
-        val results = todo.map { sendOne(server, it) }
-        fileInAlbum(server, albumName, results.mapNotNull { it?.assetId })
+        val results = sendAll(server, todo)
+        fileInAlbum(server, albumName, results.mapNotNull { it.result?.assetId })
         return reportOf(results)
     }
 
-    /** Fetches one file and hands it over, noting it as sent; null when either half failed. */
-    private suspend fun sendOne(server: ImmichServer, media: UploadableMedia): ImmichUploadResult? = orNull {
-        val file = http.download(media.url.toHttpUrl())
-        if (file.code != 200) return@orNull null
-        client.upload(server, file.bytes, media.fileName, media.id, clock()).also { result ->
+    /**
+     * Each file in turn, until the server refuses in a way that holds for
+     * every file (a wrong key or address, no way to it, not a slow file): the rest are then
+     * neither fetched from X nor sent, and count as failures.
+     */
+    private suspend fun sendAll(server: ImmichServer, todo: List<UploadableMedia>): List<FileSent> {
+        val sent = mutableListOf<FileSent>()
+        for (media in todo) {
+            val last = sent.lastOrNull()
+            sent += if (last?.stops == true) FileSent(null, last.problem, stops = true) else sendOne(server, media)
+        }
+        return sent
+    }
+
+    /** Fetches one file and hands it over, noting it as sent. */
+    private suspend fun sendOne(server: ImmichServer, media: UploadableMedia): FileSent {
+        val file = orNull { http.download(media.url.toHttpUrl()) }
+        if (file == null || file.code != 200) return FileSent(null)
+        return try {
+            val result = client.upload(server, file.bytes, media.fileName, media.id, clock())
             orNull { log.record(media.id, result.assetId) }
+            FileSent(result)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            // A file that took too long says nothing of the next, which may be a small photo.
+            ImmichProblem.of(e).let { FileSent(null, it, stops = it in STOPS_THE_RUN && e !is InterruptedIOException) }
         }
     }
 
@@ -80,13 +121,17 @@ class ImmichUploader(
         orNull { client.addToAlbum(server, albumId, assetIds) }
     }
 
-    private fun reportOf(results: List<ImmichUploadResult?>): ImmichUploadReport {
-        val uploaded = results.count { it?.outcome == ImmichUploadOutcome.CREATED }
-        val duplicates = results.count { it?.outcome == ImmichUploadOutcome.DUPLICATE }
-        val failures = results.count { it == null }
-        return when {
-            uploaded == 0 && duplicates == 0 -> ImmichUploadReport(ImmichUploadStatus.FAILED, failures = failures)
-            else -> ImmichUploadReport(ImmichUploadStatus.DONE, uploaded, duplicates, failures)
-        }
+    private fun reportOf(results: List<FileSent>): ImmichUploadReport {
+        val uploaded = results.count { it.result?.outcome == ImmichUploadOutcome.CREATED }
+        val duplicates = results.count { it.result?.outcome == ImmichUploadOutcome.DUPLICATE }
+        val failures = results.count { it.result == null }
+        val problem = results.firstNotNullOfOrNull { it.problem }
+        val status = if (uploaded == 0 && duplicates == 0) ImmichUploadStatus.FAILED else ImmichUploadStatus.DONE
+        return ImmichUploadReport(status, uploaded, duplicates, failures, problem)
+    }
+
+    private companion object {
+        /** Refusals no other file would fare better with. */
+        val STOPS_THE_RUN = setOf(ImmichProblem.UNAUTHORIZED, ImmichProblem.BAD_SERVER, ImmichProblem.NETWORK)
     }
 }

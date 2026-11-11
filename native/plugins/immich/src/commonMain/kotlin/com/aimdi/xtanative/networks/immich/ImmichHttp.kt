@@ -60,7 +60,7 @@ internal class FilePart(val field: String, val name: String, val bytes: ByteArra
 internal class Multipart(val fields: List<Pair<String, String>>, val file: FilePart, val boundary: String = "xta-boundary-${UUID.randomUUID()}") {
     val contentType: String get() = "multipart/form-data; boundary=$boundary"
 
-    fun bytes(): ByteArray = ByteArrayOutputStream().apply {
+    fun bytes(): ByteArray = ByteArrayOutputStream(file.bytes.size + 1024).apply {
         fields.forEach { (name, value) -> text("--$boundary\r\n${fieldHeader(name, value)}$value\r\n") }
         text("--$boundary\r\ncontent-type: application/octet-stream\r\n")
         text("content-disposition: form-data; name=\"${quoted(file.field)}\"; filename=\"${quoted(file.name)}\"\r\n\r\n")

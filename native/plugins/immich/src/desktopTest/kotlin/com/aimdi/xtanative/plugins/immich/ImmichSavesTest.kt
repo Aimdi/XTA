@@ -5,6 +5,8 @@ import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.core.x.model.XVideoVariant
 import com.aimdi.xtanative.networks.immich.FakeImmich
 import com.aimdi.xtanative.networks.immich.ImmichClient
+import com.aimdi.xtanative.networks.immich.ImmichProblem
+import com.aimdi.xtanative.networks.immich.ImmichUploadReport
 import com.aimdi.xtanative.networks.immich.ImmichUploadStatus
 import com.aimdi.xtanative.networks.immich.ImmichUploader
 import com.aimdi.xtanative.networks.immich.fixture
@@ -93,10 +95,19 @@ class ImmichSavesTest {
 
     @Test
     fun eachEndSaysWhatXtaSays() {
-        assertNull(ImmichSaves.notice(ImmichUploadStatus.NOTHING_TO_DO), "nothing worth interrupting the reader for")
-        assertEquals(Strings.not_configured, ImmichSaves.notice(ImmichUploadStatus.NOT_CONFIGURED))
-        assertEquals(Strings.upload_done, ImmichSaves.notice(ImmichUploadStatus.DONE))
-        assertEquals(Strings.upload_failed, ImmichSaves.notice(ImmichUploadStatus.FAILED))
+        assertNull(ImmichSaves.notice(ImmichUploadReport(ImmichUploadStatus.NOTHING_TO_DO)), "nothing worth interrupting the reader for")
+        assertEquals(Strings.not_configured, ImmichSaves.notice(ImmichUploadReport(ImmichUploadStatus.NOT_CONFIGURED)))
+        assertEquals(Strings.upload_done, ImmichSaves.notice(ImmichUploadReport(ImmichUploadStatus.DONE, uploaded = 1)))
+        assertEquals(Strings.upload_failed, ImmichSaves.notice(ImmichUploadReport(ImmichUploadStatus.FAILED, failures = 1)))
+    }
+
+    @Test
+    fun aFailedUploadSaysWhatTheServerSaidAsTestConnectionWould() {
+        fun failed(problem: ImmichProblem) = ImmichSaves.notice(ImmichUploadReport(ImmichUploadStatus.FAILED, failures = 2, problem = problem))
+        assertEquals(Strings.error_unauthorized, failed(ImmichProblem.UNAUTHORIZED))
+        assertEquals(Strings.error_server_url, failed(ImmichProblem.BAD_SERVER))
+        assertEquals(Strings.error_network, failed(ImmichProblem.NETWORK))
+        assertEquals(Strings.error_generic, failed(ImmichProblem.SERVER))
     }
 
     @Test

@@ -26,7 +26,7 @@ internal class ImmichApp(val host: PluginHost, http: ImmichHttp = OkHttpImmichHt
     suspend fun filed(post: PluginFiledPost) {
         val language = host.language
         val report = host.working(Strings.uploading.get(language)) { ImmichSaves.upload(uploader, host.settings.current(), post) }
-        ImmichSaves.notice(report.status)?.let { host.tell(it.get(language)) }
+        ImmichSaves.notice(report)?.let { host.tell(it.get(language)) }
     }
 
     /** Test connection, for the fields as they are typed, in [language]. */

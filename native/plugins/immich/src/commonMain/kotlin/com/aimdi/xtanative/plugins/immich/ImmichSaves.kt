@@ -33,12 +33,18 @@ internal object ImmichSaves {
         albumName = post.folder.takeIf { settings[ImmichPrefs.albumPerFolder] },
     )
 
-    /** What XTA says once an upload ends: nothing when there was nothing to send (no media, or all of it sent before). */
-    fun notice(status: ImmichUploadStatus): PluginText? = when (status) {
+    /**
+     * What XTA says once an upload ends: nothing when there was nothing to
+     * send (no media, or all of it sent before). A failed run says why in
+     * Test connection's words when the server (or the way to it) turned it
+     * away: a refused key or a wrong address is mended in the settings, not
+     * by filing the post again.
+     */
+    fun notice(report: ImmichUploadReport): PluginText? = when (report.status) {
         ImmichUploadStatus.NOTHING_TO_DO -> null
         ImmichUploadStatus.NOT_CONFIGURED -> Strings.not_configured
         ImmichUploadStatus.DONE -> Strings.upload_done
-        ImmichUploadStatus.FAILED -> Strings.upload_failed
+        ImmichUploadStatus.FAILED -> report.problem?.let(::problem) ?: Strings.upload_failed
     }
 
     /** Whether the server at [address] takes [apiKey], as Test connection says it. */
