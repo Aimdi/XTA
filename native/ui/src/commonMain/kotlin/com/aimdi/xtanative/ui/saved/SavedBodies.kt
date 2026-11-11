@@ -34,6 +34,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -74,6 +75,7 @@ import com.aimdi.xtanative.ui.generated.resources.saved_note_button
 import com.aimdi.xtanative.ui.media.mediaGrid
 import com.aimdi.xtanative.ui.media.rememberMediaGridRows
 import com.aimdi.xtanative.ui.offline.OfflineSavedAction
+import com.aimdi.xtanative.ui.plugins.LocalPostNetwork
 import com.aimdi.xtanative.ui.plugins.NetworkPostCard
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.PostCard
@@ -250,7 +252,9 @@ private fun KeptNetworkPost(content: SavedContent) {
     val record = content.record.raw
     val shown = remember(plugin, content) { if (plugin == null || record == null) null else runCatching { plugin.archived(record) }.getOrNull() }
     if (plugin != null && shown != null) {
-        NetworkPostCard(shown, plugin.postActions ?: rememberLinkActions(plugin.id), rememberPostExtras(plugin, shown))
+        CompositionLocalProvider(LocalPostNetwork provides plugin.id) {
+            NetworkPostCard(shown, plugin.postActions ?: rememberLinkActions(plugin.id), rememberPostExtras(plugin, shown))
+        }
     } else {
         KeptCard.of(content)?.let { KeptCardView(it) } ?: TooLarge()
     }

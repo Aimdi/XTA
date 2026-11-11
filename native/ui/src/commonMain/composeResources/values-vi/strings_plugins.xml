@@ -44,6 +44,7 @@
     <string name="plugin_category_sites">Trang web khác</string>
     <string name="plugin_category_other">Khác</string>
     <string name="plugin_post_show">Hiện</string>
+    <string name="plugin_post_hide">Ẩn</string>
     <string name="plugin_stat_replies">Trả lời</string>
     <string name="plugin_problem_no_account">%1$s cần một tài khoản, nhưng chưa có tài khoản nào được thiết lập.</string>
     <string name="plugin_problem_rate_limited">%1$s đang giới hạn việc đọc. Hãy thử lại sau vài phút.</string>

@@ -44,6 +44,7 @@
     <string name="plugin_category_sites">Autres sites</string>
     <string name="plugin_category_other">Autres</string>
     <string name="plugin_post_show">Afficher</string>
+    <string name="plugin_post_hide">Masquer</string>
     <string name="plugin_stat_replies">Réponses</string>
     <string name="plugin_problem_no_account">%1$s nécessite un compte, et aucun n’est configuré.</string>
     <string name="plugin_problem_rate_limited">%1$s limite les lectures pour le moment. Réessayez dans quelques minutes.</string>

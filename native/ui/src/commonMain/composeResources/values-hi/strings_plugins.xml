@@ -44,6 +44,7 @@
     <string name="plugin_category_sites">और साइटें</string>
     <string name="plugin_category_other">अन्य</string>
     <string name="plugin_post_show">दिखाएँ</string>
+    <string name="plugin_post_hide">छिपाएँ</string>
     <string name="plugin_stat_replies">जवाब</string>
     <string name="plugin_problem_no_account">%1$s को एक खाते की ज़रूरत है, और कोई खाता सेट नहीं है।</string>
     <string name="plugin_problem_rate_limited">%1$s अभी पढ़ना सीमित कर रहा है। कुछ मिनट बाद फिर से कोशिश करें।</string>

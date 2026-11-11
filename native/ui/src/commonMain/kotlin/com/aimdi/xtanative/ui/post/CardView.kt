@@ -92,6 +92,17 @@ fun CardView(card: XCard, modifier: Modifier = Modifier) {
 }
 
 /**
+ * A card of another network's post: its page opens in XTA's browser with
+ * [from], that post, in its bar (the networks' cards hand XTA's openPostLink
+ * their LinkPostContext); without one, on its own.
+ */
+@Composable
+fun CardView(card: XCard, from: LinkFrom?, modifier: Modifier = Modifier) {
+    val links = LocalLinks.current
+    CardBody(card, null, modifier) { link -> links?.openPostLink(link.url, from, link.title.ifBlank { null }) }
+}
+
+/**
  * How a post's card opens the page it leads to (_card.dart's _openLink): in
  * XTA's browser, with [post] in its bar and the title the card gives shown
  * while the page loads.

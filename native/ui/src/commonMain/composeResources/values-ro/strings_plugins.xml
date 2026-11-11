@@ -44,6 +44,7 @@
     <string name="plugin_category_sites">Alte site-uri</string>
     <string name="plugin_category_other">Altele</string>
     <string name="plugin_post_show">Afișează</string>
+    <string name="plugin_post_hide">Ascunde</string>
     <string name="plugin_stat_replies">Răspunsuri</string>
     <string name="plugin_problem_no_account">%1$s are nevoie de un cont și niciunul nu este configurat.</string>
     <string name="plugin_problem_rate_limited">%1$s limitează citirile deocamdată. Încercați din nou peste câteva minute.</string>

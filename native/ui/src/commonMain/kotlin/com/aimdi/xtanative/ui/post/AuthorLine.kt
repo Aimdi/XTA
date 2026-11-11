@@ -7,12 +7,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.ui.common.XIcons
 import kotlin.math.max
@@ -30,6 +35,9 @@ object AuthorLineLayout {
     const val TIME_SHARE = 0.45f
     const val HANDLE_MIN = 40f
     const val TWO_LINES_SCALE = 1.3f
+
+    /** Where a Fediverse handle's instance starts ("alice@example.social": at its second @), which the line dims; null for any other handle. */
+    fun instanceAt(handle: String): Int? = handle.indexOf('@').takeIf { it > 0 }
 
     /** The widths given to each piece; [handle] is 0 where the handle is left out. */
     data class Widths(val name: Float, val badge: Float, val handle: Float, val time: Float, val twoLines: Boolean)
@@ -78,7 +86,7 @@ fun AuthorLine(name: String, handle: String, time: String, verified: Boolean, mo
             } else {
                 Spacer(Modifier)
             }
-            Text("@$handle", style = style, color = grey, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(remember(handle, grey) { handleText(handle, grey) }, style = style, color = grey, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text(if (time.isEmpty()) "" else " · $time", style = style, color = grey, maxLines = 1, overflow = TextOverflow.Ellipsis)
         },
     ) { measurables, constraints ->
@@ -133,4 +141,17 @@ fun AuthorLine(name: String, handle: String, time: String, verified: Boolean, mo
             }
         }
     }
+}
+
+/**
+ * "@handle" as the author line writes it; a Fediverse handle
+ * (`user@instance`) keeps its instance, dimmed, as XTA's Mastodon card
+ * writes it (mastodonHandleSpan): which server someone posts from is half of
+ * who they are there.
+ */
+private fun handleText(handle: String, color: Color): AnnotatedString = buildAnnotatedString {
+    val at = AuthorLineLayout.instanceAt(handle)
+    append("@")
+    append(if (at == null) handle else handle.substring(0, at))
+    if (at != null) withStyle(SpanStyle(color = color.copy(alpha = color.alpha * 0.7f))) { append(handle.substring(at)) }
 }

@@ -44,6 +44,7 @@
     <string name="plugin_category_sites">Veel saite</string>
     <string name="plugin_category_other">Muu</string>
     <string name="plugin_post_show">Näita</string>
+    <string name="plugin_post_hide">Peida</string>
     <string name="plugin_stat_replies">Vastused</string>
     <string name="plugin_problem_no_account">%1$s vajab kontot, kuid ühtegi pole seadistatud.</string>
     <string name="plugin_problem_rate_limited">%1$s piirab praegu lugemist. Proovi mõne minuti pärast uuesti.</string>

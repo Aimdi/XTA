@@ -44,6 +44,7 @@
     <string name="plugin_category_sites">다른 사이트</string>
     <string name="plugin_category_other">기타</string>
     <string name="plugin_post_show">표시</string>
+    <string name="plugin_post_hide">숨기기</string>
     <string name="plugin_stat_replies">답글</string>
     <string name="plugin_problem_no_account">%1$s에는 계정이 필요하지만 설정된 계정이 없습니다.</string>
     <string name="plugin_problem_rate_limited">%1$s에서 현재 읽기를 제한하고 있습니다. 몇 분 뒤에 다시 시도하세요.</string>

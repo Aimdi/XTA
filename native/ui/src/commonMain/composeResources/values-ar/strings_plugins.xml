@@ -44,6 +44,7 @@
     <string name="plugin_category_sites">مواقع أخرى</string>
     <string name="plugin_category_other">أخرى</string>
     <string name="plugin_post_show">إظهار</string>
+    <string name="plugin_post_hide">إخفاء</string>
     <string name="plugin_stat_replies">الردود</string>
     <string name="plugin_problem_no_account">يحتاج %1$s إلى حساب، ولا يوجد حساب مُعدّ.</string>
     <string name="plugin_problem_rate_limited">يحدّ %1$s من القراءة حاليًا. حاول مجددًا بعد بضع دقائق.</string>

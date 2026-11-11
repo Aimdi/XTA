@@ -28,6 +28,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,6 +62,7 @@ import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.fullTimeText
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.pinned
+import com.aimdi.xtanative.ui.generated.resources.plugin_post_hide
 import com.aimdi.xtanative.ui.generated.resources.plugin_post_show
 import com.aimdi.xtanative.ui.generated.resources.plugin_stat_replies
 import com.aimdi.xtanative.ui.generated.resources.replying_to
@@ -68,10 +70,19 @@ import com.aimdi.xtanative.ui.generated.resources.reposted_by
 import com.aimdi.xtanative.ui.generated.resources.stat_likes
 import com.aimdi.xtanative.ui.generated.resources.stat_quotes
 import com.aimdi.xtanative.ui.generated.resources.stat_reposts
+import com.aimdi.xtanative.ui.links.LinkFrom
 import com.aimdi.xtanative.ui.post.AuthorLine
 import com.aimdi.xtanative.ui.post.CardView
 import com.aimdi.xtanative.ui.saved.KeepableSaveButton
 import org.jetbrains.compose.resources.stringResource
+
+/**
+ * The network whose posts are drawn below it, by its plugin's id: the app
+ * says it around a plugin's screens and rows, so that a link card opened from
+ * a post keeps that post in the bar under XTA's browser (link_post_context.dart).
+ * None where nobody said: the page then opens on its own.
+ */
+val LocalPostNetwork = staticCompositionLocalOf<String?> { null }
 
 /**
  * Text with its links, mentions and tags in the theme's blue, as the app
@@ -217,8 +228,9 @@ fun NetworkPostCard(
                 post.replyingTo?.let { handle -> ReplyLine(handle) { actions.openMention(handle) } }
                 post.title?.let { PostTitle(it, Modifier.padding(top = 2.dp)) }
                 extras.above?.invoke()
+                CoverLine(post, revealed) { revealed = !revealed }
                 if (!post.textCovered(revealed)) LinkedText(post.text, actions.openMention, actions.openTag, Modifier.padding(top = 2.dp))
-                Attachments(post, actions, revealed, onReveal = { revealed = true }, gap = 10.dp, playing = playing)
+                Attachments(post, actions, revealed, onToggle = { revealed = !revealed }, gap = 10.dp, playing = playing, opensPost = true)
                 if (!post.textCovered(revealed)) extras.below?.invoke()
                 val footer = extras.footer
                 if (footer != null) footer() else CountsLine(post, rememberArchive(post, actions))
@@ -285,10 +297,12 @@ fun NetworkFocalPost(post: NetworkPost, actions: NetworkPostActions, modifier: M
         }
         post.replyingTo?.let { handle -> ReplyLine(handle) { actions.openMention(handle) } }
         post.title?.let { PostTitle(it, Modifier.padding(top = 12.dp), MaterialTheme.typography.titleLarge) }
+        CoverLine(post, revealed) { revealed = !revealed }
         if (!post.textCovered(revealed)) {
             LinkedText(post.text, actions.openMention, actions.openTag, Modifier.padding(top = 12.dp), style = TextStyle(fontSize = 17.sp, lineHeight = 24.sp))
         }
-        Attachments(post, actions, revealed, onReveal = { revealed = true }, gap = 12.dp, playing = false)
+        // The opened post is the screen under the browser: going back to it is closing the browser.
+        Attachments(post, actions, revealed, onToggle = { revealed = !revealed }, gap = 12.dp, playing = false, opensPost = false)
         Row(Modifier.fillMaxWidth().padding(top = 12.dp), verticalAlignment = Alignment.CenterVertically) {
             Text(
                 fullTimeText(post.createdAt),
@@ -303,9 +317,15 @@ fun NetworkFocalPost(post: NetworkPost, actions: NetworkPostActions, modifier: M
     Hairline()
 }
 
-/** A quoted post, framed, opening on its own. */
+/**
+ * A quoted post, framed, opening on its own, as XTA's cards draw one
+ * (bluesky_post_card.dart's _QuotedPost, mastodon_post_card.dart's
+ * _QuoteEmbed): its author's name over the handle, then its text, media and
+ * link card; behind a warning, Show opens it in place and Hide covers it again.
+ */
 @Composable
 fun QuotedNetworkPost(post: NetworkPost, actions: NetworkPostActions, modifier: Modifier = Modifier) {
+    var revealed by rememberSaveable(post.id, post.revision) { mutableStateOf(false) }
     val shape = RoundedCornerShape(16.dp)
     Column(
         modifier
@@ -315,22 +335,19 @@ fun QuotedNetworkPost(post: NetworkPost, actions: NetworkPostActions, modifier: 
             .clickable { actions.open(post) }
             .padding(12.dp),
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Avatar(post.avatarUrl, 20.dp)
-            Spacer(Modifier.width(6.dp))
-            AuthorLine(post.authorName, post.authorHandle, agoText(post.createdAt), verified = false, modifier = Modifier.weight(1f))
-        }
+        Text(post.authorName, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Text("@" + post.authorHandle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
         post.title?.let { PostTitle(it, Modifier.padding(top = 4.dp)) }
-        val warning = post.warning
-        if (post.coversText && warning != null) {
-            // Its own screen is where the reader opens it.
-            Text(warning, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 4.dp))
-        } else {
-            LinkedText(post.text, actions.openMention, actions.openTag, Modifier.padding(top = 4.dp), maxLines = 8)
+        CoverLine(post, revealed) { revealed = !revealed }
+        if (!post.textCovered(revealed)) {
+            LinkedText(post.text, actions.openMention, actions.openTag, Modifier.padding(top = 6.dp), maxLines = QUOTE_LINES)
+            val warning = post.mediaWarning()
+            if (warning != null) WarningLine(warning, revealed) { revealed = !revealed }
             if (post.media.isNotEmpty()) {
-                MediaTiles(post.media, { index -> actions.openMedia(post, index) }, Modifier.padding(top = 8.dp), hidden = warning != null)
+                val hidden = warning != null && !revealed
+                MediaTiles(post.media, { index -> if (hidden) revealed = true else actions.openMedia(post, index) }, Modifier.padding(top = 8.dp), hidden = hidden)
             }
-            post.card?.let { CardView(it.asXCard(), Modifier.padding(top = 8.dp)) }
+            PostLinkCard(post, actions, Modifier.padding(top = 8.dp), opensPost = true)
         }
     }
 }
@@ -338,32 +355,57 @@ fun QuotedNetworkPost(post: NetworkPost, actions: NetworkPostActions, modifier: 
 /**
  * The media (behind its warning until revealed), the link card and the quoted
  * post, [gap] below what is above; a warning that [NetworkPost.coversText]
- * keeps all of them back until revealed.
+ * keeps all of them back until revealed, its line drawn over the text
+ * ([CoverLine]). With [opensPost], the bar under a page its link card opened
+ * leads back to the post.
  */
 @Composable
-private fun Attachments(post: NetworkPost, actions: NetworkPostActions, revealed: Boolean, onReveal: () -> Unit, gap: Dp, playing: Boolean) {
-    val warning = post.warning?.takeIf { !revealed && (post.media.isNotEmpty() || post.coversText) }
-    if (warning != null) WarningLine(warning, onReveal)
+private fun Attachments(post: NetworkPost, actions: NetworkPostActions, revealed: Boolean, onToggle: () -> Unit, gap: Dp, playing: Boolean, opensPost: Boolean) {
     if (post.textCovered(revealed)) return
+    val warning = post.mediaWarning()
+    if (warning != null) WarningLine(warning, revealed, onToggle)
     if (post.media.isNotEmpty()) {
+        val hidden = warning != null && !revealed
         MediaTiles(
             post.media,
-            { index -> if (warning != null) onReveal() else actions.openMedia(post, index) },
+            { index -> if (hidden) onToggle() else actions.openMedia(post, index) },
             Modifier.padding(top = gap),
             playing = playing,
-            hidden = warning != null,
+            hidden = hidden,
         )
     }
-    post.card?.let { CardView(it.asXCard(), Modifier.padding(top = gap)) }
+    PostLinkCard(post, actions, Modifier.padding(top = gap), opensPost)
     post.quoted?.let { QuotedNetworkPost(it, actions, Modifier.padding(top = gap)) }
 }
 
-/** Why the media under it is hidden, and Show. */
+/** The warning that keeps all of [post] back, over its text, with Show, or Hide once [revealed]; nothing for a post it does not cover. */
 @Composable
-private fun WarningLine(warning: String, onReveal: () -> Unit) {
+private fun CoverLine(post: NetworkPost, revealed: Boolean, onToggle: () -> Unit) {
+    val warning = post.warning?.takeIf { post.coversText } ?: return
+    WarningLine(warning, revealed, onToggle)
+}
+
+/**
+ * [post]'s link card: its page opens in XTA's browser with the post in the
+ * bar under it ([NetworkPost.linkContext]) where the app said whose post it
+ * is ([LocalPostNetwork]); [opensPost] lets that bar lead back to the post.
+ */
+@Composable
+private fun PostLinkCard(post: NetworkPost, actions: NetworkPostActions, modifier: Modifier, opensPost: Boolean) {
+    val card = post.card ?: return
+    val network = LocalPostNetwork.current
+    val from = remember(post, actions, network, opensPost) {
+        network?.let { LinkFrom(post.linkContext(it), if (opensPost) ({ actions.open(post) }) else null) }
+    }
+    CardView(card.asXCard(), from, modifier)
+}
+
+/** Why what is under it is hidden, and Show; Hide once it is [revealed], as XTA's warnings stay a toggle. */
+@Composable
+private fun WarningLine(warning: String, revealed: Boolean, onToggle: () -> Unit) {
     Row(Modifier.fillMaxWidth().padding(top = 6.dp), verticalAlignment = Alignment.CenterVertically) {
         Text(warning, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f))
-        TextButton(onClick = onReveal) { Text(stringResource(Res.string.plugin_post_show)) }
+        TextButton(onClick = onToggle) { Text(stringResource(if (revealed) Res.string.plugin_post_hide else Res.string.plugin_post_show)) }
     }
 }
 
@@ -539,3 +581,6 @@ private fun LinkCard.asXCard(): XCard.Link = XCard.Link(
 
 private val IndentStep = 20.dp
 private const val MAX_INDENT = 4
+
+/** XTA's quotes show six lines of their text. */
+private const val QUOTE_LINES = 6

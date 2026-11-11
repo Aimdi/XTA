@@ -44,6 +44,7 @@
     <string name="plugin_category_sites">更多网站</string>
     <string name="plugin_category_other">其他</string>
     <string name="plugin_post_show">显示</string>
+    <string name="plugin_post_hide">隐藏</string>
     <string name="plugin_stat_replies">回复</string>
     <string name="plugin_problem_no_account">%1$s 需要账号，但尚未设置任何账号。</string>
     <string name="plugin_problem_rate_limited">%1$s 目前正在限制读取。请几分钟后重试。</string>

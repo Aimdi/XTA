@@ -44,6 +44,7 @@
     <string name="plugin_category_sites">Інші сайти</string>
     <string name="plugin_category_other">Інше</string>
     <string name="plugin_post_show">Показати</string>
+    <string name="plugin_post_hide">Сховати</string>
     <string name="plugin_stat_replies">Відповіді</string>
     <string name="plugin_problem_no_account">%1$s потребує облікового запису, а жодного не налаштовано.</string>
     <string name="plugin_problem_rate_limited">%1$s зараз обмежує читання. Спробуйте за кілька хвилин.</string>

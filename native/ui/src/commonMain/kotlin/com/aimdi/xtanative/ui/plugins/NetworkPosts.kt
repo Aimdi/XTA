@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.plugins
 
+import com.aimdi.xtanative.services.links.LinkPostContext
 import java.time.Instant
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
@@ -76,6 +77,25 @@ data class NetworkPost(
      * content warning hides itself when the post's revision changes.
      */
     val revision: Int get() = listOf<Any?>(text, media.map { it.imageUrl }, warning, coversText, quoted?.id, quoted?.text).hashCode()
+
+    /**
+     * This post as the bar under XTA's browser shows it when a link was
+     * opened from its card (XTA's LinkPostContext of a Bluesky, Mastodon or
+     * Threads card): its author, the counts [network] reported (reposts
+     * without the quotes, as those cards count them) and where it is shared from.
+     */
+    fun linkContext(network: String): LinkPostContext = LinkPostContext(
+        network = network,
+        author = authorName,
+        avatarUrl = avatarUrl,
+        replies = replies,
+        reposts = reposts,
+        likes = likes,
+        postUrl = url,
+    )
+
+    /** Its [warning] where it covers the media alone; one that covers the text too is drawn over the text. */
+    fun mediaWarning(): String? = warning?.takeIf { !coversText && media.isNotEmpty() }
 }
 
 /** Where a network post's parts lead: its plugin decides. */

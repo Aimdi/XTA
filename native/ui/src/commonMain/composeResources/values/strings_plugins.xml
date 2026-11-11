@@ -47,6 +47,7 @@
     <string name="plugin_category_other">Other</string>
 
     <string name="plugin_post_show">Show</string>
+    <string name="plugin_post_hide">Hide</string>
     <string name="plugin_stat_replies">Replies</string>
     <string name="plugin_problem_no_account">%1$s needs an account, and none is set up.</string>
     <string name="plugin_problem_rate_limited">%1$s is limiting reads for now. Try again in a few minutes.</string>

@@ -44,6 +44,7 @@
     <string name="plugin_category_sites">Diğer siteler</string>
     <string name="plugin_category_other">Diğer</string>
     <string name="plugin_post_show">Göster</string>
+    <string name="plugin_post_hide">Gizle</string>
     <string name="plugin_stat_replies">Yanıtlar</string>
     <string name="plugin_problem_no_account">%1$s bir hesap gerektiriyor ve hiçbiri ayarlanmamış.</string>
     <string name="plugin_problem_rate_limited">%1$s şu anda okumaları sınırlıyor. Birkaç dakika sonra tekrar deneyin.</string>

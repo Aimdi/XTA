@@ -44,6 +44,7 @@
     <string name="plugin_category_sites">Situs lainnya</string>
     <string name="plugin_category_other">Lainnya</string>
     <string name="plugin_post_show">Tampilkan</string>
+    <string name="plugin_post_hide">Sembunyikan</string>
     <string name="plugin_stat_replies">Balasan</string>
     <string name="plugin_problem_no_account">%1$s memerlukan akun, dan belum ada yang diatur.</string>
     <string name="plugin_problem_rate_limited">%1$s sedang membatasi pembacaan. Coba lagi dalam beberapa menit.</string>

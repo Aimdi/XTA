@@ -44,6 +44,7 @@
     <string name="plugin_category_sites">Més llocs</string>
     <string name="plugin_category_other">Altres</string>
     <string name="plugin_post_show">Mostra</string>
+    <string name="plugin_post_hide">Amaga</string>
     <string name="plugin_stat_replies">Respostes</string>
     <string name="plugin_problem_no_account">%1$s necessita un compte, i no n'hi ha cap de configurat.</string>
     <string name="plugin_problem_rate_limited">%1$s limita les lectures ara mateix. Torna-ho a provar d'aquí a uns minuts.</string>

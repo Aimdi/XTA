@@ -44,6 +44,7 @@
     <string name="plugin_category_sites">Inšyja sajty</string>
     <string name="plugin_category_other">Inšaje</string>
     <string name="plugin_post_show">Pakazać</string>
+    <string name="plugin_post_hide">Schavać</string>
     <string name="plugin_stat_replies">Adkazy</string>
     <string name="plugin_problem_no_account">%1$s patrabuje ŭlikovy zapis, a nivodnaha nie naładžana.</string>
     <string name="plugin_problem_rate_limited">%1$s ciapier abmiažoŭvaje čytannie. Pasprabujcie praz niekalki chvilin.</string>

@@ -44,6 +44,7 @@
     <string name="plugin_category_sites">Więcej witryn</string>
     <string name="plugin_category_other">Inne</string>
     <string name="plugin_post_show">Pokaż</string>
+    <string name="plugin_post_hide">Ukryj</string>
     <string name="plugin_stat_replies">Odpowiedzi</string>
     <string name="plugin_problem_no_account">%1$s wymaga konta, a żadne nie jest skonfigurowane.</string>
     <string name="plugin_problem_rate_limited">%1$s ogranicza teraz odczyty. Spróbuj ponownie za kilka minut.</string>

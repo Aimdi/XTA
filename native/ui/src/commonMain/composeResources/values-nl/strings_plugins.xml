@@ -44,6 +44,7 @@
     <string name="plugin_category_sites">Meer sites</string>
     <string name="plugin_category_other">Overig</string>
     <string name="plugin_post_show">Tonen</string>
+    <string name="plugin_post_hide">Verbergen</string>
     <string name="plugin_stat_replies">Reacties</string>
     <string name="plugin_problem_no_account">%1$s heeft een account nodig en er is er geen ingesteld.</string>
     <string name="plugin_problem_rate_limited">%1$s beperkt het lezen op dit moment. Probeer het over een paar minuten opnieuw.</string>

@@ -27,6 +27,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -57,6 +58,7 @@ import com.aimdi.xtanative.ui.generated.resources.problem_cached_content
 import com.aimdi.xtanative.ui.generated.resources.problem_source_loading
 import com.aimdi.xtanative.ui.links.LocalLinks
 import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
+import com.aimdi.xtanative.ui.plugins.LocalPostNetwork
 import com.aimdi.xtanative.ui.plugins.NetworkPost
 import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.NetworkPostCard
@@ -121,14 +123,17 @@ fun PluginPostRow(post: SourcedPost, plugin: XtaPlugin?) {
     if (card != null) return SourceStrip(provenanceColor(markColor), card)
     val fallback = rememberLinkActions(post.source)
     val language = currentLanguage()
-    NetworkPostCard(
-        post.post,
-        plugin?.postActions ?: fallback,
-        rememberPostExtras(plugin, post.post),
-        mark = plugin?.icon,
-        markColor = markColor,
-        markLabel = remember(plugin, language) { plugin?.let { runCatching { it.title(language) }.getOrNull() } },
-    )
+    // Whose post it is, for the bar under a page its link card opens.
+    CompositionLocalProvider(LocalPostNetwork provides post.source) {
+        NetworkPostCard(
+            post.post,
+            plugin?.postActions ?: fallback,
+            rememberPostExtras(plugin, post.post),
+            mark = plugin?.icon,
+            markColor = markColor,
+            markLabel = remember(plugin, language) { plugin?.let { runCatching { it.title(language) }.getOrNull() } },
+        )
+    }
     Hairline()
 }
 

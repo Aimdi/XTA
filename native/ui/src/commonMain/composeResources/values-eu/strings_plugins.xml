@@ -44,6 +44,7 @@
     <string name="plugin_category_sites">Webgune gehiago</string>
     <string name="plugin_category_other">Besteak</string>
     <string name="plugin_post_show">Erakutsi</string>
+    <string name="plugin_post_hide">Ezkutatu</string>
     <string name="plugin_stat_replies">Erantzunak</string>
     <string name="plugin_problem_no_account">%1$s(e)k kontu bat behar du, eta ez dago bat ere konfiguratuta.</string>
     <string name="plugin_problem_rate_limited">%1$s irakurketak mugatzen ari da oraingoz. Saiatu berriro minutu batzuk barru.</string>

@@ -45,6 +45,7 @@
     <string name="plugin_category_other">Weitere</string>
 
     <string name="plugin_post_show">Anzeigen</string>
+    <string name="plugin_post_hide">Ausblenden</string>
     <string name="plugin_stat_replies">Antworten</string>
     <string name="plugin_problem_no_account">%1$s braucht ein Konto, und keins ist eingerichtet.</string>
     <string name="plugin_problem_rate_limited">%1$s bremst das Lesen gerade. Versuch es in ein paar Minuten noch einmal.</string>

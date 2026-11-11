@@ -44,6 +44,7 @@
     <string name="plugin_category_sites">Más sitios</string>
     <string name="plugin_category_other">Otros</string>
     <string name="plugin_post_show">Mostrar</string>
+    <string name="plugin_post_hide">Ocultar</string>
     <string name="plugin_stat_replies">Respuestas</string>
     <string name="plugin_problem_no_account">%1$s necesita una cuenta y no hay ninguna configurada.</string>
     <string name="plugin_problem_rate_limited">%1$s está limitando las lecturas por ahora. Inténtalo de nuevo en unos minutos.</string>

@@ -44,6 +44,7 @@
     <string name="plugin_category_sites">Další weby</string>
     <string name="plugin_category_other">Ostatní</string>
     <string name="plugin_post_show">Zobrazit</string>
+    <string name="plugin_post_hide">Skrýt</string>
     <string name="plugin_stat_replies">Odpovědi</string>
     <string name="plugin_problem_no_account">%1$s potřebuje účet a žádný není nastavený.</string>
     <string name="plugin_problem_rate_limited">%1$s teď omezuje čtení. Zkus to znovu za pár minut.</string>

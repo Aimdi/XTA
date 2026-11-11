@@ -51,6 +51,7 @@ import com.aimdi.xtanative.ui.generated.resources.reader_link_likes
 import com.aimdi.xtanative.ui.generated.resources.reader_link_replies
 import com.aimdi.xtanative.ui.generated.resources.reader_link_reposts
 import com.aimdi.xtanative.ui.generated.resources.reader_link_share_post
+import com.aimdi.xtanative.ui.feed.rememberRunningPlugins
 import com.aimdi.xtanative.ui.generated.resources.reader_network_bluesky
 import com.aimdi.xtanative.ui.generated.resources.reader_network_hackernews
 import com.aimdi.xtanative.ui.generated.resources.reader_network_instagram
@@ -152,13 +153,15 @@ private fun BarAvatar(post: LinkPostContext) {
     }
 }
 
-/** The network's mark at the bar's end: X's own; the others leave the room empty until their screens bring one. */
+/** The network's mark at the bar's end (link_post_context_bar.dart's _mark): X's own, a running plugin's in its colour; room left empty for one that is not running. */
 @Composable
 private fun NetworkMark(network: String) {
-    if (network == LinkPostContext.X) {
-        Icon(ReaderIcons.XMark, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(end = 14.dp).size(22.dp))
-    } else {
-        Spacer(Modifier.width(12.dp))
+    val plugin = if (network == LinkPostContext.X) null else rememberRunningPlugins()[network]
+    when {
+        network == LinkPostContext.X ->
+            Icon(ReaderIcons.XMark, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(end = 14.dp).size(22.dp))
+        plugin != null -> Icon(plugin.icon, contentDescription = null, tint = plugin.brandColor, modifier = Modifier.padding(end = 14.dp).size(22.dp))
+        else -> Spacer(Modifier.width(12.dp))
     }
 }
 

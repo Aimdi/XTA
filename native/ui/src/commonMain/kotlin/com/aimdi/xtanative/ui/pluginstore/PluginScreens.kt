@@ -49,6 +49,7 @@ import com.aimdi.xtanative.ui.common.searchPillColors
 import com.aimdi.xtanative.ui.plugins.LocalMediaSave
 import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.LocalPluginSurface
+import com.aimdi.xtanative.ui.plugins.LocalPostNetwork
 import com.aimdi.xtanative.ui.plugins.PluginClientBar
 import com.aimdi.xtanative.ui.plugins.PluginStandaloneBar
 import com.aimdi.xtanative.ui.plugins.PluginSurface
@@ -81,12 +82,13 @@ internal fun runningPlugin(id: String): RunningPlugin? {
  * it: a long press on a photo's tile saves it through plugin [id]'s downloads
  * ([LocalMediaSave]), and a failure's sheet names the plugin and offers its
  * settings ([LocalPluginSurface]).
+ * Its posts' link cards know whose posts they are ([LocalPostNetwork]).
  */
 @Composable
 internal fun SavesMediaOf(id: String, content: @Composable () -> Unit) {
     val plugins = LocalPlugins.current
     val save = remember(plugins, id) { { item: MediaItem -> plugins.download(id, item) } }
-    CompositionLocalProvider(LocalMediaSave provides save, LocalPluginSurface provides surfaceOf(id), content = content)
+    CompositionLocalProvider(LocalMediaSave provides save, LocalPluginSurface provides surfaceOf(id), LocalPostNetwork provides id, content = content)
 }
 
 /** What the shared pieces know of running plugin [id]: its name, colour, mark and the way to its settings. */

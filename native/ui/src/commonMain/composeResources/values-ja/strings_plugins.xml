@@ -44,6 +44,7 @@
     <string name="plugin_category_sites">その他のサイト</string>
     <string name="plugin_category_other">その他</string>
     <string name="plugin_post_show">表示</string>
+    <string name="plugin_post_hide">非表示</string>
     <string name="plugin_stat_replies">返信</string>
     <string name="plugin_problem_no_account">%1$s にはアカウントが必要ですが、設定されていません。</string>
     <string name="plugin_problem_rate_limited">%1$s が現在読み込みを制限しています。数分後にもう一度お試しください。</string>

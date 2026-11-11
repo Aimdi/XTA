@@ -44,6 +44,7 @@
     <string name="plugin_category_sites">Flere nettsteder</string>
     <string name="plugin_category_other">Annet</string>
     <string name="plugin_post_show">Vis</string>
+    <string name="plugin_post_hide">Skjul</string>
     <string name="plugin_stat_replies">Svar</string>
     <string name="plugin_problem_no_account">%1$s trenger en konto, og ingen er satt opp.</string>
     <string name="plugin_problem_rate_limited">%1$s begrenser lesingen akkurat nå. Prøv igjen om noen minutter.</string>

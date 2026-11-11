@@ -38,6 +38,13 @@ class PostGeometryTest {
 /** feed_ink_test.dart's author line (tweet_header.dart's TweetAuthorLine). */
 class AuthorLineLayoutTest {
     @Test
+    fun aFediverseHandlesInstanceIsFoundAndNoOtherHandleHasOne() {
+        assertEquals(5, AuthorLineLayout.instanceAt("alice@example.social"))
+        assertEquals(null, AuthorLineLayout.instanceAt("alice.bsky.social"))
+        assertEquals(null, AuthorLineLayout.instanceAt("@alice"), "a handle written with its own @ has no instance")
+    }
+
+    @Test
     fun theNameHandleAndTimeShareOneLineWhenTheyFit() {
         val widths = AuthorLineLayout.widths(line = 300f, name = 90f, badge = 0f, handle = 80f, time = 30f)
         assertFalse(widths.twoLines)

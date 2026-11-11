@@ -163,7 +163,10 @@ rather than a copy of your own; a piece two plugins need goes here once,
 with a test.
 
 - Posts: `NetworkPostCard` (with `NetworkPostExtras` for what a network adds),
-  `NetworkFocalPost`, `QuotedNetworkPost` (a `NetworkPost`), `LinkedText`,
+  `NetworkFocalPost`, `QuotedNetworkPost` (a `NetworkPost`; behind a warning it
+  opens in place), `LocalPostNetwork` (whose posts are drawn, which the app
+  says around a plugin's screens and rows: a link card then opens its page
+  with its post in the browser's bar, `NetworkPost.linkContext`), `LinkedText`,
   `NetworkCount`, `NetworkHeaderButton`, `PostLines` (a post's time and
   counts in words), `NetworkBookmark` (below) and `DrawnPosts` (the posts
   its shared rows drew lately, found again by id).

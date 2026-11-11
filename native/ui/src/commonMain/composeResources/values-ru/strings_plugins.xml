@@ -44,6 +44,7 @@
     <string name="plugin_category_sites">Другие сайты</string>
     <string name="plugin_category_other">Другое</string>
     <string name="plugin_post_show">Показать</string>
+    <string name="plugin_post_hide">Скрыть</string>
     <string name="plugin_stat_replies">Ответы</string>
     <string name="plugin_problem_no_account">%1$s требуется аккаунт, а ни одного не настроено.</string>
     <string name="plugin_problem_rate_limited">%1$s сейчас ограничивает чтение. Попробуйте через несколько минут.</string>
