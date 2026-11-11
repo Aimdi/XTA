@@ -137,4 +137,10 @@
     <string name="people_in_results">Bu sonuçlardaki kişiler</string>
     <string name="topics_in_results">Bu sonuçlardaki konular</string>
     <string name="topic_posts">Bu konu altındaki gönderiler</string>
+    <string name="profile_note_add">Özel not ekle</string>
+    <string name="profile_note_title">Özel not</string>
+    <string name="profile_note_hint">Yalnızca bu cihazda — asla eşitlenmez</string>
+    <string name="profile_note_save">Notu kaydet</string>
+    <string name="profile_guest_end">Threads bir misafire bir hesabın yalnızca en yeni gönderilerini gösterir</string>
+    <string name="profile_reposts">Yeniden paylaşımlar</string>
 </resources>

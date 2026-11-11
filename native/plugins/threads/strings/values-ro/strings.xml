@@ -141,4 +141,10 @@
     <string name="people_in_results">Oameni din aceste rezultate</string>
     <string name="topics_in_results">Subiecte din aceste rezultate</string>
     <string name="topic_posts">Postări încadrate la acest subiect</string>
+    <string name="profile_note_add">Adăugați o notă privată</string>
+    <string name="profile_note_title">Notă privată</string>
+    <string name="profile_note_hint">Doar pe acest dispozitiv — nu se sincronizează niciodată</string>
+    <string name="profile_note_save">Salvează nota</string>
+    <string name="profile_guest_end">Threads îi arată unui vizitator doar cele mai noi postări ale unui cont</string>
+    <string name="profile_reposts">Repostări</string>
 </resources>

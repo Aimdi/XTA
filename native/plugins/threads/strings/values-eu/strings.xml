@@ -137,4 +137,10 @@
     <string name="people_in_results">Emaitza hauetako pertsonak</string>
     <string name="topics_in_results">Emaitza hauetako gaiak</string>
     <string name="topic_posts">Gai honetan sailkatutako argitalpenak</string>
+    <string name="profile_note_add">Gehitu ohar pribatua</string>
+    <string name="profile_note_title">Ohar pribatua</string>
+    <string name="profile_note_hint">Gailu honetan bakarrik — ez da inoiz sinkronizatzen</string>
+    <string name="profile_note_save">Gorde oharra</string>
+    <string name="profile_guest_end">Threads-ek kontu baten argitalpen berrienak baino ez dizkio erakusten gonbidatu bati</string>
+    <string name="profile_reposts">Birbidalketak</string>
 </resources>

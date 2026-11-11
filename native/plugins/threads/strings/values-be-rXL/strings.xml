@@ -145,4 +145,10 @@
     <string name="people_in_results">Liudzi ŭ hetych vynikach</string>
     <string name="topics_in_results">Temy ŭ hetych vynikach</string>
     <string name="topic_posts">Dopisy z hetaj temaj</string>
+    <string name="profile_note_add">Dadać asabistuju natatku</string>
+    <string name="profile_note_title">Asabistaja natatka</string>
+    <string name="profile_note_hint">Toĺki na hetaj pryladzie — nikoli nie sinchranizujecca</string>
+    <string name="profile_note_save">Zachavać natatku</string>
+    <string name="profile_guest_end">Threads pakazvaje hosciu toĺki najnoŭšyja dopisy akaŭnta</string>
+    <string name="profile_reposts">Reposty</string>
 </resources>

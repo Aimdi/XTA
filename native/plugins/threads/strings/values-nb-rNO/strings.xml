@@ -137,4 +137,10 @@
     <string name="people_in_results">Folk i disse resultatene</string>
     <string name="topics_in_results">Emner i disse resultatene</string>
     <string name="topic_posts">Innlegg arkivert under dette emnet</string>
+    <string name="profile_note_add">Legg til privat notat</string>
+    <string name="profile_note_title">Privat notat</string>
+    <string name="profile_note_hint">Bare på denne enheten — synkroniseres aldri</string>
+    <string name="profile_note_save">Lagre notat</string>
+    <string name="profile_guest_end">Threads viser en gjest bare de nyeste innleggene til en konto</string>
+    <string name="profile_reposts">Repostinger</string>
 </resources>

@@ -139,4 +139,10 @@
     <string name="people_in_results">People in these results</string>
     <string name="topics_in_results">Topics in these results</string>
     <string name="topic_posts">Posts filed under this topic</string>
+    <string name="profile_note_add">Add private note</string>
+    <string name="profile_note_title">Private note</string>
+    <string name="profile_note_hint">Only on this device — never synced</string>
+    <string name="profile_note_save">Save note</string>
+    <string name="profile_guest_end">Threads shows a guest only an account’s newest posts</string>
+    <string name="profile_reposts">Reposts</string>
 </resources>

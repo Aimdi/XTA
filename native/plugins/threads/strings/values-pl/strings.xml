@@ -145,4 +145,10 @@
     <string name="people_in_results">Osoby w tych wynikach</string>
     <string name="topics_in_results">Tematy w tych wynikach</string>
     <string name="topic_posts">Posty przypisane do tego tematu</string>
+    <string name="profile_note_add">Dodaj prywatną notatkę</string>
+    <string name="profile_note_title">Prywatna notatka</string>
+    <string name="profile_note_hint">Tylko na tym urządzeniu — nigdy nie jest synchronizowana</string>
+    <string name="profile_note_save">Zapisz notatkę</string>
+    <string name="profile_guest_end">Threads pokazuje gościom tylko najnowsze posty konta</string>
+    <string name="profile_reposts">Udostępnienia</string>
 </resources>

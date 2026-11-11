@@ -137,4 +137,10 @@
     <string name="people_in_results">Inimesed nendes tulemustes</string>
     <string name="topics_in_results">Teemad nendes tulemustes</string>
     <string name="topic_posts">Selle teema alla pandud postitused</string>
+    <string name="profile_note_add">Lisa privaatne märkus</string>
+    <string name="profile_note_title">Privaatne märkus</string>
+    <string name="profile_note_hint">Ainult selles seadmes — ei sünkroonita kunagi</string>
+    <string name="profile_note_save">Salvesta märkus</string>
+    <string name="profile_guest_end">Threads näitab külalisele ainult konto uusimaid postitusi</string>
+    <string name="profile_reposts">Jagamised</string>
 </resources>

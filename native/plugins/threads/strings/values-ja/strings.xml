@@ -133,4 +133,10 @@
     <string name="people_in_results">この結果のユーザー</string>
     <string name="topics_in_results">この結果のトピック</string>
     <string name="topic_posts">このトピックの投稿</string>
+    <string name="profile_note_add">非公開メモを追加</string>
+    <string name="profile_note_title">非公開メモ</string>
+    <string name="profile_note_hint">この端末のみ — 同期しません</string>
+    <string name="profile_note_save">メモを保存</string>
+    <string name="profile_guest_end">Threads はゲストにアカウントの最新の投稿しか表示しません</string>
+    <string name="profile_reposts">リポスト</string>
 </resources>

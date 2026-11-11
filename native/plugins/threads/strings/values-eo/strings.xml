@@ -137,4 +137,10 @@
     <string name="people_in_results">Homoj en ĉi tiuj rezultoj</string>
     <string name="topics_in_results">Temoj en ĉi tiuj rezultoj</string>
     <string name="topic_posts">Afiŝoj sub ĉi tiu temo</string>
+    <string name="profile_note_add">Aldoni privatan noton</string>
+    <string name="profile_note_title">Privata noto</string>
+    <string name="profile_note_hint">Nur en ĉi tiu aparato — neniam sinkronigata</string>
+    <string name="profile_note_save">Konservi noton</string>
+    <string name="profile_guest_end">Threads montras al gasto nur la plej novajn afiŝojn de konto</string>
+    <string name="profile_reposts">Rediskonigoj</string>
 </resources>

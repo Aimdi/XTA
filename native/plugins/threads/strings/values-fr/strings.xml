@@ -140,4 +140,10 @@
     <string name="people_in_results">Personnes dans ces résultats</string>
     <string name="topics_in_results">Sujets dans ces résultats</string>
     <string name="topic_posts">Publications classées sous ce sujet</string>
+    <string name="profile_note_add">Ajouter une note privée</string>
+    <string name="profile_note_title">Note privée</string>
+    <string name="profile_note_hint">Uniquement sur cet appareil — jamais synchronisée</string>
+    <string name="profile_note_save">Enregistrer la note</string>
+    <string name="profile_guest_end">Threads ne montre à un invité que les publications les plus récentes d’un compte</string>
+    <string name="profile_reposts">Republications</string>
 </resources>

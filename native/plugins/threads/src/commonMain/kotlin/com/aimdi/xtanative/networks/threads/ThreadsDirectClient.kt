@@ -117,7 +117,8 @@ class ThreadsDirectClient(
     /** [handle]'s profile card from its public `threads.com/@handle` page, no login. */
     suspend fun guestProfile(handle: String): ThreadsProfile {
         val key = handle.trim().lowercase()
-        val profile = ThreadsPages.guestProfile(profilePage(key), key)
+        val page = profilePage(key)
+        val profile = ThreadsProfileOwner.enrich(ThreadsPages.guestProfile(page, key), page, key)
             ?: throw ThreadsException(NO_SUCH_FEED, "guest profile missing: @$key")
         if (profile.pk.isNotEmpty()) rememberUserId(key, profile.pk)
         return profile

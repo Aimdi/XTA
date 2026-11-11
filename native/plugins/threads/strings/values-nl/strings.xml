@@ -137,4 +137,10 @@
     <string name="people_in_results">Mensen in deze resultaten</string>
     <string name="topics_in_results">Onderwerpen in deze resultaten</string>
     <string name="topic_posts">Berichten onder dit onderwerp</string>
+    <string name="profile_note_add">Privénotitie toevoegen</string>
+    <string name="profile_note_title">Privénotitie</string>
+    <string name="profile_note_hint">Alleen op dit apparaat — nooit gesynchroniseerd</string>
+    <string name="profile_note_save">Notitie opslaan</string>
+    <string name="profile_guest_end">Threads toont een gast alleen de nieuwste berichten van een account</string>
+    <string name="profile_reposts">Reposts</string>
 </resources>

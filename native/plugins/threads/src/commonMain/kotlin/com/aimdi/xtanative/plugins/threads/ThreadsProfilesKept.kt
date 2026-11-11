@@ -1,7 +1,9 @@
 package com.aimdi.xtanative.plugins.threads
 
 import com.aimdi.xtanative.core.json.J
+import com.aimdi.xtanative.networks.threads.ThreadsBioLink
 import com.aimdi.xtanative.networks.threads.ThreadsProfile
+import com.aimdi.xtanative.networks.threads.ThreadsProfileFacts
 import com.aimdi.xtanative.networks.threads.ThreadsProfilePage
 import com.aimdi.xtanative.store.StoreFile
 import com.aimdi.xtanative.store.backup.XtaTime
@@ -81,8 +83,16 @@ internal data class ThreadsProfilesKept(val profiles: List<ThreadsKeptProfile> =
                 "following" to number(profile.followingCount),
                 "posts" to number(profile.mediaCount),
                 "link" to text(profile.externalUrl),
+                "bio" to JsonArray(profile.facts.bioFragments.map(ThreadsPostJson::fragment)),
+                "links" to JsonArray(profile.facts.links.map(::link)),
+                "roundedFollowers" to JsonPrimitive(profile.facts.roundedFollowers),
+                "roundedPosts" to JsonPrimitive(profile.facts.roundedPosts),
             ),
         )
+
+        private fun link(link: ThreadsBioLink): JsonObject = JsonObject(mapOf("url" to JsonPrimitive(link.url), "title" to text(link.title)))
+
+        private fun link(row: J): ThreadsBioLink? = row["url"].string?.ifEmpty { null }?.let { ThreadsBioLink(it, row["title"].string) }
 
         private fun card(row: J): ThreadsProfile? {
             val username = row["username"].string?.ifEmpty { null } ?: return null
@@ -100,6 +110,12 @@ internal data class ThreadsProfilesKept(val profiles: List<ThreadsKeptProfile> =
                 mediaCount = row["posts"].long,
                 externalUrl = row["link"].string,
                 hdPictureUrl = row["hdPicture"].string,
+                facts = ThreadsProfileFacts(
+                    bioFragments = row["bio"].list.mapNotNull(ThreadsPostJson::fragment),
+                    links = row["links"].list.mapNotNull(::link),
+                    roundedFollowers = row["roundedFollowers"].boolean == true,
+                    roundedPosts = row["roundedPosts"].boolean == true,
+                ),
             )
         }
 

@@ -1,6 +1,5 @@
 package com.aimdi.xtanative.plugins.threads
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Arrangement
@@ -46,11 +45,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.threads.ThreadsLinks
 import com.aimdi.xtanative.networks.threads.ThreadsPost
@@ -59,7 +55,6 @@ import com.aimdi.xtanative.networks.threads.ThreadsProfilePage
 import com.aimdi.xtanative.networks.threads.ThreadsProfileTab
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.XIcons
-import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.PluginAvatar
 import com.aimdi.xtanative.ui.plugins.Fetch
@@ -79,11 +74,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-/** The profile's tabs: its posts, its replies, its media, and the posts of its the reader liked here (XTA's Saved). */
+/** The profile's tabs: its threads, its replies, its media, what it reposted (as Threads' own tabs), and its posts the reader liked here (XTA's Saved). */
 private enum class ProfileTab(val label: PluginText) {
     POSTS(Strings.posts),
     REPLIES(Strings.profile_replies),
     MEDIA(Strings.media),
+    REPOSTS(Strings.profile_reposts),
     SAVED(Strings.saved),
 }
 
@@ -149,9 +145,10 @@ private fun ProfileBody(app: ThreadsApp, model: ThreadsProfileModel, page: Threa
     val likedIds by app.likes.state.collectAsState()
     val posts = remember(page, replies, tab, settings, likedIds) {
         when (tab) {
-            ProfileTab.POSTS -> page.tab(ThreadsProfileTab.POSTS)
+            ProfileTab.POSTS -> ThreadsProfileHeader.threads(page)
             ProfileTab.REPLIES -> page.copy(replies = replies.value).tab(ThreadsProfileTab.REPLIES)
             ProfileTab.MEDIA -> page.copy(replies = replies.value).tab(ThreadsProfileTab.MEDIA)
+            ProfileTab.REPOSTS -> ThreadsProfileHeader.reposts(page)
             ProfileTab.SAVED -> ThreadsLikes.liked(settings, likedIds).filter { it.handle == profile.username.lowercase() }
         }.distinctBy { it.id }
     }
@@ -179,6 +176,7 @@ private fun ProfileBody(app: ThreadsApp, model: ThreadsProfileModel, page: Threa
                 posts.isEmpty() -> item(key = "empty") { MessageText(pluginString(emptyLabel(tab))) }
                 else -> items(posts, key = { "post:" + it.id }, contentType = { "post" }) { ThreadsPostCard(app, it) }
             }
+            if (tab != ProfileTab.SAVED && page.posts.size >= GUEST_PAGE_HINT) item(key = "end") { ProfileEnd(profile.username) }
         }
     }
 }
@@ -221,7 +219,6 @@ private fun emptyLabel(tab: ProfileTab): PluginText = when (tab) {
 @Composable
 internal fun ThreadsProfileCard(app: ThreadsApp, profile: ThreadsProfile, modifier: Modifier = Modifier) {
     val rows by app.accounts.state.collectAsState()
-    val outside = rememberOpenOutside()
     var unfollowing by remember { mutableStateOf(false) }
     if (unfollowing) UnfollowDialog(profile.username, onConfirm = { app.unfollow(profile.username) }) { unfollowing = false }
     Column(modifier.fillMaxWidth()) {
@@ -239,20 +236,16 @@ internal fun ThreadsProfileCard(app: ThreadsApp, profile: ThreadsProfile, modifi
             }
         }
         profile.biography.trim().takeIf { it.isNotEmpty() }?.let { bio ->
-            ThreadsRichText(app, bio, emptyList(), Modifier.padding(top = 14.dp), style = MaterialTheme.typography.bodyMedium)
+            ThreadsRichText(app, bio, profile.facts.bioFragments, Modifier.padding(top = 14.dp), style = MaterialTheme.typography.bodyMedium)
         }
-        ThreadsProfiles.outsideLink(profile)?.let { link ->
-            Row(Modifier.padding(top = 8.dp).clickable { outside(link) }, verticalAlignment = Alignment.CenterVertically) {
-                Icon(XIcons.Link, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(15.dp))
-                Text(ThreadsProfiles.linkLabel(link), color = MaterialTheme.colorScheme.primary, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = 6.dp))
-            }
-        }
+        ProfileLinks(profile)
         val counts = ThreadsProfiles.counts(profile)
         if (counts.isNotEmpty()) {
-            FlowRow(Modifier.padding(top = 14.dp), horizontalArrangement = Arrangement.spacedBy(18.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                counts.forEach { (n, kind) -> CountText(n, countLabel(kind)) }
+            FlowRow(Modifier.padding(top = 10.dp), horizontalArrangement = Arrangement.spacedBy(18.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                counts.forEach { (n, kind) -> ProfileCount(n, countLabel(kind), ThreadsProfileHeader.isExact(profile, kind)) }
             }
         }
+        ProfileNote(app, profile.username)
         val followed = ThreadsAccounts.follows(rows, profile.username)
         if (rows != null && !followed) {
             Button(onClick = { app.followProfile(profile) }, modifier = Modifier.fillMaxWidth().padding(top = 18.dp)) {
@@ -277,24 +270,11 @@ internal fun ThreadsProfileCard(app: ThreadsApp, profile: ThreadsProfile, modifi
     }
 }
 
+/** From this many threads on, a profile's list is likely cut where Meta's one guest page ends. */
+private const val GUEST_PAGE_HINT = 10
+
 private fun countLabel(kind: ThreadsCount): PluginText = when (kind) {
     ThreadsCount.FOLLOWERS -> Strings.followers
     ThreadsCount.FOLLOWING -> Strings.following
     ThreadsCount.POSTS -> Strings.posts
-}
-
-@Composable
-private fun CountText(n: Long, label: PluginText) {
-    val strong = MaterialTheme.colorScheme.onSurface
-    val number = countText(n)
-    val word = pluginString(label)
-    Text(
-        buildAnnotatedString {
-            withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = strong)) { append(number) }
-            append(" ")
-            append(word)
-        },
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
 }

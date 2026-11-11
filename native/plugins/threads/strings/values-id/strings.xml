@@ -133,4 +133,10 @@
     <string name="people_in_results">Orang di hasil ini</string>
     <string name="topics_in_results">Topik di hasil ini</string>
     <string name="topic_posts">Postingan dalam topik ini</string>
+    <string name="profile_note_add">Tambah catatan pribadi</string>
+    <string name="profile_note_title">Catatan pribadi</string>
+    <string name="profile_note_hint">Hanya di perangkat ini — tidak pernah disinkronkan</string>
+    <string name="profile_note_save">Simpan catatan</string>
+    <string name="profile_guest_end">Threads hanya menampilkan postingan terbaru sebuah akun kepada tamu</string>
+    <string name="profile_reposts">Postingan ulang</string>
 </resources>

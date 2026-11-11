@@ -140,4 +140,10 @@
     <string name="people_in_results">Pessoas nestes resultados</string>
     <string name="topics_in_results">Tópicos nestes resultados</string>
     <string name="topic_posts">Posts arquivados neste tópico</string>
+    <string name="profile_note_add">Adicionar nota privada</string>
+    <string name="profile_note_title">Nota privada</string>
+    <string name="profile_note_hint">Somente neste dispositivo — nunca sincronizada</string>
+    <string name="profile_note_save">Salvar nota</string>
+    <string name="profile_guest_end">O Threads só mostra a um visitante as publicações mais recentes de uma conta</string>
+    <string name="profile_reposts">Republicações</string>
 </resources>

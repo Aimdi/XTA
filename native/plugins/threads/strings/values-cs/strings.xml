@@ -145,4 +145,10 @@
     <string name="people_in_results">Lidé v těchto výsledcích</string>
     <string name="topics_in_results">Témata v těchto výsledcích</string>
     <string name="topic_posts">Příspěvky zařazené pod toto téma</string>
+    <string name="profile_note_add">Přidat soukromou poznámku</string>
+    <string name="profile_note_title">Soukromá poznámka</string>
+    <string name="profile_note_hint">Jen v tomto zařízení — nikdy se nesynchronizuje</string>
+    <string name="profile_note_save">Uložit poznámku</string>
+    <string name="profile_guest_end">Threads ukazuje hostovi jen nejnovější příspěvky účtu</string>
+    <string name="profile_reposts">Reposty</string>
 </resources>

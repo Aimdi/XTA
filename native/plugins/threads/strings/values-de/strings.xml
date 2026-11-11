@@ -137,4 +137,10 @@
     <string name="people_in_results">Personen in diesen Ergebnissen</string>
     <string name="topics_in_results">Themen in diesen Ergebnissen</string>
     <string name="topic_posts">Beiträge unter diesem Thema</string>
+    <string name="profile_note_add">Private Notiz hinzufügen</string>
+    <string name="profile_note_title">Private Notiz</string>
+    <string name="profile_note_hint">Nur auf diesem Gerät — wird nie synchronisiert</string>
+    <string name="profile_note_save">Notiz speichern</string>
+    <string name="profile_guest_end">Threads zeigt Gästen nur die neuesten Beiträge eines Kontos</string>
+    <string name="profile_reposts">Reposts</string>
 </resources>

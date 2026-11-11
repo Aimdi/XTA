@@ -85,6 +85,7 @@ internal class ThreadsApp(val host: PluginHost) {
     val notices = PluginNotices()
     val shelf = ThreadsShelf()
     private val profiles = ThreadsProfileShelf(host.store.file("profiles.json"))
+    val accountNotes = ThreadsAccountNotes(host.store.file("account_notes.json"))
 
     /** Where the reader stopped in the Home section. */
     val homePlace = ThreadsHomePlace(host.store.file("home.json"), scope)

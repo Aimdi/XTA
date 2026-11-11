@@ -137,4 +137,10 @@
     <string name="people_in_results">इन परिणामों के लोग</string>
     <string name="topics_in_results">इन परिणामों के विषय</string>
     <string name="topic_posts">इस विषय के अंतर्गत पोस्ट</string>
+    <string name="profile_note_add">निजी नोट जोड़ें</string>
+    <string name="profile_note_title">निजी नोट</string>
+    <string name="profile_note_hint">सिर्फ़ इस डिवाइस पर — कभी सिंक नहीं होता</string>
+    <string name="profile_note_save">नोट सहेजें</string>
+    <string name="profile_guest_end">Threads मेहमान को किसी खाते की सिर्फ़ सबसे नई पोस्ट दिखाता है</string>
+    <string name="profile_reposts">रीपोस्ट</string>
 </resources>

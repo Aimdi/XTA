@@ -133,4 +133,10 @@
     <string name="people_in_results">這些結果裡的人</string>
     <string name="topics_in_results">這些結果裡的話題</string>
     <string name="topic_posts">歸入此話題的貼文</string>
+    <string name="profile_note_add">新增私人備註</string>
+    <string name="profile_note_title">私人備註</string>
+    <string name="profile_note_hint">僅儲存在本機 — 永不同步</string>
+    <string name="profile_note_save">儲存備註</string>
+    <string name="profile_guest_end">Threads 只向訪客顯示帳號最新的貼文</string>
+    <string name="profile_reposts">轉發</string>
 </resources>

@@ -145,4 +145,10 @@
     <string name="people_in_results">Людзі ў гэтых выніках</string>
     <string name="topics_in_results">Тэмы ў гэтых выніках</string>
     <string name="topic_posts">Допісы з гэтай тэмай</string>
+    <string name="profile_note_add">Дадаць асабістую нататку</string>
+    <string name="profile_note_title">Асабістая нататка</string>
+    <string name="profile_note_hint">Толькі на гэтай прыладзе — ніколі не сінхранізуецца</string>
+    <string name="profile_note_save">Захаваць нататку</string>
+    <string name="profile_guest_end">Threads паказвае госцю толькі найноўшыя допісы акаўнта</string>
+    <string name="profile_reposts">Рэпосты</string>
 </resources>

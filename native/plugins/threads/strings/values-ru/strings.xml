@@ -145,4 +145,10 @@
     <string name="people_in_results">Люди в этих результатах</string>
     <string name="topics_in_results">Темы в этих результатах</string>
     <string name="topic_posts">Посты с этой темой</string>
+    <string name="profile_note_add">Добавить личную заметку</string>
+    <string name="profile_note_title">Личная заметка</string>
+    <string name="profile_note_hint">Только на этом устройстве — никогда не синхронизируется</string>
+    <string name="profile_note_save">Сохранить заметку</string>
+    <string name="profile_guest_end">Threads показывает гостю только самые новые посты аккаунта</string>
+    <string name="profile_reposts">Репосты</string>
 </resources>

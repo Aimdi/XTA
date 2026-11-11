@@ -163,6 +163,8 @@ data class ThreadsProfile(
     val externalUrl: String? = null,
     /** The largest picture Meta offers of the profile (`hd_profile_pic_versions`); null when it gave only [profilePicUrl]. */
     val hdPictureUrl: String? = null,
+    /** The bio as Meta split it and the links under it, when the profile's own page said (ThreadsProfileOwner). */
+    val facts: ThreadsProfileFacts = ThreadsProfileFacts(),
 ) {
     /** The name to show: the display name, or the handle when there is none. */
     val displayName: String get() = fullName.trim().ifEmpty { username }

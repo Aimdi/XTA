@@ -153,4 +153,10 @@
     <string name="people_in_results">أشخاص في هذه النتائج</string>
     <string name="topics_in_results">مواضيع في هذه النتائج</string>
     <string name="topic_posts">منشورات مصنّفة تحت هذا الموضوع</string>
+    <string name="profile_note_add">أضف ملاحظة خاصة</string>
+    <string name="profile_note_title">ملاحظة خاصة</string>
+    <string name="profile_note_hint">على هذا الجهاز فقط — لا تُزامَن أبدًا</string>
+    <string name="profile_note_save">احفظ الملاحظة</string>
+    <string name="profile_guest_end">لا يعرض Threads للزائر إلا أحدث منشورات الحساب</string>
+    <string name="profile_reposts">إعادات النشر</string>
 </resources>

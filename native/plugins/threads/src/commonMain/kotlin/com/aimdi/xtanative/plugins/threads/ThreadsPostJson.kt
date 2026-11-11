@@ -138,10 +138,10 @@ internal object ThreadsPostJson {
         return ThreadsLinkCard(url, row["title"].string, row["description"].string, row["imageUrl"].string, row["providerName"].string)
     }
 
-    private fun fragment(fragment: ThreadsTextFragment): JsonObject =
+    fun fragment(fragment: ThreadsTextFragment): JsonObject =
         JsonObject(mapOf("kind" to text(fragment.kind.name.lowercase()), "text" to text(fragment.text), "target" to text(fragment.target)))
 
-    private fun fragment(row: J): ThreadsTextFragment? {
+    fun fragment(row: J): ThreadsTextFragment? {
         val kind = ThreadsTextFragment.Kind.entries.firstOrNull { it.name.lowercase() == row["kind"].string } ?: return null
         val words = row["text"].string ?: return null
         return ThreadsTextFragment(kind, words, row["target"].string)

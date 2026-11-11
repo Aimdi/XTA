@@ -133,4 +133,10 @@
     <string name="people_in_results">Người trong các kết quả này</string>
     <string name="topics_in_results">Chủ đề trong các kết quả này</string>
     <string name="topic_posts">Bài đăng thuộc chủ đề này</string>
+    <string name="profile_note_add">Thêm ghi chú riêng tư</string>
+    <string name="profile_note_title">Ghi chú riêng tư</string>
+    <string name="profile_note_hint">Chỉ trên thiết bị này — không bao giờ đồng bộ</string>
+    <string name="profile_note_save">Lưu ghi chú</string>
+    <string name="profile_guest_end">Threads chỉ cho khách xem các bài đăng mới nhất của một tài khoản</string>
+    <string name="profile_reposts">Bài đăng lại</string>
 </resources>

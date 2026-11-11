@@ -140,4 +140,10 @@
     <string name="people_in_results">Persones en aquests resultats</string>
     <string name="topics_in_results">Temes en aquests resultats</string>
     <string name="topic_posts">Publicacions classificades en aquest tema</string>
+    <string name="profile_note_add">Afegir una nota privada</string>
+    <string name="profile_note_title">Nota privada</string>
+    <string name="profile_note_hint">Només en aquest dispositiu — mai no se sincronitza</string>
+    <string name="profile_note_save">Desa la nota</string>
+    <string name="profile_guest_end">Threads només mostra a un convidat les publicacions més noves d’un compte</string>
+    <string name="profile_reposts">Republicacions</string>
 </resources>
