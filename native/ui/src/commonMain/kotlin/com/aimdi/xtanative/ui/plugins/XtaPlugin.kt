@@ -30,9 +30,12 @@ import kotlinx.serialization.json.JsonElement
  * a link a plugin can claim only after asking the network; 8 adds a home
  * timeline's reading controls ([HomeReading], [rememberHomeReading],
  * [ReadingControlsBar], [ReadingControlsPinItem], [ReportsReadingScroll]), so a
- * plugin's own timeline keeps them as XTA's does.
+ * plugin's own timeline keeps them as XTA's does; 9 adds XTA's plugin chrome
+ * (the home tabs' strip, the one bar, skeletons, the failure sheet), a
+ * search screen of the plugin's own ([PluginSearch.ownScreen]), pulls to
+ * reload, a post's link context and [XtaPlugin.brandsChrome].
  */
-const val PLUGIN_API_VERSION: Int = 8
+const val PLUGIN_API_VERSION: Int = 9
 
 /**
  * The oldest plugin API whose plugins this app still loads: what they use of
