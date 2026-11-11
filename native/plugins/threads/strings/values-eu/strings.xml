@@ -124,4 +124,8 @@
     <string name="for_you_sign_in_detail">Itsatsi saio bat Ezarpenetan zurea irakurtzeko, edo jarraitu kontuak eta irakurri Hasiera</string>
     <string name="for_you_end">Hori da dena oraingoz — tira freskatzeko</string>
     <string name="retry_after">Saiatu berriro %1$s ondoren</string>
+    <plurals name="new_posts">
+        <item quantity="one">Argitalpen berri %1$d</item>
+        <item quantity="other">%1$d argitalpen berri</item>
+    </plurals>
 </resources>

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -206,6 +207,8 @@ private fun FeedOrFiltered(app: ThreadsApp, frame: PluginFrame, posts: List<Thre
 /**
  * The feed: the people it brings up who are not followed yet, after its
  * first few posts, and how many accounts are still to be read under it.
+ * It opens where the reader stopped, and posts a read brings in above them
+ * wait under a "N new posts" pill that goes to the top.
  */
 @Composable
 private fun Feed(app: ThreadsApp, frame: PluginFrame, posts: List<ThreadsPost>) {
@@ -213,12 +216,25 @@ private fun Feed(app: ThreadsApp, frame: PluginFrame, posts: List<ThreadsPost>) 
     val people = remember(posts, rows) { ThreadsDiscovery.peopleToFollow(posts, { ThreadsAccounts.follows(rows, it) }) }
     val pending = remember(posts, rows) { app.reader.pending(ThreadsAccounts.handles(rows)) }
     val at = minOf(PEOPLE_AFTER, posts.size)
-    Refreshable(app, frame) {
-        items(posts.take(at), key = { "post:" + it.id }, contentType = { "post" }) { ThreadsPostCard(app, it) }
-        if (people.isNotEmpty()) item(key = "people") { PeopleStrip(app, people) }
-        items(posts.drop(at), key = { "post:" + it.id }, contentType = { "post" }) { ThreadsPostCard(app, it) }
-        if (pending > 0) item(key = "pending") { PendingNote(pending) }
+    val ids = remember(posts) { posts.map { it.id } }
+    val list = rememberPlacedList(app.homePlace.place, ids, people.isNotEmpty())
+    KeepsPlace(list, app.homePlace::keep)
+    Box(Modifier.fillMaxSize()) {
+        Refreshable(app, frame, list) {
+            items(posts.take(at), key = { "post:" + it.id }, contentType = { "post" }) { ThreadsPostCard(app, it) }
+            if (people.isNotEmpty()) item(key = "people") { PeopleStrip(app, people) }
+            items(posts.drop(at), key = { "post:" + it.id }, contentType = { "post" }) { ThreadsPostCard(app, it) }
+            if (pending > 0) item(key = "pending") { PendingNote(pending) }
+        }
+        FreshPill(list, ids, frame.padding, Modifier.align(Alignment.TopCenter))
     }
+}
+
+/** Home's list, opened on the post the reader stopped at when it is still there. */
+@Composable
+private fun rememberPlacedList(place: ThreadsPlace, ids: List<String>, people: Boolean): LazyListState {
+    val index = remember { ThreadsFresh.indexOf(ids, place, people, PEOPLE_AFTER) }
+    return rememberLazyListState(initialFirstVisibleItemIndex = index ?: 0, initialFirstVisibleItemScrollOffset = if (index != null) place.offset else 0)
 }
 
 /** Where the people strip sits in a feed shown in Home's strip: after this many posts. */
@@ -227,9 +243,8 @@ private const val PEOPLE_AFTER = 3
 /** The tab's list, pulled to ask Meta again past each account's ten minutes. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun Refreshable(app: ThreadsApp, frame: PluginFrame, content: LazyListScope.() -> Unit) {
+private fun Refreshable(app: ThreadsApp, frame: PluginFrame, list: LazyListState = rememberLazyListState(), content: LazyListScope.() -> Unit) {
     val state by app.feed.state.collectAsState()
-    val list = rememberLazyListState()
     ScrollsToTop(list, frame.toTop)
     PullToRefreshBox(isRefreshing = state.loading && state.loaded, onRefresh = { app.feed.refresh(force = true) }, modifier = Modifier.fillMaxSize()) {
         LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize(), content = content)

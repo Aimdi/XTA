@@ -136,4 +136,12 @@
     <string name="for_you_sign_in_detail">الصق جلسة في الإعدادات لقراءة صفحتك، أو تابع حسابات واقرأ الرئيسية</string>
     <string name="for_you_end">هذا كل شيء الآن — اسحب للتحديث للحصول على منشورات جديدة</string>
     <string name="retry_after">حاول مجددًا بعد %1$s</string>
+    <plurals name="new_posts">
+        <item quantity="zero">%1$d منشور جديد</item>
+        <item quantity="one">منشور جديد واحد</item>
+        <item quantity="two">منشوران جديدان</item>
+        <item quantity="few">%1$d منشورات جديدة</item>
+        <item quantity="many">%1$d منشورًا جديدًا</item>
+        <item quantity="other">%1$d منشور جديد</item>
+    </plurals>
 </resources>

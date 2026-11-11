@@ -130,4 +130,10 @@
     <string name="for_you_sign_in_detail">Устаўце сесію ў Наладах, каб чытаць сваю, або падпішыцеся на акаўнты і чытайце Галоўную</string>
     <string name="for_you_end">Пакуль гэта ўсё — пацягніце, каб абнавіць</string>
     <string name="retry_after">Паспрабуйце зноў пасля %1$s</string>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d новы допіс</item>
+        <item quantity="few">%1$d новыя допісы</item>
+        <item quantity="many">%1$d новых допісаў</item>
+        <item quantity="other">%1$d новага допісу</item>
+    </plurals>
 </resources>

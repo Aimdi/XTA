@@ -127,4 +127,8 @@
     <string name="for_you_sign_in_detail">Pega una sesión en Ajustes para leer la tuya, o sigue cuentas y lee Inicio</string>
     <string name="for_you_end">Eso es todo por ahora: desliza para actualizar</string>
     <string name="retry_after">Vuelve a intentarlo después de las %1$s</string>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d post nuevo</item>
+        <item quantity="other">%1$d posts nuevos</item>
+    </plurals>
 </resources>

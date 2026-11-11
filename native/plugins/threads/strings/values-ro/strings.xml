@@ -127,4 +127,9 @@
     <string name="for_you_sign_in_detail">Lipește o sesiune în Setări ca să o citești pe a ta, sau urmărește conturi și citește Acasă</string>
     <string name="for_you_end">Asta e tot deocamdată — trage pentru a reîmprospăta</string>
     <string name="retry_after">Încearcă din nou după %1$s</string>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d postare nouă</item>
+        <item quantity="few">%1$d postări noi</item>
+        <item quantity="other">%1$d de postări noi</item>
+    </plurals>
 </resources>

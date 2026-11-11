@@ -726,6 +726,13 @@ native only | a recent search can be forgotten with the cross on its chip, as XT
 native only | a GIF a post carries from GIPHY (`giphy_media_info`, the shape Instagram's comments use; not seen live from here) loops silently in place from its MP4, marked GIF, in place of the still, kept as one in likes and snapshots (`imageGifs` beside XTA's lists) and offered no quality menu; XTA showed the still or nothing | ThreadsParser.gif/media, ThreadsMedia.isGif, ThreadsMediaItems, ThreadsPostJson | ThreadsParserTest.aGifFromGiphyIsItsLargestRenditionLooping…, ThreadsRulesTest.aGifLoopsAsTheAppsGifsDoAndIsKeptAsOne
 native only | the tab's feed and the sheet's people search name the time a throttle ends too | ThreadsFailures.feedText, ThreadsHome, ThreadsSearch.FailedPeople | ThreadsRulesTest.aPageThatFailedSaysWhatIsMissing…
 
+## Threads, round 13 (past XTA: what a reader notices)
+
+Rows as above: state | what | where | test.
+
+native only | live probes log the shape of what a guest is shown (each page's answer or its redirect, unread post and user keys, features by key path, preloaded queries, paging keys), key names and counts only | desktopTest ThreadsLiveTest.theShapeOfWhatAGuestIsShown, ThreadsShape | ThreadsShapeTest (the reader, on a kept page); the reading itself is CI's live job
+native only | Home opens where the reader stopped, after For you, Liked or a restart (For you already did); posts a pull or a reopening's read brings in above the reader wait under "↑ N new posts", which goes to the top (XTA's list jumped or kept them unseen) | ThreadsHomePlace.kt (ThreadsHomePlace, ThreadsFresh, home.json in the plugin's folder), ThreadsPlaces.kt (KeepsPlace, FreshPill), ThreadsHome.Feed; string new_posts (the app's, 29 languages) | ThreadsHomePlaceTest; the list itself needs a device
+
 ## Bluesky and Mastodon, round 10 (the chrome, the covers, the audit's items)
 
 Rows as above: state | what | where | test.

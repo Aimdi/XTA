@@ -86,6 +86,9 @@ internal class ThreadsApp(val host: PluginHost) {
     val shelf = ThreadsShelf()
     private val profiles = ThreadsProfileShelf(host.store.file("profiles.json"))
 
+    /** Where the reader stopped in the Home section. */
+    val homePlace = ThreadsHomePlace(host.store.file("home.json"), scope)
+
     /** Threads' own recommended feed: the pasted Bearer's For you timeline, else threads.com's public front page. */
     val forYou = ThreadsForYouFeed(ThreadsForYou(direct)::page)
 
@@ -170,6 +173,7 @@ internal class ThreadsApp(val host: PluginHost) {
     /** Paints the feed the reader last saw, before anything is asked of Meta (threads_store.dart's `restore`). */
     suspend fun restoreFeed() {
         ready()
+        homePlace.restore()
         if (feed.state.value.items.isNotEmpty()) return
         val handles = ThreadsAccounts.handles(accounts.load()).toSet()
         val snapshot = ThreadsFeedSnapshot.decode(settings()[ThreadsPrefs.feedSnapshot]).followedBy(handles)

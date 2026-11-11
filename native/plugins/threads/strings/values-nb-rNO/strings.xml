@@ -124,4 +124,8 @@
     <string name="for_you_sign_in_detail">Lim inn en økt i Innstillinger for å lese din, eller følg kontoer og les Hjem</string>
     <string name="for_you_end">Det var alt for nå — dra for å oppdatere</string>
     <string name="retry_after">Prøv igjen etter %1$s</string>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d nytt innlegg</item>
+        <item quantity="other">%1$d nye innlegg</item>
+    </plurals>
 </resources>

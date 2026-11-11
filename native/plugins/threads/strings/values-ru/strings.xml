@@ -130,4 +130,10 @@
     <string name="for_you_sign_in_detail">Вставьте сессию в Настройках, чтобы читать свою, или подпишитесь на аккаунты и читайте Главную</string>
     <string name="for_you_end">Пока это всё — потяните, чтобы обновить</string>
     <string name="retry_after">Повторите попытку после %1$s</string>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d новый пост</item>
+        <item quantity="few">%1$d новых поста</item>
+        <item quantity="many">%1$d новых постов</item>
+        <item quantity="other">%1$d нового поста</item>
+    </plurals>
 </resources>

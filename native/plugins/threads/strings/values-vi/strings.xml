@@ -121,4 +121,7 @@
     <string name="for_you_sign_in_detail">Dán một phiên trong Cài đặt để đọc trang của bạn, hoặc theo dõi tài khoản và đọc Trang chủ</string>
     <string name="for_you_end">Tạm thời chỉ có vậy — kéo để làm mới</string>
     <string name="retry_after">Thử lại sau %1$s</string>
+    <plurals name="new_posts">
+        <item quantity="other">%1$d bài đăng mới</item>
+    </plurals>
 </resources>

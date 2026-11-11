@@ -130,4 +130,10 @@
     <string name="for_you_sign_in_detail">Вставте сесію в Налаштуваннях, щоб читати свою, або підпишіться на акаунти й читайте Головну</string>
     <string name="for_you_end">Поки що це все — потягніть, щоб оновити</string>
     <string name="retry_after">Спробуйте ще раз після %1$s</string>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d новий допис</item>
+        <item quantity="few">%1$d нові дописи</item>
+        <item quantity="many">%1$d нових дописів</item>
+        <item quantity="other">%1$d нового допису</item>
+    </plurals>
 </resources>

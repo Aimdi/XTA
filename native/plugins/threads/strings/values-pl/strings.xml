@@ -130,4 +130,10 @@
     <string name="for_you_sign_in_detail">Wklej sesję w Ustawieniach, aby czytać swoją, albo obserwuj konta i czytaj stronę główną</string>
     <string name="for_you_end">To na razie wszystko — pociągnij, aby odświeżyć</string>
     <string name="retry_after">Spróbuj ponownie po %1$s</string>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d nowy wpis</item>
+        <item quantity="few">%1$d nowe wpisy</item>
+        <item quantity="many">%1$d nowych wpisów</item>
+        <item quantity="other">%1$d nowego wpisu</item>
+    </plurals>
 </resources>

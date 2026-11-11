@@ -93,7 +93,7 @@ private fun ForYouList(app: ThreadsApp, frame: PluginFrame, state: ThreadsForYou
         initialFirstVisibleItemScrollOffset = remember { app.forYouPlace.offset.takeIf { ThreadsForYouRow.indexOf(rows, app.forYouPlace) != null } ?: 0 },
     )
     ScrollsToTop(list, frame.toTop)
-    KeepsPlace(app, list)
+    KeepsPlace(list, app::keepForYouPlace)
     ReadsMoreNearTheEnd(app, list, rows.size)
     StartsAnewAtTheTop(list, state.readAt)
     ForYouRefreshable(app, frame, state, list) {
@@ -111,17 +111,6 @@ private fun ForYouList(app: ThreadsApp, frame: PluginFrame, state: ThreadsForYou
     }
 }
 
-/** Tells the tab which post is first in view, so the section reopens there, now and after a restart. */
-@Composable
-private fun KeepsPlace(app: ThreadsApp, list: LazyListState) {
-    LaunchedEffect(app, list) {
-        snapshotFlow {
-            val first = list.layoutInfo.visibleItemsInfo.firstOrNull { ThreadsForYouRow.postId(it.key) != null }
-            // Above the first post there is only what stands over the feed: its top.
-            if (first == null || list.firstVisibleItemIndex == 0) ThreadsPlace() else ThreadsPlace(ThreadsForYouRow.postId(first.key), -first.offset)
-        }.distinctUntilChanged().collect { place -> app.keepForYouPlace(place) }
-    }
-}
 
 /** Asks for the next page once the reader is within a few rows of the end. */
 @Composable

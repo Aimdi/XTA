@@ -124,4 +124,8 @@
     <string name="for_you_sign_in_detail">Kendinizinkini okumak için Ayarlar’a bir oturum yapıştırın ya da hesapları takip edip Ana sayfayı okuyun</string>
     <string name="for_you_end">Şimdilik bu kadar — yenilemek için çekin</string>
     <string name="retry_after">%1$s sonrasında yeniden deneyin</string>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d yeni gönderi</item>
+        <item quantity="other">%1$d yeni gönderi</item>
+    </plurals>
 </resources>

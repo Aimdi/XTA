@@ -130,4 +130,10 @@
     <string name="for_you_sign_in_detail">Ustaŭcie sesiju ŭ Naladach, kab čytać svaju, abo padpišyciesia na akaŭnty i čytajcie Hałoŭnuju</string>
     <string name="for_you_end">Pakul heta ŭsio — paciahnicie, kab abnavić</string>
     <string name="retry_after">Pasprabujcie znoŭ pasla %1$s</string>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d novy dopis</item>
+        <item quantity="few">%1$d novyja dopisy</item>
+        <item quantity="many">%1$d novych dopisaŭ</item>
+        <item quantity="other">%1$d novaha dopisu</item>
+    </plurals>
 </resources>

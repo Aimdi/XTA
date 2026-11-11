@@ -9,6 +9,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.store.backup.XtaTime
 import java.time.Instant
 import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -16,9 +17,18 @@ import kotlinx.serialization.json.JsonPrimitive
 /** The sections of the Threads tab: the accounts followed here, Threads' own recommended feed, and the posts liked here. */
 internal enum class ThreadsSection { HOME, FOR_YOU, LIKED }
 
-/** Where the reader stopped in the For you feed: the first post in view, and how far it had scrolled off, in pixels. */
+/** Where the reader stopped in a feed: the first post in view, and how far it had scrolled off, in pixels. */
 internal data class ThreadsPlace(val postId: String? = null, val offset: Int = 0) {
     val atTop: Boolean get() = postId == null
+
+    /** The place as a kept file holds it. */
+    fun fields(): Map<String, JsonElement> =
+        mapOf("placePost" to (postId?.let(::JsonPrimitive) ?: JsonNull), "placeOffset" to JsonPrimitive(offset))
+
+    companion object {
+        /** The place [root]'s [fields] name; the top when they name none. */
+        fun of(root: J): ThreadsPlace = ThreadsPlace(root["placePost"].string?.ifEmpty { null }, root["placeOffset"].long?.toInt() ?: 0)
+    }
 }
 
 /**
@@ -40,10 +50,8 @@ internal data class ThreadsForYouKept(
             "section" to JsonPrimitive(section.name.lowercase()),
             "source" to (source?.let { JsonPrimitive(it.name.lowercase()) } ?: JsonNull),
             "readAt" to (readAt?.let { JsonPrimitive(XtaTime.iso(it)) } ?: JsonNull),
-            "placePost" to (place.postId?.let(::JsonPrimitive) ?: JsonNull),
-            "placeOffset" to JsonPrimitive(place.offset),
             "posts" to JsonArray(kept(posts, place).map(ThreadsPostJson::json)),
-        ),
+        ) + place.fields(),
     ).toString()
 
     companion object {
@@ -63,7 +71,7 @@ internal data class ThreadsForYouKept(
                 posts = root["posts"].list.mapNotNull(ThreadsPostJson::post),
                 source = ThreadsForYouSource.entries.firstOrNull { it.name.lowercase() == root["source"].string },
                 readAt = XtaTime.parse(root["readAt"].string),
-                place = ThreadsPlace(root["placePost"].string?.ifEmpty { null }, root["placeOffset"].long?.toInt() ?: 0),
+                place = ThreadsPlace.of(root),
                 section = ThreadsSection.entries.firstOrNull { it.name.lowercase() == root["section"].string } ?: ThreadsSection.HOME,
             )
         }
@@ -156,7 +164,7 @@ internal sealed interface ThreadsForYouRow {
         }
 
         /** The post a row's [key] names; null for a row that is none. */
-        fun postId(key: Any?): String? = (key as? String)?.takeIf { it.startsWith(KEY) }?.removePrefix(KEY)
+        fun postId(key: Any?): String? = postIdOf(key)
 
         /** Where [place]'s post is in [rows]; null when it is at the top, or no longer there. */
         fun indexOf(rows: List<ThreadsForYouRow>, place: ThreadsPlace): Int? =
