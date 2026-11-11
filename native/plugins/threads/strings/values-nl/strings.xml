@@ -115,4 +115,10 @@
     <string name="add_to_group">Aan groep toevoegen</string>
     <string name="in_home_feed">Weergeven in de hoofdtijdlijn</string>
     <string name="in_home_feed_description">Mengt berichten van de Threads-accounts die je volgt in Volgend en Voor jou</string>
+    <string name="for_you">Voor jou</string>
+    <string name="for_you_public">Wat Threads iedereen aanraadt, gelezen zonder in te loggen</string>
+    <string name="for_you_sign_in">Threads toont de Voor jou-pagina nu alleen aan ingelogde lezers</string>
+    <string name="for_you_sign_in_detail">Plak een sessie in Instellingen om die van jou te lezen, of volg accounts en lees Home</string>
+    <string name="for_you_end">Dat is alles voor nu — trek om te vernieuwen</string>
+    <string name="retry_after">Probeer het na %1$s opnieuw</string>
 </resources>

@@ -115,4 +115,10 @@
     <string name="add_to_group">Gehitu taldera</string>
     <string name="in_home_feed">Erakutsi hasierako denbora-lerroan</string>
     <string name="in_home_feed_description">Jarraitzen dituzun Threads kontuen bidalketak «Jarraitzen» eta «Zuretzat» ataletan tartekatzen ditu</string>
+    <string name="for_you">Zuretzat</string>
+    <string name="for_you_public">Threadsek guztiei gomendatzen diena, saioa hasi gabe irakurrita</string>
+    <string name="for_you_sign_in">Une honetan Threadsek saioa hasi dutenei bakarrik erakusten die Zuretzat orria</string>
+    <string name="for_you_sign_in_detail">Itsatsi saio bat Ezarpenetan zurea irakurtzeko, edo jarraitu kontuak eta irakurri Hasiera</string>
+    <string name="for_you_end">Hori da dena oraingoz — tira freskatzeko</string>
+    <string name="retry_after">Saiatu berriro %1$s ondoren</string>
 </resources>

@@ -112,4 +112,10 @@
     <string name="add_to_group">Thêm vào nhóm</string>
     <string name="in_home_feed">Hiển thị trong dòng thời gian chính</string>
     <string name="in_home_feed_description">Trộn bài viết từ các tài khoản Threads bạn theo dõi vào Đang theo dõi và Dành cho bạn</string>
+    <string name="for_you">Dành cho bạn</string>
+    <string name="for_you_public">Những gì Threads gợi ý cho mọi người, đọc mà không cần đăng nhập</string>
+    <string name="for_you_sign_in">Hiện Threads chỉ hiển thị trang Dành cho bạn cho người đã đăng nhập</string>
+    <string name="for_you_sign_in_detail">Dán một phiên trong Cài đặt để đọc trang của bạn, hoặc theo dõi tài khoản và đọc Trang chủ</string>
+    <string name="for_you_end">Tạm thời chỉ có vậy — kéo để làm mới</string>
+    <string name="retry_after">Thử lại sau %1$s</string>
 </resources>

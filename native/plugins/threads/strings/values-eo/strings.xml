@@ -115,4 +115,10 @@
     <string name="add_to_group">Aldoni al grupo</string>
     <string name="in_home_feed">Montri en la hejma tempolinio</string>
     <string name="in_home_feed_description">Miksas afiŝojn el la Threads-kontoj kiujn vi sekvas en «Sekvataj» kaj «Por vi»</string>
+    <string name="for_you">Por vi</string>
+    <string name="for_you_public">Kion Threads rekomendas al ĉiuj, legata sen ensaluto</string>
+    <string name="for_you_sign_in">Threads nun montras sian paĝon «Por vi» nur al ensalutintoj</string>
+    <string name="for_you_sign_in_detail">Algluu seancon en Agordoj por legi la vian, aŭ sekvu kontojn kaj legu Hejmon</string>
+    <string name="for_you_end">Jen ĉio por nun — tiru por aktualigi</string>
+    <string name="retry_after">Reprovu post %1$s</string>
 </resources>

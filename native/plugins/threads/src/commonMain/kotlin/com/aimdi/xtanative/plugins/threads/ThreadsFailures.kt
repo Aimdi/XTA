@@ -14,6 +14,9 @@ internal object ThreadsFailures {
         else -> common(error)
     }
 
+    /** The For you section's sentence for [error]: no account is named there. */
+    fun forYou(error: Throwable?): PluginText = common(error)
+
     /** The settings' sentence for a test that failed: there a missing feed is an instance without the route. */
     fun settings(error: Throwable?): PluginText = when ((error as? ThreadsException)?.failure) {
         ThreadsFailure.NOT_CONFIGURED -> Strings.not_configured

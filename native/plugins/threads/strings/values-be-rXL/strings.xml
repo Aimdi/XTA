@@ -121,4 +121,10 @@
     <string name="add_to_group">Dadać u hrupu</string>
     <string name="in_home_feed">Pakazvać u hałoŭnaj stužcy</string>
     <string name="in_home_feed_description">Dadaje zapisy z akaŭntaŭ Threads, na jakija vy padpisany, u «Padpiski» i «Dla vas»</string>
+    <string name="for_you">Dla vas</string>
+    <string name="for_you_public">Toje, što Threads raić usim, biez uvachodu ŭ akaŭnt</string>
+    <string name="for_you_sign_in">Zaraz Threads pakazvaje staronku «Dla vas» tolki tym, chto ŭvajšoŭ</string>
+    <string name="for_you_sign_in_detail">Ustaŭcie sesiju ŭ Naladach, kab čytać svaju, abo padpišyciesia na akaŭnty i čytajcie Hałoŭnuju</string>
+    <string name="for_you_end">Pakul heta ŭsio — paciahnicie, kab abnavić</string>
+    <string name="retry_after">Pasprabujcie znoŭ pasla %1$s</string>
 </resources>

@@ -117,4 +117,10 @@
     <string name="add_to_group">Add to group</string>
     <string name="in_home_feed">Show in the home timeline</string>
     <string name="in_home_feed_description">Mixes posts from the Threads accounts you follow into Following and For you</string>
+    <string name="for_you">For you</string>
+    <string name="for_you_public">What Threads recommends to everyone, read without signing in</string>
+    <string name="for_you_sign_in">Threads shows its For you page only to signed-in readers right now</string>
+    <string name="for_you_sign_in_detail">Paste a session in Settings to read yours, or follow accounts and read Home</string>
+    <string name="for_you_end">That is all for now — pull to refresh for new posts</string>
+    <string name="retry_after">Try again after %1$s</string>
 </resources>

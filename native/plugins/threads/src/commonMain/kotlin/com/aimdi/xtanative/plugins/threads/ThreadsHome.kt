@@ -1,5 +1,7 @@
 package com.aimdi.xtanative.plugins.threads
 
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.MoreVert
@@ -69,27 +72,34 @@ import kotlinx.coroutines.launch
 
 /**
  * The Threads tab (XTA's ThreadsScreen, as it sits in Home's strip): Home,
- * every followed account merged newest first, and Liked, the posts liked on
- * this device; search, adding an account and the settings above them. The
+ * every followed account merged newest first; For you, Threads' own
+ * recommended feed; and Liked, the posts liked on this device; search,
+ * adding an account and the settings above them. It opens on the section
+ * the reader left it on. The
  * feed the reader last saw is painted first; a pull, F5 or the desktop's
  * refresh asks Meta again past the ten minutes each account is kept.
  */
 @Composable
 internal fun ThreadsHome(app: ThreadsApp, frame: PluginFrame) {
-    var liked by rememberSaveable { mutableStateOf(false) }
+    val section by app.section.collectAsState()
     var searching by remember { mutableStateOf(false) }
     var adding by remember { mutableStateOf(false) }
     LaunchedEffect(app) {
+        app.restoreForYou()
         app.restoreFeed()
         app.feed.refresh()
     }
     RefreshesOn(frame.refresh) { app.feed.refresh(force = true) }
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
-            ReadingControlsBar { HomeBar(app, liked, onLiked = { liked = it }, onSearch = { searching = true }, onAdd = { adding = true }) }
+            ReadingControlsBar { HomeBar(app, section, onSearch = { searching = true }, onAdd = { adding = true }) }
             HorizontalDivider()
-            Box(Modifier.weight(1f).swipeTabs(if (liked) 1 else 0, 2) { liked = it == 1 }) {
-                if (liked) LikedPane(app, frame) else HomePane(app, frame, onAdd = { adding = true }, onSearch = { searching = true })
+            Box(Modifier.weight(1f).swipeTabs(section.ordinal, ThreadsSection.entries.size) { app.show(ThreadsSection.entries[it]) }) {
+                when (section) {
+                    ThreadsSection.HOME -> HomePane(app, frame, onAdd = { adding = true }, onSearch = { searching = true })
+                    ThreadsSection.FOR_YOU -> ThreadsForYouPane(app, frame)
+                    ThreadsSection.LIKED -> LikedPane(app, frame)
+                }
             }
         }
         NoticeHost(app.notices)
@@ -98,15 +108,16 @@ internal fun ThreadsHome(app: ThreadsApp, frame: PluginFrame) {
     if (adding) AddAccountDialog(app) { adding = false }
 }
 
-/** Home and Liked, then search and the menu: add an account, what was saved from Threads, the settings. */
+/** Home, For you and Liked (scrolled sideways where a phone is too narrow for the three), then search and the menu: add an account, what was saved from Threads, the settings. */
 @Composable
-private fun HomeBar(app: ThreadsApp, liked: Boolean, onLiked: (Boolean) -> Unit, onSearch: () -> Unit, onAdd: () -> Unit) {
+private fun HomeBar(app: ThreadsApp, section: ThreadsSection, onSearch: () -> Unit, onAdd: () -> Unit) {
     var menu by remember { mutableStateOf(false) }
     Row(Modifier.fillMaxWidth().padding(start = 12.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-        Tab(!liked, Icons.Outlined.Home, Strings.home) { onLiked(false) }
-        Spacer(Modifier.size(8.dp))
-        Tab(liked, ThreadsHeart.Outlined, Strings.liked) { onLiked(true) }
-        Spacer(Modifier.weight(1f))
+        Row(Modifier.weight(1f).horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Tab(section == ThreadsSection.HOME, Icons.Outlined.Home, Strings.home) { app.show(ThreadsSection.HOME) }
+            Tab(section == ThreadsSection.FOR_YOU, PostIcons.Sparkle, Strings.for_you) { app.show(ThreadsSection.FOR_YOU) }
+            Tab(section == ThreadsSection.LIKED, ThreadsHeart.Outlined, Strings.liked) { app.show(ThreadsSection.LIKED) }
+        }
         IconButton(onClick = onSearch) { Icon(Icons.Filled.Search, contentDescription = pluginString(Strings.search)) }
         Box {
             IconButton(onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, contentDescription = pluginString(Strings.more_options)) }

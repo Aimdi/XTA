@@ -115,4 +115,10 @@
     <string name="add_to_group">समूह में जोड़ें</string>
     <string name="in_home_feed">होम टाइमलाइन में दिखाएँ</string>
     <string name="in_home_feed_description">आप जिन Threads खातों को फ़ॉलो करते हैं उनकी पोस्ट को \"फ़ॉलोइंग\" और \"आपके लिए\" में मिलाता है</string>
+    <string name="for_you">आपके लिए</string>
+    <string name="for_you_public">Threads जो सबको सुझाता है, बिना साइन इन किए पढ़ा गया</string>
+    <string name="for_you_sign_in">Threads अभी अपना “आपके लिए” पेज केवल साइन इन किए पाठकों को दिखाता है</string>
+    <string name="for_you_sign_in_detail">अपना पेज पढ़ने के लिए सेटिंग्स में सेशन पेस्ट करें, या अकाउंट फ़ॉलो करके होम पढ़ें</string>
+    <string name="for_you_end">अभी के लिए बस इतना ही — नई पोस्ट के लिए खींचकर रीफ़्रेश करें</string>
+    <string name="retry_after">%1$s के बाद फिर कोशिश करें</string>
 </resources>

@@ -1,6 +1,8 @@
 package com.aimdi.xtanative.plugins.threads
 
 import com.aimdi.xtanative.networks.threads.ThreadsDirectClient
+import com.aimdi.xtanative.networks.threads.ThreadsForYou
+import com.aimdi.xtanative.networks.threads.ThreadsForYouFeed
 import com.aimdi.xtanative.networks.threads.ThreadsLinks
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsProfile
@@ -34,17 +36,22 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 /**
  * What the Threads plugin's screens share while it runs: Meta's public pages
@@ -75,6 +82,22 @@ internal class ThreadsApp(val host: PluginHost) {
     val notices = PluginNotices()
     val shelf = ThreadsShelf()
 
+    /** Threads' own recommended feed: the pasted Bearer's For you timeline, else threads.com's public front page. */
+    val forYou = ThreadsForYouFeed(ThreadsForYou(direct)::page)
+
+    /** The section the tab shows. */
+    val section = MutableStateFlow(ThreadsSection.HOME)
+
+    /** Where the reader stopped in the For you feed. */
+    @Volatile
+    var forYouPlace = ThreadsPlace()
+        private set
+
+    private val forYouFile = host.store.file("for_you.json")
+    private val forYouRestore = Mutex()
+    private var forYouRestored = false
+    private val forYouChanged = MutableStateFlow(0)
+
     /** The posts the app's shared rows drew lately, by id: what their taps, bookmark and menu find again. */
     private val drawn = DrawnPosts<ThreadsPost> { it.id }
 
@@ -89,6 +112,17 @@ internal class ThreadsApp(val host: PluginHost) {
 
     /** The order of a conversation's replies, kept for the rest of the run and shared by every conversation, as XTA keeps it. */
     val replyOrder = MutableStateFlow(ThreadsReplyOrder.TOP)
+
+    init {
+        // What the For you section keeps is written a moment after the last change, not at every scrolled row.
+        scope.launch {
+            forYouChanged.collectLatest { change ->
+                if (change == 0) return@collectLatest
+                delay(KEEP_AFTER_MILLIS)
+                keepForYou()
+            }
+        }
+    }
 
     /** Waits for what every read needs: the app's settings, the accounts and the likes. */
     suspend fun ready() {
@@ -156,6 +190,56 @@ internal class ThreadsApp(val host: PluginHost) {
         if (posts.isEmpty()) return
         val snapshot = ThreadsFeedSnapshot(posts, reader.answeredAt).encode()
         host.settings.update { it.with(ThreadsPrefs.feedSnapshot, snapshot) }
+    }
+
+    // ---- The For you section ----
+
+    /** Paints the For you feed and the section the reader last saw, once, before anything is asked of Meta. */
+    suspend fun restoreForYou() = forYouRestore.withLock {
+        if (forYouRestored) return@withLock
+        val kept = ThreadsForYouKept.decode(forYouFile.read())
+        forYou.restore(kept.posts, kept.source, kept.readAt)
+        forYouPlace = kept.place
+        section.value = kept.section
+        forYouRestored = true
+    }
+
+    /** Reads the For you feed anew: a new selection, which starts at its top. */
+    fun refreshForYou() = launch {
+        ready()
+        val before = forYou.state.value.readAt
+        forYou.refresh()
+        if (forYou.state.value.readAt != before) forYouPlace = ThreadsPlace()
+        forYouChanged.update { it + 1 }
+    }
+
+    fun moreForYou() = launch {
+        forYou.more()
+        forYouChanged.update { it + 1 }
+    }
+
+    fun retryMoreForYou() = launch {
+        forYou.retryMore()
+        forYouChanged.update { it + 1 }
+    }
+
+    fun keepForYouPlace(place: ThreadsPlace) {
+        if (place == forYouPlace) return
+        forYouPlace = place
+        forYouChanged.update { it + 1 }
+    }
+
+    /** Shows [shown], and remembers it for the next launch. */
+    fun show(shown: ThreadsSection) {
+        if (section.value == shown) return
+        section.value = shown
+        forYouChanged.update { it + 1 }
+    }
+
+    private suspend fun keepForYou() {
+        if (!forYouRestored) return
+        val state = forYou.state.value
+        forYouFile.write(ThreadsForYouKept(state.posts, state.source, state.readAt, forYouPlace, section.value).encode())
     }
 
     /** Follows [account] on this device, and has the feed read for it. */
@@ -312,5 +396,8 @@ internal class ThreadsApp(val host: PluginHost) {
     companion object {
         /** The network's name where a problem names it. */
         const val NETWORK = "Threads"
+
+        /** How long after the last change the For you section is written to its file. */
+        private const val KEEP_AFTER_MILLIS = 1_500L
     }
 }

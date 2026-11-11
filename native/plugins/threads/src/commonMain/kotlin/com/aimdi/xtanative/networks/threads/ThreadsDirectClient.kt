@@ -143,23 +143,48 @@ class ThreadsDirectClient(
         return guestAccount(handle)
     }
 
-    /** The Bearer session's home timeline ("For you"), at most [limit] threads. */
-    suspend fun followingTimeline(limit: Int = 40): Page<ThreadsPost> {
+    /** The first page of the Bearer session's For you timeline, at most [limit] threads. */
+    suspend fun followingTimeline(limit: Int = 40): Page<ThreadsPost> = Page(forYouTimeline().items.take(limit), null)
+
+    /**
+     * One page of the Bearer session's For you timeline, as the Threads app
+     * reads its home: the first page, or with [cursor] (the `next_max_id` of
+     * the page before) the one after it. [Page.next] is null once Meta says
+     * there is no more. A read only: `feed_view_info` is sent empty, so no
+     * post is reported as seen.
+     */
+    suspend fun forYouTimeline(cursor: String? = null): Page<ThreadsPost> {
         val token = session().bearerToken ?: throw ThreadsException(NOT_CONFIGURED, "no bearer")
         val device = deviceId()
+        val after = cursor?.trim()?.ifEmpty { null }
         // The parameters threads-go's HomeTimeline sends: `pagination_source` alone now answers 404.
         val url = ThreadsLinks.address(
             INSTAGRAM,
             "/api/v1/feed/text_post_app_timeline/",
-            listOf(
+            listOfNotNull(
                 "feed_type" to "for_you",
                 "feed_view_info" to "[]",
-                "reason" to "cold_start_fetch",
+                "reason" to (if (after == null) "cold_start_fetch" else "pagination"),
                 "client_session_id" to device,
                 "pagination_source_module" to "feed_unit",
+                after?.let { "max_id" to it },
             ),
         )
-        return Page(ThreadsParser.feed(sessionRead(url, bearerHeaders(token, device))).take(limit), null)
+        val body = sessionRead(url, bearerHeaders(token, device))
+        val next = (body["next_max_id"].string ?: body["next_max_id"].integer?.toString())?.trim()?.ifEmpty { null }
+        return Page(ThreadsParser.feed(body), next.takeIf { body["more_available"].boolean != false })
+    }
+
+    /**
+     * What threads.com's front page shows a logged-out browser: the threads
+     * Meta recommends to everyone. One page, since Meta names no cursor a
+     * guest can follow; empty when it shows a guest its sign-in page instead.
+     * It spends no session, and its LSD token serves the next profile read.
+     */
+    suspend fun guestForYou(): Page<ThreadsPost> {
+        val page = guestPage(ThreadsLinks.web("/"))
+        rememberGuestLsd(ThreadsPages.lsd(page))
+        return Page(ThreadsPages.recommended(page), null)
     }
 
     /**

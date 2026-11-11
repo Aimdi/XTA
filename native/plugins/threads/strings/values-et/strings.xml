@@ -115,4 +115,10 @@
     <string name="add_to_group">Lisa gruppi</string>
     <string name="in_home_feed">Näita avalehe voos</string>
     <string name="in_home_feed_description">Lisab jälgitavate Threadsi kontode postitused voogudesse „Jälgitavad“ ja „Sulle“</string>
+    <string name="for_you">Sinu jaoks</string>
+    <string name="for_you_public">Mida Threads kõigile soovitab, loetuna sisse logimata</string>
+    <string name="for_you_sign_in">Threads näitab praegu lehte „Sulle“ ainult sisseloginutele</string>
+    <string name="for_you_sign_in_detail">Kleebi seadetes seanss, et lugeda enda oma, või jälgi kontosid ja loe avalehte</string>
+    <string name="for_you_end">Praeguseks kõik — värskendamiseks tõmba alla</string>
+    <string name="retry_after">Proovi uuesti pärast kella %1$s</string>
 </resources>

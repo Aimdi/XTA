@@ -121,4 +121,10 @@
     <string name="add_to_group">Dodaj do grupy</string>
     <string name="in_home_feed">Pokazuj na osi czasu</string>
     <string name="in_home_feed_description">Dodaje wpisy z obserwowanych kont Threads do zakładek „Obserwowane” i „Dla Ciebie”</string>
+    <string name="for_you">Dla Ciebie</string>
+    <string name="for_you_public">To, co Threads poleca wszystkim, czytane bez logowania</string>
+    <string name="for_you_sign_in">Threads pokazuje teraz stronę Dla Ciebie tylko zalogowanym</string>
+    <string name="for_you_sign_in_detail">Wklej sesję w Ustawieniach, aby czytać swoją, albo obserwuj konta i czytaj stronę główną</string>
+    <string name="for_you_end">To na razie wszystko — pociągnij, aby odświeżyć</string>
+    <string name="retry_after">Spróbuj ponownie po %1$s</string>
 </resources>

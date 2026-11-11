@@ -118,4 +118,10 @@
     <string name="add_to_group">Aggiungi al gruppo</string>
     <string name="in_home_feed">Mostra nella timeline principale</string>
     <string name="in_home_feed_description">Inserisce i post degli account Threads che segui in «Seguiti» e «Per te»</string>
+    <string name="for_you">Per te</string>
+    <string name="for_you_public">Ciò che Threads consiglia a tutti, letto senza accedere</string>
+    <string name="for_you_sign_in">Al momento Threads mostra la pagina Per te solo a chi ha effettuato l’accesso</string>
+    <string name="for_you_sign_in_detail">Incolla una sessione nelle Impostazioni per leggere la tua, oppure segui degli account e leggi la Home</string>
+    <string name="for_you_end">Per ora è tutto — trascina per aggiornare</string>
+    <string name="retry_after">Riprova dopo le %1$s</string>
 </resources>

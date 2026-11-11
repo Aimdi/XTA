@@ -121,4 +121,10 @@
     <string name="add_to_group">Přidat do skupiny</string>
     <string name="in_home_feed">Zobrazovat na hlavní nástěnce</string>
     <string name="in_home_feed_description">Přimíchá příspěvky z účtů na Threads, které sledujete, do „Sleduji“ a „Pro tebe“</string>
+    <string name="for_you">Pro tebe</string>
+    <string name="for_you_public">Co Threads doporučuje všem, čteno bez přihlášení</string>
+    <string name="for_you_sign_in">Threads teď stránku Pro vás ukazuje jen přihlášeným</string>
+    <string name="for_you_sign_in_detail">Vložte relaci v Nastavení a čtěte tu svou, nebo sledujte účty a čtěte Domů</string>
+    <string name="for_you_end">To je prozatím vše — tažením obnovíte</string>
+    <string name="retry_after">Zkuste to znovu po %1$s</string>
 </resources>

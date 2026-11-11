@@ -112,4 +112,10 @@
     <string name="add_to_group">新增至群組</string>
     <string name="in_home_feed">顯示在主時間軸中</string>
     <string name="in_home_feed_description">將你追蹤的 Threads 帳號的貼文混入「追蹤中」和「為你推薦」</string>
+    <string name="for_you">為您推薦</string>
+    <string name="for_you_public">Threads 向所有人推薦的內容，無需登入即可閱讀</string>
+    <string name="for_you_sign_in">Threads 目前只向已登入的讀者顯示「為你推薦」頁面</string>
+    <string name="for_you_sign_in_detail">在設定中貼上工作階段即可閱讀你自己的頁面，或追蹤帳號後閱讀首頁</string>
+    <string name="for_you_end">暫時就這些 — 下拉重新整理查看新貼文</string>
+    <string name="retry_after">請在 %1$s 之後重試</string>
 </resources>

@@ -118,4 +118,10 @@
     <string name="add_to_group">Adăugați la grup</string>
     <string name="in_home_feed">Afișează în cronologia principală</string>
     <string name="in_home_feed_description">Adaugă postările din conturile Threads urmărite în „Urmăriți” și „Pentru tine”</string>
+    <string name="for_you">Pentru dvs.</string>
+    <string name="for_you_public">Ce recomandă Threads tuturor, citit fără autentificare</string>
+    <string name="for_you_sign_in">Threads arată acum pagina Pentru tine doar cititorilor autentificați</string>
+    <string name="for_you_sign_in_detail">Lipește o sesiune în Setări ca să o citești pe a ta, sau urmărește conturi și citește Acasă</string>
+    <string name="for_you_end">Asta e tot deocamdată — trage pentru a reîmprospăta</string>
+    <string name="retry_after">Încearcă din nou după %1$s</string>
 </resources>

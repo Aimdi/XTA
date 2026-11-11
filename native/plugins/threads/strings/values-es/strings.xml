@@ -118,4 +118,10 @@
     <string name="add_to_group">Añadir al grupo</string>
     <string name="in_home_feed">Mostrar en la cronología principal</string>
     <string name="in_home_feed_description">Mezcla las publicaciones de las cuentas de Threads que sigues en «Siguiendo» y «Para ti»</string>
+    <string name="for_you">Para ti</string>
+    <string name="for_you_public">Lo que Threads recomienda a todo el mundo, leído sin iniciar sesión</string>
+    <string name="for_you_sign_in">Ahora mismo Threads solo muestra la página Para ti a quien ha iniciado sesión</string>
+    <string name="for_you_sign_in_detail">Pega una sesión en Ajustes para leer la tuya, o sigue cuentas y lee Inicio</string>
+    <string name="for_you_end">Eso es todo por ahora: desliza para actualizar</string>
+    <string name="retry_after">Vuelve a intentarlo después de las %1$s</string>
 </resources>

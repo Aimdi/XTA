@@ -103,6 +103,12 @@ object ThreadsPages {
         .filter { handle.isEmpty() || it.first().handle == handle || it.first().repostedByHandle == handle }
         .map { it.first().withSelfThreadCount(ThreadsParser.selfThreadLength(it.first(), it.drop(1))) }
 
+    /**
+     * The front page's threads, as a logged-out browser is recommended them:
+     * each chain's first post, keeping its chain's length, whoever wrote it.
+     */
+    fun recommended(body: String): List<ThreadsPost> = profileThreads(body, "")
+
     /** Every post a post page embeds, root and replies, flattened. */
     fun thread(body: String): List<ThreadsPost> = chains(body).flatten()
 

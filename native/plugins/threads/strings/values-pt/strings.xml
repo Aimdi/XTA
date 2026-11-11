@@ -118,4 +118,10 @@
     <string name="add_to_group">Adicionar ao grupo</string>
     <string name="in_home_feed">Mostrar na cronologia principal</string>
     <string name="in_home_feed_description">Mistura as publicações das contas do Threads que segue em «A seguir» e «Para si»</string>
+    <string name="for_you">Para si</string>
+    <string name="for_you_public">O que o Threads recomenda a toda a gente, lido sem iniciar sessão</string>
+    <string name="for_you_sign_in">De momento, o Threads só mostra a página Para si a quem iniciou sessão</string>
+    <string name="for_you_sign_in_detail">Cole uma sessão nas Definições para ler a sua, ou siga contas e leia o Início</string>
+    <string name="for_you_end">É tudo por agora — puxe para atualizar</string>
+    <string name="retry_after">Tente novamente depois das %1$s</string>
 </resources>

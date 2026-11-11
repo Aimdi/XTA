@@ -115,4 +115,10 @@
     <string name="add_to_group">Gruba ekle</string>
     <string name="in_home_feed">Ana akışta göster</string>
     <string name="in_home_feed_description">Takip ettiğin Threads hesaplarının gönderilerini Takip ve Sana Özel akışlarına karıştırır</string>
+    <string name="for_you">Senin için</string>
+    <string name="for_you_public">Threads’in herkese önerdikleri, oturum açmadan okunur</string>
+    <string name="for_you_sign_in">Threads şu anda Sizin için sayfasını yalnızca oturum açmış okurlara gösteriyor</string>
+    <string name="for_you_sign_in_detail">Kendinizinkini okumak için Ayarlar’a bir oturum yapıştırın ya da hesapları takip edip Ana sayfayı okuyun</string>
+    <string name="for_you_end">Şimdilik bu kadar — yenilemek için çekin</string>
+    <string name="retry_after">%1$s sonrasında yeniden deneyin</string>
 </resources>

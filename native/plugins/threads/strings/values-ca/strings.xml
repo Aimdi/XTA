@@ -118,4 +118,10 @@
     <string name="add_to_group">Afegir al grup</string>
     <string name="in_home_feed">Mostra a la cronologia principal</string>
     <string name="in_home_feed_description">Barreja les publicacions dels comptes de Threads que segueixes a «Seguint» i «Per a tu»</string>
+    <string name="for_you">Per a tu</string>
+    <string name="for_you_public">El que Threads recomana a tothom, llegit sense iniciar sessió</string>
+    <string name="for_you_sign_in">Ara mateix Threads només mostra la pàgina Per a tu a qui ha iniciat sessió</string>
+    <string name="for_you_sign_in_detail">Enganxa una sessió a Configuració per llegir la teva, o segueix comptes i llegeix Inici</string>
+    <string name="for_you_end">Això és tot per ara: estira per actualitzar</string>
+    <string name="retry_after">Torna-ho a provar després de les %1$s</string>
 </resources>

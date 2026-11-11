@@ -121,4 +121,10 @@
     <string name="add_to_group">Додати до групи</string>
     <string name="in_home_feed">Показувати в головній стрічці</string>
     <string name="in_home_feed_description">Додає дописи з акаунтів Threads, на які ви підписані, у «Підписки» та «Для вас»</string>
+    <string name="for_you">Для вас</string>
+    <string name="for_you_public">Те, що Threads радить усім, без входу в обліковий запис</string>
+    <string name="for_you_sign_in">Зараз Threads показує сторінку «Для вас» лише тим, хто ввійшов</string>
+    <string name="for_you_sign_in_detail">Вставте сесію в Налаштуваннях, щоб читати свою, або підпишіться на акаунти й читайте Головну</string>
+    <string name="for_you_end">Поки що це все — потягніть, щоб оновити</string>
+    <string name="retry_after">Спробуйте ще раз після %1$s</string>
 </resources>

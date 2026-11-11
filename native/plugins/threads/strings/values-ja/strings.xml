@@ -112,4 +112,10 @@
     <string name="add_to_group">グループに追加</string>
     <string name="in_home_feed">ホームのタイムラインに表示</string>
     <string name="in_home_feed_description">フォロー中の Threads アカウントの投稿を「フォロー中」と「おすすめ」に混ぜます</string>
+    <string name="for_you">For you</string>
+    <string name="for_you_public">Threadsが全員におすすめする投稿をログインせずに表示しています</string>
+    <string name="for_you_sign_in">Threadsは現在、「おすすめ」ページをログイン中のユーザーにのみ表示しています</string>
+    <string name="for_you_sign_in_detail">自分のページを読むには設定でセッションを貼り付けるか、アカウントをフォローしてホームを読んでください</string>
+    <string name="for_you_end">今はここまでです — 引っ張って更新</string>
+    <string name="retry_after">%1$s以降にもう一度お試しください</string>
 </resources>

@@ -118,4 +118,10 @@
     <string name="add_to_group">Ajouter au groupe</string>
     <string name="in_home_feed">Afficher dans le fil principal</string>
     <string name="in_home_feed_description">Intègre les publications des comptes Threads que vous suivez dans « Abonnements » et « Pour vous »</string>
+    <string name="for_you">Pour vous</string>
+    <string name="for_you_public">Ce que Threads recommande à tout le monde, lu sans se connecter</string>
+    <string name="for_you_sign_in">Threads ne montre sa page Pour vous qu’aux lecteurs connectés pour le moment</string>
+    <string name="for_you_sign_in_detail">Collez une session dans les Paramètres pour lire la vôtre, ou suivez des comptes et lisez l’Accueil</string>
+    <string name="for_you_end">C’est tout pour le moment — tirez pour actualiser</string>
+    <string name="retry_after">Réessayez après %1$s</string>
 </resources>

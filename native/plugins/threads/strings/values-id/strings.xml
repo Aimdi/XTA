@@ -112,4 +112,10 @@
     <string name="add_to_group">Tambah ke grup</string>
     <string name="in_home_feed">Tampilkan di lini masa beranda</string>
     <string name="in_home_feed_description">Menggabungkan kiriman dari akun Threads yang Anda ikuti ke Mengikuti dan Untuk Anda</string>
+    <string name="for_you">Untuk Anda</string>
+    <string name="for_you_public">Yang direkomendasikan Threads untuk semua orang, dibaca tanpa masuk</string>
+    <string name="for_you_sign_in">Saat ini Threads hanya menampilkan halaman Untuk Anda kepada pembaca yang sudah masuk</string>
+    <string name="for_you_sign_in_detail">Tempel sesi di Pengaturan untuk membaca milik Anda, atau ikuti akun dan baca Beranda</string>
+    <string name="for_you_end">Itu saja untuk saat ini — tarik untuk menyegarkan</string>
+    <string name="retry_after">Coba lagi setelah %1$s</string>
 </resources>

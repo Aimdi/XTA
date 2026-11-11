@@ -115,4 +115,10 @@
     <string name="add_to_group">Zu Gruppe hinzufügen</string>
     <string name="in_home_feed">In der Startseite anzeigen</string>
     <string name="in_home_feed_description">Mischt Beiträge aus den Threads-Konten, denen du folgst, unter „Folge ich“ und „Für dich“</string>
+    <string name="for_you">Für dich</string>
+    <string name="for_you_public">Was Threads allen empfiehlt, ohne Anmeldung gelesen</string>
+    <string name="for_you_sign_in">Threads zeigt die „Für dich“-Seite gerade nur angemeldeten Lesern</string>
+    <string name="for_you_sign_in_detail">Füge in den Einstellungen eine Sitzung ein, um deine zu lesen, oder folge Konten und lies die Startseite</string>
+    <string name="for_you_end">Das ist vorerst alles — zum Aktualisieren ziehen</string>
+    <string name="retry_after">Versuche es nach %1$s erneut</string>
 </resources>

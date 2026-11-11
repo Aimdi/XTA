@@ -127,4 +127,10 @@
     <string name="add_to_group">أضف إلى المجموعة</string>
     <string name="in_home_feed">إظهار في الصفحة الرئيسية</string>
     <string name="in_home_feed_description">يدمج منشورات حسابات ثريدز التي تتابعها في \"المتابَعون\" و\"لك\"</string>
+    <string name="for_you">لك</string>
+    <string name="for_you_public">ما يقترحه Threads على الجميع، يُقرأ دون تسجيل الدخول</string>
+    <string name="for_you_sign_in">يعرض Threads صفحة «لك» حاليًا للقراء المسجّلين فقط</string>
+    <string name="for_you_sign_in_detail">الصق جلسة في الإعدادات لقراءة صفحتك، أو تابع حسابات واقرأ الرئيسية</string>
+    <string name="for_you_end">هذا كل شيء الآن — اسحب للتحديث للحصول على منشورات جديدة</string>
+    <string name="retry_after">حاول مجددًا بعد %1$s</string>
 </resources>
