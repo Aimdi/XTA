@@ -241,6 +241,13 @@ class SubstackArticleTest {
     }
 
     @Test
+    fun aPostThatCannotBeReadShowsItsPageWhereAWebViewCan() {
+        assertTrue(SubstackReading.fallsBackToSite(post(audience = "everyone"), webView = true), "as XTA's reader loads the publication's page")
+        assertFalse(SubstackReading.fallsBackToSite(post(audience = "everyone"), webView = false), "the desktop keeps the failure, with Retry")
+        assertFalse(SubstackReading.fallsBackToSite(post(audience = "everyone", canonical = null), webView = true), "no page to show")
+    }
+
+    @Test
     fun readTimeIsTheWordsAt230AMinuteRoundedUpAtLeastOne() {
         assertEquals(1, SubstackReading.readMinutes(post(words = 1)))
         assertEquals(1, SubstackReading.readMinutes(post(words = 230)))

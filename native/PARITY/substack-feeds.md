@@ -471,3 +471,7 @@ untested → ported | substack_transport_test › a long wait fails at once and 
 untested → ported | substack_transport_test › a server error is retried once after a short jittered pause | shared transport (services) | same
 untested → ported | substack_transport_test › a success clears the strikes, so the next rate limit starts small again | shared transport (services) | same
 untested → ported | substack_transport_test › no more than four requests are in flight per bucket | shared transport (services) | same
+
+## Screens against XTA's (no XTA test names these; the Dart file is the reference)
+missing/different | lib/plugins/substack/substack_reader_screen.dart › a post that cannot be read shows the publication's page in the reader | networks/substack SubstackArticle.kt SubstackReading.fallsBackToSite, plugins/substack SubstackReaderModel.kt afterFailure | Android (the web view); the desktop keeps the failure with Retry; SubstackArticleTest.aPostThatCannotBeReadShowsItsPageWhereAWebViewCan
+missing/different | lib/plugins/substack/substack_note_content.dart › an opened note counts its hearts as its row does | plugins/substack SubstackNotesUi.kt SubstackNoteScreen | it spelled "N Likes" out, zen and calm mode or not; the rule is noteLikes, SubstackDiscussionTest

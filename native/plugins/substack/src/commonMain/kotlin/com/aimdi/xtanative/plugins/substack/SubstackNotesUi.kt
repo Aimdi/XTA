@@ -40,7 +40,6 @@ import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.plugins.MediaItem
 import com.aimdi.xtanative.ui.plugins.NetworkCount
-import com.aimdi.xtanative.ui.plugins.NetworkFocalPost
 import com.aimdi.xtanative.ui.plugins.NetworkHeaderButton
 import com.aimdi.xtanative.ui.plugins.NetworkPost
 import com.aimdi.xtanative.ui.plugins.NetworkPostActions
@@ -107,8 +106,9 @@ private fun NoteRow(app: SubstackApp, note: SubstackNote, actions: NoteActions) 
 internal class NoteActions(private val app: SubstackApp, private val unknown: String, private val outside: (String) -> Unit) {
     fun post(note: SubstackNote): NetworkPost = noteAsPost(note, unknown)
 
-    fun of(note: SubstackNote) = NetworkPostActions(
-        open = { app.openNote(note) },
+    /** Where [note]'s parts lead; [opened] on its own screen, where a tap on it opens nothing more. */
+    fun of(note: SubstackNote, opened: Boolean = false) = NetworkPostActions(
+        open = { if (!opened) app.openNote(note) },
         openAuthor = { post -> if (post.authorHandle.isNotEmpty()) outside("https://substack.com/@" + post.authorHandle) },
         openMention = {},
         openTag = {},
@@ -184,12 +184,17 @@ private fun NotePublication(app: SubstackApp, publication: SubstackPublication, 
         AssistChip(
             onClick = { app.addToGroup(publication) },
             label = { Text(addToGroupText()) },
-            leadingIcon = { Icon(PostIcons.People, null, Modifier.size(16.dp)) },
+            leadingIcon = { Icon(PostIcons.GroupAdd, null, Modifier.size(16.dp)) },
         )
     }
 }
 
-/** One note on its own (substack_note_screen.dart): its text to select, its link to share or open in the browser, and the shared post sheet. */
+/**
+ * One note on its own (substack_note_screen.dart): the note as its row draws
+ * it (XTA's SubstackNoteContent in both), its text to select, its hearts
+ * under it as a heart and a count, hidden in zen and calm mode; its link to
+ * share or open in the browser, and the shared post sheet, in the bar.
+ */
 @Composable
 internal fun SubstackNoteScreen(app: SubstackApp, id: String) {
     val note = remember(id) { app.noteFor(id) }
@@ -212,7 +217,9 @@ internal fun SubstackNoteScreen(app: SubstackApp, id: String) {
             if (note == null) {
                 item(key = "gone") { EmptyState(pluginString(Strings.notes_empty)) }
             } else {
-                item(key = "note") { SelectionContainer { NetworkFocalPost(actions.post(note), actions.of(note)) } }
+                item(key = "note") {
+                    SelectionContainer { NetworkPostCard(actions.post(note), actions.of(note, opened = true), NetworkPostExtras(footer = { NoteReactions(app, note) })) }
+                }
                 note.publication?.let { publication -> item(key = "publication") { NotePublication(app, publication, Modifier.padding(16.dp)) } }
             }
         }

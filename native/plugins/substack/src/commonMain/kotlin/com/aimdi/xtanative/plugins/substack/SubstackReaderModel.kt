@@ -31,7 +31,7 @@ internal sealed interface ReaderContent {
     /** A paid post without a body: the paid pane, never the publisher's page. */
     data object Paywall : ReaderContent
 
-    /** No body but an address: the post's page, in the web view where there is one (Android), else in the browser. */
+    /** No body but an address, or a post that could not be read: the post's page, in the web view where there is one (Android), else in the browser. */
     data object Live : ReaderContent
 
     data object Empty : ReaderContent
@@ -85,11 +85,18 @@ internal class ReaderModel(private val app: SubstackApp, opened: SubstackPost, p
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                mutable.update { if (force && showing) it.copy(refreshing = false, refreshError = e) else it.copy(content = ReaderContent.Failed(e)) }
+                mutable.update { it.afterFailure(e, refresh = force && showing) }
                 return@launch
             }
             show(loaded)
         }
+    }
+
+    /** A refresh that failed keeps the article and says so; a post that could not be read shows its page where a web view can, else why. */
+    private fun State.afterFailure(error: Exception, refresh: Boolean): State = when {
+        refresh -> copy(refreshing = false, refreshError = error)
+        SubstackReading.fallsBackToSite(post, articleWebView) -> copy(content = ReaderContent.Live, refreshing = false)
+        else -> copy(content = ReaderContent.Failed(error), refreshing = false)
     }
 
     private suspend fun resolve(post: SubstackPost, force: Boolean): SubstackPost {

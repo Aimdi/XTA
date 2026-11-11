@@ -56,7 +56,7 @@ import kotlinx.coroutines.launch
 @Composable
 internal fun GroupButton(app: SubstackApp, publication: SubstackPublication, outlined: Boolean = true, enabled: Boolean = true) {
     val content: @Composable RowScope.() -> Unit = {
-        Icon(PostIcons.People, null, Modifier.size(18.dp))
+        Icon(PostIcons.GroupAdd, null, Modifier.size(18.dp))
         Spacer(Modifier.width(8.dp))
         Text(addToGroupText())
     }

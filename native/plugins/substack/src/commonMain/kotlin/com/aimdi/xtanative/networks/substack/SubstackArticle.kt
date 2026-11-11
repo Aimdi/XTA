@@ -164,6 +164,15 @@ object SubstackReading {
     }
 
     /**
+     * Whether a post that could not be read at all is shown as its own page
+     * instead: XTA's reader loads the publication's page in its web view
+     * rather than say the read failed (substack_reader_screen.dart's _load),
+     * and Listen reads that page. Without a [webView] (the desktop) the
+     * failure stays, with Retry and the page in the browser.
+     */
+    fun fallsBackToSite(post: SubstackPost, webView: Boolean): Boolean = webView && post.canonicalUrl != null
+
+    /**
      * Whether [post] is shown as the free part of a paid post: the reader ends
      * it with a note that the preview stops here and a link to the rest.
      */
