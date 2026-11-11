@@ -67,6 +67,7 @@ import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
 import com.aimdi.xtanative.ui.plugins.ReadingControlsPinItem
+import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.saved.SavedIcons
@@ -163,7 +164,7 @@ private fun HomePane(app: ThreadsApp, frame: PluginFrame, onAdd: () -> Unit, onS
             val problem = state.problem
             when {
                 state.items.isNotEmpty() -> FeedOrFiltered(app, frame, state.items, options)
-                problem != null && !notConfigured(problem) -> RetryMessage(pluginString(ThreadsFailures.feed(problem)), onRetry = { app.feed.refresh(force = true) })
+                problem != null && !notConfigured(problem) -> RetryMessage(ThreadsFailures.feedText(problem, currentLanguage()), onRetry = { app.feed.refresh(force = true) })
                 !state.loaded -> PluginFeedSkeleton()
                 else -> Refreshable(app, frame) { item(key = "empty") { NothingYet(app, onAdd, onSearch) } }
             }

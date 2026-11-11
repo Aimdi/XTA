@@ -19,6 +19,10 @@ internal object ThreadsFailures {
         else -> common(error)
     }
 
+    /** [feed]'s sentence, a throttle naming the time Meta's wait ends. */
+    fun feedText(error: Throwable?, language: String, zone: ZoneId = ZoneId.systemDefault()): String =
+        throttledUntil(error, language, zone) ?: feed(error).get(language)
+
     /** The For you section's sentence for [error]: no account is named there. */
     fun forYou(error: Throwable?): PluginText = common(error)
 
@@ -50,13 +54,14 @@ internal object ThreadsFailures {
      */
     private fun page(error: Throwable?, language: String, missing: PluginText, zone: ZoneId): String {
         if (error is ThreadsXyException) return error.serverMessage?.trim()?.ifEmpty { null } ?: xy(error).get(language)
-        val failure = (error as? ThreadsException)?.failure
-        val until = (error as? ThreadsException)?.retryAt
-        return when {
-            failure == ThreadsFailure.NO_SUCH_FEED -> missing.get(language)
-            failure == ThreadsFailure.THROTTLED && until != null -> Strings.error_throttled_until.get(language, time(until, language, zone))
-            else -> settings(error).get(language)
-        }
+        if ((error as? ThreadsException)?.failure == ThreadsFailure.NO_SUCH_FEED) return missing.get(language)
+        return throttledUntil(error, language, zone) ?: settings(error).get(language)
+    }
+
+    /** A throttle's sentence with the time Meta's wait ends; null for anything else, or a throttle that named no end. */
+    private fun throttledUntil(error: Throwable?, language: String, zone: ZoneId): String? {
+        val throttle = (error as? ThreadsException)?.takeIf { it.failure == ThreadsFailure.THROTTLED } ?: return null
+        return throttle.retryAt?.let { Strings.error_throttled_until.get(language, time(it, language, zone)) }
     }
 
     /** [at] as a short time of day in [language], where the reader is. */

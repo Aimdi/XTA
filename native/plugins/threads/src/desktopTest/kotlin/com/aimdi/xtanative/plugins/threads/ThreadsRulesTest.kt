@@ -152,6 +152,8 @@ class ThreadsRulesTest {
         assertEquals("Threads is rate limiting — try again after $time", ThreadsFailures.post(throttled, "en", ZoneOffset.UTC))
         assertEquals("14:05", ThreadsFailures.time(until, "de", ZoneOffset.UTC))
         assertEquals(Strings.error_throttled.get("en"), ThreadsFailures.post(ThreadsException(ThreadsFailure.THROTTLED, "429", 429), "en"))
+        assertEquals("Threads is rate limiting — try again after $time", ThreadsFailures.feedText(throttled, "en", ZoneOffset.UTC), "the tab says when too")
+        assertEquals(Strings.error_no_feed.get("en"), ThreadsFailures.feedText(missing, "en"))
 
         val wall = ThreadsException(ThreadsFailure.SIGN_IN_REQUIRED, "login")
         assertEquals("Threads shows this page only to signed-in readers right now", ThreadsFailures.profile(wall, "en"))

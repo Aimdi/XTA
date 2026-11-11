@@ -65,6 +65,7 @@ import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginSearch
 import com.aimdi.xtanative.ui.plugins.RetryMessage
+import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.post.PostIcons
@@ -154,7 +155,7 @@ private fun PeopleResults(app: ThreadsApp, text: String, frame: PluginFrame, onO
 @Composable
 private fun FailedPeople(text: String, problem: Throwable?, onOpen: (String) -> Unit, onRetry: () -> Unit) {
     ThreadsLinks.normaliseHandle(text)?.let { handle -> SheetRow(Icons.Filled.Person, pluginString(Strings.open_handle, handle)) { onOpen(handle) } }
-    RetryMessage(pluginString(ThreadsFailures.feed(problem)), onRetry)
+    RetryMessage(ThreadsFailures.feedText(problem, currentLanguage()), onRetry)
 }
 
 /** One row per account found: its face, name and handle, opening its profile, with Follow or Unfollow on this device. */
