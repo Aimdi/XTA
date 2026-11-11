@@ -31,6 +31,9 @@ internal class InstagramFollows(private val file: StoreFile, private val now: ()
 
     suspend fun load(): List<InstagramSubscriptionRow> = mutex.withLock { loaded() }
 
+    /** The file read again, as a pull on Accounts reads XTA's rows again (InstagramFollowsStore.load). */
+    suspend fun reload(): List<InstagramSubscriptionRow> = mutex.withLock { newestFirst(decode(file.read().orEmpty())).also { mutable.value = it } }
+
     /** Follows the account [profile] describes, under its numeric id. */
     suspend fun follow(profile: InstagramProfile) =
         put(InstagramSubscriptionRow(profile.username.lowercase(), profile.id, profile.displayName, profile.avatarUrl, profile.biography, created()))

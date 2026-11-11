@@ -3,6 +3,7 @@ package com.aimdi.xtanative.plugins.tiktok
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.aimdi.xtanative.ui.plugins.NetworkPost
 import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.PluginBackupSection
 import com.aimdi.xtanative.ui.plugins.PluginBody
@@ -62,6 +63,12 @@ class TikTokPlugin : XtaPlugin() {
     override val subscriptions: Flow<List<PluginSubscription>> get() = app.subscriptions
 
     override val postActions: NetworkPostActions get() = app.actions
+
+    /** Its videos in a group's feed as its own card, with the heart kept here and how often it was played, as XTA's groups draw them (tiktok_group.dart). */
+    override fun postCard(post: NetworkPost): (@Composable () -> Unit)? {
+        val drawn = app.drawnPost(post) ?: return null
+        return { TikTokFeedCard(app, drawn) }
+    }
 
     override fun screen(route: String): PluginScreen? = TikTokRoutes.parse(route)?.let { opened -> { TikTokRouteScreen(app, opened) } }
 

@@ -72,8 +72,8 @@ internal fun PostMediaView(app: RedditApp, post: RedditPost, choices: RedditChoi
     Box(modifier) {
         when (media) {
             is PostMedia.Video -> Covered(post, gate, ratioOf(post)) { VideoTile(app, post, media.stream) }
-            is PostMedia.Gallery -> Covered(post, gate, 1f) { Gallery(media.images, onSave = { app.savePicture(media.images[it]) }) { app.openPictures(media.images, it) } }
-            is PostMedia.Image -> Covered(post, gate) { Picture(media.url, onSave = { app.savePicture(media.url) }) { app.openPictures(listOf(media.url), 0) } }
+            is PostMedia.Gallery -> Covered(post, gate, 1f) { Gallery(media.images, onSave = { app.savePicture(media.images[it], post) }) { app.openPictures(media.images, it) } }
+            is PostMedia.Image -> Covered(post, gate) { Picture(media.url, onSave = { app.savePicture(media.url, post) }) { app.openPictures(listOf(media.url), 0) } }
             is PostMedia.GalleryLink -> GalleryLink(app, post, gate, media.url, thread)
             is PostMedia.Link -> LinkCard(app, post, gate, media.url, thread)
         }
@@ -82,7 +82,12 @@ internal fun PostMediaView(app: RedditApp, post: RedditPost, choices: RedditChoi
 
 private fun ratioOf(post: RedditPost): Float = RedditMediaRules.aspectRatio(post.videoAspectRatio).toFloat()
 
-/** A video's poster with its play badge, as the shared tiles draw one; it plays in the app's viewer. */
+/**
+ * A video in its card, as XTA's TweetVideo plays Reddit's (reddit_post_media.dart):
+ * in place under the app's controls, by itself where Autoplay videos says,
+ * else on a tap; full screen from its controls. Where nothing plays in
+ * place the tile opens the app's viewer.
+ */
 @Composable
 private fun VideoTile(app: RedditApp, post: RedditPost, stream: String) {
     val item = MediaItem(
@@ -92,7 +97,7 @@ private fun VideoTile(app: RedditApp, post: RedditPost, stream: String) {
         aspectRatio = ratioOf(post),
         webUrl = RedditThreadRules.postUrl(post),
     )
-    MediaTiles(listOf(item), onOpen = { app.openVideo(post, stream) })
+    MediaTiles(listOf(item), onOpen = { app.openVideo(post, stream) }, playing = true)
 }
 
 /** One picture at whatever height it turns out to be, within the frame's bounds, cropped beyond them; a long press saves it, as XTA's does. */
@@ -137,8 +142,8 @@ private fun Gallery(images: List<String>, onSave: (Int) -> Unit, onOpen: (Int) -
 private fun GalleryLink(app: RedditApp, post: RedditPost, gate: MediaGate?, url: String, thread: Boolean) {
     val images by produceState(emptyList<String>(), post.permalink) { value = RedditMedia.collapseImageUrls(attempt { app.galleryImages(post.permalink) }.getOrDefault(emptyList())) }
     when {
-        images.size > 1 -> Covered(post, gate, 1f) { Gallery(images, onSave = { app.savePicture(images[it]) }) { app.openPictures(images, it) } }
-        images.size == 1 -> Covered(post, gate) { Picture(images[0], onSave = { app.savePicture(images[0]) }) { app.openPictures(images, 0) } }
+        images.size > 1 -> Covered(post, gate, 1f) { Gallery(images, onSave = { app.savePicture(images[it], post) }) { app.openPictures(images, it) } }
+        images.size == 1 -> Covered(post, gate) { Picture(images[0], onSave = { app.savePicture(images[0], post) }) { app.openPictures(images, 0) } }
         else -> LinkCard(app, post, gate, url, thread)
     }
 }

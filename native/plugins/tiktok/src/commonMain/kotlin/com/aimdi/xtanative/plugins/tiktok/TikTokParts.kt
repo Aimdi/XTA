@@ -30,6 +30,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
@@ -108,6 +111,14 @@ internal fun TikTokPostCard(app: TikTokApp, post: TikTokPost, liked: Boolean, op
     }
 }
 
+/** [TikTokPostCard] where the app draws it among other networks' posts: its heart read from the hearts kept here. */
+@Composable
+internal fun TikTokFeedCard(app: TikTokApp, post: TikTokPost) {
+    val settings by app.settings.collectAsState()
+    val liked = remember(settings, post.id) { settings?.let { post.id in TikTokMarks.likes(it) } == true }
+    TikTokPostCard(app, post, liked)
+}
+
 @Composable
 private fun CardActions(app: TikTokApp, post: TikTokPost, liked: Boolean) {
     val muted = MaterialTheme.colorScheme.onSurfaceVariant
@@ -120,7 +131,7 @@ private fun CardActions(app: TikTokApp, post: TikTokPost, liked: Boolean) {
             Text(countText(post.diggCount), color = tint, modifier = Modifier.padding(start = 6.dp))
         }
         Spacer(Modifier.weight(1f))
-        IconButton(onClick = { if (!share(post.url)) app.notices.tell(copied) }) {
+        IconButton(onClick = { if (!share(post.url)) app.host.tell(copied) }) {
             Icon(Icons.Filled.Share, pluginString(Strings.share_link), tint = muted)
         }
     }

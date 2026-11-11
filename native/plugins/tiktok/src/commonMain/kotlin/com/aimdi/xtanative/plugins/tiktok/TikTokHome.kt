@@ -55,6 +55,7 @@ import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginChipTabs
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginText
+import com.aimdi.xtanative.ui.plugins.PullToReload
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
@@ -123,16 +124,15 @@ private fun tabLook(tab: TikTokTab): Pair<ImageVector, PluginText> = when (tab) 
 private fun FollowingTab(app: TikTokApp, follows: List<TikTokSubscriptionRow>?, settings: Settings, padding: PaddingValues, list: LazyListState) {
     val state by app.feed.state.collectAsState()
     val error = state.problem
-    when {
-        state.items.isEmpty() && (state.loading || !state.loaded || follows == null) -> FeedSkeleton(Modifier.padding(padding))
-        state.items.isEmpty() && error != null -> RetryMessage(pluginString(TikTokText.error(error)), { app.feed.refresh(force = true) }, Modifier.padding(padding))
-        state.items.isEmpty() -> NothingFollowed(app, hasAccounts = !follows.isNullOrEmpty(), padding)
-        else -> {
-            val likes = remember(settings) { TikTokMarks.likes(settings).toSet() }
-            PullToRefreshBox(isRefreshing = state.loading, onRefresh = { app.feed.refresh(force = true) }, modifier = Modifier.fillMaxSize()) {
-                LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
-                    items(state.items, key = { it.id }) { post -> TikTokPostCard(app, post, post.id in likes) }
-                }
+    val likes = remember(settings) { TikTokMarks.likes(settings).toSet() }
+    // The pull covers the empty pane and the failure too, as XTA's RefreshIndicator wraps them.
+    PullToRefreshBox(isRefreshing = state.loading && state.items.isNotEmpty(), onRefresh = { app.feed.refresh(force = true) }, modifier = Modifier.fillMaxSize()) {
+        LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
+            when {
+                state.items.isNotEmpty() -> items(state.items, key = { it.id }) { post -> TikTokPostCard(app, post, post.id in likes) }
+                state.loading || !state.loaded || follows == null -> item(key = "loading") { FeedSkeleton() }
+                error != null -> item(key = "problem") { RetryMessage(pluginString(TikTokText.error(error)), { app.feed.refresh(force = true) }) }
+                else -> item(key = "empty") { NothingFollowed(app, hasAccounts = !follows.isNullOrEmpty(), PaddingValues()) }
             }
         }
     }
@@ -168,26 +168,35 @@ private fun NothingFollowed(app: TikTokApp, hasAccounts: Boolean, padding: Paddi
 @Composable
 private fun AccountsTab(app: TikTokApp, follows: List<TikTokSubscriptionRow>?, padding: PaddingValues, list: LazyListState) {
     var unfollowing by remember { mutableStateOf<String?>(null) }
-    when {
-        follows == null -> LoadingRow()
-        follows.isEmpty() -> NothingFollowed(app, hasAccounts = false, padding)
-        else -> LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
-            item(key = "title") {
-                Column(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 12.dp)) {
-                    Text(pluginString(Strings.tab_accounts), style = MaterialTheme.typography.titleLarge)
-                    OutlinedButton(onClick = { app.openSearch() }, modifier = Modifier.padding(top = 8.dp)) {
-                        Icon(DiscoverIcons.PersonSearch, contentDescription = null)
-                        Text(pluginString(Strings.search), Modifier.padding(start = 8.dp))
-                    }
+    // A pull reads the accounts kept here again, over the list and over its empty pane, as XTA's RefreshIndicator does.
+    PullToReload(reload = { app.follows.reload() }) {
+        LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
+            when {
+                follows == null -> item(key = "loading") { LoadingRow() }
+                follows.isEmpty() -> item(key = "empty") { NothingFollowed(app, hasAccounts = false, PaddingValues()) }
+                else -> {
+                    item(key = "title") { AccountsTitle(app) }
+                    items(follows, key = { it.id }) { follow -> AccountRow(app, follow) { unfollowing = follow.id } }
                 }
             }
-            items(follows, key = { it.id }) { follow -> AccountRow(app, follow) { unfollowing = follow.id } }
         }
     }
     unfollowing?.let { handle ->
         UnfollowDialog(handle, onDismiss = { unfollowing = null }) {
             unfollowing = null
             app.launch { app.unfollow(handle) }
+        }
+    }
+}
+
+/** "Accounts" over the list, with the way to find another (tiktok_screen.dart). */
+@Composable
+private fun AccountsTitle(app: TikTokApp) {
+    Column(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 12.dp)) {
+        Text(pluginString(Strings.tab_accounts), style = MaterialTheme.typography.titleLarge)
+        OutlinedButton(onClick = { app.openSearch() }, modifier = Modifier.padding(top = 8.dp)) {
+            Icon(DiscoverIcons.PersonSearch, contentDescription = null)
+            Text(pluginString(Strings.search), Modifier.padding(start = 8.dp))
         }
     }
 }

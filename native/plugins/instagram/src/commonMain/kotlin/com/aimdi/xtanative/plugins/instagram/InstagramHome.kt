@@ -67,6 +67,7 @@ import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PagedItems
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginText
+import com.aimdi.xtanative.ui.plugins.PullToReload
 import com.aimdi.xtanative.ui.plugins.ReadsMoreNearEnd
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.RetryMessage
@@ -268,12 +269,15 @@ private fun Accounts(app: InstagramApp, frame: PluginFrame, onSearch: () -> Unit
     var unfollowing by remember { mutableStateOf<String?>(null) }
     val list = rememberLazyListState()
     ScrollsToTop(list, frame.toTop)
-    LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
-        val follows = rows
-        when {
-            follows == null -> item(key = "loading") { LoadingRow() }
-            follows.isEmpty() -> item(key = "empty") { EmptyFollowing(false, onRetry = {}, onSearch = onSearch) }
-            else -> accountRows(app, follows) { unfollowing = it }
+    // A pull reads the accounts kept here again, over the list and over its empty pane, as XTA's RefreshIndicator does.
+    PullToReload(reload = { app.follows.reload() }) {
+        LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+            val follows = rows
+            when {
+                follows == null -> item(key = "loading") { LoadingRow() }
+                follows.isEmpty() -> item(key = "empty") { EmptyFollowing(false, onRetry = {}, onSearch = onSearch) }
+                else -> accountRows(app, follows) { unfollowing = it }
+            }
         }
     }
     unfollowing?.let { handle -> UnfollowDialog(handle, onConfirm = { app.unfollow(handle) }) { unfollowing = null } }

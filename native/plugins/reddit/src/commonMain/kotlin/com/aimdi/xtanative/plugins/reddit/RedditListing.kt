@@ -1,9 +1,12 @@
 package com.aimdi.xtanative.plugins.reddit
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
@@ -26,7 +29,9 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.Page
 import com.aimdi.xtanative.networks.reddit.RedditPost
@@ -143,13 +148,13 @@ internal fun ListingScreen(app: RedditApp, listing: Listing) {
         is Listing.User -> listing.name
     }
     PluginScaffold(
-        title = (if (listing is Listing.Subreddit) "r/" else "u/") + name,
+        title = { ListingTitle(app, listing, name) },
         onBack = app.host::back,
         actions = {
             if (listing is Listing.Subreddit) {
                 IconButton(onClick = { app.host.open(RedditRoutes.search(name)) }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) }
                 IconButton(onClick = { about = true }) { Icon(Icons.Outlined.Info, pluginString(Strings.about_community)) }
-                IconButton(onClick = { app.addToGroup(name) }) { Icon(PostIcons.People, pluginString(Strings.add_to_group)) }
+                IconButton(onClick = { app.addToGroup(name) }) { Icon(PostIcons.GroupAdd, pluginString(Strings.add_to_group)) }
                 FollowButton(app, name)
             }
         },
@@ -192,5 +197,19 @@ internal fun SavedScreen(app: RedditApp) {
             if (saved.isEmpty()) item(key = "none") { RedditEmpty(RedditGlyphs.BookmarkBorder, pluginString(Strings.saved_empty)) }
             items(saved, key = { "post:" + it.id }) { post -> RedditPostCard(app, post) }
         }
+    }
+}
+
+/** The bar's title: a community's picture before "r/name" (reddit_listing_screen.dart), an account's "u/name" alone. */
+@Composable
+private fun ListingTitle(app: RedditApp, listing: Listing, name: String) {
+    if (listing !is Listing.Subreddit) {
+        Text("u/$name", maxLines = 1, overflow = TextOverflow.Ellipsis)
+        return
+    }
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        SubredditAvatar(app, name, 28.dp)
+        Spacer(Modifier.width(8.dp))
+        Text("r/$name", maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false))
     }
 }

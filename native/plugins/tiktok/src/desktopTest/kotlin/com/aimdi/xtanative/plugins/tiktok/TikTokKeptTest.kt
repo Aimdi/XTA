@@ -56,6 +56,17 @@ class TikTokKeptTest {
     }
 
     @Test
+    fun aPullOnAccountsReadsTheRowsKeptHereAgain(): Unit = runBlocking {
+        val follows = TikTokFollows(dir.file("pulled.json")) { now }
+        follows.follow(profile("nba"))
+        TikTokFollows(dir.file("pulled.json")) { now.plusSeconds(60) }.follow(profile("tiktok"))
+
+        assertEquals(listOf("nba"), follows.load().map { it.id }, "what was read stays until it is read again")
+        assertEquals(listOf("tiktok", "nba"), follows.reload().map { it.id })
+        assertEquals(listOf("tiktok", "nba"), follows.state.value?.map { it.id })
+    }
+
+    @Test
     fun theGuestSessionIsKeptInThePluginsFolderUnderXtasKeys(): Unit = runBlocking {
         val file = TikTokSessionFile(dir.file("session.json"))
         assertEquals(TikTokSession(), file.load())

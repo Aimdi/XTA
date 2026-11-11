@@ -24,10 +24,23 @@ import org.jetbrains.compose.resources.stringResource
  * background, a back arrow when there is [onBack], [actions] at its end, and
  * [content] below, given the padding that keeps it clear of the bar.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PluginScaffold(
     title: String,
+    onBack: (() -> Unit)?,
+    modifier: Modifier = Modifier,
+    actions: @Composable RowScope.() -> Unit = {},
+    content: @Composable (PaddingValues) -> Unit,
+) = PluginScaffold({ Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis) }, onBack, modifier, actions, content)
+
+/**
+ * [PluginScaffold] with a title of the plugin's own drawing, where XTA's bar
+ * holds more than words: a community's picture before its name.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PluginScaffold(
+    title: @Composable () -> Unit,
     onBack: (() -> Unit)?,
     modifier: Modifier = Modifier,
     actions: @Composable RowScope.() -> Unit = {},
@@ -38,7 +51,7 @@ fun PluginScaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                title = title,
                 navigationIcon = {
                     if (onBack != null) {
                         IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) }

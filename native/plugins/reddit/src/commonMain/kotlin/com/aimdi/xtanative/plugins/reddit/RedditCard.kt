@@ -135,11 +135,11 @@ private fun CardFooter(app: RedditApp, post: RedditPost) {
     Row(Modifier.fillMaxWidth().padding(top = 4.dp, bottom = 4.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
         FooterAction(
             if (upvoted) RedditGlyphs.ArrowCircleUp else RedditGlyphs.ArrowUpward,
-            countText((post.score + if (upvoted) 1 else 0).toLong()),
+            RedditCounts.score(post, upvoted),
             pluginString(Strings.upvote),
             if (upvoted) accent else null,
         ) { app.upvote(post) }
-        FooterAction(RedditGlyphs.Comment, countText(post.commentCount.toLong()), pluginPlural(Strings.comment_count, post.commentCount, post.commentCount)) { app.openThread(post) }
+        FooterAction(RedditGlyphs.Comment, RedditCounts.comments(post), pluginPlural(Strings.comment_count, post.commentCount, post.commentCount)) { app.openThread(post) }
         FooterAction(
             if (isSaved) RedditGlyphs.Bookmark else RedditGlyphs.BookmarkBorder,
             null,

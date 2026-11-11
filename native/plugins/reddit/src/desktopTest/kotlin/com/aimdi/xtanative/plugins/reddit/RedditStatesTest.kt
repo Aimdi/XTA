@@ -131,6 +131,31 @@ class RedditStatesTest {
     }
 
     @Test
+    fun aPullsIndicatorStaysUntilTheCommentsAreReadAgain(): Unit = runBlocking {
+        val gate = CompletableDeferred<Unit>()
+        var reads = 0
+        val state = RedditThreadState(
+            post("p"),
+            scope,
+            visit = { null },
+            read = { _, _ -> if (++reads > 1) gate.await(); thread("a") },
+            fill = { null },
+            more = { emptyList() },
+        )
+        assertFalse(state.state.value.refreshing, "a first read shows its loading row, not the pull's indicator")
+        assertFalse(settled(state.state) { it.comments != null }.refreshing)
+
+        state.load()
+        assertTrue(state.state.value.refreshing, "up while the comments shown are read again")
+        gate.complete(Unit)
+        assertFalse(settled(state.state) { !it.reading }.refreshing)
+
+        state.resort(RedditCommentSort.NEW)
+        assertFalse(state.state.value.refreshing, "another order reads from nothing: the loading row says so")
+        scope.cancel()
+    }
+
+    @Test
     fun heldBackCommentsLoadInPlaceOrSendTheReaderToReddit(): Unit = runBlocking {
         var refuse = false
         val state = RedditThreadState(

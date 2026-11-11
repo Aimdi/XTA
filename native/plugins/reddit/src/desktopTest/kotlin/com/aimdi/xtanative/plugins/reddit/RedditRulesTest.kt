@@ -89,6 +89,24 @@ class RedditRulesTest {
     }
 
     @Test
+    fun aCardCountsInFullAsXtasDoes() {
+        val post = RedditPost(id = "p", title = "t", subreddit = "dartlang", permalink = "/r/dartlang/comments/p/", score = 12345, commentCount = 6789)
+        assertEquals("12345", RedditCounts.score(post, upvoted = false), "never 12.3K")
+        assertEquals("12346", RedditCounts.score(post, upvoted = true), "with this device's upvote in it")
+        assertEquals("6789", RedditCounts.comments(post))
+    }
+
+    @Test
+    fun aSavedPictureIsNamedAfterWhoPostedIt() {
+        val post = RedditPost(id = "p", title = "t", subreddit = "pics", permalink = "/r/pics/comments/p/", author = "alice")
+        assertEquals("alice-abc.jpg", RedditMediaRules.fileName("https://preview.redd.it/abc.jpg?width=640&s=1", post), "the file alone, without the address's query")
+        assertEquals("pics-abc.jpg", RedditMediaRules.fileName("https://i.redd.it/abc.jpg", post.copy(author = null)), "the community stands in for a deleted author")
+        assertEquals("reddit-x.gif", RedditMediaRules.fileName("https://i.redd.it/x.gif"), "a comment's picture")
+        assertEquals(null, RedditMediaRules.fileName("https://i.redd.it/", post), "nothing to name it by: the app names it")
+        assertEquals(null, RedditMediaRules.fileName("not an address", post))
+    }
+
+    @Test
     fun aLinkCardNamesTheSite() {
         assertEquals("example.com", RedditMediaRules.domain(post, "https://www.example.com/a"))
         assertEquals("i.imgur.com", RedditMediaRules.domain(post.copy(domain = "i.imgur.com"), "https://x"))

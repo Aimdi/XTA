@@ -30,6 +30,12 @@ class HackerNewsPluginRulesTest {
     }
 
     @Test
+    fun everyTabHasItsGlyphAndEveryGlyphDraws() {
+        assertEquals(HnTab.entries.size, HnTab.entries.map { it.icon.name }.toSet().size, "a glyph of its own for each tab, as XTA's strip")
+        (HnTab.entries.map { it.icon } + HnIcons.all).forEach { assertTrue(it.root.iterator().hasNext(), it.name) }
+    }
+
+    @Test
     fun heartsSavesAndFollowsAreKeptUnderXtasKeys() {
         val liked = HnKept.withLike(Settings(), story)
         assertEquals("""["8863"]""", liked[HackerNewsPrefs.likedPosts])

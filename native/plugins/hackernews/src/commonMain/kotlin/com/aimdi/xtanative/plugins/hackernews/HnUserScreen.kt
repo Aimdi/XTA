@@ -24,9 +24,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.hackernews.HnUser
 import com.aimdi.xtanative.networks.hackernews.HnUserReader
+import com.aimdi.xtanative.ui.common.FeedSkeleton
 import com.aimdi.xtanative.ui.common.Hairline
-import com.aimdi.xtanative.ui.common.LoadingRow
-import com.aimdi.xtanative.ui.plugins.MessageText
+import com.aimdi.xtanative.ui.plugins.EmptyPane
 import com.aimdi.xtanative.ui.plugins.NetworkProblemView
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.addToGroupText
@@ -50,10 +50,10 @@ internal fun HnUserScreen(app: HnApp, id: String) {
                 val error = state.error
                 when {
                     page == null && error != null -> item(key = "problem") { NetworkProblemView(problemOf(error), app.network, reader::refresh) }
-                    page == null -> item(key = "loading") { LoadingRow() }
+                    page == null -> item(key = "loading") { FeedSkeleton() }
                     else -> {
                         item(key = "lead") { Lead(page.user, kept.isFollowing(page.user.id), { app.toggleFollow(page.user.id) }) { app.addToGroup(page.user.id) } }
-                        if (page.stories.isEmpty()) item(key = "empty") { MessageText(pluginString(Strings.user_empty)) }
+                        if (page.stories.isEmpty()) item(key = "empty") { EmptyPane(HnIcons.PersonOutline, pluginString(Strings.user_empty)) }
                         items(page.stories, key = { "${it.id}" }) { story -> HnStoryRow(app, story) }
                     }
                 }
@@ -74,7 +74,7 @@ private fun Lead(user: HnUser, following: Boolean, onFollow: () -> Unit, onGroup
             TextButton(onClick = onFollow) { Text(pluginString(if (following) Strings.unfollow else Strings.follow)) }
         }
         OutlinedButton(onClick = onGroup, modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp)) {
-            Icon(PostIcons.People, contentDescription = null, modifier = Modifier.size(18.dp))
+            Icon(PostIcons.GroupAdd, contentDescription = null, modifier = Modifier.size(18.dp))
             Text(addToGroupText(), modifier = Modifier.padding(start = 8.dp))
         }
         if (user.about.isNotEmpty()) Text(user.about, modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp))

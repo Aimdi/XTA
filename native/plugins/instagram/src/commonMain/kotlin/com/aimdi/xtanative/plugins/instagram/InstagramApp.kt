@@ -186,6 +186,9 @@ internal class InstagramApp(val host: PluginHost) {
     /** [post] as the app's shared row draws it, kept so that its taps and menu find it again. */
     fun shown(post: InstagramPost): NetworkPost = InstagramShared.post(drawn.put(post))
 
+    /** The post behind [shown], for its own card where the app draws it; null for one drawn too long ago. */
+    fun drawnPost(shown: NetworkPost): InstagramPost? = drawn[shown.id]
+
     /**
      * Where a post the app draws leads, as XTA's card: its author's profile
      * here, its pictures in the viewer, a video and the post itself on

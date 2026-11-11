@@ -64,6 +64,12 @@ class HackerNewsPlugin : XtaPlugin() {
 
     override val postActions: NetworkPostActions get() = app.actions
 
+    /** Its stories in a group's feed as its own card, with the heart and the bookmark kept here, as XTA's groups draw them (hn_group.dart). */
+    override fun postCard(post: NetworkPost): (@Composable () -> Unit)? {
+        val story = app.drawnStory(post) ?: return null
+        return { HnStoryRow(app, story) }
+    }
+
     /** A story kept as XTA's link record, as Saved draws it; another record is none of its. */
     override fun archived(content: JsonElement): NetworkPost? = HnShared.story(content)?.let { app.shown(it, words = true) }
 

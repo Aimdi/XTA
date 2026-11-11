@@ -35,6 +35,9 @@ internal class TikTokFollows(private val file: StoreFile, private val clock: () 
 
     suspend fun load(): List<TikTokSubscriptionRow> = mutex.withLock { loaded() }
 
+    /** The file read again, as a pull on Accounts reads XTA's rows again (TikTokFollowsStore.load). */
+    suspend fun reload(): List<TikTokSubscriptionRow> = mutex.withLock { decode(file.read().orEmpty()).also { mutable.value = it } }
+
     fun isFollowed(handle: String): Boolean = mutable.value.orEmpty().any { it.id == handle.lowercase() }
 
     /** [profile] followed from now, in place of any older row of it. */

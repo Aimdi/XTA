@@ -160,6 +160,9 @@ internal class HnApp(val host: PluginHost) {
     /** [story] as the app's shared rows draw it, kept so that what a row asks of it finds the story; with [words], its text too. */
     fun shown(story: HnStory, words: Boolean = false): NetworkPost = HnShared.post(drawn.put(story), words)
 
+    /** The story behind [shown], for its own card where the app draws it; null for one drawn too long ago. */
+    fun drawnStory(shown: NetworkPost): HnStory? = drawn[shown.id]
+
     /** Where a story the app draws leads: its comments, its author's page; its bookmark and the shared sheet. */
     val actions = NetworkPostActions(
         open = { post -> drawn[post.id]?.let(::openStory) ?: post.id.toLongOrNull()?.let { host.open(HnRoutes.story(it)) } },

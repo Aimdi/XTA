@@ -83,7 +83,7 @@ internal fun ThreadScreen(app: RedditApp, route: RedditRoute.Thread) {
         actions = { IconButton(onClick = { sheet = true }) { Icon(Icons.Filled.MoreVert, pluginString(Strings.more_options)) } },
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
-            PullToRefreshBox(isRefreshing = false, onRefresh = thread::load, modifier = Modifier.fillMaxSize()) {
+            PullToRefreshBox(isRefreshing = state.refreshing, onRefresh = thread::load, modifier = Modifier.fillMaxSize()) {
                 LazyColumn(state = list, contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + 96.dp), modifier = Modifier.fillMaxSize()) {
                     item(key = "post") { PostBlock(app, state, onComments = { scope.launch { list.animateScrollToItem(1) } }) }
                     item(key = "header") {

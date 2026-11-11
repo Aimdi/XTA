@@ -94,6 +94,30 @@ class InstagramPluginTest {
     }
 
     @Test
+    fun aCarouselOfPhotosHasADotEachAndAVideosCoversACounter() {
+        val one = InstagramPost("1", "ABC", "", null, InstagramAuthor("natgeo", "NatGeo"), coverUrl = "https://cdn/c.jpg")
+        val carousel = one.copy(carouselUrls = listOf("https://cdn/1.jpg", "https://cdn/2.jpg"))
+        assertEquals(PageMark.NONE, InstagramMedia.pageMark(one))
+        assertEquals(PageMark.DOTS, InstagramMedia.pageMark(carousel), "as XTA's PluginPostMedia pages a post's photos")
+        assertEquals(PageMark.COUNTER, InstagramMedia.pageMark(carousel.copy(isVideo = true)), "as instagram_post_card.dart marks a video's covers")
+        assertEquals(PageMark.NONE, InstagramMedia.pageMark(one.copy(isVideo = true)))
+    }
+
+    @Test
+    fun aPullOnAccountsReadsTheRowsKeptHereAgain(): Unit = runBlocking {
+        val file = StoreFile(folder.resolve("pulled.json"))
+        val follows = InstagramFollows(file)
+        follows.follow(InstagramAuthor(username = "natgeo", fullName = "National Geographic"))
+        assertEquals(listOf("natgeo"), follows.state.value?.map { it.id })
+
+        val other = InstagramFollows(file)
+        other.follow(InstagramAuthor(username = "nasa", fullName = "NASA"))
+        assertEquals(listOf("natgeo"), follows.load().map { it.id }, "what was read stays until it is read again")
+        assertEquals(setOf("nasa", "natgeo"), follows.reload().map { it.id }.toSet())
+        assertEquals(setOf("nasa", "natgeo"), follows.state.value?.map { it.id }?.toSet())
+    }
+
+    @Test
     fun everyGlyphDraws() {
         InstagramIcons.all.forEach { assertTrue(it.root.iterator().hasNext(), it.name) }
     }

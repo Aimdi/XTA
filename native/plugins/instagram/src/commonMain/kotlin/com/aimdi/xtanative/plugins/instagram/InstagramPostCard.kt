@@ -3,6 +3,7 @@ package com.aimdi.xtanative.plugins.instagram
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -115,9 +116,11 @@ internal fun FollowButton(app: InstagramApp, author: InstagramAuthor) {
 }
 
 /**
- * The pictures, square: one, or a carousel swiped one at a time with where
- * it is in the corner. A picture opens the app's viewer; a video, which
- * Instagram's servers serve only to its own players, shows its cover and opens on Instagram.
+ * The pictures, square: one, or a carousel swiped one at a time, a dot for
+ * each under it as XTA's PluginPostMedia pages them. A picture opens the
+ * app's viewer; a video, which Instagram's servers serve only to its own
+ * players, shows its cover (where it is among several in the corner) and
+ * opens on Instagram.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -126,18 +129,33 @@ private fun PostMedia(app: InstagramApp, post: InstagramPost, modifier: Modifier
     val outside = rememberOpenOutside()
     val pager = rememberPagerState { urls.size }
     val open = { index: Int -> if (post.isVideo) outside(post.url) else app.openPhotos(post, index) }
-    Box(modifier.fillMaxWidth().aspectRatio(1f).clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceVariant)) {
-        HorizontalPager(pager, Modifier.fillMaxSize(), key = { it }) { page ->
-            AsyncImage(urls[page], contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize().clickable { open(page) })
+    val mark = InstagramMedia.pageMark(post)
+    Column(modifier.fillMaxWidth()) {
+        Box(Modifier.fillMaxWidth().aspectRatio(1f).clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceVariant)) {
+            HorizontalPager(pager, Modifier.fillMaxSize(), key = { it }) { page ->
+                AsyncImage(urls[page], contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize().clickable { open(page) })
+            }
+            if (post.isVideo) PlayCircle(Modifier.align(Alignment.Center))
+            if (mark == PageMark.COUNTER) {
+                Text(
+                    "${pager.currentPage + 1} / ${urls.size}",
+                    color = Color.White,
+                    fontSize = 12.sp,
+                    modifier = Modifier.align(Alignment.TopEnd).padding(8.dp).clip(RoundedCornerShape(12.dp)).background(Color.Black.copy(alpha = 0.54f)).padding(horizontal = 8.dp, vertical = 4.dp),
+                )
+            }
         }
-        if (post.isVideo) PlayCircle(Modifier.align(Alignment.Center))
-        if (urls.size > 1) {
-            Text(
-                "${pager.currentPage + 1} / ${urls.size}",
-                color = Color.White,
-                fontSize = 12.sp,
-                modifier = Modifier.align(Alignment.TopEnd).padding(8.dp).clip(RoundedCornerShape(12.dp)).background(Color.Black.copy(alpha = 0.54f)).padding(horizontal = 8.dp, vertical = 4.dp),
-            )
+        if (mark == PageMark.DOTS) PageDots(pager.currentPage, urls.size)
+    }
+}
+
+/** A dot for each picture of a carousel, the one shown darker (plugin_post_media.dart's pager). */
+@Composable
+private fun PageDots(current: Int, count: Int) {
+    val color = MaterialTheme.colorScheme.onSurfaceVariant
+    Row(Modifier.fillMaxWidth().padding(top = 6.dp), horizontalArrangement = Arrangement.Center) {
+        repeat(count) { index ->
+            Box(Modifier.padding(horizontal = 2.dp).size(5.dp).clip(CircleShape).background(color.copy(alpha = if (index == current) 0.85f else 0.28f)))
         }
     }
 }
@@ -171,7 +189,7 @@ private fun Footer(app: InstagramApp, post: InstagramPost) {
         }
         Spacer(Modifier.weight(1f))
         IconButton(onClick = { outside(post.url) }) { Icon(PostIcons.OpenInNew, contentDescription = pluginString(Strings.open_on_site), tint = muted, modifier = Modifier.size(20.dp)) }
-        IconButton(onClick = { if (!share(post.url)) app.notices.tell(copied) }) {
+        IconButton(onClick = { if (!share(post.url)) app.host.tell(copied) }) {
             Icon(Icons.Filled.Share, contentDescription = pluginString(Strings.share_link), tint = muted, modifier = Modifier.size(20.dp))
         }
     }

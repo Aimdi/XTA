@@ -155,6 +155,9 @@ internal class TikTokApp(val host: PluginHost, private val playsHere: Boolean) {
         return TikTokShared.post(post)
     }
 
+    /** The video behind [shown], for its own card where the app draws it; null for one drawn too long ago. */
+    fun drawnPost(shown: NetworkPost): TikTokPost? = drawn.get(shown.id)
+
     /** Where a video the app draws leads: the player (the site where there is none), its author, the search; its bookmark and the shared menu. */
     val actions = NetworkPostActions(
         open = ::play,

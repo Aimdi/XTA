@@ -53,6 +53,7 @@ import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 import com.aimdi.xtanative.ui.post.PostIcons
+import com.aimdi.xtanative.ui.search.DiscoverIcons
 import kotlinx.coroutines.CoroutineScope
 
 /** One profile, remembered among the searches once read, as XTA's profile screen does. */
@@ -164,13 +165,16 @@ private fun Header(app: InstagramApp, profile: InstagramProfile) {
             Stat(profile.mediaCount, Strings.stat_posts)
         }
         OutlinedButton(onClick = { app.addToGroup(profile.username) }, modifier = Modifier.padding(top = 16.dp)) {
-            Icon(PostIcons.People, contentDescription = null, modifier = Modifier.size(18.dp))
+            Icon(PostIcons.GroupAdd, contentDescription = null, modifier = Modifier.size(18.dp))
             Text(pluginString(Strings.add_to_group), modifier = Modifier.padding(start = 8.dp))
         }
         FilledTonalButton(
             onClick = { if (following) app.unfollow(profile.username) else app.follow(profile) },
             modifier = Modifier.fillMaxWidth(),
-        ) { Text(pluginString(if (following) Strings.unfollow else Strings.follow)) }
+        ) {
+            Icon(if (following) DiscoverIcons.PersonRemove else DiscoverIcons.PersonAdd, contentDescription = null, modifier = Modifier.size(18.dp))
+            Text(pluginString(if (following) Strings.unfollow else Strings.follow), modifier = Modifier.padding(start = 8.dp))
+        }
     }
 }
 

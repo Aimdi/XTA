@@ -136,7 +136,12 @@ internal class RedditThreadState(
         val moreRefused: Boolean = false,
         /** When the reader opened the thread before this time; null on a first visit. */
         val lastVisit: Instant? = null,
-    )
+        /** The comments are being read, for the first time or again. */
+        val reading: Boolean = false,
+    ) {
+        /** A pull's indicator: up while comments already shown are read again, as XTA's RefreshIndicator waits for its load. */
+        val refreshing: Boolean get() = reading && comments != null
+    }
 
     private val mutable = MutableStateFlow(State(first, first.selfText))
     val state: StateFlow<State> = mutable.asStateFlow()
@@ -151,12 +156,12 @@ internal class RedditThreadState(
 
     fun load() {
         job?.cancel()
-        mutable.update { it.copy(problem = null) }
+        mutable.update { it.copy(problem = null, reading = true) }
         val sort = mutable.value.sort
         job = scope.launch {
             attempt { read(mutable.value.post.permalink, sort) }
-                .onSuccess { thread -> mutable.update { it.read(thread) } }
-                .onFailure { error -> mutable.update { it.copy(problem = error) } }
+                .onSuccess { thread -> mutable.update { it.read(thread).copy(reading = false) } }
+                .onFailure { error -> mutable.update { it.copy(problem = error, reading = false) } }
         }
     }
 

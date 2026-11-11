@@ -41,7 +41,7 @@ import com.aimdi.xtanative.networks.hackernews.HnComment
 import com.aimdi.xtanative.networks.hackernews.HnStory
 import com.aimdi.xtanative.networks.hackernews.HnThreadReader
 import com.aimdi.xtanative.ui.common.Hairline
-import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.FeedSkeleton
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.plugins.NetworkProblemView
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
@@ -75,7 +75,7 @@ internal fun HnStoryScreen(app: HnApp, id: Long) {
                 thread?.let { item(key = "lead") { Lead(app, it.story) } }
                 val error = state.error
                 when {
-                    state.loading && rows.isEmpty() -> item(key = "loading") { LoadingRow() }
+                    state.loading && rows.isEmpty() -> item(key = "loading") { FeedSkeleton() }
                     error != null -> item(key = "problem") { NetworkProblemView(problemOf(error), app.network, reader::refresh) }
                 }
                 items(rows, key = { (comment, _) -> comment.id }) { (comment, depth) ->

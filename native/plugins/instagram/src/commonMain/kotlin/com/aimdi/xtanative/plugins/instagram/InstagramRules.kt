@@ -51,9 +51,23 @@ internal object InstagramRoutes {
     fun forUrl(url: String): String? = InstagramLink.parse(url)?.let { profile(it.handle) }
 }
 
+/** How a card says where the reader is among a post's pictures. */
+internal enum class PageMark { NONE, DOTS, COUNTER }
+
 /** A post's pictures for the app's viewer: a carousel's slides, else its cover. Videos play on instagram.com. */
 internal object InstagramMedia {
     fun photos(post: InstagramPost): List<MediaItem> = post.displayUrls.map { MediaItem(imageUrl = it, aspectRatio = 1f) }
+
+    /**
+     * One picture has no mark; a carousel of photos a dot each under it, as
+     * XTA's PluginPostMedia pages them; a video's covers "2 / 3" in the
+     * corner, as instagram_post_card.dart draws those.
+     */
+    fun pageMark(post: InstagramPost): PageMark = when {
+        post.displayUrls.size < 2 -> PageMark.NONE
+        post.isVideo -> PageMark.COUNTER
+        else -> PageMark.DOTS
+    }
 }
 
 /**

@@ -1261,3 +1261,9 @@ untested → ported | discover_reading_test › a recent search fills the field 
 untested → ported | discover_reading_test › recent searches are bounded, deduplicated and isolated by network | ui/plugins PluginSearchHistoryTest (rules) | the Discover wiring is Compose-only
 untested → ported | discover_reading_test › empty Mastodon Discover shows followed people and live topics | Compose (Discover) | Compose only
 untested → ported | discover_reading_test › inline search keeps its results after opening a profile | Compose (Discover) | Compose only
+
+## Hacker News' screens against XTA's (no XTA test names these; the Dart file is the reference)
+missing→implemented | lib/plugins/hackernews/hn_group.dart › a group's feed draws the story card | plugins/hackernews HackerNewsPlugin.postCard, HnApp.drawnStory | the shared row drew it before
+missing→implemented | lib/plugins/hackernews/hn_screen.dart › the tabs are chips with XTA's glyphs | plugins/hackernews HnHome.kt HnTab.icon, HnIcons.kt | HackerNewsPluginRulesTest.everyTabHasItsGlyphAndEveryGlyphDraws
+missing→implemented | lib/plugins/hackernews/hn_screen.dart › Saved is pulled to read again, and empty panes carry their glyph | plugins/hackernews HnHome.kt SavedPane, FollowingPane (ui/plugins PullToReload, EmptyPane) | ui PullWorkTest; the panes are Compose only
+covered | lib/plugins/hackernews/hn_search_sheet.dart › the searches run before are offered | plugins/hackernews HnSearch.kt Landing, HnApp.rememberSearch | ui/plugins PluginSearchHistoryTest

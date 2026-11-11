@@ -113,6 +113,26 @@ internal object RedditMediaRules {
 
     /** The site a link card names: Reddit's own summary, else the link's host, without `www.`. */
     fun domain(post: RedditPost, url: String): String = (post.domain ?: url.toHttpUrlOrNull()?.host ?: url).removePrefix("www.")
+
+    /**
+     * What a saved picture is called, as XTA's downloadRedditImage names it:
+     * who posted it (the community for a post without an author, "reddit"
+     * for a comment's picture) before the file's own name. XTA takes the
+     * name off the whole address, its query with it; here it is the file
+     * alone. Null for an address that names no file: the app names it then.
+     */
+    fun fileName(url: String, post: RedditPost? = null): String? {
+        val file = url.toHttpUrlOrNull()?.pathSegments?.lastOrNull { it.isNotEmpty() } ?: return null
+        return (post?.let { it.author ?: it.subreddit } ?: "reddit") + "-" + file
+    }
+}
+
+/** What a card's footer counts, in full as XTA's card writes them (reddit_post_card.dart): "12345", never "12.3K". */
+internal object RedditCounts {
+    /** The score with this device's upvote in it: what it would be had the vote been cast. */
+    fun score(post: RedditPost, upvoted: Boolean): String = (post.score + if (upvoted) 1 else 0).toString()
+
+    fun comments(post: RedditPost): String = post.commentCount.toString()
 }
 
 /** What the Reddit tab shows: a discovery rail, or one followed community (XTA's `RedditHomeSource`). */

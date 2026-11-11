@@ -177,7 +177,7 @@ private fun ProfileHeader(app: TikTokApp, profile: TikTokProfile) {
             Text(pluginString(Strings.profile_private), style = MaterialTheme.typography.bodySmall, color = muted, modifier = Modifier.padding(top = 16.dp))
         } else {
             OutlinedButton(onClick = { app.addToGroup(profile) }, modifier = Modifier.padding(top = 16.dp)) {
-                Icon(PostIcons.People, contentDescription = null)
+                Icon(PostIcons.GroupAdd, contentDescription = null)
                 Text(pluginString(Strings.add_to_group), Modifier.padding(start = 8.dp))
             }
             FollowButton(app, profile)

@@ -118,7 +118,7 @@ internal fun PostSheet(app: RedditApp, post: RedditPost, onDismiss: () -> Unit) 
                 onDismiss()
                 app.editNote(post)
             }
-            SheetAction(PostIcons.People, pluginString(Strings.add_to_group)) {
+            SheetAction(PostIcons.GroupAdd, pluginString(Strings.add_to_group)) {
                 onDismiss()
                 app.addToGroup(post.subreddit)
             }
