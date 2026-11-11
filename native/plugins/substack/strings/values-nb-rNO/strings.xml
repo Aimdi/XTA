@@ -154,4 +154,5 @@
     <string name="native_reader">Innebygd leser (forhåndsvisning)</string>
     <string name="native_reader_description">Vis artikler uten nettvisning: tekst kan merkes og kopieres, og innebygde avspillere åpnes i nettleseren. Noen oppsett kan se annerledes ut.</string>
     <string name="speak_from_here">Speak from here</string>
+    <string name="turned_away">Substacks robotsjekk avviste denne tilkoblingen. Åpne den i nettleseren, eller prøv igjen senere.</string>
 </resources>

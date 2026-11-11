@@ -151,4 +151,5 @@
     <string name="native_reader">ネイティブリーダー（プレビュー）</string>
     <string name="native_reader_description">ウェブビューを使わずに記事を表示します。テキストを選択・コピーでき、埋め込みプレーヤーはブラウザで開きます。一部のレイアウトは見た目が異なる場合があります。</string>
     <string name="speak_from_here">Speak from here</string>
+    <string name="turned_away">Substackのボット確認がこの接続を拒否しました。ブラウザで開くか、後でもう一度お試しください。</string>
 </resources>

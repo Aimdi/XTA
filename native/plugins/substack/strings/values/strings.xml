@@ -154,4 +154,5 @@
     <string name="native_reader">Native reader (preview)</string>
     <string name="native_reader_description">Show articles without a web view: text can be selected and copied, and embedded players open in the browser. Some layouts may look different.</string>
     <string name="speak_from_here">Speak from here</string>
+    <string name="turned_away">Substack\'s bot check turned this connection away. Open it in your browser, or try again later.</string>
 </resources>

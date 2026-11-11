@@ -59,10 +59,8 @@ import com.aimdi.xtanative.networks.substack.SubstackOrder
 import com.aimdi.xtanative.networks.substack.SubstackPost
 import com.aimdi.xtanative.networks.substack.SubstackPublication
 import com.aimdi.xtanative.ui.plugins.PluginText
-import com.aimdi.xtanative.ui.plugins.networkProblemText
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
-import com.aimdi.xtanative.ui.plugins.problemOf
 import androidx.compose.foundation.layout.PaddingValues
 
 /**
@@ -109,7 +107,7 @@ internal fun ReadingToolbar(app: SubstackApp, state: HomeState, pane: HomePane, 
 @Composable
 private fun failureLabel(failedCount: Int, error: Throwable?): String = when {
     failedCount > 0 -> pluginPlural(Strings.partial_error, failedCount, failedCount)
-    error != null -> networkProblemText(problemOf(error), NETWORK)
+    error != null -> problemText(error)
     else -> pluginString(Strings.load_error)
 }
 

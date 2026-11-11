@@ -84,10 +84,11 @@ private fun Preview(app: SubstackApp, asked: String, retype: String, onAsk: (Str
     Button(onClick = { if (retype == asked) model.load() else onAsk(retype) }, enabled = !state.loading && retype.isNotEmpty(), modifier = Modifier.fillMaxWidth()) {
         if (state.loading) CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp) else Text(pluginString(Strings.preview_publication))
     }
-    state.error?.let {
+    state.error?.let { error ->
         Column(Modifier.fillMaxWidth().padding(vertical = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             Text(pluginString(Strings.add_error), textAlign = TextAlign.Center)
-            TextButton(onClick = model::load) { Text(pluginString(Strings.retry)) }
+            if (SubstackFailures.turnedAway(error)) FailureRow(error, model::load, page = SubstackFailures.pageOf(asked))
+            else TextButton(onClick = model::load) { Text(pluginString(Strings.retry)) }
         }
     }
     publication?.let { found ->

@@ -45,14 +45,12 @@ import com.aimdi.xtanative.ui.plugins.NetworkPost
 import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.NetworkPostCard
 import com.aimdi.xtanative.ui.plugins.NetworkPostExtras
-import com.aimdi.xtanative.ui.plugins.NetworkProblemView
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.TextRun
 import com.aimdi.xtanative.ui.plugins.addToGroupText
 import com.aimdi.xtanative.ui.plugins.pluginString
-import com.aimdi.xtanative.ui.plugins.problemOf
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 import com.aimdi.xtanative.ui.plugins.rememberShareText
 import com.aimdi.xtanative.ui.post.PostIcons
@@ -69,7 +67,7 @@ internal fun NotesPane(app: SubstackApp, notes: SubstackNotesFeed, frame: Plugin
     PullToRefreshBox(isRefreshing = state.refreshing && state.loaded, onRefresh = { notes.refresh(force = true) }, modifier = Modifier.fillMaxSize()) {
         LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
             when {
-                state.notes.isEmpty() && error != null -> item(key = "problem") { NetworkProblemView(problemOf(error), NETWORK, onRetry = { notes.refresh(force = true) }) }
+                state.notes.isEmpty() && error != null -> item(key = "problem") { FailurePane(error, onRetry = { notes.refresh(force = true) }) }
                 state.notes.isEmpty() && !state.loaded -> item(key = "loading") { LoadingRow() }
                 state.notes.isEmpty() -> item(key = "empty") { EmptyState(pluginString(Strings.notes_empty), description = pluginString(Strings.notes_intro)) }
                 else -> {

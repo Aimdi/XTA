@@ -166,4 +166,5 @@
     <string name="native_reader">القارئ الأصلي (معاينة)</string>
     <string name="native_reader_description">عرض المقالات دون عارض ويب: يمكن تحديد النص ونسخه، وتُفتح المشغلات المضمّنة في المتصفح. قد يبدو بعض التنسيق مختلفًا.</string>
     <string name="speak_from_here">Speak from here</string>
+    <string name="turned_away">رفض فحص الروبوتات في Substack هذا الاتصال. افتحه في متصفحك أو حاول لاحقًا.</string>
 </resources>

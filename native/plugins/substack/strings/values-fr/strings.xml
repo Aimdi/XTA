@@ -154,4 +154,5 @@
     <string name="native_reader">Lecteur natif (aperçu)</string>
     <string name="native_reader_description">Affiche les articles sans vue web : le texte peut être sélectionné et copié, et les lecteurs intégrés s’ouvrent dans le navigateur. Certaines mises en page peuvent différer.</string>
     <string name="speak_from_here">Speak from here</string>
+    <string name="turned_away">La vérification anti-robots de Substack a refusé cette connexion. Ouvrez-le dans votre navigateur ou réessayez plus tard.</string>
 </resources>

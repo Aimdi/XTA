@@ -154,4 +154,5 @@
     <string name="native_reader">नेटिव रीडर (पूर्वावलोकन)</string>
     <string name="native_reader_description">लेख वेब व्यू के बिना दिखाएँ: टेक्स्ट चुना और कॉपी किया जा सकता है, और एम्बेड किए गए प्लेयर ब्राउज़र में खुलते हैं। कुछ लेआउट अलग दिख सकते हैं।</string>
     <string name="speak_from_here">Speak from here</string>
+    <string name="turned_away">Substack की बॉट जाँच ने यह कनेक्शन लौटा दिया। इसे अपने ब्राउज़र में खोलें, या बाद में फिर कोशिश करें।</string>
 </resources>

@@ -154,4 +154,5 @@
     <string name="native_reader">Lector natiu (prova)</string>
     <string name="native_reader_description">Mostra els articles sense vista web: el text es pot seleccionar i copiar, i els reproductors incrustats s’obren al navegador. Algunes maquetacions poden veure’s diferents.</string>
     <string name="speak_from_here">Speak from here</string>
+    <string name="turned_away">La comprovació antibots de Substack ha rebutjat aquesta connexió. Obre-ho al navegador o torna-ho a provar més tard.</string>
 </resources>

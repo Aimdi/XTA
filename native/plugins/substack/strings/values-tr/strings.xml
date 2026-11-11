@@ -154,4 +154,5 @@
     <string name="native_reader">Yerel okuyucu (önizleme)</string>
     <string name="native_reader_description">Makaleleri web görünümü olmadan göster: metin seçilip kopyalanabilir, gömülü oynatıcılar tarayıcıda açılır. Bazı düzenler farklı görünebilir.</string>
     <string name="speak_from_here">Speak from here</string>
+    <string name="turned_away">Substack\'in bot denetimi bu bağlantıyı geri çevirdi. Tarayıcınızda açın veya daha sonra tekrar deneyin.</string>
 </resources>

@@ -154,4 +154,5 @@
     <string name="native_reader">Irakurgailu natiboa (aurrebista)</string>
     <string name="native_reader_description">Erakutsi artikuluak web-ikuspegirik gabe: testua hautatu eta kopiatu daiteke, eta txertatutako erreproduzigailuak nabigatzailean irekitzen dira. Diseinu batzuk desberdin ikus daitezke.</string>
     <string name="speak_from_here">Speak from here</string>
+    <string name="turned_away">Substack-en bot egiaztapenak konexio hau baztertu du. Ireki nabigatzailean, edo saiatu berriro geroago.</string>
 </resources>

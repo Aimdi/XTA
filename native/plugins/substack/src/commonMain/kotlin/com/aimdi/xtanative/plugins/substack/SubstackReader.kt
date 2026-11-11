@@ -58,11 +58,9 @@ import com.aimdi.xtanative.ui.offline.OfflineArticleAction
 import com.aimdi.xtanative.ui.plugins.ArticleReaderControls
 import com.aimdi.xtanative.ui.plugins.KeepsReaderPlace
 import com.aimdi.xtanative.ui.plugins.MediaItem
-import com.aimdi.xtanative.ui.plugins.NetworkProblemView
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.pluginString
-import com.aimdi.xtanative.ui.plugins.problemOf
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 import com.aimdi.xtanative.ui.plugins.rememberShareText
@@ -208,7 +206,7 @@ private fun mediaOf(image: SubstackImageBlock): MediaItem {
 internal fun ReaderFailure(post: SubstackPost, error: Throwable, onRetry: () -> Unit) {
     val outside = rememberOpenOutside()
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally) {
-        NetworkProblemView(problemOf(error), NETWORK, onRetry)
+        FailurePane(error, onRetry)
         post.canonicalUrl?.let { url -> Button(onClick = { outside(url) }) { Text(pluginString(Strings.open_in_browser)) } }
     }
 }

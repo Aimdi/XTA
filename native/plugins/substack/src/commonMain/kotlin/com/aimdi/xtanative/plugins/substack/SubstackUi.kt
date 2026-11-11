@@ -41,9 +41,11 @@ import coil3.compose.AsyncImage
 import com.aimdi.xtanative.networks.substack.SubstackPublication
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.addToGroupText
+import com.aimdi.xtanative.ui.plugins.NetworkProblemView
 import com.aimdi.xtanative.ui.plugins.networkProblemText
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.problemOf
+import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 import com.aimdi.xtanative.ui.post.PostIcons
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -105,18 +107,53 @@ internal fun EmptyState(title: String, modifier: Modifier = Modifier, icon: Imag
 /**
  * A failure in a row where what failed would have been: why, in plain words,
  * and a way to try again. [message] is XTA's own sentence when the row is a
- * reload over something the reader can keep reading.
+ * reload over something the reader can keep reading. Turned away by
+ * Substack's check, it says so and offers [page] in the browser.
  */
 @Composable
-internal fun FailureRow(error: Throwable, onRetry: () -> Unit, modifier: Modifier = Modifier, message: String? = null) {
+internal fun FailureRow(error: Throwable, onRetry: () -> Unit, modifier: Modifier = Modifier, message: String? = null, page: String? = null) {
     Column(modifier.fillMaxWidth().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
-            message ?: networkProblemText(problemOf(error), NETWORK),
+            message ?: problemText(error),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
         )
+        FailureActions(error, onRetry, page)
+    }
+}
+
+/** In place of a list or a post, why it could not be read, Retry, and (when Substack's check turned the read away) [page] in the browser. */
+@Composable
+internal fun FailurePane(error: Throwable, onRetry: () -> Unit, page: String? = null) {
+    if (!SubstackFailures.turnedAway(error)) return NetworkProblemView(problemOf(error), NETWORK, onRetry)
+    Column(
+        Modifier.fillMaxWidth().padding(horizontal = 32.dp, vertical = 40.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Text(problemText(error), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
+        FailureActions(error, onRetry, page)
+    }
+}
+
+/** Why [error] happened, in a line: Substack's check by its own words, anything else as every network says it. */
+@Composable
+internal fun problemText(error: Throwable): String =
+    if (SubstackFailures.turnedAway(error)) pluginString(Strings.turned_away) else networkProblemText(problemOf(error), NETWORK)
+
+@Composable
+private fun FailureActions(error: Throwable, onRetry: () -> Unit, page: String?) {
+    val outside = rememberOpenOutside()
+    Row(verticalAlignment = Alignment.CenterVertically) {
         TextButton(onClick = onRetry) { Text(pluginString(Strings.retry)) }
+        if (page != null && SubstackFailures.turnedAway(error)) {
+            TextButton(onClick = { outside(page) }) {
+                Icon(SubstackIcons.OpenInNew, null, Modifier.size(18.dp))
+                Spacer(Modifier.width(8.dp))
+                Text(pluginString(Strings.open_in_browser))
+            }
+        }
     }
 }
 

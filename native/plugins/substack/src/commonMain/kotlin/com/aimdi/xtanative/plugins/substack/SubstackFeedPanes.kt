@@ -38,11 +38,9 @@ import com.aimdi.xtanative.networks.substack.SubstackHomeRules
 import com.aimdi.xtanative.networks.substack.SubstackPost
 import com.aimdi.xtanative.store.settings.SubstackPrefs
 import com.aimdi.xtanative.ui.common.LoadingRow
-import com.aimdi.xtanative.ui.plugins.NetworkProblemView
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.pluginString
-import com.aimdi.xtanative.ui.plugins.problemOf
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 
@@ -106,7 +104,7 @@ private fun FeedList(feed: SubstackHomeFeed, state: SubstackHomeFeed.State, list
     PullToRefreshBox(isRefreshing = state.refreshing && state.loaded, onRefresh = { feed.refresh(force = true) }, modifier = Modifier.fillMaxSize()) {
         LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
             when {
-                !state.loaded && error != null -> item(key = "problem") { NetworkProblemView(problemOf(error), NETWORK, onRetry = { feed.refresh(force = true) }) }
+                !state.loaded && error != null -> item(key = "problem") { FailurePane(error, onRetry = { feed.refresh(force = true) }) }
                 !state.loaded -> item(key = "loading") { LoadingRow() }
                 else -> rows()
             }

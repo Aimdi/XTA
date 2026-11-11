@@ -63,11 +63,9 @@ import com.aimdi.xtanative.networks.substack.SubstackPublication
 import com.aimdi.xtanative.networks.substack.SubstackPublicationFilter
 import com.aimdi.xtanative.networks.substack.SubstackRecommendation
 import com.aimdi.xtanative.ui.common.LoadingRow
-import com.aimdi.xtanative.ui.plugins.NetworkProblemView
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.pluginString
-import com.aimdi.xtanative.ui.plugins.problemOf
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -186,17 +184,17 @@ internal fun SubstackPublicationScreen(app: SubstackApp, opened: SubstackPublica
                 item(key = "hero") { Hero(app, model, state) { similar = true } }
                 item(key = "controls") { PublicationControls(model, state) }
                 when {
-                    error != null && page.posts.isEmpty() -> item(key = "problem") { NetworkProblemView(problemOf(error), NETWORK, model::retry) }
+                    error != null && page.posts.isEmpty() -> item(key = "problem") { FailurePane(error, model::retry, state.publication.baseUrl) }
                     page.loading && page.posts.isEmpty() -> item(key = "loading") { LoadingRow() }
                     posts.isEmpty() -> item(key = "empty") { EmptyPublication(model, state.filter) }
                 }
-                if (error != null && !page.failedMore && page.posts.isNotEmpty()) item(key = "refresh-failed") { FailureRow(error, model::retry) }
+                if (error != null && !page.failedMore && page.posts.isNotEmpty()) item(key = "refresh-failed") { FailureRow(error, model::retry, page = state.publication.baseUrl) }
                 items(posts, key = { "post-" + it.publicationBaseUrl + "/" + it.id.ifEmpty { it.slug } }) { post ->
                     SubstackPostCard(app, post, marks, state.publication.logoUrl)
                 }
                 item(key = "end") {
                     when {
-                        error != null && page.failedMore -> FailureRow(error, model::retry)
+                        error != null && page.failedMore -> FailureRow(error, model::retry, page = state.publication.baseUrl)
                         error == null && page.canLoadMore -> LoadMoreRow(false, null, true, model::loadMore, enabled = !page.loading)
                     }
                     Spacer(Modifier.padding(bottom = 32.dp))

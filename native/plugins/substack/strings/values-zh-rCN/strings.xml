@@ -151,4 +151,5 @@
     <string name="native_reader">原生阅读器（预览）</string>
     <string name="native_reader_description">不使用网页视图显示文章：可以选择和复制文字，嵌入的播放器会在浏览器中打开。部分排版可能看起来不同。</string>
     <string name="speak_from_here">Speak from here</string>
+    <string name="turned_away">Substack 的机器人检查拒绝了此连接。请在浏览器中打开，或稍后再试。</string>
 </resources>

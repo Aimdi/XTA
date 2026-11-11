@@ -157,4 +157,5 @@
     <string name="native_reader">Cititor nativ (previzualizare)</string>
     <string name="native_reader_description">Afișează articolele fără vizualizare web: textul poate fi selectat și copiat, iar playerele încorporate se deschid în browser. Unele aranjamente pot arăta diferit.</string>
     <string name="speak_from_here">Speak from here</string>
+    <string name="turned_away">Verificarea anti-bot a Substack a respins această conexiune. Deschide-l în browser sau încearcă mai târziu.</string>
 </resources>
