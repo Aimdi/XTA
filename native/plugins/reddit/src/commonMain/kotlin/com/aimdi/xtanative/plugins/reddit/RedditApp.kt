@@ -277,7 +277,7 @@ internal class RedditApp(val host: PluginHost) {
         openAuthor = { shown -> openSubreddit(shown.authorId) },
         openMention = { who -> openUser(who.removePrefix("u/")) },
         openTag = { query -> host.openSearch(query) },
-        openMedia = { shown, index -> host.openMedia(shown.media, index) },
+        openMedia = { shown, index -> host.openMedia(shown.media, index, null, RedditMediaRules.sourceName(drawn.get(shown.id))) },
         archive = { shown -> drawn.get(shown.id)?.let(RedditArchive::of) },
         more = { shown -> drawn.get(shown.id)?.let { host.openPostMenu(menuOf(it)) } },
     )
@@ -393,7 +393,9 @@ internal class RedditApp(val host: PluginHost) {
 
     fun openUser(name: String) = host.open(RedditRoutes.user(name))
 
-    fun openPictures(urls: List<String>, start: Int) = host.openMedia(urls.map { MediaItem(imageUrl = it) }, start)
+    /** Pictures in the app's viewer, where one saved is named after who posted [post], as a long press names it (XTA's sourceName). */
+    fun openPictures(urls: List<String>, start: Int, post: RedditPost? = null) =
+        host.openMedia(urls.map { MediaItem(imageUrl = it) }, start, null, RedditMediaRules.sourceName(post))
 
     /**
      * The picture at [url] saved through the app's downloads, as a long press
@@ -414,8 +416,9 @@ internal class RedditApp(val host: PluginHost) {
             ),
         ),
         0,
+        null,
+        RedditMediaRules.sourceName(post),
     )
-
 }
 
 /** The posts a list showed lately, by [keyOf] (a thread's permalink, a row's id), so what opens or files them has all the list knew. */

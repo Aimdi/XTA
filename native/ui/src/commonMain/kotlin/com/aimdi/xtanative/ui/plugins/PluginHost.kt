@@ -95,6 +95,13 @@ interface PluginHost {
      */
     fun openMedia(media: List<MediaItem>, start: Int, openPost: (() -> Unit)?) = openMedia(media, start)
 
+    /**
+     * [media] full screen from [start], as [openMedia], a file saved from the
+     * viewer named after [sourceName] in place of the plugin (XTA's
+     * sourceName: who posted it, as Reddit's "<author>-<file>").
+     */
+    fun openMedia(media: List<MediaItem>, start: Int, openPost: (() -> Unit)?, sourceName: String?) = openMedia(media, start, openPost)
+
     /** The plugin's search, with [query] sent when it is given. */
     fun openSearch(query: String?)
 

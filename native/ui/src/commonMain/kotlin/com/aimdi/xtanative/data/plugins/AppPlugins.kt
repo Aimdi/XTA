@@ -664,8 +664,10 @@ class AppPlugins(
 
         override fun openMedia(media: List<MediaItem>, start: Int) = openMedia(media, start, null)
 
-        override fun openMedia(media: List<MediaItem>, start: Int, openPost: (() -> Unit)?) =
-            plugins.navigator.go(Destination.Media(plugins.media.put(id, media, openPost), start))
+        override fun openMedia(media: List<MediaItem>, start: Int, openPost: (() -> Unit)?) = openMedia(media, start, openPost, null)
+
+        override fun openMedia(media: List<MediaItem>, start: Int, openPost: (() -> Unit)?, sourceName: String?) =
+            plugins.navigator.go(Destination.Media(plugins.media.put(MediaShelf.source(id, sourceName), media, openPost), start))
 
         override fun openSearch(query: String?) = plugins.navigator.go(Destination.PluginSearch(id, query))
 

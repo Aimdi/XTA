@@ -147,7 +147,7 @@ read again, the desktop's F5: `RefreshesOn`).
 | `open(route)`, `back()` | its own screen pushed on the app's back stack; back |
 | `openLink(url)` | a link, opened as the app opens links (a plugin's screen, X's, else the web) |
 | `openPost(id)`, `openProfile(screenName)` | X's post and profile screens |
-| `openMedia(media, start)` | the media viewer for `MediaItem`s; `openMedia(media, start, openPost)` with Open post in its bar |
+| `openMedia(media, start)` | the media viewer for `MediaItem`s; `openMedia(media, start, openPost)` with Open post in its bar; `openMedia(media, start, openPost, sourceName)` names a file saved from the viewer after `sourceName` in place of the plugin (Reddit's `<author>-<file>`) |
 | `openSearch(query)`, `openSettings()` | its own search and settings |
 | `settings` | the app's settings, all to read and its own (`plugin.<id>.*`) to change; `inHomeFeed()`, `setInHomeFeed(on)` |
 | `saved`, `toggleSaved(post)`, `chooseFolder(post)`, `editNote(post)`, `setLiked(post, liked)` | the reader's archive: what is in Saved, the bookmark, the save sheet, the note, the likes |
@@ -224,8 +224,10 @@ with a test.
   and label buttons, the one shown underlined in the plugin's colour, folding
   into `PluginSectionPicker` when they do not fit; opened on its own, the tabs
   and their actions go into the screen's one bar, `PluginClientBar`, as
-  `PluginCompactTabs`), which `PluginChipTabs` now draws too; `PluginTabFit`,
-  the rules of that; `LocalPluginSurface` with `PluginSurface` and
+  `PluginCompactTabs`), which `PluginChipTabs` now draws too;
+  `PluginHomeTabs(tabs, markGivesWay)`, where that bar leaves the plugin's
+  mark out when that alone keeps every tab an icon (Pixiv's five tabs and
+  its mode button); `PluginTabFit`, the rules of that; `LocalPluginSurface` with `PluginSurface` and
   `pluginAccent` (the plugin whose screen is drawn, as the app says it);
   `RetryNotice` (Retry with XTA's ⓘ More info sheet, which
   `NetworkProblemView`, `NetworkProblemRow`, `RetryMessage` and `RetryRow`

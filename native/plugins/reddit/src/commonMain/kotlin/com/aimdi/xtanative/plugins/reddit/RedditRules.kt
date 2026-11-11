@@ -123,8 +123,11 @@ internal object RedditMediaRules {
      */
     fun fileName(url: String, post: RedditPost? = null): String? {
         val file = url.toHttpUrlOrNull()?.pathSegments?.lastOrNull { it.isNotEmpty() } ?: return null
-        return (post?.let { it.author ?: it.subreddit } ?: "reddit") + "-" + file
+        return sourceName(post) + "-" + file
     }
+
+    /** Whose name a saved picture takes (XTA's _redditMediaUser): who posted it, the community for a post without an author, "reddit" for a comment's. */
+    fun sourceName(post: RedditPost?): String = post?.let { it.author ?: it.subreddit } ?: "reddit"
 }
 
 /** What a card's footer counts, in full as XTA's card writes them (reddit_post_card.dart): "12345", never "12.3K". */

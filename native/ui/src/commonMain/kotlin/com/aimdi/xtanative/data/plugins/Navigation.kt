@@ -85,7 +85,10 @@ class MediaShelf {
     @Synchronized
     fun get(key: String): ShelvedMedia? = shelf[key]
 
-    private companion object {
-        const val KEPT = 16
+    companion object {
+        private const val KEPT = 16
+
+        /** Whose name a file saved from the viewer takes: what the plugin named ([sourceName]), else the plugin [id]. */
+        fun source(id: String, sourceName: String?): String = sourceName?.trim()?.takeIf { it.isNotEmpty() } ?: id
     }
 }

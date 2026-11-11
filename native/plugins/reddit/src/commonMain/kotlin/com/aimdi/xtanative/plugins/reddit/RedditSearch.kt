@@ -45,7 +45,6 @@ import com.aimdi.xtanative.networks.reddit.RedditSubredditResult
 import com.aimdi.xtanative.networks.reddit.RedditUserResult
 import com.aimdi.xtanative.networks.reddit.normaliseSubreddit
 import com.aimdi.xtanative.ui.common.Hairline
-import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.PagedItems
 import com.aimdi.xtanative.ui.plugins.PluginFrame
@@ -173,7 +172,7 @@ private fun CommunityRow(app: RedditApp, result: RedditSubredditResult) {
         supportingContent = result.description?.let { { Text(it, maxLines = 2, overflow = TextOverflow.Ellipsis) } },
         trailingContent = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                result.subscribers?.let { Text(countText(it.toLong()), style = MaterialTheme.typography.bodySmall) }
+                result.subscribers?.let { Text(it.toString(), style = MaterialTheme.typography.bodySmall) }
                 FollowIconButton(app, result.name)
             }
         },

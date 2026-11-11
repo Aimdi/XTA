@@ -16,4 +16,11 @@ class PluginNavigationTest {
         assertNull(shelf.get(keys.first()), "the oldest went")
         assertNull(shelf.get("never"))
     }
+
+    @Test
+    fun aSavedFileTakesTheNameThePluginGaveElseThePlugins() {
+        assertEquals("alice", MediaShelf.source("reddit", "alice"))
+        assertEquals("reddit", MediaShelf.source("reddit", null))
+        assertEquals("reddit", MediaShelf.source("reddit", "  "))
+    }
 }

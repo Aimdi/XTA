@@ -72,8 +72,8 @@ internal fun PostMediaView(app: RedditApp, post: RedditPost, choices: RedditChoi
     Box(modifier) {
         when (media) {
             is PostMedia.Video -> Covered(post, gate, ratioOf(post)) { VideoTile(app, post, media.stream) }
-            is PostMedia.Gallery -> Covered(post, gate, 1f) { Gallery(media.images, onSave = { app.savePicture(media.images[it], post) }) { app.openPictures(media.images, it) } }
-            is PostMedia.Image -> Covered(post, gate) { Picture(media.url, onSave = { app.savePicture(media.url, post) }) { app.openPictures(listOf(media.url), 0) } }
+            is PostMedia.Gallery -> Covered(post, gate, 1f) { Gallery(media.images, onSave = { app.savePicture(media.images[it], post) }) { app.openPictures(media.images, it, post) } }
+            is PostMedia.Image -> Covered(post, gate) { Picture(media.url, onSave = { app.savePicture(media.url, post) }) { app.openPictures(listOf(media.url), 0, post) } }
             is PostMedia.GalleryLink -> GalleryLink(app, post, gate, media.url, thread)
             is PostMedia.Link -> LinkCard(app, post, gate, media.url, thread)
         }
@@ -142,8 +142,8 @@ private fun Gallery(images: List<String>, onSave: (Int) -> Unit, onOpen: (Int) -
 private fun GalleryLink(app: RedditApp, post: RedditPost, gate: MediaGate?, url: String, thread: Boolean) {
     val images by produceState(emptyList<String>(), post.permalink) { value = RedditMedia.collapseImageUrls(attempt { app.galleryImages(post.permalink) }.getOrDefault(emptyList())) }
     when {
-        images.size > 1 -> Covered(post, gate, 1f) { Gallery(images, onSave = { app.savePicture(images[it], post) }) { app.openPictures(images, it) } }
-        images.size == 1 -> Covered(post, gate) { Picture(images[0], onSave = { app.savePicture(images[0], post) }) { app.openPictures(images, 0) } }
+        images.size > 1 -> Covered(post, gate, 1f) { Gallery(images, onSave = { app.savePicture(images[it], post) }) { app.openPictures(images, it, post) } }
+        images.size == 1 -> Covered(post, gate) { Picture(images[0], onSave = { app.savePicture(images[0], post) }) { app.openPictures(images, 0, post) } }
         else -> LinkCard(app, post, gate, url, thread)
     }
 }

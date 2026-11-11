@@ -104,6 +104,8 @@ class RedditRulesTest {
         assertEquals("reddit-x.gif", RedditMediaRules.fileName("https://i.redd.it/x.gif"), "a comment's picture")
         assertEquals(null, RedditMediaRules.fileName("https://i.redd.it/", post), "nothing to name it by: the app names it")
         assertEquals(null, RedditMediaRules.fileName("not an address", post))
+        assertEquals("alice", RedditMediaRules.sourceName(post), "what the viewer names its saves after")
+        assertEquals("reddit", RedditMediaRules.sourceName(null))
     }
 
     @Test
