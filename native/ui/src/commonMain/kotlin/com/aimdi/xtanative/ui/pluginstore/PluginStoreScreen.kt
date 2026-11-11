@@ -214,7 +214,9 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
             LazyColumn(state = list, contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + 24.dp), modifier = Modifier.fillMaxSize()) {
                 item(key = "search") { StoreSearchField(query) { query = it } }
                 if (store.catalogue.refreshing) item(key = "refreshing") { LinearProgressIndicator(Modifier.fillMaxWidth()) }
-                if (store.catalogue.unreachable) item(key = "unreachable") { Unreachable(store.catalogue.fetchedAt != null) }
+                if (store.catalogue.unreachable && !store.catalogue.refreshing) {
+                    item(key = "unreachable") { Unreachable(store.catalogue.fetchedAt != null) { scope.launch { plugins.manager.refresh() } } }
+                }
                 if (StoreSearch.noResults(query, installed.size, offer.values.sumOf { it.size }, grouping)) {
                     item(key = "no-results") { NoResults(stringResource(Res.string.plugin_store_no_results)) }
                 }
@@ -227,7 +229,8 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
                     }
                 }
                 available(offer, locale, actions, availableOpen) { availableOpen = !availableOpen }
-                if (store.installed.isEmpty() && store.onOffer.isEmpty() && !store.catalogue.refreshing) {
+                // Only a catalogue that was read can say nothing is on offer.
+                if (store.installed.isEmpty() && store.onOffer.isEmpty() && !store.catalogue.refreshing && !store.catalogue.unreachable) {
                     item(key = "empty") { MessageText(stringResource(Res.string.plugin_store_empty)) }
                 }
             }
@@ -272,7 +275,7 @@ private fun FollowInstalls(list: LazyListState, store: PluginStoreState, shown: 
         val added = StoreRows.newlyInstalled(seen, ids)
         seen = ids
         val position = shown.indexOfFirst { it.id == added }.takeIf { added != null && it >= 0 } ?: return@LaunchedEffect
-        list.animateScrollToItem(StoreRows.afterInstall(position, store.catalogue.refreshing, store.catalogue.unreachable, searchField = true))
+        list.animateScrollToItem(StoreRows.afterInstall(position, store.catalogue.refreshing, store.catalogue.unreachable && !store.catalogue.refreshing, searchField = true))
     }
 }
 
@@ -372,7 +375,8 @@ private fun InstalledRow(
             },
             onClick = if (opens) ({ actions.open(state.id) }) else if (plugin?.settings != null) ({ actions.settings(state.id) }) else null,
         ) {
-            if (state.status is PluginStatus.UpdateAvailable) {
+            // An update that failed is offered again beside why, which ends "Try again".
+            if (state.status is PluginStatus.UpdateAvailable || (state.status as? PluginStatus.Failed)?.update != null) {
                 FilledTonalButton(onClick = { actions.update(state.id) }) { Text(stringResource(Res.string.plugin_update)) }
             } else if (opens) {
                 TextButton(onClick = { actions.open(state.id) }) { Text(stringResource(Res.string.plugin_open)) }
@@ -649,13 +653,13 @@ private fun UninstallDialog(name: String, onConfirm: () -> Unit, onDismiss: () -
     )
 }
 
-/** The catalogue could not be read; [cached] when the list shown is the last that arrived. */
+/** The catalogue could not be read; [cached] when the list shown is the last that arrived; [onRetry] reads it again. */
 @Composable
-private fun Unreachable(cached: Boolean) {
-    Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+private fun Unreachable(cached: Boolean, onRetry: () -> Unit) {
+    Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 8.dp, top = 12.dp, bottom = 12.dp), verticalAlignment = Alignment.CenterVertically) {
         Icon(StoreIcons.CloudOff, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.width(16.dp))
-        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(stringResource(Res.string.plugin_catalogue_unavailable), style = MaterialTheme.typography.bodyMedium)
             if (cached) {
                 Text(
@@ -665,6 +669,7 @@ private fun Unreachable(cached: Boolean) {
                 )
             }
         }
+        TextButton(onClick = onRetry) { Text(stringResource(Res.string.retry)) }
     }
 }
 

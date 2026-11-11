@@ -23,8 +23,12 @@ sealed interface PluginStatus {
     /** [installed] is on the device; the catalogue offers [available]. */
     data class UpdateAvailable(val installed: String, val available: String) : PluginStatus
 
-    /** The last install, update or uninstall failed for [reason]; [installed] is the version still on the device, if any. */
-    data class Failed(val reason: PluginFailure, val installed: String?) : PluginStatus
+    /**
+     * The last install, update or uninstall failed for [reason]; [installed]
+     * is the version still on the device, if any, and [update] the newer one
+     * the catalogue still offers it, so the update can be asked for again.
+     */
+    data class Failed(val reason: PluginFailure, val installed: String?, val update: String? = null) : PluginStatus
 }
 
 /** One plugin in the store: what the catalogue says of it, what is installed, and where it stands. */
@@ -83,7 +87,8 @@ internal fun isUpdate(entry: CatalogueEntry, plugin: InstalledPlugin, platform: 
 private fun installedStatus(plugin: InstalledPlugin, entry: CatalogueEntry?, platform: PluginPlatform, api: PluginApi): PluginStatus = when {
     api.refusal(plugin.apiVersion) is PluginFailure.NeedsNewerApp -> PluginStatus.NeedsNewerApp(plugin.apiVersion, plugin.version)
     entry != null && isUpdate(entry, plugin, platform, api) -> PluginStatus.UpdateAvailable(plugin.version, entry.version)
-    else -> PluginStatus.Installed(plugin.version)
+    // Built for an API this app no longer loads, with no update yet: it says so rather than only that it did not start.
+    else -> api.refusal(plugin.apiVersion)?.let { PluginStatus.Failed(it, plugin.version) } ?: PluginStatus.Installed(plugin.version)
 }
 
 private fun offeredStatus(entry: CatalogueEntry, api: PluginApi): PluginStatus =

@@ -359,7 +359,7 @@ class PluginManager(
 
     /** What is under way, or went wrong last, wins over where the plugin otherwise stands. */
     private fun PluginState.over(busy: PluginStatus?, failure: PluginFailure?) =
-        copy(status = busy ?: failure?.let { PluginStatus.Failed(it, installed?.version) } ?: status)
+        copy(status = busy ?: failure?.let { PluginStatus.Failed(it, installed?.version, (status as? PluginStatus.UpdateAvailable)?.available) } ?: status)
 
     /** Whether [block] went through; what it threw, cancellation aside, is only a false. */
     private suspend fun quietly(block: suspend () -> Unit): Boolean = try {

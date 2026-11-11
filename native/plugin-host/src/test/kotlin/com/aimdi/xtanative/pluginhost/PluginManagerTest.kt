@@ -228,6 +228,27 @@ class PluginManagerTest {
     }
 
     @Test
+    fun anUpdateThatFailedSaysWhyKeepsTheVersionBeforeAndIsOfferedAgain() = runBlocking {
+        val manager = manager()
+        manager.refresh()
+        manager.install("reddit")
+        val newer = pluginJar("reddit", "1.1.0")
+        catalogue = catalogueJson(entryJson("reddit", "1.1.0", newer))
+        manager.refresh()
+
+        assertFalse(manager.update("reddit"))
+        val failed = assertIs<PluginStatus.Failed>(manager.status("reddit"))
+        assertEquals(PluginFailure.DownloadFailed(404, null), failed.reason, "the server's answer, for the store to say")
+        assertEquals("1.0.0", failed.installed)
+        assertEquals("1.1.0", failed.update, "the update is still on offer")
+        assertEquals(listOf("1.0.0"), File(plugins, "reddit").list()?.toList())
+
+        served["https://plugins.example/xta-plugin-reddit-1.1.0.jar"] = newer
+        assertTrue(manager.update("reddit"))
+        assertEquals(PluginStatus.Installed("1.1.0"), manager.status("reddit"))
+    }
+
+    @Test
     fun theCatalogueNeverTakesAwayWhatIsInstalled(): Unit = runBlocking {
         val manager = manager()
         manager.refresh()

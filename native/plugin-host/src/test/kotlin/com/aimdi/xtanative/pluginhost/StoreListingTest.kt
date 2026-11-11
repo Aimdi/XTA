@@ -116,6 +116,15 @@ class StoreListingTest {
     }
 
     @Test
+    fun anInstalledPluginForAnApiThisAppNoLongerLoadsSaysSoUntilItsUpdateComes() {
+        val app = PluginApi(2)
+        fun statusWith(entry: CatalogueEntry) =
+            storeListing(catalogue(entry), mapOf("reddit" to installed("reddit", version = "1.0.0", apiVersion = 1)), desktop, app, false).single().status
+        assertEquals(PluginStatus.Failed(PluginFailure.NeedsNewerPlugin(1), "1.0.0"), statusWith(entry("reddit", version = "1.0.0", apiVersion = 1)))
+        assertEquals(PluginStatus.UpdateAvailable("1.0.0", "1.1.0"), statusWith(entry("reddit", version = "1.1.0", apiVersion = 2)))
+    }
+
+    @Test
     fun versionsCompareAsNumbersPartByPart() {
         assertTrue(PluginVersions.compare("1.0.10", "1.0.9") > 0)
         assertTrue(PluginVersions.compare("2", "1.9.9") > 0)
