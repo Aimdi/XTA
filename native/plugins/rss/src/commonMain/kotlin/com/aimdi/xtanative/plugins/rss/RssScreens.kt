@@ -18,7 +18,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -41,8 +41,9 @@ import coil3.compose.AsyncImage
 import com.aimdi.xtanative.networks.Page
 import com.aimdi.xtanative.networks.RssItem
 import com.aimdi.xtanative.networks.rss.RssFeed
-import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.AddToGroupButton
+import com.aimdi.xtanative.ui.plugins.AddToGroupIcon
+import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.RetryMessage
@@ -50,7 +51,6 @@ import com.aimdi.xtanative.ui.plugins.networkProblemText
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.problemOf
 import com.aimdi.xtanative.ui.plugins.rememberKept
-import com.aimdi.xtanative.ui.post.PostIcons
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -91,13 +91,13 @@ internal fun RssFeedScreen(app: RssApp, feed: RssFeed) {
     val items = rememberKept("rss-feed-${feed.id}") { scope -> OneRead<Page<RssItem>>(scope) { app.client.items(feed) }.also { it.load() } }
     val loaded by items.state.collectAsState()
     val read by app.read.collectAsState()
-    PluginScaffold(title = feed.name, onBack = app.host::back, actions = { AddToGroupButton(app.host, feed.id) { app.followIfNeeded(feed) } }) { padding ->
+    PluginScaffold(title = feed.name, onBack = app.host::back, actions = { AddToGroupButton(app.host, feed.id, pluginString(Strings.add_to_group)) { app.followIfNeeded(feed) } }) { padding ->
         Box(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
             val shown = loaded.value?.items
             val error = loaded.error
             when {
                 shown == null && error != null -> RetryMessage(pluginString(Strings.load_error) + "\n" + networkProblemText(problemOf(error), NETWORK), items::load)
-                shown == null -> LoadingRow()
+                shown == null -> PluginFeedSkeleton()
                 else -> PullToRefreshBox(isRefreshing = loaded.loading, onRefresh = items::load, modifier = Modifier.fillMaxSize()) {
                     if (shown.isEmpty()) {
                         PullableEmpty(RssIcons.Feed, pluginString(Strings.empty), PluginFrame(PaddingValues()))
@@ -140,7 +140,7 @@ internal fun RssAddScreen(app: RssApp) {
             Spacer(Modifier.height(16.dp))
             val error = state.error
             when {
-                state.loading -> LinearProgressIndicator(Modifier.fillMaxWidth())
+                state.loading -> Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
                 error != null -> RetryMessage(pluginString(Strings.add_error) + "\n" + networkProblemText(problemOf(error), NETWORK), { lookup.follow(address) })
                 else -> state.value?.let { feed -> FoundFeed(feed) { app.addToGroup(feed) } }
             }
@@ -165,7 +165,7 @@ private fun FoundFeed(feed: RssFeed, onAddToGroup: () -> Unit) {
         }
         feed.description?.let { Text(it, modifier = Modifier.padding(top = 12.dp)) }
         TextButton(onClick = onAddToGroup, modifier = Modifier.padding(top = 4.dp)) {
-            Icon(PostIcons.People, contentDescription = null, modifier = Modifier.size(18.dp))
+            Icon(AddToGroupIcon, contentDescription = null, modifier = Modifier.size(18.dp))
             Text(pluginString(Strings.add_to_group), modifier = Modifier.padding(start = 8.dp))
         }
     }

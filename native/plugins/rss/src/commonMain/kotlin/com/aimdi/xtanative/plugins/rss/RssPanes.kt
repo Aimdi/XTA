@@ -1,6 +1,5 @@
 package com.aimdi.xtanative.plugins.rss
 
-import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -29,7 +27,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -56,8 +53,10 @@ import com.aimdi.xtanative.networks.rss.RssFilter
 import com.aimdi.xtanative.networks.rss.RssTags
 import com.aimdi.xtanative.networks.rss.RssTimelineRules
 import com.aimdi.xtanative.ui.common.Hairline
-import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.EmptyPane
+import com.aimdi.xtanative.ui.plugins.PartialFailureButton
+import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
+import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
@@ -66,70 +65,65 @@ import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.problemOf
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
-/** Home: every followed feed's items, with the filter row over them. */
+/**
+ * Home: every followed feed's items, with the filter row over them. A pull
+ * reads the feeds again whatever the pane shows: its items, an empty or a
+ * failed read, as XTA's RefreshIndicator covers the whole pane.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun RssHomePane(app: RssApp, feeds: List<RssFeed>, frame: PluginFrame) {
-    if (feeds.isEmpty()) return PullableEmpty(RssIcons.Feed, pluginString(Strings.empty), frame) { AddButton(app) }
     val timeline by app.timeline.state.collectAsState()
-    val read by app.read.collectAsState()
-    val tags by app.tags.collectAsState()
     var filter by rememberSaveable { mutableStateOf(RssFilter.ALL) }
     var tag by rememberSaveable { mutableStateOf<String?>(null) }
+    val refresh = { app.timeline.refresh(force = true) }
     val error = timeline.error
-    when {
-        !timeline.loaded -> return LoadingRow()
-        error != null && timeline.items.isEmpty() -> return RetryMessage(pluginString(Strings.load_error) + "\n" + networkProblemText(problemOf(error), NETWORK), { app.timeline.refresh(force = true) })
+    PullToRefreshBox(isRefreshing = timeline.loading && timeline.loaded, onRefresh = refresh, modifier = Modifier.fillMaxSize()) {
+        when {
+            feeds.isEmpty() -> PullableEmpty(RssIcons.Feed, pluginString(Strings.empty), frame) { AddButton(app) }
+            !timeline.loaded -> Pullable(frame) { PluginFeedSkeleton() }
+            error != null && timeline.items.isEmpty() -> Pullable(frame) { RetryMessage(pluginString(Strings.load_error) + "\n" + networkProblemText(problemOf(error), NETWORK), refresh) }
+            else -> Timeline(app, timeline, frame, filter, tag, onFilter = { filter = it; tag = null }, onTag = { picked -> filter = RssFilter.ALL; tag = if (tag == picked) null else picked })
+        }
     }
+}
+
+/** The filter row over the items it leaves, or what to do when it leaves none. */
+@Composable
+private fun Timeline(app: RssApp, timeline: RssTimelineState, frame: PluginFrame, filter: RssFilter, tag: String?, onFilter: (RssFilter) -> Unit, onTag: (String) -> Unit) {
+    val read by app.read.collectAsState()
+    val tags by app.tags.collectAsState()
     val shown = remember(timeline.items, filter, read, tag, tags) { RssTimelineRules.shown(timeline.items, filter, read, tag, tags) }
     val filtered = filter != RssFilter.ALL || tag != null
-    val reset = { filter = RssFilter.ALL; tag = null }
+    val refresh = { app.timeline.refresh(force = true) }
     Column(Modifier.fillMaxSize()) {
-        FilterRow(filter, tag, RssTags.all(tags), timeline.failed, onFilter = { filter = it; tag = null }, onTag = { picked -> filter = RssFilter.ALL; tag = if (tag == picked) null else picked }, onRetry = { app.timeline.refresh(force = true) })
+        FilterRow(filter, tag, RssTags.all(tags), timeline.failed, onFilter, onTag, refresh)
         val list = rememberLazyListState()
         ScrollsToTop(list, frame.toTop)
-        PullToRefreshBox(isRefreshing = timeline.loading, onRefresh = { app.timeline.refresh(force = true) }, modifier = Modifier.weight(1f)) {
-            if (shown.isEmpty()) {
-                PullableEmpty(if (filtered) RssIcons.FilterList else RssIcons.Article, pluginString(if (filtered) Strings.empty_filter else Strings.reader_empty), frame) {
-                    TextButton(onClick = { if (filtered) reset() else app.timeline.refresh(force = true) }) {
-                        Icon(if (filtered) RssIcons.FilterListOff else Icons.Default.Refresh, null, Modifier.size(18.dp))
-                        Spacer(Modifier.width(8.dp))
-                        Text(pluginString(if (filtered) Strings.reset_filters else Strings.retry))
-                    }
+        if (shown.isEmpty()) {
+            PullableEmpty(if (filtered) RssIcons.FilterList else RssIcons.Article, pluginString(if (filtered) Strings.empty_filter else Strings.reader_empty), frame) {
+                TextButton(onClick = { if (filtered) onFilter(RssFilter.ALL) else refresh() }) {
+                    Icon(if (filtered) RssIcons.FilterListOff else Icons.Default.Refresh, null, Modifier.size(18.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text(pluginString(if (filtered) Strings.reset_filters else Strings.retry))
                 }
-            } else {
-                LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
-                    items(shown, key = { it.id }) { item -> RssItemCard(item, unread = item.id !in read, onOpen = { app.openItem(item) }) }
-                }
+            }
+        } else {
+            LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
+                items(shown, key = { it.id }) { item -> RssItemCard(item, unread = item.id !in read, onOpen = { app.openItem(item) }) }
             }
         }
     }
 }
 
-/** The feeds that failed, then All, Unread and each tag, as XTA's filter row. */
+/** The feeds that failed, then All, Unread and each tag, as XTA's filter row: the one chosen shows a check. */
 @Composable
 private fun FilterRow(filter: RssFilter, tag: String?, tags: List<String>, failed: Int, onFilter: (RssFilter) -> Unit, onTag: (String) -> Unit, onRetry: () -> Unit) {
     Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 12.dp), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
-        if (failed > 0) PartialFailure(failed, onRetry)
-        FilterChip(selected = filter == RssFilter.ALL && tag == null, onClick = { onFilter(RssFilter.ALL) }, label = { Text(pluginString(Strings.all)) })
-        FilterChip(selected = filter == RssFilter.UNREAD, onClick = { onFilter(RssFilter.UNREAD) }, label = { Text(pluginString(Strings.unread)) })
-        tags.forEach { each -> FilterChip(selected = tag == each, onClick = { onTag(each) }, label = { Text(each) }) }
-    }
-}
-
-/** A warning that some feeds could not be read, which says so and offers to read them again. */
-@Composable
-private fun PartialFailure(failed: Int, onRetry: () -> Unit) {
-    var open by rememberSaveable { mutableStateOf(false) }
-    val message = pluginString(Strings.partial_error, failed)
-    IconButton(onClick = { open = true }) { Icon(Icons.Outlined.Warning, message, tint = MaterialTheme.colorScheme.error) }
-    if (open) {
-        AlertDialog(
-            onDismissRequest = { open = false },
-            title = { Text(message) },
-            confirmButton = { TextButton(onClick = { open = false; onRetry() }) { Text(pluginString(Strings.retry)) } },
-            dismissButton = { TextButton(onClick = { open = false }) { Text(pluginString(Strings.close)) } },
-        )
+        if (failed > 0) PartialFailureButton(pluginString(Strings.partial_error, failed), onRetry)
+        PluginFilterChip(pluginString(Strings.all), filter == RssFilter.ALL && tag == null, { onFilter(RssFilter.ALL) })
+        PluginFilterChip(pluginString(Strings.unread), filter == RssFilter.UNREAD, { onFilter(RssFilter.UNREAD) })
+        tags.forEach { each -> PluginFilterChip(each, tag == each, { onTag(each) }) }
     }
 }
 
@@ -216,8 +210,14 @@ internal fun AddButton(app: RssApp) {
 /** The kit's [EmptyPane] in a list, so that a pull reads the list again. */
 @Composable
 internal fun PullableEmpty(icon: ImageVector, message: String, frame: PluginFrame, action: @Composable () -> Unit = {}) {
+    Pullable(frame) { EmptyPane(icon, message, actions = action) }
+}
+
+/** [content] in a list of its own, so that a pull over it reads again. */
+@Composable
+internal fun Pullable(frame: PluginFrame, content: @Composable () -> Unit) {
     LazyColumn(contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
-        item { EmptyPane(icon, message, actions = action) }
+        item { content() }
     }
 }
 

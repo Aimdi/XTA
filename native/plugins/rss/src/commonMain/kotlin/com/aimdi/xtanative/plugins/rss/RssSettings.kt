@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.rss.RssOpml
 import com.aimdi.xtanative.networks.rss.RssOpmlImport
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.plugins.HomeTimelineIcon
 import com.aimdi.xtanative.ui.plugins.HomeTimelineSwitch
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.currentLanguage
@@ -49,7 +50,7 @@ internal fun RssSettingsBody(app: RssApp, frame: PluginFrame) {
     var notice by rememberSaveable { mutableStateOf<String?>(null) }
     LazyColumn(contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
         item(key = "blurb") { Text(pluginString(Strings.settings_blurb), modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp)) }
-        item(key = "home") { HomeTimelineSwitch(app.host.settings, pluginString(Strings.in_home_feed), pluginString(Strings.in_home_feed_description)) }
+        item(key = "home") { HomeTimelineSwitch(app.host.settings, pluginString(Strings.in_home_feed), pluginString(Strings.in_home_feed_description), HomeTimelineIcon) }
         item(key = "opml") {
             Hairline()
             OpmlRows(app) { notice = it }

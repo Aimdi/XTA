@@ -20,6 +20,7 @@ import com.aimdi.xtanative.ui.plugins.PluginSubscription
 import com.aimdi.xtanative.ui.plugins.RssOffline
 import com.aimdi.xtanative.ui.plugins.RssReaderScreen
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
+import com.aimdi.xtanative.ui.plugins.currentLanguage
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -80,7 +81,7 @@ class RssPlugin : XtaPlugin() {
     private fun readerScreen(route: RssRoute.Item): PluginScreen = {
         val item = app.itemFor(route.id) ?: route.stub
         val feed = app.feedOf(item)
-        RssReaderScreen(app.host, item, read = item.id in app.read.value, scope = app.scope, actions = { AddToGroupButton(app.host, feed.id) { app.followIfNeeded(feed) } }) {
+        RssReaderScreen(app.host, item, read = item.id in app.read.value, scope = app.scope, actions = { AddToGroupButton(app.host, feed.id, Strings.add_to_group.get(currentLanguage())) { app.followIfNeeded(feed) } }) {
             app.markRead(listOf(item.id))
         }
     }
