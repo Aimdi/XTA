@@ -84,11 +84,7 @@ internal fun ThreadsHome(app: ThreadsApp, frame: PluginFrame) {
     val section by app.section.collectAsState()
     var searching by remember { mutableStateOf(false) }
     var adding by remember { mutableStateOf(false) }
-    LaunchedEffect(app) {
-        app.restoreForYou()
-        app.restoreFeed()
-        app.feed.refresh()
-    }
+    LaunchedEffect(app) { app.restoreForYou() }
     RefreshesOn(frame.refresh) { app.feed.refresh(force = true) }
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
@@ -151,6 +147,11 @@ private fun MenuRow(icon: ImageVector, label: PluginText, onClick: () -> Unit) {
 private fun HomePane(app: ThreadsApp, frame: PluginFrame, onAdd: () -> Unit, onSearch: () -> Unit) {
     val state by app.feed.state.collectAsState()
     val options by app.options.collectAsState()
+    // Read when Home is the section shown: a reader on For you does not pay for the followed accounts' pages.
+    LaunchedEffect(app) {
+        app.restoreFeed()
+        app.feed.refresh()
+    }
     Column(Modifier.fillMaxSize()) {
         if (app.direct.isSessionParked) ParkedNotice()
         DockRow(app, options, onAdd)

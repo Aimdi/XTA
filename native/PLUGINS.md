@@ -260,7 +260,10 @@ for a picture as the tiles do, with the headers its
 server wants (Pixiv's Referer). A plugin may draw with the app's other
 public building blocks where they fit:
 its icon sets (`PostIcons`, `DiscoverIcons`, `GroupIcons`), `ThreadRows` for
-X posts, `rememberRowDrag` for a list dragged into order. Whatever a plugin
+X posts, `rememberRowDrag` for a list dragged into order, and `CardView(card,
+from, modifier)`, a link card whose page opens in the app's browser with the
+post it came from in its bar (a `LinkFrom` over :services' `LinkPostContext`),
+as Threads' card does. Whatever a plugin
 uses is part of the plugin API: `tool/plugin_abi.py` checks that plugins
 built before still find it. The pieces' words are the app's, in all its
 languages: a plugin draws them without strings of its own.

@@ -54,6 +54,7 @@ import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 import com.aimdi.xtanative.ui.post.AuthorLine
+import com.aimdi.xtanative.ui.links.LinkFrom
 import com.aimdi.xtanative.ui.post.CardView
 import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.post.PostPrefs
@@ -176,7 +177,7 @@ private fun Body(app: ThreadsApp, post: ThreadsPost, openOnTap: Boolean, focal: 
     post.replyToHandle?.takeIf { it.isNotEmpty() }?.let { ReplyingTo(app, it) }
     ThreadsRichText(app, post.text, post.fragments, Modifier.padding(top = 2.dp), style = if (focal) FocalStyle else threadsBodyStyle(), selectable = focal)
     ThreadsPostMedia(app, post, Modifier.partGap(), opens = openOnTap)
-    post.linkCard?.let { ThreadsLink(it, Modifier.partGap()) }
+    post.linkCard?.let { ThreadsLink(app, post, it, Modifier.partGap(), opens = openOnTap) }
     post.quoted?.let { ThreadsQuote(app, it, Modifier.partGap()) }
     if (post.selfThreadCount > 0 && openOnTap) {
         TextButton(onClick = { app.openPost(post) }, modifier = Modifier.heightIn(min = 48.dp)) {
@@ -221,9 +222,17 @@ private fun ReplyingTo(app: ThreadsApp, handle: String) {
     }
 }
 
-/** The link preview Meta attached, as the app draws X's: large with its picture, small without. */
+/**
+ * The link preview Meta attached, as the app draws X's: large with its
+ * picture, small without. Its page opens in the app's browser with [post] in
+ * the bar under it (threads_post_card.dart's threadsLinkPreview): who wrote
+ * it, the counts Meta gave, its link to share, and the way back to it,
+ * which opens the post where the card [opens] one and closes the browser
+ * on the post's own screen.
+ */
 @Composable
-internal fun ThreadsLink(card: ThreadsLinkCard, modifier: Modifier = Modifier) {
+internal fun ThreadsLink(app: ThreadsApp, post: ThreadsPost, card: ThreadsLinkCard, modifier: Modifier = Modifier, opens: Boolean = true) {
+    val from = remember(post, opens) { LinkFrom(ThreadsLinkContext.of(post), if (opens) { { app.openPost(post) } } else null) }
     val domain = card.providerName ?: card.url.toHttpUrlOrNull()?.host?.removePrefix("www.")
     val shown = XCard.Link(
         url = card.url,
@@ -235,7 +244,7 @@ internal fun ThreadsLink(card: ThreadsLinkCard, modifier: Modifier = Modifier) {
         imageHeight = null,
         large = card.hasImage,
     )
-    CardView(shown, modifier)
+    CardView(shown, from, modifier)
 }
 
 /** The post this one quotes, boxed, opening its own conversation; its media and link card under its words. */
@@ -257,7 +266,7 @@ private fun ThreadsQuote(app: ThreadsApp, quote: ThreadsPost, modifier: Modifier
         }
         ThreadsRichText(app, quote.text, quote.fragments, Modifier.padding(top = 6.dp), style = MaterialTheme.typography.bodyMedium, maxLines = 6)
         ThreadsPostMedia(app, quote, Modifier.padding(top = 8.dp))
-        quote.linkCard?.let { ThreadsLink(it, Modifier.padding(top = 8.dp)) }
+        quote.linkCard?.let { ThreadsLink(app, quote, it, Modifier.padding(top = 8.dp)) }
     }
 }
 

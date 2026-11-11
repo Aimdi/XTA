@@ -1,5 +1,7 @@
 package com.aimdi.xtanative.plugins.threads
 
+import com.aimdi.xtanative.networks.threads.ThreadsException
+import com.aimdi.xtanative.services.links.LinkPostContext
 import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.networks.threads.ThreadsCaption
 import com.aimdi.xtanative.networks.threads.ThreadsPost
@@ -79,6 +81,19 @@ internal object ThreadsShared {
         repostedBy = post.reposterDisplayName.takeIf { post.isRepost },
         replyingTo = post.replyToHandle?.takeIf { it.isNotEmpty() },
         url = post.url,
+    )
+}
+
+/** The post a link card was opened from, for the bar under the app's browser (XTA's LinkPostContext for Threads). */
+internal object ThreadsLinkContext {
+    fun of(post: ThreadsPost): LinkPostContext = LinkPostContext(
+        network = ThreadsException.NETWORK,
+        author = post.authorName,
+        avatarUrl = post.avatarUrl,
+        replies = post.replyCount,
+        reposts = post.repostCount,
+        likes = post.likeCount,
+        postUrl = post.url,
     )
 }
 

@@ -1,8 +1,11 @@
 package com.aimdi.xtanative.plugins.threads
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -13,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -25,8 +29,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.PrimaryTabRow
-import androidx.compose.material3.Tab
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -35,6 +40,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -70,6 +76,7 @@ import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 import com.aimdi.xtanative.ui.plugins.rememberShareText
 import com.aimdi.xtanative.ui.post.PostIcons
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 /** The profile's tabs: its posts, its replies, its media, and the posts of its the reader liked here (XTA's Saved). */
 private enum class ProfileTab(val label: PluginText) {
@@ -139,24 +146,49 @@ private fun ProfileBody(app: ThreadsApp, model: ThreadsProfileModel, page: Threa
     }
     val waiting = tab == ProfileTab.REPLIES && replies.loading && posts.isEmpty()
     val list = rememberLazyListState()
+    val scope = rememberCoroutineScope()
     val select: (ProfileTab) -> Unit = { option ->
+        // The tab already shown, tapped again, goes back to its top.
+        if (option == tab) scope.launch { list.animateScrollToItem(0) }
         tab = option
         if (option == ProfileTab.REPLIES) model.replies.ensure()
     }
-    PullToRefreshBox(isRefreshing = refreshing, onRefresh = { model.page.load(force = true) }, modifier = Modifier.fillMaxSize()) {
+    val refresh = {
+        model.page.load(force = true)
+        if (tab == ProfileTab.REPLIES || tab == ProfileTab.MEDIA) model.replies.load(force = true)
+    }
+    PullToRefreshBox(isRefreshing = refreshing, onRefresh = refresh, modifier = Modifier.fillMaxSize()) {
         LazyColumn(state = list, modifier = Modifier.fillMaxSize().swipeTabs(ProfileTab.entries, tab, select)) {
             item(key = "card") { ThreadsProfileCard(app, profile, Modifier.padding(16.dp)) }
             item(key = "tabs") {
-                PrimaryTabRow(selectedTabIndex = tab.ordinal) {
-                    ProfileTab.entries.forEach { option ->
-                        Tab(selected = tab == option, onClick = { select(option) }, text = { Text(pluginString(option.label), maxLines = 1) })
-                    }
-                }
+                ProfileTabs(tab, select)
             }
             when {
                 waiting -> item(key = "waiting") { LoadingRow() }
                 posts.isEmpty() -> item(key = "empty") { MessageText(pluginString(emptyLabel(tab))) }
                 else -> items(posts, key = { "post:" + it.id }, contentType = { "post" }) { ThreadsPostCard(app, it) }
+            }
+        }
+    }
+}
+
+/**
+ * The tabs as XTA draws them (plugin_profile_tabs.dart): one segmented
+ * button across the width, without the tick, scrolled sideways where the
+ * four labels are wider than the phone.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ProfileTabs(selected: ProfileTab, onSelect: (ProfileTab) -> Unit) {
+    BoxWithConstraints(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 8.dp)) {
+        SingleChoiceSegmentedButtonRow(Modifier.horizontalScroll(rememberScrollState()).widthIn(min = maxWidth)) {
+            ProfileTab.entries.forEachIndexed { index, option ->
+                SegmentedButton(
+                    selected = selected == option,
+                    onClick = { onSelect(option) },
+                    shape = SegmentedButtonDefaults.itemShape(index, ProfileTab.entries.size),
+                    icon = {},
+                ) { Text(pluginString(option.label), maxLines = 1, softWrap = false) }
             }
         }
     }

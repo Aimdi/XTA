@@ -101,4 +101,18 @@ class ThreadsSharedTest {
         val own = PluginSettings.prefixOf("threads")
         ThreadsPrefs.prefs.forEach { assertTrue(it.key.startsWith(own), it.key) }
     }
+
+    @Test
+    fun aLinkCardOpensWithItsPostBesideItAndNoCountMetaDidNotGive() {
+        val post = ThreadsPost(
+            id = "1", handle = "zuck", authorName = "Mark", text = "read this", avatarUrl = "https://cdn/zuck.jpg",
+            url = "https://www.threads.com/@zuck/post/A", likeCount = 12, replyCount = null, repostCount = 3,
+        )
+        val context = ThreadsLinkContext.of(post)
+        assertEquals("threads", context.network)
+        assertEquals("Mark", context.author)
+        assertEquals("https://cdn/zuck.jpg", context.avatarUrl)
+        assertEquals(listOf(null, 3L, 12L), listOf(context.replies, context.reposts, context.likes))
+        assertEquals("https://www.threads.com/@zuck/post/A", context.postUrl)
+    }
 }

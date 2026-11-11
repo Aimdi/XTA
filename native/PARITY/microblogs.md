@@ -684,3 +684,18 @@ missing/different | bluesky_content_warning.dart, mastodon_post_card.dart › a 
 missing/different | mastodon_interleaved.dart › Home and the groups draw a Mastodon post as the Mastodon card | MastodonPostRow.kt (sharedExtras) | only the poll was added to the shared row; MastodonSharedTest.theSharedRowSaysWhoBoostedAndThatItWasEditedAsXtasCardDoes
 missing/different | bluesky_profile_screen.dart › Bluesky's own error words on every screen | BlueskyParts.kt (errorText(Problem), ProblemView, ProblemRow) | lists said the app's generic words; BlueskyPartsTest.aFailedReadIsToldInBlueskysOwnWordsOnEveryScreen
 missing/different | bluesky_reader_view.dart, plugin_feed_people.dart › the people a feed brings sit under the third post on Home, folded | BlueskyFollowingPane.kt (PeopleStrip, filteredRows), BlueskyPlace.kt (FollowingPlaces.STRIP_AFTER) | they stood open above the posts everywhere; BlueskyStoresTest.followingsListOpensAtItsAnchorAndKeepsTheFirstPostOnScreen
+
+## Threads beyond XTA's tests (round 9: pictures, For you, the audit's items)
+
+Rows as above: state | what | where | test.
+
+missing/different | a picture's sizes: Meta's candidates of no size or one size gave the last, its smallest (XTA's _bestCandidate does too) | plugins/threads ThreadsImages.kt, ThreadsParser.media | every size kept largest first; a tile loads the smallest that fills it, the viewer and a download the largest. ThreadsImagesTest
+missing/different | a kept post (liked, the tab's snapshot) knew one address per picture | ThreadsPostJson (`imageSizes`, beside XTA's lists) | ThreadsPostJsonTest.everySizeOfAPictureIsKeptBesideXtasLists…, sizesKeptForAnotherAddressAreNotThePictures
+missing/different | a profile's page showed the 150 px picture | ThreadsParser.hdPicture, ThreadsProfile.pictureUrl, ThreadsProfileCard (a tap opens it in the viewer) | ThreadsImagesTest.aProfileKeepsItsLargestPictureForItsPageAndTheSmallOneForRows
+missing/different | the Linux desktop shrank every picture by the nearest pixel (Coil 3.2's Skia decoder) | ui/common PictureScaling.kt, PictureScaling.desktop.kt, appImageLoader | PictureScalingTest (the size); the drawing itself needs a desktop with Skia
+native only | For you: the Bearer's timeline page by page, else threads.com's public front page; needs sign-in, rate limited, a failed page, the end; the place and the section kept | ThreadsForYou.kt, ThreadsDirectClient.forYouTimeline/guestForYou, ThreadsForYouKept.kt, ThreadsForYouPane.kt | ThreadsForYouTest, ThreadsForYouKeptTest, ThreadsForYouLiveTest (RUN_LIVE)
+missing/different | profile tabs were an underlined tab row; XTA's are one segmented button (plugin_profile_tabs.dart) | ThreadsProfileScreen.ProfileTabs; a second tap goes to the top, a pull reads the replies page too | Compose only
+missing/different | a link card opened without its post (threads_post_card.dart:421-449) | ui/post CardView(card, from, modifier), ThreadsPostCard.ThreadsLink, ThreadsLinkContext | ThreadsSharedTest.aLinkCardOpensWithItsPostBesideIt…
+missing/different | the followed accounts were read behind whichever section was shown | ThreadsHome.HomePane | Compose only
+left out | the conversation as XTA's card that is dragged back (XtaCardPageRoute) | the card belongs to the app's navigation (SwipeBackCard, CardBacks), which draws only X's post that way; a plugin's screen has no way to ask for it without a change to the app's graph and the plugin API | —
+
