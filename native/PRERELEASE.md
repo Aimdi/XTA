@@ -33,6 +33,15 @@ It keeps its data in `~/.local/share/xta-native`, a folder only you can open. Vi
 - Every section of XTA's settings, its backup export and import, WebDAV sync, and 29 languages; an opened post that swipes back as XTA's card, confirm close, the check for a newer prerelease and the licences page
 - Links open in the app's own browser on Android, or in the browser you pick; x.com and the networks' links open in the app, and so do t.co, fxtwitter, vxtwitter and fixupx links; a link nothing reads says so
 - New in this prerelease:
+  - Threads conversations read Threads' new post pages: the real replies, nested under what they answer, with "Show fewer replies", related threads apart, and the whole conversation read aloud
+  - Threads profiles show the exact follower count on a tap, the verified badge, the full bio with tappable mentions and links, its links listed, a Reposts tab, and a private note of your own
+  - Threads search has People and Topics tabs, topic pages with their emoji, and suggestions while you type from what is on your device
+  - A Threads post covers spoilers until tapped, shows polls with their results, Pinned, AI info and Threads' own warning over media; ⋯ offers Copy text and Copy link; long posts fold with Show more
+  - Threads' Home reopens where you stopped and shows "N new posts" above; muted words hide posts in Home and For you; the author's replies are marked; a conversation's pictures swipe through as one gallery
+  - Threads saves pictures and videos under names saying whose they are; a long press on a picture offers its description, Download, Download all and the link
+  - Threads reads its pages several times faster, and no longer loses a profile's threads when a post mentions "<html>"
+  - Bluesky's and Mastodon's Filters sit in the tab's bar; a Bluesky post labelled for its media also covers its quote and link card; accounts without a picture show their initial
+- In 0.1.73:
   - Threads: a profile you opened before shows at once while it is read again; GIFs loop in place; accounts without a picture get a face with their initial; a reload keeps the conversation and says so in a notice with Retry
   - Threads search and topic links open in the plugin, and a recent search can be forgotten
   - Threads says what went wrong in its own words: a missing account or post, when its wait for too many reads ends, and a page it shows only to signed-in readers
