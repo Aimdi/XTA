@@ -47,6 +47,7 @@ import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.saved.SavedIcons
 import com.aimdi.xtanative.ui.search.DiscoverIcons
+import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 
 /** A feed or list offered above the posts: its URI and the name it is shown under. */
 private data class SourceChip(val uri: String, val label: String)
@@ -231,7 +232,7 @@ private fun SelectedHeader(
         if (description.isNotEmpty()) Text(description, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 4.dp))
         Row(Modifier.horizontalScroll(rememberScrollState()), verticalAlignment = Alignment.CenterVertically) {
             HeaderAction(XIcons.Link, openLabel, onOpen)
-            if (onPin != null) HeaderAction(XIcons.Pin, pluginString(if (pinned) Strings.unpin else Strings.pin), onPin)
+            if (onPin != null) HeaderAction(if (pinned) XIcons.Pin else GroupIcons.PushPinOutlined, pluginString(if (pinned) Strings.unpin else Strings.pin), onPin)
             extra?.let { HeaderAction(it.icon, it.label, it.onClick) }
         }
     }

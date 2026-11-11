@@ -226,7 +226,7 @@ private fun ReplyRow(app: MastodonApp, row: MastodonReplyRow, onToggle: (String)
 private fun BranchesMenu(enabled: Boolean, onExpand: (Boolean) -> Unit) {
     var open by remember { mutableStateOf(false) }
     Box {
-        IconButton(onClick = { open = true }, enabled = enabled) { Icon(Icons.Filled.MoreVert, null) }
+        IconButton(onClick = { open = true }, enabled = enabled) { Icon(Icons.Filled.MoreVert, pluginString(Strings.more)) }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             DropdownMenuItem(text = { Text(pluginString(Strings.thread_expand_all)) }, onClick = {
                 open = false

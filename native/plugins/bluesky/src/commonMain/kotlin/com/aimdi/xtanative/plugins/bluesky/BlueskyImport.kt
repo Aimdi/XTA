@@ -97,7 +97,7 @@ internal fun ImportScreen(app: BlueskyApp, kind: ImportKind, initial: String) {
                 prefix = if (kind == ImportKind.FOLLOWING) ({ Text("@") }) else null,
                 isError = refused,
                 supportingText = if (refused) ({ Text(pluginString(texts.invalid)) }) else null,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardOptions = KeyboardOptions(autoCorrectEnabled = false, imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { start() }),
                 modifier = Modifier.fillMaxWidth(),
             )

@@ -172,7 +172,7 @@ internal fun TextPrompt(title: String, hint: String, onDismiss: () -> Unit, subm
                 placeholder = { Text(hint) },
                 isError = refusal != null,
                 supportingText = refusal?.let { { Text(it) } },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardOptions = KeyboardOptions(autoCorrectEnabled = false, imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { send() }),
                 modifier = Modifier.fillMaxWidth(),
             )
