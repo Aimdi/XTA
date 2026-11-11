@@ -44,7 +44,7 @@ internal class RssApp(val host: PluginHost) {
     val feeds: StateFlow<List<RssFeed>?> = observe(RssPrefs.feeds) { RssFeeds.decode(it) }
     val read: StateFlow<Set<String>> = observe(RssPrefs.readIds, emptySet()) { RssReads.decode(it).toSet() }
     val tags: StateFlow<Map<String, List<String>>> = observe(RssPrefs.tags, emptyMap()) { RssTags.decode(it) }
-    val timeline = RssTimelineModel(client, scope) { feeds.value.orEmpty() }
+    val timeline = RssTimelineModel(client, scope, host.store.file("timeline.json")) { feeds.value.orEmpty() }
     val opml = RssOpmlImports()
 
     /** The pane last chosen, kept while the plugin runs as XTA keeps it for the session ('rss/view'): the home tab and the plugin opened on its own show the same one. */

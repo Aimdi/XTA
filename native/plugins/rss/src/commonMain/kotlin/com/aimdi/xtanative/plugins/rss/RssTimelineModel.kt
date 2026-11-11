@@ -3,7 +3,10 @@ package com.aimdi.xtanative.plugins.rss
 import com.aimdi.xtanative.networks.RssItem
 import com.aimdi.xtanative.networks.rss.RssClient
 import com.aimdi.xtanative.networks.rss.RssFeed
+import com.aimdi.xtanative.networks.rss.RssTimelineCopies
+import com.aimdi.xtanative.networks.rss.RssTimelineCopy
 import com.aimdi.xtanative.networks.rss.RssTimelineRules
+import com.aimdi.xtanative.store.StoreFile
 import java.time.Instant
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -32,43 +35,75 @@ internal data class RssTimelineState(
  * plugin runs: read again on a refresh asked for, when the feeds followed
  * changed, or when it is older than [RssTimelineRules.FRESH_FOR]; a refresh
  * over shown items keeps them when it fails. One feed that cannot be read
- * is counted, not thrown.
+ * is counted, not thrown. The last read is [kept] on the device, so a start
+ * shows it at once while the feeds are read again.
  */
-internal class RssTimelineModel(private val client: RssClient, private val scope: CoroutineScope, private val feeds: () -> List<RssFeed>) {
+internal class RssTimelineModel(
+    private val client: RssClient,
+    private val scope: CoroutineScope,
+    private val kept: StoreFile? = null,
+    private val feeds: () -> List<RssFeed>,
+) {
     private val mutable = MutableStateFlow(RssTimelineState())
     val state: StateFlow<RssTimelineState> = mutable.asStateFlow()
     private var job: Job? = null
+    private var asked: Set<String>? = null
 
     fun refresh(force: Boolean = false) {
         val followed = feeds()
-        val now = state.value
         if (followed.isEmpty()) {
             job?.cancel()
-            mutable.value = RssTimelineState(loaded = true, fetchedAt = now.fetchedAt ?: Instant.now())
+            mutable.value = RssTimelineState(loaded = true, fetchedAt = state.value.fetchedAt ?: Instant.now())
             return
         }
-        val same = now.readFrom == followed.map { it.id }.toSet()
-        if (!force && same && now.loaded && RssTimelineRules.fresh(now.fetchedAt, Instant.now())) return
-        if (!force && same && job?.isActive == true) return
+        val ids = followed.map { it.id }.toSet()
+        if (!force && settled(ids)) return
+        if (!force && asked == ids && job?.isActive == true) return
         job?.cancel()
-        job = scope.launch { read(followed) }
+        asked = ids
+        job = scope.launch {
+            restore(ids)
+            if (force || !settled(ids)) read(followed)
+        }
+    }
+
+    private fun settled(ids: Set<String>): Boolean =
+        state.value.let { it.loaded && it.readFrom == ids && RssTimelineRules.fresh(it.fetchedAt, Instant.now()) }
+
+    /** The copy kept on the device, before anything is shown: the items of the feeds still followed. */
+    private suspend fun restore(ids: Set<String>) {
+        if (state.value.loaded) return
+        val copy = kept?.let { file -> attempt { RssTimelineCopies.decode(file.read()) } } ?: return
+        val items = copy.items.filter { it.feedId in ids }
+        if (items.isEmpty() || state.value.loaded) return
+        mutable.value = RssTimelineState(items = items, loaded = true, fetchedAt = copy.fetchedAt, readFrom = copy.readFrom)
     }
 
     private suspend fun read(followed: List<RssFeed>) {
         mutable.update { it.copy(loading = true, error = null) }
         try {
             val timeline = client.timeline(followed)
-            mutable.value = RssTimelineState(
+            val read = RssTimelineState(
                 items = timeline.items,
                 failed = timeline.failed,
                 loaded = true,
                 fetchedAt = Instant.now(),
                 readFrom = followed.map { it.id }.toSet(),
             )
+            mutable.value = read
+            kept?.let { file -> attempt { file.write(RssTimelineCopies.encode(RssTimelineCopy(read.items, read.fetchedAt!!, read.readFrom))) } }
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
             mutable.update { it.copy(loading = false, loaded = true, error = e.takeIf { _ -> it.items.isEmpty() }) }
         }
+    }
+
+    private suspend fun <T> attempt(work: suspend () -> T): T? = try {
+        work()
+    } catch (e: CancellationException) {
+        throw e
+    } catch (_: Exception) {
+        null
     }
 }
