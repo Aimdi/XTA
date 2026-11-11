@@ -51,7 +51,7 @@ jobs:
           fi
 
       - name: Core tests
-        run: ./gradlew :core:test :networks:test :store:test :services:test :plugin-host:test :plugins:test --console=plain
+        run: ./gradlew :core:test :networks:test :store:test :services:test :plugin-host:test :plugins:test :mock-x:test --console=plain
 
       - name: Signing key
         env:
@@ -167,8 +167,8 @@ jobs:
           done
           ./gradlew :core:test --tests '*XLiveTest*' :networks:test --tests '*LiveTest*' "${plugins[@]}" --rerun --continue --console=plain
 
-  # Every screen on an emulator, against the stand-in for X that XTA's own
-  # emulator check uses (docs/mock-x.md): no account, no live request. Fails
+  # Every screen on an emulator, against the stand-in for X
+  # (native/tool/mock-x): no account, no live request. Fails
   # when the app crashes, and keeps a screenshot of each screen.
   screens:
     runs-on: ubuntu-latest
@@ -200,15 +200,11 @@ jobs:
           sleep 2
           curl -s -o /dev/null -w 'the catalogue answers %{http_code}\n' http://127.0.0.1:8788/plugins.json
 
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version-file: .fvmrc
-          cache: true
-
+      # native/tool/mock-x: a JDK server answering from recorded responses.
       - name: Serve the stand-in for X
         run: |
-          flutter pub get
-          nohup dart run tool/mock_x/server.dart > "$RUNNER_TEMP/mock-x.log" 2>&1 &
+          (cd native && ./gradlew :mock-x:installDist --console=plain)
+          nohup native/tool/mock-x/build/install/mock-x/bin/mock-x > "$RUNNER_TEMP/mock-x.log" 2>&1 &
           for _ in $(seq 1 90); do
             if curl -s -o /dev/null http://127.0.0.1:8787/; then break; fi
             sleep 1
@@ -441,15 +437,11 @@ jobs:
             ${{ runner.temp }}/desktop/xta-native-*.pkg.tar.zst
             ${{ runner.temp }}/desktop/PKGBUILD
 
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version-file: .fvmrc
-          cache: true
-
+      # native/tool/mock-x: a JDK server answering from recorded responses.
       - name: Serve the stand-in for X
         run: |
-          flutter pub get
-          nohup dart run tool/mock_x/server.dart > "$RUNNER_TEMP/mock-x.log" 2>&1 &
+          (cd native && ./gradlew :mock-x:installDist --console=plain)
+          nohup native/tool/mock-x/build/install/mock-x/bin/mock-x > "$RUNNER_TEMP/mock-x.log" 2>&1 &
           for _ in $(seq 1 90); do
             if curl -s -o /dev/null http://127.0.0.1:8787/; then break; fi
             sleep 1

@@ -42,6 +42,10 @@ include(":plugin-host")
 include(":ui")
 include(":desktop")
 
+// The stand-in for X the emulator and desktop checks read (tool/mock-x/README.md): a tool, in no app.
+include(":mock-x")
+project(":mock-x").projectDir = file("tool/mock-x")
+
 // The downloadable plugins (PLUGINS.md): every folder of plugins/ with a build
 // file is one, :plugins:<id>, configured by plugins/build.gradle.kts.
 file("plugins").listFiles().orEmpty()

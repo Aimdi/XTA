@@ -9,7 +9,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.Interceptor
 
 /**
- * XTA's stand-in for X (tool/mock_x, docs/mock-x.md), read instead of x.com
+ * The stand-in for X (native/tool/mock-x), read instead of x.com
  * when the shell names its address: an Android build made with
  * `-PmockX=<url>`, or the desktop app started with `XTA_NATIVE_MOCK_X=<url>`.
  * CI opens every screen against it with no account and no live request.
@@ -18,7 +18,7 @@ import okhttp3.Interceptor
 object MockX {
     private val xHosts = setOf("x.com", "api.x.com", "twitter.com", "api.twitter.com")
 
-    /** `https://x.com/i/api/…` to `<server>/x.com/i/api/…`, as XTA's lib/utils/mock_x_urls.dart maps it. */
+    /** `https://x.com/i/api/…` to `<server>/x.com/i/api/…`, which the stand-in reads back (XRequest.of). */
     fun interceptor(server: String) = Interceptor { chain ->
         val request = chain.request()
         val url = request.url
