@@ -5,7 +5,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_add_to_group
-import com.aimdi.xtanative.ui.post.PostIcons
+import androidx.compose.ui.graphics.vector.ImageVector
+import com.aimdi.xtanative.ui.group.DiscoveryIcons
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -15,8 +16,17 @@ import org.jetbrains.compose.resources.stringResource
  */
 @Composable
 fun AddToGroupButton(host: PluginHost, account: String, follow: suspend () -> Unit = {}) {
-    IconButton(onClick = { host.addToGroup(account, follow) }) { Icon(PostIcons.People, stringResource(Res.string.posts_add_to_group)) }
+    AddToGroupButton(host, account, stringResource(Res.string.posts_add_to_group), follow)
 }
+
+/** The same button named in the plugin's own words ([label], RSS's "Add to a group"). */
+@Composable
+fun AddToGroupButton(host: PluginHost, account: String, label: String, follow: suspend () -> Unit = {}) {
+    IconButton(onClick = { host.addToGroup(account, follow) }) { Icon(AddToGroupIcon, label) }
+}
+
+/** The glyph XTA's plugins draw "Add to group" with: Material's group_add, outlined. */
+val AddToGroupIcon: ImageVector get() = DiscoveryIcons.GroupAddOutlined
 
 /** "Add to group" in the reader's language, for a plugin's own button, chip or menu entry that opens [PluginHost.addToGroup]. */
 @Composable

@@ -165,6 +165,14 @@ abstract class XtaPlugin {
     /** Its mark, drawn in [brandColor]. */
     abstract val icon: ImageVector
 
+    /**
+     * Whether [brandColor] is the colour of its mark on Home (XTA's
+     * brandsChrome). False for a plugin whose colour is not its chrome's
+     * (Stocks' green is a rising price's): its mark then follows the text
+     * colour there, as X's does.
+     */
+    open val brandsChrome: Boolean get() = true
+
     /** The store's group for it. */
     abstract val category: Category
 

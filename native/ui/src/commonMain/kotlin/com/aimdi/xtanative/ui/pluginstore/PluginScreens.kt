@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -31,18 +33,26 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.aimdi.xtanative.data.plugins.Destination
 import com.aimdi.xtanative.data.plugins.RunningPlugin
 import com.aimdi.xtanative.store.search.RecentSearches
 import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.SearchPillShape
 import com.aimdi.xtanative.ui.common.searchPillColors
 import com.aimdi.xtanative.ui.plugins.LocalMediaSave
+import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
+import com.aimdi.xtanative.ui.plugins.LocalPluginSurface
+import com.aimdi.xtanative.ui.plugins.PluginClientBar
+import com.aimdi.xtanative.ui.plugins.PluginStandaloneBar
+import com.aimdi.xtanative.ui.plugins.PluginSurface
+import com.aimdi.xtanative.ui.plugins.XtaPlugin
 import com.aimdi.xtanative.ui.plugins.MediaItem
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
@@ -66,29 +76,74 @@ internal fun runningPlugin(id: String): RunningPlugin? {
     return running.firstOrNull { it.plugin.id == id }
 }
 
-/** [content], a plugin's, with a long press on a photo's tile saving it through plugin [id]'s downloads ([LocalMediaSave]). */
+/**
+ * [content], a plugin's, with what the shared pieces need of the app around
+ * it: a long press on a photo's tile saves it through plugin [id]'s downloads
+ * ([LocalMediaSave]), and a failure's sheet names the plugin and offers its
+ * settings ([LocalPluginSurface]).
+ */
 @Composable
 internal fun SavesMediaOf(id: String, content: @Composable () -> Unit) {
     val plugins = LocalPlugins.current
     val save = remember(plugins, id) { { item: MediaItem -> plugins.download(id, item) } }
-    CompositionLocalProvider(LocalMediaSave provides save, content = content)
+    CompositionLocalProvider(LocalMediaSave provides save, LocalPluginSurface provides surfaceOf(id), content = content)
 }
 
-/** A plugin opened on its own, from the store or pinned: its client, else its home tab, under its name. */
+/** What the shared pieces know of running plugin [id]: its name, colour, mark and the way to its settings. */
+@Composable
+private fun surfaceOf(id: String): PluginSurface? {
+    val plugin = runningPlugin(id)?.plugin ?: return null
+    val plugins = LocalPlugins.current
+    val language = currentLanguage()
+    return remember(plugin, language, plugins) {
+        val name = runCatching { plugin.title(language) }.getOrNull() ?: id
+        val settings = runCatching { plugin.settings }.getOrNull()?.let { { plugins.navigator.go(Destination.PluginSettings(id)) } }
+        PluginSurface(id, name, plugin.brandColor, plugin.icon, settings)
+    }
+}
+
+/** The colour plugin's mark is drawn in on Home (XTA's pluginMarkTint): its brand, or the text colour where that is not its chrome's. */
+@Composable
+internal fun markTint(plugin: XtaPlugin): Color =
+    if (runCatching { plugin.brandsChrome }.getOrDefault(true)) plugin.brandColor else MaterialTheme.colorScheme.onSurface
+
+/**
+ * A plugin opened on its own, from the store or pinned: its client, else its
+ * home tab, under one bar (XTA's standalone PluginHomeChrome): back, its
+ * mark, then its own tabs and actions where it draws the shared strip
+ * ([PluginClientBar]), else its name with its search and settings.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PluginClientScreen(id: String, onBack: () -> Unit, onSearch: () -> Unit, onSettings: () -> Unit) {
     val plugin = runningPlugin(id)?.plugin
-    PluginScaffold(
-        title = plugin?.title(currentLanguage()) ?: id,
-        onBack = onBack,
-        actions = {
-            if (plugin?.search != null) IconButton(onClick = onSearch) { Icon(Icons.Filled.Search, stringResource(Res.string.search)) }
-            if (plugin?.settings != null) IconButton(onClick = onSettings) { Icon(Icons.Filled.Settings, stringResource(Res.string.settings)) }
+    val bar = remember(id) { PluginClientBar() }
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+        topBar = {
+            SavesMediaOf(id) {
+                PluginStandaloneBar(
+                    bar,
+                    title = plugin?.title(currentLanguage()) ?: id,
+                    mark = { if (plugin != null) Icon(plugin.icon, contentDescription = null, tint = markTint(plugin), modifier = Modifier.size(24.dp)) },
+                    back = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.back)) } },
+                    modifier = Modifier.windowInsetsPadding(TopAppBarDefaults.windowInsets),
+                ) {
+                    if (plugin?.search != null) IconButton(onClick = onSearch) { Icon(Icons.Filled.Search, stringResource(Res.string.search)) }
+                    if (plugin?.settings != null) IconButton(onClick = onSettings) { Icon(Icons.Filled.Settings, stringResource(Res.string.settings)) }
+                }
+            }
         },
     ) { padding ->
         val body = plugin?.clientTab ?: plugin?.homeTab
         Box(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
-            if (body != null) SavesMediaOf(id) { body(PluginFrame(PaddingValues(bottom = padding.calculateBottomPadding()))) } else NotRunning()
+            if (body != null) {
+                CompositionLocalProvider(LocalPluginClientBar provides bar) {
+                    SavesMediaOf(id) { body(PluginFrame(PaddingValues(bottom = padding.calculateBottomPadding()))) }
+                }
+            } else {
+                NotRunning()
+            }
         }
     }
 }
@@ -102,7 +157,7 @@ fun PluginSettingsScreen(id: String, onBack: () -> Unit) {
     PluginScaffold(title = title, onBack = onBack) { padding ->
         val body = plugin?.settings
         Box(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
-            if (body != null) body(PluginFrame(PaddingValues(bottom = padding.calculateBottomPadding()))) else NotRunning()
+            if (body != null) SavesMediaOf(id) { body(PluginFrame(PaddingValues(bottom = padding.calculateBottomPadding()))) } else NotRunning()
         }
     }
 }

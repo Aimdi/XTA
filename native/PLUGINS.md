@@ -216,6 +216,24 @@ with a test.
   live area every mark spans, as XTA's PluginBrandMark) and, in `ui.common`,
   `FeedSkeleton` and `GridSkeleton` (post- and tile-shaped bones while a
   first page loads, in place of a spinner).
+- XTA's plugin chrome (not yet in a numbered version; the next one carries
+  it): `PluginHomeTabs` with `PluginHomeTab` (a home tab's own tabs as icon
+  and label buttons, the one shown underlined in the plugin's colour, folding
+  into `PluginSectionPicker` when they do not fit; opened on its own, the tabs
+  and their actions go into the screen's one bar, `PluginClientBar`, as
+  `PluginCompactTabs`), which `PluginChipTabs` now draws too; `PluginTabFit`,
+  the rules of that; `LocalPluginSurface` with `PluginSurface` and
+  `pluginAccent` (the plugin whose screen is drawn, as the app says it);
+  `RetryNotice` (Retry with XTA's ⓘ More info sheet, which
+  `NetworkProblemView`, `NetworkProblemRow`, `RetryMessage` and `RetryRow`
+  now end in) and `PartialFailureButton`; `PluginFeedSkeleton` and
+  `PluginGridSkeleton` (what a feed paints while its first page is on the
+  way; `pagedRows` draws the first); `PluginFilterChip` (a check while
+  selected); `XThreadRow` with `rememberXThreadStacks` (X posts sharing one
+  article stacked, as the app's feeds); `HomeTimelineSwitch` and
+  `PluginSwitchRow` with a leading icon, `HomeTimelineIcon`;
+  `AddToGroupButton` in a plugin's own words, `AddToGroupIcon`; and
+  `XtaPlugin.brandsChrome` (false: its mark on Home follows the text colour).
 - Words: `PluginStrings` with `pluginString` and `pluginPlural`
   (`pluralCategory` gives each language's plural forms).
 

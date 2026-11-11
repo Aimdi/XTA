@@ -116,4 +116,14 @@ class PluginPrefsTest {
         val session = Session(groups = listOf(FollowGroup("g1", "Friends", listOf("12", "bluesky:did:plc:maya", "reddit:spez", "blueskyfan"))))
         assertEquals(listOf("12", "reddit:spez", "blueskyfan"), session.withoutMembersOf("bluesky").groups.single().memberIds)
     }
+
+    @Test
+    fun uninstallingAPluginLetsAReinstallOfferItsTabAndStripPlaceAgain() {
+        val settings = Settings()
+            .with(HomePrefs.seededNetworkTabs, listOf("bluesky", "reddit"))
+            .with(HomePrefs.seededStripNetworks, listOf("reddit", "bluesky"))
+        val erased = settings.withoutPlugin("bluesky")
+        assertEquals(listOf("reddit"), erased[HomePrefs.seededNetworkTabs], "XTA's uninstall forgets it was offered a tab")
+        assertEquals(listOf("reddit"), erased[HomePrefs.seededStripNetworks])
+    }
 }

@@ -50,7 +50,7 @@ internal class PluginHomeNetworks(private val plugins: AppPlugins) : HomeNetwork
     @Composable
     override fun Mark(id: String, size: Dp) {
         val plugin = runningPlugin(id)?.plugin ?: return
-        Icon(plugin.icon, contentDescription = null, tint = plugin.brandColor, modifier = Modifier.size(size))
+        Icon(plugin.icon, contentDescription = null, tint = markTint(plugin), modifier = Modifier.size(size))
     }
 
     @Composable

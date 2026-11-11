@@ -69,7 +69,6 @@ fun RssReaderScreen(
 ) {
     val model = rememberKept("rss-reader-${RssOffline.idOf(item)}") { screen -> RssReaderModel(host, item, read, onRead, scope, screen) }
     val state by model.state.collectAsState()
-    val outside = rememberOpenOutside()
     val shown = state.item
     val reading = state.reading
     DisposableEffect(reading) {
@@ -79,13 +78,13 @@ fun RssReaderScreen(
     PluginScaffold(title = shown.feedTitle, onBack = host::back, actions = {
         if (shown.hasReadableBody) OfflineArticleAction(RssOffline.articleOf(shown))
         actions()
-        shown.link?.let { link -> IconButton(onClick = { outside(link) }) { Icon(PostIcons.OpenInNew, stringResource(Res.string.reader_link_open_in_browser)) } }
+        shown.link?.let { link -> IconButton(onClick = { host.openLink(link) }) { Icon(PostIcons.OpenInNew, stringResource(Res.string.reader_link_open_in_browser)) } }
     }) { padding ->
         Column(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
             when {
                 reading == null -> LoadingRow()
                 shown.hasReadableBody -> ReaderArticle(host, state, reading)
-                else -> ReaderFallback(shown, reading) { link -> outside(link) }
+                else -> ReaderFallback(shown, reading, host::openLink)
             }
         }
     }

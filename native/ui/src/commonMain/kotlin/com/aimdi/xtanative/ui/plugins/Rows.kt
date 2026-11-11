@@ -92,6 +92,15 @@ fun PluginSwitchRow(label: String, checked: Boolean, onChange: (Boolean) -> Unit
     }
 }
 
+/** [PluginSwitchRow] with [icon] before its words, as XTA's SwitchListTile draws its secondary. */
+@Composable
+fun PluginSwitchRow(icon: ImageVector, label: String, checked: Boolean, onChange: (Boolean) -> Unit, modifier: Modifier = Modifier, description: String? = null) {
+    Row(modifier.fillMaxWidth().clickable { onChange(!checked) }.padding(start = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+        PluginSwitchRow(label, checked, onChange, Modifier.weight(1f), description)
+    }
+}
+
 /**
  * A setting that does something when tapped (clears, tests, picks): the whole
  * row is the button, [icon] before [label], [description] under it, and

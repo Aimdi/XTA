@@ -3,6 +3,8 @@ package com.aimdi.xtanative.ui.plugins
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,6 +14,8 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -21,6 +25,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -34,6 +39,10 @@ import com.aimdi.xtanative.data.inFirstKinds
 import com.aimdi.xtanative.networks.NetworkFailure
 import com.aimdi.xtanative.networks.Page
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.ReadFailureSheet
+import com.aimdi.xtanative.ui.common.ReadSource
+import com.aimdi.xtanative.ui.subscriptions.GroupIcons
+import com.aimdi.xtanative.ui.generated.resources.problem_more_info
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.plugin_problem_no_account
 import com.aimdi.xtanative.ui.generated.resources.plugin_problem_offline
@@ -76,16 +85,28 @@ fun networkProblemText(problem: Problem, network: String): String = when (val fi
     else -> stringResource(Res.string.plugin_problem_other, network)
 }
 
-/** A read of [network] that brought nothing: why, and a way to try again. */
+/** A read of [network] that brought nothing: why, and a way to try again; its ⓘ opens why in a sheet ([RetryNotice]). */
 @Composable
 fun NetworkProblemView(problem: Problem, network: String, onRetry: () -> Unit, modifier: Modifier = Modifier) {
-    RetryMessage(networkProblemText(problem, network), onRetry, modifier)
+    Column(
+        modifier.fillMaxWidth().padding(horizontal = 32.dp, vertical = 40.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        val message = networkProblemText(problem, network)
+        Text(message, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
+        RetryNotice(message, onRetry, problem)
+    }
 }
 
 /** One row in a list: a failed page of [network] under what is already shown. */
 @Composable
 fun NetworkProblemRow(problem: Problem, network: String, onRetry: () -> Unit, modifier: Modifier = Modifier) {
-    RetryRow(networkProblemText(problem, network), onRetry, modifier)
+    Column(modifier.fillMaxWidth().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        val message = networkProblemText(problem, network)
+        Text(message, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
+        RetryNotice(message, onRetry, problem)
+    }
 }
 
 /** In place of a list, [message] about a read that brought nothing, in a network's own words, and a way to try again. */
@@ -97,7 +118,7 @@ fun RetryMessage(message: String, onRetry: () -> Unit, modifier: Modifier = Modi
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(message, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
-        TextButton(onClick = onRetry) { Text(stringResource(Res.string.retry)) }
+        RetryNotice(message, onRetry)
     }
 }
 
@@ -106,7 +127,31 @@ fun RetryMessage(message: String, onRetry: () -> Unit, modifier: Modifier = Modi
 fun RetryRow(message: String, onRetry: () -> Unit, modifier: Modifier = Modifier) {
     Column(modifier.fillMaxWidth().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         Text(message, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
+        RetryNotice(message, onRetry)
+    }
+}
+
+/**
+ * Retry, and beside it XTA's ⓘ More info (ReaderFailureNotice): a sheet
+ * headed by the plugin's name and why the read failed ([problem], where the
+ * plugin says it), with [message], the hint for that kind of failure, Retry
+ * and the plugin's settings. Drawn for the plugin the app says the screen is
+ * ([LocalPluginSurface]); Retry alone where it says none.
+ */
+@Composable
+fun RetryNotice(message: String?, onRetry: () -> Unit, problem: Problem? = null, modifier: Modifier = Modifier) {
+    val surface = LocalPluginSurface.current
+    var explaining by rememberSaveable { mutableStateOf(false) }
+    Row(modifier, verticalAlignment = Alignment.CenterVertically) {
         TextButton(onClick = onRetry) { Text(stringResource(Res.string.retry)) }
+        if (surface != null) {
+            IconButton(onClick = { explaining = true }) {
+                Icon(GroupIcons.InfoOutline, stringResource(Res.string.problem_more_info), modifier = Modifier.size(18.dp))
+            }
+        }
+    }
+    if (explaining && surface != null) {
+        ReadFailureSheet(ReadSource(surface.name, isX = false, openSettings = surface.openSettings), problem, onRetry, message) { explaining = false }
     }
 }
 
@@ -278,7 +323,7 @@ fun <T : Any> LazyListScope.pagedRows(
     when {
         paged.items.isEmpty() && problem != null -> item(key = "paged-problem") { RetryMessage(problemText(problem), pages::refresh) }
         paged.items.isEmpty() && paged.loaded && !paged.loading -> item(key = "paged-empty") { MessageText(empty) }
-        paged.items.isEmpty() -> item(key = "paged-loading") { LoadingRow() }
+        paged.items.isEmpty() -> item(key = "paged-loading") { PluginFeedSkeleton() }
         problem != null -> item(key = "paged-problem") { RetryRow(problemText(problem), pages::refresh) }
     }
     items(paged.items, key = key, contentType = { "row" }) { row(it) }

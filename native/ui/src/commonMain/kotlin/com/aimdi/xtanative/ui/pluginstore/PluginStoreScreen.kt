@@ -4,33 +4,37 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,6 +43,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -51,7 +56,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
@@ -69,7 +85,6 @@ import com.aimdi.xtanative.pluginhost.PluginState
 import com.aimdi.xtanative.pluginhost.PluginStatus
 import com.aimdi.xtanative.pluginhost.PluginStoreState
 import com.aimdi.xtanative.store.settings.Settings
-import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.SearchPillShape
 import com.aimdi.xtanative.ui.common.searchPillColors
@@ -79,6 +94,8 @@ import com.aimdi.xtanative.ui.generated.resources.settings_show_as_tab
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.common.currentLocale
+import com.aimdi.xtanative.ui.feed.ProvenanceColors
+import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.home_alt_microblogging
 import com.aimdi.xtanative.ui.generated.resources.home_alt_microblogging_group
@@ -155,8 +172,11 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
     val locale = currentLocale()
     val list = rememberLazyListState()
     val matching = storeMatching(query, running, locale)
-    val installed = store.installed.filter(matching)
-    val offer = store.onOffer.mapValues { (_, states) -> states.filter(matching) }.filterValues { it.isNotEmpty() }
+    val installed = StoreRows.ordered(store.installed.filter(matching)) { it.id }
+    val offer = store.onOffer.mapValues { (_, states) -> StoreRows.ordered(states.filter(matching)) { it.id } }.filterValues { it.isNotEmpty() }
+    var pulled by remember { mutableStateOf(false) }
+    var availableOpen by rememberSaveable { mutableStateOf(true) }
+    if (!store.catalogue.refreshing) pulled = false
     LaunchedEffect(Unit) { plugins.manager.refresh() }
     FollowInstalls(list, store, installed)
 
@@ -164,10 +184,10 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
         title = stringResource(Res.string.plugin_store),
         onBack = onBack,
         actions = {
+            ShowPrivateMenu(store.showPrivate) { show -> scope.launch { plugins.showPrivate(show) } }
             IconButton(onClick = { scope.launch { plugins.manager.refresh() } }, enabled = !store.catalogue.refreshing) {
                 Icon(Icons.Filled.Refresh, stringResource(Res.string.retry))
             }
-            ShowPrivateMenu(store.showPrivate) { show -> scope.launch { plugins.showPrivate(show) } }
         },
     ) { padding ->
         val actions = StoreActions(
@@ -183,28 +203,33 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
         val groupingWords = stringResource(Res.string.home_alt_microblogging) + " " +
             stringResource(Res.string.home_alt_microblogging_group) + " Mastodon Bluesky Threads"
         val grouping = StoreSearch.showsGrouping(query, groupingWords)
-        LazyColumn(
-            state = list,
-            contentPadding = PaddingValues(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding() + 24.dp),
-            modifier = Modifier.fillMaxSize(),
+        StoreColumn(
+            refreshing = pulled && store.catalogue.refreshing,
+            onRefresh = {
+                pulled = true
+                scope.launch { plugins.manager.refresh() }
+            },
+            modifier = Modifier.padding(top = padding.calculateTopPadding()),
         ) {
-            item(key = "search") { StoreSearchField(query) { query = it } }
-            if (store.catalogue.refreshing) item(key = "refreshing") { LinearProgressIndicator(Modifier.fillMaxWidth()) }
-            if (store.catalogue.unreachable) item(key = "unreachable") { Unreachable(store.catalogue.fetchedAt != null) }
-            if (StoreSearch.noResults(query, installed.size, offer.values.sumOf { it.size }, grouping)) {
-                item(key = "no-results") { MessageText(stringResource(Res.string.plugin_store_no_results)) }
-            }
-            // XTA's "Group microblogging services", above the plugins (_plugin_store.dart), unless the search leaves it out.
-            if (grouping) item(key = "group-microblogging") { MicroblogGroupingRow() }
-            if (installed.isNotEmpty()) {
-                item(key = "installed") { Header(stringResource(Res.string.plugin_installed)) }
-                items(installed, key = { "installed-" + it.id }) { state ->
-                    InstalledRow(state, running.firstOrNull { it.plugin.id == state.id }, StoreMarks(state.id in pins, settings.tabOf(state.id)), problems[state.id], plugins, locale, actions)
+            LazyColumn(state = list, contentPadding = PaddingValues(bottom = padding.calculateBottomPadding() + 24.dp), modifier = Modifier.fillMaxSize()) {
+                item(key = "search") { StoreSearchField(query) { query = it } }
+                if (store.catalogue.refreshing) item(key = "refreshing") { LinearProgressIndicator(Modifier.fillMaxWidth()) }
+                if (store.catalogue.unreachable) item(key = "unreachable") { Unreachable(store.catalogue.fetchedAt != null) }
+                if (StoreSearch.noResults(query, installed.size, offer.values.sumOf { it.size }, grouping)) {
+                    item(key = "no-results") { NoResults(stringResource(Res.string.plugin_store_no_results)) }
                 }
-            }
-            available(offer, locale, actions)
-            if (store.installed.isEmpty() && store.onOffer.isEmpty() && !store.catalogue.refreshing) {
-                item(key = "empty") { MessageText(stringResource(Res.string.plugin_store_empty)) }
+                // XTA's "Group microblogging services", above the plugins (_plugin_store.dart), unless the search leaves it out.
+                if (grouping) item(key = "group-microblogging") { MicroblogGroupingRow() }
+                if (installed.isNotEmpty()) {
+                    item(key = "installed") { Header(stringResource(Res.string.plugin_installed)) }
+                    items(installed, key = { "installed-" + it.id }) { state ->
+                        InstalledRow(state, running.firstOrNull { it.plugin.id == state.id }, StoreMarks(state.id in pins, settings.tabOf(state.id)), problems[state.id], plugins, locale, actions)
+                    }
+                }
+                available(offer, locale, actions, availableOpen) { availableOpen = !availableOpen }
+                if (store.installed.isEmpty() && store.onOffer.isEmpty() && !store.catalogue.refreshing) {
+                    item(key = "empty") { MessageText(stringResource(Res.string.plugin_store_empty)) }
+                }
             }
         }
     }
@@ -220,6 +245,23 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
         )
     }
 }
+
+/**
+ * The store's list in XTA's column (PluginStoreBody): at most
+ * [STORE_COLUMN] wide and centred, so a desktop window does not stretch a
+ * row's name away from its buttons, and pulled down to read the catalogue
+ * again.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun StoreColumn(refreshing: Boolean, onRefresh: () -> Unit, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    Box(modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+        PullToRefreshBox(isRefreshing = refreshing, onRefresh = onRefresh, modifier = Modifier.widthIn(max = STORE_COLUMN).fillMaxSize()) { content() }
+    }
+}
+
+/** XTA's kSettingsContentWidth. */
+private val STORE_COLUMN = 720.dp
 
 /** Scrolls [list] to a plugin whose install has just ended, as [StoreRows] says, among the installed plugins [shown]. */
 @Composable
@@ -289,10 +331,15 @@ private class StoreActions(
     val tab: (String, Boolean) -> Unit,
 )
 
-/** What is on offer and not installed, under Available, by category in the store's order. */
-private fun LazyListScope.available(offer: Map<PluginCategory, List<PluginState>>, locale: Locale, actions: StoreActions) {
+/**
+ * What is on offer and not installed, under Available, by category in the
+ * store's order; its heading folds it away ([open]), so Installed stays the
+ * first thing in view (XTA's PluginAvailableSection).
+ */
+private fun LazyListScope.available(offer: Map<PluginCategory, List<PluginState>>, locale: Locale, actions: StoreActions, open: Boolean, onToggle: () -> Unit) {
     if (offer.isEmpty()) return
-    item(key = "available") { Header(stringResource(Res.string.plugin_available)) }
+    item(key = "available") { FoldHeader(stringResource(Res.string.plugin_available), open, onToggle) }
+    if (!open) return
     PluginCategory.entries.forEach { category ->
         val plugins = offer[category].orEmpty()
         if (plugins.isEmpty()) return@forEach
@@ -315,19 +362,16 @@ private fun InstalledRow(
     val name = plugin?.title(currentLanguage()) ?: state.name(locale)
     val opens = plugin != null && (plugin.clientTab != null || plugin.homeTab != null)
     val use by produceState<PluginUse?>(null, state.installed?.version, running) { value = plugins.use(state.id) }
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .clickable(enabled = opens || plugin?.settings != null) { if (opens) actions.open(state.id) else actions.settings(state.id) },
-    ) {
-        Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 4.dp, top = 10.dp, bottom = 10.dp), verticalAlignment = Alignment.CenterVertically) {
-            PluginMark(running, name, 40.dp)
-            Spacer(Modifier.width(12.dp))
-            Column(Modifier.weight(1f)) {
-                Text(name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+    Column(Modifier.fillMaxWidth()) {
+        StoreTile(
+            leading = { StoreMark(running, name) },
+            title = name,
+            subtitle = {
                 StatusLine(installedStatus(state.status, startProblem, use, locale), failed = state.status is PluginStatus.Failed || startProblem != null)
                 use?.let { Footprint(it, locale) }
-            }
+            },
+            onClick = if (opens) ({ actions.open(state.id) }) else if (plugin?.settings != null) ({ actions.settings(state.id) }) else null,
+        ) {
             if (state.status is PluginStatus.UpdateAvailable) {
                 FilledTonalButton(onClick = { actions.update(state.id) }) { Text(stringResource(Res.string.plugin_update)) }
             } else if (opens) {
@@ -335,7 +379,7 @@ private fun InstalledRow(
             }
             if (plugin?.settings != null) {
                 IconButton(onClick = { actions.settings(state.id) }) {
-                    Icon(Icons.Filled.Settings, stringResource(Res.string.settings), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Icon(GroupIcons.Tune, stringResource(Res.string.settings), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
                 }
             }
             val home = plugin?.homeTab != null
@@ -349,7 +393,6 @@ private fun InstalledRow(
         }
         Progress(state.status)
     }
-    Hairline()
 }
 
 @Composable
@@ -357,23 +400,17 @@ private fun AvailableRow(state: PluginState, locale: Locale, actions: StoreActio
     val name = state.name(locale)
     val status = state.status
     Column(Modifier.fillMaxWidth()) {
-        Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
-            PluginMark(null, name, 40.dp)
-            Spacer(Modifier.width(12.dp))
-            Column(Modifier.weight(1f)) {
-                Text(name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        StoreTile(
+            leading = { StoreMark(null, name) },
+            title = name,
+            subtitle = {
                 state.description(locale).takeIf { it.isNotBlank() }?.let {
-                    Text(
-                        it,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                    )
+                    Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2, overflow = TextOverflow.Ellipsis)
                 }
                 offerStatus(status, locale)?.let { StatusLine(it, failed = status is PluginStatus.Failed) }
-            }
-            Spacer(Modifier.width(8.dp))
+            },
+            onClick = null,
+        ) {
             when (status) {
                 is PluginStatus.Downloading -> TextButton(onClick = { actions.cancel(state.id) }) { Text(stringResource(Res.string.cancel)) }
                 PluginStatus.Installing, is PluginStatus.NeedsNewerApp -> Unit
@@ -381,6 +418,48 @@ private fun AvailableRow(state: PluginState, locale: Locale, actions: StoreActio
             }
         }
         Progress(status)
+    }
+}
+
+/**
+ * One row of the store (XTA's PluginStoreTile): the plugin's mark, its name
+ * and what is said under it, then its [actions]: beside them where there is
+ * room, under them, at the row's end, in a narrow window or with large text
+ * ([StoreRows.stacks]), so a name is never squeezed out by its buttons.
+ */
+@Composable
+private fun StoreTile(
+    leading: @Composable () -> Unit,
+    title: String,
+    subtitle: @Composable () -> Unit,
+    onClick: (() -> Unit)?,
+    actions: @Composable RowScope.() -> Unit,
+) {
+    val scale = LocalDensity.current.fontScale
+    BoxWithConstraints(Modifier.fillMaxWidth().clickable(enabled = onClick != null) { onClick?.invoke() }.padding(start = 16.dp, top = 8.dp, end = 8.dp, bottom = 8.dp)) {
+        val identity: @Composable (Modifier) -> Unit = { modifier ->
+            Row(modifier, verticalAlignment = Alignment.CenterVertically) {
+                leading()
+                Spacer(Modifier.width(12.dp))
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    subtitle()
+                }
+            }
+        }
+        if (StoreRows.stacks(maxWidth.value, scale)) {
+            Column(Modifier.fillMaxWidth()) {
+                identity(Modifier.fillMaxWidth())
+                Spacer(Modifier.height(8.dp))
+                Row(Modifier.align(Alignment.End), verticalAlignment = Alignment.CenterVertically, content = actions)
+            }
+        } else {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                identity(Modifier.weight(1f))
+                Spacer(Modifier.width(8.dp))
+                actions()
+            }
+        }
     }
 }
 
@@ -459,26 +538,37 @@ private fun Progress(status: PluginStatus) {
 }
 
 /**
- * A plugin's mark: its own icon in its colour once it runs; before that, the
- * catalogue gives no picture, so its initial.
+ * A plugin's mark (XTA's pluginBrandIcon): its own icon on a [shape] washed
+ * in its colour, the colour lightened on a dark theme when it is nearly
+ * black, once it runs; before that, the catalogue gives no picture, so its
+ * initial. The store draws it as XTA's does, [STORE_MARK] on a rounded square.
  */
 @Composable
-internal fun PluginMark(running: RunningPlugin?, name: String, size: Dp) {
+internal fun PluginMark(running: RunningPlugin?, name: String, size: Dp, shape: Shape = CircleShape) {
     val plugin = running?.plugin
+    val scheme = MaterialTheme.colorScheme
+    val dark = scheme.background.luminance() < 0.5f
+    val brand = plugin?.brandColor?.let { Color(ProvenanceColors.brandOn(it.toArgb(), dark)) }
     Box(
         Modifier
             .size(size)
-            .clip(CircleShape)
-            .background(plugin?.brandColor?.copy(alpha = 0.16f) ?: MaterialTheme.colorScheme.surfaceVariant),
+            .clip(shape)
+            .background(brand?.copy(alpha = if (dark) 0.22f else 0.14f) ?: scheme.surfaceVariant),
         contentAlignment = Alignment.Center,
     ) {
-        if (plugin != null) {
-            Icon(plugin.icon, contentDescription = null, tint = plugin.brandColor, modifier = Modifier.size(size * 0.6f))
+        if (plugin != null && brand != null) {
+            Icon(plugin.icon, contentDescription = null, tint = if (brand == scheme.onSurface) scheme.primary else brand, modifier = Modifier.size(size * 0.6f))
         } else {
-            Text(name.take(1).uppercase(), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(name.take(1).uppercase(), style = if (size < 40.dp) MaterialTheme.typography.labelLarge else MaterialTheme.typography.titleMedium, color = scheme.onSurfaceVariant)
         }
     }
 }
+
+/** The store's mark, as XTA's rows draw it: 28 dp, on a square with rounded corners. */
+@Composable
+private fun StoreMark(running: RunningPlugin?, name: String) = PluginMark(running, name, STORE_MARK, RoundedCornerShape(10.dp))
+
+private val STORE_MARK = 28.dp
 
 /**
  * An installed plugin's menu: XTA's Show as a tab (its page on Home's bottom
@@ -490,7 +580,7 @@ private fun InstalledMenu(pinned: Boolean?, tab: Boolean?, onPin: (Boolean) -> U
     var open by remember { mutableStateOf(false) }
     Box {
         IconButton(onClick = { open = true }) {
-            Icon(Icons.Filled.MoreVert, stringResource(Res.string.plugin_more_options), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+            Icon(Icons.Filled.MoreVert, stringResource(Res.string.plugin_more_options), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
         }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             if (tab != null) {
@@ -514,7 +604,7 @@ private fun InstalledMenu(pinned: Boolean?, tab: Boolean?, onPin: (Boolean) -> U
                 )
             }
             DropdownMenuItem(
-                text = { Text(stringResource(Res.string.plugin_uninstall), color = MaterialTheme.colorScheme.error) },
+                text = { Text(stringResource(Res.string.plugin_uninstall)) },
                 onClick = {
                     open = false
                     onUninstall()
@@ -560,7 +650,7 @@ private fun UninstallDialog(name: String, onConfirm: () -> Unit, onDismiss: () -
 @Composable
 private fun Unreachable(cached: Boolean) {
     Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-        Icon(Icons.Filled.Info, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+        Icon(StoreIcons.CloudOff, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.width(16.dp))
         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(stringResource(Res.string.plugin_catalogue_unavailable), style = MaterialTheme.typography.bodyMedium)
@@ -576,13 +666,45 @@ private fun Unreachable(cached: Boolean) {
 }
 
 @Composable
-private fun Header(text: String) {
+private fun Header(text: String, modifier: Modifier = Modifier) {
     Text(
         text,
-        style = MaterialTheme.typography.titleMedium,
+        style = MaterialTheme.typography.titleSmall,
+        fontWeight = FontWeight.Bold,
         color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 20.dp, bottom = 4.dp),
+        modifier = modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 4.dp),
     )
+}
+
+/** A section's heading that folds it: its arrow points down while it is [open]. */
+@Composable
+private fun FoldHeader(text: String, open: Boolean, onToggle: () -> Unit) {
+    Row(
+        Modifier.fillMaxWidth().clickable(role = Role.Button, onClick = onToggle).semantics { stateDescription = text },
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Header(text, Modifier.weight(1f).padding(bottom = 12.dp))
+        Icon(
+            GroupIcons.ExpandMore,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(end = 16.dp).rotate(if (open) 180f else 0f),
+        )
+    }
+}
+
+/** XTA's PluginStoreEmptyState: a search that finds nothing says so under its mark. */
+@Composable
+private fun NoResults(label: String) {
+    val color = MaterialTheme.colorScheme.onSurfaceVariant
+    Column(
+        Modifier.fillMaxWidth().padding(start = 24.dp, top = 40.dp, end = 24.dp, bottom = 24.dp).semantics { liveRegion = LiveRegionMode.Polite },
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Icon(StoreIcons.SearchOff, contentDescription = null, tint = color, modifier = Modifier.size(40.dp))
+        Spacer(Modifier.height(12.dp))
+        Text(label, color = color)
+    }
 }
 
 @Composable
@@ -590,8 +712,9 @@ private fun CategoryHeader(text: String) {
     Text(
         text,
         style = MaterialTheme.typography.labelLarge,
+        fontWeight = FontWeight.SemiBold,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 2.dp),
+        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 2.dp),
     )
 }
 

@@ -14,8 +14,10 @@ internal fun Session.withoutMembersOf(id: String): Session =
 
 /**
  * [this] without what Home keeps of plugin [id]: its place on the strip,
- * among the timelines opened last and on the bottom bar, and its top bar's
- * pins; and without the network's own settings (`plugin.<id>.…`, which a
+ * among the timelines opened last and on the bottom bar, its top bar's
+ * pins, and Home's memory of having offered it a tab or a place on the
+ * strip, so that installing it again offers them as a first install does
+ * (XTA's uninstall); and without the network's own settings (`plugin.<id>.…`, which a
  * plugin keeps through [PluginSettings]), as XTA's uninstall resets them.
  * A setting that never named it stays as it was, unset or not.
  */
@@ -26,6 +28,8 @@ internal fun Settings.withoutPlugin(id: String): Settings {
     return dropping(HomePrefs.feedStripNetworks)
         .dropping(HomePrefs.recentNetworks)
         .dropping(HomePrefs.pages)
+        .dropping(HomePrefs.seededNetworkTabs)
+        .dropping(HomePrefs.seededStripNetworks)
         .let { if (it.isSet(pins)) it.without(pins) else it }
         .let { settings -> settings.values.keys.filter { it.startsWith(own) }.fold(settings) { kept, key -> kept.with(key, null) } }
 }

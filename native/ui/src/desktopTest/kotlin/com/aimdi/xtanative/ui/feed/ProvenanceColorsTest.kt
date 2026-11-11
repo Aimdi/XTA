@@ -39,4 +39,21 @@ class ProvenanceColorsTest {
         assertEquals(21.0, ProvenanceColors.contrast(black, white), 0.01)
         assertEquals(1.0, ProvenanceColors.contrast(white, white), 0.0001)
     }
+
+    @Test
+    fun aMarkIsTakenTowardBlackOrWhiteUntilItReadsAsText() {
+        val yellow = 0xFFFFEB3B.toInt()
+        val onWhite = ProvenanceColors.readable(yellow, white)
+        assertTrue(ProvenanceColors.contrast(onWhite, white) >= 4.5)
+        assertEquals(yellow, ProvenanceColors.readable(yellow, black), "it reads on black as it is")
+    }
+
+    @Test
+    fun onlyANearlyBlackBrandIsLightenedAndOnlyOnADarkTheme() {
+        val threads = 0xFF101010.toInt()
+        val reddit = 0xFFFF4500.toInt()
+        assertNotEquals(threads, ProvenanceColors.brandOn(threads, dark = true))
+        assertEquals(threads, ProvenanceColors.brandOn(threads, dark = false))
+        assertEquals(reddit, ProvenanceColors.brandOn(reddit, dark = true))
+    }
 }

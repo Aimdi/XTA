@@ -14,10 +14,14 @@ import kotlin.math.roundToInt
  */
 object ProvenanceColors {
     fun accent(brand: Int, surface: Int): Int {
-        val dark = luminance(surface) < 0.5
-        val readable = if (dark && luminance(brand) < DARK_BRAND) lerp(brand, WHITE, LIGHTEN) else brand
-        return contrasted(readable, surface, MIN_RATIO)
+        return contrasted(brandOn(brand, dark = luminance(surface) < 0.5), surface, MIN_RATIO)
     }
+
+    /** [brand] as a dark theme can show it (XTA's readableBrandColor): a near-black one is lightened there, any other stays. */
+    fun brandOn(brand: Int, dark: Boolean): Int = if (dark && luminance(brand) < DARK_BRAND) lerp(brand, WHITE, LIGHTEN) else brand
+
+    /** [foreground], or the nearest step of it toward black or white that reads on [background] at [ratio] (XTA's ensureContrast, 4.5 for text and marks). */
+    fun readable(foreground: Int, background: Int, ratio: Double = TEXT_RATIO): Int = contrasted(foreground, background, ratio)
 
     /** WCAG 2.1's contrast between two colours, 1 to 21. */
     fun contrast(a: Int, b: Int): Double {
@@ -53,5 +57,6 @@ object ProvenanceColors {
     private const val DARK_BRAND = 0.12
     private const val LIGHTEN = 0.72
     private const val MIN_RATIO = 2.0
+    private const val TEXT_RATIO = 4.5
     private const val STEPS = 20
 }
