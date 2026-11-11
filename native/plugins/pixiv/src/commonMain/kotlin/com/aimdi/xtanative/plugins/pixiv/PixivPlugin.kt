@@ -44,7 +44,7 @@ class PixivPlugin : XtaPlugin() {
 
     override val id: String = "pixiv"
     override val brandColor: Color = Color(0xFF0096FA)
-    override val icon: ImageVector get() = PixivIcons.Brush
+    override val icon: ImageVector get() = PixivIcons.Mark
     override val category: Category = Category.ART
     override val isPrivate: Boolean = true
 

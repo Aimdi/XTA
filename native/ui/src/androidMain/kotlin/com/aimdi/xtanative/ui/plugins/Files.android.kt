@@ -37,18 +37,28 @@ private fun rememberDocumentChooser(mimeTypes: Array<String>, onChosen: (read: s
 
 /** The system's save dialog for a file of [mime]; the text is written where the reader puts it. */
 @Composable
-actual fun rememberTextFileSaver(title: String, mime: String, onSaved: (String?) -> Unit): (fileName: String, text: String) -> Unit {
+actual fun rememberTextFileSaver(title: String, mime: String, onSaved: (String?) -> Unit): (fileName: String, text: String) -> Unit =
+    rememberTextDocumentSaver(mime) { _, name -> onSaved(name) }
+
+/** The same dialog, telling a file that could not be written from a reader who closed the dialog. */
+@Composable
+actual fun rememberTextFileSaver(title: String, mime: String, onSaved: (String) -> Unit, onFailed: () -> Unit): (fileName: String, text: String) -> Unit =
+    rememberTextDocumentSaver(mime) { placed, name -> textSaveEnded(placed, name, onSaved, onFailed) }
+
+/** The save dialog for a text of [mime]; [onEnded] hears whether the reader placed the file, and the name it was written under (null when it was not written). */
+@Composable
+private fun rememberTextDocumentSaver(mime: String, onEnded: (placed: Boolean, name: String?) -> Unit): (fileName: String, text: String) -> Unit {
     val resolver = LocalContext.current.contentResolver
     val scope = rememberCoroutineScope()
-    val saved = rememberUpdatedState(onSaved)
+    val ended = rememberUpdatedState(onEnded)
     val pending = remember { arrayOfNulls<String>(1) }
     val save = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(mime)) { uri ->
         val text = pending[0]
         pending[0] = null
         if (uri == null || text == null) {
-            saved.value(null)
+            ended.value(false, null)
         } else {
-            scope.launch { saved.value(withContext(Dispatchers.IO) { write(resolver, uri, text) }) }
+            scope.launch { ended.value(true, withContext(Dispatchers.IO) { write(resolver, uri, text) }) }
         }
     }
     return remember(save) {

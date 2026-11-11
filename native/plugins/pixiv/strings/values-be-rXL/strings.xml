@@ -22,6 +22,7 @@
     <string name="article_reader_appearance">Vyhlad dla čytannia</string>
     <string name="article_reader_line_spacing">Mižradkovy interval</string>
     <string name="article_reader_text_size">Kaeficyjent maštabavańnia tekstu</string>
+    <string name="back">Nazad</string>
     <string name="bookmark">U zakladki</string>
     <string name="bookmark_add">Dadać zakladku</string>
     <string name="bookmark_after_save">Dadavać u zakladki pry zachavanni</string>

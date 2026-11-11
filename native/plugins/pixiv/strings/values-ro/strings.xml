@@ -22,6 +22,7 @@
     <string name="article_reader_appearance">Aspectul lecturii</string>
     <string name="article_reader_line_spacing">Spațiere între rânduri</string>
     <string name="article_reader_text_size">Factorul de scalare a textului</string>
+    <string name="back">Înapoi</string>
     <string name="bookmark">Semn de carte</string>
     <string name="bookmark_add">Adaugă semn de carte</string>
     <string name="bookmark_after_save">Adaugă la semne de carte la salvare</string>

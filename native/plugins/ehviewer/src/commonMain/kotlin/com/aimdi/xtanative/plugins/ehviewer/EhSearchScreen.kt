@@ -183,6 +183,9 @@ private fun typed(initial: String): TextFieldValue {
 internal class EhAppSearch(private val app: EhApp) : PluginSearch() {
     override fun hint(language: String): String = Strings.search_hint.get(language)
 
+    /** The app's search opens EH's own (eh_plugin.dart's openSearch), with the site's tag suggestions as one types. */
+    override fun ownScreen(query: String?): String = EhRoutes.search(query)
+
     @Composable
     override fun Results(query: String, frame: PluginFrame) = WithSettings(app.host.settings) {
         val page = rememberKept("eh-app-search:$query") { scope -> EhSearchPage(app, scope).also { it.run(query) } }
@@ -228,7 +231,12 @@ private fun SearchFilters(search: EhSearch, state: EhSearchState) {
                 )
             }
             EhSearchLanguage.entries.forEach { language ->
-                FilterChip(selected = filters.language == language, onClick = { search.setLanguage(language) }, label = { Text(pluginString(EhText.language(language))) })
+                FilterChip(
+                    selected = filters.language == language,
+                    onClick = { search.setLanguage(language) },
+                    label = { Text(pluginString(EhText.language(language))) },
+                    leadingIcon = chipCheck(filters.language == language),
+                )
             }
         }
     }

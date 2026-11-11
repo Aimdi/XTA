@@ -1,13 +1,23 @@
 package com.aimdi.xtanative.plugins.ehviewer
 
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.aimdi.xtanative.ui.plugins.brandMarkIcon
 import com.aimdi.xtanative.ui.plugins.pathIcon
 
 /** The icons XTA's EH screens draw that the core set lacks, from Material's (Apache 2.0) paths. */
 internal object EhIcons {
-    /** XTA's mark for EH, collections_bookmark. */
+    /** XTA's mark for EH: the "H" its store, network switcher and strips draw (plugin_marks.dart's _ehH), fitted as every mark is. */
     val Mark: ImageVector by lazy {
-        pathIcon("Mark", "M20,2H8C6.9,2 6,2.9 6,4v12c0,1.1 0.9,2 2,2h12c1.1,0 2,-0.9 2,-2V4C22,2.9 21.1,2 20,2zM20,16H8V4h3v8l2.5,-1.5L16,12V4h4V16zM4,6H2v14c0,1.1 0.9,2 2,2h14v-2H4V6z")
+        brandMarkIcon(
+            "Mark",
+            path =
+                "M4.8,2.4H7.2A1.2,1.2 0 0 1 8.4,3.6V20.4A1.2,1.2 0 0 1 7.2,21.6H4.8A1.2,1.2 0 0 1 3.6,20.4V3.6A1.2,1.2 0 0 1 4.8,2.4Z" +
+                "M16.8,2.4H19.2A1.2,1.2 0 0 1 20.4,3.6V20.4A1.2,1.2 0 0 1 19.2,21.6H16.8A1.2,1.2 0 0 1 15.6,20.4V3.6A1.2,1.2 0 0 1 16.8,2.4Z" +
+                "M4.6,10.1H19.4A1,1 0 0 1 20.4,11.1V12.9A1,1 0 0 1 19.4,13.9H4.6A1,1 0 0 1 3.6,12.9V11.1A1,1 0 0 1 4.6,10.1Z",
+            left = 2.4f,
+            top = 2.4f,
+            side = 19.2f,
+        )
     }
     val Popular: ImageVector by lazy {
         pathIcon(

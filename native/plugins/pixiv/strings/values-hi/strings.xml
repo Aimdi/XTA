@@ -22,6 +22,7 @@
     <string name="article_reader_appearance">पढ़ने का स्वरूप</string>
     <string name="article_reader_line_spacing">पंक्तियों के बीच दूरी</string>
     <string name="article_reader_text_size">टेक्स्ट स्केल फ़ैक्टर</string>
+    <string name="back">वापस</string>
     <string name="bookmark">बुकमार्क</string>
     <string name="bookmark_add">बुकमार्क जोड़ें</string>
     <string name="bookmark_after_save">सहेजते समय बुकमार्क करें</string>

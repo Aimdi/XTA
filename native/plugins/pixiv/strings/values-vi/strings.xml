@@ -22,6 +22,7 @@
     <string name="article_reader_appearance">Giao diện đọc</string>
     <string name="article_reader_line_spacing">Giãn dòng</string>
     <string name="article_reader_text_size">Kích thước chữ</string>
+    <string name="back">Quay lại</string>
     <string name="bookmark">Đánh dấu</string>
     <string name="bookmark_add">Thêm đánh dấu</string>
     <string name="bookmark_after_save">Đánh dấu khi lưu</string>

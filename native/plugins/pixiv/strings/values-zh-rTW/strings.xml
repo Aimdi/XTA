@@ -22,6 +22,7 @@
     <string name="article_reader_appearance">閱讀外觀</string>
     <string name="article_reader_line_spacing">行距</string>
     <string name="article_reader_text_size">文字大小</string>
+    <string name="back">返回</string>
     <string name="bookmark">收藏</string>
     <string name="bookmark_add">加入收藏</string>
     <string name="bookmark_after_save">儲存時收藏</string>

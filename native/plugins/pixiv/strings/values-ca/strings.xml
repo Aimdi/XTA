@@ -22,6 +22,7 @@
     <string name="article_reader_appearance">Aspecte de lectura</string>
     <string name="article_reader_line_spacing">Interlineat</string>
     <string name="article_reader_text_size">Factor d'escala del text</string>
+    <string name="back">Enrere</string>
     <string name="bookmark">Marcador</string>
     <string name="bookmark_add">Afegeix un marcador</string>
     <string name="bookmark_after_save">Afegeix als marcadors en desar</string>

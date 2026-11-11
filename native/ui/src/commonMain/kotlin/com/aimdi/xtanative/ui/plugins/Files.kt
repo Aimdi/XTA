@@ -30,3 +30,18 @@ expect fun rememberImageChooser(title: String, onChosen: (read: suspend () -> By
  */
 @Composable
 expect fun rememberTextFileSaver(title: String, mime: String, onSaved: (String?) -> Unit): (fileName: String, text: String) -> Unit
+
+/**
+ * [rememberTextFileSaver] for a caller that tells a failed write from a
+ * reader who backed out, as XTA's exports do: [onSaved] hears the name the
+ * file went under, [onFailed] that it was placed but could not be written,
+ * and backing out of the dialog calls neither.
+ */
+@Composable
+expect fun rememberTextFileSaver(title: String, mime: String, onSaved: (String) -> Unit, onFailed: () -> Unit): (fileName: String, text: String) -> Unit
+
+/** How a save ended, told: nothing when the reader did not place the file, [onSaved] with the [name] it went under, [onFailed] when it has none. */
+internal fun textSaveEnded(placed: Boolean, name: String?, onSaved: (String) -> Unit, onFailed: () -> Unit) {
+    if (!placed) return
+    if (name != null) onSaved(name) else onFailed()
+}

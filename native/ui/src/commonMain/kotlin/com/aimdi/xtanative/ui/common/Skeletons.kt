@@ -7,10 +7,12 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -26,6 +28,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.lerp
@@ -54,6 +57,37 @@ fun FeedSkeleton(modifier: Modifier = Modifier, count: Int = 6) {
 @Composable
 fun PostSkeleton(modifier: Modifier = Modifier) {
     Box(modifier) { PostSkeletonBones(rememberSkeletonPulse()) }
+}
+
+/**
+ * Placeholder tiles while a grid's first page loads (XTA's PluginGridSkeleton):
+ * [count] square tiles in [columns] sharing one pulse, so a grid of pictures
+ * fills in place. Not scrollable itself; rows that do not fit are not drawn.
+ */
+@Composable
+fun GridSkeleton(modifier: Modifier = Modifier, columns: Int = 3, count: Int = 9) {
+    val pulse = rememberSkeletonPulse()
+    val value by pulse
+    val color = lerp(MaterialTheme.colorScheme.surfaceContainerHighest, MaterialTheme.colorScheme.surfaceContainerHigh, value)
+    Column(modifier.fillMaxWidth().clipToBounds().padding(GRID_GAP), verticalArrangement = Arrangement.spacedBy(GRID_GAP)) {
+        SkeletonGrid.rows(count, columns).forEach { tiles ->
+            Row(horizontalArrangement = Arrangement.spacedBy(GRID_GAP)) {
+                repeat(columns) { index ->
+                    if (index < tiles) Bone(Modifier.weight(1f).aspectRatio(1f), color, RoundedCornerShape(GRID_RADIUS)) else Spacer(Modifier.weight(1f))
+                }
+            }
+        }
+    }
+}
+
+/** How a grid skeleton's tiles fall in rows. */
+internal object SkeletonGrid {
+    /** The number of tiles in each row of [count] tiles in [columns]; the last row may be short. */
+    fun rows(count: Int, columns: Int): List<Int> {
+        if (count <= 0 || columns <= 0) return emptyList()
+        val full = List(count / columns) { columns }
+        return if (count % columns == 0) full else full + count % columns
+    }
 }
 
 /** Whether the bones pulse: not while the reader switched animations off (XTA's optionDisableAnimations); then they hold [STILL]. */
@@ -103,4 +137,6 @@ private fun Bone(modifier: Modifier, color: Color, shape: Shape = RoundedCornerS
 }
 
 private val BONE_RADIUS: Dp = 4.dp
+private val GRID_GAP: Dp = 4.dp
+private val GRID_RADIUS: Dp = 8.dp
 private const val SKELETON_PULSE_MILLIS = 1_100

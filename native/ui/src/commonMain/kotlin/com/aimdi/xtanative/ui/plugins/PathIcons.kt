@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.ui.plugins
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.PathParser
@@ -14,6 +15,38 @@ fun pathIcon(name: String, path: String, viewport: Float = 24f): ImageVector =
     ImageVector.Builder(name = name, defaultWidth = 24.dp, defaultHeight = 24.dp, viewportWidth = viewport, viewportHeight = viewport)
         .addPath(pathData = PathParser().parsePathString(path).toNodes(), fill = SolidColor(Color.Black))
         .build()
+
+/** Share of a mark's box its glyph spans: Material's 20 dp live area in a 24 dp icon (XTA's pluginMarkLiveShare). */
+const val MARK_LIVE_SHARE: Float = 20f / 24f
+
+/**
+ * A network's own glyph as its mark: [path], drawn edge to edge in the square
+ * frame from ([left], [top]) of side [side], fitted into the live area a
+ * Material icon's glyph spans, so every mark reads the same size (XTA's
+ * PluginBrandMark). [evenOdd] for a glyph whose holes are cut that way.
+ */
+fun brandMarkIcon(name: String, path: String, left: Float = 0f, top: Float = 0f, side: Float = 24f, evenOdd: Boolean = false): ImageVector {
+    val fit = markFit(left, top, side)
+    return ImageVector.Builder(name = name, defaultWidth = 24.dp, defaultHeight = 24.dp, viewportWidth = 24f, viewportHeight = 24f)
+        .addGroup(scaleX = fit.scale, scaleY = fit.scale, translationX = fit.x, translationY = fit.y)
+        .addPath(
+            pathData = PathParser().parsePathString(path).toNodes(),
+            fill = SolidColor(Color.Black),
+            pathFillType = if (evenOdd) PathFillType.EvenOdd else PathFillType.NonZero,
+        )
+        .clearGroup()
+        .build()
+}
+
+/** How a frame's glyph is scaled and moved to span a 24 dp icon's live area. */
+internal class MarkFit(val scale: Float, val x: Float, val y: Float)
+
+internal fun markFit(left: Float, top: Float, side: Float): MarkFit {
+    val live = 24f * MARK_LIVE_SHARE
+    val scale = live / side
+    val inset = (24f - live) / 2f
+    return MarkFit(scale, inset - left * scale, inset - top * scale)
+}
 
 /** Material's glyphs (Apache 2.0) that more than one plugin draws and neither Material's core set nor the app's sets have. */
 object PluginIcons {

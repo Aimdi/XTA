@@ -59,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.pixiv.PixivIllust
 import com.aimdi.xtanative.networks.pixiv.PixivImages
 import com.aimdi.xtanative.store.settings.PixivPrefs
+import com.aimdi.xtanative.ui.common.GridSkeleton
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
@@ -125,11 +126,11 @@ internal fun PixivWorksGrid(
     }
 }
 
-/** A list's first load, failure or emptiness, across the whole grid. */
+/** A list's first load (XTA's grid bones, two across), failure or emptiness, across the whole grid. */
 internal fun <T> LazyStaggeredGridScope.pagedState(state: PixivListState<T>, nothingShown: Boolean, empty: String, onRetry: () -> Unit) {
     when {
         state.items.isEmpty() && state.error != null -> item(key = "state", span = StaggeredGridItemSpan.FullLine) { PixivProblem(state.error, onRetry) }
-        state.waiting -> item(key = "state", span = StaggeredGridItemSpan.FullLine) { LoadingRow() }
+        state.waiting -> item(key = "state", span = StaggeredGridItemSpan.FullLine) { GridSkeleton(columns = 2) }
         nothingShown && state.loaded && !state.loading -> item(key = "state", span = StaggeredGridItemSpan.FullLine) { PixivEmpty(empty, onRetry) }
     }
 }

@@ -91,11 +91,11 @@ internal fun BooruSettingsBody(app: BooruApp, frame: PluginFrame) = Bound(app) {
 @Composable
 private fun SettingsDialog(app: BooruApp, settings: Settings, ask: SettingsAsk, onNext: (SettingsAsk?) -> Unit) {
     when (ask) {
-        SettingsAsk.Engine -> ChoiceDialog(pluginString(Strings.engine), BooruEngine.entries.map { it to engineLabel(it) }, BooruConfig.engine(settings), onDismiss = { onNext(null) }) { engine ->
+        SettingsAsk.Engine -> ChoiceSheet(BooruEngine.entries.map { it to engineLabel(it) }, onDismiss = { onNext(null) }) { engine ->
             onNext(null)
             app.update { it.with(BooruPrefs.engine, BooruConfig.stored(engine)).with(BooruPrefs.preset, BooruSites.CUSTOM) }
         }
-        SettingsAsk.Rating -> ChoiceDialog(pluginString(Strings.max_rating), BooruRating.entries.map { it to ratingLabel(it) }, BooruConfig.maxRating(settings), onDismiss = { onNext(null) }) { cap ->
+        SettingsAsk.Rating -> ChoiceSheet(BooruRating.entries.map { it to ratingLabel(it) }, onDismiss = { onNext(null) }) { cap ->
             if (BooruRatingRules.needsAdultConsent(BooruConfig.maxRating(settings), cap)) {
                 onNext(SettingsAsk.Adult(null, cap))
             } else {
@@ -103,7 +103,7 @@ private fun SettingsDialog(app: BooruApp, settings: Settings, ask: SettingsAsk, 
                 app.update { BooruSites.withCap(it, cap) }
             }
         }
-        SettingsAsk.Columns -> ChoiceDialog(pluginString(Strings.grid_columns), BooruDisplay.COLUMN_CHOICES.map { it to columnsLabel(it) }, settings[BooruPrefs.gridColumns], onDismiss = { onNext(null) }) { columns ->
+        SettingsAsk.Columns -> ChoiceSheet(BooruDisplay.COLUMN_CHOICES.map { it to columnsLabel(it) }, selected = settings[BooruPrefs.gridColumns], onDismiss = { onNext(null) }) { columns ->
             onNext(null)
             app.update { it.with(BooruPrefs.gridColumns, columns) }
         }

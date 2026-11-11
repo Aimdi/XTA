@@ -22,6 +22,7 @@
     <string name="article_reader_appearance">Lugemisvaate välimus</string>
     <string name="article_reader_line_spacing">Reavahe</string>
     <string name="article_reader_text_size">Teksti skaleerimistegur</string>
+    <string name="back">Tagasi</string>
     <string name="bookmark">Järjehoidja</string>
     <string name="bookmark_add">Lisa järjehoidja</string>
     <string name="bookmark_after_save">Lisa salvestamisel järjehoidjatesse</string>

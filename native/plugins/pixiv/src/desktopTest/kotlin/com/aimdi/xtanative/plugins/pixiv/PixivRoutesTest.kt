@@ -32,6 +32,13 @@ class PixivRoutesTest {
     )
 
     @Test
+    fun theAppsSearchOpensPixivsOwnSearchOnWhatWasAsked() {
+        val search = PixivAppSearch { error("the search's screen is named without the runtime") }
+        assertEquals(PixivRoute.Search("初音ミク", PixivSearchKind.WORKS), PixivRoutes.parse(search.ownScreen("初音ミク")))
+        assertEquals(PixivRoute.Search("", PixivSearchKind.WORKS), PixivRoutes.parse(search.ownScreen(null)))
+    }
+
+    @Test
     fun everyScreenComesBackFromItsRoute() {
         every.forEach { assertEquals(it, PixivRoutes.parse(PixivRoutes.of(it))) }
     }

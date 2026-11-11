@@ -49,11 +49,14 @@ internal object PixivSession {
     }
 
     /** Checks the token in use and keeps whose it is; null when it does not work. */
-    suspend fun verified(runtime: PixivRuntime): PixivAuthUser? = try {
-        runtime.client.verify().also { user -> runtime.settings.update { PixivAccounts.remembered(it, user) } }
+    suspend fun verified(runtime: PixivRuntime): PixivAuthUser? = tested(runtime).getOrNull()
+
+    /** The token in use, checked: whose it is, kept; or why Pixiv would not say (no connection, a refused token, a limit). */
+    suspend fun tested(runtime: PixivRuntime): Result<PixivAuthUser> = try {
+        Result.success(runtime.client.verify().also { user -> runtime.settings.update { PixivAccounts.remembered(it, user) } })
     } catch (e: CancellationException) {
         throw e
     } catch (e: Exception) {
-        null
+        Result.failure(e)
     }
 }

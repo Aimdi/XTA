@@ -41,6 +41,19 @@ actual fun rememberTextFileSaver(title: String, mime: String, onSaved: (String?)
     }
 }
 
+/** The same dialog, telling a file that could not be written from a reader who closed the dialog. */
+@Composable
+actual fun rememberTextFileSaver(title: String, mime: String, onSaved: (String) -> Unit, onFailed: () -> Unit): (fileName: String, text: String) -> Unit {
+    val saved = rememberUpdatedState(onSaved)
+    val failed = rememberUpdatedState(onFailed)
+    return remember(title) {
+        { fileName, text ->
+            val file = dialog(title, FileDialog.SAVE, fileName)
+            textSaveEnded(file != null, file?.takeIf { runCatching { it.writeText(text) }.isSuccess }?.path, saved.value, failed.value)
+        }
+    }
+}
+
 private fun dialog(title: String, mode: Int, name: String?, filter: FilenameFilter? = null): File? {
     val dialog = FileDialog(null as Frame?, title, mode)
     if (mode == FileDialog.SAVE) File(System.getProperty("user.home"), "Downloads").takeIf { it.isDirectory }?.let { dialog.directory = it.path }

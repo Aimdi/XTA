@@ -22,6 +22,7 @@
     <string name="article_reader_appearance">Lesevisning</string>
     <string name="article_reader_line_spacing">Linjeavstand</string>
     <string name="article_reader_text_size">Tekstskalafaktor</string>
+    <string name="back">Tilbake</string>
     <string name="bookmark">Bokmerke</string>
     <string name="bookmark_add">Legg til bokmerke</string>
     <string name="bookmark_after_save">Legg til bokmerke ved lagring</string>

@@ -124,12 +124,15 @@ fun PluginRouteScreen(id: String, route: String, onBack: () -> Unit) {
 /**
  * A plugin's search: the app's field above; below, what the plugin finds for
  * the query sent, and until one is, what it lands on ([PluginSearch.Landing]),
- * under its recent searches where they are the app's.
+ * under its recent searches where they are the app's. A plugin whose search
+ * is a screen of its own ([PluginSearch.ownScreen]) gets that screen instead.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PluginSearchScreen(id: String, initial: String?, onBack: () -> Unit) {
     val search = runningPlugin(id)?.plugin?.search
+    val own = remember(search, initial) { search?.let { ownSearchScreen(it, initial) } }
+    if (own != null) return PluginRouteScreen(id, own, onBack)
     var text by rememberSaveable { mutableStateOf(initial.orEmpty()) }
     var sent by rememberSaveable { mutableStateOf(initial.orEmpty().trim()) }
     var told by rememberSaveable { mutableStateOf(false) }
@@ -164,6 +167,10 @@ fun PluginSearchScreen(id: String, initial: String?, onBack: () -> Unit) {
         }
     }
 }
+
+/** The route of [search]'s own screen for what was asked for, blank as nothing; null where the app draws the field, or the plugin failed to say. */
+internal fun ownSearchScreen(search: PluginSearch, initial: String?): String? =
+    runCatching { search.ownScreen(initial?.trim()?.ifEmpty { null }) }.getOrNull()?.ifBlank { null }
 
 /** The search screen's bar: back, and the field with the plugin's placeholder, sending [onSend] from the keyboard. */
 @OptIn(ExperimentalMaterial3Api::class)

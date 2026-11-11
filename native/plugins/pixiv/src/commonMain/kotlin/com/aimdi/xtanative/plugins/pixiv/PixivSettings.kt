@@ -33,6 +33,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.networks.pixiv.PixivAuthUser
+import com.aimdi.xtanative.networks.pixiv.PixivFailure
 import com.aimdi.xtanative.store.settings.PixivPrefs
 import com.aimdi.xtanative.store.settings.PixivSection
 import com.aimdi.xtanative.ui.common.XIcons
@@ -49,7 +51,7 @@ import kotlinx.coroutines.launch
 /**
  * The plugin's settings, in XTA's sections and order: the account, what is
  * shown, browsing, viewing, bookmarking (kept on this device), saving, and
- * muting. Its own keys, as XTA backs them up.
+ * everything muted, listed in place. Its own keys, as XTA backs them up.
  */
 @Composable
 internal fun PixivSettingsBody(runtime: PixivRuntime, frame: PluginFrame) {
@@ -76,7 +78,7 @@ private fun SettingsList(padding: PaddingValues) {
             { ViewingSettings() },
             { BookmarkSettings() },
             { DownloadSettings() },
-            { MuteSettingsRow() },
+            { Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) { PixivMuteSettings() } },
         )
         sections.forEachIndexed { index, section ->
             item(key = "section-$index") {
@@ -137,14 +139,20 @@ private fun TokenField() {
                 PixivSession.useToken(runtime, text.trim())
                 testing = true
                 scope.launch {
-                    val user = PixivSession.verified(runtime)
+                    val tested = PixivSession.tested(runtime)
                     testing = false
-                    runtime.tell(user?.let { Strings.signed_in.get(language, it.displayName) } ?: Strings.error_unauthorized.get(language))
+                    runtime.tell(tokenTestMessage(tested, language))
                 }
             }) { Text(pluginString(Strings.test)) }
         }
     }
 }
+
+/** What Test says (pixiv_settings_account.dart): whose token it is, or why it could not be checked, in the words a failed read gets. */
+internal fun tokenTestMessage(tested: Result<PixivAuthUser>, language: String): String = tested.fold(
+    onSuccess = { Strings.signed_in.get(language, it.displayName) },
+    onFailure = { failureText(PixivFailure.of(it)).get(language) },
+)
 
 /** Show R-18, Hide AI, and what the account itself shows of AI works (changed on Pixiv), as pixiv_settings_content.dart orders them. */
 @Composable
@@ -228,9 +236,3 @@ internal val bookmarkSwitches = listOf(
     Triple(PixivPrefs.bookmarkAfterDownload, Strings.bookmark_after_save, Strings.bookmark_after_save_description),
     Triple(PixivPrefs.haptics, Strings.haptics, Strings.haptics_description),
 )
-
-@Composable
-private fun MuteSettingsRow() {
-    val runtime = LocalPixiv.current
-    ActionRow(pluginString(Strings.mute_settings), { runtime.open(PixivRoute.Mute) }, icon = PixivIcons.VolumeOff)
-}

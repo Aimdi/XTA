@@ -22,6 +22,7 @@
     <string name="article_reader_appearance">読書画面の表示</string>
     <string name="article_reader_line_spacing">行間</string>
     <string name="article_reader_text_size">文字サイズ</string>
+    <string name="back">戻る</string>
     <string name="bookmark">ブックマーク</string>
     <string name="bookmark_add">ブックマークに追加</string>
     <string name="bookmark_after_save">保存時にブックマーク</string>

@@ -22,6 +22,7 @@
     <string name="article_reader_appearance">Leesweergave</string>
     <string name="article_reader_line_spacing">Regelafstand</string>
     <string name="article_reader_text_size">Tekstschaalfactor</string>
+    <string name="back">Terug</string>
     <string name="bookmark">Bladwijzer</string>
     <string name="bookmark_add">Bladwijzer toevoegen</string>
     <string name="bookmark_after_save">Bladwijzer maken bij opslaan</string>

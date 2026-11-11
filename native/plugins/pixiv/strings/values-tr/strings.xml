@@ -22,6 +22,7 @@
     <string name="article_reader_appearance">Okuma görünümü</string>
     <string name="article_reader_line_spacing">Satır aralığı</string>
     <string name="article_reader_text_size">Metin ölçek faktörü</string>
+    <string name="back">Geri</string>
     <string name="bookmark">Yer imi</string>
     <string name="bookmark_add">Yer imi ekle</string>
     <string name="bookmark_after_save">Kaydederken yer imlerine ekle</string>

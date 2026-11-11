@@ -22,6 +22,7 @@
     <string name="article_reader_appearance">Vzhled čtení</string>
     <string name="article_reader_line_spacing">Řádkování</string>
     <string name="article_reader_text_size">Faktor měřítka textu</string>
+    <string name="back">Zpět</string>
     <string name="bookmark">Přidat záložku</string>
     <string name="bookmark_add">Přidat záložku</string>
     <string name="bookmark_after_save">Při uložení přidat do záložek</string>

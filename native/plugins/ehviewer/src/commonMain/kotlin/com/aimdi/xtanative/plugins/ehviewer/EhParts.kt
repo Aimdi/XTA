@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -137,4 +139,10 @@ internal fun namespaceColor(namespace: EhNamespace?): Color? {
         EhNamespace.LANGUAGE, EhNamespace.RECLASS -> if (dark) Color(0xFFFFD54F) else Color(0xFF7A5C00)
         EhNamespace.TEMP, null -> null
     }
+}
+
+/** A chosen chip's check, as XTA's chips show one (Flutter's showCheckmark); nothing on the others. */
+internal fun chipCheck(selected: Boolean): (@Composable () -> Unit)? {
+    if (!selected) return null
+    return { Icon(Icons.Filled.Check, contentDescription = null, modifier = Modifier.size(FilterChipDefaults.IconSize)) }
 }

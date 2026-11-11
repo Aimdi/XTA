@@ -119,15 +119,18 @@ internal fun NovelExportSheet(onPick: (PixivNovelExportFormat) -> Unit, onClose:
 /**
  * Export as text: the novel's text as the format picked, in a file the
  * reader names and places through the system's save dialog, saying where it
- * went, or that it could not be exported when there is no text to write. Remembered by the reader's screen, so the dialog's answer outlives the sheet.
+ * went, or that it could not be exported when there is no text to write or the file could not be written (backing out says nothing). Remembered by the reader's screen, so the dialog's answer outlives the sheet.
  */
 @Composable
 internal fun rememberNovelExport(novel: PixivNovel, reading: PixivNovelReading): (PixivNovelExportFormat) -> Unit {
     val runtime = LocalPixiv.current
     val language = currentLanguage()
-    val save = rememberTextFileSaver(pluginString(Strings.novel_export), PixivNovelExport.MIME) { saved ->
-        if (saved != null) runtime.tell(Strings.novel_exported.get(language, saved))
-    }
+    val save = rememberTextFileSaver(
+        pluginString(Strings.novel_export),
+        PixivNovelExport.MIME,
+        onSaved = { saved -> runtime.tell(Strings.novel_exported.get(language, saved)) },
+        onFailed = { runtime.tell(Strings.novel_export_failed.get(language)) },
+    )
     val markup = reading.content?.text
     return { format ->
         val text = markup?.let { runCatching { PixivNovelExport.text(it, reading.blocks, format) }.getOrNull() }

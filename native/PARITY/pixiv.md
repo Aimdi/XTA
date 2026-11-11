@@ -13,7 +13,7 @@ covered | pixiv_accounts_test › the token response user brings the avatar used
 ported | pixiv_accounts_test › adds and switches accounts; switching clears the access token | PixivSession.kt (switchTo) | PixivAccountsTest.switchingPutsTheStoredAccountInUse…
 ported | pixiv_accounts_test › a token Pixiv rotated since storing is kept when switching away | PixivSession.kt, PixivPeople.kt (keepingActive) | PixivAccountsTest.aTokenPixivRotated…; PixivPeopleTest too
 ported | pixiv_accounts_test › signing out forgets only the active account and hands over to another | PixivSession.kt (signOut) | PixivAccountsTest.signingOutForgets…
-ported | pixiv_accounts_test › a token check answered after a switch reports, and keeps, only the account now in use | PixivSession.verified, networks/PixivClient.kt | PixivAccountsTest.aTokenCheckAnsweredAfterASwitch…; client half in PixivClientTest
+ported | pixiv_accounts_test › a token check answered after a switch reports, and keeps, only the account now in use | PixivSession.verified, networks/PixivClient.kt | PixivAccountsTest.aTokenCheckAnsweredAfterASwitch…; client half in PixivClientTest; the settings' Test now names the cause (PixivSession.tested → tokenTestMessage: no connection, a limit, a bad answer, not always "rejected"), PixivTokenTestTest
 covered | pixiv_accounts_test › a user is only kept with the token of the account stored as in use | PixivPeople.kt (remembered) | PixivPeopleTest.aSignInIsRememberedOnlyForTheAccountInUse
 ported | pixiv_accounts_test › an account never checked since it signed in is kept by id before another takes over | PixivPeople.kt (keepingActive) | PixivAccountsTest.anAccountNeverChecked… (display name "5" added)
 ported | pixiv_accounts_test › a token typed in Settings has no owner, so a switch keeps every stored token | PixivSession.useToken | PixivAccountsTest.aTokenTypedInSettings…
@@ -208,7 +208,7 @@ untested | pixiv_comments_screen_test › muting a comment asks first and hides 
 ported | pixiv_comments_screen_test › muting an author hides every comment they wrote | PixivComments.kt (PixivMutes.shows) | PixivCommentsListTest.aMutedCommentAndEverythingByAMutedAuthorAreHidden
 untested | pixiv_comments_screen_test › a comment without an author can only be muted itself | PixivComments.kt (CommentMenu: the author's line only with a user) | Compose
 missing | pixiv_comments_screen_test › muting the comment a thread hangs off leaves the thread | PixivComments.kt (leavesThread → back) | implemented; PixivCommentsListTest.mutingTheCommentAThreadHangsOff…
-ported | pixiv_comments_screen_test › opening shows the skeleton, never a passing "No comments yet" or "No replies yet" | PixivPaging.kt (PixivListState.waiting) | PixivCommentsListTest.theFirstLoadCountsAsLoading…
+ported | pixiv_comments_screen_test › opening shows the skeleton, never a passing "No comments yet" or "No replies yet" | PixivPaging.kt (PixivListState.waiting) | PixivCommentsListTest.theFirstLoadCountsAsLoading…; the bones are drawn now: FeedSkeleton(4) in PixivRows (comments, novel lists, watchlist, series), GridSkeleton(2) in the work grids, in place of a spinner row
 covered | pixiv_comments_screen_test › a later page that fails keeps the comments and offers Retry instead of a spinner | PixivPaging.kt (moreFailed) | PixivPagingTest.aFailedNextPageKeepsTheListAndRetries
 untested | pixiv_comments_screen_test › scrolling toward the end of a long page asks for the next | PixivUi.kt (PixivRows) | Compose scroll
 untested | pixiv_comments_screen_test › pulling down reloads the comments | PixivUi.kt (PixivRows refresh) | Compose; refresh tested in PixivPagingTest
@@ -391,7 +391,7 @@ covered | pixiv_history_store_test › a novel without a cover keeps its row aft
 
 ## pixiv_mute_gate_test.dart
 covered | pixiv_mute_gate_test › a muted work waits behind a notice that says why, until shown this time | PixivMutes.kt | PixivMutesTest.aMutedWorkCreatorOrTagHidesTheWorkAndSaysWhy | the notice is Compose-only
-untested | pixiv_mute_gate_test › the notice opens the mute settings, and unmuting there shows the work | PixivMutes.kt; PixivSettings (Compose link) | Compose only
+untested | pixiv_mute_gate_test › the notice opens the mute settings, and unmuting there shows the work | PixivMutes.kt; PixivSettings (Compose link) | Compose only; the same list (PixivMuteSettings) is now also the last section of the settings page, in place of a row leading to it
 covered | pixiv_mute_gate_test › an unmuted work opens straight away and joins the history unless paused | PixivMutes.kt; PixivKept.kt | PixivMutesTest.aMutedWorkCreatorOrTagHidesTheWorkAndSaysWhy
 untested | pixiv_mute_gate_test › a work whose detail does not load stays out of the history | PixivRuntime/PixivHistory (Compose) | Compose only
 untested | pixiv_mute_gate_test › a paused history records nothing | PixivKept.kt (pause); PixivSettingsStore | the pause is stored; the switch is Compose-only

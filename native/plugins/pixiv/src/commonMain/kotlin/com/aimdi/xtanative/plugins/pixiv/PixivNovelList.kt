@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.pixiv.PixivNovel
 import com.aimdi.xtanative.store.settings.PixivPrefs
+import com.aimdi.xtanative.ui.common.FeedSkeleton
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
@@ -88,7 +89,7 @@ internal fun <T : Any> PixivRows(
             header()
             when {
                 state.items.isEmpty() && state.error != null -> item(key = "state") { PixivProblem(state.error, list::refresh) }
-                state.waiting -> item(key = "state") { LoadingRow() }
+                state.waiting -> item(key = "state") { FeedSkeleton(count = 4) }
                 rows.isEmpty() && state.loaded && !state.loading -> item(key = "state") { PixivEmpty(empty, list::refresh) }
             }
             items(rows, key = { "row-" + key(it) }) { item ->

@@ -22,6 +22,7 @@
     <string name="article_reader_appearance">Apparence de lecture</string>
     <string name="article_reader_line_spacing">Interligne</string>
     <string name="article_reader_text_size">Taille du texte</string>
+    <string name="back">Retour</string>
     <string name="bookmark">Favori</string>
     <string name="bookmark_add">Ajouter aux favoris</string>
     <string name="bookmark_after_save">Ajouter aux favoris en enregistrant</string>

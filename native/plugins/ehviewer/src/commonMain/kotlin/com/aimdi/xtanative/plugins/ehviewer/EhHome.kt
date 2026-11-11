@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.ehviewer.EhToplistPeriod
+import com.aimdi.xtanative.ui.common.GridSkeleton
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
@@ -123,7 +124,12 @@ private fun PeriodRow(lists: EhLists) {
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         EhToplistPeriod.entries.forEach { choice ->
-            FilterChip(selected = period == choice, onClick = { lists.choose(choice) }, label = { Text(pluginString(EhText.toplist(choice))) })
+            FilterChip(
+                selected = period == choice,
+                onClick = { lists.choose(choice) },
+                label = { Text(pluginString(EhText.toplist(choice))) },
+                leadingIcon = chipCheck(period == choice),
+            )
         }
     }
 }
@@ -136,7 +142,7 @@ private fun ListTab(app: EhApp, list: EhList, empty: PluginText, padding: Paddin
     val error = state.error
     when {
         error != null && !state.loading -> EhProblem(error, list::refresh, Modifier.padding(padding))
-        state.galleries.isEmpty() && (state.loading || !attempted) -> LoadingRow()
+        state.galleries.isEmpty() && (state.loading || !attempted) -> GridSkeleton(columns = 2)
         state.galleries.isEmpty() -> EmptyPane(EhIcons.Collections, pluginString(empty), Modifier.padding(padding)) {
             Button(onClick = list::refresh) {
                 Icon(Icons.Filled.Refresh, contentDescription = null)

@@ -5,19 +5,22 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -26,6 +29,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.ehviewer.EhCategory
@@ -53,21 +57,14 @@ import kotlinx.coroutines.launch
  */
 @Composable
 internal fun EhSettingsBody(app: EhApp, frame: PluginFrame) = WithSettings(app.host.settings) { settings ->
-    var choosingMode by remember { mutableStateOf(false) }
     Box(Modifier.fillMaxSize()) {
         LazyColumn(Modifier.fillMaxSize(), contentPadding = frame.padding) {
             item(key = "account") { Column { AccountSection(app, settings) } }
             item(key = "categories") { Column { CategoriesSection(app, settings) } }
-            item(key = "reading") { Column { ReadingSection(app, settings) { choosingMode = true } } }
+            item(key = "reading") { Column { ReadingSection(app, settings) } }
             item(key = "test") { TestConnection(app) }
         }
         NoticeHost(app.notices, Modifier.padding(frame.padding))
-    }
-    if (choosingMode) {
-        ModeDialog(EhConfig.readingMode(settings), onDismiss = { choosingMode = false }) { mode ->
-            choosingMode = false
-            app.update { it.with(EhViewerPrefs.readingMode, mode) }
-        }
     }
 }
 
@@ -114,13 +111,18 @@ private fun CategoriesSection(app: EhApp, settings: Settings) {
     ) {
         EhCategory.entries.forEach { category ->
             val selected = category in chosen
-            FilterChip(selected = selected, onClick = { app.update { EhConfig.withCategory(it, category, !selected) } }, label = { Text(category.label) })
+            FilterChip(
+                selected = selected,
+                onClick = { app.update { EhConfig.withCategory(it, category, !selected) } },
+                label = { Text(category.label) },
+                leadingIcon = chipCheck(selected),
+            )
         }
     }
 }
 
 @Composable
-private fun ReadingSection(app: EhApp, settings: Settings, onMode: () -> Unit) {
+private fun ReadingSection(app: EhApp, settings: Settings) {
     PluginSectionTitle(pluginString(Strings.section_reading))
     PluginSwitchRow(
         pluginString(Strings.prefer_japanese),
@@ -128,7 +130,7 @@ private fun ReadingSection(app: EhApp, settings: Settings, onMode: () -> Unit) {
         onChange = { on -> app.update { it.with(EhViewerPrefs.preferJapanese, on) } },
         description = pluginString(Strings.prefer_japanese_description),
     )
-    PluginActionRow(pluginString(Strings.reader_mode), onClick = onMode, description = pluginString(EhText.readingMode(EhConfig.readingMode(settings))))
+    ModeRow(EhConfig.readingMode(settings)) { mode -> app.update { it.with(EhViewerPrefs.readingMode, mode) } }
     PluginSwitchRow(
         pluginString(Strings.keep_screen_on),
         EhConfig.keepScreenOn(settings),
@@ -170,23 +172,24 @@ private fun TestConnection(app: EhApp) {
     )
 }
 
-/** The reading modes to choose from, the one in use marked. */
+/** The reading mode as XTA's dropdown: the mode in use at the row's end, the others in a menu that drops from it. */
 @Composable
-private fun ModeDialog(current: EhReadingMode, onDismiss: () -> Unit, onPick: (EhReadingMode) -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(pluginString(Strings.reader_mode)) },
-        text = {
-            Column {
+private fun ModeRow(current: EhReadingMode, onPick: (EhReadingMode) -> Unit) {
+    var open by remember { mutableStateOf(false) }
+    PluginActionRow(pluginString(Strings.reader_mode), onClick = { open = true }, trailing = {
+        Box {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(pluginString(EhText.readingMode(current)), style = MaterialTheme.typography.bodyMedium)
+                Icon(Icons.Filled.ArrowDropDown, contentDescription = null)
+            }
+            DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
                 EhReadingMode.entries.forEach { mode ->
-                    PluginActionRow(
-                        pluginString(EhText.readingMode(mode)),
-                        onClick = { onPick(mode) },
-                        trailing = { RadioButton(selected = mode == current, onClick = null) },
-                    )
+                    DropdownMenuItem(text = { Text(pluginString(EhText.readingMode(mode))) }, onClick = {
+                        open = false
+                        onPick(mode)
+                    })
                 }
             }
-        },
-        confirmButton = { TextButton(onClick = onDismiss) { Text(pluginString(Strings.cancel)) } },
-    )
+        }
+    })
 }

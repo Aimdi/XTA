@@ -106,7 +106,7 @@ its plugins have to link against that prerelease's app.
 | `clientTab` | what it shows opened on its own from the store, when not its home tab |
 | `settings` | its settings screen body, or none |
 | `settingsTitle(language)` | that screen's title ("Booru settings"); its name by default |
-| `search` | a `PluginSearch` (`hint(language)`, `Results(query, frame)`; `Landing(frame, send)`, what its search shows until a query is sent, `landsInDiscover` where Discover shows that too, `sharesRecentSearches` where its recent searches are the app's, `sent(query)` to keep its own), or none |
+| `search` | a `PluginSearch` (`hint(language)`, `Results(query, frame)`; `Landing(frame, send)`, what its search shows until a query is sent, `landsInDiscover` where Discover shows that too, `sharesRecentSearches` where its recent searches are the app's, `sent(query)` to keep its own, `ownScreen(query)` naming the plugin's own search screen where its field is its own: the app's search of the plugin then opens that route), or none |
 | `routeFor(url)` | the route of its own screen for a link (a post, a profile), or null |
 | `screen(route)` | its own whole screen for a route (`PluginScreen`), or null |
 | `backupSections` | `PluginBackupSection`s (name, export, import) of what it keeps |
@@ -210,7 +210,12 @@ with a test.
 - Leaving and files: `rememberOpenOutside`, `rememberShareText`,
   `rememberAppLinkSettings` (Android's Open by default page for the app;
   none on the desktop), `rememberTextFileChooser`, `rememberImageChooser`
-  and `rememberTextFileSaver`.
+  and `rememberTextFileSaver` (with `onSaved` and `onFailed`, it tells a file
+  that could not be written from a reader who backed out).
+- Marks and first loads: `brandMarkIcon` (a network's own glyph fitted to the
+  live area every mark spans, as XTA's PluginBrandMark) and, in `ui.common`,
+  `FeedSkeleton` and `GridSkeleton` (post- and tile-shaped bones while a
+  first page loads, in place of a spinner).
 - Words: `PluginStrings` with `pluginString` and `pluginPlural`
   (`pluralCategory` gives each language's plural forms).
 

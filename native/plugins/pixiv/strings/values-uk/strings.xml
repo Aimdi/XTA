@@ -22,6 +22,7 @@
     <string name="article_reader_appearance">Вигляд для читання</string>
     <string name="article_reader_line_spacing">Міжрядковий інтервал</string>
     <string name="article_reader_text_size">Коефіцієнт масштабування тексту</string>
+    <string name="back">Назад</string>
     <string name="bookmark">У закладки</string>
     <string name="bookmark_add">Додати в закладки</string>
     <string name="bookmark_after_save">Додавати в закладки під час збереження</string>

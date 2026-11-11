@@ -106,6 +106,18 @@ abstract class PluginSearch {
      * recent searches, as XTA's do ([PluginSearchHistory]), remembers it here.
      */
     open fun sent(query: String) {}
+
+    /**
+     * The plugin's own search screen, as a route for [XtaPlugin.screen], where
+     * its search is a screen it draws whole: its own field with what it adds
+     * while the reader types (tag suggestions, operators, a pasted link), as
+     * XTA's openSearch pushes a plugin's search screen. The app's search of
+     * the plugin then opens that screen, on [query] when there is one, in
+     * place of its own field over [Results] and [Landing]; Discover's chip,
+     * whose field is the app's, still reads [Results]. Null, the default:
+     * the app draws the field.
+     */
+    open fun ownScreen(query: String?): String? = null
 }
 
 /**

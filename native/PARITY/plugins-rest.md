@@ -312,7 +312,7 @@ covered | booru_viewer_test › settings take a multi-tag blacklist entry and a 
 untested → ported | booru_viewer_test › the grid footer offers a retry after a failed page, then marks the end | BooruFeedTest.aNextPageThatFailsWaitsToBeAskedAgain | the footer is Compose-only |
 untested → ported | booru_viewer_test › Following says when some followed tags did not load, in the tag row, and offers a retry | BooruClientTest.followingCountsTheQueriesThatFailedAndFailsOnlyWhenAllDid | the row is Compose-only |
 untested → ported | booru_viewer_test › a video waits for a tap when media loads only on tap | ui/media MediaPrefs rules | the setting is Compose-only |
-untested → ported | booru_viewer_test › Latest shows the skeleton, not "no posts", until its first page arrives | BooruFeedTest.theFirstPageWithPostsIsShown | the skeleton is Compose-only |
+untested → ported | booru_viewer_test › Latest shows the skeleton, not "no posts", until its first page arrives | BooruFeedTest.theFirstPageWithPostsIsShown | the skeleton is Compose-only | drawn now: GridSkeleton(columns = 2) in BooruFeedView (ui/common Skeletons.kt, SkeletonMotionTest.aGridSkeletonsTilesFallInRows…)
 covered | booru_viewer_test › Latest keeps its posts in place when a refresh fails, under a floating notice with Retry | BooruFeedTest.aRefreshThatFailsKeepsThePostsUnderANotice |
 covered | booru_viewer_test › Latest opened without a network shows the page kept from last time | BooruFeedTest.theCopyKeptOnTheDeviceStandsInWhenTheFirstLoadFails |
 covered | booru_viewer_test › Latest says how many posts the muted tags hid, and shows them on request | BooruFeedTest.thePostsTheBlacklistHidCanBeShownInTheirPlaces |

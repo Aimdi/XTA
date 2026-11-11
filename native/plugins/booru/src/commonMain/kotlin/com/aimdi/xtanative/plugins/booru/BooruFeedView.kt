@@ -33,7 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.booru.BooruPost
-import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.GridSkeleton
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -66,7 +66,7 @@ internal fun FeedView(
         if (isNew != null) NewPostsNotice(state.posts, isNew)
         Box(Modifier.weight(1f)) {
             when (state.view) {
-                FeedView.LOADING -> LoadingRow()
+                FeedView.LOADING -> GridSkeleton(columns = 2)
                 FeedView.ERROR -> Scrolled(padding) { RetryMessage(errorText(state.error), onRetry = { feed.refresh() }) }
                 FeedView.EMPTY -> Scrolled(padding) { EmptyFeed(empty, retryWhenEmpty, feed) }
                 FeedView.HIDDEN_SO_FAR -> Scrolled(padding) { HiddenSoFar(state.paging, feed) }

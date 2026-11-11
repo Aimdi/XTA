@@ -22,6 +22,7 @@
     <string name="article_reader_appearance">Reading appearance</string>
     <string name="article_reader_line_spacing">Line spacing</string>
     <string name="article_reader_text_size">Text size</string>
+    <string name="back">Back</string>
     <string name="bookmark">Bookmark</string>
     <string name="bookmark_add">Add bookmark</string>
     <string name="bookmark_after_save">Bookmark when saving</string>

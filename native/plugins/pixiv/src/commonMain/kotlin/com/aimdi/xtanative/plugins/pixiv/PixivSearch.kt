@@ -7,10 +7,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -19,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,6 +32,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -40,6 +46,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
@@ -57,7 +64,6 @@ import com.aimdi.xtanative.networks.pixiv.PixivSearchKind
 import com.aimdi.xtanative.networks.pixiv.PixivTrendTag
 import com.aimdi.xtanative.networks.pixiv.Pixivision
 import com.aimdi.xtanative.ui.plugins.PluginFrame
-import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginSearch
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -67,6 +73,9 @@ import com.aimdi.xtanative.ui.post.PostIcons
 /** The app's search over Pixiv works: the app draws the field, this the results of what was sent. */
 internal class PixivAppSearch(private val runtime: () -> PixivRuntime) : PluginSearch() {
     override fun hint(language: String): String = Strings.search_hint.get(language)
+
+    /** The app's search opens Pixiv's own (pixiv_plugin.dart's openSearch): suggestions, id shortcuts, pasted links, search by image, its landing. */
+    override fun ownScreen(query: String?): String = PixivRoutes.of(PixivRoute.Search(query.orEmpty(), PixivSearchKind.WORKS))
 
     @Composable
     override fun Results(query: String, frame: PluginFrame) {
@@ -81,20 +90,21 @@ internal class PixivAppSearch(private val runtime: () -> PixivRuntime) : PluginS
     }
 }
 
-/** The search as a screen of its own, opened on [query]: a tag, a link's search. */
+/** The search as a screen of its own, opened on [query] (a tag, a link's search, the app's search): the field is its bar, beside the back arrow, as XTA's is the app bar's title. */
 @Composable
 internal fun PixivSearchScreen(query: String, kind: PixivSearchKind) {
     val runtime = LocalPixiv.current
-    PluginScaffold(title = pluginString(Strings.search), onBack = runtime.host::back) { padding ->
-        Box(Modifier.padding(top = padding.calculateTopPadding())) {
-            PixivSearchBody(kind, query, PaddingValues(bottom = padding.calculateBottomPadding()), embedded = false)
+    val below = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+    Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+        Box(Modifier.fillMaxSize().statusBarsPadding()) {
+            PixivSearchBody(kind, query, PaddingValues(bottom = below), embedded = false, onBack = runtime.host::back)
         }
     }
 }
 
-/** The search with its own field, as the home tab's Search section and the search screen draw it. */
+/** The search with its own field, as the home tab's Search section and the search screen draw it; [onBack] puts a back arrow before the field. */
 @Composable
-internal fun PixivSearchBody(kind: PixivSearchKind, initial: String, padding: PaddingValues, embedded: Boolean) {
+internal fun PixivSearchBody(kind: PixivSearchKind, initial: String, padding: PaddingValues, embedded: Boolean, onBack: (() -> Unit)? = null) {
     val model = rememberSearch(kind, initial)
     val view by model.view.collectAsState()
     var text by remember(model) { mutableStateOf(model.view.value.typed.ifEmpty { initial }.let { TextFieldValue(it, TextRange(it.length)) }) }
@@ -102,10 +112,15 @@ internal fun PixivSearchBody(kind: PixivSearchKind, initial: String, padding: Pa
     val submit = rememberSubmit(model, show)
     var byImage by rememberSaveable { mutableStateOf(false) }
     Column(Modifier.fillMaxSize()) {
-        SearchField(kind, text, autofocus = !embedded && initial.isEmpty(), onChange = { value ->
-            if (value.text != text.text) model.type(value.text)
-            text = value
-        }, onPaste = { pasted -> pasteInto(model, text, pasted, show, submit)?.let { text = it } }, onImageSearch = { byImage = true }) { submit(text.text) }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            onBack?.let { IconButton(onClick = it) { Icon(Icons.AutoMirrored.Filled.ArrowBack, pluginString(Strings.back)) } }
+            Box(Modifier.weight(1f)) {
+                SearchField(kind, text, autofocus = !embedded && initial.isEmpty(), onChange = { value ->
+                    if (value.text != text.text) model.type(value.text)
+                    text = value
+                }, onPaste = { pasted -> pasteInto(model, text, pasted, show, submit)?.let { text = it } }, onImageSearch = { byImage = true }) { submit(text.text) }
+            }
+        }
         SearchBody(model, padding, typing = SearchTyping(view.picking, onPick = { tag -> show(model.pick(tag)) }, onSearch = submit))
     }
     if (byImage && kind.isWorks) {

@@ -9,23 +9,30 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -73,25 +80,28 @@ internal fun SwitchRow(title: String, description: String, checked: Boolean, onC
     }
 }
 
-/** One of [choices] picked under [title]; [selected] is the one in force. */
+/**
+ * One of [choices] picked from a sheet that rises from the bottom, as XTA's
+ * pickers do (booru_settings.dart, booru_display_settings.dart): plain rows
+ * for the engine and the rating, and with [selected] given, a radio button
+ * on each with the one in force filled (the grid's columns).
+ */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun <T> ChoiceDialog(title: String, choices: List<Pair<T, String>>, selected: T, onDismiss: () -> Unit, onPick: (T) -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(title) },
-        text = {
-            Column {
-                choices.forEach { (value, label) ->
-                    Row(Modifier.fillMaxWidth().clickable { onPick(value) }.padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                        RadioButton(selected = value == selected, onClick = { onPick(value) })
-                        Text(label, style = MaterialTheme.typography.bodyLarge)
-                    }
+internal fun <T : Any> ChoiceSheet(choices: List<Pair<T, String>>, selected: T? = null, onDismiss: () -> Unit, onPick: (T) -> Unit) {
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true), dragHandle = null) {
+        Column(Modifier.fillMaxWidth().navigationBarsPadding().verticalScroll(rememberScrollState()).padding(vertical = 8.dp)) {
+            choices.forEach { (value, label) ->
+                Row(
+                    Modifier.fillMaxWidth().heightIn(min = 56.dp).clickable { onPick(value) }.padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    if (selected != null) RadioButton(selected = value == selected, onClick = null, modifier = Modifier.padding(end = 16.dp))
+                    Text(label, style = MaterialTheme.typography.bodyLarge)
                 }
             }
-        },
-        confirmButton = {},
-        dismissButton = { TextButton(onClick = onDismiss) { Text(pluginString(Strings.cancel)) } },
-    )
+        }
+    }
 }
 
 /** A booru site to add: its host, the name it is shown by, and the engine it speaks, guessed from the host as it is typed. */

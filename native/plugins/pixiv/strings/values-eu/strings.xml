@@ -22,6 +22,7 @@
     <string name="article_reader_appearance">Irakurketa-itxura</string>
     <string name="article_reader_line_spacing">Lerroartea</string>
     <string name="article_reader_text_size">Testuaren eskala-faktorea</string>
+    <string name="back">Atzera</string>
     <string name="bookmark">Laster-marka</string>
     <string name="bookmark_add">Gehitu laster-marka</string>
     <string name="bookmark_after_save">Gorde ahala gehitu laster-marketara</string>

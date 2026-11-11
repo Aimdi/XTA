@@ -44,6 +44,9 @@ import com.aimdi.xtanative.ui.plugins.rememberKept
 internal class BooruFieldSearch(private val app: BooruApp) : PluginSearch() {
     override fun hint(language: String): String = Strings.search_hint.get(language)
 
+    /** The app's search opens the tag search (booru_plugin.dart's openSearch): the tag field with its operators, metatags and suggestions. */
+    override fun ownScreen(query: String?): String = BooruRoutes.search(query)
+
     @Composable
     override fun Results(query: String, frame: PluginFrame) = FieldResults(app, query, frame)
 }

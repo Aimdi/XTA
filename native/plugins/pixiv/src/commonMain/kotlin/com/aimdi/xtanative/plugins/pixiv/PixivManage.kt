@@ -119,20 +119,25 @@ private class MuteChip(val label: String, val copy: String?, val unmute: () -> U
 @Composable
 internal fun PixivMuteScreen() {
     val runtime = LocalPixiv.current
-    val mutes = pixivMutes()
     PluginScaffold(title = pluginString(Strings.mute_settings), onBack = runtime.host::back) { padding ->
-        Column(Modifier.padding(padding).fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) {
-            Text(pluginString(Strings.muted_section), style = MaterialTheme.typography.titleSmall)
-            if (mutes.isEmpty) Text(pluginString(Strings.muted_empty), modifier = Modifier.padding(top = 8.dp))
-            MuteGroup(pluginString(Strings.mute_tags), PixivIcons.Label, mutes.tags.sorted().map { MuteChip(PixivMuteTags.label(it), it) { runtime.mutes.unmuteTag(it) } }) { TagField() }
-            MuteGroup(pluginString(Strings.mute_users), GroupIcons.PersonRemove, mutes.authorIds.sorted().map { id ->
-                MuteChip(mutes.authorNames[id]?.ifEmpty { null }?.let { "$it · $id" } ?: "$id", null) { runtime.mutes.unmuteAuthor(id) }
-            })
-            MuteGroup(pluginString(Strings.mute_works), PostIcons.VisibilityOff, mutes.illustIds.sorted().map { id -> MuteChip("$id", null) { runtime.mutes.unmuteIllust(id) } })
-            MuteGroup(pluginString(Strings.mute_comments), PixivIcons.VolumeOff, mutes.commentIds.sorted().map { id -> MuteChip("$id", null) { runtime.mutes.unmuteComment(id) } })
-            MuteGroup(pluginString(Strings.mute_novels), PixivIcons.MenuBook, mutes.novelIds.sorted().map { id -> MuteChip("$id", null) { runtime.mutes.unmuteNovel(id) } })
-        }
+        Column(Modifier.padding(padding).fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) { PixivMuteSettings() }
     }
+}
+
+/** The mutes themselves, as the mute screen and the settings' last section both list them (XTA's PixivMuteSettings). */
+@Composable
+internal fun PixivMuteSettings() {
+    val runtime = LocalPixiv.current
+    val mutes = pixivMutes()
+    Text(pluginString(Strings.muted_section), style = MaterialTheme.typography.titleSmall)
+    if (mutes.isEmpty) Text(pluginString(Strings.muted_empty), modifier = Modifier.padding(top = 8.dp))
+    MuteGroup(pluginString(Strings.mute_tags), PixivIcons.Label, mutes.tags.sorted().map { MuteChip(PixivMuteTags.label(it), it) { runtime.mutes.unmuteTag(it) } }) { TagField() }
+    MuteGroup(pluginString(Strings.mute_users), GroupIcons.PersonRemove, mutes.authorIds.sorted().map { id ->
+        MuteChip(mutes.authorNames[id]?.ifEmpty { null }?.let { "$it · $id" } ?: "$id", null) { runtime.mutes.unmuteAuthor(id) }
+    })
+    MuteGroup(pluginString(Strings.mute_works), PostIcons.VisibilityOff, mutes.illustIds.sorted().map { id -> MuteChip("$id", null) { runtime.mutes.unmuteIllust(id) } })
+    MuteGroup(pluginString(Strings.mute_comments), PixivIcons.VolumeOff, mutes.commentIds.sorted().map { id -> MuteChip("$id", null) { runtime.mutes.unmuteComment(id) } })
+    MuteGroup(pluginString(Strings.mute_novels), PixivIcons.MenuBook, mutes.novelIds.sorted().map { id -> MuteChip("$id", null) { runtime.mutes.unmuteNovel(id) } })
 }
 
 @Composable
@@ -172,11 +177,7 @@ private fun MuteGroup(title: String, icon: ImageVector, chips: List<MuteChip>, l
     val sheets = LocalPixivSheets.current
     val copy = rememberCopy()
     val language = currentLanguage()
-    Row(Modifier.padding(top = 16.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-        Icon(icon, null, Modifier.size(18.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
-        Spacer(Modifier.size(8.dp))
-        Text(title, style = MaterialTheme.typography.labelLarge)
-    }
+    Text(title, style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(top = 16.dp, bottom = 8.dp))
     leading?.let {
         it()
         if (chips.isNotEmpty()) Spacer(Modifier.height(8.dp))
@@ -192,7 +193,9 @@ private fun MuteGroup(title: String, icon: ImageVector, chips: List<MuteChip>, l
                     onLongClick = chip.copy?.let { text -> { copy(text, Strings.copied) } },
                 ),
             ) {
-                Row(Modifier.padding(start = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+                Row(Modifier.padding(start = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Icon(icon, null, Modifier.size(18.dp))
+                    Spacer(Modifier.size(8.dp))
                     Text(chip.label, style = MaterialTheme.typography.labelLarge)
                     IconButton(onClick = chip.unmute) { Icon(Icons.Filled.Close, pluginString(Strings.unmute), Modifier.size(18.dp)) }
                 }

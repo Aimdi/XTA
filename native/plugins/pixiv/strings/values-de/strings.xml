@@ -22,6 +22,7 @@
     <string name="article_reader_appearance">Leseansicht</string>
     <string name="article_reader_line_spacing">Zeilenabstand</string>
     <string name="article_reader_text_size">Textskalierungsfaktor</string>
+    <string name="back">Zurück</string>
     <string name="bookmark">Lesezeichen</string>
     <string name="bookmark_add">Lesezeichen hinzufügen</string>
     <string name="bookmark_after_save">Beim Speichern als Lesezeichen merken</string>
