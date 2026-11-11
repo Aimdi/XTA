@@ -1,11 +1,15 @@
 package com.aimdi.xtanative.plugins.stocks
 
+import com.aimdi.xtanative.networks.stocks.TickerErrorKind
 import com.aimdi.xtanative.networks.stocks.TickerInstrument
 import com.aimdi.xtanative.networks.stocks.TickerNewsItem
 import com.aimdi.xtanative.networks.stocks.TickerPoint
 import com.aimdi.xtanative.networks.stocks.TickerQuote
+import com.aimdi.xtanative.networks.stocks.TickerQuoteCache
 import com.aimdi.xtanative.networks.stocks.TickerRange
 import com.aimdi.xtanative.networks.stocks.Watchlist
+import java.time.Duration
+import java.time.Instant
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +31,8 @@ internal data class TickerDetail(
     val dayQuote: TickerQuote? = null,
     val loading: Boolean = false,
     val failed: Boolean = false,
+    /** The failure was the price host saying it has no such symbol, not a refusal or no answer. */
+    val notFound: Boolean = false,
     val news: List<TickerNewsItem> = emptyList(),
     val scrubbed: TickerPoint? = null,
 )
@@ -45,6 +51,7 @@ internal class TickerModel(private val app: StocksApp, val symbol: String, priva
     val posts = StocksPostsFeed(app, Watchlist.tickerPostsQuery(symbol), signals = false, followedFirst = true, scope = scope)
     private var generation = 0
     private var newsAsked = false
+    private var loadedAt = Instant.EPOCH
 
     /** The reading the shared quotes are of: a day quote is handed on only while the page shows that one. */
     private var shared = state.value.instrument
@@ -54,9 +61,17 @@ internal class TickerModel(private val app: StocksApp, val symbol: String, priva
         if (state.value.quote == null && !state.value.loading) load()
     }
 
-    /** The day's chart is live: re-asked without a spinner while it shows. */
-    fun refreshLive() {
-        if (state.value.range == TickerRange.DAY) load(silent = true)
+    /**
+     * The day's chart is live: re-asked without a spinner while it shows; a
+     * closed market's only as often as its close stays fresh, so the opening
+     * bell is still caught.
+     */
+    fun refreshLive(now: Instant = Instant.now()) {
+        val shown = state.value
+        if (shown.range != TickerRange.DAY) return
+        val fresh = TickerQuoteCache.freshFor(shown.dayQuote ?: shown.quote, now)
+        if (fresh == TickerQuoteCache.CLOSED_TTL && Duration.between(loadedAt, now) < fresh) return
+        load(silent = true)
     }
 
     /**
@@ -68,19 +83,23 @@ internal class TickerModel(private val app: StocksApp, val symbol: String, priva
         if (silent && state.value.loading) return
         val asked = ++generation
         val (range, instrument) = state.value.let { it.range to it.instrument }
-        if (!silent) mutable.update { it.copy(loading = true, failed = false) }
+        if (!silent) mutable.update { it.copy(loading = true, failed = false, notFound = false) }
+        loadedAt = Instant.now()
         scope.launch {
+            var error: Exception? = null
             val page = try {
                 app.tickers.page(symbol, range, instrument, state.value.dayQuote)
             } catch (e: CancellationException) {
                 throw e
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                error = e
                 null
             }
             if (asked != generation) return@launch
             if (page == null) {
                 // Only a silent refresh keeps the chart: any other load was for a chart not shown yet.
-                mutable.update { it.copy(loading = false, quote = if (silent) it.quote else null, failed = !silent || it.quote == null) }
+                val notFound = error?.let { TickerErrorKind.of(it) } == TickerErrorKind.NOT_FOUND
+                mutable.update { it.copy(loading = false, quote = if (silent) it.quote else null, failed = !silent || it.quote == null, notFound = notFound) }
                 return@launch
             }
             mutable.update { it.copy(quote = page.chart, dayQuote = page.day, loading = false) }

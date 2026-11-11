@@ -112,7 +112,7 @@ private fun TickerPanel(model: TickerModel, state: TickerDetail) {
                     if (state.loading) LinearProgressIndicator(Modifier.fillMaxWidth().height(2.dp))
                 }
             }
-            state.failed -> Unavailable { model.load() }
+            state.failed -> Unavailable({ model.load() }, notFound = state.notFound)
             // The first chart's place is held while it loads.
             else -> Box(Modifier.fillMaxWidth().height(200.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
         }

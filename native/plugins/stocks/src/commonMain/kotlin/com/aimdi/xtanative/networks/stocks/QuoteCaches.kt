@@ -31,14 +31,14 @@ data class CryptoQuotes(val markets: Map<String, CryptoMarket> = emptyMap(), val
 }
 
 /** When each key was last asked for and which are being asked for now: the freshness both quote caches keep. */
-internal class Freshness(private val ttl: Duration, private val now: () -> Instant) {
+internal class Freshness(private val ttl: Duration, private val now: () -> Instant, private val ttlOf: (String) -> Duration = { ttl }) {
     private val lock = Any()
     private val fetchedAt = HashMap<String, Instant>()
     private val inflight = HashSet<String>()
 
     /** Whether [key] should be asked for: not being asked already, and never asked, stale, or [force]d. */
     fun due(key: String, force: Boolean = false): Boolean = synchronized(lock) {
-        key !in inflight && (force || fetchedAt[key]?.let { Duration.between(it, now()) >= ttl } ?: true)
+        key !in inflight && (force || fetchedAt[key]?.let { Duration.between(it, now()) >= ttlOf(key) } ?: true)
     }
 
     fun begin(key: String): Unit = synchronized(lock) { inflight.add(key) }
@@ -58,7 +58,10 @@ internal class Freshness(private val ttl: Duration, private val now: () -> Insta
  * In-memory last prints shared by the stocks tab, the ticker page and the
  * cashtags in posts, as XTA's ticker_quote_cache.dart keeps them: a quote
  * lives [TTL] so a `$AAPL` in the feed shows its move without every strip
- * asking again, at most [MAX_CONCURRENT] lookups at a time.
+ * asking again, at most [MAX_CONCURRENT] lookups at a time. A closed
+ * market's last close does not move, so it is fresh for [CLOSED_TTL]
+ * ([freshFor]): a watchlist open at night does not ask for every close
+ * every few minutes.
  *
  * Each entry is a row quote ([TickerClient.rowQuote]): a share's day against
  * the previous close, a coin's last 24 hours. A cashtag that names both a
@@ -72,7 +75,7 @@ class TickerQuoteCache(
     private val onPicks: (Map<String, TickerInstrument>) -> Unit = {},
     now: () -> Instant = Instant::now,
 ) {
-    private val freshness = Freshness(TTL, now)
+    private val freshness = Freshness(TTL, now) { key -> freshFor(peek(key), now()) }
     private val lock = Any()
     private val listingsAsked = HashSet<String>()
     private val state = MutableStateFlow(TickerQuotes(picks = picks.mapKeys { it.key.uppercase() }))
@@ -186,8 +189,15 @@ class TickerQuoteCache(
         /** How long a quote is fresh. */
         val TTL: Duration = Duration.ofMinutes(2)
 
+        /** How long a closed market's last close is fresh: the opening bell is caught within it. */
+        val CLOSED_TTL: Duration = Duration.ofMinutes(15)
+
         /** How many lookups run at a time. */
         const val MAX_CONCURRENT = 4
+
+        /** How long [quote] is fresh at [now]: [CLOSED_TTL] while its market is closed, else [TTL]. */
+        fun freshFor(quote: TickerQuote?, now: Instant): Duration =
+            if (quote?.sessionAt(now) == TickerSession.CLOSED) CLOSED_TTL else TTL
     }
 }
 

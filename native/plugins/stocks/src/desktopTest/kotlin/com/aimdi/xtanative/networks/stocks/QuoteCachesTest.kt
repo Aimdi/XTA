@@ -58,11 +58,31 @@ class QuoteCachesTest {
 
         cache.ensure(listOf("aapl"))
         assertEquals(10, http.asked.size, "a fresh quote is not asked for again")
-        clock = clock.plus(TickerQuoteCache.TTL)
+        clock = clock.plus(TickerQuoteCache.CLOSED_TTL)
         cache.ensure(listOf("AAPL"))
         assertEquals(11, http.asked.size, "a stale one is")
         cache.refresh(listOf("AAPL"))
         assertEquals(12, http.asked.size, "pull-to-refresh asks again")
+    }
+
+    @Test
+    fun aClosedMarketsCloseStaysFreshLongerThanATradingPrice() = runBlocking {
+        clock = Instant.ofEpochSecond(open + 600)
+        val (cache, http) = cache { url -> dayChart(url.symbol) }
+        cache.ensure(listOf("AAPL"))
+        clock = clock.plus(TickerQuoteCache.TTL)
+        cache.ensure(listOf("AAPL"))
+        assertEquals(2, http.asked.size, "a price in session is stale after the short time")
+
+        clock = Instant.ofEpochSecond(open + 23400 + 3600)
+        cache.ensure(listOf("AAPL"))
+        assertEquals(3, http.asked.size)
+        clock = clock.plus(TickerQuoteCache.TTL)
+        cache.ensure(listOf("AAPL"))
+        assertEquals(3, http.asked.size, "a close after the bell is not asked for again so soon")
+        clock = clock.plus(TickerQuoteCache.CLOSED_TTL)
+        cache.ensure(listOf("AAPL"))
+        assertEquals(4, http.asked.size, "but it is within the longer time, so an opening bell is caught")
     }
 
     @Test

@@ -152,7 +152,8 @@ private fun ReelFigures(quote: TickerQuote?, state: StockRowState) {
 
 /**
  * The price strip at the foot of an X post that names tickers
- * (cashtag_quotes.dart): each of its first cashtags with the day's line,
+ * (cashtag_quotes.dart), set in 16 dp from the start as XTA sets it, with a
+ * hairline above and below: each of its first cashtags with the day's line,
  * the price and the move, on one line that scrolls sideways. A tap opens
  * the ticker's page.
  */
@@ -164,7 +165,7 @@ internal fun CashtagStrip(app: StocksApp, symbols: List<String>) {
     val quotes by app.quotes.quotes.collectAsState()
     val entries = Cashtags.entries(shown, quotes.quotes, quotes.failed, Instant.now())
     val line = MaterialTheme.colorScheme.outlineVariant
-    Column(Modifier.padding(top = 8.dp)) {
+    Column(Modifier.padding(start = 16.dp, top = 8.dp)) {
         Hairline()
         Row(Modifier.horizontalScroll(rememberScrollState()), verticalAlignment = Alignment.CenterVertically) {
             entries.forEachIndexed { index, entry ->

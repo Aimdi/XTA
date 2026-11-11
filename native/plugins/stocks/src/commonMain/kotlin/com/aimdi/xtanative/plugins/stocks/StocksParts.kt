@@ -42,11 +42,12 @@ internal fun WatchButton(watched: Boolean, onToggle: () -> Unit) {
     }
 }
 
-/** No market data came: the reason, and a way to ask again. */
+/** No market data came: the reason ([notFound]: the host has no price for it, else it did not answer), and a way to ask again. */
 @Composable
-internal fun Unavailable(onRetry: () -> Unit) {
+internal fun Unavailable(onRetry: () -> Unit, notFound: Boolean = false) {
     ListItem(
         headlineContent = { Text(pluginString(Strings.data_unavailable)) },
+        supportingContent = if (notFound) ({ Text(pluginString(Strings.no_price_reason)) }) else null,
         leadingContent = { Icon(StocksIcons.CloudOff, null) },
         trailingContent = { TextButton(onClick = onRetry) { Text(pluginString(Strings.retry)) } },
         colors = plainRow(),
