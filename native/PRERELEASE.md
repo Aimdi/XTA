@@ -41,6 +41,13 @@ It keeps its data in `~/.local/share/xta-native`, a folder only you can open. Vi
   - Threads saves pictures and videos under names saying whose they are; a long press on a picture offers its description, Download, Download all and the link
   - Threads reads its pages several times faster, and no longer loses a profile's threads when a post mentions "<html>"
   - Bluesky's and Mastodon's Filters sit in the tab's bar; a Bluesky post labelled for its media also covers its quote and link card; accounts without a picture show their initial
+  - Reddit: folded in Home, its followed communities sit in a menu; its own search screen with a follow button when you search a community; comments, covers and the communities sheet read better
+  - Hacker News: links in stories, comments and profiles are tappable; a story's sheet opens from its bar
+  - Pixiv: the column reader zooms; pictures that fail offer Retry; novel chapters replace each other instead of piling up. EhViewer names saved pages with their page number; a Booru picture that failed asks again from its mark
+  - Instagram says a profile is hidden from your network rather than missing; Substack says when its bot check turns you away, with Open in browser; Substack's cards and highlights match XTA at every text size
+  - RSS finds a walled site's feed, says why an address failed, imports OPML faster and shows the last timeline at once; web sources say when a next page failed, with Retry, and dim posts you read to the end
+  - Stocks rests closed markets and says why a chart is missing; Immich says why an upload failed and stops when the server refuses; Karakeep and Deepmarks say they are saving
+  - The plugin store offers a failed update again, says when a plugin is too old for the app, and gives Retry when its list cannot be read
 - In 0.1.73:
   - Threads: a profile you opened before shows at once while it is read again; GIFs loop in place; accounts without a picture get a face with their initial; a reload keeps the conversation and says so in a notice with Retry
   - Threads search and topic links open in the plugin, and a recent search can be forgotten
