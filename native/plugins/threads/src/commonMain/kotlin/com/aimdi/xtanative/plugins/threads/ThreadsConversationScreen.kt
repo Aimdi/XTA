@@ -44,6 +44,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.threads.ThreadsConversation
+import com.aimdi.xtanative.networks.threads.ThreadsPost
+import com.aimdi.xtanative.networks.threads.ThreadsReplyRow
 import com.aimdi.xtanative.networks.threads.ThreadsReplyOrder
 import com.aimdi.xtanative.networks.threads.ThreadsThreadView
 import com.aimdi.xtanative.ui.common.LoadingRow
