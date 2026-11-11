@@ -33,9 +33,13 @@ import kotlinx.serialization.json.JsonElement
  * plugin's own timeline keeps them as XTA's does; 9 adds XTA's plugin chrome
  * (the home tabs' strip, the one bar, skeletons, the failure sheet), a
  * search screen of the plugin's own ([PluginSearch.ownScreen]), pulls to
- * reload, a post's link context and [XtaPlugin.brandsChrome].
+ * reload, a post's link context and [XtaPlugin.brandsChrome]; 10 adds a
+ * network's own content-warning cover ([NetworkPostExtras.cover]), a plugin
+ * screen opened as a card dragged back ([XtaPlugin.opensAsCard]), a saved
+ * picture's name ([PluginHost.openMedia] with a source name) and a home bar
+ * whose mark gives way to its tabs.
  */
-const val PLUGIN_API_VERSION: Int = 9
+const val PLUGIN_API_VERSION: Int = 10
 
 /**
  * The oldest plugin API whose plugins this app still loads: what they use of

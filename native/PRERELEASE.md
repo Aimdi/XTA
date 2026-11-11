@@ -33,6 +33,14 @@ It keeps its data in `~/.local/share/xta-native`, a folder only you can open. Vi
 - Every section of XTA's settings, its backup export and import, WebDAV sync, and 29 languages; an opened post that swipes back as XTA's card, confirm close, the check for a newer prerelease and the licences page
 - Links open in the app's own browser on Android, or in the browser you pick; x.com and the networks' links open in the app, and so do t.co, fxtwitter, vxtwitter and fixupx links; a link nothing reads says so
 - New in this prerelease:
+  - Threads has a For you feed of its own recommended posts, kept on the device and shown at once on opening, and sharper pictures: the largest Threads offers, scaled down smoothly on Linux
+  - Threads plays videos in place, at the quality Settings › Media picks; a row of pictures has its dots; described pictures carry ALT; an opened conversation is a card you drag back
+  - Bluesky, Mastodon, Threads, Hacker News, Reddit and Pixiv have one bar on their own screens, their tabs in it, folding into a section picker on Home
+  - Mastodon's and Bluesky's content warnings are their own Show and Hide covers, in Home, groups and Saved too; nothing held back is drawn until opened
+  - A Bluesky post opened from a link shows at once while it loads; a quoted post shows its pictures over its text; "… reposted" opens who reposted. A Mastodon post is laid out in XTA's order
+  - The plugin store shows each plugin's own mark before it is installed; RSS, EhViewer, TikTok and Substack keep the tab you chose
+  - A Reddit picture saved from the viewer is named after who posted it; Hacker News' empty lists and searches show their glyph
+- In 0.1.69:
   - On Android, a post link on a site you do not follow is checked before the browser opens. It shows "Checking the link…", and opens in Substack's reader only when the site confirms it
   - X's own answers are said in X's words: a private profile, a missing page, a missing account, a suspended account, and access forbidden. Those are not tried again. A thrown-away guest token still says so, and is tried again
   - A failed load names what failed: the post, the next page of replies, who reposted, and the trends for a place

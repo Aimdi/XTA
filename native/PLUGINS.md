@@ -44,7 +44,7 @@ plugin API version it was built against, `PLUGIN_API_VERSION`) and `entry`
 
 ## The plugin API
 
-`PLUGIN_API_VERSION` is 9. Version 1 is what native-0.1.41 shipped; 2,
+`PLUGIN_API_VERSION` is 10. Version 1 is what native-0.1.41 shipped; 2,
 which native-0.1.45 shipped, added `cashtagStrip` and `routeForCashtag` and
 the kit's pieces of that time (the article reader, `FeedReads`, X posts in a
 plugin, the chip tabs, the shelf, the recent searches, the action row,
@@ -239,7 +239,7 @@ with a test.
   `PluginSwitchRow` with a leading icon, `HomeTimelineIcon`;
   `AddToGroupButton` in a plugin's own words, `AddToGroupIcon`; and
   `XtaPlugin.brandsChrome` (false: its mark on Home follows the text colour).
-- A network's own cover (added after version 9, with defaults):
+- A network's own cover (version 10):
   `NetworkPostExtras.cover`, a `PostCover` drawn in place of the shared
   row's warning line, on the post and on the post it quotes (XTA's Show and
   Hide covers: Mastodon's "Content warning" box, Bluesky's button), under
