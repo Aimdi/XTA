@@ -15,12 +15,18 @@ import kotlinx.serialization.json.JsonPrimitive
 internal object ThreadsJson {
     private val number = Regex("""-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?""")
 
-    /** [text] as JSON, or null when it is not JSON at all. */
-    fun decode(text: String): JsonElement? = runCatching { Json.parseToJsonElement(text) }.getOrNull()?.takeIf(::wellFormed)
+    /**
+     * How deep a reader walks a tree: Meta nests a page's posts a few dozen
+     * levels down, and a walk that went on would end the app, not the read.
+     */
+    const val MAX_DEPTH = 160
 
-    private fun wellFormed(element: JsonElement): Boolean = when (element) {
-        is JsonObject -> element.values.all(::wellFormed)
-        is JsonArray -> element.all(::wellFormed)
+    /** [text] as JSON, or null when it is not JSON at all or nests deeper than [MAX_DEPTH]. */
+    fun decode(text: String): JsonElement? = runCatching { Json.parseToJsonElement(text) }.getOrNull()?.takeIf { wellFormed(it, 0) }
+
+    private fun wellFormed(element: JsonElement, depth: Int): Boolean = when (element) {
+        is JsonObject -> depth < MAX_DEPTH && element.values.all { wellFormed(it, depth + 1) }
+        is JsonArray -> depth < MAX_DEPTH && element.all { wellFormed(it, depth + 1) }
         is JsonNull -> true
         is JsonPrimitive -> element.isString || element.content == "true" || element.content == "false" || number.matches(element.content)
     }

@@ -281,7 +281,7 @@ object ThreadsParser {
     private fun aspectOf(width: Long?, height: Long?): Double? =
         if (width != null && height != null && width > 0 && height > 0) width.toDouble() / height else null
 
-    private fun positive(value: Long?): Int? = value?.takeIf { it > 0 }?.toInt()
+    private fun positive(value: Long?): Int? = value?.takeIf { it in 1..Int.MAX_VALUE }?.toInt()
 
     /** An id Meta may send as a string or, from the app API, as a number. */
     private fun idOf(value: J): String? =

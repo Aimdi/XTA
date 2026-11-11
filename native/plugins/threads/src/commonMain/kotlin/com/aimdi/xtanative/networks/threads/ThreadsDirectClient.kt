@@ -326,12 +326,9 @@ class ThreadsDirectClient(
         val response = send(asGuest = true, url) { http.post(url, headers, body, FORM) }
         if (response.code == 429) throw guestThrottled(url)
         if (response.code != 200) throw ThreadsException(UNREACHABLE, "$url: ${response.code}", response.code)
-        val decoded = decodeJson(response, url)
-        // Guest GraphQL sometimes answers with the HTML shell when its headers are off.
-        if (response.body.trimStart().startsWith("<!") || response.body.contains("<html")) {
-            throw ThreadsException(UNREACHABLE, "$url: HTML instead of JSON", response.code)
-        }
-        return ThreadsParser.graphqlFeed(decoded)
+        // Guest GraphQL sometimes answers with the HTML shell when its headers are off; a post may well mention `<html>`.
+        if (response.body.trimStart().startsWith("<")) throw ThreadsException(UNREACHABLE, "$url: HTML instead of JSON", response.code)
+        return ThreadsParser.graphqlFeed(decodeJson(response, url))
     }
 
     /** A session read: paced, refused while the session cools down, and checked for what Meta said. */
@@ -463,7 +460,7 @@ class ThreadsDirectClient(
     private fun rememberUserId(handle: String, id: String) {
         val key = handle.lowercase()
         if (key.isEmpty() || id.isEmpty() || memory.kept.userIds[key] == id) return
-        keep { it.copy(userIds = it.userIds + (key to id)) }
+        keep { it.copy(userIds = (it.userIds - key + (key to id)).entries.toList().takeLast(USER_IDS_KEPT).associate { (k, v) -> k to v }) }
     }
 
     private fun rememberedConversation(key: String): ThreadsPostPage? = synchronized(conversations) {
@@ -498,6 +495,9 @@ class ThreadsDirectClient(
         private const val LSD_TTL_MILLIS = 10 * 60 * 1000L
         private const val CONVERSATION_TTL_MILLIS = 10 * 60 * 1000L
         private const val CONVERSATIONS_KEPT = 40
+
+        /** How many handles' ids are remembered: the ones learnt last, so a reader's searches never grow the settings without end. */
+        internal const val USER_IDS_KEPT = 400
 
         private fun newDeviceId(): String {
             val random = SecureRandom()
