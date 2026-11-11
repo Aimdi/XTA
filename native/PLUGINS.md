@@ -219,9 +219,9 @@ with a test.
 - Marks and first loads: `brandMarkIcon` (a network's own glyph fitted to the
   live area every mark spans, as XTA's PluginBrandMark) and, in `ui.common`,
   `FeedSkeleton` and `GridSkeleton` (post- and tile-shaped bones while a
-  first page loads, in place of a spinner); `PluginAvatar` (someone's round
-  picture, or without one XTA's fallback avatar: their initial on the colour
-  their id picks, `PluginFallbackFace`).
+  first page loads, in place of a spinner); and since version 10
+  `PluginAvatar` (someone's round picture, or without one XTA's fallback
+  avatar: their initial on the colour their id picks, `PluginFallbackFace`).
 - XTA's plugin chrome (version 9): `PluginHomeTabs` with `PluginHomeTab` (a home tab's own tabs as icon
   and label buttons, the one shown underlined in the plugin's colour, folding
   into `PluginSectionPicker` when they do not fit; opened on its own, the tabs
