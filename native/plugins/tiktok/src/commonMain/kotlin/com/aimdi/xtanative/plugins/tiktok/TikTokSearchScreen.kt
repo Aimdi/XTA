@@ -17,8 +17,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -178,7 +178,7 @@ private fun LandingList(app: TikTokApp, landing: TikTokLanding, suggestions: Lis
         if (direct != null) {
             item(key = "direct") {
                 ListItem(
-                    leadingContent = { Icon(Icons.Filled.Person, contentDescription = null) },
+                    leadingContent = { Icon(Icons.Outlined.Person, contentDescription = null) },
                     headlineContent = { Text("@$direct") },
                     supportingContent = { Text(pluginString(Strings.open_handle)) },
                     colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.background),

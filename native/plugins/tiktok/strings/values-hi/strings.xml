@@ -54,4 +54,5 @@
     <string name="settings_title">TikTok सेटिंग</string>
     <string name="show_tab">TikTok टैब दिखाएँ</string>
     <string name="show_tab_description">प्लगिन चालू होने पर नीचे के नेविगेशन में TikTok जोड़ता है</string>
+    <string name="more_options">और विकल्प</string>
 </resources>

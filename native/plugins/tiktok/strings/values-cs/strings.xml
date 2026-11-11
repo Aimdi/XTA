@@ -54,4 +54,5 @@
     <string name="settings_title">Nastavení TikToku</string>
     <string name="show_tab">Zobrazit kartu TikTok</string>
     <string name="show_tab_description">Přidá TikTok do spodní navigace, když je zásuvný modul zapnutý</string>
+    <string name="more_options">Další možnosti</string>
 </resources>

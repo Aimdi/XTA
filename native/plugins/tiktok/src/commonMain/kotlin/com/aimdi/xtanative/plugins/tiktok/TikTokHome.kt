@@ -211,7 +211,7 @@ private fun AccountRow(app: TikTokApp, follow: TikTokSubscriptionRow, onUnfollow
             supportingContent = { Text("@${follow.id}", maxLines = 1, overflow = TextOverflow.Ellipsis) },
             trailingContent = {
                 Box {
-                    IconButton(onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, contentDescription = null) }
+                    IconButton(onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, pluginString(Strings.more_options)) }
                     DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                         DropdownMenuItem(text = { Text(pluginString(Strings.add_to_group)) }, onClick = { menu = false; app.addToGroup(follow) })
                         DropdownMenuItem(text = { Text(pluginString(Strings.unfollow)) }, onClick = { menu = false; onUnfollow() })

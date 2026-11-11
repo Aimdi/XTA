@@ -54,4 +54,5 @@
     <string name="settings_title">TikTok 설정</string>
     <string name="show_tab">TikTok 탭 표시</string>
     <string name="show_tab_description">플러그인이 켜져 있을 때 하단 탐색에 TikTok을 넣습니다</string>
+    <string name="more_options">더보기</string>
 </resources>

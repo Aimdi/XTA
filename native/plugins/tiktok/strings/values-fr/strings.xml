@@ -54,4 +54,5 @@
     <string name="settings_title">Réglages TikTok</string>
     <string name="show_tab">Afficher l’onglet TikTok</string>
     <string name="show_tab_description">Ajoute TikTok à la navigation du bas lorsque le greffon est activé</string>
+    <string name="more_options">Plus d\'options</string>
 </resources>

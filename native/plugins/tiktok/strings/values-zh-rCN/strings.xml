@@ -54,4 +54,5 @@
     <string name="settings_title">TikTok 设置</string>
     <string name="show_tab">显示 TikTok 标签</string>
     <string name="show_tab_description">启用插件后，将 TikTok 加入底部导航</string>
+    <string name="more_options">更多选项</string>
 </resources>

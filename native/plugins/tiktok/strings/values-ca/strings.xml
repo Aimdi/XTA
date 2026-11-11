@@ -54,4 +54,5 @@
     <string name="settings_title">Configuració de TikTok</string>
     <string name="show_tab">Mostra la pestanya de TikTok</string>
     <string name="show_tab_description">Afegeix TikTok a la navegació inferior quan el connector està activat</string>
+    <string name="more_options">Més opcions</string>
 </resources>

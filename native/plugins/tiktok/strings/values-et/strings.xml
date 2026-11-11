@@ -54,4 +54,5 @@
     <string name="settings_title">TikToki sätted</string>
     <string name="show_tab">Näita TikToki kaarti</string>
     <string name="show_tab_description">Lisab TikToki alumisse navigeerimisse, kui plugin on sisse lülitatud</string>
+    <string name="more_options">Rohkem valikuid</string>
 </resources>

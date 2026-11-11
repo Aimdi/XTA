@@ -54,4 +54,5 @@
     <string name="settings_title">Налаштування TikTok</string>
     <string name="show_tab">Показувати вкладку TikTok</string>
     <string name="show_tab_description">Додає TikTok до нижньої навігації, коли плагін увімкнено</string>
+    <string name="more_options">Інші дії</string>
 </resources>

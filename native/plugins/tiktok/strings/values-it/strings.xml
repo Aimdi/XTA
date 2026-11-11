@@ -54,4 +54,5 @@
     <string name="settings_title">Impostazioni TikTok</string>
     <string name="show_tab">Mostra scheda TikTok</string>
     <string name="show_tab_description">Aggiunge TikTok alla navigazione in basso quando il plugin è attivo</string>
+    <string name="more_options">Altre opzioni</string>
 </resources>

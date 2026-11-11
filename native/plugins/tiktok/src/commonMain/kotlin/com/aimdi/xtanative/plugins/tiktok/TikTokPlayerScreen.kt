@@ -144,7 +144,7 @@ private fun PlayerBar(
         IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, pluginString(Strings.back), tint = Color.White) }
         Text("@${post.author.uniqueId}", color = Color.White, fontSize = 18.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
         Box {
-            IconButton(onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, contentDescription = null, tint = Color.White) }
+            IconButton(onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, pluginString(Strings.more_options), tint = Color.White) }
             DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                 onToggle?.let { toggle ->
                     DropdownMenuItem(text = { Text(pluginString(if (embedded) Strings.try_native else Strings.use_embed)) }, onClick = { menu = false; toggle() })

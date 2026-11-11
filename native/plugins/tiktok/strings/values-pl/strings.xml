@@ -54,4 +54,5 @@
     <string name="settings_title">Ustawienia TikToka</string>
     <string name="show_tab">Pokaż kartę TikTok</string>
     <string name="show_tab_description">Dodaje TikToka do dolnej nawigacji, gdy wtyczka jest włączona</string>
+    <string name="more_options">Więcej opcji</string>
 </resources>
