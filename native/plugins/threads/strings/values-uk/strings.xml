@@ -166,4 +166,8 @@
     <string name="quotes">Цитати</string>
     <string name="shares">Поширення</string>
     <string name="exact_time">Показати точний час</string>
+    <string name="fewer_replies">Показати менше відповідей</string>
+    <string name="more_replies_web">Більше відповідей на threads.com</string>
+    <string name="thread_on_web">Продовження гілки на threads.com</string>
+    <string name="related_threads">Схожі гілки</string>
 </resources>

@@ -103,7 +103,9 @@ class ThreadsConversationTest {
     fun anOpenedThreadShowsEverything() {
         val rows = long.replyRows(ThreadsThreadView(expanded = setOf("2")))
         assertTrue(rows.none { it is ThreadsReplyRow.More })
-        assertEquals(6, rows.size)
+        assertEquals(6, shownIds(rows).size)
+        assertEquals(listOf("2"), rows.filterIsInstance<ThreadsReplyRow.Less>().map { it.chain.first().id }, "an opened thread can be cut again")
+        assertEquals(4, rows.indexOfFirst { it is ThreadsReplyRow.Less })
         assertFalse(rows.filterIsInstance<ThreadsReplyRow.Post>().single { it.post.id == "5" }.connectBottom)
     }
 

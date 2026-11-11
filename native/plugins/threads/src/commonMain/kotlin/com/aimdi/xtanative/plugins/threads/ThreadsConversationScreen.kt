@@ -1,13 +1,11 @@
 package com.aimdi.xtanative.plugins.threads
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -46,9 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.threads.ThreadsConversation
-import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsReplyOrder
-import com.aimdi.xtanative.networks.threads.ThreadsReplyRow
 import com.aimdi.xtanative.networks.threads.ThreadsThreadView
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.Fetch
@@ -59,12 +55,12 @@ import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.currentLanguage
-import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 import com.aimdi.xtanative.ui.plugins.rememberShareText
 import com.aimdi.xtanative.ui.post.PostIcons
+import com.aimdi.xtanative.ui.speech.ReadAloudButton
 
 /**
  * One post in its conversation (threads_thread_screen.dart): what it
@@ -84,7 +80,10 @@ internal fun ThreadsConversationScreen(app: ThreadsApp, route: ThreadsRoute.Post
     PluginScaffold(
         title = pluginString(Strings.thread),
         onBack = app.host::back,
-        actions = { conversation.focus.url?.let { url -> ThreadActions(app, url) } },
+        actions = {
+            if (conversation.loaded) ReadAloudButton("${pluginString(Strings.thread)} · @${conversation.focus.handle}", conversation::spokenText)
+            conversation.focus.url?.let { url -> ThreadActions(app, url) }
+        },
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
             ConversationList(app, conversation, state, onRetry = { fetch.load(force = true) })
@@ -114,7 +113,12 @@ private fun ConversationList(app: ThreadsApp, conversation: ThreadsConversation,
     val list = rememberLazyListState()
     LandsOnFocus(list, conversation)
     CompositionLocalProvider(LocalThreadsGallery provides gallery) {
-        RefreshableConversation(app, conversation, state, list, view, rows, onRetry, onAuthorOnly = { authorOnly = !authorOnly }) { chain -> expanded = expanded + chain.first().id }
+        RefreshableConversation(
+            app, conversation, state, list, view, rows, onRetry,
+            onAuthorOnly = { authorOnly = !authorOnly },
+            onExpand = { chain -> expanded = expanded + chain.first().id },
+            onCollapse = { chain -> expanded = expanded - chain.first().id },
+        )
     }
 }
 
@@ -130,6 +134,7 @@ private fun RefreshableConversation(
     onRetry: () -> Unit,
     onAuthorOnly: () -> Unit,
     onExpand: (List<ThreadsPost>) -> Unit,
+    onCollapse: (List<ThreadsPost>) -> Unit,
 ) {
     PullToRefreshBox(isRefreshing = state.loading && conversation.loaded, onRefresh = onRetry, modifier = Modifier.fillMaxSize()) {
         LazyColumn(state = list, contentPadding = PaddingValues(bottom = 24.dp), modifier = Modifier.fillMaxSize()) {
@@ -137,8 +142,10 @@ private fun RefreshableConversation(
             statusRows(conversation, state, onRetry)
             if (conversation.replies.isNotEmpty()) {
                 item(key = "replies-header") { RepliesHeader(app, conversation, view, onAuthorOnly) }
-                replyRows(app, conversation, rows, onExpand)
+                replyRows(app, rows, onExpand, onCollapse, byAuthor = conversation::byAuthor)
             }
+            if (conversation.moreReplies) moreRepliesOnWeb(conversation.focus.url)
+            relatedRows(app, conversation.related)
         }
         if (conversation.replies.isNotEmpty()) {
             ReloadStatus(state.loading, state.problem?.let { ThreadsFailures.post(it, currentLanguage()) }, onRetry)
@@ -262,28 +269,4 @@ private fun orderIcon(order: ThreadsReplyOrder): ImageVector = when (order) {
     ThreadsReplyOrder.TOP -> PostIcons.Sparkle
     ThreadsReplyOrder.NEWEST -> PostIcons.Schedule
     ThreadsReplyOrder.OLDEST -> PostIcons.History
-}
-
-/** Each reply thread, its posts joined by rails, the opened post's author's marked "Author", a long one cut to its first few until "Show N more replies". */
-private fun LazyListScope.replyRows(app: ThreadsApp, conversation: ThreadsConversation, rows: List<ThreadsReplyRow>, onExpand: (List<ThreadsPost>) -> Unit) {
-    itemsIndexed(rows, key = { index, row -> "reply:$index:" + keyOf(row) }, contentType = { _, row -> if (row is ThreadsReplyRow.Post) "post" else "more" }) { _, row ->
-        when (row) {
-            is ThreadsReplyRow.Post -> ThreadsPostCard(app, row.post, connectTop = row.connectTop, connectBottom = row.connectBottom, byAuthor = conversation.byAuthor(row.post))
-            is ThreadsReplyRow.More -> MoreReplies(row.hidden) { onExpand(row.chain) }
-        }
-    }
-}
-
-private fun keyOf(row: ThreadsReplyRow): String = when (row) {
-    is ThreadsReplyRow.Post -> row.post.id
-    is ThreadsReplyRow.More -> "more:" + row.chain.first().id
-}
-
-@Composable
-private fun MoreReplies(hidden: Int, onClick: () -> Unit) {
-    val color = MaterialTheme.colorScheme.primary
-    Row(Modifier.fillMaxWidth().heightIn(min = 48.dp).clickable(onClick = onClick).padding(start = 76.dp, end = 16.dp, top = 8.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-        Icon(PostIcons.SubdirectoryArrow, contentDescription = null, tint = color, modifier = Modifier.size(18.dp))
-        Text(pluginPlural(Strings.more_replies, hidden, hidden), style = MaterialTheme.typography.labelLarge, color = color, modifier = Modifier.padding(start = 8.dp))
-    }
 }

@@ -24,7 +24,8 @@ object ThreadsShape {
     /** The `text_post_app_info` fields [ThreadsParser] reads. */
     val READ_INFO = setOf(
         "share_info", "tag_header", "text_fragments", "link_preview_attachment", "direct_reply_count",
-        "repost_count", "quote_count", "reply_to_author", "is_reply",
+        "repost_count", "quote_count", "reply_to_author", "is_reply", "reply_level", "direct_replies",
+        "self_thread", "containing_thread",
     )
 
     /** What a reader would notice if it were drawn: the key names worth a path. */

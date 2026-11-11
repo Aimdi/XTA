@@ -748,6 +748,16 @@ native only | a post's inline media (`linked_inline_media`) stands in when it ha
 native only | the card's ⋯ and long press open its own sheet: Copy text and Copy link above the app's post sheet | ThreadsCardParts.ThreadsPostSheet, ThreadsShared.menu | Compose only
 native only | a caption over 600 characters or 12 lines is cut to 10 lines in lists, with Show more / Show less; a long press on the author line shows the exact time | ThreadsCardParts, ThreadsPostCard.Header | ThreadsCardTest.aLongCaptionIsCutShortInAList
 native only | a screen reader hears the card as one description (who reposted it, who and when, topic, words, labels) with Like on this device and More options as actions | ThreadsPostCard.rememberSummary, ThreadsCardRules.summary | ThreadsCardTest.theCardIsOneDescription…
+## Threads, round 14: the conversation
+
+Rows as above: state | what | where | test.
+
+missing/different | a post page now preloads four queries (BarcelonaPostPageTargetQuery, …UpwardQuery, …DownwardQuery, BarcelonaLoggedOutRelatedPostsQuery; CI's shape probe); only `thread_items` was read, so a guest's conversation showed the related posts, one of them as the post itself, and none of the replies | networks/threads ThreadsPostPage.kt (new: the post from `data.media`, what it answers and its author's continuation from the thread posts around it, each `direct_replies` edge of the post itself as a reply thread, the related posts apart), ThreadsDirectClient.postPage (postChains kept over it), ThreadsReader.conversation, ThreadsConversation.from(page) | ThreadsConversationPageTest (a kept page in the probe's shape; what a `posts` connection holds inside was not logged, so it is read whatever holds it)
+native only | replies nest by Meta's `reply_level`: the only answer to a post continues its chain with a rail, one of several steps in under the post it answers (three steps at most) with a guide line per step; without every level a thread stays one chain as before | ThreadsConversation.replyRows, ThreadsReplyShape, ThreadsReplyRows.kt | ThreadsConversationPageTest.repliesNestByTheirLevel…, withoutEveryLevel…
+native only | an opened long reply thread can be cut again ("Show fewer replies"); a thread Meta holds more of ends in "This thread goes on at threads.com", and the replies in "More replies on threads.com" when `direct_replies.page_info.has_next_page` (no guest query is known to read the next page: no doc id, no variables) | ThreadsReplyRow.Less/OnWeb, ThreadsReplyRows (moreRepliesOnWeb) | ThreadsConversationTest.anOpenedThreadShowsEverything, ThreadsConversationPageTest.aThreadMetaHoldsMore…
+native only | the related posts Threads shows a guest under a post sit after the conversation, under "Related threads" | ThreadsReplyRows.relatedRows | ThreadsConversationPageTest.relatedPostsAreNeverTakenForReplies
+native only | the whole conversation read aloud with the app's voice (the kit's ReadAloudButton, as Substack's reader) | ThreadsConversationScreen, ThreadsConversation.spokenText | ThreadsConversationPageTest.theWholeConversationIsReadAloudPostByPost
+missing/different | translate: the kit's translation is X's (XTranslator asks X by post id); nothing translates a Threads post's words, so there is none here | — | —
 
 ## Bluesky and Mastodon, round 10 (the chrome, the covers, the audit's items)
 

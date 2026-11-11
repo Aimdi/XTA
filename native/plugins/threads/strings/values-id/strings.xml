@@ -154,4 +154,8 @@
     <string name="quotes">Kutipan</string>
     <string name="shares">Dibagikan</string>
     <string name="exact_time">Tampilkan waktu persisnya</string>
+    <string name="fewer_replies">Tampilkan lebih sedikit balasan</string>
+    <string name="more_replies_web">Balasan lainnya di threads.com</string>
+    <string name="thread_on_web">Utas ini berlanjut di threads.com</string>
+    <string name="related_threads">Utas terkait</string>
 </resources>

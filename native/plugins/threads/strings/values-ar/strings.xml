@@ -174,4 +174,8 @@
     <string name="quotes">الاقتباسات</string>
     <string name="shares">المشاركات</string>
     <string name="exact_time">عرض الوقت بالضبط</string>
+    <string name="fewer_replies">عرض ردود أقل</string>
+    <string name="more_replies_web">مزيد من الردود على threads.com</string>
+    <string name="thread_on_web">يتواصل هذا الخيط على threads.com</string>
+    <string name="related_threads">خيوط ذات صلة</string>
 </resources>

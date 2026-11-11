@@ -46,8 +46,8 @@ class ThreadsDirectClient(
     private var lastDeparture: Long? = null
     private val keeping = Any()
     private val profilePages = SingleFlight<String>()
-    private val conversationReads = SingleFlight<List<List<ThreadsPost>>>()
-    private val conversations = LinkedHashMap<String, Pair<Long, List<List<ThreadsPost>>>>()
+    private val conversationReads = SingleFlight<ThreadsPostPage>()
+    private val conversations = LinkedHashMap<String, Pair<Long, ThreadsPostPage>>()
 
     /** The session as the reader pasted it, read afresh on every request. */
     val currentSession: ThreadsSession get() = session()
@@ -219,16 +219,20 @@ class ThreadsDirectClient(
     }
 
     /**
-     * A post page's chains: the conversation leading to the post, then each
-     * reply thread. Remembered for ten minutes and shared while in flight, so
-     * opening the same post again asks Meta nothing; [force] asks again.
+     * A post page as [ThreadsPostPage] reads it: the post, what it answers,
+     * its replies and the posts Threads suggests beside it. Remembered for ten
+     * minutes and shared while in flight, so opening the same post again asks
+     * Meta nothing; [force] asks again.
      */
-    suspend fun postChains(postUrl: String, force: Boolean = false): List<List<ThreadsPost>> {
+    suspend fun postPage(postUrl: String, force: Boolean = false): ThreadsPostPage {
         val url = ThreadsLinks.canonicalPostUrl(postUrl) ?: throw ThreadsException(UNREACHABLE, "not a threads url: $postUrl")
         val key = ThreadsLinks.shortcode(url.toString()) ?: url.toString()
         if (!force) rememberedConversation(key)?.let { return it }
-        return conversationReads.run(key) { ThreadsPages.chains(guestPage(url)).also { rememberConversation(key, it) } }
+        return conversationReads.run(key) { ThreadsPostPage.read(guestPage(url)).also { rememberConversation(key, it) } }
     }
+
+    /** A post page's chains: the conversation leading to the post, then each reply thread. */
+    suspend fun postChains(postUrl: String, force: Boolean = false): List<List<ThreadsPost>> = postPage(postUrl, force).conversationChains
 
     /** Every post of a post page, root and replies; empty when Meta embedded none. */
     suspend fun postThread(postUrl: String): List<ThreadsPost> = postChains(postUrl).flatten()
@@ -462,15 +466,15 @@ class ThreadsDirectClient(
         keep { it.copy(userIds = it.userIds + (key to id)) }
     }
 
-    private fun rememberedConversation(key: String): List<List<ThreadsPost>>? = synchronized(conversations) {
+    private fun rememberedConversation(key: String): ThreadsPostPage? = synchronized(conversations) {
         conversations[key]?.takeIf { (at, _) -> clock() - at < CONVERSATION_TTL_MILLIS }?.second
     }
 
-    private fun rememberConversation(key: String, chains: List<List<ThreadsPost>>) {
-        if (chains.isEmpty()) return
+    private fun rememberConversation(key: String, page: ThreadsPostPage) {
+        if (page.conversationChains.isEmpty()) return
         synchronized(conversations) {
             conversations.remove(key)
-            conversations[key] = clock() to chains
+            conversations[key] = clock() to page
             while (conversations.size > CONVERSATIONS_KEPT) conversations.remove(conversations.keys.first())
         }
     }

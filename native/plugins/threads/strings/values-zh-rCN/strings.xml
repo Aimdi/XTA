@@ -154,4 +154,8 @@
     <string name="quotes">引用</string>
     <string name="shares">分享</string>
     <string name="exact_time">显示确切时间</string>
+    <string name="fewer_replies">收起部分回复</string>
+    <string name="more_replies_web">在 threads.com 查看更多回复</string>
+    <string name="thread_on_web">此串文在 threads.com 上继续</string>
+    <string name="related_threads">相关串文</string>
 </resources>

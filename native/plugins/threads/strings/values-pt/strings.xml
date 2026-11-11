@@ -161,4 +161,8 @@
     <string name="quotes">Citações</string>
     <string name="shares">Partilhas</string>
     <string name="exact_time">Mostrar a hora exata</string>
+    <string name="fewer_replies">Mostrar menos respostas</string>
+    <string name="more_replies_web">Mais respostas em threads.com</string>
+    <string name="thread_on_web">Este tópico continua em threads.com</string>
+    <string name="related_threads">Tópicos relacionados</string>
 </resources>

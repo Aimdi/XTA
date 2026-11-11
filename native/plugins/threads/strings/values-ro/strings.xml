@@ -162,4 +162,8 @@
     <string name="quotes">Citate</string>
     <string name="shares">Distribuiri</string>
     <string name="exact_time">Arată ora exactă</string>
+    <string name="fewer_replies">Arată mai puține răspunsuri</string>
+    <string name="more_replies_web">Mai multe răspunsuri pe threads.com</string>
+    <string name="thread_on_web">Firul continuă pe threads.com</string>
+    <string name="related_threads">Fire asemănătoare</string>
 </resources>

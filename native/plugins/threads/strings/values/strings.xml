@@ -160,4 +160,8 @@
     <string name="quotes">Quotes</string>
     <string name="shares">Shares</string>
     <string name="exact_time">Show the exact time</string>
+    <string name="fewer_replies">Show fewer replies</string>
+    <string name="more_replies_web">More replies on threads.com</string>
+    <string name="thread_on_web">This thread goes on at threads.com</string>
+    <string name="related_threads">Related threads</string>
 </resources>

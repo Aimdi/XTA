@@ -23,6 +23,14 @@ data class ThreadsConversation(
     val replies: List<List<ThreadsPost>> = emptyList(),
     /** False until a page was read: [focus] is then only the card that was tapped, or a link's stub. */
     val loaded: Boolean = false,
+    /** Each reply's `reply_level` by id, where Meta said it: what nests a reply under the one it answers. */
+    val levels: Map<String, Int> = emptyMap(),
+    /** The reply threads, by their first post's id, Meta holds more of than the page carried. */
+    val unfinished: Set<String> = emptySet(),
+    /** Meta holds more replies than the page carried; a guest reads them on threads.com. */
+    val moreReplies: Boolean = false,
+    /** Posts Threads suggests beside this one, never part of it. */
+    val related: List<ThreadsPost> = emptyList(),
 ) {
     val replyCount: Int get() = replies.sumOf { it.size }
 
@@ -45,9 +53,33 @@ data class ThreadsConversation(
         }
     }
 
-    /** The reply list as rows, each long reply thread cut to its first few posts until it is opened. */
+    /**
+     * The reply list as rows, each long reply thread cut to its first few posts
+     * until it is opened, and an opened one ending in the row that cuts it again.
+     */
     fun replyRows(view: ThreadsThreadView = ThreadsThreadView()): List<ThreadsReplyRow> =
         orderedReplies(view.order, view.authorOnly).flatMap { chain -> chainRows(chain, view.isExpanded(chain)) }
+
+    /** What reading the conversation aloud says: each post's author and words, the post first, then every reply. */
+    fun spokenText(): String = (ancestors + focus + continuation + replies.flatten())
+        .filter { it.text.isNotBlank() }
+        .joinToString("\n\n") { "${it.authorName}. ${it.text}" }
+
+    private fun chainRows(chain: List<ThreadsPost>, expanded: Boolean): List<ThreadsReplyRow> {
+        val shown = if (expanded) chain else chain.take(REPLY_CHAIN_PREVIEW)
+        val hidden = chain.size - shown.size
+        val shapes = ThreadsReplyShape.of(chain.map { levels[it.id] })
+        val posts = shown.mapIndexed { index, post ->
+            val shape = shapes[index]
+            ThreadsReplyRow.Post(post, connectTop = shape.railAbove, connectBottom = shapes.getOrNull(index + 1)?.railAbove ?: false, depth = shape.depth)
+        }
+        val unfinishedRow = chain.firstOrNull()?.takeIf { it.id in unfinished && hidden == 0 }?.let { ThreadsReplyRow.OnWeb(chain) }
+        return when {
+            hidden > 0 -> posts + ThreadsReplyRow.More(chain, hidden)
+            expanded && chain.size > REPLY_CHAIN_PREVIEW -> posts + listOfNotNull(unfinishedRow) + ThreadsReplyRow.Less(chain)
+            else -> posts + listOfNotNull(unfinishedRow)
+        }
+    }
 
     companion object {
         /** How many posts of a reply thread show before "continue thread". */
@@ -55,6 +87,26 @@ data class ThreadsConversation(
 
         /** What a screen shows before Meta answers: the tapped card alone. */
         fun seed(post: ThreadsPost): ThreadsConversation = ThreadsConversation(focus = post)
+
+        /**
+         * A read post page around [seed]. A page in the older shape is arranged
+         * from its chains; the newer one names its post, so a short link that
+         * Meta answered under another id still lands on the right one.
+         */
+        fun from(page: ThreadsPostPage, seed: ThreadsPost): ThreadsConversation {
+            val target = page.target ?: return from(page.chains, seed).copy(related = page.related)
+            return ThreadsConversation(
+                focus = keepRepostContext(target, seed),
+                ancestors = page.above,
+                continuation = page.continuation,
+                replies = page.replies.map { it.posts },
+                loaded = true,
+                levels = page.replies.fold(emptyMap()) { all, thread -> all + thread.levels },
+                unfinished = page.replies.filter { it.hasMore }.mapNotNull { it.posts.firstOrNull()?.id }.toSet(),
+                moreReplies = page.moreReplies,
+                related = page.related,
+            )
+        }
 
         /**
          * [chains] arranged around [seed]. The chain holding the post gives what
@@ -106,15 +158,6 @@ data class ThreadsConversation(
             newestFirst -> b.compareTo(a)
             else -> a.compareTo(b)
         }
-
-        private fun chainRows(chain: List<ThreadsPost>, expanded: Boolean): List<ThreadsReplyRow> {
-            val shown = if (expanded) chain else chain.take(REPLY_CHAIN_PREVIEW)
-            val hidden = chain.size - shown.size
-            val posts = shown.mapIndexed { index, post ->
-                ThreadsReplyRow.Post(post, connectTop = index > 0, connectBottom = index < shown.size - 1 || hidden > 0)
-            }
-            return if (hidden > 0) posts + ThreadsReplyRow.More(chain, hidden) else posts
-        }
     }
 }
 
@@ -131,9 +174,49 @@ data class ThreadsThreadView(
 
 /** One row of a reply list. */
 sealed interface ThreadsReplyRow {
-    /** A post; rails join the posts of one reply thread, as the Threads app draws them. */
-    data class Post(val post: ThreadsPost, val connectTop: Boolean = false, val connectBottom: Boolean = false) : ThreadsReplyRow
+    /**
+     * A post; rails join a reply to the one it answers when that is the
+     * only answer, as the Threads app draws a chain; a reply beside others
+     * is set in by [depth] instead.
+     */
+    data class Post(val post: ThreadsPost, val connectTop: Boolean = false, val connectBottom: Boolean = false, val depth: Int = 0) : ThreadsReplyRow
 
     /** The marker that opens the [hidden] rest of a long reply thread. */
     data class More(val chain: List<ThreadsPost>, val hidden: Int) : ThreadsReplyRow
+
+    /** The marker that cuts an opened reply thread back to its first few posts. */
+    data class Less(val chain: List<ThreadsPost>) : ThreadsReplyRow
+
+    /** Meta holds more of this reply thread than the page carried: it continues on threads.com. */
+    data class OnWeb(val chain: List<ThreadsPost>) : ThreadsReplyRow
+}
+
+/**
+ * Where one reply of a thread sits: how far it is set in, and whether a rail
+ * joins it to the post above. From Meta's `reply_level`s: a reply that is
+ * the only answer to the post above it continues that post's chain (a rail,
+ * no step in); one of several answers steps in under the post it answers.
+ * Without every level, the thread is one chain, as the older pages gave it.
+ */
+data class ThreadsReplyShape(val depth: Int, val railAbove: Boolean) {
+    companion object {
+        /** How far a reply is set in at most, so a deep thread keeps room for its words. */
+        const val MAX_DEPTH = 3
+
+        fun of(levels: List<Int?>): List<ThreadsReplyShape> {
+            if (levels.any { it == null }) return levels.indices.map { ThreadsReplyShape(0, railAbove = it > 0) }
+            val known = levels.map { it!! }
+            return known.indices.fold(emptyList()) { shapes, index -> shapes + shape(known, index, shapes) }
+        }
+
+        private fun shape(levels: List<Int>, index: Int, before: List<ThreadsReplyShape>): ThreadsReplyShape {
+            val parent = (index - 1 downTo 0).firstOrNull { levels[it] < levels[index] } ?: return ThreadsReplyShape(0, railAbove = false)
+            val answers = (parent + 1 until levels.size).takeWhile { levels[it] > levels[parent] }.count { levels[it] == levels[index] }
+            return if (answers == 1 && parent == index - 1) {
+                ThreadsReplyShape(before[parent].depth, railAbove = true)
+            } else {
+                ThreadsReplyShape(minOf(before[parent].depth + 1, MAX_DEPTH), railAbove = false)
+            }
+        }
+    }
 }

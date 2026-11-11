@@ -156,7 +156,7 @@ class ThreadsReader(
     /** [seed]'s conversation from its public page; a post without a link has none, and asks nothing. */
     suspend fun conversation(seed: ThreadsPost, force: Boolean = false): ThreadsConversation {
         val url = seed.url?.trim()?.ifEmpty { null } ?: return ThreadsConversation(focus = seed, loaded = true)
-        return ThreadsConversation.from(direct.postChains(url, force), seed)
+        return ThreadsConversation.from(direct.postPage(url, force), seed)
     }
 
     /**

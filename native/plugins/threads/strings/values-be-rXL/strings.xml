@@ -166,4 +166,8 @@
     <string name="quotes">Cytaty</string>
     <string name="shares">Padzialilisia</string>
     <string name="exact_time">Pakazać dakładny čas</string>
+    <string name="fewer_replies">Pakazać mienš adkazaŭ</string>
+    <string name="more_replies_web">Bolš adkazaŭ na threads.com</string>
+    <string name="thread_on_web">Hetaja nitka praciahvajecca na threads.com</string>
+    <string name="related_threads">Padobnyja nitki</string>
 </resources>

@@ -154,4 +154,8 @@
     <string name="quotes">Trích dẫn</string>
     <string name="shares">Lượt chia sẻ</string>
     <string name="exact_time">Hiện thời gian chính xác</string>
+    <string name="fewer_replies">Ẩn bớt phản hồi</string>
+    <string name="more_replies_web">Thêm phản hồi trên threads.com</string>
+    <string name="thread_on_web">Chủ đề này tiếp tục trên threads.com</string>
+    <string name="related_threads">Chủ đề liên quan</string>
 </resources>

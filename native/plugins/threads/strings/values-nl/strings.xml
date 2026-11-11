@@ -158,4 +158,8 @@
     <string name="quotes">Citaten</string>
     <string name="shares">Gedeeld</string>
     <string name="exact_time">Exacte tijd tonen</string>
+    <string name="fewer_replies">Minder reacties tonen</string>
+    <string name="more_replies_web">Meer reacties op threads.com</string>
+    <string name="thread_on_web">Deze draad gaat verder op threads.com</string>
+    <string name="related_threads">Gerelateerde draden</string>
 </resources>

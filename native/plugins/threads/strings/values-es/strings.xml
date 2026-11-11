@@ -161,4 +161,8 @@
     <string name="quotes">Citas</string>
     <string name="shares">Veces compartida</string>
     <string name="exact_time">Mostrar la hora exacta</string>
+    <string name="fewer_replies">Mostrar menos respuestas</string>
+    <string name="more_replies_web">Más respuestas en threads.com</string>
+    <string name="thread_on_web">Este hilo continúa en threads.com</string>
+    <string name="related_threads">Hilos relacionados</string>
 </resources>

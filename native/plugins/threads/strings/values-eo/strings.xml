@@ -158,4 +158,8 @@
     <string name="quotes">Citaĵoj</string>
     <string name="shares">Kunhavigoj</string>
     <string name="exact_time">Montri la ĝustan horon</string>
+    <string name="fewer_replies">Montri malpli da respondoj</string>
+    <string name="more_replies_web">Pliaj respondoj ĉe threads.com</string>
+    <string name="thread_on_web">Ĉi tiu fadeno daŭras ĉe threads.com</string>
+    <string name="related_threads">Rilataj fadenoj</string>
 </resources>

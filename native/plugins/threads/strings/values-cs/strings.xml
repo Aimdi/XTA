@@ -166,4 +166,8 @@
     <string name="quotes">Citace</string>
     <string name="shares">Sdílení</string>
     <string name="exact_time">Zobrazit přesný čas</string>
+    <string name="fewer_replies">Zobrazit méně odpovědí</string>
+    <string name="more_replies_web">Další odpovědi na threads.com</string>
+    <string name="thread_on_web">Vlákno pokračuje na threads.com</string>
+    <string name="related_threads">Související vlákna</string>
 </resources>

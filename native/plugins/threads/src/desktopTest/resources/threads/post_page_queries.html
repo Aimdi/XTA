@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta property="og:title" content="Mark Zuckerberg (&#064;zuck) on Threads" />
+</head>
+<body>
+<!--
+  A post page as CI's live probe found threads.com serving it in November 2026:
+  four preloaded queries (Target, Upward, Downward, LoggedOutRelatedPosts),
+  data.media.text_post_app_info.{containing_thread,self_thread}.posts.page_info,
+  direct_replies.page_info.{end_cursor,has_next_page}, direct_replies.edges[].node.posts.page_info,
+  text_post_app_info.reply_level and root_post_author. What sits inside a `posts`
+  connection beside its page_info was not logged: here it is edges[].node, and the
+  tests read the same page with it as a plain list too. Every post is invented.
+-->
+<script type="application/json" data-sjs>{"require":[["ScheduledServerJS","handle",null,[{"__bbox":{"define":[["LSD",[],{"token":"AVqueries1"},323]]}}]]]}</script>
+<script type="application/json" data-sjs>{"require":[["ScheduledServerJS","handle",null,[{"__bbox":{"require":[["RelayPrefetchedStreamCache","next",[],["adp_BarcelonaPostPageTargetQueryRelayPreloader_1",{"__bbox":{"complete":true,"result":{"data":{"media":{"pk":"602","code":"DQzuck0602","taken_at":1762000600,"caption":{"text":"Replying to Meta"},"user":{"username":"zuck","full_name":"Mark Zuckerberg"},"like_count":120,"text_post_app_info":{"reply_level":1,"direct_reply_count":5,"reply_to_author":{"username":"meta"},"root_post_author":{"username":"meta"},"self_thread":{"posts":{"edges":[{"node":{"pk":"603","code":"DQzuck0603","taken_at":1762000660,"caption":{"text":"And one more thing"},"user":{"username":"zuck","full_name":"Mark Zuckerberg"},"text_post_app_info":{"reply_level":2}}}],"page_info":{"has_next_page":false}}}}}}}}}]]]}}]]]}</script>
+<script type="application/json" data-sjs>{"require":[["ScheduledServerJS","handle",null,[{"__bbox":{"require":[["RelayPrefetchedStreamCache","next",[],["adp_BarcelonaPostPageUpwardQueryRelayPreloader_2",{"__bbox":{"complete":true,"result":{"data":{"media":{"pk":"602","code":"DQzuck0602","taken_at":1762000600,"caption":{"text":"Replying to Meta"},"user":{"username":"zuck","full_name":"Mark Zuckerberg"},"text_post_app_info":{"containing_thread":{"posts":{"edges":[{"node":{"pk":"601","code":"DQmeta0601","taken_at":1762000000,"caption":{"text":"What is new on Threads?"},"user":{"username":"meta","full_name":"Meta"},"text_post_app_info":{"direct_replies":{"edges":[{"node":{"posts":{"edges":[{"node":{"pk":"690","code":"DQsara0690","taken_at":1762000100,"caption":{"text":"A sibling of the post, not its reply"},"user":{"username":"sara","full_name":"Sara"}}}]}}}]}}}}],"page_info":{"has_next_page":false}}}}}}}}}]]]}}]]]}</script>
+<script type="application/json" data-sjs>{"require":[["ScheduledServerJS","handle",null,[{"__bbox":{"require":[["RelayPrefetchedStreamCache","next",[],["adp_BarcelonaPostPageDownwardQueryRelayPreloader_3",{"__bbox":{"complete":true,"result":{"data":{"media":{"pk":"602","code":"DQzuck0602","taken_at":1762000600,"caption":{"text":"Replying to Meta"},"user":{"username":"zuck","full_name":"Mark Zuckerberg"},"text_post_app_info":{"direct_replies":{"edges":[
+{"node":{"posts":{"edges":[
+ {"node":{"pk":"611","code":"DQmaya0611","taken_at":1762003600,"caption":{"text":"Congrats"},"user":{"username":"maya","full_name":"Maya"},"text_post_app_info":{"reply_level":2,"root_post_author":{"username":"meta"}}}},
+ {"node":{"pk":"612","code":"DQzuck0612","taken_at":1762003700,"caption":{"text":"Thanks Maya"},"user":{"username":"zuck","full_name":"Mark Zuckerberg"},"text_post_app_info":{"reply_level":3,"is_liked_by_root_author":true}}},
+ {"node":{"pk":"613","code":"DQola00613","taken_at":1762003800,"caption":{"text":"Agreed"},"user":{"username":"ola","full_name":"Ola"},"text_post_app_info":{"reply_level":3}}},
+ {"node":{"pk":"614","code":"DQmaya0614","taken_at":1762003900,"caption":{"text":"Ha"},"user":{"username":"maya","full_name":"Maya"},"text_post_app_info":{"reply_level":4}}}
+],"page_info":{"has_next_page":true,"end_cursor":"c1"}}}},
+{"node":{"posts":{"edges":[
+ {"node":{"pk":"621","code":"DQdana0621","taken_at":1762001800,"caption":{"text":"First!"},"user":{"username":"dana","full_name":"Dana"},"text_post_app_info":{"reply_level":2,"share_info":{"quoted_post":{"pk":"699","code":"DQquot0699","taken_at":1761000000,"caption":{"text":"A quoted post"},"user":{"username":"quoted","full_name":"Quoted"}}}}}}
+],"page_info":{"has_next_page":false}}}}
+],"page_info":{"has_next_page":true,"end_cursor":"c2"}}}}}}}}]]]}}]]]}</script>
+<script type="application/json" data-sjs>{"require":[["ScheduledServerJS","handle",null,[{"__bbox":{"require":[["RelayPrefetchedStreamCache","next",[],["adp_BarcelonaLoggedOutRelatedPostsQueryRelayPreloader_4",{"__bbox":{"complete":true,"result":{"data":{"data":{"edges":[{"node":{"thread_items":[{"post":{"pk":"681","code":"DQelse0681","taken_at":1761900000,"caption":{"text":"Something else entirely"},"user":{"username":"else","full_name":"Else"}}}]}},{"node":{"thread_items":[{"post":{"pk":"682","code":"DQelse0682","taken_at":1761900100,"caption":{"text":"Also unrelated"},"user":{"username":"other","full_name":"Other"}}}]}}]}}}}}]]]}}]]]}</script>
+</body>
+</html>
