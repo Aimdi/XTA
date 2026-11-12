@@ -33,6 +33,12 @@ It keeps its data in `~/.local/share/xta-native`, a folder only you can open. Vi
 - Every section of XTA's settings, its backup export and import, WebDAV sync, and 29 languages; an opened post that swipes back as XTA's card, confirm close, the check for a newer prerelease and the licences page
 - Links open in the app's own browser on Android, or in the browser you pick; x.com and the networks' links open in the app, and so do t.co, fxtwitter, vxtwitter and fixupx links; a link nothing reads says so
 - New in this prerelease:
+  - Threads conversations show their replies again (0.1.79 showed none to a guest), nested under what they answer, and load more replies as you scroll
+  - A Threads profile's threads keep loading as you scroll; where Threads gives a guest no next page (its replies, media and reposts tabs, search and topics) the list ends in Open in browser
+  - Threads opens on For you the first time; an empty Home offers For you, Add account and accounts to follow; Add account takes several handles or links at once
+  - Threads reads through many followed accounts without repeated pulls, stops at once when it is throttled, and says when a refresh failed over what is shown
+  - Threads says what a session adds and how to fix a parked one, and its media covers carry Threads' own warning words
+- In 0.1.79:
   - Threads conversations read Threads' new post pages: the real replies, nested under what they answer, with "Show fewer replies", related threads apart, and the whole conversation read aloud
   - Threads profiles show the exact follower count on a tap, the verified badge, the full bio with tappable mentions and links, its links listed, a Reposts tab, and a private note of your own
   - Threads search has People and Topics tabs, topic pages with their emoji, and suggestions while you type from what is on your device
