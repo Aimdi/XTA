@@ -1,10 +1,25 @@
 # Removing the Flutter app
 
-The plan for the commit that deletes XTA's Flutter app once XTA Native has
-everything. Nothing here is done yet: the Flutter app, its workflows and its
-docs are all still in the repository. What is done is the preparation:
-`native/` and `.github/workflows/native-prototype.yml` no longer read or run
-anything the deletion removes, except where section (d) says so.
+**Done.** The commit "Remove the Flutter app: XTA Native in native/ is XTA
+now", right after `fab7619b` (the last commit with the Flutter app), deleted
+what section (a) lists, and the commits after it made the rewrites of (c).
+What follows is the plan as it was written, kept as the record; how each open
+point of (d) was settled:
+
+1. As planned; only CI confirms the workflow's emulator and desktop jobs.
+2. The workflow (now named XTA) runs its `live` job alone once a day
+   (`schedule`, 05:17 UTC). The signing auto-fix (`x-signing-autofix.yml`)
+   is **not ported**: a broken X signing is repaired by hand in `core/x/signing`.
+3. `PublishedDocumentsTest` (the web sources plugin's JVM tests, which
+   `jvmcheck.sh plugins/websources` runs too) reads `endpoints.json`,
+   `sources.json` and every file of `sources/` from the checkout with the
+   app's own parsers.
+4. Root `plugins.json` stays for installed XTA builds.
+5. A `[release]` commit publishes a release marked latest, `v<native/VERSION>`,
+   with the voice engine's archives (`RELEASE.md` is its notes).
+6. The design skills stay; their checks moved to `native/tool/skills/`, run by
+   the workflow's `skills` job; `docs/xta-design-skills.md` describes XTA Native.
+7. The ARB copies stay in `native/tool/l10n/`.
 
 Checked against the tree at the commit that added this file; run the checks of
 "Before and after" again when the day comes, since both sides keep moving.

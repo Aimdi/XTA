@@ -123,7 +123,8 @@ still in `networks/`.
 
 `plugin_catalogue.py` writes `plugins.json` from the entries and files the
 plugins build made (`--android`, `--desktop`, `--base-url`, `--copy-to`):
-CI's prerelease publishes it, and the emulator and desktop checks serve one of
+CI's releases and prereleases publish it with `publish_plugins.sh` (into the
+`native-plugins` release), and the emulator and desktop checks serve one of
 their own. `plugin_screens.sh` is the emulator's walk through the store
 (install, open, Home's timeline picker, uninstall), after `screens.sh`.
 
@@ -203,3 +204,14 @@ plays it, a line each step. With `without` (libmpv missing) the app has to
 say that videos go to the system's player and stay up; otherwise the video
 has to play to its end, its frames drawn and on the screen, and the podcast
 player has to play.
+
+## The skills' checks (`skills/`)
+
+```bash
+bash native/tool/skills/check_skill_sync.sh
+python3 native/tool/skills/check_design_skills.py
+```
+
+check that every skill in `.claude/skills` loads, and that the design skills
+`impeccable` and `ui-ux-pro-max` are whole, licensed and runnable
+(`docs/xta-design-skills.md`). The workflow's `skills` job runs both.
