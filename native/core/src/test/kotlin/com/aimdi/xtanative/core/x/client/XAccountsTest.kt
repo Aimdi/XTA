@@ -32,6 +32,26 @@ class XAccountsTest {
     }
 
     @Test
+    fun spareAccountsComeAfterTheOthersAndBeforeLimitedOnes() {
+        val accounts = listOf(account("on"), account("spare"))
+        assertEquals(setOf("on"), picks(XAccountSelector(accounts, spare = { it.id == "spare" })))
+        assertEquals(setOf("spare"), picks(XAccountSelector(accounts, rateLimited = { it.id == "on" }, spare = { it.id == "spare" })))
+        assertEquals(setOf("on"), picks(XAccountSelector(accounts, rateLimited = { true }, spare = { it.id == "spare" })), "with all limited, the order holds")
+    }
+
+    @Test
+    fun aDated429IsARefusalUntilItsResetAndASuccessLiftsIt() {
+        val limits = XRateLimits()
+        limits.flag("a", "/search", now + 60_000, refused = true)
+        limits.flag("b", "/search", now + 60_000)
+        assertTrue(limits.isRefused("a", "/search", now))
+        assertFalse(limits.isRefused("b", "/search", now), "a guessed or counted limit is no refusal")
+        assertFalse(limits.isRefused("a", "/search", now + 60_000))
+        limits.record("a", "/search", { null }, now)
+        assertFalse(limits.isRefused("a", "/search", now))
+    }
+
+    @Test
     fun healthyAccountsComeBeforeFlaggedOnes() {
         val selector = XAccountSelector(listOf(account("bad"), account("good")), flagged = { it.id == "bad" })
         assertEquals(setOf("good"), picks(selector))

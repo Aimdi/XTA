@@ -1,15 +1,17 @@
 package com.aimdi.xtanative.core.feed
 
 import com.aimdi.xtanative.core.x.XClient
+import com.aimdi.xtanative.core.x.asFeedRead
 
-/** The feed's reads over X. */
+/** The feed's reads over X, with the accounts left on for the feeds alone. */
 fun XClient.feedReads(): FeedReads {
     val client = this
     return object : FeedReads {
-        override suspend fun search(query: String, cursor: String?, includeReplies: Boolean) = client.search(query, cursor, includeReplies = includeReplies)
+        override suspend fun search(query: String, cursor: String?, includeReplies: Boolean) =
+            asFeedRead { client.search(query, cursor, includeReplies = includeReplies) }
 
         override suspend fun userPosts(userId: String, includeReplies: Boolean) =
-            if (includeReplies) client.userReplies(userId) else client.userPosts(userId)
+            asFeedRead { if (includeReplies) client.userReplies(userId) else client.userPosts(userId) }
     }
 }
 

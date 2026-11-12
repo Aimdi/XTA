@@ -3,9 +3,11 @@ package com.aimdi.xtanative.core.x.client
 import com.aimdi.xtanative.core.x.XAccount
 import com.aimdi.xtanative.core.x.XAccountHealth
 import com.aimdi.xtanative.core.x.XAccountHealthStore
+import com.aimdi.xtanative.core.feed.feedReads
 import com.aimdi.xtanative.core.x.XClient
 import com.aimdi.xtanative.core.x.XEndpointRefusedException
 import com.aimdi.xtanative.core.x.XNoWorkingAccountException
+import com.aimdi.xtanative.core.x.XQuoteOrder
 import com.aimdi.xtanative.core.x.XRateLimitedException
 import com.aimdi.xtanative.core.x.XRequestException
 import com.aimdi.xtanative.core.x.XSigners
@@ -185,7 +187,7 @@ class XTransportTest {
     }
 
     @Test
-    fun accountsTurnedOffForFeedsAreAskedOnlyWhenEveryAccountIsOff() {
+    fun accountsTurnedOffForFeedsAreAskedAfterTheOthers() {
         val x = FakeX { _, _ -> ok() }
         val reader = client(x, listOf(account("a"), account("b")), disabled = setOf("id-a"))
         repeat(3) { read(reader) }
@@ -203,5 +205,60 @@ class XTransportTest {
         val path = "/i/api/graphql/-SBRQaLiRjWvTFD5SI403A/HomeTimeline"
         assertTrue(reader.rateLimits.isLimited("id-b", path, now), "a malformed reset still sets the account aside")
         assertEquals(now + 15 * 60_000, error.resetsAt, "for X's usual fifteen minutes")
+    }
+
+    private val noQuotes = """{"data":{"search_by_raw_query":{"search_timeline":{"timeline":{"instructions":[]}}}}}"""
+
+    private val searchPath = "/i/api/graphql/BYppgupFFS2yqVmmRNjlsw/SearchTimeline"
+
+    private fun quotes(client: XClient) = runBlocking { client.quotes("1", order = XQuoteOrder.LATEST) }
+
+    @Test
+    fun anAccountXRefusedWithADated429IsNotAskedAgainBeforeTheReset() {
+        val x = FakeX { _, _ -> XResponse(429, "", resetIn5Minutes) }
+        val reader = client(x, listOf(account("a")))
+        assertFailsWith<XRateLimitedException> { quotes(reader) }
+        val again = assertFailsWith<XRateLimitedException> { quotes(reader) }
+        assertEquals(listOf("a"), x.asked, "the second read spends no request X would refuse")
+        assertEquals((now + 300_000) / 1000 * 1000, again.resetsAt, "and still counts down to X's reset")
+        now += 301_000
+        assertFailsWith<XRateLimitedException> { quotes(reader) }
+        assertEquals(listOf("a", "a"), x.asked, "asked again once the reset passed")
+    }
+
+    @Test
+    fun a429WithoutAResetStillLetsTheAccountBeAskedLast() {
+        val x = FakeX { call, _ -> if (call == 1) XResponse(429, "") else XResponse(200, noQuotes) }
+        val reader = client(x, listOf(account("a")))
+        assertFailsWith<XRateLimitedException> { quotes(reader) }
+        quotes(reader)
+        assertEquals(listOf("a", "a"), x.asked, "a guessed fifteen minutes only orders the account")
+    }
+
+    @Test
+    fun aRateLimitOnTheSearchLeavesOtherReadsAlone() {
+        val x = FakeX { _, _ -> XResponse(429, "", resetIn5Minutes) }
+        val reader = client(x, listOf(account("a")))
+        assertFailsWith<XRateLimitedException> { quotes(reader) }
+        assertTrue(reader.rateLimits.isLimited("id-a", searchPath, now))
+        assertFalse(reader.rateLimits.isLimited("id-a", "/i/api/graphql/AMIBMjtxEEATh4z8V9GtRg/UserByScreenName", now))
+    }
+
+    @Test
+    fun accountsTurnedOffForFeedsStandInOnceTheOthersAreLimited() {
+        val x = FakeX { _, account -> if (account == "a") XResponse(429, "", resetIn5Minutes) else XResponse(200, noQuotes) }
+        val reader = client(x, listOf(account("a"), account("b")), disabled = setOf("id-b"))
+        quotes(reader)
+        assertEquals(listOf("a", "b"), x.asked, "the quotes are read with the spare account, not shown as throttled")
+        quotes(reader)
+        assertEquals(listOf("a", "b", "b"), x.asked, "and the limited account is left alone until X's reset")
+    }
+
+    @Test
+    fun theFeedsKeepToTheAccountsLeftOnForThem() {
+        val x = FakeX { _, account -> if (account == "a") XResponse(429, "", resetIn5Minutes) else XResponse(200, noQuotes) }
+        val reader = client(x, listOf(account("a"), account("b")), disabled = setOf("id-b"))
+        assertFailsWith<XRateLimitedException> { runBlocking { reader.feedReads().search("from:a", null, includeReplies = true) } }
+        assertEquals(listOf("a"), x.asked, "the Following feed never reads with an account turned off for it")
     }
 }

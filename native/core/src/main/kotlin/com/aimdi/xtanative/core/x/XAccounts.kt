@@ -76,14 +76,22 @@ class XAccountSelector(
     private val rateLimited: (XAccount) -> Boolean = { false },
     private val remaining: (XAccount) -> Int? = { null },
     private val inFlight: (XAccount) -> Int = { 0 },
+    private val spare: (XAccount) -> Boolean = { false },
 ) {
+    /**
+     * The next account, healthy ones first; among each, the accounts left on
+     * for the feeds before the [spare] ones the reader turned off for them,
+     * which stand in once every account left on is limited or flagged.
+     */
     fun pick(exclude: Set<String>, turn: Int = 0): XAccount? {
         val left = accounts.filter { it.id !in exclude }
         if (left.isEmpty()) return null
         val healthy = left.filter { !flagged(it) && !rateLimited(it) }
-        val pool = leastUsed(healthy.ifEmpty { left })
+        val pool = leastUsed(preferringOn(healthy).ifEmpty { preferringOn(left) })
         return pool[Math.floorMod(turn, pool.size)]
     }
+
+    private fun preferringOn(pool: List<XAccount>): List<XAccount> = pool.filterNot(spare).ifEmpty { pool }
 
     private fun leastUsed(pool: List<XAccount>): List<XAccount> {
         val fewest = pool.minOf(inFlight)
@@ -106,8 +114,15 @@ class XRateLimits {
     private val resets = HashMap<Pair<String, String>, Long>()
     private val quotas = HashMap<Pair<String, String>, Quota>()
 
+    /** Where X itself refused with 429 and dated the end: asking again before it only spends another refusal. */
+    private val refusals = HashMap<Pair<String, String>, Long>()
+
     @Synchronized
     fun isLimited(account: String, endpoint: String, now: Long): Boolean = (resets[account to endpoint] ?: 0) > now
+
+    /** Whether X refused [account] on [endpoint] with a 429 whose dated reset is still ahead. */
+    @Synchronized
+    fun isRefused(account: String, endpoint: String, now: Long): Boolean = (refusals[account to endpoint] ?: 0) > now
 
     /** Requests left in the running window, or null when X reported none that still runs. */
     @Synchronized
@@ -117,15 +132,22 @@ class XRateLimits {
     @Synchronized
     fun resetAt(account: String, endpoint: String, now: Long): Long? = resets[account to endpoint]?.takeIf { it > now }
 
+    /**
+     * Sets [account] aside on [endpoint] until [resetAt]. [refused] when X
+     * answered 429 and named that reset itself: the account is then not asked
+     * there again before it, where a guessed or counted limit only orders it last.
+     */
     @Synchronized
-    fun flag(account: String, endpoint: String, resetAt: Long) {
+    fun flag(account: String, endpoint: String, resetAt: Long, refused: Boolean = false) {
         resets[account to endpoint] = resetAt
+        if (refused) refusals[account to endpoint] = resetAt
     }
 
     @Synchronized
     fun clear(account: String, endpoint: String) {
         resets.remove(account to endpoint)
         quotas.remove(account to endpoint)
+        refusals.remove(account to endpoint)
     }
 
     /**
@@ -137,6 +159,7 @@ class XRateLimits {
     @Synchronized
     fun record(account: String, endpoint: String, header: (String) -> String?, now: Long) {
         val reported = quotaOf(header)
+        refusals.remove(account to endpoint)
         if (reported == null) {
             clear(account, endpoint)
             return
