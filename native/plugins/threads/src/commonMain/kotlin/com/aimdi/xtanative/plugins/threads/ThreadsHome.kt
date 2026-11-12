@@ -64,7 +64,6 @@ import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
-import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
@@ -170,13 +169,19 @@ private fun HomePane(app: ThreadsApp, frame: PluginFrame, onAdd: () -> Unit, onS
             val problem = state.problem
             when {
                 state.items.isNotEmpty() -> FeedOrFiltered(app, frame, state.items, options)
-                problem != null && !notConfigured(problem) -> RetryMessage(ThreadsFailures.feedText(problem, currentLanguage()), onRetry = { app.feed.refresh(force = true) })
+                problem != null && !notConfigured(problem) ->
+                    FailedRead(ThreadsFailures.feedText(problem, currentLanguage()), ThreadsFailures.retryBlockedUntil(problem), onRetry = { app.feed.refresh(force = true) })
                 !state.loaded -> PluginFeedSkeleton()
                 else -> Refreshable(app, frame) { item(key = "empty") { NothingYet(app, onAdd, onSearch) } }
             }
             if (state.items.isNotEmpty() && problem != null) {
                 Box(Modifier.fillMaxSize().padding(bottom = frame.padding.calculateBottomPadding())) {
-                    ReloadStatus(false, ThreadsFailures.feedText(problem, currentLanguage()), onRetry = { app.feed.refresh(force = true) })
+                    ReloadStatus(
+                        false,
+                        ThreadsFailures.feedText(problem, currentLanguage()),
+                        onRetry = { app.feed.refresh(force = true) },
+                        retryAfter = ThreadsFailures.retryBlockedUntil(problem),
+                    )
                 }
             }
         }

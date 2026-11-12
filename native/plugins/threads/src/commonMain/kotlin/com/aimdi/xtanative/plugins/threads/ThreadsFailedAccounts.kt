@@ -36,6 +36,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsAccountFailure
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
+import java.time.Instant
 
 /**
  * "2 accounts could not be read" over Home's feed while any followed account
@@ -88,7 +89,7 @@ private fun FailedAccount(app: ThreadsApp, failure: ThreadsAccountFailure, onOpe
                 if (failure.handle in retrying) {
                     CircularProgressIndicator(Modifier.padding(12.dp).size(24.dp), strokeWidth = 2.dp)
                 } else {
-                    IconButton(onClick = { app.retryAccount(failure.handle) }) { Icon(Icons.Filled.Refresh, contentDescription = pluginString(Strings.retry)) }
+                    IconButton(onClick = { app.retryAccount(failure.handle) }, enabled = failure.retryAt?.isAfter(Instant.now()) != true) { Icon(Icons.Filled.Refresh, contentDescription = pluginString(Strings.retry)) }
                 }
                 IconButton(onClick = onOpen) { Icon(Icons.Filled.Person, contentDescription = pluginString(Strings.open_handle, failure.handle)) }
                 IconButton(onClick = onUnfollow) { Icon(ThreadsIcons.PersonRemove, contentDescription = pluginString(Strings.unfollow_on_device)) }
