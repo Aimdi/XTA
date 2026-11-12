@@ -181,4 +181,14 @@
         <item quantity="one">1 खाता पढ़ा नहीं जा सका</item>
         <item quantity="other">%1$d खाते पढ़े नहीं जा सके</item>
     </plurals>
+    <string name="sign_in_web">threads.com पर साइन इन करें</string>
+    <string name="sign_in_web_detail">यहीं Threads का अपना साइन-इन पेज खोलता है। केवल सेशन कुकीज़ रखी जाती हैं, इसी डिवाइस पर, जैसे नीचे पेस्ट की गई हों; पेज की अपनी कॉपी मिटा दी जाती है।</string>
+    <string name="cookies_how">कुकीज़ कहाँ मिलेंगी</string>
+    <string name="cookies_steps">1. कंप्यूटर पर Chrome, Edge या Firefox में threads.com पर साइन इन करें।\n2. F12 दबाएँ (Mac पर ⌥⌘I) और Network टैब खोलें।\n3. पेज रीलोड करें और पहले अनुरोध, www.threads.com, पर क्लिक करें।\n4. Request Headers में Cookie का पूरा मान कॉपी करें।\n5. उसे “ब्राउज़र कुकीज़” में पेस्ट करें और “सेशन जाँचें” दबाएँ।</string>
+    <string name="cookies_not_header">यह Cookie हेडर नहीं है — वह name=value; name=value जैसा दिखता है</string>
+    <string name="cookies_bearer">यह Bearer टोकन है — इसे नीचे Bearer फ़ील्ड में पेस्ट करें</string>
+    <string name="cookies_missing">%1$s नहीं है — साइन-इन किए हुए threads.com टैब से पूरा Cookie हेडर कॉपी करें</string>
+    <string name="bearer_invalid">Bearer टोकन IGT:2: से शुरू होता है</string>
+    <string name="signed_in_as">@%1$s के रूप में साइन इन</string>
+    <string name="session_empty">पहले कुकीज़ या Bearer टोकन पेस्ट करें</string>
 </resources>

@@ -185,4 +185,14 @@
         <item quantity="many">No s’han pogut llegir %1$d comptes</item>
         <item quantity="other">No s’han pogut llegir %1$d comptes</item>
     </plurals>
+    <string name="sign_in_web">Inicia la sessió a threads.com</string>
+    <string name="sign_in_web_detail">Obre aquí la pàgina d’inici de sessió de Threads. Només es desen les galetes de la sessió, en aquest dispositiu, com si les haguessis enganxat a sota; la còpia de la pàgina s’esborra.</string>
+    <string name="cookies_how">On trobar les galetes</string>
+    <string name="cookies_steps">1. En un ordinador, inicia la sessió a threads.com amb Chrome, Edge o Firefox.\n2. Prem F12 (⌥⌘I en un Mac) i obre la pestanya Network.\n3. Torna a carregar la pàgina i fes clic a la primera sol·licitud, www.threads.com.\n4. A Request Headers, copia tot el valor de Cookie.\n5. Enganxa’l a «Galetes del navegador» i prem «Prova la sessió».</string>
+    <string name="cookies_not_header">Això no és una capçalera Cookie: té la forma name=value; name=value</string>
+    <string name="cookies_bearer">Això és un token Bearer: enganxa’l al camp Bearer de sota</string>
+    <string name="cookies_missing">Hi falta %1$s: copia tota la capçalera Cookie d’una pestanya de threads.com amb la sessió iniciada</string>
+    <string name="bearer_invalid">Un token Bearer comença per IGT:2:</string>
+    <string name="signed_in_as">Sessió iniciada com a @%1$s</string>
+    <string name="session_empty">Primer enganxa les galetes o un token Bearer</string>
 </resources>

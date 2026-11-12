@@ -181,4 +181,14 @@
         <item quantity="one">1 kontot ei õnnestunud lugeda</item>
         <item quantity="other">%1$d kontot ei õnnestunud lugeda</item>
     </plurals>
+    <string name="sign_in_web">Logi sisse saidil threads.com</string>
+    <string name="sign_in_web_detail">Avab siin Threadsi enda sisselogimislehe. Alles jäävad ainult seansi küpsised, selles seadmes, nagu oleksid need allpool kleebitud; lehe enda koopia kustutatakse.</string>
+    <string name="cookies_how">Kust küpsised leida</string>
+    <string name="cookies_steps">1. Logi arvutis Chrome’is, Edge’is või Firefoxis sisse saidile threads.com.\n2. Vajuta F12 (Macis ⌥⌘I) ja ava vahekaart Network.\n3. Laadi leht uuesti ja klõpsa esimesel päringul, www.threads.com.\n4. Kopeeri jaotises Request Headers kogu Cookie väärtus.\n5. Kleebi see väljale „Brauseri küpsised“ ja vajuta „Testi seanssi“.</string>
+    <string name="cookies_not_header">See ei ole Cookie päis — see näeb välja nii: name=value; name=value</string>
+    <string name="cookies_bearer">See on Bearer-märk — kleebi see allpool olevale Bearer väljale</string>
+    <string name="cookies_missing">Puudu: %1$s — kopeeri kogu Cookie päis sisselogitud threads.com-i vahekaardilt</string>
+    <string name="bearer_invalid">Bearer-märk algab nii: IGT:2:</string>
+    <string name="signed_in_as">Sisse logitud kui @%1$s</string>
+    <string name="session_empty">Kleebi kõigepealt küpsised või Bearer-märk</string>
 </resources>

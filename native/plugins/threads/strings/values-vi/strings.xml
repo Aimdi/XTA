@@ -176,4 +176,14 @@
     <plurals name="accounts_failed">
         <item quantity="other">Không đọc được %1$d tài khoản</item>
     </plurals>
+    <string name="sign_in_web">Đăng nhập trên threads.com</string>
+    <string name="sign_in_web_detail">Mở trang đăng nhập của chính Threads ngay tại đây. Chỉ cookie phiên được giữ lại, trên thiết bị này, như khi dán bên dưới; bản sao của trang bị xóa.</string>
+    <string name="cookies_how">Tìm cookie ở đâu</string>
+    <string name="cookies_steps">1. Trên máy tính, đăng nhập threads.com bằng Chrome, Edge hoặc Firefox.\n2. Nhấn F12 (⌥⌘I trên Mac) và mở thẻ Network.\n3. Tải lại trang và nhấp vào yêu cầu đầu tiên, www.threads.com.\n4. Trong Request Headers, sao chép toàn bộ giá trị của Cookie.\n5. Dán vào “Cookie trình duyệt” rồi nhấn “Thử phiên”.</string>
+    <string name="cookies_not_header">Đó không phải tiêu đề Cookie — nó có dạng name=value; name=value</string>
+    <string name="cookies_bearer">Đó là Bearer token — hãy dán vào ô Bearer bên dưới</string>
+    <string name="cookies_missing">Thiếu %1$s — hãy sao chép toàn bộ tiêu đề Cookie từ một thẻ threads.com đã đăng nhập</string>
+    <string name="bearer_invalid">Bearer token bắt đầu bằng IGT:2:</string>
+    <string name="signed_in_as">Đã đăng nhập là @%1$s</string>
+    <string name="session_empty">Hãy dán cookie hoặc Bearer token trước</string>
 </resources>

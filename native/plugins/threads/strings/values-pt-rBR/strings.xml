@@ -185,4 +185,14 @@
         <item quantity="many">Não foi possível ler %1$d contas</item>
         <item quantity="other">Não foi possível ler %1$d contas</item>
     </plurals>
+    <string name="sign_in_web">Entrar no threads.com</string>
+    <string name="sign_in_web_detail">Abre aqui a página de login do próprio Threads. Só os cookies da sessão são guardados, neste dispositivo, como se colados abaixo; a cópia da página é apagada.</string>
+    <string name="cookies_how">Onde encontrar os cookies</string>
+    <string name="cookies_steps">1. Em um computador, entre no threads.com pelo Chrome, Edge ou Firefox.\n2. Pressione F12 (⌥⌘I no Mac) e abra a aba Network (Rede).\n3. Recarregue a página e clique na primeira requisição, www.threads.com.\n4. Em Request Headers, copie o valor completo de Cookie.\n5. Cole em “Cookies do navegador” e toque em “Testar sessão”.</string>
+    <string name="cookies_not_header">Isso não é um cabeçalho Cookie — ele tem a forma name=value; name=value</string>
+    <string name="cookies_bearer">Isso é um token Bearer — cole no campo Bearer abaixo</string>
+    <string name="cookies_missing">Falta %1$s — copie todo o cabeçalho Cookie de uma aba do threads.com em que você entrou</string>
+    <string name="bearer_invalid">Um token Bearer começa com IGT:2:</string>
+    <string name="signed_in_as">Conectado como @%1$s</string>
+    <string name="session_empty">Cole primeiro os cookies ou um token Bearer</string>
 </resources>

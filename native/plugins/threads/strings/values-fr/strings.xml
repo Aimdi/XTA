@@ -185,4 +185,14 @@
         <item quantity="many">%1$d comptes n’ont pas pu être lus</item>
         <item quantity="other">%1$d comptes n’ont pas pu être lus</item>
     </plurals>
+    <string name="sign_in_web">Se connecter sur threads.com</string>
+    <string name="sign_in_web_detail">Ouvre ici la page de connexion de Threads. Seuls les cookies de session sont gardés, sur cet appareil, comme s’ils étaient collés ci-dessous ; la copie de la page est effacée.</string>
+    <string name="cookies_how">Où trouver les cookies</string>
+    <string name="cookies_steps">1. Sur un ordinateur, connectez-vous à threads.com dans Chrome, Edge ou Firefox.\n2. Appuyez sur F12 (⌥⌘I sur Mac) et ouvrez l’onglet Network (Réseau).\n3. Rechargez la page et cliquez sur la première requête, www.threads.com.\n4. Sous Request Headers, copiez toute la valeur de Cookie.\n5. Collez-la dans « Cookies du navigateur » et appuyez sur « Tester la session ».</string>
+    <string name="cookies_not_header">Ce n’est pas un en-tête Cookie — il a la forme name=value; name=value</string>
+    <string name="cookies_bearer">C’est un jeton Bearer — collez-le dans le champ Bearer ci-dessous</string>
+    <string name="cookies_missing">Il manque %1$s — copiez tout l’en-tête Cookie d’un onglet threads.com connecté</string>
+    <string name="bearer_invalid">Un jeton Bearer commence par IGT:2:</string>
+    <string name="signed_in_as">Connecté en tant que @%1$s</string>
+    <string name="session_empty">Collez d’abord les cookies ou un jeton Bearer</string>
 </resources>

@@ -25,6 +25,9 @@ internal sealed interface ThreadsRoute {
 
     /** What was saved from Threads on this device. */
     data object Saved : ThreadsRoute
+
+    /** Threads' own sign-in page, its session kept as a pasted one is. */
+    data object SignIn : ThreadsRoute
 }
 
 internal object ThreadsRoutes {
@@ -42,6 +45,8 @@ internal object ThreadsRoutes {
 
     const val SAVED = "saved"
 
+    const val SIGN_IN = "sign-in"
+
     /** The screen [route] names; null for one this plugin does not have. */
     fun parse(route: String): ThreadsRoute? {
         val name = route.substringBefore('?')
@@ -54,6 +59,7 @@ internal object ThreadsRoutes {
             "search" -> query["q"]?.let { ThreadsRoute.Search(ThreadsSearchTerms(it, tag = query["tag"] == "1", profile = query["profile"])) }
             "media" -> query["key"]?.let { ThreadsRoute.Media(it, query["start"]?.toIntOrNull() ?: 0) }
             SAVED -> ThreadsRoute.Saved
+            SIGN_IN -> ThreadsRoute.SignIn
             else -> null
         }
     }

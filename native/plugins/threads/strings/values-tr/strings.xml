@@ -181,4 +181,14 @@
         <item quantity="one">1 hesap okunamadı</item>
         <item quantity="other">%1$d hesap okunamadı</item>
     </plurals>
+    <string name="sign_in_web">threads.com’da oturum aç</string>
+    <string name="sign_in_web_detail">Threads’in kendi oturum açma sayfasını burada açar. Yalnızca oturum çerezleri, aşağıya yapıştırılmış gibi bu cihazda tutulur; sayfanın kendi kopyası silinir.</string>
+    <string name="cookies_how">Çerezler nerede bulunur</string>
+    <string name="cookies_steps">1. Bir bilgisayarda Chrome, Edge veya Firefox ile threads.com’da oturum açın.\n2. F12’ye (Mac’te ⌥⌘I) basın ve Network sekmesini açın.\n3. Sayfayı yenileyin ve ilk istek olan www.threads.com’a tıklayın.\n4. Request Headers altında Cookie değerinin tamamını kopyalayın.\n5. “Tarayıcı çerezleri” alanına yapıştırın ve “Oturumu dene”e basın.</string>
+    <string name="cookies_not_header">Bu bir Cookie başlığı değil — biçimi name=value; name=value şeklindedir</string>
+    <string name="cookies_bearer">Bu bir Bearer jetonu — aşağıdaki Bearer alanına yapıştırın</string>
+    <string name="cookies_missing">%1$s eksik — oturum açılmış bir threads.com sekmesinden Cookie başlığının tamamını kopyalayın</string>
+    <string name="bearer_invalid">Bearer jetonu IGT:2: ile başlar</string>
+    <string name="signed_in_as">@%1$s olarak oturum açıldı</string>
+    <string name="session_empty">Önce çerezleri veya bir Bearer jetonunu yapıştırın</string>
 </resources>

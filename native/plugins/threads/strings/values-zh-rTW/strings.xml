@@ -176,4 +176,14 @@
     <plurals name="accounts_failed">
         <item quantity="other">有 %1$d 個帳號無法讀取</item>
     </plurals>
+    <string name="sign_in_web">在 threads.com 登入</string>
+    <string name="sign_in_web_detail">在此開啟 Threads 自己的登入頁面。只保留工作階段 Cookie，存在這部裝置上，如同在下方貼上；頁面自己的副本會被清除。</string>
+    <string name="cookies_how">在哪裡找到 Cookie</string>
+    <string name="cookies_steps">1. 在電腦上用 Chrome、Edge 或 Firefox 登入 threads.com。\n2. 按 F12（Mac 上按 ⌥⌘I），開啟 Network 分頁。\n3. 重新載入頁面，點選第一個請求 www.threads.com。\n4. 在 Request Headers 中複製 Cookie 的完整值。\n5. 貼到「瀏覽器 Cookie」，然後點「測試工作階段」。</string>
+    <string name="cookies_not_header">這不是 Cookie 標頭 — 它的格式是 name=value; name=value</string>
+    <string name="cookies_bearer">這是 Bearer 權杖 — 請貼到下方的 Bearer 欄位</string>
+    <string name="cookies_missing">缺少 %1$s — 請從已登入的 threads.com 分頁複製完整的 Cookie 標頭</string>
+    <string name="bearer_invalid">Bearer 權杖以 IGT:2: 開頭</string>
+    <string name="signed_in_as">已登入為 @%1$s</string>
+    <string name="session_empty">請先貼上 Cookie 或 Bearer 權杖</string>
 </resources>

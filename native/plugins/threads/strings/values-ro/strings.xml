@@ -186,4 +186,14 @@
         <item quantity="few">%1$d conturi nu au putut fi citite</item>
         <item quantity="other">%1$d de conturi nu au putut fi citite</item>
     </plurals>
+    <string name="sign_in_web">Conectează-te pe threads.com</string>
+    <string name="sign_in_web_detail">Deschide aici pagina de conectare a Threads. Se păstrează doar cookie-urile sesiunii, pe acest dispozitiv, ca și cum ar fi lipite mai jos; copia paginii se șterge.</string>
+    <string name="cookies_how">Unde găsești cookie-urile</string>
+    <string name="cookies_steps">1. Pe un calculator, conectează-te pe threads.com în Chrome, Edge sau Firefox.\n2. Apasă F12 (⌥⌘I pe Mac) și deschide fila Network.\n3. Reîncarcă pagina și dă clic pe prima cerere, www.threads.com.\n4. La Request Headers, copiază toată valoarea lui Cookie.\n5. Lipește-o în „Cookie-uri din browser” și apasă „Testează sesiunea”.</string>
+    <string name="cookies_not_header">Acesta nu este un antet Cookie — arată așa: name=value; name=value</string>
+    <string name="cookies_bearer">Acesta este un token Bearer — lipește-l în câmpul Bearer de mai jos</string>
+    <string name="cookies_missing">Lipsește %1$s — copiază tot antetul Cookie dintr-o filă threads.com în care ești conectat</string>
+    <string name="bearer_invalid">Un token Bearer începe cu IGT:2:</string>
+    <string name="signed_in_as">Conectat ca @%1$s</string>
+    <string name="session_empty">Lipește mai întâi cookie-urile sau un token Bearer</string>
 </resources>

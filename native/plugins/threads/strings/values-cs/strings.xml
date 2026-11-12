@@ -191,4 +191,14 @@
         <item quantity="many">%1$d účtu se nepodařilo načíst</item>
         <item quantity="other">%1$d účtů se nepodařilo načíst</item>
     </plurals>
+    <string name="sign_in_web">Přihlásit se na threads.com</string>
+    <string name="sign_in_web_detail">Otevře zde vlastní přihlašovací stránku Threads. Uloží se jen cookies relace, na tomto zařízení, jako by byly vloženy níže; kopie stránky se vymaže.</string>
+    <string name="cookies_how">Kde najít cookies</string>
+    <string name="cookies_steps">1. Na počítači se přihlaste na threads.com v Chrome, Edge nebo Firefoxu.\n2. Stiskněte F12 (na Macu ⌥⌘I) a otevřete kartu Network.\n3. Načtěte stránku znovu a klikněte na první požadavek, www.threads.com.\n4. V části Request Headers zkopírujte celou hodnotu Cookie.\n5. Vložte ji do pole „Cookies prohlížeče“ a stiskněte „Otestovat relaci“.</string>
+    <string name="cookies_not_header">To není hlavička Cookie — ta vypadá jako name=value; name=value</string>
+    <string name="cookies_bearer">To je Bearer token — vložte ho do pole Bearer níže</string>
+    <string name="cookies_missing">Chybí %1$s — zkopírujte celou hlavičku Cookie z přihlášené karty threads.com</string>
+    <string name="bearer_invalid">Bearer token začíná na IGT:2:</string>
+    <string name="signed_in_as">Přihlášeno jako @%1$s</string>
+    <string name="session_empty">Nejdřív vložte cookies nebo Bearer token</string>
 </resources>

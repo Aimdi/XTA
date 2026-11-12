@@ -191,4 +191,14 @@
         <item quantity="many">Не вдалося прочитати %1$d акаунтів</item>
         <item quantity="other">Не вдалося прочитати %1$d акаунта</item>
     </plurals>
+    <string name="sign_in_web">Увійти на threads.com</string>
+    <string name="sign_in_web_detail">Відкриває тут власну сторінку входу Threads. Зберігаються лише cookie сесії, на цьому пристрої, ніби вставлені нижче; копія сторінки стирається.</string>
+    <string name="cookies_how">Де знайти cookie</string>
+    <string name="cookies_steps">1. На комп’ютері увійдіть на threads.com у Chrome, Edge або Firefox.\n2. Натисніть F12 (⌥⌘I на Mac) і відкрийте вкладку Network.\n3. Перезавантажте сторінку й клацніть перший запит, www.threads.com.\n4. У Request Headers скопіюйте все значення Cookie.\n5. Вставте його в «Cookie браузера» і натисніть «Перевірити сесію».</string>
+    <string name="cookies_not_header">Це не заголовок Cookie — він має вигляд name=value; name=value</string>
+    <string name="cookies_bearer">Це Bearer-токен — вставте його в поле Bearer нижче</string>
+    <string name="cookies_missing">Бракує %1$s — скопіюйте весь заголовок Cookie з вкладки threads.com, де ви увійшли</string>
+    <string name="bearer_invalid">Bearer-токен починається з IGT:2:</string>
+    <string name="signed_in_as">Ви увійшли як @%1$s</string>
+    <string name="session_empty">Спершу вставте cookie або Bearer-токен</string>
 </resources>

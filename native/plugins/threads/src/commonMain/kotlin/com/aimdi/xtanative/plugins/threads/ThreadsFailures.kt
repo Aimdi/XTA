@@ -1,8 +1,10 @@
 package com.aimdi.xtanative.plugins.threads
 
 import com.aimdi.xtanative.networks.threads.ThreadsAccountFailure
+import com.aimdi.xtanative.networks.threads.ThreadsCookiePaste
 import com.aimdi.xtanative.networks.threads.ThreadsException
 import com.aimdi.xtanative.networks.threads.ThreadsFailure
+import com.aimdi.xtanative.networks.threads.ThreadsSessionCheck
 import com.aimdi.xtanative.networks.threads.ThreadsTrouble
 import com.aimdi.xtanative.networks.threads.ThreadsXyException
 import com.aimdi.xtanative.ui.plugins.PluginText
@@ -63,6 +65,21 @@ internal object ThreadsFailures {
         if ((error as? ThreadsException)?.failure == ThreadsFailure.NO_SUCH_FEED) return missing.get(language)
         if ((error as? ThreadsException)?.failure == ThreadsFailure.PRIVATE_ACCOUNT) return Strings.account_private.get(language)
         return throttledUntil(error, language, zone) ?: settings(error).get(language)
+    }
+
+    /** What is wrong with pasted cookies, said under their field; null when nothing is, or nothing was pasted. */
+    fun pasted(paste: ThreadsCookiePaste, language: String): String? = when (paste) {
+        ThreadsCookiePaste.Empty, is ThreadsCookiePaste.Complete -> null
+        ThreadsCookiePaste.Bearer -> Strings.cookies_bearer.get(language)
+        ThreadsCookiePaste.NotCookies -> Strings.cookies_not_header.get(language)
+        is ThreadsCookiePaste.Missing -> Strings.cookies_missing.get(language, paste.names.joinToString(", "))
+    }
+
+    /** What stops a session's test before Meta is asked: nothing pasted, or nothing usable; null when the cookies or the Bearer can be tried. */
+    fun untestable(cookies: String, bearer: String, language: String): String? {
+        val paste = ThreadsSessionCheck.cookies(cookies)
+        if (paste is ThreadsCookiePaste.Complete || (bearer.isNotBlank() && !ThreadsSessionCheck.badBearer(bearer))) return null
+        return pasted(paste, language) ?: Strings.bearer_invalid.get(language).takeIf { bearer.isNotBlank() } ?: Strings.session_empty.get(language)
     }
 
     /** Why a followed account could not be read, as its row in the failed accounts' list says it. */

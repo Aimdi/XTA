@@ -171,6 +171,49 @@ internal class ThreadsApp(val host: PluginHost) {
      */
     fun session(): ThreadsSession = ThreadsSessions.of(current())
 
+    private val signedInNow = MutableStateFlow<String?>(null)
+
+    /** Whom the cookies signed in as when the session was last tried; null before that, or when it failed. */
+    val signedIn: StateFlow<String?> = signedInNow
+
+    private val signInsNow = MutableStateFlow(0)
+
+    /** Counts the sessions taken from Threads' sign-in page, so the settings' fields show the new one. */
+    val signIns: StateFlow<Int> = signInsNow
+
+    /** [cookies] from Threads' sign-in page kept as a pasted session is, then tried once with a read; the settings say how it went. */
+    fun signIn(cookies: String) = launch {
+        ready()
+        host.settings.update { it.with(ThreadsPrefs.directCookies, cookies) }
+        signInsNow.update { it + 1 }
+        notices.tell(checkSession())
+    }
+
+    /**
+     * The session tried once with a read: "Signed in as @handle" for cookies,
+     * the Bearer's own read otherwise, or the settings' words for why it failed.
+     */
+    suspend fun checkSession(): String {
+        val language = host.language
+        return try {
+            if (!session().hasCookies) return Strings.direct_test_ok.get(language, direct.verify())
+            val handle = direct.currentUser().username
+            signedInNow.value = handle
+            Strings.signed_in_as.get(language, handle)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            signedInNow.value = null
+            ThreadsFailures.settings(e).get(language)
+        }
+    }
+
+    /** The session gone from this device: the cookies and the Bearer, and whom they signed in as. */
+    fun clearSession() {
+        signedInNow.value = null
+        update { it.with(ThreadsPrefs.directCookies, "").with(ThreadsPrefs.directBearer, "") }
+    }
+
     fun setup(): ThreadsSetup = ThreadsSetup(
         rssHubInstance = current()[ThreadsPrefs.instance],
         xyBase = current()[ThreadsPrefs.apiBase].ifBlank { ThreadsXy.DEFAULT_BASE },

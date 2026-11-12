@@ -191,4 +191,14 @@
         <item quantity="many">Не удалось прочитать %1$d аккаунтов</item>
         <item quantity="other">Не удалось прочитать %1$d аккаунта</item>
     </plurals>
+    <string name="sign_in_web">Войти на threads.com</string>
+    <string name="sign_in_web_detail">Открывает здесь собственную страницу входа Threads. Сохраняются только cookie сессии, на этом устройстве, как если бы их вставили ниже; копия страницы стирается.</string>
+    <string name="cookies_how">Где найти cookie</string>
+    <string name="cookies_steps">1. На компьютере войдите на threads.com в Chrome, Edge или Firefox.\n2. Нажмите F12 (⌥⌘I на Mac) и откройте вкладку Network.\n3. Перезагрузите страницу и щёлкните первый запрос, www.threads.com.\n4. В Request Headers скопируйте всё значение Cookie.\n5. Вставьте его в «Cookie браузера» и нажмите «Проверить сессию».</string>
+    <string name="cookies_not_header">Это не заголовок Cookie — он выглядит так: name=value; name=value</string>
+    <string name="cookies_bearer">Это Bearer-токен — вставьте его в поле Bearer ниже</string>
+    <string name="cookies_missing">Не хватает %1$s — скопируйте весь заголовок Cookie со вкладки threads.com, где вы вошли</string>
+    <string name="bearer_invalid">Bearer-токен начинается с IGT:2:</string>
+    <string name="signed_in_as">Вы вошли как @%1$s</string>
+    <string name="session_empty">Сначала вставьте cookie или Bearer-токен</string>
 </resources>

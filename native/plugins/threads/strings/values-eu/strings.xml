@@ -181,4 +181,14 @@
         <item quantity="one">Ezin izan da kontu 1 irakurri</item>
         <item quantity="other">Ezin izan dira %1$d kontu irakurri</item>
     </plurals>
+    <string name="sign_in_web">Hasi saioa threads.com-en</string>
+    <string name="sign_in_web_detail">Threads-en saio-hasierako orria irekitzen du hemen. Saioaren cookieak bakarrik gordetzen dira, gailu honetan, behean itsatsiko bazenitu bezala; orriaren kopia ezabatu egiten da.</string>
+    <string name="cookies_how">Non aurkitu cookieak</string>
+    <string name="cookies_steps">1. Ordenagailu batean, hasi saioa threads.com-en Chrome, Edge edo Firefox-ekin.\n2. Sakatu F12 (⌥⌘I Mac batean) eta ireki Network fitxa.\n3. Kargatu berriro orria eta egin klik lehen eskaeran, www.threads.com.\n4. Request Headers atalean, kopiatu Cookie-ren balio osoa.\n5. Itsatsi «Arakatzailearen cookieak» eremuan eta sakatu «Probatu saioa».</string>
+    <string name="cookies_not_header">Hori ez da Cookie goiburu bat: honela dago idatzita: name=value; name=value</string>
+    <string name="cookies_bearer">Hori Bearer tokena da: itsatsi beheko Bearer eremuan</string>
+    <string name="cookies_missing">%1$s falta da: kopiatu Cookie goiburu osoa saioa hasita duen threads.com fitxa batetik</string>
+    <string name="bearer_invalid">Bearer token bat IGT:2: aurrizkiarekin hasten da</string>
+    <string name="signed_in_as">@%1$s gisa saioa hasita</string>
+    <string name="session_empty">Itsatsi lehenik cookieak edo Bearer token bat</string>
 </resources>

@@ -201,4 +201,14 @@
         <item quantity="many">تعذّرت قراءة %1$d حسابًا</item>
         <item quantity="other">تعذّرت قراءة %1$d حساب</item>
     </plurals>
+    <string name="sign_in_web">تسجيل الدخول على threads.com</string>
+    <string name="sign_in_web_detail">يفتح صفحة تسجيل الدخول الخاصة بـ Threads هنا. تُحفظ ملفات تعريف ارتباط الجلسة فقط، على هذا الجهاز، كأنها لُصقت أدناه، وتُمسح نسخة الصفحة منها.</string>
+    <string name="cookies_how">أين تجد ملفات تعريف الارتباط</string>
+    <string name="cookies_steps">1. على حاسوب، سجّل الدخول إلى threads.com في Chrome أو Edge أو Firefox.\n2. اضغط F12 (‏⌥⌘I على Mac) وافتح تبويب Network.\n3. أعد تحميل الصفحة وانقر أول طلب، www.threads.com.\n4. تحت Request Headers، انسخ قيمة Cookie كاملة.\n5. الصقها في «ملفات تعريف ارتباط المتصفح» واضغط «اختبار الجلسة».</string>
+    <string name="cookies_not_header">هذا ليس ترويسة Cookie — شكلها name=value; name=value</string>
+    <string name="cookies_bearer">هذا رمز Bearer — الصقه في حقل Bearer أدناه</string>
+    <string name="cookies_missing">ينقص %1$s — انسخ ترويسة Cookie كاملة من تبويب threads.com مسجَّل الدخول فيه</string>
+    <string name="bearer_invalid">يبدأ رمز Bearer بـ IGT:2:</string>
+    <string name="signed_in_as">تم تسجيل الدخول باسم ‎@%1$s</string>
+    <string name="session_empty">الصق ملفات تعريف الارتباط أو رمز Bearer أولًا</string>
 </resources>

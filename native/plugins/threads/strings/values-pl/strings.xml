@@ -191,4 +191,14 @@
         <item quantity="many">Nie udało się odczytać %1$d kont</item>
         <item quantity="other">Nie udało się odczytać %1$d konta</item>
     </plurals>
+    <string name="sign_in_web">Zaloguj się na threads.com</string>
+    <string name="sign_in_web_detail">Otwiera tutaj stronę logowania Threads. Zachowywane są tylko ciasteczka sesji, na tym urządzeniu, jak gdyby wklejone poniżej; kopia strony jest usuwana.</string>
+    <string name="cookies_how">Gdzie znaleźć ciasteczka</string>
+    <string name="cookies_steps">1. Na komputerze zaloguj się na threads.com w Chrome, Edge lub Firefoksie.\n2. Naciśnij F12 (⌥⌘I na Macu) i otwórz kartę Network.\n3. Odśwież stronę i kliknij pierwsze żądanie, www.threads.com.\n4. W sekcji Request Headers skopiuj całą wartość Cookie.\n5. Wklej ją w pole „Ciasteczka przeglądarki” i naciśnij „Testuj sesję”.</string>
+    <string name="cookies_not_header">To nie jest nagłówek Cookie — wygląda on tak: name=value; name=value</string>
+    <string name="cookies_bearer">To token Bearer — wklej go w pole Bearer poniżej</string>
+    <string name="cookies_missing">Brakuje %1$s — skopiuj cały nagłówek Cookie z zalogowanej karty threads.com</string>
+    <string name="bearer_invalid">Token Bearer zaczyna się od IGT:2:</string>
+    <string name="signed_in_as">Zalogowano jako @%1$s</string>
+    <string name="session_empty">Najpierw wklej ciasteczka albo token Bearer</string>
 </resources>

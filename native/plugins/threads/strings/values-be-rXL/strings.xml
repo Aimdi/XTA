@@ -191,4 +191,14 @@
         <item quantity="many">Nie ŭdałosia pračytać %1$d akaŭntaŭ</item>
         <item quantity="other">Nie ŭdałosia pračytać %1$d akaŭnta</item>
     </plurals>
+    <string name="sign_in_web">Uvajsci na threads.com</string>
+    <string name="sign_in_web_detail">Adkryvaje tut ułasnuju staronku ŭvachodu Threads. Zachoŭvajucca tolki cookies seansa, na hetaj pryladzie, jak byccam ustaŭlenyja nižej; kopija staronki scirajecca.</string>
+    <string name="cookies_how">Dzie znajści cookies</string>
+    <string name="cookies_steps">1. Na kampjutary ŭvajdzicie na threads.com u Chrome, Edge ci Firefox.\n2. Nacisnicie F12 (⌥⌘I na Mac) i adkryjcie ŭkładku Network.\n3. Pierazahruzicie staronku i pstryknicie pieršy zapyt, www.threads.com.\n4. U Request Headers skapirujcie ŭsio značennie Cookie.\n5. Ustaŭcie jaho ŭ «Cookies braŭzera» i nacisnicie «Pravieryć seans».</string>
+    <string name="cookies_not_header">Heta nie zahalovak Cookie — jon vyhladaje jak name=value; name=value</string>
+    <string name="cookies_bearer">Heta Bearer-token — ustaŭcie jaho ŭ pole Bearer nižej</string>
+    <string name="cookies_missing">Nie chapaje %1$s — skapirujcie ŭvieś zahalovak Cookie z układki threads.com, dzie vy ŭvajšli</string>
+    <string name="bearer_invalid">Bearer-token pačynajecca z IGT:2:</string>
+    <string name="signed_in_as">Vy ŭvajšli jak @%1$s</string>
+    <string name="session_empty">Spačatku ŭstaŭcie cookies abo Bearer-token</string>
 </resources>

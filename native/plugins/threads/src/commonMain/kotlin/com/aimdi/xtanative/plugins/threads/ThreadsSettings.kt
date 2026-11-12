@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.plugins.threads
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,10 +10,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.FilledTonalButton
@@ -33,11 +39,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.networks.threads.ThreadsSessionCheck
 import com.aimdi.xtanative.networks.threads.ThreadsXy
 import com.aimdi.xtanative.networks.threads.ThreadsXyException
 import com.aimdi.xtanative.store.settings.Pref
@@ -164,51 +172,113 @@ private fun Accounts(app: ThreadsApp) {
     unfollowing?.let { handle -> UnfollowDialog(handle, onConfirm = { app.unfollow(handle) }) { unfollowing = null } }
 }
 
-/** The pasted session: why it is risky, the cookies and the Bearer, a test and a way to clear both. */
+/**
+ * The session: why it is risky, Threads' own sign-in page where there is a
+ * web view, the cookies and the Bearer with what is wrong with them as they
+ * are pasted, where to find the cookies, whom the session signs in as, a
+ * test and a way to clear both.
+ */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun Session(app: ThreadsApp) {
-    val language = currentLanguage()
-    var cookies by remember { mutableStateOf(app.current()[ThreadsPrefs.directCookies]) }
-    var bearer by remember { mutableStateOf(app.current()[ThreadsPrefs.directBearer]) }
+    val signIns by app.signIns.collectAsState()
+    var cookies by remember(signIns) { mutableStateOf(app.current()[ThreadsPrefs.directCookies]) }
+    var bearer by remember(signIns) { mutableStateOf(app.current()[ThreadsPrefs.directBearer]) }
     var testing by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+    val language = currentLanguage()
     Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(pluginString(Strings.direct_intro), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 8.dp))
         Text(pluginString(Strings.session_unlocks), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Secret(app, ThreadsPrefs.directCookies, cookies, Strings.direct_cookies, Strings.direct_cookies_hint, lines = 4) { cookies = it }
-        Secret(app, ThreadsPrefs.directBearer, bearer, Strings.direct_bearer, Strings.direct_bearer_hint) { bearer = it }
+        if (webSignIn) WebSignIn(app)
+        SignedIn(app)
+        val cookieProblem = ThreadsFailures.pasted(ThreadsSessionCheck.cookies(cookies), language)
+        Secret(app, ThreadsPrefs.directCookies, cookies, Strings.direct_cookies, Strings.direct_cookies_hint, lines = 4, supporting = cookieProblem, keep = ThreadsSessionCheck::kept) { cookies = it }
+        CookieSteps()
+        val bearerProblem = Strings.bearer_invalid.get(language).takeIf { ThreadsSessionCheck.badBearer(bearer) }
+        Secret(app, ThreadsPrefs.directBearer, bearer, Strings.direct_bearer, Strings.direct_bearer_hint, supporting = bearerProblem) { bearer = it }
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FilledTonalButton(enabled = !testing, onClick = {
                 testing = true
                 scope.launch {
-                    app.host.settings.update { it.with(ThreadsPrefs.directCookies, cookies.trim()).with(ThreadsPrefs.directBearer, bearer.trim()) }
-                    app.notices.tell(tested(language) { Strings.direct_test_ok.get(language, app.direct.verify()) })
+                    app.host.settings.update { it.with(ThreadsPrefs.directCookies, ThreadsSessionCheck.kept(cookies)).with(ThreadsPrefs.directBearer, bearer.trim()) }
+                    app.notices.tell(ThreadsFailures.untestable(cookies, bearer, language) ?: app.checkSession())
                     testing = false
                 }
             }) { Text(pluginString(Strings.direct_test)) }
             TextButton(onClick = {
                 cookies = ""
                 bearer = ""
-                app.update { it.with(ThreadsPrefs.directCookies, "").with(ThreadsPrefs.directBearer, "") }
+                app.clearSession()
             }) { Text(pluginString(Strings.direct_clear)) }
         }
     }
 }
 
-/** A secret field written as it is typed, to the preference XTA keeps it in, which no backup carries. */
+/** Threads' own sign-in page, its session kept as a pasted one is. */
 @Composable
-private fun Secret(app: ThreadsApp, pref: Pref<String>, value: String, label: PluginText, hint: PluginText?, lines: Int = 1, onValue: (String) -> Unit) {
+private fun WebSignIn(app: ThreadsApp) {
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        FilledTonalButton(onClick = { app.host.open(ThreadsRoutes.SIGN_IN) }) {
+            Icon(ThreadsIcons.Mark, contentDescription = null, modifier = Modifier.size(18.dp))
+            Text(pluginString(Strings.sign_in_web), modifier = Modifier.padding(start = 8.dp))
+        }
+        Text(pluginString(Strings.sign_in_web_detail), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}
+
+/** "Signed in as @handle", once the session was tried with a read. */
+@Composable
+private fun SignedIn(app: ThreadsApp) {
+    val handle by app.signedIn.collectAsState()
+    val shown = handle ?: return
+    ListItem(
+        leadingContent = { Icon(Icons.Filled.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
+        headlineContent = { Text(pluginString(Strings.signed_in_as, shown)) },
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+    )
+}
+
+/** Where a desktop browser shows the cookies, folded under its title; open where there is no sign-in page. */
+@Composable
+private fun CookieSteps() {
+    var open by rememberSaveable { mutableStateOf(!webSignIn) }
+    Column {
+        ListItem(
+            leadingContent = { Icon(Icons.Filled.Info, contentDescription = null) },
+            headlineContent = { Text(pluginString(Strings.cookies_how)) },
+            trailingContent = { Icon(if (open) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown, contentDescription = null) },
+            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+            modifier = Modifier.clickable { open = !open },
+        )
+        if (open) Text(pluginString(Strings.cookies_steps), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp))
+    }
+}
+
+/** A secret field written as it is typed, as [keep] keeps it, to the preference XTA keeps it in, which no backup carries. */
+@Composable
+private fun Secret(
+    app: ThreadsApp,
+    pref: Pref<String>,
+    value: String,
+    label: PluginText,
+    hint: PluginText?,
+    lines: Int = 1,
+    supporting: String? = null,
+    keep: (String) -> String = String::trim,
+    onValue: (String) -> Unit,
+) {
     SecretField(
         value = value,
         onValueChange = { typed ->
             onValue(typed)
-            app.update { it.with(pref, typed.trim()) }
+            app.update { it.with(pref, keep(typed)) }
         },
         label = pluginString(label),
         reveal = pluginString(Strings.show),
         conceal = pluginString(Strings.hide),
         hint = hint?.let { pluginString(it) },
+        supporting = supporting,
         lines = lines,
         modifier = Modifier.fillMaxWidth(),
     )

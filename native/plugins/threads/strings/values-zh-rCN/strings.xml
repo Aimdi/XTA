@@ -176,4 +176,14 @@
     <plurals name="accounts_failed">
         <item quantity="other">有 %1$d 个账号无法读取</item>
     </plurals>
+    <string name="sign_in_web">在 threads.com 登录</string>
+    <string name="sign_in_web_detail">在此打开 Threads 自己的登录页面。只保存会话 Cookie，存在本设备上，如同在下方粘贴；页面自己的副本会被清除。</string>
+    <string name="cookies_how">在哪里找到 Cookie</string>
+    <string name="cookies_steps">1. 在电脑上用 Chrome、Edge 或 Firefox 登录 threads.com。\n2. 按 F12（Mac 上按 ⌥⌘I），打开 Network 标签页。\n3. 刷新页面，点击第一个请求 www.threads.com。\n4. 在 Request Headers 中复制 Cookie 的完整值。\n5. 粘贴到“浏览器 Cookie”，然后点“测试会话”。</string>
+    <string name="cookies_not_header">这不是 Cookie 请求头 — 它的格式是 name=value; name=value</string>
+    <string name="cookies_bearer">这是 Bearer 令牌 — 请粘贴到下方的 Bearer 栏</string>
+    <string name="cookies_missing">缺少 %1$s — 请从已登录的 threads.com 标签页复制完整的 Cookie 请求头</string>
+    <string name="bearer_invalid">Bearer 令牌以 IGT:2: 开头</string>
+    <string name="signed_in_as">已登录为 @%1$s</string>
+    <string name="session_empty">请先粘贴 Cookie 或 Bearer 令牌</string>
 </resources>

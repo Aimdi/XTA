@@ -181,4 +181,14 @@
         <item quantity="one">1 konto kunne ikke leses</item>
         <item quantity="other">%1$d kontoer kunne ikke leses</item>
     </plurals>
+    <string name="sign_in_web">Logg inn på threads.com</string>
+    <string name="sign_in_web_detail">Åpner Threads’ egen påloggingsside her. Bare øktens informasjonskapsler beholdes, på denne enheten, som om de var limt inn nedenfor; sidens egen kopi slettes.</string>
+    <string name="cookies_how">Hvor du finner informasjonskapslene</string>
+    <string name="cookies_steps">1. Logg inn på threads.com i Chrome, Edge eller Firefox på en datamaskin.\n2. Trykk F12 (⌥⌘I på Mac) og åpne fanen Network.\n3. Last inn siden på nytt og klikk på den første forespørselen, www.threads.com.\n4. Under Request Headers kopierer du hele verdien av Cookie.\n5. Lim den inn i «Nettleserinformasjonskapsler» og trykk «Test økt».</string>
+    <string name="cookies_not_header">Det er ikke en Cookie-header – den ser slik ut: name=value; name=value</string>
+    <string name="cookies_bearer">Det er et Bearer-token – lim det inn i Bearer-feltet nedenfor</string>
+    <string name="cookies_missing">Mangler %1$s – kopier hele Cookie-headeren fra en innlogget threads.com-fane</string>
+    <string name="bearer_invalid">Et Bearer-token begynner med IGT:2:</string>
+    <string name="signed_in_as">Logget inn som @%1$s</string>
+    <string name="session_empty">Lim inn informasjonskapslene eller et Bearer-token først</string>
 </resources>

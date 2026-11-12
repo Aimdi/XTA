@@ -181,4 +181,14 @@
         <item quantity="one">1 Konto konnte nicht gelesen werden</item>
         <item quantity="other">%1$d Konten konnten nicht gelesen werden</item>
     </plurals>
+    <string name="sign_in_web">Auf threads.com anmelden</string>
+    <string name="sign_in_web_detail">Öffnet hier die Anmeldeseite von Threads selbst. Nur die Sitzungs-Cookies werden behalten, auf diesem Gerät, als wären sie unten eingefügt; die Kopie der Seite wird gelöscht.</string>
+    <string name="cookies_how">Wo die Cookies zu finden sind</string>
+    <string name="cookies_steps">1. Melde dich am Computer in Chrome, Edge oder Firefox auf threads.com an.\n2. Drücke F12 (⌥⌘I auf dem Mac) und öffne den Tab „Network“ (Netzwerk).\n3. Lade die Seite neu und klicke auf die erste Anfrage, www.threads.com.\n4. Kopiere unter „Request Headers“ den ganzen Wert von Cookie.\n5. Füge ihn bei „Browser-Cookies“ ein und tippe auf „Sitzung testen“.</string>
+    <string name="cookies_not_header">Das ist kein Cookie-Header – er sieht so aus: name=value; name=value</string>
+    <string name="cookies_bearer">Das ist ein Bearer-Token – füge ihn unten ins Bearer-Feld ein</string>
+    <string name="cookies_missing">Es fehlt %1$s – kopiere den ganzen Cookie-Header aus einem angemeldeten threads.com-Tab</string>
+    <string name="bearer_invalid">Ein Bearer-Token beginnt mit IGT:2:</string>
+    <string name="signed_in_as">Angemeldet als @%1$s</string>
+    <string name="session_empty">Füge zuerst die Cookies oder einen Bearer-Token ein</string>
 </resources>

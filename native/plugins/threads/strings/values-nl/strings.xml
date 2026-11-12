@@ -181,4 +181,14 @@
         <item quantity="one">1 account kon niet worden gelezen</item>
         <item quantity="other">%1$d accounts konden niet worden gelezen</item>
     </plurals>
+    <string name="sign_in_web">Inloggen op threads.com</string>
+    <string name="sign_in_web_detail">Opent hier de eigen inlogpagina van Threads. Alleen de sessiecookies worden bewaard, op dit apparaat, alsof ze hieronder zijn geplakt; de kopie van de pagina wordt gewist.</string>
+    <string name="cookies_how">Waar je de cookies vindt</string>
+    <string name="cookies_steps">1. Log op een computer in op threads.com in Chrome, Edge of Firefox.\n2. Druk op F12 (⌥⌘I op een Mac) en open het tabblad Network.\n3. Laad de pagina opnieuw en klik op het eerste verzoek, www.threads.com.\n4. Kopieer onder Request Headers de hele waarde van Cookie.\n5. Plak die in ‘Browsercookies’ en druk op ‘Sessie testen’.</string>
+    <string name="cookies_not_header">Dat is geen Cookie-header — die ziet eruit als name=value; name=value</string>
+    <string name="cookies_bearer">Dat is een Bearer-token — plak het in het Bearer-veld hieronder</string>
+    <string name="cookies_missing">%1$s ontbreekt — kopieer de hele Cookie-header uit een ingelogd threads.com-tabblad</string>
+    <string name="bearer_invalid">Een Bearer-token begint met IGT:2:</string>
+    <string name="signed_in_as">Ingelogd als @%1$s</string>
+    <string name="session_empty">Plak eerst de cookies of een Bearer-token</string>
 </resources>

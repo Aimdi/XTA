@@ -176,4 +176,14 @@
     <plurals name="accounts_failed">
         <item quantity="other">%1$d akun tidak bisa dibaca</item>
     </plurals>
+    <string name="sign_in_web">Masuk di threads.com</string>
+    <string name="sign_in_web_detail">Membuka halaman masuk Threads sendiri di sini. Hanya cookie sesi yang disimpan, di perangkat ini, seperti ditempel di bawah; salinan milik halaman dihapus.</string>
+    <string name="cookies_how">Di mana menemukan cookie</string>
+    <string name="cookies_steps">1. Di komputer, masuk ke threads.com di Chrome, Edge, atau Firefox.\n2. Tekan F12 (⌥⌘I di Mac) dan buka tab Network.\n3. Muat ulang halaman dan klik permintaan pertama, www.threads.com.\n4. Di bawah Request Headers, salin seluruh nilai Cookie.\n5. Tempel ke “Cookie peramban” lalu tekan “Uji sesi”.</string>
+    <string name="cookies_not_header">Itu bukan header Cookie — bentuknya name=value; name=value</string>
+    <string name="cookies_bearer">Itu token Bearer — tempel di kolom Bearer di bawah</string>
+    <string name="cookies_missing">%1$s tidak ada — salin seluruh header Cookie dari tab threads.com yang sudah masuk</string>
+    <string name="bearer_invalid">Token Bearer diawali IGT:2:</string>
+    <string name="signed_in_as">Masuk sebagai @%1$s</string>
+    <string name="session_empty">Tempel cookie atau token Bearer terlebih dahulu</string>
 </resources>

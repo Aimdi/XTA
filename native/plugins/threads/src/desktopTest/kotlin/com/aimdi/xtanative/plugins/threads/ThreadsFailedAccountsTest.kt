@@ -48,4 +48,24 @@ class ThreadsFailedAccountsTest {
         assertNull(ThreadsFailures.retryBlockedUntil(throttle, until.plusSeconds(1)))
         assertNull(ThreadsFailures.retryBlockedUntil(IOException("reset"), at))
     }
+
+    @Test
+    fun aSessionThatCannotBeTestedSaysWhyBeforeMetaIsAsked() {
+        val whole = "sessionid=s1; csrftoken=c1; ds_user_id=7; mid=m1; ig_did=d1"
+        assertNull(ThreadsFailures.untestable(whole, "", "en"))
+        assertNull(ThreadsFailures.untestable("", "IGT:2:abc", "en"))
+        assertEquals("Paste the cookies or a Bearer token first", ThreadsFailures.untestable("", "", "en"))
+        assertEquals("A Bearer token starts with IGT:2:", ThreadsFailures.untestable("", "abc", "en"))
+        assertEquals(
+            "Missing sessionid, ds_user_id — copy the whole Cookie header from a signed-in threads.com tab",
+            ThreadsFailures.untestable("csrftoken=c1; mid=m1; ig_did=d1", "", "en"),
+        )
+        assertEquals("That is a Bearer token — paste it in the Bearer field below", ThreadsFailures.untestable("IGT:2:abc", "", "en"))
+    }
+
+    @Test
+    fun theSignInPageIsAScreenOfItsOwn() {
+        assertEquals(ThreadsRoute.SignIn, ThreadsRoutes.parse(ThreadsRoutes.SIGN_IN))
+    }
 }
+

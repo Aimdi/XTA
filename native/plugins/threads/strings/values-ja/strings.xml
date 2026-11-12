@@ -176,4 +176,14 @@
     <plurals name="accounts_failed">
         <item quantity="other">%1$d 件のアカウントを読めませんでした</item>
     </plurals>
+    <string name="sign_in_web">threads.com でログイン</string>
+    <string name="sign_in_web_detail">Threads 自身のログインページをここで開きます。保存されるのはセッションの Cookie だけで、下に貼り付けたときと同じくこの端末に残ります。ページ側のコピーは消去されます。</string>
+    <string name="cookies_how">Cookie の見つけ方</string>
+    <string name="cookies_steps">1. パソコンの Chrome、Edge または Firefox で threads.com にログインします。\n2. F12（Mac では ⌥⌘I）を押し、Network タブを開きます。\n3. ページを再読み込みし、最初のリクエスト www.threads.com をクリックします。\n4. Request Headers の Cookie の値をすべてコピーします。\n5. 「ブラウザの Cookie」に貼り付けて「セッションをテスト」を押します。</string>
+    <string name="cookies_not_header">これは Cookie ヘッダーではありません。name=value; name=value の形です</string>
+    <string name="cookies_bearer">これは Bearer トークンです。下の Bearer 欄に貼り付けてください</string>
+    <string name="cookies_missing">%1$s がありません。ログイン済みの threads.com タブから Cookie ヘッダー全体をコピーしてください</string>
+    <string name="bearer_invalid">Bearer トークンは IGT:2: で始まります</string>
+    <string name="signed_in_as">@%1$s としてログイン中</string>
+    <string name="session_empty">先に Cookie か Bearer トークンを貼り付けてください</string>
 </resources>

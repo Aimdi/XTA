@@ -183,4 +183,14 @@
         <item quantity="one">1 account could not be read</item>
         <item quantity="other">%1$d accounts could not be read</item>
     </plurals>
+    <string name="sign_in_web">Sign in on threads.com</string>
+    <string name="sign_in_web_detail">Opens Threads’ own sign-in page here. Only the session cookies are kept, on this device, as if pasted below; the page’s own copy is cleared.</string>
+    <string name="cookies_how">Where to find the cookies</string>
+    <string name="cookies_steps">1. On a computer, sign in at threads.com in Chrome, Edge or Firefox.\n2. Press F12 (⌥⌘I on a Mac) and open the Network tab.\n3. Reload the page and click the first request, www.threads.com.\n4. Under Request Headers, copy the whole value of Cookie.\n5. Paste it into Browser cookies and press Test session.</string>
+    <string name="cookies_not_header">That is not a Cookie header — it reads name=value; name=value</string>
+    <string name="cookies_bearer">That is a Bearer token — paste it in the Bearer field below</string>
+    <string name="cookies_missing">Missing %1$s — copy the whole Cookie header from a signed-in threads.com tab</string>
+    <string name="bearer_invalid">A Bearer token starts with IGT:2:</string>
+    <string name="signed_in_as">Signed in as @%1$s</string>
+    <string name="session_empty">Paste the cookies or a Bearer token first</string>
 </resources>

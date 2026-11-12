@@ -181,4 +181,14 @@
         <item quantity="one">1 konto ne legeblis</item>
         <item quantity="other">%1$d kontoj ne legeblis</item>
     </plurals>
+    <string name="sign_in_web">Ensaluti ĉe threads.com</string>
+    <string name="sign_in_web_detail">Malfermas ĉi tie la propran ensalutan paĝon de Threads. Nur la seancaj kuketoj estas konservataj, en ĉi tiu aparato, kvazaŭ algluitaj sube; la kopio de la paĝo estas forviŝata.</string>
+    <string name="cookies_how">Kie trovi la kuketojn</string>
+    <string name="cookies_steps">1. En komputilo, ensalutu ĉe threads.com per Chrome, Edge aŭ Firefox.\n2. Premu F12 (⌥⌘I en Mac) kaj malfermu la langeton Network.\n3. Reŝargu la paĝon kaj alklaku la unuan peton, www.threads.com.\n4. Sub Request Headers, kopiu la tutan valoron de Cookie.\n5. Algluu ĝin en „Retumilaj kuketoj“ kaj premu „Testi seancon“.</string>
+    <string name="cookies_not_header">Tio ne estas kaplinio Cookie — ĝi aspektas kiel name=value; name=value</string>
+    <string name="cookies_bearer">Tio estas Bearer-ĵetono — algluu ĝin en la kampon Bearer sube</string>
+    <string name="cookies_missing">Mankas %1$s — kopiu la tutan kaplinion Cookie el ensalutita langeto de threads.com</string>
+    <string name="bearer_invalid">Bearer-ĵetono komenciĝas per IGT:2:</string>
+    <string name="signed_in_as">Ensalutinta kiel @%1$s</string>
+    <string name="session_empty">Unue algluu la kuketojn aŭ Bearer-ĵetonon</string>
 </resources>
