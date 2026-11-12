@@ -33,7 +33,13 @@ class ThreadsConversationLiveTest {
         }
     }
 
-    private fun log(label: String, body: String) {
+    private fun log(label: String, body: String) = try {
+        logShape(label, body)
+    } catch (e: Exception) {
+        println("LIVE Threads conversation $label: the probe failed (${e.javaClass.simpleName})")
+    }
+
+    private fun logShape(label: String, body: String) {
         val page = ThreadsPostPage.read(body)
         val levels = page.replies.flatMap { it.levels.values }.groupingBy { it }.eachCount().toSortedMap()
         println(
@@ -44,18 +50,35 @@ class ThreadsConversationLiveTest {
         ThreadsShape.scripts(body).flatMap { queries(it) }.forEach { (name, result) ->
             val paths = postPaths(result, "").groupingBy { it }.eachCount()
             println("LIVE Threads conversation $label $name posts at: ${ThreadsShape.told(paths)}")
+            println("LIVE Threads conversation $label $name direct_replies at: ${ThreadsShape.told(ThreadsShape.paths(listOf(result), Regex("^direct_replies$"), depth = 40, tail = 12))}")
+            val nodes = replyNodes(result)
+            println("LIVE Threads conversation $label $name reply edge node keys: ${ThreadsShape.told(ThreadsShape.keyCounts(nodes))}")
+            println("LIVE Threads conversation $label $name data.media keys: ${ThreadsShape.told(ThreadsShape.keyCounts(listOfNotNull(media(result))))}")
         }
     }
 
     private fun queries(node: JsonElement): List<Pair<String, JsonElement>> = when (node) {
         is JsonArray -> {
             val name = (node.firstOrNull() as? JsonPrimitive)?.takeIf { it.isString }?.content
-            val here = if (name != null && name.startsWith("adp_")) listOf(name.removePrefix("adp_").substringBefore("RelayPreloader") to node[1]) else emptyList()
+            val here = if (name != null && name.startsWith("adp_")) listOfNotNull(node.getOrNull(1)?.let { name.removePrefix("adp_").substringBefore("RelayPreloader") to it }) else emptyList()
             here + node.flatMap(::queries)
         }
         is JsonObject -> node.values.flatMap(::queries)
         else -> emptyList()
     }
+
+    /** Every `direct_replies.edges[].node` object under [node], at any depth. */
+    private fun replyNodes(node: JsonElement): List<JsonObject> = when (node) {
+        is JsonObject -> {
+            val edges = ((node["direct_replies"] as? JsonObject)?.get("edges") as? JsonArray).orEmpty()
+            edges.mapNotNull { (it as? JsonObject)?.get("node") as? JsonObject } + node.values.flatMap(::replyNodes)
+        }
+        is JsonArray -> node.flatMap(::replyNodes)
+        else -> emptyList()
+    }
+
+    private fun media(result: JsonElement): JsonObject? =
+        ((((result as? JsonObject)?.get("__bbox") as? JsonObject)?.get("result") as? JsonObject)?.get("data") as? JsonObject)?.get("media") as? JsonObject
 
     /** Where each post object sits, as a key path with `[]` for lists, posts inside posts included. */
     private fun postPaths(node: JsonElement, path: String): List<String> = when (node) {

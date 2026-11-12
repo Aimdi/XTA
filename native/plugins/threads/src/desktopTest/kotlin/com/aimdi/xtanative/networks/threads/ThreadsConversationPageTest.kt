@@ -31,6 +31,28 @@ class ThreadsConversationPageTest {
     }
 
     @Test
+    fun repliesAreFoundWhenTheDownwardQueryAnswersItsMediaOtherwise() {
+        val downward = """adp_BarcelonaPostPageDownwardQueryRelayPreloader_3",{"__bbox":{"complete":true,"result":{"data":{"media":{"pk":"602","code":"DQzuck0602","taken_at":1762000600,"caption":{"text":"Replying to Meta"},"user":{"username":"zuck","full_name":"Mark Zuckerberg"},"""
+        val html = fixture("post_page_queries.html")
+        val bare = downward.substringBefore("\"pk\"") + "\"id\":\"602_314216\","
+        listOf(bare, downward.replace("\"pk\":\"602\"", "\"pk\":\"6020\"")).forEach { media ->
+            val read = ThreadsPostPage.read(html.replace(downward, media))
+            assertEquals("602", read.target?.id)
+            assertEquals(listOf(listOf("611", "612", "613", "614"), listOf("621")), read.replies.map { ids(it.posts) })
+            assertTrue(read.moreReplies)
+        }
+    }
+
+    @Test
+    fun aPageWhoseRepliesTheNewerReadingMissesKeepsItsChains() {
+        val target = json(mapOf("x" to listOf("adp_BarcelonaPostPageTargetQueryRelayPreloader_1", mapOf("__bbox" to mapOf("result" to mapOf("data" to mapOf("media" to postJson("701"))))))))
+        val chains = page(listOf(listOf(postJson("701")), listOf(postJson("702", user = "dana"))))
+        val read = ThreadsPostPage.read(chains.replace("</html>", "<script type=\"application/json\" data-sjs>$target</script></html>"))
+        assertEquals(listOf(listOf("701"), listOf("702")), read.conversationChains.map(::ids))
+        assertEquals(listOf(listOf("701")), ThreadsPostPage.read(page(emptyList()).replace("</html>", "<script type=\"application/json\" data-sjs>$target</script></html>")).conversationChains.map(::ids))
+    }
+
+    @Test
     fun relatedPostsAreNeverTakenForReplies() {
         assertEquals(listOf("681", "682"), ids(page.related))
         val all = page.conversationChains.flatten().map { it.id }

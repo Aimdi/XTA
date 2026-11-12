@@ -71,7 +71,19 @@ internal object ThreadsPostPageReader {
             val chains = ThreadsPages.chains(body).map { chain -> chain.filter { it.id !in relatedIds } }.filter { it.isNotEmpty() }
             return ThreadsPostPage(related = related, chains = chains)
         }
-        return arranged(target, own, related)
+        return arranged(target, own, related).orChains(body)
+    }
+
+    /**
+     * The older reading when the newer found no reply where Meta's page
+     * carries more than the post's own chain of `thread_items`: replies a
+     * guest could read before must not vanish because Meta moved them.
+     */
+    private fun ThreadsPostPage.orChains(body: String): ThreadsPostPage {
+        if (replies.isNotEmpty()) return this
+        val relatedIds = related.mapTo(HashSet()) { it.id }
+        val chains = ThreadsPages.chains(body).map { chain -> chain.filter { it.id !in relatedIds } }.filter { it.isNotEmpty() }
+        return if (chains.size > 1) ThreadsPostPage(related = related, chains = chains) else this
     }
 
     private fun arranged(target: ThreadsPost, queries: List<Query>, related: List<ThreadsPost>): ThreadsPostPage {
@@ -80,6 +92,8 @@ internal object ThreadsPostPageReader {
         val continuation = below.filter { it.handle == target.handle }
         val seen = HashSet<String>().apply { add(target.id); addAll(above.map { it.id }); addAll(continuation.map { it.id }) }
         val connections = queries.flatMap { replyConnections(it.result.raw, target.id) }
+            .ifEmpty { queries.mapNotNull { mediaReplies(it.result) } }
+            .ifEmpty { queries.firstNotNullOfOrNull { anyReplyConnection(it.result.raw) }?.let(::listOf).orEmpty() }
         val replies = connections.flatMap { edges(it) }.mapNotNull { thread(it, seen) }
         return ThreadsPostPage(
             target = target,
@@ -135,6 +149,23 @@ internal object ThreadsPostPageReader {
         else -> emptyList()
     }
 
+    /**
+     * A query's own `data.media.text_post_app_info.direct_replies`, whatever
+     * `media` holds beside it: Meta's Downward query may answer its media
+     * without what makes it a post here (an author, a caption), or under an
+     * id spelled otherwise, and its replies are still the post's.
+     */
+    private fun mediaReplies(result: J): JsonObject? =
+        (result["data"]["media"]["text_post_app_info"]["direct_replies"].raw as? JsonObject)?.takeIf { it["edges"] is JsonArray }
+
+    /** The first `direct_replies` connection anywhere under [node], a quoted or reposted post's left out. */
+    private fun anyReplyConnection(node: JsonElement?): JsonObject? = when (node) {
+        is JsonObject -> (node["direct_replies"] as? JsonObject)?.takeIf { it["edges"] is JsonArray }
+            ?: node.entries.filter { it.key != "share_info" }.firstNotNullOfOrNull { anyReplyConnection(it.value) }
+        is JsonArray -> node.firstNotNullOfOrNull(::anyReplyConnection)
+        else -> null
+    }
+
     private fun edges(connection: JsonObject): List<JsonElement> = (connection["edges"] as? JsonArray).orEmpty()
 
     /** One edge as a reply thread: the posts it holds that no earlier part of the page showed. */
@@ -149,10 +180,10 @@ internal object ThreadsPostPageReader {
      * Every post under [node] in page order, with its `reply_level`. A post's
      * own `text_post_app_info` is searched on for the posts chained under it,
      * leaving out [skips] (the post it quotes or reposts, and on the post's own
-     * chain its replies); nothing else of a post is.
+     * chain its replies), here and in whatever holds a post; nothing else of a post is.
      */
     private fun posts(node: JsonElement?, skips: Set<String>): List<Pair<ThreadsPost, Int?>> = when (node) {
-        is JsonObject -> if (isPost(node)) postAndBelow(node, skips) else node.values.flatMap { posts(it, skips) }
+        is JsonObject -> if (isPost(node)) postAndBelow(node, skips) else node.entries.filter { it.key !in skips }.flatMap { posts(it.value, skips) }
         is JsonArray -> node.flatMap { posts(it, skips) }
         else -> emptyList()
     }
