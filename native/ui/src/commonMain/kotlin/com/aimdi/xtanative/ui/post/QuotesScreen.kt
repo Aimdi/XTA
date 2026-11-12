@@ -46,6 +46,7 @@ import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.ProblemRow
+import com.aimdi.xtanative.ui.common.rememberReadRecovery
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.posts_no_quotes
@@ -72,16 +73,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
-/** One list of the screen, page after page. */
-data class Paged<T>(
-    val items: List<T> = emptyList(),
-    val loading: Boolean = true,
-    val problem: Problem? = null,
-    val cursor: String? = null,
-    val loadingMore: Boolean = false,
-    val moreProblem: Problem? = null,
-)
-
 data class QuotesUi(
     val quotes: Paged<XThread> = Paged(),
     val quoteSort: QuoteSort = QuoteSort.RECENT,
@@ -92,17 +83,42 @@ data class QuotesUi(
 /**
  * The quotes of a post and the people who reposted it (quotes_screen.dart):
  * quotes in X's order (Latest or Top), people newest first, or the most
- * followed first once X said how many follow each. Reading only.
+ * followed first once X said how many follow each. Reading only. Each tab is
+ * read when it is first shown, so opening one does not spend the other's
+ * requests.
  */
 class QuotesViewModel(private val graph: AppGraph, private val id: String) : ViewModel() {
     private val state = MutableStateFlow(QuotesUi(quoteSort = Sorts.state.value.quotes, reposterSort = Sorts.state.value.reposters))
     val ui: StateFlow<QuotesUi> = state.asStateFlow()
     private val people = PeoplePaging()
     private var quotesJob: Job? = null
+    private var quotesAsked = false
+    private var repostersAsked = false
 
-    init {
+    /** The quotes tab is shown: its first page, once. */
+    fun showQuotes() {
+        if (quotesAsked) return
+        quotesAsked = true
         loadQuotes()
+    }
+
+    /** The reposts tab is shown: its first page, once. */
+    fun showReposters() {
+        if (repostersAsked) return
+        repostersAsked = true
         loadReposters()
+    }
+
+    /** Reads again what failed in the quotes: the first page, or the next. */
+    fun retryQuotes() {
+        val quotes = state.value.quotes
+        if (quotes.problem != null) loadQuotes() else quotes.cursor?.let(::loadQuotes)
+    }
+
+    /** Reads again what failed in the reposts: the first page, or the next. */
+    fun retryReposters() {
+        val reposters = state.value.reposters
+        if (reposters.problem != null) loadReposters() else reposters.cursor?.let(::loadReposters)
     }
 
     fun loadQuotes(cursor: String? = null) {
@@ -212,6 +228,8 @@ fun QuotesScreen(id: String, reposters: Boolean, actions: PostActions, onBack: (
 private fun QuotesList(state: QuotesUi, vm: QuotesViewModel, actions: PostActions, padding: PaddingValues) {
     val list = rememberLazyListState()
     val quotes = state.quotes
+    LaunchedEffect(vm) { vm.showQuotes() }
+    rememberReadRecovery(quotes.retryable, quotes.loading || quotes.loadingMore, vm::retryQuotes)
     PageMore(list, quotes.items.size) { quotes.cursor?.let(vm::loadQuotes) }
     val layout = rememberFeedLayout(quotes.items)
     WithReadingColumn(padding) { column ->
@@ -230,6 +248,8 @@ private fun QuotesList(state: QuotesUi, vm: QuotesViewModel, actions: PostAction
 private fun RepostersList(state: QuotesUi, vm: QuotesViewModel, actions: PostActions, padding: PaddingValues) {
     val list = rememberLazyListState()
     val reposters = state.reposters
+    LaunchedEffect(vm) { vm.showReposters() }
+    rememberReadRecovery(reposters.retryable, reposters.loading || reposters.loadingMore, vm::retryReposters)
     PageMore(list, reposters.items.size) { reposters.cursor?.let(vm::loadReposters) }
     val options = Sorts.reposterSorts(reposters.items)
     val sort = Sorts.effective(state.reposterSort, options)
