@@ -171,4 +171,5 @@
     <string name="media_covered">Threads on selle meedia ette hoiatuse pannud</string>
     <string name="add_accounts_hint">Mitu korraga: eralda need tühikute või komadega</string>
     <string name="session_unlocks">Mida seanss lisab: sinu enda „Sinu jaoks“ ja inimeste otsingu. Kui ülal olev lüliti on sees, loeb see ka kontosid, mida jälgid.</string>
+    <string name="instance_intro">Valikuline. Sinu enda RSSHubi eksemplar loeb kontosid, mida jälgid; kui see ei vasta, loetakse Threadsi avalikke lehti. Jäta tühjaks, et lugeda ainult avalikke lehti.</string>
 </resources>

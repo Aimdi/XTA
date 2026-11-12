@@ -171,4 +171,5 @@
     <string name="media_covered">Threads metis averton super ĉi tiun aŭdvidaĵon</string>
     <string name="add_accounts_hint">Plurajn samtempe: apartigu ilin per spacetoj aŭ komoj</string>
     <string name="session_unlocks">Kion seanco aldonas: vian propran «Por vi» kaj serĉon de homoj. Kun la supra ŝaltilo ŝaltita, ĝi ankaŭ legas la kontojn, kiujn vi sekvas.</string>
+    <string name="instance_intro">Nedeviga. Via propra RSSHub-instanco legas la kontojn, kiujn vi sekvas; se ĝi malsukcesas, la publikaj paĝoj de Threads anstataŭas ĝin. Lasu malplena por legi nur la publikajn paĝojn.</string>
 </resources>

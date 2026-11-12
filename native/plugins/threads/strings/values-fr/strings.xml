@@ -174,4 +174,5 @@
     <string name="media_covered">Threads a placé un avertissement sur ce média</string>
     <string name="add_accounts_hint">Plusieurs à la fois : séparez-les par des espaces ou des virgules</string>
     <string name="session_unlocks">Ce qu’une session ajoute : votre propre Pour vous et la recherche de personnes. Avec l’interrupteur ci-dessus activé, elle lit aussi les comptes que vous suivez.</string>
+    <string name="instance_intro">Facultatif. Une instance RSSHub que vous hébergez lit les comptes que vous suivez ; si elle échoue, les pages publiques de Threads prennent le relais. Laissez vide pour ne lire que les pages publiques.</string>
 </resources>

@@ -171,4 +171,5 @@
     <string name="media_covered">Threads ने इस मीडिया पर चेतावनी लगाई है</string>
     <string name="add_accounts_hint">एक साथ कई: इन्हें स्पेस या कॉमा से अलग करें</string>
     <string name="session_unlocks">सत्र से क्या मिलता है: आपका अपना «आपके लिए» और लोगों की खोज। ऊपर का स्विच चालू हो तो यह आपके फ़ॉलो किए गए खाते भी पढ़ता है।</string>
+    <string name="instance_intro">वैकल्पिक। आपका अपना RSSHub इंस्टेंस आपके फ़ॉलो किए गए खाते पढ़ता है; उसके विफल होने पर Threads के सार्वजनिक पेज काम आते हैं। केवल सार्वजनिक पेज पढ़ने के लिए खाली छोड़ें।</string>
 </resources>

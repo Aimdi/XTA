@@ -167,4 +167,5 @@
     <string name="media_covered">Threads はこのメディアに警告を表示しています</string>
     <string name="add_accounts_hint">まとめて追加: スペースかカンマで区切ってください</string>
     <string name="session_unlocks">セッションで使えるもの: あなた自身の For you と人物検索。上のスイッチをオンにすると、フォロー中のアカウントもセッションで読み込みます。</string>
+    <string name="instance_intro">任意。自分で運用する RSSHub インスタンスがフォロー中のアカウントを読み込みます。失敗したときは Threads の公開ページが代わりに使われます。公開ページだけを読むには空のままにしてください。</string>
 </resources>

@@ -174,4 +174,5 @@
     <string name="media_covered">Threads ha posat un avís sobre aquest contingut multimèdia</string>
     <string name="add_accounts_hint">Diversos alhora: separa’ls amb espais o comes</string>
     <string name="session_unlocks">Què afegeix una sessió: el teu propi Per a tu i la cerca de persones. Amb l’interruptor de dalt activat, també llegeix els comptes que segueixes.</string>
+    <string name="instance_intro">Opcional. Una instància d’RSSHub pròpia llegeix els comptes que segueixes; si falla, en llegeixen les pàgines públiques de Threads. Deixa-ho buit per llegir només les pàgines públiques.</string>
 </resources>

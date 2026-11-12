@@ -167,4 +167,5 @@
     <string name="media_covered">Threads memasang peringatan pada media ini</string>
     <string name="add_accounts_hint">Beberapa sekaligus: pisahkan dengan spasi atau koma</string>
     <string name="session_unlocks">Yang ditambahkan sesi: Untuk Anda milik Anda sendiri dan pencarian orang. Jika sakelar di atas aktif, sesi juga membaca akun yang Anda ikuti.</string>
+    <string name="instance_intro">Opsional. Instans RSSHub milik Anda membaca akun yang Anda ikuti; jika gagal, halaman publik Threads dipakai sebagai gantinya. Biarkan kosong untuk hanya membaca halaman publik.</string>
 </resources>

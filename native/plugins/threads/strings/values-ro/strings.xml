@@ -175,4 +175,5 @@
     <string name="media_covered">Threads a pus un avertisment peste aceste conținuturi media</string>
     <string name="add_accounts_hint">Mai multe deodată: separă-le prin spații sau virgule</string>
     <string name="session_unlocks">Ce adaugă o sesiune: propriul dvs. Pentru dvs. și căutarea de persoane. Cu comutatorul de mai sus pornit, citește și conturile pe care le urmăriți.</string>
+    <string name="instance_intro">Opțional. O instanță RSSHub proprie citește conturile pe care le urmăriți; dacă eșuează, paginile publice Threads îi țin locul. Lăsați gol pentru a citi doar paginile publice.</string>
 </resources>

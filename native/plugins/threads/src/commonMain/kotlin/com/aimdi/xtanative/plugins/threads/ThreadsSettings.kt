@@ -222,6 +222,7 @@ private fun RssHub(app: ThreadsApp) {
     var testing by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Text(pluginString(Strings.instance_intro), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 8.dp))
         Address(instance, Strings.instance, Strings.instance_hint) { typed ->
             instance = typed
             app.update { it.with(ThreadsPrefs.instance, typed.trim()) }

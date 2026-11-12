@@ -179,4 +179,5 @@
     <string name="media_covered">Threads pastaviŭ papiaredžannie na hetyja medyja</string>
     <string name="add_accounts_hint">Niekalki adrazu: padzialicie ich prabiełami abo koskami</string>
     <string name="session_unlocks">Što daje seans: vaša ŭlasnaja stužka «Dla vas» i pošuk liudziej. Kali pieraklučalnik vyšej uklučany, jon taksama čytaje akaŭnty, na jakija vy padpisanyja.</string>
+    <string name="instance_intro">Nieabaviazkova. Asobnik RSSHub, jaki vy trymajecie sami, čytaje akaŭnty, na jakija vy padpisanyja; kali jon nie adkazvaje, ich čytajuć z publičnych staronak Threads. Pakińcie pustym, kab čytać tolki publičnyja staronki.</string>
 </resources>

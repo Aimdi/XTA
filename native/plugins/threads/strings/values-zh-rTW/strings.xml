@@ -167,4 +167,5 @@
     <string name="media_covered">Threads 為此媒體加上了警告</string>
     <string name="add_accounts_hint">可一次新增多個：以空格或逗號分隔</string>
     <string name="session_unlocks">工作階段可以帶來：您自己的「為您推薦」和使用者搜尋。開啟上方開關後，也會用它讀取您追蹤的帳號。</string>
+    <string name="instance_intro">選填。由您自己架設的 RSSHub 執行個體讀取您追蹤的帳號；它出錯時改讀 Threads 的公開頁面。留空則只讀公開頁面。</string>
 </resources>

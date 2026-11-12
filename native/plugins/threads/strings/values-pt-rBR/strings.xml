@@ -174,4 +174,5 @@
     <string name="media_covered">O Threads colocou um aviso sobre esta mídia</string>
     <string name="add_accounts_hint">Vários de uma vez: separe com espaços ou vírgulas</string>
     <string name="session_unlocks">O que uma sessão adiciona: o seu próprio Para si e a busca de pessoas. Com a chave acima ligada, ela também lê as contas que você segue.</string>
+    <string name="instance_intro">Opcional. Uma instância RSSHub sua lê as contas que você segue; se ela falhar, as páginas públicas do Threads entram no lugar. Deixe vazio para ler só as páginas públicas.</string>
 </resources>

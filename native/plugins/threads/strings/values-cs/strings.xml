@@ -179,4 +179,5 @@
     <string name="media_covered">Threads u těchto médií zobrazuje varování</string>
     <string name="add_accounts_hint">Více najednou: oddělte je mezerami nebo čárkami</string>
     <string name="session_unlocks">Co přidá relace: vaše vlastní Pro tebe a hledání lidí. Se zapnutým přepínačem výše čte i účty, které sledujete.</string>
+    <string name="instance_intro">Volitelné. Vlastní instance RSSHub čte účty, které sledujete; když selže, nastoupí veřejné stránky Threads. Nechte prázdné a čtou se jen veřejné stránky.</string>
 </resources>

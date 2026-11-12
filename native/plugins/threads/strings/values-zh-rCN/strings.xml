@@ -167,4 +167,5 @@
     <string name="media_covered">Threads 为此媒体加上了警告</string>
     <string name="add_accounts_hint">可一次添加多个：用空格或逗号分隔</string>
     <string name="session_unlocks">会话可以带来：你自己的“为你”和用户搜索。打开上方的开关后，也会用它读取你关注的账号。</string>
+    <string name="instance_intro">可选。由你自己运行的 RSSHub 实例读取你关注的账号；它出错时改读 Threads 的公开页面。留空则只读公开页面。</string>
 </resources>

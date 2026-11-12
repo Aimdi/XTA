@@ -171,4 +171,5 @@
     <string name="media_covered">Threads heeft een waarschuwing over deze media gezet</string>
     <string name="add_accounts_hint">Meerdere tegelijk: scheid ze met spaties of komma’s</string>
     <string name="session_unlocks">Wat een sessie toevoegt: je eigen Voor jou en zoeken naar mensen. Met de schakelaar hierboven aan leest ze ook de accounts die je volgt.</string>
+    <string name="instance_intro">Optioneel. Een eigen RSSHub-instantie leest de accounts die je volgt; als die faalt, nemen de openbare Threads-pagina’s het over. Laat leeg om alleen de openbare pagina’s te lezen.</string>
 </resources>

@@ -187,4 +187,5 @@
     <string name="media_covered">وضعت Threads تحذيرًا على هذه الوسائط</string>
     <string name="add_accounts_hint">عدة حسابات معاً: افصل بينها بمسافات أو فواصل</string>
     <string name="session_unlocks">ما تضيفه الجلسة: صفحة «لك» الخاصة بك والبحث عن الأشخاص. وعند تشغيل المفتاح أعلاه، تقرأ بها أيضاً الحسابات التي تتابعها.</string>
+    <string name="instance_intro">اختياري. خادم RSSHub تشغّله أنت يقرأ الحسابات التي تتابعها، وتحلّ صفحات Threads العامة محله إن تعذّر. اتركه فارغاً لقراءة الصفحات العامة فقط.</string>
 </resources>

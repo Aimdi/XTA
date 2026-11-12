@@ -179,4 +179,5 @@
     <string name="media_covered">Threads oznaczył te multimedia ostrzeżeniem</string>
     <string name="add_accounts_hint">Kilka naraz: oddziel je spacjami lub przecinkami</string>
     <string name="session_unlocks">Co daje sesja: Twoje własne Dla Ciebie i wyszukiwanie osób. Gdy przełącznik powyżej jest włączony, czyta też obserwowane konta.</string>
+    <string name="instance_intro">Opcjonalne. Własna instancja RSSHub czyta obserwowane konta; gdy zawiedzie, zastępują ją publiczne strony Threads. Zostaw puste, by czytać tylko strony publiczne.</string>
 </resources>

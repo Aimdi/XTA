@@ -171,4 +171,5 @@
     <string name="media_covered">Threads hat diese Medien mit einer Warnung versehen</string>
     <string name="add_accounts_hint">Mehrere auf einmal: mit Leerzeichen oder Kommas trennen</string>
     <string name="session_unlocks">Was eine Sitzung bringt: dein eigenes Für dich und die Personensuche. Mit dem Schalter oben liest sie auch die Konten, denen du folgst.</string>
+    <string name="instance_intro">Optional. Eine eigene RSSHub-Instanz liest die Konten, denen du folgst; fällt sie aus, springen die öffentlichen Threads-Seiten ein. Leer lassen, um nur die öffentlichen Seiten zu lesen.</string>
 </resources>
