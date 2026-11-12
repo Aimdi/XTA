@@ -114,7 +114,7 @@ class ThreadsPostJsonTest {
     @Test
     fun metasCoverAndTheCardsFactsAreKeptAndTheCoverWrittenOnlyWhenThereIsOne() {
         val facts = ThreadsPostFacts(topicEmoji = "📚", shareCount = 4, aiLabel = true, poll = ThreadsPoll(listOf(ThreadsPoll.Option("Yes", 3), ThreadsPoll.Option("No", 1))))
-        val covered = post.copy(quoted = null, mediaCovered = true, facts = facts)
+        val covered = post.copy(quoted = null, mediaCovered = true, mediaCoverWords = "Graphic", facts = facts)
 
         val back = ThreadsPostJson.list(ThreadsPostJson.listText(listOf(covered))).single()
 

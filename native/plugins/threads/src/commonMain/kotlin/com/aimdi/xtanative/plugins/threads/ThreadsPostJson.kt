@@ -61,12 +61,18 @@ internal object ThreadsPostJson {
             isReply = row["isReply"].boolean ?: !replyTo.isNullOrEmpty(),
             facts = ThreadsFactsJson.facts(row["facts"]),
             mediaCovered = row["mediaCovered"].boolean == true,
+            mediaCoverWords = row["mediaCoverWords"].string?.ifEmpty { null },
         )
     }
 
     fun json(post: ThreadsPost): JsonObject = JsonObject(
-        fields(post) + (if (post.mediaCovered) mapOf("mediaCovered" to JsonPrimitive(true)) else emptyMap()),
+        fields(post) + cover(post),
     )
+
+    private fun cover(post: ThreadsPost): Map<String, JsonElement> = listOfNotNull(
+        ("mediaCovered" to JsonPrimitive(true)).takeIf { post.mediaCovered },
+        post.mediaCoverWords?.let { "mediaCoverWords" to JsonPrimitive(it) },
+    ).toMap()
 
     /** XTA's keys; Meta's cover over the media is written beside them only when there is one. */
     private fun fields(post: ThreadsPost): Map<String, JsonElement> =

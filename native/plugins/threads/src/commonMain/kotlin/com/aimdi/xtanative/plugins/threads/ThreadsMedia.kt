@@ -73,7 +73,7 @@ internal fun ThreadsPostMedia(app: ThreadsApp, post: ThreadsPost, modifier: Modi
     val quality = settings[MediaPrefs.videoQuality]
     val gallery = LocalThreadsGallery.current
     var revealed by rememberSaveable(post.id) { mutableStateOf(false) }
-    if (!revealed && ThreadsMediaCover.covers(post, settings)) return MediaCover(modifier) { revealed = true }
+    if (!revealed && ThreadsMediaCover.covers(post, settings)) return MediaCover(modifier, post.mediaCoverWords) { revealed = true }
     var holding by remember(post) { mutableStateOf<Int?>(null) }
     var describing by remember(post) { mutableStateOf<String?>(null) }
     BoxWithConstraints(modifier.fillMaxWidth()) {

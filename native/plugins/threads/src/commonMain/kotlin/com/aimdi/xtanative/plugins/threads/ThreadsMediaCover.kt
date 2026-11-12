@@ -31,9 +31,13 @@ internal object ThreadsMediaCover {
     fun hides(settings: Settings): Boolean = settings[PostsPrefs.hideSensitive] && !settings[PostsPrefs.alwaysShowSensitiveMedia]
 }
 
-/** Where covered media stands: Threads' warning in a word, and Show, which draws it; nothing under it is loaded meanwhile. */
+/**
+ * Where covered media stands: Meta's own words for the cover when it gave
+ * some ([words]), else Threads' warning in a word, and Show, which draws it;
+ * nothing under it is loaded meanwhile.
+ */
 @Composable
-internal fun MediaCover(modifier: Modifier, onShow: () -> Unit) {
+internal fun MediaCover(modifier: Modifier, words: String?, onShow: () -> Unit) {
     Column(
         modifier
             .fillMaxWidth()
@@ -46,7 +50,7 @@ internal fun MediaCover(modifier: Modifier, onShow: () -> Unit) {
     ) {
         Icon(PostIcons.VisibilityOff, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(
-            pluginString(Strings.media_covered),
+            words ?: pluginString(Strings.media_covered),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,

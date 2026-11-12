@@ -255,6 +255,7 @@ object ThreadsParser {
             isReply = replyTo != null || info["is_reply"].boolean == true || info["reply_to_author"].exists,
             facts = ThreadsPostFactsReader.of(post),
             mediaCovered = ThreadsMediaParts.covered(post),
+            mediaCoverWords = ThreadsMediaParts.coverWords(post),
         )
     }
 

@@ -64,8 +64,8 @@ internal object ThreadsShared {
      * tags, its media at the [quality] the setting picks, its link card and
      * its quote; a count Meta did not give is none. A post with a spoiler is
      * held back behind [spoiler], the word for one, as the row covers a
-     * content warning; media Meta covered waits behind [covered], the
-     * words for its cover, where the reader hides sensitive media; a post
+     * content warning; media Meta covered waits behind Meta's own words for
+     * the cover, else [covered], where the reader hides sensitive media; a post
      * pinned to its author's profile says so.
      */
     fun post(post: ThreadsPost, quality: MediaQuality, spoiler: String? = null, covered: String? = null): NetworkPost = NetworkPost(
@@ -87,7 +87,7 @@ internal object ThreadsShared {
         replyingTo = post.replyToHandle?.takeIf { it.isNotEmpty() },
         url = post.url,
         pinned = post.facts.pinnedToProfile,
-        warning = spoiler?.takeIf { post.hasSpoiler } ?: covered?.takeIf { post.mediaCovered && post.hasMedia },
+        warning = spoiler?.takeIf { post.hasSpoiler } ?: covered?.takeIf { post.mediaCovered && post.hasMedia }?.let { post.mediaCoverWords ?: it },
         coversText = spoiler != null && post.hasSpoiler,
     )
 
