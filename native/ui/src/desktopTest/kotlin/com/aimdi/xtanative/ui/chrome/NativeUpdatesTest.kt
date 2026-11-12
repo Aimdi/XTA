@@ -10,7 +10,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlinx.coroutines.runBlocking
 
-/** XTA's update check (updates_test.dart) for XTA Native's `native-*` prereleases. */
+/** XTA's update check (updates_test.dart) for XTA Native's `v*` releases and `native-*` prereleases. */
 class NativeUpdatesTest {
     private val releases = """
         [
@@ -81,6 +81,41 @@ class NativeUpdatesTest {
         assertFalse(NativeUpdates.isNewer(newest, installedTag = "", installedVersion = "0.1.0"))
         assertTrue(NativeUpdates.isNewer(newest.copy(version = listOf(0, 2, 3)), installedTag = "", installedVersion = "0.1.0"))
         assertFalse(NativeUpdates.isNewer(newest, installedTag = "", installedVersion = "dev"))
+    }
+
+    private val withARelease = """
+        [
+          {"tag_name": "native-1.0.0.90", "draft": false, "prerelease": true, "html_url": "https://github.com/Aimdi/XTA/releases/tag/native-1.0.0.90",
+           "assets": [{"name": "xta-native-1.0.0.90.apk", "browser_download_url": "https://example.invalid/pre.apk"}]},
+          {"tag_name": "v1.0.0", "draft": false, "prerelease": false, "html_url": "https://github.com/Aimdi/XTA/releases/tag/v1.0.0",
+           "assets": [{"name": "xta-native-1.0.0.apk", "browser_download_url": "https://example.invalid/release.apk"}]},
+          {"tag_name": "v4.12.0-fix33", "draft": false, "prerelease": false, "html_url": "https://github.com/Aimdi/XTA/releases/tag/v4.12.0-fix33",
+           "assets": [{"name": "xta-native-9.9.9.apk", "browser_download_url": "https://example.invalid/old-fork.apk"}]},
+          {"tag_name": "native-0.1.82", "draft": false, "prerelease": true, "html_url": "https://github.com/Aimdi/XTA/releases/tag/native-0.1.82",
+           "assets": [{"name": "xta-native-0.1.82.apk", "browser_download_url": "https://example.invalid/old.apk"}]}
+        ]
+    """.trimIndent()
+
+    @Test
+    fun aReleaseIsAVersionAndKnowsItIsNoPrerelease() {
+        assertEquals(listOf(1, 0, 0), NativeUpdates.versionOf("v1.0.0"))
+        assertNull(NativeUpdates.versionOf("v4.12.0-fix33"))
+        val listed = NativeUpdates.releases(withARelease).associate { it.tag to it.prerelease }
+        assertEquals(mapOf("native-1.0.0.90" to true, "v1.0.0" to false, "native-0.1.82" to true), listed)
+        assertTrue(NativeUpdates.isReleaseTag("v1.0.0"))
+        assertFalse(NativeUpdates.isReleaseTag("native-0.1.82"))
+        assertFalse(NativeUpdates.isReleaseTag(""))
+    }
+
+    @Test
+    fun aPrereleaseIsOfferedEitherAndAReleaseOnlyANewerRelease(): Unit = runBlocking {
+        val answers = XHttp { _, _, _ -> XResponse(200, withARelease) }
+        assertEquals("native-1.0.0.90", NativeUpdates.check(answers, UpdateFile.APK, "native-0.1.82", "0.1.82")?.tag)
+        val onlyTheRelease = XHttp { _, _, _ -> XResponse(200, withARelease.replace("native-1.0.0.90", "native-0.1.80")) }
+        assertEquals("v1.0.0", NativeUpdates.check(onlyTheRelease, UpdateFile.APK, "native-0.1.82", "0.1.82")?.tag)
+        assertNull(NativeUpdates.check(answers, UpdateFile.APK, "v1.0.0", "1.0.0"))
+        val newer = XHttp { _, _, _ -> XResponse(200, withARelease.replace("v1.0.0", "v1.0.1").replace("xta-native-1.0.0.apk", "xta-native-1.0.1.apk")) }
+        assertEquals("v1.0.1", NativeUpdates.check(newer, UpdateFile.APK, "v1.0.0", "1.0.0")?.tag)
     }
 
     @Test

@@ -7,7 +7,7 @@ import kotlinx.coroutines.CancellationException
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
-/** What updates an install: the APK on Android, the tarball or the Arch package on the desktop, as each prerelease carries them. */
+/** What updates an install: the APK on Android, the tarball or the Arch package on the desktop, as each release and prerelease carries them. */
 enum class UpdateFile {
     APK,
     TARBALL,
@@ -22,17 +22,28 @@ enum class UpdateFile {
     }
 }
 
-/** A prerelease of XTA Native, `native-0.1.45`: its [version], its page on GitHub and its files' addresses by name. */
-data class NativeRelease(val tag: String, val version: List<Int>, val page: String, val files: Map<String, String>) {
+/**
+ * A release of XTA Native, `v1.0.0`, or a prerelease, `native-0.1.45`: its
+ * [version], its page on GitHub, its files' addresses by name, and whether
+ * GitHub marks it a [prerelease].
+ */
+data class NativeRelease(
+    val tag: String,
+    val version: List<Int>,
+    val page: String,
+    val files: Map<String, String>,
+    val prerelease: Boolean = true,
+) {
     /** The address of the file that updates an install of [file], or null when this release has none. */
     fun fileFor(file: UpdateFile): String? = files.entries.firstOrNull { file.names(it.key) }?.value
 }
 
 /**
  * XTA's update check (lib/utils/updates.dart) for XTA Native, whose
- * releases are this repository's `native-*` prereleases, never marked
- * latest: the newest of them that carries this install's file is offered
- * when it is newer than this build.
+ * releases are this repository's `v*` releases and whose test builds are its
+ * `native-*` prereleases: the newest of them that carries this install's
+ * file is offered when it is newer than this build. An install of a release
+ * is offered releases only; a prerelease or a local build, either.
  */
 object NativeUpdates {
     const val REPOSITORY = "Aimdi/XTA"
@@ -43,15 +54,18 @@ object NativeUpdates {
     /** Where the Arch package puts the app; the tarball goes wherever the reader unpacks it. */
     private const val PACKAGE_HOME = "/opt/xta-native/"
 
-    private val TAG = Regex("""^native-(\d+(?:\.\d+)*)$""")
+    private val TAG = Regex("""^(?:native-|v)(\d+(?:\.\d+)*)$""")
 
-    /** `native-0.1.45` as [0, 1, 45]; null for any other tag (`native-plugins`, XTA's `aimdi186`). */
+    /** A release's tag: `v1.0.0`. */
+    private val RELEASE_TAG = Regex("""^v\d+(?:\.\d+)*$""")
+
+    /** `native-0.1.45` as [0, 1, 45], `v1.0.0` as [1, 0, 0]; null for any other tag (`native-plugins`, XTA's `aimdi186`, `v4.12.0-aimdi44`). */
     fun versionOf(tag: String): List<Int>? = TAG.find(tag.trim())?.groupValues?.get(1)?.split('.')?.map { it.toInt() }
 
     /** A version name, `0.1.45`, as numbers; null for one that is not. */
     fun numbersOf(version: String): List<Int>? = version.trim().removePrefix("v").split('.').map { it.toIntOrNull() ?: return null }.takeIf { it.isNotEmpty() }
 
-    /** The prereleases GitHub lists in [json], drafts left out. */
+    /** XTA Native's releases and prereleases GitHub lists in [json], drafts left out. */
     fun releases(json: String): List<NativeRelease> = J.parse(json).list.mapNotNull { release ->
         val tag = release["tag_name"].string ?: return@mapNotNull null
         val version = versionOf(tag) ?: return@mapNotNull null
@@ -60,8 +74,16 @@ object NativeUpdates {
             val name = asset["name"].string ?: return@mapNotNull null
             asset["browser_download_url"].string?.let { name to it }
         }.toMap()
-        NativeRelease(tag, version, release["html_url"].string ?: "https://github.com/$REPOSITORY/releases/tag/$tag", files)
+        val page = release["html_url"].string ?: "https://github.com/$REPOSITORY/releases/tag/$tag"
+        NativeRelease(tag, version, page, files, prerelease = release["prerelease"].boolean != false)
     }
+
+    /** Whether [installedTag] is a release's own tag (`v1.0.0`), not a prerelease's or a local build's. */
+    fun isReleaseTag(installedTag: String): Boolean = RELEASE_TAG.matches(installedTag.trim())
+
+    /** What an install of [installedTag] may be offered: only releases for a release, everything else otherwise. */
+    fun offerable(releases: List<NativeRelease>, installedTag: String): List<NativeRelease> =
+        if (isReleaseTag(installedTag)) releases.filterNot { it.prerelease } else releases
 
     /** The newest of [releases] that carries [file]. */
     fun newest(releases: List<NativeRelease>, file: UpdateFile): NativeRelease? =
@@ -69,7 +91,7 @@ object NativeUpdates {
 
     /**
      * Whether [latest] is newer than this build. [installedTag] is its own
-     * release (`native-0.1.45`) and wins; a local build has none, and only
+     * release (`v1.0.0`) or prerelease (`native-0.1.45`) and wins; a local build has none, and only
      * knows the version its build file names, whose last number is the run
      * that would have built it: as XTA ignores fork builds of its own
      * version, only the numbers before it are compared then.
@@ -97,7 +119,7 @@ object NativeUpdates {
             return null
         }
         if (response.code != 200) return null
-        return newest(releases(response.body), file)?.takeIf { isNewer(it, installedTag, installedVersion) }
+        return newest(offerable(releases(response.body), installedTag), file)?.takeIf { isNewer(it, installedTag, installedVersion) }
     }
 
     private fun compare(a: List<Int>, b: List<Int>): Int {

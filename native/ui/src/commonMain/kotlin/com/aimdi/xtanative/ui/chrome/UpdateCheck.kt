@@ -34,7 +34,8 @@ internal expect fun updateFile(): UpdateFile
 /**
  * XTA's update check: once a launch, once the first-launch cards have been
  * seen, while Settings › General › Check for updates is on (turning it on
- * checks at once), the newest XTA Native prerelease newer than this build
+ * checks at once), the newest XTA Native release newer than this build
+ * (for a prerelease's install, the newest release or prerelease)
  * is offered as XTA offers its own release, its page on GitHub, and with it
  * the file that updates this install (the APK; the tarball or the Arch
  * package), both opened in the browser.

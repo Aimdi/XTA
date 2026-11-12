@@ -14,8 +14,10 @@ val mockX = (findProperty("mockX") as String?).orEmpty()
 val pluginCatalogue = (findProperty("pluginCatalogue") as String?).orEmpty()
 // -PvoiceServer=<url> downloads voices and the voice engine from there, and lets CI start the voice check (tool/voice_screens.sh); never set for a release.
 val voiceServer = (findProperty("voiceServer") as String?).orEmpty()
-// A prerelease's APK downloads the voice engine from its own release first, then XTA's latest, as XTA's does.
-val releaseTag = System.getenv("NATIVE_VERSION_NAME")?.takeIf { it.isNotBlank() }?.let { "native-$it" }.orEmpty()
+// A release's or prerelease's APK downloads the voice engine from its own release first, then the
+// latest, as XTA's does: NATIVE_RELEASE_TAG names it (v1.0.0), else a prerelease's native-<version>.
+val releaseTag = System.getenv("NATIVE_RELEASE_TAG")?.takeIf { it.isNotBlank() }
+    ?: System.getenv("NATIVE_VERSION_NAME")?.takeIf { it.isNotBlank() }?.let { "native-$it" }.orEmpty()
 
 /** [file] read as Java properties, or null when there is none. */
 fun propertiesOf(file: File): Properties? = file.takeIf { it.isFile }?.let { found -> Properties().apply { found.inputStream().use { input -> load(input) } } }

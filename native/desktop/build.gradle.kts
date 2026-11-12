@@ -31,8 +31,10 @@ dependencies {
 }
 
 val versionName = System.getenv("NATIVE_VERSION_NAME") ?: "0.1.0"
-// A build CI numbered is that prerelease, which the update check compares by (ui/chrome/Updates.kt); a local build has none.
-val releaseTag = System.getenv("NATIVE_VERSION_NAME")?.takeIf { it.isNotBlank() }?.let { "native-$it" }.orEmpty()
+// A build CI numbered is that release (NATIVE_RELEASE_TAG, v1.0.0) or prerelease (native-<version>),
+// which the update check compares by (ui/chrome/Updates.kt); a local build has none.
+val releaseTag = System.getenv("NATIVE_RELEASE_TAG")?.takeIf { it.isNotBlank() }
+    ?: System.getenv("NATIVE_VERSION_NAME")?.takeIf { it.isNotBlank() }?.let { "native-$it" }.orEmpty()
 
 // The SHA-256 of the certificate every plugin JAR must be signed by, built
 // into the app (PLUGINS.md): the signing key's (see the root build file), or
