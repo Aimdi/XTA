@@ -178,4 +178,5 @@
     <string name="media_picture_of">Obrázek %1$d z %2$d</string>
     <string name="media_covered">Threads u těchto médií zobrazuje varování</string>
     <string name="add_accounts_hint">Více najednou: oddělte je mezerami nebo čárkami</string>
+    <string name="session_unlocks">Co přidá relace: vaše vlastní Pro tebe a hledání lidí. Se zapnutým přepínačem výše čte i účty, které sledujete.</string>
 </resources>

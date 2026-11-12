@@ -170,4 +170,5 @@
     <string name="media_picture_of">Afbeelding %1$d van %2$d</string>
     <string name="media_covered">Threads heeft een waarschuwing over deze media gezet</string>
     <string name="add_accounts_hint">Meerdere tegelijk: scheid ze met spaties of komma’s</string>
+    <string name="session_unlocks">Wat een sessie toevoegt: je eigen Voor jou en zoeken naar mensen. Met de schakelaar hierboven aan leest ze ook de accounts die je volgt.</string>
 </resources>

@@ -166,4 +166,5 @@
     <string name="media_picture_of">第 %1$d 张图片，共 %2$d 张</string>
     <string name="media_covered">Threads 为此媒体加上了警告</string>
     <string name="add_accounts_hint">可一次添加多个：用空格或逗号分隔</string>
+    <string name="session_unlocks">会话可以带来：你自己的“为你”和用户搜索。打开上方的开关后，也会用它读取你关注的账号。</string>
 </resources>

@@ -175,6 +175,7 @@ private fun Session(app: ThreadsApp) {
     val scope = rememberCoroutineScope()
     Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(pluginString(Strings.direct_intro), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(top = 8.dp))
+        Text(pluginString(Strings.session_unlocks), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Secret(app, ThreadsPrefs.directCookies, cookies, Strings.direct_cookies, Strings.direct_cookies_hint, lines = 4) { cookies = it }
         Secret(app, ThreadsPrefs.directBearer, bearer, Strings.direct_bearer, Strings.direct_bearer_hint) { bearer = it }
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

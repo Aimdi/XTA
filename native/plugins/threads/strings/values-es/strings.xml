@@ -173,4 +173,5 @@
     <string name="media_picture_of">Imagen %1$d de %2$d</string>
     <string name="media_covered">Threads ha puesto una advertencia sobre este contenido multimedia</string>
     <string name="add_accounts_hint">Varios a la vez: sepáralos con espacios o comas</string>
+    <string name="session_unlocks">Qué añade una sesión: tu propio Para ti y la búsqueda de personas. Con el interruptor de arriba activado, también lee las cuentas que sigues.</string>
 </resources>

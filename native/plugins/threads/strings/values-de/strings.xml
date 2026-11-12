@@ -170,4 +170,5 @@
     <string name="media_picture_of">Bild %1$d von %2$d</string>
     <string name="media_covered">Threads hat diese Medien mit einer Warnung versehen</string>
     <string name="add_accounts_hint">Mehrere auf einmal: mit Leerzeichen oder Kommas trennen</string>
+    <string name="session_unlocks">Was eine Sitzung bringt: dein eigenes Für dich und die Personensuche. Mit dem Schalter oben liest sie auch die Konten, denen du folgst.</string>
 </resources>

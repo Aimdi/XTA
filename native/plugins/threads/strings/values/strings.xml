@@ -172,4 +172,5 @@
     <string name="media_picture_of">Picture %1$d of %2$d</string>
     <string name="media_covered">Threads put a warning over this media</string>
     <string name="add_accounts_hint">Several at once: separate them with spaces or commas</string>
+    <string name="session_unlocks">What a session adds: your own For you and people search. With the switch above on, it also reads the accounts you follow.</string>
 </resources>

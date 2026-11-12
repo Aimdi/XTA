@@ -166,4 +166,5 @@
     <string name="media_picture_of">第 %1$d 張圖片，共 %2$d 張</string>
     <string name="media_covered">Threads 為此媒體加上了警告</string>
     <string name="add_accounts_hint">可一次新增多個：以空格或逗號分隔</string>
+    <string name="session_unlocks">工作階段可以帶來：您自己的「為您推薦」和使用者搜尋。開啟上方開關後，也會用它讀取您追蹤的帳號。</string>
 </resources>

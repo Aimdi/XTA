@@ -170,4 +170,5 @@
     <string name="media_picture_of">%1$d. irudia (%2$d guztira)</string>
     <string name="media_covered">Threads-ek abisu bat jarri dio multimedia honi</string>
     <string name="add_accounts_hint">Hainbat batera: bereizi zuriuneekin edo komekin</string>
+    <string name="session_unlocks">Saio batek zer gehitzen duen: zure Zuretzat propioa eta pertsonen bilaketa. Goiko etengailua piztuta, jarraitzen dituzun kontuak ere irakurtzen ditu.</string>
 </resources>

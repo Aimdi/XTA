@@ -166,4 +166,5 @@
     <string name="media_picture_of">이미지 %1$d/%2$d</string>
     <string name="media_covered">Threads가 이 미디어에 경고를 표시했습니다</string>
     <string name="add_accounts_hint">여러 개를 한 번에: 공백이나 쉼표로 구분하세요</string>
+    <string name="session_unlocks">세션으로 할 수 있는 것: 나만의 “나를 위한” 피드와 사람 검색. 위의 스위치를 켜면 팔로우한 계정도 세션으로 읽습니다.</string>
 </resources>

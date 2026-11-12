@@ -161,7 +161,7 @@ private fun HomePane(app: ThreadsApp, frame: PluginFrame, onAdd: () -> Unit, onS
     }
     CatchesUp(app)
     Column(Modifier.fillMaxSize()) {
-        if (app.direct.isSessionParked) ParkedNotice()
+        if (app.direct.isSessionParked) ParkedNotice(app)
         DockRow(app, options, onAdd)
         Box(Modifier.weight(1f)) {
             val problem = state.problem
@@ -170,6 +170,11 @@ private fun HomePane(app: ThreadsApp, frame: PluginFrame, onAdd: () -> Unit, onS
                 problem != null && !notConfigured(problem) -> RetryMessage(ThreadsFailures.feedText(problem, currentLanguage()), onRetry = { app.feed.refresh(force = true) })
                 !state.loaded -> PluginFeedSkeleton()
                 else -> Refreshable(app, frame) { item(key = "empty") { NothingYet(app, onAdd, onSearch) } }
+            }
+            if (state.items.isNotEmpty() && problem != null) {
+                Box(Modifier.fillMaxSize().padding(bottom = frame.padding.calculateBottomPadding())) {
+                    ReloadStatus(false, ThreadsFailures.feedText(problem, currentLanguage()), onRetry = { app.feed.refresh(force = true) })
+                }
             }
         }
     }
@@ -193,11 +198,15 @@ private fun CatchesUp(app: ThreadsApp) {
 
 private fun notConfigured(problem: Throwable) = (problem as? ThreadsException)?.failure == ThreadsFailure.NOT_CONFIGURED
 
+/** That Meta parked the session, with the way to the settings to paste a fresh one or clear it. */
 @Composable
-private fun ParkedNotice() {
+private fun ParkedNotice(app: ThreadsApp) {
     ListItem(
         leadingContent = { Icon(ThreadsIcons.PauseCircle, contentDescription = null, tint = MaterialTheme.colorScheme.onErrorContainer) },
         headlineContent = { Text(pluginString(Strings.session_parked), color = MaterialTheme.colorScheme.onErrorContainer) },
+        trailingContent = {
+            TextButton(onClick = { app.host.openSettings() }) { Text(pluginString(Strings.settings), color = MaterialTheme.colorScheme.onErrorContainer) }
+        },
         colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.errorContainer),
     )
 }
