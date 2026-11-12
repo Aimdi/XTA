@@ -41,16 +41,26 @@ data class ThreadsForYouPage(
  * The public page goes on where it names a cursor ([ThreadsNextPages]).
  * Where it names none, or Meta does not answer the next page as expected,
  * asking for more reads the page again, at most [GUEST_EXTRA_READS] times,
- * for whatever Meta recommends that was not shown yet; the feed ends when a
- * read brings nothing new.
+ * for whatever Meta recommends that was not shown yet. Then, as the reader
+ * scrolls on, it explores: one topic or community page at a time from
+ * [explore] (those followed here first, then those of the posts shown),
+ * each once per selection, at most [MAX_EXPLORED]; and when the front page
+ * shows a guest nothing, exploring stands in for it.
  */
-class ThreadsForYou(private val direct: ThreadsDirectClient) {
+class ThreadsForYou(
+    private val direct: ThreadsDirectClient,
+    /** The topics to explore, in order: a topic's name, or a community's page address. */
+    private val explore: () -> List<String> = { emptyList() },
+) {
+    private val explored = LinkedHashSet<String>()
     /** Whose page a read would ask for now. */
     val source: ThreadsForYouSource
         get() = if (direct.currentSession.hasBearer && !direct.isSessionParked) ThreadsForYouSource.SESSION else ThreadsForYouSource.GUEST
 
     /** The first page, or the one [cursor] names. */
     suspend fun page(cursor: String? = null): ThreadsForYouPage {
+        if (cursor == null) synchronized(explored) { explored.clear() }
+        if (cursor?.startsWith(EXPLORE_CURSOR) == true) return explorePage()
         guestRead(cursor)?.let { return guest(it) }
         if (ThreadsNextPage.decode(cursor) != null) return guestMore(cursor!!)
         if (source == ThreadsForYouSource.GUEST) return guest(0)
@@ -66,9 +76,28 @@ class ThreadsForYou(private val direct: ThreadsDirectClient) {
 
     private suspend fun guest(read: Int): ThreadsForYouPage {
         val page = direct.guestForYou()
-        val next = page.next.takeIf { read == 0 } ?: (GUEST_CURSOR + (read + 1)).takeIf { page.items.isNotEmpty() && read < GUEST_EXTRA_READS }
+        if (read == 0 && page.items.isEmpty() && toExplore() != null) return explorePage()
+        val next = page.next.takeIf { read == 0 }
+            ?: (GUEST_CURSOR + (read + 1)).takeIf { page.items.isNotEmpty() && read < GUEST_EXTRA_READS }
+            ?: exploreNext()
         return ThreadsForYouPage(ThreadsForYouSource.GUEST, page.items, next)
     }
+
+    /** The next topic or community page to explore, read; nothing more when every one was. */
+    private suspend fun explorePage(): ThreadsForYouPage {
+        val topic = synchronized(explored) { toExplore()?.also { explored += it.lowercase() } }
+            ?: return ThreadsForYouPage(ThreadsForYouSource.GUEST, emptyList(), null)
+        val found = if (topic.startsWith("https://")) direct.communityPage(topic) else direct.searchFound(topic, tag = true)
+        return ThreadsForYouPage(ThreadsForYouSource.GUEST, found.posts, exploreNext())
+    }
+
+    private fun toExplore(): String? = synchronized(explored) {
+        if (explored.size >= MAX_EXPLORED) return null
+        explore().map { it.trim() }.firstOrNull { it.isNotEmpty() && it.lowercase() !in explored }
+    }
+
+    /** A cursor of its own for each topic, so a feed never takes one for the page it came from. */
+    private fun exploreNext(): String? = toExplore()?.let { EXPLORE_CURSOR + synchronized(explored) { explored.size } }
 
     /** The public page's next page; one Meta does not answer as expected gives way to reading the page again. */
     private suspend fun guestMore(cursor: String): ThreadsForYouPage {
@@ -84,7 +113,11 @@ class ThreadsForYou(private val direct: ThreadsDirectClient) {
         /** How many more times the public page is read for a feed the reader keeps scrolling. */
         const val GUEST_EXTRA_READS = 2
 
+        /** How many topic or community pages one selection explores at most. */
+        const val MAX_EXPLORED = 12
+
         private const val GUEST_CURSOR = "guest:"
+        private const val EXPLORE_CURSOR = "explore:"
 
         /** What Meta says to a session that the public page can stand in for. */
         private val SESSION_REFUSALS = setOf(ThreadsFailure.THROTTLED, ThreadsFailure.UNAUTHORIZED, ThreadsFailure.SESSION_SUSPENDED)
@@ -124,7 +157,10 @@ data class ThreadsForYouState(
 /**
  * The For you feed as a screen shows it: read page by page with [read], each
  * post once. A refresh keeps what is shown until the new first page arrives,
- * and keeps it when that read fails; a page with nothing new ends the feed.
+ * and keeps it when that read fails; a guest's refresh puts the new posts
+ * above those shown, so the public page's few posts grow into a feed. A
+ * page with nothing new is passed over for the one it names, twice at most,
+ * and then ends the feed.
  * While Meta is rate limiting, nothing is asked again before the time it
  * named: asking within seconds is how a throttle becomes a ban.
  */
@@ -152,8 +188,10 @@ class ThreadsForYouFeed(
         try {
             mutable.update { it.copy(loading = true, problem = null, moreProblem = null) }
             val page = read(null)
+            val before = mutable.value
+            val kept = if (page.source == ThreadsForYouSource.GUEST && before.source == ThreadsForYouSource.GUEST) before.posts else emptyList()
             mutable.value = ThreadsForYouState(
-                posts = page.posts.distinctBy(ThreadsPost::id),
+                posts = (page.posts + kept).distinctBy(ThreadsPost::id).take(KEPT),
                 source = page.source,
                 next = page.next?.ifEmpty { null },
                 loaded = true,
@@ -187,13 +225,19 @@ class ThreadsForYouFeed(
         if (!reading.tryLock()) return
         try {
             mutable.update { it.copy(loadingMore = true, moreProblem = null) }
-            val page = read(cursor)
-            mutable.update { shown ->
-                val known = shown.posts.mapTo(HashSet(), ThreadsPost::id)
+            var asked = cursor
+            repeat(EMPTY_PAGES_PASSED + 1) {
+                val page = read(asked)
+                val known = mutable.value.posts.mapTo(HashSet(), ThreadsPost::id)
                 val fresh = page.posts.distinctBy(ThreadsPost::id).filter { it.id !in known }
-                val next = page.next?.takeIf { it.isNotEmpty() && it != cursor && fresh.isNotEmpty() }
-                shown.copy(posts = shown.posts + fresh, next = next, loadingMore = false)
+                val next = page.next?.takeIf { it.isNotEmpty() && it != asked }
+                if (fresh.isNotEmpty() || next == null) {
+                    mutable.update { it.copy(posts = it.posts + fresh, next = next.takeIf { fresh.isNotEmpty() }, loadingMore = false) }
+                    return
+                }
+                asked = next
             }
+            mutable.update { it.copy(next = null, loadingMore = false) }
         } catch (e: CancellationException) {
             mutable.update { it.copy(loadingMore = false) }
             throw e
@@ -210,4 +254,12 @@ class ThreadsForYouFeed(
     }
 
     private fun waitsForMeta(): Boolean = mutable.value.throttledUntil?.let { clock() < it.toEpochMilli() } ?: false
+
+    companion object {
+        /** How many posts a guest's selection keeps as it grows over refreshes. */
+        const val KEPT = 300
+
+        /** How many pages with nothing new a read for more passes over before the feed ends. */
+        const val EMPTY_PAGES_PASSED = 2
+    }
 }

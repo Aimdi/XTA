@@ -2,6 +2,7 @@ package com.aimdi.xtanative.plugins.threads
 
 import com.aimdi.xtanative.networks.threads.ThreadsAccountFailure
 import com.aimdi.xtanative.networks.threads.ThreadsDirectClient
+import com.aimdi.xtanative.networks.threads.ThreadsDiscovery
 import com.aimdi.xtanative.networks.threads.ThreadsException
 import com.aimdi.xtanative.networks.threads.ThreadsFailure
 import com.aimdi.xtanative.networks.threads.ThreadsTopic
@@ -100,8 +101,12 @@ internal class ThreadsApp(val host: PluginHost) {
     /** Where the reader stopped in the Home section. */
     val homePlace = ThreadsHomePlace(host.store.file("home.json"), scope)
 
-    /** Threads' own recommended feed: the pasted Bearer's For you timeline, else threads.com's public front page. */
-    val forYou = ThreadsForYouFeed(ThreadsForYou(direct)::page)
+    /**
+     * Threads' own recommended feed: the pasted Bearer's For you timeline,
+     * else threads.com's public front page, growing with each refresh and
+     * going on into the topics and communities it explores.
+     */
+    val forYou = ThreadsForYouFeed(ThreadsForYou(direct, ::exploreTopics)::page)
 
     /** The section the tab shows. */
     val section = MutableStateFlow(ThreadsSection.HOME)
@@ -274,6 +279,14 @@ internal class ThreadsApp(val host: PluginHost) {
 
     /** What Home reads for each followed topic: a community's own page where Meta named one, else the topic's name. */
     private suspend fun topicPages(): List<String> = topics.load().map { it.url ?: it.name }
+
+    /** The topics and communities For you shows to explore: those followed here, then those of the posts For you and Home show. */
+    fun discoveredTopics(): List<ThreadsTopic> =
+        ThreadsDiscovery.topics(forYou.state.value.posts + feed.state.value.items, topics.state.value.orEmpty(), cap = ThreadsForYou.MAX_EXPLORED)
+
+    /** What For you explores past the public page: [discoveredTopics], then a few every guest can read. */
+    private fun exploreTopics(): List<String> =
+        (discoveredTopics().map(ThreadsDiscovery::page) + ThreadsDiscovery.STARTER_TOPICS).distinctBy { it.lowercase() }
 
     /** Follows [topic] here, says so, and has Home read its posts. */
     fun followTopic(topic: ThreadsTopic) = launch {

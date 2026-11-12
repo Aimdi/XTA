@@ -230,8 +230,8 @@ internal fun SwitchRow(label: PluginText, on: Boolean, detail: PluginText? = nul
  * opening its profile, with Follow beside it.
  */
 @Composable
-internal fun PeopleStrip(app: ThreadsApp, people: List<ThreadsPerson>) {
-    var open by rememberSaveable { mutableStateOf(false) }
+internal fun PeopleStrip(app: ThreadsApp, people: List<ThreadsPerson>, startOpen: Boolean = false) {
+    var open by rememberSaveable { mutableStateOf(startOpen) }
     Column(Modifier.fillMaxWidth()) {
         ListItem(
             leadingContent = { BadgedBox(badge = { Badge { Text("${people.size}") } }) { Icon(PostIcons.People, contentDescription = null, modifier = Modifier.size(20.dp)) } },

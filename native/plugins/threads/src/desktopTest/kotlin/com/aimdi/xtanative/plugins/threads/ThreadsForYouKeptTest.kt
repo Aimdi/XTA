@@ -46,8 +46,8 @@ class ThreadsForYouKeptTest {
         val kept = ThreadsForYouKept.kept(many, ThreadsPlace("150"))
         assertEquals(ThreadsForYouKept.CAP, kept.size)
         assertTrue(kept.any { it.id == "150" })
-        assertEquals("121", kept.first().id, "the last eighty, the place among them")
-        assertEquals("30", ThreadsForYouKept.kept(many, ThreadsPlace("50")).first().id, "a few above the place, most below it")
+        assertEquals("41", kept.first().id, "the last hundred and sixty, the place among them")
+        assertEquals("10", ThreadsForYouKept.kept(many, ThreadsPlace("50")).first().id, "a few above the place, most below it")
         assertEquals("1", ThreadsForYouKept.kept(many, ThreadsPlace()).first().id)
         assertEquals("200", ThreadsForYouKept.kept(many, ThreadsPlace("199")).last().id)
         assertEquals(posts, ThreadsForYouKept.kept(posts, ThreadsPlace("3")))
@@ -93,6 +93,16 @@ class ThreadsForYouKeptTest {
         assertEquals(listOf("post:1", "post:2", "post:3", "people", "post:4", "post:5", "more-problem"), rows.map { it.key })
         assertEquals(listOf("post:1", "people"), ThreadsForYouRow.of(state.copy(posts = posts.take(1), moreProblem = null, next = null), listOf(person)).map { it.key }.take(2))
         assertEquals(emptyList(), ThreadsForYouRow.of(ThreadsForYouState(loaded = true), listOf(person)), "no posts: the pane says why, not the list")
+    }
+
+    @Test
+    fun theTopicsToExploreSitFurtherOnOrAtTheEndOfAShortFeed() {
+        val topics = listOf(com.aimdi.xtanative.networks.threads.ThreadsTopic("Books"))
+        val state = ThreadsForYouState(posts = posts, source = ThreadsForYouSource.SESSION, loaded = true)
+        assertEquals(listOf("post:1", "post:2", "post:3", "people", "post:4", "post:5", "topics", "end"), ThreadsForYouRow.of(state, listOf(person), topics).map { it.key })
+        val long = (1..10).map { posts.first().copy(id = "p$it") }
+        val rows = ThreadsForYouRow.of(state.copy(posts = long), emptyList(), topics).map { it.key }
+        assertEquals("topics", rows[ThreadsForYouRow.TOPICS_AFTER])
     }
 
     @Test

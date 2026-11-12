@@ -6,6 +6,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsForYouState
 import com.aimdi.xtanative.networks.threads.ThreadsFailure
 import com.aimdi.xtanative.networks.threads.ThreadsPerson
 import com.aimdi.xtanative.networks.threads.ThreadsPost
+import com.aimdi.xtanative.networks.threads.ThreadsTopic
 import com.aimdi.xtanative.store.backup.XtaTime
 import java.time.Instant
 import kotlinx.serialization.json.JsonArray
@@ -55,8 +56,8 @@ internal data class ThreadsForYouKept(
     ).toString()
 
     companion object {
-        /** How many posts are kept. */
-        const val CAP = 80
+        /** How many posts are kept: a guest's feed grows with each refresh. */
+        const val CAP = 160
 
         /** How old a restored feed may be before opening it reads a new one. */
         const val STALE_MILLIS = 30 * 60 * 1000L
@@ -128,6 +129,11 @@ internal sealed interface ThreadsForYouRow {
         override val key: String get() = "people"
     }
 
+    /** Topics and communities to explore: those followed here, then those of the posts shown. */
+    data class Topics(val topics: List<ThreadsTopic>) : ThreadsForYouRow {
+        override val key: String get() = "topics"
+    }
+
     data object LoadingMore : ThreadsForYouRow {
         override val key: String get() = "loading-more"
     }
@@ -146,21 +152,29 @@ internal sealed interface ThreadsForYouRow {
         /** After how many posts the people strip sits, as in Home. */
         const val PEOPLE_AFTER = 3
 
+        /** After how many posts the topics strip sits. */
+        const val TOPICS_AFTER = 8
+
         /**
          * The list for [state]: why a session was not used, or that the page is
          * the public one; the posts, the people to follow after the first
-         * few; then that more is coming, why it did not, or that this is all.
+         * few and the topics to explore a little further on (at the end of a
+         * shorter list); then that more is coming, why it did not, or that
+         * this is all.
          */
-        fun of(state: ThreadsForYouState, people: List<ThreadsPerson>): List<ThreadsForYouRow> = buildList {
+        fun of(state: ThreadsForYouState, people: List<ThreadsPerson>, topics: List<ThreadsTopic> = emptyList()): List<ThreadsForYouRow> = buildList {
             val refused = state.sessionProblem
             when {
                 refused != null -> add(SessionNotice(refused))
                 state.source == ThreadsForYouSource.GUEST && state.posts.isNotEmpty() -> add(PublicNote)
             }
-            val at = minOf(PEOPLE_AFTER, state.posts.size)
-            state.posts.take(at).forEach { add(Post(it)) }
-            if (people.isNotEmpty() && state.posts.isNotEmpty()) add(People(people))
-            state.posts.drop(at).forEach { add(Post(it)) }
+            state.posts.forEachIndexed { index, post ->
+                if (index == PEOPLE_AFTER && people.isNotEmpty()) add(People(people))
+                if (index == TOPICS_AFTER && topics.isNotEmpty()) add(Topics(topics))
+                add(Post(post))
+            }
+            if (state.posts.isNotEmpty() && state.posts.size <= PEOPLE_AFTER && people.isNotEmpty()) add(People(people))
+            if (state.posts.isNotEmpty() && state.posts.size <= TOPICS_AFTER && topics.isNotEmpty()) add(Topics(topics))
             val failed = state.moreProblem
             when {
                 state.posts.isEmpty() -> Unit

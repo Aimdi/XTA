@@ -16,6 +16,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Icon
@@ -136,8 +140,39 @@ internal fun TopicMark(topic: ThreadsTopic, size: Dp) {
         return
     }
     Box(Modifier.size(size).clip(CircleShape).background(MaterialTheme.colorScheme.surfaceVariant), contentAlignment = Alignment.Center) {
-        Text(topic.emoji ?: "#", style = if (topic.emoji != null) MaterialTheme.typography.titleLarge else MaterialTheme.typography.titleMedium)
+        val small = size < 32.dp
+        val style = when {
+            small -> MaterialTheme.typography.labelMedium
+            topic.emoji != null -> MaterialTheme.typography.titleLarge
+            else -> MaterialTheme.typography.titleMedium
+        }
+        Text(topic.emoji ?: "#", style = style)
     }
+}
+
+/** Topics and communities to explore, each opening its page: those followed here first, then those of the posts shown. */
+@Composable
+internal fun TopicStrip(app: ThreadsApp, topics: List<ThreadsTopic>) {
+    Column(Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 4.dp)) {
+        Text(
+            pluginString(Strings.search_topics),
+            style = MaterialTheme.typography.labelLarge,
+            modifier = Modifier.padding(horizontal = 16.dp).semantics { heading() },
+        )
+        Row(
+            Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(start = 12.dp, end = 16.dp, top = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            topics.forEach { topic ->
+                AssistChip(
+                    onClick = { app.openTopic(topic) },
+                    label = { Text(if (topic.community) topic.name else "#" + topic.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                    leadingIcon = { TopicMark(topic, 20.dp) },
+                )
+            }
+        }
+    }
+    HorizontalDivider()
 }
 
 @Composable

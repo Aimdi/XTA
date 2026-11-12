@@ -88,8 +88,10 @@ private fun ForYouList(app: ThreadsApp, frame: PluginFrame, read: ThreadsForYouS
     val followed by app.accounts.state.collectAsState()
     val options by app.options.collectAsState()
     val state = remember(read, options.mutedWords) { read.copy(posts = options.unmuted(read.posts)) }
+    val followedTopics by app.topics.state.collectAsState()
     val people = remember(state.posts, followed) { ThreadsDiscovery.peopleToFollow(state.posts, { ThreadsAccounts.follows(followed, it) }) }
-    val rows = remember(state, people) { ThreadsForYouRow.of(state, people) }
+    val topics = remember(state.posts, followedTopics) { app.discoveredTopics() }
+    val rows = remember(state, people, topics) { ThreadsForYouRow.of(state, people, topics) }
     val list = rememberLazyListState(
         initialFirstVisibleItemIndex = remember { ThreadsForYouRow.indexOf(rows, app.forYouPlace) ?: 0 },
         initialFirstVisibleItemScrollOffset = remember { app.forYouPlace.offset.takeIf { ThreadsForYouRow.indexOf(rows, app.forYouPlace) != null } ?: 0 },
@@ -104,7 +106,8 @@ private fun ForYouList(app: ThreadsApp, frame: PluginFrame, read: ThreadsForYouS
                 is ThreadsForYouRow.SessionNotice -> SessionNotice(app, row.problem)
                 ThreadsForYouRow.PublicNote -> NoteText(pluginString(Strings.for_you_public), Modifier.padding(horizontal = 16.dp, vertical = 10.dp))
                 is ThreadsForYouRow.Post -> ThreadsPostCard(app, row.post)
-                is ThreadsForYouRow.People -> PeopleStrip(app, row.people)
+                is ThreadsForYouRow.People -> PeopleStrip(app, row.people, startOpen = true)
+                is ThreadsForYouRow.Topics -> TopicStrip(app, row.topics)
                 ThreadsForYouRow.LoadingMore -> LoadingRow()
                 is ThreadsForYouRow.MoreProblem -> RetryRow(pluginString(ThreadsFailures.forYou(row.problem)), onRetry = app::retryMoreForYou)
                 ThreadsForYouRow.End -> NoteText(pluginString(Strings.for_you_end), Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 28.dp))
