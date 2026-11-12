@@ -20,8 +20,10 @@ permissions:
   contents: write
 
 # A prerelease run has a group of its own, so a later push cannot cancel it.
+# (The groups' names were renewed once, when GitHub held two runs of the old
+# release group queued for hours without ever starting them.)
 concurrency:
-  group: native-prototype-${{ github.ref }}-${{ contains(github.event.head_commit.message, '[prerelease]') && 'release' || 'build' }}
+  group: native-prototype-2-${{ github.ref }}-${{ contains(github.event.head_commit.message, '[prerelease]') && 'release' || 'build' }}
   cancel-in-progress: true
 
 jobs:
