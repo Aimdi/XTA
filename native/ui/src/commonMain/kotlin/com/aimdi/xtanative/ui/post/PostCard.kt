@@ -83,32 +83,39 @@ val LocalCashtagOpener = staticCompositionLocalOf<((symbol: String) -> Boolean)?
  */
 val LocalCashtagSheet = staticCompositionLocalOf<((symbol: String) -> Unit)?> { null }
 
-/** One timeline row, or a thread X groups, with the line under it. With [playing], its first video plays in place. */
+/**
+ * One timeline row, or a thread X groups, with the line under it. With
+ * [playing], its first video plays in place. Its posts sit in a column of
+ * their own: laid out by a parent that stacks its children, a Box, they
+ * would otherwise all be drawn at the same place, on top of each other.
+ */
 @Composable
 fun ThreadRows(thread: XThread, actions: PostActions, pinnedIds: Set<String> = emptySet(), playing: Boolean = false) {
     val playingPost = if (playing) thread.posts.firstOrNull { it.hasVideo } else null
     val threaded = thread.posts.size > 1
-    thread.posts.forEachIndexed { index, post ->
-        PostCard(
-            post,
-            actions,
-            pinned = post.id in pinnedIds,
-            continues = index < thread.posts.lastIndex,
-            playing = post === playingPost,
-            firstOfThread = threaded && index == 0,
-            midThread = index > 0,
-        )
+    Column(Modifier.fillMaxWidth()) {
+        thread.posts.forEachIndexed { index, post ->
+            PostCard(
+                post,
+                actions,
+                pinned = post.id in pinnedIds,
+                continues = index < thread.posts.lastIndex,
+                playing = post === playingPost,
+                firstOfThread = threaded && index == 0,
+                midThread = index > 0,
+            )
+        }
+        // A conversation keeps the place of the posts X withheld.
+        thread.withheld.forEach { gap ->
+            UnavailablePost(
+                gap.reason ?: stringResource(if (gap.subscribersOnly) Res.string.posts_subscribers_only_of_author else Res.string.posts_unavailable),
+                gap.screenName?.let { XLinks.waybackUrl(it, gap.id) },
+                actions,
+                Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            )
+        }
+        Hairline()
     }
-    // A conversation keeps the place of the posts X withheld.
-    thread.withheld.forEach { gap ->
-        UnavailablePost(
-            gap.reason ?: stringResource(if (gap.subscribersOnly) Res.string.posts_subscribers_only_of_author else Res.string.posts_unavailable),
-            gap.screenName?.let { XLinks.waybackUrl(it, gap.id) },
-            actions,
-            Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-        )
-    }
-    Hairline()
 }
 
 /** Whether a row has a video or GIF of its own to play in place. */
