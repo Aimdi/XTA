@@ -12,17 +12,41 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
  */
 object ThreadsCommunities {
     private val NAME_KEYS = listOf("display_name", "name", "community_name", "title", "tag_name")
+    private val slug = Regex("[a-z0-9_.-]+")
     private val ID_KEYS = listOf("community_id", "community_pk", "id", "pk")
     private val LINK_KEYS = listOf("community_url", "url", "link", "uri", "path", "community_path", "deep_link")
     private val digits = Regex("\\d{3,32}")
 
-    /** The topic's name without its `#`, from the first key that holds one, or from a nested `community`. */
-    fun name(header: J): String? = NAME_KEYS.firstNotNullOfOrNull { key -> header[key].string?.trim()?.removePrefix("#")?.trim()?.ifEmpty { null } }
-        ?: header["community"].takeIf { it.exists }?.let { nested -> NAME_KEYS.firstNotNullOfOrNull { nested[it].string?.trim()?.ifEmpty { null } } }
+    /**
+     * The topic's name without its `#`, from the first key that holds one, or
+     * from a nested `community`. CI saw `display_name` on every header and
+     * `tag_cluster_name` beside it: a `display_name` written as a slug
+     * ("cosplay") gives way to the cluster's name as people write it.
+     */
+    fun name(header: J): String? {
+        val named = NAME_KEYS.firstNotNullOfOrNull { key -> text(header[key]) }
+            ?: header["community"].takeIf { it.exists }?.let { nested -> NAME_KEYS.firstNotNullOfOrNull { text(nested[it]) } }
+        val cluster = text(header["tag_cluster_name"])
+        return when {
+            named == null -> cluster
+            cluster != null && slug.matches(named) -> cluster
+            else -> named
+        }
+    }
+
+    /**
+     * Whether [header] is a community's: `is_community` when Meta sets it, but
+     * CI saw it false on every header, communities included; a community's
+     * emoji or favicon is what tells it from a plain topic.
+     */
+    fun isCommunity(header: J): Boolean = header["is_community"].boolean == true ||
+        text(header["community_emoji"]) != null || header["community_favicon_url"].string?.trim()?.startsWith("https://") == true
+
+    private fun text(node: J): String? = node.string?.trim()?.removePrefix("#")?.trim()?.ifEmpty { null }
 
     /** The community's id: digits under a community's id key, or its nested object's. */
     fun id(header: J): String? {
-        val community = header["is_community"].boolean == true
+        val community = isCommunity(header)
         return digitsAt(header, ID_KEYS.filter { community || it.startsWith("community") }) ?: digitsAt(header["community"], ID_KEYS)
     }
 

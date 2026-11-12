@@ -107,7 +107,7 @@ class ThreadsForYouTest {
         val meta = FakeMeta { ok(frontPage(postJson("${it.hashCode()}", user = "nasa"))) }
         val forYou = ThreadsForYou(direct(meta, time = time))
         val cursors = generateSequence(forYou.page()) { page -> page.next?.let { runBlocking { forYou.page(it) } } }.map { it.next }.toList()
-        assertEquals(listOf("guest:1", "guest:2", null), cursors)
+        assertEquals(listOf("guest:1", "guest:2", "guest:3", "guest:4", null), cursors)
         assertEquals(1 + ThreadsForYou.GUEST_EXTRA_READS, meta.asked.size)
     }
 

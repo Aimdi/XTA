@@ -102,16 +102,17 @@ class ThreadsForYou(
     /** The public page's next page; one Meta does not answer as expected gives way to reading the page again. */
     private suspend fun guestMore(cursor: String): ThreadsForYouPage {
         val more = direct.moreRecommended(cursor)
-        if (more.refused) return guest(1)
-        return ThreadsForYouPage(ThreadsForYouSource.GUEST, more.items, more.next)
+        // CI's live probe: Meta answers a guest's next front page with nothing, while reading the page again brings five new posts.
+        if (more.refused || more.items.isEmpty()) return guest(1)
+        return ThreadsForYouPage(ThreadsForYouSource.GUEST, more.items, more.next ?: (GUEST_CURSOR + 1))
     }
 
     /** Which re-read of the public page [cursor] asks for; null for a session's cursor, or none. */
     private fun guestRead(cursor: String?): Int? = cursor?.takeIf { it.startsWith(GUEST_CURSOR) }?.removePrefix(GUEST_CURSOR)?.toIntOrNull()
 
     companion object {
-        /** How many more times the public page is read for a feed the reader keeps scrolling. */
-        const val GUEST_EXTRA_READS = 2
+        /** How many more times the public page is read for a feed the reader keeps scrolling: each read brought five posts not seen before (CI). */
+        const val GUEST_EXTRA_READS = 4
 
         /** How many topic or community pages one selection explores at most. */
         const val MAX_EXPLORED = 12

@@ -133,7 +133,6 @@ object ThreadsSearchReading {
         val emoji = header["community_emoji"].string?.trim()?.ifEmpty { null }
         val icon = header["community_favicon_url"].string?.trim()?.takeIf { it.startsWith("https://") }
         val id = ThreadsCommunities.id(header)
-        val community = header["is_community"].boolean == true || emoji != null || icon != null || id != null
-        return ThreadsTopic(name, emoji, icon, community, ThreadsCommunities.url(header))
+        return ThreadsTopic(name, emoji, icon, ThreadsCommunities.isCommunity(header), ThreadsCommunities.url(header))
     }
 }

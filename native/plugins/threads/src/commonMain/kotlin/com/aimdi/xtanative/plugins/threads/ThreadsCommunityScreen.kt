@@ -31,6 +31,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsPaging
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsSearchFound
 import com.aimdi.xtanative.networks.threads.ThreadsTopic
+import com.aimdi.xtanative.networks.threads.attempt
 import com.aimdi.xtanative.ui.plugins.Fetch
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.NoticeHost
@@ -49,6 +50,21 @@ internal object ThreadsCommunityReads {
     /** The address its page opens in a browser, and shares. */
     fun webUrl(topic: ThreadsTopic): String = topic.url ?: ThreadsLinks.searchUrl(topic.name, tag = true).toString()
 
+    /**
+     * The community's posts: its own page where Meta named one and it shows
+     * a guest something, else the posts filed under its name (which CI read
+     * as a guest: twenty posts); the second is whether they are its own page's.
+     */
+    suspend fun read(
+        topic: ThreadsTopic,
+        ownPage: suspend (String) -> ThreadsSearchFound,
+        topicSearch: suspend () -> ThreadsSearchFound,
+    ): Pair<ThreadsSearchFound, Boolean> {
+        val url = topic.url ?: return topicSearch() to false
+        val found = attempt { ownPage(url) }?.takeIf { it.posts.isNotEmpty() }
+        return if (found != null) found to true else topicSearch() to false
+    }
+
     /** [topic] with the marks [found] carried for it, its own link kept. */
     fun refined(topic: ThreadsTopic, found: ThreadsSearchFound?): ThreadsTopic {
         val seen = found?.topics?.firstOrNull { it.key == topic.key } ?: return topic
@@ -58,15 +74,18 @@ internal object ThreadsCommunityReads {
 
 /** A community's first page and the pages after it, as the reader scrolls on. */
 internal class ThreadsCommunityModel(app: ThreadsApp, topic: ThreadsTopic, scope: kotlinx.coroutines.CoroutineScope) {
-    private val url = topic.url
+    /** Whether the posts shown came from the community's own page; the topic search's otherwise. */
+    @Volatile
+    private var own = false
 
     val page = Fetch<ThreadsSearchFound>(scope) {
         app.ready()
-        if (url != null) app.direct.communityPage(url) else app.direct.searchFound(topic.name, tag = true)
+        ThreadsCommunityReads.read(topic, { app.direct.communityPage(it) }, { app.direct.searchFound(topic.name, tag = true) }).also { own = it.second }.first
     }
 
     val more = ThreadsPaging(scope, ThreadsPost::id) { cursor ->
-        app.nextPage { if (url != null) app.direct.moreCommunity(url, cursor) else app.direct.moreFound(topic.name, tag = true, recent = false, cursor = cursor) }
+        val url = topic.url
+        app.nextPage { if (own && url != null) app.direct.moreCommunity(url, cursor) else app.direct.moreFound(topic.name, tag = true, recent = false, cursor = cursor) }
     }
 }
 

@@ -59,7 +59,7 @@ object ThreadsPostFactsReader {
         return ThreadsPostFacts(
             topicEmoji = emoji,
             topicIconUrl = icon,
-            community = header["is_community"].boolean == true || emoji != null || icon != null || id != null,
+            community = ThreadsCommunities.isCommunity(header),
             communityId = id,
             communityUrl = ThreadsCommunities.url(header),
             shareCount = info["reshare_count"].integer?.takeIf { it >= 0 },

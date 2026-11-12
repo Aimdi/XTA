@@ -59,7 +59,7 @@ class ThreadsExploreTest {
         }
         val forYou = ThreadsForYou(direct(meta, time = time)) { listOf("Books", "books", "Art") }
         val pages = generateSequence(forYou.page()) { page -> page.next?.let { runBlocking { forYou.page(it) } } }.toList()
-        assertEquals(listOf("guest:1", "guest:2", "explore:0", "explore:1", null), pages.map { it.next })
+        assertEquals(listOf("guest:1", "guest:2", "guest:3", "guest:4", "explore:0", "explore:1", null), pages.map { it.next })
         assertEquals(listOf("t-Books", "t-Art"), pages.takeLast(2).map { it.posts.single().id })
         assertEquals(listOf("Books", "Art"), meta.asked.filter { it.path == "/search" }.map { it.url.queryParameter("q") })
         assertEquals("guest:1", forYou.page().next, "a new selection explores every topic again")

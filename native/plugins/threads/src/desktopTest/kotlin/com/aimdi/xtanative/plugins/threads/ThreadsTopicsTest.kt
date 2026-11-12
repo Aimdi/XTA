@@ -2,6 +2,8 @@ package com.aimdi.xtanative.plugins.threads
 
 import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.networks.threads.ThreadsPost
+import com.aimdi.xtanative.networks.threads.ThreadsSearchFound
+import kotlinx.coroutines.runBlocking
 import com.aimdi.xtanative.networks.threads.ThreadsPostFacts
 import com.aimdi.xtanative.networks.threads.ThreadsTopic
 import kotlin.test.Test
@@ -51,5 +53,16 @@ class ThreadsTopicsTest {
         assertEquals(cosplay, ThreadsTopics.of(post))
         assertEquals(facts, ThreadsFactsJson.facts(J(ThreadsFactsJson.json(facts))))
         assertNull(ThreadsTopics.of(post.copy(topicTag = null)))
+    }
+
+    @Test
+    fun aCommunityPageFallsBackToThePostsFiledUnderItsName() = runBlocking {
+        val own = ThreadsSearchFound(listOf(ThreadsPost(id = "1", handle = "a", authorName = "A", text = "t")))
+        val filed = ThreadsSearchFound(listOf(ThreadsPost(id = "2", handle = "b", authorName = "B", text = "t")))
+        val search = suspend { filed }
+        assertEquals(own to true, ThreadsCommunityReads.read(cosplay, { own }, search))
+        assertEquals(filed to false, ThreadsCommunityReads.read(cosplay, { error("down") }, search), "its own page failing")
+        assertEquals(filed to false, ThreadsCommunityReads.read(cosplay, { ThreadsSearchFound(emptyList()) }, search), "its own page empty")
+        assertEquals(filed to false, ThreadsCommunityReads.read(cosplay.copy(url = null), { own }, search), "no address of its own: as CI saw every one")
     }
 }
