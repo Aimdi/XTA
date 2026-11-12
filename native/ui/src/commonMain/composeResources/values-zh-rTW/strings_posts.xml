@@ -51,6 +51,7 @@
     <string name="posts_possibly_sensitive_profile">此個人資料可能包含潛在敏感的圖片、語言或其他內容。您仍要檢視嗎？</string>
     <string name="posts_private_profile">私人個人資料</string>
     <string name="posts_profile_note_add">新增私人備註</string>
+    <string name="posts_profile_note_short">備註</string>
     <string name="posts_profile_note_hint">Only on this device — never synced</string>
     <string name="posts_profile_note_save">Save note</string>
     <string name="posts_profile_note_title">Private note</string>

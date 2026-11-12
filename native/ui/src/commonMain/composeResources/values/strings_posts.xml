@@ -55,6 +55,7 @@
     <string name="posts_possibly_sensitive_profile">This profile may include potentially sensitive images, language, or other content. Do you still want to view it?</string>
     <string name="posts_private_profile">Private profile</string>
     <string name="posts_profile_note_add">Add private note</string>
+    <string name="posts_profile_note_short">Note</string>
     <string name="posts_profile_note_hint">Only on this device — never synced</string>
     <string name="posts_profile_note_save">Save note</string>
     <string name="posts_profile_note_title">Private note</string>

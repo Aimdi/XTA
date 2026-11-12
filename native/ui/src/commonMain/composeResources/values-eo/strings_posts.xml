@@ -51,6 +51,7 @@
     <string name="posts_possibly_sensitive_profile">Tiu ĉi profilo eble enhavas eble sentemajn bildojn, idiomon, aŭ alian enhavon. Ĉu vi ankoraŭ deziras vidi ĝin?</string>
     <string name="posts_private_profile">Profilo privata</string>
     <string name="posts_profile_note_add">Aldoni privatan noton</string>
+    <string name="posts_profile_note_short">Noto</string>
     <string name="posts_profile_note_hint">Only on this device — never synced</string>
     <string name="posts_profile_note_save">Save note</string>
     <string name="posts_profile_note_title">Private note</string>

@@ -51,6 +51,7 @@
     <string name="posts_possibly_sensitive_profile">이 프로필에는 민감한 이미지, 언어 또는 기타 콘텐츠가 포함될 수 있습니다. 그래도 보시겠습니까?</string>
     <string name="posts_private_profile">비공개 프로필</string>
     <string name="posts_profile_note_add">비공개 메모 추가</string>
+    <string name="posts_profile_note_short">메모</string>
     <string name="posts_profile_note_hint">Only on this device — never synced</string>
     <string name="posts_profile_note_save">Save note</string>
     <string name="posts_profile_note_title">Private note</string>

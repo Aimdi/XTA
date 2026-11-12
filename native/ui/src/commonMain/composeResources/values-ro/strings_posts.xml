@@ -51,6 +51,7 @@
     <string name="posts_possibly_sensitive_profile">Acest profil poate include imagini, limbaj sau alt conținut posibil sensibil. Doriți totuși să îl vizualizați?</string>
     <string name="posts_private_profile">Profil privat</string>
     <string name="posts_profile_note_add">Adăugați o notă privată</string>
+    <string name="posts_profile_note_short">Notă</string>
     <string name="posts_profile_note_hint">Only on this device — never synced</string>
     <string name="posts_profile_note_save">Save note</string>
     <string name="posts_profile_note_title">Private note</string>

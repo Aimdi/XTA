@@ -51,6 +51,7 @@
     <string name="posts_possibly_sensitive_profile">Hety profil moža źmiaščać patencyjna čułlivyja vyjavy, vykazvanni abo inšaje zmiesciva. Vy ŭsio jašče chočacie prahledzieć jaho?</string>
     <string name="posts_private_profile">Pryvatny profil</string>
     <string name="posts_profile_note_add">Dadać asabistuju natatku</string>
+    <string name="posts_profile_note_short">Natatka</string>
     <string name="posts_profile_note_hint">Tolki na hetaj pryladzie — nikoli nie sinchranizujecca</string>
     <string name="posts_profile_note_save">Zachavać natatku</string>
     <string name="posts_profile_note_title">Pryvatnaja natatka</string>

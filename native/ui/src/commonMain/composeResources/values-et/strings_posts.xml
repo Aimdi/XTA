@@ -51,6 +51,7 @@
     <string name="posts_possibly_sensitive_profile">Selles profiilis võib leiduda ebasobilikke pilte, sõnakasutust või muud sisu. Ka sa siiski soovid seda vaadata?</string>
     <string name="posts_private_profile">Privaatne profiil</string>
     <string name="posts_profile_note_add">Lisa privaatne märkus</string>
+    <string name="posts_profile_note_short">Märkus</string>
     <string name="posts_profile_note_hint">Only on this device — never synced</string>
     <string name="posts_profile_note_save">Save note</string>
     <string name="posts_profile_note_title">Private note</string>

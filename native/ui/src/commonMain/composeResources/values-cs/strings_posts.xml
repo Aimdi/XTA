@@ -51,6 +51,7 @@
     <string name="posts_possibly_sensitive_profile">Tento profil může obsahovat potenciálně citlivé obrázky, jazyk nebo jiný obsah. Chcete jej přesto zobrazit?</string>
     <string name="posts_private_profile">Soukromý profil</string>
     <string name="posts_profile_note_add">Přidat soukromou poznámku</string>
+    <string name="posts_profile_note_short">Poznámka</string>
     <string name="posts_profile_note_hint">Only on this device — never synced</string>
     <string name="posts_profile_note_save">Save note</string>
     <string name="posts_profile_note_title">Private note</string>

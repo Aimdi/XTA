@@ -51,6 +51,7 @@
     <string name="posts_possibly_sensitive_profile">该个人资料可能包含潜在的敏感图像、语言或其他内容。是否仍要浏览？</string>
     <string name="posts_private_profile">个人简介</string>
     <string name="posts_profile_note_add">添加私人备注</string>
+    <string name="posts_profile_note_short">备注</string>
     <string name="posts_profile_note_hint">仅保存在本机 — 永不同步</string>
     <string name="posts_profile_note_save">保存备注</string>
     <string name="posts_profile_note_title">私人备注</string>

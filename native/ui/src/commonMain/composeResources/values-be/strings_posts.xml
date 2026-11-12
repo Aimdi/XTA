@@ -51,6 +51,7 @@
     <string name="posts_possibly_sensitive_profile">Гэты профіль можа змяшчаць патэнцыйна чуллівыя выявы, выказванні або іншае змесціва. Вы ўсё яшчэ хочаце прагледзець яго?</string>
     <string name="posts_private_profile">Прыватны профіль</string>
     <string name="posts_profile_note_add">Дадаць асабістую нататку</string>
+    <string name="posts_profile_note_short">Нататка</string>
     <string name="posts_profile_note_hint">Only on this device — never synced</string>
     <string name="posts_profile_note_save">Save note</string>
     <string name="posts_profile_note_title">Private note</string>

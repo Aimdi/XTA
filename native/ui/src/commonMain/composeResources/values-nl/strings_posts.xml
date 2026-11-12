@@ -51,6 +51,7 @@
     <string name="posts_possibly_sensitive_profile">Dit profiel kan mogelijk gevoelige afbeeldingen, taal of andere inhoud bevatten. Wil je het toch bekijken?</string>
     <string name="posts_private_profile">Privé profiel</string>
     <string name="posts_profile_note_add">Privénotitie toevoegen</string>
+    <string name="posts_profile_note_short">Notitie</string>
     <string name="posts_profile_note_hint">Only on this device — never synced</string>
     <string name="posts_profile_note_save">Save note</string>
     <string name="posts_profile_note_title">Private note</string>

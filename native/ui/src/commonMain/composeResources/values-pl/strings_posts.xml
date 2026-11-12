@@ -51,6 +51,7 @@
     <string name="posts_possibly_sensitive_profile">Ten profil może zawierać potencjalnie wrażliwe obrazy, język lub inne treści. Czy nadal chcesz go wyświetlić?</string>
     <string name="posts_private_profile">Profil prywatny</string>
     <string name="posts_profile_note_add">Dodaj prywatną notatkę</string>
+    <string name="posts_profile_note_short">Notatka</string>
     <string name="posts_profile_note_hint">Only on this device — never synced</string>
     <string name="posts_profile_note_save">Save note</string>
     <string name="posts_profile_note_title">Private note</string>

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
@@ -18,6 +19,7 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,6 +39,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -56,6 +61,7 @@ import com.aimdi.xtanative.ui.generated.resources.posts_hide_retweets_descriptio
 import com.aimdi.xtanative.ui.generated.resources.posts_profile_note_add
 import com.aimdi.xtanative.ui.generated.resources.posts_profile_note_hint
 import com.aimdi.xtanative.ui.generated.resources.posts_profile_note_save
+import com.aimdi.xtanative.ui.generated.resources.posts_profile_note_short
 import com.aimdi.xtanative.ui.generated.resources.posts_profile_note_title
 import com.aimdi.xtanative.ui.generated.resources.posts_quiet_account
 import com.aimdi.xtanative.ui.generated.resources.posts_quiet_account_description
@@ -115,23 +121,44 @@ private fun SwitchRow(title: String, description: String, checked: Boolean, onCh
     }
 }
 
-/** The private note across the header, one line: tapping it opens the editor (profile_note.dart). */
+/**
+ * The handle, and after it the private note as a subtitle: the note in the
+ * accent's italic, cut to the line, behind a pencil, or a muted "+ Note"
+ * without one; either opens the editor. Without [onNote] only the handle.
+ */
 @Composable
-internal fun NoteRow(note: String, onEdit: () -> Unit) {
+internal fun HandleLine(handle: String, note: String, onNote: (() -> Unit)?) {
+    val muted = MaterialTheme.colorScheme.onSurfaceVariant
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(handle, color = muted, maxLines = 1, modifier = Modifier.weight(1f, fill = false))
+        if (onNote != null) {
+            Text(" · ", color = muted)
+            NoteInline(note, onNote)
+        }
+    }
+}
+
+@Composable
+private fun RowScope.NoteInline(note: String, onEdit: () -> Unit) {
     val empty = note.isEmpty()
+    val color = if (empty) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary
+    val label = if (empty) stringResource(Res.string.posts_profile_note_add) else stringResource(Res.string.posts_profile_note_title) + ": " + note
     Row(
-        Modifier.fillMaxWidth().heightIn(min = 48.dp).clickable(onClick = onEdit).padding(horizontal = 16.dp),
+        Modifier
+            .weight(1f, fill = false)
+            .clickable(onClickLabel = label, role = Role.Button, onClick = onEdit)
+            .semantics(mergeDescendants = true) { contentDescription = label },
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(PostIcons.Article, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
+        Icon(if (empty) Icons.Filled.Add else Icons.Filled.Edit, null, tint = color, modifier = Modifier.size(14.dp))
         Text(
-            if (empty) stringResource(Res.string.posts_profile_note_add) else note,
-            color = if (empty) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
+            if (empty) stringResource(Res.string.posts_profile_note_short) else note,
+            color = color,
+            fontStyle = if (empty) FontStyle.Normal else FontStyle.Italic,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f).padding(horizontal = 12.dp),
+            modifier = Modifier.padding(start = 5.dp),
         )
-        Icon(Icons.Filled.Edit, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
     }
 }
 

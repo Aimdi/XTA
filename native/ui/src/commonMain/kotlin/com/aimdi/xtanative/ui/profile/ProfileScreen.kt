@@ -459,7 +459,8 @@ private fun Header(state: ProfileUi, follow: FollowUi, screenName: String, actio
             }
         }
         Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Identity(user, screenName)
+            val noteEdit = if (state.complete && user != null) ({ onSheet(ProfileSheet.NOTE) }) else null
+            Identity(user, screenName, state.note, noteEdit)
             if (!user?.description.isNullOrBlank()) {
                 val bio = remember(user) { user?.let(XText::bio).orEmpty() }
                 SelectionContainer { RunsText(bio, actions) }
@@ -471,17 +472,17 @@ private fun Header(state: ProfileUi, follow: FollowUi, screenName: String, actio
             }
         }
         Spacer(Modifier.height(12.dp))
-        if (state.complete && user != null) {
-            Hairline()
-            NoteRow(state.note) { onSheet(ProfileSheet.NOTE) }
-        }
         Hairline()
     }
 }
 
-/** The name with its checks and, for a protected account, the lock; the handle under it. */
+/**
+ * The name with its checks and, for a protected account, the lock; under
+ * it the handle and, once the profile is read, the private note beside it
+ * ([onNote] edits it).
+ */
 @Composable
-private fun Identity(user: XUser?, screenName: String) {
+private fun Identity(user: XUser?, screenName: String, note: String, onNote: (() -> Unit)?) {
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
@@ -497,7 +498,7 @@ private fun Identity(user: XUser?, screenName: String) {
                 Icon(Icons.Filled.Lock, stringResource(Res.string.posts_private_profile), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(start = 4.dp).size(17.dp))
             }
         }
-        Text("@" + (user?.screenName ?: screenName), color = MaterialTheme.colorScheme.onSurfaceVariant)
+        HandleLine("@" + (user?.screenName ?: screenName), note, onNote)
     }
 }
 

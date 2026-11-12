@@ -51,6 +51,7 @@
     <string name="posts_possibly_sensitive_profile">इस प्रोफ़ाइल में संभावित रूप से संवेदनशील छवियाँ, भाषा या अन्य सामग्री हो सकती है। क्या आप फिर भी इसे देखना चाहते हैं?</string>
     <string name="posts_private_profile">निजी प्रोफ़ाइल</string>
     <string name="posts_profile_note_add">निजी नोट जोड़ें</string>
+    <string name="posts_profile_note_short">नोट</string>
     <string name="posts_profile_note_hint">Only on this device — never synced</string>
     <string name="posts_profile_note_save">Save note</string>
     <string name="posts_profile_note_title">Private note</string>

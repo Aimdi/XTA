@@ -51,6 +51,7 @@
     <string name="posts_possibly_sensitive_profile">プロフィールにセンシティブな画像、言語、その他のコンテンツが含まれる可能性があります。表示しますか？</string>
     <string name="posts_private_profile">非公開プロフィール</string>
     <string name="posts_profile_note_add">非公開メモを追加</string>
+    <string name="posts_profile_note_short">メモ</string>
     <string name="posts_profile_note_hint">この端末のみ — 同期しません</string>
     <string name="posts_profile_note_save">メモを保存</string>
     <string name="posts_profile_note_title">非公開メモ</string>
