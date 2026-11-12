@@ -147,6 +147,7 @@ private fun Accounts(app: ThreadsApp) {
         Text(pluginString(Strings.no_accounts), style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(16.dp))
         return
     }
+    var unfollowing by remember { mutableStateOf<String?>(null) }
     accounts.forEach { account ->
         ListItem(
             leadingContent = { PluginAvatar(account.avatarUrl, account.name, account.handle, 36.dp) },
@@ -154,12 +155,13 @@ private fun Accounts(app: ThreadsApp) {
             trailingContent = {
                 Row {
                     AddToGroupButton(app.host, account.handle)
-                    IconButton(onClick = { app.unfollow(account.handle) }) { Icon(Icons.Filled.Delete, contentDescription = pluginString(Strings.delete)) }
+                    IconButton(onClick = { unfollowing = account.handle }) { Icon(Icons.Filled.Delete, contentDescription = pluginString(Strings.unfollow)) }
                 }
             },
             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
         )
     }
+    unfollowing?.let { handle -> UnfollowDialog(handle, onConfirm = { app.unfollow(handle) }) { unfollowing = null } }
 }
 
 /** The pasted session: why it is risky, the cookies and the Bearer, a test and a way to clear both. */

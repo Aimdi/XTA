@@ -165,4 +165,5 @@
     <string name="media_picture">画像</string>
     <string name="media_picture_of">画像 %1$d/%2$d</string>
     <string name="media_covered">Threads はこのメディアに警告を表示しています</string>
+    <string name="add_accounts_hint">まとめて追加: スペースかカンマで区切ってください</string>
 </resources>

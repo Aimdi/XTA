@@ -165,4 +165,5 @@
     <string name="media_picture">이미지</string>
     <string name="media_picture_of">이미지 %1$d/%2$d</string>
     <string name="media_covered">Threads가 이 미디어에 경고를 표시했습니다</string>
+    <string name="add_accounts_hint">여러 개를 한 번에: 공백이나 쉼표로 구분하세요</string>
 </resources>

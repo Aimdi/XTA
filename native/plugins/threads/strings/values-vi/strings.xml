@@ -165,4 +165,5 @@
     <string name="media_picture">Hình ảnh</string>
     <string name="media_picture_of">Hình ảnh %1$d/%2$d</string>
     <string name="media_covered">Threads đã đặt cảnh báo lên nội dung đa phương tiện này</string>
+    <string name="add_accounts_hint">Nhiều tài khoản cùng lúc: phân tách bằng dấu cách hoặc dấu phẩy</string>
 </resources>

@@ -165,4 +165,5 @@
     <string name="media_picture">圖片</string>
     <string name="media_picture_of">第 %1$d 張圖片，共 %2$d 張</string>
     <string name="media_covered">Threads 為此媒體加上了警告</string>
+    <string name="add_accounts_hint">可一次新增多個：以空格或逗號分隔</string>
 </resources>

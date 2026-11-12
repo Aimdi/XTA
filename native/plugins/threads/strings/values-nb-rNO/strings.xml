@@ -169,4 +169,5 @@
     <string name="media_picture">Bilde</string>
     <string name="media_picture_of">Bilde %1$d av %2$d</string>
     <string name="media_covered">Threads har lagt en advarsel over dette mediet</string>
+    <string name="add_accounts_hint">Flere samtidig: skill dem med mellomrom eller komma</string>
 </resources>

@@ -169,4 +169,5 @@
     <string name="media_picture">चित्र</string>
     <string name="media_picture_of">चित्र %1$d / %2$d</string>
     <string name="media_covered">Threads ने इस मीडिया पर चेतावनी लगाई है</string>
+    <string name="add_accounts_hint">एक साथ कई: इन्हें स्पेस या कॉमा से अलग करें</string>
 </resources>

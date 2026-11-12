@@ -169,7 +169,7 @@ internal fun LazyListScope.people(app: ThreadsApp, users: List<ThreadsProfile>, 
             headlineContent = { Text(user.displayName, maxLines = 1, overflow = TextOverflow.Ellipsis) },
             supportingContent = { Text("@" + user.username, maxLines = 1, overflow = TextOverflow.Ellipsis) },
             trailingContent = {
-                TextButton(onClick = { if (followed) app.unfollow(user.username) else app.follow(ThreadsAccount.of(user), force = false) }) {
+                TextButton(onClick = { if (followed) app.unfollow(user.username) else app.follow(ThreadsAccount.of(user)) }) {
                     Text(pluginString(if (followed) Strings.unfollow else Strings.follow))
                 }
             },

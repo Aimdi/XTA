@@ -169,4 +169,5 @@
     <string name="media_picture">Pilt</string>
     <string name="media_picture_of">Pilt %1$d/%2$d</string>
     <string name="media_covered">Threads on selle meedia ette hoiatuse pannud</string>
+    <string name="add_accounts_hint">Mitu korraga: eralda need tühikute või komadega</string>
 </resources>

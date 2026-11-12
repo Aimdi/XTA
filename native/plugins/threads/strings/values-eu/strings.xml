@@ -169,4 +169,5 @@
     <string name="media_picture">Irudia</string>
     <string name="media_picture_of">%1$d. irudia (%2$d guztira)</string>
     <string name="media_covered">Threads-ek abisu bat jarri dio multimedia honi</string>
+    <string name="add_accounts_hint">Hainbat batera: bereizi zuriuneekin edo komekin</string>
 </resources>

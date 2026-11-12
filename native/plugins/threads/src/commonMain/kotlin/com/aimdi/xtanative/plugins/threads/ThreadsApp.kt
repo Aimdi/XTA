@@ -251,31 +251,32 @@ internal class ThreadsApp(val host: PluginHost) {
         forYouFile.write(ThreadsForYouKept(state.posts, state.source, state.readAt, forYouPlace, section.value).encode())
     }
 
-    /** Follows [account] on this device, and has the feed read for it. */
-    fun follow(account: ThreadsAccount, force: Boolean = true) = launch {
-        accounts.add(account)
-        feed.refresh(force)
-    }
+    /**
+     * Follows [account] on this device, says so, and has the feed read for it:
+     * the new account is asked, the others give what was read within their ten minutes.
+     */
+    fun follow(account: ThreadsAccount) = launch { followed(listOf(account)) }
 
     /** Follows [profile] from its page, says so, and has the feed read for it. */
-    fun followProfile(profile: ThreadsProfile) = launch {
-        accounts.add(ThreadsAccount.of(profile))
+    fun followProfile(profile: ThreadsProfile) = follow(ThreadsAccount.of(profile))
+
+    private suspend fun followed(added: List<ThreadsAccount>) {
+        if (added.isEmpty()) return
+        accounts.addAll(added)
         notices.tell(Strings.account_added.get(host.language))
         feed.refresh()
     }
 
-    /** Follows [handle] with what its profile says, or its handle alone when the card cannot be read: its public posts load either way. */
-    fun followHandle(handle: String) = launch {
+    /**
+     * Follows [handles], typed or pasted: one with what its profile says, or
+     * its handle alone when the card cannot be read; several by their handles
+     * at once, their names coming with their first posts. Their public posts
+     * load either way.
+     */
+    fun followHandles(handles: List<String>) = launch {
         ready()
-        val profile = try {
-            direct.profile(handle)
-        } catch (e: CancellationException) {
-            throw e
-        } catch (_: Exception) {
-            null
-        }
-        accounts.add(profile?.let(ThreadsAccount::of) ?: ThreadsAccount(handle, handle))
-        feed.refresh(force = true)
+        val one = handles.singleOrNull()?.let { handle -> attemptKept { direct.profile(handle) } }
+        followed(if (one != null) listOf(ThreadsAccount.of(one)) else handles.map { ThreadsAccount(it, it) })
     }
 
     fun unfollow(handle: String) = launch { unfollowNow(handle) }
@@ -298,7 +299,7 @@ internal class ThreadsApp(val host: PluginHost) {
     private suspend fun unfollowNow(handle: String) {
         accounts.remove(handle)
         host.unfollowed(handle.trim().lowercase())
-        feed.refresh(force = true)
+        feed.refresh()
     }
 
     /** The accounts followed here as the app's Subscriptions list shows them (XTA's ThreadsSubscription): a tap opens the profile. */
@@ -349,7 +350,7 @@ internal class ThreadsApp(val host: PluginHost) {
     /** A backup's followed accounts in place of these, and the feed read for them. */
     suspend fun restoreAccounts(text: String) {
         accounts.import(text)
-        feed.refresh(force = true)
+        feed.refresh()
     }
 
     // ---- The app's timelines, Saved and the post sheet ----

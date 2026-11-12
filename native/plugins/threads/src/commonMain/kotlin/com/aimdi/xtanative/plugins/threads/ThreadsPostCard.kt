@@ -222,7 +222,7 @@ private fun Header(app: ThreadsApp, post: ThreadsPost, focal: Boolean, byAuthor:
         )
         if (byAuthor) AuthorChip()
         if (rows != null && !ThreadsAccounts.follows(rows, post.handle)) {
-            SmallIcon(ThreadsIcons.PersonAdd, pluginString(Strings.follow)) { app.follow(ThreadsAccount.of(post), force = false) }
+            SmallIcon(ThreadsIcons.PersonAdd, pluginString(Strings.follow)) { app.follow(ThreadsAccount.of(post)) }
         }
         SmallIcon(PostIcons.MoreHoriz, pluginString(Strings.more_info), onMore)
     }

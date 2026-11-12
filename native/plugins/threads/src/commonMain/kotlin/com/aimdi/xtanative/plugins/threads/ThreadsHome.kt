@@ -72,6 +72,7 @@ import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.saved.SavedIcons
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
@@ -158,6 +159,7 @@ private fun HomePane(app: ThreadsApp, frame: PluginFrame, onAdd: () -> Unit, onS
         app.restoreFeed()
         app.feed.refresh()
     }
+    CatchesUp(app)
     Column(Modifier.fillMaxSize()) {
         if (app.direct.isSessionParked) ParkedNotice()
         DockRow(app, options, onAdd)
@@ -170,6 +172,22 @@ private fun HomePane(app: ThreadsApp, frame: PluginFrame, onAdd: () -> Unit, onS
                 else -> Refreshable(app, frame) { item(key = "empty") { NothingYet(app, onAdd, onSearch) } }
             }
         }
+    }
+}
+
+/** The followed accounts a load could not reach yet, read on after a pause while Home is shown. */
+@Composable
+private fun CatchesUp(app: ThreadsApp) {
+    val state by app.feed.state.collectAsState()
+    var before by remember { mutableStateOf<Int?>(null) }
+    LaunchedEffect(state.loading, state.loaded) {
+        if (state.loading || !state.loaded || state.problem != null) return@LaunchedEffect
+        val pending = app.reader.pending(ThreadsAccounts.handles(app.accounts.load()))
+        val reads = ThreadsCatchUp.readsOn(before, pending)
+        before = pending
+        if (!reads) return@LaunchedEffect
+        delay(ThreadsCatchUp.PAUSE_MILLIS)
+        app.feed.refresh()
     }
 }
 

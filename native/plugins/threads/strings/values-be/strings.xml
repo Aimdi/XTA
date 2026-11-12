@@ -177,4 +177,5 @@
     <string name="media_picture">Выява</string>
     <string name="media_picture_of">Выява %1$d з %2$d</string>
     <string name="media_covered">Threads паставіў папярэджанне на гэтыя медыя</string>
+    <string name="add_accounts_hint">Некалькі адразу: падзяліце іх прабеламі або коскамі</string>
 </resources>

@@ -20,6 +20,8 @@ internal class AccountPosts<T>(
     private val concurrency: Int,
     private val ttlMillis: Long,
     private val clock: () -> Long,
+    /** A failure that says asking more now is no use (a throttle): the rest of the load gives what is held. */
+    private val stopsLoad: (Exception) -> Boolean = { (it as? ThreadsException)?.failure == ThreadsFailure.THROTTLED },
 ) {
     private class Entry<T>(val at: Long, val posts: List<T>)
 
@@ -117,6 +119,7 @@ internal class AccountPosts<T>(
             throw e
         } catch (e: Exception) {
             run.failed(e)
+            if (stopsLoad(e)) budget.set(0)
             run.answer(key, held(key), read = false)
         }
     }

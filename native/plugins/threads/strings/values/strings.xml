@@ -171,4 +171,5 @@
     <string name="media_picture">Picture</string>
     <string name="media_picture_of">Picture %1$d of %2$d</string>
     <string name="media_covered">Threads put a warning over this media</string>
+    <string name="add_accounts_hint">Several at once: separate them with spaces or commas</string>
 </resources>

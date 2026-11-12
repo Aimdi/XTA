@@ -177,4 +177,5 @@
     <string name="media_picture">Obraz</string>
     <string name="media_picture_of">Obraz %1$d z %2$d</string>
     <string name="media_covered">Threads oznaczył te multimedia ostrzeżeniem</string>
+    <string name="add_accounts_hint">Kilka naraz: oddziel je spacjami lub przecinkami</string>
 </resources>

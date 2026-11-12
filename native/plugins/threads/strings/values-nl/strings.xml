@@ -169,4 +169,5 @@
     <string name="media_picture">Afbeelding</string>
     <string name="media_picture_of">Afbeelding %1$d van %2$d</string>
     <string name="media_covered">Threads heeft een waarschuwing over deze media gezet</string>
+    <string name="add_accounts_hint">Meerdere tegelijk: scheid ze met spaties of komma’s</string>
 </resources>

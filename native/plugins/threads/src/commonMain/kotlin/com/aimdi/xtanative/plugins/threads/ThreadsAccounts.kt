@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.plugins.threads
 
 import com.aimdi.xtanative.core.json.J
+import com.aimdi.xtanative.networks.threads.ThreadsLinks
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsProfile
 import com.aimdi.xtanative.store.StoreFile
@@ -37,11 +38,18 @@ internal class ThreadsAccounts(private val file: StoreFile, private val now: () 
 
     suspend fun load(): List<ProfileSubscriptionRow> = mutex.withLock { loaded() }
 
-    suspend fun add(account: ThreadsAccount) = mutex.withLock {
-        val key = account.handle.trim().lowercase()
-        if (key.isEmpty()) return@withLock
-        val row = ProfileSubscriptionRow(key, account.name.ifBlank { key }, account.avatarUrl, inFeed = true, createdAt = XtaTime.sqlite(now()))
-        save(loaded().filterNot { it.id == key } + row)
+    suspend fun add(account: ThreadsAccount) = addAll(listOf(account))
+
+    /** [added] followed, in one write; one already followed takes the new name and picture. */
+    suspend fun addAll(added: List<ThreadsAccount>) = mutex.withLock {
+        val at = XtaTime.sqlite(now())
+        val rows = added.mapNotNull { account ->
+            val key = account.handle.trim().lowercase().ifEmpty { return@mapNotNull null }
+            ProfileSubscriptionRow(key, account.name.ifBlank { key }, account.avatarUrl, inFeed = true, createdAt = at)
+        }
+        if (rows.isEmpty()) return@withLock
+        val keys = rows.map { it.id }.toSet()
+        save(loaded().filterNot { it.id in keys } + rows)
     }
 
     suspend fun remove(handle: String) = mutex.withLock { save(loaded().filterNot { it.id == handle.trim().lowercase() }) }
@@ -70,6 +78,18 @@ internal class ThreadsAccounts(private val file: StoreFile, private val now: () 
         fun accounts(rows: List<ProfileSubscriptionRow>?): List<ThreadsAccount> = rows.orEmpty().map { ThreadsAccount(it.id, it.name, it.avatarUrl) }
 
         fun handles(rows: List<ProfileSubscriptionRow>?): List<String> = rows.orEmpty().map { it.id }
+
+        /**
+         * What a reader typed or pasted into Add account: handles, @handles or
+         * profile links, several split by spaces, commas or lines; each once.
+         * Null when any of it is not a handle, so nothing half-read is followed.
+         */
+        fun handlesIn(text: String): List<String>? {
+            val parts = text.split(Regex("[\\s,;]+")).filter { it.isNotBlank() }
+            if (parts.isEmpty()) return null
+            val handles = parts.map { ThreadsLinks.normaliseHandle(it) ?: return null }
+            return handles.distinct()
+        }
 
         fun follows(rows: List<ProfileSubscriptionRow>?, handle: String): Boolean = rows.orEmpty().any { it.id == handle.trim().lowercase() }
 

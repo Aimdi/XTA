@@ -56,7 +56,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.aimdi.xtanative.networks.threads.ThreadsLinks
 import com.aimdi.xtanative.networks.threads.ThreadsPerson
 import com.aimdi.xtanative.ui.plugins.PluginAvatar
 import com.aimdi.xtanative.ui.plugins.PluginText
@@ -269,24 +268,27 @@ private fun PersonChip(app: ThreadsApp, person: ThreadsPerson) {
             label = { Text("@" + person.handle) },
             leadingIcon = { PluginAvatar(person.avatarUrl, person.name, person.handle, 20.dp) },
         )
-        TextButton(onClick = { app.follow(ThreadsAccount(person.handle, person.name, person.avatarUrl), force = false) }) {
+        TextButton(onClick = { app.follow(ThreadsAccount(person.handle, person.name, person.avatarUrl)) }) {
             Text(pluginString(Strings.follow))
         }
     }
 }
 
-/** Asks for a handle, takes "@zuck", "zuck" or a profile link alike, and follows it with what its profile says. */
+/**
+ * Asks for a handle, takes "@zuck", "zuck" or a profile link alike, or
+ * several split by spaces, commas or lines, and follows them.
+ */
 @Composable
 internal fun AddAccountDialog(app: ThreadsApp, onDismiss: () -> Unit) {
     var text by rememberSaveable { mutableStateOf("") }
     var invalid by remember { mutableStateOf(false) }
     val submit = {
-        val handle = ThreadsLinks.normaliseHandle(text)
-        if (handle == null) {
+        val handles = ThreadsAccounts.handlesIn(text)
+        if (handles == null) {
             invalid = true
         } else {
             onDismiss()
-            app.followHandle(handle)
+            app.followHandles(handles)
         }
     }
     AlertDialog(
@@ -296,11 +298,11 @@ internal fun AddAccountDialog(app: ThreadsApp, onDismiss: () -> Unit) {
             OutlinedTextField(
                 value = text,
                 onValueChange = { text = it; invalid = false },
-                singleLine = true,
+                maxLines = 4,
                 prefix = { Text("@") },
                 placeholder = { Text(pluginString(Strings.account_hint)) },
                 isError = invalid,
-                supportingText = if (invalid) { { Text(pluginString(Strings.invalid_handle)) } } else null,
+                supportingText = { Text(pluginString(if (invalid) Strings.invalid_handle else Strings.add_accounts_hint)) },
                 keyboardOptions = KeyboardOptions(autoCorrectEnabled = false, imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { submit() }),
             )
