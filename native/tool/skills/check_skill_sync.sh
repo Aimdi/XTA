@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
-# Skills live only in .claude/skills/ (the Grok and Codex mirrors were removed),
-# so there is no second tree to keep in sync. The name stays because CI and
-# every release build (scripts/release_integrity.py) run this script. It now
-# fails when a skill would not load: a missing SKILL.md, or frontmatter whose
-# name does not match the skill's folder or that has no description.
+# Fails when a skill in .claude/skills/ would not load: a missing SKILL.md, or
+# frontmatter whose name does not match the skill's folder or that has no
+# description. CI's skills job runs it (.github/workflows/native-prototype.yml).
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
 cd "$ROOT"
 
 SKILLS_DIR=".claude/skills"

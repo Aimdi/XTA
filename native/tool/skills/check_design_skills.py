@@ -8,11 +8,11 @@ import re
 import subprocess
 import sys
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[3]
 NAMES = ('impeccable', 'ui-ux-pro-max')
 REQUIRED = {
     'impeccable': ('SKILL.md', 'UPSTREAM.md', 'UPSTREAM_SKILL.md', 'reference/critique.md', 'reference/distill.md', 'reference/layout.md', 'reference/operate.md', 'reference/craft-floor.md', 'reference/audit.native.md', 'scripts/impeccable', 'scripts/VERSION'),
-    'ui-ux-pro-max': ('SKILL.md', 'UPSTREAM.md', 'UPSTREAM_SKILL.md', 'references/quick-reference.md', 'references/pro-rules.md', 'scripts/search.py', 'data/stacks/flutter.csv'),
+    'ui-ux-pro-max': ('SKILL.md', 'UPSTREAM.md', 'UPSTREAM_SKILL.md', 'references/quick-reference.md', 'references/pro-rules.md', 'scripts/search.py', 'data/stacks/jetpack-compose.csv'),
 }
 
 def inventory(folder):
@@ -46,11 +46,11 @@ def main():
     subprocess.run(['sh', '-n', str(ROOT / '.claude/skills/impeccable/scripts/impeccable')], check=True)
     script = ROOT / '.claude/skills/ui-ux-pro-max/scripts/search.py'
     env = dict(os.environ, PYTHONDONTWRITEBYTECODE='1')
-    output = subprocess.check_output([sys.executable, str(script), 'compact spacing', '--stack', 'flutter'], cwd=ROOT, env=env, text=True, timeout=30)
-    if not output.strip() or 'flutter' not in output.lower():
-        raise ValueError('Flutter search did not produce identifiable Flutter output')
+    output = subprocess.check_output([sys.executable, str(script), 'compact spacing', '--stack', 'jetpack-compose'], cwd=ROOT, env=env, text=True, timeout=30)
+    if not output.strip() or 'jetpack-compose' not in output.lower():
+        raise ValueError('Jetpack Compose search did not produce identifiable Compose output')
     print(output)
-    print('PASS local Flutter search; no Android runtime/build was run')
+    print('PASS local Jetpack Compose search; no Android runtime/build was run')
 
 if __name__ == '__main__':
     try:
