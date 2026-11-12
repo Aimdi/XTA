@@ -211,25 +211,24 @@ internal class AccountPosts<T>(
 
         /** Records [key]'s answer, and repaints when it changed what is shown. [read] is false for posts kept only because their refresh failed. */
         fun answer(key: String, posts: List<T>, read: Boolean = true): List<T> {
-            val paint = synchronized(this) {
+            // Painted under the lock: with several accounts answering at once, an older paint must not land after a newer one.
+            synchronized(this) {
                 if (read && posts.isNotEmpty()) readAnything = true
                 val dropped = held.remove(key)
-                if (emit == null) return@synchronized null
+                if (emit == null) return posts
                 done += posts
-                if (posts.isNotEmpty() || !dropped.isNullOrEmpty()) merged(done + held.values) else null
+                if (posts.isNotEmpty() || !dropped.isNullOrEmpty()) emit.invoke(merged(done + held.values))
             }
-            paint?.let { emit?.invoke(it) }
             return posts
         }
 
         /** Paints what is held before the first wait for the network, so a refresh does not blank the feed. */
         fun showHeld() {
-            val paint = synchronized(this) {
-                if (emit == null || shownHeld || held.isEmpty()) return@synchronized null
+            synchronized(this) {
+                if (emit == null || shownHeld || held.isEmpty()) return
                 shownHeld = true
-                merged(done + held.values)
+                emit.invoke(merged(done + held.values))
             }
-            paint?.let { emit?.invoke(it) }
         }
     }
 }

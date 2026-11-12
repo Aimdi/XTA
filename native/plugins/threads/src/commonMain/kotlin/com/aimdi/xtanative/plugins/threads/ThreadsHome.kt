@@ -38,6 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -154,6 +155,7 @@ private fun MenuRow(icon: ImageVector, label: PluginText, onClick: () -> Unit) {
 private fun HomePane(app: ThreadsApp, frame: PluginFrame, onAdd: () -> Unit, onSearch: () -> Unit) {
     val state by app.feed.state.collectAsState()
     val options by app.options.collectAsState()
+    DisposableEffect(app) { onDispose(app.homeLoads.show()) }
     // Read when Home is the section shown: a reader on For you does not pay for the followed accounts' pages.
     LaunchedEffect(app) {
         app.restoreFeed()

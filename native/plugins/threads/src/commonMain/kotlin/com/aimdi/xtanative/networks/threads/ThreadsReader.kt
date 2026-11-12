@@ -49,10 +49,13 @@ data class ThreadsProfilePage(
  * followed accounts' merged feed, a profile, and a conversation. Following
  * itself happens in XTA Native: the followed handles are passed in.
  *
- * Each followed account is read once per ten minutes at most, one at a time,
- * through the source the setup implies; a load asks at most twenty accounts
- * (six with session reads), the ones asked longest ago first, so successive
- * refreshes reach every account.
+ * Each followed account is read once per ten minutes at most, through the
+ * source the setup implies; a load asks at most twenty accounts (six with
+ * session reads), the ones asked longest ago first, so successive refreshes
+ * reach every account. Three are read at once, so one slow answer does not
+ * hold the rest; the client still lets requests leave one at a time, its
+ * gap apart, so Meta sees no more requests than before, and a throttle
+ * stops every read of the load.
  */
 class ThreadsReader(
     val direct: ThreadsDirectClient,
@@ -64,7 +67,7 @@ class ThreadsReader(
     private val accounts = AccountPosts<ThreadsPost>(
         dateOf = { it.publishedAt },
         perAccount = ThreadsDirectClient.POSTS_PER_ACCOUNT,
-        concurrency = 1,
+        concurrency = ACCOUNTS_AT_ONCE,
         ttlMillis = CACHE_TTL_MILLIS,
         clock = clock,
         settles = ThreadsTrouble::settles,
@@ -226,6 +229,9 @@ class ThreadsReader(
 
         /** Session loads are capped harder: a burst of `text_feed` calls is what Meta's anti-scripting looks for. */
         const val SESSION_ACCOUNTS_PER_LOAD = 6
+
+        /** How many followed accounts are waited on at once. */
+        const val ACCOUNTS_AT_ONCE = 3
 
         /** How long an account's threads are reused before Meta is asked again. */
         const val CACHE_TTL_MILLIS = 10 * 60 * 1000L

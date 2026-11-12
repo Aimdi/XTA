@@ -87,6 +87,9 @@ internal class ThreadsApp(val host: PluginHost) {
     private val profiles = ThreadsProfileShelf(host.store.file("profiles.json"))
     val accountNotes = ThreadsAccountNotes(host.store.file("account_notes.json"))
 
+    /** Home's loads, given up once Home is no longer shown. */
+    val homeLoads = ThreadsShownLoads()
+
     /** Where the reader stopped in the Home section. */
     val homePlace = ThreadsHomePlace(host.store.file("home.json"), scope)
 
@@ -189,8 +192,14 @@ internal class ThreadsApp(val host: PluginHost) {
     private suspend fun readFeed(force: Boolean, onPartial: (List<ThreadsPost>) -> Unit): List<ThreadsPost> {
         ready()
         val handles = ThreadsAccounts.handles(accounts.load())
+        var painted: List<ThreadsPost>? = null
         val posts = try {
-            reader.following(handles, force, onPartial)
+            homeLoads.whileShown {
+                reader.following(handles, force) { partial ->
+                    painted = partial
+                    onPartial(partial)
+                }
+            } ?: return painted ?: feed.state.value.items
         } finally {
             failedNow.value = reader.failures(handles)
         }
