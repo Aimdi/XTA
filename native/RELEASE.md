@@ -1,6 +1,6 @@
 **XTA Native is XTA now.** XTA is written again in Kotlin and Compose Multiplatform, for Android and the Linux desktop from the same screens, and it replaces the Flutter XTA, whose last release stays downloadable under its `aimdi` tag. It reads X and the other networks as XTA did. Nothing is posted, liked or followed on any network: follows, likes, saves and notes stay on your device.
 
-**New in 1.0.1:** an opened post's reply threads no longer pile up on top of each other when X groups several replies in one thread, and the + on avatars to follow someone is a clean, whole badge again.
+**New in 1.0.2:** the timeline picker leads Home's Following bar, as on X's screen; a profile's private note sits beside the handle; and a post's quotes no longer say every account is throttled when spare accounts are free: they use them, wait out X's limit without asking again, and load again by themselves. **In 1.0.1:** an opened post's reply threads no longer pile up, and the + to follow someone is a whole badge again.
 
 ### Installing
 
