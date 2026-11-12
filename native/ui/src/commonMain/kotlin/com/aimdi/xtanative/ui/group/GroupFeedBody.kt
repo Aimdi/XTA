@@ -84,7 +84,6 @@ import com.aimdi.xtanative.ui.feed.SourceLoadingHairline
 import com.aimdi.xtanative.ui.feed.SourcedPost
 import com.aimdi.xtanative.ui.feed.rememberFeedLayout
 import com.aimdi.xtanative.ui.feed.rememberNearEnd
-import com.aimdi.xtanative.ui.feed.rememberPlayingId
 import com.aimdi.xtanative.ui.feed.rememberRunningPlugins
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_next_page_of_tweets
@@ -232,11 +231,10 @@ private fun FeedList(state: GroupFeedUi, vm: GroupFeedViewModel, actions: PostAc
     val threads = run.shown.threads
     val nearEnd by rememberNearEnd(list)
     LaunchedEffect(nearEnd, threads.size, run.shown.canLoadMore) { if (nearEnd) vm.loadMore() }
-    val playingId by rememberPlayingId(list, threads)
     val layout = rememberFeedLayout(threads, mixed.shown)
     val byKey = remember(threads) { threads.associateBy(FeedLayout::xKey) }
     val posts = remember(mixed.shown) { mixed.shown.associateBy { it.key } }
-    val draw: @Composable (XThread) -> Unit = { thread -> FeedThread(thread, run.shown.folds[thread.id], actions, playing = thread.id == playingId) }
+    val draw: @Composable (XThread) -> Unit = { thread -> FeedThread(thread, run.shown.folds[thread.id], actions) }
     // A stack holds X's posts and the plugins' alike.
     val drawKey: @Composable (String) -> Unit = { key ->
         val post = posts[key]

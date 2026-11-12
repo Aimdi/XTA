@@ -117,8 +117,9 @@ val LocalMediaSave = staticCompositionLocalOf<((MediaItem) -> Unit)?> { null }
 /**
  * Photos and videos laid out as the app lays out X's: one at its shape, two
  * side by side, three, or four in a square. Videos play in their tiles as X's
- * do, under Settings › Media (with [playing], the first plays by itself where
- * Autoplay videos says), GIFs loop, and while media loads manually a video
+ * do, under Settings › Media (in a feed, the one seen most plays by itself
+ * where Autoplay videos says; [playing], which chose one before, is kept
+ * for the plugins built against it), GIFs loop, and while media loads manually a video
  * waits behind "Tap to show Media"; with [hidden], the pictures are blurred.
  * A described one carries "ALT", and a long press shows its description, or
  * saves a photo where the screen saves them ([LocalMediaSave]), as XTA's
@@ -129,7 +130,6 @@ fun MediaTiles(items: List<MediaItem>, onOpen: (Int) -> Unit, modifier: Modifier
     if (items.isEmpty()) return
     val save = LocalMediaSave.current
     var describing by remember { mutableStateOf<String?>(null) }
-    val playIndex = if (playing && !hidden) items.indexOfFirst { it.kind != MediaItem.Kind.PHOTO } else -1
     val shape = RoundedCornerShape(16.dp)
     val frame = modifier.fillMaxWidth().clip(shape).border(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant, shape)
     val tile: @Composable (Int, Modifier) -> Unit = { index, tileModifier ->
@@ -140,7 +140,7 @@ fun MediaTiles(items: List<MediaItem>, onOpen: (Int) -> Unit, modifier: Modifier
             TileHold.SAVE -> save?.let { { it(item) } }
             TileHold.NOTHING -> null
         }
-        MediaTile(item, playIndex == index, hidden, tileModifier, onClick = { onOpen(index) }, onHold = hold, onDescribe = described?.let { { describing = it } })
+        MediaTile(item, hidden, tileModifier, onClick = { onOpen(index) }, onHold = hold, onDescribe = described?.let { { describing = it } })
     }
     describing?.let { AltTextDialog(it) { describing = null } }
     when (items.size) {
@@ -171,7 +171,7 @@ fun MediaTiles(items: List<MediaItem>, onOpen: (Int) -> Unit, modifier: Modifier
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun MediaTile(item: MediaItem, playing: Boolean, hidden: Boolean, modifier: Modifier, onClick: () -> Unit, onHold: (() -> Unit)?, onDescribe: (() -> Unit)?) {
+private fun MediaTile(item: MediaItem, hidden: Boolean, modifier: Modifier, onClick: () -> Unit, onHold: (() -> Unit)?, onDescribe: (() -> Unit)?) {
     val moving = item.kind != MediaItem.Kind.PHOTO
     var revealed by rememberSaveable(item.tileUrl) { mutableStateOf(false) }
     // A video and its poster wait for a tap while media loads manually, as XTA's PluginVideoGate holds them back.
@@ -195,7 +195,7 @@ private fun MediaTile(item: MediaItem, playing: Boolean, hidden: Boolean, modifi
             }
             MediaItem.Kind.GIF -> TileLabel("GIF", Modifier.align(Alignment.BottomStart))
         }
-        if (moving && !hidden) TileClip(item, poster, playing, Modifier.matchParentSize())
+        if (moving && !hidden) TileClip(item, poster, Modifier.matchParentSize())
         // XTA's badge sits at the start; a video's own label holds that corner.
         onDescribe?.let { AltBadge(it, Modifier.align(if (item.kind == MediaItem.Kind.PHOTO) Alignment.BottomStart else Alignment.BottomEnd)) }
     }
@@ -208,15 +208,15 @@ private fun MediaTile(item: MediaItem, playing: Boolean, hidden: Boolean, modifi
  * place it draws nothing, and the tile's tap opens the viewer.
  */
 @Composable
-private fun TileClip(item: MediaItem, poster: Any, playing: Boolean, modifier: Modifier) {
+private fun TileClip(item: MediaItem, poster: Any, modifier: Modifier) {
     val url = item.inlineVideoUrl ?: item.videoUrl ?: return
     val graph = LocalGraph.current
     if (item.kind == MediaItem.Kind.GIF) {
         val source = remember(url) { VideoSource.of(url, true, graph.settings.state.value) }
-        return TileGif(source, poster, playing, modifier)
+        return TileGif(source, poster, modifier)
     }
     val save = LocalMediaSave.current
-    TileVideo({ VideoSource.of(url, false, it) }, item.alt, item.aspectRatio, poster, playing, modifier) {
+    TileVideo({ VideoSource.of(url, false, it) }, item.alt, item.aspectRatio, poster, modifier) {
         save?.takeIf { PluginDownloads.url(item) != null }?.let { saves -> { saves(item) } }
     }
 }

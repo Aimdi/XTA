@@ -51,7 +51,7 @@ import org.jetbrains.compose.resources.stringResource
 
 /** A thread folded behind why (folded_chain.dart): a tap shows it, and hides it again. */
 @Composable
-internal fun FoldedThread(thread: XThread, reason: String, actions: PostActions, playing: Boolean) {
+internal fun FoldedThread(thread: XThread, reason: String, actions: PostActions) {
     var open by rememberSaveable(thread.id) { mutableStateOf(false) }
     Column(Modifier.animateContentSize()) {
         Row(
@@ -69,14 +69,14 @@ internal fun FoldedThread(thread: XThread, reason: String, actions: PostActions,
             )
             if (!open) Icon(GroupIcons.ExpandMore, contentDescription = null, tint = accent, modifier = Modifier.size(20.dp))
         }
-        if (open) ThreadRows(thread, actions, playing = playing) else Hairline()
+        if (open) ThreadRows(thread, actions) else Hairline()
     }
 }
 
 /** A thread as a feed shows it: folded behind [fold] when its rules fold it, else whole. */
 @Composable
-internal fun FeedThread(thread: XThread, fold: String?, actions: PostActions, playing: Boolean) {
-    if (fold != null) FoldedThread(thread, fold, actions, playing) else ThreadRows(thread, actions, playing = playing)
+internal fun FeedThread(thread: XThread, fold: String?, actions: PostActions) {
+    if (fold != null) FoldedThread(thread, fold, actions) else ThreadRows(thread, actions)
 }
 
 /** What a feed's media grid has to say at its foot: reading more, why reading failed, or nothing. */

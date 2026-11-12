@@ -43,7 +43,6 @@ import com.aimdi.xtanative.ui.post.BoostRuns
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.post.ThreadRows
-import com.aimdi.xtanative.ui.post.hasVideo
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -138,25 +137,6 @@ internal fun PlacedPluginPost(post: SourcedPost, layout: FeedLayout, plugins: Ma
         FeedPart.Hidden -> Unit
         is FeedPart.Stack -> LinkStackRow(part.keys) { key -> posts[key]?.let { PluginPostRow(it, plugins[it.source]) } ?: drawThread(key) }
         else -> PluginPostRow(post, plugins[post.source])
-    }
-}
-
-/**
- * The thread whose video plays (the feeds' autoplay): the first row with a
- * video that is mostly on screen. A row a stack or a run hides takes no room
- * and is passed over.
- */
-@Composable
-fun rememberPlayingId(list: LazyListState, threads: List<XThread>): State<Any?> {
-    val withVideo = remember(threads) { threads.filter { it.hasVideo }.mapTo(HashSet()) { it.id } }
-    return remember(list, withVideo) {
-        derivedStateOf {
-            val info = list.layoutInfo
-            info.visibleItemsInfo.firstOrNull { item ->
-                val shown = minOf(item.offset + item.size, info.viewportEndOffset) - maxOf(item.offset, info.viewportStartOffset)
-                item.size > 0 && item.key in withVideo && shown >= item.size * 0.6f
-            }?.key
-        }
     }
 }
 

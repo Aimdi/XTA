@@ -32,7 +32,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.services.ai.TranslationStatus
@@ -83,14 +82,12 @@ val LocalCashtagOpener = staticCompositionLocalOf<((symbol: String) -> Boolean)?
 val LocalCashtagSheet = staticCompositionLocalOf<((symbol: String) -> Unit)?> { null }
 
 /**
- * One timeline row, or a thread X groups, with the line under it. With
- * [playing], its first video plays in place. Its posts sit in a column of
+ * One timeline row, or a thread X groups, with the line under it. Its posts sit in a column of
  * their own: laid out by a parent that stacks its children, a Box, they
  * would otherwise all be drawn at the same place, on top of each other.
  */
 @Composable
-fun ThreadRows(thread: XThread, actions: PostActions, pinnedIds: Set<String> = emptySet(), playing: Boolean = false) {
-    val playingPost = if (playing) thread.posts.firstOrNull { it.hasVideo } else null
+fun ThreadRows(thread: XThread, actions: PostActions, pinnedIds: Set<String> = emptySet()) {
     val threaded = thread.posts.size > 1
     Column(Modifier.fillMaxWidth()) {
         thread.posts.forEachIndexed { index, post ->
@@ -99,7 +96,6 @@ fun ThreadRows(thread: XThread, actions: PostActions, pinnedIds: Set<String> = e
                 actions,
                 pinned = post.id in pinnedIds,
                 continues = index < thread.posts.lastIndex,
-                playing = post === playingPost,
                 firstOfThread = threaded && index == 0,
                 midThread = index > 0,
             )
@@ -116,11 +112,6 @@ fun ThreadRows(thread: XThread, actions: PostActions, pinnedIds: Set<String> = e
         Hairline()
     }
 }
-
-/** Whether a row has a video or GIF of its own to play in place. */
-val XPost.hasVideo: Boolean get() = shown.media.any { it.kind != XMedia.Kind.PHOTO }
-
-val XThread.hasVideo: Boolean get() = posts.any { it.hasVideo }
 
 private val AvatarSize = PostGeometry.AVATAR_SIZE.dp
 private val RailStart = PostGeometry.AVATAR_START.dp
@@ -143,7 +134,6 @@ fun PostCard(
     modifier: Modifier = Modifier,
     pinned: Boolean = false,
     continues: Boolean = false,
-    playing: Boolean = false,
     firstOfThread: Boolean = false,
     midThread: Boolean = false,
 ) {
@@ -195,7 +185,7 @@ fun PostCard(
                         shown.article == null -> ExpandablePostText(drawn, actions, Modifier.padding(top = 2.dp))
                     }
                     TranslationFailure(translation)
-                    PostAttachments(shown, scope, actions, playing = playing, gap = 10.dp)
+                    PostAttachments(shown, scope, actions, gap = 10.dp)
                     PostFooter(shown, actions, FooterCounts.of(shown, scope.prefs, showViews = true), picture = picture)
                 }
                 // Translate and ⋯ at the end of the author line, reaching over the text under it as X's ⋯ does.
@@ -289,7 +279,7 @@ internal fun ReplyingTo(screenName: String, replyToId: String?, actions: PostAct
  * the screen's edge except inside a quote.
  */
 @Composable
-internal fun PostAttachments(shown: XPost, scope: PostScope, actions: PostActions, playing: Boolean, gap: Dp, quoted: Boolean = false, startMedia: Int = 0) {
+internal fun PostAttachments(shown: XPost, scope: PostScope, actions: PostActions, gap: Dp, quoted: Boolean = false, startMedia: Int = 0) {
     if (shown.subscriberPreview) SubscriberPreviewLine(shown.author.screenName)
     PostView.articleLink(shown)?.let { ArticleLinkCard({ actions.openArticle(shown.id) }, Modifier.padding(top = gap)) }
     if (shown.media.isNotEmpty()) {
@@ -298,7 +288,6 @@ internal fun PostAttachments(shown: XPost, scope: PostScope, actions: PostAction
                 shown.media,
                 { index -> actions.openMedia(shown.id, index) },
                 Modifier.padding(top = gap),
-                playing = playing,
                 post = shown,
                 start = startMedia,
                 bleed = if (quoted) 0.dp else MediaBleed,
@@ -366,7 +355,7 @@ fun QuotedPost(post: XPost, actions: PostActions, modifier: Modifier = Modifier)
                 PostAuthor(post, scope, Modifier.weight(1f))
             }
             if (post.article == null) ExpandablePostText(post, actions, Modifier.padding(top = 4.dp))
-            PostAttachments(post, scope, actions, playing = false, gap = 8.dp, quoted = true)
+            PostAttachments(post, scope, actions, gap = 8.dp, quoted = true)
         }
     }
 }

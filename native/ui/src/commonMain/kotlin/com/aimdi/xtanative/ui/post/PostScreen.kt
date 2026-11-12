@@ -360,7 +360,7 @@ private fun FocalPost(post: XPost, actions: PostActions, startMedia: Int) {
             )
         }
         TranslationFailure(translation)
-        PostAttachments(shown, scope, actions, playing = false, gap = 12.dp, startMedia = startMedia)
+        PostAttachments(shown, scope, actions, gap = 12.dp, startMedia = startMedia)
         if (article != null) {
             ArticleBody(article, actions, Modifier.padding(top = 12.dp), header = { PostFooter(shown, actions, FooterCounts.of(shown, scope.prefs, showViews = false), picture = picture) })
         } else if (shown.article != null) {

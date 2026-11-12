@@ -50,7 +50,6 @@ import com.aimdi.xtanative.ui.common.scrollToTop
 import com.aimdi.xtanative.ui.feed.feedThreads
 import com.aimdi.xtanative.ui.feed.rememberFeedLayout
 import com.aimdi.xtanative.ui.feed.rememberNearEnd
-import com.aimdi.xtanative.ui.feed.rememberPlayingId
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_tweets
 import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_next_page_of_tweets
@@ -128,8 +127,6 @@ private fun ForYouList(state: ForYouUi, vm: ForYouViewModel, actions: PostAction
     LaunchedEffect(nearEnd, state.threads.size, state.hasMore) {
         if (nearEnd) vm.loadMore()
     }
-    // The first row with a video that is mostly on screen plays it, as in the group feeds.
-    val playingId by rememberPlayingId(list, state.threads)
     val layout = rememberFeedLayout(state.threads)
     val divider = state.divider
     WithReadingColumn(contentPadding) { padding ->
@@ -137,7 +134,7 @@ private fun ForYouList(state: ForYouUi, vm: ForYouViewModel, actions: PostAction
             state.notice?.let { notice ->
                 item(key = "notice", contentType = "notice") { RefreshNotice(notice, vm::dismissNotice) }
             }
-            feedThreads(state.threads, layout, actions, divider = divider) { thread -> ThreadRows(thread, actions, playing = thread.id == playingId) }
+            feedThreads(state.threads, layout, actions, divider = divider) { thread -> ThreadRows(thread, actions) }
             item(key = "footer", contentType = "footer") {
                 val more = state.moreProblem
                 when {

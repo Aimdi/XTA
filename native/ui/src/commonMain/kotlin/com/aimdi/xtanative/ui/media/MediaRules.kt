@@ -76,16 +76,31 @@ object VideoRules {
     /** Whether a tile [height] tall of which [visibleHeight] is on screen is seen: half of it at least, as XTA's tiles count. */
     fun mostlySeen(visibleHeight: Float, height: Int): Boolean = height > 0 && visibleHeight >= height / 2f
 
-    /**
-     * Whether a video starts without a tap (XTA's showsPlayButton): only with
-     * Autoplay videos on, once it is seen, and in a feed only while its row is
-     * the one the feed plays ([playing]); a player of its own ([shared] false)
-     * needs no such turn. Otherwise its play button waits.
-     */
-    fun startsByItself(autoplay: Boolean, seen: Boolean, playing: Boolean, shared: Boolean): Boolean = autoplay && seen && (playing || !shared)
+    /** How much of a tile must be on screen before it plays by itself, as X's feed starts a video. */
+    const val SEEN_SHARE = 0.6f
 
-    /** Whether a GIF loops (XTA's shouldCreatePlayer): only while it is seen, whatever Autoplay says; off screen it holds no player. */
-    fun gifLoops(seen: Boolean, playing: Boolean, shared: Boolean): Boolean = seen && (playing || !shared)
+    /**
+     * The share of a tile [width] x [height] that is on screen, of which
+     * [visibleWidth] x [visibleHeight] is: a tile in a row of media scrolled
+     * sideways counts as little as one scrolled off the top. 0 to 1.
+     */
+    fun seenShare(visibleWidth: Float, visibleHeight: Float, width: Int, height: Int): Float =
+        if (width <= 0 || height <= 0) 0f else (visibleWidth.coerceIn(0f, width.toFloat()) * visibleHeight.coerceIn(0f, height.toFloat()) / (width.toFloat() * height)).coerceIn(0f, 1f)
+
+    /** [share] in steps of a twentieth, rounded down: a tile is drawn again as it crosses a step, not on every pixel of a scroll. */
+    fun shareStep(share: Float): Float = kotlin.math.floor(share.coerceIn(0f, 1f) * 20f) / 20f
+
+    /**
+     * Whether a video starts without a tap: only while it autoplays, and once
+     * [share] of it ([SEEN_SHARE] at least) is on screen; in a feed, whose
+     * tiles take turns at one player ([shared]), only the tile the feed has
+     * [chosen] ([MostSeen]).
+     */
+    fun startsByItself(autoplay: Boolean, share: Float, chosen: Boolean, shared: Boolean): Boolean =
+        autoplay && if (shared) chosen else share >= SEEN_SHARE
+
+    /** Whether a GIF loops: while it is seen, whatever Autoplay says, and in a feed while it is the tile chosen; off screen it holds no player. */
+    fun gifLoops(share: Float, chosen: Boolean, shared: Boolean): Boolean = if (shared) chosen else share >= SEEN_SHARE
 
     /**
      * Whether a video stops when the app is left: unless Background play

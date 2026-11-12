@@ -123,14 +123,27 @@ class VideoSettingsTest {
     }
 
     @Test
-    fun aPlainVideoWaitsForATapAndAnUnseenGifHoldsNoPlayer() {
-        assertFalse(VideoRules.startsByItself(autoplay = false, seen = true, playing = true, shared = true), "without Autoplay the play button waits")
-        assertTrue(VideoRules.startsByItself(autoplay = true, seen = true, playing = true, shared = true))
-        assertFalse(VideoRules.startsByItself(autoplay = true, seen = false, playing = true, shared = true), "an off-screen autoplay video allocates nothing")
-        assertFalse(VideoRules.startsByItself(autoplay = true, seen = true, playing = false, shared = true), "not the row the feed plays")
-        assertTrue(VideoRules.startsByItself(autoplay = true, seen = true, playing = false, shared = false))
-        assertFalse(VideoRules.gifLoops(seen = false, playing = true, shared = true), "an off-screen GIF allocates nothing")
-        assertTrue(VideoRules.gifLoops(seen = true, playing = true, shared = true), "the same GIF once it is on screen")
+    fun aTileCountsTheShareOfItOnScreen() {
+        assertEquals(1f, VideoRules.seenShare(200f, 100f, 200, 100))
+        assertEquals(0.5f, VideoRules.seenShare(200f, 50f, 200, 100))
+        assertEquals(0.25f, VideoRules.seenShare(100f, 50f, 200, 100), "a tile of a sideways row scrolled half away")
+        assertEquals(0f, VideoRules.seenShare(0f, 0f, 0, 0))
+        assertEquals(0.6f, VideoRules.shareStep(0.6f), "the share to play at is a step of its own")
+        assertEquals(0.55f, VideoRules.shareStep(0.599f))
+        assertEquals(1f, VideoRules.shareStep(1f))
+    }
+
+    @Test
+    fun aVideoWaitsForATapUnlessItAutoplaysAndAnUnseenGifHoldsNoPlayer() {
+        assertFalse(VideoRules.startsByItself(autoplay = false, share = 1f, chosen = true, shared = true), "without Autoplay a tap starts it")
+        assertTrue(VideoRules.startsByItself(autoplay = true, share = 1f, chosen = true, shared = true))
+        assertFalse(VideoRules.startsByItself(autoplay = true, share = 1f, chosen = false, shared = true), "another tile of the feed is seen more")
+        assertTrue(VideoRules.startsByItself(autoplay = true, share = 0.6f, chosen = false, shared = false))
+        assertFalse(VideoRules.startsByItself(autoplay = true, share = 0.59f, chosen = false, shared = false), "an off-screen autoplay video allocates nothing")
+        assertFalse(VideoRules.gifLoops(share = 0.2f, chosen = false, shared = false), "an off-screen GIF allocates nothing")
+        assertTrue(VideoRules.gifLoops(share = 0.8f, chosen = false, shared = false))
+        assertTrue(VideoRules.gifLoops(share = 0.8f, chosen = true, shared = true))
+        assertFalse(VideoRules.gifLoops(share = 0.8f, chosen = false, shared = true))
     }
 
     @Test

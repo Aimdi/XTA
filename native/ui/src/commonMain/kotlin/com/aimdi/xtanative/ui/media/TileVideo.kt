@@ -14,6 +14,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -45,15 +46,16 @@ import org.jetbrains.compose.resources.stringResource
  * A post's video in its tile, playing there under XTA's controls (_video.dart's
  * TweetVideo): the mute corner, the ⋮ menu and full screen, looping as Loop
  * videos says, with the sound as the app's mute stands. With Autoplay videos
- * on it plays by itself once it has stayed in view a moment (in a feed, when
- * its row is the one the feed plays); otherwise a tap plays it in place. It
- * pauses while less than half of it is seen. [poster] is the tile's picture,
- * kept over the video until its first frame; [post] names a saved file. Where
- * nothing plays in place, it draws nothing and the tile's tap opens the viewer.
+ * on it plays by itself once most of it has stayed in view a moment (in a
+ * feed, while it is the tile seen most: [MostSeen]); otherwise a tap plays
+ * it in place. It pauses while less than half of it is seen. [poster] is the
+ * tile's picture, kept over the video until its first frame; [post] names a
+ * saved file. Where nothing plays in place, it draws nothing and the tile's
+ * tap opens the viewer.
  */
 @Composable
-internal fun TileVideo(media: XMedia, poster: Any?, post: XPost?, playing: Boolean, modifier: Modifier = Modifier) =
-    TileVideo({ VideoSource.of(media, it) }, media.alt, media.aspectRatio, poster, playing, modifier) { player -> rememberTileDownload(media, post, player) }
+internal fun TileVideo(media: XMedia, poster: Any?, post: XPost?, modifier: Modifier = Modifier) =
+    TileVideo({ VideoSource.of(media, it) }, media.alt, media.aspectRatio, poster, modifier) { player -> rememberTileDownload(media, post, player) }
 
 /**
  * [TileVideo] for any video: [source] what it plays as the settings given
@@ -66,7 +68,6 @@ internal fun TileVideo(
     alt: String?,
     aspectRatio: Float?,
     poster: Any?,
-    playing: Boolean,
     modifier: Modifier = Modifier,
     download: @Composable (VideoPlayer) -> (() -> Unit)?,
 ) {
@@ -74,9 +75,12 @@ internal fun TileVideo(
     val settings by LocalGraph.current.settings.state.collectAsStateWithLifecycle()
     val key = remember { Any() }
     var seen by remember { mutableStateOf(false) }
+    var share by remember { mutableFloatStateOf(0f) }
     val autoplay = settings?.get(MediaPrefs.autoplay) == true
+    val chosen by tiles.seen.chosen.collectAsState()
+    ReportsSeen(tiles, key, share, reports = autoplay && tiles.shared)
     val ask by rememberUpdatedState<() -> Unit> { source(settings)?.let { tiles.ask(key, it) } }
-    val byItself = VideoRules.startsByItself(autoplay, seen, playing, tiles.shared)
+    val byItself = VideoRules.startsByItself(autoplay, share, chosen === key, tiles.shared)
     LaunchedEffect(tiles, byItself) {
         if (!byItself) return@LaunchedEffect
         delay(VideoRules.SETTLE_MS)
@@ -85,7 +89,11 @@ internal fun TileVideo(
     DisposableEffect(tiles, key) { onDispose { tiles.drop(key) } }
     val turn by tiles.holder.collectAsState()
     val player = tiles.playerOf(key)?.takeIf { turn?.key == key }
-    val placed = modifier.onGloballyPositioned { seen = VideoRules.mostlySeen(it.boundsInWindow().height, it.size.height) }
+    val placed = modifier.onGloballyPositioned { coordinates ->
+        val bounds = coordinates.boundsInWindow()
+        seen = VideoRules.mostlySeen(bounds.height, coordinates.size.height)
+        share = VideoRules.shareStep(VideoRules.seenShare(bounds.width, bounds.height, coordinates.size.width, coordinates.size.height))
+    }
     val fullscreen = LocalVideoFullscreen.current
     when {
         player == null -> IdleTile(autoplay, settings?.get(MediaPrefs.mute) ?: true, onPlay = { ask() }, modifier = placed)
@@ -104,28 +112,45 @@ internal fun TileVideo(
     }
 }
 
-/** A GIF looping silently in its tile while it is seen (in a feed, while its row is the one the feed plays), as XTA's GIFs loop whatever Autoplay says. */
+/** Tells the feed's [tiles] how much of tile [key] is seen ([share]) while it [reports], and forgets it when it does not or is gone. */
 @Composable
-internal fun TileGif(media: XMedia, poster: Any?, playing: Boolean, modifier: Modifier = Modifier) {
+private fun ReportsSeen(tiles: PlayerTurns<VideoPlayer>, key: Any, share: Float, reports: Boolean) {
+    DisposableEffect(tiles, key, share, reports) {
+        if (reports) tiles.seen.report(key, share) else tiles.seen.forget(key)
+        onDispose { }
+    }
+    DisposableEffect(tiles, key) { onDispose { tiles.seen.forget(key) } }
+}
+
+/** A GIF looping silently in its tile while it is seen (in a feed, while it is the tile seen most), as XTA's GIFs loop whatever Autoplay says. */
+@Composable
+internal fun TileGif(media: XMedia, poster: Any?, modifier: Modifier = Modifier) {
     val graph = LocalGraph.current
     val source = remember(media) { VideoSource.of(media, graph.settings.state.value) }
-    TileGif(source, poster, playing, modifier)
+    TileGif(source, poster, modifier)
 }
 
 /** [TileGif] for any GIF: [source] what loops, null for nothing. */
 @Composable
-internal fun TileGif(source: VideoSource?, poster: Any?, playing: Boolean, modifier: Modifier = Modifier) {
+internal fun TileGif(source: VideoSource?, poster: Any?, modifier: Modifier = Modifier) {
     val tiles = rememberTilePlayer() ?: return
-    var seen by remember { mutableStateOf(false) }
+    val key = remember { Any() }
+    var share by remember { mutableFloatStateOf(0f) }
     var settled by remember { mutableStateOf(false) }
-    val wanted = VideoRules.gifLoops(seen, playing, tiles.shared)
+    val chosen by tiles.seen.chosen.collectAsState()
+    ReportsSeen(tiles, key, share, reports = tiles.shared && source != null)
+    val wanted = VideoRules.gifLoops(share, chosen === key, tiles.shared)
     LaunchedEffect(wanted) {
         settled = false
         if (!wanted) return@LaunchedEffect
         delay(VideoRules.SETTLE_MS)
         settled = true
     }
-    Box(modifier.onGloballyPositioned { seen = VideoRules.mostlySeen(it.boundsInWindow().height, it.size.height) }) {
+    val placed = modifier.onGloballyPositioned { coordinates ->
+        val bounds = coordinates.boundsInWindow()
+        share = VideoRules.shareStep(VideoRules.seenShare(bounds.width, bounds.height, coordinates.size.width, coordinates.size.height))
+    }
+    Box(placed) {
         if (settled && source != null) LoopingVideo(tiles, source, poster, Modifier.matchParentSize())
     }
 }

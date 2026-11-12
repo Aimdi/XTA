@@ -33,6 +33,9 @@ internal class PlayerTurns<P : PlayerCore>(private val make: () -> P, private va
 
     val holder: StateFlow<Turn<Any, VideoSource>?> get() = turns.holder
 
+    /** In a feed ([shared]), which of its tiles is seen most, and so plays by itself. */
+    val seen = MostSeen<Any>()
+
     /** A video wants the player now: it takes it from whoever has it. */
     fun ask(key: Any, source: VideoSource) {
         turns.ask(key, source)

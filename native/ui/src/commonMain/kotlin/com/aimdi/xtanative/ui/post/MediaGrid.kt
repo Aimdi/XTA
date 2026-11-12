@@ -76,8 +76,8 @@ private val MediaShape = RoundedCornerShape(16.dp)
  * description, else saves it under [username]'s name from post [postId].
  * While media loads manually each waits behind "Tap to show Media". A video
  * plays in its tile with its controls, and a GIF loops there (`ui/media`'s
- * TileVideo and TileGif): with [playing], the feed plays the first of them
- * by itself; [post] names a saved video's file. The row starts at
+ * TileVideo and TileGif), the one seen most of a feed playing by itself
+ * as Settings › Media says; [post] names a saved video's file. The row starts at
  * [start] and runs [bleed] on past the end of its column, to the screen's
  * edge, as XTA's does.
  */
@@ -86,7 +86,6 @@ fun MediaGrid(
     media: List<XMedia>,
     onOpen: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    playing: Boolean = false,
     post: XPost? = null,
     username: String = post?.author?.screenName.orEmpty(),
     postId: String = post?.id.orEmpty(),
@@ -94,15 +93,14 @@ fun MediaGrid(
     bleed: Dp = 0.dp,
 ) {
     if (media.isEmpty()) return
-    val playIndex = if (playing) media.indexOfFirst { it.kind != XMedia.Kind.PHOTO } else -1
     val owner = MediaOwner(username, postId, post)
     if (media.size == 1) {
         val frame = modifier.fillMaxWidth().aspectRatio(MediaStrip.singleAspect(MediaStrip.aspectOf(media[0]))).clip(MediaShape)
         Box(frame.border(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant, MediaShape).background(Color.Black)) {
-            ShownMedia(media[0], 0, 1, playIndex == 0, ContentScale.Fit, Color.Black, owner) { onOpen(0) }
+            ShownMedia(media[0], 0, 1, ContentScale.Fit, Color.Black, owner) { onOpen(0) }
         }
     } else {
-        MediaRow(media, playIndex, owner, start, bleed, modifier, onOpen)
+        MediaRow(media, owner, start, bleed, modifier, onOpen)
     }
 }
 
@@ -111,7 +109,7 @@ private class MediaOwner(val username: String, val postId: String, val post: XPo
 
 /** Several along a row at one height, opened at [start], running [bleed] past the column's end. */
 @Composable
-private fun MediaRow(media: List<XMedia>, playIndex: Int, owner: MediaOwner, start: Int, bleed: Dp, modifier: Modifier, onOpen: (Int) -> Unit) {
+private fun MediaRow(media: List<XMedia>, owner: MediaOwner, start: Int, bleed: Dp, modifier: Modifier, onOpen: (Int) -> Unit) {
     val row = rememberLazyListState(initialFirstVisibleItemIndex = MediaStrip.startOf(start, media.size))
     val backdrop = MaterialTheme.colorScheme.surfaceVariant
     BoxWithConstraints(modifier.fillMaxWidth().bleedEnd(bleed)) {
@@ -125,7 +123,7 @@ private fun MediaRow(media: List<XMedia>, playIndex: Int, owner: MediaOwner, sta
             itemsIndexed(media, key = { index, item -> "$index:" + item.url }) { index, item ->
                 val frame = Modifier.width(layout.widths[index].dp).fillMaxHeight().clip(MediaShape)
                 Box(frame.border(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant, MediaShape)) {
-                    ShownMedia(item, index, media.size, playIndex == index, ContentScale.Crop, backdrop, owner) { onOpen(index) }
+                    ShownMedia(item, index, media.size, ContentScale.Crop, backdrop, owner) { onOpen(index) }
                 }
             }
         }
@@ -138,7 +136,7 @@ private fun MediaRow(media: List<XMedia>, playIndex: Int, owner: MediaOwner, sta
  * read as "Media 2/4" when there are several.
  */
 @Composable
-private fun ShownMedia(media: XMedia, index: Int, count: Int, playing: Boolean, scale: ContentScale, backdrop: Color, owner: MediaOwner, onOpen: () -> Unit) {
+private fun ShownMedia(media: XMedia, index: Int, count: Int, scale: ContentScale, backdrop: Color, owner: MediaOwner, onOpen: () -> Unit) {
     var revealed by rememberSaveable(media.url) { mutableStateOf(false) }
     var describing by remember { mutableStateOf(false) }
     val url = photoUrl(media.url, rememberPhotoSize())
@@ -152,7 +150,7 @@ private fun ShownMedia(media: XMedia, index: Int, count: Int, playing: Boolean, 
         }
         // A long press on a photo shows what it is of, or saves it when it says nothing.
         val onLongPress: (() -> Unit)? = if (media.kind != XMedia.Kind.PHOTO) null else ({ describeOrSave(media, owner, saver) { describing = true } })
-        MediaTile(media, playing, url, scale, owner.post, Modifier.fillMaxSize().background(backdrop), onLongPress, onOpen)
+        MediaTile(media, url, scale, owner.post, Modifier.fillMaxSize().background(backdrop), onLongPress, onOpen)
         media.alt?.let { AltBadge(it, Modifier.align(Alignment.BottomStart)) }
     }
     if (describing) media.alt?.let { AltTextDialog(it) { describing = false } }
@@ -169,7 +167,7 @@ private fun describeOrSave(media: XMedia, owner: MediaOwner, saver: MediaSaver?,
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun MediaTile(media: XMedia, playing: Boolean, url: String, scale: ContentScale, post: XPost?, modifier: Modifier, onLongClick: (() -> Unit)?, onClick: () -> Unit) {
+private fun MediaTile(media: XMedia, url: String, scale: ContentScale, post: XPost?, modifier: Modifier, onLongClick: (() -> Unit)?, onClick: () -> Unit) {
     Box(modifier.combinedClickable(onClick = onClick, onLongClick = onLongClick)) {
         AsyncImage(
             model = url,
@@ -183,10 +181,10 @@ private fun MediaTile(media: XMedia, playing: Boolean, url: String, scale: Conte
                 PlayBadge(Modifier.align(Alignment.Center))
                 // Clear of the ALT badge, which takes the start.
                 media.durationMs?.let { Label(duration(it), Modifier.align(if (media.alt != null) Alignment.BottomEnd else Alignment.BottomStart)) }
-                TileVideo(media, url, post, playing, Modifier.matchParentSize())
+                TileVideo(media, url, post, Modifier.matchParentSize())
             }
             XMedia.Kind.GIF -> {
-                TileGif(media, url, playing, Modifier.matchParentSize())
+                TileGif(media, url, Modifier.matchParentSize())
                 MediaBadge(Modifier.align(Alignment.BottomEnd).padding(8.dp), icon = MediaIcons.GifBoxOutlined, description = stringResource(Res.string.posts_filter_videos))
             }
         }
