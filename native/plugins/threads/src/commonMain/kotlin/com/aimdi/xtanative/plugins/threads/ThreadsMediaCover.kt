@@ -25,8 +25,10 @@ import com.aimdi.xtanative.ui.post.PostIcons
 
 /** When a post's media waits behind a cover: Meta laid one over it and the reader hides sensitive media, as X's posts are hidden. */
 internal object ThreadsMediaCover {
-    fun covers(post: ThreadsPost, settings: Settings): Boolean =
-        post.mediaCovered && settings[PostsPrefs.hideSensitive] && !settings[PostsPrefs.alwaysShowSensitiveMedia]
+    fun covers(post: ThreadsPost, settings: Settings): Boolean = post.mediaCovered && hides(settings)
+
+    /** Whether the reader hides sensitive media. */
+    fun hides(settings: Settings): Boolean = settings[PostsPrefs.hideSensitive] && !settings[PostsPrefs.alwaysShowSensitiveMedia]
 }
 
 /** Where covered media stands: Threads' warning in a word, and Show, which draws it; nothing under it is loaded meanwhile. */

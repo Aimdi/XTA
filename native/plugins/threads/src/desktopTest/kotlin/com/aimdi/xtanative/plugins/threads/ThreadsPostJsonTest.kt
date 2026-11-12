@@ -4,7 +4,9 @@ import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.networks.threads.ThreadsImage
 import com.aimdi.xtanative.networks.threads.ThreadsLinkCard
 import com.aimdi.xtanative.networks.threads.ThreadsMedia
+import com.aimdi.xtanative.networks.threads.ThreadsPoll
 import com.aimdi.xtanative.networks.threads.ThreadsPost
+import com.aimdi.xtanative.networks.threads.ThreadsPostFacts
 import com.aimdi.xtanative.networks.threads.ThreadsTextFragment
 import com.aimdi.xtanative.networks.threads.ThreadsVideoRendition
 import java.time.Instant
@@ -107,5 +109,16 @@ class ThreadsPostJsonTest {
 
         assertEquals(emptyList(), read.media.single().images)
         assertEquals("https://cdn/new.jpg", read.media.single().tileUrl(300))
+    }
+
+    @Test
+    fun metasCoverAndTheCardsFactsAreKeptAndTheCoverWrittenOnlyWhenThereIsOne() {
+        val facts = ThreadsPostFacts(topicEmoji = "📚", shareCount = 4, aiLabel = true, poll = ThreadsPoll(listOf(ThreadsPoll.Option("Yes", 3), ThreadsPoll.Option("No", 1))))
+        val covered = post.copy(quoted = null, mediaCovered = true, facts = facts)
+
+        val back = ThreadsPostJson.list(ThreadsPostJson.listText(listOf(covered))).single()
+
+        assertEquals(covered, back)
+        assertEquals(false, J(ThreadsPostJson.json(post))["mediaCovered"].exists, "XTA's keys alone when nothing is covered")
     }
 }

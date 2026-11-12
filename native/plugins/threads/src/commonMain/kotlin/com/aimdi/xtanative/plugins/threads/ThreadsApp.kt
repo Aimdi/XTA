@@ -359,7 +359,9 @@ internal class ThreadsApp(val host: PluginHost) {
     fun shown(post: ThreadsPost): NetworkPost {
         drawn.put(post)
         post.quoted?.let(drawn::put)
-        return ThreadsShared.post(post, current()[MediaPrefs.videoQuality], Strings.spoiler.get(host.language))
+        val settings = current()
+        val covered = Strings.media_covered.get(host.language).takeIf { ThreadsMediaCover.hides(settings) }
+        return ThreadsShared.post(post, settings[MediaPrefs.videoQuality], Strings.spoiler.get(host.language), covered)
     }
 
     /** The post [shown] names, as the app drew it lately; null for one not drawn lately. */

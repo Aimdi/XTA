@@ -21,7 +21,8 @@ import kotlinx.serialization.json.JsonPrimitive
  * other's. Its media are four lists side by side, every video rendition kept;
  * a quote is kept one level deep. `imageSizes`, a list XTA does not read,
  * keeps every size Meta offered of each picture, so a kept post's tiles
- * still load one that fits them.
+ * still load one that fits them. Meta's cover over the media and the
+ * card's facts are kept too, so a liked post is covered and labelled as it was.
  */
 internal object ThreadsPostJson {
     fun list(text: String): List<ThreadsPost> = J.parse(text).list.mapNotNull(::post)
@@ -59,10 +60,16 @@ internal object ThreadsPostJson {
             replyToHandle = replyTo,
             isReply = row["isReply"].boolean ?: !replyTo.isNullOrEmpty(),
             facts = ThreadsFactsJson.facts(row["facts"]),
+            mediaCovered = row["mediaCovered"].boolean == true,
         )
     }
 
     fun json(post: ThreadsPost): JsonObject = JsonObject(
+        fields(post) + (if (post.mediaCovered) mapOf("mediaCovered" to JsonPrimitive(true)) else emptyMap()),
+    )
+
+    /** XTA's keys; Meta's cover over the media is written beside them only when there is one. */
+    private fun fields(post: ThreadsPost): Map<String, JsonElement> =
         mapOf(
             "id" to text(post.id),
             "handle" to text(post.handle),
@@ -93,8 +100,7 @@ internal object ThreadsPostJson {
             "replyToHandle" to text(post.replyToHandle),
             "isReply" to JsonPrimitive(post.isReply),
             "facts" to ThreadsFactsJson.json(post.facts),
-        ),
-    )
+        )
 
     /**
      * The pictures and videos, from XTA's lists side by side. A post kept

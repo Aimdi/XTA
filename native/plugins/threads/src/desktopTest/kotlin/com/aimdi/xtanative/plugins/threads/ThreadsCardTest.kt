@@ -3,6 +3,7 @@ package com.aimdi.xtanative.plugins.threads
 import androidx.compose.ui.graphics.Color
 import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.networks.threads.ThreadsParser
+import com.aimdi.xtanative.networks.threads.ThreadsMedia
 import com.aimdi.xtanative.networks.threads.ThreadsPoll
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsPostFacts
@@ -162,4 +163,18 @@ class ThreadsCardTest {
         assertNull(plain.warning)
         assertFalse(plain.coversText)
     }
+
+    @Test
+    fun theSharedRowCoversMediaMetaCoveredWhereTheReaderHidesItAndNeverAPostWithoutMedia() {
+        val media = listOf(ThreadsMedia("https://cdn/a.jpg", 1.0, null))
+        val post = ThreadsPost(id = "1", handle = "zuck", authorName = "Mark", text = "Hi", publishedAt = Instant.ofEpochSecond(1), media = media, mediaCovered = true)
+        val shown = ThreadsShared.post(post, MediaQuality.LARGE, "Spoiler", covered = "Covered")
+        assertEquals("Covered", shown.warning)
+        assertFalse(shown.coversText)
+        assertEquals("Covered", shown.mediaWarning())
+        assertNull(ThreadsShared.post(post, MediaQuality.LARGE, "Spoiler", covered = null).warning, "the reader shows sensitive media")
+        assertNull(ThreadsShared.post(post.copy(media = emptyList()), MediaQuality.LARGE, "Spoiler", covered = "Covered").warning)
+        assertEquals("Covered", ThreadsShared.post(post.copy(media = emptyList(), quoted = post), MediaQuality.LARGE, null, "Covered").quoted?.warning)
+    }
 }
+
