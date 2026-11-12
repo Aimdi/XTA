@@ -91,11 +91,14 @@ object ThreadsPages {
      * to a post and each reply thread under it on a post page. A post repeated
      * across scripts stays where it first appeared, so no chain shows it twice.
      */
-    fun chains(body: String): List<List<ThreadsPost>> {
+    fun chains(body: String): List<List<ThreadsPost>> =
+        chainsIn(ThreadsScripts.embedded(body, "\"thread_items\"").mapNotNull(ThreadsJson::decode))
+
+    /** [chains] of JSON already decoded: a page's scripts, or a GraphQL answer. */
+    fun chainsIn(roots: List<JsonElement>): List<List<ThreadsPost>> {
         val chains = mutableListOf<List<ThreadsPost>>()
         val seen = HashSet<String>()
-        ThreadsScripts.embedded(body, "\"thread_items\"")
-            .forEach { script -> ThreadsJson.decode(script)?.let { collectChains(it, chains, seen, depth = 0) } }
+        roots.forEach { collectChains(it, chains, seen, depth = 0) }
         return chains
     }
 

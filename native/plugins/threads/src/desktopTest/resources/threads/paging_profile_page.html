@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta property="og:title" content="Mark Zuckerberg (&#064;zuck) on Threads" />
+</head>
+<body>
+<!--
+  A profile page in the shape guessed for paging before CI's probe read one: the
+  ThreadsTab query defined with its doc id beside its preloader id, the RepliesTab
+  query with its doc id kept apart from its variables, and the ThreadsTab answer
+  under RelayPrefetchedStreamCache with data.mediaData.page_info. Post text is
+  replaced by "A thread"; the ids and doc ids are invented.
+-->
+<script type="application/json" data-sjs>{"require":[["ScheduledServerJS","handle",null,[{"__bbox":{"define":[["LSD",[],{"token":"AVpaging1"},323]]}}]]]}</script>
+<script type="application/json" data-sjs>{"require":[["ScheduledServerJS","handle",null,[{"__bbox":{"require":[["BarcelonaRelayPreloaders","preload",[],[{"queries":[{"preloaderID":"adp_BarcelonaProfileThreadsTabDirectQueryRelayPreloader_1","queryID":"24000000000000001","variables":{"userID":"314216","__relay_internal__pv__BarcelonaIsLoggedInrelayprovider":false}},{"preloaderID":"adp_BarcelonaProfileRepliesTabDirectQueryRelayPreloader_2","variables":{"userID":"314216"},"params":{"queryID":"24000000000000002"}}]}]]]}}]]]}</script>
+<script type="application/json" data-sjs>{"require":[["ScheduledServerJS","handle",null,[{"__bbox":{"require":[["RelayPrefetchedStreamCache","next",[],["adp_BarcelonaProfileThreadsTabDirectQueryRelayPreloader_1",{"__bbox":{"complete":true,"result":{"data":{"mediaData":{"edges":[{"node":{"thread_items":[{"post":{"pk":"3400000000000000101","id":"3400000000000000101_314216","code":"DApage0101","taken_at":1761900000,"caption":{"text":"A thread"},"user":{"pk":"314216","username":"zuck","profile_pic_url":"https://scontent.cdninstagram.com/v/zuck_150.jpg"},"text_post_app_info":{}}}]}},{"node":{"thread_items":[{"post":{"pk":"3400000000000000102","id":"3400000000000000102_314216","code":"DApage0102","taken_at":1761800000,"caption":{"text":"A thread"},"user":{"pk":"314216","username":"zuck","profile_pic_url":"https://scontent.cdninstagram.com/v/zuck_150.jpg"},"text_post_app_info":{}}}]}}],"page_info":{"end_cursor":"QVFIcursor1","has_next_page":true}}}}}}]]]}}]]]}</script>
+<script type="application/json" data-sjs>{"require":[["ScheduledServerJS","handle",null,[{"__bbox":{"require":[["RelayPrefetchedStreamCache","next",[],["adp_BarcelonaProfileRepliesTabDirectQueryRelayPreloader_2",{"__bbox":{"complete":true,"result":{"data":{"mediaData":{"edges":[],"page_info":{"end_cursor":null,"has_next_page":false}}}}}}]]]}}]]]}</script>
+</body>
+</html>

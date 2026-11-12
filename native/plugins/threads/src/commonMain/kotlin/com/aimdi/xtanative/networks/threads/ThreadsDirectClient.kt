@@ -17,6 +17,7 @@ import java.time.Instant
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import okhttp3.HttpUrl
@@ -308,8 +309,21 @@ class ThreadsDirectClient(
     /** Guest GraphQL's profile tab (`BarcelonaProfileThreadsTabQuery`), as threads.com's own page asks it. */
     private suspend fun guestThreads(handle: String, userId: String, lsd: String): List<ThreadsPost> {
         val values = repairs()
-        val url = ThreadsLinks.web("/api/graphql")
-        val form = listOf("lsd" to lsd, "doc_id" to values.guestDocId, "variables" to buildJsonObject { put("userID", userId) }.toString())
+        val url = ThreadsLinks.web(GRAPHQL)
+        val query = GuestQuery(values.guestDocId, values.guestQueryName, buildJsonObject { put("userID", userId) })
+        val response = guestQuery(query, lsd, "/@$handle")
+        if (response.code == 429) throw guestThrottled(url)
+        if (response.code != 200) throw ThreadsException(UNREACHABLE, "$url: ${response.code}", response.code)
+        // Guest GraphQL sometimes answers with the HTML shell when its headers are off; a post may well mention `<html>`.
+        if (response.body.trimStart().startsWith("<")) throw ThreadsException(UNREACHABLE, "$url: HTML instead of JSON", response.code)
+        return ThreadsParser.graphqlFeed(decodeJson(response, url))
+    }
+
+    /** One guest GraphQL query, as a logged-out threads.com page at [referer] asks it with its [lsd] token; paced as a guest read. */
+    internal suspend fun guestQuery(query: GuestQuery, lsd: String, referer: String, path: String = GRAPHQL): XResponse {
+        val values = repairs()
+        val url = ThreadsLinks.web(path)
+        val form = listOf("lsd" to lsd, "doc_id" to query.docId, "variables" to query.variables.toString()) + query.extraForm
         val body = form.joinToString("&") { (name, value) -> "${ThreadsLinks.formEncode(name)}=${ThreadsLinks.formEncode(value)}" }
         val headers = mapOf(
             "User-Agent" to values.webUserAgent,
@@ -319,16 +333,11 @@ class ThreadsDirectClient(
             "X-IG-App-ID" to values.appId,
             "X-ASBD-ID" to values.asbdId,
             "X-FB-LSD" to lsd,
-            "X-FB-Friendly-Name" to values.guestQueryName,
+            "X-FB-Friendly-Name" to query.name,
             "Origin" to ThreadsLinks.WEB,
-            "Referer" to "${ThreadsLinks.WEB}/@$handle",
+            "Referer" to "${ThreadsLinks.WEB}$referer",
         )
-        val response = send(asGuest = true, url) { http.post(url, headers, body, FORM) }
-        if (response.code == 429) throw guestThrottled(url)
-        if (response.code != 200) throw ThreadsException(UNREACHABLE, "$url: ${response.code}", response.code)
-        // Guest GraphQL sometimes answers with the HTML shell when its headers are off; a post may well mention `<html>`.
-        if (response.body.trimStart().startsWith("<")) throw ThreadsException(UNREACHABLE, "$url: HTML instead of JSON", response.code)
-        return ThreadsParser.graphqlFeed(decodeJson(response, url))
+        return send(asGuest = true, url) { http.post(url, headers, body, FORM) }
     }
 
     /** A session read: paced, refused while the session cools down, and checked for what Meta said. */
@@ -483,6 +492,7 @@ class ThreadsDirectClient(
         const val POSTS_PER_ACCOUNT = 20
 
         private const val INSTAGRAM = "https://i.instagram.com"
+        private const val GRAPHQL = "/api/graphql"
         private const val FORM = "application/x-www-form-urlencoded"
         private const val ACCEPT_LANGUAGE = "en-US,en;q=0.9"
         private const val TIMEOUT_MILLIS = 25_000L
@@ -506,3 +516,11 @@ class ThreadsDirectClient(
         }
     }
 }
+
+/** A guest GraphQL query: its doc id, the name threads.com sends it under, its variables, and any form fields its client adds. */
+internal data class GuestQuery(
+    val docId: String,
+    val name: String,
+    val variables: JsonObject,
+    val extraForm: List<Pair<String, String>> = emptyList(),
+)
