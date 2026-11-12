@@ -63,6 +63,13 @@ internal data class ThreadsForYouKept(
 
         private const val VERSION = 1
 
+        /**
+         * The section the tab opens on: the one kept, or, the first time it is
+         * opened with no one followed yet, For you, which a guest can read at once.
+         */
+        fun openingSection(text: String?, follows: Boolean): ThreadsSection =
+            if (text.isNullOrBlank() && !follows) ThreadsSection.FOR_YOU else decode(text).section
+
         /** What [text] keeps; anything unreadable is nothing kept. */
         fun decode(text: String?): ThreadsForYouKept {
             val root = J.parse(text.orEmpty())

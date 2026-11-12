@@ -205,10 +205,11 @@ internal class ThreadsApp(val host: PluginHost) {
     /** Paints the For you feed and the section the reader last saw, once, before anything is asked of Meta. */
     suspend fun restoreForYou() = forYouRestore.withLock {
         if (forYouRestored) return@withLock
-        val kept = ThreadsForYouKept.decode(forYouFile.read())
+        val text = forYouFile.read()
+        val kept = ThreadsForYouKept.decode(text)
         forYou.restore(kept.posts, kept.source, kept.readAt)
         forYouPlace = kept.place
-        section.value = kept.section
+        section.value = ThreadsForYouKept.openingSection(text, follows = attemptKept { accounts.load() }.orEmpty().isNotEmpty())
         forYouRestored = true
     }
 

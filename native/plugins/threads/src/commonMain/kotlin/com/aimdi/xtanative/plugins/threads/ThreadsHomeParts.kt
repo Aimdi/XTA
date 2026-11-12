@@ -249,6 +249,18 @@ internal fun PeopleStrip(app: ThreadsApp, people: List<ThreadsPerson>) {
     }
 }
 
+/** Accounts to follow before following anyone: each opens its profile, with Follow beside it. */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+internal fun StarterPeople(app: ThreadsApp, people: List<ThreadsPerson>) {
+    Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
+        Text(pluginString(Strings.try_public), style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(bottom = 8.dp))
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            people.forEach { person -> PersonChip(app, person) }
+        }
+    }
+}
+
 @Composable
 private fun PersonChip(app: ThreadsApp, person: ThreadsPerson) {
     Row(verticalAlignment = Alignment.CenterVertically) {

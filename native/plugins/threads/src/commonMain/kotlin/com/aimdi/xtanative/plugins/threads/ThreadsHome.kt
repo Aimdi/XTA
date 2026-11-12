@@ -258,22 +258,31 @@ private fun PendingNote(pending: Int) {
     NoteText(pluginPlural(Strings.accounts_pending, pending, pending), Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 24.dp))
 }
 
-/** Following no one, or no one has posted: where to start. */
+/** Following no one, or no one has posted: where to start, with For you and accounts to follow in one tap. */
 @Composable
 private fun NothingYet(app: ThreadsApp, onAdd: () -> Unit, onSearch: () -> Unit) {
     val rows by app.accounts.state.collectAsState()
     val state by app.feed.state.collectAsState()
+    val forYou by app.forYou.state.collectAsState()
     val pending = remember(rows, state.items) { app.reader.pending(ThreadsAccounts.handles(rows)) }
-    if (pending > 0) PendingNote(pending)
-    EmptyPane(ThreadsIcons.Mark, pluginString(if (rows.isNullOrEmpty()) Strings.no_accounts else Strings.no_posts), detail = pluginString(Strings.empty_cta)) {
-        Button(onClick = onAdd) {
-            Icon(ThreadsIcons.PersonAdd, contentDescription = null, modifier = Modifier.size(18.dp))
-            Text(pluginString(Strings.add_account), modifier = Modifier.padding(start = 8.dp))
+    val people = remember(rows, forYou.posts) { ThreadsStarters.people(forYou.posts) { ThreadsAccounts.follows(rows, it) } }
+    Column(Modifier.fillMaxWidth()) {
+        if (pending > 0) PendingNote(pending)
+        EmptyPane(ThreadsIcons.Mark, pluginString(if (rows.isNullOrEmpty()) Strings.no_accounts else Strings.no_posts), detail = pluginString(Strings.empty_cta)) {
+            Button(onClick = onAdd) {
+                Icon(ThreadsIcons.PersonAdd, contentDescription = null, modifier = Modifier.size(18.dp))
+                Text(pluginString(Strings.add_account), modifier = Modifier.padding(start = 8.dp))
+            }
+            FilledTonalButton(onClick = { app.show(ThreadsSection.FOR_YOU) }) {
+                Icon(PostIcons.Sparkle, contentDescription = null, modifier = Modifier.size(18.dp))
+                Text(pluginString(Strings.for_you), modifier = Modifier.padding(start = 8.dp))
+            }
+            TextButton(onClick = onSearch) {
+                Icon(Icons.Filled.Search, contentDescription = null, modifier = Modifier.size(18.dp))
+                Text(pluginString(Strings.discover), modifier = Modifier.padding(start = 8.dp))
+            }
         }
-        TextButton(onClick = onSearch) {
-            Icon(Icons.Filled.Search, contentDescription = null, modifier = Modifier.size(18.dp))
-            Text(pluginString(Strings.discover), modifier = Modifier.padding(start = 8.dp))
-        }
+        if (people.isNotEmpty()) StarterPeople(app, people)
     }
 }
 
