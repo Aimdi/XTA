@@ -1,40 +1,105 @@
-name: Native prototype
+name: XTA
 
-# Builds XTA Native, the prototype in native/ for Android and the Linux desktop,
-# beside the Flutter app. Every push to the prototype's branch builds and tests
-# it; a commit whose message carries [prerelease] also publishes the APK and the
-# Linux tarball and Arch package as a GitHub prerelease, never marked latest, so
-# XTA's own releases are untouched. (A manual run cannot: runs started through
-# the GitHub integration get no release permission.)
+# Builds XTA (XTA Native, in native/) for Android and the Linux desktop. Every
+# push builds and tests it. A commit whose message carries [prerelease] also
+# publishes the APK, the Linux tarball and the Arch package as a GitHub
+# prerelease, never marked latest; one whose message carries [release]
+# publishes them as a release marked latest, versioned by native/VERSION
+# (raise it in that commit). (A manual run cannot publish: runs started
+# through the GitHub integration get no release permission.) Once a day the
+# live job alone reads X and the other networks, and nothing else runs.
+#
+# The file keeps its name: the run's number is the APK's versionCode, and
+# GitHub numbers runs per workflow file, so a new name would start it again
+# below the prereleases already installed.
 on:
   push:
-    branches: [claude/admiring-mayer-bdfg95]
+    branches: [claude/admiring-mayer-bdfg95, main, claude/main]
     paths:
       - 'native/**'
-      # The published repairs, which :networks' and TikTok's tests hold to what the build ships.
+      # The published documents, which native tests hold to what the build reads
+      # (NetworkRepairsTest, the plugins' *RepairsTest, PublishedDocumentsTest).
       - 'repairs.json'
+      - 'endpoints.json'
+      - 'sources.json'
+      - 'sources/**'
+      # The design skills and their checks (the skills job).
+      - '.claude/skills/**'
+      - 'docs/xta-design-skills.md'
       - '.github/workflows/native-prototype.yml'
+  # The daily probe of X and the other networks: the live job only. GitHub runs
+  # a schedule from the default branch's copy of this file.
+  schedule:
+    - cron: '17 5 * * *'
   workflow_dispatch:
 
 permissions:
   contents: write
 
-# A prerelease run has a group of its own, so a later push cannot cancel it.
-# (The groups' names were renewed once, when GitHub held two runs of the old
-# release group queued for hours without ever starting them.)
+# A release or prerelease run has a group of its own, so a later push cannot
+# cancel it, and so has the daily probe. (The groups' names were renewed twice,
+# once when GitHub held two runs of the old release group queued for hours
+# without ever starting them; never go back to native-prototype-….)
 concurrency:
-  group: native-prototype-2-${{ github.ref }}-${{ contains(github.event.head_commit.message, '[prerelease]') && 'release' || 'build' }}
+  group: xta-${{ github.ref }}-${{ github.event_name == 'schedule' && 'daily' || ((contains(github.event.head_commit.message, '[release]') || contains(github.event.head_commit.message, '[prerelease]')) && 'release' || 'build') }}
   cancel-in-progress: true
 
 jobs:
+  # The version every job builds. A [release] is native/VERSION, tagged
+  # v<version>. Anything else is the latest release's version with the run's
+  # number after it, tagged native-<version> (1.0.0.<run>, newer than 1.0.0
+  # and older than 1.0.1), or 0.1.<run> before the first release. The
+  # versionCode is always the run's number, which only grows in this file, as
+  # every prerelease's did.
+  version:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      name: ${{ steps.version.outputs.name }}
+      tag: ${{ steps.version.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Version
+        id: version
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[release]') }}
+          RUN: ${{ github.run_number }}
+        run: |
+          set -euo pipefail
+          version=$(tr -d '[:space:]' < native/VERSION)
+          [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "::error::native/VERSION is not MAJOR.MINOR.PATCH: $version"; exit 1; }
+          if [ "$RELEASE" = true ]; then
+            if gh release view "v$version" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+              echo "::error::v$version is released already: raise native/VERSION in the [release] commit"
+              exit 1
+            fi
+            name=$version
+            tag=v$version
+          else
+            latest=$(gh release list --repo "$GITHUB_REPOSITORY" --limit 100 --exclude-drafts --exclude-pre-releases --json tagName -q '.[].tagName' \
+              | sed -nE 's/^v([0-9]+\.[0-9]+\.[0-9]+)$/\1/p' | sort -V | tail -1)
+            name=${latest:-0.1}.$RUN
+            tag=native-$name
+          fi
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "XTA $name ($tag), versionCode $RUN" | tee -a "$GITHUB_STEP_SUMMARY"
+
   build:
+    if: github.event_name != 'schedule'
+    needs: version
     runs-on: ubuntu-latest
     timeout-minutes: 30
     defaults:
       run:
         working-directory: native
     env:
-      VERSION_NAME: 0.1.${{ github.run_number }}
+      VERSION_NAME: ${{ needs.version.outputs.name }}
     steps:
       - uses: actions/checkout@v4
 
@@ -61,8 +126,8 @@ jobs:
         env:
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
         run: |
-          # The prototype is signed like XTA when the key is there; without it
-          # the build falls back to the debug key, which still installs.
+          # The app is signed with XTA's release key when it is there; without
+          # it the build falls back to the debug key, which still installs.
           if [ -n "$SIGNING_KEY" ]; then
             echo "$SIGNING_KEY" | base64 -d > "$RUNNER_TEMP/native.jks"
             echo "KEY_PATH=$RUNNER_TEMP/native.jks" >> "$GITHUB_ENV"
@@ -75,6 +140,7 @@ jobs:
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           NATIVE_VERSION_CODE: ${{ github.run_number }}
           NATIVE_VERSION_NAME: ${{ env.VERSION_NAME }}
+          NATIVE_RELEASE_TAG: ${{ needs.version.outputs.tag }}
         run: ./gradlew :app:assembleRelease --console=plain
 
       - name: Size
@@ -114,8 +180,8 @@ jobs:
           path: ${{ runner.temp }}/xta-native-*.apk
 
       # Every plugin as a code-only APK signed like the app (PLUGINS.md), with
-      # its catalogue entry; numbered by the run, so each prerelease's plugins
-      # are newer than the last ones published.
+      # its catalogue entry; numbered by the run, so each release's and
+      # prerelease's plugins are newer than the last ones published.
       - name: Build the Android plugins
         env:
           KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
@@ -139,8 +205,11 @@ jobs:
 
 
   # Live x.com, as XTA's own X check reads it: the request signer derived from
-  # x.com's pages with no session, then @X's profile as a guest. It says
-  # whether the native client still reaches X; X's moods hold no prerelease back.
+  # x.com's pages with no session, then @X's profile as a guest, and every
+  # network's live test. It says whether the app still reaches them; their
+  # moods hold no release back. It runs on every push and, alone, once a day
+  # (the schedule above): XTA's daily probe. When X's request signing breaks,
+  # core/x/signing is repaired by hand; nothing opens a repair by itself.
   live:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -175,6 +244,7 @@ jobs:
   # (native/tool/mock-x): no account, no live request. Fails
   # when the app crashes, and keeps a screenshot of each screen.
   screens:
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     timeout-minutes: 55
     steps:
@@ -235,9 +305,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          # The latest XTA release's x86_64 build, for the emulator, asked for
-          # with the job's token: the API turns away a runner's unauthenticated
-          # calls once its address has made too many. Without such a release
+          # The latest release's x86_64 build of the Flutter XTA, for the
+          # emulator, asked for with the job's token: the API turns away a
+          # runner's unauthenticated calls once its address has made too many.
+          # Once XTA Native's own release is the latest, there is none, and
           # XTA Native is measured alone (tool/compare.sh).
           tag=$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName -q .tagName || true)
           if [ -n "$tag" ] && gh release download "$tag" --repo "$GITHUB_REPOSITORY" --pattern "xta-${tag}_x86_64.apk" --output "$RUNNER_TEMP/xta.apk"; then
@@ -303,15 +374,17 @@ jobs:
           path: native-screens
           if-no-files-found: ignore
 
-  # The Linux app, packed as XTA ships its own (a tarball and an Arch package),
+  # The Linux app, packed as a release ships it (a tarball and an Arch package),
   # then started from that tarball under a virtual display against the same
   # stand-in for X: fails when the app does not stay up, and shows its window
   # in the log.
   desktop:
+    if: github.event_name != 'schedule'
+    needs: version
     runs-on: ubuntu-latest
     timeout-minutes: 40
     env:
-      VERSION_NAME: 0.1.${{ github.run_number }}
+      VERSION_NAME: ${{ needs.version.outputs.name }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -347,6 +420,7 @@ jobs:
         working-directory: native
         env:
           NATIVE_VERSION_NAME: ${{ env.VERSION_NAME }}
+          NATIVE_RELEASE_TAG: ${{ needs.version.outputs.tag }}
           KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
@@ -380,17 +454,19 @@ jobs:
           python3 -I native/tool/plugin_abi.py --oldest "${oldest:?no OLDEST_PLUGIN_API in XtaPlugin.kt}" --app "$app" "$RUNNER_TEMP"/published/*.jar
 
       # This build's plugins say they are for PLUGIN_API_VERSION, and an app of
-      # the last prerelease that loads that version would be offered them: they
-      # have to link against it, or the API changed without a new version.
-      - name: The last prerelease's app runs this build's plugins
+      # the last release or prerelease that loads that version would be offered
+      # them: they have to link against it, or the API changed without a new version.
+      - name: The last release's app runs this build's plugins
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           api=$(sed -n 's/^const val PLUGIN_API_VERSION: Int = \([0-9]*\)$/\1/p' native/ui/src/commonMain/kotlin/com/aimdi/xtanative/ui/plugins/XtaPlugin.kt)
-          last=$(gh release list --repo "$GITHUB_REPOSITORY" --limit 50 --json tagName -q '.[].tagName' | grep -E '^native-[0-9]+\.' | sort -V | tail -1)
+          # The newest by version of native-<version> and v<version> (never the Flutter fork's v4.12.0-…).
+          last=$(gh release list --repo "$GITHUB_REPOSITORY" --limit 50 --json tagName -q '.[].tagName' \
+            | sed -nE 's/^(native-|v)([0-9]+(\.[0-9]+)+)$/\2 &/p' | sort -V -k1,1 | tail -1 | cut -d' ' -f2)
           mkdir -p "$RUNNER_TEMP/last"
           if [ -z "$last" ] || ! gh release download native-plugins --repo "$GITHUB_REPOSITORY" --pattern plugins.json --dir "$RUNNER_TEMP/last"; then
-            echo "No prerelease with plugins yet"
+            echo "No release with plugins yet"
             exit 0
           fi
           published=$(python3 -I -c 'import json, sys; print(max(p["apiVersion"] for p in json.load(open(sys.argv[1]))["plugins"]))' "$RUNNER_TEMP/last/plugins.json")
@@ -622,13 +698,30 @@ jobs:
           path: native-desktop
           if-no-files-found: ignore
 
+  # The design skills in .claude/skills (docs/xta-design-skills.md): each one
+  # loads, and the two design skills are whole, licensed and runnable.
+  skills:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Every skill loads
+        run: bash native/tool/skills/check_skill_sync.sh
+
+      - name: The design skills are whole
+        run: python3 -I native/tool/skills/check_design_skills.py
+
   # Published only when the build, the emulator run and the desktop run all passed.
   prerelease:
-    if: contains(github.event.head_commit.message, '[prerelease]')
-    needs: [build, screens, desktop]
+    if: github.event_name == 'push' && contains(github.event.head_commit.message, '[prerelease]') && !contains(github.event.head_commit.message, '[release]')
+    needs: [version, build, screens, desktop]
     runs-on: ubuntu-latest
     env:
-      VERSION_NAME: 0.1.${{ github.run_number }}
+      VERSION_NAME: ${{ needs.version.outputs.name }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -676,31 +769,70 @@ jobs:
             --target "$GITHUB_SHA" \
             --prerelease \
             --latest=false \
-            --title "XTA Native $VERSION_NAME (prototype)" \
+            --title "XTA $VERSION_NAME (prerelease)" \
             --notes-file native/PRERELEASE.md
 
       # The plugins and their catalogue, plugins.json (PLUGINS.md), as assets of
-      # one rolling release the app reads the catalogue from: the files first,
-      # then the catalogue that names them, then the files no catalogue names
-      # any more. Never marked latest.
+      # one rolling release the app reads the catalogue from (tool/publish_plugins.sh).
       - name: Plugins
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          python3 native/tool/plugin_catalogue.py \
-            --base-url "https://github.com/$GITHUB_REPOSITORY/releases/download/native-plugins" \
-            --android plugins-android --desktop plugins-desktop --out release/plugins.json --copy-to release
-          cat release/plugins.json
-          if ! gh release view native-plugins --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
-            gh release create native-plugins --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease --latest=false \
-              --title "XTA Native plugins" \
-              --notes "The plugins XTA Native's plugin store offers, and plugins.json, the list it reads. Installed from the store, never by hand."
-          fi
-          gh release upload native-plugins release/xta-plugin-* --repo "$GITHUB_REPOSITORY" --clobber
-          gh release upload native-plugins release/plugins.json --repo "$GITHUB_REPOSITORY" --clobber
-          for asset in $(gh release view native-plugins --repo "$GITHUB_REPOSITORY" --json assets -q '.assets[].name'); do
-            case "$asset" in
-              xta-plugin-*) [ -f "release/$asset" ] || gh release delete-asset native-plugins "$asset" --repo "$GITHUB_REPOSITORY" --yes ;;
-            esac
-          done
+        run: bash native/tool/publish_plugins.sh plugins-android plugins-desktop
 
+  # A release: the same files as a prerelease and their checksums, published
+  # as v<native/VERSION>, marked latest, with native/RELEASE.md as its notes.
+  # Installed apps download the voice engine from releases/latest, so it
+  # carries the engine's archives; the update check offers it to every install.
+  release:
+    if: github.event_name == 'push' && contains(github.event.head_commit.message, '[release]')
+    needs: [version, build, screens, desktop, skills]
+    runs-on: ubuntu-latest
+    env:
+      VERSION_NAME: ${{ needs.version.outputs.name }}
+      TAG: ${{ needs.version.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      # The APK, the desktop files and both plugin sets, each in artifacts/<its name>/.
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: xta-native-*
+          path: artifacts
+
+      - name: The voice engine's archives
+        run: |
+          python3 -I native/tool/voice_engine.py archives voice-engine
+          python3 -I native/tool/voice_engine.py check voice-engine
+
+      - name: The files and their checksums
+        run: |
+          set -euo pipefail
+          mkdir release-files
+          cp "artifacts/xta-native-$VERSION_NAME/xta-native-$VERSION_NAME.apk" \
+            "artifacts/xta-native-desktop-$VERSION_NAME/xta-native-desktop-$VERSION_NAME-linux-x64.tar.gz" \
+            "artifacts/xta-native-desktop-$VERSION_NAME/xta-native-$VERSION_NAME-1-x86_64.pkg.tar.zst" \
+            "artifacts/xta-native-desktop-$VERSION_NAME/PKGBUILD" \
+            voice-engine/xta-voice-engine-*.tar.xz \
+            release-files/
+          (cd release-files && sha256sum -- * > SHA256SUMS)
+          cat release-files/SHA256SUMS
+          [ "$(ls release-files/xta-voice-engine-*.tar.xz | wc -l)" -eq 3 ] \
+            || { echo "::error::A release carries the voice engine for all three processors"; exit 1; }
+
+      - name: Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$TAG" release-files/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --latest \
+            --title "XTA $VERSION_NAME" \
+            --notes-file native/RELEASE.md
+
+      - name: Plugins
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash native/tool/publish_plugins.sh "artifacts/xta-native-plugins-android-$VERSION_NAME" "artifacts/xta-native-plugins-desktop-$VERSION_NAME"
