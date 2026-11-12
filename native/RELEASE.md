@@ -1,5 +1,7 @@
 **XTA Native is XTA now.** XTA is written again in Kotlin and Compose Multiplatform, for Android and the Linux desktop from the same screens, and it replaces the Flutter XTA, whose last release stays downloadable under its `aimdi` tag. It reads X and the other networks as XTA did. Nothing is posted, liked or followed on any network: follows, likes, saves and notes stay on your device.
 
+**New in 1.0.1:** an opened post's reply threads no longer pile up on top of each other when X groups several replies in one thread, and the + on avatars to follow someone is a clean, whole badge again.
+
 ### Installing
 
 - **Android 8.0 or newer:** install `xta-native-….apk`. It installs as its own app, `com.aimdi.xtanative`, **next to the Flutter XTA** (`com.aimdi.xta`), and shares nothing with it: the old app and its data are untouched until you remove them.
