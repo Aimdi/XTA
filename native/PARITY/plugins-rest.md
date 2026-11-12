@@ -1,5 +1,7 @@
 # Plugins, the rest: parity ledger (booru, EH, stocks and the shared plugin UI)
 
+> A record of the port: the `.dart` test files and widgets named here are XTA's Flutter sources as of commit `fab7619b`, the last that has them. The Flutter app was deleted after it; the repository's history keeps it (`git show fab7619b:test/…`).
+
 One line per XTA test: `status | test file › test name | native place (file) | note`.
 Statuses: covered (a native JVM test asserts the same), untested → ported (implemented; the
 Flutter widget/timing assertion has no Compose widget harness, the rule or store it covers is

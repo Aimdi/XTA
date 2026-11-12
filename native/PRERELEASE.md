@@ -1,8 +1,8 @@
-**XTA Native is a prototype.** It is XTA written again in Kotlin and Compose instead of Flutter, for Android and the Linux desktop from the same screens, so you can compare size, start time and feel with XTA itself. It is not a release and may be withdrawn.
+**This is a prerelease of XTA Native**, a test build between releases: the newest work, checked by the same tests and emulator walk as a release, but not yet released. XTA Native is XTA written again in Kotlin and Compose, for Android and the Linux desktop from the same screens; it replaced XTA's Flutter app. The latest release is at [releases/latest](https://github.com/Aimdi/XTA/releases/latest).
 
 ### Trying it
 
-1. Install the APK below. It installs **next to XTA** (its own app id, `com.aimdi.xtanative`) and shares nothing with it: XTA and its data are untouched.
+1. Install the APK below. It installs **next to the Flutter XTA** (its own app id, `com.aimdi.xtanative`; XTA's is `com.aimdi.xta`) and shares nothing with it: XTA and its data are untouched.
 2. Sign in to X in the app, from its first screen or **Settings → Accounts → +**: X's own sign-in page on Android, XTA's cookie form on Linux.
 3. Or bring everything over from XTA: in XTA, open **Settings → Data → Export**, switch on **"Export accounts?"**, and export; then choose that file in XTA Native (later, **Settings → Data → Import**). Your X accounts, the accounts you follow, your groups, saved posts, notes and settings come with it.
 
@@ -95,7 +95,7 @@ It keeps its data in `~/.local/share/xta-native`, a folder only you can open. Vi
   - Long-press a hashtag to follow the topic; crash reports filed on GitHub when you set them up; headset buttons; the phone's fastest refresh rate
   - Without an X account the app opens on Home and asks once, as XTA does
 
-### Comparing it with XTA
+### Comparing it with the Flutter XTA
 
 - **Size:** this APK against XTA's.
 - **Start:** close both apps fully, then open each from the launcher. Both show the last feed from disk.

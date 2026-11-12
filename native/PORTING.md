@@ -3,7 +3,7 @@
 XTA Native is XTA's reader rewritten in Kotlin: Android first (Jetpack Compose),
 with the same UI built for the Linux desktop through Compose Multiplatform. This
 guide is for porting one of XTA's networks (`lib/plugins/<name>/` in the Flutter
-app) into `native/networks`.
+app, kept in history at commit `fab7619b`) into `native/networks`.
 
 ## What a port is
 
@@ -55,7 +55,7 @@ what they are and why, in plain words; no comments that repeat the code.
 `kotlin.test` on JUnit 5. For each response shape, a test that parses a fixture
 and checks the fields that matter. For each client call, a test with a fake
 `XHttp` that checks the URL, parameters and headers sent, and the pagination.
-Port the rules XTA's own tests encode (`test/` in the Flutter app; grep for the
+Port the rules XTA's own tests encode (`test/` in the Flutter app at `fab7619b`; grep for the
 plugin's name). Fixtures come from XTA's `test/fixtures/` where they exist;
 copy only what you use and keep them small.
 

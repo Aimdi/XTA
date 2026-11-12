@@ -1,5 +1,7 @@
 # Parity ledger: x-posts (round 3)
 
+> A record of the port: the `.dart` test files and widgets named here are XTA's Flutter sources as of commit `fab7619b`, the last that has them. The Flutter app was deleted after it; the repository's history keeps it (`git show fab7619b:test/…`).
+
 One line per XTA test: `status | test file › test name | native place (file) | note`.
 
 - **covered**: native does it and a native test checks it.

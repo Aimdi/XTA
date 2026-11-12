@@ -1,5 +1,5 @@
-// XTA Native: a prototype of XTA written in Kotlin, beside the Flutter app, for
-// Android and the Linux desktop.
+// XTA Native: XTA written in Kotlin, for Android and the Linux desktop. It
+// replaced XTA's Flutter app, which history keeps up to commit fab7619b.
 //
 // :core is plain Kotlin (the X client, the request signer, the parsers, the
 // backup import) and builds anywhere with a JDK; so do :networks, the other

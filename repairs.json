@@ -1,5 +1,5 @@
 {
-  "_comment": "Repairs for the networks' fragile values, read by every install once a day and applied over what each release ships (docs/specs/published-repairs.md). Only keys a build knows are used, and only values that fit their kind: request and app ids, versions, client ids, user agents. Nothing here can change where a request goes. Each entry must be the value this repository ships (a unit test checks it): to repair a network, change the value here and in lib/plugins/plugin_repairs.dart together.",
+  "_comment": "Repairs for the networks' fragile values, read by every install once a day and applied over what each release ships (docs/specs/published-repairs.md). Only keys a build knows are used, and only values that fit their kind: request and app ids, versions, client ids, user agents. Nothing here can change where a request goes. Each entry must be the value this repository ships (a unit test checks it): to repair a network, change the value here and in the plugin that ships it (native/plugins/<network>/, whose <Network>RepairsTest checks it) together.",
   "format": 1,
   "repairs": {
     "threads.guest_doc_id": "6232751443445612",

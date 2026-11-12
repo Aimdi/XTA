@@ -2,7 +2,8 @@
 
 The screens are Compose Multiplatform in `native/ui`, one code base for the
 Android app (`:app`) and the Linux desktop (`:desktop`). This guide is for
-porting a part of XTA's UI (`lib/<feature>/` in the Flutter app) onto the
+porting a part of XTA's UI (`lib/<feature>/` in the Flutter app, kept in
+history at commit `fab7619b`) onto the
 reading layers that are already ported: `:core` (X, feeds, session),
 `:networks`, `:store` (saved, offline, downloads, reading, settings, backup,
 antennas, recent searches) and `:services` (articles, links, translation,
@@ -70,7 +71,7 @@ names prefixed with the area (`saved_empty`, not `empty`). Use
 `stringResource(Res.string.<name>)` as the existing screens do.
 
 Translate every string into all of them. Where XTA already has the text
-(`lib/l10n/intl_en.arb`, matched by meaning, not only words), take each
+(`lib/l10n/intl_en.arb` at `fab7619b`, matched by meaning, not only words), take each
 language's wording from its `intl_<lang>.arb`; otherwise translate so it
 sounds natural in that language, as `.claude/skills/translate/SKILL.md`
 asks. Plurals use `<plurals>`, with each language's categories.

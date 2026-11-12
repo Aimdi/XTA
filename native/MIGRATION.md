@@ -1,6 +1,7 @@
 # Moving XTA to XTA Native
 
-Every part of the Flutter app (`lib/` in the repository root) and where it goes
+Every part of the Flutter app (`lib/` in the repository root until commit
+`fab7619b`, the last that has it; history keeps it) and where it went
 in XTA Native. Nothing in XTA is left without a row. **Read** is the layer that
 fetches and parses; **Keep** is what the device stores; **Screens** is the
 Compose UI, shared by Android and the Linux desktop.
