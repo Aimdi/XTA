@@ -73,6 +73,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -240,15 +241,15 @@ private val MuteCornerReserve = MuteInset + MuteDisc + MuteInset + 2.dp
 
 /**
  * The always-shown sound switch at the bottom end of a video in place
- * (video_mute_badge.dart): a small dark disc with the speaker, its edge 12 dp
- * in from the corner, inside a full touch target.
+ * (video_mute_badge.dart): a small dark disc with the speaker, its edge [inset]
+ * in from the corner (12 dp), [disc] across (30 dp), inside a full touch target.
  */
 @Composable
-internal fun MuteCorner(muted: Boolean, onToggle: () -> Unit, modifier: Modifier = Modifier) {
+internal fun MuteCorner(muted: Boolean, onToggle: () -> Unit, modifier: Modifier = Modifier, disc: Dp = MuteDisc, inset: Dp = MuteInset) {
     val label = stringResource(Res.string.reader_video_mute)
     Box(
         modifier
-            .padding(MuteInset - (TouchTarget - MuteDisc) / 2)
+            .padding(inset - (TouchTarget - disc) / 2)
             .size(TouchTarget)
             .clip(CircleShape)
             .toggleable(value = muted, role = Role.Switch, onValueChange = { onToggle() })
@@ -257,7 +258,7 @@ internal fun MuteCorner(muted: Boolean, onToggle: () -> Unit, modifier: Modifier
     ) {
         Box(
             Modifier
-                .size(MuteDisc)
+                .size(disc)
                 .clip(CircleShape)
                 .background(Color.Black.copy(alpha = 0.4f))
                 .background(Brush.verticalGradient(0f to Color.White.copy(alpha = 0.16f), 0.5f to Color.Transparent))

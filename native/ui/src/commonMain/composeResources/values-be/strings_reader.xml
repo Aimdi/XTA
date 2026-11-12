@@ -101,4 +101,7 @@
     <string name="reader_link_unable_details">Не атрымалася адкрыць спасылку. Калі ласка, паспрабуйце яшчэ раз.</string>
     <string name="reader_link_report">Паведаміць</string>
     <string name="reader_checking_link">Правяраем спасылку…</string>
+    <string name="reader_video_length">Відэа, %1$s</string>
+    <string name="reader_video_open_sound">Адкрыць на ўвесь экран з гукам</string>
+    <string name="reader_gif">GIF</string>
 </resources>

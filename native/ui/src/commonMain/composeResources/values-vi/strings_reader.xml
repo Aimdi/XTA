@@ -101,4 +101,7 @@
     <string name="reader_link_unable_details">Liên kết của bạn không hợp lệ hoặc không được hỗ trợ trong XTA, có thể đây là một lỗi</string>
     <string name="reader_link_report">Báo cáo</string>
     <string name="reader_checking_link">Đang kiểm tra liên kết…</string>
+    <string name="reader_video_length">Video, %1$s</string>
+    <string name="reader_video_open_sound">Mở toàn màn hình có âm thanh</string>
+    <string name="reader_gif">GIF</string>
 </resources>

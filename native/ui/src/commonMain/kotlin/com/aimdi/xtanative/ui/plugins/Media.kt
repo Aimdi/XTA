@@ -66,41 +66,40 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChanged
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
+import com.aimdi.xtanative.store.settings.MediaPrefs
+import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.AltBadge
 import com.aimdi.xtanative.ui.common.AltTextDialog
+import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.ShowMediaTile
+import com.aimdi.xtanative.ui.common.mediaShown
 import com.aimdi.xtanative.ui.common.rememberPicture
 import com.aimdi.xtanative.ui.common.turnTo
+import com.aimdi.xtanative.ui.downloads.PluginDownloads
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.close
 import com.aimdi.xtanative.ui.generated.resources.media_alt_title
 import com.aimdi.xtanative.ui.generated.resources.posts_open_post
 import com.aimdi.xtanative.ui.generated.resources.reader_download
-import com.aimdi.xtanative.ui.downloads.PluginDownloads
 import com.aimdi.xtanative.ui.generated.resources.reader_link_copied
 import com.aimdi.xtanative.ui.generated.resources.reader_link_share
-import com.aimdi.xtanative.store.settings.MediaPrefs
-import com.aimdi.xtanative.store.settings.Settings
-import com.aimdi.xtanative.ui.common.LocalGraph
-import com.aimdi.xtanative.ui.common.ShowMediaTile
-import com.aimdi.xtanative.ui.common.mediaShown
 import com.aimdi.xtanative.ui.generated.resources.reader_media
+import com.aimdi.xtanative.ui.media.GifCorner
 import com.aimdi.xtanative.ui.media.MediaIcons
 import com.aimdi.xtanative.ui.media.ReaderIcons
 import com.aimdi.xtanative.ui.media.SourceVideoPage
+import com.aimdi.xtanative.ui.media.TileCorner
 import com.aimdi.xtanative.ui.media.TileGif
 import com.aimdi.xtanative.ui.media.TileVideo
 import com.aimdi.xtanative.ui.media.VideoQuality
 import com.aimdi.xtanative.ui.media.VideoRules
 import com.aimdi.xtanative.ui.media.VideoSource
 import com.aimdi.xtanative.ui.media.rememberVideoPlayers
-import com.aimdi.xtanative.ui.post.PlayBadge
 import com.aimdi.xtanative.ui.post.PostIcons
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -189,15 +188,13 @@ private fun MediaTile(item: MediaItem, hidden: Boolean, modifier: Modifier, onCl
         )
         when (item.kind) {
             MediaItem.Kind.PHOTO -> Unit
-            MediaItem.Kind.VIDEO -> {
-                PlayBadge(Modifier.align(Alignment.Center))
-                item.durationMs?.let { TileLabel(duration(it), Modifier.align(Alignment.BottomStart)) }
-            }
-            MediaItem.Kind.GIF -> TileLabel("GIF", Modifier.align(Alignment.BottomStart))
+            // A blurred video only says how long it is; one shown has the tile's own corners (TileVideo).
+            MediaItem.Kind.VIDEO -> if (hidden) TileCorner(VideoRules.cornerTimeMs(null, item.durationMs), play = true, Modifier.align(Alignment.BottomStart))
+            MediaItem.Kind.GIF -> GifCorner(Modifier.align(Alignment.BottomStart))
         }
         if (moving && !hidden) TileClip(item, poster, Modifier.matchParentSize())
-        // XTA's badge sits at the start; a video's own label holds that corner.
-        onDescribe?.let { AltBadge(it, Modifier.align(if (item.kind == MediaItem.Kind.PHOTO) Alignment.BottomStart else Alignment.BottomEnd)) }
+        // XTA's badge sits at the start; a video's own label holds that corner, and its mute switch the other.
+        onDescribe?.let { AltBadge(it, Modifier.align(if (item.kind == MediaItem.Kind.PHOTO) Alignment.BottomStart else Alignment.TopStart)) }
     }
 }
 
@@ -216,29 +213,9 @@ private fun TileClip(item: MediaItem, poster: Any, modifier: Modifier) {
         return TileGif(source, poster, modifier)
     }
     val save = LocalMediaSave.current
-    TileVideo({ VideoSource.of(url, false, it) }, item.alt, item.aspectRatio, poster, modifier) {
-        save?.takeIf { PluginDownloads.url(item) != null }?.let { saves -> { saves(item) } }
+    TileVideo({ VideoSource.of(url, false, it) }, item.alt, item.aspectRatio, item.durationMs, poster, modifier) {
+        save?.takeIf { PluginDownloads.url(item) != null }?.let { saves -> { _ -> saves(item) } }
     }
-}
-
-@Composable
-private fun TileLabel(text: String, modifier: Modifier) {
-    Text(
-        text,
-        color = Color.White,
-        fontSize = 12.sp,
-        fontWeight = FontWeight.Bold,
-        modifier = modifier
-            .padding(8.dp)
-            .clip(RoundedCornerShape(4.dp))
-            .background(Color.Black.copy(alpha = 0.7f))
-            .padding(horizontal = 4.dp, vertical = 1.dp),
-    )
-}
-
-private fun duration(ms: Long): String {
-    val seconds = ms / 1000
-    return if (seconds >= 3600) "%d:%02d:%02d".format(seconds / 3600, seconds % 3600 / 60, seconds % 60) else "%d:%02d".format(seconds / 60, seconds % 60)
 }
 
 /**

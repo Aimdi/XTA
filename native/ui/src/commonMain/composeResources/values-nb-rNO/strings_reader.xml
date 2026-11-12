@@ -101,4 +101,7 @@
     <string name="reader_link_unable_details">Lenken kunne ikke åpnes. Vennligst prøv igjen.</string>
     <string name="reader_link_report">Rapporter</string>
     <string name="reader_checking_link">Sjekker lenken …</string>
+    <string name="reader_video_length">Video, %1$s</string>
+    <string name="reader_video_open_sound">Åpne i fullskjerm med lyd</string>
+    <string name="reader_gif">GIF</string>
 </resources>

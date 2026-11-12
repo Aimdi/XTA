@@ -101,4 +101,7 @@
     <string name="reader_link_unable_details">Не вдалося відкрити посилання. Будь ласка, спробуйте ще раз.</string>
     <string name="reader_link_report">Повідомити</string>
     <string name="reader_checking_link">Перевіряємо посилання…</string>
+    <string name="reader_video_length">Відео, %1$s</string>
+    <string name="reader_video_open_sound">Відкрити на весь екран зі звуком</string>
+    <string name="reader_gif">GIF</string>
 </resources>

@@ -147,6 +147,26 @@ class VideoSettingsTest {
     }
 
     @Test
+    fun videosPlayByThemselvesOnlyWithAutoplayAndNeitherReducedMotionNorDataSaver() {
+        assertTrue(VideoRules.autoplays(setting = true, reducedMotion = false, dataSaver = false))
+        assertFalse(VideoRules.autoplays(setting = false, reducedMotion = false, dataSaver = false))
+        assertFalse(VideoRules.autoplays(setting = true, reducedMotion = true, dataSaver = false))
+        assertFalse(VideoRules.autoplays(setting = true, reducedMotion = false, dataSaver = true))
+    }
+
+    @Test
+    fun aTilesCornerCountsDownWhileItPlaysAndShowsPlayOnlyWhenATapStartsIt() {
+        assertEquals(42_000L, VideoRules.cornerTimeMs(null, 42_000))
+        assertEquals(30_000L, VideoRules.cornerTimeMs(VideoState(positionMs = 12_000, durationMs = 42_000), 41_000), "the player's own length wins")
+        assertEquals(41_000L, VideoRules.cornerTimeMs(VideoState(), 41_000), "while the player knows no length yet")
+        assertEquals(0L, VideoRules.cornerTimeMs(VideoState(positionMs = 43_000, durationMs = 42_000), null))
+        assertNull(VideoRules.cornerTimeMs(null, null))
+        assertTrue(VideoRules.cornerPlay(autoplays = false, holding = false))
+        assertFalse(VideoRules.cornerPlay(autoplays = true, holding = false))
+        assertFalse(VideoRules.cornerPlay(autoplays = false, holding = true))
+    }
+
+    @Test
     fun onlyAVideoThatIsHeardPlaysOnWhenTheAppIsLeft() {
         assertFalse(VideoRules.pausesWhenLeft(backgroundPlay = true, heard = true))
         assertTrue(VideoRules.pausesWhenLeft(backgroundPlay = true, heard = false))

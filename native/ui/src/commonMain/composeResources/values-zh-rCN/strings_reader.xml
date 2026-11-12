@@ -101,4 +101,7 @@
     <string name="reader_link_unable_details">无法打开链接。请重试。</string>
     <string name="reader_link_report">报告</string>
     <string name="reader_checking_link">正在检查链接…</string>
+    <string name="reader_video_length">视频，%1$s</string>
+    <string name="reader_video_open_sound">全屏打开并播放声音</string>
+    <string name="reader_gif">GIF</string>
 </resources>

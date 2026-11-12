@@ -101,4 +101,7 @@
     <string name="reader_link_unable_details">無法開啟連結。請再試一次。</string>
     <string name="reader_link_report">回報</string>
     <string name="reader_checking_link">正在檢查連結…</string>
+    <string name="reader_video_length">影片，%1$s</string>
+    <string name="reader_video_open_sound">以全螢幕開啟並播放聲音</string>
+    <string name="reader_gif">GIF</string>
 </resources>

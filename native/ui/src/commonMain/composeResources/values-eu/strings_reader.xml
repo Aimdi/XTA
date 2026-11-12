@@ -101,4 +101,7 @@
     <string name="reader_link_unable_details">Ezin izan da esteka ireki. Mesedez, saiatu berriro.</string>
     <string name="reader_link_report">Txostena</string>
     <string name="reader_checking_link">Esteka egiaztatzen…</string>
+    <string name="reader_video_length">Bideoa, %1$s</string>
+    <string name="reader_video_open_sound">Ireki pantaila osoan soinuarekin</string>
+    <string name="reader_gif">GIF</string>
 </resources>

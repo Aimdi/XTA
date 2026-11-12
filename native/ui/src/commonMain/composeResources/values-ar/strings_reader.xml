@@ -101,4 +101,7 @@
     <string name="reader_link_unable_details">تعذر فتح الرابط. يرجى المحاولة مرة أخرى.</string>
     <string name="reader_link_report">إبلاغ</string>
     <string name="reader_checking_link">جارٍ التحقق من الرابط…</string>
+    <string name="reader_video_length">فيديو، %1$s</string>
+    <string name="reader_video_open_sound">فتح بملء الشاشة مع الصوت</string>
+    <string name="reader_gif">GIF</string>
 </resources>

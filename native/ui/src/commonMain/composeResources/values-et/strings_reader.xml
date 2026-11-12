@@ -101,4 +101,7 @@
     <string name="reader_link_unable_details">Linki ei õnnestunud avada. Palun proovige uuesti.</string>
     <string name="reader_link_report">Teata veast</string>
     <string name="reader_checking_link">Linki kontrollimine…</string>
+    <string name="reader_video_length">Video, %1$s</string>
+    <string name="reader_video_open_sound">Ava täisekraanil koos heliga</string>
+    <string name="reader_gif">GIF</string>
 </resources>

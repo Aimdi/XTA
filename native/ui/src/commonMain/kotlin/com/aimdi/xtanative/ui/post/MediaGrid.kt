@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
@@ -25,7 +24,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,22 +38,19 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.model.photoUrl
 import com.aimdi.xtanative.ui.common.AltBadge
 import com.aimdi.xtanative.ui.common.AltTextDialog
-import com.aimdi.xtanative.ui.common.MediaBadge
 import com.aimdi.xtanative.ui.common.ShowMediaTile
 import com.aimdi.xtanative.ui.common.mediaShown
 import com.aimdi.xtanative.ui.generated.resources.Res
-import com.aimdi.xtanative.ui.generated.resources.posts_filter_videos
 import com.aimdi.xtanative.ui.generated.resources.reader_media
+import com.aimdi.xtanative.ui.media.GifCorner
 import com.aimdi.xtanative.ui.media.LocalMediaSaver
 import com.aimdi.xtanative.ui.media.MediaFiles
 import com.aimdi.xtanative.ui.media.MediaIcons
@@ -151,7 +146,8 @@ private fun ShownMedia(media: XMedia, index: Int, count: Int, scale: ContentScal
         // A long press on a photo shows what it is of, or saves it when it says nothing.
         val onLongPress: (() -> Unit)? = if (media.kind != XMedia.Kind.PHOTO) null else ({ describeOrSave(media, owner, saver) { describing = true } })
         MediaTile(media, url, scale, owner.post, Modifier.fillMaxSize().background(backdrop), onLongPress, onOpen)
-        media.alt?.let { AltBadge(it, Modifier.align(Alignment.BottomStart)) }
+        // A video's and a GIF's own label holds the bottom-start corner, and its mute switch the other.
+        media.alt?.let { AltBadge(it, Modifier.align(if (media.kind == XMedia.Kind.PHOTO) Alignment.BottomStart else Alignment.TopStart)) }
     }
     if (describing) media.alt?.let { AltTextDialog(it) { describing = false } }
 }
@@ -177,15 +173,11 @@ private fun MediaTile(media: XMedia, url: String, scale: ContentScale, post: XPo
         )
         when (media.kind) {
             XMedia.Kind.PHOTO -> Unit
-            XMedia.Kind.VIDEO -> {
-                PlayBadge(Modifier.align(Alignment.Center))
-                // Clear of the ALT badge, which takes the start.
-                media.durationMs?.let { Label(duration(it), Modifier.align(if (media.alt != null) Alignment.BottomEnd else Alignment.BottomStart)) }
-                TileVideo(media, url, post, Modifier.matchParentSize())
-            }
+            // Its corners (the time, the mute switch) are the tile's own; a tap opens it full screen.
+            XMedia.Kind.VIDEO -> TileVideo(media, url, post, Modifier.matchParentSize())
             XMedia.Kind.GIF -> {
                 TileGif(media, url, Modifier.matchParentSize())
-                MediaBadge(Modifier.align(Alignment.BottomEnd).padding(8.dp), icon = MediaIcons.GifBoxOutlined, description = stringResource(Res.string.posts_filter_videos))
+                GifCorner(Modifier.align(Alignment.BottomStart))
             }
         }
     }
@@ -210,26 +202,3 @@ internal fun PlayBadge(modifier: Modifier) {
     }
 }
 
-@Composable
-private fun Label(text: String, modifier: Modifier) {
-    Text(
-        text,
-        color = Color.White,
-        fontSize = 12.sp,
-        fontWeight = FontWeight.Bold,
-        modifier = modifier
-            .padding(8.dp)
-            .clip(RoundedCornerShape(4.dp))
-            .background(Color.Black.copy(alpha = 0.7f))
-            .padding(horizontal = 4.dp, vertical = 1.dp),
-    )
-}
-
-private fun duration(ms: Long): String {
-    val seconds = ms / 1000
-    return if (seconds >= 3600) {
-        "%d:%02d:%02d".format(seconds / 3600, seconds % 3600 / 60, seconds % 60)
-    } else {
-        "%d:%02d".format(seconds / 60, seconds % 60)
-    }
-}

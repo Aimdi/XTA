@@ -101,4 +101,7 @@
     <string name="reader_link_unable_details">Ne eblis malfermi la ligilon. Bonvolu provi denove.</string>
     <string name="reader_link_report">Raporti</string>
     <string name="reader_checking_link">Kontrolante la ligilon…</string>
+    <string name="reader_video_length">Video, %1$s</string>
+    <string name="reader_video_open_sound">Malfermi plenekrane kun sono</string>
+    <string name="reader_gif">GIF</string>
 </resources>

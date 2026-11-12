@@ -101,4 +101,7 @@
     <string name="reader_link_unable_details">Der Link konnte nicht geöffnet werden. Bitte versuche es erneut.</string>
     <string name="reader_link_report">Bericht</string>
     <string name="reader_checking_link">Link wird geprüft …</string>
+    <string name="reader_video_length">Video, %1$s</string>
+    <string name="reader_video_open_sound">Im Vollbild mit Ton öffnen</string>
+    <string name="reader_gif">GIF</string>
 </resources>

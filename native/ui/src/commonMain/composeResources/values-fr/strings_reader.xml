@@ -101,4 +101,7 @@
     <string name="reader_link_unable_details">XTA n'a pas pu ouvrir le lien sur lequel vous avez cliqué. Soit le lien est invalide, soit il s'agit d'une erreur qui devrait être signalée.</string>
     <string name="reader_link_report">Signaler</string>
     <string name="reader_checking_link">Vérification du lien…</string>
+    <string name="reader_video_length">Vidéo, %1$s</string>
+    <string name="reader_video_open_sound">Ouvrir en plein écran avec le son</string>
+    <string name="reader_gif">GIF</string>
 </resources>

@@ -101,4 +101,7 @@
     <string name="reader_link_unable_details">Nie atrymałasia adkryć spasyłku. Kali łaska, pasprabujcie jašče raz.</string>
     <string name="reader_link_report">Pavedamić</string>
     <string name="reader_checking_link">Praviarajem spasyłku…</string>
+    <string name="reader_video_length">Videa, %1$s</string>
+    <string name="reader_video_open_sound">Adkryć na ŭvieś ekran z hukam</string>
+    <string name="reader_gif">GIF</string>
 </resources>

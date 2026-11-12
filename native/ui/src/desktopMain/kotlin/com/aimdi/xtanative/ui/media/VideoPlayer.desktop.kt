@@ -13,6 +13,9 @@ import androidx.compose.ui.Modifier
 @Composable
 internal actual fun rememberVideoPlayers(): VideoPlayers? = remember { if (MpvEngine.ready) VideoPlayers { options -> MpvVideoPlayer(options) } else null }
 
+@Composable
+internal actual fun rememberDataSaver(): Boolean = false
+
 /** libmpv under XTA's controls ([MpvVideoCore]), its picture drawn by [MpvFrames] where it was put on screen last. */
 internal class MpvVideoPlayer private constructor(private val core: MpvVideoCore<MpvFrames>) : VideoPlayer, PlayerCore by core {
     constructor(options: VideoOptions) : this(MpvVideoCore(options, ::MpvFrames))

@@ -99,6 +99,27 @@ object VideoRules {
     fun startsByItself(autoplay: Boolean, share: Float, chosen: Boolean, shared: Boolean): Boolean =
         autoplay && if (shared) chosen else share >= SEEN_SHARE
 
+    /**
+     * Whether videos play by themselves: Settings › Media's Autoplay videos
+     * ([setting]), unless motion is reduced or the phone saves data (Android's
+     * Data Saver), as X holds its autoplay back then.
+     */
+    fun autoplays(setting: Boolean, reducedMotion: Boolean, dataSaver: Boolean): Boolean = setting && !reducedMotion && !dataSaver
+
+    /**
+     * The time a tile's corner shows: what is left of the video while it
+     * plays in the tile ([state], once it knows its length), else its whole
+     * length ([durationMs], what the post says); null when neither is known.
+     */
+    fun cornerTimeMs(state: VideoState?, durationMs: Long?): Long? = when {
+        state != null && state.durationMs > 0 -> (state.durationMs - state.positionMs).coerceAtLeast(0)
+        durationMs != null && durationMs > 0 -> durationMs
+        else -> null
+    }
+
+    /** Whether a tile's corner carries the small ▶: nothing plays it by itself and it is not playing in the tile, so a tap is what starts it. */
+    fun cornerPlay(autoplays: Boolean, holding: Boolean): Boolean = !autoplays && !holding
+
     /** Whether a GIF loops: while it is seen, whatever Autoplay says, and in a feed while it is the tile chosen; off screen it holds no player. */
     fun gifLoops(share: Float, chosen: Boolean, shared: Boolean): Boolean = if (shared) chosen else share >= SEEN_SHARE
 

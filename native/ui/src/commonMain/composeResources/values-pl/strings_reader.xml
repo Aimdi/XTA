@@ -101,4 +101,7 @@
     <string name="reader_link_unable_details">Nie udało się otworzyć linku. Spróbuj ponownie.</string>
     <string name="reader_link_report">Zgłoś</string>
     <string name="reader_checking_link">Sprawdzanie linku…</string>
+    <string name="reader_video_length">Wideo, %1$s</string>
+    <string name="reader_video_open_sound">Otwórz na pełnym ekranie z dźwiękiem</string>
+    <string name="reader_gif">GIF</string>
 </resources>

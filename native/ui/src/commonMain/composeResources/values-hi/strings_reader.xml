@@ -101,4 +101,7 @@
     <string name="reader_link_unable_details">लिंक नहीं खोला जा सका। कृपया पुनः प्रयास करें।</string>
     <string name="reader_link_report">रिपोर्ट करें</string>
     <string name="reader_checking_link">लिंक जाँचा जा रहा है…</string>
+    <string name="reader_video_length">वीडियो, %1$s</string>
+    <string name="reader_video_open_sound">आवाज़ के साथ फ़ुल स्क्रीन में खोलें</string>
+    <string name="reader_gif">GIF</string>
 </resources>

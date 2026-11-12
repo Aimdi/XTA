@@ -36,6 +36,10 @@ internal fun interface VideoPlayers {
 @Composable
 internal expect fun rememberVideoPlayers(): VideoPlayers?
 
+/** Whether the phone saves data now (Android's Data Saver), when videos wait for a tap; never on the desktop. */
+@Composable
+internal expect fun rememberDataSaver(): Boolean
+
 /** Pauses [player] when the app is left, unless Background play keeps a video that is heard going (pauseUponEnteringBackgroundMode). */
 @Composable
 internal fun PausesWhenLeft(player: VideoPlayer) {

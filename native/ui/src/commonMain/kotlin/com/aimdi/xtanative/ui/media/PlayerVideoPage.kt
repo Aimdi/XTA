@@ -80,7 +80,7 @@ internal fun SourceVideoPage(
             VideoControls(player, VideoChrome(onFullscreen = open, onDownload = download), Modifier.fillMaxSize())
         }
         // Over the player: a surface of its own lies behind the window, and would clear a poster drawn under it.
-        PosterUntilStarted(state, Modifier.fillMaxSize(), poster)
+        PosterUntilStarted(state, Modifier.fillMaxSize(), poster = poster)
         if (!gif) MuteCorner(state.muted, onToggle = { toggleMute(player, state.muted) }, Modifier.align(Alignment.BottomEnd))
     }
 }

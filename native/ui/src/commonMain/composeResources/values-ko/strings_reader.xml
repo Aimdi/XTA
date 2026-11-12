@@ -101,4 +101,7 @@
     <string name="reader_link_unable_details">링크를 열 수 없습니다. 다시 시도해 주세요.</string>
     <string name="reader_link_report">신고</string>
     <string name="reader_checking_link">링크 확인 중…</string>
+    <string name="reader_video_length">동영상, %1$s</string>
+    <string name="reader_video_open_sound">소리와 함께 전체 화면으로 열기</string>
+    <string name="reader_gif">GIF</string>
 </resources>

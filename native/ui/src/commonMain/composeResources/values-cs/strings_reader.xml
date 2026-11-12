@@ -101,4 +101,7 @@
     <string name="reader_link_unable_details">Odkaz se nepodařilo otevřít. Zkuste to prosím znovu.</string>
     <string name="reader_link_report">Nahlásit</string>
     <string name="reader_checking_link">Kontroluje se odkaz…</string>
+    <string name="reader_video_length">Video, %1$s</string>
+    <string name="reader_video_open_sound">Otevřít na celou obrazovku se zvukem</string>
+    <string name="reader_gif">GIF</string>
 </resources>
