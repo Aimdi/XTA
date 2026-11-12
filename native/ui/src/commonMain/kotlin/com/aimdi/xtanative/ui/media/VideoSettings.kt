@@ -88,6 +88,29 @@ internal data class VideoOptions(
  */
 internal data class VideoBuffer(val minMs: Int, val maxMs: Int, val playbackMs: Int, val rebufferMs: Int, val backMs: Int, val targetBytes: Int)
 
+/**
+ * Which videos the app keeps on disk as they are read (Media3's cache on
+ * Android), so a tile scrolled back to, a GIF's next loop and the same video
+ * full screen or in the viewer read nothing again: a file a page's address
+ * names, over the web. Never a playlist (X's live broadcasts and Spaces, a
+ * network's HLS or DASH): a live one changes as it plays, and its kept copy
+ * would stall it.
+ */
+internal object VideoCaching {
+    /** What the cache may hold, the least recently read going first. */
+    const val MAX_BYTES = 256L * 1024 * 1024
+
+    private val files = setOf("mp4", "m4v", "mov", "webm", "gif")
+
+    fun caches(url: String): Boolean {
+        val scheme = url.substringBefore("://", "").lowercase()
+        if (scheme != "https" && scheme != "http") return false
+        val path = url.substringAfter("://").substringBefore('?').substringBefore('#')
+        val name = path.substringAfterLast('/')
+        return '.' in name && name.substringAfterLast('.').lowercase() in files
+    }
+}
+
 /** XTA's bounds on a feed video's reading (_video.dart's libmpv cache), in Media3's terms. */
 internal object VideoBuffering {
     /** kVideoReadaheadSeconds: how far a video reads ahead when the reader has set no prefetch. */
@@ -97,7 +120,12 @@ internal object VideoBuffering {
     const val AHEAD_BYTES = 16 * 1024 * 1024
     const val BACK_BYTES = 4 * 1024 * 1024
 
-    private const val PLAYBACK_MS = 2_500
+    /**
+     * How much is read before a video starts: a second, not Media3's two and
+     * a half, so a feed's short clip starts as soon as it can; running dry
+     * later waits for more ([REBUFFER_MS]).
+     */
+    private const val PLAYBACK_MS = 1_000
     private const val REBUFFER_MS = 5_000
 
     /**

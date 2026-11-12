@@ -103,7 +103,7 @@ class VideoSettingsTest {
         val unset = VideoBuffering.of(0)
         assertEquals(10_000, unset.minMs)
         assertEquals(10_000, unset.maxMs)
-        assertEquals(2_500, unset.playbackMs)
+        assertEquals(1_000, unset.playbackMs, "a clip starts once a second of it is read")
         assertEquals(5_000, unset.rebufferMs)
         assertEquals(20 * 1024 * 1024, unset.targetBytes)
         assertEquals(10_000, unset.backMs)
@@ -113,6 +113,18 @@ class VideoSettingsTest {
         // A second ahead starts as soon as that second is there: Media3 wants no more to start than it keeps.
         val second = VideoBuffering.of(1)
         assertEquals(listOf(1_000, 1_000, 1_000, 1_000), listOf(second.minMs, second.maxMs, second.playbackMs, second.rebufferMs))
+    }
+
+    @Test
+    fun onlyAVideoFileOverTheWebIsKeptOnDiskNeverAPlaylist() {
+        assertTrue(VideoCaching.caches("https://video.twimg.com/ext_tw_video/1/pu/vid/avc1/720x1280/abc.mp4?tag=12"))
+        assertTrue(VideoCaching.caches("https://video.twimg.com/tweet_video/abc.MP4"))
+        assertTrue(VideoCaching.caches("https://v.redd.it/x/DASH_720.mp4?source=fallback"))
+        assertFalse(VideoCaching.caches("https://prod-fastly.video.pscp.tv/x/playlist_123.m3u8?type=live"), "a live playlist changes as it plays")
+        assertFalse(VideoCaching.caches("https://v.redd.it/x/DASHPlaylist.mpd"))
+        assertFalse(VideoCaching.caches("https://example.com/stream"), "nothing says it is a file")
+        assertFalse(VideoCaching.caches("file:///data/offline/abc.mp4"), "already on the device")
+        assertFalse(VideoCaching.caches("https://example.com/mp4/watch?v=a.mp4"), "the query is no file name")
     }
 
     @Test

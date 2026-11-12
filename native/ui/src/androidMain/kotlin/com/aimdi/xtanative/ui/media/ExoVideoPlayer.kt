@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
-import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Tracks
@@ -46,12 +45,14 @@ import kotlinx.coroutines.launch
  * headphones are pulled out unless so; and it keeps the phone awake for a
  * video going on in the background. A change of quality opens the other
  * variant where this one was, and when that fails the one before plays on
- * from there. Its state is read on the main thread a few times a second
+ * from there. A video file is read through the app's video cache
+ * ([VideoSources]). Its state is read on the main thread a few times a second
  * while it plays, so the time and the seek bar move.
  */
 internal class ExoVideoPlayer(context: Context, private val options: VideoOptions) : VideoPlayer {
     private val attributes = AudioAttributes.Builder().setUsage(C.USAGE_MEDIA).setContentType(C.AUDIO_CONTENT_TYPE_MOVIE).build()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    private val sources = VideoSources(context)
 
     private val player: ExoPlayer = ExoPlayer.Builder(context)
         .setLoadControl(loadControl(VideoBuffering.of(options.prefetchSeconds)))
@@ -155,7 +156,7 @@ internal class ExoVideoPlayer(context: Context, private val options: VideoOption
         player.repeatMode = if (source.loop) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_OFF
         sound(source.muted)
         player.trackSelectionParameters = player.trackSelectionParameters.buildUpon().setTrackTypeDisabled(C.TRACK_TYPE_TEXT, true).build()
-        player.setMediaItem(MediaItem.fromUri(source.url), source.startMs.coerceAtLeast(0))
+        player.setMediaSource(sources.of(source.url), source.startMs.coerceAtLeast(0))
         player.prepare()
         current.value = VideoState(url = source.url, qualities = source.qualities, muted = source.muted)
     }
@@ -224,7 +225,7 @@ internal class ExoVideoPlayer(context: Context, private val options: VideoOption
     /** [url] from [positionMs], playing on if it was playing. */
     private fun reopen(url: String, positionMs: Long) {
         val playing = player.playWhenReady
-        player.setMediaItem(MediaItem.fromUri(url), PlaybackRestore.resumeTarget(positionMs, current.value.durationMs))
+        player.setMediaSource(sources.of(url), PlaybackRestore.resumeTarget(positionMs, current.value.durationMs))
         player.prepare()
         player.playWhenReady = playing
         current.update { it.copy(url = url) }
