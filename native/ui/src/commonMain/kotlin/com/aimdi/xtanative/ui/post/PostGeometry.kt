@@ -9,6 +9,8 @@ package com.aimdi.xtanative.ui.post
  * thread's rail through the avatars' centres.
  */
 object PostGeometry {
+    private const val COS_45 = 0.70710677f
+
     const val AVATAR_START = 16f
     const val AVATAR_TOP = 12f
     const val AVATAR_SIZE = 40f
@@ -41,4 +43,13 @@ object PostGeometry {
 
     /** Where the right edge of the last header target is on a screen [width] wide. */
     fun trailingRight(width: Float): Float = width - END_PADDING + TRAILING_BLEED
+
+    /** The follow badge's diameter on an avatar [avatar] wide, ring included (avatar_follow_badge.dart). */
+    fun followBadgeSize(avatar: Float): Float = (avatar * 0.42f).coerceIn(14f, 20f)
+
+    /** The page-coloured ring around a follow badge [badge] wide. */
+    fun followBadgeRing(badge: Float): Float = if (badge >= 18f) 2f else 1.5f
+
+    /** The badge's centre from the avatar's top-left, on both axes: on the rim, where it crosses the lower-right 45° diagonal. */
+    fun followBadgeCenter(avatar: Float): Float = avatar / 2 * (1 + COS_45)
 }

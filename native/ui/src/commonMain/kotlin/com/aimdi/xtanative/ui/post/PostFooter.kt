@@ -31,6 +31,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -321,26 +322,7 @@ internal fun FollowBadge(author: XUser, size: Dp, avatar: @Composable () -> Unit
     Box(Modifier.size(size)) {
         avatar()
         if (!followed && session != null) {
-            val surface = MaterialTheme.colorScheme.background
-            Box(
-                Modifier
-                    .align(Alignment.BottomEnd)
-                    .offset(x = 2.dp, y = 2.dp)
-                    .size(18.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.onBackground)
-                    .border(1.5.dp, surface, CircleShape)
-                    .combinedClickable(
-                        role = Role.Button,
-                        onClickLabel = subscribe,
-                        onLongClickLabel = addToGroup,
-                        onClick = { follow() },
-                        onLongClick = { sheet = BadgeSheet.CHOICES },
-                    ),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(Icons.Filled.Add, subscribe, tint = surface, modifier = Modifier.size(14.dp))
-            }
+            BadgeDisc(size, subscribe, addToGroup, onFollow = { follow() }, onMore = { sheet = BadgeSheet.CHOICES })
         }
     }
     when (sheet) {
@@ -354,6 +336,44 @@ internal fun FollowBadge(author: XUser, size: Dp, avatar: @Composable () -> Unit
         )
         BadgeSheet.GROUPS -> AuthorGroupsSheet(author, onDismiss = { sheet = BadgeSheet.NONE })
         BadgeSheet.NONE -> Unit
+    }
+}
+
+/**
+ * The badge itself (avatar_follow_badge.dart's _Disc): a solid disc in the
+ * text colour with a + in the page colour, ringed in the page colour so it
+ * stands off the face, centred on the avatar's rim at the lower right. It
+ * answers in a 48 dp target around it, larger than the disc.
+ */
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun BadgeDisc(avatar: Dp, subscribe: String, addToGroup: String, onFollow: () -> Unit, onMore: () -> Unit) {
+    val disc = PostGeometry.followBadgeSize(avatar.value)
+    val ring = PostGeometry.followBadgeRing(disc).dp
+    val target = PostGeometry.TOUCH_TARGET.dp
+    val at = PostGeometry.followBadgeCenter(avatar.value).dp - target / 2
+    val page = MaterialTheme.colorScheme.background
+    Box(
+        Modifier
+            .offset(at, at)
+            .size(target)
+            .combinedClickable(
+                interactionSource = null,
+                indication = ripple(bounded = false, radius = disc.dp),
+                role = Role.Button,
+                onClickLabel = subscribe,
+                onLongClickLabel = addToGroup,
+                onClick = onFollow,
+                onLongClick = onMore,
+            ),
+        contentAlignment = Alignment.Center,
+    ) {
+        Box(
+            Modifier.size(disc.dp).background(page, CircleShape).padding(ring).background(MaterialTheme.colorScheme.onBackground, CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(Icons.Filled.Add, subscribe, tint = page, modifier = Modifier.size(disc.dp - ring * 2 - 2.dp))
+        }
     }
 }
 

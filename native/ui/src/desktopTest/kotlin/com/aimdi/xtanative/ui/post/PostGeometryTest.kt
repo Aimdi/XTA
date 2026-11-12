@@ -84,4 +84,22 @@ class AuthorLineLayoutTest {
         assertEquals(120f, widths.handle)
         assertEquals(40f, widths.time)
     }
+
+    @Test
+    fun theFollowBadgeSitsOnTheAvatarsRimInsideItsTargetAsXtasDid() {
+        val avatar = PostGeometry.AVATAR_SIZE
+        val badge = PostGeometry.followBadgeSize(avatar)
+        assertEquals(16.8f, badge, 0.001f)
+        assertEquals(1.5f, PostGeometry.followBadgeRing(badge))
+        assertEquals(2f, PostGeometry.followBadgeRing(PostGeometry.followBadgeSize(48f)))
+        assertEquals(14f, PostGeometry.followBadgeSize(20f))
+        assertEquals(20f, PostGeometry.followBadgeSize(64f))
+        // Centred where the rim crosses the lower-right diagonal, in from the avatar's corner.
+        val center = PostGeometry.followBadgeCenter(avatar)
+        assertEquals(34.14f, center, 0.01f)
+        // The disc overlaps the corner, yet stays inside the avatar's 48 dp target: nothing around the avatar clips it.
+        val inset = PostGeometry.AVATAR_TARGET_INSET
+        assertTrue(center + badge / 2 > avatar)
+        assertTrue(center + badge / 2 <= avatar + inset)
+    }
 }

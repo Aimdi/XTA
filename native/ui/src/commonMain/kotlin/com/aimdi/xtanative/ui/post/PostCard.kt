@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -19,6 +17,7 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -176,8 +175,12 @@ fun PostCard(
                 Modifier
                     .offset(-inset, -inset)
                     .size(PostGeometry.TOUCH_TARGET.dp)
-                    .clip(CircleShape)
-                    .clickable(enabled = PostView.showsAuthor(shown, scope.prefs, scope.profileScreenName)) { actions.openUser(shown.author.screenName, shown.author.id) },
+                    // An unbounded ripple, not a clip: a clip would cut the follow badge on the avatar's rim.
+                    .clickable(
+                        interactionSource = null,
+                        indication = ripple(bounded = false, radius = (PostGeometry.TOUCH_TARGET / 2).dp),
+                        enabled = PostView.showsAuthor(shown, scope.prefs, scope.profileScreenName),
+                    ) { actions.openUser(shown.author.screenName, shown.author.id) },
                 contentAlignment = Alignment.Center,
             ) { PostAvatar(shown, scope, actions, AvatarSize) }
             Spacer(Modifier.width((PostGeometry.COLUMN_START - PostGeometry.AVATAR_START - PostGeometry.TOUCH_TARGET).dp))
