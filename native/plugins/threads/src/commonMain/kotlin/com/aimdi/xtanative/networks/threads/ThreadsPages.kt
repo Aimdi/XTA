@@ -120,6 +120,14 @@ object ThreadsPages {
      */
     fun recommended(body: String): List<ThreadsPost> = profileThreads(body, "")
 
+    /**
+     * A profile's reposts page (`/@handle/reposts`): each post [handle]
+     * shared of another's, read as the original with "reposted" by [handle];
+     * the page's other posts left out.
+     */
+    fun reposts(chains: List<List<ThreadsPost>>, handle: String): List<ThreadsPost> =
+        profileThreads(chains, handle).filter { it.isRepost && it.repostedByHandle == handle }
+
     /** Every post a post page embeds, root and replies, flattened. */
     fun thread(body: String): List<ThreadsPost> = chains(body).flatten()
 

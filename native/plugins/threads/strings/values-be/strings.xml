@@ -201,4 +201,5 @@
     <string name="bearer_invalid">Bearer-токен пачынаецца з IGT:2:</string>
     <string name="signed_in_as">Вы ўвайшлі як @%1$s</string>
     <string name="session_empty">Спачатку ўстаўце cookies або Bearer-токен</string>
+    <string name="reposts_empty">На публічнай старонцы няма рэпостаў</string>
 </resources>

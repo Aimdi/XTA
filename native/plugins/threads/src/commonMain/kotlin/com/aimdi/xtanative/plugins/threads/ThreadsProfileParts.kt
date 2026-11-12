@@ -76,8 +76,13 @@ internal object ThreadsProfileHeader {
     /** The Threads tab: the account's own threads, its reposts having a tab of their own as on Threads. */
     fun threads(page: ThreadsProfilePage): List<ThreadsPost> = page.tab(ThreadsProfileTab.POSTS).filterNot { it.isRepost }
 
-    /** The Reposts tab: what the account shared of others', as far as its guest page carried. */
-    fun reposts(page: ThreadsProfilePage): List<ThreadsPost> = page.posts.filter { it.isRepost }
+    /**
+     * The Reposts tab: what the account shared of others', from its reposts
+     * page ([read], pages after the first included) and any its own page
+     * carried, newest first, each post once.
+     */
+    fun reposts(page: ThreadsProfilePage, read: List<ThreadsPost> = emptyList()): List<ThreadsPost> =
+        (read + page.posts.filter { it.isRepost }).distinctBy { it.id }.sortedByDescending { it.publishedAt ?: java.time.Instant.MIN }
 
     /** [n] whole, grouped as [locale] groups digits: 5,812,345. */
     fun exact(n: Long, locale: Locale): String = NumberFormat.getIntegerInstance(locale).format(n)

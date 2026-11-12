@@ -186,4 +186,5 @@
     <string name="bearer_invalid">Token Bearer diawali IGT:2:</string>
     <string name="signed_in_as">Masuk sebagai @%1$s</string>
     <string name="session_empty">Tempel cookie atau token Bearer terlebih dahulu</string>
+    <string name="reposts_empty">Tidak ada postingan ulang di halaman publik</string>
 </resources>

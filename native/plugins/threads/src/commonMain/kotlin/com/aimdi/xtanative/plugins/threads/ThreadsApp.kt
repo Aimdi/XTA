@@ -2,6 +2,7 @@ package com.aimdi.xtanative.plugins.threads
 
 import com.aimdi.xtanative.networks.threads.ThreadsAccountFailure
 import com.aimdi.xtanative.networks.threads.ThreadsDirectClient
+import com.aimdi.xtanative.networks.threads.ThreadsFeedMix
 import com.aimdi.xtanative.networks.threads.ThreadsForYou
 import com.aimdi.xtanative.networks.threads.ThreadsForYouFeed
 import com.aimdi.xtanative.networks.threads.ThreadsLinks
@@ -236,12 +237,13 @@ internal class ThreadsApp(val host: PluginHost) {
         ready()
         val handles = ThreadsAccounts.handles(accounts.load())
         var painted: List<ThreadsPost>? = null
+        val held = reader.heldExtras(handles)
         val posts = try {
             homeLoads.whileShown {
-                reader.following(handles, force) { partial ->
-                    painted = partial
-                    onPartial(partial)
+                val own = reader.following(handles, force) { partial ->
+                    painted = ThreadsFeedMix.merge(partial, held).also(onPartial)
                 }
+                ThreadsFeedMix.merge(own, reader.extras(handles))
             } ?: return painted ?: feed.state.value.items
         } finally {
             failedNow.value = reader.failures(handles)
@@ -479,7 +481,7 @@ internal class ThreadsApp(val host: PluginHost) {
         override suspend fun posts(accounts: List<String>, kinds: FeedKinds, force: Boolean): List<NetworkPost> {
             ready()
             val posts = try {
-                ThreadsRetryBudget.retrying(online = { host.online.first() }) { reader.postsFor(accounts, force) }
+                ThreadsRetryBudget.retrying(online = { host.online.first() }) { ThreadsFeedMix.merge(reader.postsFor(accounts, force), reader.heldExtras(accounts)) }
             } finally {
                 failedNow.value = reader.failures(followed())
             }

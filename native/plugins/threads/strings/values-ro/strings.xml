@@ -196,4 +196,5 @@
     <string name="bearer_invalid">Un token Bearer începe cu IGT:2:</string>
     <string name="signed_in_as">Conectat ca @%1$s</string>
     <string name="session_empty">Lipește mai întâi cookie-urile sau un token Bearer</string>
+    <string name="reposts_empty">Nicio repostare pe pagina publică</string>
 </resources>

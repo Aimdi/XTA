@@ -191,4 +191,5 @@
     <string name="bearer_invalid">Bearer token bat IGT:2: aurrizkiarekin hasten da</string>
     <string name="signed_in_as">@%1$s gisa saioa hasita</string>
     <string name="session_empty">Itsatsi lehenik cookieak edo Bearer token bat</string>
+    <string name="reposts_empty">Ez dago birbidalketarik orri publikoan</string>
 </resources>

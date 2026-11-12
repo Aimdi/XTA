@@ -201,4 +201,5 @@
     <string name="bearer_invalid">Bearer-token pačynajecca z IGT:2:</string>
     <string name="signed_in_as">Vy ŭvajšli jak @%1$s</string>
     <string name="session_empty">Spačatku ŭstaŭcie cookies abo Bearer-token</string>
+    <string name="reposts_empty">Na publičnaj staroncy niama repostaŭ</string>
 </resources>

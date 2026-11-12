@@ -191,4 +191,5 @@
     <string name="bearer_invalid">Bearer-märk algab nii: IGT:2:</string>
     <string name="signed_in_as">Sisse logitud kui @%1$s</string>
     <string name="session_empty">Kleebi kõigepealt küpsised või Bearer-märk</string>
+    <string name="reposts_empty">Avalikul lehel pole jagamisi</string>
 </resources>

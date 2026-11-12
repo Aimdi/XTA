@@ -186,4 +186,5 @@
     <string name="bearer_invalid">Bearer token bắt đầu bằng IGT:2:</string>
     <string name="signed_in_as">Đã đăng nhập là @%1$s</string>
     <string name="session_empty">Hãy dán cookie hoặc Bearer token trước</string>
+    <string name="reposts_empty">Không có bài đăng lại trên trang công khai</string>
 </resources>

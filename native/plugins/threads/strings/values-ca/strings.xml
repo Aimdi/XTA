@@ -195,4 +195,5 @@
     <string name="bearer_invalid">Un token Bearer comença per IGT:2:</string>
     <string name="signed_in_as">Sessió iniciada com a @%1$s</string>
     <string name="session_empty">Primer enganxa les galetes o un token Bearer</string>
+    <string name="reposts_empty">No hi ha republicacions a la pàgina pública</string>
 </resources>

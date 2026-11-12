@@ -186,4 +186,5 @@
     <string name="bearer_invalid">Bearer トークンは IGT:2: で始まります</string>
     <string name="signed_in_as">@%1$s としてログイン中</string>
     <string name="session_empty">先に Cookie か Bearer トークンを貼り付けてください</string>
+    <string name="reposts_empty">公開ページにリポストはありません</string>
 </resources>

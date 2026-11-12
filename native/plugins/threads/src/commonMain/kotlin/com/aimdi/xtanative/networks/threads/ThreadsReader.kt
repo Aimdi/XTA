@@ -72,6 +72,14 @@ class ThreadsReader(
         clock = clock,
         settles = ThreadsTrouble::settles,
     )
+    private val extras = AccountPosts<ThreadsPost>(
+        dateOf = { it.publishedAt },
+        perAccount = EXTRA_POSTS,
+        concurrency = 1,
+        ttlMillis = EXTRA_TTL_MILLIS,
+        clock = clock,
+        settles = ThreadsTrouble::settles,
+    )
     private var credentials: String? = null
 
     /**
@@ -116,6 +124,42 @@ class ThreadsReader(
         )
     }
 
+    /**
+     * What Home shows beside [handles]' own threads: what they reposted
+     * (their public reposts pages; a profile's own page carries none) and the
+     * posts of the [topics] followed here, newest first. Each is read at most
+     * once per half hour and [EXTRAS_PER_LOAD] of them per load, the ones
+     * asked longest ago first, so they add few requests to a load; never a
+     * failure of its own: what was read before stays, else nothing.
+     */
+    suspend fun extras(handles: List<String>, topics: List<String> = emptyList()): List<ThreadsPost> {
+        val keys = topics.map { TOPIC + it.trim().removePrefix("#").lowercase() }.filter { it != TOPIC } +
+            handles.map { REPOSTS + it.trim().lowercase() }
+        if (keys.isEmpty()) return emptyList()
+        return try {
+            extras.merge(extras.prioritize(keys), ::readExtra, maxFetches = EXTRAS_PER_LOAD)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: Exception) {
+            emptyList()
+        }
+    }
+
+    /** What [extras] holds for [handles] and [topics] now, asking Meta nothing. */
+    suspend fun heldExtras(handles: List<String>, topics: List<String> = emptyList()): List<ThreadsPost> {
+        val keys = topics.map { TOPIC + it.trim().removePrefix("#").lowercase() } + handles.map { REPOSTS + it.trim().lowercase() }
+        return if (keys.isEmpty()) emptyList() else extras.merge(keys, { emptyList() }, maxFetches = 0)
+    }
+
+    private suspend fun readExtra(key: String): List<ThreadsPost> = when {
+        key.startsWith(REPOSTS) -> direct.guestReposts(key.removePrefix(REPOSTS)).items
+        key.startsWith(TOPIC) -> direct.searchFound(key.removePrefix(TOPIC), tag = true).posts
+        else -> emptyList()
+    }
+
+    /** [handle]'s reposts page, for when its Reposts tab opens; empty when Meta gave a guest none. */
+    suspend fun repostsPage(handle: String): Page<ThreadsPost> = attempt { direct.guestReposts(handle) } ?: Page(emptyList(), null)
+
     /** How many of [handles] a load would still have to ask Meta for; an account found missing or private is not among them. */
     fun pending(handles: List<String>): Int = accounts.pendingCount(handles)
 
@@ -146,8 +190,11 @@ class ThreadsReader(
         accounts.seed(handle, posts, at.toEpochMilli())
     }
 
-    /** Forgets every account's threads. */
-    fun forget() = accounts.clear()
+    /** Forgets every account's threads, and their reposts and the topics' posts. */
+    fun forget() {
+        accounts.clear()
+        extras.clear()
+    }
 
     /**
      * [handle]'s card and threads, read together. The card comes from the public
@@ -232,6 +279,18 @@ class ThreadsReader(
 
         /** How many followed accounts are waited on at once. */
         const val ACCOUNTS_AT_ONCE = 3
+
+        /** How many reposts pages and topic pages one Home load asks for at most. */
+        const val EXTRAS_PER_LOAD = 3
+
+        /** How many posts of each reposts or topic page reach Home. */
+        const val EXTRA_POSTS = 10
+
+        /** How long a reposts or topic page is reused before Meta is asked again. */
+        const val EXTRA_TTL_MILLIS = 30 * 60 * 1000L
+
+        private const val REPOSTS = "reposts:"
+        private const val TOPIC = "topic:"
 
         /** How long an account's threads are reused before Meta is asked again. */
         const val CACHE_TTL_MILLIS = 10 * 60 * 1000L

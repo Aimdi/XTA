@@ -191,4 +191,5 @@
     <string name="bearer_invalid">Et Bearer-token begynner med IGT:2:</string>
     <string name="signed_in_as">Logget inn som @%1$s</string>
     <string name="session_empty">Lim inn informasjonskapslene eller et Bearer-token først</string>
+    <string name="reposts_empty">Ingen repostinger på den offentlige siden</string>
 </resources>

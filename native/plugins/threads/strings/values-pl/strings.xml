@@ -201,4 +201,5 @@
     <string name="bearer_invalid">Token Bearer zaczyna się od IGT:2:</string>
     <string name="signed_in_as">Zalogowano jako @%1$s</string>
     <string name="session_empty">Najpierw wklej ciasteczka albo token Bearer</string>
+    <string name="reposts_empty">Brak udostępnień na publicznej stronie</string>
 </resources>

@@ -60,6 +60,15 @@ class ThreadsProfileHeaderTest {
     }
 
     @Test
+    fun theRepostsTabTakesTheRepostsPageNewestFirstEachOnce() {
+        val at = { s: Long -> Instant.ofEpochSecond(s) }
+        val older = ThreadsPost(id = "2", handle = "meta", authorName = "Meta", text = "a", publishedAt = at(100)).repostedBy("3", "zuck", "Zuck")
+        val newer = ThreadsPost(id = "5", handle = "ola", authorName = "Ola", text = "b").repostedBy("6", "zuck", "Zuck", at(200))
+        val page = ThreadsProfilePage(zuck, listOf(older))
+        assertEquals(listOf("6", "3"), ThreadsProfileHeader.reposts(page, listOf(older, newer)).map { it.id })
+    }
+
+    @Test
     fun aKeptProfileKeepsItsSplitBioItsLinksAndWhichCountsWereRounded() {
         val at = Instant.parse("2026-11-01T09:30:00Z")
         val kept = ThreadsProfilesKept.decode(ThreadsProfilesKept().with("zuck", ThreadsProfilePage(zuck, emptyList()), at).encode())

@@ -186,4 +186,5 @@
     <string name="bearer_invalid">Bearer 權杖以 IGT:2: 開頭</string>
     <string name="signed_in_as">已登入為 @%1$s</string>
     <string name="session_empty">請先貼上 Cookie 或 Bearer 權杖</string>
+    <string name="reposts_empty">公開頁面上沒有轉發</string>
 </resources>

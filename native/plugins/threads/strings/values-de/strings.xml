@@ -191,4 +191,5 @@
     <string name="bearer_invalid">Ein Bearer-Token beginnt mit IGT:2:</string>
     <string name="signed_in_as">Angemeldet als @%1$s</string>
     <string name="session_empty">Füge zuerst die Cookies oder einen Bearer-Token ein</string>
+    <string name="reposts_empty">Keine Reposts auf der öffentlichen Seite</string>
 </resources>

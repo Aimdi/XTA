@@ -201,4 +201,5 @@
     <string name="bearer_invalid">Bearer token začíná na IGT:2:</string>
     <string name="signed_in_as">Přihlášeno jako @%1$s</string>
     <string name="session_empty">Nejdřív vložte cookies nebo Bearer token</string>
+    <string name="reposts_empty">Na veřejné stránce nejsou žádné reposty</string>
 </resources>

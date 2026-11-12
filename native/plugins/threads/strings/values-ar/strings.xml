@@ -211,4 +211,5 @@
     <string name="bearer_invalid">يبدأ رمز Bearer بـ IGT:2:</string>
     <string name="signed_in_as">تم تسجيل الدخول باسم ‎@%1$s</string>
     <string name="session_empty">الصق ملفات تعريف الارتباط أو رمز Bearer أولًا</string>
+    <string name="reposts_empty">لا إعادات نشر في الصفحة العامة</string>
 </resources>

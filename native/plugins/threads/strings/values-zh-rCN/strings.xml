@@ -186,4 +186,5 @@
     <string name="bearer_invalid">Bearer 令牌以 IGT:2: 开头</string>
     <string name="signed_in_as">已登录为 @%1$s</string>
     <string name="session_empty">请先粘贴 Cookie 或 Bearer 令牌</string>
+    <string name="reposts_empty">公开页面上没有转发</string>
 </resources>

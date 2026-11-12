@@ -218,6 +218,12 @@ class ThreadsDirectClient(
         return more(cursor, profileUrl(key, "replies")) { ThreadsPages.replies(ThreadsPages.chainsIn(it), key) }
     }
 
+    /** [handle]'s reposts after [cursor], the cursor [guestReposts] gave. */
+    suspend fun moreReposts(handle: String, cursor: String): ThreadsMore<ThreadsPost> {
+        val key = handle.trim().lowercase()
+        return more(cursor, profileUrl(key, "reposts")) { ThreadsPages.reposts(ThreadsPages.chainsIn(it), key) }
+    }
+
     /** What a search found after [cursor], the cursor [searchFound] gave. */
     suspend fun moreFound(query: String, tag: Boolean, recent: Boolean, cursor: String): ThreadsMore<ThreadsPost> =
         more(cursor, ThreadsLinks.searchUrl(query, tag, recent)) { ThreadsPages.searchResults(ThreadsPages.chainsIn(it), query, tag) }
@@ -284,6 +290,18 @@ class ThreadsDirectClient(
         val key = handle.trim().lowercase()
         val page = guestPage(profileUrl(key, "replies"))
         return Page(ThreadsPages.replies(page, key), ThreadsNextPages.first(page) { "RepliesTab" in it.query.orEmpty() }?.encoded())
+    }
+
+    /**
+     * What [handle] reposted, from the public `/@handle/reposts` page: the
+     * profile's own page does not carry its reposts. Empty when Meta embedded
+     * none for a guest; the cursor after them when the page named one.
+     */
+    suspend fun guestReposts(handle: String): Page<ThreadsPost> {
+        val key = handle.trim().lowercase()
+        val page = guestPage(profileUrl(key, "reposts"))
+        val posts = withContext(Dispatchers.Default) { ThreadsPages.reposts(ThreadsPages.chains(page), key) }
+        return Page(posts, ThreadsNextPages.first(page) { "RepostsTab" in it.query.orEmpty() }?.encoded())
     }
 
     /**
