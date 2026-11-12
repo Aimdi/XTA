@@ -202,4 +202,7 @@
     <string name="signed_in_as">Вы вошли как @%1$s</string>
     <string name="session_empty">Сначала вставьте cookie или Bearer-токен</string>
     <string name="reposts_empty">На публичной странице нет репостов</string>
+    <string name="community">Сообщество</string>
+    <string name="community_posts">Посты в этом сообществе</string>
+    <string name="topic_followed">Подписка на этом устройстве — его посты теперь приходят на Главную</string>
 </resources>

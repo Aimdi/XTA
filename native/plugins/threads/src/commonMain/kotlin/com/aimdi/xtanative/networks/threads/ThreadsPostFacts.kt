@@ -15,6 +15,12 @@ import kotlinx.serialization.json.JsonObject
 data class ThreadsPostFacts(
     val topicEmoji: String? = null,
     val topicIconUrl: String? = null,
+    /** The topic is a community (`tag_header.is_community`, or a community's mark or id): shown beside the author, followable here. */
+    val community: Boolean = false,
+    /** The community's own id, when Meta named one. */
+    val communityId: String? = null,
+    /** The community's own page on threads.com, when Meta named one. */
+    val communityUrl: String? = null,
     /** `reshare_count`: how often it was sent on, beside its reposts and quotes. */
     val shareCount: Long? = null,
     /** Meta named a way it found the post made or changed with AI (`gen_ai_detection_method`, not "NONE"). */
@@ -47,9 +53,15 @@ object ThreadsPostFactsReader {
         val info = post["text_post_app_info"]
         val header = info["tag_header"]
         val pinned = info["pinned_post_info"]
+        val emoji = header["community_emoji"].string?.trim()?.ifEmpty { null }
+        val icon = header["community_favicon_url"].string?.trim()?.takeIf { it.startsWith("https://") }
+        val id = ThreadsCommunities.id(header)
         return ThreadsPostFacts(
-            topicEmoji = header["community_emoji"].string?.trim()?.ifEmpty { null },
-            topicIconUrl = header["community_favicon_url"].string?.trim()?.takeIf { it.startsWith("https://") },
+            topicEmoji = emoji,
+            topicIconUrl = icon,
+            community = header["is_community"].boolean == true || emoji != null || icon != null || id != null,
+            communityId = id,
+            communityUrl = ThreadsCommunities.url(header),
             shareCount = info["reshare_count"].integer?.takeIf { it >= 0 },
             aiLabel = aiLabel(post["gen_ai_detection_method"]),
             pinnedToProfile = pinned["is_pinned_to_profile"].boolean == true,

@@ -197,4 +197,7 @@
     <string name="signed_in_as">Conectat ca @%1$s</string>
     <string name="session_empty">Lipește mai întâi cookie-urile sau un token Bearer</string>
     <string name="reposts_empty">Nicio repostare pe pagina publică</string>
+    <string name="community">Comunitate</string>
+    <string name="community_posts">Postări din această comunitate</string>
+    <string name="topic_followed">Urmărit pe acest dispozitiv — postările ajung acum în Acasă</string>
 </resources>

@@ -192,4 +192,7 @@
     <string name="signed_in_as">Ingelogd als @%1$s</string>
     <string name="session_empty">Plak eerst de cookies of een Bearer-token</string>
     <string name="reposts_empty">Geen reposts op de openbare pagina</string>
+    <string name="community">Community</string>
+    <string name="community_posts">Berichten in deze community</string>
+    <string name="topic_followed">Gevolgd op dit apparaat — de berichten komen nu in Home</string>
 </resources>

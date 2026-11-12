@@ -187,4 +187,7 @@
     <string name="signed_in_as">Đã đăng nhập là @%1$s</string>
     <string name="session_empty">Hãy dán cookie hoặc Bearer token trước</string>
     <string name="reposts_empty">Không có bài đăng lại trên trang công khai</string>
+    <string name="community">Cộng đồng</string>
+    <string name="community_posts">Bài đăng trong cộng đồng này</string>
+    <string name="topic_followed">Đã theo dõi trên thiết bị này — bài đăng giờ sẽ có trong Trang chủ</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.plugins.threads
 
 import com.aimdi.xtanative.core.json.J
+import com.aimdi.xtanative.networks.threads.ThreadsCommunities
 import com.aimdi.xtanative.networks.threads.ThreadsPoll
 import com.aimdi.xtanative.networks.threads.ThreadsPostFacts
 import com.aimdi.xtanative.store.backup.XtaTime
@@ -21,6 +22,9 @@ internal object ThreadsFactsJson {
         val fields = listOfNotNull(
             facts.topicEmoji?.let { "topicEmoji" to JsonPrimitive(it) },
             facts.topicIconUrl?.let { "topicIconUrl" to JsonPrimitive(it) },
+            flag("community", facts.community),
+            facts.communityId?.let { "communityId" to JsonPrimitive(it) },
+            facts.communityUrl?.let { "communityUrl" to JsonPrimitive(it) },
             facts.shareCount?.let { "shareCount" to JsonPrimitive(it) },
             flag("aiLabel", facts.aiLabel),
             flag("pinnedToProfile", facts.pinnedToProfile),
@@ -36,6 +40,9 @@ internal object ThreadsFactsJson {
         return ThreadsPostFacts(
             topicEmoji = row["topicEmoji"].string,
             topicIconUrl = row["topicIconUrl"].string,
+            community = row["community"].boolean == true,
+            communityId = row["communityId"].string,
+            communityUrl = row["communityUrl"].string?.let(ThreadsCommunities::threadsPage),
             shareCount = row["shareCount"].long,
             aiLabel = row["aiLabel"].boolean == true,
             pinnedToProfile = row["pinnedToProfile"].boolean == true,

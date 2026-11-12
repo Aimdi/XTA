@@ -192,4 +192,7 @@
     <string name="signed_in_as">Sisse logitud kui @%1$s</string>
     <string name="session_empty">Kleebi kõigepealt küpsised või Bearer-märk</string>
     <string name="reposts_empty">Avalikul lehel pole jagamisi</string>
+    <string name="community">Kogukond</string>
+    <string name="community_posts">Selle kogukonna postitused</string>
+    <string name="topic_followed">Selles seadmes jälgitud — selle postitused jõuavad nüüd avalehele</string>
 </resources>

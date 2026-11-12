@@ -133,12 +133,17 @@ private fun FactLine(icon: ImageVector, text: String, modifier: Modifier, bold: 
     }
 }
 
-/** The topic the post was filed under, "› Books" or its community's emoji or picture before it, opening its posts. */
+/**
+ * The topic or community the post was posted in, as threads.com shows it
+ * beside the author: "› Books", or a community's emoji or picture and its
+ * name in the accent colour. A topic opens its posts, a community its page.
+ */
 @Composable
 internal fun TopicTag(app: ThreadsApp, post: ThreadsPost, tag: String) {
-    val color = MaterialTheme.colorScheme.onSurfaceVariant
     val facts = post.facts
-    Row(Modifier.heightIn(min = 48.dp).clip(RoundedCornerShape(8.dp)).clickable { app.openTag(tag) }, verticalAlignment = Alignment.CenterVertically) {
+    val color = if (facts.community) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+    val open = { ThreadsTopics.of(post)?.let(app::openTopic) ?: app.openTag(tag) }
+    Row(Modifier.heightIn(min = 48.dp).clip(RoundedCornerShape(8.dp)).clickable(onClickLabel = tag) { open() }, verticalAlignment = Alignment.CenterVertically) {
         when {
             facts.topicEmoji != null -> Text(facts.topicEmoji, style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(end = 4.dp))
             facts.topicIconUrl != null -> AsyncImage(facts.topicIconUrl, contentDescription = null, modifier = Modifier.padding(end = 4.dp).size(16.dp).clip(RoundedCornerShape(4.dp)))

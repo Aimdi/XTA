@@ -192,4 +192,7 @@
     <string name="signed_in_as">Logget inn som @%1$s</string>
     <string name="session_empty">Lim inn informasjonskapslene eller et Bearer-token først</string>
     <string name="reposts_empty">Ingen repostinger på den offentlige siden</string>
+    <string name="community">Fellesskap</string>
+    <string name="community_posts">Innlegg i dette fellesskapet</string>
+    <string name="topic_followed">Fulgt på denne enheten – innleggene kommer nå til Hjem</string>
 </resources>

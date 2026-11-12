@@ -196,4 +196,7 @@
     <string name="signed_in_as">Accesso eseguito come @%1$s</string>
     <string name="session_empty">Prima incolla i cookie o un token Bearer</string>
     <string name="reposts_empty">Nessun repost sulla pagina pubblica</string>
+    <string name="community">Community</string>
+    <string name="community_posts">Post in questa community</string>
+    <string name="topic_followed">Seguito su questo dispositivo: i suoi post ora arrivano in Home</string>
 </resources>

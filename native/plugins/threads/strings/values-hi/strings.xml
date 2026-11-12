@@ -192,4 +192,7 @@
     <string name="signed_in_as">@%1$s के रूप में साइन इन</string>
     <string name="session_empty">पहले कुकीज़ या Bearer टोकन पेस्ट करें</string>
     <string name="reposts_empty">सार्वजनिक पेज पर कोई रीपोस्ट नहीं</string>
+    <string name="community">समुदाय</string>
+    <string name="community_posts">इस समुदाय की पोस्ट</string>
+    <string name="topic_followed">इस डिवाइस पर फ़ॉलो किया — इसकी पोस्ट अब होम में आएँगी</string>
 </resources>

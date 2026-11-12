@@ -192,4 +192,7 @@
     <string name="signed_in_as">Angemeldet als @%1$s</string>
     <string name="session_empty">Füge zuerst die Cookies oder einen Bearer-Token ein</string>
     <string name="reposts_empty">Keine Reposts auf der öffentlichen Seite</string>
+    <string name="community">Community</string>
+    <string name="community_posts">Beiträge in dieser Community</string>
+    <string name="topic_followed">Auf diesem Gerät gefolgt – seine Beiträge erscheinen jetzt auf der Startseite</string>
 </resources>

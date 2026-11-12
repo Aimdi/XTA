@@ -14,7 +14,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -68,7 +71,7 @@ internal fun LazyListScope.foundPeople(app: ThreadsApp, terms: ThreadsSearchTerm
 
 /** The Topics tab: the words as a topic, and the topics the top posts are filed under, those the words name first. */
 internal fun LazyListScope.foundTopics(app: ThreadsApp, terms: ThreadsSearchTerms, found: ThreadsSearchFound) {
-    val topics = found.related(terms.query, terms.tag)
+    val topics = found.related(terms.query, terms.tag).sortedByDescending { it.community }
     if (topics.isEmpty()) {
         item(key = "none") { MessageText(pluginString(Strings.no_results)) }
         return
@@ -77,29 +80,48 @@ internal fun LazyListScope.foundTopics(app: ThreadsApp, terms: ThreadsSearchTerm
     items(topics, key = { "topic:" + it.key }) { topic ->
         ListItem(
             leadingContent = { TopicMark(topic, 40.dp) },
-            headlineContent = { Text("#" + topic.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+            headlineContent = { Text(if (topic.community) topic.name else "#" + topic.name, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+            supportingContent = if (topic.community) { { Text(pluginString(Strings.community)) } } else null,
             colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-            modifier = Modifier.clickable { app.openTag(topic.name) },
+            modifier = Modifier.clickable { app.openTopic(topic) },
         )
         HorizontalDivider()
     }
 }
 
-/** A topic's page opens under its name and mark, saying the posts below are filed under it. */
+/**
+ * A topic's or community's page opens under its name and mark, saying what
+ * the posts below are, with Follow on this device: its posts then come to
+ * Home. Tapped again, Following unfollows it here.
+ */
 @Composable
-internal fun ThreadsTopicHeader(topic: ThreadsTopic) {
+internal fun ThreadsTopicHeader(app: ThreadsApp, topic: ThreadsTopic) {
+    val followed by app.topics.state.collectAsState()
+    LaunchedEffect(Unit) { app.topics.load() }
+    val follows = ThreadsTopics.follows(followed, topic.name)
     Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
         TopicMark(topic, 48.dp)
         Spacer(Modifier.width(12.dp))
-        Column {
+        Column(Modifier.weight(1f)) {
             Text(
-                "#" + topic.name,
+                if (topic.community) topic.name else "#" + topic.name,
                 style = MaterialTheme.typography.titleLarge,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.semantics { heading() },
             )
-            Text(pluginString(Strings.topic_posts), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                pluginString(if (topic.community) Strings.community_posts else Strings.topic_posts),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        if (followed != null) {
+            if (follows) {
+                OutlinedButton(onClick = { app.unfollowTopic(topic.name) }, modifier = Modifier.heightIn(min = 48.dp)) { Text(pluginString(Strings.following)) }
+            } else {
+                FilledTonalButton(onClick = { app.followTopic(topic) }, modifier = Modifier.heightIn(min = 48.dp)) { Text(pluginString(Strings.follow)) }
+            }
         }
     }
     HorizontalDivider()
@@ -107,7 +129,7 @@ internal fun ThreadsTopicHeader(topic: ThreadsTopic) {
 
 /** The community's emoji or picture when Threads gave one, else a `#`. */
 @Composable
-private fun TopicMark(topic: ThreadsTopic, size: Dp) {
+internal fun TopicMark(topic: ThreadsTopic, size: Dp) {
     val icon = topic.iconUrl
     if (topic.emoji == null && icon != null) {
         PluginAvatar(icon, topic.name, topic.key, size)

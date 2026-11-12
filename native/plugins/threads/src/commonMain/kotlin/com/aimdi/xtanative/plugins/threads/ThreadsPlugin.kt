@@ -63,6 +63,7 @@ class ThreadsPlugin : XtaPlugin() {
         is ThreadsRoute.Post -> { { ThreadsConversationScreen(app, opened) } }
         is ThreadsRoute.Profile -> { { ThreadsProfileScreen(app, opened.handle) } }
         is ThreadsRoute.Search -> { { ThreadsSearchScreen(app, opened.terms) } }
+        is ThreadsRoute.Community -> { { ThreadsCommunityScreen(app, opened.topic) } }
         is ThreadsRoute.Media -> { { ThreadsMediaScreen(app, opened) } }
         ThreadsRoute.Saved -> { { ThreadsSavedScreen(app) } }
         ThreadsRoute.SignIn -> { { ThreadsSignInScreen(app) } }

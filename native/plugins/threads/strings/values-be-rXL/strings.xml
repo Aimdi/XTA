@@ -202,4 +202,7 @@
     <string name="signed_in_as">Vy ŭvajšli jak @%1$s</string>
     <string name="session_empty">Spačatku ŭstaŭcie cookies abo Bearer-token</string>
     <string name="reposts_empty">Na publičnaj staroncy niama repostaŭ</string>
+    <string name="community">Supolnasć</string>
+    <string name="community_posts">Dopisy ŭ hetaj supolnasci</string>
+    <string name="topic_followed">Padpiska na hetaj pryladzie — jaje dopisy ciapier traplajuć na Hałoŭnuju</string>
 </resources>

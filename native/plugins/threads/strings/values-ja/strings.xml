@@ -187,4 +187,7 @@
     <string name="signed_in_as">@%1$s としてログイン中</string>
     <string name="session_empty">先に Cookie か Bearer トークンを貼り付けてください</string>
     <string name="reposts_empty">公開ページにリポストはありません</string>
+    <string name="community">コミュニティ</string>
+    <string name="community_posts">このコミュニティの投稿</string>
+    <string name="topic_followed">この端末でフォローしました — 投稿がホームに届きます</string>
 </resources>

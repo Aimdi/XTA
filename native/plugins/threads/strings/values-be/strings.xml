@@ -202,4 +202,7 @@
     <string name="signed_in_as">Вы ўвайшлі як @%1$s</string>
     <string name="session_empty">Спачатку ўстаўце cookies або Bearer-токен</string>
     <string name="reposts_empty">На публічнай старонцы няма рэпостаў</string>
+    <string name="community">Супольнасць</string>
+    <string name="community_posts">Допісы ў гэтай супольнасці</string>
+    <string name="topic_followed">Падпіска на гэтай прыладзе — яе допісы цяпер трапляюць на Галоўную</string>
 </resources>

@@ -212,4 +212,7 @@
     <string name="signed_in_as">تم تسجيل الدخول باسم ‎@%1$s</string>
     <string name="session_empty">الصق ملفات تعريف الارتباط أو رمز Bearer أولًا</string>
     <string name="reposts_empty">لا إعادات نشر في الصفحة العامة</string>
+    <string name="community">مجتمع</string>
+    <string name="community_posts">منشورات في هذا المجتمع</string>
+    <string name="topic_followed">تمت المتابعة على هذا الجهاز — تظهر منشوراته الآن في الرئيسية</string>
 </resources>

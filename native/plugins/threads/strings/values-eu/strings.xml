@@ -192,4 +192,7 @@
     <string name="signed_in_as">@%1$s gisa saioa hasita</string>
     <string name="session_empty">Itsatsi lehenik cookieak edo Bearer token bat</string>
     <string name="reposts_empty">Ez dago birbidalketarik orri publikoan</string>
+    <string name="community">Komunitatea</string>
+    <string name="community_posts">Komunitate honetako argitalpenak</string>
+    <string name="topic_followed">Gailu honetan jarraituta — bere argitalpenak orain Hasierara iristen dira</string>
 </resources>

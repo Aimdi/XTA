@@ -9,9 +9,16 @@ import org.jsoup.Jsoup
 /**
  * A topic posts are filed under: its [name] without the `#`, and the mark
  * Meta gives its community (`tag_header.community_emoji`,
- * `community_favicon_url`) when the page carried one.
+ * `community_favicon_url`) when the page carried one; whether it is a
+ * [community], and the community's own page when Meta named one.
  */
-data class ThreadsTopic(val name: String, val emoji: String? = null, val iconUrl: String? = null) {
+data class ThreadsTopic(
+    val name: String,
+    val emoji: String? = null,
+    val iconUrl: String? = null,
+    val community: Boolean = false,
+    val url: String? = null,
+) {
     val key: String get() = name.lowercase()
 }
 
@@ -113,7 +120,7 @@ object ThreadsSearchReading {
             is JsonObject -> {
                 (node["tag_header"] as? JsonObject)?.let { mark(J(it)) }?.let { topic ->
                     val known = out[topic.key]
-                    if (known == null || (known.emoji == null && known.iconUrl == null)) out[topic.key] = topic
+                    if (known == null || (known.emoji == null && known.iconUrl == null && !known.community)) out[topic.key] = topic
                 }
                 node.values.forEach { collectMarks(it, out) }
             }
@@ -122,10 +129,11 @@ object ThreadsSearchReading {
     }
 
     private fun mark(header: J): ThreadsTopic? {
-        val name = (header["display_name"].string ?: header["name"].string)?.trim()?.removePrefix("#")?.trim()
-        if (name.isNullOrEmpty()) return null
+        val name = ThreadsCommunities.name(header) ?: return null
         val emoji = header["community_emoji"].string?.trim()?.ifEmpty { null }
         val icon = header["community_favicon_url"].string?.trim()?.takeIf { it.startsWith("https://") }
-        return ThreadsTopic(name, emoji, icon)
+        val id = ThreadsCommunities.id(header)
+        val community = header["is_community"].boolean == true || emoji != null || icon != null || id != null
+        return ThreadsTopic(name, emoji, icon, community, ThreadsCommunities.url(header))
     }
 }

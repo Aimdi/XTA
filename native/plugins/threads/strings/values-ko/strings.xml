@@ -187,4 +187,7 @@
     <string name="signed_in_as">@%1$s(으)로 로그인됨</string>
     <string name="session_empty">먼저 쿠키나 Bearer 토큰을 붙여넣으세요</string>
     <string name="reposts_empty">공개 페이지에 리포스트가 없습니다</string>
+    <string name="community">커뮤니티</string>
+    <string name="community_posts">이 커뮤니티의 게시물</string>
+    <string name="topic_followed">이 기기에서 팔로우했습니다 — 이제 게시물이 홈에 표시됩니다</string>
 </resources>

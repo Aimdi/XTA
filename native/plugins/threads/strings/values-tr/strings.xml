@@ -192,4 +192,7 @@
     <string name="signed_in_as">@%1$s olarak oturum açıldı</string>
     <string name="session_empty">Önce çerezleri veya bir Bearer jetonunu yapıştırın</string>
     <string name="reposts_empty">Herkese açık sayfada yeniden paylaşım yok</string>
+    <string name="community">Topluluk</string>
+    <string name="community_posts">Bu topluluktaki gönderiler</string>
+    <string name="topic_followed">Bu cihazda takip ediliyor — gönderileri artık Ana sayfada</string>
 </resources>

@@ -187,4 +187,7 @@
     <string name="signed_in_as">已登录为 @%1$s</string>
     <string name="session_empty">请先粘贴 Cookie 或 Bearer 令牌</string>
     <string name="reposts_empty">公开页面上没有转发</string>
+    <string name="community">社区</string>
+    <string name="community_posts">此社区的帖子</string>
+    <string name="topic_followed">已在此设备上关注——其帖子现在会出现在首页</string>
 </resources>

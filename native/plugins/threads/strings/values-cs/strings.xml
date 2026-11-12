@@ -202,4 +202,7 @@
     <string name="signed_in_as">Přihlášeno jako @%1$s</string>
     <string name="session_empty">Nejdřív vložte cookies nebo Bearer token</string>
     <string name="reposts_empty">Na veřejné stránce nejsou žádné reposty</string>
+    <string name="community">Komunita</string>
+    <string name="community_posts">Příspěvky v této komunitě</string>
+    <string name="topic_followed">Sledováno v tomto zařízení — jeho příspěvky teď přicházejí na Domů</string>
 </resources>

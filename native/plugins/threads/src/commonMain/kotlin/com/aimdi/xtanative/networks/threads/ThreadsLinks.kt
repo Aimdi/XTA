@@ -13,6 +13,9 @@ sealed interface ThreadsLink {
 
     /** What Threads' search page shows: posts for words, or with a tag's `serp_type` the posts filed under it. */
     data class Search(val terms: ThreadsSearchTerms) : ThreadsLink
+
+    /** A community's own page on threads.com. */
+    data class Community(val url: String) : ThreadsLink
 }
 
 /** Handles, post links and addresses on threads.com, read as XTA reads them. */
@@ -72,6 +75,8 @@ object ThreadsLinks {
             return parts.getOrNull(1)?.takeIf { it.isNotEmpty() }?.let { ThreadsLink.Post("$WEB/t/$it", "") }
         }
         if (first.lowercase() == "search") return searchLink(link)
+        // A community's own page, whatever its address form: never an account written without its `@`.
+        if (first.lowercase() in COMMUNITY_PAGES) return ThreadsLink.Community(link.newBuilder().scheme("https").host("www.threads.com").build().toString())
         if (!first.startsWith("@") && first.lowercase() in SITE_PAGES) return null
         val handle = atHandle(first) ?: return null
         return if (parts.size >= 3 && parts[1] == "post" && parts[2].isNotEmpty()) {
@@ -104,6 +109,9 @@ object ThreadsLinks {
         val words = (if (tag) query.removePrefix("#").trim() else query).ifEmpty { return null }
         return ThreadsLink.Search(ThreadsSearchTerms(words, tag))
     }
+
+    /** First path segments of a community's own page. */
+    private val COMMUNITY_PAGES = setOf("community", "communities")
 
     /** First path segments that are Threads' own pages, never an account written without its `@`. */
     private val SITE_PAGES = setOf("login", "logout", "settings", "activity", "saved", "liked", "insights", "about", "legal", "privacy", "terms", "intent", "accounts", "explore")

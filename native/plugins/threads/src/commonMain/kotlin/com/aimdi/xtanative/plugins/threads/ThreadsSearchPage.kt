@@ -262,7 +262,7 @@ private fun Results(app: ThreadsApp, terms: ThreadsSearchTerms, tab: ThreadsSear
 }
 
 private fun LazyListScope.foundPosts(app: ThreadsApp, terms: ThreadsSearchTerms, found: ThreadsSearchFound) {
-    if (terms.tag) item(key = "topic") { ThreadsTopicHeader(found.topic(terms.query)) }
+    if (terms.tag) item(key = "topic") { ThreadsTopicHeader(app, found.topic(terms.query)) }
     if (found.posts.isEmpty()) item(key = "none") { MessageText(pluginString(Strings.no_results)) }
     items(found.posts, key = { "post:" + it.id }, contentType = { "post" }) { ThreadsPostCard(app, it) }
 }

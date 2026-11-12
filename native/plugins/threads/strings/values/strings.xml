@@ -194,4 +194,7 @@
     <string name="signed_in_as">Signed in as @%1$s</string>
     <string name="session_empty">Paste the cookies or a Bearer token first</string>
     <string name="reposts_empty">No reposts on the public page</string>
+    <string name="community">Community</string>
+    <string name="community_posts">Posts in this community</string>
+    <string name="topic_followed">Followed on this device — its posts now come to Home</string>
 </resources>

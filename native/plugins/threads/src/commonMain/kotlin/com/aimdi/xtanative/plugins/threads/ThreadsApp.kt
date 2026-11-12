@@ -2,6 +2,9 @@ package com.aimdi.xtanative.plugins.threads
 
 import com.aimdi.xtanative.networks.threads.ThreadsAccountFailure
 import com.aimdi.xtanative.networks.threads.ThreadsDirectClient
+import com.aimdi.xtanative.networks.threads.ThreadsException
+import com.aimdi.xtanative.networks.threads.ThreadsFailure
+import com.aimdi.xtanative.networks.threads.ThreadsTopic
 import com.aimdi.xtanative.networks.threads.ThreadsFeedMix
 import com.aimdi.xtanative.networks.threads.ThreadsForYou
 import com.aimdi.xtanative.networks.threads.ThreadsForYouFeed
@@ -88,6 +91,9 @@ internal class ThreadsApp(val host: PluginHost) {
     private val profiles = ThreadsProfileShelf(host.store.file("profiles.json"))
     val accountNotes = ThreadsAccountNotes(host.store.file("account_notes.json"))
 
+    /** The topics and communities followed on this device. */
+    val topics = ThreadsTopics(host.store.file("topics.json"))
+
     /** Home's loads, given up once Home is no longer shown. */
     val homeLoads = ThreadsShownLoads()
 
@@ -141,6 +147,7 @@ internal class ThreadsApp(val host: PluginHost) {
         settings()
         accounts.load()
         likes.load()
+        topics.load()
     }
 
     suspend fun settings(): Settings = host.settings.state.filterNotNull().first()
@@ -236,14 +243,15 @@ internal class ThreadsApp(val host: PluginHost) {
     private suspend fun readFeed(force: Boolean, onPartial: (List<ThreadsPost>) -> Unit): List<ThreadsPost> {
         ready()
         val handles = ThreadsAccounts.handles(accounts.load())
+        val followedTopics = topicPages()
         var painted: List<ThreadsPost>? = null
-        val held = reader.heldExtras(handles)
+        val held = reader.heldExtras(handles, followedTopics)
         val posts = try {
             homeLoads.whileShown {
-                val own = reader.following(handles, force) { partial ->
+                val own = ownPosts(handles, followedTopics.isNotEmpty(), force) { partial ->
                     painted = ThreadsFeedMix.merge(partial, held).also(onPartial)
                 }
-                ThreadsFeedMix.merge(own, reader.extras(handles))
+                ThreadsFeedMix.merge(own, reader.extras(handles, followedTopics))
             } ?: return painted ?: feed.state.value.items
         } finally {
             failedNow.value = reader.failures(handles)
@@ -253,6 +261,30 @@ internal class ThreadsApp(val host: PluginHost) {
             remember(posts)
         }
         return posts
+    }
+
+    /** The followed accounts' threads; with none followed but topics, nothing of their own instead of Home's "follow someone". */
+    private suspend fun ownPosts(handles: List<String>, topicsFollowed: Boolean, force: Boolean, onPartial: (List<ThreadsPost>) -> Unit): List<ThreadsPost> =
+        try {
+            reader.following(handles, force, onPartial)
+        } catch (e: ThreadsException) {
+            if (!topicsFollowed || e.failure != ThreadsFailure.NOT_CONFIGURED) throw e
+            emptyList()
+        }
+
+    /** What Home reads for each followed topic: a community's own page where Meta named one, else the topic's name. */
+    private suspend fun topicPages(): List<String> = topics.load().map { it.url ?: it.name }
+
+    /** Follows [topic] here, says so, and has Home read its posts. */
+    fun followTopic(topic: ThreadsTopic) = launch {
+        topics.follow(topic)
+        notices.tell(Strings.topic_followed.get(host.language))
+        feed.refresh()
+    }
+
+    fun unfollowTopic(name: String) = launch {
+        topics.unfollow(name)
+        feed.refresh()
     }
 
     /** Only the followed accounts' feed is kept: a Bearer's "For you" is no one's account. */
@@ -500,6 +532,9 @@ internal class ThreadsApp(val host: PluginHost) {
     fun openProfile(handle: String) = host.open(ThreadsRoutes.profile(handle))
 
     fun openTag(tag: String) = host.open(ThreadsRoutes.search(ThreadsSearchTerms(tag.removePrefix("#"), tag = true)))
+
+    /** A community's own page; a plain topic's search page. */
+    fun openTopic(topic: ThreadsTopic) = if (topic.community) host.open(ThreadsRoutes.community(topic)) else openTag(topic.name)
 
     fun openSearch(terms: ThreadsSearchTerms) = host.open(ThreadsRoutes.search(terms))
 

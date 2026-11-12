@@ -202,4 +202,7 @@
     <string name="signed_in_as">Zalogowano jako @%1$s</string>
     <string name="session_empty">Najpierw wklej ciasteczka albo token Bearer</string>
     <string name="reposts_empty">Brak udostępnień na publicznej stronie</string>
+    <string name="community">Społeczność</string>
+    <string name="community_posts">Posty w tej społeczności</string>
+    <string name="topic_followed">Obserwowane na tym urządzeniu — posty trafiają teraz na stronę główną</string>
 </resources>

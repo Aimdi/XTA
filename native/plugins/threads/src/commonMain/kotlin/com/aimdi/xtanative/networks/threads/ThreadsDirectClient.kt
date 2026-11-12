@@ -26,6 +26,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
 /**
@@ -223,6 +224,29 @@ class ThreadsDirectClient(
         val key = handle.trim().lowercase()
         return more(cursor, profileUrl(key, "reposts")) { ThreadsPages.reposts(ThreadsPages.chainsIn(it), key) }
     }
+
+    /**
+     * A community's own page as a guest is shown it ([ThreadsCommunities.url]):
+     * the first post of each thread it carries, the topics they are filed
+     * under with their marks, and the cursor after them when the page names
+     * one. Read off the caller's thread.
+     */
+    suspend fun communityPage(url: String): ThreadsSearchFound {
+        val page = communityUrl(url) ?: throw ThreadsException(UNREACHABLE, "not a threads.com page: $url")
+        val body = guestPage(page)
+        return withContext(Dispatchers.Default) {
+            val posts = ThreadsPages.profileThreads(ThreadsPages.chains(body), "").distinctBy { it.id }
+            ThreadsSearchFound(posts, ThreadsSearchReading.topics(posts, ThreadsSearchReading.marks(body)), ThreadsNextPages.first(body) { true }?.encoded())
+        }
+    }
+
+    /** A community page's posts after [cursor], the cursor [communityPage] gave. */
+    suspend fun moreCommunity(url: String, cursor: String): ThreadsMore<ThreadsPost> {
+        val page = communityUrl(url) ?: return ThreadsMore(emptyList(), null, refused = true)
+        return more(cursor, page) { ThreadsPages.profileThreads(ThreadsPages.chainsIn(it), "") }
+    }
+
+    private fun communityUrl(url: String): HttpUrl? = ThreadsCommunities.threadsPage(url)?.toHttpUrlOrNull()
 
     /** What a search found after [cursor], the cursor [searchFound] gave. */
     suspend fun moreFound(query: String, tag: Boolean, recent: Boolean, cursor: String): ThreadsMore<ThreadsPost> =

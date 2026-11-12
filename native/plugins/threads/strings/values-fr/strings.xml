@@ -196,4 +196,7 @@
     <string name="signed_in_as">Connecté en tant que @%1$s</string>
     <string name="session_empty">Collez d’abord les cookies ou un jeton Bearer</string>
     <string name="reposts_empty">Aucune republication sur la page publique</string>
+    <string name="community">Communauté</string>
+    <string name="community_posts">Publications de cette communauté</string>
+    <string name="topic_followed">Suivi sur cet appareil — ses publications arrivent désormais dans Accueil</string>
 </resources>

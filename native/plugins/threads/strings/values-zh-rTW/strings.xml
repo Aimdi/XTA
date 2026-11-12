@@ -187,4 +187,7 @@
     <string name="signed_in_as">已登入為 @%1$s</string>
     <string name="session_empty">請先貼上 Cookie 或 Bearer 權杖</string>
     <string name="reposts_empty">公開頁面上沒有轉發</string>
+    <string name="community">社群</string>
+    <string name="community_posts">此社群的貼文</string>
+    <string name="topic_followed">已在此裝置上追蹤——其貼文現在會出現在首頁</string>
 </resources>

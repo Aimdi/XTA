@@ -196,4 +196,7 @@
     <string name="signed_in_as">Conectado como @%1$s</string>
     <string name="session_empty">Cole primeiro os cookies ou um token Bearer</string>
     <string name="reposts_empty">Sem republicações na página pública</string>
+    <string name="community">Comunidade</string>
+    <string name="community_posts">Posts nesta comunidade</string>
+    <string name="topic_followed">Seguindo neste dispositivo — os posts agora chegam ao Início</string>
 </resources>

@@ -127,14 +127,14 @@ class ThreadsReader(
     /**
      * What Home shows beside [handles]' own threads: what they reposted
      * (their public reposts pages; a profile's own page carries none) and the
-     * posts of the [topics] followed here, newest first. Each is read at most
+     * posts of the [topics] followed here (a topic's name, or a community's
+     * page address), newest first. Each is read at most
      * once per half hour and [EXTRAS_PER_LOAD] of them per load, the ones
      * asked longest ago first, so they add few requests to a load; never a
      * failure of its own: what was read before stays, else nothing.
      */
     suspend fun extras(handles: List<String>, topics: List<String> = emptyList()): List<ThreadsPost> {
-        val keys = topics.map { TOPIC + it.trim().removePrefix("#").lowercase() }.filter { it != TOPIC } +
-            handles.map { REPOSTS + it.trim().lowercase() }
+        val keys = extraKeys(handles, topics)
         if (keys.isEmpty()) return emptyList()
         return try {
             extras.merge(extras.prioritize(keys), ::readExtra, maxFetches = EXTRAS_PER_LOAD)
@@ -147,13 +147,19 @@ class ThreadsReader(
 
     /** What [extras] holds for [handles] and [topics] now, asking Meta nothing. */
     suspend fun heldExtras(handles: List<String>, topics: List<String> = emptyList()): List<ThreadsPost> {
-        val keys = topics.map { TOPIC + it.trim().removePrefix("#").lowercase() } + handles.map { REPOSTS + it.trim().lowercase() }
+        val keys = extraKeys(handles, topics)
         return if (keys.isEmpty()) emptyList() else extras.merge(keys, { emptyList() }, maxFetches = 0)
     }
+
+    /** A topic is its name, read from its topic page; a community's page address (`https://…`) is read as that page. */
+    private fun extraKeys(handles: List<String>, topics: List<String>): List<String> =
+        topics.map { it.trim() }.filter { it.isNotEmpty() }.map { if (it.startsWith("https://")) PAGE + it else TOPIC + it.removePrefix("#").lowercase() }
+            .filter { it != TOPIC }.distinct() + handles.map { REPOSTS + it.trim().lowercase() }
 
     private suspend fun readExtra(key: String): List<ThreadsPost> = when {
         key.startsWith(REPOSTS) -> direct.guestReposts(key.removePrefix(REPOSTS)).items
         key.startsWith(TOPIC) -> direct.searchFound(key.removePrefix(TOPIC), tag = true).posts
+        key.startsWith(PAGE) -> direct.communityPage(key.removePrefix(PAGE)).posts
         else -> emptyList()
     }
 
@@ -291,6 +297,7 @@ class ThreadsReader(
 
         private const val REPOSTS = "reposts:"
         private const val TOPIC = "topic:"
+        private const val PAGE = "page:"
 
         /** How long an account's threads are reused before Meta is asked again. */
         const val CACHE_TTL_MILLIS = 10 * 60 * 1000L

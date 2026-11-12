@@ -22,9 +22,9 @@ class ThreadsSearchFoundTest {
         val found = ThreadsSearchReading.read(body, "ceramics", tag = false)
         assertEquals(listOf("1", "2", "3", "4"), found.posts.map { it.id })
         assertEquals(
-            listOf(ThreadsTopic("Ceramics", emoji = "🏺"), ThreadsTopic("Pottery", iconUrl = "https://cdn.example/p.png")),
+            listOf(ThreadsTopic("Ceramics", emoji = "🏺", community = true), ThreadsTopic("Pottery", iconUrl = "https://cdn.example/p.png", community = true)),
             found.topics,
-            "each topic once, the first spelling kept, with the mark any of its headers carried",
+            "each topic once, the first spelling kept, with the mark any of its headers carried; a community's mark makes it one",
         )
     }
 

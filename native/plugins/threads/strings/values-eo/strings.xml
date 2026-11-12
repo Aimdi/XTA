@@ -192,4 +192,7 @@
     <string name="signed_in_as">Ensalutinta kiel @%1$s</string>
     <string name="session_empty">Unue algluu la kuketojn aŭ Bearer-ĵetonon</string>
     <string name="reposts_empty">Neniuj rediskonigoj sur la publika paĝo</string>
+    <string name="community">Komunumo</string>
+    <string name="community_posts">Afiŝoj en ĉi tiu komunumo</string>
+    <string name="topic_followed">Sekvata en ĉi tiu aparato — ĝiaj afiŝoj nun venas al Hejmo</string>
 </resources>

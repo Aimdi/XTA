@@ -54,11 +54,7 @@ object ThreadsParser {
     }
 
     /** The topic a post was filed under, without its `#`. */
-    fun topicTag(post: J): String? {
-        val header = post["text_post_app_info"]["tag_header"]
-        val name = (header["display_name"].string ?: header["name"].string).orEmpty().trim()
-        return name.ifEmpty { null }?.removePrefix("#")
-    }
+    fun topicTag(post: J): String? = ThreadsCommunities.name(post["text_post_app_info"]["tag_header"])
 
     /**
      * Meta's own split of [caption] into text, mentions, links and tags; only

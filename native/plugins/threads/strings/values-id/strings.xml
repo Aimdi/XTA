@@ -187,4 +187,7 @@
     <string name="signed_in_as">Masuk sebagai @%1$s</string>
     <string name="session_empty">Tempel cookie atau token Bearer terlebih dahulu</string>
     <string name="reposts_empty">Tidak ada postingan ulang di halaman publik</string>
+    <string name="community">Komunitas</string>
+    <string name="community_posts">Postingan di komunitas ini</string>
+    <string name="topic_followed">Diikuti di perangkat ini — postingannya kini muncul di Beranda</string>
 </resources>
