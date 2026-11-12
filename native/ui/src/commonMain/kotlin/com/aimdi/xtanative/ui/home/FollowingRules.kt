@@ -36,7 +36,7 @@ object FollowingBar {
 
     /**
      * The fit for a bar [width] dp wide holding the order button and [actions]
-     * more buttons, with Posts and Media measuring [labels] dp together in
+     * more buttons (the picker before the tabs, the rest after them), with Posts and Media measuring [labels] dp together in
      * their bold, widest state.
      */
     fun fit(width: Float, labels: Float, actions: Int): BarFit {
@@ -52,7 +52,7 @@ object FollowingBar {
     /** The bar's height for [fit], in dp. */
     fun height(fit: BarFit): Float = if (fit == BarFit.TWO_ROWS) 2 * HEIGHT else HEIGHT
 
-    /** The buttons beside the order: the source picker, the search of the loaded posts and Home feed accounts, and refresh on the desktop. */
+    /** The buttons besides the order: the source picker (leading the bar), the search of the loaded posts and Home feed accounts, and refresh on the desktop. */
     fun actions(desktop: Boolean): Int = if (desktop) 4 else 3
 
     /** The orders the menu offers, in XTA's order. */

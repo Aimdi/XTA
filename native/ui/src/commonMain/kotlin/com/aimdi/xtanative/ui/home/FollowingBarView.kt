@@ -102,10 +102,14 @@ internal fun FollowingTopBar(look: FollowingLook, calls: FollowingCalls, behavio
             if (fit == BarFit.TWO_ROWS) {
                 Column {
                     Row(Modifier.fillMaxWidth().height(FollowingBar.HEIGHT.dp), horizontalArrangement = Arrangement.End) { Controls(look, calls) }
-                    Box(Modifier.height(FollowingBar.HEIGHT.dp).padding(start = FollowingBar.INSET.dp)) { ModeTabs(look.mediaOnly, padding, calls.onMedia) }
+                    Row(Modifier.height(FollowingBar.HEIGHT.dp).padding(start = FollowingBar.INSET.dp), verticalAlignment = Alignment.CenterVertically) {
+                        PickerButton(look.unread, calls.onPicker)
+                        ModeTabs(look.mediaOnly, padding, calls.onMedia)
+                    }
                 }
             } else {
                 Row(Modifier.fillMaxWidth().height(FollowingBar.HEIGHT.dp).padding(start = FollowingBar.INSET.dp), verticalAlignment = Alignment.CenterVertically) {
+                    PickerButton(look.unread, calls.onPicker)
                     Box(Modifier.weight(1f)) { ModeTabs(look.mediaOnly, padding, calls.onMedia) }
                     Controls(look, calls)
                 }
@@ -164,15 +168,24 @@ private fun ModeTab(label: String, selected: Boolean, padding: Dp, onClick: () -
     }
 }
 
-/** The order and filters, the picker, the search of the loaded posts, Home feed accounts and the desktop's refresh. */
+/**
+ * The timeline picker, leading the bar before Posts and Media as the X
+ * screen's does: its glyph 16 dp from the edge (the bar's inset and the
+ * button's own), with a dot while another timeline has unread posts.
+ */
+@Composable
+private fun PickerButton(unread: Boolean, onPicker: () -> Unit) {
+    val source = stringResource(Res.string.following)
+    IconButton(onClick = onPicker, modifier = Modifier.semantics { contentDescription = source }) {
+        UnreadDot(unread) { Icon(HomeIcons.DynamicFeed, contentDescription = null) }
+    }
+}
+
+/** The order and filters, the search of the loaded posts, Home feed accounts and the desktop's refresh. */
 @Composable
 private fun Controls(look: FollowingLook, calls: FollowingCalls) {
     Row(Modifier.padding(end = FollowingBar.INSET.dp), verticalAlignment = Alignment.CenterVertically) {
         OrderButton(look.feed, calls.onOrder, calls.onFilters)
-        val source = stringResource(Res.string.following)
-        IconButton(onClick = calls.onPicker, modifier = Modifier.semantics { contentDescription = source }) {
-            UnreadDot(look.unread) { Icon(HomeIcons.DynamicFeed, contentDescription = null) }
-        }
         LoadedSearchButton(calls.onSearchLoaded)
         FeedAccountsButton(look.accountsOff, calls.onAccounts)
         calls.onRefresh?.let { refresh ->
