@@ -176,4 +176,13 @@
     <string name="add_accounts_hint">Varios a la vez: sepáralos con espacios o comas</string>
     <string name="session_unlocks">Qué añade una sesión: tu propio Para ti y la búsqueda de personas. Con el interruptor de arriba activado, también lee las cuentas que sigues.</string>
     <string name="instance_intro">Opcional. Una instancia de RSSHub propia lee las cuentas que sigues; si falla, se leen las páginas públicas de Threads. Déjalo vacío para leer solo las páginas públicas.</string>
+    <string name="account_missing">No encontrada: ¿cambió de nombre, se eliminó o está mal escrita?</string>
+    <string name="account_private">Privada: Threads no muestra ninguna de sus publicaciones a un invitado</string>
+    <string name="retry">Reintentar</string>
+    <string name="unfollow_on_device">Dejar de seguir en este dispositivo</string>
+    <plurals name="accounts_failed">
+        <item quantity="one">No se pudo leer 1 cuenta</item>
+        <item quantity="many">No se pudieron leer %1$d cuentas</item>
+        <item quantity="other">No se pudieron leer %1$d cuentas</item>
+    </plurals>
 </resources>

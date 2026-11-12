@@ -173,4 +173,12 @@
     <string name="add_accounts_hint">एक साथ कई: इन्हें स्पेस या कॉमा से अलग करें</string>
     <string name="session_unlocks">सत्र से क्या मिलता है: आपका अपना «आपके लिए» और लोगों की खोज। ऊपर का स्विच चालू हो तो यह आपके फ़ॉलो किए गए खाते भी पढ़ता है।</string>
     <string name="instance_intro">वैकल्पिक। आपका अपना RSSHub इंस्टेंस आपके फ़ॉलो किए गए खाते पढ़ता है; उसके विफल होने पर Threads के सार्वजनिक पेज काम आते हैं। केवल सार्वजनिक पेज पढ़ने के लिए खाली छोड़ें।</string>
+    <string name="account_missing">नहीं मिला — नाम बदला, हटाया गया या ग़लत लिखा गया?</string>
+    <string name="account_private">निजी — Threads अतिथि को इसकी कोई पोस्ट नहीं दिखाता</string>
+    <string name="retry">फिर कोशिश करें</string>
+    <string name="unfollow_on_device">इस डिवाइस पर फ़ॉलो करना बंद करें</string>
+    <plurals name="accounts_failed">
+        <item quantity="one">1 खाता पढ़ा नहीं जा सका</item>
+        <item quantity="other">%1$d खाते पढ़े नहीं जा सके</item>
+    </plurals>
 </resources>

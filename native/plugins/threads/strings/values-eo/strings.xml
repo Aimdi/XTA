@@ -173,4 +173,12 @@
     <string name="add_accounts_hint">Plurajn samtempe: apartigu ilin per spacetoj aŭ komoj</string>
     <string name="session_unlocks">Kion seanco aldonas: vian propran «Por vi» kaj serĉon de homoj. Kun la supra ŝaltilo ŝaltita, ĝi ankaŭ legas la kontojn, kiujn vi sekvas.</string>
     <string name="instance_intro">Nedeviga. Via propra RSSHub-instanco legas la kontojn, kiujn vi sekvas; se ĝi malsukcesas, la publikaj paĝoj de Threads anstataŭas ĝin. Lasu malplena por legi nur la publikajn paĝojn.</string>
+    <string name="account_missing">Ne trovita — ĉu renomita, forigita aŭ mistajpita?</string>
+    <string name="account_private">Privata — Threads montras al gasto neniun el ĝiaj afiŝoj</string>
+    <string name="retry">Reprovi</string>
+    <string name="unfollow_on_device">Ne plu sekvi en ĉi tiu aparato</string>
+    <plurals name="accounts_failed">
+        <item quantity="one">1 konto ne legeblis</item>
+        <item quantity="other">%1$d kontoj ne legeblis</item>
+    </plurals>
 </resources>

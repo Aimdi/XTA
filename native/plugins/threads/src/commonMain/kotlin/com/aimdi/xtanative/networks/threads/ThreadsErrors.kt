@@ -27,6 +27,9 @@ enum class ThreadsFailure {
 
     /** Meta sent a guest to its sign-in page instead of the page asked for. */
     SIGN_IN_REQUIRED,
+
+    /** The account is private: its page is there, but a guest is shown none of its threads. */
+    PRIVATE_ACCOUNT,
 }
 
 /** How a screen may retry a failure without being asked (XTA's ReadRetry). */

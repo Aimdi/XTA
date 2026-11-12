@@ -67,6 +67,7 @@ class ThreadsReader(
         concurrency = 1,
         ttlMillis = CACHE_TTL_MILLIS,
         clock = clock,
+        settles = ThreadsTrouble::settles,
     )
     private var credentials: String? = null
 
@@ -112,8 +113,23 @@ class ThreadsReader(
         )
     }
 
-    /** How many of [handles] a load would still have to ask Meta for. */
+    /** How many of [handles] a load would still have to ask Meta for; an account found missing or private is not among them. */
     fun pending(handles: List<String>): Int = accounts.pendingCount(handles)
+
+    /** [handles] whose last read failed, in their order, with why. */
+    fun failures(handles: List<String>): List<ThreadsAccountFailure> =
+        accounts.failures(handles).map { (handle, failure) -> ThreadsAccountFailure.of(handle, failure.error, Instant.ofEpochMilli(failure.at)) }
+
+    /**
+     * [handle] read again now, past its ten minutes and what it failed with
+     * last; its threads, or the failure it answered with. The client's
+     * spacing paces it as any read.
+     */
+    suspend fun retry(handle: String): List<ThreadsPost> {
+        forgetOnCredentialChange()
+        accounts.forgetFailure(handle)
+        return accounts.merge(listOf(handle), fetcher(direct.currentSession), forceRefresh = true)
+    }
 
     /** When each account last answered, to keep beside a saved feed. */
     val answeredAt: Map<String, Instant> get() = accounts.answeredAt.mapValues { Instant.ofEpochMilli(it.value) }

@@ -173,4 +173,12 @@
     <string name="add_accounts_hint">Flere samtidig: skill dem med mellomrom eller komma</string>
     <string name="session_unlocks">Hva en økt gir: din egen For deg og personsøk. Med bryteren over slått på leser den også kontoene du følger.</string>
     <string name="instance_intro">Valgfritt. En RSSHub-instans du driver selv, leser kontoene du følger; svikter den, brukes Threads’ offentlige sider i stedet. La feltet stå tomt for bare å lese de offentlige sidene.</string>
+    <string name="account_missing">Ikke funnet – nytt navn, slettet eller skrevet feil?</string>
+    <string name="account_private">Privat – Threads viser ingen av innleggene til en gjest</string>
+    <string name="retry">Prøv igjen</string>
+    <string name="unfollow_on_device">Slutt å følge på denne enheten</string>
+    <plurals name="accounts_failed">
+        <item quantity="one">1 konto kunne ikke leses</item>
+        <item quantity="other">%1$d kontoer kunne ikke leses</item>
+    </plurals>
 </resources>

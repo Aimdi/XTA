@@ -181,4 +181,14 @@
     <string name="add_accounts_hint">Niekalki adrazu: padzialicie ich prabiełami abo koskami</string>
     <string name="session_unlocks">Što daje seans: vaša ŭlasnaja stužka «Dla vas» i pošuk liudziej. Kali pieraklučalnik vyšej uklučany, jon taksama čytaje akaŭnty, na jakija vy padpisanyja.</string>
     <string name="instance_intro">Nieabaviazkova. Asobnik RSSHub, jaki vy trymajecie sami, čytaje akaŭnty, na jakija vy padpisanyja; kali jon nie adkazvaje, ich čytajuć z publičnych staronak Threads. Pakińcie pustym, kab čytać tolki publičnyja staronki.</string>
+    <string name="account_missing">Nie znojdzieny — pierajmienavany, vydaleny ci z pamyłkaj?</string>
+    <string name="account_private">Pryvatny — hosciu Threads nie pakazvaje nivodnaha dopisu</string>
+    <string name="retry">Paŭtaryć</string>
+    <string name="unfollow_on_device">Adpisacca na hetaj pryladzie</string>
+    <plurals name="accounts_failed">
+        <item quantity="one">Nie ŭdałosia pračytać %1$d akaŭnt</item>
+        <item quantity="few">Nie ŭdałosia pračytać %1$d akaŭnty</item>
+        <item quantity="many">Nie ŭdałosia pračytać %1$d akaŭntaŭ</item>
+        <item quantity="other">Nie ŭdałosia pračytać %1$d akaŭnta</item>
+    </plurals>
 </resources>

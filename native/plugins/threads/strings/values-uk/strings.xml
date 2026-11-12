@@ -181,4 +181,14 @@
     <string name="add_accounts_hint">Кілька одразу: розділіть їх пробілами або комами</string>
     <string name="session_unlocks">Що дає сеанс: ваша власна стрічка «Для вас» і пошук людей. Якщо перемикач вище ввімкнено, він також читає акаунти, які ви відстежуєте.</string>
     <string name="instance_intro">Необов’язково. Власний екземпляр RSSHub читає акаунти, які ви відстежуєте; якщо він не відповідає, їх читають із публічних сторінок Threads. Залиште порожнім, щоб читати лише публічні сторінки.</string>
+    <string name="account_missing">Не знайдено — перейменовано, видалено чи помилка в назві?</string>
+    <string name="account_private">Приватний — гостю Threads не показує жодного допису</string>
+    <string name="retry">Повторити</string>
+    <string name="unfollow_on_device">Відписатися на цьому пристрої</string>
+    <plurals name="accounts_failed">
+        <item quantity="one">Не вдалося прочитати %1$d акаунт</item>
+        <item quantity="few">Не вдалося прочитати %1$d акаунти</item>
+        <item quantity="many">Не вдалося прочитати %1$d акаунтів</item>
+        <item quantity="other">Не вдалося прочитати %1$d акаунта</item>
+    </plurals>
 </resources>

@@ -181,4 +181,14 @@
     <string name="add_accounts_hint">Несколько сразу: разделите их пробелами или запятыми</string>
     <string name="session_unlocks">Что даёт сеанс: ваша собственная лента «Для вас» и поиск людей. Если переключатель выше включён, он также читает аккаунты, на которые вы подписаны.</string>
     <string name="instance_intro">Необязательно. Собственный экземпляр RSSHub читает аккаунты, на которые вы подписаны; если он не отвечает, их читают с публичных страниц Threads. Оставьте пустым, чтобы читать только публичные страницы.</string>
+    <string name="account_missing">Не найден — переименован, удалён или опечатка?</string>
+    <string name="account_private">Закрытый — гостю Threads не показывает ни одного поста</string>
+    <string name="retry">Повторить</string>
+    <string name="unfollow_on_device">Отписаться на этом устройстве</string>
+    <plurals name="accounts_failed">
+        <item quantity="one">Не удалось прочитать %1$d аккаунт</item>
+        <item quantity="few">Не удалось прочитать %1$d аккаунта</item>
+        <item quantity="many">Не удалось прочитать %1$d аккаунтов</item>
+        <item quantity="other">Не удалось прочитать %1$d аккаунта</item>
+    </plurals>
 </resources>

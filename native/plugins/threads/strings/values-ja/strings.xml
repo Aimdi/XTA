@@ -169,4 +169,11 @@
     <string name="add_accounts_hint">まとめて追加: スペースかカンマで区切ってください</string>
     <string name="session_unlocks">セッションで使えるもの: あなた自身の For you と人物検索。上のスイッチをオンにすると、フォロー中のアカウントもセッションで読み込みます。</string>
     <string name="instance_intro">任意。自分で運用する RSSHub インスタンスがフォロー中のアカウントを読み込みます。失敗したときは Threads の公開ページが代わりに使われます。公開ページだけを読むには空のままにしてください。</string>
+    <string name="account_missing">見つかりません — 名前の変更、削除、または入力ミスかもしれません</string>
+    <string name="account_private">非公開 — Threads はゲストに投稿を表示しません</string>
+    <string name="retry">再試行</string>
+    <string name="unfollow_on_device">この端末でフォロー解除</string>
+    <plurals name="accounts_failed">
+        <item quantity="other">%1$d 件のアカウントを読めませんでした</item>
+    </plurals>
 </resources>

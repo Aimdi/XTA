@@ -173,4 +173,12 @@
     <string name="add_accounts_hint">Mitu korraga: eralda need tühikute või komadega</string>
     <string name="session_unlocks">Mida seanss lisab: sinu enda „Sinu jaoks“ ja inimeste otsingu. Kui ülal olev lüliti on sees, loeb see ka kontosid, mida jälgid.</string>
     <string name="instance_intro">Valikuline. Sinu enda RSSHubi eksemplar loeb kontosid, mida jälgid; kui see ei vasta, loetakse Threadsi avalikke lehti. Jäta tühjaks, et lugeda ainult avalikke lehti.</string>
+    <string name="account_missing">Ei leitud — ümber nimetatud, kustutatud või valesti kirjutatud?</string>
+    <string name="account_private">Privaatne — Threads ei näita külalisele ühtegi selle postitust</string>
+    <string name="retry">Proovi uuesti</string>
+    <string name="unfollow_on_device">Lõpeta jälgimine selles seadmes</string>
+    <plurals name="accounts_failed">
+        <item quantity="one">1 kontot ei õnnestunud lugeda</item>
+        <item quantity="other">%1$d kontot ei õnnestunud lugeda</item>
+    </plurals>
 </resources>

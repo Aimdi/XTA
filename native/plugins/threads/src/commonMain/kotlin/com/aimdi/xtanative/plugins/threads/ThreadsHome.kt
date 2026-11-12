@@ -163,6 +163,7 @@ private fun HomePane(app: ThreadsApp, frame: PluginFrame, onAdd: () -> Unit, onS
     Column(Modifier.fillMaxSize()) {
         if (app.direct.isSessionParked) ParkedNotice(app)
         DockRow(app, options, onAdd)
+        FailedAccountsRow(app)
         Box(Modifier.weight(1f)) {
             val problem = state.problem
             when {

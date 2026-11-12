@@ -175,4 +175,12 @@
     <string name="add_accounts_hint">Several at once: separate them with spaces or commas</string>
     <string name="session_unlocks">What a session adds: your own For you and people search. With the switch above on, it also reads the accounts you follow.</string>
     <string name="instance_intro">Optional. An RSSHub instance you run reads the accounts you follow; Threads’ public pages stand in when it fails. Leave it empty to read the public pages only.</string>
+    <string name="account_missing">Not found — renamed, deleted or mistyped?</string>
+    <string name="account_private">Private — Threads shows a guest none of its posts</string>
+    <string name="retry">Retry</string>
+    <string name="unfollow_on_device">Unfollow on this device</string>
+    <plurals name="accounts_failed">
+        <item quantity="one">1 account could not be read</item>
+        <item quantity="other">%1$d accounts could not be read</item>
+    </plurals>
 </resources>

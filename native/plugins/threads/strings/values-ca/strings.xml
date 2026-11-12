@@ -176,4 +176,13 @@
     <string name="add_accounts_hint">Diversos alhora: separa’ls amb espais o comes</string>
     <string name="session_unlocks">Què afegeix una sessió: el teu propi Per a tu i la cerca de persones. Amb l’interruptor de dalt activat, també llegeix els comptes que segueixes.</string>
     <string name="instance_intro">Opcional. Una instància d’RSSHub pròpia llegeix els comptes que segueixes; si falla, en llegeixen les pàgines públiques de Threads. Deixa-ho buit per llegir només les pàgines públiques.</string>
+    <string name="account_missing">No s’ha trobat: s’ha canviat el nom, s’ha suprimit o està mal escrit?</string>
+    <string name="account_private">Privat: Threads no mostra cap publicació a un convidat</string>
+    <string name="retry">Torna-ho a provar</string>
+    <string name="unfollow_on_device">Deixa de seguir en aquest dispositiu</string>
+    <plurals name="accounts_failed">
+        <item quantity="one">No s’ha pogut llegir 1 compte</item>
+        <item quantity="many">No s’han pogut llegir %1$d comptes</item>
+        <item quantity="other">No s’han pogut llegir %1$d comptes</item>
+    </plurals>
 </resources>

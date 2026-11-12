@@ -177,4 +177,13 @@
     <string name="add_accounts_hint">Mai multe deodată: separă-le prin spații sau virgule</string>
     <string name="session_unlocks">Ce adaugă o sesiune: propriul dvs. Pentru dvs. și căutarea de persoane. Cu comutatorul de mai sus pornit, citește și conturile pe care le urmăriți.</string>
     <string name="instance_intro">Opțional. O instanță RSSHub proprie citește conturile pe care le urmăriți; dacă eșuează, paginile publice Threads îi țin locul. Lăsați gol pentru a citi doar paginile publice.</string>
+    <string name="account_missing">Negăsit — redenumit, șters sau scris greșit?</string>
+    <string name="account_private">Privat — Threads nu arată unui vizitator nicio postare</string>
+    <string name="retry">Reîncearcă</string>
+    <string name="unfollow_on_device">Nu mai urmări pe acest dispozitiv</string>
+    <plurals name="accounts_failed">
+        <item quantity="one">1 cont nu a putut fi citit</item>
+        <item quantity="few">%1$d conturi nu au putut fi citite</item>
+        <item quantity="other">%1$d de conturi nu au putut fi citite</item>
+    </plurals>
 </resources>

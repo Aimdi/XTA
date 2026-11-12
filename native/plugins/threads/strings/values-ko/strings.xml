@@ -169,4 +169,11 @@
     <string name="add_accounts_hint">여러 개를 한 번에: 공백이나 쉼표로 구분하세요</string>
     <string name="session_unlocks">세션으로 할 수 있는 것: 나만의 “나를 위한” 피드와 사람 검색. 위의 스위치를 켜면 팔로우한 계정도 세션으로 읽습니다.</string>
     <string name="instance_intro">선택 사항. 직접 운영하는 RSSHub 인스턴스가 팔로우한 계정을 읽고, 실패하면 Threads 공개 페이지가 대신합니다. 공개 페이지만 읽으려면 비워 두세요.</string>
+    <string name="account_missing">찾을 수 없음 — 이름이 바뀌었거나 삭제되었거나 잘못 입력했나요?</string>
+    <string name="account_private">비공개 — Threads는 게스트에게 게시물을 보여주지 않습니다</string>
+    <string name="retry">다시 시도</string>
+    <string name="unfollow_on_device">이 기기에서 팔로우 취소</string>
+    <plurals name="accounts_failed">
+        <item quantity="other">계정 %1$d개를 읽을 수 없습니다</item>
+    </plurals>
 </resources>

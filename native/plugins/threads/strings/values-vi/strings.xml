@@ -169,4 +169,11 @@
     <string name="add_accounts_hint">Nhiều tài khoản cùng lúc: phân tách bằng dấu cách hoặc dấu phẩy</string>
     <string name="session_unlocks">Phiên đăng nhập thêm gì: mục Dành cho bạn của riêng bạn và tìm kiếm người. Khi bật công tắc phía trên, nó cũng đọc các tài khoản bạn theo dõi.</string>
     <string name="instance_intro">Không bắt buộc. Một máy chủ RSSHub do bạn chạy sẽ đọc các tài khoản bạn theo dõi; nếu nó lỗi, các trang công khai của Threads sẽ thay thế. Để trống để chỉ đọc các trang công khai.</string>
+    <string name="account_missing">Không tìm thấy — đã đổi tên, bị xóa hay gõ sai?</string>
+    <string name="account_private">Riêng tư — Threads không hiển thị bài viết nào cho khách</string>
+    <string name="retry">Thử lại</string>
+    <string name="unfollow_on_device">Bỏ theo dõi trên thiết bị này</string>
+    <plurals name="accounts_failed">
+        <item quantity="other">Không đọc được %1$d tài khoản</item>
+    </plurals>
 </resources>

@@ -173,4 +173,12 @@
     <string name="add_accounts_hint">Meerdere tegelijk: scheid ze met spaties of komma’s</string>
     <string name="session_unlocks">Wat een sessie toevoegt: je eigen Voor jou en zoeken naar mensen. Met de schakelaar hierboven aan leest ze ook de accounts die je volgt.</string>
     <string name="instance_intro">Optioneel. Een eigen RSSHub-instantie leest de accounts die je volgt; als die faalt, nemen de openbare Threads-pagina’s het over. Laat leeg om alleen de openbare pagina’s te lezen.</string>
+    <string name="account_missing">Niet gevonden — hernoemd, verwijderd of verkeerd getypt?</string>
+    <string name="account_private">Privé — Threads toont een gast geen van de berichten</string>
+    <string name="retry">Opnieuw proberen</string>
+    <string name="unfollow_on_device">Niet meer volgen op dit apparaat</string>
+    <plurals name="accounts_failed">
+        <item quantity="one">1 account kon niet worden gelezen</item>
+        <item quantity="other">%1$d accounts konden niet worden gelezen</item>
+    </plurals>
 </resources>

@@ -173,4 +173,12 @@
     <string name="add_accounts_hint">Birden fazla: boşluk ya da virgülle ayırın</string>
     <string name="session_unlocks">Oturumun kattıkları: kendi Senin için akışınız ve kişi araması. Yukarıdaki anahtar açıkken takip ettiğiniz hesapları da onunla okur.</string>
     <string name="instance_intro">İsteğe bağlı. Kendi çalıştırdığınız bir RSSHub örneği takip ettiğiniz hesapları okur; başarısız olursa Threads’in herkese açık sayfaları devreye girer. Yalnızca herkese açık sayfaları okumak için boş bırakın.</string>
+    <string name="account_missing">Bulunamadı — adı mı değişti, silindi mi, yoksa yanlış mı yazıldı?</string>
+    <string name="account_private">Gizli — Threads misafire gönderilerinin hiçbirini göstermiyor</string>
+    <string name="retry">Yeniden dene</string>
+    <string name="unfollow_on_device">Bu cihazda takibi bırak</string>
+    <plurals name="accounts_failed">
+        <item quantity="one">1 hesap okunamadı</item>
+        <item quantity="other">%1$d hesap okunamadı</item>
+    </plurals>
 </resources>

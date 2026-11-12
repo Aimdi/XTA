@@ -173,4 +173,12 @@
     <string name="add_accounts_hint">Hainbat batera: bereizi zuriuneekin edo komekin</string>
     <string name="session_unlocks">Saio batek zer gehitzen duen: zure Zuretzat propioa eta pertsonen bilaketa. Goiko etengailua piztuta, jarraitzen dituzun kontuak ere irakurtzen ditu.</string>
     <string name="instance_intro">Aukerakoa. Zuk zeuk darabilzun RSSHub instantzia batek jarraitzen dituzun kontuak irakurtzen ditu; huts egiten badu, Threadsen orri publikoak erabiltzen dira. Utzi hutsik orri publikoak soilik irakurtzeko.</string>
+    <string name="account_missing">Ez da aurkitu: izenez aldatu, ezabatu edo gaizki idatzi da?</string>
+    <string name="account_private">Pribatua: Threads-ek ez dio gonbidatuari bere argitalpenik erakusten</string>
+    <string name="retry">Saiatu berriro</string>
+    <string name="unfollow_on_device">Utzi jarraitzeari gailu honetan</string>
+    <plurals name="accounts_failed">
+        <item quantity="one">Ezin izan da kontu 1 irakurri</item>
+        <item quantity="other">Ezin izan dira %1$d kontu irakurri</item>
+    </plurals>
 </resources>

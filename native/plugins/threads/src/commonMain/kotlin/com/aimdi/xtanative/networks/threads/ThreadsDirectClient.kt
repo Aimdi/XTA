@@ -6,6 +6,7 @@ import com.aimdi.xtanative.core.x.http.XResponse
 import com.aimdi.xtanative.networks.Page
 import com.aimdi.xtanative.networks.threads.ThreadsFailure.NOT_CONFIGURED
 import com.aimdi.xtanative.networks.threads.ThreadsFailure.NO_SUCH_FEED
+import com.aimdi.xtanative.networks.threads.ThreadsFailure.PRIVATE_ACCOUNT
 import com.aimdi.xtanative.networks.threads.ThreadsFailure.SESSION_SUSPENDED
 import com.aimdi.xtanative.networks.threads.ThreadsFailure.SIGN_IN_REQUIRED
 import com.aimdi.xtanative.networks.threads.ThreadsFailure.THROTTLED
@@ -250,6 +251,7 @@ class ThreadsDirectClient(
             guestThreadsOrNull(key, userId, pageLsd)?.let { return Page(it, null) }
         }
         val posts = ThreadsPages.profileThreads(page, key)
+        if (posts.isEmpty() && isPrivate(page, key)) throw ThreadsException(PRIVATE_ACCOUNT, "@$key is private")
         if (posts.isEmpty()) throw ThreadsException(NO_SUCH_FEED, "no posts for @$key (GraphQL+SSR empty)")
         return Page(posts, null)
     }
@@ -299,6 +301,9 @@ class ThreadsDirectClient(
             ThreadsSearchReading.read(body, query, tag).copy(next = ThreadsNextPages.first(body) { "Search" in it.query.orEmpty() }?.encoded())
         }
     }
+
+    private fun isPrivate(page: String, handle: String): Boolean =
+        ThreadsProfileOwner.enrich(ThreadsPages.guestProfile(page, handle), page, handle)?.isPrivate == true
 
     /** A profile's page, read once even when its card and its threads are asked for together. */
     private suspend fun profilePage(handle: String): String {

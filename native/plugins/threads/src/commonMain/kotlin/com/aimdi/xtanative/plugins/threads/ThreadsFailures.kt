@@ -1,7 +1,9 @@
 package com.aimdi.xtanative.plugins.threads
 
+import com.aimdi.xtanative.networks.threads.ThreadsAccountFailure
 import com.aimdi.xtanative.networks.threads.ThreadsException
 import com.aimdi.xtanative.networks.threads.ThreadsFailure
+import com.aimdi.xtanative.networks.threads.ThreadsTrouble
 import com.aimdi.xtanative.networks.threads.ThreadsXyException
 import com.aimdi.xtanative.ui.plugins.PluginText
 import java.time.Instant
@@ -59,8 +61,22 @@ internal object ThreadsFailures {
     private fun page(error: Throwable?, language: String, missing: PluginText, zone: ZoneId): String {
         if (error is ThreadsXyException) return error.serverMessage?.trim()?.ifEmpty { null } ?: xy(error).get(language)
         if ((error as? ThreadsException)?.failure == ThreadsFailure.NO_SUCH_FEED) return missing.get(language)
+        if ((error as? ThreadsException)?.failure == ThreadsFailure.PRIVATE_ACCOUNT) return Strings.account_private.get(language)
         return throttledUntil(error, language, zone) ?: settings(error).get(language)
     }
+
+    /** Why a followed account could not be read, as its row in the failed accounts' list says it. */
+    fun trouble(failure: ThreadsAccountFailure, language: String, zone: ZoneId = ZoneId.systemDefault()): String = when (failure.trouble) {
+        ThreadsTrouble.MISSING -> Strings.account_missing.get(language)
+        ThreadsTrouble.PRIVATE -> Strings.account_private.get(language)
+        ThreadsTrouble.THROTTLED -> failure.retryAt?.let { Strings.error_throttled_until.get(language, time(it, language, zone)) } ?: Strings.error_throttled.get(language)
+        ThreadsTrouble.SIGN_IN -> Strings.error_sign_in.get(language)
+        ThreadsTrouble.NETWORK -> Strings.error_unreachable.get(language)
+    }
+
+    /** When Retry may be pressed again after [error]: the end of a throttle Meta named, while it is ahead of [now]; null otherwise. */
+    fun retryBlockedUntil(error: Throwable?, now: Instant = Instant.now()): Instant? =
+        (error as? ThreadsException)?.takeIf { it.failure == ThreadsFailure.THROTTLED }?.retryAt?.takeIf { it.isAfter(now) }
 
     /** A throttle's sentence with the time Meta's wait ends; null for anything else, or a throttle that named no end. */
     private fun throttledUntil(error: Throwable?, language: String, zone: ZoneId): String? {

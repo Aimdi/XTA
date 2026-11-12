@@ -189,4 +189,16 @@
     <string name="add_accounts_hint">عدة حسابات معاً: افصل بينها بمسافات أو فواصل</string>
     <string name="session_unlocks">ما تضيفه الجلسة: صفحة «لك» الخاصة بك والبحث عن الأشخاص. وعند تشغيل المفتاح أعلاه، تقرأ بها أيضاً الحسابات التي تتابعها.</string>
     <string name="instance_intro">اختياري. خادم RSSHub تشغّله أنت يقرأ الحسابات التي تتابعها، وتحلّ صفحات Threads العامة محله إن تعذّر. اتركه فارغاً لقراءة الصفحات العامة فقط.</string>
+    <string name="account_missing">غير موجود — هل غُيّر اسمه أو حُذف أو كُتب خطأً؟</string>
+    <string name="account_private">خاص — لا يعرض Threads أيًا من منشوراته للزائر</string>
+    <string name="retry">إعادة المحاولة</string>
+    <string name="unfollow_on_device">إلغاء المتابعة على هذا الجهاز</string>
+    <plurals name="accounts_failed">
+        <item quantity="zero">تعذّرت قراءة %1$d حساب</item>
+        <item quantity="one">تعذّرت قراءة حساب واحد</item>
+        <item quantity="two">تعذّرت قراءة حسابين</item>
+        <item quantity="few">تعذّرت قراءة %1$d حسابات</item>
+        <item quantity="many">تعذّرت قراءة %1$d حسابًا</item>
+        <item quantity="other">تعذّرت قراءة %1$d حساب</item>
+    </plurals>
 </resources>

@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.plugins.threads
 
+import com.aimdi.xtanative.networks.threads.ThreadsAccountFailure
 import com.aimdi.xtanative.networks.threads.ThreadsDirectClient
 import com.aimdi.xtanative.networks.threads.ThreadsForYou
 import com.aimdi.xtanative.networks.threads.ThreadsForYouFeed
@@ -188,7 +189,11 @@ internal class ThreadsApp(val host: PluginHost) {
     private suspend fun readFeed(force: Boolean, onPartial: (List<ThreadsPost>) -> Unit): List<ThreadsPost> {
         ready()
         val handles = ThreadsAccounts.handles(accounts.load())
-        val posts = reader.following(handles, force, onPartial)
+        val posts = try {
+            reader.following(handles, force, onPartial)
+        } finally {
+            failedNow.value = reader.failures(handles)
+        }
         if (handles.isNotEmpty()) {
             accounts.keepCurrent(posts)
             remember(posts)
@@ -201,6 +206,30 @@ internal class ThreadsApp(val host: PluginHost) {
         if (posts.isEmpty()) return
         val snapshot = ThreadsFeedSnapshot(posts, reader.answeredAt).encode()
         host.settings.update { it.with(ThreadsPrefs.feedSnapshot, snapshot) }
+    }
+
+    private val failedNow = MutableStateFlow<List<ThreadsAccountFailure>>(emptyList())
+
+    /** The followed accounts whose last read failed, with why, as the last load left them. */
+    val failures: StateFlow<List<ThreadsAccountFailure>> = failedNow
+
+    private val retryingNow = MutableStateFlow<Set<String>>(emptySet())
+
+    /** The accounts being read again from the failed accounts' list. */
+    val retrying: StateFlow<Set<String>> = retryingNow
+
+    /** [handle] read again now, its row saying so meanwhile; then the feed takes what it gave. */
+    fun retryAccount(handle: String) = launch {
+        if (handle in retryingNow.value) return@launch
+        retryingNow.update { it + handle }
+        try {
+            ready()
+            attemptKept { reader.retry(handle) }
+            failedNow.value = reader.failures(ThreadsAccounts.handles(accounts.load()))
+        } finally {
+            retryingNow.update { it - handle }
+        }
+        feed.refresh()
     }
 
     // ---- The For you section ----
@@ -397,7 +426,11 @@ internal class ThreadsApp(val host: PluginHost) {
          */
         override suspend fun posts(accounts: List<String>, kinds: FeedKinds, force: Boolean): List<NetworkPost> {
             ready()
-            val posts = ThreadsRetryBudget.retrying(online = { host.online.first() }) { reader.postsFor(accounts, force) }
+            val posts = try {
+                ThreadsRetryBudget.retrying(online = { host.online.first() }) { reader.postsFor(accounts, force) }
+            } finally {
+                failedNow.value = reader.failures(followed())
+            }
             this@ThreadsApp.accounts.keepCurrent(posts)
             return ThreadsShared.mixed(posts, kinds).map(::shown)
         }

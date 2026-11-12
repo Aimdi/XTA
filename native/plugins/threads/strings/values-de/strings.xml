@@ -173,4 +173,12 @@
     <string name="add_accounts_hint">Mehrere auf einmal: mit Leerzeichen oder Kommas trennen</string>
     <string name="session_unlocks">Was eine Sitzung bringt: dein eigenes Für dich und die Personensuche. Mit dem Schalter oben liest sie auch die Konten, denen du folgst.</string>
     <string name="instance_intro">Optional. Eine eigene RSSHub-Instanz liest die Konten, denen du folgst; fällt sie aus, springen die öffentlichen Threads-Seiten ein. Leer lassen, um nur die öffentlichen Seiten zu lesen.</string>
+    <string name="account_missing">Nicht gefunden – umbenannt, gelöscht oder vertippt?</string>
+    <string name="account_private">Privat – Threads zeigt Gästen keinen seiner Beiträge</string>
+    <string name="retry">Erneut versuchen</string>
+    <string name="unfollow_on_device">Auf diesem Gerät entfolgen</string>
+    <plurals name="accounts_failed">
+        <item quantity="one">1 Konto konnte nicht gelesen werden</item>
+        <item quantity="other">%1$d Konten konnten nicht gelesen werden</item>
+    </plurals>
 </resources>

@@ -169,4 +169,11 @@
     <string name="add_accounts_hint">可一次添加多个：用空格或逗号分隔</string>
     <string name="session_unlocks">会话可以带来：你自己的“为你”和用户搜索。打开上方的开关后，也会用它读取你关注的账号。</string>
     <string name="instance_intro">可选。由你自己运行的 RSSHub 实例读取你关注的账号；它出错时改读 Threads 的公开页面。留空则只读公开页面。</string>
+    <string name="account_missing">找不到 — 是否已改名、删除或拼写有误？</string>
+    <string name="account_private">私密 — Threads 不向访客显示其任何帖子</string>
+    <string name="retry">重试</string>
+    <string name="unfollow_on_device">在此设备上取消关注</string>
+    <plurals name="accounts_failed">
+        <item quantity="other">有 %1$d 个账号无法读取</item>
+    </plurals>
 </resources>
