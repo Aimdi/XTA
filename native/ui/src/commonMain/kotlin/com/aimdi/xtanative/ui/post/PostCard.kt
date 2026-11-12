@@ -85,9 +85,14 @@ val LocalCashtagSheet = staticCompositionLocalOf<((symbol: String) -> Unit)?> { 
  * One timeline row, or a thread X groups, with the line under it. Its posts sit in a column of
  * their own: laid out by a parent that stacks its children, a Box, they
  * would otherwise all be drawn at the same place, on top of each other.
+ *
+ * [playing] is no longer read (each video now takes its own turn by how
+ * much of it is seen); it stays so plugins built against this signature,
+ * and plugins built now on older apps, keep linking.
  */
+@Suppress("UNUSED_PARAMETER")
 @Composable
-fun ThreadRows(thread: XThread, actions: PostActions, pinnedIds: Set<String> = emptySet()) {
+fun ThreadRows(thread: XThread, actions: PostActions, pinnedIds: Set<String> = emptySet(), playing: Boolean = false) {
     val threaded = thread.posts.size > 1
     Column(Modifier.fillMaxWidth()) {
         thread.posts.forEachIndexed { index, post ->
