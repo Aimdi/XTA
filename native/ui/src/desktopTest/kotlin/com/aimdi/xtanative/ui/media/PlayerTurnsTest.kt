@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 class PlayerTurnsTest {
     private class FakePlayer : PlayerCore {
         val opened = mutableListOf<String>()
+        val starts = mutableListOf<Long>()
         var stops = 0
         var released = false
         private val current = MutableStateFlow(VideoState())
@@ -19,7 +20,13 @@ class PlayerTurnsTest {
 
         override fun open(source: VideoSource) {
             opened += source.url
+            starts += source.startMs
             current.value = VideoState(url = source.url, muted = source.muted)
+        }
+
+        /** It played to [positionMs] of [durationMs]. */
+        fun at(positionMs: Long, durationMs: Long = 60_000) {
+            current.value = current.value.copy(positionMs = positionMs, durationMs = durationMs, started = true)
         }
 
         override fun setActive(active: Boolean) {
@@ -58,7 +65,45 @@ class PlayerTurnsTest {
     private val clip = VideoSource("clip.mp4", muted = false)
     private val loop = VideoSource.looping("loop.mp4")
 
-    private fun turns(shared: Boolean, backgroundPlay: Boolean = true) = PlayerTurns({ FakePlayer().also { made += it } }, backgroundPlay, shared)
+    private val places = VideoPlaceMemory()
+
+    private fun turns(shared: Boolean, backgroundPlay: Boolean = true) = PlayerTurns({ FakePlayer().also { made += it } }, backgroundPlay, shared, places)
+
+    @Test
+    fun aVideoThatLostThePlayerPlaysOnFromWhereItWas() {
+        val feed = turns(shared = true)
+        feed.ask("first", clip)
+        val player = made.single()
+        player.at(12_000)
+        feed.ask("second", VideoSource("other.mp4"))
+        player.at(3_000)
+        feed.ask("first again", clip)
+        assertEquals(listOf(0L, 0L, 12_000L), player.starts)
+        feed.ask("second again", VideoSource("other.mp4"))
+        assertEquals(3_000L, player.starts.last())
+    }
+
+    @Test
+    fun aTilesOwnPlayerKeepsItsPlaceWhenItIsLetGo() {
+        val own = turns(shared = false)
+        own.ask("video", clip)
+        made.single().at(20_000)
+        own.drop("video")
+        own.ask("video", clip)
+        assertEquals(20_000L, made[1].starts.single())
+    }
+
+    @Test
+    fun aGifAlwaysLoopsFromItsStart() {
+        val feed = turns(shared = true)
+        feed.want("gif", loop)
+        made.single().at(5_000)
+        feed.ask("video", clip)
+        feed.drop("video")
+        assertEquals(0L, made.single().starts.last())
+        assertEquals(0L, places.startOf("loop.mp4"))
+    }
+
 
     @Test
     fun nothingIsMadeUntilATileWantsItAndThenTheHolderPlaysInIt() {

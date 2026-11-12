@@ -7,8 +7,9 @@ import com.aimdi.xtanative.store.settings.Settings
 /**
  * What a player opens (_video.dart's TweetVideoMetadata and the settings it
  * reads): [url] to start on, the [qualities] its menu offers, whether it
- * loops and starts without sound, and whether it is a GIF, which loops
- * silently without controls and pauses no other video.
+ * loops and starts without sound, whether it is a GIF, which loops
+ * silently without controls and pauses no other video, and where it starts
+ * ([startMs], where the reader left it: [VideoPlaces]).
  */
 internal data class VideoSource(
     val url: String,
@@ -16,6 +17,7 @@ internal data class VideoSource(
     val loop: Boolean = false,
     val muted: Boolean = true,
     val gif: Boolean = false,
+    val startMs: Long = 0,
 ) {
     companion object {
         /**

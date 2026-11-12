@@ -112,7 +112,7 @@ internal class MpvVideoCore<P : MpvPictures>(
             previous = null
             retries = 0
             current.value = VideoState(url = source.url, qualities = source.qualities, muted = source.muted)
-            load = opened.open(source.url, 0, play = false)
+            load = opened.open(source.url, source.startMs.coerceAtLeast(0), play = false)
         }
     }
 

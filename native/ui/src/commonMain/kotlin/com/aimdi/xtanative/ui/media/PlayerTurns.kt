@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 /** A platform's player as tiles take turns at it: XTA's controls' calls, and opening a video, playing it, stopping it and letting it go. */
 internal interface PlayerCore : VideoPlayback {
-    /** Plays [source] from its start, in place of what it played before; it waits for [setActive] to start. */
+    /** Plays [source] from its [VideoSource.startMs], in place of what it played before; it waits for [setActive] to start. */
     fun open(source: VideoSource)
 
     /** Plays once ready, or pauses. */
@@ -21,12 +21,20 @@ internal interface PlayerCore : VideoPlayback {
  * first wanted: a feed's ([shared]), kept for the next tile, or a tile's own,
  * let go once nobody wants it. While its feed is left ([pause]) what plays
  * stops, unless it is full screen or Background play ([backgroundPlay]) keeps
- * a video heard, and it plays again on return.
+ * a video heard, and it plays again on return. A video that loses the
+ * player, or is let go with it, is kept where it was ([places]), and opens
+ * there when its turn comes again.
  */
-internal class PlayerTurns<P : PlayerCore>(private val make: () -> P, private val backgroundPlay: Boolean, val shared: Boolean) {
+internal class PlayerTurns<P : PlayerCore>(
+    private val make: () -> P,
+    private val backgroundPlay: Boolean,
+    val shared: Boolean,
+    private val places: VideoPlaceMemory = VideoPlaces,
+) {
     private val turns = InlineTurns<Any, VideoSource>()
     private var made: P? = null
     private var opened: Any? = null
+    private var openedSource: VideoSource? = null
     private var away = false
     private var resumeOnReturn = false
     private var released = false
@@ -94,11 +102,13 @@ internal class PlayerTurns<P : PlayerCore>(private val make: () -> P, private va
         if (released && !turns.pinned) return letGo()
         val turn = turns.holder.value
         if (turn?.key == opened) return
+        keepPlace()
         opened = turn?.key
+        openedSource = turn?.value
         resumeOnReturn = false
         when {
             turn != null -> (made ?: make().also { made = it }).apply {
-                open(turn.value)
+                open(turn.value.let { if (it.gif) it else it.copy(startMs = places.startOf(it.url)) })
                 setActive(!away)
             }
             shared -> made?.stop()
@@ -107,8 +117,19 @@ internal class PlayerTurns<P : PlayerCore>(private val make: () -> P, private va
     }
 
     private fun letGo() {
+        keepPlace()
         made?.release()
         made = null
         opened = null
+        openedSource = null
+    }
+
+    /** Where the video open now stands, kept for when its turn comes again; a GIF just loops from its start. */
+    private fun keepPlace() {
+        val source = openedSource?.takeIf { !it.gif } ?: return
+        val now = made?.state?.value ?: return
+        // A player still opening reads 0: what it opened with stays.
+        if (now.url.isEmpty() || (!now.started && now.positionMs == 0L)) return
+        places.keep(source.url, now.positionMs, now.durationMs, now.completed)
     }
 }

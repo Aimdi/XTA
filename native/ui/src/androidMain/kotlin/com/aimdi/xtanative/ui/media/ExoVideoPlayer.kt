@@ -155,7 +155,7 @@ internal class ExoVideoPlayer(context: Context, private val options: VideoOption
         player.repeatMode = if (source.loop) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_OFF
         sound(source.muted)
         player.trackSelectionParameters = player.trackSelectionParameters.buildUpon().setTrackTypeDisabled(C.TRACK_TYPE_TEXT, true).build()
-        player.setMediaItem(MediaItem.fromUri(source.url))
+        player.setMediaItem(MediaItem.fromUri(source.url), source.startMs.coerceAtLeast(0))
         player.prepare()
         current.value = VideoState(url = source.url, qualities = source.qualities, muted = source.muted)
     }
