@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.networks.threads
 
+import com.aimdi.xtanative.networks.Page
 import java.time.Instant
 import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.async
@@ -23,6 +24,8 @@ data class ThreadsProfilePage(
     val posts: List<ThreadsPost> = emptyList(),
     /** What the replies page gave; null until it was asked for. */
     val replies: List<ThreadsPost>? = null,
+    /** Where the threads after [posts] start, when the profile's page named a cursor to follow. */
+    val next: String? = null,
 ) {
     val isEmpty: Boolean get() = profile == null && posts.isEmpty()
 
@@ -142,7 +145,7 @@ class ThreadsReader(
             val (posts, error) = read.await()
             val resolved = profile ?: ThreadsProfile.fromPosts(handle, posts)
             if (resolved == null && posts.isEmpty()) throw error ?: ThreadsException(ThreadsFailure.NO_SUCH_FEED, "profile missing")
-            ThreadsProfilePage(resolved, posts)
+            ThreadsProfilePage(resolved, posts, next = direct.profileNext(handle))
         }
     }
 
@@ -151,7 +154,10 @@ class ThreadsReader(
      * refresh. Empty when Meta did not give it to a guest; the tab then shows
      * the replies the threads already carried.
      */
-    suspend fun replies(handle: String): List<ThreadsPost> = attempt { direct.guestReplies(handle).items }.orEmpty()
+    suspend fun replies(handle: String): List<ThreadsPost> = repliesPage(handle).items
+
+    /** [replies] with the cursor after them, when the replies page named one. */
+    suspend fun repliesPage(handle: String): Page<ThreadsPost> = attempt { direct.guestReplies(handle) } ?: Page(emptyList(), null)
 
     /** [seed]'s conversation from its public page; a post without a link has none, and asks nothing. */
     suspend fun conversation(seed: ThreadsPost, force: Boolean = false): ThreadsConversation {

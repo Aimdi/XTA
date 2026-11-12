@@ -57,6 +57,8 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.threads.ThreadsLinks
+import com.aimdi.xtanative.networks.threads.ThreadsPaging
+import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsQuery
 import com.aimdi.xtanative.networks.threads.ThreadsSearchFound
 import com.aimdi.xtanative.networks.threads.ThreadsSearchTerms
@@ -85,8 +87,8 @@ internal enum class ThreadsSearchTab {
 }
 
 /**
- * What words or a tag find (threads_search_screen.dart): Top and Recent, one
- * page each, as a guest sees them. The title is a search field holding the
+ * What words or a tag find (threads_search_screen.dart): Top and Recent as
+ * a guest sees them, page after page where Meta names a next one. The title is a search field holding the
  * query, as on X: words or a #tag search again here, keeping the order
  * chosen; a post link, an @handle or a profile link opens its page.
  */
@@ -235,6 +237,13 @@ private fun Results(app: ThreadsApp, terms: ThreadsSearchTerms, tab: ThreadsSear
     val state by fetch.state.collectAsState()
     val found = state.value
     val sessionPeople = if (tab == ThreadsSearchTab.PEOPLE) rememberSessionPeople(app, terms) else emptyList()
+    val more = rememberKept("threads-search-more-${terms.query}-${terms.tag}-${tab.recent}") { scope ->
+        ThreadsPaging(scope, ThreadsPost::id) { cursor -> app.nextPage { app.direct.moreFound(terms.query, terms.tag, tab.recent, cursor) } }
+    }
+    val paged by more.state.collectAsState()
+    val postsTab = tab == ThreadsSearchTab.TOP || tab == ThreadsSearchTab.RECENT
+    LaunchedEffect(found) { found?.let { more.start(it.posts, it.next) } }
+    if (postsTab) ReadsMoreNear(list, more, paged)
     val language = currentLanguage()
     PullToRefreshBox(isRefreshing = state.loading && found != null, onRefresh = { fetch.load(force = true) }, modifier = Modifier.fillMaxSize()) {
         LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
@@ -243,7 +252,10 @@ private fun Results(app: ThreadsApp, terms: ThreadsSearchTerms, tab: ThreadsSear
                 found == null -> item(key = "loading") { PluginFeedSkeleton() }
                 tab == ThreadsSearchTab.PEOPLE -> foundPeople(app, terms, found, sessionPeople)
                 tab == ThreadsSearchTab.TOPICS -> foundTopics(app, terms, found)
-                else -> foundPosts(app, terms, found)
+                else -> {
+                    foundPosts(app, terms, found.copy(posts = found.posts + paged.items))
+                    moreFoot("search", paged, more::retry)
+                }
             }
         }
     }

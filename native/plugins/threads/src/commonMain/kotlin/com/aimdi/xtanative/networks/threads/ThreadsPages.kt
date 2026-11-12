@@ -107,7 +107,10 @@ object ThreadsPages {
      * keeping its chain's length. A repost keeps the original author as its
      * handle, so the profile is matched as either.
      */
-    fun profileThreads(body: String, handle: String): List<ThreadsPost> = chains(body)
+    fun profileThreads(body: String, handle: String): List<ThreadsPost> = profileThreads(chains(body), handle)
+
+    /** [profileThreads] of chains already read: a page's, or a next page's. */
+    fun profileThreads(chains: List<List<ThreadsPost>>, handle: String): List<ThreadsPost> = chains
         .filter { handle.isEmpty() || it.first().handle == handle || it.first().repostedByHandle == handle }
         .map { it.first().withSelfThreadCount(ThreadsParser.selfThreadLength(it.first(), it.drop(1))) }
 
@@ -121,7 +124,10 @@ object ThreadsPages {
     fun thread(body: String): List<ThreadsPost> = chains(body).flatten()
 
     /** A profile's replies page: each of [handle]'s replies, without the other people's posts it is shown under. */
-    fun replies(body: String, handle: String): List<ThreadsPost> = chains(body).flatMap { chain ->
+    fun replies(body: String, handle: String): List<ThreadsPost> = replies(chains(body), handle)
+
+    /** [replies] of chains already read. */
+    fun replies(chains: List<List<ThreadsPost>>, handle: String): List<ThreadsPost> = chains.flatMap { chain ->
         chain.filterIndexed { index, post -> post.handle == handle && (index > 0 || post.isReply) }
     }
 
@@ -130,12 +136,15 @@ object ThreadsPages {
      * (the one whose text holds [query], or with [tag] the one filed under it),
      * else the chain's first.
      */
-    fun searchResults(body: String, query: String, tag: Boolean = false): List<ThreadsPost> {
+    fun searchResults(body: String, query: String, tag: Boolean = false): List<ThreadsPost> = searchResults(chains(body), query, tag)
+
+    /** [searchResults] of chains already read. */
+    fun searchResults(chains: List<List<ThreadsPost>>, query: String, tag: Boolean): List<ThreadsPost> {
         val needle = query.trim().removePrefix("#").lowercase()
         val found = { post: ThreadsPost ->
             if (tag) post.topicTag?.lowercase() == needle else post.text.lowercase().contains(needle)
         }
-        return chains(body).map { chain -> chain.firstOrNull(found) ?: chain.first() }
+        return chains.map { chain -> chain.firstOrNull(found) ?: chain.first() }
     }
 
     private fun collectChains(node: JsonElement, out: MutableList<List<ThreadsPost>>, seen: MutableSet<String>, depth: Int) {

@@ -16,7 +16,12 @@ data class ThreadsTopic(val name: String, val emoji: String? = null, val iconUrl
 }
 
 /** What one public search page found: its posts, and the topics its posts are filed under. */
-data class ThreadsSearchFound(val posts: List<ThreadsPost>, val topics: List<ThreadsTopic> = emptyList()) {
+data class ThreadsSearchFound(
+    val posts: List<ThreadsPost>,
+    val topics: List<ThreadsTopic> = emptyList(),
+    /** Where the posts after these start, when the page named a cursor to follow. */
+    val next: String? = null,
+) {
     /** The topic [name] names, with its mark when the page gave one. */
     fun topic(name: String): ThreadsTopic {
         val key = name.removePrefix("#").trim().lowercase()

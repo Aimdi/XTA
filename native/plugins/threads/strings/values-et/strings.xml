@@ -123,6 +123,7 @@
     <string name="for_you_sign_in">Threads näitab praegu lehte „Sulle“ ainult sisseloginutele</string>
     <string name="for_you_sign_in_detail">Kleebi seadetes seanss, et lugeda enda oma, või jälgi kontosid ja loe avalehte</string>
     <string name="for_you_end">Praeguseks kõik — värskendamiseks tõmba alla</string>
+    <string name="list_end">Rohkem postitusi pole</string>
     <string name="retry_after">Proovi uuesti pärast kella %1$s</string>
     <plurals name="new_posts">
         <item quantity="one">%1$d uus postitus</item>

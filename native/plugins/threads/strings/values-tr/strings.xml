@@ -123,6 +123,7 @@
     <string name="for_you_sign_in">Threads şu anda Sizin için sayfasını yalnızca oturum açmış okurlara gösteriyor</string>
     <string name="for_you_sign_in_detail">Kendinizinkini okumak için Ayarlar’a bir oturum yapıştırın ya da hesapları takip edip Ana sayfayı okuyun</string>
     <string name="for_you_end">Şimdilik bu kadar — yenilemek için çekin</string>
+    <string name="list_end">Başka gönderi yok</string>
     <string name="retry_after">%1$s sonrasında yeniden deneyin</string>
     <plurals name="new_posts">
         <item quantity="one">%1$d yeni gönderi</item>

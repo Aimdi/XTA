@@ -120,6 +120,7 @@
     <string name="for_you_sign_in">Threads 目前只向已登录的读者显示“为你推荐”页面</string>
     <string name="for_you_sign_in_detail">在设置中粘贴会话即可阅读你自己的页面，或关注账号后阅读主页</string>
     <string name="for_you_end">暂时就这些 — 下拉刷新查看新帖子</string>
+    <string name="list_end">没有更多帖子了</string>
     <string name="retry_after">请在 %1$s 之后重试</string>
     <plurals name="new_posts">
         <item quantity="other">%1$d 条新帖子</item>

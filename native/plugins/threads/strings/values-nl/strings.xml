@@ -123,6 +123,7 @@
     <string name="for_you_sign_in">Threads toont de Voor jou-pagina nu alleen aan ingelogde lezers</string>
     <string name="for_you_sign_in_detail">Plak een sessie in Instellingen om die van jou te lezen, of volg accounts en lees Home</string>
     <string name="for_you_end">Dat is alles voor nu — trek om te vernieuwen</string>
+    <string name="list_end">Geen berichten meer</string>
     <string name="retry_after">Probeer het na %1$s opnieuw</string>
     <plurals name="new_posts">
         <item quantity="one">%1$d nieuwe post</item>

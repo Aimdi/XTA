@@ -123,6 +123,7 @@
     <string name="for_you_sign_in">Threads अभी अपना “आपके लिए” पेज केवल साइन इन किए पाठकों को दिखाता है</string>
     <string name="for_you_sign_in_detail">अपना पेज पढ़ने के लिए सेटिंग्स में सेशन पेस्ट करें, या अकाउंट फ़ॉलो करके होम पढ़ें</string>
     <string name="for_you_end">अभी के लिए बस इतना ही — नई पोस्ट के लिए खींचकर रीफ़्रेश करें</string>
+    <string name="list_end">और कोई पोस्ट नहीं</string>
     <string name="retry_after">%1$s के बाद फिर कोशिश करें</string>
     <plurals name="new_posts">
         <item quantity="one">%1$d नई पोस्ट</item>

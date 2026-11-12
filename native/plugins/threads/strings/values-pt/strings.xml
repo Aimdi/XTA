@@ -126,6 +126,7 @@
     <string name="for_you_sign_in">De momento, o Threads só mostra a página Para si a quem iniciou sessão</string>
     <string name="for_you_sign_in_detail">Cole uma sessão nas Definições para ler a sua, ou siga contas e leia o Início</string>
     <string name="for_you_end">É tudo por agora — puxe para atualizar</string>
+    <string name="list_end">Não há mais publicações</string>
     <string name="retry_after">Tente novamente depois das %1$s</string>
     <plurals name="new_posts">
         <item quantity="one">%1$d nova publicação</item>

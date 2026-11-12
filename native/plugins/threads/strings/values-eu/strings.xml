@@ -123,6 +123,7 @@
     <string name="for_you_sign_in">Une honetan Threadsek saioa hasi dutenei bakarrik erakusten die Zuretzat orria</string>
     <string name="for_you_sign_in_detail">Itsatsi saio bat Ezarpenetan zurea irakurtzeko, edo jarraitu kontuak eta irakurri Hasiera</string>
     <string name="for_you_end">Hori da dena oraingoz — tira freskatzeko</string>
+    <string name="list_end">Ez dago argitalpen gehiagorik</string>
     <string name="retry_after">Saiatu berriro %1$s ondoren</string>
     <plurals name="new_posts">
         <item quantity="one">Argitalpen berri %1$d</item>

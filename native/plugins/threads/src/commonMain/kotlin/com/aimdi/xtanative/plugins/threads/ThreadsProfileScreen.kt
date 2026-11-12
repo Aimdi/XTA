@@ -48,7 +48,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.networks.Page
 import com.aimdi.xtanative.networks.threads.ThreadsLinks
+import com.aimdi.xtanative.networks.threads.ThreadsPaging
+import com.aimdi.xtanative.networks.threads.ThreadsPagingState
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsProfile
 import com.aimdi.xtanative.networks.threads.ThreadsProfilePage
@@ -75,19 +78,25 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 /** The profile's tabs: its threads, its replies, its media, what it reposted (as Threads' own tabs), and its posts the reader liked here (XTA's Saved). */
-private enum class ProfileTab(val label: PluginText) {
-    POSTS(Strings.posts),
-    REPLIES(Strings.profile_replies),
-    MEDIA(Strings.media),
-    REPOSTS(Strings.profile_reposts),
-    SAVED(Strings.saved),
+private enum class ProfileTab(val label: PluginText, val paged: ThreadsProfilePaging.Lists?) {
+    POSTS(Strings.posts, ThreadsProfilePaging.Lists.THREADS),
+    REPLIES(Strings.profile_replies, ThreadsProfilePaging.Lists.REPLIES),
+    MEDIA(Strings.media, ThreadsProfilePaging.Lists.BOTH),
+    REPOSTS(Strings.profile_reposts, ThreadsProfilePaging.Lists.THREADS),
+    SAVED(Strings.saved, null),
 }
 
-/** One profile as it has been read, what it showed last time until then, and its replies page once its tab asked for it. */
+/**
+ * One profile as it has been read, what it showed last time until then, its
+ * replies page once its tab asked for it, and the pages after each first one
+ * as the reader scrolls on.
+ */
 internal class ThreadsProfileModel(private val app: ThreadsApp, private val handle: String, scope: CoroutineScope) {
     val kept = MutableStateFlow<ThreadsKeptProfile?>(null)
     val page = Fetch<ThreadsProfilePage>(scope) { force -> app.ready(); app.reader.profile(handle, force).also { app.keepProfile(handle, it) } }
-    val replies = Fetch<List<ThreadsPost>>(scope) { app.reader.replies(handle) }
+    val replies = Fetch<Page<ThreadsPost>>(scope) { app.reader.repliesPage(handle) }
+    val morePosts = ThreadsPaging(scope, ThreadsPost::id) { cursor -> app.nextPage { app.direct.moreThreads(handle, cursor) } }
+    val moreReplies = ThreadsPaging(scope, ThreadsPost::id) { cursor -> app.nextPage { app.direct.moreReplies(handle, cursor) } }
 
     init {
         scope.launch { kept.value = app.keptProfile(handle) }
@@ -138,19 +147,32 @@ private fun ProfileActions(app: ThreadsApp, url: String) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ProfileBody(app: ThreadsApp, model: ThreadsProfileModel, page: ThreadsProfilePage, profile: ThreadsProfile, refreshing: Boolean) {
+private fun ProfileBody(app: ThreadsApp, model: ThreadsProfileModel, read: ThreadsProfilePage, profile: ThreadsProfile, refreshing: Boolean) {
     var tab by rememberSaveable { mutableStateOf(ProfileTab.POSTS) }
     val replies by model.replies.state.collectAsState()
+    val morePosts by model.morePosts.state.collectAsState()
+    val moreReplies by model.moreReplies.state.collectAsState()
+    LaunchedEffect(read) { model.morePosts.start(read.posts, read.next) }
+    LaunchedEffect(replies.value) { replies.value?.let { model.moreReplies.start(it.items, it.next) } }
+    val page = remember(read, replies, morePosts.items, moreReplies.items) {
+        read.copy(posts = read.posts + morePosts.items, replies = replies.value?.let { it.items + moreReplies.items })
+    }
     val settings by app.prefs.collectAsState()
     val likedIds by app.likes.state.collectAsState()
-    val posts = remember(page, replies, tab, settings, likedIds) {
+    val posts = remember(page, tab, settings, likedIds) {
         when (tab) {
             ProfileTab.POSTS -> ThreadsProfileHeader.threads(page)
-            ProfileTab.REPLIES -> page.copy(replies = replies.value).tab(ThreadsProfileTab.REPLIES)
-            ProfileTab.MEDIA -> page.copy(replies = replies.value).tab(ThreadsProfileTab.MEDIA)
+            ProfileTab.REPLIES -> page.tab(ThreadsProfileTab.REPLIES)
+            ProfileTab.MEDIA -> page.tab(ThreadsProfileTab.MEDIA)
             ProfileTab.REPOSTS -> ThreadsProfileHeader.reposts(page)
             ProfileTab.SAVED -> ThreadsLikes.liked(settings, likedIds).filter { it.handle == profile.username.lowercase() }
         }.distinctBy { it.id }
+    }
+    val paging = ThreadsProfilePaging.of(tab.paged, morePosts, moreReplies)
+    val pager = when {
+        paging == null -> null
+        paging === morePosts -> model.morePosts
+        else -> model.moreReplies
     }
     val waiting = tab == ProfileTab.REPLIES && replies.loading && posts.isEmpty()
     val list = rememberLazyListState()
@@ -165,6 +187,7 @@ private fun ProfileBody(app: ThreadsApp, model: ThreadsProfileModel, page: Threa
         model.page.load(force = true)
         if (tab == ProfileTab.REPLIES || tab == ProfileTab.MEDIA) model.replies.load(force = true)
     }
+    ReadsMoreNear(list, pager, paging)
     PullToRefreshBox(isRefreshing = refreshing, onRefresh = refresh, modifier = Modifier.fillMaxSize()) {
         LazyColumn(state = list, modifier = Modifier.fillMaxSize().swipeTabs(ProfileTab.entries, tab, select)) {
             item(key = "card") { ThreadsProfileCard(app, profile, Modifier.padding(16.dp)) }
@@ -176,7 +199,8 @@ private fun ProfileBody(app: ThreadsApp, model: ThreadsProfileModel, page: Threa
                 posts.isEmpty() -> item(key = "empty") { MessageText(pluginString(emptyLabel(tab))) }
                 else -> items(posts, key = { "post:" + it.id }, contentType = { "post" }) { ThreadsPostCard(app, it) }
             }
-            if (tab != ProfileTab.SAVED && page.posts.size >= GUEST_PAGE_HINT) item(key = "end") { ProfileEnd(profile.username) }
+            moreFoot("profile", paging) { pager?.retry() }
+            if (ThreadsProfilePaging.endsOnWeb(paging, read.posts.size)) item(key = "end") { ProfileEnd(profile.username) }
         }
     }
 }
@@ -270,8 +294,33 @@ internal fun ThreadsProfileCard(app: ThreadsApp, profile: ThreadsProfile, modifi
     }
 }
 
-/** From this many threads on, a profile's list is likely cut where Meta's one guest page ends. */
-private const val GUEST_PAGE_HINT = 10
+/** Which of a profile's two paged lists a tab goes on with, and when its end leads to threads.com. */
+internal object ThreadsProfilePaging {
+    /** The lists a tab is drawn from: its threads, its replies page, or both (Media). */
+    enum class Lists { THREADS, REPLIES, BOTH }
+
+    /** From this many threads on, a profile's list is likely cut where Meta's one guest page ends. */
+    const val GUEST_PAGE_HINT = 10
+
+    /** The paged list [lists] goes on with now: Media pages its threads, then its replies once the threads end. */
+    fun <T> of(lists: Lists?, threads: ThreadsPagingState<T>, replies: ThreadsPagingState<T>): ThreadsPagingState<T>? = when (lists) {
+        null -> null
+        Lists.THREADS -> threads
+        Lists.REPLIES -> replies
+        Lists.BOTH -> threads.takeIf { it.next != null || it.loading || it.problem != null } ?: replies
+    }
+
+    /**
+     * Whether the list ends in "open in browser": the pages after the first
+     * were refused or reached the memory's bound, or the first page named no
+     * next page and is as long as Meta's one guest page.
+     */
+    fun endsOnWeb(paging: ThreadsPagingState<*>?, firstPosts: Int): Boolean = when {
+        paging == null -> false
+        paging.onWeb -> true
+        else -> !paging.paged && firstPosts >= GUEST_PAGE_HINT
+    }
+}
 
 private fun countLabel(kind: ThreadsCount): PluginText = when (kind) {
     ThreadsCount.FOLLOWERS -> Strings.followers

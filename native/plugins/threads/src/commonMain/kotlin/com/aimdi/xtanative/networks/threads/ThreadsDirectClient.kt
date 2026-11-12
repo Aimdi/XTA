@@ -17,6 +17,10 @@ import java.time.Instant
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -31,9 +35,11 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
  *
  * Requests leave one at a time, the gap of [pacing] apart, and a session that
  * Meta throttled or parked is not used again until its cooldown, kept in
- * [memory], has passed; public reads spend no session and ignore it. Every
- * list read is one page: Meta names no cursor a guest can follow, so
- * [Page.next] is always null.
+ * [memory], has passed; public reads spend no session and ignore it. A
+ * guest list goes on where its page names a cursor and the query that read
+ * it ([ThreadsNextPages]): its [Page.next] is that cursor, and the `more…`
+ * reads ask guest GraphQL for the page after it as threads.com's own client
+ * does. Elsewhere [Page.next] is null.
  */
 class ThreadsDirectClient(
     private val http: XHttp,
@@ -49,6 +55,7 @@ class ThreadsDirectClient(
     private val profilePages = SingleFlight<String>()
     private val conversationReads = SingleFlight<ThreadsPostPage>()
     private val conversations = LinkedHashMap<String, Pair<Long, ThreadsPostPage>>()
+    private val profileCursors = LinkedHashMap<String, String?>()
 
     /** The session as the reader pasted it, read afresh on every request. */
     val currentSession: ThreadsSession get() = session()
@@ -191,9 +198,37 @@ class ThreadsDirectClient(
             if (e.failure != SIGN_IN_REQUIRED) throw e
             return Page(emptyList(), null)
         }
-        rememberGuestLsd(ThreadsPages.lsd(page))
-        return Page(ThreadsPages.recommended(page), null)
+        return Page(ThreadsPages.recommended(page), ThreadsNextPages.first(page, ::isFeed)?.encoded())
     }
+
+    /** The front page's threads after [cursor], as [guestForYou]'s list goes on. */
+    suspend fun moreRecommended(cursor: String): ThreadsMore<ThreadsPost> =
+        more(cursor, ThreadsLinks.web("/")) { ThreadsPages.profileThreads(ThreadsPages.chainsIn(it), "") }
+
+    /** [handle]'s threads after [cursor], the cursor [profileNext] gave. */
+    suspend fun moreThreads(handle: String, cursor: String): ThreadsMore<ThreadsPost> {
+        val key = handle.trim().lowercase()
+        return more(cursor, profileUrl(key)) { ThreadsPages.profileThreads(ThreadsPages.chainsIn(it), key) }
+    }
+
+    /** [handle]'s replies after [cursor], the cursor [guestReplies] gave. */
+    suspend fun moreReplies(handle: String, cursor: String): ThreadsMore<ThreadsPost> {
+        val key = handle.trim().lowercase()
+        return more(cursor, profileUrl(key, "replies")) { ThreadsPages.replies(ThreadsPages.chainsIn(it), key) }
+    }
+
+    /** What a search found after [cursor], the cursor [searchFound] gave. */
+    suspend fun moreFound(query: String, tag: Boolean, recent: Boolean, cursor: String): ThreadsMore<ThreadsPost> =
+        more(cursor, ThreadsLinks.searchUrl(query, tag, recent)) { ThreadsPages.searchResults(ThreadsPages.chainsIn(it), query, tag) }
+
+    /** The reply threads under the post [targetId] at [postUrl] after [cursor], the cursor its [postPage] gave. */
+    suspend fun moreReplyThreads(postUrl: String, targetId: String, cursor: String): ThreadsMore<ThreadsReplyThread> {
+        val url = ThreadsLinks.canonicalPostUrl(postUrl) ?: return ThreadsMore(emptyList(), null, refused = true)
+        return more(cursor, url) { ThreadsPostPageReader.replyThreads(it, targetId) }
+    }
+
+    /** The cursor after the threads [handle]'s page showed when it was last read; null when it named none. */
+    fun profileNext(handle: String): String? = synchronized(profileCursors) { profileCursors[handle.trim().lowercase()] }
 
     /**
      * [handle]'s public threads without a session: guest GraphQL with the LSD
@@ -229,7 +264,11 @@ class ThreadsDirectClient(
         val url = ThreadsLinks.canonicalPostUrl(postUrl) ?: throw ThreadsException(UNREACHABLE, "not a threads url: $postUrl")
         val key = ThreadsLinks.shortcode(url.toString()) ?: url.toString()
         if (!force) rememberedConversation(key)?.let { return it }
-        return conversationReads.run(key) { ThreadsPostPage.read(guestPage(url)).also { rememberConversation(key, it) } }
+        return conversationReads.run(key) {
+            val body = guestPage(url)
+            val next = ThreadsNextPages.first(body) { it.path.endsWith(REPLIES_PAGE_INFO) }?.encoded()
+            ThreadsPostPage.read(body).copy(repliesNext = next).also { rememberConversation(key, it) }
+        }
     }
 
     /** A post page's chains: the conversation leading to the post, then each reply thread. */
@@ -241,7 +280,8 @@ class ThreadsDirectClient(
     /** [handle]'s replies, from the public `/@handle/replies` page; empty when Meta did not embed them for a guest. */
     suspend fun guestReplies(handle: String): Page<ThreadsPost> {
         val key = handle.trim().lowercase()
-        return Page(ThreadsPages.replies(guestPage(profileUrl(key, "replies")), key), null)
+        val page = guestPage(profileUrl(key, "replies"))
+        return Page(ThreadsPages.replies(page, key), ThreadsNextPages.first(page) { "RepliesTab" in it.query.orEmpty() }?.encoded())
     }
 
     /**
@@ -255,13 +295,15 @@ class ThreadsDirectClient(
     /** [searchPosts] with the topics its posts are filed under, the page read off the caller's thread. */
     suspend fun searchFound(query: String, tag: Boolean = false, recent: Boolean = false): ThreadsSearchFound {
         val body = guestPage(ThreadsLinks.searchUrl(query, tag, recent))
-        return kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) { ThreadsSearchReading.read(body, query, tag) }
+        return withContext(Dispatchers.Default) {
+            ThreadsSearchReading.read(body, query, tag).copy(next = ThreadsNextPages.first(body) { "Search" in it.query.orEmpty() }?.encoded())
+        }
     }
 
     /** A profile's page, read once even when its card and its threads are asked for together. */
     private suspend fun profilePage(handle: String): String {
         val key = handle.trim().lowercase()
-        return profilePages.run(key) { guestPage(profileUrl(key)) }
+        return profilePages.run(key) { guestPage(profileUrl(key)).also { rememberProfileNext(key, it) } }
     }
 
     /**
@@ -278,7 +320,7 @@ class ThreadsDirectClient(
         )
         val response = send(asGuest = true, url) { followed(url, headers) }
         return when (response.code) {
-            200 -> response.body
+            200 -> response.body.also { rememberGuestLsd(ThreadsPages.lsd(it)) }
             404 -> throw ThreadsException(NO_SUCH_FEED, "$url: 404", 404)
             429 -> throw guestThrottled(url)
             else -> throw ThreadsException(UNREACHABLE, "$url: ${response.code}", response.code)
@@ -339,6 +381,45 @@ class ThreadsDirectClient(
         )
         return send(asGuest = true, url) { http.post(url, headers, body, FORM) }
     }
+
+    /**
+     * The page after [cursor] of the list [page] shows, as threads.com's
+     * client asks it, its posts read by [read]. A throttle or a server that
+     * failed is thrown, to be retried; an answer in a shape not understood
+     * (a refusal, HTML, errors and nothing else) is [ThreadsMore.refused],
+     * and the list's rest is left to threads.com.
+     */
+    private suspend fun <T> more(cursor: String, page: HttpUrl, read: (List<JsonElement>) -> List<T>): ThreadsMore<T> {
+        val refused = ThreadsMore<T>(emptyList(), null, refused = true)
+        val asked = ThreadsNextPage.decode(cursor) ?: return refused
+        val lsd = freshGuestLsd() ?: ThreadsPages.lsd(guestPage(page)) ?: return refused
+        val referer = page.encodedPath + (page.encodedQuery?.let { "?$it" } ?: "")
+        val url = ThreadsLinks.web(GRAPHQL)
+        val response = guestQuery(GuestQuery(asked.docId, asked.query, asked.requestVariables, GuestQuery.relayForm(asked.query)), lsd, referer)
+        when {
+            response.code == 429 -> throw guestThrottled(url)
+            response.code >= 500 -> throw ThreadsException(UNREACHABLE, "$url: ${response.code}", response.code)
+            response.code != 200 -> return refused
+        }
+        val answers = ThreadsNextPages.answer(response.body)
+        val roots = answers.filter { (it as? JsonObject)?.get("data") is JsonObject }
+        if (roots.isEmpty()) return refused
+        val items = withContext(Dispatchers.Default) { read(roots) }
+        val next = roots.firstNotNullOfOrNull { ThreadsNextPages.after(asked, it) }?.encoded()
+        val failed = items.isEmpty() && next == null && answers.any { (it as? JsonObject)?.get("errors") is JsonArray }
+        return ThreadsMore(items, next, refused = failed)
+    }
+
+    private fun rememberProfileNext(handle: String, page: String) {
+        val next = ThreadsNextPages.first(page) { "ThreadsTab" in it.query.orEmpty() }?.encoded()
+        synchronized(profileCursors) {
+            profileCursors.remove(handle)
+            profileCursors[handle] = next
+            while (profileCursors.size > CONVERSATIONS_KEPT) profileCursors.remove(profileCursors.keys.first())
+        }
+    }
+
+    private fun isFeed(info: ThreadsPageInfo): Boolean = "Feed" in info.query.orEmpty()
 
     /** A session read: paced, refused while the session cools down, and checked for what Meta said. */
     private suspend fun sessionRead(url: HttpUrl, headers: Map<String, String>): J {
@@ -493,6 +574,7 @@ class ThreadsDirectClient(
 
         private const val INSTAGRAM = "https://i.instagram.com"
         private const val GRAPHQL = "/api/graphql"
+        private const val REPLIES_PAGE_INFO = "media.text_post_app_info.direct_replies.page_info"
         private const val FORM = "application/x-www-form-urlencoded"
         private const val ACCEPT_LANGUAGE = "en-US,en;q=0.9"
         private const val TIMEOUT_MILLIS = 25_000L
@@ -523,4 +605,9 @@ internal data class GuestQuery(
     val name: String,
     val variables: JsonObject,
     val extraForm: List<Pair<String, String>> = emptyList(),
-)
+) {
+    companion object {
+        /** The form fields threads.com's Relay client adds to a query it names. */
+        fun relayForm(name: String) = listOf("fb_api_caller_class" to "RelayModern", "fb_api_req_friendly_name" to name, "server_timestamps" to "true")
+    }
+}

@@ -140,6 +140,9 @@ internal class ThreadsApp(val host: PluginHost) {
 
     suspend fun settings(): Settings = host.settings.state.filterNotNull().first()
 
+    /** A list's next page, tried again as Meta advises, as every read of the tab is; the client spaces the requests themselves. */
+    suspend fun <T> nextPage(read: suspend () -> T): T = ThreadsRetryBudget.retrying(online = { host.online.first() }, read = read)
+
     /** Runs [block] beyond the screen that asked for it: a follow, a like, a setting. */
     fun launch(block: suspend () -> Unit) {
         scope.launch {

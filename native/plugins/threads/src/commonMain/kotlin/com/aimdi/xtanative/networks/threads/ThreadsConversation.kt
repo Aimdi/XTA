@@ -27,8 +27,10 @@ data class ThreadsConversation(
     val levels: Map<String, Int> = emptyMap(),
     /** The reply threads, by their first post's id, Meta holds more of than the page carried. */
     val unfinished: Set<String> = emptySet(),
-    /** Meta holds more replies than the page carried; a guest reads them on threads.com. */
+    /** Meta holds more replies than the page carried. */
     val moreReplies: Boolean = false,
+    /** Where the replies after these start, when the page named a way to follow them; else they are read on threads.com. */
+    val repliesNext: String? = null,
     /** Posts Threads suggests beside this one, never part of it. */
     val related: List<ThreadsPost> = emptyList(),
 ) {
@@ -59,6 +61,18 @@ data class ThreadsConversation(
      */
     fun replyRows(view: ThreadsThreadView = ThreadsThreadView()): List<ThreadsReplyRow> =
         orderedReplies(view.order, view.authorOnly).flatMap { chain -> chainRows(chain, view.isExpanded(chain)) }
+
+    /** The conversation with [more] reply threads after its own, as later pages brought them. */
+    fun withMore(more: List<ThreadsReplyThread>): ThreadsConversation {
+        if (more.isEmpty()) return this
+        val shown = replies.flatten().mapTo(HashSet()) { it.id }.apply { add(focus.id) }
+        val fresh = more.map { thread -> thread.copy(posts = thread.posts.filter { shown.add(it.id) }) }.filter { it.posts.isNotEmpty() }
+        return copy(
+            replies = replies + fresh.map { it.posts },
+            levels = fresh.fold(levels) { all, thread -> all + thread.levels },
+            unfinished = unfinished + fresh.filter { it.hasMore }.map { it.posts.first().id },
+        )
+    }
 
     /** What reading the conversation aloud says: each post's author and words, the post first, then every reply. */
     fun spokenText(): String = (ancestors + focus + continuation + replies.flatten())
@@ -104,6 +118,7 @@ data class ThreadsConversation(
                 levels = page.replies.fold(emptyMap()) { all, thread -> all + thread.levels },
                 unfinished = page.replies.filter { it.hasMore }.mapNotNull { it.posts.firstOrNull()?.id }.toSet(),
                 moreReplies = page.moreReplies,
+                repliesNext = page.repliesNext,
                 related = page.related,
             )
         }

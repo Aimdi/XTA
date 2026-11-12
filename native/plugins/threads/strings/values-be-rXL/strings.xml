@@ -129,6 +129,7 @@
     <string name="for_you_sign_in">Zaraz Threads pakazvaje staronku «Dla vas» tolki tym, chto ŭvajšoŭ</string>
     <string name="for_you_sign_in_detail">Ustaŭcie sesiju ŭ Naladach, kab čytać svaju, abo padpišyciesia na akaŭnty i čytajcie Hałoŭnuju</string>
     <string name="for_you_end">Pakul heta ŭsio — paciahnicie, kab abnavić</string>
+    <string name="list_end">Bolš niama dopisaŭ</string>
     <string name="retry_after">Pasprabujcie znoŭ pasla %1$s</string>
     <plurals name="new_posts">
         <item quantity="one">%1$d novy dopis</item>

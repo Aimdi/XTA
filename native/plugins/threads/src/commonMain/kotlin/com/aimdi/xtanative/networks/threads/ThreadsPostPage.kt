@@ -33,6 +33,8 @@ data class ThreadsPostPage(
     val replies: List<ThreadsReplyThread> = emptyList(),
     /** Meta holds more replies than the page carried (`direct_replies.page_info.has_next_page`). */
     val moreReplies: Boolean = false,
+    /** Where the replies after these start, when the page named a cursor and the query to follow it ([ThreadsNextPage]). */
+    val repliesNext: String? = null,
     /** Posts Threads suggests beside this one: never part of the conversation. */
     val related: List<ThreadsPost> = emptyList(),
     /** A page in the older shape: every `thread_items` chain, the post's own first. */
@@ -115,6 +117,19 @@ internal object ThreadsPostPageReader {
         }
         is JsonObject -> node.values.flatMap(::queries)
         else -> emptyList()
+    }
+
+    /**
+     * The reply threads a next page of [targetId]'s replies brings: its
+     * `direct_replies` edges, else those of the first `direct_replies` it
+     * holds, should Meta answer the next page around another node.
+     */
+    fun replyThreads(roots: List<JsonElement>, targetId: String): List<ThreadsReplyThread> {
+        val connections = roots.flatMap { replyConnections(it, targetId) }
+            .ifEmpty { roots.mapNotNull { mediaReplies(J(it)) } }
+            .ifEmpty { roots.firstNotNullOfOrNull(::anyReplyConnection)?.let(::listOf).orEmpty() }
+        val seen = HashSet<String>().apply { add(targetId) }
+        return connections.flatMap { edges(it) }.mapNotNull { thread(it, seen) }
     }
 
     private fun queryName(key: String): String = key.removePrefix(PRELOAD).substringBefore("RelayPreloader").substringBefore('_')

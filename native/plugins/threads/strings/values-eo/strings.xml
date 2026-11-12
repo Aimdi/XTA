@@ -123,6 +123,7 @@
     <string name="for_you_sign_in">Threads nun montras sian paĝon «Por vi» nur al ensalutintoj</string>
     <string name="for_you_sign_in_detail">Algluu seancon en Agordoj por legi la vian, aŭ sekvu kontojn kaj legu Hejmon</string>
     <string name="for_you_end">Jen ĉio por nun — tiru por aktualigi</string>
+    <string name="list_end">Ne plu estas afiŝoj</string>
     <string name="retry_after">Reprovu post %1$s</string>
     <plurals name="new_posts">
         <item quantity="one">%1$d nova afiŝo</item>

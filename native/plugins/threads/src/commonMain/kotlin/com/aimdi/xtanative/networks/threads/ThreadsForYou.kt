@@ -38,9 +38,11 @@ data class ThreadsForYouPage(
  * read the public page too: no cookie request for the timeline is known to
  * work, and an untried one is not worth a reader's login.
  *
- * The public page has no cursor. Asking for more reads it again, at most
- * [GUEST_EXTRA_READS] times, for whatever Meta recommends that was not shown
- * yet; the feed ends when a read brings nothing new.
+ * The public page goes on where it names a cursor ([ThreadsNextPages]).
+ * Where it names none, or Meta does not answer the next page as expected,
+ * asking for more reads the page again, at most [GUEST_EXTRA_READS] times,
+ * for whatever Meta recommends that was not shown yet; the feed ends when a
+ * read brings nothing new.
  */
 class ThreadsForYou(private val direct: ThreadsDirectClient) {
     /** Whose page a read would ask for now. */
@@ -50,6 +52,7 @@ class ThreadsForYou(private val direct: ThreadsDirectClient) {
     /** The first page, or the one [cursor] names. */
     suspend fun page(cursor: String? = null): ThreadsForYouPage {
         guestRead(cursor)?.let { return guest(it) }
+        if (ThreadsNextPage.decode(cursor) != null) return guestMore(cursor!!)
         if (source == ThreadsForYouSource.GUEST) return guest(0)
         return try {
             val page = direct.forYouTimeline(cursor)
@@ -62,9 +65,16 @@ class ThreadsForYou(private val direct: ThreadsDirectClient) {
     }
 
     private suspend fun guest(read: Int): ThreadsForYouPage {
-        val posts = direct.guestForYou().items
-        val next = (GUEST_CURSOR + (read + 1)).takeIf { posts.isNotEmpty() && read < GUEST_EXTRA_READS }
-        return ThreadsForYouPage(ThreadsForYouSource.GUEST, posts, next)
+        val page = direct.guestForYou()
+        val next = page.next.takeIf { read == 0 } ?: (GUEST_CURSOR + (read + 1)).takeIf { page.items.isNotEmpty() && read < GUEST_EXTRA_READS }
+        return ThreadsForYouPage(ThreadsForYouSource.GUEST, page.items, next)
+    }
+
+    /** The public page's next page; one Meta does not answer as expected gives way to reading the page again. */
+    private suspend fun guestMore(cursor: String): ThreadsForYouPage {
+        val more = direct.moreRecommended(cursor)
+        if (more.refused) return guest(1)
+        return ThreadsForYouPage(ThreadsForYouSource.GUEST, more.items, more.next)
     }
 
     /** Which re-read of the public page [cursor] asks for; null for a session's cursor, or none. */

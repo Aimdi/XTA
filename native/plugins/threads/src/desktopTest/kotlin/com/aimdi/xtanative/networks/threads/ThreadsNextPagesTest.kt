@@ -23,12 +23,12 @@ class ThreadsNextPagesTest {
         assertEquals(listOf(true, false), infos.map { it.goesOn })
         assertEquals("data.mediaData.page_info", infos.first().path)
 
-        val next = ThreadsNextPages.first(html) { "ThreadsTab" in it }!!
+        val next = ThreadsNextPages.first(html) { "ThreadsTab" in it.query.orEmpty() }!!
         assertEquals("BarcelonaProfileThreadsTabDirectQuery", next.query)
         assertEquals(JsonPrimitive("QVFIcursor1"), next.requestVariables["after"])
         assertEquals(JsonPrimitive(ThreadsNextPage.PAGE_SIZE), next.requestVariables["first"])
         assertEquals(next, ThreadsNextPage.decode(next.encoded()))
-        assertNull(ThreadsNextPages.first(html) { "RepliesTab" in it }, "a list that ends asks for nothing")
+        assertNull(ThreadsNextPages.first(html) { "RepliesTab" in it.query.orEmpty() }, "a list that ends asks for nothing")
     }
 
     @Test

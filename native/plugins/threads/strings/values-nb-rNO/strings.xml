@@ -123,6 +123,7 @@
     <string name="for_you_sign_in">Threads viser For deg-siden bare til innloggede lesere akkurat nå</string>
     <string name="for_you_sign_in_detail">Lim inn en økt i Innstillinger for å lese din, eller følg kontoer og les Hjem</string>
     <string name="for_you_end">Det var alt for nå — dra for å oppdatere</string>
+    <string name="list_end">Ingen flere innlegg</string>
     <string name="retry_after">Prøv igjen etter %1$s</string>
     <plurals name="new_posts">
         <item quantity="one">%1$d nytt innlegg</item>

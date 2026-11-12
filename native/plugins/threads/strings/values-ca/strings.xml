@@ -126,6 +126,7 @@
     <string name="for_you_sign_in">Ara mateix Threads només mostra la pàgina Per a tu a qui ha iniciat sessió</string>
     <string name="for_you_sign_in_detail">Enganxa una sessió a Configuració per llegir la teva, o segueix comptes i llegeix Inici</string>
     <string name="for_you_end">Això és tot per ara: estira per actualitzar</string>
+    <string name="list_end">No hi ha més publicacions</string>
     <string name="retry_after">Torna-ho a provar després de les %1$s</string>
     <plurals name="new_posts">
         <item quantity="one">%1$d publicació nova</item>

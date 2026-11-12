@@ -126,6 +126,7 @@
     <string name="for_you_sign_in">Al momento Threads mostra la pagina Per te solo a chi ha effettuato l’accesso</string>
     <string name="for_you_sign_in_detail">Incolla una sessione nelle Impostazioni per leggere la tua, oppure segui degli account e leggi la Home</string>
     <string name="for_you_end">Per ora è tutto — trascina per aggiornare</string>
+    <string name="list_end">Nessun altro post</string>
     <string name="retry_after">Riprova dopo le %1$s</string>
     <plurals name="new_posts">
         <item quantity="one">%1$d nuovo post</item>

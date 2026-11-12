@@ -125,6 +125,7 @@
     <string name="for_you_sign_in">Threads shows its For you page only to signed-in readers right now</string>
     <string name="for_you_sign_in_detail">Paste a session in Settings to read yours, or follow accounts and read Home</string>
     <string name="for_you_end">That is all for now — pull to refresh for new posts</string>
+    <string name="list_end">No more posts</string>
     <string name="retry_after">Try again after %1$s</string>
     <plurals name="new_posts">
         <item quantity="one">%1$d new post</item>

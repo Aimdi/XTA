@@ -57,6 +57,9 @@ import com.aimdi.xtanative.ui.plugins.PluginScaffold
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.currentLanguage
+import com.aimdi.xtanative.networks.threads.ThreadsPaging
+import com.aimdi.xtanative.networks.threads.ThreadsPagingState
+import com.aimdi.xtanative.networks.threads.ThreadsReplyThread
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
@@ -78,7 +81,17 @@ internal fun ThreadsConversationScreen(app: ThreadsApp, route: ThreadsRoute.Post
     }
     LaunchedEffect(fetch) { fetch.ensure() }
     val state by fetch.state.collectAsState()
-    val conversation = state.value ?: ThreadsConversation.seed(seed)
+    val more = rememberKept("threads-post-more-${route.url}") { scope ->
+        ThreadsPaging<ThreadsReplyThread>(scope, { it.posts.first().id }) { cursor ->
+            val focus = fetch.state.value.value?.focus ?: seed
+            app.nextPage { app.direct.moreReplyThreads(focus.url ?: route.url, focus.id, cursor) }
+        }
+    }
+    val paged by more.state.collectAsState()
+    LaunchedEffect(state.value) {
+        state.value?.takeIf { it.loaded }?.let { read -> more.start(read.replies.map(::ThreadsReplyThread), read.repliesNext) }
+    }
+    val conversation = remember(state.value, paged.items) { (state.value ?: ThreadsConversation.seed(seed)).withMore(paged.items) }
     PluginScaffold(
         title = pluginString(Strings.thread),
         onBack = app.host::back,
@@ -88,7 +101,7 @@ internal fun ThreadsConversationScreen(app: ThreadsApp, route: ThreadsRoute.Post
         },
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
-            ConversationList(app, conversation, state, onRetry = { fetch.load(force = true) })
+            ConversationList(app, conversation, state, ThreadsMoreReplies(more, paged), onRetry = { fetch.load(force = true) })
             NoticeHost(app.notices)
         }
     }
@@ -105,7 +118,7 @@ private fun ThreadActions(app: ThreadsApp, url: String) {
 
 /** The conversation's list; a picture opened in it is viewed among all the pictures shown in it. */
 @Composable
-private fun ConversationList(app: ThreadsApp, conversation: ThreadsConversation, state: Fetched<ThreadsConversation>, onRetry: () -> Unit) {
+private fun ConversationList(app: ThreadsApp, conversation: ThreadsConversation, state: Fetched<ThreadsConversation>, more: ThreadsMoreReplies, onRetry: () -> Unit) {
     val order by app.replyOrder.collectAsState()
     var authorOnly by rememberSaveable { mutableStateOf(false) }
     var expanded by rememberSaveable { mutableStateOf(emptyList<String>()) }
@@ -114,9 +127,10 @@ private fun ConversationList(app: ThreadsApp, conversation: ThreadsConversation,
     val gallery = remember(conversation, rows) { conversation.ancestors + conversation.focus + conversation.continuation + rows.mapNotNull { (it as? ThreadsReplyRow.Post)?.post } }
     val list = rememberLazyListState()
     LandsOnFocus(list, conversation)
+    ReadsMoreNear(list, more.paging, more.state)
     CompositionLocalProvider(LocalThreadsGallery provides gallery) {
         RefreshableConversation(
-            app, conversation, state, list, view, rows, onRetry,
+            app, conversation, state, more, list, view, rows, onRetry,
             onAuthorOnly = { authorOnly = !authorOnly },
             onExpand = { chain -> expanded = expanded + chain.first().id },
             onCollapse = { chain -> expanded = expanded - chain.first().id },
@@ -130,6 +144,7 @@ private fun RefreshableConversation(
     app: ThreadsApp,
     conversation: ThreadsConversation,
     state: Fetched<ThreadsConversation>,
+    more: ThreadsMoreReplies,
     list: LazyListState,
     view: ThreadsThreadView,
     rows: List<ThreadsReplyRow>,
@@ -146,7 +161,8 @@ private fun RefreshableConversation(
                 item(key = "replies-header") { RepliesHeader(app, conversation, view, onAuthorOnly) }
                 replyRows(app, rows, onExpand, onCollapse, byAuthor = conversation::byAuthor)
             }
-            if (conversation.moreReplies) moreRepliesOnWeb(conversation.focus.url)
+            moreFoot("replies", more.state) { more.paging.retry() }
+            if (conversation.moreReplies && (more.state.onWeb || !more.state.paged)) moreRepliesOnWeb(conversation.focus.url)
             relatedRows(app, conversation.related)
         }
         if (conversation.replies.isNotEmpty()) {
@@ -154,6 +170,9 @@ private fun RefreshableConversation(
         }
     }
 }
+
+/** The reply threads after the page's own, and where reading them stands. */
+private class ThreadsMoreReplies(val paging: ThreadsPaging<ThreadsReplyThread>, val state: ThreadsPagingState<ThreadsReplyThread>)
 
 /** With posts above it, the opened post is brought to the top once, as X opens a reply. */
 @Composable

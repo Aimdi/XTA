@@ -81,9 +81,9 @@ object ThreadsNextPages {
         return found
     }
 
-    /** The next page of the first list [html] says goes on whose query [wanted] takes; null when the page names no cursor or no doc id for it. */
-    fun first(html: String, wanted: (String) -> Boolean): ThreadsNextPage? {
-        val infos = pageInfos(html).filter { it.goesOn && it.query != null && wanted(it.query) }
+    /** The next page of the first list [html] says goes on that [wanted] takes; null when the page names no cursor or no doc id for it. */
+    fun first(html: String, wanted: (ThreadsPageInfo) -> Boolean): ThreadsNextPage? {
+        val infos = pageInfos(html).filter { it.goesOn && it.query != null && wanted(it) }
         if (infos.isEmpty()) return null
         val preloads = preloads(html)
         return infos.firstNotNullOfOrNull { info ->

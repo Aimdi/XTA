@@ -120,6 +120,7 @@
     <string name="for_you_sign_in">Threadsは現在、「おすすめ」ページをログイン中のユーザーにのみ表示しています</string>
     <string name="for_you_sign_in_detail">自分のページを読むには設定でセッションを貼り付けるか、アカウントをフォローしてホームを読んでください</string>
     <string name="for_you_end">今はここまでです — 引っ張って更新</string>
+    <string name="list_end">これ以上の投稿はありません</string>
     <string name="retry_after">%1$s以降にもう一度お試しください</string>
     <plurals name="new_posts">
         <item quantity="other">新しいポスト %1$d 件</item>

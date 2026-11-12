@@ -129,6 +129,7 @@
     <string name="for_you_sign_in">Threads teď stránku Pro vás ukazuje jen přihlášeným</string>
     <string name="for_you_sign_in_detail">Vložte relaci v Nastavení a čtěte tu svou, nebo sledujte účty a čtěte Domů</string>
     <string name="for_you_end">To je prozatím vše — tažením obnovíte</string>
+    <string name="list_end">Žádné další příspěvky</string>
     <string name="retry_after">Zkuste to znovu po %1$s</string>
     <plurals name="new_posts">
         <item quantity="one">%1$d nový příspěvek</item>

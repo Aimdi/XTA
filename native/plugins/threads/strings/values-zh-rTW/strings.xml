@@ -120,6 +120,7 @@
     <string name="for_you_sign_in">Threads 目前只向已登入的讀者顯示「為你推薦」頁面</string>
     <string name="for_you_sign_in_detail">在設定中貼上工作階段即可閱讀你自己的頁面，或追蹤帳號後閱讀首頁</string>
     <string name="for_you_end">暫時就這些 — 下拉重新整理查看新貼文</string>
+    <string name="list_end">沒有更多貼文了</string>
     <string name="retry_after">請在 %1$s 之後重試</string>
     <plurals name="new_posts">
         <item quantity="other">%1$d 則新貼文</item>

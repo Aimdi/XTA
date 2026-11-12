@@ -129,6 +129,7 @@
     <string name="for_you_sign_in">Зараз Threads паказвае старонку «Для вас» толькі тым, хто ўвайшоў</string>
     <string name="for_you_sign_in_detail">Устаўце сесію ў Наладах, каб чытаць сваю, або падпішыцеся на акаўнты і чытайце Галоўную</string>
     <string name="for_you_end">Пакуль гэта ўсё — пацягніце, каб абнавіць</string>
+    <string name="list_end">Больш няма допісаў</string>
     <string name="retry_after">Паспрабуйце зноў пасля %1$s</string>
     <plurals name="new_posts">
         <item quantity="one">%1$d новы допіс</item>
