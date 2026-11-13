@@ -67,10 +67,21 @@ internal object ThreadsPeopleView {
     fun opensLikers(post: ThreadsPost, signedIn: Boolean): Boolean = opens(post.likeCount, post, signedIn)
 
     /** Whether a post's repost count opens who reposted it: as [opensLikers], for reposts. */
-    fun opensReposters(post: ThreadsPost, signedIn: Boolean): Boolean = opens(post.repostCount, post, signedIn)
+    fun opensReposters(post: ThreadsPost, signedIn: Boolean, pathKnown: Boolean = POST_LISTS_PATH_KNOWN): Boolean =
+        pathKnown && opens(post.repostCount, post, signedIn)
 
     /** Whether a post's quote count opens its quotes: as [opensLikers], for quotes. */
-    fun opensQuotes(post: ThreadsPost, signedIn: Boolean): Boolean = opens(post.quoteCount, post, signedIn)
+    fun opensQuotes(post: ThreadsPost, signedIn: Boolean, pathKnown: Boolean = POST_LISTS_PATH_KNOWN): Boolean =
+        pathKnown && opens(post.quoteCount, post, signedIn)
+
+    /**
+     * Whether Meta is known to answer the reposters' and quotes' lists where
+     * the client asks. CI's live probe (13 Nov 2026) found every guessed path
+     * a 404 even for a guest, where the likers' real path sends a guest to
+     * sign in: until a path answers, neither list is offered, rather than one
+     * that always fails.
+     */
+    const val POST_LISTS_PATH_KNOWN = false
 
     private fun opens(count: Long?, post: ThreadsPost, signedIn: Boolean): Boolean =
         signedIn && (count ?: 0) > 0 && ThreadsPeople.mediaId(post) != null

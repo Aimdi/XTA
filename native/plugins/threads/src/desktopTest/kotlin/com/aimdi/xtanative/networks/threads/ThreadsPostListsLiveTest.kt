@@ -46,7 +46,8 @@ class ThreadsPostListsLiveTest {
         for (tail in listOf("quotes", "reposts", "likes")) page(http, url.newBuilder().addPathSegment(tail).build(), tail)
         val asked = ThreadsPeople.paths(ThreadsPeopleList.LIKERS, media).map { "likers" to it } +
             ThreadsPeople.paths(ThreadsPeopleList.REPOSTERS, media).map { "reposters" to it } +
-            ThreadsQuotes.paths(media).map { "quotes" to it }
+            ThreadsQuotes.paths(media).map { "quotes" to it } +
+            CANDIDATES.map { (list, template) -> list to template.replace("{m}", media) }
         asked.forEachIndexed { index, (list, path) -> api(http, list, index, ThreadsLinks.web(path, emptyList())) }
     }
 
@@ -108,6 +109,22 @@ class ThreadsPostListsLiveTest {
     }
 
     private companion object {
+        /**
+         * Where the reposters' and quotes' lists might be, asked as a guest: a
+         * real session path sends a guest to sign in (302), as the likers' does;
+         * a wrong one is a 404. `replies` is a control that exists.
+         */
+        val CANDIDATES = listOf(
+            "control" to "/api/v1/text_feed/{m}/replies/",
+            "reposters" to "/api/v1/text_feed/{m}/reposts/",
+            "reposters" to "/api/v1/text_feed/{m}/repost_users/",
+            "reposters" to "/api/v1/media/{m}/reposts/",
+            "reposters" to "/api/v1/media/{m}/reshares/",
+            "quotes" to "/api/v1/text_feed/{m}/quoted_posts/",
+            "quotes" to "/api/v1/text_feed/{m}/quote_posts/",
+            "quotes" to "/api/v1/media/{m}/quoted_posts/",
+        )
+
         const val GAP_MILLIS = 2_500L
         const val REACH = 400
         val LIST_QUERY = Regex("Barcelona[A-Za-z]*(Quote|Repost|Liker|Inline|Pending|Activity)[A-Za-z]*Query")

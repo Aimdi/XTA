@@ -27,13 +27,15 @@ class ThreadsPostListsViewTest {
 
     @Test
     fun repostsAndQuotesOpenTheirListsOnlyForASignedInReaderAndACountedPost() {
-        assertTrue(ThreadsPeopleView.opensReposters(post, signedIn = true))
-        assertTrue(ThreadsPeopleView.opensQuotes(post, signedIn = true))
-        assertFalse(ThreadsPeopleView.opensReposters(post, signedIn = false))
-        assertFalse(ThreadsPeopleView.opensQuotes(post, signedIn = false))
-        assertFalse(ThreadsPeopleView.opensReposters(post.copy(repostCount = 0), signedIn = true))
-        assertFalse(ThreadsPeopleView.opensQuotes(post.copy(quoteCount = null), signedIn = true))
-        assertFalse(ThreadsPeopleView.opensQuotes(post.copy(url = null, id = "rss-item"), signedIn = true), "no media id, no list")
+        assertTrue(ThreadsPeopleView.opensReposters(post, signedIn = true, pathKnown = true))
+        assertTrue(ThreadsPeopleView.opensQuotes(post, signedIn = true, pathKnown = true))
+        assertFalse(ThreadsPeopleView.opensReposters(post, signedIn = false, pathKnown = true))
+        assertFalse(ThreadsPeopleView.opensQuotes(post, signedIn = false, pathKnown = true))
+        assertFalse(ThreadsPeopleView.opensReposters(post.copy(repostCount = 0), signedIn = true, pathKnown = true))
+        assertFalse(ThreadsPeopleView.opensQuotes(post.copy(quoteCount = null), signedIn = true, pathKnown = true))
+        assertFalse(ThreadsPeopleView.opensQuotes(post.copy(url = null, id = "rss-item"), signedIn = true, pathKnown = true), "no media id, no list")
+        assertFalse(ThreadsPeopleView.opensReposters(post, signedIn = true), "no list Meta was never seen to answer")
+        assertFalse(ThreadsPeopleView.opensQuotes(post, signedIn = true), "no list Meta was never seen to answer")
     }
 
     @Test
