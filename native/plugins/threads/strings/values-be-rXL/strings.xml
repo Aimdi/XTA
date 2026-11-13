@@ -267,4 +267,15 @@
     <string name="media_as_grid">Pakazać sietkaj</string>
     <string name="media_as_list">Pakazać spisam</string>
     <string name="media_video">Videa</string>
+    <string name="following_on_threads">Padpiski ŭ Threads</string>
+    <string name="following_on_threads_empty">Niama dopisaŭ ad akaŭntaŭ, na jakija vy padpisany ŭ Threads</string>
+    <string name="activity">Aktyŭnasć</string>
+    <string name="activity_empty">Niama aktyŭnasci</string>
+    <string name="mentions">Zhadki</string>
+    <string name="saved_on_threads">Zachavanaje ŭ Threads</string>
+    <string name="saved_on_threads_empty">Niama dopisaŭ, zachavanych u Threads</string>
+    <string name="liked_on_threads">Upadabanaje ŭ Threads</string>
+    <string name="liked_on_threads_empty">Niama dopisaŭ, upadabanych u Threads</string>
+    <string name="your_profile">Vaš profil</string>
+    <string name="signed_in_unavailable">Threads pakul nie daje hetaha tut.</string>
 </resources>

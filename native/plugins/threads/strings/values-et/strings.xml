@@ -253,4 +253,15 @@
     <string name="media_as_grid">Näita ruudustikuna</string>
     <string name="media_as_list">Näita loendina</string>
     <string name="media_video">Video</string>
+    <string name="following_on_threads">Jälgitavad Threadsis</string>
+    <string name="following_on_threads_empty">Threadsis jälgitavatelt kontodelt pole postitusi</string>
+    <string name="activity">Tegevus</string>
+    <string name="activity_empty">Tegevust pole näidata</string>
+    <string name="mentions">Mainimised</string>
+    <string name="saved_on_threads">Threadsis salvestatud</string>
+    <string name="saved_on_threads_empty">Threadsis salvestatud postitusi pole</string>
+    <string name="liked_on_threads">Threadsis meeldinud</string>
+    <string name="liked_on_threads_empty">Threadsis meeldinud postitusi pole</string>
+    <string name="your_profile">Sinu profiil</string>
+    <string name="signed_in_unavailable">Threads ei anna seda siin veel.</string>
 </resources>

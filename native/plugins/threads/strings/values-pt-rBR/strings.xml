@@ -259,4 +259,15 @@
     <string name="media_as_grid">Mostrar em grade</string>
     <string name="media_as_list">Mostrar em lista</string>
     <string name="media_video">Vídeo</string>
+    <string name="following_on_threads">Seguindo no Threads</string>
+    <string name="following_on_threads_empty">Nenhum post das contas que você segue no Threads</string>
+    <string name="activity">Atividade</string>
+    <string name="activity_empty">Nenhuma atividade para mostrar</string>
+    <string name="mentions">Menções</string>
+    <string name="saved_on_threads">Salvo no Threads</string>
+    <string name="saved_on_threads_empty">Nenhum post salvo no Threads</string>
+    <string name="liked_on_threads">Curtidos no Threads</string>
+    <string name="liked_on_threads_empty">Nenhum post curtido no Threads</string>
+    <string name="your_profile">Seu perfil</string>
+    <string name="signed_in_unavailable">O Threads ainda não oferece isso aqui.</string>
 </resources>

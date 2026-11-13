@@ -259,4 +259,15 @@
     <string name="media_as_grid">Mostra en graella</string>
     <string name="media_as_list">Mostra en llista</string>
     <string name="media_video">Vídeo</string>
+    <string name="following_on_threads">Seguint a Threads</string>
+    <string name="following_on_threads_empty">No hi ha publicacions dels comptes que segueixes a Threads</string>
+    <string name="activity">Activitat</string>
+    <string name="activity_empty">No hi ha activitat per mostrar</string>
+    <string name="mentions">Mencions</string>
+    <string name="saved_on_threads">Desat a Threads</string>
+    <string name="saved_on_threads_empty">No hi ha publicacions desades a Threads</string>
+    <string name="liked_on_threads">M’agrada a Threads</string>
+    <string name="liked_on_threads_empty">No hi ha publicacions que t’agradin a Threads</string>
+    <string name="your_profile">El teu perfil</string>
+    <string name="signed_in_unavailable">Threads encara no ofereix això aquí.</string>
 </resources>

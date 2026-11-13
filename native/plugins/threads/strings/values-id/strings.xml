@@ -246,4 +246,15 @@
     <string name="media_as_grid">Tampilkan sebagai kisi</string>
     <string name="media_as_list">Tampilkan sebagai daftar</string>
     <string name="media_video">Video</string>
+    <string name="following_on_threads">Mengikuti di Threads</string>
+    <string name="following_on_threads_empty">Tidak ada postingan dari akun yang Anda ikuti di Threads</string>
+    <string name="activity">Aktivitas</string>
+    <string name="activity_empty">Tidak ada aktivitas untuk ditampilkan</string>
+    <string name="mentions">Sebutan</string>
+    <string name="saved_on_threads">Disimpan di Threads</string>
+    <string name="saved_on_threads_empty">Tidak ada postingan yang disimpan di Threads</string>
+    <string name="liked_on_threads">Disukai di Threads</string>
+    <string name="liked_on_threads_empty">Tidak ada postingan yang disukai di Threads</string>
+    <string name="your_profile">Profil Anda</string>
+    <string name="signed_in_unavailable">Threads belum memberikan ini di sini.</string>
 </resources>

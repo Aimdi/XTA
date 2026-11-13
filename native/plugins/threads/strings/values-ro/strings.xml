@@ -260,4 +260,15 @@
     <string name="media_as_grid">Afișează ca grilă</string>
     <string name="media_as_list">Afișează ca listă</string>
     <string name="media_video">Videoclip</string>
+    <string name="following_on_threads">Urmăriți pe Threads</string>
+    <string name="following_on_threads_empty">Nicio postare de la conturile pe care le urmărești pe Threads</string>
+    <string name="activity">Activitate</string>
+    <string name="activity_empty">Nicio activitate de afișat</string>
+    <string name="mentions">Mențiuni</string>
+    <string name="saved_on_threads">Salvate pe Threads</string>
+    <string name="saved_on_threads_empty">Nicio postare salvată pe Threads</string>
+    <string name="liked_on_threads">Apreciate pe Threads</string>
+    <string name="liked_on_threads_empty">Nicio postare apreciată pe Threads</string>
+    <string name="your_profile">Profilul tău</string>
+    <string name="signed_in_unavailable">Threads nu oferă încă asta aici.</string>
 </resources>

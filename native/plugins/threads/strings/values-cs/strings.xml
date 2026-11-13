@@ -267,4 +267,15 @@
     <string name="media_as_grid">Zobrazit jako mřížku</string>
     <string name="media_as_list">Zobrazit jako seznam</string>
     <string name="media_video">Video</string>
+    <string name="following_on_threads">Sledované na Threads</string>
+    <string name="following_on_threads_empty">Žádné příspěvky od účtů, které sledujete na Threads</string>
+    <string name="activity">Aktivita</string>
+    <string name="activity_empty">Žádná aktivita k zobrazení</string>
+    <string name="mentions">Zmínky</string>
+    <string name="saved_on_threads">Uloženo na Threads</string>
+    <string name="saved_on_threads_empty">Žádné příspěvky uložené na Threads</string>
+    <string name="liked_on_threads">Líbí se na Threads</string>
+    <string name="liked_on_threads_empty">Žádné příspěvky, které se vám líbí na Threads</string>
+    <string name="your_profile">Váš profil</string>
+    <string name="signed_in_unavailable">Threads to zde zatím neposkytuje.</string>
 </resources>

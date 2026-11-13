@@ -246,4 +246,15 @@
     <string name="media_as_grid">Hiển thị dạng lưới</string>
     <string name="media_as_list">Hiển thị dạng danh sách</string>
     <string name="media_video">Video</string>
+    <string name="following_on_threads">Đang theo dõi trên Threads</string>
+    <string name="following_on_threads_empty">Không có bài viết nào từ các tài khoản bạn theo dõi trên Threads</string>
+    <string name="activity">Hoạt động</string>
+    <string name="activity_empty">Không có hoạt động nào để hiển thị</string>
+    <string name="mentions">Lượt nhắc đến</string>
+    <string name="saved_on_threads">Đã lưu trên Threads</string>
+    <string name="saved_on_threads_empty">Không có bài viết nào đã lưu trên Threads</string>
+    <string name="liked_on_threads">Đã thích trên Threads</string>
+    <string name="liked_on_threads_empty">Không có bài viết nào đã thích trên Threads</string>
+    <string name="your_profile">Hồ sơ của bạn</string>
+    <string name="signed_in_unavailable">Threads chưa cung cấp mục này ở đây.</string>
 </resources>

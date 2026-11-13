@@ -253,4 +253,15 @@
     <string name="media_as_grid">ग्रिड में दिखाएँ</string>
     <string name="media_as_list">सूची में दिखाएँ</string>
     <string name="media_video">वीडियो</string>
+    <string name="following_on_threads">Threads पर फ़ॉलो किए गए</string>
+    <string name="following_on_threads_empty">Threads पर आपके फ़ॉलो किए गए खातों की कोई पोस्ट नहीं</string>
+    <string name="activity">गतिविधि</string>
+    <string name="activity_empty">दिखाने को कोई गतिविधि नहीं</string>
+    <string name="mentions">उल्लेख</string>
+    <string name="saved_on_threads">Threads पर सहेजा गया</string>
+    <string name="saved_on_threads_empty">Threads पर सहेजी गई कोई पोस्ट नहीं</string>
+    <string name="liked_on_threads">Threads पर पसंद किए गए</string>
+    <string name="liked_on_threads_empty">Threads पर पसंद की गई कोई पोस्ट नहीं</string>
+    <string name="your_profile">आपकी प्रोफ़ाइल</string>
+    <string name="signed_in_unavailable">Threads यह अभी यहाँ नहीं देता।</string>
 </resources>

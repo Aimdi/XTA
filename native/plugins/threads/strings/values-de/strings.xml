@@ -253,4 +253,15 @@
     <string name="media_as_grid">Als Raster anzeigen</string>
     <string name="media_as_list">Als Liste anzeigen</string>
     <string name="media_video">Video</string>
+    <string name="following_on_threads">Gefolgt auf Threads</string>
+    <string name="following_on_threads_empty">Keine Beiträge von Konten, denen du auf Threads folgst</string>
+    <string name="activity">Aktivität</string>
+    <string name="activity_empty">Keine Aktivität</string>
+    <string name="mentions">Erwähnungen</string>
+    <string name="saved_on_threads">Gespeichert auf Threads</string>
+    <string name="saved_on_threads_empty">Keine auf Threads gespeicherten Beiträge</string>
+    <string name="liked_on_threads">Gefällt mir auf Threads</string>
+    <string name="liked_on_threads_empty">Keine Beiträge, die dir auf Threads gefallen</string>
+    <string name="your_profile">Dein Profil</string>
+    <string name="signed_in_unavailable">Threads gibt das hier noch nicht heraus.</string>
 </resources>

@@ -21,21 +21,9 @@ object ThreadsQuotes {
 
     /**
      * One page of quotes: the feed's threads or items as a timeline carries
-     * them, else a plain list of posts (`medias`, `posts`, `quotes`), each
-     * post once, and the cursor after them, null when Meta named none or said
-     * there is no more. The post quoted is never one of its own quotes.
+     * them, else a plain list of posts ([ThreadsListedPosts]), each post once,
+     * and the cursor after them, null when Meta named none or said there is
+     * no more. The post quoted is never one of its own quotes.
      */
-    fun page(body: J, quotedId: String? = null): Page<ThreadsPost> {
-        val listed = POST_LISTS.map { body[it].list }.firstOrNull { it.isNotEmpty() }.orEmpty()
-            .mapNotNull { ThreadsParser.post(it["post"].takeIf { post -> post.exists } ?: it) }
-        val posts = ThreadsParser.feed(body).ifEmpty { listed }
-            .filter { it.id != quotedId }
-            .distinctBy { it.shortcode ?: it.id }
-        val next = listOf(body["next_max_id"], body["paging_tokens"]["downwards"], body["max_id"])
-            .firstNotNullOfOrNull { it.string ?: it.integer?.toString() }?.trim()?.ifEmpty { null }
-        val ended = body["has_more"].boolean == false || body["more_available"].boolean == false
-        return Page(posts, next.takeIf { !ended && posts.isNotEmpty() })
-    }
-
-    private val POST_LISTS = listOf("medias", "posts", "quotes")
+    fun page(body: J, quotedId: String? = null): Page<ThreadsPost> = ThreadsListedPosts.page(body, without = quotedId)
 }

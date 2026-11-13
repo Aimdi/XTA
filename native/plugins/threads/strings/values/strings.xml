@@ -255,4 +255,15 @@
     <string name="media_as_grid">Show as a grid</string>
     <string name="media_as_list">Show as a list</string>
     <string name="media_video">Video</string>
+    <string name="following_on_threads">Following on Threads</string>
+    <string name="following_on_threads_empty">No posts from the accounts you follow on Threads</string>
+    <string name="activity">Activity</string>
+    <string name="activity_empty">No activity to show</string>
+    <string name="mentions">Mentions</string>
+    <string name="saved_on_threads">Saved on Threads</string>
+    <string name="saved_on_threads_empty">No posts saved on Threads</string>
+    <string name="liked_on_threads">Liked on Threads</string>
+    <string name="liked_on_threads_empty">No posts liked on Threads</string>
+    <string name="your_profile">Your profile</string>
+    <string name="signed_in_unavailable">Threads does not give this here yet.</string>
 </resources>

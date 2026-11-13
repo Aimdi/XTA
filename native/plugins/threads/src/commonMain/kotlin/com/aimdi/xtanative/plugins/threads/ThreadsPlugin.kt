@@ -72,6 +72,8 @@ class ThreadsPlugin : XtaPlugin() {
         is ThreadsRoute.Media -> { { ThreadsMediaScreen(app, opened) } }
         ThreadsRoute.Saved -> { { ThreadsSavedScreen(app) } }
         ThreadsRoute.SignIn -> { { ThreadsSignInScreen(app) } }
+        is ThreadsRoute.OwnFeed -> { { ThreadsOwnFeedScreen(app, opened.feed) } }
+        ThreadsRoute.Activity -> { { ThreadsActivityScreen(app) } }
         null -> null
     }
 

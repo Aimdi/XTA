@@ -267,4 +267,15 @@
     <string name="media_as_grid">Показати сіткою</string>
     <string name="media_as_list">Показати списком</string>
     <string name="media_video">Відео</string>
+    <string name="following_on_threads">Підписки в Threads</string>
+    <string name="following_on_threads_empty">Немає дописів від акаунтів, на які ви підписані в Threads</string>
+    <string name="activity">Активність</string>
+    <string name="activity_empty">Немає активності</string>
+    <string name="mentions">Згадки</string>
+    <string name="saved_on_threads">Збережене в Threads</string>
+    <string name="saved_on_threads_empty">Немає дописів, збережених у Threads</string>
+    <string name="liked_on_threads">Вподобане в Threads</string>
+    <string name="liked_on_threads_empty">Немає дописів, вподобаних у Threads</string>
+    <string name="your_profile">Ваш профіль</string>
+    <string name="signed_in_unavailable">Threads поки не надає цього тут.</string>
 </resources>

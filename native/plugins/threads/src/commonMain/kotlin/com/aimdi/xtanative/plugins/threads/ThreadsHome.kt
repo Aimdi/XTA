@@ -18,6 +18,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
@@ -138,10 +141,38 @@ private fun HomeMenu(app: ThreadsApp, onAdd: () -> Unit) {
         DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
             MenuRow(ThreadsIcons.PersonAdd, Strings.add_account) { menu = false; onAdd() }
             MenuRow(SavedIcons.BookmarkBorder, Strings.saved) { menu = false; app.host.open(ThreadsRoutes.SAVED) }
+            SignedInRows(app) { menu = false }
             MenuRow(Icons.Filled.Settings, Strings.settings) { menu = false; app.host.openSettings() }
             ReadingControlsPinItem()
         }
     }
+}
+
+/** What a signed-in reader is offered of their own Threads ([ThreadsSignedInRules]); nothing without a session. */
+@Composable
+private fun SignedInRows(app: ThreadsApp, close: () -> Unit) {
+    val settings by app.prefs.collectAsState()
+    val offered = remember(settings) { ThreadsSignedInRules.offered(ThreadsSessions.of(settings)) }
+    val scope = rememberCoroutineScope()
+    if (offered.isEmpty()) return
+    HorizontalDivider()
+    offered.forEach { place ->
+        MenuRow(signedInIcon(place), ThreadsSignedInRules.label(place)) {
+            close()
+            when (val route = ThreadsSignedInRules.route(place)) {
+                null -> scope.launch { app.ownHandle()?.let { app.host.open(ThreadsRoutes.profile(it)) } }
+                else -> app.host.open(route)
+            }
+        }
+    }
+}
+
+private fun signedInIcon(place: ThreadsSignedInPlace): ImageVector = when (place) {
+    ThreadsSignedInPlace.FOLLOWING -> PostIcons.People
+    ThreadsSignedInPlace.ACTIVITY -> Icons.Filled.Notifications
+    ThreadsSignedInPlace.SAVED -> PostIcons.Bookmark
+    ThreadsSignedInPlace.LIKED -> Icons.Filled.FavoriteBorder
+    ThreadsSignedInPlace.PROFILE -> Icons.Filled.Person
 }
 
 @Composable

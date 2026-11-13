@@ -267,4 +267,15 @@
     <string name="media_as_grid">Паказаць сеткай</string>
     <string name="media_as_list">Паказаць спісам</string>
     <string name="media_video">Відэа</string>
+    <string name="following_on_threads">Падпіскі ў Threads</string>
+    <string name="following_on_threads_empty">Няма допісаў ад акаўнтаў, на якія вы падпісаны ў Threads</string>
+    <string name="activity">Актыўнасць</string>
+    <string name="activity_empty">Няма актыўнасці</string>
+    <string name="mentions">Згадкі</string>
+    <string name="saved_on_threads">Захаванае ў Threads</string>
+    <string name="saved_on_threads_empty">Няма допісаў, захаваных у Threads</string>
+    <string name="liked_on_threads">Упадабанае ў Threads</string>
+    <string name="liked_on_threads_empty">Няма допісаў, упадабаных у Threads</string>
+    <string name="your_profile">Ваш профіль</string>
+    <string name="signed_in_unavailable">Threads пакуль не дае гэтага тут.</string>
 </resources>

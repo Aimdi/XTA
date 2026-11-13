@@ -135,6 +135,19 @@ object ThreadsPeople {
         return id.toString().takeIf { id.signum() > 0 }
     }
 
+    /** The short code a numeric media id is spelt as: [idOfShortcode] the other way. Null for anything but a positive number. */
+    fun shortcodeOf(id: String): String? {
+        var value = id.trim().takeIf { it.isNotEmpty() && it.all(Char::isDigit) }?.toBigInteger()?.takeIf { it.signum() > 0 } ?: return null
+        val code = StringBuilder()
+        val base = BigInteger.valueOf(ALPHABET.length.toLong())
+        while (value.signum() > 0) {
+            val (rest, digit) = value.divideAndRemainder(base)
+            code.append(ALPHABET[digit.toInt()])
+            value = rest
+        }
+        return code.reverse().toString()
+    }
+
     private const val ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"
     private const val SHORTCODE_LENGTH = 11
 }

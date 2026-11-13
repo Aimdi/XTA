@@ -253,4 +253,15 @@
     <string name="media_as_grid">Als raster tonen</string>
     <string name="media_as_list">Als lijst tonen</string>
     <string name="media_video">Video</string>
+    <string name="following_on_threads">Volgend op Threads</string>
+    <string name="following_on_threads_empty">Geen berichten van accounts die je op Threads volgt</string>
+    <string name="activity">Activiteit</string>
+    <string name="activity_empty">Geen activiteit om te tonen</string>
+    <string name="mentions">Vermeldingen</string>
+    <string name="saved_on_threads">Opgeslagen op Threads</string>
+    <string name="saved_on_threads_empty">Geen berichten opgeslagen op Threads</string>
+    <string name="liked_on_threads">Geliket op Threads</string>
+    <string name="liked_on_threads_empty">Geen berichten geliket op Threads</string>
+    <string name="your_profile">Je profiel</string>
+    <string name="signed_in_unavailable">Threads geeft dit hier nog niet.</string>
 </resources>

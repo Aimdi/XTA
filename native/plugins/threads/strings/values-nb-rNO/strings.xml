@@ -253,4 +253,15 @@
     <string name="media_as_grid">Vis som rutenett</string>
     <string name="media_as_list">Vis som liste</string>
     <string name="media_video">Video</string>
+    <string name="following_on_threads">Følger på Threads</string>
+    <string name="following_on_threads_empty">Ingen innlegg fra kontoene du følger på Threads</string>
+    <string name="activity">Aktivitet</string>
+    <string name="activity_empty">Ingen aktivitet å vise</string>
+    <string name="mentions">Omtaler</string>
+    <string name="saved_on_threads">Lagret på Threads</string>
+    <string name="saved_on_threads_empty">Ingen innlegg lagret på Threads</string>
+    <string name="liked_on_threads">Likt på Threads</string>
+    <string name="liked_on_threads_empty">Ingen innlegg likt på Threads</string>
+    <string name="your_profile">Profilen din</string>
+    <string name="signed_in_unavailable">Threads gir ikke ut dette her ennå.</string>
 </resources>

@@ -246,4 +246,15 @@
     <string name="media_as_grid">以網格顯示</string>
     <string name="media_as_list">以清單顯示</string>
     <string name="media_video">影片</string>
+    <string name="following_on_threads">Threads 追蹤中</string>
+    <string name="following_on_threads_empty">沒有你在 Threads 上追蹤的帳號的貼文</string>
+    <string name="activity">動態</string>
+    <string name="activity_empty">沒有可顯示的動態</string>
+    <string name="mentions">提及</string>
+    <string name="saved_on_threads">Threads 已儲存</string>
+    <string name="saved_on_threads_empty">沒有在 Threads 上儲存的貼文</string>
+    <string name="liked_on_threads">Threads 上喜歡的</string>
+    <string name="liked_on_threads_empty">沒有在 Threads 上喜歡的貼文</string>
+    <string name="your_profile">你的個人檔案</string>
+    <string name="signed_in_unavailable">Threads 暫不在此處提供這項內容。</string>
 </resources>

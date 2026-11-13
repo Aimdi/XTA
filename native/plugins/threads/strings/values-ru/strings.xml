@@ -267,4 +267,15 @@
     <string name="media_as_grid">Показать сеткой</string>
     <string name="media_as_list">Показать списком</string>
     <string name="media_video">Видео</string>
+    <string name="following_on_threads">Подписки в Threads</string>
+    <string name="following_on_threads_empty">Нет постов от аккаунтов, на которые вы подписаны в Threads</string>
+    <string name="activity">Активность</string>
+    <string name="activity_empty">Нет активности</string>
+    <string name="mentions">Упоминания</string>
+    <string name="saved_on_threads">Сохранённое в Threads</string>
+    <string name="saved_on_threads_empty">Нет постов, сохранённых в Threads</string>
+    <string name="liked_on_threads">Понравившееся в Threads</string>
+    <string name="liked_on_threads_empty">Нет постов, понравившихся вам в Threads</string>
+    <string name="your_profile">Ваш профиль</string>
+    <string name="signed_in_unavailable">Threads пока не отдаёт это здесь.</string>
 </resources>

@@ -253,4 +253,15 @@
     <string name="media_as_grid">Erakutsi sareta gisa</string>
     <string name="media_as_list">Erakutsi zerrenda gisa</string>
     <string name="media_video">Bideoa</string>
+    <string name="following_on_threads">Jarraitzen Threads-en</string>
+    <string name="following_on_threads_empty">Ez dago Threads-en jarraitzen dituzun kontuen argitalpenik</string>
+    <string name="activity">Jarduera</string>
+    <string name="activity_empty">Ez dago jarduerarik erakusteko</string>
+    <string name="mentions">Aipamenak</string>
+    <string name="saved_on_threads">Threads-en gordeak</string>
+    <string name="saved_on_threads_empty">Ez dago Threads-en gordetako argitalpenik</string>
+    <string name="liked_on_threads">Threads-en gogokoak</string>
+    <string name="liked_on_threads_empty">Ez dago Threads-en gogoko duzun argitalpenik</string>
+    <string name="your_profile">Zure profila</string>
+    <string name="signed_in_unavailable">Threads-ek ez du hau hemen ematen oraindik.</string>
 </resources>

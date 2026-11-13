@@ -164,14 +164,45 @@ class ThreadsDirectClient(
     }
 
     /**
+     * One page of the signed-in reader's own [feed] ([ThreadsOwnFeeds]): the
+     * Following feed, or the posts they saved or liked on Threads, after
+     * [cursor]. A session read as [people] is, with neither cookies nor a
+     * Bearer [NOT_CONFIGURED]; [NO_SUCH_FEED] when no path answers. An answer
+     * that cannot be the Following feed ([ThreadsOwnFeeds.isFollowing]) is
+     * taken for a path that does not serve it. A read only: nothing is
+     * followed, saved, liked or marked seen.
+     */
+    suspend fun ownFeed(feed: ThreadsOwnFeed, cursor: String? = null): Page<ThreadsPost> {
+        val accepts: (J) -> Boolean = if (feed == ThreadsOwnFeed.FOLLOWING) ThreadsOwnFeeds::isFollowing else { _ -> true }
+        val body = sessionApi("own:$feed", ThreadsOwnFeeds.paths(feed), ThreadsOwnFeeds.params(feed, cursor, deviceId()), accepts = accepts)
+        return ThreadsOwnFeeds.page(body)
+    }
+
+    /**
+     * One page of the signed-in reader's activity ([ThreadsActivity]), the
+     * part [filter] names, after [cursor]: a session read as [people] is.
+     * Asked never to mark anything seen; nothing is answered or followed.
+     */
+    suspend fun activity(filter: ThreadsActivityFilter = ThreadsActivityFilter.ALL, cursor: String? = null): Page<ThreadsActivityItem> =
+        ThreadsActivity.page(sessionApi("activity", ThreadsActivity.PATHS, ThreadsActivity.params(filter, cursor)))
+
+    /**
      * A session read of the API behind Threads at the first of [paths] that
      * answers: the cookies on threads.com when the reader gave them, else
      * the Bearer on the app API. A path Meta answers 404 gives way to the next
      * ([NO_SUCH_FEED] once none is left); the one that answered is used first
      * for [kind] from then on, so a list whose path is known asks once.
-     * [language], when given, is the Accept-Language Meta answers in.
+     * [language], when given, is the Accept-Language Meta answers in. An
+     * answer [accepts] refuses is taken for a missing path: it is not what
+     * [kind] asked for.
      */
-    private suspend fun sessionApi(kind: String, paths: List<String>, params: List<Pair<String, String>>, language: String? = null): J {
+    private suspend fun sessionApi(
+        kind: String,
+        paths: List<String>,
+        params: List<Pair<String, String>>,
+        language: String? = null,
+        accepts: (J) -> Boolean = { true },
+    ): J {
         val current = session()
         val token = current.bearerToken
         if (!current.hasCookies && token == null) throw ThreadsException(NOT_CONFIGURED, "no session for $kind")
@@ -186,6 +217,7 @@ class ThreadsDirectClient(
                     current.hasCookies -> sessionRead(ThreadsLinks.web(path, params), inLanguage(cookieHeaders(current)))
                     else -> sessionRead(ThreadsLinks.address(INSTAGRAM, path, params), inLanguage(bearerHeaders(checkNotNull(token), deviceId())))
                 }
+                if (!accepts(body)) throw ThreadsException(NO_SUCH_FEED, "$path: not $kind")
                 synchronized(keeping) { answeringPaths[kind] = index }
                 return body
             } catch (e: ThreadsException) {

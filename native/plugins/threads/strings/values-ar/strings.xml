@@ -281,4 +281,15 @@
     <string name="media_as_grid">العرض كشبكة</string>
     <string name="media_as_list">العرض كقائمة</string>
     <string name="media_video">فيديو</string>
+    <string name="following_on_threads">ما تتابعه على Threads</string>
+    <string name="following_on_threads_empty">لا منشورات من الحسابات التي تتابعها على Threads</string>
+    <string name="activity">النشاط</string>
+    <string name="activity_empty">لا نشاط لعرضه</string>
+    <string name="mentions">الإشارات</string>
+    <string name="saved_on_threads">المحفوظ على Threads</string>
+    <string name="saved_on_threads_empty">لا منشورات محفوظة على Threads</string>
+    <string name="liked_on_threads">ما أعجبك على Threads</string>
+    <string name="liked_on_threads_empty">لا منشورات أعجبتك على Threads</string>
+    <string name="your_profile">ملفك الشخصي</string>
+    <string name="signed_in_unavailable">لا يتيح Threads هذا هنا بعد.</string>
 </resources>

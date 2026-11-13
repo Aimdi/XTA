@@ -229,6 +229,23 @@ internal class ThreadsApp(val host: PluginHost) {
         }
     }
 
+    /**
+     * Whom the cookies sign in as, for the reader's own profile: known since
+     * the session was last tried, else asked once (a session read) and kept
+     * for the run. Null when it cannot be read, the notices saying why.
+     */
+    suspend fun ownHandle(): String? {
+        signedInNow.value?.let { return it }
+        return try {
+            direct.currentUser().username.also { signedInNow.value = it }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            notices.tell(ThreadsFailures.settings(e).get(host.language))
+            null
+        }
+    }
+
     /** The session gone from this device: the cookies and the Bearer, and whom they signed in as. */
     fun clearSession() {
         signedInNow.value = null

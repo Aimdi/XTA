@@ -267,4 +267,15 @@
     <string name="media_as_grid">Pokaż jako siatkę</string>
     <string name="media_as_list">Pokaż jako listę</string>
     <string name="media_video">Wideo</string>
+    <string name="following_on_threads">Obserwowani na Threads</string>
+    <string name="following_on_threads_empty">Brak postów od kont, które obserwujesz na Threads</string>
+    <string name="activity">Aktywność</string>
+    <string name="activity_empty">Brak aktywności do pokazania</string>
+    <string name="mentions">Wzmianki</string>
+    <string name="saved_on_threads">Zapisane na Threads</string>
+    <string name="saved_on_threads_empty">Brak postów zapisanych na Threads</string>
+    <string name="liked_on_threads">Polubione na Threads</string>
+    <string name="liked_on_threads_empty">Brak postów polubionych na Threads</string>
+    <string name="your_profile">Twój profil</string>
+    <string name="signed_in_unavailable">Threads jeszcze tego tu nie udostępnia.</string>
 </resources>

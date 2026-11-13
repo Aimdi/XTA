@@ -49,6 +49,14 @@ internal object ThreadsFailures {
     fun postList(error: Throwable?, language: String, zone: ZoneId = ZoneId.systemDefault()): String =
         page(error, language, Strings.list_unavailable, zone)
 
+    /**
+     * The sentence of one of the signed-in reader's own lists (their Following
+     * feed, activity, saved or liked posts): no path answering means Threads
+     * does not give it here.
+     */
+    fun ownList(error: Throwable?, language: String, zone: ZoneId = ZoneId.systemDefault()): String =
+        page(error, language, Strings.signed_in_unavailable, zone)
+
     /** A list's next page's sentence: Meta refusing for now names when its wait ends. */
     fun nextPage(error: Throwable?, language: String, zone: ZoneId = ZoneId.systemDefault()): String =
         page(error, language, Strings.error_unreachable, zone)

@@ -253,4 +253,15 @@
     <string name="media_as_grid">Izgara olarak göster</string>
     <string name="media_as_list">Liste olarak göster</string>
     <string name="media_video">Video</string>
+    <string name="following_on_threads">Threads\'te takip edilenler</string>
+    <string name="following_on_threads_empty">Threads\'te takip ettiğin hesaplardan gönderi yok</string>
+    <string name="activity">Etkinlik</string>
+    <string name="activity_empty">Gösterilecek etkinlik yok</string>
+    <string name="mentions">Bahsetmeler</string>
+    <string name="saved_on_threads">Threads\'te kaydedilenler</string>
+    <string name="saved_on_threads_empty">Threads\'te kaydedilmiş gönderi yok</string>
+    <string name="liked_on_threads">Threads\'te beğenilenler</string>
+    <string name="liked_on_threads_empty">Threads\'te beğenilmiş gönderi yok</string>
+    <string name="your_profile">Profilin</string>
+    <string name="signed_in_unavailable">Threads bunu henüz burada vermiyor.</string>
 </resources>

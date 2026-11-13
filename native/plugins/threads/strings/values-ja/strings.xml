@@ -246,4 +246,15 @@
     <string name="media_as_grid">グリッドで表示</string>
     <string name="media_as_list">リストで表示</string>
     <string name="media_video">動画</string>
+    <string name="following_on_threads">Threadsのフォロー中</string>
+    <string name="following_on_threads_empty">Threadsでフォローしているアカウントの投稿はありません</string>
+    <string name="activity">アクティビティ</string>
+    <string name="activity_empty">表示できるアクティビティはありません</string>
+    <string name="mentions">メンション</string>
+    <string name="saved_on_threads">Threadsで保存した投稿</string>
+    <string name="saved_on_threads_empty">Threadsで保存した投稿はありません</string>
+    <string name="liked_on_threads">Threadsでいいねした投稿</string>
+    <string name="liked_on_threads_empty">Threadsでいいねした投稿はありません</string>
+    <string name="your_profile">あなたのプロフィール</string>
+    <string name="signed_in_unavailable">Threadsはまだこれをここでは提供していません。</string>
 </resources>

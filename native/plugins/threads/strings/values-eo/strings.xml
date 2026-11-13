@@ -253,4 +253,15 @@
     <string name="media_as_grid">Montri kiel kradon</string>
     <string name="media_as_list">Montri kiel liston</string>
     <string name="media_video">Video</string>
+    <string name="following_on_threads">Sekvataj ĉe Threads</string>
+    <string name="following_on_threads_empty">Neniuj afiŝoj de kontoj, kiujn vi sekvas ĉe Threads</string>
+    <string name="activity">Aktiveco</string>
+    <string name="activity_empty">Neniu aktiveco montrebla</string>
+    <string name="mentions">Mencioj</string>
+    <string name="saved_on_threads">Konservitaj ĉe Threads</string>
+    <string name="saved_on_threads_empty">Neniuj afiŝoj konservitaj ĉe Threads</string>
+    <string name="liked_on_threads">Ŝatitaj ĉe Threads</string>
+    <string name="liked_on_threads_empty">Neniuj afiŝoj ŝatitaj ĉe Threads</string>
+    <string name="your_profile">Via profilo</string>
+    <string name="signed_in_unavailable">Threads ankoraŭ ne donas tion ĉi tie.</string>
 </resources>
