@@ -202,8 +202,15 @@ sealed interface ThreadsReplyRow {
     /** The marker that cuts an opened reply thread back to its first few posts. */
     data class Less(val chain: List<ThreadsPost>) : ThreadsReplyRow
 
-    /** Meta holds more of this reply thread than the page carried: it continues on threads.com. */
-    data class OnWeb(val chain: List<ThreadsPost>) : ThreadsReplyRow
+    /**
+     * Meta holds more of this reply thread than the page carried: it goes on
+     * at the page of its last post shown ([continuesAt]), whose own
+     * conversation carries the replies under it.
+     */
+    data class OnWeb(val chain: List<ThreadsPost>) : ThreadsReplyRow {
+        /** The post whose conversation shows the rest: the last of the chain with a link of its own. */
+        val continuesAt: ThreadsPost? get() = chain.lastOrNull { !it.url.isNullOrBlank() }
+    }
 }
 
 /**

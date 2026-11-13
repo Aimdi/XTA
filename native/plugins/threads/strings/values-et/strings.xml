@@ -161,7 +161,6 @@
     <string name="exact_time">Näita täpset aega</string>
     <string name="fewer_replies">Näita vähem vastuseid</string>
     <string name="more_replies_web">Rohkem vastuseid saidil threads.com</string>
-    <string name="thread_on_web">See lõim jätkub saidil threads.com</string>
     <string name="related_threads">Seotud lõimed</string>
     <string name="media_description">Pildi kirjeldus</string>
     <string name="media_download">Laadi alla</string>
@@ -209,4 +208,18 @@
     <string name="filters_and_groups">Filtrid ja rühmad</string>
     <string name="pinned_post">Kinnitatud postitus</string>
     <string name="profile_search_empty">Siin pole otsingule vastavaid postitusi</string>
+    <string name="reposted_by">Uuesti postitanud</string>
+    <string name="reposters_empty">Uuesti postitusi pole näidata</string>
+    <string name="show_reposted_by">Vaata, kes selle uuesti postitas</string>
+    <string name="show_quotes">Vaata tsitaate</string>
+    <string name="quotes_empty">Tsitaate pole näidata</string>
+    <string name="list_unavailable">Threads ei anna seda loendit siin. Selle nägemiseks ava postitus saidil threads.com.</string>
+    <string name="liked_by_author">Autorile meeldis</string>
+    <string name="edited">Muudetud</string>
+    <string name="continue_thread">Jätka seda lõime</string>
+    <string name="music">Muusika</string>
+    <string name="replies_limited_followed">Vastata saavad ainult kontod, keda autor jälgib</string>
+    <string name="replies_limited_followers">Vastata saavad ainult autori jälgijad</string>
+    <string name="replies_limited_mentioned">Vastata saavad ainult postituses mainitud kontod</string>
+    <string name="replies_limited_author">Vastata saab ainult autor</string>
 </resources>

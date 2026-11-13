@@ -169,7 +169,6 @@
     <string name="exact_time">Pokaż dokładny czas</string>
     <string name="fewer_replies">Pokaż mniej odpowiedzi</string>
     <string name="more_replies_web">Więcej odpowiedzi na threads.com</string>
-    <string name="thread_on_web">Ten wątek ciągnie się dalej na threads.com</string>
     <string name="related_threads">Podobne wątki</string>
     <string name="media_description">Opis obrazu</string>
     <string name="media_download">Pobierz</string>
@@ -219,4 +218,18 @@
     <string name="filters_and_groups">Filtry i grupy</string>
     <string name="pinned_post">Przypięty wpis</string>
     <string name="profile_search_empty">Żaden wpis tutaj nie pasuje do wyszukiwania</string>
+    <string name="reposted_by">Podali dalej</string>
+    <string name="reposters_empty">Brak udostępnień do pokazania</string>
+    <string name="show_reposted_by">Zobacz, kto podał dalej</string>
+    <string name="show_quotes">Zobacz cytaty</string>
+    <string name="quotes_empty">Brak cytatów do pokazania</string>
+    <string name="list_unavailable">Threads nie udostępnia tu tej listy. Otwórz wpis na threads.com, aby ją zobaczyć.</string>
+    <string name="liked_by_author">Polubione przez autora</string>
+    <string name="edited">Edytowano</string>
+    <string name="continue_thread">Kontynuuj ten wątek</string>
+    <string name="music">Muzyka</string>
+    <string name="replies_limited_followed">Odpowiadać mogą tylko konta obserwowane przez autora</string>
+    <string name="replies_limited_followers">Odpowiadać mogą tylko obserwujący autora</string>
+    <string name="replies_limited_mentioned">Odpowiadać mogą tylko konta wspomniane we wpisie</string>
+    <string name="replies_limited_author">Odpowiadać może tylko autor</string>
 </resources>

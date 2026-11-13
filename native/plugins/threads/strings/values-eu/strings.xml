@@ -161,7 +161,6 @@
     <string name="exact_time">Erakutsi ordu zehatza</string>
     <string name="fewer_replies">Erakutsi erantzun gutxiago</string>
     <string name="more_replies_web">Erantzun gehiago threads.com-en</string>
-    <string name="thread_on_web">Hari honek threads.com-en jarraitzen du</string>
     <string name="related_threads">Lotutako hariak</string>
     <string name="media_description">Irudiaren deskribapena</string>
     <string name="media_download">Deskargatu</string>
@@ -209,4 +208,18 @@
     <string name="filters_and_groups">Iragazkiak eta taldeak</string>
     <string name="pinned_post">Finkatutako argitalpena</string>
     <string name="profile_search_empty">Hemen ez dago bilaketarekin bat datorren argitalpenik</string>
+    <string name="reposted_by">Birbidali dutenak</string>
+    <string name="reposters_empty">Ez dago birbidalketarik erakusteko</string>
+    <string name="show_reposted_by">Ikusi nork birbidali duen</string>
+    <string name="show_quotes">Ikusi aipamenak</string>
+    <string name="quotes_empty">Ez dago aipamenik erakusteko</string>
+    <string name="list_unavailable">Threads-ek ez du zerrenda hau hemen ematen. Ireki argitalpena threads.com-en ikusteko.</string>
+    <string name="liked_by_author">Egileari gustatu zaio</string>
+    <string name="edited">Editatua</string>
+    <string name="continue_thread">Jarraitu hari honekin</string>
+    <string name="music">Musika</string>
+    <string name="replies_limited_followed">Egileak jarraitzen dituen kontuek soilik erantzun dezakete</string>
+    <string name="replies_limited_followers">Egilearen jarraitzaileek soilik erantzun dezakete</string>
+    <string name="replies_limited_mentioned">Argitalpenean aipatutako kontuek soilik erantzun dezakete</string>
+    <string name="replies_limited_author">Egileak soilik erantzun dezake</string>
 </resources>

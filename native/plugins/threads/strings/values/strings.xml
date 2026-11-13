@@ -163,7 +163,6 @@
     <string name="exact_time">Show the exact time</string>
     <string name="fewer_replies">Show fewer replies</string>
     <string name="more_replies_web">More replies on threads.com</string>
-    <string name="thread_on_web">This thread goes on at threads.com</string>
     <string name="related_threads">Related threads</string>
     <string name="media_description">Image description</string>
     <string name="media_download">Download</string>
@@ -211,4 +210,18 @@
     <string name="filters_and_groups">Filters and groups</string>
     <string name="pinned_post">Pinned post</string>
     <string name="profile_search_empty">No posts here match your search</string>
+    <string name="reposted_by">Reposted by</string>
+    <string name="reposters_empty">No reposts to show</string>
+    <string name="show_reposted_by">See who reposted this</string>
+    <string name="show_quotes">See quotes</string>
+    <string name="quotes_empty">No quotes to show</string>
+    <string name="list_unavailable">Threads does not give this list here. Open the post on threads.com to see it.</string>
+    <string name="liked_by_author">Liked by the author</string>
+    <string name="edited">Edited</string>
+    <string name="continue_thread">Continue this thread</string>
+    <string name="music">Music</string>
+    <string name="replies_limited_followed">Only accounts the author follows can reply</string>
+    <string name="replies_limited_followers">Only the author\'s followers can reply</string>
+    <string name="replies_limited_mentioned">Only accounts mentioned in the post can reply</string>
+    <string name="replies_limited_author">Only the author can reply</string>
 </resources>

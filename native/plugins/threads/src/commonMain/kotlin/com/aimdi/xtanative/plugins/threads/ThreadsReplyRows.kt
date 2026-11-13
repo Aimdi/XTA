@@ -38,7 +38,7 @@ private val STEP: Dp = 20.dp
  * of several answers set in under the post it answers with a guide line per
  * level, a long thread cut to its first few until "Show N more replies" and
  * cut again by "Show fewer replies", and one Meta holds more of ending in
- * its page on threads.com.
+ * "Continue this thread", which opens its last post's own conversation here.
  */
 internal fun LazyListScope.replyRows(
     app: ThreadsApp,
@@ -54,7 +54,7 @@ internal fun LazyListScope.replyRows(
             }
             is ThreadsReplyRow.More -> MarkerRow(PostIcons.SubdirectoryArrow, pluginPlural(Strings.more_replies, row.hidden, row.hidden)) { onExpand(row.chain) }
             is ThreadsReplyRow.Less -> MarkerRow(PostIcons.SubdirectoryArrow, pluginString(Strings.fewer_replies)) { onCollapse(row.chain) }
-            is ThreadsReplyRow.OnWeb -> row.chain.firstOrNull()?.url?.let { url -> OnWebRow(pluginString(Strings.thread_on_web), url) }
+            is ThreadsReplyRow.OnWeb -> row.continuesAt?.let { last -> MarkerRow(PostIcons.Forum, pluginString(Strings.continue_thread)) { app.openPost(last) } }
         }
     }
 }

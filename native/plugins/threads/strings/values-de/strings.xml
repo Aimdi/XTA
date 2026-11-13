@@ -161,7 +161,6 @@
     <string name="exact_time">Genaue Uhrzeit anzeigen</string>
     <string name="fewer_replies">Weniger Antworten anzeigen</string>
     <string name="more_replies_web">Weitere Antworten auf threads.com</string>
-    <string name="thread_on_web">Dieser Thread geht auf threads.com weiter</string>
     <string name="related_threads">Ähnliche Threads</string>
     <string name="media_description">Bildbeschreibung</string>
     <string name="media_download">Herunterladen</string>
@@ -209,4 +208,18 @@
     <string name="filters_and_groups">Filter und Gruppen</string>
     <string name="pinned_post">Angehefteter Beitrag</string>
     <string name="profile_search_empty">Keine Beiträge hier passen zu deiner Suche</string>
+    <string name="reposted_by">Erneut gepostet von</string>
+    <string name="reposters_empty">Keine Reposts</string>
+    <string name="show_reposted_by">Sehen, wer das erneut gepostet hat</string>
+    <string name="show_quotes">Zitate ansehen</string>
+    <string name="quotes_empty">Keine Zitate</string>
+    <string name="list_unavailable">Threads gibt diese Liste hier nicht heraus. Öffne den Beitrag auf threads.com, um sie zu sehen.</string>
+    <string name="liked_by_author">Gefällt dem Autor</string>
+    <string name="edited">Bearbeitet</string>
+    <string name="continue_thread">Diesen Thread fortsetzen</string>
+    <string name="music">Musik</string>
+    <string name="replies_limited_followed">Nur Konten, denen der Autor folgt, können antworten</string>
+    <string name="replies_limited_followers">Nur Follower des Autors können antworten</string>
+    <string name="replies_limited_mentioned">Nur im Beitrag erwähnte Konten können antworten</string>
+    <string name="replies_limited_author">Nur der Autor kann antworten</string>
 </resources>

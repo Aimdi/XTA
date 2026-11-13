@@ -169,7 +169,6 @@
     <string name="exact_time">Zobrazit přesný čas</string>
     <string name="fewer_replies">Zobrazit méně odpovědí</string>
     <string name="more_replies_web">Další odpovědi na threads.com</string>
-    <string name="thread_on_web">Vlákno pokračuje na threads.com</string>
     <string name="related_threads">Související vlákna</string>
     <string name="media_description">Popis obrázku</string>
     <string name="media_download">Stáhnout</string>
@@ -219,4 +218,18 @@
     <string name="filters_and_groups">Filtry a skupiny</string>
     <string name="pinned_post">Připnutý příspěvek</string>
     <string name="profile_search_empty">Hledání tu neodpovídá žádný příspěvek</string>
+    <string name="reposted_by">Repostovali</string>
+    <string name="reposters_empty">Žádné reposty k zobrazení</string>
+    <string name="show_reposted_by">Zobrazit, kdo to repostoval</string>
+    <string name="show_quotes">Zobrazit citace</string>
+    <string name="quotes_empty">Žádné citace k zobrazení</string>
+    <string name="list_unavailable">Threads tento seznam zde neposkytuje. Otevřete příspěvek na threads.com, kde ho uvidíte.</string>
+    <string name="liked_by_author">Líbí se autorovi</string>
+    <string name="edited">Upraveno</string>
+    <string name="continue_thread">Pokračovat ve vlákně</string>
+    <string name="music">Hudba</string>
+    <string name="replies_limited_followed">Odpovídat mohou jen účty, které autor sleduje</string>
+    <string name="replies_limited_followers">Odpovídat mohou jen sledující autora</string>
+    <string name="replies_limited_mentioned">Odpovídat mohou jen účty zmíněné v příspěvku</string>
+    <string name="replies_limited_author">Odpovídat může jen autor</string>
 </resources>

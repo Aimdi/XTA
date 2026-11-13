@@ -6,7 +6,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsProfile
 import com.aimdi.xtanative.networks.threads.ThreadsSession
 
-/** What a people list (followers, following, both, likers) shows, decided apart from its drawing. */
+/** What a people list (followers, following, both, likers, reposters) shows, decided apart from its drawing. */
 internal object ThreadsPeopleView {
     /** What fills a list's place. */
     enum class Body {
@@ -64,6 +64,20 @@ internal object ThreadsPeopleView {
      * Whether a post's like count opens who liked it: for a signed-in reader,
      * a post Meta counted likes on, whose media id is known.
      */
-    fun opensLikers(post: ThreadsPost, signedIn: Boolean): Boolean =
-        signedIn && (post.likeCount ?: 0) > 0 && ThreadsPeople.mediaId(post) != null
+    fun opensLikers(post: ThreadsPost, signedIn: Boolean): Boolean = opens(post.likeCount, post, signedIn)
+
+    /** Whether a post's repost count opens who reposted it: as [opensLikers], for reposts. */
+    fun opensReposters(post: ThreadsPost, signedIn: Boolean): Boolean = opens(post.repostCount, post, signedIn)
+
+    /** Whether a post's quote count opens its quotes: as [opensLikers], for quotes. */
+    fun opensQuotes(post: ThreadsPost, signedIn: Boolean): Boolean = opens(post.quoteCount, post, signedIn)
+
+    private fun opens(count: Long?, post: ThreadsPost, signedIn: Boolean): Boolean =
+        signedIn && (count ?: 0) > 0 && ThreadsPeople.mediaId(post) != null
+}
+
+/** What a post's list of posts (its quotes) shows, decided apart from its drawing. */
+internal object ThreadsPostLists {
+    /** The first page and those after it, each post once by its short code (else its id). */
+    fun shown(first: List<ThreadsPost>, more: List<ThreadsPost>): List<ThreadsPost> = (first + more).distinctBy { it.shortcode ?: it.id }
 }

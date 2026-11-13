@@ -177,7 +177,6 @@
     <string name="exact_time">عرض الوقت بالضبط</string>
     <string name="fewer_replies">عرض ردود أقل</string>
     <string name="more_replies_web">مزيد من الردود على threads.com</string>
-    <string name="thread_on_web">يتواصل هذا الخيط على threads.com</string>
     <string name="related_threads">خيوط ذات صلة</string>
     <string name="media_description">وصف الصورة</string>
     <string name="media_download">تحميل</string>
@@ -229,4 +228,18 @@
     <string name="filters_and_groups">المرشحات والمجموعات</string>
     <string name="pinned_post">منشور مثبّت</string>
     <string name="profile_search_empty">لا توجد منشورات هنا تطابق بحثك</string>
+    <string name="reposted_by">أعاد نشره</string>
+    <string name="reposters_empty">لا إعادات نشر لعرضها</string>
+    <string name="show_reposted_by">معرفة من أعاد نشر هذا</string>
+    <string name="show_quotes">عرض الاقتباسات</string>
+    <string name="quotes_empty">لا اقتباسات لعرضها</string>
+    <string name="list_unavailable">لا يعرض Threads هذه القائمة هنا. افتح المنشور على threads.com لرؤيتها.</string>
+    <string name="liked_by_author">أُعجب به الكاتب</string>
+    <string name="edited">معدَّل</string>
+    <string name="continue_thread">متابعة هذا الخيط</string>
+    <string name="music">موسيقى</string>
+    <string name="replies_limited_followed">يمكن الرد للحسابات التي يتابعها الكاتب فقط</string>
+    <string name="replies_limited_followers">يمكن الرد لمتابعي الكاتب فقط</string>
+    <string name="replies_limited_mentioned">يمكن الرد للحسابات المذكورة في المنشور فقط</string>
+    <string name="replies_limited_author">يمكن للكاتب وحده الرد</string>
 </resources>

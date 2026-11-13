@@ -169,7 +169,6 @@
     <string name="exact_time">Показати точний час</string>
     <string name="fewer_replies">Показати менше відповідей</string>
     <string name="more_replies_web">Більше відповідей на threads.com</string>
-    <string name="thread_on_web">Продовження гілки на threads.com</string>
     <string name="related_threads">Схожі гілки</string>
     <string name="media_description">Опис зображення</string>
     <string name="media_download">Завантажити</string>
@@ -219,4 +218,18 @@
     <string name="filters_and_groups">Фільтри та групи</string>
     <string name="pinned_post">Закріплений допис</string>
     <string name="profile_search_empty">Тут немає дописів, що відповідають пошуку</string>
+    <string name="reposted_by">Зробили репост</string>
+    <string name="reposters_empty">Немає репостів</string>
+    <string name="show_reposted_by">Подивитися, хто зробив репост</string>
+    <string name="show_quotes">Подивитися цитати</string>
+    <string name="quotes_empty">Немає цитат</string>
+    <string name="list_unavailable">Threads не надає цей список тут. Відкрийте допис на threads.com, щоб його побачити.</string>
+    <string name="liked_by_author">Сподобалося авторові</string>
+    <string name="edited">Змінено</string>
+    <string name="continue_thread">Продовжити цю гілку</string>
+    <string name="music">Музика</string>
+    <string name="replies_limited_followed">Відповідати можуть лише ті, на кого підписаний автор</string>
+    <string name="replies_limited_followers">Відповідати можуть лише підписники автора</string>
+    <string name="replies_limited_mentioned">Відповідати можуть лише згадані в дописі</string>
+    <string name="replies_limited_author">Відповідати може лише автор</string>
 </resources>

@@ -157,7 +157,6 @@
     <string name="exact_time">Hiện thời gian chính xác</string>
     <string name="fewer_replies">Ẩn bớt phản hồi</string>
     <string name="more_replies_web">Thêm phản hồi trên threads.com</string>
-    <string name="thread_on_web">Chủ đề này tiếp tục trên threads.com</string>
     <string name="related_threads">Chủ đề liên quan</string>
     <string name="media_description">Mô tả hình ảnh</string>
     <string name="media_download">Tải xuống</string>
@@ -204,4 +203,18 @@
     <string name="filters_and_groups">Bộ lọc và nhóm</string>
     <string name="pinned_post">Bài viết đã ghim</string>
     <string name="profile_search_empty">Không có bài viết nào ở đây khớp với tìm kiếm</string>
+    <string name="reposted_by">Người đã đăng lại</string>
+    <string name="reposters_empty">Không có lượt đăng lại nào để hiển thị</string>
+    <string name="show_reposted_by">Xem ai đã đăng lại</string>
+    <string name="show_quotes">Xem trích dẫn</string>
+    <string name="quotes_empty">Không có trích dẫn nào để hiển thị</string>
+    <string name="list_unavailable">Threads không cung cấp danh sách này ở đây. Hãy mở bài đăng trên threads.com để xem.</string>
+    <string name="liked_by_author">Tác giả đã thích</string>
+    <string name="edited">Đã chỉnh sửa</string>
+    <string name="continue_thread">Tiếp tục chủ đề này</string>
+    <string name="music">Âm nhạc</string>
+    <string name="replies_limited_followed">Chỉ những tài khoản tác giả theo dõi mới có thể trả lời</string>
+    <string name="replies_limited_followers">Chỉ người theo dõi tác giả mới có thể trả lời</string>
+    <string name="replies_limited_mentioned">Chỉ những tài khoản được nhắc đến trong bài đăng mới có thể trả lời</string>
+    <string name="replies_limited_author">Chỉ tác giả mới có thể trả lời</string>
 </resources>

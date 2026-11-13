@@ -119,14 +119,14 @@ internal fun ThreadsPeopleScreen(app: ThreadsApp, handle: String, opened: Thread
     }
 }
 
-/** Who liked the post Meta keeps under [mediaId], in the same rows. */
+/** Who liked or reposted ([list]) the post Meta keeps under [mediaId], in the same rows. */
 @Composable
-internal fun ThreadsLikersScreen(app: ThreadsApp, mediaId: String) {
+internal fun ThreadsPostPeopleScreen(app: ThreadsApp, list: ThreadsPeopleList, mediaId: String) {
     val settings by app.prefs.collectAsState()
     val signedIn = ThreadsPeopleView.signedIn(ThreadsSessions.of(settings))
-    PluginScaffold(title = pluginString(Strings.liked_by), onBack = app.host::back) { padding ->
+    PluginScaffold(title = pluginString(tabLabel(list)), onBack = app.host::back) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
-            PeopleList(app, ThreadsPeopleList.LIKERS, "likers-$mediaId", signedIn) { mediaId }
+            PeopleList(app, list, "${list.name.lowercase()}-$mediaId", signedIn) { mediaId }
             NoticeHost(app.notices)
         }
     }
@@ -145,6 +145,14 @@ private fun tabLabel(list: ThreadsPeopleList): PluginText = when (list) {
     ThreadsPeopleList.FOLLOWING -> Strings.following
     ThreadsPeopleList.MUTUAL -> Strings.people_both
     ThreadsPeopleList.LIKERS -> Strings.liked_by
+    ThreadsPeopleList.REPOSTERS -> Strings.reposted_by
+}
+
+/** What an empty [list] says. */
+private fun emptyLabel(list: ThreadsPeopleList): PluginText = when (list) {
+    ThreadsPeopleList.LIKERS -> Strings.likers_empty
+    ThreadsPeopleList.REPOSTERS -> Strings.reposters_empty
+    else -> Strings.people_empty
 }
 
 /**
@@ -177,9 +185,9 @@ private fun PeopleList(app: ThreadsApp, list: ThreadsPeopleList, key: String, si
         ReadsMoreNear(state, model.more, more)
         LazyColumn(state = state, modifier = Modifier.fillMaxSize()) {
             when (body) {
-                ThreadsPeopleView.Body.PROBLEM -> item(key = "problem") { RetryMessage(ThreadsFailures.profile(first.problem, currentLanguage()), onRetry = { model.first.load(force = true) }) }
+                ThreadsPeopleView.Body.PROBLEM -> item(key = "problem") { RetryMessage(problemText(list, first.problem), onRetry = { model.first.load(force = true) }) }
                 ThreadsPeopleView.Body.LOADING -> item(key = "loading") { LoadingRow() }
-                ThreadsPeopleView.Body.EMPTY -> item(key = "empty") { MessageText(pluginString(if (list == ThreadsPeopleList.LIKERS) Strings.likers_empty else Strings.people_empty)) }
+                ThreadsPeopleView.Body.EMPTY -> item(key = "empty") { MessageText(pluginString(emptyLabel(list))) }
                 ThreadsPeopleView.Body.NO_MATCH -> item(key = "none") { MessageText(pluginString(Strings.no_matching_accounts)) }
                 else -> personRows(app, people) { app.openProfile(it) }
             }
@@ -187,6 +195,11 @@ private fun PeopleList(app: ThreadsApp, list: ThreadsPeopleList, key: String, si
         }
     }
 }
+
+/** Why [list]'s first page failed: a post's list Meta has no page for is a list it does not give here. */
+@Composable
+private fun problemText(list: ThreadsPeopleList, problem: Throwable?): String =
+    if (list.ofPost) ThreadsFailures.postList(problem, currentLanguage()) else ThreadsFailures.profile(problem, currentLanguage())
 
 @Composable
 private fun SearchBox(typed: String, onType: (String) -> Unit) {
@@ -206,7 +219,7 @@ private fun SearchBox(typed: String, onType: (String) -> Unit) {
 
 /** Threads shows these lists only to signed-in readers: where to sign in. */
 @Composable
-private fun SignedOut(app: ThreadsApp) {
+internal fun SignedOut(app: ThreadsApp) {
     EmptyPane(ThreadsIcons.Mark, pluginString(Strings.people_signed_out), detail = pluginString(Strings.people_signed_out_detail)) {
         if (webSignIn) {
             Button(onClick = { app.host.open(ThreadsRoutes.SIGN_IN) }) {

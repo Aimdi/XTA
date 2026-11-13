@@ -72,6 +72,9 @@ class ThreadsDirectClient(
     private val trendReads = SingleFlight<List<ThreadsTrend>>()
     private var trendsRead: Pair<Long, List<ThreadsTrend>>? = null
 
+    /** Which of a session list's paths answered last ([sessionApi]), by the list's kind. */
+    private val answeringPaths = HashMap<String, Int>()
+
     /** The session as the reader pasted it, read afresh on every request. */
     val currentSession: ThreadsSession get() = session()
 
@@ -126,16 +129,49 @@ class ThreadsDirectClient(
      */
     suspend fun people(list: ThreadsPeopleList, target: String, cursor: String? = null, query: String? = null): Page<ThreadsProfile> {
         val id = target.trim().takeIf { it.isNotEmpty() && it.all(Char::isDigit) } ?: throw ThreadsException(NO_SUCH_FEED, "no id for $list")
+        return ThreadsPeople.page(sessionApi("people:$list", ThreadsPeople.paths(list, id), ThreadsPeople.params(list, cursor, query)))
+    }
+
+    /**
+     * One page of the posts that quote the post Meta keeps under [mediaId]
+     * ([ThreadsQuotes]), after [cursor]: a session read as [people] is, with
+     * neither cookies nor a Bearer [NOT_CONFIGURED]. A read only: nothing is
+     * quoted or reposted.
+     */
+    suspend fun quotes(mediaId: String, cursor: String? = null): Page<ThreadsPost> {
+        val id = mediaId.trim().takeIf { it.isNotEmpty() && it.all(Char::isDigit) } ?: throw ThreadsException(NO_SUCH_FEED, "no media id for quotes")
+        return ThreadsQuotes.page(sessionApi("quotes", ThreadsQuotes.paths(id), ThreadsQuotes.params(cursor)), id)
+    }
+
+    /**
+     * A session read of the API behind Threads at the first of [paths] that
+     * answers: the cookies on threads.com when the reader gave them, else
+     * the Bearer on the app API. A path Meta answers 404 gives way to the next
+     * ([NO_SUCH_FEED] once none is left); the one that answered is used first
+     * for [kind] from then on, so a list whose path is known asks once.
+     */
+    private suspend fun sessionApi(kind: String, paths: List<String>, params: List<Pair<String, String>>): J {
         val current = session()
-        val path = ThreadsPeople.path(list, id)
-        val params = ThreadsPeople.params(list, cursor, query)
         val token = current.bearerToken
-        val body = when {
-            current.hasCookies -> sessionRead(ThreadsLinks.web(path, params), cookieHeaders(current))
-            token != null -> deviceId().let { device -> sessionRead(ThreadsLinks.address(INSTAGRAM, path, params), bearerHeaders(token, device)) }
-            else -> throw ThreadsException(NOT_CONFIGURED, "no session for $list")
+        if (!current.hasCookies && token == null) throw ThreadsException(NOT_CONFIGURED, "no session for $kind")
+        val known = synchronized(keeping) { answeringPaths[kind] }
+        val tried = paths.indices.sortedBy { if (it == known) -1 else it }
+        var missing: ThreadsException? = null
+        for (index in tried) {
+            val path = paths[index]
+            try {
+                val body = when {
+                    current.hasCookies -> sessionRead(ThreadsLinks.web(path, params), cookieHeaders(current))
+                    else -> sessionRead(ThreadsLinks.address(INSTAGRAM, path, params), bearerHeaders(checkNotNull(token), deviceId()))
+                }
+                synchronized(keeping) { answeringPaths[kind] = index }
+                return body
+            } catch (e: ThreadsException) {
+                if (e.failure != NO_SUCH_FEED) throw e
+                missing = e
+            }
         }
-        return ThreadsPeople.page(body)
+        throw missing ?: ThreadsException(NO_SUCH_FEED, "no path for $kind")
     }
 
     /**

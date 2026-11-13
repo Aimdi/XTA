@@ -161,7 +161,6 @@
     <string name="exact_time">Vis nøyaktig tidspunkt</string>
     <string name="fewer_replies">Vis færre svar</string>
     <string name="more_replies_web">Flere svar på threads.com</string>
-    <string name="thread_on_web">Tråden fortsetter på threads.com</string>
     <string name="related_threads">Relaterte tråder</string>
     <string name="media_description">Bildebeskrivelse</string>
     <string name="media_download">Last ned</string>
@@ -209,4 +208,18 @@
     <string name="filters_and_groups">Filtre og grupper</string>
     <string name="pinned_post">Festet innlegg</string>
     <string name="profile_search_empty">Ingen innlegg her samsvarer med søket</string>
+    <string name="reposted_by">Republisert av</string>
+    <string name="reposters_empty">Ingen repostinger å vise</string>
+    <string name="show_reposted_by">Se hvem som republiserte dette</string>
+    <string name="show_quotes">Se sitater</string>
+    <string name="quotes_empty">Ingen sitater å vise</string>
+    <string name="list_unavailable">Threads gir ikke ut denne listen her. Åpne innlegget på threads.com for å se den.</string>
+    <string name="liked_by_author">Likt av forfatteren</string>
+    <string name="edited">Redigert</string>
+    <string name="continue_thread">Fortsett denne tråden</string>
+    <string name="music">Musikk</string>
+    <string name="replies_limited_followed">Bare kontoer forfatteren følger, kan svare</string>
+    <string name="replies_limited_followers">Bare forfatterens følgere kan svare</string>
+    <string name="replies_limited_mentioned">Bare kontoer som nevnes i innlegget, kan svare</string>
+    <string name="replies_limited_author">Bare forfatteren kan svare</string>
 </resources>

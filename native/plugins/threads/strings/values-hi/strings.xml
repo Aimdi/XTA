@@ -161,7 +161,6 @@
     <string name="exact_time">सटीक समय दिखाएँ</string>
     <string name="fewer_replies">कम जवाब दिखाएँ</string>
     <string name="more_replies_web">threads.com पर और जवाब</string>
-    <string name="thread_on_web">यह थ्रेड threads.com पर जारी है</string>
     <string name="related_threads">संबंधित थ्रेड</string>
     <string name="media_description">चित्र का विवरण</string>
     <string name="media_download">डाउनलोड</string>
@@ -209,4 +208,18 @@
     <string name="filters_and_groups">फ़िल्टर और समूह</string>
     <string name="pinned_post">पिन की गई पोस्ट</string>
     <string name="profile_search_empty">यहाँ आपकी खोज से मेल खाती कोई पोस्ट नहीं है</string>
+    <string name="reposted_by">इन्होंने रीपोस्ट किया</string>
+    <string name="reposters_empty">दिखाने को कोई रीपोस्ट नहीं</string>
+    <string name="show_reposted_by">देखें किसने रीपोस्ट किया</string>
+    <string name="show_quotes">उद्धरण देखें</string>
+    <string name="quotes_empty">दिखाने को कोई उद्धरण नहीं</string>
+    <string name="list_unavailable">Threads यह सूची यहाँ नहीं देता। इसे देखने के लिए पोस्ट threads.com पर खोलें।</string>
+    <string name="liked_by_author">लेखक को पसंद आया</string>
+    <string name="edited">संपादित</string>
+    <string name="continue_thread">यह थ्रेड जारी रखें</string>
+    <string name="music">संगीत</string>
+    <string name="replies_limited_followed">केवल वे खाते जवाब दे सकते हैं जिन्हें लेखक फ़ॉलो करता है</string>
+    <string name="replies_limited_followers">केवल लेखक के फ़ॉलोअर जवाब दे सकते हैं</string>
+    <string name="replies_limited_mentioned">केवल पोस्ट में उल्लिखित खाते जवाब दे सकते हैं</string>
+    <string name="replies_limited_author">केवल लेखक जवाब दे सकता है</string>
 </resources>

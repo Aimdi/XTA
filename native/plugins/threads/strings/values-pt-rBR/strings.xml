@@ -164,7 +164,6 @@
     <string name="exact_time">Mostrar o horário exato</string>
     <string name="fewer_replies">Mostrar menos respostas</string>
     <string name="more_replies_web">Mais respostas no threads.com</string>
-    <string name="thread_on_web">Esta thread continua no threads.com</string>
     <string name="related_threads">Threads relacionadas</string>
     <string name="media_description">Descrição da imagem</string>
     <string name="media_download">Baixar</string>
@@ -213,4 +212,18 @@
     <string name="filters_and_groups">Filtros e grupos</string>
     <string name="pinned_post">Post fixado</string>
     <string name="profile_search_empty">Nenhum post aqui corresponde à sua pesquisa</string>
+    <string name="reposted_by">Republicado por</string>
+    <string name="reposters_empty">Nenhuma republicação para mostrar</string>
+    <string name="show_reposted_by">Ver quem republicou</string>
+    <string name="show_quotes">Ver citações</string>
+    <string name="quotes_empty">Nenhuma citação para mostrar</string>
+    <string name="list_unavailable">O Threads não oferece esta lista aqui. Abra a publicação no threads.com para vê-la.</string>
+    <string name="liked_by_author">Curtido pelo autor</string>
+    <string name="edited">Editado</string>
+    <string name="continue_thread">Continuar esta thread</string>
+    <string name="music">Música</string>
+    <string name="replies_limited_followed">Só as contas que o autor segue podem responder</string>
+    <string name="replies_limited_followers">Só os seguidores do autor podem responder</string>
+    <string name="replies_limited_mentioned">Só as contas mencionadas na publicação podem responder</string>
+    <string name="replies_limited_author">Só o autor pode responder</string>
 </resources>

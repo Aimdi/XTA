@@ -164,7 +164,6 @@
     <string name="exact_time">Mostra l\'ora esatta</string>
     <string name="fewer_replies">Mostra meno risposte</string>
     <string name="more_replies_web">Altre risposte su threads.com</string>
-    <string name="thread_on_web">La discussione continua su threads.com</string>
     <string name="related_threads">Discussioni correlate</string>
     <string name="media_description">Descrizione dell’immagine</string>
     <string name="media_download">Scarica</string>
@@ -213,4 +212,18 @@
     <string name="filters_and_groups">Filtri e gruppi</string>
     <string name="pinned_post">Post fissato</string>
     <string name="profile_search_empty">Nessun post qui corrisponde alla ricerca</string>
+    <string name="reposted_by">Ripubblicato da</string>
+    <string name="reposters_empty">Nessuna ripubblicazione da mostrare</string>
+    <string name="show_reposted_by">Vedi chi l\'ha ripubblicato</string>
+    <string name="show_quotes">Vedi le citazioni</string>
+    <string name="quotes_empty">Nessuna citazione da mostrare</string>
+    <string name="list_unavailable">Threads non fornisce questo elenco qui. Apri il post su threads.com per vederlo.</string>
+    <string name="liked_by_author">Piace all\'autore</string>
+    <string name="edited">Modificato</string>
+    <string name="continue_thread">Continua questa discussione</string>
+    <string name="music">Musica</string>
+    <string name="replies_limited_followed">Possono rispondere solo gli account seguiti dall\'autore</string>
+    <string name="replies_limited_followers">Possono rispondere solo i follower dell\'autore</string>
+    <string name="replies_limited_mentioned">Possono rispondere solo gli account menzionati nel post</string>
+    <string name="replies_limited_author">Può rispondere solo l\'autore</string>
 </resources>

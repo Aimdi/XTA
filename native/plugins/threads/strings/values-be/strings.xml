@@ -169,7 +169,6 @@
     <string name="exact_time">Паказаць дакладны час</string>
     <string name="fewer_replies">Паказаць менш адказаў</string>
     <string name="more_replies_web">Больш адказаў на threads.com</string>
-    <string name="thread_on_web">Гэтая нітка працягваецца на threads.com</string>
     <string name="related_threads">Падобныя ніткі</string>
     <string name="media_description">Апісанне выявы</string>
     <string name="media_download">Спампаваць</string>
@@ -219,4 +218,18 @@
     <string name="filters_and_groups">Фільтры і групы</string>
     <string name="pinned_post">Замацаваны допіс</string>
     <string name="profile_search_empty">Тут няма допісаў, якія адпавядаюць пошуку</string>
+    <string name="reposted_by">Зрабілі рэпост</string>
+    <string name="reposters_empty">Няма рэпостаў</string>
+    <string name="show_reposted_by">Паглядзець, хто зрабіў рэпост</string>
+    <string name="show_quotes">Паглядзець цытаты</string>
+    <string name="quotes_empty">Няма цытат</string>
+    <string name="list_unavailable">Threads не дае гэты спіс тут. Адкрыйце пост на threads.com, каб убачыць яго.</string>
+    <string name="liked_by_author">Спадабалася аўтару</string>
+    <string name="edited">Зменена</string>
+    <string name="continue_thread">Працягнуць гэтую нітку</string>
+    <string name="music">Музыка</string>
+    <string name="replies_limited_followed">Адказваць могуць толькі тыя, на каго падпісаны аўтар</string>
+    <string name="replies_limited_followers">Адказваць могуць толькі падпісчыкі аўтара</string>
+    <string name="replies_limited_mentioned">Адказваць могуць толькі тыя, каго згадалі ў пасце</string>
+    <string name="replies_limited_author">Адказваць можа толькі аўтар</string>
 </resources>

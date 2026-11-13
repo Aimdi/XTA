@@ -76,7 +76,7 @@ class ThreadsLiveTest {
         val page = probe(http, "@zuck", "people page")
         if (page != null) println("LIVE Threads people page queries: ${ThreadsShape.queries(page).filter { PEOPLE_WORDS.containsMatchIn(it) }.ifEmpty { listOf("none") }}")
         val media = page?.let { ThreadsPages.chains(it).flatten().firstNotNullOfOrNull(ThreadsPeople::mediaId) }
-        val asked = ThreadsPeopleList.entries.mapNotNull { list -> (if (list == ThreadsPeopleList.LIKERS) media else id)?.let { list to ThreadsPeople.path(list, it) } }
+        val asked = ThreadsPeopleList.entries.mapNotNull { list -> (if (list.ofPost) media else id)?.let { list to ThreadsPeople.path(list, it) } }
         asked.forEach { (list, path) ->
             delay(PROBE_GAP_MILLIS)
             val url = ThreadsLinks.web(path, ThreadsPeople.params(list, null, null))

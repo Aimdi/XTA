@@ -165,7 +165,6 @@
     <string name="exact_time">Arată ora exactă</string>
     <string name="fewer_replies">Arată mai puține răspunsuri</string>
     <string name="more_replies_web">Mai multe răspunsuri pe threads.com</string>
-    <string name="thread_on_web">Firul continuă pe threads.com</string>
     <string name="related_threads">Fire asemănătoare</string>
     <string name="media_description">Descrierea imaginii</string>
     <string name="media_download">Descarcă</string>
@@ -214,4 +213,18 @@
     <string name="filters_and_groups">Filtre și grupuri</string>
     <string name="pinned_post">Postare fixată</string>
     <string name="profile_search_empty">Nicio postare de aici nu se potrivește căutării</string>
+    <string name="reposted_by">Redistribuit de</string>
+    <string name="reposters_empty">Nicio redistribuire de afișat</string>
+    <string name="show_reposted_by">Vezi cine a redistribuit</string>
+    <string name="show_quotes">Vezi citatele</string>
+    <string name="quotes_empty">Niciun citat de afișat</string>
+    <string name="list_unavailable">Threads nu oferă această listă aici. Deschide postarea pe threads.com ca s-o vezi.</string>
+    <string name="liked_by_author">Apreciat de autor</string>
+    <string name="edited">Editat</string>
+    <string name="continue_thread">Continuă acest fir</string>
+    <string name="music">Muzică</string>
+    <string name="replies_limited_followed">Pot răspunde doar conturile urmărite de autor</string>
+    <string name="replies_limited_followers">Pot răspunde doar urmăritorii autorului</string>
+    <string name="replies_limited_mentioned">Pot răspunde doar conturile menționate în postare</string>
+    <string name="replies_limited_author">Doar autorul poate răspunde</string>
 </resources>

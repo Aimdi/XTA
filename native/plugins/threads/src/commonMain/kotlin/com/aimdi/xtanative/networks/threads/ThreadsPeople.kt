@@ -7,7 +7,7 @@ import java.math.BigInteger
 /**
  * The lists of people Threads shows a signed-in reader: an account's
  * followers, whom it follows, the followers it and the reader both have,
- * and who liked a post. Read only, through the session the reader gave:
+ * who liked a post and who reposted it. Read only, through the session the reader gave:
  * nothing here follows or likes anyone on Threads.
  */
 enum class ThreadsPeopleList {
@@ -19,7 +19,13 @@ enum class ThreadsPeopleList {
 
     /** Who liked a post. */
     LIKERS,
+
+    /** Who reposted a post. */
+    REPOSTERS,
     ;
+
+    /** A post's list, asked for by its media id; the others are an account's. */
+    val ofPost: Boolean get() = this == LIKERS || this == REPOSTERS
 
     /** Whether Meta searches this list itself for typed words; the others are filtered where they are shown. */
     val searchesOnServer: Boolean get() = this == FOLLOWERS || this == FOLLOWING
@@ -30,18 +36,29 @@ enum class ThreadsPeopleList {
  * Instagram API behind it (the same paths serve threads.com's cookie API):
  * `friendships/{user}/followers/`, `…/following/` and `…/mutual_followers/`,
  * paged with `max_id` = the `next_max_id` of the page before, and
- * `media/{media}/likers/`. Every field is read as if it might be gone.
+ * `media/{media}/likers/`. Who reposted a post has no path seen working
+ * yet: [paths] names those tried in turn, a 404 moving on to the next, and
+ * CI's live probe (ThreadsPostListsLiveTest) logs how each answers. Every
+ * field is read as if it might be gone.
  */
 object ThreadsPeople {
     /** How many people one page asks for. */
     const val PAGE_SIZE = 50
 
-    /** The API path of [list] for [target]: a user's numeric id, or for [ThreadsPeopleList.LIKERS] a post's media id. */
-    fun path(list: ThreadsPeopleList, target: String): String = when (list) {
-        ThreadsPeopleList.FOLLOWERS -> "/api/v1/friendships/$target/followers/"
-        ThreadsPeopleList.FOLLOWING -> "/api/v1/friendships/$target/following/"
-        ThreadsPeopleList.MUTUAL -> "/api/v1/friendships/$target/mutual_followers/"
-        ThreadsPeopleList.LIKERS -> "/api/v1/media/$target/likers/"
+    /** The API path of [list] for [target]: a user's numeric id, or for a post's list its media id. The first of [paths]. */
+    fun path(list: ThreadsPeopleList, target: String): String = paths(list, target).first()
+
+    /**
+     * Every path [list] may be read at, in the order they are tried: one for
+     * the lists the Threads app is known to read, the likely ones for who
+     * reposted a post, whose path no probe has confirmed.
+     */
+    fun paths(list: ThreadsPeopleList, target: String): List<String> = when (list) {
+        ThreadsPeopleList.FOLLOWERS -> listOf("/api/v1/friendships/$target/followers/")
+        ThreadsPeopleList.FOLLOWING -> listOf("/api/v1/friendships/$target/following/")
+        ThreadsPeopleList.MUTUAL -> listOf("/api/v1/friendships/$target/mutual_followers/")
+        ThreadsPeopleList.LIKERS -> listOf("/api/v1/media/$target/likers/")
+        ThreadsPeopleList.REPOSTERS -> listOf("/api/v1/text_feed/$target/reposters/", "/api/v1/media/$target/reposters/")
     }
 
     /** The query of one page: after [cursor] when it is not the first, and Meta's own search for [query] where the list has one. */
@@ -49,7 +66,7 @@ object ThreadsPeople {
         val after = cursor?.trim()?.ifEmpty { null }
         val words = query?.trim()?.removePrefix("@")?.trim()?.ifEmpty { null }?.takeIf { list.searchesOnServer }
         return listOfNotNull(
-            ("count" to "$PAGE_SIZE").takeIf { list != ThreadsPeopleList.LIKERS },
+            ("count" to "$PAGE_SIZE").takeIf { !list.ofPost },
             ("search_surface" to "follow_list_page").takeIf { list.searchesOnServer },
             words?.let { "query" to it },
             after?.let { "max_id" to it },
@@ -62,7 +79,7 @@ object ThreadsPeople {
      * is skipped, a missing list is an empty page.
      */
     fun page(body: J): Page<ThreadsProfile> {
-        val people = body["users"].list.mapNotNull(::person).distinctBy { it.username.lowercase() }
+        val people = body["users"].list.ifEmpty { body["reposters"].list }.map { it["user"].takeIf { user -> user.exists } ?: it }.mapNotNull(::person).distinctBy { it.username.lowercase() }
         val next = (body["next_max_id"].string ?: body["next_max_id"].integer?.toString())?.trim()?.ifEmpty { null }
         val ended = body["has_more"].boolean == false || body["big_list"].boolean == false && next == null
         return Page(people, next.takeIf { !ended && people.isNotEmpty() })
@@ -95,7 +112,7 @@ object ThreadsPeople {
         listOfNotNull(ThreadsPeopleList.FOLLOWERS, ThreadsPeopleList.FOLLOWING, ThreadsPeopleList.MUTUAL.takeIf { signedIn && !ownProfile })
 
     /**
-     * The media id Meta keeps [post] under, for its likers: decoded from the
+     * The media id Meta keeps [post] under, for its likers, reposters and quotes: decoded from the
      * short code in its link, which names the original even for a repost; else
      * its id when that is Meta's numeric one. Null when neither says it.
      */

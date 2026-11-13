@@ -161,7 +161,6 @@
     <string name="exact_time">Exacte tijd tonen</string>
     <string name="fewer_replies">Minder reacties tonen</string>
     <string name="more_replies_web">Meer reacties op threads.com</string>
-    <string name="thread_on_web">Deze draad gaat verder op threads.com</string>
     <string name="related_threads">Gerelateerde draden</string>
     <string name="media_description">Afbeeldingsbeschrijving</string>
     <string name="media_download">Downloaden</string>
@@ -209,4 +208,18 @@
     <string name="filters_and_groups">Filters en groepen</string>
     <string name="pinned_post">Vastgezet bericht</string>
     <string name="profile_search_empty">Geen berichten hier passen bij je zoekopdracht</string>
+    <string name="reposted_by">Opnieuw geplaatst door</string>
+    <string name="reposters_empty">Geen reposts om te tonen</string>
+    <string name="show_reposted_by">Zien wie dit opnieuw heeft geplaatst</string>
+    <string name="show_quotes">Citaten bekijken</string>
+    <string name="quotes_empty">Geen citaten om te tonen</string>
+    <string name="list_unavailable">Threads geeft deze lijst hier niet. Open het bericht op threads.com om hem te zien.</string>
+    <string name="liked_by_author">Leuk gevonden door de auteur</string>
+    <string name="edited">Bewerkt</string>
+    <string name="continue_thread">Deze draad voortzetten</string>
+    <string name="music">Muziek</string>
+    <string name="replies_limited_followed">Alleen accounts die de auteur volgt, kunnen reageren</string>
+    <string name="replies_limited_followers">Alleen volgers van de auteur kunnen reageren</string>
+    <string name="replies_limited_mentioned">Alleen accounts die in het bericht worden genoemd, kunnen reageren</string>
+    <string name="replies_limited_author">Alleen de auteur kan reageren</string>
 </resources>

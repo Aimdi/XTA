@@ -164,7 +164,6 @@
     <string name="exact_time">Mostra l\'hora exacta</string>
     <string name="fewer_replies">Mostra menys respostes</string>
     <string name="more_replies_web">Més respostes a threads.com</string>
-    <string name="thread_on_web">Aquest fil continua a threads.com</string>
     <string name="related_threads">Fils relacionats</string>
     <string name="media_description">Descripció de la imatge</string>
     <string name="media_download">Descarregar</string>
@@ -213,4 +212,18 @@
     <string name="filters_and_groups">Filtres i grups</string>
     <string name="pinned_post">Publicació fixada</string>
     <string name="profile_search_empty">Cap publicació d’aquí coincideix amb la cerca</string>
+    <string name="reposted_by">Republicat per</string>
+    <string name="reposters_empty">No hi ha republicacions per mostrar</string>
+    <string name="show_reposted_by">Mira qui ho ha republicat</string>
+    <string name="show_quotes">Mira les citacions</string>
+    <string name="quotes_empty">No hi ha citacions per mostrar</string>
+    <string name="list_unavailable">Threads no ofereix aquesta llista aquí. Obre la publicació a threads.com per veure-la.</string>
+    <string name="liked_by_author">A l\'autor li agrada</string>
+    <string name="edited">Editat</string>
+    <string name="continue_thread">Continua aquest fil</string>
+    <string name="music">Música</string>
+    <string name="replies_limited_followed">Només hi poden respondre els comptes que l\'autor segueix</string>
+    <string name="replies_limited_followers">Només hi poden respondre els seguidors de l\'autor</string>
+    <string name="replies_limited_mentioned">Només hi poden respondre els comptes esmentats a la publicació</string>
+    <string name="replies_limited_author">Només hi pot respondre l\'autor</string>
 </resources>

@@ -161,7 +161,6 @@
     <string name="exact_time">Tam saati göster</string>
     <string name="fewer_replies">Daha az yanıt göster</string>
     <string name="more_replies_web">threads.com\'da daha fazla yanıt</string>
-    <string name="thread_on_web">Bu konu threads.com\'da devam ediyor</string>
     <string name="related_threads">İlgili konular</string>
     <string name="media_description">Görsel açıklaması</string>
     <string name="media_download">İndir</string>
@@ -209,4 +208,18 @@
     <string name="filters_and_groups">Filtreler ve gruplar</string>
     <string name="pinned_post">Sabitlenmiş gönderi</string>
     <string name="profile_search_empty">Burada aramanızla eşleşen gönderi yok</string>
+    <string name="reposted_by">Yeniden paylaşanlar</string>
+    <string name="reposters_empty">Gösterilecek yeniden paylaşım yok</string>
+    <string name="show_reposted_by">Kimlerin yeniden paylaştığını gör</string>
+    <string name="show_quotes">Alıntıları gör</string>
+    <string name="quotes_empty">Gösterilecek alıntı yok</string>
+    <string name="list_unavailable">Threads bu listeyi burada vermiyor. Görmek için gönderiyi threads.com\'da aç.</string>
+    <string name="liked_by_author">Yazar beğendi</string>
+    <string name="edited">Düzenlendi</string>
+    <string name="continue_thread">Bu konuya devam et</string>
+    <string name="music">Müzik</string>
+    <string name="replies_limited_followed">Yalnızca yazarın takip ettiği hesaplar yanıt verebilir</string>
+    <string name="replies_limited_followers">Yalnızca yazarın takipçileri yanıt verebilir</string>
+    <string name="replies_limited_mentioned">Yalnızca gönderide bahsedilen hesaplar yanıt verebilir</string>
+    <string name="replies_limited_author">Yalnızca yazar yanıt verebilir</string>
 </resources>

@@ -157,7 +157,6 @@
     <string name="exact_time">正確な時刻を表示</string>
     <string name="fewer_replies">返信の表示を減らす</string>
     <string name="more_replies_web">threads.comで返信をもっと見る</string>
-    <string name="thread_on_web">このスレッドの続きはthreads.comで</string>
     <string name="related_threads">関連スレッド</string>
     <string name="media_description">画像の説明</string>
     <string name="media_download">ダウンロード</string>
@@ -204,4 +203,18 @@
     <string name="filters_and_groups">フィルタとグループ</string>
     <string name="pinned_post">固定された投稿</string>
     <string name="profile_search_empty">検索に一致する投稿はありません</string>
+    <string name="reposted_by">リポストした人</string>
+    <string name="reposters_empty">表示できるリポストはありません</string>
+    <string name="show_reposted_by">リポストした人を見る</string>
+    <string name="show_quotes">引用を見る</string>
+    <string name="quotes_empty">表示できる引用はありません</string>
+    <string name="list_unavailable">Threadsはこの一覧をここでは提供していません。threads.comで投稿を開いてご覧ください。</string>
+    <string name="liked_by_author">投稿者がいいねしました</string>
+    <string name="edited">編集済み</string>
+    <string name="continue_thread">このスレッドの続きを見る</string>
+    <string name="music">音楽</string>
+    <string name="replies_limited_followed">投稿者がフォローしているアカウントのみ返信できます</string>
+    <string name="replies_limited_followers">投稿者のフォロワーのみ返信できます</string>
+    <string name="replies_limited_mentioned">投稿でメンションされたアカウントのみ返信できます</string>
+    <string name="replies_limited_author">投稿者のみ返信できます</string>
 </resources>

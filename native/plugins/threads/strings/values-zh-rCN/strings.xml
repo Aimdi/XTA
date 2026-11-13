@@ -157,7 +157,6 @@
     <string name="exact_time">显示确切时间</string>
     <string name="fewer_replies">收起部分回复</string>
     <string name="more_replies_web">在 threads.com 查看更多回复</string>
-    <string name="thread_on_web">此串文在 threads.com 上继续</string>
     <string name="related_threads">相关串文</string>
     <string name="media_description">图片描述</string>
     <string name="media_download">下载</string>
@@ -204,4 +203,18 @@
     <string name="filters_and_groups">过滤器和分组</string>
     <string name="pinned_post">置顶帖子</string>
     <string name="profile_search_empty">这里没有符合搜索的帖子</string>
+    <string name="reposted_by">转发者</string>
+    <string name="reposters_empty">没有可显示的转发</string>
+    <string name="show_reposted_by">查看谁转发了</string>
+    <string name="show_quotes">查看引用</string>
+    <string name="quotes_empty">没有可显示的引用</string>
+    <string name="list_unavailable">Threads 不在此处提供这个列表。请在 threads.com 上打开这条帖子查看。</string>
+    <string name="liked_by_author">作者赞过</string>
+    <string name="edited">已编辑</string>
+    <string name="continue_thread">继续查看此串文</string>
+    <string name="music">音乐</string>
+    <string name="replies_limited_followed">仅作者关注的账号可以回复</string>
+    <string name="replies_limited_followers">仅作者的粉丝可以回复</string>
+    <string name="replies_limited_mentioned">仅帖子中提及的账号可以回复</string>
+    <string name="replies_limited_author">仅作者可以回复</string>
 </resources>

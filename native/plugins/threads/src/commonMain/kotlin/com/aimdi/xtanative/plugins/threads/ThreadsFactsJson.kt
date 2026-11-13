@@ -2,8 +2,10 @@ package com.aimdi.xtanative.plugins.threads
 
 import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.networks.threads.ThreadsCommunities
+import com.aimdi.xtanative.networks.threads.ThreadsMusic
 import com.aimdi.xtanative.networks.threads.ThreadsPoll
 import com.aimdi.xtanative.networks.threads.ThreadsPostFacts
+import com.aimdi.xtanative.networks.threads.ThreadsReplyAudience
 import com.aimdi.xtanative.store.backup.XtaTime
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -31,6 +33,10 @@ internal object ThreadsFactsJson {
             flag("pinnedToParent", facts.pinnedToParent),
             flag("sharingFriction", facts.sharingFriction),
             facts.poll?.let { "poll" to poll(it) },
+            flag("edited", facts.edited),
+            flag("likedByAuthor", facts.likedByAuthor),
+            facts.replyAudience?.let { "replyAudience" to JsonPrimitive(it.name) },
+            facts.music?.let { "music" to music(it) },
         )
         return JsonObject(fields.toMap())
     }
@@ -49,6 +55,10 @@ internal object ThreadsFactsJson {
             pinnedToParent = row["pinnedToParent"].boolean == true,
             sharingFriction = row["sharingFriction"].boolean == true,
             poll = poll(row["poll"]),
+            edited = row["edited"].boolean == true,
+            likedByAuthor = row["likedByAuthor"].boolean == true,
+            replyAudience = ThreadsReplyAudience.entries.firstOrNull { it.name == row["replyAudience"].string },
+            music = music(row["music"]),
         )
     }
 
@@ -60,6 +70,18 @@ internal object ThreadsFactsJson {
             poll.endsAt?.let { "endsAt" to JsonPrimitive(XtaTime.iso(it)) },
         ).toMap(),
     )
+
+    private fun music(music: ThreadsMusic): JsonObject = JsonObject(
+        listOfNotNull(
+            "title" to JsonPrimitive(music.title),
+            music.artist?.let { "artist" to JsonPrimitive(it) },
+            music.imageUrl?.let { "imageUrl" to JsonPrimitive(it) },
+        ).toMap(),
+    )
+
+    private fun music(row: J): ThreadsMusic? = row["title"].string?.let {
+        ThreadsMusic(it, row["artist"].string, row["imageUrl"].string?.takeIf { url -> url.startsWith("https://") })
+    }
 
     private fun poll(row: J): ThreadsPoll? {
         val options = row["options"].list.mapNotNull { option ->

@@ -157,7 +157,6 @@
     <string name="exact_time">Tampilkan waktu persisnya</string>
     <string name="fewer_replies">Tampilkan lebih sedikit balasan</string>
     <string name="more_replies_web">Balasan lainnya di threads.com</string>
-    <string name="thread_on_web">Utas ini berlanjut di threads.com</string>
     <string name="related_threads">Utas terkait</string>
     <string name="media_description">Deskripsi gambar</string>
     <string name="media_download">Unduh</string>
@@ -204,4 +203,18 @@
     <string name="filters_and_groups">Filter dan grup</string>
     <string name="pinned_post">Postingan yang disematkan</string>
     <string name="profile_search_empty">Tidak ada postingan di sini yang cocok dengan pencarian Anda</string>
+    <string name="reposted_by">Diposting ulang oleh</string>
+    <string name="reposters_empty">Tidak ada postingan ulang untuk ditampilkan</string>
+    <string name="show_reposted_by">Lihat siapa yang memposting ulang ini</string>
+    <string name="show_quotes">Lihat kutipan</string>
+    <string name="quotes_empty">Tidak ada kutipan untuk ditampilkan</string>
+    <string name="list_unavailable">Threads tidak memberikan daftar ini di sini. Buka postingan di threads.com untuk melihatnya.</string>
+    <string name="liked_by_author">Disukai penulis</string>
+    <string name="edited">Diedit</string>
+    <string name="continue_thread">Lanjutkan utas ini</string>
+    <string name="music">Musik</string>
+    <string name="replies_limited_followed">Hanya akun yang diikuti penulis yang dapat membalas</string>
+    <string name="replies_limited_followers">Hanya pengikut penulis yang dapat membalas</string>
+    <string name="replies_limited_mentioned">Hanya akun yang disebut dalam postingan yang dapat membalas</string>
+    <string name="replies_limited_author">Hanya penulis yang dapat membalas</string>
 </resources>

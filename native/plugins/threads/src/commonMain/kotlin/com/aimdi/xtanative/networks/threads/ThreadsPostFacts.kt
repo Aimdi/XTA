@@ -10,7 +10,9 @@ import kotlinx.serialization.json.JsonObject
  * What Meta says about a post beside its words and media, each read as if
  * it might be gone: the emoji or picture of the community its topic belongs
  * to, how often it was shared, Meta's AI label, whether its author pinned
- * it, whether Meta asks for a check before it is shared, and its poll.
+ * it, whether Meta asks for a check before it is shared, its poll, whether
+ * its words were edited, whether the opened post's author liked it, who may
+ * answer it, and the song it plays.
  */
 data class ThreadsPostFacts(
     val topicEmoji: String? = null,
@@ -31,12 +33,62 @@ data class ThreadsPostFacts(
     /** `sharing_friction_info.should_have_sharing_friction`: Meta asks for a check before it is shared. */
     val sharingFriction: Boolean = false,
     val poll: ThreadsPoll? = null,
+    /** `caption_is_edited`: the author changed the words after posting them. */
+    val edited: Boolean = false,
+    /** `text_post_app_info.is_liked_by_root_author`: the author of the post this answers liked it, as threads.com marks a reply. */
+    val likedByAuthor: Boolean = false,
+    /** Who the author lets answer (`text_post_app_info.reply_control`); null for everyone, or a value not known. */
+    val replyAudience: ThreadsReplyAudience? = null,
+    /** The song the post plays (`text_app_music_info`), named only: nothing of it is played here. */
+    val music: ThreadsMusic? = null,
 ) {
     val isEmpty: Boolean get() = this == NONE
 
     companion object {
         val NONE = ThreadsPostFacts()
     }
+}
+
+/** Who the author of a post lets answer it, past everyone. */
+enum class ThreadsReplyAudience {
+    /** Only the accounts the author follows. */
+    FOLLOWED,
+
+    /** Only the author's followers. */
+    FOLLOWERS,
+
+    /** Only the accounts the post mentions. */
+    MENTIONED,
+
+    /** Only the author of the post this one answers. */
+    AUTHOR,
+    ;
+
+    companion object {
+        /**
+         * The audience [value] names, as the app's and the public API's words
+         * have it (`accounts_you_follow`, `followers_only`, `mentioned_only`,
+         * `parent_post_author_only`); null for everyone, a number, or a word
+         * not known, so nothing is claimed that Meta did not say.
+         */
+        fun of(value: String?): ThreadsReplyAudience? {
+            val word = value?.trim()?.lowercase()?.ifEmpty { null } ?: return null
+            return when {
+                "everyone" in word || "anyone" in word || word.all(Char::isDigit) -> null
+                "mention" in word -> MENTIONED
+                "follower" in word -> FOLLOWERS
+                "follow" in word -> FOLLOWED
+                "author" in word || "parent" in word -> AUTHOR
+                else -> null
+            }
+        }
+    }
+}
+
+/** The song a post plays, as Meta names it; [imageUrl] its cover, over https only. */
+data class ThreadsMusic(val title: String, val artist: String? = null, val imageUrl: String? = null) {
+    /** "Title · Artist", or the title alone. */
+    val line: String get() = listOfNotNull(title, artist).joinToString(" · ")
 }
 
 /** A poll's results as a guest sees them, each answer with its votes; nothing is voted from here. */
@@ -68,8 +120,39 @@ object ThreadsPostFactsReader {
             pinnedToParent = pinned["is_pinned_to_parent_post"].boolean == true,
             sharingFriction = post["sharing_friction_info"]["should_have_sharing_friction"].boolean == true,
             poll = poll(post),
+            edited = post["caption_is_edited"].boolean == true || post["caption"]["is_edited"].boolean == true,
+            likedByAuthor = info["is_liked_by_root_author"].boolean == true,
+            replyAudience = ThreadsReplyAudience.of(info["reply_control"].string ?: info["reply_control"]["mode"].string),
+            music = music(post),
         )
     }
+
+    /**
+     * The song a post plays: `text_app_music_info.music_consumable_video`'s
+     * `audio_metadata.audio_asset` as CI's media probe saw it (its
+     * `display_title.text`, `display_artist.text`, `display_image`), or
+     * Instagram's `music_asset_info` where Meta answers in that shape. Null
+     * without a title.
+     */
+    fun music(post: J): ThreadsMusic? {
+        val info = post["text_app_music_info"]
+        if (!info.exists) return null
+        val asset = listOf(
+            info["music_consumable_video"]["audio_metadata"]["audio_asset"],
+            info["audio_metadata"]["audio_asset"],
+            info["music_asset_info"],
+            info["music_info"]["music_asset_info"],
+        ).firstOrNull { it.raw is JsonObject } ?: return null
+        val title = said(asset["display_title"]) ?: said(asset["title"]) ?: return null
+        val artist = said(asset["display_artist"]) ?: said(asset["artist_name"]) ?: said(asset["display_artist_name"])
+        val image = listOf(asset["display_image"], asset["large_display_image"]).firstNotNullOfOrNull { image ->
+            (image["downloadable_uri"].string ?: image["uri"].string ?: image.string)?.trim()?.takeIf { it.startsWith("https://") }
+        } ?: asset["cover_artwork_thumbnail_uri"].string?.trim()?.takeIf { it.startsWith("https://") }
+        return ThreadsMusic(title, artist, image)
+    }
+
+    /** Words Meta gives as a string or as `{ "text": … }`. */
+    private fun said(node: J): String? = (node.string ?: node["text"].string)?.trim()?.ifEmpty { null }
 
     /** The method as a word, or under `detection_method`; "NONE" and nothing are no label. */
     fun aiLabel(method: J): Boolean {

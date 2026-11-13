@@ -169,7 +169,6 @@
     <string name="exact_time">Показать точное время</string>
     <string name="fewer_replies">Показать меньше ответов</string>
     <string name="more_replies_web">Больше ответов на threads.com</string>
-    <string name="thread_on_web">Продолжение ветки на threads.com</string>
     <string name="related_threads">Похожие ветки</string>
     <string name="media_description">Описание изображения</string>
     <string name="media_download">Скачать</string>
@@ -219,4 +218,18 @@
     <string name="filters_and_groups">Фильтры и группы</string>
     <string name="pinned_post">Закреплённый пост</string>
     <string name="profile_search_empty">Здесь нет постов, подходящих под поиск</string>
+    <string name="reposted_by">Сделали репост</string>
+    <string name="reposters_empty">Нет репостов</string>
+    <string name="show_reposted_by">Посмотреть, кто сделал репост</string>
+    <string name="show_quotes">Посмотреть цитаты</string>
+    <string name="quotes_empty">Нет цитат</string>
+    <string name="list_unavailable">Threads не отдаёт этот список здесь. Откройте пост на threads.com, чтобы его увидеть.</string>
+    <string name="liked_by_author">Понравилось автору</string>
+    <string name="edited">Изменено</string>
+    <string name="continue_thread">Продолжить эту ветку</string>
+    <string name="music">Музыка</string>
+    <string name="replies_limited_followed">Отвечать могут только те, на кого подписан автор</string>
+    <string name="replies_limited_followers">Отвечать могут только подписчики автора</string>
+    <string name="replies_limited_mentioned">Отвечать могут только упомянутые в посте</string>
+    <string name="replies_limited_author">Отвечать может только автор</string>
 </resources>

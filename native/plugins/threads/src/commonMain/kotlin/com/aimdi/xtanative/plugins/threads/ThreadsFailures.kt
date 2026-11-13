@@ -45,6 +45,10 @@ internal object ThreadsFailures {
     fun post(error: Throwable?, language: String, zone: ZoneId = ZoneId.systemDefault()): String =
         page(error, language, Strings.error_no_post, zone)
 
+    /** A post's list's sentence (who liked, reposted or quoted it): Meta having no page for it means it does not give that list here. */
+    fun postList(error: Throwable?, language: String, zone: ZoneId = ZoneId.systemDefault()): String =
+        page(error, language, Strings.list_unavailable, zone)
+
     /** A list's next page's sentence: Meta refusing for now names when its wait ends. */
     fun nextPage(error: Throwable?, language: String, zone: ZoneId = ZoneId.systemDefault()): String =
         page(error, language, Strings.error_unreachable, zone)

@@ -76,9 +76,10 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 /**
  * A Threads post as a timeline card, laid out as an X post is
  * (threads_post_card.dart): who reposted it or that it is pinned, the
- * author with Follow and ⋯, the topic, whom it answers, the caption (its
- * spoilers covered, a long one cut short), its poll's results, Meta's
- * labels, its pictures and videos, the link card, the quote and "Show N
+ * author with Follow and ⋯ ("Edited" by its time), the topic, whom it
+ * answers, the caption (its spoilers covered, a long one cut short), its
+ * song, its poll's results, Meta's labels (and "Liked by the author"), its
+ * pictures and videos, the link card, the quote and "Show N
  * more posts in this thread"; then the counts Meta gave, the like kept on
  * this device, its bookmark in the app's Saved and the way to the web. A
  * long press, or ⋯, opens its sheet: copying its words and link above the
@@ -150,6 +151,9 @@ private fun rememberSummary(post: ThreadsPost, liked: Boolean, menu: () -> Unit,
     val labels = listOfNotNull(
         pluginString(Strings.ai_info).takeIf { post.facts.aiLabel },
         pluginString(Strings.sharing_friction).takeIf { post.facts.sharingFriction },
+        pluginString(Strings.edited).takeIf { post.facts.edited },
+        pluginString(Strings.liked_by_author).takeIf { post.facts.likedByAuthor },
+        post.facts.music?.let { pluginString(Strings.music) + ": " + it.line },
     )
     val likeLabel = pluginString(if (liked) Strings.unlike_on_device else Strings.like_on_device)
     val moreLabel = pluginString(Strings.more_options)
@@ -207,11 +211,15 @@ private fun RepostLine(app: ThreadsApp, post: ThreadsPost) {
 private fun Header(app: ThreadsApp, post: ThreadsPost, focal: Boolean, byAuthor: Boolean, absolute: Boolean, onMore: () -> Unit) {
     val rows by app.accounts.state.collectAsState()
     var exact by rememberSaveable(post.id) { mutableStateOf(false) }
-    val time = when {
-        focal -> ""
-        absolute || exact -> fullTimeText(post.publishedAt)
-        else -> agoText(post.publishedAt)
-    }
+    val edited = pluginString(Strings.edited)
+    val time = ThreadsCardRules.timeLine(
+        when {
+            focal -> ""
+            absolute || exact -> fullTimeText(post.publishedAt)
+            else -> agoText(post.publishedAt)
+        },
+        edited.takeIf { post.facts.edited && !focal },
+    )
     Row(verticalAlignment = Alignment.CenterVertically) {
         AuthorLine(
             post.authorName,
@@ -256,6 +264,7 @@ private fun Body(app: ThreadsApp, post: ThreadsPost, openOnTap: Boolean, focal: 
     post.topicTag?.let { TopicTag(app, post, it) }
     post.replyToHandle?.takeIf { it.isNotEmpty() }?.let { ReplyingTo(app, it) }
     ThreadsCaptionText(app, post, Modifier.padding(top = 2.dp), style = if (focal) FocalStyle else threadsBodyStyle(), selectable = focal)
+    MusicLine(post, Modifier.padding(top = 8.dp))
     post.facts.poll?.let { ThreadsPollView(it, Modifier.partGap()) }
     FactLines(post)
     ThreadsPostMedia(app, post, Modifier.partGap(), opens = openOnTap)
@@ -269,12 +278,13 @@ private fun Body(app: ThreadsApp, post: ThreadsPost, openOnTap: Boolean, focal: 
     }
     if (focal) {
         Text(
-            fullTimeText(post.publishedAt),
+            ThreadsCardRules.timeLine(fullTimeText(post.publishedAt), pluginString(Strings.edited).takeIf { post.facts.edited }),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 12.dp),
         )
-        FocalCounts(post, PostPrefs.of(app.current()).hideCounts)
+        ReplyAudienceLine(post)
+        FocalCounts(app, post, PostPrefs.of(app.current()).hideCounts)
     }
 }
 
@@ -345,9 +355,9 @@ private fun ThreadsQuote(app: ThreadsApp, quote: ThreadsPost, modifier: Modifier
 }
 
 /**
- * Replies and reposts as Meta counted them, both opening the post (Meta
- * lists neither apart); the like kept on this device, its count one more
- * while liked; the bookmark that files it in the app's Saved (a long press:
+ * Replies and reposts as Meta counted them, both opening the post (for a
+ * signed-in reader, the reposts open who reposted it); the like kept on
+ * this device, its count one more while liked; the bookmark that files it in the app's Saved (a long press:
  * its folder); the post on the web. No count Meta did not give is drawn,
  * and none in zen or calm mode.
  */
@@ -358,15 +368,21 @@ private fun Engagement(app: ThreadsApp, post: ThreadsPost, liked: Boolean, hideC
     val counted = { n: Long? -> n?.takeIf { !hideCounts } }
     val outside = rememberOpenOutside()
     val archive = remember(post) { ThreadsArchive.of(post) }
+    val settings by app.prefs.collectAsState()
+    val signedIn = ThreadsPeopleView.signedIn(ThreadsSessions.of(settings))
     Row(Modifier.fillMaxWidth().padding(top = 2.dp), verticalAlignment = Alignment.CenterVertically) {
         CountButton(XIcons.Reply, counted(post.replyCount), openPost, muted, open)
-        CountButton(XIcons.Repost, counted(post.repostCount), openPost, muted, open)
+        val reposters = ThreadsPeople.mediaId(post).takeIf { counted(post.repostCount) != null && ThreadsPeopleView.opensReposters(post, signedIn) }
+        if (reposters == null) {
+            CountButton(XIcons.Repost, counted(post.repostCount), openPost, muted, open)
+        } else {
+            CountButton(XIcons.Repost, counted(post.repostCount), pluginString(Strings.show_reposted_by), muted) { app.host.open(ThreadsRoutes.reposters(reposters, post.url)) }
+        }
         val heart = if (liked) ThreadsHeart.Filled else ThreadsHeart.Outlined
         val likes = counted(post.likeCount?.let { if (liked) it + 1 else it })
         val likeLabel = pluginString(if (liked) Strings.unlike_on_device else Strings.like_on_device)
         val likeTint = if (liked) MaterialTheme.colorScheme.primary else muted
-        val settings by app.prefs.collectAsState()
-        val likers = ThreadsPeople.mediaId(post).takeIf { likes != null && ThreadsPeopleView.opensLikers(post, ThreadsPeopleView.signedIn(ThreadsSessions.of(settings))) }
+        val likers = ThreadsPeople.mediaId(post).takeIf { likes != null && ThreadsPeopleView.opensLikers(post, signedIn) }
         if (likers == null) {
             CountButton(heart, likes, likeLabel, likeTint) { app.toggleLike(post) }
         } else {

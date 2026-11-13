@@ -161,7 +161,6 @@
     <string name="exact_time">Montri la ĝustan horon</string>
     <string name="fewer_replies">Montri malpli da respondoj</string>
     <string name="more_replies_web">Pliaj respondoj ĉe threads.com</string>
-    <string name="thread_on_web">Ĉi tiu fadeno daŭras ĉe threads.com</string>
     <string name="related_threads">Rilataj fadenoj</string>
     <string name="media_description">Priskribo de la bildo</string>
     <string name="media_download">Elŝuti</string>
@@ -209,4 +208,18 @@
     <string name="filters_and_groups">Filtriloj kaj grupoj</string>
     <string name="pinned_post">Fiksita afiŝo</string>
     <string name="profile_search_empty">Neniu afiŝo ĉi tie kongruas kun via serĉo</string>
+    <string name="reposted_by">Reafiŝita de</string>
+    <string name="reposters_empty">Neniuj reafiŝoj montreblaj</string>
+    <string name="show_reposted_by">Vidi, kiu reafiŝis tion</string>
+    <string name="show_quotes">Vidi citaĵojn</string>
+    <string name="quotes_empty">Neniuj citaĵoj montreblaj</string>
+    <string name="list_unavailable">Threads ne donas ĉi tiun liston ĉi tie. Malfermu la afiŝon ĉe threads.com por vidi ĝin.</string>
+    <string name="liked_by_author">Ŝatata de la aŭtoro</string>
+    <string name="edited">Redaktita</string>
+    <string name="continue_thread">Daŭrigi ĉi tiun fadenon</string>
+    <string name="music">Muziko</string>
+    <string name="replies_limited_followed">Nur kontoj, kiujn la aŭtoro sekvas, povas respondi</string>
+    <string name="replies_limited_followers">Nur la sekvantoj de la aŭtoro povas respondi</string>
+    <string name="replies_limited_mentioned">Nur kontoj menciitaj en la afiŝo povas respondi</string>
+    <string name="replies_limited_author">Nur la aŭtoro povas respondi</string>
 </resources>
