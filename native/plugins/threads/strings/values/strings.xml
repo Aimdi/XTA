@@ -266,4 +266,5 @@
     <string name="liked_on_threads_empty">No posts liked on Threads</string>
     <string name="your_profile">Your profile</string>
     <string name="signed_in_unavailable">Threads does not give this here yet.</string>
+    <string name="profile_joined">Joined %1$s</string>
 </resources>

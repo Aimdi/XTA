@@ -278,4 +278,5 @@
     <string name="liked_on_threads_empty">Brak postów polubionych na Threads</string>
     <string name="your_profile">Twój profil</string>
     <string name="signed_in_unavailable">Threads jeszcze tego tu nie udostępnia.</string>
+    <string name="profile_joined">Dołączono: %1$s</string>
 </resources>

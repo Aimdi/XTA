@@ -278,4 +278,5 @@
     <string name="liked_on_threads_empty">Žádné příspěvky, které se vám líbí na Threads</string>
     <string name="your_profile">Váš profil</string>
     <string name="signed_in_unavailable">Threads to zde zatím neposkytuje.</string>
+    <string name="profile_joined">Členem od: %1$s</string>
 </resources>

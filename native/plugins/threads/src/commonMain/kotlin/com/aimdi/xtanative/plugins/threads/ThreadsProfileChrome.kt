@@ -41,6 +41,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -71,6 +72,8 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.aimdi.xtanative.networks.threads.ThreadsLinks
 import com.aimdi.xtanative.networks.threads.ThreadsProfile
+import com.aimdi.xtanative.networks.threads.ThreadsProfileAbout
+import com.aimdi.xtanative.networks.threads.attempt
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.plugins.AddToGroupIcon
@@ -80,10 +83,12 @@ import com.aimdi.xtanative.ui.plugins.PluginFilterChip
 import com.aimdi.xtanative.ui.plugins.PluginMenuRow
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.addToGroupText
+import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
+import java.util.Locale
 
 /** The banner's height, and how far the face rises into it. */
 private val BannerHeight = 128.dp
@@ -410,6 +415,7 @@ internal fun ProfileFiltersSheet(
     ModalBottomSheet(onDismissRequest = onDismiss) {
         Column(Modifier.navigationBarsPadding().padding(bottom = 16.dp)) {
             Text(pluginString(Strings.filters), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(horizontal = 24.dp))
+            ProfileJoined(app, profile.username)
             FlowRow(Modifier.padding(horizontal = 24.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 options.forEach { option ->
                     PluginFilterChip(pluginString(contentLabel(option)), option == selected, onClick = { onChoose(option) })
@@ -419,6 +425,26 @@ internal fun ProfileFiltersSheet(
             PluginMenuRow(PostIcons.OpenInNew, pluginString(Strings.open_in_browser), onClick = { onDismiss(); outside("${ThreadsLinks.WEB}/@${profile.username}") })
         }
     }
+}
+
+/**
+ * When the account joined, as Threads' "About this profile" says it: asked
+ * when the sheet opens, and only once that read's doc id is known
+ * ([ThreadsDirectClient.readsAboutProfile]); until then, and when Meta says
+ * nothing, there is no line.
+ */
+@Composable
+private fun ProfileJoined(app: ThreadsApp, handle: String) {
+    if (!app.direct.readsAboutProfile) return
+    val about by produceState<ThreadsProfileAbout?>(null, handle) { value = attempt { app.direct.aboutProfile(handle) } }
+    val language = currentLanguage()
+    val joined = about?.let { ThreadsProfileHeader.joined(it, Locale.forLanguageTag(language)) } ?: return
+    Text(
+        pluginString(Strings.profile_joined, joined),
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(horizontal = 24.dp, vertical = 4.dp),
+    )
 }
 
 private fun contentIcon(content: ThreadsFeedContent): ImageVector = when (content) {

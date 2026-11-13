@@ -271,4 +271,5 @@
     <string name="liked_on_threads_empty">Nicio postare apreciată pe Threads</string>
     <string name="your_profile">Profilul tău</string>
     <string name="signed_in_unavailable">Threads nu oferă încă asta aici.</string>
+    <string name="profile_joined">S-a alăturat: %1$s</string>
 </resources>

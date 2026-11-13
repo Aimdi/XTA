@@ -74,6 +74,31 @@ data class ThreadsConversation(
         )
     }
 
+    /**
+     * The conversation with the replies read in place under its unfinished
+     * reply threads ([ThreadsDirectClient.deeperReplies]), each by its
+     * thread's first post's id: the posts not shown yet go on the end of
+     * their thread, which is unfinished from then on only if Meta holds
+     * still more. A thread that brought nothing new stays as it was.
+     */
+    fun withDeeper(deeper: Map<String, ThreadsReplyThread>): ThreadsConversation {
+        if (deeper.isEmpty()) return this
+        val shown = replies.flatten().mapTo(HashSet()) { it.id }.apply { add(focus.id) }
+        val fresh = deeper.mapValues { (_, thread) -> thread.copy(posts = thread.posts.filter { shown.add(it.id) }) }.filterValues { it.posts.isNotEmpty() }
+        if (fresh.isEmpty()) return this
+        return copy(
+            replies = replies.map { chain -> chain + fresh[chain.firstOrNull()?.id]?.posts.orEmpty() },
+            levels = fresh.values.fold(levels) { all, thread -> all + thread.levels.filterKeys { id -> thread.posts.any { it.id == id } } },
+            unfinished = unfinished - fresh.filterValues { !it.hasMore }.keys,
+        )
+    }
+
+    /** Whether [thread] holds a post this conversation does not show yet. */
+    fun brings(thread: ThreadsReplyThread): Boolean {
+        val shown = replies.flatten().mapTo(HashSet()) { it.id }.apply { add(focus.id) }
+        return thread.posts.any { it.id !in shown }
+    }
+
     /** What reading the conversation aloud says: each post's author and words, the post first, then every reply. */
     fun spokenText(): String = (ancestors + focus + continuation + replies.flatten())
         .filter { it.text.isNotBlank() }

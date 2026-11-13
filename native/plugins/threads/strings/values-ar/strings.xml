@@ -292,4 +292,5 @@
     <string name="liked_on_threads_empty">لا منشورات أعجبتك على Threads</string>
     <string name="your_profile">ملفك الشخصي</string>
     <string name="signed_in_unavailable">لا يتيح Threads هذا هنا بعد.</string>
+    <string name="profile_joined">انضم في %1$s</string>
 </resources>

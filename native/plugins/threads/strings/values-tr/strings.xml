@@ -264,4 +264,5 @@
     <string name="liked_on_threads_empty">Threads\'te beğenilmiş gönderi yok</string>
     <string name="your_profile">Profilin</string>
     <string name="signed_in_unavailable">Threads bunu henüz burada vermiyor.</string>
+    <string name="profile_joined">Katılma: %1$s</string>
 </resources>

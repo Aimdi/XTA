@@ -257,4 +257,5 @@
     <string name="liked_on_threads_empty">Threadsでいいねした投稿はありません</string>
     <string name="your_profile">あなたのプロフィール</string>
     <string name="signed_in_unavailable">Threadsはまだこれをここでは提供していません。</string>
+    <string name="profile_joined">%1$sに登録</string>
 </resources>

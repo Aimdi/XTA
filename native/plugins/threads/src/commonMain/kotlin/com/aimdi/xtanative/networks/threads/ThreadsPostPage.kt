@@ -14,7 +14,13 @@ data class ThreadsReplyThread(
     val levels: Map<String, Int> = emptyMap(),
     /** Meta holds more of this thread than the page carried. */
     val hasMore: Boolean = false,
-)
+) {
+    /** This thread with [more] of it read after: its posts not here yet on the end, and unfinished only if [more] is. */
+    fun then(more: ThreadsReplyThread): ThreadsReplyThread {
+        val ids = posts.mapTo(HashSet()) { it.id }
+        return ThreadsReplyThread(posts + more.posts.filter { ids.add(it.id) }, levels + more.levels, more.hasMore)
+    }
+}
 
 /**
  * What a post page tells a guest. Meta now preloads it as separate queries
@@ -130,6 +136,28 @@ internal object ThreadsPostPageReader {
             .ifEmpty { roots.firstNotNullOfOrNull(::anyReplyConnection)?.let(::listOf).orEmpty() }
         val seen = HashSet<String>().apply { add(targetId) }
         return connections.flatMap { edges(it) }.mapNotNull { thread(it, seen) }
+    }
+
+    /**
+     * The replies an inline expansion brings under the reply [targetId]
+     * ([ThreadsBundleReads.INLINE_REPLIES]), as one thread in the answer's
+     * order: its reply connections where the answer is shaped as a post
+     * page's next replies are, else every post it holds but the reply itself.
+     * Null when it holds none.
+     */
+    fun deeper(roots: List<JsonElement>, targetId: String): ThreadsReplyThread? {
+        val threads = replyThreads(roots, targetId).ifEmpty {
+            val found = distinctPosts(roots.flatMap { posts(it, REPLY_SKIPS) }).filter { (post, _) -> post.id != targetId }
+            listOf(ThreadsReplyThread(found.map { it.first }, found.mapNotNull { (post, level) -> level?.let { post.id to it } }.toMap(), roots.any(::morePages)))
+        }
+        val posts = threads.flatMap { it.posts }
+        if (posts.isEmpty()) return null
+        return ThreadsReplyThread(posts, threads.fold(emptyMap()) { all, thread -> all + thread.levels }, threads.any { it.hasMore })
+    }
+
+    private fun distinctPosts(found: List<Pair<ThreadsPost, Int?>>): List<Pair<ThreadsPost, Int?>> {
+        val ids = HashSet<String>()
+        return found.filter { ids.add(it.first.id) }
     }
 
     private fun queryName(key: String): String = key.removePrefix(PRELOAD).substringBefore("RelayPreloader").substringBefore('_')

@@ -257,4 +257,5 @@
     <string name="liked_on_threads_empty">Threads에서 좋아요한 게시물이 없습니다</string>
     <string name="your_profile">내 프로필</string>
     <string name="signed_in_unavailable">Threads가 아직 이것을 여기서 제공하지 않습니다.</string>
+    <string name="profile_joined">가입: %1$s</string>
 </resources>

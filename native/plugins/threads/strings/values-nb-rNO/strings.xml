@@ -264,4 +264,5 @@
     <string name="liked_on_threads_empty">Ingen innlegg likt på Threads</string>
     <string name="your_profile">Profilen din</string>
     <string name="signed_in_unavailable">Threads gir ikke ut dette her ennå.</string>
+    <string name="profile_joined">Ble med: %1$s</string>
 </resources>

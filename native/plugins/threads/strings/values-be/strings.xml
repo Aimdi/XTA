@@ -278,4 +278,5 @@
     <string name="liked_on_threads_empty">Няма допісаў, упадабаных у Threads</string>
     <string name="your_profile">Ваш профіль</string>
     <string name="signed_in_unavailable">Threads пакуль не дае гэтага тут.</string>
+    <string name="profile_joined">Дата рэгістрацыі: %1$s</string>
 </resources>

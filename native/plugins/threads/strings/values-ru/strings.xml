@@ -278,4 +278,5 @@
     <string name="liked_on_threads_empty">Нет постов, понравившихся вам в Threads</string>
     <string name="your_profile">Ваш профиль</string>
     <string name="signed_in_unavailable">Threads пока не отдаёт это здесь.</string>
+    <string name="profile_joined">Дата регистрации: %1$s</string>
 </resources>

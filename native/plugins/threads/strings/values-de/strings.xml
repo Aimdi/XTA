@@ -264,4 +264,5 @@
     <string name="liked_on_threads_empty">Keine Beiträge, die dir auf Threads gefallen</string>
     <string name="your_profile">Dein Profil</string>
     <string name="signed_in_unavailable">Threads gibt das hier noch nicht heraus.</string>
+    <string name="profile_joined">Beigetreten: %1$s</string>
 </resources>

@@ -257,4 +257,5 @@
     <string name="liked_on_threads_empty">Tidak ada postingan yang disukai di Threads</string>
     <string name="your_profile">Profil Anda</string>
     <string name="signed_in_unavailable">Threads belum memberikan ini di sini.</string>
+    <string name="profile_joined">Bergabung: %1$s</string>
 </resources>

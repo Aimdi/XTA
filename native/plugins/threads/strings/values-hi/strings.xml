@@ -264,4 +264,5 @@
     <string name="liked_on_threads_empty">Threads पर पसंद की गई कोई पोस्ट नहीं</string>
     <string name="your_profile">आपकी प्रोफ़ाइल</string>
     <string name="signed_in_unavailable">Threads यह अभी यहाँ नहीं देता।</string>
+    <string name="profile_joined">शामिल हुए: %1$s</string>
 </resources>

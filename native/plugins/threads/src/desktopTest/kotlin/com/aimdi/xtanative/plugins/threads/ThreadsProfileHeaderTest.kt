@@ -4,6 +4,7 @@ import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.networks.threads.ThreadsBioLink
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsProfile
+import com.aimdi.xtanative.networks.threads.ThreadsProfileAbout
 import com.aimdi.xtanative.networks.threads.ThreadsProfileFacts
 import com.aimdi.xtanative.networks.threads.ThreadsProfilePage
 import com.aimdi.xtanative.networks.threads.ThreadsTextFragment
@@ -11,6 +12,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsTextFragment.Kind
 import com.aimdi.xtanative.store.StoreFile
 import java.nio.file.Files
 import java.time.Instant
+import java.time.ZoneOffset
 import java.util.Locale
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -48,6 +50,15 @@ class ThreadsProfileHeaderTest {
         assertFalse(ThreadsProfileHeader.isExact(zuck, ThreadsCount.POSTS), "the meta tags' count may be rounded")
         assertEquals("5,812,345", ThreadsProfileHeader.exact(5_812_345, Locale.ENGLISH))
         assertEquals("5.812.345", ThreadsProfileHeader.exact(5_812_345, Locale.GERMAN))
+    }
+
+    @Test
+    fun aJoinDateIsItsMonthAndYearInTheReadersLanguageElseMetasOwnWords() {
+        val july = ThreadsProfileAbout(joinedAt = Instant.parse("2023-07-05T12:00:00Z"))
+        assertEquals("July 2023", ThreadsProfileHeader.joined(july, Locale.ENGLISH, ZoneOffset.UTC))
+        assertEquals("Juli 2023", ThreadsProfileHeader.joined(july, Locale.GERMAN, ZoneOffset.UTC))
+        assertEquals("June 2023", ThreadsProfileHeader.joined(ThreadsProfileAbout(joined = " June 2023 "), Locale.GERMAN))
+        assertEquals(null, ThreadsProfileHeader.joined(ThreadsProfileAbout(), Locale.ENGLISH))
     }
 
     @Test

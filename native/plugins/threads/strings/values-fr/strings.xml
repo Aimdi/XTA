@@ -270,4 +270,5 @@
     <string name="liked_on_threads_empty">Aucune publication aimée sur Threads</string>
     <string name="your_profile">Votre profil</string>
     <string name="signed_in_unavailable">Threads ne fournit pas encore cela ici.</string>
+    <string name="profile_joined">Inscription : %1$s</string>
 </resources>

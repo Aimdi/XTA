@@ -257,4 +257,5 @@
     <string name="liked_on_threads_empty">沒有在 Threads 上喜歡的貼文</string>
     <string name="your_profile">你的個人檔案</string>
     <string name="signed_in_unavailable">Threads 暫不在此處提供這項內容。</string>
+    <string name="profile_joined">加入時間：%1$s</string>
 </resources>

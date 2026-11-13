@@ -264,4 +264,5 @@
     <string name="liked_on_threads_empty">Ez dago Threads-en gogoko duzun argitalpenik</string>
     <string name="your_profile">Zure profila</string>
     <string name="signed_in_unavailable">Threads-ek ez du hau hemen ematen oraindik.</string>
+    <string name="profile_joined">Noiz batu zen: %1$s</string>
 </resources>

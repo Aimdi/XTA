@@ -278,4 +278,5 @@
     <string name="liked_on_threads_empty">Немає дописів, вподобаних у Threads</string>
     <string name="your_profile">Ваш профіль</string>
     <string name="signed_in_unavailable">Threads поки не надає цього тут.</string>
+    <string name="profile_joined">Дата реєстрації: %1$s</string>
 </resources>

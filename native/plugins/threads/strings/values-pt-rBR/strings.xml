@@ -270,4 +270,5 @@
     <string name="liked_on_threads_empty">Nenhum post curtido no Threads</string>
     <string name="your_profile">Seu perfil</string>
     <string name="signed_in_unavailable">O Threads ainda não oferece isso aqui.</string>
+    <string name="profile_joined">Entrou: %1$s</string>
 </resources>

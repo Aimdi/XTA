@@ -37,6 +37,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -48,6 +49,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsReplyRow
 import com.aimdi.xtanative.networks.threads.ThreadsReplyOrder
 import com.aimdi.xtanative.networks.threads.ThreadsThreadView
+import com.aimdi.xtanative.networks.threads.attempt
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.Fetch
 import com.aimdi.xtanative.ui.plugins.Fetched
@@ -141,10 +143,14 @@ private fun ThreadActions(app: ThreadsApp, url: String) {
 
 /** The conversation's list; a picture opened in it is viewed among all the pictures shown in it. */
 @Composable
-private fun ConversationList(app: ThreadsApp, conversation: ThreadsConversation, state: Fetched<ThreadsConversation>, more: ThreadsMoreReplies, onRetry: () -> Unit) {
+private fun ConversationList(app: ThreadsApp, read: ThreadsConversation, state: Fetched<ThreadsConversation>, more: ThreadsMoreReplies, onRetry: () -> Unit) {
     val order by app.replyOrder.collectAsState()
     var authorOnly by rememberSaveable { mutableStateOf(false) }
     var expanded by rememberSaveable { mutableStateOf(emptyList<String>()) }
+    // The replies read in place under an unfinished thread, by the thread: only once Threads' own read of them is known.
+    var deeper by remember(read.focus.id) { mutableStateOf(emptyMap<String, ThreadsReplyThread>()) }
+    val conversation = remember(read, deeper) { read.withDeeper(deeper) }
+    val scope = rememberCoroutineScope()
     val view = ThreadsThreadView(authorOnly, expanded.toSet(), order)
     val rows = remember(conversation, view) { conversation.replyRows(view) }
     val gallery = remember(conversation, rows) { conversation.ancestors + conversation.focus + conversation.continuation + rows.mapNotNull { (it as? ThreadsReplyRow.Post)?.post } }
@@ -157,6 +163,24 @@ private fun ConversationList(app: ThreadsApp, conversation: ThreadsConversation,
             onAuthorOnly = { authorOnly = !authorOnly },
             onExpand = { chain -> expanded = expanded + chain.first().id },
             onCollapse = { chain -> expanded = expanded - chain.first().id },
+            onContinue = { row ->
+                val last = row.continuesAt
+                val under = row.chain.first().id
+                when {
+                    last == null -> Unit
+                    !app.direct.readsDeeperReplies -> app.openPost(last)
+                    else -> scope.launch {
+                        val brought = attempt { app.nextPage { app.direct.deeperReplies(last) } }
+                        val all = brought?.let { deeper[under]?.then(it) ?: it }
+                        if (all != null && read.withDeeper(deeper).brings(all)) {
+                            deeper = deeper + (under to all)
+                            expanded = expanded + under
+                        } else {
+                            app.openPost(last)
+                        }
+                    }
+                }
+            },
         )
     }
 }
@@ -175,6 +199,7 @@ private fun RefreshableConversation(
     onAuthorOnly: () -> Unit,
     onExpand: (List<ThreadsPost>) -> Unit,
     onCollapse: (List<ThreadsPost>) -> Unit,
+    onContinue: (ThreadsReplyRow.OnWeb) -> Unit,
 ) {
     // Pulling shows its own spinner; what was kept shown while the page is read first says "updating" instead.
     val fresh = state.value?.loaded == true
@@ -184,7 +209,7 @@ private fun RefreshableConversation(
             statusRows(conversation, state, onRetry)
             if (conversation.replies.isNotEmpty()) {
                 item(key = "replies-header") { RepliesHeader(app, conversation, view, onAuthorOnly) }
-                replyRows(app, rows, onExpand, onCollapse, byAuthor = conversation::byAuthor)
+                replyRows(app, rows, onExpand, onCollapse, byAuthor = conversation::byAuthor, onContinue = onContinue)
             }
             moreFoot("replies", more.state) { more.paging.retry() }
             if (conversation.moreReplies && (more.state.onWeb || !more.state.paged)) moreRepliesOnWeb(conversation.focus.url)

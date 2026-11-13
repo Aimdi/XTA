@@ -257,4 +257,5 @@
     <string name="liked_on_threads_empty">Không có bài viết nào đã thích trên Threads</string>
     <string name="your_profile">Hồ sơ của bạn</string>
     <string name="signed_in_unavailable">Threads chưa cung cấp mục này ở đây.</string>
+    <string name="profile_joined">Tham gia: %1$s</string>
 </resources>

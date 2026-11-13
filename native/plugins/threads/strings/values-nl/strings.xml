@@ -264,4 +264,5 @@
     <string name="liked_on_threads_empty">Geen berichten geliket op Threads</string>
     <string name="your_profile">Je profiel</string>
     <string name="signed_in_unavailable">Threads geeft dit hier nog niet.</string>
+    <string name="profile_joined">Lid sinds %1$s</string>
 </resources>
