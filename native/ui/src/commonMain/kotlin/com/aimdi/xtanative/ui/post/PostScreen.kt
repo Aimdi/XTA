@@ -16,9 +16,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -33,18 +35,26 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -64,8 +74,8 @@ import com.aimdi.xtanative.ui.article.ArticlePreviewCard
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalGraph
-import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.ProblemRow
+import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.fullTimeText
@@ -73,8 +83,6 @@ import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.post
 import com.aimdi.xtanative.ui.generated.resources.posts_continue_thread
-import com.aimdi.xtanative.ui.generated.resources.posts_unable_to_load_the_next_page_of_replies
-import com.aimdi.xtanative.ui.generated.resources.posts_unable_to_load_the_tweet
 import com.aimdi.xtanative.ui.generated.resources.posts_more
 import com.aimdi.xtanative.ui.generated.resources.posts_no_text
 import com.aimdi.xtanative.ui.generated.resources.posts_replies_missing
@@ -85,6 +93,8 @@ import com.aimdi.xtanative.ui.generated.resources.posts_sort_oldest
 import com.aimdi.xtanative.ui.generated.resources.posts_sort_order
 import com.aimdi.xtanative.ui.generated.resources.posts_sort_recent
 import com.aimdi.xtanative.ui.generated.resources.posts_sort_relevant
+import com.aimdi.xtanative.ui.generated.resources.posts_unable_to_load_the_next_page_of_replies
+import com.aimdi.xtanative.ui.generated.resources.posts_unable_to_load_the_tweet
 import com.aimdi.xtanative.ui.generated.resources.posts_unavailable
 import com.aimdi.xtanative.ui.generated.resources.posts_views_count
 import com.aimdi.xtanative.ui.generated.resources.posts_zen_replies
@@ -170,8 +180,8 @@ private fun LazyListScope.focalItems(state: PostUi, id: String, actions: PostAct
     val focal = state.focal
     when {
         focal != null -> {
-            item(key = "focal", contentType = "focal") { FocalPost(focal, actions, startMedia) }
-            if (focal.shown.replyCount > 0 && !(prefs.zen && !state.repliesRevealed)) item(key = "sort") { ReplySortBar(state.sort, vm::select) }
+            val sort = ReplyOrder(state.sort, vm::select).takeIf { focal.shown.replyCount > 0 && !(prefs.zen && !state.repliesRevealed) }
+            item(key = "focal", contentType = "focal") { FocalPost(focal, actions, startMedia, sort) }
         }
         state.focalWithheld != null || state.gone -> item(key = "focal-gone") {
             val gap = state.focalWithheld
@@ -269,12 +279,54 @@ private fun ZenReplies(onReveal: () -> Unit) {
     )
 }
 
-/** The reply order, in a row of its own under the opened post, closed by a hairline, as on X. */
+/** The replies' order and what changes it, which the opened post's time line carries. */
+private class ReplyOrder(val sort: ReplySort, val onSelect: (ReplySort) -> Unit)
+
+/**
+ * The replies' order as a quiet chip at the end of the opened post's time
+ * line (the sort bar's concept A): its icon in the accent, its name and a
+ * chevron in the line's grey, opening a menu of the orders with the one
+ * shown ticked. It is left out of the post's picture.
+ */
 @Composable
-private fun ReplySortBar(sort: ReplySort, onSelect: (ReplySort) -> Unit) {
-    Column {
-        SortChip(sort, Sorts.X_REPLIES, { replySortLabel(it) }, ::replySortIcon, onSelect, Modifier.padding(start = 4.dp))
-        Hairline()
+private fun ReplyOrderChip(order: ReplyOrder, picture: PostPicture) {
+    var open by rememberSaveable { mutableStateOf(false) }
+    val shown = Sorts.effective(order.sort, Sorts.X_REPLIES)
+    val muted = MaterialTheme.colorScheme.onSurfaceVariant
+    val label = replySortLabel(shown)
+    val description = stringResource(Res.string.posts_sort_order) + ": " + label
+    Box(Modifier.alpha(if (picture.recording) 0f else 1f)) {
+        Row(
+            Modifier
+                .heightIn(min = 44.dp)
+                .clip(RoundedCornerShape(22.dp))
+                .clickable { open = true }
+                .clearAndSetSemantics {
+                    role = Role.DropdownList
+                    contentDescription = description
+                }
+                .padding(horizontal = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(replySortIcon(shown), null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
+            Text(label, color = muted, style = MaterialTheme.typography.bodyMedium, maxLines = 1, modifier = Modifier.padding(start = 4.dp))
+            Icon(Icons.Filled.ArrowDropDown, null, tint = muted, modifier = Modifier.size(18.dp))
+        }
+        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+            Sorts.X_REPLIES.forEach { option ->
+                val picked = option == shown
+                DropdownMenuItem(
+                    text = { Text(replySortLabel(option)) },
+                    leadingIcon = { Icon(replySortIcon(option), null, modifier = Modifier.size(20.dp)) },
+                    trailingIcon = { if (picked) Icon(Icons.Filled.Check, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp)) },
+                    onClick = {
+                        open = false
+                        if (!picked) order.onSelect(option)
+                    },
+                    modifier = Modifier.semantics { selected = picked },
+                )
+            }
+        }
     }
 }
 
@@ -310,11 +362,11 @@ internal fun <T> SortChip(value: T, options: List<T>, label: @Composable (T) -> 
  * The opened post, larger: the author beside the avatar with translate and
  * ⋯, the text across the width (whole unless the reader asked for the
  * compact form), what it carries, its article in full, X's time · date ·
- * views line, and the counts, whose share sheet takes the post as drawn
+ * views line with the replies' [order] at its end, and the counts, whose share sheet takes the post as drawn
  * for "Share … as image".
  */
 @Composable
-private fun FocalPost(post: XPost, actions: PostActions, startMedia: Int) {
+private fun FocalPost(post: XPost, actions: PostActions, startMedia: Int, order: ReplyOrder?) {
     val scope = postScope()
     val shown = post.shown
     val translation = rememberPostTranslation(shown, scope)
@@ -366,22 +418,27 @@ private fun FocalPost(post: XPost, actions: PostActions, startMedia: Int) {
         } else if (shown.article != null) {
             ArticlePreviewCard(shown, { actions.openArticle(shown.id) }, Modifier.padding(top = 12.dp))
         }
-        FocalMetaLine(shown, scope.prefs)
+        FocalMetaLine(shown, scope.prefs, order, picture)
         if (article == null) PostFooter(shown, actions, FooterCounts.of(shown, scope.prefs, showViews = false), picture = picture)
     }
     Hairline()
     if (menu) PostMenu(post, actions, onDismiss = { menu = false })
 }
 
-/** X's line under an opened post: `16:12 · 9 Oct 2026 · 77K Views`, the count in bold; no views in zen or calm mode. */
+/**
+ * X's line under an opened post: `16:12 · 9 Oct 2026 · 77K Views`, the count
+ * in bold, no views in zen or calm mode; the replies' [order] at its end
+ * while there are replies to order.
+ */
 @Composable
-private fun FocalMetaLine(post: XPost, prefs: PostPrefs) {
+private fun FocalMetaLine(post: XPost, prefs: PostPrefs, order: ReplyOrder?, picture: PostPicture) {
     val views = post.viewCount?.takeIf { it > 0 && !prefs.hideCounts }
     val time = fullTimeText(post.createdAt)
     val viewsLabel = views?.let { pluralStringResource(Res.plurals.posts_views_count, viewsPluralCount(it), countText(it)) }
     val strong = MaterialTheme.colorScheme.onSurface
-    if (time.isEmpty() && viewsLabel == null) return
+    if (time.isEmpty() && viewsLabel == null && order == null) return
     val number = views?.let { countText(it) }
+    Row(Modifier.fillMaxWidth().padding(top = if (order == null) 12.dp else 2.dp), verticalAlignment = Alignment.CenterVertically) {
     Text(
         buildAnnotatedString {
             append(time)
@@ -399,8 +456,12 @@ private fun FocalMetaLine(post: XPost, prefs: PostPrefs) {
         },
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(top = 12.dp),
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        modifier = Modifier.weight(1f),
     )
+    if (order != null) ReplyOrderChip(order, picture)
+    }
 }
 
 @Composable
