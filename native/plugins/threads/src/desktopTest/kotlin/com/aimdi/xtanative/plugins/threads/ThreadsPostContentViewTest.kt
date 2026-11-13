@@ -32,17 +32,18 @@ class ThreadsPostContentViewTest {
     @Test
     fun translationIsOfferedToASignedInReaderForWordsNotInTheirLanguage() {
         val german = post.copy(facts = ThreadsPostFacts(language = "de"))
-        assertTrue(ThreadsTranslationRules.offers(german, "en-US", signedIn = true, available = true))
-        assertTrue(ThreadsTranslationRules.offers(post, "en-US", signedIn = true, available = true), "a post whose language Meta did not name keeps the offer")
-        assertFalse(ThreadsTranslationRules.offers(german, "de-DE", signedIn = true, available = true), "the reader's own language")
-        assertFalse(ThreadsTranslationRules.offers(german, "en", signedIn = false, available = true), "Meta translates for a session only")
-        assertFalse(ThreadsTranslationRules.offers(german, "en", signedIn = true, available = false), "no path answered this run")
-        assertFalse(ThreadsTranslationRules.offers(german.copy(facts = ThreadsPostFacts(language = "de", canTranslate = false)), "en", signedIn = true, available = true))
-        assertFalse(ThreadsTranslationRules.offers(post.copy(facts = ThreadsPostFacts(language = "und")), "en", signedIn = true, available = true))
-        assertFalse(ThreadsTranslationRules.offers(german.copy(text = " "), "en", signedIn = true, available = true))
+        assertTrue(ThreadsTranslationRules.offers(german, "en-US", signedIn = true, available = true, pathKnown = true))
+        assertTrue(ThreadsTranslationRules.offers(post, "en-US", signedIn = true, available = true, pathKnown = true), "a post whose language Meta did not name keeps the offer")
+        assertFalse(ThreadsTranslationRules.offers(german, "de-DE", signedIn = true, available = true, pathKnown = true), "the reader's own language")
+        assertFalse(ThreadsTranslationRules.offers(german, "en", signedIn = false, available = true, pathKnown = true), "Meta translates for a session only")
+        assertFalse(ThreadsTranslationRules.offers(german, "en", signedIn = true, available = false, pathKnown = true), "no path answered this run")
+        assertFalse(ThreadsTranslationRules.offers(german.copy(facts = ThreadsPostFacts(language = "de", canTranslate = false)), "en", signedIn = true, available = true, pathKnown = true))
+        assertFalse(ThreadsTranslationRules.offers(post.copy(facts = ThreadsPostFacts(language = "und")), "en", signedIn = true, available = true, pathKnown = true))
+        assertFalse(ThreadsTranslationRules.offers(german.copy(text = " "), "en", signedIn = true, available = true, pathKnown = true))
         val spoiler = german.copy(fragments = listOf(ThreadsTextFragment(ThreadsTextFragment.Kind.TEXT, "Hallo Welt", spoiler = true)))
-        assertFalse(ThreadsTranslationRules.offers(spoiler, "en", signedIn = true, available = true), "a translation could not keep a spoiler covered")
-        assertFalse(ThreadsTranslationRules.offers(german.copy(url = null, id = "x"), "en", signedIn = true, available = true), "no media id to ask by")
+        assertFalse(ThreadsTranslationRules.offers(spoiler, "en", signedIn = true, available = true, pathKnown = true), "a translation could not keep a spoiler covered")
+        assertFalse(ThreadsTranslationRules.offers(german.copy(url = null, id = "x"), "en", signedIn = true, available = true, pathKnown = true), "no media id to ask by")
+        assertFalse(ThreadsTranslationRules.offers(german, "en-US", signedIn = true, available = true), "no translation path Meta was seen to answer")
     }
 
     @Test

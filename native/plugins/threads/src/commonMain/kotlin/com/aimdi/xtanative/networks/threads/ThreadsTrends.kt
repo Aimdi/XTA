@@ -32,8 +32,8 @@ object ThreadsTrends {
     private const val MARKER = "\"trends\""
     private const val LONGEST_TITLE = 120
     private const val LONGEST_LINE = 400
-    private val NAME_KEYS = listOf("title", "name", "display_name", "trend_name", "topic_name", "headline", "query_text", "search_query", "query", "keyword", "text", "label")
-    private val QUERY_KEYS = listOf("search_query", "query_text", "query", "search_term", "serp_query", "keyword")
+    private val NAME_KEYS = listOf("trending_keyword", "title", "name", "display_name", "trend_name", "topic_name", "headline", "query_text", "search_query", "query", "keyword", "text", "label")
+    private val QUERY_KEYS = listOf("trending_keyword", "search_query", "query_text", "query", "search_term", "serp_query", "keyword")
     private val LINK_KEYS = listOf("search_url", "url", "link", "uri", "destination_url", "permalink")
     private val CONTEXT_KEYS = listOf("social_context", "subtitle", "context", "context_text", "secondary_text", "formatted_post_count", "post_count_text", "formatted_count", "category")
     private val SUMMARY_KEYS = listOf("summary", "trend_summary", "ai_summary", "summary_text", "description", "snippet")

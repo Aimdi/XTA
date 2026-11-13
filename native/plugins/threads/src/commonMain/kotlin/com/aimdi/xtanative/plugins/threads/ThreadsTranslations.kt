@@ -90,6 +90,15 @@ internal class ThreadsTranslations(
 /** When a post offers translation, decided apart from its drawing. */
 internal object ThreadsTranslationRules {
     /**
+     * Whether Meta is known to answer a translation where the client asks.
+     * CI's live probe (13 Nov 2026) found all three REST guesses a 404 even
+     * for a guest, where real session paths send a guest to sign in;
+     * threads.com translates through BarcelonaPostTranslationQuery, whose doc
+     * id is not known. Until one answers, Translate is not offered.
+     */
+    const val PATH_KNOWN = false
+
+    /**
      * Whether [post] offers Translate to a reader reading in [target]:
      * signed in (Meta translates for a session only) while translation is
      * [available], a post with words and no spoiler (a translation could
@@ -98,7 +107,7 @@ internal object ThreadsTranslationRules {
      * the app's X posts decide it; a post whose language Meta did not name
      * keeps the offer).
      */
-    fun offers(post: ThreadsPost, target: String, signedIn: Boolean, available: Boolean): Boolean =
-        signedIn && available && post.text.isNotBlank() && !post.hasSpoiler && post.facts.canTranslate != false &&
+    fun offers(post: ThreadsPost, target: String, signedIn: Boolean, available: Boolean, pathKnown: Boolean = PATH_KNOWN): Boolean =
+        pathKnown && signedIn && available && post.text.isNotBlank() && !post.hasSpoiler && post.facts.canTranslate != false &&
             ThreadsPeople.mediaId(post) != null && XTranslator.offers(post.facts.language, target)
 }

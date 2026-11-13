@@ -91,6 +91,10 @@ class ThreadsPostContentTest {
         val many = read(info = mapOf("related_trends_info" to (1..5).map { mapOf("title" to "T$it") }))
         assertEquals(ThreadsPostContent.MAX_TRENDS, many.facts.trends.size)
         assertTrue(read(info = mapOf("related_trends_info" to "x")).facts.trends.isEmpty())
+        // The shape CI's live probe saw (13 Nov 2026): one object with trending_keyword and related_threads_count; made-up values.
+        val live = read(info = mapOf("related_trends_info" to mapOf("trending_keyword" to "Made-up Cup", "related_threads_count" to 12)))
+        assertEquals(listOf("Made-up Cup"), live.facts.trends.map { it.title })
+        assertEquals(ThreadsSearchTerms("Made-up Cup", tag = false), live.facts.trends.single().terms)
         assertTrue(read().facts.isEmpty, "a post without the keys has nothing more")
     }
 
