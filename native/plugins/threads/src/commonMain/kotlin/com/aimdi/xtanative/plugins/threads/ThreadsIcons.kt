@@ -25,6 +25,15 @@ internal object ThreadsIcons {
                 "M15,14c-2.67,0 -8,1.34 -8,4v2h16v-2c0,-2.66 -5.33,-4 -8,-4z",
         )
     }
+    /** An account muted on this device. */
+    val PersonOff: ImageVector by lazy {
+        icon(
+            "PersonOff",
+            "M8.65,5.82C9.36,4.72 10.6,4 12,4c2.21,0 4,1.79 4,4c0,1.4 -0.72,2.64 -1.82,3.35L8.65,5.82zM20,17.17c-0.02,-1.1 -0.63,-2.11 -1.61,-2.62" +
+                "c-0.54,-0.28 -1.13,-0.54 -1.77,-0.76L20,17.17zM21.19,21.19L2.81,2.81L1.39,4.22l8.89,8.89c-1.81,0.23 -3.39,0.79 -4.67,1.45" +
+                "C4.61,15.07 4,16.1 4,17.22V20h13.17l2.61,2.61L21.19,21.19z",
+        )
+    }
     val PersonRemove: ImageVector by lazy {
         icon("PersonRemove", "M14,8c0,-2.21 -1.79,-4 -4,-4S6,5.79 6,8s1.79,4 4,4S14,10.21 14,8zM17,10v2h6v-2H17zM2,18v2h16v-2c0,-2.66 -5.33,-4 -8,-4S2,15.34 2,18z")
     }
@@ -49,8 +58,27 @@ internal object ThreadsIcons {
         icon("MusicNote", "M12,3v10.55c-0.59,-0.34 -1.27,-0.55 -2,-0.55 -2.21,0 -4,1.79 -4,4s1.79,4 4,4 4,-1.79 4,-4V7h4V3h-6z")
     }
 
+    /** A profile's media as a grid. */
+    val GridView: ImageVector by lazy {
+        icon(
+            "GridView",
+            "M5,11h4c1.1,0 2,-0.9 2,-2V5c0,-1.1 -0.9,-2 -2,-2H5C3.9,3 3,3.9 3,5v4C3,10.1 3.9,11 5,11zM5,21h4c1.1,0 2,-0.9 2,-2v-4c0,-1.1 -0.9,-2 -2,-2H5" +
+                "c-1.1,0 -2,0.9 -2,2v4C3,20.1 3.9,21 5,21zM13,5v4c0,1.1 0.9,2 2,2h4c1.1,0 2,-0.9 2,-2V5c0,-1.1 -0.9,-2 -2,-2h-4C13.9,3 13,3.9 13,5z" +
+                "M15,21h4c1.1,0 2,-0.9 2,-2v-4c0,-1.1 -0.9,-2 -2,-2h-4c-1.1,0 -2,0.9 -2,2v4C13,20.1 13.9,21 15,21z",
+        )
+    }
+
+    /** A profile's media as the posts' cards again. */
+    val ViewAgenda: ImageVector by lazy {
+        icon(
+            "ViewAgenda",
+            "M20,13H4c-0.55,0 -1,0.45 -1,1v6c0,0.55 0.45,1 1,1h16c0.55,0 1,-0.45 1,-1v-6C21,13.45 20.55,13 20,13zM20,3H4C3.45,3 3,3.45 3,4v6" +
+                "c0,0.55 0.45,1 1,1h16c0.55,0 1,-0.45 1,-1V4C21,3.45 20.55,3 20,3z",
+        )
+    }
+
     /** Every glyph, for the test that draws them all. */
-    internal val all: List<ImageVector> get() = listOf(Mark, PersonAdd, PersonRemove, Public, PauseCircle, MusicNote)
+    internal val all: List<ImageVector> get() = listOf(Mark, PersonAdd, PersonOff, PersonRemove, Public, PauseCircle, MusicNote, GridView, ViewAgenda)
 
     internal fun icon(name: String, path: String): ImageVector =
         ImageVector.Builder(name = name, defaultWidth = 24.dp, defaultHeight = 24.dp, viewportWidth = 24f, viewportHeight = 24f)

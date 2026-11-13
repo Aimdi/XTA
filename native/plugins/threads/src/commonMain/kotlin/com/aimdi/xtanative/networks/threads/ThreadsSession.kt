@@ -110,6 +110,13 @@ class ThreadsPacing(
  * Values Meta may change, each with the one XTA ships. XTA's published
  * repairs (`repairs.json`) can replace one with a value of the same kind, so a
  * rotated doc id is fixed without a release; nothing here names a host.
+ *
+ * The reads asked by a doc id that only threads.com's bundles name
+ * ([ThreadsDocIds]) ship with none: [inlineRepliesDocId],
+ * [aboutProfileDocId] and [trendingTopicsDocId] are empty, and each read
+ * is off, asking Meta nothing, until its id is shipped or published. The
+ * variable such a query takes its id under is a value too, since only a
+ * bundle says its name.
  */
 data class ThreadsRepairs(
     val guestDocId: String = GUEST_DOC_ID.shipped,
@@ -118,6 +125,11 @@ data class ThreadsRepairs(
     val asbdId: String = ASBD_ID.shipped,
     val appUserAgent: String = APP_USER_AGENT.shipped,
     val webUserAgent: String = WEB_USER_AGENT.shipped,
+    val inlineRepliesDocId: String = INLINE_REPLIES_DOC_ID.shipped,
+    val inlineRepliesVariable: String = INLINE_REPLIES_VARIABLE.shipped,
+    val aboutProfileDocId: String = ABOUT_PROFILE_DOC_ID.shipped,
+    val aboutProfileVariable: String = ABOUT_PROFILE_VARIABLE.shipped,
+    val trendingTopicsDocId: String = TRENDING_TOPICS_DOC_ID.shipped,
 ) {
     companion object {
         val GUEST_DOC_ID = RepairSlot("threads.guest_doc_id", "6232751443445612", RepairKind.DIGITS)
@@ -132,8 +144,29 @@ data class ThreadsRepairs(
             RepairKind.HEADER,
         )
 
+        /** `BarcelonaInlineRepliesExpansionQuery`'s doc id, for the replies under a reply: empty, and the read off, until a bundle told it. */
+        val INLINE_REPLIES_DOC_ID = RepairSlot("threads.inline_replies_doc_id", "", RepairKind.DIGITS)
+
+        /** The variable that query takes the reply's media id under. */
+        val INLINE_REPLIES_VARIABLE = RepairSlot("threads.inline_replies_variable", "postID", RepairKind.TOKEN)
+
+        /** `BarcelonaAboutThisProfileDialogQuery`'s doc id, for when an account joined: empty, and the read off, until a bundle told it. */
+        val ABOUT_PROFILE_DOC_ID = RepairSlot("threads.about_profile_doc_id", "", RepairKind.DIGITS)
+
+        /** The variable that query takes the account's id under. */
+        val ABOUT_PROFILE_VARIABLE = RepairSlot("threads.about_profile_variable", "userID", RepairKind.TOKEN)
+
+        /** `BarcelonaSearchTrendingTopicsSectionQuery`'s doc id, for the trends when the search page carries none: empty, and the read off, until a bundle told it. */
+        val TRENDING_TOPICS_DOC_ID = RepairSlot("threads.trending_topics_doc_id", "", RepairKind.DIGITS)
+
         /** Every Threads value `repairs.json` may replace. */
-        val SLOTS = listOf(GUEST_DOC_ID, GUEST_QUERY_NAME, APP_ID, ASBD_ID, APP_USER_AGENT, WEB_USER_AGENT)
+        val SLOTS = listOf(
+            GUEST_DOC_ID, GUEST_QUERY_NAME, APP_ID, ASBD_ID, APP_USER_AGENT, WEB_USER_AGENT,
+            INLINE_REPLIES_DOC_ID, INLINE_REPLIES_VARIABLE, ABOUT_PROFILE_DOC_ID, ABOUT_PROFILE_VARIABLE, TRENDING_TOPICS_DOC_ID,
+        )
+
+        /** The slots that ship empty: each a read waiting for its doc id, which `repairs.json` names only once it is known. */
+        val WAITING = SLOTS.filter { it.shipped.isEmpty() }
 
         /**
          * The shipped values with [published]'s Threads entries in force: an entry
@@ -147,6 +180,11 @@ data class ThreadsRepairs(
             asbdId = ASBD_ID.valueIn(published),
             appUserAgent = APP_USER_AGENT.valueIn(published),
             webUserAgent = WEB_USER_AGENT.valueIn(published),
+            inlineRepliesDocId = INLINE_REPLIES_DOC_ID.valueIn(published),
+            inlineRepliesVariable = INLINE_REPLIES_VARIABLE.valueIn(published),
+            aboutProfileDocId = ABOUT_PROFILE_DOC_ID.valueIn(published),
+            aboutProfileVariable = ABOUT_PROFILE_VARIABLE.valueIn(published),
+            trendingTopicsDocId = TRENDING_TOPICS_DOC_ID.valueIn(published),
         )
     }
 }

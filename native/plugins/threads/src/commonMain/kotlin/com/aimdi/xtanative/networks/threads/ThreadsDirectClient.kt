@@ -164,14 +164,45 @@ class ThreadsDirectClient(
     }
 
     /**
+     * One page of the signed-in reader's own [feed] ([ThreadsOwnFeeds]): the
+     * Following feed, or the posts they saved or liked on Threads, after
+     * [cursor]. A session read as [people] is, with neither cookies nor a
+     * Bearer [NOT_CONFIGURED]; [NO_SUCH_FEED] when no path answers. An answer
+     * that cannot be the Following feed ([ThreadsOwnFeeds.isFollowing]) is
+     * taken for a path that does not serve it. A read only: nothing is
+     * followed, saved, liked or marked seen.
+     */
+    suspend fun ownFeed(feed: ThreadsOwnFeed, cursor: String? = null): Page<ThreadsPost> {
+        val accepts: (J) -> Boolean = if (feed == ThreadsOwnFeed.FOLLOWING) ThreadsOwnFeeds::isFollowing else { _ -> true }
+        val body = sessionApi("own:$feed", ThreadsOwnFeeds.paths(feed), ThreadsOwnFeeds.params(feed, cursor, deviceId()), accepts = accepts)
+        return ThreadsOwnFeeds.page(body)
+    }
+
+    /**
+     * One page of the signed-in reader's activity ([ThreadsActivity]), the
+     * part [filter] names, after [cursor]: a session read as [people] is.
+     * Asked never to mark anything seen; nothing is answered or followed.
+     */
+    suspend fun activity(filter: ThreadsActivityFilter = ThreadsActivityFilter.ALL, cursor: String? = null): Page<ThreadsActivityItem> =
+        ThreadsActivity.page(sessionApi("activity", ThreadsActivity.PATHS, ThreadsActivity.params(filter, cursor)))
+
+    /**
      * A session read of the API behind Threads at the first of [paths] that
      * answers: the cookies on threads.com when the reader gave them, else
      * the Bearer on the app API. A path Meta answers 404 gives way to the next
      * ([NO_SUCH_FEED] once none is left); the one that answered is used first
      * for [kind] from then on, so a list whose path is known asks once.
-     * [language], when given, is the Accept-Language Meta answers in.
+     * [language], when given, is the Accept-Language Meta answers in. An
+     * answer [accepts] refuses is taken for a missing path: it is not what
+     * [kind] asked for.
      */
-    private suspend fun sessionApi(kind: String, paths: List<String>, params: List<Pair<String, String>>, language: String? = null): J {
+    private suspend fun sessionApi(
+        kind: String,
+        paths: List<String>,
+        params: List<Pair<String, String>>,
+        language: String? = null,
+        accepts: (J) -> Boolean = { true },
+    ): J {
         val current = session()
         val token = current.bearerToken
         if (!current.hasCookies && token == null) throw ThreadsException(NOT_CONFIGURED, "no session for $kind")
@@ -186,6 +217,7 @@ class ThreadsDirectClient(
                     current.hasCookies -> sessionRead(ThreadsLinks.web(path, params), inLanguage(cookieHeaders(current)))
                     else -> sessionRead(ThreadsLinks.address(INSTAGRAM, path, params), inLanguage(bearerHeaders(checkNotNull(token), deviceId())))
                 }
+                if (!accepts(body)) throw ThreadsException(NO_SUCH_FEED, "$path: not $kind")
                 synchronized(keeping) { answeringPaths[kind] = index }
                 return body
             } catch (e: ThreadsException) {
@@ -466,7 +498,10 @@ class ThreadsDirectClient(
      * guest ([ThreadsTrends]): one public page, no session. Remembered for
      * [TRENDS_TTL_MILLIS] so the search page asks once however often it is
      * opened; [force] reads again. Empty when the page carries none or sends
-     * a guest to sign in. Read off the caller's thread.
+     * a guest to sign in. Read off the caller's thread. A page without
+     * trends is followed by the query its client asks them with
+     * ([ThreadsBundleReads.TRENDING_TOPICS]) once that read's doc id is
+     * known; until then nothing more is asked.
      */
     suspend fun trends(force: Boolean = false): List<ThreadsTrend> {
         if (!force) knownTrends()?.let { return it }
@@ -477,8 +512,52 @@ class ThreadsDirectClient(
                 if (e.failure != SIGN_IN_REQUIRED) throw e
                 ""
             }
-            withContext(Dispatchers.Default) { ThreadsTrends.read(body) }.also { trends -> synchronized(keeping) { trendsRead = clock() to trends } }
+            withContext(Dispatchers.Default) { ThreadsTrends.read(body) }.ifEmpty { askedTrends() }
+                .also { trends -> synchronized(keeping) { trendsRead = clock() to trends } }
         }
+    }
+
+    /** Whether the replies under a reply can be read in place ([deeperReplies]): only once that read's doc id is known. */
+    val readsDeeperReplies: Boolean get() = repairs().inlineRepliesDocId.isNotEmpty()
+
+    /**
+     * The replies Meta holds under the reply [post] beyond what its
+     * conversation's page carried ([ThreadsBundleReads.INLINE_REPLIES]), as
+     * one thread: a guest read, asked as the post's own page asks it. Null,
+     * with nothing asked, while the read is off ([readsDeeperReplies]) or the
+     * post has no link or media id; null too when Meta refuses or answers in
+     * a shape not understood, and the thread goes on at the post's own page
+     * as before. A throttle or a server that failed is thrown.
+     */
+    suspend fun deeperReplies(post: ThreadsPost): ThreadsReplyThread? {
+        val values = repairs()
+        if (values.inlineRepliesDocId.isEmpty()) return null
+        val url = post.url?.let(ThreadsLinks::canonicalPostUrl) ?: return null
+        val media = ThreadsPeople.mediaId(post) ?: return null
+        val variables = ThreadsBundleReads.variables(values.inlineRepliesVariable, media)
+        val roots = bundleRead(values.inlineRepliesDocId, ThreadsBundleReads.INLINE_REPLIES, variables, url) ?: return null
+        return withContext(Dispatchers.Default) { ThreadsPostPageReader.deeper(roots, post.id) }
+    }
+
+    /** Whether what Threads says about a profile can be read ([aboutProfile]): only once that read's doc id is known. */
+    val readsAboutProfile: Boolean get() = repairs().aboutProfileDocId.isNotEmpty()
+
+    /**
+     * What Threads' "About this profile" says of [handle]
+     * ([ThreadsBundleReads.ABOUT_PROFILE]): a guest read, asked as the
+     * profile's page asks it, the account's id taken from its card. Null,
+     * with nothing asked, while the read is off ([readsAboutProfile]); null
+     * too when the account's id is not known, Meta refuses, or the answer
+     * says nothing this reads. A throttle or a server that failed is thrown.
+     */
+    suspend fun aboutProfile(handle: String): ThreadsProfileAbout? {
+        val values = repairs()
+        if (values.aboutProfileDocId.isEmpty()) return null
+        val key = ThreadsLinks.normaliseHandle(handle) ?: return null
+        val id = guestProfile(key).pk.takeIf { it.isNotEmpty() && it.all(Char::isDigit) } ?: return null
+        val variables = ThreadsBundleReads.variables(values.aboutProfileVariable, id)
+        val roots = bundleRead(values.aboutProfileDocId, ThreadsBundleReads.ABOUT_PROFILE, variables, profileUrl(key)) ?: return null
+        return ThreadsBundleReads.about(roots)
     }
 
     /** The trends read in the last [TRENDS_TTL_MILLIS], asking Meta nothing; null when there are none that fresh. */
@@ -585,21 +664,54 @@ class ThreadsDirectClient(
         val refused = ThreadsMore<T>(emptyList(), null, refused = true)
         val asked = ThreadsNextPage.decode(cursor) ?: return refused
         val lsd = freshGuestLsd() ?: ThreadsPages.lsd(guestPage(page)) ?: return refused
-        val referer = page.encodedPath + (page.encodedQuery?.let { "?$it" } ?: "")
-        val url = ThreadsLinks.web(GRAPHQL)
-        val response = guestQuery(GuestQuery(asked.docId, asked.query, asked.requestVariables, GuestQuery.relayForm(asked.query)), lsd, referer)
-        when {
-            response.code == 429 -> throw guestThrottled(url)
-            response.code >= 500 -> throw ThreadsException(UNREACHABLE, "$url: ${response.code}", response.code)
-            response.code != 200 -> return refused
-        }
-        val answers = ThreadsNextPages.answer(response.body)
+        val answers = answered(GuestQuery(asked.docId, asked.query, asked.requestVariables, GuestQuery.relayForm(asked.query)), lsd, page) ?: return refused
         val roots = answers.filter { (it as? JsonObject)?.get("data") is JsonObject }
         if (roots.isEmpty()) return refused
         val items = withContext(Dispatchers.Default) { read(roots) }
         val next = roots.firstNotNullOfOrNull { ThreadsNextPages.after(asked, it) }?.encoded()
         val failed = items.isEmpty() && next == null && answers.any { (it as? JsonObject)?.get("errors") is JsonArray }
         return ThreadsMore(items, next, refused = failed)
+    }
+
+    /**
+     * What guest GraphQL answered [query], asked as the page at [page] asks
+     * it: its JSON objects, none when it is not JSON. A throttle or a server
+     * that failed is thrown; any other refusal is null.
+     */
+    private suspend fun answered(query: GuestQuery, lsd: String, page: HttpUrl): List<JsonElement>? {
+        val referer = page.encodedPath + (page.encodedQuery?.let { "?$it" } ?: "")
+        val url = ThreadsLinks.web(GRAPHQL)
+        val response = guestQuery(query, lsd, referer)
+        return when {
+            response.code == 429 -> throw guestThrottled(url)
+            response.code >= 500 -> throw ThreadsException(UNREACHABLE, "$url: ${response.code}", response.code)
+            response.code != 200 -> null
+            else -> ThreadsNextPages.answer(response.body)
+        }
+    }
+
+    /**
+     * A read [ThreadsBundleReads] names, asked as the page at [page] asks it:
+     * the answers that carry `data`. Null, with nothing asked, while its
+     * [docId] is empty ([ThreadsRepairs.WAITING]); null too when the page
+     * gives no token (with [readPage] false a token is never fetched for
+     * it) or Meta refuses.
+     */
+    private suspend fun bundleRead(docId: String, name: String, variables: JsonObject, page: HttpUrl, readPage: Boolean = true): List<JsonElement>? {
+        if (docId.isEmpty()) return null
+        val lsd = freshGuestLsd() ?: (if (readPage) ThreadsPages.lsd(guestPage(page)) else null) ?: return null
+        return answered(GuestQuery(docId, name, variables, GuestQuery.relayForm(name)), lsd, page)
+            ?.filter { (it as? JsonObject)?.get("data") is JsonObject }
+            ?.ifEmpty { null }
+    }
+
+    /** The trends guest GraphQL names when the search page carried none; none while the read is off, without a token, or refused. */
+    private suspend fun askedTrends(): List<ThreadsTrend> = try {
+        bundleRead(repairs().trendingTopicsDocId, ThreadsBundleReads.TRENDING_TOPICS, JsonObject(emptyMap()), ThreadsLinks.web("/search"), readPage = false)
+            ?.let(ThreadsTrends::fromRoots).orEmpty()
+    } catch (e: Exception) {
+        if (!e.isReadFailure()) throw e
+        emptyList()
     }
 
     private fun rememberProfileNext(handle: String, page: String) {

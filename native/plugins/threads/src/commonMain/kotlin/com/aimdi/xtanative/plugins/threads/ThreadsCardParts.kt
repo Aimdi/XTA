@@ -168,7 +168,7 @@ internal fun ThreadsPollView(poll: ThreadsPoll, modifier: Modifier) {
 }
 
 /**
- * The opened post's views, quotes and shares, where Meta counted them,
+ * The opened post's views, its video's plays, quotes and shares, where Meta counted them,
  * which its buttons do not show; for a signed-in reader its quotes open the
  * posts that quote it ([ThreadsQuotesScreen]).
  */
@@ -179,12 +179,14 @@ internal fun FocalCounts(app: ThreadsApp, post: ThreadsPost, hideCounts: Boolean
     val quotes = post.quoteCount?.takeIf { it > 0 }?.let { it to pluginString(Strings.quotes) }
     val shares = post.facts.shareCount?.takeIf { it > 0 }?.let { it to pluginString(Strings.shares) }
     val views = post.facts.viewCount?.takeIf { it > 0 }?.let { it to pluginString(Strings.views) }
-    if (quotes == null && shares == null && views == null) return
+    val plays = post.facts.playCount?.takeIf { it > 0 && post.hasVideo }?.let { it to pluginString(Strings.plays) }
+    if (quotes == null && shares == null && views == null && plays == null) return
     val signedIn = ThreadsPeopleView.signedIn(ThreadsSessions.of(settings))
     val quotesOpen = ThreadsPeople.mediaId(post).takeIf { ThreadsPeopleView.opensQuotes(post, signedIn) }
     val showQuotes = pluginString(Strings.show_quotes)
     Row(Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically) {
         views?.let { PluginCounts(listOf(it)) }
+        plays?.let { PluginCounts(listOf(it)) }
         quotes?.let { counted ->
             val opens = quotesOpen?.let { id ->
                 Modifier.heightIn(min = 48.dp).clickable(role = Role.Button, onClickLabel = showQuotes) { app.host.open(ThreadsRoutes.quotes(id, post.url)) }
@@ -231,24 +233,32 @@ internal fun MusicLine(post: ThreadsPost, modifier: Modifier) {
 }
 
 /**
- * A card's ⋯ and long-press sheet: copying its words and its link,
- * translating them (or showing them again) where Threads translates, then
- * the app's shared post sheet (Saved and its folders, the note, Add to group,
- * Share link, Open in browser).
+ * A card's ⋯ and long-press sheet: copying its words and its link, the
+ * post as a picture ([onPicture], as the app shares an X post), translating
+ * its words (or showing them again) where Threads translates, hiding it or
+ * muting its author on this device ([ThreadsSheetRows]), then the app's
+ * shared post sheet (Saved and its folders, the note, Add to group, Share
+ * link, Open in browser). None of it writes to Threads.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun ThreadsPostSheet(app: ThreadsApp, post: ThreadsPost, onDone: () -> Unit) {
+internal fun ThreadsPostSheet(app: ThreadsApp, post: ThreadsPost, onPicture: (() -> Unit)? = null, onDone: () -> Unit) {
     val copy = rememberCopyText()
     val textCopied = pluginString(Strings.text_copied)
     val linkCopied = pluginString(Strings.link_copied)
+    val options by app.options.collectAsState()
+    val rows = ThreadsSheetRows.of(post, options, picture = onPicture != null)
     val then = { action: () -> Unit -> { onDone(); action() } }
     ModalBottomSheet(onDismissRequest = onDone) {
         Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).navigationBarsPadding().padding(bottom = 8.dp)) {
-            if (post.text.isNotBlank()) PluginMenuRow(PostIcons.TextSnippet, pluginString(Strings.copy_text), then { copy(post.text); app.host.tell(textCopied) })
-            post.url?.let { url -> PluginMenuRow(XIcons.Link, pluginString(Strings.copy_link), then { copy(url); app.host.tell(linkCopied) }) }
+            if (ThreadsSheetRow.COPY_TEXT in rows) PluginMenuRow(PostIcons.TextSnippet, pluginString(Strings.copy_text), then { copy(post.text); app.host.tell(textCopied) })
+            if (ThreadsSheetRow.COPY_LINK in rows) PluginMenuRow(XIcons.Link, pluginString(Strings.copy_link), then { post.url?.let { copy(it); app.host.tell(linkCopied) } })
+            if (ThreadsSheetRow.SHARE_IMAGE in rows) PluginMenuRow(PostIcons.Screenshot, pluginString(Strings.share_image), then { onPicture?.invoke() })
             TranslateRow(app, post, then)
             PostListRows(app, post, then)
+            if (ThreadsSheetRow.HIDE in rows) PluginMenuRow(PostIcons.VisibilityOff, pluginString(Strings.hide_post), then { app.hidePost(post) })
+            if (ThreadsSheetRow.MUTE in rows) PluginMenuRow(ThreadsIcons.PersonOff, pluginString(Strings.mute_account, "@" + post.handle), then { app.muteAccount(post.handle, muted = true) })
+            if (ThreadsSheetRow.UNMUTE in rows) PluginMenuRow(ThreadsIcons.PersonOff, pluginString(Strings.unmute_account, "@" + post.handle), then { app.muteAccount(post.handle, muted = false) })
             HorizontalDivider()
             PluginPostMenuRows(app.host, ThreadsShared.menu(app, post), onDone)
         }
@@ -282,6 +292,30 @@ private fun PostListRows(app: ThreadsApp, post: ThreadsPost, then: (() -> Unit) 
     }
     if (ThreadsPeopleView.opensQuotes(post, signedIn)) {
         PluginMenuRow(PostIcons.Quote, pluginString(Strings.show_quotes), then { app.host.open(ThreadsRoutes.quotes(id, post.url)) })
+    }
+}
+
+/** An entry of the card's sheet that the plugin itself adds above the app's. */
+internal enum class ThreadsSheetRow { COPY_TEXT, COPY_LINK, SHARE_IMAGE, HIDE, MUTE, UNMUTE }
+
+/** Which of its own entries a card's sheet lists, in their order. */
+internal object ThreadsSheetRows {
+    /**
+     * For [post] as the reader's [options] stand: its words and its link to
+     * copy where it has them, the post as a picture where the card can take
+     * one ([picture]), Hide post unless it is hidden already (a profile and a
+     * search still show it), and Mute for its author, or Unmute once muted.
+     */
+    fun of(post: ThreadsPost, options: ThreadsFeedOptions, picture: Boolean): List<ThreadsSheetRow> {
+        val muted = options.mutes(post.handle)
+        return listOfNotNull(
+            ThreadsSheetRow.COPY_TEXT.takeIf { post.text.isNotBlank() },
+            ThreadsSheetRow.COPY_LINK.takeIf { !post.url.isNullOrBlank() },
+            ThreadsSheetRow.SHARE_IMAGE.takeIf { picture },
+            ThreadsSheetRow.HIDE.takeIf { post.id.isNotBlank() && post.id !in options.hiddenPosts },
+            ThreadsSheetRow.MUTE.takeIf { post.handle.isNotBlank() && !muted },
+            ThreadsSheetRow.UNMUTE.takeIf { muted },
+        )
     }
 }
 

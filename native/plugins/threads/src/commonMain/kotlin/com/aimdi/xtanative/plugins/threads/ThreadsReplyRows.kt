@@ -38,7 +38,8 @@ private val STEP: Dp = 20.dp
  * of several answers set in under the post it answers with a guide line per
  * level, a long thread cut to its first few until "Show N more replies" and
  * cut again by "Show fewer replies", and one Meta holds more of ending in
- * "Continue this thread", which opens its last post's own conversation here.
+ * "Continue this thread": [onContinue], which opens its last post's own
+ * conversation here unless the screen reads its replies in place.
  */
 internal fun LazyListScope.replyRows(
     app: ThreadsApp,
@@ -46,6 +47,7 @@ internal fun LazyListScope.replyRows(
     onExpand: (List<ThreadsPost>) -> Unit,
     onCollapse: (List<ThreadsPost>) -> Unit,
     byAuthor: (ThreadsPost) -> Boolean = { false },
+    onContinue: (ThreadsReplyRow.OnWeb) -> Unit = { row -> row.continuesAt?.let(app::openPost) },
 ) {
     itemsIndexed(rows, key = { index, row -> "reply:$index:" + keyOf(row) }, contentType = { _, row -> if (row is ThreadsReplyRow.Post) "post" else "marker" }) { _, row ->
         when (row) {
@@ -54,7 +56,7 @@ internal fun LazyListScope.replyRows(
             }
             is ThreadsReplyRow.More -> MarkerRow(PostIcons.SubdirectoryArrow, pluginPlural(Strings.more_replies, row.hidden, row.hidden)) { onExpand(row.chain) }
             is ThreadsReplyRow.Less -> MarkerRow(PostIcons.SubdirectoryArrow, pluginString(Strings.fewer_replies)) { onCollapse(row.chain) }
-            is ThreadsReplyRow.OnWeb -> row.continuesAt?.let { last -> MarkerRow(PostIcons.Forum, pluginString(Strings.continue_thread)) { app.openPost(last) } }
+            is ThreadsReplyRow.OnWeb -> if (row.continuesAt != null) MarkerRow(PostIcons.Forum, pluginString(Strings.continue_thread)) { onContinue(row) }
         }
     }
 }

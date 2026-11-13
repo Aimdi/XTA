@@ -14,7 +14,9 @@ import kotlinx.serialization.json.JsonObject
  * its words were edited, whether the opened post's author liked it, who may
  * answer it, the song it plays, the language of its words and whether
  * Meta translates them, its views, whether it is a ghost post, the long
- * text attached to it and the trends it is part of ([ThreadsPostContent]).
+ * text attached to it and the trends it is part of ([ThreadsPostContent]);
+ * the author's badge in its community, a quoted post Threads no longer
+ * shows and how often its video was played ([ThreadsGuestMarks]).
  */
 data class ThreadsPostFacts(
     val topicEmoji: String? = null,
@@ -57,6 +59,12 @@ data class ThreadsPostFacts(
     val attachment: ThreadsTextAttachment? = null,
     /** The trends it is part of (`text_post_app_info.related_trends_info`), at most [ThreadsPostContent.MAX_TRENDS]. */
     val trends: List<ThreadsTrend> = emptyList(),
+    /** The author's badge in the community the post is in (`community_badge.badge_type`, seen live as MEMBER). */
+    val communityBadge: ThreadsCommunityBadge? = null,
+    /** The post quotes one Threads shows as unavailable (deleted, hidden or private). */
+    val quoteUnavailable: Boolean = false,
+    /** How often its video was played, where Meta gives a count. */
+    val playCount: Long? = null,
 ) {
     val isEmpty: Boolean get() = this == NONE
 
@@ -147,6 +155,9 @@ object ThreadsPostFactsReader {
             ghost = ThreadsPostContent.ghost(post, postedAt(post)),
             attachment = ThreadsPostContent.attachment(post),
             trends = ThreadsPostContent.trends(post),
+            communityBadge = ThreadsGuestMarks.communityBadge(post),
+            quoteUnavailable = ThreadsGuestMarks.quoteUnavailable(post),
+            playCount = ThreadsGuestMarks.playCount(post),
         )
     }
 

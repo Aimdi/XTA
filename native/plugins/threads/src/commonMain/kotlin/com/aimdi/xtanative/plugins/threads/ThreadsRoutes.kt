@@ -3,6 +3,7 @@ package com.aimdi.xtanative.plugins.threads
 import com.aimdi.xtanative.networks.threads.ThreadsCommunities
 import com.aimdi.xtanative.networks.threads.ThreadsLink
 import com.aimdi.xtanative.networks.threads.ThreadsLinks
+import com.aimdi.xtanative.networks.threads.ThreadsOwnFeed
 import com.aimdi.xtanative.networks.threads.ThreadsPeopleList
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsSearchTerms
@@ -46,6 +47,12 @@ internal sealed interface ThreadsRoute {
 
     /** Threads' own sign-in page, its session kept as a pasted one is. */
     data object SignIn : ThreadsRoute
+
+    /** A list of posts Threads keeps for the signed-in reader: their Following feed, saved or liked posts. */
+    data class OwnFeed(val feed: ThreadsOwnFeed) : ThreadsRoute
+
+    /** The signed-in reader's activity on Threads. */
+    data object Activity : ThreadsRoute
 }
 
 internal object ThreadsRoutes {
@@ -80,6 +87,10 @@ internal object ThreadsRoutes {
 
     const val SIGN_IN = "sign-in"
 
+    fun ownFeed(feed: ThreadsOwnFeed): String = "own" + params("feed" to feed.name.lowercase())
+
+    const val ACTIVITY = "activity"
+
     /** The screen [route] names; null for one this plugin does not have. */
     fun parse(route: String): ThreadsRoute? {
         val name = route.substringBefore('?')
@@ -98,6 +109,8 @@ internal object ThreadsRoutes {
             "media" -> query["key"]?.let { ThreadsRoute.Media(it, query["start"]?.toIntOrNull() ?: 0) }
             SAVED -> ThreadsRoute.Saved
             SIGN_IN -> ThreadsRoute.SignIn
+            "own" -> ThreadsOwnFeed.entries.firstOrNull { it.name.equals(query["feed"], ignoreCase = true) }?.let(ThreadsRoute::OwnFeed)
+            ACTIVITY -> ThreadsRoute.Activity
             else -> null
         }
     }

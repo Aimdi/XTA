@@ -2,8 +2,11 @@ package com.aimdi.xtanative.plugins.threads
 
 import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.networks.threads.ThreadsBioLink
+import com.aimdi.xtanative.networks.threads.ThreadsFediverse
 import com.aimdi.xtanative.networks.threads.ThreadsImage
+import com.aimdi.xtanative.networks.threads.ThreadsPodcast
 import com.aimdi.xtanative.networks.threads.ThreadsProfile
+import com.aimdi.xtanative.networks.threads.ThreadsProfileExtras
 import com.aimdi.xtanative.networks.threads.ThreadsProfileFacts
 import com.aimdi.xtanative.networks.threads.ThreadsProfilePage
 import com.aimdi.xtanative.store.StoreFile
@@ -78,8 +81,20 @@ internal object ThreadsProfilesKept {
             "links" to JsonArray(profile.facts.links.map(::link)),
             "roundedFollowers" to JsonPrimitive(profile.facts.roundedFollowers),
             "roundedPosts" to JsonPrimitive(profile.facts.roundedPosts),
+            "tags" to (J.parse(ThreadsTopics.encode(profile.facts.tags)).raw ?: JsonArray(emptyList())),
+            "podcast" to (profile.facts.podcast?.let(::podcast) ?: JsonNull),
+            "fediverse" to text(profile.facts.fediverse?.address),
         ),
     )
+
+    private fun podcast(podcast: ThreadsPodcast): JsonObject =
+        JsonObject(mapOf("title" to text(podcast.title), "url" to text(podcast.url), "platform" to text(podcast.platform)))
+
+    private fun podcast(row: J): ThreadsPodcast? {
+        if (row.raw !is JsonObject) return null
+        val podcast = ThreadsPodcast(row["title"].string, row["url"].string?.takeIf { it.startsWith("https://") }, row["platform"].string)
+        return podcast.takeIf { it.title != null || it.url != null }
+    }
 
     private fun link(link: ThreadsBioLink): JsonObject = JsonObject(mapOf("url" to JsonPrimitive(link.url), "title" to text(link.title)))
 
@@ -107,6 +122,9 @@ internal object ThreadsProfilesKept {
                 links = row["links"].list.mapNotNull(::link),
                 roundedFollowers = row["roundedFollowers"].boolean == true,
                 roundedPosts = row["roundedPosts"].boolean == true,
+                tags = row["tags"].raw?.let { ThreadsTopics.decode(it.toString()) }.orEmpty().take(ThreadsProfileExtras.MAX_TAGS),
+                podcast = podcast(row["podcast"]),
+                fediverse = row["fediverse"].string?.ifEmpty { null }?.let(::ThreadsFediverse),
             ),
         )
     }

@@ -92,7 +92,8 @@ internal class ThreadsProfileModel(private val app: ThreadsApp, private val hand
  * here and its menu, name, handle with the private note, bio, links and
  * counts), then Posts, Replies, Media, Reposts and the posts of its the
  * reader liked here, each narrowed by the round toggles under the tabs and
- * by the bar's search through what is loaded. The replies page is asked for
+ * by the bar's search through what is loaded, Media also as a grid of its
+ * posts' first pictures ([ThreadsMediaGrid]). The replies page is asked for
  * only when its tab opens. A read that fails keeps what was shown; only a
  * profile that never had anything to show says why. More than XTA's: a
  * profile opened before shows at once what it showed then, a line at the
@@ -200,6 +201,8 @@ private fun ProfileBody(
     val mediaTab = tab == ProfileTab.MEDIA
     val chosen = ThreadsProfileView.chosen(content, mediaTab)
     val posts = remember(all, chosen, query) { ThreadsProfileView.shown(all, chosen, query) }
+    var grid by rememberSaveable { mutableStateOf(false) }
+    val gridRows = remember(posts) { ThreadsMediaGrid.rows(ThreadsMediaGrid.tiles(posts)) }
     val paging = ThreadsProfilePaging.of(tab.paged, morePosts, moreReplies, moreReposts)
     val pager = when {
         paging == null -> null
@@ -238,10 +241,13 @@ private fun ProfileBody(
         LazyColumn(state = list, modifier = Modifier.fillMaxSize().swipeTabs(ProfileTab.entries, tab, select)) {
             item(key = "card") { ThreadsProfileCard(app, profile, onFilters = { sheet = true }) }
             item(key = "tabs") { ProfileTabStrip(ProfileTab.entries, tab, label = { pluginString(it.label) }, onSelect = select) }
-            item(key = "filters") { ContentToggles(ThreadsProfileView.filters(mediaTab), chosen) { content = it } }
+            item(key = "filters") {
+                ContentToggles(ThreadsProfileView.filters(mediaTab), chosen, grid = grid.takeIf { mediaTab }, onGrid = { grid = it }) { content = it }
+            }
             when {
                 waiting -> item(key = "waiting") { LoadingRow() }
                 posts.isEmpty() -> item(key = "empty") { MessageText(pluginString(emptyLabel(tab, ThreadsProfileView.empty(all, chosen, query)))) }
+                mediaTab && grid && gridRows.isNotEmpty() -> items(gridRows, key = { "grid:" + it.first().key }, contentType = { "grid" }) { MediaGridRow(app, it) }
                 else -> items(posts, key = { "post:" + it.id }, contentType = { "post" }) { ThreadsPostCard(app, it) }
             }
             moreFoot("profile", paging) { pager?.retry() }

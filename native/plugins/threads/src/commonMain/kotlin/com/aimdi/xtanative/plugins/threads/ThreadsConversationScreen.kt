@@ -37,6 +37,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -48,6 +49,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsReplyRow
 import com.aimdi.xtanative.networks.threads.ThreadsReplyOrder
 import com.aimdi.xtanative.networks.threads.ThreadsThreadView
+import com.aimdi.xtanative.networks.threads.attempt
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.Fetch
 import com.aimdi.xtanative.ui.plugins.Fetched
@@ -93,7 +95,9 @@ internal class ThreadsConversationModel(app: ThreadsApp, url: String, seed: Thre
  * thread, read from the post's public page. The tapped card is on screen at
  * once; with posts above it, the list opens on it, what it answers a scroll up.
  * A conversation opened before shows at once what it showed then, quietly
- * "updating" while its page is read again.
+ * "updating" while its page is read again. Where the author chained several
+ * posts, the bar offers them read as one article; replies of accounts the
+ * reader muted, and posts they hid, are left out.
  */
 @Composable
 internal fun ThreadsConversationScreen(app: ThreadsApp, route: ThreadsRoute.Post) {
@@ -114,18 +118,41 @@ internal fun ThreadsConversationScreen(app: ThreadsApp, route: ThreadsRoute.Post
         state.value?.takeIf { it.loaded }?.let { read -> more.start(read.replies.map(::ThreadsReplyThread), read.repliesNext) }
     }
     val shown = ThreadsConversationView.shown(state.value, kept, seed)
-    val conversation = remember(shown, paged.items) { shown.withMore(paged.items) }
+    val options by app.options.collectAsState()
+    val conversation = remember(shown, paged.items, options) { ThreadsConversationView.quieted(shown.withMore(paged.items), options) }
+    val article = remember(conversation) { ThreadsArticles.of(conversation) }
+    var asked by rememberSaveable { mutableStateOf(false) }
+    val reading = ThreadsArticles.reading(asked, article)
     PluginScaffold(
         title = pluginString(Strings.thread),
         onBack = app.host::back,
         actions = {
-            if (conversation.loaded) ReadAloudButton("${pluginString(Strings.thread)} · @${conversation.focus.handle}", conversation::spokenText)
+            if (article != null) ArticleSwitch(reading) { asked = !reading }
+            if (conversation.loaded) {
+                ReadAloudButton("${pluginString(Strings.thread)} · @${conversation.focus.handle}", text = { if (reading) article?.spokenText().orEmpty() else conversation.spokenText() })
+            }
             conversation.focus.url?.let { url -> ThreadActions(app, url) }
         },
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
-            ConversationList(app, conversation, state, ThreadsMoreReplies(more, paged), onRetry = { fetch.load(force = true) })
+            if (reading && article != null) {
+                ThreadsArticleView(app, article)
+            } else {
+                ConversationList(app, conversation, state, ThreadsMoreReplies(more, paged), onRetry = { fetch.load(force = true) })
+            }
             NoticeHost(app.notices)
+        }
+    }
+}
+
+/** The bar's switch between an author's thread read as one article ([ThreadsArticleView]) and the conversation with its replies. */
+@Composable
+private fun ArticleSwitch(reading: Boolean, onSwitch: () -> Unit) {
+    IconButton(onClick = onSwitch) {
+        if (reading) {
+            Icon(PostIcons.Forum, contentDescription = pluginString(Strings.show_conversation))
+        } else {
+            Icon(PostIcons.Article, contentDescription = pluginString(Strings.read_as_article))
         }
     }
 }
@@ -141,10 +168,14 @@ private fun ThreadActions(app: ThreadsApp, url: String) {
 
 /** The conversation's list; a picture opened in it is viewed among all the pictures shown in it. */
 @Composable
-private fun ConversationList(app: ThreadsApp, conversation: ThreadsConversation, state: Fetched<ThreadsConversation>, more: ThreadsMoreReplies, onRetry: () -> Unit) {
+private fun ConversationList(app: ThreadsApp, read: ThreadsConversation, state: Fetched<ThreadsConversation>, more: ThreadsMoreReplies, onRetry: () -> Unit) {
     val order by app.replyOrder.collectAsState()
     var authorOnly by rememberSaveable { mutableStateOf(false) }
     var expanded by rememberSaveable { mutableStateOf(emptyList<String>()) }
+    // The replies read in place under an unfinished thread, by the thread: only once Threads' own read of them is known.
+    var deeper by remember(read.focus.id) { mutableStateOf(emptyMap<String, ThreadsReplyThread>()) }
+    val conversation = remember(read, deeper) { read.withDeeper(deeper) }
+    val scope = rememberCoroutineScope()
     val view = ThreadsThreadView(authorOnly, expanded.toSet(), order)
     val rows = remember(conversation, view) { conversation.replyRows(view) }
     val gallery = remember(conversation, rows) { conversation.ancestors + conversation.focus + conversation.continuation + rows.mapNotNull { (it as? ThreadsReplyRow.Post)?.post } }
@@ -157,6 +188,24 @@ private fun ConversationList(app: ThreadsApp, conversation: ThreadsConversation,
             onAuthorOnly = { authorOnly = !authorOnly },
             onExpand = { chain -> expanded = expanded + chain.first().id },
             onCollapse = { chain -> expanded = expanded - chain.first().id },
+            onContinue = { row ->
+                val last = row.continuesAt
+                val under = row.chain.first().id
+                when {
+                    last == null -> Unit
+                    !app.direct.readsDeeperReplies -> app.openPost(last)
+                    else -> scope.launch {
+                        val brought = attempt { app.nextPage { app.direct.deeperReplies(last) } }
+                        val all = brought?.let { deeper[under]?.then(it) ?: it }
+                        if (all != null && read.withDeeper(deeper).brings(all)) {
+                            deeper = deeper + (under to all)
+                            expanded = expanded + under
+                        } else {
+                            app.openPost(last)
+                        }
+                    }
+                }
+            },
         )
     }
 }
@@ -175,6 +224,7 @@ private fun RefreshableConversation(
     onAuthorOnly: () -> Unit,
     onExpand: (List<ThreadsPost>) -> Unit,
     onCollapse: (List<ThreadsPost>) -> Unit,
+    onContinue: (ThreadsReplyRow.OnWeb) -> Unit,
 ) {
     // Pulling shows its own spinner; what was kept shown while the page is read first says "updating" instead.
     val fresh = state.value?.loaded == true
@@ -184,7 +234,7 @@ private fun RefreshableConversation(
             statusRows(conversation, state, onRetry)
             if (conversation.replies.isNotEmpty()) {
                 item(key = "replies-header") { RepliesHeader(app, conversation, view, onAuthorOnly) }
-                replyRows(app, rows, onExpand, onCollapse, byAuthor = conversation::byAuthor)
+                replyRows(app, rows, onExpand, onCollapse, byAuthor = conversation::byAuthor, onContinue = onContinue)
             }
             moreFoot("replies", more.state) { more.paging.retry() }
             if (conversation.moreReplies && (more.state.onWeb || !more.state.paged)) moreRepliesOnWeb(conversation.focus.url)
@@ -325,4 +375,13 @@ internal object ThreadsConversationView {
         kept != null -> kept
         else -> read ?: ThreadsConversation.seed(seed)
     }
+
+    /**
+     * [conversation] without what the reader muted or hid on this device
+     * ([ThreadsFeedOptions.replies]): among its replies and the posts Threads
+     * suggests beside it. The post that was opened, what it answers and its
+     * author's own thread stay whole: the reader asked for them.
+     */
+    fun quieted(conversation: ThreadsConversation, options: ThreadsFeedOptions): ThreadsConversation =
+        if (!options.hidesSome) conversation else conversation.copy(replies = options.replies(conversation.replies), related = options.unhidden(conversation.related))
 }

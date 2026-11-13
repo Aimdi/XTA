@@ -37,6 +37,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsLinks
 import com.aimdi.xtanative.networks.threads.ThreadsPeopleList
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsProfile
+import com.aimdi.xtanative.networks.threads.ThreadsProfileAbout
 import com.aimdi.xtanative.networks.threads.ThreadsProfilePage
 import com.aimdi.xtanative.networks.threads.ThreadsProfileTab
 import com.aimdi.xtanative.ui.common.XIcons
@@ -47,6 +48,8 @@ import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 import com.aimdi.xtanative.ui.post.PostIcons
 import java.text.NumberFormat
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 /** The rules of a profile's header beyond XTA's: its links, its exact counts. */
@@ -93,6 +96,14 @@ internal object ThreadsProfileHeader {
 
     /** [n] whole, grouped as [locale] groups digits: 5,812,345. */
     fun exact(n: Long, locale: Locale): String = NumberFormat.getIntegerInstance(locale).format(n)
+
+    /**
+     * When the account joined, as "Joined %s" reads it: the month and year of
+     * the moment Meta gave, in [locale]'s words and [zone], else Meta's own
+     * words for it; null when it gave neither.
+     */
+    fun joined(about: ThreadsProfileAbout, locale: Locale, zone: ZoneId = ZoneId.systemDefault()): String? =
+        about.joinedAt?.let { DateTimeFormatter.ofPattern("LLLL yyyy", locale).withZone(zone).format(it) } ?: about.joined?.trim()?.ifEmpty { null }
 }
 
 /** The profile's links, one row each, opened outside the app (more than XTA's one website). */

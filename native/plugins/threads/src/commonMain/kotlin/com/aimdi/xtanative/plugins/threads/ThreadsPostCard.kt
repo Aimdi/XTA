@@ -76,15 +76,17 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 /**
  * A Threads post as a timeline card, laid out as an X post is
  * (threads_post_card.dart): who reposted it or that it is pinned, the
- * author with Follow and ⋯ ("Edited" by its time), the topic, whom it
+ * author with their community badge, Follow and ⋯ ("Edited" by its time), the topic, whom it
  * answers, whether it is a ghost post, the caption (its spoilers covered, a
  * long one cut short, Meta's translation in its place once asked for), its
  * attached text, its song, its poll's results, Meta's labels (and "Liked
- * by the author"), its pictures and videos, the link card, the quote, its
+ * by the author"), its pictures and videos, the link card, the quote (or
+ * "This post is unavailable" where Threads no longer shows it), its
  * trends and "Show N more posts in this thread"; then the counts Meta gave, the like kept on
  * this device, its bookmark in the app's Saved and the way to the web. A
- * long press, or ⋯, opens its sheet: copying its words and link above the
- * app's post sheet. With [focal] it is the opened post: its time and date
+ * long press, or ⋯, opens its sheet: copying its words and link, the post
+ * as a picture to share, hiding it and muting its author on this device,
+ * above the app's post sheet. With [focal] it is the opened post: its time and date
  * on a line under it with its quotes and shares, its text selectable. [connectTop] and [connectBottom] join it to
  * the posts above and below it through the avatar, as a thread draws them;
  * without [divider] the line under it is left to the list.
@@ -111,9 +113,12 @@ internal fun ThreadsPostCard(
     val menu = { sheet = true }
     val translation = rememberThreadsTranslation(app, post)
     val summary = rememberSummary(translation.applied(post), isLiked, menu) { app.toggleLike(post) }
+    val picture = rememberThreadsPostPicture()
+    val sharePicture = rememberPictureShare(app, post, picture)
     Column(
         modifier
             .fillMaxWidth()
+            .recordedIn(picture)
             .combinedClickable(
                 onClickLabel = pluginString(Strings.open_post),
                 onClick = open,
@@ -138,7 +143,7 @@ internal fun ThreadsPostCard(
         }
     }
     if (divider && !connectBottom) Hairline()
-    if (sheet) ThreadsPostSheet(app, post) { sheet = false }
+    if (sheet) ThreadsPostSheet(app, post, onPicture = sharePicture) { sheet = false }
 }
 
 /**
@@ -152,6 +157,7 @@ private fun rememberSummary(post: ThreadsPost, liked: Boolean, menu: () -> Unit,
     val spoiler = pluginString(Strings.spoiler)
     val ghost = pluginString(Strings.ghost_post)
     val labels = listOfNotNull(
+        post.facts.communityBadge?.let { pluginString(badgeLabel(it)) },
         ghost.takeIf { post.facts.ghost != null },
         post.facts.attachment?.let { pluginString(Strings.attached_text) + ": " + (it.title ?: it.text.take(SPOKEN_ATTACHMENT)) },
         pluginString(Strings.ai_info).takeIf { post.facts.aiLabel },
@@ -160,6 +166,7 @@ private fun rememberSummary(post: ThreadsPost, liked: Boolean, menu: () -> Unit,
         pluginString(Strings.liked_by_author).takeIf { post.facts.likedByAuthor },
         post.facts.music?.let { pluginString(Strings.music) + ": " + it.line },
         post.facts.trends.takeIf { it.isNotEmpty() }?.joinToString(", ") { it.title }?.let { pluginString(Strings.post_trend, it) },
+        pluginString(Strings.quote_unavailable).takeIf { post.quoted == null && post.facts.quoteUnavailable },
     )
     val likeLabel = pluginString(if (liked) Strings.unlike_on_device else Strings.like_on_device)
     val moreLabel = pluginString(Strings.more_options)
@@ -243,6 +250,7 @@ private fun Header(app: ThreadsApp, post: ThreadsPost, focal: Boolean, byAuthor:
             ),
         )
         if (byAuthor) AuthorChip()
+        post.facts.communityBadge?.let { AuthorChip(pluginString(badgeLabel(it))) }
         if (rows != null && !ThreadsAccounts.follows(rows, post.handle)) {
             SmallIcon(ThreadsIcons.PersonAdd, pluginString(Strings.follow)) { app.follow(ThreadsAccount.of(post)) }
         }
@@ -250,11 +258,14 @@ private fun Header(app: ThreadsApp, post: ThreadsPost, focal: Boolean, byAuthor:
     }
 }
 
-/** "Author", beside a reply the opened post's author wrote. */
+/**
+ * "Author", beside a reply the opened post's author wrote; "Member" (or the
+ * author's other badge in the community the post is in) as threads.com marks it.
+ */
 @Composable
-private fun AuthorChip() {
+private fun AuthorChip(text: String = pluginString(Strings.author)) {
     Text(
-        pluginString(Strings.author),
+        text,
         style = MaterialTheme.typography.labelSmall,
         fontWeight = FontWeight.SemiBold,
         color = MaterialTheme.colorScheme.onSecondaryContainer,
@@ -287,6 +298,7 @@ private fun Body(app: ThreadsApp, post: ThreadsPost, translation: ThreadsTransla
     ThreadsPostMedia(app, post, Modifier.partGap(), opens = openOnTap)
     post.linkCard?.let { ThreadsLink(app, post, it, Modifier.partGap(), opens = openOnTap) }
     post.quoted?.let { ThreadsQuote(app, it, Modifier.partGap()) }
+    if (post.quoted == null && post.facts.quoteUnavailable) QuoteUnavailable(Modifier.partGap())
     TrendChips(app, post, Modifier.padding(top = 4.dp))
     if (post.selfThreadCount > 0 && openOnTap) {
         TextButton(onClick = { app.openPost(post) }, modifier = Modifier.heightIn(min = 48.dp)) {
@@ -350,7 +362,7 @@ internal fun ThreadsLink(app: ThreadsApp, post: ThreadsPost, card: ThreadsLinkCa
 
 /** The post this one quotes, boxed, opening its own conversation; its media and link card under its words. */
 @Composable
-private fun ThreadsQuote(app: ThreadsApp, quote: ThreadsPost, modifier: Modifier) {
+internal fun ThreadsQuote(app: ThreadsApp, quote: ThreadsPost, modifier: Modifier) {
     val shape = RoundedCornerShape(16.dp)
     Column(
         modifier
@@ -370,6 +382,22 @@ private fun ThreadsQuote(app: ThreadsApp, quote: ThreadsPost, modifier: Modifier
         ThreadsPostMedia(app, quote, Modifier.padding(top = 8.dp))
         quote.linkCard?.let { ThreadsLink(app, quote, it, Modifier.padding(top = 8.dp)) }
     }
+}
+
+/** Where a quoted post would be boxed, when Threads no longer shows it: "This post is unavailable", as threads.com says. */
+@Composable
+private fun QuoteUnavailable(modifier: Modifier) {
+    val shape = RoundedCornerShape(16.dp)
+    Text(
+        pluginString(Strings.quote_unavailable),
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .border(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant, shape)
+            .padding(horizontal = 12.dp, vertical = 14.dp),
+    )
 }
 
 /**

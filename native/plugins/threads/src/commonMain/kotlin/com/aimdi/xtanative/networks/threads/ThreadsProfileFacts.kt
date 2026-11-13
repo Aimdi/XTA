@@ -12,14 +12,21 @@ data class ThreadsBioLink(val url: String, val title: String? = null)
 
 /**
  * What a profile's own page says about it beyond its meta tags: its bio as
- * Meta split it, and its links; and which counts came only from the meta
- * tags' rounded "5.7M Followers", so no exact figure can be shown for them.
+ * Meta split it, and its links; which counts came only from the meta
+ * tags' rounded "5.7M Followers", so no exact figure can be shown for them;
+ * and the topics, podcast and fediverse sharing it shows ([ThreadsProfileExtras]).
  */
 data class ThreadsProfileFacts(
     val bioFragments: List<ThreadsTextFragment> = emptyList(),
     val links: List<ThreadsBioLink> = emptyList(),
     val roundedFollowers: Boolean = false,
     val roundedPosts: Boolean = false,
+    /** The topics and communities the profile lists under its bio (`profile_tags`). */
+    val tags: List<ThreadsTopic> = emptyList(),
+    /** The podcast it names (`platform_podcast_info`). */
+    val podcast: ThreadsPodcast? = null,
+    /** Set when it shares its posts to the fediverse. */
+    val fediverse: ThreadsFediverse? = null,
 )
 
 /**
@@ -107,6 +114,9 @@ object ThreadsProfileOwner {
             facts = ThreadsProfileFacts(
                 bioFragments = all.firstOf { bioFragments(it, bio).ifEmpty { null } }.orEmpty(),
                 links = all.firstOf { links(it).ifEmpty { null } }.orEmpty(),
+                tags = all.firstOf { ThreadsProfileExtras.tags(it).ifEmpty { null } }.orEmpty(),
+                podcast = all.firstOf(ThreadsProfileExtras::podcast),
+                fediverse = all.firstOf { ThreadsProfileExtras.fediverse(it, base.username) },
             ),
         )
     }
