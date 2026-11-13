@@ -205,4 +205,12 @@
     <string name="community">Społeczność</string>
     <string name="community_posts">Posty w tej społeczności</string>
     <string name="topic_followed">Obserwowane na tym urządzeniu — posty trafiają teraz na stronę główną</string>
+    <string name="people_both">Wspólni obserwujący</string>
+    <string name="liked_by">Polubione przez</string>
+    <string name="people_signed_out">Threads pokazuje te listy tylko zalogowanym czytelnikom</string>
+    <string name="people_signed_out_detail">Zaloguj się do Threads, aby je zobaczyć. Obserwowanie kogoś stąd zostaje na tym urządzeniu; nic nie jest wysyłane do Threads.</string>
+    <string name="people_empty">Nikogo tu jeszcze nie ma</string>
+    <string name="likers_empty">Brak polubień do pokazania</string>
+    <string name="show_list">Pokaż listę</string>
+    <string name="show_liked_by">Zobacz, kto polubił</string>
 </resources>

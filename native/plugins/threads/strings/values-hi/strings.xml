@@ -195,4 +195,12 @@
     <string name="community">समुदाय</string>
     <string name="community_posts">इस समुदाय की पोस्ट</string>
     <string name="topic_followed">इस डिवाइस पर फ़ॉलो किया — इसकी पोस्ट अब होम में आएँगी</string>
+    <string name="people_both">आप दोनों के फ़ॉलोअर</string>
+    <string name="liked_by">इन्हें पसंद आया</string>
+    <string name="people_signed_out">Threads ये सूचियाँ सिर्फ़ साइन-इन किए पाठकों को दिखाता है</string>
+    <string name="people_signed_out_detail">इन्हें देखने के लिए Threads में साइन इन करें। यहाँ से किसी को फ़ॉलो करना इसी डिवाइस पर रहता है; Threads को कुछ नहीं भेजा जाता।</string>
+    <string name="people_empty">अभी यहाँ कोई नहीं है</string>
+    <string name="likers_empty">दिखाने को कोई पसंद नहीं</string>
+    <string name="show_list">सूची दिखाएँ</string>
+    <string name="show_liked_by">देखें किसने पसंद किया</string>
 </resources>

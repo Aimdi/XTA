@@ -205,4 +205,12 @@
     <string name="community">Супольнасць</string>
     <string name="community_posts">Допісы ў гэтай супольнасці</string>
     <string name="topic_followed">Падпіска на гэтай прыладзе — яе допісы цяпер трапляюць на Галоўную</string>
+    <string name="people_both">Агульныя падпісчыкі</string>
+    <string name="liked_by">Спадабалася</string>
+    <string name="people_signed_out">Threads паказвае гэтыя спісы толькі тым, хто ўвайшоў</string>
+    <string name="people_signed_out_detail">Увайдзіце ў Threads, каб убачыць іх. Падпіска адсюль застаецца на гэтай прыладзе; у Threads нічога не адпраўляецца.</string>
+    <string name="people_empty">Тут пакуль нікога няма</string>
+    <string name="likers_empty">Няма спадабанняў</string>
+    <string name="show_list">Паказаць спіс</string>
+    <string name="show_liked_by">Паглядзець, каму спадабалася</string>
 </resources>

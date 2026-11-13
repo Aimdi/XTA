@@ -115,6 +115,43 @@ class ThreadsDirectClient(
         return Page(users, null)
     }
 
+    /**
+     * One page of [list] ([ThreadsPeople]) for [target], a user's numeric id or
+     * a post's media id, after [cursor], with Meta's own search for [query]
+     * where the list has one. A session read: the cookies on threads.com when
+     * the reader gave them, else the Bearer on the app API; with neither,
+     * [NOT_CONFIGURED]. A read only: no one is followed or liked.
+     */
+    suspend fun people(list: ThreadsPeopleList, target: String, cursor: String? = null, query: String? = null): Page<ThreadsProfile> {
+        val id = target.trim().takeIf { it.isNotEmpty() && it.all(Char::isDigit) } ?: throw ThreadsException(NO_SUCH_FEED, "no id for $list")
+        val current = session()
+        val path = ThreadsPeople.path(list, id)
+        val params = ThreadsPeople.params(list, cursor, query)
+        val token = current.bearerToken
+        val body = when {
+            current.hasCookies -> sessionRead(ThreadsLinks.web(path, params), cookieHeaders(current))
+            token != null -> deviceId().let { device -> sessionRead(ThreadsLinks.address(INSTAGRAM, path, params), bearerHeaders(token, device)) }
+            else -> throw ThreadsException(NOT_CONFIGURED, "no session for $list")
+        }
+        return ThreadsPeople.page(body)
+    }
+
+    /**
+     * [handle]'s numeric id for its lists: remembered, else from its public
+     * page, else (with cookies) from people search.
+     */
+    suspend fun userIdFor(handle: String): String {
+        val key = handle.trim().removePrefix("@").lowercase()
+        memory.kept.userIds[key]?.ifEmpty { null }?.let { return it }
+        val fromPage = try {
+            guestProfile(key).pk.ifEmpty { null }
+        } catch (e: Exception) {
+            if (!e.isReadFailure() || !session().hasCookies) throw e
+            null
+        }
+        return fromPage ?: resolveUserId(key)
+    }
+
     /** [handle]'s profile card: its public page, else the cookie API when the reader opted in to session reads. */
     suspend fun profile(handle: String): ThreadsProfile {
         try {

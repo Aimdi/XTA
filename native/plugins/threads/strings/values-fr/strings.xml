@@ -199,4 +199,12 @@
     <string name="community">Communauté</string>
     <string name="community_posts">Publications de cette communauté</string>
     <string name="topic_followed">Suivi sur cet appareil — ses publications arrivent désormais dans Accueil</string>
+    <string name="people_both">Abonnés en commun</string>
+    <string name="liked_by">Aimé par</string>
+    <string name="people_signed_out">Threads ne montre ces listes qu\'aux lecteurs connectés</string>
+    <string name="people_signed_out_detail">Connectez-vous à Threads pour les voir. Suivre quelqu\'un d\'ici reste sur cet appareil ; rien n\'est envoyé à Threads.</string>
+    <string name="people_empty">Personne pour l\'instant</string>
+    <string name="likers_empty">Aucun J\'aime à afficher</string>
+    <string name="show_list">Afficher la liste</string>
+    <string name="show_liked_by">Voir qui a aimé</string>
 </resources>

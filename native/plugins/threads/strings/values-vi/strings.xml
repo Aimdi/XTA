@@ -190,4 +190,12 @@
     <string name="community">Cộng đồng</string>
     <string name="community_posts">Bài đăng trong cộng đồng này</string>
     <string name="topic_followed">Đã theo dõi trên thiết bị này — bài đăng giờ sẽ có trong Trang chủ</string>
+    <string name="people_both">Người theo dõi chung</string>
+    <string name="liked_by">Người đã thích</string>
+    <string name="people_signed_out">Threads chỉ hiển thị các danh sách này cho người đọc đã đăng nhập</string>
+    <string name="people_signed_out_detail">Hãy đăng nhập Threads để xem. Theo dõi ai đó từ đây chỉ lưu trên thiết bị này; không có gì được gửi tới Threads.</string>
+    <string name="people_empty">Chưa có ai</string>
+    <string name="likers_empty">Không có lượt thích nào để hiển thị</string>
+    <string name="show_list">Hiện danh sách</string>
+    <string name="show_liked_by">Xem ai đã thích</string>
 </resources>

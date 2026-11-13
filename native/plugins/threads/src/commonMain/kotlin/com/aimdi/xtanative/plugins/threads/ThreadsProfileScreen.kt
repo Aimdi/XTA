@@ -285,7 +285,10 @@ internal fun ThreadsProfileCard(app: ThreadsApp, profile: ThreadsProfile, modifi
         val counts = ThreadsProfiles.counts(profile)
         if (counts.isNotEmpty()) {
             FlowRow(Modifier.padding(top = 10.dp), horizontalArrangement = Arrangement.spacedBy(18.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                counts.forEach { (n, kind) -> ProfileCount(n, countLabel(kind), ThreadsProfileHeader.isExact(profile, kind)) }
+                counts.forEach { (n, kind) ->
+                    val list = ThreadsProfileHeader.list(kind)
+                    ProfileCount(n, countLabel(kind), ThreadsProfileHeader.isExact(profile, kind), list?.let { { app.host.open(ThreadsRoutes.people(profile.username, it)) } })
+                }
             }
         }
         ProfileNote(app, profile.username)

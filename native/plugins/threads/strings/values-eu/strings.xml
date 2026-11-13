@@ -195,4 +195,12 @@
     <string name="community">Komunitatea</string>
     <string name="community_posts">Komunitate honetako argitalpenak</string>
     <string name="topic_followed">Gailu honetan jarraituta — bere argitalpenak orain Hasierara iristen dira</string>
+    <string name="people_both">Jarraitzaile komunak</string>
+    <string name="liked_by">Gustuko dute</string>
+    <string name="people_signed_out">Threadsek saioa hasi dutenei bakarrik erakusten dizkie zerrenda hauek</string>
+    <string name="people_signed_out_detail">Hasi saioa Threadsen haiek ikusteko. Hemendik norbait jarraitzea gailu honetan geratzen da; ez da ezer bidaltzen Threadsera.</string>
+    <string name="people_empty">Oraindik ez dago inor</string>
+    <string name="likers_empty">Ez dago atsegiterik erakusteko</string>
+    <string name="show_list">Erakutsi zerrenda</string>
+    <string name="show_liked_by">Ikusi nori gustatu zaion</string>
 </resources>

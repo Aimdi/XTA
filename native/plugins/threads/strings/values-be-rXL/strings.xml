@@ -205,4 +205,12 @@
     <string name="community">Supolnasć</string>
     <string name="community_posts">Dopisy ŭ hetaj supolnasci</string>
     <string name="topic_followed">Padpiska na hetaj pryladzie — jaje dopisy ciapier traplajuć na Hałoŭnuju</string>
+    <string name="people_both">Ahulnyja padpisčyki</string>
+    <string name="liked_by">Spadabałasia</string>
+    <string name="people_signed_out">Threads pakazvaje hetyja spisy tolki tym, chto ŭvajšoŭ</string>
+    <string name="people_signed_out_detail">Uvajdzicie ŭ Threads, kab ubačyć ich. Padpiska adsul zastajecca na hetaj pryladzie; u Threads ničoha nie adpraŭlajecca.</string>
+    <string name="people_empty">Tut pakul nikoha niama</string>
+    <string name="likers_empty">Niama spadabanniaŭ</string>
+    <string name="show_list">Pakazać spis</string>
+    <string name="show_liked_by">Pahladzieć, kamu spadabałasia</string>
 </resources>

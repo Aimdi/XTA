@@ -195,4 +195,12 @@
     <string name="community">Komunumo</string>
     <string name="community_posts">Afiŝoj en ĉi tiu komunumo</string>
     <string name="topic_followed">Sekvata en ĉi tiu aparato — ĝiaj afiŝoj nun venas al Hejmo</string>
+    <string name="people_both">Komunaj sekvantoj</string>
+    <string name="liked_by">Ŝatata de</string>
+    <string name="people_signed_out">Threads montras ĉi tiujn listojn nur al ensalutintaj legantoj</string>
+    <string name="people_signed_out_detail">Ensalutu al Threads por vidi ilin. Sekvi iun de ĉi tie restas en ĉi tiu aparato; nenio estas sendata al Threads.</string>
+    <string name="people_empty">Ankoraŭ neniu ĉi tie</string>
+    <string name="likers_empty">Neniuj ŝatoj montreblaj</string>
+    <string name="show_list">Montri la liston</string>
+    <string name="show_liked_by">Vidi, kiu ŝatis tion</string>
 </resources>

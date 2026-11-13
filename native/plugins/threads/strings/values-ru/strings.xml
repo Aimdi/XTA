@@ -205,4 +205,12 @@
     <string name="community">Сообщество</string>
     <string name="community_posts">Посты в этом сообществе</string>
     <string name="topic_followed">Подписка на этом устройстве — его посты теперь приходят на Главную</string>
+    <string name="people_both">Общие подписчики</string>
+    <string name="liked_by">Понравилось</string>
+    <string name="people_signed_out">Threads показывает эти списки только вошедшим читателям</string>
+    <string name="people_signed_out_detail">Войдите в Threads, чтобы их увидеть. Подписка отсюда остаётся на этом устройстве; в Threads ничего не отправляется.</string>
+    <string name="people_empty">Здесь пока никого нет</string>
+    <string name="likers_empty">Нет отметок «Нравится»</string>
+    <string name="show_list">Показать список</string>
+    <string name="show_liked_by">Посмотреть, кому понравилось</string>
 </resources>

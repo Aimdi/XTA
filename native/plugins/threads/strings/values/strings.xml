@@ -197,4 +197,12 @@
     <string name="community">Community</string>
     <string name="community_posts">Posts in this community</string>
     <string name="topic_followed">Followed on this device — its posts now come to Home</string>
+    <string name="people_both">Followers you both have</string>
+    <string name="liked_by">Liked by</string>
+    <string name="people_signed_out">Threads shows these lists only to signed-in readers</string>
+    <string name="people_signed_out_detail">Sign in to Threads to see them. Following someone from here stays on this device; nothing is sent to Threads.</string>
+    <string name="people_empty">No one here yet</string>
+    <string name="likers_empty">No likes to show</string>
+    <string name="show_list">Show the list</string>
+    <string name="show_liked_by">See who liked this</string>
 </resources>

@@ -195,4 +195,12 @@
     <string name="community">Community</string>
     <string name="community_posts">Berichten in deze community</string>
     <string name="topic_followed">Gevolgd op dit apparaat — de berichten komen nu in Home</string>
+    <string name="people_both">Gemeenschappelijke volgers</string>
+    <string name="liked_by">Leuk gevonden door</string>
+    <string name="people_signed_out">Threads toont deze lijsten alleen aan ingelogde lezers</string>
+    <string name="people_signed_out_detail">Log in bij Threads om ze te zien. Iemand vanaf hier volgen blijft op dit apparaat; er wordt niets naar Threads gestuurd.</string>
+    <string name="people_empty">Nog niemand hier</string>
+    <string name="likers_empty">Geen likes om te tonen</string>
+    <string name="show_list">Lijst tonen</string>
+    <string name="show_liked_by">Zien wie dit leuk vond</string>
 </resources>

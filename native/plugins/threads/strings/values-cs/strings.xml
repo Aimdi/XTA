@@ -205,4 +205,12 @@
     <string name="community">Komunita</string>
     <string name="community_posts">Příspěvky v této komunitě</string>
     <string name="topic_followed">Sledováno v tomto zařízení — jeho příspěvky teď přicházejí na Domů</string>
+    <string name="people_both">Společní sledující</string>
+    <string name="liked_by">Líbí se</string>
+    <string name="people_signed_out">Threads tyto seznamy ukazuje jen přihlášeným</string>
+    <string name="people_signed_out_detail">Přihlaste se do Threads, abyste je viděli. Sledování odsud zůstává v tomto zařízení; do Threads se nic neposílá.</string>
+    <string name="people_empty">Zatím tu nikdo není</string>
+    <string name="likers_empty">Žádná označení Líbí se</string>
+    <string name="show_list">Zobrazit seznam</string>
+    <string name="show_liked_by">Zobrazit, komu se to líbí</string>
 </resources>

@@ -195,4 +195,12 @@
     <string name="community">Topluluk</string>
     <string name="community_posts">Bu topluluktaki gönderiler</string>
     <string name="topic_followed">Bu cihazda takip ediliyor — gönderileri artık Ana sayfada</string>
+    <string name="people_both">Ortak takipçiler</string>
+    <string name="liked_by">Beğenenler</string>
+    <string name="people_signed_out">Threads bu listeleri yalnızca oturum açmış okurlara gösterir</string>
+    <string name="people_signed_out_detail">Görmek için Threads\'e giriş yapın. Buradan birini takip etmek bu cihazda kalır; Threads\'e hiçbir şey gönderilmez.</string>
+    <string name="people_empty">Henüz kimse yok</string>
+    <string name="likers_empty">Gösterilecek beğeni yok</string>
+    <string name="show_list">Listeyi göster</string>
+    <string name="show_liked_by">Kimlerin beğendiğini gör</string>
 </resources>

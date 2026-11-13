@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -35,8 +37,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsPropertyReceiver
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.customActions
@@ -49,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.core.x.model.XCard
 import com.aimdi.xtanative.networks.threads.ThreadsLinkCard
+import com.aimdi.xtanative.networks.threads.ThreadsPeople
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.store.settings.AccessibilityPrefs
 import com.aimdi.xtanative.ui.common.Hairline
@@ -224,7 +229,7 @@ private fun Header(app: ThreadsApp, post: ThreadsPost, focal: Boolean, byAuthor:
         if (rows != null && !ThreadsAccounts.follows(rows, post.handle)) {
             SmallIcon(ThreadsIcons.PersonAdd, pluginString(Strings.follow)) { app.follow(ThreadsAccount.of(post)) }
         }
-        SmallIcon(PostIcons.MoreHoriz, pluginString(Strings.more_info), onMore)
+        SmallIcon(PostIcons.MoreHoriz, pluginString(Strings.more_info), onClick = onMore)
     }
 }
 
@@ -356,12 +361,25 @@ private fun Engagement(app: ThreadsApp, post: ThreadsPost, liked: Boolean, hideC
     Row(Modifier.fillMaxWidth().padding(top = 2.dp), verticalAlignment = Alignment.CenterVertically) {
         CountButton(XIcons.Reply, counted(post.replyCount), openPost, muted, open)
         CountButton(XIcons.Repost, counted(post.repostCount), openPost, muted, open)
-        CountButton(
-            if (liked) ThreadsHeart.Filled else ThreadsHeart.Outlined,
-            counted(post.likeCount?.let { if (liked) it + 1 else it }),
-            pluginString(if (liked) Strings.unlike_on_device else Strings.like_on_device),
-            if (liked) MaterialTheme.colorScheme.primary else muted,
-        ) { app.toggleLike(post) }
+        val heart = if (liked) ThreadsHeart.Filled else ThreadsHeart.Outlined
+        val likes = counted(post.likeCount?.let { if (liked) it + 1 else it })
+        val likeLabel = pluginString(if (liked) Strings.unlike_on_device else Strings.like_on_device)
+        val likeTint = if (liked) MaterialTheme.colorScheme.primary else muted
+        val settings by app.prefs.collectAsState()
+        val likers = ThreadsPeople.mediaId(post).takeIf { likes != null && ThreadsPeopleView.opensLikers(post, ThreadsPeopleView.signedIn(ThreadsSessions.of(settings))) }
+        if (likers == null) {
+            CountButton(heart, likes, likeLabel, likeTint) { app.toggleLike(post) }
+        } else {
+            // The heart is the like on this device; its count, for a signed-in reader, who liked the post on Threads.
+            SmallIcon(heart, likeLabel, likeTint) { app.toggleLike(post) }
+            Box(
+                Modifier.heightIn(min = 48.dp).widthIn(min = 32.dp)
+                    .clickable(role = Role.Button, onClickLabel = pluginString(Strings.show_liked_by)) { app.host.open(ThreadsRoutes.likers(likers, post.url)) },
+                contentAlignment = Alignment.CenterStart,
+            ) {
+                Text(countText(likes ?: 0), style = MaterialTheme.typography.labelMedium, color = likeTint, modifier = Modifier.padding(end = 8.dp))
+            }
+        }
         NetworkBookmark(archive)
         Spacer(Modifier.weight(1f))
         post.url?.let { url -> SmallIcon(PostIcons.OpenInNew, pluginString(Strings.open_in_browser)) { outside(url) } }
@@ -378,9 +396,9 @@ private fun CountButton(icon: ImageVector, count: Long?, label: String, tint: Co
 }
 
 @Composable
-internal fun SmallIcon(icon: ImageVector, label: String, onClick: () -> Unit) {
+internal fun SmallIcon(icon: ImageVector, label: String, tint: Color = Color.Unspecified, onClick: () -> Unit) {
     IconButton(onClick = onClick) {
-        Icon(icon, contentDescription = label, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
+        Icon(icon, contentDescription = label, tint = tint.takeOrElse { MaterialTheme.colorScheme.onSurfaceVariant }, modifier = Modifier.size(20.dp))
     }
 }
 

@@ -1,6 +1,8 @@
 package com.aimdi.xtanative.plugins.threads
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.threads.ThreadsBioLink
 import com.aimdi.xtanative.networks.threads.ThreadsLink
 import com.aimdi.xtanative.networks.threads.ThreadsLinks
+import com.aimdi.xtanative.networks.threads.ThreadsPeopleList
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsProfile
 import com.aimdi.xtanative.networks.threads.ThreadsProfilePage
@@ -84,6 +87,13 @@ internal object ThreadsProfileHeader {
     fun reposts(page: ThreadsProfilePage, read: List<ThreadsPost> = emptyList()): List<ThreadsPost> =
         (read + page.posts.filter { it.isRepost }).distinctBy { it.id }.sortedByDescending { it.publishedAt ?: java.time.Instant.MIN }
 
+    /** The people list a count opens: followers, or whom the account follows; none for its posts. */
+    fun list(kind: ThreadsCount): ThreadsPeopleList? = when (kind) {
+        ThreadsCount.FOLLOWERS -> ThreadsPeopleList.FOLLOWERS
+        ThreadsCount.FOLLOWING -> ThreadsPeopleList.FOLLOWING
+        ThreadsCount.POSTS -> null
+    }
+
     /** [n] whole, grouped as [locale] groups digits: 5,812,345. */
     fun exact(n: Long, locale: Locale): String = NumberFormat.getIntegerInstance(locale).format(n)
 }
@@ -106,9 +116,14 @@ internal fun ProfileLinks(profile: ThreadsProfile) {
     }
 }
 
-/** "5.7M Followers"; a tap shows the whole figure when Meta gave it, and a second tap rounds it again. */
+/**
+ * "5.7M Followers". With [onOpen], a tap opens the list it counts and a long
+ * press shows the whole figure; without, a tap shows the whole figure when
+ * Meta gave it, and a second tap rounds it again.
+ */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-internal fun ProfileCount(n: Long, label: PluginText, exact: Boolean) {
+internal fun ProfileCount(n: Long, label: PluginText, exact: Boolean, onOpen: (() -> Unit)? = null) {
     var whole by rememberSaveable(n) { mutableStateOf(false) }
     val strong = MaterialTheme.colorScheme.onSurface
     val rounded = countText(n)
@@ -117,6 +132,17 @@ internal fun ProfileCount(n: Long, label: PluginText, exact: Boolean) {
     val number = if (whole) full else rounded
     val word = pluginString(label)
     val tappable = exact && full != rounded
+    val showList = pluginString(Strings.show_list)
+    val tap = when {
+        onOpen != null -> Modifier.heightIn(min = 48.dp).combinedClickable(
+            role = Role.Button,
+            onClickLabel = showList,
+            onClick = onOpen,
+            onLongClick = if (tappable) { { whole = !whole } } else null,
+        )
+        tappable -> Modifier.heightIn(min = 32.dp).clickable(role = Role.Button) { whole = !whole }
+        else -> Modifier
+    }
     Text(
         buildAnnotatedString {
             withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = strong)) { append(number) }
@@ -125,7 +151,7 @@ internal fun ProfileCount(n: Long, label: PluginText, exact: Boolean) {
         },
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = if (tappable) Modifier.heightIn(min = 32.dp).clickable(role = Role.Button) { whole = !whole } else Modifier,
+        modifier = tap,
     )
 }
 

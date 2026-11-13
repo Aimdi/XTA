@@ -190,4 +190,12 @@
     <string name="community">社区</string>
     <string name="community_posts">此社区的帖子</string>
     <string name="topic_followed">已在此设备上关注——其帖子现在会出现在首页</string>
+    <string name="people_both">共同关注者</string>
+    <string name="liked_by">赞过的人</string>
+    <string name="people_signed_out">Threads 只向已登录的读者显示这些列表</string>
+    <string name="people_signed_out_detail">登录 Threads 即可查看。在这里关注某人只保存在本设备上，不会向 Threads 发送任何内容。</string>
+    <string name="people_empty">这里还没有人</string>
+    <string name="likers_empty">没有可显示的赞</string>
+    <string name="show_list">显示列表</string>
+    <string name="show_liked_by">查看谁赞过</string>
 </resources>

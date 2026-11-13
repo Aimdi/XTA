@@ -190,4 +190,12 @@
     <string name="community">커뮤니티</string>
     <string name="community_posts">이 커뮤니티의 게시물</string>
     <string name="topic_followed">이 기기에서 팔로우했습니다 — 이제 게시물이 홈에 표시됩니다</string>
+    <string name="people_both">함께 아는 팔로워</string>
+    <string name="liked_by">좋아한 사람</string>
+    <string name="people_signed_out">Threads는 로그인한 사용자에게만 이 목록을 보여 줍니다</string>
+    <string name="people_signed_out_detail">보려면 Threads에 로그인하세요. 여기서 팔로우한 내용은 이 기기에만 남고 Threads로는 아무것도 보내지 않습니다.</string>
+    <string name="people_empty">아직 아무도 없습니다</string>
+    <string name="likers_empty">표시할 좋아요가 없습니다</string>
+    <string name="show_list">목록 보기</string>
+    <string name="show_liked_by">좋아한 사람 보기</string>
 </resources>

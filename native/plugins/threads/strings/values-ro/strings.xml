@@ -200,4 +200,12 @@
     <string name="community">Comunitate</string>
     <string name="community_posts">Postări din această comunitate</string>
     <string name="topic_followed">Urmărit pe acest dispozitiv — postările ajung acum în Acasă</string>
+    <string name="people_both">Urmăritori comuni</string>
+    <string name="liked_by">Apreciat de</string>
+    <string name="people_signed_out">Threads arată aceste liste doar cititorilor autentificați</string>
+    <string name="people_signed_out_detail">Conectează-te la Threads ca să le vezi. Urmărirea cuiva de aici rămâne pe acest dispozitiv; nu se trimite nimic către Threads.</string>
+    <string name="people_empty">Încă nu e nimeni aici</string>
+    <string name="likers_empty">Nicio apreciere de afișat</string>
+    <string name="show_list">Arată lista</string>
+    <string name="show_liked_by">Vezi cine a apreciat</string>
 </resources>

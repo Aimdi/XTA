@@ -55,6 +55,43 @@ class ThreadsLiveTest {
         if (post == null) println("LIVE Threads shape post: no post link on @zuck's page") else probe(http, post.substringAfter("threads.com/"), "post")
     }
 
+    /**
+     * What a guest is answered for the people lists the plugin reads with a
+     * session (followers, following, both, likers), by status and top-level
+     * key names only, and which follow or like queries @zuck's page names; no
+     * session is sent, and nothing a list holds is logged. It never fails on
+     * what it finds: a refusal is what a guest is expected to see.
+     */
+    @Test
+    fun whatAGuestIsAnsweredForThePeopleLists(): Unit = runBlocking {
+        assumeTrue(System.getenv("RUN_LIVE") == "true", "Set RUN_LIVE=true to read live threads.com")
+        val http = OkHttpXHttp()
+        val client = ThreadsDirectClient(http)
+        val id = try {
+            client.userIdFor("zuck")
+        } catch (e: Exception) {
+            println("LIVE Threads people: no id for @zuck (${e.javaClass.simpleName})")
+            return@runBlocking
+        }
+        val page = probe(http, "@zuck", "people page")
+        if (page != null) println("LIVE Threads people page queries: ${ThreadsShape.queries(page).filter { PEOPLE_WORDS.containsMatchIn(it) }.ifEmpty { listOf("none") }}")
+        val media = page?.let { ThreadsPages.chains(it).flatten().firstNotNullOfOrNull(ThreadsPeople::mediaId) }
+        val asked = ThreadsPeopleList.entries.mapNotNull { list -> (if (list == ThreadsPeopleList.LIKERS) media else id)?.let { list to ThreadsPeople.path(list, it) } }
+        asked.forEach { (list, path) ->
+            delay(PROBE_GAP_MILLIS)
+            val url = ThreadsLinks.web(path, ThreadsPeople.params(list, null, null))
+            val headers = mapOf("User-Agent" to ThreadsRepairs().webUserAgent, "Accept" to "application/json", "X-IG-App-ID" to ThreadsRepairs().appId)
+            val shape = try {
+                val response = http.get(url, headers, followRedirects = false)
+                val keys = (ThreadsJson.decode(response.body) as? JsonObject)?.keys?.sorted()?.joinToString(",") ?: "not JSON"
+                "${response.code}${sentTo(url, response)} keys: $keys"
+            } catch (e: IOException) {
+                "unreachable (${e.javaClass.simpleName})"
+            }
+            println("LIVE Threads people ${list.name.lowercase()} as a guest: $shape")
+        }
+    }
+
     /** One page's answer and shape, logged; its body when it answered 200. */
     private suspend fun probe(http: OkHttpXHttp, path: String, label: String = path.ifEmpty { "front" }): String? {
         delay(PROBE_GAP_MILLIS)
@@ -99,5 +136,8 @@ class ThreadsLiveTest {
 
     private companion object {
         const val PROBE_GAP_MILLIS = 2_500L
+
+        /** The words a follow-list or likers query's name carries. */
+        val PEOPLE_WORDS = Regex("Follow|Friendship|Liker|Like", RegexOption.IGNORE_CASE)
     }
 }

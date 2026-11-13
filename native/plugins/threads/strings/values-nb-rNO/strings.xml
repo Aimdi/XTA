@@ -195,4 +195,12 @@
     <string name="community">Fellesskap</string>
     <string name="community_posts">Innlegg i dette fellesskapet</string>
     <string name="topic_followed">Fulgt på denne enheten – innleggene kommer nå til Hjem</string>
+    <string name="people_both">Felles følgere</string>
+    <string name="liked_by">Likt av</string>
+    <string name="people_signed_out">Threads viser disse listene bare til innloggede lesere</string>
+    <string name="people_signed_out_detail">Logg inn på Threads for å se dem. Å følge noen herfra blir på denne enheten; ingenting sendes til Threads.</string>
+    <string name="people_empty">Ingen her ennå</string>
+    <string name="likers_empty">Ingen liker-markeringer å vise</string>
+    <string name="show_list">Vis listen</string>
+    <string name="show_liked_by">Se hvem som likte dette</string>
 </resources>

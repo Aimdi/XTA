@@ -205,4 +205,12 @@
     <string name="community">Спільнота</string>
     <string name="community_posts">Дописи в цій спільноті</string>
     <string name="topic_followed">Стежите на цьому пристрої — його дописи тепер надходять на Головну</string>
+    <string name="people_both">Спільні підписники</string>
+    <string name="liked_by">Сподобалося</string>
+    <string name="people_signed_out">Threads показує ці списки лише читачам, які увійшли</string>
+    <string name="people_signed_out_detail">Увійдіть у Threads, щоб їх побачити. Підписка звідси залишається на цьому пристрої; до Threads нічого не надсилається.</string>
+    <string name="people_empty">Тут поки нікого немає</string>
+    <string name="likers_empty">Немає вподобань</string>
+    <string name="show_list">Показати список</string>
+    <string name="show_liked_by">Подивитися, кому сподобалося</string>
 </resources>

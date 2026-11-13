@@ -62,6 +62,8 @@ class ThreadsPlugin : XtaPlugin() {
     override fun screen(route: String): PluginScreen? = when (val opened = ThreadsRoutes.parse(route)) {
         is ThreadsRoute.Post -> { { ThreadsConversationScreen(app, opened) } }
         is ThreadsRoute.Profile -> { { ThreadsProfileScreen(app, opened.handle) } }
+        is ThreadsRoute.People -> { { ThreadsPeopleScreen(app, opened.handle, opened.list) } }
+        is ThreadsRoute.Likers -> { { ThreadsLikersScreen(app, opened.mediaId) } }
         is ThreadsRoute.Search -> { { ThreadsSearchScreen(app, opened.terms) } }
         is ThreadsRoute.Community -> { { ThreadsCommunityScreen(app, opened.topic) } }
         is ThreadsRoute.Media -> { { ThreadsMediaScreen(app, opened) } }

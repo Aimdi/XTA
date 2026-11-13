@@ -190,4 +190,12 @@
     <string name="community">コミュニティ</string>
     <string name="community_posts">このコミュニティの投稿</string>
     <string name="topic_followed">この端末でフォローしました — 投稿がホームに届きます</string>
+    <string name="people_both">共通のフォロワー</string>
+    <string name="liked_by">いいねした人</string>
+    <string name="people_signed_out">Threadsはこれらのリストをログインしている読者にだけ表示します</string>
+    <string name="people_signed_out_detail">表示するにはThreadsにログインしてください。ここからのフォローはこの端末に保存され、Threadsには何も送信されません。</string>
+    <string name="people_empty">まだ誰もいません</string>
+    <string name="likers_empty">表示できるいいねはありません</string>
+    <string name="show_list">リストを表示</string>
+    <string name="show_liked_by">いいねした人を見る</string>
 </resources>

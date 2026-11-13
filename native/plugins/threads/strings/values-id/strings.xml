@@ -190,4 +190,12 @@
     <string name="community">Komunitas</string>
     <string name="community_posts">Postingan di komunitas ini</string>
     <string name="topic_followed">Diikuti di perangkat ini — postingannya kini muncul di Beranda</string>
+    <string name="people_both">Pengikut yang sama</string>
+    <string name="liked_by">Disukai oleh</string>
+    <string name="people_signed_out">Threads hanya menampilkan daftar ini kepada pembaca yang sudah masuk</string>
+    <string name="people_signed_out_detail">Masuk ke Threads untuk melihatnya. Mengikuti seseorang dari sini tetap di perangkat ini; tidak ada yang dikirim ke Threads.</string>
+    <string name="people_empty">Belum ada siapa pun</string>
+    <string name="likers_empty">Tidak ada suka untuk ditampilkan</string>
+    <string name="show_list">Tampilkan daftar</string>
+    <string name="show_liked_by">Lihat siapa yang menyukai ini</string>
 </resources>

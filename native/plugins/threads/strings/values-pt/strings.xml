@@ -199,4 +199,12 @@
     <string name="community">Comunidade</string>
     <string name="community_posts">Publicações nesta comunidade</string>
     <string name="topic_followed">A seguir neste dispositivo — as publicações chegam agora ao Início</string>
+    <string name="people_both">Seguidores em comum</string>
+    <string name="liked_by">Gostos de</string>
+    <string name="people_signed_out">O Threads só mostra estas listas a leitores com sessão iniciada</string>
+    <string name="people_signed_out_detail">Inicie sessão no Threads para as ver. Seguir alguém a partir daqui fica neste dispositivo; nada é enviado ao Threads.</string>
+    <string name="people_empty">Ainda não há ninguém</string>
+    <string name="likers_empty">Sem gostos para mostrar</string>
+    <string name="show_list">Mostrar a lista</string>
+    <string name="show_liked_by">Ver quem gostou</string>
 </resources>

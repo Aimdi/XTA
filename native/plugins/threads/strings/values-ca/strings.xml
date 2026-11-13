@@ -199,4 +199,12 @@
     <string name="community">Comunitat</string>
     <string name="community_posts">Publicacions d’aquesta comunitat</string>
     <string name="topic_followed">Seguit en aquest dispositiu: les seves publicacions arriben ara a Inici</string>
+    <string name="people_both">Seguidors en comú</string>
+    <string name="liked_by">Li agrada a</string>
+    <string name="people_signed_out">Threads només mostra aquestes llistes a qui ha iniciat sessió</string>
+    <string name="people_signed_out_detail">Inicia sessió a Threads per veure-les. Seguir algú des d\'aquí queda en aquest dispositiu; no s\'envia res a Threads.</string>
+    <string name="people_empty">Encara no hi ha ningú</string>
+    <string name="likers_empty">No hi ha m\'agrada per mostrar</string>
+    <string name="show_list">Mostra la llista</string>
+    <string name="show_liked_by">Mira a qui li agrada</string>
 </resources>

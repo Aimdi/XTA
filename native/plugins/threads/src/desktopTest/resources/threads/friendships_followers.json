@@ -1,0 +1,21 @@
+{
+  "users": [
+    {
+      "pk": "1000000001",
+      "pk_id": "1000000001",
+      "username": "first.reader",
+      "full_name": "First Reader",
+      "is_verified": true,
+      "is_private": false,
+      "profile_pic_url": "https://cdn.example/first.jpg"
+    },
+    { "pk": 1000000002, "username": "second_reader", "full_name": "", "is_private": true },
+    { "pk": 1000000003, "username": "First.Reader", "full_name": "The same account again" },
+    { "full_name": "No username, skipped" },
+    "not an object"
+  ],
+  "big_list": true,
+  "page_size": 50,
+  "next_max_id": "QVFE-made-up-cursor",
+  "status": "ok"
+}

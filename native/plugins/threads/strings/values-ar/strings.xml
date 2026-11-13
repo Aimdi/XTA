@@ -215,4 +215,12 @@
     <string name="community">مجتمع</string>
     <string name="community_posts">منشورات في هذا المجتمع</string>
     <string name="topic_followed">تمت المتابعة على هذا الجهاز — تظهر منشوراته الآن في الرئيسية</string>
+    <string name="people_both">متابعون مشتركون</string>
+    <string name="liked_by">أُعجب به</string>
+    <string name="people_signed_out">تعرض Threads هذه القوائم للقرّاء المسجّلين الدخول فقط</string>
+    <string name="people_signed_out_detail">سجّل الدخول إلى Threads لرؤيتها. متابعة أي شخص من هنا تبقى على هذا الجهاز ولا يُرسَل شيء إلى Threads.</string>
+    <string name="people_empty">لا أحد هنا بعد</string>
+    <string name="likers_empty">لا إعجابات لعرضها</string>
+    <string name="show_list">عرض القائمة</string>
+    <string name="show_liked_by">معرفة من أُعجب بهذا</string>
 </resources>

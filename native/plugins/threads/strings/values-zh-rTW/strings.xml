@@ -190,4 +190,12 @@
     <string name="community">社群</string>
     <string name="community_posts">此社群的貼文</string>
     <string name="topic_followed">已在此裝置上追蹤——其貼文現在會出現在首頁</string>
+    <string name="people_both">共同追蹤者</string>
+    <string name="liked_by">說讚的人</string>
+    <string name="people_signed_out">Threads 只向已登入的讀者顯示這些清單</string>
+    <string name="people_signed_out_detail">登入 Threads 即可查看。在這裡追蹤某人只會保存在這部裝置上，不會傳送任何內容給 Threads。</string>
+    <string name="people_empty">這裡還沒有人</string>
+    <string name="likers_empty">沒有可顯示的讚</string>
+    <string name="show_list">顯示清單</string>
+    <string name="show_liked_by">查看誰說讚</string>
 </resources>

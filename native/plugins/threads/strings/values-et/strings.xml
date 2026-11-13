@@ -195,4 +195,12 @@
     <string name="community">Kogukond</string>
     <string name="community_posts">Selle kogukonna postitused</string>
     <string name="topic_followed">Selles seadmes jälgitud — selle postitused jõuavad nüüd avalehele</string>
+    <string name="people_both">Ühised jälgijad</string>
+    <string name="liked_by">Meeldib</string>
+    <string name="people_signed_out">Threads näitab neid loendeid ainult sisselogitud lugejatele</string>
+    <string name="people_signed_out_detail">Logi Threadsi sisse, et neid näha. Siit jälgimine jääb sellesse seadmesse; Threadsile ei saadeta midagi.</string>
+    <string name="people_empty">Siin pole veel kedagi</string>
+    <string name="likers_empty">Meeldimisi pole näidata</string>
+    <string name="show_list">Näita loendit</string>
+    <string name="show_liked_by">Vaata, kellele see meeldis</string>
 </resources>
