@@ -2,6 +2,7 @@ package com.aimdi.xtanative.plugins.threads
 
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsProfile
+import com.aimdi.xtanative.networks.threads.ThreadsProfilePage
 import com.aimdi.xtanative.store.backup.ProfileSubscriptionRow
 
 /** What the follow button on a profile says: the account is not followed on this device yet, or it is. */
@@ -20,8 +21,23 @@ internal object ThreadsProfileView {
     /** The bar's title: the profile's name once read (its handle when it gave none), else its @handle. */
     fun title(profile: ThreadsProfile?, handle: String): String = profile?.displayName ?: "@$handle"
 
-    /** The banner's picture: Threads has no banner, so the profile's own picture, blurred; none without one. */
-    fun bannerUrl(profile: ThreadsProfile): String? = profile.pictureUrl.trim().ifEmpty { null }
+    /**
+     * The banner's picture: Threads has no banner, so the profile's own
+     * picture, blurred, which its small size serves as well as the largest;
+     * none without one.
+     */
+    fun bannerUrl(profile: ThreadsProfile): String? = profile.profilePicUrl.trim().ifEmpty { null } ?: profile.pictureUrl.trim().ifEmpty { null }
+
+    /**
+     * What a profile's screen shows: the page as read; until then its card as
+     * soon as it is known, over the threads kept from last time (or none yet);
+     * else what was kept; null when there is nothing to show yet.
+     */
+    fun shownPage(read: ThreadsProfilePage?, card: ThreadsProfile?, kept: ThreadsProfilePage?): ThreadsProfilePage? = when {
+        read != null -> read
+        card != null -> kept?.copy(profile = card) ?: ThreadsProfilePage(card)
+        else -> kept
+    }
 
     /** The follow button's face, or null while the accounts followed here are still being read. */
     fun followFace(rows: List<ProfileSubscriptionRow>?, handle: String): ThreadsFollowFace? = when {

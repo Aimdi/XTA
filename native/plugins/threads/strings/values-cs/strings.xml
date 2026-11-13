@@ -232,4 +232,5 @@
     <string name="replies_limited_followers">Odpovídat mohou jen sledující autora</string>
     <string name="replies_limited_mentioned">Odpovídat mohou jen účty zmíněné v příspěvku</string>
     <string name="replies_limited_author">Odpovídat může jen autor</string>
+    <string name="updating">Aktualizuje se…</string>
 </resources>

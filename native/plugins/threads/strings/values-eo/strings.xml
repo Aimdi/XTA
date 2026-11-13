@@ -222,4 +222,5 @@
     <string name="replies_limited_followers">Nur la sekvantoj de la aŭtoro povas respondi</string>
     <string name="replies_limited_mentioned">Nur kontoj menciitaj en la afiŝo povas respondi</string>
     <string name="replies_limited_author">Nur la aŭtoro povas respondi</string>
+    <string name="updating">Ĝisdatigante…</string>
 </resources>

@@ -232,4 +232,5 @@
     <string name="replies_limited_followers">Отвечать могут только подписчики автора</string>
     <string name="replies_limited_mentioned">Отвечать могут только упомянутые в посте</string>
     <string name="replies_limited_author">Отвечать может только автор</string>
+    <string name="updating">Обновление…</string>
 </resources>

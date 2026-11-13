@@ -207,12 +207,13 @@ class ThreadsReader(
      * [handle]'s card and threads, read together. The card comes from the public
      * page, else the cookie API when the reader opted in, else the Xy server,
      * else is pieced together from the threads; the read fails only when it
-     * found neither a card nor a thread.
+     * found neither a card nor a thread. [onCard] hears the card as soon as
+     * it is known, so a screen draws the header while the threads still come.
      */
-    suspend fun profile(handle: String, force: Boolean = false): ThreadsProfilePage {
+    suspend fun profile(handle: String, force: Boolean = false, onCard: ((ThreadsProfile) -> Unit)? = null): ThreadsProfilePage {
         if (handle.isEmpty()) throw ThreadsException(ThreadsFailure.NO_SUCH_FEED, "empty handle")
         return coroutineScope {
-            val card = async { resolveProfile(handle) }
+            val card = async { resolveProfile(handle, force)?.also { onCard?.invoke(it) } }
             val read = async { readPosts(handle, force) }
             val profile = card.await()
             val (posts, error) = read.await()
@@ -250,8 +251,8 @@ class ThreadsReader(
         return { handle -> attempt { rssHub.account(instance, handle).items }?.ifEmpty { null } ?: direct.guestAccount(handle).items }
     }
 
-    private suspend fun resolveProfile(handle: String): ThreadsProfile? {
-        attempt { direct.guestProfile(handle) }?.let { return it }
+    private suspend fun resolveProfile(handle: String, force: Boolean): ThreadsProfile? {
+        attempt { direct.guestProfile(handle, force) }?.let { return it }
         val current = direct.currentSession
         if (current.useSessionApis && current.hasCookies) attempt { direct.sessionProfile(handle) }?.let { return it }
         val where = setup()

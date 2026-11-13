@@ -232,4 +232,5 @@
     <string name="replies_limited_followers">Адказваць могуць толькі падпісчыкі аўтара</string>
     <string name="replies_limited_mentioned">Адказваць могуць толькі тыя, каго згадалі ў пасце</string>
     <string name="replies_limited_author">Адказваць можа толькі аўтар</string>
+    <string name="updating">Абнаўленне…</string>
 </resources>

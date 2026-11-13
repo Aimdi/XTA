@@ -217,4 +217,5 @@
     <string name="replies_limited_followers">仅作者的粉丝可以回复</string>
     <string name="replies_limited_mentioned">仅帖子中提及的账号可以回复</string>
     <string name="replies_limited_author">仅作者可以回复</string>
+    <string name="updating">正在更新…</string>
 </resources>

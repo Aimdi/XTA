@@ -217,4 +217,5 @@
     <string name="replies_limited_followers">Hanya pengikut penulis yang dapat membalas</string>
     <string name="replies_limited_mentioned">Hanya akun yang disebut dalam postingan yang dapat membalas</string>
     <string name="replies_limited_author">Hanya penulis yang dapat membalas</string>
+    <string name="updating">Memperbarui…</string>
 </resources>

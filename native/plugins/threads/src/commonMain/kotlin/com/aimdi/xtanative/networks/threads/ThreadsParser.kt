@@ -130,6 +130,17 @@ object ThreadsParser {
         ?.first
 
     /**
+     * Every size Meta offers of a user's picture, largest first: the HD
+     * versions with their sizes, and `profile_pic_url`, whose size its
+     * address names ([ThreadsImages.boxIn]).
+     */
+    fun pictureSizes(user: J): List<ThreadsImage> = ThreadsImages.ordered(
+        (listOf(user["hd_profile_pic_url_info"]) + user["hd_profile_pic_versions"].list).mapNotNull { version ->
+            version["url"].string?.takeIf { it.isNotEmpty() }?.let { ThreadsImage(it, positive(version["width"].integer), positive(version["height"].integer)) }
+        } + listOfNotNull(user["profile_pic_url"].string?.takeIf { it.isNotEmpty() }?.let { ThreadsImage(it) }),
+    )
+
+    /**
      * Every file Meta offers for a video, largest first (in Meta's order where
      * sizes tie or are missing), one per file and one per quality, so a quality
      * menu never names the same one twice.
@@ -190,6 +201,7 @@ object ThreadsParser {
             mediaCount = user["media_count"].integer ?: 0,
             externalUrl = user["external_url"].string?.trim()?.ifEmpty { null },
             hdPictureUrl = hdPicture(user),
+            pictureSizes = pictureSizes(user),
         )
     }
 
@@ -234,7 +246,7 @@ object ThreadsParser {
             handle = handle,
             authorName = user["full_name"].string.orEmpty().trim().ifEmpty { handle },
             text = text,
-            avatarUrl = user["profile_pic_url"].string?.ifEmpty { null } ?: hdPicture(user),
+            avatarUrl = user["profile_pic_url"].string?.ifEmpty { null } ?: ThreadsImages.fitting(pictureSizes(user), AVATAR_PIXELS, AVATAR_PIXELS)?.url,
             media = media,
             publishedAt = takenAt(post),
             url = code?.let { "${ThreadsLinks.WEB}/@$handle/post/$it" },
@@ -277,6 +289,9 @@ object ThreadsParser {
 
     private fun aspectOf(width: Long?, height: Long?): Double? =
         if (width != null && height != null && width > 0 && height > 0) width.toDouble() / height else null
+
+    /** The face a post's row draws, in pixels: the size Meta's own small `profile_pic_url` comes in, enough for a row's avatar. */
+    private const val AVATAR_PIXELS = 150
 
     private fun positive(value: Long?): Int? = value?.takeIf { it in 1..Int.MAX_VALUE }?.toInt()
 

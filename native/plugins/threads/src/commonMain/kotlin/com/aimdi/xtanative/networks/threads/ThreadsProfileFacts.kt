@@ -67,6 +67,7 @@ object ThreadsProfileOwner {
         isPrivate = card.isPrivate || owner.isPrivate,
         profilePicUrl = owner.profilePicUrl.ifEmpty { card.profilePicUrl },
         hdPictureUrl = owner.hdPictureUrl ?: card.hdPictureUrl,
+        pictureSizes = owner.pictureSizes.ifEmpty { card.pictureSizes },
         biography = owner.biography.trim().ifEmpty { card.biography },
         followerCount = owner.followerCount ?: card.followerCount,
         followingCount = owner.followingCount ?: card.followingCount,
@@ -98,6 +99,7 @@ object ThreadsProfileOwner {
             isVerified = all.any { it["is_verified"].boolean == true },
             biography = bio,
             hdPictureUrl = all.firstOf(ThreadsParser::hdPicture),
+            pictureSizes = ThreadsImages.ordered(all.flatMap(ThreadsParser::pictureSizes)),
             // ThreadsParser reads a missing count as 0; a guest page tells only the counts it holds.
             followerCount = all.firstOf { it["follower_count"].integer },
             followingCount = all.firstOf { it["following_count"].integer },

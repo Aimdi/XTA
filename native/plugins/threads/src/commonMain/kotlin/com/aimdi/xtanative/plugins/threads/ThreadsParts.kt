@@ -28,6 +28,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.ui.plugins.RetryNotice
@@ -35,6 +38,19 @@ import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginString
 import java.time.Instant
 import kotlinx.coroutines.delay
+
+/** "Updating…", small and tonal, for what the device kept while it is read again. */
+@Composable
+private fun UpdatingLabel(modifier: Modifier) {
+    Surface(shape = RoundedCornerShape(12.dp), color = MaterialTheme.colorScheme.secondaryContainer, tonalElevation = 1.dp, modifier = modifier) {
+        Text(
+            pluginString(Strings.updating),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSecondaryContainer,
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp).semantics { liveRegion = LiveRegionMode.Polite },
+        )
+    }
+}
 
 /** A row of a sheet: its icon, its words, and a line under them when there is one. */
 @Composable
@@ -94,11 +110,15 @@ internal fun FailedRead(message: String, retryAfter: Instant?, onRetry: () -> Un
  * How a read again over what is shown goes, as XTA's ReloadStatus says it:
  * a line over the top edge while it reads, taking no room, and when it
  * failed a floating notice with why and Retry; what is shown stays put.
+ * With [updating] (what the device kept is shown while Meta is asked
+ * again), a small quiet "Updating…" sits under the line, told to a screen
+ * reader once.
  */
 @Composable
-internal fun BoxScope.ReloadStatus(reading: Boolean, problem: String?, onRetry: () -> Unit, retryAfter: Instant? = null) {
+internal fun BoxScope.ReloadStatus(reading: Boolean, problem: String?, onRetry: () -> Unit, retryAfter: Instant? = null, updating: Boolean = false) {
     if (reading) {
         LinearProgressIndicator(Modifier.align(Alignment.TopCenter).fillMaxWidth().height(2.dp), trackColor = Color.Transparent)
+        if (updating) UpdatingLabel(Modifier.align(Alignment.TopCenter).padding(top = 8.dp))
         return
     }
     if (problem == null) return

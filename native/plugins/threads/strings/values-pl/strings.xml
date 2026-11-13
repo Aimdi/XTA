@@ -232,4 +232,5 @@
     <string name="replies_limited_followers">Odpowiadać mogą tylko obserwujący autora</string>
     <string name="replies_limited_mentioned">Odpowiadać mogą tylko konta wspomniane we wpisie</string>
     <string name="replies_limited_author">Odpowiadać może tylko autor</string>
+    <string name="updating">Aktualizowanie…</string>
 </resources>

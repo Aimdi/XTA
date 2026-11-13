@@ -242,4 +242,5 @@
     <string name="replies_limited_followers">يمكن الرد لمتابعي الكاتب فقط</string>
     <string name="replies_limited_mentioned">يمكن الرد للحسابات المذكورة في المنشور فقط</string>
     <string name="replies_limited_author">يمكن للكاتب وحده الرد</string>
+    <string name="updating">جارٍ التحديث…</string>
 </resources>

@@ -224,4 +224,5 @@
     <string name="replies_limited_followers">Only the author\'s followers can reply</string>
     <string name="replies_limited_mentioned">Only accounts mentioned in the post can reply</string>
     <string name="replies_limited_author">Only the author can reply</string>
+    <string name="updating">Updating…</string>
 </resources>

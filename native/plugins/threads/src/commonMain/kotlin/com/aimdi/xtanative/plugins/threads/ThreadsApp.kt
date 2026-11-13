@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.plugins.threads
 
 import com.aimdi.xtanative.networks.threads.ThreadsAccountFailure
+import com.aimdi.xtanative.networks.threads.ThreadsConversation
 import com.aimdi.xtanative.networks.threads.ThreadsDirectClient
 import com.aimdi.xtanative.networks.threads.ThreadsDiscovery
 import com.aimdi.xtanative.networks.threads.ThreadsException
@@ -89,7 +90,8 @@ internal class ThreadsApp(val host: PluginHost) {
     val feed = MergedFeed(scope, ::readFeed)
     val notices = PluginNotices()
     val shelf = ThreadsShelf()
-    private val profiles = ThreadsProfileShelf(host.store.file("profiles.json"))
+    private val profiles = ThreadsProfileShelf(host.store::file, legacy = host.store.file("profiles.json"))
+    private val conversations = ThreadsConversationShelf(host.store::file)
     val accountNotes = ThreadsAccountNotes(host.store.file("account_notes.json"))
 
     /** The topics and communities followed on this device. */
@@ -417,6 +419,12 @@ internal class ThreadsApp(val host: PluginHost) {
 
     /** [page] kept as [handle]'s profile for the next time it opens. */
     fun keepProfile(handle: String, page: ThreadsProfilePage) = launch { profiles.keep(handle, page, Instant.now()) }
+
+    /** What the conversation at [url] showed when it was last read; null when it was not kept, or cannot be read. */
+    suspend fun keptConversation(url: String): ThreadsKeptEntry<ThreadsConversation>? = attemptKept { conversations.of(url) }
+
+    /** [conversation] kept as [url]'s for the next time it opens. */
+    fun keepConversation(url: String, conversation: ThreadsConversation) = launch { conversations.keep(url, conversation, Instant.now()) }
 
     private suspend fun <T> attemptKept(read: suspend () -> T?): T? = try {
         read()

@@ -222,4 +222,5 @@
     <string name="replies_limited_followers">Bare forfatterens følgere kan svare</string>
     <string name="replies_limited_mentioned">Bare kontoer som nevnes i innlegget, kan svare</string>
     <string name="replies_limited_author">Bare forfatteren kan svare</string>
+    <string name="updating">Oppdaterer…</string>
 </resources>

@@ -64,12 +64,17 @@ internal enum class ProfileTab(val label: PluginText, val paged: ThreadsProfileP
 
 /**
  * One profile as it has been read, what it showed last time until then, its
- * replies page once its tab asked for it, and the pages after each first one
- * as the reader scrolls on.
+ * card as soon as it is known (before its threads), its replies page once
+ * its tab asked for it, and the pages after each first one as the reader
+ * scrolls on.
  */
 internal class ThreadsProfileModel(private val app: ThreadsApp, private val handle: String, scope: CoroutineScope) {
     val kept = MutableStateFlow<ThreadsKeptProfile?>(null)
-    val page = Fetch<ThreadsProfilePage>(scope) { force -> app.ready(); app.reader.profile(handle, force).also { app.keepProfile(handle, it) } }
+    val card = MutableStateFlow<ThreadsProfile?>(null)
+    val page = Fetch<ThreadsProfilePage>(scope) { force ->
+        app.ready()
+        app.reader.profile(handle, force) { card.value = it }.also { app.keepProfile(handle, it) }
+    }
     val replies = Fetch<Page<ThreadsPost>>(scope) { app.reader.repliesPage(handle) }
     val morePosts = ThreadsPaging(scope, ThreadsPost::id) { cursor -> app.nextPage { app.direct.moreThreads(handle, cursor) } }
     val moreReplies = ThreadsPaging(scope, ThreadsPost::id) { cursor -> app.nextPage { app.direct.moreReplies(handle, cursor) } }
@@ -104,8 +109,9 @@ internal fun ThreadsProfileScreen(app: ThreadsApp, username: String) {
     var searching by rememberSaveable { mutableStateOf(false) }
     var query by rememberSaveable { mutableStateOf("") }
     val closeSearch = { searching = false; query = "" }
+    val card by model.card.collectAsState()
     val url = "${ThreadsLinks.WEB}/@$handle"
-    val page = state.value ?: kept?.page
+    val page = ThreadsProfileView.shownPage(state.value, card, kept?.page)
     PluginScaffold(
         title = {
             if (searching) {
@@ -134,9 +140,11 @@ internal fun ThreadsProfileScreen(app: ThreadsApp, username: String) {
             when {
                 page == null && problem != null -> RetryMessage(problem, onRetry = { model.page.load() })
                 page?.profile == null -> LoadingRow()
-                else -> ProfileBody(app, model, page, page.profile, refreshing = state.loading && !showingKept, query = query)
+                else -> ProfileBody(app, model, page, page.profile, refreshing = state.loading && !showingKept, postsPending = state.value == null && state.loading, query = query)
             }
-            if (page?.profile != null) ReloadStatus(state.loading && showingKept, problem, onRetry = { model.page.load(force = true) })
+            if (page?.profile != null) {
+                ReloadStatus(state.loading && showingKept, problem, onRetry = { model.page.load(force = true) }, updating = state.value == null && kept != null)
+            }
             NoticeHost(app.notices)
         }
     }
@@ -154,7 +162,15 @@ private fun ProfileActions(app: ThreadsApp, url: String, onSearch: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ProfileBody(app: ThreadsApp, model: ThreadsProfileModel, read: ThreadsProfilePage, profile: ThreadsProfile, refreshing: Boolean, query: String) {
+private fun ProfileBody(
+    app: ThreadsApp,
+    model: ThreadsProfileModel,
+    read: ThreadsProfilePage,
+    profile: ThreadsProfile,
+    refreshing: Boolean,
+    postsPending: Boolean,
+    query: String,
+) {
     var tab by rememberSaveable { mutableStateOf(ProfileTab.POSTS) }
     var content by rememberSaveable { mutableStateOf(ThreadsFeedContent.ALL) }
     var sheet by rememberSaveable { mutableStateOf(false) }
@@ -194,7 +210,9 @@ private fun ProfileBody(app: ThreadsApp, model: ThreadsProfileModel, read: Threa
     val waiting = all.isEmpty() && when (tab) {
         ProfileTab.REPLIES -> replies.loading
         ProfileTab.REPOSTS -> reposts.loading || reposts.value == null
-        else -> false
+        ProfileTab.SAVED -> false
+        // The header came first; its threads are still on their way.
+        else -> postsPending
     }
     val list = rememberLazyListState()
     val scope = rememberCoroutineScope()

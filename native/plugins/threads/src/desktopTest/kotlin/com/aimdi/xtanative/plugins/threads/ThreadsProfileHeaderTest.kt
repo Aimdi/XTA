@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.plugins.threads
 
+import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.networks.threads.ThreadsBioLink
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsProfile
@@ -70,9 +71,8 @@ class ThreadsProfileHeaderTest {
 
     @Test
     fun aKeptProfileKeepsItsSplitBioItsLinksAndWhichCountsWereRounded() {
-        val at = Instant.parse("2026-11-01T09:30:00Z")
-        val kept = ThreadsProfilesKept.decode(ThreadsProfilesKept().with("zuck", ThreadsProfilePage(zuck, emptyList()), at).encode())
-        assertEquals(zuck, kept.of("zuck")!!.page.profile)
+        val kept = ThreadsProfilesKept.pageOf(J.parse(ThreadsProfilesKept.json(ThreadsProfilePage(zuck, emptyList())).toString()))
+        assertEquals(zuck, kept!!.profile)
     }
 
     @Test

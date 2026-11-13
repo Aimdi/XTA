@@ -222,4 +222,5 @@
     <string name="replies_limited_followers">केवल लेखक के फ़ॉलोअर जवाब दे सकते हैं</string>
     <string name="replies_limited_mentioned">केवल पोस्ट में उल्लिखित खाते जवाब दे सकते हैं</string>
     <string name="replies_limited_author">केवल लेखक जवाब दे सकता है</string>
+    <string name="updating">अपडेट हो रहा है…</string>
 </resources>

@@ -217,4 +217,5 @@
     <string name="replies_limited_followers">投稿者のフォロワーのみ返信できます</string>
     <string name="replies_limited_mentioned">投稿でメンションされたアカウントのみ返信できます</string>
     <string name="replies_limited_author">投稿者のみ返信できます</string>
+    <string name="updating">更新中…</string>
 </resources>

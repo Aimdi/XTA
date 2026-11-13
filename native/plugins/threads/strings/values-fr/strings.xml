@@ -226,4 +226,5 @@
     <string name="replies_limited_followers">Seuls les abonnés de l\'auteur peuvent répondre</string>
     <string name="replies_limited_mentioned">Seuls les comptes mentionnés dans la publication peuvent répondre</string>
     <string name="replies_limited_author">Seul l\'auteur peut répondre</string>
+    <string name="updating">Mise à jour…</string>
 </resources>

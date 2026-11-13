@@ -222,4 +222,5 @@
     <string name="replies_limited_followers">Yalnızca yazarın takipçileri yanıt verebilir</string>
     <string name="replies_limited_mentioned">Yalnızca gönderide bahsedilen hesaplar yanıt verebilir</string>
     <string name="replies_limited_author">Yalnızca yazar yanıt verebilir</string>
+    <string name="updating">Güncelleniyor…</string>
 </resources>

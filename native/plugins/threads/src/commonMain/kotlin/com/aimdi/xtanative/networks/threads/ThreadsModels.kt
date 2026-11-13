@@ -170,6 +170,8 @@ data class ThreadsProfile(
     val externalUrl: String? = null,
     /** The largest picture Meta offers of the profile (`hd_profile_pic_versions`); null when it gave only [profilePicUrl]. */
     val hdPictureUrl: String? = null,
+    /** Every size Meta offers of the profile's picture, largest first ([ThreadsImages.ordered]); empty when only the addresses above are known. */
+    val pictureSizes: List<ThreadsImage> = emptyList(),
     /** The bio as Meta split it and the links under it, when the profile's own page said (ThreadsProfileOwner). */
     val facts: ThreadsProfileFacts = ThreadsProfileFacts(),
 ) {
@@ -178,6 +180,13 @@ data class ThreadsProfile(
 
     /** The picture a profile's own page shows, and its viewer: the largest known. Rows keep [profilePicUrl], the small one. */
     val pictureUrl: String get() = hdPictureUrl?.trim()?.ifEmpty { null } ?: profilePicUrl
+
+    /**
+     * The picture for a face [pixels] wide: the smallest size Meta offers that
+     * still fills it, so the profile's header does not download the original
+     * for a face; [pictureUrl] when no size is known to fit.
+     */
+    fun pictureFor(pixels: Int): String = ThreadsImages.fitting(pictureSizes, pixels, pixels)?.url?.takeIf { pixels > 0 } ?: pictureUrl
 
     companion object {
         /**

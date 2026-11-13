@@ -222,4 +222,5 @@
     <string name="replies_limited_followers">Egilearen jarraitzaileek soilik erantzun dezakete</string>
     <string name="replies_limited_mentioned">Argitalpenean aipatutako kontuek soilik erantzun dezakete</string>
     <string name="replies_limited_author">Egileak soilik erantzun dezake</string>
+    <string name="updating">Eguneratzen…</string>
 </resources>

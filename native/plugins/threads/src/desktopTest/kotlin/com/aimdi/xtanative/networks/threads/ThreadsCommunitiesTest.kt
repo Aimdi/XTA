@@ -69,6 +69,6 @@ class ThreadsCommunitiesTest {
         assertEquals("/communities/9", meta.asked.single().path)
         val reader = ThreadsReader(client, ThreadsRssHub(meta), ThreadsXy(meta), clock = time.clock)
         assertEquals(setOf("1", "2"), reader.extras(emptyList(), listOf("https://www.threads.com/communities/9", "Knitting")).map { it.id }.toSet())
-        assertEquals(listOf("/communities/9", "/communities/9", "/search"), meta.asked.map { it.path })
+        assertEquals(listOf("/communities/9", "/search"), meta.asked.map { it.path }, "Home takes the page the screen was answered a moment ago")
     }
 }

@@ -102,6 +102,9 @@ private val FaceRing = 4.dp
 @Composable
 internal fun ThreadsProfileCard(app: ThreadsApp, profile: ThreadsProfile, onFilters: () -> Unit) {
     val picture = profile.pictureUrl.ifEmpty { null }
+    // The face loads the smallest size that fills its pixels; the viewer the largest.
+    val facePixels = with(LocalDensity.current) { FaceSize.roundToPx() }
+    val face = remember(profile, facePixels) { profile.pictureFor(facePixels).ifEmpty { null } }
     val openPicture = picture?.let { { app.host.openMedia(listOf(MediaItem(imageUrl = it, aspectRatio = 1f, shareUrl = "${ThreadsLinks.WEB}/@${profile.username}")), 0) } }
     Column(Modifier.fillMaxWidth()) {
         Box(Modifier.fillMaxWidth()) {
@@ -111,7 +114,7 @@ internal fun ThreadsProfileCard(app: ThreadsApp, profile: ThreadsProfile, onFilt
                 verticalAlignment = Alignment.Bottom,
             ) {
                 Box(Modifier.clip(CircleShape).background(MaterialTheme.colorScheme.background).padding(FaceRing)) {
-                    PluginAvatar(picture, profile.displayName, profile.username, FaceSize, onClick = openPicture)
+                    PluginAvatar(face, profile.displayName, profile.username, FaceSize, onClick = openPicture)
                 }
                 Spacer(Modifier.weight(1f))
                 IconButton(onClick = onFilters) { Icon(PostIcons.Tune, contentDescription = pluginString(Strings.filters_and_groups)) }

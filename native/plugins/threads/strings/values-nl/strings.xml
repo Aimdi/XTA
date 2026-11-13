@@ -222,4 +222,5 @@
     <string name="replies_limited_followers">Alleen volgers van de auteur kunnen reageren</string>
     <string name="replies_limited_mentioned">Alleen accounts die in het bericht worden genoemd, kunnen reageren</string>
     <string name="replies_limited_author">Alleen de auteur kan reageren</string>
+    <string name="updating">Bijwerken…</string>
 </resources>

@@ -66,21 +66,43 @@ import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 import com.aimdi.xtanative.ui.plugins.rememberShareText
 import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.speech.ReadAloudButton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
+
+/**
+ * One conversation as it has been read, and what it showed when it was
+ * last read, kept on the device, until then; each read is kept for the next
+ * time it opens.
+ */
+internal class ThreadsConversationModel(app: ThreadsApp, url: String, seed: ThreadsPost, scope: CoroutineScope) {
+    val kept = MutableStateFlow<ThreadsConversation?>(null)
+    val fetch = Fetch(scope, ThreadsConversation.seed(seed)) { force ->
+        app.ready()
+        app.reader.conversation(seed, force).also { if (it.loaded) app.keepConversation(url, it) }
+    }
+
+    init {
+        scope.launch { kept.value = app.keptConversation(url)?.value }
+    }
+}
 
 /**
  * One post in its conversation (threads_thread_screen.dart): what it
  * answers, the post, the rest of its author's thread, then each reply
  * thread, read from the post's public page. The tapped card is on screen at
  * once; with posts above it, the list opens on it, what it answers a scroll up.
+ * A conversation opened before shows at once what it showed then, quietly
+ * "updating" while its page is read again.
  */
 @Composable
 internal fun ThreadsConversationScreen(app: ThreadsApp, route: ThreadsRoute.Post) {
     val seed = remember(route) { app.shelf.post(route.card) ?: route.stub() }
-    val fetch = rememberKept("threads-post-${route.url}") { scope ->
-        Fetch(scope, ThreadsConversation.seed(seed)) { force -> app.ready(); app.reader.conversation(seed, force) }
-    }
+    val model = rememberKept("threads-post-${route.url}") { scope -> ThreadsConversationModel(app, route.url, seed, scope) }
+    val fetch = model.fetch
     LaunchedEffect(fetch) { fetch.ensure() }
     val state by fetch.state.collectAsState()
+    val kept by model.kept.collectAsState()
     val more = rememberKept("threads-post-more-${route.url}") { scope ->
         ThreadsPaging<ThreadsReplyThread>(scope, { it.posts.first().id }) { cursor ->
             val focus = fetch.state.value.value?.focus ?: seed
@@ -91,7 +113,8 @@ internal fun ThreadsConversationScreen(app: ThreadsApp, route: ThreadsRoute.Post
     LaunchedEffect(state.value) {
         state.value?.takeIf { it.loaded }?.let { read -> more.start(read.replies.map(::ThreadsReplyThread), read.repliesNext) }
     }
-    val conversation = remember(state.value, paged.items) { (state.value ?: ThreadsConversation.seed(seed)).withMore(paged.items) }
+    val shown = ThreadsConversationView.shown(state.value, kept, seed)
+    val conversation = remember(shown, paged.items) { shown.withMore(paged.items) }
     PluginScaffold(
         title = pluginString(Strings.thread),
         onBack = app.host::back,
@@ -153,7 +176,9 @@ private fun RefreshableConversation(
     onExpand: (List<ThreadsPost>) -> Unit,
     onCollapse: (List<ThreadsPost>) -> Unit,
 ) {
-    PullToRefreshBox(isRefreshing = state.loading && conversation.loaded, onRefresh = onRetry, modifier = Modifier.fillMaxSize()) {
+    // Pulling shows its own spinner; what was kept shown while the page is read first says "updating" instead.
+    val fresh = state.value?.loaded == true
+    PullToRefreshBox(isRefreshing = state.loading && fresh, onRefresh = onRetry, modifier = Modifier.fillMaxSize()) {
         LazyColumn(state = list, contentPadding = PaddingValues(bottom = 24.dp), modifier = Modifier.fillMaxSize()) {
             threadRows(app, conversation)
             statusRows(conversation, state, onRetry)
@@ -166,7 +191,7 @@ private fun RefreshableConversation(
             relatedRows(app, conversation.related)
         }
         if (conversation.replies.isNotEmpty()) {
-            ReloadStatus(state.loading, state.problem?.let { ThreadsFailures.post(it, currentLanguage()) }, onRetry)
+            ReloadStatus(state.loading, state.problem?.let { ThreadsFailures.post(it, currentLanguage()) }, onRetry, updating = !fresh)
         }
     }
 }
@@ -290,4 +315,14 @@ private fun orderIcon(order: ThreadsReplyOrder): ImageVector = when (order) {
     ThreadsReplyOrder.TOP -> PostIcons.Sparkle
     ThreadsReplyOrder.NEWEST -> PostIcons.Schedule
     ThreadsReplyOrder.OLDEST -> PostIcons.History
+}
+
+/** Which conversation the screen shows while its page is read. */
+internal object ThreadsConversationView {
+    /** The page as read; until then what was kept of it last time; else the tapped card (or the link's stub) alone. */
+    fun shown(read: ThreadsConversation?, kept: ThreadsConversation?, seed: ThreadsPost): ThreadsConversation = when {
+        read?.loaded == true -> read
+        kept != null -> kept
+        else -> read ?: ThreadsConversation.seed(seed)
+    }
 }

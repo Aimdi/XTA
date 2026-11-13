@@ -227,4 +227,5 @@
     <string name="replies_limited_followers">Pot răspunde doar urmăritorii autorului</string>
     <string name="replies_limited_mentioned">Pot răspunde doar conturile menționate în postare</string>
     <string name="replies_limited_author">Doar autorul poate răspunde</string>
+    <string name="updating">Se actualizează…</string>
 </resources>
