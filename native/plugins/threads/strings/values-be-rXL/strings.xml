@@ -254,4 +254,17 @@
         <item quantity="other">Dopis-pryvid · zniknie praz %1$d chviliny</item>
     </plurals>
     <string name="post_trend">U trendzie · %1$s</string>
+    <string name="badge_member">Udzielnik</string>
+    <string name="badge_founder">Zasnavalnik</string>
+    <string name="badge_moderator">Maderatar</string>
+    <string name="badge_champion">Čempijon</string>
+    <string name="badge_top_contributor">Lepšy aŭtar</string>
+    <string name="quote_unavailable">Hety dopis niedastupny</string>
+    <string name="plays">Prajhravanni</string>
+    <string name="podcast">Padkast</string>
+    <string name="fediverse_sharing">Dzielicca dopisami ŭ fiedyviors</string>
+    <string name="fediverse_copied">Adras u fiedyviorsie skapijavany</string>
+    <string name="media_as_grid">Pakazać sietkaj</string>
+    <string name="media_as_list">Pakazać spisam</string>
+    <string name="media_video">Videa</string>
 </resources>

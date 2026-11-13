@@ -254,4 +254,17 @@
         <item quantity="other">Пост-призрак · исчезнет через %1$d минуты</item>
     </plurals>
     <string name="post_trend">В трендах · %1$s</string>
+    <string name="badge_member">Участник</string>
+    <string name="badge_founder">Основатель</string>
+    <string name="badge_moderator">Модератор</string>
+    <string name="badge_champion">Чемпион</string>
+    <string name="badge_top_contributor">Лучший автор</string>
+    <string name="quote_unavailable">Этот пост недоступен</string>
+    <string name="plays">Воспроизведения</string>
+    <string name="podcast">Подкаст</string>
+    <string name="fediverse_sharing">Делится постами в федиверс</string>
+    <string name="fediverse_copied">Адрес в федиверсе скопирован</string>
+    <string name="media_as_grid">Показать сеткой</string>
+    <string name="media_as_list">Показать списком</string>
+    <string name="media_video">Видео</string>
 </resources>

@@ -202,6 +202,11 @@ object ThreadsParser {
             externalUrl = user["external_url"].string?.trim()?.ifEmpty { null },
             hdPictureUrl = hdPicture(user),
             pictureSizes = pictureSizes(user),
+            facts = ThreadsProfileFacts(
+                tags = ThreadsProfileExtras.tags(user),
+                podcast = ThreadsProfileExtras.podcast(user),
+                fediverse = ThreadsProfileExtras.fediverse(user, username),
+            ),
         )
     }
 
@@ -235,7 +240,10 @@ object ThreadsParser {
         val media = ThreadsMediaParts.of(post)
         val linkCard = linkCard(post)
         val quoted = if (withQuote) quotedPost(post) else null
-        if (handle.isEmpty() || (text.isEmpty() && media.isEmpty() && linkCard == null && quoted == null)) return null
+        val read = ThreadsPostFactsReader.of(post)
+        // A quote of a post Threads no longer shows is drawn as such; one level down there is no box to draw it in.
+        val facts = if (withQuote && quoted == null) read else read.copy(quoteUnavailable = false)
+        if (handle.isEmpty() || (text.isEmpty() && media.isEmpty() && linkCard == null && quoted == null && !facts.quoteUnavailable)) return null
         val code = post["code"].string
         val id = idOf(post["pk"]) ?: post["id"].string ?: code
         if (id.isNullOrEmpty()) return null
@@ -261,7 +269,7 @@ object ThreadsParser {
             isVerified = user["is_verified"].boolean ?: false,
             replyToHandle = replyTo,
             isReply = replyTo != null || info["is_reply"].boolean == true || info["reply_to_author"].exists,
-            facts = ThreadsPostFactsReader.of(post),
+            facts = facts,
             mediaCovered = ThreadsMediaParts.covered(post),
             mediaCoverWords = ThreadsMediaParts.coverWords(post),
         )

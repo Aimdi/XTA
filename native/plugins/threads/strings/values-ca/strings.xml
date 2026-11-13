@@ -246,4 +246,17 @@
         <item quantity="other">Publicació fantasma · desapareix d’aquí a %1$d minuts</item>
     </plurals>
     <string name="post_trend">Tendència · %1$s</string>
+    <string name="badge_member">Membre</string>
+    <string name="badge_founder">Fundador</string>
+    <string name="badge_moderator">Moderador</string>
+    <string name="badge_champion">Campió</string>
+    <string name="badge_top_contributor">Col·laborador destacat</string>
+    <string name="quote_unavailable">Aquesta publicació no està disponible</string>
+    <string name="plays">Reproduccions</string>
+    <string name="podcast">Pòdcast</string>
+    <string name="fediverse_sharing">Comparteix al fedivers</string>
+    <string name="fediverse_copied">S\'ha copiat l\'adreça del fedivers</string>
+    <string name="media_as_grid">Mostra en graella</string>
+    <string name="media_as_list">Mostra en llista</string>
+    <string name="media_video">Vídeo</string>
 </resources>

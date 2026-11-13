@@ -240,4 +240,17 @@
         <item quantity="other">Kummituspostitus · kaob %1$d minuti pärast</item>
     </plurals>
     <string name="post_trend">Populaarne · %1$s</string>
+    <string name="badge_member">Liige</string>
+    <string name="badge_founder">Asutaja</string>
+    <string name="badge_moderator">Moderaator</string>
+    <string name="badge_champion">Tšempion</string>
+    <string name="badge_top_contributor">Tippkaasautor</string>
+    <string name="quote_unavailable">See postitus pole saadaval</string>
+    <string name="plays">Esitused</string>
+    <string name="podcast">Taskuhääling</string>
+    <string name="fediverse_sharing">Jagab fediversumisse</string>
+    <string name="fediverse_copied">Fediversumi aadress kopeeritud</string>
+    <string name="media_as_grid">Näita ruudustikuna</string>
+    <string name="media_as_list">Näita loendina</string>
+    <string name="media_video">Video</string>
 </resources>

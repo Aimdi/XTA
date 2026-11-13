@@ -2,6 +2,7 @@ package com.aimdi.xtanative.plugins.threads
 
 import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.networks.threads.ThreadsCommunities
+import com.aimdi.xtanative.networks.threads.ThreadsCommunityBadge
 import com.aimdi.xtanative.networks.threads.ThreadsGhost
 import com.aimdi.xtanative.networks.threads.ThreadsMusic
 import com.aimdi.xtanative.networks.threads.ThreadsPoll
@@ -48,6 +49,9 @@ internal object ThreadsFactsJson {
             facts.ghost?.let { ghost -> "ghost" to JsonObject(listOfNotNull(ghost.endsAt?.let { "endsAt" to JsonPrimitive(XtaTime.iso(it)) }).toMap()) },
             facts.attachment?.let { "attachment" to attachment(it) },
             facts.trends.takeIf { it.isNotEmpty() }?.let { trends -> "trends" to JsonArray(trends.map(::trend)) },
+            facts.communityBadge?.let { "communityBadge" to JsonPrimitive(it.name) },
+            flag("quoteUnavailable", facts.quoteUnavailable),
+            facts.playCount?.let { "playCount" to JsonPrimitive(it) },
         )
         return JsonObject(fields.toMap())
     }
@@ -77,6 +81,9 @@ internal object ThreadsFactsJson {
             ghost = row["ghost"].takeIf { it.raw is JsonObject }?.let { ThreadsGhost(XtaTime.parse(it["endsAt"].string)) },
             attachment = attachment(row["attachment"]),
             trends = row["trends"].list.mapNotNull(::trend),
+            communityBadge = ThreadsCommunityBadge.entries.firstOrNull { it.name == row["communityBadge"].string },
+            quoteUnavailable = row["quoteUnavailable"].boolean == true,
+            playCount = row["playCount"].long?.takeIf { it >= 0 },
         )
     }
 

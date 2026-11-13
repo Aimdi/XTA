@@ -246,4 +246,17 @@
         <item quantity="other">Post fantasma · some em %1$d minutos</item>
     </plurals>
     <string name="post_trend">Em alta · %1$s</string>
+    <string name="badge_member">Membro</string>
+    <string name="badge_founder">Fundador</string>
+    <string name="badge_moderator">Moderador</string>
+    <string name="badge_champion">Campeão</string>
+    <string name="badge_top_contributor">Colaborador de destaque</string>
+    <string name="quote_unavailable">Esta publicação não está disponível</string>
+    <string name="plays">Reproduções</string>
+    <string name="podcast">Podcast</string>
+    <string name="fediverse_sharing">Compartilha no fediverso</string>
+    <string name="fediverse_copied">Endereço do fediverso copiado</string>
+    <string name="media_as_grid">Mostrar em grade</string>
+    <string name="media_as_list">Mostrar em lista</string>
+    <string name="media_video">Vídeo</string>
 </resources>

@@ -233,4 +233,17 @@
         <item quantity="other">ゴースト投稿 · %1$d分後に消えます</item>
     </plurals>
     <string name="post_trend">トレンド · %1$s</string>
+    <string name="badge_member">メンバー</string>
+    <string name="badge_founder">創設者</string>
+    <string name="badge_moderator">モデレーター</string>
+    <string name="badge_champion">チャンピオン</string>
+    <string name="badge_top_contributor">トップ投稿者</string>
+    <string name="quote_unavailable">この投稿は表示できません</string>
+    <string name="plays">再生回数</string>
+    <string name="podcast">ポッドキャスト</string>
+    <string name="fediverse_sharing">フェディバースに共有中</string>
+    <string name="fediverse_copied">フェディバースのアドレスをコピーしました</string>
+    <string name="media_as_grid">グリッドで表示</string>
+    <string name="media_as_list">リストで表示</string>
+    <string name="media_video">動画</string>
 </resources>

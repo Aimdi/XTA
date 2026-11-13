@@ -240,4 +240,17 @@
         <item quantity="other">Spøkelsesinnlegg · forsvinner om %1$d minutter</item>
     </plurals>
     <string name="post_trend">Populært · %1$s</string>
+    <string name="badge_member">Medlem</string>
+    <string name="badge_founder">Grunnlegger</string>
+    <string name="badge_moderator">Moderator</string>
+    <string name="badge_champion">Mester</string>
+    <string name="badge_top_contributor">Toppbidragsyter</string>
+    <string name="quote_unavailable">Dette innlegget er ikke tilgjengelig</string>
+    <string name="plays">Avspillinger</string>
+    <string name="podcast">Podkast</string>
+    <string name="fediverse_sharing">Deler til fødiverset</string>
+    <string name="fediverse_copied">Fødiverse-adressen er kopiert</string>
+    <string name="media_as_grid">Vis som rutenett</string>
+    <string name="media_as_list">Vis som liste</string>
+    <string name="media_video">Video</string>
 </resources>

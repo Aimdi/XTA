@@ -240,4 +240,17 @@
         <item quantity="other">Ghost-Beitrag · verschwindet in %1$d Minuten</item>
     </plurals>
     <string name="post_trend">Im Trend · %1$s</string>
+    <string name="badge_member">Mitglied</string>
+    <string name="badge_founder">Gründer</string>
+    <string name="badge_moderator">Moderator</string>
+    <string name="badge_champion">Champion</string>
+    <string name="badge_top_contributor">Top-Beitragender</string>
+    <string name="quote_unavailable">Dieser Beitrag ist nicht verfügbar</string>
+    <string name="plays">Wiedergaben</string>
+    <string name="podcast">Podcast</string>
+    <string name="fediverse_sharing">Teilt ins Fediverse</string>
+    <string name="fediverse_copied">Fediverse-Adresse kopiert</string>
+    <string name="media_as_grid">Als Raster anzeigen</string>
+    <string name="media_as_list">Als Liste anzeigen</string>
+    <string name="media_video">Video</string>
 </resources>

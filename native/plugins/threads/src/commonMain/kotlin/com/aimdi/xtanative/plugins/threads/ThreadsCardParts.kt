@@ -168,7 +168,7 @@ internal fun ThreadsPollView(poll: ThreadsPoll, modifier: Modifier) {
 }
 
 /**
- * The opened post's views, quotes and shares, where Meta counted them,
+ * The opened post's views, its video's plays, quotes and shares, where Meta counted them,
  * which its buttons do not show; for a signed-in reader its quotes open the
  * posts that quote it ([ThreadsQuotesScreen]).
  */
@@ -179,12 +179,14 @@ internal fun FocalCounts(app: ThreadsApp, post: ThreadsPost, hideCounts: Boolean
     val quotes = post.quoteCount?.takeIf { it > 0 }?.let { it to pluginString(Strings.quotes) }
     val shares = post.facts.shareCount?.takeIf { it > 0 }?.let { it to pluginString(Strings.shares) }
     val views = post.facts.viewCount?.takeIf { it > 0 }?.let { it to pluginString(Strings.views) }
-    if (quotes == null && shares == null && views == null) return
+    val plays = post.facts.playCount?.takeIf { it > 0 && post.hasVideo }?.let { it to pluginString(Strings.plays) }
+    if (quotes == null && shares == null && views == null && plays == null) return
     val signedIn = ThreadsPeopleView.signedIn(ThreadsSessions.of(settings))
     val quotesOpen = ThreadsPeople.mediaId(post).takeIf { ThreadsPeopleView.opensQuotes(post, signedIn) }
     val showQuotes = pluginString(Strings.show_quotes)
     Row(Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically) {
         views?.let { PluginCounts(listOf(it)) }
+        plays?.let { PluginCounts(listOf(it)) }
         quotes?.let { counted ->
             val opens = quotesOpen?.let { id ->
                 Modifier.heightIn(min = 48.dp).clickable(role = Role.Button, onClickLabel = showQuotes) { app.host.open(ThreadsRoutes.quotes(id, post.url)) }

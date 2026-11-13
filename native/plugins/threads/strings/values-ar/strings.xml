@@ -268,4 +268,17 @@
         <item quantity="other">منشور شبح · يختفي خلال %1$d دقيقة</item>
     </plurals>
     <string name="post_trend">رائج · %1$s</string>
+    <string name="badge_member">عضو</string>
+    <string name="badge_founder">مؤسس</string>
+    <string name="badge_moderator">مشرف</string>
+    <string name="badge_champion">بطل</string>
+    <string name="badge_top_contributor">من أبرز المساهمين</string>
+    <string name="quote_unavailable">هذا المنشور غير متاح</string>
+    <string name="plays">مرات التشغيل</string>
+    <string name="podcast">بودكاست</string>
+    <string name="fediverse_sharing">يشارك منشوراته في الفيديفيرس</string>
+    <string name="fediverse_copied">تم نسخ عنوان الفيديفيرس</string>
+    <string name="media_as_grid">العرض كشبكة</string>
+    <string name="media_as_list">العرض كقائمة</string>
+    <string name="media_video">فيديو</string>
 </resources>

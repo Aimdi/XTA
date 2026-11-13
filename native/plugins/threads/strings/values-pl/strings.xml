@@ -254,4 +254,17 @@
         <item quantity="other">Wpis-widmo · zniknie za %1$d minuty</item>
     </plurals>
     <string name="post_trend">Popularne · %1$s</string>
+    <string name="badge_member">Członek</string>
+    <string name="badge_founder">Założyciel</string>
+    <string name="badge_moderator">Moderator</string>
+    <string name="badge_champion">Mistrz</string>
+    <string name="badge_top_contributor">Najaktywniejszy autor</string>
+    <string name="quote_unavailable">Ten post jest niedostępny</string>
+    <string name="plays">Odtworzenia</string>
+    <string name="podcast">Podcast</string>
+    <string name="fediverse_sharing">Udostępnia w fediwersum</string>
+    <string name="fediverse_copied">Skopiowano adres w fediwersum</string>
+    <string name="media_as_grid">Pokaż jako siatkę</string>
+    <string name="media_as_list">Pokaż jako listę</string>
+    <string name="media_video">Wideo</string>
 </resources>

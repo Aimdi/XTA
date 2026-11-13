@@ -49,8 +49,27 @@ internal object ThreadsIcons {
         icon("MusicNote", "M12,3v10.55c-0.59,-0.34 -1.27,-0.55 -2,-0.55 -2.21,0 -4,1.79 -4,4s1.79,4 4,4 4,-1.79 4,-4V7h4V3h-6z")
     }
 
+    /** A profile's media as a grid. */
+    val GridView: ImageVector by lazy {
+        icon(
+            "GridView",
+            "M5,11h4c1.1,0 2,-0.9 2,-2V5c0,-1.1 -0.9,-2 -2,-2H5C3.9,3 3,3.9 3,5v4C3,10.1 3.9,11 5,11zM5,21h4c1.1,0 2,-0.9 2,-2v-4c0,-1.1 -0.9,-2 -2,-2H5" +
+                "c-1.1,0 -2,0.9 -2,2v4C3,20.1 3.9,21 5,21zM13,5v4c0,1.1 0.9,2 2,2h4c1.1,0 2,-0.9 2,-2V5c0,-1.1 -0.9,-2 -2,-2h-4C13.9,3 13,3.9 13,5z" +
+                "M15,21h4c1.1,0 2,-0.9 2,-2v-4c0,-1.1 -0.9,-2 -2,-2h-4c-1.1,0 -2,0.9 -2,2v4C13,20.1 13.9,21 15,21z",
+        )
+    }
+
+    /** A profile's media as the posts' cards again. */
+    val ViewAgenda: ImageVector by lazy {
+        icon(
+            "ViewAgenda",
+            "M20,13H4c-0.55,0 -1,0.45 -1,1v6c0,0.55 0.45,1 1,1h16c0.55,0 1,-0.45 1,-1v-6C21,13.45 20.55,13 20,13zM20,3H4C3.45,3 3,3.45 3,4v6" +
+                "c0,0.55 0.45,1 1,1h16c0.55,0 1,-0.45 1,-1V4C21,3.45 20.55,3 20,3z",
+        )
+    }
+
     /** Every glyph, for the test that draws them all. */
-    internal val all: List<ImageVector> get() = listOf(Mark, PersonAdd, PersonRemove, Public, PauseCircle, MusicNote)
+    internal val all: List<ImageVector> get() = listOf(Mark, PersonAdd, PersonRemove, Public, PauseCircle, MusicNote, GridView, ViewAgenda)
 
     internal fun icon(name: String, path: String): ImageVector =
         ImageVector.Builder(name = name, defaultWidth = 24.dp, defaultHeight = 24.dp, viewportWidth = 24f, viewportHeight = 24f)

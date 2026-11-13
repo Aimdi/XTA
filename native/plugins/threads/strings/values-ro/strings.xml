@@ -247,4 +247,17 @@
         <item quantity="other">Postare fantomă · dispare în %1$d de minute</item>
     </plurals>
     <string name="post_trend">În tendințe · %1$s</string>
+    <string name="badge_member">Membru</string>
+    <string name="badge_founder">Fondator</string>
+    <string name="badge_moderator">Moderator</string>
+    <string name="badge_champion">Campion</string>
+    <string name="badge_top_contributor">Contribuitor de top</string>
+    <string name="quote_unavailable">Această postare nu este disponibilă</string>
+    <string name="plays">Redări</string>
+    <string name="podcast">Podcast</string>
+    <string name="fediverse_sharing">Distribuie în fedivers</string>
+    <string name="fediverse_copied">Adresa din fedivers a fost copiată</string>
+    <string name="media_as_grid">Afișează ca grilă</string>
+    <string name="media_as_list">Afișează ca listă</string>
+    <string name="media_video">Videoclip</string>
 </resources>

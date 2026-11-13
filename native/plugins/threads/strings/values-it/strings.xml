@@ -246,4 +246,17 @@
         <item quantity="other">Post fantasma · scompare tra %1$d minuti</item>
     </plurals>
     <string name="post_trend">Di tendenza · %1$s</string>
+    <string name="badge_member">Membro</string>
+    <string name="badge_founder">Fondatore</string>
+    <string name="badge_moderator">Moderatore</string>
+    <string name="badge_champion">Campione</string>
+    <string name="badge_top_contributor">Tra i migliori contributori</string>
+    <string name="quote_unavailable">Questo post non è disponibile</string>
+    <string name="plays">Riproduzioni</string>
+    <string name="podcast">Podcast</string>
+    <string name="fediverse_sharing">Condivide nel fediverso</string>
+    <string name="fediverse_copied">Indirizzo del fediverso copiato</string>
+    <string name="media_as_grid">Mostra come griglia</string>
+    <string name="media_as_list">Mostra come elenco</string>
+    <string name="media_video">Video</string>
 </resources>

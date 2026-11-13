@@ -94,7 +94,8 @@ private val FaceRing = 4.dp
 /**
  * The profile's header: the banner, the face over its lower edge with the
  * filters-and-groups button and following here beside it, then the name,
- * the handle with the private note, the bio, the links, the counts (each
+ * the handle with the private note, the bio, the topics and communities it
+ * lists, the links, its podcast, whether it shares to the fediverse, the counts (each
  * opening its list, a long press showing the whole figure) and a word when
  * the profile is private. Following is the device's own, never Threads'.
  */
@@ -138,7 +139,10 @@ internal fun ThreadsProfileCard(app: ThreadsApp, profile: ThreadsProfile, onFilt
             profile.biography.trim().takeIf { it.isNotEmpty() }?.let { bio ->
                 ThreadsRichText(app, bio, profile.facts.bioFragments, Modifier.padding(top = 8.dp), style = MaterialTheme.typography.bodyLarge.copy(fontSize = 15.sp, lineHeight = 22.sp))
             }
+            ProfileTags(app, profile.facts.tags)
             ProfileLinks(profile)
+            ProfilePodcast(profile.facts.podcast)
+            ProfileFediverse(app, profile.facts.fediverse)
             val counts = ThreadsProfiles.counts(profile)
             if (counts.isNotEmpty()) {
                 FlowRow(Modifier.padding(top = 4.dp), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
@@ -339,27 +343,54 @@ private fun ProfileTabItem(label: String, selected: Boolean, onClick: () -> Unit
     }
 }
 
-/** The round toggles under the tabs: every post, those with media, those with a link; the chosen one on a quiet filled circle. */
+/**
+ * The round toggles under the tabs: every post, those with media, those
+ * with a link; the chosen one on a quiet filled circle. With [grid] (the
+ * Media tab), a last toggle at the row's end shows the tab as a grid or as
+ * its cards again.
+ */
 @Composable
-internal fun ContentToggles(options: List<ThreadsFeedContent>, selected: ThreadsFeedContent, onSelect: (ThreadsFeedContent) -> Unit) {
-    Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 10.dp).selectableGroup(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        options.forEach { option ->
-            val chosen = option == selected
-            Box(
-                Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-                    .background(if (chosen) MaterialTheme.colorScheme.surfaceContainerHigh else Color.Transparent)
-                    .selectable(selected = chosen, role = Role.RadioButton) { onSelect(option) },
-                contentAlignment = Alignment.Center,
-            ) {
+internal fun ContentToggles(
+    options: List<ThreadsFeedContent>,
+    selected: ThreadsFeedContent,
+    grid: Boolean? = null,
+    onGrid: (Boolean) -> Unit = {},
+    onSelect: (ThreadsFeedContent) -> Unit,
+) {
+    Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 10.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(Modifier.selectableGroup(), horizontalArrangement = Arrangement.spacedBy(8.dp)) { ContentChoices(options, selected, onSelect) }
+        if (grid != null) {
+            Spacer(Modifier.weight(1f))
+            IconButton(onClick = { onGrid(!grid) }, modifier = Modifier.size(48.dp)) {
                 Icon(
-                    contentIcon(option),
-                    contentDescription = pluginString(contentLabel(option)),
-                    tint = if (chosen) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
+                    if (grid) ThreadsIcons.ViewAgenda else ThreadsIcons.GridView,
+                    contentDescription = pluginString(if (grid) Strings.media_as_list else Strings.media_as_grid),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(20.dp),
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun ContentChoices(options: List<ThreadsFeedContent>, selected: ThreadsFeedContent, onSelect: (ThreadsFeedContent) -> Unit) {
+    options.forEach { option ->
+        val chosen = option == selected
+        Box(
+            Modifier
+                .size(48.dp)
+                .clip(CircleShape)
+                .background(if (chosen) MaterialTheme.colorScheme.surfaceContainerHigh else Color.Transparent)
+                .selectable(selected = chosen, role = Role.RadioButton) { onSelect(option) },
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                contentIcon(option),
+                contentDescription = pluginString(contentLabel(option)),
+                tint = if (chosen) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(20.dp),
+            )
         }
     }
 }

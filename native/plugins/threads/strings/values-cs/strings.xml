@@ -254,4 +254,17 @@
         <item quantity="other">Příspěvek duch · zmizí za %1$d minut</item>
     </plurals>
     <string name="post_trend">Populární · %1$s</string>
+    <string name="badge_member">Člen</string>
+    <string name="badge_founder">Zakladatel</string>
+    <string name="badge_moderator">Moderátor</string>
+    <string name="badge_champion">Šampion</string>
+    <string name="badge_top_contributor">Top přispěvatel</string>
+    <string name="quote_unavailable">Tento příspěvek není dostupný</string>
+    <string name="plays">Přehrání</string>
+    <string name="podcast">Podcast</string>
+    <string name="fediverse_sharing">Sdílí do fediversu</string>
+    <string name="fediverse_copied">Adresa ve fediversu zkopírována</string>
+    <string name="media_as_grid">Zobrazit jako mřížku</string>
+    <string name="media_as_list">Zobrazit jako seznam</string>
+    <string name="media_video">Video</string>
 </resources>

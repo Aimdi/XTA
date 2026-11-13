@@ -240,4 +240,17 @@
         <item quantity="other">घोस्ट पोस्ट · %1$d मिनट में गायब हो जाएगी</item>
     </plurals>
     <string name="post_trend">ट्रेंडिंग · %1$s</string>
+    <string name="badge_member">सदस्य</string>
+    <string name="badge_founder">संस्थापक</string>
+    <string name="badge_moderator">मॉडरेटर</string>
+    <string name="badge_champion">चैंपियन</string>
+    <string name="badge_top_contributor">शीर्ष योगदानकर्ता</string>
+    <string name="quote_unavailable">यह पोस्ट उपलब्ध नहीं है</string>
+    <string name="plays">प्ले</string>
+    <string name="podcast">पॉडकास्ट</string>
+    <string name="fediverse_sharing">फ़ेडिवर्स पर साझा करता है</string>
+    <string name="fediverse_copied">फ़ेडिवर्स पता कॉपी किया गया</string>
+    <string name="media_as_grid">ग्रिड में दिखाएँ</string>
+    <string name="media_as_list">सूची में दिखाएँ</string>
+    <string name="media_video">वीडियो</string>
 </resources>

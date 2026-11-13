@@ -240,4 +240,17 @@
         <item quantity="other">Hayalet gönderi · %1$d dakika içinde kaybolacak</item>
     </plurals>
     <string name="post_trend">Gündemde · %1$s</string>
+    <string name="badge_member">Üye</string>
+    <string name="badge_founder">Kurucu</string>
+    <string name="badge_moderator">Moderatör</string>
+    <string name="badge_champion">Şampiyon</string>
+    <string name="badge_top_contributor">Öne çıkan katkıcı</string>
+    <string name="quote_unavailable">Bu gönderi kullanılamıyor</string>
+    <string name="plays">Oynatma</string>
+    <string name="podcast">Podcast</string>
+    <string name="fediverse_sharing">Fediverse\'te paylaşıyor</string>
+    <string name="fediverse_copied">Fediverse adresi kopyalandı</string>
+    <string name="media_as_grid">Izgara olarak göster</string>
+    <string name="media_as_list">Liste olarak göster</string>
+    <string name="media_video">Video</string>
 </resources>

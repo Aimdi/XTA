@@ -240,4 +240,17 @@
         <item quantity="other">Fantoma afiŝo · malaperos post %1$d minutoj</item>
     </plurals>
     <string name="post_trend">Populara · %1$s</string>
+    <string name="badge_member">Membro</string>
+    <string name="badge_founder">Fondinto</string>
+    <string name="badge_moderator">Moderiganto</string>
+    <string name="badge_champion">Ĉampiono</string>
+    <string name="badge_top_contributor">Ĉefa kontribuanto</string>
+    <string name="quote_unavailable">Tiu afiŝo ne estas disponebla</string>
+    <string name="plays">Ludadoj</string>
+    <string name="podcast">Podkasto</string>
+    <string name="fediverse_sharing">Kunhavigas al la fediverso</string>
+    <string name="fediverse_copied">Fediversa adreso kopiita</string>
+    <string name="media_as_grid">Montri kiel kradon</string>
+    <string name="media_as_list">Montri kiel liston</string>
+    <string name="media_video">Video</string>
 </resources>

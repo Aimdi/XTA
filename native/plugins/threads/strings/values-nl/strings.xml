@@ -240,4 +240,17 @@
         <item quantity="other">Spookbericht · verdwijnt over %1$d minuten</item>
     </plurals>
     <string name="post_trend">Populair · %1$s</string>
+    <string name="badge_member">Lid</string>
+    <string name="badge_founder">Oprichter</string>
+    <string name="badge_moderator">Moderator</string>
+    <string name="badge_champion">Kampioen</string>
+    <string name="badge_top_contributor">Topbijdrager</string>
+    <string name="quote_unavailable">Dit bericht is niet beschikbaar</string>
+    <string name="plays">Afspeelbeurten</string>
+    <string name="podcast">Podcast</string>
+    <string name="fediverse_sharing">Deelt naar de fediverse</string>
+    <string name="fediverse_copied">Fediverse-adres gekopieerd</string>
+    <string name="media_as_grid">Als raster tonen</string>
+    <string name="media_as_list">Als lijst tonen</string>
+    <string name="media_video">Video</string>
 </resources>

@@ -242,4 +242,17 @@
         <item quantity="other">Ghost post · disappears in %1$d minutes</item>
     </plurals>
     <string name="post_trend">Trending · %1$s</string>
+    <string name="badge_member">Member</string>
+    <string name="badge_founder">Founder</string>
+    <string name="badge_moderator">Moderator</string>
+    <string name="badge_champion">Champion</string>
+    <string name="badge_top_contributor">Top contributor</string>
+    <string name="quote_unavailable">This post is unavailable</string>
+    <string name="plays">Plays</string>
+    <string name="podcast">Podcast</string>
+    <string name="fediverse_sharing">Shares to the fediverse</string>
+    <string name="fediverse_copied">Fediverse address copied</string>
+    <string name="media_as_grid">Show as a grid</string>
+    <string name="media_as_list">Show as a list</string>
+    <string name="media_video">Video</string>
 </resources>

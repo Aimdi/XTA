@@ -254,4 +254,17 @@
         <item quantity="other">Допіс-прывід · знікне праз %1$d хвіліны</item>
     </plurals>
     <string name="post_trend">У трэндзе · %1$s</string>
+    <string name="badge_member">Удзельнік</string>
+    <string name="badge_founder">Заснавальнік</string>
+    <string name="badge_moderator">Мадэратар</string>
+    <string name="badge_champion">Чэмпіён</string>
+    <string name="badge_top_contributor">Лепшы аўтар</string>
+    <string name="quote_unavailable">Гэты допіс недаступны</string>
+    <string name="plays">Прайграванні</string>
+    <string name="podcast">Падкаст</string>
+    <string name="fediverse_sharing">Дзеліцца допісамі ў федывёрс</string>
+    <string name="fediverse_copied">Адрас у федывёрсе скапіяваны</string>
+    <string name="media_as_grid">Паказаць сеткай</string>
+    <string name="media_as_list">Паказаць спісам</string>
+    <string name="media_video">Відэа</string>
 </resources>

@@ -233,4 +233,17 @@
         <item quantity="other">幽靈貼文 · %1$d 分鐘後消失</item>
     </plurals>
     <string name="post_trend">熱門 · %1$s</string>
+    <string name="badge_member">成員</string>
+    <string name="badge_founder">創辦人</string>
+    <string name="badge_moderator">版主</string>
+    <string name="badge_champion">達人</string>
+    <string name="badge_top_contributor">熱門貢獻者</string>
+    <string name="quote_unavailable">這則貼文無法顯示</string>
+    <string name="plays">播放次數</string>
+    <string name="podcast">Podcast</string>
+    <string name="fediverse_sharing">分享到聯邦宇宙</string>
+    <string name="fediverse_copied">已複製聯邦宇宙地址</string>
+    <string name="media_as_grid">以網格顯示</string>
+    <string name="media_as_list">以清單顯示</string>
+    <string name="media_video">影片</string>
 </resources>

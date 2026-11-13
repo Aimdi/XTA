@@ -246,4 +246,17 @@
         <item quantity="other">Publicación fantasma · desaparece en %1$d minutos</item>
     </plurals>
     <string name="post_trend">Tendencia · %1$s</string>
+    <string name="badge_member">Miembro</string>
+    <string name="badge_founder">Fundador</string>
+    <string name="badge_moderator">Moderador</string>
+    <string name="badge_champion">Campeón</string>
+    <string name="badge_top_contributor">Colaborador destacado</string>
+    <string name="quote_unavailable">Esta publicación no está disponible</string>
+    <string name="plays">Reproducciones</string>
+    <string name="podcast">Pódcast</string>
+    <string name="fediverse_sharing">Comparte en el fediverso</string>
+    <string name="fediverse_copied">Dirección del fediverso copiada</string>
+    <string name="media_as_grid">Ver como cuadrícula</string>
+    <string name="media_as_list">Ver como lista</string>
+    <string name="media_video">Vídeo</string>
 </resources>

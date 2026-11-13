@@ -233,4 +233,17 @@
         <item quantity="other">고스트 게시물 · %1$d분 후 사라짐</item>
     </plurals>
     <string name="post_trend">트렌드 · %1$s</string>
+    <string name="badge_member">멤버</string>
+    <string name="badge_founder">창립자</string>
+    <string name="badge_moderator">운영자</string>
+    <string name="badge_champion">챔피언</string>
+    <string name="badge_top_contributor">최고 기여자</string>
+    <string name="quote_unavailable">이 게시물을 볼 수 없습니다</string>
+    <string name="plays">재생수</string>
+    <string name="podcast">팟캐스트</string>
+    <string name="fediverse_sharing">페디버스에 공유 중</string>
+    <string name="fediverse_copied">페디버스 주소를 복사했습니다</string>
+    <string name="media_as_grid">격자로 보기</string>
+    <string name="media_as_list">목록으로 보기</string>
+    <string name="media_video">동영상</string>
 </resources>
