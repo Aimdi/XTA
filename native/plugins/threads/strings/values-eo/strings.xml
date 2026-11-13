@@ -223,4 +223,21 @@
     <string name="replies_limited_mentioned">Nur kontoj menciitaj en la afiŝo povas respondi</string>
     <string name="replies_limited_author">Nur la aŭtoro povas respondi</string>
     <string name="updating">Ĝisdatigante…</string>
+    <string name="translate">Traduki</string>
+    <string name="show_original">Montri originalon</string>
+    <string name="translated_by_threads">Tradukita de Threads</string>
+    <string name="translating">Tradukante…</string>
+    <string name="translation_failed">Threads ne povis traduki ĉi tiun afiŝon</string>
+    <string name="attached_text">Aldonita teksto</string>
+    <string name="views">Vidoj</string>
+    <string name="ghost_post">Fantoma afiŝo</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="one">Fantoma afiŝo · malaperos post %1$d horo</item>
+        <item quantity="other">Fantoma afiŝo · malaperos post %1$d horoj</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="one">Fantoma afiŝo · malaperos post %1$d minuto</item>
+        <item quantity="other">Fantoma afiŝo · malaperos post %1$d minutoj</item>
+    </plurals>
+    <string name="post_trend">Populara · %1$s</string>
 </resources>

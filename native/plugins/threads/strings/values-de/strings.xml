@@ -223,4 +223,21 @@
     <string name="replies_limited_mentioned">Nur im Beitrag erwähnte Konten können antworten</string>
     <string name="replies_limited_author">Nur der Autor kann antworten</string>
     <string name="updating">Wird aktualisiert…</string>
+    <string name="translate">Übersetzen</string>
+    <string name="show_original">Original anzeigen</string>
+    <string name="translated_by_threads">Von Threads übersetzt</string>
+    <string name="translating">Wird übersetzt…</string>
+    <string name="translation_failed">Threads konnte diesen Beitrag nicht übersetzen</string>
+    <string name="attached_text">Angehängter Text</string>
+    <string name="views">Aufrufe</string>
+    <string name="ghost_post">Ghost-Beitrag</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="one">Ghost-Beitrag · verschwindet in %1$d Stunde</item>
+        <item quantity="other">Ghost-Beitrag · verschwindet in %1$d Stunden</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="one">Ghost-Beitrag · verschwindet in %1$d Minute</item>
+        <item quantity="other">Ghost-Beitrag · verschwindet in %1$d Minuten</item>
+    </plurals>
+    <string name="post_trend">Im Trend · %1$s</string>
 </resources>

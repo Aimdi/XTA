@@ -223,4 +223,21 @@
     <string name="replies_limited_mentioned">Bare kontoer som nevnes i innlegget, kan svare</string>
     <string name="replies_limited_author">Bare forfatteren kan svare</string>
     <string name="updating">Oppdaterer…</string>
+    <string name="translate">Oversett</string>
+    <string name="show_original">Vis original</string>
+    <string name="translated_by_threads">Oversatt av Threads</string>
+    <string name="translating">Oversetter…</string>
+    <string name="translation_failed">Threads kunne ikke oversette dette innlegget</string>
+    <string name="attached_text">Vedlagt tekst</string>
+    <string name="views">Visninger</string>
+    <string name="ghost_post">Spøkelsesinnlegg</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="one">Spøkelsesinnlegg · forsvinner om %1$d time</item>
+        <item quantity="other">Spøkelsesinnlegg · forsvinner om %1$d timer</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="one">Spøkelsesinnlegg · forsvinner om %1$d minutt</item>
+        <item quantity="other">Spøkelsesinnlegg · forsvinner om %1$d minutter</item>
+    </plurals>
+    <string name="post_trend">Populært · %1$s</string>
 </resources>

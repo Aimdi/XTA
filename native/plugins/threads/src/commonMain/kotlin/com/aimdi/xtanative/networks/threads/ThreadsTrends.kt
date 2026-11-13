@@ -54,6 +54,20 @@ object ThreadsTrends {
         .take(MAX)
         .toList()
 
+    /**
+     * The trends a post names ([ThreadsPostContent.trends]): a list of them,
+     * an object holding one under the names a list goes by, or one trend
+     * itself; each once. Empty for anything else.
+     */
+    fun related(node: JsonElement?): List<ThreadsTrend> {
+        val listed = when (node) {
+            is JsonArray -> items(node)
+            is JsonObject -> if (LIST_KEYS.any { node[it] is JsonArray }) items(node) else listOf(unwrapped(node))
+            else -> emptyList()
+        }
+        return listed.mapNotNull(::trend).distinctBy { it.terms.text.lowercase() }
+    }
+
     /** The trend [terms] opens among [trends], so its search page can say what Meta wrote of it. */
     fun matching(trends: List<ThreadsTrend>, terms: ThreadsSearchTerms): ThreadsTrend? =
         trends.firstOrNull { it.terms.tag == terms.tag && it.terms.query.equals(terms.query.trim(), ignoreCase = true) }

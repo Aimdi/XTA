@@ -233,4 +233,25 @@
     <string name="replies_limited_mentioned">Отвечать могут только упомянутые в посте</string>
     <string name="replies_limited_author">Отвечать может только автор</string>
     <string name="updating">Обновление…</string>
+    <string name="translate">Перевести</string>
+    <string name="show_original">Показать оригинал</string>
+    <string name="translated_by_threads">Переведено Threads</string>
+    <string name="translating">Перевод…</string>
+    <string name="translation_failed">Threads не удалось перевести этот пост</string>
+    <string name="attached_text">Прикреплённый текст</string>
+    <string name="views">Просмотры</string>
+    <string name="ghost_post">Пост-призрак</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="one">Пост-призрак · исчезнет через %1$d час</item>
+        <item quantity="few">Пост-призрак · исчезнет через %1$d часа</item>
+        <item quantity="many">Пост-призрак · исчезнет через %1$d часов</item>
+        <item quantity="other">Пост-призрак · исчезнет через %1$d часа</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="one">Пост-призрак · исчезнет через %1$d минуту</item>
+        <item quantity="few">Пост-призрак · исчезнет через %1$d минуты</item>
+        <item quantity="many">Пост-призрак · исчезнет через %1$d минут</item>
+        <item quantity="other">Пост-призрак · исчезнет через %1$d минуты</item>
+    </plurals>
+    <string name="post_trend">В трендах · %1$s</string>
 </resources>

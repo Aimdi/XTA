@@ -218,4 +218,19 @@
     <string name="replies_limited_mentioned">仅帖子中提及的账号可以回复</string>
     <string name="replies_limited_author">仅作者可以回复</string>
     <string name="updating">正在更新…</string>
+    <string name="translate">翻译</string>
+    <string name="show_original">显示原文</string>
+    <string name="translated_by_threads">由 Threads 翻译</string>
+    <string name="translating">正在翻译…</string>
+    <string name="translation_failed">Threads 无法翻译此帖子</string>
+    <string name="attached_text">附加文字</string>
+    <string name="views">浏览量</string>
+    <string name="ghost_post">幽灵帖子</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="other">幽灵帖子 · %1$d 小时后消失</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="other">幽灵帖子 · %1$d 分钟后消失</item>
+    </plurals>
+    <string name="post_trend">热门 · %1$s</string>
 </resources>

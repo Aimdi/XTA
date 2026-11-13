@@ -227,4 +227,23 @@
     <string name="replies_limited_mentioned">Só as contas mencionadas na publicação podem responder</string>
     <string name="replies_limited_author">Só o autor pode responder</string>
     <string name="updating">Atualizando…</string>
+    <string name="translate">Traduzir</string>
+    <string name="show_original">Ver original</string>
+    <string name="translated_by_threads">Traduzido pelo Threads</string>
+    <string name="translating">Traduzindo…</string>
+    <string name="translation_failed">O Threads não conseguiu traduzir este post</string>
+    <string name="attached_text">Texto anexado</string>
+    <string name="views">Visualizações</string>
+    <string name="ghost_post">Post fantasma</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="one">Post fantasma · some em %1$d hora</item>
+        <item quantity="many">Post fantasma · some em %1$d horas</item>
+        <item quantity="other">Post fantasma · some em %1$d horas</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="one">Post fantasma · some em %1$d minuto</item>
+        <item quantity="many">Post fantasma · some em %1$d minutos</item>
+        <item quantity="other">Post fantasma · some em %1$d minutos</item>
+    </plurals>
+    <string name="post_trend">Em alta · %1$s</string>
 </resources>

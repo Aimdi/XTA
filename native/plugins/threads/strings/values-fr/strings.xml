@@ -227,4 +227,23 @@
     <string name="replies_limited_mentioned">Seuls les comptes mentionnés dans la publication peuvent répondre</string>
     <string name="replies_limited_author">Seul l\'auteur peut répondre</string>
     <string name="updating">Mise à jour…</string>
+    <string name="translate">Traduire</string>
+    <string name="show_original">Voir l’original</string>
+    <string name="translated_by_threads">Traduit par Threads</string>
+    <string name="translating">Traduction…</string>
+    <string name="translation_failed">Threads n’a pas pu traduire cette publication</string>
+    <string name="attached_text">Texte joint</string>
+    <string name="views">Vues</string>
+    <string name="ghost_post">Publication fantôme</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="one">Publication fantôme · disparaît dans %1$d heure</item>
+        <item quantity="many">Publication fantôme · disparaît dans %1$d heures</item>
+        <item quantity="other">Publication fantôme · disparaît dans %1$d heures</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="one">Publication fantôme · disparaît dans %1$d minute</item>
+        <item quantity="many">Publication fantôme · disparaît dans %1$d minutes</item>
+        <item quantity="other">Publication fantôme · disparaît dans %1$d minutes</item>
+    </plurals>
+    <string name="post_trend">Tendance · %1$s</string>
 </resources>

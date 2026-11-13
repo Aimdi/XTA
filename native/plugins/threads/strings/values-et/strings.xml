@@ -223,4 +223,21 @@
     <string name="replies_limited_mentioned">Vastata saavad ainult postituses mainitud kontod</string>
     <string name="replies_limited_author">Vastata saab ainult autor</string>
     <string name="updating">Värskendamine…</string>
+    <string name="translate">Tõlgi</string>
+    <string name="show_original">Näita originaali</string>
+    <string name="translated_by_threads">Tõlkinud Threads</string>
+    <string name="translating">Tõlgin…</string>
+    <string name="translation_failed">Threads ei saanud seda postitust tõlkida</string>
+    <string name="attached_text">Lisatud tekst</string>
+    <string name="views">Vaatamised</string>
+    <string name="ghost_post">Kummituspostitus</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="one">Kummituspostitus · kaob %1$d tunni pärast</item>
+        <item quantity="other">Kummituspostitus · kaob %1$d tunni pärast</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="one">Kummituspostitus · kaob %1$d minuti pärast</item>
+        <item quantity="other">Kummituspostitus · kaob %1$d minuti pärast</item>
+    </plurals>
+    <string name="post_trend">Populaarne · %1$s</string>
 </resources>

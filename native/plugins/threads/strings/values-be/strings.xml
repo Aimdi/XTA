@@ -233,4 +233,25 @@
     <string name="replies_limited_mentioned">Адказваць могуць толькі тыя, каго згадалі ў пасце</string>
     <string name="replies_limited_author">Адказваць можа толькі аўтар</string>
     <string name="updating">Абнаўленне…</string>
+    <string name="translate">Перакласці</string>
+    <string name="show_original">Паказаць арыгінал</string>
+    <string name="translated_by_threads">Перакладзена Threads</string>
+    <string name="translating">Перакладаем…</string>
+    <string name="translation_failed">Threads не ўдалося перакласці гэты допіс</string>
+    <string name="attached_text">Далучаны тэкст</string>
+    <string name="views">Прагляды</string>
+    <string name="ghost_post">Допіс-прывід</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="one">Допіс-прывід · знікне праз %1$d гадзіну</item>
+        <item quantity="few">Допіс-прывід · знікне праз %1$d гадзіны</item>
+        <item quantity="many">Допіс-прывід · знікне праз %1$d гадзін</item>
+        <item quantity="other">Допіс-прывід · знікне праз %1$d гадзіны</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="one">Допіс-прывід · знікне праз %1$d хвіліну</item>
+        <item quantity="few">Допіс-прывід · знікне праз %1$d хвіліны</item>
+        <item quantity="many">Допіс-прывід · знікне праз %1$d хвілін</item>
+        <item quantity="other">Допіс-прывід · знікне праз %1$d хвіліны</item>
+    </plurals>
+    <string name="post_trend">У трэндзе · %1$s</string>
 </resources>

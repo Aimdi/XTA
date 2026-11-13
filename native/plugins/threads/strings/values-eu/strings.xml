@@ -223,4 +223,21 @@
     <string name="replies_limited_mentioned">Argitalpenean aipatutako kontuek soilik erantzun dezakete</string>
     <string name="replies_limited_author">Egileak soilik erantzun dezake</string>
     <string name="updating">Eguneratzen…</string>
+    <string name="translate">Itzuli</string>
+    <string name="show_original">Erakutsi jatorrizkoa</string>
+    <string name="translated_by_threads">Threads-ek itzulia</string>
+    <string name="translating">Itzultzen…</string>
+    <string name="translation_failed">Threads-ek ezin izan du argitalpen hau itzuli</string>
+    <string name="attached_text">Erantsitako testua</string>
+    <string name="views">Ikustaldiak</string>
+    <string name="ghost_post">Argitalpen mamua</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="one">Argitalpen mamua · %1$d ordu barru desagertuko da</item>
+        <item quantity="other">Argitalpen mamua · %1$d ordu barru desagertuko da</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="one">Argitalpen mamua · %1$d minutu barru desagertuko da</item>
+        <item quantity="other">Argitalpen mamua · %1$d minutu barru desagertuko da</item>
+    </plurals>
+    <string name="post_trend">Joera · %1$s</string>
 </resources>

@@ -218,4 +218,19 @@
     <string name="replies_limited_mentioned">投稿でメンションされたアカウントのみ返信できます</string>
     <string name="replies_limited_author">投稿者のみ返信できます</string>
     <string name="updating">更新中…</string>
+    <string name="translate">翻訳</string>
+    <string name="show_original">原文を表示</string>
+    <string name="translated_by_threads">Threadsによる翻訳</string>
+    <string name="translating">翻訳中…</string>
+    <string name="translation_failed">Threadsはこの投稿を翻訳できませんでした</string>
+    <string name="attached_text">添付テキスト</string>
+    <string name="views">表示回数</string>
+    <string name="ghost_post">ゴースト投稿</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="other">ゴースト投稿 · %1$d時間後に消えます</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="other">ゴースト投稿 · %1$d分後に消えます</item>
+    </plurals>
+    <string name="post_trend">トレンド · %1$s</string>
 </resources>

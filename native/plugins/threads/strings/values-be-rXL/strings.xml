@@ -233,4 +233,25 @@
     <string name="replies_limited_mentioned">Adkazvać mohuć tolki tyja, kaho zhadali ŭ pascie</string>
     <string name="replies_limited_author">Adkazvać moža tolki aŭtar</string>
     <string name="updating">Abnaŭlennie…</string>
+    <string name="translate">Pierakłaści</string>
+    <string name="show_original">Pakazać aryhinal</string>
+    <string name="translated_by_threads">Pierakładziena Threads</string>
+    <string name="translating">Pierakładajem…</string>
+    <string name="translation_failed">Threads nie ŭdałosia pierakłaści hety dopis</string>
+    <string name="attached_text">Dałučany tekst</string>
+    <string name="views">Prahliady</string>
+    <string name="ghost_post">Dopis-pryvid</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="one">Dopis-pryvid · zniknie praz %1$d hadzinu</item>
+        <item quantity="few">Dopis-pryvid · zniknie praz %1$d hadziny</item>
+        <item quantity="many">Dopis-pryvid · zniknie praz %1$d hadzin</item>
+        <item quantity="other">Dopis-pryvid · zniknie praz %1$d hadziny</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="one">Dopis-pryvid · zniknie praz %1$d chvilinu</item>
+        <item quantity="few">Dopis-pryvid · zniknie praz %1$d chviliny</item>
+        <item quantity="many">Dopis-pryvid · zniknie praz %1$d chvilin</item>
+        <item quantity="other">Dopis-pryvid · zniknie praz %1$d chviliny</item>
+    </plurals>
+    <string name="post_trend">U trendzie · %1$s</string>
 </resources>

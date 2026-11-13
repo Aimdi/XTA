@@ -12,7 +12,9 @@ import kotlinx.serialization.json.JsonObject
  * to, how often it was shared, Meta's AI label, whether its author pinned
  * it, whether Meta asks for a check before it is shared, its poll, whether
  * its words were edited, whether the opened post's author liked it, who may
- * answer it, and the song it plays.
+ * answer it, the song it plays, the language of its words and whether
+ * Meta translates them, its views, whether it is a ghost post, the long
+ * text attached to it and the trends it is part of ([ThreadsPostContent]).
  */
 data class ThreadsPostFacts(
     val topicEmoji: String? = null,
@@ -41,6 +43,20 @@ data class ThreadsPostFacts(
     val replyAudience: ThreadsReplyAudience? = null,
     /** The song the post plays (`text_app_music_info`), named only: nothing of it is played here. */
     val music: ThreadsMusic? = null,
+    /** `detected_language` (seen live): the language Meta found its words in, what translation starts from. */
+    val language: String? = null,
+    /** `caption.can_translate` (seen live): false where Meta says its words cannot be translated; null where it did not say. */
+    val canTranslate: Boolean? = null,
+    /** `caption.pk`: the caption's own id, which Instagram's translation asks by. */
+    val captionId: String? = null,
+    /** How many times it was viewed, where Meta gives a public count. */
+    val viewCount: Long? = null,
+    /** Set on a ghost post, which Threads takes down after a day. */
+    val ghost: ThreadsGhost? = null,
+    /** The long text its author attached. */
+    val attachment: ThreadsTextAttachment? = null,
+    /** The trends it is part of (`text_post_app_info.related_trends_info`), at most [ThreadsPostContent.MAX_TRENDS]. */
+    val trends: List<ThreadsTrend> = emptyList(),
 ) {
     val isEmpty: Boolean get() = this == NONE
 
@@ -124,8 +140,17 @@ object ThreadsPostFactsReader {
             likedByAuthor = info["is_liked_by_root_author"].boolean == true,
             replyAudience = ThreadsReplyAudience.of(info["reply_control"].string ?: info["reply_control"]["mode"].string),
             music = music(post),
+            language = ThreadsPostContent.language(post),
+            canTranslate = ThreadsPostContent.canTranslate(post),
+            captionId = ThreadsPostContent.captionId(post),
+            viewCount = ThreadsPostContent.viewCount(post),
+            ghost = ThreadsPostContent.ghost(post, postedAt(post)),
+            attachment = ThreadsPostContent.attachment(post),
+            trends = ThreadsPostContent.trends(post),
         )
     }
+
+    private fun postedAt(post: J): Instant? = post["taken_at"].integer?.takeIf { it > 0 }?.let { runCatching { Instant.ofEpochSecond(it) }.getOrNull() }
 
     /**
      * The song a post plays: `text_app_music_info.music_consumable_video`'s

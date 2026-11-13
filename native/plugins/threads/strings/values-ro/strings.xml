@@ -228,4 +228,23 @@
     <string name="replies_limited_mentioned">Pot răspunde doar conturile menționate în postare</string>
     <string name="replies_limited_author">Doar autorul poate răspunde</string>
     <string name="updating">Se actualizează…</string>
+    <string name="translate">Traduce</string>
+    <string name="show_original">Arată originalul</string>
+    <string name="translated_by_threads">Tradus de Threads</string>
+    <string name="translating">Se traduce…</string>
+    <string name="translation_failed">Threads nu a putut traduce această postare</string>
+    <string name="attached_text">Text atașat</string>
+    <string name="views">Vizualizări</string>
+    <string name="ghost_post">Postare fantomă</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="one">Postare fantomă · dispare în %1$d oră</item>
+        <item quantity="few">Postare fantomă · dispare în %1$d ore</item>
+        <item quantity="other">Postare fantomă · dispare în %1$d de ore</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="one">Postare fantomă · dispare în %1$d minut</item>
+        <item quantity="few">Postare fantomă · dispare în %1$d minute</item>
+        <item quantity="other">Postare fantomă · dispare în %1$d de minute</item>
+    </plurals>
+    <string name="post_trend">În tendințe · %1$s</string>
 </resources>

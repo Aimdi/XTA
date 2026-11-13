@@ -223,4 +223,21 @@
     <string name="replies_limited_mentioned">केवल पोस्ट में उल्लिखित खाते जवाब दे सकते हैं</string>
     <string name="replies_limited_author">केवल लेखक जवाब दे सकता है</string>
     <string name="updating">अपडेट हो रहा है…</string>
+    <string name="translate">अनुवाद करें</string>
+    <string name="show_original">मूल दिखाएँ</string>
+    <string name="translated_by_threads">Threads द्वारा अनुवादित</string>
+    <string name="translating">अनुवाद हो रहा है…</string>
+    <string name="translation_failed">Threads इस पोस्ट का अनुवाद नहीं कर सका</string>
+    <string name="attached_text">संलग्न टेक्स्ट</string>
+    <string name="views">व्यू</string>
+    <string name="ghost_post">घोस्ट पोस्ट</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="one">घोस्ट पोस्ट · %1$d घंटे में गायब हो जाएगी</item>
+        <item quantity="other">घोस्ट पोस्ट · %1$d घंटे में गायब हो जाएगी</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="one">घोस्ट पोस्ट · %1$d मिनट में गायब हो जाएगी</item>
+        <item quantity="other">घोस्ट पोस्ट · %1$d मिनट में गायब हो जाएगी</item>
+    </plurals>
+    <string name="post_trend">ट्रेंडिंग · %1$s</string>
 </resources>

@@ -223,4 +223,21 @@
     <string name="replies_limited_mentioned">Yalnızca gönderide bahsedilen hesaplar yanıt verebilir</string>
     <string name="replies_limited_author">Yalnızca yazar yanıt verebilir</string>
     <string name="updating">Güncelleniyor…</string>
+    <string name="translate">Çevir</string>
+    <string name="show_original">Orijinali göster</string>
+    <string name="translated_by_threads">Threads tarafından çevrildi</string>
+    <string name="translating">Çevriliyor…</string>
+    <string name="translation_failed">Threads bu gönderiyi çeviremedi</string>
+    <string name="attached_text">Ekli metin</string>
+    <string name="views">Görüntülenme</string>
+    <string name="ghost_post">Hayalet gönderi</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="one">Hayalet gönderi · %1$d saat içinde kaybolacak</item>
+        <item quantity="other">Hayalet gönderi · %1$d saat içinde kaybolacak</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="one">Hayalet gönderi · %1$d dakika içinde kaybolacak</item>
+        <item quantity="other">Hayalet gönderi · %1$d dakika içinde kaybolacak</item>
+    </plurals>
+    <string name="post_trend">Gündemde · %1$s</string>
 </resources>

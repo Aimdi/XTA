@@ -225,4 +225,21 @@
     <string name="replies_limited_mentioned">Only accounts mentioned in the post can reply</string>
     <string name="replies_limited_author">Only the author can reply</string>
     <string name="updating">Updating…</string>
+    <string name="translate">Translate</string>
+    <string name="show_original">Show original</string>
+    <string name="translated_by_threads">Translated by Threads</string>
+    <string name="translating">Translating…</string>
+    <string name="translation_failed">Threads could not translate this post</string>
+    <string name="attached_text">Attached text</string>
+    <string name="views">Views</string>
+    <string name="ghost_post">Ghost post</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="one">Ghost post · disappears in %1$d hour</item>
+        <item quantity="other">Ghost post · disappears in %1$d hours</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="one">Ghost post · disappears in %1$d minute</item>
+        <item quantity="other">Ghost post · disappears in %1$d minutes</item>
+    </plurals>
+    <string name="post_trend">Trending · %1$s</string>
 </resources>

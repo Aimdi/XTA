@@ -151,13 +151,27 @@ class ThreadsDirectClient(
     }
 
     /**
+     * The words of the post Meta keeps under [mediaId] (its caption's own id
+     * [captionId] where Meta gave one) in [target], a BCP 47 tag, as Meta
+     * translates them ([ThreadsTranslation]); null when Meta answered with
+     * none. A session read as [people] is, with neither cookies nor a Bearer
+     * [NOT_CONFIGURED]; [NO_SUCH_FEED] when no path answers. A read only.
+     */
+    suspend fun translation(mediaId: String, captionId: String?, target: String): String? {
+        val id = mediaId.trim().takeIf { it.isNotEmpty() && it.all(Char::isDigit) } ?: throw ThreadsException(NO_SUCH_FEED, "no media id for a translation")
+        val body = sessionApi("translation", ThreadsTranslation.paths(id), ThreadsTranslation.params(id, captionId), ThreadsTranslation.acceptLanguage(target))
+        return ThreadsTranslation.text(body)
+    }
+
+    /**
      * A session read of the API behind Threads at the first of [paths] that
      * answers: the cookies on threads.com when the reader gave them, else
      * the Bearer on the app API. A path Meta answers 404 gives way to the next
      * ([NO_SUCH_FEED] once none is left); the one that answered is used first
      * for [kind] from then on, so a list whose path is known asks once.
+     * [language], when given, is the Accept-Language Meta answers in.
      */
-    private suspend fun sessionApi(kind: String, paths: List<String>, params: List<Pair<String, String>>): J {
+    private suspend fun sessionApi(kind: String, paths: List<String>, params: List<Pair<String, String>>, language: String? = null): J {
         val current = session()
         val token = current.bearerToken
         if (!current.hasCookies && token == null) throw ThreadsException(NOT_CONFIGURED, "no session for $kind")
@@ -167,9 +181,10 @@ class ThreadsDirectClient(
         for (index in tried) {
             val path = paths[index]
             try {
+                val inLanguage = { headers: Map<String, String> -> if (language == null) headers else headers + ("Accept-Language" to language) }
                 val body = when {
-                    current.hasCookies -> sessionRead(ThreadsLinks.web(path, params), cookieHeaders(current))
-                    else -> sessionRead(ThreadsLinks.address(INSTAGRAM, path, params), bearerHeaders(checkNotNull(token), deviceId()))
+                    current.hasCookies -> sessionRead(ThreadsLinks.web(path, params), inLanguage(cookieHeaders(current)))
+                    else -> sessionRead(ThreadsLinks.address(INSTAGRAM, path, params), inLanguage(bearerHeaders(checkNotNull(token), deviceId())))
                 }
                 synchronized(keeping) { answeringPaths[kind] = index }
                 return body

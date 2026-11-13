@@ -223,4 +223,21 @@
     <string name="replies_limited_mentioned">Alleen accounts die in het bericht worden genoemd, kunnen reageren</string>
     <string name="replies_limited_author">Alleen de auteur kan reageren</string>
     <string name="updating">Bijwerken…</string>
+    <string name="translate">Vertalen</string>
+    <string name="show_original">Origineel tonen</string>
+    <string name="translated_by_threads">Vertaald door Threads</string>
+    <string name="translating">Bezig met vertalen…</string>
+    <string name="translation_failed">Threads kon dit bericht niet vertalen</string>
+    <string name="attached_text">Bijgevoegde tekst</string>
+    <string name="views">Weergaven</string>
+    <string name="ghost_post">Spookbericht</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="one">Spookbericht · verdwijnt over %1$d uur</item>
+        <item quantity="other">Spookbericht · verdwijnt over %1$d uur</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="one">Spookbericht · verdwijnt over %1$d minuut</item>
+        <item quantity="other">Spookbericht · verdwijnt over %1$d minuten</item>
+    </plurals>
+    <string name="post_trend">Populair · %1$s</string>
 </resources>

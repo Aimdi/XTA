@@ -218,4 +218,19 @@
     <string name="replies_limited_mentioned">게시물에서 언급된 계정만 답글을 달 수 있습니다</string>
     <string name="replies_limited_author">작성자만 답글을 달 수 있습니다</string>
     <string name="updating">업데이트 중…</string>
+    <string name="translate">번역하기</string>
+    <string name="show_original">원문 보기</string>
+    <string name="translated_by_threads">Threads에서 번역함</string>
+    <string name="translating">번역 중…</string>
+    <string name="translation_failed">Threads에서 이 게시물을 번역하지 못했습니다</string>
+    <string name="attached_text">첨부된 텍스트</string>
+    <string name="views">조회수</string>
+    <string name="ghost_post">고스트 게시물</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="other">고스트 게시물 · %1$d시간 후 사라짐</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="other">고스트 게시물 · %1$d분 후 사라짐</item>
+    </plurals>
+    <string name="post_trend">트렌드 · %1$s</string>
 </resources>

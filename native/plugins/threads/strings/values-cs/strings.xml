@@ -233,4 +233,25 @@
     <string name="replies_limited_mentioned">Odpovídat mohou jen účty zmíněné v příspěvku</string>
     <string name="replies_limited_author">Odpovídat může jen autor</string>
     <string name="updating">Aktualizuje se…</string>
+    <string name="translate">Přeložit</string>
+    <string name="show_original">Zobrazit originál</string>
+    <string name="translated_by_threads">Přeloženo službou Threads</string>
+    <string name="translating">Překládání…</string>
+    <string name="translation_failed">Threads tento příspěvek nedokázal přeložit</string>
+    <string name="attached_text">Přiložený text</string>
+    <string name="views">Zobrazení</string>
+    <string name="ghost_post">Příspěvek duch</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="one">Příspěvek duch · zmizí za %1$d hodinu</item>
+        <item quantity="few">Příspěvek duch · zmizí za %1$d hodiny</item>
+        <item quantity="many">Příspěvek duch · zmizí za %1$d hodiny</item>
+        <item quantity="other">Příspěvek duch · zmizí za %1$d hodin</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="one">Příspěvek duch · zmizí za %1$d minutu</item>
+        <item quantity="few">Příspěvek duch · zmizí za %1$d minuty</item>
+        <item quantity="many">Příspěvek duch · zmizí za %1$d minuty</item>
+        <item quantity="other">Příspěvek duch · zmizí za %1$d minut</item>
+    </plurals>
+    <string name="post_trend">Populární · %1$s</string>
 </resources>

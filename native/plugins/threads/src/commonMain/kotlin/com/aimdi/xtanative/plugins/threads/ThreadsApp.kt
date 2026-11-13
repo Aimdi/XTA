@@ -11,6 +11,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsFeedMix
 import com.aimdi.xtanative.networks.threads.ThreadsForYou
 import com.aimdi.xtanative.networks.threads.ThreadsForYouFeed
 import com.aimdi.xtanative.networks.threads.ThreadsLinks
+import com.aimdi.xtanative.networks.threads.ThreadsPeople
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsProfile
 import com.aimdi.xtanative.networks.threads.ThreadsProfilePage
@@ -93,6 +94,11 @@ internal class ThreadsApp(val host: PluginHost) {
     private val profiles = ThreadsProfileShelf(host.store::file, legacy = host.store.file("profiles.json"))
     private val conversations = ThreadsConversationShelf(host.store::file)
     val accountNotes = ThreadsAccountNotes(host.store.file("account_notes.json"))
+
+    /** The posts the reader asked Threads to translate, as Meta translates them for a session. */
+    val translations = ThreadsTranslations(scope) { post, target ->
+        ThreadsPeople.mediaId(post)?.let { direct.translation(it, post.facts.captionId, target) }
+    }
 
     /** The topics and communities followed on this device. */
     val topics = ThreadsTopics(host.store.file("topics.json"))

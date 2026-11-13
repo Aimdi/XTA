@@ -233,4 +233,25 @@
     <string name="replies_limited_mentioned">Odpowiadać mogą tylko konta wspomniane we wpisie</string>
     <string name="replies_limited_author">Odpowiadać może tylko autor</string>
     <string name="updating">Aktualizowanie…</string>
+    <string name="translate">Przetłumacz</string>
+    <string name="show_original">Pokaż oryginał</string>
+    <string name="translated_by_threads">Przetłumaczone przez Threads</string>
+    <string name="translating">Tłumaczenie…</string>
+    <string name="translation_failed">Threads nie udało się przetłumaczyć tego wpisu</string>
+    <string name="attached_text">Załączony tekst</string>
+    <string name="views">Wyświetlenia</string>
+    <string name="ghost_post">Wpis-widmo</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="one">Wpis-widmo · zniknie za %1$d godzinę</item>
+        <item quantity="few">Wpis-widmo · zniknie za %1$d godziny</item>
+        <item quantity="many">Wpis-widmo · zniknie za %1$d godzin</item>
+        <item quantity="other">Wpis-widmo · zniknie za %1$d godziny</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="one">Wpis-widmo · zniknie za %1$d minutę</item>
+        <item quantity="few">Wpis-widmo · zniknie za %1$d minuty</item>
+        <item quantity="many">Wpis-widmo · zniknie za %1$d minut</item>
+        <item quantity="other">Wpis-widmo · zniknie za %1$d minuty</item>
+    </plurals>
+    <string name="post_trend">Popularne · %1$s</string>
 </resources>

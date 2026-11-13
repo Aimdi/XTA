@@ -227,4 +227,23 @@
     <string name="replies_limited_mentioned">Només hi poden respondre els comptes esmentats a la publicació</string>
     <string name="replies_limited_author">Només hi pot respondre l\'autor</string>
     <string name="updating">S\'està actualitzant…</string>
+    <string name="translate">Tradueix</string>
+    <string name="show_original">Mostra l’original</string>
+    <string name="translated_by_threads">Traduït per Threads</string>
+    <string name="translating">S’està traduint…</string>
+    <string name="translation_failed">Threads no ha pogut traduir aquesta publicació</string>
+    <string name="attached_text">Text adjunt</string>
+    <string name="views">Visualitzacions</string>
+    <string name="ghost_post">Publicació fantasma</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="one">Publicació fantasma · desapareix d’aquí a %1$d hora</item>
+        <item quantity="many">Publicació fantasma · desapareix d’aquí a %1$d hores</item>
+        <item quantity="other">Publicació fantasma · desapareix d’aquí a %1$d hores</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="one">Publicació fantasma · desapareix d’aquí a %1$d minut</item>
+        <item quantity="many">Publicació fantasma · desapareix d’aquí a %1$d minuts</item>
+        <item quantity="other">Publicació fantasma · desapareix d’aquí a %1$d minuts</item>
+    </plurals>
+    <string name="post_trend">Tendència · %1$s</string>
 </resources>

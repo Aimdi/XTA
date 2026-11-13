@@ -168,9 +168,9 @@ internal fun ThreadsPollView(poll: ThreadsPoll, modifier: Modifier) {
 }
 
 /**
- * The opened post's quotes and shares, where Meta counted them, which its
- * buttons do not show; for a signed-in reader its quotes open the posts that
- * quote it ([ThreadsQuotesScreen]).
+ * The opened post's views, quotes and shares, where Meta counted them,
+ * which its buttons do not show; for a signed-in reader its quotes open the
+ * posts that quote it ([ThreadsQuotesScreen]).
  */
 @Composable
 internal fun FocalCounts(app: ThreadsApp, post: ThreadsPost, hideCounts: Boolean) {
@@ -178,11 +178,13 @@ internal fun FocalCounts(app: ThreadsApp, post: ThreadsPost, hideCounts: Boolean
     val settings by app.prefs.collectAsState()
     val quotes = post.quoteCount?.takeIf { it > 0 }?.let { it to pluginString(Strings.quotes) }
     val shares = post.facts.shareCount?.takeIf { it > 0 }?.let { it to pluginString(Strings.shares) }
-    if (quotes == null && shares == null) return
+    val views = post.facts.viewCount?.takeIf { it > 0 }?.let { it to pluginString(Strings.views) }
+    if (quotes == null && shares == null && views == null) return
     val signedIn = ThreadsPeopleView.signedIn(ThreadsSessions.of(settings))
     val quotesOpen = ThreadsPeople.mediaId(post).takeIf { ThreadsPeopleView.opensQuotes(post, signedIn) }
     val showQuotes = pluginString(Strings.show_quotes)
     Row(Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically) {
+        views?.let { PluginCounts(listOf(it)) }
         quotes?.let { counted ->
             val opens = quotesOpen?.let { id ->
                 Modifier.heightIn(min = 48.dp).clickable(role = Role.Button, onClickLabel = showQuotes) { app.host.open(ThreadsRoutes.quotes(id, post.url)) }
@@ -229,8 +231,9 @@ internal fun MusicLine(post: ThreadsPost, modifier: Modifier) {
 }
 
 /**
- * A card's ⋯ and long-press sheet: copying its words and its link, then the
- * app's shared post sheet (Saved and its folders, the note, Add to group,
+ * A card's ⋯ and long-press sheet: copying its words and its link,
+ * translating them (or showing them again) where Threads translates, then
+ * the app's shared post sheet (Saved and its folders, the note, Add to group,
  * Share link, Open in browser).
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -244,10 +247,21 @@ internal fun ThreadsPostSheet(app: ThreadsApp, post: ThreadsPost, onDone: () -> 
         Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).navigationBarsPadding().padding(bottom = 8.dp)) {
             if (post.text.isNotBlank()) PluginMenuRow(PostIcons.TextSnippet, pluginString(Strings.copy_text), then { copy(post.text); app.host.tell(textCopied) })
             post.url?.let { url -> PluginMenuRow(XIcons.Link, pluginString(Strings.copy_link), then { copy(url); app.host.tell(linkCopied) }) }
+            TranslateRow(app, post, then)
             PostListRows(app, post, then)
             HorizontalDivider()
             PluginPostMenuRows(app.host, ThreadsShared.menu(app, post), onDone)
         }
+    }
+}
+
+/** The sheet's Translate, or Show original while Meta's translation is shown. */
+@Composable
+private fun TranslateRow(app: ThreadsApp, post: ThreadsPost, then: (() -> Unit) -> () -> Unit) {
+    val translation = rememberThreadsTranslation(app, post)
+    when {
+        translation.shown != null -> PluginMenuRow(PostIcons.Translate, pluginString(Strings.show_original), then(translation.showOriginal))
+        translation.offered -> PluginMenuRow(PostIcons.Translate, pluginString(Strings.translate), then { translation.translate() })
     }
 }
 

@@ -233,4 +233,25 @@
     <string name="replies_limited_mentioned">Відповідати можуть лише згадані в дописі</string>
     <string name="replies_limited_author">Відповідати може лише автор</string>
     <string name="updating">Оновлення…</string>
+    <string name="translate">Перекласти</string>
+    <string name="show_original">Показати оригінал</string>
+    <string name="translated_by_threads">Перекладено Threads</string>
+    <string name="translating">Перекладаємо…</string>
+    <string name="translation_failed">Threads не вдалося перекласти цей допис</string>
+    <string name="attached_text">Доданий текст</string>
+    <string name="views">Перегляди</string>
+    <string name="ghost_post">Допис-привид</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="one">Допис-привид · зникне через %1$d годину</item>
+        <item quantity="few">Допис-привид · зникне через %1$d години</item>
+        <item quantity="many">Допис-привид · зникне через %1$d годин</item>
+        <item quantity="other">Допис-привид · зникне через %1$d години</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="one">Допис-привид · зникне через %1$d хвилину</item>
+        <item quantity="few">Допис-привид · зникне через %1$d хвилини</item>
+        <item quantity="many">Допис-привид · зникне через %1$d хвилин</item>
+        <item quantity="other">Допис-привид · зникне через %1$d хвилини</item>
+    </plurals>
+    <string name="post_trend">У трендах · %1$s</string>
 </resources>

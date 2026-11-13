@@ -218,4 +218,19 @@
     <string name="replies_limited_mentioned">Hanya akun yang disebut dalam postingan yang dapat membalas</string>
     <string name="replies_limited_author">Hanya penulis yang dapat membalas</string>
     <string name="updating">Memperbarui…</string>
+    <string name="translate">Terjemahkan</string>
+    <string name="show_original">Tampilkan asli</string>
+    <string name="translated_by_threads">Diterjemahkan oleh Threads</string>
+    <string name="translating">Menerjemahkan…</string>
+    <string name="translation_failed">Threads tidak dapat menerjemahkan postingan ini</string>
+    <string name="attached_text">Teks terlampir</string>
+    <string name="views">Tayangan</string>
+    <string name="ghost_post">Postingan hantu</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="other">Postingan hantu · hilang dalam %1$d jam</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="other">Postingan hantu · hilang dalam %1$d menit</item>
+    </plurals>
+    <string name="post_trend">Sedang tren · %1$s</string>
 </resources>

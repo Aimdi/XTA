@@ -218,4 +218,19 @@
     <string name="replies_limited_mentioned">Chỉ những tài khoản được nhắc đến trong bài đăng mới có thể trả lời</string>
     <string name="replies_limited_author">Chỉ tác giả mới có thể trả lời</string>
     <string name="updating">Đang cập nhật…</string>
+    <string name="translate">Dịch</string>
+    <string name="show_original">Xem bản gốc</string>
+    <string name="translated_by_threads">Đã được Threads dịch</string>
+    <string name="translating">Đang dịch…</string>
+    <string name="translation_failed">Threads không dịch được bài viết này</string>
+    <string name="attached_text">Văn bản đính kèm</string>
+    <string name="views">Lượt xem</string>
+    <string name="ghost_post">Bài viết tự biến mất</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="other">Bài viết tự biến mất · biến mất sau %1$d giờ</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="other">Bài viết tự biến mất · biến mất sau %1$d phút</item>
+    </plurals>
+    <string name="post_trend">Thịnh hành · %1$s</string>
 </resources>

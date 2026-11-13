@@ -218,4 +218,19 @@
     <string name="replies_limited_mentioned">僅貼文中提及的帳號可以回覆</string>
     <string name="replies_limited_author">僅作者可以回覆</string>
     <string name="updating">正在更新…</string>
+    <string name="translate">翻譯</string>
+    <string name="show_original">顯示原文</string>
+    <string name="translated_by_threads">由 Threads 翻譯</string>
+    <string name="translating">正在翻譯…</string>
+    <string name="translation_failed">Threads 無法翻譯這則貼文</string>
+    <string name="attached_text">附加文字</string>
+    <string name="views">瀏覽次數</string>
+    <string name="ghost_post">幽靈貼文</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="other">幽靈貼文 · %1$d 小時後消失</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="other">幽靈貼文 · %1$d 分鐘後消失</item>
+    </plurals>
+    <string name="post_trend">熱門 · %1$s</string>
 </resources>
