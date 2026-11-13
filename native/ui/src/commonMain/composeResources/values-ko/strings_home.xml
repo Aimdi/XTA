@@ -68,4 +68,5 @@
     <string name="home_unable_to_load_pages">홈 페이지를 불러올 수 없습니다</string>
     <string name="feed_strip_unavailable">이 타임라인은 더 이상 사용할 수 없습니다</string>
     <string name="home_feed_accounts_empty">추천을 불러오려면 계정을 추가하세요.</string>
+    <string name="home_all_timelines">모든 타임라인</string>
 </resources>

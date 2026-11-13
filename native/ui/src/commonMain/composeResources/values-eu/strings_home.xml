@@ -69,4 +69,5 @@
     <string name="home_unable_to_load_pages">Ezin dira hasierako orriak kargatu</string>
     <string name="feed_strip_unavailable">Denbora-lerro hau ez dago erabilgarri</string>
     <string name="home_feed_accounts_empty">Gehitu kontu bat Zuretzat kargatzeko.</string>
+    <string name="home_all_timelines">Denbora-lerro guztiak</string>
 </resources>

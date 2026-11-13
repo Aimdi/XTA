@@ -69,4 +69,5 @@
     <string name="home_unable_to_load_pages">No se pueden cargar las páginas de inicio</string>
     <string name="feed_strip_unavailable">Esta cronología ya no está disponible</string>
     <string name="home_feed_accounts_empty">Añade una cuenta para cargar Para ti.</string>
+    <string name="home_all_timelines">Todas las cronologías</string>
 </resources>

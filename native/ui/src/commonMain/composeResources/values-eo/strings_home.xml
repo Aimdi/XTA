@@ -69,4 +69,5 @@
     <string name="home_unable_to_load_pages">Ne eblas ŝarĝi viajn hejmpaĝojn</string>
     <string name="feed_strip_unavailable">Tiu tempolinio ne plu disponeblas</string>
     <string name="home_feed_accounts_empty">Aldonu konton por ŝargi Por vi.</string>
+    <string name="home_all_timelines">Ĉiuj tempolinioj</string>
 </resources>

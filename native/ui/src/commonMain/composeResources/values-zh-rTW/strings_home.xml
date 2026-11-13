@@ -68,4 +68,5 @@
     <string name="home_unable_to_load_pages">無法載入您的主頁</string>
     <string name="feed_strip_unavailable">此時間軸已無法使用</string>
     <string name="home_feed_accounts_empty">請新增帳號以載入「為你推薦」。</string>
+    <string name="home_all_timelines">所有時間軸</string>
 </resources>
