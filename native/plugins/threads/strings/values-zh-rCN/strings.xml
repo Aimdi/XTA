@@ -107,6 +107,7 @@
     <string name="test">测试连接</string>
     <string name="test_ok">你的 RSSHub 实例已响应</string>
     <string name="thread">串文</string>
+    <string name="trending_now">当前热门</string>
     <string name="try_public">试试公开账号</string>
     <string name="unfollow">取消关注</string>
     <string name="unlike_on_device">从此设备取消点赞</string>

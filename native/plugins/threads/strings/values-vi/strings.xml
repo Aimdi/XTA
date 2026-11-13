@@ -107,6 +107,7 @@
     <string name="test">Thử kết nối</string>
     <string name="test_ok">Máy chủ RSSHub của bạn đã phản hồi</string>
     <string name="thread">Chủ đề</string>
+    <string name="trending_now">Đang thịnh hành</string>
     <string name="try_public">Thử một tài khoản công khai</string>
     <string name="unfollow">Bỏ theo dõi</string>
     <string name="unlike_on_device">Bỏ thích khỏi thiết bị này</string>

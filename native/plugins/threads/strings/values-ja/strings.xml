@@ -107,6 +107,7 @@
     <string name="test">接続を試す</string>
     <string name="test_ok">RSSHub インスタンスが応答しました</string>
     <string name="thread">スレッド</string>
+    <string name="trending_now">今のトレンド</string>
     <string name="try_public">公開アカウントを試す</string>
     <string name="unfollow">フォロー解除</string>
     <string name="unlike_on_device">この端末のいいねを取り消す</string>

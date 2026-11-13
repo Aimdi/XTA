@@ -113,6 +113,7 @@
     <string name="test">Testar a ligação</string>
     <string name="test_ok">A sua instância do RSSHub respondeu</string>
     <string name="thread">Tópico</string>
+    <string name="trending_now">Tendências agora</string>
     <string name="try_public">Experimentar uma conta pública</string>
     <string name="unfollow">Deixar de seguir</string>
     <string name="unlike_on_device">Remover gosto deste dispositivo</string>

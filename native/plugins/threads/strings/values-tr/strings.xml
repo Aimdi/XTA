@@ -110,6 +110,7 @@
     <string name="test">Bağlantıyı sına</string>
     <string name="test_ok">RSSHub örneğin yanıt verdi</string>
     <string name="thread">Konu</string>
+    <string name="trending_now">Şu an gündemde</string>
     <string name="try_public">Herkese açık bir hesap dene</string>
     <string name="unfollow">Takibi bırak</string>
     <string name="unlike_on_device">Beğeniyi bu cihazdan kaldır</string>

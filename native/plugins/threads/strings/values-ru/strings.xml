@@ -116,6 +116,7 @@
     <string name="test">Проверить подключение</string>
     <string name="test_ok">Ваш экземпляр RSSHub ответил</string>
     <string name="thread">Ветка</string>
+    <string name="trending_now">Сейчас в трендах</string>
     <string name="try_public">Попробовать публичный аккаунт</string>
     <string name="unfollow">Отписаться</string>
     <string name="unlike_on_device">Убрать отметку «нравится» с этого устройства</string>

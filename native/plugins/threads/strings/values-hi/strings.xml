@@ -110,6 +110,7 @@
     <string name="test">कनेक्शन जाँचें</string>
     <string name="test_ok">आपके RSSHub इंस्टेंस ने जवाब दिया</string>
     <string name="thread">थ्रेड</string>
+    <string name="trending_now">अभी ट्रेंडिंग</string>
     <string name="try_public">कोई सार्वजनिक खाता आज़माएँ</string>
     <string name="unfollow">फ़ॉलो करना बंद करें</string>
     <string name="unlike_on_device">इस डिवाइस से पसंद हटाएँ</string>

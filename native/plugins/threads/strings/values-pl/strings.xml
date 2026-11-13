@@ -116,6 +116,7 @@
     <string name="test">Sprawdź połączenie</string>
     <string name="test_ok">Twoja instancja RSSHub odpowiedziała</string>
     <string name="thread">Wątek</string>
+    <string name="trending_now">Popularne teraz</string>
     <string name="try_public">Wypróbuj konto publiczne</string>
     <string name="unfollow">Przestań obserwować</string>
     <string name="unlike_on_device">Usuń polubienie z tego urządzenia</string>

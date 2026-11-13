@@ -75,7 +75,7 @@ internal class ThreadsSearch(private val app: () -> ThreadsApp) : PluginSearch()
     override fun Landing(frame: PluginFrame, send: (String) -> Unit) {
         val shown = app()
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(frame.padding)) {
-            BeforeSearch(shown, "", onOpenProfile = { shown.openProfile(it) }, onRecent = send)
+            BeforeSearch(shown, "", onOpenProfile = { shown.openProfile(it) }, onRecent = send, onTrend = { terms -> shown.remember(terms.text); shown.openSearch(terms) })
         }
     }
 }
@@ -199,10 +199,16 @@ internal fun ThreadsSearchSheet(app: ThreadsApp, initial: String?, onDismiss: ()
                 val query = listed
                 if (query == null) {
                     Column(Modifier.verticalScroll(rememberScrollState())) {
-                        BeforeSearch(app, text, onOpenProfile = { handle -> app.remember(handle); leave { app.openProfile(handle) } }) { recent ->
-                            text = recent
-                            search(recent)
-                        }
+                        BeforeSearch(
+                            app,
+                            text,
+                            onOpenProfile = { handle -> app.remember(handle); leave { app.openProfile(handle) } },
+                            onRecent = { recent ->
+                                text = recent
+                                search(recent)
+                            },
+                            onTrend = { terms -> app.remember(terms.text); leave { app.openSearch(terms) } },
+                        )
                     }
                 } else {
                     SheetPeople(app, query, leave)
@@ -227,10 +233,13 @@ private fun SheetPeople(app: ThreadsApp, query: String, leave: (() -> Unit) -> U
     PeopleResults(app, query, PluginFrame(PaddingValues()), onOpen = { leave { app.openProfile(it) } }, onPosts = { terms -> leave { app.openSearch(terms) } })
 }
 
-/** Before a search: the profile the typed handle names, the recent searches, and public accounts to try. */
+/**
+ * Before a search: the profile the typed handle names, the recent searches,
+ * Meta's trending topics while nothing is typed, and public accounts to try.
+ */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun BeforeSearch(app: ThreadsApp, text: String, onOpenProfile: (String) -> Unit, onRecent: (String) -> Unit) {
+private fun BeforeSearch(app: ThreadsApp, text: String, onOpenProfile: (String) -> Unit, onRecent: (String) -> Unit, onTrend: (ThreadsSearchTerms) -> Unit) {
     val settings by app.prefs.collectAsState()
     Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         ThreadsLinks.normaliseHandle(text)?.let { handle -> SheetRow(ThreadsIcons.Mark, pluginString(Strings.open_handle, handle)) { onOpenProfile(handle) } }
@@ -242,6 +251,7 @@ private fun BeforeSearch(app: ThreadsApp, text: String, onOpenProfile: (String) 
                 recent.forEach { item -> RecentChip(item, onClick = { onRecent(item) }, onForget = { app.forget(item) }) }
             }
         }
+        if (text.isBlank()) TrendingTopics(app, onTrend)
         Text(pluginString(Strings.try_public), style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 12.dp))
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             ThreadsDiscovery.STARTER_HANDLES.forEach { handle ->

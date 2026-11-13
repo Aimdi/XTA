@@ -116,6 +116,7 @@
     <string name="test">Перевірити з\'єднання</string>
     <string name="test_ok">Ваш примірник RSSHub відповів</string>
     <string name="thread">Гілка</string>
+    <string name="trending_now">Зараз у трендах</string>
     <string name="try_public">Спробувати публічний обліковий запис</string>
     <string name="unfollow">Відписатися</string>
     <string name="unlike_on_device">Прибрати вподобання з цього пристрою</string>

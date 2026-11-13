@@ -112,6 +112,7 @@
     <string name="test">Test connection</string>
     <string name="test_ok">Your RSSHub instance answered</string>
     <string name="thread">Thread</string>
+    <string name="trending_now">Trending now</string>
     <string name="try_public">Try a public account</string>
     <string name="unfollow">Unfollow</string>
     <string name="unlike_on_device">Remove like from this device</string>

@@ -22,7 +22,8 @@ import org.junit.jupiter.api.Assumptions.assumeTrue
  * forms a page names for a community and what such a page answers; how a
  * repost sits in a profile's page and in its `/reposts` page; the front
  * page's queries, whether a second read brings other posts, and what the
- * empty search page offers. Key names, paths, kinds and counts only; the
+ * empty search page offers (the shape of its trending topics, and how many
+ * ThreadsTrends reads), and whether a guest's search has a profiles page. Key names, paths, kinds and counts only; the
  * only values logged are public community ids, slugs, paths and names, and
  * query names and doc ids. Nothing a post or user says, no token or cursor.
  */
@@ -113,6 +114,41 @@ class ThreadsDiscoveryLiveTest {
             val roots = ThreadsShape.scripts(html)
             println("LIVE Threads discovery $path: ${html.length} chars, queries ${ThreadsShape.queries(html).joinToString(", ").ifEmpty { "none" }}, ${ThreadsShape.users(roots).size} user objects, ${ThreadsShape.posts(roots).size} post objects")
             println("LIVE Threads discovery $path suggestion key paths: ${ThreadsShape.told(ThreadsShape.paths(roots, Regex("(?i)suggest|trend|recommend|popular|topic|tag|communit|explore|keyword"), depth = 40), limit = 30)}")
+            trends(path, html, roots)
+        }
+        PROFILE_SEARCHES.forEach { path ->
+            val html = page(http, path, path) ?: return@forEach
+            val roots = ThreadsShape.scripts(html)
+            println("LIVE Threads discovery $path: ${html.length} chars, queries ${ThreadsShape.queries(html).joinToString(", ").ifEmpty { "none" }}, ${ThreadsShape.users(roots).size} user objects, ${ThreadsShape.posts(roots).size} post objects")
+        }
+    }
+
+    /**
+     * What the search page's `data.trends` holds: the kind of the value, the
+     * keys of its items (a connection's nodes unwrapped) and the kind of each,
+     * and how many trends [ThreadsTrends] read with a context or a summary.
+     * Kinds and counts only; no trend's words.
+     */
+    private fun trends(path: String, html: String, roots: List<JsonElement>) {
+        val values = roots.flatMap(::objects).mapNotNull { (it["data"] as? JsonObject)?.get("trends") }
+        if (values.isEmpty()) return println("LIVE Threads discovery $path trends: no data.trends")
+        val items = values.flatMap { value ->
+            val list = when (value) {
+                is JsonArray -> value
+                is JsonObject -> value.values.firstOrNull { it is JsonArray } as? JsonArray
+                else -> null
+            }
+            list.orEmpty().filterIsInstance<JsonObject>().map { item -> (item["node"] as? JsonObject) ?: item }
+        }
+        val read = ThreadsTrends.read(html)
+        val objectKeys = values.filterIsInstance<JsonObject>().flatMap { it.keys }.distinct().map(::plain).ifEmpty { listOf("none") }
+        println("LIVE Threads discovery $path trends: ${values.size} data.trends (${values.joinToString { kind(it) }}), object keys $objectKeys, ${items.size} items")
+        println("LIVE Threads discovery $path trend item kinds: ${kinds(items)}")
+        println("LIVE Threads discovery $path trend item nested keys: ${ThreadsShape.told(ThreadsShape.paths(items, Regex(".*"), depth = 4).filterKeys { '.' in it.trimStart('.') }, limit = 40)}")
+        println("LIVE Threads discovery $path trends read: ${read.size}, ${read.count { it.context != null }} with a context, ${read.count { it.summary != null }} with a summary, ${read.count { it.terms.tag }} topics")
+        ThreadsNextPages.preloads(html).filter { "Trend" in it.name }.forEach { preload ->
+            val variables = preload.variables.entries.filterNot { it.key.startsWith("__relay_internal") }
+            println("LIVE Threads discovery $path ${preload.name} doc_id=${preload.docId ?: "none"} own variables: ${variables.joinToString { "${it.key}:${kind(it.value)}" }.ifEmpty { "none" }}")
         }
     }
 
@@ -249,6 +285,9 @@ class ThreadsDiscoveryLiveTest {
         val SOURCES = listOf("@zuck", "", "search?q=cosplay", "search?q=cosplay&serp_type=tags")
         val REPOSTERS = listOf("zuck", "mosseri")
         val SEARCH_PAGES = listOf("search", "search?q=")
+
+        /** Whether a guest's search has a profiles page of its own: forms threads.com might use, probed for user objects. */
+        val PROFILE_SEARCHES = listOf("search?q=cosplay&serp_type=accounts", "search?q=cosplay&filter=profiles")
         val NAME_KEYS = setOf("display_name", "name", "community_name", "title")
         val SLUG = Regex("[a-z0-9_.-]{1,80}")
         val DOC_ID = Regex(""""(?:queryID|queryId|docID|docId|doc_id|documentID|id)"\s*:\s*"?(\d{10,})""")

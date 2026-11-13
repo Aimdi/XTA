@@ -113,6 +113,7 @@
     <string name="test">Prova la connexió</string>
     <string name="test_ok">La teva instància de RSSHub ha respost</string>
     <string name="thread">Fil</string>
+    <string name="trending_now">Tendències ara</string>
     <string name="try_public">Prova un compte públic</string>
     <string name="unfollow">Deixa de seguir</string>
     <string name="unlike_on_device">Treu el m’agrada d’aquest dispositiu</string>

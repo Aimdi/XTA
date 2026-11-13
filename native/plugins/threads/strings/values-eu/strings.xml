@@ -110,6 +110,7 @@
     <string name="test">Probatu konexioa</string>
     <string name="test_ok">Zure RSSHub instantziak erantzun du</string>
     <string name="thread">Haria</string>
+    <string name="trending_now">Joerak orain</string>
     <string name="try_public">Saiatu kontu publiko bat</string>
     <string name="unfollow">Utzi jarraitzeari</string>
     <string name="unlike_on_device">Kendu atsegina gailu honetatik</string>

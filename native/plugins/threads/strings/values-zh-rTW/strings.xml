@@ -107,6 +107,7 @@
     <string name="test">測試連線</string>
     <string name="test_ok">你的 RSSHub 執行個體已回應</string>
     <string name="thread">串文</string>
+    <string name="trending_now">現正熱門</string>
     <string name="try_public">試試公開帳號</string>
     <string name="unfollow">取消追蹤</string>
     <string name="unlike_on_device">從此裝置取消按讚</string>

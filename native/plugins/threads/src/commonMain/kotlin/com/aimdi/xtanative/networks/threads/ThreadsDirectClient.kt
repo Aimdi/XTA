@@ -69,6 +69,8 @@ class ThreadsDirectClient(
     private val conversationReads = SingleFlight<ThreadsPostPage>()
     private val conversations = LinkedHashMap<String, Pair<Long, ThreadsPostPage>>()
     private val profileCursors = LinkedHashMap<String, String?>()
+    private val trendReads = SingleFlight<List<ThreadsTrend>>()
+    private var trendsRead: Pair<Long, List<ThreadsTrend>>? = null
 
     /** The session as the reader pasted it, read afresh on every request. */
     val currentSession: ThreadsSession get() = session()
@@ -392,6 +394,29 @@ class ThreadsDirectClient(
         }
     }
 
+    /**
+     * Meta's trending topics, as threads.com's empty search page shows a
+     * guest ([ThreadsTrends]): one public page, no session. Remembered for
+     * [TRENDS_TTL_MILLIS] so the search page asks once however often it is
+     * opened; [force] reads again. Empty when the page carries none or sends
+     * a guest to sign in. Read off the caller's thread.
+     */
+    suspend fun trends(force: Boolean = false): List<ThreadsTrend> {
+        if (!force) knownTrends()?.let { return it }
+        return trendReads.run(TRENDS) {
+            val body = try {
+                guestPage(ThreadsLinks.web("/search"))
+            } catch (e: ThreadsException) {
+                if (e.failure != SIGN_IN_REQUIRED) throw e
+                ""
+            }
+            withContext(Dispatchers.Default) { ThreadsTrends.read(body) }.also { trends -> synchronized(keeping) { trendsRead = clock() to trends } }
+        }
+    }
+
+    /** The trends read in the last [TRENDS_TTL_MILLIS], asking Meta nothing; null when there are none that fresh. */
+    fun knownTrends(): List<ThreadsTrend>? = synchronized(keeping) { trendsRead?.takeIf { (at, _) -> clock() - at < TRENDS_TTL_MILLIS }?.second }
+
     private fun isPrivate(page: String, handle: String): Boolean =
         ThreadsProfileOwner.enrich(ThreadsPages.guestProfile(page, handle), page, handle)?.isPrivate == true
 
@@ -707,6 +732,10 @@ class ThreadsDirectClient(
         private const val LSD_TTL_MILLIS = 10 * 60 * 1000L
         private const val CONVERSATION_TTL_MILLIS = 10 * 60 * 1000L
         private const val CONVERSATIONS_KEPT = 40
+        private const val TRENDS = "trends"
+
+        /** How long Meta's trending topics are kept: they move through the day, not by the minute. */
+        internal const val TRENDS_TTL_MILLIS = 30 * 60 * 1000L
 
         /** How many handles' ids are remembered: the ones learnt last, so a reader's searches never grow the settings without end. */
         internal const val USER_IDS_KEPT = 400

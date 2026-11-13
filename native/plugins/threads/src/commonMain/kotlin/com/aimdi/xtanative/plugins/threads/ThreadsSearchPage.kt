@@ -190,6 +190,7 @@ internal fun ThreadsSearchBody(
         Unit
     }
     Column(Modifier.fillMaxSize()) {
+        TrendHeader(app, terms)
         SearchTabs(shown, choose)
         terms.profile?.let { handle -> ProfileRow(app, handle) }
         Box(Modifier.weight(1f)) { key(shown) { Results(app, terms, shown, frame, lists.getValue(shown)) } }

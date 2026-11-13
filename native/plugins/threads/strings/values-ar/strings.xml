@@ -122,6 +122,7 @@
     <string name="test">اختبر الاتصال</string>
     <string name="test_ok">استجابت نسخة RSSHub لديك</string>
     <string name="thread">خيط</string>
+    <string name="trending_now">الرائج الآن</string>
     <string name="try_public">جرّب حساباً عاماً</string>
     <string name="unfollow">إلغاء المتابعة</string>
     <string name="unlike_on_device">إزالة الإعجاب من هذا الجهاز</string>

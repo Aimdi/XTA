@@ -110,6 +110,7 @@
     <string name="test">Verbindung testen</string>
     <string name="test_ok">Deine RSSHub-Instanz hat geantwortet</string>
     <string name="thread">Thread</string>
+    <string name="trending_now">Aktuelle Trends</string>
     <string name="try_public">Öffentliches Konto ausprobieren</string>
     <string name="unfollow">Entfolgen</string>
     <string name="unlike_on_device">Like von diesem Gerät entfernen</string>

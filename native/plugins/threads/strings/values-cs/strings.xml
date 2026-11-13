@@ -116,6 +116,7 @@
     <string name="test">Otestovat připojení</string>
     <string name="test_ok">Vaše instance RSSHub odpověděla</string>
     <string name="thread">Vlákno</string>
+    <string name="trending_now">Právě populární</string>
     <string name="try_public">Zkusit veřejný účet</string>
     <string name="unfollow">Přestat sledovat</string>
     <string name="unlike_on_device">Odebrat like z tohoto zařízení</string>

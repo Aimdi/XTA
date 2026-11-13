@@ -107,6 +107,7 @@
     <string name="test">연결 확인</string>
     <string name="test_ok">RSSHub 인스턴스가 응답했습니다</string>
     <string name="thread">스레드</string>
+    <string name="trending_now">지금 뜨는 주제</string>
     <string name="try_public">공개 계정 살펴보기</string>
     <string name="unfollow">팔로우 취소</string>
     <string name="unlike_on_device">이 기기에서 마음에 들어요 취소</string>

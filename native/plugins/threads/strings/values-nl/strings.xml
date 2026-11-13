@@ -110,6 +110,7 @@
     <string name="test">Verbinding testen</string>
     <string name="test_ok">Je RSSHub-instantie antwoordde</string>
     <string name="thread">Draad</string>
+    <string name="trending_now">Nu populair</string>
     <string name="try_public">Probeer een openbaar account</string>
     <string name="unfollow">Niet meer volgen</string>
     <string name="unlike_on_device">Like van dit apparaat verwijderen</string>
