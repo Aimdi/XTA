@@ -146,7 +146,6 @@
     <string name="profile_reposts">Yeniden paylaşımlar</string>
     <string name="show_more">Daha fazla göster</string>
     <string name="show_less">Daha az göster</string>
-    <string name="pinned">Sabitlendi</string>
     <string name="pinned_reply">Yazar tarafından sabitlendi</string>
     <string name="spoiler">Spoiler</string>
     <string name="tap_to_show_spoiler">Spoiler\'ı göstermek için dokun</string>
@@ -203,4 +202,10 @@
     <string name="likers_empty">Gösterilecek beğeni yok</string>
     <string name="show_list">Listeyi göster</string>
     <string name="show_liked_by">Kimlerin beğendiğini gör</string>
+    <string name="following_state">Takip ediliyor</string>
+    <string name="profile_note_short">Not</string>
+    <string name="search_profile">Bu profilde ara</string>
+    <string name="filters_and_groups">Filtreler ve gruplar</string>
+    <string name="pinned_post">Sabitlenmiş gönderi</string>
+    <string name="profile_search_empty">Burada aramanızla eşleşen gönderi yok</string>
 </resources>

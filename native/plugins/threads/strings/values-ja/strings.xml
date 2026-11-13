@@ -142,7 +142,6 @@
     <string name="profile_reposts">リポスト</string>
     <string name="show_more">もっと見る</string>
     <string name="show_less">表示を減らす</string>
-    <string name="pinned">固定</string>
     <string name="pinned_reply">投稿者が固定</string>
     <string name="spoiler">ネタバレ</string>
     <string name="tap_to_show_spoiler">タップしてネタバレを表示</string>
@@ -198,4 +197,10 @@
     <string name="likers_empty">表示できるいいねはありません</string>
     <string name="show_list">リストを表示</string>
     <string name="show_liked_by">いいねした人を見る</string>
+    <string name="following_state">フォロー中</string>
+    <string name="profile_note_short">メモ</string>
+    <string name="search_profile">このプロフィール内を検索</string>
+    <string name="filters_and_groups">フィルタとグループ</string>
+    <string name="pinned_post">固定された投稿</string>
+    <string name="profile_search_empty">検索に一致する投稿はありません</string>
 </resources>

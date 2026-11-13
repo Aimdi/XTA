@@ -148,7 +148,6 @@
     <string name="profile_reposts">Reposts</string>
     <string name="show_more">Show more</string>
     <string name="show_less">Show less</string>
-    <string name="pinned">Pinned</string>
     <string name="pinned_reply">Pinned by the author</string>
     <string name="spoiler">Spoiler</string>
     <string name="tap_to_show_spoiler">Tap to show spoiler</string>
@@ -205,4 +204,10 @@
     <string name="likers_empty">No likes to show</string>
     <string name="show_list">Show the list</string>
     <string name="show_liked_by">See who liked this</string>
+    <string name="following_state">Following</string>
+    <string name="profile_note_short">Note</string>
+    <string name="search_profile">Search this profile</string>
+    <string name="filters_and_groups">Filters and groups</string>
+    <string name="pinned_post">Pinned post</string>
+    <string name="profile_search_empty">No posts here match your search</string>
 </resources>

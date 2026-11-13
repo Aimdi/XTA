@@ -149,7 +149,6 @@
     <string name="profile_reposts">Republications</string>
     <string name="show_more">Voir plus</string>
     <string name="show_less">Voir moins</string>
-    <string name="pinned">Épinglé</string>
     <string name="pinned_reply">Épinglé par l\'auteur</string>
     <string name="spoiler">Spoiler</string>
     <string name="tap_to_show_spoiler">Touchez pour afficher le spoiler</string>
@@ -207,4 +206,10 @@
     <string name="likers_empty">Aucun J\'aime à afficher</string>
     <string name="show_list">Afficher la liste</string>
     <string name="show_liked_by">Voir qui a aimé</string>
+    <string name="following_state">Abonné</string>
+    <string name="profile_note_short">Note</string>
+    <string name="search_profile">Rechercher dans ce profil</string>
+    <string name="filters_and_groups">Filtres et groupes</string>
+    <string name="pinned_post">Publication épinglée</string>
+    <string name="profile_search_empty">Aucune publication ici ne correspond à votre recherche</string>
 </resources>

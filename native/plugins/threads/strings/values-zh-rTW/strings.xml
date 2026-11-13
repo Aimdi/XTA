@@ -142,7 +142,6 @@
     <string name="profile_reposts">轉發</string>
     <string name="show_more">顯示更多</string>
     <string name="show_less">收合</string>
-    <string name="pinned">已釘選</string>
     <string name="pinned_reply">作者已釘選</string>
     <string name="spoiler">劇透</string>
     <string name="tap_to_show_spoiler">點按顯示劇透</string>
@@ -198,4 +197,10 @@
     <string name="likers_empty">沒有可顯示的讚</string>
     <string name="show_list">顯示清單</string>
     <string name="show_liked_by">查看誰說讚</string>
+    <string name="following_state">已追蹤</string>
+    <string name="profile_note_short">備註</string>
+    <string name="search_profile">在此個人檔案中搜尋</string>
+    <string name="filters_and_groups">篩選器和群組</string>
+    <string name="pinned_post">置頂貼文</string>
+    <string name="profile_search_empty">這裡沒有符合搜尋的貼文</string>
 </resources>

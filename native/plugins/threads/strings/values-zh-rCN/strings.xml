@@ -142,7 +142,6 @@
     <string name="profile_reposts">转发</string>
     <string name="show_more">显示更多</string>
     <string name="show_less">收起</string>
-    <string name="pinned">已置顶</string>
     <string name="pinned_reply">作者已置顶</string>
     <string name="spoiler">剧透</string>
     <string name="tap_to_show_spoiler">点按显示剧透</string>
@@ -198,4 +197,10 @@
     <string name="likers_empty">没有可显示的赞</string>
     <string name="show_list">显示列表</string>
     <string name="show_liked_by">查看谁赞过</string>
+    <string name="following_state">已关注</string>
+    <string name="profile_note_short">备注</string>
+    <string name="search_profile">在此主页中搜索</string>
+    <string name="filters_and_groups">过滤器和分组</string>
+    <string name="pinned_post">置顶帖子</string>
+    <string name="profile_search_empty">这里没有符合搜索的帖子</string>
 </resources>

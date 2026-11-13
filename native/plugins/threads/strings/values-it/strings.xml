@@ -149,7 +149,6 @@
     <string name="profile_reposts">Repost</string>
     <string name="show_more">Mostra di più</string>
     <string name="show_less">Mostra di meno</string>
-    <string name="pinned">Fissato</string>
     <string name="pinned_reply">Fissato dall\'autore</string>
     <string name="spoiler">Spoiler</string>
     <string name="tap_to_show_spoiler">Tocca per mostrare lo spoiler</string>
@@ -207,4 +206,10 @@
     <string name="likers_empty">Nessun Mi piace da mostrare</string>
     <string name="show_list">Mostra l\'elenco</string>
     <string name="show_liked_by">Vedi a chi piace</string>
+    <string name="following_state">Segui già</string>
+    <string name="profile_note_short">Nota</string>
+    <string name="search_profile">Cerca in questo profilo</string>
+    <string name="filters_and_groups">Filtri e gruppi</string>
+    <string name="pinned_post">Post fissato</string>
+    <string name="profile_search_empty">Nessun post qui corrisponde alla ricerca</string>
 </resources>

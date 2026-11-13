@@ -154,7 +154,6 @@
     <string name="profile_reposts">Репости</string>
     <string name="show_more">Показати більше</string>
     <string name="show_less">Показати менше</string>
-    <string name="pinned">Закріплено</string>
     <string name="pinned_reply">Закріплено автором</string>
     <string name="spoiler">Спойлер</string>
     <string name="tap_to_show_spoiler">Торкніться, щоб показати спойлер</string>
@@ -213,4 +212,10 @@
     <string name="likers_empty">Немає вподобань</string>
     <string name="show_list">Показати список</string>
     <string name="show_liked_by">Подивитися, кому сподобалося</string>
+    <string name="following_state">Ви стежите</string>
+    <string name="profile_note_short">Нотатка</string>
+    <string name="search_profile">Шукати в цьому профілі</string>
+    <string name="filters_and_groups">Фільтри та групи</string>
+    <string name="pinned_post">Закріплений допис</string>
+    <string name="profile_search_empty">Тут немає дописів, що відповідають пошуку</string>
 </resources>

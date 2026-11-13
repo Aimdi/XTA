@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -18,8 +16,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.networks.threads.ThreadsBioLink
 import com.aimdi.xtanative.networks.threads.ThreadsLink
 import com.aimdi.xtanative.networks.threads.ThreadsLinks
@@ -103,14 +100,21 @@ internal object ThreadsProfileHeader {
 internal fun ProfileLinks(profile: ThreadsProfile) {
     val outside = rememberOpenOutside()
     val links = remember(profile) { ThreadsProfileHeader.links(profile) }
-    Column(Modifier.padding(top = 4.dp)) {
+    Column(Modifier.padding(top = 6.dp)) {
         links.forEach { link ->
             Row(
                 Modifier.fillMaxWidth().heightIn(min = 40.dp).clickable(role = Role.Button) { outside(link.url) },
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Icon(XIcons.Link, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(15.dp))
-                Text(ThreadsProfileHeader.label(link), color = MaterialTheme.colorScheme.primary, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = 6.dp))
+                Icon(XIcons.Link, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(17.dp))
+                Text(
+                    ThreadsProfileHeader.label(link),
+                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 15.sp),
+                    color = MaterialTheme.colorScheme.primary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(start = 8.dp),
+                )
             }
         }
     }
@@ -149,39 +153,15 @@ internal fun ProfileCount(n: Long, label: PluginText, exact: Boolean, onOpen: ((
             append(" ")
             append(word)
         },
-        style = MaterialTheme.typography.bodyMedium,
+        style = MaterialTheme.typography.bodyLarge.copy(fontSize = 15.sp),
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = tap,
     )
 }
 
-/** The reader's private note on the account (XTA's ProfileNoteCard): one row, its editor in a dialog. */
+/** The private note's editor (XTA's ProfileNoteCard's): only on this device, never synced; an empty note removes it. */
 @Composable
-internal fun ProfileNote(app: ThreadsApp, handle: String) {
-    val notes by app.accountNotes.state.collectAsState()
-    val note = notes[ThreadsAccountNotes.key(handle)]
-    var editing by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) { app.accountNotes.load() }
-    if (editing) NoteDialog(note.orEmpty(), onSave = { text -> app.launch { app.accountNotes.keep(handle, text) } }) { editing = false }
-    Row(
-        Modifier.fillMaxWidth().padding(top = 12.dp).heightIn(min = 48.dp).clickable(role = Role.Button) { editing = true },
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(PostIcons.TextSnippet, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
-        Text(
-            note ?: pluginString(Strings.profile_note_add),
-            style = MaterialTheme.typography.bodyMedium,
-            color = if (note == null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-            maxLines = 3,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f).padding(horizontal = 10.dp),
-        )
-        if (note != null) Icon(Icons.Outlined.Edit, contentDescription = pluginString(Strings.profile_note_title), modifier = Modifier.size(18.dp))
-    }
-}
-
-@Composable
-private fun NoteDialog(note: String, onSave: (String) -> Unit, onDismiss: () -> Unit) {
+internal fun NoteDialog(note: String, onSave: (String) -> Unit, onDismiss: () -> Unit) {
     var text by rememberSaveable { mutableStateOf(note) }
     AlertDialog(
         onDismissRequest = onDismiss,

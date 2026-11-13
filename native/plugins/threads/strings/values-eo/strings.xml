@@ -146,7 +146,6 @@
     <string name="profile_reposts">Rediskonigoj</string>
     <string name="show_more">Montri pli</string>
     <string name="show_less">Montri malpli</string>
-    <string name="pinned">Alpinglita</string>
     <string name="pinned_reply">Alpinglita de la aŭtoro</string>
     <string name="spoiler">Malkaŝo</string>
     <string name="tap_to_show_spoiler">Tuŝu por montri la malkaŝon</string>
@@ -203,4 +202,10 @@
     <string name="likers_empty">Neniuj ŝatoj montreblaj</string>
     <string name="show_list">Montri la liston</string>
     <string name="show_liked_by">Vidi, kiu ŝatis tion</string>
+    <string name="following_state">Sekvata</string>
+    <string name="profile_note_short">Noto</string>
+    <string name="search_profile">Serĉi en ĉi tiu profilo</string>
+    <string name="filters_and_groups">Filtriloj kaj grupoj</string>
+    <string name="pinned_post">Fiksita afiŝo</string>
+    <string name="profile_search_empty">Neniu afiŝo ĉi tie kongruas kun via serĉo</string>
 </resources>

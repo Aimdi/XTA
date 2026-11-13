@@ -149,7 +149,6 @@
     <string name="profile_reposts">Republicacions</string>
     <string name="show_more">Mostra\'n més</string>
     <string name="show_less">Mostra\'n menys</string>
-    <string name="pinned">Fixada</string>
     <string name="pinned_reply">Fixada per l\'autor</string>
     <string name="spoiler">Espòiler</string>
     <string name="tap_to_show_spoiler">Toca per mostrar l\'espòiler</string>
@@ -207,4 +206,10 @@
     <string name="likers_empty">No hi ha m\'agrada per mostrar</string>
     <string name="show_list">Mostra la llista</string>
     <string name="show_liked_by">Mira a qui li agrada</string>
+    <string name="following_state">Seguint</string>
+    <string name="profile_note_short">Nota</string>
+    <string name="search_profile">Cerca en aquest perfil</string>
+    <string name="filters_and_groups">Filtres i grups</string>
+    <string name="pinned_post">Publicació fixada</string>
+    <string name="profile_search_empty">Cap publicació d’aquí coincideix amb la cerca</string>
 </resources>

@@ -146,7 +146,6 @@
     <string name="profile_reposts">Jagamised</string>
     <string name="show_more">Näita rohkem</string>
     <string name="show_less">Näita vähem</string>
-    <string name="pinned">Kinnitatud</string>
     <string name="pinned_reply">Autori kinnitatud</string>
     <string name="spoiler">Rõõmurikkuja</string>
     <string name="tap_to_show_spoiler">Puuduta, et rõõmurikkujat näha</string>
@@ -203,4 +202,10 @@
     <string name="likers_empty">Meeldimisi pole näidata</string>
     <string name="show_list">Näita loendit</string>
     <string name="show_liked_by">Vaata, kellele see meeldis</string>
+    <string name="following_state">Jälgid</string>
+    <string name="profile_note_short">Märkus</string>
+    <string name="search_profile">Otsi sellest profiilist</string>
+    <string name="filters_and_groups">Filtrid ja rühmad</string>
+    <string name="pinned_post">Kinnitatud postitus</string>
+    <string name="profile_search_empty">Siin pole otsingule vastavaid postitusi</string>
 </resources>

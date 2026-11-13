@@ -109,7 +109,7 @@ private fun CoveredText(post: ThreadsPost, style: TextStyle, maxLines: Int, show
 @Composable
 internal fun PinnedLine(post: ThreadsPost) {
     val words = when {
-        post.facts.pinnedToProfile -> Strings.pinned
+        post.facts.pinnedToProfile -> Strings.pinned_post
         post.facts.pinnedToParent -> Strings.pinned_reply
         else -> return
     }

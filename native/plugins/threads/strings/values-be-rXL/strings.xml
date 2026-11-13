@@ -154,7 +154,6 @@
     <string name="profile_reposts">Reposty</string>
     <string name="show_more">Pakazać bolš</string>
     <string name="show_less">Pakazać mienš</string>
-    <string name="pinned">Zamacavana</string>
     <string name="pinned_reply">Zamacavana aŭtaram</string>
     <string name="spoiler">Spojler</string>
     <string name="tap_to_show_spoiler">Nacisnicie, kab pakazać spojler</string>
@@ -213,4 +212,10 @@
     <string name="likers_empty">Niama spadabanniaŭ</string>
     <string name="show_list">Pakazać spis</string>
     <string name="show_liked_by">Pahladzieć, kamu spadabałasia</string>
+    <string name="following_state">Saču</string>
+    <string name="profile_note_short">Natatka</string>
+    <string name="search_profile">Šukać u hetym profili</string>
+    <string name="filters_and_groups">Filtry i hrupy</string>
+    <string name="pinned_post">Zamacavany dopis</string>
+    <string name="profile_search_empty">Tut niama dopisaŭ, jakija adpaviadajuć pošuku</string>
 </resources>

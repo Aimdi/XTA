@@ -154,7 +154,6 @@
     <string name="profile_reposts">Udostępnienia</string>
     <string name="show_more">Pokaż więcej</string>
     <string name="show_less">Pokaż mniej</string>
-    <string name="pinned">Przypięty</string>
     <string name="pinned_reply">Przypięty przez autora</string>
     <string name="spoiler">Spoiler</string>
     <string name="tap_to_show_spoiler">Stuknij, aby pokazać spoiler</string>
@@ -213,4 +212,10 @@
     <string name="likers_empty">Brak polubień do pokazania</string>
     <string name="show_list">Pokaż listę</string>
     <string name="show_liked_by">Zobacz, kto polubił</string>
+    <string name="following_state">Obserwujesz</string>
+    <string name="profile_note_short">Notatka</string>
+    <string name="search_profile">Szukaj w tym profilu</string>
+    <string name="filters_and_groups">Filtry i grupy</string>
+    <string name="pinned_post">Przypięty wpis</string>
+    <string name="profile_search_empty">Żaden wpis tutaj nie pasuje do wyszukiwania</string>
 </resources>

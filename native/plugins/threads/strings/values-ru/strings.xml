@@ -154,7 +154,6 @@
     <string name="profile_reposts">Репосты</string>
     <string name="show_more">Показать больше</string>
     <string name="show_less">Показать меньше</string>
-    <string name="pinned">Закреплено</string>
     <string name="pinned_reply">Закреплено автором</string>
     <string name="spoiler">Спойлер</string>
     <string name="tap_to_show_spoiler">Нажмите, чтобы показать спойлер</string>
@@ -213,4 +212,10 @@
     <string name="likers_empty">Нет отметок «Нравится»</string>
     <string name="show_list">Показать список</string>
     <string name="show_liked_by">Посмотреть, кому понравилось</string>
+    <string name="following_state">Вы подписаны</string>
+    <string name="profile_note_short">Заметка</string>
+    <string name="search_profile">Искать в этом профиле</string>
+    <string name="filters_and_groups">Фильтры и группы</string>
+    <string name="pinned_post">Закреплённый пост</string>
+    <string name="profile_search_empty">Здесь нет постов, подходящих под поиск</string>
 </resources>

@@ -146,7 +146,6 @@
     <string name="profile_reposts">Birbidalketak</string>
     <string name="show_more">Erakutsi gehiago</string>
     <string name="show_less">Erakutsi gutxiago</string>
-    <string name="pinned">Finkatuta</string>
     <string name="pinned_reply">Egileak finkatua</string>
     <string name="spoiler">Spoilerra</string>
     <string name="tap_to_show_spoiler">Sakatu spoilerra ikusteko</string>
@@ -203,4 +202,10 @@
     <string name="likers_empty">Ez dago atsegiterik erakusteko</string>
     <string name="show_list">Erakutsi zerrenda</string>
     <string name="show_liked_by">Ikusi nori gustatu zaion</string>
+    <string name="following_state">Jarraitzen</string>
+    <string name="profile_note_short">Oharra</string>
+    <string name="search_profile">Bilatu profil honetan</string>
+    <string name="filters_and_groups">Iragazkiak eta taldeak</string>
+    <string name="pinned_post">Finkatutako argitalpena</string>
+    <string name="profile_search_empty">Hemen ez dago bilaketarekin bat datorren argitalpenik</string>
 </resources>

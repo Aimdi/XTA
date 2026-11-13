@@ -154,7 +154,6 @@
     <string name="profile_reposts">Рэпосты</string>
     <string name="show_more">Паказаць больш</string>
     <string name="show_less">Паказаць менш</string>
-    <string name="pinned">Замацавана</string>
     <string name="pinned_reply">Замацавана аўтарам</string>
     <string name="spoiler">Спойлер</string>
     <string name="tap_to_show_spoiler">Націсніце, каб паказаць спойлер</string>
@@ -213,4 +212,10 @@
     <string name="likers_empty">Няма спадабанняў</string>
     <string name="show_list">Паказаць спіс</string>
     <string name="show_liked_by">Паглядзець, каму спадабалася</string>
+    <string name="following_state">Сачу</string>
+    <string name="profile_note_short">Нататка</string>
+    <string name="search_profile">Шукаць у гэтым профілі</string>
+    <string name="filters_and_groups">Фільтры і групы</string>
+    <string name="pinned_post">Замацаваны допіс</string>
+    <string name="profile_search_empty">Тут няма допісаў, якія адпавядаюць пошуку</string>
 </resources>

@@ -146,7 +146,6 @@
     <string name="profile_reposts">Reposts</string>
     <string name="show_more">Meer tonen</string>
     <string name="show_less">Minder tonen</string>
-    <string name="pinned">Vastgezet</string>
     <string name="pinned_reply">Vastgezet door de auteur</string>
     <string name="spoiler">Spoiler</string>
     <string name="tap_to_show_spoiler">Tik om de spoiler te tonen</string>
@@ -203,4 +202,10 @@
     <string name="likers_empty">Geen likes om te tonen</string>
     <string name="show_list">Lijst tonen</string>
     <string name="show_liked_by">Zien wie dit leuk vond</string>
+    <string name="following_state">Volgend</string>
+    <string name="profile_note_short">Notitie</string>
+    <string name="search_profile">Zoeken in dit profiel</string>
+    <string name="filters_and_groups">Filters en groepen</string>
+    <string name="pinned_post">Vastgezet bericht</string>
+    <string name="profile_search_empty">Geen berichten hier passen bij je zoekopdracht</string>
 </resources>

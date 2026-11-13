@@ -142,7 +142,6 @@
     <string name="profile_reposts">리포스트</string>
     <string name="show_more">더 보기</string>
     <string name="show_less">간략히 보기</string>
-    <string name="pinned">고정됨</string>
     <string name="pinned_reply">작성자가 고정함</string>
     <string name="spoiler">스포일러</string>
     <string name="tap_to_show_spoiler">탭하여 스포일러 보기</string>
@@ -198,4 +197,10 @@
     <string name="likers_empty">표시할 좋아요가 없습니다</string>
     <string name="show_list">목록 보기</string>
     <string name="show_liked_by">좋아한 사람 보기</string>
+    <string name="following_state">팔로잉</string>
+    <string name="profile_note_short">메모</string>
+    <string name="search_profile">이 프로필에서 검색</string>
+    <string name="filters_and_groups">필터 및 그룹</string>
+    <string name="pinned_post">고정된 게시물</string>
+    <string name="profile_search_empty">검색과 일치하는 게시물이 없습니다</string>
 </resources>

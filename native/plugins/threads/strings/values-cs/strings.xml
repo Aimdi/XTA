@@ -154,7 +154,6 @@
     <string name="profile_reposts">Reposty</string>
     <string name="show_more">Zobrazit více</string>
     <string name="show_less">Zobrazit méně</string>
-    <string name="pinned">Připnuto</string>
     <string name="pinned_reply">Připnuto autorem</string>
     <string name="spoiler">Spoiler</string>
     <string name="tap_to_show_spoiler">Klepnutím zobrazíte spoiler</string>
@@ -213,4 +212,10 @@
     <string name="likers_empty">Žádná označení Líbí se</string>
     <string name="show_list">Zobrazit seznam</string>
     <string name="show_liked_by">Zobrazit, komu se to líbí</string>
+    <string name="following_state">Sledujete</string>
+    <string name="profile_note_short">Poznámka</string>
+    <string name="search_profile">Hledat v tomto profilu</string>
+    <string name="filters_and_groups">Filtry a skupiny</string>
+    <string name="pinned_post">Připnutý příspěvek</string>
+    <string name="profile_search_empty">Hledání tu neodpovídá žádný příspěvek</string>
 </resources>

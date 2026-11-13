@@ -162,7 +162,6 @@
     <string name="profile_reposts">إعادات النشر</string>
     <string name="show_more">عرض المزيد</string>
     <string name="show_less">عرض أقل</string>
-    <string name="pinned">مثبّت</string>
     <string name="pinned_reply">ثبّته الكاتب</string>
     <string name="spoiler">حرق للأحداث</string>
     <string name="tap_to_show_spoiler">اضغط لعرض الحرق</string>
@@ -223,4 +222,10 @@
     <string name="likers_empty">لا إعجابات لعرضها</string>
     <string name="show_list">عرض القائمة</string>
     <string name="show_liked_by">معرفة من أُعجب بهذا</string>
+    <string name="following_state">تتابعه</string>
+    <string name="profile_note_short">ملاحظة</string>
+    <string name="search_profile">البحث في هذا الملف الشخصي</string>
+    <string name="filters_and_groups">المرشحات والمجموعات</string>
+    <string name="pinned_post">منشور مثبّت</string>
+    <string name="profile_search_empty">لا توجد منشورات هنا تطابق بحثك</string>
 </resources>

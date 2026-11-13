@@ -142,7 +142,6 @@
     <string name="profile_reposts">Postingan ulang</string>
     <string name="show_more">Tampilkan lebih banyak</string>
     <string name="show_less">Tampilkan lebih sedikit</string>
-    <string name="pinned">Disematkan</string>
     <string name="pinned_reply">Disematkan oleh penulis</string>
     <string name="spoiler">Spoiler</string>
     <string name="tap_to_show_spoiler">Ketuk untuk menampilkan spoiler</string>
@@ -198,4 +197,10 @@
     <string name="likers_empty">Tidak ada suka untuk ditampilkan</string>
     <string name="show_list">Tampilkan daftar</string>
     <string name="show_liked_by">Lihat siapa yang menyukai ini</string>
+    <string name="following_state">Mengikuti</string>
+    <string name="profile_note_short">Catatan</string>
+    <string name="search_profile">Cari di profil ini</string>
+    <string name="filters_and_groups">Filter dan grup</string>
+    <string name="pinned_post">Postingan yang disematkan</string>
+    <string name="profile_search_empty">Tidak ada postingan di sini yang cocok dengan pencarian Anda</string>
 </resources>

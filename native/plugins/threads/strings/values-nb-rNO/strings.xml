@@ -146,7 +146,6 @@
     <string name="profile_reposts">Repostinger</string>
     <string name="show_more">Vis mer</string>
     <string name="show_less">Vis mindre</string>
-    <string name="pinned">Festet</string>
     <string name="pinned_reply">Festet av forfatteren</string>
     <string name="spoiler">Spoiler</string>
     <string name="tap_to_show_spoiler">Trykk for å vise spoileren</string>
@@ -203,4 +202,10 @@
     <string name="likers_empty">Ingen liker-markeringer å vise</string>
     <string name="show_list">Vis listen</string>
     <string name="show_liked_by">Se hvem som likte dette</string>
+    <string name="following_state">Følger</string>
+    <string name="profile_note_short">Notat</string>
+    <string name="search_profile">Søk i denne profilen</string>
+    <string name="filters_and_groups">Filtre og grupper</string>
+    <string name="pinned_post">Festet innlegg</string>
+    <string name="profile_search_empty">Ingen innlegg her samsvarer med søket</string>
 </resources>

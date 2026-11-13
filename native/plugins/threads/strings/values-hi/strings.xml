@@ -146,7 +146,6 @@
     <string name="profile_reposts">रीपोस्ट</string>
     <string name="show_more">और दिखाएँ</string>
     <string name="show_less">कम दिखाएँ</string>
-    <string name="pinned">पिन किया गया</string>
     <string name="pinned_reply">लेखक ने पिन किया</string>
     <string name="spoiler">स्पॉइलर</string>
     <string name="tap_to_show_spoiler">स्पॉइलर देखने के लिए टैप करें</string>
@@ -203,4 +202,10 @@
     <string name="likers_empty">दिखाने को कोई पसंद नहीं</string>
     <string name="show_list">सूची दिखाएँ</string>
     <string name="show_liked_by">देखें किसने पसंद किया</string>
+    <string name="following_state">फ़ॉलो कर रहे हैं</string>
+    <string name="profile_note_short">नोट</string>
+    <string name="search_profile">इस प्रोफ़ाइल में खोजें</string>
+    <string name="filters_and_groups">फ़िल्टर और समूह</string>
+    <string name="pinned_post">पिन की गई पोस्ट</string>
+    <string name="profile_search_empty">यहाँ आपकी खोज से मेल खाती कोई पोस्ट नहीं है</string>
 </resources>

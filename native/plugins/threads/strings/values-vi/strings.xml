@@ -142,7 +142,6 @@
     <string name="profile_reposts">Bài đăng lại</string>
     <string name="show_more">Xem thêm</string>
     <string name="show_less">Thu gọn</string>
-    <string name="pinned">Đã ghim</string>
     <string name="pinned_reply">Tác giả đã ghim</string>
     <string name="spoiler">Tiết lộ nội dung</string>
     <string name="tap_to_show_spoiler">Chạm để hiện phần tiết lộ</string>
@@ -198,4 +197,10 @@
     <string name="likers_empty">Không có lượt thích nào để hiển thị</string>
     <string name="show_list">Hiện danh sách</string>
     <string name="show_liked_by">Xem ai đã thích</string>
+    <string name="following_state">Đang theo dõi</string>
+    <string name="profile_note_short">Ghi chú</string>
+    <string name="search_profile">Tìm trong hồ sơ này</string>
+    <string name="filters_and_groups">Bộ lọc và nhóm</string>
+    <string name="pinned_post">Bài viết đã ghim</string>
+    <string name="profile_search_empty">Không có bài viết nào ở đây khớp với tìm kiếm</string>
 </resources>
