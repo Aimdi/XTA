@@ -258,4 +258,15 @@
     <string name="your_profile">Hồ sơ của bạn</string>
     <string name="signed_in_unavailable">Threads chưa cung cấp mục này ở đây.</string>
     <string name="profile_joined">Tham gia: %1$s</string>
+    <string name="share_image">Chia sẻ bài đăng dưới dạng ảnh</string>
+    <string name="share_image_failed">Không thể chia sẻ ảnh này</string>
+    <string name="hide_post">Ẩn bài đăng</string>
+    <string name="post_hidden">Đã ẩn bài đăng trên thiết bị này</string>
+    <string name="mute_account">Tắt tiếng %1$s</string>
+    <string name="unmute_account">Bỏ tắt tiếng %1$s</string>
+    <string name="account_muted">Đã tắt tiếng %1$s trên thiết bị này</string>
+    <string name="muted_accounts">Tài khoản đã tắt tiếng</string>
+    <string name="show_hidden_posts">Hiện lại các bài đăng đã ẩn</string>
+    <string name="read_as_article">Đọc như một bài viết</string>
+    <string name="show_conversation">Hiện cuộc trò chuyện</string>
 </resources>

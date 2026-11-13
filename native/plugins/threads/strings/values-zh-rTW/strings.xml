@@ -258,4 +258,15 @@
     <string name="your_profile">你的個人檔案</string>
     <string name="signed_in_unavailable">Threads 暫不在此處提供這項內容。</string>
     <string name="profile_joined">加入時間：%1$s</string>
+    <string name="share_image">以圖片分享貼文</string>
+    <string name="share_image_failed">無法分享此圖片</string>
+    <string name="hide_post">隱藏貼文</string>
+    <string name="post_hidden">已在此裝置上隱藏該貼文</string>
+    <string name="mute_account">封鎖 %1$s</string>
+    <string name="unmute_account">取消封鎖 %1$s</string>
+    <string name="account_muted">已在此裝置上封鎖 %1$s</string>
+    <string name="muted_accounts">已封鎖的帳號</string>
+    <string name="show_hidden_posts">重新顯示已隱藏的貼文</string>
+    <string name="read_as_article">以文章方式閱讀</string>
+    <string name="show_conversation">顯示對話</string>
 </resources>

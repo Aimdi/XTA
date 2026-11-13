@@ -265,4 +265,15 @@
     <string name="your_profile">Sinu profiil</string>
     <string name="signed_in_unavailable">Threads ei anna seda siin veel.</string>
     <string name="profile_joined">Liitus: %1$s</string>
+    <string name="share_image">Jaga postitust pildina</string>
+    <string name="share_image_failed">Pilti ei õnnestunud jagada</string>
+    <string name="hide_post">Peida postitus</string>
+    <string name="post_hidden">Postitus on selles seadmes peidetud</string>
+    <string name="mute_account">Vaigista %1$s</string>
+    <string name="unmute_account">Tühista %1$s vaigistus</string>
+    <string name="account_muted">%1$s on selles seadmes vaigistatud</string>
+    <string name="muted_accounts">Vaigistatud kontod</string>
+    <string name="show_hidden_posts">Näita peidetud postitusi uuesti</string>
+    <string name="read_as_article">Loe artiklina</string>
+    <string name="show_conversation">Näita vestlust</string>
 </resources>

@@ -84,8 +84,9 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
  * "This post is unavailable" where Threads no longer shows it), its
  * trends and "Show N more posts in this thread"; then the counts Meta gave, the like kept on
  * this device, its bookmark in the app's Saved and the way to the web. A
- * long press, or ⋯, opens its sheet: copying its words and link above the
- * app's post sheet. With [focal] it is the opened post: its time and date
+ * long press, or ⋯, opens its sheet: copying its words and link, the post
+ * as a picture to share, hiding it and muting its author on this device,
+ * above the app's post sheet. With [focal] it is the opened post: its time and date
  * on a line under it with its quotes and shares, its text selectable. [connectTop] and [connectBottom] join it to
  * the posts above and below it through the avatar, as a thread draws them;
  * without [divider] the line under it is left to the list.
@@ -112,9 +113,12 @@ internal fun ThreadsPostCard(
     val menu = { sheet = true }
     val translation = rememberThreadsTranslation(app, post)
     val summary = rememberSummary(translation.applied(post), isLiked, menu) { app.toggleLike(post) }
+    val picture = rememberThreadsPostPicture()
+    val sharePicture = rememberPictureShare(app, post, picture)
     Column(
         modifier
             .fillMaxWidth()
+            .recordedIn(picture)
             .combinedClickable(
                 onClickLabel = pluginString(Strings.open_post),
                 onClick = open,
@@ -139,7 +143,7 @@ internal fun ThreadsPostCard(
         }
     }
     if (divider && !connectBottom) Hairline()
-    if (sheet) ThreadsPostSheet(app, post) { sheet = false }
+    if (sheet) ThreadsPostSheet(app, post, onPicture = sharePicture) { sheet = false }
 }
 
 /**
@@ -358,7 +362,7 @@ internal fun ThreadsLink(app: ThreadsApp, post: ThreadsPost, card: ThreadsLinkCa
 
 /** The post this one quotes, boxed, opening its own conversation; its media and link card under its words. */
 @Composable
-private fun ThreadsQuote(app: ThreadsApp, quote: ThreadsPost, modifier: Modifier) {
+internal fun ThreadsQuote(app: ThreadsApp, quote: ThreadsPost, modifier: Modifier) {
     val shape = RoundedCornerShape(16.dp)
     Column(
         modifier

@@ -25,6 +25,15 @@ internal object ThreadsIcons {
                 "M15,14c-2.67,0 -8,1.34 -8,4v2h16v-2c0,-2.66 -5.33,-4 -8,-4z",
         )
     }
+    /** An account muted on this device. */
+    val PersonOff: ImageVector by lazy {
+        icon(
+            "PersonOff",
+            "M8.65,5.82C9.36,4.72 10.6,4 12,4c2.21,0 4,1.79 4,4c0,1.4 -0.72,2.64 -1.82,3.35L8.65,5.82zM20,17.17c-0.02,-1.1 -0.63,-2.11 -1.61,-2.62" +
+                "c-0.54,-0.28 -1.13,-0.54 -1.77,-0.76L20,17.17zM21.19,21.19L2.81,2.81L1.39,4.22l8.89,8.89c-1.81,0.23 -3.39,0.79 -4.67,1.45" +
+                "C4.61,15.07 4,16.1 4,17.22V20h13.17l2.61,2.61L21.19,21.19z",
+        )
+    }
     val PersonRemove: ImageVector by lazy {
         icon("PersonRemove", "M14,8c0,-2.21 -1.79,-4 -4,-4S6,5.79 6,8s1.79,4 4,4S14,10.21 14,8zM17,10v2h6v-2H17zM2,18v2h16v-2c0,-2.66 -5.33,-4 -8,-4S2,15.34 2,18z")
     }
@@ -69,7 +78,7 @@ internal object ThreadsIcons {
     }
 
     /** Every glyph, for the test that draws them all. */
-    internal val all: List<ImageVector> get() = listOf(Mark, PersonAdd, PersonRemove, Public, PauseCircle, MusicNote, GridView, ViewAgenda)
+    internal val all: List<ImageVector> get() = listOf(Mark, PersonAdd, PersonOff, PersonRemove, Public, PauseCircle, MusicNote, GridView, ViewAgenda)
 
     internal fun icon(name: String, path: String): ImageVector =
         ImageVector.Builder(name = name, defaultWidth = 24.dp, defaultHeight = 24.dp, viewportWidth = 24f, viewportHeight = 24f)

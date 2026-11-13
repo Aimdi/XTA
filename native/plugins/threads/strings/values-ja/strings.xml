@@ -258,4 +258,15 @@
     <string name="your_profile">あなたのプロフィール</string>
     <string name="signed_in_unavailable">Threadsはまだこれをここでは提供していません。</string>
     <string name="profile_joined">%1$sに登録</string>
+    <string name="share_image">投稿を画像として共有</string>
+    <string name="share_image_failed">この画像を共有できませんでした</string>
+    <string name="hide_post">投稿を非表示</string>
+    <string name="post_hidden">この端末で投稿を非表示にしました</string>
+    <string name="mute_account">%1$sをミュート</string>
+    <string name="unmute_account">%1$sのミュートを解除</string>
+    <string name="account_muted">この端末で%1$sをミュートしました</string>
+    <string name="muted_accounts">ミュート中のアカウント</string>
+    <string name="show_hidden_posts">非表示にした投稿を再表示</string>
+    <string name="read_as_article">記事として読む</string>
+    <string name="show_conversation">会話を表示</string>
 </resources>

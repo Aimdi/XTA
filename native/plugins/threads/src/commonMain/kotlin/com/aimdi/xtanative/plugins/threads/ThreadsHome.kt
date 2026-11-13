@@ -99,10 +99,13 @@ internal fun ThreadsHome(app: ThreadsApp, frame: PluginFrame) {
             ReadingControlsBar { HomeBar(app, section, onSearch = { searching = true }, onAdd = { adding = true }) }
             Hairline()
             Box(Modifier.weight(1f).swipeTabs(section.ordinal, ThreadsSection.entries.size) { app.show(ThreadsSection.entries[it]) }) {
-                when (section) {
-                    ThreadsSection.HOME -> HomePane(app, frame, onAdd = { adding = true }, onSearch = { searching = true })
-                    ThreadsSection.FOR_YOU -> ThreadsForYouPane(app, frame)
-                    ThreadsSection.LIKED -> LikedPane(app, frame)
+                // Each section's videos take turns at one player: the one seen most plays, as in Home's X feeds.
+                PlaysOneVideo {
+                    when (section) {
+                        ThreadsSection.HOME -> HomePane(app, frame, onAdd = { adding = true }, onSearch = { searching = true })
+                        ThreadsSection.FOR_YOU -> ThreadsForYouPane(app, frame)
+                        ThreadsSection.LIKED -> LikedPane(app, frame)
+                    }
                 }
             }
         }

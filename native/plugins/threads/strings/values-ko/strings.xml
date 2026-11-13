@@ -258,4 +258,15 @@
     <string name="your_profile">내 프로필</string>
     <string name="signed_in_unavailable">Threads가 아직 이것을 여기서 제공하지 않습니다.</string>
     <string name="profile_joined">가입: %1$s</string>
+    <string name="share_image">게시물을 이미지로 공유</string>
+    <string name="share_image_failed">이 이미지를 공유할 수 없습니다</string>
+    <string name="hide_post">게시물 숨기기</string>
+    <string name="post_hidden">이 기기에서 게시물을 숨겼습니다</string>
+    <string name="mute_account">%1$s 뮤트</string>
+    <string name="unmute_account">%1$s 뮤트 해제</string>
+    <string name="account_muted">이 기기에서 %1$s 님을 뮤트했습니다</string>
+    <string name="muted_accounts">뮤트한 계정</string>
+    <string name="show_hidden_posts">숨긴 게시물 다시 보기</string>
+    <string name="read_as_article">하나의 글로 읽기</string>
+    <string name="show_conversation">대화 보기</string>
 </resources>

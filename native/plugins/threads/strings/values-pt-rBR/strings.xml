@@ -271,4 +271,15 @@
     <string name="your_profile">Seu perfil</string>
     <string name="signed_in_unavailable">O Threads ainda não oferece isso aqui.</string>
     <string name="profile_joined">Entrou: %1$s</string>
+    <string name="share_image">Compartilhar post como imagem</string>
+    <string name="share_image_failed">Não foi possível compartilhar esta imagem</string>
+    <string name="hide_post">Ocultar post</string>
+    <string name="post_hidden">Post ocultado neste dispositivo</string>
+    <string name="mute_account">Silenciar %1$s</string>
+    <string name="unmute_account">Parar de silenciar %1$s</string>
+    <string name="account_muted">%1$s silenciado neste dispositivo</string>
+    <string name="muted_accounts">Contas silenciadas</string>
+    <string name="show_hidden_posts">Mostrar de novo os posts ocultados</string>
+    <string name="read_as_article">Ler como artigo</string>
+    <string name="show_conversation">Mostrar conversa</string>
 </resources>

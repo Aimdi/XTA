@@ -279,4 +279,15 @@
     <string name="your_profile">Váš profil</string>
     <string name="signed_in_unavailable">Threads to zde zatím neposkytuje.</string>
     <string name="profile_joined">Členem od: %1$s</string>
+    <string name="share_image">Sdílet příspěvek jako obrázek</string>
+    <string name="share_image_failed">Obrázek se nepodařilo sdílet</string>
+    <string name="hide_post">Skrýt příspěvek</string>
+    <string name="post_hidden">Příspěvek je na tomto zařízení skrytý</string>
+    <string name="mute_account">Ztišit %1$s</string>
+    <string name="unmute_account">Zrušit ztišení %1$s</string>
+    <string name="account_muted">Účet %1$s je na tomto zařízení ztišený</string>
+    <string name="muted_accounts">Ztišené účty</string>
+    <string name="show_hidden_posts">Znovu zobrazit skryté příspěvky</string>
+    <string name="read_as_article">Číst jako článek</string>
+    <string name="show_conversation">Zobrazit konverzaci</string>
 </resources>

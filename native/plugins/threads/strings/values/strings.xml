@@ -267,4 +267,15 @@
     <string name="your_profile">Your profile</string>
     <string name="signed_in_unavailable">Threads does not give this here yet.</string>
     <string name="profile_joined">Joined %1$s</string>
+    <string name="share_image">Share post as image</string>
+    <string name="share_image_failed">Couldn't share this image</string>
+    <string name="hide_post">Hide post</string>
+    <string name="post_hidden">Post hidden on this device</string>
+    <string name="mute_account">Mute %1$s</string>
+    <string name="unmute_account">Unmute %1$s</string>
+    <string name="account_muted">%1$s muted on this device</string>
+    <string name="muted_accounts">Muted accounts</string>
+    <string name="show_hidden_posts">Show hidden posts again</string>
+    <string name="read_as_article">Read as article</string>
+    <string name="show_conversation">Show conversation</string>
 </resources>

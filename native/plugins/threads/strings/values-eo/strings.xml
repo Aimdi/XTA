@@ -265,4 +265,15 @@
     <string name="your_profile">Via profilo</string>
     <string name="signed_in_unavailable">Threads ankoraŭ ne donas tion ĉi tie.</string>
     <string name="profile_joined">Aliĝis: %1$s</string>
+    <string name="share_image">Kunhavigi la afiŝon kiel bildon</string>
+    <string name="share_image_failed">Ne eblis kunhavigi ĉi tiun bildon</string>
+    <string name="hide_post">Kaŝi la afiŝon</string>
+    <string name="post_hidden">Afiŝo kaŝita en ĉi tiu aparato</string>
+    <string name="mute_account">Silentigi %1$s</string>
+    <string name="unmute_account">Malsilentigi %1$s</string>
+    <string name="account_muted">%1$s silentigita en ĉi tiu aparato</string>
+    <string name="muted_accounts">Silentigitaj kontoj</string>
+    <string name="show_hidden_posts">Remontri la kaŝitajn afiŝojn</string>
+    <string name="read_as_article">Legi kiel artikolon</string>
+    <string name="show_conversation">Montri la konversacion</string>
 </resources>

@@ -265,4 +265,15 @@
     <string name="your_profile">Zure profila</string>
     <string name="signed_in_unavailable">Threads-ek ez du hau hemen ematen oraindik.</string>
     <string name="profile_joined">Noiz batu zen: %1$s</string>
+    <string name="share_image">Partekatu argitalpena irudi gisa</string>
+    <string name="share_image_failed">Ezin izan da irudia partekatu</string>
+    <string name="hide_post">Ezkutatu argitalpena</string>
+    <string name="post_hidden">Argitalpena ezkutatuta gailu honetan</string>
+    <string name="mute_account">Isilarazi %1$s</string>
+    <string name="unmute_account">Utzi %1$s isilarazteari</string>
+    <string name="account_muted">%1$s isilarazita gailu honetan</string>
+    <string name="muted_accounts">Isilarazitako kontuak</string>
+    <string name="show_hidden_posts">Erakutsi berriro ezkutatutako argitalpenak</string>
+    <string name="read_as_article">Irakurri artikulu gisa</string>
+    <string name="show_conversation">Erakutsi elkarrizketa</string>
 </resources>

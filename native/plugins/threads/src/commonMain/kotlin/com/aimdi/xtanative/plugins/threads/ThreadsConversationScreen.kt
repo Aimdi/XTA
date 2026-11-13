@@ -95,7 +95,9 @@ internal class ThreadsConversationModel(app: ThreadsApp, url: String, seed: Thre
  * thread, read from the post's public page. The tapped card is on screen at
  * once; with posts above it, the list opens on it, what it answers a scroll up.
  * A conversation opened before shows at once what it showed then, quietly
- * "updating" while its page is read again.
+ * "updating" while its page is read again. Where the author chained several
+ * posts, the bar offers them read as one article; replies of accounts the
+ * reader muted, and posts they hid, are left out.
  */
 @Composable
 internal fun ThreadsConversationScreen(app: ThreadsApp, route: ThreadsRoute.Post) {
@@ -116,18 +118,41 @@ internal fun ThreadsConversationScreen(app: ThreadsApp, route: ThreadsRoute.Post
         state.value?.takeIf { it.loaded }?.let { read -> more.start(read.replies.map(::ThreadsReplyThread), read.repliesNext) }
     }
     val shown = ThreadsConversationView.shown(state.value, kept, seed)
-    val conversation = remember(shown, paged.items) { shown.withMore(paged.items) }
+    val options by app.options.collectAsState()
+    val conversation = remember(shown, paged.items, options) { ThreadsConversationView.quieted(shown.withMore(paged.items), options) }
+    val article = remember(conversation) { ThreadsArticles.of(conversation) }
+    var asked by rememberSaveable { mutableStateOf(false) }
+    val reading = ThreadsArticles.reading(asked, article)
     PluginScaffold(
         title = pluginString(Strings.thread),
         onBack = app.host::back,
         actions = {
-            if (conversation.loaded) ReadAloudButton("${pluginString(Strings.thread)} · @${conversation.focus.handle}", conversation::spokenText)
+            if (article != null) ArticleSwitch(reading) { asked = !reading }
+            if (conversation.loaded) {
+                ReadAloudButton("${pluginString(Strings.thread)} · @${conversation.focus.handle}", text = { if (reading) article?.spokenText().orEmpty() else conversation.spokenText() })
+            }
             conversation.focus.url?.let { url -> ThreadActions(app, url) }
         },
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
-            ConversationList(app, conversation, state, ThreadsMoreReplies(more, paged), onRetry = { fetch.load(force = true) })
+            if (reading && article != null) {
+                ThreadsArticleView(app, article)
+            } else {
+                ConversationList(app, conversation, state, ThreadsMoreReplies(more, paged), onRetry = { fetch.load(force = true) })
+            }
             NoticeHost(app.notices)
+        }
+    }
+}
+
+/** The bar's switch between an author's thread read as one article ([ThreadsArticleView]) and the conversation with its replies. */
+@Composable
+private fun ArticleSwitch(reading: Boolean, onSwitch: () -> Unit) {
+    IconButton(onClick = onSwitch) {
+        if (reading) {
+            Icon(PostIcons.Forum, contentDescription = pluginString(Strings.show_conversation))
+        } else {
+            Icon(PostIcons.Article, contentDescription = pluginString(Strings.read_as_article))
         }
     }
 }
@@ -350,4 +375,13 @@ internal object ThreadsConversationView {
         kept != null -> kept
         else -> read ?: ThreadsConversation.seed(seed)
     }
+
+    /**
+     * [conversation] without what the reader muted or hid on this device
+     * ([ThreadsFeedOptions.replies]): among its replies and the posts Threads
+     * suggests beside it. The post that was opened, what it answers and its
+     * author's own thread stay whole: the reader asked for them.
+     */
+    fun quieted(conversation: ThreadsConversation, options: ThreadsFeedOptions): ThreadsConversation =
+        if (!options.hidesSome) conversation else conversation.copy(replies = options.replies(conversation.replies), related = options.unhidden(conversation.related))
 }

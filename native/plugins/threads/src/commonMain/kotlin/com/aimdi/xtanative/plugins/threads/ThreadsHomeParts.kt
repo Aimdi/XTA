@@ -125,7 +125,11 @@ internal fun UnfollowDialog(handle: String, onConfirm: () -> Unit, onDismiss: ()
     )
 }
 
-/** What the tab shows: all posts, only media or only links, with or without replies and reposts, and the words muted here. */
+/**
+ * What the tab shows: all posts, only media or only links, with or without
+ * replies and reposts, the words and the accounts muted here, and the way
+ * back for the posts hidden one by one.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun FilterSheet(app: ThreadsApp, onDismiss: () -> Unit) {
@@ -147,6 +151,13 @@ private fun FilterSheet(app: ThreadsApp, onDismiss: () -> Unit) {
             SwitchRow(Strings.hide_replies, options.hideReplies) { app.setOptions(options.copy(hideReplies = it)) }
             SwitchRow(Strings.hide_reposts, options.hideReposts) { app.setOptions(options.copy(hideReposts = it)) }
             MutedWords(options) { app.setOptions(it) }
+            MutedAccounts(options.mutedAccounts) { app.muteAccount(it, muted = false) }
+            if (options.hiddenPosts.isNotEmpty()) {
+                TextButton(onClick = app::showHiddenPosts, modifier = Modifier.padding(top = 4.dp)) {
+                    Icon(PostIcons.VisibilityOff, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Text(pluginString(Strings.show_hidden_posts), modifier = Modifier.padding(start = 8.dp))
+                }
+            }
             if (options.resettable) {
                 TextButton(onClick = { app.setOptions(options.reset()) }) {
                     Icon(Icons.Filled.Clear, contentDescription = null, modifier = Modifier.size(18.dp))
@@ -203,13 +214,26 @@ private fun MutedWords(options: ThreadsFeedOptions, onChange: (ThreadsFeedOption
     }
 }
 
+/** The accounts muted on this device from a post's sheet, a chip for each, whose cross unmutes it; nothing while none is. */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun MutedChip(word: String, onRemove: () -> Unit) {
+private fun MutedAccounts(accounts: List<String>, onUnmute: (String) -> Unit) {
+    if (accounts.isEmpty()) return
+    Column(Modifier.fillMaxWidth().padding(top = 16.dp)) {
+        Text(pluginString(Strings.muted_accounts), style = MaterialTheme.typography.titleSmall)
+        FlowRow(Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            accounts.forEach { handle -> MutedChip("@$handle", pluginString(Strings.unmute_account, "@$handle")) { onUnmute(handle) } }
+        }
+    }
+}
+
+@Composable
+private fun MutedChip(word: String, removes: String = pluginString(Strings.delete), onRemove: () -> Unit) {
     InputChip(
         selected = false,
         onClick = onRemove,
         label = { Text(word, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-        trailingIcon = { Icon(Icons.Filled.Close, contentDescription = pluginString(Strings.delete), modifier = Modifier.size(16.dp)) },
+        trailingIcon = { Icon(Icons.Filled.Close, contentDescription = removes, modifier = Modifier.size(16.dp)) },
     )
 }
 

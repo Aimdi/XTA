@@ -271,4 +271,15 @@
     <string name="your_profile">Il tuo profilo</string>
     <string name="signed_in_unavailable">Threads non fornisce ancora questo qui.</string>
     <string name="profile_joined">Iscrizione: %1$s</string>
+    <string name="share_image">Condividi il post come immagine</string>
+    <string name="share_image_failed">Impossibile condividere questa immagine</string>
+    <string name="hide_post">Nascondi il post</string>
+    <string name="post_hidden">Post nascosto su questo dispositivo</string>
+    <string name="mute_account">Silenzia %1$s</string>
+    <string name="unmute_account">Non silenziare più %1$s</string>
+    <string name="account_muted">%1$s silenziato su questo dispositivo</string>
+    <string name="muted_accounts">Account silenziati</string>
+    <string name="show_hidden_posts">Mostra di nuovo i post nascosti</string>
+    <string name="read_as_article">Leggi come articolo</string>
+    <string name="show_conversation">Mostra la conversazione</string>
 </resources>

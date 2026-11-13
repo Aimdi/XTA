@@ -272,4 +272,15 @@
     <string name="your_profile">Profilul tău</string>
     <string name="signed_in_unavailable">Threads nu oferă încă asta aici.</string>
     <string name="profile_joined">S-a alăturat: %1$s</string>
+    <string name="share_image">Distribuie postarea ca imagine</string>
+    <string name="share_image_failed">Imaginea nu a putut fi partajată</string>
+    <string name="hide_post">Ascunde postarea</string>
+    <string name="post_hidden">Postare ascunsă pe acest dispozitiv</string>
+    <string name="mute_account">Ignoră %1$s</string>
+    <string name="unmute_account">Nu mai ignora %1$s</string>
+    <string name="account_muted">%1$s este ignorat pe acest dispozitiv</string>
+    <string name="muted_accounts">Conturi ignorate</string>
+    <string name="show_hidden_posts">Arată din nou postările ascunse</string>
+    <string name="read_as_article">Citește ca articol</string>
+    <string name="show_conversation">Arată conversația</string>
 </resources>

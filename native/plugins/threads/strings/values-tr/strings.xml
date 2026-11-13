@@ -265,4 +265,15 @@
     <string name="your_profile">Profilin</string>
     <string name="signed_in_unavailable">Threads bunu henüz burada vermiyor.</string>
     <string name="profile_joined">Katılma: %1$s</string>
+    <string name="share_image">Gönderiyi görsel olarak paylaş</string>
+    <string name="share_image_failed">Bu görsel paylaşılamadı</string>
+    <string name="hide_post">Gönderiyi gizle</string>
+    <string name="post_hidden">Gönderi bu cihazda gizlendi</string>
+    <string name="mute_account">%1$s hesabını sessize al</string>
+    <string name="unmute_account">%1$s hesabının sessizini kaldır</string>
+    <string name="account_muted">%1$s bu cihazda sessize alındı</string>
+    <string name="muted_accounts">Sessize alınan hesaplar</string>
+    <string name="show_hidden_posts">Gizlenen gönderileri yeniden göster</string>
+    <string name="read_as_article">Makale olarak oku</string>
+    <string name="show_conversation">Sohbeti göster</string>
 </resources>

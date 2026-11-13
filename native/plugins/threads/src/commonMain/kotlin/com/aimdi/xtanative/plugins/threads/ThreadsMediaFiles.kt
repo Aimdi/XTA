@@ -14,10 +14,13 @@ import com.aimdi.xtanative.ui.plugins.PluginDownload
 internal object ThreadsMediaFiles {
     /** The name [item], the post's [index]th, is saved under. */
     fun name(post: ThreadsPost, index: Int, item: MediaItem): String {
-        val stem = listOf("threads", safe(post.handle), safe(post.shortcode ?: post.id).take(MAX_CODE)).filter { it.isNotEmpty() }.joinToString("-")
         val place = if (post.media.size > 1) "-${index + 1}" else ""
-        return stem + place + extension(url(item), item.kind != MediaItem.Kind.PHOTO)
+        return stem(post) + place + extension(url(item), item.kind != MediaItem.Kind.PHOTO)
     }
+
+    /** What every file of [post] starts with: "threads-<author>-<post's code>". */
+    fun stem(post: ThreadsPost): String =
+        listOf("threads", safe(post.handle), safe(post.shortcode ?: post.id).take(MAX_CODE)).filter { it.isNotEmpty() }.joinToString("-")
 
     /** The file a download of [item] fetches: a picture itself, a video's or GIF's own file; null for a stream. */
     fun url(item: MediaItem): String? = when (item.kind) {

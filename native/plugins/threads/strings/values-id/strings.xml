@@ -258,4 +258,15 @@
     <string name="your_profile">Profil Anda</string>
     <string name="signed_in_unavailable">Threads belum memberikan ini di sini.</string>
     <string name="profile_joined">Bergabung: %1$s</string>
+    <string name="share_image">Bagikan postingan sebagai gambar</string>
+    <string name="share_image_failed">Tidak dapat membagikan gambar ini</string>
+    <string name="hide_post">Sembunyikan postingan</string>
+    <string name="post_hidden">Postingan disembunyikan di perangkat ini</string>
+    <string name="mute_account">Bisukan %1$s</string>
+    <string name="unmute_account">Batal bisukan %1$s</string>
+    <string name="account_muted">%1$s dibisukan di perangkat ini</string>
+    <string name="muted_accounts">Akun yang dibisukan</string>
+    <string name="show_hidden_posts">Tampilkan lagi postingan yang disembunyikan</string>
+    <string name="read_as_article">Baca sebagai artikel</string>
+    <string name="show_conversation">Tampilkan percakapan</string>
 </resources>

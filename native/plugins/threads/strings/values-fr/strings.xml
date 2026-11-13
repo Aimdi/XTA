@@ -271,4 +271,15 @@
     <string name="your_profile">Votre profil</string>
     <string name="signed_in_unavailable">Threads ne fournit pas encore cela ici.</string>
     <string name="profile_joined">Inscription : %1$s</string>
+    <string name="share_image">Partager la publication en image</string>
+    <string name="share_image_failed">Impossible de partager cette image</string>
+    <string name="hide_post">Masquer la publication</string>
+    <string name="post_hidden">Publication masquée sur cet appareil</string>
+    <string name="mute_account">Masquer %1$s</string>
+    <string name="unmute_account">Ne plus masquer %1$s</string>
+    <string name="account_muted">%1$s masqué sur cet appareil</string>
+    <string name="muted_accounts">Comptes masqués</string>
+    <string name="show_hidden_posts">Réafficher les publications masquées</string>
+    <string name="read_as_article">Lire comme un article</string>
+    <string name="show_conversation">Afficher la conversation</string>
 </resources>

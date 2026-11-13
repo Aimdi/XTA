@@ -60,21 +60,28 @@ class ThreadsPlugin : XtaPlugin() {
 
     override fun routeFor(url: String): String? = ThreadsRoutes.forUrl(url)
 
-    override fun screen(route: String): PluginScreen? = when (val opened = ThreadsRoutes.parse(route)) {
-        is ThreadsRoute.Post -> { { ThreadsConversationScreen(app, opened) } }
-        is ThreadsRoute.Profile -> { { ThreadsProfileScreen(app, opened.handle) } }
-        is ThreadsRoute.People -> { { ThreadsPeopleScreen(app, opened.handle, opened.list) } }
-        is ThreadsRoute.Likers -> { { ThreadsPostPeopleScreen(app, ThreadsPeopleList.LIKERS, opened.mediaId) } }
-        is ThreadsRoute.Reposters -> { { ThreadsPostPeopleScreen(app, ThreadsPeopleList.REPOSTERS, opened.mediaId) } }
-        is ThreadsRoute.Quotes -> { { ThreadsQuotesScreen(app, opened.mediaId) } }
-        is ThreadsRoute.Search -> { { ThreadsSearchScreen(app, opened.terms) } }
-        is ThreadsRoute.Community -> { { ThreadsCommunityScreen(app, opened.topic) } }
-        is ThreadsRoute.Media -> { { ThreadsMediaScreen(app, opened) } }
-        ThreadsRoute.Saved -> { { ThreadsSavedScreen(app) } }
-        ThreadsRoute.SignIn -> { { ThreadsSignInScreen(app) } }
-        is ThreadsRoute.OwnFeed -> { { ThreadsOwnFeedScreen(app, opened.feed) } }
-        ThreadsRoute.Activity -> { { ThreadsActivityScreen(app) } }
-        null -> null
+    override fun screen(route: String): PluginScreen? {
+        val opened = ThreadsRoutes.parse(route) ?: return null
+        val screen: PluginScreen = { Screen(opened) }
+        // A list of posts plays the video seen most, in one player, as Home's X feeds do.
+        return if (ThreadsFeedVideo.shared(opened)) { { PlaysOneVideo(screen) } } else screen
+    }
+
+    @Composable
+    private fun Screen(opened: ThreadsRoute) = when (opened) {
+        is ThreadsRoute.Post -> ThreadsConversationScreen(app, opened)
+        is ThreadsRoute.Profile -> ThreadsProfileScreen(app, opened.handle)
+        is ThreadsRoute.People -> ThreadsPeopleScreen(app, opened.handle, opened.list)
+        is ThreadsRoute.Likers -> ThreadsPostPeopleScreen(app, ThreadsPeopleList.LIKERS, opened.mediaId)
+        is ThreadsRoute.Reposters -> ThreadsPostPeopleScreen(app, ThreadsPeopleList.REPOSTERS, opened.mediaId)
+        is ThreadsRoute.Quotes -> ThreadsQuotesScreen(app, opened.mediaId)
+        is ThreadsRoute.Search -> ThreadsSearchScreen(app, opened.terms)
+        is ThreadsRoute.Community -> ThreadsCommunityScreen(app, opened.topic)
+        is ThreadsRoute.Media -> ThreadsMediaScreen(app, opened)
+        ThreadsRoute.Saved -> ThreadsSavedScreen(app)
+        ThreadsRoute.SignIn -> ThreadsSignInScreen(app)
+        is ThreadsRoute.OwnFeed -> ThreadsOwnFeedScreen(app, opened.feed)
+        ThreadsRoute.Activity -> ThreadsActivityScreen(app)
     }
 
     /** A conversation opens as XTA's opened post does: a card over the page it came from, dragged or thrown back. */

@@ -271,4 +271,15 @@
     <string name="your_profile">El teu perfil</string>
     <string name="signed_in_unavailable">Threads encara no ofereix això aquí.</string>
     <string name="profile_joined">Es va unir: %1$s</string>
+    <string name="share_image">Comparteix la publicació com a imatge</string>
+    <string name="share_image_failed">No s'ha pogut compartir la imatge</string>
+    <string name="hide_post">Amaga la publicació</string>
+    <string name="post_hidden">Publicació amagada en aquest dispositiu</string>
+    <string name="mute_account">Silencia %1$s</string>
+    <string name="unmute_account">Deixa de silenciar %1$s</string>
+    <string name="account_muted">%1$s silenciat en aquest dispositiu</string>
+    <string name="muted_accounts">Comptes silenciats</string>
+    <string name="show_hidden_posts">Torna a mostrar les publicacions amagades</string>
+    <string name="read_as_article">Llegeix com a article</string>
+    <string name="show_conversation">Mostra la conversa</string>
 </resources>

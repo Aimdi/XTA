@@ -293,4 +293,15 @@
     <string name="your_profile">ملفك الشخصي</string>
     <string name="signed_in_unavailable">لا يتيح Threads هذا هنا بعد.</string>
     <string name="profile_joined">انضم في %1$s</string>
+    <string name="share_image">مشاركة المنشور كصورة</string>
+    <string name="share_image_failed">تعذّرت مشاركة هذه الصورة</string>
+    <string name="hide_post">إخفاء المنشور</string>
+    <string name="post_hidden">أُخفي المنشور على هذا الجهاز</string>
+    <string name="mute_account">كتم %1$s</string>
+    <string name="unmute_account">إلغاء كتم %1$s</string>
+    <string name="account_muted">كُتم %1$s على هذا الجهاز</string>
+    <string name="muted_accounts">الحسابات المكتومة</string>
+    <string name="show_hidden_posts">إظهار المنشورات المخفية من جديد</string>
+    <string name="read_as_article">القراءة كمقال</string>
+    <string name="show_conversation">عرض المحادثة</string>
 </resources>

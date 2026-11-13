@@ -279,4 +279,15 @@
     <string name="your_profile">Twój profil</string>
     <string name="signed_in_unavailable">Threads jeszcze tego tu nie udostępnia.</string>
     <string name="profile_joined">Dołączono: %1$s</string>
+    <string name="share_image">Udostępnij post jako obraz</string>
+    <string name="share_image_failed">Nie udało się udostępnić obrazu</string>
+    <string name="hide_post">Ukryj post</string>
+    <string name="post_hidden">Post ukryty na tym urządzeniu</string>
+    <string name="mute_account">Wycisz %1$s</string>
+    <string name="unmute_account">Cofnij wyciszenie %1$s</string>
+    <string name="account_muted">Wyciszono %1$s na tym urządzeniu</string>
+    <string name="muted_accounts">Wyciszone konta</string>
+    <string name="show_hidden_posts">Pokaż ponownie ukryte posty</string>
+    <string name="read_as_article">Czytaj jak artykuł</string>
+    <string name="show_conversation">Pokaż rozmowę</string>
 </resources>

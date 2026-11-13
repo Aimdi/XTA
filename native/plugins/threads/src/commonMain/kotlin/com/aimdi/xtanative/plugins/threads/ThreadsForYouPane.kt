@@ -87,7 +87,7 @@ internal fun ThreadsForYouPane(app: ThreadsApp, frame: PluginFrame) {
 private fun ForYouList(app: ThreadsApp, frame: PluginFrame, read: ThreadsForYouState) {
     val followed by app.accounts.state.collectAsState()
     val options by app.options.collectAsState()
-    val state = remember(read, options.mutedWords) { read.copy(posts = options.unmuted(read.posts)) }
+    val state = remember(read, options) { read.copy(posts = options.unmuted(read.posts)) }
     val followedTopics by app.topics.state.collectAsState()
     val people = remember(state.posts, followed) { ThreadsDiscovery.peopleToFollow(state.posts, { ThreadsAccounts.follows(followed, it) }) }
     val topics = remember(state.posts, followedTopics) { app.discoveredTopics() }

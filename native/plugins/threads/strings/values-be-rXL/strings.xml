@@ -279,4 +279,15 @@
     <string name="your_profile">Vaš profil</string>
     <string name="signed_in_unavailable">Threads pakul nie daje hetaha tut.</string>
     <string name="profile_joined">Data rehistracyi: %1$s</string>
+    <string name="share_image">Padzialicca dopisam jak vyjavaj</string>
+    <string name="share_image_failed">Nie ŭdałosia padzialicca vyjavaj</string>
+    <string name="hide_post">Schavać dopis</string>
+    <string name="post_hidden">Dopis schavany na hetaj pryladzie</string>
+    <string name="mute_account">Pryhłušyć %1$s</string>
+    <string name="unmute_account">Bolš nie pryhłušać %1$s</string>
+    <string name="account_muted">%1$s pryhlušany na hetaj pryladzie</string>
+    <string name="muted_accounts">Pryhlušanyja ŭlikovyja zapisy</string>
+    <string name="show_hidden_posts">Znoŭ pakazać schavanyja dopisy</string>
+    <string name="read_as_article">Čytać jak artykuł</string>
+    <string name="show_conversation">Pakazać razmovu</string>
 </resources>

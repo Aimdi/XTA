@@ -265,4 +265,15 @@
     <string name="your_profile">Profilen din</string>
     <string name="signed_in_unavailable">Threads gir ikke ut dette her ennå.</string>
     <string name="profile_joined">Ble med: %1$s</string>
+    <string name="share_image">Del innlegget som bilde</string>
+    <string name="share_image_failed">Kunne ikke dele dette bildet</string>
+    <string name="hide_post">Skjul innlegget</string>
+    <string name="post_hidden">Innlegget er skjult på denne enheten</string>
+    <string name="mute_account">Demp %1$s</string>
+    <string name="unmute_account">Opphev demping av %1$s</string>
+    <string name="account_muted">%1$s er dempet på denne enheten</string>
+    <string name="muted_accounts">Dempede kontoer</string>
+    <string name="show_hidden_posts">Vis skjulte innlegg igjen</string>
+    <string name="read_as_article">Les som artikkel</string>
+    <string name="show_conversation">Vis samtalen</string>
 </resources>

@@ -279,4 +279,15 @@
     <string name="your_profile">Ваш профіль</string>
     <string name="signed_in_unavailable">Threads поки не надає цього тут.</string>
     <string name="profile_joined">Дата реєстрації: %1$s</string>
+    <string name="share_image">Поділитися дописом як зображенням</string>
+    <string name="share_image_failed">Не вдалося поділитися зображенням</string>
+    <string name="hide_post">Приховати допис</string>
+    <string name="post_hidden">Допис приховано на цьому пристрої</string>
+    <string name="mute_account">Приховувати %1$s</string>
+    <string name="unmute_account">Більше не приховувати %1$s</string>
+    <string name="account_muted">Дописи %1$s приховано на цьому пристрої</string>
+    <string name="muted_accounts">Приховані акаунти</string>
+    <string name="show_hidden_posts">Знову показати приховані дописи</string>
+    <string name="read_as_article">Читати як статтю</string>
+    <string name="show_conversation">Показати розмову</string>
 </resources>

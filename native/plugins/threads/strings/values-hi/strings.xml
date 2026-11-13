@@ -265,4 +265,15 @@
     <string name="your_profile">आपकी प्रोफ़ाइल</string>
     <string name="signed_in_unavailable">Threads यह अभी यहाँ नहीं देता।</string>
     <string name="profile_joined">शामिल हुए: %1$s</string>
+    <string name="share_image">पोस्ट को इमेज के रूप में शेयर करें</string>
+    <string name="share_image_failed">यह छवि साझा नहीं की जा सकी</string>
+    <string name="hide_post">पोस्ट छिपाएँ</string>
+    <string name="post_hidden">पोस्ट इस डिवाइस पर छिपा दी गई</string>
+    <string name="mute_account">%1$s को म्यूट करें</string>
+    <string name="unmute_account">%1$s से म्यूट हटाएँ</string>
+    <string name="account_muted">%1$s इस डिवाइस पर म्यूट है</string>
+    <string name="muted_accounts">म्यूट किए गए खाते</string>
+    <string name="show_hidden_posts">छिपाई गई पोस्ट फिर दिखाएँ</string>
+    <string name="read_as_article">लेख की तरह पढ़ें</string>
+    <string name="show_conversation">बातचीत दिखाएँ</string>
 </resources>

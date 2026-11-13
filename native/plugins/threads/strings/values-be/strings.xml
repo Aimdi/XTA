@@ -279,4 +279,15 @@
     <string name="your_profile">Ваш профіль</string>
     <string name="signed_in_unavailable">Threads пакуль не дае гэтага тут.</string>
     <string name="profile_joined">Дата рэгістрацыі: %1$s</string>
+    <string name="share_image">Падзяліцца допісам як выявай</string>
+    <string name="share_image_failed">Не ўдалося падзяліцца выявай</string>
+    <string name="hide_post">Схаваць допіс</string>
+    <string name="post_hidden">Допіс схаваны на гэтай прыладзе</string>
+    <string name="mute_account">Прыглушыць %1$s</string>
+    <string name="unmute_account">Больш не прыглушаць %1$s</string>
+    <string name="account_muted">%1$s прыглушаны на гэтай прыладзе</string>
+    <string name="muted_accounts">Прыглушаныя ўліковыя запісы</string>
+    <string name="show_hidden_posts">Зноў паказаць схаваныя допісы</string>
+    <string name="read_as_article">Чытаць як артыкул</string>
+    <string name="show_conversation">Паказаць размову</string>
 </resources>

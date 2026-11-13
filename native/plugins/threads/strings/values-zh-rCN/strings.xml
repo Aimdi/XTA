@@ -258,4 +258,15 @@
     <string name="your_profile">你的主页</string>
     <string name="signed_in_unavailable">Threads 暂不在此处提供这项内容。</string>
     <string name="profile_joined">加入时间：%1$s</string>
+    <string name="share_image">以图片分享帖子</string>
+    <string name="share_image_failed">无法分享此图片</string>
+    <string name="hide_post">隐藏帖子</string>
+    <string name="post_hidden">已在此设备上隐藏该帖子</string>
+    <string name="mute_account">屏蔽 %1$s</string>
+    <string name="unmute_account">取消屏蔽 %1$s</string>
+    <string name="account_muted">已在此设备上屏蔽 %1$s</string>
+    <string name="muted_accounts">已屏蔽的账号</string>
+    <string name="show_hidden_posts">重新显示已隐藏的帖子</string>
+    <string name="read_as_article">按文章阅读</string>
+    <string name="show_conversation">显示对话</string>
 </resources>

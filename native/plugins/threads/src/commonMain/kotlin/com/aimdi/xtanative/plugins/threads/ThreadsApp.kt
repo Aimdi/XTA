@@ -504,6 +504,25 @@ internal class ThreadsApp(val host: PluginHost) {
 
     fun setOptions(options: ThreadsFeedOptions) = update { it.with(ThreadsPrefs.feedOptions, options.encode()) }
 
+    /** The feed's choices changed from what they are when the change is written, so two changes made at once both stay. */
+    private fun editOptions(edit: (ThreadsFeedOptions) -> ThreadsFeedOptions) =
+        update { it.with(ThreadsPrefs.feedOptions, edit(ThreadsFeedOptions.decode(it[ThreadsPrefs.feedOptions])).encode()) }
+
+    /** [post] hidden on this device, out of Home, For you, the replies and the app's timelines; the filters show it again. Nothing is sent to Threads. */
+    fun hidePost(post: ThreadsPost) {
+        editOptions { it.hiding(post.id) }
+        host.tell(Strings.post_hidden.get(host.language))
+    }
+
+    /** [handle] muted on this device, or no longer: its posts and reposts leave the feeds and the replies. Nothing is sent to Threads. */
+    fun muteAccount(handle: String, muted: Boolean) {
+        editOptions { if (muted) it.mutingAccount(handle) else it.unmutingAccount(handle) }
+        if (muted) host.tell(Strings.account_muted.get(host.language, "@" + ThreadsFeedOptions.normalised(handle)))
+    }
+
+    /** The posts hidden one by one, shown again. */
+    fun showHiddenPosts() = editOptions { it.showingHidden() }
+
     fun remember(query: String) = update { it.with(ThreadsPrefs.searchHistory, PluginSearchHistory.remembered(it[ThreadsPrefs.searchHistory], query)) }
 
     /** [query] out of the recent searches, as XTA's other plugins let a reader drop one. */
@@ -562,7 +581,7 @@ internal class ThreadsApp(val host: PluginHost) {
                 failedNow.value = reader.failures(followed())
             }
             this@ThreadsApp.accounts.keepCurrent(posts)
-            return ThreadsShared.mixed(posts, kinds).map(::shown)
+            return options.value.unhidden(ThreadsShared.mixed(posts, kinds)).map(::shown)
         }
     }
 

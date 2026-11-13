@@ -265,4 +265,15 @@
     <string name="your_profile">Dein Profil</string>
     <string name="signed_in_unavailable">Threads gibt das hier noch nicht heraus.</string>
     <string name="profile_joined">Beigetreten: %1$s</string>
+    <string name="share_image">Beitrag als Bild teilen</string>
+    <string name="share_image_failed">Das Bild konnte nicht geteilt werden</string>
+    <string name="hide_post">Beitrag ausblenden</string>
+    <string name="post_hidden">Beitrag auf diesem Gerät ausgeblendet</string>
+    <string name="mute_account">%1$s stummschalten</string>
+    <string name="unmute_account">Stummschaltung von %1$s aufheben</string>
+    <string name="account_muted">%1$s auf diesem Gerät stummgeschaltet</string>
+    <string name="muted_accounts">Stummgeschaltete Konten</string>
+    <string name="show_hidden_posts">Ausgeblendete Beiträge wieder anzeigen</string>
+    <string name="read_as_article">Als Artikel lesen</string>
+    <string name="show_conversation">Unterhaltung anzeigen</string>
 </resources>

@@ -279,4 +279,15 @@
     <string name="your_profile">Ваш профиль</string>
     <string name="signed_in_unavailable">Threads пока не отдаёт это здесь.</string>
     <string name="profile_joined">Дата регистрации: %1$s</string>
+    <string name="share_image">Поделиться публикацией как изображением</string>
+    <string name="share_image_failed">Не удалось поделиться изображением</string>
+    <string name="hide_post">Скрыть публикацию</string>
+    <string name="post_hidden">Публикация скрыта на этом устройстве</string>
+    <string name="mute_account">Скрывать %1$s</string>
+    <string name="unmute_account">Больше не скрывать %1$s</string>
+    <string name="account_muted">Публикации %1$s скрыты на этом устройстве</string>
+    <string name="muted_accounts">Скрытые аккаунты</string>
+    <string name="show_hidden_posts">Снова показать скрытые публикации</string>
+    <string name="read_as_article">Читать как статью</string>
+    <string name="show_conversation">Показать обсуждение</string>
 </resources>
