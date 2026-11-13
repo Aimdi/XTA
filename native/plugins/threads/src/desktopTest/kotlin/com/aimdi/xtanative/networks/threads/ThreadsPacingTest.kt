@@ -8,6 +8,7 @@ import kotlin.test.assertTrue
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 
 /**
@@ -70,12 +71,30 @@ class ThreadsPacingTest {
     }
 
     @Test
+    fun aReadTheReaderWaitsOnLeavesBeforeHomesBackgroundReadsStillWaiting() = runBlocking {
+        val order = CopyOnWriteArrayList<String>()
+        val searches = FakeMeta { asked ->
+            order += asked.url.queryParameter("q").orEmpty()
+            yield()
+            ok(fixture("search_page.html"))
+        }
+        // A gap that lets the others run while it is waited out, as a real one does.
+        val yielding = ThreadsPacing(sessionGapMillis = 3_000, guestGapMillis = 550, sessionJitterMillis = 0, guestJitterMillis = 0, sleep = { time.sleep(it); yield() })
+        val client = direct(searches, session, memory, time, yielding)
+        coroutineScope {
+            listOf("home1", "home2", "home3").forEach { query -> launch { withContext(ThreadsBackground) { client.searchPosts(query) } } }
+            launch { client.searchPosts("opened") }
+        }
+        assertEquals(listOf("home1", "home2", "opened", "home3"), order, "what was opened waits behind one of Home's reads at most")
+    }
+
+    @Test
     fun theJitterStaysWithinItsBound() {
         val jittered = ThreadsPacing(random = Random(7))
         val session = (1..200).map { jittered.gap(asGuest = false) }
         val guest = (1..200).map { jittered.gap(asGuest = true) }
         assertTrue(session.all { it in 3_000 until 3_750 } && session.toSet().size > 1, "$session")
-        assertTrue(guest.all { it in 550 until 900 } && guest.toSet().size > 1, "$guest")
+        assertTrue(guest.all { it in 300 until 500 } && guest.toSet().size > 1, "$guest")
         assertEquals(0, ThreadsPacing.NONE.gap(asGuest = false))
     }
 }

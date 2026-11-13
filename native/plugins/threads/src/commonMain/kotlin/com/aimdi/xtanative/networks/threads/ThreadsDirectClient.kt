@@ -15,6 +15,11 @@ import com.aimdi.xtanative.networks.threads.ThreadsFailure.UNREACHABLE
 import java.net.SocketTimeoutException
 import java.security.SecureRandom
 import java.time.Instant
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.coroutineContext
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeoutOrNull
@@ -52,6 +57,12 @@ class ThreadsDirectClient(
     private val clock: () -> Long = System::currentTimeMillis,
 ) {
     private val departures = Mutex()
+
+    /** How many reads the reader is waiting on (not [ThreadsBackground]) are waiting for their turn to leave. */
+    private val waitingInFront = MutableStateFlow(0)
+
+    /** The line [ThreadsBackground] reads take, one at a time, before they queue for a departure. */
+    private val backgroundLane = Mutex()
     private var lastDeparture: Long? = null
     private val keeping = Any()
     private val profilePages = SingleFlight<String>()
@@ -476,8 +487,30 @@ class ThreadsDirectClient(
     }
 
     private suspend fun send(asGuest: Boolean, url: HttpUrl, request: suspend () -> XResponse): XResponse {
-        depart(asGuest)
-        return withTimeoutOrNull(TIMEOUT_MILLIS) { request() } ?: throw SocketTimeoutException("$url: no answer in ${TIMEOUT_MILLIS / 1000} s")
+        departInTurn(asGuest)
+        val limit = if (asGuest) GUEST_TIMEOUT_MILLIS else TIMEOUT_MILLIS
+        return withTimeoutOrNull(limit) { request() } ?: throw SocketTimeoutException("$url: no answer in ${limit / 1000} s")
+    }
+
+    /**
+     * Waits for this request's turn to leave, a read run in [ThreadsBackground]
+     * (Home's followed accounts) first letting every read the reader is
+     * waiting on (a profile, a post, a search) go ahead of it.
+     */
+    private suspend fun departInTurn(asGuest: Boolean) {
+        if (coroutineContext[ThreadsBackground.Key] != null) {
+            // One background read at a time queues for a departure, so a read the reader waits on is behind one of them at most.
+            return backgroundLane.withLock {
+                waitingInFront.first { it == 0 }
+                depart(asGuest)
+            }
+        }
+        waitingInFront.update { it + 1 }
+        try {
+            depart(asGuest)
+        } finally {
+            waitingInFront.update { it - 1 }
+        }
     }
 
     /**
@@ -625,6 +658,9 @@ class ThreadsDirectClient(
         private const val FORM = "application/x-www-form-urlencoded"
         private const val ACCEPT_LANGUAGE = "en-US,en;q=0.9"
         private const val TIMEOUT_MILLIS = 25_000L
+
+        /** A guest read that has not answered in this long is given up: a public page answers in a few seconds or not at all. */
+        private const val GUEST_TIMEOUT_MILLIS = 12_000L
         private const val MAX_REDIRECTS = 4
         private val REDIRECTS = setOf(301, 302, 303, 307, 308)
         private const val COOLDOWN_MILLIS = 30 * 60 * 1000L
@@ -657,4 +693,16 @@ internal data class GuestQuery(
         /** The form fields threads.com's Relay client adds to a query it names. */
         fun relayForm(name: String) = listOf("fb_api_caller_class" to "RelayModern", "fb_api_req_friendly_name" to name, "server_timestamps" to "true")
     }
+}
+
+/**
+ * Marks reads nobody is looking at yet (Home's followed accounts and their
+ * extras): each waits while a read the reader is waiting on wants its turn,
+ * so what was just opened is not queued behind Home.
+ */
+object ThreadsBackground : CoroutineContext.Element {
+    override val key: CoroutineContext.Key<*> get() = Key
+
+    /** How a coroutine is asked whether it reads in the background. */
+    object Key : CoroutineContext.Key<ThreadsBackground>
 }
