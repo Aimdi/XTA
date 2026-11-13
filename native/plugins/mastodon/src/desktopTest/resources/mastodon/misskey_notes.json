@@ -1,0 +1,56 @@
+[
+  {
+    "id": "9x1",
+    "createdAt": "2026-08-01T09:00:00.000Z",
+    "text": "hello from misskey",
+    "cw": "cats",
+    "repliesCount": 2,
+    "renoteCount": 4,
+    "reactions": {":plus:": 3, ":star@.:": 1, ":odd:": "many"},
+    "user": {"id": "u1", "username": "neo", "name": "Neo", "host": null, "avatarUrl": "https://misskey.io/avatar/neo.webp"},
+    "files": [
+      {"id": "f1", "type": "image/jpeg", "thumbnailUrl": "https://misskey.io/files/thumb-f1.webp", "url": "https://misskey.io/files/f1.jpg"},
+      {"id": "f2", "type": "video/mp4", "thumbnailUrl": null, "url": "https://misskey.io/files/f2.mp4"},
+      {"id": "f3", "type": "image/png", "thumbnailUrl": "", "url": "https://misskey.io/files/f3.png"}
+    ]
+  },
+  {
+    "id": "9x2",
+    "createdAt": "2026-08-01T09:05:00.000Z",
+    "text": null,
+    "user": {"username": "boosty", "name": "", "host": "followed.example"},
+    "renote": {
+      "id": "9x0",
+      "createdAt": "2026-08-01T08:00:00.000Z",
+      "text": "original",
+      "repliesCount": 1,
+      "renoteCount": 2,
+      "reactions": {":plus:": 5},
+      "user": {"username": "author", "name": "Author", "host": "Other.Example"},
+      "files": []
+    }
+  },
+  {
+    "id": "9x3",
+    "createdAt": "2026-08-01T09:10:00.000Z",
+    "text": "adding this",
+    "user": {"username": "boosty", "name": "Boosty", "host": null},
+    "renote": {
+      "id": "9x0",
+      "text": "original",
+      "user": {"username": "author", "name": "Author", "host": "other.example"},
+      "files": []
+    }
+  },
+  {
+    "id": "9x4",
+    "createdAt": "2026-08-01T09:20:00.000Z",
+    "text": "a reply",
+    "replyId": "9x1",
+    "reply": {"id": "9x1", "user": {"username": "neo", "host": null}},
+    "user": {"username": "trinity", "name": "Trinity", "host": "remote.example"}
+  },
+  {"id": "9x5", "text": "   ", "cw": null, "user": {"username": "empty"}, "files": []},
+  {"id": "9x6", "text": "no user", "user": {"username": ""}},
+  {"id": "", "text": "no id", "user": {"username": "someone"}}
+]

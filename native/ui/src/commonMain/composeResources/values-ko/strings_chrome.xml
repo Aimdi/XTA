@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chrome_confirm_close">XTA를 닫으시겠습니까?</string>
+    <string name="chrome_update_available">XTA 업데이트가 있습니다! 🚀</string>
+    <string name="chrome_update_view_version">GitHub에서 버전 %1$s 보기</string>
+    <string name="chrome_update_view">GitHub에서 보기</string>
+    <string name="chrome_update_download">다운로드</string>
+    <string name="chrome_licences_legalese">MIT 라이선스에 따라 출시</string>
+    <plurals name="chrome_licences_count">
+        <item quantity="other">라이선스 %1$d개</item>
+    </plurals>
+</resources>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- An X post's footer, its share and ⋯ sheets and menus, its poll's line, and the contract addresses in its text (ui.post): XTA's words where XTA has them. -->
+<resources>
+    <string name="posts_share">Gönderiyi paylaş</string>
+    <string name="posts_share_content">Tweet içeriğini paylaş</string>
+    <string name="posts_share_article_link">Makale bağlantısını paylaş</string>
+    <string name="posts_share_content_and_link">Tweet içeriğini ve bağlantısını paylaş</string>
+    <string name="posts_share_image">Gönderiyi resim olarak paylaş</string>
+    <string name="posts_share_article_image">Makaleyi resim olarak paylaş</string>
+    <string name="posts_copied">Panoya kopyalandı</string>
+    <string name="posts_reply_not_found">Üzgünüz, yanıtlanan tweet bulunamadı!</string>
+    <string name="posts_subscribe">Abone ol</string>
+    <string name="contract_address_copied">Sözleşme adresi kopyalandı</string>
+    <string name="poll_no_votes">Oy yok</string>
+    <plurals name="poll_ends_minutes">
+        <item quantity="one">%1$d dakika sonra bitiyor</item>
+        <item quantity="other">%1$d dakika sonra bitiyor</item>
+    </plurals>
+    <plurals name="poll_ends_hours">
+        <item quantity="one">%1$d saat sonra bitiyor</item>
+        <item quantity="other">%1$d saat sonra bitiyor</item>
+    </plurals>
+    <plurals name="poll_ends_days">
+        <item quantity="one">%1$d gün sonra bitiyor</item>
+        <item quantity="other">%1$d gün sonra bitiyor</item>
+    </plurals>
+    <plurals name="poll_ended_minutes">
+        <item quantity="one">%1$d dakika önce sona erdi</item>
+        <item quantity="other">%1$d dakika önce sona erdi</item>
+    </plurals>
+    <plurals name="poll_ended_hours">
+        <item quantity="one">%1$d saat önce sona erdi</item>
+        <item quantity="other">%1$d saat önce sona erdi</item>
+    </plurals>
+    <plurals name="poll_ended_days">
+        <item quantity="one">%1$d gün önce sona erdi</item>
+        <item quantity="other">%1$d gün önce sona erdi</item>
+    </plurals>
+    <plurals name="poll_ended_months">
+        <item quantity="one">%1$d ay önce sona erdi</item>
+        <item quantity="other">%1$d ay önce sona erdi</item>
+    </plurals>
+    <plurals name="poll_ended_years">
+        <item quantity="one">%1$d yıl önce sona erdi</item>
+        <item quantity="other">%1$d yıl önce sona erdi</item>
+    </plurals>
+</resources>

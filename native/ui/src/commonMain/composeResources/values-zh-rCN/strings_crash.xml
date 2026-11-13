@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Crash reports and the screens shown when something breaks: XTA's own wording (lib/l10n), placeholders positional. -->
+<resources>
+    <string name="crash_reports_auth_failed">GitHub 拒绝了该令牌（请检查权限）</string>
+    <string name="crash_reports_disabled_toast">请先启用崩溃报告</string>
+    <string name="crash_reports_duplicate">该崩溃已报告过</string>
+    <string name="crash_reports_enabled">向 GitHub 发送崩溃报告</string>
+    <string name="crash_reports_enabled_description">启用后，未捕获的崩溃会在你的仓库创建 GitHub Issue。默认关闭。需要具有 Issues 写入权限的个人访问令牌。应用内不会内置令牌。</string>
+    <string name="crash_reports_invalid_repo">仓库格式必须为 owner/name</string>
+    <string name="crash_reports_missing_token">请先添加 GitHub 访问令牌</string>
+    <string name="crash_reports_rate_limited">短时间内发送的崩溃报告过多</string>
+    <string name="crash_reports_repo">GitHub 仓库</string>
+    <string name="crash_reports_repo_description">接收崩溃 Issue 的仓库（owner/name）</string>
+    <string name="crash_reports_send_test">发送测试崩溃报告</string>
+    <string name="crash_reports_send_test_description">创建示例 Issue 以验证令牌和仓库</string>
+    <string name="crash_reports_test_failed">无法发送崩溃报告</string>
+    <string name="crash_reports_test_sent">测试崩溃报告已发送</string>
+    <string name="crash_reports_token">GitHub 访问令牌</string>
+    <string name="crash_reports_token_description">具有创建 Issue 权限的精细或经典 PAT。仅保存在本机，并会从备份中排除。</string>
+    <string name="crash_reports_token_hint">ghp_… 或 github_pat_…</string>
+    <string name="crash_something_broke">XTA 发生异常。</string>
+    <string name="crash_start_failed">无法进行数据迁移</string>
+</resources>

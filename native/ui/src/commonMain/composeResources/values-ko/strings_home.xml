@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
+     Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="home_x">X</string>
+    <string name="home_search_in">%1$s 검색</string>
+    <string name="home_open_menu">탐색 메뉴 열기</string>
+    <string name="home_add_timeline">타임라인 추가</string>
+    <string name="home_unread">읽지 않음</string>
+    <string name="home_refresh">새로고침</string>
+    <string name="home_open_group">그룹 열기</string>
+    <string name="home_more_options">옵션 더보기</string>
+        <string name="home_pin_to_bar_hint">고정한 항목은 바에 공간이 있을 때 섹션 옆에 표시됩니다. 모든 항목은 이 메뉴에도 그대로 남습니다.</string>
+    <string name="home_keep_controls_visible">컨트롤 항상 표시</string>
+    <string name="home_pin_to_bar">상단 바에 고정</string>
+
+    <string name="home_strip_title">플러그인 타임라인</string>
+    <string name="home_strip_intro">설치한 플러그인을 «추천» 옆에 고정하세요. 끌어다 순서를 바꾸세요. 더 많은 항목은 플러그인 스토어에서.</string>
+    <string name="home_strip_pinned">이 표시줄에</string>
+    <string name="home_strip_available">추가 가능</string>
+    <string name="home_strip_empty">고정할 플러그인이 없습니다. 스토어에서 Reddit, Pixiv, Mastodon 등을 설치하세요.</string>
+    <string name="home_strip_remove">표시줄에서 제거</string>
+    <string name="home_strip_reorder">순서 변경</string>
+    <string name="home_plugin_store">플러그인 스토어</string>
+
+    <string name="home_subscriptions">구독</string>
+    <string name="home_discover">탐색</string>
+    <string name="home_saved">저장됨</string>
+    <string name="home_downloads">다운로드</string>
+    <string name="home_antennas">안테나</string>
+    <string name="home_deck">덱</string>
+    <string name="home_deck_empty">넓은 화면에서 나란히 보려면 그룹을 고정하세요</string>
+    <string name="home_groups">그룹</string>
+    <string name="home_no_groups">아직 그룹이 없습니다</string>
+    <string name="home_no_results">결과 없음</string>
+    <plurals name="home_group_members">
+        <item quantity="other">구독 %1$d개</item>
+    </plurals>
+
+    <string name="home_feed_accounts">홈 피드 계정</string>
+    <string name="home_filter_accounts">계정</string>
+    <string name="home_filter_accounts_explained">한도만 위해 남겨 둔 예비 계정은 끄세요. 추천은 켠 계정의 홈 타임라인을 합칩니다. 팔로잉은 로컬 구독을 쓰되, 끈 계정으로는 가져오지 않습니다. 댓글과 프로필은 필요하면 어떤 계정이든 쓸 수 있습니다.</string>
+    <string name="home_filter_groups_explained">그룹을 끄면 멤버가 팔로잉에서 숨겨집니다. 그룹 탭은 그대로입니다. 그 게시물은 추천에서도 빠집니다.</string>
+    <string name="home_filter_only_hint">길게 누르면 그 항목만 켜 둡니다.</string>
+    <string name="home_filter_keep_one">계정은 하나 이상 켜 두어야 합니다</string>
+    <string name="home_filter_count">%1$d / %2$d</string>
+    <string name="home_filter_all">전체</string>
+    <string name="home_filter_none">없음</string>
+    <string name="home_filter_reset">필터 초기화</string>
+    <string name="home_filter_apply">적용</string>
+
+    <string name="home_for_you_empty">피드의 게시물을 불러올 수 없습니다</string>
+    <string name="home_for_you_no_account">추천을 불러오려면 계정이 포함된 XTA 백업을 가져오세요.</string>
+    <string name="home_import">XTA 백업 가져오기</string>
+
+    <string name="home_home">홈</string>
+    <string name="home_networks">네트워크</string>
+    <string name="home_networks_recent">최근</string>
+    <string name="home_networks_all">모든 네트워크</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">마이크로블로그 서비스 묶기</string>
+    <string name="home_alt_microblogging_group_detail">홈에서 Mastodon, Bluesky, Threads를 하나의 섹션으로 표시합니다. 끄면 각각 표시됩니다. 데이터와 설정은 그대로 유지됩니다.</string>
+    <string name="home_posts">트윗</string>
+    <string name="home_media">미디어</string>
+    <string name="home_missing_page">누락된 페이지</string>
+    <string name="home_two_pages_required">홈 화면 페이지가 최소 2개 있어야 합니다.</string>
+    <string name="home_choose_pages">페이지 선택</string>
+    <string name="home_unable_to_load_pages">홈 페이지를 불러올 수 없습니다</string>
+    <string name="feed_strip_unavailable">이 타임라인은 더 이상 사용할 수 없습니다</string>
+    <string name="home_feed_accounts_empty">추천을 불러오려면 계정을 추가하세요.</string>
+</resources>

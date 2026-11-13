@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Crash reports and the screens shown when something breaks: XTA's own wording (lib/l10n), placeholders positional. -->
+<resources>
+    <string name="crash_reports_auth_failed">GitHub odrzucił token (sprawdź uprawnienia)</string>
+    <string name="crash_reports_disabled_toast">Najpierw włącz raporty awarii</string>
+    <string name="crash_reports_duplicate">Ta awaria została już zgłoszona</string>
+    <string name="crash_reports_enabled">Wysyłaj raporty awarii do GitHub</string>
+    <string name="crash_reports_enabled_description">Po włączeniu nieobsłużone awarie tworzą issue w GitHubie. Domyślnie wyłączone. Wymaga osobistego tokena z prawem zapisu Issues. Token nie jest osadzony w aplikacji.</string>
+    <string name="crash_reports_invalid_repo">Repozytorium musi mieć format owner/name</string>
+    <string name="crash_reports_missing_token">Najpierw dodaj token dostępu GitHub</string>
+    <string name="crash_reports_rate_limited">Wysłano zbyt wiele raportów awarii w krótkim czasie</string>
+    <string name="crash_reports_repo">Repozytorium GitHub</string>
+    <string name="crash_reports_repo_description">owner/name repozytorium przyjmującego issue o awariach</string>
+    <string name="crash_reports_send_test">Wyślij testowy raport awarii</string>
+    <string name="crash_reports_send_test_description">Tworzy przykładowe issue, by sprawdzić token i repozytorium</string>
+    <string name="crash_reports_test_failed">Nie udało się wysłać raportu awarii</string>
+    <string name="crash_reports_test_sent">Wysłano testowy raport awarii</string>
+    <string name="crash_reports_token">Token dostępu GitHub</string>
+    <string name="crash_reports_token_description">Fine-grained lub klasyczny PAT z prawem tworzenia issue. Przechowywany tylko na tym urządzeniu i wykluczony z kopii zapasowych.</string>
+    <string name="crash_reports_token_hint">ghp_… lub github_pat_…</string>
+    <string name="crash_something_broke">Coś się popsuło we Quackerze.</string>
+    <string name="crash_start_failed">Nie można uruchomić migracji bazy danych</string>
+</resources>

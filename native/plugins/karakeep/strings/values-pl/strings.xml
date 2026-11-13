@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Karakeep</string>
+    <string name="plugin_description">Zapisuj wpisy i linki na własnym serwerze Karakeep jednym dotknięciem</string>
+    <string name="settings_intro">Karakeep to serwis zakładek, który hostujesz samodzielnie. Podaj adres swojej instancji i klucz API z „Ustawienia &gt; Klucze API” w Karakeep.</string>
+    <string name="server_url">Adres serwera</string>
+    <string name="server_url_hint">Na przykład karakeep.example.com</string>
+    <string name="api_key">Klucz API</string>
+    <string name="api_key_hint">Zostaje tylko na tym urządzeniu</string>
+    <string name="test">Sprawdź połączenie</string>
+    <string name="test_ok">Połączono z Karakeep</string>
+    <string name="not_configured">Najpierw podaj serwer Karakeep i klucz API</string>
+    <string name="error_unauthorized">Karakeep odrzucił klucz API</string>
+    <string name="error_server_url">Pod tym adresem nie ma Karakeep</string>
+    <string name="error_network">Nie udało się połączyć z serwerem Karakeep</string>
+    <string name="error_generic">Karakeep nie zapisał tego linku</string>
+    <string name="learn_more">O Karakeep</string>
+    <string name="save_action">Zapisz w Karakeep</string>
+    <string name="saved">Zapisano w Karakeep</string>
+    <string name="already_saved">Już jest w Karakeep</string>
+    <string name="saving">Zapisywanie w Karakeep…</string>
+    <string name="show">Pokaż</string>
+    <string name="hide">Ukryj</string>
+    <string name="save">Zapisz</string>
+    <string name="connection">Połączenie</string>
+</resources>

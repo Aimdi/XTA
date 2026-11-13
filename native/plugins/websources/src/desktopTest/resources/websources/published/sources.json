@@ -1,0 +1,11 @@
+{
+  "_comment": "The web sources this repository publishes: the Add source list in the Web sources plugin. Each file is a source as docs/web-sources.md describes; adding a file and an entry here offers a site to every install without a release. A source can only read the sites it lists, and installs ask the reader before reading any of them.",
+  "format": 1,
+  "sources": [
+    { "id": "lobsters", "name": "Lobsters", "description": "Computing-focused links and discussion.", "url": "sources/lobsters.json" },
+    { "id": "devto", "name": "DEV Community", "description": "Articles by software developers, from dev.to.", "url": "sources/devto.json" },
+    { "id": "lemmy-world", "name": "Lemmy.world", "description": "Posts from the communities on lemmy.world, a Lemmy instance.", "url": "sources/lemmy-world.json" },
+    { "id": "nasa-images", "name": "NASA Images", "description": "Pictures from the NASA Image and Video Library.", "url": "sources/nasa-images.json" },
+    { "id": "tildes", "name": "Tildes", "description": "A non-profit community site for links and discussion.", "url": "sources/tildes.json" }
+  ]
+}

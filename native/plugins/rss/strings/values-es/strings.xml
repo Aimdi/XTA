@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RSS's text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Añadir fuente</string>
+    <string name="add_error">No se ha podido leer esa fuente</string>
+    <string name="add_hint">Pega la URL de un sitio o de una fuente. XTA encuentra el RSS o el Atom.</string>
+    <string name="add_placeholder">https://example.com/feed</string>
+    <string name="add_to_group">Añadir a un grupo</string>
+    <string name="all">Todo</string>
+    <string name="cancel">Cancelar</string>
+    <string name="close">Cerrar</string>
+    <string name="data_exported_to">Datos exportados a %1$s</string>
+    <string name="empty">Sigue una fuente para ver sus publicaciones aquí</string>
+    <string name="empty_filter">No hay contenido que coincida con estos filtros</string>
+    <string name="feeds">Fuentes</string>
+    <string name="follow">Seguir</string>
+    <string name="following_empty">Aún no hay fuentes</string>
+    <string name="home">Inicio</string>
+    <string name="load_error">No se han podido cargar las fuentes</string>
+    <string name="mark_all_read">Marcar todo como leído</string>
+    <string name="more_options">Más opciones</string>
+    <string name="opml_empty">Este archivo no contiene fuentes</string>
+    <string name="opml_export">Exportar suscripciones como OPML</string>
+    <string name="opml_export_description">Un archivo que otros lectores de feeds pueden importar.</string>
+    <string name="opml_import">Importar suscripciones desde OPML</string>
+    <string name="opml_import_description">Sigue cada fuente del archivo; las que ya sigues quedan igual.</string>
+    <string name="opml_importing">Importando: %1$d de %2$d</string>
+    <string name="opml_result">Añadidas: %1$d · Ya seguidas: %2$d · Fallidas: %3$d</string>
+    <string name="partial_error">No se pudieron cargar %1$d fuentes</string>
+    <string name="plugin_description">Sigue fuentes RSS y Atom públicas. Lo no leído se queda en este dispositivo.</string>
+    <string name="plugin_name">RSS</string>
+    <string name="reader_empty">Aún no hay nada que leer</string>
+    <string name="reset_filters">Restablecer filtros</string>
+    <string name="retry">Reintentar</string>
+    <string name="set_tag">Asignar etiqueta</string>
+    <string name="settings">Configuración</string>
+    <string name="settings_blurb">Sin inicio de sesión. Sigue fuentes públicas. Lo no leído y las etiquetas se quedan en este dispositivo.</string>
+    <string name="tag">Etiqueta</string>
+    <string name="tag_hint">Una etiqueta corta, como Noticias o Blogs</string>
+    <string name="unfollow">Dejar de seguir</string>
+    <string name="unread">No leído</string>
+    <string name="in_home_feed">Mezclar las fuentes seguidas en Siguiendo</string>
+    <string name="in_home_feed_description">Mostrar elementos nuevos de las fuentes seguidas en la cronología Siguiendo.</string>
+    <string name="add_not_a_url">Eso no es una dirección web.</string>
+    <string name="add_no_feed">No se ha encontrado ningún feed RSS o Atom, ni en la página ni en las direcciones habituales.</string>
+</resources>

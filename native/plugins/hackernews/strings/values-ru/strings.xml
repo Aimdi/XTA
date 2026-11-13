@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Hacker News</string>
+    <string name="plugin_description">Читайте Hacker News без аккаунта. Сердечки и закладки остаются на этом устройстве.</string>
+    <string name="tab_top">Топ</string>
+    <string name="tab_new">Новые</string>
+    <string name="tab_best">Лучшие</string>
+    <string name="tab_ask">Ask</string>
+    <string name="tab_show">Show</string>
+    <string name="tab_jobs">Вакансии</string>
+    <string name="tab_saved">Сохранённые</string>
+    <string name="tab_following">Подписки</string>
+    <string name="search">Поиск по Hacker News</string>
+    <string name="settings">Настройки</string>
+    <string name="feed_empty">Пока здесь пусто</string>
+    <string name="saved_empty">Пока нет сохранённых историй — закладки остаются на этом устройстве</string>
+    <string name="following_empty">Подпишитесь на кого-нибудь, чтобы видеть истории здесь</string>
+    <string name="by">от %1$s</string>
+    <string name="like">Нравится на этом устройстве</string>
+    <string name="unlike">Убрать отметку «нравится» с этого устройства</string>
+    <string name="save">Сохранить на этом устройстве</string>
+    <string name="unsave">Удалить с этого устройства</string>
+    <string name="comments">Комментарии</string>
+    <string name="open_article">Открыть статью</string>
+    <string name="deleted">[удалено]</string>
+    <string name="user_empty">Нет публичных публикаций</string>
+    <string name="follow">Подписаться на этом устройстве</string>
+    <string name="unfollow">Отписаться</string>
+    <string name="search_hint">Искать истории</string>
+    <string name="search_empty">Ничего не нашлось</string>
+    <string name="settings_blurb">Без входа. Голоса и комментарии остаются на Hacker News. Сердечки и закладки остаются на этом устройстве.</string>
+    <plurals name="points">
+        <item quantity="one">%1$d балл</item>
+        <item quantity="few">%1$d балла</item>
+        <item quantity="many">%1$d баллов</item>
+        <item quantity="other">%1$d балла</item>
+    </plurals>
+    <plurals name="comment_count">
+        <item quantity="one">%1$d комментарий</item>
+        <item quantity="few">%1$d комментария</item>
+        <item quantity="many">%1$d комментариев</item>
+        <item quantity="other">%1$d комментария</item>
+    </plurals>
+    <plurals name="user_karma">
+        <item quantity="one">%1$d karma</item>
+        <item quantity="other">%1$d karma</item>
+    </plurals>
+    <string name="more_options">Другие параметры</string>
+</resources>

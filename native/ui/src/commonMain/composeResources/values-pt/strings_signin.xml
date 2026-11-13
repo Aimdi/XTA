@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Signing in to X as XTA does (lib/client/login_webview.dart, x_cookie_login.dart). -->
+<resources>
+    <string name="signin_add_account">Adicionar conta</string>
+    <string name="signin_logging_in_title">A iniciar sessão no XTA</string>
+    <string name="signin_logging_in_text">A conta com que inicias sessão não muda o que vês. As subscrições, os grupos e as publicações guardadas ficam neste dispositivo e nunca tocam na tua conta verdadeira. O XTA inicia sessão apenas para ler: não pode gostar, repartilhar nem responder.\n\nPodes adicionar várias contas. O XTA escolhe uma que não tenha atingido o limite de pedidos no ponto de acesso de que precisa e a que não tenha acabado de falhar o início de sessão — é isso que mantém o erro «Demasiados pedidos» à distância.</string>
+    <string name="signin_import_title">Importar inscrições</string>
+    <string name="signin_import_text">As subscrições são locais no XTA. São independentes das subscrições da tua conta X verdadeira. Iniciar sessão não afeta as subscrições do XTA.\n\nQueres importar para o XTA as subscrições de @%1$s?</string>
+    <string name="signin_cookie_help">Inicie sessão em x.com no navegador, abra as ferramentas de programador (F12) e copie os cookies auth_token e ct0 em Armazenamento → Cookies. Cole-os abaixo no formato auth_token=…; ct0=…. Ficam guardados apenas neste computador e nunca são partilhados.</string>
+    <string name="signin_open_in_browser">Abrir no navegador</string>
+    <string name="signin_username">Nome de utilizador</string>
+    <string name="signin_cookies">Cookies de x.com</string>
+    <string name="signin_not_logged_in">Sessão não iniciada</string>
+    <string name="signin_why_needed">O X recusa a maioria dos pedidos que não vêm de uma conta. O XTA tenta primeiro como convidado, e às vezes resulta, mas sem uma conta é mais provável veres erros do que publicações.\n\nIniciar sessão só permite ao XTA ler o X. Nunca publica, gosta, repartilha nem segue por ti.</string>
+    <string name="signin_import_backup">Importar cópia de segurança</string>
+    <string name="signin_login">Iniciar sessão</string>
+</resources>

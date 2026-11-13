@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Crash reports and the screens shown when something breaks: XTA's own wording (lib/l10n), placeholders positional. -->
+<resources>
+    <string name="crash_reports_auth_failed">GitHub rechazó el token (revisa los permisos)</string>
+    <string name="crash_reports_disabled_toast">Activa primero los informes de fallos</string>
+    <string name="crash_reports_duplicate">Este fallo ya se había notificado</string>
+    <string name="crash_reports_enabled">Enviar informes de fallos a GitHub</string>
+    <string name="crash_reports_enabled_description">Si está activado, los fallos no capturados abren un issue en GitHub. Desactivado por defecto. Requiere un token de acceso personal con permiso de escritura en Issues. Nunca se incrusta un token en la app.</string>
+    <string name="crash_reports_invalid_repo">El repositorio debe tener el formato owner/name</string>
+    <string name="crash_reports_missing_token">Añade primero un token de acceso de GitHub</string>
+    <string name="crash_reports_rate_limited">Se enviaron demasiados informes de fallos recientemente</string>
+    <string name="crash_reports_repo">Repositorio de GitHub</string>
+    <string name="crash_reports_repo_description">owner/name del repositorio que debería recibir los issues de fallos</string>
+    <string name="crash_reports_send_test">Enviar informe de fallo de prueba</string>
+    <string name="crash_reports_send_test_description">Crea un issue de ejemplo para comprobar el token y el repositorio</string>
+    <string name="crash_reports_test_failed">No se pudo enviar el informe de fallo</string>
+    <string name="crash_reports_test_sent">Informe de fallo de prueba enviado</string>
+    <string name="crash_reports_token">Token de acceso de GitHub</string>
+    <string name="crash_reports_token_description">PAT clásico o de granularidad fina con permiso para crear issues. Se guarda solo en este dispositivo y se excluye de las copias de seguridad.</string>
+    <string name="crash_reports_token_hint">ghp_… o github_pat_…</string>
+    <string name="crash_something_broke">Algo se rompió en XTA.</string>
+    <string name="crash_start_failed">No se pueden ejecutar las migraciones de base de datos</string>
+</resources>

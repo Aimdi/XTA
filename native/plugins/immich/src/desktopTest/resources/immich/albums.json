@@ -1,0 +1,50 @@
+[
+  {
+    "albumName": "Holidays",
+    "albumThumbnailAssetId": null,
+    "albumUsers": [],
+    "assetCount": 12,
+    "assets": [],
+    "createdAt": "2026-01-02T10:00:00.000Z",
+    "description": "",
+    "hasSharedLink": false,
+    "id": "6a1b2c3d-0000-4000-8000-000000000001",
+    "isActivityEnabled": true,
+    "order": "desc",
+    "ownerId": "8d2f0c4e-1b3a-4e5f-9a7b-2c6d8e0f1a3b",
+    "shared": false,
+    "updatedAt": "2026-01-02T10:00:00.000Z"
+  },
+  {
+    "albumName": "art",
+    "albumThumbnailAssetId": null,
+    "albumUsers": [],
+    "assetCount": 1,
+    "assets": [],
+    "createdAt": "2026-01-05T08:00:00.000Z",
+    "description": "",
+    "hasSharedLink": false,
+    "id": "6a1b2c3d-0000-4000-8000-000000000002",
+    "isActivityEnabled": true,
+    "order": "desc",
+    "ownerId": "8d2f0c4e-1b3a-4e5f-9a7b-2c6d8e0f1a3b",
+    "shared": false,
+    "updatedAt": "2026-01-05T08:00:00.000Z"
+  },
+  {
+    "albumName": "Art",
+    "albumThumbnailAssetId": "f5a3c9e2-7b1d-4e8f-a0c6-3d9b2e4f6a18",
+    "albumUsers": [],
+    "assetCount": 3,
+    "assets": [],
+    "createdAt": "2026-02-01T09:30:00.000Z",
+    "description": "Saved from X",
+    "hasSharedLink": false,
+    "id": "6a1b2c3d-0000-4000-8000-000000000003",
+    "isActivityEnabled": true,
+    "order": "desc",
+    "ownerId": "8d2f0c4e-1b3a-4e5f-9a7b-2c6d8e0f1a3b",
+    "shared": false,
+    "updatedAt": "2026-02-01T09:30:00.000Z"
+  }
+]

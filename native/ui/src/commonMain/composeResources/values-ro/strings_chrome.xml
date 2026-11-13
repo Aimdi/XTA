@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chrome_confirm_close">Ești sigur că vrei să închizi XTA?</string>
+    <string name="chrome_update_available">Este disponibilă o actualizare pentru XTA! 🚀</string>
+    <string name="chrome_update_view_version">Vizualizați versiunea %1$s pe GitHub</string>
+    <string name="chrome_update_view">Vizualizați pe GitHub</string>
+    <string name="chrome_update_download">Descarcă</string>
+    <string name="chrome_licences_legalese">Lansat sub Licența MIT</string>
+    <plurals name="chrome_licences_count">
+        <item quantity="one">%1$d licență</item>
+        <item quantity="few">%1$d licențe</item>
+        <item quantity="other">%1$d de licențe</item>
+    </plurals>
+</resources>

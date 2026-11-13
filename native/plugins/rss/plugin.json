@@ -1,0 +1,7 @@
+{
+  "id": "rss",
+  "version": "1.0.0",
+  "entry": "com.aimdi.xtanative.plugins.rss.RssPlugin",
+  "category": "newsletters",
+  "private": false
+}

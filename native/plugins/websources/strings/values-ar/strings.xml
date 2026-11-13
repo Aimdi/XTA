@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Web sources' text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">إضافة مصدر</string>
+    <string name="add_link">إضافة من رابط</string>
+    <string name="back">رجوع</string>
+    <string name="cancel">الغاء</string>
+    <plurals name="comments">
+        <item quantity="zero">لا تعليقات</item>
+        <item quantity="one">تعليق واحد</item>
+        <item quantity="two">تعليقان</item>
+        <item quantity="few">%1$d تعليقات</item>
+        <item quantity="many">%1$d تعليقاً</item>
+        <item quantity="other">%1$d تعليق</item>
+    </plurals>
+    <string name="consent_from">من %1$s</string>
+    <string name="consent_read_only">لا يمكنه إلا قراءة الصفحات العامة. لا يمكنه استخدام حساباتك ولا نشر أي شيء.</string>
+    <string name="consent_sites">سيقرأ صفحات من هذه المواقع:</string>
+    <string name="consent_title">إضافة %1$s؟</string>
+    <string name="discussion">النقاش</string>
+    <string name="empty">لا توجد مصادر بعد. أضف مصدرًا من القائمة المنشورة أو عبر رابط.</string>
+    <string name="failure_blocked">هذه الصفحة ليست على موقع يذكره المصدر.</string>
+    <string name="failure_status">ردّ الموقع بالخطأ %1$s.</string>
+    <string name="failure_too_large">هذه الصفحة أكبر من أن تُقرأ.</string>
+    <string name="failure_unreachable">تعذّر الوصول إلى الموقع.</string>
+    <string name="follow">متابعة</string>
+    <string name="install">إضافة</string>
+    <string name="installed">مُضاف</string>
+    <string name="link">رابط المصدر</string>
+    <string name="link_placeholder">https://example.org/source.json</string>
+    <string name="list_empty">لا شيء هنا الآن.</string>
+    <plurals name="lists">
+        <item quantity="zero">لا قوائم</item>
+        <item quantity="one">قائمة واحدة</item>
+        <item quantity="two">قائمتان</item>
+        <item quantity="few">%1$d قوائم</item>
+        <item quantity="many">%1$d قائمة</item>
+        <item quantity="other">%1$d قائمة</item>
+    </plurals>
+    <string name="more_options">خيارات إضافية</string>
+    <string name="ok">تمام</string>
+    <string name="open_in_browser">فتح في المتصفح</string>
+    <string name="plugin_description">أضف مواقع بسيطة من قائمة منشورة أو عبر رابط. لا يقرأ المصدر إلا الصفحات العامة، ويستأذنك قبل أن يقرأ موقعًا جديدًا.</string>
+    <string name="plugin_name">مصادر الويب</string>
+    <plurals name="points">
+        <item quantity="zero">لا نقاط</item>
+        <item quantity="one">نقطة واحدة</item>
+        <item quantity="two">نقطتان</item>
+        <item quantity="few">%1$d نقاط</item>
+        <item quantity="many">%1$d نقطة</item>
+        <item quantity="other">%1$d نقطة</item>
+    </plurals>
+    <string name="published">المصادر المنشورة</string>
+    <string name="published_unreachable">تعذّر تحميل القائمة المنشورة.</string>
+    <string name="reading">جارٍ قراءة المصدر…</string>
+    <string name="refused_detail">الموضع: %1$s</string>
+    <string name="refused_insecure">سيقرأ هذا المصدر موقعًا لا يذكره، أو دون HTTPS.</string>
+    <string name="refused_invalid">في ملف هذا المصدر خطأ.</string>
+    <string name="refused_newer">يحتاج هذا المصدر إلى إصدار أحدث من XTA.</string>
+    <string name="refused_too_large">يتجاوز هذا المصدر ما يسمح به XTA.</string>
+    <string name="refused_unreadable">هذا ليس ملف مصدر ويب.</string>
+    <string name="remove">إزالة المصدر</string>
+    <string name="remove_confirm">إزالة %1$s؟ ستُزال أيضًا القوائم التي تتابعها منه.</string>
+    <string name="retry">إعادة المحاولة</string>
+    <string name="review_update">مراجعة التحديث</string>
+    <string name="search_in">البحث في %1$s</string>
+    <string name="unfollow">إلغاء المتابعة</string>
+    <string name="unreachable">تعذّرت قراءة ملف المصدر. تحقّق من الرابط ومن اتصالك.</string>
+    <string name="update_title">تحديث %1$s؟</string>
+    <string name="in_home_feed">دمج القوائم المتابَعة في «أتابع»</string>
+    <string name="in_home_feed_description">إظهار المنشورات الجديدة من القوائم المتابَعة في الخط الزمني «أتابع».</string>
+    <string name="settings">الإعدادات</string>
+</resources>

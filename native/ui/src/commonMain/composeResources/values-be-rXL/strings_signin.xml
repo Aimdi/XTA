@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Signing in to X as XTA does (lib/client/login_webview.dart, x_cookie_login.dart). -->
+<resources>
+    <string name="signin_add_account">Dadać akaŭnt</string>
+    <string name="signin_logging_in_title">Uvachod u XTA</string>
+    <string name="signin_logging_in_text">Ad taho, pad jakim ulikovym zapisam vy ŭvajšli, ničoha nie mianiajecca. Padpiski, hrupy i zachavanyja dopisy zastajucca na hetaj pryladzie i nie zakranajuć vaš sapraŭdny akaŭnt. XTA uvachodzić tolki kab čytać — jon nie moža stavić adznaki, reposcić ci adkazvać.\n\nMožna dadać niekalki ŭlikovych zapisaŭ. XTA biare toj, jaki nie abmiežavany pa patrebnaj kaniečnaj kropcy i tolki što nie zvaliŭsia pry ŭvachodzie — heta i trymaje pamyłku «Zanadta šmat zapytaŭ» navoddal.</string>
+    <string name="signin_import_title">Impartavać padpiski</string>
+    <string name="signin_import_text">Padpiski zachoŭvajucca tolki ŭ XTA. Jany nie zaležać ad padpisak vašaha sapraŭdnaha akaŭnta X. Uvachod nie ŭpłyvaje na padpiski XTA.\n\nImpartavać u XTA padpiski @%1$s?</string>
+    <string name="signin_cookie_help">Uvajdzicie na x.com u braŭzery, adkryjcie instrumienty raspracoŭščyka (F12) i skapirujcie cookie auth_token i ct0 z razdzieła «Schovišča» → «Cookie». Ustaŭcie ich nižej u vyhladzie auth_token=…; ct0=…. Jany zachoŭvajucca tolki na hetym kampjutary i nikomu nie pieradajucca.</string>
+    <string name="signin_open_in_browser">Adčynić u braŭzery</string>
+    <string name="signin_username">Imia karystalnika</string>
+    <string name="signin_cookies">Cookie z x.com</string>
+    <string name="signin_not_logged_in">Nie ŭvajšli</string>
+    <string name="signin_why_needed">X adchilaje bolšasć zapytaŭ, jakija nie iduć ad ulikovaha zapisu. XTA spačatku sprabuje jak hosć, i časam heta pracuje, ale biez ulikovaha zapisu čakajcie chutčej pamyłak, čym dopisaŭ.\n\nUvachod dazvalaje XTA tolki čytać X. Jon nikoli nie publikuje, nie stavić adznak, nie repostyć i nie padpisvajecca za vas.</string>
+    <string name="signin_import_backup">Impartavać rezervovuju kopiju</string>
+    <string name="signin_login">Uvajsci</string>
+</resources>

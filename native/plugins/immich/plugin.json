@@ -1,0 +1,7 @@
+{
+  "id": "immich",
+  "version": "1.0.0",
+  "entry": "com.aimdi.xtanative.plugins.immich.ImmichPlugin",
+  "category": "media",
+  "private": false
+}

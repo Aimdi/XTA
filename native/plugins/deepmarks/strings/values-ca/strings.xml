@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Deepmarks</string>
+    <string name="plugin_description">Guarda publicacions a Deepmarks, el servei d’adreces d’interès sobre Nostr</string>
+    <string name="settings_intro">Deepmarks guarda les adreces d’interès com a esdeveniments Nostr signats. La teva clau de signatura no surt mai d’aquest dispositiu: la publicació es signa aquí i només s’envia l’esdeveniment final.</string>
+    <string name="lifetime_notice">L’accés a l’API requereix una subscripció vitalícia de Deepmarks.</string>
+    <string name="api_key">Clau d’API</string>
+    <string name="api_key_hint">Comença amb dmk_live_, a «api access» dins la configuració de Deepmarks</string>
+    <string name="identity">Identitat de signatura</string>
+    <string name="secret_key">Clau de signatura</string>
+    <string name="secret_key_hint">El teu nsec, es queda només en aquest dispositiu. Signa cada adreça d’interès i no s’envia mai a Deepmarks.</string>
+    <string name="signing_as">Signa com a %1$s</string>
+    <string name="api_base">Adreça del servidor</string>
+    <string name="test">Prova la connexió</string>
+    <string name="test_ok">Connectat a Deepmarks</string>
+    <string name="test_ok_unverified">Clau acceptada, però el compte encara no té cap adreça d’interès pública per comprovar la clau de signatura</string>
+    <string name="not_configured">Afegeix primer la clau d’API i la clau de signatura de Deepmarks</string>
+    <string name="error_secret_key">Això no és un nsec vàlid ni una clau hexadecimal de 64 caràcters</string>
+    <string name="error_unauthorized">Deepmarks ha rebutjat la clau d’API</string>
+    <string name="error_lifetime">L’API de Deepmarks és només per a membres vitalicis</string>
+    <string name="error_key_mismatch">La teva clau de signatura pertany a un compte de Deepmarks diferent del de la clau d’API</string>
+    <string name="error_rejected">Deepmarks ha refusat aquesta adreça d’interès</string>
+    <string name="error_rate_limited">Massa peticions, torna-ho a provar aviat</string>
+    <string name="error_server">Cap API de Deepmarks ha respost en aquesta adreça</string>
+    <string name="error_network">No s’ha pogut contactar amb Deepmarks</string>
+    <string name="learn_more">Quant a Deepmarks</string>
+    <string name="save_action">Guarda a Deepmarks</string>
+    <string name="saved">Guardat a Deepmarks</string>
+    <string name="saved_no_relay">Enviat a Deepmarks, però cap relay no l’ha acceptat encara</string>
+    <string name="saving">S\'està desant a Deepmarks…</string>
+    <string name="show">Mostra</string>
+    <string name="hide">Amaga</string>
+    <string name="save">Desa</string>
+    <string name="connection">Connexió</string>
+</resources>

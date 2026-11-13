@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Accounts' avatar and Diagnostics' account health and recent reads, in XTA's words. -->
+<resources>
+    <string name="settings_avatar_title">Avataren din</string>
+    <string name="settings_avatar_change">Trykk for å endre bildet øverst til venstre</string>
+    <string name="settings_avatar_description">Bilde øverst til venstre og i menyen — blir på denne enheten</string>
+    <string name="settings_avatar_choose">Velg fra enheten</string>
+    <string name="settings_avatar_from_account">Bruk X-profilbilde</string>
+    <string name="settings_avatar_error">Kunne ikke laste det profilbildet</string>
+    <string name="settings_avatar_clear">Bruk monogram</string>
+    <string name="settings_diagnostics_recent_reads">Nylige leseoperasjoner</string>
+    <string name="settings_diagnostics_sign_in_broken">Innloggingen ser ikke ut til å gjelde lenger, pause til %1$s</string>
+</resources>

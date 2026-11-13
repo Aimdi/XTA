@@ -1,0 +1,27 @@
+{
+  "total_comments": 41,
+  "comments": [
+    {
+      "id": 501,
+      "comment": "Lovely colours (heart)",
+      "date": "2026-07-01T12:30:00+09:00",
+      "user": {"id": 42, "name": "Mika", "account": "mika", "profile_image_urls": {"medium": "https://i.pximg.net/user-profile/img/42.jpg"}},
+      "has_replies": true,
+      "stamp": null
+    },
+    {"comment": "dropped: no id"},
+    {
+      "id": 502,
+      "comment": "",
+      "user": {"id": 3, "name": "", "account": "rin_art"},
+      "stamp": {"stamp_id": 301, "stamp_url": "https://s.pximg.net/common/images/stamp/generated-stamps/301_s.jpg"}
+    },
+    {
+      "id": 503,
+      "comment": "Free coins https://bit.ly/abc",
+      "user": {"id": 0, "name": ""},
+      "parent_comment": {"id": 501, "comment": "Lovely", "user": {"id": 77, "name": "Rin", "account": "rin"}}
+    }
+  ],
+  "next_url": "https://app-api.pixiv.net/v3/illust/comments?illust_id=120&offset=30"
+}

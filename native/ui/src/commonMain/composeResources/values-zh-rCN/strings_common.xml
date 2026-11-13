@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Read failures as XTA's full-page errors say them (lib/ui/errors.dart), and closing the app. -->
+<resources>
+    <string name="problem_no_account_title">当前没有可用的账户</string>
+    <string name="problem_no_account_text">XTA 需要至少一个 𝕏 账户才能运行。添加一个账户即可开始使用。</string>
+    <string name="problem_rate_limited_title">被 𝕏 限流</string>
+    <string name="problem_rate_limited_text">你在过短的时间内发送了过多请求。请稍后再试，或添加另一个账户以继续使用 XTA。</string>
+    <string name="problem_no_working_account_title">你的账户无法使用</string>
+    <string name="problem_no_working_account_text">看起来你的账户目前都无法使用。请使用其他账户登录，或稍后再试。</string>
+    <string name="problem_endpoint_refused_title">𝕏 拒绝了这个请求</string>
+    <string name="problem_endpoint_refused_text">𝕏 的这一部分拒绝了所有账号，所以多半不是你的账号有问题。𝕏 很可能改动了什么；应用会在可能时自行修复。请稍后再试。</string>
+    <string name="problem_signing_title">X 请求签名不可用</string>
+    <string name="problem_signing_text">XTA 无法生成 X 目前要求的交易令牌。你的账号可能没有问题；请稍后重试，或查看诊断。</string>
+    <string name="problem_offline_title">无法访问 X</string>
+    <string name="problem_offline_text">请检查您的网络连接。</string>
+    <string name="problem_timed_out_title">超时</string>
+    <string name="problem_timed_out_text">加载时间太长了。请检查您的网络连接！</string>
+    <string name="problem_service_unavailable_title">X 暂时不可用</string>
+    <string name="problem_service_unavailable_text">X 返回了服务器错误。你可以继续阅读缓存的帖子，稍后再试。</string>
+    <string name="problem_request_unavailable_title">此请求不可用</string>
+    <string name="problem_request_unavailable_text">X 拒绝了此请求。它可能暂时不可用，或者服务的这一部分已经变更。</string>
+    <string name="problem_oops">哎呀！出了点问题 🥲</string>
+    <string name="problem_http_text">X 返回了 HTTP %1$d。</string>
+    <string name="problem_retry_in">%1$s 后重试</string>
+    <string name="close_app_confirm">确定要关闭 XTA 吗？</string>
+    <string name="problem_unable_to_load_the_community">无法加载社群</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">无法找到可用的趋势位置。</string>
+    <string name="problem_unable_to_load_the_members">无法加载成员</string>
+    <string name="problem_unable_to_load_the_list_of_follows">无法加载关注列表</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">无法载入下一页关注列表</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">无法载入下一页的推文</string>
+    <string name="problem_unable_to_load_the_tweets">无法载入推文</string>
+    <string name="problem_connection_failed">连接失败</string>
+    <string name="problem_sign_in_needed">请重新登录以继续</string>
+    <string name="problem_rate_limit_hint">此来源正在限制请求。请稍后重试。</string>
+    <string name="problem_more_info">更多信息</string>
+    <string name="problem_auto_retry_seconds">%1$d 秒后重试…</string>
+    <string name="problem_auto_retry_in">%1$s 后重试…</string>
+    <string name="problem_cached_content">正在更新此来源，暂时显示已保存的副本。</string>
+    <string name="problem_source_loading">此来源仍在加载。其他帖子已可阅读。</string>
+    <string name="problem_saved_at">显示于 %1$s 保存的帖子</string>
+    <string name="problem_saved_earlier">显示先前保存的帖子</string>
+</resources>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">Sledování</string>
+    <string name="search">Hledat</string>
+    <string name="settings">Nastavení</string>
+    <string name="dismiss">Zavřít</string>
+    <string name="retry">Zkusit znovu</string>
+    <string name="back">Zpět</string>
+    <string name="close">Zavřít</string>
+    <string name="cancel">Zrušit</string>
+    <string name="post">Příspěvek</string>
+
+    <string name="pinned">Připnuto</string>
+    <string name="reposted_by">%1$s sdílí</string>
+    <string name="replying_to">Odpověď uživateli</string>
+    <string name="stat_reposts">Reposty</string>
+    <string name="stat_quotes">Citace</string>
+    <string name="stat_likes">To se mi líbí</string>
+
+    <string name="ago_seconds">%1$d s</string>
+    <string name="ago_minutes">%1$d min</string>
+    <string name="ago_hours">%1$d h</string>
+
+    <string name="problem_rate_limited">X tu omezuje všechny účty. Zkuste to znovu za pár minut.</string>
+    <string name="problem_offline">Žádné připojení k X.</string>
+    <string name="problem_signing">Podepisování požadavků pro X se nepodařilo připravit. Zkuste to znovu za chvíli.</string>
+    <string name="problem_refused">X požadavek odmítl (%1$d).</string>
+    <string name="problem_other">Při čtení X se něco pokazilo.</string>
+
+    <string name="import_intro">XTA Native je XTA napsané jen pro Android, aby se dalo porovnat s XTA. Čte X účty, které už v XTA používáte.</string>
+    <string name="import_steps">V XTA otevřete Nastavení → Data → Exportovat, zapněte „Exportovat účty“, exportujte a pak tu vyberte ten soubor.</string>
+    <string name="import_choose">Vybrat zálohu XTA</string>
+    <string name="import_choose_another">Vybrat jiný soubor</string>
+    <string name="import_no_accounts">Tato záloha neobsahuje žádné účty X: exportujte ji znovu se zapnutým „Exportovat účty“.</string>
+    <string name="import_use">Použít tuto zálohu</string>
+    <string name="import_privacy">Záloha obsahuje vaše relace X. XTA Native je uchovává v tomto telefonu, posílá je jen na X a nikdy tam nic nezveřejňuje, nelajkuje ani nesleduje.</string>
+
+    <string name="settings_clear">Odstranit vše</string>
+    <string name="settings_clear_explained">Odstraní z XTA Native relace X a sledované účty. Samotné XTA si ponechá vše.</string>
+    <string name="settings_clear_confirm">Odstranit</string>
+
+    <string name="card_from">Z webu %1$s</string>
+    <plurals name="poll_votes">
+        <item quantity="one">%1$s hlas</item>
+        <item quantity="few">%1$s hlasy</item>
+        <item quantity="many">%1$s hlasu</item>
+        <item quantity="other">%1$s hlasů</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d nový příspěvek</item>
+        <item quantity="few">%1$d nové příspěvky</item>
+        <item quantity="many">%1$d nového příspěvku</item>
+        <item quantity="other">%1$d nových příspěvků</item>
+    </plurals>
+    <string name="problem_x_private">Soukromý profil</string>
+    <string name="problem_x_missing">Twitter říká, že stránka neexistuje, nemusí to ale být pravda</string>
+    <string name="problem_x_user_missing">Uživatel nenalezen</string>
+    <string name="problem_x_suspended">Účet pozastaven</string>
+    <string name="problem_x_forbidden">Twitter říká, že přístup k tomuto je zamítnut</string>
+    <string name="problem_x_guest">Twitter zneplatnil náš přístupový token. Zkuste prosím znovu otevřít XTA!</string>
+</resources>

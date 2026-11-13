@@ -1,0 +1,529 @@
+{
+ "data": {
+  "communities_search_slice": {
+   "items_results": [
+    {
+     "id": "Q29tbXVuaXR5UmVzdWx0czoxNDcyMjQ5MzE1NzI0NzcxMzI5",
+     "result": {
+      "__typename": "Community",
+      "custom_banner_media": {
+       "id": "QXBpTWVkaWE6DAATCgABFG57L87XMAEAAA==",
+       "media_info": {
+        "__typename": "ApiImage",
+        "color_info": {
+         "palette": [
+          {
+           "percentage": 96.25,
+           "rgb": {
+            "blue": 255,
+            "green": 255,
+            "red": 255
+           }
+          },
+          {
+           "percentage": 1.82,
+           "rgb": {
+            "blue": 253,
+            "green": 209,
+            "red": 69
+           }
+          },
+          {
+           "percentage": 1.56,
+           "rgb": {
+            "blue": 131,
+            "green": 131,
+            "red": 131
+           }
+          },
+          {
+           "percentage": 0.31,
+           "rgb": {
+            "blue": 161,
+            "green": 95,
+            "red": 18
+           }
+          }
+         ]
+        },
+        "original_img_height": 375,
+        "original_img_url": "https://pbs.twimg.com/community_banner_img/1472249573460619265/9sWI3PGT?format=jpg&name=orig",
+        "original_img_width": 937,
+        "salient_rect": {
+         "height": 1,
+         "left": 237,
+         "top": 121,
+         "width": 1
+        }
+       }
+      },
+      "default_banner_media": {
+       "id": "QXBpTWVkaWE6DAABCgABFECTM+lVIAMKAAITiFWq8lUQBAAA",
+       "media_info": {
+        "__typename": "ApiImage",
+        "color_info": {
+         "palette": [
+          {
+           "percentage": 45.56,
+           "rgb": {
+            "blue": 63,
+            "green": 206,
+            "red": 255
+           }
+          },
+          {
+           "percentage": 32.34,
+           "rgb": {
+            "blue": 233,
+            "green": 217,
+            "red": 255
+           }
+          },
+          {
+           "percentage": 8.01,
+           "rgb": {
+            "blue": 38,
+            "green": 180,
+            "red": 255
+           }
+          },
+          {
+           "percentage": 7.22,
+           "rgb": {
+            "blue": 160,
+            "green": 214,
+            "red": 254
+           }
+          },
+          {
+           "percentage": 6.76,
+           "rgb": {
+            "blue": 123,
+            "green": 213,
+            "red": 255
+           }
+          }
+         ]
+        },
+        "original_img_height": 480,
+        "original_img_url": "https://pbs.twimg.com/media/FECTM-lVIAMfwd1.jpg",
+        "original_img_width": 1200
+       }
+      },
+      "id": "Q29tbXVuaXR5OjE0NzIyNDkzMTU3MjQ3NzEzMjk=",
+      "is_nsfw": false,
+      "member_count": 20730,
+      "members_facepile_results": [
+       {
+        "id": "VXNlclJlc3VsdHM6MTIxNjQ5MDI3MTc1NzgwNzYxNw==",
+        "result": {
+         "__typename": "User",
+         "avatar": {
+          "image_url": "https://pbs.twimg.com/profile_images/2089346712057884672/shSyc6Zt_normal.jpg"
+         },
+         "id": "VXNlcjoxMjE2NDkwMjcxNzU3ODA3NjE3"
+        }
+       },
+       {
+        "id": "VXNlclJlc3VsdHM6MTA2MTEwNzc1",
+        "result": {
+         "__typename": "User",
+         "avatar": {
+          "image_url": "https://pbs.twimg.com/profile_images/1951319192990355456/uIIaRtMX_normal.jpg"
+         },
+         "id": "VXNlcjoxMDYxMTA3NzU="
+        }
+       },
+       {
+        "id": "VXNlclJlc3VsdHM6Nzc3MDQxMTU1OTA5NDUxNzc2",
+        "result": {
+         "__typename": "User",
+         "avatar": {
+          "image_url": "https://pbs.twimg.com/profile_images/1364915715350888449/5LMWEACf_normal.jpg"
+         },
+         "id": "VXNlcjo3NzcwNDExNTU5MDk0NTE3NzY="
+        }
+       },
+       {
+        "id": "VXNlclJlc3VsdHM6MTI0NzIzNjQ3NjY3MDE4MTM4Mg==",
+        "result": {
+         "__typename": "User",
+         "avatar": {
+          "image_url": "https://pbs.twimg.com/profile_images/1247237654556618752/EKgQROZ4_normal.jpg"
+         },
+         "id": "VXNlcjoxMjQ3MjM2NDc2NjcwMTgxMzgy"
+        }
+       },
+       {
+        "id": "VXNlclJlc3VsdHM6MTUzMTQxNjk5MQ==",
+        "result": {
+         "__typename": "User",
+         "avatar": {
+          "image_url": "https://pbs.twimg.com/profile_images/1017532253394624513/LgFqlJ4U_normal.jpg"
+         },
+         "id": "VXNlcjoxNTMxNDE2OTkx"
+        }
+       }
+      ],
+      "name": "Flutter",
+      "primary_community_topic": {
+       "topic_name": "Software"
+      },
+      "rest_id": "1472249315724771329"
+     }
+    },
+    {
+     "id": "Q29tbXVuaXR5UmVzdWx0czoxNTMyMzEzMTM5ODEwOTA2MTE0",
+     "result": {
+      "__typename": "Community",
+      "custom_banner_media": {
+       "id": "QXBpTWVkaWE6DAATCgABFa7DskrXkAAAAA==",
+       "media_info": {
+        "__typename": "ApiImage",
+        "color_info": {
+         "palette": [
+          {
+           "percentage": 97.92,
+           "rgb": {
+            "blue": 243,
+            "green": 243,
+            "red": 243
+           }
+          },
+          {
+           "percentage": 0.95,
+           "rgb": {
+            "blue": 175,
+            "green": 144,
+            "red": 195
+           }
+          },
+          {
+           "percentage": 0.55,
+           "rgb": {
+            "blue": 153,
+            "green": 202,
+            "red": 184
+           }
+          },
+          {
+           "percentage": 0.47,
+           "rgb": {
+            "blue": 90,
+            "green": 90,
+            "red": 90
+           }
+          }
+         ]
+        },
+        "original_img_height": 393,
+        "original_img_url": "https://pbs.twimg.com/community_banner_img/1562401291271376896/MUlefuZ-?format=jpg&name=orig",
+        "original_img_width": 982,
+        "salient_rect": {
+         "height": 1,
+         "left": 491,
+         "top": 196,
+         "width": 1
+        }
+       }
+      },
+      "default_banner_media": {
+       "id": "QXBpTWVkaWE6DAABCgABFECRTkDVcAYKAAITiFWq8lUQBAAA",
+       "media_info": {
+        "__typename": "ApiImage",
+        "color_info": {
+         "palette": [
+          {
+           "percentage": 53.86,
+           "rgb": {
+            "blue": 164,
+            "green": 165,
+            "red": 2
+           }
+          },
+          {
+           "percentage": 25.51,
+           "rgb": {
+            "blue": 134,
+            "green": 123,
+            "red": 248
+           }
+          },
+          {
+           "percentage": 8,
+           "rgb": {
+            "blue": 152,
+            "green": 143,
+            "red": 217
+           }
+          },
+          {
+           "percentage": 5.28,
+           "rgb": {
+            "blue": 168,
+            "green": 168,
+            "red": 150
+           }
+          },
+          {
+           "percentage": 1.95,
+           "rgb": {
+            "blue": 99,
+            "green": 86,
+            "red": 245
+           }
+          }
+         ]
+        },
+        "original_img_height": 480,
+        "original_img_url": "https://pbs.twimg.com/media/FECRTkDVcAYfGL0.jpg",
+        "original_img_width": 1200
+       }
+      },
+      "id": "Q29tbXVuaXR5OjE1MzIzMTMxMzk4MTA5MDYxMTQ=",
+      "is_nsfw": false,
+      "member_count": 29844,
+      "members_facepile_results": [
+       {
+        "id": "VXNlclJlc3VsdHM6NTY0MDg3NzUz",
+        "result": {
+         "__typename": "User",
+         "avatar": {
+          "image_url": "https://pbs.twimg.com/profile_images/1080018415983697927/xzQksblO_normal.jpg"
+         },
+         "id": "VXNlcjo1NjQwODc3NTM="
+        }
+       },
+       {
+        "id": "VXNlclJlc3VsdHM6MTA3NTE2Mzg0MjUyNTcwNDE5Mg==",
+        "result": {
+         "__typename": "User",
+         "avatar": {
+          "image_url": "https://pbs.twimg.com/profile_images/2108274034907508736/WbMgrKhr_normal.jpg"
+         },
+         "id": "VXNlcjoxMDc1MTYzODQyNTI1NzA0MTky"
+        }
+       },
+       {
+        "id": "VXNlclJlc3VsdHM6MzE1Mzk1NDE3MQ==",
+        "result": {
+         "__typename": "User",
+         "avatar": {
+          "image_url": "https://pbs.twimg.com/profile_images/2088553202190848000/F2pq91Js_normal.jpg"
+         },
+         "id": "VXNlcjozMTUzOTU0MTcx"
+        }
+       },
+       {
+        "id": "VXNlclJlc3VsdHM6MTM4MDc1MTIwMDE1MzM5MTEwNA==",
+        "result": {
+         "__typename": "User",
+         "avatar": {
+          "image_url": "https://pbs.twimg.com/profile_images/2095857151428222980/HPn_Z6ge_normal.jpg"
+         },
+         "id": "VXNlcjoxMzgwNzUxMjAwMTUzMzkxMTA0"
+        }
+       },
+       {
+        "id": "VXNlclJlc3VsdHM6MTU3MzkzMTQ4",
+        "result": {
+         "__typename": "User",
+         "avatar": {
+          "image_url": "https://pbs.twimg.com/profile_images/2074130411165245440/1DfWPZk2_normal.jpg"
+         },
+         "id": "VXNlcjoxNTczOTMxNDg="
+        }
+       }
+      ],
+      "name": "Level Up Coding",
+      "primary_community_topic": {
+       "topic_name": "Software"
+      },
+      "rest_id": "1532313139810906114"
+     }
+    },
+    {
+     "id": "Q29tbXVuaXR5UmVzdWx0czoxODE2MDI0OTY3NzYwMjQ4OTA3",
+     "result": {
+      "__typename": "Community",
+      "custom_banner_media": {
+       "id": "QXBpTWVkaWE6DAATCgABGTVvdBFWUAAAAA==",
+       "media_info": {
+        "__typename": "ApiImage",
+        "color_info": {
+         "palette": [
+          {
+           "percentage": 88.69,
+           "rgb": {
+            "blue": 74,
+            "green": 36,
+            "red": 4
+           }
+          },
+          {
+           "percentage": 3.43,
+           "rgb": {
+            "blue": 247,
+            "green": 198,
+            "red": 90
+           }
+          },
+          {
+           "percentage": 3.34,
+           "rgb": {
+            "blue": 186,
+            "green": 170,
+            "red": 157
+           }
+          },
+          {
+           "percentage": 1.93,
+           "rgb": {
+            "blue": 133,
+            "green": 105,
+            "red": 73
+           }
+          },
+          {
+           "percentage": 0.6,
+           "rgb": {
+            "blue": 254,
+            "green": 243,
+            "red": 158
+           }
+          }
+         ]
+        },
+        "original_img_height": 396,
+        "original_img_url": "https://pbs.twimg.com/community_banner_img/1816480569011621888/1171soZN?format=jpg&name=orig",
+        "original_img_width": 990,
+        "salient_rect": {
+         "height": 1,
+         "left": 186,
+         "top": 156,
+         "width": 1
+        }
+       }
+      },
+      "default_banner_media": {
+       "id": "QXBpTWVkaWE6DAABCgABFECQY8MVEAEKAAITiFWq8lUQBAAA",
+       "media_info": {
+        "__typename": "ApiImage",
+        "color_info": {
+         "palette": [
+          {
+           "percentage": 79.35,
+           "rgb": {
+            "blue": 155,
+            "green": 161,
+            "red": 1
+           }
+          },
+          {
+           "percentage": 11.83,
+           "rgb": {
+            "blue": 132,
+            "green": 120,
+            "red": 248
+           }
+          },
+          {
+           "percentage": 2.97,
+           "rgb": {
+            "blue": 146,
+            "green": 133,
+            "red": 212
+           }
+          },
+          {
+           "percentage": 1.95,
+           "rgb": {
+            "blue": 168,
+            "green": 175,
+            "red": 129
+           }
+          },
+          {
+           "percentage": 0.81,
+           "rgb": {
+            "blue": 97,
+            "green": 84,
+            "red": 244
+           }
+          }
+         ]
+        },
+        "original_img_height": 480,
+        "original_img_url": "https://pbs.twimg.com/media/FECQY8MVEAEnZBg.jpg",
+        "original_img_width": 1200
+       }
+      },
+      "id": "Q29tbXVuaXR5OjE4MTYwMjQ5Njc3NjAyNDg5MDc=",
+      "is_nsfw": false,
+      "member_count": 481,
+      "members_facepile_results": [
+       {
+        "id": "VXNlclJlc3VsdHM6MTQ0MjQ0OTc1MDMwNTg3MzkyNQ==",
+        "result": {
+         "__typename": "User",
+         "avatar": {
+          "image_url": "https://pbs.twimg.com/profile_images/1442461119671455746/HDUtkAtw_normal.jpg"
+         },
+         "id": "VXNlcjoxNDQyNDQ5NzUwMzA1ODczOTI1"
+        }
+       },
+       {
+        "id": "VXNlclJlc3VsdHM6MTMyMzE4NDk3MTM0ODE0MDA0Mw==",
+        "result": {
+         "__typename": "User",
+         "avatar": {
+          "image_url": "https://pbs.twimg.com/profile_images/1819282613615345664/c-bMpiBL_normal.jpg"
+         },
+         "id": "VXNlcjoxMzIzMTg0OTcxMzQ4MTQwMDQz"
+        }
+       },
+       {
+        "id": "VXNlclJlc3VsdHM6OTY4ODM3ODQ2",
+        "result": {
+         "__typename": "User",
+         "avatar": {
+          "image_url": "https://pbs.twimg.com/profile_images/2023892984262021120/OjtqNuPV_normal.jpg"
+         },
+         "id": "VXNlcjo5Njg4Mzc4NDY="
+        }
+       },
+       {
+        "id": "VXNlclJlc3VsdHM6NTQ0MDE4MDIy",
+        "result": {
+         "__typename": "User",
+         "avatar": {
+          "image_url": "https://pbs.twimg.com/profile_images/1783755881248620545/fPCasEwu_normal.jpg"
+         },
+         "id": "VXNlcjo1NDQwMTgwMjI="
+        }
+       },
+       {
+        "id": "VXNlclJlc3VsdHM6NDQ4NzYwOTk=",
+        "result": {
+         "__typename": "User",
+         "avatar": {
+          "image_url": "https://pbs.twimg.com/profile_images/1732679551744872448/pa6Khpqh_normal.jpg"
+         },
+         "id": "VXNlcjo0NDg3NjA5OQ=="
+        }
+       }
+      ],
+      "name": "Flutter Developer Community",
+      "primary_community_topic": {
+       "topic_name": "Technology"
+      },
+      "rest_id": "1816024967760248907"
+     }
+    }
+   ],
+   "slice_info": {
+    "next_cursor": "WzEwNC41NDMxNzUsMTcyMDY4MDg1NTM0MDAzMjMyNl0="
+   }
+  }
+ }
+}

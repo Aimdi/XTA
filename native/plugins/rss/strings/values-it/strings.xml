@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RSS's text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Aggiungi feed</string>
+    <string name="add_error">Impossibile leggere quel feed</string>
+    <string name="add_hint">Incolla l’URL di un sito o di un feed. XTA trova l’RSS o l’Atom.</string>
+    <string name="add_placeholder">https://example.com/feed</string>
+    <string name="add_to_group">Aggiungi a un gruppo</string>
+    <string name="all">Tutti</string>
+    <string name="cancel">Annulla</string>
+    <string name="close">Chiudi</string>
+    <string name="data_exported_to">Dati esportati in %1$s</string>
+    <string name="empty">Segui un feed per vederne i post qui</string>
+    <string name="empty_filter">Nessun contenuto corrisponde a questi filtri</string>
+    <string name="feeds">Feed</string>
+    <string name="follow">Segui</string>
+    <string name="following_empty">Nessun feed ancora</string>
+    <string name="home">Home</string>
+    <string name="load_error">Impossibile caricare i feed</string>
+    <string name="mark_all_read">Segna tutto come letto</string>
+    <string name="more_options">Altre opzioni</string>
+    <string name="opml_empty">Nessun feed in questo file</string>
+    <string name="opml_export">Esporta i seguiti come OPML</string>
+    <string name="opml_export_description">Un file che altri lettori di feed possono importare.</string>
+    <string name="opml_import">Importa i seguiti da OPML</string>
+    <string name="opml_import_description">Segue ogni feed del file; quelli che segui già restano come sono.</string>
+    <string name="opml_importing">Importazione: %1$d di %2$d</string>
+    <string name="opml_result">Aggiunte: %1$d · Già seguite: %2$d · Non riuscite: %3$d</string>
+    <string name="partial_error">Impossibile caricare %1$d fonti</string>
+    <string name="plugin_description">Segui feed RSS e Atom pubblici. I non letti restano su questo dispositivo.</string>
+    <string name="plugin_name">RSS</string>
+    <string name="reader_empty">Ancora nulla da leggere</string>
+    <string name="reset_filters">Reimposta filtri</string>
+    <string name="retry">Riprova</string>
+    <string name="set_tag">Imposta etichetta</string>
+    <string name="settings">Impostazioni</string>
+    <string name="settings_blurb">Nessun accesso. Segui feed pubblici. I non letti e le etichette restano su questo dispositivo.</string>
+    <string name="tag">Etichetta</string>
+    <string name="tag_hint">Un’etichetta breve, come Notizie o Blog</string>
+    <string name="unfollow">Smetti di seguire</string>
+    <string name="unread">Non letti</string>
+    <string name="in_home_feed">Mescola i feed seguiti in Seguiti</string>
+    <string name="in_home_feed_description">Mostra i nuovi elementi dei feed seguiti nella cronologia Seguiti.</string>
+    <string name="add_not_a_url">Questo non è un indirizzo web.</string>
+    <string name="add_no_feed">Nessun feed RSS o Atom trovato, né nella pagina né agli indirizzi consueti.</string>
+</resources>

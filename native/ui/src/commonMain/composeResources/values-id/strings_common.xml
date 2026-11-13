@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Read failures as XTA's full-page errors say them (lib/ui/errors.dart), and closing the app. -->
+<resources>
+    <string name="problem_no_account_title">Tidak ada akun yang tersedia saat ini</string>
+    <string name="problem_no_account_text">XTA memerlukan setidaknya satu akun 𝕏 agar berfungsi. Tambahkan akun untuk memulai.</string>
+    <string name="problem_rate_limited_title">Dibatasi oleh 𝕏</string>
+    <string name="problem_rate_limited_text">Anda membuat terlalu banyak permintaan dalam waktu terlalu singkat. Coba lagi nanti atau tambahkan akun lain untuk terus menggunakan XTA.</string>
+    <string name="problem_no_working_account_title">Akun Anda tidak berfungsi</string>
+    <string name="problem_no_working_account_text">Sepertinya tidak ada akun Anda yang berfungsi saat ini. Masuk dengan akun lain atau coba lagi nanti.</string>
+    <string name="problem_endpoint_refused_title">𝕏 menolak permintaan ini</string>
+    <string name="problem_endpoint_refused_text">Semua akun ditolak di bagian 𝕏 ini, jadi kemungkinan besar bukan akun Anda masalahnya. 𝕏 sepertinya mengubah sesuatu; aplikasi memperbaiki dirinya sendiri bila bisa. Coba lagi sebentar lagi.</string>
+    <string name="problem_signing_title">Penandatanganan permintaan X tidak tersedia</string>
+    <string name="problem_signing_text">XTA tidak dapat menurunkan token transaksi yang kini diwajibkan X. Akun Anda mungkin baik-baik saja; coba lagi sebentar lagi atau periksa Diagnostik.</string>
+    <string name="problem_offline_title">Tidak bisa menghubungi X</string>
+    <string name="problem_offline_text">Mohon periksa koneksi Internet Anda.</string>
+    <string name="problem_timed_out_title">Waktu habis</string>
+    <string name="problem_timed_out_text">Ini perlu waktu lama untuk memuat. Mohon periksa koneksi jaringan Anda!</string>
+    <string name="problem_service_unavailable_title">X untuk sementara tidak tersedia</string>
+    <string name="problem_service_unavailable_text">X mengembalikan galat server. Anda masih bisa membaca postingan yang tersimpan di cache dan mencoba lagi nanti.</string>
+    <string name="problem_request_unavailable_title">Permintaan ini tidak tersedia</string>
+    <string name="problem_request_unavailable_text">X menolak permintaan ini. Mungkin sedang tidak tersedia untuk sementara, atau bagian layanan ini telah berubah.</string>
+    <string name="problem_oops">Aduh! Ada yang tidak beres 🥲</string>
+    <string name="problem_http_text">X mengembalikan HTTP %1$d.</string>
+    <string name="problem_retry_in">Coba lagi dalam %1$s</string>
+    <string name="close_app_confirm">Apakah Anda yakin ingin menutup XTA?</string>
+    <string name="problem_unable_to_load_the_community">Tidak dapat memuat komunitas</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">Tidak bisa menemukan lokasi tren yang tersedia.</string>
+    <string name="problem_unable_to_load_the_members">Tidak dapat memuat anggota</string>
+    <string name="problem_unable_to_load_the_list_of_follows">Tidak bisa memuat daftar pengikut</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">Tidak bisa memuat halaman pengikut selanjutnya</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">Tidak dapat memuat halaman cuitan selanjutnya</string>
+    <string name="problem_unable_to_load_the_tweets">Tidak bisa memuat cuitan</string>
+    <string name="problem_connection_failed">Koneksi gagal</string>
+    <string name="problem_sign_in_needed">Masuk lagi untuk melanjutkan</string>
+    <string name="problem_rate_limit_hint">Sumber ini membatasi permintaan. Coba lagi nanti.</string>
+    <string name="problem_more_info">Informasi lebih lanjut</string>
+    <string name="problem_auto_retry_seconds">Mencoba lagi dalam %1$d dtk…</string>
+    <string name="problem_auto_retry_in">Mencoba lagi dalam %1$s…</string>
+    <string name="problem_cached_content">Menampilkan salinan tersimpan saat sumber diperbarui.</string>
+    <string name="problem_source_loading">Sumber ini masih dimuat. Postingan lain sudah bisa dibaca.</string>
+    <string name="problem_saved_at">Menampilkan postingan yang disimpan pada %1$s</string>
+    <string name="problem_saved_earlier">Menampilkan postingan yang disimpan sebelumnya</string>
+</resources>

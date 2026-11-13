@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Web sources' text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Дадаць крыніцу</string>
+    <string name="add_link">Дадаць па спасылцы</string>
+    <string name="back">Назад</string>
+    <string name="cancel">Скасаваць</string>
+    <plurals name="comments">
+        <item quantity="one">%1$d каментарый</item>
+        <item quantity="few">%1$d каментарыі</item>
+        <item quantity="many">%1$d каментарыяў</item>
+        <item quantity="other">%1$d каментарыя</item>
+    </plurals>
+    <string name="consent_from">З %1$s</string>
+    <string name="consent_read_only">Яна можа толькі чытаць публічныя старонкі. Яна не можа карыстацца вашымі ўліковымі запісамі або нешта публікаваць.</string>
+    <string name="consent_sites">Яна будзе чытаць старонкі з гэтых сайтаў:</string>
+    <string name="consent_title">Дадаць %1$s?</string>
+    <string name="discussion">Абмеркаванне</string>
+    <string name="empty">Крыніц пакуль няма. Дадайце крыніцу з апублікаванага спіса або па спасылцы.</string>
+    <string name="failure_blocked">Гэтай старонкі няма на сайтах са спіса крыніцы.</string>
+    <string name="failure_status">Сайт адказаў памылкай %1$s.</string>
+    <string name="failure_too_large">Гэтая старонка занадта вялікая, каб яе прачытаць.</string>
+    <string name="failure_unreachable">Не ўдалося звязацца з сайтам.</string>
+    <string name="follow">Сачыць</string>
+    <string name="install">Дадаць</string>
+    <string name="installed">Дададзена</string>
+    <string name="link">Спасылка на крыніцу</string>
+    <string name="link_placeholder">https://example.org/source.json</string>
+    <string name="list_empty">Тут пакуль нічога няма.</string>
+    <plurals name="lists">
+        <item quantity="one">%1$d спіс</item>
+        <item quantity="few">%1$d спісы</item>
+        <item quantity="many">%1$d спісаў</item>
+        <item quantity="other">%1$d спіса</item>
+    </plurals>
+    <string name="more_options">Іншыя дзеянні</string>
+    <string name="ok">Добра</string>
+    <string name="open_in_browser">Адкрыць у браўзеры</string>
+    <string name="plugin_description">Дадавайце простыя сайты з апублікаванага спіса або па спасылцы. Крыніца чытае толькі публічныя старонкі і пытаецца, перш чым чытаць новы сайт.</string>
+    <string name="plugin_name">Вэб-крыніцы</string>
+    <plurals name="points">
+        <item quantity="one">%1$d бал</item>
+        <item quantity="few">%1$d балы</item>
+        <item quantity="many">%1$d балаў</item>
+        <item quantity="other">%1$d бала</item>
+    </plurals>
+    <string name="published">Апублікаваныя крыніцы</string>
+    <string name="published_unreachable">Не ўдалося загрузіць апублікаваны спіс.</string>
+    <string name="reading">Чытаем крыніцу…</string>
+    <string name="refused_detail">Дзе: %1$s</string>
+    <string name="refused_insecure">Гэтая крыніца чытала б сайт, якога няма ў яе спісе, або без HTTPS.</string>
+    <string name="refused_invalid">У файле гэтай крыніцы памылка.</string>
+    <string name="refused_newer">Гэтай крыніцы патрэбна навейшая версія XTA.</string>
+    <string name="refused_too_large">Гэтая крыніца выходзіць за межы таго, што дазваляе XTA.</string>
+    <string name="refused_unreadable">Гэта не файл вэб-крыніцы.</string>
+    <string name="remove">Выдаліць крыніцу</string>
+    <string name="remove_confirm">Выдаліць %1$s? Спісы, за якімі вы сочыце ў ёй, таксама будуць выдалены.</string>
+    <string name="retry">Паўтарыць</string>
+    <string name="review_update">Праглядзець абнаўленне</string>
+    <string name="search_in">Пошук у %1$s</string>
+    <string name="unfollow">Адпісацца</string>
+    <string name="unreachable">Не ўдалося прачытаць файл крыніцы. Праверце спасылку і падключэнне.</string>
+    <string name="update_title">Абнавіць %1$s?</string>
+    <string name="in_home_feed">Змешваць падпісаныя спісы ў «Чытаю»</string>
+    <string name="in_home_feed_description">Паказваць новыя допісы з падпісаных спісаў у стужцы «Чытаю».</string>
+    <string name="settings">Налады</string>
+</resources>

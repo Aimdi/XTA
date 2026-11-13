@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Deepmarks</string>
+    <string name="plugin_description">Gorde argitalpenak Deepmarks-en, Nostr-en oinarritutako laster-marken zerbitzuan</string>
+    <string name="settings_intro">Deepmarks-ek laster-markak sinatutako Nostr gertaera gisa gordetzen ditu. Zure sinadura gakoa ez da gailu honetatik inoiz irteten: argitalpena hemen sinatzen da eta gertaera amaitua baino ez da bidaltzen.</string>
+    <string name="lifetime_notice">APIra sartzeko Deepmarks-en bizitza osoko harpidetza behar da.</string>
+    <string name="api_key">API gakoa</string>
+    <string name="api_key_hint">dmk_live_ hasten da, Deepmarks-en ezarpenetako «api access» atalean</string>
+    <string name="identity">Sinadura-identitatea</string>
+    <string name="secret_key">Sinadura gakoa</string>
+    <string name="secret_key_hint">Zure nsec-a gailu honetan bakarrik gordetzen da. Laster-marka bakoitza sinatzen du eta ez da inoiz Deepmarks-era bidaltzen.</string>
+    <string name="signing_as">%1$s gisa sinatzen</string>
+    <string name="api_base">Zerbitzariaren helbidea</string>
+    <string name="test">Probatu konexioa</string>
+    <string name="test_ok">Deepmarks-era konektatuta</string>
+    <string name="test_ok_unverified">Gakoa onartu da, baina kontuak ez du oraindik laster-marka publikorik sinadura gakoa egiaztatzeko</string>
+    <string name="not_configured">Gehitu lehenik Deepmarks-en API gakoa eta sinadura gakoa</string>
+    <string name="error_secret_key">Hori ez da baliozko nsec bat, ezta 64 karaktereko gako hamaseitarra ere</string>
+    <string name="error_unauthorized">Deepmarks-ek API gakoa ez du onartu</string>
+    <string name="error_lifetime">Deepmarks-en APIa bizitza osoko kideentzat baino ez da</string>
+    <string name="error_key_mismatch">Zure sinadura gakoa API gakoarena ez den beste Deepmarks kontu batena da</string>
+    <string name="error_rejected">Deepmarks-ek laster-marka hau ez du onartu</string>
+    <string name="error_rate_limited">Eskaera gehiegi; saiatu berriro laster</string>
+    <string name="error_server">Ez da Deepmarks APIrik erantzun helbide horretan</string>
+    <string name="error_network">Ezin izan da Deepmarks-era iritsi</string>
+    <string name="learn_more">Deepmarks-i buruz</string>
+    <string name="save_action">Gorde Deepmarks-en</string>
+    <string name="saved">Deepmarks-en gordeta</string>
+    <string name="saved_no_relay">Deepmarks-era bidalita, baina relay batek ez du oraindik onartu</string>
+    <string name="saving">Deepmarks-en gordetzen…</string>
+    <string name="show">Erakutsi</string>
+    <string name="hide">Ezkutatu</string>
+    <string name="save">Gorde</string>
+    <string name="connection">Konexioa</string>
+</resources>

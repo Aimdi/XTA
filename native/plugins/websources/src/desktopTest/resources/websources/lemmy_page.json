@@ -1,0 +1,9 @@
+{
+  "posts": [
+    {"post": {"id": 7, "name": "Hello", "body": "<p>First <em>post</em></p>", "thumbnail_url": "/pictrs/7.jpg",
+              "published": "1761724800"},
+     "creator": {"name": "cy", "avatar": "https://lemmy.world/pictrs/cy.png"},
+     "counts": {"score": 9, "comments": 2}}
+  ],
+  "next_page": "Pa7"
+}

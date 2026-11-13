@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RSS's text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Thêm nguồn</string>
+    <string name="add_error">Không đọc được nguồn đó</string>
+    <string name="add_hint">Dán URL trang hoặc nguồn. XTA tìm nguồn RSS hoặc Atom.</string>
+    <string name="add_placeholder">https://example.com/feed</string>
+    <string name="add_to_group">Thêm vào nhóm</string>
+    <string name="all">Tất cả</string>
+    <string name="cancel">Hủy</string>
+    <string name="close">Đóng</string>
+    <string name="data_exported_to">Dữ liệu đã xuất ra %1$s</string>
+    <string name="empty">Theo dõi một nguồn để xem bài viết ở đây</string>
+    <string name="empty_filter">Không có nội dung phù hợp với các bộ lọc này</string>
+    <string name="feeds">Nguồn</string>
+    <string name="follow">Theo dõi</string>
+    <string name="following_empty">Chưa có nguồn nào</string>
+    <string name="home">Trang chủ</string>
+    <string name="load_error">Không tải được nguồn</string>
+    <string name="mark_all_read">Đánh dấu tất cả đã đọc</string>
+    <string name="more_options">Tùy chọn khác</string>
+    <string name="opml_empty">Tệp này không có nguồn nào</string>
+    <string name="opml_export">Xuất danh sách theo dõi ra OPML</string>
+    <string name="opml_export_description">Một tệp mà các trình đọc nguồn cấp khác có thể nhập.</string>
+    <string name="opml_import">Nhập danh sách theo dõi từ OPML</string>
+    <string name="opml_import_description">Theo dõi từng nguồn trong tệp; các nguồn bạn đã theo dõi vẫn giữ nguyên.</string>
+    <string name="opml_importing">Đang nhập %1$d/%2$d</string>
+    <string name="opml_result">Đã thêm: %1$d · Đã theo dõi: %2$d · Thất bại: %3$d</string>
+    <string name="partial_error">Không tải được %1$d nguồn</string>
+    <string name="plugin_description">Theo dõi các nguồn RSS và Atom công khai. Chưa đọc được giữ trên thiết bị này.</string>
+    <string name="plugin_name">RSS</string>
+    <string name="reader_empty">Chưa có nội dung để đọc</string>
+    <string name="reset_filters">Đặt lại bộ lọc</string>
+    <string name="retry">Thử lại</string>
+    <string name="set_tag">Đặt thẻ</string>
+    <string name="settings">Cài đặt</string>
+    <string name="settings_blurb">Không cần đăng nhập. Theo dõi nguồn công khai. Chưa đọc và thẻ được giữ trên thiết bị này.</string>
+    <string name="tag">Thẻ</string>
+    <string name="tag_hint">Nhãn ngắn, như Tin tức hoặc Blog</string>
+    <string name="unfollow">Bỏ theo dõi</string>
+    <string name="unread">Chưa đọc</string>
+    <string name="in_home_feed">Trộn nguồn đã theo dõi vào Đang theo dõi</string>
+    <string name="in_home_feed_description">Hiện các mục mới từ nguồn đã theo dõi trên dòng thời gian Đang theo dõi.</string>
+    <string name="add_not_a_url">Đó không phải là địa chỉ web.</string>
+    <string name="add_no_feed">Không tìm thấy nguồn RSS hay Atom nào, cả trên trang lẫn ở các địa chỉ thường dùng.</string>
+</resources>

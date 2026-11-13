@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chrome_confirm_close">Czy na pewno chcesz zamknąć XTA?</string>
+    <string name="chrome_update_available">Dostępna jest aktualizacja XTA! 🚀</string>
+    <string name="chrome_update_view_version">Wyświetl wersję %1$s na GitHub</string>
+    <string name="chrome_update_view">Wyświetl na GitHub</string>
+    <string name="chrome_update_download">Pobierz</string>
+    <string name="chrome_licences_legalese">Wydany na licencji MIT</string>
+    <plurals name="chrome_licences_count">
+        <item quantity="one">%1$d licencja</item>
+        <item quantity="few">%1$d licencje</item>
+        <item quantity="many">%1$d licencji</item>
+        <item quantity="other">%1$d licencji</item>
+    </plurals>
+</resources>

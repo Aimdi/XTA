@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="media_alt_badge">ALT</string>
+    <string name="media_alt_title">画像の説明</string>
+    <string name="media_tap_to_show">タップして%1$sを表示</string>
+</resources>

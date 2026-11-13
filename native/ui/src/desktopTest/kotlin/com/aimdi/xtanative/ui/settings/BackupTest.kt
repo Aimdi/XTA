@@ -1,0 +1,600 @@
+package com.aimdi.xtanative.ui.settings
+
+import com.aimdi.xtanative.core.backup.FollowGroup
+import com.aimdi.xtanative.core.backup.FollowedAccount
+import com.aimdi.xtanative.core.feed.ReadPosition
+import com.aimdi.xtanative.core.json.J
+import com.aimdi.xtanative.core.session.SavedSearch
+import com.aimdi.xtanative.core.session.Session
+import com.aimdi.xtanative.core.x.XAccount
+import com.aimdi.xtanative.data.AppGraph
+import com.aimdi.xtanative.store.StoreDir
+import com.aimdi.xtanative.store.antenna.AntennaScope
+import com.aimdi.xtanative.store.backup.AccountRow
+import com.aimdi.xtanative.store.backup.AntennaRow
+import com.aimdi.xtanative.store.backup.ArchiveAnnotationRow
+import com.aimdi.xtanative.store.backup.BackupCategory
+import com.aimdi.xtanative.store.backup.BackupDocument
+import com.aimdi.xtanative.store.backup.BackupKeys
+import com.aimdi.xtanative.store.backup.ExportChoice
+import com.aimdi.xtanative.store.backup.FeedFilterRow
+import com.aimdi.xtanative.store.backup.GroupMemberRow
+import com.aimdi.xtanative.store.backup.GroupRow
+import com.aimdi.xtanative.store.backup.LikedPostRow
+import com.aimdi.xtanative.store.backup.LocalMarkRow
+import com.aimdi.xtanative.store.backup.LocalPostMediaRow
+import com.aimdi.xtanative.store.backup.LocalPostRow
+import com.aimdi.xtanative.store.backup.NamedSubscriptionRow
+import com.aimdi.xtanative.store.backup.NetworkAccount
+import com.aimdi.xtanative.store.backup.NetworkMembers
+import com.aimdi.xtanative.store.backup.ProfileNoteRow
+import com.aimdi.xtanative.store.backup.ProfileSubscriptionRow
+import com.aimdi.xtanative.store.backup.ReadPositionRow
+import com.aimdi.xtanative.store.backup.SavedFolderRow
+import com.aimdi.xtanative.store.backup.SavedPostRow
+import com.aimdi.xtanative.store.backup.SearchGroupMemberRow
+import com.aimdi.xtanative.store.backup.SearchSubscriptionRow
+import com.aimdi.xtanative.store.backup.SubstackSubscriptionRow
+import com.aimdi.xtanative.store.backup.UserSubscriptionRow
+import com.aimdi.xtanative.store.reading.ArticleReadPoint
+import com.aimdi.xtanative.store.saved.ProfileNotesStore
+import com.aimdi.xtanative.store.saved.SavedLibrary
+import com.aimdi.xtanative.store.saved.SavedPost
+import com.aimdi.xtanative.store.settings.HomePrefs
+import com.aimdi.xtanative.store.settings.PostsPrefs
+import com.aimdi.xtanative.store.settings.ReadingPrefs
+import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.store.settings.ThemeBackground
+import com.aimdi.xtanative.store.settings.ThemePrefs
+import com.aimdi.xtanative.ui.group.ReadMarks
+import java.io.File
+import java.nio.file.Files
+import java.time.Instant
+import java.time.LocalDate
+import kotlin.test.AfterTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonPrimitive
+
+private const val HEADERS = """{"Cookie":"auth_token=a;ct0=c1","x-csrf-token":"c1"}"""
+
+/** One row in most sections, as a file XTA exported would carry them. */
+private fun backup() = BackupDocument(
+    exportedAt = "2026-08-04T09:30:00.000Z",
+    appVersion = "4.12.0+400001040",
+    archiveAnnotations = mapOf("archive-note:a1" to ArchiveAnnotationRow(mapOf("Quote" to "Note"), listOf("read"))),
+    settings = mapOf(
+        ThemePrefs.background.key to JsonPrimitive("dim"),
+        PostsPrefs.includeReplies.key to JsonPrimitive(false),
+        HomePrefs.followingHiddenGroupIds.key to JsonPrimitive("""["g1","missing"]"""),
+        HomePrefs.deckGroupIds.key to JsonPrimitive("g1, missing"),
+        ReadingPrefs.articles.key to JsonPrimitive("""{"art":{"fraction":0.5,"paragraph":3,"leading":0,"completed":false,"updatedAt":7}}"""),
+        "ai.api_key" to JsonPrimitive("never restored"),
+    ),
+    threadsSubscriptions = listOf(ProfileSubscriptionRow("reader", "Reader")),
+    redditLocalVotes = listOf(LocalMarkRow("v1")),
+    searchSubscriptions = listOf(SearchSubscriptionRow("dart", "2026-01-02 03:04:05")),
+    subscriptions = listOf(
+        UserSubscriptionRow("1", "reader", "Reader", createdAt = "2026-01-02 03:04:05", maxPostsPerLoad = 3),
+        UserSubscriptionRow("2", "other", "Other", inFeed = false),
+    ),
+    groups = listOf(
+        GroupRow("-1", "Everyone", createdAt = "2026-01-02T03:04:05.000Z"),
+        GroupRow("g0", "Parent", createdAt = "2026-01-02T03:04:05.000Z"),
+        GroupRow("g1", "Feeds", color = 0xFF2196F3, createdAt = "2026-01-02T03:04:05.000Z", pinned = true, emoji = "🚀", markStyle = 1, parentId = "g0"),
+    ),
+    groupMembers = listOf(GroupMemberRow("g1", "1")),
+    searchGroupMembers = listOf(SearchGroupMemberRow("g1", "dart")),
+    savedPosts = listOf(SavedPostRow("t1", "1", """{"id_str":"t1"}""", "f1", "later"), SavedPostRow("t2", "1", """{"id_str":"t2"}""")),
+    savedFolders = listOf(SavedFolderRow("f1", "Later", 2, "2026-01-02T03:04:05.000Z", autoDownload = true)),
+    likedPosts = listOf(LikedPostRow("t3", "1", "{}")),
+    repostFilters = listOf(FeedFilterRow("1", "reader")),
+    replyFilters = listOf(FeedFilterRow("2", "Other")),
+    profileNotes = listOf(ProfileNoteRow("1", "met at a conference", "2026-01-02T03:04:05.000Z")),
+    readPositions = listOf(ReadPositionRow("g1", "c1"), ReadPositionRow("-1", "c0"), ReadPositionRow("nowhere", "c9")),
+    accounts = listOf(AccountRow("c1", JsonPrimitive(HEADERS), "reader"), AccountRow("nocookie", JsonPrimitive("""{"x":"y"}"""))),
+    antennas = listOf(AntennaRow("a1", "Tech", listOf("dart"), scope = AntennaRow.FOLLOWING, createdAt = "2026-01-02T03:04:05.000Z")),
+    localPosts = listOf(LocalPostRow("n1", "stays", "2026-01-02T03:04:05.000Z", media = listOf(LocalPostMediaRow("m1", "a.jpg", "image/jpeg", "AAEC")))),
+)
+
+/** An XTA backup whose group holds accounts of other networks, as XTA writes them: bare where XTA's tables join them so. */
+private fun networks() = BackupDocument(
+    threadsSubscriptions = listOf(ProfileSubscriptionRow("aria", "Aria")),
+    blueskySubscriptions = listOf(ProfileSubscriptionRow("maya.bsky.social", "Maya")),
+    redditSubscriptions = listOf(NamedSubscriptionRow("dartlang", "dartlang")),
+    booruSubscriptions = listOf(NamedSubscriptionRow("sky", "sky")),
+    searchSubscriptions = listOf(SearchSubscriptionRow("dartlang", "2026-01-02 03:04:05")),
+    groups = listOf(GroupRow("g2", "Mixed", createdAt = "2026-01-02T03:04:05.000Z")),
+    groupMembers = listOf("1", "aria", "maya.bsky.social", "dartlang", "sky", "tiktok:dancer", "gone").map { GroupMemberRow("g2", it) },
+)
+
+class BackupReadTest {
+    @Test
+    fun aFileIsABackupXtaCanRestoreOrSaysWhyNot() {
+        assertEquals(BackupRead.NotABackup, BackupRead.of("not json"))
+        assertEquals(BackupRead.NotABackup, BackupRead.of(null))
+        assertEquals(BackupRead.Unsupported, BackupRead.of("""{"formatVersion":99,"subscriptions":[]}"""))
+        assertEquals(BackupRead.Empty, BackupRead.of("""{"formatVersion":2,"subscriptions":[]}"""))
+        assertIs<BackupRead.Ready>(BackupRead.of(backup().encode()))
+    }
+}
+
+class BackupRestoreTest {
+    private val session = Session(
+        accounts = listOf(XAccount("c1", "old", mapOf("Cookie" to "x")), XAccount("c2", "kept", mapOf("Cookie" to "y"))),
+        following = listOf(FollowedAccount("1", "old", "Old", null, false, true, 5), FollowedAccount("9", "mine", "Mine", null, false, true, 6)),
+        groups = listOf(FollowGroup("g1", "Old name", listOf("9"))),
+        searches = listOf(SavedSearch("kotlin", 1)),
+        postCaps = mapOf("2" to 4),
+    )
+
+    @Test
+    fun rowsReplaceTheOnesWithTheirKeyAndEveryOtherStays() {
+        val restored = BackupRestore.session(session, backup())
+        assertEquals(listOf("c2", "c1", "nocookie"), restored.accounts.map { it.id }, "one without a cookie is kept, as XTA keeps it")
+        assertEquals("reader", restored.accounts.first { it.id == "c1" }.screenName)
+        assertEquals(listOf("9", "1", "2"), restored.following.map { it.id })
+        assertFalse(restored.following.last().inFeed)
+        assertEquals(mapOf("1" to 3), restored.postCaps)
+        assertEquals(listOf("kotlin", "dart"), restored.searches.map { it.query })
+    }
+
+    @Test
+    fun groupsKeepTheirMembersAndGainTheBackupsAndTheirNesting() {
+        val restored = BackupRestore.session(session, backup())
+        assertEquals(listOf("g1", "g0"), restored.groups.map { it.id }.sorted().reversed())
+        val feeds = restored.groups.first { it.id == "g1" }
+        assertEquals("Feeds", feeds.name)
+        assertEquals(listOf("9", "1", "dart"), feeds.memberIds)
+        assertTrue(feeds.pinned)
+        assertEquals("🚀", feeds.emoji)
+        assertEquals("g0", restored.nesting["g1"])
+        assertTrue(restored.groups.none { it.id == GroupRow.EVERYONE })
+        assertEquals(setOf("g1"), restored.offFollowing)
+        assertEquals(listOf("g1"), restored.deck)
+    }
+
+    @Test
+    fun xtasBareMembersOfOtherNetworksBecomeTheirPluginsAndWhatXClaimsStays() {
+        val mixed = BackupRestore.session(session, networks()).groups.first { it.id == "g2" }
+        assertEquals(
+            listOf("1", "threads:aria", "bluesky:maya.bsky.social", "dartlang", "reddit:dartlang", "booru:sky", "tiktok:dancer", "gone"),
+            mixed.memberIds,
+            "a saved search of the same name stays beside the subreddit, as XTA's groups read both",
+        )
+    }
+
+    @Test
+    fun anAccountARunningPluginReadsByAnotherNameJoinsUnderIt() {
+        val running = listOf(NetworkAccount("bluesky", "maya.bsky.social", "did:plc:maya"), NetworkAccount("threads", "nova"))
+        val owners = NetworkMembers.named(NetworkMembers.accounts(networks()), running) + running
+        val members = BackupRestore.session(session, networks().copy(groupMembers = listOf(GroupMemberRow("g2", "maya.bsky.social"), GroupMemberRow("g2", "nova"))), owners)
+            .groups.first { it.id == "g2" }.memberIds
+        assertEquals(listOf("bluesky:did:plc:maya", "threads:nova"), members, "a plugin's own follows are read too, as XTA joins its tables")
+    }
+
+    @Test
+    fun rowsThatReachTheirPluginLaterTakeOverTheBareMembersXDoesNotClaim() {
+        val legacy = session.copy(groups = listOf(FollowGroup("g1", "Old", listOf("9", "aria", "kotlin", "x"))))
+        val owners = listOf(NetworkAccount("threads", "aria"), NetworkAccount("reddit", "kotlin"), NetworkAccount("threads", "9"))
+        assertEquals(listOf("9", "threads:aria", "kotlin", "x"), BackupRestore.withNetworkMembers(legacy, owners).groups.single().memberIds)
+    }
+
+    @Test
+    fun aSectionTheFileDoesNotCarryChangesNothing() {
+        assertEquals(session, BackupRestore.session(session, BackupDocument()))
+        assertNull(BackupRestore.library(SavedLibrary(), BackupDocument(), 0))
+        assertNull(BackupRestore.likes(emptyList(), BackupDocument(), 0))
+        assertNull(BackupRestore.antennas(BackupDocument(), 0))
+        assertNull(BackupRestore.journal(BackupDocument()))
+    }
+
+    @Test
+    fun savedPostsNewToTheDeviceComeInTheFilesOrderAndKnownOnesKeepTheirPlace() {
+        val library = SavedLibrary(listOf(SavedPost("t2", null, null, savedAt = 50), SavedPost("t0", null, null, savedAt = 40)))
+        val restored = BackupRestore.library(library, backup(), now = 1_000)!!
+        assertEquals(listOf("t1", "t2", "t0"), restored.posts.map { it.id })
+        assertEquals(50, restored.posts.first { it.id == "t2" }.savedAt)
+        assertEquals("f1", restored.posts.first().folderId)
+        assertEquals("later", restored.posts.first().note)
+        assertTrue(restored.folders.single().autoDownload)
+        assertEquals("t3", BackupRestore.likes(emptyList(), backup(), 1_000)!!.single().id)
+    }
+
+    @Test
+    fun notesArticleNotesAndAntennasComeBack() {
+        val note = BackupRestore.localPosts(emptyList(), backup(), 1_000)!!.single()
+        assertEquals("AAEC", note.media.single().data)
+        assertEquals(listOf("read"), BackupRestore.annotations(backup())!!["a1"]!!.tags.toList())
+        val antenna = BackupRestore.antennas(backup(), 1_000)!!.single()
+        assertEquals(AntennaScope.FOLLOWING, antenna.scope)
+        assertEquals(Instant.parse("2026-01-02T03:04:05Z").toEpochMilli(), antenna.createdAt)
+    }
+
+    @Test
+    fun readingPositionsGoToTheFeedsThisDeviceHas() {
+        val positions = BackupRestore.readPositions(backup(), setOf("g1"))
+        assertEquals(mapOf("following" to ReadPosition("c0", null), "g1" to ReadPosition("c1", null)), positions)
+        assertEquals(ArticleReadPoint(0.5, 3, 0.0, false, 7), BackupRestore.journal(backup())!!["art"])
+    }
+}
+
+class KeptSectionsTest {
+    @Test
+    fun aRowReplacesTheOneWithItsKeyAndGoesLast() {
+        val kept = BackupDocument(threadsSubscriptions = listOf(ProfileSubscriptionRow("a", "A"), ProfileSubscriptionRow("b", "B")))
+        val merged = KeptSections.merged(kept, BackupDocument(threadsSubscriptions = listOf(ProfileSubscriptionRow("a", "A2"))))
+        assertEquals(listOf("b" to "B", "a" to "A2"), merged.threadsSubscriptions!!.map { it.id to it.name })
+        assertEquals(kept.threadsSubscriptions, KeptSections.merged(kept, BackupDocument()).threadsSubscriptions)
+    }
+
+    @Test
+    fun theyAreKeptAcrossLaunches(): Unit = runBlocking {
+        val dir = Files.createTempDirectory("kept").toFile()
+        try {
+            KeptSections(StoreDir(dir)).merge(KeptSections.keptOf(backup()))
+            val read = KeptSections(StoreDir(dir)).get()
+            assertEquals("reader", read.threadsSubscriptions!!.single().id)
+            assertEquals("v1", read.redditLocalVotes!!.single().id)
+            assertNull(read.repostFilters, "the profiles' filters and notes have their own stores")
+            assertNull(read.profileNotes)
+            assertNull(read.subscriptions)
+        } finally {
+            dir.deleteRecursively()
+        }
+    }
+
+    @Test
+    fun whatARestoreKeptAfterItWasHandedOverStaysForTheNextHandOver(): Unit = runBlocking {
+        val dir = Files.createTempDirectory("kept").toFile()
+        try {
+            val kept = KeptSections(StoreDir(dir))
+            kept.merge(BackupDocument(redditLocalVotes = listOf(LocalMarkRow("v1")), pluginSections = mapOf("a.b" to "1", "c.d" to "1")))
+            val handed = kept.get()
+            kept.merge(BackupDocument(redditLocalVotes = listOf(LocalMarkRow("v2")), pluginSections = mapOf("a.b" to "2")))
+            kept.forgetNetworkSections(handed.networkRows())
+            kept.forgetPluginSections(handed.pluginSections!!)
+            assertEquals(listOf("v1", "v2"), kept.get().redditLocalVotes!!.map { it.id })
+            assertEquals(mapOf("a.b" to "2"), kept.get().pluginSections, "the one taken as it was is kept no more")
+        } finally {
+            dir.deleteRecursively()
+        }
+    }
+}
+
+class BackupExportTest {
+    @Test
+    fun theFileIsNamedAsXtaNamesIt() {
+        assertEquals("xta-2026-11-03.json", BackupExport.fileName(LocalDate.of(2026, 11, 3)))
+    }
+
+    @Test
+    fun onlyTheChosenSectionsAreWrittenAndNotesAlwaysAre() {
+        val content = DeviceContent(
+            session = BackupRestore.session(Session(), backup()),
+            settings = Settings().restoring(backup().settings!!),
+            kept = KeptSections.keptOf(backup()),
+        )
+        val now = Instant.parse("2026-11-03T10:00:00Z")
+        val subscriptions = BackupExport.document(content, ExportChoice(subscriptions = true), "1.0", now)
+        assertEquals(listOf("1", "2"), subscriptions.subscriptions!!.map { it.id })
+        assertEquals(3, subscriptions.subscriptions!!.first().maxPostsPerLoad)
+        assertEquals("reader", subscriptions.threadsSubscriptions!!.single().id)
+        assertNull(subscriptions.groups)
+        assertNull(subscriptions.accounts)
+        // Without the settings, only the preferences that hold followed accounts go along.
+        assertEquals(setOf("plugin.hackernews.follows", "plugin.websources.follows", "plugin.pixiv.group_subscriptions"), subscriptions.settings!!.keys)
+        assertNotNull(subscriptions.localPosts)
+        assertEquals("2026-11-03T10:00:00.000Z", subscriptions.exportedAt)
+    }
+
+    @Test
+    fun groupsGoOutWithWhatTheirRowsCarried() {
+        val content = DeviceContent(session = BackupRestore.session(Session(), backup()), kept = KeptSections.keptOf(backup()))
+        val document = BackupExport.document(content, ExportChoice(subscriptions = true, groups = true, groupMembers = true), "1.0", Instant.EPOCH)
+        val feeds = document.groups!!.first { it.id == "g1" }
+        assertEquals(0xFF2196F3, feeds.color)
+        assertEquals(1, feeds.markStyle)
+        assertEquals("g0", feeds.parentId)
+        assertEquals(listOf(GroupMemberRow("g1", "1"), GroupMemberRow("g1", "dart")), document.groupMembers)
+    }
+
+    @Test
+    fun theGroupsHoldOtherNetworksAccountsAsXtaWritesThem() {
+        val session = Session(
+            groups = listOf(FollowGroup("g", "Mixed", listOf("1", "threads:aria", "bluesky:did:plc:maya", "aria", "tiktok:dancer", "booru:sky", "threads:q"))),
+            searches = listOf(SavedSearch("threads:q", 0)),
+        )
+        val content = DeviceContent(session = session, networkAccounts = listOf(NetworkAccount("bluesky", "maya.bsky.social", "did:plc:maya")))
+        val document = BackupExport.document(content, ExportChoice(subscriptions = true, groups = true, groupMembers = true), "1.0", Instant.EPOCH)
+        assertEquals(listOf("1", "aria", "maya.bsky.social", "tiktok:dancer", "booru:sky", "threads:q"), document.groupMembers!!.map { it.profileId })
+    }
+
+    @Test
+    fun theSettingsCarryWhatXtaKeepsInPreferencesAndNoSecret() {
+        val session = Session(groups = listOf(FollowGroup("g1", "Feeds", emptyList())), offFollowing = setOf("g1"), deck = listOf("g1"))
+        val content = DeviceContent(session = session, settings = Settings().restoring(backup().settings!!), journal = mapOf("art" to ArticleReadPoint(0.25)))
+        val section = BackupExport.settings(content, ExportChoice(settings = true))!!
+        assertEquals(JsonPrimitive("dim"), section[ThemePrefs.background.key])
+        assertEquals(JsonPrimitive("""["g1"]"""), section[HomePrefs.followingHiddenGroupIds.key])
+        assertEquals(JsonPrimitive("g1"), section[HomePrefs.deckGroupIds.key])
+        assertTrue((section[ReadingPrefs.articles.key] as JsonPrimitive).content.contains("\"art\""))
+        assertFalse("ai.api_key" in section)
+    }
+
+    @Test
+    fun aBackupGoesOutAndComesBackTheSame() {
+        val session = BackupRestore.session(Session(), backup())
+        val content = DeviceContent(session = session, kept = KeptSections.keptOf(backup()))
+        val document = BackupExport.document(content, ExportChoice.everything(includeAccounts = true), "1.0", Instant.EPOCH)
+        val again = BackupRestore.session(Session(), BackupDocument.parse(document.encode())!!)
+        assertEquals(session.following.map { it.copy(avatarUrl = null) }, again.following.map { it.copy(avatarUrl = null) })
+        assertEquals(session.accounts, again.accounts)
+        assertEquals(session.searches, again.searches)
+        assertEquals(session.groups.map { it.id to it.memberIds }.toSet(), again.groups.map { it.id to it.memberIds }.toSet())
+    }
+}
+
+class DeviceBackupTest {
+    private val dir: File = Files.createTempDirectory("graph").toFile()
+
+    @AfterTest
+    fun cleanUp() {
+        dir.deleteRecursively()
+    }
+
+    @Test
+    fun aRestoreWritesEverySectionIntoItsStore(): Unit = runBlocking {
+        val graph = AppGraph(dir, flowOf(true), "test")
+        val now = Instant.parse("2026-11-03T10:00:00Z")
+        DeviceBackup(graph) { now }.restore(backup(), includeReadPositions = true)
+
+        val settings = graph.settings.load()
+        assertEquals(ThemeBackground.DIM, settings[ThemePrefs.background])
+        assertFalse(settings.isSet(com.aimdi.xtanative.store.settings.AiPrefs.apiKey))
+        val session = graph.sessions.state.value!!
+        assertFalse(session.includeReplies)
+        assertEquals(listOf("c1", "nocookie"), session.accounts.map { it.id })
+        assertEquals(listOf("1", "2"), session.following.map { it.id })
+        assertEquals(listOf("t1", "t2"), graph.saved.library().posts.map { it.id })
+        assertEquals("t3", graph.likes.likes().single().id)
+        assertEquals("stays", graph.localPosts.notes().single().body)
+        assertTrue(graph.localPosts.mediaFile("n1", "m1").isFile)
+        assertEquals("Tech", graph.antennas.load().single().name)
+        assertEquals(listOf("read"), graph.archiveNotes.of("a1").tags.toList())
+        assertEquals(0.5, graph.readingJournal.point("art")!!.fraction)
+        assertEquals("v1", graph.kept.get().redditLocalVotes!!.single().id)
+        assertEquals(ReadPosition("c1", null), ReadMarks(graph.feedCache(ReadMarks.key("g1"))).position())
+        assertEquals(ReadPosition("c0", null), ReadMarks(graph.feedCache(ReadMarks.key("following"))).position())
+        assertEquals("met at a conference", graph.profileNotes.of("1")?.note)
+        assertTrue(graph.profileFilters.filters().repostsHidden("1"))
+        assertEquals(setOf("other"), graph.profileFilters.filters().hiddenReplyHandles)
+
+        val exported = BackupDocument.parse(DeviceBackup(graph) { now }.export(ExportChoice.everything(includeAccounts = false)))!!
+        val counts = exported.counts()
+        assertEquals(2, counts[BackupCategory.SUBSCRIPTIONS]?.minus(1))
+        assertEquals(2, counts[BackupCategory.SAVED_POSTS])
+        assertEquals(1, counts[BackupCategory.THREADS])
+        assertEquals(1, counts[BackupCategory.UPVOTES])
+        assertNull(counts[BackupCategory.ACCOUNTS])
+        assertEquals(2, counts[BackupCategory.READ_POSITIONS])
+        assertEquals(2, counts[BackupCategory.FILTERS])
+        assertEquals(1, counts[BackupCategory.PROFILE_NOTES])
+        assertEquals("AAEC", exported.localPosts!!.single().media.single().data)
+    }
+
+    @Test
+    fun profileNotesAndFiltersGoOutAndComeBackThroughTheirStores(): Unit = runBlocking {
+        val graph = AppGraph(dir, flowOf(true), "test")
+        graph.profileNotes.set("42", "met at a conference")
+        graph.profileFilters.setRepostsHidden("42", "Tommy", true)
+        graph.profileFilters.setRepliesHidden("7", "Maya", true)
+        val exported = BackupDocument.parse(DeviceBackup(graph).export(ExportChoice(filters = true)))!!
+        assertEquals(listOf("42"), exported.profileNotes!!.map { it.profileId })
+        assertEquals(listOf(FeedFilterRow("42", "tommy")), exported.repostFilters)
+        assertEquals(listOf(FeedFilterRow("7", "maya")), exported.replyFilters)
+
+        val other = AppGraph(File(dir, "other"), flowOf(true), "test")
+        other.profileNotes.set("9", "stays")
+        DeviceBackup(other).restore(exported, includeReadPositions = false)
+        assertEquals("met at a conference", other.profileNotes.of("42")?.note)
+        assertEquals("stays", other.profileNotes.of("9")?.note, "a note replaces the one on its profile, as XTA's import does")
+        assertTrue(other.profileFilters.filters().repostsHidden("42"))
+        assertTrue(other.profileFilters.filters().repliesHidden("7"))
+    }
+
+    @Test
+    fun theProfileRowsAnOlderBuildKeptGoToTheirStoresOnce(): Unit = runBlocking {
+        val kept = File(dir, "store/" + KeptSections.FILE)
+        kept.parentFile.mkdirs()
+        kept.writeText(
+            BackupDocument(
+                profileNotes = listOf(ProfileNoteRow("1", "old note")),
+                repostFilters = listOf(FeedFilterRow("1", "Reader")),
+                threadsSubscriptions = listOf(ProfileSubscriptionRow("t", "T")),
+            ).encode(),
+        )
+        val graph = AppGraph(dir, flowOf(true), "test")
+        DeviceBackup(graph).adoptKeptProfiles()
+        assertEquals("old note", graph.profileNotes.of("1")?.note)
+        assertTrue(graph.profileFilters.filters().repostsHidden("1"))
+
+        graph.profileNotes.set("1", "newer")
+        DeviceBackup(AppGraph(dir, flowOf(true), "test")).adoptKeptProfiles()
+        assertEquals("newer", ProfileNotesStore(StoreDir(File(dir, "store"))).of("1")?.note, "taken once, never again over what came after")
+        val left = BackupDocument.parse(kept.readText())!!
+        assertNull(left.profileNotes)
+        assertEquals("t", left.threadsSubscriptions!!.single().id, "the rest stays kept")
+    }
+
+    /** A plugin's backup section, keeping its text in memory. */
+    private class FakeSection(name: String, var text: String? = null, failing: Boolean = false) {
+        val section = PluginSection(name, export = { text }, import = {
+            if (failing) error("broken")
+            text = it
+        })
+    }
+
+    @Test
+    fun eachRunningPluginTakesItsSectionsAndTheOthersWaitForTheirs(): Unit = runBlocking {
+        val graph = AppGraph(dir, flowOf(true), "test")
+        val bluesky = FakeSection("bluesky.follows", "mine")
+        graph.pluginBackups.attach(listOf(bluesky.section))
+        val restored = BackupDocument(pluginSections = mapOf("bluesky.follows" to "restored", "reddit.votes" to "up"))
+        DeviceBackup(graph).restore(restored, includeReadPositions = false)
+        assertEquals("restored", bluesky.text)
+        assertEquals(mapOf("reddit.votes" to "up"), graph.kept.get().pluginSections, "kept for a plugin that is not running")
+
+        bluesky.text = "followed since"
+        val exported = BackupDocument.parse(DeviceBackup(graph).export(ExportChoice(subscriptions = true)))!!
+        assertEquals(mapOf("reddit.votes" to "up", "bluesky.follows" to "followed since"), exported.pluginSections)
+
+        val reddit = FakeSection("reddit.votes")
+        graph.pluginBackups.attach(listOf(bluesky.section, reddit.section))
+        assertEquals("up", reddit.text, "installed, a plugin gets what was kept for it")
+        assertNull(graph.kept.get().pluginSections, "which is kept no more: uninstalling erases it")
+    }
+
+    @Test
+    fun aSectionAPluginCannotTakeStaysKeptAndGoesOut(): Unit = runBlocking {
+        val graph = AppGraph(dir, flowOf(true), "test")
+        graph.pluginBackups.attach(listOf(FakeSection("broken.data", failing = true).section))
+        DeviceBackup(graph).restore(BackupDocument(pluginSections = mapOf("broken.data" to "text")), includeReadPositions = false)
+        assertEquals(mapOf("broken.data" to "text"), graph.kept.get().pluginSections)
+        val exported = BackupDocument.parse(DeviceBackup(graph).export(ExportChoice(subscriptions = true)))!!
+        assertEquals(mapOf("broken.data" to "text"), exported.pluginSections)
+    }
+
+    @Test
+    fun readingPositionsAreRestoredOnlyWhenAskedFor(): Unit = runBlocking {
+        val graph = AppGraph(dir, flowOf(true), "test")
+        DeviceBackup(graph).restore(backup(), includeReadPositions = false)
+        assertNull(ReadMarks(graph.feedCache(ReadMarks.key("g1"))).position())
+    }
+
+    /** XTA's rows as a plugin keeps them: the text of their list. */
+    private fun rowsText(vararg rows: NamedSubscriptionRow): String = JsonArray(rows.map { it.toJson() }).toString()
+
+    private fun namedRows(text: String?): List<Pair<String, String>> =
+        J.parse(text.orEmpty()).list.mapNotNull { NamedSubscriptionRow.from(it) }.map { it.id to it.name }
+
+    private suspend fun exported(graph: AppGraph): BackupDocument = BackupDocument.parse(DeviceBackup(graph).export(ExportChoice(subscriptions = true)))!!
+
+    @Test
+    fun xtasRowsGoToThePluginWhoseSectionTheirKeyNamesOverWhatItKeeps(): Unit = runBlocking {
+        val graph = AppGraph(dir, flowOf(true), "test")
+        val reddit = FakeSection(BackupKeys.REDDIT_SUBSCRIPTIONS, rowsText(NamedSubscriptionRow("mine", "mine"), NamedSubscriptionRow("dart", "Dart")))
+        graph.pluginBackups.attach(listOf(reddit.section))
+        val xta = BackupDocument(redditSubscriptions = listOf(NamedSubscriptionRow("dart", "dartlang"), NamedSubscriptionRow("kotlin", "Kotlin")))
+        DeviceBackup(graph).restore(xta, includeReadPositions = false)
+        assertEquals(listOf("mine" to "mine", "dart" to "dartlang", "kotlin" to "Kotlin"), namedRows(reddit.text), "a row replaces the one with its id, as XTA's import writes it")
+        assertNull(graph.kept.get().redditSubscriptions, "taken, they are kept no more: uninstalling the plugin erases them")
+
+        DeviceBackup(graph).restore(BackupDocument(redditSubscriptions = emptyList()), includeReadPositions = false)
+        assertEquals(3, namedRows(reddit.text).size, "a table XTA wrote without rows leaves the plugin's alone")
+    }
+
+    @Test
+    fun aRunningPluginsSectionNamedByXtasKeyGoesOutWhereXtaReadsIt(): Unit = runBlocking {
+        val graph = AppGraph(dir, flowOf(true), "test")
+        DeviceBackup(graph).restore(BackupDocument(booruSubscriptions = listOf(NamedSubscriptionRow("solo", "solo"))), includeReadPositions = false)
+        val alone = DeviceBackup(graph).export(ExportChoice(subscriptions = true))
+        assertEquals(BackupDocument().toJson().keys, J.parse(alone).keys, "without a plugin's data, only the keys XTA writes")
+
+        val reddit = FakeSection(BackupKeys.REDDIT_SUBSCRIPTIONS, rowsText(NamedSubscriptionRow("dart", "Dart")))
+        graph.pluginBackups.attach(listOf(reddit.section, FakeSection("bluesky.follows", "mine").section))
+        val exported = exported(graph)
+        assertEquals(listOf(NamedSubscriptionRow("dart", "Dart")), exported.redditSubscriptions)
+        assertEquals(mapOf("bluesky.follows" to "mine"), exported.pluginSections, "only a section XTA has no key for")
+        assertEquals("solo", exported.booruSubscriptions!!.single().id, "kept for a plugin that is not running")
+        assertEquals(emptyList(), exported.substackSubscriptions, "and every other table, as XTA writes them")
+    }
+
+    @Test
+    fun aRunningPluginsRowsGoOutInPlaceOfTheOnesKeptForIt(): Unit = runBlocking {
+        val graph = AppGraph(dir, flowOf(true), "test")
+        graph.pluginBackups.attach(listOf(FakeSection(BackupKeys.REDDIT_SUBSCRIPTIONS, rowsText(NamedSubscriptionRow("dart", "Dart")), failing = true).section))
+        DeviceBackup(graph).restore(BackupDocument(redditSubscriptions = listOf(NamedSubscriptionRow("old", "old"))), includeReadPositions = false)
+        assertEquals("old", graph.kept.get().redditSubscriptions!!.single().id, "kept while the plugin cannot take them")
+        assertEquals(listOf("dart"), exported(graph).redditSubscriptions!!.map { it.id })
+    }
+
+    @Test
+    fun xtasRowsForAPluginNotInstalledGoOutWithEveryExportUntilItIsInstalledAndTakesThem(): Unit = runBlocking {
+        val follows = listOf(SubstackSubscriptionRow("astral", "https://astral.substack.com", "Astral"))
+        DeviceBackup(AppGraph(dir, flowOf(true), "test")).restore(BackupDocument(substackSubscriptions = follows), includeReadPositions = false)
+        val graph = AppGraph(dir, flowOf(true), "test")
+        assertEquals(follows, exported(graph).substackSubscriptions, "carried meanwhile, where XTA reads them")
+
+        val substack = FakeSection(BackupKeys.SUBSTACK_SUBSCRIPTIONS)
+        graph.pluginBackups.attach(listOf(substack.section))
+        assertEquals(follows, J.parse(substack.text!!).list.mapNotNull { SubstackSubscriptionRow.from(it) }, "installed, it takes them")
+        assertNull(graph.kept.get().substackSubscriptions, "and they are kept no more")
+
+        substack.text = "[]"
+        graph.pluginBackups.attach(listOf(substack.section))
+        assertEquals("[]", substack.text, "once")
+        assertEquals(emptyList(), exported(graph).substackSubscriptions)
+    }
+
+    private suspend fun membersOf(graph: AppGraph, group: String): List<String> = graph.sessions.state.value!!.groups.first { it.id == group }.memberIds
+
+    @Test
+    fun aRestoreGivesXtasGroupsTheirOtherNetworksAccountsAndAnExportWritesThemBackAsXtaDoes(): Unit = runBlocking {
+        val graph = AppGraph(dir, flowOf(true), "test")
+        DeviceBackup(graph).restore(networks(), includeReadPositions = false)
+        assertEquals(
+            listOf("1", "threads:aria", "bluesky:maya.bsky.social", "dartlang", "reddit:dartlang", "booru:sky", "tiktok:dancer", "gone"),
+            membersOf(graph, "g2"),
+            "their plugins not running yet, their rows wait for them",
+        )
+        val exported = BackupDocument.parse(DeviceBackup(graph).export(ExportChoice(subscriptions = true, groups = true, groupMembers = true)))!!
+        assertEquals(listOf("1", "aria", "maya.bsky.social", "dartlang", "booru:sky", "tiktok:dancer", "gone"), exported.groupMembers!!.map { it.profileId })
+        assertEquals("aria", exported.threadsSubscriptions!!.single().id)
+    }
+
+    @Test
+    fun rowsAnEarlierRestoreKeptTakeOverTheirBareMembersWhenTheirPluginRuns(): Unit = runBlocking {
+        val graph = AppGraph(dir, flowOf(true), "test")
+        graph.sessions.update { Session(groups = listOf(FollowGroup("g", "G", listOf("aria", "dart"))), searches = listOf(SavedSearch("dart", 0))) }
+        graph.kept.merge(BackupDocument(threadsSubscriptions = listOf(ProfileSubscriptionRow("aria", "Aria"), ProfileSubscriptionRow("dart", "Dart"))))
+        val threads = FakeSection(BackupKeys.THREADS_SUBSCRIPTIONS)
+        graph.pluginBackups.attach(listOf(threads.section))
+        assertEquals(listOf("threads:aria", "dart"), membersOf(graph, "g"), "the saved search stays one")
+        assertNull(graph.kept.get().threadsSubscriptions)
+    }
+
+    @Test
+    fun anAccountTheRunningPluginReadsByAnotherNameGoesOutAndComesBackByXtasName(): Unit = runBlocking {
+        val graph = AppGraph(dir, flowOf(true), "test")
+        val bluesky = FakeSection(BackupKeys.BLUESKY_SUBSCRIPTIONS, JsonArray(listOf(ProfileSubscriptionRow("maya.bsky.social", "Maya").toJson())).toString())
+        graph.pluginBackups.attach(listOf(bluesky.section)) { listOf(NetworkAccount("bluesky", "maya.bsky.social", "did:plc:maya")) }
+        val xta = BackupDocument(groups = networks().groups, groupMembers = listOf(GroupMemberRow("g2", "maya.bsky.social")))
+        DeviceBackup(graph).restore(xta, includeReadPositions = false)
+        assertEquals(listOf("bluesky:did:plc:maya"), membersOf(graph, "g2"))
+        val exported = BackupDocument.parse(DeviceBackup(graph).export(ExportChoice(subscriptions = true, groups = true, groupMembers = true)))!!
+        assertEquals(listOf("maya.bsky.social"), exported.groupMembers!!.map { it.profileId })
+    }
+
+    @Test
+    fun whatAnEarlierBuildWroteUnderPluginSectionsByXtasKeyReachesItsPluginBeforeXtasRows(): Unit = runBlocking {
+        val graph = AppGraph(dir, flowOf(true), "test")
+        val reddit = FakeSection(BackupKeys.REDDIT_SUBSCRIPTIONS)
+        graph.pluginBackups.attach(listOf(reddit.section))
+        val earlier = BackupDocument(
+            redditSubscriptions = listOf(NamedSubscriptionRow("kotlin", "Kotlin")),
+            pluginSections = mapOf(BackupKeys.REDDIT_SUBSCRIPTIONS to rowsText(NamedSubscriptionRow("dart", "Dart"))),
+        )
+        DeviceBackup(graph).restore(earlier, includeReadPositions = false)
+        assertEquals(listOf("dart" to "Dart", "kotlin" to "Kotlin"), namedRows(reddit.text))
+        assertEquals(BackupDocument(), graph.kept.get(), "both taken")
+    }
+}

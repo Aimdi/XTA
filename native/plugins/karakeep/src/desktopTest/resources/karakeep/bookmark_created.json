@@ -1,0 +1,26 @@
+{
+  "id": "ieidlxygmwj87oxz5hxttoc8",
+  "createdAt": "2026-07-25T10:00:00.000Z",
+  "modifiedAt": "2026-07-25T10:00:00.000Z",
+  "title": "Jack (@jack): just setting up my twttr",
+  "archived": false,
+  "favourited": false,
+  "taggingStatus": "pending",
+  "summarizationStatus": "pending",
+  "note": null,
+  "summary": null,
+  "source": "api",
+  "userId": "u7x3k9m2p5q8r1t4v6w0y2z4",
+  "tags": [],
+  "content": {
+    "type": "link",
+    "url": "https://x.com/jack/status/20",
+    "title": null,
+    "description": null,
+    "imageUrl": null,
+    "favicon": null,
+    "htmlContent": null,
+    "crawledAt": null
+  },
+  "assets": []
+}

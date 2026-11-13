@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chrome_confirm_close">Ви впевнені, що хочете закрити XTA?</string>
+    <string name="chrome_update_available">Доступне оновлення для XTA! 🚀</string>
+    <string name="chrome_update_view_version">Переглянути версію %1$s на GitHub</string>
+    <string name="chrome_update_view">Переглянути на GitHub</string>
+    <string name="chrome_update_download">Завантажити</string>
+    <string name="chrome_licences_legalese">Випущено за ліцензією MIT</string>
+    <plurals name="chrome_licences_count">
+        <item quantity="one">%1$d ліцензія</item>
+        <item quantity="few">%1$d ліцензії</item>
+        <item quantity="many">%1$d ліцензій</item>
+        <item quantity="other">%1$d ліцензії</item>
+    </plurals>
+</resources>

@@ -1,0 +1,57 @@
+{
+  "posts": [
+    {
+      "id": 6617540,
+      "created_at": "2026-08-11T19:31:24.361-04:00",
+      "updated_at": "2026-08-12T01:00:00.000-04:00",
+      "file": {"width": 200, "height": 300, "ext": "png", "size": 300, "md5": "aa", "url": "https://static1.e621.net/data/aa/bb/aabb.png"},
+      "preview": {"width": 100, "height": 150, "url": "https://static1.e621.net/data/preview/aa/bb/aabb.jpg"},
+      "sample": {"has": true, "height": 300, "width": 200, "url": "https://static1.e621.net/data/sample/aa/bb/aabb.jpg"},
+      "score": {"up": 4, "down": -1, "total": 3},
+      "tags": {
+        "general": ["smile"],
+        "artist": ["someone"],
+        "copyright": [],
+        "character": [],
+        "species": ["fox"],
+        "invalid": [],
+        "meta": [],
+        "lore": ["backstory"]
+      },
+      "locked_tags": [],
+      "rating": "s",
+      "fav_count": 7,
+      "sources": ["https://example.com/fox"],
+      "pools": [],
+      "relationships": {"parent_id": null, "has_children": false, "has_active_children": false, "children": [6617541]},
+      "uploader_id": 1,
+      "uploader_name": "uploader",
+      "description": "",
+      "comment_count": 1
+    },
+    {
+      "id": 1,
+      "created_at": "2026-08-10T10:00:00.000-04:00",
+      "file": {"width": 400, "height": 400, "ext": "gif", "size": 900000, "md5": "cc", "url": "https://static1.e621.net/data/cc/dd/ccdd.gif"},
+      "preview": {"url": "https://static1.e621.net/data/preview/cc/dd/ccdd.jpg"},
+      "sample": {"has": true, "url": "https://static1.e621.net/data/sample/cc/dd/ccdd.jpg"},
+      "score": {"up": 1, "down": 0, "total": 1},
+      "tags": {"general": ["animated"], "artist": [], "species": ["wolf"]},
+      "rating": "s",
+      "fav_count": 0,
+      "sources": [],
+      "relationships": {"parent_id": 6617540, "has_children": false, "children": []}
+    },
+    {
+      "id": 10,
+      "created_at": "2026-08-09T10:00:00.000-04:00",
+      "file": {"width": 300, "height": 300, "ext": "png", "size": 1000, "md5": "ee", "url": null},
+      "preview": {"url": null},
+      "sample": {"has": false, "url": null},
+      "score": {"up": 0, "down": 0, "total": 0},
+      "tags": {"general": ["young"]},
+      "rating": "s",
+      "relationships": {"parent_id": null, "has_children": false, "children": []}
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Hacker News</string>
+    <string name="plugin_description">Ler o Hacker News sem conta. Corações e marcadores ficam neste dispositivo.</string>
+    <string name="tab_top">Top</string>
+    <string name="tab_new">Novos</string>
+    <string name="tab_best">Melhores</string>
+    <string name="tab_ask">Ask</string>
+    <string name="tab_show">Show</string>
+    <string name="tab_jobs">Empregos</string>
+    <string name="tab_saved">Salvos</string>
+    <string name="tab_following">A seguir</string>
+    <string name="search">Pesquisar no Hacker News</string>
+    <string name="settings">Configurações</string>
+    <string name="feed_empty">Nada por agora</string>
+    <string name="saved_empty">Ainda sem salvos — os marcadores ficam neste dispositivo</string>
+    <string name="following_empty">Siga alguém para ver as histórias aqui</string>
+    <string name="by">por %1$s</string>
+    <string name="like">Curtir neste dispositivo</string>
+    <string name="unlike">Remover curtida deste dispositivo</string>
+    <string name="save">Salvar neste dispositivo</string>
+    <string name="unsave">Remover deste dispositivo</string>
+    <string name="comments">Comentários</string>
+    <string name="open_article">Abrir artigo</string>
+    <string name="deleted">[excluído]</string>
+    <string name="user_empty">Sem envios públicos</string>
+    <string name="follow">Seguir neste dispositivo</string>
+    <string name="unfollow">Deixar de seguir</string>
+    <string name="search_hint">Pesquisar histórias</string>
+    <string name="search_empty">Nenhuma história corresponde</string>
+    <string name="settings_blurb">Sem login. Votos e comentários ficam no Hacker News. Corações e marcadores ficam neste dispositivo.</string>
+    <plurals name="points">
+        <item quantity="one">%1$d ponto</item>
+        <item quantity="other">%1$d pontos</item>
+    </plurals>
+    <plurals name="comment_count">
+        <item quantity="one">%1$d comentário</item>
+        <item quantity="other">%1$d comentários</item>
+    </plurals>
+    <plurals name="user_karma">
+        <item quantity="one">%1$d karma</item>
+        <item quantity="other">%1$d karma</item>
+    </plurals>
+    <string name="more_options">Mais opções</string>
+</resources>

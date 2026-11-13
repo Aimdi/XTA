@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- An X post's footer, its share and ⋯ sheets and menus, its poll's line, and the contract addresses in its text (ui.post): XTA's words where XTA has them. -->
+<resources>
+    <string name="posts_share">Udostępnij post</string>
+    <string name="posts_share_content">Udostępnij treść tweeta</string>
+    <string name="posts_share_article_link">Udostępnij link do artykułu</string>
+    <string name="posts_share_content_and_link">Udostępnij treść tweeta i link</string>
+    <string name="posts_share_image">Udostępnij post jako obraz</string>
+    <string name="posts_share_article_image">Udostępnij artykuł jako obraz</string>
+    <string name="posts_copied">Skopiowano do schowka</string>
+    <string name="posts_reply_not_found">Przepraszamy, nie znaleziono tweeta z odpowiedzią!</string>
+    <string name="posts_subscribe">Subskrybuj</string>
+    <string name="contract_address_copied">Skopiowano adres kontraktu</string>
+    <string name="poll_no_votes">Brak głosów</string>
+    <plurals name="poll_ends_minutes">
+        <item quantity="one">Kończy się za %1$d minutę</item>
+        <item quantity="few">Kończy się za %1$d minuty</item>
+        <item quantity="many">Kończy się za %1$d minut</item>
+        <item quantity="other">Kończy się za %1$d minuty</item>
+    </plurals>
+    <plurals name="poll_ends_hours">
+        <item quantity="one">Kończy się za %1$d godzinę</item>
+        <item quantity="few">Kończy się za %1$d godziny</item>
+        <item quantity="many">Kończy się za %1$d godzin</item>
+        <item quantity="other">Kończy się za %1$d godziny</item>
+    </plurals>
+    <plurals name="poll_ends_days">
+        <item quantity="one">Kończy się za %1$d dzień</item>
+        <item quantity="few">Kończy się za %1$d dni</item>
+        <item quantity="many">Kończy się za %1$d dni</item>
+        <item quantity="other">Kończy się za %1$d dnia</item>
+    </plurals>
+    <plurals name="poll_ended_minutes">
+        <item quantity="one">Zakończono %1$d minutę temu</item>
+        <item quantity="few">Zakończono %1$d minuty temu</item>
+        <item quantity="many">Zakończono %1$d minut temu</item>
+        <item quantity="other">Zakończono %1$d minuty temu</item>
+    </plurals>
+    <plurals name="poll_ended_hours">
+        <item quantity="one">Zakończono %1$d godzinę temu</item>
+        <item quantity="few">Zakończono %1$d godziny temu</item>
+        <item quantity="many">Zakończono %1$d godzin temu</item>
+        <item quantity="other">Zakończono %1$d godziny temu</item>
+    </plurals>
+    <plurals name="poll_ended_days">
+        <item quantity="one">Zakończono %1$d dzień temu</item>
+        <item quantity="few">Zakończono %1$d dni temu</item>
+        <item quantity="many">Zakończono %1$d dni temu</item>
+        <item quantity="other">Zakończono %1$d dnia temu</item>
+    </plurals>
+    <plurals name="poll_ended_months">
+        <item quantity="one">Zakończono %1$d miesiąc temu</item>
+        <item quantity="few">Zakończono %1$d miesiące temu</item>
+        <item quantity="many">Zakończono %1$d miesięcy temu</item>
+        <item quantity="other">Zakończono %1$d miesiąca temu</item>
+    </plurals>
+    <plurals name="poll_ended_years">
+        <item quantity="one">Zakończono %1$d rok temu</item>
+        <item quantity="few">Zakończono %1$d lata temu</item>
+        <item quantity="many">Zakończono %1$d lat temu</item>
+        <item quantity="other">Zakończono %1$d roku temu</item>
+    </plurals>
+</resources>

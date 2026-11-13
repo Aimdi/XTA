@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">Đang theo dõi</string>
+    <string name="search">Tìm kiếm</string>
+    <string name="settings">Cài đặt</string>
+    <string name="dismiss">Bỏ qua</string>
+    <string name="retry">Thử lại</string>
+    <string name="back">Trở về</string>
+    <string name="close">Đóng</string>
+    <string name="cancel">Hủy</string>
+    <string name="post">Bài đăng</string>
+
+    <string name="pinned">Đã ghim</string>
+    <string name="reposted_by">%1$s đã đăng lại</string>
+    <string name="replying_to">Đang trả lời</string>
+    <string name="stat_reposts">Lượt đăng lại</string>
+    <string name="stat_quotes">Trích dẫn</string>
+    <string name="stat_likes">Lượt thích</string>
+
+    <string name="ago_seconds">%1$d giây</string>
+    <string name="ago_minutes">%1$d phút</string>
+    <string name="ago_hours">%1$d giờ</string>
+
+    <string name="problem_rate_limited">X đang giới hạn mọi tài khoản ở đây. Hãy thử lại sau vài phút.</string>
+    <string name="problem_offline">Không có kết nối tới X.</string>
+    <string name="problem_signing">Không thể chuẩn bị chữ ký cho yêu cầu tới X. Hãy thử lại sau giây lát.</string>
+    <string name="problem_refused">X đã từ chối yêu cầu (%1$d).</string>
+    <string name="problem_other">Đã xảy ra lỗi khi đọc X.</string>
+
+    <string name="import_intro">XTA Native là XTA được viết riêng cho Android, để so sánh với XTA. Ứng dụng đọc X bằng các tài khoản bạn đã dùng trong XTA.</string>
+    <string name="import_steps">Trong XTA, mở Cài đặt → Dữ liệu → Xuất, bật “Xuất thông tin tài khoản”, xuất, rồi chọn tệp đó ở đây.</string>
+    <string name="import_choose">Chọn bản sao lưu XTA</string>
+    <string name="import_choose_another">Chọn tệp khác</string>
+    <string name="import_no_accounts">Bản sao lưu này không có tài khoản X: hãy xuất lại với “Xuất thông tin tài khoản” được bật.</string>
+    <string name="import_use">Dùng bản sao lưu này</string>
+    <string name="import_privacy">Bản sao lưu chứa các phiên X của bạn. XTA Native giữ chúng trên điện thoại này, chỉ gửi chúng tới X và không bao giờ đăng, thích hay theo dõi gì ở đó.</string>
+
+    <string name="settings_clear">Xóa mọi thứ</string>
+    <string name="settings_clear_explained">Xóa các phiên X và các tài khoản đang theo dõi khỏi XTA Native. Bản thân XTA vẫn giữ mọi thứ.</string>
+    <string name="settings_clear_confirm">Xóa</string>
+
+    <string name="card_from">Từ %1$s</string>
+    <plurals name="poll_votes">
+        <item quantity="other">%1$s phiếu</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="other">%1$d bài đăng mới</item>
+    </plurals>
+    <string name="problem_x_private">Trang cá nhân riêng tư</string>
+    <string name="problem_x_missing">X đã không tìm thấy bài này, có lẽ vậy</string>
+    <string name="problem_x_user_missing">Không tìm thấy người dùng</string>
+    <string name="problem_x_suspended">Tài khoản đã dừng hoạt động</string>
+    <string name="problem_x_forbidden">Không thể truy cập theo X</string>
+    <string name="problem_x_guest">X đã xóa quyền truy cập theo token, vui lòng đóng ứng dụng và mở lại</string>
+</resources>

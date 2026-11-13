@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RSS's text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Ajouter un flux</string>
+    <string name="add_error">Impossible de lire ce flux</string>
+    <string name="add_hint">Collez l’URL d’un site ou d’un flux. XTA trouve le RSS ou l’Atom.</string>
+    <string name="add_placeholder">https://example.com/feed</string>
+    <string name="add_to_group">Ajouter à un groupe</string>
+    <string name="all">Tout</string>
+    <string name="cancel">Annuler</string>
+    <string name="close">Fermer</string>
+    <string name="data_exported_to">Données exportées vers %1$s</string>
+    <string name="empty">Suivez un flux pour voir ses articles ici</string>
+    <string name="empty_filter">Aucun contenu ne correspond à ces filtres</string>
+    <string name="feeds">Flux</string>
+    <string name="follow">Suivre</string>
+    <string name="following_empty">Aucun flux pour l’instant</string>
+    <string name="home">Accueil</string>
+    <string name="load_error">Impossible de charger les flux</string>
+    <string name="mark_all_read">Tout marquer comme lu</string>
+    <string name="more_options">Plus d'options</string>
+    <string name="opml_empty">Aucun flux dans ce fichier</string>
+    <string name="opml_export">Exporter les abonnements en OPML</string>
+    <string name="opml_export_description">Un fichier que d’autres lecteurs de flux peuvent importer.</string>
+    <string name="opml_import">Importer des abonnements depuis un OPML</string>
+    <string name="opml_import_description">Suit chaque flux du fichier ; ceux que vous suivez déjà restent inchangés.</string>
+    <string name="opml_importing">Importation : %1$d sur %2$d</string>
+    <string name="opml_result">Ajoutées : %1$d · Déjà suivies : %2$d · Échecs : %3$d</string>
+    <string name="partial_error">Impossible de charger %1$d sources</string>
+    <string name="plugin_description">Suivez des flux RSS et Atom publics. Les non-lus restent sur cet appareil.</string>
+    <string name="plugin_name">RSS</string>
+    <string name="reader_empty">Rien à lire pour le moment</string>
+    <string name="reset_filters">Réinitialiser les filtres</string>
+    <string name="retry">Réessayer</string>
+    <string name="set_tag">Définir une étiquette</string>
+    <string name="settings">Paramètres</string>
+    <string name="settings_blurb">Sans connexion. Suivez des flux publics. Les non-lus et les étiquettes restent sur cet appareil.</string>
+    <string name="tag">Étiquette</string>
+    <string name="tag_hint">Un libellé court, comme Actualités ou Blogs</string>
+    <string name="unfollow">Ne plus suivre</string>
+    <string name="unread">Non lus</string>
+    <string name="in_home_feed">Mélanger les flux suivis dans Abonnements</string>
+    <string name="in_home_feed_description">Afficher les nouveaux éléments des flux suivis dans le fil Abonnements.</string>
+    <string name="add_not_a_url">Ce n\'est pas une adresse web.</string>
+    <string name="add_no_feed">Aucun flux RSS ou Atom n\'a été trouvé, ni sur la page ni aux adresses habituelles.</string>
+</resources>

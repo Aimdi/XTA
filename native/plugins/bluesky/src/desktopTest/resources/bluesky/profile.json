@@ -1,0 +1,19 @@
+{
+  "did": "did:plc:z72i7hdynmk6r22z27h6tvur",
+  "handle": "bsky.app",
+  "displayName": "Bluesky",
+  "avatar": "https://cdn.bsky.app/img/avatar/plain/did:plc:z72i7hdynmk6r22z27h6tvur/bafkreihagr2cmvl2jt4mgx3sppwe2it3fwolkrbtjrhcnwjk4jdijhsoze@jpeg",
+  "banner": "https://cdn.bsky.app/img/banner/plain/did:plc:z72i7hdynmk6r22z27h6tvur/bafkreichzyovokfzmymz36p5jibbjrhsur6n7hjnzxrpbt5jaydp2szvna@jpeg",
+  "description": "official Bluesky account (check username👆)\n\nBugs, feature requests, feedback: support@bsky.app",
+  "createdAt": "2023-04-12T04:53:57.057Z",
+  "followersCount": 33000000,
+  "followsCount": 5,
+  "postsCount": "650",
+  "pinnedPost": {
+    "uri": "at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.post/3l6oveex3ii2l",
+    "cid": "bafyreie3ytfr4yq3drzmcmzoxjtdp3nvlnojhtkfrryvdx25odxbbnz7ya"
+  },
+  "associated": {"lists": 0, "feedgens": 8, "starterPacks": 0, "labeler": false},
+  "indexedAt": "2024-01-25T23:46:04.785Z",
+  "labels": []
+}

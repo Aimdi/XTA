@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Deepmarks</string>
+    <string name="plugin_description">Lagre innlegg i Deepmarks, bokmerketjenesten bygd på Nostr</string>
+    <string name="settings_intro">Deepmarks lagrer bokmerker som signerte Nostr-hendelser. Signeringsnøkkelen forlater aldri denne enheten: innlegget signeres her, og bare den ferdige hendelsen sendes.</string>
+    <string name="lifetime_notice">API-tilgang krever livstidsmedlemskap i Deepmarks.</string>
+    <string name="api_key">API-nøkkel</string>
+    <string name="api_key_hint">Begynner med dmk_live_, fra «api access» i Deepmarks-innstillingene</string>
+    <string name="identity">Signeringsidentitet</string>
+    <string name="secret_key">Signeringsnøkkel</string>
+    <string name="secret_key_hint">Din nsec, blir bare på denne enheten. Den signerer hvert bokmerke og sendes aldri til Deepmarks.</string>
+    <string name="signing_as">Signerer som %1$s</string>
+    <string name="api_base">Serveradresse</string>
+    <string name="test">Test tilkoblingen</string>
+    <string name="test_ok">Koblet til Deepmarks</string>
+    <string name="test_ok_unverified">Nøkkelen ble godtatt, men kontoen har ennå ingen offentlige bokmerker å sjekke signeringsnøkkelen mot</string>
+    <string name="not_configured">Legg inn Deepmarks-API-nøkkel og signeringsnøkkel først</string>
+    <string name="error_secret_key">Dette er verken en gyldig nsec eller en 64-tegns heksnøkkel</string>
+    <string name="error_unauthorized">Deepmarks avviste API-nøkkelen</string>
+    <string name="error_lifetime">Deepmarks-API-et er bare for livstidsmedlemmer</string>
+    <string name="error_key_mismatch">Signeringsnøkkelen din hører til en annen Deepmarks-konto enn API-nøkkelen</string>
+    <string name="error_rejected">Deepmarks avviste dette bokmerket</string>
+    <string name="error_rate_limited">For mange forespørsler, prøv igjen om litt</string>
+    <string name="error_server">Ingen Deepmarks-API svarte på den adressen</string>
+    <string name="error_network">Kunne ikke nå Deepmarks</string>
+    <string name="learn_more">Om Deepmarks</string>
+    <string name="save_action">Lagre i Deepmarks</string>
+    <string name="saved">Lagret i Deepmarks</string>
+    <string name="saved_no_relay">Sendt til Deepmarks, men ingen relay har tatt imot det ennå</string>
+    <string name="saving">Lagrer i Deepmarks…</string>
+    <string name="show">Vis</string>
+    <string name="hide">Skjul</string>
+    <string name="save">Lagre</string>
+    <string name="connection">Tilkobling</string>
+</resources>

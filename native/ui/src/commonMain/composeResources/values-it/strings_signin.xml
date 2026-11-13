@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Signing in to X as XTA does (lib/client/login_webview.dart, x_cookie_login.dart). -->
+<resources>
+    <string name="signin_add_account">Aggiungi account</string>
+    <string name="signin_logging_in_title">Accesso a XTA</string>
+    <string name="signin_logging_in_text">L'account con cui accedi non cambia quello che vedi. Iscrizioni, gruppi e post salvati restano su questo dispositivo e non toccano mai il tuo account vero. XTA accede solo per leggere: non può mettere mi piace, ripubblicare o rispondere.\n\nPuoi aggiungere più account. XTA sceglie quello che non ha esaurito il limite di richieste sull'endpoint che gli serve e a cui non è appena fallito l'accesso: è questo che tiene lontano l'errore «Troppe richieste».</string>
+    <string name="signin_import_title">Importa iscrizioni</string>
+    <string name="signin_import_text">Le iscrizioni sono locali in XTA e indipendenti da quelle del tuo vero account X. Accedere non cambia le iscrizioni di XTA.\n\nVuoi importare in XTA le iscrizioni di @%1$s?</string>
+    <string name="signin_cookie_help">Accedi a x.com nel browser, apri gli strumenti per sviluppatori (F12) e copia i cookie auth_token e ct0 da Archiviazione → Cookie. Incollali qui sotto nel formato auth_token=…; ct0=…. Restano solo su questo computer e non vengono mai condivisi.</string>
+    <string name="signin_open_in_browser">Apri nel browser</string>
+    <string name="signin_username">Nome utente</string>
+    <string name="signin_cookies">Cookie di x.com</string>
+    <string name="signin_not_logged_in">Non connesso</string>
+    <string name="signin_why_needed">X rifiuta la maggior parte delle richieste che non arrivano da un account. XTA prova prima come ospite, e a volte funziona, ma senza un account aspettati più errori che post.\n\nAccedere permette a XTA soltanto di leggere X. Non pubblica, non mette mi piace, non ripubblica e non segue mai al posto tuo.</string>
+    <string name="signin_import_backup">Importa backup</string>
+    <string name="signin_login">Accedi</string>
+</resources>

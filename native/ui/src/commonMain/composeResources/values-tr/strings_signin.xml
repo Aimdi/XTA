@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Signing in to X as XTA does (lib/client/login_webview.dart, x_cookie_login.dart). -->
+<resources>
+    <string name="signin_add_account">Hesap ekle</string>
+    <string name="signin_logging_in_title">XTA'a giriş yapılıyor</string>
+    <string name="signin_logging_in_text">Hangi hesapla oturum açtığınız gördüklerinizi değiştirmez. Abonelikler, gruplar ve kaydedilen gönderiler bu cihazda kalır ve gerçek hesabınıza dokunmaz. XTA yalnızca okumak için oturum açar — beğenemez, yeniden paylaşamaz, yanıtlayamaz.\n\nBirden fazla hesap ekleyebilirsiniz. XTA, ihtiyaç duyduğu uç noktada istek sınırına takılmamış ve az önce oturum açmayı beceremediği bir hesap olmayanı seçer; "Çok fazla istek" hatasını uzak tutan da budur.</string>
+    <string name="signin_import_title">Abonelikleri içe aktar</string>
+    <string name="signin_import_text">Abonelikler yalnızca XTA'da tutulur. Gerçek X hesabınızdaki aboneliklerden bağımsızdır. Oturum açmak XTA aboneliklerini etkilemez.\n\n@%1$s hesabının aboneliklerini XTA'ya aktarmak ister misiniz?</string>
+    <string name="signin_cookie_help">Tarayıcınızda x.com'a giriş yapın, geliştirici araçlarını (F12) açın ve Depolama → Çerezler bölümünden auth_token ile ct0 çerezlerini kopyalayın. Bunları aşağıya auth_token=…; ct0=… biçiminde yapıştırın. Yalnızca bu bilgisayarda saklanır ve hiçbir zaman paylaşılmaz.</string>
+    <string name="signin_open_in_browser">Tarayıcıda aç</string>
+    <string name="signin_username">Kullanıcı adı</string>
+    <string name="signin_cookies">x.com çerezleri</string>
+    <string name="signin_not_logged_in">Giriş yapılmadı</string>
+    <string name="signin_why_needed">X, bir hesaptan gelmeyen isteklerin çoğunu reddeder. XTA önce misafir olarak dener ve bu bazen işe yarar, ama hesap olmadan gönderilerden çok hata görmeyi bekleyin.\n\nOturum açmak XTA'nın yalnızca X'i okumasını sağlar. Sizin adınıza asla gönderi paylaşmaz, beğenmez, yeniden paylaşmaz ve takip etmez.</string>
+    <string name="signin_import_backup">Yedeği içe aktar</string>
+    <string name="signin_login">Giriş yap</string>
+</resources>

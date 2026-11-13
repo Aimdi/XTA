@@ -1,0 +1,46 @@
+[
+  {
+    "id": 101,
+    "slug": "hello",
+    "title": "Hello",
+    "subtitle": "world",
+    "description": "longer excerpt",
+    "post_date": "2026-07-01T00:00:00.000Z",
+    "canonical_url": "https://fieldnotes.substack.com/p/hello",
+    "audience": "everyone",
+    "type": "newsletter",
+    "body_html": "<p>secret</p>",
+    "reactions": {"❤": 3, "😂": 2},
+    "publishedBylines": [{"name": "Author", "publicationUsers": [{"publication": {"name": "Field Notes", "subdomain": "fieldnotes"}}]}]
+  },
+  {
+    "id": 102,
+    "slug": "members-only",
+    "title": "Members only",
+    "subtitle": "...",
+    "description": "The paid part starts here",
+    "post_date": "2026-06-30T00:00:00.000Z",
+    "canonical_url": "https://fieldnotes.substack.com/p/members-only",
+    "audience": "only_paid",
+    "comment_count": -4,
+    "reaction_count": "many"
+  },
+  {
+    "id": 103,
+    "slug": "episode-12",
+    "title": "Episode 12",
+    "type": "podcast",
+    "podcast_url": "https://api.substack.com/feed/podcast/103/ep.mp3",
+    "post_date": "2026-06-29T00:00:00.000Z"
+  },
+  {
+    "id": 104,
+    "slug": "a-clip",
+    "title": "A clip",
+    "type": "newsletter",
+    "videoUpload": {"id": "v1"},
+    "wordcount": 40
+  },
+  false,
+  {"id": [], "title": false, "slug": 9}
+]

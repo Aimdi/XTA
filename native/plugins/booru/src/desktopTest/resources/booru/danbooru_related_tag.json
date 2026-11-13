@@ -1,0 +1,10 @@
+{
+  "query": "cat_ears",
+  "post_query": "cat_ears",
+  "tag_type": null,
+  "related_tags": [
+    {"tag": {"id": 1, "name": "cat_ears", "post_count": 400000, "category": 0}, "cosine_similarity": 1.0, "frequency": 1.0},
+    {"tag": {"id": 2, "name": "animal_ears", "post_count": 900000, "category": 0}, "cosine_similarity": 0.66, "frequency": 0.9},
+    {"tag": null}
+  ]
+}

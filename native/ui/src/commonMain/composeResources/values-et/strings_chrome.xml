@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chrome_confirm_close">Kas sa oled kindel, et soovid panna XTA'i kinni?</string>
+    <string name="chrome_update_available">XTA'i tarkvarauuendus on saadaval! 🚀</string>
+    <string name="chrome_update_view_version">Vaata versiooni %1$s GitHubis</string>
+    <string name="chrome_update_view">Vaata GitHubis</string>
+    <string name="chrome_update_download">Laadi alla</string>
+    <string name="chrome_licences_legalese">Avaldatud MIT litsentsi alusel</string>
+    <plurals name="chrome_licences_count">
+        <item quantity="one">%1$d litsents</item>
+        <item quantity="other">%1$d litsentsi</item>
+    </plurals>
+</resources>

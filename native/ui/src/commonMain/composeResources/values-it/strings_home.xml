@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
+     Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="home_x">X</string>
+    <string name="home_search_in">Cerca in %1$s</string>
+    <string name="home_open_menu">Apri il menu di navigazione</string>
+    <string name="home_add_timeline">Aggiungi timeline</string>
+    <string name="home_unread">Non letto</string>
+    <string name="home_refresh">Aggiorna</string>
+    <string name="home_open_group">Apri il gruppo</string>
+    <string name="home_more_options">Altre opzioni</string>
+        <string name="home_pin_to_bar_hint">Gli elementi fissati compaiono accanto alle sezioni quando la barra ha spazio. Tutto resta anche in questo menu.</string>
+    <string name="home_keep_controls_visible">Mantieni visibili i controlli</string>
+    <string name="home_pin_to_bar">Fissa nella barra in alto</string>
+
+    <string name="home_strip_title">Timeline dei plugin</string>
+    <string name="home_strip_intro">Fissa i plugin installati accanto a «Per te». Trascina per riordinare. Installane altri dallo store.</string>
+    <string name="home_strip_pinned">Su questa barra</string>
+    <string name="home_strip_available">Disponibili</string>
+    <string name="home_strip_empty">Nessun plugin da fissare. Apri lo store per installare Reddit, Pixiv, Mastodon e altri.</string>
+    <string name="home_strip_remove">Rimuovi dalla barra</string>
+    <string name="home_strip_reorder">Riordina</string>
+    <string name="home_plugin_store">Store dei plugin</string>
+
+    <string name="home_subscriptions">Iscrizioni</string>
+    <string name="home_discover">Scopri</string>
+    <string name="home_saved">Salvati</string>
+    <string name="home_downloads">Download</string>
+    <string name="home_antennas">Antenne</string>
+    <string name="home_deck">Deck</string>
+    <string name="home_deck_empty">Fissa dei gruppi per vederli affiancati su uno schermo ampio</string>
+    <string name="home_groups">Gruppi</string>
+    <string name="home_no_groups">Nessun gruppo ancora</string>
+    <string name="home_no_results">Nessun risultato</string>
+    <plurals name="home_group_members">
+        <item quantity="one">%1$d iscrizione</item>
+        <item quantity="other">%1$d iscrizioni</item>
+    </plurals>
+
+    <string name="home_feed_accounts">Account della home</string>
+    <string name="home_filter_accounts">Account</string>
+    <string name="home_filter_accounts_explained">Disattiva gli account di riserva tenuti solo per i limiti di frequenza. Per te unisce le timeline degli account lasciati attivi; Seguiti usa ancora i tuoi abbonamenti locali ma salta gli account disattivati in fase di recupero. Commenti e profili possono ancora usare qualsiasi account se serve.</string>
+    <string name="home_filter_groups_explained">Disattiva un gruppo per nasconderne i membri da Seguiti. La scheda del gruppo resta. I loro post vengono tolti anche da Per te.</string>
+    <string name="home_filter_only_hint">Tieni premuto un elemento per lasciare attivo solo quello.</string>
+    <string name="home_filter_keep_one">Almeno un account deve restare attivo</string>
+    <string name="home_filter_count">%1$d / %2$d</string>
+    <string name="home_filter_all">Tutti</string>
+    <string name="home_filter_none">Nessuno</string>
+    <string name="home_filter_reset">Reimposta filtri</string>
+    <string name="home_filter_apply">Applica</string>
+
+    <string name="home_for_you_empty">Impossibile caricare i post del feed</string>
+    <string name="home_for_you_no_account">Importa il backup di XTA con i suoi account per caricare Per te.</string>
+    <string name="home_import">Importa un backup di XTA</string>
+
+    <string name="home_home">Home</string>
+    <string name="home_networks">Reti</string>
+    <string name="home_networks_recent">Recenti</string>
+    <string name="home_networks_all">Tutte le reti</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">Raggruppa i servizi di microblogging</string>
+    <string name="home_alt_microblogging_group_detail">Mostra Mastodon, Bluesky e Threads in una sola sezione della Home. Disattiva per separarli. I dati e le impostazioni restano invariati.</string>
+    <string name="home_posts">Tweet</string>
+    <string name="home_media">Contenuti</string>
+    <string name="home_missing_page">Pagina mancante</string>
+    <string name="home_two_pages_required">È necessario avere almeno due pagine nella home.</string>
+    <string name="home_choose_pages">Scegli le pagine</string>
+    <string name="home_unable_to_load_pages">Impossibile caricare le tue pagine della home</string>
+    <string name="feed_strip_unavailable">Questa timeline non è più disponibile</string>
+    <string name="home_feed_accounts_empty">Aggiungi un account per caricare Per te.</string>
+</resources>

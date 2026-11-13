@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Signing in to X as XTA does (lib/client/login_webview.dart, x_cookie_login.dart). -->
+<resources>
+    <string name="signin_add_account">Ajouter un compte</string>
+    <string name="signin_logging_in_title">Connexion dans XTA</string>
+    <string name="signin_logging_in_text">Le compte avec lequel vous vous connectez ne change rien à ce que vous voyez. Les abonnements, les groupes et les publications enregistrées restent sur cet appareil et ne touchent jamais votre vrai compte. XTA se connecte uniquement pour lire X : il ne peut ni aimer, ni repartager, ni répondre.\n\nVous pouvez ajouter plusieurs comptes. XTA choisit celui qui n'a pas atteint la limite de requêtes sur le point d'accès dont il a besoin et dont la connexion vient de fonctionner : c'est ce qui tient l'erreur « Trop de requêtes » à distance.</string>
+    <string name="signin_import_title">Importer les abonnements</string>
+    <string name="signin_import_text">Les abonnements sont gérés localement dans XTA. Ils sont totalement indépendants de ceux de votre compte X. Se connecter n'affecte pas vos abonnements dans XTA.\n\nVoulez-vous importer les abonnements de @%1$s dans XTA ?</string>
+    <string name="signin_cookie_help">Connectez-vous à x.com dans votre navigateur, ouvrez les outils de développement (F12) et copiez les cookies auth_token et ct0 depuis Stockage → Cookies. Collez-les ci-dessous sous la forme auth_token=…; ct0=…. Ils restent uniquement sur cet ordinateur et ne sont jamais partagés.</string>
+    <string name="signin_open_in_browser">Ouvrir dans le navigateur</string>
+    <string name="signin_username">Nom d'utilisateur</string>
+    <string name="signin_cookies">Cookies de x.com</string>
+    <string name="signin_not_logged_in">Vous n'êtes pas connecté</string>
+    <string name="signin_why_needed">X refuse la plupart des requêtes qui ne viennent pas d'un compte. XTA essaie d'abord en tant qu'invité, ce qui fonctionne parfois, mais sans compte attendez-vous à voir plus d'erreurs que de publications.\n\nSe connecter permet seulement à XTA de lire X. L'application ne publie jamais, n'aime rien, ne repartage rien et ne suit personne à votre place.</string>
+    <string name="signin_import_backup">Importer une sauvegarde</string>
+    <string name="signin_login">Connexion</string>
+</resources>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Deepmarks</string>
+    <string name="plugin_description">पोस्ट को Deepmarks में सहेजें, Nostr आधारित बुकमार्क सेवा</string>
+    <string name="settings_intro">Deepmarks बुकमार्क को हस्ताक्षरित Nostr इवेंट के रूप में रखता है। आपकी हस्ताक्षर कुंजी इस डिवाइस से कभी बाहर नहीं जाती: पोस्ट यहीं हस्ताक्षरित होती है और केवल पूर्ण इवेंट भेजा जाता है।</string>
+    <string name="lifetime_notice">API पहुँच के लिए Deepmarks lifetime सदस्यता आवश्यक है।</string>
+    <string name="api_key">API कुंजी</string>
+    <string name="api_key_hint">dmk_live_ से शुरू, Deepmarks सेटिंग्स के «api access» से</string>
+    <string name="identity">हस्ताक्षर पहचान</string>
+    <string name="secret_key">हस्ताक्षर कुंजी</string>
+    <string name="secret_key_hint">आपका nsec केवल इस डिवाइस पर रहता है। यह प्रत्येक बुकमार्क पर हस्ताक्षर करता है और Deepmarks को कभी नहीं भेजा जाता।</string>
+    <string name="signing_as">%1$s के रूप में हस्ताक्षर</string>
+    <string name="api_base">सर्वर पता</string>
+    <string name="test">कनेक्शन जाँचें</string>
+    <string name="test_ok">Deepmarks से जुड़ गया</string>
+    <string name="test_ok_unverified">कुंजी स्वीकृत, पर खाते में अभी कोई सार्वजनिक बुकमार्क नहीं है जिससे हस्ताक्षर कुंजी जाँची जाए</string>
+    <string name="not_configured">पहले अपनी Deepmarks API कुंजी और हस्ताक्षर कुंजी जोड़ें</string>
+    <string name="error_secret_key">यह मान्य nsec या 64 अक्षरों की hex कुंजी नहीं है</string>
+    <string name="error_unauthorized">Deepmarks ने API कुंजी अस्वीकार कर दी</string>
+    <string name="error_lifetime">Deepmarks का API केवल lifetime सदस्यों के लिए है</string>
+    <string name="error_key_mismatch">आपकी हस्ताक्षर कुंजी API कुंजी से भिन्न Deepmarks खाते की है</string>
+    <string name="error_rejected">Deepmarks ने यह बुकमार्क अस्वीकार किया</string>
+    <string name="error_rate_limited">बहुत अधिक अनुरोध, कुछ देर बाद प्रयास करें</string>
+    <string name="error_server">उस पते पर कोई Deepmarks API उत्तर नहीं दिया</string>
+    <string name="error_network">Deepmarks तक पहुँच नहीं हो सकी</string>
+    <string name="learn_more">Deepmarks के बारे में</string>
+    <string name="save_action">Deepmarks में सहेजें</string>
+    <string name="saved">Deepmarks में सहेजा गया</string>
+    <string name="saved_no_relay">Deepmarks को भेजा गया, लेकिन अभी किसी relay ने स्वीकार नहीं किया</string>
+    <string name="saving">Deepmarks में सहेजा जा रहा है…</string>
+    <string name="show">दिखाएँ</string>
+    <string name="hide">छिपाएँ</string>
+    <string name="save">सहेजें</string>
+    <string name="connection">कनेक्शन</string>
+</resources>

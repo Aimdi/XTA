@@ -1,0 +1,98 @@
+{
+  "thread": {
+    "$type": "app.bsky.feed.defs#threadViewPost",
+    "post": {
+      "uri": "at://did:plc:alice/app.bsky.feed.post/focal",
+      "cid": "bafy-focal",
+      "author": {"did": "did:plc:alice", "handle": "alice.bsky.social", "displayName": "Alice"},
+      "record": {
+        "text": "focal",
+        "createdAt": "2026-08-01T10:00:00.000Z",
+        "reply": {
+          "root": {"uri": "at://did:plc:carol/app.bsky.feed.post/gone"},
+          "parent": {"uri": "at://did:plc:bob/app.bsky.feed.post/middle"}
+        }
+      },
+      "replyCount": 3
+    },
+    "parent": {
+      "$type": "app.bsky.feed.defs#threadViewPost",
+      "post": {
+        "uri": "at://did:plc:bob/app.bsky.feed.post/middle",
+        "cid": "bafy-middle",
+        "author": {"did": "did:plc:bob", "handle": "bob.bsky.social"},
+        "record": {
+          "text": "middle",
+          "createdAt": "2026-08-01T09:00:00.000Z",
+          "reply": {
+            "root": {"uri": "at://did:plc:carol/app.bsky.feed.post/gone"},
+            "parent": {"uri": "at://did:plc:carol/app.bsky.feed.post/gone"}
+          }
+        }
+      },
+      "parent": {
+        "$type": "app.bsky.feed.defs#notFoundPost",
+        "uri": "at://did:plc:carol/app.bsky.feed.post/gone",
+        "notFound": true
+      }
+    },
+    "replies": [
+      {
+        "$type": "app.bsky.feed.defs#threadViewPost",
+        "post": {
+          "uri": "at://did:plc:bob/app.bsky.feed.post/first",
+          "cid": "bafy-first",
+          "author": {"did": "did:plc:bob", "handle": "bob.bsky.social"},
+          "record": {
+            "text": "first reply",
+            "createdAt": "2026-08-01T11:00:00.000Z",
+            "reply": {
+              "root": {"uri": "at://did:plc:carol/app.bsky.feed.post/gone"},
+              "parent": {"uri": "at://did:plc:alice/app.bsky.feed.post/focal"}
+            }
+          },
+          "likeCount": 5
+        },
+        "replies": [
+          {
+            "$type": "app.bsky.feed.defs#threadViewPost",
+            "post": {
+              "uri": "at://did:plc:carol/app.bsky.feed.post/nested",
+              "cid": "bafy-nested",
+              "author": {"did": "did:plc:carol", "handle": "carol.bsky.social"},
+              "record": {"text": "nested", "createdAt": "2026-08-01T12:00:00.000Z"}
+            },
+            "replies": []
+          }
+        ]
+      },
+      {
+        "$type": "app.bsky.feed.defs#blockedPost",
+        "uri": "at://did:plc:eve/app.bsky.feed.post/blocked",
+        "blocked": true,
+        "author": {"did": "did:plc:eve", "viewer": {"blockedBy": false}}
+      },
+      {
+        "$type": "app.bsky.feed.defs#notFoundPost",
+        "uri": "at://did:plc:eve/app.bsky.feed.post/deleted",
+        "notFound": true
+      },
+      {
+        "$type": "app.bsky.feed.defs#threadViewPost",
+        "post": {
+          "uri": "at://did:plc:alice/app.bsky.feed.post/again",
+          "cid": "bafy-again",
+          "author": {"did": "did:plc:alice", "handle": "alice.bsky.social"},
+          "record": {
+            "text": "the author again",
+            "createdAt": "2026-08-01T13:00:00.000Z",
+            "reply": {
+              "root": {"uri": "at://did:plc:carol/app.bsky.feed.post/gone"},
+              "parent": {"uri": "at://did:plc:alice/app.bsky.feed.post/focal"}
+            }
+          }
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
+     Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="home_x">X</string>
+    <string name="home_search_in">%1$s içinde ara</string>
+    <string name="home_open_menu">Gezinme menüsünü aç</string>
+    <string name="home_add_timeline">Zaman çizelgesi ekle</string>
+    <string name="home_unread">Okunmamış</string>
+    <string name="home_refresh">Yenile</string>
+    <string name="home_open_group">Grubu aç</string>
+    <string name="home_more_options">Diğer seçenekler</string>
+        <string name="home_pin_to_bar_hint">Sabitlenen öğeler, çubukta yer olduğunda bölümlerin yanında görünür. Hepsi bu menüde de kalır.</string>
+    <string name="home_keep_controls_visible">Kontrolleri görünür tut</string>
+    <string name="home_pin_to_bar">Üst çubuğa sabitle</string>
+
+    <string name="home_strip_title">Eklenti zaman çizelgeleri</string>
+    <string name="home_strip_intro">Yüklü eklentileri «Sizin için» yanına sabitleyin. Sıralamak için sürükleyin. Daha fazlası eklenti mağazasında.</string>
+    <string name="home_strip_pinned">Bu şeritte</string>
+    <string name="home_strip_available">Eklenebilir</string>
+    <string name="home_strip_empty">Sabitlenecek eklenti yok. Reddit, Pixiv, Mastodon ve daha fazlası için mağazayı açın.</string>
+    <string name="home_strip_remove">Şeritten kaldır</string>
+    <string name="home_strip_reorder">Sıralamayı değiştir</string>
+    <string name="home_plugin_store">Eklenti mağazası</string>
+
+    <string name="home_subscriptions">Abonelikler</string>
+    <string name="home_discover">Keşfet</string>
+    <string name="home_saved">Kaydedilmiş</string>
+    <string name="home_downloads">İndirilenler</string>
+    <string name="home_antennas">Antenler</string>
+    <string name="home_deck">Sütunlar</string>
+    <string name="home_deck_empty">Geniş ekranda yan yana görmek için grupları sabitle</string>
+    <string name="home_groups">Gruplar</string>
+    <string name="home_no_groups">Henüz grup yok</string>
+    <string name="home_no_results">Sonuç yok</string>
+    <plurals name="home_group_members">
+        <item quantity="one">%1$d abonelik</item>
+        <item quantity="other">%1$d abonelik</item>
+    </plurals>
+
+    <string name="home_feed_accounts">Ana akış hesapları</string>
+    <string name="home_filter_accounts">Hesaplar</string>
+    <string name="home_filter_accounts_explained">Yalnızca hız limitleri için tuttuğunuz yedek hesapları kapatın. Senin için, açık hesapların ana sayfa akışlarını birleştirir; Takip edilenler yerel aboneliklerinizi kullanmaya devam eder ancak kapalı hesapları çekerken atlar. Yorumlar ve profiller gerekirse hâlâ herhangi bir hesabı kullanabilir.</string>
+    <string name="home_filter_groups_explained">Bir grubu kapatınca üyeleri Takip edilenler'den gizlenir. Grubun sekmesi kalır. Gönderileri Senin için'den de düşer.</string>
+    <string name="home_filter_only_hint">Yalnızca birini açık bırakmak için ona uzun basın.</string>
+    <string name="home_filter_keep_one">En az bir hesabın açık kalması gerekir</string>
+    <string name="home_filter_count">%1$d / %2$d</string>
+    <string name="home_filter_all">Hepsi</string>
+    <string name="home_filter_none">Hiçbiri</string>
+    <string name="home_filter_reset">Filtreleri sıfırla</string>
+    <string name="home_filter_apply">Uygula</string>
+
+    <string name="home_for_you_empty">Akışın gönderileri yüklenemiyor</string>
+    <string name="home_for_you_no_account">Senin için'i yüklemek için XTA yedeğini hesaplarıyla birlikte içe aktar.</string>
+    <string name="home_import">Bir XTA yedeğini içe aktar</string>
+
+    <string name="home_home">Ana sayfa</string>
+    <string name="home_networks">Ağlar</string>
+    <string name="home_networks_recent">Son kullanılanlar</string>
+    <string name="home_networks_all">Tüm ağlar</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">Mikroblog hizmetlerini grupla</string>
+    <string name="home_alt_microblogging_group_detail">Mastodon, Bluesky ve Threads’i ana ekranda tek bir bölümde gösterir. Ayrı göstermek için kapatın. Verileriniz ve ayarlarınız korunur.</string>
+    <string name="home_posts">Tweet'ler</string>
+    <string name="home_media">Medya</string>
+    <string name="home_missing_page">Eksik sayfa</string>
+    <string name="home_two_pages_required">En az 2 ana ekran sayfanızın olması gerekir.</string>
+    <string name="home_choose_pages">Sayfaları seçin</string>
+    <string name="home_unable_to_load_pages">Ana sayfalarınız yüklenemiyor</string>
+    <string name="feed_strip_unavailable">Bu zaman çizelgesi artık yok</string>
+    <string name="home_feed_accounts_empty">Sana özel’i yüklemek için bir hesap ekleyin.</string>
+</resources>

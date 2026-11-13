@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">Volgend</string>
+    <string name="search">Zoeken</string>
+    <string name="settings">Instellingen</string>
+    <string name="dismiss">Sluiten</string>
+    <string name="retry">Opnieuw</string>
+    <string name="back">Terug</string>
+    <string name="close">Sluiten</string>
+    <string name="cancel">Annuleren</string>
+    <string name="post">Post</string>
+
+    <string name="pinned">Vastgezet</string>
+    <string name="reposted_by">%1$s heeft gerepost</string>
+    <string name="replying_to">Antwoord aan</string>
+    <string name="stat_reposts">Reposts</string>
+    <string name="stat_quotes">Citaten</string>
+    <string name="stat_likes">Likes</string>
+
+    <string name="ago_seconds">%1$d s</string>
+    <string name="ago_minutes">%1$d min</string>
+    <string name="ago_hours">%1$d u</string>
+
+    <string name="problem_rate_limited">X beperkt hier elk account. Probeer het over een paar minuten opnieuw.</string>
+    <string name="problem_offline">Geen verbinding met X.</string>
+    <string name="problem_signing">Het ondertekenen van verzoeken aan X kon niet worden ingesteld. Probeer het zo opnieuw.</string>
+    <string name="problem_refused">X heeft het verzoek geweigerd (%1$d).</string>
+    <string name="problem_other">Er ging iets mis bij het lezen van X.</string>
+
+    <string name="import_intro">XTA Native is XTA, geschreven voor alleen Android, om met XTA te vergelijken. Het leest X met de accounts die je al in XTA gebruikt.</string>
+    <string name="import_steps">Open in XTA Instellingen → Gegevens → Exporteren, zet ‘Accounts exporteren’ aan, exporteer en kies dat bestand hier.</string>
+    <string name="import_choose">XTA-back-up kiezen</string>
+    <string name="import_choose_another">Ander bestand kiezen</string>
+    <string name="import_no_accounts">Deze back-up bevat geen X-accounts: exporteer opnieuw met ‘Accounts exporteren’ aan.</string>
+    <string name="import_use">Deze back-up gebruiken</string>
+    <string name="import_privacy">De back-up bevat je X-sessies. XTA Native bewaart ze op deze telefoon, stuurt ze alleen naar X en post, liket of volgt daar nooit iets.</string>
+
+    <string name="settings_clear">Alles verwijderen</string>
+    <string name="settings_clear_explained">Verwijdert de X-sessies en de gevolgde accounts uit XTA Native. XTA zelf houdt alles.</string>
+    <string name="settings_clear_confirm">Verwijderen</string>
+
+    <string name="card_from">Van %1$s</string>
+    <plurals name="poll_votes">
+        <item quantity="one">%1$s stem</item>
+        <item quantity="other">%1$s stemmen</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d nieuwe post</item>
+        <item quantity="other">%1$d nieuwe posts</item>
+    </plurals>
+    <string name="problem_x_private">Privé profiel</string>
+    <string name="problem_x_missing">Twitter meldt dat deze pagina niet bestaat, maar dit hoeft niet te kloppen</string>
+    <string name="problem_x_user_missing">Gebruiker niet gevonden</string>
+    <string name="problem_x_suspended">Account uitgeschakeld</string>
+    <string name="problem_x_forbidden">Twitter zegt dat de toegang verboden is</string>
+    <string name="problem_x_guest">Twitter heeft onze toegangssleutel ongeldig gemaakt. Probeer XTA opnieuw te starten!</string>
+</resources>

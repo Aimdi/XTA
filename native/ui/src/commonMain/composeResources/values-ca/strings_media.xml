@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="media_alt_badge">ALT</string>
+    <string name="media_alt_title">Descripció de la imatge</string>
+    <string name="media_tap_to_show">Fes un toc per mostrar %1$s</string>
+</resources>

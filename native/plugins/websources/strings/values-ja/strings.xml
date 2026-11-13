@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Web sources' text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">ソースを追加</string>
+    <string name="add_link">リンクから追加</string>
+    <string name="back">戻る</string>
+    <string name="cancel">キャンセル</string>
+    <plurals name="comments">
+        <item quantity="other">%1$d 件のコメント</item>
+    </plurals>
+    <string name="consent_from">%1$s から</string>
+    <string name="consent_read_only">公開ページを読むことしかできません。あなたのアカウントを使ったり、投稿したりはできません。</string>
+    <string name="consent_sites">次のサイトのページを読みます:</string>
+    <string name="consent_title">%1$s を追加しますか？</string>
+    <string name="discussion">ディスカッション</string>
+    <string name="empty">まだソースがありません。公開リストやリンクから追加してください。</string>
+    <string name="failure_blocked">このページはソースのリストにあるサイトのものではありません。</string>
+    <string name="failure_status">サイトがエラー %1$s を返しました。</string>
+    <string name="failure_too_large">このページは大きすぎて読めません。</string>
+    <string name="failure_unreachable">サイトに接続できませんでした。</string>
+    <string name="follow">フォロー</string>
+    <string name="install">追加</string>
+    <string name="installed">追加済み</string>
+    <string name="link">ソースのリンク</string>
+    <string name="link_placeholder">https://example.org/source.json</string>
+    <string name="list_empty">今は何もありません。</string>
+    <plurals name="lists">
+        <item quantity="other">%1$d 件のリスト</item>
+    </plurals>
+    <string name="more_options">その他のオプション</string>
+    <string name="ok">OK</string>
+    <string name="open_in_browser">ブラウザで開く</string>
+    <string name="plugin_description">公開リストやリンクからシンプルなサイトを追加します。ソースは公開ページだけを読み、新しいサイトを読む前に確認します。</string>
+    <string name="plugin_name">ウェブソース</string>
+    <plurals name="points">
+        <item quantity="other">%1$d ポイント</item>
+    </plurals>
+    <string name="published">公開ソース</string>
+    <string name="published_unreachable">公開リストを読み込めませんでした。</string>
+    <string name="reading">ソースを読み込んでいます…</string>
+    <string name="refused_detail">場所: %1$s</string>
+    <string name="refused_insecure">このソースは、リストにないサイトを読むか、HTTPS を使わずに読もうとします。</string>
+    <string name="refused_invalid">このソースのファイルに誤りがあります。</string>
+    <string name="refused_newer">このソースには新しいバージョンの XTA が必要です。</string>
+    <string name="refused_too_large">このソースは XTA が許可する範囲を超えています。</string>
+    <string name="refused_unreadable">これはウェブソースのファイルではありません。</string>
+    <string name="remove">ソースを削除</string>
+    <string name="remove_confirm">%1$s を削除しますか？このソースでフォローしているリストも削除されます。</string>
+    <string name="retry">再試行</string>
+    <string name="review_update">更新を確認</string>
+    <string name="search_in">%1$sを検索</string>
+    <string name="unfollow">フォロー解除</string>
+    <string name="unreachable">ソースのファイルを読めませんでした。リンクと接続を確認してください。</string>
+    <string name="update_title">%1$s を更新しますか？</string>
+    <string name="in_home_feed">フォロー中にフォローしたリストを混ぜる</string>
+    <string name="in_home_feed_description">フォロー中のタイムラインに、フォローしたリストの新しい投稿を表示します。</string>
+    <string name="settings">設定</string>
+</resources>

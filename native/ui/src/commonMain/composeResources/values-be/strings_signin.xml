@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Signing in to X as XTA does (lib/client/login_webview.dart, x_cookie_login.dart). -->
+<resources>
+    <string name="signin_add_account">Дадаць акаўнт</string>
+    <string name="signin_logging_in_title">Уваход у XTA</string>
+    <string name="signin_logging_in_text">Ад таго, пад якім уліковым запісам вы ўвайшлі, нічога не мяняецца. Падпіскі, групы і захаваныя допісы застаюцца на гэтай прыладзе і не закранаюць ваш сапраўдны акаўнт. XTA уваходзіць толькі каб чытаць — ён не можа ставіць адзнакі, рэпосціць ці адказваць.\n\nМожна дадаць некалькі ўліковых запісаў. XTA бярэ той, які не абмежаваны па патрэбнай канечнай кропцы і толькі што не зваліўся пры ўваходзе — гэта і трымае памылку «Занадта шмат запытаў» наводдаль.</string>
+    <string name="signin_import_title">Імпартаваць падпіскі</string>
+    <string name="signin_import_text">Падпіскі захоўваюцца толькі ў XTA. Яны не залежаць ад падпісак вашага сапраўднага акаўнта X. Уваход не ўплывае на падпіскі XTA.\n\nІмпартаваць у XTA падпіскі @%1$s?</string>
+    <string name="signin_cookie_help">Увайдзіце на x.com у браўзеры, адкрыйце інструменты распрацоўшчыка (F12) і скапіруйце cookie auth_token і ct0 з раздзела «Сховішча» → «Cookie». Устаўце іх ніжэй у выглядзе auth_token=…; ct0=…. Яны захоўваюцца толькі на гэтым камп'ютары і нікому не перадаюцца.</string>
+    <string name="signin_open_in_browser">Адкрыць у браўзеры</string>
+    <string name="signin_username">Імя карыстальніка</string>
+    <string name="signin_cookies">Cookie з x.com</string>
+    <string name="signin_not_logged_in">Не ўвайшлі</string>
+    <string name="signin_why_needed">X адхіляе большасць запытаў, якія не ідуць ад уліковага запісу. XTA спачатку спрабуе як госць, і часам гэта працуе, але без уліковага запісу чакайце хутчэй памылак, чым допісаў.\n\nУваход дазваляе XTA толькі чытаць X. Ён ніколі не публікуе, не ставіць адзнак, не рэпостыць і не падпісваецца за вас.</string>
+    <string name="signin_import_backup">Імпартаваць рэзервовую копію</string>
+    <string name="signin_login">Увайсці</string>
+</resources>

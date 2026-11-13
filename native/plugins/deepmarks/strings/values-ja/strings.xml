@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Deepmarks</string>
+    <string name="plugin_description">Nostr ベースのブックマークサービス Deepmarks に投稿を保存</string>
+    <string name="settings_intro">Deepmarks はブックマークを署名済みの Nostr イベントとして保存します。署名キーはこの端末から出ません。投稿はここで署名され、完成したイベントだけが送信されます。</string>
+    <string name="lifetime_notice">API を使うには Deepmarks の生涯メンバーシップが必要です。</string>
+    <string name="api_key">API キー</string>
+    <string name="api_key_hint">dmk_live_ で始まります。Deepmarks 設定の「api access」から取得します</string>
+    <string name="identity">署名の識別情報</string>
+    <string name="secret_key">署名キー</string>
+    <string name="secret_key_hint">nsec はこの端末にのみ保存されます。各ブックマークに署名し、Deepmarks には送信されません。</string>
+    <string name="signing_as">%1$s として署名</string>
+    <string name="api_base">サーバーアドレス</string>
+    <string name="test">接続をテスト</string>
+    <string name="test_ok">Deepmarks に接続しました</string>
+    <string name="test_ok_unverified">キーは受理されましたが、署名キーを照合できる公開ブックマークがまだアカウントにありません</string>
+    <string name="not_configured">先に Deepmarks の API キーと署名キーを設定してください</string>
+    <string name="error_secret_key">有効な nsec でも 64 文字の 16 進キーでもありません</string>
+    <string name="error_unauthorized">Deepmarks が API キーを拒否しました</string>
+    <string name="error_lifetime">Deepmarks の API は生涯メンバー限定です</string>
+    <string name="error_key_mismatch">署名キーは API キーとは別の Deepmarks アカウントのものです</string>
+    <string name="error_rejected">Deepmarks はこのブックマークを拒否しました</string>
+    <string name="error_rate_limited">リクエストが多すぎます。しばらくしてから試してください</string>
+    <string name="error_server">そのアドレスでは Deepmarks の API が応答しません</string>
+    <string name="error_network">Deepmarks に接続できません</string>
+    <string name="learn_more">Deepmarks について</string>
+    <string name="save_action">Deepmarks に保存</string>
+    <string name="saved">Deepmarks に保存しました</string>
+    <string name="saved_no_relay">Deepmarks に送信しましたが、まだどのリレーも受け取っていません</string>
+    <string name="saving">Deepmarks に保存しています…</string>
+    <string name="show">表示</string>
+    <string name="hide">非表示</string>
+    <string name="save">保存</string>
+    <string name="connection">接続</string>
+</resources>

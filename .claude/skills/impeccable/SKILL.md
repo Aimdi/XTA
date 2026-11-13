@@ -8,12 +8,13 @@ metadata:
 ## XTA project adaptation (read first)
 
 Read CLAUDE.md and docs/xta-design-skills.md from the repository root.
-They override generic upstream design advice. This is Android-only Flutter:
-refine existing layouts, preserve features and true-black support, and retain
-48 x 48 logical-pixel touch targets. Use Flutter guidance, not a web rewrite.
+They override generic upstream design advice. This is XTA Native, Kotlin and
+Compose Multiplatform for Android and the Linux desktop: refine existing layouts,
+preserve features and true-black support, and retain 48 x 48 dp touch targets.
+Use Jetpack Compose guidance, not a web rewrite.
 For this repo-local installation run examples from the repository root; resolve
 `.claude/skills/...` against that root when your working directory differs.
-Do not change approval settings, install hooks, or modify frozen API/DB code.
+Do not change approval settings, install hooks, or change the plugin API in a design pass.
 
 ---
 

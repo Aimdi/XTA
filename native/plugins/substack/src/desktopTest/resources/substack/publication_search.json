@@ -1,0 +1,15 @@
+{
+  "results": [
+    {
+      "subdomain": "bytebytego",
+      "name": "ByteByteGo Newsletter",
+      "logo_url": "https://example.com/logo.png",
+      "hero_text": "Explain complex systems",
+      "custom_domain": "blog.bytebytego.com",
+      "base_url": "https://blog.bytebytego.com"
+    },
+    {"subdomain": "platformer", "name": "Platformer"},
+    {"name": "Orphan"},
+    {"subdomain": "bad handle!", "name": "Not a handle"}
+  ]
+}

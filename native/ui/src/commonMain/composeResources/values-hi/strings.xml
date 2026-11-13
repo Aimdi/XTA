@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">फ़ॉलोइंग</string>
+    <string name="search">खोजें</string>
+    <string name="settings">सेटिंग</string>
+    <string name="dismiss">बंद करें</string>
+    <string name="retry">पुनः प्रयास करें</string>
+    <string name="back">वापस</string>
+    <string name="close">बंद करें</string>
+    <string name="cancel">रद्द करें</string>
+    <string name="post">पोस्ट</string>
+
+    <string name="pinned">पिन की गई</string>
+    <string name="reposted_by">%1$s ने रीपोस्ट किया</string>
+    <string name="replying_to">जवाब दे रहे हैं</string>
+    <string name="stat_reposts">रीपोस्ट</string>
+    <string name="stat_quotes">उद्धरण</string>
+    <string name="stat_likes">पसंद</string>
+
+    <string name="ago_seconds">%1$d से॰</string>
+    <string name="ago_minutes">%1$d मि॰</string>
+    <string name="ago_hours">%1$d घं॰</string>
+
+    <string name="problem_rate_limited">X यहाँ के हर खाते को सीमित कर रहा है। कुछ मिनट बाद फिर कोशिश करें।</string>
+    <string name="problem_offline">X से कोई कनेक्शन नहीं है।</string>
+    <string name="problem_signing">X के अनुरोधों का हस्ताक्षर तैयार नहीं हो सका। थोड़ी देर में फिर कोशिश करें।</string>
+    <string name="problem_refused">X ने अनुरोध अस्वीकार कर दिया (%1$d)।</string>
+    <string name="problem_other">X पढ़ते समय कुछ गड़बड़ हो गई।</string>
+
+    <string name="import_intro">XTA Native केवल Android के लिए लिखा गया XTA है, ताकि उसकी XTA से तुलना की जा सके। यह X को उन्हीं खातों से पढ़ता है जिन्हें आप XTA में पहले से इस्तेमाल करते हैं।</string>
+    <string name="import_steps">XTA में सेटिंग → डेटा → निर्यात खोलें, “खाते निर्यात करें” चालू करें, निर्यात करें, फिर वह फ़ाइल यहाँ चुनें।</string>
+    <string name="import_choose">XTA बैकअप चुनें</string>
+    <string name="import_choose_another">दूसरी फ़ाइल चुनें</string>
+    <string name="import_no_accounts">इस बैकअप में कोई X खाता नहीं है: “खाते निर्यात करें” चालू करके फिर से निर्यात करें।</string>
+    <string name="import_use">यह बैकअप इस्तेमाल करें</string>
+    <string name="import_privacy">बैकअप में आपके X सेशन हैं। XTA Native उन्हें इसी फ़ोन पर रखता है, उन्हें सिर्फ़ X को भेजता है, और वहाँ कभी कुछ पोस्ट, लाइक या फ़ॉलो नहीं करता।</string>
+
+    <string name="settings_clear">सब कुछ हटाएँ</string>
+    <string name="settings_clear_explained">XTA Native से X सेशन और फ़ॉलो किए गए खाते हटाता है। XTA स्वयं सब कुछ रखता है।</string>
+    <string name="settings_clear_confirm">हटाएँ</string>
+
+    <string name="card_from">%1$s से</string>
+    <plurals name="poll_votes">
+        <item quantity="one">%1$s वोट</item>
+        <item quantity="other">%1$s वोट</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d नई पोस्ट</item>
+        <item quantity="other">%1$d नई पोस्ट</item>
+    </plurals>
+    <string name="problem_x_private">निजी प्रोफ़ाइल</string>
+    <string name="problem_x_missing">X का कहना है कि पृष्ठ मौजूद नहीं है, लेकिन यह सच नहीं हो सकता</string>
+    <string name="problem_x_user_missing">उपयोगकर्ता नहीं मिला</string>
+    <string name="problem_x_suspended">अकाउंट निलंबित</string>
+    <string name="problem_x_forbidden">X का कहना है कि इस तक पहुँच प्रतिबंधित है</string>
+    <string name="problem_x_guest">X ने हमारा एक्सेस टोकन अमान्य कर दिया है। कृपया XTA को फिर से खोलने का प्रयास करें!</string>
+</resources>

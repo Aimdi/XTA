@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Karakeep</string>
+    <string name="plugin_description">Зберігайте пости й посилання на власний сервер Karakeep одним дотиком</string>
+    <string name="settings_intro">Karakeep — це сервіс закладок, який ви розміщуєте самі. Введіть адресу свого примірника та ключ API з «Налаштування &gt; Ключі API» у Karakeep.</string>
+    <string name="server_url">Адреса сервера</string>
+    <string name="server_url_hint">Наприклад, karakeep.example.com</string>
+    <string name="api_key">Ключ API</string>
+    <string name="api_key_hint">Залишається лише на цьому пристрої</string>
+    <string name="test">Перевірити з’єднання</string>
+    <string name="test_ok">З’єднано з Karakeep</string>
+    <string name="not_configured">Спочатку вкажіть сервер Karakeep і ключ API</string>
+    <string name="error_unauthorized">Karakeep відхилив ключ API</string>
+    <string name="error_server_url">За цією адресою Karakeep не знайдено</string>
+    <string name="error_network">Не вдалося зв’язатися з сервером Karakeep</string>
+    <string name="error_generic">Karakeep не зміг зберегти це посилання</string>
+    <string name="learn_more">Про Karakeep</string>
+    <string name="save_action">Зберегти в Karakeep</string>
+    <string name="saved">Збережено в Karakeep</string>
+    <string name="already_saved">Уже є в Karakeep</string>
+    <string name="saving">Збереження в Karakeep…</string>
+    <string name="show">Показати</string>
+    <string name="hide">Сховати</string>
+    <string name="save">Зберегти</string>
+    <string name="connection">З’єднання</string>
+</resources>

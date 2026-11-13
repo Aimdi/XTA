@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
+     Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="home_x">X</string>
+    <string name="home_search_in">Bilatu %1$s(e)n</string>
+    <string name="home_open_menu">Ireki nabigazio-menua</string>
+    <string name="home_add_timeline">Gehitu denbora-lerroa</string>
+    <string name="home_unread">Irakurri gabe</string>
+    <string name="home_refresh">Freskatu</string>
+    <string name="home_open_group">Ireki taldea</string>
+    <string name="home_more_options">Aukera gehiago</string>
+        <string name="home_pin_to_bar_hint">Ainguratutako elementuak atalen ondoan agertzen dira barran lekua dagoenean. Dena menu honetan ere geratzen da.</string>
+    <string name="home_keep_controls_visible">Mantendu kontrolak ikusgai</string>
+    <string name="home_pin_to_bar">Ainguratu goiko barran</string>
+
+    <string name="home_strip_title">Plugin denbora-lerroak</string>
+    <string name="home_strip_intro">Ainguratu instalatutako pluginak «Zuretzat» ondoan. Arrastatu berrordenatzeko. Gehiago plugin dendatik.</string>
+    <string name="home_strip_pinned">Barratxo honetan</string>
+    <string name="home_strip_available">Gehigarriak</string>
+    <string name="home_strip_empty">Ez dago ainguratzeko pluginik. Ireki denda Reddit, Pixiv, Mastodon… instalatzeko.</string>
+    <string name="home_strip_remove">Kendu barratxotik</string>
+    <string name="home_strip_reorder">Berrordenatu</string>
+    <string name="home_plugin_store">Plugin-denda</string>
+
+    <string name="home_subscriptions">Harpidetzak</string>
+    <string name="home_discover">Ezagutu</string>
+    <string name="home_saved">Gordeak</string>
+    <string name="home_downloads">Deskargak</string>
+    <string name="home_antennas">Antenak</string>
+    <string name="home_deck">Zutabeak</string>
+    <string name="home_deck_empty">Ainguratu taldeak pantaila zabal batean elkarren ondoan ikusteko</string>
+    <string name="home_groups">Taldeak</string>
+    <string name="home_no_groups">Oraindik ez dago talderik</string>
+    <string name="home_no_results">Ez dago emaitzarik</string>
+    <plurals name="home_group_members">
+        <item quantity="one">Harpidetza %1$d</item>
+        <item quantity="other">%1$d harpidetza</item>
+    </plurals>
+
+    <string name="home_feed_accounts">Hasierako kontuak</string>
+    <string name="home_filter_accounts">Kontuak</string>
+    <string name="home_filter_accounts_explained">Itzali tasa-mugetarako bakarrik gordetzen dituzun erreserba-kontuak. Zuretzat piztuta dauden kontuen hasierako kronologiak biltzen ditu; Jarraitzen tokiko harpidetzak erabiltzen jarraitzen du, baina itzalitakoak saltatzen ditu eskuratzean. Iruzkinek eta profilek edozein kontu erabil dezakete behar izanez gero.</string>
+    <string name="home_filter_groups_explained">Desaktibatu talde bat kideak Jarraitzen ataletik ezkutatzeko. Taldearen fitxa geratzen da. Haien argitalpenak Zuretzat ataletik ere kentzen dira.</string>
+    <string name="home_filter_only_hint">Sakatu luze bat hori bakarrik aktibo uzteko.</string>
+    <string name="home_filter_keep_one">Gutxienez kontu bat piztuta utzi behar da</string>
+    <string name="home_filter_count">%1$d / %2$d</string>
+    <string name="home_filter_all">Dena</string>
+    <string name="home_filter_none">Bat ere ez</string>
+    <string name="home_filter_reset">Berrezarri iragazkiak</string>
+    <string name="home_filter_apply">Aplikatu</string>
+
+    <string name="home_for_you_empty">Ezin dira kargatu jarioko argitalpenak</string>
+    <string name="home_for_you_no_account">Zuretzat kargatzeko, inportatu XTAren babeskopia bere kontuekin.</string>
+    <string name="home_import">Inportatu XTAren babeskopia bat</string>
+
+    <string name="home_home">Hasiera</string>
+    <string name="home_networks">Sareak</string>
+    <string name="home_networks_recent">Azkenak</string>
+    <string name="home_networks_all">Sare guztiak</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">Taldekatu mikroblog-zerbitzuak</string>
+    <string name="home_alt_microblogging_group_detail">Erakutsi Mastodon, Bluesky eta Threads hasierako pantailako atal bakarrean. Desaktibatu bereizita erakusteko. Datuak eta ezarpenak bere horretan mantenduko dira.</string>
+    <string name="home_posts">Txioak</string>
+    <string name="home_media">Multimedia</string>
+    <string name="home_missing_page">Orria falta da</string>
+    <string name="home_two_pages_required">Gutxienez 2 hasiera-orri behar dituzu</string>
+    <string name="home_choose_pages">Aukeratu orriak</string>
+    <string name="home_unable_to_load_pages">Ezin dira hasierako orriak kargatu</string>
+    <string name="feed_strip_unavailable">Denbora-lerro hau ez dago erabilgarri</string>
+    <string name="home_feed_accounts_empty">Gehitu kontu bat Zuretzat kargatzeko.</string>
+</resources>

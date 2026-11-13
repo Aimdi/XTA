@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Hacker News</string>
+    <string name="plugin_description">Читайте Hacker News без облікового запису. Сердечка й закладки лишаються на цьому пристрої.</string>
+    <string name="tab_top">Топ</string>
+    <string name="tab_new">Нові</string>
+    <string name="tab_best">Найкращі</string>
+    <string name="tab_ask">Ask</string>
+    <string name="tab_show">Show</string>
+    <string name="tab_jobs">Вакансії</string>
+    <string name="tab_saved">Збережені</string>
+    <string name="tab_following">Підписки</string>
+    <string name="search">Пошук у Hacker News</string>
+    <string name="settings">Налаштування</string>
+    <string name="feed_empty">Тут поки порожньо</string>
+    <string name="saved_empty">Ще немає збережених історій — закладки лишаються на цьому пристрої</string>
+    <string name="following_empty">Підпишіться на когось, щоб бачити історії тут</string>
+    <string name="by">від %1$s</string>
+    <string name="like">Вподобати на цьому пристрої</string>
+    <string name="unlike">Прибрати вподобання з цього пристрою</string>
+    <string name="save">Зберегти на цьому пристрої</string>
+    <string name="unsave">Видалити з цього пристрою</string>
+    <string name="comments">Коментарі</string>
+    <string name="open_article">Відкрити статтю</string>
+    <string name="deleted">[видалено]</string>
+    <string name="user_empty">Немає публічних дописів</string>
+    <string name="follow">Підписатися на цьому пристрої</string>
+    <string name="unfollow">Відписатися</string>
+    <string name="search_hint">Шукати історії</string>
+    <string name="search_empty">Нічого не знайдено</string>
+    <string name="settings_blurb">Без входу. Голоси й коментарі лишаються на Hacker News. Сердечка й закладки лишаються на цьому пристрої.</string>
+    <plurals name="points">
+        <item quantity="one">%1$d бал</item>
+        <item quantity="few">%1$d бали</item>
+        <item quantity="many">%1$d балів</item>
+        <item quantity="other">%1$d бала</item>
+    </plurals>
+    <plurals name="comment_count">
+        <item quantity="one">%1$d коментар</item>
+        <item quantity="few">%1$d коментарі</item>
+        <item quantity="many">%1$d коментарів</item>
+        <item quantity="other">%1$d коментаря</item>
+    </plurals>
+    <plurals name="user_karma">
+        <item quantity="one">%1$d karma</item>
+        <item quantity="other">%1$d karma</item>
+    </plurals>
+    <string name="more_options">Інші параметри</string>
+</resources>

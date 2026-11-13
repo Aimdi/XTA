@@ -1,0 +1,67 @@
+// The Android half of a downloadable plugin (PLUGINS.md), applied by
+// plugins/build.gradle.kts where an Android SDK is installed: a code-only APK,
+// never installed, which the app loads with a DexClassLoader once its signer
+// is the app's own. It is signed as the app is (the release key CI gives, else
+// the debug key), carries assets/xta-plugin.json, and is not shrunk: the app
+// calls its entry class by name, and it calls the app's classes by theirs.
+// Groovy for the reason ui/android.gradle gives.
+android {
+    namespace = 'com.aimdi.xtanative.plugins.' + project.name.replace('-', '_')
+    compileSdk = 35
+    defaultConfig {
+        applicationId = 'com.aimdi.xtanative.plugin.' + project.name.replace('-', '_')
+        minSdk = 26
+        targetSdk = 35
+        versionCode = 1
+        versionName = project.ext.pluginVersion
+    }
+    sourceSets {
+        main {
+            manifest.srcFile rootProject.file('plugins/AndroidManifest.xml')
+            assets.srcDir(project.layout.buildDirectory.dir('generated/xta-plugin/manifest').get().asFile)
+        }
+    }
+    signingConfigs {
+        release {
+            def path = System.getenv('KEY_PATH')
+            if (path) {
+                storeFile = file(path)
+                storePassword = System.getenv('KEY_STORE_PASSWORD')
+                keyAlias = System.getenv('KEY_ALIAS')
+                keyPassword = System.getenv('KEY_PASSWORD')
+            }
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled = false
+            shrinkResources = false
+            signingConfig = System.getenv('KEY_PATH') ? signingConfigs.release : signingConfigs.debug
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    // Lifecycle 2.9's lint check for LiveData crashes this Android plugin's lint, as in the app.
+    lint {
+        disable 'NullSafeMutableLiveData'
+        checkReleaseBuilds = false
+        abortOnError = false
+    }
+}
+
+// The app has Kotlin's standard library: the plugin's APK does not carry another.
+configurations.configureEach {
+    if (name.endsWith('RuntimeClasspath') && !name.startsWith('desktop')) {
+        exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib'
+        exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
+        exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
+        exclude group: 'org.jetbrains', module: 'annotations'
+    }
+}
+
+// xta-plugin.json is written by pluginManifest before the assets are merged.
+tasks.matching { it.name.startsWith('merge') && it.name.endsWith('Assets') }.configureEach {
+    dependsOn 'pluginManifest'
+}

@@ -1,0 +1,7 @@
+{
+  "id": "tiktok",
+  "version": "1.0.0",
+  "entry": "com.aimdi.xtanative.plugins.tiktok.TikTokPlugin",
+  "category": "social",
+  "private": true
+}

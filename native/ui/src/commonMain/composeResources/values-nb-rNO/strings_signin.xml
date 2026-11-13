@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Signing in to X as XTA does (lib/client/login_webview.dart, x_cookie_login.dart). -->
+<resources>
+    <string name="signin_add_account">Legg til konto</string>
+    <string name="signin_logging_in_title">Logger inn på XTA</string>
+    <string name="signin_logging_in_text">Hvilken konto du logger inn med, endrer ikke hva du ser. Abonnementer, grupper og lagrede innlegg blir værende på denne enheten og rører aldri den ekte kontoen din. XTA logger inn bare for å lese — den kan ikke like, dele eller svare.\n\nDu kan legge til flere kontoer. XTA velger en som ikke har brukt opp grensen på endepunktet den trenger, og som ikke nettopp mislyktes med innloggingen. Det er dette som holder «For mange forespørsler» unna.</string>
+    <string name="signin_import_title">Importer abonnementer</string>
+    <string name="signin_import_text">Abonnementer finnes bare lokalt i XTA. De er uavhengige av abonnementene på den ekte X-kontoen din. Innlogging påvirker ikke abonnementene i XTA.\n\nVil du importere abonnementene til @%1$s i XTA?</string>
+    <string name="signin_cookie_help">Logg inn på x.com i nettleseren, åpne utviklerverktøyene (F12) og kopier informasjonskapslene auth_token og ct0 fra Lagring → Informasjonskapsler. Lim dem inn nedenfor som auth_token=…; ct0=…. De lagres bare på denne datamaskinen og deles aldri.</string>
+    <string name="signin_open_in_browser">Åpne i nettleser</string>
+    <string name="signin_username">Brukernavn</string>
+    <string name="signin_cookies">Informasjonskapsler fra x.com</string>
+    <string name="signin_not_logged_in">Ikke innlogget</string>
+    <string name="signin_why_needed">X avviser de fleste forespørsler som ikke kommer fra en konto. XTA prøver først som gjest, og det går av og til bra, men uten en konto bør du vente deg feil oftere enn innlegg.\n\nÅ logge inn lar bare XTA lese X. Appen publiserer, liker, deler eller følger aldri på dine vegne.</string>
+    <string name="signin_import_backup">Importer sikkerhetskopi</string>
+    <string name="signin_login">Logg inn</string>
+</resources>

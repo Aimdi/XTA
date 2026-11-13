@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Deepmarks</string>
+    <string name="plugin_description">Bewaar berichten in Deepmarks, de bookmarkdienst op Nostr</string>
+    <string name="settings_intro">Deepmarks bewaart bookmarks als ondertekende Nostr-events. Je ondertekeningssleutel verlaat dit apparaat nooit: het bericht wordt hier ondertekend en alleen het afgeronde event wordt verstuurd.</string>
+    <string name="lifetime_notice">API-toegang vereist een Deepmarks lifetime-lidmaatschap.</string>
+    <string name="api_key">API-sleutel</string>
+    <string name="api_key_hint">Begint met dmk_live_, uit ‘api access’ in de Deepmarks-instellingen</string>
+    <string name="identity">Ondertekeningsidentiteit</string>
+    <string name="secret_key">Ondertekeningssleutel</string>
+    <string name="secret_key_hint">Je nsec, blijft alleen op dit apparaat. Hij ondertekent elke bookmark en wordt nooit naar Deepmarks gestuurd.</string>
+    <string name="signing_as">Ondertekent als %1$s</string>
+    <string name="api_base">Serveradres</string>
+    <string name="test">Verbinding testen</string>
+    <string name="test_ok">Verbonden met Deepmarks</string>
+    <string name="test_ok_unverified">Sleutel geaccepteerd, maar het account heeft nog geen openbare bookmark om de ondertekeningssleutel mee te vergelijken</string>
+    <string name="not_configured">Vul eerst je Deepmarks API-sleutel en ondertekeningssleutel in</string>
+    <string name="error_secret_key">Dat is geen geldige nsec of hexsleutel van 64 tekens</string>
+    <string name="error_unauthorized">Deepmarks weigerde de API-sleutel</string>
+    <string name="error_lifetime">De Deepmarks-API is alleen voor lifetime-leden</string>
+    <string name="error_key_mismatch">Je ondertekeningssleutel hoort bij een ander Deepmarks-account dan de API-sleutel</string>
+    <string name="error_rejected">Deepmarks weigerde deze bookmark</string>
+    <string name="error_rate_limited">Te veel verzoeken, probeer het straks opnieuw</string>
+    <string name="error_server">Op dat adres antwoordde geen Deepmarks-API</string>
+    <string name="error_network">Kan Deepmarks niet bereiken</string>
+    <string name="learn_more">Over Deepmarks</string>
+    <string name="save_action">Opslaan in Deepmarks</string>
+    <string name="saved">Opgeslagen in Deepmarks</string>
+    <string name="saved_no_relay">Naar Deepmarks gestuurd, maar nog geen relay heeft het aangenomen</string>
+    <string name="saving">Opslaan in Deepmarks…</string>
+    <string name="show">Tonen</string>
+    <string name="hide">Verbergen</string>
+    <string name="save">Veilig</string>
+    <string name="connection">Verbinding</string>
+</resources>

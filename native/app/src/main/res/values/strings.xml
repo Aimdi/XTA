@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The launcher's label, which the manifest can only take from here. The
+     screens' strings are Compose resources in :ui (ui/src/commonMain/composeResources). -->
+<resources>
+    <string name="app_name">XTA Native</string>
+</resources>

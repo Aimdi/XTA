@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chrome_confirm_close">XTA'ı kapatmak istediğinizden emin misiniz?</string>
+    <string name="chrome_update_available">XTA için bir güncelleme mevcut! 🚀</string>
+    <string name="chrome_update_view_version">GitHub'da %1$s sürümünü görüntüle</string>
+    <string name="chrome_update_view">GitHub'da görüntüle</string>
+    <string name="chrome_update_download">İndir</string>
+    <string name="chrome_licences_legalese">MIT Lisansı altında yayınlandı</string>
+    <plurals name="chrome_licences_count">
+        <item quantity="one">%1$d lisans</item>
+        <item quantity="other">%1$d lisans</item>
+    </plurals>
+</resources>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Read failures as XTA's full-page errors say them (lib/ui/errors.dart), and closing the app. -->
+<resources>
+    <string name="problem_no_account_title">No account available right now</string>
+    <string name="problem_no_account_text">XTA needs at least one 𝕏 account to work. Add an account to get started.</string>
+    <string name="problem_rate_limited_title">Rate limited by 𝕏</string>
+    <string name="problem_rate_limited_text">You've made too many requests in too short a time. Try again later or add another account to keep using XTA.</string>
+    <string name="problem_no_working_account_title">Your accounts aren't working</string>
+    <string name="problem_no_working_account_text">It looks like none of your accounts are working right now. Sign in with another account or try again later.</string>
+    <string name="problem_endpoint_refused_title">𝕏 turned this request away</string>
+    <string name="problem_endpoint_refused_text">Every account was refused on this part of 𝕏, so this is unlikely to be your accounts. 𝕏 probably changed something; the app repairs itself when it can. Try again shortly.</string>
+    <string name="problem_signing_title">X request signing is unavailable</string>
+    <string name="problem_signing_text">XTA could not derive the transaction token X currently requires. Your accounts may still be fine; retry shortly or check Diagnostics.</string>
+    <string name="problem_offline_title">Could not contact X</string>
+    <string name="problem_offline_text">Please check your Internet connection.</string>
+    <string name="problem_timed_out_title">Timed out</string>
+    <string name="problem_timed_out_text">This took too long to load. Please check your network connection!</string>
+    <string name="problem_service_unavailable_title">X is temporarily unavailable</string>
+    <string name="problem_service_unavailable_text">X returned a server error. You can keep reading cached posts and retry later.</string>
+    <string name="problem_request_unavailable_title">This request is unavailable</string>
+    <string name="problem_request_unavailable_text">X rejected this request. It may be temporarily unavailable or this part of the service may have changed.</string>
+    <string name="problem_oops">Oops! Something went wrong 🥲</string>
+    <string name="problem_http_text">X returned HTTP %1$d.</string>
+    <string name="problem_retry_in">Retry in %1$s</string>
+    <string name="close_app_confirm">Are you sure you want to close XTA?</string>
+    <string name="problem_unable_to_load_the_community">Unable to load the community</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">Unable to find the available trend locations.</string>
+    <string name="problem_unable_to_load_the_members">Unable to load the members</string>
+    <string name="problem_unable_to_load_the_list_of_follows">Unable to load the list of follows</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">Unable to load the next page of follows</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">Unable to load the next page of posts</string>
+    <string name="problem_unable_to_load_the_tweets">Unable to load the posts</string>
+    <string name="problem_connection_failed">Connection failed</string>
+    <string name="problem_sign_in_needed">Sign in again to continue</string>
+    <string name="problem_rate_limit_hint">This source is limiting requests. Try again later.</string>
+    <string name="problem_more_info">More info</string>
+    <string name="problem_auto_retry_seconds">Trying again in %1$d s …</string>
+    <string name="problem_auto_retry_in">Trying again in %1$s …</string>
+    <string name="problem_cached_content">Showing a saved copy while this source updates.</string>
+    <string name="problem_source_loading">This source is still loading. Other posts are ready to read.</string>
+    <string name="problem_saved_at">Showing posts saved at %1$s</string>
+    <string name="problem_saved_earlier">Showing posts saved earlier</string>
+</resources>

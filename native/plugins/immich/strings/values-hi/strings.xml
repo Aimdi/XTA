@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Immich</string>
+    <string name="plugin_description">चुने हुए बुकमार्क फ़ोल्डरों का मीडिया अपने Immich सर्वर पर भेजें</string>
+    <string name="settings_intro">अपने Immich सर्वर का पता और खाता सेटिंग → API कुंजियाँ से एक API कुंजी डालें। जिन बुकमार्क फ़ोल्डरों के लिए आप इसे चालू करेंगे, वे अपनी फ़ोटो और वीडियो यहाँ भेजेंगे।</string>
+    <string name="server_url">सर्वर का पता</string>
+    <string name="server_url_hint">जैसे 192.168.1.10:2283 या https://photos.example.org</string>
+    <string name="api_key">API कुंजी</string>
+    <string name="api_key_hint">Immich → खाता सेटिंग → API कुंजियाँ</string>
+    <string name="test">कनेक्शन जाँचें</string>
+    <string name="test_ok">आपके Immich सर्वर से कनेक्ट हो गया</string>
+    <string name="not_configured">पहले पता और API कुंजी डालें</string>
+    <string name="error_unauthorized">Immich ने API कुंजी अस्वीकार कर दी</string>
+    <string name="error_server_url">उस पते पर कोई Immich सर्वर जवाब नहीं देता</string>
+    <string name="error_network">आपके Immich सर्वर तक पहुँच नहीं हो सकी</string>
+    <string name="error_generic">आपके Immich सर्वर ने त्रुटि लौटाई</string>
+    <string name="options">अपलोड विकल्प</string>
+    <string name="album_per_folder">हर फ़ोल्डर के लिए एक एल्बम</string>
+    <string name="album_per_folder_description">अपलोड किया गया मीडिया बुकमार्क फ़ोल्डर के नाम वाले Immich एल्बम में जाता है, जो न होने पर बना दिया जाता है</string>
+    <string name="include_videos">वीडियो भी अपलोड करें</string>
+    <string name="include_videos_description">वीडियो और GIF फ़ोटो से कहीं बड़े होते हैं। यह बंद होने पर सिर्फ़ फ़ोटो भेजी जाती हैं।</string>
+    <string name="folder_hint">अपलोड करना हर फ़ोल्डर के लिए अलग से चालू होता है — बुकमार्क में फ़ोल्डर बनाते या बदलते समय।</string>
+    <string name="learn_more">Immich के बारे में</string>
+    <string name="auto_upload">मीडिया Immich पर अपलोड करें</string>
+    <string name="auto_upload_description">इस फ़ोल्डर में सहेजी गई पोस्ट की फ़ोटो और वीडियो अपने Immich सर्वर पर भेजें</string>
+    <string name="uploading">Immich पर अपलोड हो रहा है…</string>
+    <string name="upload_done">Immich पर भेज दिया</string>
+    <string name="upload_failed">Immich पर अपलोड नहीं हो सका</string>
+    <string name="show">दिखाएँ</string>
+    <string name="hide">छिपाएँ</string>
+    <string name="save">सहेजें</string>
+    <string name="connection">कनेक्शन</string>
+</resources>

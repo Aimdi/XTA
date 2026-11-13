@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">Seguint</string>
+    <string name="search">Cerca</string>
+    <string name="settings">Configuració</string>
+    <string name="dismiss">Tanca</string>
+    <string name="retry">Reintentar</string>
+    <string name="back">Enrere</string>
+    <string name="close">Tanca</string>
+    <string name="cancel">Cancelar</string>
+    <string name="post">Publicació</string>
+
+    <string name="pinned">Fixat</string>
+    <string name="reposted_by">%1$s ha republicat</string>
+    <string name="replying_to">Responent a</string>
+    <string name="stat_reposts">Republicacions</string>
+    <string name="stat_quotes">Citacions</string>
+    <string name="stat_likes">M'agrada</string>
+
+    <string name="ago_seconds">%1$d s</string>
+    <string name="ago_minutes">%1$d min</string>
+    <string name="ago_hours">%1$d h</string>
+
+    <string name="problem_rate_limited">X està limitant tots els comptes d'aquí. Torna-ho a provar d'aquí a uns minuts.</string>
+    <string name="problem_offline">Sense connexió amb X.</string>
+    <string name="problem_signing">No s'ha pogut preparar la signatura de les sol·licituds a X. Torna-ho a provar d'aquí a un moment.</string>
+    <string name="problem_refused">X ha rebutjat la sol·licitud (%1$d).</string>
+    <string name="problem_other">Alguna cosa ha anat malament en llegir X.</string>
+
+    <string name="import_intro">XTA Native és l'XTA escrit només per a Android, per comparar-lo amb l'XTA. Llegeix X amb els comptes que ja fas servir a l'XTA.</string>
+    <string name="import_steps">A l'XTA, obre Configuració → Dades → Exportar, activa «Exporta els comptes», exporta i tria aquí aquest fitxer.</string>
+    <string name="import_choose">Tria una còpia de seguretat de l'XTA</string>
+    <string name="import_choose_another">Tria un altre fitxer</string>
+    <string name="import_no_accounts">Aquesta còpia de seguretat no té comptes d'X: torna a exportar-la amb «Exporta els comptes» activat.</string>
+    <string name="import_use">Fes servir aquesta còpia</string>
+    <string name="import_privacy">La còpia de seguretat conté les teves sessions d'X. XTA Native les guarda en aquest telèfon, només les envia a X i mai no hi publica, hi fa m'agrada ni hi segueix res.</string>
+
+    <string name="settings_clear">Suprimeix-ho tot</string>
+    <string name="settings_clear_explained">Suprimeix d'XTA Native les sessions d'X i els comptes seguits. L'XTA ho conserva tot.</string>
+    <string name="settings_clear_confirm">Suprimeix</string>
+
+    <string name="card_from">De %1$s</string>
+    <plurals name="poll_votes">
+        <item quantity="one">%1$s vot</item>
+        <item quantity="other">%1$s vots</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d publicació nova</item>
+        <item quantity="other">%1$d publicacions noves</item>
+    </plurals>
+    <string name="problem_x_private">Perfil privat</string>
+    <string name="problem_x_missing">Twitter diu que la pàgina no existeix, però pot ser que no sigui veritat</string>
+    <string name="problem_x_user_missing">Usuari no trobat</string>
+    <string name="problem_x_suspended">Compte suspés</string>
+    <string name="problem_x_forbidden">El Twitter diu que l\'accés a això està prohibit</string>
+    <string name="problem_x_guest">El Twitter ha invalidat el testimoni d\'accés. Si us plau, proveu de tornar a obrir XTA!</string>
+</resources>

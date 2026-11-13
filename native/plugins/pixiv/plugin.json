@@ -1,0 +1,7 @@
+{
+  "id": "pixiv",
+  "version": "1.0.0",
+  "entry": "com.aimdi.xtanative.plugins.pixiv.PixivPlugin",
+  "category": "art",
+  "private": true
+}

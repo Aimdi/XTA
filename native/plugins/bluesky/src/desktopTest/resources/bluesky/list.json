@@ -1,0 +1,19 @@
+{
+  "cursor": "c2",
+  "list": {
+    "uri": "at://did:plc:alice/app.bsky.graph.list/3abc",
+    "cid": "bafy-list",
+    "name": " Cool people ",
+    "purpose": "app.bsky.graph.defs#curatelist",
+    "listItemCount": 2,
+    "description": "Friends",
+    "avatar": "",
+    "creator": {"did": "did:plc:alice", "handle": "alice.bsky.social"},
+    "indexedAt": "2026-08-01T10:00:00.000Z"
+  },
+  "items": [
+    {"uri": "at://did:plc:alice/app.bsky.graph.listitem/1", "subject": {"did": "did:plc:bob", "handle": "bob.bsky.social", "displayName": "Bob"}},
+    {"uri": "at://did:plc:alice/app.bsky.graph.listitem/2", "subject": {}},
+    {"uri": "at://did:plc:alice/app.bsky.graph.listitem/3", "subject": {"did": "did:plc:carol", "handle": "carol.bsky.social"}}
+  ]
+}

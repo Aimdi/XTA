@@ -1,0 +1,37 @@
+{
+  "statusCode": 0,
+  "body": [
+    {
+      "exploreList": [
+        {
+          "cardItem": {
+            "type": 2,
+            "id": "6745191554350760966",
+            "title": "The Rock",
+            "subTitle": "therock",
+            "description": "Mana",
+            "cover": "https://p16-sign-va.tiktokcdn.com/therock.jpeg",
+            "link": "/@therock",
+            "extraInfo": {"verified": true, "fans": 79000000, "likes": 600000000}
+          }
+        },
+        {
+          "cardItem": {
+            "type": 2,
+            "title": "charli d’amelio",
+            "subTitle": "@charlidamelio",
+            "link": "/@charlidamelio",
+            "extraInfo": {"verified": true, "fans": 155000000}
+          }
+        }
+      ]
+    },
+    {
+      "exploreList": [
+        {"cardItem": {"type": 3, "title": "#cats", "link": "/tag/cats"}},
+        {"cardItem": {"type": 1, "title": "original sound", "link": "/music/original-sound-1"}},
+        {"cardItem": {"type": 2, "title": "The Rock again", "link": "/@TheRock"}}
+      ]
+    }
+  ]
+}

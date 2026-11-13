@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- An X post's footer, its share and ⋯ sheets and menus, its poll's line, and the contract addresses in its text (ui.post): XTA's words where XTA has them. -->
+<resources>
+    <string name="posts_share">Chia sẻ bài đăng</string>
+    <string name="posts_share_content">Chia sẻ nội dung bài viết</string>
+    <string name="posts_share_article_link">Chia sẻ liên kết bài viết</string>
+    <string name="posts_share_content_and_link">Chia sẻ nội dung bài viết và liên kết</string>
+    <string name="posts_share_image">Chia sẻ bài viết dưới dạng hình ảnh</string>
+    <string name="posts_share_article_image">Chia sẻ bài viết dưới dạng hình ảnh</string>
+    <string name="posts_copied">Đã sao chép vào bảng nhớ tạm</string>
+    <string name="posts_reply_not_found">Xin lỗi, phản hồi không thể tìm thấy</string>
+    <string name="posts_subscribe">Đăng kí</string>
+    <string name="contract_address_copied">Đã sao chép địa chỉ hợp đồng</string>
+    <string name="poll_no_votes">Chưa có phiếu bầu</string>
+    <plurals name="poll_ends_minutes">
+        <item quantity="other">Kết thúc sau %1$d phút</item>
+    </plurals>
+    <plurals name="poll_ends_hours">
+        <item quantity="other">Kết thúc sau %1$d giờ</item>
+    </plurals>
+    <plurals name="poll_ends_days">
+        <item quantity="other">Kết thúc sau %1$d ngày</item>
+    </plurals>
+    <plurals name="poll_ended_minutes">
+        <item quantity="other">Đã kết thúc %1$d phút trước</item>
+    </plurals>
+    <plurals name="poll_ended_hours">
+        <item quantity="other">Đã kết thúc %1$d giờ trước</item>
+    </plurals>
+    <plurals name="poll_ended_days">
+        <item quantity="other">Đã kết thúc %1$d ngày trước</item>
+    </plurals>
+    <plurals name="poll_ended_months">
+        <item quantity="other">Đã kết thúc %1$d tháng trước</item>
+    </plurals>
+    <plurals name="poll_ended_years">
+        <item quantity="other">Đã kết thúc %1$d năm trước</item>
+    </plurals>
+</resources>

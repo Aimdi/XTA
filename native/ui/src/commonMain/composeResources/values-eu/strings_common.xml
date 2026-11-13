@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Read failures as XTA's full-page errors say them (lib/ui/errors.dart), and closing the app. -->
+<resources>
+    <string name="problem_no_account_title">Ez dago konturik erabilgarri une honetan</string>
+    <string name="problem_no_account_text">XTA-ek 𝕏 kontu bat behar du gutxienez funtzionatzeko. Gehitu kontu bat hasteko.</string>
+    <string name="problem_rate_limited_title">𝕏-ek eskaerak mugatu ditu</string>
+    <string name="problem_rate_limited_text">Eskaera gehiegi egin dituzu denbora gutxiegian. Saiatu berriro geroago edo gehitu beste kontu bat XTA erabiltzen jarraitzeko.</string>
+    <string name="problem_no_working_account_title">Zure kontuek ez dute funtzionatzen</string>
+    <string name="problem_no_working_account_text">Badirudi zure konturik bat ere ez dabilela une honetan. Hasi saioa beste kontu batekin edo saiatu berriro geroago.</string>
+    <string name="problem_endpoint_refused_title">𝕏-k eskaera hau ukatu du</string>
+    <string name="problem_endpoint_refused_text">𝕏-ren zati honetan kontu guztiak ukatu dituzte, beraz ez dira zure kontuak ziurrenik. 𝕏-k zerbait aldatu duela dirudi; aplikazioa bere kabuz konpontzen da ahal duenean. Saiatu berriro pixka bat barru.</string>
+    <string name="problem_signing_title">X-ren eskaeren sinadura ez dago erabilgarri</string>
+    <string name="problem_signing_text">XTAk ezin izan du X-k orain eskatzen duen transakzio-tokena eratorri. Zure kontuak ondo egon daitezke; saiatu berriro laster edo begiratu Diagnostikoa.</string>
+    <string name="problem_offline_title">Ezin izan da X-rekin harremanetan jarri</string>
+    <string name="problem_offline_text">Mesedez, egiaztatu Internet konexioa.</string>
+    <string name="problem_timed_out_title">Denbora agortuta</string>
+    <string name="problem_timed_out_text">Denbora gehiegi behar izan du honek kargatzeko. Mesedez, egiaztatu interneteko konexioa!</string>
+    <string name="problem_service_unavailable_title">X ez dago erabilgarri aldi baterako</string>
+    <string name="problem_service_unavailable_text">X-k zerbitzari-errore bat itzuli du. Cachean gordetako argitalpenak irakurtzen jarrai dezakezu eta geroago berriro saiatu.</string>
+    <string name="problem_request_unavailable_title">Eskaera hau ez dago erabilgarri</string>
+    <string name="problem_request_unavailable_text">X-k eskaera hau baztertu du. Baliteke aldi baterako erabilgarri ez egotea edo zerbitzuaren zati hau aldatu izana.</string>
+    <string name="problem_oops">Hara! Zerbait gaizki atera da 🥲</string>
+    <string name="problem_http_text">X-k HTTP %1$d itzuli du.</string>
+    <string name="problem_retry_in">Saiatu berriro %1$s barru</string>
+    <string name="close_app_confirm">Ziur al zaude XTA itxi nahi duzula?</string>
+    <string name="problem_unable_to_load_the_community">Ezin izan da komunitatea kargatu</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">Ezin dira aurkitu eskuragarri dauden joera-kokapenak.</string>
+    <string name="problem_unable_to_load_the_members">Ezin izan dira kideak kargatu</string>
+    <string name="problem_unable_to_load_the_list_of_follows">Ezin da jarraipenen zerrenda kargatu</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">Ezin da jarraipenen hurrengo orrialdea kargatu</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">Ezin da txioen hurrengo orria kargatu</string>
+    <string name="problem_unable_to_load_the_tweets">Ezin da txioa kargatu</string>
+    <string name="problem_connection_failed">Konexioak huts egin du</string>
+    <string name="problem_sign_in_needed">Hasi saioa berriro jarraitzeko</string>
+    <string name="problem_rate_limit_hint">Iturri honek eskaerak mugatzen ditu. Saiatu geroago.</string>
+    <string name="problem_more_info">Informazio gehiago</string>
+    <string name="problem_auto_retry_seconds">%1$d s barru saiatuko da berriro…</string>
+    <string name="problem_auto_retry_in">%1$s barru saiatuko da berriro…</string>
+    <string name="problem_cached_content">Gordetako kopia bat erakusten da iturria eguneratzen den bitartean.</string>
+    <string name="problem_source_loading">Iturri hau kargatzen ari da oraindik. Beste argitalpenak irakurgai daude.</string>
+    <string name="problem_saved_at">%1$s(e)an gordetako argitalpenak erakusten dira</string>
+    <string name="problem_saved_earlier">Lehenago gordetako argitalpenak erakusten dira</string>
+</resources>

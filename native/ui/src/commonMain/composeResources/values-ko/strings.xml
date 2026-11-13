@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">팔로잉</string>
+    <string name="search">검색</string>
+    <string name="settings">설정</string>
+    <string name="dismiss">닫기</string>
+    <string name="retry">재시도</string>
+    <string name="back">뒤로</string>
+    <string name="close">닫기</string>
+    <string name="cancel">취소</string>
+    <string name="post">게시물</string>
+
+    <string name="pinned">고정됨</string>
+    <string name="reposted_by">%1$s님이 재게시함</string>
+    <string name="replying_to">답글 대상:</string>
+    <string name="stat_reposts">재게시</string>
+    <string name="stat_quotes">인용</string>
+    <string name="stat_likes">좋아요</string>
+
+    <string name="ago_seconds">%1$d초</string>
+    <string name="ago_minutes">%1$d분</string>
+    <string name="ago_hours">%1$d시간</string>
+
+    <string name="problem_rate_limited">X가 이곳의 모든 계정을 제한하고 있습니다. 몇 분 후에 다시 시도하세요.</string>
+    <string name="problem_offline">X에 연결되지 않았습니다.</string>
+    <string name="problem_signing">X 요청 서명을 준비하지 못했습니다. 잠시 후 다시 시도하세요.</string>
+    <string name="problem_refused">X가 요청을 거부했습니다(%1$d).</string>
+    <string name="problem_other">X를 읽는 중에 문제가 발생했습니다.</string>
+
+    <string name="import_intro">XTA Native는 XTA와 비교하기 위해 Android 전용으로 작성된 XTA입니다. XTA에서 이미 사용하는 계정으로 X를 읽습니다.</string>
+    <string name="import_steps">XTA에서 설정 → 데이터 → 내보내기를 열고 “계정 내보내기”를 켠 다음 내보내고, 그 파일을 여기에서 선택하세요.</string>
+    <string name="import_choose">XTA 백업 선택</string>
+    <string name="import_choose_another">다른 파일 선택</string>
+    <string name="import_no_accounts">이 백업에는 X 계정이 없습니다. “계정 내보내기”를 켜고 다시 내보내세요.</string>
+    <string name="import_use">이 백업 사용</string>
+    <string name="import_privacy">백업에는 X 세션이 들어 있습니다. XTA Native는 이 휴대전화에 보관하고 X에만 보내며, X에서 아무것도 게시하거나 마음에 들어 하거나 팔로우하지 않습니다.</string>
+
+    <string name="settings_clear">모두 제거</string>
+    <string name="settings_clear_explained">XTA Native에서 X 세션과 팔로우한 계정을 제거합니다. XTA 자체에는 모두 그대로 남습니다.</string>
+    <string name="settings_clear_confirm">제거</string>
+
+    <string name="card_from">출처: %1$s</string>
+    <plurals name="poll_votes">
+        <item quantity="other">%1$s표</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="other">새 게시물 %1$d개</item>
+    </plurals>
+    <string name="problem_x_private">비공개 프로필</string>
+    <string name="problem_x_missing">X는 페이지가 존재하지 않는다고 하지만 사실이 아닐 수도 있습니다</string>
+    <string name="problem_x_user_missing">사용자를 찾을 수 없습니다</string>
+    <string name="problem_x_suspended">계정 정지됨</string>
+    <string name="problem_x_forbidden">X는 이에 대한 접근이 금지되어 있다고 합니다</string>
+    <string name="problem_x_guest">X가 액세스 토큰을 무효화했습니다. XTA를 다시 열어 보세요!</string>
+</resources>

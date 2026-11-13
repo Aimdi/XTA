@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Karakeep's text, English (the default), from XTA's wording. Written as Android writes strings;
+     the plugins build turns them into the Kotlin object Strings, so they load from any class loader.
+     plugin_name and plugin_description also name the plugin in the store's catalogue. -->
+<resources>
+    <string name="plugin_name">Karakeep</string>
+    <string name="plugin_description">Save posts and links to your own Karakeep server in one tap</string>
+    <string name="settings_intro">Karakeep is a self-hosted bookmark service. Enter the address of your instance and an API key from Settings &gt; API Keys in Karakeep.</string>
+    <string name="server_url">Server address</string>
+    <string name="server_url_hint">For example karakeep.example.com</string>
+    <string name="api_key">API key</string>
+    <string name="api_key_hint">Kept on this device only</string>
+    <string name="test">Test connection</string>
+    <string name="test_ok">Connected to Karakeep</string>
+    <string name="not_configured">Add your Karakeep server and API key first</string>
+    <string name="error_unauthorized">Karakeep rejected the API key</string>
+    <string name="error_server_url">No Karakeep found at that address</string>
+    <string name="error_network">Could not reach your Karakeep server</string>
+    <string name="error_generic">Karakeep could not save this link</string>
+    <string name="learn_more">About Karakeep</string>
+    <string name="save_action">Save to Karakeep</string>
+    <string name="saved">Saved to Karakeep</string>
+    <string name="already_saved">Already in Karakeep</string>
+    <string name="saving">Saving to Karakeep…</string>
+    <string name="show">Show</string>
+    <string name="hide">Hide</string>
+    <string name="save">Save</string>
+    <string name="connection">Connection</string>
+</resources>

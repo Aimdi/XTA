@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Accounts' avatar and Diagnostics' account health and recent reads, in XTA's words. -->
+<resources>
+    <string name="settings_avatar_title">Avatar Anda</string>
+    <string name="settings_avatar_change">Ketuk untuk mengubah gambar di kiri atas</string>
+    <string name="settings_avatar_description">Gambar di kiri atas dan di laci — tetap di perangkat ini</string>
+    <string name="settings_avatar_choose">Pilih dari perangkat</string>
+    <string name="settings_avatar_from_account">Gunakan foto profil X</string>
+    <string name="settings_avatar_error">Tidak bisa memuat foto profil itu</string>
+    <string name="settings_avatar_clear">Gunakan monogram</string>
+    <string name="settings_diagnostics_recent_reads">Operasi pembacaan terbaru</string>
+    <string name="settings_diagnostics_sign_in_broken">Sesi masuk tampaknya sudah tidak berlaku, dijeda sampai %1$s</string>
+</resources>

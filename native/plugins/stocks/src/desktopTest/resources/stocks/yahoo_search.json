@@ -1,0 +1,16 @@
+{
+  "explains": [],
+  "count": 5,
+  "quotes": [
+    {"exchange": "NMS", "shortname": "Apple Inc.", "quoteType": "EQUITY", "symbol": "AAPL", "exchDisp": "NASDAQ", "typeDisp": "Equity"},
+    {"exchange": "SET", "shortname": "AAPL DR", "quoteType": "EQUITY", "symbol": "AAPL01.BK", "exchDisp": "SET"},
+    {"symbol": "EURUSD=X", "quoteType": "CURRENCY"},
+    {"exchange": "PCX", "longname": "SPDR S&P 500 ETF Trust", "quoteType": "ETF", "symbol": " spy "},
+    {"shortname": "no symbol", "quoteType": "EQUITY"}
+  ],
+  "news": [
+    {"uuid": "a", "title": "Apple builds in Texas", "publisher": "WSJ", "link": "https://example.com/a"},
+    {"uuid": "b", "title": "  ", "link": "https://example.com/b"},
+    {"uuid": "c", "link": "https://example.com/c"}
+  ]
+}

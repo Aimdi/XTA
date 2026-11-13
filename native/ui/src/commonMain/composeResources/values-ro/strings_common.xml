@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Read failures as XTA's full-page errors say them (lib/ui/errors.dart), and closing the app. -->
+<resources>
+    <string name="problem_no_account_title">Niciun cont disponibil momentan</string>
+    <string name="problem_no_account_text">XTA are nevoie de cel puțin un cont 𝕏 pentru a funcționa. Adaugă un cont ca să începi.</string>
+    <string name="problem_rate_limited_title">Limitat de 𝕏</string>
+    <string name="problem_rate_limited_text">Ai făcut prea multe cereri într-un timp prea scurt. Încearcă din nou mai târziu sau adaugă alt cont pentru a continua să folosești XTA.</string>
+    <string name="problem_no_working_account_title">Conturile tale nu funcționează</string>
+    <string name="problem_no_working_account_text">Se pare că niciunul dintre conturile tale nu funcționează acum. Conectează-te cu alt cont sau încearcă din nou mai târziu.</string>
+    <string name="problem_endpoint_refused_title">𝕏 a refuzat această cerere</string>
+    <string name="problem_endpoint_refused_text">Toate conturile au fost refuzate în această parte a 𝕏, așa că probabil nu conturile tale sunt de vină. Cel mai probabil 𝕏 a schimbat ceva; aplicația se repară singură când poate. Încearcă din nou peste puțin timp.</string>
+    <string name="problem_signing_title">Semnarea cererilor către X nu este disponibilă</string>
+    <string name="problem_signing_text">XTA nu a putut obține tokenul de tranzacție pe care X îl cere acum. Conturile tale pot fi în regulă; încearcă din nou în curând sau verifică Diagnosticarea.</string>
+    <string name="problem_offline_title">Nu s-a putut contacta X</string>
+    <string name="problem_offline_text">Vă rugăm să verificați conexiunea la Internet.</string>
+    <string name="problem_timed_out_title">Timp de așteptare depășit</string>
+    <string name="problem_timed_out_text">Aceasta a durat prea mult pentru a se încărca. Verificați conexiunea la rețea!</string>
+    <string name="problem_service_unavailable_title">X este temporar indisponibil</string>
+    <string name="problem_service_unavailable_text">X a returnat o eroare de server. Poți citi în continuare postările din cache și poți încerca din nou mai târziu.</string>
+    <string name="problem_request_unavailable_title">Această cerere nu este disponibilă</string>
+    <string name="problem_request_unavailable_text">X a respins această cerere. Poate fi temporar indisponibilă sau această parte a serviciului s-a schimbat.</string>
+    <string name="problem_oops">Ups! Ceva a mers prost 🥲</string>
+    <string name="problem_http_text">X a returnat HTTP %1$d.</string>
+    <string name="problem_retry_in">Încearcă din nou peste %1$s</string>
+    <string name="close_app_confirm">Ești sigur că vrei să închizi XTA?</string>
+    <string name="problem_unable_to_load_the_community">Comunitatea nu a putut fi încărcată</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">Nu se pot găsi locațiile de tendințe disponibile.</string>
+    <string name="problem_unable_to_load_the_members">Membrii nu au putut fi încărcați</string>
+    <string name="problem_unable_to_load_the_list_of_follows">Nu se poate încărca lista urmăriților</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">Nu se poate încărca pagina următoare de urmăriți</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">Nu se poate încărca următoarea pagină de tweet-uri</string>
+    <string name="problem_unable_to_load_the_tweets">Nu se pot încărca postările</string>
+    <string name="problem_connection_failed">Conexiune eșuată</string>
+    <string name="problem_sign_in_needed">Autentifică-te din nou pentru a continua</string>
+    <string name="problem_rate_limit_hint">Această sursă limitează cererile. Încearcă mai târziu.</string>
+    <string name="problem_more_info">Mai multe informații</string>
+    <string name="problem_auto_retry_seconds">Se reîncearcă în %1$d s…</string>
+    <string name="problem_auto_retry_in">Se reîncearcă în %1$s…</string>
+    <string name="problem_cached_content">Se afișează o copie salvată în timpul actualizării sursei.</string>
+    <string name="problem_source_loading">Această sursă încă se încarcă. Celelalte postări sunt disponibile.</string>
+    <string name="problem_saved_at">Se afișează postări salvate la %1$s</string>
+    <string name="problem_saved_earlier">Se afișează postări salvate anterior</string>
+</resources>

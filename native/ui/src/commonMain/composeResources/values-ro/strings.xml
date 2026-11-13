@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">Urmăresc</string>
+    <string name="search">Căutare</string>
+    <string name="settings">Setări</string>
+    <string name="dismiss">Închide</string>
+    <string name="retry">Reîncearcă</string>
+    <string name="back">Înapoi</string>
+    <string name="close">Închide</string>
+    <string name="cancel">Anulare</string>
+    <string name="post">Postare</string>
+
+    <string name="pinned">Fixată</string>
+    <string name="reposted_by">%1$s a repostat</string>
+    <string name="replying_to">Răspuns la</string>
+    <string name="stat_reposts">Repostări</string>
+    <string name="stat_quotes">Citate</string>
+    <string name="stat_likes">Aprecieri</string>
+
+    <string name="ago_seconds">%1$d s</string>
+    <string name="ago_minutes">%1$d min</string>
+    <string name="ago_hours">%1$d h</string>
+
+    <string name="problem_rate_limited">X limitează toate conturile de aici. Reîncearcă peste câteva minute.</string>
+    <string name="problem_offline">Nu există conexiune la X.</string>
+    <string name="problem_signing">Semnarea cererilor către X nu a putut fi pregătită. Reîncearcă într-o clipă.</string>
+    <string name="problem_refused">X a refuzat cererea (%1$d).</string>
+    <string name="problem_other">Ceva nu a mers bine la citirea X.</string>
+
+    <string name="import_intro">XTA Native este XTA scris doar pentru Android, ca să fie comparat cu XTA. Citește X cu conturile pe care le folosești deja în XTA.</string>
+    <string name="import_steps">În XTA, deschide Setări → Date → Export, activează „Exportați conturile”, exportă, apoi alege fișierul aici.</string>
+    <string name="import_choose">Alege copia de rezervă XTA</string>
+    <string name="import_choose_another">Alege alt fișier</string>
+    <string name="import_no_accounts">Această copie de rezervă nu are conturi X: exportă din nou cu „Exportați conturile” activat.</string>
+    <string name="import_use">Folosește această copie</string>
+    <string name="import_privacy">Copia de rezervă conține sesiunile tale X. XTA Native le păstrează pe acest telefon, le trimite doar către X și nu postează, nu apreciază și nu urmărește niciodată nimic acolo.</string>
+
+    <string name="settings_clear">Elimină tot</string>
+    <string name="settings_clear_explained">Elimină din XTA Native sesiunile X și conturile urmărite. XTA păstrează totul.</string>
+    <string name="settings_clear_confirm">Elimină</string>
+
+    <string name="card_from">De la %1$s</string>
+    <plurals name="poll_votes">
+        <item quantity="one">%1$s vot</item>
+        <item quantity="few">%1$s voturi</item>
+        <item quantity="other">%1$s de voturi</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d postare nouă</item>
+        <item quantity="few">%1$d postări noi</item>
+        <item quantity="other">%1$d de postări noi</item>
+    </plurals>
+    <string name="problem_x_private">Profil privat</string>
+    <string name="problem_x_missing">X spune că pagina nu există, dar poate că nu este adevărat</string>
+    <string name="problem_x_user_missing">Utilizatorul nu a fost găsit</string>
+    <string name="problem_x_suspended">Cont suspendat</string>
+    <string name="problem_x_forbidden">X spune că accesul la aceasta este interzis</string>
+    <string name="problem_x_guest">X a invalidat tokenul nostru de acces. Vă rugăm să încercați să redeschideți XTA!</string>
+</resources>

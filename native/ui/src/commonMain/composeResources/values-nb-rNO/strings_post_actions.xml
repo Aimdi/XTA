@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- An X post's footer, its share and ⋯ sheets and menus, its poll's line, and the contract addresses in its text (ui.post): XTA's words where XTA has them. -->
+<resources>
+    <string name="posts_share">Del innlegget</string>
+    <string name="posts_share_content">Del tvitringsinnhold</string>
+    <string name="posts_share_article_link">Del artikkellenke</string>
+    <string name="posts_share_content_and_link">Del tvitringsinnhold og lenk</string>
+    <string name="posts_share_image">Del innlegg som bilde</string>
+    <string name="posts_share_article_image">Del artikkel som bilde</string>
+    <string name="posts_copied">Kopiert til utklippstavlen</string>
+    <string name="posts_reply_not_found">Fant ikke svar-tvitringen.</string>
+    <string name="posts_subscribe">Abonnere</string>
+    <string name="contract_address_copied">Kontraktadressen er kopiert</string>
+    <string name="poll_no_votes">Ingen stemmer</string>
+    <plurals name="poll_ends_minutes">
+        <item quantity="one">Slutter om %1$d minutt</item>
+        <item quantity="other">Slutter om %1$d minutter</item>
+    </plurals>
+    <plurals name="poll_ends_hours">
+        <item quantity="one">Slutter om %1$d time</item>
+        <item quantity="other">Slutter om %1$d timer</item>
+    </plurals>
+    <plurals name="poll_ends_days">
+        <item quantity="one">Slutter om %1$d dag</item>
+        <item quantity="other">Slutter om %1$d dager</item>
+    </plurals>
+    <plurals name="poll_ended_minutes">
+        <item quantity="one">Sluttet for %1$d minutt siden</item>
+        <item quantity="other">Sluttet for %1$d minutter siden</item>
+    </plurals>
+    <plurals name="poll_ended_hours">
+        <item quantity="one">Sluttet for %1$d time siden</item>
+        <item quantity="other">Sluttet for %1$d timer siden</item>
+    </plurals>
+    <plurals name="poll_ended_days">
+        <item quantity="one">Sluttet for %1$d dag siden</item>
+        <item quantity="other">Sluttet for %1$d dager siden</item>
+    </plurals>
+    <plurals name="poll_ended_months">
+        <item quantity="one">Sluttet for %1$d måned siden</item>
+        <item quantity="other">Sluttet for %1$d måneder siden</item>
+    </plurals>
+    <plurals name="poll_ended_years">
+        <item quantity="one">Sluttet for %1$d år siden</item>
+        <item quantity="other">Sluttet for %1$d år siden</item>
+    </plurals>
+</resources>

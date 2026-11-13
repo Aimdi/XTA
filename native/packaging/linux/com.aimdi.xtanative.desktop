@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=XTA Native
+GenericName=X reader
+Comment=XTA's X reader written in Kotlin, a prototype to compare with XTA
+Exec=xta-native
+Icon=com.aimdi.xtanative
+Terminal=false
+Categories=Network;News;
+Keywords=X;Twitter;Reader;
+StartupWMClass=com-aimdi-xtanative-desktop-MainKt

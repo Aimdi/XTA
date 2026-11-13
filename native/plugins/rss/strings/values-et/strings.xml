@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RSS's text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Lisa voog</string>
+    <string name="add_error">Seda voogu ei õnnestunud lugeda</string>
+    <string name="add_hint">Kleebi saidi või voo aadress. XTA leiab RSS- või Atom-voo.</string>
+    <string name="add_placeholder">https://example.com/feed</string>
+    <string name="add_to_group">Lisa rühma</string>
+    <string name="all">Kõik</string>
+    <string name="cancel">Katkesta</string>
+    <string name="close">Sulge</string>
+    <string name="data_exported_to">Andmed on eksporditud faili %1$s</string>
+    <string name="empty">Jälgi voogu, et näha selle postitusi siin</string>
+    <string name="empty_filter">Ükski sisu ei vasta nendele filtritele</string>
+    <string name="feeds">Vood</string>
+    <string name="follow">Jälgi</string>
+    <string name="following_empty">Vooge veel pole</string>
+    <string name="home">Avaleht</string>
+    <string name="load_error">Vooge ei õnnestunud laadida</string>
+    <string name="mark_all_read">Märgi kõik loetuks</string>
+    <string name="more_options">Rohkem valikuid</string>
+    <string name="opml_empty">Selles failis pole vooge</string>
+    <string name="opml_export">Ekspordi jälgitavad OPML-ina</string>
+    <string name="opml_export_description">Fail, mida teised voolugejad oskavad importida.</string>
+    <string name="opml_import">Impordi jälgitavad OPML-ist</string>
+    <string name="opml_import_description">Hakkab jälgima iga failis olevat voogu; juba jälgitavad jäävad samaks.</string>
+    <string name="opml_importing">Importimine: %1$d/%2$d</string>
+    <string name="opml_result">Lisatud: %1$d · Juba jälgitud: %2$d · Ebaõnnestus: %3$d</string>
+    <string name="partial_error">%1$d allika laadimine ebaõnnestus</string>
+    <string name="plugin_description">Jälgi avalikke RSS- ja Atom-vooge. Lugemata jääb sellesse seadmesse.</string>
+    <string name="plugin_name">RSS</string>
+    <string name="reader_empty">Pole veel midagi lugeda</string>
+    <string name="reset_filters">Lähtesta filtrid</string>
+    <string name="retry">Proovi uuesti</string>
+    <string name="set_tag">Määra silt</string>
+    <string name="settings">Seaded</string>
+    <string name="settings_blurb">Ilma sisselogimiseta. Jälgi avalikke vooge. Lugemata ja sildid jäävad sellesse seadmesse.</string>
+    <string name="tag">Silt</string>
+    <string name="tag_hint">Lühike silt, näiteks Uudised või Blogid</string>
+    <string name="unfollow">Lõpeta jälgimine</string>
+    <string name="unread">Lugemata</string>
+    <string name="in_home_feed">Sega jälgitavad vood voogu Jälgin</string>
+    <string name="in_home_feed_description">Näita jälgitavate voogude uusi kirjeid ajajoones Jälgin.</string>
+    <string name="add_not_a_url">See pole veebiaadress.</string>
+    <string name="add_no_feed">Sealt ei leitud RSS- ega Atom-voogu, ei lehelt ega tavalistelt aadressidelt.</string>
+</resources>

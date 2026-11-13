@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Immich</string>
+    <string name="plugin_description">Die Medien ausgewählter Lesezeichen-Ordner an den eigenen Immich-Server senden</string>
+    <string name="settings_intro">Gib die Adresse deines Immich-Servers und einen API-Schlüssel aus den Kontoeinstellungen → API-Schlüssel ein. Lesezeichen-Ordner, für die du das aktivierst, senden ihre Fotos und Videos hierhin.</string>
+    <string name="server_url">Server-Adresse</string>
+    <string name="server_url_hint">Zum Beispiel 192.168.1.10:2283 oder https://fotos.example.org</string>
+    <string name="api_key">API-Schlüssel</string>
+    <string name="api_key_hint">Immich → Kontoeinstellungen → API-Schlüssel</string>
+    <string name="test">Verbindung testen</string>
+    <string name="test_ok">Verbindung zum Immich-Server steht</string>
+    <string name="not_configured">Trage zuerst Adresse und API-Schlüssel ein</string>
+    <string name="error_unauthorized">Immich hat den API-Schlüssel abgelehnt</string>
+    <string name="error_server_url">Unter dieser Adresse antwortet kein Immich-Server</string>
+    <string name="error_network">Der Immich-Server ist nicht erreichbar</string>
+    <string name="error_generic">Der Immich-Server hat einen Fehler gemeldet</string>
+    <string name="options">Upload-Optionen</string>
+    <string name="album_per_folder">Ein Album pro Ordner</string>
+    <string name="album_per_folder_description">Hochgeladenes landet in einem Immich-Album, das nach dem Lesezeichen-Ordner benannt ist – und angelegt wird, falls es noch fehlt</string>
+    <string name="include_videos">Auch Videos hochladen</string>
+    <string name="include_videos_description">Videos und GIFs sind deutlich größer als Fotos. Ist dies aus, werden nur Fotos gesendet.</string>
+    <string name="folder_hint">Das Hochladen aktivierst du beim Anlegen oder Bearbeiten eines Ordners unter „Lesezeichen“.</string>
+    <string name="learn_more">Über Immich</string>
+    <string name="auto_upload">Medien zu Immich hochladen</string>
+    <string name="auto_upload_description">Fotos und Videos von Beiträgen in diesem Ordner an den Immich-Server senden</string>
+    <string name="uploading">Wird zu Immich hochgeladen …</string>
+    <string name="upload_done">An Immich gesendet</string>
+    <string name="upload_failed">Hochladen zu Immich fehlgeschlagen</string>
+    <string name="show">Anzeigen</string>
+    <string name="hide">Ausblenden</string>
+    <string name="save">Speichern</string>
+    <string name="connection">Verbindung</string>
+</resources>

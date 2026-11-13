@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Accounts' avatar and Diagnostics' account health and recent reads, in XTA's words. -->
+<resources>
+    <string name="settings_avatar_title">あなたのアバター</string>
+    <string name="settings_avatar_change">タップして左上の画像を変更</string>
+    <string name="settings_avatar_description">左上とドロワーに表示する画像 — この端末だけに保存されます</string>
+    <string name="settings_avatar_choose">端末から選ぶ</string>
+    <string name="settings_avatar_from_account">Xのプロフィール写真を使う</string>
+    <string name="settings_avatar_error">プロフィール画像を読み込めませんでした</string>
+    <string name="settings_avatar_clear">モノグラムを使う</string>
+    <string name="settings_diagnostics_recent_reads">最近の読み込み処理</string>
+    <string name="settings_diagnostics_sign_in_broken">ログインが無効になったようです。%1$s まで休止します</string>
+</resources>

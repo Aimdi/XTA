@@ -1,0 +1,24 @@
+{
+  "posts": [
+    {
+      "id": "6a30a3a4-6dff-4ec9-a5e6-d519df5271f4",
+      "web_title": "Miles Morales probably couldn’t happen now",
+      "web_subtitle": "Read to the end for a very good dog video",
+      "slug": "miles-morales-probably-couldn-t-happen-now",
+      "image_url": "https://media.beehiiv.com/cover.png",
+      "audience": "both",
+      "is_premium": false,
+      "override_scheduled_at": "2026-08-28T18:54:19.460Z",
+      "authors": [{"name": "Adam Bumas"}]
+    },
+    {
+      "id": "b2",
+      "title": "Premium dispatch",
+      "slug": "premium-dispatch",
+      "audience": "premium",
+      "created_at": "2026-08-27T10:00:00.000Z"
+    },
+    {"id": "b3", "web_title": "", "slug": "no-title"}
+  ],
+  "pagination": {"page": 1, "per_page": 30, "total": 3, "total_pages": 1}
+}

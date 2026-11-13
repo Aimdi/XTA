@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
+     Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="home_x">X</string>
+    <string name="home_search_in">Rechercher dans %1$s</string>
+    <string name="home_open_menu">Ouvrir le menu de navigation</string>
+    <string name="home_add_timeline">Ajouter un fil</string>
+    <string name="home_unread">Non lu</string>
+    <string name="home_refresh">Actualiser</string>
+    <string name="home_open_group">Ouvrir le groupe</string>
+    <string name="home_more_options">Plus d'options</string>
+        <string name="home_pin_to_bar_hint">Les éléments épinglés s’affichent à côté des sections dès que la barre a la place. Tout reste aussi dans ce menu.</string>
+    <string name="home_keep_controls_visible">Garder les commandes visibles</string>
+    <string name="home_pin_to_bar">Épingler dans la barre du haut</string>
+
+    <string name="home_strip_title">Fils des plugins</string>
+    <string name="home_strip_intro">Épinglez des plugins installés à côté de « Pour vous ». Faites glisser pour réordonner. Installez-en d’autres depuis le magasin.</string>
+    <string name="home_strip_pinned">Sur cette barre</string>
+    <string name="home_strip_available">Disponibles</string>
+    <string name="home_strip_empty">Aucun plugin à épingler. Ouvrez le magasin pour installer Reddit, Pixiv, Mastodon, etc.</string>
+    <string name="home_strip_remove">Retirer de la barre</string>
+    <string name="home_strip_reorder">Réordonner</string>
+    <string name="home_plugin_store">Boutique d’extensions</string>
+
+    <string name="home_subscriptions">Abonnements</string>
+    <string name="home_discover">Découvrir</string>
+    <string name="home_saved">Enregistré</string>
+    <string name="home_downloads">Téléchargements</string>
+    <string name="home_antennas">Antennes</string>
+    <string name="home_deck">Deck</string>
+    <string name="home_deck_empty">Épinglez des groupes pour les voir côte à côte sur un grand écran</string>
+    <string name="home_groups">Groupes</string>
+    <string name="home_no_groups">Aucun groupe pour l’instant</string>
+    <string name="home_no_results">Aucun résultat</string>
+    <plurals name="home_group_members">
+        <item quantity="one">%1$d abonnement</item>
+        <item quantity="other">%1$d abonnements</item>
+    </plurals>
+
+    <string name="home_feed_accounts">Comptes du fil d'accueil</string>
+    <string name="home_filter_accounts">Comptes</string>
+    <string name="home_filter_accounts_explained">Désactivez les comptes de réserve gardés seulement pour les limites de débit. Pour vous fusionne les fils des comptes laissés actifs ; Abonnements utilise toujours vos abonnements locaux mais ignore les comptes désactivés lors du chargement. Les commentaires et profils peuvent encore utiliser n’importe quel compte si besoin.</string>
+    <string name="home_filter_groups_explained">Désactivez un groupe pour masquer ses membres dans Abonnements. L’onglet du groupe reste. Leurs publications sont aussi retirées de Pour vous.</string>
+    <string name="home_filter_only_hint">Appuyez longuement sur un élément pour ne garder que lui.</string>
+    <string name="home_filter_keep_one">Au moins un compte doit rester activé</string>
+    <string name="home_filter_count">%1$d / %2$d</string>
+    <string name="home_filter_all">Tout</string>
+    <string name="home_filter_none">Aucun</string>
+    <string name="home_filter_reset">Réinitialiser les filtres</string>
+    <string name="home_filter_apply">Appliquer</string>
+
+    <string name="home_for_you_empty">Impossible de charger les posts du fil</string>
+    <string name="home_for_you_no_account">Importez la sauvegarde de XTA avec ses comptes pour charger Pour vous.</string>
+    <string name="home_import">Importer une sauvegarde XTA</string>
+
+    <string name="home_home">Accueil</string>
+    <string name="home_networks">Réseaux</string>
+    <string name="home_networks_recent">Récentes</string>
+    <string name="home_networks_all">Tous les réseaux</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">Regrouper les services de microblogging</string>
+    <string name="home_alt_microblogging_group_detail">Afficher Mastodon, Bluesky et Threads dans une seule section de l’accueil. Désactivez cette option pour les séparer. Vos données et réglages sont conservés.</string>
+    <string name="home_posts">Tweets</string>
+    <string name="home_media">Médias</string>
+    <string name="home_missing_page">Page manquante</string>
+    <string name="home_two_pages_required">Vous devez avoir au moins deux pages d'écran d'accueil.</string>
+    <string name="home_choose_pages">Choisir les pages</string>
+    <string name="home_unable_to_load_pages">Impossible de charger vos pages d'accueil</string>
+    <string name="feed_strip_unavailable">Ce fil n’est plus disponible</string>
+    <string name="home_feed_accounts_empty">Ajoutez un compte pour charger Pour vous.</string>
+</resources>

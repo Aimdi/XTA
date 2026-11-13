@@ -1,0 +1,69 @@
+{
+  "sectional_items": [
+    {
+      "layout_type": "two_by_two_right",
+      "layout_content": {
+        "fill_items": [
+          {
+            "media": {
+              "id": "11",
+              "code": "AAA",
+              "taken_at": 1700000000,
+              "media_type": 1,
+              "user": {"username": "natgeo", "full_name": "Nat Geo"},
+              "image_versions2": {"candidates": [{"url": "https://scontent.cdninstagram.com/a.jpg"}]}
+            }
+          }
+        ]
+      }
+    },
+    {
+      "layout_type": "media_grid",
+      "layout_content": {
+        "medias": [
+          {
+            "media": {
+              "pk": 12,
+              "code": "BBB",
+              "taken_at": 1700000001,
+              "caption": {"text": "reel"},
+              "media_type": 2,
+              "user": {"username": "nasa", "full_name": "NASA"}
+            }
+          },
+          {
+            "media": {
+              "id": "11",
+              "code": "AAA",
+              "taken_at": 1700000000,
+              "user": {"username": "natgeo", "full_name": "Nat Geo"}
+            }
+          }
+        ]
+      }
+    },
+    {
+      "layout_type": "one_by_two_left",
+      "layout_content": {
+        "one_by_two_item": {
+          "clips": {
+            "items": [
+              {
+                "media": {
+                  "id": "13",
+                  "code": "CCC",
+                  "taken_at": 1700000002,
+                  "product_type": "clips",
+                  "user": {"username": "instagram", "full_name": "Instagram"}
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "more_available": true,
+  "next_max_id": "cur1",
+  "status": "ok"
+}

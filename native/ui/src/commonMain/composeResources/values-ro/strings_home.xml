@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
+     Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="home_x">X</string>
+    <string name="home_search_in">Caută în %1$s</string>
+    <string name="home_open_menu">Deschide meniul de navigare</string>
+    <string name="home_add_timeline">Adaugă timeline</string>
+    <string name="home_unread">Necitit</string>
+    <string name="home_refresh">Reîmprospătează</string>
+    <string name="home_open_group">Deschide grupul</string>
+    <string name="home_more_options">Mai multe opțiuni</string>
+        <string name="home_pin_to_bar_hint">Elementele fixate apar lângă secțiuni ori de câte ori bara are loc. Totul rămâne și în acest meniu.</string>
+    <string name="home_keep_controls_visible">Păstrează comenzile vizibile</string>
+    <string name="home_pin_to_bar">Fixează în bara de sus</string>
+
+    <string name="home_strip_title">Timeline-uri plugin</string>
+    <string name="home_strip_intro">Fixează pluginurile instalate lângă „Pentru tine”. Trage pentru a reordona. Instalează altele din magazin.</string>
+    <string name="home_strip_pinned">Pe această bară</string>
+    <string name="home_strip_available">Disponibile</string>
+    <string name="home_strip_empty">Niciun plugin de fixat. Deschide magazinul pentru Reddit, Pixiv, Mastodon etc.</string>
+    <string name="home_strip_remove">Elimină de pe bară</string>
+    <string name="home_strip_reorder">Reordonează</string>
+    <string name="home_plugin_store">Magazin de pluginuri</string>
+
+    <string name="home_subscriptions">Abonamente</string>
+    <string name="home_discover">Descoperă</string>
+    <string name="home_saved">Salvat</string>
+    <string name="home_downloads">Descărcări</string>
+    <string name="home_antennas">Antene</string>
+    <string name="home_deck">Coloane</string>
+    <string name="home_deck_empty">Fixează grupuri ca să le vezi unul lângă altul pe un ecran lat</string>
+    <string name="home_groups">Grupuri</string>
+    <string name="home_no_groups">Niciun grup încă</string>
+    <string name="home_no_results">Niciun rezultat</string>
+    <plurals name="home_group_members">
+        <item quantity="one">%1$d abonament</item>
+        <item quantity="few">%1$d abonamente</item>
+        <item quantity="other">%1$d de abonamente</item>
+    </plurals>
+
+    <string name="home_feed_accounts">Conturi pentru fluxul principal</string>
+    <string name="home_filter_accounts">Conturi</string>
+    <string name="home_filter_accounts_explained">Dezactivează conturile de rezervă ținute doar pentru limite. Pentru tine îmbină cronologiile conturilor lăsate pe pornit; Urmăresc tot folosește abonamentele locale, dar sare peste conturile oprite la încărcare. Comentariile și profilurile pot folosi orice cont dacă e nevoie.</string>
+    <string name="home_filter_groups_explained">Oprește un grup ca să-i ascunzi membrii din Urmăresc. Fila grupului rămâne. Postările lor dispar și din Pentru tine.</string>
+    <string name="home_filter_only_hint">Apasă lung pe unul ca să rămână activ doar acela.</string>
+    <string name="home_filter_keep_one">Cel puțin un cont trebuie să rămână pornit</string>
+    <string name="home_filter_count">%1$d / %2$d</string>
+    <string name="home_filter_all">Toate</string>
+    <string name="home_filter_none">Niciunul</string>
+    <string name="home_filter_reset">Resetează filtrele</string>
+    <string name="home_filter_apply">Aplică</string>
+
+    <string name="home_for_you_empty">Nu se pot încărca postările pentru flux</string>
+    <string name="home_for_you_no_account">Importă copia de rezervă XTA cu conturile ei ca să încarci Pentru tine.</string>
+    <string name="home_import">Importă o copie de rezervă XTA</string>
+
+    <string name="home_home">Acasă</string>
+    <string name="home_networks">Rețele</string>
+    <string name="home_networks_recent">Recente</string>
+    <string name="home_networks_all">Toate rețelele</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">Grupează serviciile de microblogging</string>
+    <string name="home_alt_microblogging_group_detail">Afișează Mastodon, Bluesky și Threads într-o singură secțiune pe ecranul principal. Dezactivează pentru a le separa. Datele și setările se păstrează.</string>
+    <string name="home_posts">Postări</string>
+    <string name="home_media">Media</string>
+    <string name="home_missing_page">Pagină lipsă</string>
+    <string name="home_two_pages_required">Trebuie să aveți cel puțin 2 pagini de ecran de start.</string>
+    <string name="home_choose_pages">Alegeți pagini</string>
+    <string name="home_unable_to_load_pages">Nu se pot încărca paginile de start</string>
+    <string name="feed_strip_unavailable">Această timeline nu mai este disponibilă</string>
+    <string name="home_feed_accounts_empty">Adaugă un cont pentru a încărca Pentru tine.</string>
+</resources>

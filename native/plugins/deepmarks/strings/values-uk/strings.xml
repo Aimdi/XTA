@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Deepmarks</string>
+    <string name="plugin_description">Зберігайте пости в Deepmarks — сервіс закладок на Nostr</string>
+    <string name="settings_intro">Deepmarks зберігає закладки як підписані події Nostr. Ваш ключ підписування ніколи не покидає пристрій: пост підписується тут, а надсилається лише готова подія.</string>
+    <string name="lifetime_notice">Для доступу до API потрібне довічне членство в Deepmarks.</string>
+    <string name="api_key">Ключ API</string>
+    <string name="api_key_hint">Починається з dmk_live_, із розділу «api access» у налаштуваннях Deepmarks</string>
+    <string name="identity">Ідентифікатор підпису</string>
+    <string name="secret_key">Ключ підписування</string>
+    <string name="secret_key_hint">Ваш nsec, залишається лише на цьому пристрої. Він підписує кожну закладку й ніколи не надсилається до Deepmarks.</string>
+    <string name="signing_as">Підпис від імені %1$s</string>
+    <string name="api_base">Адреса сервера</string>
+    <string name="test">Перевірити з’єднання</string>
+    <string name="test_ok">З’єднано з Deepmarks</string>
+    <string name="test_ok_unverified">Ключ прийнято, але акаунт ще не має публічних закладок, щоб перевірити ключ підписування</string>
+    <string name="not_configured">Спочатку вкажіть ключ API та ключ підписування Deepmarks</string>
+    <string name="error_secret_key">Це не коректний nsec і не 64-символьний шістнадцятковий ключ</string>
+    <string name="error_unauthorized">Deepmarks відхилив ключ API</string>
+    <string name="error_lifetime">API Deepmarks доступний лише для довічних учасників</string>
+    <string name="error_key_mismatch">Ваш ключ підписування належить іншому акаунту Deepmarks, ніж ключ API</string>
+    <string name="error_rejected">Deepmarks відхилив цю закладку</string>
+    <string name="error_rate_limited">Занадто багато запитів, спробуйте трохи пізніше</string>
+    <string name="error_server">За цією адресою API Deepmarks не відповідає</string>
+    <string name="error_network">Не вдалося зв’язатися з Deepmarks</string>
+    <string name="learn_more">Про Deepmarks</string>
+    <string name="save_action">Зберегти в Deepmarks</string>
+    <string name="saved">Збережено в Deepmarks</string>
+    <string name="saved_no_relay">Надіслано до Deepmarks, але жоден relay ще не прийняв</string>
+    <string name="saving">Збереження в Deepmarks…</string>
+    <string name="show">Показати</string>
+    <string name="hide">Сховати</string>
+    <string name="save">Зберегти</string>
+    <string name="connection">З’єднання</string>
+</resources>

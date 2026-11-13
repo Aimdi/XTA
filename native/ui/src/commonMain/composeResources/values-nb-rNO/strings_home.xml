@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
+     Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="home_x">X</string>
+    <string name="home_search_in">Søk i %1$s</string>
+    <string name="home_open_menu">Åpne navigasjonsmenyen</string>
+    <string name="home_add_timeline">Legg til tidslinje</string>
+    <string name="home_unread">Ulest</string>
+    <string name="home_refresh">Oppdater</string>
+    <string name="home_open_group">Åpne gruppen</string>
+    <string name="home_more_options">Flere alternativer</string>
+        <string name="home_pin_to_bar_hint">Festede elementer vises ved siden av seksjonene når linjen har plass. Alt blir også værende i denne menyen.</string>
+    <string name="home_keep_controls_visible">Hold kontrollene synlige</string>
+    <string name="home_pin_to_bar">Fest til topplinjen</string>
+
+    <string name="home_strip_title">Programtilleggets tidslinjer</string>
+    <string name="home_strip_intro">Fest installerte tillegg ved siden av «For deg». Dra for å endre rekkefølgen. Installer flere fra tilleggsbutikken.</string>
+    <string name="home_strip_pinned">På denne stripen</string>
+    <string name="home_strip_available">Tilgjengelige</string>
+    <string name="home_strip_empty">Ingen tillegg å feste ennå. Åpne butikken for Reddit, Pixiv, Mastodon med mer.</string>
+    <string name="home_strip_remove">Fjern fra stripen</string>
+    <string name="home_strip_reorder">Endre rekkefølge</string>
+    <string name="home_plugin_store">Tilleggsbutikk</string>
+
+    <string name="home_subscriptions">Abonnementer</string>
+    <string name="home_discover">Oppdag</string>
+    <string name="home_saved">Lagret</string>
+    <string name="home_downloads">Nedlastinger</string>
+    <string name="home_antennas">Antenner</string>
+    <string name="home_deck">Kolonner</string>
+    <string name="home_deck_empty">Fest grupper for å se dem side om side på en bred skjerm</string>
+    <string name="home_groups">Grupper</string>
+    <string name="home_no_groups">Ingen grupper ennå</string>
+    <string name="home_no_results">Ingen resultater</string>
+    <plurals name="home_group_members">
+        <item quantity="one">%1$d abonnement</item>
+        <item quantity="other">%1$d abonnementer</item>
+    </plurals>
+
+    <string name="home_feed_accounts">Kontoer for startfeeden</string>
+    <string name="home_filter_accounts">Kontoer</string>
+    <string name="home_filter_accounts_explained">Slå av reservekontoer du bare beholder for høyere grenser. For deg slår sammen tidslinjene fra kontoer som er på; Følger bruker fortsatt lokale abonnementer, men hopper over avslåtte kontoer ved henting. Kommentarer og profiler kan fortsatt bruke hvilken som helst konto om nødvendig.</string>
+    <string name="home_filter_groups_explained">Slå av en gruppe for å skjule medlemmene i Følger. Gruppefanen blir. Innleggene deres fjernes også fra For deg.</string>
+    <string name="home_filter_only_hint">Trykk lenge på ett for å bare ha det på.</string>
+    <string name="home_filter_keep_one">Minst én konto må stå på</string>
+    <string name="home_filter_count">%1$d / %2$d</string>
+    <string name="home_filter_all">Alle</string>
+    <string name="home_filter_none">Ingen</string>
+    <string name="home_filter_reset">Nullstill filtre</string>
+    <string name="home_filter_apply">Bruk</string>
+
+    <string name="home_for_you_empty">Kan ikke laste inn innleggene i feeden</string>
+    <string name="home_for_you_no_account">Importer XTA-sikkerhetskopien med kontoene for å laste inn For deg.</string>
+    <string name="home_import">Importer en XTA-sikkerhetskopi</string>
+
+    <string name="home_home">Hjem</string>
+    <string name="home_networks">Nettverk</string>
+    <string name="home_networks_recent">Nylige</string>
+    <string name="home_networks_all">Alle nettverk</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">Samle mikrobloggtjenester</string>
+    <string name="home_alt_microblogging_group_detail">Vis Mastodon, Bluesky og Threads i én seksjon på Hjem. Slå av for å vise dem hver for seg. Data og innstillinger beholdes.</string>
+    <string name="home_posts">Tvitringer</string>
+    <string name="home_media">Media</string>
+    <string name="home_missing_page">Manglende side</string>
+    <string name="home_two_pages_required">Du trenger minst 2 startsider</string>
+    <string name="home_choose_pages">Velg sider</string>
+    <string name="home_unable_to_load_pages">Kunne ikke laste startsider</string>
+    <string name="feed_strip_unavailable">Denne tidslinjen er ikke lenger tilgjengelig</string>
+    <string name="home_feed_accounts_empty">Legg til en konto for å laste For deg.</string>
+</resources>

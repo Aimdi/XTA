@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Accounts' avatar and Diagnostics' account health and recent reads, in XTA's words. -->
+<resources>
+    <string name="settings_avatar_title">Ваш аватар</string>
+    <string name="settings_avatar_change">Нажмите, чтобы изменить изображение слева сверху</string>
+    <string name="settings_avatar_description">Изображение слева сверху и в меню — остаётся на этом устройстве</string>
+    <string name="settings_avatar_choose">Выбрать с устройства</string>
+    <string name="settings_avatar_from_account">Взять фото профиля X</string>
+    <string name="settings_avatar_error">Не удалось загрузить это фото профиля</string>
+    <string name="settings_avatar_clear">Использовать монограмму</string>
+    <string name="settings_diagnostics_recent_reads">Последние операции чтения</string>
+    <string name="settings_diagnostics_sign_in_broken">Похоже, вход больше не действует, пауза до %1$s</string>
+</resources>

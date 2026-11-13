@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Read failures as XTA's full-page errors say them (lib/ui/errors.dart), and closing the app. -->
+<resources>
+    <string name="problem_no_account_title">Brak dostępnego konta w tej chwili</string>
+    <string name="problem_no_account_text">XTA potrzebuje co najmniej jednego konta 𝕏, aby działać. Dodaj konto, aby zacząć.</string>
+    <string name="problem_rate_limited_title">Ograniczenie liczby żądań przez 𝕏</string>
+    <string name="problem_rate_limited_text">Wysłano zbyt wiele żądań w zbyt krótkim czasie. Spróbuj ponownie później lub dodaj kolejne konto, aby dalej korzystać z XTA.</string>
+    <string name="problem_no_working_account_title">Twoje konta nie działają</string>
+    <string name="problem_no_working_account_text">Wygląda na to, że żadne z Twoich kont obecnie nie działa. Zaloguj się innym kontem lub spróbuj ponownie później.</string>
+    <string name="problem_endpoint_refused_title">𝕏 odrzucił to żądanie</string>
+    <string name="problem_endpoint_refused_text">W tej części 𝕏 odrzucono wszystkie konta, więc raczej nie chodzi o twoje konta. 𝕏 prawdopodobnie coś zmienił; aplikacja naprawia się sama, gdy tylko może. Spróbuj ponownie za chwilę.</string>
+    <string name="problem_signing_title">Podpisywanie żądań do X jest niedostępne</string>
+    <string name="problem_signing_text">XTA nie zdołało wyprowadzić tokenu transakcji, którego X teraz wymaga. Twoje konta mogą być w porządku; spróbuj ponownie za chwilę lub zajrzyj do Diagnostyki.</string>
+    <string name="problem_offline_title">Nie udało się połączyć z X</string>
+    <string name="problem_offline_text">Sprawdź swoje połączenie internetowe.</string>
+    <string name="problem_timed_out_title">Przekroczono limit czasu</string>
+    <string name="problem_timed_out_text">Ładowanie trwało zbyt długo. Sprawdź swoje połączenie sieciowe!</string>
+    <string name="problem_service_unavailable_title">X jest chwilowo niedostępny</string>
+    <string name="problem_service_unavailable_text">X zwrócił błąd serwera. Możesz dalej czytać wpisy z pamięci podręcznej i spróbować ponownie później.</string>
+    <string name="problem_request_unavailable_title">To żądanie jest niedostępne</string>
+    <string name="problem_request_unavailable_text">X odrzucił to żądanie. Może być chwilowo niedostępne albo ta część usługi mogła się zmienić.</string>
+    <string name="problem_oops">Ups! Coś poszło nie tak 🥲</string>
+    <string name="problem_http_text">X zwrócił HTTP %1$d.</string>
+    <string name="problem_retry_in">Spróbuj ponownie za %1$s</string>
+    <string name="close_app_confirm">Czy na pewno chcesz zamknąć XTA?</string>
+    <string name="problem_unable_to_load_the_community">Nie udało się wczytać społeczności</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">Nie można znaleźć dostępnych lokalizacji trendów.</string>
+    <string name="problem_unable_to_load_the_members">Nie udało się wczytać członków</string>
+    <string name="problem_unable_to_load_the_list_of_follows">Nie można załadować listy obserwowanych</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">Nie można załadować następnej strony z obserwowanymi</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">Nie można załadować następnej strony z tweetami</string>
+    <string name="problem_unable_to_load_the_tweets">Nie można załadować tweetów</string>
+    <string name="problem_connection_failed">Błąd połączenia</string>
+    <string name="problem_sign_in_needed">Zaloguj się ponownie, aby kontynuować</string>
+    <string name="problem_rate_limit_hint">To źródło ogranicza żądania. Spróbuj ponownie później.</string>
+    <string name="problem_more_info">Więcej informacji</string>
+    <string name="problem_auto_retry_seconds">Ponowna próba za %1$d s…</string>
+    <string name="problem_auto_retry_in">Ponowna próba za %1$s…</string>
+    <string name="problem_cached_content">Podczas aktualizacji źródła wyświetlana jest zapisana kopia.</string>
+    <string name="problem_source_loading">To źródło nadal się ładuje. Inne wpisy są już dostępne.</string>
+    <string name="problem_saved_at">Wyświetlane są posty zapisane o %1$s</string>
+    <string name="problem_saved_earlier">Wyświetlane są wcześniej zapisane posty</string>
+</resources>

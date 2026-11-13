@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Karakeep</string>
+    <string name="plugin_description">Lưu bài viết và liên kết vào máy chủ Karakeep của bạn chỉ với một lần nhấn</string>
+    <string name="settings_intro">Karakeep là dịch vụ dấu trang bạn tự vận hành. Hãy nhập địa chỉ máy chủ của bạn và một khóa API từ «Cài đặt &gt; Khóa API» trong Karakeep.</string>
+    <string name="server_url">Địa chỉ máy chủ</string>
+    <string name="server_url_hint">Ví dụ karakeep.example.com</string>
+    <string name="api_key">Khóa API</string>
+    <string name="api_key_hint">Chỉ lưu trên thiết bị này</string>
+    <string name="test">Kiểm tra kết nối</string>
+    <string name="test_ok">Đã kết nối tới Karakeep</string>
+    <string name="not_configured">Hãy nhập máy chủ Karakeep và khóa API trước</string>
+    <string name="error_unauthorized">Karakeep đã từ chối khóa API</string>
+    <string name="error_server_url">Không tìm thấy Karakeep tại địa chỉ đó</string>
+    <string name="error_network">Không thể kết nối tới máy chủ Karakeep</string>
+    <string name="error_generic">Karakeep không lưu được liên kết này</string>
+    <string name="learn_more">Về Karakeep</string>
+    <string name="save_action">Lưu vào Karakeep</string>
+    <string name="saved">Đã lưu vào Karakeep</string>
+    <string name="already_saved">Đã có trong Karakeep</string>
+    <string name="saving">Đang lưu vào Karakeep…</string>
+    <string name="show">Hiện</string>
+    <string name="hide">Ẩn</string>
+    <string name="save">Lưu</string>
+    <string name="connection">Kết nối</string>
+</resources>

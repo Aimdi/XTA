@@ -1,0 +1,7 @@
+{
+  "id": "hackernews",
+  "version": "1.0.0",
+  "entry": "com.aimdi.xtanative.plugins.hackernews.HackerNewsPlugin",
+  "category": "communities",
+  "private": false
+}

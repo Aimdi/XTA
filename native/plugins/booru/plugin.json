@@ -1,0 +1,7 @@
+{
+  "id": "booru",
+  "version": "1.0.0",
+  "entry": "com.aimdi.xtanative.plugins.booru.BooruPlugin",
+  "category": "art",
+  "private": false
+}

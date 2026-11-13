@@ -1,0 +1,29 @@
+{
+  "format": 1,
+  "id": "lobsters",
+  "version": 1,
+  "name": "Lobsters",
+  "description": "Computing-focused links and discussion.",
+  "homepage": "https://lobste.rs",
+  "color": "#AC130D",
+  "hosts": ["lobste.rs"],
+  "layout": "links",
+  "type": "json",
+  "items": "$",
+  "fields": {
+    "id": "short_id",
+    "title": "title",
+    "link": "url",
+    "text": "description_plain",
+    "author": "submitter_user",
+    "date": "created_at",
+    "score": "score",
+    "comments": "comment_count",
+    "discussion": "comments_url",
+    "tags": "tags[*]"
+  },
+  "feeds": [
+    { "id": "hottest", "name": "Hottest", "url": "https://lobste.rs/page/{page}.json" },
+    { "id": "newest", "name": "Newest", "url": "https://lobste.rs/newest/page/{page}.json" }
+  ]
+}

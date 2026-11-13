@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Web sources' text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Add source</string>
+    <string name="add_link">Add from link</string>
+    <string name="back">Back</string>
+    <string name="cancel">Cancel</string>
+    <plurals name="comments">
+        <item quantity="one">%1$d comment</item>
+        <item quantity="other">%1$d comments</item>
+    </plurals>
+    <string name="consent_from">From %1$s</string>
+    <string name="consent_read_only">It can only read public pages. It cannot use your accounts or post anything.</string>
+    <string name="consent_sites">It will read pages from these sites:</string>
+    <string name="consent_title">Add %1$s?</string>
+    <string name="discussion">Discussion</string>
+    <string name="empty">No sources yet. Add one from the published list, or by link.</string>
+    <string name="failure_blocked">This page is not on a site the source lists.</string>
+    <string name="failure_status">The site answered with error %1$s.</string>
+    <string name="failure_too_large">This page is too large to read.</string>
+    <string name="failure_unreachable">The site could not be reached.</string>
+    <string name="follow">Follow</string>
+    <string name="install">Add</string>
+    <string name="installed">Added</string>
+    <string name="link">Source link</string>
+    <string name="link_placeholder">https://example.org/source.json</string>
+    <string name="list_empty">Nothing here right now.</string>
+    <plurals name="lists">
+        <item quantity="one">%1$d list</item>
+        <item quantity="other">%1$d lists</item>
+    </plurals>
+    <string name="more_options">More options</string>
+    <string name="ok">OK</string>
+    <string name="open_in_browser">Open in browser</string>
+    <string name="plugin_description">Add simple sites from a published list or by link. A source only reads public pages, and asks before it reads a new site.</string>
+    <string name="plugin_name">Web sources</string>
+    <plurals name="points">
+        <item quantity="one">%1$d point</item>
+        <item quantity="other">%1$d points</item>
+    </plurals>
+    <string name="published">Published sources</string>
+    <string name="published_unreachable">The published list could not be loaded.</string>
+    <string name="reading">Reading the source…</string>
+    <string name="refused_detail">Where: %1$s</string>
+    <string name="refused_insecure">This source would read a site it does not list, or without HTTPS.</string>
+    <string name="refused_invalid">This source file has a mistake.</string>
+    <string name="refused_newer">This source needs a newer version of XTA.</string>
+    <string name="refused_too_large">This source goes beyond what XTA allows.</string>
+    <string name="refused_unreadable">This is not a web source file.</string>
+    <string name="remove">Remove source</string>
+    <string name="remove_confirm">Remove %1$s? The lists you follow from it are removed too.</string>
+    <string name="retry">Retry</string>
+    <string name="review_update">Review update</string>
+    <string name="search_in">Search %1$s</string>
+    <string name="unfollow">Unfollow</string>
+    <string name="unreachable">The source file could not be read. Check the link and your connection.</string>
+    <string name="update_title">Update %1$s?</string>
+    <string name="in_home_feed">Mix followed lists into Following</string>
+    <string name="in_home_feed_description">Show new posts from followed lists in the Following timeline.</string>
+    <string name="settings">Settings</string>
+</resources>

@@ -1,0 +1,27 @@
+{
+  "items": [
+    {
+      "entity_key": "c-1",
+      "comment": {
+        "id": 1,
+        "name": "Ann",
+        "handle": "ann",
+        "photo_url": "https://substackcdn.com/ann.png",
+        "body": " Hello note ",
+        "date": "2026-08-01T10:00:00Z",
+        "reaction_count": 3,
+        "attachments": [false, {"type": "link"}, {"type": "image", "imageUrl": "https://substackcdn.com/note.png"}],
+        "user_primary_publication": {"subdomain": "ann", "name": "Ann Writes", "logo_url": "https://example.org/a.png"}
+      }
+    },
+    {
+      "comment": {"id": 2, "body": "Readable without author", "name": false, "handle": [], "date": 4, "reaction_count": "many"},
+      "publication": {"subdomain": false, "custom_domain": {}, "name": 4}
+    },
+    {"comment": {"id": 3, "body": ["unsupported"]}},
+    {"comment": {"id": 4, "body": "A third note", "handle": "jordan", "reaction_count": -2}},
+    {"comment": {"id": {}, "body": "Invalid identity"}},
+    null
+  ],
+  "nextCursor": "cursor-2"
+}

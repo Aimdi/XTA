@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Read failures as XTA's full-page errors say them (lib/ui/errors.dart), and closing the app. -->
+<resources>
+    <string name="problem_no_account_title">Aucun compte disponible pour le moment</string>
+    <string name="problem_no_account_text">XTA a besoin d'au moins un compte 𝕏 pour fonctionner. Ajoutez un compte pour commencer.</string>
+    <string name="problem_rate_limited_title">Limité par 𝕏</string>
+    <string name="problem_rate_limited_text">Vous avez fait trop de requêtes dans un temps trop court. Réessayez plus tard ou ajoutez un autre compte pour continuer à utiliser XTA.</string>
+    <string name="problem_no_working_account_title">Vos comptes ne fonctionnent pas</string>
+    <string name="problem_no_working_account_text">Il semble qu'aucun de vos comptes ne fonctionne actuellement. Connectez-vous avec un autre compte ou réessayez plus tard.</string>
+    <string name="problem_endpoint_refused_title">𝕏 a refusé cette requête</string>
+    <string name="problem_endpoint_refused_text">Tous les comptes ont été refusés sur cette partie de 𝕏 : le problème ne vient donc probablement pas de vos comptes. 𝕏 a sans doute changé quelque chose ; l'application se répare d'elle-même dès qu'elle le peut. Réessayez dans un instant.</string>
+    <string name="problem_signing_title">La signature des requêtes X est indisponible</string>
+    <string name="problem_signing_text">XTA n'a pas pu dériver le jeton de transaction qu'exige actuellement X. Vos comptes vont peut-être bien ; réessayez dans un instant ou consultez le Diagnostic.</string>
+    <string name="problem_offline_title">Impossible de contacter X</string>
+    <string name="problem_offline_text">Veuillez vérifier votre connexion Internet.</string>
+    <string name="problem_timed_out_title">Délai expiré</string>
+    <string name="problem_timed_out_text">Le chargement prend trop de temps. Veuillez vérifier votre connexion réseau !</string>
+    <string name="problem_service_unavailable_title">X est temporairement indisponible</string>
+    <string name="problem_service_unavailable_text">X a renvoyé une erreur serveur. Vous pouvez continuer à lire les publications en cache et réessayer plus tard.</string>
+    <string name="problem_request_unavailable_title">Cette requête est indisponible</string>
+    <string name="problem_request_unavailable_text">X a rejeté cette requête. Elle est peut-être temporairement indisponible, ou cette partie du service a changé.</string>
+    <string name="problem_oops">Oups ! Quelque chose s'est mal passé 🥲</string>
+    <string name="problem_http_text">X a renvoyé HTTP %1$d.</string>
+    <string name="problem_retry_in">Réessayer dans %1$s</string>
+    <string name="close_app_confirm">Êtes-vous sûr de vouloir fermer XTA ?</string>
+    <string name="problem_unable_to_load_the_community">Impossible de charger la communauté</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">Impossible de trouver les emplacements de tendances disponibles.</string>
+    <string name="problem_unable_to_load_the_members">Impossible de charger les membres</string>
+    <string name="problem_unable_to_load_the_list_of_follows">Impossible de charger la liste des abonnements</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">Impossible de charger la page suivante</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">Impossible de charger la page suivante des tweets</string>
+    <string name="problem_unable_to_load_the_tweets">Impossible de charger les tweets</string>
+    <string name="problem_connection_failed">Échec de la connexion</string>
+    <string name="problem_sign_in_needed">Reconnectez-vous pour continuer</string>
+    <string name="problem_rate_limit_hint">Cette source limite les requêtes. Réessayez plus tard.</string>
+    <string name="problem_more_info">En savoir plus</string>
+    <string name="problem_auto_retry_seconds">Nouvel essai dans %1$d s…</string>
+    <string name="problem_auto_retry_in">Nouvel essai dans %1$s…</string>
+    <string name="problem_cached_content">Une copie enregistrée est affichée pendant la mise à jour.</string>
+    <string name="problem_source_loading">Cette source charge encore. Les autres publications sont disponibles.</string>
+    <string name="problem_saved_at">Publications enregistrées à %1$s</string>
+    <string name="problem_saved_earlier">Publications enregistrées précédemment</string>
+</resources>

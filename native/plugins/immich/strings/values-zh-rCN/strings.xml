@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Immich</string>
+    <string name="plugin_description">把所选书签文件夹里的媒体发送到你自己的 Immich 服务器</string>
+    <string name="settings_intro">填写 Immich 服务器地址，以及在「账户设置 → API 密钥」中创建的 API 密钥。为哪些书签文件夹开启此项，它们的照片和视频就会发送到这里。</string>
+    <string name="server_url">服务器地址</string>
+    <string name="server_url_hint">例如 192.168.1.10:2283 或 https://photos.example.org</string>
+    <string name="api_key">API 密钥</string>
+    <string name="api_key_hint">Immich → 账户设置 → API 密钥</string>
+    <string name="test">测试连接</string>
+    <string name="test_ok">已连接到你的 Immich 服务器</string>
+    <string name="not_configured">请先填写地址和 API 密钥</string>
+    <string name="error_unauthorized">Immich 拒绝了该 API 密钥</string>
+    <string name="error_server_url">该地址上没有 Immich 服务器响应</string>
+    <string name="error_network">无法连接到你的 Immich 服务器</string>
+    <string name="error_generic">你的 Immich 服务器返回了错误</string>
+    <string name="options">上传选项</string>
+    <string name="album_per_folder">每个文件夹一个相册</string>
+    <string name="album_per_folder_description">上传的内容会放进与书签文件夹同名的 Immich 相册；相册不存在时会自动创建</string>
+    <string name="include_videos">同时上传视频</string>
+    <string name="include_videos_description">视频和 GIF 比照片大得多。关闭后只发送照片。</string>
+    <string name="folder_hint">上传按文件夹开启：在「书签」中新建或编辑文件夹时设置。</string>
+    <string name="learn_more">关于 Immich</string>
+    <string name="auto_upload">把媒体上传到 Immich</string>
+    <string name="auto_upload_description">把归入此文件夹的帖子的照片和视频发送到你的 Immich 服务器</string>
+    <string name="uploading">正在上传到 Immich…</string>
+    <string name="upload_done">已发送到 Immich</string>
+    <string name="upload_failed">无法上传到 Immich</string>
+    <string name="show">显示</string>
+    <string name="hide">隐藏</string>
+    <string name="save">保存</string>
+    <string name="connection">连接</string>
+</resources>

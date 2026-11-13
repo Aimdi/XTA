@@ -1,39 +1,45 @@
 # XTA design skills
 
-This is a project-local installation for coding agents, not an Android runtime
-plugin and not a global installation into the ChatGPT account.
+This is a project-local installation for coding agents, not an XTA plugin and
+not a global installation.
 
 ## Scope and precedence
 
 Read `CLAUDE.md` before either skill. This brief and the user's
 request take precedence over generic upstream design suggestions.
 
-XTA is an existing Android-only Flutter reader. Refine the current app rather
-than replacing it with a website, marketing page, or unrelated application.
-Use Impeccable's Operate mode for controls and Read mode for article surfaces.
-Use UI UX Pro Max's Flutter stack explicitly; do not default to HTML/Tailwind.
+XTA is XTA Native (`native/`): an existing reader in Kotlin, with one set of
+Compose Multiplatform screens (`native/ui`) for Android and the Linux desktop.
+Refine the current app rather than replacing it with a website, marketing
+page, or unrelated application. Use Impeccable's Operate mode for controls and
+Read mode for article surfaces. Use UI UX Pro Max's `jetpack-compose` stack
+explicitly; do not default to HTML/Tailwind.
 
 ## Compact layout contract
 
 - Remove redundant chrome, repeated headings, oversized padding, and nested
   decorative cards before reducing content size. Preserve readable typography.
-- Retain at least 48 x 48 logical-pixel Android touch targets, accessible labels,
-  text scaling, safe areas, contrast, and predictable back navigation.
+- Retain at least 48 x 48 dp touch targets, accessible labels (content
+  descriptions), text scaling, safe areas, contrast, and predictable back
+  navigation; on the desktop, mouse and keyboard as well.
 - Keep frequent actions visible and consistently placed. Secondary actions may
   move into a labelled sheet or menu, but remain discoverable and fully usable.
 - Preserve all existing plugin features, accounts, subscriptions, local saved
   data, navigation/scroll state, and the reversible Alt Microblogging grouping.
-- Preserve existing icons, supported themes, and the true-black option. Do not
-  apply generic bans on native fonts or black backgrounds to this Android app.
-- Inspect existing shared UI, including PluginHomeChrome and Substack reading
-  controls, before adding a new toolbar or duplicating components.
-- Keep flutter_triple Store state management. Localize UI text through ARB/L10n.
-  Do not edit lib/generated, lib/client, or lib/database in a design pass. Do not
-  upgrade pinned Flutter/dependencies or add X write actions.
+- Preserve existing icons, supported themes (`ui/theme/Theme.kt`), and the
+  true-black option. Do not apply generic bans on native fonts or black
+  backgrounds to this app.
+- Inspect the existing shared UI (`ui/common`, `ui/post`, the plugin kit and
+  its chrome) before adding a new toolbar or duplicating components.
+- Keep the screens' pattern (`native/SCREENS.md`): a ViewModel with one
+  immutable state, decisions in plain Kotlin with tests. Put UI text in the
+  string resources, in all 29 languages. Do not change the plugin API, bump
+  pinned dependencies, or add write actions to any network in a design pass.
 - Work incrementally, one surface at a time. Test German/long labels, narrow
-  screens, large text, empty/loading/error states and all moved actions. Separate
-  code inspection, widget tests, screenshots, and real-device checks in reports.
-- Installation alone is not a UI redesign, a merge, an APK build, or a release.
+  screens, large text, empty/loading/error states and all moved actions.
+  Separate code inspection, tests, screenshots (CI's emulator walk and desktop
+  job), and real-device checks in reports.
+- Installation alone is not a UI redesign, a merge, a build, or a release.
 
 ## Use
 
@@ -44,20 +50,20 @@ initialization is needed.
 Example request:
 
 > Use Impeccable to critique, distill and improve XTA's Home layout. Read
-> docs/xta-design-skills.md first. Then use UI UX Pro Max's Flutter guidance.
+> docs/xta-design-skills.md first. Then use UI UX Pro Max's Jetpack Compose guidance.
 > Preserve every feature and keep accessible touch targets.
 
-From the repository root, a focused Flutter lookup is:
+From the repository root, a focused Compose lookup is:
 
 ```sh
-python3 .claude/skills/ui-ux-pro-max/scripts/search.py "compact spacing" --stack flutter
+python3 .claude/skills/ui-ux-pro-max/scripts/search.py "compact spacing" --stack jetpack-compose
 ```
 
 In hosts exposing skill commands, invoke the names `impeccable` and
 `ui-ux-pro-max`; command-prefix syntax depends on the host. Impeccable's
 `critique`, `distill`, `layout`, `extract`, `harden`, and native `audit` playbooks
 are the relevant starting points. Do not run browser-only checks as proof of
-Android behavior.
+the app's behavior.
 
 ## Provenance and runtime
 
@@ -84,6 +90,8 @@ these copies with floating downloads or weaken the existing skill sync check.
 
 ## Verification
 
-Run `python3 scripts/check_design_skills.py` and
-`bash scripts/check_skill_sync.sh`. The design check checks manifests/resources/licenses, verifies Python syntax, and runs a local
-Flutter search. It does not assert Android UI quality or build an APK.
+Run `python3 native/tool/skills/check_design_skills.py` and
+`bash native/tool/skills/check_skill_sync.sh` (CI's `skills` job runs both).
+The design check checks manifests, resources and licences, verifies Python
+syntax, and runs a local Jetpack Compose search. It does not assert UI quality
+or build the app.

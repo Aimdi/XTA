@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="video_fullscreen">전체 화면</string>
+    <string name="video_fullscreen_exit">전체 화면 종료</string>
+    <string name="video_picture_in_picture">화면 속 화면</string>
+</resources>

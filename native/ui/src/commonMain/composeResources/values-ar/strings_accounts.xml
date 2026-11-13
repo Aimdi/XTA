@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Accounts' avatar and Diagnostics' account health and recent reads, in XTA's words. -->
+<resources>
+    <string name="settings_avatar_title">صورتك الشخصية</string>
+    <string name="settings_avatar_change">اضغط لتغيير الصورة في أعلى اليسار</string>
+    <string name="settings_avatar_description">الصورة الظاهرة أعلى اليسار وفي الدرج — تبقى على هذا الجهاز</string>
+    <string name="settings_avatar_choose">اختر من الجهاز</string>
+    <string name="settings_avatar_from_account">استخدم صورة ملف X</string>
+    <string name="settings_avatar_error">تعذّر تحميل صورة الملف الشخصي</string>
+    <string name="settings_avatar_clear">استخدم الحرف الأول بدلًا من ذلك</string>
+    <string name="settings_diagnostics_recent_reads">عمليات القراءة الأخيرة</string>
+    <string name="settings_diagnostics_sign_in_broken">يبدو أن تسجيل الدخول لم يعد صالحًا، سيُعاد المحاولة في %1$s</string>
+</resources>

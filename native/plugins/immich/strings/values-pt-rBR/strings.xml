@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Immich</string>
+    <string name="plugin_description">Enviar as mídias das pastas de marcadores escolhidas para o seu próprio servidor Immich</string>
+    <string name="settings_intro">Informe o endereço do seu servidor Immich e uma chave de API em Configurações da conta → Chaves de API. As pastas de marcadores em que você ativar isso enviarão para cá suas fotos e vídeos.</string>
+    <string name="server_url">Endereço do servidor</string>
+    <string name="server_url_hint">Por exemplo 192.168.1.10:2283 ou https://fotos.example.org</string>
+    <string name="api_key">Chave de API</string>
+    <string name="api_key_hint">Immich → Configurações da conta → Chaves de API</string>
+    <string name="test">Testar a conexão</string>
+    <string name="test_ok">Conectado ao seu servidor Immich</string>
+    <string name="not_configured">Informe primeiro o endereço e a chave de API</string>
+    <string name="error_unauthorized">O Immich recusou a chave de API</string>
+    <string name="error_server_url">Nenhum servidor Immich respondeu nesse endereço</string>
+    <string name="error_network">Não foi possível alcançar o seu servidor Immich</string>
+    <string name="error_generic">Seu servidor Immich retornou um erro</string>
+    <string name="options">Opções de envio</string>
+    <string name="album_per_folder">Um álbum por pasta</string>
+    <string name="album_per_folder_description">O que for enviado vai para um álbum do Immich com o nome da pasta de marcadores, criado se ainda não existir</string>
+    <string name="include_videos">Enviar os vídeos também</string>
+    <string name="include_videos_description">Vídeos e GIFs são bem maiores que fotos. Com isso desligado, só as fotos são enviadas.</string>
+    <string name="folder_hint">O envio é ativado por pasta, ao criá-la ou editá-la, em Marcadores.</string>
+    <string name="learn_more">Sobre o Immich</string>
+    <string name="auto_upload">Enviar mídias para o Immich</string>
+    <string name="auto_upload_description">Enviar as fotos e os vídeos dos posts guardados aqui para o seu servidor Immich</string>
+    <string name="uploading">Enviando para o Immich…</string>
+    <string name="upload_done">Enviado para o Immich</string>
+    <string name="upload_failed">Não foi possível enviar para o Immich</string>
+    <string name="show">Mostrar</string>
+    <string name="hide">Ocultar</string>
+    <string name="save">Salvar</string>
+    <string name="connection">Conexão</string>
+</resources>

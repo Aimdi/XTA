@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Karakeep</string>
+    <string name="plugin_description">Beiträge und Links mit einem Tippen auf dem eigenen Karakeep-Server speichern</string>
+    <string name="settings_intro">Karakeep ist ein selbst gehosteter Lesezeichendienst. Trage die Adresse deiner Instanz und einen API-Schlüssel aus „Einstellungen &gt; API-Schlüssel“ in Karakeep ein.</string>
+    <string name="server_url">Serveradresse</string>
+    <string name="server_url_hint">Zum Beispiel karakeep.example.com</string>
+    <string name="api_key">API-Schlüssel</string>
+    <string name="api_key_hint">Bleibt nur auf diesem Gerät</string>
+    <string name="test">Verbindung testen</string>
+    <string name="test_ok">Mit Karakeep verbunden</string>
+    <string name="not_configured">Bitte zuerst Karakeep-Server und API-Schlüssel eintragen</string>
+    <string name="error_unauthorized">Karakeep hat den API-Schlüssel abgelehnt</string>
+    <string name="error_server_url">Unter dieser Adresse ist kein Karakeep erreichbar</string>
+    <string name="error_network">Der Karakeep-Server ist nicht erreichbar</string>
+    <string name="error_generic">Karakeep konnte diesen Link nicht speichern</string>
+    <string name="learn_more">Über Karakeep</string>
+    <string name="save_action">In Karakeep speichern</string>
+    <string name="saved">In Karakeep gespeichert</string>
+    <string name="already_saved">Schon in Karakeep</string>
+    <string name="saving">Wird in Karakeep gespeichert…</string>
+    <string name="show">Anzeigen</string>
+    <string name="hide">Ausblenden</string>
+    <string name="save">Speichern</string>
+    <string name="connection">Verbindung</string>
+</resources>

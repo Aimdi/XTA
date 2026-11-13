@@ -1,0 +1,105 @@
+package com.aimdi.xtanative.ui.pluginstore
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
+import com.aimdi.xtanative.data.plugins.AppPlugins
+import com.aimdi.xtanative.data.plugins.Destination
+import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.feed_strip_unavailable
+import com.aimdi.xtanative.ui.generated.resources.plugin_open_client
+import com.aimdi.xtanative.ui.generated.resources.search
+import com.aimdi.xtanative.ui.generated.resources.settings
+import com.aimdi.xtanative.ui.home.HomeNetworks
+import com.aimdi.xtanative.ui.home.NetworkOption
+import com.aimdi.xtanative.ui.home.StripNetwork
+import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.currentLanguage
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
+import org.jetbrains.compose.resources.stringResource
+
+/**
+ * The plugins' timelines for Home's strip: every running plugin with a home
+ * tab can sit there (the reader pins it in the strip's sheet, or in the
+ * store). Its page is its home tab, its mark its icon in its brand colour, and
+ * its options its search and its settings, where it has them, and "Open
+ * ‹plugin›", its whole client, as XTA's dock menu offers it.
+ */
+internal class PluginHomeNetworks(private val plugins: AppPlugins) : HomeNetworks {
+    private val refreshes = MutableStateFlow<Map<String, Int>>(emptyMap())
+
+    override val available: StateFlow<List<StripNetwork>> get() = plugins.stripNetworks
+
+    override val missing: StateFlow<Set<String>> get() = plugins.missingNetworks
+
+    @Composable
+    override fun Mark(id: String, size: Dp) {
+        val plugin = runningPlugin(id)?.plugin ?: return
+        Icon(plugin.icon, contentDescription = null, tint = markTint(plugin), modifier = Modifier.size(size))
+    }
+
+    @Composable
+    override fun Page(id: String, contentPadding: PaddingValues, toTop: Int) {
+        val body = runningPlugin(id)?.plugin?.homeTab ?: return Unavailable()
+        val refreshed by refreshes.collectAsState()
+        SavesMediaOf(id) { body(PluginFrame(contentPadding, toTop, refreshed[id] ?: 0)) }
+    }
+
+    @Composable
+    override fun options(id: String): List<NetworkOption> {
+        val plugin = runningPlugin(id)?.plugin ?: return emptyList()
+        val language = currentLanguage()
+        val searchLabel = stringResource(Res.string.search)
+        val settings = stringResource(Res.string.settings)
+        val name = runCatching { plugin.title(language) }.getOrNull() ?: id
+        val open = stringResource(Res.string.plugin_open_client, name)
+        return remember(plugin, language, searchLabel, settings, open) {
+            listOfNotNull(
+                plugin.search?.let { search ->
+                    val label = runCatching { search.hint(language) }.getOrNull() ?: searchLabel
+                    NetworkOption(SEARCH, label, Icons.Filled.Search) { plugins.navigator.go(Destination.PluginSearch(id, null)) }
+                },
+                plugin.settings?.let {
+                    NetworkOption(SETTINGS, settings, Icons.Filled.Settings) { plugins.navigator.go(Destination.PluginSettings(id)) }
+                },
+                NetworkOption(CLIENT, open, plugin.icon) { plugins.navigator.go(Destination.PluginClient(id)) },
+            )
+        }
+    }
+
+    /** XTA's page for a pinned timeline whose plugin gives none any more. */
+    @Composable
+    private fun Unavailable() {
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text(stringResource(Res.string.feed_strip_unavailable)) }
+    }
+
+    /** A plugin does not say what its reader has not seen: no dot. */
+    @Composable
+    override fun unread(id: String): Boolean = false
+
+    override fun refresh(id: String) {
+        refreshes.update { it + (id to (it[id] ?: 0) + 1) }
+    }
+
+    private companion object {
+        /** The options' ids, which the top bar's pins keep. */
+        const val SEARCH = "search"
+        const val SETTINGS = "settings"
+        const val CLIENT = "client"
+    }
+}

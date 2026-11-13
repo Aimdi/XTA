@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Deepmarks</string>
+    <string name="plugin_description">احفظ المنشورات في Deepmarks، خدمة العلامات المرجعية القائمة على Nostr</string>
+    <string name="settings_intro">يحفظ Deepmarks العلامات المرجعية كأحداث Nostr موقّعة. مفتاح التوقيع لا يترك هذا الجهاز أبدًا: يُوقَّع المنشور هنا ويُرسل الحدث المكتمل فقط.</string>
+    <string name="lifetime_notice">يتطلب الوصول إلى الواجهة عضوية دائمة في Deepmarks.</string>
+    <string name="api_key">مفتاح الواجهة</string>
+    <string name="api_key_hint">يبدأ بـ dmk_live_، من «api access» في إعدادات Deepmarks</string>
+    <string name="identity">هوية التوقيع</string>
+    <string name="secret_key">مفتاح التوقيع</string>
+    <string name="secret_key_hint">مفتاح nsec يبقى على هذا الجهاز فقط. يوقّع كل علامة مرجعية ولا يُرسل إلى Deepmarks أبدًا.</string>
+    <string name="signing_as">التوقيع باسم %1$s</string>
+    <string name="api_base">عنوان الخادم</string>
+    <string name="test">اختبار الاتصال</string>
+    <string name="test_ok">تم الاتصال بـ Deepmarks</string>
+    <string name="test_ok_unverified">تم قبول المفتاح، لكن الحساب لا يملك بعد علامة مرجعية عامة للتحقق من مفتاح التوقيع</string>
+    <string name="not_configured">أضف أولًا مفتاح Deepmarks للواجهة ومفتاح التوقيع</string>
+    <string name="error_secret_key">هذا ليس nsec صالحًا ولا مفتاحًا ست عشريًا من 64 حرفًا</string>
+    <string name="error_unauthorized">رفض Deepmarks مفتاح الواجهة</string>
+    <string name="error_lifetime">واجهة Deepmarks متاحة لأعضاء العضوية الدائمة فقط</string>
+    <string name="error_key_mismatch">مفتاح التوقيع يخص حسابًا آخر في Deepmarks غير صاحب مفتاح الواجهة</string>
+    <string name="error_rejected">رفض Deepmarks هذه العلامة المرجعية</string>
+    <string name="error_rate_limited">طلبات كثيرة جدًا، أعد المحاولة قريبًا</string>
+    <string name="error_server">لم تُجب أي واجهة Deepmarks على هذا العنوان</string>
+    <string name="error_network">تعذّر الوصول إلى Deepmarks</string>
+    <string name="learn_more">عن Deepmarks</string>
+    <string name="save_action">الحفظ في Deepmarks</string>
+    <string name="saved">تم الحفظ في Deepmarks</string>
+    <string name="saved_no_relay">أُرسل إلى Deepmarks، لكن لم يقبله أي relay بعد</string>
+    <string name="saving">جارٍ الحفظ في Deepmarks…</string>
+    <string name="show">إظهار</string>
+    <string name="hide">إخفاء</string>
+    <string name="save">حفظ</string>
+    <string name="connection">الاتصال</string>
+</resources>

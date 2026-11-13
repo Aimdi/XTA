@@ -1,5 +1,5 @@
 {
-  "_comment": "Query-id overrides for the X GraphQL endpoints in lib/client/endpoints.dart. Apps fetch this on launch, so correcting an id here repairs every install without a release. Only ids for operations the installed build already knows are accepted, and only when they match ^[A-Za-z0-9_-]{16,32}$ — this file cannot redirect traffic or add endpoints. Keep entries while they differ from older shipped APKs; clear when every release already ships the same ids.",
+  "_comment": "Query-id overrides for the X GraphQL endpoints in XTA's X client (native/core/src/main/kotlin/com/aimdi/xtanative/core/x/XEndpoints.kt). Apps fetch this on launch, so correcting an id here repairs every install without a release. Only ids for operations the installed build already knows are accepted, and only when they match ^[A-Za-z0-9_-]{16,32}$ — this file cannot redirect traffic or add endpoints. Keep entries while they differ from older shipped APKs; clear when every release already ships the same ids.",
   "version": 1,
   "endpoints": {
     "UserMedia": "9EovraBTXJYGSEQXZqlLmQ",

@@ -1,0 +1,23 @@
+{
+  "novel_series_detail": {
+    "id": 77,
+    "title": "Seasons",
+    "caption": "Four <b>seasons</b>",
+    "is_original": true,
+    "is_concluded": true,
+    "content_count": 4,
+    "total_character_count": 54321,
+    "user": {"id": 42, "name": "Mika", "account": "mika", "profile_image_urls": {}},
+    "display_text": "全4話",
+    "novel_ai_type": 1,
+    "watchlist_added": true
+  },
+  "novel_series_first_novel": {"id": 10, "title": "Spring", "user": {"id": 42}, "x_restrict": 0},
+  "novel_series_latest_novel": {"id": 13, "title": "Winter", "user": {"id": 42}, "x_restrict": 1},
+  "novels": [
+    {"id": 10, "title": "Spring", "user": {"id": 42}, "x_restrict": 0},
+    {"id": 11, "title": "Summer", "user": {"id": 42}, "x_restrict": 1},
+    {"id": 12, "title": "Autumn", "user": {"id": 42}, "x_restrict": 0}
+  ],
+  "next_url": "https://app-api.pixiv.net/v2/novel/series?series_id=77&last_order=3"
+}

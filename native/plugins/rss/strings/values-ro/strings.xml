@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RSS's text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Adaugă un flux</string>
+    <string name="add_error">Acest flux nu a putut fi citit</string>
+    <string name="add_hint">Lipește URL-ul unui site sau al unui flux. XTA găsește RSS-ul sau Atom-ul.</string>
+    <string name="add_placeholder">https://example.com/feed</string>
+    <string name="add_to_group">Adaugă într-un grup</string>
+    <string name="all">Toate</string>
+    <string name="cancel">Anulare</string>
+    <string name="close">Închide</string>
+    <string name="data_exported_to">Date exportate în %1$s</string>
+    <string name="empty">Urmărește un flux ca să vezi postările aici</string>
+    <string name="empty_filter">Niciun conținut nu corespunde acestor filtre</string>
+    <string name="feeds">Fluxuri</string>
+    <string name="follow">Urmărește</string>
+    <string name="following_empty">Nu există încă fluxuri</string>
+    <string name="home">Acasă</string>
+    <string name="load_error">Fluxurile nu au putut fi încărcate</string>
+    <string name="mark_all_read">Marchează totul ca citit</string>
+    <string name="more_options">Mai multe opțiuni</string>
+    <string name="opml_empty">Fișierul nu conține fluxuri</string>
+    <string name="opml_export">Exportă abonările ca OPML</string>
+    <string name="opml_export_description">Un fișier pe care alte cititoare de fluxuri îl pot importa.</string>
+    <string name="opml_import">Importă abonări din OPML</string>
+    <string name="opml_import_description">Urmărește fiecare flux din fișier; cele pe care le urmărești deja rămân la fel.</string>
+    <string name="opml_importing">Se importă: %1$d din %2$d</string>
+    <string name="opml_result">Adăugate: %1$d · Deja urmărite: %2$d · Eșuate: %3$d</string>
+    <string name="partial_error">Nu s-au putut încărca %1$d surse</string>
+    <string name="plugin_description">Urmărește fluxuri RSS și Atom publice. Necititele rămân pe acest dispozitiv.</string>
+    <string name="plugin_name">RSS</string>
+    <string name="reader_empty">Încă nu există nimic de citit</string>
+    <string name="reset_filters">Resetează filtrele</string>
+    <string name="retry">Reîncercați</string>
+    <string name="set_tag">Setează eticheta</string>
+    <string name="settings">Setări</string>
+    <string name="settings_blurb">Fără autentificare. Urmărește fluxuri publice. Necititele și etichetele rămân pe acest dispozitiv.</string>
+    <string name="tag">Etichetă</string>
+    <string name="tag_hint">O etichetă scurtă, de exemplu Știri sau Bloguri</string>
+    <string name="unfollow">Nu mai urmări</string>
+    <string name="unread">Necitite</string>
+    <string name="in_home_feed">Amestecă fluxurile urmărite în Urmăresc</string>
+    <string name="in_home_feed_description">Afișează elementele noi din fluxurile urmărite în cronologia Urmăresc.</string>
+    <string name="add_not_a_url">Aceasta nu este o adresă web.</string>
+    <string name="add_no_feed">Nu s-a găsit niciun flux RSS sau Atom, nici pe pagină, nici la adresele obișnuite.</string>
+</resources>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">Jälgin</string>
+    <string name="search">Otsi</string>
+    <string name="settings">Seaded</string>
+    <string name="dismiss">Sulge</string>
+    <string name="retry">Proovi uuesti</string>
+    <string name="back">Tagasi</string>
+    <string name="close">Sulge</string>
+    <string name="cancel">Katkesta</string>
+    <string name="post">Postitus</string>
+
+    <string name="pinned">Kinnitatud</string>
+    <string name="reposted_by">%1$s jagas uuesti</string>
+    <string name="replying_to">Vastus kasutajale</string>
+    <string name="stat_reposts">Uuesti jagamised</string>
+    <string name="stat_quotes">Tsitaadid</string>
+    <string name="stat_likes">Meeldimised</string>
+
+    <string name="ago_seconds">%1$d s</string>
+    <string name="ago_minutes">%1$d min</string>
+    <string name="ago_hours">%1$d t</string>
+
+    <string name="problem_rate_limited">X piirab siin kõiki kontosid. Proovi mõne minuti pärast uuesti.</string>
+    <string name="problem_offline">X-iga pole ühendust.</string>
+    <string name="problem_signing">X-i päringute allkirjastamist ei õnnestunud seadistada. Proovi kohe uuesti.</string>
+    <string name="problem_refused">X lükkas päringu tagasi (%1$d).</string>
+    <string name="problem_other">X-i lugemisel läks midagi valesti.</string>
+
+    <string name="import_intro">XTA Native on XTA, mis on kirjutatud ainult Androidile, et seda XTA-ga võrrelda. See loeb X-i kontodega, mida juba XTA-s kasutad.</string>
+    <string name="import_steps">Ava XTA-s Seaded → Andmed → Eksport, lülita sisse „Ekspordi kontod“, ekspordi ja vali see fail siin.</string>
+    <string name="import_choose">Vali XTA varukoopia</string>
+    <string name="import_choose_another">Vali teine fail</string>
+    <string name="import_no_accounts">Selles varukoopias pole X-i kontosid: ekspordi uuesti, „Ekspordi kontod“ sisse lülitatud.</string>
+    <string name="import_use">Kasuta seda varukoopiat</string>
+    <string name="import_privacy">Varukoopias on sinu X-i seansid. XTA Native hoiab neid selles telefonis, saadab neid ainult X-ile ega postita, märgi meeldivaks ega jälgi seal kunagi midagi.</string>
+
+    <string name="settings_clear">Eemalda kõik</string>
+    <string name="settings_clear_explained">Eemaldab XTA Native’ist X-i seansid ja jälgitavad kontod. XTA ise jätab kõik alles.</string>
+    <string name="settings_clear_confirm">Eemalda</string>
+
+    <string name="card_from">Allikas: %1$s</string>
+    <plurals name="poll_votes">
+        <item quantity="one">%1$s hääl</item>
+        <item quantity="other">%1$s häält</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d uus postitus</item>
+        <item quantity="other">%1$d uut postitust</item>
+    </plurals>
+    <string name="problem_x_private">Privaatne profiil</string>
+    <string name="problem_x_missing">Twitter ütleb, et lehte pole olemas, kuid see ei pruugi tõsi olla</string>
+    <string name="problem_x_user_missing">Kasutajat ei leidu</string>
+    <string name="problem_x_suspended">Kasutajakonto on ajutiselt peatatud</string>
+    <string name="problem_x_forbidden">Twitter ütleb, et juurdepääs sellele sisule on keelatud</string>
+    <string name="problem_x_guest">Twitter on meie juurdepääsutunnuse kehtetuks tunnistanud. Palun proovi uuesti avada XTA!</string>
+</resources>

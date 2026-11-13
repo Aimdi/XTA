@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">Obserwowani</string>
+    <string name="search">Szukaj</string>
+    <string name="settings">Ustawienia</string>
+    <string name="dismiss">Zamknij</string>
+    <string name="retry">Ponów</string>
+    <string name="back">Wstecz</string>
+    <string name="close">Zamknij</string>
+    <string name="cancel">Anuluj</string>
+    <string name="post">Wpis</string>
+
+    <string name="pinned">Przypięty</string>
+    <string name="reposted_by">%1$s podaje dalej</string>
+    <string name="replying_to">W odpowiedzi do</string>
+    <string name="stat_reposts">Podania dalej</string>
+    <string name="stat_quotes">Cytaty</string>
+    <string name="stat_likes">Polubienia</string>
+
+    <string name="ago_seconds">%1$d s</string>
+    <string name="ago_minutes">%1$d min</string>
+    <string name="ago_hours">%1$d godz.</string>
+
+    <string name="problem_rate_limited">X ogranicza tu wszystkie konta. Spróbuj ponownie za kilka minut.</string>
+    <string name="problem_offline">Brak połączenia z X.</string>
+    <string name="problem_signing">Nie udało się przygotować podpisywania żądań do X. Spróbuj ponownie za chwilę.</string>
+    <string name="problem_refused">X odrzucił żądanie (%1$d).</string>
+    <string name="problem_other">Coś poszło nie tak podczas odczytu X.</string>
+
+    <string name="import_intro">XTA Native to XTA napisane tylko na Androida, żeby porównać je z XTA. Czyta X kontami, których już używasz w XTA.</string>
+    <string name="import_steps">W XTA otwórz Ustawienia → Dane → Eksportuj, włącz „Eksportuj konta”, wyeksportuj, a potem wybierz tutaj ten plik.</string>
+    <string name="import_choose">Wybierz kopię zapasową XTA</string>
+    <string name="import_choose_another">Wybierz inny plik</string>
+    <string name="import_no_accounts">Ta kopia zapasowa nie zawiera kont X: wyeksportuj ją ponownie z włączonym „Eksportuj konta”.</string>
+    <string name="import_use">Użyj tej kopii</string>
+    <string name="import_privacy">Kopia zapasowa zawiera Twoje sesje X. XTA Native trzyma je na tym telefonie, wysyła je tylko do X i nigdy niczego tam nie publikuje, nie lubi ani nie obserwuje.</string>
+
+    <string name="settings_clear">Usuń wszystko</string>
+    <string name="settings_clear_explained">Usuwa z XTA Native sesje X i obserwowane konta. Samo XTA zachowuje wszystko.</string>
+    <string name="settings_clear_confirm">Usuń</string>
+
+    <string name="card_from">Z %1$s</string>
+    <plurals name="poll_votes">
+        <item quantity="one">%1$s głos</item>
+        <item quantity="few">%1$s głosy</item>
+        <item quantity="many">%1$s głosów</item>
+        <item quantity="other">%1$s głosu</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d nowy wpis</item>
+        <item quantity="few">%1$d nowe wpisy</item>
+        <item quantity="many">%1$d nowych wpisów</item>
+        <item quantity="other">%1$d nowego wpisu</item>
+    </plurals>
+    <string name="problem_x_private">Profil prywatny</string>
+    <string name="problem_x_missing">Twitter twierdzi, że strona nie istnieje, ale to może nie być prawda</string>
+    <string name="problem_x_user_missing">Nie znaleziono użytkownika</string>
+    <string name="problem_x_suspended">Konto zawieszone</string>
+    <string name="problem_x_forbidden">Twitter mówi, że dostęp do tego jest zabroniony</string>
+    <string name="problem_x_guest">Twitter unieważnił nasz token dostępu. Spróbuj ponownie otworzyć Quackera!</string>
+</resources>

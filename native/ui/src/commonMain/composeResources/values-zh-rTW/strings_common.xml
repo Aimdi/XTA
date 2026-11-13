@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Read failures as XTA's full-page errors say them (lib/ui/errors.dart), and closing the app. -->
+<resources>
+    <string name="problem_no_account_title">目前沒有可用的帳號</string>
+    <string name="problem_no_account_text">XTA 需要至少一個 𝕏 帳號才能運作。新增一個帳號即可開始使用。</string>
+    <string name="problem_rate_limited_title">被 𝕏 限流</string>
+    <string name="problem_rate_limited_text">你在過短的時間內發送了過多請求。請稍後再試，或新增另一個帳號以繼續使用 XTA。</string>
+    <string name="problem_no_working_account_title">你的帳號無法使用</string>
+    <string name="problem_no_working_account_text">看起來你的帳號目前都無法使用。請使用其他帳號登入，或稍後再試。</string>
+    <string name="problem_endpoint_refused_title">𝕏 拒絕了這個請求</string>
+    <string name="problem_endpoint_refused_text">𝕏 的這個部分拒絕了所有帳號，所以多半不是你的帳號有問題。𝕏 很可能改動了什麼；應用程式會在可能時自行修復。請稍後再試。</string>
+    <string name="problem_signing_title">X 請求簽署無法使用</string>
+    <string name="problem_signing_text">XTA 無法產生 X 目前要求的交易權杖。你的帳號可能沒有問題；請稍後重試，或查看診斷。</string>
+    <string name="problem_offline_title">無法連線至 X</string>
+    <string name="problem_offline_text">請檢查您的網際網路連線。</string>
+    <string name="problem_timed_out_title">已逾時</string>
+    <string name="problem_timed_out_text">載入時間過長。請檢查您的網路連線！</string>
+    <string name="problem_service_unavailable_title">X 暫時無法使用</string>
+    <string name="problem_service_unavailable_text">X 傳回了伺服器錯誤。你可以繼續閱讀快取的貼文，稍後再試。</string>
+    <string name="problem_request_unavailable_title">此請求無法使用</string>
+    <string name="problem_request_unavailable_text">X 拒絕了此請求。它可能暫時無法使用，或者服務的這個部分已經變更。</string>
+    <string name="problem_oops">哎呀！發生錯誤了 🥲</string>
+    <string name="problem_http_text">X 傳回了 HTTP %1$d。</string>
+    <string name="problem_retry_in">%1$s 後重試</string>
+    <string name="close_app_confirm">您確定要關閉 XTA 嗎？</string>
+    <string name="problem_unable_to_load_the_community">無法載入社群</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">找不到可用的趨勢地點。</string>
+    <string name="problem_unable_to_load_the_members">無法載入成員</string>
+    <string name="problem_unable_to_load_the_list_of_follows">無法載入追蹤中清單</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">無法載入下一頁的追蹤中清單</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">無法載入下一頁的推文</string>
+    <string name="problem_unable_to_load_the_tweets">無法載入推文</string>
+    <string name="problem_connection_failed">連線失敗</string>
+    <string name="problem_sign_in_needed">請重新登入以繼續</string>
+    <string name="problem_rate_limit_hint">此來源正在限制請求。請稍後再試。</string>
+    <string name="problem_more_info">更多資訊</string>
+    <string name="problem_auto_retry_seconds">%1$d 秒後重試…</string>
+    <string name="problem_auto_retry_in">%1$s 後重試…</string>
+    <string name="problem_cached_content">正在更新此來源，暫時顯示已儲存的副本。</string>
+    <string name="problem_source_loading">此來源仍在載入。其他貼文已可閱讀。</string>
+    <string name="problem_saved_at">顯示於 %1$s 儲存的貼文</string>
+    <string name="problem_saved_earlier">顯示先前儲存的貼文</string>
+</resources>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Accounts' avatar and Diagnostics' account health and recent reads, in XTA's words. -->
+<resources>
+    <string name="settings_avatar_title">내 아바타</string>
+    <string name="settings_avatar_change">탭하여 왼쪽 위 사진 변경</string>
+    <string name="settings_avatar_description">왼쪽 위와 서랍에 보이는 사진 — 이 기기에만 저장됩니다</string>
+    <string name="settings_avatar_choose">기기에서 선택</string>
+    <string name="settings_avatar_from_account">X 프로필 사진 사용</string>
+    <string name="settings_avatar_error">프로필 사진을 불러올 수 없습니다</string>
+    <string name="settings_avatar_clear">모노그램 사용</string>
+    <string name="settings_diagnostics_recent_reads">최근 읽기 작업</string>
+    <string name="settings_diagnostics_sign_in_broken">로그인이 만료된 것 같습니다. %1$s까지 쉽니다</string>
+</resources>

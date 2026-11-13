@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Crash reports and the screens shown when something breaks: XTA's own wording (lib/l10n), placeholders positional. -->
+<resources>
+    <string name="crash_reports_auth_failed">GitHub heeft het token geweigerd (controleer rechten)</string>
+    <string name="crash_reports_disabled_toast">Schakel eerst crashrapporten in</string>
+    <string name="crash_reports_duplicate">Deze crash is al gemeld</string>
+    <string name="crash_reports_enabled">Crashrapporten naar GitHub sturen</string>
+    <string name="crash_reports_enabled_description">Indien ingeschakeld worden onverwerkte crashes als GitHub-issue gemeld. Standaard uit. Vereist een personal access token met schrijfrechten voor Issues. Er wordt geen token in de app gezet.</string>
+    <string name="crash_reports_invalid_repo">Repository moet eruitzien als owner/name</string>
+    <string name="crash_reports_missing_token">Voeg eerst een GitHub-toegangstoken toe</string>
+    <string name="crash_reports_rate_limited">Er zijn recent te veel crashrapporten verzonden</string>
+    <string name="crash_reports_repo">GitHub-repository</string>
+    <string name="crash_reports_repo_description">owner/name van de repository voor crash-issues</string>
+    <string name="crash_reports_send_test">Testcrashrapport verzenden</string>
+    <string name="crash_reports_send_test_description">Maakt een voorbeeldissue om token en repository te controleren</string>
+    <string name="crash_reports_test_failed">Crashrapport kon niet worden verzonden</string>
+    <string name="crash_reports_test_sent">Testcrashrapport verzonden</string>
+    <string name="crash_reports_token">GitHub-toegangstoken</string>
+    <string name="crash_reports_token_description">Fine-grained of klassieke PAT met rechten om issues te maken. Alleen op dit apparaat opgeslagen en uitgesloten van back-ups.</string>
+    <string name="crash_reports_token_hint">ghp_… of github_pat_…</string>
+    <string name="crash_something_broke">Er is iets kapot gegaan in XTA.</string>
+    <string name="crash_start_failed">Kan de databasemigraties niet uitvoeren</string>
+</resources>

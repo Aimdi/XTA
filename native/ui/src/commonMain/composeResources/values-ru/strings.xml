@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">Читаю</string>
+    <string name="search">Поиск</string>
+    <string name="settings">Настройки</string>
+    <string name="dismiss">Закрыть</string>
+    <string name="retry">Повторить</string>
+    <string name="back">Назад</string>
+    <string name="close">Закрыть</string>
+    <string name="cancel">Отмена</string>
+    <string name="post">Пост</string>
+
+    <string name="pinned">Закреплено</string>
+    <string name="reposted_by">%1$s сделал(а) репост</string>
+    <string name="replying_to">В ответ</string>
+    <string name="stat_reposts">Репосты</string>
+    <string name="stat_quotes">Цитаты</string>
+    <string name="stat_likes">Нравится</string>
+
+    <string name="ago_seconds">%1$d с</string>
+    <string name="ago_minutes">%1$d мин</string>
+    <string name="ago_hours">%1$d ч</string>
+
+    <string name="problem_rate_limited">X ограничивает здесь все аккаунты. Повторите через несколько минут.</string>
+    <string name="problem_offline">Нет соединения с X.</string>
+    <string name="problem_signing">Не удалось настроить подпись запросов к X. Повторите чуть позже.</string>
+    <string name="problem_refused">X отклонил запрос (%1$d).</string>
+    <string name="problem_other">При чтении X что-то пошло не так.</string>
+
+    <string name="import_intro">XTA Native — это XTA, написанный только для Android, чтобы сравнить его с XTA. Он читает X через аккаунты, которые вы уже используете в XTA.</string>
+    <string name="import_steps">В XTA откройте Настройки → Данные → Экспортировать, включите «Экспортировать аккаунты», экспортируйте и выберите этот файл здесь.</string>
+    <string name="import_choose">Выбрать резервную копию XTA</string>
+    <string name="import_choose_another">Выбрать другой файл</string>
+    <string name="import_no_accounts">В этой резервной копии нет аккаунтов X: экспортируйте её заново с включённым «Экспортировать аккаунты».</string>
+    <string name="import_use">Использовать эту копию</string>
+    <string name="import_privacy">В резервной копии хранятся ваши сеансы X. XTA Native держит их на этом телефоне, отправляет только в X и никогда ничего там не публикует, не лайкает и ни на кого не подписывается.</string>
+
+    <string name="settings_clear">Удалить всё</string>
+    <string name="settings_clear_explained">Удаляет из XTA Native сеансы X и читаемые аккаунты. Сам XTA сохраняет всё.</string>
+    <string name="settings_clear_confirm">Удалить</string>
+
+    <string name="card_from">Источник: %1$s</string>
+    <plurals name="poll_votes">
+        <item quantity="one">%1$s голос</item>
+        <item quantity="few">%1$s голоса</item>
+        <item quantity="many">%1$s голосов</item>
+        <item quantity="other">%1$s голоса</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d новый пост</item>
+        <item quantity="few">%1$d новых поста</item>
+        <item quantity="many">%1$d новых постов</item>
+        <item quantity="other">%1$d нового поста</item>
+    </plurals>
+    <string name="problem_x_private">Приватный профиль</string>
+    <string name="problem_x_missing">Twiiter говорит, что эта страница не существует, но это может оказаться неправдой</string>
+    <string name="problem_x_user_missing">Пользователь не найден</string>
+    <string name="problem_x_suspended">Учётная запись приостановлена</string>
+    <string name="problem_x_forbidden">Twitter говорит, что доступ к этому запрещен</string>
+    <string name="problem_x_guest">Twitter признал недействительным наш маркер доступа. Пожалуйста, попробуйте снова открыть XTA!</string>
+</resources>

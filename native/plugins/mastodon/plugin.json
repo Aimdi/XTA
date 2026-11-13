@@ -1,0 +1,7 @@
+{
+  "id": "mastodon",
+  "version": "1.0.0",
+  "entry": "com.aimdi.xtanative.plugins.mastodon.MastodonPlugin",
+  "category": "social",
+  "private": false
+}

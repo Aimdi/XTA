@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Accounts' avatar and Diagnostics' account health and recent reads, in XTA's words. -->
+<resources>
+    <string name="settings_avatar_title">Jouw avatar</string>
+    <string name="settings_avatar_change">Tik om de afbeelding linksboven te wijzigen</string>
+    <string name="settings_avatar_description">Afbeelding linksboven en in het menu — blijft op dit apparaat</string>
+    <string name="settings_avatar_choose">Kiezen van apparaat</string>
+    <string name="settings_avatar_from_account">X-profielfoto gebruiken</string>
+    <string name="settings_avatar_error">Kon die profielfoto niet laden</string>
+    <string name="settings_avatar_clear">Monogram gebruiken</string>
+    <string name="settings_diagnostics_recent_reads">Recente leesbewerkingen</string>
+    <string name="settings_diagnostics_sign_in_broken">De aanmelding lijkt niet meer geldig, pauze tot %1$s</string>
+</resources>

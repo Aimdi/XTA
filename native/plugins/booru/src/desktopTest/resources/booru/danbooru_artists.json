@@ -1,0 +1,13 @@
+[
+  {"name": "kantoku_(old)", "is_deleted": false, "other_names": [], "urls": []},
+  {
+    "name": "kantoku",
+    "is_deleted": false,
+    "other_names": ["カントク", "kantoku_art"],
+    "urls": [
+      {"url": "https://www.pixiv.net/users/1", "is_active": true},
+      {"url": "https://old.example.com", "is_active": false},
+      {"url": "https://x.com/kantoku"}
+    ]
+  }
+]

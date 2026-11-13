@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Signing in to X as XTA does (lib/client/login_webview.dart, x_cookie_login.dart). -->
+<resources>
+    <string name="signin_add_account">Dodaj konto</string>
+    <string name="signin_logging_in_title">Logowanie do XTA</string>
+    <string name="signin_logging_in_text">To, którym kontem się zalogujesz, nie zmienia tego, co widzisz. Subskrypcje, grupy i zapisane wpisy zostają na tym urządzeniu i nie dotykają twojego prawdziwego konta. XTA loguje się tylko po to, by czytać — nie potrafi polubić, udostępnić ani odpowiedzieć.\n\nMożesz dodać kilka kont. XTA wybiera to, które nie wyczerpało limitu na potrzebnym punkcie końcowym i któremu przed chwilą nie nie udało się zalogować. Właśnie to trzyma błąd „Zbyt wiele żądań” z daleka.</string>
+    <string name="signin_import_title">Importuj subskrypcje</string>
+    <string name="signin_import_text">Subskrypcje są lokalne w XTA. Nie zależą od subskrypcji na twoim prawdziwym koncie X. Logowanie nie wpływa na subskrypcje w XTA.\n\nCzy zaimportować do XTA subskrypcje konta @%1$s?</string>
+    <string name="signin_cookie_help">Zaloguj się na x.com w przeglądarce, otwórz narzędzia deweloperskie (F12) i skopiuj pliki cookie auth_token i ct0 z sekcji Pamięć → Pliki cookie. Wklej je poniżej w postaci auth_token=…; ct0=…. Są przechowywane tylko na tym komputerze i nigdy nie są udostępniane.</string>
+    <string name="signin_open_in_browser">Otwórz w przeglądarce</string>
+    <string name="signin_username">Nazwa użytkownika</string>
+    <string name="signin_cookies">Pliki cookie z x.com</string>
+    <string name="signin_not_logged_in">Nie zalogowano</string>
+    <string name="signin_why_needed">X odrzuca większość żądań, które nie pochodzą z konta. XTA najpierw próbuje jako gość i czasem się udaje, ale bez konta spodziewaj się raczej błędów niż wpisów.\n\nLogowanie pozwala XTA jedynie czytać X. Aplikacja nigdy nie publikuje, nie polubia, nie udostępnia ani nie obserwuje w twoim imieniu.</string>
+    <string name="signin_import_backup">Importuj kopię zapasową</string>
+    <string name="signin_login">Zaloguj się</string>
+</resources>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="video_fullscreen">全画面表示</string>
+    <string name="video_fullscreen_exit">全画面表示を終了</string>
+    <string name="video_picture_in_picture">ピクチャーインピクチャー</string>
+</resources>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RSS's text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Feed toevoegen</string>
+    <string name="add_error">Die feed kon niet worden gelezen</string>
+    <string name="add_hint">Plak de URL van een site of feed. XTA vindt de RSS- of Atom-feed.</string>
+    <string name="add_placeholder">https://example.com/feed</string>
+    <string name="add_to_group">Aan een groep toevoegen</string>
+    <string name="all">Alles</string>
+    <string name="cancel">Annuleren</string>
+    <string name="close">Sluiten</string>
+    <string name="data_exported_to">Gegevens geëxporteerd naar %1$s</string>
+    <string name="empty">Volg een feed om de berichten hier te zien</string>
+    <string name="empty_filter">Geen inhoud voldoet aan deze filters</string>
+    <string name="feeds">Feeds</string>
+    <string name="follow">Volgen</string>
+    <string name="following_empty">Nog geen feeds</string>
+    <string name="home">Start</string>
+    <string name="load_error">Feeds konden niet worden geladen</string>
+    <string name="mark_all_read">Alles als gelezen markeren</string>
+    <string name="more_options">Meer opties</string>
+    <string name="opml_empty">Geen feeds in dit bestand</string>
+    <string name="opml_export">Gevolgde publicaties exporteren als OPML</string>
+    <string name="opml_export_description">Een bestand dat andere feedlezers kunnen importeren.</string>
+    <string name="opml_import">Gevolgde publicaties importeren uit OPML</string>
+    <string name="opml_import_description">Volgt elke feed uit het bestand; wat je al volgt, blijft zoals het is.</string>
+    <string name="opml_importing">Importeren: %1$d van %2$d</string>
+    <string name="opml_result">Toegevoegd: %1$d · Al gevolgd: %2$d · Mislukt: %3$d</string>
+    <string name="partial_error">%1$d bronnen konden niet worden geladen</string>
+    <string name="plugin_description">Volg openbare RSS- en Atom-feeds. Ongelezen blijft op dit apparaat.</string>
+    <string name="plugin_name">RSS</string>
+    <string name="reader_empty">Nog niets te lezen</string>
+    <string name="reset_filters">Filters herstellen</string>
+    <string name="retry">Opnieuw</string>
+    <string name="set_tag">Label instellen</string>
+    <string name="settings">Instellingen</string>
+    <string name="settings_blurb">Geen aanmelding. Volg openbare feeds. Ongelezen en labels blijven op dit apparaat.</string>
+    <string name="tag">Label</string>
+    <string name="tag_hint">Een kort label, zoals Nieuws of Blogs</string>
+    <string name="unfollow">Ontvolgen</string>
+    <string name="unread">Ongelezen</string>
+    <string name="in_home_feed">Gevolgde feeds mengen in Volgend</string>
+    <string name="in_home_feed_description">Nieuwe items van gevolgde feeds tonen in de tijdlijn Volgend.</string>
+    <string name="add_not_a_url">Dat is geen webadres.</string>
+    <string name="add_no_feed">Daar is geen RSS- of Atom-feed gevonden, niet op de pagina en niet op de gebruikelijke adressen.</string>
+</resources>

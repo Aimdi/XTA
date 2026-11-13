@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Read failures as XTA's full-page errors say them (lib/ui/errors.dart), and closing the app. -->
+<resources>
+    <string name="problem_no_account_title">Momentálně není k dispozici žádný účet</string>
+    <string name="problem_no_account_text">XTA potřebuje ke svému fungování alespoň jeden účet 𝕏. Přidejte účet a můžete začít.</string>
+    <string name="problem_rate_limited_title">𝕏 omezuje počet požadavků</string>
+    <string name="problem_rate_limited_text">Odeslali jste příliš mnoho požadavků za příliš krátkou dobu. Zkuste to znovu později nebo přidejte další účet, abyste mohli dál používat XTA.</string>
+    <string name="problem_no_working_account_title">Vaše účty nefungují</string>
+    <string name="problem_no_working_account_text">Zdá se, že žádný z vašich účtů nyní nefunguje. Přihlaste se jiným účtem nebo to zkuste znovu později.</string>
+    <string name="problem_endpoint_refused_title">𝕏 tento požadavek odmítl</string>
+    <string name="problem_endpoint_refused_text">V této části 𝕏 byly odmítnuty všechny účty, takže chyba nejspíš není u vás. 𝕏 pravděpodobně něco změnil; aplikace se opraví sama, jakmile to půjde. Zkuste to za chvíli znovu.</string>
+    <string name="problem_signing_title">Podepisování požadavků X není k dispozici</string>
+    <string name="problem_signing_text">XTA nedokázalo odvodit transakční token, který X nyní vyžaduje. Vaše účty mohou být v pořádku; zkuste to za chvíli znovu nebo se podívejte do Diagnostiky.</string>
+    <string name="problem_offline_title">Nepodařilo se kontaktovat X</string>
+    <string name="problem_offline_text">Zkontrolujte prosím vaše připojení k internetu.</string>
+    <string name="problem_timed_out_title">Vypršel čas</string>
+    <string name="problem_timed_out_text">Tento obsah se načítal příliš dlouho. Zkontrolujte prosím vaše připojení k internetu!</string>
+    <string name="problem_service_unavailable_title">X je dočasně nedostupný</string>
+    <string name="problem_service_unavailable_text">X vrátil chybu serveru. Můžete dál číst příspěvky z mezipaměti a zkusit to později.</string>
+    <string name="problem_request_unavailable_title">Tento požadavek není k dispozici</string>
+    <string name="problem_request_unavailable_text">X tento požadavek odmítl. Může být dočasně nedostupný, nebo se tato část služby změnila.</string>
+    <string name="problem_oops">Jejda! Něco se pokazilo 🥲</string>
+    <string name="problem_http_text">X vrátil HTTP %1$d.</string>
+    <string name="problem_retry_in">Zkusit znovu za %1$s</string>
+    <string name="close_app_confirm">Opravdu chcete zavřít XTA?</string>
+    <string name="problem_unable_to_load_the_community">Komunitu se nepodařilo načíst</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">Nepodařilo se nalézt umístění trendů.</string>
+    <string name="problem_unable_to_load_the_members">Členy se nepodařilo načíst</string>
+    <string name="problem_unable_to_load_the_list_of_follows">Nepodařilo se načíst seznam sledování</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">Nepodařilo se načíst další stránku sledování</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">Nepodařilo se načíst další stránku tweetů</string>
+    <string name="problem_unable_to_load_the_tweets">Nepodařilo se načíst tweety</string>
+    <string name="problem_connection_failed">Připojení selhalo</string>
+    <string name="problem_sign_in_needed">Pro pokračování se znovu přihlaste</string>
+    <string name="problem_rate_limit_hint">Tento zdroj omezuje požadavky. Zkuste to později.</string>
+    <string name="problem_more_info">Více informací</string>
+    <string name="problem_auto_retry_seconds">Další pokus za %1$d s…</string>
+    <string name="problem_auto_retry_in">Další pokus za %1$s…</string>
+    <string name="problem_cached_content">Během aktualizace zdroje se zobrazuje uložená kopie.</string>
+    <string name="problem_source_loading">Tento zdroj se stále načítá. Ostatní příspěvky jsou k dispozici.</string>
+    <string name="problem_saved_at">Zobrazují se příspěvky uložené v %1$s</string>
+    <string name="problem_saved_earlier">Zobrazují se dříve uložené příspěvky</string>
+</resources>

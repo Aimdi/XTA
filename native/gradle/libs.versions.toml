@@ -1,0 +1,44 @@
+# The versions the screens are built with, in one place: the Gradle build reads
+# them as `libs`, and tools that compile without Gradle read this file.
+#
+# Compose Multiplatform 1.8.2 is built with Kotlin 2.1 and pairs with JetBrains'
+# lifecycle 2.9.1 and navigation 2.9.0-beta03 (on Android: AndroidX lifecycle
+# 2.9.1, navigation 2.9.0, Compose 1.8.2). Coil 3.2.0 is the last Coil built
+# with Kotlin 2.1 and Compose 1.8. The material icons stopped at 1.7.3.
+# :core and the other plain-Kotlin modules name their own few libraries.
+
+[versions]
+kotlin = "2.1.21"
+agp = "8.7.3"
+compose-multiplatform = "1.8.2"
+compose-material-icons = "1.7.3"
+jetbrains-lifecycle = "2.9.1"
+jetbrains-navigation = "2.9.0-beta03"
+coil = "3.2.0"
+coroutines = "1.10.2"
+activity-compose = "1.9.3"
+media3 = "1.5.1"
+
+[libraries]
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+compose-compiler-gradle-plugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
+compose-gradle-plugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "compose-multiplatform" }
+android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
+
+compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-multiplatform" }
+compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-multiplatform" }
+compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-multiplatform" }
+compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose-multiplatform" }
+compose-material-icons-core = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "compose-material-icons" }
+compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose-multiplatform" }
+lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "jetbrains-lifecycle" }
+lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "jetbrains-lifecycle" }
+navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "jetbrains-navigation" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
+kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "coroutines" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
+media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3" }
+media3-exoplayer-hls = { module = "androidx.media3:media3-exoplayer-hls", version.ref = "media3" }
+media3-ui = { module = "androidx.media3:media3-ui", version.ref = "media3" }

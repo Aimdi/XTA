@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Signing in to X as XTA does (lib/client/login_webview.dart, x_cookie_login.dart). -->
+<resources>
+    <string name="signin_add_account">Añadir cuenta</string>
+    <string name="signin_logging_in_title">Iniciando sesión en XTA</string>
+    <string name="signin_logging_in_text">La cuenta con la que inicies sesión no cambia lo que ves. Las suscripciones, los grupos y las publicaciones guardadas se quedan en este dispositivo y nunca tocan tu cuenta real. XTA inicia sesión solo para leer: no puede marcar me gusta, republicar ni responder.\n\nPuedes añadir varias cuentas. XTA elige una que no haya agotado el límite en el punto de acceso que necesita y a la que no acabe de fallarle el inicio de sesión, que es lo que mantiene a raya el error «Demasiadas peticiones».</string>
+    <string name="signin_import_title">Importar suscripciones</string>
+    <string name="signin_import_text">Las suscripciones son locales de XTA. Son independientes de las suscripciones de tu cuenta real de X. Iniciar sesión no afecta a las suscripciones de XTA.\n\n¿Quieres importar en XTA las suscripciones de @%1$s?</string>
+    <string name="signin_cookie_help">Inicia sesión en x.com en tu navegador, abre las herramientas para desarrolladores (F12) y copia las cookies auth_token y ct0 desde Almacenamiento → Cookies. Pégalas abajo con el formato auth_token=…; ct0=…. Solo se guardan en este ordenador y nunca se comparten.</string>
+    <string name="signin_open_in_browser">Abrir en el navegador</string>
+    <string name="signin_username">Nombre de usuario</string>
+    <string name="signin_cookies">Cookies de x.com</string>
+    <string name="signin_not_logged_in">No has iniciado sesión</string>
+    <string name="signin_why_needed">X rechaza la mayoría de las peticiones que no vienen de una cuenta. XTA lo intenta primero como invitado, y a veces funciona, pero sin cuenta es más probable que veas errores que publicaciones.\n\nIniciar sesión solo permite a XTA leer X. Nunca publica, marca me gusta, republica ni sigue por ti.</string>
+    <string name="signin_import_backup">Importar copia de seguridad</string>
+    <string name="signin_login">Iniciar sesión</string>
+</resources>

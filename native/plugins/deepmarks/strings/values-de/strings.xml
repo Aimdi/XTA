@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Deepmarks</string>
+    <string name="plugin_description">Beiträge in Deepmarks speichern, dem Lesezeichendienst auf Nostr</string>
+    <string name="settings_intro">Deepmarks speichert Lesezeichen als signierte Nostr-Ereignisse. Dein Signaturschlüssel verlässt dieses Gerät nie: Der Beitrag wird hier signiert und nur das fertige Ereignis gesendet.</string>
+    <string name="lifetime_notice">Für den API-Zugang ist eine Deepmarks-Lifetime-Mitgliedschaft nötig.</string>
+    <string name="api_key">API-Schlüssel</string>
+    <string name="api_key_hint">Beginnt mit dmk_live_, zu finden unter „api access“ in den Deepmarks-Einstellungen</string>
+    <string name="identity">Signaturidentität</string>
+    <string name="secret_key">Signaturschlüssel</string>
+    <string name="secret_key_hint">Dein nsec, bleibt nur auf diesem Gerät. Er signiert jedes Lesezeichen und wird nie an Deepmarks gesendet.</string>
+    <string name="signing_as">Signiert als %1$s</string>
+    <string name="api_base">Serveradresse</string>
+    <string name="test">Verbindung testen</string>
+    <string name="test_ok">Mit Deepmarks verbunden</string>
+    <string name="test_ok_unverified">Schlüssel akzeptiert, aber das Konto hat noch kein öffentliches Lesezeichen, um den Signaturschlüssel zu prüfen</string>
+    <string name="not_configured">Bitte zuerst Deepmarks-API-Schlüssel und Signaturschlüssel eintragen</string>
+    <string name="error_secret_key">Das ist kein gültiger nsec und kein 64-stelliger Hex-Schlüssel</string>
+    <string name="error_unauthorized">Deepmarks hat den API-Schlüssel abgelehnt</string>
+    <string name="error_lifetime">Die Deepmarks-API ist nur für Lifetime-Mitglieder</string>
+    <string name="error_key_mismatch">Dein Signaturschlüssel gehört zu einem anderen Deepmarks-Konto als der API-Schlüssel</string>
+    <string name="error_rejected">Deepmarks hat dieses Lesezeichen abgelehnt</string>
+    <string name="error_rate_limited">Zu viele Anfragen, bitte kurz warten</string>
+    <string name="error_server">Unter dieser Adresse antwortet keine Deepmarks-API</string>
+    <string name="error_network">Deepmarks ist nicht erreichbar</string>
+    <string name="learn_more">Über Deepmarks</string>
+    <string name="save_action">In Deepmarks speichern</string>
+    <string name="saved">In Deepmarks gespeichert</string>
+    <string name="saved_no_relay">An Deepmarks gesendet, aber noch kein Relay hat es angenommen</string>
+    <string name="saving">Wird in Deepmarks gespeichert…</string>
+    <string name="show">Anzeigen</string>
+    <string name="hide">Ausblenden</string>
+    <string name="save">Speichern</string>
+    <string name="connection">Verbindung</string>
+</resources>

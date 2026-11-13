@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="video_fullscreen">Ecran complet</string>
+    <string name="video_fullscreen_exit">Ieși din ecranul complet</string>
+    <string name="video_picture_in_picture">Imagine în imagine</string>
+</resources>

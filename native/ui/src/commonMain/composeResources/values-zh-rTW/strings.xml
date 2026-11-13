@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">追蹤中</string>
+    <string name="search">搜尋</string>
+    <string name="settings">設定</string>
+    <string name="dismiss">關閉</string>
+    <string name="retry">重試</string>
+    <string name="back">返回</string>
+    <string name="close">關閉</string>
+    <string name="cancel">取消</string>
+    <string name="post">貼文</string>
+
+    <string name="pinned">已置頂</string>
+    <string name="reposted_by">%1$s 已轉發</string>
+    <string name="replying_to">正在回覆</string>
+    <string name="stat_reposts">轉發</string>
+    <string name="stat_quotes">引用</string>
+    <string name="stat_likes">喜歡</string>
+
+    <string name="ago_seconds">%1$d秒</string>
+    <string name="ago_minutes">%1$d分鐘</string>
+    <string name="ago_hours">%1$d小時</string>
+
+    <string name="problem_rate_limited">X 正在限制這裡的所有帳號。請幾分鐘後再試。</string>
+    <string name="problem_offline">無法連線到 X。</string>
+    <string name="problem_signing">無法準備 X 請求的簽章。請稍後再試。</string>
+    <string name="problem_refused">X 拒絕了請求（%1$d）。</string>
+    <string name="problem_other">讀取 X 時發生問題。</string>
+
+    <string name="import_intro">XTA Native 是專為 Android 撰寫的 XTA，用來和 XTA 比較。它用你在 XTA 已經使用的帳號讀取 X。</string>
+    <string name="import_steps">在 XTA 開啟 設定 → 資料 → 匯出，開啟「匯出帳號」，匯出後在這裡選擇該檔案。</string>
+    <string name="import_choose">選擇 XTA 備份</string>
+    <string name="import_choose_another">選擇其他檔案</string>
+    <string name="import_no_accounts">這份備份沒有 X 帳號：請開啟「匯出帳號」後重新匯出。</string>
+    <string name="import_use">使用這份備份</string>
+    <string name="import_privacy">備份裡有你的 X 工作階段。XTA Native 會把它們保存在這支手機上，只傳送給 X，而且從不在那裡發文、按喜歡或追蹤任何東西。</string>
+
+    <string name="settings_clear">全部移除</string>
+    <string name="settings_clear_explained">從 XTA Native 移除 X 工作階段和追蹤的帳號。XTA 本身會保留一切。</string>
+    <string name="settings_clear_confirm">移除</string>
+
+    <string name="card_from">來自 %1$s</string>
+    <plurals name="poll_votes">
+        <item quantity="other">%1$s 票</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="other">%1$d 則新貼文</item>
+    </plurals>
+    <string name="problem_x_private">私人個人資料</string>
+    <string name="problem_x_missing">X 表示該頁面不存在，但這可能不是真的</string>
+    <string name="problem_x_user_missing">找不到使用者</string>
+    <string name="problem_x_suspended">帳號已遭停權</string>
+    <string name="problem_x_forbidden">X 表示禁止存取此內容</string>
+    <string name="problem_x_guest">X 已使我們的存取權杖失效。請嘗試重新開啟 XTA！</string>
+</resources>

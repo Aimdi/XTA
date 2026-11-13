@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">Abonoj</string>
+    <string name="search">Serĉi</string>
+    <string name="settings">Agordoj</string>
+    <string name="dismiss">Fermi</string>
+    <string name="retry">Reprovi</string>
+    <string name="back">Reen</string>
+    <string name="close">Fermi</string>
+    <string name="cancel">Rezigni</string>
+    <string name="post">Afiŝo</string>
+
+    <string name="pinned">Alpinglita</string>
+    <string name="reposted_by">%1$s reafiŝis</string>
+    <string name="replying_to">Respondante al</string>
+    <string name="stat_reposts">Reafiŝoj</string>
+    <string name="stat_quotes">Citaĵoj</string>
+    <string name="stat_likes">Ŝatoj</string>
+
+    <string name="ago_seconds">%1$d s</string>
+    <string name="ago_minutes">%1$d min</string>
+    <string name="ago_hours">%1$d h</string>
+
+    <string name="problem_rate_limited">X limigas ĉiun konton ĉi tie. Reprovu post kelkaj minutoj.</string>
+    <string name="problem_offline">Neniu konekto al X.</string>
+    <string name="problem_signing">Ne eblis prepari la subskribadon de petoj al X. Reprovu post momento.</string>
+    <string name="problem_refused">X rifuzis la peton (%1$d).</string>
+    <string name="problem_other">Io misfunkciis dum legado de X.</string>
+
+    <string name="import_intro">XTA Native estas XTA verkita nur por Android, por kompari ĝin kun XTA. Ĝi legas X per la kontoj, kiujn vi jam uzas en XTA.</string>
+    <string name="import_steps">En XTA, malfermu Agordoj → Datumoj → Eksporti, ŝaltu “Eksporti kontojn”, eksportu, poste elektu tiun dosieron ĉi tie.</string>
+    <string name="import_choose">Elekti savkopion de XTA</string>
+    <string name="import_choose_another">Elekti alian dosieron</string>
+    <string name="import_no_accounts">Ĉi tiu savkopio ne havas X-kontojn: eksportu denove kun “Eksporti kontojn” ŝaltita.</string>
+    <string name="import_use">Uzi ĉi tiun savkopion</string>
+    <string name="import_privacy">La savkopio enhavas viajn X-seancojn. XTA Native konservas ilin en ĉi tiu telefono, sendas ilin nur al X kaj neniam afiŝas, ŝatas aŭ sekvas ion tie.</string>
+
+    <string name="settings_clear">Forigi ĉion</string>
+    <string name="settings_clear_explained">Forigas la X-seancojn kaj la sekvatajn kontojn el XTA Native. XTA mem konservas ĉion.</string>
+    <string name="settings_clear_confirm">Forigi</string>
+
+    <string name="card_from">De %1$s</string>
+    <plurals name="poll_votes">
+        <item quantity="one">%1$s voĉdono</item>
+        <item quantity="other">%1$s voĉdonoj</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d nova afiŝo</item>
+        <item quantity="other">%1$d novaj afiŝoj</item>
+    </plurals>
+    <string name="problem_x_private">Profilo privata</string>
+    <string name="problem_x_missing">Twitter diras, la paĝo ne ekzistas, sed tio eble ne estas vere</string>
+    <string name="problem_x_user_missing">Uzanto ne troviĝis</string>
+    <string name="problem_x_suspended">Konto haltiĝis</string>
+    <string name="problem_x_forbidden">Twitter diras, atingo estas malpermesita</string>
+    <string name="problem_x_guest">Twitter malvalidigis la ĵetonon de atingo. Bonvolu provi remalfermi XTA-on!</string>
+</resources>

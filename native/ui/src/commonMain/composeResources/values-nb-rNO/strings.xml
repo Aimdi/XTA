@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">Følger</string>
+    <string name="search">Søk</string>
+    <string name="settings">Innstillinger</string>
+    <string name="dismiss">Lukk</string>
+    <string name="retry">Prøv på nytt</string>
+    <string name="back">Tilbake</string>
+    <string name="close">Lukk</string>
+    <string name="cancel">Avbryt</string>
+    <string name="post">Innlegg</string>
+
+    <string name="pinned">Festet</string>
+    <string name="reposted_by">%1$s repostet</string>
+    <string name="replying_to">Svarer til</string>
+    <string name="stat_reposts">Reposts</string>
+    <string name="stat_quotes">Sitater</string>
+    <string name="stat_likes">Liker</string>
+
+    <string name="ago_seconds">%1$d s</string>
+    <string name="ago_minutes">%1$d min</string>
+    <string name="ago_hours">%1$d t</string>
+
+    <string name="problem_rate_limited">X begrenser hver konto her. Prøv igjen om noen minutter.</string>
+    <string name="problem_offline">Ingen tilkobling til X.</string>
+    <string name="problem_signing">Signering av forespørsler til X kunne ikke settes opp. Prøv igjen om et øyeblikk.</string>
+    <string name="problem_refused">X avviste forespørselen (%1$d).</string>
+    <string name="problem_other">Noe gikk galt under lesing av X.</string>
+
+    <string name="import_intro">XTA Native er XTA skrevet bare for Android, for å sammenligne med XTA. Den leser X med kontoene du allerede bruker i XTA.</string>
+    <string name="import_steps">I XTA åpner du Innstillinger → Data → Eksporter, slår på «Eksporter kontoer», eksporterer og velger filen her.</string>
+    <string name="import_choose">Velg XTA-sikkerhetskopi</string>
+    <string name="import_choose_another">Velg en annen fil</string>
+    <string name="import_no_accounts">Denne sikkerhetskopien har ingen X-kontoer: eksporter på nytt med «Eksporter kontoer» slått på.</string>
+    <string name="import_use">Bruk denne sikkerhetskopien</string>
+    <string name="import_privacy">Sikkerhetskopien inneholder X-øktene dine. XTA Native beholder dem på denne telefonen, sender dem bare til X og legger aldri ut, liker eller følger noe der.</string>
+
+    <string name="settings_clear">Fjern alt</string>
+    <string name="settings_clear_explained">Fjerner X-øktene og de fulgte kontoene fra XTA Native. XTA selv beholder alt.</string>
+    <string name="settings_clear_confirm">Fjern</string>
+
+    <string name="card_from">Fra %1$s</string>
+    <plurals name="poll_votes">
+        <item quantity="one">%1$s stemme</item>
+        <item quantity="other">%1$s stemmer</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d nytt innlegg</item>
+        <item quantity="other">%1$d nye innlegg</item>
+    </plurals>
+    <string name="problem_x_private">Privat profil</string>
+    <string name="problem_x_missing">Siden ble ikke funnet</string>
+    <string name="problem_x_user_missing">Bruker ikke funnet</string>
+    <string name="problem_x_suspended">Kontoen er suspendert</string>
+    <string name="problem_x_forbidden">Forbudt</string>
+    <string name="problem_x_guest">Ugyldig gjestetoken</string>
+</resources>

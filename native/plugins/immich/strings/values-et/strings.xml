@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Immich</string>
+    <string name="plugin_description">Saada valitud järjehoidjakaustade meedia oma Immichi serverisse</string>
+    <string name="settings_intro">Sisesta oma Immichi serveri aadress ja API-võti jaotisest Konto seaded → API-võtmed. Järjehoidjakaustad, mille juures selle sisse lülitad, saadavad siia oma fotod ja videod.</string>
+    <string name="server_url">Serveri aadress</string>
+    <string name="server_url_hint">Näiteks 192.168.1.10:2283 või https://pildid.example.org</string>
+    <string name="api_key">API-võti</string>
+    <string name="api_key_hint">Immich → Konto seaded → API-võtmed</string>
+    <string name="test">Testi ühendust</string>
+    <string name="test_ok">Ühendatud sinu Immichi serveriga</string>
+    <string name="not_configured">Lisa kõigepealt aadress ja API-võti</string>
+    <string name="error_unauthorized">Immich ei võtnud API-võtit vastu</string>
+    <string name="error_server_url">Sellel aadressil ei vasta ükski Immichi server</string>
+    <string name="error_network">Sinu Immichi serverini ei õnnestunud jõuda</string>
+    <string name="error_generic">Sinu Immichi server tagastas vea</string>
+    <string name="options">Üleslaadimise valikud</string>
+    <string name="album_per_folder">Igale kaustale oma album</string>
+    <string name="album_per_folder_description">Üleslaaditu läheb järjehoidjakausta järgi nimetatud Immichi albumisse, mis luuakse, kui seda veel pole</string>
+    <string name="include_videos">Laadi ka videod üles</string>
+    <string name="include_videos_description">Videod ja GIF-id on fotodest palju suuremad. Kui see on väljas, saadetakse ainult fotod.</string>
+    <string name="folder_hint">Üleslaadimise lülitad sisse kausta kaupa, seda luues või muutes, Järjehoidjate all.</string>
+    <string name="learn_more">Immichist</string>
+    <string name="auto_upload">Laadi meedia Immichisse</string>
+    <string name="auto_upload_description">Saada siia salvestatud postituste fotod ja videod oma Immichi serverisse</string>
+    <string name="uploading">Immichisse laadimine…</string>
+    <string name="upload_done">Saadetud Immichisse</string>
+    <string name="upload_failed">Immichisse laadimine ebaõnnestus</string>
+    <string name="show">Näita</string>
+    <string name="hide">Peida</string>
+    <string name="save">salvesta</string>
+    <string name="connection">Ühendus</string>
+</resources>

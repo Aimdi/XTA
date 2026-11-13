@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- An X post's footer, its share and ⋯ sheets and menus, its poll's line, and the contract addresses in its text (ui.post): XTA's words where XTA has them. -->
+<resources>
+    <string name="posts_share">Padzialicca dopisam</string>
+    <string name="posts_share_content">Padzialicca zmiescivam tvitu</string>
+    <string name="posts_share_article_link">Padzialicca spasyłkaj na artykuł</string>
+    <string name="posts_share_content_and_link">Adpravić zmiesciva i spasyłku</string>
+    <string name="posts_share_image">Padzialicca publikacyjaj jak vidarysam</string>
+    <string name="posts_share_article_image">Padzialicca artykułam jak vidarysam</string>
+    <string name="posts_copied">Skapijavana ŭ bufier abmienu</string>
+    <string name="posts_reply_not_found">Na žal, tvit z adkazam nie znojdzieny!</string>
+    <string name="posts_subscribe">Padpisacca</string>
+    <string name="contract_address_copied">Adras kantrakta skapijavany</string>
+    <string name="poll_no_votes">Niama hałasoŭ</string>
+    <plurals name="poll_ends_minutes">
+        <item quantity="one">Zavieršycca praz %1$d chvilinu</item>
+        <item quantity="few">Zavieršycca praz %1$d chviliny</item>
+        <item quantity="many">Zavieršycca praz %1$d chvilin</item>
+        <item quantity="other">Zavieršycca praz %1$d chviliny</item>
+    </plurals>
+    <plurals name="poll_ends_hours">
+        <item quantity="one">Zavieršycca praz %1$d hadzinu</item>
+        <item quantity="few">Zavieršycca praz %1$d hadziny</item>
+        <item quantity="many">Zavieršycca praz %1$d hadzin</item>
+        <item quantity="other">Zavieršycca praz %1$d hadziny</item>
+    </plurals>
+    <plurals name="poll_ends_days">
+        <item quantity="one">Zavieršycca praz %1$d dzień</item>
+        <item quantity="few">Zavieršycca praz %1$d dni</item>
+        <item quantity="many">Zavieršycca praz %1$d dzion</item>
+        <item quantity="other">Zavieršycca praz %1$d dnia</item>
+    </plurals>
+    <plurals name="poll_ended_minutes">
+        <item quantity="one">Zavieršana %1$d chvilinu tamu</item>
+        <item quantity="few">Zavieršana %1$d chviliny tamu</item>
+        <item quantity="many">Zavieršana %1$d chvilin tamu</item>
+        <item quantity="other">Zavieršana %1$d chviliny tamu</item>
+    </plurals>
+    <plurals name="poll_ended_hours">
+        <item quantity="one">Zavieršana %1$d hadzinu tamu</item>
+        <item quantity="few">Zavieršana %1$d hadziny tamu</item>
+        <item quantity="many">Zavieršana %1$d hadzin tamu</item>
+        <item quantity="other">Zavieršana %1$d hadziny tamu</item>
+    </plurals>
+    <plurals name="poll_ended_days">
+        <item quantity="one">Zavieršana %1$d dzień tamu</item>
+        <item quantity="few">Zavieršana %1$d dni tamu</item>
+        <item quantity="many">Zavieršana %1$d dzion tamu</item>
+        <item quantity="other">Zavieršana %1$d dnia tamu</item>
+    </plurals>
+    <plurals name="poll_ended_months">
+        <item quantity="one">Zavieršana %1$d miesiac tamu</item>
+        <item quantity="few">Zavieršana %1$d miesiacy tamu</item>
+        <item quantity="many">Zavieršana %1$d miesiacaŭ tamu</item>
+        <item quantity="other">Zavieršana %1$d miesiaca tamu</item>
+    </plurals>
+    <plurals name="poll_ended_years">
+        <item quantity="one">Zavieršana %1$d hod tamu</item>
+        <item quantity="few">Zavieršana %1$d hady tamu</item>
+        <item quantity="many">Zavieršana %1$d hadoŭ tamu</item>
+        <item quantity="other">Zavieršana %1$d hoda tamu</item>
+    </plurals>
+</resources>

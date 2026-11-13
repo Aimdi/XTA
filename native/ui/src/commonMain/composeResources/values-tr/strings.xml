@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">Takip edilenler</string>
+    <string name="search">Ara</string>
+    <string name="settings">Ayarlar</string>
+    <string name="dismiss">Kapat</string>
+    <string name="retry">Yeniden dene</string>
+    <string name="back">Geri</string>
+    <string name="close">Kapat</string>
+    <string name="cancel">İptal et</string>
+    <string name="post">Gönderi</string>
+
+    <string name="pinned">Sabitlenmiş</string>
+    <string name="reposted_by">%1$s yeniden paylaştı</string>
+    <string name="replying_to">Yanıt verilen</string>
+    <string name="stat_reposts">Yeniden paylaşımlar</string>
+    <string name="stat_quotes">Alıntılar</string>
+    <string name="stat_likes">Beğeniler</string>
+
+    <string name="ago_seconds">%1$d sn</string>
+    <string name="ago_minutes">%1$d dk</string>
+    <string name="ago_hours">%1$d sa</string>
+
+    <string name="problem_rate_limited">X buradaki her hesabı sınırlıyor. Birkaç dakika sonra yeniden dene.</string>
+    <string name="problem_offline">X'e bağlantı yok.</string>
+    <string name="problem_signing">X isteklerinin imzalanması hazırlanamadı. Birazdan yeniden dene.</string>
+    <string name="problem_refused">X isteği reddetti (%1$d).</string>
+    <string name="problem_other">X okunurken bir şeyler ters gitti.</string>
+
+    <string name="import_intro">XTA Native, XTA ile karşılaştırmak için yalnızca Android için yazılmış XTA'dır. X'i XTA'da zaten kullandığın hesaplarla okur.</string>
+    <string name="import_steps">XTA'da Ayarlar → Veriler → Dışa aktar'ı aç, “Hesapları dışa aktar” seçeneğini aç, dışa aktar, sonra o dosyayı burada seç.</string>
+    <string name="import_choose">XTA yedeğini seç</string>
+    <string name="import_choose_another">Başka bir dosya seç</string>
+    <string name="import_no_accounts">Bu yedekte X hesabı yok: “Hesapları dışa aktar” açıkken yeniden dışa aktar.</string>
+    <string name="import_use">Bu yedeği kullan</string>
+    <string name="import_privacy">Yedek, X oturumlarını içerir. XTA Native onları bu telefonda tutar, yalnızca X'e gönderir ve orada asla bir şey paylaşmaz, beğenmez ya da takip etmez.</string>
+
+    <string name="settings_clear">Her şeyi kaldır</string>
+    <string name="settings_clear_explained">X oturumlarını ve takip edilen hesapları XTA Native'den kaldırır. XTA'nın kendisi her şeyi saklar.</string>
+    <string name="settings_clear_confirm">Kaldır</string>
+
+    <string name="card_from">Kaynak: %1$s</string>
+    <plurals name="poll_votes">
+        <item quantity="one">%1$s oy</item>
+        <item quantity="other">%1$s oy</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d yeni gönderi</item>
+        <item quantity="other">%1$d yeni gönderi</item>
+    </plurals>
+    <string name="problem_x_private">Gizli profil</string>
+    <string name="problem_x_missing">Twitter sayfanın mevcut olmadığını söylüyor, ancak bu doğru olmayabilir</string>
+    <string name="problem_x_user_missing">Kullanıcı bulunamadı</string>
+    <string name="problem_x_suspended">Hesap askıya alındı</string>
+    <string name="problem_x_forbidden">Twitter buna erişimin yasak olduğunu söylüyor</string>
+    <string name="problem_x_guest">Twitter erişim belirtecimizi geçersiz kıldı. Lütfen XTA\'ı yeniden açmayı deneyin!</string>
+</resources>

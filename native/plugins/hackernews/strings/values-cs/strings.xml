@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Hacker News</string>
+    <string name="plugin_description">Čtěte Hacker News bez účtu. Srdíčka a záložky zůstanou v tomto zařízení.</string>
+    <string name="tab_top">Top</string>
+    <string name="tab_new">Nové</string>
+    <string name="tab_best">Nejlepší</string>
+    <string name="tab_ask">Ask</string>
+    <string name="tab_show">Show</string>
+    <string name="tab_jobs">Práce</string>
+    <string name="tab_saved">Uložené</string>
+    <string name="tab_following">Sledovaní</string>
+    <string name="search">Hledat na Hacker News</string>
+    <string name="settings">Nastavení</string>
+    <string name="feed_empty">Teď tu nic není</string>
+    <string name="saved_empty">Zatím žádné uložené příspěvky — záložky zůstanou v tomto zařízení</string>
+    <string name="following_empty">Sledujte někoho, abyste tu viděli příspěvky</string>
+    <string name="by">od %1$s</string>
+    <string name="like">Líbí se na tomto zařízení</string>
+    <string name="unlike">Odebrat like z tohoto zařízení</string>
+    <string name="save">Uložit na toto zařízení</string>
+    <string name="unsave">Odebrat z tohoto zařízení</string>
+    <string name="comments">Komentáře</string>
+    <string name="open_article">Otevřít článek</string>
+    <string name="deleted">[smazáno]</string>
+    <string name="user_empty">Žádné veřejné příspěvky</string>
+    <string name="follow">Sledovat v tomto zařízení</string>
+    <string name="unfollow">Přestat sledovat</string>
+    <string name="search_hint">Hledat příspěvky</string>
+    <string name="search_empty">Nic neodpovídá</string>
+    <string name="settings_blurb">Bez přihlášení. Hlasy a komentáře zůstanou na Hacker News. Srdíčka a záložky zůstanou v tomto zařízení.</string>
+    <plurals name="points">
+        <item quantity="one">%1$d bod</item>
+        <item quantity="few">%1$d body</item>
+        <item quantity="other">%1$d bodů</item>
+    </plurals>
+    <plurals name="comment_count">
+        <item quantity="one">%1$d komentář</item>
+        <item quantity="few">%1$d komentáře</item>
+        <item quantity="other">%1$d komentářů</item>
+    </plurals>
+    <plurals name="user_karma">
+        <item quantity="one">%1$d karma</item>
+        <item quantity="other">%1$d karma</item>
+    </plurals>
+    <string name="more_options">Další možnosti</string>
+</resources>

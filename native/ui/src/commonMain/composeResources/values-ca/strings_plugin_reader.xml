@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The RSS reader the RSS plugin and web sources open their articles in (ui/plugins/RssReader.kt), from XTA's ARB files. -->
+<resources>
+    <string name="plugin_reader_opened">Obert</string>
+    <string name="plugin_reader_resumed">Reprès</string>
+    <string name="plugin_reader_finished">Acabat</string>
+    <string name="plugin_reader_finish">Marca com a acabat</string>
+    <string name="plugin_reader_start_over">Torna al principi</string>
+    <string name="plugin_reader_appearance">Aspecte de lectura</string>
+    <string name="plugin_reader_text_size">Factor d'escala del text</string>
+    <string name="plugin_reader_line_spacing">Interlineat</string>
+    <string name="plugin_rss_no_article">Aquesta font només enllaça la pàgina original</string>
+</resources>

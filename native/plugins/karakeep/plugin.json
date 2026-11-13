@@ -1,0 +1,7 @@
+{
+  "id": "karakeep",
+  "version": "1.0.0",
+  "entry": "com.aimdi.xtanative.plugins.karakeep.KarakeepPlugin",
+  "category": "bookmarks",
+  "private": false
+}

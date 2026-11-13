@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- An X post's footer, its share and ⋯ sheets and menus, its poll's line, and the contract addresses in its text (ui.post): XTA's words where XTA has them. -->
+<resources>
+    <string name="posts_share">게시물 공유</string>
+    <string name="posts_share_content">게시물 내용 공유</string>
+    <string name="posts_share_article_link">기사 링크 공유</string>
+    <string name="posts_share_content_and_link">게시물 내용과 링크 공유</string>
+    <string name="posts_share_image">게시물을 이미지로 공유</string>
+    <string name="posts_share_article_image">기사를 이미지로 공유</string>
+    <string name="posts_copied">클립보드에 복사했습니다</string>
+    <string name="posts_reply_not_found">죄송합니다. 답글 게시물을 찾을 수 없습니다!</string>
+    <string name="posts_subscribe">구독</string>
+    <string name="contract_address_copied">컨트랙트 주소를 복사했습니다</string>
+    <string name="poll_no_votes">투표 없음</string>
+    <plurals name="poll_ends_minutes">
+        <item quantity="other">%1$d분 후 종료</item>
+    </plurals>
+    <plurals name="poll_ends_hours">
+        <item quantity="other">%1$d시간 후 종료</item>
+    </plurals>
+    <plurals name="poll_ends_days">
+        <item quantity="other">%1$d일 후 종료</item>
+    </plurals>
+    <plurals name="poll_ended_minutes">
+        <item quantity="other">%1$d분 전 종료됨</item>
+    </plurals>
+    <plurals name="poll_ended_hours">
+        <item quantity="other">%1$d시간 전 종료됨</item>
+    </plurals>
+    <plurals name="poll_ended_days">
+        <item quantity="other">%1$d일 전 종료됨</item>
+    </plurals>
+    <plurals name="poll_ended_months">
+        <item quantity="other">%1$d개월 전 종료됨</item>
+    </plurals>
+    <plurals name="poll_ended_years">
+        <item quantity="other">%1$d년 전 종료됨</item>
+    </plurals>
+</resources>

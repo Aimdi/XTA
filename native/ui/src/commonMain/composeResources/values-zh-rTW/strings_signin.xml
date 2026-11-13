@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Signing in to X as XTA does (lib/client/login_webview.dart, x_cookie_login.dart). -->
+<resources>
+    <string name="signin_add_account">新增帳號</string>
+    <string name="signin_logging_in_title">正在登入 XTA</string>
+    <string name="signin_logging_in_text">用哪個帳號登入不會改變你看到的內容。訂閱、訂閱群組和儲存的貼文都留在本裝置上，不會碰到你真正的帳號。XTA 登入只為讀取——它無法按讚、轉發或回覆。\n\n你可以新增多個帳號。XTA 會挑一個在所需端點上沒有觸發速率限制、且剛才沒有登入失敗的帳號，這正是把「請求過多」擋在門外的辦法。</string>
+    <string name="signin_import_title">匯入訂閱</string>
+    <string name="signin_import_text">訂閱只儲存在 XTA 本機，與你真實 X 帳號上的追蹤互不相干。登入不會影響 XTA 的訂閱。\n\n要把 @%1$s 的追蹤匯入 XTA 嗎？</string>
+    <string name="signin_cookie_help">在瀏覽器中登入 x.com，開啟開發人員工具（F12），從「儲存空間」→「Cookie」複製 auth_token 和 ct0 兩個 Cookie，再依 auth_token=…; ct0=… 的格式貼到下方。它們只會儲存在這台電腦上，絕不會被分享。</string>
+    <string name="signin_open_in_browser">在瀏覽器中開啟</string>
+    <string name="signin_username">使用者名稱</string>
+    <string name="signin_cookies">來自 x.com 的 Cookie</string>
+    <string name="signin_not_logged_in">您尚未登入</string>
+    <string name="signin_why_needed">X 會拒絕大多數並非來自帳號的請求。XTA 會先以訪客身分嘗試，有時能成功，但沒有帳號時，你看到錯誤的次數多半會超過看到貼文。\n\n登入只是讓 XTA 能讀取 X，它絕不會代你發文、按讚、轉發或追蹤。</string>
+    <string name="signin_import_backup">匯入備份</string>
+    <string name="signin_login">登入</string>
+</resources>

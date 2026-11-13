@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- An X post's footer, its share and ⋯ sheets and menus, its poll's line, and the contract addresses in its text (ui.post): XTA's words where XTA has them. -->
+<resources>
+    <string name="posts_share">Condividi il post</string>
+    <string name="posts_share_content">Condividi il contenuto del tweet</string>
+    <string name="posts_share_article_link">Condividi link articolo</string>
+    <string name="posts_share_content_and_link">Condividi il link e il contenuto del tweet</string>
+    <string name="posts_share_image">Condividi post come immagine</string>
+    <string name="posts_share_article_image">Condividi articolo come immagine</string>
+    <string name="posts_copied">Copiato negli appunti</string>
+    <string name="posts_reply_not_found">Spiacenti, il tweet a cui è riferita la risposta non è stato trovato!</string>
+    <string name="posts_subscribe">Iscriviti</string>
+    <string name="contract_address_copied">Indirizzo del contratto copiato</string>
+    <string name="poll_no_votes">Nessun voto</string>
+    <plurals name="poll_ends_minutes">
+        <item quantity="one">Finisce tra %1$d minuto</item>
+        <item quantity="other">Finisce tra %1$d minuti</item>
+    </plurals>
+    <plurals name="poll_ends_hours">
+        <item quantity="one">Finisce tra %1$d ora</item>
+        <item quantity="other">Finisce tra %1$d ore</item>
+    </plurals>
+    <plurals name="poll_ends_days">
+        <item quantity="one">Finisce tra %1$d giorno</item>
+        <item quantity="other">Finisce tra %1$d giorni</item>
+    </plurals>
+    <plurals name="poll_ended_minutes">
+        <item quantity="one">Finito %1$d minuto fa</item>
+        <item quantity="other">Finito %1$d minuti fa</item>
+    </plurals>
+    <plurals name="poll_ended_hours">
+        <item quantity="one">Finito %1$d ora fa</item>
+        <item quantity="other">Finito %1$d ore fa</item>
+    </plurals>
+    <plurals name="poll_ended_days">
+        <item quantity="one">Finito %1$d giorno fa</item>
+        <item quantity="other">Finito %1$d giorni fa</item>
+    </plurals>
+    <plurals name="poll_ended_months">
+        <item quantity="one">Finito %1$d mese fa</item>
+        <item quantity="other">Finito %1$d mesi fa</item>
+    </plurals>
+    <plurals name="poll_ended_years">
+        <item quantity="one">Finito %1$d anno fa</item>
+        <item quantity="other">Finito %1$d anni fa</item>
+    </plurals>
+</resources>

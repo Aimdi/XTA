@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RSS's text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">إضافة خلاصة</string>
+    <string name="add_error">تعذّر قراءة هذه الخلاصة</string>
+    <string name="add_hint">الصق رابط موقع أو خلاصة. يعثر XTA على خلاصة RSS أو Atom.</string>
+    <string name="add_placeholder">https://example.com/feed</string>
+    <string name="add_to_group">إضافة إلى مجموعة</string>
+    <string name="all">الكل</string>
+    <string name="cancel">الغاء</string>
+    <string name="close">اغلاق</string>
+    <string name="data_exported_to">صُدِّرَت البيانات إلى %1$s</string>
+    <string name="empty">تابع خلاصة لترى منشوراتها هنا</string>
+    <string name="empty_filter">لا توجد عناصر تطابق هذه الفلاتر</string>
+    <string name="feeds">الخلاصات</string>
+    <string name="follow">متابعة</string>
+    <string name="following_empty">لا توجد خلاصات بعد</string>
+    <string name="home">الرئيسية</string>
+    <string name="load_error">تعذّر تحميل الخلاصات</string>
+    <string name="mark_all_read">تعليم الكل كمقروء</string>
+    <string name="more_options">خيارات إضافية</string>
+    <string name="opml_empty">لا توجد خلاصات في هذا الملف</string>
+    <string name="opml_export">تصدير المتابَعات بصيغة OPML</string>
+    <string name="opml_export_description">ملف يمكن لقارئات الخلاصات الأخرى استيراده.</string>
+    <string name="opml_import">استيراد المتابَعات من OPML</string>
+    <string name="opml_import_description">يتابع كل خلاصة يذكرها الملف؛ وتبقى التي تتابعها كما هي.</string>
+    <string name="opml_importing">جارٍ الاستيراد: %1$d من %2$d</string>
+    <string name="opml_result">أُضيف: %1$d · مُتابَع مسبقًا: %2$d · فشل: %3$d</string>
+    <string name="partial_error">تعذّر تحميل %1$d من المصادر</string>
+    <string name="plugin_description">تابع خلاصات RSS وAtom العامة. تبقى غير المقروءة على هذا الجهاز.</string>
+    <string name="plugin_name">RSS</string>
+    <string name="reader_empty">لا يوجد ما تقرؤه بعد</string>
+    <string name="reset_filters">إعادة ضبط الفلاتر</string>
+    <string name="retry">إعادة المحاولة</string>
+    <string name="set_tag">تعيين وسم</string>
+    <string name="settings">الإعدادات</string>
+    <string name="settings_blurb">بدون تسجيل دخول. تابع الخلاصات العامة. تبقى غير المقروءة والوسوم على هذا الجهاز.</string>
+    <string name="tag">وسم</string>
+    <string name="tag_hint">تسمية قصيرة، مثل أخبار أو مدونات</string>
+    <string name="unfollow">إلغاء المتابعة</string>
+    <string name="unread">غير مقروء</string>
+    <string name="in_home_feed">دمج الخلاصات المتابَعة في «أتابع»</string>
+    <string name="in_home_feed_description">إظهار العناصر الجديدة من الخلاصات المتابَعة في الخط الزمني «أتابع».</string>
+    <string name="add_not_a_url">هذا ليس عنوان ويب.</string>
+    <string name="add_no_feed">لم يُعثر على موجز RSS أو Atom هناك، لا في الصفحة ولا في العناوين المعتادة.</string>
+</resources>

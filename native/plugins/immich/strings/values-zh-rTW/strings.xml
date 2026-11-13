@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Immich</string>
+    <string name="plugin_description">把所選書籤資料夾裡的媒體傳送到你自己的 Immich 伺服器</string>
+    <string name="settings_intro">填寫 Immich 伺服器位址，以及在「帳戶設定 → API 金鑰」中建立的 API 金鑰。為哪些書籤資料夾開啟此項，它們的照片和影片就會傳送到這裡。</string>
+    <string name="server_url">伺服器位址</string>
+    <string name="server_url_hint">例如 192.168.1.10:2283 或 https://photos.example.org</string>
+    <string name="api_key">API 金鑰</string>
+    <string name="api_key_hint">Immich → 帳戶設定 → API 金鑰</string>
+    <string name="test">測試連線</string>
+    <string name="test_ok">已連線到你的 Immich 伺服器</string>
+    <string name="not_configured">請先填寫位址和 API 金鑰</string>
+    <string name="error_unauthorized">Immich 拒絕了這個 API 金鑰</string>
+    <string name="error_server_url">這個位址上沒有 Immich 伺服器回應</string>
+    <string name="error_network">無法連線到你的 Immich 伺服器</string>
+    <string name="error_generic">你的 Immich 伺服器回傳了錯誤</string>
+    <string name="options">上傳選項</string>
+    <string name="album_per_folder">每個資料夾一個相簿</string>
+    <string name="album_per_folder_description">上傳的內容會放進與書籤資料夾同名的 Immich 相簿；相簿不存在時會自動建立</string>
+    <string name="include_videos">同時上傳影片</string>
+    <string name="include_videos_description">影片和 GIF 比照片大得多。關閉後只傳送照片。</string>
+    <string name="folder_hint">上傳按資料夾開啟：在「書籤」中新增或編輯資料夾時設定。</string>
+    <string name="learn_more">關於 Immich</string>
+    <string name="auto_upload">把媒體上傳到 Immich</string>
+    <string name="auto_upload_description">把歸入此資料夾的貼文的照片和影片傳送到你的 Immich 伺服器</string>
+    <string name="uploading">正在上傳到 Immich…</string>
+    <string name="upload_done">已傳送到 Immich</string>
+    <string name="upload_failed">無法上傳到 Immich</string>
+    <string name="show">顯示</string>
+    <string name="hide">隱藏</string>
+    <string name="save">儲存</string>
+    <string name="connection">連線</string>
+</resources>

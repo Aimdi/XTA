@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "1.0.0",
+  "pairs": [
+    {
+      "chainId": "ethereum",
+      "dexId": "uniswap",
+      "url": "https://dexscreener.com/ethereum/0xpoolethereum",
+      "pairAddress": "0xpoolethereum",
+      "baseToken": {"address": "0x6982508145454Ce325dDbE47a25d4ec3d2311933", "name": "Pepe", "symbol": "PEPE"},
+      "quoteToken": {"address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", "name": "Wrapped Ether", "symbol": "WETH"},
+      "priceNative": "0.000000004",
+      "priceUsd": "0.0000123",
+      "priceChange": {"m5": 0.1, "h1": -1.5, "h6": 3.25, "h24": 12.5},
+      "volume": {"h24": 4200000, "h6": 900000},
+      "liquidity": {"usd": 1000, "base": 1, "quote": 2},
+      "fdv": 5100000000,
+      "marketCap": 4900000000
+    },
+    {
+      "chainId": "ethereum",
+      "dexId": "uniswap",
+      "pairAddress": "0xdeeper",
+      "baseToken": {"address": "0x6982508145454Ce325dDbE47a25d4ec3d2311933", "name": "Pepe", "symbol": "PEPE"},
+      "quoteToken": {"address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", "name": "Wrapped Ether", "symbol": "WETH"},
+      "priceUsd": "0.0000125",
+      "priceChange": {"h24": 11.0},
+      "liquidity": {"usd": 9000}
+    },
+    {
+      "chainId": "base",
+      "dexId": "aerodrome",
+      "pairAddress": "0xpoolbase",
+      "baseToken": {"address": "0x4200000000000000000000000000000000000006", "name": "Wrapped Ether", "symbol": "WETH"},
+      "quoteToken": {"address": "0x6982508145454ce325ddbe47a25d4ec3d2311933", "name": "Pepe", "symbol": "PEPE"},
+      "priceUsd": "3500",
+      "liquidity": {"usd": 500}
+    },
+    {
+      "chainId": "ethereum",
+      "pairAddress": "0xunrelated",
+      "baseToken": {"address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", "name": "Wrapped Ether", "symbol": "WETH"},
+      "quoteToken": {"address": "0xdAC17F958D2ee523a2206206994597C13D831ec7", "name": "Tether", "symbol": "USDT"},
+      "priceUsd": "3500",
+      "liquidity": {"usd": 90000000}
+    }
+  ]
+}

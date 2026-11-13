@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
+     Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="home_x">X</string>
+    <string name="home_search_in">%1$s में खोजें</string>
+    <string name="home_open_menu">नेविगेशन मेन्यू खोलें</string>
+    <string name="home_add_timeline">टाइमलाइन जोड़ें</string>
+    <string name="home_unread">अपठित</string>
+    <string name="home_refresh">रीफ़्रेश करें</string>
+    <string name="home_open_group">समूह खोलें</string>
+    <string name="home_more_options">और विकल्प</string>
+        <string name="home_pin_to_bar_hint">जब भी बार में जगह हो, पिन की गई चीज़ें सेक्शन के बगल में दिखती हैं। सब कुछ इस मेन्यू में भी रहता है।</string>
+    <string name="home_keep_controls_visible">कंट्रोल हमेशा दिखाएँ</string>
+    <string name="home_pin_to_bar">ऊपरी बार में पिन करें</string>
+
+    <string name="home_strip_title">प्लगइन टाइमलाइन</string>
+    <string name="home_strip_intro">इंस्टॉल किए प्लगइन «आपके लिए» के पास पिन करें। क्रम बदलने के लिए खींचें। और प्लगइन स्टोर से इंस्टॉल करें।</string>
+    <string name="home_strip_pinned">इस पट्टी पर</string>
+    <string name="home_strip_available">जोड़ने योग्य</string>
+    <string name="home_strip_empty">पिन करने के लिए कोई प्लगइन नहीं। स्टोर से Reddit, Pixiv, Mastodon आदि इंस्टॉल करें।</string>
+    <string name="home_strip_remove">पट्टी से हटाएँ</string>
+    <string name="home_strip_reorder">क्रम बदलें</string>
+    <string name="home_plugin_store">प्लगइन स्टोर</string>
+
+    <string name="home_subscriptions">सदस्यताएँ</string>
+    <string name="home_discover">एक्सप्लोर</string>
+    <string name="home_saved">सहेजा गया</string>
+    <string name="home_downloads">डाउनलोड</string>
+    <string name="home_antennas">एंटेना</string>
+    <string name="home_deck">कॉलम</string>
+    <string name="home_deck_empty">चौड़ी स्क्रीन पर समूहों को साथ-साथ देखने के लिए उन्हें पिन करें</string>
+    <string name="home_groups">समूह</string>
+    <string name="home_no_groups">अभी कोई समूह नहीं</string>
+    <string name="home_no_results">कोई परिणाम नहीं</string>
+    <plurals name="home_group_members">
+        <item quantity="one">%1$d सदस्यता</item>
+        <item quantity="other">%1$d सदस्यताएँ</item>
+    </plurals>
+
+    <string name="home_feed_accounts">होम फ़ीड खाते</string>
+    <string name="home_filter_accounts">खाते</string>
+    <string name="home_filter_accounts_explained">केवल दर सीमाओं के लिए रखे अतिरिक्त खाते बंद करें। आपके लिए चालू खातों की होम टाइमलाइन मिलाता है; फ़ॉलोइंग स्थानीय सदस्यताएँ इस्तेमाल करता है, पर बंद खातों से नहीं लाता। टिप्पणियाँ और प्रोफ़ाइल ज़रूरत पर किसी भी खाते का उपयोग कर सकते हैं।</string>
+    <string name="home_filter_groups_explained">समूह बंद करने पर उसके सदस्य फ़ॉलोइंग से छिप जाते हैं। समूह का टैब रहता है। उनकी पोस्ट 'आपके लिए' से भी हट जाती हैं।</string>
+    <string name="home_filter_only_hint">किसी एक को देर तक दबाएँ, ताकि सिर्फ़ वही चालू रहे।</string>
+    <string name="home_filter_keep_one">कम से कम एक खाता चालू रहना चाहिए</string>
+    <string name="home_filter_count">%1$d / %2$d</string>
+    <string name="home_filter_all">सभी</string>
+    <string name="home_filter_none">कोई नहीं</string>
+    <string name="home_filter_reset">फ़िल्टर रीसेट करें</string>
+    <string name="home_filter_apply">लागू करें</string>
+
+    <string name="home_for_you_empty">फ़ीड के लिए पोस्ट लोड नहीं की जा सकीं</string>
+    <string name="home_for_you_no_account">'आपके लिए' लोड करने के लिए XTA का बैकअप उसके खातों के साथ इंपोर्ट करें।</string>
+    <string name="home_import">XTA बैकअप इंपोर्ट करें</string>
+
+    <string name="home_home">होम</string>
+    <string name="home_networks">नेटवर्क</string>
+    <string name="home_networks_recent">हालिया</string>
+    <string name="home_networks_all">सभी नेटवर्क</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">माइक्रोब्लॉगिंग सेवाओं को एक साथ दिखाएँ</string>
+    <string name="home_alt_microblogging_group_detail">होम पर Mastodon, Bluesky और Threads को एक ही सेक्शन में दिखाएँ। उन्हें अलग-अलग दिखाने के लिए इसे बंद करें। आपका डेटा और सेटिंग्स सुरक्षित रहेंगे।</string>
+    <string name="home_posts">पोस्ट</string>
+    <string name="home_media">मीडिया</string>
+    <string name="home_missing_page">लापता पृष्ठ</string>
+    <string name="home_two_pages_required">आपके पास कम से कम 2 होम स्क्रीन पृष्ठ होने चाहिए।</string>
+    <string name="home_choose_pages">पृष्ठ चुनें</string>
+    <string name="home_unable_to_load_pages">होम पृष्ठ लोड नहीं किए जा सके</string>
+    <string name="feed_strip_unavailable">यह टाइमलाइन अब उपलब्ध नहीं है</string>
+    <string name="home_feed_accounts_empty">आपके लिए लोड करने हेतु खाता जोड़ें।</string>
+</resources>

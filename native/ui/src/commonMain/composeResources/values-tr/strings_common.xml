@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Read failures as XTA's full-page errors say them (lib/ui/errors.dart), and closing the app. -->
+<resources>
+    <string name="problem_no_account_title">Şu anda kullanılabilir hesap yok</string>
+    <string name="problem_no_account_text">XTA'in çalışması için en az bir 𝕏 hesabı gerekir. Başlamak için bir hesap ekleyin.</string>
+    <string name="problem_rate_limited_title">𝕏 tarafından sınırlandınız</string>
+    <string name="problem_rate_limited_text">Çok kısa sürede çok fazla istek gönderdiniz. Daha sonra tekrar deneyin veya XTA'i kullanmaya devam etmek için başka bir hesap ekleyin.</string>
+    <string name="problem_no_working_account_title">Hesaplarınız çalışmıyor</string>
+    <string name="problem_no_working_account_text">Görünüşe göre şu anda hesaplarınızın hiçbiri çalışmıyor. Başka bir hesapla giriş yapın veya daha sonra tekrar deneyin.</string>
+    <string name="problem_endpoint_refused_title">𝕏 bu isteği geri çevirdi</string>
+    <string name="problem_endpoint_refused_text">𝕏 'in bu bölümünde tüm hesaplar geri çevrildi, dolayısıyla sorun büyük olasılıkla hesaplarınız değil. 𝕏 muhtemelen bir şeyi değiştirdi; uygulama elverdiğinde kendini onarır. Birazdan yeniden deneyin.</string>
+    <string name="problem_signing_title">X istek imzalama kullanılamıyor</string>
+    <string name="problem_signing_text">XTA, X'in şu anda istediği işlem belirtecini türetemedi. Hesaplarınız sorunsuz olabilir; birazdan yeniden deneyin ya da Tanılama'ya bakın.</string>
+    <string name="problem_offline_title">X ile iletişim kurulamadı</string>
+    <string name="problem_offline_text">Lütfen internet bağlantınızı kontrol edin.</string>
+    <string name="problem_timed_out_title">Zaman aşımına uğradı</string>
+    <string name="problem_timed_out_text">Bunun yüklenmesi çok uzun sürdü. Lütfen internet bağlantınızı kontrol edin!</string>
+    <string name="problem_service_unavailable_title">X geçici olarak kullanılamıyor</string>
+    <string name="problem_service_unavailable_text">X bir sunucu hatası döndürdü. Önbellekteki gönderileri okumaya devam edip daha sonra yeniden deneyebilirsiniz.</string>
+    <string name="problem_request_unavailable_title">Bu istek kullanılamıyor</string>
+    <string name="problem_request_unavailable_text">X bu isteği reddetti. Geçici olarak kullanılamıyor olabilir ya da hizmetin bu bölümü değişmiş olabilir.</string>
+    <string name="problem_oops">Hop! Bir şeyler ters gitti 🥲</string>
+    <string name="problem_http_text">X, HTTP %1$d döndürdü.</string>
+    <string name="problem_retry_in">%1$s sonra yeniden dene</string>
+    <string name="close_app_confirm">XTA'ı kapatmak istediğinizden emin misiniz?</string>
+    <string name="problem_unable_to_load_the_community">Topluluk yüklenemedi</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">Mevcut trend konumları bulunamadı.</string>
+    <string name="problem_unable_to_load_the_members">Üyeler yüklenemedi</string>
+    <string name="problem_unable_to_load_the_list_of_follows">Aşağıdakilerin listesi yüklenemiyor</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">Takip edenlerin sonraki sayfası yüklenemiyor</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">Tweet\'lerin sonraki sayfası yüklenemiyor</string>
+    <string name="problem_unable_to_load_the_tweets">Tweet\'ler yüklenemedi</string>
+    <string name="problem_connection_failed">Bağlantı başarısız</string>
+    <string name="problem_sign_in_needed">Devam etmek için yeniden giriş yapın</string>
+    <string name="problem_rate_limit_hint">Bu kaynak istekleri sınırlandırıyor. Daha sonra tekrar deneyin.</string>
+    <string name="problem_more_info">Daha fazla bilgi</string>
+    <string name="problem_auto_retry_seconds">%1$d sn sonra yeniden denenecek…</string>
+    <string name="problem_auto_retry_in">%1$s sonra yeniden denenecek…</string>
+    <string name="problem_cached_content">Kaynak güncellenirken kaydedilmiş bir kopya gösteriliyor.</string>
+    <string name="problem_source_loading">Bu kaynak hâlâ yükleniyor. Diğer gönderiler okunabilir.</string>
+    <string name="problem_saved_at">%1$s tarihinde kaydedilen gönderiler gösteriliyor</string>
+    <string name="problem_saved_earlier">Daha önce kaydedilen gönderiler gösteriliyor</string>
+</resources>

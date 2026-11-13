@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Mastodon's text, English (the default), from XTA's wording. Written as Android writes strings;
+     the plugins build turns them into the Kotlin object Strings, so they load from any class loader.
+     plugin_name and plugin_description also name the plugin in the store's catalogue. -->
+<resources>
+    <string name="plugin_name">Mastodon</string>
+    <string name="plugin_description">Read Fediverse accounts through a Mastodon-compatible instance — no login</string>
+
+    <string name="tab_explore">Explore</string>
+    <string name="tab_local">Local</string>
+    <string name="tab_federated">Federated</string>
+    <string name="tab_following">Following</string>
+    <string name="search">Search</string>
+    <string name="saved">Saved</string>
+    <string name="settings">Settings</string>
+    <string name="more">More options</string>
+    <string name="posts">Posts</string>
+    <string name="accounts">Accounts</string>
+    <string name="add_account">Add account</string>
+    <string name="trending">Trending</string>
+
+    <string name="filters">Filters</string>
+    <string name="sort">Sort posts</string>
+    <string name="order_server">Feed order</string>
+    <string name="order_newest">Newest first</string>
+    <string name="order_oldest">Oldest first</string>
+    <string name="loaded_controls">Filters and sorting apply to posts already loaded on this device.</string>
+    <string name="loaded_search">Search loaded posts</string>
+    <string name="clear_search">Clear search</string>
+    <string name="content_all">All</string>
+    <string name="content_media">Media</string>
+    <string name="content_links">Links</string>
+    <string name="hide_boosts">Hide boosts</string>
+    <string name="hide_replies">Hide replies</string>
+    <string name="reset_filters">Reset filters</string>
+    <string name="empty_filter">No items match these filters</string>
+    <string name="close">Close</string>
+
+    <string name="refresh_failed">Could not refresh. Previously loaded posts are still available.</string>
+    <string name="load_more">Load more</string>
+    <string name="load_more_failed">Could not load more posts</string>
+    <string name="empty_public">Nothing on this timeline yet</string>
+    <string name="empty_following">Follow someone to fill this feed</string>
+    <string name="no_posts">Nothing to read yet</string>
+    <string name="discover">Discover</string>
+    <string name="retry">Retry</string>
+
+    <string name="handle_hint">user or user@other.instance</string>
+    <string name="invalid_handle">That is not a Fediverse address</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+
+    <string name="error_network">Could not reach the Mastodon instance</string>
+    <string name="error_not_found">That account was not found</string>
+    <string name="error_rate_limited">The instance is rate limiting — try again later</string>
+    <string name="error_unauthorized">This instance does not allow public API access</string>
+    <string name="error_response">The instance returned something unexpected</string>
+    <string name="not_configured">Enter a Mastodon instance address first</string>
+    <string name="activity_unavailable">This server does not provide this list without signing in, or does not support it. You can open the post in your browser.</string>
+
+    <string name="boosted">%1$s boosted</string>
+    <string name="edited">Edited</string>
+    <string name="content_warning">Content warning</string>
+    <string name="show">Show</string>
+    <string name="hide">Hide</string>
+    <string name="sensitive">This post contains potentially sensitive content. Would you like to view it?</string>
+    <string name="replies">Replies</string>
+    <string name="reposted_by">Reposted by</string>
+    <string name="quotes">Quotes</string>
+    <string name="likes">Likes</string>
+    <string name="share_link">Share link</string>
+    <string name="open_in_browser">Open in browser</string>
+    <string name="alt_text">Image description</string>
+    <string name="alt_badge">ALT</string>
+
+    <plurals name="poll_votes">
+        <item quantity="one">%1$s vote</item>
+        <item quantity="other">%1$s votes</item>
+    </plurals>
+    <string name="poll_unavailable">Results are not available</string>
+    <string name="poll_open">Poll open</string>
+    <string name="poll_closed">Poll closed</string>
+    <string name="poll_ends">Ends %1$s</string>
+    <string name="poll_ended">Ended %1$s</string>
+
+    <string name="bot">Bot</string>
+    <string name="locked">Locked</string>
+    <string name="verified_link">Verified link</string>
+    <string name="joined">Joined %1$s</string>
+    <string name="followers">Followers</string>
+    <string name="following">Following</string>
+    <string name="follow">Follow</string>
+    <string name="unfollow">Unfollow</string>
+    <string name="profile_posts">Posts</string>
+    <string name="profile_replies">Posts &amp; Replies</string>
+    <string name="profile_media">Media</string>
+
+    <string name="thread">Thread</string>
+    <string name="thread_selected">Back to selected post</string>
+    <string name="thread_expand_all">Expand all replies</string>
+    <string name="thread_collapse_all">Collapse all replies</string>
+    <string name="replying_to">Replying to</string>
+    <string name="thread_all">All</string>
+    <string name="thread_author">Author’s thread</string>
+    <string name="thread_no_replies">No public replies were returned by this server.</string>
+    <string name="thread_no_author_replies">No further posts from this author in the loaded conversation.</string>
+    <string name="thread_context">Reply context</string>
+
+    <string name="sort_order">Sort order</string>
+    <string name="sort_oldest">Oldest</string>
+    <string name="sort_recent">Recent</string>
+    <string name="sort_most_liked">Most liked</string>
+    <string name="sort_most_followers">Most followers</string>
+
+    <string name="search_hint">Name, #tag, user@instance, or post URL</string>
+    <string name="hashtags">Hashtags</string>
+    <string name="no_results">No matching accounts</string>
+    <string name="no_hashtags">No matching hashtags</string>
+    <string name="empty_list">No results</string>
+
+
+    <string name="settings_intro">Reading works without any setup: an account\'s own instance is asked first, then your instances, then the built-in ones. Public profiles and posts only — no Mastodon account is required.</string>
+    <string name="instance">Home instance</string>
+    <string name="instance_hint">For example https://mastodon.social</string>
+    <string name="test">Test connection</string>
+    <string name="test_ok">Your instance answered</string>
+    <string name="more_instances">More instances</string>
+    <string name="add_instance">Add instance</string>
+    <string name="delete">Delete</string>
+    <string name="builtin_instances">Built-in instances</string>
+    <string name="builtin_description">Tried after yours, so reading works with nothing configured.</string>
+    <string name="no_accounts">No accounts yet</string>
+    <string name="add_to_group">Add to group</string>
+    <string name="in_home_feed">Show in the home timeline</string>
+    <string name="in_home_feed_description">Mixes posts from the Mastodon accounts you follow into Following and For you</string>
+</resources>

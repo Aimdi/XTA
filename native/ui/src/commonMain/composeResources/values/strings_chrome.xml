@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The app's chrome (ui.chrome, the licences page): XTA's wording (lib/l10n), the licence count Flutter's licence page's. -->
+<resources>
+    <string name="chrome_confirm_close">Are you sure you want to close XTA?</string>
+    <string name="chrome_update_available">An update for XTA is available! 🚀</string>
+    <string name="chrome_update_view_version">View version %1$s on GitHub</string>
+    <string name="chrome_update_view">View on GitHub</string>
+    <string name="chrome_update_download">Download</string>
+    <string name="chrome_licences_legalese">Released under the MIT License</string>
+    <plurals name="chrome_licences_count">
+        <item quantity="one">%1$d license</item>
+        <item quantity="other">%1$d licenses</item>
+    </plurals>
+</resources>

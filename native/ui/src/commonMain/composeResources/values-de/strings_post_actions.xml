@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- An X post's footer, its share and ⋯ sheets and menus, its poll's line, and the contract addresses in its text (ui.post): XTA's words where XTA has them. -->
+<resources>
+    <string name="posts_share">Beitrag teilen</string>
+    <string name="posts_share_content">Tweet-Inhalt teilen</string>
+    <string name="posts_share_article_link">Artikellink teilen</string>
+    <string name="posts_share_content_and_link">Tweet-Inhalt und Link teilen</string>
+    <string name="posts_share_image">Beitrag als Bild teilen</string>
+    <string name="posts_share_article_image">Artikel als Bild teilen</string>
+    <string name="posts_copied">In die Zwischenablage kopiert</string>
+    <string name="posts_reply_not_found">Entschuldigung! Der beantwortete Tweet konnte nicht gefunden werden!</string>
+    <string name="posts_subscribe">Abonnieren</string>
+    <string name="contract_address_copied">Vertragsadresse kopiert</string>
+    <string name="poll_no_votes">Keine Stimmen</string>
+    <plurals name="poll_ends_minutes">
+        <item quantity="one">Endet in %1$d Minute</item>
+        <item quantity="other">Endet in %1$d Minuten</item>
+    </plurals>
+    <plurals name="poll_ends_hours">
+        <item quantity="one">Endet in %1$d Stunde</item>
+        <item quantity="other">Endet in %1$d Stunden</item>
+    </plurals>
+    <plurals name="poll_ends_days">
+        <item quantity="one">Endet in %1$d Tag</item>
+        <item quantity="other">Endet in %1$d Tagen</item>
+    </plurals>
+    <plurals name="poll_ended_minutes">
+        <item quantity="one">Beendet vor %1$d Minute</item>
+        <item quantity="other">Beendet vor %1$d Minuten</item>
+    </plurals>
+    <plurals name="poll_ended_hours">
+        <item quantity="one">Beendet vor %1$d Stunde</item>
+        <item quantity="other">Beendet vor %1$d Stunden</item>
+    </plurals>
+    <plurals name="poll_ended_days">
+        <item quantity="one">Beendet vor %1$d Tag</item>
+        <item quantity="other">Beendet vor %1$d Tagen</item>
+    </plurals>
+    <plurals name="poll_ended_months">
+        <item quantity="one">Beendet vor %1$d Monat</item>
+        <item quantity="other">Beendet vor %1$d Monaten</item>
+    </plurals>
+    <plurals name="poll_ended_years">
+        <item quantity="one">Beendet vor %1$d Jahr</item>
+        <item quantity="other">Beendet vor %1$d Jahren</item>
+    </plurals>
+</resources>

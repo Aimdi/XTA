@@ -1,0 +1,8 @@
+<?xml version="1.0"?><opml version="1.0"><head><title>Another reader</title></head><body>
+<outline text="Newsletters">
+  <outline type="rss" xmlUrl="https://www.astralcodexten.com/feed"/>
+  <outline type="rss" xmlUrl="https://astralcodexten.com/feed" htmlUrl="https://astralcodexten.com"/>
+  <outline type="rss" XMLURL="https://one.substack.com/feed"/>
+  <outline text="no address"/>
+  <outline xmlUrl="javascript:alert(1)"/>
+</outline></body></opml>

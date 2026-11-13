@@ -1,0 +1,26 @@
+[
+  {
+    "preview_url": "https://safebooru.org/thumbnails/4552/thumbnail_9a1b.jpg",
+    "sample_url": "https://safebooru.org/samples/4552/sample_9a1b.jpg",
+    "file_url": "https://safebooru.org/images/4552/9a1b.png",
+    "directory": 4552,
+    "hash": "9a1b",
+    "width": 500,
+    "height": 500,
+    "id": 7,
+    "image": "9a1b.png",
+    "change": 1700000000,
+    "owner": "danbooru",
+    "parent_id": 0,
+    "rating": "general",
+    "sample": true,
+    "sample_height": 850,
+    "sample_width": 850,
+    "score": null,
+    "tags": "smile solo",
+    "source": "",
+    "status": "active",
+    "has_notes": false,
+    "comment_count": 0
+  }
+]

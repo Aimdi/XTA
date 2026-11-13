@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Accounts' avatar and Diagnostics' account health and recent reads, in XTA's words. -->
+<resources>
+    <string name="settings_avatar_title">Il tuo avatar</string>
+    <string name="settings_avatar_change">Tocca per cambiare l’immagine in alto a sinistra</string>
+    <string name="settings_avatar_description">Immagine in alto a sinistra e nel menu — resta su questo dispositivo</string>
+    <string name="settings_avatar_choose">Scegli dal dispositivo</string>
+    <string name="settings_avatar_from_account">Usa la foto profilo di X</string>
+    <string name="settings_avatar_error">Impossibile caricare quella foto profilo</string>
+    <string name="settings_avatar_clear">Usa il monogramma</string>
+    <string name="settings_diagnostics_recent_reads">Operazioni di lettura recenti</string>
+    <string name="settings_diagnostics_sign_in_broken">L'accesso sembra non essere più valido, in pausa fino alle %1$s</string>
+</resources>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Hacker News</string>
+    <string name="plugin_description">계정 없이 해커 뉴스를 읽습니다. 하트와 북마크는 이 기기에 남습니다.</string>
+    <string name="tab_top">인기</string>
+    <string name="tab_new">최신</string>
+    <string name="tab_best">베스트</string>
+    <string name="tab_ask">Ask</string>
+    <string name="tab_show">Show</string>
+    <string name="tab_jobs">채용</string>
+    <string name="tab_saved">저장됨</string>
+    <string name="tab_following">팔로잉</string>
+    <string name="search">해커 뉴스 검색</string>
+    <string name="settings">설정</string>
+    <string name="feed_empty">지금은 아무것도 없습니다</string>
+    <string name="saved_empty">저장한 이야기가 아직 없습니다. 북마크는 이 기기에 남습니다</string>
+    <string name="following_empty">누군가를 팔로우하면 그 사람의 이야기가 여기에 나타납니다</string>
+    <string name="by">%1$s</string>
+    <string name="like">이 기기에 마음에 들어요</string>
+    <string name="unlike">이 기기에서 마음에 들어요 취소</string>
+    <string name="save">이 기기에 저장</string>
+    <string name="unsave">이 기기에서 삭제</string>
+    <string name="comments">댓글</string>
+    <string name="open_article">글 열기</string>
+    <string name="deleted">[삭제됨]</string>
+    <string name="user_empty">공개 제출이 없습니다</string>
+    <string name="follow">이 기기에서 팔로우</string>
+    <string name="unfollow">언팔로우</string>
+    <string name="search_hint">이야기 검색</string>
+    <string name="search_empty">일치하는 이야기가 없습니다</string>
+    <string name="settings_blurb">로그인은 없습니다. 투표와 댓글은 해커 뉴스에 남습니다. 하트와 북마크는 이 기기에 남습니다.</string>
+    <plurals name="points">
+        <item quantity="other">%1$d점</item>
+    </plurals>
+    <plurals name="comment_count">
+        <item quantity="other">댓글 %1$d개</item>
+    </plurals>
+    <plurals name="user_karma">
+        <item quantity="other">카르마 %1$d</item>
+    </plurals>
+    <string name="more_options">옵션 더보기</string>
+</resources>

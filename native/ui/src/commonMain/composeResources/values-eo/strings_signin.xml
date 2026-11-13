@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Signing in to X as XTA does (lib/client/login_webview.dart, x_cookie_login.dart). -->
+<resources>
+    <string name="signin_add_account">Aldoni konton</string>
+    <string name="signin_logging_in_title">Ensalutante al XTA</string>
+    <string name="signin_logging_in_text">Per kiu konto vi ensalutas ne ŝanĝas tion, kion vi vidas. Abonoj, grupoj kaj konservitaj afiŝoj restas en ĉi tiu aparato kaj neniam tuŝas vian veran konton. XTA ensalutas nur por legi — ĝi ne povas ŝati, respafi aŭ respondi.\n\nVi povas aldoni plurajn kontojn. XTA elektas tiun, kiu ne atingis la petlimon ĉe la bezonata finpunkto kaj kiu ĵus ne malsukcesis ensaluti; ĝuste tio tenas for la eraron «Tro multaj petoj».</string>
+    <string name="signin_import_title">Importi abonojn</string>
+    <string name="signin_import_text">Abonoj estas lokaj en XTA. Ili ne dependas de la abonoj de via vera X-konto. Ensaluto ne tuŝas la abonojn de XTA.\n\nĈu vi volas importi en XTA la abonojn de @%1$s?</string>
+    <string name="signin_cookie_help">Ensalutu al x.com en via retumilo, malfermu ĝiajn programistajn ilojn (F12) kaj kopiu la kuketojn auth_token kaj ct0 el Konservado → Kuketoj. Algluu ilin sube kiel auth_token=…; ct0=…. Ili restas nur en ĉi tiu komputilo kaj neniam estas kunhavigataj.</string>
+    <string name="signin_open_in_browser">Malfermi en retumilo</string>
+    <string name="signin_username">Uzantnomo</string>
+    <string name="signin_cookies">Kuketoj de x.com</string>
+    <string name="signin_not_logged_in">Ne ensalutita</string>
+    <string name="signin_why_needed">X rifuzas plej multajn petojn, kiuj ne venas de konto. XTA unue provas kiel gasto, kaj tio foje funkcias, sed sen konto atendu pli da eraroj ol da afiŝoj.\n\nEnsaluto permesas al XTA nur legi X. Ĝi neniam afiŝas, ŝatas, respafas aŭ sekvas anstataŭ vi.</string>
+    <string name="signin_import_backup">Importi sekurkopion</string>
+    <string name="signin_login">Ensaluti</string>
+</resources>

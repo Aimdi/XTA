@@ -8,6 +8,7 @@
 .buildlog/
 .history
 .svn/
+__pycache__/
 
 # IntelliJ related
 *.iml
@@ -20,38 +21,12 @@
 # is commented out by default.
 # .vscode/
 
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
-.dart_tool/
-.flutter-plugins
-.flutter-plugins-dependencies
-.packages
-.pub-cache/
-.pub/
-/build/
-/profile_files/
-
-
-/android/.kotlin/
-/android/app/.cxx/
-
-
-lib/generated
-lib/oss_licenses.dart
-
-# Web related
-lib/generated_plugin_registrant.dart
-
-# Symbolication related
-app.*.symbols
-
-# Obfuscation related
-app.*.map.json
-
-# FVM Version Cache
-.fvm/
-
+# Gradle and Kotlin (native/.gitignore covers native/ itself)
 .gradle/
-.venv/
-assets/icon-*.png
+.kotlin/
+build/
+local.properties
+
+# Signing keys never go in the repository
+*.jks
+*.keystore

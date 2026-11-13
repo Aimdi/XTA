@@ -1,0 +1,248 @@
+package com.aimdi.xtanative.core.x
+
+import com.aimdi.xtanative.core.json.J
+import com.aimdi.xtanative.core.x.http.XHttp
+import com.aimdi.xtanative.core.x.http.XRequestBudget
+import com.aimdi.xtanative.core.x.http.XResponse
+import com.aimdi.xtanative.core.x.http.withRequestBudget
+import java.util.concurrent.atomic.AtomicInteger
+import kotlin.coroutines.AbstractCoroutineContextElement
+import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.withContext
+import okhttp3.HttpUrl
+
+/**
+ * Every request XTA Native sends X, as XTA's transport.dart sends them: over
+ * the stored accounts in turn, healthy ones first, a guest's when there is no
+ * account. A 429 sets the account aside on that endpoint until X says it
+ * resets and asks the next, each account once per read; one X refused with a
+ * dated 429 is not asked there again before that reset. Accounts the reader
+ * turned off for the feeds stand in once every other one is limited, except
+ * for the feeds' own reads ([XFeedRead]). A refusal (401, 403, 404) is tried on one more
+ * account, and is only held against the account that gave it once another
+ * account was answered on the same endpoint. Any other failure is surfaced at
+ * once: another account would get the same. Every read, whatever it tries,
+ * has [budgetMillis] in all, as XTA's RequestBudget gives it.
+ */
+internal class XTransport(
+    private val http: XHttp,
+    private val accounts: () -> List<XAccount>,
+    private val signers: XSigners,
+    private val endpoints: XEndpoints,
+    private val clock: () -> Long,
+    private val guest: XGuest?,
+    private val health: XAccountHealthStore,
+    private val disabled: () -> Set<String>,
+    private val budgetMillis: Long = XRequestBudget.READ_MILLIS,
+) {
+    val limits = XRateLimits()
+    private val load = XAccountLoad()
+
+    /** Each read, how it ended and how long it took, for Diagnostics. */
+    val reads = XReadLog(clock = clock)
+
+    /** Reads take turns across the accounts, so no one account reaches X's limits first. */
+    private val turn = AtomicInteger()
+
+    private sealed interface Outcome {
+        class Answer(val body: J) : Outcome
+        class Refused(val accounts: List<XAccount>) : Outcome
+    }
+
+    suspend fun graphql(endpoint: String, params: Map<String, String>): J = get(endpoints.url(endpoint, params), endpoint)
+
+    suspend fun get(url: HttpUrl, what: String): J = reads.track(what) {
+        withRequestBudget(budgetMillis, what) {
+            val off = disabled()
+            val pool = pool(off, feedOnly = currentCoroutineContext()[XFeedRead.Key] != null)
+            if (pool.isEmpty()) return@withRequestBudget asGuest(what, url)
+            // Every account tried refused with 404: surfaced at once, as XTA
+            // does; a signer is derived again only when its lifetime ends.
+            when (val outcome = rotate(pool, off, url, what)) {
+                is Outcome.Answer -> outcome.body
+                is Outcome.Refused -> throw refusal(outcome.accounts, what)
+            }
+        }
+    }
+
+    /**
+     * [url] read with [account] alone, as XTA's fetchAs reads a chosen
+     * account's own home timeline: no other account stands in for it.
+     */
+    suspend fun getAs(account: XAccount, url: HttpUrl, what: String): J = reads.track(what) { withRequestBudget(budgetMillis, what) { readAs(account, url, what) } }
+
+    private suspend fun readAs(account: XAccount, url: HttpUrl, what: String): J {
+        val path = url.encodedPath
+        val response = send(account, url, path)
+        return when {
+            response.isSuccessful -> answered(account, emptyList(), path, response)
+            response.code == 429 -> {
+                flagLimited(account, path, response)
+                throw XRateLimitedException(limits.resetAt(account.id, path, clock()))
+            }
+            else -> throw XRequestException(response.code, "X answered $what for @${account.screenName} with ${response.code}")
+        }
+    }
+
+    /**
+     * A POST of [body] with one healthy account, as XTA's one-shot requests
+     * (translation) pick one; with no account, the same request without an
+     * account's headers, signed without a session, as XTA sends it then. XTA
+     * signs it as a GET, as every request it makes; so does this.
+     */
+    suspend fun post(url: HttpUrl, body: String, contentType: String): XResponse = withRequestBudget(budgetMillis, url.encodedPath) {
+        val now = clock()
+        val account = XAccountSelector(accounts(), flagged = { health.read(it.id).flagged(now) }).pick(emptySet(), turn.getAndIncrement())
+        val signer = signers.forSession(account?.cookie)
+        val headers = (BASE_HEADERS - "content-type") + account?.headers.orEmpty() + ("x-client-transaction-id" to signer.transactionId("GET", url.encodedPath))
+        http.post(url, headers, body, contentType)
+    }
+
+    /**
+     * The accounts to read with: every one, those turned [off] for the feeds
+     * asked after the rest; for a feed's own read only those left on, or all
+     * when none is.
+     */
+    private fun pool(off: Set<String>, feedOnly: Boolean): List<XAccount> {
+        val all = accounts()
+        return if (feedOnly) all.filterNot { it.id in off }.ifEmpty { all } else all
+    }
+
+    private suspend fun rotate(pool: List<XAccount>, off: Set<String>, url: HttpUrl, what: String): Outcome {
+        val path = url.encodedPath
+        val now = clock()
+        // X dated these refusals itself: another request before then is only refused again.
+        val askable = pool.filterNot { limits.isRefused(it.id, path, now) }
+        if (askable.isEmpty()) throw XRateLimitedException(earliestReset(pool, path))
+        val selector = XAccountSelector(
+            askable,
+            flagged = { health.read(it.id).flagged(now) },
+            rateLimited = { limits.isLimited(it.id, path, now) },
+            remaining = { limits.remaining(it.id, path, now) },
+            inFlight = { load.of(it.id, path) },
+            spare = { it.id in off },
+        )
+        val first = turn.getAndIncrement()
+        val tried = HashSet<String>()
+        // Held rather than blamed: only another account's answer proves them broken.
+        val refused = ArrayList<XAccount>()
+        var last: XResponse? = null
+        while (refused.size < MAX_REFUSALS) {
+            val account = selector.pick(tried, first) ?: break
+            tried += account.id
+            limits.consume(account.id, path, now)
+            val response = send(account, url, path)
+            when {
+                response.isSuccessful -> return Outcome.Answer(answered(account, refused, path, response))
+                response.code == 429 -> flagLimited(account, path, response)
+                response.code in REFUSALS -> refused += account
+                else -> throw XRequestException(response.code, "X answered $what with ${response.code}")
+            }
+            last = response
+        }
+        return when (val code = last?.code) {
+            429 -> throw XRateLimitedException(earliestReset(pool, path))
+            404 -> Outcome.Refused(refused)
+            else -> throw XRequestException(code ?: 0, "X refused $what ($code)")
+        }
+    }
+
+    private suspend fun send(account: XAccount, url: HttpUrl, path: String): XResponse {
+        val signer = signers.forSession(account.cookie)
+        val headers = BASE_HEADERS + account.headers + ("x-client-transaction-id" to signer.transactionId("GET", path))
+        load.begin(account.id, path)
+        try {
+            return http.get(url, headers, followRedirects = true)
+        } finally {
+            load.end(account.id, path)
+        }
+    }
+
+    private fun answered(account: XAccount, refused: List<XAccount>, path: String, response: XResponse): J {
+        limits.record(account.id, path, response::header, clock())
+        if (!health.read(account.id).isClean) health.write(account.id, XAccountHealth())
+        refused.forEach { health.write(it.id, health.read(it.id).afterRefusal(clock())) }
+        return J.parse(response.body)
+    }
+
+    /** No account proved the endpoint works: the accounts are only blamed when each was flagged before. */
+    private fun refusal(refused: List<XAccount>, what: String): XReadException {
+        val now = clock()
+        return if (refused.isNotEmpty() && refused.all { health.read(it.id).flagged(now) }) XNoWorkingAccountException() else XEndpointRefusedException(what)
+    }
+
+    /** [account]'s 429 on [path]: until the reset X named, or X's usual fifteen minutes when it named none. */
+    private fun flagLimited(account: XAccount, path: String, response: XResponse) {
+        val dated = XRateLimits.resetSeconds(response.header("x-rate-limit-reset"))?.times(1000)
+        limits.flag(account.id, path, dated ?: (clock() + XAccountPolicy.RATE_LIMIT_FALLBACK_MILLIS), refused = dated != null)
+    }
+
+    /** When the first account frees up here; null while one of them is not limited at all. */
+    private fun earliestReset(pool: List<XAccount>, path: String): Long? {
+        val now = clock()
+        val resets = pool.map { limits.resetAt(it.id, path, now) }
+        return if (resets.any { it == null }) null else resets.filterNotNull().minOrNull()
+    }
+
+    /**
+     * The read as a guest, with what XTA's fetchUnauthenticated sends and no
+     * more: X's logged-out bearer, a guest token, and no signature. A refused
+     * token is replaced once; the quota X reports decides whether the token is
+     * kept for the next read. Any answer but X's content, a 429 too, means an
+     * account has to be added.
+     */
+    private suspend fun asGuest(what: String, url: HttpUrl): J {
+        val guest = guest ?: throw XNoAccountException()
+        suspend fun send(fresh: Boolean) = http.get(url, GUEST_HEADERS + ("x-guest-token" to guest.token(fresh)), followRedirects = true)
+        val first = send(fresh = false)
+        val response = if (first.code == 401 || first.code == 403) send(fresh = true) else first
+        guest.observe(response::header)
+        if (!response.isSuccessful) throw XNoAccountException("X did not answer $what for a guest (${response.code})")
+        return J.parse(response.body)
+    }
+
+    companion object {
+        private val REFUSALS = setOf(401, 403, 404)
+
+        /** A refusal is tried on one more account; then it is surfaced, as XTA does. */
+        private const val MAX_REFUSALS = 2
+
+        private const val BEARER =
+            "Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA"
+
+        /** What every signed-in request carries before the account's own headers (XTA's headers.dart). */
+        val BASE_HEADERS = mapOf(
+            "accept" to "*/*",
+            "accept-language" to "en-US,en;q=0.9",
+            "authorization" to BEARER,
+            "cache-control" to "no-cache",
+            "content-type" to "application/json",
+            "pragma" to "no-cache",
+            "priority" to "u=1, i",
+            "referer" to "https://x.com/",
+            "user-agent" to "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Mobile Safari/537.3",
+            "x-twitter-active-user" to "yes",
+            "x-twitter-client-language" to "en",
+        )
+
+        /** What a guest read carries beside its token (XTA's fetchUnauthenticated). */
+        private val GUEST_HEADERS = mapOf(
+            "authorization" to XGuest.BEARER,
+            "x-twitter-active-user" to "yes",
+            "user-agent" to BASE_HEADERS.getValue("user-agent"),
+        )
+    }
+}
+
+/**
+ * Marks a read the Following feed or a group sends: it keeps to the accounts
+ * the reader left on for the feeds, as the setting promises, where any other
+ * read lets the accounts turned off stand in.
+ */
+internal object XFeedRead : AbstractCoroutineContextElement(XFeedRead.Key) {
+    object Key : CoroutineContext.Key<XFeedRead>
+}
+
+/** [block] as a feed's read ([XFeedRead]). */
+internal suspend fun <T> asFeedRead(block: suspend () -> T): T = withContext(XFeedRead) { block() }

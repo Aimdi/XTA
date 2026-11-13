@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">Стежу</string>
+    <string name="search">Пошук</string>
+    <string name="settings">Налаштування</string>
+    <string name="dismiss">Закрити</string>
+    <string name="retry">Повторити</string>
+    <string name="back">Назад</string>
+    <string name="close">Закрити</string>
+    <string name="cancel">Скасувати</string>
+    <string name="post">Допис</string>
+
+    <string name="pinned">Закріплено</string>
+    <string name="reposted_by">%1$s поширює</string>
+    <string name="replying_to">Відповідаючи на</string>
+    <string name="stat_reposts">Поширення</string>
+    <string name="stat_quotes">Цитати</string>
+    <string name="stat_likes">Вподобання</string>
+
+    <string name="ago_seconds">%1$d с</string>
+    <string name="ago_minutes">%1$d хв</string>
+    <string name="ago_hours">%1$d год</string>
+
+    <string name="problem_rate_limited">X обмежує тут усі облікові записи. Спробуйте ще раз за кілька хвилин.</string>
+    <string name="problem_offline">Немає з’єднання з X.</string>
+    <string name="problem_signing">Не вдалося налаштувати підпис запитів до X. Спробуйте ще раз за мить.</string>
+    <string name="problem_refused">X відхилив запит (%1$d).</string>
+    <string name="problem_other">Під час читання X щось пішло не так.</string>
+
+    <string name="import_intro">XTA Native — це XTA, написаний лише для Android, щоб порівняти його з XTA. Він читає X через облікові записи, які ви вже використовуєте в XTA.</string>
+    <string name="import_steps">У XTA відкрийте Налаштування → Дані → Експорт, увімкніть «Експортувати облікові записи», експортуйте й виберіть цей файл тут.</string>
+    <string name="import_choose">Вибрати резервну копію XTA</string>
+    <string name="import_choose_another">Вибрати інший файл</string>
+    <string name="import_no_accounts">У цій резервній копії немає облікових записів X: експортуйте її знову з увімкненим «Експортувати облікові записи».</string>
+    <string name="import_use">Використати цю копію</string>
+    <string name="import_privacy">Резервна копія містить ваші сеанси X. XTA Native зберігає їх на цьому телефоні, надсилає лише до X і ніколи нічого там не публікує, не вподобує й ні за ким не стежить.</string>
+
+    <string name="settings_clear">Вилучити все</string>
+    <string name="settings_clear_explained">Вилучає з XTA Native сеанси X і відстежувані облікові записи. Сам XTA зберігає все.</string>
+    <string name="settings_clear_confirm">Вилучити</string>
+
+    <string name="card_from">Джерело: %1$s</string>
+    <plurals name="poll_votes">
+        <item quantity="one">%1$s голос</item>
+        <item quantity="few">%1$s голоси</item>
+        <item quantity="many">%1$s голосів</item>
+        <item quantity="other">%1$s голосу</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d новий допис</item>
+        <item quantity="few">%1$d нові дописи</item>
+        <item quantity="many">%1$d нових дописів</item>
+        <item quantity="other">%1$d нового допису</item>
+    </plurals>
+    <string name="problem_x_private">Приватний профіль</string>
+    <string name="problem_x_missing">X повідомляє, що сторінка не існує, але це може бути неправда</string>
+    <string name="problem_x_user_missing">Користувача не знайдено</string>
+    <string name="problem_x_suspended">Акаунт призупинено</string>
+    <string name="problem_x_forbidden">X повідомляє, що доступ до цього заборонено</string>
+    <string name="problem_x_guest">X анулював наш токен доступу. Будь ласка, спробуйте перезапустити XTA!</string>
+</resources>

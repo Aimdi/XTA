@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
+     Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="home_x">X</string>
+    <string name="home_search_in">Search %1$s</string>
+    <string name="home_open_menu">Open navigation menu</string>
+    <string name="home_add_timeline">Add timeline</string>
+    <string name="home_unread">Unread</string>
+    <string name="home_refresh">Refresh</string>
+    <string name="home_open_group">Open group</string>
+    <string name="home_more_options">More options</string>
+    <string name="home_pin_to_bar">Pin to top bar</string>
+    <string name="home_pin_to_bar_hint">Pinned entries sit next to the sections whenever the bar has room. Everything stays in this menu too.</string>
+    <string name="home_keep_controls_visible">Keep controls visible</string>
+
+    <string name="home_strip_title">Plugin timelines</string>
+    <string name="home_strip_intro">Pin installed plugins next to For you. Drag to reorder. Install more from the plugin store.</string>
+    <string name="home_strip_pinned">On this strip</string>
+    <string name="home_strip_available">Available to add</string>
+    <string name="home_strip_empty">No installed plugins to pin yet. Open the plugin store to install Reddit, Pixiv, Mastodon and more.</string>
+    <string name="home_strip_remove">Remove from strip</string>
+    <string name="home_strip_reorder">Reorder</string>
+    <string name="home_plugin_store">Plugin store</string>
+
+    <string name="home_subscriptions">Subscriptions</string>
+    <string name="home_discover">Discover</string>
+    <string name="home_saved">Saved</string>
+    <string name="home_downloads">Downloads</string>
+    <string name="home_antennas">Antennas</string>
+    <string name="home_deck">Deck</string>
+    <string name="home_deck_empty">Pin groups to see them side by side on a wide screen</string>
+    <string name="home_groups">Groups</string>
+    <string name="home_no_groups">No groups yet</string>
+    <string name="home_no_results">No results</string>
+    <plurals name="home_group_members">
+        <item quantity="one">%1$d subscription</item>
+        <item quantity="other">%1$d subscriptions</item>
+    </plurals>
+
+    <string name="home_feed_accounts">Home feed accounts</string>
+    <string name="home_filter_accounts">Accounts</string>
+    <string name="home_filter_accounts_explained">Turn off spare accounts you only keep for higher rate limits. For you merges Home timelines from accounts left on; Following still uses your local subscriptions but skips turned-off accounts when fetching. Comments and profiles can still use any account if needed.</string>
+    <string name="home_filter_groups_explained">Turn off a group to hide its members from Following. The group's own tab stays. Their posts are also dropped from For you.</string>
+    <string name="home_filter_only_hint">Long-press one to keep only it on.</string>
+    <string name="home_filter_keep_one">At least one account has to stay on</string>
+    <string name="home_filter_count">%1$d / %2$d</string>
+    <string name="home_filter_all">All</string>
+    <string name="home_filter_none">None</string>
+    <string name="home_filter_reset">Reset filters</string>
+    <string name="home_filter_apply">Apply</string>
+
+    <string name="home_for_you_empty">Unable to load the posts for the feed</string>
+    <string name="home_for_you_no_account">Import XTA's backup with its accounts to load For you.</string>
+    <string name="home_import">Import an XTA backup</string>
+
+    <string name="home_home">Home</string>
+    <string name="home_networks">Networks</string>
+    <string name="home_networks_recent">Recent</string>
+    <string name="home_networks_all">All networks</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">Group microblogging services</string>
+    <string name="home_alt_microblogging_group_detail">Show Mastodon, Bluesky and Threads in one Home section. Turn off to separate them. Your data and settings stay unchanged.</string>
+    <string name="home_posts">Posts</string>
+    <string name="home_media">Media</string>
+    <string name="home_missing_page">Missing page</string>
+    <string name="home_two_pages_required">You need to have at least 2 home screen pages.</string>
+    <string name="home_choose_pages">Choose pages</string>
+    <string name="home_unable_to_load_pages">Unable to load your home pages</string>
+    <string name="feed_strip_unavailable">This timeline is no longer available</string>
+    <string name="home_feed_accounts_empty">Add an account to load For you.</string>
+</resources>

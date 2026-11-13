@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+<title><![CDATA[Field Notes]]></title>
+<description><![CDATA[Notes from the field.]]></description>
+<link>https://www.fieldnotes.example</link>
+<image><url>https://substackcdn.com/image/fetch/logo.png</url><title>Field Notes</title></image>
+<generator>Substack</generator>
+<item>
+<title><![CDATA[Episode 12: the harbour]]></title>
+<link>https://www.fieldnotes.example/p/episode-12</link>
+<dc:creator><![CDATA[Jordan]]></dc:creator>
+<pubDate>Tue, 04 Aug 2026 23:03:08 GMT</pubDate>
+<content:encoded><![CDATA[<p>An opening <strong>paragraph</strong>.</p><img src="https://substackcdn.com/image/fetch/cover.jpeg"><p>And more.</p>]]></content:encoded>
+<enclosure url="https://api.substack.com/feed/podcast/12/ep.mp3?a=1&amp;b=2" length="1" type="audio/mpeg" />
+</item>
+<item>
+<title>Tom &amp; Jerry &lt;3</title>
+<link>https://www.fieldnotes.example/p/tom-and-jerry</link>
+<author>Sam &amp; Lee</author>
+<pubDate>Wed, 05 Aug 2026 10:00:00 +0000</pubDate>
+<description>&lt;p&gt;Escaped &amp;amp; plain.&lt;/p&gt;</description>
+<enclosure url="https://www.fieldnotes.example/cover.jpg" type="image/jpeg" />
+</item>
+<item>
+<title>A page that is not a post</title>
+<link>https://www.fieldnotes.example/about</link>
+</item>
+<item>
+<link>https://www.fieldnotes.example/p/untitled</link>
+</item>
+</channel>
+</rss>

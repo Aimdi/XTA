@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Signing in to X as XTA does (lib/client/login_webview.dart, x_cookie_login.dart). -->
+<resources>
+    <string name="signin_add_account">Account toevoegen</string>
+    <string name="signin_logging_in_title">Inloggen bij XTA</string>
+    <string name="signin_logging_in_text">Met welk account je inlogt, verandert niets aan wat je ziet. Abonnementen, groepen en bewaarde berichten blijven op dit apparaat en raken je echte account nooit. XTA logt alleen in om te lezen — liken, delen of reageren kan het niet.\n\nJe kunt meerdere accounts toevoegen. XTA kiest er een dat niet tegen de limiet is gelopen op het eindpunt dat het nodig heeft en dat niet net niet kon inloggen. Dat is wat "Te veel verzoeken" op afstand houdt.</string>
+    <string name="signin_import_title">Abonnementen importeren</string>
+    <string name="signin_import_text">Abonnementen staan alleen lokaal in XTA. Ze staan los van de abonnementen op je echte X-account. Inloggen heeft geen invloed op de abonnementen in XTA.\n\nWil je de abonnementen van @%1$s in XTA importeren?</string>
+    <string name="signin_cookie_help">Log in op x.com in je browser, open de ontwikkelaarstools (F12) en kopieer de cookies auth_token en ct0 via Opslag → Cookies. Plak ze hieronder als auth_token=…; ct0=…. Ze blijven alleen op deze computer en worden nooit gedeeld.</string>
+    <string name="signin_open_in_browser">Openen in browser</string>
+    <string name="signin_username">Gebruikersnaam</string>
+    <string name="signin_cookies">Cookies van x.com</string>
+    <string name="signin_not_logged_in">Niet ingelogd</string>
+    <string name="signin_why_needed">X weigert de meeste verzoeken die niet van een account komen. XTA probeert het eerst als gast, en soms lukt dat, maar zonder account kun je meer fouten dan berichten verwachten.\n\nInloggen laat XTA alleen X lezen. De app plaatst, liket, deelt of volgt nooit namens jou.</string>
+    <string name="signin_import_backup">Back-up importeren</string>
+    <string name="signin_login">Inloggen</string>
+</resources>

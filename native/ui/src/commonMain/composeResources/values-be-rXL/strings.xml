@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">Čytaju</string>
+    <string name="search">Pošuk</string>
+    <string name="settings">Nalady</string>
+    <string name="dismiss">Zakryć</string>
+    <string name="retry">Paŭtaryć</string>
+    <string name="back">Nazad</string>
+    <string name="close">Začynić</string>
+    <string name="cancel">Skasavać</string>
+    <string name="post">Dopis</string>
+
+    <string name="pinned">Zamacavana</string>
+    <string name="reposted_by">%1$s zrabiŭ(-ła) repost</string>
+    <string name="replying_to">U adkaz</string>
+    <string name="stat_reposts">Reposty</string>
+    <string name="stat_quotes">Cytaty</string>
+    <string name="stat_likes">Upadabanaje</string>
+
+    <string name="ago_seconds">%1$d s</string>
+    <string name="ago_minutes">%1$d chv</string>
+    <string name="ago_hours">%1$d hadz</string>
+
+    <string name="problem_rate_limited">X abmiažoŭvaje tut usie akaŭnty. Pasprabujcie znoŭ praz niekalki chvilin.</string>
+    <string name="problem_offline">Niama złučennia z X.</string>
+    <string name="problem_signing">Nie ŭdałosia naładzić podpis zapytaŭ da X. Pasprabujcie znoŭ krychu paźniej.</string>
+    <string name="problem_refused">X adchiliŭ zapyt (%1$d).</string>
+    <string name="problem_other">Pry čytanni X nešta pajšło nie tak.</string>
+
+    <string name="import_intro">XTA Native — heta XTA, napisany tolki dla Android, kab paraŭnać jaho z XTA. Jon čytaje X praz akaŭnty, jakimi vy ŭžo karystajeciesia ŭ XTA.</string>
+    <string name="import_steps">U XTA adkryjcie Nalady → Dadzienyja → Ekspartavać, uklučycie «Ekspartavać ulikovyja zapisy», ekspartujcie i vybierycie hety fajł tut.</string>
+    <string name="import_choose">Vybrać rezervovuju kopiju XTA</string>
+    <string name="import_choose_another">Vybrać inšy fajł</string>
+    <string name="import_no_accounts">U hetaj rezervovaj kopii niama akaŭntaŭ X: ekspartujcie jaje znoŭ z uklučanym «Ekspartavać ulikovyja zapisy».</string>
+    <string name="import_use">Vykarystać hetu kopiju</string>
+    <string name="import_privacy">Rezervovaja kopija źmiaščaje vašy seansy X. XTA Native trymaje ich na hetym telefonie, adpraŭlaje tolki ŭ X i nikoli ničoha tam nie publikuje, nie ŭpadabaje i ni na kaho nie padpisvajecca.</string>
+
+    <string name="settings_clear">Vydalić usio</string>
+    <string name="settings_clear_explained">Vydalaje z XTA Native seansy X i akaŭnty, jakija vy čytajecie. Sam XTA zachoŭvaje ŭsio.</string>
+    <string name="settings_clear_confirm">Vydalić</string>
+
+    <string name="card_from">Krynica: %1$s</string>
+    <plurals name="poll_votes">
+        <item quantity="one">%1$s hołas</item>
+        <item quantity="few">%1$s hałasy</item>
+        <item quantity="many">%1$s hałasoŭ</item>
+        <item quantity="other">%1$s hołasu</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d novy dopis</item>
+        <item quantity="few">%1$d novyja dopisy</item>
+        <item quantity="many">%1$d novych dopisaŭ</item>
+        <item quantity="other">%1$d novaha dopisu</item>
+    </plurals>
+    <string name="problem_x_private">Pryvatny profil</string>
+    <string name="problem_x_missing">Twitter kaža, što hetaja staronka nie isnuje, ale heta moža być niapraŭdaj</string>
+    <string name="problem_x_user_missing">Karystalnik nie znojdzieny</string>
+    <string name="problem_x_suspended">Ulikovy zapis prypynieny</string>
+    <string name="problem_x_forbidden">Twitter kaža, što dostup da hetaha zabaronieny</string>
+    <string name="problem_x_guest">Twitter pryznaŭ niesapraŭdnym naš markier dostupu. Kali łaska, pasprabujcie znoŭ adkryć XTA!</string>
+</resources>

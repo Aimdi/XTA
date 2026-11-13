@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Karakeep</string>
+    <string name="plugin_description">Salve posts e links no seu próprio servidor Karakeep com um toque</string>
+    <string name="settings_intro">O Karakeep é um serviço de favoritos auto-hospedado. Informe o endereço da sua instância e uma chave de API em “Configurações &gt; Chaves de API” no Karakeep.</string>
+    <string name="server_url">Endereço do servidor</string>
+    <string name="server_url_hint">Por exemplo karakeep.example.com</string>
+    <string name="api_key">Chave de API</string>
+    <string name="api_key_hint">Fica somente neste dispositivo</string>
+    <string name="test">Testar conexão</string>
+    <string name="test_ok">Conectado ao Karakeep</string>
+    <string name="not_configured">Informe primeiro seu servidor Karakeep e uma chave de API</string>
+    <string name="error_unauthorized">O Karakeep recusou a chave de API</string>
+    <string name="error_server_url">Nenhum Karakeep encontrado nesse endereço</string>
+    <string name="error_network">Não foi possível acessar seu servidor Karakeep</string>
+    <string name="error_generic">O Karakeep não conseguiu salvar este link</string>
+    <string name="learn_more">Sobre o Karakeep</string>
+    <string name="save_action">Salvar no Karakeep</string>
+    <string name="saved">Salvo no Karakeep</string>
+    <string name="already_saved">Já está no Karakeep</string>
+    <string name="saving">Salvando no Karakeep…</string>
+    <string name="show">Mostrar</string>
+    <string name="hide">Ocultar</string>
+    <string name="save">Salvar</string>
+    <string name="connection">Conexão</string>
+</resources>

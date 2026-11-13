@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="video_fullscreen">Pełny ekran</string>
+    <string name="video_fullscreen_exit">Zamknij pełny ekran</string>
+    <string name="video_picture_in_picture">Obraz w obrazie</string>
+</resources>

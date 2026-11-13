@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">A seguir</string>
+    <string name="search">Buscar</string>
+    <string name="settings">Definições</string>
+    <string name="dismiss">Fechar</string>
+    <string name="retry">Tentar novamente</string>
+    <string name="back">Voltar</string>
+    <string name="close">Fechar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="post">Publicação</string>
+
+    <string name="pinned">Afixado</string>
+    <string name="reposted_by">%1$s republicou</string>
+    <string name="replying_to">Respondendo a</string>
+    <string name="stat_reposts">Republicações</string>
+    <string name="stat_quotes">Citações</string>
+    <string name="stat_likes">Gostos</string>
+
+    <string name="ago_seconds">%1$d s</string>
+    <string name="ago_minutes">%1$d min</string>
+    <string name="ago_hours">%1$d h</string>
+
+    <string name="problem_rate_limited">O X está a limitar todas as contas aqui. Tente novamente dentro de alguns minutos.</string>
+    <string name="problem_offline">Sem ligação ao X.</string>
+    <string name="problem_signing">Não foi possível preparar a assinatura dos pedidos ao X. Tente novamente daqui a pouco.</string>
+    <string name="problem_refused">O X recusou o pedido (%1$d).</string>
+    <string name="problem_other">Algo correu mal ao ler o X.</string>
+
+    <string name="import_intro">O XTA Native é o XTA escrito só para Android, para comparar com o XTA. Lê o X com as contas que já usa no XTA.</string>
+    <string name="import_steps">No XTA, abra Definições → Dados → Exportar, ative «Exportar contas», exporte e escolha esse ficheiro aqui.</string>
+    <string name="import_choose">Escolher cópia de segurança do XTA</string>
+    <string name="import_choose_another">Escolher outro ficheiro</string>
+    <string name="import_no_accounts">Esta cópia de segurança não tem contas X: exporte novamente com «Exportar contas» ativado.</string>
+    <string name="import_use">Usar esta cópia de segurança</string>
+    <string name="import_privacy">A cópia de segurança contém as suas sessões X. O XTA Native guarda-as neste telemóvel, só as envia ao X e nunca publica, gosta nem segue nada lá.</string>
+
+    <string name="settings_clear">Remover tudo</string>
+    <string name="settings_clear_explained">Remove do XTA Native as sessões X e as contas seguidas. O próprio XTA mantém tudo.</string>
+    <string name="settings_clear_confirm">Remover</string>
+
+    <string name="card_from">De %1$s</string>
+    <plurals name="poll_votes">
+        <item quantity="one">%1$s voto</item>
+        <item quantity="other">%1$s votos</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d nova publicação</item>
+        <item quantity="other">%1$d novas publicações</item>
+    </plurals>
+    <string name="problem_x_private">Perfil privado</string>
+    <string name="problem_x_missing">Twitter diz que a página não existe, mas isso pode não ser verdade</string>
+    <string name="problem_x_user_missing">Utilizador não encontrado</string>
+    <string name="problem_x_suspended">Conta suspensa</string>
+    <string name="problem_x_forbidden">Twitter diz que o acesso a isso é proibido</string>
+    <string name="problem_x_guest">Twitter invalidou nosso token de acesso. Por favor tente reabrir o XTA!</string>
+</resources>

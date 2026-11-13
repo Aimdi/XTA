@@ -1,0 +1,838 @@
+name: XTA
+
+# Builds XTA (XTA Native, in native/) for Android and the Linux desktop. Every
+# push builds and tests it. A commit whose message carries [prerelease] also
+# publishes the APK, the Linux tarball and the Arch package as a GitHub
+# prerelease, never marked latest; one whose message carries [release]
+# publishes them as a release marked latest, versioned by native/VERSION
+# (raise it in that commit). (A manual run cannot publish: runs started
+# through the GitHub integration get no release permission.) Once a day the
+# live job alone reads X and the other networks, and nothing else runs.
+#
+# The file keeps its name: the run's number is the APK's versionCode, and
+# GitHub numbers runs per workflow file, so a new name would start it again
+# below the prereleases already installed.
+on:
+  push:
+    branches: [claude/admiring-mayer-bdfg95, main, claude/main]
+    paths:
+      - 'native/**'
+      # The published documents, which native tests hold to what the build reads
+      # (NetworkRepairsTest, the plugins' *RepairsTest, PublishedDocumentsTest).
+      - 'repairs.json'
+      - 'endpoints.json'
+      - 'sources.json'
+      - 'sources/**'
+      # The design skills and their checks (the skills job).
+      - '.claude/skills/**'
+      - 'docs/xta-design-skills.md'
+      - '.github/workflows/native-prototype.yml'
+  # The daily probe of X and the other networks: the live job only. GitHub runs
+  # a schedule from the default branch's copy of this file.
+  schedule:
+    - cron: '17 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# A release or prerelease run has a group of its own, so a later push cannot
+# cancel it, and so has the daily probe. (The groups' names were renewed twice,
+# once when GitHub held two runs of the old release group queued for hours
+# without ever starting them; never go back to native-prototype-….)
+concurrency:
+  group: xta-${{ github.ref }}-${{ github.event_name == 'schedule' && 'daily' || ((contains(github.event.head_commit.message, '[release]') || contains(github.event.head_commit.message, '[prerelease]')) && 'release' || 'build') }}
+  cancel-in-progress: true
+
+jobs:
+  # The version every job builds. A [release] is native/VERSION, tagged
+  # v<version>. Anything else is the latest release's version with the run's
+  # number after it, tagged native-<version> (1.0.0.<run>, newer than 1.0.0
+  # and older than 1.0.1), or 0.1.<run> before the first release. The
+  # versionCode is always the run's number, which only grows in this file, as
+  # every prerelease's did.
+  version:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      name: ${{ steps.version.outputs.name }}
+      tag: ${{ steps.version.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Version
+        id: version
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[release]') }}
+          RUN: ${{ github.run_number }}
+        run: |
+          set -euo pipefail
+          version=$(tr -d '[:space:]' < native/VERSION)
+          [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "::error::native/VERSION is not MAJOR.MINOR.PATCH: $version"; exit 1; }
+          if [ "$RELEASE" = true ]; then
+            if gh release view "v$version" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+              echo "::error::v$version is released already: raise native/VERSION in the [release] commit"
+              exit 1
+            fi
+            name=$version
+            tag=v$version
+          else
+            latest=$(gh release list --repo "$GITHUB_REPOSITORY" --limit 100 --exclude-drafts --exclude-pre-releases --json tagName -q '.[].tagName' \
+              | sed -nE 's/^v([0-9]+\.[0-9]+\.[0-9]+)$/\1/p' | sort -V | tail -1)
+            name=${latest:-0.1}.$RUN
+            tag=native-$name
+          fi
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "XTA $name ($tag), versionCode $RUN" | tee -a "$GITHUB_STEP_SUMMARY"
+
+  build:
+    if: github.event_name != 'schedule'
+    needs: version
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: native
+    env:
+      VERSION_NAME: ${{ needs.version.outputs.name }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      # Android's java.util.regex is ICU's, which refuses some of Java's own syntax:
+      # a pattern with it compiles on the desktop and crashes the app on Android.
+      - name: Regular expressions Android compiles
+        run: |
+          if grep -rnE '\(\?[a-zA-Z]*U[a-zA-Z]*\)|UNICODE_CHARACTER_CLASS|\\+p\{java' --include='*.kt' native; then
+            echo "::error::Android's ICU regex refuses (?U) and Java's own classes: write [\\s\\p{Z}] and the like"
+            exit 1
+          fi
+
+      - name: Core tests
+        run: ./gradlew :core:test :networks:test :store:test :services:test :plugin-host:test :plugins:test :mock-x:test --console=plain
+
+      - name: Signing key
+        env:
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+        run: |
+          # The app is signed with XTA's release key when it is there; without
+          # it the build falls back to the debug key, which still installs.
+          if [ -n "$SIGNING_KEY" ]; then
+            echo "$SIGNING_KEY" | base64 -d > "$RUNNER_TEMP/native.jks"
+            echo "KEY_PATH=$RUNNER_TEMP/native.jks" >> "$GITHUB_ENV"
+          fi
+
+      - name: Build the APK
+        env:
+          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          NATIVE_VERSION_CODE: ${{ github.run_number }}
+          NATIVE_VERSION_NAME: ${{ env.VERSION_NAME }}
+          NATIVE_RELEASE_TAG: ${{ needs.version.outputs.tag }}
+        run: ./gradlew :app:assembleRelease --console=plain
+
+      - name: Size
+        run: |
+          apk=app/build/outputs/apk/release/app-release.apk
+          cp "$apk" "$RUNNER_TEMP/xta-native-$VERSION_NAME.apk"
+          echo "APK: $(stat -c %s "$apk") bytes"
+          unzip -lv "$apk" | sort -k1 -n -r | head -12
+          {
+            echo "### XTA Native $VERSION_NAME"
+            echo
+            echo "APK: $(stat -c %s "$apk") bytes"
+            echo
+            echo '```'
+            unzip -lv "$apk" | sort -k1 -n -r | head -15
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # The voice engine downloads with the first voice (docs/specs/downloadable-voice-engine.md):
+      # the APK carries only the JNI shim that reaches it, built with the runner's NDK.
+      - name: The APK carries the voice shim and no engine
+        run: |
+          apk=app/build/outputs/apk/release/app-release.apk
+          if unzip -l "$apk" | grep -E 'lib/[^/]+/lib(onnxruntime|sherpa-onnx-c-api)\.so$'; then
+            echo "::error::The APK carries the voice engine, which downloads with the first voice"
+            exit 1
+          fi
+          shims=$(unzip -lv "$apk" | grep -E 'lib/[^/]+/libxta_sherpa\.so$' || true)
+          [ "$(printf '%s\n' "$shims" | grep -c libxta_sherpa)" -ge 3 ] \
+            || { echo "::error::The APK lacks the voice shim for a processor (no NDK on the runner?):"; echo "$shims"; exit 1; }
+          echo "$shims"
+          { echo "### The voice shim in the APK"; echo; echo '```'; echo "$shims"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xta-native-${{ env.VERSION_NAME }}
+          path: ${{ runner.temp }}/xta-native-*.apk
+
+      # Every plugin as a code-only APK signed like the app (PLUGINS.md), with
+      # its catalogue entry; numbered by the run, so each release's and
+      # prerelease's plugins are newer than the last ones published.
+      - name: Build the Android plugins
+        env:
+          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        run: |
+          ./gradlew :plugins:androidPlugins -PpluginBuild=${{ github.run_number }} --console=plain
+          {
+            echo "### Android plugins"
+            echo
+            for f in plugins/build/out/android/*.apk; do
+              echo "- $(basename "$f"): $(stat -c %s "$f") bytes, $(unzip -l "$f" | tail -1 | awk '{print $2}') files"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+          for f in plugins/build/out/android/*.apk; do echo "== $f"; unzip -lv "$f" | sort -k1 -n -r | head -8; done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xta-native-plugins-android-${{ env.VERSION_NAME }}
+          path: native/plugins/build/out/android
+
+
+  # Live x.com, as XTA's own X check reads it: the request signer derived from
+  # x.com's pages with no session, then @X's profile as a guest, and every
+  # network's live test. It says whether the app still reaches them; their
+  # moods hold no release back. It runs on every push and, alone, once a day
+  # (the schedule above): XTA's daily probe. When X's request signing breaks,
+  # core/x/signing is repaired by hand; nothing opens a repair by itself.
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: native
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Read live x.com and the other networks
+        env:
+          RUN_LIVE: 'true'
+        run: |
+          # The networks that are plugins test in their own modules. --continue:
+          # one network failing must not keep the others from reporting.
+          plugins=()
+          for f in plugins/*/build.gradle.kts; do
+            plugins+=(":plugins:$(basename "$(dirname "$f")"):desktopTest" --tests '*LiveTest*')
+          done
+          ./gradlew :core:test --tests '*XLiveTest*' :networks:test --tests '*LiveTest*' "${plugins[@]}" --rerun --continue --console=plain
+
+  # Every screen on an emulator, against the stand-in for X
+  # (native/tool/mock-x): no account, no live request. Fails
+  # when the app crashes, and keeps a screenshot of each screen.
+  screens:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      # With the plugins of this commit, signed with this runner's debug key as
+      # the app is, a catalogue the runner serves to the emulator, and the
+      # voice engine and a voice served the same way.
+      - name: Build against the stand-in
+        working-directory: native
+        run: ./gradlew :app:assembleRelease :plugins:androidPlugins -PmockX=http://10.0.2.2:8787 -PpluginCatalogue=http://10.0.2.2:8788/plugins.json -PvoiceServer=http://10.0.2.2:8789 --console=plain
+
+      - name: Serve a catalogue of this build's plugins
+        run: |
+          python3 native/tool/plugin_catalogue.py --base-url http://10.0.2.2:8788 --android native/plugins/build/out/android \
+            --out "$RUNNER_TEMP/catalogue/plugins.json" --copy-to "$RUNNER_TEMP/catalogue"
+          nohup python3 -m http.server 8788 --bind 127.0.0.1 --directory "$RUNNER_TEMP/catalogue" > "$RUNNER_TEMP/catalogue.log" 2>&1 &
+          sleep 2
+          curl -s -o /dev/null -w 'the catalogue answers %{http_code}\n' http://127.0.0.1:8788/plugins.json
+
+      # native/tool/mock-x: a JDK server answering from recorded responses.
+      - name: Serve the stand-in for X
+        run: |
+          (cd native && ./gradlew :mock-x:installDist --console=plain)
+          nohup native/tool/mock-x/build/install/mock-x/bin/mock-x > "$RUNNER_TEMP/mock-x.log" 2>&1 &
+          for _ in $(seq 1 90); do
+            if curl -s -o /dev/null http://127.0.0.1:8787/; then break; fi
+            sleep 1
+          done
+          curl -s -o /dev/null -w 'stand-in answers %{http_code}\n' http://127.0.0.1:8787/
+
+      # The engine's archives as a prerelease publishes them, made from
+      # pub.dev's packages and checked against the app's pins
+      # (tool/voice_engine.py), and the English voice, checked against its own.
+      - name: Serve the voice engine and a voice
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/voices"
+          python3 -I native/tool/voice_engine.py archives "$RUNNER_TEMP/voices"
+          python3 -I native/tool/voice_engine.py check "$RUNNER_TEMP/voices"
+          voice=vits-piper-en_US-libritts_r-medium-int8.tar.bz2
+          curl -fsSL -o "$RUNNER_TEMP/voices/$voice" "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/$voice"
+          echo "7e4552e239988f4896872822b56e99e0e9e00958164e3f6bdf5ee14391fbe829  $RUNNER_TEMP/voices/$voice" | sha256sum -c -
+          nohup python3 -m http.server 8789 --bind 127.0.0.1 --directory "$RUNNER_TEMP/voices" > "$RUNNER_TEMP/voices.log" 2>&1 &
+          sleep 1
+          curl -fsS -o /dev/null "http://127.0.0.1:8789/$voice"
+
+      - name: Fetch XTA to compare with
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # The latest release's x86_64 build of the Flutter XTA, for the
+          # emulator, asked for with the job's token: the API turns away a
+          # runner's unauthenticated calls once its address has made too many.
+          # Once XTA Native's own release is the latest, there is none, and
+          # XTA Native is measured alone (tool/compare.sh).
+          tag=$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName -q .tagName || true)
+          if [ -n "$tag" ] && gh release download "$tag" --repo "$GITHUB_REPOSITORY" --pattern "xta-${tag}_x86_64.apk" --output "$RUNNER_TEMP/xta.apk"; then
+            echo "XTA $tag: $(stat -c %s "$RUNNER_TEMP/xta.apk") bytes"
+          else
+            rm -f "$RUNNER_TEMP/xta.apk"
+            echo "No XTA release with an x86_64 APK to compare with${tag:+ (latest: $tag)}"
+          fi
+
+      - name: Let the emulator use KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Open each screen
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          # The plugin store and the voices last, so the measured starts load neither.
+          script: bash native/tool/screens.sh native/app/build/outputs/apk/release/app-release.apk native-screens && bash native/tool/compare.sh native/app/build/outputs/apk/release/app-release.apk "$RUNNER_TEMP/xta.apk" native-screens/compare.txt && bash native/tool/plugin_screens.sh native-screens && bash native/tool/voice_screens.sh native/app/build/outputs/apk/release/app-release.apk native-screens
+
+      - name: Start, memory and size against XTA
+        if: always()
+        run: |
+          if [ -f native-screens/compare.txt ]; then
+            cat native-screens/compare.txt
+            { echo "### Start, memory and size on the emulator"; echo; echo '```'; cat native-screens/compare.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Keep the stand-in's log
+        if: always()
+        run: |
+          cp "$RUNNER_TEMP/mock-x.log" "$RUNNER_TEMP/catalogue.log" "$RUNNER_TEMP/voices.log" native-screens/ 2>/dev/null || true
+          tail -40 "$RUNNER_TEMP/mock-x.log" || true
+          tail -20 "$RUNNER_TEMP/catalogue.log" || true
+          tail -20 "$RUNNER_TEMP/voices.log" || true
+
+      # The top of each screen, small, in the log itself: readable where the
+      # artifact store is not.
+      - name: Screens for review
+        if: always()
+        run: |
+          command -v convert > /dev/null || { sudo apt-get update -qq && sudo apt-get install -y -qq imagemagick > /dev/null; }
+          for f in native-screens/*.png; do
+            [ -f "$f" ] || continue
+            name=$(basename "$f" .png)
+            convert "$f" -gravity North -crop 100%x62%+0+0 +repage -resize 360x -quality 60 "$RUNNER_TEMP/$name.jpg"
+            echo "==== $name.jpg"
+            base64 -w 0 "$RUNNER_TEMP/$name.jpg"
+            echo
+          done
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-screens
+          path: native-screens
+          if-no-files-found: ignore
+
+  # The Linux app, packed as a release ships it (a tarball and an Arch package),
+  # then started from that tarball under a virtual display against the same
+  # stand-in for X: fails when the app does not stay up, and shows its window
+  # in the log.
+  desktop:
+    if: github.event_name != 'schedule'
+    needs: version
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      VERSION_NAME: ${{ needs.version.outputs.name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      # The desktop app is built with the certificate plugins must be signed
+      # by, and its plugins' JARs are signed with that key: the release key
+      # when the secret is there, else this runner's debug key (a dev build).
+      - name: Signing key
+        env:
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+        run: |
+          if [ -n "$SIGNING_KEY" ]; then
+            echo "$SIGNING_KEY" | base64 -d > "$RUNNER_TEMP/native.jks"
+            echo "KEY_PATH=$RUNNER_TEMP/native.jks" >> "$GITHUB_ENV"
+          fi
+
+      # The voice engine downloaded voices read with, which the tarball and the
+      # Arch package carry: pub.dev's
+      # sherpa_onnx_linux checked against the app's pins, and the app's JNI
+      # shim built beside it; the desktop build takes it from here.
+      - name: The voice engine the desktop app carries
+        run: python3 -I native/tool/voice_engine.py desktop native/desktop/build/app-resources/linux-x64/voice-engine
+
+      - name: Build the desktop app and its plugins
+        working-directory: native
+        env:
+          NATIVE_VERSION_NAME: ${{ env.VERSION_NAME }}
+          NATIVE_RELEASE_TAG: ${{ needs.version.outputs.tag }}
+          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        run: |
+          ./gradlew :ui:desktopTest :desktop:createDistributable :plugins:desktopPlugins -PpluginBuild=${{ github.run_number }} --console=plain
+          {
+            echo "### Desktop plugins"
+            echo
+            for f in plugins/build/out/desktop/*.jar; do echo "- $(basename "$f"): $(stat -c %s "$f") bytes"; done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xta-native-plugins-desktop-${{ env.VERSION_NAME }}
+          path: native/plugins/build/out/desktop
+
+      # The app keeps loading plugins built for OLDEST_PLUGIN_API and later
+      # (XtaPlugin.kt): the ones published in native-plugins have to link
+      # against what this build ships, or OLDEST_PLUGIN_API moves up.
+      - name: The published plugins still link
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/published"
+          if ! gh release download native-plugins --repo "$GITHUB_REPOSITORY" --pattern 'xta-plugin-*.jar' --dir "$RUNNER_TEMP/published"; then
+            echo "No published plugins to check"
+            exit 0
+          fi
+          oldest=$(sed -n 's/^const val OLDEST_PLUGIN_API: Int = \([0-9]*\)$/\1/p' native/ui/src/commonMain/kotlin/com/aimdi/xtanative/ui/plugins/XtaPlugin.kt)
+          app=$(ls native/desktop/build/compose/binaries/main/app/xta-native/lib/app/*.jar | paste -sd:)
+          python3 -I native/tool/plugin_abi.py --oldest "${oldest:?no OLDEST_PLUGIN_API in XtaPlugin.kt}" --app "$app" "$RUNNER_TEMP"/published/*.jar
+
+      # This build's plugins say they are for PLUGIN_API_VERSION, and an app of
+      # the last release or prerelease that loads that version would be offered
+      # them: they have to link against it, or the API changed without a new version.
+      - name: The last release's app runs this build's plugins
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          api=$(sed -n 's/^const val PLUGIN_API_VERSION: Int = \([0-9]*\)$/\1/p' native/ui/src/commonMain/kotlin/com/aimdi/xtanative/ui/plugins/XtaPlugin.kt)
+          # The newest by version of native-<version> and v<version> (never the Flutter fork's v4.12.0-…).
+          last=$(gh release list --repo "$GITHUB_REPOSITORY" --limit 50 --json tagName -q '.[].tagName' \
+            | sed -nE 's/^(native-|v)([0-9]+(\.[0-9]+)+)$/\2 &/p' | sort -V -k1,1 | tail -1 | cut -d' ' -f2)
+          mkdir -p "$RUNNER_TEMP/last"
+          if [ -z "$last" ] || ! gh release download native-plugins --repo "$GITHUB_REPOSITORY" --pattern plugins.json --dir "$RUNNER_TEMP/last"; then
+            echo "No release with plugins yet"
+            exit 0
+          fi
+          published=$(python3 -I -c 'import json, sys; print(max(p["apiVersion"] for p in json.load(open(sys.argv[1]))["plugins"]))' "$RUNNER_TEMP/last/plugins.json")
+          if [ "$published" != "${api:?no PLUGIN_API_VERSION in XtaPlugin.kt}" ]; then
+            echo "$last published plugins for API $published, this build is API $api: an app of $last does not load them"
+            exit 0
+          fi
+          gh release download "$last" --repo "$GITHUB_REPOSITORY" --pattern '*-linux-x64.tar.gz' --dir "$RUNNER_TEMP/last"
+          tar -xzf "$RUNNER_TEMP"/last/*-linux-x64.tar.gz -C "$RUNNER_TEMP/last"
+          app=$(find "$RUNNER_TEMP/last" -path '*/lib/app/*.jar' | paste -sd:)
+          python3 -I native/tool/plugin_abi.py --app "${app:?no lib/app in the tarball of $last}" native/plugins/build/out/desktop/*.jar \
+            || { echo "These plugins need what $last's app lacks, at the same plugin API $api: move PLUGIN_API_VERSION up"; exit 1; }
+
+      - name: Pack the tarball and the PKGBUILD
+        run: |
+          bash native/tool/package_desktop.sh native/desktop/build/compose/binaries/main/app/xta-native "$VERSION_NAME" "$RUNNER_TEMP/desktop"
+          carried=$(tar -tzf "$RUNNER_TEMP/desktop/xta-native-desktop-$VERSION_NAME-linux-x64.tar.gz" | grep -cE '/lib/app/resources/voice-engine/lib(onnxruntime|sherpa-onnx-c-api|xta_sherpa)\.so$' || true)
+          [ "$carried" -eq 3 ] || { echo "::error::The tarball does not carry the voice engine and its shim ($carried of 3)"; exit 1; }
+          # The video engine's shim, which plays through the system's libmpv: built
+          # by :desktop:videoEngine, needing no glibc newer than the Java runtime's.
+          shim=native/desktop/build/compose/binaries/main/app/xta-native/lib/app/resources/video-engine/libxta_mpv.so
+          tar -tzf "$RUNNER_TEMP/desktop/xta-native-desktop-$VERSION_NAME-linux-x64.tar.gz" | grep -qE '/lib/app/resources/video-engine/libxta_mpv\.so$' \
+            || { echo "::error::The tarball does not carry the video engine's shim"; exit 1; }
+          glibc=$(objdump -T "$shim" | grep -oE 'GLIBC_[0-9.]+' | sort -uV | tail -1)
+          [ "$(printf '%s\n' "$glibc" GLIBC_2.17 | sort -V | tail -1)" = GLIBC_2.17 ] \
+            || { echo "::error::The video engine's shim needs $glibc, newer than the Java runtime's glibc 2.17"; exit 1; }
+          echo "The video engine's shim: $(stat -c %s "$shim") bytes, $glibc at most."
+
+      # makepkg refuses to run as root, and takes the tarball beside the
+      # PKGBUILD rather than downloading it, so this also proves the PKGBUILD.
+      - name: Build the Arch package
+        run: |
+          docker run --rm -v "$RUNNER_TEMP/desktop:/out" archlinux:base-devel bash -euc '
+            useradd -m builder
+            cp -r /out /home/builder/pkg
+            chown -R builder /home/builder/pkg
+            su builder -c "cd /home/builder/pkg && makepkg --force --nodeps --noconfirm"
+            cp /home/builder/pkg/*.pkg.tar.zst /out/'
+          ls -l "$RUNNER_TEMP/desktop"
+          {
+            echo "### XTA Native $VERSION_NAME on Linux"
+            echo
+            for f in "$RUNNER_TEMP"/desktop/*.tar.gz "$RUNNER_TEMP"/desktop/*.pkg.tar.zst; do
+              echo "- $(basename "$f"): $(stat -c %s "$f") bytes"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xta-native-desktop-${{ env.VERSION_NAME }}
+          path: |
+            ${{ runner.temp }}/desktop/xta-native-desktop-*.tar.gz
+            ${{ runner.temp }}/desktop/xta-native-*.pkg.tar.zst
+            ${{ runner.temp }}/desktop/PKGBUILD
+
+      # native/tool/mock-x: a JDK server answering from recorded responses.
+      - name: Serve the stand-in for X
+        run: |
+          (cd native && ./gradlew :mock-x:installDist --console=plain)
+          nohup native/tool/mock-x/build/install/mock-x/bin/mock-x > "$RUNNER_TEMP/mock-x.log" 2>&1 &
+          for _ in $(seq 1 90); do
+            if curl -s -o /dev/null http://127.0.0.1:8787/; then break; fi
+            sleep 1
+          done
+          curl -s -o /dev/null -w 'stand-in answers %{http_code}\n' http://127.0.0.1:8787/
+
+      # Skia draws in software: the virtual display has no GPU.
+      - name: Open it against the stand-in
+        env:
+          XTA_NATIVE_MOCK_X: http://127.0.0.1:8787
+          SKIKO_RENDER_API: SOFTWARE
+        run: |
+          command -v xvfb-run > /dev/null && command -v import > /dev/null \
+            || { sudo apt-get update -qq && sudo apt-get install -y -qq xvfb imagemagick > /dev/null; }
+          mkdir -p native-desktop
+          tar -xzf "$RUNNER_TEMP/desktop/xta-native-desktop-$VERSION_NAME-linux-x64.tar.gz" -C "$RUNNER_TEMP"
+          app="$RUNNER_TEMP/xta-native-desktop-$VERSION_NAME-linux-x64/bin/xta-native"
+          xvfb-run -a -s '-screen 0 1280x960x24' bash -c '
+            "$1" > native-desktop/app.log 2>&1 &
+            pid=$!
+            sleep 20
+            import -window root native-desktop/desktop.png
+            if ! kill -0 "$pid" 2> /dev/null; then
+              echo "XTA Native is no longer running:"
+              cat native-desktop/app.log
+              exit 1
+            fi
+            kill "$pid"
+          ' _ "$app"
+          echo "XTA Native was still running after 20 s."
+
+      # The plugin store's whole chain on the desktop, from a catalogue the
+      # runner serves: the first plugin downloaded, checked against its size,
+      # SHA-256 and the certificate built into the app, kept, loaded and shown
+      # (the store, then its home tab, which reads live Bluesky); then loaded
+      # again at the next start, pinned on Home's strip, and uninstalled. A
+      # screenshot of each.
+      - name: Install the first plugin from a local catalogue
+        env:
+          SKIKO_RENDER_API: SOFTWARE
+        run: |
+          python3 native/tool/plugin_catalogue.py --base-url http://127.0.0.1:8788 --desktop native/plugins/build/out/desktop \
+            --out "$RUNNER_TEMP/catalogue/plugins.json" --copy-to "$RUNNER_TEMP/catalogue"
+          nohup python3 -m http.server 8788 --bind 127.0.0.1 --directory "$RUNNER_TEMP/catalogue" > "$RUNNER_TEMP/catalogue.log" 2>&1 &
+          sleep 2
+          app="$RUNNER_TEMP/xta-native-desktop-$VERSION_NAME-linux-x64/bin/xta-native"
+          home="$RUNNER_TEMP/plugin-home"
+          run() { # <log> <screenshot> <seconds> <VAR=value>...: the app that long under a virtual display, then its window
+            xvfb-run -a -s '-screen 0 1280x960x24' bash -c '
+              env "${@:5}" "$1" > "$2" 2>&1 &
+              pid=$!
+              sleep "$4"
+              import -window root "$3"
+              if ! kill -0 "$pid" 2> /dev/null; then echo "XTA Native is no longer running:"; cat "$2"; exit 1; fi
+              kill "$pid"
+            ' _ "$app" "$@"
+          }
+          common=(XTA_NATIVE_MOCK_X=http://127.0.0.1:8787 XTA_NATIVE_PLUGIN_CATALOGUE=http://127.0.0.1:8788/plugins.json "XDG_DATA_HOME=$home")
+          run native-desktop/plugin-install.log native-desktop/plugin-store.png 30 "${common[@]}" XTA_NATIVE_PLUGIN_INSTALL=bluesky XTA_NATIVE_OPEN=plugins
+          grep "XTA Native: plugin" native-desktop/plugin-install.log || true
+          grep -q "XTA Native: plugin bluesky .* loaded" native-desktop/plugin-install.log \
+            || { echo "Bluesky was not installed and loaded:"; cat native-desktop/plugin-install.log; exit 1; }
+          run native-desktop/plugin-start.log native-desktop/plugin-bluesky.png 30 "${common[@]}" XTA_NATIVE_OPEN=plugin:bluesky
+          grep -q "XTA Native: plugin bluesky .* loaded" native-desktop/plugin-start.log \
+            || { echo "The installed Bluesky did not load at start:"; cat native-desktop/plugin-start.log; exit 1; }
+          ls -l "$home/xta-native/plugins" "$home/xta-native/plugins/bluesky"/* || true
+          # Home, with its timeline pinned on the strip beside For you.
+          run native-desktop/plugin-pin.log native-desktop/plugin-strip.png 25 "${common[@]}" XTA_NATIVE_PLUGIN_PIN=bluesky
+          # Uninstalled as the store's Uninstall does: its code, what it stored and its pin go.
+          run native-desktop/plugin-uninstall.log native-desktop/plugin-uninstalled.png 25 "${common[@]}" XTA_NATIVE_PLUGIN_UNINSTALL=bluesky XTA_NATIVE_OPEN=plugins
+          grep "XTA Native: plugin" native-desktop/plugin-uninstall.log || true
+          grep -q "XTA Native: plugin bluesky uninstalled" native-desktop/plugin-uninstall.log \
+            || { echo "Bluesky was not uninstalled:"; cat native-desktop/plugin-uninstall.log; exit 1; }
+          if [ -e "$home/xta-native/plugins/bluesky" ] || [ -e "$home/xta-native/plugin-data/bluesky" ]; then
+            echo "Bluesky's files outlived its uninstall:"; find "$home/xta-native/plugins" "$home/xta-native/plugin-data" || true; exit 1
+          fi
+          echo "Bluesky was installed from the catalogue, loaded, loaded again at the next start, pinned on Home and uninstalled."
+
+      # The desktop's voice check, as the emulator's (tool/voice_screens.sh):
+      # the English voice from a server of the runner's, read into a clip by
+      # the engine the tarball carries. The runner has no sound card, so the
+      # reading itself may not play; the clip is what counts, as in XTA's check.
+      - name: Downloaded voices speak
+        env:
+          SKIKO_RENDER_API: SOFTWARE
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/voices" native-desktop
+          voice=vits-piper-en_US-libritts_r-medium-int8.tar.bz2
+          curl -fsSL -o "$RUNNER_TEMP/voices/$voice" "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/$voice"
+          echo "7e4552e239988f4896872822b56e99e0e9e00958164e3f6bdf5ee14391fbe829  $RUNNER_TEMP/voices/$voice" | sha256sum -c -
+          nohup python3 -m http.server 8789 --bind 127.0.0.1 --directory "$RUNNER_TEMP/voices" > "$RUNNER_TEMP/voices.log" 2>&1 &
+          sleep 1
+          app="$RUNNER_TEMP/xta-native-desktop-$VERSION_NAME-linux-x64/bin/xta-native"
+          xvfb-run -a -s '-screen 0 1280x960x24' bash -c '
+            env XTA_NATIVE_MOCK_X=http://127.0.0.1:8787 XTA_NATIVE_VOICE_SERVER=http://127.0.0.1:8789 XTA_NATIVE_VOICE_CHECK=1 \
+              "XDG_DATA_HOME=$2/data" "XDG_CACHE_HOME=$2/cache" "$1" > native-desktop/voice.log 2>&1 &
+            pid=$!
+            for _ in $(seq 1 240); do
+              grep -q "voice check: done" native-desktop/voice.log && break
+              kill -0 "$pid" 2> /dev/null || break
+              sleep 1
+            done
+            import -window root native-desktop/voice.png
+            kill "$pid" 2> /dev/null || true
+          ' _ "$app" "$RUNNER_TEMP/voice-home"
+          grep "XTA Native: voice check" native-desktop/voice.log || true
+          bytes=$(sed -n 's/.*voice check: clip \([0-9]*\) bytes.*/\1/p' native-desktop/voice.log | tail -1)
+          if [ "${bytes:-0}" -le 16000 ]; then
+            echo "The downloaded voice made no clip on the desktop:"
+            cat native-desktop/voice.log
+            # A crash in native code leaves the JVM's report where it ran: its thread, frames and libraries.
+            for crash in hs_err_pid*.log; do
+              [ -f "$crash" ] || continue
+              cp "$crash" native-desktop/
+              sed -n '1,/^---------------  P R O C E S S/p' "$crash" | head -150 || true
+              grep -A120 '^Dynamic libraries:' "$crash" | grep -E '\.so' | head -90 || true
+            done
+            exit 1
+          fi
+          echo "The engine the desktop app carries read a sentence with the downloaded voice: $bytes bytes."
+
+      # Videos, GIFs, podcasts and offline videos play in the app through the
+      # system's libmpv, as XTA's do (tool/video_check.sh): first without it,
+      # where the app has to say they go to the system's player and stay up;
+      # then with Ubuntu's libmpv2, where a video the runner serves has to play
+      # in the viewer's player to its end, its frames drawn and on the screen
+      # (the last one in the screenshot), and again as a podcast plays it. The
+      # runner has no sound card: mpv's null output keeps the time.
+      - name: Videos play in the app
+        env:
+          SKIKO_RENDER_API: SOFTWARE
+          XTA_NATIVE_MOCK_X: http://127.0.0.1:8787
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg > /dev/null
+          app="$RUNNER_TEMP/xta-native-desktop-$VERSION_NAME-linux-x64/bin/xta-native"
+          bash native/tool/video_check.sh "$app" native-desktop without
+          sudo apt-get install -y -qq libmpv2 > /dev/null
+          bash native/tool/video_check.sh "$app" native-desktop
+
+      - name: Keep the logs
+        if: always()
+        run: |
+          mkdir -p native-desktop
+          cp "$RUNNER_TEMP/mock-x.log" "$RUNNER_TEMP/catalogue.log" "$RUNNER_TEMP/voices.log" native-desktop/ 2>/dev/null || true
+          tail -40 native-desktop/app.log 2>/dev/null || true
+          tail -40 "$RUNNER_TEMP/mock-x.log" || true
+          tail -20 "$RUNNER_TEMP/catalogue.log" || true
+
+      # The windows, small, in the log itself, as the screens job shows its screens.
+      - name: Desktop for review
+        if: always()
+        run: |
+          for f in native-desktop/*.png; do
+            [ -f "$f" ] || continue
+            name=$(basename "$f" .png)
+            convert "$f" -trim +repage -resize 480x -quality 60 "$RUNNER_TEMP/$name.jpg"
+            echo "==== $name.jpg"
+            base64 -w 0 "$RUNNER_TEMP/$name.jpg"
+            echo
+          done
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-desktop
+          path: native-desktop
+          if-no-files-found: ignore
+
+  # The design skills in .claude/skills (docs/xta-design-skills.md): each one
+  # loads, and the two design skills are whole, licensed and runnable.
+  skills:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Every skill loads
+        run: bash native/tool/skills/check_skill_sync.sh
+
+      - name: The design skills are whole
+        run: python3 -I native/tool/skills/check_design_skills.py
+
+  # Published only when the build, the emulator run and the desktop run all passed.
+  prerelease:
+    if: github.event_name == 'push' && contains(github.event.head_commit.message, '[prerelease]') && !contains(github.event.head_commit.message, '[release]')
+    needs: [version, build, screens, desktop]
+    runs-on: ubuntu-latest
+    env:
+      VERSION_NAME: ${{ needs.version.outputs.name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: xta-native-${{ env.VERSION_NAME }}
+          path: apk
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: xta-native-desktop-${{ env.VERSION_NAME }}
+          path: desktop
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: xta-native-plugins-android-${{ env.VERSION_NAME }}
+          path: plugins-android
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: xta-native-plugins-desktop-${{ env.VERSION_NAME }}
+          path: plugins-desktop
+
+      # The voice engine beside the APK, one archive per processor
+      # (tool/voice_engine.py): the app downloads its own release's first,
+      # then the latest release's. Checked against the app's pins before it
+      # is published.
+      - name: The voice engine's archives
+        run: |
+          python3 -I native/tool/voice_engine.py archives voice-engine
+          python3 -I native/tool/voice_engine.py check voice-engine
+
+      - name: Prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "native-$VERSION_NAME" "apk/xta-native-$VERSION_NAME.apk" \
+            "desktop/xta-native-desktop-$VERSION_NAME-linux-x64.tar.gz" \
+            "desktop/xta-native-$VERSION_NAME-1-x86_64.pkg.tar.zst" \
+            desktop/PKGBUILD \
+            voice-engine/xta-voice-engine-*.tar.xz \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --prerelease \
+            --latest=false \
+            --title "XTA $VERSION_NAME (prerelease)" \
+            --notes-file native/PRERELEASE.md
+
+      # The plugins and their catalogue, plugins.json (PLUGINS.md), as assets of
+      # one rolling release the app reads the catalogue from (tool/publish_plugins.sh).
+      - name: Plugins
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash native/tool/publish_plugins.sh plugins-android plugins-desktop
+
+  # A release: the same files as a prerelease and their checksums, published
+  # as v<native/VERSION>, marked latest, with native/RELEASE.md as its notes.
+  # Installed apps download the voice engine from releases/latest, so it
+  # carries the engine's archives; the update check offers it to every install.
+  release:
+    if: github.event_name == 'push' && contains(github.event.head_commit.message, '[release]')
+    needs: [version, build, screens, desktop, skills]
+    runs-on: ubuntu-latest
+    env:
+      VERSION_NAME: ${{ needs.version.outputs.name }}
+      TAG: ${{ needs.version.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      # The APK, the desktop files and both plugin sets, each in artifacts/<its name>/.
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: xta-native-*
+          path: artifacts
+
+      - name: The voice engine's archives
+        run: |
+          python3 -I native/tool/voice_engine.py archives voice-engine
+          python3 -I native/tool/voice_engine.py check voice-engine
+
+      - name: The files and their checksums
+        run: |
+          set -euo pipefail
+          mkdir release-files
+          cp "artifacts/xta-native-$VERSION_NAME/xta-native-$VERSION_NAME.apk" \
+            "artifacts/xta-native-desktop-$VERSION_NAME/xta-native-desktop-$VERSION_NAME-linux-x64.tar.gz" \
+            "artifacts/xta-native-desktop-$VERSION_NAME/xta-native-$VERSION_NAME-1-x86_64.pkg.tar.zst" \
+            "artifacts/xta-native-desktop-$VERSION_NAME/PKGBUILD" \
+            voice-engine/xta-voice-engine-*.tar.xz \
+            release-files/
+          (cd release-files && sha256sum -- * > SHA256SUMS)
+          cat release-files/SHA256SUMS
+          [ "$(ls release-files/xta-voice-engine-*.tar.xz | wc -l)" -eq 3 ] \
+            || { echo "::error::A release carries the voice engine for all three processors"; exit 1; }
+
+      - name: Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$TAG" release-files/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --latest \
+            --title "XTA $VERSION_NAME" \
+            --notes-file native/RELEASE.md
+
+      - name: Plugins
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash native/tool/publish_plugins.sh "artifacts/xta-native-plugins-android-$VERSION_NAME" "artifacts/xta-native-plugins-desktop-$VERSION_NAME"

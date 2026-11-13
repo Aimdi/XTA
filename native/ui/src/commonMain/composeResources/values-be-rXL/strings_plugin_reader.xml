@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The RSS reader the RSS plugin and web sources open their articles in (ui/plugins/RssReader.kt), from XTA's ARB files. -->
+<resources>
+    <string name="plugin_reader_opened">Adkryta</string>
+    <string name="plugin_reader_resumed">Praciahnuta</string>
+    <string name="plugin_reader_finished">Pračytana</string>
+    <string name="plugin_reader_finish">Paznačyć jak pračytanaje</string>
+    <string name="plugin_reader_start_over">Da pačatku</string>
+    <string name="plugin_reader_appearance">Vyhlad dla čytannia</string>
+    <string name="plugin_reader_text_size">Kaeficyjent maštabavańnia tekstu</string>
+    <string name="plugin_reader_line_spacing">Mižradkovy interval</string>
+    <string name="plugin_rss_no_article">Hetaja stužka tolki spasyłajecca na zychodnuju staronku</string>
+</resources>

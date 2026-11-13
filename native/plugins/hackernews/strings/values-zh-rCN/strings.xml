@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Hacker News</string>
+    <string name="plugin_description">无需账号阅读 Hacker News。爱心和书签留在本机。</string>
+    <string name="tab_top">热门</string>
+    <string name="tab_new">最新</string>
+    <string name="tab_best">最佳</string>
+    <string name="tab_ask">Ask</string>
+    <string name="tab_show">Show</string>
+    <string name="tab_jobs">招聘</string>
+    <string name="tab_saved">已保存</string>
+    <string name="tab_following">关注</string>
+    <string name="search">搜索 Hacker News</string>
+    <string name="settings">设置</string>
+    <string name="feed_empty">这里暂时没有内容</string>
+    <string name="saved_empty">还没有保存的帖子——书签留在本机</string>
+    <string name="following_empty">关注某人后，他们的帖子会出现在这里</string>
+    <string name="by">%1$s</string>
+    <string name="like">在此设备点赞</string>
+    <string name="unlike">从此设备取消点赞</string>
+    <string name="save">保存在此设备</string>
+    <string name="unsave">从此设备移除</string>
+    <string name="comments">评论</string>
+    <string name="open_article">打开文章</string>
+    <string name="deleted">[已删除]</string>
+    <string name="user_empty">没有公开提交</string>
+    <string name="follow">在本机关注</string>
+    <string name="unfollow">取消关注</string>
+    <string name="search_hint">搜索帖子</string>
+    <string name="search_empty">没有匹配的帖子</string>
+    <string name="settings_blurb">无需登录。投票和评论留在 Hacker News。爱心和书签留在本机。</string>
+    <plurals name="points">
+        <item quantity="other">%1$d 分</item>
+    </plurals>
+    <plurals name="comment_count">
+        <item quantity="other">%1$d 条评论</item>
+    </plurals>
+    <plurals name="user_karma">
+        <item quantity="other">%1$d 点 karma</item>
+    </plurals>
+    <string name="more_options">更多选项</string>
+</resources>

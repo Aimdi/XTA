@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Accounts' avatar and Diagnostics' account health and recent reads, in XTA's words. -->
+<resources>
+    <string name="settings_avatar_title">Vaš avatar</string>
+    <string name="settings_avatar_change">Nacisnicie, kab zmianić vyjavu źvierchu źleva</string>
+    <string name="settings_avatar_description">Vyjava źvierchu źleva i ŭ mieniu — zastajecca na hetaj pryladzie</string>
+    <string name="settings_avatar_choose">Vybrać z prylady</string>
+    <string name="settings_avatar_from_account">Uziać fota profilu X</string>
+    <string name="settings_avatar_error">Nie atrymałasia zahruzić fota profilu</string>
+    <string name="settings_avatar_clear">Vykarystoŭvać manahramu</string>
+    <string name="settings_diagnostics_recent_reads">Apošnija aperacyi čytannia</string>
+    <string name="settings_diagnostics_sign_in_broken">Zdajecca, uvachod bolš nie dziejničaje, paŭza da %1$s</string>
+</resources>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
+     Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="home_x">X</string>
+    <string name="home_search_in">Cari di %1$s</string>
+    <string name="home_open_menu">Buka menu navigasi</string>
+    <string name="home_add_timeline">Tambah timeline</string>
+    <string name="home_unread">Belum dibaca</string>
+    <string name="home_refresh">Muat ulang</string>
+    <string name="home_open_group">Buka grup</string>
+    <string name="home_more_options">Opsi lainnya</string>
+        <string name="home_pin_to_bar_hint">Item yang disematkan muncul di samping bagian setiap kali bilah punya ruang. Semuanya tetap ada di menu ini juga.</string>
+    <string name="home_keep_controls_visible">Selalu tampilkan kontrol</string>
+    <string name="home_pin_to_bar">Sematkan di bilah atas</string>
+
+    <string name="home_strip_title">Timeline plugin</string>
+    <string name="home_strip_intro">Sematkan plugin terpasang di samping Untuk Anda. Seret untuk mengubah urutan. Instal lainnya dari toko plugin.</string>
+    <string name="home_strip_pinned">Di bilah ini</string>
+    <string name="home_strip_available">Tersedia</string>
+    <string name="home_strip_empty">Belum ada plugin untuk disematkan. Buka toko untuk memasang Reddit, Pixiv, Mastodon, dll.</string>
+    <string name="home_strip_remove">Hapus dari bilah</string>
+    <string name="home_strip_reorder">Ubah urutan</string>
+    <string name="home_plugin_store">Toko plugin</string>
+
+    <string name="home_subscriptions">Langganan</string>
+    <string name="home_discover">Jelajahi</string>
+    <string name="home_saved">Disimpan</string>
+    <string name="home_downloads">Unduhan</string>
+    <string name="home_antennas">Antena</string>
+    <string name="home_deck">Kolom</string>
+    <string name="home_deck_empty">Sematkan grup untuk melihatnya berdampingan di layar lebar</string>
+    <string name="home_groups">Grup</string>
+    <string name="home_no_groups">Belum ada grup</string>
+    <string name="home_no_results">Tidak ada hasil</string>
+    <plurals name="home_group_members">
+        <item quantity="other">%1$d langganan</item>
+    </plurals>
+
+    <string name="home_feed_accounts">Akun umpan beranda</string>
+    <string name="home_filter_accounts">Akun</string>
+    <string name="home_filter_accounts_explained">Matikan akun cadangan yang hanya Anda simpan untuk batas laju. Untuk Anda menggabungkan linimasa beranda dari akun yang tetap aktif; Mengikuti tetap memakai langganan lokal tetapi melewati akun yang dimatikan saat mengambil. Komentar dan profil masih bisa memakai akun mana pun jika perlu.</string>
+    <string name="home_filter_groups_explained">Matikan grup untuk menyembunyikan anggotanya dari Mengikuti. Tab grup tetap ada. Kiriman mereka juga dihapus dari Untuk Anda.</string>
+    <string name="home_filter_only_hint">Tekan lama salah satu untuk hanya menyalakan yang itu.</string>
+    <string name="home_filter_keep_one">Setidaknya satu akun harus tetap aktif</string>
+    <string name="home_filter_count">%1$d / %2$d</string>
+    <string name="home_filter_all">Semua</string>
+    <string name="home_filter_none">Tidak ada</string>
+    <string name="home_filter_reset">Atur ulang filter</string>
+    <string name="home_filter_apply">Terapkan</string>
+
+    <string name="home_for_you_empty">Tidak bisa memuat postingan untuk umpan</string>
+    <string name="home_for_you_no_account">Impor cadangan XTA beserta akunnya untuk memuat Untuk Anda.</string>
+    <string name="home_import">Impor cadangan XTA</string>
+
+    <string name="home_home">Beranda</string>
+    <string name="home_networks">Jaringan</string>
+    <string name="home_networks_recent">Terbaru</string>
+    <string name="home_networks_all">Semua jaringan</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">Kelompokkan layanan mikroblog</string>
+    <string name="home_alt_microblogging_group_detail">Tampilkan Mastodon, Bluesky, dan Threads dalam satu bagian di Beranda. Nonaktifkan untuk memisahkannya. Data dan pengaturan Anda tetap tersimpan.</string>
+    <string name="home_posts">Cuitan</string>
+    <string name="home_media">Media</string>
+    <string name="home_missing_page">Halaman hilang</string>
+    <string name="home_two_pages_required">Kamu perlu setidaknya 2 halaman beranda.</string>
+    <string name="home_choose_pages">Pilih halaman</string>
+    <string name="home_unable_to_load_pages">Tidak bisa memuat beranda Anda</string>
+    <string name="feed_strip_unavailable">Timeline ini tidak lagi tersedia</string>
+    <string name="home_feed_accounts_empty">Tambahkan akun untuk memuat Untuk Anda.</string>
+</resources>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Karakeep</string>
+    <string name="plugin_description">Enregistrez publications et liens sur votre serveur Karakeep en un geste</string>
+    <string name="settings_intro">Karakeep est un service de favoris auto-hébergé. Indiquez l’adresse de votre instance et une clé d’API créée dans « Paramètres &gt; Clés d’API » de Karakeep.</string>
+    <string name="server_url">Adresse du serveur</string>
+    <string name="server_url_hint">Par exemple karakeep.example.com</string>
+    <string name="api_key">Clé d’API</string>
+    <string name="api_key_hint">Conservée uniquement sur cet appareil</string>
+    <string name="test">Tester la connexion</string>
+    <string name="test_ok">Connecté à Karakeep</string>
+    <string name="not_configured">Renseignez d’abord votre serveur Karakeep et une clé d’API</string>
+    <string name="error_unauthorized">Karakeep a refusé la clé d’API</string>
+    <string name="error_server_url">Aucun Karakeep trouvé à cette adresse</string>
+    <string name="error_network">Impossible de joindre votre serveur Karakeep</string>
+    <string name="error_generic">Karakeep n’a pas pu enregistrer ce lien</string>
+    <string name="learn_more">À propos de Karakeep</string>
+    <string name="save_action">Enregistrer dans Karakeep</string>
+    <string name="saved">Enregistré dans Karakeep</string>
+    <string name="already_saved">Déjà dans Karakeep</string>
+    <string name="saving">Enregistrement dans Karakeep…</string>
+    <string name="show">Afficher</string>
+    <string name="hide">Masquer</string>
+    <string name="save">Enregistrer</string>
+    <string name="connection">Connexion</string>
+</resources>

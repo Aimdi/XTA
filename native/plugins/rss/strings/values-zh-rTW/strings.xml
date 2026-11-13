@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RSS's text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">新增訂閱源</string>
+    <string name="add_error">無法讀取該訂閱源</string>
+    <string name="add_hint">貼上網站或訂閱源網址。XTA 會找出 RSS 或 Atom。</string>
+    <string name="add_placeholder">https://example.com/feed</string>
+    <string name="add_to_group">加入群組</string>
+    <string name="all">全部</string>
+    <string name="cancel">取消</string>
+    <string name="close">關閉</string>
+    <string name="data_exported_to">資料已匯出至 %1$s</string>
+    <string name="empty">追蹤訂閱源後，內容會顯示在這裡</string>
+    <string name="empty_filter">沒有符合這些篩選條件的內容</string>
+    <string name="feeds">訂閱源</string>
+    <string name="follow">追蹤</string>
+    <string name="following_empty">還沒有訂閱源</string>
+    <string name="home">首頁</string>
+    <string name="load_error">無法載入訂閱源</string>
+    <string name="mark_all_read">全部標為已讀</string>
+    <string name="more_options">更多選項</string>
+    <string name="opml_empty">此檔案中沒有訂閱源</string>
+    <string name="opml_export">將追蹤匯出為 OPML</string>
+    <string name="opml_export_description">其他訂閱閱讀器可以匯入的檔案。</string>
+    <string name="opml_import">從 OPML 匯入追蹤</string>
+    <string name="opml_import_description">追蹤檔案中列出的每個訂閱源；已追蹤的保持不變。</string>
+    <string name="opml_importing">正在匯入：%1$d/%2$d</string>
+    <string name="opml_result">已新增：%1$d · 已追蹤：%2$d · 失敗：%3$d</string>
+    <string name="partial_error">無法載入 %1$d 個來源</string>
+    <string name="plugin_description">追蹤公開的 RSS 與 Atom 訂閱源。未讀會留在這部裝置上。</string>
+    <string name="plugin_name">RSS</string>
+    <string name="reader_empty">暫無可讀內容</string>
+    <string name="reset_filters">重設篩選</string>
+    <string name="retry">重試</string>
+    <string name="set_tag">設定標籤</string>
+    <string name="settings">設定</string>
+    <string name="settings_blurb">不必登入。追蹤公開訂閱源。未讀與標籤會留在這部裝置上。</string>
+    <string name="tag">標籤</string>
+    <string name="tag_hint">簡短標籤，例如新聞或部落格</string>
+    <string name="unfollow">取消追蹤</string>
+    <string name="unread">未讀</string>
+    <string name="in_home_feed">將已追蹤的訂閱源混入「正在追蹤」</string>
+    <string name="in_home_feed_description">在「正在追蹤」時間軸顯示已追蹤訂閱源的新項目。</string>
+    <string name="add_not_a_url">這不是網址。</string>
+    <string name="add_no_feed">在該頁面和常用位址上都找不到 RSS 或 Atom 訂閱來源。</string>
+</resources>

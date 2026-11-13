@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Read failures as XTA's full-page errors say them (lib/ui/errors.dart), and closing the app. -->
+<resources>
+    <string name="problem_no_account_title">Hiện không có tài khoản nào khả dụng</string>
+    <string name="problem_no_account_text">XTA cần ít nhất một tài khoản 𝕏 để hoạt động. Thêm một tài khoản để bắt đầu.</string>
+    <string name="problem_rate_limited_title">Bị 𝕏 giới hạn</string>
+    <string name="problem_rate_limited_text">Bạn đã gửi quá nhiều yêu cầu trong thời gian quá ngắn. Hãy thử lại sau hoặc thêm một tài khoản khác để tiếp tục sử dụng XTA.</string>
+    <string name="problem_no_working_account_title">Tài khoản của bạn không hoạt động</string>
+    <string name="problem_no_working_account_text">Có vẻ như không có tài khoản nào của bạn hoạt động lúc này. Đăng nhập bằng một tài khoản khác hoặc thử lại sau.</string>
+    <string name="problem_endpoint_refused_title">𝕏 đã từ chối yêu cầu này</string>
+    <string name="problem_endpoint_refused_text">Mọi tài khoản đều bị từ chối ở phần này của 𝕏, nên nhiều khả năng không phải do tài khoản của bạn. Có lẽ 𝕏 đã thay đổi điều gì đó; ứng dụng sẽ tự khắc phục khi có thể. Hãy thử lại sau ít phút.</string>
+    <string name="problem_signing_title">Không thể ký yêu cầu gửi tới X</string>
+    <string name="problem_signing_text">XTA không tạo được mã giao dịch mà X hiện yêu cầu. Tài khoản của bạn có thể vẫn ổn; hãy thử lại sau ít phút hoặc xem Chẩn đoán.</string>
+    <string name="problem_offline_title">Không thể liên hệ đến X</string>
+    <string name="problem_offline_text">Vui lòng kiểm tra kết nối của bạn.</string>
+    <string name="problem_timed_out_title">Hết thời gian</string>
+    <string name="problem_timed_out_text">Cái này quá tốn thời gian để tải, vui lòng kiểm tra lại mạng!</string>
+    <string name="problem_service_unavailable_title">X tạm thời không khả dụng</string>
+    <string name="problem_service_unavailable_text">X trả về lỗi máy chủ. Bạn vẫn có thể đọc các bài đã lưu trong bộ nhớ đệm và thử lại sau.</string>
+    <string name="problem_request_unavailable_title">Yêu cầu này không khả dụng</string>
+    <string name="problem_request_unavailable_text">X đã từ chối yêu cầu này. Có thể nó tạm thời không khả dụng hoặc phần này của dịch vụ đã thay đổi.</string>
+    <string name="problem_oops">Ôi! Đã xảy ra lỗi 🥲</string>
+    <string name="problem_http_text">X trả về HTTP %1$d.</string>
+    <string name="problem_retry_in">Thử lại sau %1$s</string>
+    <string name="close_app_confirm">Bạn có muốn đóng XTA không?</string>
+    <string name="problem_unable_to_load_the_community">Không thể tải cộng đồng</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">Không thể tìm được xu hướng theo địa điểm</string>
+    <string name="problem_unable_to_load_the_members">Không thể tải danh sách thành viên</string>
+    <string name="problem_unable_to_load_the_list_of_follows">Không thể tải danh sách những người đã theo dõi</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">Không thể tải danh sách tiếp những người đã theo dõi</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">Không thể tải trang tiếp theo của bài viết</string>
+    <string name="problem_unable_to_load_the_tweets">Không thể tải bài viết</string>
+    <string name="problem_connection_failed">Kết nối thất bại</string>
+    <string name="problem_sign_in_needed">Đăng nhập lại để tiếp tục</string>
+    <string name="problem_rate_limit_hint">Nguồn này đang giới hạn yêu cầu. Hãy thử lại sau.</string>
+    <string name="problem_more_info">Thêm thông tin</string>
+    <string name="problem_auto_retry_seconds">Sẽ thử lại sau %1$d giây…</string>
+    <string name="problem_auto_retry_in">Sẽ thử lại sau %1$s…</string>
+    <string name="problem_cached_content">Đang hiển thị bản đã lưu trong khi cập nhật nguồn.</string>
+    <string name="problem_source_loading">Nguồn này vẫn đang tải. Bạn có thể đọc các bài đăng khác.</string>
+    <string name="problem_saved_at">Đang hiển thị bài đăng đã lưu lúc %1$s</string>
+    <string name="problem_saved_earlier">Đang hiển thị bài đăng đã lưu trước đó</string>
+</resources>

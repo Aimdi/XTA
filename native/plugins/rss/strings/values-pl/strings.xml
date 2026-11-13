@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RSS's text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Dodaj kanał</string>
+    <string name="add_error">Nie udało się odczytać tego kanału</string>
+    <string name="add_hint">Wklej adres strony lub kanału. XTA znajdzie RSS lub Atom.</string>
+    <string name="add_placeholder">https://example.com/feed</string>
+    <string name="add_to_group">Dodaj do grupy</string>
+    <string name="all">Wszystko</string>
+    <string name="cancel">Anuluj</string>
+    <string name="close">Zamknij</string>
+    <string name="data_exported_to">Dane wyeksportowano do %1$s</string>
+    <string name="empty">Obserwuj kanał, aby zobaczyć tu jego wpisy</string>
+    <string name="empty_filter">Żadne treści nie pasują do tych filtrów</string>
+    <string name="feeds">Kanały</string>
+    <string name="follow">Obserwuj</string>
+    <string name="following_empty">Nie ma jeszcze kanałów</string>
+    <string name="home">Główna</string>
+    <string name="load_error">Nie udało się wczytać kanałów</string>
+    <string name="mark_all_read">Oznacz wszystko jako przeczytane</string>
+    <string name="more_options">Więcej opcji</string>
+    <string name="opml_empty">W tym pliku nie ma kanałów</string>
+    <string name="opml_export">Eksportuj obserwowane jako OPML</string>
+    <string name="opml_export_description">Plik, który mogą zaimportować inne czytniki kanałów.</string>
+    <string name="opml_import">Importuj obserwowane z OPML</string>
+    <string name="opml_import_description">Obserwuje każdy kanał z pliku; te, które już obserwujesz, pozostają bez zmian.</string>
+    <string name="opml_importing">Importowanie: %1$d z %2$d</string>
+    <string name="opml_result">Dodano: %1$d · Już obserwowane: %2$d · Nieudane: %3$d</string>
+    <string name="partial_error">Nie udało się wczytać źródeł: %1$d</string>
+    <string name="plugin_description">Obserwuj publiczne kanały RSS i Atom. Nieprzeczytane zostaje na tym urządzeniu.</string>
+    <string name="plugin_name">RSS</string>
+    <string name="reader_empty">Nie ma jeszcze nic do czytania</string>
+    <string name="reset_filters">Wyczyść filtry</string>
+    <string name="retry">Ponów</string>
+    <string name="set_tag">Ustaw etykietę</string>
+    <string name="settings">Ustawienia</string>
+    <string name="settings_blurb">Bez logowania. Obserwuj publiczne kanały. Nieprzeczytane i etykiety zostają na tym urządzeniu.</string>
+    <string name="tag">Etykieta</string>
+    <string name="tag_hint">Krótka etykieta, np. Wiadomości albo Blogi</string>
+    <string name="unfollow">Przestań obserwować</string>
+    <string name="unread">Nieprzeczytane</string>
+    <string name="in_home_feed">Mieszaj obserwowane kanały w Obserwowane</string>
+    <string name="in_home_feed_description">Pokazuj nowe pozycje z obserwowanych kanałów na osi Obserwowane.</string>
+    <string name="add_not_a_url">To nie jest adres internetowy.</string>
+    <string name="add_no_feed">Nie znaleziono tam kanału RSS ani Atom — ani na stronie, ani pod typowymi adresami.</string>
+</resources>

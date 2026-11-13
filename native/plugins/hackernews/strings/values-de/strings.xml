@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Hacker News</string>
+    <string name="plugin_description">Hacker News ohne Konto lesen. Herzen und Lesezeichen bleiben auf diesem Gerät.</string>
+    <string name="tab_top">Oben</string>
+    <string name="tab_new">Neu</string>
+    <string name="tab_best">Beste</string>
+    <string name="tab_ask">Ask</string>
+    <string name="tab_show">Show</string>
+    <string name="tab_jobs">Jobs</string>
+    <string name="tab_saved">Gespeichert</string>
+    <string name="tab_following">Folge ich</string>
+    <string name="search">Hacker News durchsuchen</string>
+    <string name="settings">Einstellungen</string>
+    <string name="feed_empty">Gerade ist hier nichts</string>
+    <string name="saved_empty">Noch keine gespeicherten Beiträge — Lesezeichen bleiben auf diesem Gerät</string>
+    <string name="following_empty">Folge jemandem, um die Beiträge hier zu sehen</string>
+    <string name="by">von %1$s</string>
+    <string name="like">Auf diesem Gerät liken</string>
+    <string name="unlike">Like von diesem Gerät entfernen</string>
+    <string name="save">Auf diesem Gerät speichern</string>
+    <string name="unsave">Von diesem Gerät entfernen</string>
+    <string name="comments">Kommentare</string>
+    <string name="open_article">Artikel öffnen</string>
+    <string name="deleted">[gelöscht]</string>
+    <string name="user_empty">Keine öffentlichen Beiträge</string>
+    <string name="follow">Auf diesem Gerät folgen</string>
+    <string name="unfollow">Entfolgen</string>
+    <string name="search_hint">Beiträge suchen</string>
+    <string name="search_empty">Keine passenden Beiträge</string>
+    <string name="settings_blurb">Keine Anmeldung. Stimmen und Kommentare bleiben bei Hacker News. Herzen und Lesezeichen bleiben auf diesem Gerät.</string>
+    <plurals name="points">
+        <item quantity="one">%1$d Punkt</item>
+        <item quantity="other">%1$d Punkte</item>
+    </plurals>
+    <plurals name="comment_count">
+        <item quantity="one">%1$d Kommentar</item>
+        <item quantity="other">%1$d Kommentare</item>
+    </plurals>
+    <plurals name="user_karma">
+        <item quantity="one">%1$d karma</item>
+        <item quantity="other">%1$d karma</item>
+    </plurals>
+    <string name="more_options">Weitere Optionen</string>
+</resources>

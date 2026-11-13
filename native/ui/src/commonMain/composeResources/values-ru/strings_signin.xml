@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Signing in to X as XTA does (lib/client/login_webview.dart, x_cookie_login.dart). -->
+<resources>
+    <string name="signin_add_account">Добавить аккаунт</string>
+    <string name="signin_logging_in_title">Выполняется вход в XTA</string>
+    <string name="signin_logging_in_text">От того, под каким аккаунтом вы вошли, ничего не меняется. Подписки, группы и сохранённые посты остаются на этом устройстве и не затрагивают ваш настоящий аккаунт. XTA входит только чтобы читать — ставить отметки, репостить и отвечать он не умеет.\n\nМожно добавить несколько аккаунтов. XTA берёт тот, у которого не исчерпан лимит на нужной конечной точке и у которого только что не сорвался вход, — именно это и держит ошибку «Слишком много запросов» в стороне.</string>
+    <string name="signin_import_title">Импортировать подписки</string>
+    <string name="signin_import_text">Подписки хранятся только в XTA. Они не зависят от подписок вашего настоящего аккаунта X. Вход не влияет на подписки XTA.\n\nИмпортировать в XTA подписки @%1$s?</string>
+    <string name="signin_cookie_help">Войдите на x.com в браузере, откройте инструменты разработчика (F12) и скопируйте cookie auth_token и ct0 из раздела «Хранилище» → «Cookie». Вставьте их ниже в виде auth_token=…; ct0=…. Они хранятся только на этом компьютере и никому не передаются.</string>
+    <string name="signin_open_in_browser">Открыть в браузере</string>
+    <string name="signin_username">Имя пользователя</string>
+    <string name="signin_cookies">Cookie с x.com</string>
+    <string name="signin_not_logged_in">Не выполнен вход</string>
+    <string name="signin_why_needed">X отклоняет большинство запросов, приходящих не от аккаунта. XTA сначала пробует как гость, и иногда это срабатывает, но без аккаунта ошибок будет больше, чем постов.\n\nВход позволяет XTA только читать X. Приложение никогда не публикует, не ставит отметки, не репостит и не подписывается за вас.</string>
+    <string name="signin_import_backup">Импортировать резервную копию</string>
+    <string name="signin_login">Войти</string>
+</resources>

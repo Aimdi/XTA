@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
+     Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="home_x">X</string>
+    <string name="home_search_in">البحث في %1$s</string>
+    <string name="home_open_menu">فتح قائمة التنقل</string>
+    <string name="home_add_timeline">إضافة موجز</string>
+    <string name="home_unread">غير مقروء</string>
+    <string name="home_refresh">تحديث</string>
+    <string name="home_open_group">فتح المجموعة</string>
+    <string name="home_more_options">خيارات أخرى</string>
+        <string name="home_pin_to_bar_hint">تظهر العناصر المثبتة بجوار الأقسام كلما اتسع الشريط لها، وتبقى كلها في هذه القائمة أيضًا.</string>
+    <string name="home_keep_controls_visible">إبقاء عناصر التحكم ظاهرة</string>
+    <string name="home_pin_to_bar">التثبيت في الشريط العلوي</string>
+
+    <string name="home_strip_title">موجزات الإضافات</string>
+    <string name="home_strip_intro">ثبّت الإضافات المثبتة بجانب «لك». اسحب لإعادة الترتيب. ثبّت المزيد من متجر الإضافات.</string>
+    <string name="home_strip_pinned">على هذا الشريط</string>
+    <string name="home_strip_available">متاح للإضافة</string>
+    <string name="home_strip_empty">لا إضافات للتثبيت بعد. افتح المتجر لتثبيت Reddit وPixiv وMastodon وغيرها.</string>
+    <string name="home_strip_remove">إزالة من الشريط</string>
+    <string name="home_strip_reorder">إعادة الترتيب</string>
+    <string name="home_plugin_store">متجر الإضافات</string>
+
+    <string name="home_subscriptions">الاشتراكات</string>
+    <string name="home_discover">اكتشف</string>
+    <string name="home_saved">المحفوظ</string>
+    <string name="home_downloads">التنزيلات</string>
+    <string name="home_antennas">الهوائيات</string>
+    <string name="home_deck">الأعمدة</string>
+    <string name="home_deck_empty">ثبّت مجموعات لتراها متجاورة على شاشة عريضة</string>
+    <string name="home_groups">المجموعات</string>
+    <string name="home_no_groups">لا توجد مجموعات بعد</string>
+    <string name="home_no_results">لا نتائج</string>
+    <plurals name="home_group_members">
+        <item quantity="zero">لا اشتراكات</item>
+        <item quantity="one">اشتراك واحد</item>
+        <item quantity="two">اشتراكان</item>
+        <item quantity="few">%1$d اشتراكات</item>
+        <item quantity="many">%1$d اشتراكًا</item>
+        <item quantity="other">%1$d اشتراك</item>
+    </plurals>
+
+    <string name="home_feed_accounts">حسابات الخلاصة الرئيسية</string>
+    <string name="home_filter_accounts">الحسابات</string>
+    <string name="home_filter_accounts_explained">عطّل الحسابات الاحتياطية التي تبقيها فقط لحدود المعدّل. «لك» يدمج الجداول الزمنية للحسابات المفعّلة؛ «المتابَعون» ما زال يستخدم اشتراكاتك المحلية لكنه يتجاوز الحسابات المعطّلة عند الجلب. يمكن للتعليقات والملفات الشخصية استخدام أي حساب عند الحاجة.</string>
+    <string name="home_filter_groups_explained">أوقف مجموعة لإخفاء أعضائها من المتابَعين. تبقى علامة تبويب المجموعة. وتُحذف منشوراتهم من «لك» أيضًا.</string>
+    <string name="home_filter_only_hint">اضغط مطولًا على عنصر لإبقائه وحده مفعّلًا.</string>
+    <string name="home_filter_keep_one">يجب أن يبقى حساب واحد على الأقل مفعّلاً</string>
+    <string name="home_filter_count">%1$d / %2$d</string>
+    <string name="home_filter_all">الكل</string>
+    <string name="home_filter_none">لا شيء</string>
+    <string name="home_filter_reset">إعادة ضبط الفلاتر</string>
+    <string name="home_filter_apply">تطبيق</string>
+
+    <string name="home_for_you_empty">تعذّر تحميل منشورات الموجز</string>
+    <string name="home_for_you_no_account">استورد النسخة الاحتياطية من XTA مع حساباتها لتحميل «لك».</string>
+    <string name="home_import">استيراد نسخة XTA الاحتياطية</string>
+
+    <string name="home_home">الرئيسية</string>
+    <string name="home_networks">الشبكات</string>
+    <string name="home_networks_recent">الأخيرة</string>
+    <string name="home_networks_all">كل الشبكات</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">تجميع خدمات التدوين المصغّر</string>
+    <string name="home_alt_microblogging_group_detail">اعرض Mastodon وBluesky وThreads في قسم واحد على الصفحة الرئيسية. أوقف هذا الخيار لفصلها. تبقى بياناتك وإعداداتك كما هي.</string>
+    <string name="home_posts">التغريدات</string>
+    <string name="home_media">الوسائط</string>
+    <string name="home_missing_page">صفحة مفقودة</string>
+    <string name="home_two_pages_required">تحتاج إلى صفحتان على الأقل من صفحات الشاشة الرئيسية.</string>
+    <string name="home_choose_pages">اختيار الصفحات</string>
+    <string name="home_unable_to_load_pages">تعذر تحميل الصفحات الرئيسية الخاصة بك</string>
+    <string name="feed_strip_unavailable">هذا الموجز لم يعد متاحًا</string>
+    <string name="home_feed_accounts_empty">أضف حساباً لتحميل «لك».</string>
+</resources>

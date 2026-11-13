@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Signing in to X as XTA does (lib/client/login_webview.dart, x_cookie_login.dart). -->
+<resources>
+    <string name="signin_add_account">Afegeix un compte</string>
+    <string name="signin_logging_in_title">Iniciant sessió a XTA</string>
+    <string name="signin_logging_in_text">El compte amb què inicies la sessió no canvia el que veus. Les subscripcions, els grups i les publicacions desades es queden en aquest dispositiu i no toquen mai el teu compte real. El XTA inicia la sessió només per llegir X: no pot fer m'agrada, ni repetir ni respondre.\n\nPots afegir diversos comptes. El XTA en tria un que no tingui el límit de peticions exhaurit al punt final que necessita i que no acabi de fallar en iniciar la sessió, que és el que manté a ratlla l'error «Massa peticions».</string>
+    <string name="signin_import_title">Importar subscripcions</string>
+    <string name="signin_import_text">Les subscripcions són locals a XTA. Són independents de les subscripcions del teu compte real d'X. Iniciar la sessió no afecta les subscripcions d'XTA.\n\nVols importar a XTA les subscripcions de @%1$s?</string>
+    <string name="signin_cookie_help">Inicia la sessió a x.com al navegador, obre les eines per a desenvolupadors (F12) i copia les galetes auth_token i ct0 des d'Emmagatzematge → Galetes. Enganxa-les a sota amb el format auth_token=…; ct0=…. Només es desen en aquest ordinador i no es comparteixen mai.</string>
+    <string name="signin_open_in_browser">Obre al navegador</string>
+    <string name="signin_username">Nom d'usuari</string>
+    <string name="signin_cookies">Galetes d'x.com</string>
+    <string name="signin_not_logged_in">No has iniciat sessió</string>
+    <string name="signin_why_needed">X rebutja la majoria de peticions que no venen d'un compte. El XTA ho prova primer com a convidat, i de vegades funciona, però sense compte has d'esperar més errors que publicacions.\n\nIniciar la sessió només permet al XTA llegir X. Mai no publica, ni fa m'agrada, ni repeteix ni segueix per tu.</string>
+    <string name="signin_import_backup">Importa la còpia de seguretat</string>
+    <string name="signin_login">Inicia sessió</string>
+</resources>

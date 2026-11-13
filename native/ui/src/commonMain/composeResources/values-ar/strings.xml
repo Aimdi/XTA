@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">المتابَعون</string>
+    <string name="search">البحث</string>
+    <string name="settings">الإعدادات</string>
+    <string name="dismiss">إغلاق</string>
+    <string name="retry">إعادة المحاولة</string>
+    <string name="back">رجوع</string>
+    <string name="close">إغلاق</string>
+    <string name="cancel">إلغاء</string>
+    <string name="post">منشور</string>
+
+    <string name="pinned">مثبَّت</string>
+    <string name="reposted_by">أعاد %1$s النشر</string>
+    <string name="replying_to">ردًا على</string>
+    <string name="stat_reposts">إعادات النشر</string>
+    <string name="stat_quotes">الاقتباسات</string>
+    <string name="stat_likes">الإعجابات</string>
+
+    <string name="ago_seconds">%1$d ث</string>
+    <string name="ago_minutes">%1$d د</string>
+    <string name="ago_hours">%1$d س</string>
+
+    <string name="problem_rate_limited">يقيّد X كل الحسابات هنا. أعد المحاولة بعد بضع دقائق.</string>
+    <string name="problem_offline">لا اتصال بـ X.</string>
+    <string name="problem_signing">تعذّر إعداد توقيع طلبات X. أعد المحاولة بعد قليل.</string>
+    <string name="problem_refused">رفض X الطلب (%1$d).</string>
+    <string name="problem_other">حدث خطأ أثناء قراءة X.</string>
+
+    <string name="import_intro">XTA Native هو XTA مكتوبًا لنظام Android وحده، للمقارنة مع XTA. يقرأ X بالحسابات التي تستخدمها في XTA.</string>
+    <string name="import_steps">في XTA، افتح الإعدادات ← البيانات ← تصدير، وفعّل «تصدير الحسابات»، ثم صدّر واختر ذلك الملف هنا.</string>
+    <string name="import_choose">اختيار نسخة XTA الاحتياطية</string>
+    <string name="import_choose_another">اختيار ملف آخر</string>
+    <string name="import_no_accounts">لا تحتوي هذه النسخة الاحتياطية على حسابات X: صدّرها مجددًا مع تفعيل «تصدير الحسابات».</string>
+    <string name="import_use">استخدام هذه النسخة</string>
+    <string name="import_privacy">تحتوي النسخة الاحتياطية على جلسات X الخاصة بك. يحتفظ بها XTA Native على هذا الهاتف، ولا يرسلها إلا إلى X، ولا ينشر أو يُعجب أو يتابع أي شيء هناك أبدًا.</string>
+
+    <string name="settings_clear">إزالة كل شيء</string>
+    <string name="settings_clear_explained">يزيل جلسات X والحسابات المتابَعة من XTA Native. أما XTA نفسه فيحتفظ بكل شيء.</string>
+    <string name="settings_clear_confirm">إزالة</string>
+
+    <string name="card_from">من %1$s</string>
+    <plurals name="poll_votes">
+        <item quantity="zero">لا أصوات</item>
+        <item quantity="one">صوت واحد</item>
+        <item quantity="two">صوتان</item>
+        <item quantity="few">%1$s أصوات</item>
+        <item quantity="many">%1$s صوتًا</item>
+        <item quantity="other">%1$s صوت</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="zero">%1$d منشور جديد</item>
+        <item quantity="one">منشور جديد واحد</item>
+        <item quantity="two">منشوران جديدان</item>
+        <item quantity="few">%1$d منشورات جديدة</item>
+        <item quantity="many">%1$d منشورًا جديدًا</item>
+        <item quantity="other">%1$d منشور جديد</item>
+    </plurals>
+    <string name="problem_x_private">ملف شخصي خاص</string>
+    <string name="problem_x_missing">تويتر يقول إن الصفحة غير موجودة، ولكن هذا قد لا يكون صحيحا</string>
+    <string name="problem_x_user_missing">لم يُعثر على المستخدم</string>
+    <string name="problem_x_suspended">الحساب معلق</string>
+    <string name="problem_x_forbidden">تويتر يقول إن الوصول إلى هذا ممنوع</string>
+    <string name="problem_x_guest">لقد ألغى Twitter رمز الوصول الخاص بنا. من فضلك حاول إعادة فتح XTA!</string>
+</resources>

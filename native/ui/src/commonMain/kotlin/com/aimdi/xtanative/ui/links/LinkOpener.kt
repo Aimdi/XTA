@@ -1,0 +1,428 @@
+package com.aimdi.xtanative.ui.links
+
+import com.aimdi.xtanative.core.x.model.XPost
+import com.aimdi.xtanative.services.links.BrowserPicker
+import com.aimdi.xtanative.services.links.InstalledBrowser
+import com.aimdi.xtanative.services.links.LinkDestination
+import com.aimdi.xtanative.services.links.LinkLaunch
+import com.aimdi.xtanative.services.links.LinkOpening
+import com.aimdi.xtanative.services.links.LinkPostContext
+import com.aimdi.xtanative.services.links.LinkRouter
+import com.aimdi.xtanative.services.links.LinkSettings
+import com.aimdi.xtanative.services.links.NativeRoute
+import com.aimdi.xtanative.services.links.NetworkLink
+import com.aimdi.xtanative.services.links.NetworkLinks
+import com.aimdi.xtanative.services.links.XLink
+import com.aimdi.xtanative.services.links.XLinks
+import com.aimdi.xtanative.services.links.XProfileTab
+import com.aimdi.xtanative.store.settings.GeneralPrefs
+import com.aimdi.xtanative.store.settings.Pref
+import com.aimdi.xtanative.store.settings.Settings
+import com.aimdi.xtanative.store.settings.XtaPrefs
+import java.net.URI
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
+
+/**
+ * The screens a link can land on, bound by the app's navigation. A network,
+ * the live player, a community or a list opens only where the app has a
+ * screen for it: those answer true when they opened the link, and a link
+ * none of them opens goes to the web.
+ */
+class LinkScreens(
+    val post: (id: String) -> Unit,
+    /** An X profile, on the tab its link named (`/media`, `/with_replies`) when it named one. */
+    val profile: (screenName: String, tab: XProfileTab?) -> Unit,
+    val search: (query: String) -> Unit,
+    /** XTA's browser screen at [url]; [from] finds the post it was opened from, see [LinkOpener.opening]. */
+    val browser: (url: String, from: String?) -> Unit,
+    val network: (NetworkLink) -> Boolean = { false },
+    val live: (XLink.Live) -> Boolean = { false },
+    val community: (id: String, about: Boolean) -> Boolean = { _, _ -> false },
+    /** An X list: its members, to follow here (main.dart opens a list link in its list import). */
+    val list: (id: String) -> Boolean = { false },
+    /** Pixiv's search for a work's id; while it is null, a shared number is searched on X. */
+    val pixivWork: ((id: String) -> Unit)? = null,
+    /** An installed plugin's screen for [url] (PLUGINS.md), asked before any other rule: true when one opened it. */
+    val plugin: (url: String) -> Boolean = { false },
+    /**
+     * Whether a plugin may still open [url] after asking the network. Quick,
+     * and only then is [pluginLater] called. XTA asks only off the desktop.
+     */
+    val mightAskPlugin: (url: String) -> Boolean = { false },
+    /** Opens [url] on a plugin's screen after asking the network; false when none did, and the browser has it. */
+    val pluginLater: (suspend (url: String) -> Boolean)? = null,
+)
+
+/** What only the platform can do with a link that leaves the app for the web. */
+interface LinkPlatform {
+    /** No web view, no custom tabs, no app a link could bounce back into: the system browser takes every link. */
+    val desktop: Boolean
+
+    fun launch(launch: LinkLaunch)
+
+    /** Whether a plain VIEW of [url] would land in this app again: an x.com page it has no screen for. */
+    fun reopensApp(url: String): Boolean = false
+
+    /** The platform's share sheet for [text]; false where there is none (then the caller copies it instead). */
+    fun share(text: String): Boolean = false
+
+    /** The browsers the reader can pick from; empty where the platform cannot say. */
+    fun browsers(): List<InstalledBrowser> = emptyList()
+}
+
+/** What the app says about a link it was handed, where the screen it came from cannot. */
+enum class LinkNotice { UNABLE_TO_OPEN, CHECKING_LINK, CHECKING_DONE }
+
+/**
+ * The post a link was opened from, for the bar under XTA's browser screen.
+ * [openPost] opens the post; null when the post is the screen under the
+ * browser, so going back to it is closing the browser (tweet_link_context.dart).
+ */
+class LinkFrom(val post: LinkPostContext, val openPost: (() -> Unit)?) {
+    companion object {
+        /** An X post's context, shared under the reader's share host from [settings]. */
+        fun x(post: XPost, settings: Settings?, openPost: (() -> Unit)?): LinkFrom =
+            LinkFrom(LinkPostContext.of(post, settings?.get(GeneralPrefs.shareBaseUrl)), openPost)
+
+        /**
+         * The X post whose card a link opened from (tweet_link_context.dart):
+         * [openPost] opens it, except on a post's own screen ([onPostScreen]),
+         * where the post is what the browser covers.
+         */
+        fun card(post: XPost, settings: Settings?, onPostScreen: Boolean, openPost: () -> Unit): LinkFrom =
+            x(post, settings, openPost.takeUnless { onPostScreen })
+    }
+}
+
+/** What a browser screen was opened with: the post it came from and the title the link was opened with. */
+class BrowserOpening(val from: LinkFrom?, val title: String?)
+
+/** Where a tapped link goes before anything is opened. */
+sealed interface LinkStep {
+    data class Post(val id: String) : LinkStep
+
+    data class Profile(val screenName: String, val tab: XProfileTab? = null) : LinkStep
+
+    /** A network's screen, the live player, a community or a list: opened when the app has one, else [orElse]. */
+    data class Screen(val route: NativeRoute, val orElse: LinkLaunch) : LinkStep
+
+    data class Web(val launch: LinkLaunch) : LinkStep
+}
+
+/**
+ * The rules a link follows (plugin_links.dart, link_opening.dart, urls.dart):
+ * an X post or profile opens its screen, a network that reads it and is on,
+ * the live player, a community or a list open theirs when the app has them,
+ * and anything else leaves for the web the way the reader's link settings say.
+ */
+object LinkSteps {
+    /**
+     * Where [url] goes. [inPost] is a link from a post's card, which XTA's own
+     * browser screen may show; any other link leaves the app ([LinkOpening.outside]).
+     */
+    fun step(
+        url: String,
+        route: NativeRoute?,
+        settings: LinkSettings,
+        desktop: Boolean,
+        reopensApp: Boolean,
+        inPost: Boolean,
+    ): LinkStep {
+        val web = if (inPost) {
+            LinkOpening.postLink(url, settings, desktop, reopensApp)
+        } else {
+            LinkOpening.outside(url, settings, desktop, reopensApp)
+        }
+        return when (route) {
+            null -> LinkStep.Web(web)
+            is NativeRoute.X -> when (val link = route.link) {
+                is XLink.Post -> LinkStep.Post(link.id)
+                is XLink.Profile -> LinkStep.Profile(link.screenName, link.tab)
+                else -> LinkStep.Screen(route, web)
+            }
+            is NativeRoute.Live, is NativeRoute.Network -> LinkStep.Screen(route, web)
+        }
+    }
+
+    /** The reader's three link settings as stored; null where a switch was never set, as [LinkSettings] reads them. */
+    fun settingsOf(settings: Settings?): LinkSettings {
+        settings ?: return LinkSettings()
+        fun <T> stored(pref: Pref<T>): T? = if (settings.isSet(pref)) settings[pref] else null
+        return LinkSettings(
+            inApp = stored(GeneralPrefs.openLinksInApp),
+            browser = stored(GeneralPrefs.externalBrowser),
+            clean = stored(GeneralPrefs.cleanLinks),
+        )
+    }
+
+    /** [settings] holding [links], as the browser picker stores a choice. */
+    fun withLinkSettings(settings: Settings, links: LinkSettings): Settings {
+        var next = settings
+        links.inApp?.let { next = next.with(GeneralPrefs.openLinksInApp, it) }
+        links.browser?.let { next = next.with(GeneralPrefs.externalBrowser, it) }
+        links.clean?.let { next = next.with(GeneralPrefs.cleanLinks, it) }
+        return next
+    }
+
+    /**
+     * What the browser picker shows as chosen (_browser_picker.dart): an
+     * in-app switch never set reads as on, as links then open (XTA turns it
+     * on at first launch).
+     */
+    fun pickedBrowser(settings: Settings?, browsers: List<InstalledBrowser>): LinkDestination {
+        val links = settingsOf(settings)
+        return BrowserPicker.selected(links.copy(inApp = links.inApp ?: true), browsers)
+    }
+
+    /** [settings] once [destination] is picked in the browser picker. */
+    fun withPicked(settings: Settings, destination: LinkDestination): Settings =
+        withLinkSettings(settings, BrowserPicker.choose(settingsOf(settings), destination))
+
+    /**
+     * Where [url] opens in the app: what [router] reads, in XTA's link order,
+     * then an X list, which XTA opens in its list screen when one is handed
+     * to it (main.dart's handleInitialLink).
+     */
+    fun route(router: LinkRouter, url: String): NativeRoute? = router.route(url) ?: listRoute(url)
+
+    private fun listRoute(url: String): NativeRoute? =
+        (XLinks.parse(url) as? XLink.XList)?.takeIf { claimedByApp(url) }?.let { NativeRoute.X(it) }
+
+    /**
+     * "Open in browser" from XTA's browser screen: the picked browser, or the
+     * system's choice. A page a plain VIEW would bring back to the app goes
+     * to a browser by name instead (urls.dart's openInRealBrowser).
+     */
+    fun leaving(url: String, settings: LinkSettings, reopensApp: Boolean): LinkLaunch {
+        val launch = LinkOpening.leaveBrowserScreen(url, settings)
+        return if (reopensApp) LinkLaunch.RealBrowser(launch.url, launch.browser, customTabFirst = false) else launch
+    }
+
+    /**
+     * The browser a page the app claims goes to when none was picked: the
+     * system's default ([default]), else the first of [installed]; never
+     * [self], nor Android's chooser, which would offer the app again.
+     */
+    fun realBrowser(default: String?, installed: List<InstalledBrowser>, self: String): String? =
+        (listOfNotNull(default) + installed.map { it.packageName }).firstOrNull { it.isNotEmpty() && it != self && it != SYSTEM_CHOOSER }
+
+    /** The package Android names when it would ask which app opens a link. */
+    private const val SYSTEM_CHOOSER = "android"
+
+    /** Whether the network [id] is switched on in [settings]. */
+    fun networkEnabled(settings: Settings?, id: String): Boolean {
+        val prefs = XtaPrefs.networks.firstOrNull { it.id == id } ?: return false
+        return settings?.get(prefs.enabled) == true
+    }
+
+    /** The host of [url] in lower case, or null when it has none. */
+    fun hostOf(url: String): String? = runCatching { URI(url.trim()).host?.lowercase() }.getOrNull()?.ifEmpty { null }
+
+    /**
+     * Whether the app claims [url]'s host (X's, its short links, the embed
+     * mirrors and Pixiv's pages, as XTA's manifest claims them), so that a
+     * plain VIEW of it could land back in the app.
+     */
+    fun claimedByApp(url: String): Boolean {
+        val host = hostOf(url) ?: return false
+        return host in XLinks.HOSTS || host in MIRROR_HOSTS || MIRROR_FAMILIES.any(host::endsWith) || LinkOpening.onClaimedHost(url)
+    }
+
+    /** X's short links and the embed fixers' mirrors of X, which the manifest claims too. */
+    private val MIRROR_HOSTS = setOf("t.co", "fxtwitter.com")
+
+    /** Mirrors claimed with every host before them (the manifest's `*vxtwitter.com`). */
+    private val MIRROR_FAMILIES = listOf("vxtwitter.com", "fixupx.com")
+}
+
+/**
+ * The app's one way to open a link. [open] is a link in a post's text, a
+ * profile or anywhere else: an XTA screen when one reads it, else out to the
+ * web. [openPostLink] is a link from a post's card, which may open XTA's own
+ * browser screen with the post in reach. [openOutside] leaves the app.
+ *
+ * The screens are bound once the navigation exists; a link opened before
+ * that (shared from another app while the session loads) waits for them.
+ */
+class LinkOpener(
+    private val platform: LinkPlatform,
+    private val settings: () -> Settings?,
+    private val router: (Settings?) -> LinkRouter = { current -> defaultRouter(current, platform.desktop) },
+    private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined),
+) {
+    @Volatile
+    private var screens: LinkScreens? = null
+    private var waiting: (() -> Unit)? = null
+    private val openings = object : LinkedHashMap<String, BrowserOpening>(16, 0.75f, true) {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, BrowserOpening>?) = size > KEPT_OPENINGS
+    }
+    private var tokens = 0
+    private val said = MutableSharedFlow<LinkNotice>(extraBufferCapacity = 4, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+
+    val desktop: Boolean get() = platform.desktop
+
+    /** What the app tells the reader about links, as it happens. */
+    val notices: SharedFlow<LinkNotice> = said.asSharedFlow()
+
+    fun notify(notice: LinkNotice) {
+        said.tryEmit(notice)
+    }
+
+    fun browsers(): List<InstalledBrowser> = platform.browsers()
+
+    /** Whether the screens are bound, so a link opened now opens at once. */
+    val bound: Boolean get() = screens != null
+
+    /** Makes [screens] the ones links open on, and opens the link that was waiting for them. */
+    fun bind(screens: LinkScreens) {
+        val pending = synchronized(this) {
+            this.screens = screens
+            waiting.also { waiting = null }
+        }
+        pending?.invoke()
+    }
+
+    fun unbind(screens: LinkScreens) {
+        synchronized(this) { if (this.screens === screens) this.screens = null }
+    }
+
+    fun open(url: String) = go(url, inPost = false, from = null, title = null)
+
+    fun openPostLink(url: String, from: LinkFrom? = null, title: String? = null) = go(url, inPost = true, from = from, title = title)
+
+    /** Leaves the app for [url], whatever XTA screen could read it (`openUri`). */
+    fun openOutside(url: String) {
+        val current = settings()
+        platform.launch(LinkOpening.outside(url, LinkSteps.settingsOf(current), platform.desktop, reopensApp(url)))
+    }
+
+    /** "Open in browser" from XTA's browser screen: the picked browser, or the system's choice; never this app. */
+    fun leaveBrowserScreen(url: String) {
+        platform.launch(LinkSteps.leaving(url, LinkSteps.settingsOf(settings()), reopensApp(url)))
+    }
+
+    /** [url] as it leaves the app: without tracking unless the reader turned that off. */
+    fun prepare(url: String): String = LinkOpening.prepare(url, LinkSteps.settingsOf(settings()))
+
+    /** The platform's share sheet for [text]; false where there is none. */
+    fun share(text: String): Boolean = platform.share(text)
+
+    /**
+     * Opens [url] on an XTA screen when one reads it, answering whether one
+     * did: a web page in XTA's browser asks this before it navigates.
+     */
+    fun openOnScreen(url: String): Boolean {
+        val screens = screens ?: return false
+        if (screens.plugin(url)) return true
+        val current = settings()
+        return when (val step = LinkSteps.step(url, LinkSteps.route(router(current), url), LinkSteps.settingsOf(current), platform.desktop, false, inPost = false)) {
+            is LinkStep.Post -> true.also { screens.post(step.id) }
+            is LinkStep.Profile -> true.also { screens.profile(step.screenName, step.tab) }
+            is LinkStep.Screen -> openScreen(screens, step.route)
+            is LinkStep.Web -> false
+        }
+    }
+
+    /** Opens [url] on a network's screen when one is on and reads it, answering whether one did. */
+    fun openOnNetwork(url: String): Boolean {
+        val screens = screens ?: return false
+        if (screens.plugin(url)) return true
+        val route = router(settings()).route(url) as? NativeRoute.Network ?: return false
+        return screens.network(route.link)
+    }
+
+    /** What the browser screen [token] names was opened with; null once it is forgotten. */
+    @Synchronized
+    fun opening(token: String?): BrowserOpening? = token?.let { openings[it] }
+
+    private fun go(url: String, inPost: Boolean, from: LinkFrom?, title: String?) {
+        val screens = synchronized(this) {
+            screens ?: run {
+                waiting = { go(url, inPost, from, title) }
+                return
+            }
+        }
+        if (screens.plugin(url)) return
+        val current = settings()
+        val step = LinkSteps.step(url, LinkSteps.route(router(current), url), LinkSteps.settingsOf(current), platform.desktop, reopensApp(url), inPost)
+        when (step) {
+            is LinkStep.Post -> screens.post(step.id)
+            is LinkStep.Profile -> screens.profile(step.screenName, step.tab)
+            is LinkStep.Screen -> if (!openScreen(screens, step.route)) leave(screens, url, step.orElse, from, title)
+            is LinkStep.Web -> leave(screens, url, step.launch, from, title)
+        }
+    }
+
+    /**
+     * Leaves for the web, unless a plugin may still open [url] after asking
+     * the network. XTA asks only off the desktop, shows why nothing opened
+     * yet, and gives the domain a few seconds before the browser has the link.
+     */
+    private fun leave(screens: LinkScreens, url: String, launch: LinkLaunch, from: LinkFrom?, title: String?) {
+        val later = screens.pluginLater
+        if (platform.desktop || later == null || !screens.mightAskPlugin(url)) {
+            web(screens, launch, from, title)
+            return
+        }
+        notify(LinkNotice.CHECKING_LINK)
+        scope.launch {
+            val opened = withTimeoutOrNull(PLUGIN_ASK_MILLIS) { later(url) } == true
+            notify(LinkNotice.CHECKING_DONE)
+            if (!opened) web(screens, launch, from, title)
+        }
+    }
+
+    private fun openScreen(screens: LinkScreens, route: NativeRoute): Boolean = when (route) {
+        is NativeRoute.Network -> screens.network(route.link)
+        is NativeRoute.Live -> screens.live(route.live)
+        is NativeRoute.X -> when (val link = route.link) {
+            is XLink.Post -> true.also { screens.post(link.id) }
+            is XLink.Profile -> true.also { screens.profile(link.screenName, link.tab) }
+            is XLink.Community -> screens.community(link.id, link.about)
+            is XLink.XList -> screens.list(link.id)
+            else -> false
+        }
+    }
+
+    private fun web(screens: LinkScreens, launch: LinkLaunch, from: LinkFrom?, title: String?) {
+        if (launch is LinkLaunch.InAppBrowser) {
+            screens.browser(launch.url, remember(BrowserOpening(from, title)))
+        } else {
+            platform.launch(launch)
+        }
+    }
+
+    @Synchronized
+    private fun remember(opening: BrowserOpening): String? {
+        if (opening.from == null && opening.title == null) return null
+        val token = "l" + ++tokens
+        openings[token] = opening
+        return token
+    }
+
+    private fun reopensApp(url: String): Boolean = !platform.desktop && platform.reopensApp(url)
+
+    companion object {
+        /** Browser screens whose post is still in reach: the ones on the back stack, in practice a few. */
+        private const val KEPT_OPENINGS = 32
+
+        /** How long a tapped link waits to learn whether a plugin reads it, as XTA waits on an unknown domain. */
+        const val PLUGIN_ASK_MILLIS = 4_000L
+
+        /**
+         * XTA's link order over the networks switched on in [settings]. A
+         * network's screen decides for itself whether it reads a link it is
+         * handed (Pixiv, a booru, Mastodon's hosts): none is asked here.
+         */
+        fun defaultRouter(settings: Settings?, desktop: Boolean): LinkRouter =
+            LinkRouter(NetworkLinks(), enabled = { id -> LinkSteps.networkEnabled(settings, id) }, desktop = desktop)
+    }
+}

@@ -1,0 +1,8 @@
+{
+  "@attributes": {"limit": 3, "offset": 0, "count": 3},
+  "tag": [
+    {"id": 1, "name": "kantoku", "count": 50, "type": 1, "ambiguous": 0},
+    {"id": 2, "name": "highres", "count": 9000000, "type": 5, "ambiguous": 0},
+    {"id": 3, "name": "girls&#039;_frontline", "count": "1200", "type": "copyright", "ambiguous": 0}
+  ]
+}

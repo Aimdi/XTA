@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Hacker News</string>
+    <string name="plugin_description">Loe Hacker Newsi ilma kontota. Südamed ja järjehoidjad jäävad sellesse seadmesse.</string>
+    <string name="tab_top">Top</string>
+    <string name="tab_new">Uued</string>
+    <string name="tab_best">Parimad</string>
+    <string name="tab_ask">Ask</string>
+    <string name="tab_show">Show</string>
+    <string name="tab_jobs">Tööd</string>
+    <string name="tab_saved">Salvestatud</string>
+    <string name="tab_following">Jälgin</string>
+    <string name="search">Otsi Hacker Newsist</string>
+    <string name="settings">Seaded</string>
+    <string name="feed_empty">Praegu pole siin midagi</string>
+    <string name="saved_empty">Salvestatud lugusid pole — järjehoidjad jäävad sellesse seadmesse</string>
+    <string name="following_empty">Jälgi kedagi, et näha lugusid siin</string>
+    <string name="by">autor %1$s</string>
+    <string name="like">Meeldi selles seadmes</string>
+    <string name="unlike">Eemalda meeldimine sellest seadmest</string>
+    <string name="save">Salvesta selles seadmes</string>
+    <string name="unsave">Eemalda sellest seadmest</string>
+    <string name="comments">Kommentaarid</string>
+    <string name="open_article">Ava artikkel</string>
+    <string name="deleted">[kustutatud]</string>
+    <string name="user_empty">Avalikke postitusi pole</string>
+    <string name="follow">Jälgi selles seadmes</string>
+    <string name="unfollow">Lõpeta jälgimine</string>
+    <string name="search_hint">Otsi lugusid</string>
+    <string name="search_empty">Ühtegi lugu ei sobi</string>
+    <string name="settings_blurb">Sisselogimist pole. Hääled ja kommentaarid jäävad Hacker Newsile. Südamed ja järjehoidjad jäävad sellesse seadmesse.</string>
+    <plurals name="points">
+        <item quantity="one">%1$d punkt</item>
+        <item quantity="other">%1$d punkti</item>
+    </plurals>
+    <plurals name="comment_count">
+        <item quantity="one">%1$d kommentaar</item>
+        <item quantity="other">%1$d kommentaari</item>
+    </plurals>
+    <plurals name="user_karma">
+        <item quantity="one">%1$d karma</item>
+        <item quantity="other">%1$d karma</item>
+    </plurals>
+    <string name="more_options">Rohkem valikuid</string>
+</resources>

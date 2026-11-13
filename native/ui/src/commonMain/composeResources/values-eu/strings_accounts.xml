@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Accounts' avatar and Diagnostics' account health and recent reads, in XTA's words. -->
+<resources>
+    <string name="settings_avatar_title">Zure avatarra</string>
+    <string name="settings_avatar_change">Sakatu goian ezkerreko irudia aldatzeko</string>
+    <string name="settings_avatar_description">Goian ezkerrean eta tiraderan agertzen den irudia — gailu honetan geratzen da</string>
+    <string name="settings_avatar_choose">Aukeratu gailutik</string>
+    <string name="settings_avatar_from_account">Erabili X-eko profil-argazkia</string>
+    <string name="settings_avatar_error">Ezin izan da profil-argazki hori kargatu</string>
+    <string name="settings_avatar_clear">Erabili monograma</string>
+    <string name="settings_diagnostics_recent_reads">Azken irakurketa-eragiketak</string>
+    <string name="settings_diagnostics_sign_in_broken">Saioa jada ez dela baliozkoa dirudi; %1$sean berrekingo da</string>
+</resources>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">Jarraitzen</string>
+    <string name="search">Bilatu</string>
+    <string name="settings">Ezarpenak</string>
+    <string name="dismiss">Itxi</string>
+    <string name="retry">Saiatu berriro</string>
+    <string name="back">Itzuli</string>
+    <string name="close">Itxi</string>
+    <string name="cancel">Ezeztatu</string>
+    <string name="post">Argitalpena</string>
+
+    <string name="pinned">Ainguratua</string>
+    <string name="reposted_by">%1$s erabiltzaileak birbidali du</string>
+    <string name="replying_to">Honi erantzuten:</string>
+    <string name="stat_reposts">Birbidalketak</string>
+    <string name="stat_quotes">Aipamenak</string>
+    <string name="stat_likes">Atsegiteak</string>
+
+    <string name="ago_seconds">%1$d s</string>
+    <string name="ago_minutes">%1$d min</string>
+    <string name="ago_hours">%1$d h</string>
+
+    <string name="problem_rate_limited">X hemengo kontu guztiak mugatzen ari da. Saiatu berriro minutu batzuk barru.</string>
+    <string name="problem_offline">Ez dago X-rako konexiorik.</string>
+    <string name="problem_signing">Ezin izan da X-ren eskaeren sinadura prestatu. Saiatu berriro une batean.</string>
+    <string name="problem_refused">X-k eskaera baztertu du (%1$d).</string>
+    <string name="problem_other">Zerbait gaizki joan da X irakurtzean.</string>
+
+    <string name="import_intro">XTA Native Androiderako soilik idatzitako XTA da, XTArekin alderatzeko. X irakurtzen du XTAn dagoeneko erabiltzen dituzun kontuekin.</string>
+    <string name="import_steps">XTAn, ireki Ezarpenak → Datuak → Esportatu, aktibatu “Esportatu kontuak”, esportatu eta aukeratu fitxategi hori hemen.</string>
+    <string name="import_choose">Aukeratu XTAren babeskopia</string>
+    <string name="import_choose_another">Aukeratu beste fitxategi bat</string>
+    <string name="import_no_accounts">Babeskopia honek ez du X konturik: esportatu berriro “Esportatu kontuak” aktibatuta.</string>
+    <string name="import_use">Erabili babeskopia hau</string>
+    <string name="import_privacy">Babeskopiak zure X saioak ditu. XTA Native-k telefono honetan gordetzen ditu, X-ri bakarrik bidaltzen dizkio eta ez du inoiz ezer argitaratzen, atsegiten edo jarraitzen han.</string>
+
+    <string name="settings_clear">Kendu dena</string>
+    <string name="settings_clear_explained">X saioak eta jarraitutako kontuak kentzen ditu XTA Native-tik. XTAk berak dena gordetzen du.</string>
+    <string name="settings_clear_confirm">Kendu</string>
+
+    <string name="card_from">Iturria: %1$s</string>
+    <plurals name="poll_votes">
+        <item quantity="one">Boto %1$s</item>
+        <item quantity="other">%1$s boto</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="one">Argitalpen berri %1$d</item>
+        <item quantity="other">%1$d argitalpen berri</item>
+    </plurals>
+    <string name="problem_x_private">Profil pribatua</string>
+    <string name="problem_x_missing">Twitterrek dio orria ez dela existitzen, baina baliteke hori egia ez izatea</string>
+    <string name="problem_x_user_missing">Ez da erabiltzailea aurkitu</string>
+    <string name="problem_x_suspended">Etendako kontua</string>
+    <string name="problem_x_forbidden">Twitterrek dio horretarako sarbidea debekatuta dagoela</string>
+    <string name="problem_x_guest">Twitterrek sarbide-tokena baliogabetu du. Mesedez, saiatu XTA berriro irekitzen!</string>
+</resources>

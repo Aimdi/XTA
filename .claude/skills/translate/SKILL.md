@@ -5,107 +5,100 @@ description: load this skill everytime user asks you to do translation stuff, or
 
 # translate skill
 
-Guide for adding, changing, or removing user-visible strings in XTA.
+Guide for adding, changing, or removing user-visible strings in XTA Native
+(`native/`). `native/SCREENS.md` ("Text") is the full reference.
 
 ## When this skill applies
 
-Any time you touch a string that appears on the UI: adding a new label, changing existing copy, removing a string, or refactoring code that calls `L10n.of(context).*`.
+Any time you touch a string that appears on the UI: adding a label, changing
+copy, removing a string, or refactoring code that calls
+`stringResource(Res.string.*)` or a plugin's generated `Strings`.
 
-## Fill translations
+## Where strings live
 
-When asked to fill missing translations, DON'T READ *.arb FILES YET.
+| Part | English | Other languages |
+|---|---|---|
+| The screens (`:ui`) | `native/ui/src/commonMain/composeResources/values/strings_<area>.xml` | `values-<qualifier>/strings_<area>.xml` |
+| A plugin | `native/plugins/<id>/strings/values/strings.xml` | `strings/values-<qualifier>/strings.xml` |
+| The Android shell (`:app`) | `native/app/src/main/res/values/strings.xml` | only what Android itself shows |
 
-First run `./l10n.py` and check the output to see which file you need to work with.
+Names in `:ui` are prefixed with their area (`saved_empty`, not `empty`).
 
 ## Rules
 
-### 1. Never use raw strings in the UI
+### 1. Never write UI text in Kotlin
 
-If a string is displayed to the user, it **must** go through the localization system:
-
-```dart
+```kotlin
 // Wrong
 Text("Subscribe")
 
 // Right
-Text(L10n.of(context).subscribe)
+Text(stringResource(Res.string.profile_subscribe))
 ```
 
-### 2. Add the key to `intl_en.arb` first
+A plugin uses its generated `Strings`, never a literal.
 
-- Choose a descriptive snake_case key.
-- The `@key` metadata entry is added automatically by `l10n.py` — you do not need to write it.
+### 2. Add the English string first, then every language
 
-### 3. Fill every supported locale
+The 29 languages and their folders:
 
-After adding a key to `intl_en.arb`, add a translation for the same key in **all** of the following files:
+| Language codes | Folder |
+|---|---|
+| en | `values` |
+| ar be ca cs de eo es et eu fr hi id it ja ko nl pl pt ro ru tr uk vi | `values-<same>` |
+| Norwegian Bokmål | `values-nb-rNO` |
+| Brazilian Portuguese | `values-pt-rBR` |
+| Simplified / Traditional Chinese | `values-zh-rCN` / `values-zh-rTW` |
+| Latin Belarusian | `values-be-rXL` (filled by the tool, below) |
 
-```bash
-ls lib/l10n/*.arb
-```
+`ui/.../composeResources/values-in` is a link to `values-id` (Android names
+Indonesian `in`): edit `values-id` only.
 
-### 3.1. Correctly fill a locale
+### 3. Translate naturally
 
-For each translation, make an effort to produce a translation that not only is grammatically correct 
-but also sounds natural in the target language. For every translation, ask yourself "does this sound
-natural in this language ?". Do not try to match exactly the English syntax if it does not sound natural.
-
-Example, from English to French for a setting description:
-
-```txt
-English: How much of a video is loaded ahead of playback. A shorter duration saves data and memory but may cause more pauses to load on unstable connections.
-French: Détermine la durée maximale de vidéo chargée à l'avance. Une durée plus courte économise les données et la mémoire, mais peut provoquer davantage de coupures de chargement sur les connexions instables.
-```
+For each translation, ask "does this sound natural in this language?" rather
+than matching the English syntax. Where the old XTA already had the text,
+`native/tool/l10n/` keeps its English and Belarusian wording for reference;
+the other languages' wording is in the git history of `lib/l10n/`.
 
 ### 4. Stop and ask when the string is ambiguous
 
-Before translating, **stop and ask the user** if any of the following is unclear:
+Ask the user before translating when it is unclear what is counted or
+described (plurals, grammatical gender), whether a word is a verb or a noun,
+which register is expected, or where the text appears (button, body, error).
+A wrong translation ships silently to every reader of that language.
 
-- What is being counted or described (needed for plurals and grammatical gender)
-- Ambiguity about the words (is it a verb ? A noun ? Which tense is it ?).
-- Whether formal or informal register is expected
-- The surrounding UI context (button label vs. body text vs. error message)
+### 5. Plurals use `<plurals>` with each language's categories
 
-Do not guess. A wrong translation in one language silently ships to all users of that locale.
-
-Then add the disambiguity in the arb file.
-
-### 5. Plural strings: use ICU format with correct forms per language
-
-Use the `{count, plural, …}` ICU syntax. Different languages require different plural categories:
-
-```
-// English — only one + other
-"{count, plural, one{1 item} other{{count} items}}"
-
-// French — zero treated as singular; only one + other
-"{count, plural, one{{count} élément} other{{count} éléments}}"
-
-// Russian / Ukrainian / Belarusian / Polish — one, few, many, other
-"{count, plural, one{{count} элемент} few{{count} элемента} many{{count} элементов} other{{count} элемента}}"
-
-// Arabic — zero, one, two, few, many, other (all six)
-"{count, plural, zero{لا عناصر} one{عنصر واحد} two{عنصران} few{{count} عناصر} many{{count} عنصرًا} other{{count} عنصر}}"
-
-// Japanese / Korean / Chinese / Vietnamese / Indonesian — only other
-"{count, plural, other{{count}件}}"
+```xml
+<plurals name="saved_items">
+    <item quantity="one">%1$d item</item>
+    <item quantity="other">%1$d items</item>
+</plurals>
 ```
 
-When in doubt about which plural forms a language needs, ask the user.
+Russian, Ukrainian, Belarusian and Polish need `one`, `few`, `many`, `other`;
+Arabic all six (`zero`, `one`, `two`, `few`, `many`, `other`); Japanese,
+Korean, Chinese, Vietnamese and Indonesian only `other`.
 
-### 6. Run `l10n.py` after every ARB change
+### 6. Fill Latin Belarusian with the tool
 
 ```bash
-python l10n.py
+python3 -I native/tool/belarusian_latin.py
 ```
 
-This sorts all files, adds missing metadata, and reports any remaining missing or unused keys. Fix any issues it reports before marking the task done.
+It adds what `values-be-rXL` lacks from `values-be`, and lists what to read
+over. `LatinBelarusianTest` fails while a string is missing.
+
+### 7. Removing a string
+
+Remove it from `values/` and every `values-*` folder in the same change.
 
 ## Checklist
 
-- [ ] No raw UI string in Dart code — every visible string goes through `L10n.of(context).*`
-- [ ] Key added to `intl_en.arb`
-- [ ] Same key added to all 29 other locale files with correct translation
-- [ ] Plural strings use ICU format with the correct plural categories for each language
-- [ ] Ambiguous context was clarified with the user before translating
-- [ ] `python l10n.py` run and output is clean (no missing keys reported)
+- [ ] No UI text written in Kotlin
+- [ ] English string added under `values/`
+- [ ] The same name in all other language folders, translated
+- [ ] Plurals with the right categories per language
+- [ ] Ambiguous context clarified with the user
+- [ ] `belarusian_latin.py` run; the `:ui` and plugin string tests pass (`./gradlew :ui:desktopTest`)

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Karakeep</string>
+    <string name="plugin_description">Lagre innlegg og lenker på din egen Karakeep-server med ett trykk</string>
+    <string name="settings_intro">Karakeep er en bokmerketjeneste du drifter selv. Skriv inn adressen til din instans og en API-nøkkel fra «Innstillinger &gt; API-nøkler» i Karakeep.</string>
+    <string name="server_url">Serveradresse</string>
+    <string name="server_url_hint">For eksempel karakeep.example.com</string>
+    <string name="api_key">API-nøkkel</string>
+    <string name="api_key_hint">Blir bare på denne enheten</string>
+    <string name="test">Test tilkoblingen</string>
+    <string name="test_ok">Koblet til Karakeep</string>
+    <string name="not_configured">Legg inn Karakeep-serveren og en API-nøkkel først</string>
+    <string name="error_unauthorized">Karakeep avviste API-nøkkelen</string>
+    <string name="error_server_url">Fant ingen Karakeep på den adressen</string>
+    <string name="error_network">Kunne ikke nå Karakeep-serveren din</string>
+    <string name="error_generic">Karakeep kunne ikke lagre denne lenken</string>
+    <string name="learn_more">Om Karakeep</string>
+    <string name="save_action">Lagre i Karakeep</string>
+    <string name="saved">Lagret i Karakeep</string>
+    <string name="already_saved">Finnes allerede i Karakeep</string>
+    <string name="saving">Lagrer i Karakeep…</string>
+    <string name="show">Vis</string>
+    <string name="hide">Skjul</string>
+    <string name="save">Lagre</string>
+    <string name="connection">Tilkobling</string>
+</resources>

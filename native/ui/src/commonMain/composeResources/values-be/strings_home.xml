@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
+     Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="home_x">X</string>
+    <string name="home_search_in">Пошук у %1$s</string>
+    <string name="home_open_menu">Адкрыць меню навігацыі</string>
+    <string name="home_add_timeline">Дадаць стужку</string>
+    <string name="home_unread">Непрачытанае</string>
+    <string name="home_refresh">Абнавіць</string>
+    <string name="home_open_group">Адкрыць групу</string>
+    <string name="home_more_options">Іншыя параметры</string>
+        <string name="home_pin_to_bar_hint">Замацаваныя пункты з\'яўляюцца побач з раздзеламі, калі на панэлі хапае месца. Усе яны застаюцца і ў гэтым меню.</string>
+    <string name="home_keep_controls_visible">Заўсёды паказваць элементы кіравання</string>
+    <string name="home_pin_to_bar">Замацаваць на верхняй панэлі</string>
+
+    <string name="home_strip_title">Стужкі плагінаў</string>
+    <string name="home_strip_intro">Замацуйце ўсталяваныя плагіны побач з «Для вас». Перацягніце, каб змяніць парадак. Іншыя — у краме плагінаў.</string>
+    <string name="home_strip_pinned">На гэтай стужцы</string>
+    <string name="home_strip_available">Можна дадаць</string>
+    <string name="home_strip_empty">Пакуль няма што замацаваць. Адкрыйце краму: Reddit, Pixiv, Mastodon і інш.</string>
+    <string name="home_strip_remove">Прыбраць са стужкі</string>
+    <string name="home_strip_reorder">Змяніць парадак</string>
+    <string name="home_plugin_store">Крама плагінаў</string>
+
+    <string name="home_subscriptions">Падпіскі</string>
+    <string name="home_discover">Агляд</string>
+    <string name="home_saved">Захаванае</string>
+    <string name="home_downloads">Спампоўкі</string>
+    <string name="home_antennas">Антэны</string>
+    <string name="home_deck">Калонкі</string>
+    <string name="home_deck_empty">Замацуйце групы, каб бачыць іх побач на шырокім экране</string>
+    <string name="home_groups">Групы</string>
+    <string name="home_no_groups">Пакуль няма груп</string>
+    <string name="home_no_results">Нічога не знойдзена</string>
+    <plurals name="home_group_members">
+        <item quantity="one">%1$d падпіска</item>
+        <item quantity="few">%1$d падпіскі</item>
+        <item quantity="many">%1$d падпісак</item>
+        <item quantity="other">%1$d падпіскі</item>
+    </plurals>
+
+    <string name="home_feed_accounts">Акаўнты галоўнай стужкі</string>
+    <string name="home_filter_accounts">Уліковыя запісы</string>
+    <string name="home_filter_accounts_explained">Адключайце запасныя акаўнты, якія трымаеце толькі дзеля лімітаў. «Для вас» аб’ядноўвае стужкі ўключаных акаўнтаў; «Чытаю» далей выкарыстоўвае лакальныя падпіскі, але пры загрузцы прапускае адключаныя. Каментары і профілі пры патрэбе могуць выкарыстаць любы акаўнт.</string>
+    <string name="home_filter_groups_explained">Выключыце групу, каб схаваць яе ўдзельнікаў з «Чытаю». Укладка групы застаецца. Іх допісы таксама знікаюць з «Для вас».</string>
+    <string name="home_filter_only_hint">Доўга націсніце на пункт, каб пакінуць уключаным толькі яго.</string>
+    <string name="home_filter_keep_one">Хоць адзін уліковы запіс мусіць застацца ўключаным</string>
+    <string name="home_filter_count">%1$d / %2$d</string>
+    <string name="home_filter_all">Усе</string>
+    <string name="home_filter_none">Нічога</string>
+    <string name="home_filter_reset">Скінуць фільтры</string>
+    <string name="home_filter_apply">Ужыць</string>
+
+    <string name="home_for_you_empty">Не атрымліваецца загрузіць допісы стужкі</string>
+    <string name="home_for_you_no_account">Каб загрузіць «Для вас», імпартуйце рэзервовую копію XTA з яе акаўнтамі.</string>
+    <string name="home_import">Імпартаваць рэзервовую копію XTA</string>
+
+    <string name="home_home">Галоўная</string>
+    <string name="home_networks">Сеткі</string>
+    <string name="home_networks_recent">Нядаўнія</string>
+    <string name="home_networks_all">Усе сеткі</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">Аб’яднаць сэрвісы мікраблогаў</string>
+    <string name="home_alt_microblogging_group_detail">Паказваць Mastodon, Bluesky і Threads у адным раздзеле галоўнага экрана. Выключыце, каб паказваць іх асобна. Даныя і налады застануцца без змен.</string>
+    <string name="home_posts">Твіты</string>
+    <string name="home_media">Медыя</string>
+    <string name="home_missing_page">Старонка адсутнічае</string>
+    <string name="home_two_pages_required">Патрабуецца не менш за дзве галоўных старонкі</string>
+    <string name="home_choose_pages">Выберыце старонкі</string>
+    <string name="home_unable_to_load_pages">Немагчыма загрузіць галоўную старонку</string>
+    <string name="feed_strip_unavailable">Гэта стужка больш недаступная</string>
+    <string name="home_feed_accounts_empty">Дадайце акаўнт, каб загрузіць «Для вас».</string>
+</resources>

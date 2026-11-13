@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">正在关注</string>
+    <string name="search">搜索</string>
+    <string name="settings">设置</string>
+    <string name="dismiss">关闭</string>
+    <string name="retry">重试</string>
+    <string name="back">返回</string>
+    <string name="close">关闭</string>
+    <string name="cancel">取消</string>
+    <string name="post">帖子</string>
+
+    <string name="pinned">已置顶</string>
+    <string name="reposted_by">%1$s 转帖了</string>
+    <string name="replying_to">回复给</string>
+    <string name="stat_reposts">转帖</string>
+    <string name="stat_quotes">引用</string>
+    <string name="stat_likes">喜欢</string>
+
+    <string name="ago_seconds">%1$d秒</string>
+    <string name="ago_minutes">%1$d分钟</string>
+    <string name="ago_hours">%1$d小时</string>
+
+    <string name="problem_rate_limited">X 正在限制这里的所有账号。请几分钟后再试。</string>
+    <string name="problem_offline">无法连接到 X。</string>
+    <string name="problem_signing">无法准备 X 请求的签名。请稍后再试。</string>
+    <string name="problem_refused">X 拒绝了请求（%1$d）。</string>
+    <string name="problem_other">读取 X 时出了点问题。</string>
+
+    <string name="import_intro">XTA Native 是专为 Android 编写的 XTA，用来与 XTA 比较。它用你在 XTA 中已经使用的账号读取 X。</string>
+    <string name="import_steps">在 XTA 中打开 设置 → 数据 → 导出，开启“导出账户”，导出后在这里选择该文件。</string>
+    <string name="import_choose">选择 XTA 备份</string>
+    <string name="import_choose_another">选择其他文件</string>
+    <string name="import_no_accounts">此备份中没有 X 账号：请开启“导出账户”后重新导出。</string>
+    <string name="import_use">使用此备份</string>
+    <string name="import_privacy">备份中包含你的 X 会话。XTA Native 把它们保存在这部手机上，只发送给 X，并且从不在那里发帖、点赞或关注任何内容。</string>
+
+    <string name="settings_clear">全部移除</string>
+    <string name="settings_clear_explained">从 XTA Native 中移除 X 会话和关注的账号。XTA 本身会保留一切。</string>
+    <string name="settings_clear_confirm">移除</string>
+
+    <string name="card_from">来自 %1$s</string>
+    <plurals name="poll_votes">
+        <item quantity="other">%1$s 票</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="other">%1$d 条新帖子</item>
+    </plurals>
+    <string name="problem_x_private">个人简介</string>
+    <string name="problem_x_missing">Twitter 说该页面不存在，但这可能不是真的</string>
+    <string name="problem_x_user_missing">未找到用户</string>
+    <string name="problem_x_suspended">账号已被冻结</string>
+    <string name="problem_x_forbidden">Twitter 表示禁止访问此内容</string>
+    <string name="problem_x_guest">Twitter 使我们的访问令牌无效。请尝试重新打开 XTA！</string>
+</resources>

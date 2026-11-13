@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Read failures as XTA's full-page errors say them (lib/ui/errors.dart), and closing the app. -->
+<resources>
+    <string name="problem_no_account_title">Praegu pole ühtegi kontot saadaval</string>
+    <string name="problem_no_account_text">XTA vajab töötamiseks vähemalt ühte 𝕏 kontot. Alustamiseks lisa konto.</string>
+    <string name="problem_rate_limited_title">𝕏 piiras päringuid</string>
+    <string name="problem_rate_limited_text">Tegite liiga lühikese ajaga liiga palju päringuid. Proovige hiljem uuesti või lisage teine konto, et XTA edasi kasutada.</string>
+    <string name="problem_no_working_account_title">Sinu kontod ei tööta</string>
+    <string name="problem_no_working_account_text">Tundub, et ükski sinu konto ei tööta praegu. Logi sisse teise kontoga või proovi hiljem uuesti.</string>
+    <string name="problem_endpoint_refused_title">𝕏 lükkas selle päringu tagasi</string>
+    <string name="problem_endpoint_refused_text">Selles 𝕏 osas lükati tagasi kõik kontod, seega asi pole tõenäoliselt sinu kontodes. Ilmselt muutis 𝕏 midagi; rakendus parandab end ise, kui saab. Proovi mõne aja pärast uuesti.</string>
+    <string name="problem_signing_title">X-i päringute allkirjastamine pole saadaval</string>
+    <string name="problem_signing_text">XTA ei suutnud tuletada tehingutunnust, mida X praegu nõuab. Sinu kontod võivad olla korras; proovi varsti uuesti või vaata Diagnostikat.</string>
+    <string name="problem_offline_title">Puudub ühendus X-iga</string>
+    <string name="problem_offline_text">Palun kontrolli oma võrguühendust.</string>
+    <string name="problem_timed_out_title">Päring aegus</string>
+    <string name="problem_timed_out_text">Andmete laadimine kestab liiga kaua. Palun vaata, kas sinu internetiühendus toimib!</string>
+    <string name="problem_service_unavailable_title">X pole ajutiselt saadaval</string>
+    <string name="problem_service_unavailable_text">X tagastas serveri vea. Saad edasi lugeda vahemällu salvestatud postitusi ja hiljem uuesti proovida.</string>
+    <string name="problem_request_unavailable_title">See päring pole saadaval</string>
+    <string name="problem_request_unavailable_text">X lükkas selle päringu tagasi. See võib olla ajutiselt kättesaamatu või on see teenuse osa muutunud.</string>
+    <string name="problem_oops">Hopsti! Midagi läks nüüd viltu 🥲</string>
+    <string name="problem_http_text">X tagastas HTTP %1$d.</string>
+    <string name="problem_retry_in">Proovi uuesti %1$s pärast</string>
+    <string name="close_app_confirm">Kas sa oled kindel, et soovid panna XTA'i kinni?</string>
+    <string name="problem_unable_to_load_the_community">Kogukonda ei õnnestunud laadida</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">Ei õnnestu laadida riike ja piirkondi, mille kohta kuvada hetkel populaarsemaid viiteid ja otsinguid.</string>
+    <string name="problem_unable_to_load_the_members">Liikmeid ei õnnestunud laadida</string>
+    <string name="problem_unable_to_load_the_list_of_follows">Jälgijate loendi laadimine ei õnnestu</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">Jälgijate loendi järgmise lehe laadimine ei õnnestu</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">Säutsude järgmise lehe laadimine ei õnnestu</string>
+    <string name="problem_unable_to_load_the_tweets">Säutsude laadimine ei õnnestu</string>
+    <string name="problem_connection_failed">Ühendus nurjus</string>
+    <string name="problem_sign_in_needed">Jätkamiseks logi uuesti sisse</string>
+    <string name="problem_rate_limit_hint">See allikas piirab päringuid. Proovi hiljem uuesti.</string>
+    <string name="problem_more_info">Lisateave</string>
+    <string name="problem_auto_retry_seconds">Proovin uuesti %1$d s pärast…</string>
+    <string name="problem_auto_retry_in">Proovin uuesti %1$s pärast…</string>
+    <string name="problem_cached_content">Allika uuendamise ajal kuvatakse salvestatud koopiat.</string>
+    <string name="problem_source_loading">See allikas alles laadib. Teised postitused on juba loetavad.</string>
+    <string name="problem_saved_at">Kuvatakse postitusi, mis salvestati kell %1$s</string>
+    <string name="problem_saved_earlier">Kuvatakse varem salvestatud postitusi</string>
+</resources>

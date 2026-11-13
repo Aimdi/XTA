@@ -1,0 +1,174 @@
+package com.aimdi.xtanative.plugins.threads
+
+import com.aimdi.xtanative.core.json.J
+import com.aimdi.xtanative.networks.threads.ThreadsImage
+import com.aimdi.xtanative.networks.threads.ThreadsLinkCard
+import com.aimdi.xtanative.networks.threads.ThreadsMedia
+import com.aimdi.xtanative.networks.threads.ThreadsPost
+import com.aimdi.xtanative.networks.threads.ThreadsTextFragment
+import com.aimdi.xtanative.networks.threads.ThreadsVideoRendition
+import com.aimdi.xtanative.store.backup.XtaTime
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+
+/**
+ * A post as XTA keeps it where a post outlives its page (threads_models.dart's
+ * `toJson` and `fromSnapshot`): the liked posts and the tab's restart
+ * snapshot, in the preferences XTA writes them to, so both apps read each
+ * other's. Its media are four lists side by side, every video rendition kept;
+ * a quote is kept one level deep. `imageSizes`, a list XTA does not read,
+ * keeps every size Meta offered of each picture, so a kept post's tiles
+ * still load one that fits them. Meta's cover over the media and the
+ * card's facts are kept too, so a liked post is covered and labelled as it was.
+ */
+internal object ThreadsPostJson {
+    fun list(text: String): List<ThreadsPost> = J.parse(text).list.mapNotNull(::post)
+
+    fun listText(posts: List<ThreadsPost>): String = JsonArray(posts.map(::json)).toString()
+
+    /** The post [row] keeps; null without an id. */
+    fun post(row: J): ThreadsPost? {
+        if (row.raw !is JsonObject) return null
+        val id = row["id"].string.orEmpty()
+        if (id.isEmpty()) return null
+        val handle = row["handle"].string.orEmpty()
+        val replyTo = row["replyToHandle"].string
+        return ThreadsPost(
+            id = id,
+            handle = handle,
+            authorName = row["authorName"].string ?: handle,
+            text = row["text"].string.orEmpty(),
+            avatarUrl = row["avatarUrl"].string,
+            media = media(row),
+            publishedAt = XtaTime.parse(row["publishedAt"].string),
+            url = row["url"].string,
+            likeCount = count(row["likeCount"]),
+            replyCount = count(row["replyCount"]),
+            repostCount = count(row["repostCount"]),
+            quoteCount = count(row["quoteCount"]),
+            linkCard = linkCard(row["linkCard"]),
+            quoted = row["quoted"].takeIf { it.raw is JsonObject }?.let(::post)?.copy(quoted = null),
+            topicTag = row["topicTag"].string,
+            fragments = row["fragments"].list.mapNotNull(::fragment),
+            selfThreadCount = count(row["selfThreadCount"])?.toInt() ?: 0,
+            repostedByHandle = row["repostedByHandle"].string,
+            repostedByName = row["repostedByName"].string,
+            isVerified = row["isVerified"].boolean ?: false,
+            replyToHandle = replyTo,
+            isReply = row["isReply"].boolean ?: !replyTo.isNullOrEmpty(),
+            facts = ThreadsFactsJson.facts(row["facts"]),
+            mediaCovered = row["mediaCovered"].boolean == true,
+            mediaCoverWords = row["mediaCoverWords"].string?.ifEmpty { null },
+        )
+    }
+
+    fun json(post: ThreadsPost): JsonObject = JsonObject(
+        fields(post) + cover(post),
+    )
+
+    private fun cover(post: ThreadsPost): Map<String, JsonElement> = listOfNotNull(
+        ("mediaCovered" to JsonPrimitive(true)).takeIf { post.mediaCovered },
+        post.mediaCoverWords?.let { "mediaCoverWords" to JsonPrimitive(it) },
+    ).toMap()
+
+    /** XTA's keys; Meta's cover over the media is written beside them only when there is one. */
+    private fun fields(post: ThreadsPost): Map<String, JsonElement> =
+        mapOf(
+            "id" to text(post.id),
+            "handle" to text(post.handle),
+            "authorName" to text(post.authorName),
+            "avatarUrl" to text(post.avatarUrl),
+            "text" to text(post.text),
+            "images" to JsonArray(post.media.map { text(it.url) }),
+            "imageAspects" to JsonArray(post.media.map { media -> media.aspectRatio?.let(::JsonPrimitive) ?: JsonNull }),
+            "imageAlts" to JsonArray(post.media.map { text(it.alt) }),
+            "imageSizes" to JsonArray(post.media.map { media -> JsonArray(media.images.map(::image)) }),
+            "videoUrls" to JsonArray(post.media.map { text(it.videoUrl) }),
+            "videoRenditions" to JsonArray(post.media.map { media -> JsonArray(media.renditions.map(::rendition)) }),
+            "imageGifs" to JsonArray(post.media.map { JsonPrimitive(it.isGif) }),
+            "publishedAt" to text(post.publishedAt?.let(XtaTime::iso)),
+            "url" to text(post.url),
+            "likeCount" to number(post.likeCount),
+            "replyCount" to number(post.replyCount),
+            "repostCount" to number(post.repostCount),
+            "quoteCount" to number(post.quoteCount),
+            "linkCard" to (post.linkCard?.let(::card) ?: JsonNull),
+            "quoted" to (post.quoted?.let { json(it.copy(quoted = null)) } ?: JsonNull),
+            "topicTag" to text(post.topicTag),
+            "fragments" to JsonArray(post.fragments.map(::fragment)),
+            "selfThreadCount" to JsonPrimitive(post.selfThreadCount),
+            "repostedByHandle" to text(post.repostedByHandle),
+            "repostedByName" to text(post.repostedByName),
+            "isVerified" to JsonPrimitive(post.isVerified),
+            "replyToHandle" to text(post.replyToHandle),
+            "isReply" to JsonPrimitive(post.isReply),
+            "facts" to ThreadsFactsJson.json(post.facts),
+        )
+
+    /**
+     * The pictures and videos, from XTA's lists side by side. A post kept
+     * before renditions were plays the one file it kept.
+     */
+    private fun media(row: J): List<ThreadsMedia> = row["images"].list.mapIndexedNotNull { index, image ->
+        val url = image.string ?: return@mapIndexedNotNull null
+        val kept = row["videoRenditions"][index].list.mapNotNull(::rendition)
+        val single = row["videoUrls"][index].string?.takeIf { it.isNotEmpty() }?.let { listOf(ThreadsVideoRendition(it)) }.orEmpty()
+        // Sizes kept for another address are not this picture's: XTA may have rewritten the post since.
+        val sizes = row["imageSizes"][index].list.mapNotNull(::image).takeIf { it.firstOrNull()?.url == url }.orEmpty()
+        ThreadsMedia(url, row["imageAspects"][index].double, row["imageAlts"][index].string, kept.ifEmpty { single }, sizes, isGif = row["imageGifs"][index].boolean == true)
+    }
+
+    private fun image(image: ThreadsImage): JsonObject =
+        JsonObject(mapOf("url" to text(image.url), "width" to number(image.width?.toLong()), "height" to number(image.height?.toLong())))
+
+    private fun image(row: J): ThreadsImage? {
+        val url = row["url"].string?.takeIf { it.isNotEmpty() } ?: return null
+        return ThreadsImage(url, size(row["width"]), size(row["height"]))
+    }
+
+    private fun rendition(rendition: ThreadsVideoRendition): JsonObject =
+        JsonObject(mapOf("url" to text(rendition.url), "width" to number(rendition.width?.toLong()), "height" to number(rendition.height?.toLong())))
+
+    private fun rendition(row: J): ThreadsVideoRendition? {
+        val url = row["url"].string?.takeIf { it.isNotEmpty() } ?: return null
+        return ThreadsVideoRendition(url, size(row["width"]), size(row["height"]))
+    }
+
+    private fun card(card: ThreadsLinkCard): JsonObject = JsonObject(
+        mapOf(
+            "url" to text(card.url),
+            "title" to text(card.title),
+            "description" to text(card.description),
+            "imageUrl" to text(card.imageUrl),
+            "providerName" to text(card.providerName),
+        ),
+    )
+
+    private fun linkCard(row: J): ThreadsLinkCard? {
+        val url = row["url"].string?.takeIf { it.isNotEmpty() } ?: return null
+        return ThreadsLinkCard(url, row["title"].string, row["description"].string, row["imageUrl"].string, row["providerName"].string)
+    }
+
+    fun fragment(fragment: ThreadsTextFragment): JsonObject = JsonObject(
+        mapOf("kind" to text(fragment.kind.name.lowercase()), "text" to text(fragment.text), "target" to text(fragment.target)) +
+            (if (fragment.spoiler) mapOf("spoiler" to JsonPrimitive(true)) else emptyMap()),
+    )
+
+    fun fragment(row: J): ThreadsTextFragment? {
+        val kind = ThreadsTextFragment.Kind.entries.firstOrNull { it.name.lowercase() == row["kind"].string } ?: return null
+        val words = row["text"].string ?: return null
+        return ThreadsTextFragment(kind, words, row["target"].string, spoiler = row["spoiler"].boolean == true)
+    }
+
+    /** A count as XTA's `_snapshotCount` reads one: any number, cut to its whole part. */
+    private fun count(value: J): Long? = (value.raw as? JsonPrimitive)?.takeIf { !it.isString }?.let { value.double?.toLong() }
+
+    private fun size(value: J): Int? = count(value)?.toInt()?.takeIf { it > 0 }
+
+    private fun text(value: String?): JsonElement = value?.let(::JsonPrimitive) ?: JsonNull
+
+    private fun number(value: Long?): JsonElement = value?.let(::JsonPrimitive) ?: JsonNull
+}

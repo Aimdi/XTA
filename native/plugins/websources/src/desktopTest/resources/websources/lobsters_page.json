@@ -1,0 +1,9 @@
+[
+  {"short_id": "abc", "title": "Rust &amp; Dart", "url": "https://example.org/a", "submitter_user": "ann",
+   "created_at": "2026-10-29T08:00:00.000-05:00", "score": 12, "comment_count": 3,
+   "comments_url": "https://lobste.rs/s/abc", "tags": ["rust", "dart"]},
+  {"short_id": "def", "title": "Ask: editors", "url": "", "submitter_user": "bo",
+   "created_at": "2026-10-28T08:00:00Z", "score": "4", "comment_count": 0,
+   "comments_url": "https://lobste.rs/s/def", "tags": []},
+  {"title": "No id or link"}
+]

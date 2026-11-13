@@ -1,0 +1,27 @@
+[
+  {
+    "chainId": "ethereum",
+    "pairAddress": "0xother",
+    "baseToken": {"address": "0x2222222222222222222222222222222222222222", "name": "Other", "symbol": "OTHER"},
+    "quoteToken": {"address": "0x1111111111111111111111111111111111111111", "name": "Same", "symbol": "SAME"},
+    "priceUsd": "9000",
+    "liquidity": {"usd": 1000}
+  },
+  {
+    "chainId": "base",
+    "pairAddress": "0xbase",
+    "baseToken": {"address": "0x1111111111111111111111111111111111111111", "name": "Same", "symbol": "SAME"},
+    "quoteToken": {"address": "0x4200000000000000000000000000000000000006", "name": "Wrapped Ether", "symbol": "WETH"},
+    "priceUsd": "8000",
+    "liquidity": {"usd": 900}
+  },
+  {
+    "chainId": "ethereum",
+    "pairAddress": "0xsame",
+    "baseToken": {"address": "0x1111111111111111111111111111111111111111", "name": "Same", "symbol": "SAME"},
+    "quoteToken": {"address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", "name": "Wrapped Ether", "symbol": "WETH"},
+    "priceUsd": "0.05",
+    "priceChange": {"h24": 3},
+    "liquidity": {"usd": 100}
+  }
+]

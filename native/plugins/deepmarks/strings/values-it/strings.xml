@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Deepmarks</string>
+    <string name="plugin_description">Salva i post su Deepmarks, il servizio di segnalibri su Nostr</string>
+    <string name="settings_intro">Deepmarks salva i segnalibri come eventi Nostr firmati. La tua chiave di firma non lascia mai questo dispositivo: il post viene firmato qui e viene inviato solo l’evento finito.</string>
+    <string name="lifetime_notice">L’accesso all’API richiede un abbonamento a vita a Deepmarks.</string>
+    <string name="api_key">Chiave API</string>
+    <string name="api_key_hint">Inizia con dmk_live_, da «api access» nelle impostazioni di Deepmarks</string>
+    <string name="identity">Identità di firma</string>
+    <string name="secret_key">Chiave di firma</string>
+    <string name="secret_key_hint">Il tuo nsec, resta solo su questo dispositivo. Firma ogni segnalibro e non viene mai inviato a Deepmarks.</string>
+    <string name="signing_as">Firma come %1$s</string>
+    <string name="api_base">Indirizzo del server</string>
+    <string name="test">Prova la connessione</string>
+    <string name="test_ok">Connesso a Deepmarks</string>
+    <string name="test_ok_unverified">Chiave accettata, ma l’account non ha ancora segnalibri pubblici con cui verificare la chiave di firma</string>
+    <string name="not_configured">Inserisci prima la chiave API e la chiave di firma di Deepmarks</string>
+    <string name="error_secret_key">Non è un nsec valido né una chiave esadecimale di 64 caratteri</string>
+    <string name="error_unauthorized">Deepmarks ha rifiutato la chiave API</string>
+    <string name="error_lifetime">L’API di Deepmarks è solo per i membri a vita</string>
+    <string name="error_key_mismatch">La tua chiave di firma appartiene a un account Deepmarks diverso dalla chiave API</string>
+    <string name="error_rejected">Deepmarks ha rifiutato questo segnalibro</string>
+    <string name="error_rate_limited">Troppe richieste, riprova tra poco</string>
+    <string name="error_server">Nessuna API Deepmarks ha risposto a questo indirizzo</string>
+    <string name="error_network">Impossibile raggiungere Deepmarks</string>
+    <string name="learn_more">Informazioni su Deepmarks</string>
+    <string name="save_action">Salva su Deepmarks</string>
+    <string name="saved">Salvato su Deepmarks</string>
+    <string name="saved_no_relay">Inviato a Deepmarks, ma nessun relay lo ha ancora accettato</string>
+    <string name="saving">Salvataggio su Deepmarks…</string>
+    <string name="show">Mostra</string>
+    <string name="hide">Nascondi</string>
+    <string name="save">Salva</string>
+    <string name="connection">Connessione</string>
+</resources>

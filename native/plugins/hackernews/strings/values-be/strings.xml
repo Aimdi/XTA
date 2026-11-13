@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Hacker News</string>
+    <string name="plugin_description">Чытайце Hacker News без акаўнта. Сэрцы і закладкі застаюцца на гэтай прыладзе.</string>
+    <string name="tab_top">Топ</string>
+    <string name="tab_new">Новыя</string>
+    <string name="tab_best">Найлепшыя</string>
+    <string name="tab_ask">Ask</string>
+    <string name="tab_show">Show</string>
+    <string name="tab_jobs">Вакансіі</string>
+    <string name="tab_saved">Захаваныя</string>
+    <string name="tab_following">Падпіскі</string>
+    <string name="search">Пошук у Hacker News</string>
+    <string name="settings">Налады</string>
+    <string name="feed_empty">Пакуль тут пуста</string>
+    <string name="saved_empty">Пакуль няма захаваных гісторый — закладкі застаюцца на гэтай прыладзе</string>
+    <string name="following_empty">Падпішыцеся на кагосьці, каб бачыць гісторыі тут</string>
+    <string name="by">ад %1$s</string>
+    <string name="like">Падабаецца на гэтай прыладзе</string>
+    <string name="unlike">Прыбраць «падабаецца» з гэтай прылады</string>
+    <string name="save">Захаваць на гэтай прыладзе</string>
+    <string name="unsave">Выдаліць з гэтай прылады</string>
+    <string name="comments">Каментарыі</string>
+    <string name="open_article">Адкрыць артыкул</string>
+    <string name="deleted">[выдалена]</string>
+    <string name="user_empty">Няма публічных публікацый</string>
+    <string name="follow">Падпісацца на гэтай прыладзе</string>
+    <string name="unfollow">Адпісацца</string>
+    <string name="search_hint">Шукаць гісторыі</string>
+    <string name="search_empty">Нічога не знойдзена</string>
+    <string name="settings_blurb">Без уваходу. Галасы і каментарыі застаюцца на Hacker News. Сэрцы і закладкі застаюцца на гэтай прыладзе.</string>
+    <plurals name="points">
+        <item quantity="one">%1$d бал</item>
+        <item quantity="few">%1$d балы</item>
+        <item quantity="many">%1$d балаў</item>
+        <item quantity="other">%1$d бала</item>
+    </plurals>
+    <plurals name="comment_count">
+        <item quantity="one">%1$d каментарый</item>
+        <item quantity="few">%1$d каментарыі</item>
+        <item quantity="many">%1$d каментарыяў</item>
+        <item quantity="other">%1$d каментарыя</item>
+    </plurals>
+    <plurals name="user_karma">
+        <item quantity="one">%1$d karma</item>
+        <item quantity="other">%1$d karma</item>
+    </plurals>
+    <string name="more_options">Дадатковыя параметры</string>
+</resources>

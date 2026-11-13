@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Read failures as XTA's full-page errors say them (lib/ui/errors.dart), and closing the app. -->
+<resources>
+    <string name="problem_no_account_title">अभी कोई खाता उपलब्ध नहीं है</string>
+    <string name="problem_no_account_text">XTA को काम करने के लिए कम से कम एक 𝕏 खाते की आवश्यकता है। शुरू करने के लिए एक खाता जोड़ें।</string>
+    <string name="problem_rate_limited_title">𝕏 ने अनुरोध सीमित कर दिए</string>
+    <string name="problem_rate_limited_text">आपने बहुत कम समय में बहुत अधिक अनुरोध कर दिए हैं। बाद में पुनः प्रयास करें या XTA का उपयोग जारी रखने के लिए कोई अन्य खाता जोड़ें।</string>
+    <string name="problem_no_working_account_title">आपके खाते काम नहीं कर रहे</string>
+    <string name="problem_no_working_account_text">ऐसा लगता है कि आपका कोई भी खाता अभी काम नहीं कर रहा है। किसी अन्य खाते से लॉग इन करें या बाद में पुनः प्रयास करें।</string>
+    <string name="problem_endpoint_refused_title">𝕏 ने यह अनुरोध ठुकरा दिया</string>
+    <string name="problem_endpoint_refused_text">𝕏 के इस हिस्से में सभी खाते अस्वीकार हुए, इसलिए समस्या शायद आपके खातों की नहीं है। संभवतः 𝕏 ने कुछ बदला है; ऐप जब संभव हो खुद ठीक हो जाता है। थोड़ी देर बाद फिर कोशिश करें।</string>
+    <string name="problem_signing_title">X अनुरोधों पर हस्ताक्षर उपलब्ध नहीं है</string>
+    <string name="problem_signing_text">XTA वह ट्रांज़ैक्शन टोकन नहीं बना सका जो X अभी माँगता है। आपके खाते शायद ठीक हैं; थोड़ी देर बाद फिर कोशिश करें या निदान देखें।</string>
+    <string name="problem_offline_title">X से संपर्क नहीं किया जा सका</string>
+    <string name="problem_offline_text">कृपया अपना इंटरनेट कनेक्शन जाँचें।</string>
+    <string name="problem_timed_out_title">समय समाप्त</string>
+    <string name="problem_timed_out_text">इसे लोड होने में बहुत समय लगा। कृपया अपना नेटवर्क कनेक्शन जाँचें!</string>
+    <string name="problem_service_unavailable_title">X अस्थायी रूप से उपलब्ध नहीं है</string>
+    <string name="problem_service_unavailable_text">X ने सर्वर त्रुटि लौटाई। आप कैश की गई पोस्ट पढ़ते रह सकते हैं और बाद में फिर कोशिश कर सकते हैं।</string>
+    <string name="problem_request_unavailable_title">यह अनुरोध उपलब्ध नहीं है</string>
+    <string name="problem_request_unavailable_text">X ने यह अनुरोध अस्वीकार कर दिया। यह अस्थायी रूप से उपलब्ध नहीं हो सकता या सेवा का यह हिस्सा बदल गया हो सकता है।</string>
+    <string name="problem_oops">ओह! कुछ गलत हो गया 🥲</string>
+    <string name="problem_http_text">X ने HTTP %1$d लौटाया।</string>
+    <string name="problem_retry_in">%1$s बाद फिर प्रयास करें</string>
+    <string name="close_app_confirm">क्या आप XTA बंद करना चाहते हैं?</string>
+    <string name="problem_unable_to_load_the_community">समुदाय लोड नहीं हो सका</string>
+    <string name="problem_unable_to_find_the_available_trend_locations">उपलब्ध ट्रेंड स्थान नहीं मिले।</string>
+    <string name="problem_unable_to_load_the_members">सदस्य लोड नहीं हो सके</string>
+    <string name="problem_unable_to_load_the_list_of_follows">अनुसरण की सूची लोड नहीं की जा सकी</string>
+    <string name="problem_unable_to_load_the_next_page_of_follows">अनुसरण का अगला पृष्ठ लोड नहीं किया जा सका</string>
+    <string name="problem_unable_to_load_the_next_page_of_tweets">पोस्ट का अगला पृष्ठ लोड नहीं किया जा सका</string>
+    <string name="problem_unable_to_load_the_tweets">पोस्ट लोड नहीं की जा सकीं</string>
+    <string name="problem_connection_failed">कनेक्शन विफल</string>
+    <string name="problem_sign_in_needed">जारी रखने के लिए फिर से साइन इन करें</string>
+    <string name="problem_rate_limit_hint">यह स्रोत अनुरोधों को सीमित कर रहा है। बाद में कोशिश करें।</string>
+    <string name="problem_more_info">अधिक जानकारी</string>
+    <string name="problem_auto_retry_seconds">%1$d सेकंड बाद फिर प्रयास होगा…</string>
+    <string name="problem_auto_retry_in">%1$s बाद फिर प्रयास होगा…</string>
+    <string name="problem_cached_content">स्रोत अपडेट होने तक सहेजी गई कॉपी दिखाई जा रही है।</string>
+    <string name="problem_source_loading">यह स्रोत अभी लोड हो रहा है। अन्य पोस्ट पढ़ने के लिए तैयार हैं।</string>
+    <string name="problem_saved_at">%1$s पर सहेजी गई पोस्ट दिखाई जा रही हैं</string>
+    <string name="problem_saved_earlier">पहले सहेजी गई पोस्ट दिखाई जा रही हैं</string>
+</resources>

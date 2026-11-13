@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
+     Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="home_x">X</string>
+    <string name="home_search_in">Hledat v %1$s</string>
+    <string name="home_open_menu">Otevřít navigační nabídku</string>
+    <string name="home_add_timeline">Přidat timeline</string>
+    <string name="home_unread">Nepřečteno</string>
+    <string name="home_refresh">Obnovit</string>
+    <string name="home_open_group">Otevřít skupinu</string>
+    <string name="home_more_options">Další možnosti</string>
+        <string name="home_pin_to_bar_hint">Připnuté položky se zobrazí vedle sekcí, kdykoli je na liště místo. Vše zůstává i v této nabídce.</string>
+    <string name="home_keep_controls_visible">Vždy zobrazovat ovládací prvky</string>
+    <string name="home_pin_to_bar">Připnout na horní lištu</string>
+
+    <string name="home_strip_title">Timeline pluginů</string>
+    <string name="home_strip_intro">Připněte nainstalované pluginy vedle „Pro vás“. Přetažením změníte pořadí. Další najdete v obchodě pluginů.</string>
+    <string name="home_strip_pinned">Na tomto pruhu</string>
+    <string name="home_strip_available">K dispozici</string>
+    <string name="home_strip_empty">Zatím není co připnout. Otevřete obchod pluginů pro Reddit, Pixiv, Mastodon a další.</string>
+    <string name="home_strip_remove">Odebrat z pruhu</string>
+    <string name="home_strip_reorder">Změnit pořadí</string>
+    <string name="home_plugin_store">Obchod s pluginy</string>
+
+    <string name="home_subscriptions">Odběry</string>
+    <string name="home_discover">Objevovat</string>
+    <string name="home_saved">Uloženo</string>
+    <string name="home_downloads">Stahování</string>
+    <string name="home_antennas">Antény</string>
+    <string name="home_deck">Sloupce</string>
+    <string name="home_deck_empty">Připněte skupiny a uvidíte je na širokém displeji vedle sebe</string>
+    <string name="home_groups">Skupiny</string>
+    <string name="home_no_groups">Zatím žádné skupiny</string>
+    <string name="home_no_results">Žádné výsledky</string>
+    <plurals name="home_group_members">
+        <item quantity="one">%1$d odběr</item>
+        <item quantity="few">%1$d odběry</item>
+        <item quantity="many">%1$d odběrů</item>
+        <item quantity="other">%1$d odběrů</item>
+    </plurals>
+
+    <string name="home_feed_accounts">Účty hlavní chronologie</string>
+    <string name="home_filter_accounts">Účty</string>
+    <string name="home_filter_accounts_explained">Vypněte náhradní účty, které držíte jen kvůli limitům. Pro vás sloučí časové osy zapnutých účtů; Sledování dál používá místní odběry, ale při načítání přeskočí vypnuté. Komentáře a profily můžou v případě potřeby použít kterýkoli účet.</string>
+    <string name="home_filter_groups_explained">Vypněte skupinu, aby se její členové skryli ze Sledování. Karta skupiny zůstane. Jejich příspěvky zmizí i z Pro vás.</string>
+    <string name="home_filter_only_hint">Dlouhým stisknutím položky necháte zapnutou jen ji.</string>
+    <string name="home_filter_keep_one">Alespoň jeden účet musí zůstat zapnutý</string>
+    <string name="home_filter_count">%1$d / %2$d</string>
+    <string name="home_filter_all">Vše</string>
+    <string name="home_filter_none">Nic</string>
+    <string name="home_filter_reset">Obnovit filtry</string>
+    <string name="home_filter_apply">Použít</string>
+
+    <string name="home_for_you_empty">Příspěvky zdroje se nepodařilo načíst</string>
+    <string name="home_for_you_no_account">Chcete-li načíst Pro vás, importujte zálohu XTA i s jejími účty.</string>
+    <string name="home_import">Importovat zálohu XTA</string>
+
+    <string name="home_home">Domů</string>
+    <string name="home_networks">Sítě</string>
+    <string name="home_networks_recent">Nedávné</string>
+    <string name="home_networks_all">Všechny sítě</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">Seskupit mikroblogovací služby</string>
+    <string name="home_alt_microblogging_group_detail">Zobrazit Mastodon, Bluesky a Threads v jedné sekci na hlavní obrazovce. Vypnutím je znovu oddělíte. Data a nastavení zůstanou zachována.</string>
+    <string name="home_posts">Tweety</string>
+    <string name="home_media">Média</string>
+    <string name="home_missing_page">Chybějící stránka</string>
+    <string name="home_two_pages_required">Musíte mít alespoň 2 stránky domovské obrazovky.</string>
+    <string name="home_choose_pages">Vybrat stránky</string>
+    <string name="home_unable_to_load_pages">Nepodařilo se načíst vaše domovské stránky</string>
+    <string name="feed_strip_unavailable">Tato timeline už není dostupná</string>
+    <string name="home_feed_accounts_empty">Přidejte účet pro načtení Pro vás.</string>
+</resources>

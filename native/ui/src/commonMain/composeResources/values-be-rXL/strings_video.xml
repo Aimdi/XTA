@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="video_fullscreen">Na ŭvieś ekran</string>
+    <string name="video_fullscreen_exit">Vyjsci z poŭnaekrannaha režymu</string>
+    <string name="video_picture_in_picture">Vidarys u vidarysie</string>
+</resources>

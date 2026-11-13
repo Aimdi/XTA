@@ -1,0 +1,37 @@
+{
+  "items": [
+    {
+      "thread_items": [
+        {
+          "post": {
+            "pk": 3420000000000000001,
+            "code": "DHhome0001",
+            "taken_at": 1761960000,
+            "caption": { "text": "For you, first" },
+            "user": { "pk": 1, "username": "Meta", "full_name": "Meta", "is_verified": true }
+          }
+        },
+        {
+          "post": {
+            "pk": 3420000000000000002,
+            "code": "DHhome0002",
+            "taken_at": 1761960060,
+            "caption": { "text": "A reply someone else wrote" },
+            "user": { "username": "ola", "full_name": "Ola" }
+          }
+        }
+      ]
+    },
+    {
+      "post": {
+        "pk": 3420000000000000003,
+        "code": "DHhome0003",
+        "taken_at": 1761950000,
+        "caption": { "text": "A post without its thread" },
+        "user": { "username": "maya", "full_name": "Maya" }
+      }
+    }
+  ],
+  "num_results": 2,
+  "status": "ok"
+}

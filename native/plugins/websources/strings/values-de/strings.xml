@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Web sources' text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Quelle hinzufügen</string>
+    <string name="add_link">Per Link hinzufügen</string>
+    <string name="back">Zurück</string>
+    <string name="cancel">Abbrechen</string>
+    <plurals name="comments">
+        <item quantity="one">%1$d Kommentar</item>
+        <item quantity="other">%1$d Kommentare</item>
+    </plurals>
+    <string name="consent_from">Von %1$s</string>
+    <string name="consent_read_only">Sie kann nur öffentliche Seiten lesen. Sie kann deine Konten nicht nutzen und nichts veröffentlichen.</string>
+    <string name="consent_sites">Sie liest Seiten dieser Websites:</string>
+    <string name="consent_title">%1$s hinzufügen?</string>
+    <string name="discussion">Diskussion</string>
+    <string name="empty">Noch keine Quellen. Füge eine aus der veröffentlichten Liste oder per Link hinzu.</string>
+    <string name="failure_blocked">Diese Seite liegt auf keiner Website, die die Quelle aufführt.</string>
+    <string name="failure_status">Die Website antwortete mit Fehler %1$s.</string>
+    <string name="failure_too_large">Diese Seite ist zu groß zum Lesen.</string>
+    <string name="failure_unreachable">Die Website war nicht erreichbar.</string>
+    <string name="follow">Folgen</string>
+    <string name="install">Hinzufügen</string>
+    <string name="installed">Hinzugefügt</string>
+    <string name="link">Link zur Quelle</string>
+    <string name="link_placeholder">https://example.org/source.json</string>
+    <string name="list_empty">Hier ist gerade nichts.</string>
+    <plurals name="lists">
+        <item quantity="one">%1$d Liste</item>
+        <item quantity="other">%1$d Listen</item>
+    </plurals>
+    <string name="more_options">Weitere Optionen</string>
+    <string name="ok">OK</string>
+    <string name="open_in_browser">Im Browser öffnen</string>
+    <string name="plugin_description">Füge einfache Websites aus einer veröffentlichten Liste oder per Link hinzu. Eine Quelle liest nur öffentliche Seiten und fragt, bevor sie eine neue Website liest.</string>
+    <string name="plugin_name">Webquellen</string>
+    <plurals name="points">
+        <item quantity="one">%1$d Punkt</item>
+        <item quantity="other">%1$d Punkte</item>
+    </plurals>
+    <string name="published">Veröffentlichte Quellen</string>
+    <string name="published_unreachable">Die veröffentlichte Liste konnte nicht geladen werden.</string>
+    <string name="reading">Quelle wird gelesen …</string>
+    <string name="refused_detail">Wo: %1$s</string>
+    <string name="refused_insecure">Diese Quelle würde eine Website lesen, die sie nicht aufführt, oder ohne HTTPS.</string>
+    <string name="refused_invalid">Die Datei dieser Quelle enthält einen Fehler.</string>
+    <string name="refused_newer">Diese Quelle braucht eine neuere Version von XTA.</string>
+    <string name="refused_too_large">Diese Quelle geht über das hinaus, was XTA erlaubt.</string>
+    <string name="refused_unreadable">Das ist keine Webquellen-Datei.</string>
+    <string name="remove">Quelle entfernen</string>
+    <string name="remove_confirm">%1$s entfernen? Die Listen, denen du daraus folgst, werden ebenfalls entfernt.</string>
+    <string name="retry">Erneut versuchen</string>
+    <string name="review_update">Update prüfen</string>
+    <string name="search_in">%1$s durchsuchen</string>
+    <string name="unfollow">Nicht mehr folgen</string>
+    <string name="unreachable">Die Datei der Quelle konnte nicht gelesen werden. Prüfe den Link und deine Verbindung.</string>
+    <string name="update_title">%1$s aktualisieren?</string>
+    <string name="in_home_feed">Gefolgte Listen in Folgend mischen</string>
+    <string name="in_home_feed_description">Neue Beiträge gefolgter Listen in der Folgend-Zeitleiste zeigen.</string>
+    <string name="settings">Einstellungen</string>
+</resources>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home: the strip, For you, the account menu, the deck and Home feed accounts.
+     Placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="home_x">X</string>
+    <string name="home_search_in">搜尋 %1$s</string>
+    <string name="home_open_menu">開啟導覽選單</string>
+    <string name="home_add_timeline">新增時間軸</string>
+    <string name="home_unread">未讀</string>
+    <string name="home_refresh">重新整理</string>
+    <string name="home_open_group">開啟群組</string>
+    <string name="home_more_options">更多選項</string>
+        <string name="home_pin_to_bar_hint">頂端列有空間時，已釘選的項目會顯示在分頁旁邊。所有項目也仍保留在此選單中。</string>
+    <string name="home_keep_controls_visible">一律顯示控制項</string>
+    <string name="home_pin_to_bar">釘選到頂端列</string>
+
+    <string name="home_strip_title">外掛時間軸</string>
+    <string name="home_strip_intro">將已安裝的外掛釘選在「為你推薦」旁。拖曳可重新排序。更多可在外掛商店安裝。</string>
+    <string name="home_strip_pinned">已釘選在此列</string>
+    <string name="home_strip_available">可新增</string>
+    <string name="home_strip_empty">尚無可釘選的外掛。開啟外掛商店安裝 Reddit、Pixiv、Mastodon 等。</string>
+    <string name="home_strip_remove">從此列移除</string>
+    <string name="home_strip_reorder">重新排序</string>
+    <string name="home_plugin_store">外掛商店</string>
+
+    <string name="home_subscriptions">訂閱</string>
+    <string name="home_discover">探索</string>
+    <string name="home_saved">已儲存</string>
+    <string name="home_downloads">下載</string>
+    <string name="home_antennas">天線</string>
+    <string name="home_deck">多欄</string>
+    <string name="home_deck_empty">釘選群組，在寬螢幕上並排查看</string>
+    <string name="home_groups">群組</string>
+    <string name="home_no_groups">尚無群組</string>
+    <string name="home_no_results">沒有結果</string>
+    <plurals name="home_group_members">
+        <item quantity="other">%1$d 個訂閱</item>
+    </plurals>
+
+    <string name="home_feed_accounts">主頁動態帳號</string>
+    <string name="home_filter_accounts">帳號</string>
+    <string name="home_filter_accounts_explained">關閉只為提高速率限制而保留的備用帳號。「為您推薦」合併仍開啟帳號的首頁時間軸；「追蹤中」仍使用本機訂閱，但抓取時會略過已關閉的帳號。留言與個人資料在需要時仍可使用任何帳號。</string>
+    <string name="home_filter_groups_explained">關閉群組後，成員會從「追蹤中」隱藏。群組自己的分頁仍在。他們的貼文也會從「為您推薦」拿掉。</string>
+    <string name="home_filter_only_hint">長按某一項即可只保留它開啟。</string>
+    <string name="home_filter_keep_one">至少要保留一個帳號開啟</string>
+    <string name="home_filter_count">%1$d / %2$d</string>
+    <string name="home_filter_all">全部</string>
+    <string name="home_filter_none">全不選</string>
+    <string name="home_filter_reset">重設篩選</string>
+    <string name="home_filter_apply">套用</string>
+
+    <string name="home_for_you_empty">無法載入這個動態的貼文</string>
+    <string name="home_for_you_no_account">請匯入含有帳號的 XTA 備份來載入「為您推薦」。</string>
+    <string name="home_import">匯入 XTA 備份</string>
+
+    <string name="home_home">主頁</string>
+    <string name="home_networks">網路</string>
+    <string name="home_networks_recent">最近使用</string>
+    <string name="home_networks_all">全部網路</string>
+    <string name="home_alt_microblogging">Mastodon &amp; Bluesky</string>
+    <string name="home_alt_microblogging_group">合併微網誌服務</string>
+    <string name="home_alt_microblogging_group_detail">在首頁的同一個區塊中顯示 Mastodon、Bluesky 和 Threads。關閉後恢復個別顯示。資料和設定維持不變。</string>
+    <string name="home_posts">推文</string>
+    <string name="home_media">媒體</string>
+    <string name="home_missing_page">遺失頁面</string>
+    <string name="home_two_pages_required">您需要至少有 2 個主畫面頁面。</string>
+    <string name="home_choose_pages">選擇頁面</string>
+    <string name="home_unable_to_load_pages">無法載入您的主頁</string>
+    <string name="feed_strip_unavailable">此時間軸已無法使用</string>
+    <string name="home_feed_accounts_empty">請新增帳號以載入「為你推薦」。</string>
+</resources>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Following a hashtag as a topic from its long press: XTA's own wording (lib/l10n), placeholders positional. -->
+<resources>
+    <string name="topic_follow">Thema folgen</string>
+    <string name="topic_following">Thema wird gefolgt</string>
+    <string name="topic_follow_done">%1$s wird jetzt gefolgt</string>
+    <string name="topic_unsubscribe">Deabonnieren</string>
+</resources>

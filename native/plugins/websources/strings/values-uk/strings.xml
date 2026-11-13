@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Web sources' text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Додати джерело</string>
+    <string name="add_link">Додати за посиланням</string>
+    <string name="back">Назад</string>
+    <string name="cancel">Скасувати</string>
+    <plurals name="comments">
+        <item quantity="one">%1$d коментар</item>
+        <item quantity="few">%1$d коментарі</item>
+        <item quantity="many">%1$d коментарів</item>
+        <item quantity="other">%1$d коментаря</item>
+    </plurals>
+    <string name="consent_from">З %1$s</string>
+    <string name="consent_read_only">Воно може лише читати загальнодоступні сторінки. Воно не може користуватися вашими обліковими записами чи щось публікувати.</string>
+    <string name="consent_sites">Воно читатиме сторінки з цих сайтів:</string>
+    <string name="consent_title">Додати %1$s?</string>
+    <string name="discussion">Обговорення</string>
+    <string name="empty">Джерел поки немає. Додайте джерело з опублікованого списку або за посиланням.</string>
+    <string name="failure_blocked">Цієї сторінки немає на сайтах зі списку джерела.</string>
+    <string name="failure_status">Сайт відповів помилкою %1$s.</string>
+    <string name="failure_too_large">Ця сторінка завелика, щоб її прочитати.</string>
+    <string name="failure_unreachable">Не вдалося зв’язатися із сайтом.</string>
+    <string name="follow">Стежити</string>
+    <string name="install">Додати</string>
+    <string name="installed">Додано</string>
+    <string name="link">Посилання на джерело</string>
+    <string name="link_placeholder">https://example.org/source.json</string>
+    <string name="list_empty">Тут поки нічого немає.</string>
+    <plurals name="lists">
+        <item quantity="one">%1$d список</item>
+        <item quantity="few">%1$d списки</item>
+        <item quantity="many">%1$d списків</item>
+        <item quantity="other">%1$d списку</item>
+    </plurals>
+    <string name="more_options">Інші дії</string>
+    <string name="ok">Добре</string>
+    <string name="open_in_browser">Відкрити у браузері</string>
+    <string name="plugin_description">Додавайте прості сайти з опублікованого списку або за посиланням. Джерело читає лише загальнодоступні сторінки й питає, перш ніж читати новий сайт.</string>
+    <string name="plugin_name">Вебджерела</string>
+    <plurals name="points">
+        <item quantity="one">%1$d бал</item>
+        <item quantity="few">%1$d бали</item>
+        <item quantity="many">%1$d балів</item>
+        <item quantity="other">%1$d бала</item>
+    </plurals>
+    <string name="published">Опубліковані джерела</string>
+    <string name="published_unreachable">Не вдалося завантажити опублікований список.</string>
+    <string name="reading">Читаємо джерело…</string>
+    <string name="refused_detail">Де: %1$s</string>
+    <string name="refused_insecure">Це джерело читало б сайт, якого немає в його списку, або без HTTPS.</string>
+    <string name="refused_invalid">У файлі цього джерела помилка.</string>
+    <string name="refused_newer">Цьому джерелу потрібна новіша версія XTA.</string>
+    <string name="refused_too_large">Це джерело виходить за межі того, що дозволяє XTA.</string>
+    <string name="refused_unreadable">Це не файл вебджерела.</string>
+    <string name="remove">Видалити джерело</string>
+    <string name="remove_confirm">Видалити %1$s? Списки, на які ви підписані в ньому, теж буде видалено.</string>
+    <string name="retry">Повторити</string>
+    <string name="review_update">Переглянути оновлення</string>
+    <string name="search_in">Шукати в %1$s</string>
+    <string name="unfollow">Відписатися</string>
+    <string name="unreachable">Не вдалося прочитати файл джерела. Перевірте посилання й підключення.</string>
+    <string name="update_title">Оновити %1$s?</string>
+    <string name="in_home_feed">Змішувати підписані списки в стрічці «Читаю»</string>
+    <string name="in_home_feed_description">Показувати нові дописи з підписаних списків у стрічці «Читаю».</string>
+    <string name="settings">Налаштування</string>
+</resources>

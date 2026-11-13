@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Crash reports and the screens shown when something breaks: XTA's own wording (lib/l10n), placeholders positional. -->
+<resources>
+    <string name="crash_reports_auth_failed">GitHub ha rifiutato il token (controlla i permessi)</string>
+    <string name="crash_reports_disabled_toast">Attiva prima i report di crash</string>
+    <string name="crash_reports_duplicate">Questo crash è già stato segnalato</string>
+    <string name="crash_reports_enabled">Invia i report di arresto anomalo a GitHub</string>
+    <string name="crash_reports_enabled_description">Se attivo, i crash non gestiti aprono una issue GitHub. Disattivato di default. Serve un personal access token con permesso di scrittura Issues. Nessun token è incorporato nell’app.</string>
+    <string name="crash_reports_invalid_repo">Il repository deve avere il formato owner/name</string>
+    <string name="crash_reports_missing_token">Aggiungi prima un token di accesso GitHub</string>
+    <string name="crash_reports_rate_limited">Sono stati inviati troppi report di crash di recente</string>
+    <string name="crash_reports_repo">Repository GitHub</string>
+    <string name="crash_reports_repo_description">owner/name del repository che riceve le issue di crash</string>
+    <string name="crash_reports_send_test">Invia report di crash di prova</string>
+    <string name="crash_reports_send_test_description">Crea una issue di esempio per verificare token e repository</string>
+    <string name="crash_reports_test_failed">Impossibile inviare il report di crash</string>
+    <string name="crash_reports_test_sent">Report di crash di prova inviato</string>
+    <string name="crash_reports_token">Token di accesso GitHub</string>
+    <string name="crash_reports_token_description">PAT classico o fine-grained con permesso di creare issue. Salvato solo su questo dispositivo ed escluso dai backup.</string>
+    <string name="crash_reports_token_hint">ghp_… o github_pat_…</string>
+    <string name="crash_something_broke">Qualcosa si è rotto in XTA.</string>
+    <string name="crash_start_failed">Impossibile eseguire le migrazioni del database</string>
+</resources>

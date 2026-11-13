@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="plugin_name">Hacker News</string>
+    <string name="plugin_description">Les Hacker News uten konto. Hjerter og bokmerker blir på denne enheten.</string>
+    <string name="tab_top">Top</string>
+    <string name="tab_new">Nye</string>
+    <string name="tab_best">Beste</string>
+    <string name="tab_ask">Ask</string>
+    <string name="tab_show">Show</string>
+    <string name="tab_jobs">Jobber</string>
+    <string name="tab_saved">Lagret</string>
+    <string name="tab_following">Følger</string>
+    <string name="search">Søk i Hacker News</string>
+    <string name="settings">Innstillinger</string>
+    <string name="feed_empty">Ingenting her akkurat nå</string>
+    <string name="saved_empty">Ingen lagrede innlegg ennå — bokmerker blir på denne enheten</string>
+    <string name="following_empty">Følg noen for å se innleggene deres her</string>
+    <string name="by">av %1$s</string>
+    <string name="like">Lik på denne enheten</string>
+    <string name="unlike">Fjern likerklikk fra denne enheten</string>
+    <string name="save">Lagre på denne enheten</string>
+    <string name="unsave">Fjern fra denne enheten</string>
+    <string name="comments">Kommentarer</string>
+    <string name="open_article">Åpne artikkel</string>
+    <string name="deleted">[slettet]</string>
+    <string name="user_empty">Ingen offentlige innlegg</string>
+    <string name="follow">Følg på denne enheten</string>
+    <string name="unfollow">Slutt å følge</string>
+    <string name="search_hint">Søk etter innlegg</string>
+    <string name="search_empty">Ingen treff</string>
+    <string name="settings_blurb">Ingen innlogging. Stemmer og kommentarer blir på Hacker News. Hjerter og bokmerker blir på denne enheten.</string>
+    <plurals name="points">
+        <item quantity="one">%1$d poeng</item>
+        <item quantity="other">%1$d poeng</item>
+    </plurals>
+    <plurals name="comment_count">
+        <item quantity="one">%1$d kommentar</item>
+        <item quantity="other">%1$d kommentarer</item>
+    </plurals>
+    <plurals name="user_karma">
+        <item quantity="one">%1$d karma</item>
+        <item quantity="other">%1$d karma</item>
+    </plurals>
+    <string name="more_options">Flere alternativer</string>
+</resources>

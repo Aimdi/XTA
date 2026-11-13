@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RSS's text in this language, from XTA's ARB files (lib/l10n) and the app's own where XTA has none. -->
+<resources>
+    <string name="add">Přidat kanál</string>
+    <string name="add_error">Tento kanál se nepodařilo načíst</string>
+    <string name="add_hint">Vložte adresu webu nebo kanálu. XTA najde RSS nebo Atom.</string>
+    <string name="add_placeholder">https://example.com/feed</string>
+    <string name="add_to_group">Přidat do skupiny</string>
+    <string name="all">Vše</string>
+    <string name="cancel">Zrušit</string>
+    <string name="close">Zavřít</string>
+    <string name="data_exported_to">Data exportována do %1$s</string>
+    <string name="empty">Sledujte kanál, abyste tu viděli jeho příspěvky</string>
+    <string name="empty_filter">Těmto filtrům neodpovídá žádný obsah</string>
+    <string name="feeds">Kanály</string>
+    <string name="follow">Sledovat</string>
+    <string name="following_empty">Zatím žádné kanály</string>
+    <string name="home">Domů</string>
+    <string name="load_error">Kanály se nepodařilo načíst</string>
+    <string name="mark_all_read">Označit vše jako přečtené</string>
+    <string name="more_options">Další možnosti</string>
+    <string name="opml_empty">V tomto souboru nejsou žádné kanály</string>
+    <string name="opml_export">Exportovat sledované jako OPML</string>
+    <string name="opml_export_description">Soubor, který umí načíst jiné čtečky kanálů.</string>
+    <string name="opml_import">Importovat sledované z OPML</string>
+    <string name="opml_import_description">Začne sledovat každý kanál ze souboru; ty, které už sledujete, zůstanou beze změny.</string>
+    <string name="opml_importing">Import: %1$d z %2$d</string>
+    <string name="opml_result">Přidáno: %1$d · Už sledováno: %2$d · Selhalo: %3$d</string>
+    <string name="partial_error">Počet zdrojů, které se nepodařilo načíst: %1$d</string>
+    <string name="plugin_description">Sledujte veřejné kanály RSS a Atom. Nepřečtené zůstane v tomto zařízení.</string>
+    <string name="plugin_name">RSS</string>
+    <string name="reader_empty">Zatím není co číst</string>
+    <string name="reset_filters">Obnovit filtry</string>
+    <string name="retry">Zkusit znovu</string>
+    <string name="set_tag">Nastavit štítek</string>
+    <string name="settings">Nastavení</string>
+    <string name="settings_blurb">Bez přihlášení. Sledujte veřejné kanály. Nepřečtené a štítky zůstanou v tomto zařízení.</string>
+    <string name="tag">Štítek</string>
+    <string name="tag_hint">Krátký popisek, například Zprávy nebo Blogy</string>
+    <string name="unfollow">Přestat sledovat</string>
+    <string name="unread">Nepřečtené</string>
+    <string name="in_home_feed">Míchat sledované kanály do Sleduji</string>
+    <string name="in_home_feed_description">Zobrazovat nové položky ze sledovaných kanálů v časové ose Sleduji.</string>
+    <string name="add_not_a_url">Toto není webová adresa.</string>
+    <string name="add_no_feed">Nebyl nalezen žádný kanál RSS ani Atom, na stránce ani na obvyklých adresách.</string>
+</resources>

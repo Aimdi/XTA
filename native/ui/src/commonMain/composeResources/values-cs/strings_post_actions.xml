@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- An X post's footer, its share and ⋯ sheets and menus, its poll's line, and the contract addresses in its text (ui.post): XTA's words where XTA has them. -->
+<resources>
+    <string name="posts_share">Sdílet příspěvek</string>
+    <string name="posts_share_content">Sdílet obsah tweetu</string>
+    <string name="posts_share_article_link">Sdílet odkaz na článek</string>
+    <string name="posts_share_content_and_link">Sdílet obsah tweetu a odkaz</string>
+    <string name="posts_share_image">Sdílet příspěvek jako obrázek</string>
+    <string name="posts_share_article_image">Sdílet článek jako obrázek</string>
+    <string name="posts_copied">Zkopírováno do schránky</string>
+    <string name="posts_reply_not_found">Omlouváme se, ale odpovídaný tweety nebyl nalezen!</string>
+    <string name="posts_subscribe">Odebírat</string>
+    <string name="contract_address_copied">Adresa kontraktu zkopírována</string>
+    <string name="poll_no_votes">Žádné hlasy</string>
+    <plurals name="poll_ends_minutes">
+        <item quantity="one">Končí za %1$d minutu</item>
+        <item quantity="few">Končí za %1$d minuty</item>
+        <item quantity="many">Končí za %1$d minuty</item>
+        <item quantity="other">Končí za %1$d minut</item>
+    </plurals>
+    <plurals name="poll_ends_hours">
+        <item quantity="one">Končí za %1$d hodinu</item>
+        <item quantity="few">Končí za %1$d hodiny</item>
+        <item quantity="many">Končí za %1$d hodiny</item>
+        <item quantity="other">Končí za %1$d hodin</item>
+    </plurals>
+    <plurals name="poll_ends_days">
+        <item quantity="one">Končí za %1$d den</item>
+        <item quantity="few">Končí za %1$d dny</item>
+        <item quantity="many">Končí za %1$d dne</item>
+        <item quantity="other">Končí za %1$d dní</item>
+    </plurals>
+    <plurals name="poll_ended_minutes">
+        <item quantity="one">Skončilo před %1$d minutou</item>
+        <item quantity="few">Skončilo před %1$d minutami</item>
+        <item quantity="many">Skončilo před %1$d minuty</item>
+        <item quantity="other">Skončilo před %1$d minutami</item>
+    </plurals>
+    <plurals name="poll_ended_hours">
+        <item quantity="one">Skončilo před %1$d hodinou</item>
+        <item quantity="few">Skončilo před %1$d hodinami</item>
+        <item quantity="many">Skončilo před %1$d hodiny</item>
+        <item quantity="other">Skončilo před %1$d hodinami</item>
+    </plurals>
+    <plurals name="poll_ended_days">
+        <item quantity="one">Skončilo před %1$d dnem</item>
+        <item quantity="few">Skončilo před %1$d dny</item>
+        <item quantity="many">Skončilo před %1$d dne</item>
+        <item quantity="other">Skončilo před %1$d dny</item>
+    </plurals>
+    <plurals name="poll_ended_months">
+        <item quantity="one">Skončilo před %1$d měsícem</item>
+        <item quantity="few">Skončilo před %1$d měsíci</item>
+        <item quantity="many">Skončilo před %1$d měsíce</item>
+        <item quantity="other">Skončilo před %1$d měsíci</item>
+    </plurals>
+    <plurals name="poll_ended_years">
+        <item quantity="one">Skončilo před %1$d rokem</item>
+        <item quantity="few">Skončilo před %1$d lety</item>
+        <item quantity="many">Skončilo před %1$d roku</item>
+        <item quantity="other">Skončilo před %1$d lety</item>
+    </plurals>
+</resources>

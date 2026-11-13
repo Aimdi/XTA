@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Compose Multiplatform resources, shared by the Android and desktop apps:
+     placeholders are positional (%1$s, %1$d), and apostrophes need no backslash. -->
+<resources>
+    <string name="following">Чытаю</string>
+    <string name="search">Пошук</string>
+    <string name="settings">Налады</string>
+    <string name="dismiss">Закрыць</string>
+    <string name="retry">Паўтарыць</string>
+    <string name="back">Назад</string>
+    <string name="close">Закрыць</string>
+    <string name="cancel">Скасаваць</string>
+    <string name="post">Допіс</string>
+
+    <string name="pinned">Замацавана</string>
+    <string name="reposted_by">%1$s зрабіў(-ла) рэпост</string>
+    <string name="replying_to">У адказ</string>
+    <string name="stat_reposts">Рэпосты</string>
+    <string name="stat_quotes">Цытаты</string>
+    <string name="stat_likes">Упадабанае</string>
+
+    <string name="ago_seconds">%1$d с</string>
+    <string name="ago_minutes">%1$d хв</string>
+    <string name="ago_hours">%1$d гадз</string>
+
+    <string name="problem_rate_limited">X абмяжоўвае тут усе акаўнты. Паспрабуйце зноў праз некалькі хвілін.</string>
+    <string name="problem_offline">Няма злучэння з X.</string>
+    <string name="problem_signing">Не ўдалося наладзіць подпіс запытаў да X. Паспрабуйце зноў крыху пазней.</string>
+    <string name="problem_refused">X адхіліў запыт (%1$d).</string>
+    <string name="problem_other">Пры чытанні X нешта пайшло не так.</string>
+
+    <string name="import_intro">XTA Native — гэта XTA, напісаны толькі для Android, каб параўнаць яго з XTA. Ён чытае X праз акаўнты, якімі вы ўжо карыстаецеся ў XTA.</string>
+    <string name="import_steps">У XTA адкрыйце Налады → Дадзеныя → Экспартаваць, уключыце «Экспартаваць уліковыя запісы», экспартуйце і выберыце гэты файл тут.</string>
+    <string name="import_choose">Выбраць рэзервовую копію XTA</string>
+    <string name="import_choose_another">Выбраць іншы файл</string>
+    <string name="import_no_accounts">У гэтай рэзервовай копіі няма акаўнтаў X: экспартуйце яе зноў з уключаным «Экспартаваць уліковыя запісы».</string>
+    <string name="import_use">Выкарыстаць гэту копію</string>
+    <string name="import_privacy">Рэзервовая копія змяшчае вашы сеансы X. XTA Native трымае іх на гэтым тэлефоне, адпраўляе толькі ў X і ніколі нічога там не публікуе, не ўпадабае і ні на каго не падпісваецца.</string>
+
+    <string name="settings_clear">Выдаліць усё</string>
+    <string name="settings_clear_explained">Выдаляе з XTA Native сеансы X і акаўнты, якія вы чытаеце. Сам XTA захоўвае ўсё.</string>
+    <string name="settings_clear_confirm">Выдаліць</string>
+
+    <string name="card_from">Крыніца: %1$s</string>
+    <plurals name="poll_votes">
+        <item quantity="one">%1$s голас</item>
+        <item quantity="few">%1$s галасы</item>
+        <item quantity="many">%1$s галасоў</item>
+        <item quantity="other">%1$s голасу</item>
+    </plurals>
+    <plurals name="new_posts">
+        <item quantity="one">%1$d новы допіс</item>
+        <item quantity="few">%1$d новыя допісы</item>
+        <item quantity="many">%1$d новых допісаў</item>
+        <item quantity="other">%1$d новага допісу</item>
+    </plurals>
+    <string name="problem_x_private">Прыватны профіль</string>
+    <string name="problem_x_missing">Twitter кажа, што гэтая старонка не існуе, але гэта можа быць няпраўдай</string>
+    <string name="problem_x_user_missing">Карыстальнік не знойдзены</string>
+    <string name="problem_x_suspended">Уліковы запіс прыпынены</string>
+    <string name="problem_x_forbidden">Twitter кажа, што доступ да гэтага забаронены</string>
+    <string name="problem_x_guest">Twitter прызнаў несапраўдным наш маркер доступу. Калі ласка, паспрабуйце зноў адкрыць XTA!</string>
+</resources>
