@@ -1,14 +1,14 @@
 package com.aimdi.xtanative.plugins.threads
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -16,8 +16,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,9 +30,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.networks.threads.ThreadsBioLink
 import com.aimdi.xtanative.networks.threads.ThreadsLink
 import com.aimdi.xtanative.networks.threads.ThreadsLinks
+import com.aimdi.xtanative.networks.threads.ThreadsPeopleList
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsProfile
 import com.aimdi.xtanative.networks.threads.ThreadsProfilePage
@@ -84,6 +84,13 @@ internal object ThreadsProfileHeader {
     fun reposts(page: ThreadsProfilePage, read: List<ThreadsPost> = emptyList()): List<ThreadsPost> =
         (read + page.posts.filter { it.isRepost }).distinctBy { it.id }.sortedByDescending { it.publishedAt ?: java.time.Instant.MIN }
 
+    /** The people list a count opens: followers, or whom the account follows; none for its posts. */
+    fun list(kind: ThreadsCount): ThreadsPeopleList? = when (kind) {
+        ThreadsCount.FOLLOWERS -> ThreadsPeopleList.FOLLOWERS
+        ThreadsCount.FOLLOWING -> ThreadsPeopleList.FOLLOWING
+        ThreadsCount.POSTS -> null
+    }
+
     /** [n] whole, grouped as [locale] groups digits: 5,812,345. */
     fun exact(n: Long, locale: Locale): String = NumberFormat.getIntegerInstance(locale).format(n)
 }
@@ -93,22 +100,34 @@ internal object ThreadsProfileHeader {
 internal fun ProfileLinks(profile: ThreadsProfile) {
     val outside = rememberOpenOutside()
     val links = remember(profile) { ThreadsProfileHeader.links(profile) }
-    Column(Modifier.padding(top = 4.dp)) {
+    Column(Modifier.padding(top = 6.dp)) {
         links.forEach { link ->
             Row(
                 Modifier.fillMaxWidth().heightIn(min = 40.dp).clickable(role = Role.Button) { outside(link.url) },
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Icon(XIcons.Link, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(15.dp))
-                Text(ThreadsProfileHeader.label(link), color = MaterialTheme.colorScheme.primary, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = 6.dp))
+                Icon(XIcons.Link, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(17.dp))
+                Text(
+                    ThreadsProfileHeader.label(link),
+                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 15.sp),
+                    color = MaterialTheme.colorScheme.primary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(start = 8.dp),
+                )
             }
         }
     }
 }
 
-/** "5.7M Followers"; a tap shows the whole figure when Meta gave it, and a second tap rounds it again. */
+/**
+ * "5.7M Followers". With [onOpen], a tap opens the list it counts and a long
+ * press shows the whole figure; without, a tap shows the whole figure when
+ * Meta gave it, and a second tap rounds it again.
+ */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-internal fun ProfileCount(n: Long, label: PluginText, exact: Boolean) {
+internal fun ProfileCount(n: Long, label: PluginText, exact: Boolean, onOpen: (() -> Unit)? = null) {
     var whole by rememberSaveable(n) { mutableStateOf(false) }
     val strong = MaterialTheme.colorScheme.onSurface
     val rounded = countText(n)
@@ -117,45 +136,32 @@ internal fun ProfileCount(n: Long, label: PluginText, exact: Boolean) {
     val number = if (whole) full else rounded
     val word = pluginString(label)
     val tappable = exact && full != rounded
+    val showList = pluginString(Strings.show_list)
+    val tap = when {
+        onOpen != null -> Modifier.heightIn(min = 48.dp).combinedClickable(
+            role = Role.Button,
+            onClickLabel = showList,
+            onClick = onOpen,
+            onLongClick = if (tappable) { { whole = !whole } } else null,
+        )
+        tappable -> Modifier.heightIn(min = 32.dp).clickable(role = Role.Button) { whole = !whole }
+        else -> Modifier
+    }
     Text(
         buildAnnotatedString {
             withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = strong)) { append(number) }
             append(" ")
             append(word)
         },
-        style = MaterialTheme.typography.bodyMedium,
+        style = MaterialTheme.typography.bodyLarge.copy(fontSize = 15.sp),
         color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = if (tappable) Modifier.heightIn(min = 32.dp).clickable(role = Role.Button) { whole = !whole } else Modifier,
+        modifier = tap,
     )
 }
 
-/** The reader's private note on the account (XTA's ProfileNoteCard): one row, its editor in a dialog. */
+/** The private note's editor (XTA's ProfileNoteCard's): only on this device, never synced; an empty note removes it. */
 @Composable
-internal fun ProfileNote(app: ThreadsApp, handle: String) {
-    val notes by app.accountNotes.state.collectAsState()
-    val note = notes[ThreadsAccountNotes.key(handle)]
-    var editing by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) { app.accountNotes.load() }
-    if (editing) NoteDialog(note.orEmpty(), onSave = { text -> app.launch { app.accountNotes.keep(handle, text) } }) { editing = false }
-    Row(
-        Modifier.fillMaxWidth().padding(top = 12.dp).heightIn(min = 48.dp).clickable(role = Role.Button) { editing = true },
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(PostIcons.TextSnippet, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
-        Text(
-            note ?: pluginString(Strings.profile_note_add),
-            style = MaterialTheme.typography.bodyMedium,
-            color = if (note == null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-            maxLines = 3,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f).padding(horizontal = 10.dp),
-        )
-        if (note != null) Icon(Icons.Outlined.Edit, contentDescription = pluginString(Strings.profile_note_title), modifier = Modifier.size(18.dp))
-    }
-}
-
-@Composable
-private fun NoteDialog(note: String, onSave: (String) -> Unit, onDismiss: () -> Unit) {
+internal fun NoteDialog(note: String, onSave: (String) -> Unit, onDismiss: () -> Unit) {
     var text by rememberSaveable { mutableStateOf(note) }
     AlertDialog(
         onDismissRequest = onDismiss,

@@ -107,6 +107,7 @@
     <string name="test">接続を試す</string>
     <string name="test_ok">RSSHub インスタンスが応答しました</string>
     <string name="thread">スレッド</string>
+    <string name="trending_now">今のトレンド</string>
     <string name="try_public">公開アカウントを試す</string>
     <string name="unfollow">フォロー解除</string>
     <string name="unlike_on_device">この端末のいいねを取り消す</string>
@@ -142,7 +143,6 @@
     <string name="profile_reposts">リポスト</string>
     <string name="show_more">もっと見る</string>
     <string name="show_less">表示を減らす</string>
-    <string name="pinned">固定</string>
     <string name="pinned_reply">投稿者が固定</string>
     <string name="spoiler">ネタバレ</string>
     <string name="tap_to_show_spoiler">タップしてネタバレを表示</string>
@@ -157,7 +157,6 @@
     <string name="exact_time">正確な時刻を表示</string>
     <string name="fewer_replies">返信の表示を減らす</string>
     <string name="more_replies_web">threads.comで返信をもっと見る</string>
-    <string name="thread_on_web">このスレッドの続きはthreads.comで</string>
     <string name="related_threads">関連スレッド</string>
     <string name="media_description">画像の説明</string>
     <string name="media_download">ダウンロード</string>
@@ -190,4 +189,48 @@
     <string name="community">コミュニティ</string>
     <string name="community_posts">このコミュニティの投稿</string>
     <string name="topic_followed">この端末でフォローしました — 投稿がホームに届きます</string>
+    <string name="people_both">共通のフォロワー</string>
+    <string name="liked_by">いいねした人</string>
+    <string name="people_signed_out">Threadsはこれらのリストをログインしている読者にだけ表示します</string>
+    <string name="people_signed_out_detail">表示するにはThreadsにログインしてください。ここからのフォローはこの端末に保存され、Threadsには何も送信されません。</string>
+    <string name="people_empty">まだ誰もいません</string>
+    <string name="likers_empty">表示できるいいねはありません</string>
+    <string name="show_list">リストを表示</string>
+    <string name="show_liked_by">いいねした人を見る</string>
+    <string name="following_state">フォロー中</string>
+    <string name="profile_note_short">メモ</string>
+    <string name="search_profile">このプロフィール内を検索</string>
+    <string name="filters_and_groups">フィルタとグループ</string>
+    <string name="pinned_post">固定された投稿</string>
+    <string name="profile_search_empty">検索に一致する投稿はありません</string>
+    <string name="reposted_by">リポストした人</string>
+    <string name="reposters_empty">表示できるリポストはありません</string>
+    <string name="show_reposted_by">リポストした人を見る</string>
+    <string name="show_quotes">引用を見る</string>
+    <string name="quotes_empty">表示できる引用はありません</string>
+    <string name="list_unavailable">Threadsはこの一覧をここでは提供していません。threads.comで投稿を開いてご覧ください。</string>
+    <string name="liked_by_author">投稿者がいいねしました</string>
+    <string name="edited">編集済み</string>
+    <string name="continue_thread">このスレッドの続きを見る</string>
+    <string name="music">音楽</string>
+    <string name="replies_limited_followed">投稿者がフォローしているアカウントのみ返信できます</string>
+    <string name="replies_limited_followers">投稿者のフォロワーのみ返信できます</string>
+    <string name="replies_limited_mentioned">投稿でメンションされたアカウントのみ返信できます</string>
+    <string name="replies_limited_author">投稿者のみ返信できます</string>
+    <string name="updating">更新中…</string>
+    <string name="translate">翻訳</string>
+    <string name="show_original">原文を表示</string>
+    <string name="translated_by_threads">Threadsによる翻訳</string>
+    <string name="translating">翻訳中…</string>
+    <string name="translation_failed">Threadsはこの投稿を翻訳できませんでした</string>
+    <string name="attached_text">添付テキスト</string>
+    <string name="views">表示回数</string>
+    <string name="ghost_post">ゴースト投稿</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="other">ゴースト投稿 · %1$d時間後に消えます</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="other">ゴースト投稿 · %1$d分後に消えます</item>
+    </plurals>
+    <string name="post_trend">トレンド · %1$s</string>
 </resources>

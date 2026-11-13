@@ -68,4 +68,5 @@
     <string name="home_unable_to_load_pages">Không thể tải trang chủ của bạn</string>
     <string name="feed_strip_unavailable">Dòng thời gian này không còn khả dụng</string>
     <string name="home_feed_accounts_empty">Thêm tài khoản để tải Dành cho bạn.</string>
+    <string name="home_all_timelines">Tất cả dòng thời gian</string>
 </resources>

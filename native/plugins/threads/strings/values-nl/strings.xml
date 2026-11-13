@@ -110,6 +110,7 @@
     <string name="test">Verbinding testen</string>
     <string name="test_ok">Je RSSHub-instantie antwoordde</string>
     <string name="thread">Draad</string>
+    <string name="trending_now">Nu populair</string>
     <string name="try_public">Probeer een openbaar account</string>
     <string name="unfollow">Niet meer volgen</string>
     <string name="unlike_on_device">Like van dit apparaat verwijderen</string>
@@ -146,7 +147,6 @@
     <string name="profile_reposts">Reposts</string>
     <string name="show_more">Meer tonen</string>
     <string name="show_less">Minder tonen</string>
-    <string name="pinned">Vastgezet</string>
     <string name="pinned_reply">Vastgezet door de auteur</string>
     <string name="spoiler">Spoiler</string>
     <string name="tap_to_show_spoiler">Tik om de spoiler te tonen</string>
@@ -161,7 +161,6 @@
     <string name="exact_time">Exacte tijd tonen</string>
     <string name="fewer_replies">Minder reacties tonen</string>
     <string name="more_replies_web">Meer reacties op threads.com</string>
-    <string name="thread_on_web">Deze draad gaat verder op threads.com</string>
     <string name="related_threads">Gerelateerde draden</string>
     <string name="media_description">Afbeeldingsbeschrijving</string>
     <string name="media_download">Downloaden</string>
@@ -195,4 +194,50 @@
     <string name="community">Community</string>
     <string name="community_posts">Berichten in deze community</string>
     <string name="topic_followed">Gevolgd op dit apparaat — de berichten komen nu in Home</string>
+    <string name="people_both">Gemeenschappelijke volgers</string>
+    <string name="liked_by">Leuk gevonden door</string>
+    <string name="people_signed_out">Threads toont deze lijsten alleen aan ingelogde lezers</string>
+    <string name="people_signed_out_detail">Log in bij Threads om ze te zien. Iemand vanaf hier volgen blijft op dit apparaat; er wordt niets naar Threads gestuurd.</string>
+    <string name="people_empty">Nog niemand hier</string>
+    <string name="likers_empty">Geen likes om te tonen</string>
+    <string name="show_list">Lijst tonen</string>
+    <string name="show_liked_by">Zien wie dit leuk vond</string>
+    <string name="following_state">Volgend</string>
+    <string name="profile_note_short">Notitie</string>
+    <string name="search_profile">Zoeken in dit profiel</string>
+    <string name="filters_and_groups">Filters en groepen</string>
+    <string name="pinned_post">Vastgezet bericht</string>
+    <string name="profile_search_empty">Geen berichten hier passen bij je zoekopdracht</string>
+    <string name="reposted_by">Opnieuw geplaatst door</string>
+    <string name="reposters_empty">Geen reposts om te tonen</string>
+    <string name="show_reposted_by">Zien wie dit opnieuw heeft geplaatst</string>
+    <string name="show_quotes">Citaten bekijken</string>
+    <string name="quotes_empty">Geen citaten om te tonen</string>
+    <string name="list_unavailable">Threads geeft deze lijst hier niet. Open het bericht op threads.com om hem te zien.</string>
+    <string name="liked_by_author">Leuk gevonden door de auteur</string>
+    <string name="edited">Bewerkt</string>
+    <string name="continue_thread">Deze draad voortzetten</string>
+    <string name="music">Muziek</string>
+    <string name="replies_limited_followed">Alleen accounts die de auteur volgt, kunnen reageren</string>
+    <string name="replies_limited_followers">Alleen volgers van de auteur kunnen reageren</string>
+    <string name="replies_limited_mentioned">Alleen accounts die in het bericht worden genoemd, kunnen reageren</string>
+    <string name="replies_limited_author">Alleen de auteur kan reageren</string>
+    <string name="updating">Bijwerken…</string>
+    <string name="translate">Vertalen</string>
+    <string name="show_original">Origineel tonen</string>
+    <string name="translated_by_threads">Vertaald door Threads</string>
+    <string name="translating">Bezig met vertalen…</string>
+    <string name="translation_failed">Threads kon dit bericht niet vertalen</string>
+    <string name="attached_text">Bijgevoegde tekst</string>
+    <string name="views">Weergaven</string>
+    <string name="ghost_post">Spookbericht</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="one">Spookbericht · verdwijnt over %1$d uur</item>
+        <item quantity="other">Spookbericht · verdwijnt over %1$d uur</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="one">Spookbericht · verdwijnt over %1$d minuut</item>
+        <item quantity="other">Spookbericht · verdwijnt over %1$d minuten</item>
+    </plurals>
+    <string name="post_trend">Populair · %1$s</string>
 </resources>

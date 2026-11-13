@@ -69,4 +69,5 @@
     <string name="home_unable_to_load_pages">Unable to load your home pages</string>
     <string name="feed_strip_unavailable">This timeline is no longer available</string>
     <string name="home_feed_accounts_empty">Add an account to load For you.</string>
+    <string name="home_all_timelines">All timelines</string>
 </resources>

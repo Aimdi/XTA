@@ -113,6 +113,7 @@
     <string name="test">Probar la conexión</string>
     <string name="test_ok">Tu instancia de RSSHub respondió</string>
     <string name="thread">Hilo</string>
+    <string name="trending_now">Tendencias ahora</string>
     <string name="try_public">Probar una cuenta pública</string>
     <string name="unfollow">Dejar de seguir</string>
     <string name="unlike_on_device">Quitar el me gusta de este dispositivo</string>
@@ -149,7 +150,6 @@
     <string name="profile_reposts">Republicaciones</string>
     <string name="show_more">Mostrar más</string>
     <string name="show_less">Mostrar menos</string>
-    <string name="pinned">Fijada</string>
     <string name="pinned_reply">Fijada por el autor</string>
     <string name="spoiler">Spoiler</string>
     <string name="tap_to_show_spoiler">Toca para mostrar el spoiler</string>
@@ -164,7 +164,6 @@
     <string name="exact_time">Mostrar la hora exacta</string>
     <string name="fewer_replies">Mostrar menos respuestas</string>
     <string name="more_replies_web">Más respuestas en threads.com</string>
-    <string name="thread_on_web">Este hilo continúa en threads.com</string>
     <string name="related_threads">Hilos relacionados</string>
     <string name="media_description">Descripción de la imagen</string>
     <string name="media_download">Descargar</string>
@@ -199,4 +198,52 @@
     <string name="community">Comunidad</string>
     <string name="community_posts">Publicaciones de esta comunidad</string>
     <string name="topic_followed">Seguido en este dispositivo: sus publicaciones llegan ahora a Inicio</string>
+    <string name="people_both">Seguidores en común</string>
+    <string name="liked_by">Les gusta a</string>
+    <string name="people_signed_out">Threads solo muestra estas listas a quienes han iniciado sesión</string>
+    <string name="people_signed_out_detail">Inicia sesión en Threads para verlas. Seguir a alguien desde aquí se queda en este dispositivo; no se envía nada a Threads.</string>
+    <string name="people_empty">Todavía no hay nadie</string>
+    <string name="likers_empty">No hay me gusta que mostrar</string>
+    <string name="show_list">Ver la lista</string>
+    <string name="show_liked_by">Ver a quién le gusta</string>
+    <string name="following_state">Siguiendo</string>
+    <string name="profile_note_short">Nota</string>
+    <string name="search_profile">Buscar en este perfil</string>
+    <string name="filters_and_groups">Filtros y grupos</string>
+    <string name="pinned_post">Publicación fijada</string>
+    <string name="profile_search_empty">Ninguna publicación de aquí coincide con tu búsqueda</string>
+    <string name="reposted_by">Republicado por</string>
+    <string name="reposters_empty">No hay republicaciones que mostrar</string>
+    <string name="show_reposted_by">Ver quién lo ha republicado</string>
+    <string name="show_quotes">Ver citas</string>
+    <string name="quotes_empty">No hay citas que mostrar</string>
+    <string name="list_unavailable">Threads no ofrece esta lista aquí. Abre la publicación en threads.com para verla.</string>
+    <string name="liked_by_author">Le gusta al autor</string>
+    <string name="edited">Editado</string>
+    <string name="continue_thread">Continuar este hilo</string>
+    <string name="music">Música</string>
+    <string name="replies_limited_followed">Solo pueden responder las cuentas que sigue el autor</string>
+    <string name="replies_limited_followers">Solo pueden responder los seguidores del autor</string>
+    <string name="replies_limited_mentioned">Solo pueden responder las cuentas mencionadas en la publicación</string>
+    <string name="replies_limited_author">Solo puede responder el autor</string>
+    <string name="updating">Actualizando…</string>
+    <string name="translate">Traducir</string>
+    <string name="show_original">Ver original</string>
+    <string name="translated_by_threads">Traducido por Threads</string>
+    <string name="translating">Traduciendo…</string>
+    <string name="translation_failed">Threads no pudo traducir esta publicación</string>
+    <string name="attached_text">Texto adjunto</string>
+    <string name="views">Visualizaciones</string>
+    <string name="ghost_post">Publicación fantasma</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="one">Publicación fantasma · desaparece en %1$d hora</item>
+        <item quantity="many">Publicación fantasma · desaparece en %1$d horas</item>
+        <item quantity="other">Publicación fantasma · desaparece en %1$d horas</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="one">Publicación fantasma · desaparece en %1$d minuto</item>
+        <item quantity="many">Publicación fantasma · desaparece en %1$d minutos</item>
+        <item quantity="other">Publicación fantasma · desaparece en %1$d minutos</item>
+    </plurals>
+    <string name="post_trend">Tendencia · %1$s</string>
 </resources>

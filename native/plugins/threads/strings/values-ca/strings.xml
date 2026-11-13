@@ -113,6 +113,7 @@
     <string name="test">Prova la connexió</string>
     <string name="test_ok">La teva instància de RSSHub ha respost</string>
     <string name="thread">Fil</string>
+    <string name="trending_now">Tendències ara</string>
     <string name="try_public">Prova un compte públic</string>
     <string name="unfollow">Deixa de seguir</string>
     <string name="unlike_on_device">Treu el m’agrada d’aquest dispositiu</string>
@@ -149,7 +150,6 @@
     <string name="profile_reposts">Republicacions</string>
     <string name="show_more">Mostra\'n més</string>
     <string name="show_less">Mostra\'n menys</string>
-    <string name="pinned">Fixada</string>
     <string name="pinned_reply">Fixada per l\'autor</string>
     <string name="spoiler">Espòiler</string>
     <string name="tap_to_show_spoiler">Toca per mostrar l\'espòiler</string>
@@ -164,7 +164,6 @@
     <string name="exact_time">Mostra l\'hora exacta</string>
     <string name="fewer_replies">Mostra menys respostes</string>
     <string name="more_replies_web">Més respostes a threads.com</string>
-    <string name="thread_on_web">Aquest fil continua a threads.com</string>
     <string name="related_threads">Fils relacionats</string>
     <string name="media_description">Descripció de la imatge</string>
     <string name="media_download">Descarregar</string>
@@ -199,4 +198,52 @@
     <string name="community">Comunitat</string>
     <string name="community_posts">Publicacions d’aquesta comunitat</string>
     <string name="topic_followed">Seguit en aquest dispositiu: les seves publicacions arriben ara a Inici</string>
+    <string name="people_both">Seguidors en comú</string>
+    <string name="liked_by">Li agrada a</string>
+    <string name="people_signed_out">Threads només mostra aquestes llistes a qui ha iniciat sessió</string>
+    <string name="people_signed_out_detail">Inicia sessió a Threads per veure-les. Seguir algú des d\'aquí queda en aquest dispositiu; no s\'envia res a Threads.</string>
+    <string name="people_empty">Encara no hi ha ningú</string>
+    <string name="likers_empty">No hi ha m\'agrada per mostrar</string>
+    <string name="show_list">Mostra la llista</string>
+    <string name="show_liked_by">Mira a qui li agrada</string>
+    <string name="following_state">Seguint</string>
+    <string name="profile_note_short">Nota</string>
+    <string name="search_profile">Cerca en aquest perfil</string>
+    <string name="filters_and_groups">Filtres i grups</string>
+    <string name="pinned_post">Publicació fixada</string>
+    <string name="profile_search_empty">Cap publicació d’aquí coincideix amb la cerca</string>
+    <string name="reposted_by">Republicat per</string>
+    <string name="reposters_empty">No hi ha republicacions per mostrar</string>
+    <string name="show_reposted_by">Mira qui ho ha republicat</string>
+    <string name="show_quotes">Mira les citacions</string>
+    <string name="quotes_empty">No hi ha citacions per mostrar</string>
+    <string name="list_unavailable">Threads no ofereix aquesta llista aquí. Obre la publicació a threads.com per veure-la.</string>
+    <string name="liked_by_author">A l\'autor li agrada</string>
+    <string name="edited">Editat</string>
+    <string name="continue_thread">Continua aquest fil</string>
+    <string name="music">Música</string>
+    <string name="replies_limited_followed">Només hi poden respondre els comptes que l\'autor segueix</string>
+    <string name="replies_limited_followers">Només hi poden respondre els seguidors de l\'autor</string>
+    <string name="replies_limited_mentioned">Només hi poden respondre els comptes esmentats a la publicació</string>
+    <string name="replies_limited_author">Només hi pot respondre l\'autor</string>
+    <string name="updating">S\'està actualitzant…</string>
+    <string name="translate">Tradueix</string>
+    <string name="show_original">Mostra l’original</string>
+    <string name="translated_by_threads">Traduït per Threads</string>
+    <string name="translating">S’està traduint…</string>
+    <string name="translation_failed">Threads no ha pogut traduir aquesta publicació</string>
+    <string name="attached_text">Text adjunt</string>
+    <string name="views">Visualitzacions</string>
+    <string name="ghost_post">Publicació fantasma</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="one">Publicació fantasma · desapareix d’aquí a %1$d hora</item>
+        <item quantity="many">Publicació fantasma · desapareix d’aquí a %1$d hores</item>
+        <item quantity="other">Publicació fantasma · desapareix d’aquí a %1$d hores</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="one">Publicació fantasma · desapareix d’aquí a %1$d minut</item>
+        <item quantity="many">Publicació fantasma · desapareix d’aquí a %1$d minuts</item>
+        <item quantity="other">Publicació fantasma · desapareix d’aquí a %1$d minuts</item>
+    </plurals>
+    <string name="post_trend">Tendència · %1$s</string>
 </resources>

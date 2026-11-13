@@ -113,6 +113,7 @@
     <string name="test">Tester la connexion</string>
     <string name="test_ok">Votre instance RSSHub a répondu</string>
     <string name="thread">Fil</string>
+    <string name="trending_now">Tendances du moment</string>
     <string name="try_public">Essayer un compte public</string>
     <string name="unfollow">Ne plus suivre</string>
     <string name="unlike_on_device">Retirer le j’aime de cet appareil</string>
@@ -149,7 +150,6 @@
     <string name="profile_reposts">Republications</string>
     <string name="show_more">Voir plus</string>
     <string name="show_less">Voir moins</string>
-    <string name="pinned">Épinglé</string>
     <string name="pinned_reply">Épinglé par l\'auteur</string>
     <string name="spoiler">Spoiler</string>
     <string name="tap_to_show_spoiler">Touchez pour afficher le spoiler</string>
@@ -164,7 +164,6 @@
     <string name="exact_time">Afficher l\'heure exacte</string>
     <string name="fewer_replies">Afficher moins de réponses</string>
     <string name="more_replies_web">Plus de réponses sur threads.com</string>
-    <string name="thread_on_web">Ce fil continue sur threads.com</string>
     <string name="related_threads">Fils liés</string>
     <string name="media_description">Description de l’image</string>
     <string name="media_download">Télécharger</string>
@@ -199,4 +198,52 @@
     <string name="community">Communauté</string>
     <string name="community_posts">Publications de cette communauté</string>
     <string name="topic_followed">Suivi sur cet appareil — ses publications arrivent désormais dans Accueil</string>
+    <string name="people_both">Abonnés en commun</string>
+    <string name="liked_by">Aimé par</string>
+    <string name="people_signed_out">Threads ne montre ces listes qu\'aux lecteurs connectés</string>
+    <string name="people_signed_out_detail">Connectez-vous à Threads pour les voir. Suivre quelqu\'un d\'ici reste sur cet appareil ; rien n\'est envoyé à Threads.</string>
+    <string name="people_empty">Personne pour l\'instant</string>
+    <string name="likers_empty">Aucun J\'aime à afficher</string>
+    <string name="show_list">Afficher la liste</string>
+    <string name="show_liked_by">Voir qui a aimé</string>
+    <string name="following_state">Abonné</string>
+    <string name="profile_note_short">Note</string>
+    <string name="search_profile">Rechercher dans ce profil</string>
+    <string name="filters_and_groups">Filtres et groupes</string>
+    <string name="pinned_post">Publication épinglée</string>
+    <string name="profile_search_empty">Aucune publication ici ne correspond à votre recherche</string>
+    <string name="reposted_by">Republié par</string>
+    <string name="reposters_empty">Aucune republication à afficher</string>
+    <string name="show_reposted_by">Voir qui l\'a republié</string>
+    <string name="show_quotes">Voir les citations</string>
+    <string name="quotes_empty">Aucune citation à afficher</string>
+    <string name="list_unavailable">Threads ne fournit pas cette liste ici. Ouvrez la publication sur threads.com pour la voir.</string>
+    <string name="liked_by_author">Aimé par l\'auteur</string>
+    <string name="edited">Modifié</string>
+    <string name="continue_thread">Continuer ce fil</string>
+    <string name="music">Musique</string>
+    <string name="replies_limited_followed">Seuls les comptes suivis par l\'auteur peuvent répondre</string>
+    <string name="replies_limited_followers">Seuls les abonnés de l\'auteur peuvent répondre</string>
+    <string name="replies_limited_mentioned">Seuls les comptes mentionnés dans la publication peuvent répondre</string>
+    <string name="replies_limited_author">Seul l\'auteur peut répondre</string>
+    <string name="updating">Mise à jour…</string>
+    <string name="translate">Traduire</string>
+    <string name="show_original">Voir l’original</string>
+    <string name="translated_by_threads">Traduit par Threads</string>
+    <string name="translating">Traduction…</string>
+    <string name="translation_failed">Threads n’a pas pu traduire cette publication</string>
+    <string name="attached_text">Texte joint</string>
+    <string name="views">Vues</string>
+    <string name="ghost_post">Publication fantôme</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="one">Publication fantôme · disparaît dans %1$d heure</item>
+        <item quantity="many">Publication fantôme · disparaît dans %1$d heures</item>
+        <item quantity="other">Publication fantôme · disparaît dans %1$d heures</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="one">Publication fantôme · disparaît dans %1$d minute</item>
+        <item quantity="many">Publication fantôme · disparaît dans %1$d minutes</item>
+        <item quantity="other">Publication fantôme · disparaît dans %1$d minutes</item>
+    </plurals>
+    <string name="post_trend">Tendance · %1$s</string>
 </resources>

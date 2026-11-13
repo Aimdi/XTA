@@ -6,13 +6,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
@@ -39,16 +37,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -79,6 +72,8 @@ import com.aimdi.xtanative.ui.generated.resources.home_subscriptions
 import com.aimdi.xtanative.ui.generated.resources.home_unread
 import com.aimdi.xtanative.ui.generated.resources.home_x
 import com.aimdi.xtanative.ui.group.GroupFeedBody
+import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
+import com.aimdi.xtanative.ui.plugins.PluginClientBar
 import com.aimdi.xtanative.ui.group.groupFeedViewModel
 import com.aimdi.xtanative.ui.media.ReaderIcons
 import com.aimdi.xtanative.ui.plugins.LocalHomeReading
@@ -134,6 +129,7 @@ internal fun HomeFeedPage(
     val anyUnread = SourcePicker.sources(tabs).any { it.key in timelines.unread }
     val labels = tabs.map { tabLabel(it, ui) }
     val holder = rememberSaveableStateHolder()
+    val client = remember(current?.key) { PluginClientBar() }
     val reading = rememberHomeReading()
     val graph = LocalGraph.current
     val settings by graph.settings.state.collectAsStateWithLifecycle()
@@ -160,6 +156,23 @@ internal fun HomeFeedPage(
         topBar = {
             if (current == HomeTab.Following) {
                 FollowingTopBar(following, followingCalls(calls, desktop, refresh), bar)
+            } else if (current is HomeTab.Network) {
+                NetworkTopBar(
+                    current.id,
+                    ui,
+                    networks,
+                    client,
+                    timelines.unread,
+                    anyUnread,
+                    NetworkBarCalls(
+                        onMember = { id -> calls.onTab(tabs.indexOf(HomeTab.Network(id))) },
+                        onPicker = { calls.openSheet(HomeSheet.PICKER) },
+                    ),
+                    bar,
+                ) {
+                    key(current.id) { NetworkActions(current.id, ui, networks, vm::setTopBarPins) }
+                    if (desktop) IconButton(onClick = refresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) }
+                }
             } else {
                 TimelineTopBar(current, TopBarLook(ui, anyUnread, timelines.unread), networks, routes, refresh, calls, bar, vm::setTopBarPins)
             }
@@ -170,7 +183,8 @@ internal fun HomeFeedPage(
                 holder.SaveableStateProvider(current.key) {
                     val toTop = if (timelines.toTop.page == timelines.index) timelines.toTop.count else 0
                     // Home turns its timelines with a sideways drag: the tabs of a network's page leave it to Home.
-                    CompositionLocalProvider(LocalParentTurnsPages provides true) {
+                    // A network hands its own sections and actions to Home's one bar (NetworkTopBar).
+                    CompositionLocalProvider(LocalParentTurnsPages provides true, LocalPluginClientBar provides client.takeIf { current is HomeTab.Network }) {
                         TimelinePage(current, toTop, following.mediaOnly, actions, networks, PaddingValues(bottom = padding.calculateBottomPadding()))
                     }
                 }
@@ -216,10 +230,10 @@ private fun TimelinePage(
 private class TopBarLook(val ui: HomeUi, val anyUnread: Boolean, val unread: Set<String>)
 
 /**
- * The top bar of a timeline that is not Following (plugin_compact_header.dart):
- * its mark, which opens the timeline picker and carries the unread dot of
- * any timeline; its name, or, for Mastodon, Bluesky and Threads while they
- * are grouped, the switch between them; its actions.
+ * The top bar of X's For you and a group (plugin_compact_header.dart): its
+ * mark, which opens the timeline picker and carries the unread dot of any
+ * timeline; its name; its actions. A network's timeline has its own
+ * ([NetworkTopBar]).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -237,16 +251,12 @@ private fun TimelineTopBar(
     TopAppBar(
         navigationIcon = { if (current != null) PickerMark(current, ui, networks, look.anyUnread) { calls.openSheet(HomeSheet.PICKER) } },
         title = {
-            if (current is HomeTab.Network && ui.microblogsGrouped && AltMicroblogging.isMember(current.id)) {
-                MicroblogSwitcher(ui, networks, current.id, look.unread) { id -> calls.onTab(ui.tabs.indexOf(HomeTab.Network(id))) }
-            } else {
-                Text(
-                    current?.let { tabLabel(it, ui) }.orEmpty(),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.clickable(onClick = calls.toTitleTop),
-                )
-            }
+            Text(
+                current?.let { tabLabel(it, ui) }.orEmpty(),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.clickable(onClick = calls.toTitleTop),
+            )
         },
         actions = { TabActions(current, ui, networks, routes, refresh, calls, onPins) },
         scrollBehavior = bar,
@@ -276,38 +286,6 @@ internal fun TimelineMark(tab: HomeTab, networks: HomeNetworks, size: Dp) {
         HomeTab.ForYou -> Icon(ReaderIcons.XMark, contentDescription = null, tint = tint, modifier = Modifier.size(size * 0.85f))
         is HomeTab.Network -> networks.Mark(tab.id, size)
         is HomeTab.Group -> Unit
-    }
-}
-
-/**
- * Mastodon, Bluesky and Threads side by side (alt_microblogging_selector.dart's
- * compact row): the one shown lit, each with its unread dot; a tap shows another.
- */
-@Composable
-private fun MicroblogSwitcher(ui: HomeUi, networks: HomeNetworks, shown: String, unread: Set<String>, onPick: (String) -> Unit) {
-    val members = AltMicroblogging.members(ui.tabs.filterIsInstance<HomeTab.Network>().map { it.id })
-    val unreadLabel = stringResource(Res.string.home_unread)
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        members.forEach { id ->
-            val selected = id == shown
-            val name = ui.networks.firstOrNull { it.id == id }?.title ?: id
-            val lit = HomeTab.Network(id).key in unread
-            Box(
-                Modifier
-                    .size(48.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(if (selected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.background)
-                    .clickable(onClick = { if (!selected) onPick(id) })
-                    .semantics(mergeDescendants = true) {
-                        role = Role.Tab
-                        this.selected = selected
-                        contentDescription = if (lit) "$name, $unreadLabel" else name
-                    },
-                contentAlignment = Alignment.Center,
-            ) {
-                if (lit) BadgedBox(badge = { Badge() }) { networks.Mark(id, 22.dp) } else networks.Mark(id, 22.dp)
-            }
-        }
     }
 }
 

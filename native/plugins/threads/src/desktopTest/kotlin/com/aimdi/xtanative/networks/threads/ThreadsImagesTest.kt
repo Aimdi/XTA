@@ -146,11 +146,27 @@ class ThreadsImagesTest {
         )!!
         assertEquals("https://scontent.cdninstagram.com/zuck-150.jpg", profile.profilePicUrl)
         assertEquals("https://scontent.cdninstagram.com/zuck-1080.jpg", profile.pictureUrl)
+        assertEquals(listOf(1080, 640, 320, null), profile.pictureSizes.map { it.width }, "every size, largest first, the small one last")
+        assertEquals("https://scontent.cdninstagram.com/zuck-320.jpg", profile.pictureFor(240), "an 80 dp face at 3x loads the 320, not the 1080")
+        assertEquals("https://scontent.cdninstagram.com/zuck-640.jpg", profile.pictureFor(400))
 
         val plain = ThreadsParser.profile(j(mapOf("username" to "maya", "profile_pic_url" to "https://scontent.cdninstagram.com/maya.jpg")))!!
         assertEquals("https://scontent.cdninstagram.com/maya.jpg", plain.pictureUrl, "the small one when Meta sent no other")
 
         val onlyHd = ThreadsParser.profile(j(mapOf("username" to "ola", "hd_profile_pic_url_info" to mapOf("url" to "https://scontent.cdninstagram.com/ola-hd.jpg"))))!!
         assertEquals("https://scontent.cdninstagram.com/ola-hd.jpg", onlyHd.profilePicUrl)
+    }
+
+    @Test
+    fun aPostWithoutTheSmallPictureTakesTheSmallestHdOneThatFillsARowsFace() {
+        val user = mapOf(
+            "username" to "zuck",
+            "hd_profile_pic_versions" to listOf(
+                mapOf("url" to "https://scontent.cdninstagram.com/zuck-1080.jpg", "width" to 1080, "height" to 1080),
+                mapOf("url" to "https://scontent.cdninstagram.com/zuck-320.jpg", "width" to 320, "height" to 320),
+            ),
+        )
+        val post = ThreadsParser.post(j(postJson("1", extra = mapOf("user" to user))))!!
+        assertEquals("https://scontent.cdninstagram.com/zuck-320.jpg", post.avatarUrl, "before: the 1080 one, for a 36 dp face")
     }
 }

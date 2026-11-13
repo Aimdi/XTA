@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -27,17 +26,13 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -48,9 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.threads.ThreadsDiscovery
 import com.aimdi.xtanative.networks.threads.ThreadsLinks
@@ -60,7 +53,6 @@ import com.aimdi.xtanative.networks.threads.ThreadsSearchTerms
 import com.aimdi.xtanative.networks.threads.ThreadsSuggestion
 import com.aimdi.xtanative.store.settings.ThreadsPrefs
 import com.aimdi.xtanative.ui.common.LoadingRow
-import com.aimdi.xtanative.ui.plugins.PluginAvatar
 import com.aimdi.xtanative.ui.plugins.Fetch
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PluginFrame
@@ -83,7 +75,7 @@ internal class ThreadsSearch(private val app: () -> ThreadsApp) : PluginSearch()
     override fun Landing(frame: PluginFrame, send: (String) -> Unit) {
         val shown = app()
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(frame.padding)) {
-            BeforeSearch(shown, "", onOpenProfile = { shown.openProfile(it) }, onRecent = send)
+            BeforeSearch(shown, "", onOpenProfile = { shown.openProfile(it) }, onRecent = send, onTrend = { terms -> shown.remember(terms.text); shown.openSearch(terms) })
         }
     }
 }
@@ -159,26 +151,8 @@ private fun FailedPeople(text: String, problem: Throwable?, onOpen: (String) -> 
     RetryMessage(ThreadsFailures.feedText(problem, currentLanguage()), onRetry)
 }
 
-/** One row per account found: its face, name and handle, opening its profile, with Follow or Unfollow on this device. */
-internal fun LazyListScope.people(app: ThreadsApp, users: List<ThreadsProfile>, onOpen: (String) -> Unit) {
-    items(users.distinctBy { it.username }, key = { "user:" + it.username }) { user ->
-        val rows by app.accounts.state.collectAsState()
-        val followed = ThreadsAccounts.follows(rows, user.username)
-        ListItem(
-            leadingContent = { PluginAvatar(user.profilePicUrl, user.displayName, user.username, 40.dp) },
-            headlineContent = { Text(user.displayName, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-            supportingContent = { Text("@" + user.username, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-            trailingContent = {
-                TextButton(onClick = { if (followed) app.unfollow(user.username) else app.follow(ThreadsAccount.of(user)) }) {
-                    Text(pluginString(if (followed) Strings.unfollow else Strings.follow))
-                }
-            },
-            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-            modifier = Modifier.clickable { onOpen(user.username) },
-        )
-        HorizontalDivider()
-    }
-}
+/** One row per account found: its face, handle and name, opening its profile, with Follow or Unfollow on this device. */
+internal fun LazyListScope.people(app: ThreadsApp, users: List<ThreadsProfile>, onOpen: (String) -> Unit) = personRows(app, users, onOpen)
 
 /**
  * XTA's search sheet (threads_search_sheet.dart): words search public posts,
@@ -225,10 +199,16 @@ internal fun ThreadsSearchSheet(app: ThreadsApp, initial: String?, onDismiss: ()
                 val query = listed
                 if (query == null) {
                     Column(Modifier.verticalScroll(rememberScrollState())) {
-                        BeforeSearch(app, text, onOpenProfile = { handle -> app.remember(handle); leave { app.openProfile(handle) } }) { recent ->
-                            text = recent
-                            search(recent)
-                        }
+                        BeforeSearch(
+                            app,
+                            text,
+                            onOpenProfile = { handle -> app.remember(handle); leave { app.openProfile(handle) } },
+                            onRecent = { recent ->
+                                text = recent
+                                search(recent)
+                            },
+                            onTrend = { terms -> app.remember(terms.text); leave { app.openSearch(terms) } },
+                        )
                     }
                 } else {
                     SheetPeople(app, query, leave)
@@ -253,10 +233,13 @@ private fun SheetPeople(app: ThreadsApp, query: String, leave: (() -> Unit) -> U
     PeopleResults(app, query, PluginFrame(PaddingValues()), onOpen = { leave { app.openProfile(it) } }, onPosts = { terms -> leave { app.openSearch(terms) } })
 }
 
-/** Before a search: the profile the typed handle names, the recent searches, and public accounts to try. */
+/**
+ * Before a search: the profile the typed handle names, the recent searches,
+ * Meta's trending topics while nothing is typed, and public accounts to try.
+ */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun BeforeSearch(app: ThreadsApp, text: String, onOpenProfile: (String) -> Unit, onRecent: (String) -> Unit) {
+private fun BeforeSearch(app: ThreadsApp, text: String, onOpenProfile: (String) -> Unit, onRecent: (String) -> Unit, onTrend: (ThreadsSearchTerms) -> Unit) {
     val settings by app.prefs.collectAsState()
     Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         ThreadsLinks.normaliseHandle(text)?.let { handle -> SheetRow(ThreadsIcons.Mark, pluginString(Strings.open_handle, handle)) { onOpenProfile(handle) } }
@@ -268,6 +251,7 @@ private fun BeforeSearch(app: ThreadsApp, text: String, onOpenProfile: (String) 
                 recent.forEach { item -> RecentChip(item, onClick = { onRecent(item) }, onForget = { app.forget(item) }) }
             }
         }
+        if (text.isBlank()) TrendingTopics(app, onTrend)
         Text(pluginString(Strings.try_public), style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 12.dp))
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             ThreadsDiscovery.STARTER_HANDLES.forEach { handle ->

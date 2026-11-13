@@ -3,6 +3,7 @@ package com.aimdi.xtanative.plugins.threads
 import com.aimdi.xtanative.networks.threads.ThreadsCommunities
 import com.aimdi.xtanative.networks.threads.ThreadsLink
 import com.aimdi.xtanative.networks.threads.ThreadsLinks
+import com.aimdi.xtanative.networks.threads.ThreadsPeopleList
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsSearchTerms
 import com.aimdi.xtanative.networks.threads.ThreadsTopic
@@ -18,6 +19,18 @@ internal sealed interface ThreadsRoute {
     }
 
     data class Profile(val handle: String) : ThreadsRoute
+
+    /** An account's followers, whom it follows, and the followers the reader shares with it; [list] the tab it opens on. */
+    data class People(val handle: String, val list: ThreadsPeopleList) : ThreadsRoute
+
+    /** Who liked the post Meta keeps under [mediaId]; [url] its link, for the title's way back to it. */
+    data class Likers(val mediaId: String, val url: String?) : ThreadsRoute
+
+    /** Who reposted the post Meta keeps under [mediaId]. */
+    data class Reposters(val mediaId: String, val url: String?) : ThreadsRoute
+
+    /** The posts that quote the post Meta keeps under [mediaId]. */
+    data class Quotes(val mediaId: String, val url: String?) : ThreadsRoute
 
     /** What words or a tag find, on a page whose query can be edited. */
     data class Search(val terms: ThreadsSearchTerms) : ThreadsRoute
@@ -42,6 +55,14 @@ internal object ThreadsRoutes {
     fun post(link: ThreadsLink.Post): String = "post" + params("url" to link.url, "handle" to link.handle)
 
     fun profile(handle: String): String = "profile" + params("handle" to handle)
+
+    fun people(handle: String, list: ThreadsPeopleList): String = "people" + params("handle" to handle, "list" to list.name.lowercase())
+
+    fun likers(mediaId: String, url: String?): String = "likers" + params("id" to mediaId, "url" to url)
+
+    fun reposters(mediaId: String, url: String?): String = "reposters" + params("id" to mediaId, "url" to url)
+
+    fun quotes(mediaId: String, url: String?): String = "quotes" + params("id" to mediaId, "url" to url)
 
     fun search(terms: ThreadsSearchTerms): String =
         "search" + params("q" to terms.query, "tag" to if (terms.tag) "1" else null, "profile" to terms.profile)
@@ -68,6 +89,10 @@ internal object ThreadsRoutes {
         return when (name) {
             "post" -> query["url"]?.let { ThreadsRoute.Post(it, query["handle"].orEmpty(), query["card"]) }
             "profile" -> query["handle"]?.let(ThreadsLinks::normaliseHandle)?.let(ThreadsRoute::Profile)
+            "people" -> query["handle"]?.let(ThreadsLinks::normaliseHandle)?.let { ThreadsRoute.People(it, peopleList(query["list"])) }
+            "likers" -> mediaIdOf(query)?.let { ThreadsRoute.Likers(it, query["url"]) }
+            "reposters" -> mediaIdOf(query)?.let { ThreadsRoute.Reposters(it, query["url"]) }
+            "quotes" -> mediaIdOf(query)?.let { ThreadsRoute.Quotes(it, query["url"]) }
             "search" -> query["q"]?.let { ThreadsRoute.Search(ThreadsSearchTerms(it, tag = query["tag"] == "1", profile = query["profile"])) }
             "community" -> communityOf(query)
             "media" -> query["key"]?.let { ThreadsRoute.Media(it, query["start"]?.toIntOrNull() ?: 0) }
@@ -76,6 +101,13 @@ internal object ThreadsRoutes {
             else -> null
         }
     }
+
+    /** A post's list's media id: Meta's number, never anything else. */
+    private fun mediaIdOf(query: Map<String, String>): String? = query["id"]?.takeIf { id -> id.all(Char::isDigit) }
+
+    /** The list a people route names; Followers for one it does not, and never the likers or reposters, which are a post's. */
+    private fun peopleList(name: String?): ThreadsPeopleList =
+        ThreadsPeopleList.entries.firstOrNull { it.name.equals(name, ignoreCase = true) && !it.ofPost } ?: ThreadsPeopleList.FOLLOWERS
 
     /** The route of the screen showing [url]: a threads.com or threads.net profile, post, search or topic; null for any other link. */
     fun forUrl(url: String): String? = when (val link = ThreadsLinks.parse(url)) {

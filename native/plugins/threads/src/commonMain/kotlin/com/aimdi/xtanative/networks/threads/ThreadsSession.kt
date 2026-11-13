@@ -88,9 +88,9 @@ interface ThreadsMemory {
  */
 class ThreadsPacing(
     val sessionGapMillis: Long = 3_000,
-    val guestGapMillis: Long = 550,
+    val guestGapMillis: Long = 300,
     val sessionJitterMillis: Int = 750,
-    val guestJitterMillis: Int = 350,
+    val guestJitterMillis: Int = 200,
     private val random: Random = Random.Default,
     internal val sleep: suspend (Long) -> Unit = { delay(it) },
 ) {

@@ -107,6 +107,7 @@
     <string name="test">測試連線</string>
     <string name="test_ok">你的 RSSHub 執行個體已回應</string>
     <string name="thread">串文</string>
+    <string name="trending_now">現正熱門</string>
     <string name="try_public">試試公開帳號</string>
     <string name="unfollow">取消追蹤</string>
     <string name="unlike_on_device">從此裝置取消按讚</string>
@@ -142,7 +143,6 @@
     <string name="profile_reposts">轉發</string>
     <string name="show_more">顯示更多</string>
     <string name="show_less">收合</string>
-    <string name="pinned">已釘選</string>
     <string name="pinned_reply">作者已釘選</string>
     <string name="spoiler">劇透</string>
     <string name="tap_to_show_spoiler">點按顯示劇透</string>
@@ -157,7 +157,6 @@
     <string name="exact_time">顯示確切時間</string>
     <string name="fewer_replies">收合部分回覆</string>
     <string name="more_replies_web">在 threads.com 查看更多回覆</string>
-    <string name="thread_on_web">此串文在 threads.com 上繼續</string>
     <string name="related_threads">相關串文</string>
     <string name="media_description">圖片描述</string>
     <string name="media_download">下載</string>
@@ -190,4 +189,48 @@
     <string name="community">社群</string>
     <string name="community_posts">此社群的貼文</string>
     <string name="topic_followed">已在此裝置上追蹤——其貼文現在會出現在首頁</string>
+    <string name="people_both">共同追蹤者</string>
+    <string name="liked_by">說讚的人</string>
+    <string name="people_signed_out">Threads 只向已登入的讀者顯示這些清單</string>
+    <string name="people_signed_out_detail">登入 Threads 即可查看。在這裡追蹤某人只會保存在這部裝置上，不會傳送任何內容給 Threads。</string>
+    <string name="people_empty">這裡還沒有人</string>
+    <string name="likers_empty">沒有可顯示的讚</string>
+    <string name="show_list">顯示清單</string>
+    <string name="show_liked_by">查看誰說讚</string>
+    <string name="following_state">已追蹤</string>
+    <string name="profile_note_short">備註</string>
+    <string name="search_profile">在此個人檔案中搜尋</string>
+    <string name="filters_and_groups">篩選器和群組</string>
+    <string name="pinned_post">置頂貼文</string>
+    <string name="profile_search_empty">這裡沒有符合搜尋的貼文</string>
+    <string name="reposted_by">轉發者</string>
+    <string name="reposters_empty">沒有可顯示的轉發</string>
+    <string name="show_reposted_by">查看誰轉發了</string>
+    <string name="show_quotes">查看引用</string>
+    <string name="quotes_empty">沒有可顯示的引用</string>
+    <string name="list_unavailable">Threads 不在此處提供這份清單。請在 threads.com 上開啟這則貼文查看。</string>
+    <string name="liked_by_author">作者說讚</string>
+    <string name="edited">已編輯</string>
+    <string name="continue_thread">繼續查看此串文</string>
+    <string name="music">音樂</string>
+    <string name="replies_limited_followed">僅作者追蹤的帳號可以回覆</string>
+    <string name="replies_limited_followers">僅作者的粉絲可以回覆</string>
+    <string name="replies_limited_mentioned">僅貼文中提及的帳號可以回覆</string>
+    <string name="replies_limited_author">僅作者可以回覆</string>
+    <string name="updating">正在更新…</string>
+    <string name="translate">翻譯</string>
+    <string name="show_original">顯示原文</string>
+    <string name="translated_by_threads">由 Threads 翻譯</string>
+    <string name="translating">正在翻譯…</string>
+    <string name="translation_failed">Threads 無法翻譯這則貼文</string>
+    <string name="attached_text">附加文字</string>
+    <string name="views">瀏覽次數</string>
+    <string name="ghost_post">幽靈貼文</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="other">幽靈貼文 · %1$d 小時後消失</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="other">幽靈貼文 · %1$d 分鐘後消失</item>
+    </plurals>
+    <string name="post_trend">熱門 · %1$s</string>
 </resources>

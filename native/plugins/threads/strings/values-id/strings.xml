@@ -107,6 +107,7 @@
     <string name="test">Uji koneksi</string>
     <string name="test_ok">Instans RSSHub kamu menjawab</string>
     <string name="thread">Utas</string>
+    <string name="trending_now">Sedang tren</string>
     <string name="try_public">Coba akun publik</string>
     <string name="unfollow">Berhenti mengikuti</string>
     <string name="unlike_on_device">Hapus suka dari perangkat ini</string>
@@ -142,7 +143,6 @@
     <string name="profile_reposts">Postingan ulang</string>
     <string name="show_more">Tampilkan lebih banyak</string>
     <string name="show_less">Tampilkan lebih sedikit</string>
-    <string name="pinned">Disematkan</string>
     <string name="pinned_reply">Disematkan oleh penulis</string>
     <string name="spoiler">Spoiler</string>
     <string name="tap_to_show_spoiler">Ketuk untuk menampilkan spoiler</string>
@@ -157,7 +157,6 @@
     <string name="exact_time">Tampilkan waktu persisnya</string>
     <string name="fewer_replies">Tampilkan lebih sedikit balasan</string>
     <string name="more_replies_web">Balasan lainnya di threads.com</string>
-    <string name="thread_on_web">Utas ini berlanjut di threads.com</string>
     <string name="related_threads">Utas terkait</string>
     <string name="media_description">Deskripsi gambar</string>
     <string name="media_download">Unduh</string>
@@ -190,4 +189,48 @@
     <string name="community">Komunitas</string>
     <string name="community_posts">Postingan di komunitas ini</string>
     <string name="topic_followed">Diikuti di perangkat ini — postingannya kini muncul di Beranda</string>
+    <string name="people_both">Pengikut yang sama</string>
+    <string name="liked_by">Disukai oleh</string>
+    <string name="people_signed_out">Threads hanya menampilkan daftar ini kepada pembaca yang sudah masuk</string>
+    <string name="people_signed_out_detail">Masuk ke Threads untuk melihatnya. Mengikuti seseorang dari sini tetap di perangkat ini; tidak ada yang dikirim ke Threads.</string>
+    <string name="people_empty">Belum ada siapa pun</string>
+    <string name="likers_empty">Tidak ada suka untuk ditampilkan</string>
+    <string name="show_list">Tampilkan daftar</string>
+    <string name="show_liked_by">Lihat siapa yang menyukai ini</string>
+    <string name="following_state">Mengikuti</string>
+    <string name="profile_note_short">Catatan</string>
+    <string name="search_profile">Cari di profil ini</string>
+    <string name="filters_and_groups">Filter dan grup</string>
+    <string name="pinned_post">Postingan yang disematkan</string>
+    <string name="profile_search_empty">Tidak ada postingan di sini yang cocok dengan pencarian Anda</string>
+    <string name="reposted_by">Diposting ulang oleh</string>
+    <string name="reposters_empty">Tidak ada postingan ulang untuk ditampilkan</string>
+    <string name="show_reposted_by">Lihat siapa yang memposting ulang ini</string>
+    <string name="show_quotes">Lihat kutipan</string>
+    <string name="quotes_empty">Tidak ada kutipan untuk ditampilkan</string>
+    <string name="list_unavailable">Threads tidak memberikan daftar ini di sini. Buka postingan di threads.com untuk melihatnya.</string>
+    <string name="liked_by_author">Disukai penulis</string>
+    <string name="edited">Diedit</string>
+    <string name="continue_thread">Lanjutkan utas ini</string>
+    <string name="music">Musik</string>
+    <string name="replies_limited_followed">Hanya akun yang diikuti penulis yang dapat membalas</string>
+    <string name="replies_limited_followers">Hanya pengikut penulis yang dapat membalas</string>
+    <string name="replies_limited_mentioned">Hanya akun yang disebut dalam postingan yang dapat membalas</string>
+    <string name="replies_limited_author">Hanya penulis yang dapat membalas</string>
+    <string name="updating">Memperbarui…</string>
+    <string name="translate">Terjemahkan</string>
+    <string name="show_original">Tampilkan asli</string>
+    <string name="translated_by_threads">Diterjemahkan oleh Threads</string>
+    <string name="translating">Menerjemahkan…</string>
+    <string name="translation_failed">Threads tidak dapat menerjemahkan postingan ini</string>
+    <string name="attached_text">Teks terlampir</string>
+    <string name="views">Tayangan</string>
+    <string name="ghost_post">Postingan hantu</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="other">Postingan hantu · hilang dalam %1$d jam</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="other">Postingan hantu · hilang dalam %1$d menit</item>
+    </plurals>
+    <string name="post_trend">Sedang tren · %1$s</string>
 </resources>

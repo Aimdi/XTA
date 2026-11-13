@@ -113,6 +113,7 @@
     <string name="test">Testar a conexão</string>
     <string name="test_ok">Sua instância do RSSHub respondeu</string>
     <string name="thread">Thread</string>
+    <string name="trending_now">Em alta agora</string>
     <string name="try_public">Experimentar uma conta pública</string>
     <string name="unfollow">Deixar de seguir</string>
     <string name="unlike_on_device">Remover curtida deste dispositivo</string>
@@ -149,7 +150,6 @@
     <string name="profile_reposts">Republicações</string>
     <string name="show_more">Mostrar mais</string>
     <string name="show_less">Mostrar menos</string>
-    <string name="pinned">Fixada</string>
     <string name="pinned_reply">Fixada pelo autor</string>
     <string name="spoiler">Spoiler</string>
     <string name="tap_to_show_spoiler">Toque para mostrar o spoiler</string>
@@ -164,7 +164,6 @@
     <string name="exact_time">Mostrar o horário exato</string>
     <string name="fewer_replies">Mostrar menos respostas</string>
     <string name="more_replies_web">Mais respostas no threads.com</string>
-    <string name="thread_on_web">Esta thread continua no threads.com</string>
     <string name="related_threads">Threads relacionadas</string>
     <string name="media_description">Descrição da imagem</string>
     <string name="media_download">Baixar</string>
@@ -199,4 +198,52 @@
     <string name="community">Comunidade</string>
     <string name="community_posts">Posts nesta comunidade</string>
     <string name="topic_followed">Seguindo neste dispositivo — os posts agora chegam ao Início</string>
+    <string name="people_both">Seguidores em comum</string>
+    <string name="liked_by">Curtido por</string>
+    <string name="people_signed_out">O Threads só mostra essas listas para quem está conectado</string>
+    <string name="people_signed_out_detail">Entre no Threads para vê-las. Seguir alguém daqui fica neste dispositivo; nada é enviado ao Threads.</string>
+    <string name="people_empty">Ainda não há ninguém</string>
+    <string name="likers_empty">Nenhuma curtida para mostrar</string>
+    <string name="show_list">Mostrar a lista</string>
+    <string name="show_liked_by">Ver quem curtiu</string>
+    <string name="following_state">Seguindo</string>
+    <string name="profile_note_short">Nota</string>
+    <string name="search_profile">Pesquisar neste perfil</string>
+    <string name="filters_and_groups">Filtros e grupos</string>
+    <string name="pinned_post">Post fixado</string>
+    <string name="profile_search_empty">Nenhum post aqui corresponde à sua pesquisa</string>
+    <string name="reposted_by">Republicado por</string>
+    <string name="reposters_empty">Nenhuma republicação para mostrar</string>
+    <string name="show_reposted_by">Ver quem republicou</string>
+    <string name="show_quotes">Ver citações</string>
+    <string name="quotes_empty">Nenhuma citação para mostrar</string>
+    <string name="list_unavailable">O Threads não oferece esta lista aqui. Abra a publicação no threads.com para vê-la.</string>
+    <string name="liked_by_author">Curtido pelo autor</string>
+    <string name="edited">Editado</string>
+    <string name="continue_thread">Continuar esta thread</string>
+    <string name="music">Música</string>
+    <string name="replies_limited_followed">Só as contas que o autor segue podem responder</string>
+    <string name="replies_limited_followers">Só os seguidores do autor podem responder</string>
+    <string name="replies_limited_mentioned">Só as contas mencionadas na publicação podem responder</string>
+    <string name="replies_limited_author">Só o autor pode responder</string>
+    <string name="updating">Atualizando…</string>
+    <string name="translate">Traduzir</string>
+    <string name="show_original">Ver original</string>
+    <string name="translated_by_threads">Traduzido pelo Threads</string>
+    <string name="translating">Traduzindo…</string>
+    <string name="translation_failed">O Threads não conseguiu traduzir este post</string>
+    <string name="attached_text">Texto anexado</string>
+    <string name="views">Visualizações</string>
+    <string name="ghost_post">Post fantasma</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="one">Post fantasma · some em %1$d hora</item>
+        <item quantity="many">Post fantasma · some em %1$d horas</item>
+        <item quantity="other">Post fantasma · some em %1$d horas</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="one">Post fantasma · some em %1$d minuto</item>
+        <item quantity="many">Post fantasma · some em %1$d minutos</item>
+        <item quantity="other">Post fantasma · some em %1$d minutos</item>
+    </plurals>
+    <string name="post_trend">Em alta · %1$s</string>
 </resources>

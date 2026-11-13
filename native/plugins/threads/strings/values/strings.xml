@@ -112,6 +112,7 @@
     <string name="test">Test connection</string>
     <string name="test_ok">Your RSSHub instance answered</string>
     <string name="thread">Thread</string>
+    <string name="trending_now">Trending now</string>
     <string name="try_public">Try a public account</string>
     <string name="unfollow">Unfollow</string>
     <string name="unlike_on_device">Remove like from this device</string>
@@ -148,7 +149,6 @@
     <string name="profile_reposts">Reposts</string>
     <string name="show_more">Show more</string>
     <string name="show_less">Show less</string>
-    <string name="pinned">Pinned</string>
     <string name="pinned_reply">Pinned by the author</string>
     <string name="spoiler">Spoiler</string>
     <string name="tap_to_show_spoiler">Tap to show spoiler</string>
@@ -163,7 +163,6 @@
     <string name="exact_time">Show the exact time</string>
     <string name="fewer_replies">Show fewer replies</string>
     <string name="more_replies_web">More replies on threads.com</string>
-    <string name="thread_on_web">This thread goes on at threads.com</string>
     <string name="related_threads">Related threads</string>
     <string name="media_description">Image description</string>
     <string name="media_download">Download</string>
@@ -197,4 +196,50 @@
     <string name="community">Community</string>
     <string name="community_posts">Posts in this community</string>
     <string name="topic_followed">Followed on this device — its posts now come to Home</string>
+    <string name="people_both">Followers you both have</string>
+    <string name="liked_by">Liked by</string>
+    <string name="people_signed_out">Threads shows these lists only to signed-in readers</string>
+    <string name="people_signed_out_detail">Sign in to Threads to see them. Following someone from here stays on this device; nothing is sent to Threads.</string>
+    <string name="people_empty">No one here yet</string>
+    <string name="likers_empty">No likes to show</string>
+    <string name="show_list">Show the list</string>
+    <string name="show_liked_by">See who liked this</string>
+    <string name="following_state">Following</string>
+    <string name="profile_note_short">Note</string>
+    <string name="search_profile">Search this profile</string>
+    <string name="filters_and_groups">Filters and groups</string>
+    <string name="pinned_post">Pinned post</string>
+    <string name="profile_search_empty">No posts here match your search</string>
+    <string name="reposted_by">Reposted by</string>
+    <string name="reposters_empty">No reposts to show</string>
+    <string name="show_reposted_by">See who reposted this</string>
+    <string name="show_quotes">See quotes</string>
+    <string name="quotes_empty">No quotes to show</string>
+    <string name="list_unavailable">Threads does not give this list here. Open the post on threads.com to see it.</string>
+    <string name="liked_by_author">Liked by the author</string>
+    <string name="edited">Edited</string>
+    <string name="continue_thread">Continue this thread</string>
+    <string name="music">Music</string>
+    <string name="replies_limited_followed">Only accounts the author follows can reply</string>
+    <string name="replies_limited_followers">Only the author\'s followers can reply</string>
+    <string name="replies_limited_mentioned">Only accounts mentioned in the post can reply</string>
+    <string name="replies_limited_author">Only the author can reply</string>
+    <string name="updating">Updating…</string>
+    <string name="translate">Translate</string>
+    <string name="show_original">Show original</string>
+    <string name="translated_by_threads">Translated by Threads</string>
+    <string name="translating">Translating…</string>
+    <string name="translation_failed">Threads could not translate this post</string>
+    <string name="attached_text">Attached text</string>
+    <string name="views">Views</string>
+    <string name="ghost_post">Ghost post</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="one">Ghost post · disappears in %1$d hour</item>
+        <item quantity="other">Ghost post · disappears in %1$d hours</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="one">Ghost post · disappears in %1$d minute</item>
+        <item quantity="other">Ghost post · disappears in %1$d minutes</item>
+    </plurals>
+    <string name="post_trend">Trending · %1$s</string>
 </resources>

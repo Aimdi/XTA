@@ -110,6 +110,7 @@
     <string name="test">कनेक्शन जाँचें</string>
     <string name="test_ok">आपके RSSHub इंस्टेंस ने जवाब दिया</string>
     <string name="thread">थ्रेड</string>
+    <string name="trending_now">अभी ट्रेंडिंग</string>
     <string name="try_public">कोई सार्वजनिक खाता आज़माएँ</string>
     <string name="unfollow">फ़ॉलो करना बंद करें</string>
     <string name="unlike_on_device">इस डिवाइस से पसंद हटाएँ</string>
@@ -146,7 +147,6 @@
     <string name="profile_reposts">रीपोस्ट</string>
     <string name="show_more">और दिखाएँ</string>
     <string name="show_less">कम दिखाएँ</string>
-    <string name="pinned">पिन किया गया</string>
     <string name="pinned_reply">लेखक ने पिन किया</string>
     <string name="spoiler">स्पॉइलर</string>
     <string name="tap_to_show_spoiler">स्पॉइलर देखने के लिए टैप करें</string>
@@ -161,7 +161,6 @@
     <string name="exact_time">सटीक समय दिखाएँ</string>
     <string name="fewer_replies">कम जवाब दिखाएँ</string>
     <string name="more_replies_web">threads.com पर और जवाब</string>
-    <string name="thread_on_web">यह थ्रेड threads.com पर जारी है</string>
     <string name="related_threads">संबंधित थ्रेड</string>
     <string name="media_description">चित्र का विवरण</string>
     <string name="media_download">डाउनलोड</string>
@@ -195,4 +194,50 @@
     <string name="community">समुदाय</string>
     <string name="community_posts">इस समुदाय की पोस्ट</string>
     <string name="topic_followed">इस डिवाइस पर फ़ॉलो किया — इसकी पोस्ट अब होम में आएँगी</string>
+    <string name="people_both">आप दोनों के फ़ॉलोअर</string>
+    <string name="liked_by">इन्हें पसंद आया</string>
+    <string name="people_signed_out">Threads ये सूचियाँ सिर्फ़ साइन-इन किए पाठकों को दिखाता है</string>
+    <string name="people_signed_out_detail">इन्हें देखने के लिए Threads में साइन इन करें। यहाँ से किसी को फ़ॉलो करना इसी डिवाइस पर रहता है; Threads को कुछ नहीं भेजा जाता।</string>
+    <string name="people_empty">अभी यहाँ कोई नहीं है</string>
+    <string name="likers_empty">दिखाने को कोई पसंद नहीं</string>
+    <string name="show_list">सूची दिखाएँ</string>
+    <string name="show_liked_by">देखें किसने पसंद किया</string>
+    <string name="following_state">फ़ॉलो कर रहे हैं</string>
+    <string name="profile_note_short">नोट</string>
+    <string name="search_profile">इस प्रोफ़ाइल में खोजें</string>
+    <string name="filters_and_groups">फ़िल्टर और समूह</string>
+    <string name="pinned_post">पिन की गई पोस्ट</string>
+    <string name="profile_search_empty">यहाँ आपकी खोज से मेल खाती कोई पोस्ट नहीं है</string>
+    <string name="reposted_by">इन्होंने रीपोस्ट किया</string>
+    <string name="reposters_empty">दिखाने को कोई रीपोस्ट नहीं</string>
+    <string name="show_reposted_by">देखें किसने रीपोस्ट किया</string>
+    <string name="show_quotes">उद्धरण देखें</string>
+    <string name="quotes_empty">दिखाने को कोई उद्धरण नहीं</string>
+    <string name="list_unavailable">Threads यह सूची यहाँ नहीं देता। इसे देखने के लिए पोस्ट threads.com पर खोलें।</string>
+    <string name="liked_by_author">लेखक को पसंद आया</string>
+    <string name="edited">संपादित</string>
+    <string name="continue_thread">यह थ्रेड जारी रखें</string>
+    <string name="music">संगीत</string>
+    <string name="replies_limited_followed">केवल वे खाते जवाब दे सकते हैं जिन्हें लेखक फ़ॉलो करता है</string>
+    <string name="replies_limited_followers">केवल लेखक के फ़ॉलोअर जवाब दे सकते हैं</string>
+    <string name="replies_limited_mentioned">केवल पोस्ट में उल्लिखित खाते जवाब दे सकते हैं</string>
+    <string name="replies_limited_author">केवल लेखक जवाब दे सकता है</string>
+    <string name="updating">अपडेट हो रहा है…</string>
+    <string name="translate">अनुवाद करें</string>
+    <string name="show_original">मूल दिखाएँ</string>
+    <string name="translated_by_threads">Threads द्वारा अनुवादित</string>
+    <string name="translating">अनुवाद हो रहा है…</string>
+    <string name="translation_failed">Threads इस पोस्ट का अनुवाद नहीं कर सका</string>
+    <string name="attached_text">संलग्न टेक्स्ट</string>
+    <string name="views">व्यू</string>
+    <string name="ghost_post">घोस्ट पोस्ट</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="one">घोस्ट पोस्ट · %1$d घंटे में गायब हो जाएगी</item>
+        <item quantity="other">घोस्ट पोस्ट · %1$d घंटे में गायब हो जाएगी</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="one">घोस्ट पोस्ट · %1$d मिनट में गायब हो जाएगी</item>
+        <item quantity="other">घोस्ट पोस्ट · %1$d मिनट में गायब हो जाएगी</item>
+    </plurals>
+    <string name="post_trend">ट्रेंडिंग · %1$s</string>
 </resources>

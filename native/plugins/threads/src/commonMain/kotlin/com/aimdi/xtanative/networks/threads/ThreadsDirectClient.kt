@@ -15,6 +15,11 @@ import com.aimdi.xtanative.networks.threads.ThreadsFailure.UNREACHABLE
 import java.net.SocketTimeoutException
 import java.security.SecureRandom
 import java.time.Instant
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.coroutineContext
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeoutOrNull
@@ -42,6 +47,11 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
  * it ([ThreadsNextPages]): its [Page.next] is that cursor, and the `more…`
  * reads ask guest GraphQL for the page after it as threads.com's own client
  * does. Elsewhere [Page.next] is null.
+ *
+ * A guest request two screens send alike leaves once ([ThreadsGuestAnswers]):
+ * one already on its way is joined, and what Home was just answered serves
+ * a screen opened a moment later, and the other way round. A profile's card
+ * is remembered as long as its threads, a post page for ten minutes.
  */
 class ThreadsDirectClient(
     private val http: XHttp,
@@ -52,12 +62,25 @@ class ThreadsDirectClient(
     private val clock: () -> Long = System::currentTimeMillis,
 ) {
     private val departures = Mutex()
+
+    /** How many reads the reader is waiting on (not [ThreadsBackground]) are waiting for their turn to leave. */
+    private val waitingInFront = MutableStateFlow(0)
+
+    /** The line [ThreadsBackground] reads take, one at a time, before they queue for a departure. */
+    private val backgroundLane = Mutex()
     private var lastDeparture: Long? = null
     private val keeping = Any()
     private val profilePages = SingleFlight<String>()
+    private val guestAnswers = ThreadsGuestAnswers(clock)
+    private val profileCards = LinkedHashMap<String, Pair<Long, ThreadsProfile>>()
     private val conversationReads = SingleFlight<ThreadsPostPage>()
     private val conversations = LinkedHashMap<String, Pair<Long, ThreadsPostPage>>()
     private val profileCursors = LinkedHashMap<String, String?>()
+    private val trendReads = SingleFlight<List<ThreadsTrend>>()
+    private var trendsRead: Pair<Long, List<ThreadsTrend>>? = null
+
+    /** Which of a session list's paths answered last ([sessionApi]), by the list's kind. */
+    private val answeringPaths = HashMap<String, Int>()
 
     /** The session as the reader pasted it, read afresh on every request. */
     val currentSession: ThreadsSession get() = session()
@@ -104,6 +127,91 @@ class ThreadsDirectClient(
         return Page(users, null)
     }
 
+    /**
+     * One page of [list] ([ThreadsPeople]) for [target], a user's numeric id or
+     * a post's media id, after [cursor], with Meta's own search for [query]
+     * where the list has one. A session read: the cookies on threads.com when
+     * the reader gave them, else the Bearer on the app API; with neither,
+     * [NOT_CONFIGURED]. A read only: no one is followed or liked.
+     */
+    suspend fun people(list: ThreadsPeopleList, target: String, cursor: String? = null, query: String? = null): Page<ThreadsProfile> {
+        val id = target.trim().takeIf { it.isNotEmpty() && it.all(Char::isDigit) } ?: throw ThreadsException(NO_SUCH_FEED, "no id for $list")
+        return ThreadsPeople.page(sessionApi("people:$list", ThreadsPeople.paths(list, id), ThreadsPeople.params(list, cursor, query)))
+    }
+
+    /**
+     * One page of the posts that quote the post Meta keeps under [mediaId]
+     * ([ThreadsQuotes]), after [cursor]: a session read as [people] is, with
+     * neither cookies nor a Bearer [NOT_CONFIGURED]. A read only: nothing is
+     * quoted or reposted.
+     */
+    suspend fun quotes(mediaId: String, cursor: String? = null): Page<ThreadsPost> {
+        val id = mediaId.trim().takeIf { it.isNotEmpty() && it.all(Char::isDigit) } ?: throw ThreadsException(NO_SUCH_FEED, "no media id for quotes")
+        return ThreadsQuotes.page(sessionApi("quotes", ThreadsQuotes.paths(id), ThreadsQuotes.params(cursor)), id)
+    }
+
+    /**
+     * The words of the post Meta keeps under [mediaId] (its caption's own id
+     * [captionId] where Meta gave one) in [target], a BCP 47 tag, as Meta
+     * translates them ([ThreadsTranslation]); null when Meta answered with
+     * none. A session read as [people] is, with neither cookies nor a Bearer
+     * [NOT_CONFIGURED]; [NO_SUCH_FEED] when no path answers. A read only.
+     */
+    suspend fun translation(mediaId: String, captionId: String?, target: String): String? {
+        val id = mediaId.trim().takeIf { it.isNotEmpty() && it.all(Char::isDigit) } ?: throw ThreadsException(NO_SUCH_FEED, "no media id for a translation")
+        val body = sessionApi("translation", ThreadsTranslation.paths(id), ThreadsTranslation.params(id, captionId), ThreadsTranslation.acceptLanguage(target))
+        return ThreadsTranslation.text(body)
+    }
+
+    /**
+     * A session read of the API behind Threads at the first of [paths] that
+     * answers: the cookies on threads.com when the reader gave them, else
+     * the Bearer on the app API. A path Meta answers 404 gives way to the next
+     * ([NO_SUCH_FEED] once none is left); the one that answered is used first
+     * for [kind] from then on, so a list whose path is known asks once.
+     * [language], when given, is the Accept-Language Meta answers in.
+     */
+    private suspend fun sessionApi(kind: String, paths: List<String>, params: List<Pair<String, String>>, language: String? = null): J {
+        val current = session()
+        val token = current.bearerToken
+        if (!current.hasCookies && token == null) throw ThreadsException(NOT_CONFIGURED, "no session for $kind")
+        val known = synchronized(keeping) { answeringPaths[kind] }
+        val tried = paths.indices.sortedBy { if (it == known) -1 else it }
+        var missing: ThreadsException? = null
+        for (index in tried) {
+            val path = paths[index]
+            try {
+                val inLanguage = { headers: Map<String, String> -> if (language == null) headers else headers + ("Accept-Language" to language) }
+                val body = when {
+                    current.hasCookies -> sessionRead(ThreadsLinks.web(path, params), inLanguage(cookieHeaders(current)))
+                    else -> sessionRead(ThreadsLinks.address(INSTAGRAM, path, params), inLanguage(bearerHeaders(checkNotNull(token), deviceId())))
+                }
+                synchronized(keeping) { answeringPaths[kind] = index }
+                return body
+            } catch (e: ThreadsException) {
+                if (e.failure != NO_SUCH_FEED) throw e
+                missing = e
+            }
+        }
+        throw missing ?: ThreadsException(NO_SUCH_FEED, "no path for $kind")
+    }
+
+    /**
+     * [handle]'s numeric id for its lists: remembered, else from its public
+     * page, else (with cookies) from people search.
+     */
+    suspend fun userIdFor(handle: String): String {
+        val key = handle.trim().removePrefix("@").lowercase()
+        memory.kept.userIds[key]?.ifEmpty { null }?.let { return it }
+        val fromPage = try {
+            guestProfile(key).pk.ifEmpty { null }
+        } catch (e: Exception) {
+            if (!e.isReadFailure() || !session().hasCookies) throw e
+            null
+        }
+        return fromPage ?: resolveUserId(key)
+    }
+
     /** [handle]'s profile card: its public page, else the cookie API when the reader opted in to session reads. */
     suspend fun profile(handle: String): ThreadsProfile {
         try {
@@ -124,15 +232,24 @@ class ThreadsDirectClient(
             ?: throw ThreadsException(NO_SUCH_FEED, "profile missing: @$handle")
     }
 
-    /** [handle]'s profile card from its public `threads.com/@handle` page, no login. */
-    suspend fun guestProfile(handle: String): ThreadsProfile {
+    /**
+     * [handle]'s profile card from its public `threads.com/@handle` page, no
+     * login. Remembered for [CARD_TTL_MILLIS], as an account's threads are,
+     * so a profile opened again asks Meta nothing; [force] reads the page again.
+     */
+    suspend fun guestProfile(handle: String, force: Boolean = false): ThreadsProfile {
         val key = handle.trim().lowercase()
+        if (!force) rememberedCard(key)?.let { return it }
         val page = profilePage(key)
         val profile = ThreadsProfileOwner.enrich(ThreadsPages.guestProfile(page, key), page, key)
             ?: throw ThreadsException(NO_SUCH_FEED, "guest profile missing: @$key")
         if (profile.pk.isNotEmpty()) rememberUserId(key, profile.pk)
+        rememberCard(key, profile)
         return profile
     }
+
+    /** How many guest requests were answered without being sent, shared with another screen's read of the same page or query. */
+    val sharedAnswers: Int get() = guestAnswers.shared
 
     /**
      * [handle]'s threads. Guest GraphQL by default; the cookie API only when the
@@ -344,13 +461,41 @@ class ThreadsDirectClient(
         }
     }
 
+    /**
+     * Meta's trending topics, as threads.com's empty search page shows a
+     * guest ([ThreadsTrends]): one public page, no session. Remembered for
+     * [TRENDS_TTL_MILLIS] so the search page asks once however often it is
+     * opened; [force] reads again. Empty when the page carries none or sends
+     * a guest to sign in. Read off the caller's thread.
+     */
+    suspend fun trends(force: Boolean = false): List<ThreadsTrend> {
+        if (!force) knownTrends()?.let { return it }
+        return trendReads.run(TRENDS) {
+            val body = try {
+                guestPage(ThreadsLinks.web("/search"))
+            } catch (e: ThreadsException) {
+                if (e.failure != SIGN_IN_REQUIRED) throw e
+                ""
+            }
+            withContext(Dispatchers.Default) { ThreadsTrends.read(body) }.also { trends -> synchronized(keeping) { trendsRead = clock() to trends } }
+        }
+    }
+
+    /** The trends read in the last [TRENDS_TTL_MILLIS], asking Meta nothing; null when there are none that fresh. */
+    fun knownTrends(): List<ThreadsTrend>? = synchronized(keeping) { trendsRead?.takeIf { (at, _) -> clock() - at < TRENDS_TTL_MILLIS }?.second }
+
     private fun isPrivate(page: String, handle: String): Boolean =
         ThreadsProfileOwner.enrich(ThreadsPages.guestProfile(page, handle), page, handle)?.isPrivate == true
 
-    /** A profile's page, read once even when its card and its threads are asked for together. */
+    /**
+     * A profile's page, read once even when its card and its threads are asked
+     * for together. A screen's read never waits on Home's queued one: each
+     * lane has its own, and the request itself is shared once it has left.
+     */
     private suspend fun profilePage(handle: String): String {
         val key = handle.trim().lowercase()
-        return profilePages.run(key) { guestPage(profileUrl(key)).also { rememberProfileNext(key, it) } }
+        val lane = if (coroutineContext[ThreadsBackground.Key] != null) "background:" else "shown:"
+        return profilePages.run(lane + key) { guestPage(profileUrl(key)).also { rememberProfileNext(key, it) } }
     }
 
     /**
@@ -365,7 +510,7 @@ class ThreadsDirectClient(
             "Accept" to "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             "Accept-Language" to ACCEPT_LANGUAGE,
         )
-        val response = send(asGuest = true, url) { followed(url, headers) }
+        val response = sendGuest("GET $url", url) { followed(url, headers) }
         return when (response.code) {
             200 -> response.body.also { rememberGuestLsd(ThreadsPages.lsd(it)) }
             404 -> throw ThreadsException(NO_SUCH_FEED, "$url: 404", 404)
@@ -426,7 +571,7 @@ class ThreadsDirectClient(
             "Origin" to ThreadsLinks.WEB,
             "Referer" to "${ThreadsLinks.WEB}$referer",
         )
-        return send(asGuest = true, url) { http.post(url, headers, body, FORM) }
+        return sendGuest("POST $url $body", url) { http.post(url, headers, body, FORM) }
     }
 
     /**
@@ -470,14 +615,44 @@ class ThreadsDirectClient(
 
     /** A session read: paced, refused while the session cools down, and checked for what Meta said. */
     private suspend fun sessionRead(url: HttpUrl, headers: Map<String, String>): J {
-        val response = send(asGuest = false, url) { http.get(url, headers, followRedirects = true) }
+        val response = sendSession(url) { http.get(url, headers, followRedirects = true) }
         checkSession(response, url)
         return decodeJson(response, url)
     }
 
-    private suspend fun send(asGuest: Boolean, url: HttpUrl, request: suspend () -> XResponse): XResponse {
-        depart(asGuest)
+    /** A guest request, shared with an identical one another screen sends or was just answered ([ThreadsGuestAnswers]). */
+    private suspend fun sendGuest(key: String, url: HttpUrl, request: suspend () -> XResponse): XResponse {
+        val background = coroutineContext[ThreadsBackground.Key] != null
+        return guestAnswers.send(key, background, depart = { departInTurn(asGuest = true) }) {
+            withTimeoutOrNull(GUEST_TIMEOUT_MILLIS) { request() } ?: throw SocketTimeoutException("$url: no answer in ${GUEST_TIMEOUT_MILLIS / 1000} s")
+        }
+    }
+
+    /** A session request: paced at the session's own gap, never shared or reused. */
+    private suspend fun sendSession(url: HttpUrl, request: suspend () -> XResponse): XResponse {
+        departInTurn(asGuest = false)
         return withTimeoutOrNull(TIMEOUT_MILLIS) { request() } ?: throw SocketTimeoutException("$url: no answer in ${TIMEOUT_MILLIS / 1000} s")
+    }
+
+    /**
+     * Waits for this request's turn to leave, a read run in [ThreadsBackground]
+     * (Home's followed accounts) first letting every read the reader is
+     * waiting on (a profile, a post, a search) go ahead of it.
+     */
+    private suspend fun departInTurn(asGuest: Boolean) {
+        if (coroutineContext[ThreadsBackground.Key] != null) {
+            // One background read at a time queues for a departure, so a read the reader waits on is behind one of them at most.
+            return backgroundLane.withLock {
+                waitingInFront.first { it == 0 }
+                depart(asGuest)
+            }
+        }
+        waitingInFront.update { it + 1 }
+        try {
+            depart(asGuest)
+        } finally {
+            waitingInFront.update { it - 1 }
+        }
     }
 
     /**
@@ -600,6 +775,18 @@ class ThreadsDirectClient(
         keep { it.copy(userIds = (it.userIds - key + (key to id)).entries.toList().takeLast(USER_IDS_KEPT).associate { (k, v) -> k to v }) }
     }
 
+    private fun rememberedCard(handle: String): ThreadsProfile? = synchronized(profileCards) {
+        profileCards[handle]?.takeIf { (at, _) -> clock() - at < CARD_TTL_MILLIS }?.second
+    }
+
+    private fun rememberCard(handle: String, profile: ThreadsProfile) {
+        synchronized(profileCards) {
+            profileCards.remove(handle)
+            profileCards[handle] = clock() to profile
+            while (profileCards.size > CONVERSATIONS_KEPT) profileCards.remove(profileCards.keys.first())
+        }
+    }
+
     private fun rememberedConversation(key: String): ThreadsPostPage? = synchronized(conversations) {
         conversations[key]?.takeIf { (at, _) -> clock() - at < CONVERSATION_TTL_MILLIS }?.second
     }
@@ -625,6 +812,9 @@ class ThreadsDirectClient(
         private const val FORM = "application/x-www-form-urlencoded"
         private const val ACCEPT_LANGUAGE = "en-US,en;q=0.9"
         private const val TIMEOUT_MILLIS = 25_000L
+
+        /** A guest read that has not answered in this long is given up: a public page answers in a few seconds or not at all. */
+        private const val GUEST_TIMEOUT_MILLIS = 12_000L
         private const val MAX_REDIRECTS = 4
         private val REDIRECTS = setOf(301, 302, 303, 307, 308)
         private const val COOLDOWN_MILLIS = 30 * 60 * 1000L
@@ -634,6 +824,13 @@ class ThreadsDirectClient(
         private const val LSD_TTL_MILLIS = 10 * 60 * 1000L
         private const val CONVERSATION_TTL_MILLIS = 10 * 60 * 1000L
         private const val CONVERSATIONS_KEPT = 40
+
+        /** How long a profile's card is reused: as long as its threads ([ThreadsReader.CACHE_TTL_MILLIS]). */
+        private const val CARD_TTL_MILLIS = 10 * 60 * 1000L
+        private const val TRENDS = "trends"
+
+        /** How long Meta's trending topics are kept: they move through the day, not by the minute. */
+        internal const val TRENDS_TTL_MILLIS = 30 * 60 * 1000L
 
         /** How many handles' ids are remembered: the ones learnt last, so a reader's searches never grow the settings without end. */
         internal const val USER_IDS_KEPT = 400
@@ -657,4 +854,16 @@ internal data class GuestQuery(
         /** The form fields threads.com's Relay client adds to a query it names. */
         fun relayForm(name: String) = listOf("fb_api_caller_class" to "RelayModern", "fb_api_req_friendly_name" to name, "server_timestamps" to "true")
     }
+}
+
+/**
+ * Marks reads nobody is looking at yet (Home's followed accounts and their
+ * extras): each waits while a read the reader is waiting on wants its turn,
+ * so what was just opened is not queued behind Home.
+ */
+object ThreadsBackground : CoroutineContext.Element {
+    override val key: CoroutineContext.Key<*> get() = Key
+
+    /** How a coroutine is asked whether it reads in the background. */
+    object Key : CoroutineContext.Key<ThreadsBackground>
 }

@@ -71,4 +71,5 @@
     <string name="home_unable_to_load_pages">Не вдалося завантажити домашні сторінки</string>
     <string name="feed_strip_unavailable">Ця стрічка більше недоступна</string>
     <string name="home_feed_accounts_empty">Додайте обліковий запис, щоб завантажити «Для вас».</string>
+    <string name="home_all_timelines">Усі стрічки</string>
 </resources>

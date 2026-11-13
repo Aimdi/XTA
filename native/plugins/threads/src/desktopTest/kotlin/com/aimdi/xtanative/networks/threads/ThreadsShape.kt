@@ -18,18 +18,18 @@ object ThreadsShape {
     val READ_POST = setOf(
         "caption", "user", "carousel_media", "image_versions2", "original_width", "original_height",
         "accessibility_caption", "video_versions", "giphy_media_info", "text_post_app_info", "code", "pk", "id",
-        "like_count", "taken_at",
+        "like_count", "taken_at", "caption_is_edited", "text_app_music_info", "detected_language",
     )
 
     /** The `text_post_app_info` fields [ThreadsParser] reads. */
     val READ_INFO = setOf(
         "share_info", "tag_header", "text_fragments", "link_preview_attachment", "direct_reply_count",
         "repost_count", "quote_count", "reply_to_author", "is_reply", "reply_level", "direct_replies",
-        "self_thread", "containing_thread",
+        "self_thread", "containing_thread", "is_liked_by_root_author", "reply_control", "related_trends_info",
     )
 
     /** What a reader would notice if it were drawn: the key names worth a path. */
-    val FEATURES = Regex("poll|giphy|gif|quote|link_preview|carousel|audio|music|sticker|attachment|translat|spoiler|label|badge|verified|ai_|community|reply_control|hide|pinned")
+    val FEATURES = Regex("poll|giphy|gif|quote|link_preview|carousel|audio|music|sticker|attachment|translat|spoiler|label|badge|verified|ai_|community|reply_control|hide|pinned|trend|view_count|impression|ghost|expir")
 
     /** Where a page might name a next page of replies or posts. */
     val PAGING = Regex("cursor|has_next|next_max|more_available|page_info|paging")

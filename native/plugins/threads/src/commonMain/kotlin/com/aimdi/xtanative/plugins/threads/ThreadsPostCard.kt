@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -35,8 +37,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsPropertyReceiver
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.customActions
@@ -49,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.core.x.model.XCard
 import com.aimdi.xtanative.networks.threads.ThreadsLinkCard
+import com.aimdi.xtanative.networks.threads.ThreadsPeople
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.store.settings.AccessibilityPrefs
 import com.aimdi.xtanative.ui.common.Hairline
@@ -71,10 +76,12 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 /**
  * A Threads post as a timeline card, laid out as an X post is
  * (threads_post_card.dart): who reposted it or that it is pinned, the
- * author with Follow and ⋯, the topic, whom it answers, the caption (its
- * spoilers covered, a long one cut short), its poll's results, Meta's
- * labels, its pictures and videos, the link card, the quote and "Show N
- * more posts in this thread"; then the counts Meta gave, the like kept on
+ * author with Follow and ⋯ ("Edited" by its time), the topic, whom it
+ * answers, whether it is a ghost post, the caption (its spoilers covered, a
+ * long one cut short, Meta's translation in its place once asked for), its
+ * attached text, its song, its poll's results, Meta's labels (and "Liked
+ * by the author"), its pictures and videos, the link card, the quote, its
+ * trends and "Show N more posts in this thread"; then the counts Meta gave, the like kept on
  * this device, its bookmark in the app's Saved and the way to the web. A
  * long press, or ⋯, opens its sheet: copying its words and link above the
  * app's post sheet. With [focal] it is the opened post: its time and date
@@ -102,7 +109,8 @@ internal fun ThreadsPostCard(
     val open = { if (openOnTap) app.openPost(post) }
     var sheet by remember { mutableStateOf(false) }
     val menu = { sheet = true }
-    val summary = rememberSummary(post, isLiked, menu) { app.toggleLike(post) }
+    val translation = rememberThreadsTranslation(app, post)
+    val summary = rememberSummary(translation.applied(post), isLiked, menu) { app.toggleLike(post) }
     Column(
         modifier
             .fillMaxWidth()
@@ -124,7 +132,7 @@ internal fun ThreadsPostCard(
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Header(app, post, focal, byAuthor, PostPrefs.of(settings).absoluteTimestamps, menu)
-                Body(app, post, openOnTap, focal)
+                Body(app, post, translation, openOnTap, focal)
                 Engagement(app, post, isLiked, PostPrefs.of(settings).hideCounts, open)
             }
         }
@@ -142,9 +150,16 @@ internal fun ThreadsPostCard(
 private fun rememberSummary(post: ThreadsPost, liked: Boolean, menu: () -> Unit, like: () -> Unit): SemanticsPropertyReceiver.() -> Unit {
     val reposted = if (post.isRepost) pluginString(Strings.reposted, post.reposterDisplayName) else null
     val spoiler = pluginString(Strings.spoiler)
+    val ghost = pluginString(Strings.ghost_post)
     val labels = listOfNotNull(
+        ghost.takeIf { post.facts.ghost != null },
+        post.facts.attachment?.let { pluginString(Strings.attached_text) + ": " + (it.title ?: it.text.take(SPOKEN_ATTACHMENT)) },
         pluginString(Strings.ai_info).takeIf { post.facts.aiLabel },
         pluginString(Strings.sharing_friction).takeIf { post.facts.sharingFriction },
+        pluginString(Strings.edited).takeIf { post.facts.edited },
+        pluginString(Strings.liked_by_author).takeIf { post.facts.likedByAuthor },
+        post.facts.music?.let { pluginString(Strings.music) + ": " + it.line },
+        post.facts.trends.takeIf { it.isNotEmpty() }?.joinToString(", ") { it.title }?.let { pluginString(Strings.post_trend, it) },
     )
     val likeLabel = pluginString(if (liked) Strings.unlike_on_device else Strings.like_on_device)
     val moreLabel = pluginString(Strings.more_options)
@@ -160,6 +175,9 @@ private fun rememberSummary(post: ThreadsPost, liked: Boolean, menu: () -> Unit,
 }
 
 private val AvatarSize = 40.dp
+
+/** How much of attached text the card's description reads: its start; the block itself holds the rest. */
+private const val SPOKEN_ATTACHMENT = 280
 
 /** The rails through the avatar, [above] from the row's top, to the posts above and below, as a conversation draws a thread. */
 @Composable
@@ -202,11 +220,15 @@ private fun RepostLine(app: ThreadsApp, post: ThreadsPost) {
 private fun Header(app: ThreadsApp, post: ThreadsPost, focal: Boolean, byAuthor: Boolean, absolute: Boolean, onMore: () -> Unit) {
     val rows by app.accounts.state.collectAsState()
     var exact by rememberSaveable(post.id) { mutableStateOf(false) }
-    val time = when {
-        focal -> ""
-        absolute || exact -> fullTimeText(post.publishedAt)
-        else -> agoText(post.publishedAt)
-    }
+    val edited = pluginString(Strings.edited)
+    val time = ThreadsCardRules.timeLine(
+        when {
+            focal -> ""
+            absolute || exact -> fullTimeText(post.publishedAt)
+            else -> agoText(post.publishedAt)
+        },
+        edited.takeIf { post.facts.edited && !focal },
+    )
     Row(verticalAlignment = Alignment.CenterVertically) {
         AuthorLine(
             post.authorName,
@@ -224,7 +246,7 @@ private fun Header(app: ThreadsApp, post: ThreadsPost, focal: Boolean, byAuthor:
         if (rows != null && !ThreadsAccounts.follows(rows, post.handle)) {
             SmallIcon(ThreadsIcons.PersonAdd, pluginString(Strings.follow)) { app.follow(ThreadsAccount.of(post)) }
         }
-        SmallIcon(PostIcons.MoreHoriz, pluginString(Strings.more_info), onMore)
+        SmallIcon(PostIcons.MoreHoriz, pluginString(Strings.more_info), onClick = onMore)
     }
 }
 
@@ -245,17 +267,27 @@ private fun AuthorChip() {
     )
 }
 
-/** The topic, whom it answers, the caption, the media, the link card, the quote, the rest of the thread and, opened, the time. */
+/**
+ * The topic, whom it answers, whether it is a ghost post, the caption (or
+ * Meta's translation of it) with its translate control, its attached text,
+ * the media, the link card, the quote, its trends, the rest of the thread
+ * and, opened, the time.
+ */
 @Composable
-private fun Body(app: ThreadsApp, post: ThreadsPost, openOnTap: Boolean, focal: Boolean) {
+private fun Body(app: ThreadsApp, post: ThreadsPost, translation: ThreadsTranslationView, openOnTap: Boolean, focal: Boolean) {
     post.topicTag?.let { TopicTag(app, post, it) }
     post.replyToHandle?.takeIf { it.isNotEmpty() }?.let { ReplyingTo(app, it) }
-    ThreadsCaptionText(app, post, Modifier.padding(top = 2.dp), style = if (focal) FocalStyle else threadsBodyStyle(), selectable = focal)
+    GhostLine(post, Modifier.padding(top = 2.dp, bottom = 2.dp))
+    ThreadsCaptionText(app, translation.applied(post), Modifier.padding(top = 2.dp), style = if (focal) FocalStyle else threadsBodyStyle(), selectable = focal)
+    TranslationLine(translation, focal)
+    post.facts.attachment?.let { TextAttachmentBlock(app, post, it, focal, Modifier.partGap()) }
+    MusicLine(post, Modifier.padding(top = 8.dp))
     post.facts.poll?.let { ThreadsPollView(it, Modifier.partGap()) }
     FactLines(post)
     ThreadsPostMedia(app, post, Modifier.partGap(), opens = openOnTap)
     post.linkCard?.let { ThreadsLink(app, post, it, Modifier.partGap(), opens = openOnTap) }
     post.quoted?.let { ThreadsQuote(app, it, Modifier.partGap()) }
+    TrendChips(app, post, Modifier.padding(top = 4.dp))
     if (post.selfThreadCount > 0 && openOnTap) {
         TextButton(onClick = { app.openPost(post) }, modifier = Modifier.heightIn(min = 48.dp)) {
             Icon(PostIcons.Forum, contentDescription = null, modifier = Modifier.size(18.dp))
@@ -264,12 +296,13 @@ private fun Body(app: ThreadsApp, post: ThreadsPost, openOnTap: Boolean, focal: 
     }
     if (focal) {
         Text(
-            fullTimeText(post.publishedAt),
+            ThreadsCardRules.timeLine(fullTimeText(post.publishedAt), pluginString(Strings.edited).takeIf { post.facts.edited }),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 12.dp),
         )
-        FocalCounts(post, PostPrefs.of(app.current()).hideCounts)
+        ReplyAudienceLine(post)
+        FocalCounts(app, post, PostPrefs.of(app.current()).hideCounts)
     }
 }
 
@@ -340,9 +373,9 @@ private fun ThreadsQuote(app: ThreadsApp, quote: ThreadsPost, modifier: Modifier
 }
 
 /**
- * Replies and reposts as Meta counted them, both opening the post (Meta
- * lists neither apart); the like kept on this device, its count one more
- * while liked; the bookmark that files it in the app's Saved (a long press:
+ * Replies and reposts as Meta counted them, both opening the post (for a
+ * signed-in reader, the reposts open who reposted it); the like kept on
+ * this device, its count one more while liked; the bookmark that files it in the app's Saved (a long press:
  * its folder); the post on the web. No count Meta did not give is drawn,
  * and none in zen or calm mode.
  */
@@ -353,15 +386,34 @@ private fun Engagement(app: ThreadsApp, post: ThreadsPost, liked: Boolean, hideC
     val counted = { n: Long? -> n?.takeIf { !hideCounts } }
     val outside = rememberOpenOutside()
     val archive = remember(post) { ThreadsArchive.of(post) }
+    val settings by app.prefs.collectAsState()
+    val signedIn = ThreadsPeopleView.signedIn(ThreadsSessions.of(settings))
     Row(Modifier.fillMaxWidth().padding(top = 2.dp), verticalAlignment = Alignment.CenterVertically) {
         CountButton(XIcons.Reply, counted(post.replyCount), openPost, muted, open)
-        CountButton(XIcons.Repost, counted(post.repostCount), openPost, muted, open)
-        CountButton(
-            if (liked) ThreadsHeart.Filled else ThreadsHeart.Outlined,
-            counted(post.likeCount?.let { if (liked) it + 1 else it }),
-            pluginString(if (liked) Strings.unlike_on_device else Strings.like_on_device),
-            if (liked) MaterialTheme.colorScheme.primary else muted,
-        ) { app.toggleLike(post) }
+        val reposters = ThreadsPeople.mediaId(post).takeIf { counted(post.repostCount) != null && ThreadsPeopleView.opensReposters(post, signedIn) }
+        if (reposters == null) {
+            CountButton(XIcons.Repost, counted(post.repostCount), openPost, muted, open)
+        } else {
+            CountButton(XIcons.Repost, counted(post.repostCount), pluginString(Strings.show_reposted_by), muted) { app.host.open(ThreadsRoutes.reposters(reposters, post.url)) }
+        }
+        val heart = if (liked) ThreadsHeart.Filled else ThreadsHeart.Outlined
+        val likes = counted(post.likeCount?.let { if (liked) it + 1 else it })
+        val likeLabel = pluginString(if (liked) Strings.unlike_on_device else Strings.like_on_device)
+        val likeTint = if (liked) MaterialTheme.colorScheme.primary else muted
+        val likers = ThreadsPeople.mediaId(post).takeIf { likes != null && ThreadsPeopleView.opensLikers(post, signedIn) }
+        if (likers == null) {
+            CountButton(heart, likes, likeLabel, likeTint) { app.toggleLike(post) }
+        } else {
+            // The heart is the like on this device; its count, for a signed-in reader, who liked the post on Threads.
+            SmallIcon(heart, likeLabel, likeTint) { app.toggleLike(post) }
+            Box(
+                Modifier.heightIn(min = 48.dp).widthIn(min = 32.dp)
+                    .clickable(role = Role.Button, onClickLabel = pluginString(Strings.show_liked_by)) { app.host.open(ThreadsRoutes.likers(likers, post.url)) },
+                contentAlignment = Alignment.CenterStart,
+            ) {
+                Text(countText(likes ?: 0), style = MaterialTheme.typography.labelMedium, color = likeTint, modifier = Modifier.padding(end = 8.dp))
+            }
+        }
         NetworkBookmark(archive)
         Spacer(Modifier.weight(1f))
         post.url?.let { url -> SmallIcon(PostIcons.OpenInNew, pluginString(Strings.open_in_browser)) { outside(url) } }
@@ -378,9 +430,9 @@ private fun CountButton(icon: ImageVector, count: Long?, label: String, tint: Co
 }
 
 @Composable
-internal fun SmallIcon(icon: ImageVector, label: String, onClick: () -> Unit) {
+internal fun SmallIcon(icon: ImageVector, label: String, tint: Color = Color.Unspecified, onClick: () -> Unit) {
     IconButton(onClick = onClick) {
-        Icon(icon, contentDescription = label, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
+        Icon(icon, contentDescription = label, tint = tint.takeOrElse { MaterialTheme.colorScheme.onSurfaceVariant }, modifier = Modifier.size(20.dp))
     }
 }
 

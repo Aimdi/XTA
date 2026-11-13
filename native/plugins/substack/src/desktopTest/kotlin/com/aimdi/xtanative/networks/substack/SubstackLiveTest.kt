@@ -15,7 +15,8 @@ import org.junit.jupiter.api.Assumptions.assumeTrue
  * run names the route that changed. Substack's Cloudflare turns some networks
  * away, GitHub's runners among them, with a challenge (403) on every route;
  * the test is skipped there too, saying so, as Reddit's is, since that answer
- * says nothing about the reader.
+ * says nothing about the reader. Where only the API turns it away, the
+ * archive comes from the RSS feed, as in the app, and the test reads that.
  */
 class SubstackLiveTest {
     @Test
@@ -27,7 +28,10 @@ class SubstackLiveTest {
 
         val archive = logged("archive of ${publication.baseUrl}") { client.posts(publication, limit = 5) }
         assertTrue(archive.items.isNotEmpty(), "the archive lists posts")
-        assertTrue(archive.items.all { it.title.isNotEmpty() && it.slug.isNotEmpty() && it.bodyHtml == null })
+        // Where Substack's API turns a network away, the archive is read from the RSS feed, whose
+        // posts come with their bodies; the API's listing has none. Either is a reading.
+        assertTrue(archive.items.all { it.title.isNotEmpty() && it.slug.isNotEmpty() }, "every listed post has a title and an address")
+        println("LIVE archive read from ${if (archive.items.any { it.bodyHtml != null }) "the RSS feed" else "the API"}")
 
         val listed = archive.items.first()
         val post = logged("post ${listed.slug}") { client.post(publication, listed.slug) }

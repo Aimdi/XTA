@@ -71,4 +71,5 @@
     <string name="home_unable_to_load_pages">Nie można załadować Twoich kart</string>
     <string name="feed_strip_unavailable">Ta oś czasu jest już niedostępna</string>
     <string name="home_feed_accounts_empty">Dodaj konto, aby wczytać Dla Ciebie.</string>
+    <string name="home_all_timelines">Wszystkie osie czasu</string>
 </resources>

@@ -5,6 +5,7 @@ import java.time.Instant
 import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 
 /** Where a reader's Threads reads come from besides Meta's public pages. */
 data class ThreadsSetup(
@@ -52,7 +53,7 @@ data class ThreadsProfilePage(
  * Each followed account is read once per ten minutes at most, through the
  * source the setup implies; a load asks at most twenty accounts (six with
  * session reads), the ones asked longest ago first, so successive refreshes
- * reach every account. Three are read at once, so one slow answer does not
+ * reach every account. Five are read at once, so one slow answer does not
  * hold the rest; the client still lets requests leave one at a time, its
  * gap apart, so Meta sees no more requests than before, and a throttle
  * stops every read of the load.
@@ -92,7 +93,7 @@ class ThreadsReader(
         force: Boolean = false,
         onPartial: ((List<ThreadsPost>) -> Unit)? = null,
     ): List<ThreadsPost> {
-        if (handles.isNotEmpty()) return postsFor(handles, force, onPartial)
+        if (handles.isNotEmpty()) return withContext(ThreadsBackground) { postsFor(handles, force, onPartial) }
         val current = direct.currentSession
         return when {
             current.hasBearer -> direct.followingTimeline().items
@@ -137,7 +138,7 @@ class ThreadsReader(
         val keys = extraKeys(handles, topics)
         if (keys.isEmpty()) return emptyList()
         return try {
-            extras.merge(extras.prioritize(keys), ::readExtra, maxFetches = EXTRAS_PER_LOAD)
+            withContext(ThreadsBackground) { extras.merge(extras.prioritize(keys), ::readExtra, maxFetches = EXTRAS_PER_LOAD) }
         } catch (e: CancellationException) {
             throw e
         } catch (_: Exception) {
@@ -206,12 +207,13 @@ class ThreadsReader(
      * [handle]'s card and threads, read together. The card comes from the public
      * page, else the cookie API when the reader opted in, else the Xy server,
      * else is pieced together from the threads; the read fails only when it
-     * found neither a card nor a thread.
+     * found neither a card nor a thread. [onCard] hears the card as soon as
+     * it is known, so a screen draws the header while the threads still come.
      */
-    suspend fun profile(handle: String, force: Boolean = false): ThreadsProfilePage {
+    suspend fun profile(handle: String, force: Boolean = false, onCard: ((ThreadsProfile) -> Unit)? = null): ThreadsProfilePage {
         if (handle.isEmpty()) throw ThreadsException(ThreadsFailure.NO_SUCH_FEED, "empty handle")
         return coroutineScope {
-            val card = async { resolveProfile(handle) }
+            val card = async { resolveProfile(handle, force)?.also { onCard?.invoke(it) } }
             val read = async { readPosts(handle, force) }
             val profile = card.await()
             val (posts, error) = read.await()
@@ -249,8 +251,8 @@ class ThreadsReader(
         return { handle -> attempt { rssHub.account(instance, handle).items }?.ifEmpty { null } ?: direct.guestAccount(handle).items }
     }
 
-    private suspend fun resolveProfile(handle: String): ThreadsProfile? {
-        attempt { direct.guestProfile(handle) }?.let { return it }
+    private suspend fun resolveProfile(handle: String, force: Boolean): ThreadsProfile? {
+        attempt { direct.guestProfile(handle, force) }?.let { return it }
         val current = direct.currentSession
         if (current.useSessionApis && current.hasCookies) attempt { direct.sessionProfile(handle) }?.let { return it }
         val where = setup()
@@ -283,8 +285,8 @@ class ThreadsReader(
         /** Session loads are capped harder: a burst of `text_feed` calls is what Meta's anti-scripting looks for. */
         const val SESSION_ACCOUNTS_PER_LOAD = 6
 
-        /** How many followed accounts are waited on at once. */
-        const val ACCOUNTS_AT_ONCE = 3
+        /** How many followed accounts are waited on at once: requests still leave one at a time, their gap apart, but more answers are awaited together. */
+        const val ACCOUNTS_AT_ONCE = 5
 
         /** How many reposts pages and topic pages one Home load asks for at most. */
         const val EXTRAS_PER_LOAD = 3

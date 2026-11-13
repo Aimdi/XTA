@@ -3,6 +3,7 @@ package com.aimdi.xtanative.plugins.threads
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.aimdi.xtanative.networks.threads.ThreadsPeopleList
 import com.aimdi.xtanative.ui.plugins.NetworkPost
 import com.aimdi.xtanative.ui.plugins.NetworkPostActions
 import com.aimdi.xtanative.ui.plugins.PluginBackupSection
@@ -62,6 +63,10 @@ class ThreadsPlugin : XtaPlugin() {
     override fun screen(route: String): PluginScreen? = when (val opened = ThreadsRoutes.parse(route)) {
         is ThreadsRoute.Post -> { { ThreadsConversationScreen(app, opened) } }
         is ThreadsRoute.Profile -> { { ThreadsProfileScreen(app, opened.handle) } }
+        is ThreadsRoute.People -> { { ThreadsPeopleScreen(app, opened.handle, opened.list) } }
+        is ThreadsRoute.Likers -> { { ThreadsPostPeopleScreen(app, ThreadsPeopleList.LIKERS, opened.mediaId) } }
+        is ThreadsRoute.Reposters -> { { ThreadsPostPeopleScreen(app, ThreadsPeopleList.REPOSTERS, opened.mediaId) } }
+        is ThreadsRoute.Quotes -> { { ThreadsQuotesScreen(app, opened.mediaId) } }
         is ThreadsRoute.Search -> { { ThreadsSearchScreen(app, opened.terms) } }
         is ThreadsRoute.Community -> { { ThreadsCommunityScreen(app, opened.topic) } }
         is ThreadsRoute.Media -> { { ThreadsMediaScreen(app, opened) } }

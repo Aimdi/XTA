@@ -110,6 +110,7 @@
     <string name="test">Bağlantıyı sına</string>
     <string name="test_ok">RSSHub örneğin yanıt verdi</string>
     <string name="thread">Konu</string>
+    <string name="trending_now">Şu an gündemde</string>
     <string name="try_public">Herkese açık bir hesap dene</string>
     <string name="unfollow">Takibi bırak</string>
     <string name="unlike_on_device">Beğeniyi bu cihazdan kaldır</string>
@@ -146,7 +147,6 @@
     <string name="profile_reposts">Yeniden paylaşımlar</string>
     <string name="show_more">Daha fazla göster</string>
     <string name="show_less">Daha az göster</string>
-    <string name="pinned">Sabitlendi</string>
     <string name="pinned_reply">Yazar tarafından sabitlendi</string>
     <string name="spoiler">Spoiler</string>
     <string name="tap_to_show_spoiler">Spoiler\'ı göstermek için dokun</string>
@@ -161,7 +161,6 @@
     <string name="exact_time">Tam saati göster</string>
     <string name="fewer_replies">Daha az yanıt göster</string>
     <string name="more_replies_web">threads.com\'da daha fazla yanıt</string>
-    <string name="thread_on_web">Bu konu threads.com\'da devam ediyor</string>
     <string name="related_threads">İlgili konular</string>
     <string name="media_description">Görsel açıklaması</string>
     <string name="media_download">İndir</string>
@@ -195,4 +194,50 @@
     <string name="community">Topluluk</string>
     <string name="community_posts">Bu topluluktaki gönderiler</string>
     <string name="topic_followed">Bu cihazda takip ediliyor — gönderileri artık Ana sayfada</string>
+    <string name="people_both">Ortak takipçiler</string>
+    <string name="liked_by">Beğenenler</string>
+    <string name="people_signed_out">Threads bu listeleri yalnızca oturum açmış okurlara gösterir</string>
+    <string name="people_signed_out_detail">Görmek için Threads\'e giriş yapın. Buradan birini takip etmek bu cihazda kalır; Threads\'e hiçbir şey gönderilmez.</string>
+    <string name="people_empty">Henüz kimse yok</string>
+    <string name="likers_empty">Gösterilecek beğeni yok</string>
+    <string name="show_list">Listeyi göster</string>
+    <string name="show_liked_by">Kimlerin beğendiğini gör</string>
+    <string name="following_state">Takip ediliyor</string>
+    <string name="profile_note_short">Not</string>
+    <string name="search_profile">Bu profilde ara</string>
+    <string name="filters_and_groups">Filtreler ve gruplar</string>
+    <string name="pinned_post">Sabitlenmiş gönderi</string>
+    <string name="profile_search_empty">Burada aramanızla eşleşen gönderi yok</string>
+    <string name="reposted_by">Yeniden paylaşanlar</string>
+    <string name="reposters_empty">Gösterilecek yeniden paylaşım yok</string>
+    <string name="show_reposted_by">Kimlerin yeniden paylaştığını gör</string>
+    <string name="show_quotes">Alıntıları gör</string>
+    <string name="quotes_empty">Gösterilecek alıntı yok</string>
+    <string name="list_unavailable">Threads bu listeyi burada vermiyor. Görmek için gönderiyi threads.com\'da aç.</string>
+    <string name="liked_by_author">Yazar beğendi</string>
+    <string name="edited">Düzenlendi</string>
+    <string name="continue_thread">Bu konuya devam et</string>
+    <string name="music">Müzik</string>
+    <string name="replies_limited_followed">Yalnızca yazarın takip ettiği hesaplar yanıt verebilir</string>
+    <string name="replies_limited_followers">Yalnızca yazarın takipçileri yanıt verebilir</string>
+    <string name="replies_limited_mentioned">Yalnızca gönderide bahsedilen hesaplar yanıt verebilir</string>
+    <string name="replies_limited_author">Yalnızca yazar yanıt verebilir</string>
+    <string name="updating">Güncelleniyor…</string>
+    <string name="translate">Çevir</string>
+    <string name="show_original">Orijinali göster</string>
+    <string name="translated_by_threads">Threads tarafından çevrildi</string>
+    <string name="translating">Çevriliyor…</string>
+    <string name="translation_failed">Threads bu gönderiyi çeviremedi</string>
+    <string name="attached_text">Ekli metin</string>
+    <string name="views">Görüntülenme</string>
+    <string name="ghost_post">Hayalet gönderi</string>
+    <plurals name="ghost_post_hours">
+        <item quantity="one">Hayalet gönderi · %1$d saat içinde kaybolacak</item>
+        <item quantity="other">Hayalet gönderi · %1$d saat içinde kaybolacak</item>
+    </plurals>
+    <plurals name="ghost_post_minutes">
+        <item quantity="one">Hayalet gönderi · %1$d dakika içinde kaybolacak</item>
+        <item quantity="other">Hayalet gönderi · %1$d dakika içinde kaybolacak</item>
+    </plurals>
+    <string name="post_trend">Gündemde · %1$s</string>
 </resources>
