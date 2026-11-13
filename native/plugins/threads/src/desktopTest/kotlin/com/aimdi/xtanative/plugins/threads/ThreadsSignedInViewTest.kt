@@ -26,8 +26,12 @@ class ThreadsSignedInViewTest {
             ThreadsSignedInRules.offered(bearer, everything),
             "whom a Bearer signs in as is read nowhere, so it has no profile to open",
         )
-        assertEquals(listOf(ThreadsSignedInPlace.PROFILE), ThreadsSignedInRules.offered(cookies), "no list Meta was never seen to answer")
-        assertEquals(emptyList(), ThreadsSignedInRules.offered(bearer))
+        assertEquals(
+            listOf(ThreadsSignedInPlace.ACTIVITY, ThreadsSignedInPlace.SAVED, ThreadsSignedInPlace.PROFILE),
+            ThreadsSignedInRules.offered(cookies),
+            "the lists CI saw a path answer for (run 111), and no list Meta was never seen to answer",
+        )
+        assertEquals(listOf(ThreadsSignedInPlace.ACTIVITY, ThreadsSignedInPlace.SAVED), ThreadsSignedInRules.offered(bearer))
         assertEquals(listOf(ThreadsSignedInPlace.ACTIVITY), ThreadsSignedInRules.offered(bearer) { it == ThreadsSignedInPlace.ACTIVITY })
     }
 

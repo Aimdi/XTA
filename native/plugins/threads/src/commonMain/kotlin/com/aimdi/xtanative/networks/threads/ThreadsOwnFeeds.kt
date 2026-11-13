@@ -33,7 +33,7 @@ object ThreadsOwnFeeds {
     /** Every path [feed] may be read at, in the order they are tried. */
     fun paths(feed: ThreadsOwnFeed): List<String> = when (feed) {
         ThreadsOwnFeed.FOLLOWING -> listOf(TIMELINE, "/api/v1/text_feed/following_timeline/")
-        ThreadsOwnFeed.SAVED -> listOf("/api/v1/text_feed/saved/", "/api/v1/text_feed/saved_posts/", "/api/v1/feed/text_post_app_saved/")
+        ThreadsOwnFeed.SAVED -> listOf("/api/v1/text_feed/saved_posts/", "/api/v1/text_feed/saved/", "/api/v1/feed/text_post_app_saved/")
         ThreadsOwnFeed.LIKED -> listOf("/api/v1/text_feed/liked/", "/api/v1/text_feed/liked_posts/", "/api/v1/feed/text_post_app_liked/")
     }
 

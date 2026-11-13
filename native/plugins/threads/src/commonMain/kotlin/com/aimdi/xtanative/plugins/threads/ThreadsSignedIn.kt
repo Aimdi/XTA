@@ -40,13 +40,13 @@ internal object ThreadsSignedInRules {
      */
     const val FOLLOWING_PATH_KNOWN = false
 
-    /** Whether one of the activity's paths is known to answer. */
-    const val ACTIVITY_PATH_KNOWN = false
+    /** Whether one of the activity's paths is known to answer: CI's probe (run 111) saw both send a guest to sign in, as real session paths do. */
+    const val ACTIVITY_PATH_KNOWN = true
 
-    /** Whether one of the saved posts' paths is known to answer. */
-    const val SAVED_PATH_KNOWN = false
+    /** Whether one of the saved posts' paths is known to answer: CI's probe (run 111) saw `text_feed/saved_posts/` send a guest to sign in; the other guesses were 404. */
+    const val SAVED_PATH_KNOWN = true
 
-    /** Whether one of the liked posts' paths is known to answer. */
+    /** Whether one of the liked posts' paths is known to answer: every guess was a 404 in CI's probe (run 111). */
     const val LIKED_PATH_KNOWN = false
 
     /** Whether [place]'s read is known to answer; the reader's profile is a public page, and whom the cookies sign in as a read the sign-in itself makes. */
