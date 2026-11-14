@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -77,10 +78,10 @@ import java.time.Instant
  */
 @Composable
 internal fun ThreadsCaptionText(app: ThreadsApp, post: ThreadsPost, modifier: Modifier, style: TextStyle, selectable: Boolean, maxLines: Int = Int.MAX_VALUE) {
-    if (post.text.isEmpty()) return
+    if (post.text.isEmpty() && !post.hasStickers) return
     var shown by rememberSaveable(post.id) { mutableStateOf(false) }
     var expanded by rememberSaveable(post.id) { mutableStateOf(false) }
-    val long = maxLines == Int.MAX_VALUE && !selectable && ThreadsCardRules.isLong(post.text)
+    val long = maxLines == Int.MAX_VALUE && !selectable && ThreadsCardRules.isLong(post)
     val lines = if (long && !expanded) ThreadsCardRules.SHORT_LINES else maxLines
     Column(modifier) {
         if (post.hasSpoiler && !shown) {
@@ -102,13 +103,17 @@ private fun CoveredText(post: ThreadsPost, style: TextStyle, maxLines: Int, show
     val cover = MaterialTheme.colorScheme.onSurfaceVariant
     val link = MaterialTheme.colorScheme.primary
     val said = pluginString(Strings.tap_to_show_spoiler)
-    val text = remember(post.text, post.fragments, cover, link) { ThreadsCardRules.covered(ThreadsCaption.runs(post.text, post.fragments), cover, link, show) }
+    val sticker = pluginString(Strings.sticker)
+    val runs = remember(post.text, post.fragments) { ThreadsCaption.runs(post.text, post.fragments) }
+    val shown = remember(runs) { runs.filterNot { it.spoiler } }
+    val text = remember(runs, cover, link, sticker) { ThreadsCardRules.covered(runs, cover, link, sticker, show) }
     Text(
         text,
         style = style,
         color = MaterialTheme.colorScheme.onSurface,
         maxLines = maxLines,
         overflow = TextOverflow.Ellipsis,
+        inlineContent = rememberStickerContent(shown, style),
         modifier = Modifier.semantics { contentDescription = ThreadsCardRules.spoken(post, said) },
     )
 }
@@ -366,20 +371,27 @@ internal object ThreadsCardRules {
     /** A caption a list cuts short: more than [LONG_CHARS] characters, or more than [LONG_LINES] lines. */
     fun isLong(text: String): Boolean = text.length > LONG_CHARS || text.count { it == '\n' } >= LONG_LINES
 
+    /** [post]'s caption is cut short in a list: long in words, or in words and stickers together ([ThreadsStickerRules.weight]). */
+    fun isLong(post: ThreadsPost): Boolean = isLong(post.text) || ThreadsStickerRules.weight(post) > LONG_CHARS
+
     /** A post's time with "Edited" after it where its words were changed, as threads.com marks one; either alone when the other is missing. */
     fun timeLine(time: String, edited: String?): String = listOfNotNull(time.ifBlank { null }, edited?.ifBlank { null }).joinToString(" · ")
 
     /**
      * [runs] with each spoiler drawn in [cover] on [cover], a tap on it
      * calling [show]; mentions, links and tags only coloured with [link]
-     * until it is shown, so a tap meant for the cover opens nothing.
+     * until it is shown, so a tap meant for the cover opens nothing. A
+     * sticker is drawn in its placeholder ([ThreadsStickerRules.id]); one
+     * under a spoiler is covered as its name ([sticker] where it has none).
      */
-    fun covered(runs: List<ThreadsTextFragment>, cover: Color, link: Color, show: () -> Unit): AnnotatedString = buildAnnotatedString {
+    fun covered(runs: List<ThreadsTextFragment>, cover: Color, link: Color, sticker: String = "", show: () -> Unit): AnnotatedString = buildAnnotatedString {
         for (run in runs) {
+            val picture = run.sticker
             when {
                 run.spoiler -> withLink(LinkAnnotation.Clickable("spoiler") { show() }) {
-                    withStyle(SpanStyle(color = cover, background = cover)) { append(run.text) }
+                    withStyle(SpanStyle(color = cover, background = cover)) { append(picture?.let { ThreadsStickerRules.alternate(it, sticker) } ?: run.text) }
                 }
+                run.isSticker && picture != null -> appendInlineContent(ThreadsStickerRules.id(picture), ThreadsStickerRules.alternate(picture, sticker))
                 run.kind != ThreadsTextFragment.Kind.TEXT -> withStyle(SpanStyle(color = link)) { append(run.text) }
                 else -> append(run.text)
             }
@@ -408,12 +420,16 @@ internal object ThreadsCardRules {
     /**
      * The whole card as a screen reader hears it first: who reposted it,
      * who wrote it and when, its topic, its words (each spoiler as
-     * [spoiler]), and Meta's labels.
+     * [spoiler], stickers by their names or [sticker]), and Meta's labels.
      */
-    fun summary(post: ThreadsPost, time: String, reposted: String?, spoiler: String, labels: List<String>): String = listOfNotNull(
+    fun summary(post: ThreadsPost, time: String, reposted: String?, spoiler: String, labels: List<String>, sticker: String = ""): String = listOfNotNull(
         reposted,
         listOf(post.authorName, "@" + post.handle, time).filter { it.isNotBlank() }.joinToString(", "),
         post.topicTag,
-        post.text.takeIf { it.isNotBlank() }?.let { if (post.hasSpoiler) spoken(post, spoiler) else it },
+        when {
+            post.hasSpoiler -> spoken(post, spoiler)
+            post.hasStickers -> ThreadsStickerRules.spoken(post.fragments, sticker)
+            else -> post.text
+        }.takeIf { it.isNotBlank() },
     ).plus(labels).filter { it.isNotBlank() }.joinToString(". ")
 }

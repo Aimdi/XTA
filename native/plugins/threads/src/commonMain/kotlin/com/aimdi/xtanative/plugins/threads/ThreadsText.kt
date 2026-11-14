@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
+import com.aimdi.xtanative.networks.threads.ThreadsCaption
 import com.aimdi.xtanative.networks.threads.ThreadsLinks
 import com.aimdi.xtanative.networks.threads.ThreadsTextFragment
 import com.aimdi.xtanative.ui.plugins.LinkedText
@@ -16,6 +17,7 @@ import com.aimdi.xtanative.ui.plugins.LinkedText
  * Meta's own split when the post carried it, else the @handles, addresses and
  * #tags a pattern finds. A mention opens the profile, a tag its posts, a link
  * as the app opens links. The opened post's text can be selected and copied.
+ * Stickers among the words are drawn in the line ([ThreadsStickerText]).
  */
 @Composable
 internal fun ThreadsRichText(
@@ -27,17 +29,17 @@ internal fun ThreadsRichText(
     maxLines: Int = Int.MAX_VALUE,
     selectable: Boolean = false,
 ) {
-    if (text.isEmpty()) return
-    val runs = remember(text, fragments) { threadsRuns(text, fragments) }
+    val stickers = fragments.any { it.isSticker }
+    if (text.isEmpty() && !stickers) return
+    val onMention = remember(app) { { who: String -> app.openProfile(ThreadsLinks.normaliseHandle(who) ?: who.lowercase()) } }
+    val onTag = remember(app) { { tag: String -> app.openTag(tag) } }
     val linked = @Composable {
-        LinkedText(
-            runs,
-            onMention = { who -> app.openProfile(ThreadsLinks.normaliseHandle(who) ?: who.lowercase()) },
-            onTag = app::openTag,
-            modifier = modifier,
-            style = style,
-            maxLines = maxLines,
-        )
+        if (stickers) {
+            ThreadsStickerText(ThreadsCaption.runs(text, fragments), style, maxLines, modifier, onMention, onTag)
+        } else {
+            val runs = remember(text, fragments) { threadsRuns(text, fragments) }
+            LinkedText(runs, onMention = onMention, onTag = onTag, modifier = modifier, style = style, maxLines = maxLines)
+        }
     }
     if (selectable) SelectionContainer { linked() } else linked()
 }

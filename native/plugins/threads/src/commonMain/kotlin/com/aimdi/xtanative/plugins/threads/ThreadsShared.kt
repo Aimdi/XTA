@@ -113,8 +113,13 @@ internal object ThreadsLinkContext {
     )
 }
 
-/** A caption's runs as the shared text draws them: Meta's own split when the post carried it, else what a pattern finds. */
-internal fun threadsRuns(text: String, fragments: List<ThreadsTextFragment>): List<TextRun> = ThreadsCaption.runs(text, fragments).map { run ->
+/**
+ * A caption's runs as the shared text draws them: Meta's own split when the
+ * post carried it, else what a pattern finds. The shared row draws words
+ * alone, so a sticker is left out there ([ThreadsStickerText] draws it on
+ * Threads' own cards).
+ */
+internal fun threadsRuns(text: String, fragments: List<ThreadsTextFragment>): List<TextRun> = ThreadsCaption.runs(text, fragments).filterNot { it.isSticker }.map { run ->
     val target = run.target
     when {
         target == null -> TextRun.Plain(run.text)

@@ -144,6 +144,7 @@
     <string name="show_less">Thu gọn</string>
     <string name="pinned_reply">Tác giả đã ghim</string>
     <string name="spoiler">Tiết lộ nội dung</string>
+    <string name="sticker">Nhãn dán</string>
     <string name="tap_to_show_spoiler">Chạm để hiện phần tiết lộ</string>
     <string name="copy_text">Sao chép văn bản</string>
     <string name="copy_link">Sao chép liên kết</string>

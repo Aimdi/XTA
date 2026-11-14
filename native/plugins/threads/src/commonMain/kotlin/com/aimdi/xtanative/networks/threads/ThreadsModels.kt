@@ -59,9 +59,43 @@ data class ThreadsMedia(
  * their real destination, which a pattern cannot tell from a shortened
  * `example.com/a…` display.
  */
-data class ThreadsTextFragment(val kind: Kind, val text: String, val target: String? = null, val spoiler: Boolean = false) {
-    /** [target] is the handle for a mention, the unwrapped URL for a link, the tag's name for a tag; a [spoiler] stays covered until tapped. */
-    enum class Kind { TEXT, MENTION, LINK, TAG }
+data class ThreadsTextFragment(
+    val kind: Kind,
+    val text: String,
+    val target: String? = null,
+    val spoiler: Boolean = false,
+    /** The picture a [Kind.STICKER] run draws in the line; its [text] is then empty. */
+    val sticker: ThreadsSticker? = null,
+) {
+    /**
+     * [target] is the handle for a mention, the unwrapped URL for a link, the
+     * tag's name for a tag; a [spoiler] stays covered until tapped. A sticker
+     * is a small picture drawn among the words, as threads.com draws one.
+     */
+    enum class Kind { TEXT, MENTION, LINK, TAG, STICKER }
+
+    val isSticker: Boolean get() = kind == Kind.STICKER && sticker != null
+
+    companion object {
+        /** A run that draws [sticker] among the words. */
+        fun sticker(sticker: ThreadsSticker, spoiler: Boolean = false) = ThreadsTextFragment(Kind.STICKER, "", spoiler = spoiler, sticker = sticker)
+    }
+}
+
+/**
+ * A sticker drawn inline in a caption or bio (Meta's `inline_sticker_fragment`):
+ * its picture, its size when Meta gave one (else it is drawn square), and
+ * what Meta calls it, for a screen reader.
+ */
+data class ThreadsSticker(val url: String, val width: Int? = null, val height: Int? = null, val label: String? = null) {
+    /** Width over height, kept between a narrow letter and a wide banner; square without a size. */
+    val aspect: Float
+        get() = if (width != null && height != null && width > 0 && height > 0) (width.toFloat() / height).coerceIn(MIN_ASPECT, MAX_ASPECT) else 1f
+
+    private companion object {
+        const val MIN_ASPECT = 0.4f
+        const val MAX_ASPECT = 3f
+    }
 }
 
 /** The link preview Meta attaches to a post (`link_preview_attachment`). */
@@ -128,6 +162,9 @@ data class ThreadsPost(
     val isRepost: Boolean get() = !repostedByHandle.isNullOrEmpty()
 
     val hasSpoiler: Boolean get() = fragments.any { it.spoiler }
+
+    /** Some of the caption is drawn as stickers. */
+    val hasStickers: Boolean get() = fragments.any { it.isSticker }
 
     /** The account whose page this post came from: the reposter for a repost. */
     val sourceHandle: String get() = repostedByHandle?.takeIf { isRepost } ?: handle

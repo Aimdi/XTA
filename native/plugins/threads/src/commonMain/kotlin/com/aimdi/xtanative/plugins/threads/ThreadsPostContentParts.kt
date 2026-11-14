@@ -58,8 +58,8 @@ internal class ThreadsTranslationView(
     /** The translated words while they are shown. */
     val shown: String? get() = state?.shown
 
-    /** [post] as its card draws it: Meta's translation in place of its words while it is shown. */
-    fun applied(post: ThreadsPost): ThreadsPost = shown?.let { post.copy(text = it, fragments = emptyList()) } ?: post
+    /** [post] as its card draws it: Meta's translation in place of its words while it is shown, its stickers after it. */
+    fun applied(post: ThreadsPost): ThreadsPost = shown?.let { post.copy(text = it, fragments = ThreadsStickerRules.translated(it, post.fragments)) } ?: post
 }
 
 /** [post]'s translate control, in the language the app translates into (its setting, else the reader's). */

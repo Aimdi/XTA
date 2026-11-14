@@ -144,6 +144,7 @@
     <string name="show_less">收合</string>
     <string name="pinned_reply">作者已釘選</string>
     <string name="spoiler">劇透</string>
+    <string name="sticker">貼圖</string>
     <string name="tap_to_show_spoiler">點按顯示劇透</string>
     <string name="copy_text">複製文字</string>
     <string name="copy_link">複製連結</string>

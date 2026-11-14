@@ -148,6 +148,7 @@
     <string name="show_less">Daha az göster</string>
     <string name="pinned_reply">Yazar tarafından sabitlendi</string>
     <string name="spoiler">Spoiler</string>
+    <string name="sticker">Çıkartma</string>
     <string name="tap_to_show_spoiler">Spoiler\'ı göstermek için dokun</string>
     <string name="copy_text">Metni kopyala</string>
     <string name="copy_link">Bağlantıyı kopyala</string>

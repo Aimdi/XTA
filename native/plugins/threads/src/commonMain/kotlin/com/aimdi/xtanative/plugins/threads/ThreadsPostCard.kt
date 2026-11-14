@@ -180,7 +180,8 @@ private fun rememberSummary(post: ThreadsPost, liked: Boolean, byAuthor: Boolean
     val likeLabel = pluginString(if (liked) Strings.unlike_on_device else Strings.like_on_device)
     val moreLabel = pluginString(Strings.more_options)
     val time = fullTimeText(post.publishedAt)
-    val said = remember(post, time, reposted, spoiler, labels) { ThreadsCardRules.summary(post, time, reposted, spoiler, labels) }
+    val sticker = pluginString(Strings.sticker)
+    val said = remember(post, time, reposted, spoiler, labels, sticker) { ThreadsCardRules.summary(post, time, reposted, spoiler, labels, sticker) }
     return {
         contentDescription = said
         customActions = listOf(

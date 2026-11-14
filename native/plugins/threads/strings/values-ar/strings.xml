@@ -164,6 +164,7 @@
     <string name="show_less">عرض أقل</string>
     <string name="pinned_reply">ثبّته الكاتب</string>
     <string name="spoiler">حرق للأحداث</string>
+    <string name="sticker">ملصق</string>
     <string name="tap_to_show_spoiler">اضغط لعرض الحرق</string>
     <string name="copy_text">نسخ النص</string>
     <string name="copy_link">نسخ الرابط</string>

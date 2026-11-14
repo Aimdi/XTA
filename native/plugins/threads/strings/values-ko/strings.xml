@@ -144,6 +144,7 @@
     <string name="show_less">간략히 보기</string>
     <string name="pinned_reply">작성자가 고정함</string>
     <string name="spoiler">스포일러</string>
+    <string name="sticker">스티커</string>
     <string name="tap_to_show_spoiler">탭하여 스포일러 보기</string>
     <string name="copy_text">텍스트 복사</string>
     <string name="copy_link">링크 복사</string>

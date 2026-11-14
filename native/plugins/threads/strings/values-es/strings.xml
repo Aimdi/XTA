@@ -151,6 +151,7 @@
     <string name="show_less">Mostrar menos</string>
     <string name="pinned_reply">Fijada por el autor</string>
     <string name="spoiler">Spoiler</string>
+    <string name="sticker">Sticker</string>
     <string name="tap_to_show_spoiler">Toca para mostrar el spoiler</string>
     <string name="copy_text">Copiar texto</string>
     <string name="copy_link">Copiar enlace</string>
