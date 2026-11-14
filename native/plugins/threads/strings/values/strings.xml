@@ -118,7 +118,6 @@
     <string name="unlike_on_device">Remove like from this device</string>
     <string name="use_session">Use my session for followed accounts</string>
     <string name="use_session_description">Off by default. When on, this app talks to Threads as you — Meta can ban that account. Leave this off unless you are using a disposable login.</string>
-    <string name="add_to_group">Add to group</string>
     <string name="in_home_feed">Show in the home timeline</string>
     <string name="in_home_feed_description">Mixes posts from the Threads accounts you follow into Following and For you</string>
     <string name="for_you">For you</string>

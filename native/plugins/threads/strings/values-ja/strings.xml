@@ -76,7 +76,7 @@
     <string name="open_post">投稿を開く</string>
     <string name="plugin_description">ログインなしでThreadsの公開投稿を読む — セッションやRSSHubは任意</string>
     <string name="plugin_name">Threads</string>
-    <string name="posts">ツイート</string>
+    <string name="posts">投稿</string>
     <string name="profile_private">このプロフィールは非公開です。公開されているのは自己紹介だけです。</string>
     <string name="profile_replies">返信</string>
     <string name="recent">最新</string>
@@ -86,7 +86,7 @@
     <string name="replying_to">返信：</string>
     <string name="reposted">%1$sさんが再投稿しました</string>
     <string name="reset_filters">フィルターをリセット</string>
-    <string name="saved">保存ツイート</string>
+    <string name="saved">保存済み</string>
     <string name="search">検索</string>
     <string name="search_guest_posts_hint">キーワードで公開投稿を検索し、#タグでそのトピック、@ハンドルでプロフィールを開きます。ログインは不要です。</string>
     <string name="search_posts">投稿を検索</string>
@@ -113,7 +113,6 @@
     <string name="unlike_on_device">この端末のいいねを取り消す</string>
     <string name="use_session">フォロー中のアカウントに自分のセッションを使う</string>
     <string name="use_session_description">初期値はオフ。オンにするとこのアプリがあなたとして Threads にアクセスし、Meta がそのアカウントを凍結することがあります。捨てアカ以外はオフのままに。</string>
-    <string name="add_to_group">グループに追加</string>
     <string name="in_home_feed">ホームのタイムラインに表示</string>
     <string name="in_home_feed_description">フォロー中の Threads アカウントの投稿を「フォロー中」と「おすすめ」に混ぜます</string>
     <string name="for_you">For you</string>

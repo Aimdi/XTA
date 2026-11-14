@@ -78,7 +78,7 @@
     <string name="open_post">Malfermi la afiŝon</string>
     <string name="plugin_description">Legu publikajn Threads-afiŝojn sen ensaluto — seanco aŭ RSSHub nedevigaj</string>
     <string name="plugin_name">Threads</string>
-    <string name="posts">Pepoj</string>
+    <string name="posts">Afiŝoj</string>
     <string name="profile_private">Ĉi tiu profilo estas privata; publika estas nur kion ĝi diras pri si mem.</string>
     <string name="profile_replies">Respondoj</string>
     <string name="recent">Lastatempaj</string>
@@ -116,7 +116,6 @@
     <string name="unlike_on_device">Forigi ŝaton el ĉi tiu aparato</string>
     <string name="use_session">Uzi mian seancon por sekvataj kontoj</string>
     <string name="use_session_description">Defaŭlte malŝaltita. Ŝaltite, la apo parolas al Threads kiel vi — Meta povas malpermesi tiun konton. Lasu malŝaltita krom se vi uzas forĵeteblan ensaluton.</string>
-    <string name="add_to_group">Aldoni al grupo</string>
     <string name="in_home_feed">Montri en la hejma tempolinio</string>
     <string name="in_home_feed_description">Miksas afiŝojn el la Threads-kontoj kiujn vi sekvas en «Sekvataj» kaj «Por vi»</string>
     <string name="for_you">Por vi</string>
@@ -219,7 +218,7 @@
     <string name="continue_thread">Daŭrigi ĉi tiun fadenon</string>
     <string name="music">Muziko</string>
     <string name="replies_limited_followed">Nur kontoj, kiujn la aŭtoro sekvas, povas respondi</string>
-    <string name="replies_limited_followers">Nur la sekvantoj de la aŭtoro povas respondi</string>
+    <string name="replies_limited_followers">Nur la abonantoj de la aŭtoro povas respondi</string>
     <string name="replies_limited_mentioned">Nur kontoj menciitaj en la afiŝo povas respondi</string>
     <string name="replies_limited_author">Nur la aŭtoro povas respondi</string>
     <string name="updating">Ĝisdatigante…</string>

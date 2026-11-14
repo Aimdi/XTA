@@ -80,7 +80,7 @@
     <string name="open_post">Abrir publicação</string>
     <string name="plugin_description">Leia publicações públicas do Threads sem login — sessão ou RSSHub opcionais</string>
     <string name="plugin_name">Threads</string>
-    <string name="posts">Tweets</string>
+    <string name="posts">Publicações</string>
     <string name="profile_private">Este perfil é privado: só é público o que ele diz sobre si mesmo.</string>
     <string name="profile_replies">Respostas</string>
     <string name="recent">Recentes</string>
@@ -119,7 +119,6 @@
     <string name="unlike_on_device">Remover curtida deste dispositivo</string>
     <string name="use_session">Usar minha sessão nas contas seguidas</string>
     <string name="use_session_description">Desligado por padrão. Ligado, o app fala com o Threads como você — a Meta pode banir essa conta. Deixe desligado salvo um login descartável.</string>
-    <string name="add_to_group">Adicionar ao grupo</string>
     <string name="in_home_feed">Mostrar na linha do tempo principal</string>
     <string name="in_home_feed_description">Mistura as publicações das contas do Threads que você segue em «Seguindo» e «Para você»</string>
     <string name="for_you">Para você</string>

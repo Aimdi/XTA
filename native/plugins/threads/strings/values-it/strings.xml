@@ -80,7 +80,7 @@
     <string name="open_post">Apri il post</string>
     <string name="plugin_description">Leggi i post pubblici di Threads senza accedere — sessione o RSSHub opzionali</string>
     <string name="plugin_name">Threads</string>
-    <string name="posts">Tweet</string>
+    <string name="posts">Post</string>
     <string name="profile_private">Questo profilo è privato: è pubblico solo ciò che dice di sé.</string>
     <string name="profile_replies">Risposte</string>
     <string name="recent">Recenti</string>
@@ -119,7 +119,6 @@
     <string name="unlike_on_device">Rimuovi il mi piace da questo dispositivo</string>
     <string name="use_session">Usa la mia sessione per gli account seguiti</string>
     <string name="use_session_description">Disattivato di default. Se attivo, l’app parla a Threads come te — Meta può bannare quell’account. Lascialo spento a meno di un accesso usa e getta.</string>
-    <string name="add_to_group">Aggiungi al gruppo</string>
     <string name="in_home_feed">Mostra nella timeline principale</string>
     <string name="in_home_feed_description">Inserisce i post degli account Threads che segui in «Seguiti» e «Per te»</string>
     <string name="for_you">Per te</string>
@@ -213,7 +212,7 @@
     <string name="pinned_post">Post fissato</string>
     <string name="profile_search_empty">Nessun post qui corrisponde alla ricerca</string>
     <string name="reposted_by">Ripubblicato da</string>
-    <string name="reposters_empty">Nessuna ripubblicazione da mostrare</string>
+    <string name="reposters_empty">Nessun repost da mostrare</string>
     <string name="show_reposted_by">Vedi chi l\'ha ripubblicato</string>
     <string name="show_quotes">Vedi le citazioni</string>
     <string name="quotes_empty">Nessuna citazione da mostrare</string>
@@ -223,7 +222,7 @@
     <string name="continue_thread">Continua questa discussione</string>
     <string name="music">Musica</string>
     <string name="replies_limited_followed">Possono rispondere solo gli account seguiti dall\'autore</string>
-    <string name="replies_limited_followers">Possono rispondere solo i follower dell\'autore</string>
+    <string name="replies_limited_followers">Possono rispondere solo i seguaci dell\'autore</string>
     <string name="replies_limited_mentioned">Possono rispondere solo gli account menzionati nel post</string>
     <string name="replies_limited_author">Può rispondere solo l\'autore</string>
     <string name="updating">Aggiornamento…</string>

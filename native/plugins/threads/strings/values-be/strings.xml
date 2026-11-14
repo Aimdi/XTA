@@ -82,7 +82,7 @@
     <string name="open_post">Адкрыць пост</string>
     <string name="plugin_description">Чытайце публічныя пасты Threads без уваходу — сесія або RSSHub па жаданні</string>
     <string name="plugin_name">Threads</string>
-    <string name="posts">Твіты</string>
+    <string name="posts">Допісы</string>
     <string name="profile_private">Гэты профіль прыватны: публічна толькі тое, што ён кажа пра сябе.</string>
     <string name="profile_replies">Адказы</string>
     <string name="recent">Апошнія</string>
@@ -122,7 +122,6 @@
     <string name="unlike_on_device">Прыбраць «падабаецца» з гэтай прылады</string>
     <string name="use_session">Выкарыстоўваць маю сесію для адсочваных акаўнтаў</string>
     <string name="use_session_description">Выключана па змаўчанні. Калі ўключана, праграма звяртаецца да Threads ад вашага імя — Meta можа заблакаваць той акаўнт. Пакіньце выключаным, калі гэта не аднаразовы ўваход.</string>
-    <string name="add_to_group">Дадаць у групу</string>
     <string name="in_home_feed">Паказваць у галоўнай стужцы</string>
     <string name="in_home_feed_description">Дадае запісы з акаўнтаў Threads, на якія вы падпісаны, у «Падпіскі» і «Для вас»</string>
     <string name="for_you">Для вас</string>
@@ -223,14 +222,14 @@
     <string name="show_reposted_by">Паглядзець, хто зрабіў рэпост</string>
     <string name="show_quotes">Паглядзець цытаты</string>
     <string name="quotes_empty">Няма цытат</string>
-    <string name="list_unavailable">Threads не дае гэты спіс тут. Адкрыйце пост на threads.com, каб убачыць яго.</string>
+    <string name="list_unavailable">Threads не дае гэты спіс тут. Адкрыйце допіс на threads.com, каб убачыць яго.</string>
     <string name="liked_by_author">Спадабалася аўтару</string>
     <string name="edited">Зменена</string>
     <string name="continue_thread">Працягнуць гэтую нітку</string>
     <string name="music">Музыка</string>
     <string name="replies_limited_followed">Адказваць могуць толькі тыя, на каго падпісаны аўтар</string>
     <string name="replies_limited_followers">Адказваць могуць толькі падпісчыкі аўтара</string>
-    <string name="replies_limited_mentioned">Адказваць могуць толькі тыя, каго згадалі ў пасце</string>
+    <string name="replies_limited_mentioned">Адказваць могуць толькі тыя, каго згадалі ў допісе</string>
     <string name="replies_limited_author">Адказваць можа толькі аўтар</string>
     <string name="updating">Абнаўленне…</string>
     <string name="translate">Перакласці</string>

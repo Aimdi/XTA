@@ -72,4 +72,15 @@ class ThreadsProfileViewTest {
         assertEquals(emptyList(), ThreadsProfileView.tabWidths(emptyList(), 400))
         assertEquals(listOf(133, 133, 134), ThreadsProfileView.tabWidths(listOf(10, 10, 10), 400))
     }
+
+    @Test
+    fun tabsCloseUpBeforeTheLastIsCutAtTheScreensEdge() {
+        // Five tabs on a 390-wide phone: 403 with the room each likes, 323 without.
+        val tight = listOf(55, 70, 61, 76, 61)
+        assertEquals(listOf(68, 83, 74, 89, 76), ThreadsProfileView.tabWidths(tight, 390, comfort = 16), "their least widths and the room left shared out")
+        assertEquals(390, ThreadsProfileView.tabWidths(tight, 390, comfort = 16).sum(), "the strip ends where the screen does")
+        assertEquals(listOf(84, 84, 84, 84, 84), ThreadsProfileView.tabWidths(tight, 420, comfort = 8), "equal while each fits its share with its comfort")
+        assertEquals(listOf(74, 89, 80, 95, 82), ThreadsProfileView.tabWidths(tight, 420, comfort = 16), "comfortable widths and the room left shared out")
+        assertEquals(tight.map { it + 16 }, ThreadsProfileView.tabWidths(tight, 300, comfort = 16), "wider than the strip even closed up: comfortable, and it scrolls")
+    }
 }

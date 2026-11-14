@@ -169,7 +169,7 @@ private fun ActivityList(app: ThreadsApp, filter: ThreadsActivityFilter) {
                     RetryMessage(ThreadsFailures.ownList(first.problem, currentLanguage()), onRetry = { model.first.load(force = true) })
                 }
                 ThreadsPeopleView.Body.LOADING -> item(key = "loading") { LoadingRow() }
-                ThreadsPeopleView.Body.PEOPLE -> items(lines, key = { "activity:" + it.id }) { line -> ActivityRow(app, line) }
+                ThreadsPeopleView.Body.PEOPLE -> items(lines, key = { "activity:" + it.id }, contentType = { "activity" }) { line -> ActivityRow(app, line) }
                 else -> item(key = "empty") { MessageText(pluginString(Strings.activity_empty)) }
             }
             if (body == ThreadsPeopleView.Body.PEOPLE) moreFoot("activity", more) { model.more.retry() }

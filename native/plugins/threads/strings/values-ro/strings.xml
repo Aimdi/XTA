@@ -45,7 +45,7 @@
     <string name="filters">Filtre</string>
     <string name="follow">Urmărește</string>
     <string name="followers">Urmăritori</string>
-    <string name="following">Urmăritori</string>
+    <string name="following">Urmăriri</string>
     <string name="from_feed">Oameni din acest flux</string>
     <string name="guest_card">Citire publică — fără autentificare</string>
     <string name="guest_card_body">Urmărește @handle-uri ca să le citești postările publice. Meta nu vede niciun cont al tău.</string>
@@ -119,7 +119,6 @@
     <string name="unlike_on_device">Elimină aprecierea de pe acest dispozitiv</string>
     <string name="use_session">Folosește sesiunea mea pentru conturile urmărite</string>
     <string name="use_session_description">Oprit implicit. Pornit, aplicația vorbește cu Threads ca tine — Meta poate interzice acel cont. Lasă oprit, decât dacă e un login de unică folosință.</string>
-    <string name="add_to_group">Adăugați la grup</string>
     <string name="in_home_feed">Afișează în cronologia principală</string>
     <string name="in_home_feed_description">Adaugă postările din conturile Threads urmărite în „Urmăriți” și „Pentru tine”</string>
     <string name="for_you">Pentru dvs.</string>

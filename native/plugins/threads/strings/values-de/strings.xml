@@ -78,7 +78,7 @@
     <string name="open_post">Beitrag öffnen</string>
     <string name="plugin_description">Öffentliche Threads-Beiträge ohne Anmeldung lesen — optionale Sitzung oder RSSHub als Extra</string>
     <string name="plugin_name">Threads</string>
-    <string name="posts">Tweets</string>
+    <string name="posts">Beiträge</string>
     <string name="profile_private">Dieses Profil ist privat, öffentlich ist nur, was es über sich selbst sagt.</string>
     <string name="profile_replies">Antworten</string>
     <string name="recent">Neueste</string>
@@ -116,7 +116,6 @@
     <string name="unlike_on_device">Like von diesem Gerät entfernen</string>
     <string name="use_session">Meine Sitzung für gefolgte Konten nutzen</string>
     <string name="use_session_description">Standardmäßig aus. Wenn an, spricht die App als Sie mit Threads — Meta kann das Konto sperren. Aus lassen, außer Sie nutzen ein Wegwerflogin.</string>
-    <string name="add_to_group">Zu Gruppe hinzufügen</string>
     <string name="in_home_feed">In der Startseite anzeigen</string>
     <string name="in_home_feed_description">Mischt Beiträge aus den Threads-Konten, denen du folgst, unter „Folge ich“ und „Für dich“</string>
     <string name="for_you">Für dich</string>

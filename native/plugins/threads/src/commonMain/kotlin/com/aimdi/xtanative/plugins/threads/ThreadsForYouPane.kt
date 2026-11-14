@@ -171,7 +171,7 @@ private fun NeedsSignIn(app: ThreadsApp) {
         }
         TextButton(onClick = app::refreshForYou) {
             Icon(Icons.Filled.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
-            Text(pluginString(Strings.for_you), modifier = Modifier.padding(start = 8.dp))
+            Text(pluginString(Strings.retry), modifier = Modifier.padding(start = 8.dp))
         }
     }
 }
@@ -188,6 +188,6 @@ private fun ForYouMessage(app: ThreadsApp, frame: PluginFrame, state: ThreadsFor
 @Composable
 private fun ForYouRefreshable(app: ThreadsApp, frame: PluginFrame, state: ThreadsForYouState, list: LazyListState, content: LazyListScope.() -> Unit) {
     PullToRefreshBox(isRefreshing = state.loading && (state.loaded || state.posts.isNotEmpty()), onRefresh = app::refreshForYou, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize().fillMaxWidth(), content = content)
+        LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize(), content = content)
     }
 }

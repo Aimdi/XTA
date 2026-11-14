@@ -88,18 +88,23 @@ internal object ThreadsProfileView {
 
     /**
      * Each tab's width in a strip [width] wide, from the width each needs
-     * ([naturals]): all equal when every one fits that share, else each its
-     * own width and an equal part of the room left, else (wider than the
-     * strip) its own width, the strip then scrolling sideways.
+     * at the least ([naturals]) and the room each has more of while there
+     * is some ([comfort]): all equal when every one fits that share with
+     * its comfort; else each its own comfortable width and an equal part of
+     * the room left; else, while they still fit without it, their least
+     * widths and what is left shared out, so five tabs fit a phone before
+     * the last is cut at its edge; else (wider than the strip) each its
+     * comfortable width, the strip then scrolling sideways.
      */
-    fun tabWidths(naturals: List<Int>, width: Int): List<Int> {
+    fun tabWidths(naturals: List<Int>, width: Int, comfort: Int = 0): List<Int> {
         if (naturals.isEmpty()) return naturals
         val share = width / naturals.size
-        val sum = naturals.sum()
+        val roomy = naturals.map { it + comfort }
         val widths = when {
-            naturals.all { it <= share } -> naturals.map { share }
-            sum <= width -> naturals.map { it + (width - sum) / naturals.size }
-            else -> return naturals
+            roomy.all { it <= share } -> naturals.map { share }
+            roomy.sum() <= width -> roomy.map { it + (width - roomy.sum()) / naturals.size }
+            naturals.sum() <= width -> naturals.map { it + (width - naturals.sum()) / naturals.size }
+            else -> return roomy
         }
         // The pixels division leaves go to the last tab, so the strip ends where the screen does.
         return widths.dropLast(1) + (widths.last() + width - widths.sum())

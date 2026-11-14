@@ -86,7 +86,7 @@
     <string name="open_post">فتح المنشور</string>
     <string name="plugin_description">اقرأ منشورات Threads العامة دون تسجيل دخول — الجلسة أو RSSHub اختياريان</string>
     <string name="plugin_name">Threads</string>
-    <string name="posts">التغريدات</string>
+    <string name="posts">المنشورات</string>
     <string name="profile_private">هذا الملف خاص، والعلني منه ما يقوله عن نفسه فقط.</string>
     <string name="profile_replies">الردود</string>
     <string name="recent">الأحدث</string>
@@ -128,7 +128,6 @@
     <string name="unlike_on_device">إزالة الإعجاب من هذا الجهاز</string>
     <string name="use_session">استخدم جلستي للحسابات المتابَعة</string>
     <string name="use_session_description">متوقف افتراضيًا. عند التشغيل يتحدث التطبيق إلى ثريدز بصفتك — وقد تحظر ميتا ذلك الحساب. اتركه مغلقًا إلا إذا كنت تستخدم تسجيل دخولًا مؤقتًا.</string>
-    <string name="add_to_group">أضف إلى المجموعة</string>
     <string name="in_home_feed">إظهار في الصفحة الرئيسية</string>
     <string name="in_home_feed_description">يدمج منشورات حسابات ثريدز التي تتابعها في \"المتابَعون\" و\"لك\"</string>
     <string name="for_you">لك</string>

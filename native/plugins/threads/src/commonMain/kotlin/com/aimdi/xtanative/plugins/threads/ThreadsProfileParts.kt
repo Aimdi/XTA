@@ -3,6 +3,7 @@ package com.aimdi.xtanative.plugins.threads
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -155,19 +156,21 @@ internal fun ProfileCount(n: Long, label: PluginText, exact: Boolean, onOpen: ((
             onClick = onOpen,
             onLongClick = if (tappable) { { whole = !whole } } else null,
         )
-        tappable -> Modifier.heightIn(min = 32.dp).clickable(role = Role.Button) { whole = !whole }
-        else -> Modifier
+        tappable -> Modifier.heightIn(min = 48.dp).clickable(role = Role.Button) { whole = !whole }
+        else -> Modifier.heightIn(min = 48.dp)
     }
-    Text(
-        buildAnnotatedString {
-            withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = strong)) { append(number) }
-            append(" ")
-            append(word)
-        },
-        style = MaterialTheme.typography.bodyLarge.copy(fontSize = 15.sp),
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = tap,
-    )
+    // The words sit in the middle of what can be touched: at its top they left a blank band under the counts.
+    Box(tap, contentAlignment = Alignment.CenterStart) {
+        Text(
+            buildAnnotatedString {
+                withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = strong)) { append(number) }
+                append(" ")
+                append(word)
+            },
+            style = MaterialTheme.typography.bodyLarge.copy(fontSize = 15.sp),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
 }
 
 /** The private note's editor (XTA's ProfileNoteCard's): only on this device, never synced; an empty note removes it. */

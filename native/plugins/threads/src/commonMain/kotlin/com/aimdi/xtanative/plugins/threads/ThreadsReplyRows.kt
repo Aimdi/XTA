@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsReplyRow
@@ -99,7 +100,8 @@ private fun Modifier.levelGuides(depth: Int): Modifier {
 private fun androidx.compose.ui.graphics.drawscope.DrawScope.guides(depth: Int, color: Color) {
     val width = 1.dp.toPx()
     repeat(depth) { level ->
-        val x = (STEP * level + STEP / 2 + 16.dp).toPx()
+        // The replies step in from the row's start: from the right where the language is written right to left.
+        val x = ThreadsCardRules.mirrored((STEP * level + STEP / 2 + 16.dp).toPx(), size.width, layoutDirection == LayoutDirection.Rtl)
         drawLine(color, Offset(x, 0f), Offset(x, size.height), strokeWidth = width)
     }
 }

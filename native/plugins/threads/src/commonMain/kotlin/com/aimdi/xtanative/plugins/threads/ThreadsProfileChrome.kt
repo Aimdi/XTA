@@ -90,6 +90,10 @@ import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import java.util.Locale
 
+/** The room a tab's label always keeps on each side, and what it has more of while the strip has the room. */
+private val TabTight = 8.dp
+private val TabComfort = 8.dp
+
 /** The banner's height, and how far the face rises into it. */
 private val BannerHeight = 128.dp
 private val FaceRise = 44.dp
@@ -150,7 +154,7 @@ internal fun ThreadsProfileCard(app: ThreadsApp, profile: ThreadsProfile, onFilt
             ProfileFediverse(app, profile.facts.fediverse)
             val counts = ThreadsProfiles.counts(profile)
             if (counts.isNotEmpty()) {
-                FlowRow(Modifier.padding(top = 4.dp), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(20.dp), itemVerticalAlignment = Alignment.CenterVertically) {
                     counts.forEach { (n, kind) ->
                         val list = ThreadsProfileHeader.list(kind)
                         ProfileCount(n, countLabel(kind), ThreadsProfileHeader.isExact(profile, kind), list?.let { { app.host.open(ThreadsRoutes.people(profile.username, it)) } })
@@ -161,7 +165,7 @@ internal fun ThreadsProfileCard(app: ThreadsApp, profile: ThreadsProfile, onFilt
                 Text(pluginString(Strings.profile_private), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 8.dp))
             }
         }
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(8.dp))
     }
 }
 
@@ -214,7 +218,8 @@ private fun ProfileFollowButton(app: ThreadsApp, profile: ThreadsProfile) {
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
-                modifier = Modifier.padding(start = 6.dp),
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f, fill = false).padding(start = 6.dp),
             )
             Icon(GroupIcons.ExpandMore, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(start = 2.dp).size(18.dp))
         }
@@ -256,11 +261,11 @@ internal fun ProfileHandleLine(app: ThreadsApp, handle: String) {
     Row(Modifier.padding(top = 2.dp), verticalAlignment = Alignment.CenterVertically) {
         Text("@$handle", style = style, color = muted, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false))
         Text(" · ", style = style, color = muted)
+        // "+ Note" is short and keeps its width, so a long handle has the rest of the line; a note written shares it.
         Row(
-            Modifier
-                .weight(1f, fill = false)
+            (if (empty) Modifier else Modifier.weight(1f, fill = false))
                 .height(32.dp)
-                .clickable(onClickLabel = label, role = Role.Button) { editing = true }
+                .clickable(role = Role.Button) { editing = true }
                 .semantics(mergeDescendants = true) { contentDescription = label },
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -303,7 +308,8 @@ internal fun ProfileSearchField(query: String, onChange: (String) -> Unit) {
  * The tabs across the width, between hairlines: the chosen one in the
  * foreground colour over a 3dp line in the accent, the others muted. Equal
  * while every label fits its share; wider labels take the room they need,
- * and the strip scrolls sideways once they are wider than the screen.
+ * closer together before any is cut ([ThreadsProfileView.tabWidths]), and
+ * the strip scrolls sideways once they are wider than the screen.
  */
 @Composable
 internal fun <T> ProfileTabStrip(tabs: List<T>, selected: T, label: @Composable (T) -> String, onSelect: (T) -> Unit) {
@@ -316,7 +322,7 @@ internal fun <T> ProfileTabStrip(tabs: List<T>, selected: T, label: @Composable 
                 modifier = Modifier.horizontalScroll(rememberScrollState()).selectableGroup(),
             ) { measurables, constraints ->
                 val naturals = measurables.map { it.maxIntrinsicWidth(constraints.maxHeight) }
-                val widths = ThreadsProfileView.tabWidths(naturals, width)
+                val widths = ThreadsProfileView.tabWidths(naturals, width, comfort = (TabComfort * 2).roundToPx())
                 val placeables = measurables.mapIndexed { i, m -> m.measure(Constraints.fixedWidth(widths[i])) }
                 val height = placeables.maxOfOrNull { it.height } ?: 0
                 layout(widths.sum(), height) {
@@ -342,7 +348,7 @@ private fun ProfileTabItem(label: String, selected: Boolean, onClick: () -> Unit
             color = if (selected) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
             softWrap = false,
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier.padding(horizontal = TabTight),
         )
         if (selected) Box(Modifier.align(Alignment.BottomCenter).fillMaxWidth().height(3.dp).background(MaterialTheme.colorScheme.primary))
     }

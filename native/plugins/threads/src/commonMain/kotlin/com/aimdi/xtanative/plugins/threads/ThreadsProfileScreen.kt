@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.plugins.threads
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -53,13 +54,18 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-/** The profile's tabs: its threads, its replies, its media, what it reposted (as Threads' own tabs), and its posts the reader liked here (XTA's Saved). */
+/**
+ * The profile's tabs: its threads, its replies, its media, what it reposted
+ * (as Threads' own tabs), and its posts the reader liked here (XTA's Saved),
+ * named "Liked" as the Threads tab names the same posts: "Saved" is the
+ * app's own archive, which this tab does not show.
+ */
 internal enum class ProfileTab(val label: PluginText, val paged: ThreadsProfilePaging.Lists?) {
     POSTS(Strings.posts, ThreadsProfilePaging.Lists.THREADS),
     REPLIES(Strings.profile_replies, ThreadsProfilePaging.Lists.REPLIES),
     MEDIA(Strings.media, ThreadsProfilePaging.Lists.BOTH),
     REPOSTS(Strings.profile_reposts, ThreadsProfilePaging.Lists.REPOSTS),
-    SAVED(Strings.saved, null),
+    SAVED(Strings.liked, null),
 }
 
 /**
@@ -202,7 +208,6 @@ private fun ProfileBody(
     val chosen = ThreadsProfileView.chosen(content, mediaTab)
     val posts = remember(all, chosen, query) { ThreadsProfileView.shown(all, chosen, query) }
     var grid by rememberSaveable { mutableStateOf(false) }
-    val gridRows = remember(posts) { ThreadsMediaGrid.rows(ThreadsMediaGrid.tiles(posts)) }
     val paging = ThreadsProfilePaging.of(tab.paged, morePosts, moreReplies, moreReposts)
     val pager = when {
         paging == null -> null
@@ -237,21 +242,26 @@ private fun ProfileBody(
     }
     val firstPage = if (tab == ProfileTab.REPOSTS) reposts.value?.items?.size ?: 0 else read.posts.size
     ReadsMoreNear(list, pager, paging)
-    PullToRefreshBox(isRefreshing = refreshing, onRefresh = refresh, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(state = list, modifier = Modifier.fillMaxSize().swipeTabs(ProfileTab.entries, tab, select)) {
-            item(key = "card") { ThreadsProfileCard(app, profile, onFilters = { sheet = true }) }
-            item(key = "tabs") { ProfileTabStrip(ProfileTab.entries, tab, label = { pluginString(it.label) }, onSelect = select) }
-            item(key = "filters") {
-                ContentToggles(ThreadsProfileView.filters(mediaTab), chosen, grid = grid.takeIf { mediaTab }, onGrid = { grid = it }) { content = it }
+    BoxWithConstraints(Modifier.fillMaxSize()) {
+        // As wide as the list: a wide window draws more squares a row rather than three huge ones.
+        val columns = ThreadsMediaGrid.columns(maxWidth.value)
+        val gridRows = remember(posts, columns) { ThreadsMediaGrid.rows(ThreadsMediaGrid.tiles(posts), columns) }
+        PullToRefreshBox(isRefreshing = refreshing, onRefresh = refresh, modifier = Modifier.fillMaxSize()) {
+            LazyColumn(state = list, modifier = Modifier.fillMaxSize().swipeTabs(ProfileTab.entries, tab, select)) {
+                item(key = "card") { ThreadsProfileCard(app, profile, onFilters = { sheet = true }) }
+                item(key = "tabs") { ProfileTabStrip(ProfileTab.entries, tab, label = { pluginString(it.label) }, onSelect = select) }
+                item(key = "filters") {
+                    ContentToggles(ThreadsProfileView.filters(mediaTab), chosen, grid = grid.takeIf { mediaTab }, onGrid = { grid = it }) { content = it }
+                }
+                when {
+                    waiting -> item(key = "waiting") { LoadingRow() }
+                    posts.isEmpty() -> item(key = "empty") { MessageText(pluginString(emptyLabel(tab, ThreadsProfileView.empty(all, chosen, query)))) }
+                    mediaTab && grid && gridRows.isNotEmpty() -> items(gridRows, key = { "grid:" + it.first().key }, contentType = { "grid" }) { MediaGridRow(app, it, columns) }
+                    else -> items(posts, key = { "post:" + it.id }, contentType = { "post" }) { ThreadsPostCard(app, it) }
+                }
+                moreFoot("profile", paging) { pager?.retry() }
+                if (ThreadsProfilePaging.endsOnWeb(paging, firstPage)) item(key = "end") { ProfileEnd(profile.username) }
             }
-            when {
-                waiting -> item(key = "waiting") { LoadingRow() }
-                posts.isEmpty() -> item(key = "empty") { MessageText(pluginString(emptyLabel(tab, ThreadsProfileView.empty(all, chosen, query)))) }
-                mediaTab && grid && gridRows.isNotEmpty() -> items(gridRows, key = { "grid:" + it.first().key }, contentType = { "grid" }) { MediaGridRow(app, it) }
-                else -> items(posts, key = { "post:" + it.id }, contentType = { "post" }) { ThreadsPostCard(app, it) }
-            }
-            moreFoot("profile", paging) { pager?.retry() }
-            if (ThreadsProfilePaging.endsOnWeb(paging, firstPage)) item(key = "end") { ProfileEnd(profile.username) }
         }
     }
     if (sheet) ProfileFiltersSheet(app, profile, ThreadsProfileView.filters(mediaTab), chosen, onChoose = { content = it }) { sheet = false }
