@@ -144,7 +144,7 @@ private fun MediaTile(item: MediaItem, place: Int, count: Int, modifier: Modifie
             .clip(MediaShape)
             .border(Dp.Hairline, MaterialTheme.colorScheme.outlineVariant, MediaShape)
             .background(MaterialTheme.colorScheme.surfaceVariant)
-            .combinedClickable(onClick = onClick, onLongClick = onHold, onLongClickLabel = pluginString(Strings.more_info)),
+            .combinedClickable(onClick = onClick, onLongClick = onHold, onLongClickLabel = pluginString(Strings.more_options)),
     ) {
         AsyncImage(
             model = item.tileUrl,

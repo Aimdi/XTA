@@ -82,7 +82,7 @@
     <string name="open_post">Відкрити допис</string>
     <string name="plugin_description">Читайте публічні дописи Threads без входу — сесія або RSSHub за бажанням</string>
     <string name="plugin_name">Threads</string>
-    <string name="posts">Твіти</string>
+    <string name="posts">Дописи</string>
     <string name="profile_private">Цей профіль закритий: публічно лише те, що він каже про себе.</string>
     <string name="profile_replies">Відповіді</string>
     <string name="recent">Нещодавні</string>
@@ -122,7 +122,6 @@
     <string name="unlike_on_device">Прибрати вподобання з цього пристрою</string>
     <string name="use_session">Використовувати мою сесію для відстежуваних акаунтів</string>
     <string name="use_session_description">Типово вимкнено. Якщо увімкнути, застосунок звертається до Threads від вашого імені — Meta може забанити той акаунт. Залиште вимкненим, якщо це не одноразовий вхід.</string>
-    <string name="add_to_group">Додати до групи</string>
     <string name="in_home_feed">Показувати в головній стрічці</string>
     <string name="in_home_feed_description">Додає дописи з акаунтів Threads, на які ви підписані, у «Підписки» та «Для вас»</string>
     <string name="for_you">Для вас</string>

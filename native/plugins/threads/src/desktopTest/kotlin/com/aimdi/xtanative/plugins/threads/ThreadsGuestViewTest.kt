@@ -66,4 +66,15 @@ class ThreadsGuestViewTest {
         assertTrue(ThreadsMediaGrid.rows(emptyList()).isEmpty())
         assertEquals(4, ThreadsMediaGrid.rows(tiles, columns = 0).size, "a column count below one is one")
     }
+
+    @Test
+    fun aWideWindowDrawsMoreSquaresARowAndAPhoneThree() {
+        assertEquals(listOf(3, 3, 3, 3), listOf(320f, 390f, 412f, 600f).map(ThreadsMediaGrid::columns))
+        assertEquals(4, ThreadsMediaGrid.columns(800f))
+        assertEquals(6, ThreadsMediaGrid.columns(1200f), "no square wider than 200dp")
+        assertEquals(ThreadsMediaGrid.MOST_COLUMNS, ThreadsMediaGrid.columns(4000f))
+        assertEquals(3, ThreadsMediaGrid.columns(0f))
+        val tiles = ThreadsMediaGrid.tiles((1..8).map { post("p$it", 1) })
+        assertEquals(listOf(6, 2), ThreadsMediaGrid.rows(tiles, ThreadsMediaGrid.columns(1200f)).map { it.size })
+    }
 }

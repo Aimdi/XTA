@@ -113,7 +113,6 @@
     <string name="unlike_on_device">Bỏ thích khỏi thiết bị này</string>
     <string name="use_session">Dùng phiên của tôi cho tài khoản đang theo dõi</string>
     <string name="use_session_description">Tắt mặc định. Khi bật, ứng dụng nói với Threads với tư cách bạn — Meta có thể cấm tài khoản đó. Để tắt trừ khi dùng đăng nhập dùng một lần.</string>
-    <string name="add_to_group">Thêm vào nhóm</string>
     <string name="in_home_feed">Hiển thị trong dòng thời gian chính</string>
     <string name="in_home_feed_description">Trộn bài viết từ các tài khoản Threads bạn theo dõi vào Đang theo dõi và Dành cho bạn</string>
     <string name="for_you">Dành cho bạn</string>

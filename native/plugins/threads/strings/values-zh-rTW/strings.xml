@@ -76,7 +76,7 @@
     <string name="open_post">開啟貼文</string>
     <string name="plugin_description">無需登入即可閱讀 Threads 公開貼文——工作階段或 RSSHub 為選用</string>
     <string name="plugin_name">Threads</string>
-    <string name="posts">推文</string>
+    <string name="posts">貼文</string>
     <string name="profile_private">此個人檔案為私密，公開的只有其自我介紹。</string>
     <string name="profile_replies">回覆</string>
     <string name="recent">最新</string>
@@ -113,7 +113,6 @@
     <string name="unlike_on_device">從此裝置取消按讚</string>
     <string name="use_session">用我的工作階段讀取已追蹤帳號</string>
     <string name="use_session_description">預設關閉。開啟後本應用會以你的身分存取 Threads，Meta 可能停權該帳號。除非是一次性登入，否則請保持關閉。</string>
-    <string name="add_to_group">新增至群組</string>
     <string name="in_home_feed">顯示在主時間軸中</string>
     <string name="in_home_feed_description">將你追蹤的 Threads 帳號的貼文混入「追蹤中」和「為你推薦」</string>
     <string name="for_you">為您推薦</string>

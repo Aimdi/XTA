@@ -80,7 +80,7 @@
     <string name="open_post">Obre la publicació</string>
     <string name="plugin_description">Llegeix publicacions públiques de Threads sense iniciar sessió — sessió o RSSHub opcionals</string>
     <string name="plugin_name">Threads</string>
-    <string name="posts">Tuits</string>
+    <string name="posts">Publicacions</string>
     <string name="profile_private">Aquest perfil és privat; només és públic el que diu de si mateix.</string>
     <string name="profile_replies">Respostes</string>
     <string name="recent">Recents</string>
@@ -119,7 +119,6 @@
     <string name="unlike_on_device">Treu el m’agrada d’aquest dispositiu</string>
     <string name="use_session">Fes servir la meva sessió per als comptes seguits</string>
     <string name="use_session_description">Desactivat per defecte. Si s’activa, l’app parla amb Threads com si fossis tu — Meta pot bandejar aquest compte. Deixa-ho apagat tret que sigui un inici de sessió d’un sol ús.</string>
-    <string name="add_to_group">Afegir al grup</string>
     <string name="in_home_feed">Mostra a la cronologia principal</string>
     <string name="in_home_feed_description">Barreja les publicacions dels comptes de Threads que segueixes a «Seguint» i «Per a tu»</string>
     <string name="for_you">Per a tu</string>

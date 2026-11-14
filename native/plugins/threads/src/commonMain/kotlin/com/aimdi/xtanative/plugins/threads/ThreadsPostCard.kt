@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,6 +40,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsPropertyReceiver
@@ -49,6 +51,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.core.x.model.XCard
@@ -76,7 +79,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 /**
  * A Threads post as a timeline card, laid out as an X post is
  * (threads_post_card.dart): who reposted it or that it is pinned, the
- * author with their community badge, Follow and ⋯ ("Edited" by its time), the topic, whom it
+ * author, Follow and ⋯ ("Edited" by its time), "Author" and their community badge under them, the topic, whom it
  * answers, whether it is a ghost post, the caption (its spoilers covered, a
  * long one cut short, Meta's translation in its place once asked for), its
  * attached text, its song, its poll's results, Meta's labels (and "Liked
@@ -84,9 +87,9 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
  * "This post is unavailable" where Threads no longer shows it), its
  * trends and "Show N more posts in this thread"; then the counts Meta gave, the like kept on
  * this device, its bookmark in the app's Saved and the way to the web. A
- * long press, or ⋯, opens its sheet: copying its words and link, the post
- * as a picture to share, hiding it and muting its author on this device,
- * above the app's post sheet. With [focal] it is the opened post: its time and date
+ * long press, or ⋯, opens its sheet ([ThreadsPostSheet]): copying its words and link and the post
+ * as a picture to share above the app's post sheet, hiding it and muting its author on this device
+ * under it. With [focal] it is the opened post: its time and date
  * on a line under it with its quotes and shares, its text selectable. [connectTop] and [connectBottom] join it to
  * the posts above and below it through the avatar, as a thread draws them;
  * without [divider] the line under it is left to the list.
@@ -112,7 +115,8 @@ internal fun ThreadsPostCard(
     var sheet by remember { mutableStateOf(false) }
     val menu = { sheet = true }
     val translation = rememberThreadsTranslation(app, post)
-    val summary = rememberSummary(translation.applied(post), isLiked, menu) { app.toggleLike(post) }
+    val summary = rememberSummary(translation.applied(post), isLiked, byAuthor, menu) { app.toggleLike(post) }
+    val prefs = remember(settings) { PostPrefs.of(settings) }
     val picture = rememberThreadsPostPicture()
     val sharePicture = rememberPictureShare(app, post, picture)
     Column(
@@ -136,9 +140,9 @@ internal fun ThreadsPostCard(
             PluginAvatar(post.avatarUrl, post.authorName, post.handle, AvatarSize) { app.openProfile(post.handle) }
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
-                Header(app, post, focal, byAuthor, PostPrefs.of(settings).absoluteTimestamps, menu)
-                Body(app, post, translation, openOnTap, focal)
-                Engagement(app, post, isLiked, PostPrefs.of(settings).hideCounts, open)
+                Header(app, post, focal, byAuthor, prefs.absoluteTimestamps, menu)
+                Body(app, post, translation, openOnTap, focal, prefs.hideCounts)
+                Engagement(app, post, isLiked, prefs.hideCounts, open)
             }
         }
     }
@@ -152,11 +156,12 @@ internal fun ThreadsPostCard(
  * as its actions.
  */
 @Composable
-private fun rememberSummary(post: ThreadsPost, liked: Boolean, menu: () -> Unit, like: () -> Unit): SemanticsPropertyReceiver.() -> Unit {
+private fun rememberSummary(post: ThreadsPost, liked: Boolean, byAuthor: Boolean, menu: () -> Unit, like: () -> Unit): SemanticsPropertyReceiver.() -> Unit {
     val reposted = if (post.isRepost) pluginString(Strings.reposted, post.reposterDisplayName) else null
     val spoiler = pluginString(Strings.spoiler)
     val ghost = pluginString(Strings.ghost_post)
     val labels = listOfNotNull(
+        pluginString(Strings.author).takeIf { byAuthor },
         post.facts.communityBadge?.let { pluginString(badgeLabel(it)) },
         ghost.takeIf { post.facts.ghost != null },
         post.facts.attachment?.let { pluginString(Strings.attached_text) + ": " + (it.title ?: it.text.take(SPOKEN_ATTACHMENT)) },
@@ -192,7 +197,8 @@ private fun Modifier.rails(top: Boolean, bottom: Boolean, above: Dp): Modifier {
     if (!top && !bottom) return this
     val color = MaterialTheme.colorScheme.outlineVariant
     return drawBehind {
-        val x = (AvatarSize / 2).toPx()
+        // The avatar is at the row's start: on the right where the language is written right to left.
+        val x = ThreadsCardRules.mirrored((AvatarSize / 2).toPx(), size.width, layoutDirection == LayoutDirection.Rtl)
         val avatarTop = above.toPx()
         val stroke = 2.dp.toPx()
         if (top) drawLine(color, Offset(x, 0f), Offset(x, avatarTop - stroke), stroke)
@@ -205,7 +211,8 @@ private fun Modifier.rails(top: Boolean, bottom: Boolean, above: Dp): Modifier {
 private fun RepostLine(app: ThreadsApp, post: ThreadsPost) {
     val reposter = post.repostedByHandle
     Row(
-        Modifier.padding(top = 12.dp, start = 24.dp).let { if (reposter.isNullOrEmpty()) it else it.clickable { app.openProfile(reposter) } },
+        // The room above and before the line is part of what can be tapped: the line alone is 16dp high.
+        (if (reposter.isNullOrEmpty()) Modifier else Modifier.clickable(role = Role.Button) { app.openProfile(reposter) }).padding(top = 12.dp, start = 24.dp, end = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(XIcons.Repost, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(14.dp))
@@ -236,6 +243,7 @@ private fun Header(app: ThreadsApp, post: ThreadsPost, focal: Boolean, byAuthor:
         },
         edited.takeIf { post.facts.edited && !focal },
     )
+    val badge = post.facts.communityBadge
     Row(verticalAlignment = Alignment.CenterVertically) {
         AuthorLine(
             post.authorName,
@@ -249,12 +257,17 @@ private fun Header(app: ThreadsApp, post: ThreadsPost, focal: Boolean, byAuthor:
                 onLongClick = if (focal || absolute) null else { { exact = !exact } },
             ),
         )
-        if (byAuthor) AuthorChip()
-        post.facts.communityBadge?.let { AuthorChip(pluginString(badgeLabel(it))) }
         if (rows != null && !ThreadsAccounts.follows(rows, post.handle)) {
             SmallIcon(ThreadsIcons.PersonAdd, pluginString(Strings.follow)) { app.follow(ThreadsAccount.of(post)) }
         }
-        SmallIcon(PostIcons.MoreHoriz, pluginString(Strings.more_info), onClick = onMore)
+        SmallIcon(PostIcons.MoreHoriz, pluginString(Strings.more_options), onClick = onMore)
+    }
+    // Under the author, not beside: on a narrow phone the chips left the name no room at all.
+    if (byAuthor || badge != null) {
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.padding(end = 8.dp, bottom = 2.dp)) {
+            if (byAuthor) AuthorChip(pluginString(Strings.author), Modifier.weight(1f, fill = false))
+            badge?.let { AuthorChip(pluginString(badgeLabel(it)), Modifier.weight(1f, fill = false)) }
+        }
     }
 }
 
@@ -263,15 +276,15 @@ private fun Header(app: ThreadsApp, post: ThreadsPost, focal: Boolean, byAuthor:
  * author's other badge in the community the post is in) as threads.com marks it.
  */
 @Composable
-private fun AuthorChip(text: String = pluginString(Strings.author)) {
+private fun AuthorChip(text: String, modifier: Modifier = Modifier) {
     Text(
         text,
         style = MaterialTheme.typography.labelSmall,
         fontWeight = FontWeight.SemiBold,
         color = MaterialTheme.colorScheme.onSecondaryContainer,
         maxLines = 1,
-        modifier = Modifier
-            .padding(start = 6.dp)
+        overflow = TextOverflow.Ellipsis,
+        modifier = modifier
             .clip(RoundedCornerShape(6.dp))
             .background(MaterialTheme.colorScheme.secondaryContainer)
             .padding(horizontal = 6.dp, vertical = 2.dp),
@@ -285,7 +298,7 @@ private fun AuthorChip(text: String = pluginString(Strings.author)) {
  * and, opened, the time.
  */
 @Composable
-private fun Body(app: ThreadsApp, post: ThreadsPost, translation: ThreadsTranslationView, openOnTap: Boolean, focal: Boolean) {
+private fun Body(app: ThreadsApp, post: ThreadsPost, translation: ThreadsTranslationView, openOnTap: Boolean, focal: Boolean, hideCounts: Boolean) {
     post.topicTag?.let { TopicTag(app, post, it) }
     post.replyToHandle?.takeIf { it.isNotEmpty() }?.let { ReplyingTo(app, it) }
     GhostLine(post, Modifier.padding(top = 2.dp, bottom = 2.dp))
@@ -314,7 +327,7 @@ private fun Body(app: ThreadsApp, post: ThreadsPost, translation: ThreadsTransla
             modifier = Modifier.padding(top = 12.dp),
         )
         ReplyAudienceLine(post)
-        FocalCounts(app, post, PostPrefs.of(app.current()).hideCounts)
+        FocalCounts(app, post, hideCounts)
     }
 }
 
@@ -415,8 +428,8 @@ private fun Engagement(app: ThreadsApp, post: ThreadsPost, liked: Boolean, hideC
     val outside = rememberOpenOutside()
     val archive = remember(post) { ThreadsArchive.of(post) }
     val settings by app.prefs.collectAsState()
-    val signedIn = ThreadsPeopleView.signedIn(ThreadsSessions.of(settings))
-    Row(Modifier.fillMaxWidth().padding(top = 2.dp), verticalAlignment = Alignment.CenterVertically) {
+    val signedIn = remember(settings) { ThreadsPeopleView.signedIn(ThreadsSessions.of(settings)) }
+    EngagementRow(Modifier.fillMaxWidth().padding(top = 2.dp), web = post.url != null) {
         CountButton(XIcons.Reply, counted(post.replyCount), openPost, muted, open)
         val reposters = ThreadsPeople.mediaId(post).takeIf { counted(post.repostCount) != null && ThreadsPeopleView.opensReposters(post, signedIn) }
         if (reposters == null) {
@@ -443,17 +456,52 @@ private fun Engagement(app: ThreadsApp, post: ThreadsPost, liked: Boolean, hideC
             }
         }
         NetworkBookmark(archive)
-        Spacer(Modifier.weight(1f))
         post.url?.let { url -> SmallIcon(PostIcons.OpenInNew, pluginString(Strings.open_in_browser)) { outside(url) } }
     }
 }
 
-/** A footer action: its icon, the count beside it when there is one, and its name for screen readers. */
+/**
+ * The footer's buttons along one line, the last ([web]: the post on the
+ * web) at the line's end. Where they are wider than the card (a narrow
+ * phone, large type, long counts), the way to the web is left out rather
+ * than squeezed to nothing: the sheet has it too.
+ */
+@Composable
+private fun EngagementRow(modifier: Modifier, web: Boolean, content: @Composable () -> Unit) {
+    Layout(content, modifier) { measurables, constraints ->
+        val loose = constraints.copy(minWidth = 0, minHeight = 0)
+        val placeables = measurables.map { it.measure(loose) }
+        val shown = ThreadsCardRules.footerShown(placeables.map { it.width }, constraints.maxWidth, web)
+        val height = placeables.take(shown).maxOfOrNull { it.height } ?: 0
+        layout(constraints.maxWidth, height) {
+            var x = 0
+            placeables.take(shown).forEachIndexed { index, placeable ->
+                val atEnd = web && index == placeables.lastIndex
+                placeable.placeRelative(if (atEnd) constraints.maxWidth - placeable.width else x, (height - placeable.height) / 2)
+                x += placeable.width
+            }
+        }
+    }
+}
+
+/**
+ * A footer action: its icon, the count beside it when there is one, and its
+ * name for screen readers; 48dp to touch, no wider than it needs.
+ */
 @Composable
 private fun CountButton(icon: ImageVector, count: Long?, label: String, tint: Color, onClick: () -> Unit) {
-    TextButton(onClick = onClick, modifier = Modifier.heightIn(min = 48.dp)) {
+    Row(
+        Modifier
+            .heightIn(min = 48.dp)
+            .widthIn(min = 48.dp)
+            .clip(RoundedCornerShape(24.dp))
+            .clickable(role = Role.Button, onClick = onClick)
+            .padding(horizontal = 8.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         Icon(icon, contentDescription = label, tint = tint, modifier = Modifier.size(18.dp))
-        if (count != null) Text(countText(count), style = MaterialTheme.typography.labelMedium, color = tint, modifier = Modifier.padding(start = 4.dp))
+        if (count != null) Text(countText(count), style = MaterialTheme.typography.labelMedium, color = tint, maxLines = 1, modifier = Modifier.padding(start = 4.dp))
     }
 }
 

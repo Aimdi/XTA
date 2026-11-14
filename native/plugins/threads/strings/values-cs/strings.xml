@@ -82,7 +82,7 @@
     <string name="open_post">Otevřít příspěvek</string>
     <string name="plugin_description">Čtěte veřejné příspěvky Threads bez přihlášení — relace nebo RSSHub volitelně</string>
     <string name="plugin_name">Threads</string>
-    <string name="posts">Tweety</string>
+    <string name="posts">Příspěvky</string>
     <string name="profile_private">Tento profil je soukromý – veřejné je jen to, co o sobě uvádí.</string>
     <string name="profile_replies">Odpovědi</string>
     <string name="recent">Nejnovější</string>
@@ -122,7 +122,6 @@
     <string name="unlike_on_device">Odebrat like z tohoto zařízení</string>
     <string name="use_session">Použít moji relaci pro sledované účty</string>
     <string name="use_session_description">Ve výchozím stavu vypnuto. Zapnuté to znamená, že aplikace mluví s Threads jako vy — Meta může ten účet zabanovat. Nechte vypnuté, pokud nepoužíváte jednorázové přihlášení.</string>
-    <string name="add_to_group">Přidat do skupiny</string>
     <string name="in_home_feed">Zobrazovat na hlavní nástěnce</string>
     <string name="in_home_feed_description">Přimíchá příspěvky z účtů na Threads, které sledujete, do „Sleduji“ a „Pro tebe“</string>
     <string name="for_you">Pro tebe</string>

@@ -210,7 +210,7 @@ private fun SearchBox(typed: String, onType: (String) -> Unit) {
         placeholder = { Text(pluginString(Strings.search)) },
         leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
         trailingIcon = if (typed.isEmpty()) null else {
-            { IconButton(onClick = { onType("") }) { Icon(Icons.Filled.Close, contentDescription = pluginString(Strings.delete)) } }
+            { IconButton(onClick = { onType("") }) { Icon(Icons.Filled.Close, contentDescription = pluginString(Strings.clear)) } }
         },
         keyboardOptions = KeyboardOptions(autoCorrectEnabled = false, imeAction = ImeAction.Search),
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
@@ -236,7 +236,7 @@ internal fun SignedOut(app: ThreadsApp) {
 
 /** One row per person, as Threads draws them: face, handle with its badge, name; a tap opens the profile, Follow is kept on this device. */
 internal fun LazyListScope.personRows(app: ThreadsApp, users: List<ThreadsProfile>, onOpen: (String) -> Unit) {
-    items(users.distinctBy { it.username.lowercase() }, key = { "user:" + it.username.lowercase() }) { user -> ThreadsPersonRow(app, user, onOpen) }
+    items(users.distinctBy { it.username.lowercase() }, key = { "user:" + it.username.lowercase() }, contentType = { "user" }) { user -> ThreadsPersonRow(app, user, onOpen) }
 }
 
 @Composable

@@ -121,6 +121,38 @@ class ThreadsReadingParityTest {
         )
     }
 
+    @Test
+    fun theSheetListsWhatIsDoneWithThePostThenItsListsAndLastWhatPutsItAway() {
+        val plain = post("1").copy(likeCount = 4)
+        assertEquals(
+            listOf(listOf(ThreadsSheetRow.TRANSLATE, ThreadsSheetRow.COPY_TEXT, ThreadsSheetRow.COPY_LINK, ThreadsSheetRow.SHARE_IMAGE), listOf(ThreadsSheetRow.LIKED_BY)),
+            ThreadsSheetRows.above(plain, picture = true, translate = ThreadsSheetRow.TRANSLATE, lists = ThreadsSheetRows.lists(plain, signedIn = true)),
+            "translate first where it is offered, the lists on Threads a group of their own",
+        )
+        assertEquals(emptyList(), ThreadsSheetRows.lists(plain, signedIn = false), "a guest is offered no list that would only say sign in")
+        assertEquals(emptyList(), ThreadsSheetRows.lists(post("2"), signedIn = true), "nor is anyone where Meta counted nothing")
+        assertEquals(
+            emptyList(),
+            ThreadsSheetRows.above(plain.copy(text = "", url = null), picture = false),
+            "a group with nothing in it is left out, so no divider stands alone",
+        )
+        assertEquals(listOf(ThreadsSheetRow.HIDE, ThreadsSheetRow.MUTE), ThreadsSheetRows.below(plain, ThreadsFeedOptions()), "hiding and muting come last, under the app's entries")
+        assertEquals(listOf(ThreadsSheetRow.UNMUTE), ThreadsSheetRows.below(plain, ThreadsFeedOptions().mutingAccount("zuck").hiding("1")))
+        assertEquals(ThreadsSheetRow.SHOW_ORIGINAL, ThreadsSheetRows.translation(shown = true, offered = true))
+        assertEquals(ThreadsSheetRow.TRANSLATE, ThreadsSheetRows.translation(shown = false, offered = true))
+        assertEquals(null, ThreadsSheetRows.translation(shown = false, offered = false))
+    }
+
+    @Test
+    fun theFootersWayToTheWebGivesWayOnANarrowCardAndLinesMirrorRightToLeft() {
+        assertEquals(5, ThreadsCardRules.footerShown(listOf(60, 60, 60, 48, 48), 300, web = true), "all of them while they fit")
+        assertEquals(4, ThreadsCardRules.footerShown(listOf(66, 66, 60, 48, 48), 244, web = true), "a 320dp phone with long counts: the sheet has the way to the web too")
+        assertEquals(4, ThreadsCardRules.footerShown(listOf(66, 66, 60, 60), 244, web = false), "nothing else is ever left out")
+        assertEquals(1, ThreadsCardRules.footerShown(listOf(400), 244, web = true))
+        assertEquals(20f, ThreadsCardRules.mirrored(20f, 300f, rtl = false))
+        assertEquals(280f, ThreadsCardRules.mirrored(20f, 300f, rtl = true), "the rail through the avatar, on the right in Arabic")
+    }
+
     // ---- An author's thread read as one article ----
 
     @Test

@@ -22,16 +22,6 @@ internal object ThreadsSessions {
 
 /** What a profile card shows, as XTA's ThreadsProfileCard does. */
 internal object ThreadsProfiles {
-    /**
-     * The link the profile names, unless it is its own Threads page: the bar
-     * already opens that, and a guest page has no other.
-     */
-    fun outsideLink(profile: ThreadsProfile): String? {
-        val url = profile.externalUrl?.trim()?.ifEmpty { null } ?: return null
-        val own = (ThreadsLinks.parse(url) as? ThreadsLink.Profile)?.handle == profile.username.lowercase()
-        return url.takeIf { !own }
-    }
-
     /** [link] as the card shows it: without its scheme, "www." or a bare trailing slash; the tap still opens the whole address. */
     fun linkLabel(link: String): String =
         link.trim().replaceFirst(Regex("^https?://", RegexOption.IGNORE_CASE), "").removePrefix("www.").trimEnd('/').ifEmpty { link.trim() }

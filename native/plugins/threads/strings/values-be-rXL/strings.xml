@@ -82,7 +82,7 @@
     <string name="open_post">Adkryć post</string>
     <string name="plugin_description">Čytajcie publičnyja pasty Threads biez uvachodu — sesija abo RSSHub pa žadanni</string>
     <string name="plugin_name">Threads</string>
-    <string name="posts">Tvity</string>
+    <string name="posts">Dopisy</string>
     <string name="profile_private">Hety profil pryvatny: publična tolki toje, što jon kaža pra siabie.</string>
     <string name="profile_replies">Adkazy</string>
     <string name="recent">Apošnija</string>
@@ -122,7 +122,6 @@
     <string name="unlike_on_device">Prybrać «padabajecca» z hetaj prylady</string>
     <string name="use_session">Vykarystoŭvać maju sesiju dla adsočvanych akaŭntaŭ</string>
     <string name="use_session_description">Vyklučana pa zmaŭčanni. Kali ŭklučana, prahrama zviartajecca da Threads ad vašaha imia — Meta moža zablakavać toj akaŭnt. Pakińcie vyklučanym, kali heta nie adnarazovy ŭvachod.</string>
-    <string name="add_to_group">Dadać u hrupu</string>
     <string name="in_home_feed">Pakazvać u hałoŭnaj stužcy</string>
     <string name="in_home_feed_description">Dadaje zapisy z akaŭntaŭ Threads, na jakija vy padpisany, u «Padpiski» i «Dla vas»</string>
     <string name="for_you">Dla vas</string>
@@ -223,14 +222,14 @@
     <string name="show_reposted_by">Pahladzieć, chto zrabiŭ repost</string>
     <string name="show_quotes">Pahladzieć cytaty</string>
     <string name="quotes_empty">Niama cytat</string>
-    <string name="list_unavailable">Threads nie daje hety spis tut. Adkryjcie post na threads.com, kab ubačyć jaho.</string>
+    <string name="list_unavailable">Threads nie daje hety spis tut. Adkryjcie dopis na threads.com, kab ubačyć jaho.</string>
     <string name="liked_by_author">Spadabałasia aŭtaru</string>
     <string name="edited">Zmieniena</string>
     <string name="continue_thread">Praciahnuć hetuju nitku</string>
     <string name="music">Muzyka</string>
     <string name="replies_limited_followed">Adkazvać mohuć tolki tyja, na kaho padpisany aŭtar</string>
     <string name="replies_limited_followers">Adkazvać mohuć tolki padpisčyki aŭtara</string>
-    <string name="replies_limited_mentioned">Adkazvać mohuć tolki tyja, kaho zhadali ŭ pascie</string>
+    <string name="replies_limited_mentioned">Adkazvać mohuć tolki tyja, kaho zhadali ŭ dopisie</string>
     <string name="replies_limited_author">Adkazvać moža tolki aŭtar</string>
     <string name="updating">Abnaŭlennie…</string>
     <string name="translate">Pierakłaści</string>

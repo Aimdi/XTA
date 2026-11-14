@@ -58,9 +58,9 @@ import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.search.DiscoverIcons
 
 /**
- * The People tab: with a session, the accounts its people search finds;
- * then, for a guest too, the accounts that wrote the top posts, those the
- * words name first.
+ * The People tab: the accounts Threads' people search finds (a session's,
+ * or a guest's once that read is on); then, for every reader, the accounts
+ * that wrote the top posts, those the words name first.
  */
 internal fun LazyListScope.foundPeople(app: ThreadsApp, terms: ThreadsSearchTerms, found: ThreadsSearchFound, session: List<ThreadsProfile>) {
     val listed = session.map { it.username }.toSet()
@@ -184,11 +184,22 @@ private fun SectionTitle(text: String) {
     )
 }
 
-/** A session's people search for the words; nothing for a guest, a tag, or a search that failed (the authors still show). */
+/**
+ * Threads' own people search for the words: a session's, else a guest's
+ * once that read is switched on ([ThreadsDirectClient.readsGuestPeople]).
+ * Nothing for a tag, for a guest while it is off, or for a search that
+ * failed or was refused (the authors still show).
+ */
 @Composable
 internal fun rememberSessionPeople(app: ThreadsApp, terms: ThreadsSearchTerms): List<ThreadsProfile> {
-    if (terms.tag || !searchesPeople(app)) return emptyList()
-    val fetch = rememberKept("threads-people-${terms.query}") { scope -> Fetch(scope) { app.ready(); app.direct.searchUsers(terms.query).items } }
+    val session = searchesPeople(app)
+    if (terms.tag || !(session || app.direct.readsGuestPeople)) return emptyList()
+    val fetch = rememberKept(ThreadsSearchRules.peopleKey(terms.query, session)) { scope ->
+        Fetch(scope) {
+            app.ready()
+            if (session) app.direct.searchUsers(terms.query).items else app.direct.guestPeople(terms.query).orEmpty()
+        }
+    }
     LaunchedEffect(fetch) { fetch.ensure() }
     val state by fetch.state.collectAsState()
     return state.value.orEmpty()

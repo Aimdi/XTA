@@ -80,7 +80,7 @@
     <string name="open_post">Ouvrir la publication</string>
     <string name="plugin_description">Lire les publications Threads publiques sans se connecter — session ou RSSHub en option</string>
     <string name="plugin_name">Threads</string>
-    <string name="posts">Tweets</string>
+    <string name="posts">Publications</string>
     <string name="profile_private">Ce profil est privé : seul ce qu\'il dit de lui-même est public.</string>
     <string name="profile_replies">Réponses</string>
     <string name="recent">Récents</string>
@@ -119,7 +119,6 @@
     <string name="unlike_on_device">Retirer le j’aime de cet appareil</string>
     <string name="use_session">Utiliser ma session pour les comptes suivis</string>
     <string name="use_session_description">Désactivé par défaut. Activé, l’app parle à Threads en votre nom — Meta peut bannir ce compte. Laissez désactivé sauf compte jetable.</string>
-    <string name="add_to_group">Ajouter au groupe</string>
     <string name="in_home_feed">Afficher dans le fil principal</string>
     <string name="in_home_feed_description">Intègre les publications des comptes Threads que vous suivez dans « Abonnements » et « Pour vous »</string>
     <string name="for_you">Pour vous</string>

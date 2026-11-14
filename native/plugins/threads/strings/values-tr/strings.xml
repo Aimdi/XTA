@@ -78,7 +78,7 @@
     <string name="open_post">Gönderiyi aç</string>
     <string name="plugin_description">Giriş yapmadan herkese açık Threads gönderilerini okuyun — oturum veya RSSHub isteğe bağlı</string>
     <string name="plugin_name">Threads</string>
-    <string name="posts">Tweet\'ler</string>
+    <string name="posts">Gönderiler</string>
     <string name="profile_private">Bu profil gizli; yalnızca kendisi hakkında söyledikleri herkese açık.</string>
     <string name="profile_replies">Yanıtlar</string>
     <string name="recent">En yeni</string>
@@ -116,7 +116,6 @@
     <string name="unlike_on_device">Beğeniyi bu cihazdan kaldır</string>
     <string name="use_session">Takip edilen hesaplar için oturumumu kullan</string>
     <string name="use_session_description">Varsayılan kapalı. Açıkken uygulama Threads’e sizin adınıza konuşur — Meta o hesabı yasaklayabilir. Tek kullanımlık giriş değilse kapalı bırakın.</string>
-    <string name="add_to_group">Gruba ekle</string>
     <string name="in_home_feed">Ana akışta göster</string>
     <string name="in_home_feed_description">Takip ettiğin Threads hesaplarının gönderilerini Takip ve Sana Özel akışlarına karıştırır</string>
     <string name="for_you">Senin için</string>

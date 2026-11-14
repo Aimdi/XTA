@@ -39,6 +39,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -51,6 +52,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsProfile
 import com.aimdi.xtanative.networks.threads.ThreadsQuery
 import com.aimdi.xtanative.networks.threads.ThreadsSearchTerms
 import com.aimdi.xtanative.networks.threads.ThreadsSuggestion
+import com.aimdi.xtanative.networks.threads.attempt
 import com.aimdi.xtanative.store.settings.ThreadsPrefs
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.Fetch
@@ -253,8 +255,9 @@ private fun BeforeSearch(app: ThreadsApp, text: String, onOpenProfile: (String) 
         }
         if (text.isBlank()) TrendingTopics(app, onTrend)
         Text(pluginString(Strings.try_public), style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 12.dp))
+        val recommended = rememberRecommended(app)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            ThreadsDiscovery.STARTER_HANDLES.forEach { handle ->
+            ThreadsSearchRules.accountsToTry(recommended, ThreadsDiscovery.STARTER_HANDLES).forEach { handle ->
                 AssistChip(
                     onClick = { onOpenProfile(handle) },
                     label = { Text("@$handle") },
@@ -263,6 +266,20 @@ private fun BeforeSearch(app: ThreadsApp, text: String, onOpenProfile: (String) 
             }
         }
     }
+}
+
+/**
+ * The accounts Threads recommends a guest, once that read is switched on
+ * ([ThreadsDirectClient.readsRecommendedPeople]); none until then, and none
+ * when Meta refuses: the accounts to try are then the ones shipped.
+ */
+@Composable
+private fun rememberRecommended(app: ThreadsApp): List<String> {
+    if (!app.direct.readsRecommendedPeople) return emptyList()
+    val found by produceState(emptyList<String>()) {
+        value = attempt { app.ready(); app.direct.recommendedPeople() }.orEmpty().map { it.username }
+    }
+    return found
 }
 
 /** A recent search, and (more than XTA's Threads sheet, as its other plugins do) a cross that forgets it. */

@@ -31,6 +31,10 @@ object ThreadsDocIds {
     private const val DEFINITION_REACH = 120_000
     private const val MOST_NAMES = 40
 
+    /** A query declares its own variables and every one Relay provides it: some sixty in all on a post's queries. */
+    private const val MOST_VARIABLES = 200
+    private val definedName = Regex("""__d\("(Barcelona[A-Za-z0-9]*Query)\.graphql"""")
+
     private val queryName = Regex("Barcelona[A-Za-z0-9]*Query")
     private val moduleName = Regex("""__d\("(Barcelona[A-Za-z0-9]*)([_$.][A-Za-z0-9_$.]*)?"""")
     private val exported = Regex("""exports\s*=\s*"(\d{6,32})"""")
@@ -53,10 +57,13 @@ object ThreadsDocIds {
     fun ids(js: String): Map<String, String> = operations(js).groupBy({ it.name }, { it.docId }).mapValues { it.value.first() }
 
     /** The variables the query [name] declares, where [js] holds its definition; names only, each once. */
-    fun variables(js: String, name: String): List<String> = namesIn(js, name, argument)
+    fun variables(js: String, name: String): List<String> = namesIn(js, name, argument, MOST_VARIABLES)
 
     /** The variables Relay provides the query [name] itself (`__relay_internal__pv__…`), where [js] holds its definition. */
-    fun providedVariables(js: String, name: String): List<String> = namesIn(js, name, provided)
+    fun providedVariables(js: String, name: String): List<String> = namesIn(js, name, provided, MOST_VARIABLES)
+
+    /** The queries [js] holds the definition of (a `.graphql` module of their name), each once; never a mutation. */
+    fun defined(js: String): List<String> = definedName.findAll(js).map { it.groupValues[1] }.filter(::isQuery).distinct().toList()
 
     /** The linked fields the query [name] selects, in the order its definition writes them, where [js] holds it; names only. */
     fun fields(js: String, name: String): List<String> = namesIn(js, name, linkedField)
@@ -98,8 +105,8 @@ object ThreadsDocIds {
     /** A query's name and nothing else: `…Query`, with no word of a write in it. */
     private fun isQuery(name: String): Boolean = queryName.matches(name) && "Mutation" !in name && "Subscription" !in name
 
-    private fun namesIn(js: String, name: String, shape: Regex): List<String> =
-        definitions(js, name).flatMap { shape.findAll(it).map { match -> match.groupValues[1] } }.distinct().take(MOST_NAMES).toList()
+    private fun namesIn(js: String, name: String, shape: Regex, most: Int = MOST_NAMES): List<String> =
+        definitions(js, name).flatMap { shape.findAll(it).map { match -> match.groupValues[1] } }.distinct().take(most).toList()
 
     /** The text of the modules of [js] that define the query [name]: its `.graphql` module, else the one writing its request out. */
     private fun definitions(js: String, name: String): Sequence<String> {

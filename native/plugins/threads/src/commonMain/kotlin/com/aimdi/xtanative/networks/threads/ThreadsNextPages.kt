@@ -46,6 +46,9 @@ data class ThreadsNextPage(val query: String, val docId: String, val variables: 
     }
 }
 
+/** A refetch query a list falls back on ([ThreadsRefetch]): its name, its doc id, and the variables to start from where the page preloaded none. */
+class ThreadsRefetchBy(val query: String, val docId: String, val seed: () -> JsonObject?)
+
 /**
  * Reads where a threads.com page's lists go on: the relay queries it
  * preloaded (`adp_<Name>RelayPreloader_<n>`) with their doc ids and
@@ -81,14 +84,28 @@ object ThreadsNextPages {
         return found
     }
 
-    /** The next page of the first list [html] says goes on that [wanted] takes; null when the page names no cursor or no doc id for it. */
-    fun first(html: String, wanted: (ThreadsPageInfo) -> Boolean): ThreadsNextPage? {
+    /**
+     * The next page of the first list [html] says goes on that [wanted]
+     * takes; null when the page names no cursor or no doc id for it. With
+     * [fallback], a list that goes on whose own query the page names no doc
+     * id for is followed by that refetch query instead, with the variables
+     * its own query was preloaded with over the fallback's seed; null still
+     * when neither gives any.
+     */
+    fun first(html: String, fallback: ThreadsRefetchBy? = null, wanted: (ThreadsPageInfo) -> Boolean): ThreadsNextPage? {
         val infos = pageInfos(html).filter { it.goesOn && it.query != null && wanted(it) }
         if (infos.isEmpty()) return null
         val preloads = preloads(html)
-        return infos.firstNotNullOfOrNull { info ->
+        val own = infos.firstNotNullOfOrNull { info ->
             val preload = preloads.firstOrNull { it.name == info.query && it.docId != null } ?: return@firstNotNullOfOrNull null
             ThreadsNextPage(preload.name, preload.docId!!, preload.variables, info.endCursor!!, info.path)
+        }
+        if (own != null || fallback == null || fallback.docId.isEmpty() || !fallback.docId.all(Char::isDigit)) return own
+        return infos.firstNotNullOfOrNull { info ->
+            val preloaded = preloads.firstOrNull { it.name == info.query }?.variables
+            val seed = fallback.seed()
+            if (preloaded == null && seed == null) return@firstNotNullOfOrNull null
+            ThreadsNextPage(fallback.query, fallback.docId, JsonObject(seed.orEmpty() + preloaded.orEmpty()), info.endCursor!!, info.path)
         }
     }
 

@@ -116,4 +116,18 @@ class ThreadsDocIdsTest {
         )
         assertTrue(ThreadsDocIds.bundles("<html></html>").isEmpty())
     }
+
+    @Test
+    fun aBundleTellsWhichQueriesItDefinesAndEveryVariableOneDeclares() {
+        val provided = (1..70).joinToString(",") { """{defaultValue:null,kind:"LocalArgument",name:"__relay_internal__pv__BarcelonaFlag${it}relayprovider"}""" }
+        val js = """__d("BarcelonaWideQuery.graphql",[],(function(){var a=[{defaultValue:null,kind:"LocalArgument",name:"postID"},$provided];""" +
+            """e.exports={params:{id:"7000000000000008",metadata:{},name:"BarcelonaWideQuery",operationKind:"query"}}}),null);""" +
+            """__d("BarcelonaLikePostMutation.graphql",[],(function(){e.exports={}}),null);""" +
+            """__d("BarcelonaWideQuery.graphql",[],(function(){}),null);__d("BarcelonaOtherQuery_threadsRelayOperation",[],(function(){e.exports="7000000000000009"}),null);"""
+
+        assertEquals(listOf("BarcelonaWideQuery"), ThreadsDocIds.defined(js), "each query a `.graphql` module defines, once; never a mutation, nor a module of an id alone")
+        assertEquals(71, ThreadsDocIds.variables(js, "BarcelonaWideQuery").size, "run 114's lists were cut at forty: a post's queries declare some sixty")
+        assertEquals(70, ThreadsDocIds.providedVariables(js, "BarcelonaWideQuery").size)
+        assertTrue(ThreadsDocIds.defined("no modules here").isEmpty())
+    }
 }

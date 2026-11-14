@@ -33,7 +33,10 @@ class ThreadsRepairsTest {
     fun everyShippedValueFitsItsKindOrIsAReadWaitingForItsIdAndIsDeclaredOnce() {
         (ThreadsRepairs.SLOTS - ThreadsRepairs.WAITING.toSet()).forEach { assertTrue(it.kind.fits(it.shipped), it.key) }
         assertEquals(
-            setOf("threads.inline_replies_doc_id", "threads.about_profile_doc_id", "threads.trending_topics_doc_id"),
+            setOf(
+                "threads.inline_replies_doc_id", "threads.about_profile_doc_id", "threads.trending_topics_doc_id",
+                "threads.inline_replies_expansion", "threads.search_users_doc_id", "threads.recommended_users_doc_id",
+            ),
             ThreadsRepairs.WAITING.map { it.key }.toSet(),
         )
         assertEquals(ThreadsRepairs.SLOTS.size, ThreadsRepairs.SLOTS.map { it.key }.toSet().size)
@@ -47,6 +50,39 @@ class ThreadsRepairsTest {
         assertEquals("7000000000000001", on.inlineRepliesDocId)
         assertEquals("mediaID", on.inlineRepliesVariable)
         assertEquals("userID", on.aboutProfileVariable)
+    }
+
+    @Test
+    fun aGuestsPeopleReadsShipOffAndAPublishedIdSwitchesEachOn() {
+        assertEquals("", ThreadsRepairs().searchUsersDocId)
+        assertEquals("", ThreadsRepairs().recommendedUsersDocId)
+        assertEquals("query", ThreadsRepairs().searchUsersVariable)
+        assertEquals("", ThreadsRepairs().inlineRepliesExpansion)
+        val on = ThreadsRepairs.published(
+            mapOf(
+                "threads.search_users_doc_id" to "7000000000000004",
+                "threads.search_users_variable" to "search_query",
+                "threads.recommended_users_doc_id" to "7000000000000005",
+                "threads.inline_replies_expansion" to "CHILDREN",
+            ),
+        )
+        assertEquals("7000000000000004", on.searchUsersDocId)
+        assertEquals("search_query", on.searchUsersVariable)
+        assertEquals("7000000000000005", on.recommendedUsersDocId)
+        assertEquals("CHILDREN", on.inlineRepliesExpansion)
+        assertEquals("", ThreadsRepairs.published(mapOf("threads.search_users_doc_id" to "an id")).searchUsersDocId)
+    }
+
+    @Test
+    fun theRefetchQueriesShipWithTheirIdsAndAPublishedZeroWithdrawsOne() {
+        val shipped = ThreadsRepairs()
+        assertEquals("28965099446515427", shipped.refetchDocId(ThreadsRefetch.REPLIES))
+        assertEquals("29180318631617452", shipped.refetchDocId(ThreadsRefetch.SEARCH))
+        assertEquals("29222947497321867", shipped.refetchDocId(ThreadsRefetch.PROFILE_THREADS))
+        val published = ThreadsRepairs.published(mapOf("threads.search_refetch_doc_id" to "0", "threads.replies_refetch_doc_id" to "7000000000000006"))
+        assertEquals("", published.refetchDocId(ThreadsRefetch.SEARCH), "repairs.json can name no empty value: zero is off")
+        assertEquals("7000000000000006", published.refetchDocId(ThreadsRefetch.REPLIES))
+        assertEquals(shipped.profileRefetchDocId, published.refetchDocId(ThreadsRefetch.PROFILE_THREADS))
     }
 
     @Test

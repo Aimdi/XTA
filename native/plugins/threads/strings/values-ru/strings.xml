@@ -82,7 +82,7 @@
     <string name="open_post">Открыть пост</string>
     <string name="plugin_description">Читайте публичные посты Threads без входа — сессия или RSSHub по желанию</string>
     <string name="plugin_name">Threads</string>
-    <string name="posts">Твиты</string>
+    <string name="posts">Посты</string>
     <string name="profile_private">Этот профиль закрыт: публично только то, что он сообщает о себе.</string>
     <string name="profile_replies">Ответы</string>
     <string name="recent">Недавние</string>
@@ -122,7 +122,6 @@
     <string name="unlike_on_device">Убрать отметку «нравится» с этого устройства</string>
     <string name="use_session">Использовать мою сессию для отслеживаемых аккаунтов</string>
     <string name="use_session_description">По умолчанию выключено. Если включить, приложение обращается к Threads от вашего имени — Meta может забанить этот аккаунт. Оставьте выключенным, если это не одноразовый вход.</string>
-    <string name="add_to_group">Добавить в группу</string>
     <string name="in_home_feed">Показывать в главной ленте</string>
     <string name="in_home_feed_description">Добавляет записи из аккаунтов Threads, на которые вы подписаны, в «Подписки» и «Для вас»</string>
     <string name="for_you">Для вас</string>
@@ -279,15 +278,15 @@
     <string name="your_profile">Ваш профиль</string>
     <string name="signed_in_unavailable">Threads пока не отдаёт это здесь.</string>
     <string name="profile_joined">Дата регистрации: %1$s</string>
-    <string name="share_image">Поделиться публикацией как изображением</string>
+    <string name="share_image">Поделиться постом как изображением</string>
     <string name="share_image_failed">Не удалось поделиться изображением</string>
-    <string name="hide_post">Скрыть публикацию</string>
-    <string name="post_hidden">Публикация скрыта на этом устройстве</string>
+    <string name="hide_post">Скрыть пост</string>
+    <string name="post_hidden">Пост скрыт на этом устройстве</string>
     <string name="mute_account">Скрывать %1$s</string>
     <string name="unmute_account">Больше не скрывать %1$s</string>
-    <string name="account_muted">Публикации %1$s скрыты на этом устройстве</string>
+    <string name="account_muted">Посты %1$s скрыты на этом устройстве</string>
     <string name="muted_accounts">Скрытые аккаунты</string>
-    <string name="show_hidden_posts">Снова показать скрытые публикации</string>
+    <string name="show_hidden_posts">Снова показать скрытые посты</string>
     <string name="read_as_article">Читать как статью</string>
     <string name="show_conversation">Показать обсуждение</string>
 </resources>

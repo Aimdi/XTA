@@ -78,7 +78,7 @@
     <string name="open_post">Åpne innlegg</string>
     <string name="plugin_description">Les offentlige Threads-innlegg uten innlogging — økt eller RSSHub valgfritt</string>
     <string name="plugin_name">Threads</string>
-    <string name="posts">Tvitringer</string>
+    <string name="posts">Innlegg</string>
     <string name="profile_private">Denne profilen er privat; bare det den sier om seg selv er offentlig.</string>
     <string name="profile_replies">Svar</string>
     <string name="recent">Nylige</string>
@@ -116,7 +116,6 @@
     <string name="unlike_on_device">Fjern likerklikk fra denne enheten</string>
     <string name="use_session">Bruk økten min for fulgte kontoer</string>
     <string name="use_session_description">Av som standard. Når den er på, snakker appen med Threads som deg — Meta kan utestenge den kontoen. La den være av med mindre du bruker en engangspålogging.</string>
-    <string name="add_to_group">Legg til i gruppe</string>
     <string name="in_home_feed">Vis i hovedstrømmen</string>
     <string name="in_home_feed_description">Blander innlegg fra Threads-kontoene du følger inn i Følger og For deg</string>
     <string name="for_you">For deg</string>

@@ -76,7 +76,7 @@
     <string name="open_post">打开帖子</string>
     <string name="plugin_description">无需登录即可阅读 Threads 公开帖子——会话或 RSSHub 为可选项</string>
     <string name="plugin_name">Threads</string>
-    <string name="posts">推文</string>
+    <string name="posts">帖子</string>
     <string name="profile_private">该资料为私密，公开的只有其自我介绍。</string>
     <string name="profile_replies">回复</string>
     <string name="recent">最新</string>
@@ -113,7 +113,6 @@
     <string name="unlike_on_device">从此设备取消点赞</string>
     <string name="use_session">用我的会话读取已关注账号</string>
     <string name="use_session_description">默认关闭。打开后本应用会以你的身份访问 Threads，Meta 可能封禁该账号。除非是一次性登录，否则请保持关闭。</string>
-    <string name="add_to_group">添加到订阅组</string>
     <string name="in_home_feed">显示在主时间线中</string>
     <string name="in_home_feed_description">把你关注的 Threads 账号的帖子混入「关注」和「为你推荐」</string>
     <string name="for_you">为你</string>
@@ -251,7 +250,7 @@
     <string name="activity">动态</string>
     <string name="activity_empty">没有可显示的动态</string>
     <string name="mentions">提及</string>
-    <string name="saved_on_threads">Threads 收藏</string>
+    <string name="saved_on_threads">Threads 书签</string>
     <string name="saved_on_threads_empty">没有在 Threads 上收藏的帖子</string>
     <string name="liked_on_threads">Threads 上喜欢的</string>
     <string name="liked_on_threads_empty">没有在 Threads 上喜欢的帖子</string>

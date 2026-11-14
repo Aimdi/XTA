@@ -111,7 +111,7 @@ internal fun ProfileFediverse(app: ThreadsApp, fediverse: ThreadsFediverse?) {
         Modifier
             .fillMaxWidth()
             .heightIn(min = 40.dp)
-            .clickable(role = Role.Button, onClickLabel = copied) { copy(shown.address); app.host.tell(copied) }
+            .clickable(role = Role.Button) { copy(shown.address); app.host.tell(copied) }
             .semantics(mergeDescendants = true) { contentDescription = "$sharing, ${shown.address}" },
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -135,6 +135,21 @@ internal fun ProfileFediverse(app: ThreadsApp, fediverse: ThreadsFediverse?) {
 internal object ThreadsMediaGrid {
     const val COLUMNS = 3
 
+    /** A square is not drawn wider than this where the window has room for more of them. */
+    const val WIDEST_TILE_DP = 200
+
+    /** No more squares a row than this, however wide the window. */
+    const val MOST_COLUMNS = 8
+
+    /**
+     * The squares a row holds in a list [widthDp] wide: three on a phone,
+     * as Threads' own grid; on a tablet or a desktop window as many as keep
+     * a square under [WIDEST_TILE_DP], so three do not fill a wide window
+     * with one post each.
+     */
+    fun columns(widthDp: Float): Int =
+        kotlin.math.ceil(widthDp / WIDEST_TILE_DP).toInt().coerceIn(COLUMNS, MOST_COLUMNS)
+
     /** One square: [post]'s first [media]; [more] when the post holds several. */
     data class Tile(val post: ThreadsPost, val media: ThreadsMedia, val more: Boolean) {
         val key: String get() = post.id
@@ -150,12 +165,12 @@ internal object ThreadsMediaGrid {
 
 /** One row of the grid: its squares side by side, the row's end left empty where they run out. */
 @Composable
-internal fun MediaGridRow(app: ThreadsApp, row: List<ThreadsMediaGrid.Tile>) {
+internal fun MediaGridRow(app: ThreadsApp, row: List<ThreadsMediaGrid.Tile>, columns: Int = ThreadsMediaGrid.COLUMNS) {
     BoxWithConstraints(Modifier.fillMaxWidth().padding(bottom = 2.dp)) {
-        val pixels = with(LocalDensity.current) { (maxWidth / ThreadsMediaGrid.COLUMNS).roundToPx() }
+        val pixels = with(LocalDensity.current) { (maxWidth / columns).roundToPx() }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(2.dp)) {
             row.forEach { tile -> MediaGridTile(app, tile, pixels, Modifier.weight(1f)) }
-            repeat(ThreadsMediaGrid.COLUMNS - row.size) { Spacer(Modifier.weight(1f)) }
+            repeat(columns - row.size) { Spacer(Modifier.weight(1f)) }
         }
     }
 }
@@ -173,6 +188,7 @@ private fun MediaGridTile(app: ThreadsApp, tile: ThreadsMediaGrid.Tile, pixels: 
     val covered = ThreadsMediaCover.covers(tile.post, settings)
     val media = tile.media
     val name = media.alt ?: pluginString(if (media.isVideo) Strings.media_video else Strings.media_picture)
+    val scrim = MaterialTheme.colorScheme.scrim
     val openPost = pluginString(Strings.open_post)
     val url = remember(media, pixels) { media.tileUrl(pixels, pixels) }
     Box(
@@ -199,7 +215,7 @@ private fun MediaGridTile(app: ThreadsApp, tile: ThreadsMediaGrid.Tile, pixels: 
         }
         mark?.let {
             Box(
-                Modifier.align(Alignment.TopEnd).padding(6.dp).size(24.dp).clip(CircleShape).background(Color.Black.copy(alpha = 0.45f)),
+                Modifier.align(Alignment.TopEnd).padding(6.dp).size(24.dp).clip(CircleShape).background(scrim.copy(alpha = 0.45f)),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(it, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))

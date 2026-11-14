@@ -78,7 +78,7 @@
     <string name="open_post">Ava postitus</string>
     <string name="plugin_description">Loe Threads’i avalikke postitusi ilma sisselogimiseta — seanss või RSSHub valikuline</string>
     <string name="plugin_name">Threads</string>
-    <string name="posts">Säutsud</string>
+    <string name="posts">Postitused</string>
     <string name="profile_private">See profiil on privaatne; avalik on vaid see, mida ta enda kohta ütleb.</string>
     <string name="profile_replies">Vastused</string>
     <string name="recent">Hiljutised</string>
@@ -116,7 +116,6 @@
     <string name="unlike_on_device">Eemalda meeldimine sellest seadmest</string>
     <string name="use_session">Kasuta minu seanssi jälgitavate kontode jaoks</string>
     <string name="use_session_description">Vaikimisi väljas. Sisselülitatuna räägib rakendus Threadsiga sinuna — Meta võib selle konto bännida. Jäta väljaks, kui see pole ühekordne sisselogimine.</string>
-    <string name="add_to_group">Lisa gruppi</string>
     <string name="in_home_feed">Näita avalehe voos</string>
     <string name="in_home_feed_description">Lisab jälgitavate Threadsi kontode postitused voogudesse „Jälgitavad“ ja „Sulle“</string>
     <string name="for_you">Sinu jaoks</string>

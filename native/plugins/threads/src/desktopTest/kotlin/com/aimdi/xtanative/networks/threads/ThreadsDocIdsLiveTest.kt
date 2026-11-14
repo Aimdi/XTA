@@ -15,15 +15,20 @@ import org.junit.jupiter.api.Assumptions.assumeTrue
 
 /**
  * The doc ids threads.com's JavaScript bundles name, for the next round to
- * read in CI's log (`LIVE Threads doc ids …`): a guest reads a profile, a
- * post and the search page, takes the bundles they name ([ThreadsDocIds.bundles],
- * those the bootloader lists for a watched query's component first), reads
- * at most [MOST_BUNDLES] of them, [BUNDLE_BYTES] of each, a few seconds
- * apart, and logs every `Barcelona…Query` with its doc id, then for each
- * query of the watch list whether it was found and the variables and fields
- * its definition declares, by name. Query names, doc ids and a query's
- * variable names are what the page sends every visitor; no session is sent,
- * and no cookie, token or word of a post is logged. Mutations are never
+ * read in CI's log (`LIVE Threads doc ids …`): a guest reads a profile and
+ * its reposts, a post, the front page, the search page and a search, takes
+ * the bundles they name ([ThreadsDocIds.bundles], those the bootloader lists
+ * for a wanted query's component first: the queries still missing an id,
+ * and anything named for quotes, reposts, likers or translation), reads at
+ * most [MOST_BUNDLES] of them, [BUNDLE_BYTES] of each, a few seconds apart,
+ * and logs every `Barcelona…Query` with its doc id; then, for every query
+ * the plugin uses or prepares and every one named for what is still
+ * missing, the variables and fields its definition declares, by name; the
+ * values its callers' code writes for the variables only code names
+ * (`expansionType`, `sortOrder`…), identifiers only; and whether each
+ * wanted query was found. Query names, doc ids and a query's variable names
+ * are what the page sends every visitor; no session is sent, and no cookie,
+ * token or word of a post is logged. Mutations are never
  * read ([ThreadsDocIds]). It never fails on what it finds. Skipped unless
  * RUN_LIVE=true.
  */
@@ -48,41 +53,63 @@ class ThreadsDocIdsLiveTest {
             println("LIVE Threads doc ids: no post on @zuck's page (${e.javaClass.simpleName})")
             null
         }
-        val pages = listOfNotNull("profile" to ThreadsLinks.web("/@zuck"), post?.let { "post" to it }, "search" to ThreadsLinks.web("/search"))
-            .mapNotNull { (label, url) -> page(http, label, url) }
+        val pages = listOfNotNull(
+            "profile" to ThreadsLinks.web("/@zuck"),
+            post?.let { "post" to it },
+            "search" to ThreadsLinks.web("/search"),
+            "results" to ThreadsLinks.searchUrl("threads", tag = false, recent = false),
+            "reposts" to ThreadsLinks.web("/@zuck/reposts"),
+            "front" to ThreadsLinks.web("/"),
+        ).mapNotNull { (label, url) -> page(http, label, url) }
         val found = LinkedHashMap<String, LinkedHashSet<String>>()
         pages.flatMap(ThreadsNextPages::preloads).forEach { preload -> preload.docId?.let { found.getOrPut(preload.name) { LinkedHashSet() } += it } }
         println("LIVE Threads doc ids pages: ${pages.size} read, ${found.size} queries preloaded with an id")
 
-        val bundles = ThreadsDocIds.bundles(pages.joinToString("\n"), WATCHED)
-        val declared = WATCHED.associateWith { Declared() }
+        // The bundles of the components named for what is still missing lead; the rest follow in page order.
+        val bundles = ThreadsDocIds.bundles(pages.joinToString("\n"), MISSING + WANTED_WORDS)
+        val declared = LinkedHashMap<String, Declared>()
+        val values = VALUE_NAMES.associateWith { LinkedHashSet<String>() }
         val hints = LinkedHashMap<String, String>()
         var read = 0
         var bytes = 0L
         for (address in bundles.take(MOST_BUNDLES)) {
-            if (WATCHED.all { it in found }) break
+            if (read >= ENOUGH_BUNDLES && MISSING.all { it in found }) break
             val js = bundle(address) ?: continue
             read++
             bytes += js.length
             ThreadsDocIds.operations(js).forEach { found.getOrPut(it.name) { LinkedHashSet() } += it.docId }
-            WATCHED.forEach { name ->
-                declared.getValue(name).add(ThreadsDocIds.variables(js, name), ThreadsDocIds.providedVariables(js, name), ThreadsDocIds.fields(js, name))
-                if (name !in hints) hint(js, name)?.let { hints[name] = it }
+            // Every query this bundle defines that the plugin uses or prepares, or that is named for what is still missing.
+            (WATCHED + ThreadsDocIds.defined(js).filter(::isWanted)).distinct().forEach { name ->
+                val told = Declared(ThreadsDocIds.variables(js, name), ThreadsDocIds.providedVariables(js, name), ThreadsDocIds.fields(js, name))
+                if (!told.isEmpty) declared.getOrPut(name) { Declared() }.add(told)
             }
+            MISSING.forEach { name -> if (name !in hints) hint(js, name)?.let { hints[name] = it } }
+            written(js).forEach { (name, value) -> values.getValue(name).takeIf { it.size < MOST_VALUES }?.add(value) }
         }
 
         found.filterKeys { QUERY.matches(it) }.forEach { (name, ids) -> println("LIVE Threads doc ids $name=${ids.filter { it.all(Char::isDigit) }.joinToString("|")}") }
-        WATCHED.forEach { name ->
-            val told = declared.getValue(name)
-            if (!told.isEmpty) println("LIVE Threads doc ids declared $name: variables ${told(told.variables)}; provided ${told(told.provided)}; fields ${told(told.fields)}")
-            // A watched query a bundle names without an id this reads: how its module starts, so its shape can be read next round.
-            if (name !in found) hints[name]?.let { println("LIVE Threads doc ids unread $name: $it") }
+        declared.forEach { (name, told) ->
+            println("LIVE Threads doc ids declared $name: variables ${told(told.variables.filterNot(ThreadsRelayProviders::isProvided))}; provided ${told(told.provided)}; fields ${told(told.fields)}")
         }
+        // A missing query a bundle names without an id this reads: how its module starts, so its shape can be read next round.
+        MISSING.filter { it !in found }.forEach { name -> hints[name]?.let { println("LIVE Threads doc ids unread $name: $it") } }
+        values.filterValues { it.isNotEmpty() }.forEach { (name, written) -> println("LIVE Threads doc ids values $name: ${written.joinToString(",")}") }
+        val unseen = declared.values.flatMap { it.provided }.distinct().filter { it !in ThreadsRelayProviders.defaults }
+        println("LIVE Threads doc ids provided not sent yet: ${unseen.joinToString(",").ifEmpty { "none" }}")
+        val named = found.keys.filter { name -> QUERY.matches(name) && WANTED_WORDS.any { it in name } }
+        println("LIVE Threads doc ids named for quotes, reposts, likers or translation: ${named.joinToString(", ").ifEmpty { "none" }}")
         println(
-            "LIVE Threads doc ids summary: ${bundles.size} bundles named, $read read, $bytes bytes, ${found.size} names found; watched: " +
-                WATCHED.joinToString(", ") { "$it ${if (it in found) "found" else if (it in hints) "named without an id" else "missing"}" },
+            "LIVE Threads doc ids summary: ${bundles.size} bundles named, $read read, $bytes bytes, ${found.size} names found, ${declared.size} declared; wanted: " +
+                MISSING.joinToString(", ") { "$it ${if (it in found) "found" else if (it in hints) "named without an id" else "missing"}" } +
+                "; used: " + WATCHED.joinToString(", ") { "$it ${if (it in found) "found" else "missing"}" },
         )
     }
+
+    /** A query named for what the plugin still lacks a guest read of. */
+    private fun isWanted(name: String): Boolean = name in MISSING || WANTED_WORDS.any { it in name }
+
+    /** The values [js]'s code writes for the variables only code names, as (variable, value): identifiers, nothing a person wrote. */
+    private fun written(js: String): List<Pair<String, String>> = VALUE.findAll(js).map { it.groupValues[1] to it.groupValues[2] }.distinct().toList()
 
     /** A page as a guest is shown it; null when it is not a page (a redirect to sign in, an error). */
     private suspend fun page(http: OkHttpXHttp, label: String, url: HttpUrl): String? {
@@ -131,41 +158,70 @@ class ThreadsDocIdsLiveTest {
         return js.substring(at, minOf(js.length, at + HINT_CHARS)).map { if (it in ' '..'~') it else '?' }.joinToString("")
     }
 
-    private fun told(names: Set<String>): String = names.joinToString(",").ifEmpty { "none" }
+    private fun told(names: Collection<String>): String = names.joinToString(",").ifEmpty { "none" }
 
     /** What the bundles declare of one query, by name. */
-    private class Declared {
-        val variables = LinkedHashSet<String>()
-        val provided = LinkedHashSet<String>()
-        val fields = LinkedHashSet<String>()
+    private class Declared(variables: List<String> = emptyList(), provided: List<String> = emptyList(), fields: List<String> = emptyList()) {
+        val variables = LinkedHashSet(variables)
+        val provided = LinkedHashSet(provided)
+        val fields = LinkedHashSet(fields)
         val isEmpty: Boolean get() = variables.isEmpty() && provided.isEmpty() && fields.isEmpty()
 
-        fun add(variables: List<String>, provided: List<String>, fields: List<String>) {
-            this.variables += variables
-            this.provided += provided
-            this.fields += fields
+        fun add(more: Declared) {
+            variables += more.variables
+            provided += more.provided
+            fields += more.fields
         }
     }
 
     private companion object {
-        /** The guest queries CI's probes saw named on threads.com's pages with no doc id beside them; all reads. */
+        /** Every query the plugin asks or prepares, by a bundle's doc id or a page's: what each declares is logged. All reads. */
         val WATCHED = listOf(
             ThreadsBundleReads.INLINE_REPLIES,
             ThreadsBundleReads.ABOUT_PROFILE,
             ThreadsBundleReads.TRENDING_TOPICS,
-            "BarcelonaPostTranslationQuery",
+            ThreadsBundleReads.SEARCH_USERS,
+            ThreadsBundleReads.RECOMMENDED_USERS,
+        ) + ThreadsRefetch.entries.map { it.query } + listOf(
+            "BarcelonaSearchRecommendedUsersQuery",
+            "BarcelonaSearchPeopleAlsoSearchedQuery",
+            "BarcelonaRightPanelProfileSuggestedUsersQuery",
+            "BarcelonaSearchSuggestedTopicsSectionQuery",
+            "BarcelonaPostPageThreadViewSectionInlineExpansionQuery",
+            "BarcelonaProfileThreadsTabDirectQuery",
+            "BarcelonaProfileRepliesTabDirectQuery",
+            "BarcelonaProfileRepostsTabDirectQuery",
+            "BarcelonaPostPageDownwardQuery",
+            "BarcelonaSearchResultsQuery",
+            "BarcelonaLoggedOutFeedContainerQuery",
             "BarcelonaProfileUserInterestsDialogUserQuery",
             "BarcelonaCustomFeedPickerPageQuery",
-            "BarcelonaGetCommunityCustomFeedQuery",
-            "BarcelonaLoggedOutFeedPaginationQuery",
-            "BarcelonaPostPageDirectRepliesRefetchQuery",
-            "BarcelonaSearchResultsRefetchableQuery",
-            "BarcelonaProfileThreadsTabRefetchableDirectQuery",
-            "BarcelonaProfileRepostsTabRefetchableDirectQuery",
+            "BarcelonaPostViewCountQuery",
         )
+
+        /** The queries run 114 found no id for: the bundles of their components are read first, and reading goes on until each is found. */
+        val MISSING = listOf(
+            "BarcelonaPostTranslationQuery",
+            "BarcelonaProfileRepostsTabRefetchableDirectQuery",
+            "BarcelonaProfileRepliesTabRefetchableDirectQuery",
+            "BarcelonaProfileMediaTabRefetchableDirectQuery",
+            "BarcelonaLoggedOutFeedPaginationQuery",
+            "BarcelonaGetCommunityCustomFeedQuery",
+        )
+
+        /** What a query or a component is named for when it reads what the plugin still lacks a guest read of. */
+        val WANTED_WORDS = listOf("Quote", "Repost", "Liker", "Translat")
+
+        /** The variables whose values only the code that asks a query names. */
+        val VALUE_NAMES = listOf("expansionType", "filterType", "sortOrder", "requested_subtab", "search_surface")
+        val VALUE = Regex("""(?<![A-Za-z0-9_$])"?(${VALUE_NAMES.joinToString("|")})"?\s*:\s*"([A-Za-z][A-Za-z0-9_]{0,40})"""")
+        const val MOST_VALUES = 16
         val STATIC_HOSTS = setOf("static.cdninstagram.com", "static.threads.com", "static.threads.net")
         val QUERY = Regex("Barcelona[A-Za-z0-9]*Query")
-        const val MOST_BUNDLES = 40
+        const val MOST_BUNDLES = 80
+
+        /** How many bundles are read whatever was found: the names nobody knew to ask for are in the rest. */
+        const val ENOUGH_BUNDLES = 40
         const val BUNDLE_BYTES = 6 * 1024 * 1024
         const val GAP_MILLIS = 2_500L
         const val BUNDLE_GAP_MILLIS = 2_000L

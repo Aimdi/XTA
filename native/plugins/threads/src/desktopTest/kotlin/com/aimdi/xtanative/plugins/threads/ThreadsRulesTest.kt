@@ -65,12 +65,10 @@ class ThreadsRulesTest {
     }
 
     @Test
-    fun aProfileShowsTheCountsMetaToldAndNoLinkToItself() {
+    fun aProfileShowsTheCountsMetaTold() {
         val guest = ThreadsProfile(pk = "", id = "", username = "zuck", fullName = "Mark", followerCount = 5_700_000, mediaCount = 380)
         assertEquals(listOf(5_700_000L to ThreadsCount.FOLLOWERS, 380L to ThreadsCount.POSTS), ThreadsProfiles.counts(guest))
         assertEquals(emptyList(), ThreadsProfiles.counts(guest.copy(followerCount = null, mediaCount = null)))
-        assertNull(ThreadsProfiles.outsideLink(guest.copy(externalUrl = "https://www.threads.net/@Zuck")))
-        assertEquals("https://about.meta.com", ThreadsProfiles.outsideLink(guest.copy(externalUrl = " https://about.meta.com ")))
     }
 
     @Test
