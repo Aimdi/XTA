@@ -17,7 +17,8 @@ import kotlinx.coroutines.runBlocking
  */
 class ThreadsForYouTest {
     private val time = FakeTime()
-    private val bearer = ThreadsSession(bearer = "IGT:2:test")
+    // The Bearer's own For you is read only with the reader's opt-in to session reads (ThreadsAccountGuardTest has the guest side).
+    private val bearer = ThreadsSession(bearer = "IGT:2:test", useSessionApis = true)
 
     private fun Asked.line() = "$method ${url.host}$path"
 

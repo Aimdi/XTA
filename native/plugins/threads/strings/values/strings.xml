@@ -116,8 +116,8 @@
     <string name="try_public">Try a public account</string>
     <string name="unfollow">Unfollow</string>
     <string name="unlike_on_device">Remove like from this device</string>
-    <string name="use_session">Use my session for followed accounts</string>
-    <string name="use_session_description">Off by default. When on, this app talks to Threads as you — Meta can ban that account. Leave this off unless you are using a disposable login.</string>
+    <string name="use_session">Use my session for Home and For you</string>
+    <string name="use_session_description">Off by default, and safest off: whatever needs your account switches to it by itself when you open it. When on, Home, For you and the accounts you follow are read as you too — many more reads, and Meta can ban that account.</string>
     <string name="in_home_feed">Show in the home timeline</string>
     <string name="in_home_feed_description">Mixes posts from the Threads accounts you follow into Following and For you</string>
     <string name="for_you">For you</string>
@@ -171,7 +171,7 @@
     <string name="media_picture_of">Picture %1$d of %2$d</string>
     <string name="media_covered">Threads put a warning over this media</string>
     <string name="add_accounts_hint">Several at once: separate them with spaces or commas</string>
-    <string name="session_unlocks">What a session adds: your own For you and people search. With the switch above on, it also reads the accounts you follow.</string>
+    <string name="session_unlocks">What a session adds: followers and following, who liked a post, your Activity and people search, each read with your account only when you open it. With the switch above on, Home and For you are read with it too.</string>
     <string name="instance_intro">Optional. An RSSHub instance you run reads the accounts you follow; Threads’ public pages stand in when it fails. Leave it empty to read the public pages only.</string>
     <string name="account_missing">Not found — renamed, deleted or mistyped?</string>
     <string name="account_private">Private — Threads shows a guest none of its posts</string>
@@ -277,4 +277,14 @@
     <string name="show_hidden_posts">Show hidden posts again</string>
     <string name="read_as_article">Read as article</string>
     <string name="show_conversation">Show conversation</string>
+    <string name="account_in_use">Using your Threads account</string>
+    <string name="account_resting">Paused to protect your account — continues at %1$s</string>
+    <string name="account_paused">Paused to protect your account</string>
+    <string name="account_signed_out">Threads signed this session out — sign in again</string>
+    <string name="load_more">Load more</string>
+    <string name="account_guard">Account protection</string>
+    <string name="account_active">Active — used only when you open something that needs it</string>
+    <string name="account_resting_until">Resting until %1$s</string>
+    <string name="account_usage">Account reads in the last 24 hours: %1$d of %2$d</string>
+    <string name="account_guard_detail">Followers, Liked by, Activity and people search use your account only when you open them, a few seconds apart, and pause before Meta would notice. Everything else is read as a guest.</string>
 </resources>

@@ -8,9 +8,11 @@ import kotlinx.coroutines.delay
 /**
  * A Threads session the reader pasted, if any: a browser's Cookie header for
  * threads.com, and an `IGT:2` Bearer for the app API. Optional: public pages
- * are read without one. [useSessionApis] is the reader's opt-in to spend the
- * cookies on followed accounts and people search, the one setting that can
- * cost them their Threads login.
+ * are read without one, and what needs the session (a people list, Activity)
+ * switches to it when the reader opens it. [useSessionApis] is the reader's
+ * opt-in to spend it in the background too (Home, For you, the accounts
+ * followed here) and to list people before posts in a search: the one
+ * setting that can cost them their Threads login.
  */
 data class ThreadsSession(
     val cookieHeader: String = "",
@@ -58,8 +60,9 @@ data class ThreadsSession(
  * What the client keeps between launches, as XTA keeps it in preferences, so
  * a restart does not ask Meta again what it already answered: the device id
  * the app API is sent, each handle's numeric id, the last guest LSD token and
- * when it was taken, and when a parked session may talk to Meta again. Times
- * are epoch milliseconds.
+ * when it was taken, when a parked session may talk to Meta again, and what
+ * the account guard counts ([ThreadsGuardKept]). Times are epoch
+ * milliseconds. Nothing secret: no token, cookie or session value.
  */
 data class ThreadsKept(
     val deviceId: String? = null,
@@ -67,6 +70,7 @@ data class ThreadsKept(
     val guestLsd: String? = null,
     val guestLsdAt: Long? = null,
     val cooldownUntil: Long? = null,
+    val guard: ThreadsGuardKept = ThreadsGuardKept(),
 )
 
 /** Where [ThreadsKept] lives: the app's own storage, or memory alone. */
@@ -85,6 +89,11 @@ interface ThreadsMemory {
  * defence a reader has against Meta's ban on scripts. A session read waits
  * [sessionGapMillis] after the last departure, a guest read, which has no
  * account to lose, [guestGapMillis]; each with up to its jitter on top.
+ *
+ * A session read also keeps its distance from the last session read
+ * ([sessionSpacing]): after every [longPauseEvery] in a row a longer pause
+ * of [longPauseMillis], as a person stops to read, and a page after a
+ * list's first [pagingExtraMillis] more, as a person scrolls.
  */
 class ThreadsPacing(
     val sessionGapMillis: Long = 3_000,
@@ -93,6 +102,9 @@ class ThreadsPacing(
     val guestJitterMillis: Int = 200,
     private val random: Random = Random.Default,
     internal val sleep: suspend (Long) -> Unit = { delay(it) },
+    val longPauseEvery: Int = 5,
+    val longPauseMillis: LongRange = 8_000L..20_000L,
+    val pagingExtraMillis: LongRange = 2_000L..4_000L,
 ) {
     /** The gap before the next departure. */
     internal fun gap(asGuest: Boolean): Long {
@@ -100,9 +112,22 @@ class ThreadsPacing(
         return (if (asGuest) guestGapMillis else sessionGapMillis) + (if (jitter > 0) random.nextInt(jitter) else 0)
     }
 
+    /**
+     * How long after the last session read the next leaves, [streak] reads
+     * having left in a row before it: the session gap, a page of a long list
+     * ([paging]) more, and after every [longPauseEvery]th a long pause.
+     */
+    internal fun sessionSpacing(streak: Int, paging: Boolean): Long {
+        val paced = gap(asGuest = false) + if (paging) within(pagingExtraMillis) else 0
+        val resting = longPauseEvery > 0 && streak > 0 && streak % longPauseEvery == 0
+        return if (resting) maxOf(paced, within(longPauseMillis)) else paced
+    }
+
+    private fun within(range: LongRange): Long = if (range.last <= range.first) range.first.coerceAtLeast(0) else random.nextLong(range.first, range.last + 1)
+
     companion object {
         /** No gap at all: for tests. */
-        val NONE = ThreadsPacing(0, 0, 0, 0)
+        val NONE = ThreadsPacing(0, 0, 0, 0, longPauseMillis = 0L..0L, pagingExtraMillis = 0L..0L)
     }
 }
 

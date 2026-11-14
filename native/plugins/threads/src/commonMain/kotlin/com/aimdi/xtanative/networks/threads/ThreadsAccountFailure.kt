@@ -23,7 +23,7 @@ enum class ThreadsTrouble {
         fun of(error: Throwable): ThreadsTrouble = when ((error as? ThreadsException)?.failure) {
             ThreadsFailure.NO_SUCH_FEED -> MISSING
             ThreadsFailure.PRIVATE_ACCOUNT -> PRIVATE
-            ThreadsFailure.THROTTLED, ThreadsFailure.SESSION_SUSPENDED -> THROTTLED
+            ThreadsFailure.THROTTLED, ThreadsFailure.SESSION_SUSPENDED, ThreadsFailure.ACCOUNT_RESTING -> THROTTLED
             ThreadsFailure.SIGN_IN_REQUIRED, ThreadsFailure.UNAUTHORIZED -> SIGN_IN
             else -> NETWORK
         }

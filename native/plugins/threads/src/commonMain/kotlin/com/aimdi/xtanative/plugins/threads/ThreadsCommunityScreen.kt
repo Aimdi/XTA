@@ -26,7 +26,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.networks.Page
+import com.aimdi.xtanative.networks.threads.ThreadsCommunityFeed
+import com.aimdi.xtanative.networks.threads.ThreadsGuardLimits
 import com.aimdi.xtanative.networks.threads.ThreadsLinks
+import com.aimdi.xtanative.networks.threads.ThreadsMore
 import com.aimdi.xtanative.networks.threads.ThreadsPaging
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsSearchFound
@@ -65,6 +69,25 @@ internal object ThreadsCommunityReads {
         return if (found != null) found to true else topicSearch() to false
     }
 
+    /**
+     * The community's posts as [read] says, the reader's account first where
+     * [account] is given (the reader opened it, a session path is known and
+     * there is a session, [ThreadsCommunityFeed.usesAccount]): its feed as
+     * the signed-in reader is shown it. That read failing, resting or empty
+     * falls back to the guest's reading, quietly.
+     */
+    suspend fun readWithAccount(
+        topic: ThreadsTopic,
+        account: (suspend () -> Page<ThreadsPost>)?,
+        ownPage: suspend (String) -> ThreadsSearchFound,
+        topicSearch: suspend () -> ThreadsSearchFound,
+    ): Pair<ThreadsSearchFound, ThreadsCommunitySource> {
+        val signedIn = account?.let { attempt { it() } }?.takeIf { it.items.isNotEmpty() }
+        if (signedIn != null) return ThreadsSearchFound(signedIn.items, next = signedIn.next) to ThreadsCommunitySource.ACCOUNT
+        val (found, own) = read(topic, ownPage, topicSearch)
+        return found to if (own) ThreadsCommunitySource.OWN_PAGE else ThreadsCommunitySource.TOPIC
+    }
+
     /** [topic] with the marks [found] carried for it, its own link kept. */
     fun refined(topic: ThreadsTopic, found: ThreadsSearchFound?): ThreadsTopic {
         val seen = found?.topics?.firstOrNull { it.key == topic.key } ?: return topic
@@ -72,21 +95,50 @@ internal object ThreadsCommunityReads {
     }
 }
 
-/** A community's first page and the pages after it, as the reader scrolls on. */
-internal class ThreadsCommunityModel(app: ThreadsApp, topic: ThreadsTopic, scope: kotlinx.coroutines.CoroutineScope) {
-    /** Whether the posts shown came from the community's own page; the topic search's otherwise. */
-    @Volatile
-    private var own = false
+/** Whose reading a community's posts came from. */
+internal enum class ThreadsCommunitySource {
+    /** The reader's account: the community as the signed-in reader is shown it. */
+    ACCOUNT,
 
-    val page = Fetch<ThreadsSearchFound>(scope) {
+    /** The community's own page, as a guest. */
+    OWN_PAGE,
+
+    /** The posts filed under its name, as a guest. */
+    TOPIC,
+}
+
+/**
+ * A community's first page and the pages after it, as the reader scrolls on:
+ * with the reader's account when [ThreadsCommunityFeed.usesAccount] says so
+ * (only here, when the community is opened; Home's followed communities are
+ * read as a guest), its pages then capped as every session list's are.
+ */
+internal class ThreadsCommunityModel(app: ThreadsApp, topic: ThreadsTopic, scope: kotlinx.coroutines.CoroutineScope) {
+    /** Where the posts shown came from. */
+    @Volatile
+    var source = ThreadsCommunitySource.TOPIC
+        private set
+
+    val page = Fetch<ThreadsSearchFound>(scope) { force ->
         app.ready()
-        ThreadsCommunityReads.read(topic, { app.direct.communityPage(it) }, { app.direct.searchFound(topic.name, tag = true) }).also { own = it.second }.first
+        val account = ThreadsCommunityFeed.usesAccount(app.session(), app.direct.guard.refresh().state)
+            .takeIf { it }?.let { suspend { app.direct.communityFeed(topic.name, fresh = force) } }
+        ThreadsCommunityReads.readWithAccount(topic, account, { app.direct.communityPage(it) }, { app.direct.searchFound(topic.name, tag = true) })
+            .also { source = it.second }.first
     }
 
     val more = ThreadsPaging(scope, ThreadsPost::id) { cursor ->
         val url = topic.url
-        app.nextPage { if (own && url != null) app.direct.moreCommunity(url, cursor) else app.direct.moreFound(topic.name, tag = true, recent = false, cursor = cursor) }
+        app.nextPage { if (source == ThreadsCommunitySource.OWN_PAGE && url != null) app.direct.moreCommunity(url, cursor) else app.direct.moreFound(topic.name, tag = true, recent = false, cursor = cursor) }
     }
+
+    /** The pages after an account's first: four on their own, then each on Load more. */
+    val accountMore = ThreadsPaging(scope, ThreadsPost::id, autoPages = ThreadsGuardLimits.AUTO_PAGES) { cursor ->
+        app.nextPage { app.direct.communityFeed(topic.name, cursor).let { ThreadsMore(it.items, it.next) } }
+    }
+
+    /** The pager for where the posts shown came from. */
+    val pager: ThreadsPaging<ThreadsPost> get() = if (source == ThreadsCommunitySource.ACCOUNT) accountMore else more
 }
 
 /**
@@ -102,18 +154,21 @@ internal fun ThreadsCommunityScreen(app: ThreadsApp, start: ThreadsTopic) {
     val model = rememberKept("threads-community-${start.key}-${start.url}") { scope -> ThreadsCommunityModel(app, start, scope) }
     LaunchedEffect(model) { model.page.ensure() }
     val state by model.page.state.collectAsState()
-    val paged by model.more.state.collectAsState()
     val found = state.value
+    val usedAccount = found != null && model.source == ThreadsCommunitySource.ACCOUNT
+    val pager = remember(found) { model.pager }
+    val paged by pager.state.collectAsState()
     val topic = remember(start, found) { ThreadsCommunityReads.refined(start, found) }
-    LaunchedEffect(found) { found?.let { model.more.start(it.posts, it.next) } }
+    LaunchedEffect(found) { found?.let { pager.start(it.posts, it.next) } }
     val list = rememberLazyListState()
-    ReadsMoreNear(list, model.more, paged)
+    ReadsMoreNear(list, pager, paged)
     val web = ThreadsCommunityReads.webUrl(topic)
     PluginScaffold(title = topic.name, onBack = app.host::back, actions = { CommunityActions(app, web) }) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
             PullToRefreshBox(isRefreshing = state.loading && found != null, onRefresh = { model.page.load(force = true) }, modifier = Modifier.fillMaxSize()) {
                 LazyColumn(state = list, modifier = Modifier.fillMaxSize()) {
                     item(key = "header") { ThreadsTopicHeader(app, topic) }
+                    if (usedAccount) item(key = "account") { AccountInUse(app) }
                     val posts = found?.posts.orEmpty() + paged.items
                     when {
                         found == null && state.problem != null ->
@@ -122,7 +177,7 @@ internal fun ThreadsCommunityScreen(app: ThreadsApp, start: ThreadsTopic) {
                         posts.isEmpty() -> item(key = "empty") { NothingHere(web) }
                         else -> items(posts.distinctBy { it.id }, key = { "post:" + it.id }, contentType = { "post" }) { ThreadsPostCard(app, it) }
                     }
-                    moreFoot("community", paged, model.more::retry)
+                    sessionMoreFoot("community", paged, pager::loadMore.takeIf { usedAccount }, pager::retry)
                 }
             }
             NoticeHost(app.notices)

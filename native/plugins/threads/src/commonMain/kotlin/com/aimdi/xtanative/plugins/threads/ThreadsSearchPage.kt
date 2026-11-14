@@ -238,6 +238,7 @@ private fun Results(app: ThreadsApp, terms: ThreadsSearchTerms, tab: ThreadsSear
     val state by fetch.state.collectAsState()
     val found = state.value
     val sessionPeople = if (tab == ThreadsSearchTab.PEOPLE) rememberSessionPeople(app, terms) else emptyList()
+    val peopleWithAccount = tab == ThreadsSearchTab.PEOPLE && !terms.tag && searchesPeople(app)
     val more = rememberKept("threads-search-more-${terms.query}-${terms.tag}-${tab.recent}") { scope ->
         ThreadsPaging(scope, ThreadsPost::id) { cursor -> app.nextPage { app.direct.moreFound(terms.query, terms.tag, tab.recent, cursor) } }
     }
@@ -251,7 +252,10 @@ private fun Results(app: ThreadsApp, terms: ThreadsSearchTerms, tab: ThreadsSear
             when {
                 found == null && state.problem != null -> item(key = "problem") { RetryMessage(ThreadsFailures.search(state.problem, language), onRetry = { fetch.load() }) }
                 found == null -> item(key = "loading") { PluginFeedSkeleton() }
-                tab == ThreadsSearchTab.PEOPLE -> foundPeople(app, terms, found, sessionPeople)
+                tab == ThreadsSearchTab.PEOPLE -> {
+                    if (peopleWithAccount) item(key = "account") { AccountInUse(app) }
+                    foundPeople(app, terms, found, sessionPeople)
+                }
                 tab == ThreadsSearchTab.TOPICS -> foundTopics(app, terms, found)
                 else -> {
                     foundPosts(app, terms, found.copy(posts = found.posts + paged.items))

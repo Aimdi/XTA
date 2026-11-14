@@ -114,8 +114,8 @@
     <string name="try_public">Probeer een openbaar account</string>
     <string name="unfollow">Niet meer volgen</string>
     <string name="unlike_on_device">Like van dit apparaat verwijderen</string>
-    <string name="use_session">Mijn sessie gebruiken voor gevolgde accounts</string>
-    <string name="use_session_description">Standaard uit. Aan betekent dat de app als jij met Threads praat — Meta kan dat account bannen. Laat uit, tenzij je een wegwerplogin gebruikt.</string>
+    <string name="use_session">Mijn sessie gebruiken voor Home en Voor jou</string>
+    <string name="use_session_description">Standaard uit, en zo het veiligst: wat je account nodig heeft, schakelt er bij het openen vanzelf naar over. Als dit aan staat, worden ook Home, Voor jou en de accounts die je volgt als jou gelezen — veel meer verzoeken, en Meta kan dat account blokkeren.</string>
     <string name="in_home_feed">Weergeven in de hoofdtijdlijn</string>
     <string name="in_home_feed_description">Mengt berichten van de Threads-accounts die je volgt in Volgend en Voor jou</string>
     <string name="for_you">Voor jou</string>
@@ -169,7 +169,7 @@
     <string name="media_picture_of">Afbeelding %1$d van %2$d</string>
     <string name="media_covered">Threads heeft een waarschuwing over deze media gezet</string>
     <string name="add_accounts_hint">Meerdere tegelijk: scheid ze met spaties of komma’s</string>
-    <string name="session_unlocks">Wat een sessie toevoegt: je eigen Voor jou en zoeken naar mensen. Met de schakelaar hierboven aan leest ze ook de accounts die je volgt.</string>
+    <string name="session_unlocks">Wat een sessie toevoegt: volgers en gevolgden, wie een bericht leuk vond, je activiteit en mensen zoeken, elk alleen met je account gelezen als je het opent. Met de schakelaar hierboven aan worden ook Home en Voor jou ermee gelezen.</string>
     <string name="instance_intro">Optioneel. Een eigen RSSHub-instantie leest de accounts die je volgt; als die faalt, nemen de openbare Threads-pagina’s het over. Laat leeg om alleen de openbare pagina’s te lezen.</string>
     <string name="account_missing">Niet gevonden — hernoemd, verwijderd of verkeerd getypt?</string>
     <string name="account_private">Privé — Threads toont een gast geen van de berichten</string>
@@ -275,4 +275,14 @@
     <string name="show_hidden_posts">Verborgen berichten weer tonen</string>
     <string name="read_as_article">Lezen als artikel</string>
     <string name="show_conversation">Gesprek tonen</string>
+    <string name="account_in_use">Je Threads-account wordt gebruikt</string>
+    <string name="account_resting">Gepauzeerd om je account te beschermen — gaat verder om %1$s</string>
+    <string name="account_paused">Gepauzeerd om je account te beschermen</string>
+    <string name="account_signed_out">Threads heeft deze sessie uitgelogd — log opnieuw in</string>
+    <string name="load_more">Meer laden</string>
+    <string name="account_guard">Accountbescherming</string>
+    <string name="account_active">Actief — alleen gebruikt als je iets opent dat het nodig heeft</string>
+    <string name="account_resting_until">Rust tot %1$s</string>
+    <string name="account_usage">Leesacties met het account in de afgelopen 24 uur: %1$d van %2$d</string>
+    <string name="account_guard_detail">Volgers, Leuk gevonden door, Activiteit en mensen zoeken gebruiken je account alleen als je ze opent, een paar seconden na elkaar, en pauzeren voordat Meta het zou merken. Al het andere wordt als gast gelezen.</string>
 </resources>

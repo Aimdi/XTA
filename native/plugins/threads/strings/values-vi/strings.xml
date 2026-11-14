@@ -111,8 +111,8 @@
     <string name="try_public">Thử một tài khoản công khai</string>
     <string name="unfollow">Bỏ theo dõi</string>
     <string name="unlike_on_device">Bỏ thích khỏi thiết bị này</string>
-    <string name="use_session">Dùng phiên của tôi cho tài khoản đang theo dõi</string>
-    <string name="use_session_description">Tắt mặc định. Khi bật, ứng dụng nói với Threads với tư cách bạn — Meta có thể cấm tài khoản đó. Để tắt trừ khi dùng đăng nhập dùng một lần.</string>
+    <string name="use_session">Dùng phiên của tôi cho Trang chủ và Dành cho bạn</string>
+    <string name="use_session_description">Tắt theo mặc định, và như vậy an toàn nhất: thứ gì cần tài khoản của bạn sẽ tự chuyển sang nó khi bạn mở. Khi bật, Trang chủ, Dành cho bạn và các tài khoản bạn theo dõi cũng được đọc dưới tên bạn — nhiều yêu cầu hơn hẳn, và Meta có thể cấm tài khoản đó.</string>
     <string name="in_home_feed">Hiển thị trong dòng thời gian chính</string>
     <string name="in_home_feed_description">Trộn bài viết từ các tài khoản Threads bạn theo dõi vào Đang theo dõi và Dành cho bạn</string>
     <string name="for_you">Dành cho bạn</string>
@@ -165,7 +165,7 @@
     <string name="media_picture_of">Hình ảnh %1$d/%2$d</string>
     <string name="media_covered">Threads đã đặt cảnh báo lên nội dung đa phương tiện này</string>
     <string name="add_accounts_hint">Nhiều tài khoản cùng lúc: phân tách bằng dấu cách hoặc dấu phẩy</string>
-    <string name="session_unlocks">Phiên đăng nhập thêm gì: mục Dành cho bạn của riêng bạn và tìm kiếm người. Khi bật công tắc phía trên, nó cũng đọc các tài khoản bạn theo dõi.</string>
+    <string name="session_unlocks">Phiên thêm được gì: người theo dõi và đang theo dõi, ai đã thích bài viết, hoạt động của bạn và tìm người, mỗi thứ chỉ được đọc bằng tài khoản của bạn khi bạn mở nó. Khi bật công tắc ở trên, Trang chủ và Dành cho bạn cũng được đọc bằng nó.</string>
     <string name="instance_intro">Không bắt buộc. Một máy chủ RSSHub do bạn chạy sẽ đọc các tài khoản bạn theo dõi; nếu nó lỗi, các trang công khai của Threads sẽ thay thế. Để trống để chỉ đọc các trang công khai.</string>
     <string name="account_missing">Không tìm thấy — đã đổi tên, bị xóa hay gõ sai?</string>
     <string name="account_private">Riêng tư — Threads không hiển thị bài viết nào cho khách</string>
@@ -268,4 +268,14 @@
     <string name="show_hidden_posts">Hiện lại các bài đăng đã ẩn</string>
     <string name="read_as_article">Đọc như một bài viết</string>
     <string name="show_conversation">Hiện cuộc trò chuyện</string>
+    <string name="account_in_use">Đang dùng tài khoản Threads của bạn</string>
+    <string name="account_resting">Tạm dừng để bảo vệ tài khoản của bạn — tiếp tục lúc %1$s</string>
+    <string name="account_paused">Tạm dừng để bảo vệ tài khoản của bạn</string>
+    <string name="account_signed_out">Threads đã đăng xuất phiên này — hãy đăng nhập lại</string>
+    <string name="load_more">Tải thêm</string>
+    <string name="account_guard">Bảo vệ tài khoản</string>
+    <string name="account_active">Đang hoạt động — chỉ dùng khi bạn mở thứ cần đến nó</string>
+    <string name="account_resting_until">Nghỉ đến %1$s</string>
+    <string name="account_usage">Lượt đọc bằng tài khoản trong 24 giờ qua: %1$d / %2$d</string>
+    <string name="account_guard_detail">Người theo dõi, Người đã thích, Hoạt động và tìm người chỉ dùng tài khoản của bạn khi bạn mở chúng, cách nhau vài giây, và dừng lại trước khi Meta để ý. Mọi thứ khác được đọc dưới dạng khách.</string>
 </resources>

@@ -114,8 +114,8 @@
     <string name="try_public">Prøv en offentlig konto</string>
     <string name="unfollow">Slutt å følge</string>
     <string name="unlike_on_device">Fjern likerklikk fra denne enheten</string>
-    <string name="use_session">Bruk økten min for fulgte kontoer</string>
-    <string name="use_session_description">Av som standard. Når den er på, snakker appen med Threads som deg — Meta kan utestenge den kontoen. La den være av med mindre du bruker en engangspålogging.</string>
+    <string name="use_session">Bruk økten min for Hjem og For deg</string>
+    <string name="use_session_description">Av som standard, og tryggest slik: det som trenger kontoen din, går over til den av seg selv når du åpner det. Når den er på, leses også Hjem, For deg og kontoene du følger som deg — langt flere forespørsler, og Meta kan utestenge den kontoen.</string>
     <string name="in_home_feed">Vis i hovedstrømmen</string>
     <string name="in_home_feed_description">Blander innlegg fra Threads-kontoene du følger inn i Følger og For deg</string>
     <string name="for_you">For deg</string>
@@ -169,7 +169,7 @@
     <string name="media_picture_of">Bilde %1$d av %2$d</string>
     <string name="media_covered">Threads har lagt en advarsel over dette mediet</string>
     <string name="add_accounts_hint">Flere samtidig: skill dem med mellomrom eller komma</string>
-    <string name="session_unlocks">Hva en økt gir: din egen For deg og personsøk. Med bryteren over slått på leser den også kontoene du følger.</string>
+    <string name="session_unlocks">Hva en økt gir: følgere og fulgte, hvem som likte et innlegg, aktiviteten din og personsøk, hver lest med kontoen din bare når du åpner den. Med bryteren over på leses også Hjem og For deg med den.</string>
     <string name="instance_intro">Valgfritt. En RSSHub-instans du driver selv, leser kontoene du følger; svikter den, brukes Threads’ offentlige sider i stedet. La feltet stå tomt for bare å lese de offentlige sidene.</string>
     <string name="account_missing">Ikke funnet – nytt navn, slettet eller skrevet feil?</string>
     <string name="account_private">Privat – Threads viser ingen av innleggene til en gjest</string>
@@ -275,4 +275,14 @@
     <string name="show_hidden_posts">Vis skjulte innlegg igjen</string>
     <string name="read_as_article">Les som artikkel</string>
     <string name="show_conversation">Vis samtalen</string>
+    <string name="account_in_use">Bruker Threads-kontoen din</string>
+    <string name="account_resting">Satt på pause for å beskytte kontoen din — fortsetter kl. %1$s</string>
+    <string name="account_paused">Satt på pause for å beskytte kontoen din</string>
+    <string name="account_signed_out">Threads logget ut denne økten — logg inn igjen</string>
+    <string name="load_more">Last inn flere</string>
+    <string name="account_guard">Kontobeskyttelse</string>
+    <string name="account_active">Aktiv — brukes bare når du åpner noe som trenger den</string>
+    <string name="account_resting_until">Hviler til %1$s</string>
+    <string name="account_usage">Lesinger med kontoen siste 24 timer: %1$d av %2$d</string>
+    <string name="account_guard_detail">Følgere, Likt av, Aktivitet og personsøk bruker kontoen din bare når du åpner dem, noen sekunder imellom, og tar pause før Meta ville merket noe. Alt annet leses som gjest.</string>
 </resources>

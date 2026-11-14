@@ -44,6 +44,7 @@ import com.aimdi.xtanative.networks.Page
 import com.aimdi.xtanative.networks.threads.ThreadsActivityFilter
 import com.aimdi.xtanative.networks.threads.ThreadsActivityItem
 import com.aimdi.xtanative.networks.threads.ThreadsActivityKind
+import com.aimdi.xtanative.networks.threads.ThreadsGuardLimits
 import com.aimdi.xtanative.networks.threads.ThreadsMore
 import com.aimdi.xtanative.networks.threads.ThreadsOwnFeed
 import com.aimdi.xtanative.networks.threads.ThreadsPaging
@@ -67,8 +68,8 @@ import kotlinx.coroutines.CoroutineScope
 
 /** One of the reader's own lists of posts as far as it has been read: the first page, and those after it as the reader scrolls. */
 internal class ThreadsOwnFeedModel(private val app: ThreadsApp, private val feed: ThreadsOwnFeed, scope: CoroutineScope) {
-    val first = Fetch<Page<ThreadsPost>>(scope) { app.ready(); app.nextPage { app.direct.ownFeed(feed) } }
-    val more = ThreadsPaging(scope, { it.shortcode ?: it.id }) { cursor ->
+    val first = Fetch<Page<ThreadsPost>>(scope) { force -> app.ready(); app.nextPage { app.direct.ownFeed(feed, fresh = force) } }
+    val more = ThreadsPaging(scope, { it.shortcode ?: it.id }, autoPages = ThreadsGuardLimits.AUTO_PAGES) { cursor ->
         app.nextPage { app.direct.ownFeed(feed, cursor).let { ThreadsMore(it.items, it.next) } }
     }
 }
@@ -106,15 +107,15 @@ private fun OwnFeedList(app: ThreadsApp, feed: ThreadsOwnFeed) {
                 ThreadsPeopleView.Body.PEOPLE -> items(posts, key = { "post:" + (it.shortcode ?: it.id) }, contentType = { "post" }) { post -> ThreadsPostCard(app, post) }
                 else -> item(key = "empty") { MessageText(pluginString(ThreadsSignedInRules.empty(feed))) }
             }
-            if (body == ThreadsPeopleView.Body.PEOPLE) moreFoot("own", more) { model.more.retry() }
+            if (body == ThreadsPeopleView.Body.PEOPLE) sessionMoreFoot("own", more, model.more::loadMore) { model.more.retry() }
         }
     }
 }
 
 /** The reader's activity as far as it has been read, for one [filter]. */
 internal class ThreadsActivityModel(private val app: ThreadsApp, private val filter: ThreadsActivityFilter, scope: CoroutineScope) {
-    val first = Fetch<Page<ThreadsActivityItem>>(scope) { app.ready(); app.nextPage { app.direct.activity(filter) } }
-    val more = ThreadsPaging(scope, { it.id }) { cursor ->
+    val first = Fetch<Page<ThreadsActivityItem>>(scope) { force -> app.ready(); app.nextPage { app.direct.activity(filter, fresh = force) } }
+    val more = ThreadsPaging(scope, { it.id }, autoPages = ThreadsGuardLimits.AUTO_PAGES) { cursor ->
         app.nextPage { app.direct.activity(filter, cursor).let { ThreadsMore(it.items, it.next) } }
     }
 }
@@ -172,7 +173,7 @@ private fun ActivityList(app: ThreadsApp, filter: ThreadsActivityFilter) {
                 ThreadsPeopleView.Body.PEOPLE -> items(lines, key = { "activity:" + it.id }, contentType = { "activity" }) { line -> ActivityRow(app, line) }
                 else -> item(key = "empty") { MessageText(pluginString(Strings.activity_empty)) }
             }
-            if (body == ThreadsPeopleView.Body.PEOPLE) moreFoot("activity", more) { model.more.retry() }
+            if (body == ThreadsPeopleView.Body.PEOPLE) sessionMoreFoot("activity", more, model.more::loadMore) { model.more.retry() }
         }
     }
 }
@@ -213,7 +214,14 @@ private fun SignedInScaffold(app: ThreadsApp, title: PluginText, content: @Compo
     val signedIn = ThreadsPeopleView.signedIn(ThreadsSessions.of(settings))
     PluginScaffold(title = pluginString(title), onBack = app.host::back) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
-            if (signedIn) content() else SignedOut(app)
+            if (signedIn) {
+                Column(Modifier.fillMaxSize()) {
+                    AccountInUse(app)
+                    content()
+                }
+            } else {
+                SignedOut(app)
+            }
             NoticeHost(app.notices)
         }
     }

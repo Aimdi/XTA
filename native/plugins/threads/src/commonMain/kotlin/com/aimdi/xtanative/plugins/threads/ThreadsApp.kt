@@ -53,6 +53,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -145,6 +146,11 @@ internal class ThreadsApp(val host: PluginHost) {
     val replyOrder = MutableStateFlow(ThreadsReplyOrder.TOP)
 
     init {
+        // A session pasted, signed in with or cleared is a new one to the account guard: not signed out, sent today's headers.
+        scope.launch {
+            host.settings.state.filterNotNull().map { it[ThreadsPrefs.directCookies] to it[ThreadsPrefs.directBearer] }
+                .distinctUntilChanged().drop(1).collect { direct.sessionChanged() }
+        }
         // What the For you section keeps is written a moment after the last change, not at every scrolled row.
         scope.launch {
             forYouChanged.collectLatest { change ->

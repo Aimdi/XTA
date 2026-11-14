@@ -1,5 +1,7 @@
 package com.aimdi.xtanative.plugins.threads
 
+import com.aimdi.xtanative.networks.threads.ThreadsSession
+
 /** What the search screens decide about people, apart from drawing them. */
 internal object ThreadsSearchRules {
     /** How many accounts "Try a public account" offers once Threads recommends some; never fewer than are shipped. */
@@ -11,6 +13,14 @@ internal object ThreadsSearchRules {
      * never shows what the guest read found, nor the other way round.
      */
     fun peopleKey(query: String, session: Boolean): String = if (session) "threads-people-$query" else "threads-guest-people-$query"
+
+    /**
+     * Whether a search's words and handles list accounts before anything
+     * else: only with cookies and the reader's opt-in to session reads
+     * ([ThreadsSession.useSessionApis]). Otherwise they open what a guest
+     * reads, and the account is spent on the People tab once it is opened.
+     */
+    fun listsPeopleFirst(session: ThreadsSession): Boolean = session.hasCookies && session.useSessionApis
 
     /**
      * The handles "Try a public account" offers: those Threads recommends a

@@ -114,8 +114,8 @@
     <string name="try_public">Proovi avalikku kontot</string>
     <string name="unfollow">Lõpeta jälgimine</string>
     <string name="unlike_on_device">Eemalda meeldimine sellest seadmest</string>
-    <string name="use_session">Kasuta minu seanssi jälgitavate kontode jaoks</string>
-    <string name="use_session_description">Vaikimisi väljas. Sisselülitatuna räägib rakendus Threadsiga sinuna — Meta võib selle konto bännida. Jäta väljaks, kui see pole ühekordne sisselogimine.</string>
+    <string name="use_session">Kasuta minu seanssi avalehe ja „Sinu jaoks“ jaoks</string>
+    <string name="use_session_description">Vaikimisi väljas, ja nii on kõige turvalisem: mis vajab sinu kontot, läheb avamisel ise selle peale. Sisselülitatuna loetakse sinu nimel ka avalehte, „Sinu jaoks“ ja kontosid, mida jälgid — palju rohkem päringuid ja Meta võib selle konto blokeerida.</string>
     <string name="in_home_feed">Näita avalehe voos</string>
     <string name="in_home_feed_description">Lisab jälgitavate Threadsi kontode postitused voogudesse „Jälgitavad“ ja „Sulle“</string>
     <string name="for_you">Sinu jaoks</string>
@@ -169,7 +169,7 @@
     <string name="media_picture_of">Pilt %1$d/%2$d</string>
     <string name="media_covered">Threads on selle meedia ette hoiatuse pannud</string>
     <string name="add_accounts_hint">Mitu korraga: eralda need tühikute või komadega</string>
-    <string name="session_unlocks">Mida seanss lisab: sinu enda „Sinu jaoks“ ja inimeste otsingu. Kui ülal olev lüliti on sees, loeb see ka kontosid, mida jälgid.</string>
+    <string name="session_unlocks">Mida seanss lisab: jälgijad ja jälgitavad, kellele postitus meeldis, sinu tegevus ja inimeste otsing, igaüks loetakse sinu kontoga ainult siis, kui selle avad. Ülemise lülitiga loetakse sellega ka avalehte ja „Sinu jaoks“.</string>
     <string name="instance_intro">Valikuline. Sinu enda RSSHubi eksemplar loeb kontosid, mida jälgid; kui see ei vasta, loetakse Threadsi avalikke lehti. Jäta tühjaks, et lugeda ainult avalikke lehti.</string>
     <string name="account_missing">Ei leitud — ümber nimetatud, kustutatud või valesti kirjutatud?</string>
     <string name="account_private">Privaatne — Threads ei näita külalisele ühtegi selle postitust</string>
@@ -275,4 +275,14 @@
     <string name="show_hidden_posts">Näita peidetud postitusi uuesti</string>
     <string name="read_as_article">Loe artiklina</string>
     <string name="show_conversation">Näita vestlust</string>
+    <string name="account_in_use">Kasutatakse sinu Threadsi kontot</string>
+    <string name="account_resting">Peatatud, et kaitsta sinu kontot — jätkub kell %1$s</string>
+    <string name="account_paused">Peatatud, et kaitsta sinu kontot</string>
+    <string name="account_signed_out">Threads logis selle seansi välja — logi uuesti sisse</string>
+    <string name="load_more">Laadi veel</string>
+    <string name="account_guard">Konto kaitse</string>
+    <string name="account_active">Aktiivne — kasutatakse ainult siis, kui avad midagi, mis seda vajab</string>
+    <string name="account_resting_until">Puhkab kuni %1$s</string>
+    <string name="account_usage">Lugemised kontoga viimase 24 tunni jooksul: %1$d / %2$d</string>
+    <string name="account_guard_detail">Jälgijad, „Meeldib“, tegevus ja inimeste otsing kasutavad sinu kontot ainult siis, kui need avad, mõnesekundiliste vahedega, ja peatuvad enne, kui Meta märkaks. Kõik muu loetakse külalisena.</string>
 </resources>

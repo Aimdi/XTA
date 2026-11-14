@@ -120,8 +120,8 @@
     <string name="try_public">Pasprabavać publičny akaŭnt</string>
     <string name="unfollow">Adpisacca</string>
     <string name="unlike_on_device">Prybrać «padabajecca» z hetaj prylady</string>
-    <string name="use_session">Vykarystoŭvać maju sesiju dla adsočvanych akaŭntaŭ</string>
-    <string name="use_session_description">Vyklučana pa zmaŭčanni. Kali ŭklučana, prahrama zviartajecca da Threads ad vašaha imia — Meta moža zablakavać toj akaŭnt. Pakińcie vyklučanym, kali heta nie adnarazovy ŭvachod.</string>
+    <string name="use_session">Vykarystoŭvać maju sesiju dla Hałoŭnaj i «Dla vas»</string>
+    <string name="use_session_description">Pa zmaŭčanni vyklučana, i tak biaspiečniej: toje, što patrabuje vaš akaŭnt, samo pierachodzić na jaho, kali vy heta adkryvajecie. Kali ŭklučana, Hałoŭnaja, «Dla vas» i akaŭnty, na jakija vy padpisany, taksama čytajucca ad vašaha imia — značna bolš zapytaŭ, i Meta moža zablakavać hety akaŭnt.</string>
     <string name="in_home_feed">Pakazvać u hałoŭnaj stužcy</string>
     <string name="in_home_feed_description">Dadaje zapisy z akaŭntaŭ Threads, na jakija vy padpisany, u «Padpiski» i «Dla vas»</string>
     <string name="for_you">Dla vas</string>
@@ -177,7 +177,7 @@
     <string name="media_picture_of">Vyjava %1$d z %2$d</string>
     <string name="media_covered">Threads pastaviŭ papiaredžannie na hetyja medyja</string>
     <string name="add_accounts_hint">Niekalki adrazu: padzialicie ich prabiełami abo koskami</string>
-    <string name="session_unlocks">Što daje seans: vaša ŭlasnaja stužka «Dla vas» i pošuk liudziej. Kali pieraklučalnik vyšej uklučany, jon taksama čytaje akaŭnty, na jakija vy padpisanyja.</string>
+    <string name="session_unlocks">Što daje sesija: čytačoŭ i padpiski, tych, kamu spadabaŭsia dopis, vašu aktyŭnasć i pošuk liudziej — kožnaje čytajecca z vašym akaŭntam tolki tady, kali vy heta adkryvajecie. Kali pieraklučalnik vyšej uklučany, z joj čytajucca taksama Hałoŭnaja i «Dla vas».</string>
     <string name="instance_intro">Nieabaviazkova. Asobnik RSSHub, jaki vy trymajecie sami, čytaje akaŭnty, na jakija vy padpisanyja; kali jon nie adkazvaje, ich čytajuć z publičnych staronak Threads. Pakińcie pustym, kab čytać tolki publičnyja staronki.</string>
     <string name="account_missing">Nie znojdzieny — pierajmienavany, vydaleny ci z pamyłkaj?</string>
     <string name="account_private">Pryvatny — hosciu Threads nie pakazvaje nivodnaha dopisu</string>
@@ -289,4 +289,14 @@
     <string name="show_hidden_posts">Znoŭ pakazać schavanyja dopisy</string>
     <string name="read_as_article">Čytać jak artykuł</string>
     <string name="show_conversation">Pakazać razmovu</string>
+    <string name="account_in_use">Vykarystoŭvajecca vaš akaŭnt Threads</string>
+    <string name="account_resting">Prypyniena, kab abaranić vaš akaŭnt — praciah a %1$s</string>
+    <string name="account_paused">Prypyniena, kab abaranić vaš akaŭnt</string>
+    <string name="account_signed_out">Threads zaviaršyŭ hetu sesiju — uvajdzicie znoŭ</string>
+    <string name="load_more">Zahruzić jašče</string>
+    <string name="account_guard">Achova akaŭnta</string>
+    <string name="account_active">Aktyŭny — vykarystoŭvajecca tolki tady, kali vy adkryvajecie toje, što jaho patrabuje</string>
+    <string name="account_resting_until">Adpačyvaje da %1$s</string>
+    <string name="account_usage">Čytanni z akaŭntam za apošnija 24 hadziny: %1$d z %2$d</string>
+    <string name="account_guard_detail">Čytačy, «Spadabałasia», aktyŭnasć i pošuk liudziej vykarystoŭvajuć vaš akaŭnt tolki tady, kali vy ich adkryvajecie, z paŭzaj u niekalki siekund, i spyniajucca raniej, čym Meta zaŭvažyć. Usio astatniaje čytajecca jak hosć.</string>
 </resources>

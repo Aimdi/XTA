@@ -111,8 +111,8 @@
     <string name="try_public">公開アカウントを試す</string>
     <string name="unfollow">フォロー解除</string>
     <string name="unlike_on_device">この端末のいいねを取り消す</string>
-    <string name="use_session">フォロー中のアカウントに自分のセッションを使う</string>
-    <string name="use_session_description">初期値はオフ。オンにするとこのアプリがあなたとして Threads にアクセスし、Meta がそのアカウントを凍結することがあります。捨てアカ以外はオフのままに。</string>
+    <string name="use_session">ホームと For you に自分のセッションを使う</string>
+    <string name="use_session_description">初期値はオフで、それが最も安全です。アカウントが必要なものは、開いたときに自動でアカウントに切り替わります。オンにすると、ホーム、For you、フォロー中のアカウントもあなたとして読み込まれ、リクエストが大幅に増え、Meta がそのアカウントを凍結することがあります。</string>
     <string name="in_home_feed">ホームのタイムラインに表示</string>
     <string name="in_home_feed_description">フォロー中の Threads アカウントの投稿を「フォロー中」と「おすすめ」に混ぜます</string>
     <string name="for_you">For you</string>
@@ -165,7 +165,7 @@
     <string name="media_picture_of">画像 %1$d/%2$d</string>
     <string name="media_covered">Threads はこのメディアに警告を表示しています</string>
     <string name="add_accounts_hint">まとめて追加: スペースかカンマで区切ってください</string>
-    <string name="session_unlocks">セッションで使えるもの: あなた自身の For you と人物検索。上のスイッチをオンにすると、フォロー中のアカウントもセッションで読み込みます。</string>
+    <string name="session_unlocks">セッションで使えるもの: フォロワーとフォロー中、投稿にいいねした人、あなたのアクティビティ、人物検索。どれも開いたときだけアカウントで読み込みます。上のスイッチをオンにすると、ホームと For you もセッションで読み込みます。</string>
     <string name="instance_intro">任意。自分で運用する RSSHub インスタンスがフォロー中のアカウントを読み込みます。失敗したときは Threads の公開ページが代わりに使われます。公開ページだけを読むには空のままにしてください。</string>
     <string name="account_missing">見つかりません — 名前の変更、削除、または入力ミスかもしれません</string>
     <string name="account_private">非公開 — Threads はゲストに投稿を表示しません</string>
@@ -268,4 +268,14 @@
     <string name="show_hidden_posts">非表示にした投稿を再表示</string>
     <string name="read_as_article">記事として読む</string>
     <string name="show_conversation">会話を表示</string>
+    <string name="account_in_use">Threads アカウントを使用中</string>
+    <string name="account_resting">アカウントを守るため一時停止中 — %1$s に再開</string>
+    <string name="account_paused">アカウントを守るため一時停止中</string>
+    <string name="account_signed_out">Threads がこのセッションをログアウトしました — もう一度ログインしてください</string>
+    <string name="load_more">さらに読み込む</string>
+    <string name="account_guard">アカウントの保護</string>
+    <string name="account_active">有効 — 必要なものを開いたときだけ使われます</string>
+    <string name="account_resting_until">%1$s まで休止中</string>
+    <string name="account_usage">過去 24 時間のアカウントでの読み込み: %1$d / %2$d</string>
+    <string name="account_guard_detail">フォロワー、いいねした人、アクティビティ、人物検索は、開いたときだけ数秒おきにアカウントを使い、Meta に気づかれる前に休止します。それ以外はすべてゲストとして読み込みます。</string>
 </resources>

@@ -120,8 +120,8 @@
     <string name="try_public">Попробовать публичный аккаунт</string>
     <string name="unfollow">Отписаться</string>
     <string name="unlike_on_device">Убрать отметку «нравится» с этого устройства</string>
-    <string name="use_session">Использовать мою сессию для отслеживаемых аккаунтов</string>
-    <string name="use_session_description">По умолчанию выключено. Если включить, приложение обращается к Threads от вашего имени — Meta может забанить этот аккаунт. Оставьте выключенным, если это не одноразовый вход.</string>
+    <string name="use_session">Использовать мою сессию для Главной и «Для вас»</string>
+    <string name="use_session_description">По умолчанию выключено, и так безопаснее: то, что требует ваш аккаунт, само переключается на него, когда вы это открываете. Если включить, Главная, «Для вас» и аккаунты, на которые вы подписаны, тоже читаются от вашего имени — намного больше запросов, и Meta может заблокировать этот аккаунт.</string>
     <string name="in_home_feed">Показывать в главной ленте</string>
     <string name="in_home_feed_description">Добавляет записи из аккаунтов Threads, на которые вы подписаны, в «Подписки» и «Для вас»</string>
     <string name="for_you">Для вас</string>
@@ -177,7 +177,7 @@
     <string name="media_picture_of">Изображение %1$d из %2$d</string>
     <string name="media_covered">Threads поставил предупреждение на это медиа</string>
     <string name="add_accounts_hint">Несколько сразу: разделите их пробелами или запятыми</string>
-    <string name="session_unlocks">Что даёт сеанс: ваша собственная лента «Для вас» и поиск людей. Если переключатель выше включён, он также читает аккаунты, на которые вы подписаны.</string>
+    <string name="session_unlocks">Что даёт сессия: читателей и подписки, кому понравилась публикация, вашу активность и поиск людей — каждое читается с вашим аккаунтом, только когда вы это открываете. Если переключатель выше включён, с ней читаются также Главная и «Для вас».</string>
     <string name="instance_intro">Необязательно. Собственный экземпляр RSSHub читает аккаунты, на которые вы подписаны; если он не отвечает, их читают с публичных страниц Threads. Оставьте пустым, чтобы читать только публичные страницы.</string>
     <string name="account_missing">Не найден — переименован, удалён или опечатка?</string>
     <string name="account_private">Закрытый — гостю Threads не показывает ни одного поста</string>
@@ -289,4 +289,14 @@
     <string name="show_hidden_posts">Снова показать скрытые посты</string>
     <string name="read_as_article">Читать как статью</string>
     <string name="show_conversation">Показать обсуждение</string>
+    <string name="account_in_use">Используется ваш аккаунт Threads</string>
+    <string name="account_resting">Приостановлено для защиты вашего аккаунта — продолжится в %1$s</string>
+    <string name="account_paused">Приостановлено для защиты вашего аккаунта</string>
+    <string name="account_signed_out">Threads завершил эту сессию — войдите снова</string>
+    <string name="load_more">Загрузить ещё</string>
+    <string name="account_guard">Защита аккаунта</string>
+    <string name="account_active">Активен — используется, только когда вы открываете то, что его требует</string>
+    <string name="account_resting_until">Отдыхает до %1$s</string>
+    <string name="account_usage">Чтения с аккаунтом за последние 24 часа: %1$d из %2$d</string>
+    <string name="account_guard_detail">Читатели, «Понравилось», активность и поиск людей используют ваш аккаунт, только когда вы их открываете, с паузой в несколько секунд, и останавливаются раньше, чем Meta заметит. Всё остальное читается как гость.</string>
 </resources>

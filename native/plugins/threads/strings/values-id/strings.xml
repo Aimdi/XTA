@@ -111,8 +111,8 @@
     <string name="try_public">Coba akun publik</string>
     <string name="unfollow">Berhenti mengikuti</string>
     <string name="unlike_on_device">Hapus suka dari perangkat ini</string>
-    <string name="use_session">Gunakan sesi saya untuk akun yang diikuti</string>
-    <string name="use_session_description">Nonaktif secara bawaan. Jika aktif, aplikasi berbicara ke Threads sebagai Anda — Meta bisa memblokir akun itu. Biarkan mati kecuali login sekali pakai.</string>
+    <string name="use_session">Pakai sesi saya untuk Beranda dan Untuk Anda</string>
+    <string name="use_session_description">Mati secara bawaan, dan paling aman begitu: yang memerlukan akun Anda beralih ke akun itu sendiri saat Anda membukanya. Jika aktif, Beranda, Untuk Anda, dan akun yang Anda ikuti juga dibaca sebagai Anda — jauh lebih banyak permintaan, dan Meta bisa memblokir akun itu.</string>
     <string name="in_home_feed">Tampilkan di lini masa beranda</string>
     <string name="in_home_feed_description">Menggabungkan kiriman dari akun Threads yang Anda ikuti ke Mengikuti dan Untuk Anda</string>
     <string name="for_you">Untuk Anda</string>
@@ -165,7 +165,7 @@
     <string name="media_picture_of">Gambar %1$d dari %2$d</string>
     <string name="media_covered">Threads memasang peringatan pada media ini</string>
     <string name="add_accounts_hint">Beberapa sekaligus: pisahkan dengan spasi atau koma</string>
-    <string name="session_unlocks">Yang ditambahkan sesi: Untuk Anda milik Anda sendiri dan pencarian orang. Jika sakelar di atas aktif, sesi juga membaca akun yang Anda ikuti.</string>
+    <string name="session_unlocks">Yang ditambahkan sesi: pengikut dan yang diikuti, siapa yang menyukai postingan, aktivitas Anda, dan pencarian orang, masing-masing dibaca dengan akun Anda hanya saat Anda membukanya. Dengan sakelar di atas aktif, Beranda dan Untuk Anda juga dibaca dengannya.</string>
     <string name="instance_intro">Opsional. Instans RSSHub milik Anda membaca akun yang Anda ikuti; jika gagal, halaman publik Threads dipakai sebagai gantinya. Biarkan kosong untuk hanya membaca halaman publik.</string>
     <string name="account_missing">Tidak ditemukan — diganti nama, dihapus, atau salah ketik?</string>
     <string name="account_private">Privat — Threads tidak menampilkan satu pun postingannya kepada tamu</string>
@@ -268,4 +268,14 @@
     <string name="show_hidden_posts">Tampilkan lagi postingan yang disembunyikan</string>
     <string name="read_as_article">Baca sebagai artikel</string>
     <string name="show_conversation">Tampilkan percakapan</string>
+    <string name="account_in_use">Memakai akun Threads Anda</string>
+    <string name="account_resting">Dijeda untuk melindungi akun Anda — lanjut pukul %1$s</string>
+    <string name="account_paused">Dijeda untuk melindungi akun Anda</string>
+    <string name="account_signed_out">Threads mengeluarkan sesi ini — masuk lagi</string>
+    <string name="load_more">Muat lebih banyak</string>
+    <string name="account_guard">Perlindungan akun</string>
+    <string name="account_active">Aktif — hanya dipakai saat Anda membuka sesuatu yang memerlukannya</string>
+    <string name="account_resting_until">Beristirahat sampai %1$s</string>
+    <string name="account_usage">Bacaan dengan akun dalam 24 jam terakhir: %1$d dari %2$d</string>
+    <string name="account_guard_detail">Pengikut, Disukai oleh, Aktivitas, dan pencarian orang memakai akun Anda hanya saat Anda membukanya, berjarak beberapa detik, dan berhenti sebelum Meta menyadarinya. Selebihnya dibaca sebagai tamu.</string>
 </resources>

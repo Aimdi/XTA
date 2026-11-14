@@ -111,8 +111,8 @@
     <string name="try_public">试试公开账号</string>
     <string name="unfollow">取消关注</string>
     <string name="unlike_on_device">从此设备取消点赞</string>
-    <string name="use_session">用我的会话读取已关注账号</string>
-    <string name="use_session_description">默认关闭。打开后本应用会以你的身份访问 Threads，Meta 可能封禁该账号。除非是一次性登录，否则请保持关闭。</string>
+    <string name="use_session">在首页和“为你”中使用我的会话</string>
+    <string name="use_session_description">默认关闭，这样最安全：需要账号的内容会在你打开时自动切换到账号。开启后，首页、“为你”和你关注的账号也会以你的身份读取 — 请求多得多，Meta 可能封禁该账号。</string>
     <string name="in_home_feed">显示在主时间线中</string>
     <string name="in_home_feed_description">把你关注的 Threads 账号的帖子混入「关注」和「为你推荐」</string>
     <string name="for_you">为你</string>
@@ -165,7 +165,7 @@
     <string name="media_picture_of">第 %1$d 张图片，共 %2$d 张</string>
     <string name="media_covered">Threads 为此媒体加上了警告</string>
     <string name="add_accounts_hint">可一次添加多个：用空格或逗号分隔</string>
-    <string name="session_unlocks">会话可以带来：你自己的“为你”和用户搜索。打开上方的开关后，也会用它读取你关注的账号。</string>
+    <string name="session_unlocks">会话能带来：关注者和关注中、谁赞了帖子、你的动态和找人，每项都只在你打开时才用账号读取。打开上面的开关后，首页和“为你”也会用它读取。</string>
     <string name="instance_intro">可选。由你自己运行的 RSSHub 实例读取你关注的账号；它出错时改读 Threads 的公开页面。留空则只读公开页面。</string>
     <string name="account_missing">找不到 — 是否已改名、删除或拼写有误？</string>
     <string name="account_private">私密 — Threads 不向访客显示其任何帖子</string>
@@ -268,4 +268,14 @@
     <string name="show_hidden_posts">重新显示已隐藏的帖子</string>
     <string name="read_as_article">按文章阅读</string>
     <string name="show_conversation">显示对话</string>
+    <string name="account_in_use">正在使用你的 Threads 账号</string>
+    <string name="account_resting">为保护你的账号已暂停 — %1$s 继续</string>
+    <string name="account_paused">为保护你的账号已暂停</string>
+    <string name="account_signed_out">Threads 已注销此会话 — 请重新登录</string>
+    <string name="load_more">加载更多</string>
+    <string name="account_guard">账号保护</string>
+    <string name="account_active">可用 — 只在你打开需要它的内容时使用</string>
+    <string name="account_resting_until">休息至 %1$s</string>
+    <string name="account_usage">过去 24 小时用账号读取：%1$d / %2$d</string>
+    <string name="account_guard_detail">关注者、赞过的人、动态和找人只在你打开时才使用你的账号，每次间隔几秒，并在 Meta 察觉之前暂停。其余内容都以访客身份读取。</string>
 </resources>

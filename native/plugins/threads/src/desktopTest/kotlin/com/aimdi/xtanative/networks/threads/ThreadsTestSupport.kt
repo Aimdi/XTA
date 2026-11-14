@@ -70,9 +70,10 @@ fun direct(
     session: ThreadsSession = ThreadsSession(),
     memory: ThreadsMemory = ThreadsMemory.InMemory(),
     time: FakeTime = FakeTime(),
-    pacing: ThreadsPacing = ThreadsPacing(0, 0, 0, 0, sleep = time.sleep),
+    pacing: ThreadsPacing = ThreadsPacing(0, 0, 0, 0, sleep = time.sleep, longPauseMillis = 0L..0L, pagingExtraMillis = 0L..0L),
     repairs: ThreadsRepairs = ThreadsRepairs(),
-) = ThreadsDirectClient(meta, { session }, memory, { repairs }, pacing, time.clock)
+    limits: ThreadsGuardLimits = ThreadsGuardLimits(),
+) = ThreadsDirectClient(meta, { session }, memory, { repairs }, pacing, time.clock, limits)
 
 /** Kotlin maps, lists and values as JSON, so posts read like the map literals of XTA's tests. */
 fun json(value: Any?): JsonElement = when (value) {

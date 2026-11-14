@@ -66,7 +66,8 @@ import kotlinx.coroutines.launch
  * Where the reader points the plugin, and who they follow with it
  * (threads_settings.dart), in XTA's order: public reading, whether the
  * accounts followed here join Home's timelines, the switch that spends the
- * session on followed accounts, the accounts (each to put in groups or
+ * session in the background, how the account guard finds the account
+ * (active, resting until when, signed out; today's reads), the accounts (each to put in groups or
  * remove), the optional session with its warning, an RSSHub instance and an
  * Xy server, each with its test. The session and the token are never backed
  * up or exported.
@@ -88,6 +89,7 @@ internal fun ThreadsSettingsBody(app: ThreadsApp, frame: PluginFrame) {
                 Toggle(Strings.use_session, Strings.use_session_description, settings[ThreadsPrefs.useSessionApis]) { on -> app.update { it.with(ThreadsPrefs.useSessionApis, on) } }
             }
             if (app.direct.isSessionParked) item(key = "parked") { Parked() }
+            if (ThreadsSessions.of(settings).hasDirectAuth) item(key = "guard") { Section(Strings.account_guard) { AccountProtection(app) } }
             item(key = "accounts") { Section(Strings.accounts) { Accounts(app) } }
             if (loaded) {
                 item(key = "session") { Section(Strings.session_section) { Session(app) } }

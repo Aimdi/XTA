@@ -126,8 +126,8 @@
     <string name="try_public">جرّب حساباً عاماً</string>
     <string name="unfollow">إلغاء المتابعة</string>
     <string name="unlike_on_device">إزالة الإعجاب من هذا الجهاز</string>
-    <string name="use_session">استخدم جلستي للحسابات المتابَعة</string>
-    <string name="use_session_description">متوقف افتراضيًا. عند التشغيل يتحدث التطبيق إلى ثريدز بصفتك — وقد تحظر ميتا ذلك الحساب. اتركه مغلقًا إلا إذا كنت تستخدم تسجيل دخولًا مؤقتًا.</string>
+    <string name="use_session">استخدم جلستي للرئيسية و«لك»</string>
+    <string name="use_session_description">متوقف افتراضيًا، وهذا أكثر أمانًا: ما يحتاج إلى حسابك ينتقل إليه تلقائيًا عندما تفتحه. عند التشغيل تُقرأ الرئيسية و«لك» والحسابات التي تتابعها باسمك أيضًا — قراءات أكثر بكثير، وقد تحظر ميتا ذلك الحساب.</string>
     <string name="in_home_feed">إظهار في الصفحة الرئيسية</string>
     <string name="in_home_feed_description">يدمج منشورات حسابات ثريدز التي تتابعها في \"المتابَعون\" و\"لك\"</string>
     <string name="for_you">لك</string>
@@ -185,7 +185,7 @@
     <string name="media_picture_of">الصورة %1$d من %2$d</string>
     <string name="media_covered">وضعت Threads تحذيرًا على هذه الوسائط</string>
     <string name="add_accounts_hint">عدة حسابات معاً: افصل بينها بمسافات أو فواصل</string>
-    <string name="session_unlocks">ما تضيفه الجلسة: صفحة «لك» الخاصة بك والبحث عن الأشخاص. وعند تشغيل المفتاح أعلاه، تقرأ بها أيضاً الحسابات التي تتابعها.</string>
+    <string name="session_unlocks">ما تضيفه الجلسة: المتابِعون ومن تتابعهم، ومن أُعجب بمنشور، ونشاطك، والبحث عن الأشخاص، وكلها تُقرأ بحسابك فقط عندما تفتحها. وعند تشغيل المفتاح أعلاه تُقرأ بها الرئيسية و«لك» أيضًا.</string>
     <string name="instance_intro">اختياري. خادم RSSHub تشغّله أنت يقرأ الحسابات التي تتابعها، وتحلّ صفحات Threads العامة محله إن تعذّر. اتركه فارغاً لقراءة الصفحات العامة فقط.</string>
     <string name="account_missing">غير موجود — هل غُيّر اسمه أو حُذف أو كُتب خطأً؟</string>
     <string name="account_private">خاص — لا يعرض Threads أيًا من منشوراته للزائر</string>
@@ -303,4 +303,14 @@
     <string name="show_hidden_posts">إظهار المنشورات المخفية من جديد</string>
     <string name="read_as_article">القراءة كمقال</string>
     <string name="show_conversation">عرض المحادثة</string>
+    <string name="account_in_use">يُستخدم حسابك على Threads</string>
+    <string name="account_resting">متوقف مؤقتًا لحماية حسابك — يُستأنف عند %1$s</string>
+    <string name="account_paused">متوقف مؤقتًا لحماية حسابك</string>
+    <string name="account_signed_out">سجّلت Threads خروج هذه الجلسة — سجّل الدخول من جديد</string>
+    <string name="load_more">تحميل المزيد</string>
+    <string name="account_guard">حماية الحساب</string>
+    <string name="account_active">نشط — لا يُستخدم إلا حين تفتح شيئًا يحتاج إليه</string>
+    <string name="account_resting_until">في استراحة حتى %1$s</string>
+    <string name="account_usage">قراءات الحساب في آخر 24 ساعة: %1$d من %2$d</string>
+    <string name="account_guard_detail">المتابِعون و«أُعجب به» والنشاط والبحث عن الأشخاص تستخدم حسابك فقط عندما تفتحها، بفاصل بضع ثوانٍ، وتتوقف قبل أن تلاحظ ميتا. كل ما عدا ذلك يُقرأ كزائر.</string>
 </resources>

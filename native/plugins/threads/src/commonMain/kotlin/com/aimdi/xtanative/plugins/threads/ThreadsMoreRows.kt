@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.plugins.threads
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
@@ -7,8 +8,10 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -38,13 +41,28 @@ internal fun ReadsMoreNear(list: LazyListState, paging: ThreadsPaging<*>?, state
     }
 }
 
-/** The row under a paged list: a spinner while its next page is read, why that failed and a way to ask again, or that it has ended. */
-internal fun LazyListScope.moreFoot(key: String, state: ThreadsPagingState<*>?, onRetry: () -> Unit) {
+/**
+ * The row under a paged list: a spinner while its next page is read, why
+ * that failed and a way to ask again, or that it has ended.
+ */
+internal fun LazyListScope.moreFoot(key: String, state: ThreadsPagingState<*>?, onRetry: () -> Unit) = sessionMoreFoot(key, state, null, onRetry)
+
+/** [moreFoot] for a list read with the reader's account: Load more ([onLoadMore]) once it stopped reading pages on its own. */
+internal fun LazyListScope.sessionMoreFoot(key: String, state: ThreadsPagingState<*>?, onLoadMore: (() -> Unit)?, onRetry: () -> Unit) {
     val problem = state?.problem
     when {
         state?.loading == true -> item(key = "$key-more-loading") { LoadingRow() }
         problem != null -> item(key = "$key-more-problem") { RetryRow(ThreadsFailures.nextPage(problem, currentLanguage()), onRetry) }
+        state?.held == true && state.next != null && onLoadMore != null -> item(key = "$key-more-held") { LoadMore(onLoadMore) }
         state?.paged == true && state.next == null && !state.onWeb -> item(key = "$key-more-end") { ListEnd() }
+    }
+}
+
+/** The way on past the pages a list read on its own: one page a tap, so scrolling alone never spends the account. */
+@Composable
+private fun LoadMore(onLoadMore: () -> Unit) {
+    Box(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 16.dp), contentAlignment = Alignment.Center) {
+        OutlinedButton(onClick = onLoadMore) { Text(pluginString(Strings.load_more)) }
     }
 }
 

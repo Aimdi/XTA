@@ -99,7 +99,19 @@ internal fun searchesPeople(app: ThreadsApp): Boolean {
     return ThreadsSessions.of(settings).hasCookies
 }
 
-/** Whether [query] lists accounts rather than opening a page: an @handle or words, with a session. */
+/**
+ * Whether a search's words and handles list accounts first: only with
+ * cookies and the reader's opt-in to session reads. Otherwise they are read
+ * as a guest reads them (the posts words find, the profile a handle names),
+ * and the account is spent only on the People tab, when it is opened.
+ */
+@Composable
+internal fun listsPeopleFirst(app: ThreadsApp): Boolean {
+    val settings by app.prefs.collectAsState()
+    return ThreadsSearchRules.listsPeopleFirst(ThreadsSessions.of(settings))
+}
+
+/** Whether [query] lists accounts rather than opening a page: an @handle or words, with a session the reader lets search first. */
 private fun listsPeople(query: ThreadsQuery, withSession: Boolean): Boolean =
     withSession && (query is ThreadsQuery.Profile || query is ThreadsQuery.Words)
 
@@ -117,7 +129,7 @@ private fun QueryResults(app: ThreadsApp, text: String, frame: PluginFrame) {
     }
     val terms = query.terms
     when {
-        listsPeople(query, searchesPeople(app)) -> PeopleResults(app, text, frame, app::openProfile)
+        listsPeople(query, listsPeopleFirst(app)) -> PeopleResults(app, text, frame, app::openProfile)
         query is ThreadsQuery.Post -> SheetRow(PostIcons.Forum, pluginString(Strings.thread)) { app.openQuery(query) }
         query is ThreadsQuery.Profile -> SheetRow(Icons.Filled.Person, pluginString(Strings.open_handle, query.handle)) { app.openProfile(query.handle) }
         terms != null -> ThreadsSearchBody(app, terms, frame)
@@ -137,6 +149,7 @@ private fun PeopleResults(app: ThreadsApp, text: String, frame: PluginFrame, onO
     val users = state.value
     LaunchedEffect(users) { if (users != null) app.remember(text) }
     LazyColumn(Modifier.fillMaxSize(), contentPadding = frame.padding) {
+        item(key = "account") { AccountInUse(app) }
         item(key = "posts") { SheetRow(PostIcons.Article, pluginString(Strings.search_posts)) { onPosts(ThreadsSearchTerms(text.trim(), tag = false)) } }
         when {
             users == null && state.problem != null -> item(key = "problem") { FailedPeople(text, state.problem, onOpen) { fetch.load() } }
@@ -168,7 +181,7 @@ internal fun LazyListScope.people(app: ThreadsApp, users: List<ThreadsProfile>, 
 internal fun ThreadsSearchSheet(app: ThreadsApp, initial: String?, onDismiss: () -> Unit) {
     var text by rememberSaveable { mutableStateOf(initial.orEmpty()) }
     var listed by remember { mutableStateOf<String?>(null) }
-    val withSession = searchesPeople(app)
+    val withSession = listsPeopleFirst(app)
     LaunchedEffect(Unit) { app.ready() }
     val leave = { action: () -> Unit -> onDismiss(); action() }
     val search = { typed: String ->

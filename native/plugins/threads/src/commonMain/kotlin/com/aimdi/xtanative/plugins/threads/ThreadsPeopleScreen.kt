@@ -46,6 +46,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.Page
 import com.aimdi.xtanative.networks.threads.ThreadsLinks
+import com.aimdi.xtanative.networks.threads.ThreadsGuardLimits
 import com.aimdi.xtanative.networks.threads.ThreadsMore
 import com.aimdi.xtanative.networks.threads.ThreadsPaging
 import com.aimdi.xtanative.networks.threads.ThreadsPeopleList
@@ -81,8 +82,8 @@ internal class ThreadsPeopleModel(
     private val target: suspend () -> String,
     scope: CoroutineScope,
 ) {
-    val first = Fetch<Page<ThreadsProfile>>(scope) { app.ready(); app.nextPage { app.direct.people(list, target(), null, query) } }
-    val more = ThreadsPaging(scope, { it.username.lowercase() }) { cursor ->
+    val first = Fetch<Page<ThreadsProfile>>(scope) { force -> app.ready(); app.nextPage { app.direct.people(list, target(), null, query, fresh = force) } }
+    val more = ThreadsPaging(scope, { it.username.lowercase() }, autoPages = ThreadsGuardLimits.AUTO_PAGES) { cursor ->
         app.nextPage { app.direct.people(list, target(), cursor, query).let { ThreadsMore(it.items, it.next) } }
     }
 }
@@ -174,6 +175,7 @@ private fun PeopleList(app: ThreadsApp, list: ThreadsPeopleList, key: String, si
             SignedOut(app)
             return@Column
         }
+        AccountInUse(app)
         val model = rememberKept("threads-$key-${list.name}-${searched.orEmpty()}") { scope -> ThreadsPeopleModel(app, list, searched, target, scope) }
         LaunchedEffect(model) { model.first.ensure() }
         val first by model.first.state.collectAsState()
@@ -191,7 +193,7 @@ private fun PeopleList(app: ThreadsApp, list: ThreadsPeopleList, key: String, si
                 ThreadsPeopleView.Body.NO_MATCH -> item(key = "none") { MessageText(pluginString(Strings.no_matching_accounts)) }
                 else -> personRows(app, people) { app.openProfile(it) }
             }
-            if (body == ThreadsPeopleView.Body.PEOPLE || body == ThreadsPeopleView.Body.NO_MATCH) moreFoot("people", more) { model.more.retry() }
+            if (body == ThreadsPeopleView.Body.PEOPLE || body == ThreadsPeopleView.Body.NO_MATCH) sessionMoreFoot("people", more, model.more::loadMore) { model.more.retry() }
         }
     }
 }

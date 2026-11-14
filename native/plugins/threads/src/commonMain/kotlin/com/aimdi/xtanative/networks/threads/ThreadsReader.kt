@@ -85,8 +85,9 @@ class ThreadsReader(
 
     /**
      * The feed: the [handles] followed here, merged newest first; with none, the
-     * pasted Bearer's own timeline; with only cookies or an RSSHub instance,
-     * nothing, since a session alone follows no one.
+     * pasted Bearer's own timeline when the reader opted in to session reads;
+     * with only a session or an RSSHub instance, nothing, since a session
+     * alone follows no one.
      */
     suspend fun following(
         handles: List<String>,
@@ -96,7 +97,9 @@ class ThreadsReader(
         if (handles.isNotEmpty()) return withContext(ThreadsBackground) { postsFor(handles, force, onPartial) }
         val current = direct.currentSession
         return when {
-            current.hasBearer -> direct.followingTimeline().items
+            // Home reads on its own, so the Bearer's timeline is spent only when the reader opted in to session reads.
+            current.hasBearer && current.useSessionApis -> direct.followingTimeline().items
+            current.hasBearer -> emptyList()
             current.hasCookies || setup().rssHubInstance.isNotBlank() -> emptyList()
             else -> throw ThreadsException(ThreadsFailure.NOT_CONFIGURED, "no accounts or session")
         }

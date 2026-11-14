@@ -23,6 +23,8 @@ data class ThreadsPagingState<T>(
     val problem: Throwable? = null,
     /** Meta answered a next page in a shape not understood, or the list reached what is kept in memory: the rest is at threads.com. */
     val onWeb: Boolean = false,
+    /** The list read as many pages on its own as it may: the next one waits for the reader's Load more ([ThreadsPaging.loadMore]). */
+    val held: Boolean = false,
 ) {
     /** The first page named a next one, so the list was paged here. */
     val paged: Boolean get() = next != null || items.isNotEmpty() || onWeb || problem != null
@@ -36,11 +38,17 @@ data class ThreadsPagingState<T>(
  * so they end with the screen; a failure waits for [retry]. Past [limit]
  * items in all the list stops here, at threads.com, so a long scroll never
  * holds a whole account in memory.
+ *
+ * A list read with the reader's account reads at most [autoPages] pages
+ * after the first on its own ([more], as the reader scrolls); then each
+ * page waits for [loadMore], the reader's tap, so scrolling alone cannot
+ * spend the account's budget ([ThreadsGuardLimits.autoPages]).
  */
 class ThreadsPaging<T>(
     private val scope: CoroutineScope,
     private val key: (T) -> String,
     private val limit: Int = MAX_ITEMS,
+    private val autoPages: Int = Int.MAX_VALUE,
     private val read: suspend (cursor: String) -> ThreadsMore<T>,
 ) {
     private val mutable = MutableStateFlow(ThreadsPagingState<T>())
@@ -51,6 +59,7 @@ class ThreadsPaging<T>(
     private var known = HashSet<String>()
     private var firstCount = 0
     private val used = HashSet<String>()
+    private var pagesRead = 0
 
     /** A first page arrived with [first] and [next]: the pages after it start anew, unless it is the first page already started from. */
     fun start(first: List<T>, next: String?) {
@@ -62,29 +71,50 @@ class ThreadsPaging<T>(
         known = HashSet(ids)
         firstCount = ids.size
         used.clear()
+        pagesRead = 0
         mutable.value = ThreadsPagingState(next = cursor)
     }
 
-    /** Reads the next page; nothing while one is read, after a failure until [retry], or at the end. */
-    fun more() {
-        val now = mutable.value
-        val cursor = now.next ?: return
-        if (now.loading || now.problem != null || job?.isActive == true) return
-        job = scope.launch { page(cursor) }
-    }
+    /**
+     * Reads the next page as the reader nears the end; nothing while one is
+     * read, after a failure until [retry], at the end, or once [autoPages]
+     * were read on their own ([ThreadsPagingState.held] until [loadMore]).
+     */
+    fun more() = next(tapped = false)
+
+    /** Reads the next page because the reader asked for it, past the pages read on their own. */
+    fun loadMore() = next(tapped = true)
 
     /** Asks again for the page that failed. */
     fun retry() {
         mutable.update { it.copy(problem = null) }
-        more()
+        next(tapped = true)
     }
 
-    private suspend fun page(first: String) {
+    private fun next(tapped: Boolean) {
+        val now = mutable.value
+        val cursor = now.next ?: return
+        if (now.loading || now.problem != null || job?.isActive == true) return
+        if (!tapped && pagesRead >= autoPages) {
+            mutable.update { it.copy(held = true) }
+            return
+        }
+        mutable.update { it.copy(held = false) }
+        job = scope.launch { page(cursor, tapped) }
+    }
+
+    private suspend fun page(first: String, tapped: Boolean) {
         mutable.update { it.copy(loading = true, problem = null) }
         try {
             var cursor: String? = first
             var hops = 0
             while (cursor != null && hops++ < PASSES) {
+                // A page that brought nothing new is passed over on its own: past the pages a list reads on its own, that waits for a tap too.
+                if (pagesRead >= autoPages && !(tapped && hops == 1)) {
+                    mutable.update { it.copy(held = true, next = cursor) }
+                    break
+                }
+                pagesRead++
                 used += cursor
                 val page = read(cursor)
                 val fresh = page.items.filter { known.add(key(it)) }
