@@ -286,4 +286,11 @@
     <string name="suggestion_follow">Ikuti %1$s di perangkat ini</string>
     <string name="suggestion_unfollow">Berhenti mengikuti %1$s di perangkat ini</string>
     <string name="suggestion_hide">Hapus %1$s dari saran</string>
+    <string name="song_play">Putar %1$s oleh %2$s</string>
+    <string name="song_play_title">Putar %1$s</string>
+    <string name="song_pause">Jeda %1$s</string>
+    <string name="song_open_page">Buka halaman lagu</string>
+    <string name="song_explicit">Eksplisit</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">Lagu ini tidak dapat diputar sekarang</string>
 </resources>

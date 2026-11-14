@@ -307,4 +307,11 @@
     <string name="suggestion_follow">Sačyć za %1$s na hetaj pryladzie</string>
     <string name="suggestion_unfollow">Pierastać sačyć za %1$s na hetaj pryladzie</string>
     <string name="suggestion_hide">Prybrać %1$s z prapanoŭ</string>
+    <string name="song_play">Sluchać «%1$s» — %2$s</string>
+    <string name="song_play_title">Sluchać «%1$s»</string>
+    <string name="song_pause">Prypynić «%1$s»</string>
+    <string name="song_open_page">Adkryć staronku piesni</string>
+    <string name="song_explicit">Nienarmatyŭny zmiest</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">Hetuju piesniu zaraz niemahčyma prajhrać</string>
 </resources>

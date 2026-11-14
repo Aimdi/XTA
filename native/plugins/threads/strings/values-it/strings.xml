@@ -299,4 +299,11 @@
     <string name="suggestion_follow">Segui %1$s su questo dispositivo</string>
     <string name="suggestion_unfollow">Non seguire più %1$s su questo dispositivo</string>
     <string name="suggestion_hide">Rimuovi %1$s dai suggerimenti</string>
+    <string name="song_play">Riproduci %1$s di %2$s</string>
+    <string name="song_play_title">Riproduci %1$s</string>
+    <string name="song_pause">Metti in pausa %1$s</string>
+    <string name="song_open_page">Apri la pagina del brano</string>
+    <string name="song_explicit">Esplicito</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">Al momento non è possibile riprodurre questo brano</string>
 </resources>

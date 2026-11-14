@@ -79,6 +79,9 @@ import kotlinx.coroutines.sync.withLock
 internal class ThreadsApp(val host: PluginHost) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
+    /** The one song heard among its posts ([ThreadsSongCard]); its player is made on the first tap of play. */
+    val songs = ThreadsSongs()
+
     val direct = ThreadsDirectClient(
         http = host.http,
         session = ::session,
@@ -213,7 +216,10 @@ internal class ThreadsApp(val host: PluginHost) {
 
     fun update(edit: (Settings) -> Settings) = launch { host.settings.update(edit) }
 
-    fun close() = scope.cancel()
+    fun close() {
+        songs.close()
+        scope.cancel()
+    }
 
     /**
      * The session as the reader pasted it, read afresh on every request: in

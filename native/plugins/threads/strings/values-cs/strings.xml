@@ -307,4 +307,11 @@
     <string name="suggestion_follow">Sledovat %1$s v tomto zařízení</string>
     <string name="suggestion_unfollow">Přestat sledovat %1$s v tomto zařízení</string>
     <string name="suggestion_hide">Odebrat %1$s z návrhů</string>
+    <string name="song_play">Přehrát %1$s od %2$s</string>
+    <string name="song_play_title">Přehrát %1$s</string>
+    <string name="song_pause">Pozastavit %1$s</string>
+    <string name="song_open_page">Otevřít stránku skladby</string>
+    <string name="song_explicit">Explicitní obsah</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">Tuto skladbu teď nelze přehrát</string>
 </resources>

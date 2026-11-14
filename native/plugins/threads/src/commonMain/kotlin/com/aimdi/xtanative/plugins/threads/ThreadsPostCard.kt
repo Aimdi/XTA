@@ -306,7 +306,7 @@ private fun Body(app: ThreadsApp, post: ThreadsPost, translation: ThreadsTransla
     ThreadsCaptionText(app, translation.applied(post), Modifier.padding(top = 2.dp), style = if (focal) FocalStyle else threadsBodyStyle(), selectable = focal)
     TranslationLine(translation, focal)
     post.facts.attachment?.let { TextAttachmentBlock(app, post, it, focal, Modifier.partGap()) }
-    MusicLine(post, Modifier.padding(top = 8.dp))
+    ThreadsSongCard(app, post, focal, Modifier.partGap())
     post.facts.poll?.let { ThreadsPollView(it, Modifier.partGap()) }
     FactLines(post)
     ThreadsPostMedia(app, post, Modifier.partGap(), opens = openOnTap)

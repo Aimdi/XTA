@@ -286,4 +286,11 @@
     <string name="suggestion_follow">このデバイスで%1$sをフォロー</string>
     <string name="suggestion_unfollow">このデバイスで%1$sのフォローを解除</string>
     <string name="suggestion_hide">%1$sをおすすめから削除</string>
+    <string name="song_play">%2$sの「%1$s」を再生</string>
+    <string name="song_play_title">「%1$s」を再生</string>
+    <string name="song_pause">「%1$s」を一時停止</string>
+    <string name="song_open_page">曲のページを開く</string>
+    <string name="song_explicit">露骨な表現</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">この曲は現在再生できません</string>
 </resources>

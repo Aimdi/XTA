@@ -293,4 +293,11 @@
     <string name="suggestion_follow">Følg %1$s på denne enheten</string>
     <string name="suggestion_unfollow">Slutt å følge %1$s på denne enheten</string>
     <string name="suggestion_hide">Fjern %1$s fra forslagene</string>
+    <string name="song_play">Spill av %1$s av %2$s</string>
+    <string name="song_play_title">Spill av %1$s</string>
+    <string name="song_pause">Sett %1$s på pause</string>
+    <string name="song_open_page">Åpne sangens side</string>
+    <string name="song_explicit">Eksplisitt</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">Denne sangen kan ikke spilles av nå</string>
 </resources>

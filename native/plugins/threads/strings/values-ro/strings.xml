@@ -300,4 +300,11 @@
     <string name="suggestion_follow">Urmărește %1$s pe acest dispozitiv</string>
     <string name="suggestion_unfollow">Nu mai urmări %1$s pe acest dispozitiv</string>
     <string name="suggestion_hide">Elimină %1$s din sugestii</string>
+    <string name="song_play">Redă %1$s de %2$s</string>
+    <string name="song_play_title">Redă %1$s</string>
+    <string name="song_pause">Întrerupe %1$s</string>
+    <string name="song_open_page">Deschide pagina melodiei</string>
+    <string name="song_explicit">Explicit</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">Această melodie nu poate fi redată acum</string>
 </resources>

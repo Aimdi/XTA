@@ -3,6 +3,8 @@ package com.aimdi.xtanative.plugins.threads
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalWindowInfo
 import com.aimdi.xtanative.ui.media.LocalInlinePlayer
 import com.aimdi.xtanative.ui.media.rememberInlinePlayer
@@ -17,16 +19,19 @@ import com.aimdi.xtanative.ui.media.rememberInlinePlayer
  * and plays whenever most of it is in view, as an opened X post's does.
  * While the window is not the one in front (the app left, a sheet over the
  * list, another window on the desktop) the list's video waits, but one full
- * screen or heard under Background play; inside a list that has a player
- * already, [content] plays in that one.
+ * screen or heard under Background play; it waits too while one of
+ * [songs] is heard, so nothing plays over a song. Inside a list that has a
+ * player already, [content] plays in that one.
  */
 @Composable
-internal fun PlaysOneVideo(content: @Composable () -> Unit) {
+internal fun PlaysOneVideo(songs: ThreadsSongs, content: @Composable () -> Unit) {
     if (LocalInlinePlayer.current != null) return content()
     val player = rememberInlinePlayer()
     val seen = LocalWindowInfo.current.isWindowFocused
-    LaunchedEffect(player, seen) {
-        if (seen) player?.resume() else player?.pause()
+    val song by songs.turn.collectAsState()
+    val waits = ThreadsSongRules.holdsVideo(song)
+    LaunchedEffect(player, seen, waits) {
+        if (seen && !waits) player?.resume() else player?.pause()
     }
     CompositionLocalProvider(LocalInlinePlayer provides player, content = content)
 }

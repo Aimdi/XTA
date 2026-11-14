@@ -286,4 +286,11 @@
     <string name="suggestion_follow">在此设备上关注 %1$s</string>
     <string name="suggestion_unfollow">在此设备上取消关注 %1$s</string>
     <string name="suggestion_hide">从推荐中移除 %1$s</string>
+    <string name="song_play">播放 %2$s 的《%1$s》</string>
+    <string name="song_play_title">播放《%1$s》</string>
+    <string name="song_pause">暂停《%1$s》</string>
+    <string name="song_open_page">打开歌曲页面</string>
+    <string name="song_explicit">含露骨内容</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">暂时无法播放这首歌</string>
 </resources>

@@ -307,4 +307,11 @@
     <string name="suggestion_follow">Obserwuj %1$s na tym urządzeniu</string>
     <string name="suggestion_unfollow">Przestań obserwować %1$s na tym urządzeniu</string>
     <string name="suggestion_hide">Usuń %1$s z propozycji</string>
+    <string name="song_play">Odtwórz %1$s – %2$s</string>
+    <string name="song_play_title">Odtwórz %1$s</string>
+    <string name="song_pause">Wstrzymaj %1$s</string>
+    <string name="song_open_page">Otwórz stronę utworu</string>
+    <string name="song_explicit">Treści dosadne</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">Tego utworu nie można teraz odtworzyć</string>
 </resources>

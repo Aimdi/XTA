@@ -293,4 +293,11 @@
     <string name="suggestion_follow">%1$s auf diesem Gerät folgen</string>
     <string name="suggestion_unfollow">%1$s auf diesem Gerät nicht mehr folgen</string>
     <string name="suggestion_hide">%1$s aus den Vorschlägen entfernen</string>
+    <string name="song_play">%1$s von %2$s abspielen</string>
+    <string name="song_play_title">%1$s abspielen</string>
+    <string name="song_pause">%1$s pausieren</string>
+    <string name="song_open_page">Seite des Songs öffnen</string>
+    <string name="song_explicit">Explizit</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">Dieser Song kann gerade nicht abgespielt werden</string>
 </resources>

@@ -321,4 +321,11 @@
     <string name="suggestion_follow">متابعة %1$s على هذا الجهاز</string>
     <string name="suggestion_unfollow">إلغاء متابعة %1$s على هذا الجهاز</string>
     <string name="suggestion_hide">إزالة %1$s من الاقتراحات</string>
+    <string name="song_play">تشغيل %1$s من أداء %2$s</string>
+    <string name="song_play_title">تشغيل %1$s</string>
+    <string name="song_pause">إيقاف %1$s مؤقتًا</string>
+    <string name="song_open_page">فتح صفحة الأغنية</string>
+    <string name="song_explicit">محتوى صريح</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">لا يمكن تشغيل هذه الأغنية الآن</string>
 </resources>

@@ -293,4 +293,11 @@
     <string name="suggestion_follow">Jarraitu %1$s gailu honetan</string>
     <string name="suggestion_unfollow">Utzi %1$s jarraitzeari gailu honetan</string>
     <string name="suggestion_hide">Kendu %1$s iradokizunetatik</string>
+    <string name="song_play">Erreproduzitu %1$s (%2$s)</string>
+    <string name="song_play_title">Erreproduzitu %1$s</string>
+    <string name="song_pause">Pausatu %1$s</string>
+    <string name="song_open_page">Ireki abestiaren orria</string>
+    <string name="song_explicit">Esplizitua</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">Abesti hau ezin da orain erreproduzitu</string>
 </resources>

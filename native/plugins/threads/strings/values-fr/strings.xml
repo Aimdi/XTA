@@ -299,4 +299,11 @@
     <string name="suggestion_follow">Suivre %1$s sur cet appareil</string>
     <string name="suggestion_unfollow">Ne plus suivre %1$s sur cet appareil</string>
     <string name="suggestion_hide">Retirer %1$s des suggestions</string>
+    <string name="song_play">Lire %1$s de %2$s</string>
+    <string name="song_play_title">Lire %1$s</string>
+    <string name="song_pause">Mettre %1$s en pause</string>
+    <string name="song_open_page">Ouvrir la page du titre</string>
+    <string name="song_explicit">Explicite</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">Ce titre ne peut pas être lu pour le moment</string>
 </resources>

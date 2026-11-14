@@ -129,12 +129,38 @@ internal object ThreadsFactsJson {
             "title" to JsonPrimitive(music.title),
             music.artist?.let { "artist" to JsonPrimitive(it) },
             music.imageUrl?.let { "imageUrl" to JsonPrimitive(it) },
+            music.largeImageUrl?.let { "largeImageUrl" to JsonPrimitive(it) },
+            music.audioUrl?.let { "audioUrl" to JsonPrimitive(it) },
+            music.durationMs?.let { "durationMs" to JsonPrimitive(it) },
+            music.startMs.takeIf { it > 0 }?.let { "startMs" to JsonPrimitive(it) },
+            music.lengthMs?.let { "lengthMs" to JsonPrimitive(it) },
+            flag("explicit", music.explicit),
+            music.pageUrl?.let { "pageUrl" to JsonPrimitive(it) },
         ).toMap(),
     )
 
+    /** A kept song; an address that is not https, or a time out of bounds, is dropped as the reader drops it. */
     private fun music(row: J): ThreadsMusic? = row["title"].string?.let {
-        ThreadsMusic(it, row["artist"].string, row["imageUrl"].string?.takeIf { url -> url.startsWith("https://") })
+        ThreadsMusic(
+            title = it,
+            artist = row["artist"].string,
+            imageUrl = https(row["imageUrl"]),
+            largeImageUrl = https(row["largeImageUrl"]),
+            audioUrl = https(row["audioUrl"]),
+            durationMs = time(row["durationMs"]),
+            startMs = time(row["startMs"]) ?: 0,
+            lengthMs = time(row["lengthMs"]),
+            explicit = row["explicit"].boolean == true,
+            pageUrl = https(row["pageUrl"]),
+        )
     }
+
+    private fun https(node: J): String? = node.string?.takeIf { url -> url.startsWith("https://") }
+
+    private fun time(node: J): Long? = node.long?.takeIf { it in 0..MAX_SONG_MS }
+
+    /** A day: no song is longer. */
+    private const val MAX_SONG_MS = 24L * 60 * 60 * 1000
 
     private fun poll(row: J): ThreadsPoll? {
         val options = row["options"].list.mapNotNull { option ->

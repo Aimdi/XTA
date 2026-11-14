@@ -307,4 +307,11 @@
     <string name="suggestion_follow">Подписаться на %1$s на этом устройстве</string>
     <string name="suggestion_unfollow">Отписаться от %1$s на этом устройстве</string>
     <string name="suggestion_hide">Убрать %1$s из рекомендаций</string>
+    <string name="song_play">Слушать «%1$s» — %2$s</string>
+    <string name="song_play_title">Слушать «%1$s»</string>
+    <string name="song_pause">Приостановить «%1$s»</string>
+    <string name="song_open_page">Открыть страницу песни</string>
+    <string name="song_explicit">Ненормативный контент</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">Эту песню сейчас нельзя воспроизвести</string>
 </resources>

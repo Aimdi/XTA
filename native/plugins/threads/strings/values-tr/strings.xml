@@ -293,4 +293,11 @@
     <string name="suggestion_follow">%1$s hesabını bu cihazda takip et</string>
     <string name="suggestion_unfollow">%1$s hesabını bu cihazda takipten çık</string>
     <string name="suggestion_hide">%1$s hesabını önerilerden kaldır</string>
+    <string name="song_play">%2$s - %1$s şarkısını çal</string>
+    <string name="song_play_title">%1$s şarkısını çal</string>
+    <string name="song_pause">%1$s şarkısını duraklat</string>
+    <string name="song_open_page">Şarkının sayfasını aç</string>
+    <string name="song_explicit">Müstehcen</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">Bu şarkı şu anda çalınamıyor</string>
 </resources>

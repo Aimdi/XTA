@@ -64,7 +64,7 @@ class ThreadsPlugin : XtaPlugin() {
         val opened = ThreadsRoutes.parse(route) ?: return null
         val screen: PluginScreen = { Screen(opened) }
         // A list of posts plays the video seen most, in one player, as Home's X feeds do.
-        return if (ThreadsFeedVideo.shared(opened)) { { PlaysOneVideo(screen) } } else screen
+        return if (ThreadsFeedVideo.shared(opened)) { { PlaysOneVideo(app.songs, screen) } } else screen
     }
 
     @Composable

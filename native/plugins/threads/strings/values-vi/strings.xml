@@ -286,4 +286,11 @@
     <string name="suggestion_follow">Theo dõi %1$s trên thiết bị này</string>
     <string name="suggestion_unfollow">Bỏ theo dõi %1$s trên thiết bị này</string>
     <string name="suggestion_hide">Xóa %1$s khỏi gợi ý</string>
+    <string name="song_play">Phát %1$s của %2$s</string>
+    <string name="song_play_title">Phát %1$s</string>
+    <string name="song_pause">Tạm dừng %1$s</string>
+    <string name="song_open_page">Mở trang bài hát</string>
+    <string name="song_explicit">Nội dung nhạy cảm</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">Không thể phát bài hát này lúc này</string>
 </resources>

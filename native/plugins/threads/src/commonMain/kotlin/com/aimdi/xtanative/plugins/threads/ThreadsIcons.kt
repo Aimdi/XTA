@@ -58,6 +58,12 @@ internal object ThreadsIcons {
         icon("MusicNote", "M12,3v10.55c-0.59,-0.34 -1.27,-0.55 -2,-0.55 -2.21,0 -4,1.79 -4,4s1.79,4 4,4 4,-1.79 4,-4V7h4V3h-6z")
     }
 
+    /** A song's play button. */
+    val Play: ImageVector by lazy { icon("PlayArrow", "M8,5v14l11,-7z") }
+
+    /** A song's pause button. */
+    val Pause: ImageVector by lazy { icon("Pause", "M6,19h4V5H6v14zM14,5v14h4V5h-4z") }
+
     /** A profile's media as a grid. */
     val GridView: ImageVector by lazy {
         icon(
@@ -78,7 +84,7 @@ internal object ThreadsIcons {
     }
 
     /** Every glyph, for the test that draws them all. */
-    internal val all: List<ImageVector> get() = listOf(Mark, PersonAdd, PersonOff, PersonRemove, Public, PauseCircle, MusicNote, GridView, ViewAgenda)
+    internal val all: List<ImageVector> get() = listOf(Mark, PersonAdd, PersonOff, PersonRemove, Public, PauseCircle, MusicNote, Play, Pause, GridView, ViewAgenda)
 
     internal fun icon(name: String, path: String): ImageVector =
         ImageVector.Builder(name = name, defaultWidth = 24.dp, defaultHeight = 24.dp, viewportWidth = 24f, viewportHeight = 24f)

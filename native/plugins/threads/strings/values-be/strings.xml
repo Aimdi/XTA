@@ -307,4 +307,11 @@
     <string name="suggestion_follow">Сачыць за %1$s на гэтай прыладзе</string>
     <string name="suggestion_unfollow">Перастаць сачыць за %1$s на гэтай прыладзе</string>
     <string name="suggestion_hide">Прыбраць %1$s з прапаноў</string>
+    <string name="song_play">Слухаць «%1$s» — %2$s</string>
+    <string name="song_play_title">Слухаць «%1$s»</string>
+    <string name="song_pause">Прыпыніць «%1$s»</string>
+    <string name="song_open_page">Адкрыць старонку песні</string>
+    <string name="song_explicit">Ненарматыўны змест</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">Гэтую песню зараз немагчыма прайграць</string>
 </resources>

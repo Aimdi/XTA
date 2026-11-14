@@ -295,4 +295,11 @@
     <string name="suggestion_follow">Follow %1$s on this device</string>
     <string name="suggestion_unfollow">Unfollow %1$s on this device</string>
     <string name="suggestion_hide">Remove %1$s from suggestions</string>
+    <string name="song_play">Play %1$s by %2$s</string>
+    <string name="song_play_title">Play %1$s</string>
+    <string name="song_pause">Pause %1$s</string>
+    <string name="song_open_page">Open song page</string>
+    <string name="song_explicit">Explicit</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">This song can’t be played right now</string>
 </resources>

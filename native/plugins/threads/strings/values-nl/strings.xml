@@ -293,4 +293,11 @@
     <string name="suggestion_follow">%1$s volgen op dit apparaat</string>
     <string name="suggestion_unfollow">%1$s niet meer volgen op dit apparaat</string>
     <string name="suggestion_hide">%1$s uit de suggesties verwijderen</string>
+    <string name="song_play">%1$s van %2$s afspelen</string>
+    <string name="song_play_title">%1$s afspelen</string>
+    <string name="song_pause">%1$s pauzeren</string>
+    <string name="song_open_page">Pagina van het nummer openen</string>
+    <string name="song_explicit">Expliciet</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">Dit nummer kan nu niet worden afgespeeld</string>
 </resources>

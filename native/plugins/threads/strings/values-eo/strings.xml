@@ -293,4 +293,11 @@
     <string name="suggestion_follow">Sekvi %1$s en ĉi tiu aparato</string>
     <string name="suggestion_unfollow">Ĉesi sekvi %1$s en ĉi tiu aparato</string>
     <string name="suggestion_hide">Forigi %1$s el la proponoj</string>
+    <string name="song_play">Ludi %1$s de %2$s</string>
+    <string name="song_play_title">Ludi %1$s</string>
+    <string name="song_pause">Paŭzigi %1$s</string>
+    <string name="song_open_page">Malfermi la paĝon de la kanto</string>
+    <string name="song_explicit">Eksplicita enhavo</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">Ĉi tiu kanto nun ne ludeblas</string>
 </resources>

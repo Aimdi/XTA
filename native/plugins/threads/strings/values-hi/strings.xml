@@ -293,4 +293,11 @@
     <string name="suggestion_follow">इस डिवाइस पर %1$s को फ़ॉलो करें</string>
     <string name="suggestion_unfollow">इस डिवाइस पर %1$s को अनफ़ॉलो करें</string>
     <string name="suggestion_hide">%1$s को सुझावों से हटाएँ</string>
+    <string name="song_play">%2$s का %1$s चलाएँ</string>
+    <string name="song_play_title">%1$s चलाएँ</string>
+    <string name="song_pause">%1$s रोकें</string>
+    <string name="song_open_page">गाने का पेज खोलें</string>
+    <string name="song_explicit">अश्लील</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">यह गाना अभी नहीं चल सकता</string>
 </resources>

@@ -307,4 +307,11 @@
     <string name="suggestion_follow">Стежити за %1$s на цьому пристрої</string>
     <string name="suggestion_unfollow">Не стежити за %1$s на цьому пристрої</string>
     <string name="suggestion_hide">Прибрати %1$s з рекомендацій</string>
+    <string name="song_play">Відтворити «%1$s» — %2$s</string>
+    <string name="song_play_title">Відтворити «%1$s»</string>
+    <string name="song_pause">Призупинити «%1$s»</string>
+    <string name="song_open_page">Відкрити сторінку пісні</string>
+    <string name="song_explicit">Відвертий вміст</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">Цю пісню зараз не можна відтворити</string>
 </resources>

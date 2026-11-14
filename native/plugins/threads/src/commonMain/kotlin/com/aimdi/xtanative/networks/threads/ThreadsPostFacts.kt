@@ -43,7 +43,7 @@ data class ThreadsPostFacts(
     val likedByAuthor: Boolean = false,
     /** Who the author lets answer (`text_post_app_info.reply_control`); null for everyone, or a value not known. */
     val replyAudience: ThreadsReplyAudience? = null,
-    /** The song the post plays (`text_app_music_info`), named only: nothing of it is played here. */
+    /** The song the post plays (`text_app_music_info`): named, and its preview played where Meta gives a file for it. */
     val music: ThreadsMusic? = null,
     /** `detected_language` (seen live): the language Meta found its words in, what translation starts from. */
     val language: String? = null,
@@ -109,12 +109,6 @@ enum class ThreadsReplyAudience {
     }
 }
 
-/** The song a post plays, as Meta names it; [imageUrl] its cover, over https only. */
-data class ThreadsMusic(val title: String, val artist: String? = null, val imageUrl: String? = null) {
-    /** "Title · Artist", or the title alone. */
-    val line: String get() = listOfNotNull(title, artist).joinToString(" · ")
-}
-
 /** A poll's results as a guest sees them, each answer with its votes; nothing is voted from here. */
 data class ThreadsPoll(val options: List<Option>, val endsAt: Instant? = null) {
     data class Option(val text: String, val votes: Long)
@@ -163,29 +157,8 @@ object ThreadsPostFactsReader {
 
     private fun postedAt(post: J): Instant? = post["taken_at"].integer?.takeIf { it > 0 }?.let { runCatching { Instant.ofEpochSecond(it) }.getOrNull() }
 
-    /**
-     * The song a post plays: `text_app_music_info.music_consumable_video`'s
-     * `audio_metadata.audio_asset` as CI's media probe saw it (its
-     * `display_title.text`, `display_artist.text`, `display_image`), or
-     * Instagram's `music_asset_info` where Meta answers in that shape. Null
-     * without a title.
-     */
-    fun music(post: J): ThreadsMusic? {
-        val info = post["text_app_music_info"]
-        if (!info.exists) return null
-        val asset = listOf(
-            info["music_consumable_video"]["audio_metadata"]["audio_asset"],
-            info["audio_metadata"]["audio_asset"],
-            info["music_asset_info"],
-            info["music_info"]["music_asset_info"],
-        ).firstOrNull { it.raw is JsonObject } ?: return null
-        val title = said(asset["display_title"]) ?: said(asset["title"]) ?: return null
-        val artist = said(asset["display_artist"]) ?: said(asset["artist_name"]) ?: said(asset["display_artist_name"])
-        val image = listOf(asset["display_image"], asset["large_display_image"]).firstNotNullOfOrNull { image ->
-            (image["downloadable_uri"].string ?: image["uri"].string ?: image.string)?.trim()?.takeIf { it.startsWith("https://") }
-        } ?: asset["cover_artwork_thumbnail_uri"].string?.trim()?.takeIf { it.startsWith("https://") }
-        return ThreadsMusic(title, artist, image)
-    }
+    /** The song a post plays ([ThreadsMusicReader]); null without a title. */
+    fun music(post: J): ThreadsMusic? = ThreadsMusicReader.of(post)
 
     /** Words Meta gives as a string or as `{ "text": … }`. */
     private fun said(node: J): String? = (node.string ?: node["text"].string)?.trim()?.ifEmpty { null }

@@ -218,29 +218,6 @@ internal fun ReplyAudienceLine(post: ThreadsPost) {
     FactLine(XIcons.Reply, pluginString(words), Modifier.padding(top = 8.dp))
 }
 
-/** The song the post plays, named as Meta names it: nothing is played here. */
-@Composable
-internal fun MusicLine(post: ThreadsPost, modifier: Modifier) {
-    val music = post.facts.music ?: return
-    val said = pluginString(Strings.music) + ": " + music.line
-    Row(modifier.semantics(mergeDescendants = true) { contentDescription = said }, verticalAlignment = Alignment.CenterVertically) {
-        if (music.imageUrl != null) {
-            AsyncImage(music.imageUrl, contentDescription = null, modifier = Modifier.size(28.dp).clip(RoundedCornerShape(6.dp)))
-        } else {
-            Icon(ThreadsIcons.MusicNote, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(16.dp))
-        }
-        Spacer(Modifier.width(8.dp))
-        Text(
-            music.line,
-            style = MaterialTheme.typography.bodySmall,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
-    }
-}
-
 /**
  * A card's ⋯ and long-press sheet, in three groups between dividers
  * ([ThreadsSheetRows]): what is done with the post (translating its words
