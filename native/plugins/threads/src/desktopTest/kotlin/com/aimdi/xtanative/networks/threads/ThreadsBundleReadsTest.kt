@@ -9,6 +9,10 @@ import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 
 /**
  * The reads asked by a doc id only threads.com's bundles name
@@ -33,6 +37,13 @@ class ThreadsBundleReadsTest {
     }
 
     private fun asked(meta: FakeMeta): List<String> = meta.asked.map { "${it.method} ${it.path}" }
+
+    private fun variables(form: Map<String, String>): Map<String, JsonElement> = ThreadsJson.decode(form.getValue("variables")) as JsonObject
+
+    /** The variables a request sent but those Relay provides. */
+    private fun own(form: Map<String, String>) = variables(form).filterKeys { !ThreadsRelayProviders.isProvided(it) }
+
+    private fun provided(form: Map<String, String>) = variables(form).filterKeys(ThreadsRelayProviders::isProvided).mapValues { (it.value as JsonPrimitive).content == "true" }
 
     private fun answer(data: Any?) = ok(json(mapOf("data" to data)).toString())
 
@@ -75,7 +86,13 @@ class ThreadsBundleReadsTest {
         assertEquals(listOf("GET /@a/post/C2", "POST /api/graphql"), asked(meta))
         val form = meta.asked.last().form
         assertEquals("7000000000000001", form["doc_id"])
-        assertEquals("""{"postID":"${ThreadsPeople.mediaId(reply)}"}""", form["variables"])
+        val media = ThreadsPeople.mediaId(reply)
+        assertEquals(
+            mapOf("postID" to JsonPrimitive(media), "permalinkPostID" to JsonPrimitive(media), "pagingToken" to JsonNull, "expansionType" to JsonNull),
+            own(form),
+            "every variable the bundle declares; a reply read outside a conversation is its own page's post",
+        )
+        assertEquals(ThreadsRelayProviders.defaults.mapKeys { "__relay_internal__pv__" + it.key }, provided(form), "and every provided variable seen, as a guest's")
         assertEquals("BarcelonaInlineRepliesExpansionQuery", form["fb_api_req_friendly_name"])
         assertEquals("tok", form["lsd"])
         assertEquals("https://www.threads.com/@a/post/C2", meta.asked.last().headers["Referer"])
@@ -87,7 +104,8 @@ class ThreadsBundleReadsTest {
         val client = direct(meta, repairs = ThreadsRepairs.published(mapOf("threads.inline_replies_doc_id" to "7000000000000009", "threads.inline_replies_variable" to "mediaID")))
 
         assertEquals(listOf("3"), client.deeperReplies(reply)?.posts?.map { it.id }, "an answer in another shape gives every post but the reply")
-        assertEquals("""{"mediaID":"${ThreadsPeople.mediaId(reply)}"}""", meta.asked.last().form["variables"])
+        assertEquals(JsonPrimitive(ThreadsPeople.mediaId(reply)), own(meta.asked.last().form)["mediaID"])
+        assertFalse("postID" in own(meta.asked.last().form))
         assertEquals("7000000000000009", meta.asked.last().form["doc_id"])
     }
 
@@ -141,7 +159,7 @@ class ThreadsBundleReadsTest {
         assertEquals(listOf("Kotlin"), client.trends().map { it.title })
         assertEquals(listOf("GET /search", "POST /api/graphql"), asked(meta))
         assertEquals("7000000000000003", meta.asked.last().form["doc_id"])
-        assertEquals("{}", meta.asked.last().form["variables"])
+        assertEquals("""{"__relay_internal__pv__BarcelonaDiscussionSummariesrelayprovider":false}""", meta.asked.last().form["variables"], "the one variable its bundle says Relay provides it")
         assertEquals(listOf("Kotlin"), client.trends().map { it.title })
         assertEquals(2, meta.asked.size, "remembered as the page's are")
 

@@ -17,10 +17,11 @@ data class ThreadsProfileAbout(val joinedAt: Instant? = null, val joined: String
 /**
  * The guest reads threads.com asks by a doc id only its JavaScript bundles
  * name ([ThreadsDocIds]): the names its client sends them under, the
- * variables each takes, and what their answers say. No id is shipped yet
- * ([ThreadsRepairs.WAITING]), so each is off; CI's `ThreadsDocIdsLiveTest`
- * logs the ids, the variables and the fields the bundles show. All three are
- * queries: nothing here writes to Threads.
+ * variables each takes, and what their answers say. No id is shipped
+ * ([ThreadsRepairs.WAITING]), so each is off until `repairs.json` names
+ * its id; CI's `ThreadsDocIdsLiveTest` logs the ids, the variables and the
+ * fields the bundles show, and `ThreadsSwitchedReadsLiveTest` what Meta
+ * answers each. All are queries: nothing here writes to Threads.
  *
  * Their answers were never seen, so each is read under every key it might
  * use and anything else is nothing: a read in another shape shows the
@@ -35,6 +36,18 @@ object ThreadsBundleReads {
 
     /** The search page's trending topics, when the page itself carries none ([ThreadsDirectClient.trends]). */
     const val TRENDING_TOPICS = "BarcelonaSearchTrendingTopicsSectionQuery"
+
+    /** The one variable Relay provides the trending topics' query, as its bundle says (CI's probe). */
+    val TRENDING_PROVIDED = setOf("BarcelonaDiscussionSummariesrelayprovider")
+
+    /** A guest's people search ([ThreadsDirectClient.guestPeople]). */
+    const val SEARCH_USERS = "BarcelonaSearchUserResultsRefetchableQuery"
+
+    /** The accounts Threads recommends a guest on its search page ([ThreadsDirectClient.recommendedPeople]). */
+    const val RECOMMENDED_USERS = "BarcelonaSearchRecommendedUsersRefetchableQuery"
+
+    /** How many accounts a people read asks for. */
+    const val PEOPLE_ASKED = 20
 
     private val JOINED_KEYS = listOf(
         "joined_date", "date_joined", "join_date", "joined_at", "joined_time", "join_time", "joined",
@@ -52,6 +65,30 @@ object ThreadsBundleReads {
 
     /** The variables of a read that takes one id, under the [name] its query declares. */
     fun variables(name: String, id: String): JsonObject = JsonObject(mapOf(name to JsonPrimitive(id)))
+
+    /**
+     * What `BarcelonaInlineRepliesExpansionQuery` is asked with, every
+     * variable its bundle declares (CI's probe: `expansionType`,
+     * `pagingToken`, `permalinkPostID`, `postID`): the reply's media id
+     * under [idVariable], the post whose page the reader is on
+     * ([permalink], else the reply itself), where the thread's rest starts
+     * when the page said ([pagingToken]) and the kind of expansion when it
+     * is known ([expansion]); a value not known is sent as null, which is
+     * what a variable left out means to GraphQL.
+     */
+    fun inlineReplies(idVariable: String, media: String, permalink: String?, pagingToken: String?, expansion: String?): JsonObject = JsonObject(
+        mapOf(
+            idVariable to JsonPrimitive(media),
+            "permalinkPostID" to JsonPrimitive(permalink ?: media),
+            "pagingToken" to JsonPrimitive(pagingToken?.ifEmpty { null }),
+            "expansionType" to JsonPrimitive(expansion?.ifEmpty { null }),
+        ),
+    )
+
+    /** What a people read is asked with: the [words] under the name its query takes them by (none for the recommended), and how many. */
+    fun people(wordsVariable: String?, words: String?): JsonObject = JsonObject(
+        listOfNotNull(wordsVariable?.let { name -> words?.let { name to JsonPrimitive(it) } }, "first" to JsonPrimitive(PEOPLE_ASKED)).toMap(),
+    )
 
     /**
      * What an "About this profile" answer says, wherever under its `data` it

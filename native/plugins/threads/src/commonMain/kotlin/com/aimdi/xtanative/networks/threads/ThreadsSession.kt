@@ -113,10 +113,16 @@ class ThreadsPacing(
  *
  * The reads asked by a doc id that only threads.com's bundles name
  * ([ThreadsDocIds]) ship with none: [inlineRepliesDocId],
- * [aboutProfileDocId] and [trendingTopicsDocId] are empty, and each read
- * is off, asking Meta nothing, until its id is shipped or published. The
- * variable such a query takes its id under is a value too, since only a
- * bundle says its name.
+ * [aboutProfileDocId], [trendingTopicsDocId], [searchUsersDocId] and
+ * [recommendedUsersDocId] are empty, and each read is off, asking Meta
+ * nothing, until its id is shipped or published. The variable such a
+ * query takes its id or words under is a value too, since only a bundle
+ * says its name.
+ *
+ * The refetch queries a list's next pages fall back on ([ThreadsRefetch])
+ * ship with the ids CI's probe read: they are asked only where the page's
+ * own query names no doc id or brings nothing, so an empty id is today's
+ * paging and nothing else.
  */
 data class ThreadsRepairs(
     val guestDocId: String = GUEST_DOC_ID.shipped,
@@ -130,7 +136,25 @@ data class ThreadsRepairs(
     val aboutProfileDocId: String = ABOUT_PROFILE_DOC_ID.shipped,
     val aboutProfileVariable: String = ABOUT_PROFILE_VARIABLE.shipped,
     val trendingTopicsDocId: String = TRENDING_TOPICS_DOC_ID.shipped,
+    val inlineRepliesExpansion: String = INLINE_REPLIES_EXPANSION.shipped,
+    val searchUsersDocId: String = SEARCH_USERS_DOC_ID.shipped,
+    val searchUsersVariable: String = SEARCH_USERS_VARIABLE.shipped,
+    val recommendedUsersDocId: String = RECOMMENDED_USERS_DOC_ID.shipped,
+    val repliesRefetchDocId: String = REPLIES_REFETCH_DOC_ID.shipped,
+    val searchRefetchDocId: String = SEARCH_REFETCH_DOC_ID.shipped,
+    val profileRefetchDocId: String = PROFILE_REFETCH_DOC_ID.shipped,
 ) {
+    /**
+     * The doc id [refetch]'s query is asked by; empty when that fallback is
+     * off. An id of zeros is off too: `repairs.json` can publish no empty
+     * value, so `"0"` is how it withdraws a refetch without a release.
+     */
+    fun refetchDocId(refetch: ThreadsRefetch): String = when (refetch) {
+        ThreadsRefetch.REPLIES -> repliesRefetchDocId
+        ThreadsRefetch.SEARCH -> searchRefetchDocId
+        ThreadsRefetch.PROFILE_THREADS -> profileRefetchDocId
+    }.takeIf { id -> id.any { it != '0' } }.orEmpty()
+
     companion object {
         val GUEST_DOC_ID = RepairSlot("threads.guest_doc_id", "6232751443445612", RepairKind.DIGITS)
         val GUEST_QUERY_NAME = RepairSlot("threads.guest_query_name", "BarcelonaProfileThreadsTabQuery", RepairKind.TOKEN)
@@ -159,13 +183,42 @@ data class ThreadsRepairs(
         /** `BarcelonaSearchTrendingTopicsSectionQuery`'s doc id, for the trends when the search page carries none: empty, and the read off, until a bundle told it. */
         val TRENDING_TOPICS_DOC_ID = RepairSlot("threads.trending_topics_doc_id", "", RepairKind.DIGITS)
 
+        /**
+         * The `expansionType` that query is asked with: empty, and sent as null, since only its caller's
+         * code names the values and no probe has read them.
+         */
+        val INLINE_REPLIES_EXPANSION = RepairSlot("threads.inline_replies_expansion", "", RepairKind.TOKEN)
+
+        /** `BarcelonaSearchUserResultsRefetchableQuery`'s doc id, for a guest's people search: empty, and the read off, until its variables are known. */
+        val SEARCH_USERS_DOC_ID = RepairSlot("threads.search_users_doc_id", "", RepairKind.DIGITS)
+
+        /** The variable that query takes the words under. */
+        val SEARCH_USERS_VARIABLE = RepairSlot("threads.search_users_variable", "query", RepairKind.TOKEN)
+
+        /** `BarcelonaSearchRecommendedUsersRefetchableQuery`'s doc id, for the accounts Threads recommends a guest: empty, and the read off, until its variables are known. */
+        val RECOMMENDED_USERS_DOC_ID = RepairSlot("threads.recommended_users_doc_id", "", RepairKind.DIGITS)
+
+        /** `BarcelonaPostPageDirectRepliesRefetchQuery`'s doc id: a conversation's next replies where the page's own query gives none. */
+        val REPLIES_REFETCH_DOC_ID = RepairSlot("threads.replies_refetch_doc_id", "28965099446515427", RepairKind.DIGITS)
+
+        /** `BarcelonaSearchResultsRefetchableQuery`'s doc id: a search's next page where the page's own query gives none. */
+        val SEARCH_REFETCH_DOC_ID = RepairSlot("threads.search_refetch_doc_id", "29180318631617452", RepairKind.DIGITS)
+
+        /** `BarcelonaProfileThreadsTabRefetchableDirectQuery`'s doc id: a profile's next threads where the page's own query gives none. */
+        val PROFILE_REFETCH_DOC_ID = RepairSlot("threads.profile_refetch_doc_id", "29222947497321867", RepairKind.DIGITS)
+
         /** Every Threads value `repairs.json` may replace. */
         val SLOTS = listOf(
             GUEST_DOC_ID, GUEST_QUERY_NAME, APP_ID, ASBD_ID, APP_USER_AGENT, WEB_USER_AGENT,
             INLINE_REPLIES_DOC_ID, INLINE_REPLIES_VARIABLE, ABOUT_PROFILE_DOC_ID, ABOUT_PROFILE_VARIABLE, TRENDING_TOPICS_DOC_ID,
+            INLINE_REPLIES_EXPANSION, SEARCH_USERS_DOC_ID, SEARCH_USERS_VARIABLE, RECOMMENDED_USERS_DOC_ID,
+            REPLIES_REFETCH_DOC_ID, SEARCH_REFETCH_DOC_ID, PROFILE_REFETCH_DOC_ID,
         )
 
-        /** The slots that ship empty: each a read waiting for its doc id, which `repairs.json` names only once it is known. */
+        /**
+         * The slots that ship empty: a read waiting for its doc id, or a value no probe has read yet,
+         * which `repairs.json` names only once it is known.
+         */
         val WAITING = SLOTS.filter { it.shipped.isEmpty() }
 
         /**
@@ -185,6 +238,13 @@ data class ThreadsRepairs(
             aboutProfileDocId = ABOUT_PROFILE_DOC_ID.valueIn(published),
             aboutProfileVariable = ABOUT_PROFILE_VARIABLE.valueIn(published),
             trendingTopicsDocId = TRENDING_TOPICS_DOC_ID.valueIn(published),
+            inlineRepliesExpansion = INLINE_REPLIES_EXPANSION.valueIn(published),
+            searchUsersDocId = SEARCH_USERS_DOC_ID.valueIn(published),
+            searchUsersVariable = SEARCH_USERS_VARIABLE.valueIn(published),
+            recommendedUsersDocId = RECOMMENDED_USERS_DOC_ID.valueIn(published),
+            repliesRefetchDocId = REPLIES_REFETCH_DOC_ID.valueIn(published),
+            searchRefetchDocId = SEARCH_REFETCH_DOC_ID.valueIn(published),
+            profileRefetchDocId = PROFILE_REFETCH_DOC_ID.valueIn(published),
         )
     }
 }

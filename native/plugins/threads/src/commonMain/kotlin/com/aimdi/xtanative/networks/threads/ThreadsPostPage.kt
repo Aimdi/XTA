@@ -14,11 +14,13 @@ data class ThreadsReplyThread(
     val levels: Map<String, Int> = emptyMap(),
     /** Meta holds more of this thread than the page carried. */
     val hasMore: Boolean = false,
+    /** Where Meta says the rest of this thread starts, when the page named it ([ThreadsDirectClient.deeperReplies] sends it back). */
+    val pagingToken: String? = null,
 ) {
     /** This thread with [more] of it read after: its posts not here yet on the end, and unfinished only if [more] is. */
     fun then(more: ThreadsReplyThread): ThreadsReplyThread {
         val ids = posts.mapTo(HashSet()) { it.id }
-        return ThreadsReplyThread(posts + more.posts.filter { ids.add(it.id) }, levels + more.levels, more.hasMore)
+        return ThreadsReplyThread(posts + more.posts.filter { ids.add(it.id) }, levels + more.levels, more.hasMore, more.pagingToken)
     }
 }
 
@@ -152,7 +154,7 @@ internal object ThreadsPostPageReader {
         }
         val posts = threads.flatMap { it.posts }
         if (posts.isEmpty()) return null
-        return ThreadsReplyThread(posts, threads.fold(emptyMap()) { all, thread -> all + thread.levels }, threads.any { it.hasMore })
+        return ThreadsReplyThread(posts, threads.fold(emptyMap()) { all, thread -> all + thread.levels }, threads.any { it.hasMore }, threads.firstNotNullOfOrNull { it.pagingToken })
     }
 
     private fun distinctPosts(found: List<Pair<ThreadsPost, Int?>>): List<Pair<ThreadsPost, Int?>> {
@@ -216,7 +218,7 @@ internal object ThreadsPostPageReader {
         val found = posts(edge, REPLY_SKIPS).filter { (post, _) -> seen.add(post.id) }
         if (found.isEmpty()) return null
         val levels = found.mapNotNull { (post, level) -> level?.let { post.id to it } }.toMap()
-        return ThreadsReplyThread(found.map { it.first }, levels, hasMore = morePages(edge))
+        return ThreadsReplyThread(found.map { it.first }, levels, hasMore = morePages(edge), pagingToken = pagingToken(J(edge)))
     }
 
     /**
@@ -252,6 +254,25 @@ internal object ThreadsPostPageReader {
         is JsonArray -> node.any(::morePages)
         else -> false
     }
+
+    /**
+     * Where a reply thread's rest starts, as its edge names it: the cursor
+     * after its own posts when they go on (`node.posts.page_info`, the shape
+     * CI's probe saw), else a token under the names one might go by. Null
+     * when the edge names none.
+     */
+    private fun pagingToken(edge: J): String? {
+        val node = edge["node"].takeIf { it.exists } ?: edge
+        val info = node["posts"]["page_info"]
+        return listOfNotNull(
+            info["end_cursor"].string?.takeIf { hasNextPage(info) },
+            node["paging_token"].string,
+            node["paging_tokens"]["downwards"].string,
+            node["fetch_token"].string,
+        ).firstOrNull { it.isNotBlank() && it.length <= LONGEST_TOKEN }
+    }
+
+    private const val LONGEST_TOKEN = 4_000
 
     private fun hasNextPage(info: J): Boolean = info["has_next_page"].boolean == true
 
