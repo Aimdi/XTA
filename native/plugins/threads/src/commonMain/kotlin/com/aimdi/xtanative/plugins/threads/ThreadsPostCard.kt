@@ -137,7 +137,11 @@ internal fun ThreadsPostCard(
         PinnedLine(post)
         val above = if (post.isRepost || post.facts.pinnedToProfile || post.facts.pinnedToParent) 4.dp else 12.dp
         Row(Modifier.fillMaxWidth().rails(connectTop, connectBottom, above).padding(top = above, bottom = if (connectBottom) 0.dp else 12.dp)) {
-            PluginAvatar(post.avatarUrl, post.authorName, post.handle, AvatarSize) { app.openProfile(post.handle) }
+            val follows by app.accounts.state.collectAsState()
+            val badge = ThreadsFollowBadgeGeometry.shown(follows != null, follows?.let { ThreadsAccounts.follows(it, post.handle) } == true)
+            ThreadsFollowBadge(app, ThreadsAccount.of(post), badge, AvatarSize) {
+                PluginAvatar(post.avatarUrl, post.authorName, post.handle, AvatarSize) { app.openProfile(post.handle) }
+            }
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Header(app, post, focal, byAuthor, prefs.absoluteTimestamps, menu)
@@ -228,11 +232,10 @@ private fun RepostLine(app: ThreadsApp, post: ThreadsPost) {
     }
 }
 
-/** The author line (a long press: its exact time), Follow while the author is not followed here, and ⋯. */
+/** The author line (a long press: its exact time) and ⋯; following is the + on the face ([ThreadsFollowBadge]). */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun Header(app: ThreadsApp, post: ThreadsPost, focal: Boolean, byAuthor: Boolean, absolute: Boolean, onMore: () -> Unit) {
-    val rows by app.accounts.state.collectAsState()
     var exact by rememberSaveable(post.id) { mutableStateOf(false) }
     val edited = pluginString(Strings.edited)
     val time = ThreadsCardRules.timeLine(
@@ -257,9 +260,6 @@ private fun Header(app: ThreadsApp, post: ThreadsPost, focal: Boolean, byAuthor:
                 onLongClick = if (focal || absolute) null else { { exact = !exact } },
             ),
         )
-        if (rows != null && !ThreadsAccounts.follows(rows, post.handle)) {
-            SmallIcon(ThreadsIcons.PersonAdd, pluginString(Strings.follow)) { app.follow(ThreadsAccount.of(post)) }
-        }
         SmallIcon(PostIcons.MoreHoriz, pluginString(Strings.more_options), onClick = onMore)
     }
     // Under the author, not beside: on a narrow phone the chips left the name no room at all.
