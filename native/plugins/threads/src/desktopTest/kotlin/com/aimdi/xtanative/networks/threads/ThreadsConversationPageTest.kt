@@ -65,7 +65,7 @@ class ThreadsConversationPageTest {
         val conversation = ThreadsConversation.from(page, ThreadsPost.linkStub("https://www.threads.com/t/Short"))
         assertEquals("602", conversation.focus.id)
         assertEquals(listOf("601"), ids(conversation.ancestors))
-        assertEquals(listOf("681", "682"), ids(conversation.related))
+        assertEquals(emptyList(), ids(conversation.fromAuthor), "Meta's picks by others are not called the author's threads")
         assertEquals(setOf("611"), conversation.unfinished)
         assertTrue(conversation.moreReplies)
     }

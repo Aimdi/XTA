@@ -156,7 +156,8 @@
     <string name="exact_time">Hiện thời gian chính xác</string>
     <string name="fewer_replies">Ẩn bớt phản hồi</string>
     <string name="more_replies_web">Thêm phản hồi trên threads.com</string>
-    <string name="related_threads">Chủ đề liên quan</string>
+    <string name="more_from_author">Thêm từ @%1$s</string>
+    <string name="more_on_topic">Thêm về %1$s</string>
     <string name="media_description">Mô tả hình ảnh</string>
     <string name="media_download">Tải xuống</string>
     <string name="media_download_all">Tải xuống tất cả</string>

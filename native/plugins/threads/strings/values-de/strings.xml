@@ -160,7 +160,8 @@
     <string name="exact_time">Genaue Uhrzeit anzeigen</string>
     <string name="fewer_replies">Weniger Antworten anzeigen</string>
     <string name="more_replies_web">Weitere Antworten auf threads.com</string>
-    <string name="related_threads">Ähnliche Threads</string>
+    <string name="more_from_author">Mehr von @%1$s</string>
+    <string name="more_on_topic">Mehr zu %1$s</string>
     <string name="media_description">Bildbeschreibung</string>
     <string name="media_download">Herunterladen</string>
     <string name="media_download_all">Alle herunterladen</string>

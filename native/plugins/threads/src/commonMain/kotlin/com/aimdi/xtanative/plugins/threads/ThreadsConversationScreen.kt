@@ -40,10 +40,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.networks.threads.ThreadsBeside
 import com.aimdi.xtanative.networks.threads.ThreadsConversation
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsReplyRow
@@ -70,6 +76,7 @@ import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.speech.ReadAloudButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 /**
@@ -114,6 +121,8 @@ internal fun ThreadsConversationScreen(app: ThreadsApp, route: ThreadsRoute.Post
         }
     }
     val paged by more.state.collectAsState()
+    val beside = rememberKept("threads-post-topic-${route.url}") { scope -> ThreadsTopicBeside(scope, app.reader::topicPosts) }
+    val found by beside.state.collectAsState()
     LaunchedEffect(state.value) {
         state.value?.takeIf { it.loaded }?.let { read -> more.start(read.replies.map(::ThreadsReplyThread), read.repliesNext) }
     }
@@ -138,7 +147,8 @@ internal fun ThreadsConversationScreen(app: ThreadsApp, route: ThreadsRoute.Post
             if (reading && article != null) {
                 ThreadsArticleView(app, article)
             } else {
-                ConversationList(app, conversation, state, ThreadsMoreReplies(more, paged), onRetry = { fetch.load(force = true) })
+                val onTopic = ThreadsOnTopic(beside, found, options.unhidden(found?.posts.orEmpty()))
+                ConversationList(app, conversation, state, ThreadsMoreReplies(more, paged), onTopic, onRetry = { fetch.load(force = true) })
             }
             NoticeHost(app.notices)
         }
@@ -168,7 +178,14 @@ private fun ThreadActions(app: ThreadsApp, url: String) {
 
 /** The conversation's list; a picture opened in it is viewed among all the pictures shown in it. */
 @Composable
-private fun ConversationList(app: ThreadsApp, read: ThreadsConversation, state: Fetched<ThreadsConversation>, more: ThreadsMoreReplies, onRetry: () -> Unit) {
+private fun ConversationList(
+    app: ThreadsApp,
+    read: ThreadsConversation,
+    state: Fetched<ThreadsConversation>,
+    more: ThreadsMoreReplies,
+    onTopic: ThreadsOnTopic,
+    onRetry: () -> Unit,
+) {
     val order by app.replyOrder.collectAsState()
     var authorOnly by rememberSaveable { mutableStateOf(false) }
     var expanded by rememberSaveable { mutableStateOf(emptyList<String>()) }
@@ -182,9 +199,11 @@ private fun ConversationList(app: ThreadsApp, read: ThreadsConversation, state: 
     val list = rememberLazyListState()
     LandsOnFocus(list, conversation)
     ReadsMoreNear(list, more.paging, more.state)
+    val scrolled = rememberReaderScrolled()
+    AsksTopicAtTheEnd(list, conversation, scrolled.value, repliesPending = more.state.next != null, onTopic)
     CompositionLocalProvider(LocalThreadsGallery provides gallery) {
         RefreshableConversation(
-            app, conversation, state, more, list, view, rows, onRetry,
+            app, conversation, state, more, onTopic, list, Modifier.nestedScroll(scrolled.connection), view, rows, onRetry,
             onAuthorOnly = { authorOnly = !authorOnly },
             onExpand = { chain -> expanded = expanded + chain.first().id },
             onCollapse = { chain -> expanded = expanded - chain.first().id },
@@ -217,7 +236,9 @@ private fun RefreshableConversation(
     conversation: ThreadsConversation,
     state: Fetched<ThreadsConversation>,
     more: ThreadsMoreReplies,
+    onTopic: ThreadsOnTopic,
     list: LazyListState,
+    scrolling: Modifier,
     view: ThreadsThreadView,
     rows: List<ThreadsReplyRow>,
     onRetry: () -> Unit,
@@ -229,7 +250,7 @@ private fun RefreshableConversation(
     // Pulling shows its own spinner; what was kept shown while the page is read first says "updating" instead.
     val fresh = state.value?.loaded == true
     PullToRefreshBox(isRefreshing = state.loading && fresh, onRefresh = onRetry, modifier = Modifier.fillMaxSize()) {
-        LazyColumn(state = list, contentPadding = PaddingValues(bottom = 24.dp), modifier = Modifier.fillMaxSize()) {
+        LazyColumn(state = list, contentPadding = PaddingValues(bottom = 24.dp), modifier = Modifier.fillMaxSize().then(scrolling)) {
             threadRows(app, conversation)
             statusRows(conversation, state, onRetry)
             if (conversation.replies.isNotEmpty()) {
@@ -238,7 +259,10 @@ private fun RefreshableConversation(
             }
             moreFoot("replies", more.state) { more.paging.retry() }
             if (conversation.moreReplies && (more.state.onWeb || !more.state.paged)) moreRepliesOnWeb(conversation.focus.url)
-            relatedRows(app, conversation.related)
+            fromAuthorRows(app, conversation.focus.handle, conversation.fromAuthor)
+            ThreadsBeside.topicOf(conversation)?.let { topic ->
+                onTopicRows(app, topic, onTopic.found, ThreadsBeside.onTopic(conversation, onTopic.posts)) { onTopic.beside.ask(topic) }
+            }
         }
         if (conversation.replies.isNotEmpty()) {
             ReloadStatus(state.loading, state.problem?.let { ThreadsFailures.post(it, currentLanguage()) }, onRetry, updating = !fresh)
@@ -248,6 +272,39 @@ private fun RefreshableConversation(
 
 /** The reply threads after the page's own, and where reading them stands. */
 private class ThreadsMoreReplies(val paging: ThreadsPaging<ThreadsReplyThread>, val state: ThreadsPagingState<ThreadsReplyThread>)
+
+/** "More on …": what reads it, what it found, and the found posts the reader did not hide or mute. */
+private class ThreadsOnTopic(val beside: ThreadsTopicBeside, val found: ThreadsTopicBeside.Found?, val posts: List<ThreadsPost>)
+
+/** Whether the reader has scrolled the list themselves (a drag, a wheel), which landing on the opened post does not count as. */
+private class ReaderScrolled {
+    var value by mutableStateOf(false)
+    val connection = object : NestedScrollConnection {
+        override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+            if (source == NestedScrollSource.UserInput && available != Offset.Zero) value = true
+            return Offset.Zero
+        }
+    }
+}
+
+@Composable
+private fun rememberReaderScrolled(): ReaderScrolled = remember { ReaderScrolled() }
+
+/**
+ * Reads "More on …" once the reader scrolled to its heading at the end of
+ * the conversation ([ThreadsBeside.asksTopic]); opening a conversation, or
+ * landing on its post, asks nothing.
+ */
+@Composable
+private fun AsksTopicAtTheEnd(list: LazyListState, conversation: ThreadsConversation, scrolled: Boolean, repliesPending: Boolean, onTopic: ThreadsOnTopic) {
+    val topic = ThreadsBeside.topicOf(conversation)
+    if (topic == null || onTopic.found != null) return
+    LaunchedEffect(list, topic, scrolled, repliesPending, conversation.loaded) {
+        snapshotFlow { list.layoutInfo.visibleItemsInfo.any { it.key == ON_TOPIC_KEY } }
+            .first { endShown -> ThreadsBeside.asksTopic(conversation, endShown, scrolled, repliesPending) }
+        onTopic.beside.ask(topic)
+    }
+}
 
 /** With posts above it, the opened post is brought to the top once, as X opens a reply. */
 @Composable
@@ -383,5 +440,5 @@ internal object ThreadsConversationView {
      * author's own thread stay whole: the reader asked for them.
      */
     fun quieted(conversation: ThreadsConversation, options: ThreadsFeedOptions): ThreadsConversation =
-        if (!options.hidesSome) conversation else conversation.copy(replies = options.replies(conversation.replies), related = options.unhidden(conversation.related))
+        if (!options.hidesSome) conversation else conversation.copy(replies = options.replies(conversation.replies), fromAuthor = options.unhidden(conversation.fromAuthor))
 }

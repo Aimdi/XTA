@@ -168,7 +168,8 @@
     <string name="exact_time">Показати точний час</string>
     <string name="fewer_replies">Показати менше відповідей</string>
     <string name="more_replies_web">Більше відповідей на threads.com</string>
-    <string name="related_threads">Схожі гілки</string>
+    <string name="more_from_author">Більше від @%1$s</string>
+    <string name="more_on_topic">Більше на тему «%1$s»</string>
     <string name="media_description">Опис зображення</string>
     <string name="media_download">Завантажити</string>
     <string name="media_download_all">Завантажити все</string>

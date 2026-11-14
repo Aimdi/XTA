@@ -160,7 +160,8 @@
     <string name="exact_time">सटीक समय दिखाएँ</string>
     <string name="fewer_replies">कम जवाब दिखाएँ</string>
     <string name="more_replies_web">threads.com पर और जवाब</string>
-    <string name="related_threads">संबंधित थ्रेड</string>
+    <string name="more_from_author">@%1$s की और पोस्ट</string>
+    <string name="more_on_topic">%1$s पर और</string>
     <string name="media_description">चित्र का विवरण</string>
     <string name="media_download">डाउनलोड</string>
     <string name="media_download_all">सभी डाउनलोड करें</string>

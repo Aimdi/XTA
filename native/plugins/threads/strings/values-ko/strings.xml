@@ -156,7 +156,8 @@
     <string name="exact_time">정확한 시간 보기</string>
     <string name="fewer_replies">답글 간단히 보기</string>
     <string name="more_replies_web">threads.com에서 답글 더 보기</string>
-    <string name="related_threads">관련 스레드</string>
+    <string name="more_from_author">@%1$s 님의 다른 스레드</string>
+    <string name="more_on_topic">%1$s 관련 더 보기</string>
     <string name="media_description">이미지 설명</string>
     <string name="media_download">다운로드</string>
     <string name="media_download_all">모두 다운로드</string>

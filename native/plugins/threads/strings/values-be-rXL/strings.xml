@@ -168,7 +168,8 @@
     <string name="exact_time">Pakazać dakładny čas</string>
     <string name="fewer_replies">Pakazać mienš adkazaŭ</string>
     <string name="more_replies_web">Bolš adkazaŭ na threads.com</string>
-    <string name="related_threads">Padobnyja nitki</string>
+    <string name="more_from_author">Jašče ad @%1$s</string>
+    <string name="more_on_topic">Jašče na temu «%1$s»</string>
     <string name="media_description">Apisańnie vyjavy</string>
     <string name="media_download">Sćahnuć</string>
     <string name="media_download_all">Spampavać usio</string>

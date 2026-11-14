@@ -160,7 +160,8 @@
     <string name="exact_time">Vis nøyaktig tidspunkt</string>
     <string name="fewer_replies">Vis færre svar</string>
     <string name="more_replies_web">Flere svar på threads.com</string>
-    <string name="related_threads">Relaterte tråder</string>
+    <string name="more_from_author">Mer fra @%1$s</string>
+    <string name="more_on_topic">Mer om %1$s</string>
     <string name="media_description">Bildebeskrivelse</string>
     <string name="media_download">Last ned</string>
     <string name="media_download_all">Last ned alle</string>

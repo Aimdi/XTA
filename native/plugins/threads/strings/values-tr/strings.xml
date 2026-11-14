@@ -160,7 +160,8 @@
     <string name="exact_time">Tam saati göster</string>
     <string name="fewer_replies">Daha az yanıt göster</string>
     <string name="more_replies_web">threads.com\'da daha fazla yanıt</string>
-    <string name="related_threads">İlgili konular</string>
+    <string name="more_from_author">@%1$s kullanıcısından daha fazlası</string>
+    <string name="more_on_topic">%1$s hakkında daha fazlası</string>
     <string name="media_description">Görsel açıklaması</string>
     <string name="media_download">İndir</string>
     <string name="media_download_all">Tümünü indir</string>

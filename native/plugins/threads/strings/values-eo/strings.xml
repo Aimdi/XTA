@@ -160,7 +160,8 @@
     <string name="exact_time">Montri la ĝustan horon</string>
     <string name="fewer_replies">Montri malpli da respondoj</string>
     <string name="more_replies_web">Pliaj respondoj ĉe threads.com</string>
-    <string name="related_threads">Rilataj fadenoj</string>
+    <string name="more_from_author">Pli de @%1$s</string>
+    <string name="more_on_topic">Pli pri %1$s</string>
     <string name="media_description">Priskribo de la bildo</string>
     <string name="media_download">Elŝuti</string>
     <string name="media_download_all">Elŝuti ĉion</string>

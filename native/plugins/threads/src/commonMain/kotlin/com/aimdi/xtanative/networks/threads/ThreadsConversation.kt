@@ -31,8 +31,12 @@ data class ThreadsConversation(
     val moreReplies: Boolean = false,
     /** Where the replies after these start, when the page named a way to follow them; else they are read on threads.com. */
     val repliesNext: String? = null,
-    /** Posts Threads suggests beside this one, never part of it. */
-    val related: List<ThreadsPost> = emptyList(),
+    /**
+     * The author's own other threads among those Meta's page suggests beside
+     * this one ([ThreadsBeside.fromAuthor]), never part of it: "More from
+     * @author". Meta's picks by anyone else are not kept.
+     */
+    val fromAuthor: List<ThreadsPost> = emptyList(),
 ) {
     val replyCount: Int get() = replies.sumOf { it.size }
 
@@ -99,6 +103,9 @@ data class ThreadsConversation(
         return thread.posts.any { it.id !in shown }
     }
 
+    /** The ids of every post the conversation itself shows: what the post answers, the post, its author's thread and the replies. */
+    fun shownIds(): Set<String> = (ancestors + focus + continuation + replies.flatten()).mapTo(HashSet()) { it.id }
+
     /** What reading the conversation aloud says: each post's author and words, the post first, then every reply. */
     fun spokenText(): String = (ancestors + focus + continuation + replies.flatten())
         .filter { it.text.isNotBlank() }
@@ -133,7 +140,7 @@ data class ThreadsConversation(
          * Meta answered under another id still lands on the right one.
          */
         fun from(page: ThreadsPostPage, seed: ThreadsPost): ThreadsConversation {
-            val target = page.target ?: return from(page.chains, seed).copy(related = page.related)
+            val target = page.target ?: return from(page.chains, seed).besideFrom(page)
             return ThreadsConversation(
                 focus = keepRepostContext(target, seed),
                 ancestors = page.above,
@@ -144,9 +151,12 @@ data class ThreadsConversation(
                 unfinished = page.replies.filter { it.hasMore }.mapNotNull { it.posts.firstOrNull()?.id }.toSet(),
                 moreReplies = page.moreReplies,
                 repliesNext = page.repliesNext,
-                related = page.related,
-            )
+            ).besideFrom(page)
         }
+
+        /** This conversation with its author's other threads among what [page] suggests beside it. */
+        private fun ThreadsConversation.besideFrom(page: ThreadsPostPage): ThreadsConversation =
+            copy(fromAuthor = ThreadsBeside.fromAuthor(page.related, focus, shownIds()))
 
         /**
          * [chains] arranged around [seed]. The chain holding the post gives what

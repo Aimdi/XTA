@@ -164,7 +164,8 @@
     <string name="exact_time">Arată ora exactă</string>
     <string name="fewer_replies">Arată mai puține răspunsuri</string>
     <string name="more_replies_web">Mai multe răspunsuri pe threads.com</string>
-    <string name="related_threads">Fire asemănătoare</string>
+    <string name="more_from_author">Mai multe de la @%1$s</string>
+    <string name="more_on_topic">Mai multe despre %1$s</string>
     <string name="media_description">Descrierea imaginii</string>
     <string name="media_download">Descarcă</string>
     <string name="media_download_all">Descarcă tot</string>

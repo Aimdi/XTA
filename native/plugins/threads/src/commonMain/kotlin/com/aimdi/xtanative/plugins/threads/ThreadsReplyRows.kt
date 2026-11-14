@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsReplyRow
+import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.plugins.pluginPlural
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
@@ -68,18 +69,44 @@ internal fun LazyListScope.moreRepliesOnWeb(url: String?) {
     item(key = "replies-on-web") { OnWebRow(pluginString(Strings.more_replies_web), url) }
 }
 
-/** The posts Threads suggests beside this one, under their own heading, after the conversation. */
-internal fun LazyListScope.relatedRows(app: ThreadsApp, related: List<ThreadsPost>) {
-    if (related.isEmpty()) return
-    item(key = "related-header") {
-        Text(
-            pluginString(Strings.related_threads),
-            style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 20.dp, bottom = 4.dp),
-        )
+/** The author's other threads Meta's page suggests beside this one ([ThreadsBeside.fromAuthor]), after the conversation. */
+internal fun LazyListScope.fromAuthorRows(app: ThreadsApp, handle: String, posts: List<ThreadsPost>) {
+    if (posts.isEmpty()) return
+    item(key = "from-author-header") { SectionHeader(pluginString(Strings.more_from_author, handle)) }
+    items(posts, key = { "from-author:" + it.id }, contentType = { "post" }) { post -> ThreadsPostCard(app, post) }
+}
+
+/**
+ * "More on …", the last section: a few posts from the opened post's topic
+ * ([ThreadsBeside.onTopic]). Until they are asked for, its heading is a row
+ * that asks ([onAsk]); scrolling to it asks as well. A topic that brought
+ * nothing more leaves no section.
+ */
+internal fun LazyListScope.onTopicRows(app: ThreadsApp, topic: String, found: ThreadsTopicBeside.Found?, posts: List<ThreadsPost>, onAsk: () -> Unit) {
+    when {
+        found == null -> item(key = ON_TOPIC_KEY) { MarkerRow(PostIcons.Forum, pluginString(Strings.more_on_topic, topic), onAsk) }
+        found.loading -> {
+            item(key = ON_TOPIC_KEY) { SectionHeader(pluginString(Strings.more_on_topic, topic)) }
+            item(key = "on-topic-loading") { LoadingRow() }
+        }
+        posts.isNotEmpty() -> {
+            item(key = ON_TOPIC_KEY) { SectionHeader(pluginString(Strings.more_on_topic, topic)) }
+            items(posts, key = { "on-topic:" + it.id }, contentType = { "post" }) { post -> ThreadsPostCard(app, post) }
+        }
     }
-    items(related, key = { "related:" + it.id }, contentType = { "post" }) { post -> ThreadsPostCard(app, post) }
+}
+
+/** The key of "More on …"'s heading, the row whose coming into view reads it. */
+internal const val ON_TOPIC_KEY = "on-topic-header"
+
+@Composable
+private fun SectionHeader(label: String) {
+    Text(
+        label,
+        style = MaterialTheme.typography.titleSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 20.dp, bottom = 4.dp),
+    )
 }
 
 private fun keyOf(row: ThreadsReplyRow): String = when (row) {

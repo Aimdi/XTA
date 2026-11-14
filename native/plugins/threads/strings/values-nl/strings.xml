@@ -160,7 +160,8 @@
     <string name="exact_time">Exacte tijd tonen</string>
     <string name="fewer_replies">Minder reacties tonen</string>
     <string name="more_replies_web">Meer reacties op threads.com</string>
-    <string name="related_threads">Gerelateerde draden</string>
+    <string name="more_from_author">Meer van @%1$s</string>
+    <string name="more_on_topic">Meer over %1$s</string>
     <string name="media_description">Afbeeldingsbeschrijving</string>
     <string name="media_download">Downloaden</string>
     <string name="media_download_all">Alles downloaden</string>

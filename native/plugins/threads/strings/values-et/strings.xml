@@ -160,7 +160,8 @@
     <string name="exact_time">Näita täpset aega</string>
     <string name="fewer_replies">Näita vähem vastuseid</string>
     <string name="more_replies_web">Rohkem vastuseid saidil threads.com</string>
-    <string name="related_threads">Seotud lõimed</string>
+    <string name="more_from_author">Veel kasutajalt @%1$s</string>
+    <string name="more_on_topic">Veel teemal %1$s</string>
     <string name="media_description">Pildi kirjeldus</string>
     <string name="media_download">Laadi alla</string>
     <string name="media_download_all">Laadi kõik alla</string>

@@ -45,7 +45,7 @@ class ThreadsConversationLiveTest {
         println(
             "LIVE Threads conversation $label: target ${page.target != null}, above ${page.above.size}, continuation ${page.continuation.size}, " +
                 "${page.replies.size} reply threads of ${page.replies.map { it.posts.size }}, levels $levels, " +
-                "${page.replies.count { it.hasMore }} going on, more replies ${page.moreReplies}, related ${page.related.size}, chains ${page.chains.size}",
+                "${page.replies.count { it.hasMore }} going on, more replies ${page.moreReplies}, related ${page.related.size} (the author's ${page.related.count { it.handle == page.target?.handle }}), chains ${page.chains.size}",
         )
         ThreadsShape.scripts(body).flatMap { queries(it) }.forEach { (name, result) ->
             val paths = postPaths(result, "").groupingBy { it }.eachCount()

@@ -36,7 +36,7 @@ class ThreadsConversationsKeptTest {
         levels = mapOf("2" to 1, "3" to 2, "4" to 1),
         unfinished = setOf("4"),
         repliesNext = "cursor",
-        related = listOf(post("9", "c")),
+        fromAuthor = listOf(post("9")),
     )
 
     @Test

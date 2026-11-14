@@ -163,7 +163,8 @@
     <string name="exact_time">Mostrar a hora exata</string>
     <string name="fewer_replies">Mostrar menos respostas</string>
     <string name="more_replies_web">Mais respostas em threads.com</string>
-    <string name="related_threads">Tópicos relacionados</string>
+    <string name="more_from_author">Mais de @%1$s</string>
+    <string name="more_on_topic">Mais sobre %1$s</string>
     <string name="media_description">Descrição da imagem</string>
     <string name="media_download">Descarregar</string>
     <string name="media_download_all">Transferir tudo</string>

@@ -162,7 +162,8 @@
     <string name="exact_time">Show the exact time</string>
     <string name="fewer_replies">Show fewer replies</string>
     <string name="more_replies_web">More replies on threads.com</string>
-    <string name="related_threads">Related threads</string>
+    <string name="more_from_author">More from @%1$s</string>
+    <string name="more_on_topic">More on %1$s</string>
     <string name="media_description">Image description</string>
     <string name="media_download">Download</string>
     <string name="media_download_all">Download all</string>
