@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Translation (ui.settings) and the reader's translation service, from XTA's words (reader_translation_*.dart). -->
+<resources>
+    <string name="translation_title">Traduzione</string>
+    <string name="translation_privacy">Non viene inviato nulla finché non tocchi Traduci. Il testo va poi solo al servizio scelto qui.</string>
+    <string name="translation_provider">Servizio di traduzione</string>
+    <string name="translation_provider_off">Disattivato</string>
+    <string name="translation_provider_ai">Fornitore IA</string>
+    <string name="translation_target">Traduci in</string>
+    <string name="translation_target_app">Lingua dell'app</string>
+    <string name="translation_endpoint">Indirizzo del server</string>
+    <string name="translation_endpoint_deepl_help">Lascia vuoto per usare DeepL Free o Pro in base alla tua chiave.</string>
+    <string name="translation_endpoint_libre_help">Il tuo server LibreTranslate, ad esempio https://translate.example.com</string>
+    <string name="translation_key_optional">Serve solo se il server la richiede</string>
+    <string name="translation_ai_description">Usa il fornitore IA configurato nelle impostazioni.</string>
+    <string name="translation_ai_not_configured">Configura prima un fornitore IA</string>
+    <string name="translation_invalid">Controlla l'indirizzo del server e la chiave API</string>
+    <string name="translation_saved">Impostazioni di traduzione salvate</string>
+    <string name="translation_clear_cache">Cancella le traduzioni salvate</string>
+    <string name="translation_cache_cleared">Traduzioni salvate cancellate</string>
+    <string name="translation_not_configured">Scegli prima un servizio di traduzione</string>
+    <string name="translation_hint">Traduci i post di tutte le reti con un servizio a tua scelta</string>
+    <string name="translation_examples">Server pubblici da provare</string>
+    <string name="translation_examples_note">Ciò che traduci viene inviato al server che scegli. Puoi anche far girare LibreTranslate sul tuo computer o server.</string>
+    <string name="translation_test">Prova</string>
+    <string name="translation_testing">Prova in corso…</string>
+    <string name="translation_test_ok">Il server risponde: %1$d lingue</string>
+    <string name="translation_unreachable">Il server non ha risposto. Controlla l'indirizzo e la connessione.</string>
+    <string name="translation_refused">Il server ha rifiutato. Forse serve una chiave API, oppure la chiave è sbagliata.</string>
+    <string name="translation_rate_limited">Troppe traduzioni per ora. Riprova più tardi.</string>
+    <string name="translation_unsupported">Questo server non traduce in quella lingua.</string>
+    <string name="translation_bad_answer">La risposta del server non conteneva alcuna traduzione.</string>
+</resources>

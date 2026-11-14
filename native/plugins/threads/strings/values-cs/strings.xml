@@ -237,6 +237,8 @@
     <string name="translate">Přeložit</string>
     <string name="show_original">Zobrazit originál</string>
     <string name="translated_by_threads">Přeloženo službou Threads</string>
+    <string name="translated_by">Přeložila služba %1$s</string>
+    <string name="translation_failed_by">Služba %1$s tento příspěvek nepřeložila</string>
     <string name="translating">Překládání…</string>
     <string name="translation_failed">Threads tento příspěvek nedokázal přeložit</string>
     <string name="attached_text">Přiložený text</string>

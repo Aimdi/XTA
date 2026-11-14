@@ -222,6 +222,8 @@
     <string name="translate">번역하기</string>
     <string name="show_original">원문 보기</string>
     <string name="translated_by_threads">Threads에서 번역함</string>
+    <string name="translated_by">%1$s 번역</string>
+    <string name="translation_failed_by">%1$s에서 이 게시물을 번역하지 못했습니다</string>
     <string name="translating">번역 중…</string>
     <string name="translation_failed">Threads에서 이 게시물을 번역하지 못했습니다</string>
     <string name="attached_text">첨부된 텍스트</string>

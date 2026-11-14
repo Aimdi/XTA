@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Translation (ui.settings) and the reader's translation service, from XTA's words (reader_translation_*.dart). -->
+<resources>
+    <string name="translation_title">번역</string>
+    <string name="translation_privacy">번역을 누르기 전에는 아무것도 전송되지 않습니다. 누르면 여기서 선택한 서비스로만 텍스트가 전송됩니다.</string>
+    <string name="translation_provider">번역 서비스</string>
+    <string name="translation_provider_off">사용 안 함</string>
+    <string name="translation_provider_ai">AI 제공자</string>
+    <string name="translation_target">번역할 언어</string>
+    <string name="translation_target_app">앱 언어</string>
+    <string name="translation_endpoint">서버 주소</string>
+    <string name="translation_endpoint_deepl_help">비워 두면 키에 맞는 DeepL Free 또는 Pro를 사용합니다.</string>
+    <string name="translation_endpoint_libre_help">LibreTranslate 서버 주소(예: https://translate.example.com)</string>
+    <string name="translation_key_optional">서버에서 요구할 때만 필요합니다</string>
+    <string name="translation_ai_description">설정에서 지정한 AI 제공자를 사용합니다.</string>
+    <string name="translation_ai_not_configured">먼저 AI 제공자를 설정하세요</string>
+    <string name="translation_invalid">서버 주소와 API 키를 확인하세요</string>
+    <string name="translation_saved">번역 설정을 저장했습니다</string>
+    <string name="translation_clear_cache">저장된 번역 지우기</string>
+    <string name="translation_cache_cleared">저장된 번역을 지웠습니다</string>
+    <string name="translation_not_configured">먼저 번역 서비스를 선택하세요</string>
+    <string name="translation_hint">선택한 서비스로 모든 네트워크의 게시물을 번역합니다</string>
+    <string name="translation_examples">사용해 볼 공개 서버</string>
+    <string name="translation_examples_note">번역하는 텍스트는 선택한 서버로 전송됩니다. LibreTranslate를 직접 컴퓨터나 서버에서 실행할 수도 있습니다.</string>
+    <string name="translation_test">테스트</string>
+    <string name="translation_testing">테스트 중…</string>
+    <string name="translation_test_ok">서버가 응답합니다: %1$d개 언어</string>
+    <string name="translation_unreachable">서버가 응답하지 않았습니다. 주소와 연결을 확인하세요.</string>
+    <string name="translation_refused">서버가 거부했습니다. API 키가 필요하거나 키가 잘못되었을 수 있습니다.</string>
+    <string name="translation_rate_limited">지금은 번역 요청이 너무 많습니다. 나중에 다시 시도하세요.</string>
+    <string name="translation_unsupported">이 서버는 해당 언어로 번역하지 않습니다.</string>
+    <string name="translation_bad_answer">서버 응답에 번역이 없었습니다.</string>
+</resources>

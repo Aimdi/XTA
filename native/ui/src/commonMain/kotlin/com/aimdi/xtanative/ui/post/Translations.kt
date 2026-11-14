@@ -2,6 +2,8 @@ package com.aimdi.xtanative.ui.post
 
 import com.aimdi.xtanative.core.x.XTranslationException
 import com.aimdi.xtanative.services.ai.TranslationCache
+import com.aimdi.xtanative.services.translation.TranslationException
+import com.aimdi.xtanative.services.translation.TranslationFailure
 
 /**
  * Translations kept for this run, a week at most, as XTA's cache keeps them;
@@ -41,7 +43,12 @@ enum class TranslationProblem {
     ;
 
     companion object {
-        fun of(error: Throwable): TranslationProblem = when ((error as? XTranslationException)?.kind) {
+        fun of(error: Throwable): TranslationProblem = when {
+            error is TranslationException -> if (error.failure == TranslationFailure.RATE_LIMITED) TOO_MANY else OTHER
+            else -> ofX(error)
+        }
+
+        private fun ofX(error: Throwable): TranslationProblem = when ((error as? XTranslationException)?.kind) {
             XTranslationException.Kind.UNSUPPORTED_LANGUAGE -> UNSUPPORTED_LANGUAGE
             XTranslationException.Kind.BANNED -> BANNED
             XTranslationException.Kind.TOO_MANY_REQUESTS -> TOO_MANY

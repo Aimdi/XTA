@@ -222,6 +222,8 @@
     <string name="translate">翻訳</string>
     <string name="show_original">原文を表示</string>
     <string name="translated_by_threads">Threadsによる翻訳</string>
+    <string name="translated_by">%1$s による翻訳</string>
+    <string name="translation_failed_by">%1$s はこの投稿を翻訳できませんでした</string>
     <string name="translating">翻訳中…</string>
     <string name="translation_failed">Threadsはこの投稿を翻訳できませんでした</string>
     <string name="attached_text">添付テキスト</string>

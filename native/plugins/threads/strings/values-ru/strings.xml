@@ -237,6 +237,8 @@
     <string name="translate">Перевести</string>
     <string name="show_original">Показать оригинал</string>
     <string name="translated_by_threads">Переведено Threads</string>
+    <string name="translated_by">Перевод: %1$s</string>
+    <string name="translation_failed_by">%1$s не удалось перевести этот пост</string>
     <string name="translating">Перевод…</string>
     <string name="translation_failed">Threads не удалось перевести этот пост</string>
     <string name="attached_text">Прикреплённый текст</string>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Translation (ui.settings) and the reader's translation service, from XTA's words (reader_translation_*.dart). -->
+<resources>
+    <string name="translation_title">Tradukado</string>
+    <string name="translation_privacy">Nenio estas sendata ĝis vi tuŝetas Traduki. Tiam la teksto iras nur al la servo elektita ĉi tie.</string>
+    <string name="translation_provider">Tradukservo</string>
+    <string name="translation_provider_off">Malŝaltita</string>
+    <string name="translation_provider_ai">AI-provizanto</string>
+    <string name="translation_target">Traduki al</string>
+    <string name="translation_target_app">Lingvo de la aplikaĵo</string>
+    <string name="translation_endpoint">Servila adreso</string>
+    <string name="translation_endpoint_deepl_help">Lasu malplena por uzi DeepL Free aŭ Pro, laŭ via ŝlosilo.</string>
+    <string name="translation_endpoint_libre_help">Via LibreTranslate-servilo, ekzemple https://translate.example.com</string>
+    <string name="translation_key_optional">Necesa nur se via servilo petas ĝin</string>
+    <string name="translation_ai_description">Uzas la AI-provizanton agorditan en Agordoj.</string>
+    <string name="translation_ai_not_configured">Unue agordu AI-provizanton</string>
+    <string name="translation_invalid">Kontrolu la servilan adreson kaj la API-ŝlosilon</string>
+    <string name="translation_saved">Tradukaj agordoj konservitaj</string>
+    <string name="translation_clear_cache">Forviŝi konservitajn tradukojn</string>
+    <string name="translation_cache_cleared">Konservitaj tradukoj forviŝitaj</string>
+    <string name="translation_not_configured">Unue elektu tradukservon</string>
+    <string name="translation_hint">Traduku afiŝojn de ĉiuj retoj per servo, kiun vi elektas</string>
+    <string name="translation_examples">Publikaj serviloj por provi</string>
+    <string name="translation_examples_note">Kion vi tradukas, tio estas sendata al la servilo, kiun vi elektas. Vi ankaŭ povas ruli LibreTranslate en via propra komputilo aŭ servilo.</string>
+    <string name="translation_test">Provi</string>
+    <string name="translation_testing">Provante…</string>
+    <string name="translation_test_ok">La servilo respondas: %1$d lingvoj</string>
+    <string name="translation_unreachable">La servilo ne respondis. Kontrolu la adreson kaj vian konekton.</string>
+    <string name="translation_refused">La servilo rifuzis. Eble ĝi bezonas API-ŝlosilon, aŭ la ŝlosilo estas malĝusta.</string>
+    <string name="translation_rate_limited">Tro da tradukoj nun. Reprovu poste.</string>
+    <string name="translation_unsupported">Ĉi tiu servilo ne tradukas al tiu lingvo.</string>
+    <string name="translation_bad_answer">La respondo de la servilo enhavis neniun tradukon.</string>
+</resources>

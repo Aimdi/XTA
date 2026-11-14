@@ -227,6 +227,8 @@
     <string name="translate">Oversett</string>
     <string name="show_original">Vis original</string>
     <string name="translated_by_threads">Oversatt av Threads</string>
+    <string name="translated_by">Oversatt av %1$s</string>
+    <string name="translation_failed_by">%1$s kunne ikke oversette dette innlegget</string>
     <string name="translating">Oversetter…</string>
     <string name="translation_failed">Threads kunne ikke oversette dette innlegget</string>
     <string name="attached_text">Vedlagt tekst</string>

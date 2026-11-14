@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Translation (ui.settings) and the reader's translation service, from XTA's words (reader_translation_*.dart). -->
+<resources>
+    <string name="translation_title">翻訳</string>
+    <string name="translation_privacy">「翻訳」をタップするまで何も送信されません。タップすると、ここで選んだサービスにだけテキストが送られます。</string>
+    <string name="translation_provider">翻訳サービス</string>
+    <string name="translation_provider_off">オフ</string>
+    <string name="translation_provider_ai">AI プロバイダー</string>
+    <string name="translation_target">翻訳先の言語</string>
+    <string name="translation_target_app">アプリの言語</string>
+    <string name="translation_endpoint">サーバーアドレス</string>
+    <string name="translation_endpoint_deepl_help">空欄にすると、キーに合わせて DeepL Free または Pro を使います。</string>
+    <string name="translation_endpoint_libre_help">LibreTranslate サーバー（例: https://translate.example.com）</string>
+    <string name="translation_key_optional">サーバーが求める場合のみ必要です</string>
+    <string name="translation_ai_description">設定で指定した AI プロバイダーを使います。</string>
+    <string name="translation_ai_not_configured">先に AI プロバイダーを設定してください</string>
+    <string name="translation_invalid">サーバーアドレスと API キーを確認してください</string>
+    <string name="translation_saved">翻訳の設定を保存しました</string>
+    <string name="translation_clear_cache">保存した翻訳を消去</string>
+    <string name="translation_cache_cleared">保存した翻訳を消去しました</string>
+    <string name="translation_not_configured">先に翻訳サービスを選んでください</string>
+    <string name="translation_hint">選んだサービスで、あらゆるネットワークの投稿を翻訳します</string>
+    <string name="translation_examples">試せる公開サーバー</string>
+    <string name="translation_examples_note">翻訳する文章は、選んだサーバーに送られます。LibreTranslate は自分のパソコンやサーバーで動かすこともできます。</string>
+    <string name="translation_test">テスト</string>
+    <string name="translation_testing">テスト中…</string>
+    <string name="translation_test_ok">サーバーは応答しています: %1$d 言語</string>
+    <string name="translation_unreachable">サーバーが応答しませんでした。アドレスと接続を確認してください。</string>
+    <string name="translation_refused">サーバーに拒否されました。API キーが必要か、キーが間違っている可能性があります。</string>
+    <string name="translation_rate_limited">翻訳が多すぎます。しばらくしてからもう一度お試しください。</string>
+    <string name="translation_unsupported">このサーバーはその言語への翻訳に対応していません。</string>
+    <string name="translation_bad_answer">サーバーの応答に翻訳が含まれていませんでした。</string>
+</resources>

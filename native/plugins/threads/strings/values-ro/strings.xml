@@ -232,6 +232,8 @@
     <string name="translate">Traduce</string>
     <string name="show_original">Arată originalul</string>
     <string name="translated_by_threads">Tradus de Threads</string>
+    <string name="translated_by">Tradus de %1$s</string>
+    <string name="translation_failed_by">%1$s nu a putut traduce această postare</string>
     <string name="translating">Se traduce…</string>
     <string name="translation_failed">Threads nu a putut traduce această postare</string>
     <string name="attached_text">Text atașat</string>

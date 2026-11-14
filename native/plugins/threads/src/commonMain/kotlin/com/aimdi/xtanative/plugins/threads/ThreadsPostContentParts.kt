@@ -62,24 +62,32 @@ internal class ThreadsTranslationView(
     fun applied(post: ThreadsPost): ThreadsPost = shown?.let { post.copy(text = it, fragments = ThreadsStickerRules.translated(it, post.fragments)) } ?: post
 }
 
-/** [post]'s translate control, in the language the app translates into (its setting, else the reader's). */
+/**
+ * [post]'s translate control, by Threads in the language the app
+ * translates into (its setting, else the reader's), or by the reader's
+ * translation service in its own ([ThreadsTranslationRules.translator]).
+ */
 @Composable
 internal fun rememberThreadsTranslation(app: ThreadsApp, post: ThreadsPost): ThreadsTranslationView {
     val settings by app.prefs.collectAsState()
     val states by app.translations.state.collectAsState()
     val available by app.translations.available.collectAsState()
-    val target = PostPrefs.of(settings).translationTarget(currentLanguage())
+    val service by app.host.translator.collectAsState()
+    val appTarget = PostPrefs.of(settings).translationTarget(currentLanguage())
     val signedIn = ThreadsPeopleView.signedIn(ThreadsSessions.of(settings))
-    val offered = ThreadsTranslationRules.offers(post, target, signedIn, available)
+    val via = ThreadsTranslationRules.translator(post, appTarget, signedIn, available, service?.target)
+    val viaService = via == ThreadsTranslator.SERVICE
+    val target = service?.target?.takeIf { viaService } ?: appTarget
     val state = states[ThreadsTranslations.key(post)]?.takeIf { it.target == target }
-    return ThreadsTranslationView(offered, state, { app.translations.translate(post, target) }, { app.translations.showOriginal(post) })
+    return ThreadsTranslationView(via != null, state, { app.translations.translate(post, target, viaService, service?.name) }, { app.translations.showOriginal(post) })
 }
 
 /**
  * Under the words: "Translate" on the opened post (and on a card once its
- * translation was shown and put away), "Translating…" while Meta is asked,
- * "Translated by Threads" with Show original, or why there is none with
- * Retry. A card offers Translate first from its sheet.
+ * translation was shown and put away), "Translating…" while it is asked,
+ * "Translated by Threads" (or by the reader's service: "Translated by
+ * LibreTranslate") with Show original, or why there is none with Retry. A
+ * card offers Translate first from its sheet.
  */
 @Composable
 internal fun TranslationLine(view: ThreadsTranslationView, focal: Boolean) {
@@ -93,11 +101,11 @@ internal fun TranslationLine(view: ThreadsTranslationView, focal: Boolean) {
         TranslationStatus.TRANSLATED -> Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(PostIcons.Translate, contentDescription = null, tint = muted, modifier = Modifier.size(14.dp))
             Spacer(Modifier.width(8.dp))
-            Text(pluginString(Strings.translated_by_threads), style = MaterialTheme.typography.bodySmall, color = muted, modifier = Modifier.weight(1f, fill = false))
+            Text(view.state?.by?.let { pluginString(Strings.translated_by, it) } ?: pluginString(Strings.translated_by_threads), style = MaterialTheme.typography.bodySmall, color = muted, modifier = Modifier.weight(1f, fill = false))
             TextButton(onClick = view.showOriginal, modifier = Modifier.heightIn(min = 48.dp)) { Text(pluginString(Strings.show_original)) }
         }
         TranslationStatus.FAILED -> Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(pluginString(Strings.translation_failed), style = MaterialTheme.typography.bodySmall, color = muted, modifier = Modifier.weight(1f, fill = false))
+            Text(view.state?.by?.let { pluginString(Strings.translation_failed_by, it) } ?: pluginString(Strings.translation_failed), style = MaterialTheme.typography.bodySmall, color = muted, modifier = Modifier.weight(1f, fill = false))
             if (view.offered) TextButton(onClick = view.translate, modifier = Modifier.heightIn(min = 48.dp)) { Text(pluginString(Strings.retry)) }
         }
         TranslationStatus.ORIGINAL, null -> if (view.offered && (focal || view.state != null)) {

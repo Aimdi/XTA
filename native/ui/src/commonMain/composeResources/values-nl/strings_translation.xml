@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Translation (ui.settings) and the reader's translation service, from XTA's words (reader_translation_*.dart). -->
+<resources>
+    <string name="translation_title">Vertaling</string>
+    <string name="translation_privacy">Er wordt niets verstuurd tot je op Vertalen tikt. De tekst gaat dan alleen naar de dienst die je hier kiest.</string>
+    <string name="translation_provider">Vertaaldienst</string>
+    <string name="translation_provider_off">Uit</string>
+    <string name="translation_provider_ai">AI-aanbieder</string>
+    <string name="translation_target">Vertalen naar</string>
+    <string name="translation_target_app">Taal van de app</string>
+    <string name="translation_endpoint">Serveradres</string>
+    <string name="translation_endpoint_deepl_help">Laat leeg om DeepL Free of Pro te gebruiken, afhankelijk van je sleutel.</string>
+    <string name="translation_endpoint_libre_help">Je LibreTranslate-server, bijvoorbeeld https://translate.example.com</string>
+    <string name="translation_key_optional">Alleen nodig als je server erom vraagt</string>
+    <string name="translation_ai_description">Gebruikt de AI-aanbieder die in Instellingen is ingesteld.</string>
+    <string name="translation_ai_not_configured">Stel eerst een AI-aanbieder in</string>
+    <string name="translation_invalid">Controleer het serveradres en de API-sleutel</string>
+    <string name="translation_saved">Vertaalinstellingen opgeslagen</string>
+    <string name="translation_clear_cache">Opgeslagen vertalingen wissen</string>
+    <string name="translation_cache_cleared">Opgeslagen vertalingen gewist</string>
+    <string name="translation_not_configured">Kies eerst een vertaaldienst</string>
+    <string name="translation_hint">Vertaal berichten van alle netwerken met een dienst naar keuze</string>
+    <string name="translation_examples">Openbare servers om te proberen</string>
+    <string name="translation_examples_note">Wat je vertaalt, wordt naar de gekozen server gestuurd. Je kunt LibreTranslate ook op je eigen computer of server draaien.</string>
+    <string name="translation_test">Testen</string>
+    <string name="translation_testing">Bezig met testen…</string>
+    <string name="translation_test_ok">De server antwoordt: %1$d talen</string>
+    <string name="translation_unreachable">De server antwoordde niet. Controleer het adres en je verbinding.</string>
+    <string name="translation_refused">De server weigerde. Misschien is er een API-sleutel nodig, of klopt de sleutel niet.</string>
+    <string name="translation_rate_limited">Te veel vertalingen op dit moment. Probeer het later opnieuw.</string>
+    <string name="translation_unsupported">Deze server vertaalt niet naar die taal.</string>
+    <string name="translation_bad_answer">Het antwoord van de server bevatte geen vertaling.</string>
+</resources>

@@ -98,9 +98,13 @@ internal class ThreadsApp(val host: PluginHost) {
     private val conversations = ThreadsConversationShelf(host.store::file)
     val accountNotes = ThreadsAccountNotes(host.store.file("account_notes.json"))
 
-    /** The posts the reader asked Threads to translate, as Meta translates them for a session. */
-    val translations = ThreadsTranslations(scope) { post, target ->
-        ThreadsPeople.mediaId(post)?.let { direct.translation(it, post.facts.captionId, target) }
+    /** The posts the reader asked to translate: as Meta translates them for a session, or by the reader's translation service. */
+    val translations = ThreadsTranslations(scope) { post, target, viaService ->
+        if (viaService) {
+            host.translate(post.text, target)?.let { ThreadsWords(it.text, it.translator) }
+        } else {
+            ThreadsPeople.mediaId(post)?.let { direct.translation(it, post.facts.captionId, target) }?.let { ThreadsWords(it) }
+        }
     }
 
     /** The topics and communities followed on this device. */

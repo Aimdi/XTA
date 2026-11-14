@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Translation (ui.settings) and the reader's translation service, from XTA's words (reader_translation_*.dart). -->
+<resources>
+    <string name="translation_title">Traducere</string>
+    <string name="translation_privacy">Nu se trimite nimic până nu atingi Tradu. Textul ajunge apoi doar la serviciul ales aici.</string>
+    <string name="translation_provider">Serviciu de traducere</string>
+    <string name="translation_provider_off">Dezactivat</string>
+    <string name="translation_provider_ai">Furnizor IA</string>
+    <string name="translation_target">Tradu în</string>
+    <string name="translation_target_app">Limba aplicației</string>
+    <string name="translation_endpoint">Adresa serverului</string>
+    <string name="translation_endpoint_deepl_help">Lasă gol pentru a folosi DeepL Free sau Pro, după cheia ta.</string>
+    <string name="translation_endpoint_libre_help">Serverul tău LibreTranslate, de exemplu https://translate.example.com</string>
+    <string name="translation_key_optional">Necesară doar dacă serverul o cere</string>
+    <string name="translation_ai_description">Folosește furnizorul IA configurat în setări.</string>
+    <string name="translation_ai_not_configured">Configurează mai întâi un furnizor IA</string>
+    <string name="translation_invalid">Verifică adresa serverului și cheia API</string>
+    <string name="translation_saved">Setările de traducere au fost salvate</string>
+    <string name="translation_clear_cache">Șterge traducerile salvate</string>
+    <string name="translation_cache_cleared">Traducerile salvate au fost șterse</string>
+    <string name="translation_not_configured">Alege mai întâi un serviciu de traducere</string>
+    <string name="translation_hint">Tradu postările din toate rețelele cu serviciul ales de tine</string>
+    <string name="translation_examples">Servere publice de încercat</string>
+    <string name="translation_examples_note">Ce traduci este trimis la serverul ales. Poți rula LibreTranslate și pe propriul calculator sau server.</string>
+    <string name="translation_test">Testează</string>
+    <string name="translation_testing">Se testează…</string>
+    <string name="translation_test_ok">Serverul răspunde: %1$d limbi</string>
+    <string name="translation_unreachable">Serverul nu a răspuns. Verifică adresa și conexiunea.</string>
+    <string name="translation_refused">Serverul a refuzat. Poate are nevoie de o cheie API sau cheia e greșită.</string>
+    <string name="translation_rate_limited">Prea multe traduceri acum. Încearcă mai târziu.</string>
+    <string name="translation_unsupported">Acest server nu traduce în limba aceea.</string>
+    <string name="translation_bad_answer">Răspunsul serverului nu conținea nicio traducere.</string>
+</resources>

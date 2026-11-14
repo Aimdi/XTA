@@ -250,7 +250,32 @@ interface PluginHost {
      */
     suspend fun <T : Any> withProgress(first: PluginProgress, work: suspend (say: (PluginProgress) -> Unit) -> T): T? =
         working(first.text) { work {} }
+
+    /**
+     * The reader's translation service (Settings › Translation: DeepL, a
+     * LibreTranslate server or their AI provider), as it changes: null while
+     * none is set, which is the default. A plugin offers Translate on a post
+     * only while it is set, and on a post in a language not its
+     * [PluginTranslator.target].
+     */
+    val translator: StateFlow<PluginTranslator?> get() = NoTranslator
+
+    /** Whether a translation service is set now: [translator] is not null. */
+    fun translationAvailable(): Boolean = translator.value != null
+
+    /**
+     * [text], a post's words alone, translated by the reader's service into
+     * [target] (a BCP 47 tag), or into its own language when null. Only the
+     * text and the languages are sent, to the service the reader chose,
+     * after the reader asked; a translation is kept on the device for a
+     * week. Null while no service is set; a [PluginTranslationException]
+     * says why the service gave none.
+     */
+    suspend fun translate(text: String, target: String? = null): PluginTranslation? = null
 }
+
+/** What [PluginHost.translator] holds where a host translates nothing. */
+private val NoTranslator: StateFlow<PluginTranslator?> = MutableStateFlow(null)
 
 /** What [PluginHost.savedPosts] holds where a host keeps no Saved: nothing. */
 private val NoSavedPosts: StateFlow<List<PluginSavedPost>?> = MutableStateFlow(emptyList())

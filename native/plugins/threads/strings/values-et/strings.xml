@@ -227,6 +227,8 @@
     <string name="translate">Tõlgi</string>
     <string name="show_original">Näita originaali</string>
     <string name="translated_by_threads">Tõlkinud Threads</string>
+    <string name="translated_by">Tõlkis %1$s</string>
+    <string name="translation_failed_by">%1$s ei saanud seda postitust tõlkida</string>
     <string name="translating">Tõlgin…</string>
     <string name="translation_failed">Threads ei saanud seda postitust tõlkida</string>
     <string name="attached_text">Lisatud tekst</string>

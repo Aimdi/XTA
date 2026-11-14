@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Translation (ui.settings) and the reader's translation service, from XTA's words (reader_translation_*.dart). -->
+<resources>
+    <string name="translation_title">Oversettelse</string>
+    <string name="translation_privacy">Ingenting sendes før du trykker på Oversett. Da går teksten bare til tjenesten du velger her.</string>
+    <string name="translation_provider">Oversettelsestjeneste</string>
+    <string name="translation_provider_off">Av</string>
+    <string name="translation_provider_ai">KI-leverandør</string>
+    <string name="translation_target">Oversett til</string>
+    <string name="translation_target_app">Appens språk</string>
+    <string name="translation_endpoint">Serveradresse</string>
+    <string name="translation_endpoint_deepl_help">La stå tomt for å bruke DeepL Free eller Pro, etter hva nøkkelen din gjelder.</string>
+    <string name="translation_endpoint_libre_help">LibreTranslate-serveren din, for eksempel https://translate.example.com</string>
+    <string name="translation_key_optional">Trengs bare hvis serveren ber om en</string>
+    <string name="translation_ai_description">Bruker KI-leverandøren som er satt opp i innstillingene.</string>
+    <string name="translation_ai_not_configured">Sett opp en KI-leverandør først</string>
+    <string name="translation_invalid">Sjekk serveradressen og API-nøkkelen</string>
+    <string name="translation_saved">Oversettelsesinnstillingene er lagret</string>
+    <string name="translation_clear_cache">Tøm lagrede oversettelser</string>
+    <string name="translation_cache_cleared">Lagrede oversettelser er tømt</string>
+    <string name="translation_not_configured">Velg en oversettelsestjeneste først</string>
+    <string name="translation_hint">Oversett innlegg fra alle nettverk med en tjeneste du velger</string>
+    <string name="translation_examples">Offentlige servere å prøve</string>
+    <string name="translation_examples_note">Det du oversetter, sendes til serveren du velger. Du kan også kjøre LibreTranslate på din egen datamaskin eller server.</string>
+    <string name="translation_test">Test</string>
+    <string name="translation_testing">Tester …</string>
+    <string name="translation_test_ok">Serveren svarer: %1$d språk</string>
+    <string name="translation_unreachable">Serveren svarte ikke. Sjekk adressen og tilkoblingen.</string>
+    <string name="translation_refused">Serveren avviste. Den trenger kanskje en API-nøkkel, eller nøkkelen er feil.</string>
+    <string name="translation_rate_limited">For mange oversettelser akkurat nå. Prøv igjen senere.</string>
+    <string name="translation_unsupported">Denne serveren oversetter ikke til det språket.</string>
+    <string name="translation_bad_answer">Svaret fra serveren inneholdt ingen oversettelse.</string>
+</resources>

@@ -231,6 +231,8 @@
     <string name="translate">Tradueix</string>
     <string name="show_original">Mostra l’original</string>
     <string name="translated_by_threads">Traduït per Threads</string>
+    <string name="translated_by">Traduït per %1$s</string>
+    <string name="translation_failed_by">%1$s no ha pogut traduir aquesta publicació</string>
     <string name="translating">S’està traduint…</string>
     <string name="translation_failed">Threads no ha pogut traduir aquesta publicació</string>
     <string name="attached_text">Text adjunt</string>

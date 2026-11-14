@@ -227,6 +227,8 @@
     <string name="translate">Itzuli</string>
     <string name="show_original">Erakutsi jatorrizkoa</string>
     <string name="translated_by_threads">Threads-ek itzulia</string>
+    <string name="translated_by">%1$s-(e)k itzulia</string>
+    <string name="translation_failed_by">%1$s-(e)k ezin izan du argitalpen hau itzuli</string>
     <string name="translating">Itzultzen…</string>
     <string name="translation_failed">Threads-ek ezin izan du argitalpen hau itzuli</string>
     <string name="attached_text">Erantsitako testua</string>

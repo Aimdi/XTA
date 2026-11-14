@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Translation (ui.settings) and the reader's translation service, from XTA's words (reader_translation_*.dart). -->
+<resources>
+    <string name="translation_title">翻译</string>
+    <string name="translation_privacy">点按“翻译”之前不会发送任何内容。之后文本只会发送到你在这里选择的服务。</string>
+    <string name="translation_provider">翻译服务</string>
+    <string name="translation_provider_off">关闭</string>
+    <string name="translation_provider_ai">AI 服务</string>
+    <string name="translation_target">翻译为</string>
+    <string name="translation_target_app">应用语言</string>
+    <string name="translation_endpoint">服务器地址</string>
+    <string name="translation_endpoint_deepl_help">留空即可根据你的密钥使用 DeepL Free 或 Pro。</string>
+    <string name="translation_endpoint_libre_help">你的 LibreTranslate 服务器，例如 https://translate.example.com</string>
+    <string name="translation_key_optional">仅在服务器要求时需要</string>
+    <string name="translation_ai_description">使用在设置中配置的 AI 服务。</string>
+    <string name="translation_ai_not_configured">请先设置 AI 服务</string>
+    <string name="translation_invalid">请检查服务器地址和 API 密钥</string>
+    <string name="translation_saved">翻译设置已保存</string>
+    <string name="translation_clear_cache">清除已保存的翻译</string>
+    <string name="translation_cache_cleared">已清除保存的翻译</string>
+    <string name="translation_not_configured">请先选择翻译服务</string>
+    <string name="translation_hint">用你选择的服务翻译所有网络的帖子</string>
+    <string name="translation_examples">可以试用的公共服务器</string>
+    <string name="translation_examples_note">你翻译的内容会发送到你选择的服务器。你也可以在自己的电脑或服务器上运行 LibreTranslate。</string>
+    <string name="translation_test">测试</string>
+    <string name="translation_testing">正在测试…</string>
+    <string name="translation_test_ok">服务器有响应：%1$d 种语言</string>
+    <string name="translation_unreachable">服务器没有响应。请检查地址和网络连接。</string>
+    <string name="translation_refused">服务器拒绝了请求。可能需要 API 密钥，或者密钥不正确。</string>
+    <string name="translation_rate_limited">目前翻译请求过多，请稍后再试。</string>
+    <string name="translation_unsupported">此服务器不支持翻译成该语言。</string>
+    <string name="translation_bad_answer">服务器的回复中没有译文。</string>
+</resources>

@@ -231,6 +231,8 @@
     <string name="translate">Traduire</string>
     <string name="show_original">Voir l’original</string>
     <string name="translated_by_threads">Traduit par Threads</string>
+    <string name="translated_by">Traduit par %1$s</string>
+    <string name="translation_failed_by">%1$s n\'a pas pu traduire cette publication</string>
     <string name="translating">Traduction…</string>
     <string name="translation_failed">Threads n’a pas pu traduire cette publication</string>
     <string name="attached_text">Texte joint</string>

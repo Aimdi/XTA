@@ -222,6 +222,8 @@
     <string name="translate">Terjemahkan</string>
     <string name="show_original">Tampilkan asli</string>
     <string name="translated_by_threads">Diterjemahkan oleh Threads</string>
+    <string name="translated_by">Diterjemahkan oleh %1$s</string>
+    <string name="translation_failed_by">%1$s tidak dapat menerjemahkan postingan ini</string>
     <string name="translating">Menerjemahkan…</string>
     <string name="translation_failed">Threads tidak dapat menerjemahkan postingan ini</string>
     <string name="attached_text">Teks terlampir</string>

@@ -311,6 +311,8 @@ sync.webdav.last_sync_at
 search.recent_by_network.v1
 reading.articles.v1
 reading.appearance.v1
+reading.translation.config.v1
+reading.translation.api_key
 home_keep_controls_visible
 plugin.substack.podcast.v1
 plugin.substack.podcast.places

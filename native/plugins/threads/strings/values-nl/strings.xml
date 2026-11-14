@@ -227,6 +227,8 @@
     <string name="translate">Vertalen</string>
     <string name="show_original">Origineel tonen</string>
     <string name="translated_by_threads">Vertaald door Threads</string>
+    <string name="translated_by">Vertaald door %1$s</string>
+    <string name="translation_failed_by">%1$s kon dit bericht niet vertalen</string>
     <string name="translating">Bezig met vertalen…</string>
     <string name="translation_failed">Threads kon dit bericht niet vertalen</string>
     <string name="attached_text">Bijgevoegde tekst</string>

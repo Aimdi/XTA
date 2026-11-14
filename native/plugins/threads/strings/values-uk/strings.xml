@@ -237,6 +237,8 @@
     <string name="translate">Перекласти</string>
     <string name="show_original">Показати оригінал</string>
     <string name="translated_by_threads">Перекладено Threads</string>
+    <string name="translated_by">Переклад: %1$s</string>
+    <string name="translation_failed_by">%1$s не вдалося перекласти цей допис</string>
     <string name="translating">Перекладаємо…</string>
     <string name="translation_failed">Threads не вдалося перекласти цей допис</string>
     <string name="attached_text">Доданий текст</string>

@@ -227,6 +227,8 @@
     <string name="translate">Übersetzen</string>
     <string name="show_original">Original anzeigen</string>
     <string name="translated_by_threads">Von Threads übersetzt</string>
+    <string name="translated_by">Übersetzt von %1$s</string>
+    <string name="translation_failed_by">%1$s konnte diesen Beitrag nicht übersetzen</string>
     <string name="translating">Wird übersetzt…</string>
     <string name="translation_failed">Threads konnte diesen Beitrag nicht übersetzen</string>
     <string name="attached_text">Angehängter Text</string>

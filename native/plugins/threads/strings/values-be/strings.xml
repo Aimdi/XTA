@@ -237,6 +237,8 @@
     <string name="translate">Перакласці</string>
     <string name="show_original">Паказаць арыгінал</string>
     <string name="translated_by_threads">Перакладзена Threads</string>
+    <string name="translated_by">Пераклад: %1$s</string>
+    <string name="translation_failed_by">%1$s не змог перакласці гэты допіс</string>
     <string name="translating">Перакладаем…</string>
     <string name="translation_failed">Threads не ўдалося перакласці гэты допіс</string>
     <string name="attached_text">Далучаны тэкст</string>

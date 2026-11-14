@@ -13,6 +13,7 @@ import com.aimdi.xtanative.pluginhost.InstalledPlugin
 import com.aimdi.xtanative.pluginhost.PluginApi
 import com.aimdi.xtanative.pluginhost.PluginLoad
 import com.aimdi.xtanative.pluginhost.PluginManager
+import com.aimdi.xtanative.services.translation.TranslationException
 import com.aimdi.xtanative.store.StoreDir
 import com.aimdi.xtanative.store.backup.NetworkAccount
 import com.aimdi.xtanative.store.offline.OfflineArticle
@@ -46,6 +47,9 @@ import com.aimdi.xtanative.ui.plugins.PluginSavedPost
 import com.aimdi.xtanative.ui.plugins.PluginSettings
 import com.aimdi.xtanative.ui.plugins.PluginSharedPost
 import com.aimdi.xtanative.ui.plugins.PluginSubscription
+import com.aimdi.xtanative.ui.plugins.PluginTranslation
+import com.aimdi.xtanative.ui.plugins.PluginTranslationException
+import com.aimdi.xtanative.ui.plugins.PluginTranslator
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
 import com.aimdi.xtanative.ui.post.CashtagLinks
 import com.aimdi.xtanative.ui.saved.FolderFilings
@@ -215,6 +219,18 @@ class AppPlugins(
     val startProblems: StateFlow<Map<String, String>> = mutableProblems.asStateFlow()
 
     private val language = MutableStateFlow(Locale.getDefault().toLanguageTag())
+
+    /** The reader's translation service as the plugins see it, in the reader's language. */
+    internal val translator: StateFlow<PluginTranslator?> = combine(graph.translation.config, language, PluginTranslations::translator)
+        .stateIn(scope, SharingStarted.Eagerly, PluginTranslations.translator(graph.translation.current(), language.value))
+
+    /** [text] translated for a plugin by the reader's service, into [target] or the reader's language. */
+    internal suspend fun translate(text: String, target: String?): PluginTranslation? = try {
+        val config = graph.translation.current().let { if (target == null) it else it.copy(target = target) }
+        graph.translation.translate(text, language.value, config)?.let(PluginTranslations::translation)
+    } catch (e: TranslationException) {
+        throw PluginTranslationException(PluginTranslations.problem(e.failure))
+    }
 
     /** The running plugins with a home tab, which Home's strip can show, named in the reader's language. */
     val stripNetworks: StateFlow<List<StripNetwork>> = combine(running, language) { list, tag ->
@@ -705,6 +721,10 @@ class AppPlugins(
         override fun openDownloads() = plugins.navigator.go(Destination.Downloads)
 
         override fun tell(text: String) = KeepNotices.say(text)
+
+        override val translator: StateFlow<PluginTranslator?> get() = plugins.translator
+
+        override suspend fun translate(text: String, target: String?): PluginTranslation? = plugins.translate(text, target)
 
         override suspend fun <T> working(text: String, work: suspend () -> T): T {
             KeepNotices.show(KeepNotice.Said(text, working = true))

@@ -222,6 +222,8 @@
     <string name="translate">Dịch</string>
     <string name="show_original">Xem bản gốc</string>
     <string name="translated_by_threads">Đã được Threads dịch</string>
+    <string name="translated_by">Được dịch bởi %1$s</string>
+    <string name="translation_failed_by">%1$s không thể dịch bài đăng này</string>
     <string name="translating">Đang dịch…</string>
     <string name="translation_failed">Threads không dịch được bài viết này</string>
     <string name="attached_text">Văn bản đính kèm</string>

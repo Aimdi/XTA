@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Translation (ui.settings) and the reader's translation service, from XTA's words (reader_translation_*.dart). -->
+<resources>
+    <string name="translation_title">Překlad</string>
+    <string name="translation_privacy">Nic se neodešle, dokud neklepnete na Přeložit. Text pak putuje jen do zde vybrané služby.</string>
+    <string name="translation_provider">Překladová služba</string>
+    <string name="translation_provider_off">Vypnuto</string>
+    <string name="translation_provider_ai">Poskytovatel AI</string>
+    <string name="translation_target">Překládat do</string>
+    <string name="translation_target_app">Jazyk aplikace</string>
+    <string name="translation_endpoint">Adresa serveru</string>
+    <string name="translation_endpoint_deepl_help">Nechte prázdné a použije se DeepL Free nebo Pro podle vašeho klíče.</string>
+    <string name="translation_endpoint_libre_help">Váš server LibreTranslate, například https://translate.example.com</string>
+    <string name="translation_key_optional">Potřeba jen tehdy, pokud jej server vyžaduje</string>
+    <string name="translation_ai_description">Používá poskytovatele AI nastaveného v Nastavení.</string>
+    <string name="translation_ai_not_configured">Nejdřív nastavte poskytovatele AI</string>
+    <string name="translation_invalid">Zkontrolujte adresu serveru a klíč API</string>
+    <string name="translation_saved">Nastavení překladu uloženo</string>
+    <string name="translation_clear_cache">Vymazat uložené překlady</string>
+    <string name="translation_cache_cleared">Uložené překlady vymazány</string>
+    <string name="translation_not_configured">Nejdřív vyberte překladovou službu</string>
+    <string name="translation_hint">Překládejte příspěvky ze všech sítí službou, kterou si vyberete</string>
+    <string name="translation_examples">Veřejné servery k vyzkoušení</string>
+    <string name="translation_examples_note">To, co překládáte, se odešle na vybraný server. LibreTranslate si můžete spustit i na vlastním počítači nebo serveru.</string>
+    <string name="translation_test">Vyzkoušet</string>
+    <string name="translation_testing">Zkouší se…</string>
+    <string name="translation_test_ok">Server odpovídá: jazyků %1$d</string>
+    <string name="translation_unreachable">Server neodpověděl. Zkontrolujte adresu a připojení.</string>
+    <string name="translation_refused">Server odmítl. Možná potřebuje klíč API, nebo je klíč chybný.</string>
+    <string name="translation_rate_limited">Příliš mnoho překladů najednou. Zkuste to později.</string>
+    <string name="translation_unsupported">Tento server do tohoto jazyka nepřekládá.</string>
+    <string name="translation_bad_answer">Odpověď serveru neobsahovala žádný překlad.</string>
+</resources>

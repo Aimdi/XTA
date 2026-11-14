@@ -227,6 +227,8 @@
     <string name="translate">Traduki</string>
     <string name="show_original">Montri originalon</string>
     <string name="translated_by_threads">Tradukita de Threads</string>
+    <string name="translated_by">Tradukita de %1$s</string>
+    <string name="translation_failed_by">%1$s ne povis traduki ĉi tiun afiŝon</string>
     <string name="translating">Tradukante…</string>
     <string name="translation_failed">Threads ne povis traduki ĉi tiun afiŝon</string>
     <string name="attached_text">Aldonita teksto</string>

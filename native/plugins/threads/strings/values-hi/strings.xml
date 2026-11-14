@@ -227,6 +227,8 @@
     <string name="translate">अनुवाद करें</string>
     <string name="show_original">मूल दिखाएँ</string>
     <string name="translated_by_threads">Threads द्वारा अनुवादित</string>
+    <string name="translated_by">%1$s द्वारा अनुवादित</string>
+    <string name="translation_failed_by">%1$s इस पोस्ट का अनुवाद नहीं कर सका</string>
     <string name="translating">अनुवाद हो रहा है…</string>
     <string name="translation_failed">Threads इस पोस्ट का अनुवाद नहीं कर सका</string>
     <string name="attached_text">संलग्न टेक्स्ट</string>

@@ -227,6 +227,8 @@
     <string name="translate">Çevir</string>
     <string name="show_original">Orijinali göster</string>
     <string name="translated_by_threads">Threads tarafından çevrildi</string>
+    <string name="translated_by">%1$s tarafından çevrildi</string>
+    <string name="translation_failed_by">%1$s bu gönderiyi çeviremedi</string>
     <string name="translating">Çevriliyor…</string>
     <string name="translation_failed">Threads bu gönderiyi çeviremedi</string>
     <string name="attached_text">Ekli metin</string>

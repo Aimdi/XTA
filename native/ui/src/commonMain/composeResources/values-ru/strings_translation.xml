@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Translation (ui.settings) and the reader's translation service, from XTA's words (reader_translation_*.dart). -->
+<resources>
+    <string name="translation_title">Перевод</string>
+    <string name="translation_privacy">Ничего не отправляется, пока вы не нажмёте «Перевести». Тогда текст уходит только в выбранный здесь сервис.</string>
+    <string name="translation_provider">Сервис перевода</string>
+    <string name="translation_provider_off">Выключен</string>
+    <string name="translation_provider_ai">Поставщик ИИ</string>
+    <string name="translation_target">Переводить на</string>
+    <string name="translation_target_app">Язык приложения</string>
+    <string name="translation_endpoint">Адрес сервера</string>
+    <string name="translation_endpoint_deepl_help">Оставьте пустым, чтобы использовать DeepL Free или Pro в зависимости от ключа.</string>
+    <string name="translation_endpoint_libre_help">Ваш сервер LibreTranslate, например https://translate.example.com</string>
+    <string name="translation_key_optional">Нужен, только если его требует сервер</string>
+    <string name="translation_ai_description">Использует поставщика ИИ, настроенного в параметрах.</string>
+    <string name="translation_ai_not_configured">Сначала настройте поставщика ИИ</string>
+    <string name="translation_invalid">Проверьте адрес сервера и ключ API</string>
+    <string name="translation_saved">Настройки перевода сохранены</string>
+    <string name="translation_clear_cache">Очистить сохранённые переводы</string>
+    <string name="translation_cache_cleared">Сохранённые переводы очищены</string>
+    <string name="translation_not_configured">Сначала выберите сервис перевода</string>
+    <string name="translation_hint">Переводите посты из всех сетей выбранным вами сервисом</string>
+    <string name="translation_examples">Публичные серверы, чтобы попробовать</string>
+    <string name="translation_examples_note">То, что вы переводите, отправляется на выбранный вами сервер. LibreTranslate можно запустить и на своём компьютере или сервере.</string>
+    <string name="translation_test">Проверить</string>
+    <string name="translation_testing">Проверка…</string>
+    <string name="translation_test_ok">Сервер отвечает: языков — %1$d</string>
+    <string name="translation_unreachable">Сервер не ответил. Проверьте адрес и подключение.</string>
+    <string name="translation_refused">Сервер отказал. Возможно, нужен ключ API или ключ неверный.</string>
+    <string name="translation_rate_limited">Слишком много переводов. Попробуйте позже.</string>
+    <string name="translation_unsupported">Этот сервер не переводит на этот язык.</string>
+    <string name="translation_bad_answer">В ответе сервера нет перевода.</string>
+</resources>

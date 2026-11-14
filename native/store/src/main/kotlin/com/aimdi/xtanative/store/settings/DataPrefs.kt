@@ -110,8 +110,16 @@ object SearchPrefs : PrefSection() {
     val recent = text("search.recent_by_network.v1", "", seeded = false)
 }
 
-/** Article reading, as JSON: where each article was left, and the reader's type size and spacing. */
+/** Article reading, as JSON: where each article was left, the reader's type size and spacing, and how posts are translated. */
 object ReadingPrefs : PrefSection() {
     val articles = text("reading.articles.v1", "", seeded = false)
     val appearance = text("reading.appearance.v1", "", seeded = false)
+
+    /**
+     * The reader's translation service for posts of every network
+     * (reader_translation_config.dart), as JSON; its key is kept apart in
+     * [translationApiKey], a secret, so an export never carries it.
+     */
+    val translation = text("reading.translation.config.v1", "", seeded = false)
+    val translationApiKey = text("reading.translation.api_key", "", seeded = false)
 }

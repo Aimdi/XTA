@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Translation (ui.settings) and the reader's translation service, from XTA's words (reader_translation_*.dart). -->
+<resources>
+    <string name="translation_title">Traducció</string>
+    <string name="translation_privacy">No s'envia res fins que no toques Tradueix. Aleshores el text només va al servei que triïs aquí.</string>
+    <string name="translation_provider">Servei de traducció</string>
+    <string name="translation_provider_off">Desactivat</string>
+    <string name="translation_provider_ai">Proveïdor d'IA</string>
+    <string name="translation_target">Tradueix a</string>
+    <string name="translation_target_app">Idioma de l'aplicació</string>
+    <string name="translation_endpoint">Adreça del servidor</string>
+    <string name="translation_endpoint_deepl_help">Deixa-ho en blanc per fer servir DeepL Free o Pro, segons la teva clau.</string>
+    <string name="translation_endpoint_libre_help">El teu servidor de LibreTranslate, per exemple https://translate.example.com</string>
+    <string name="translation_key_optional">Només cal si el servidor la demana</string>
+    <string name="translation_ai_description">Fa servir el proveïdor d'IA configurat a la configuració.</string>
+    <string name="translation_ai_not_configured">Primer configura un proveïdor d'IA</string>
+    <string name="translation_invalid">Comprova l'adreça del servidor i la clau de l'API</string>
+    <string name="translation_saved">S'ha desat la configuració de traducció</string>
+    <string name="translation_clear_cache">Esborra les traduccions desades</string>
+    <string name="translation_cache_cleared">S'han esborrat les traduccions desades</string>
+    <string name="translation_not_configured">Primer tria un servei de traducció</string>
+    <string name="translation_hint">Tradueix publicacions de totes les xarxes amb el servei que triïs</string>
+    <string name="translation_examples">Servidors públics per provar</string>
+    <string name="translation_examples_note">El que tradueixes s'envia al servidor que triïs. També pots fer servir LibreTranslate al teu propi ordinador o servidor.</string>
+    <string name="translation_test">Prova</string>
+    <string name="translation_testing">S'està provant…</string>
+    <string name="translation_test_ok">El servidor respon: %1$d idiomes</string>
+    <string name="translation_unreachable">El servidor no ha respost. Comprova l'adreça i la connexió.</string>
+    <string name="translation_refused">El servidor s'ha negat. Potser necessita una clau d'API, o la clau és incorrecta.</string>
+    <string name="translation_rate_limited">Massa traduccions ara mateix. Torna-ho a provar més tard.</string>
+    <string name="translation_unsupported">Aquest servidor no tradueix a aquest idioma.</string>
+    <string name="translation_bad_answer">La resposta del servidor no contenia cap traducció.</string>
+</resources>

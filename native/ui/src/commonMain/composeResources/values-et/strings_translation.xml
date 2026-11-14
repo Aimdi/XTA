@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Translation (ui.settings) and the reader's translation service, from XTA's words (reader_translation_*.dart). -->
+<resources>
+    <string name="translation_title">Tõlkimine</string>
+    <string name="translation_privacy">Midagi ei saadeta enne, kui puudutad nuppu Tõlgi. Siis läheb tekst ainult siin valitud teenusele.</string>
+    <string name="translation_provider">Tõlketeenus</string>
+    <string name="translation_provider_off">Väljas</string>
+    <string name="translation_provider_ai">Tehisintellekti teenus</string>
+    <string name="translation_target">Tõlgi keelde</string>
+    <string name="translation_target_app">Rakenduse keel</string>
+    <string name="translation_endpoint">Serveri aadress</string>
+    <string name="translation_endpoint_deepl_help">Jäta tühjaks, et kasutada võtmele vastavat DeepL Free või Pro teenust.</string>
+    <string name="translation_endpoint_libre_help">Sinu LibreTranslate'i server, näiteks https://translate.example.com</string>
+    <string name="translation_key_optional">Vajalik ainult siis, kui server seda nõuab</string>
+    <string name="translation_ai_description">Kasutab seadetes seadistatud tehisintellekti teenust.</string>
+    <string name="translation_ai_not_configured">Seadista esmalt tehisintellekti teenus</string>
+    <string name="translation_invalid">Kontrolli serveri aadressi ja API võtit</string>
+    <string name="translation_saved">Tõlkeseaded salvestatud</string>
+    <string name="translation_clear_cache">Kustuta salvestatud tõlked</string>
+    <string name="translation_cache_cleared">Salvestatud tõlked kustutatud</string>
+    <string name="translation_not_configured">Vali esmalt tõlketeenus</string>
+    <string name="translation_hint">Tõlgi kõigi võrgustike postitusi enda valitud teenusega</string>
+    <string name="translation_examples">Avalikud serverid proovimiseks</string>
+    <string name="translation_examples_note">Tõlgitav tekst saadetakse sinu valitud serverisse. LibreTranslate'i saab käitada ka oma arvutis või serveris.</string>
+    <string name="translation_test">Proovi</string>
+    <string name="translation_testing">Proovin…</string>
+    <string name="translation_test_ok">Server vastab: %1$d keelt</string>
+    <string name="translation_unreachable">Server ei vastanud. Kontrolli aadressi ja ühendust.</string>
+    <string name="translation_refused">Server keeldus. Võib-olla on vaja API-võtit või on võti vale.</string>
+    <string name="translation_rate_limited">Praegu on liiga palju tõlkeid. Proovi hiljem uuesti.</string>
+    <string name="translation_unsupported">See server ei tõlgi sellesse keelde.</string>
+    <string name="translation_bad_answer">Serveri vastuses polnud tõlget.</string>
+</resources>

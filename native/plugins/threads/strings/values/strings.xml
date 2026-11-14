@@ -229,6 +229,8 @@
     <string name="translate">Translate</string>
     <string name="show_original">Show original</string>
     <string name="translated_by_threads">Translated by Threads</string>
+    <string name="translated_by">Translated by %1$s</string>
+    <string name="translation_failed_by">%1$s could not translate this post</string>
     <string name="translating">Translating…</string>
     <string name="translation_failed">Threads could not translate this post</string>
     <string name="attached_text">Attached text</string>

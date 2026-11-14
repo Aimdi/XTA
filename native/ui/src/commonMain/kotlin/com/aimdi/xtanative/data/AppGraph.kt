@@ -102,6 +102,9 @@ class AppGraph(
     val readingAppearance = ReadingAppearanceStore(store)
     val timelineCache = TimelineCache(store)
 
+    /** The reader's translation service for every network's posts (Settings › Translation), off until chosen. */
+    val translation = ReaderTranslation(settings, OkHttpXHttp(), store)
+
     /** Profiles as X last gave them, shown for a week while X is read again. */
     val keptProfiles = KeptProfiles(store)
 

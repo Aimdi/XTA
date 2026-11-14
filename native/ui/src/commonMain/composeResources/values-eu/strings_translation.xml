@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Translation (ui.settings) and the reader's translation service, from XTA's words (reader_translation_*.dart). -->
+<resources>
+    <string name="translation_title">Itzulpena</string>
+    <string name="translation_privacy">Ez da ezer bidaltzen Itzuli sakatu arte. Orduan testua hemen aukeratutako zerbitzura bakarrik doa.</string>
+    <string name="translation_provider">Itzulpen-zerbitzua</string>
+    <string name="translation_provider_off">Desaktibatuta</string>
+    <string name="translation_provider_ai">AA hornitzailea</string>
+    <string name="translation_target">Itzuli hizkuntza honetara</string>
+    <string name="translation_target_app">Aplikazioaren hizkuntza</string>
+    <string name="translation_endpoint">Zerbitzariaren helbidea</string>
+    <string name="translation_endpoint_deepl_help">Utzi hutsik zure gakoari dagokion DeepL Free edo Pro erabiltzeko.</string>
+    <string name="translation_endpoint_libre_help">Zure LibreTranslate zerbitzaria, adibidez https://translate.example.com</string>
+    <string name="translation_key_optional">Zerbitzariak eskatzen badu bakarrik behar da</string>
+    <string name="translation_ai_description">Ezarpenetan konfiguratutako AA hornitzailea erabiltzen du.</string>
+    <string name="translation_ai_not_configured">Konfiguratu AA hornitzaile bat lehenik</string>
+    <string name="translation_invalid">Egiaztatu zerbitzariaren helbidea eta APIaren gakoa</string>
+    <string name="translation_saved">Itzulpen-ezarpenak gorde dira</string>
+    <string name="translation_clear_cache">Garbitu gordetako itzulpenak</string>
+    <string name="translation_cache_cleared">Gordetako itzulpenak garbitu dira</string>
+    <string name="translation_not_configured">Aukeratu itzulpen-zerbitzu bat lehenik</string>
+    <string name="translation_hint">Itzuli sare guztietako argitalpenak zuk aukeratutako zerbitzu batekin</string>
+    <string name="translation_examples">Probatzeko zerbitzari publikoak</string>
+    <string name="translation_examples_note">Itzultzen duzuna aukeratzen duzun zerbitzarira bidaltzen da. LibreTranslate zure ordenagailuan edo zerbitzarian ere exekuta dezakezu.</string>
+    <string name="translation_test">Probatu</string>
+    <string name="translation_testing">Probatzen…</string>
+    <string name="translation_test_ok">Zerbitzariak erantzuten du: %1$d hizkuntza</string>
+    <string name="translation_unreachable">Zerbitzariak ez du erantzun. Egiaztatu helbidea eta konexioa.</string>
+    <string name="translation_refused">Zerbitzariak ukatu egin du. Agian API gako bat behar du, edo gakoa okerra da.</string>
+    <string name="translation_rate_limited">Itzulpen gehiegi oraingoz. Saiatu berriro geroago.</string>
+    <string name="translation_unsupported">Zerbitzari honek ez du hizkuntza horretara itzultzen.</string>
+    <string name="translation_bad_answer">Zerbitzariaren erantzunak ez zuen itzulpenik.</string>
+</resources>

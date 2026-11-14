@@ -59,6 +59,7 @@ import com.aimdi.xtanative.store.settings.ThemePrefs
 import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.generated.resources.*
 import com.aimdi.xtanative.ui.intro.IntroFlow
 import kotlinx.coroutines.launch
@@ -169,6 +170,7 @@ private fun sectionIcon(section: SettingsSection): ImageVector = when (section) 
     SettingsSection.THEME -> Icons.Outlined.Star
     SettingsSection.ACCESSIBILITY -> Icons.Outlined.Face
     SettingsSection.SPEECH -> Icons.Outlined.Notifications
+    SettingsSection.TRANSLATION -> PostIcons.Translate
     SettingsSection.ACCOUNT -> Icons.Outlined.AccountCircle
     SettingsSection.DATA -> Icons.AutoMirrored.Outlined.ExitToApp
     SettingsSection.SYNC -> Icons.Outlined.Refresh

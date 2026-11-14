@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Translation (ui.settings) and the reader's translation service, from XTA's words (reader_translation_*.dart). -->
+<resources>
+    <string name="translation_title">Terjemahan</string>
+    <string name="translation_privacy">Tidak ada yang dikirim sebelum Anda mengetuk Terjemahkan. Setelah itu teks hanya dikirim ke layanan yang dipilih di sini.</string>
+    <string name="translation_provider">Layanan terjemahan</string>
+    <string name="translation_provider_off">Nonaktif</string>
+    <string name="translation_provider_ai">Penyedia AI</string>
+    <string name="translation_target">Terjemahkan ke</string>
+    <string name="translation_target_app">Bahasa aplikasi</string>
+    <string name="translation_endpoint">Alamat server</string>
+    <string name="translation_endpoint_deepl_help">Biarkan kosong untuk memakai DeepL Free atau Pro sesuai kunci Anda.</string>
+    <string name="translation_endpoint_libre_help">Server LibreTranslate Anda, misalnya https://translate.example.com</string>
+    <string name="translation_key_optional">Hanya perlu jika server Anda memintanya</string>
+    <string name="translation_ai_description">Memakai penyedia AI yang diatur di Setelan.</string>
+    <string name="translation_ai_not_configured">Atur penyedia AI dulu</string>
+    <string name="translation_invalid">Periksa alamat server dan kunci API</string>
+    <string name="translation_saved">Setelan terjemahan disimpan</string>
+    <string name="translation_clear_cache">Hapus terjemahan tersimpan</string>
+    <string name="translation_cache_cleared">Terjemahan tersimpan dihapus</string>
+    <string name="translation_not_configured">Pilih layanan terjemahan dulu</string>
+    <string name="translation_hint">Terjemahkan postingan dari semua jaringan dengan layanan pilihan Anda</string>
+    <string name="translation_examples">Server publik untuk dicoba</string>
+    <string name="translation_examples_note">Teks yang Anda terjemahkan dikirim ke server yang Anda pilih. Anda juga bisa menjalankan LibreTranslate di komputer atau server sendiri.</string>
+    <string name="translation_test">Uji</string>
+    <string name="translation_testing">Menguji…</string>
+    <string name="translation_test_ok">Server menjawab: %1$d bahasa</string>
+    <string name="translation_unreachable">Server tidak menjawab. Periksa alamat dan koneksi Anda.</string>
+    <string name="translation_refused">Server menolak. Mungkin perlu kunci API, atau kuncinya salah.</string>
+    <string name="translation_rate_limited">Terlalu banyak terjemahan saat ini. Coba lagi nanti.</string>
+    <string name="translation_unsupported">Server ini tidak menerjemahkan ke bahasa itu.</string>
+    <string name="translation_bad_answer">Jawaban server tidak berisi terjemahan.</string>
+</resources>
