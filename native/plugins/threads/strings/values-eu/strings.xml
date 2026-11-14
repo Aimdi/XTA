@@ -286,4 +286,8 @@
     <string name="account_resting_until">Atsedenean %1$s arte</string>
     <string name="account_usage">Kontuarekin egindako irakurketak azken 24 orduetan: %1$d / %2$d</string>
     <string name="account_guard_detail">Jarraitzaileek, «Gustuko dute»-k, jarduerak eta pertsonen bilaketak zure kontua irekitzen dituzunean bakarrik erabiltzen dute, segundo batzuetako tartearekin, eta Meta ohartu aurretik gelditzen dira. Gainerako guztia gonbidatu gisa irakurtzen da.</string>
+    <string name="suggested_for_you">Zuretzako iradokizunak</string>
+    <string name="suggestion_follow">Jarraitu %1$s gailu honetan</string>
+    <string name="suggestion_unfollow">Utzi %1$s jarraitzeari gailu honetan</string>
+    <string name="suggestion_hide">Kendu %1$s iradokizunetatik</string>
 </resources>

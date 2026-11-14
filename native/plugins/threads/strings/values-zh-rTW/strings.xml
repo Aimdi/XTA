@@ -279,4 +279,8 @@
     <string name="account_resting_until">休息至 %1$s</string>
     <string name="account_usage">過去 24 小時以帳號讀取：%1$d / %2$d</string>
     <string name="account_guard_detail">追蹤者、說讚的人、動態和搜尋用戶只在你開啟時才使用你的帳號，每次間隔幾秒，並在 Meta 察覺之前暫停。其餘內容都以訪客身分讀取。</string>
+    <string name="suggested_for_you">為你推薦</string>
+    <string name="suggestion_follow">在此裝置上追蹤 %1$s</string>
+    <string name="suggestion_unfollow">在此裝置上取消追蹤 %1$s</string>
+    <string name="suggestion_hide">從推薦中移除 %1$s</string>
 </resources>

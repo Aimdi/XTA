@@ -99,6 +99,9 @@ class ThreadsDirectClient(
     private val recommendedReads = SingleFlight<List<ThreadsProfile>>()
     private var recommendedRead: Pair<Long, List<ThreadsProfile>>? = null
 
+    /** The accounts the last Bearer For you page carried between its posts, and when ([timelineSuggestions]). */
+    private var timelineSuggested: Pair<Long, List<ThreadsSuggestedAccount>>? = null
+
     /** The values the pages read gave Relay's provided variables ([ThreadsRelayProviders]), the latest of each. */
     private val relayProviders = LinkedHashMap<String, Boolean>()
 
@@ -223,6 +226,59 @@ class ThreadsDirectClient(
         if (name.isBlank()) throw ThreadsException(NO_SUCH_FEED, "no community name", manual = true)
         val body = sessionApi("community", ThreadsCommunityFeed.paths(name), ThreadsCommunityFeed.params(name, cursor), paging = cursor != null, fresh = fresh)
         return ThreadsCommunityFeed.page(body)
+    }
+
+    /**
+     * The accounts Threads suggests the signed-in reader ([ThreadsSuggested]):
+     * the recommended-users query with the cookies where [routes] allows it,
+     * else the app API's likely paths, tried in turn; a session read through
+     * the guard as [people] is, kept half an hour and never sent from
+     * [ThreadsBackground] unless the reader opted in. With no route for the
+     * session, [NOT_CONFIGURED] and nothing asked. A read only: no one is
+     * followed or dismissed on Threads.
+     */
+    suspend fun suggestedPeople(routes: ThreadsSuggestedRoutes = ThreadsSuggestedRoutes.SHIPPED, fresh: Boolean = false): List<ThreadsSuggestedAccount> {
+        val current = session()
+        return when {
+            routes.query && current.hasCookies -> {
+                val docId = repairs().recommendedUsersDocId.ifEmpty { ThreadsSuggested.QUERY_DOC_ID }
+                ThreadsSuggested.fromQuery(remembered("suggested|query|$docId", fresh) { sessionQuery(ThreadsSuggested.QUERY, docId, ThreadsSuggested.variables()) })
+            }
+            routes.path && current.hasDirectAuth -> ThreadsSuggested.fromRest(sessionApi("suggested", ThreadsSuggested.PATHS, ThreadsSuggested.params(), fresh = fresh))
+            else -> throw ThreadsException(NOT_CONFIGURED, "no route for suggestions", manual = true)
+        }
+    }
+
+    /**
+     * The accounts the last Bearer For you page read carried between its
+     * posts, with when it was read; null when none did. Asks nothing.
+     */
+    fun timelineSuggestions(): Pair<Long, List<ThreadsSuggestedAccount>>? = synchronized(keeping) { timelineSuggested }
+
+    /**
+     * A GraphQL query sent with the session's cookies, as threads.com's
+     * signed-in client sends one: through the guard as every session read
+     * is, its redirects read for a challenge or a sign-out. Only a query:
+     * a [name] that is a mutation is never sent.
+     */
+    private suspend fun sessionQuery(name: String, docId: String, variables: JsonObject): J {
+        require("Mutation" !in name) { "a session query only" }
+        val current = requireCookies()
+        val url = ThreadsLinks.web(GRAPHQL)
+        val form = listOf("doc_id" to docId, "variables" to variables.toString()) + GuestQuery.relayForm(name)
+        val body = form.joinToString("&") { (key, value) -> "${ThreadsLinks.formEncode(key)}=${ThreadsLinks.formEncode(value)}" }
+        val headers = cookieHeaders(current) + mapOf("Content-Type" to FORM, "X-FB-Friendly-Name" to name, "Origin" to ThreadsLinks.WEB)
+        val response = sendSession(url, paging = false) { http.post(url, headers, body, FORM) }
+        if (response.code in REDIRECTS) {
+            val next = response.header("Location")?.let(url::resolve)
+            when (next?.let(ThreadsAccountSignals::ofRedirect)) {
+                ThreadsSignal.CHALLENGE -> throw parked(url, response)
+                ThreadsSignal.SIGNED_OUT -> throw signedOut(url, response.code)
+                else -> throw ThreadsException(UNREACHABLE, "$url: ${response.code}", response.code, manual = true)
+            }
+        }
+        checkSession(response, url)
+        return decodeJson(response, url)
     }
 
     /**
@@ -419,6 +475,7 @@ class ThreadsDirectClient(
             ),
         )
         val body = sessionRead(url, bearerHeaders(token, device), paging = after != null)
+        ThreadsSuggested.fromTimeline(body).takeIf { it.isNotEmpty() }?.let { found -> synchronized(keeping) { timelineSuggested = clock() to found } }
         val next = (body["next_max_id"].string ?: body["next_max_id"].integer?.toString())?.trim()?.ifEmpty { null }
         return Page(ThreadsParser.feed(body), next.takeIf { body["more_available"].boolean != false })
     }

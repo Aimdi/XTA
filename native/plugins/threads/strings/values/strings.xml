@@ -288,4 +288,8 @@
     <string name="account_resting_until">Resting until %1$s</string>
     <string name="account_usage">Account reads in the last 24 hours: %1$d of %2$d</string>
     <string name="account_guard_detail">Followers, Liked by, Activity and people search use your account only when you open them, a few seconds apart, and pause before Meta would notice. Everything else is read as a guest.</string>
+    <string name="suggested_for_you">Suggested for you</string>
+    <string name="suggestion_follow">Follow %1$s on this device</string>
+    <string name="suggestion_unfollow">Unfollow %1$s on this device</string>
+    <string name="suggestion_hide">Remove %1$s from suggestions</string>
 </resources>

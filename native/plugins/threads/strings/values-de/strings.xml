@@ -286,4 +286,8 @@
     <string name="account_resting_until">Pausiert bis %1$s</string>
     <string name="account_usage">Abrufe mit dem Konto in den letzten 24 Stunden: %1$d von %2$d</string>
     <string name="account_guard_detail">Follower, „Gefällt“, Aktivität und Personensuche nutzen dein Konto nur, wenn du sie öffnest, mit einigen Sekunden Abstand, und pausieren, bevor Meta es bemerken würde. Alles andere wird als Gast gelesen.</string>
+    <string name="suggested_for_you">Für dich vorgeschlagen</string>
+    <string name="suggestion_follow">%1$s auf diesem Gerät folgen</string>
+    <string name="suggestion_unfollow">%1$s auf diesem Gerät nicht mehr folgen</string>
+    <string name="suggestion_hide">%1$s aus den Vorschlägen entfernen</string>
 </resources>

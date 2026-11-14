@@ -286,4 +286,8 @@
     <string name="account_resting_until">Rust tot %1$s</string>
     <string name="account_usage">Leesacties met het account in de afgelopen 24 uur: %1$d van %2$d</string>
     <string name="account_guard_detail">Volgers, Leuk gevonden door, Activiteit en mensen zoeken gebruiken je account alleen als je ze opent, een paar seconden na elkaar, en pauzeren voordat Meta het zou merken. Al het andere wordt als gast gelezen.</string>
+    <string name="suggested_for_you">Voorgesteld voor jou</string>
+    <string name="suggestion_follow">%1$s volgen op dit apparaat</string>
+    <string name="suggestion_unfollow">%1$s niet meer volgen op dit apparaat</string>
+    <string name="suggestion_hide">%1$s uit de suggesties verwijderen</string>
 </resources>

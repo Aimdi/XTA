@@ -300,4 +300,8 @@
     <string name="account_resting_until">Отдыхает до %1$s</string>
     <string name="account_usage">Чтения с аккаунтом за последние 24 часа: %1$d из %2$d</string>
     <string name="account_guard_detail">Читатели, «Понравилось», активность и поиск людей используют ваш аккаунт, только когда вы их открываете, с паузой в несколько секунд, и останавливаются раньше, чем Meta заметит. Всё остальное читается как гость.</string>
+    <string name="suggested_for_you">Рекомендуем вам</string>
+    <string name="suggestion_follow">Подписаться на %1$s на этом устройстве</string>
+    <string name="suggestion_unfollow">Отписаться от %1$s на этом устройстве</string>
+    <string name="suggestion_hide">Убрать %1$s из рекомендаций</string>
 </resources>

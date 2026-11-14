@@ -293,4 +293,8 @@
     <string name="account_resting_until">În repaus până la %1$s</string>
     <string name="account_usage">Citiri cu contul în ultimele 24 de ore: %1$d din %2$d</string>
     <string name="account_guard_detail">Urmăritorii, „Apreciat de”, activitatea și căutarea de persoane îți folosesc contul doar când le deschizi, la câteva secunde distanță, și se opresc înainte ca Meta să observe. Restul se citește ca vizitator.</string>
+    <string name="suggested_for_you">Sugestii pentru tine</string>
+    <string name="suggestion_follow">Urmărește %1$s pe acest dispozitiv</string>
+    <string name="suggestion_unfollow">Nu mai urmări %1$s pe acest dispozitiv</string>
+    <string name="suggestion_hide">Elimină %1$s din sugestii</string>
 </resources>

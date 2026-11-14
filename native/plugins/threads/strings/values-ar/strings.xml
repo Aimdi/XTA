@@ -314,4 +314,8 @@
     <string name="account_resting_until">في استراحة حتى %1$s</string>
     <string name="account_usage">قراءات الحساب في آخر 24 ساعة: %1$d من %2$d</string>
     <string name="account_guard_detail">المتابِعون و«أُعجب به» والنشاط والبحث عن الأشخاص تستخدم حسابك فقط عندما تفتحها، بفاصل بضع ثوانٍ، وتتوقف قبل أن تلاحظ ميتا. كل ما عدا ذلك يُقرأ كزائر.</string>
+    <string name="suggested_for_you">مقترح لك</string>
+    <string name="suggestion_follow">متابعة %1$s على هذا الجهاز</string>
+    <string name="suggestion_unfollow">إلغاء متابعة %1$s على هذا الجهاز</string>
+    <string name="suggestion_hide">إزالة %1$s من الاقتراحات</string>
 </resources>

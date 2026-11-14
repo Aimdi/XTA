@@ -286,4 +286,8 @@
     <string name="account_resting_until">Puhkab kuni %1$s</string>
     <string name="account_usage">Lugemised kontoga viimase 24 tunni jooksul: %1$d / %2$d</string>
     <string name="account_guard_detail">Jälgijad, „Meeldib“, tegevus ja inimeste otsing kasutavad sinu kontot ainult siis, kui need avad, mõnesekundiliste vahedega, ja peatuvad enne, kui Meta märkaks. Kõik muu loetakse külalisena.</string>
+    <string name="suggested_for_you">Sulle soovitatud</string>
+    <string name="suggestion_follow">Jälgi kasutajat %1$s selles seadmes</string>
+    <string name="suggestion_unfollow">Lõpeta kasutaja %1$s jälgimine selles seadmes</string>
+    <string name="suggestion_hide">Eemalda %1$s soovitustest</string>
 </resources>

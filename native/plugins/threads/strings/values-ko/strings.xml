@@ -279,4 +279,8 @@
     <string name="account_resting_until">%1$s까지 쉬는 중</string>
     <string name="account_usage">지난 24시간 동안 계정으로 읽은 횟수: %2$d회 중 %1$d회</string>
     <string name="account_guard_detail">팔로워, 좋아한 사람, 활동, 사람 검색은 열 때만 몇 초 간격으로 계정을 사용하고, Meta가 알아채기 전에 멈춥니다. 나머지는 모두 게스트로 읽습니다.</string>
+    <string name="suggested_for_you">회원님을 위한 추천</string>
+    <string name="suggestion_follow">이 기기에서 %1$s 팔로우</string>
+    <string name="suggestion_unfollow">이 기기에서 %1$s 팔로우 취소</string>
+    <string name="suggestion_hide">추천에서 %1$s 삭제</string>
 </resources>

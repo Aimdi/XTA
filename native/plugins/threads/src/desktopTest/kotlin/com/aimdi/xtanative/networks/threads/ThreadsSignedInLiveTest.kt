@@ -12,8 +12,9 @@ import org.junit.jupiter.api.Assumptions.assumeTrue
  * How the paths a signed-in reader's own lists are tried at answer a
  * guest, for the next round to read in CI's log (`LIVE Threads signed in
  * …`): the Following feed ([ThreadsOwnFeeds]), the saved and liked posts,
- * the activity ([ThreadsActivity]) and a community's feed
- * ([ThreadsCommunityFeed]). A real session path sends a guest
+ * the activity ([ThreadsActivity]), a community's feed
+ * ([ThreadsCommunityFeed]) and the accounts suggested in For you
+ * ([ThreadsSuggested]). A real session path sends a guest
  * to sign in (302), as the replies' and the current user's do (the
  * controls); a wrong one is a 404. threads.com's own pages for them
  * (`/activity`, `/saved`, `/liked`, `/following`) are asked too, for where
@@ -44,6 +45,10 @@ class ThreadsSignedInLiveTest {
         // A community as a signed-in reader is shown it (ThreadsCommunityFeed, off until one of these answers 302 beside the controls).
         ThreadsCommunityFeed.paths(COMMUNITY).forEachIndexed { index, path ->
             answer(http, "community path ${index + 1}", ThreadsLinks.web(path, ThreadsCommunityFeed.params(COMMUNITY, null)), JSON)
+        }
+        // For you's "Suggested for you" (ThreadsSuggested, off until one of these answers 302 beside the controls).
+        ThreadsSuggested.PATHS.forEachIndexed { index, path ->
+            answer(http, "suggested path ${index + 1}", ThreadsLinks.web(path, ThreadsSuggested.params()), JSON)
         }
     }
 

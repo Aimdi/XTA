@@ -300,4 +300,8 @@
     <string name="account_resting_until">Odpočívá do %1$s</string>
     <string name="account_usage">Čtení s účtem za posledních 24 hodin: %1$d z %2$d</string>
     <string name="account_guard_detail">Sledující, To se líbí, aktivita a hledání lidí používají váš účet jen tehdy, když je otevřete, s odstupem několika sekund, a zastaví se dřív, než by si toho Meta všimla. Vše ostatní se čte jako host.</string>
+    <string name="suggested_for_you">Navrženo pro vás</string>
+    <string name="suggestion_follow">Sledovat %1$s v tomto zařízení</string>
+    <string name="suggestion_unfollow">Přestat sledovat %1$s v tomto zařízení</string>
+    <string name="suggestion_hide">Odebrat %1$s z návrhů</string>
 </resources>

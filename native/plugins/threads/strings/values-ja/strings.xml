@@ -279,4 +279,8 @@
     <string name="account_resting_until">%1$s まで休止中</string>
     <string name="account_usage">過去 24 時間のアカウントでの読み込み: %1$d / %2$d</string>
     <string name="account_guard_detail">フォロワー、いいねした人、アクティビティ、人物検索は、開いたときだけ数秒おきにアカウントを使い、Meta に気づかれる前に休止します。それ以外はすべてゲストとして読み込みます。</string>
+    <string name="suggested_for_you">おすすめのアカウント</string>
+    <string name="suggestion_follow">このデバイスで%1$sをフォロー</string>
+    <string name="suggestion_unfollow">このデバイスで%1$sのフォローを解除</string>
+    <string name="suggestion_hide">%1$sをおすすめから削除</string>
 </resources>

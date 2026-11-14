@@ -23,6 +23,8 @@ import com.aimdi.xtanative.networks.threads.ThreadsRssHub
 import com.aimdi.xtanative.networks.threads.ThreadsSearchTerms
 import com.aimdi.xtanative.networks.threads.ThreadsSession
 import com.aimdi.xtanative.networks.threads.ThreadsSetup
+import com.aimdi.xtanative.networks.threads.ThreadsSuggested
+import com.aimdi.xtanative.networks.threads.ThreadsSuggestedAccount
 import com.aimdi.xtanative.networks.threads.ThreadsXy
 import com.aimdi.xtanative.store.backup.ProfileSubscriptionRow
 import com.aimdi.xtanative.store.backup.XtaTime
@@ -116,6 +118,24 @@ internal class ThreadsApp(val host: PluginHost) {
      * going on into the topics and communities it explores.
      */
     val forYou = ThreadsForYouFeed(ThreadsForYou(direct, ::exploreTopics)::page)
+
+    /**
+     * For you's "Suggested for you": what Threads suggests the signed-in
+     * reader, read with the account only once they reach the row, the
+     * accounts they hid from it kept here. Nothing is followed or hidden on Threads.
+     */
+    val suggestions = ThreadsSuggestedPeople(
+        file = host.store.file("suggestions_hidden.json"),
+        read = { ready(); direct.suggestedPeople() },
+        usable = { ThreadsSuggested.usesAccount(session(), ThreadsAccountView.state(direct.guard.refresh())) },
+        timeline = { direct.timelineSuggestions()?.takeIf { session().useSessionApis } },
+    )
+
+    /** [suggestion] followed on this device only, as any account followed here: its public posts come to Home. */
+    fun followSuggested(suggestion: ThreadsSuggestedAccount) = follow(ThreadsAccount(suggestion.handle, suggestion.name, suggestion.avatarUrl))
+
+    /** [handle] hidden from For you's suggestions on this device. */
+    fun dismissSuggested(handle: String) = launch { suggestions.dismiss(handle) }
 
     /** The section the tab shows. */
     val section = MutableStateFlow(ThreadsSection.HOME)

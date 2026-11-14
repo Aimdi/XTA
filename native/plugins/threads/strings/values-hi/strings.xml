@@ -286,4 +286,8 @@
     <string name="account_resting_until">%1$s तक विश्राम में</string>
     <string name="account_usage">पिछले 24 घंटों में खाते से पढ़ाई: %2$d में से %1$d</string>
     <string name="account_guard_detail">अनुसरणकर्ता, “इन्हें पसंद आया”, गतिविधि और लोगों की खोज आपके खाते का इस्तेमाल सिर्फ़ तब करते हैं जब आप उन्हें खोलते हैं, कुछ सेकंड के अंतर पर, और मेटा के ध्यान देने से पहले रुक जाते हैं। बाकी सब मेहमान के रूप में पढ़ा जाता है।</string>
+    <string name="suggested_for_you">आपके लिए सुझाव</string>
+    <string name="suggestion_follow">इस डिवाइस पर %1$s को फ़ॉलो करें</string>
+    <string name="suggestion_unfollow">इस डिवाइस पर %1$s को अनफ़ॉलो करें</string>
+    <string name="suggestion_hide">%1$s को सुझावों से हटाएँ</string>
 </resources>

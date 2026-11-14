@@ -292,4 +292,8 @@
     <string name="account_resting_until">En repòs fins a les %1$s</string>
     <string name="account_usage">Lectures amb el compte en les últimes 24 hores: %1$d de %2$d</string>
     <string name="account_guard_detail">Els seguidors, «Li agrada a», l’activitat i la cerca de persones fan servir el teu compte només quan els obres, amb uns segons entre lectures, i s’aturen abans que Meta se n’adoni. Tota la resta es llegeix com a convidat.</string>
+    <string name="suggested_for_you">Suggeriments per a tu</string>
+    <string name="suggestion_follow">Segueix %1$s en aquest dispositiu</string>
+    <string name="suggestion_unfollow">Deixa de seguir %1$s en aquest dispositiu</string>
+    <string name="suggestion_hide">Treu %1$s dels suggeriments</string>
 </resources>

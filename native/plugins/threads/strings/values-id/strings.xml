@@ -279,4 +279,8 @@
     <string name="account_resting_until">Beristirahat sampai %1$s</string>
     <string name="account_usage">Bacaan dengan akun dalam 24 jam terakhir: %1$d dari %2$d</string>
     <string name="account_guard_detail">Pengikut, Disukai oleh, Aktivitas, dan pencarian orang memakai akun Anda hanya saat Anda membukanya, berjarak beberapa detik, dan berhenti sebelum Meta menyadarinya. Selebihnya dibaca sebagai tamu.</string>
+    <string name="suggested_for_you">Disarankan untuk Anda</string>
+    <string name="suggestion_follow">Ikuti %1$s di perangkat ini</string>
+    <string name="suggestion_unfollow">Berhenti mengikuti %1$s di perangkat ini</string>
+    <string name="suggestion_hide">Hapus %1$s dari saran</string>
 </resources>

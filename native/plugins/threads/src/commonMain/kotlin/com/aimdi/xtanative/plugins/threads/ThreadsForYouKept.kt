@@ -124,7 +124,11 @@ internal sealed interface ThreadsForYouRow {
         override val key: String get() = KEY + post.id
     }
 
-    /** The feed's authors not followed here yet. */
+    /**
+     * Who to follow: Threads' suggestions for the signed-in reader where
+     * they come ("Suggested for you", read once the reader reaches this
+     * row), else the feed's authors not followed here yet.
+     */
     data class People(val people: List<ThreadsPerson>) : ThreadsForYouRow {
         override val key: String get() = "people"
     }
@@ -160,20 +164,23 @@ internal sealed interface ThreadsForYouRow {
          * the public one; the posts, the people to follow after the first
          * few and the topics to explore a little further on (at the end of a
          * shorter list); then that more is coming, why it did not, or that
-         * this is all.
+         * this is all. With [suggests] (Threads' suggestions may come from
+         * the reader's account) the people row stands where it would even
+         * when the feed names no one new: reaching it is what reads them.
          */
-        fun of(state: ThreadsForYouState, people: List<ThreadsPerson>, topics: List<ThreadsTopic> = emptyList()): List<ThreadsForYouRow> = buildList {
+        fun of(state: ThreadsForYouState, people: List<ThreadsPerson>, topics: List<ThreadsTopic> = emptyList(), suggests: Boolean = false): List<ThreadsForYouRow> = buildList {
+            val peopleRow = people.isNotEmpty() || suggests
             val refused = state.sessionProblem
             when {
                 refused != null -> add(SessionNotice(refused))
                 state.source == ThreadsForYouSource.GUEST && state.posts.isNotEmpty() -> add(PublicNote)
             }
             state.posts.forEachIndexed { index, post ->
-                if (index == PEOPLE_AFTER && people.isNotEmpty()) add(People(people))
+                if (index == PEOPLE_AFTER && peopleRow) add(People(people))
                 if (index == TOPICS_AFTER && topics.isNotEmpty()) add(Topics(topics))
                 add(Post(post))
             }
-            if (state.posts.isNotEmpty() && state.posts.size <= PEOPLE_AFTER && people.isNotEmpty()) add(People(people))
+            if (state.posts.isNotEmpty() && state.posts.size <= PEOPLE_AFTER && peopleRow) add(People(people))
             if (state.posts.isNotEmpty() && state.posts.size <= TOPICS_AFTER && topics.isNotEmpty()) add(Topics(topics))
             val failed = state.moreProblem
             when {

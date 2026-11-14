@@ -300,4 +300,8 @@
     <string name="account_resting_until">Відпочиває до %1$s</string>
     <string name="account_usage">Читання з обліковим записом за останні 24 години: %1$d з %2$d</string>
     <string name="account_guard_detail">Підписники, «Сподобалося», активність і пошук людей використовують ваш обліковий запис, лише коли ви їх відкриваєте, з паузою в кілька секунд, і зупиняються раніше, ніж Meta помітить. Усе інше читається як гість.</string>
+    <string name="suggested_for_you">Рекомендовано для вас</string>
+    <string name="suggestion_follow">Стежити за %1$s на цьому пристрої</string>
+    <string name="suggestion_unfollow">Не стежити за %1$s на цьому пристрої</string>
+    <string name="suggestion_hide">Прибрати %1$s з рекомендацій</string>
 </resources>

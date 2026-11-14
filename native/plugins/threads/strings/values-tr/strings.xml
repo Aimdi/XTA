@@ -286,4 +286,8 @@
     <string name="account_resting_until">%1$s saatine kadar dinleniyor</string>
     <string name="account_usage">Son 24 saatte hesapla yapılan okumalar: %1$d / %2$d</string>
     <string name="account_guard_detail">Takipçiler, Beğenenler, Etkinlik ve kişi araması hesabınızı yalnızca onları açtığınızda, birkaç saniye arayla kullanır ve Meta fark etmeden önce durur. Geri kalan her şey konuk olarak okunur.</string>
+    <string name="suggested_for_you">Senin için önerilenler</string>
+    <string name="suggestion_follow">%1$s hesabını bu cihazda takip et</string>
+    <string name="suggestion_unfollow">%1$s hesabını bu cihazda takipten çık</string>
+    <string name="suggestion_hide">%1$s hesabını önerilerden kaldır</string>
 </resources>

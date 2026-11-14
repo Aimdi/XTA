@@ -279,4 +279,8 @@
     <string name="account_resting_until">休息至 %1$s</string>
     <string name="account_usage">过去 24 小时用账号读取：%1$d / %2$d</string>
     <string name="account_guard_detail">关注者、赞过的人、动态和找人只在你打开时才使用你的账号，每次间隔几秒，并在 Meta 察觉之前暂停。其余内容都以访客身份读取。</string>
+    <string name="suggested_for_you">为你推荐</string>
+    <string name="suggestion_follow">在此设备上关注 %1$s</string>
+    <string name="suggestion_unfollow">在此设备上取消关注 %1$s</string>
+    <string name="suggestion_hide">从推荐中移除 %1$s</string>
 </resources>

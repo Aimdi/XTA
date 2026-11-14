@@ -292,4 +292,8 @@
     <string name="account_resting_until">Em repouso até às %1$s</string>
     <string name="account_usage">Leituras com a conta nas últimas 24 horas: %1$d de %2$d</string>
     <string name="account_guard_detail">Seguidores, Gostos de, Atividade e a pesquisa de pessoas usam a sua conta só quando os abre, com alguns segundos de intervalo, e param antes de a Meta reparar. Tudo o resto é lido como convidado.</string>
+    <string name="suggested_for_you">Sugestões para si</string>
+    <string name="suggestion_follow">Seguir %1$s neste dispositivo</string>
+    <string name="suggestion_unfollow">Deixar de seguir %1$s neste dispositivo</string>
+    <string name="suggestion_hide">Remover %1$s das sugestões</string>
 </resources>

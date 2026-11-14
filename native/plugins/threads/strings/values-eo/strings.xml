@@ -286,4 +286,8 @@
     <string name="account_resting_until">Ripozas ĝis %1$s</string>
     <string name="account_usage">Legoj per la konto en la lastaj 24 horoj: %1$d el %2$d</string>
     <string name="account_guard_detail">Abonantoj, «Ŝatata de», aktiveco kaj serĉo de homoj uzas vian konton nur kiam vi malfermas ilin, kelkajn sekundojn inter legoj, kaj paŭzas antaŭ ol Meta rimarkus. Ĉio alia estas legata kiel gasto.</string>
+    <string name="suggested_for_you">Proponitaj por vi</string>
+    <string name="suggestion_follow">Sekvi %1$s en ĉi tiu aparato</string>
+    <string name="suggestion_unfollow">Ĉesi sekvi %1$s en ĉi tiu aparato</string>
+    <string name="suggestion_hide">Forigi %1$s el la proponoj</string>
 </resources>

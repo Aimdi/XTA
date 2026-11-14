@@ -286,4 +286,8 @@
     <string name="account_resting_until">Hviler til %1$s</string>
     <string name="account_usage">Lesinger med kontoen siste 24 timer: %1$d av %2$d</string>
     <string name="account_guard_detail">Følgere, Likt av, Aktivitet og personsøk bruker kontoen din bare når du åpner dem, noen sekunder imellom, og tar pause før Meta ville merket noe. Alt annet leses som gjest.</string>
+    <string name="suggested_for_you">Foreslått for deg</string>
+    <string name="suggestion_follow">Følg %1$s på denne enheten</string>
+    <string name="suggestion_unfollow">Slutt å følge %1$s på denne enheten</string>
+    <string name="suggestion_hide">Fjern %1$s fra forslagene</string>
 </resources>
