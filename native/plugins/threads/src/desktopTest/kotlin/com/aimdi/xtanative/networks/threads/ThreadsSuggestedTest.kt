@@ -98,9 +98,10 @@ class ThreadsSuggestedTest {
 
     @Test
     fun theAccountIsUsedOnlyByARouteKnownWithASessionThatIsReady() {
-        assertFalse(ThreadsSuggested.PATH_KNOWN, "ships off until CI's probe sees a path answer")
+        assertTrue(ThreadsSuggested.PATH_KNOWN, "CI's probe saw the paths send a guest to sign in")
         assertFalse(ThreadsSuggested.QUERY_KNOWN, "ships off until a session's answer is seen")
-        assertFalse(ThreadsSuggested.usesAccount(cookies, ThreadsAccountState.READY))
+        assertTrue(ThreadsSuggested.usesAccount(cookies, ThreadsAccountState.READY), "the shipped paths go with a ready session")
+        assertFalse(ThreadsSuggested.usesAccount(cookies, ThreadsAccountState.READY, ThreadsSuggestedRoutes(path = false, query = false)))
         assertTrue(ThreadsSuggested.usesAccount(cookies, ThreadsAccountState.READY, on))
         assertTrue(ThreadsSuggested.usesAccount(ThreadsSession(bearer = "IGT:2:x"), ThreadsAccountState.READY, pathsOnly))
         assertFalse(ThreadsSuggested.usesAccount(ThreadsSession(bearer = "IGT:2:x"), ThreadsAccountState.READY, ThreadsSuggestedRoutes(query = true, path = false)), "the query is sent with cookies only")
@@ -110,24 +111,31 @@ class ThreadsSuggestedTest {
     }
 
     @Test
-    fun theShippedRoutesAskNothing() = runBlocking {
+    fun noRouteAsksNothing() = runBlocking {
         val meta = FakeMeta { ok("{}") }
-        val refused = assertFailsWith<ThreadsException> { direct(meta, cookies, time = time).suggestedPeople() }
+        val refused = assertFailsWith<ThreadsException> { direct(meta, cookies, time = time).suggestedPeople(ThreadsSuggestedRoutes(path = false, query = false)) }
         assertEquals(ThreadsFailure.NOT_CONFIGURED, refused.failure)
         assertTrue(meta.asked.isEmpty())
+    }
+
+    @Test
+    fun theShippedRoutesAskThePathsCIsProbeSawAndNeverTheQuery() = runBlocking {
+        val meta = FakeMeta { asked -> if (asked.path == "/api/v1/discover/ayml/") ok(json(mapOf("users" to listOf(node("ceramics", pk = "101")))).toString()) else XResponse(404, "") }
+        assertEquals(listOf("ceramics"), direct(meta, cookies, time = time).suggestedPeople().map { it.handle })
+        assertEquals(listOf("/api/v1/text_feed/recommended_users/", "/api/v1/discover/ayml/"), meta.asked.map { it.path })
     }
 
     @Test
     fun thePathsAreASessionReadThroughTheGuardTriedInTurnAndKept() = runBlocking {
         val meta = FakeMeta { asked ->
             when (asked.path) {
-                "/api/v1/text_feed/suggested_users/" -> ok(json(mapOf("users" to listOf(node("ceramics", pk = "101")))).toString())
+                "/api/v1/discover/ayml/" -> ok(json(mapOf("users" to listOf(node("ceramics", pk = "101")))).toString())
                 else -> XResponse(404, "")
             }
         }
         val client = direct(meta, cookies, time = time)
         assertEquals(listOf("ceramics"), client.suggestedPeople(pathsOnly).map { it.handle })
-        assertEquals(listOf("/api/v1/text_feed/recommended_users/", "/api/v1/text_feed/suggested_users/"), meta.asked.map { it.path })
+        assertEquals(listOf("/api/v1/text_feed/recommended_users/", "/api/v1/discover/ayml/"), meta.asked.map { it.path })
         assertTrue(meta.asked.all { it.method == "GET" && "Cookie" in it.headers }, "GETs with the session, nothing written")
         client.suggestedPeople(pathsOnly)
         assertEquals(2, meta.asked.size, "kept for half an hour")

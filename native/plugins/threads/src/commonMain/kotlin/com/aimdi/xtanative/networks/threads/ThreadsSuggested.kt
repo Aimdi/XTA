@@ -36,13 +36,14 @@ data class ThreadsSuggestedRoutes(val path: Boolean = ThreadsSuggested.PATH_KNOW
  * a guest asking `BarcelonaSearchRecommendedUsersRefetchableQuery` was
  * refused (`field_exception`, round 22).
  *
- * Three sources, none confirmed by a session yet:
+ * Three sources:
  * - a Bearer's For you timeline, which the reader opted in to: Instagram's
  *   timelines carry `suggested_users` items between posts, read out of the
  *   page already read ([fromTimeline]), costing nothing more;
  * - the app API's likely GETs ([PATHS]), tried in turn as every session
- *   list is, off until CI's probe (`LIVE Threads signed in suggested …`)
- *   sees one send a guest to sign in beside the controls ([PATH_KNOWN]);
+ *   list is, which CI's probe (`LIVE Threads signed in suggested …`)
+ *   saw send a guest to sign in beside the controls, while
+ *   `text_feed/suggested_users/` answered 404 and was dropped ([PATH_KNOWN]);
  * - the recommended-users query with the session's cookies ([QUERY_KNOWN]),
  *   whose answer CI's doc-id probe read the fields of
  *   (`xdt_text_app_recommended_users { edges { node } page_info }`).
@@ -50,8 +51,8 @@ data class ThreadsSuggestedRoutes(val path: Boolean = ThreadsSuggested.PATH_KNOW
  * A query, never a mutation: nothing is followed or dismissed on Threads.
  */
 object ThreadsSuggested {
-    /** Whether one of [PATHS] is known to answer a session: off until CI's probe sees one. */
-    const val PATH_KNOWN = false
+    /** Whether one of [PATHS] is known to answer a session: CI's probe saw both send a guest to sign in beside the controls (1.0.8). */
+    const val PATH_KNOWN = true
 
     /** Whether the recommended-users query answers a cookie session without the page's `fb_dtsg`: off until a session says so. */
     const val QUERY_KNOWN = false
@@ -68,7 +69,6 @@ object ThreadsSuggested {
     /** Where the app API may list the suggested accounts, in the order they are tried. */
     val PATHS = listOf(
         "/api/v1/text_feed/recommended_users/",
-        "/api/v1/text_feed/suggested_users/",
         "/api/v1/discover/ayml/",
     )
 

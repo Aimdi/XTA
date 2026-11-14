@@ -80,7 +80,7 @@ class ThreadsSuggestedPeopleTest {
         row.visit(); row.reached()
         usable = ThreadsSuggested.usesAccount(ThreadsSession(COOKIE), ThreadsAccountState.SIGNED_OUT, ThreadsSuggestedRoutes(path = true, query = true))
         row.visit(); row.reached()
-        usable = ThreadsSuggested.usesAccount(ThreadsSession(COOKIE), ThreadsAccountState.READY)
+        usable = ThreadsSuggested.usesAccount(ThreadsSession(COOKIE), ThreadsAccountState.READY, ThreadsSuggestedRoutes(path = false, query = false))
         row.visit(); row.reached()
         assertEquals(0, reads)
         assertTrue(row.state.value.people.isEmpty())
