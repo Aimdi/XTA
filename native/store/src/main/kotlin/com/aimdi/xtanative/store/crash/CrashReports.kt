@@ -1,4 +1,4 @@
-package com.aimdi.xtanative.ui.settings
+package com.aimdi.xtanative.store.crash
 
 import java.io.File
 import java.io.PrintWriter

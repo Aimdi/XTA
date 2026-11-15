@@ -87,6 +87,14 @@ keep loading in this app, which still has everything they use. 13 adds
 tab that joins More (Pixiv's account and About) goes there instead of taking
 a place; the four-argument constructor stays for plugins built before.
 
+Beyond `ui.plugins`, plugins use about fifty of the app's own parts
+(`ui.common`'s `Avatar` and `Hairline`, `ui.post`'s `PostActions`, the media
+players and so on). They are part of the contract as much as the API, since
+a plugin is compiled against their names. `PluginSurfaceTest` (in `:ui`'s
+desktop tests) lists them and fails when a plugin starts to use another, so
+the surface grows on purpose: move what a plugin needs into `ui.plugins`, or
+add it to the list knowingly.
+
 The app loads the versions from `OLDEST_PLUGIN_API` (2) to its own, so a
 plugin built before keeps working until its update comes, for as long as what
 it uses is still here: CI's desktop job checks the plugins published in

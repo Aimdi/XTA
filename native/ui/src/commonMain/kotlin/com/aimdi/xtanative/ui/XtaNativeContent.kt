@@ -8,12 +8,13 @@ import androidx.compose.runtime.remember
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.request.crossfade
-import com.aimdi.xtanative.ui.common.addPlatformPictureDecoders
 import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.data.plugins.AppPlugins
+import com.aimdi.xtanative.store.crash.CrashIssue
 import com.aimdi.xtanative.ui.common.FullPageError
 import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.SwitchedHapticsFrame
+import com.aimdi.xtanative.ui.common.addPlatformPictureDecoders
 import com.aimdi.xtanative.ui.downloads.DownloadsFrame
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.app_name
@@ -23,7 +24,6 @@ import com.aimdi.xtanative.ui.generated.resources.dismiss
 import com.aimdi.xtanative.ui.links.LinksFrame
 import com.aimdi.xtanative.ui.media.VideoFullscreenFrame
 import com.aimdi.xtanative.ui.pluginstore.PluginsFrame
-import com.aimdi.xtanative.ui.settings.CrashIssue
 import com.aimdi.xtanative.ui.settings.trimImageCache
 import com.aimdi.xtanative.ui.speech.SpeechBarScaffold
 import com.aimdi.xtanative.ui.theme.XtaTheme

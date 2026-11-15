@@ -1,10 +1,6 @@
-package com.aimdi.xtanative.ui.settings
+package com.aimdi.xtanative.store.backup
 
 import com.aimdi.xtanative.store.StoreDir
-import com.aimdi.xtanative.store.backup.BackupDocument
-import com.aimdi.xtanative.store.backup.BackupKeys
-import com.aimdi.xtanative.store.backup.WebDavVersion
-import com.aimdi.xtanative.store.backup.XtaTime
 import java.io.IOException
 import java.security.MessageDigest
 import java.time.Instant

@@ -1,4 +1,4 @@
-package com.aimdi.xtanative.ui.settings
+package com.aimdi.xtanative.store.crash
 
 import com.aimdi.xtanative.core.x.XNoAccountException
 import com.aimdi.xtanative.core.x.XRateLimitedException

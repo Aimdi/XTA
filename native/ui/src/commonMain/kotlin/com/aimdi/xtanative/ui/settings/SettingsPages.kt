@@ -48,6 +48,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.aimdi.xtanative.store.crash.CrashReportResult
+import com.aimdi.xtanative.store.crash.CrashReporter
 import com.aimdi.xtanative.store.downloads.DownloadDestination
 import com.aimdi.xtanative.store.settings.AccessibilityPrefs
 import com.aimdi.xtanative.store.settings.CrashReportPrefs

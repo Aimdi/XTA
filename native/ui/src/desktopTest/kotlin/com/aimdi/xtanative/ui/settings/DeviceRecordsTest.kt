@@ -11,6 +11,7 @@ import com.aimdi.xtanative.core.x.http.XResponse
 import com.aimdi.xtanative.core.x.signing.TransactionSigner
 import com.aimdi.xtanative.data.SessionStore
 import com.aimdi.xtanative.store.StoreDir
+import com.aimdi.xtanative.store.crash.CrashReports
 import com.aimdi.xtanative.store.settings.AccountPrefs
 import com.aimdi.xtanative.store.settings.DataPrefs
 import com.aimdi.xtanative.store.settings.GeneralPrefs

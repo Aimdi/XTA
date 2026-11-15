@@ -1,4 +1,4 @@
-package com.aimdi.xtanative.ui.settings
+package com.aimdi.xtanative.store.backup
 
 import com.aimdi.xtanative.store.StoreDir
 import java.io.IOException
