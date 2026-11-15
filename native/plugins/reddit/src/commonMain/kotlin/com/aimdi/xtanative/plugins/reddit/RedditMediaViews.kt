@@ -175,14 +175,10 @@ private fun FeedLinkCard(post: RedditPost, gate: MediaGate?, url: String, onOpen
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (preview == null) Thumb(post, gate)
-            Text(
-                RedditMediaRules.domain(post, url),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f).padding(horizontal = 12.dp, vertical = 10.dp),
-            )
+            Column(Modifier.weight(1f).padding(horizontal = 12.dp, vertical = 10.dp)) {
+                Text(RedditMediaRules.domain(post, url), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(pluginString(Strings.open_in_browser), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            }
             OutIcon(Modifier.padding(end = 12.dp))
         }
     }
@@ -192,7 +188,7 @@ private fun FeedLinkCard(post: RedditPost, gate: MediaGate?, url: String, onOpen
 @Composable
 private fun Thumb(post: RedditPost, gate: MediaGate?) {
     val thumbnail = post.thumbnailUrl
-    Box(Modifier.size(88.dp).background(MaterialTheme.colorScheme.surfaceContainerHighest), contentAlignment = Alignment.Center) {
+    Box(Modifier.size(64.dp).background(MaterialTheme.colorScheme.surfaceContainerHighest), contentAlignment = Alignment.Center) {
         if (thumbnail != null && gate == null) {
             AsyncImage(model = thumbnail, contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
         } else {
