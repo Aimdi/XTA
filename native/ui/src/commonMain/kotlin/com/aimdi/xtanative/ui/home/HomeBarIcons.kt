@@ -113,6 +113,14 @@ internal object HomeBarIcons {
         )
     }
 
+    /** More: four squares, for the bar's other places while a network's sections take it over. */
+    val More: ImageVector by lazy {
+        icon(
+            "BarMore",
+            strokes = listOf("M4.75 4.75H10.25V10.25H4.75Z", "M13.75 4.75H19.25V10.25H13.75Z", "M4.75 13.75H10.25V19.25H4.75Z", "M13.75 13.75H19.25V19.25H13.75Z"),
+        )
+    }
+
     /** [fills] filled even-odd, so a cut-out stays open, then [strokes] drawn as round 1.5 lines; tinted by the icon's colour. */
     private fun icon(name: String, fills: List<String> = emptyList(), strokes: List<String> = emptyList()): ImageVector {
         val builder = ImageVector.Builder(name = name, defaultWidth = 24.dp, defaultHeight = 24.dp, viewportWidth = 24f, viewportHeight = 24f)

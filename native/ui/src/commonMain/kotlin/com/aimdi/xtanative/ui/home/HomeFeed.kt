@@ -31,6 +31,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -134,6 +135,12 @@ internal fun HomeFeedPage(
     val graph = LocalGraph.current
     val settings by graph.settings.state.collectAsStateWithLifecycle()
     val source = (current as? HomeTab.Network)?.id
+    val takeover = LocalNetworkBarTakeover.current
+    DisposableEffect(takeover, source, client) {
+        takeover?.show(source, client.takeIf { source != null })
+        onDispose { takeover?.show(null, null) }
+    }
+    val sectionsBelow = takeover?.active == true && takeover.network == source
     val pinned = settings?.get(HomePrefs.keepControlsVisible) == true
     val keyboard = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     reading.active = source != null
@@ -169,6 +176,7 @@ internal fun HomeFeedPage(
                         onPicker = { calls.openSheet(HomeSheet.PICKER) },
                     ),
                     bar,
+                    sectionsBelow = sectionsBelow,
                 ) {
                     key(current.id) { NetworkActions(current.id, ui, networks, vm::setTopBarPins) }
                     if (desktop) IconButton(onClick = refresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) }

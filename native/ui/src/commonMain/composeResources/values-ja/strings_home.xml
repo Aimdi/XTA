@@ -69,4 +69,5 @@
     <string name="feed_strip_unavailable">このタイムラインはもう使えません</string>
     <string name="home_feed_accounts_empty">おすすめを表示するにはアカウントを追加してください。</string>
     <string name="home_all_timelines">すべてのタイムライン</string>
+    <string name="home_bar_more">その他</string>
 </resources>

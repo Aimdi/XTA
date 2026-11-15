@@ -259,6 +259,7 @@ private fun HomeDrawer(parts: HomeParts, shell: HomeShellState, deckFits: Boolea
 @Composable
 private fun HomeBody(parts: HomeParts, shell: HomeShellState, page: BarPage, following: FollowingLook, unread: Set<String>, refresh: () -> Unit, feedCalls: FeedPageCalls) {
     val ui = parts.ui
+    val takeover = remember { NetworkBarTakeover() }
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -271,10 +272,12 @@ private fun HomeBody(parts: HomeParts, shell: HomeShellState, page: BarPage, fol
                 onPage = { index -> barTapped(shell, ui, index) },
                 onNetworks = { shell.sheet = HomeSheet.NETWORKS },
                 onHoldHome = { shell.sheet = HomeSheet.PICKER },
+                sections = takeover.takeIf { page == BarPage.Feed },
             )
         },
     ) { padding ->
         val bottom = PaddingValues(bottom = padding.calculateBottomPadding())
+        CompositionLocalProvider(LocalNetworkBarTakeover provides takeover) {
         Box(Modifier.fillMaxSize().padding(bottom).consumeWindowInsets(bottom).nestedScroll(shell.bars.connection)) {
             BarPageHost(page, shell.retaps) { shown ->
                 when (shown) {
@@ -300,6 +303,7 @@ private fun HomeBody(parts: HomeParts, shell: HomeShellState, page: BarPage, fol
                     is BarPage.Group -> GroupFeedScreen(shown.groupId, parts.actions, onBack = null)
                 }
             }
+        }
         }
     }
 }

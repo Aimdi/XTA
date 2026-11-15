@@ -35,6 +35,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -75,6 +77,7 @@ import com.aimdi.xtanative.ui.generated.resources.home_add_timeline
 import com.aimdi.xtanative.ui.generated.resources.home_alt_microblogging
 import com.aimdi.xtanative.ui.generated.resources.home_discover
 import com.aimdi.xtanative.ui.generated.resources.home_home
+import com.aimdi.xtanative.ui.generated.resources.home_bar_more
 import com.aimdi.xtanative.ui.generated.resources.home_networks
 import com.aimdi.xtanative.ui.generated.resources.home_networks_all
 import com.aimdi.xtanative.ui.generated.resources.home_networks_recent
@@ -90,6 +93,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
+import androidx.compose.ui.graphics.Color
+import com.aimdi.xtanative.ui.plugins.pluginAccent
 
 /** The bar's height above the system's gesture area, with or without labels (kHomeNavigationHeight). */
 private val BAR_HEIGHT = 64.dp
@@ -213,8 +218,10 @@ internal fun HomeBottomBar(
     onPage: (Int) -> Unit,
     onNetworks: () -> Unit,
     onHoldHome: () -> Unit,
+    sections: NetworkBarTakeover? = null,
 ) {
     val slots = remember(ui.bar, ui.recentNetworks) { HomeBar.slots(ui.bar, ui.recentNetworks) }
+    if (sections != null && sections.active) return NetworkSectionsBar(ui, state, networks, sections, slots, onPage, onNetworks)
     val selected = HomeBar.slotOf(slots, page)
     Column(
         Modifier
@@ -242,6 +249,77 @@ internal fun HomeBottomBar(
     }
 }
 
+/**
+ * The bottom bar while a network's timeline takes it over ([NetworkBarRules]):
+ * the network's own sections, the one shown in its colour, then More, which
+ * lists the bar's other places (Subscriptions, Discover, Saved, networks and
+ * groups) and opens the one picked.
+ */
+@Composable
+private fun NetworkSectionsBar(
+    ui: HomeUi,
+    state: HomeBarsState,
+    networks: HomeNetworks,
+    takeover: NetworkBarTakeover,
+    slots: List<BarSlot>,
+    onPage: (Int) -> Unit,
+    onNetworks: () -> Unit,
+) {
+    val accent = pluginAccent(takeover.accent)
+    val more = remember(slots, ui.bar) { NetworkBarRules.moreSlots(slots, ui.bar) }
+    var open by remember { mutableStateOf(false) }
+    Column(
+        Modifier
+            .hiding(state)
+            .onSizeChanged { state.travel = it.height.toFloat() }
+            .background(MaterialTheme.colorScheme.background.copy(alpha = BAR_OPACITY)),
+    ) {
+        Hairline()
+        Row(Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.navigationBars).height(BAR_HEIGHT)) {
+            takeover.sections.forEach { section ->
+                BarItem(section.label, section.selected, ui.navigationLabels, onClick = section.onSelect, tint = accent.takeIf { section.selected }) { on ->
+                    Icon(section.icon, contentDescription = null, tint = if (on) accent else MaterialTheme.colorScheme.onBackground, modifier = Modifier.size(26.dp))
+                }
+            }
+            if (more.isNotEmpty()) {
+                BarItem(
+                    stringResource(Res.string.home_bar_more),
+                    selected = false,
+                    labels = ui.navigationLabels,
+                    onClick = { open = true },
+                    menu = {
+                        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+                            more.forEach { slot ->
+                                when (slot) {
+                                    BarSlot.Networks -> DropdownMenuItem(
+                                        text = { Text(stringResource(Res.string.home_networks)) },
+                                        leadingIcon = { BarIcon(HomeIcons.PublicOutlined) },
+                                        onClick = {
+                                            open = false
+                                            onNetworks()
+                                        },
+                                    )
+                                    is BarSlot.Page -> {
+                                        val page = ui.bar[slot.index]
+                                        DropdownMenuItem(
+                                            text = { Text(barLabel(page, ui)) },
+                                            leadingIcon = { BarPageIcon(page, false, ui, networks) },
+                                            onClick = {
+                                                open = false
+                                                onPage(slot.index)
+                                            },
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    },
+                ) { BarIcon(HomeBarIcons.More) }
+            }
+        }
+    }
+}
+
 /** A swipe across the bar turns to the page before or after (reader_swipe_navigation.dart). */
 @Composable
 private fun Modifier.barSwipe(page: Int, count: Int, onPage: (Int) -> Unit): Modifier {
@@ -262,7 +340,16 @@ private fun Modifier.barSwipe(page: Int, count: Int, onPage: (Int) -> Unit): Mod
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun RowScope.BarItem(label: String, selected: Boolean, labels: Boolean, onClick: () -> Unit, onHold: (() -> Unit)? = null, icon: @Composable (Boolean) -> Unit) {
+private fun RowScope.BarItem(
+    label: String,
+    selected: Boolean,
+    labels: Boolean,
+    onClick: () -> Unit,
+    onHold: (() -> Unit)? = null,
+    tint: Color? = null,
+    menu: @Composable () -> Unit = {},
+    icon: @Composable (Boolean) -> Unit,
+) {
     Column(
         Modifier
             .weight(1f)
@@ -281,11 +368,13 @@ private fun RowScope.BarItem(label: String, selected: Boolean, labels: Boolean, 
                 label,
                 fontSize = 11.sp,
                 fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
+                color = tint ?: Color.Unspecified,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.padding(start = 6.dp, end = 6.dp, top = 2.dp),
             )
         }
+        menu()
     }
 }
 
