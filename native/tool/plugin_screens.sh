@@ -50,6 +50,14 @@ wait_for() {
   return 1
 }
 
+# The first plugin under the store's "Installed · n" heading: the name on its
+# box, which a tap opens (a box has no Open button).
+installed_plugin() {
+  adb shell uiautomator dump /sdcard/ui.xml > /dev/null 2>&1 || true
+  adb exec-out cat /sdcard/ui.xml 2> /dev/null | tr '>' '\n' | sed -n 's/.* text="\([^"][^"]*\)".*/\1/p' \
+    | awk 'seen { print; exit } /^Installed/ { seen = 1 }' || true
+}
+
 # Why it failed, in the job's own log: the app's plugin lines (why a plugin
 # was not started), a crash, and what the screen says (a row's status line).
 fail() {
@@ -109,7 +117,7 @@ shot plugin-store 2
 # Install: downloaded, checked against the catalogue and the app's key, loaded.
 tap_node 'text="Install"' || fail "No Install for $name"
 shot plugin-store-installing 1
-wait_for 'text="Open"' 90 || { shot plugin-store-failed 0; fail "$name was not installed"; }
+wait_for 'text="Installed' 90 || { shot plugin-store-failed 0; fail "$name was not installed"; }
 shot plugin-store-installed 2
 
 # On Home's strip, from its row's menu (the lowest "More options"; the bar's is above it).
@@ -118,8 +126,10 @@ sleep 1
 tap_node 'text="Pin next to For you"' || fail "$name cannot be pinned on Home"
 sleep 1
 
-# Its home tab, opened from the store.
-tap_node 'text="Open"' || fail "No Open for $name"
+# Its home tab, opened from the store by a tap on its box.
+installed=$(installed_plugin)
+[ -n "$installed" ] || fail "No box under Installed"
+tap_node "text=\"$installed\"" || fail "No box for $installed"
 shot plugin-home 15
 
 # Home, where its timeline is now one of Home's, picked in the timeline picker.
