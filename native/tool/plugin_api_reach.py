@@ -91,7 +91,7 @@ def main():
 
     used = set()
     for f in kotlin_files(PLUGINS, True):
-        used |= set(re.findall(r"^import (" + re.escape(BASE) + r"ui\.[a-z]+\.[A-Za-z]+)", open(f, encoding="utf-8").read(), re.M))
+        used |= set(re.findall(r"^import (" + re.escape(BASE) + r"(?:ui\.[a-z]+|data(?:\.[a-z]+)?)\.[A-Za-z]+)$", open(f, encoding="utf-8").read(), re.M))
     roots = {f for f in files if info[f][0] == BASE + "ui.plugins"}
     for name in used:
         p, _, n = name.rpartition(".")
@@ -102,8 +102,10 @@ def main():
     lines = sum(info[f][3] for f in reach)
     print(f"The plugin API ({len(roots)} files) reaches {len(reach)} of {len(files)} files in :ui, {lines} of {total} lines ({100 * lines // total}%).")
 
-    api = [f for f in files if info[f][0] in API_LIKE]
-    movable = [f for f in api if all(info[x][0] in API_LIKE and not info[x][4] for x in closure({f}))]
+    # The API-like packages, and any other file declaring something plugins import (data.Problem).
+    api = sorted({f for f in files if info[f][0] in API_LIKE} | {f for f in roots if info[f][0] != BASE + "ui.plugins"})
+    api_set = set(api)
+    movable = [f for f in api if all((x in api_set or info[x][0] in API_LIKE) and not info[x][4] for x in closure({f}))]
     api_lines = sum(info[f][3] for f in api)
     moved = sum(info[f][3] for f in movable)
     print(f"Movable to a module today: {len(movable)} of {len(api)} API-like files, {moved} of {api_lines} lines ({100 * moved // api_lines}%).")
@@ -113,7 +115,7 @@ def main():
         pkg, imports, _, _, _ = info[f]
         for imp in imports:
             p, _, n = imp.rpartition(".")
-            if p.startswith(BASE) and p not in API_LIKE and n in declared.get(p, {}):
+            if p.startswith(BASE) and p not in API_LIKE and n in declared.get(p, {}) and not declared[p][n] <= api_set:
                 key = (pkg.removeprefix(BASE), p.removeprefix(BASE))
                 links[key] += 1
                 examples[key].add(n)

@@ -5,7 +5,8 @@ import kotlin.test.Test
 import kotlin.test.assertTrue
 
 /**
- * What the plugins use of the app beyond its plugin API (`ui.plugins`): these
+ * What the plugins use of the app beyond its plugin API (`ui.plugins`), in
+ * `ui.*` and `data.*`: these
  * are part of the contract with installed plugins as much as the API is, since
  * a plugin is compiled against their names. A plugin that starts to use
  * another of the app's parts fails here, so the contract grows on purpose (add
@@ -15,6 +16,7 @@ import kotlin.test.assertTrue
  */
 class PluginSurfaceTest {
     private val outsideTheApi = setOf(
+        "com.aimdi.xtanative.data.Problem",
         "com.aimdi.xtanative.ui.common.AltBadge",
         "com.aimdi.xtanative.ui.common.AltTextDialog",
         "com.aimdi.xtanative.ui.common.Avatar",
@@ -74,7 +76,8 @@ class PluginSurfaceTest {
         ?.flatMap { plugin -> File(plugin, "src").walkTopDown().filter { it.extension == "kt" && "Test" !in it.path }.toList() }
         .orEmpty()
 
-    private val imported = Regex("""^import (com\.aimdi\.xtanative\.ui\.(?!plugins\.|generated\.)[a-z]+\.[A-Za-z]+)""", RegexOption.MULTILINE)
+    // Every package :ui holds: its screens (ui.*) and the app's own data (data.*), but not ui.plugins, the API itself.
+    private val imported = Regex("""^import (com\.aimdi\.xtanative\.(?:ui\.(?!plugins\.|generated\.)[a-z]+|data(?:\.[a-z]+)?)\.[A-Z][A-Za-z]*|com\.aimdi\.xtanative\.(?:ui\.(?!plugins\.|generated\.)[a-z]+|data(?:\.[a-z]+)?)\.[a-z][A-Za-z]*)$""", RegexOption.MULTILINE)
 
     @Test
     fun pluginsUseOnlyTheAppsPartsTheContractNames() {
