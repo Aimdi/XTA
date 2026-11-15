@@ -27,6 +27,11 @@ internal object RedditGlyphs {
         )
     }
 
+    /** Sliders: the order's control on the communities' strip, as a profile's own. */
+    val Tune: ImageVector by lazy {
+        glyph("Tune", "M3 17V19H9V17H3ZM3 5V7H13V5H3ZM13 21V19H21V17H13V15H11V21H13ZM7 9V11H3V13H7V15H9V9H7ZM21 13V11H11V13H21ZM15 9H17V7H21V5H17V3H15V9Z")
+    }
+
     /** A rising line: Popular on Home's bottom bar, where the flame would read as the Hot order. */
     val Trending: ImageVector by lazy {
         glyph("Trending", "M16 6L18.29 8.29L13.41 13.17L9.41 9.17L2 16.59L3.41 18L9.41 12L13.41 16L19.71 9.71L22 12V6Z")
