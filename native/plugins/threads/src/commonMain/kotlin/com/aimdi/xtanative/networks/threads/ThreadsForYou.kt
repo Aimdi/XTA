@@ -31,7 +31,8 @@ data class ThreadsForYouPage(
  * Threads' own recommended feed, read and never acted on: nothing is liked,
  * followed, reposted or reported as seen.
  *
- * With a pasted `IGT:2` Bearer it is that account's For you timeline from the
+ * With a pasted `IGT:2` Bearer, and the reader's opt-in to session reads,
+ * it is that account's For you timeline from the
  * app API, page after page by Meta's `next_max_id`. Without one, or while the
  * session is parked, or when Meta refuses the session, it is the public front
  * page of threads.com as a logged-out browser gets it. Pasted cookies alone
@@ -53,9 +54,16 @@ class ThreadsForYou(
     private val explore: () -> List<String> = { emptyList() },
 ) {
     private val explored = LinkedHashSet<String>()
-    /** Whose page a read would ask for now. */
+    /**
+     * Whose page a read would ask for now: the Bearer's own only when the
+     * reader opted in to session reads ([ThreadsSession.useSessionApis]),
+     * since For you loads and pages on its own as the reader scrolls, and
+     * the account is spent only when a reader asks for it.
+     */
     val source: ThreadsForYouSource
-        get() = if (direct.currentSession.hasBearer && !direct.isSessionParked) ThreadsForYouSource.SESSION else ThreadsForYouSource.GUEST
+        get() = direct.currentSession.let { session ->
+            if (session.hasBearer && session.useSessionApis && !direct.isSessionParked) ThreadsForYouSource.SESSION else ThreadsForYouSource.GUEST
+        }
 
     /** The first page, or the one [cursor] names. */
     suspend fun page(cursor: String? = null): ThreadsForYouPage {
@@ -121,7 +129,7 @@ class ThreadsForYou(
         private const val EXPLORE_CURSOR = "explore:"
 
         /** What Meta says to a session that the public page can stand in for. */
-        private val SESSION_REFUSALS = setOf(ThreadsFailure.THROTTLED, ThreadsFailure.UNAUTHORIZED, ThreadsFailure.SESSION_SUSPENDED)
+        private val SESSION_REFUSALS = setOf(ThreadsFailure.THROTTLED, ThreadsFailure.UNAUTHORIZED, ThreadsFailure.SESSION_SUSPENDED, ThreadsFailure.ACCOUNT_RESTING)
     }
 }
 

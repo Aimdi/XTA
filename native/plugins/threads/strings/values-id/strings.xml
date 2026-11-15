@@ -111,8 +111,8 @@
     <string name="try_public">Coba akun publik</string>
     <string name="unfollow">Berhenti mengikuti</string>
     <string name="unlike_on_device">Hapus suka dari perangkat ini</string>
-    <string name="use_session">Gunakan sesi saya untuk akun yang diikuti</string>
-    <string name="use_session_description">Nonaktif secara bawaan. Jika aktif, aplikasi berbicara ke Threads sebagai Anda — Meta bisa memblokir akun itu. Biarkan mati kecuali login sekali pakai.</string>
+    <string name="use_session">Pakai sesi saya untuk Beranda dan Untuk Anda</string>
+    <string name="use_session_description">Mati secara bawaan, dan paling aman begitu: yang memerlukan akun Anda beralih ke akun itu sendiri saat Anda membukanya. Jika aktif, Beranda, Untuk Anda, dan akun yang Anda ikuti juga dibaca sebagai Anda — jauh lebih banyak permintaan, dan Meta bisa memblokir akun itu.</string>
     <string name="in_home_feed">Tampilkan di lini masa beranda</string>
     <string name="in_home_feed_description">Menggabungkan kiriman dari akun Threads yang Anda ikuti ke Mengikuti dan Untuk Anda</string>
     <string name="for_you">Untuk Anda</string>
@@ -144,6 +144,7 @@
     <string name="show_less">Tampilkan lebih sedikit</string>
     <string name="pinned_reply">Disematkan oleh penulis</string>
     <string name="spoiler">Spoiler</string>
+    <string name="sticker">Stiker</string>
     <string name="tap_to_show_spoiler">Ketuk untuk menampilkan spoiler</string>
     <string name="copy_text">Salin teks</string>
     <string name="copy_link">Salin tautan</string>
@@ -156,7 +157,8 @@
     <string name="exact_time">Tampilkan waktu persisnya</string>
     <string name="fewer_replies">Tampilkan lebih sedikit balasan</string>
     <string name="more_replies_web">Balasan lainnya di threads.com</string>
-    <string name="related_threads">Utas terkait</string>
+    <string name="more_from_author">Lainnya dari @%1$s</string>
+    <string name="more_on_topic">Lainnya tentang %1$s</string>
     <string name="media_description">Deskripsi gambar</string>
     <string name="media_download">Unduh</string>
     <string name="media_download_all">Unduh semua</string>
@@ -165,7 +167,7 @@
     <string name="media_picture_of">Gambar %1$d dari %2$d</string>
     <string name="media_covered">Threads memasang peringatan pada media ini</string>
     <string name="add_accounts_hint">Beberapa sekaligus: pisahkan dengan spasi atau koma</string>
-    <string name="session_unlocks">Yang ditambahkan sesi: Untuk Anda milik Anda sendiri dan pencarian orang. Jika sakelar di atas aktif, sesi juga membaca akun yang Anda ikuti.</string>
+    <string name="session_unlocks">Yang ditambahkan sesi: pengikut dan yang diikuti, siapa yang menyukai postingan, aktivitas Anda, dan pencarian orang, masing-masing dibaca dengan akun Anda hanya saat Anda membukanya. Dengan sakelar di atas aktif, Beranda dan Untuk Anda juga dibaca dengannya.</string>
     <string name="instance_intro">Opsional. Instans RSSHub milik Anda membaca akun yang Anda ikuti; jika gagal, halaman publik Threads dipakai sebagai gantinya. Biarkan kosong untuk hanya membaca halaman publik.</string>
     <string name="account_missing">Tidak ditemukan — diganti nama, dihapus, atau salah ketik?</string>
     <string name="account_private">Privat — Threads tidak menampilkan satu pun postingannya kepada tamu</string>
@@ -220,6 +222,8 @@
     <string name="translate">Terjemahkan</string>
     <string name="show_original">Tampilkan asli</string>
     <string name="translated_by_threads">Diterjemahkan oleh Threads</string>
+    <string name="translated_by">Diterjemahkan oleh %1$s</string>
+    <string name="translation_failed_by">%1$s tidak dapat menerjemahkan postingan ini</string>
     <string name="translating">Menerjemahkan…</string>
     <string name="translation_failed">Threads tidak dapat menerjemahkan postingan ini</string>
     <string name="attached_text">Teks terlampir</string>
@@ -268,4 +272,25 @@
     <string name="show_hidden_posts">Tampilkan lagi postingan yang disembunyikan</string>
     <string name="read_as_article">Baca sebagai artikel</string>
     <string name="show_conversation">Tampilkan percakapan</string>
+    <string name="account_in_use">Memakai akun Threads Anda</string>
+    <string name="account_resting">Dijeda untuk melindungi akun Anda — lanjut pukul %1$s</string>
+    <string name="account_paused">Dijeda untuk melindungi akun Anda</string>
+    <string name="account_signed_out">Threads mengeluarkan sesi ini — masuk lagi</string>
+    <string name="load_more">Muat lebih banyak</string>
+    <string name="account_guard">Perlindungan akun</string>
+    <string name="account_active">Aktif — hanya dipakai saat Anda membuka sesuatu yang memerlukannya</string>
+    <string name="account_resting_until">Beristirahat sampai %1$s</string>
+    <string name="account_usage">Bacaan dengan akun dalam 24 jam terakhir: %1$d dari %2$d</string>
+    <string name="account_guard_detail">Pengikut, Disukai oleh, Aktivitas, dan pencarian orang memakai akun Anda hanya saat Anda membukanya, berjarak beberapa detik, dan berhenti sebelum Meta menyadarinya. Selebihnya dibaca sebagai tamu.</string>
+    <string name="suggested_for_you">Disarankan untuk Anda</string>
+    <string name="suggestion_follow">Ikuti %1$s di perangkat ini</string>
+    <string name="suggestion_unfollow">Berhenti mengikuti %1$s di perangkat ini</string>
+    <string name="suggestion_hide">Hapus %1$s dari saran</string>
+    <string name="song_play">Putar %1$s oleh %2$s</string>
+    <string name="song_play_title">Putar %1$s</string>
+    <string name="song_pause">Jeda %1$s</string>
+    <string name="song_open_page">Buka halaman lagu</string>
+    <string name="song_explicit">Eksplisit</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">Lagu ini tidak dapat diputar sekarang</string>
 </resources>

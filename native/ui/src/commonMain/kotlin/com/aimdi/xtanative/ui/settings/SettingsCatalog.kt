@@ -23,6 +23,7 @@ enum class SettingsSection(val id: String) {
     THEME("theme"),
     ACCESSIBILITY("accessibility"),
     SPEECH("speech"),
+    TRANSLATION("translation"),
     ACCOUNT("account"),
     DATA("data"),
     SYNC("sync"),
@@ -34,7 +35,7 @@ enum class SettingsSection(val id: String) {
         fun of(id: String?): SettingsSection? = entries.firstOrNull { it.id == id }
 
         /** Settings' first group, in XTA's order. */
-        val everyday = listOf(GENERAL, POSTS, MEDIA, HOME, THEME, ACCESSIBILITY, SPEECH)
+        val everyday = listOf(GENERAL, POSTS, MEDIA, HOME, THEME, ACCESSIBILITY, SPEECH, TRANSLATION)
 
         /** Under Advanced, folded away. */
         val advanced = listOf(AI, DIAGNOSTICS)

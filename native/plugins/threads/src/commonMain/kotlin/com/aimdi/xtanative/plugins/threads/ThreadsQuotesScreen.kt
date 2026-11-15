@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.plugins.threads
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.aimdi.xtanative.networks.Page
+import com.aimdi.xtanative.networks.threads.ThreadsGuardLimits
 import com.aimdi.xtanative.networks.threads.ThreadsMore
 import com.aimdi.xtanative.networks.threads.ThreadsPaging
 import com.aimdi.xtanative.networks.threads.ThreadsPost
@@ -31,8 +33,8 @@ import kotlinx.coroutines.CoroutineScope
 
 /** The quotes of the post Meta keeps under [mediaId] as far as they have been read: the first page, and those after it as the reader scrolls. */
 internal class ThreadsQuotesModel(private val app: ThreadsApp, private val mediaId: String, scope: CoroutineScope) {
-    val first = Fetch<Page<ThreadsPost>>(scope) { app.ready(); app.nextPage { app.direct.quotes(mediaId) } }
-    val more = ThreadsPaging(scope, { it.shortcode ?: it.id }) { cursor ->
+    val first = Fetch<Page<ThreadsPost>>(scope) { force -> app.ready(); app.nextPage { app.direct.quotes(mediaId, fresh = force) } }
+    val more = ThreadsPaging(scope, { it.shortcode ?: it.id }, autoPages = ThreadsGuardLimits.AUTO_PAGES) { cursor ->
         app.nextPage { app.direct.quotes(mediaId, cursor).let { ThreadsMore(it.items, it.next) } }
     }
 }
@@ -53,7 +55,10 @@ internal fun ThreadsQuotesScreen(app: ThreadsApp, mediaId: String) {
             if (!signedIn) {
                 SignedOut(app)
             } else {
-                QuotesList(app, mediaId)
+                Column(Modifier.fillMaxSize()) {
+                    AccountInUse(app)
+                    QuotesList(app, mediaId)
+                }
             }
             NoticeHost(app.notices)
         }
@@ -82,7 +87,7 @@ private fun QuotesList(app: ThreadsApp, mediaId: String) {
                 ThreadsPeopleView.Body.PEOPLE -> items(posts, key = { "quote:" + (it.shortcode ?: it.id) }, contentType = { "post" }) { post -> ThreadsPostCard(app, post) }
                 else -> item(key = "empty") { MessageText(pluginString(Strings.quotes_empty)) }
             }
-            if (body == ThreadsPeopleView.Body.PEOPLE) moreFoot("quotes", more) { model.more.retry() }
+            if (body == ThreadsPeopleView.Body.PEOPLE) sessionMoreFoot("quotes", more, model.more::loadMore) { model.more.retry() }
         }
     }
 }

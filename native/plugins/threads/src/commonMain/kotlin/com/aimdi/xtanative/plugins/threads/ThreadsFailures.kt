@@ -25,7 +25,7 @@ internal object ThreadsFailures {
 
     /** [feed]'s sentence, a throttle naming the time Meta's wait ends. */
     fun feedText(error: Throwable?, language: String, zone: ZoneId = ZoneId.systemDefault()): String =
-        throttledUntil(error, language, zone) ?: feed(error).get(language)
+        restingUntil(error, language, zone) ?: throttledUntil(error, language, zone) ?: feed(error).get(language)
 
     /** The For you section's sentence for [error]: no account is named there. */
     fun forYou(error: Throwable?): PluginText = common(error)
@@ -76,7 +76,7 @@ internal object ThreadsFailures {
         if (error is ThreadsXyException) return error.serverMessage?.trim()?.ifEmpty { null } ?: xy(error).get(language)
         if ((error as? ThreadsException)?.failure == ThreadsFailure.NO_SUCH_FEED) return missing.get(language)
         if ((error as? ThreadsException)?.failure == ThreadsFailure.PRIVATE_ACCOUNT) return Strings.account_private.get(language)
-        return throttledUntil(error, language, zone) ?: settings(error).get(language)
+        return restingUntil(error, language, zone) ?: throttledUntil(error, language, zone) ?: settings(error).get(language)
     }
 
     /** What is wrong with pasted cookies, said under their field; null when nothing is, or nothing was pasted. */
@@ -107,6 +107,16 @@ internal object ThreadsFailures {
     fun retryBlockedUntil(error: Throwable?, now: Instant = Instant.now()): Instant? =
         (error as? ThreadsException)?.takeIf { it.failure == ThreadsFailure.THROTTLED }?.retryAt?.takeIf { it.isAfter(now) }
 
+    /**
+     * The account guard holding a session read, with the time it goes on:
+     * a budget spent, or a rest after Meta's warning; null for anything
+     * else, or a rest that named no end.
+     */
+    private fun restingUntil(error: Throwable?, language: String, zone: ZoneId): String? {
+        val held = (error as? ThreadsException)?.takeIf { it.failure == ThreadsFailure.ACCOUNT_RESTING || it.failure == ThreadsFailure.SESSION_SUSPENDED } ?: return null
+        return held.retryAt?.let { Strings.account_resting.get(language, time(it, language, zone)) }
+    }
+
     /** A throttle's sentence with the time Meta's wait ends; null for anything else, or a throttle that named no end. */
     private fun throttledUntil(error: Throwable?, language: String, zone: ZoneId): String? {
         val throttle = (error as? ThreadsException)?.takeIf { it.failure == ThreadsFailure.THROTTLED } ?: return null
@@ -129,6 +139,7 @@ internal object ThreadsFailures {
         ThreadsFailure.THROTTLED -> Strings.error_throttled
         ThreadsFailure.UNAUTHORIZED -> Strings.error_unauthorized
         ThreadsFailure.SESSION_SUSPENDED -> Strings.error_session_suspended
+        ThreadsFailure.ACCOUNT_RESTING -> Strings.account_paused
         ThreadsFailure.SIGN_IN_REQUIRED -> Strings.error_sign_in
         else -> Strings.error_unreachable
     }

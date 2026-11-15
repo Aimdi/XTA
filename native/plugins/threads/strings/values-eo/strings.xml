@@ -114,8 +114,8 @@
     <string name="try_public">Provi publikan konton</string>
     <string name="unfollow">Ne plu sekvi</string>
     <string name="unlike_on_device">Forigi ŝaton el ĉi tiu aparato</string>
-    <string name="use_session">Uzi mian seancon por sekvataj kontoj</string>
-    <string name="use_session_description">Defaŭlte malŝaltita. Ŝaltite, la apo parolas al Threads kiel vi — Meta povas malpermesi tiun konton. Lasu malŝaltita krom se vi uzas forĵeteblan ensaluton.</string>
+    <string name="use_session">Uzi mian seancon por Hejmo kaj Por vi</string>
+    <string name="use_session_description">Defaŭlte malŝaltita, kaj tiel plej sekura: kio bezonas vian konton, mem transiras al ĝi kiam vi malfermas ĝin. Se ŝaltita, ankaŭ Hejmo, Por vi kaj la kontoj, kiujn vi sekvas, estas legataj kiel vi — multe pli da legoj, kaj Meta povas forbari tiun konton.</string>
     <string name="in_home_feed">Montri en la hejma tempolinio</string>
     <string name="in_home_feed_description">Miksas afiŝojn el la Threads-kontoj kiujn vi sekvas en «Sekvataj» kaj «Por vi»</string>
     <string name="for_you">Por vi</string>
@@ -148,6 +148,7 @@
     <string name="show_less">Montri malpli</string>
     <string name="pinned_reply">Alpinglita de la aŭtoro</string>
     <string name="spoiler">Malkaŝo</string>
+    <string name="sticker">Glumarko</string>
     <string name="tap_to_show_spoiler">Tuŝu por montri la malkaŝon</string>
     <string name="copy_text">Kopii tekston</string>
     <string name="copy_link">Kopii ligilon</string>
@@ -160,7 +161,8 @@
     <string name="exact_time">Montri la ĝustan horon</string>
     <string name="fewer_replies">Montri malpli da respondoj</string>
     <string name="more_replies_web">Pliaj respondoj ĉe threads.com</string>
-    <string name="related_threads">Rilataj fadenoj</string>
+    <string name="more_from_author">Pli de @%1$s</string>
+    <string name="more_on_topic">Pli pri %1$s</string>
     <string name="media_description">Priskribo de la bildo</string>
     <string name="media_download">Elŝuti</string>
     <string name="media_download_all">Elŝuti ĉion</string>
@@ -169,7 +171,7 @@
     <string name="media_picture_of">Bildo %1$d el %2$d</string>
     <string name="media_covered">Threads metis averton super ĉi tiun aŭdvidaĵon</string>
     <string name="add_accounts_hint">Plurajn samtempe: apartigu ilin per spacetoj aŭ komoj</string>
-    <string name="session_unlocks">Kion seanco aldonas: vian propran «Por vi» kaj serĉon de homoj. Kun la supra ŝaltilo ŝaltita, ĝi ankaŭ legas la kontojn, kiujn vi sekvas.</string>
+    <string name="session_unlocks">Kion aldonas seanco: abonantojn kaj abonatojn, kiu ŝatis afiŝon, vian aktivecon kaj serĉon de homoj, ĉiu legata per via konto nur kiam vi malfermas ĝin. Kun la supra ŝaltilo ŝaltita, ankaŭ Hejmo kaj Por vi estas legataj per ĝi.</string>
     <string name="instance_intro">Nedeviga. Via propra RSSHub-instanco legas la kontojn, kiujn vi sekvas; se ĝi malsukcesas, la publikaj paĝoj de Threads anstataŭas ĝin. Lasu malplena por legi nur la publikajn paĝojn.</string>
     <string name="account_missing">Ne trovita — ĉu renomita, forigita aŭ mistajpita?</string>
     <string name="account_private">Privata — Threads montras al gasto neniun el ĝiaj afiŝoj</string>
@@ -225,6 +227,8 @@
     <string name="translate">Traduki</string>
     <string name="show_original">Montri originalon</string>
     <string name="translated_by_threads">Tradukita de Threads</string>
+    <string name="translated_by">Tradukita de %1$s</string>
+    <string name="translation_failed_by">%1$s ne povis traduki ĉi tiun afiŝon</string>
     <string name="translating">Tradukante…</string>
     <string name="translation_failed">Threads ne povis traduki ĉi tiun afiŝon</string>
     <string name="attached_text">Aldonita teksto</string>
@@ -275,4 +279,25 @@
     <string name="show_hidden_posts">Remontri la kaŝitajn afiŝojn</string>
     <string name="read_as_article">Legi kiel artikolon</string>
     <string name="show_conversation">Montri la konversacion</string>
+    <string name="account_in_use">Via Threads-konto estas uzata</string>
+    <string name="account_resting">Paŭzita por protekti vian konton — daŭrigos je %1$s</string>
+    <string name="account_paused">Paŭzita por protekti vian konton</string>
+    <string name="account_signed_out">Threads elsalutigis ĉi tiun seancon — ensalutu denove</string>
+    <string name="load_more">Ŝargi pli</string>
+    <string name="account_guard">Protekto de la konto</string>
+    <string name="account_active">Aktiva — uzata nur kiam vi malfermas ion, kio bezonas ĝin</string>
+    <string name="account_resting_until">Ripozas ĝis %1$s</string>
+    <string name="account_usage">Legoj per la konto en la lastaj 24 horoj: %1$d el %2$d</string>
+    <string name="account_guard_detail">Abonantoj, «Ŝatata de», aktiveco kaj serĉo de homoj uzas vian konton nur kiam vi malfermas ilin, kelkajn sekundojn inter legoj, kaj paŭzas antaŭ ol Meta rimarkus. Ĉio alia estas legata kiel gasto.</string>
+    <string name="suggested_for_you">Proponitaj por vi</string>
+    <string name="suggestion_follow">Sekvi %1$s en ĉi tiu aparato</string>
+    <string name="suggestion_unfollow">Ĉesi sekvi %1$s en ĉi tiu aparato</string>
+    <string name="suggestion_hide">Forigi %1$s el la proponoj</string>
+    <string name="song_play">Ludi %1$s de %2$s</string>
+    <string name="song_play_title">Ludi %1$s</string>
+    <string name="song_pause">Paŭzigi %1$s</string>
+    <string name="song_open_page">Malfermi la paĝon de la kanto</string>
+    <string name="song_explicit">Eksplicita enhavo</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">Ĉi tiu kanto nun ne ludeblas</string>
 </resources>

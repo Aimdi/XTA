@@ -85,8 +85,9 @@ class ThreadsReader(
 
     /**
      * The feed: the [handles] followed here, merged newest first; with none, the
-     * pasted Bearer's own timeline; with only cookies or an RSSHub instance,
-     * nothing, since a session alone follows no one.
+     * pasted Bearer's own timeline when the reader opted in to session reads;
+     * with only a session or an RSSHub instance, nothing, since a session
+     * alone follows no one.
      */
     suspend fun following(
         handles: List<String>,
@@ -96,7 +97,9 @@ class ThreadsReader(
         if (handles.isNotEmpty()) return withContext(ThreadsBackground) { postsFor(handles, force, onPartial) }
         val current = direct.currentSession
         return when {
-            current.hasBearer -> direct.followingTimeline().items
+            // Home reads on its own, so the Bearer's timeline is spent only when the reader opted in to session reads.
+            current.hasBearer && current.useSessionApis -> direct.followingTimeline().items
+            current.hasBearer -> emptyList()
             current.hasCookies || setup().rssHubInstance.isNotBlank() -> emptyList()
             else -> throw ThreadsException(ThreadsFailure.NOT_CONFIGURED, "no accounts or session")
         }
@@ -150,6 +153,25 @@ class ThreadsReader(
     suspend fun heldExtras(handles: List<String>, topics: List<String> = emptyList()): List<ThreadsPost> {
         val keys = extraKeys(handles, topics)
         return if (keys.isEmpty()) emptyList() else extras.merge(keys, { emptyList() }, maxFetches = 0)
+    }
+
+    /**
+     * The posts filed under [topic], newest first, for "More on …" under a
+     * conversation ([ThreadsBeside]): its topic page, one guest read, held
+     * as Home holds a followed topic's, so a topic followed here or asked in
+     * the last half hour asks Meta nothing, and on Home's lane, so a search
+     * of it answered a moment ago is taken too. Never a failure: what was
+     * held, else nothing.
+     */
+    suspend fun topicPosts(topic: String): List<ThreadsPost> {
+        val key = extraKeys(emptyList(), listOf(topic)).firstOrNull() ?: return emptyList()
+        return try {
+            withContext(ThreadsBackground) { extras.merge(listOf(key), ::readExtra, maxFetches = 1) }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: Exception) {
+            heldExtras(emptyList(), listOf(topic))
+        }
     }
 
     /** A topic is its name, read from its topic page; a community's page address (`https://…`) is read as that page. */

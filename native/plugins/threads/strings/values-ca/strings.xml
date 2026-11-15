@@ -117,8 +117,8 @@
     <string name="try_public">Prova un compte públic</string>
     <string name="unfollow">Deixa de seguir</string>
     <string name="unlike_on_device">Treu el m’agrada d’aquest dispositiu</string>
-    <string name="use_session">Fes servir la meva sessió per als comptes seguits</string>
-    <string name="use_session_description">Desactivat per defecte. Si s’activa, l’app parla amb Threads com si fossis tu — Meta pot bandejar aquest compte. Deixa-ho apagat tret que sigui un inici de sessió d’un sol ús.</string>
+    <string name="use_session">Fes servir la meva sessió per a Inici i Per a tu</string>
+    <string name="use_session_description">Desactivat per defecte, i és el més segur: el que necessita el teu compte hi passa sol quan l’obres. Si s’activa, Inici, Per a tu i els comptes que segueixes també es llegeixen en nom teu — moltes més lectures, i Meta pot bloquejar aquest compte.</string>
     <string name="in_home_feed">Mostra a la cronologia principal</string>
     <string name="in_home_feed_description">Barreja les publicacions dels comptes de Threads que segueixes a «Seguint» i «Per a tu»</string>
     <string name="for_you">Per a tu</string>
@@ -151,6 +151,7 @@
     <string name="show_less">Mostra\'n menys</string>
     <string name="pinned_reply">Fixada per l\'autor</string>
     <string name="spoiler">Espòiler</string>
+    <string name="sticker">Adhesiu</string>
     <string name="tap_to_show_spoiler">Toca per mostrar l\'espòiler</string>
     <string name="copy_text">Copia el text</string>
     <string name="copy_link">Copia l\'enllaç</string>
@@ -163,7 +164,8 @@
     <string name="exact_time">Mostra l\'hora exacta</string>
     <string name="fewer_replies">Mostra menys respostes</string>
     <string name="more_replies_web">Més respostes a threads.com</string>
-    <string name="related_threads">Fils relacionats</string>
+    <string name="more_from_author">Més de @%1$s</string>
+    <string name="more_on_topic">Més sobre %1$s</string>
     <string name="media_description">Descripció de la imatge</string>
     <string name="media_download">Descarregar</string>
     <string name="media_download_all">Baixa-ho tot</string>
@@ -172,7 +174,7 @@
     <string name="media_picture_of">Imatge %1$d de %2$d</string>
     <string name="media_covered">Threads ha posat un avís sobre aquest contingut multimèdia</string>
     <string name="add_accounts_hint">Diversos alhora: separa’ls amb espais o comes</string>
-    <string name="session_unlocks">Què afegeix una sessió: el teu propi Per a tu i la cerca de persones. Amb l’interruptor de dalt activat, també llegeix els comptes que segueixes.</string>
+    <string name="session_unlocks">Què hi afegeix una sessió: seguidors i seguits, a qui li agrada una publicació, la teva activitat i la cerca de persones, cadascun llegit amb el teu compte només quan l’obres. Amb l’interruptor de dalt activat, també s’hi llegeixen Inici i Per a tu.</string>
     <string name="instance_intro">Opcional. Una instància d’RSSHub pròpia llegeix els comptes que segueixes; si falla, en llegeixen les pàgines públiques de Threads. Deixa-ho buit per llegir només les pàgines públiques.</string>
     <string name="account_missing">No s’ha trobat: s’ha canviat el nom, s’ha suprimit o està mal escrit?</string>
     <string name="account_private">Privat: Threads no mostra cap publicació a un convidat</string>
@@ -229,6 +231,8 @@
     <string name="translate">Tradueix</string>
     <string name="show_original">Mostra l’original</string>
     <string name="translated_by_threads">Traduït per Threads</string>
+    <string name="translated_by">Traduït per %1$s</string>
+    <string name="translation_failed_by">%1$s no ha pogut traduir aquesta publicació</string>
     <string name="translating">S’està traduint…</string>
     <string name="translation_failed">Threads no ha pogut traduir aquesta publicació</string>
     <string name="attached_text">Text adjunt</string>
@@ -281,4 +285,25 @@
     <string name="show_hidden_posts">Torna a mostrar les publicacions amagades</string>
     <string name="read_as_article">Llegeix com a article</string>
     <string name="show_conversation">Mostra la conversa</string>
+    <string name="account_in_use">S’està fent servir el teu compte de Threads</string>
+    <string name="account_resting">En pausa per protegir el teu compte — continua a les %1$s</string>
+    <string name="account_paused">En pausa per protegir el teu compte</string>
+    <string name="account_signed_out">Threads ha tancat aquesta sessió — torna a iniciar-la</string>
+    <string name="load_more">Carrega’n més</string>
+    <string name="account_guard">Protecció del compte</string>
+    <string name="account_active">Actiu — només s’utilitza quan obres alguna cosa que el necessita</string>
+    <string name="account_resting_until">En repòs fins a les %1$s</string>
+    <string name="account_usage">Lectures amb el compte en les últimes 24 hores: %1$d de %2$d</string>
+    <string name="account_guard_detail">Els seguidors, «Li agrada a», l’activitat i la cerca de persones fan servir el teu compte només quan els obres, amb uns segons entre lectures, i s’aturen abans que Meta se n’adoni. Tota la resta es llegeix com a convidat.</string>
+    <string name="suggested_for_you">Suggeriments per a tu</string>
+    <string name="suggestion_follow">Segueix %1$s en aquest dispositiu</string>
+    <string name="suggestion_unfollow">Deixa de seguir %1$s en aquest dispositiu</string>
+    <string name="suggestion_hide">Treu %1$s dels suggeriments</string>
+    <string name="song_play">Reprodueix %1$s de %2$s</string>
+    <string name="song_play_title">Reprodueix %1$s</string>
+    <string name="song_pause">Posa en pausa %1$s</string>
+    <string name="song_open_page">Obre la pàgina de la cançó</string>
+    <string name="song_explicit">Explícita</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">Ara no es pot reproduir aquesta cançó</string>
 </resources>

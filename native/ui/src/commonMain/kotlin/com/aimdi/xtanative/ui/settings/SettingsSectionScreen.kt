@@ -35,6 +35,7 @@ fun SettingsSectionScreen(id: String, focus: String?, onBack: () -> Unit, onOpen
         SettingsSection.THEME -> ThemeSettings(title, vm, focus, onBack)
         SettingsSection.ACCESSIBILITY -> AccessibilitySettings(title, vm, focus, onBack)
         SettingsSection.SPEECH -> VoiceSettingsScreen(onBack)
+        SettingsSection.TRANSLATION -> TranslationSettings(title, vm, onBack, onOpen)
         SettingsSection.ACCOUNT -> AccountSettings(title, vm, onBack, onOpen, onStartOver)
         SettingsSection.DATA -> DataSettings(title, vm, onBack, onOpen)
         SettingsSection.SYNC -> SyncSettings(title, vm, onBack)

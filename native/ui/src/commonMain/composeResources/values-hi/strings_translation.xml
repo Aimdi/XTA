@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Translation (ui.settings) and the reader's translation service, from XTA's words (reader_translation_*.dart). -->
+<resources>
+    <string name="translation_title">अनुवाद</string>
+    <string name="translation_privacy">जब तक आप अनुवाद करें नहीं दबाते, कुछ नहीं भेजा जाता। तब टेक्स्ट केवल यहाँ चुनी गई सेवा को जाता है।</string>
+    <string name="translation_provider">अनुवाद सेवा</string>
+    <string name="translation_provider_off">बंद</string>
+    <string name="translation_provider_ai">एआई प्रदाता</string>
+    <string name="translation_target">इस भाषा में अनुवाद करें</string>
+    <string name="translation_target_app">ऐप की भाषा</string>
+    <string name="translation_endpoint">सर्वर पता</string>
+    <string name="translation_endpoint_deepl_help">अपनी कुंजी के अनुसार DeepL Free या Pro इस्तेमाल करने के लिए खाली छोड़ें।</string>
+    <string name="translation_endpoint_libre_help">आपका LibreTranslate सर्वर, जैसे https://translate.example.com</string>
+    <string name="translation_key_optional">केवल तब ज़रूरी है जब आपका सर्वर माँगे</string>
+    <string name="translation_ai_description">सेटिंग्स में सेट किए गए एआई प्रदाता का उपयोग करता है।</string>
+    <string name="translation_ai_not_configured">पहले कोई एआई प्रदाता सेट करें</string>
+    <string name="translation_invalid">सर्वर पता और एपीआई कुंजी जाँचें</string>
+    <string name="translation_saved">अनुवाद सेटिंग्स सहेजी गईं</string>
+    <string name="translation_clear_cache">सहेजे गए अनुवाद साफ़ करें</string>
+    <string name="translation_cache_cleared">सहेजे गए अनुवाद साफ़ किए गए</string>
+    <string name="translation_not_configured">पहले कोई अनुवाद सेवा चुनें</string>
+    <string name="translation_hint">अपनी चुनी हुई सेवा से हर नेटवर्क की पोस्ट का अनुवाद करें</string>
+    <string name="translation_examples">आज़माने के लिए सार्वजनिक सर्वर</string>
+    <string name="translation_examples_note">आप जो अनुवाद करते हैं, वह आपके चुने हुए सर्वर को भेजा जाता है। आप LibreTranslate अपने कंप्यूटर या सर्वर पर भी चला सकते हैं।</string>
+    <string name="translation_test">जाँचें</string>
+    <string name="translation_testing">जाँच हो रही है…</string>
+    <string name="translation_test_ok">सर्वर जवाब दे रहा है: %1$d भाषाएँ</string>
+    <string name="translation_unreachable">सर्वर ने जवाब नहीं दिया। पता और अपना कनेक्शन जाँचें।</string>
+    <string name="translation_refused">सर्वर ने मना कर दिया। शायद उसे API कुंजी चाहिए, या कुंजी गलत है।</string>
+    <string name="translation_rate_limited">अभी बहुत ज़्यादा अनुवाद हो रहे हैं। बाद में फिर कोशिश करें।</string>
+    <string name="translation_unsupported">यह सर्वर उस भाषा में अनुवाद नहीं करता।</string>
+    <string name="translation_bad_answer">सर्वर के जवाब में कोई अनुवाद नहीं था।</string>
+</resources>

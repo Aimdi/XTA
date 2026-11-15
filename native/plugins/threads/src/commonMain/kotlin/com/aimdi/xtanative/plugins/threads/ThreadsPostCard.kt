@@ -137,7 +137,11 @@ internal fun ThreadsPostCard(
         PinnedLine(post)
         val above = if (post.isRepost || post.facts.pinnedToProfile || post.facts.pinnedToParent) 4.dp else 12.dp
         Row(Modifier.fillMaxWidth().rails(connectTop, connectBottom, above).padding(top = above, bottom = if (connectBottom) 0.dp else 12.dp)) {
-            PluginAvatar(post.avatarUrl, post.authorName, post.handle, AvatarSize) { app.openProfile(post.handle) }
+            val follows by app.accounts.state.collectAsState()
+            val badge = ThreadsFollowBadgeGeometry.shown(follows != null, follows?.let { ThreadsAccounts.follows(it, post.handle) } == true)
+            ThreadsFollowBadge(app, ThreadsAccount.of(post), badge, AvatarSize) {
+                PluginAvatar(post.avatarUrl, post.authorName, post.handle, AvatarSize) { app.openProfile(post.handle) }
+            }
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Header(app, post, focal, byAuthor, prefs.absoluteTimestamps, menu)
@@ -176,7 +180,8 @@ private fun rememberSummary(post: ThreadsPost, liked: Boolean, byAuthor: Boolean
     val likeLabel = pluginString(if (liked) Strings.unlike_on_device else Strings.like_on_device)
     val moreLabel = pluginString(Strings.more_options)
     val time = fullTimeText(post.publishedAt)
-    val said = remember(post, time, reposted, spoiler, labels) { ThreadsCardRules.summary(post, time, reposted, spoiler, labels) }
+    val sticker = pluginString(Strings.sticker)
+    val said = remember(post, time, reposted, spoiler, labels, sticker) { ThreadsCardRules.summary(post, time, reposted, spoiler, labels, sticker) }
     return {
         contentDescription = said
         customActions = listOf(
@@ -228,11 +233,10 @@ private fun RepostLine(app: ThreadsApp, post: ThreadsPost) {
     }
 }
 
-/** The author line (a long press: its exact time), Follow while the author is not followed here, and ⋯. */
+/** The author line (a long press: its exact time) and ⋯; following is the + on the face ([ThreadsFollowBadge]). */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun Header(app: ThreadsApp, post: ThreadsPost, focal: Boolean, byAuthor: Boolean, absolute: Boolean, onMore: () -> Unit) {
-    val rows by app.accounts.state.collectAsState()
     var exact by rememberSaveable(post.id) { mutableStateOf(false) }
     val edited = pluginString(Strings.edited)
     val time = ThreadsCardRules.timeLine(
@@ -257,9 +261,6 @@ private fun Header(app: ThreadsApp, post: ThreadsPost, focal: Boolean, byAuthor:
                 onLongClick = if (focal || absolute) null else { { exact = !exact } },
             ),
         )
-        if (rows != null && !ThreadsAccounts.follows(rows, post.handle)) {
-            SmallIcon(ThreadsIcons.PersonAdd, pluginString(Strings.follow)) { app.follow(ThreadsAccount.of(post)) }
-        }
         SmallIcon(PostIcons.MoreHoriz, pluginString(Strings.more_options), onClick = onMore)
     }
     // Under the author, not beside: on a narrow phone the chips left the name no room at all.
@@ -305,7 +306,7 @@ private fun Body(app: ThreadsApp, post: ThreadsPost, translation: ThreadsTransla
     ThreadsCaptionText(app, translation.applied(post), Modifier.padding(top = 2.dp), style = if (focal) FocalStyle else threadsBodyStyle(), selectable = focal)
     TranslationLine(translation, focal)
     post.facts.attachment?.let { TextAttachmentBlock(app, post, it, focal, Modifier.partGap()) }
-    MusicLine(post, Modifier.padding(top = 8.dp))
+    ThreadsSongCard(app, post, focal, Modifier.partGap())
     post.facts.poll?.let { ThreadsPollView(it, Modifier.partGap()) }
     FactLines(post)
     ThreadsPostMedia(app, post, Modifier.partGap(), opens = openOnTap)

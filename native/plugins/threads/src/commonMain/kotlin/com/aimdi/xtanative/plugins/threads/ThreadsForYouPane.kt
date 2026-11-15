@@ -54,7 +54,10 @@ import kotlinx.coroutines.flow.distinctUntilChanged
  * so above it. It is painted where the reader left it, reads more as they
  * near its end, and a pull, F5 or the desktop's refresh reads it anew. Meta
  * showing a guest nothing, refusing for now, or not answering each has its
- * own words. Nothing here is liked, followed or reported as seen on Threads.
+ * own words. A signed-in reader who scrolls to the people row is shown
+ * Threads' suggestions for them there, read with their account once a
+ * visit ([ThreadsSuggestedPeople]). Nothing here is liked, followed or reported
+ * as seen on Threads.
  */
 @Composable
 internal fun ThreadsForYouPane(app: ThreadsApp, frame: PluginFrame) {
@@ -67,6 +70,7 @@ internal fun ThreadsForYouPane(app: ThreadsApp, frame: PluginFrame) {
         return
     }
     val state by app.forYou.state.collectAsState()
+    LaunchedEffect(app) { app.suggestions.visit() }
     LaunchedEffect(app) {
         if (ThreadsForYouKept.readsOnOpen(app.forYou.state.value, app.forYouPlace, System.currentTimeMillis())) app.refreshForYou()
     }
@@ -91,7 +95,8 @@ private fun ForYouList(app: ThreadsApp, frame: PluginFrame, read: ThreadsForYouS
     val followedTopics by app.topics.state.collectAsState()
     val people = remember(state.posts, followed) { ThreadsDiscovery.peopleToFollow(state.posts, { ThreadsAccounts.follows(followed, it) }) }
     val topics = remember(state.posts, followedTopics) { app.discoveredTopics() }
-    val rows = remember(state, people, topics) { ThreadsForYouRow.of(state, people, topics) }
+    val suggests = remember(state.readAt, state.source) { app.suggestions.mayAsk() }
+    val rows = remember(state, people, topics, suggests) { ThreadsForYouRow.of(state, people, topics, suggests) }
     val list = rememberLazyListState(
         initialFirstVisibleItemIndex = remember { ThreadsForYouRow.indexOf(rows, app.forYouPlace) ?: 0 },
         initialFirstVisibleItemScrollOffset = remember { app.forYouPlace.offset.takeIf { ThreadsForYouRow.indexOf(rows, app.forYouPlace) != null } ?: 0 },
@@ -100,13 +105,14 @@ private fun ForYouList(app: ThreadsApp, frame: PluginFrame, read: ThreadsForYouS
     KeepsPlace(list, app::keepForYouPlace)
     ReadsMoreNearTheEnd(app, list, rows.size)
     StartsAnewAtTheTop(list, state.readAt)
+    AsksSuggestionsWhenReached(app, list, hasRow = rows.any { it is ThreadsForYouRow.People })
     ForYouRefreshable(app, frame, state, list) {
         items(rows, key = { it.key }, contentType = { it::class }) { row ->
             when (row) {
                 is ThreadsForYouRow.SessionNotice -> SessionNotice(app, row.problem)
                 ThreadsForYouRow.PublicNote -> NoteText(pluginString(Strings.for_you_public), Modifier.padding(horizontal = 16.dp, vertical = 10.dp))
                 is ThreadsForYouRow.Post -> ThreadsPostCard(app, row.post)
-                is ThreadsForYouRow.People -> PeopleStrip(app, row.people, startOpen = true)
+                is ThreadsForYouRow.People -> ForYouPeople(app, row.people)
                 is ThreadsForYouRow.Topics -> TopicStrip(app, row.topics)
                 ThreadsForYouRow.LoadingMore -> LoadingRow()
                 is ThreadsForYouRow.MoreProblem -> RetryRow(pluginString(ThreadsFailures.forYou(row.problem)), onRetry = app::retryMoreForYou)

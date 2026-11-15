@@ -114,8 +114,8 @@
     <string name="try_public">Herkese açık bir hesap dene</string>
     <string name="unfollow">Takibi bırak</string>
     <string name="unlike_on_device">Beğeniyi bu cihazdan kaldır</string>
-    <string name="use_session">Takip edilen hesaplar için oturumumu kullan</string>
-    <string name="use_session_description">Varsayılan kapalı. Açıkken uygulama Threads’e sizin adınıza konuşur — Meta o hesabı yasaklayabilir. Tek kullanımlık giriş değilse kapalı bırakın.</string>
+    <string name="use_session">Ana sayfa ve Senin için oturumumu kullan</string>
+    <string name="use_session_description">Varsayılan olarak kapalı ve en güvenlisi de bu: hesabınıza ihtiyaç duyan şey, onu açtığınızda kendiliğinden hesaba geçer. Açıkken Ana sayfa, Senin için ve takip ettiğiniz hesaplar da sizin adınıza okunur — çok daha fazla istek ve Meta bu hesabı yasaklayabilir.</string>
     <string name="in_home_feed">Ana akışta göster</string>
     <string name="in_home_feed_description">Takip ettiğin Threads hesaplarının gönderilerini Takip ve Sana Özel akışlarına karıştırır</string>
     <string name="for_you">Senin için</string>
@@ -148,6 +148,7 @@
     <string name="show_less">Daha az göster</string>
     <string name="pinned_reply">Yazar tarafından sabitlendi</string>
     <string name="spoiler">Spoiler</string>
+    <string name="sticker">Çıkartma</string>
     <string name="tap_to_show_spoiler">Spoiler\'ı göstermek için dokun</string>
     <string name="copy_text">Metni kopyala</string>
     <string name="copy_link">Bağlantıyı kopyala</string>
@@ -160,7 +161,8 @@
     <string name="exact_time">Tam saati göster</string>
     <string name="fewer_replies">Daha az yanıt göster</string>
     <string name="more_replies_web">threads.com\'da daha fazla yanıt</string>
-    <string name="related_threads">İlgili konular</string>
+    <string name="more_from_author">@%1$s kullanıcısından daha fazlası</string>
+    <string name="more_on_topic">%1$s hakkında daha fazlası</string>
     <string name="media_description">Görsel açıklaması</string>
     <string name="media_download">İndir</string>
     <string name="media_download_all">Tümünü indir</string>
@@ -169,7 +171,7 @@
     <string name="media_picture_of">Görsel %1$d/%2$d</string>
     <string name="media_covered">Threads bu medyanın üzerine bir uyarı koydu</string>
     <string name="add_accounts_hint">Birden fazla: boşluk ya da virgülle ayırın</string>
-    <string name="session_unlocks">Oturumun kattıkları: kendi Senin için akışınız ve kişi araması. Yukarıdaki anahtar açıkken takip ettiğiniz hesapları da onunla okur.</string>
+    <string name="session_unlocks">Oturumun kattıkları: takipçiler ve takip edilenler, bir gönderiyi kimin beğendiği, etkinliğiniz ve kişi araması; her biri hesabınızla yalnızca açtığınızda okunur. Yukarıdaki anahtar açıkken Ana sayfa ve Senin için de onunla okunur.</string>
     <string name="instance_intro">İsteğe bağlı. Kendi çalıştırdığınız bir RSSHub örneği takip ettiğiniz hesapları okur; başarısız olursa Threads’in herkese açık sayfaları devreye girer. Yalnızca herkese açık sayfaları okumak için boş bırakın.</string>
     <string name="account_missing">Bulunamadı — adı mı değişti, silindi mi, yoksa yanlış mı yazıldı?</string>
     <string name="account_private">Gizli — Threads misafire gönderilerinin hiçbirini göstermiyor</string>
@@ -225,6 +227,8 @@
     <string name="translate">Çevir</string>
     <string name="show_original">Orijinali göster</string>
     <string name="translated_by_threads">Threads tarafından çevrildi</string>
+    <string name="translated_by">%1$s tarafından çevrildi</string>
+    <string name="translation_failed_by">%1$s bu gönderiyi çeviremedi</string>
     <string name="translating">Çevriliyor…</string>
     <string name="translation_failed">Threads bu gönderiyi çeviremedi</string>
     <string name="attached_text">Ekli metin</string>
@@ -275,4 +279,25 @@
     <string name="show_hidden_posts">Gizlenen gönderileri yeniden göster</string>
     <string name="read_as_article">Makale olarak oku</string>
     <string name="show_conversation">Sohbeti göster</string>
+    <string name="account_in_use">Threads hesabınız kullanılıyor</string>
+    <string name="account_resting">Hesabınızı korumak için duraklatıldı — %1$s itibarıyla devam eder</string>
+    <string name="account_paused">Hesabınızı korumak için duraklatıldı</string>
+    <string name="account_signed_out">Threads bu oturumu kapattı — yeniden oturum açın</string>
+    <string name="load_more">Daha fazla yükle</string>
+    <string name="account_guard">Hesap koruması</string>
+    <string name="account_active">Etkin — yalnızca ona ihtiyaç duyan bir şeyi açtığınızda kullanılır</string>
+    <string name="account_resting_until">%1$s saatine kadar dinleniyor</string>
+    <string name="account_usage">Son 24 saatte hesapla yapılan okumalar: %1$d / %2$d</string>
+    <string name="account_guard_detail">Takipçiler, Beğenenler, Etkinlik ve kişi araması hesabınızı yalnızca onları açtığınızda, birkaç saniye arayla kullanır ve Meta fark etmeden önce durur. Geri kalan her şey konuk olarak okunur.</string>
+    <string name="suggested_for_you">Senin için önerilenler</string>
+    <string name="suggestion_follow">%1$s hesabını bu cihazda takip et</string>
+    <string name="suggestion_unfollow">%1$s hesabını bu cihazda takipten çık</string>
+    <string name="suggestion_hide">%1$s hesabını önerilerden kaldır</string>
+    <string name="song_play">%2$s - %1$s şarkısını çal</string>
+    <string name="song_play_title">%1$s şarkısını çal</string>
+    <string name="song_pause">%1$s şarkısını duraklat</string>
+    <string name="song_open_page">Şarkının sayfasını aç</string>
+    <string name="song_explicit">Müstehcen</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">Bu şarkı şu anda çalınamıyor</string>
 </resources>

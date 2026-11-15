@@ -120,8 +120,8 @@
     <string name="try_public">Zkusit veřejný účet</string>
     <string name="unfollow">Přestat sledovat</string>
     <string name="unlike_on_device">Odebrat like z tohoto zařízení</string>
-    <string name="use_session">Použít moji relaci pro sledované účty</string>
-    <string name="use_session_description">Ve výchozím stavu vypnuto. Zapnuté to znamená, že aplikace mluví s Threads jako vy — Meta může ten účet zabanovat. Nechte vypnuté, pokud nepoužíváte jednorázové přihlášení.</string>
+    <string name="use_session">Použít mou relaci pro Domů a Pro tebe</string>
+    <string name="use_session_description">Ve výchozím stavu vypnuto, a tak je to nejbezpečnější: co potřebuje váš účet, přejde na něj samo, když to otevřete. Když je zapnuto, čtou se za vás i Domů, Pro tebe a účty, které sledujete — mnohem víc požadavků a Meta může účet zablokovat.</string>
     <string name="in_home_feed">Zobrazovat na hlavní nástěnce</string>
     <string name="in_home_feed_description">Přimíchá příspěvky z účtů na Threads, které sledujete, do „Sleduji“ a „Pro tebe“</string>
     <string name="for_you">Pro tebe</string>
@@ -156,6 +156,7 @@
     <string name="show_less">Zobrazit méně</string>
     <string name="pinned_reply">Připnuto autorem</string>
     <string name="spoiler">Spoiler</string>
+    <string name="sticker">Nálepka</string>
     <string name="tap_to_show_spoiler">Klepnutím zobrazíte spoiler</string>
     <string name="copy_text">Kopírovat text</string>
     <string name="copy_link">Kopírovat odkaz</string>
@@ -168,7 +169,8 @@
     <string name="exact_time">Zobrazit přesný čas</string>
     <string name="fewer_replies">Zobrazit méně odpovědí</string>
     <string name="more_replies_web">Další odpovědi na threads.com</string>
-    <string name="related_threads">Související vlákna</string>
+    <string name="more_from_author">Více od @%1$s</string>
+    <string name="more_on_topic">Více k tématu %1$s</string>
     <string name="media_description">Popis obrázku</string>
     <string name="media_download">Stáhnout</string>
     <string name="media_download_all">Stáhnout vše</string>
@@ -177,7 +179,7 @@
     <string name="media_picture_of">Obrázek %1$d z %2$d</string>
     <string name="media_covered">Threads u těchto médií zobrazuje varování</string>
     <string name="add_accounts_hint">Více najednou: oddělte je mezerami nebo čárkami</string>
-    <string name="session_unlocks">Co přidá relace: vaše vlastní Pro tebe a hledání lidí. Se zapnutým přepínačem výše čte i účty, které sledujete.</string>
+    <string name="session_unlocks">Co relace přidá: sledující a sledované, kdo dal příspěvku To se mi líbí, vaši aktivitu a hledání lidí, vše čtené s vaším účtem jen tehdy, když to otevřete. Se zapnutým přepínačem výše se s ní čtou i Domů a Pro tebe.</string>
     <string name="instance_intro">Volitelné. Vlastní instance RSSHub čte účty, které sledujete; když selže, nastoupí veřejné stránky Threads. Nechte prázdné a čtou se jen veřejné stránky.</string>
     <string name="account_missing">Nenalezeno — přejmenováno, smazáno, nebo překlep?</string>
     <string name="account_private">Soukromý — Threads hostovi neukáže žádný jeho příspěvek</string>
@@ -235,6 +237,8 @@
     <string name="translate">Přeložit</string>
     <string name="show_original">Zobrazit originál</string>
     <string name="translated_by_threads">Přeloženo službou Threads</string>
+    <string name="translated_by">Přeložila služba %1$s</string>
+    <string name="translation_failed_by">Služba %1$s tento příspěvek nepřeložila</string>
     <string name="translating">Překládání…</string>
     <string name="translation_failed">Threads tento příspěvek nedokázal přeložit</string>
     <string name="attached_text">Přiložený text</string>
@@ -289,4 +293,25 @@
     <string name="show_hidden_posts">Znovu zobrazit skryté příspěvky</string>
     <string name="read_as_article">Číst jako článek</string>
     <string name="show_conversation">Zobrazit konverzaci</string>
+    <string name="account_in_use">Používá se váš účet Threads</string>
+    <string name="account_resting">Pozastaveno kvůli ochraně vašeho účtu — pokračuje v %1$s</string>
+    <string name="account_paused">Pozastaveno kvůli ochraně vašeho účtu</string>
+    <string name="account_signed_out">Threads tuto relaci odhlásil — přihlaste se znovu</string>
+    <string name="load_more">Načíst další</string>
+    <string name="account_guard">Ochrana účtu</string>
+    <string name="account_active">Aktivní — použije se jen tehdy, když otevřete něco, co ho potřebuje</string>
+    <string name="account_resting_until">Odpočívá do %1$s</string>
+    <string name="account_usage">Čtení s účtem za posledních 24 hodin: %1$d z %2$d</string>
+    <string name="account_guard_detail">Sledující, To se líbí, aktivita a hledání lidí používají váš účet jen tehdy, když je otevřete, s odstupem několika sekund, a zastaví se dřív, než by si toho Meta všimla. Vše ostatní se čte jako host.</string>
+    <string name="suggested_for_you">Navrženo pro vás</string>
+    <string name="suggestion_follow">Sledovat %1$s v tomto zařízení</string>
+    <string name="suggestion_unfollow">Přestat sledovat %1$s v tomto zařízení</string>
+    <string name="suggestion_hide">Odebrat %1$s z návrhů</string>
+    <string name="song_play">Přehrát %1$s od %2$s</string>
+    <string name="song_play_title">Přehrát %1$s</string>
+    <string name="song_pause">Pozastavit %1$s</string>
+    <string name="song_open_page">Otevřít stránku skladby</string>
+    <string name="song_explicit">Explicitní obsah</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">Tuto skladbu teď nelze přehrát</string>
 </resources>

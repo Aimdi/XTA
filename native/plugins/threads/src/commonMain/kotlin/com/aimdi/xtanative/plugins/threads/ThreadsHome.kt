@@ -100,7 +100,7 @@ internal fun ThreadsHome(app: ThreadsApp, frame: PluginFrame) {
             Hairline()
             Box(Modifier.weight(1f).swipeTabs(section.ordinal, ThreadsSection.entries.size) { app.show(ThreadsSection.entries[it]) }) {
                 // Each section's videos take turns at one player: the one seen most plays, as in Home's X feeds.
-                PlaysOneVideo {
+                PlaysOneVideo(app.songs) {
                     when (section) {
                         ThreadsSection.HOME -> HomePane(app, frame, onAdd = { adding = true }, onSearch = { searching = true })
                         ThreadsSection.FOR_YOU -> ThreadsForYouPane(app, frame)

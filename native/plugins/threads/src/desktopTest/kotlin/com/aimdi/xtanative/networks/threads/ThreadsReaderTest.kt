@@ -174,9 +174,12 @@ class ThreadsReaderTest {
     }
 
     @Test
-    fun withNoAccountsTheBearersOwnTimelineIsTheFeed() = runBlocking {
+    fun withNoAccountsAndTheOptInTheBearersOwnTimelineIsTheFeed() = runBlocking {
         val meta = FakeMeta { ok(fixture("app_timeline.json")) }
         session = ThreadsSession(bearer = "IGT:2:secret")
+        assertTrue(reader(meta).following(emptyList()).isEmpty(), "Home reads on its own: without the opt-in the Bearer is not spent")
+        assertTrue(meta.asked.isEmpty())
+        session = ThreadsSession(bearer = "IGT:2:secret", useSessionApis = true)
         assertEquals(listOf("For you, first", "A post without its thread"), reader(meta).following(emptyList()).map { it.text })
 
         session = ThreadsSession(COOKIES)

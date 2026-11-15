@@ -120,8 +120,8 @@
     <string name="try_public">Паспрабаваць публічны акаўнт</string>
     <string name="unfollow">Адпісацца</string>
     <string name="unlike_on_device">Прыбраць «падабаецца» з гэтай прылады</string>
-    <string name="use_session">Выкарыстоўваць маю сесію для адсочваных акаўнтаў</string>
-    <string name="use_session_description">Выключана па змаўчанні. Калі ўключана, праграма звяртаецца да Threads ад вашага імя — Meta можа заблакаваць той акаўнт. Пакіньце выключаным, калі гэта не аднаразовы ўваход.</string>
+    <string name="use_session">Выкарыстоўваць маю сесію для Галоўнай і «Для вас»</string>
+    <string name="use_session_description">Па змаўчанні выключана, і так бяспечней: тое, што патрабуе ваш акаўнт, само пераходзіць на яго, калі вы гэта адкрываеце. Калі ўключана, Галоўная, «Для вас» і акаўнты, на якія вы падпісаны, таксама чытаюцца ад вашага імя — значна больш запытаў, і Meta можа заблакаваць гэты акаўнт.</string>
     <string name="in_home_feed">Паказваць у галоўнай стужцы</string>
     <string name="in_home_feed_description">Дадае запісы з акаўнтаў Threads, на якія вы падпісаны, у «Падпіскі» і «Для вас»</string>
     <string name="for_you">Для вас</string>
@@ -156,6 +156,7 @@
     <string name="show_less">Паказаць менш</string>
     <string name="pinned_reply">Замацавана аўтарам</string>
     <string name="spoiler">Спойлер</string>
+    <string name="sticker">Стыкер</string>
     <string name="tap_to_show_spoiler">Націсніце, каб паказаць спойлер</string>
     <string name="copy_text">Скапіяваць тэкст</string>
     <string name="copy_link">Скапіяваць спасылку</string>
@@ -168,7 +169,8 @@
     <string name="exact_time">Паказаць дакладны час</string>
     <string name="fewer_replies">Паказаць менш адказаў</string>
     <string name="more_replies_web">Больш адказаў на threads.com</string>
-    <string name="related_threads">Падобныя ніткі</string>
+    <string name="more_from_author">Яшчэ ад @%1$s</string>
+    <string name="more_on_topic">Яшчэ на тэму «%1$s»</string>
     <string name="media_description">Апісанне выявы</string>
     <string name="media_download">Спампаваць</string>
     <string name="media_download_all">Спампаваць усё</string>
@@ -177,7 +179,7 @@
     <string name="media_picture_of">Выява %1$d з %2$d</string>
     <string name="media_covered">Threads паставіў папярэджанне на гэтыя медыя</string>
     <string name="add_accounts_hint">Некалькі адразу: падзяліце іх прабеламі або коскамі</string>
-    <string name="session_unlocks">Што дае сеанс: ваша ўласная стужка «Для вас» і пошук людзей. Калі пераключальнік вышэй уключаны, ён таксама чытае акаўнты, на якія вы падпісаныя.</string>
+    <string name="session_unlocks">Што дае сесія: чытачоў і падпіскі, тых, каму спадабаўся допіс, вашу актыўнасць і пошук людзей — кожнае чытаецца з вашым акаўнтам толькі тады, калі вы гэта адкрываеце. Калі пераключальнік вышэй уключаны, з ёй чытаюцца таксама Галоўная і «Для вас».</string>
     <string name="instance_intro">Неабавязкова. Асобнік RSSHub, які вы трымаеце самі, чытае акаўнты, на якія вы падпісаныя; калі ён не адказвае, іх чытаюць з публічных старонак Threads. Пакіньце пустым, каб чытаць толькі публічныя старонкі.</string>
     <string name="account_missing">Не знойдзены — перайменаваны, выдалены ці з памылкай?</string>
     <string name="account_private">Прыватны — госцю Threads не паказвае ніводнага допісу</string>
@@ -235,6 +237,8 @@
     <string name="translate">Перакласці</string>
     <string name="show_original">Паказаць арыгінал</string>
     <string name="translated_by_threads">Перакладзена Threads</string>
+    <string name="translated_by">Пераклад: %1$s</string>
+    <string name="translation_failed_by">%1$s не змог перакласці гэты допіс</string>
     <string name="translating">Перакладаем…</string>
     <string name="translation_failed">Threads не ўдалося перакласці гэты допіс</string>
     <string name="attached_text">Далучаны тэкст</string>
@@ -289,4 +293,25 @@
     <string name="show_hidden_posts">Зноў паказаць схаваныя допісы</string>
     <string name="read_as_article">Чытаць як артыкул</string>
     <string name="show_conversation">Паказаць размову</string>
+    <string name="account_in_use">Выкарыстоўваецца ваш акаўнт Threads</string>
+    <string name="account_resting">Прыпынена, каб абараніць ваш акаўнт — працяг а %1$s</string>
+    <string name="account_paused">Прыпынена, каб абараніць ваш акаўнт</string>
+    <string name="account_signed_out">Threads завяршыў гэту сесію — увайдзіце зноў</string>
+    <string name="load_more">Загрузіць яшчэ</string>
+    <string name="account_guard">Ахова акаўнта</string>
+    <string name="account_active">Актыўны — выкарыстоўваецца толькі тады, калі вы адкрываеце тое, што яго патрабуе</string>
+    <string name="account_resting_until">Адпачывае да %1$s</string>
+    <string name="account_usage">Чытанні з акаўнтам за апошнія 24 гадзіны: %1$d з %2$d</string>
+    <string name="account_guard_detail">Чытачы, «Спадабалася», актыўнасць і пошук людзей выкарыстоўваюць ваш акаўнт толькі тады, калі вы іх адкрываеце, з паўзай у некалькі секунд, і спыняюцца раней, чым Meta заўважыць. Усё астатняе чытаецца як госць.</string>
+    <string name="suggested_for_you">Прапанавана для вас</string>
+    <string name="suggestion_follow">Сачыць за %1$s на гэтай прыладзе</string>
+    <string name="suggestion_unfollow">Перастаць сачыць за %1$s на гэтай прыладзе</string>
+    <string name="suggestion_hide">Прыбраць %1$s з прапаноў</string>
+    <string name="song_play">Слухаць «%1$s» — %2$s</string>
+    <string name="song_play_title">Слухаць «%1$s»</string>
+    <string name="song_pause">Прыпыніць «%1$s»</string>
+    <string name="song_open_page">Адкрыць старонку песні</string>
+    <string name="song_explicit">Ненарматыўны змест</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">Гэтую песню зараз немагчыма прайграць</string>
 </resources>

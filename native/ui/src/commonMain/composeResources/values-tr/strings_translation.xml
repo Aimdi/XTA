@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Translation (ui.settings) and the reader's translation service, from XTA's words (reader_translation_*.dart). -->
+<resources>
+    <string name="translation_title">Çeviri</string>
+    <string name="translation_privacy">Çevir'e dokunana kadar hiçbir şey gönderilmez. Metin yalnızca burada seçilen hizmete gider.</string>
+    <string name="translation_provider">Çeviri hizmeti</string>
+    <string name="translation_provider_off">Kapalı</string>
+    <string name="translation_provider_ai">Yapay zekâ sağlayıcısı</string>
+    <string name="translation_target">Çevrilecek dil</string>
+    <string name="translation_target_app">Uygulama dili</string>
+    <string name="translation_endpoint">Sunucu adresi</string>
+    <string name="translation_endpoint_deepl_help">Anahtarınıza göre DeepL Free veya Pro kullanmak için boş bırakın.</string>
+    <string name="translation_endpoint_libre_help">LibreTranslate sunucunuz, örneğin https://translate.example.com</string>
+    <string name="translation_key_optional">Yalnızca sunucunuz isterse gerekir</string>
+    <string name="translation_ai_description">Ayarlarda kurulan yapay zekâ sağlayıcısını kullanır.</string>
+    <string name="translation_ai_not_configured">Önce bir yapay zekâ sağlayıcısı ayarlayın</string>
+    <string name="translation_invalid">Sunucu adresini ve API anahtarını kontrol edin</string>
+    <string name="translation_saved">Çeviri ayarları kaydedildi</string>
+    <string name="translation_clear_cache">Kayıtlı çevirileri temizle</string>
+    <string name="translation_cache_cleared">Kayıtlı çeviriler temizlendi</string>
+    <string name="translation_not_configured">Önce bir çeviri hizmeti seçin</string>
+    <string name="translation_hint">Tüm ağlardaki gönderileri seçtiğiniz bir hizmetle çevirin</string>
+    <string name="translation_examples">Denenecek herkese açık sunucular</string>
+    <string name="translation_examples_note">Çevirdiğiniz metin seçtiğiniz sunucuya gönderilir. LibreTranslate'i kendi bilgisayarınızda veya sunucunuzda da çalıştırabilirsiniz.</string>
+    <string name="translation_test">Dene</string>
+    <string name="translation_testing">Deneniyor…</string>
+    <string name="translation_test_ok">Sunucu yanıt veriyor: %1$d dil</string>
+    <string name="translation_unreachable">Sunucu yanıt vermedi. Adresi ve bağlantınızı kontrol edin.</string>
+    <string name="translation_refused">Sunucu reddetti. Bir API anahtarı gerekebilir veya anahtar yanlış olabilir.</string>
+    <string name="translation_rate_limited">Şu anda çok fazla çeviri var. Daha sonra yeniden deneyin.</string>
+    <string name="translation_unsupported">Bu sunucu o dile çeviri yapmıyor.</string>
+    <string name="translation_bad_answer">Sunucunun yanıtında çeviri yoktu.</string>
+</resources>

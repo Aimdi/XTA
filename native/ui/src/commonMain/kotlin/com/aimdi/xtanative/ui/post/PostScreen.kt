@@ -283,51 +283,23 @@ private fun ZenReplies(onReveal: () -> Unit) {
 private class ReplyOrder(val sort: ReplySort, val onSelect: (ReplySort) -> Unit)
 
 /**
- * The replies' order as a quiet chip at the end of the opened post's time
- * line (the sort bar's concept A): its icon in the accent, its name and a
- * chevron in the line's grey, opening a menu of the orders with the one
- * shown ticked. It is left out of the post's picture.
+ * The replies' order at the end of the opened post's time line (the sort
+ * bar's concept A, drawn as the sort menu redesign: [ReplyOrderButton]). It
+ * is left out of the post's picture.
  */
 @Composable
 private fun ReplyOrderChip(order: ReplyOrder, picture: PostPicture) {
-    var open by rememberSaveable { mutableStateOf(false) }
     val shown = Sorts.effective(order.sort, Sorts.X_REPLIES)
-    val muted = MaterialTheme.colorScheme.onSurfaceVariant
-    val label = replySortLabel(shown)
-    val description = stringResource(Res.string.posts_sort_order) + ": " + label
-    Box(Modifier.alpha(if (picture.recording) 0f else 1f)) {
-        Row(
-            Modifier
-                .heightIn(min = 44.dp)
-                .clip(RoundedCornerShape(22.dp))
-                .clickable { open = true }
-                .clearAndSetSemantics {
-                    role = Role.DropdownList
-                    contentDescription = description
-                }
-                .padding(horizontal = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(replySortIcon(shown), null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
-            Text(label, color = muted, style = MaterialTheme.typography.bodyMedium, maxLines = 1, modifier = Modifier.padding(start = 4.dp))
-            Icon(Icons.Filled.ArrowDropDown, null, tint = muted, modifier = Modifier.size(18.dp))
-        }
-        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
-            Sorts.X_REPLIES.forEach { option ->
-                val picked = option == shown
-                DropdownMenuItem(
-                    text = { Text(replySortLabel(option)) },
-                    leadingIcon = { Icon(replySortIcon(option), null, modifier = Modifier.size(20.dp)) },
-                    trailingIcon = { if (picked) Icon(Icons.Filled.Check, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp)) },
-                    onClick = {
-                        open = false
-                        if (!picked) order.onSelect(option)
-                    },
-                    modifier = Modifier.semantics { selected = picked },
-                )
-            }
-        }
-    }
+    val description = stringResource(Res.string.posts_sort_order) + ": " + replySortLabel(shown)
+    ReplyOrderButton(
+        shown,
+        Sorts.X_REPLIES,
+        { replySortLabel(it) },
+        ::replySortIcon,
+        description,
+        order.onSelect,
+        Modifier.alpha(if (picture.recording) 0f else 1f),
+    )
 }
 
 /** A compact "order ▾" that shows the current order and opens a menu of the others (sort_menu_button.dart). */

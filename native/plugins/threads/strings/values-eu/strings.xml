@@ -114,8 +114,8 @@
     <string name="try_public">Saiatu kontu publiko bat</string>
     <string name="unfollow">Utzi jarraitzeari</string>
     <string name="unlike_on_device">Kendu atsegina gailu honetatik</string>
-    <string name="use_session">Erabili nire saioa jarraitutako kontuetarako</string>
-    <string name="use_session_description">Desaktibatuta lehenetsita. Piztuta, aplikazioak Threads-ekin hitz egiten du zu bazina bezala — Metak kontu hori debeka dezake. Utzi itzalita saio botagarria ez bada.</string>
+    <string name="use_session">Erabili nire saioa Hasiera eta Zuretzat atalerako</string>
+    <string name="use_session_description">Lehenespenez desaktibatuta, eta seguruena horrela da: zure kontua behar duena berez aldatzen da hartara irekitzen duzunean. Aktibatuta, Hasiera, Zuretzat eta jarraitzen dituzun kontuak ere zure izenean irakurtzen dira — irakurketa askoz gehiago, eta Metak kontu hori blokea dezake.</string>
     <string name="in_home_feed">Erakutsi hasierako denbora-lerroan</string>
     <string name="in_home_feed_description">Jarraitzen dituzun Threads kontuen bidalketak «Jarraitzen» eta «Zuretzat» ataletan tartekatzen ditu</string>
     <string name="for_you">Zuretzat</string>
@@ -148,6 +148,7 @@
     <string name="show_less">Erakutsi gutxiago</string>
     <string name="pinned_reply">Egileak finkatua</string>
     <string name="spoiler">Spoilerra</string>
+    <string name="sticker">Pegatina</string>
     <string name="tap_to_show_spoiler">Sakatu spoilerra ikusteko</string>
     <string name="copy_text">Kopiatu testua</string>
     <string name="copy_link">Kopiatu esteka</string>
@@ -160,7 +161,8 @@
     <string name="exact_time">Erakutsi ordu zehatza</string>
     <string name="fewer_replies">Erakutsi erantzun gutxiago</string>
     <string name="more_replies_web">Erantzun gehiago threads.com-en</string>
-    <string name="related_threads">Lotutako hariak</string>
+    <string name="more_from_author">Gehiago: @%1$s</string>
+    <string name="more_on_topic">Gehiago %1$s gaiari buruz</string>
     <string name="media_description">Irudiaren deskribapena</string>
     <string name="media_download">Deskargatu</string>
     <string name="media_download_all">Deskargatu dena</string>
@@ -169,7 +171,7 @@
     <string name="media_picture_of">%1$d. irudia (%2$d guztira)</string>
     <string name="media_covered">Threads-ek abisu bat jarri dio multimedia honi</string>
     <string name="add_accounts_hint">Hainbat batera: bereizi zuriuneekin edo komekin</string>
-    <string name="session_unlocks">Saio batek zer gehitzen duen: zure Zuretzat propioa eta pertsonen bilaketa. Goiko etengailua piztuta, jarraitzen dituzun kontuak ere irakurtzen ditu.</string>
+    <string name="session_unlocks">Saio batek zer gehitzen duen: jarraitzaileak eta jarraituak, argitalpen bat nori gustatu zaion, zure jarduera eta pertsonen bilaketa, bakoitza zure kontuarekin irekitzen duzunean bakarrik irakurria. Goiko etengailua aktibatuta, Hasiera eta Zuretzat ere harekin irakurtzen dira.</string>
     <string name="instance_intro">Aukerakoa. Zuk zeuk darabilzun RSSHub instantzia batek jarraitzen dituzun kontuak irakurtzen ditu; huts egiten badu, Threadsen orri publikoak erabiltzen dira. Utzi hutsik orri publikoak soilik irakurtzeko.</string>
     <string name="account_missing">Ez da aurkitu: izenez aldatu, ezabatu edo gaizki idatzi da?</string>
     <string name="account_private">Pribatua: Threads-ek ez dio gonbidatuari bere argitalpenik erakusten</string>
@@ -225,6 +227,8 @@
     <string name="translate">Itzuli</string>
     <string name="show_original">Erakutsi jatorrizkoa</string>
     <string name="translated_by_threads">Threads-ek itzulia</string>
+    <string name="translated_by">%1$s-(e)k itzulia</string>
+    <string name="translation_failed_by">%1$s-(e)k ezin izan du argitalpen hau itzuli</string>
     <string name="translating">Itzultzen…</string>
     <string name="translation_failed">Threads-ek ezin izan du argitalpen hau itzuli</string>
     <string name="attached_text">Erantsitako testua</string>
@@ -275,4 +279,25 @@
     <string name="show_hidden_posts">Erakutsi berriro ezkutatutako argitalpenak</string>
     <string name="read_as_article">Irakurri artikulu gisa</string>
     <string name="show_conversation">Erakutsi elkarrizketa</string>
+    <string name="account_in_use">Zure Threads kontua erabiltzen ari da</string>
+    <string name="account_resting">Pausatuta zure kontua babesteko — %1$s(e)tan jarraituko du</string>
+    <string name="account_paused">Pausatuta zure kontua babesteko</string>
+    <string name="account_signed_out">Threadsek saio hau itxi du — hasi saioa berriro</string>
+    <string name="load_more">Kargatu gehiago</string>
+    <string name="account_guard">Kontuaren babesa</string>
+    <string name="account_active">Aktibo — behar duen zerbait irekitzen duzunean bakarrik erabiltzen da</string>
+    <string name="account_resting_until">Atsedenean %1$s arte</string>
+    <string name="account_usage">Kontuarekin egindako irakurketak azken 24 orduetan: %1$d / %2$d</string>
+    <string name="account_guard_detail">Jarraitzaileek, «Gustuko dute»-k, jarduerak eta pertsonen bilaketak zure kontua irekitzen dituzunean bakarrik erabiltzen dute, segundo batzuetako tartearekin, eta Meta ohartu aurretik gelditzen dira. Gainerako guztia gonbidatu gisa irakurtzen da.</string>
+    <string name="suggested_for_you">Zuretzako iradokizunak</string>
+    <string name="suggestion_follow">Jarraitu %1$s gailu honetan</string>
+    <string name="suggestion_unfollow">Utzi %1$s jarraitzeari gailu honetan</string>
+    <string name="suggestion_hide">Kendu %1$s iradokizunetatik</string>
+    <string name="song_play">Erreproduzitu %1$s (%2$s)</string>
+    <string name="song_play_title">Erreproduzitu %1$s</string>
+    <string name="song_pause">Pausatu %1$s</string>
+    <string name="song_open_page">Ireki abestiaren orria</string>
+    <string name="song_explicit">Esplizitua</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">Abesti hau ezin da orain erreproduzitu</string>
 </resources>

@@ -15,23 +15,33 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-/** Where one post's translation stands: its [status], and Meta's words in [target] once they came. */
-internal data class ThreadsTranslated(val status: TranslationStatus, val target: String, val text: String? = null) {
+/**
+ * Where one post's translation stands: its [status], and the words in
+ * [target] once they came; [by] names the reader's translation service that
+ * gave them (LibreTranslate, DeepL, their AI), null where Threads did.
+ */
+internal data class ThreadsTranslated(val status: TranslationStatus, val target: String, val text: String? = null, val by: String? = null) {
     /** The words to draw in place of the post's own: the translation while it is shown. */
     val shown: String? get() = text.takeIf { status == TranslationStatus.TRANSLATED }
 }
 
+/** A translation's words, and the service that gave them ([ThreadsTranslated.by]). */
+internal data class ThreadsWords(val text: String, val by: String? = null)
+
 /**
- * The posts the reader asked Threads to translate, shared by every screen
- * so a card and its opened post agree: a translation is asked once per
- * post and language, and going back and forth between it and the original
- * asks nothing more. Once Meta answers no path at all, translation is
- * [available] no more this run, rather than offered to fail again. [ask] is
- * the client's read ([com.aimdi.xtanative.networks.threads.ThreadsDirectClient.translation]).
+ * The posts the reader asked to translate, shared by every screen so a card
+ * and its opened post agree: a translation is asked once per post and
+ * language, and going back and forth between it and the original asks
+ * nothing more. Once Meta answers no path at all, Threads' own translation
+ * is [available] no more this run, rather than offered to fail again. [ask]
+ * is the client's read
+ * ([com.aimdi.xtanative.networks.threads.ThreadsDirectClient.translation]),
+ * or with `viaService` the reader's translation service
+ * ([com.aimdi.xtanative.ui.plugins.PluginHost.translate]).
  */
 internal class ThreadsTranslations(
     private val scope: CoroutineScope,
-    private val ask: suspend (post: ThreadsPost, target: String) -> String?,
+    private val ask: suspend (post: ThreadsPost, target: String, viaService: Boolean) -> ThreadsWords?,
 ) {
     private val states = MutableStateFlow<Map<String, ThreadsTranslated>>(emptyMap())
     private val offered = MutableStateFlow(true)
@@ -42,8 +52,12 @@ internal class ThreadsTranslations(
     /** Whether Meta may still translate: false once no path answered. */
     val available: StateFlow<Boolean> = offered.asStateFlow()
 
-    /** Shows [post] in [target]: the kept translation at once, else Meta is asked. Null when nothing is asked. */
-    fun translate(post: ThreadsPost, target: String): Job? {
+    /**
+     * Shows [post] in [target]: the kept translation at once, else Meta is
+     * asked, or with [viaService] the reader's service ([by], for the line
+     * its failure shows). Null when nothing is asked.
+     */
+    fun translate(post: ThreadsPost, target: String, viaService: Boolean = false, by: String? = null): Job? {
         val key = key(post)
         val known = states.value[key]
         if (known?.status == TranslationStatus.TRANSLATING && known.target == target) return null
@@ -51,8 +65,8 @@ internal class ThreadsTranslations(
             put(key, known.copy(status = TranslationStatus.TRANSLATED))
             return null
         }
-        put(key, ThreadsTranslated(TranslationStatus.TRANSLATING, target))
-        return scope.launch { put(key, answer(post, target)) }
+        put(key, ThreadsTranslated(TranslationStatus.TRANSLATING, target, by = by.takeIf { viaService }))
+        return scope.launch { put(key, answer(post, target, viaService, by)) }
     }
 
     /** Shows [post]'s own words again, keeping the translation for the next time. */
@@ -61,16 +75,17 @@ internal class ThreadsTranslations(
         states.value[key]?.let { put(key, it.copy(status = TranslationStatus.ORIGINAL)) }
     }
 
-    private suspend fun answer(post: ThreadsPost, target: String): ThreadsTranslated = try {
-        val text = ask(post, target)?.trim()?.ifEmpty { null }
-        ThreadsTranslated(if (text == null) TranslationStatus.FAILED else TranslationStatus.TRANSLATED, target, text)
+    private suspend fun answer(post: ThreadsPost, target: String, viaService: Boolean, by: String?): ThreadsTranslated = try {
+        val words = ask(post, target, viaService)
+        val text = words?.text?.trim()?.ifEmpty { null }
+        ThreadsTranslated(if (text == null) TranslationStatus.FAILED else TranslationStatus.TRANSLATED, target, text, words?.by ?: by.takeIf { viaService })
     } catch (e: CancellationException) {
         throw e
     } catch (e: ThreadsException) {
         if (e.failure == ThreadsFailure.NO_SUCH_FEED) offered.value = false
         ThreadsTranslated(if (e.failure == ThreadsFailure.NOT_CONFIGURED) TranslationStatus.ORIGINAL else TranslationStatus.FAILED, target)
     } catch (_: Exception) {
-        ThreadsTranslated(TranslationStatus.FAILED, target)
+        ThreadsTranslated(TranslationStatus.FAILED, target, by = by.takeIf { viaService })
     }
 
     private fun put(key: String, value: ThreadsTranslated) = states.update { kept ->
@@ -86,6 +101,9 @@ internal class ThreadsTranslations(
         fun key(post: ThreadsPost): String = post.shortcode ?: post.id
     }
 }
+
+/** Who translates a post: Threads itself, or the reader's translation service. */
+internal enum class ThreadsTranslator { THREADS, SERVICE }
 
 /** When a post offers translation, decided apart from its drawing. */
 internal object ThreadsTranslationRules {
@@ -110,4 +128,34 @@ internal object ThreadsTranslationRules {
     fun offers(post: ThreadsPost, target: String, signedIn: Boolean, available: Boolean, pathKnown: Boolean = PATH_KNOWN): Boolean =
         pathKnown && signedIn && available && post.text.isNotBlank() && !post.hasSpoiler && post.facts.canTranslate != false &&
             ThreadsPeople.mediaId(post) != null && XTranslator.offers(post.facts.language, target)
+
+    /**
+     * Whether [post] offers Translate through the reader's translation
+     * service ([com.aimdi.xtanative.ui.plugins.PluginHost.translator]),
+     * translating into [serviceTarget]: a service is set, and the post has
+     * words, no spoiler (a translation could not keep it covered), and a
+     * language not [serviceTarget] (one Meta did not name keeps the offer).
+     * Meta's own `can_translate` is Meta's: the service reads the words
+     * whatever Meta offers.
+     */
+    fun serviceOffers(post: ThreadsPost, serviceTarget: String?): Boolean =
+        serviceTarget != null && post.text.isNotBlank() && !post.hasSpoiler && XTranslator.offers(post.facts.language, serviceTarget)
+
+    /**
+     * Who translates [post], or null when it offers no Translate: Threads
+     * first where its own translation is known to answer and the reader is
+     * signed in ([offers]), else the reader's service ([serviceOffers]).
+     */
+    fun translator(
+        post: ThreadsPost,
+        target: String,
+        signedIn: Boolean,
+        available: Boolean,
+        serviceTarget: String?,
+        pathKnown: Boolean = PATH_KNOWN,
+    ): ThreadsTranslator? = when {
+        offers(post, target, signedIn, available, pathKnown) -> ThreadsTranslator.THREADS
+        serviceOffers(post, serviceTarget) -> ThreadsTranslator.SERVICE
+        else -> null
+    }
 }

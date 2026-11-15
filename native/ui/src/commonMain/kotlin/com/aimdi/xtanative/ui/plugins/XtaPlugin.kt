@@ -38,9 +38,11 @@ import kotlinx.serialization.json.JsonElement
  * screen opened as a card dragged back ([XtaPlugin.opensAsCard]), a saved
  * picture's name ([PluginHost.openMedia] with a source name) and a home bar
  * whose mark gives way to its tabs; 11 adds [PluginAvatar], a face with
- * the account's initial for one without a picture.
+ * the account's initial for one without a picture; 12 adds the reader's
+ * translation service ([PluginHost.translator], [PluginHost.translate] with
+ * [PluginTranslation]), so a plugin's posts translate as X's do.
  */
-const val PLUGIN_API_VERSION: Int = 11
+const val PLUGIN_API_VERSION: Int = 12
 
 /**
  * The oldest plugin API whose plugins this app still loads: what they use of

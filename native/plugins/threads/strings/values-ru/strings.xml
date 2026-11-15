@@ -120,8 +120,8 @@
     <string name="try_public">Попробовать публичный аккаунт</string>
     <string name="unfollow">Отписаться</string>
     <string name="unlike_on_device">Убрать отметку «нравится» с этого устройства</string>
-    <string name="use_session">Использовать мою сессию для отслеживаемых аккаунтов</string>
-    <string name="use_session_description">По умолчанию выключено. Если включить, приложение обращается к Threads от вашего имени — Meta может забанить этот аккаунт. Оставьте выключенным, если это не одноразовый вход.</string>
+    <string name="use_session">Использовать мою сессию для Главной и «Для вас»</string>
+    <string name="use_session_description">По умолчанию выключено, и так безопаснее: то, что требует ваш аккаунт, само переключается на него, когда вы это открываете. Если включить, Главная, «Для вас» и аккаунты, на которые вы подписаны, тоже читаются от вашего имени — намного больше запросов, и Meta может заблокировать этот аккаунт.</string>
     <string name="in_home_feed">Показывать в главной ленте</string>
     <string name="in_home_feed_description">Добавляет записи из аккаунтов Threads, на которые вы подписаны, в «Подписки» и «Для вас»</string>
     <string name="for_you">Для вас</string>
@@ -156,6 +156,7 @@
     <string name="show_less">Показать меньше</string>
     <string name="pinned_reply">Закреплено автором</string>
     <string name="spoiler">Спойлер</string>
+    <string name="sticker">Стикер</string>
     <string name="tap_to_show_spoiler">Нажмите, чтобы показать спойлер</string>
     <string name="copy_text">Копировать текст</string>
     <string name="copy_link">Копировать ссылку</string>
@@ -168,7 +169,8 @@
     <string name="exact_time">Показать точное время</string>
     <string name="fewer_replies">Показать меньше ответов</string>
     <string name="more_replies_web">Больше ответов на threads.com</string>
-    <string name="related_threads">Похожие ветки</string>
+    <string name="more_from_author">Ещё от @%1$s</string>
+    <string name="more_on_topic">Ещё на тему «%1$s»</string>
     <string name="media_description">Описание изображения</string>
     <string name="media_download">Скачать</string>
     <string name="media_download_all">Скачать все</string>
@@ -177,7 +179,7 @@
     <string name="media_picture_of">Изображение %1$d из %2$d</string>
     <string name="media_covered">Threads поставил предупреждение на это медиа</string>
     <string name="add_accounts_hint">Несколько сразу: разделите их пробелами или запятыми</string>
-    <string name="session_unlocks">Что даёт сеанс: ваша собственная лента «Для вас» и поиск людей. Если переключатель выше включён, он также читает аккаунты, на которые вы подписаны.</string>
+    <string name="session_unlocks">Что даёт сессия: читателей и подписки, кому понравилась публикация, вашу активность и поиск людей — каждое читается с вашим аккаунтом, только когда вы это открываете. Если переключатель выше включён, с ней читаются также Главная и «Для вас».</string>
     <string name="instance_intro">Необязательно. Собственный экземпляр RSSHub читает аккаунты, на которые вы подписаны; если он не отвечает, их читают с публичных страниц Threads. Оставьте пустым, чтобы читать только публичные страницы.</string>
     <string name="account_missing">Не найден — переименован, удалён или опечатка?</string>
     <string name="account_private">Закрытый — гостю Threads не показывает ни одного поста</string>
@@ -235,6 +237,8 @@
     <string name="translate">Перевести</string>
     <string name="show_original">Показать оригинал</string>
     <string name="translated_by_threads">Переведено Threads</string>
+    <string name="translated_by">Перевод: %1$s</string>
+    <string name="translation_failed_by">%1$s не удалось перевести этот пост</string>
     <string name="translating">Перевод…</string>
     <string name="translation_failed">Threads не удалось перевести этот пост</string>
     <string name="attached_text">Прикреплённый текст</string>
@@ -289,4 +293,25 @@
     <string name="show_hidden_posts">Снова показать скрытые посты</string>
     <string name="read_as_article">Читать как статью</string>
     <string name="show_conversation">Показать обсуждение</string>
+    <string name="account_in_use">Используется ваш аккаунт Threads</string>
+    <string name="account_resting">Приостановлено для защиты вашего аккаунта — продолжится в %1$s</string>
+    <string name="account_paused">Приостановлено для защиты вашего аккаунта</string>
+    <string name="account_signed_out">Threads завершил эту сессию — войдите снова</string>
+    <string name="load_more">Загрузить ещё</string>
+    <string name="account_guard">Защита аккаунта</string>
+    <string name="account_active">Активен — используется, только когда вы открываете то, что его требует</string>
+    <string name="account_resting_until">Отдыхает до %1$s</string>
+    <string name="account_usage">Чтения с аккаунтом за последние 24 часа: %1$d из %2$d</string>
+    <string name="account_guard_detail">Читатели, «Понравилось», активность и поиск людей используют ваш аккаунт, только когда вы их открываете, с паузой в несколько секунд, и останавливаются раньше, чем Meta заметит. Всё остальное читается как гость.</string>
+    <string name="suggested_for_you">Рекомендуем вам</string>
+    <string name="suggestion_follow">Подписаться на %1$s на этом устройстве</string>
+    <string name="suggestion_unfollow">Отписаться от %1$s на этом устройстве</string>
+    <string name="suggestion_hide">Убрать %1$s из рекомендаций</string>
+    <string name="song_play">Слушать «%1$s» — %2$s</string>
+    <string name="song_play_title">Слушать «%1$s»</string>
+    <string name="song_pause">Приостановить «%1$s»</string>
+    <string name="song_open_page">Открыть страницу песни</string>
+    <string name="song_explicit">Ненормативный контент</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">Эту песню сейчас нельзя воспроизвести</string>
 </resources>

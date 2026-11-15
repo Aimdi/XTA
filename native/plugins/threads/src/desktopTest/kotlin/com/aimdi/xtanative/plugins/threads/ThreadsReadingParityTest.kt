@@ -91,13 +91,13 @@ class ThreadsReadingParityTest {
                 listOf(post("hidden", handle = "meta")),
             ),
             loaded = true,
-            related = listOf(post("x", handle = "spammer"), post("y")),
+            fromAuthor = listOf(post("x"), post("hidden")),
         )
         val options = ThreadsFeedOptions().mutingAccount("spammer").hiding("hidden")
 
         val quieted = ThreadsConversationView.quieted(conversation, options)
         assertEquals(listOf(listOf("r2"), listOf("r3")), quieted.replies.map { chain -> chain.map { it.id } })
-        assertEquals(listOf("y"), quieted.related.map { it.id })
+        assertEquals(listOf("x"), quieted.fromAuthor.map { it.id })
         assertEquals(conversation.ancestors, quieted.ancestors, "what the opened post answers stays: the reader asked for it")
         assertTrue(ThreadsConversationView.quieted(conversation, ThreadsFeedOptions(mutedWords = listOf("post"))) === conversation, "muted words are the feeds' alone")
     }

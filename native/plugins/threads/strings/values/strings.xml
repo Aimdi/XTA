@@ -116,8 +116,8 @@
     <string name="try_public">Try a public account</string>
     <string name="unfollow">Unfollow</string>
     <string name="unlike_on_device">Remove like from this device</string>
-    <string name="use_session">Use my session for followed accounts</string>
-    <string name="use_session_description">Off by default. When on, this app talks to Threads as you — Meta can ban that account. Leave this off unless you are using a disposable login.</string>
+    <string name="use_session">Use my session for Home and For you</string>
+    <string name="use_session_description">Off by default, and safest off: whatever needs your account switches to it by itself when you open it. When on, Home, For you and the accounts you follow are read as you too — many more reads, and Meta can ban that account.</string>
     <string name="in_home_feed">Show in the home timeline</string>
     <string name="in_home_feed_description">Mixes posts from the Threads accounts you follow into Following and For you</string>
     <string name="for_you">For you</string>
@@ -150,6 +150,7 @@
     <string name="show_less">Show less</string>
     <string name="pinned_reply">Pinned by the author</string>
     <string name="spoiler">Spoiler</string>
+    <string name="sticker">Sticker</string>
     <string name="tap_to_show_spoiler">Tap to show spoiler</string>
     <string name="copy_text">Copy text</string>
     <string name="copy_link">Copy link</string>
@@ -162,7 +163,8 @@
     <string name="exact_time">Show the exact time</string>
     <string name="fewer_replies">Show fewer replies</string>
     <string name="more_replies_web">More replies on threads.com</string>
-    <string name="related_threads">Related threads</string>
+    <string name="more_from_author">More from @%1$s</string>
+    <string name="more_on_topic">More on %1$s</string>
     <string name="media_description">Image description</string>
     <string name="media_download">Download</string>
     <string name="media_download_all">Download all</string>
@@ -171,7 +173,7 @@
     <string name="media_picture_of">Picture %1$d of %2$d</string>
     <string name="media_covered">Threads put a warning over this media</string>
     <string name="add_accounts_hint">Several at once: separate them with spaces or commas</string>
-    <string name="session_unlocks">What a session adds: your own For you and people search. With the switch above on, it also reads the accounts you follow.</string>
+    <string name="session_unlocks">What a session adds: followers and following, who liked a post, your Activity and people search, each read with your account only when you open it. With the switch above on, Home and For you are read with it too.</string>
     <string name="instance_intro">Optional. An RSSHub instance you run reads the accounts you follow; Threads’ public pages stand in when it fails. Leave it empty to read the public pages only.</string>
     <string name="account_missing">Not found — renamed, deleted or mistyped?</string>
     <string name="account_private">Private — Threads shows a guest none of its posts</string>
@@ -227,6 +229,8 @@
     <string name="translate">Translate</string>
     <string name="show_original">Show original</string>
     <string name="translated_by_threads">Translated by Threads</string>
+    <string name="translated_by">Translated by %1$s</string>
+    <string name="translation_failed_by">%1$s could not translate this post</string>
     <string name="translating">Translating…</string>
     <string name="translation_failed">Threads could not translate this post</string>
     <string name="attached_text">Attached text</string>
@@ -277,4 +281,25 @@
     <string name="show_hidden_posts">Show hidden posts again</string>
     <string name="read_as_article">Read as article</string>
     <string name="show_conversation">Show conversation</string>
+    <string name="account_in_use">Using your Threads account</string>
+    <string name="account_resting">Paused to protect your account — continues at %1$s</string>
+    <string name="account_paused">Paused to protect your account</string>
+    <string name="account_signed_out">Threads signed this session out — sign in again</string>
+    <string name="load_more">Load more</string>
+    <string name="account_guard">Account protection</string>
+    <string name="account_active">Active — used only when you open something that needs it</string>
+    <string name="account_resting_until">Resting until %1$s</string>
+    <string name="account_usage">Account reads in the last 24 hours: %1$d of %2$d</string>
+    <string name="account_guard_detail">Followers, Liked by, Activity and people search use your account only when you open them, a few seconds apart, and pause before Meta would notice. Everything else is read as a guest.</string>
+    <string name="suggested_for_you">Suggested for you</string>
+    <string name="suggestion_follow">Follow %1$s on this device</string>
+    <string name="suggestion_unfollow">Unfollow %1$s on this device</string>
+    <string name="suggestion_hide">Remove %1$s from suggestions</string>
+    <string name="song_play">Play %1$s by %2$s</string>
+    <string name="song_play_title">Play %1$s</string>
+    <string name="song_pause">Pause %1$s</string>
+    <string name="song_open_page">Open song page</string>
+    <string name="song_explicit">Explicit</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">This song can’t be played right now</string>
 </resources>

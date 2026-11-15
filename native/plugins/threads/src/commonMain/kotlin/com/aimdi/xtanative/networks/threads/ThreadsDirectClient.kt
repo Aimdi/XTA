@@ -40,9 +40,14 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
  * a session, the cookie API on threads.com and the Bearer API on
  * i.instagram.com. Read-only: nothing is posted, liked, reposted or followed.
  *
- * Requests leave one at a time, the gap of [pacing] apart, and a session that
- * Meta throttled or parked is not used again until its cooldown, kept in
- * [memory], has passed; public reads spend no session and ignore it. A
+ * Requests leave one at a time, the gap of [pacing] apart. Every session read
+ * passes [guard] first (ThreadsAccountGuard): one at a time, human gaps and
+ * pauses, rolling budgets, a rest that grows with each warning Meta gives,
+ * a session Meta signed out left alone, all kept in [memory]; a page of a
+ * session list read in the last half hour is that page again, asked of no
+ * one. A session read is never sent from [ThreadsBackground] unless the
+ * reader opted in ([ThreadsSession.useSessionApis]). Public reads spend no
+ * session and ignore all of it. A
  * guest list goes on where its page names a cursor and the query that read
  * it ([ThreadsNextPages]): its [Page.next] is that cursor, and the `more…`
  * reads ask guest GraphQL for the page after it as threads.com's own client
@@ -62,8 +67,12 @@ class ThreadsDirectClient(
     private val repairs: () -> ThreadsRepairs = { ThreadsRepairs() },
     private val pacing: ThreadsPacing = ThreadsPacing(),
     private val clock: () -> Long = System::currentTimeMillis,
+    limits: ThreadsGuardLimits = ThreadsGuardLimits(),
 ) {
     private val departures = Mutex()
+
+    /** The line session reads take, one at a time from waiting out their spacing until Meta answered. */
+    private val sessionLane = Mutex()
 
     /** How many reads the reader is waiting on (not [ThreadsBackground]) are waiting for their turn to leave. */
     private val waitingInFront = MutableStateFlow(0)
@@ -72,6 +81,13 @@ class ThreadsDirectClient(
     private val backgroundLane = Mutex()
     private var lastDeparture: Long? = null
     private val keeping = Any()
+
+    /** What every session read asks first, and what Settings shows of the account. */
+    val guard = ThreadsAccountGuard(memory, clock, limits, keeping)
+
+    /** The pages of session lists read lately, by what was asked, and those on their way. */
+    private val sessionPages = LinkedHashMap<String, Pair<Long, J>>()
+    private val sessionReads = SingleFlight<J>()
     private val profilePages = SingleFlight<String>()
     private val guestAnswers = ThreadsGuestAnswers(clock)
     private val profileCards = LinkedHashMap<String, Pair<Long, ThreadsProfile>>()
@@ -82,6 +98,9 @@ class ThreadsDirectClient(
     private var trendsRead: Pair<Long, List<ThreadsTrend>>? = null
     private val recommendedReads = SingleFlight<List<ThreadsProfile>>()
     private var recommendedRead: Pair<Long, List<ThreadsProfile>>? = null
+
+    /** The accounts the last Bearer For you page carried between its posts, and when ([timelineSuggestions]). */
+    private var timelineSuggested: Pair<Long, List<ThreadsSuggestedAccount>>? = null
 
     /** The values the pages read gave Relay's provided variables ([ThreadsRelayProviders]), the latest of each. */
     private val relayProviders = LinkedHashMap<String, Boolean>()
@@ -132,7 +151,8 @@ class ThreadsDirectClient(
         val words = query.trim().removePrefix("@")
         if (words.isEmpty()) return Page(emptyList(), null)
         val url = ThreadsLinks.web("/api/v1/users/search/", listOf("q" to words, "count" to "$count"))
-        val users = sessionRead(url, cookieHeaders(current))["users"].list.mapNotNull(ThreadsParser::profile)
+        val body = remembered("search|${words.lowercase()}|$count", fresh = false) { sessionRead(url, cookieHeaders(current)) }
+        val users = body["users"].list.mapNotNull(ThreadsParser::profile)
         users.filter { it.pk.isNotEmpty() }.forEach { rememberUserId(it.username.lowercase(), it.pk) }
         return Page(users, null)
     }
@@ -144,9 +164,9 @@ class ThreadsDirectClient(
      * the reader gave them, else the Bearer on the app API; with neither,
      * [NOT_CONFIGURED]. A read only: no one is followed or liked.
      */
-    suspend fun people(list: ThreadsPeopleList, target: String, cursor: String? = null, query: String? = null): Page<ThreadsProfile> {
+    suspend fun people(list: ThreadsPeopleList, target: String, cursor: String? = null, query: String? = null, fresh: Boolean = false): Page<ThreadsProfile> {
         val id = target.trim().takeIf { it.isNotEmpty() && it.all(Char::isDigit) } ?: throw ThreadsException(NO_SUCH_FEED, "no id for $list")
-        return ThreadsPeople.page(sessionApi("people:$list", ThreadsPeople.paths(list, id), ThreadsPeople.params(list, cursor, query)))
+        return ThreadsPeople.page(sessionApi("people:$list", ThreadsPeople.paths(list, id), ThreadsPeople.params(list, cursor, query), paging = cursor != null, fresh = fresh))
     }
 
     /**
@@ -155,9 +175,9 @@ class ThreadsDirectClient(
      * neither cookies nor a Bearer [NOT_CONFIGURED]. A read only: nothing is
      * quoted or reposted.
      */
-    suspend fun quotes(mediaId: String, cursor: String? = null): Page<ThreadsPost> {
+    suspend fun quotes(mediaId: String, cursor: String? = null, fresh: Boolean = false): Page<ThreadsPost> {
         val id = mediaId.trim().takeIf { it.isNotEmpty() && it.all(Char::isDigit) } ?: throw ThreadsException(NO_SUCH_FEED, "no media id for quotes")
-        return ThreadsQuotes.page(sessionApi("quotes", ThreadsQuotes.paths(id), ThreadsQuotes.params(cursor)), id)
+        return ThreadsQuotes.page(sessionApi("quotes", ThreadsQuotes.paths(id), ThreadsQuotes.params(cursor), paging = cursor != null, fresh = fresh), id)
     }
 
     /**
@@ -182,9 +202,9 @@ class ThreadsDirectClient(
      * taken for a path that does not serve it. A read only: nothing is
      * followed, saved, liked or marked seen.
      */
-    suspend fun ownFeed(feed: ThreadsOwnFeed, cursor: String? = null): Page<ThreadsPost> {
+    suspend fun ownFeed(feed: ThreadsOwnFeed, cursor: String? = null, fresh: Boolean = false): Page<ThreadsPost> {
         val accepts: (J) -> Boolean = if (feed == ThreadsOwnFeed.FOLLOWING) ThreadsOwnFeeds::isFollowing else { _ -> true }
-        val body = sessionApi("own:$feed", ThreadsOwnFeeds.paths(feed), ThreadsOwnFeeds.params(feed, cursor, deviceId()), accepts = accepts)
+        val body = sessionApi("own:$feed", ThreadsOwnFeeds.paths(feed), ThreadsOwnFeeds.params(feed, cursor, deviceId()), accepts = accepts, paging = cursor != null, fresh = fresh)
         return ThreadsOwnFeeds.page(body)
     }
 
@@ -193,8 +213,73 @@ class ThreadsDirectClient(
      * part [filter] names, after [cursor]: a session read as [people] is.
      * Asked never to mark anything seen; nothing is answered or followed.
      */
-    suspend fun activity(filter: ThreadsActivityFilter = ThreadsActivityFilter.ALL, cursor: String? = null): Page<ThreadsActivityItem> =
-        ThreadsActivity.page(sessionApi("activity", ThreadsActivity.PATHS, ThreadsActivity.params(filter, cursor)))
+    suspend fun activity(filter: ThreadsActivityFilter = ThreadsActivityFilter.ALL, cursor: String? = null, fresh: Boolean = false): Page<ThreadsActivityItem> =
+        ThreadsActivity.page(sessionApi("activity", ThreadsActivity.PATHS, ThreadsActivity.params(filter, cursor), paging = cursor != null, fresh = fresh))
+
+    /**
+     * One page of the community named [name] as the signed-in reader is shown
+     * it ([ThreadsCommunityFeed]), after [cursor]: a session read as [people]
+     * is, through the guard, for a community the reader opened. Never asked
+     * while [ThreadsCommunityFeed.PATH_KNOWN] is off; a read only.
+     */
+    suspend fun communityFeed(name: String, cursor: String? = null, fresh: Boolean = false): Page<ThreadsPost> {
+        if (name.isBlank()) throw ThreadsException(NO_SUCH_FEED, "no community name", manual = true)
+        val body = sessionApi("community", ThreadsCommunityFeed.paths(name), ThreadsCommunityFeed.params(name, cursor), paging = cursor != null, fresh = fresh)
+        return ThreadsCommunityFeed.page(body)
+    }
+
+    /**
+     * The accounts Threads suggests the signed-in reader ([ThreadsSuggested]):
+     * the recommended-users query with the cookies where [routes] allows it,
+     * else the app API's likely paths, tried in turn; a session read through
+     * the guard as [people] is, kept half an hour and never sent from
+     * [ThreadsBackground] unless the reader opted in. With no route for the
+     * session, [NOT_CONFIGURED] and nothing asked. A read only: no one is
+     * followed or dismissed on Threads.
+     */
+    suspend fun suggestedPeople(routes: ThreadsSuggestedRoutes = ThreadsSuggestedRoutes.SHIPPED, fresh: Boolean = false): List<ThreadsSuggestedAccount> {
+        val current = session()
+        return when {
+            routes.query && current.hasCookies -> {
+                val docId = repairs().recommendedUsersDocId.ifEmpty { ThreadsSuggested.QUERY_DOC_ID }
+                ThreadsSuggested.fromQuery(remembered("suggested|query|$docId", fresh) { sessionQuery(ThreadsSuggested.QUERY, docId, ThreadsSuggested.variables()) })
+            }
+            routes.path && current.hasDirectAuth -> ThreadsSuggested.fromRest(sessionApi("suggested", ThreadsSuggested.PATHS, ThreadsSuggested.params(), fresh = fresh))
+            else -> throw ThreadsException(NOT_CONFIGURED, "no route for suggestions", manual = true)
+        }
+    }
+
+    /**
+     * The accounts the last Bearer For you page read carried between its
+     * posts, with when it was read; null when none did. Asks nothing.
+     */
+    fun timelineSuggestions(): Pair<Long, List<ThreadsSuggestedAccount>>? = synchronized(keeping) { timelineSuggested }
+
+    /**
+     * A GraphQL query sent with the session's cookies, as threads.com's
+     * signed-in client sends one: through the guard as every session read
+     * is, its redirects read for a challenge or a sign-out. Only a query:
+     * a [name] that is a mutation is never sent.
+     */
+    private suspend fun sessionQuery(name: String, docId: String, variables: JsonObject): J {
+        require("Mutation" !in name) { "a session query only" }
+        val current = requireCookies()
+        val url = ThreadsLinks.web(GRAPHQL)
+        val form = listOf("doc_id" to docId, "variables" to variables.toString()) + GuestQuery.relayForm(name)
+        val body = form.joinToString("&") { (key, value) -> "${ThreadsLinks.formEncode(key)}=${ThreadsLinks.formEncode(value)}" }
+        val headers = cookieHeaders(current) + mapOf("Content-Type" to FORM, "X-FB-Friendly-Name" to name, "Origin" to ThreadsLinks.WEB)
+        val response = sendSession(url, paging = false) { http.post(url, headers, body, FORM) }
+        if (response.code in REDIRECTS) {
+            val next = response.header("Location")?.let(url::resolve)
+            when (next?.let(ThreadsAccountSignals::ofRedirect)) {
+                ThreadsSignal.CHALLENGE -> throw parked(url, response)
+                ThreadsSignal.SIGNED_OUT -> throw signedOut(url, response.code)
+                else -> throw ThreadsException(UNREACHABLE, "$url: ${response.code}", response.code, manual = true)
+            }
+        }
+        checkSession(response, url)
+        return decodeJson(response, url)
+    }
 
     /**
      * A session read of the API behind Threads at the first of [paths] that
@@ -204,7 +289,9 @@ class ThreadsDirectClient(
      * for [kind] from then on, so a list whose path is known asks once.
      * [language], when given, is the Accept-Language Meta answers in. An
      * answer [accepts] refuses is taken for a missing path: it is not what
-     * [kind] asked for.
+     * [kind] asked for. The answer is kept for [ThreadsGuardLimits.pageTtlMillis]
+     * and shared while on its way ([remembered]); [fresh] reads it again.
+     * [paging] is a page after a list's first, paced slower.
      */
     private suspend fun sessionApi(
         kind: String,
@@ -212,6 +299,23 @@ class ThreadsDirectClient(
         params: List<Pair<String, String>>,
         language: String? = null,
         accepts: (J) -> Boolean = { true },
+        paging: Boolean = false,
+        fresh: Boolean = false,
+    ): J {
+        val current = session()
+        if (!current.hasCookies && current.bearerToken == null) throw ThreadsException(NOT_CONFIGURED, "no session for $kind")
+        val key = listOf(kind, paths.firstOrNull().orEmpty(), params.toString(), language.orEmpty(), if (current.hasCookies) "web" else "app").joinToString("|")
+        return remembered(key, fresh) { askPaths(kind, paths, params, language, accepts, paging) }
+    }
+
+    /** The first of [paths] that answers, asked as [sessionApi] says. */
+    private suspend fun askPaths(
+        kind: String,
+        paths: List<String>,
+        params: List<Pair<String, String>>,
+        language: String?,
+        accepts: (J) -> Boolean,
+        paging: Boolean,
     ): J {
         val current = session()
         val token = current.bearerToken
@@ -224,8 +328,8 @@ class ThreadsDirectClient(
             try {
                 val inLanguage = { headers: Map<String, String> -> if (language == null) headers else headers + ("Accept-Language" to language) }
                 val body = when {
-                    current.hasCookies -> sessionRead(ThreadsLinks.web(path, params), inLanguage(cookieHeaders(current)))
-                    else -> sessionRead(ThreadsLinks.address(INSTAGRAM, path, params), inLanguage(bearerHeaders(checkNotNull(token), deviceId())))
+                    current.hasCookies -> sessionRead(ThreadsLinks.web(path, params), inLanguage(cookieHeaders(current)), paging)
+                    else -> sessionRead(ThreadsLinks.address(INSTAGRAM, path, params), inLanguage(bearerHeaders(checkNotNull(token), deviceId())), paging)
                 }
                 if (!accepts(body)) throw ThreadsException(NO_SUCH_FEED, "$path: not $kind")
                 synchronized(keeping) { answeringPaths[kind] = index }
@@ -235,7 +339,36 @@ class ThreadsDirectClient(
                 missing = e
             }
         }
-        throw missing ?: ThreadsException(NO_SUCH_FEED, "no path for $kind")
+        throw missing ?: ThreadsException(NO_SUCH_FEED, "no path for $kind", manual = true)
+    }
+
+    /**
+     * A session answer by [key]: the one read in the last
+     * [ThreadsGuardLimits.pageTtlMillis] unless [fresh], else the one already
+     * on its way, else [read]'s, kept. A failure is never kept.
+     */
+    private suspend fun remembered(key: String, fresh: Boolean, read: suspend () -> J): J {
+        if (!fresh) synchronized(sessionPages) { sessionPages[key]?.takeIf { (at, _) -> clock() - at < guard.limits.pageTtlMillis }?.second }?.let { return it }
+        return sessionReads.run(key) {
+            read().also { body ->
+                synchronized(sessionPages) {
+                    sessionPages.remove(key)
+                    sessionPages[key] = clock() to body
+                    while (sessionPages.size > SESSION_PAGES_KEPT) sessionPages.remove(sessionPages.keys.first())
+                }
+            }
+        }
+    }
+
+    /**
+     * The reader pasted, signed in with or cleared a session: what the old one
+     * read is no answer for the new, which is not signed out and is sent the
+     * headers in force now ([ThreadsAccountGuard.sessionChanged]).
+     */
+    fun sessionChanged() {
+        synchronized(sessionPages) { sessionPages.clear() }
+        synchronized(keeping) { answeringPaths.clear() }
+        guard.sessionChanged()
     }
 
     /**
@@ -341,7 +474,8 @@ class ThreadsDirectClient(
                 after?.let { "max_id" to it },
             ),
         )
-        val body = sessionRead(url, bearerHeaders(token, device))
+        val body = sessionRead(url, bearerHeaders(token, device), paging = after != null)
+        ThreadsSuggested.fromTimeline(body).takeIf { it.isNotEmpty() }?.let { found -> synchronized(keeping) { timelineSuggested = clock() to found } }
         val next = (body["next_max_id"].string ?: body["next_max_id"].integer?.toString())?.trim()?.ifEmpty { null }
         return Page(ThreadsParser.feed(body), next.takeIf { body["more_available"].boolean != false })
     }
@@ -860,11 +994,31 @@ class ThreadsDirectClient(
 
     private fun isFeed(info: ThreadsPageInfo): Boolean = "Feed" in info.query.orEmpty()
 
-    /** A session read: paced, refused while the session cools down, and checked for what Meta said. */
-    private suspend fun sessionRead(url: HttpUrl, headers: Map<String, String>): J {
-        val response = sendSession(url) { http.get(url, headers, followRedirects = true) }
+    /**
+     * A session read: through the [guard], paced (slower for a page after a
+     * list's first, [paging]), and checked for what Meta said. Redirects are
+     * followed here, so one to a challenge or Meta's sign-in page is seen.
+     */
+    private suspend fun sessionRead(url: HttpUrl, headers: Map<String, String>, paging: Boolean = false): J {
+        val response = sendSession(url, paging) { sessionFollowed(url, headers) }
         checkSession(response, url)
         return decodeJson(response, url)
+    }
+
+    /** [url]'s answer with its redirects followed; one to a challenge parks the session, one to the sign-in page signs it out. */
+    private suspend fun sessionFollowed(url: HttpUrl, headers: Map<String, String>): XResponse {
+        var at = url
+        repeat(MAX_REDIRECTS + 1) {
+            val response = http.get(at, headers, followRedirects = false)
+            if (response.code !in REDIRECTS) return response
+            val next = response.header("Location")?.let(at::resolve) ?: return response
+            when (ThreadsAccountSignals.ofRedirect(next)) {
+                ThreadsSignal.CHALLENGE -> throw parked(url, response)
+                ThreadsSignal.SIGNED_OUT -> throw signedOut(url, response.code)
+                else -> at = next
+            }
+        }
+        throw ThreadsException(UNREACHABLE, "$url: too many redirects", manual = true)
     }
 
     /** A guest request, shared with an identical one another screen sends or was just answered ([ThreadsGuestAnswers]). */
@@ -875,10 +1029,26 @@ class ThreadsDirectClient(
         }
     }
 
-    /** A session request: paced at the session's own gap, never shared or reused. */
-    private suspend fun sendSession(url: HttpUrl, request: suspend () -> XResponse): XResponse {
-        departInTurn(asGuest = false)
-        return withTimeoutOrNull(TIMEOUT_MILLIS) { request() } ?: throw SocketTimeoutException("$url: no answer in ${TIMEOUT_MILLIS / 1000} s")
+    /**
+     * A session request, one at a time until it is answered: refused before
+     * anything leaves from [ThreadsBackground] unless the reader opted in, or
+     * when the [guard] says no; else spaced from the last session read as a
+     * person reads ([ThreadsPacing.sessionSpacing]), then paced with every
+     * request, counted, and sent. Never shared with another request.
+     */
+    private suspend fun sendSession(url: HttpUrl, paging: Boolean, request: suspend () -> XResponse): XResponse {
+        if (coroutineContext[ThreadsBackground.Key] != null && !session().useSessionApis) {
+            throw ThreadsException(NOT_CONFIGURED, "no session read in the background", manual = true)
+        }
+        return sessionLane.withLock {
+            guard.refusal()?.let { throw it }
+            guard.lastSent()?.let { last ->
+                val wait = pacing.sessionSpacing(guard.streak(), paging) - (clock() - last)
+                if (wait > 0) pacing.sleep(wait)
+            }
+            departInTurn(asGuest = false)
+            withTimeoutOrNull(TIMEOUT_MILLIS) { request() } ?: throw SocketTimeoutException("$url: no answer in ${TIMEOUT_MILLIS / 1000} s")
+        }
     }
 
     /**
@@ -908,34 +1078,54 @@ class ThreadsDirectClient(
      * answered: one slow answer must not hold every request behind it.
      */
     private suspend fun depart(asGuest: Boolean) = departures.withLock {
-        if (!asGuest) {
-            coolingDown()?.let { until ->
-                val at = Instant.ofEpochMilli(until)
-                throw ThreadsException(SESSION_SUSPENDED, "cooling down until $at", retryAt = at)
-            }
-        }
+        if (!asGuest) guard.refusal()?.let { throw it }
         lastDeparture?.let { last ->
             val wait = pacing.gap(asGuest) - (clock() - last)
             if (wait > 0) pacing.sleep(wait)
         }
+        // A warning that came in while this one waited its turn holds it too.
+        if (!asGuest) guard.refusal()?.let { throw it }
         lastDeparture = clock()
+        if (!asGuest) guard.departed()
     }
 
-    /** What Meta said to a session read: a throttle or `login_required` parks the session. */
+    /**
+     * What Meta said to a session read. A throttle (429, "Please wait a few
+     * minutes", Meta's spam or feedback flag) or `login_required` rests the
+     * session ([ThreadsAccountGuard.warned]), a challenge or checkpoint too;
+     * a 401, or a 403 that asks to log in, signs it out. Nothing of it is
+     * tried again on its own.
+     */
     private fun checkSession(response: XResponse, url: HttpUrl) {
         val body = response.body
         val loginRequired = "login_required" in body || "logout_reason" in body
+        val signal = ThreadsAccountSignals.ofAnswer(response.code, body)
         when {
-            response.code == 429 || "Please wait a few minutes" in body ->
-                throw ThreadsException(THROTTLED, "$url: rate limited", response.code, retryAt = armCooldown())
-            response.code == 401 || response.code == 403 || loginRequired -> {
-                if (loginRequired) armCooldown()
-                throw ThreadsException(if (loginRequired) SESSION_SUSPENDED else UNAUTHORIZED, "$url: ${response.code}", response.code)
+            response.code == 429 || "Please wait a few minutes" in body || signal == ThreadsSignal.THROTTLE ->
+                throw ThreadsException(THROTTLED, "$url: rate limited", response.code, retryAt = guard.warned(retryAfter(response)))
+            signal == ThreadsSignal.CHALLENGE -> throw parked(url, response)
+            loginRequired -> {
+                guard.warned(retryAfter(response))
+                throw ThreadsException(SESSION_SUSPENDED, "$url: ${response.code}", response.code)
             }
-            response.code == 404 -> throw ThreadsException(NO_SUCH_FEED, "$url: 404", 404)
-            response.code != 200 -> throw ThreadsException(UNREACHABLE, "$url: ${response.code}", response.code)
+            signal == ThreadsSignal.SIGNED_OUT -> throw signedOut(url, response.code)
+            response.code == 403 -> throw ThreadsException(UNAUTHORIZED, "$url: 403", 403)
+            response.code == 404 -> throw ThreadsException(NO_SUCH_FEED, "$url: 404", 404, manual = true)
+            response.code != 200 -> throw ThreadsException(UNREACHABLE, "$url: ${response.code}", response.code, manual = true)
         }
     }
+
+    /** Meta wants the person to prove who they are, or suspended the account: the session rests at once, as after any warning. */
+    private fun parked(url: HttpUrl, response: XResponse): ThreadsException =
+        ThreadsException(SESSION_SUSPENDED, "$url: challenge", response.code, retryAt = guard.warned(retryAfter(response)))
+
+    /** Meta says the session is gone: it is not used again until the reader signs in again. */
+    private fun signedOut(url: HttpUrl, code: Int): ThreadsException {
+        guard.signedOut()
+        return ThreadsException(UNAUTHORIZED, "$url: signed out", code)
+    }
+
+    private fun retryAfter(response: XResponse): Long? = ThreadsAccountSignals.retryAfter(response.header("Retry-After"), clock())
 
     private fun decodeJson(response: XResponse, url: HttpUrl): J =
         ThreadsJson.decode(response.body)?.let { J(it) } ?: throw ThreadsException(UNREACHABLE, "$url: not JSON", response.code)
@@ -943,21 +1133,6 @@ class ThreadsDirectClient(
     /** A guest read Meta refused for now: it has no session to park, so it waits as long as any limit without a stated reset. */
     private fun guestThrottled(url: HttpUrl) =
         ThreadsException(THROTTLED, "$url: 429", 429, retryAt = Instant.ofEpochMilli(clock() + GUEST_THROTTLE_MILLIS))
-
-    /** When the session may talk to Meta again, or null when it may now; an ended cooldown is cleared. */
-    private fun coolingDown(): Long? = synchronized(keeping) {
-        val until = memory.kept.cooldownUntil ?: return null
-        if (clock() < until) return until
-        memory.kept = memory.kept.copy(cooldownUntil = null)
-        null
-    }
-
-    /** Backs the session off as Meta asked. Kept with [memory]: a cooldown a restart clears is no cooldown. */
-    private fun armCooldown(): Instant {
-        val until = clock() + COOLDOWN_MILLIS
-        keep { it.copy(cooldownUntil = until) }
-        return Instant.ofEpochMilli(until)
-    }
 
     private fun requireCookies(): ThreadsSession =
         session().takeIf { it.hasCookies } ?: throw ThreadsException(NOT_CONFIGURED, "incomplete cookies")
@@ -967,8 +1142,11 @@ class ThreadsDirectClient(
         .firstNotNullOfOrNull { it.pk.ifEmpty { null } ?: it.id.ifEmpty { null } }
         ?: throw ThreadsException(NO_SUCH_FEED, "user not found: $handle")
 
+    /** The headers this session was first sent, kept for its life ([ThreadsAccountGuard.headers]). */
+    private fun pinned(): ThreadsSessionHeaders = guard.headers { ThreadsSessionHeaders.of(repairs()) }
+
     private fun cookieHeaders(current: ThreadsSession): Map<String, String> {
-        val values = repairs()
+        val values = pinned()
         val cookies = current.cookies
         return mapOf(
             "User-Agent" to values.webUserAgent,
@@ -984,7 +1162,7 @@ class ThreadsDirectClient(
     }
 
     private fun bearerHeaders(token: String, device: String): Map<String, String> {
-        val values = repairs()
+        val values = pinned()
         return mapOf(
             "User-Agent" to values.appUserAgent,
             "Authorization" to "Bearer $token",
@@ -1064,7 +1242,9 @@ class ThreadsDirectClient(
         private const val GUEST_TIMEOUT_MILLIS = 12_000L
         private const val MAX_REDIRECTS = 4
         private val REDIRECTS = setOf(301, 302, 303, 307, 308)
-        private const val COOLDOWN_MILLIS = 30 * 60 * 1000L
+
+        /** How many pages of session lists are kept: a few lists' worth, each page a screen of people or posts. */
+        private const val SESSION_PAGES_KEPT = 60
 
         /** XTA's rateLimitFallback: how long a limit without a stated reset is waited out. */
         private const val GUEST_THROTTLE_MILLIS = 15 * 60 * 1000L

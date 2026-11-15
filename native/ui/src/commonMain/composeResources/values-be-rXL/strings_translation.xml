@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Translation (ui.settings) and the reader's translation service, from XTA's words (reader_translation_*.dart). -->
+<resources>
+    <string name="translation_title">Pierakład</string>
+    <string name="translation_privacy">Ničoha nie adpraŭlajecca, pakul vy nie naciśniecie «Pierakłaści». Tady tekst trapliaje tolki ŭ vybrany tut servis.</string>
+    <string name="translation_provider">Servis pierakładu</string>
+    <string name="translation_provider_off">Vykłučana</string>
+    <string name="translation_provider_ai">Pastaŭščyk ŠI</string>
+    <string name="translation_target">Pierakładać na</string>
+    <string name="translation_target_app">Mova prahramy</string>
+    <string name="translation_endpoint">Adras servera</string>
+    <string name="translation_endpoint_deepl_help">Pakińcie pustym, kab vykarystoŭvać DeepL Free abo Pro adpaviedna vašamu kluču.</string>
+    <string name="translation_endpoint_libre_help">Vaš server LibreTranslate, napryklad https://translate.example.com</string>
+    <string name="translation_key_optional">Patrebny, tolki kali jaho patrabuje server</string>
+    <string name="translation_ai_description">Vykarystoŭvaje pastaŭščyka ŠI, naładžanaha ŭ naładach.</string>
+    <string name="translation_ai_not_configured">Spačatku naładźcie pastaŭščyka ŠI</string>
+    <string name="translation_invalid">Praviercie adras servera i kluč API</string>
+    <string name="translation_saved">Nałady pierakładu zachavany</string>
+    <string name="translation_clear_cache">Ačyścić zachavanyja pierakłady</string>
+    <string name="translation_cache_cleared">Zachavanyja pierakłady ačyščany</string>
+    <string name="translation_not_configured">Spačatku vybierycie servis pierakładu</string>
+    <string name="translation_hint">Pierakładajcie dopisy z usich sietak praz servis, jaki vy vybierycie</string>
+    <string name="translation_examples">Publičnyja servery, kab pasprabavać</string>
+    <string name="translation_examples_note">Toje, što vy pierakładajecie, adpraŭlajecca na vybrany vami server. Možna taksama zapuscić LibreTranslate na svaim kampjutary ci servery.</string>
+    <string name="translation_test">Pravieryć</string>
+    <string name="translation_testing">Pravierka…</string>
+    <string name="translation_test_ok">Server adkazvaje: moŭ — %1$d</string>
+    <string name="translation_unreachable">Server nie adkazaŭ. Praviercie adras i złučennie.</string>
+    <string name="translation_refused">Server admoviŭ. Mahčyma, patrebny kluč API abo kluč niapravilny.</string>
+    <string name="translation_rate_limited">Zašmat pierakładaŭ. Pasprabujcie paźniej.</string>
+    <string name="translation_unsupported">Hety server nie pierakładaje na hetuju movu.</string>
+    <string name="translation_bad_answer">U adkazie servera niama pierakładu.</string>
+</resources>

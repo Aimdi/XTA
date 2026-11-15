@@ -27,7 +27,8 @@ import kotlinx.coroutines.runBlocking
 class ThreadsPostContentViewTest {
     private val post = ThreadsPost(id = "3456", handle = "zuck", authorName = "Mark", text = "Hallo Welt", url = "https://www.threads.com/@zuck/post/ABC")
 
-    private fun translations(answer: suspend (ThreadsPost, String) -> String?) = ThreadsTranslations(CoroutineScope(Dispatchers.Unconfined), answer)
+    private fun translations(answer: suspend (ThreadsPost, String) -> String?) =
+        ThreadsTranslations(CoroutineScope(Dispatchers.Unconfined)) { post, target, _ -> answer(post, target)?.let { ThreadsWords(it) } }
 
     @Test
     fun translationIsOfferedToASignedInReaderForWordsNotInTheirLanguage() {

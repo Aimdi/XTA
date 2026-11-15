@@ -111,8 +111,8 @@
     <string name="try_public">试试公开账号</string>
     <string name="unfollow">取消关注</string>
     <string name="unlike_on_device">从此设备取消点赞</string>
-    <string name="use_session">用我的会话读取已关注账号</string>
-    <string name="use_session_description">默认关闭。打开后本应用会以你的身份访问 Threads，Meta 可能封禁该账号。除非是一次性登录，否则请保持关闭。</string>
+    <string name="use_session">在首页和“为你”中使用我的会话</string>
+    <string name="use_session_description">默认关闭，这样最安全：需要账号的内容会在你打开时自动切换到账号。开启后，首页、“为你”和你关注的账号也会以你的身份读取 — 请求多得多，Meta 可能封禁该账号。</string>
     <string name="in_home_feed">显示在主时间线中</string>
     <string name="in_home_feed_description">把你关注的 Threads 账号的帖子混入「关注」和「为你推荐」</string>
     <string name="for_you">为你</string>
@@ -144,6 +144,7 @@
     <string name="show_less">收起</string>
     <string name="pinned_reply">作者已置顶</string>
     <string name="spoiler">剧透</string>
+    <string name="sticker">贴纸</string>
     <string name="tap_to_show_spoiler">点按显示剧透</string>
     <string name="copy_text">复制文字</string>
     <string name="copy_link">复制链接</string>
@@ -156,7 +157,8 @@
     <string name="exact_time">显示确切时间</string>
     <string name="fewer_replies">收起部分回复</string>
     <string name="more_replies_web">在 threads.com 查看更多回复</string>
-    <string name="related_threads">相关串文</string>
+    <string name="more_from_author">更多来自 @%1$s 的串文</string>
+    <string name="more_on_topic">更多关于 %1$s 的串文</string>
     <string name="media_description">图片描述</string>
     <string name="media_download">下载</string>
     <string name="media_download_all">全部下载</string>
@@ -165,7 +167,7 @@
     <string name="media_picture_of">第 %1$d 张图片，共 %2$d 张</string>
     <string name="media_covered">Threads 为此媒体加上了警告</string>
     <string name="add_accounts_hint">可一次添加多个：用空格或逗号分隔</string>
-    <string name="session_unlocks">会话可以带来：你自己的“为你”和用户搜索。打开上方的开关后，也会用它读取你关注的账号。</string>
+    <string name="session_unlocks">会话能带来：关注者和关注中、谁赞了帖子、你的动态和找人，每项都只在你打开时才用账号读取。打开上面的开关后，首页和“为你”也会用它读取。</string>
     <string name="instance_intro">可选。由你自己运行的 RSSHub 实例读取你关注的账号；它出错时改读 Threads 的公开页面。留空则只读公开页面。</string>
     <string name="account_missing">找不到 — 是否已改名、删除或拼写有误？</string>
     <string name="account_private">私密 — Threads 不向访客显示其任何帖子</string>
@@ -220,6 +222,8 @@
     <string name="translate">翻译</string>
     <string name="show_original">显示原文</string>
     <string name="translated_by_threads">由 Threads 翻译</string>
+    <string name="translated_by">由 %1$s 翻译</string>
+    <string name="translation_failed_by">%1$s 无法翻译这篇帖子</string>
     <string name="translating">正在翻译…</string>
     <string name="translation_failed">Threads 无法翻译此帖子</string>
     <string name="attached_text">附加文字</string>
@@ -268,4 +272,25 @@
     <string name="show_hidden_posts">重新显示已隐藏的帖子</string>
     <string name="read_as_article">按文章阅读</string>
     <string name="show_conversation">显示对话</string>
+    <string name="account_in_use">正在使用你的 Threads 账号</string>
+    <string name="account_resting">为保护你的账号已暂停 — %1$s 继续</string>
+    <string name="account_paused">为保护你的账号已暂停</string>
+    <string name="account_signed_out">Threads 已注销此会话 — 请重新登录</string>
+    <string name="load_more">加载更多</string>
+    <string name="account_guard">账号保护</string>
+    <string name="account_active">可用 — 只在你打开需要它的内容时使用</string>
+    <string name="account_resting_until">休息至 %1$s</string>
+    <string name="account_usage">过去 24 小时用账号读取：%1$d / %2$d</string>
+    <string name="account_guard_detail">关注者、赞过的人、动态和找人只在你打开时才使用你的账号，每次间隔几秒，并在 Meta 察觉之前暂停。其余内容都以访客身份读取。</string>
+    <string name="suggested_for_you">为你推荐</string>
+    <string name="suggestion_follow">在此设备上关注 %1$s</string>
+    <string name="suggestion_unfollow">在此设备上取消关注 %1$s</string>
+    <string name="suggestion_hide">从推荐中移除 %1$s</string>
+    <string name="song_play">播放 %2$s 的《%1$s》</string>
+    <string name="song_play_title">播放《%1$s》</string>
+    <string name="song_pause">暂停《%1$s》</string>
+    <string name="song_open_page">打开歌曲页面</string>
+    <string name="song_explicit">含露骨内容</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">暂时无法播放这首歌</string>
 </resources>

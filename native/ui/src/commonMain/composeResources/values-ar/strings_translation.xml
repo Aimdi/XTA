@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Translation (ui.settings) and the reader's translation service, from XTA's words (reader_translation_*.dart). -->
+<resources>
+    <string name="translation_title">الترجمة</string>
+    <string name="translation_privacy">لا يُرسَل أي شيء قبل أن تضغط على ترجمة، وعندها يذهب النص إلى الخدمة المختارة هنا فقط.</string>
+    <string name="translation_provider">خدمة الترجمة</string>
+    <string name="translation_provider_off">متوقفة</string>
+    <string name="translation_provider_ai">مزوّد الذكاء الاصطناعي</string>
+    <string name="translation_target">الترجمة إلى</string>
+    <string name="translation_target_app">لغة التطبيق</string>
+    <string name="translation_endpoint">عنوان الخادم</string>
+    <string name="translation_endpoint_deepl_help">اتركه فارغًا لاستخدام DeepL المجاني أو Pro بحسب مفتاحك.</string>
+    <string name="translation_endpoint_libre_help">خادم LibreTranslate الخاص بك، مثل https://translate.example.com</string>
+    <string name="translation_key_optional">مطلوب فقط إذا طلبه خادمك</string>
+    <string name="translation_ai_description">يستخدم مزوّد الذكاء الاصطناعي المُعدّ في الإعدادات.</string>
+    <string name="translation_ai_not_configured">أعدّ مزوّد ذكاء اصطناعي أولًا</string>
+    <string name="translation_invalid">تحقّق من عنوان الخادم ومفتاح واجهة البرمجة</string>
+    <string name="translation_saved">حُفظت إعدادات الترجمة</string>
+    <string name="translation_clear_cache">مسح الترجمات المحفوظة</string>
+    <string name="translation_cache_cleared">مُسحت الترجمات المحفوظة</string>
+    <string name="translation_not_configured">اختر خدمة ترجمة أولًا</string>
+    <string name="translation_hint">ترجم منشورات كل الشبكات بخدمة تختارها</string>
+    <string name="translation_examples">خوادم عامة للتجربة</string>
+    <string name="translation_examples_note">يُرسَل ما تترجمه إلى الخادم الذي تختاره. ويمكنك أيضًا تشغيل LibreTranslate على حاسوبك أو خادمك.</string>
+    <string name="translation_test">اختبار</string>
+    <string name="translation_testing">جارٍ الاختبار…</string>
+    <string name="translation_test_ok">الخادم يستجيب: %1$d لغة</string>
+    <string name="translation_unreachable">لم يستجب الخادم. تحقّق من العنوان ومن اتصالك.</string>
+    <string name="translation_refused">رفض الخادم الطلب. قد يحتاج إلى مفتاح API، أو أن المفتاح غير صحيح.</string>
+    <string name="translation_rate_limited">ترجمات كثيرة في الوقت الحالي. حاول لاحقًا.</string>
+    <string name="translation_unsupported">لا يترجم هذا الخادم إلى تلك اللغة.</string>
+    <string name="translation_bad_answer">لم يتضمن رد الخادم أي ترجمة.</string>
+</resources>

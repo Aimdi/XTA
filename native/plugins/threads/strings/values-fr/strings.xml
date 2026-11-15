@@ -117,8 +117,8 @@
     <string name="try_public">Essayer un compte public</string>
     <string name="unfollow">Ne plus suivre</string>
     <string name="unlike_on_device">Retirer le j’aime de cet appareil</string>
-    <string name="use_session">Utiliser ma session pour les comptes suivis</string>
-    <string name="use_session_description">Désactivé par défaut. Activé, l’app parle à Threads en votre nom — Meta peut bannir ce compte. Laissez désactivé sauf compte jetable.</string>
+    <string name="use_session">Utiliser ma session pour l’Accueil et Pour vous</string>
+    <string name="use_session_description">Désactivé par défaut, et c’est le plus sûr : ce qui a besoin de votre compte y passe tout seul quand vous l’ouvrez. Activé, l’Accueil, Pour vous et les comptes que vous suivez sont aussi lus en votre nom — bien plus de lectures, et Meta peut bannir ce compte.</string>
     <string name="in_home_feed">Afficher dans le fil principal</string>
     <string name="in_home_feed_description">Intègre les publications des comptes Threads que vous suivez dans « Abonnements » et « Pour vous »</string>
     <string name="for_you">Pour vous</string>
@@ -151,6 +151,7 @@
     <string name="show_less">Voir moins</string>
     <string name="pinned_reply">Épinglé par l\'auteur</string>
     <string name="spoiler">Spoiler</string>
+    <string name="sticker">Autocollant</string>
     <string name="tap_to_show_spoiler">Touchez pour afficher le spoiler</string>
     <string name="copy_text">Copier le texte</string>
     <string name="copy_link">Copier le lien</string>
@@ -163,7 +164,8 @@
     <string name="exact_time">Afficher l\'heure exacte</string>
     <string name="fewer_replies">Afficher moins de réponses</string>
     <string name="more_replies_web">Plus de réponses sur threads.com</string>
-    <string name="related_threads">Fils liés</string>
+    <string name="more_from_author">Plus de @%1$s</string>
+    <string name="more_on_topic">Plus sur %1$s</string>
     <string name="media_description">Description de l’image</string>
     <string name="media_download">Télécharger</string>
     <string name="media_download_all">Tout télécharger</string>
@@ -172,7 +174,7 @@
     <string name="media_picture_of">Image %1$d sur %2$d</string>
     <string name="media_covered">Threads a placé un avertissement sur ce média</string>
     <string name="add_accounts_hint">Plusieurs à la fois : séparez-les par des espaces ou des virgules</string>
-    <string name="session_unlocks">Ce qu’une session ajoute : votre propre Pour vous et la recherche de personnes. Avec l’interrupteur ci-dessus activé, elle lit aussi les comptes que vous suivez.</string>
+    <string name="session_unlocks">Ce qu’ajoute une session : abonnés et abonnements, qui a aimé une publication, votre activité et la recherche de personnes, chacun lu avec votre compte seulement quand vous l’ouvrez. Avec l’interrupteur ci-dessus activé, l’Accueil et Pour vous sont aussi lus avec elle.</string>
     <string name="instance_intro">Facultatif. Une instance RSSHub que vous hébergez lit les comptes que vous suivez ; si elle échoue, les pages publiques de Threads prennent le relais. Laissez vide pour ne lire que les pages publiques.</string>
     <string name="account_missing">Introuvable — renommé, supprimé ou mal orthographié ?</string>
     <string name="account_private">Privé — Threads ne montre aucune de ses publications à un invité</string>
@@ -229,6 +231,8 @@
     <string name="translate">Traduire</string>
     <string name="show_original">Voir l’original</string>
     <string name="translated_by_threads">Traduit par Threads</string>
+    <string name="translated_by">Traduit par %1$s</string>
+    <string name="translation_failed_by">%1$s n\'a pas pu traduire cette publication</string>
     <string name="translating">Traduction…</string>
     <string name="translation_failed">Threads n’a pas pu traduire cette publication</string>
     <string name="attached_text">Texte joint</string>
@@ -281,4 +285,25 @@
     <string name="show_hidden_posts">Réafficher les publications masquées</string>
     <string name="read_as_article">Lire comme un article</string>
     <string name="show_conversation">Afficher la conversation</string>
+    <string name="account_in_use">Votre compte Threads est utilisé</string>
+    <string name="account_resting">En pause pour protéger votre compte — reprise à %1$s</string>
+    <string name="account_paused">En pause pour protéger votre compte</string>
+    <string name="account_signed_out">Threads a déconnecté cette session — reconnectez-vous</string>
+    <string name="load_more">Charger plus</string>
+    <string name="account_guard">Protection du compte</string>
+    <string name="account_active">Actif — utilisé seulement quand vous ouvrez ce qui en a besoin</string>
+    <string name="account_resting_until">Au repos jusqu’à %1$s</string>
+    <string name="account_usage">Lectures avec le compte ces dernières 24 heures : %1$d sur %2$d</string>
+    <string name="account_guard_detail">Les abonnés, « Aimé par », l’activité et la recherche de personnes n’utilisent votre compte que lorsque vous les ouvrez, à quelques secondes d’intervalle, et s’arrêtent avant que Meta ne le remarque. Tout le reste est lu en invité.</string>
+    <string name="suggested_for_you">Suggestions pour vous</string>
+    <string name="suggestion_follow">Suivre %1$s sur cet appareil</string>
+    <string name="suggestion_unfollow">Ne plus suivre %1$s sur cet appareil</string>
+    <string name="suggestion_hide">Retirer %1$s des suggestions</string>
+    <string name="song_play">Lire %1$s de %2$s</string>
+    <string name="song_play_title">Lire %1$s</string>
+    <string name="song_pause">Mettre %1$s en pause</string>
+    <string name="song_open_page">Ouvrir la page du titre</string>
+    <string name="song_explicit">Explicite</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">Ce titre ne peut pas être lu pour le moment</string>
 </resources>

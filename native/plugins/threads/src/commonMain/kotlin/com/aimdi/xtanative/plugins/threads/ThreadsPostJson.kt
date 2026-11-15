@@ -5,6 +5,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsImage
 import com.aimdi.xtanative.networks.threads.ThreadsLinkCard
 import com.aimdi.xtanative.networks.threads.ThreadsMedia
 import com.aimdi.xtanative.networks.threads.ThreadsPost
+import com.aimdi.xtanative.networks.threads.ThreadsSticker
 import com.aimdi.xtanative.networks.threads.ThreadsTextFragment
 import com.aimdi.xtanative.networks.threads.ThreadsVideoRendition
 import com.aimdi.xtanative.store.backup.XtaTime
@@ -154,13 +155,30 @@ internal object ThreadsPostJson {
 
     fun fragment(fragment: ThreadsTextFragment): JsonObject = JsonObject(
         mapOf("kind" to text(fragment.kind.name.lowercase()), "text" to text(fragment.text), "target" to text(fragment.target)) +
-            (if (fragment.spoiler) mapOf("spoiler" to JsonPrimitive(true)) else emptyMap()),
+            (if (fragment.spoiler) mapOf("spoiler" to JsonPrimitive(true)) else emptyMap()) +
+            (fragment.sticker?.let { mapOf("sticker" to sticker(it)) } ?: emptyMap()),
     )
 
+    /** A run as kept; a sticker whose picture is not named is left out, as the parser leaves one out. */
     fun fragment(row: J): ThreadsTextFragment? {
         val kind = ThreadsTextFragment.Kind.entries.firstOrNull { it.name.lowercase() == row["kind"].string } ?: return null
+        if (kind == ThreadsTextFragment.Kind.STICKER) return sticker(row["sticker"])?.let { ThreadsTextFragment.sticker(it, spoiler = row["spoiler"].boolean == true) }
         val words = row["text"].string ?: return null
         return ThreadsTextFragment(kind, words, row["target"].string, spoiler = row["spoiler"].boolean == true)
+    }
+
+    private fun sticker(sticker: ThreadsSticker): JsonObject = JsonObject(
+        listOfNotNull(
+            "url" to JsonPrimitive(sticker.url),
+            sticker.width?.let { "width" to JsonPrimitive(it) },
+            sticker.height?.let { "height" to JsonPrimitive(it) },
+            sticker.label?.let { "label" to JsonPrimitive(it) },
+        ).toMap(),
+    )
+
+    private fun sticker(row: J): ThreadsSticker? {
+        val url = row["url"].string?.takeIf { it.isNotEmpty() } ?: return null
+        return ThreadsSticker(url, size(row["width"]), size(row["height"]), row["label"].string?.ifEmpty { null })
     }
 
     /** A count as XTA's `_snapshotCount` reads one: any number, cut to its whole part. */

@@ -117,8 +117,8 @@
     <string name="try_public">Încearcă un cont public</string>
     <string name="unfollow">Nu mai urmări</string>
     <string name="unlike_on_device">Elimină aprecierea de pe acest dispozitiv</string>
-    <string name="use_session">Folosește sesiunea mea pentru conturile urmărite</string>
-    <string name="use_session_description">Oprit implicit. Pornit, aplicația vorbește cu Threads ca tine — Meta poate interzice acel cont. Lasă oprit, decât dacă e un login de unică folosință.</string>
+    <string name="use_session">Folosește sesiunea mea pentru Acasă și Pentru dvs.</string>
+    <string name="use_session_description">Dezactivat implicit, și așa e cel mai sigur: ce are nevoie de contul tău trece singur pe el când îl deschizi. Când e activat, Acasă, Pentru dvs. și conturile pe care le urmărești se citesc și ele în numele tău — mult mai multe cereri, iar Meta poate bloca acel cont.</string>
     <string name="in_home_feed">Afișează în cronologia principală</string>
     <string name="in_home_feed_description">Adaugă postările din conturile Threads urmărite în „Urmăriți” și „Pentru tine”</string>
     <string name="for_you">Pentru dvs.</string>
@@ -152,6 +152,7 @@
     <string name="show_less">Arată mai puțin</string>
     <string name="pinned_reply">Fixată de autor</string>
     <string name="spoiler">Spoiler</string>
+    <string name="sticker">Autocolant</string>
     <string name="tap_to_show_spoiler">Atinge pentru a afișa spoilerul</string>
     <string name="copy_text">Copiază textul</string>
     <string name="copy_link">Copiază linkul</string>
@@ -164,7 +165,8 @@
     <string name="exact_time">Arată ora exactă</string>
     <string name="fewer_replies">Arată mai puține răspunsuri</string>
     <string name="more_replies_web">Mai multe răspunsuri pe threads.com</string>
-    <string name="related_threads">Fire asemănătoare</string>
+    <string name="more_from_author">Mai multe de la @%1$s</string>
+    <string name="more_on_topic">Mai multe despre %1$s</string>
     <string name="media_description">Descrierea imaginii</string>
     <string name="media_download">Descarcă</string>
     <string name="media_download_all">Descarcă tot</string>
@@ -173,7 +175,7 @@
     <string name="media_picture_of">Imaginea %1$d din %2$d</string>
     <string name="media_covered">Threads a pus un avertisment peste aceste conținuturi media</string>
     <string name="add_accounts_hint">Mai multe deodată: separă-le prin spații sau virgule</string>
-    <string name="session_unlocks">Ce adaugă o sesiune: propriul dvs. Pentru dvs. și căutarea de persoane. Cu comutatorul de mai sus pornit, citește și conturile pe care le urmăriți.</string>
+    <string name="session_unlocks">Ce aduce o sesiune: urmăritori și urmăriți, cui i-a plăcut o postare, activitatea ta și căutarea de persoane, fiecare citită cu contul tău doar când o deschizi. Cu comutatorul de mai sus activat, Acasă și Pentru dvs. se citesc și ele cu ea.</string>
     <string name="instance_intro">Opțional. O instanță RSSHub proprie citește conturile pe care le urmăriți; dacă eșuează, paginile publice Threads îi țin locul. Lăsați gol pentru a citi doar paginile publice.</string>
     <string name="account_missing">Negăsit — redenumit, șters sau scris greșit?</string>
     <string name="account_private">Privat — Threads nu arată unui vizitator nicio postare</string>
@@ -230,6 +232,8 @@
     <string name="translate">Traduce</string>
     <string name="show_original">Arată originalul</string>
     <string name="translated_by_threads">Tradus de Threads</string>
+    <string name="translated_by">Tradus de %1$s</string>
+    <string name="translation_failed_by">%1$s nu a putut traduce această postare</string>
     <string name="translating">Se traduce…</string>
     <string name="translation_failed">Threads nu a putut traduce această postare</string>
     <string name="attached_text">Text atașat</string>
@@ -282,4 +286,25 @@
     <string name="show_hidden_posts">Arată din nou postările ascunse</string>
     <string name="read_as_article">Citește ca articol</string>
     <string name="show_conversation">Arată conversația</string>
+    <string name="account_in_use">Se folosește contul tău Threads</string>
+    <string name="account_resting">În pauză ca să-ți protejeze contul — continuă la %1$s</string>
+    <string name="account_paused">În pauză ca să-ți protejeze contul</string>
+    <string name="account_signed_out">Threads a deconectat această sesiune — conectează-te din nou</string>
+    <string name="load_more">Încarcă mai multe</string>
+    <string name="account_guard">Protecția contului</string>
+    <string name="account_active">Activ — folosit doar când deschizi ceva care are nevoie de el</string>
+    <string name="account_resting_until">În repaus până la %1$s</string>
+    <string name="account_usage">Citiri cu contul în ultimele 24 de ore: %1$d din %2$d</string>
+    <string name="account_guard_detail">Urmăritorii, „Apreciat de”, activitatea și căutarea de persoane îți folosesc contul doar când le deschizi, la câteva secunde distanță, și se opresc înainte ca Meta să observe. Restul se citește ca vizitator.</string>
+    <string name="suggested_for_you">Sugestii pentru tine</string>
+    <string name="suggestion_follow">Urmărește %1$s pe acest dispozitiv</string>
+    <string name="suggestion_unfollow">Nu mai urmări %1$s pe acest dispozitiv</string>
+    <string name="suggestion_hide">Elimină %1$s din sugestii</string>
+    <string name="song_play">Redă %1$s de %2$s</string>
+    <string name="song_play_title">Redă %1$s</string>
+    <string name="song_pause">Întrerupe %1$s</string>
+    <string name="song_open_page">Deschide pagina melodiei</string>
+    <string name="song_explicit">Explicit</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">Această melodie nu poate fi redată acum</string>
 </resources>

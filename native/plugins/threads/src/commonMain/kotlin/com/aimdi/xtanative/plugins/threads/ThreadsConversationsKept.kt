@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.plugins.threads
 
 import com.aimdi.xtanative.core.json.J
+import com.aimdi.xtanative.networks.threads.ThreadsBeside
 import com.aimdi.xtanative.networks.threads.ThreadsConversation
 import com.aimdi.xtanative.networks.threads.ThreadsLinks
 import com.aimdi.xtanative.networks.threads.ThreadsPost
@@ -14,15 +15,16 @@ import kotlinx.serialization.json.JsonPrimitive
 /**
  * How a conversation is kept on the device ([ThreadsConversationShelf]): the
  * post, what it answers and its author's thread, then as many reply threads
- * as fit in [POSTS] posts (each cut to its first [CHAIN_POSTS]) and the first
- * [RELATED] suggestions. Never the cursor to the replies after these: what is
+ * as fit in [POSTS] posts (each cut to its first [CHAIN_POSTS]) and the
+ * author's other threads shown beside it ([ThreadsConversation.fromAuthor],
+ * kept under "related" as before; a row kept before round 23 also holds
+ * Meta's picks by anyone, left out as it is read back). Never the cursor to the replies after these: what is
  * kept is shown only until the page is read again.
  */
 internal object ThreadsConversationsKept {
     /** How many posts a kept conversation holds at most, all its parts together. */
     const val POSTS = 40
     const val CHAIN_POSTS = 6
-    const val RELATED = 6
 
     /** What of [conversation] is kept; null for one not read yet, which has nothing to keep. */
     fun trimmed(conversation: ThreadsConversation): ThreadsConversation? {
@@ -37,7 +39,7 @@ internal object ThreadsConversationsKept {
             unfinished = conversation.unfinished.filterTo(HashSet()) { it in ids },
             moreReplies = conversation.moreReplies || replies.size < conversation.replies.size,
             repliesNext = null,
-            related = conversation.related.take(RELATED),
+            fromAuthor = conversation.fromAuthor.take(ThreadsBeside.FROM_AUTHOR),
         )
     }
 
@@ -50,7 +52,7 @@ internal object ThreadsConversationsKept {
             "levels" to JsonObject(conversation.levels.mapValues { JsonPrimitive(it.value) }),
             "unfinished" to JsonArray(conversation.unfinished.map(::JsonPrimitive)),
             "moreReplies" to JsonPrimitive(conversation.moreReplies),
-            "related" to posts(conversation.related),
+            "related" to posts(conversation.fromAuthor),
         ),
     )
 
@@ -66,7 +68,7 @@ internal object ThreadsConversationsKept {
             levels = row["levels"].keys.mapNotNull { id -> row["levels"][id].long?.let { id to it.toInt() } }.toMap(),
             unfinished = row["unfinished"].list.mapNotNull { it.string }.toSet(),
             moreReplies = row["moreReplies"].boolean == true,
-            related = postsOf(row["related"]),
+            fromAuthor = ThreadsBeside.fromAuthor(postsOf(row["related"]), focus),
         )
     }
 

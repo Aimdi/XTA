@@ -114,8 +114,8 @@
     <string name="try_public">Öffentliches Konto ausprobieren</string>
     <string name="unfollow">Entfolgen</string>
     <string name="unlike_on_device">Like von diesem Gerät entfernen</string>
-    <string name="use_session">Meine Sitzung für gefolgte Konten nutzen</string>
-    <string name="use_session_description">Standardmäßig aus. Wenn an, spricht die App als Sie mit Threads — Meta kann das Konto sperren. Aus lassen, außer Sie nutzen ein Wegwerflogin.</string>
+    <string name="use_session">Meine Sitzung für Startseite und Für dich nutzen</string>
+    <string name="use_session_description">Standardmäßig aus, und so am sichersten: Was dein Konto braucht, wechselt beim Öffnen von selbst dorthin. Wenn an, werden auch Startseite, Für dich und die Konten, denen du folgst, als du gelesen — viel mehr Abrufe, und Meta kann das Konto sperren.</string>
     <string name="in_home_feed">In der Startseite anzeigen</string>
     <string name="in_home_feed_description">Mischt Beiträge aus den Threads-Konten, denen du folgst, unter „Folge ich“ und „Für dich“</string>
     <string name="for_you">Für dich</string>
@@ -148,6 +148,7 @@
     <string name="show_less">Weniger anzeigen</string>
     <string name="pinned_reply">Vom Autor angeheftet</string>
     <string name="spoiler">Spoiler</string>
+    <string name="sticker">Sticker</string>
     <string name="tap_to_show_spoiler">Tippen, um den Spoiler anzuzeigen</string>
     <string name="copy_text">Text kopieren</string>
     <string name="copy_link">Link kopieren</string>
@@ -160,7 +161,8 @@
     <string name="exact_time">Genaue Uhrzeit anzeigen</string>
     <string name="fewer_replies">Weniger Antworten anzeigen</string>
     <string name="more_replies_web">Weitere Antworten auf threads.com</string>
-    <string name="related_threads">Ähnliche Threads</string>
+    <string name="more_from_author">Mehr von @%1$s</string>
+    <string name="more_on_topic">Mehr zu %1$s</string>
     <string name="media_description">Bildbeschreibung</string>
     <string name="media_download">Herunterladen</string>
     <string name="media_download_all">Alle herunterladen</string>
@@ -169,7 +171,7 @@
     <string name="media_picture_of">Bild %1$d von %2$d</string>
     <string name="media_covered">Threads hat diese Medien mit einer Warnung versehen</string>
     <string name="add_accounts_hint">Mehrere auf einmal: mit Leerzeichen oder Kommas trennen</string>
-    <string name="session_unlocks">Was eine Sitzung bringt: dein eigenes Für dich und die Personensuche. Mit dem Schalter oben liest sie auch die Konten, denen du folgst.</string>
+    <string name="session_unlocks">Was eine Sitzung bringt: Follower und Gefolgte, wem ein Beitrag gefällt, deine Aktivität und die Personensuche, jeweils nur dann mit deinem Konto gelesen, wenn du sie öffnest. Mit dem Schalter oben werden auch Startseite und Für dich damit gelesen.</string>
     <string name="instance_intro">Optional. Eine eigene RSSHub-Instanz liest die Konten, denen du folgst; fällt sie aus, springen die öffentlichen Threads-Seiten ein. Leer lassen, um nur die öffentlichen Seiten zu lesen.</string>
     <string name="account_missing">Nicht gefunden – umbenannt, gelöscht oder vertippt?</string>
     <string name="account_private">Privat – Threads zeigt Gästen keinen seiner Beiträge</string>
@@ -225,6 +227,8 @@
     <string name="translate">Übersetzen</string>
     <string name="show_original">Original anzeigen</string>
     <string name="translated_by_threads">Von Threads übersetzt</string>
+    <string name="translated_by">Übersetzt von %1$s</string>
+    <string name="translation_failed_by">%1$s konnte diesen Beitrag nicht übersetzen</string>
     <string name="translating">Wird übersetzt…</string>
     <string name="translation_failed">Threads konnte diesen Beitrag nicht übersetzen</string>
     <string name="attached_text">Angehängter Text</string>
@@ -275,4 +279,25 @@
     <string name="show_hidden_posts">Ausgeblendete Beiträge wieder anzeigen</string>
     <string name="read_as_article">Als Artikel lesen</string>
     <string name="show_conversation">Unterhaltung anzeigen</string>
+    <string name="account_in_use">Dein Threads-Konto wird verwendet</string>
+    <string name="account_resting">Pausiert, um dein Konto zu schützen — weiter um %1$s</string>
+    <string name="account_paused">Pausiert, um dein Konto zu schützen</string>
+    <string name="account_signed_out">Threads hat diese Sitzung abgemeldet — melde dich erneut an</string>
+    <string name="load_more">Mehr laden</string>
+    <string name="account_guard">Kontoschutz</string>
+    <string name="account_active">Aktiv — nur genutzt, wenn du etwas öffnest, das es braucht</string>
+    <string name="account_resting_until">Pausiert bis %1$s</string>
+    <string name="account_usage">Abrufe mit dem Konto in den letzten 24 Stunden: %1$d von %2$d</string>
+    <string name="account_guard_detail">Follower, „Gefällt“, Aktivität und Personensuche nutzen dein Konto nur, wenn du sie öffnest, mit einigen Sekunden Abstand, und pausieren, bevor Meta es bemerken würde. Alles andere wird als Gast gelesen.</string>
+    <string name="suggested_for_you">Für dich vorgeschlagen</string>
+    <string name="suggestion_follow">%1$s auf diesem Gerät folgen</string>
+    <string name="suggestion_unfollow">%1$s auf diesem Gerät nicht mehr folgen</string>
+    <string name="suggestion_hide">%1$s aus den Vorschlägen entfernen</string>
+    <string name="song_play">%1$s von %2$s abspielen</string>
+    <string name="song_play_title">%1$s abspielen</string>
+    <string name="song_pause">%1$s pausieren</string>
+    <string name="song_open_page">Seite des Songs öffnen</string>
+    <string name="song_explicit">Explizit</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">Dieser Song kann gerade nicht abgespielt werden</string>
 </resources>

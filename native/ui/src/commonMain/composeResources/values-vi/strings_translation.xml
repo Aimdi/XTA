@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Translation (ui.settings) and the reader's translation service, from XTA's words (reader_translation_*.dart). -->
+<resources>
+    <string name="translation_title">Dịch</string>
+    <string name="translation_privacy">Không có gì được gửi đi cho đến khi bạn nhấn Dịch. Khi đó văn bản chỉ được gửi tới dịch vụ bạn chọn ở đây.</string>
+    <string name="translation_provider">Dịch vụ dịch</string>
+    <string name="translation_provider_off">Tắt</string>
+    <string name="translation_provider_ai">Nhà cung cấp AI</string>
+    <string name="translation_target">Dịch sang</string>
+    <string name="translation_target_app">Ngôn ngữ ứng dụng</string>
+    <string name="translation_endpoint">Địa chỉ máy chủ</string>
+    <string name="translation_endpoint_deepl_help">Để trống để dùng DeepL Free hoặc Pro tùy theo khoá của bạn.</string>
+    <string name="translation_endpoint_libre_help">Máy chủ LibreTranslate của bạn, ví dụ https://translate.example.com</string>
+    <string name="translation_key_optional">Chỉ cần khi máy chủ của bạn yêu cầu</string>
+    <string name="translation_ai_description">Dùng nhà cung cấp AI đã thiết lập trong Cài đặt.</string>
+    <string name="translation_ai_not_configured">Hãy thiết lập nhà cung cấp AI trước</string>
+    <string name="translation_invalid">Kiểm tra địa chỉ máy chủ và khoá API</string>
+    <string name="translation_saved">Đã lưu cài đặt dịch</string>
+    <string name="translation_clear_cache">Xoá bản dịch đã lưu</string>
+    <string name="translation_cache_cleared">Đã xoá bản dịch đã lưu</string>
+    <string name="translation_not_configured">Hãy chọn dịch vụ dịch trước</string>
+    <string name="translation_hint">Dịch bài đăng từ mọi mạng bằng dịch vụ bạn chọn</string>
+    <string name="translation_examples">Máy chủ công khai để thử</string>
+    <string name="translation_examples_note">Nội dung bạn dịch sẽ được gửi tới máy chủ bạn chọn. Bạn cũng có thể tự chạy LibreTranslate trên máy tính hoặc máy chủ của mình.</string>
+    <string name="translation_test">Kiểm tra</string>
+    <string name="translation_testing">Đang kiểm tra…</string>
+    <string name="translation_test_ok">Máy chủ phản hồi: %1$d ngôn ngữ</string>
+    <string name="translation_unreachable">Máy chủ không phản hồi. Hãy kiểm tra địa chỉ và kết nối.</string>
+    <string name="translation_refused">Máy chủ từ chối. Có thể cần khóa API, hoặc khóa không đúng.</string>
+    <string name="translation_rate_limited">Hiện có quá nhiều lượt dịch. Hãy thử lại sau.</string>
+    <string name="translation_unsupported">Máy chủ này không dịch sang ngôn ngữ đó.</string>
+    <string name="translation_bad_answer">Phản hồi của máy chủ không có bản dịch nào.</string>
+</resources>

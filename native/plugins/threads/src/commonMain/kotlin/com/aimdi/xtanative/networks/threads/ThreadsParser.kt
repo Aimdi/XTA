@@ -60,9 +60,30 @@ object ThreadsParser {
      * Meta's own split of [caption] into text, mentions, links and tags; only
      * trusted when its pieces spell the caption exactly and some piece is more
      * than text. Anything else is a reshaped payload, and patterns read safer.
+     * Stickers ([ThreadsStickers]) keep their place among the words; when the
+     * words around them no longer spell the caption, the caption's own words
+     * are read by pattern and its stickers follow them.
      */
     fun fragments(post: J, caption: String): List<ThreadsTextFragment> {
         val raw = post["text_post_app_info"]["text_fragments"]["fragments"].list
+        val listed = ThreadsStickers.listed(post).map { ThreadsTextFragment.sticker(it) }
+        if (listed.isEmpty() && raw.none(ThreadsStickers::isSticker)) return plainFragments(raw, caption)
+        val fragments = raw.mapNotNull { if (ThreadsStickers.isSticker(it)) ThreadsStickers.run(it) else fragment(it) } + listed
+        val held = raw.filter(ThreadsStickers::isSticker).mapNotNull { it["plaintext"].string }
+        val words = ThreadsStickers.words(caption, held)
+        val stickers = fragments.filter { it.isSticker }
+        return when {
+            stickers.isEmpty() -> plainFragments(raw.filterNot(ThreadsStickers::isSticker), words)
+            ThreadsStickers.collapse(fragments.joinToString("") { it.text }) == words -> fragments
+            else -> ThreadsCaption.runs(words, emptyList()) + stickers
+        }
+    }
+
+    /** The caption a post shows in words: with stickers, the words around them alone, else [caption] as Meta gave it. */
+    fun words(caption: String, fragments: List<ThreadsTextFragment>): String =
+        if (fragments.any { it.isSticker }) fragments.filterNot { it.isSticker }.joinToString("") { it.text }.trim() else caption
+
+    private fun plainFragments(raw: List<J>, caption: String): List<ThreadsTextFragment> {
         if (raw.isEmpty()) return emptyList()
         val fragments = raw.mapNotNull(::fragment)
         val spelled = fragments.joinToString("") { it.text }.trim()
@@ -236,14 +257,17 @@ object ThreadsParser {
         if (!post.exists) return null
         val user = post["user"]
         val handle = user["username"].string.orEmpty().trim().lowercase()
-        val text = post["caption"]["text"].string.orEmpty().trim()
+        val caption = post["caption"]["text"].string.orEmpty().trim()
+        val fragments = fragments(post, caption)
+        val text = words(caption, fragments)
         val media = ThreadsMediaParts.of(post)
         val linkCard = linkCard(post)
         val quoted = if (withQuote) quotedPost(post) else null
         val read = ThreadsPostFactsReader.of(post)
         // A quote of a post Threads no longer shows is drawn as such; one level down there is no box to draw it in.
         val facts = if (withQuote && quoted == null) read else read.copy(quoteUnavailable = false)
-        if (handle.isEmpty() || (text.isEmpty() && media.isEmpty() && linkCard == null && quoted == null && !facts.quoteUnavailable)) return null
+        val shows = text.isNotEmpty() || fragments.any { it.isSticker } || media.isNotEmpty() || linkCard != null || quoted != null || facts.quoteUnavailable
+        if (handle.isEmpty() || !shows) return null
         val code = post["code"].string
         val id = idOf(post["pk"]) ?: post["id"].string ?: code
         if (id.isNullOrEmpty()) return null
@@ -265,7 +289,7 @@ object ThreadsParser {
             linkCard = linkCard,
             quoted = quoted,
             topicTag = topicTag(post),
-            fragments = fragments(post, text),
+            fragments = fragments,
             isVerified = user["is_verified"].boolean ?: false,
             replyToHandle = replyTo,
             isReply = replyTo != null || info["is_reply"].boolean == true || info["reply_to_author"].exists,

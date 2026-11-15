@@ -114,8 +114,8 @@
     <string name="try_public">कोई सार्वजनिक खाता आज़माएँ</string>
     <string name="unfollow">फ़ॉलो करना बंद करें</string>
     <string name="unlike_on_device">इस डिवाइस से पसंद हटाएँ</string>
-    <string name="use_session">फ़ॉलो किए खातों के लिए मेरा सत्र इस्तेमाल करें</string>
-    <string name="use_session_description">डिफ़ॉल्ट रूप से बंद। चालू होने पर ऐप आपके रूप में थ्रेड्स से बात करता है — मेटा उस खाते पर बैन लगा सकती है। डिस्पोज़ेबल लॉगिन के अलावा इसे बंद रखें।</string>
+    <string name="use_session">होम और आपके लिए के लिए मेरा सत्र इस्तेमाल करें</string>
+    <string name="use_session_description">डिफ़ॉल्ट रूप से बंद, और यही सबसे सुरक्षित है: जिसे आपके खाते की ज़रूरत है, वह खोलते ही अपने-आप उस पर चला जाता है। चालू होने पर होम, आपके लिए और जिन खातों को आप फ़ॉलो करते हैं, वे भी आपके नाम से पढ़े जाते हैं — कहीं ज़्यादा अनुरोध, और मेटा उस खाते पर पाबंदी लगा सकता है।</string>
     <string name="in_home_feed">होम टाइमलाइन में दिखाएँ</string>
     <string name="in_home_feed_description">आप जिन Threads खातों को फ़ॉलो करते हैं उनकी पोस्ट को \"फ़ॉलोइंग\" और \"आपके लिए\" में मिलाता है</string>
     <string name="for_you">आपके लिए</string>
@@ -148,6 +148,7 @@
     <string name="show_less">कम दिखाएँ</string>
     <string name="pinned_reply">लेखक ने पिन किया</string>
     <string name="spoiler">स्पॉइलर</string>
+    <string name="sticker">स्टिकर</string>
     <string name="tap_to_show_spoiler">स्पॉइलर देखने के लिए टैप करें</string>
     <string name="copy_text">टेक्स्ट कॉपी करें</string>
     <string name="copy_link">लिंक कॉपी करें</string>
@@ -160,7 +161,8 @@
     <string name="exact_time">सटीक समय दिखाएँ</string>
     <string name="fewer_replies">कम जवाब दिखाएँ</string>
     <string name="more_replies_web">threads.com पर और जवाब</string>
-    <string name="related_threads">संबंधित थ्रेड</string>
+    <string name="more_from_author">@%1$s की और पोस्ट</string>
+    <string name="more_on_topic">%1$s पर और</string>
     <string name="media_description">चित्र का विवरण</string>
     <string name="media_download">डाउनलोड</string>
     <string name="media_download_all">सभी डाउनलोड करें</string>
@@ -169,7 +171,7 @@
     <string name="media_picture_of">चित्र %1$d / %2$d</string>
     <string name="media_covered">Threads ने इस मीडिया पर चेतावनी लगाई है</string>
     <string name="add_accounts_hint">एक साथ कई: इन्हें स्पेस या कॉमा से अलग करें</string>
-    <string name="session_unlocks">सत्र से क्या मिलता है: आपका अपना «आपके लिए» और लोगों की खोज। ऊपर का स्विच चालू हो तो यह आपके फ़ॉलो किए गए खाते भी पढ़ता है।</string>
+    <string name="session_unlocks">सत्र क्या जोड़ता है: अनुसरणकर्ता और फ़ॉलो किए गए, किसने पोस्ट पसंद की, आपकी गतिविधि और लोगों की खोज — हर एक आपके खाते से सिर्फ़ तब पढ़ा जाता है जब आप उसे खोलते हैं। ऊपर का स्विच चालू हो तो होम और आपके लिए भी इसी से पढ़े जाते हैं।</string>
     <string name="instance_intro">वैकल्पिक। आपका अपना RSSHub इंस्टेंस आपके फ़ॉलो किए गए खाते पढ़ता है; उसके विफल होने पर Threads के सार्वजनिक पेज काम आते हैं। केवल सार्वजनिक पेज पढ़ने के लिए खाली छोड़ें।</string>
     <string name="account_missing">नहीं मिला — नाम बदला, हटाया गया या ग़लत लिखा गया?</string>
     <string name="account_private">निजी — Threads अतिथि को इसकी कोई पोस्ट नहीं दिखाता</string>
@@ -225,6 +227,8 @@
     <string name="translate">अनुवाद करें</string>
     <string name="show_original">मूल दिखाएँ</string>
     <string name="translated_by_threads">Threads द्वारा अनुवादित</string>
+    <string name="translated_by">%1$s द्वारा अनुवादित</string>
+    <string name="translation_failed_by">%1$s इस पोस्ट का अनुवाद नहीं कर सका</string>
     <string name="translating">अनुवाद हो रहा है…</string>
     <string name="translation_failed">Threads इस पोस्ट का अनुवाद नहीं कर सका</string>
     <string name="attached_text">संलग्न टेक्स्ट</string>
@@ -275,4 +279,25 @@
     <string name="show_hidden_posts">छिपाई गई पोस्ट फिर दिखाएँ</string>
     <string name="read_as_article">लेख की तरह पढ़ें</string>
     <string name="show_conversation">बातचीत दिखाएँ</string>
+    <string name="account_in_use">आपका Threads खाता इस्तेमाल हो रहा है</string>
+    <string name="account_resting">आपके खाते की सुरक्षा के लिए रोका गया — %1$s पर फिर शुरू होगा</string>
+    <string name="account_paused">आपके खाते की सुरक्षा के लिए रोका गया</string>
+    <string name="account_signed_out">Threads ने यह सत्र साइन आउट कर दिया — फिर से साइन इन करें</string>
+    <string name="load_more">और लोड करें</string>
+    <string name="account_guard">खाते की सुरक्षा</string>
+    <string name="account_active">सक्रिय — सिर्फ़ तब इस्तेमाल होता है जब आप कुछ ऐसा खोलते हैं जिसे इसकी ज़रूरत हो</string>
+    <string name="account_resting_until">%1$s तक विश्राम में</string>
+    <string name="account_usage">पिछले 24 घंटों में खाते से पढ़ाई: %2$d में से %1$d</string>
+    <string name="account_guard_detail">अनुसरणकर्ता, “इन्हें पसंद आया”, गतिविधि और लोगों की खोज आपके खाते का इस्तेमाल सिर्फ़ तब करते हैं जब आप उन्हें खोलते हैं, कुछ सेकंड के अंतर पर, और मेटा के ध्यान देने से पहले रुक जाते हैं। बाकी सब मेहमान के रूप में पढ़ा जाता है।</string>
+    <string name="suggested_for_you">आपके लिए सुझाव</string>
+    <string name="suggestion_follow">इस डिवाइस पर %1$s को फ़ॉलो करें</string>
+    <string name="suggestion_unfollow">इस डिवाइस पर %1$s को अनफ़ॉलो करें</string>
+    <string name="suggestion_hide">%1$s को सुझावों से हटाएँ</string>
+    <string name="song_play">%2$s का %1$s चलाएँ</string>
+    <string name="song_play_title">%1$s चलाएँ</string>
+    <string name="song_pause">%1$s रोकें</string>
+    <string name="song_open_page">गाने का पेज खोलें</string>
+    <string name="song_explicit">अश्लील</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">यह गाना अभी नहीं चल सकता</string>
 </resources>

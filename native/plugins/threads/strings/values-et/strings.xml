@@ -114,8 +114,8 @@
     <string name="try_public">Proovi avalikku kontot</string>
     <string name="unfollow">Lõpeta jälgimine</string>
     <string name="unlike_on_device">Eemalda meeldimine sellest seadmest</string>
-    <string name="use_session">Kasuta minu seanssi jälgitavate kontode jaoks</string>
-    <string name="use_session_description">Vaikimisi väljas. Sisselülitatuna räägib rakendus Threadsiga sinuna — Meta võib selle konto bännida. Jäta väljaks, kui see pole ühekordne sisselogimine.</string>
+    <string name="use_session">Kasuta minu seanssi avalehe ja „Sinu jaoks“ jaoks</string>
+    <string name="use_session_description">Vaikimisi väljas, ja nii on kõige turvalisem: mis vajab sinu kontot, läheb avamisel ise selle peale. Sisselülitatuna loetakse sinu nimel ka avalehte, „Sinu jaoks“ ja kontosid, mida jälgid — palju rohkem päringuid ja Meta võib selle konto blokeerida.</string>
     <string name="in_home_feed">Näita avalehe voos</string>
     <string name="in_home_feed_description">Lisab jälgitavate Threadsi kontode postitused voogudesse „Jälgitavad“ ja „Sulle“</string>
     <string name="for_you">Sinu jaoks</string>
@@ -148,6 +148,7 @@
     <string name="show_less">Näita vähem</string>
     <string name="pinned_reply">Autori kinnitatud</string>
     <string name="spoiler">Rõõmurikkuja</string>
+    <string name="sticker">Kleebis</string>
     <string name="tap_to_show_spoiler">Puuduta, et rõõmurikkujat näha</string>
     <string name="copy_text">Kopeeri tekst</string>
     <string name="copy_link">Kopeeri link</string>
@@ -160,7 +161,8 @@
     <string name="exact_time">Näita täpset aega</string>
     <string name="fewer_replies">Näita vähem vastuseid</string>
     <string name="more_replies_web">Rohkem vastuseid saidil threads.com</string>
-    <string name="related_threads">Seotud lõimed</string>
+    <string name="more_from_author">Veel kasutajalt @%1$s</string>
+    <string name="more_on_topic">Veel teemal %1$s</string>
     <string name="media_description">Pildi kirjeldus</string>
     <string name="media_download">Laadi alla</string>
     <string name="media_download_all">Laadi kõik alla</string>
@@ -169,7 +171,7 @@
     <string name="media_picture_of">Pilt %1$d/%2$d</string>
     <string name="media_covered">Threads on selle meedia ette hoiatuse pannud</string>
     <string name="add_accounts_hint">Mitu korraga: eralda need tühikute või komadega</string>
-    <string name="session_unlocks">Mida seanss lisab: sinu enda „Sinu jaoks“ ja inimeste otsingu. Kui ülal olev lüliti on sees, loeb see ka kontosid, mida jälgid.</string>
+    <string name="session_unlocks">Mida seanss lisab: jälgijad ja jälgitavad, kellele postitus meeldis, sinu tegevus ja inimeste otsing, igaüks loetakse sinu kontoga ainult siis, kui selle avad. Ülemise lülitiga loetakse sellega ka avalehte ja „Sinu jaoks“.</string>
     <string name="instance_intro">Valikuline. Sinu enda RSSHubi eksemplar loeb kontosid, mida jälgid; kui see ei vasta, loetakse Threadsi avalikke lehti. Jäta tühjaks, et lugeda ainult avalikke lehti.</string>
     <string name="account_missing">Ei leitud — ümber nimetatud, kustutatud või valesti kirjutatud?</string>
     <string name="account_private">Privaatne — Threads ei näita külalisele ühtegi selle postitust</string>
@@ -225,6 +227,8 @@
     <string name="translate">Tõlgi</string>
     <string name="show_original">Näita originaali</string>
     <string name="translated_by_threads">Tõlkinud Threads</string>
+    <string name="translated_by">Tõlkis %1$s</string>
+    <string name="translation_failed_by">%1$s ei saanud seda postitust tõlkida</string>
     <string name="translating">Tõlgin…</string>
     <string name="translation_failed">Threads ei saanud seda postitust tõlkida</string>
     <string name="attached_text">Lisatud tekst</string>
@@ -275,4 +279,25 @@
     <string name="show_hidden_posts">Näita peidetud postitusi uuesti</string>
     <string name="read_as_article">Loe artiklina</string>
     <string name="show_conversation">Näita vestlust</string>
+    <string name="account_in_use">Kasutatakse sinu Threadsi kontot</string>
+    <string name="account_resting">Peatatud, et kaitsta sinu kontot — jätkub kell %1$s</string>
+    <string name="account_paused">Peatatud, et kaitsta sinu kontot</string>
+    <string name="account_signed_out">Threads logis selle seansi välja — logi uuesti sisse</string>
+    <string name="load_more">Laadi veel</string>
+    <string name="account_guard">Konto kaitse</string>
+    <string name="account_active">Aktiivne — kasutatakse ainult siis, kui avad midagi, mis seda vajab</string>
+    <string name="account_resting_until">Puhkab kuni %1$s</string>
+    <string name="account_usage">Lugemised kontoga viimase 24 tunni jooksul: %1$d / %2$d</string>
+    <string name="account_guard_detail">Jälgijad, „Meeldib“, tegevus ja inimeste otsing kasutavad sinu kontot ainult siis, kui need avad, mõnesekundiliste vahedega, ja peatuvad enne, kui Meta märkaks. Kõik muu loetakse külalisena.</string>
+    <string name="suggested_for_you">Sulle soovitatud</string>
+    <string name="suggestion_follow">Jälgi kasutajat %1$s selles seadmes</string>
+    <string name="suggestion_unfollow">Lõpeta kasutaja %1$s jälgimine selles seadmes</string>
+    <string name="suggestion_hide">Eemalda %1$s soovitustest</string>
+    <string name="song_play">Esita %1$s (%2$s)</string>
+    <string name="song_play_title">Esita %1$s</string>
+    <string name="song_pause">Peata %1$s</string>
+    <string name="song_open_page">Ava loo leht</string>
+    <string name="song_explicit">Vulgaarne</string>
+    <string name="song_explicit_mark">E</string>
+    <string name="song_unavailable">Seda lugu ei saa praegu esitada</string>
 </resources>

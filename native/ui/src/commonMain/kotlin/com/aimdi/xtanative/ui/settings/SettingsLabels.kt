@@ -172,6 +172,7 @@ internal fun sectionTitle(section: SettingsSection): StringResource = when (sect
     SettingsSection.THEME -> Res.string.settings_theme
     SettingsSection.ACCESSIBILITY -> Res.string.settings_accessibility
     SettingsSection.SPEECH -> Res.string.settings_speech
+    SettingsSection.TRANSLATION -> Res.string.translation_title
     SettingsSection.ACCOUNT -> Res.string.settings_account
     SettingsSection.DATA -> Res.string.settings_data
     SettingsSection.SYNC -> Res.string.settings_sync
@@ -187,6 +188,7 @@ internal fun sectionHint(section: SettingsSection): StringResource = when (secti
     SettingsSection.THEME -> Res.string.settings_theme_hint
     SettingsSection.ACCESSIBILITY -> Res.string.settings_accessibility_hint
     SettingsSection.SPEECH -> Res.string.settings_speech_description
+    SettingsSection.TRANSLATION -> Res.string.translation_hint
     SettingsSection.ACCOUNT -> Res.string.settings_account_hint
     SettingsSection.DATA -> Res.string.settings_data_hint
     SettingsSection.SYNC -> Res.string.settings_sync_description

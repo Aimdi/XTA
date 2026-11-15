@@ -145,7 +145,7 @@ internal fun ThreadsProfileCard(app: ThreadsApp, profile: ThreadsProfile, onFilt
                 if (profile.isPrivate) Icon(Icons.Filled.Lock, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(start = 6.dp).size(18.dp))
             }
             ProfileHandleLine(app, profile.username)
-            profile.biography.trim().takeIf { it.isNotEmpty() }?.let { bio ->
+            profile.biography.trim().takeIf { it.isNotEmpty() || profile.facts.bioFragments.any { run -> run.isSticker } }?.let { bio ->
                 ThreadsRichText(app, bio, profile.facts.bioFragments, Modifier.padding(top = 8.dp), style = MaterialTheme.typography.bodyLarge.copy(fontSize = 15.sp, lineHeight = 22.sp))
             }
             ProfileTags(app, profile.facts.tags)

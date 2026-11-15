@@ -23,6 +23,8 @@ import com.aimdi.xtanative.networks.threads.ThreadsRssHub
 import com.aimdi.xtanative.networks.threads.ThreadsSearchTerms
 import com.aimdi.xtanative.networks.threads.ThreadsSession
 import com.aimdi.xtanative.networks.threads.ThreadsSetup
+import com.aimdi.xtanative.networks.threads.ThreadsSuggested
+import com.aimdi.xtanative.networks.threads.ThreadsSuggestedAccount
 import com.aimdi.xtanative.networks.threads.ThreadsXy
 import com.aimdi.xtanative.store.backup.ProfileSubscriptionRow
 import com.aimdi.xtanative.store.backup.XtaTime
@@ -53,6 +55,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -76,6 +79,9 @@ import kotlinx.coroutines.sync.withLock
 internal class ThreadsApp(val host: PluginHost) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
+    /** The one song heard among its posts ([ThreadsSongCard]); its player is made on the first tap of play. */
+    val songs = ThreadsSongs()
+
     val direct = ThreadsDirectClient(
         http = host.http,
         session = ::session,
@@ -95,9 +101,13 @@ internal class ThreadsApp(val host: PluginHost) {
     private val conversations = ThreadsConversationShelf(host.store::file)
     val accountNotes = ThreadsAccountNotes(host.store.file("account_notes.json"))
 
-    /** The posts the reader asked Threads to translate, as Meta translates them for a session. */
-    val translations = ThreadsTranslations(scope) { post, target ->
-        ThreadsPeople.mediaId(post)?.let { direct.translation(it, post.facts.captionId, target) }
+    /** The posts the reader asked to translate: as Meta translates them for a session, or by the reader's translation service. */
+    val translations = ThreadsTranslations(scope) { post, target, viaService ->
+        if (viaService) {
+            host.translate(post.text, target)?.let { ThreadsWords(it.text, it.translator) }
+        } else {
+            ThreadsPeople.mediaId(post)?.let { direct.translation(it, post.facts.captionId, target) }?.let { ThreadsWords(it) }
+        }
     }
 
     /** The topics and communities followed on this device. */
@@ -115,6 +125,24 @@ internal class ThreadsApp(val host: PluginHost) {
      * going on into the topics and communities it explores.
      */
     val forYou = ThreadsForYouFeed(ThreadsForYou(direct, ::exploreTopics)::page)
+
+    /**
+     * For you's "Suggested for you": what Threads suggests the signed-in
+     * reader, read with the account only once they reach the row, the
+     * accounts they hid from it kept here. Nothing is followed or hidden on Threads.
+     */
+    val suggestions = ThreadsSuggestedPeople(
+        file = host.store.file("suggestions_hidden.json"),
+        read = { ready(); direct.suggestedPeople() },
+        usable = { ThreadsSuggested.usesAccount(session(), ThreadsAccountView.state(direct.guard.refresh())) },
+        timeline = { direct.timelineSuggestions()?.takeIf { session().useSessionApis } },
+    )
+
+    /** [suggestion] followed on this device only, as any account followed here: its public posts come to Home. */
+    fun followSuggested(suggestion: ThreadsSuggestedAccount) = follow(ThreadsAccount(suggestion.handle, suggestion.name, suggestion.avatarUrl))
+
+    /** [handle] hidden from For you's suggestions on this device. */
+    fun dismissSuggested(handle: String) = launch { suggestions.dismiss(handle) }
 
     /** The section the tab shows. */
     val section = MutableStateFlow(ThreadsSection.HOME)
@@ -145,6 +173,11 @@ internal class ThreadsApp(val host: PluginHost) {
     val replyOrder = MutableStateFlow(ThreadsReplyOrder.TOP)
 
     init {
+        // A session pasted, signed in with or cleared is a new one to the account guard: not signed out, sent today's headers.
+        scope.launch {
+            host.settings.state.filterNotNull().map { it[ThreadsPrefs.directCookies] to it[ThreadsPrefs.directBearer] }
+                .distinctUntilChanged().drop(1).collect { direct.sessionChanged() }
+        }
         // What the For you section keeps is written a moment after the last change, not at every scrolled row.
         scope.launch {
             forYouChanged.collectLatest { change ->
@@ -183,7 +216,10 @@ internal class ThreadsApp(val host: PluginHost) {
 
     fun update(edit: (Settings) -> Settings) = launch { host.settings.update(edit) }
 
-    fun close() = scope.cancel()
+    fun close() {
+        songs.close()
+        scope.cancel()
+    }
 
     /**
      * The session as the reader pasted it, read afresh on every request: in

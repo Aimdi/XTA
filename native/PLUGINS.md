@@ -44,7 +44,7 @@ plugin API version it was built against, `PLUGIN_API_VERSION`) and `entry`
 
 ## The plugin API
 
-`PLUGIN_API_VERSION` is 11. Version 1 is what native-0.1.41 shipped; 2,
+`PLUGIN_API_VERSION` is 12. Version 1 is what native-0.1.41 shipped; 2,
 which native-0.1.45 shipped, added `cashtagStrip` and `routeForCashtag` and
 the kit's pieces of that time (the article reader, `FeedReads`, X posts in a
 plugin, the chip tabs, the shelf, the recent searches, the action row,
@@ -75,8 +75,14 @@ defaulting to no). The app asks only off the desktop, for a few seconds, and
 a plugin built before simply never is; 8 adds a home timeline's reading
 controls (`HomeReading`, `rememberHomeReading`, `ReadingControlsBar`,
 `ReadingControlsPinItem` and `ReportsReadingScroll`'s three lists), so a
-plugin's own timeline keeps them as XTA's does. A plugin's `xta-plugin.json`
-names the version it was built against.
+plugin's own timeline keeps them as XTA's does; 9 to 11 are listed in
+`XtaPlugin.kt`; 12 adds the reader's translation service
+(`PluginHost.translator`, `translationAvailable`, `translate` with
+`PluginTranslation`, `PluginTranslationException`). A plugin's
+`xta-plugin.json` names the version it was built against, so a plugin that
+calls `translate` says 12 and an app of API 11 (native-1.0.7) offers it as
+"needs a newer XTA Native" instead of loading it; the published plugins of 11
+keep loading in this app, which still has everything they use.
 
 The app loads the versions from `OLDEST_PLUGIN_API` (2) to its own, so a
 plugin built before keeps working until its update comes, for as long as what
@@ -157,6 +163,7 @@ read again, the desktop's F5: `RefreshesOn`).
 | `unfollowed(account)` | one of its accounts unfollowed: the app takes it out of every group |
 | `openPostMenu(menu)` | the shared post menu over the screen |
 | `download(media, fileName, subfolder)`, `downloadAll(files, subfolder)`, `downloadAll(files, subfolder, progress)`, `queueDownloads(files, subfolder)`, `saveFile(bytes, fileName, mimeType, subfolder)`, `saveFileAndWait(…)`, `shareFile(bytes, fileName, mimeType)`, `openDownloads()` | the app's downloads (a file, a batch saved together, one watched file by file with Cancel, a batch queued), a file it made saved (waited for) or shared, the Downloads screen |
+| `translator`, `translationAvailable()`, `translate(text, target)` | the reader's translation service (Settings › Translation: DeepL, a LibreTranslate server or their AI provider), null while none is set: its name for the credit line and the language it translates into; a post's words translated (a `PluginTranslation`: text, the language they were in, who translated), null while none is set, a `PluginTranslationException` with its `problem` when the service gave none. Only the text and the languages are sent, after the reader asked |
 | `tell(text)`, `working(text, work)`, `withProgress(first, work)` | a line at the foot of the window over any screen, as XTA's snack bars; one shown while `work` runs; one with a ring, a note and Cancel that `work` keeps up to date (`PluginProgress`) |
 
 The shared pieces, in the same package, drawn in the app's theme. Use them

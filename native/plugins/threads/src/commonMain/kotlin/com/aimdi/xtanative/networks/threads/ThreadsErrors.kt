@@ -30,6 +30,13 @@ enum class ThreadsFailure {
 
     /** The account is private: its page is there, but a guest is shown none of its threads. */
     PRIVATE_ACCOUNT,
+
+    /**
+     * The reader's account rests: the account guard's budget is spent
+     * ([ThreadsAccountGuard]), so nothing was sent; it may be read again at
+     * [ThreadsException.retryAt]. Never retried on its own.
+     */
+    ACCOUNT_RESTING,
 }
 
 /** How a screen may retry a failure without being asked (XTA's ReadRetry). */
@@ -55,6 +62,8 @@ class ThreadsException(
     message: String,
     override val code: Int? = null,
     override val retryAt: Instant? = null,
+    /** A failure of a read made with the reader's account: it waits for the reader whatever it is, since a session read tried again on its own is what a script does. */
+    val manual: Boolean = false,
 ) : Exception(message), NetworkFailure {
     /** Which network failed, so a screen can name it. */
     override val network: String get() = NETWORK
@@ -66,6 +75,7 @@ class ThreadsException(
      */
     val retry: ThreadsRetry
         get() = when {
+            manual || failure == ThreadsFailure.ACCOUNT_RESTING -> ThreadsRetry.MANUAL
             failure == ThreadsFailure.UNREACHABLE || failure == ThreadsFailure.NO_SUCH_FEED -> ThreadsRetry.BACKOFF
             retryAt != null -> ThreadsRetry.AT_RESET
             else -> ThreadsRetry.MANUAL

@@ -25,7 +25,10 @@ import org.junit.jupiter.api.Assumptions.assumeTrue
  * vanished quote would be flagged), `community_badge`'s types, the keys
  * that may count a video's plays, how many pictures carry a description,
  * `has_audio`; and how many of each [ThreadsProfileOwner] and
- * [ThreadsParser] read. Key names, kinds, one-word types and counts only:
+ * [ThreadsParser] read; round 24's stickers in captions and bios (each
+ * fragment's type and keys, the sticker objects' paths, what a sticker's
+ * `plaintext` is, and how many stickers were read), on the profiles, a
+ * search for "sticker" and the front page. Key names, kinds, one-word types and counts only:
  * no value a profile or post holds, no token and no address. It never fails
  * on what it finds. Skipped unless RUN_LIVE=true.
  */
@@ -62,6 +65,8 @@ class ThreadsGuestLiveTest {
         }
         val stickers = owners.flatMap { owner -> fragments(owner).mapNotNull { it["inline_sticker_fragment"] } }
         println("LIVE Threads guest @$handle bio stickers: ${stickers.size}, paths ${ThreadsShape.told(leaves(stickers), limit = 30)}")
+        fragmentShapes("@$handle bio", owners.flatMap(::fragments))
+        println("LIVE Threads guest @$handle bio read: ${ThreadsProfileOwner.owner(html, handle)?.facts?.bioFragments?.count { it.isSticker } ?: 0} stickers")
         println("LIVE Threads guest @$handle fediverse paths: ${ThreadsShape.told(roots.flatMap { kindsAt(it, "", FEDIVERSE, 10) }.groupingBy { it }.eachCount())}")
         println("LIVE Threads guest @$handle about paths: ${ThreadsShape.told(owners.flatMap { kindsAt(it, "", ABOUT, 3) }.groupingBy { it }.eachCount())}")
         val queries = QUERY.findAll(html).map { it.value }.distinct().toList()
@@ -96,7 +101,50 @@ class ThreadsGuestLiveTest {
             "LIVE Threads guest $label read: ${read.size} posts, badges ${ThreadsShape.told(read.mapNotNull { it.facts.communityBadge?.name }.groupingBy { it }.eachCount())}, " +
                 "quote unavailable ${read.count { it.facts.quoteUnavailable }}, plays ${read.count { it.facts.playCount != null }}, quotes ${read.count { it.quoted != null }}",
         )
+        val split = posts.map(::captionFragments)
+        fragmentShapes(label, split.flatten())
+        val held = posts.count { (((it["caption"] as? JsonObject)?.get("text") as? JsonPrimitive)?.content.orEmpty()).any { c -> c in "￼�" } }
+        val elsewhere = ThreadsShape.paths(posts, STICKER, depth = 6).filterKeys { "text_fragments" !in it }
+        val all = read + read.mapNotNull { it.quoted }
+        println(
+            "LIVE Threads guest $label stickers read: ${split.count { it.isNotEmpty() }} posts split, captions holding a stand-in character $held, " +
+                "sticker paths outside fragments ${ThreadsShape.told(elsewhere, limit = 20)}, posts with stickers ${all.count { it.hasStickers }} " +
+                "(${all.sumOf { post -> post.fragments.count { it.isSticker } }} stickers, ${all.count { it.hasStickers && it.text.isEmpty() }} without words, " +
+                "${all.flatMap { it.fragments }.count { it.sticker?.width != null }} sized, ${all.flatMap { it.fragments }.count { it.sticker?.label != null }} named)",
+        )
     }
+
+    /**
+     * Round 24's stickers: how many of [fragments] there are of each
+     * `fragment_type`, the keys a fragment carries with their kinds, the
+     * key paths and kinds under any sticker object in one, and what kind of
+     * thing a sticker fragment's `plaintext` is (missing, empty, a stand-in
+     * character, spaces or words), never the words themselves.
+     */
+    private fun fragmentShapes(label: String, fragments: List<JsonObject>) {
+        val types = fragments.map { (it["fragment_type"] as? JsonPrimitive)?.content?.let { type -> if (WORD.matches(type)) type else "<other>" } ?: "<none>" }
+        val keys = fragments.flatMap { fragment -> fragment.entries.filter { it.value !is JsonNull }.map { (key, value) -> "${name(key)}:${kind(value)}" } }
+        val sticky = fragments.filter { fragment -> fragment.entries.any { (key, value) -> STICKER.containsMatchIn(key) && value !is JsonNull } || STICKER.containsMatchIn((fragment["fragment_type"] as? JsonPrimitive)?.content.orEmpty()) }
+        val held = sticky.flatMap { fragment -> fragment.entries.filter { (key, value) -> STICKER.containsMatchIn(key) && value !is JsonNull }.map { it.value } }
+        val plaintext = sticky.map { standIn(it["plaintext"]) }
+        println(
+            "LIVE Threads guest $label fragments: ${fragments.size}, types ${ThreadsShape.told(types.groupingBy { it }.eachCount())}, keys ${ThreadsShape.told(keys.groupingBy { it }.eachCount(), limit = 40)}; " +
+                "sticker fragments ${sticky.size}, paths ${ThreadsShape.told(leaves(held), limit = 30)}, plaintext ${ThreadsShape.told(plaintext.groupingBy { it }.eachCount())}",
+        )
+    }
+
+    private fun standIn(value: JsonElement?): String {
+        val text = (value as? JsonPrimitive)?.takeIf { it.isString }?.content ?: return if (value == null || value is JsonNull) "missing" else kind(value)
+        return when {
+            text.isEmpty() -> "empty"
+            text.all { it in "￼�" } -> "standin"
+            text.isBlank() -> "spaces"
+            else -> "words"
+        }
+    }
+
+    private fun captionFragments(post: JsonObject): List<JsonObject> =
+        ((((post["text_post_app_info"] as? JsonObject)?.get("text_fragments") as? JsonObject)?.get("fragments")) as? JsonArray).orEmpty().filterIsInstance<JsonObject>()
 
     private fun inCommunity(post: JsonObject): Boolean {
         val header = (post["text_post_app_info"] as? JsonObject)?.get("tag_header") as? JsonObject ?: return false
@@ -159,7 +207,13 @@ class ThreadsGuestLiveTest {
 
     private companion object {
         val PROFILES = listOf("threads", "zuck", "instagram")
-        val SEARCHES = listOf("search?q=threads&serp_type=tags" to "/search?q=threads&serp_type=tags", "search?q=video" to "/search?q=video")
+        val SEARCHES = listOf(
+            "search?q=threads&serp_type=tags" to "/search?q=threads&serp_type=tags",
+            "search?q=video" to "/search?q=video",
+            "search?q=sticker" to "/search?q=sticker",
+            "front page" to "/",
+        )
+        val STICKER = Regex("sticker", RegexOption.IGNORE_CASE)
         const val GAP_MILLIS = 2_500L
         val PLAIN = Regex("[a-z_][a-z0-9_]{0,47}")
         val WORD = Regex("[a-z_]{1,40}", RegexOption.IGNORE_CASE)

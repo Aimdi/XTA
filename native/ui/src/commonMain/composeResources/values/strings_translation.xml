@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings › Translation (ui.settings) and the reader's translation service, from XTA's words (reader_translation_*.dart). -->
+<resources>
+    <string name="translation_title">Translation</string>
+    <string name="translation_privacy">Nothing is sent until you tap Translate. The text then goes only to the service chosen here.</string>
+    <string name="translation_provider">Translation service</string>
+    <string name="translation_provider_off">Off</string>
+    <string name="translation_provider_ai">AI provider</string>
+    <string name="translation_target">Translate into</string>
+    <string name="translation_target_app">App language</string>
+    <string name="translation_endpoint">Server address</string>
+    <string name="translation_endpoint_deepl_help">Leave empty to use DeepL Free or Pro, whichever matches your key.</string>
+    <string name="translation_endpoint_libre_help">Your LibreTranslate server, for example https://translate.example.com</string>
+    <string name="translation_key_optional">Only needed if your server asks for one</string>
+    <string name="translation_ai_description">Uses the AI provider set up in Settings.</string>
+    <string name="translation_ai_not_configured">Set up an AI provider first</string>
+    <string name="translation_invalid">Check the server address and API key</string>
+    <string name="translation_saved">Translation settings saved</string>
+    <string name="translation_clear_cache">Clear saved translations</string>
+    <string name="translation_cache_cleared">Saved translations cleared</string>
+    <string name="translation_not_configured">Choose a translation service first</string>
+    <string name="translation_hint">Translate posts from every network with a service you choose</string>
+    <string name="translation_examples">Public servers to try</string>
+    <string name="translation_examples_note">What you translate is sent to the server you choose. You can also run LibreTranslate on your own computer or server.</string>
+    <string name="translation_test">Test</string>
+    <string name="translation_testing">Testing…</string>
+    <string name="translation_test_ok">The server answers: %1$d languages</string>
+    <string name="translation_unreachable">The server didn't answer. Check the address and your connection.</string>
+    <string name="translation_refused">The server refused. It may need an API key, or the key is wrong.</string>
+    <string name="translation_rate_limited">Too many translations for now. Try again later.</string>
+    <string name="translation_unsupported">This server doesn't translate into that language.</string>
+    <string name="translation_bad_answer">The server's answer held no translation.</string>
+</resources>

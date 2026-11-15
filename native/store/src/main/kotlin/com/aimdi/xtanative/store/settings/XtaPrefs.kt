@@ -37,7 +37,7 @@ object XtaPrefs {
  */
 object SecretPrefs {
     val keys: Set<String> = listOf(
-        CrashReportPrefs.githubToken, DataPrefs.webDavPassword, AiPrefs.apiKey,
+        CrashReportPrefs.githubToken, DataPrefs.webDavPassword, AiPrefs.apiKey, ReadingPrefs.translationApiKey,
         DeepmarksPrefs.apiKey, DeepmarksPrefs.secretKey, ImmichPrefs.apiKey, KarakeepPrefs.apiKey,
         RedditPrefs.clientId, RedditPrefs.refreshToken,
         ThreadsPrefs.apiToken, ThreadsPrefs.directCookies, ThreadsPrefs.directBearer,
