@@ -160,11 +160,13 @@ private fun LinkCard(app: RedditApp, post: RedditPost, gate: MediaGate?, url: St
 /**
  * A link post in a list: Reddit's preview full width, a video's with its
  * play badge, over the site and the way out; with no preview, the
- * thumbnail, or a square saying what it is, beside the site.
+ * thumbnail, or a square saying what it is, beside the site. The listing
+ * thumbnail (about 140 px, all an old.reddit page carries) is never
+ * stretched across the card, where it is a blur.
  */
 @Composable
 private fun FeedLinkCard(post: RedditPost, gate: MediaGate?, url: String, onOpen: () -> Unit) {
-    val preview = post.cardPreviewImage
+    val preview = post.previewImage
     Column(Modifier.fillMaxWidth().framed().clickable(onClick = onOpen)) {
         if (preview != null) {
             Covered(post, gate, RedditMediaRules.MAX_RATIO.toFloat(), shape = RoundedCornerShape(0.dp)) {

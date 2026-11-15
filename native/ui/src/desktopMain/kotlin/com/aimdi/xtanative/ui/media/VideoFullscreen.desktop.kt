@@ -9,7 +9,7 @@ import java.awt.Window
 
 /** The window fills the screen while a video is full screen, as XTA's desktop fullscreen does, and goes back as it was after. */
 @Composable
-internal actual fun FullscreenWindow(aspectRatio: Float) {
+internal actual fun FullscreenWindow(sideways: Boolean) {
     DisposableEffect(Unit) {
         val window = appWindow()
         val before = window?.placement
@@ -17,6 +17,9 @@ internal actual fun FullscreenWindow(aspectRatio: Float) {
         onDispose { if (window != null && before != null) window.placement = before }
     }
 }
+
+/** A desktop window is not turned. */
+internal actual val FullscreenTurns: Boolean = false
 
 /** The app's window: the one the reader is using, else the one showing. */
 private fun appWindow(): ComposeWindow? =

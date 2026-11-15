@@ -3,4 +3,5 @@
     <string name="video_fullscreen">Volledig scherm</string>
     <string name="video_fullscreen_exit">Volledig scherm sluiten</string>
     <string name="video_picture_in_picture">Beeld-in-beeld</string>
+    <string name="video_rotate">Draaien</string>
 </resources>

@@ -3,4 +3,5 @@
     <string name="video_fullscreen">Täisekraan</string>
     <string name="video_fullscreen_exit">Välju täisekraanist</string>
     <string name="video_picture_in_picture">Pilt pildis</string>
+    <string name="video_rotate">Pööra</string>
 </resources>

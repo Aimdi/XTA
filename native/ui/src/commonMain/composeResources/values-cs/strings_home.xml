@@ -72,4 +72,5 @@
     <string name="feed_strip_unavailable">Tato timeline už není dostupná</string>
     <string name="home_feed_accounts_empty">Přidejte účet pro načtení Pro vás.</string>
     <string name="home_all_timelines">Všechny časové osy</string>
+    <string name="home_bar_more">Více</string>
 </resources>

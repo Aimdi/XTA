@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.core.x.parse
 
+import com.aimdi.xtanative.core.x.model.XCard
 import com.aimdi.xtanative.core.x.model.XCommunityNote
 import com.aimdi.xtanative.core.x.model.XEntity
 import com.aimdi.xtanative.core.x.model.XLiveLinks
@@ -24,7 +25,8 @@ sealed interface XRun {
  * code points within X's display range, each piece unescaped, links shown by
  * their display text. A link is left out when something under the text shows
  * it: the post's media, the post it quotes, an X article, a broadcast or a
- * Space, and a shared Grok conversation its card shows.
+ * Space, a shared Grok conversation its card shows, and, as on X, the link
+ * a link preview shows when the text ends with it.
  */
 object XText {
     private val xHosts = setOf("x.com", "www.x.com", "mobile.x.com", "twitter.com", "www.twitter.com", "mobile.twitter.com")
@@ -33,8 +35,26 @@ object XText {
         val points = post.text.codePointCount(0, post.text.length)
         val start = post.displayStart.coerceIn(0, points)
         val end = (post.displayEnd ?: points).coerceIn(start, points)
-        return runsOf(post.text, post.entities, start, end, hiddenLinks(post))
+        return withoutCardLink(runsOf(post.text, post.entities, start, end, hiddenLinks(post)), post.card)
     }
+
+    /**
+     * [runs] without their last link when [card] is a link preview of it, as X
+     * leaves out the address its preview box shows; a link inside the words
+     * stays, so the sentence still reads.
+     */
+    private fun withoutCardLink(runs: List<XRun>, card: XCard?): List<XRun> {
+        val link = card as? XCard.Link ?: return runs
+        val last = runs.lastOrNull() as? XRun.Link ?: return runs
+        if (!sameAddress(last.url, link.url)) return runs
+        return trimEnd(runs.dropLast(1))
+    }
+
+    /** Whether two addresses name the same page, letting a scheme, a `www.` and a closing slash differ. */
+    private fun sameAddress(a: String, b: String): Boolean = addressKey(a) == addressKey(b)
+
+    private fun addressKey(url: String): String =
+        url.trim().substringAfter("://").removePrefix("www.").trimEnd('/').lowercase()
 
     /**
      * A profile's bio as runs: its links from X's entities, and the @names and

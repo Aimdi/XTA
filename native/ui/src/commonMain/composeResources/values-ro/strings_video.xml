@@ -3,4 +3,5 @@
     <string name="video_fullscreen">Ecran complet</string>
     <string name="video_fullscreen_exit">Ieși din ecranul complet</string>
     <string name="video_picture_in_picture">Imagine în imagine</string>
+    <string name="video_rotate">Rotește</string>
 </resources>

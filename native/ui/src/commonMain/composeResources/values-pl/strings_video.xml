@@ -3,4 +3,5 @@
     <string name="video_fullscreen">Pełny ekran</string>
     <string name="video_fullscreen_exit">Zamknij pełny ekran</string>
     <string name="video_picture_in_picture">Obraz w obrazie</string>
+    <string name="video_rotate">Obróć</string>
 </resources>

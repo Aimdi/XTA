@@ -3,4 +3,5 @@
     <string name="video_fullscreen">Layar penuh</string>
     <string name="video_fullscreen_exit">Keluar dari layar penuh</string>
     <string name="video_picture_in_picture">Picture-in-picture</string>
+    <string name="video_rotate">Putar</string>
 </resources>

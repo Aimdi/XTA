@@ -3,4 +3,5 @@
     <string name="video_fullscreen">Celá obrazovka</string>
     <string name="video_fullscreen_exit">Ukončit režim celé obrazovky</string>
     <string name="video_picture_in_picture">Obraz v obraze</string>
+    <string name="video_rotate">Otočit</string>
 </resources>

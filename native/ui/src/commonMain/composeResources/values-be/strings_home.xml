@@ -72,4 +72,5 @@
     <string name="feed_strip_unavailable">Гэта стужка больш недаступная</string>
     <string name="home_feed_accounts_empty">Дадайце акаўнт, каб загрузіць «Для вас».</string>
     <string name="home_all_timelines">Усе стужкі</string>
+    <string name="home_bar_more">Яшчэ</string>
 </resources>

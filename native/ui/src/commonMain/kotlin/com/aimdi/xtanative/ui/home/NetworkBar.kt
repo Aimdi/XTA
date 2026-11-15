@@ -81,7 +81,8 @@ internal class NetworkBarCalls(val onMember: (String) -> Unit, val onPicker: () 
  * [client], as text tabs underlined in the accent (folded into its section
  * picker where they do not fit); then the plugin's actions and the app's
  * ([actions]). The plugin's own strip under it gives way, so its posts start
- * one row higher.
+ * one row higher. With [sectionsBelow] the sections are on the bottom bar
+ * instead ([NetworkBarRules]), and the bar keeps the button and the actions.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -94,6 +95,7 @@ internal fun NetworkTopBar(
     anyUnread: Boolean,
     calls: NetworkBarCalls,
     bar: TopAppBarScrollBehavior,
+    sectionsBelow: Boolean = false,
     actions: @Composable () -> Unit,
 ) {
     val content = client.content
@@ -103,7 +105,7 @@ internal fun NetworkTopBar(
         navigationIcon = { NetworkButton(id, ui, networks, unread, anyUnread, calls) },
         title = {
             val tabs = content?.tabs?.value.orEmpty()
-            if (tabs.isNotEmpty()) TextTabs(tabs, accent)
+            if (tabs.isNotEmpty() && !sectionsBelow) TextTabs(tabs, accent)
         },
         actions = {
             content?.actions?.value?.invoke(this)

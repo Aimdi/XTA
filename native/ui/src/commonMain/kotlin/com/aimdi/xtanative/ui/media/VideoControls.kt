@@ -94,6 +94,7 @@ import com.aimdi.xtanative.ui.generated.resources.reader_video_subtitles
 import com.aimdi.xtanative.ui.generated.resources.video_fullscreen
 import com.aimdi.xtanative.ui.generated.resources.video_fullscreen_exit
 import com.aimdi.xtanative.ui.generated.resources.video_picture_in_picture
+import com.aimdi.xtanative.ui.generated.resources.video_rotate
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 
@@ -105,7 +106,8 @@ private enum class VideoSheet { MORE, SPEED, QUALITY }
  * ([onToggleFill]) in its menu; in place, the corner badge mutes
  * ([MuteCorner]) and the seek bar stops short of it. [onFullscreen] goes full
  * screen in place and leaves it full screen; [onPictureInPicture] shrinks
- * the app into a floating window where the platform has one.
+ * the app into a floating window where the platform has one; [onTurn]
+ * turns full screen sideways and back, on a phone.
  */
 internal class VideoChrome(
     val fullscreen: Boolean = false,
@@ -114,6 +116,7 @@ internal class VideoChrome(
     val fill: Boolean = false,
     val onToggleFill: (() -> Unit)? = null,
     val onDownload: (() -> Unit)? = null,
+    val onTurn: (() -> Unit)? = null,
 )
 
 /**
@@ -193,6 +196,12 @@ private fun BottomBar(state: VideoState, playback: VideoPlayback, chrome: VideoC
                 MuteButton(state.muted) {
                     touch()
                     toggleMute(playback, state.muted)
+                }
+            }
+            chrome.onTurn?.let { turn ->
+                ControlButton(ReaderIcons.ScreenRotation, stringResource(Res.string.video_rotate)) {
+                    touch()
+                    turn()
                 }
             }
             chrome.onPictureInPicture?.let { enter -> ControlButton(ReaderIcons.PictureInPicture, stringResource(Res.string.video_picture_in_picture), enter) }

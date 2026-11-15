@@ -106,7 +106,8 @@ internal fun PixivHome(runtime: PixivRuntime, frame: PluginFrame) {
  */
 @Composable
 private fun HomeChrome(view: PixivHomeView, onTab: (PixivTab) -> Unit, onMode: () -> Unit) {
-    val tabs = PixivTab.entries.map { tab -> PluginHomeTab(tabIcon(tab), pluginString(tabLabel(tab)), view.tab == tab) { onTab(tab) } }
+    // Its own "more" (the account, About) joins Home's More where the tabs take the bottom bar.
+    val tabs = PixivTab.entries.map { tab -> PluginHomeTab(tabIcon(tab), pluginString(tabLabel(tab)), view.tab == tab, { onTab(tab) }, joinsMore = tab == PixivTab.MORE) }
     PluginHomeTabs(tabs, markGivesWay = true) {
         IconButton(onClick = onMode) {
             Icon(

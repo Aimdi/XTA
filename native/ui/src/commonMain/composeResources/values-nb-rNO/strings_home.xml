@@ -70,4 +70,5 @@
     <string name="feed_strip_unavailable">Denne tidslinjen er ikke lenger tilgjengelig</string>
     <string name="home_feed_accounts_empty">Legg til en konto for å laste For deg.</string>
     <string name="home_all_timelines">Alle tidslinjer</string>
+    <string name="home_bar_more">Mer</string>
 </resources>

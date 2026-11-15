@@ -51,8 +51,17 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 
-/** One of a plugin's own tabs (XTA's PluginHomeTab): its [icon] and [label], whether it is the one shown, and what picks it. */
-class PluginHomeTab(val icon: ImageVector, val label: String, val selected: Boolean, val onSelect: () -> Unit)
+/**
+ * One of a plugin's own tabs (XTA's PluginHomeTab): its [icon] and [label],
+ * whether it is the one shown, and what picks it. Where Home's bottom bar
+ * takes the plugin's tabs, one that [joinsMore] (a plugin's own "more", its
+ * account and About) goes into the bar's More, named after the plugin,
+ * instead of taking a place of its own (API 13).
+ */
+class PluginHomeTab(val icon: ImageVector, val label: String, val selected: Boolean, val onSelect: () -> Unit, val joinsMore: Boolean) {
+    /** A tab with a place of its own, as plugins built before API 13 make them. */
+    constructor(icon: ImageVector, label: String, selected: Boolean, onSelect: () -> Unit) : this(icon, label, selected, onSelect, false)
+}
 
 /**
  * What a plugin's own tabs hand the bar of a plugin opened on its own

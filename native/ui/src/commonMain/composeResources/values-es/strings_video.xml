@@ -3,4 +3,5 @@
     <string name="video_fullscreen">Pantalla completa</string>
     <string name="video_fullscreen_exit">Salir de pantalla completa</string>
     <string name="video_picture_in_picture">Imagen en imagen</string>
+    <string name="video_rotate">Girar</string>
 </resources>

@@ -29,16 +29,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -79,6 +77,7 @@ import com.aimdi.xtanative.ui.generated.resources.home_add_timeline
 import com.aimdi.xtanative.ui.generated.resources.home_alt_microblogging
 import com.aimdi.xtanative.ui.generated.resources.home_discover
 import com.aimdi.xtanative.ui.generated.resources.home_home
+import com.aimdi.xtanative.ui.generated.resources.home_bar_more
 import com.aimdi.xtanative.ui.generated.resources.home_networks
 import com.aimdi.xtanative.ui.generated.resources.home_networks_all
 import com.aimdi.xtanative.ui.generated.resources.home_networks_recent
@@ -94,6 +93,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
+import androidx.compose.ui.graphics.Color
+import com.aimdi.xtanative.ui.plugins.PluginHomeTab
+import com.aimdi.xtanative.ui.plugins.pluginAccent
 
 /** The bar's height above the system's gesture area, with or without labels (kHomeNavigationHeight). */
 private val BAR_HEIGHT = 64.dp
@@ -217,8 +219,11 @@ internal fun HomeBottomBar(
     onPage: (Int) -> Unit,
     onNetworks: () -> Unit,
     onHoldHome: () -> Unit,
+    sections: NetworkBarSections? = null,
 ) {
     val slots = remember(ui.bar, ui.recentNetworks) { HomeBar.slots(ui.bar, ui.recentNetworks) }
+    val current = ui.bar.getOrNull(page)
+    if (sections != null && current != null) return NetworkSectionsBar(ui, state, networks, sections, BarPlaces(slots, current), onPage, onNetworks)
     val selected = HomeBar.slotOf(slots, page)
     Column(
         Modifier
@@ -246,6 +251,119 @@ internal fun HomeBottomBar(
     }
 }
 
+/** The bar's places ([slots]) and the page shown on it ([current]). */
+private class BarPlaces(val slots: List<BarSlot>, val current: BarPage)
+
+/**
+ * The bottom bar while a network takes it over ([NetworkBarRules]): the
+ * network's own sections, the one shown in its colour, then More, which
+ * lists the network's sections that did not fit or join it, under the
+ * network's name, and the bar's other places (Subscriptions, Discover,
+ * Saved, networks and groups), and opens the one picked.
+ */
+@Composable
+private fun NetworkSectionsBar(
+    ui: HomeUi,
+    state: HomeBarsState,
+    networks: HomeNetworks,
+    takeover: NetworkBarSections,
+    places: BarPlaces,
+    onPage: (Int) -> Unit,
+    onNetworks: () -> Unit,
+) {
+    val accent = pluginAccent(takeover.accent)
+    val split = NetworkBarRules.split(takeover.sections) { it.joinsMore }
+    val more = remember(places.slots, ui.bar, places.current) { NetworkBarRules.moreSlots(places.slots, ui.bar, places.current) }
+    val title = ui.networks.firstOrNull { it.id == takeover.network }?.title ?: takeover.network
+    var open by remember { mutableStateOf(false) }
+    Column(
+        Modifier
+            .hiding(state)
+            .onSizeChanged { state.travel = it.height.toFloat() }
+            .background(MaterialTheme.colorScheme.background.copy(alpha = BAR_OPACITY)),
+    ) {
+        Hairline()
+        Row(Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.navigationBars).height(BAR_HEIGHT)) {
+            split.bar.forEach { section ->
+                BarItem(section.label, section.selected, ui.navigationLabels, onClick = section.onSelect, tint = accent.takeIf { section.selected }) { on ->
+                    Icon(section.icon, contentDescription = null, tint = if (on) accent else MaterialTheme.colorScheme.onBackground, modifier = Modifier.size(26.dp))
+                }
+            }
+            val moreShown = split.more.any { it.selected }
+            BarItem(
+                stringResource(Res.string.home_bar_more),
+                selected = moreShown,
+                labels = ui.navigationLabels,
+                onClick = { open = true },
+                tint = accent.takeIf { moreShown },
+                menu = {
+                    DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+                        MoreMenu(ui, networks, title, split.more, more, accent) { pick ->
+                            open = false
+                            when (pick) {
+                                is MorePick.Section -> pick.section.onSelect()
+                                is MorePick.Place -> if (pick.slot is BarSlot.Page) onPage(pick.slot.index) else onNetworks()
+                            }
+                        }
+                    }
+                },
+            ) { on -> Icon(HomeBarIcons.More, contentDescription = null, tint = if (on) accent else MaterialTheme.colorScheme.onBackground, modifier = Modifier.size(26.dp)) }
+        }
+    }
+}
+
+/** What a row of More opens: one of the network's sections, or a place of the bar. */
+private sealed interface MorePick {
+    class Section(val section: PluginHomeTab) : MorePick
+    class Place(val slot: BarSlot) : MorePick
+}
+
+/**
+ * More's rows: the network's [sections] under its [title] (one that joins
+ * More by itself named after the network, as Pixiv's account and About), a
+ * divider, then the bar's [places].
+ */
+@Composable
+private fun MoreMenu(ui: HomeUi, networks: HomeNetworks, title: String, sections: List<PluginHomeTab>, places: List<BarSlot>, accent: Color, onPick: (MorePick) -> Unit) {
+    val headed = sections.any { !it.joinsMore }
+    if (headed) MoreHeader(title)
+    sections.forEach { section ->
+        DropdownMenuItem(
+            text = { Text(if (section.joinsMore && !headed) title else section.label, fontWeight = if (section.selected) FontWeight.Bold else null, color = if (section.selected) accent else Color.Unspecified) },
+            leadingIcon = { Icon(section.icon, contentDescription = null, tint = if (section.selected) accent else MaterialTheme.colorScheme.onBackground, modifier = Modifier.size(24.dp)) },
+            onClick = { onPick(MorePick.Section(section)) },
+        )
+    }
+    if (sections.isNotEmpty() && places.isNotEmpty()) HorizontalDivider()
+    places.forEach { slot ->
+        when (slot) {
+            BarSlot.Networks -> DropdownMenuItem(
+                text = { Text(stringResource(Res.string.home_networks)) },
+                leadingIcon = { BarIcon(HomeIcons.PublicOutlined) },
+                onClick = { onPick(MorePick.Place(slot)) },
+            )
+            is BarSlot.Page -> {
+                val page = ui.bar[slot.index]
+                DropdownMenuItem(
+                    text = { Text(barLabel(page, ui)) },
+                    leadingIcon = { BarPageIcon(page, false, ui, networks) },
+                    onClick = { onPick(MorePick.Place(slot)) },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun MoreHeader(title: String) {
+    Text(
+        title,
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp),
+    )
+}
+
 /** A swipe across the bar turns to the page before or after (reader_swipe_navigation.dart). */
 @Composable
 private fun Modifier.barSwipe(page: Int, count: Int, onPage: (Int) -> Unit): Modifier {
@@ -266,7 +384,16 @@ private fun Modifier.barSwipe(page: Int, count: Int, onPage: (Int) -> Unit): Mod
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun RowScope.BarItem(label: String, selected: Boolean, labels: Boolean, onClick: () -> Unit, onHold: (() -> Unit)? = null, icon: @Composable (Boolean) -> Unit) {
+private fun RowScope.BarItem(
+    label: String,
+    selected: Boolean,
+    labels: Boolean,
+    onClick: () -> Unit,
+    onHold: (() -> Unit)? = null,
+    tint: Color? = null,
+    menu: @Composable () -> Unit = {},
+    icon: @Composable (Boolean) -> Unit,
+) {
     Column(
         Modifier
             .weight(1f)
@@ -285,11 +412,13 @@ private fun RowScope.BarItem(label: String, selected: Boolean, labels: Boolean, 
                 label,
                 fontSize = 11.sp,
                 fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
+                color = tint ?: Color.Unspecified,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.padding(start = 6.dp, end = 6.dp, top = 2.dp),
             )
         }
+        menu()
     }
 }
 
@@ -301,10 +430,10 @@ private fun BarIcon(vector: ImageVector) {
 @Composable
 private fun BarPageIcon(page: BarPage, selected: Boolean, ui: HomeUi, networks: HomeNetworks) {
     when (page) {
-        BarPage.Feed -> BarIcon(if (selected) Icons.Filled.Home else Icons.Outlined.Home)
-        BarPage.Subscriptions -> BarIcon(if (selected) HomeIcons.People else HomeIcons.PeopleOutlined)
-        BarPage.Trending -> BarIcon(if (selected) Icons.Filled.Search else Icons.Outlined.Search)
-        BarPage.Saved -> BarIcon(if (selected) HomeIcons.BookmarkFilled else HomeIcons.Bookmark)
+        BarPage.Feed -> BarIcon(if (selected) HomeBarIcons.HomeFilled else HomeBarIcons.Home)
+        BarPage.Subscriptions -> BarIcon(if (selected) HomeBarIcons.SubscriptionsFilled else HomeBarIcons.Subscriptions)
+        BarPage.Trending -> BarIcon(if (selected) HomeBarIcons.DiscoverFilled else HomeBarIcons.Discover)
+        BarPage.Saved -> BarIcon(if (selected) HomeBarIcons.SavedFilled else HomeBarIcons.Saved)
         is BarPage.Network -> if (page.id in ui.missing) BarIcon(Icons.Outlined.Warning) else networks.Mark(page.id, 22.dp)
         is BarPage.Group -> ui.session.groups.firstOrNull { it.id == page.groupId }?.let { GroupMark(it, 24.dp) }
     }

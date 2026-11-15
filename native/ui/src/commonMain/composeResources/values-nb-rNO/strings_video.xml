@@ -3,4 +3,5 @@
     <string name="video_fullscreen">Fullskjerm</string>
     <string name="video_fullscreen_exit">Avslutt fullskjerm</string>
     <string name="video_picture_in_picture">Bilde-i-bilde</string>
+    <string name="video_rotate">Roter</string>
 </resources>

@@ -28,6 +28,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
@@ -61,6 +62,8 @@ import com.aimdi.xtanative.ui.group.CustomSettingsScreen
 import com.aimdi.xtanative.ui.group.FeedSettingsSheet
 import com.aimdi.xtanative.ui.group.GroupFeedScreen
 import com.aimdi.xtanative.ui.group.groupFeedViewModel
+import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
+import com.aimdi.xtanative.ui.plugins.PluginClientBar
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.search.LoadedFeedSearchScreen
 import com.aimdi.xtanative.ui.settings.AvatarSheet
@@ -259,6 +262,7 @@ private fun HomeDrawer(parts: HomeParts, shell: HomeShellState, deckFits: Boolea
 @Composable
 private fun HomeBody(parts: HomeParts, shell: HomeShellState, page: BarPage, following: FollowingLook, unread: Set<String>, refresh: () -> Unit, feedCalls: FeedPageCalls) {
     val ui = parts.ui
+    val takeover = remember { NetworkBarTakeover() }
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
@@ -271,10 +275,12 @@ private fun HomeBody(parts: HomeParts, shell: HomeShellState, page: BarPage, fol
                 onPage = { index -> barTapped(shell, ui, index) },
                 onNetworks = { shell.sheet = HomeSheet.NETWORKS },
                 onHoldHome = { shell.sheet = HomeSheet.PICKER },
+                sections = takeover.on(page),
             )
         },
     ) { padding ->
         val bottom = PaddingValues(bottom = padding.calculateBottomPadding())
+        CompositionLocalProvider(LocalNetworkBarTakeover provides takeover) {
         Box(Modifier.fillMaxSize().padding(bottom).consumeWindowInsets(bottom).nestedScroll(shell.bars.connection)) {
             BarPageHost(page, shell.retaps) { shown ->
                 when (shown) {
@@ -295,11 +301,12 @@ private fun HomeBody(parts: HomeParts, shell: HomeShellState, page: BarPage, fol
                     is BarPage.Network -> if (shown.id in ui.missing) {
                         MissingPage(onChoose = { if (parts.routes.exists(HomeDestination.SETTINGS.route)) parts.routes.open(SettingsRoutes.of(SettingsSection.HOME)) })
                     } else {
-                        NetworkPage(shown.id, ui, parts.networks, shell.networkTop, refresh, parts.vm::setTopBarPins)
+                        NetworkPage(shown.id, ui, parts.networks, shell.networkTop, refresh, parts.vm::setTopBarPins, takeover)
                     }
                     is BarPage.Group -> GroupFeedScreen(shown.groupId, parts.actions, onBack = null)
                 }
             }
+        }
         }
     }
 }
@@ -347,13 +354,21 @@ private fun barTapped(shell: HomeShellState, ui: HomeUi, index: Int) {
 /** A network as a page of the bar: its name and options over its timeline. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun NetworkPage(id: String, ui: HomeUi, networks: HomeNetworks, toTop: Int, refresh: () -> Unit, onPins: (String, List<String>) -> Unit) {
+private fun NetworkPage(id: String, ui: HomeUi, networks: HomeNetworks, toTop: Int, refresh: () -> Unit, onPins: (String, List<String>) -> Unit, takeover: NetworkBarTakeover) {
+    // A network whose sections take the bottom bar hands them to Home rather than drawing its own strip.
+    val client = remember(id) { PluginClientBar() }.takeIf { id in NetworkBarRules.NETWORKS }
+    val owner = NetworkBarRules.owner(BarPage.Network(id))!!
+    DisposableEffect(takeover, id, client) {
+        takeover.show(owner, id, client)
+        onDispose { takeover.show(owner, null, null) }
+    }
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = { Text(ui.networks.firstOrNull { it.id == id }?.title ?: id, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 actions = {
+                    client?.content?.actions?.value?.invoke(this)
                     key(id) { NetworkActions(id, ui, networks, onPins) }
                     if (LocalDesktopActions.current != null) IconButton(onClick = refresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) }
                 },
@@ -362,7 +377,9 @@ private fun NetworkPage(id: String, ui: HomeUi, networks: HomeNetworks, toTop: I
         },
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
-            networks.Page(id, PaddingValues(bottom = padding.calculateBottomPadding()), toTop)
+            CompositionLocalProvider(LocalPluginClientBar provides client) {
+                networks.Page(id, PaddingValues(bottom = padding.calculateBottomPadding()), toTop)
+            }
         }
     }
 }
