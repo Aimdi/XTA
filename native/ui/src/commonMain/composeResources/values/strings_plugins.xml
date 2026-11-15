@@ -57,4 +57,6 @@
     <string name="plugin_store_search">Search plugins</string>
     <string name="plugin_store_no_results">No results</string>
     <string name="plugin_open_client">Open %1$s</string>
+    <string name="plugin_installed_count">Installed · %1$d</string>
+    <string name="plugin_storage_used_one">%1$d item · %2$s</string>
 </resources>

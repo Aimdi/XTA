@@ -54,4 +54,6 @@
     <string name="plugin_store_search">Шукати плагіни</string>
     <string name="plugin_store_no_results">Немає результатів</string>
     <string name="plugin_open_client">Відкрити %1$s</string>
+    <string name="plugin_installed_count">Встановлені · %1$d</string>
+    <string name="plugin_storage_used_one">Елементів: %1$d · %2$s</string>
 </resources>

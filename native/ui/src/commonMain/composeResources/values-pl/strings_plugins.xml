@@ -54,4 +54,6 @@
     <string name="plugin_store_search">Szukaj wtyczek</string>
     <string name="plugin_store_no_results">Brak wyników</string>
     <string name="plugin_open_client">Otwórz %1$s</string>
+    <string name="plugin_installed_count">Zainstalowane · %1$d</string>
+    <string name="plugin_storage_used_one">Elementów: %1$d · %2$s</string>
 </resources>

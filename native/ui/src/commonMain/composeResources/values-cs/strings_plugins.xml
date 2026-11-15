@@ -54,4 +54,6 @@
     <string name="plugin_store_search">Hledat pluginy</string>
     <string name="plugin_store_no_results">Žádné výsledky</string>
     <string name="plugin_open_client">Otevřít %1$s</string>
+    <string name="plugin_installed_count">Nainstalované · %1$d</string>
+    <string name="plugin_storage_used_one">Položek: %1$d · %2$s</string>
 </resources>

@@ -56,4 +56,23 @@ class StoreRowsTest {
         assertTrue(StoreRows.stacks(720f, 1.3f), "from 1.3 times the text size on, too")
         assertFalse(StoreRows.stacks(720f, 1.29f))
     }
+
+    @Test
+    fun installedPluginsStandTwoToALineAsBoxesAfterThoseWithSomethingToSay() {
+        val slots = StoreRows.slots(listOf("threads", "bluesky!", "mastodon", "reddit", "pixiv")) { it.endsWith("!") }
+        assertEquals(
+            listOf(StoreSlot(listOf("bluesky!"), boxes = false), StoreSlot(listOf("threads", "mastodon"), boxes = true), StoreSlot(listOf("reddit", "pixiv"), boxes = true)),
+            slots,
+            "an update or a failure keeps its own row, first",
+        )
+        assertEquals(listOf(StoreSlot(listOf("rss"), boxes = true)), StoreRows.slots(listOf("rss")) { false }, "an odd one stands alone in its line")
+        assertEquals(emptyList(), StoreRows.slots(emptyList<String>()) { false })
+    }
+
+    @Test
+    fun aPluginOnOfferKeepsItsButtonBesideItsNameExceptWithLargeText() {
+        assertEquals(false, StoreRows.offerStacks(1f))
+        assertEquals(true, StoreRows.stacks(390f, 1f), "an installed row with several buttons still stacks on a phone")
+        assertEquals(true, StoreRows.offerStacks(1.3f))
+    }
 }

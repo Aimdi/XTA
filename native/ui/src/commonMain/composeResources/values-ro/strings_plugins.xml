@@ -54,4 +54,6 @@
     <string name="plugin_store_search">Caută pluginuri</string>
     <string name="plugin_store_no_results">Niciun rezultat</string>
     <string name="plugin_open_client">Deschide %1$s</string>
+    <string name="plugin_installed_count">Instalate · %1$d</string>
+    <string name="plugin_storage_used_one">%1$d element · %2$s</string>
 </resources>

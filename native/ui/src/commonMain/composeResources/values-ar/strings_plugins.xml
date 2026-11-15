@@ -54,4 +54,6 @@
     <string name="plugin_store_search">البحث في الإضافات</string>
     <string name="plugin_store_no_results">لا نتائج</string>
     <string name="plugin_open_client">فتح %1$s</string>
+    <string name="plugin_installed_count">مثبَّتة · %1$d</string>
+    <string name="plugin_storage_used_one">%1$d عنصر · %2$s</string>
 </resources>

@@ -54,4 +54,6 @@
     <string name="plugin_store_search">Otsi pluginaid</string>
     <string name="plugin_store_no_results">Tulemusi pole</string>
     <string name="plugin_open_client">Ava %1$s</string>
+    <string name="plugin_installed_count">Installitud · %1$d</string>
+    <string name="plugin_storage_used_one">%1$d üksus · %2$s</string>
 </resources>

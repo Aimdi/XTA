@@ -54,4 +54,6 @@
     <string name="plugin_store_search">Cercar connectors</string>
     <string name="plugin_store_no_results">Sense resultats</string>
     <string name="plugin_open_client">Obre %1$s</string>
+    <string name="plugin_installed_count">Instal·lats · %1$d</string>
+    <string name="plugin_storage_used_one">%1$d element · %2$s</string>
 </resources>

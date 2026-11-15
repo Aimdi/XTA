@@ -54,4 +54,6 @@
     <string name="plugin_store_search">プラグインを検索</string>
     <string name="plugin_store_no_results">結果なし</string>
     <string name="plugin_open_client">%1$sを開く</string>
+    <string name="plugin_installed_count">インストール済み · %1$d</string>
+    <string name="plugin_storage_used_one">%1$d 件 · %2$s</string>
 </resources>

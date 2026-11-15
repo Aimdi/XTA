@@ -54,4 +54,6 @@
     <string name="plugin_store_search">Šukać plahiny</string>
     <string name="plugin_store_no_results">Niama vyniku</string>
     <string name="plugin_open_client">Adkryć %1$s</string>
+    <string name="plugin_installed_count">Ustalavanyja · %1$d</string>
+    <string name="plugin_storage_used_one">Elementaŭ: %1$d · %2$s</string>
 </resources>
