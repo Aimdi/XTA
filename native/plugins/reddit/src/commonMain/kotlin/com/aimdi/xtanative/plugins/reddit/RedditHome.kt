@@ -1,34 +1,37 @@
 package com.aimdi.xtanative.plugins.reddit
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material3.AssistChip
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -45,20 +48,32 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.store.settings.RedditFeedMode
 import com.aimdi.xtanative.ui.common.FeedSkeleton
 import com.aimdi.xtanative.ui.common.swipeTabs
+import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginHomeTab
 import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
 import com.aimdi.xtanative.ui.plugins.PluginText
-import com.aimdi.xtanative.ui.plugins.RefreshesOn
-import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
 import com.aimdi.xtanative.ui.plugins.ReadingControlsPinItem
+import com.aimdi.xtanative.ui.plugins.RefreshesOn
+import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.pluginString
 
 /**
@@ -211,32 +226,65 @@ private fun CommunityStrip(app: RedditApp, names: List<String>, home: RedditHome
     var sorting by remember { mutableStateOf(false) }
     val choices by app.choices.collectAsState()
     val strip = pluginString(Strings.followed_communities)
+    val accent = MaterialTheme.colorScheme.primary
     Column(Modifier.fillMaxWidth()) {
+        // In the app's own manner, as a profile's: nothing boxed, the accent on what is tapped, white on what is shown.
         Row(
-            Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 12.dp).semantics { contentDescription = strip },
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            Modifier.fillMaxWidth().height(48.dp).horizontalScroll(rememberScrollState()).padding(horizontal = 4.dp).semantics { contentDescription = strip },
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (sortChip) {
-                // The order every listing reads in, named, where the flame alone had to be known.
-                AssistChip(
-                    onClick = { sorting = true },
-                    label = { Text(sortLabel(choices.sort)) },
-                    leadingIcon = { Icon(sortIcon(choices.sort), contentDescription = pluginString(Strings.sort), tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp)) },
-                    trailingIcon = { Icon(Icons.Filled.ArrowDropDown, contentDescription = null, modifier = Modifier.size(18.dp)) },
-                )
+                // The order every listing reads in, named, where an icon alone had to be known.
+                Row(
+                    Modifier.fillMaxHeight().clip(RoundedCornerShape(8.dp)).clickable(role = Role.Button) { sorting = true }.padding(horizontal = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(RedditGlyphs.Tune, contentDescription = pluginString(Strings.sort), modifier = Modifier.size(20.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text(sortLabel(choices.sort), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = accent)
+                    Icon(Icons.Filled.ArrowDropDown, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
+                }
+                if (names.isNotEmpty()) Box(Modifier.padding(horizontal = 6.dp).width(1.dp).height(20.dp).background(MaterialTheme.colorScheme.outlineVariant))
             }
             names.forEach { name ->
                 val selected = home.isSelected(name)
-                FilterChip(
-                    selected = selected,
-                    onClick = { if (selected) app.selectMode(home.mode) else app.selectSubreddit(name) },
-                    label = { Text("r/$name") },
-                )
+                Box(
+                    Modifier
+                        .fillMaxHeight()
+                        .clickable(role = Role.Tab) { if (selected) app.selectMode(home.mode) else app.selectSubreddit(name) }
+                        .semantics { this.selected = selected }
+                        .underlined(selected, accent)
+                        .padding(horizontal = 10.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        "r/$name",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
+                        color = if (selected) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                    )
+                }
+            }
+        }
+        Hairline()
+        if (names.isNotEmpty()) {
+            // How many are followed, as a profile counts: the number in white, what it counts in grey.
+            Row(Modifier.padding(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 6.dp)) {
+                Text(names.size.toString(), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+                Spacer(Modifier.width(6.dp))
+                Text(strip, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     }
     if (sorting) SortSheet(app) { sorting = false }
+}
+
+/** A three dp line in [color] along the bottom of the one [shown], its ends rounded, as Home's own tabs are underlined. */
+private fun Modifier.underlined(shown: Boolean, color: Color): Modifier = if (!shown) this else drawBehind {
+    val line = 3.dp.toPx()
+    val inset = 6.dp.toPx()
+    drawRoundRect(color, topLeft = Offset(inset, size.height - line), size = Size(size.width - inset * 2, line), cornerRadius = CornerRadius(line / 2, line / 2))
 }
 
 /**
