@@ -94,6 +94,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.graphics.Color
+import com.aimdi.xtanative.ui.plugins.PluginHomeTab
 import com.aimdi.xtanative.ui.plugins.pluginAccent
 
 /** The bar's height above the system's gesture area, with or without labels (kHomeNavigationHeight). */
@@ -218,10 +219,11 @@ internal fun HomeBottomBar(
     onPage: (Int) -> Unit,
     onNetworks: () -> Unit,
     onHoldHome: () -> Unit,
-    sections: NetworkBarTakeover? = null,
+    sections: NetworkBarSections? = null,
 ) {
     val slots = remember(ui.bar, ui.recentNetworks) { HomeBar.slots(ui.bar, ui.recentNetworks) }
-    if (sections != null && sections.active) return NetworkSectionsBar(ui, state, networks, sections, slots, onPage, onNetworks)
+    val current = ui.bar.getOrNull(page)
+    if (sections != null && current != null) return NetworkSectionsBar(ui, state, networks, sections, BarPlaces(slots, current), onPage, onNetworks)
     val selected = HomeBar.slotOf(slots, page)
     Column(
         Modifier
@@ -249,24 +251,30 @@ internal fun HomeBottomBar(
     }
 }
 
+/** The bar's places ([slots]) and the page shown on it ([current]). */
+private class BarPlaces(val slots: List<BarSlot>, val current: BarPage)
+
 /**
- * The bottom bar while a network's timeline takes it over ([NetworkBarRules]):
- * the network's own sections, the one shown in its colour, then More, which
- * lists the bar's other places (Subscriptions, Discover, Saved, networks and
- * groups) and opens the one picked.
+ * The bottom bar while a network takes it over ([NetworkBarRules]): the
+ * network's own sections, the one shown in its colour, then More, which
+ * lists the network's sections that did not fit or join it, under the
+ * network's name, and the bar's other places (Subscriptions, Discover,
+ * Saved, networks and groups), and opens the one picked.
  */
 @Composable
 private fun NetworkSectionsBar(
     ui: HomeUi,
     state: HomeBarsState,
     networks: HomeNetworks,
-    takeover: NetworkBarTakeover,
-    slots: List<BarSlot>,
+    takeover: NetworkBarSections,
+    places: BarPlaces,
     onPage: (Int) -> Unit,
     onNetworks: () -> Unit,
 ) {
     val accent = pluginAccent(takeover.accent)
-    val more = remember(slots, ui.bar) { NetworkBarRules.moreSlots(slots, ui.bar) }
+    val split = NetworkBarRules.split(takeover.sections) { it.joinsMore }
+    val more = remember(places.slots, ui.bar, places.current) { NetworkBarRules.moreSlots(places.slots, ui.bar, places.current) }
+    val title = ui.networks.firstOrNull { it.id == takeover.network }?.title ?: takeover.network
     var open by remember { mutableStateOf(false) }
     Column(
         Modifier
@@ -276,48 +284,84 @@ private fun NetworkSectionsBar(
     ) {
         Hairline()
         Row(Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.navigationBars).height(BAR_HEIGHT)) {
-            takeover.sections.forEach { section ->
+            split.bar.forEach { section ->
                 BarItem(section.label, section.selected, ui.navigationLabels, onClick = section.onSelect, tint = accent.takeIf { section.selected }) { on ->
                     Icon(section.icon, contentDescription = null, tint = if (on) accent else MaterialTheme.colorScheme.onBackground, modifier = Modifier.size(26.dp))
                 }
             }
-            if (more.isNotEmpty()) {
-                BarItem(
-                    stringResource(Res.string.home_bar_more),
-                    selected = false,
-                    labels = ui.navigationLabels,
-                    onClick = { open = true },
-                    menu = {
-                        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
-                            more.forEach { slot ->
-                                when (slot) {
-                                    BarSlot.Networks -> DropdownMenuItem(
-                                        text = { Text(stringResource(Res.string.home_networks)) },
-                                        leadingIcon = { BarIcon(HomeIcons.PublicOutlined) },
-                                        onClick = {
-                                            open = false
-                                            onNetworks()
-                                        },
-                                    )
-                                    is BarSlot.Page -> {
-                                        val page = ui.bar[slot.index]
-                                        DropdownMenuItem(
-                                            text = { Text(barLabel(page, ui)) },
-                                            leadingIcon = { BarPageIcon(page, false, ui, networks) },
-                                            onClick = {
-                                                open = false
-                                                onPage(slot.index)
-                                            },
-                                        )
-                                    }
-                                }
+            val moreShown = split.more.any { it.selected }
+            BarItem(
+                stringResource(Res.string.home_bar_more),
+                selected = moreShown,
+                labels = ui.navigationLabels,
+                onClick = { open = true },
+                tint = accent.takeIf { moreShown },
+                menu = {
+                    DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+                        MoreMenu(ui, networks, title, split.more, more, accent) { pick ->
+                            open = false
+                            when (pick) {
+                                is MorePick.Section -> pick.section.onSelect()
+                                is MorePick.Place -> if (pick.slot is BarSlot.Page) onPage(pick.slot.index) else onNetworks()
                             }
                         }
-                    },
-                ) { BarIcon(HomeBarIcons.More) }
+                    }
+                },
+            ) { on -> Icon(HomeBarIcons.More, contentDescription = null, tint = if (on) accent else MaterialTheme.colorScheme.onBackground, modifier = Modifier.size(26.dp)) }
+        }
+    }
+}
+
+/** What a row of More opens: one of the network's sections, or a place of the bar. */
+private sealed interface MorePick {
+    class Section(val section: PluginHomeTab) : MorePick
+    class Place(val slot: BarSlot) : MorePick
+}
+
+/**
+ * More's rows: the network's [sections] under its [title] (one that joins
+ * More by itself named after the network, as Pixiv's account and About), a
+ * divider, then the bar's [places].
+ */
+@Composable
+private fun MoreMenu(ui: HomeUi, networks: HomeNetworks, title: String, sections: List<PluginHomeTab>, places: List<BarSlot>, accent: Color, onPick: (MorePick) -> Unit) {
+    val headed = sections.any { !it.joinsMore }
+    if (headed) MoreHeader(title)
+    sections.forEach { section ->
+        DropdownMenuItem(
+            text = { Text(if (section.joinsMore && !headed) title else section.label, fontWeight = if (section.selected) FontWeight.Bold else null, color = if (section.selected) accent else Color.Unspecified) },
+            leadingIcon = { Icon(section.icon, contentDescription = null, tint = if (section.selected) accent else MaterialTheme.colorScheme.onBackground, modifier = Modifier.size(24.dp)) },
+            onClick = { onPick(MorePick.Section(section)) },
+        )
+    }
+    if (sections.isNotEmpty() && places.isNotEmpty()) HorizontalDivider()
+    places.forEach { slot ->
+        when (slot) {
+            BarSlot.Networks -> DropdownMenuItem(
+                text = { Text(stringResource(Res.string.home_networks)) },
+                leadingIcon = { BarIcon(HomeIcons.PublicOutlined) },
+                onClick = { onPick(MorePick.Place(slot)) },
+            )
+            is BarSlot.Page -> {
+                val page = ui.bar[slot.index]
+                DropdownMenuItem(
+                    text = { Text(barLabel(page, ui)) },
+                    leadingIcon = { BarPageIcon(page, false, ui, networks) },
+                    onClick = { onPick(MorePick.Place(slot)) },
+                )
             }
         }
     }
+}
+
+@Composable
+private fun MoreHeader(title: String) {
+    Text(
+        title,
+        style = MaterialTheme.typography.labelMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp),
+    )
 }
 
 /** A swipe across the bar turns to the page before or after (reader_swipe_navigation.dart). */

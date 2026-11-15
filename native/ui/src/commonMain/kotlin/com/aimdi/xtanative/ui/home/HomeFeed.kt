@@ -137,10 +137,10 @@ internal fun HomeFeedPage(
     val source = (current as? HomeTab.Network)?.id
     val takeover = LocalNetworkBarTakeover.current
     DisposableEffect(takeover, source, client) {
-        takeover?.show(source, client.takeIf { source != null })
-        onDispose { takeover?.show(null, null) }
+        takeover?.show(NetworkBarRules.FEED, source, client.takeIf { source != null })
+        onDispose { takeover?.show(NetworkBarRules.FEED, null, null) }
     }
-    val sectionsBelow = takeover?.active == true && takeover.network == source
+    val sectionsBelow = takeover?.on(BarPage.Feed)?.network == source && source != null
     val pinned = settings?.get(HomePrefs.keepControlsVisible) == true
     val keyboard = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     reading.active = source != null

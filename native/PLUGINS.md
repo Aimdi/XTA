@@ -44,7 +44,7 @@ plugin API version it was built against, `PLUGIN_API_VERSION`) and `entry`
 
 ## The plugin API
 
-`PLUGIN_API_VERSION` is 12. Version 1 is what native-0.1.41 shipped; 2,
+`PLUGIN_API_VERSION` is 13. Version 1 is what native-0.1.41 shipped; 2,
 which native-0.1.45 shipped, added `cashtagStrip` and `routeForCashtag` and
 the kit's pieces of that time (the article reader, `FeedReads`, X posts in a
 plugin, the chip tabs, the shelf, the recent searches, the action row,
@@ -82,7 +82,10 @@ plugin's own timeline keeps them as XTA's does; 9 to 11 are listed in
 `xta-plugin.json` names the version it was built against, so a plugin that
 calls `translate` says 12 and an app of API 11 (native-1.0.7) offers it as
 "needs a newer XTA Native" instead of loading it; the published plugins of 11
-keep loading in this app, which still has everything they use.
+keep loading in this app, which still has everything they use. 13 adds
+`PluginHomeTab.joinsMore`: where a plugin's tabs take Home's bottom bar, a
+tab that joins More (Pixiv's account and About) goes there instead of taking
+a place; the four-argument constructor stays for plugins built before.
 
 The app loads the versions from `OLDEST_PLUGIN_API` (2) to its own, so a
 plugin built before keeps working until its update comes, for as long as what

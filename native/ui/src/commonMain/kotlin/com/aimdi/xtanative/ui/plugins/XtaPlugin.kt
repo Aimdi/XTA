@@ -40,9 +40,11 @@ import kotlinx.serialization.json.JsonElement
  * whose mark gives way to its tabs; 11 adds [PluginAvatar], a face with
  * the account's initial for one without a picture; 12 adds the reader's
  * translation service ([PluginHost.translator], [PluginHost.translate] with
- * [PluginTranslation]), so a plugin's posts translate as X's do.
+ * [PluginTranslation]), so a plugin's posts translate as X's do; 13 adds a
+ * tab that joins Home's More ([PluginHomeTab.joinsMore]) where a plugin's
+ * tabs take the bottom bar.
  */
-const val PLUGIN_API_VERSION: Int = 12
+const val PLUGIN_API_VERSION: Int = 13
 
 /**
  * The oldest plugin API whose plugins this app still loads: what they use of
