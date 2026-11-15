@@ -3,4 +3,5 @@
     <string name="video_fullscreen">Pantaila osoa</string>
     <string name="video_fullscreen_exit">Irten pantaila osotik</string>
     <string name="video_picture_in_picture">Irudia irudian</string>
+    <string name="video_rotate">Biratu</string>
 </resources>

@@ -3,4 +3,5 @@
     <string name="video_fullscreen">全画面表示</string>
     <string name="video_fullscreen_exit">全画面表示を終了</string>
     <string name="video_picture_in_picture">ピクチャーインピクチャー</string>
+    <string name="video_rotate">回転</string>
 </resources>

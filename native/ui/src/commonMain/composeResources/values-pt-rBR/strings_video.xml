@@ -3,4 +3,5 @@
     <string name="video_fullscreen">Tela cheia</string>
     <string name="video_fullscreen_exit">Sair da tela cheia</string>
     <string name="video_picture_in_picture">Picture-in-picture</string>
+    <string name="video_rotate">Girar</string>
 </resources>

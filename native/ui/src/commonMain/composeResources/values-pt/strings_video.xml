@@ -3,4 +3,5 @@
     <string name="video_fullscreen">Ecrã inteiro</string>
     <string name="video_fullscreen_exit">Sair do ecrã inteiro</string>
     <string name="video_picture_in_picture">Imagem sobreposta</string>
+    <string name="video_rotate">Rodar</string>
 </resources>

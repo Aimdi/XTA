@@ -3,4 +3,5 @@
     <string name="video_fullscreen">Tam ekran</string>
     <string name="video_fullscreen_exit">Tam ekrandan çık</string>
     <string name="video_picture_in_picture">Mini oynatıcı</string>
+    <string name="video_rotate">Döndür</string>
 </resources>

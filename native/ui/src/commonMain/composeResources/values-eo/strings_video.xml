@@ -3,4 +3,5 @@
     <string name="video_fullscreen">Plena ekrano</string>
     <string name="video_fullscreen_exit">Eliri el plena ekrano</string>
     <string name="video_picture_in_picture">Bildo en bildo</string>
+    <string name="video_rotate">Turni</string>
 </resources>

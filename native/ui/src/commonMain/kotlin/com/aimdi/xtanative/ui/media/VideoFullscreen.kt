@@ -54,8 +54,8 @@ internal val LocalVideoFullscreen = staticCompositionLocalOf<VideoFullscreen?> {
 
 /**
  * Where a video goes full screen, over [content] and all else in the window
- * (video_fullscreen.dart): turned to the video's orientation and without the
- * system bars on Android, filling the screen on the desktop, with
+ * (video_fullscreen.dart): upright and without the system bars on Android,
+ * turned sideways and back by the controls' Rotate, filling the screen on the desktop, with
  * picture-in-picture where the phone has it (video_pip.dart). Back, or Esc
  * on the desktop, leaves it.
  */
@@ -75,7 +75,8 @@ internal fun VideoFullscreenFrame(content: @Composable () -> Unit) {
 private fun FullscreenLayer(video: FullscreenVideo, onClose: () -> Unit) {
     val player = video.player
     val pip = rememberPictureInPicture(onDismissed = { player.setActive(false) })
-    FullscreenWindow(video.aspectRatio)
+    var sideways by remember { mutableStateOf(false) }
+    FullscreenWindow(sideways)
     BackHandling(enabled = true, onBack = onClose)
     PausesWhenLeft(player)
     var fill by remember { mutableStateOf(false) }
@@ -100,6 +101,7 @@ private fun FullscreenLayer(video: FullscreenVideo, onClose: () -> Unit) {
                 fill = fill,
                 onToggleFill = { fill = !fill },
                 onDownload = video.onDownload,
+                onTurn = if (FullscreenTurns) ({ sideways = !sideways }) else null,
             )
             VideoControls(player, chrome, Modifier.fillMaxSize().safeDrawingPadding())
         }
@@ -115,12 +117,16 @@ internal interface PictureInPicture {
 }
 
 /**
- * While composed, the window shows a video of [aspectRatio] full screen:
- * Android turns to the video's orientation and hides the system bars (until
- * a swipe shows them for a moment); the desktop window fills the screen.
+ * While composed, the window shows a video full screen: Android holds the
+ * phone upright, or sideways while [sideways], and hides the system bars
+ * (until a swipe shows them for a moment); the desktop window fills the
+ * screen.
  */
 @Composable
-internal expect fun FullscreenWindow(aspectRatio: Float)
+internal expect fun FullscreenWindow(sideways: Boolean)
+
+/** Whether full screen can be turned sideways ([FullscreenWindow]'s `sideways`): on a phone, not in a desktop window. */
+internal expect val FullscreenTurns: Boolean
 
 /** Picture-in-picture, or null where there is none (the desktop, a phone without it); [onDismissed] hears its window closed. */
 @Composable

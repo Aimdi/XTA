@@ -3,4 +3,5 @@
     <string name="video_fullscreen">На весь екран</string>
     <string name="video_fullscreen_exit">Вийти з повноекранного режиму</string>
     <string name="video_picture_in_picture">Картинка в картинці</string>
+    <string name="video_rotate">Повернути</string>
 </resources>

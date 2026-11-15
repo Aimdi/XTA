@@ -21,23 +21,32 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.Lifecycle
 import com.aimdi.xtanative.ui.common.findActivity
 
-/** Turned to the video's orientation, upright or sideways either way up, with the system bars hidden until a swipe shows them a moment (immersiveSticky). */
+/**
+ * Upright, or sideways while [sideways] (either way up, as the phone is held),
+ * with the system bars hidden until a swipe shows them a moment
+ * (immersiveSticky). It opens upright whatever the video's shape: the
+ * reader turns a wide one sideways with Rotate.
+ */
 @Composable
-internal actual fun FullscreenWindow(aspectRatio: Float) {
+internal actual fun FullscreenWindow(sideways: Boolean) {
     val activity = LocalContext.current.findActivity() ?: return
-    val portrait = VideoRules.portrait(aspectRatio)
-    DisposableEffect(activity, portrait) {
-        val before = activity.requestedOrientation
-        activity.requestedOrientation = if (portrait) ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT else ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+    val first = remember(activity) { activity.requestedOrientation }
+    DisposableEffect(activity, sideways) {
+        activity.requestedOrientation = if (sideways) ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE else ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
+        onDispose { }
+    }
+    DisposableEffect(activity) {
         val bars = WindowCompat.getInsetsController(activity.window, activity.window.decorView)
         bars.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         bars.hide(WindowInsetsCompat.Type.systemBars())
         onDispose {
             bars.show(WindowInsetsCompat.Type.systemBars())
-            activity.requestedOrientation = before
+            activity.requestedOrientation = first
         }
     }
 }
+
+internal actual val FullscreenTurns: Boolean = true
 
 /**
  * The activity's picture-in-picture (video_pip.dart, MainActivity's
