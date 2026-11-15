@@ -1,7 +1,7 @@
 package com.aimdi.xtanative.ui.common
 
 import androidx.compose.runtime.Composable
-import com.aimdi.xtanative.ui.settings.LocalLanguage
+import com.aimdi.xtanative.ui.theme.LocalLanguage
 import java.time.Instant
 import java.time.ZoneId
 import java.time.chrono.IsoChronology

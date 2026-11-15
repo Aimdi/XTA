@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.settings
 
+import com.aimdi.xtanative.ui.theme.AppLocale
 import com.aimdi.xtanative.core.feed.FeedStrip
 import com.aimdi.xtanative.store.settings.BlueskyPrefs
 import com.aimdi.xtanative.store.settings.BooruPrefs
@@ -164,7 +165,7 @@ object SettingsChoices {
         AppLanguage("zh_Hans", "中文 (简体中文)"), AppLanguage("zh_Hant", "中文 (繁體)"),
     ).sortedBy { it.name.lowercase() }
 
-    const val SYSTEM_LANGUAGE = "system"
+    const val SYSTEM_LANGUAGE = AppLocale.SYSTEM
 
     /** The name [code] is shown under; null for the system's choice or a code this build has no language for. */
     fun languageName(code: String): String? = languages.firstOrNull { it.code == code }?.name
@@ -181,22 +182,14 @@ object SettingsChoices {
      * (values-b+be+Latn), so the app's and the plugins' Latin Belarusian is in
      * values-be-rXL, XL being one of ISO 3166's private codes (SCREENS.md).
      */
-    const val LATIN_BELARUSIAN_REGION = "XL"
+    const val LATIN_BELARUSIAN_REGION = AppLocale.LATIN_BELARUSIAN_REGION
 
     /**
      * The language and region whose resources [code] reads, or null for the
      * system's: the scripts of Chinese are kept under China and Taiwan, Latin
      * Belarusian under [LATIN_BELARUSIAN_REGION].
      */
-    fun localeOf(code: String?): Pair<String, String>? {
-        val tag = code?.takeIf { it.isNotBlank() && it != SYSTEM_LANGUAGE } ?: return null
-        return when (tag) {
-            "zh_Hans" -> "zh" to "CN"
-            "zh_Hant" -> "zh" to "TW"
-            "be_Latn" -> "be" to LATIN_BELARUSIAN_REGION
-            else -> tag.substringBefore('_') to tag.substringAfter('_', "")
-        }
-    }
+    fun localeOf(code: String?): Pair<String, String>? = AppLocale.of(code)
 }
 
 /** One of XTA's languages: its stored [code] and the [name] it calls itself. */
