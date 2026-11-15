@@ -75,7 +75,14 @@ class RedditSharedTest {
         val link = RedditShared.post(post("l", "link" to "https://example.com/story"), null, choices, "en")
         assertEquals("https://example.com/story", link.card?.url)
         assertEquals("example.com", link.card?.title)
+        assertEquals("https://preview.redd.it/l.jpg", link.card?.imageUrl)
         assertTrue(link.media.isEmpty())
+    }
+
+    @Test
+    fun aListingThumbnailIsNeverStretchedAcrossALinkCard() {
+        val thumbOnly = post("t", "link" to "https://maccus.fr/europa").copy(previewImage = null, thumbnail = "https://b.thumbs.redditmedia.com/t.jpg")
+        assertNull(RedditShared.post(thumbOnly, null, choices, "en").card?.imageUrl, "a 140 px thumbnail drawn full width is a blur")
     }
 
     @Test

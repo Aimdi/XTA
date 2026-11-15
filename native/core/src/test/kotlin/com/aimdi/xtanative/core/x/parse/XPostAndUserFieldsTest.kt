@@ -2,6 +2,7 @@ package com.aimdi.xtanative.core.x.parse
 
 import com.aimdi.xtanative.core.json.J
 import com.aimdi.xtanative.core.x.model.XAffiliation
+import com.aimdi.xtanative.core.x.model.XCard
 import com.aimdi.xtanative.core.x.model.XCodec
 import com.aimdi.xtanative.core.x.model.XEntity
 import com.aimdi.xtanative.core.x.model.XGrokShare
@@ -128,6 +129,24 @@ class XPostAndUserFieldsTest {
         val grok = XPost("1", XUser("9", "a", "A"), null, share, entities = listOf(link(5, 19, "https://x.com/i/grok/share/abc123")))
         assertEquals("Look x.com/i/grok/share/abc123 at this", XText.plain(grok), "a Grok link the card does not show stays")
         assertEquals("Look  at this", XText.plain(grok.copy(grokShare = XGrokShare("https://x.com/i/grok/share/abc123", "q", "a"))))
+    }
+
+    @Test
+    fun aLinkThePreviewShowsIsLeftOffTheEndOfTheTextAsOnX() {
+        fun link(start: Int, end: Int, expanded: String) = XEntity.Link(start, end, "https://t.co/$start", expanded, expanded.removePrefix("https://"))
+        fun card(url: String) = XCard.Link(url, "Britain's nicest prison", null, "economist.com", null, null, null, large = false)
+        val text = "Not all are so decrepit https://t.co/24 \n"
+        val post = XPost("1", XUser("9", "a", "A"), null, text, entities = listOf(link(24, 39, "https://www.economist.com/britain/2026/1")), card = card("https://economist.com/britain/2026/1/"))
+        assertEquals(listOf("Not all are so decrepit"), XText.runs(post).map { it.text }, "the address the box shows goes, with the space before it")
+
+        val only = XPost("2", XUser("9", "a", "A"), null, "https://t.co/0", entities = listOf(link(0, 14, "https://m.etnews.com/20261113000212")), card = card("https://m.etnews.com/20261113000212"))
+        assertTrue(XText.runs(only).isEmpty(), "a post that is only the link shows only the box")
+
+        val inside = post.copy(text = "See https://t.co/4 today", entities = listOf(link(4, 18, "https://economist.com/britain/2026/1")))
+        assertEquals("See economist.com/britain/2026/1 today", XText.plain(inside), "a link inside the words stays")
+        val other = post.copy(card = card("https://example.com/other"))
+        assertEquals("www.economist.com/britain/2026/1", XText.runs(other).last().text, "a link the box does not show stays")
+        assertEquals("www.economist.com/britain/2026/1", XText.runs(post.copy(card = null)).last().text, "without a box the link stays")
     }
 
     @Test

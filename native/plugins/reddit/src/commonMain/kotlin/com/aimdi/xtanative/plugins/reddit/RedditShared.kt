@@ -52,7 +52,7 @@ internal object RedditShared {
             createdAt = post.createdAt,
             text = words(post),
             media = items(post, media),
-            card = (media as? PostMedia.Link)?.let { LinkCard(it.url, RedditMediaRules.domain(post, it.url), imageUrl = post.cardPreviewImage) },
+            card = (media as? PostMedia.Link)?.let { LinkCard(it.url, RedditMediaRules.domain(post, it.url), imageUrl = post.previewImage) },
             replies = post.commentCount.toLong(),
             likes = post.score.toLong(),
             warning = choices.gate(post)?.let { warning(it, language) },
