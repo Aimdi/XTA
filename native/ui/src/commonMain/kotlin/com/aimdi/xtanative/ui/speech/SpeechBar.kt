@@ -36,10 +36,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.services.speech.SpeechPlayback
 import com.aimdi.xtanative.services.speech.Tts
 import com.aimdi.xtanative.services.speech.TtsFailureAction
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_dismiss
 import com.aimdi.xtanative.ui.generated.resources.reader_speech_get_sherpa

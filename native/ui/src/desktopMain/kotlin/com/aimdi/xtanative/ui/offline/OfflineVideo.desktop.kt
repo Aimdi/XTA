@@ -21,8 +21,8 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.downloads.mimeTypeFor
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.downloads_open_file
 import com.aimdi.xtanative.ui.media.EngineVideo

@@ -22,7 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.x.model.XPost
-import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.plugins.PluginPostArchive
 import com.aimdi.xtanative.ui.plugins.PluginPostMenu
 import com.aimdi.xtanative.ui.plugins.PostMenuHandlers

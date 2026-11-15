@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.currentStateAsState
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.data.isRateLimit
 import com.aimdi.xtanative.ui.generated.resources.Res

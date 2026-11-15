@@ -42,9 +42,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.x.model.XUser
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.LoadingRow
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.groups_add_member_failed
 import com.aimdi.xtanative.ui.generated.resources.groups_add_member_hint
@@ -52,9 +52,9 @@ import com.aimdi.xtanative.ui.generated.resources.groups_no_results
 import com.aimdi.xtanative.ui.generated.resources.groups_ok
 import com.aimdi.xtanative.ui.generated.resources.groups_search
 import com.aimdi.xtanative.ui.generated.resources.groups_search_failed
+import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
 import com.aimdi.xtanative.ui.pluginstore.PluginMark
-import com.aimdi.xtanative.ui.plugins.currentLanguage
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource

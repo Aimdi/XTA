@@ -54,8 +54,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.model.XUser
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.services.ai.TranslationStatus
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.downloads.Downloading

@@ -15,9 +15,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.appName
 import com.aimdi.xtanative.ui.common.Hairline
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.chrome_licences_count
 import com.aimdi.xtanative.ui.generated.resources.chrome_licences_legalese

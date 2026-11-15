@@ -5,7 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import com.aimdi.xtanative.store.settings.MediaPrefs
-import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.LocalSettingsStore
 
 /**
  * A platform's player for one video at a time, which XTA's controls drive
@@ -43,9 +43,9 @@ internal expect fun rememberDataSaver(): Boolean
 /** Pauses [player] when the app is left, unless Background play keeps a video that is heard going (pauseUponEnteringBackgroundMode). */
 @Composable
 internal fun PausesWhenLeft(player: VideoPlayer) {
-    val graph = LocalGraph.current
+    val settingsStore = LocalSettingsStore.current
     LifecycleEventEffect(Lifecycle.Event.ON_STOP) {
-        val background = graph.settings.state.value?.get(MediaPrefs.backgroundPlayback) ?: true
+        val background = settingsStore.state.value?.get(MediaPrefs.backgroundPlayback) ?: true
         if (VideoRules.pausesWhenLeft(background, heard = !player.state.value.muted)) player.setActive(false)
     }
 }

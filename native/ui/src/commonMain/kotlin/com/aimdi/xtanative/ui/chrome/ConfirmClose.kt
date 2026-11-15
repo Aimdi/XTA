@@ -10,9 +10,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.GeneralPrefs
 import com.aimdi.xtanative.ui.common.BackHandling
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.chrome_confirm_close
 import com.aimdi.xtanative.ui.generated.resources.settings_are_you_sure

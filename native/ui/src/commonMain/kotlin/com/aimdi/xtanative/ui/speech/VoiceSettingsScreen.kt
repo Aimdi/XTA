@@ -49,13 +49,13 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.services.speech.OfflineVoice
 import com.aimdi.xtanative.services.speech.Tts
 import com.aimdi.xtanative.services.speech.VoiceEngines
 import com.aimdi.xtanative.services.speech.VoiceFailure
 import com.aimdi.xtanative.services.speech.VoiceInstall
 import com.aimdi.xtanative.services.util.formatByteSize
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_back
 import com.aimdi.xtanative.ui.generated.resources.reader_cancel

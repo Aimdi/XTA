@@ -12,8 +12,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.store.settings.AccessibilityPrefs
 import com.aimdi.xtanative.store.settings.GeneralPrefs
 import com.aimdi.xtanative.store.settings.Settings
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.LocalSettingsStore
 
 /**
  * XTA's X Look from the settings: the background (System, Light, Dim or
@@ -22,7 +22,7 @@ import com.aimdi.xtanative.ui.common.LocalReducedMotion
  */
 @Composable
 fun XtaTheme(content: @Composable () -> Unit) {
-    val stored by LocalGraph.current.settings.state.collectAsStateWithLifecycle()
+    val stored by LocalSettingsStore.current.state.collectAsStateWithLifecycle()
     val settings = stored ?: Settings()
     val systemDark = isSystemInDarkTheme()
     val tokens = XLook.tokens(settings, systemDark)

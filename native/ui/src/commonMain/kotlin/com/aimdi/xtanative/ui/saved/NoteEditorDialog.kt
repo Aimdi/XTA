@@ -63,12 +63,12 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.aimdi.xtanative.data.AppGraph
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.saved.LocalPost
 import com.aimdi.xtanative.store.saved.LocalPosts
 import com.aimdi.xtanative.store.saved.NoteEditor
 import com.aimdi.xtanative.store.saved.NoteMedia
 import com.aimdi.xtanative.store.saved.SavedContent
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.downloads.PickedFile
 import com.aimdi.xtanative.ui.downloads.rememberFilePicker
 import com.aimdi.xtanative.ui.generated.resources.Res

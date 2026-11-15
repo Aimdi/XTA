@@ -19,9 +19,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.aimdi.xtanative.data.AppGraph
+import com.aimdi.xtanative.store.settings.SettingsStore
 
-val LocalGraph = staticCompositionLocalOf<AppGraph> { error("No AppGraph provided") }
+/**
+ * The reader's settings, as every shared part reads them (a post's card, the
+ * players, links, haptics): the store alone, so those parts do not depend on
+ * the app graph and the screens it holds.
+ */
+val LocalSettingsStore = staticCompositionLocalOf<SettingsStore> { error("No settings provided") }
 
 /** A round picture of someone, asked for as its server wants it ([pictureModel]: Pixiv's with its Referer). */
 @Composable

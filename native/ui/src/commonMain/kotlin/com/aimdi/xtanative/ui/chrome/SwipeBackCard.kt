@@ -52,8 +52,8 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.AccessibilityPrefs
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.home.DesktopShortcuts
 import kotlin.math.roundToInt

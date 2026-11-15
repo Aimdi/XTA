@@ -9,10 +9,11 @@ import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.request.crossfade
 import com.aimdi.xtanative.data.AppGraph
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.data.plugins.AppPlugins
 import com.aimdi.xtanative.store.crash.CrashIssue
 import com.aimdi.xtanative.ui.common.FullPageError
-import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.common.SwitchedHapticsFrame
 import com.aimdi.xtanative.ui.common.addPlatformPictureDecoders
 import com.aimdi.xtanative.ui.downloads.DownloadsFrame
@@ -37,7 +38,7 @@ import org.jetbrains.compose.resources.stringResource
  */
 @Composable
 fun XtaNativeContent(graph: AppGraph, plugins: AppPlugins) {
-    CompositionLocalProvider(LocalGraph provides graph) {
+    CompositionLocalProvider(LocalGraph provides graph, LocalSettingsStore provides graph.settings) {
         XtaTheme { SwitchedHapticsFrame { LinksFrame { PluginsFrame(plugins) { DownloadsFrame { VideoFullscreenFrame { SpeechBarScaffold { RootOrBroken(graph) } } } } } } }
     }
 }

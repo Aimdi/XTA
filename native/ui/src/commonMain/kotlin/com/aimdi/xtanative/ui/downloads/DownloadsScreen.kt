@@ -39,12 +39,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.services.util.formatByteSize
 import com.aimdi.xtanative.store.downloads.DownloadEntry
 import com.aimdi.xtanative.store.downloads.DownloadStatus
 import com.aimdi.xtanative.store.settings.MediaPrefs
 import com.aimdi.xtanative.ui.common.Hairline
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.cancel

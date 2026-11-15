@@ -29,7 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.x.XAccount
-import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.settings_no
 import com.aimdi.xtanative.ui.generated.resources.settings_save

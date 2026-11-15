@@ -59,6 +59,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.SingletonImageLoader
 import coil3.compose.LocalPlatformContext
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.services.util.formatByteSize
 import com.aimdi.xtanative.store.backup.BackupCategory
 import com.aimdi.xtanative.store.backup.BackupDocument
@@ -73,7 +74,6 @@ import com.aimdi.xtanative.store.backup.XtaTime
 import com.aimdi.xtanative.store.crash.CrashReport
 import com.aimdi.xtanative.store.settings.DataPrefs
 import com.aimdi.xtanative.ui.common.LoadingRow
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.generated.resources.*

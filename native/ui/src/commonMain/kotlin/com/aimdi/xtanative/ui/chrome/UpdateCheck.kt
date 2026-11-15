@@ -11,8 +11,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.x.http.OkHttpXHttp
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.GeneralPrefs
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.chrome_update_available
 import com.aimdi.xtanative.ui.generated.resources.chrome_update_download

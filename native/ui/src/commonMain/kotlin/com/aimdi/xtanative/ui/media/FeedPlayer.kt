@@ -7,7 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.store.settings.MediaPrefs
-import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.LocalSettingsStore
 
 /**
  * A feed's one player (XTA's video pool, kept to one): its tiles take turns
@@ -19,7 +19,7 @@ import com.aimdi.xtanative.ui.common.LocalGraph
 internal class FeedPlayer(val turns: PlayerTurns<VideoPlayer>) : InlinePlayer {
     @Composable
     override fun Video(url: String, modifier: Modifier) {
-        val settings by LocalGraph.current.settings.state.collectAsStateWithLifecycle()
+        val settings by LocalSettingsStore.current.state.collectAsStateWithLifecycle()
         if (settings?.get(MediaPrefs.autoplay) != true || settings?.get(MediaPrefs.loadManually) == true) return
         LoopingVideo(turns, VideoSource.looping(url), poster = null, modifier)
     }
@@ -47,9 +47,9 @@ internal fun rememberTilePlayer(): PlayerTurns<VideoPlayer>? {
 /** Turns at a player made as the settings say when first wanted, let go with the caller. */
 @Composable
 private fun rememberPlayerTurns(players: VideoPlayers, shared: Boolean): PlayerTurns<VideoPlayer> {
-    val graph = LocalGraph.current
+    val settingsStore = LocalSettingsStore.current
     val turns = remember(players) {
-        val options = VideoOptions.of(graph.settings.state.value)
+        val options = VideoOptions.of(settingsStore.state.value)
         PlayerTurns({ players.make(options) }, options.backgroundPlay, shared)
     }
     DisposableEffect(turns) { onDispose(turns::release) }

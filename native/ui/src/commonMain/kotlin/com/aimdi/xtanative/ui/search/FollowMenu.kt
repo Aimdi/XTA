@@ -16,8 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.data.AppGraph
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.SubscriptionPrefs
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.discover_add_to_group
 import com.aimdi.xtanative.ui.generated.resources.discover_hide_from_main_feed

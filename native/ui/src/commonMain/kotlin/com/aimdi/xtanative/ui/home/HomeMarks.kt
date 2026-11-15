@@ -34,8 +34,8 @@ import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.x.XAccount
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.AccountPrefs
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.home_unread
 import org.jetbrains.compose.resources.stringResource

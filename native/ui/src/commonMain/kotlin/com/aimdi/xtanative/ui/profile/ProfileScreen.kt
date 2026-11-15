@@ -17,8 +17,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -70,11 +70,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.aimdi.xtanative.core.x.model.XUser
 import com.aimdi.xtanative.core.x.parse.XText
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.saved.ArchiveFilter
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.clickableNoRipple
@@ -82,8 +82,6 @@ import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.common.monthText
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.generated.resources.Res
-import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_tweets
-import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_next_page_of_tweets
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.posts_account_suspended
 import com.aimdi.xtanative.ui.generated.resources.posts_filter_all
@@ -111,6 +109,8 @@ import com.aimdi.xtanative.ui.generated.resources.posts_tab_posts
 import com.aimdi.xtanative.ui.generated.resources.posts_tab_replies
 import com.aimdi.xtanative.ui.generated.resources.posts_tab_saved
 import com.aimdi.xtanative.ui.generated.resources.posts_user_not_found
+import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_next_page_of_tweets
+import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_tweets
 import com.aimdi.xtanative.ui.generated.resources.reader_link_share
 import com.aimdi.xtanative.ui.generated.resources.search
 import com.aimdi.xtanative.ui.media.MediaGridLook
@@ -118,6 +118,8 @@ import com.aimdi.xtanative.ui.media.MediaGridRows
 import com.aimdi.xtanative.ui.media.mediaGrid
 import com.aimdi.xtanative.ui.media.rememberMediaGridLook
 import com.aimdi.xtanative.ui.media.rememberMediaGridRows
+import com.aimdi.xtanative.ui.plugins.rememberShareText
+import com.aimdi.xtanative.ui.post.LocalPostScope
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.post.PostScopeProvider
@@ -125,9 +127,7 @@ import com.aimdi.xtanative.ui.post.RunsText
 import com.aimdi.xtanative.ui.post.SensitiveGate
 import com.aimdi.xtanative.ui.post.ThreadRows
 import com.aimdi.xtanative.ui.post.VerifiedBadges
-import com.aimdi.xtanative.ui.post.LocalPostScope
 import com.aimdi.xtanative.ui.post.rememberPostPrefs
-import com.aimdi.xtanative.ui.plugins.rememberShareText
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch

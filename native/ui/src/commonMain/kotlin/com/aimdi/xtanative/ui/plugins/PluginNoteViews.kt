@@ -5,7 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.saved_add_note
 import com.aimdi.xtanative.ui.saved.Keepable

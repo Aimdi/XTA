@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -42,8 +42,8 @@ import coil3.compose.AsyncImage
 import com.aimdi.xtanative.core.x.model.XCard
 import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.core.x.model.XPost
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.common.rememberLoadsManually
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -110,7 +110,7 @@ fun CardView(card: XCard, from: LinkFrom?, modifier: Modifier = Modifier) {
 @Composable
 internal fun rememberCardOpener(post: XPost, actions: PostActions): (url: String, title: String?) -> Unit {
     val links = LocalLinks.current
-    val settings = LocalGraph.current.settings
+    val settings = LocalSettingsStore.current
     val onPostScreen = postScope().focalId != null
     return remember(links, settings, post, actions, onPostScreen) {
         { url, title -> links?.openPostLink(url, LinkFrom.card(post, settings.state.value, onPostScreen) { actions.openPost(post.id) }, title) }

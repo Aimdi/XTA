@@ -14,14 +14,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.session.Session
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.SubscriptionPrefs
 import com.aimdi.xtanative.ui.common.Avatar
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.groups_search_term
+import com.aimdi.xtanative.ui.plugins.MarkedAvatar
 import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
 import com.aimdi.xtanative.ui.pluginstore.PluginMark
-import com.aimdi.xtanative.ui.plugins.MarkedAvatar
 import org.jetbrains.compose.resources.stringResource
 
 /**

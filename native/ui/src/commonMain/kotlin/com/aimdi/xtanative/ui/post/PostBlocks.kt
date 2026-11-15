@@ -44,8 +44,8 @@ import com.aimdi.xtanative.core.x.model.XGrokShare
 import com.aimdi.xtanative.core.x.model.XLive
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.parse.XText
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.common.Avatar
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_article_on_x
 import com.aimdi.xtanative.ui.generated.resources.posts_community_notes

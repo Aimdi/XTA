@@ -19,7 +19,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import kotlinx.coroutines.launch
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
@@ -30,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.x.http.OkHttpXHttp
 import com.aimdi.xtanative.services.links.NetworkLink
 import com.aimdi.xtanative.services.links.SharedLinks
-import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_checking_link
 import com.aimdi.xtanative.ui.generated.resources.reader_link_open_in_browser
@@ -76,10 +75,10 @@ internal expect fun IncomingLinkEffect(onLink: (String) -> Unit)
  */
 @Composable
 fun LinksFrame(content: @Composable () -> Unit) {
-    val graph = LocalGraph.current
+    val settingsStore = LocalSettingsStore.current
     val platform = rememberLinkPlatform()
     val scope = rememberCoroutineScope()
-    val opener = remember(graph, platform, scope) { LinkOpener(platform, { graph.settings.state.value }, scope = scope) }
+    val opener = remember(settingsStore, platform, scope) { LinkOpener(platform, { settingsStore.state.value }, scope = scope) }
     val handler = remember(opener) {
         object : UriHandler {
             override fun openUri(uri: String) = opener.open(uri)
@@ -88,7 +87,7 @@ fun LinksFrame(content: @Composable () -> Unit) {
     val snackbar = remember { SnackbarHostState() }
     val unable = stringResource(Res.string.reader_link_unable)
     val checking = stringResource(Res.string.reader_checking_link)
-    LaunchedEffect(graph) { runCatching { graph.settings.load() } }
+    LaunchedEffect(settingsStore) { runCatching { settingsStore.load() } }
     LaunchedEffect(opener) {
         opener.notices.collect { notice ->
             when (notice) {
@@ -116,7 +115,7 @@ fun LinksFrame(content: @Composable () -> Unit) {
 @Composable
 fun BindLinkScreens(screens: LinkScreens) {
     val opener = LocalLinks.current ?: return
-    val graph = LocalGraph.current
+    val settingsStore = LocalSettingsStore.current
     val scope = rememberCoroutineScope()
     var unreadable by remember { mutableStateOf<String?>(null) }
     DisposableEffect(opener, screens) {
@@ -141,7 +140,7 @@ fun BindLinkScreens(screens: LinkScreens) {
     }
     SharedTextEffect { text ->
         scope.launch {
-            val settings = runCatching { graph.settings.load() }.getOrNull()
+            val settings = runCatching { settingsStore.load() }.getOrNull()
             val pixiv = screens.pixivWork != null && LinkSteps.networkEnabled(settings, NetworkLink.PIXIV)
             val step = SharedText.step(text, pixiv, opener::openOnNetwork) { shared -> SharedLinks.resolve(shared, SharedHttp.http, pixiv) }
             when (step) {

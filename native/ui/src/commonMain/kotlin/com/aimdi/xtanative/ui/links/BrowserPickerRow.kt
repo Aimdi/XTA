@@ -31,7 +31,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.services.links.BrowserPicker
 import com.aimdi.xtanative.services.links.InstalledBrowser
 import com.aimdi.xtanative.services.links.LinkDestination
-import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_links_in_app
 import com.aimdi.xtanative.ui.generated.resources.reader_links_in_app_description
@@ -55,9 +55,9 @@ import org.jetbrains.compose.resources.stringResource
 fun BrowserPickerRow(modifier: Modifier = Modifier) {
     val links = LocalLinks.current ?: return
     if (links.desktop) return
-    val graph = LocalGraph.current
+    val settingsStore = LocalSettingsStore.current
     val scope = rememberCoroutineScope()
-    val settings by graph.settings.state.collectAsStateWithLifecycle()
+    val settings by settingsStore.state.collectAsStateWithLifecycle()
     val browsers by produceState(emptyList<InstalledBrowser>(), links) { value = withContext(Dispatchers.Default) { links.browsers() } }
     val selected = LinkSteps.pickedBrowser(settings, browsers)
     var open by remember { mutableStateOf(false) }
@@ -91,7 +91,7 @@ fun BrowserPickerRow(modifier: Modifier = Modifier) {
                         selected = destination == selected,
                     ) {
                         open = false
-                        scope.launch { graph.settings.update { current -> LinkSteps.withPicked(current, destination) } }
+                        scope.launch { settingsStore.update { current -> LinkSteps.withPicked(current, destination) } }
                     }
                 }
             }

@@ -39,7 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.aimdi.xtanative.core.x.model.XLive
-import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.posts_filter_broadcasts

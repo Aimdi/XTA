@@ -28,11 +28,11 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.x.model.XPost
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.saved.XtaTweetJson
 import com.aimdi.xtanative.store.settings.PostsPrefs
 import com.aimdi.xtanative.ui.common.HEART_BURST_MILLIS
 import com.aimdi.xtanative.ui.common.HeartBurst
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.generated.resources.Res

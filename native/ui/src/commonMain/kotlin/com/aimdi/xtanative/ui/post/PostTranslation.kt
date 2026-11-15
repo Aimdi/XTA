@@ -10,11 +10,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.aimdi.xtanative.core.x.model.XPost
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.services.ai.TranslationStatus
 import com.aimdi.xtanative.services.ai.XTranslator
 import com.aimdi.xtanative.services.translation.TranslationException
 import com.aimdi.xtanative.services.translation.TranslationFailure
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.currentLocale
 import kotlinx.coroutines.CancellationException
 

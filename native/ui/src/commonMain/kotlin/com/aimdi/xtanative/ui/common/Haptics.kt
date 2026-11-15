@@ -33,7 +33,7 @@ class SwitchedHaptics(private val platform: HapticFeedback, private val on: () -
  */
 @Composable
 fun SwitchedHapticsFrame(content: @Composable () -> Unit) {
-    val stored by LocalGraph.current.settings.state.collectAsStateWithLifecycle()
+    val stored by LocalSettingsStore.current.state.collectAsStateWithLifecycle()
     val on = stored?.get(AccessibilityPrefs.haptics) ?: true
     val latest = rememberUpdatedState(on)
     val platform = LocalHapticFeedback.current

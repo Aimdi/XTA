@@ -55,10 +55,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.ui.common.BackHandling
 import com.aimdi.xtanative.ui.common.Hairline
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.ProblemView
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
@@ -70,8 +70,8 @@ import com.aimdi.xtanative.ui.generated.resources.groups_pack_imported
 import com.aimdi.xtanative.ui.generated.resources.groups_pack_invalid
 import com.aimdi.xtanative.ui.generated.resources.groups_search
 import com.aimdi.xtanative.ui.generated.resources.groups_search_subscriptions
-import com.aimdi.xtanative.ui.generated.resources.groups_subscriptions
 import com.aimdi.xtanative.ui.generated.resources.groups_sort_applied
+import com.aimdi.xtanative.ui.generated.resources.groups_subscriptions
 import com.aimdi.xtanative.ui.generated.resources.unable_to_load_the_group
 import com.aimdi.xtanative.ui.generated.resources.unable_to_refresh_the_subscriptions
 import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
