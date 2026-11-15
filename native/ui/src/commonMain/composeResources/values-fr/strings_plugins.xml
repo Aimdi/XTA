@@ -54,4 +54,6 @@
     <string name="plugin_store_search">Rechercher des extensions</string>
     <string name="plugin_store_no_results">Aucun résultat</string>
     <string name="plugin_open_client">Ouvrir %1$s</string>
+    <string name="plugin_installed_count">Installées · %1$d</string>
+    <string name="plugin_storage_used_one">%1$d élément · %2$s</string>
 </resources>

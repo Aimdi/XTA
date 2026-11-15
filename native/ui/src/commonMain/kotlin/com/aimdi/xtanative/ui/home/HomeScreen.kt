@@ -369,7 +369,7 @@ private fun NetworkPage(id: String, ui: HomeUi, networks: HomeNetworks, toTop: I
                 title = { Text(ui.networks.firstOrNull { it.id == id }?.title ?: id, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 actions = {
                     client?.content?.actions?.value?.invoke(this)
-                    key(id) { NetworkActions(id, ui, networks, onPins) }
+                    if (client == null || id !in NetworkBarRules.ONE_MENU) key(id) { NetworkActions(id, ui, networks, onPins) }
                     if (LocalDesktopActions.current != null) IconButton(onClick = refresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),

@@ -54,4 +54,6 @@
     <string name="plugin_store_search">搜尋外掛</string>
     <string name="plugin_store_no_results">沒有結果</string>
     <string name="plugin_open_client">開啟%1$s</string>
+    <string name="plugin_installed_count">已安裝 · %1$d</string>
+    <string name="plugin_storage_used_one">%1$d 個項目 · %2$s</string>
 </resources>

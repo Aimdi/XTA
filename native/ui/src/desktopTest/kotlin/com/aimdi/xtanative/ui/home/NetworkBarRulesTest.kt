@@ -29,11 +29,9 @@ class NetworkBarRulesTest {
     }
 
     @Test
-    fun moreListsEveryPlaceButThePageShown() {
-        val bar = listOf(BarPage.Feed, BarPage.Subscriptions, BarPage.Network("hackernews"), BarPage.Saved)
-        val slots = bar.indices.map { BarSlot.Page(it) } + BarSlot.Networks
-        assertEquals(listOf(BarSlot.Page(1), BarSlot.Page(2), BarSlot.Page(3), BarSlot.Networks), NetworkBarRules.moreSlots(slots, bar, BarPage.Feed))
-        assertEquals(listOf(BarSlot.Page(0), BarSlot.Page(1), BarSlot.Page(3), BarSlot.Networks), NetworkBarRules.moreSlots(slots, bar, BarPage.Network("hackernews")))
+    fun redditsOwnMenuIsTheBarsOnlyOne() {
+        assertTrue("reddit" in NetworkBarRules.ONE_MENU)
+        assertFalse("bluesky" in NetworkBarRules.ONE_MENU, "the others keep Home's menu of their options")
     }
 
     @Test

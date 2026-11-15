@@ -31,6 +31,20 @@ internal object StoreRows {
 
     private fun rank(id: String): Int = REGISTRY.indexOf(id).let { if (it < 0) REGISTRY.size else it }
 
+    /**
+     * The installed plugins as the store lays them out: one that has
+     * something to say or do ([needsRow]: an update, a failure, a download
+     * under way) keeps a row of its own, first; the others stand two to a
+     * line as boxes.
+     */
+    fun <T> slots(plugins: List<T>, needsRow: (T) -> Boolean): List<StoreSlot<T>> {
+        val (rows, boxes) = plugins.partition(needsRow)
+        return rows.map { StoreSlot(listOf(it), boxes = false) } + boxes.chunked(BOXES_PER_LINE).map { StoreSlot(it, boxes = true) }
+    }
+
+    /** How many installed plugins stand on one line as boxes. */
+    const val BOXES_PER_LINE = 2
+
     /** Under this width a row's buttons go under its name (kPluginStoreStackBreakpoint). */
     const val STACK_BELOW = 420f
 
@@ -40,6 +54,12 @@ internal object StoreRows {
     /** Whether a row [width] dp wide, at text scale [fontScale], puts its buttons under its name. */
     fun stacks(width: Float, fontScale: Float): Boolean = width < STACK_BELOW || fontScale >= STACK_FROM_SCALE
 
+    /** Whether a plugin on offer puts its one button under its name: only with large text, whatever the width. */
+    fun offerStacks(fontScale: Float): Boolean = fontScale >= STACK_FROM_SCALE
+
     fun afterInstall(position: Int, refreshing: Boolean, unreachable: Boolean, searchField: Boolean = false): Int =
         listOf(searchField, refreshing, unreachable).count { it } + position
 }
+
+/** One line of the installed list: a plugin's own row, or up to [StoreRows.BOXES_PER_LINE] boxes. */
+internal data class StoreSlot<T>(val plugins: List<T>, val boxes: Boolean)

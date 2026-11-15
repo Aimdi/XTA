@@ -36,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -136,8 +137,10 @@ internal fun HomeFeedPage(
     val settings by graph.settings.state.collectAsStateWithLifecycle()
     val source = (current as? HomeTab.Network)?.id
     val takeover = LocalNetworkBarTakeover.current
+    // The bar's house, while a network has it, leads back to Following and so to the app's own bar.
+    val toFollowing by rememberUpdatedState({ calls.onTab(tabs.indexOf(HomeTab.Following).coerceAtLeast(0)) })
     DisposableEffect(takeover, source, client) {
-        takeover?.show(NetworkBarRules.FEED, source, client.takeIf { source != null })
+        takeover?.show(NetworkBarRules.FEED, source, client.takeIf { source != null }) { toFollowing() }
         onDispose { takeover?.show(NetworkBarRules.FEED, null, null) }
     }
     val sectionsBelow = takeover?.on(BarPage.Feed)?.network == source && source != null
@@ -178,7 +181,7 @@ internal fun HomeFeedPage(
                     bar,
                     sectionsBelow = sectionsBelow,
                 ) {
-                    key(current.id) { NetworkActions(current.id, ui, networks, vm::setTopBarPins) }
+                    if (current.id !in NetworkBarRules.ONE_MENU) key(current.id) { NetworkActions(current.id, ui, networks, vm::setTopBarPins) }
                     if (desktop) IconButton(onClick = refresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) }
                 }
             } else {

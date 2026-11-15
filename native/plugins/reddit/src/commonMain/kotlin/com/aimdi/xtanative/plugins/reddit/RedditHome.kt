@@ -20,6 +20,10 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material3.AssistChip
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -68,11 +72,13 @@ internal fun RedditHome(app: RedditApp, frame: PluginFrame) {
     val home by app.home.collectAsState()
     val followed by app.followed.collectAsState()
     val place = RedditHomeSource.communitiesPlace(followed, inHome = LocalPluginClientBar.current == null)
+    // Home draws Reddit's sections and actions in its own bars: there the order is a chip leading the communities' strip.
+    val oneBar = LocalPluginClientBar.current != null
     Column(Modifier.fillMaxSize()) {
         ReadingControlsBar {
             Column {
-                HomeBar(app, home, if (place == CommunitiesPlace.MENU) followed else emptyList())
-                if (place == CommunitiesPlace.STRIP) CommunityStrip(app, followed, home)
+                HomeBar(app, home, if (place == CommunitiesPlace.MENU) followed else emptyList(), oneBar)
+                if (oneBar || place == CommunitiesPlace.STRIP) CommunityStrip(app, followed.takeIf { place == CommunitiesPlace.STRIP }.orEmpty(), home, sortChip = oneBar)
             }
         }
         // A community picked from the strip is no section of its own: the swipes turn Following, Popular and All (Home keeps its swipes to itself).
@@ -95,12 +101,15 @@ internal fun RedditHome(app: RedditApp, frame: PluginFrame) {
  * one bar on Reddit's own screen, a strip folding into a section picker in Home.
  */
 @Composable
-private fun HomeBar(app: RedditApp, home: RedditHomeSource, communities: List<String>) {
+private fun HomeBar(app: RedditApp, home: RedditHomeSource, communities: List<String>, oneBar: Boolean) {
     var sorting by remember { mutableStateOf(false) }
     val choices by app.choices.collectAsState()
-    PluginHomeTabs(RedditFeedMode.entries.map { mode -> PluginHomeTab(railIcon(mode), pluginString(railLabel(mode)), home.railSelected(mode)) { app.selectMode(mode) } }) {
+    val tabs = RedditFeedMode.entries.map { mode ->
+        PluginHomeTab(if (oneBar) barIcon(mode) else railIcon(mode), pluginString(railLabel(mode)), if (oneBar) home.barSelected(mode) else home.railSelected(mode)) { app.selectMode(mode) }
+    }
+    PluginHomeTabs(tabs) {
         if (communities.isNotEmpty()) CommunitiesMenu(app, communities, home)
-        RedditHomeChrome.actions.forEach { action ->
+        (if (oneBar) RedditHomeChrome.homeActions else RedditHomeChrome.actions).forEach { action ->
             when (action) {
                 RedditHomeChrome.Action.SEARCH -> IconButton(onClick = { app.host.openSearch(null) }) { Icon(Icons.Filled.Search, contentDescription = pluginString(Strings.search_hint)) }
                 RedditHomeChrome.Action.SORT -> IconButton(onClick = { sorting = true }) { Icon(sortIcon(choices.sort), contentDescription = pluginString(Strings.sort)) }
@@ -114,6 +123,13 @@ private fun HomeBar(app: RedditApp, home: RedditHomeSource, communities: List<St
 private fun railIcon(mode: RedditFeedMode): ImageVector = when (mode) {
     RedditFeedMode.FOLLOWING -> Icons.Outlined.Home
     RedditFeedMode.POPULAR -> RedditGlyphs.Popular
+    RedditFeedMode.ALL -> RedditGlyphs.All
+}
+
+/** The sections' icons on Home's bottom bar: a list for Following (the house there leads back to XTA) and a rising line for Popular (the flame is the Hot order). */
+private fun barIcon(mode: RedditFeedMode): ImageVector = when (mode) {
+    RedditFeedMode.FOLLOWING -> Icons.AutoMirrored.Filled.List
+    RedditFeedMode.POPULAR -> RedditGlyphs.Trending
     RedditFeedMode.ALL -> RedditGlyphs.All
 }
 
@@ -191,15 +207,25 @@ private fun SourceRow(
 
 /** The followed communities as a strip, so r/one and r/other stay on this tab; the one open again goes back to the rail. */
 @Composable
-private fun CommunityStrip(app: RedditApp, names: List<String>, home: RedditHomeSource) {
+private fun CommunityStrip(app: RedditApp, names: List<String>, home: RedditHomeSource, sortChip: Boolean = false) {
+    var sorting by remember { mutableStateOf(false) }
+    val choices by app.choices.collectAsState()
+    val strip = pluginString(Strings.followed_communities)
     Column(Modifier.fillMaxWidth()) {
-        Text(
-            pluginString(Strings.followed_communities),
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 4.dp),
-        )
-        Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(
+            Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 12.dp).semantics { contentDescription = strip },
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (sortChip) {
+                // The order every listing reads in, named, where the flame alone had to be known.
+                AssistChip(
+                    onClick = { sorting = true },
+                    label = { Text(sortLabel(choices.sort)) },
+                    leadingIcon = { Icon(sortIcon(choices.sort), contentDescription = pluginString(Strings.sort), tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp)) },
+                    trailingIcon = { Icon(Icons.Filled.ArrowDropDown, contentDescription = null, modifier = Modifier.size(18.dp)) },
+                )
+            }
             names.forEach { name ->
                 val selected = home.isSelected(name)
                 FilterChip(
@@ -210,6 +236,7 @@ private fun CommunityStrip(app: RedditApp, names: List<String>, home: RedditHome
             }
         }
     }
+    if (sorting) SortSheet(app) { sorting = false }
 }
 
 /**

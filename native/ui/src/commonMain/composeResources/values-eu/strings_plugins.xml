@@ -54,4 +54,6 @@
     <string name="plugin_store_search">Bilatu pluginak</string>
     <string name="plugin_store_no_results">Ez dago emaitzarik</string>
     <string name="plugin_open_client">Ireki %1$s</string>
+    <string name="plugin_installed_count">Instalatuta · %1$d</string>
+    <string name="plugin_storage_used_one">%1$d elementu · %2$s</string>
 </resources>

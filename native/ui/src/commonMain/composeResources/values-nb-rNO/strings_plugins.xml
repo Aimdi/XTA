@@ -54,4 +54,6 @@
     <string name="plugin_store_search">Søk etter tillegg</string>
     <string name="plugin_store_no_results">Ingen resultater</string>
     <string name="plugin_open_client">Åpne %1$s</string>
+    <string name="plugin_installed_count">Installert · %1$d</string>
+    <string name="plugin_storage_used_one">%1$d element · %2$s</string>
 </resources>

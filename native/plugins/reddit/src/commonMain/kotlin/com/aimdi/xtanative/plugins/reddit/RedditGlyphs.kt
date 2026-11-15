@@ -27,6 +27,11 @@ internal object RedditGlyphs {
         )
     }
 
+    /** A rising line: Popular on Home's bottom bar, where the flame would read as the Hot order. */
+    val Trending: ImageVector by lazy {
+        glyph("Trending", "M16 6L18.29 8.29L13.41 13.17L9.41 9.17L2 16.59L3.41 18L9.41 12L13.41 16L19.71 9.71L22 12V6Z")
+    }
+
     val Popular: ImageVector by lazy {
         glyph(
             "Popular",

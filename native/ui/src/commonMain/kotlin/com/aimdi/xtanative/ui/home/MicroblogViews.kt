@@ -66,7 +66,11 @@ private const val MASTODON = "mastodon"
  * off; nothing else of theirs changes.
  */
 @Composable
-fun MicroblogGroupingRow() {
+fun MicroblogGroupingRow() = MicroblogGroupingRow(detailed = true)
+
+/** [MicroblogGroupingRow], with what it does spelled out under it only when [detailed]: the plugin store shows the switch alone, under its plugins. */
+@Composable
+internal fun MicroblogGroupingRow(detailed: Boolean) {
     val settings = LocalGraph.current.settings
     val grouped by remember(settings) { settings.observe(HomePrefs.altMicrobloggingGrouped) }.collectAsStateWithLifecycle(true)
     val scope = rememberCoroutineScope()
@@ -74,6 +78,6 @@ fun MicroblogGroupingRow() {
         stringResource(Res.string.home_alt_microblogging_group),
         grouped,
         onChange = { on -> scope.launch { settings.set(HomePrefs.altMicrobloggingGrouped, on) } },
-        description = stringResource(Res.string.home_alt_microblogging_group_detail),
+        description = stringResource(Res.string.home_alt_microblogging_group_detail).takeIf { detailed },
     )
 }

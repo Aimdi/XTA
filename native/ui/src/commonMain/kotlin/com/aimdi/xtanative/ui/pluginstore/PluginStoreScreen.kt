@@ -36,6 +36,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -126,7 +127,7 @@ import com.aimdi.xtanative.ui.generated.resources.plugin_failed_not_offered
 import com.aimdi.xtanative.ui.generated.resources.plugin_failed_signature
 import com.aimdi.xtanative.ui.generated.resources.plugin_failed_storage
 import com.aimdi.xtanative.ui.generated.resources.plugin_install
-import com.aimdi.xtanative.ui.generated.resources.plugin_installed
+import com.aimdi.xtanative.ui.generated.resources.plugin_installed_count
 import com.aimdi.xtanative.ui.generated.resources.plugin_installing
 import com.aimdi.xtanative.ui.generated.resources.plugin_needs_newer_app
 import com.aimdi.xtanative.ui.generated.resources.plugin_not_started
@@ -134,6 +135,7 @@ import com.aimdi.xtanative.ui.generated.resources.plugin_open
 import com.aimdi.xtanative.ui.generated.resources.plugin_pin
 import com.aimdi.xtanative.ui.generated.resources.plugin_storage_empty
 import com.aimdi.xtanative.ui.generated.resources.plugin_storage_used
+import com.aimdi.xtanative.ui.generated.resources.plugin_storage_used_one
 import com.aimdi.xtanative.ui.generated.resources.plugin_store
 import com.aimdi.xtanative.ui.generated.resources.plugin_store_empty
 import com.aimdi.xtanative.ui.generated.resources.plugin_store_show_private
@@ -173,12 +175,13 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
     val list = rememberLazyListState()
     val matching = storeMatching(query, running, locale)
     val installed = StoreRows.ordered(store.installed.filter(matching)) { it.id }
+    val slots = StoreRows.slots(installed) { it.status !is PluginStatus.Installed || problems[it.id] != null }
     val offer = store.onOffer.mapValues { (_, states) -> StoreRows.ordered(states.filter(matching)) { it.id } }.filterValues { it.isNotEmpty() }
     var pulled by remember { mutableStateOf(false) }
     var availableOpen by rememberSaveable { mutableStateOf(true) }
     if (!store.catalogue.refreshing) pulled = false
     LaunchedEffect(Unit) { plugins.manager.refresh() }
-    FollowInstalls(list, store, installed)
+    FollowInstalls(list, store, slots)
 
     PluginScaffold(
         title = stringResource(Res.string.plugin_store),
@@ -220,14 +223,17 @@ fun PluginStoreScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onSettings: 
                 if (StoreSearch.noResults(query, installed.size, offer.values.sumOf { it.size }, grouping)) {
                     item(key = "no-results") { NoResults(stringResource(Res.string.plugin_store_no_results)) }
                 }
-                // XTA's "Group microblogging services", above the plugins (_plugin_store.dart), unless the search leaves it out.
-                if (grouping) item(key = "group-microblogging") { MicroblogGroupingRow() }
                 if (installed.isNotEmpty()) {
-                    item(key = "installed") { Header(stringResource(Res.string.plugin_installed)) }
-                    items(installed, key = { "installed-" + it.id }) { state ->
-                        InstalledRow(state, running.firstOrNull { it.plugin.id == state.id }, StoreMarks(state.id in pins, settings.tabOf(state.id)), problems[state.id], plugins, locale, actions)
+                    item(key = "installed") { Header(stringResource(Res.string.plugin_installed_count, installed.size)) }
+                    items(slots, key = { "installed-" + it.plugins.first().id }) { slot ->
+                        val shown = slot.plugins.map { state ->
+                            InstalledPlugin(state, running.firstOrNull { it.plugin.id == state.id }, StoreMarks(state.id in pins, settings.tabOf(state.id)), problems[state.id])
+                        }
+                        if (slot.boxes) InstalledBoxes(shown, plugins, locale, actions) else InstalledRow(shown.first(), plugins, locale, actions)
                     }
                 }
+                // XTA's "Group microblogging services", one line under the plugins it is about, unless the search leaves it out.
+                if (grouping) item(key = "group-microblogging") { MicroblogGroupingRow(detailed = false) }
                 available(offer, locale, actions, availableOpen) { availableOpen = !availableOpen }
                 // Only a catalogue that was read can say nothing is on offer.
                 if (store.installed.isEmpty() && store.onOffer.isEmpty() && !store.catalogue.refreshing && !store.catalogue.unreachable) {
@@ -268,13 +274,13 @@ private val STORE_COLUMN = 720.dp
 
 /** Scrolls [list] to a plugin whose install has just ended, as [StoreRows] says, among the installed plugins [shown]. */
 @Composable
-private fun FollowInstalls(list: LazyListState, store: PluginStoreState, shown: List<PluginState>) {
+private fun FollowInstalls(list: LazyListState, store: PluginStoreState, shown: List<StoreSlot<PluginState>>) {
     val ids = store.installed.map { it.id }
     var seen by remember { mutableStateOf<List<String>?>(null) }
     LaunchedEffect(ids) {
         val added = StoreRows.newlyInstalled(seen, ids)
         seen = ids
-        val position = shown.indexOfFirst { it.id == added }.takeIf { added != null && it >= 0 } ?: return@LaunchedEffect
+        val position = shown.indexOfFirst { slot -> slot.plugins.any { it.id == added } }.takeIf { added != null && it >= 0 } ?: return@LaunchedEffect
         list.animateScrollToItem(StoreRows.afterInstall(position, store.catalogue.refreshing, store.catalogue.unreachable && !store.catalogue.refreshing, searchField = true))
     }
 }
@@ -351,16 +357,62 @@ private fun LazyListScope.available(offer: Map<PluginCategory, List<PluginState>
     }
 }
 
+/** An installed plugin as the store shows it: its state, the plugin running, what its menu ticks and why it did not start. */
+private class InstalledPlugin(val state: PluginState, val running: RunningPlugin?, val marks: StoreMarks, val startProblem: String?)
+
+/**
+ * A line of installed plugins as boxes, two side by side: each its mark, its
+ * name and its menu, opened by a tap. Its settings, version and what it keeps
+ * are in the menu, so every plugin installed fits one screen.
+ */
 @Composable
-private fun InstalledRow(
-    state: PluginState,
-    running: RunningPlugin?,
-    marks: StoreMarks,
-    startProblem: String?,
-    plugins: AppPlugins,
-    locale: Locale,
-    actions: StoreActions,
-) {
+private fun InstalledBoxes(shown: List<InstalledPlugin>, plugins: AppPlugins, locale: Locale, actions: StoreActions) {
+    Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        shown.forEach { InstalledBox(it, plugins, locale, actions, Modifier.weight(1f)) }
+        repeat(StoreRows.BOXES_PER_LINE - shown.size) { Spacer(Modifier.weight(1f)) }
+    }
+}
+
+@Composable
+private fun InstalledBox(shown: InstalledPlugin, plugins: AppPlugins, locale: Locale, actions: StoreActions, modifier: Modifier) {
+    val state = shown.state
+    val plugin = shown.running?.plugin
+    val name = plugin?.title(currentLanguage()) ?: state.name(locale)
+    val opens = plugin != null && (plugin.clientTab != null || plugin.homeTab != null)
+    val use by produceState<PluginUse?>(null, state.installed?.version, shown.running) { value = plugins.use(state.id) }
+    val onClick: (() -> Unit)? = if (opens) ({ actions.open(state.id) }) else if (plugin?.settings != null) ({ actions.settings(state.id) }) else null
+    val info = listOfNotNull(installedStatus(state.status, null, use, locale).takeIf { it.isNotEmpty() }, use?.let { footprint(it, locale) })
+    Row(
+        modifier
+            .height(52.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+            .clickable(enabled = onClick != null) { onClick?.invoke() }
+            .padding(start = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        StoreMark(shown.running, name)
+        Spacer(Modifier.width(10.dp))
+        Text(name, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+        val home = plugin?.homeTab != null
+        InstalledMenu(
+            pinned = shown.marks.pinned.takeIf { home },
+            tab = shown.marks.tab.takeIf { home },
+            onPin = { pin -> actions.pin(state.id, pin) },
+            onTab = { on -> actions.tab(state.id, on) },
+            onUninstall = { actions.uninstall(state) },
+            info = info,
+            onSettings = if (plugin?.settings != null) ({ actions.settings(state.id) }) else null,
+        )
+    }
+}
+
+@Composable
+private fun InstalledRow(shown: InstalledPlugin, plugins: AppPlugins, locale: Locale, actions: StoreActions) {
+    val state = shown.state
+    val running = shown.running
+    val marks = shown.marks
+    val startProblem = shown.startProblem
     val plugin = running?.plugin
     val name = plugin?.title(currentLanguage()) ?: state.name(locale)
     val opens = plugin != null && (plugin.clientTab != null || plugin.homeTab != null)
@@ -414,6 +466,7 @@ private fun AvailableRow(state: PluginState, locale: Locale, actions: StoreActio
                 offerStatus(status, locale)?.let { StatusLine(it, failed = status is PluginStatus.Failed) }
             },
             onClick = null,
+            inline = true,
         ) {
             when (status) {
                 is PluginStatus.Downloading -> TextButton(onClick = { actions.cancel(state.id) }) { Text(stringResource(Res.string.cancel)) }
@@ -437,6 +490,7 @@ private fun StoreTile(
     title: String,
     subtitle: @Composable () -> Unit,
     onClick: (() -> Unit)?,
+    inline: Boolean = false,
     actions: @Composable RowScope.() -> Unit,
 ) {
     val scale = LocalDensity.current.fontScale
@@ -451,7 +505,7 @@ private fun StoreTile(
                 }
             }
         }
-        if (StoreRows.stacks(maxWidth.value, scale)) {
+        if (if (inline) StoreRows.offerStacks(scale) else StoreRows.stacks(maxWidth.value, scale)) {
             Column(Modifier.fillMaxWidth()) {
                 identity(Modifier.fillMaxWidth())
                 Spacer(Modifier.height(8.dp))
@@ -523,12 +577,15 @@ private fun StatusLine(text: String, failed: Boolean) {
 /** What the plugin keeps, as XTA's store says it: "12 items · 1.2 MB", or nothing yet. */
 @Composable
 private fun Footprint(use: PluginUse, locale: Locale) {
-    val text = if (use.items == 0 && use.dataBytes == 0L) {
-        stringResource(Res.string.plugin_storage_empty)
-    } else {
-        stringResource(Res.string.plugin_storage_used, use.items, size(use.dataBytes, locale))
-    }
-    Text(text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
+    Text(footprint(use, locale), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
+}
+
+/** [Footprint]'s words; one item is said in the singular ("1 item"), not "1 items". */
+@Composable
+private fun footprint(use: PluginUse, locale: Locale): String = when {
+    use.items == 0 && use.dataBytes == 0L -> stringResource(Res.string.plugin_storage_empty)
+    use.items == 1 -> stringResource(Res.string.plugin_storage_used_one, use.items, size(use.dataBytes, locale))
+    else -> stringResource(Res.string.plugin_storage_used, use.items, size(use.dataBytes, locale))
 }
 
 /** The download's progress under its row. */
@@ -583,13 +640,37 @@ private val STORE_MARK = 28.dp
  * [pinned] or can be, and Uninstall.
  */
 @Composable
-private fun InstalledMenu(pinned: Boolean?, tab: Boolean?, onPin: (Boolean) -> Unit, onTab: (Boolean) -> Unit, onUninstall: () -> Unit) {
+private fun InstalledMenu(
+    pinned: Boolean?,
+    tab: Boolean?,
+    onPin: (Boolean) -> Unit,
+    onTab: (Boolean) -> Unit,
+    onUninstall: () -> Unit,
+    info: List<String> = emptyList(),
+    onSettings: (() -> Unit)? = null,
+) {
     var open by remember { mutableStateOf(false) }
     Box {
         IconButton(onClick = { open = true }) {
             Icon(Icons.Filled.MoreVert, stringResource(Res.string.plugin_more_options), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
         }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+            // A box has no room for these: its version, what it keeps and its settings are said and reached here.
+            if (info.isNotEmpty()) {
+                Column(Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
+                    info.forEach { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                }
+                HorizontalDivider()
+            }
+            if (onSettings != null) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(Res.string.settings)) },
+                    onClick = {
+                        open = false
+                        onSettings()
+                    },
+                )
+            }
             if (tab != null) {
                 DropdownMenuItem(
                     text = { Text(stringResource(Res.string.settings_show_as_tab)) },

@@ -61,11 +61,12 @@ internal fun RedditPostCard(app: RedditApp, post: RedditPost) {
             Column(Modifier.weight(1f)) {
                 AuthorLine(post, onSubreddit = { app.openSubreddit(post.subreddit) }, onAuthor = { sheet = true })
                 if (post.showsTitle) {
-                    Text(post.displayTitle, style = bodyStyle(), maxLines = 6, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 2.dp, end = 8.dp))
+                    Text(post.displayTitle, style = bodyStyle(), fontWeight = FontWeight.Medium, maxLines = 6, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 2.dp, end = 8.dp))
                 }
                 // On a discussion community the words are most of the post: a card with the title alone said almost nothing.
                 post.displaySelfText?.takeIf { post.isSelf && post.showsSelfText }?.let { words ->
-                    RedditText(words, Modifier.padding(top = 6.dp, end = 8.dp), maxLines = 4)
+                    // Two quieter lines: the title leads, and the list shows more posts.
+                    RedditText(words, Modifier.padding(top = 4.dp, end = 8.dp), style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurfaceVariant), maxLines = 2)
                 }
                 Labels(post)
                 PostMediaView(app, post, choices, Modifier.padding(top = 10.dp, end = 8.dp))
@@ -132,7 +133,8 @@ private fun CardFooter(app: RedditApp, post: RedditPost) {
     val upvoted = post.id in votes
     val isSaved = RedditArchive.id(post) in archived
     val accent = MaterialTheme.colorScheme.primary
-    Row(Modifier.fillMaxWidth().padding(top = 4.dp, bottom = 4.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+    // What the post has (points, comments) at the start; what the reader does with it (save, open on Reddit) at the end.
+    Row(Modifier.fillMaxWidth().padding(top = 4.dp, bottom = 4.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
         FooterAction(
             if (upvoted) RedditGlyphs.ArrowCircleUp else RedditGlyphs.ArrowUpward,
             RedditCounts.score(post, upvoted),
@@ -140,6 +142,7 @@ private fun CardFooter(app: RedditApp, post: RedditPost) {
             if (upvoted) accent else null,
         ) { app.upvote(post) }
         FooterAction(RedditGlyphs.Comment, RedditCounts.comments(post), pluginPlural(Strings.comment_count, post.commentCount, post.commentCount)) { app.openThread(post) }
+        Spacer(Modifier.weight(1f))
         FooterAction(
             if (isSaved) RedditGlyphs.Bookmark else RedditGlyphs.BookmarkBorder,
             null,
