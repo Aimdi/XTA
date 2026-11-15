@@ -29,10 +29,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -301,10 +297,10 @@ private fun BarIcon(vector: ImageVector) {
 @Composable
 private fun BarPageIcon(page: BarPage, selected: Boolean, ui: HomeUi, networks: HomeNetworks) {
     when (page) {
-        BarPage.Feed -> BarIcon(if (selected) Icons.Filled.Home else Icons.Outlined.Home)
-        BarPage.Subscriptions -> BarIcon(if (selected) HomeIcons.People else HomeIcons.PeopleOutlined)
-        BarPage.Trending -> BarIcon(if (selected) Icons.Filled.Search else Icons.Outlined.Search)
-        BarPage.Saved -> BarIcon(if (selected) HomeIcons.BookmarkFilled else HomeIcons.Bookmark)
+        BarPage.Feed -> BarIcon(if (selected) HomeBarIcons.HomeFilled else HomeBarIcons.Home)
+        BarPage.Subscriptions -> BarIcon(if (selected) HomeBarIcons.SubscriptionsFilled else HomeBarIcons.Subscriptions)
+        BarPage.Trending -> BarIcon(if (selected) HomeBarIcons.DiscoverFilled else HomeBarIcons.Discover)
+        BarPage.Saved -> BarIcon(if (selected) HomeBarIcons.SavedFilled else HomeBarIcons.Saved)
         is BarPage.Network -> if (page.id in ui.missing) BarIcon(Icons.Outlined.Warning) else networks.Mark(page.id, 22.dp)
         is BarPage.Group -> ui.session.groups.firstOrNull { it.id == page.groupId }?.let { GroupMark(it, 24.dp) }
     }
