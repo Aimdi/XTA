@@ -162,4 +162,6 @@
     <string name="speak_from_here">Speak from here</string>
     <string name="turned_away">Kontrola botów Substacka odrzuciła to połączenie. Otwórz w przeglądarce albo spróbuj ponownie później.</string>
     <string name="image_view">Pokaż na pełnym ekranie</string>
+    <string name="feed_subscriptions">Subskrypcje</string>
+    <string name="unread_count">Nieprzeczytane: %1$d</string>
 </resources>

@@ -73,7 +73,6 @@ import com.aimdi.xtanative.ui.generated.resources.signin_add_account
 import com.aimdi.xtanative.ui.search.DiscoverIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -134,8 +133,7 @@ fun rememberReadRecovery(problem: Problem?, loading: Boolean, retry: () -> Unit)
 /** Whether there is a connection, as the app hears of it; true where nothing tells (a preview). */
 @Composable
 private fun rememberOnline(): State<Boolean> {
-    val graph = runCatching { LocalGraph.current }.getOrNull()
-    val flow = remember(graph) { graph?.online ?: MutableStateFlow(true) }
+    val flow = LocalOnline.current
     return produceState(true, flow) { flow.collect { value = it } }
 }
 

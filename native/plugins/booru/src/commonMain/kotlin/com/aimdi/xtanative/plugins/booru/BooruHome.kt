@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -37,15 +38,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.swipeTabs
+import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.PluginFrame
-import com.aimdi.xtanative.ui.plugins.RefreshesOn
-import com.aimdi.xtanative.ui.plugins.ScrollsToTop
+import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
+import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.ReportsReadingScroll
+import com.aimdi.xtanative.ui.plugins.ScrollsToTop
+import com.aimdi.xtanative.ui.plugins.ShellFeeds
+import com.aimdi.xtanative.ui.plugins.ShellMenuButton
+import com.aimdi.xtanative.ui.plugins.ShellSubtitle
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
@@ -68,8 +75,12 @@ internal fun BooruHome(app: BooruApp, frame: PluginFrame, ownActions: Boolean = 
     ReportsReadingScroll(grids.getValue(tab))
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
-            ReadingControlsBar { HomeBar(tab, onTab = { tab = it }, actions = if (ownActions) HomeActions({ app.openSearch() }, app.host::openSettings) else null) }
-            Hairline()
+            if (LocalPluginClientBar.current != null) {
+                ShellBar(app, settings, tab) { tab = it }
+            } else {
+                ReadingControlsBar { HomeBar(tab, onTab = { tab = it }, actions = if (ownActions) HomeActions({ app.openSearch() }, app.host::openSettings) else null) }
+                Hairline()
+            }
             Box(Modifier.weight(1f).swipeTabs(HomeTab.entries, tab) { tab = it }) {
                 when (tab) {
                     HomeTab.LATEST -> FeedView(app, feeds.latest, pluginString(Strings.empty_latest), frame.padding, grid = grids.getValue(tab))
@@ -80,6 +91,26 @@ internal fun BooruHome(app: BooruApp, frame: PluginFrame, ownActions: Boolean = 
         }
         BooruMessages(app, Modifier.align(Alignment.BottomCenter).padding(frame.padding))
     }
+}
+
+/**
+ * Booru in the app's shell (the unified plugin shell): Latest, Popular and
+ * Following as its feed row, the site read under its name, the tag search
+ * alone on the bar and the settings in the plugin sheet.
+ */
+@Composable
+private fun ShellBar(app: BooruApp, settings: Settings, tab: HomeTab, onTab: (HomeTab) -> Unit) {
+    PluginHomeTabs(emptyList()) {
+        IconButton(onClick = { app.openSearch() }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) }
+        ShellMenuButton { close ->
+            DropdownMenuItem(text = { Text(pluginString(Strings.settings)) }, onClick = {
+                close()
+                app.host.openSettings()
+            })
+        }
+    }
+    ShellFeeds(HomeTab.entries, tab, onTab, label = { tabLook(it).second })
+    ShellSubtitle(BooruConfig.host(settings))
 }
 
 /** The tag search and the settings, as the home tab's row offers them. */

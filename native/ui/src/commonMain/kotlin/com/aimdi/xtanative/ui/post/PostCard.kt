@@ -39,26 +39,26 @@ import com.aimdi.xtanative.services.links.XLinks
 import com.aimdi.xtanative.ui.article.ArticlePreviewCard
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.common.fullTimeText
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_community
 import com.aimdi.xtanative.ui.generated.resources.posts_more
+import com.aimdi.xtanative.ui.generated.resources.posts_no_text
 import com.aimdi.xtanative.ui.generated.resources.posts_pinned
+import com.aimdi.xtanative.ui.generated.resources.posts_quote_unavailable
 import com.aimdi.xtanative.ui.generated.resources.posts_reply_not_found
 import com.aimdi.xtanative.ui.generated.resources.posts_replying_to
 import com.aimdi.xtanative.ui.generated.resources.posts_reposted
 import com.aimdi.xtanative.ui.generated.resources.posts_subscribers_only_of_author
 import com.aimdi.xtanative.ui.generated.resources.posts_thread
 import com.aimdi.xtanative.ui.generated.resources.posts_unavailable
-import com.aimdi.xtanative.ui.generated.resources.posts_no_text
-import com.aimdi.xtanative.ui.generated.resources.posts_quote_unavailable
 import com.aimdi.xtanative.ui.generated.resources.posts_view_quoted
 import com.aimdi.xtanative.ui.media.LiveRooms
 import com.aimdi.xtanative.ui.media.LocalLivePlayer
 import com.aimdi.xtanative.ui.saved.KeepNotices
+import com.aimdi.xtanative.ui.saved.LocalKeeper
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -216,8 +216,8 @@ internal fun Modifier.opening(like: (() -> Unit)?, open: () -> Unit): Modifier =
 /** What a double-tap on [post] does with "Double-tap to like" on: likes it on this device, unless it is liked already; null while off. */
 @Composable
 internal fun rememberDoubleTapLike(post: XPost, prefs: PostPrefs, actions: PostActions): (() -> Unit)? {
-    val graph = LocalGraph.current
-    val like = remember(graph, post, actions) { { actions.keep.likeHere(graph, post) } }
+    val keeper = LocalKeeper.current
+    val like = remember(keeper, post, actions) { { actions.keep.likeHere(keeper, post) } }
     return like.takeIf { prefs.doubleTapLike }
 }
 

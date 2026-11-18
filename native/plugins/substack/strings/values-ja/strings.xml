@@ -153,4 +153,6 @@
     <string name="speak_from_here">Speak from here</string>
     <string name="turned_away">Substackのボット確認がこの接続を拒否しました。ブラウザで開くか、後でもう一度お試しください。</string>
     <string name="image_view">全画面で表示</string>
+    <string name="feed_subscriptions">購読</string>
+    <string name="unread_count">未読 %1$d件</string>
 </resources>

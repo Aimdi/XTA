@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.data.plugins
 
+import androidx.compose.runtime.staticCompositionLocalOf
 import com.aimdi.xtanative.ui.plugins.MediaItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -92,3 +93,6 @@ class MediaShelf {
         fun source(id: String, sourceName: String?): String = sourceName?.trim()?.takeIf { it.isNotEmpty() } ?: id
     }
 }
+
+/** The app's [AppNavigator], for the views that lead to the app's own screens (a plugin's X posts, a mixed feed's chips). */
+val LocalNavigator = staticCompositionLocalOf<AppNavigator> { AppNavigator() }

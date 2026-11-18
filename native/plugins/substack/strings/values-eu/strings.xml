@@ -156,4 +156,6 @@
     <string name="speak_from_here">Speak from here</string>
     <string name="turned_away">Substack-en bot egiaztapenak konexio hau baztertu du. Ireki nabigatzailean, edo saiatu berriro geroago.</string>
     <string name="image_view">Ikusi pantaila osoan</string>
+    <string name="feed_subscriptions">Harpidetzak</string>
+    <string name="unread_count">Irakurri gabeak: %1$d</string>
 </resources>

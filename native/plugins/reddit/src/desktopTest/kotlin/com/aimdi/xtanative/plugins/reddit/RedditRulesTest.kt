@@ -125,9 +125,6 @@ class RedditRulesTest {
         assertEquals("FlutterDev", open.subreddit)
         assertEquals("r/flutterdev", open.key)
         assertFalse(open.railSelected(RedditFeedMode.FOLLOWING))
-        assertTrue(open.barSelected(RedditFeedMode.FOLLOWING), "Home's bottom bar lights Following while a followed community is open")
-        assertFalse(open.barSelected(RedditFeedMode.POPULAR))
-        assertTrue(rail.barSelected(RedditFeedMode.FOLLOWING))
         assertTrue(open.isSelected("flutterdev"))
 
         val popular = RedditHomeSource.of(RedditHomeSource.selectingMode(RedditHomeSource.selectingSubreddit(Settings(), "pics"), RedditFeedMode.POPULAR))
@@ -193,7 +190,6 @@ class RedditRulesTest {
     @Test
     fun theBarLeadsWithSearchThenTheOrderThenOneMenuAndNoPlus() {
         assertEquals(listOf(RedditHomeChrome.Action.SEARCH, RedditHomeChrome.Action.SORT, RedditHomeChrome.Action.MENU), RedditHomeChrome.actions)
-        assertEquals(listOf(RedditHomeChrome.Action.SEARCH, RedditHomeChrome.Action.MENU), RedditHomeChrome.homeActions, "in Home the order is a chip on the strip")
     }
 
     @Test
@@ -218,5 +214,16 @@ class RedditRulesTest {
         assertFalse(RedditHomeChrome.checked(RedditHomeChrome.MenuItem.SOURCE_AUTO, RedditChoices.of(chosen)))
         assertNull(RedditHomeChrome.choosing(chosen, RedditHomeChrome.MenuItem.SOURCE_PUBLIC), "the route in force: nothing to read again")
         assertNull(RedditHomeChrome.choosing(chosen, RedditHomeChrome.MenuItem.SAVED))
+    }
+
+    @Test
+    fun theShellsFilterLightsOnlyForAnOrderOtherThanTheDefault() {
+        fun choices(sort: StoredSort, window: StoredWindow) = RedditChoices(sort, window, RedditNsfwMode.TAP, showSpoilers = false, preferPublic = false)
+        assertFalse(RedditHomeChrome.sortChanged(choices(StoredSort.HOT, StoredWindow.DAY)))
+        assertFalse(RedditHomeChrome.sortChanged(choices(StoredSort.HOT, StoredWindow.YEAR)), "Hot takes no time window, so one left set is no change")
+        assertTrue(RedditHomeChrome.sortChanged(choices(StoredSort.NEWEST, StoredWindow.DAY)))
+        val reset = RedditHomeChrome.defaultSort(Settings().with(RedditPrefs.sort, StoredSort.TOP).with(RedditPrefs.timeFilter, StoredWindow.YEAR))
+        assertEquals(StoredSort.HOT, reset[RedditPrefs.sort])
+        assertEquals(RedditPrefs.timeFilter.default, reset[RedditPrefs.timeFilter])
     }
 }

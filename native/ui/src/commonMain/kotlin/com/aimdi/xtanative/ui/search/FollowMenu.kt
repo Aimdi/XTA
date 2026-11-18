@@ -15,24 +15,27 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.session.Session
-import com.aimdi.xtanative.data.AppGraph
+import com.aimdi.xtanative.data.SessionStore
 import com.aimdi.xtanative.store.settings.SubscriptionPrefs
-import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.LocalSessions
+import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.discover_add_to_group
 import com.aimdi.xtanative.ui.generated.resources.discover_hide_from_main_feed
 import com.aimdi.xtanative.ui.generated.resources.discover_show_in_main_feed
 import com.aimdi.xtanative.ui.generated.resources.discover_subscribe
 import com.aimdi.xtanative.ui.generated.resources.discover_unsubscribe
-import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
+import com.aimdi.xtanative.ui.saved.Keeper
+import com.aimdi.xtanative.ui.saved.LocalKeeper
 import com.aimdi.xtanative.ui.subscriptions.GroupBoardModel
 import com.aimdi.xtanative.ui.subscriptions.GroupMembershipSheet
 import com.aimdi.xtanative.ui.subscriptions.GroupPicker
+import com.aimdi.xtanative.ui.subscriptions.LocalGroupActions
 import com.aimdi.xtanative.ui.subscriptions.Unfollowing
 import org.jetbrains.compose.resources.stringResource
 
 /** [change] applied to the session, to its end even when the screen that asked goes away. */
-private fun AppGraph.changeSession(change: (Session) -> Session) {
+private fun Keeper.changeSession(sessions: SessionStore, change: (Session) -> Session) {
     keep { sessions.update(change) }
 }
 
@@ -45,8 +48,9 @@ private fun AppGraph.changeSession(change: (Session) -> Session) {
  */
 @Composable
 fun FollowMenu(target: FollowTarget, modifier: Modifier = Modifier, face: @Composable (Followed, () -> Unit) -> Unit = { state, open -> FollowIcon(state, open) }) {
-    val graph = LocalGraph.current
-    val session by graph.sessions.state.collectAsStateWithLifecycle()
+    val sessions = LocalSessions.current
+    val keeper = LocalKeeper.current
+    val session by sessions.state.collectAsStateWithLifecycle()
     val state = session?.let(target::state) ?: Followed()
     var open by remember { mutableStateOf(false) }
     var picking by rememberSaveable { mutableStateOf(false) }
@@ -57,7 +61,7 @@ fun FollowMenu(target: FollowTarget, modifier: Modifier = Modifier, face: @Compo
                 text = { Text(stringResource(if (state.followed) Res.string.discover_unsubscribe else Res.string.discover_subscribe)) },
                 onClick = {
                     open = false
-                    if (state.followed) graph.keep { Unfollowing.unfollow(graph, target) } else graph.changeSession { target.followed(it, System.currentTimeMillis()) }
+                    if (state.followed) keeper.keep { Unfollowing.unfollow(sessions, target) } else keeper.changeSession(sessions) { target.followed(it, System.currentTimeMillis()) }
                 },
             )
             DropdownMenuItem(
@@ -72,7 +76,7 @@ fun FollowMenu(target: FollowTarget, modifier: Modifier = Modifier, face: @Compo
                     text = { Text(stringResource(if (state.inFeed) Res.string.discover_hide_from_main_feed else Res.string.discover_show_in_main_feed)) },
                     onClick = {
                         open = false
-                        graph.changeSession(target::feedToggled)
+                        keeper.changeSession(sessions, target::feedToggled)
                     },
                 )
             }
@@ -102,14 +106,15 @@ private fun FollowIcon(state: Followed, onClick: () -> Unit) {
  */
 @Composable
 fun GroupsSheet(target: FollowTarget, onDismiss: () -> Unit) {
-    val graph = LocalGraph.current
-    val loadedSession by graph.sessions.state.collectAsStateWithLifecycle()
-    val loadedSettings by graph.settings.state.collectAsStateWithLifecycle()
+    val sessions = LocalSessions.current
+    val keeper = LocalKeeper.current
+    val loadedSession by sessions.state.collectAsStateWithLifecycle()
+    val loadedSettings by LocalSettingsStore.current.state.collectAsStateWithLifecycle()
     val session = loadedSession ?: return
     val settings = loadedSettings ?: return
     val initial = remember(target) { session.groups.filter { target.memberId in it.memberIds }.mapTo(LinkedHashSet()) { it.id } }
     // The app's own group changes, written to their end whatever screen asked.
-    val actions = LocalPlugins.current.groups
+    val actions = LocalGroupActions.current
     GroupMembershipSheet(
         groups = GroupBoardModel.ordered(session.groups, settings[SubscriptionPrefs.groupsOrder], settings[SubscriptionPrefs.groupsAscending]),
         selected = initial,
@@ -118,7 +123,7 @@ fun GroupsSheet(target: FollowTarget, onDismiss: () -> Unit) {
         onDone = { chosen ->
             onDismiss()
             if (chosen != null) {
-                graph.changeSession { target.followed(it, System.currentTimeMillis()).withMemberships(target.memberId, chosen) }
+                keeper.changeSession(sessions) { target.followed(it, System.currentTimeMillis()).withMemberships(target.memberId, chosen) }
                 actions.rememberPicks(initial, chosen)
             }
         },

@@ -50,8 +50,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -65,7 +65,6 @@ import com.aimdi.xtanative.store.saved.SavedFolder
 import com.aimdi.xtanative.store.saved.SavedLibrary
 import com.aimdi.xtanative.store.settings.SavedPrefs
 import com.aimdi.xtanative.ui.common.Hairline
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.saved_matches
@@ -93,12 +92,12 @@ import org.jetbrains.compose.resources.stringResource
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SaveSheet(item: Keepable, onDismiss: () -> Unit) {
-    val graph = LocalGraph.current
-    val library by graph.saved.state.collectAsStateWithLifecycle()
-    val settings by graph.settings.state.collectAsStateWithLifecycle()
-    LaunchedEffect(graph) {
-        graph.saved.library()
-        graph.settings.load()
+    val keeper = LocalKeeper.current
+    val library by keeper.saved.state.collectAsStateWithLifecycle()
+    val settings by keeper.settings.state.collectAsStateWithLifecycle()
+    LaunchedEffect(keeper) {
+        keeper.saved.library()
+        keeper.settings.load()
     }
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
         val loaded = library ?: return@ModalBottomSheet
@@ -109,14 +108,14 @@ fun SaveSheet(item: Keepable, onDismiss: () -> Unit) {
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun SheetBody(item: Keepable, library: SavedLibrary, remembering: Boolean) {
-    val graph = LocalGraph.current
+    val keeper = LocalKeeper.current
     val scope = rememberCoroutineScope()
     // Fixed once, so a chip never moves from under a finger.
     val openOrder = remember { SaveSheetView.openOrder(library) }
     var view by remember { mutableStateOf(SaveSheetView()) }
     val chips = view.chips(library, openOrder)
     val current = if (library.isSaved(item.id)) library.folderOf(item.id) else null
-    val file = { folderId: String? -> Keeping.fileFromSheet(graph, item, folderId) }
+    val file = { folderId: String? -> Keeping.fileFromSheet(keeper, item, folderId) }
 
     Column(Modifier.fillMaxWidth().imePadding()) {
         Row(
@@ -138,7 +137,7 @@ private fun SheetBody(item: Keepable, library: SavedLibrary, remembering: Boolea
                 CreateRow(stringResource(Res.string.saved_sheet_create, view.query.trim())) {
                     val name = view.query.trim()
                     scope.launch {
-                        val folder = graph.saved.createFolder(name) ?: return@launch
+                        val folder = keeper.saved.createFolder(name) ?: return@launch
                         view = view.created(folder.id)
                         file(folder.id)
                     }
@@ -150,7 +149,7 @@ private fun SheetBody(item: Keepable, library: SavedLibrary, remembering: Boolea
                 }
             }
             Spacer(Modifier.size(8.dp))
-            RememberRow(remembering) { on -> scope.launch { SavedFiling(graph.saved, graph.settings).setRemember(on, current) } }
+            RememberRow(remembering) { on -> scope.launch { SavedFiling(keeper.saved, keeper.settings).setRemember(on, current) } }
         }
         StatusLine(SaveStatus.of(library, item.id))
     }

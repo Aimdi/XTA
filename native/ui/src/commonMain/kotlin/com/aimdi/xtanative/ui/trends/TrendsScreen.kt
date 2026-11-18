@@ -20,8 +20,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -76,14 +76,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.aimdi.xtanative.ui.home.HomeRequests
-import com.aimdi.xtanative.ui.home.RetapsToTop
 import com.aimdi.xtanative.core.x.model.XTrend
 import com.aimdi.xtanative.core.x.model.XTrendPlace
 import com.aimdi.xtanative.core.x.model.XTrendPlaces
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.ProblemView
 import com.aimdi.xtanative.ui.common.countText
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -100,6 +98,8 @@ import com.aimdi.xtanative.ui.generated.resources.discover_trends_empty
 import com.aimdi.xtanative.ui.generated.resources.discover_trends_unable
 import com.aimdi.xtanative.ui.generated.resources.saved_search_library
 import com.aimdi.xtanative.ui.generated.resources.saved_source_x
+import com.aimdi.xtanative.ui.home.HomeRequests
+import com.aimdi.xtanative.ui.home.RetapsToTop
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.pluginstore.SavesMediaOf

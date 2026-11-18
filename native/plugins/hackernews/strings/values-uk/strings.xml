@@ -46,4 +46,5 @@
         <item quantity="other">%1$d karma</item>
     </plurals>
     <string name="more_options">Інші параметри</string>
+    <string name="updated_ago">Оновлено %1$s тому</string>
 </resources>

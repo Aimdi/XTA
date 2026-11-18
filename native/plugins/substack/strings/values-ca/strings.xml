@@ -156,4 +156,6 @@
     <string name="speak_from_here">Speak from here</string>
     <string name="turned_away">La comprovació antibots de Substack ha rebutjat aquesta connexió. Obre-ho al navegador o torna-ho a provar més tard.</string>
     <string name="image_view">Mostra a pantalla completa</string>
+    <string name="feed_subscriptions">Subscripcions</string>
+    <string name="unread_count">No llegits: %1$d</string>
 </resources>

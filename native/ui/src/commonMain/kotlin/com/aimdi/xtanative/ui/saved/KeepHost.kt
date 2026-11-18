@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
-import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.downloads.LocalPlatformFiles
 import com.aimdi.xtanative.ui.downloads.PlatformFilesHost
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.cancel
@@ -40,20 +40,20 @@ import com.aimdi.xtanative.ui.generated.resources.downloads_batch
 import com.aimdi.xtanative.ui.generated.resources.downloads_cancelled
 import com.aimdi.xtanative.ui.generated.resources.downloads_downloading
 import com.aimdi.xtanative.ui.generated.resources.downloads_failed
-import com.aimdi.xtanative.ui.generated.resources.saved_media_status
 import com.aimdi.xtanative.ui.generated.resources.downloads_open_failed
-import com.aimdi.xtanative.ui.generated.resources.groups_changes_saved
-import com.aimdi.xtanative.ui.generated.resources.groups_undo
-import com.aimdi.xtanative.ui.generated.resources.groups_undo_failed
 import com.aimdi.xtanative.ui.generated.resources.downloads_open_file
 import com.aimdi.xtanative.ui.generated.resources.downloads_retry_hint
 import com.aimdi.xtanative.ui.generated.resources.downloads_saved_to
+import com.aimdi.xtanative.ui.generated.resources.groups_changes_saved
+import com.aimdi.xtanative.ui.generated.resources.groups_undo
+import com.aimdi.xtanative.ui.generated.resources.groups_undo_failed
 import com.aimdi.xtanative.ui.generated.resources.offline_article_detail
 import com.aimdi.xtanative.ui.generated.resources.offline_failed
 import com.aimdi.xtanative.ui.generated.resources.offline_media_count
 import com.aimdi.xtanative.ui.generated.resources.offline_unavailable
 import com.aimdi.xtanative.ui.generated.resources.saved_long_press_hint
 import com.aimdi.xtanative.ui.generated.resources.saved_media_saved
+import com.aimdi.xtanative.ui.generated.resources.saved_media_status
 import com.aimdi.xtanative.ui.generated.resources.saved_no_media_file
 import com.aimdi.xtanative.ui.generated.resources.saved_note_save_error
 import com.aimdi.xtanative.ui.generated.resources.saved_note_saved
@@ -82,7 +82,8 @@ fun KeepHost() {
 private fun KeepNoticeHost() {
     val shown by KeepNotices.shown.collectAsState()
     val current = shown ?: return
-    val graph = LocalGraph.current
+    val keeper = LocalKeeper.current
+    val files = LocalPlatformFiles.current
     val scope = rememberCoroutineScope()
     LaunchedEffect(current.serial) {
         delay(
@@ -101,14 +102,14 @@ private fun KeepNoticeHost() {
         {
             TextButton(onClick = {
                 KeepNotices.hide(current)
-                scope.launch { if (!graph.platformFiles.open(saved.savedUri, saved.fileName)) KeepNotices.show(KeepNotice.OpenFailed) }
+                scope.launch { if (!files.open(saved.savedUri, saved.fileName)) KeepNotices.show(KeepNotice.OpenFailed) }
             }) { Text(stringResource(Res.string.downloads_open_file), color = MaterialTheme.colorScheme.inversePrimary) }
         }
     } ?: (current.notice as? KeepNotice.ChangesSaved)?.let { changed ->
         {
             TextButton(onClick = {
                 KeepNotices.hide(current)
-                graph.keep { if (!changed.undo()) KeepNotices.show(KeepNotice.UndoFailed) }
+                keeper.keep { if (!changed.undo()) KeepNotices.show(KeepNotice.UndoFailed) }
             }) { Text(stringResource(Res.string.groups_undo), color = MaterialTheme.colorScheme.inversePrimary) }
         }
     }

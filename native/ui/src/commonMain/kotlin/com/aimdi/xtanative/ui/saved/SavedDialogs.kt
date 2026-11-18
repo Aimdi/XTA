@@ -48,7 +48,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.x.model.XConversation
 import com.aimdi.xtanative.store.saved.SavedFolder
 import com.aimdi.xtanative.store.saved.SavedPost
-import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.LocalXClient
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.cancel
 import com.aimdi.xtanative.ui.generated.resources.close
@@ -226,12 +226,13 @@ internal fun RemoveSelectedDialog(count: Int, onDismiss: () -> Unit, onRemove: (
  */
 @Composable
 internal fun CleanupDialog(posts: List<SavedPost>, onDismiss: () -> Unit) {
-    val graph = LocalGraph.current
+    val keeper = LocalKeeper.current
+    val client = LocalXClient.current
     val items = remember { posts.toList() }
     var scan by remember { mutableStateOf(CleanupScan(items.size)) }
     LaunchedEffect(items) {
         for (post in items) {
-            val check = SavedCleanup.check(post) { id -> XConversation.of(graph.client.conversation(id), id) }
+            val check = SavedCleanup.check(post) { id -> XConversation.of(client.conversation(id), id) }
             scan = scan.after(post, check)
             if (scan.done) break
             if (SavedCleanup.isXPost(post)) delay(SavedCleanup.PAUSE_MS)
@@ -268,7 +269,7 @@ internal fun CleanupDialog(posts: List<SavedPost>, onDismiss: () -> Unit) {
             if (done && scan.broken.isNotEmpty()) {
                 TextButton(onClick = {
                     val ids = scan.broken.map { it.id }
-                    graph.keep { graph.saved.remove(ids) }
+                    keeper.keep { keeper.saved.remove(ids) }
                     onDismiss()
                 }) { Text("${stringResource(Res.string.saved_delete)} (${scan.broken.size})") }
             } else {

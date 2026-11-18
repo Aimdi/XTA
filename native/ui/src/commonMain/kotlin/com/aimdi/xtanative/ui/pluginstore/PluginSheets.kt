@@ -12,14 +12,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.data.plugins.PluginMembers
 import com.aimdi.xtanative.data.plugins.PluginSaves
 import com.aimdi.xtanative.data.plugins.PluginSheet
 import com.aimdi.xtanative.data.plugins.keepable
 import com.aimdi.xtanative.store.settings.SubscriptionPrefs
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.plugins.PluginPostArchive
-import com.aimdi.xtanative.ui.plugins.PluginSharedPost
 import com.aimdi.xtanative.ui.plugins.PostMenuHandlers
 import com.aimdi.xtanative.ui.plugins.PostMenuRows
 import com.aimdi.xtanative.ui.plugins.currentLanguage
@@ -96,7 +95,7 @@ private fun PostMenuSheet(sheet: PluginSheet.Menu, onDismiss: () -> Unit) {
     val handlers = remember(menu) {
         val item = menu.post.keepable()
         PostMenuHandlers(
-            toggleSaved = { Keeping.toggleSave(graph, item) },
+            toggleSaved = { Keeping.toggleSave(graph.keeper, item) },
             editNote = { plugins.show(PluginSheet.Note(menu.post)) },
             addToGroup = { author -> plugins.show(PluginSheet.Groups(PluginMembers.memberId(sheet.pluginId, author), menu.follow)) },
             chooseFolder = { plugins.show(PluginSheet.Folders(menu.post)) },
@@ -142,21 +141,3 @@ private fun CashtagSheet(symbol: String, onDismiss: () -> Unit) {
 /** Material's show_chart (Apache 2.0), the cashtag's mark in its sheet as in XTA's. */
 private val ShowChart: ImageVector by lazy { pathIcon("ShowChart", "M3.5,18.49l6,-6.01l4,4L22,6.92l-1.41,-1.41l-7.09,7.97l-4,-4L2,16.99L3.5,18.49z") }
 
-/**
- * The running plugins' entries for [post] in a post sheet, below the app's
- * own, as XTA's share sheet ends with them: each closes the sheet, then runs
- * beyond it.
- */
-@Composable
-fun PluginSheetEntries(post: PluginSharedPost, onDismiss: () -> Unit) {
-    val plugins = LocalPlugins.current
-    val running by plugins.running.collectAsStateWithLifecycle()
-    val language = currentLanguage()
-    val entries = remember(post, running, language) { plugins.sheetEntries(post, language, running) }
-    entries.forEach { entry ->
-        MenuRow(entry.icon, entry.label) {
-            onDismiss()
-            entry.run()
-        }
-    }
-}

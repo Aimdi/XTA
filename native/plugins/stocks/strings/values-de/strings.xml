@@ -88,4 +88,6 @@
     <string name="window_24h">24 h</string>
     <string name="year_high">52W Hoch</string>
     <string name="year_low">52W Tief</string>
+    <string name="all_tickers">Alle</string>
+    <string name="live_tickers">Live · Ticker: %1$d</string>
 </resources>

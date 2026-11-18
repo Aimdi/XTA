@@ -139,15 +139,6 @@ data class SorterUi(
  * saved as it is made, and an undo takes it back out of those groups. The
  * plugins' accounts ([follows]) are read once, before the first is shown.
  */
-/** What the one-by-one sorter writes, so a save can be held or failed in a test. */
-interface UngroupedWrites {
-    suspend fun addTo(memberId: String, groupIds: List<String>)
-
-    suspend fun removeFrom(memberId: String, groupIds: List<String>)
-
-    suspend fun create(name: String): String
-}
-
 internal class UngroupedSorterViewModel(
     private val graph: AppGraph,
     accountIds: List<String>,
@@ -157,7 +148,7 @@ internal class UngroupedSorterViewModel(
     private val sorter = MutableStateFlow(SorterState(accountIds))
     private val failed = MutableStateFlow(false)
     private val plugins = MutableStateFlow<List<SubscriptionRow>?>(null)
-    val groups = GroupActions(graph, viewModelScope)
+    val groups = GroupActions(graph.sessions, graph.settings, viewModelScope)
     private val writes: UngroupedWrites = writer ?: groups
 
     init {

@@ -92,4 +92,6 @@
     <string name="window_24h">24 ч</string>
     <string name="year_high">Макс. 52 нед.</string>
     <string name="year_low">Мин. 52 нед.</string>
+    <string name="all_tickers">Все</string>
+    <string name="live_tickers">Онлайн · тикеры: %1$d</string>
 </resources>

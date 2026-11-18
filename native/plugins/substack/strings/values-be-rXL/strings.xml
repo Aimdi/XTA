@@ -162,4 +162,6 @@
     <string name="speak_from_here">Speak from here</string>
     <string name="turned_away">Pravierka Substack na botaŭ nie prapusciła heta złučennie. Adkryjcie ŭ braŭzery abo pasprabujcie paźniej.</string>
     <string name="image_view">Hladzieć na ŭvieś ekran</string>
+    <string name="feed_subscriptions">Padpiski</string>
+    <string name="unread_count">Niepračytanyja: %1$d</string>
 </resources>

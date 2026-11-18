@@ -86,4 +86,6 @@
     <string name="window_24h">24시간</string>
     <string name="year_high">52주 최고</string>
     <string name="year_low">52주 최저</string>
+    <string name="all_tickers">전체</string>
+    <string name="live_tickers">실시간 · 티커 %1$d개</string>
 </resources>

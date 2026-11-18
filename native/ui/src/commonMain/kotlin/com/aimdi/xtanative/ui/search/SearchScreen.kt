@@ -13,9 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
-import com.aimdi.xtanative.ui.common.WithReadingColumn
-import com.aimdi.xtanative.ui.feed.feedThreads
-import com.aimdi.xtanative.ui.feed.rememberFeedLayout
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -71,11 +68,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.core.format.Formats
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.core.x.search.XAdvancedSearch
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.common.Hairline
-import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.WithReadingColumn
 import com.aimdi.xtanative.ui.community.CommunityRow
+import com.aimdi.xtanative.ui.feed.feedThreads
+import com.aimdi.xtanative.ui.feed.rememberFeedLayout
 import com.aimdi.xtanative.ui.generated.resources.Res
-import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_next_page_of_tweets
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.discover_accounts
 import com.aimdi.xtanative.ui.generated.resources.discover_advanced_search
@@ -90,6 +89,7 @@ import com.aimdi.xtanative.ui.generated.resources.discover_popular
 import com.aimdi.xtanative.ui.generated.resources.discover_recent
 import com.aimdi.xtanative.ui.generated.resources.discover_search
 import com.aimdi.xtanative.ui.generated.resources.discover_search_x
+import com.aimdi.xtanative.ui.generated.resources.problem_unable_to_load_the_next_page_of_tweets
 import com.aimdi.xtanative.ui.generated.resources.saved_search_library
 import com.aimdi.xtanative.ui.media.mediaGrid
 import com.aimdi.xtanative.ui.media.rememberMediaGridRows

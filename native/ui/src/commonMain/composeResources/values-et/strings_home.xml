@@ -69,6 +69,17 @@
     <string name="home_unable_to_load_pages">Sinu kodulehtede laadimine ei õnnestunud</string>
     <string name="feed_strip_unavailable">See ajajoon pole enam saadaval</string>
     <string name="home_feed_accounts_empty">Lisa konto, et laadida Sulle.</string>
-    <string name="home_all_timelines">Kõik ajajooned</string>
-    <string name="home_bar_more">Rohkem</string>
+    <string name="home_switcher_title">Vaheta pistikprogrammi</string>
+    <string name="home_switcher_start">Algus</string>
+    <string name="home_switcher_start_hint">Jälgitavad ja kõik su ajajooned</string>
+    <string name="home_switcher_recent">Hiljuti kasutatud</string>
+    <string name="home_manage_plugins">Halda pistikprogramme</string>
+    <string name="home_xta_settings">XTA seaded</string>
+    <string name="home_menu_xta">XTA</string>
+    <string name="home_sort_filter">Sortimine ja filtrid</string>
+    <string name="home_sort_filter_on">Sortimine ja filtrid, muudetud</string>
+    <string name="home_sort_reset">Lähtesta</string>
+    <string name="home_plugin_settings">%1$s seaded</string>
+    <string name="home_switch_account">Vaheta kontot</string>
+    <string name="home_unread_count">Lugemata: %1$d</string>
 </resources>

@@ -12,7 +12,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import com.aimdi.xtanative.store.settings.GeneralPrefs
 import com.aimdi.xtanative.ui.common.BackHandling
-import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.chrome_confirm_close
 import com.aimdi.xtanative.ui.generated.resources.settings_are_you_sure
@@ -41,12 +41,12 @@ object AppClosing {
  */
 @Composable
 fun ConfirmClose() {
-    val graph = LocalGraph.current
+    val settings = LocalSettingsStore.current
     val close by rememberUpdatedState(rememberCloseApp())
     var asking by remember { mutableStateOf(false) }
-    LaunchedEffect(graph) {
+    LaunchedEffect(settings) {
         AppClosing.asked.collect {
-            if (graph.settings.state.value?.get(GeneralPrefs.confirmClose) == false) close() else asking = true
+            if (settings.state.value?.get(GeneralPrefs.confirmClose) == false) close() else asking = true
         }
     }
     if (!asking) return

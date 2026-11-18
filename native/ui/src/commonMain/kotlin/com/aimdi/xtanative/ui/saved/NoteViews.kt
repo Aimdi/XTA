@@ -47,13 +47,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil3.compose.AsyncImage
+import com.aimdi.xtanative.data.LocalPostCache
 import com.aimdi.xtanative.store.saved.LocalPost
 import com.aimdi.xtanative.store.saved.NoteMedia
 import com.aimdi.xtanative.store.saved.SavedContent
 import com.aimdi.xtanative.ui.common.Hairline
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.agoText
+import com.aimdi.xtanative.ui.downloads.LocalPlatformFiles
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.close
 import com.aimdi.xtanative.ui.generated.resources.saved_delete
@@ -105,10 +106,10 @@ fun NoteTile(
     replies: Int = 0,
     compact: Boolean = false,
 ) {
-    val graph = LocalGraph.current
+    val posts = LocalPostCache.current
     var menu by remember { mutableStateOf(false) }
     val quoted = remember(note.quoted) { note.quoted?.let { SavedContent.of(it).xPost } }
-    if (quoted != null) LaunchedEffect(quoted.id) { graph.posts.remember(quoted) }
+    if (quoted != null) LaunchedEffect(quoted.id) { posts.remember(quoted) }
     Column(Modifier.fillMaxWidth()) {
         Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 12.dp, top = 12.dp, bottom = 4.dp)) {
             NoteAvatar()
@@ -198,17 +199,18 @@ private fun NoteFooter(replies: Int, onReply: (() -> Unit)?, onOpen: (() -> Unit
 /** A note's pictures in a grid of up to four (one alone drawn tall), then its other files, each opening on a tap. */
 @Composable
 fun NoteMediaBlock(postId: String, media: List<NoteMedia>, modifier: Modifier = Modifier) {
-    val graph = LocalGraph.current
+    val notes = LocalKeeper.current.localPosts
+    val files = LocalPlatformFiles.current
     val scope = rememberCoroutineScope()
     val layout = remember(media) { NoteRules.layout(media) }
     var viewing by remember { mutableStateOf<NoteMedia?>(null) }
     Column(modifier.fillMaxWidth()) {
         if (layout.single) {
-            NoteImage(graph.localPosts.mediaFile(postId, layout.images.first().id), Modifier.fillMaxWidth().height(220.dp)) { viewing = layout.images.first() }
+            NoteImage(notes.mediaFile(postId, layout.images.first().id), Modifier.fillMaxWidth().height(220.dp)) { viewing = layout.images.first() }
         } else if (layout.images.isNotEmpty()) {
             layout.images.chunked(2).forEach { row ->
                 Row(Modifier.fillMaxWidth().padding(bottom = 4.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    row.forEach { image -> NoteImage(graph.localPosts.mediaFile(postId, image.id), Modifier.weight(1f).height(140.dp)) { viewing = image } }
+                    row.forEach { image -> NoteImage(notes.mediaFile(postId, image.id), Modifier.weight(1f).height(140.dp)) { viewing = image } }
                     if (row.size == 1) Spacer(Modifier.weight(1f))
                 }
             }
@@ -220,7 +222,7 @@ fun NoteMediaBlock(postId: String, media: List<NoteMedia>, modifier: Modifier = 
                         viewing = file
                     } else {
                         scope.launch {
-                            if (!graph.platformFiles.openFile(graph.localPosts.mediaFile(postId, file.id), file.mime)) KeepNotices.show(KeepNotice.OpenFailed)
+                            if (!files.openFile(notes.mediaFile(postId, file.id), file.mime)) KeepNotices.show(KeepNotice.OpenFailed)
                         }
                     }
                 },
@@ -232,7 +234,7 @@ fun NoteMediaBlock(postId: String, media: List<NoteMedia>, modifier: Modifier = 
             }
         }
     }
-    viewing?.let { item -> LocalFileViewer(graph.localPosts.mediaFile(postId, item.id), item.isVideo) { viewing = null } }
+    viewing?.let { item -> LocalFileViewer(notes.mediaFile(postId, item.id), item.isVideo) { viewing = null } }
 }
 
 @Composable

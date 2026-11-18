@@ -71,6 +71,17 @@
     <string name="home_unable_to_load_pages">Niemahčyma zahruzić hałoŭnuju staronku</string>
     <string name="feed_strip_unavailable">Heta stužka bolš niedastupnaja</string>
     <string name="home_feed_accounts_empty">Dadajcie akaŭnt, kab zahruzić «Dla vas».</string>
-    <string name="home_all_timelines">Usie stužki</string>
-    <string name="home_bar_more">Jašče</string>
+    <string name="home_switcher_title">Zmianić plahin</string>
+    <string name="home_switcher_start">Pačatak</string>
+    <string name="home_switcher_start_hint">Padpiski i ŭsie vašy stužki</string>
+    <string name="home_switcher_recent">Niadaŭnija</string>
+    <string name="home_manage_plugins">Kiravać plahinami</string>
+    <string name="home_xta_settings">Nalady XTA</string>
+    <string name="home_menu_xta">XTA</string>
+    <string name="home_sort_filter">Sartavannie i filtry</string>
+    <string name="home_sort_filter_on">Sartavannie i filtry, zmieniena</string>
+    <string name="home_sort_reset">Skinuć</string>
+    <string name="home_plugin_settings">Nalady %1$s</string>
+    <string name="home_switch_account">Zmianić ulikovy zapis</string>
+    <string name="home_unread_count">Niepračytanyja: %1$d</string>
 </resources>

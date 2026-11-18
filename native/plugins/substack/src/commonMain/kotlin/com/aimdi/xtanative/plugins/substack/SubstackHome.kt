@@ -1,23 +1,13 @@
 package com.aimdi.xtanative.plugins.substack
 
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -25,14 +15,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.substack.SubstackFeedFilter
 import com.aimdi.xtanative.networks.substack.SubstackHomeFeed
 import com.aimdi.xtanative.networks.substack.SubstackHomeRules
@@ -46,9 +32,9 @@ import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
 import com.aimdi.xtanative.ui.plugins.PluginText
-import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
-import com.aimdi.xtanative.ui.plugins.ReadingControlsPinItem
+import com.aimdi.xtanative.ui.plugins.RefreshesOn
+import com.aimdi.xtanative.ui.plugins.ShellMenuButton
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import kotlinx.coroutines.CoroutineScope
@@ -70,6 +56,9 @@ internal class HomeControls {
     var home by mutableStateOf(SubstackLoadedOptions())
     var inbox by mutableStateOf(SubstackLoadedOptions())
     var filter by mutableStateOf(SubstackFeedFilter.ALL)
+
+    /** The publication Home's feed is narrowed to from the shell's feed row; null for all followed. */
+    var publication by mutableStateOf<String?>(null)
     var librarySection by mutableStateOf(SubstackLibrarySection.FOLLOWING)
     var libraryQuery by mutableStateOf("")
 
@@ -141,18 +130,13 @@ private fun HomeHeader(app: SubstackApp, state: HomeState, selected: HomePane, o
 
 @Composable
 private fun HomeMenu(app: SubstackApp, state: HomeState, selected: HomePane) {
-    var open by rememberSaveable { mutableStateOf(false) }
     val feed by state.feed.state.collectAsState()
     val read by app.read.state.collectAsState()
-    Box {
-        IconButton(onClick = { open = true }) { Icon(Icons.Default.MoreVert, pluginString(Strings.more_options)) }
-        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
-            DropdownMenuItem(text = { Text(pluginString(Strings.discover)) }, onClick = { open = false; app.openDiscover() })
-            DropdownMenuItem(text = { Text(pluginString(Strings.add)) }, onClick = { open = false; app.openAdd() })
-            if (selected.ordinal < 2 && SubstackHomeRules.anyUnread(feed.posts, read)) {
-                DropdownMenuItem(text = { Text(pluginString(Strings.mark_all_read)) }, onClick = { open = false; app.launch { app.read.markRead(feed.posts) } })
-            }
-            ReadingControlsPinItem()
+    ShellMenuButton { close ->
+        DropdownMenuItem(text = { Text(pluginString(Strings.discover)) }, onClick = { close(); app.openDiscover() })
+        DropdownMenuItem(text = { Text(pluginString(Strings.add)) }, onClick = { close(); app.openAdd() })
+        if (selected.ordinal < 2 && SubstackHomeRules.anyUnread(feed.posts, read)) {
+            DropdownMenuItem(text = { Text(pluginString(Strings.mark_all_read)) }, onClick = { close(); app.launch { app.read.markRead(feed.posts) } })
         }
     }
 }

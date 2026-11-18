@@ -1,7 +1,5 @@
 package com.aimdi.xtanative.plugins.stocks
 
-import com.aimdi.xtanative.ui.common.swipeTabs
-import com.aimdi.xtanative.ui.post.PostIcons
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +22,6 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -55,17 +52,24 @@ import com.aimdi.xtanative.networks.stocks.TickerQuote
 import com.aimdi.xtanative.networks.stocks.Watchlist
 import com.aimdi.xtanative.networks.stocks.WatchlistEntries
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.swipeTabs
+import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.NetworkProblemView
 import com.aimdi.xtanative.ui.plugins.NoticeHost
-import com.aimdi.xtanative.ui.plugins.PluginNotices
 import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
-import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
 import com.aimdi.xtanative.ui.plugins.PluginFrame
-import com.aimdi.xtanative.ui.plugins.RefreshesOn
+import com.aimdi.xtanative.ui.plugins.PluginHomeTab
+import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
+import com.aimdi.xtanative.ui.plugins.PluginNotices
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
-import com.aimdi.xtanative.ui.plugins.ReadingControlsPinItem
+import com.aimdi.xtanative.ui.plugins.RefreshesOn
+import com.aimdi.xtanative.ui.plugins.ShellFeeds
+import com.aimdi.xtanative.ui.plugins.ShellMenuButton
+import com.aimdi.xtanative.ui.plugins.ShellStatus
+import com.aimdi.xtanative.ui.plugins.ShellSubtitle
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
+import com.aimdi.xtanative.ui.post.PostIcons
 import kotlinx.coroutines.delay
 
 /** While a tab is on screen its quotes are asked for this often, the caches answering what is fresh. */
@@ -88,6 +92,8 @@ internal fun StocksHome(app: StocksApp, frame: PluginFrame) {
     var adding by rememberSaveable { mutableStateOf(false) }
     var managing by rememberSaveable { mutableStateOf(false) }
     val notices = remember { PluginNotices() }
+    // The quotes are read again every so often while this is shown: live, for as many tickers as are watched.
+    entries?.let { ShellSubtitle(pluginString(Strings.live_tickers, it.ids.size), ShellStatus.LIVE) }
     LaunchedEffect(model, view.tab, entries?.ids, view.trending) {
         while (true) {
             model.refreshQuotes()
@@ -127,7 +133,7 @@ private fun StocksTabBody(app: StocksApp, model: StocksHomeModel, view: StocksVi
     val failed = remember(tickers, crypto) { tickers.failed + crypto.failed }
     val trending = view.trending
     when {
-        view.tab == StocksTab.MARKETS -> StocksMarketsList(quotes, failed, app::open, model::retry, model::pull, view.refreshing, frame.padding, frame.toTop)
+        view.tab == StocksTab.MARKETS -> MarketsHome(quotes, failed, app, model, view, frame)
         view.tab == StocksTab.TRENDING && trending.isEmpty() && view.trendingLoading -> PluginFeedSkeleton()
         view.tab == StocksTab.TRENDING && trending.isEmpty() -> EmptyStocks(app, model, view, frame, onAdd)
         view.tab == StocksTab.TRENDING -> PostsHome(app, model, view, trending, entries, quotes, failed, frame)
@@ -135,6 +141,18 @@ private fun StocksTabBody(app: StocksApp, model: StocksHomeModel, view: StocksVi
         view.tab == StocksTab.POSTS -> PostsHome(app, model, view, entries.ids, entries, quotes, failed, frame)
         else -> StocksWatchlistList(app, entries, tickers, quotes, failed, onAdd, model::retry, model::pull, view.refreshing, frame)
     }
+}
+
+/**
+ * Markets: the indices and the coins, as two sections; in the app's shell
+ * they are its feed row instead, one shown at a time.
+ */
+@Composable
+private fun MarketsHome(quotes: Map<String, TickerQuote>, failed: Set<String>, app: StocksApp, model: StocksHomeModel, view: StocksView, frame: PluginFrame) {
+    var group by rememberSaveable { mutableStateOf(MarketGroup.INDICES) }
+    val shell = LocalPluginClientBar.current != null
+    if (shell) ShellFeeds(MarketGroup.entries, group, { group = it }, label = { pluginString(it.label) })
+    StocksMarketsList(quotes, failed, app::open, model::retry, model::pull, view.refreshing, frame.padding, frame.toTop, groups = if (shell) setOf(group) else MarketGroup.entries.toSet())
 }
 
 /** The strip of [symbols] over "Posts" and the ticker they are filtered to, over the posts about them. */
@@ -154,6 +172,19 @@ private fun PostsHome(
     // One ticker's posts, also when the watchlist holds only that one, put the followed accounts' first.
     val followedFirst = filter != null || symbols.size == 1
     val feed = rememberKept("stocks-posts:$followedFirst:$query") { StocksPostsFeed(app, query, signals = true, followedFirst = followedFirst, scope = it) }
+    // In the app's shell the tickers are its feed row: All, then each, one picked filtering the posts to it.
+    val shell = LocalPluginClientBar.current != null
+    if (shell) {
+        val all = PluginHomeTab(StocksIcons.ShowChart, pluginString(Strings.all_tickers), filter == null) { filter?.let(model::toggleFilter) }
+        ShellFeeds(listOf(all) + symbols.map { symbol -> PluginHomeTab(StocksIcons.ShowChart, entries.label(symbol), filter == symbol) { if (filter != symbol) model.toggleFilter(symbol) } })
+    }
+    if (shell) {
+        // The reel of prices scrolls away with the posts, the shell's feed row staying.
+        StocksPostsList(app, feed, frame.padding, frame.toTop, onRefresh = model::pull) {
+            item(key = "reel") { StocksReel(symbols, entries.assets, quotes, failed, filter, model::toggleFilter, app::open) }
+        }
+        return
+    }
     Column(Modifier.fillMaxSize()) {
         StocksReel(symbols, entries.assets, quotes, failed, filter, model::toggleFilter, app::open)
         Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -227,8 +258,9 @@ private fun EmptyStocks(app: StocksApp, model: StocksHomeModel, view: StocksView
 @Composable
 private fun StocksHeader(app: StocksApp, selected: StocksTab, onSelect: (StocksTab) -> Unit, onAdd: () -> Unit, onManage: () -> Unit) {
     PluginHomeTabs(StocksTab.entries, selected, onSelect, icon = ::tabIcon, label = { pluginString(it.label) }, accent = MaterialTheme.colorScheme.primary) {
-        IconButton(onClick = onAdd) { Icon(Icons.Default.Add, pluginString(Strings.add)) }
-        StocksMenu(app, onManage)
+        // In the app's shell only its search stays on the bar: Add is in the plugin sheet ([StocksMenu]).
+        if (LocalPluginClientBar.current == null) IconButton(onClick = onAdd) { Icon(Icons.Default.Add, pluginString(Strings.add)) }
+        StocksMenu(app, onManage, onAdd)
     }
 }
 
@@ -241,30 +273,36 @@ private fun tabIcon(tab: StocksTab): ImageVector = when (tab) {
 
 /** The sliders: the watchlist itself, and how Stocks shows things. */
 @Composable
-private fun StocksMenu(app: StocksApp, onManage: () -> Unit) {
-    var open by remember { mutableStateOf(false) }
+private fun StocksMenu(app: StocksApp, onManage: () -> Unit, onAdd: () -> Unit) {
     val chart by app.chart.collectAsState()
     val fold by app.foldSignals.collectAsState()
-    Box {
-        IconButton(onClick = { open = true }) { Icon(PostIcons.Tune, pluginString(Strings.settings_title)) }
-        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+    val shell = LocalPluginClientBar.current != null
+    ShellMenuButton { close ->
+        if (shell) {
             DropdownMenuItem(
-                text = { Text(pluginString(Strings.manage_watchlist)) },
+                text = { Text(pluginString(Strings.add)) },
                 onClick = {
-                    open = false
-                    onManage()
+                    close()
+                    onAdd()
                 },
-                leadingIcon = { Spacer(Modifier.size(24.dp)) },
+                leadingIcon = { Icon(Icons.Default.Add, contentDescription = null) },
             )
-            CheckedItem(pluginString(Strings.ticker_chart), chart) {
-                open = false
-                app.toggleChart()
-            }
-            CheckedItem(pluginString(Strings.fold_signal_posts), fold) {
-                open = false
-                app.toggleFoldSignals()
-            }
-            ReadingControlsPinItem()
+        }
+        DropdownMenuItem(
+            text = { Text(pluginString(Strings.manage_watchlist)) },
+            onClick = {
+                close()
+                onManage()
+            },
+            leadingIcon = { Spacer(Modifier.size(24.dp)) },
+        )
+        CheckedItem(pluginString(Strings.ticker_chart), chart) {
+            close()
+            app.toggleChart()
+        }
+        CheckedItem(pluginString(Strings.fold_signal_posts), fold) {
+            close()
+            app.toggleFoldSignals()
         }
     }
 }

@@ -35,11 +35,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.core.x.model.XConversation
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.data.AppGraph
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.services.article.Article
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.LoadingRow
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.ProblemView
 import com.aimdi.xtanative.ui.common.fullTimeText
 import com.aimdi.xtanative.ui.generated.resources.Res

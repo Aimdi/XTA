@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -71,6 +72,18 @@ class PluginHomeTab(val icon: ImageVector, val label: String, val selected: Bool
  */
 class PluginClientBar {
     internal var content: PluginBarContent? by mutableStateOf(null)
+
+    /** The feeds the plugin hands the shell's second row ([ShellFeeds]). */
+    internal var feeds: ShellFeedsContent? by mutableStateOf(null)
+
+    /** What the shell's title says under the plugin's name ([ShellSubtitle]). */
+    internal var subtitle: ShellSubtitleContent? by mutableStateOf(null)
+
+    /** How many posts the plugin has unread, for its avatar's badge ([ShellUnread]); null when it does not say. */
+    internal var unread: Int? by mutableStateOf(null)
+
+    /** What opens the plugin's own account switcher ([ShellAccounts]); null when it has none. */
+    internal var switchAccount: (() -> Unit)? by mutableStateOf(null)
 }
 
 internal class PluginBarContent(
@@ -307,7 +320,8 @@ internal fun PluginStandaloneBar(
     fallbackActions: @Composable RowScope.() -> Unit = {},
 ) {
     val content = bar.content
-    Row(modifier.fillMaxWidth().heightIn(min = STANDALONE_BAR.dp).padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+    Column(modifier.fillMaxWidth()) {
+    Row(Modifier.fillMaxWidth().heightIn(min = STANDALONE_BAR.dp).padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
         back()
         val tabs = content?.tabs?.value.orEmpty()
         if (tabs.isEmpty()) {
@@ -323,6 +337,9 @@ internal fun PluginStandaloneBar(
             }
         }
         if (content != null) content.actions.value(this) else fallbackActions()
+    }
+    // The plugin's feeds ([ShellFeeds]) under its bar, as on Home.
+    bar.feeds?.let { ShellFeedRow(it.feeds, it.filter, content?.accent?.value) }
     }
 }
 

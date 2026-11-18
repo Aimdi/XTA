@@ -153,4 +153,6 @@
     <string name="speak_from_here">Speak from here</string>
     <string name="turned_away">Bước kiểm tra bot của Substack đã từ chối kết nối này. Hãy mở trong trình duyệt, hoặc thử lại sau.</string>
     <string name="image_view">Xem toàn màn hình</string>
+    <string name="feed_subscriptions">Đăng ký</string>
+    <string name="unread_count">%1$d chưa đọc</string>
 </resources>

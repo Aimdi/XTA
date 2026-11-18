@@ -3,11 +3,12 @@ package com.aimdi.xtanative.ui.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -32,6 +33,7 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -40,19 +42,20 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.feed.FeedSort
 import com.aimdi.xtanative.core.feed.FeedStrip
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.HomePrefs
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.LocalParentTurnsPages
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.rememberScreenReaderOn
@@ -63,6 +66,7 @@ import com.aimdi.xtanative.ui.generated.resources.discover_loaded_title
 import com.aimdi.xtanative.ui.generated.resources.following
 import com.aimdi.xtanative.ui.generated.resources.home_feed_accounts
 import com.aimdi.xtanative.ui.generated.resources.home_filter_accounts
+import com.aimdi.xtanative.ui.generated.resources.home_manage_plugins
 import com.aimdi.xtanative.ui.generated.resources.home_more_options
 import com.aimdi.xtanative.ui.generated.resources.home_networks
 import com.aimdi.xtanative.ui.generated.resources.home_pin_to_bar
@@ -73,19 +77,24 @@ import com.aimdi.xtanative.ui.generated.resources.home_search_in
 import com.aimdi.xtanative.ui.generated.resources.home_subscriptions
 import com.aimdi.xtanative.ui.generated.resources.home_unread
 import com.aimdi.xtanative.ui.generated.resources.home_x
+import com.aimdi.xtanative.ui.generated.resources.home_xta_settings
 import com.aimdi.xtanative.ui.group.GroupFeedBody
-import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
-import com.aimdi.xtanative.ui.plugins.PluginClientBar
 import com.aimdi.xtanative.ui.group.groupFeedViewModel
 import com.aimdi.xtanative.ui.media.ReaderIcons
 import com.aimdi.xtanative.ui.plugins.LocalHomeReading
-import com.aimdi.xtanative.ui.plugins.ReadingControlsPinItem
+import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
+import com.aimdi.xtanative.ui.plugins.LocalShellMenu
+import com.aimdi.xtanative.ui.plugins.PluginClientBar
+import com.aimdi.xtanative.ui.plugins.PluginHomeTab
+import com.aimdi.xtanative.ui.plugins.ReadingControlsPinRow
+import com.aimdi.xtanative.ui.plugins.ShellMenu
 import com.aimdi.xtanative.ui.plugins.rememberHomeReading
+import com.aimdi.xtanative.ui.pluginstore.PluginRoutes
 import com.aimdi.xtanative.ui.post.PostActions
-import kotlin.coroutines.cancellation.CancellationException
 import com.aimdi.xtanative.ui.settings.SettingsRoutes
 import com.aimdi.xtanative.ui.settings.SettingsSection
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
+import kotlin.coroutines.cancellation.CancellationException
 import org.jetbrains.compose.resources.stringResource
 
 /** Where the feed page's controls lead, in the shell that holds the drawer, the sheets and what opens over Home. */
@@ -140,7 +149,7 @@ internal fun HomeFeedPage(
     // The bar's house, while a network has it, leads back to Following and so to the app's own bar.
     val toFollowing by rememberUpdatedState({ calls.onTab(tabs.indexOf(HomeTab.Following).coerceAtLeast(0)) })
     DisposableEffect(takeover, source, client) {
-        takeover?.show(NetworkBarRules.FEED, source, client.takeIf { source != null }) { toFollowing() }
+        takeover?.show(NetworkBarRules.FEED, source, client.takeIf { source != null }, onHome = { toFollowing() }, house = false)
         onDispose { takeover?.show(NetworkBarRules.FEED, null, null) }
     }
     val sectionsBelow = takeover?.on(BarPage.Feed)?.network == source && source != null
@@ -167,22 +176,28 @@ internal fun HomeFeedPage(
             if (current == HomeTab.Following) {
                 FollowingTopBar(following, followingCalls(calls, desktop, refresh), bar)
             } else if (current is HomeTab.Network) {
-                NetworkTopBar(
-                    current.id,
-                    ui,
-                    networks,
-                    client,
-                    timelines.unread,
-                    anyUnread,
-                    NetworkBarCalls(
-                        onMember = { id -> calls.onTab(tabs.indexOf(HomeTab.Network(id))) },
-                        onPicker = { calls.openSheet(HomeSheet.PICKER) },
-                    ),
-                    bar,
-                    sectionsBelow = sectionsBelow,
-                ) {
-                    if (current.id !in NetworkBarRules.ONE_MENU) key(current.id) { NetworkActions(current.id, ui, networks, vm::setTopBarPins) }
-                    if (desktop) IconButton(onClick = refresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) }
+                val extras = takeover?.on(BarPage.Feed)?.takeIf { it.network == current.id }?.split?.more.orEmpty()
+                val shell = remember(current.id) { ShellMenu(current.id) }
+                var sheet by remember { mutableStateOf(false) }
+                CompositionLocalProvider(LocalShellMenu provides shell) {
+                    NetworkTopBar(
+                        current.id,
+                        ui,
+                        networks,
+                        client,
+                        anyUnread,
+                        NetworkBarCalls(onAvatar = { sheet = true }, onTitle = calls.toTitleTop),
+                        bar,
+                        sectionsBelow = sectionsBelow,
+                    ) {
+                        // Only the search and what the reader pinned stay on the bar; the rest is in the plugin sheet.
+                        key(current.id) { NetworkActions(current.id, ui, networks, vm::setTopBarPins, routes, extras, menu = false) }
+                        if (desktop) IconButton(onClick = refresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) }
+                    }
+                }
+                if (sheet) {
+                    LaunchedEffect(Unit) { vm.reloadUnread() }
+                    PluginSheet(current.id, ui, networks, client, shell, extras, timelines.unread, routes, calls, vm::setTopBarPins) { sheet = false }
                 }
             } else {
                 TimelineTopBar(current, TopBarLook(ui, anyUnread, timelines.unread), networks, routes, refresh, calls, bar, vm::setTopBarPins)
@@ -341,6 +356,62 @@ private fun RowScope.TabActions(
     }
 }
 
+/**
+ * Network [id]'s plugin sheet ([PluginSwitcherSheet]): the plugin's own
+ * entries ([shell]) and the app's for it, then Start, the networks on Home,
+ * the plugin store and XTA's settings.
+ */
+@Composable
+private fun PluginSheet(
+    id: String,
+    ui: HomeUi,
+    networks: HomeNetworks,
+    client: PluginClientBar,
+    shell: ShellMenu,
+    extras: List<PluginHomeTab>,
+    unread: Set<String>,
+    routes: HomeRoutes,
+    calls: FeedPageCalls,
+    onPins: (String, List<String>) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val tabs = ui.tabs
+    val settings = PluginRoutes.settings(id).takeIf { routes.exists(PluginRoutes.SETTINGS) }
+    PluginSwitcherSheet(
+        ui,
+        networks,
+        current = id,
+        unread = unread,
+        calls = SwitcherCalls(
+            onStart = {
+                onDismiss()
+                calls.onTab(tabs.indexOf(HomeTab.Following).coerceAtLeast(0))
+            },
+            onNetwork = { other ->
+                onDismiss()
+                tabs.indexOf(HomeTab.Network(other)).takeIf { it >= 0 }?.let(calls.onTab)
+            },
+            onManage = {
+                onDismiss()
+                routes.openIfExists(HomeDestination.PLUGINS.route)
+            },
+            onSettings = {
+                onDismiss()
+                routes.openIfExists(HomeDestination.SETTINGS.route)
+            },
+            onDismiss = onDismiss,
+        ),
+        plugin = SheetPlugin(
+            id,
+            client.subtitle,
+            shell.items,
+            settings?.let { route -> { onDismiss(); routes.open(route) } },
+            appEntries = { close -> ShellEntries(id, ui, networks, extras, null, onPins, close) },
+            onSwitchAccount = client.switchAccount?.let { switch -> { onDismiss(); switch() } },
+        ),
+    )
+}
+
 /** X's options, by the ids its pins keep: its library, the reader's accounts, and the loaded posts' search, Home feed accounts and Refresh. */
 @Composable
 private fun xOptions(routes: HomeRoutes, refresh: () -> Unit, calls: FeedPageCalls): List<NetworkOption> {
@@ -370,63 +441,136 @@ internal fun FeedAccountsButton(off: Int, onClick: () -> Unit) {
     }
 }
 
-/** A network's options pinned to the bar, in pin order, and the menu of them all, where each can be pinned (XTA's top-bar pins). */
+/**
+ * A network's options pinned to the bar, in pin order, and, unless its
+ * plugin draws the one menu itself ([menu] false, [ShellMenu]), the menu of
+ * them all, where each can be pinned, with the app's entries after them:
+ * the network's sections that are in its menu ([extras]), the plugin store
+ * and XTA's settings.
+ */
 @Composable
-internal fun NetworkActions(id: String, ui: HomeUi, networks: HomeNetworks, onPins: (String, List<String>) -> Unit) {
-    PinnedOptions(id, networks.options(id), ui.topBarPins[id].orEmpty(), onPins)
+internal fun NetworkActions(
+    id: String,
+    ui: HomeUi,
+    networks: HomeNetworks,
+    onPins: (String, List<String>) -> Unit,
+    routes: HomeRoutes? = null,
+    extras: List<PluginHomeTab> = emptyList(),
+    menu: Boolean = true,
+) {
+    PinnedOptions(id, networks.options(id), ui.topBarPins[id].orEmpty(), onPins, menu = menu) { close -> AppEntries(extras, routes, close) }
+}
+
+/**
+ * The app's entries of a network's one menu, under XTA's name in its
+ * plugin's ([ShellMenuButton]): keep controls visible, the network's
+ * options as Home offers them (each can be pinned to the bar), then its
+ * sections in the menu, the plugin store and XTA's settings.
+ */
+@Composable
+internal fun ColumnScope.ShellEntries(id: String, ui: HomeUi, networks: HomeNetworks, extras: List<PluginHomeTab>, routes: HomeRoutes?, onPins: (String, List<String>) -> Unit, close: () -> Unit) {
+    ReadingControlsPinRow()
+    OptionItems(id, networks.options(id), ui.topBarPins[id].orEmpty(), onPins, close)
+    AppEntries(extras, routes, close)
+}
+
+/** The network's sections in its menu, then the plugin store and XTA's settings, where the app has them. */
+@Composable
+private fun AppEntries(extras: List<PluginHomeTab>, routes: HomeRoutes?, close: () -> Unit) {
+    extras.forEach { section ->
+        DropdownMenuItem(
+            text = { Text(section.label, fontWeight = if (section.selected) FontWeight.Bold else null) },
+            leadingIcon = { Icon(section.icon, contentDescription = null) },
+            onClick = {
+                close()
+                section.onSelect()
+            },
+        )
+    }
+    if (routes == null) return
+    if (routes.exists(HomeDestination.PLUGINS.route)) {
+        DropdownMenuItem(text = { Text(stringResource(Res.string.home_manage_plugins)) }, onClick = {
+            close()
+            routes.open(HomeDestination.PLUGINS.route)
+        })
+    }
+    if (routes.exists(HomeDestination.SETTINGS.route)) {
+        DropdownMenuItem(text = { Text(stringResource(Res.string.home_xta_settings)) }, onClick = {
+            close()
+            routes.open(HomeDestination.SETTINGS.route)
+        })
+    }
 }
 
 /**
  * [options] of the timeline [id]: those in [pins] on the bar, in pin order,
- * then the menu of them all, where each can be pinned; the menu's button
- * carries a dot while one of them wants the reader's [attention].
+ * then, with [menu], the menu of them all, where each can be pinned, and
+ * [more] after them; the menu's button carries a dot while one of them
+ * wants the reader's [attention].
  */
 @Composable
-private fun PinnedOptions(id: String, options: List<NetworkOption>, pins: List<String>, onPins: (String, List<String>) -> Unit, attention: Boolean = false) {
-    if (options.isEmpty()) return
+private fun PinnedOptions(
+    id: String,
+    options: List<NetworkOption>,
+    pins: List<String>,
+    onPins: (String, List<String>) -> Unit,
+    attention: Boolean = false,
+    menu: Boolean = true,
+    more: @Composable ColumnScope.(close: () -> Unit) -> Unit = {},
+) {
     TopBarPins.shown(options, pins) { it.id }.forEach { option ->
         IconButton(onClick = option.onClick) { Icon(option.icon, option.label) }
     }
+    if (!menu) return
     var open by remember { mutableStateOf(false) }
     Box {
         IconButton(onClick = { open = true }) {
-            val more = stringResource(Res.string.home_more_options)
-            if (attention) BadgedBox(badge = { Badge() }) { Icon(Icons.Filled.MoreVert, more) } else Icon(Icons.Filled.MoreVert, more)
+            val label = stringResource(Res.string.home_more_options)
+            if (attention) BadgedBox(badge = { Badge() }) { Icon(Icons.Filled.MoreVert, label) } else Icon(Icons.Filled.MoreVert, label)
         }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
-            val pinLabel = stringResource(Res.string.home_pin_to_bar)
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        stringResource(Res.string.home_pin_to_bar_hint),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                },
-                onClick = {},
-                enabled = false,
-            )
-            ReadingControlsPinItem()
-            options.forEach { option ->
+            if (options.isNotEmpty()) {
                 DropdownMenuItem(
-                    text = { Text(option.label) },
-                    leadingIcon = { Icon(option.icon, contentDescription = null) },
-                    trailingIcon = {
-                        IconButton(onClick = { onPins(id, TopBarPins.toggled(pins, option.id)) }) {
-                            Icon(
-                                XIcons.Pin,
-                                pinLabel,
-                                tint = if (option.id in pins) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(20.dp),
-                            )
-                        }
+                    text = {
+                        Text(
+                            stringResource(Res.string.home_pin_to_bar_hint),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                     },
-                    onClick = {
-                        open = false
-                        option.onClick()
-                    },
+                    onClick = {},
+                    enabled = false,
                 )
             }
+            ReadingControlsPinRow()
+            OptionItems(id, options, pins, onPins) { open = false }
+            more { open = false }
         }
+    }
+}
+
+/** Each of [options] as a menu row, its pin beside it. */
+@Composable
+private fun OptionItems(id: String, options: List<NetworkOption>, pins: List<String>, onPins: (String, List<String>) -> Unit, close: () -> Unit) {
+    val pinLabel = stringResource(Res.string.home_pin_to_bar)
+    options.forEach { option ->
+        DropdownMenuItem(
+            text = { Text(option.label) },
+            leadingIcon = { Icon(option.icon, contentDescription = null) },
+            trailingIcon = {
+                IconButton(onClick = { onPins(id, TopBarPins.toggled(pins, option.id)) }) {
+                    Icon(
+                        XIcons.Pin,
+                        pinLabel,
+                        tint = if (option.id in pins) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(20.dp),
+                    )
+                }
+            },
+            onClick = {
+                close()
+                option.onClick()
+            },
+        )
     }
 }

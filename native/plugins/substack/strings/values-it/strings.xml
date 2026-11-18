@@ -156,4 +156,6 @@
     <string name="speak_from_here">Speak from here</string>
     <string name="turned_away">Il controllo anti-bot di Substack ha respinto questa connessione. Aprilo nel browser o riprova più tardi.</string>
     <string name="image_view">Visualizza a schermo intero</string>
+    <string name="feed_subscriptions">Iscrizioni</string>
+    <string name="unread_count">Da leggere: %1$d</string>
 </resources>

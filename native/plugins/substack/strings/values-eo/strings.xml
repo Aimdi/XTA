@@ -156,4 +156,6 @@
     <string name="speak_from_here">Speak from here</string>
     <string name="turned_away">La kontrolo de Substack kontraŭ robotoj rifuzis ĉi tiun konekton. Malfermu ĝin en via retumilo, aŭ reprovu poste.</string>
     <string name="image_view">Vidi tutekrane</string>
+    <string name="feed_subscriptions">Abonoj</string>
+    <string name="unread_count">Nelegitaj: %1$d</string>
 </resources>

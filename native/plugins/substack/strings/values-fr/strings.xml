@@ -156,4 +156,6 @@
     <string name="speak_from_here">Speak from here</string>
     <string name="turned_away">La vérification anti-robots de Substack a refusé cette connexion. Ouvrez-le dans votre navigateur ou réessayez plus tard.</string>
     <string name="image_view">Afficher en plein écran</string>
+    <string name="feed_subscriptions">Abonnements</string>
+    <string name="unread_count">Non lus : %1$d</string>
 </resources>

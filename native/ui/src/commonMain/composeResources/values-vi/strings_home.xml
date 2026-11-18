@@ -68,6 +68,17 @@
     <string name="home_unable_to_load_pages">Không thể tải trang chủ của bạn</string>
     <string name="feed_strip_unavailable">Dòng thời gian này không còn khả dụng</string>
     <string name="home_feed_accounts_empty">Thêm tài khoản để tải Dành cho bạn.</string>
-    <string name="home_all_timelines">Tất cả dòng thời gian</string>
-    <string name="home_bar_more">Thêm</string>
+    <string name="home_switcher_title">Đổi plugin</string>
+    <string name="home_switcher_start">Bắt đầu</string>
+    <string name="home_switcher_start_hint">Đang theo dõi và mọi dòng thời gian của bạn</string>
+    <string name="home_switcher_recent">Dùng gần đây</string>
+    <string name="home_manage_plugins">Quản lý plugin</string>
+    <string name="home_xta_settings">Cài đặt XTA</string>
+    <string name="home_menu_xta">XTA</string>
+    <string name="home_sort_filter">Sắp xếp và lọc</string>
+    <string name="home_sort_filter_on">Sắp xếp và lọc, đã thay đổi</string>
+    <string name="home_sort_reset">Đặt lại</string>
+    <string name="home_plugin_settings">Cài đặt %1$s</string>
+    <string name="home_switch_account">Đổi tài khoản</string>
+    <string name="home_unread_count">%1$d chưa đọc</string>
 </resources>

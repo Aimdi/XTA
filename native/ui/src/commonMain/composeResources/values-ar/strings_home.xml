@@ -73,6 +73,17 @@
     <string name="home_unable_to_load_pages">تعذر تحميل الصفحات الرئيسية الخاصة بك</string>
     <string name="feed_strip_unavailable">هذا الموجز لم يعد متاحًا</string>
     <string name="home_feed_accounts_empty">أضف حساباً لتحميل «لك».</string>
-    <string name="home_all_timelines">كل الخطوط الزمنية</string>
-    <string name="home_bar_more">المزيد</string>
+    <string name="home_switcher_title">تبديل الإضافة</string>
+    <string name="home_switcher_start">البداية</string>
+    <string name="home_switcher_start_hint">المتابَعون وكل خطوطك الزمنية</string>
+    <string name="home_switcher_recent">المستخدمة مؤخرًا</string>
+    <string name="home_manage_plugins">إدارة الإضافات</string>
+    <string name="home_xta_settings">إعدادات XTA</string>
+    <string name="home_menu_xta">XTA</string>
+    <string name="home_sort_filter">الترتيب والتصفية</string>
+    <string name="home_sort_filter_on">الترتيب والتصفية، مُعدَّل</string>
+    <string name="home_sort_reset">إعادة الضبط</string>
+    <string name="home_plugin_settings">إعدادات %1$s</string>
+    <string name="home_switch_account">تبديل الحساب</string>
+    <string name="home_unread_count">غير المقروءة: %1$d</string>
 </resources>

@@ -52,4 +52,5 @@
 
     <string name="settings_blurb">No login. Votes and comments stay on Hacker News. Hearts and bookmarks stay on this device.</string>
     <string name="more_options">More options</string>
+    <string name="updated_ago">Updated %1$s ago</string>
 </resources>

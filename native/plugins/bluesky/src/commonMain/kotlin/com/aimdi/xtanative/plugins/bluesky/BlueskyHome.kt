@@ -5,10 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -21,15 +19,20 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.aimdi.xtanative.networks.bluesky.Bluesky
 import com.aimdi.xtanative.networks.bluesky.BlueskyTab
 import com.aimdi.xtanative.networks.bluesky.BlueskyUrls
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.swipeTabs
+import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginHomeTab
 import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
-import com.aimdi.xtanative.ui.plugins.ReadingControlsPinItem
+import com.aimdi.xtanative.ui.plugins.ShellFeeds
+import com.aimdi.xtanative.ui.plugins.ShellFilter
+import com.aimdi.xtanative.ui.plugins.ShellMenuButton
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.post.PostIcons
 
@@ -89,6 +92,7 @@ private val BlueskyTab.icon: ImageVector
 /** XTA's chrome for the tab (PluginHomeChrome with its dock): its four tabs, then search, the list's [filters] where it has some, and the menu. */
 @Composable
 private fun HomeBar(app: BlueskyApp, tab: BlueskyTab, onTab: (BlueskyTab) -> Unit, filters: ReaderFilter?) {
+    if (LocalPluginClientBar.current != null) return ShellBar(app, tab, onTab, filters)
     PluginHomeTabs(BlueskyTab.entries, tab, onTab, icon = { it.icon }, label = { pluginString(it.label) }) {
         IconButton(onClick = { app.openSearch() }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) }
         if (filters != null) FiltersButton(filters.first, filters.second)
@@ -96,28 +100,63 @@ private fun HomeBar(app: BlueskyApp, tab: BlueskyTab, onTab: (BlueskyTab) -> Uni
     }
 }
 
+/**
+ * Bluesky in the app's shell (the unified plugin shell): its four lists as
+ * the shell's feed row, the list's filters, where it has some, as its
+ * filter; its search alone on the bar, its menu in the plugin sheet. No
+ * sections of its own, so no bottom bar.
+ */
+@Composable
+private fun ShellBar(app: BlueskyApp, tab: BlueskyTab, onTab: (BlueskyTab) -> Unit, filters: ReaderFilter?) {
+    var filtering by rememberSaveable { mutableStateOf(false) }
+    PluginHomeTabs(emptyList()) {
+        IconButton(onClick = { app.openSearch() }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) }
+        HomeMenu(app)
+    }
+    ShellFeeds(shellFeeds(app, tab, onTab), filter = filters?.let { ShellFilter(it.first.setCount() > 0) { filtering = true } })
+    if (filtering && filters != null) FiltersSheet(filters.first, filters.second) { filtering = false }
+}
+
+/**
+ * The shell's feed row: Following, Discover and each custom feed pinned
+ * (which open in Discover's place, as its chips did), then Lists and Liked.
+ */
+@Composable
+private fun shellFeeds(app: BlueskyApp, tab: BlueskyTab, onTab: (BlueskyTab) -> Unit): List<PluginHomeTab> {
+    val feeds = app.feeds
+    val state by feeds.state.collectAsState()
+    val pinned by app.prefs.pinnedFeeds.collectAsState()
+    val discover = pluginString(Strings.tab_discover)
+    val custom = listOf(Bluesky.DISCOVER_FEED_URI to discover) + feeds.offered(pinned).map { it.uri to it.displayName }
+    val inDiscover = custom.map { (uri, name) ->
+        PluginHomeTab(BlueskyTab.DISCOVER.icon, name, tab == BlueskyTab.DISCOVER && state.selected.uri == uri) {
+            feeds.open(uri, name)
+            onTab(BlueskyTab.DISCOVER)
+        }
+    }
+    val (following, rest) = listOf(BlueskyTab.FOLLOWING, BlueskyTab.LISTS, BlueskyTab.LIKED)
+        .map { other -> PluginHomeTab(other.icon, pluginString(other.label), tab == other) { onTab(other) } }
+        .let { it.take(1) to it.drop(1) }
+    return following + inDiscover + rest
+}
+
 /** XTA's Bluesky menu: add an account, what was saved from Bluesky, import follows three ways, the settings. */
 @Composable
 private fun HomeMenu(app: BlueskyApp) {
-    var open by rememberSaveable { mutableStateOf(false) }
     var adding by rememberSaveable { mutableStateOf(false) }
-    Box {
-        IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, pluginString(Strings.more_options)) }
-        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
-            listOf<Pair<PluginText, () -> Unit>>(
-                Strings.add_account to { adding = true },
-                Strings.saved to { app.host.open(BlueskyRoutes.SAVED) },
-                Strings.import_following to { app.host.open(BlueskyRoutes.import(ImportKind.FOLLOWING)) },
-                Strings.import_list to { app.host.open(BlueskyRoutes.import(ImportKind.LIST)) },
-                Strings.import_starter to { app.host.open(BlueskyRoutes.import(ImportKind.STARTER)) },
-                Strings.settings to { app.host.openSettings() },
-            ).forEach { (text, action) ->
-                DropdownMenuItem(text = { Text(pluginString(text)) }, onClick = {
-                    open = false
-                    action()
-                })
-            }
-            ReadingControlsPinItem()
+    ShellMenuButton { close ->
+        listOf<Pair<PluginText, () -> Unit>>(
+            Strings.add_account to { adding = true },
+            Strings.saved to { app.host.open(BlueskyRoutes.SAVED) },
+            Strings.import_following to { app.host.open(BlueskyRoutes.import(ImportKind.FOLLOWING)) },
+            Strings.import_list to { app.host.open(BlueskyRoutes.import(ImportKind.LIST)) },
+            Strings.import_starter to { app.host.open(BlueskyRoutes.import(ImportKind.STARTER)) },
+            Strings.settings to { app.host.openSettings() },
+        ).forEach { (text, action) ->
+            DropdownMenuItem(text = { Text(pluginString(text)) }, onClick = {
+                close()
+                action()
+            })
         }
     }
     if (adding) AddAccountDialog(app) { adding = false }

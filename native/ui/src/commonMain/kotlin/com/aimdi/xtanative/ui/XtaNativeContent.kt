@@ -8,13 +8,21 @@ import androidx.compose.runtime.remember
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.request.crossfade
-import com.aimdi.xtanative.ui.common.addPlatformPictureDecoders
 import com.aimdi.xtanative.data.AppGraph
+import com.aimdi.xtanative.data.LocalGraph
+import com.aimdi.xtanative.data.LocalPostCache
+import com.aimdi.xtanative.data.LocalTranslation
 import com.aimdi.xtanative.data.plugins.AppPlugins
+import com.aimdi.xtanative.store.crash.CrashIssue
 import com.aimdi.xtanative.ui.common.FullPageError
-import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.LocalOnline
+import com.aimdi.xtanative.ui.common.LocalSessions
+import com.aimdi.xtanative.ui.common.LocalSettingsStore
+import com.aimdi.xtanative.ui.common.LocalXClient
 import com.aimdi.xtanative.ui.common.SwitchedHapticsFrame
+import com.aimdi.xtanative.ui.common.addPlatformPictureDecoders
 import com.aimdi.xtanative.ui.downloads.DownloadsFrame
+import com.aimdi.xtanative.ui.downloads.LocalPlatformFiles
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.app_name
 import com.aimdi.xtanative.ui.generated.resources.crash_something_broke
@@ -23,7 +31,7 @@ import com.aimdi.xtanative.ui.generated.resources.dismiss
 import com.aimdi.xtanative.ui.links.LinksFrame
 import com.aimdi.xtanative.ui.media.VideoFullscreenFrame
 import com.aimdi.xtanative.ui.pluginstore.PluginsFrame
-import com.aimdi.xtanative.ui.settings.CrashIssue
+import com.aimdi.xtanative.ui.saved.LocalKeeper
 import com.aimdi.xtanative.ui.settings.trimImageCache
 import com.aimdi.xtanative.ui.speech.SpeechBarScaffold
 import com.aimdi.xtanative.ui.theme.XtaTheme
@@ -37,7 +45,18 @@ import org.jetbrains.compose.resources.stringResource
  */
 @Composable
 fun XtaNativeContent(graph: AppGraph, plugins: AppPlugins) {
-    CompositionLocalProvider(LocalGraph provides graph) {
+    CompositionLocalProvider(
+        LocalGraph provides graph,
+        // The narrow parts, for what reads one or two of them rather than the whole graph.
+        LocalSettingsStore provides graph.settings,
+        LocalKeeper provides graph.keeper,
+        LocalOnline provides graph.online,
+        LocalSessions provides graph.sessions,
+        LocalXClient provides graph.client,
+        LocalTranslation provides graph.translation,
+        LocalPostCache provides graph.posts,
+        LocalPlatformFiles provides graph.platformFiles,
+    ) {
         XtaTheme { SwitchedHapticsFrame { LinksFrame { PluginsFrame(plugins) { DownloadsFrame { VideoFullscreenFrame { SpeechBarScaffold { RootOrBroken(graph) } } } } } } }
     }
 }

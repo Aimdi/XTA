@@ -153,4 +153,6 @@
     <string name="speak_from_here">Speak from here</string>
     <string name="turned_away">Substack의 봇 확인이 이 연결을 거부했습니다. 브라우저에서 열거나 나중에 다시 시도하세요.</string>
     <string name="image_view">전체 화면으로 보기</string>
+    <string name="feed_subscriptions">구독</string>
+    <string name="unread_count">읽지 않음 %1$d</string>
 </resources>

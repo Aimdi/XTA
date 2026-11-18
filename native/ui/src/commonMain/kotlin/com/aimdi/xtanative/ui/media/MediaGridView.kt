@@ -57,7 +57,7 @@ import com.aimdi.xtanative.core.x.model.photoUrl
 import com.aimdi.xtanative.store.settings.MediaGridLayout
 import com.aimdi.xtanative.store.settings.MediaPrefs
 import com.aimdi.xtanative.store.settings.MediaQuality
-import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.common.MediaBadge
 import com.aimdi.xtanative.ui.common.ShowMediaTile
 import com.aimdi.xtanative.ui.common.currentLocale
@@ -90,14 +90,14 @@ val LocalGalleryOpener = staticCompositionLocalOf<((MediaGallery, Int) -> Unit)?
 /** The size a post's photos are shown at, by Settings › Media's image quality (_media.dart). */
 @Composable
 fun rememberPhotoSize(): PhotoSize {
-    val settings by LocalGraph.current.settings.state.collectAsState()
+    val settings by LocalSettingsStore.current.state.collectAsState()
     return MediaFiles.viewerSize(settings?.get(MediaPrefs.imageQuality) ?: MediaQuality.MEDIUM)
 }
 
 /** The grid Settings › Media asks for: its layout and columns. */
 @Composable
 fun rememberMediaGridLook(): MediaGridLook {
-    val settings by LocalGraph.current.settings.state.collectAsState()
+    val settings by LocalSettingsStore.current.state.collectAsState()
     val layout = settings?.get(MediaPrefs.gridLayout) ?: MediaGridLayout.MASONRY
     val columns = settings?.get(MediaPrefs.gridColumns) ?: 3
     return remember(layout, columns) { MediaGridLook.of(layout, columns) }

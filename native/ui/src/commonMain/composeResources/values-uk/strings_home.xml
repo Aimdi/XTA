@@ -71,6 +71,17 @@
     <string name="home_unable_to_load_pages">Не вдалося завантажити домашні сторінки</string>
     <string name="feed_strip_unavailable">Ця стрічка більше недоступна</string>
     <string name="home_feed_accounts_empty">Додайте обліковий запис, щоб завантажити «Для вас».</string>
-    <string name="home_all_timelines">Усі стрічки</string>
-    <string name="home_bar_more">Ще</string>
+    <string name="home_switcher_title">Змінити плагін</string>
+    <string name="home_switcher_start">Початок</string>
+    <string name="home_switcher_start_hint">Підписки та всі ваші стрічки</string>
+    <string name="home_switcher_recent">Нещодавні</string>
+    <string name="home_manage_plugins">Керувати плагінами</string>
+    <string name="home_xta_settings">Налаштування XTA</string>
+    <string name="home_menu_xta">XTA</string>
+    <string name="home_sort_filter">Сортування й фільтри</string>
+    <string name="home_sort_filter_on">Сортування й фільтри, змінено</string>
+    <string name="home_sort_reset">Скинути</string>
+    <string name="home_plugin_settings">Налаштування %1$s</string>
+    <string name="home_switch_account">Змінити обліковий запис</string>
+    <string name="home_unread_count">Непрочитані: %1$d</string>
 </resources>

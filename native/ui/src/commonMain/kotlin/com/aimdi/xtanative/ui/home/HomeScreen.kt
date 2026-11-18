@@ -6,6 +6,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -50,8 +51,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.session.DeckGroups
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.common.BackHandling
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.rememberScreenReaderOn
 import com.aimdi.xtanative.ui.feed.MediaModes
@@ -64,6 +65,8 @@ import com.aimdi.xtanative.ui.group.GroupFeedScreen
 import com.aimdi.xtanative.ui.group.groupFeedViewModel
 import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.PluginClientBar
+import com.aimdi.xtanative.ui.plugins.ShellFeedRow
+import com.aimdi.xtanative.ui.plugins.pluginAccent
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.search.LoadedFeedSearchScreen
 import com.aimdi.xtanative.ui.settings.AvatarSheet
@@ -276,6 +279,7 @@ private fun HomeBody(parts: HomeParts, shell: HomeShellState, page: BarPage, fol
                 onNetworks = { shell.sheet = HomeSheet.NETWORKS },
                 onHoldHome = { shell.sheet = HomeSheet.PICKER },
                 sections = takeover.on(page),
+                hidden = takeover.hidesBar(page),
             )
         },
     ) { padding ->
@@ -301,7 +305,7 @@ private fun HomeBody(parts: HomeParts, shell: HomeShellState, page: BarPage, fol
                     is BarPage.Network -> if (shown.id in ui.missing) {
                         MissingPage(onChoose = { if (parts.routes.exists(HomeDestination.SETTINGS.route)) parts.routes.open(SettingsRoutes.of(SettingsSection.HOME)) })
                     } else {
-                        NetworkPage(shown.id, ui, parts.networks, shell.networkTop, refresh, parts.vm::setTopBarPins, takeover)
+                        NetworkPage(shown.id, ui, parts.networks, shell.networkTop, refresh, parts.vm::setTopBarPins, takeover, parts.routes)
                     }
                     is BarPage.Group -> GroupFeedScreen(shown.groupId, parts.actions, onBack = null)
                 }
@@ -354,9 +358,9 @@ private fun barTapped(shell: HomeShellState, ui: HomeUi, index: Int) {
 /** A network as a page of the bar: its name and options over its timeline. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun NetworkPage(id: String, ui: HomeUi, networks: HomeNetworks, toTop: Int, refresh: () -> Unit, onPins: (String, List<String>) -> Unit, takeover: NetworkBarTakeover) {
-    // A network whose sections take the bottom bar hands them to Home rather than drawing its own strip.
-    val client = remember(id) { PluginClientBar() }.takeIf { id in NetworkBarRules.NETWORKS }
+private fun NetworkPage(id: String, ui: HomeUi, networks: HomeNetworks, toTop: Int, refresh: () -> Unit, onPins: (String, List<String>) -> Unit, takeover: NetworkBarTakeover, routes: HomeRoutes) {
+    // A plugin hands its sections and feeds to Home's bars rather than drawing its own strip.
+    val client = remember(id) { PluginClientBar() }
     val owner = NetworkBarRules.owner(BarPage.Network(id))!!
     DisposableEffect(takeover, id, client) {
         takeover.show(owner, id, client)
@@ -365,15 +369,24 @@ private fun NetworkPage(id: String, ui: HomeUi, networks: HomeNetworks, toTop: I
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            TopAppBar(
-                title = { Text(ui.networks.firstOrNull { it.id == id }?.title ?: id, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                actions = {
-                    client?.content?.actions?.value?.invoke(this)
-                    if (client == null || id !in NetworkBarRules.ONE_MENU) key(id) { NetworkActions(id, ui, networks, onPins) }
-                    if (LocalDesktopActions.current != null) IconButton(onClick = refresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
-            )
+            val extras = takeover.on(BarPage.Network(id))?.split?.more.orEmpty()
+            Column {
+                TopAppBar(
+                    title = { Text(ui.networks.firstOrNull { it.id == id }?.title ?: id, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                    actions = {
+                        // Off Home's Feed there is no plugin sheet: the plugin's own entries stay its ⋮ ([ShellMenuButton]).
+                        client.content?.actions?.value?.invoke(this)
+                        key(id) { NetworkActions(id, ui, networks, onPins, routes, extras) }
+                        if (LocalDesktopActions.current != null) IconButton(onClick = refresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
+                )
+                // The plugin's feeds, or sections that do not make the bottom bar, run as its feed row, as on Home's Feed.
+                val handed = client.feeds
+                val tabs = client.content?.tabs?.value.orEmpty()
+                val feeds = handed?.feeds ?: tabs.takeIf { it.size > 1 && takeover.on(BarPage.Network(id)) == null }
+                if (feeds != null) ShellFeedRow(feeds, handed?.filter, pluginAccent(client.content?.accent?.value))
+            }
         },
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {

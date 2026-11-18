@@ -69,6 +69,17 @@
     <string name="home_unable_to_load_pages">Ezin dira hasierako orriak kargatu</string>
     <string name="feed_strip_unavailable">Denbora-lerro hau ez dago erabilgarri</string>
     <string name="home_feed_accounts_empty">Gehitu kontu bat Zuretzat kargatzeko.</string>
-    <string name="home_all_timelines">Denbora-lerro guztiak</string>
-    <string name="home_bar_more">Gehiago</string>
+    <string name="home_switcher_title">Aldatu plugina</string>
+    <string name="home_switcher_start">Hasiera</string>
+    <string name="home_switcher_start_hint">Jarraituak eta zure denbora-lerro guztiak</string>
+    <string name="home_switcher_recent">Azkenaldian erabiliak</string>
+    <string name="home_manage_plugins">Kudeatu pluginak</string>
+    <string name="home_xta_settings">XTAren ezarpenak</string>
+    <string name="home_menu_xta">XTA</string>
+    <string name="home_sort_filter">Ordenatu eta iragazi</string>
+    <string name="home_sort_filter_on">Ordenatu eta iragazi, aldatua</string>
+    <string name="home_sort_reset">Berrezarri</string>
+    <string name="home_plugin_settings">%1$s ezarpenak</string>
+    <string name="home_switch_account">Aldatu kontua</string>
+    <string name="home_unread_count">Irakurri gabeak: %1$d</string>
 </resources>

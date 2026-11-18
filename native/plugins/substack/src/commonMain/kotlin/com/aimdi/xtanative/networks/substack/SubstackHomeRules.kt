@@ -18,9 +18,10 @@ object SubstackHomeRules {
         readIds: Set<String>,
         isSaved: (SubstackPost) -> Boolean,
         options: SubstackLoadedOptions,
+        publication: String? = null,
     ): List<SubstackPost> {
         val followed = publications.mapTo(HashSet()) { it.baseUrl }
-        val shown = posts.filter { it.publicationBaseUrl in followed && SubstackFilters.matches(it, filter, readIds, isSaved) }
+        val shown = posts.filter { it.publicationBaseUrl in followed && (publication == null || it.publicationBaseUrl == publication) && SubstackFilters.matches(it, filter, readIds, isSaved) }
         return SubstackFilters.loaded(shown, options.query, options.order)
     }
 
@@ -48,6 +49,12 @@ object SubstackHomeRules {
 
     /** Whether "Mark all as read" has anything to do. */
     fun anyUnread(posts: List<SubstackPost>, readIds: Set<String>): Boolean = posts.any { !SubstackPosts.isRead(readIds, it) }
+
+    /** How many loaded posts of the publications followed are unread: the shell's subtitle. */
+    fun unread(posts: List<SubstackPost>, publications: List<SubstackPublication>, readIds: Set<String>): Int {
+        val followed = publications.mapTo(HashSet()) { it.baseUrl }
+        return posts.count { it.publicationBaseUrl in followed && !SubstackPosts.isRead(readIds, it) }
+    }
 
     /** A library post matching [query] by its title, publication or excerpt. */
     fun matches(query: String, post: SubstackPost): Boolean {

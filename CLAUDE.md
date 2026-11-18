@@ -43,7 +43,7 @@ the device. There are no trackers; the app talks to reverse-engineered APIs.
 |---|---|
 | `:core` | Plain Kotlin: the X client (`core/x`: transport, endpoints, signing, parsers, account health), JSON (`J`), feeds, the session, backup import, published repairs |
 | `:networks` | Plain Kotlin reading layers shared by plugins (RSS, readers) |
-| `:store` | Plain Kotlin: saved posts, offline, downloads, reading positions, settings, backup, antennas, follows, recent searches |
+| `:store` | Plain Kotlin: saved posts, offline, downloads, reading positions, settings, backup and its WebDAV sync, crash reports, antennas, follows, recent searches |
 | `:services` | Plain Kotlin: articles, links, translation, AI, speech text and the voice engine |
 | `:plugin-host` | Plain Kotlin: the plugin catalogue, download, verification, loading |
 | `:ui` | Compose Multiplatform screens for both apps (`androidMain`, `desktopMain`, `commonMain`) |
@@ -64,7 +64,8 @@ The app id is `com.aimdi.xtanative`; JDK 17.
   `J`, typed failures, fixtures, live tests).
 - `native/tool/README.md`: checking without Gradle, where Gradle cannot reach
   Maven (`jvmcheck.sh`, `uilogic.sh`, `uicheck.sh`, `plugincheck.sh`,
-  `plugin_abi.py`, `belarusian_latin.py`, `voice_engine.py`).
+  `plugin_abi.py`, `plugin_api_reach.py`, `belarusian_latin.py`,
+  `voice_engine.py`).
 - `native/RELEASE.md` / `native/PRERELEASE.md`: the notes a release and a
   prerelease publish.
 - `native/PARITY/`: the record of the port from the Flutter app.
@@ -90,7 +91,13 @@ new classes) rather than change what is there. Any change a built plugin
 would notice, and any addition once a release or prerelease has shipped the
 current version, means `PLUGIN_API_VERSION` goes up. A change that leaves the
 published plugins behind moves `OLDEST_PLUGIN_API` up with it. CI's desktop
-job checks both with `tool/plugin_abi.py`. Plugins are signed with the
+job checks both with `tool/plugin_abi.py`. Plugins may also use a fixed list
+of the app's parts outside `ui.plugins` (`PluginSurfaceTest`): those are
+contract too, and the test fails when a plugin starts to use another.
+What they reach reads narrow composition locals (`LocalKeeper`,
+`LocalSettingsStore`, …), never the app graph; `tool/plugin_api_reach.py
+--check` (CI's desktop job) fails when it does.
+Plugins are signed with the
 app's key and verified before loading; never weaken that.
 
 ## Translations

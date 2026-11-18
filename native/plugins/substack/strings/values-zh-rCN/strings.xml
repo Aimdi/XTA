@@ -153,4 +153,6 @@
     <string name="speak_from_here">Speak from here</string>
     <string name="turned_away">Substack 的机器人检查拒绝了此连接。请在浏览器中打开，或稍后再试。</string>
     <string name="image_view">全屏查看</string>
+    <string name="feed_subscriptions">订阅</string>
+    <string name="unread_count">%1$d 篇未读</string>
 </resources>

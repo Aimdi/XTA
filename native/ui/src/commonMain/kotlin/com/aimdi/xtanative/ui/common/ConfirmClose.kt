@@ -25,8 +25,8 @@ import org.jetbrains.compose.resources.stringResource
  */
 @Composable
 fun ConfirmCloseOnBack(enabled: Boolean = true) {
-    val graph = LocalGraph.current
-    val confirms by graph.settings.observe(GeneralPrefs.confirmClose).collectAsStateWithLifecycle(graph.settings.state.value?.get(GeneralPrefs.confirmClose) ?: true)
+    val settingsStore = LocalSettingsStore.current
+    val confirms by settingsStore.observe(GeneralPrefs.confirmClose).collectAsStateWithLifecycle(settingsStore.state.value?.get(GeneralPrefs.confirmClose) ?: true)
     var asking by remember { mutableStateOf(false) }
     val close = rememberCloseApp()
     BackHandling(enabled = enabled && confirms) { asking = true }

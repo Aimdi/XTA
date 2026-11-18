@@ -119,4 +119,8 @@
     </plurals>
     <string name="in_home_feed">显示在主时间线中</string>
     <string name="in_home_feed_description">把你关注的子版块的帖子混入「关注」和「为你推荐」</string>
+    <string name="see_popular">查看 Popular</string>
+    <string name="nothing_new">你关注的子版块没有新内容</string>
+    <string name="feed_home">首页</string>
+    <string name="your_profile">我的主页</string>
 </resources>

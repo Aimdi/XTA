@@ -122,4 +122,8 @@
     </plurals>
     <string name="in_home_feed">Weergeven in de hoofdtijdlijn</string>
     <string name="in_home_feed_description">Mengt berichten uit de subreddits die je volgt in Volgend en Voor jou</string>
+    <string name="see_popular">Popular bekijken</string>
+    <string name="nothing_new">Niets nieuws in de subreddits die je volgt</string>
+    <string name="feed_home">Home</string>
+    <string name="your_profile">Je profiel</string>
 </resources>

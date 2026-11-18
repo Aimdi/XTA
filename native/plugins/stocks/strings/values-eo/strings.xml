@@ -88,4 +88,6 @@
     <string name="window_24h">24 h</string>
     <string name="year_high">Maks. 52 sem.</string>
     <string name="year_low">Min. 52 sem.</string>
+    <string name="all_tickers">Ĉiuj</string>
+    <string name="live_tickers">Vive · simboloj: %1$d</string>
 </resources>

@@ -86,4 +86,6 @@
     <string name="window_24h">24 jam</string>
     <string name="year_high">Tertinggi 52 mgg</string>
     <string name="year_low">Terendah 52 mgg</string>
+    <string name="all_tickers">Semua</string>
+    <string name="live_tickers">Langsung · ticker: %1$d</string>
 </resources>

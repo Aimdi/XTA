@@ -3,7 +3,7 @@ package com.aimdi.xtanative.ui.subscriptions
 import com.aimdi.xtanative.core.backup.FollowedAccount
 import com.aimdi.xtanative.core.session.SavedSearch
 import com.aimdi.xtanative.core.session.Session
-import com.aimdi.xtanative.data.AppGraph
+import com.aimdi.xtanative.data.SessionStore
 import com.aimdi.xtanative.ui.saved.KeepNotice
 import com.aimdi.xtanative.ui.saved.KeepNotices
 import com.aimdi.xtanative.ui.search.FollowTarget
@@ -78,28 +78,28 @@ object MembershipUndo {
  * shown. Nothing reaches X.
  */
 object Unfollowing {
-    suspend fun unfollow(graph: AppGraph, target: FollowTarget) = when (target) {
-        is FollowTarget.Account -> accounts(graph, listOf(target.user.id))
-        is FollowTarget.Search -> search(graph, target.query)
+    suspend fun unfollow(sessions: SessionStore, target: FollowTarget) = when (target) {
+        is FollowTarget.Account -> accounts(sessions, listOf(target.user.id))
+        is FollowTarget.Search -> search(sessions, target.query)
     }
 
-    suspend fun accounts(graph: AppGraph, ids: Collection<String>) = change(graph) { Unfollows.accounts(it, ids) }
+    suspend fun accounts(sessions: SessionStore, ids: Collection<String>) = change(sessions) { Unfollows.accounts(it, ids) }
 
-    suspend fun search(graph: AppGraph, query: String) = change(graph) { Unfollows.search(it, query) }
+    suspend fun search(sessions: SessionStore, query: String) = change(sessions) { Unfollows.search(it, query) }
 
-    private suspend fun change(graph: AppGraph, unfollow: (Session) -> Pair<Session, Unfollowed>) {
+    private suspend fun change(sessions: SessionStore, unfollow: (Session) -> Pair<Session, Unfollowed>) {
         var taken = Unfollowed()
-        graph.sessions.update { session ->
+        sessions.update { session ->
             val (next, took) = unfollow(session)
             taken = took
             next
         }
-        if (!taken.isEmpty) offer { restore(graph, taken) }
+        if (!taken.isEmpty) offer { restore(sessions, taken) }
     }
 
-    private suspend fun restore(graph: AppGraph, taken: Unfollowed): Boolean {
+    private suspend fun restore(sessions: SessionStore, taken: Unfollowed): Boolean {
         var done = false
-        graph.sessions.update { session -> Unfollows.restored(session, taken)?.also { done = true } ?: session }
+        sessions.update { session -> Unfollows.restored(session, taken)?.also { done = true } ?: session }
         return done
     }
 

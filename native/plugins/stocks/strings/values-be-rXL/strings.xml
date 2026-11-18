@@ -92,4 +92,6 @@
     <string name="window_24h">24 h</string>
     <string name="year_high">Maks. 52 tyd.</string>
     <string name="year_low">Min. 52 tyd.</string>
+    <string name="all_tickers">Usio</string>
+    <string name="live_tickers">Naŭprost · tykery: %1$d</string>
 </resources>

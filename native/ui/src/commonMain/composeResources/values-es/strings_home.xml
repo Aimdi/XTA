@@ -69,6 +69,17 @@
     <string name="home_unable_to_load_pages">No se pueden cargar las páginas de inicio</string>
     <string name="feed_strip_unavailable">Esta cronología ya no está disponible</string>
     <string name="home_feed_accounts_empty">Añade una cuenta para cargar Para ti.</string>
-    <string name="home_all_timelines">Todas las cronologías</string>
-    <string name="home_bar_more">Más</string>
+    <string name="home_switcher_title">Cambiar de plugin</string>
+    <string name="home_switcher_start">Inicio</string>
+    <string name="home_switcher_start_hint">Seguidos y todas tus cronologías</string>
+    <string name="home_switcher_recent">Usados recientemente</string>
+    <string name="home_manage_plugins">Gestionar plugins</string>
+    <string name="home_xta_settings">Ajustes de XTA</string>
+    <string name="home_menu_xta">XTA</string>
+    <string name="home_sort_filter">Ordenar y filtrar</string>
+    <string name="home_sort_filter_on">Ordenar y filtrar, cambiado</string>
+    <string name="home_sort_reset">Restablecer</string>
+    <string name="home_plugin_settings">Ajustes de %1$s</string>
+    <string name="home_switch_account">Cambiar de cuenta</string>
+    <string name="home_unread_count">Sin leer: %1$d</string>
 </resources>

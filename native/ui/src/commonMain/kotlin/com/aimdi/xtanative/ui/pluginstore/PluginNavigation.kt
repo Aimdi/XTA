@@ -25,14 +25,18 @@ import androidx.navigation.navArgument
 import androidx.savedstate.read
 import com.aimdi.xtanative.data.plugins.AppPlugins
 import com.aimdi.xtanative.data.plugins.Destination
+import com.aimdi.xtanative.data.plugins.LocalNavigator
+import com.aimdi.xtanative.data.plugins.LocalSheetEntries
 import com.aimdi.xtanative.data.plugins.NavTarget
 import com.aimdi.xtanative.data.plugins.PluginSheet
 import com.aimdi.xtanative.data.plugins.RunningPlugin
+import com.aimdi.xtanative.data.plugins.SheetEntry
 import com.aimdi.xtanative.ui.home.LocalHomeNetworks
 import com.aimdi.xtanative.ui.links.LinkOpener
 import com.aimdi.xtanative.ui.links.LinkScreens
 import com.aimdi.xtanative.ui.links.LocalLinks
 import com.aimdi.xtanative.ui.plugins.MediaPager
+import com.aimdi.xtanative.ui.plugins.PluginSharedPost
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.post.LocalCashtagOpener
@@ -41,6 +45,7 @@ import com.aimdi.xtanative.ui.post.LocalCashtagStrip
 import com.aimdi.xtanative.ui.post.LocalContractNetworks
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.settings.SettingsRoutes
+import com.aimdi.xtanative.ui.subscriptions.LocalGroupActions
 import java.net.URLEncoder
 import kotlinx.coroutines.flow.first
 
@@ -87,8 +92,17 @@ fun PluginsFrame(plugins: AppPlugins, content: @Composable () -> Unit) {
     val cashtags = remember(plugins, running) { PluginCashtags(plugins, running) }
     val cashtagSheet = remember(plugins) { { symbol: String -> plugins.show(PluginSheet.Cashtag(symbol)) } }
     val contracts by plugins.contractNetworks.collectAsState()
+    val sheetEntries: @Composable (PluginSharedPost, String) -> List<SheetEntry> = remember(plugins) {
+        { post, shownIn ->
+            val now by plugins.running.collectAsState()
+            remember(post, now, shownIn) { plugins.sheetEntries(post, shownIn, now) }
+        }
+    }
     CompositionLocalProvider(
         LocalPlugins provides plugins,
+        LocalNavigator provides plugins.navigator,
+        LocalGroupActions provides plugins.groups,
+        LocalSheetEntries provides sheetEntries,
         LocalHomeNetworks provides networks,
         LocalCashtagStrip provides cashtags.strip,
         LocalCashtagOpener provides cashtags.opener,

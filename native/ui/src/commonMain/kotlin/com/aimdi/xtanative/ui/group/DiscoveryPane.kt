@@ -72,13 +72,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aimdi.xtanative.core.x.model.XThread
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.data.plugins.Destination
 import com.aimdi.xtanative.store.follows.Judgement
 import com.aimdi.xtanative.store.settings.SubscriptionPrefs
 import com.aimdi.xtanative.ui.common.Avatar
 import com.aimdi.xtanative.ui.common.Hairline
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.problemText
 import com.aimdi.xtanative.ui.feed.PluginPostRow
@@ -122,11 +122,11 @@ import com.aimdi.xtanative.ui.generated.resources.groups_retry
 import com.aimdi.xtanative.ui.generated.resources.groups_sort_ai_note
 import com.aimdi.xtanative.ui.generated.resources.groups_undo
 import com.aimdi.xtanative.ui.media.ReaderIcons
-import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
 import com.aimdi.xtanative.ui.plugins.DiscoverySignal
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.networkProblemText
+import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.post.ThreadRows
 import com.aimdi.xtanative.ui.subscriptions.GroupBoardModel

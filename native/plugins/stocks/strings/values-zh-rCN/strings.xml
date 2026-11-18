@@ -86,4 +86,6 @@
     <string name="window_24h">24小时</string>
     <string name="year_high">52周最高</string>
     <string name="year_low">52周最低</string>
+    <string name="all_tickers">全部</string>
+    <string name="live_tickers">实时 · 代码 %1$d 个</string>
 </resources>

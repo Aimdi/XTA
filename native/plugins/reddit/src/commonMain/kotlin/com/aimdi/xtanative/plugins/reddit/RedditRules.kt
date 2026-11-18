@@ -147,13 +147,6 @@ internal data class RedditHomeSource(val mode: RedditFeedMode = RedditFeedMode.F
 
     fun railSelected(rail: RedditFeedMode): Boolean = !viewingSubreddit && mode == rail
 
-    /**
-     * Which section Home's bottom bar lights: the rail shown, and Following
-     * while a followed community is open, since that is where it came from
-     * (a bar with nothing lit does not say where the reader is).
-     */
-    fun barSelected(rail: RedditFeedMode): Boolean = if (viewingSubreddit) rail == RedditFeedMode.FOLLOWING else mode == rail
-
     fun isSelected(name: String): Boolean = subreddit?.equals(name, ignoreCase = true) == true
 
     companion object {
@@ -277,12 +270,16 @@ internal object RedditAboutIcon {
 internal object RedditHomeChrome {
     enum class Action { SEARCH, SORT, MENU }
 
+    /** Whether the order differs from Reddit's default (Hot; a time window only where the order takes one): the shell's filter then shows it. */
+    fun sortChanged(choices: RedditChoices): Boolean =
+        choices.sort != RedditPrefs.sort.default || (choices.sort.usesTimeFilter && choices.window != RedditPrefs.timeFilter.default)
+
+    /** [settings] with the order and its time window back to the defaults, as the sort sheet's Reset. */
+    fun defaultSort(settings: Settings): Settings = settings.with(RedditPrefs.sort, RedditPrefs.sort.default).with(RedditPrefs.timeFilter, RedditPrefs.timeFilter.default)
+
     enum class MenuItem { SAVED, SUBSCRIPTIONS, SOURCE_AUTO, SOURCE_PUBLIC, SETTINGS }
 
     val actions: List<Action> = listOf(Action.SEARCH, Action.SORT, Action.MENU)
-
-    /** The actions in Home's one bar, where the order is a chip at the start of the communities' strip instead. */
-    val homeActions: List<Action> = actions - Action.SORT
 
     val menu: List<MenuItem> = MenuItem.entries
 

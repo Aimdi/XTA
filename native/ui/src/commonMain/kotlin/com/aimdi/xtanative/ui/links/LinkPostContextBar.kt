@@ -42,16 +42,16 @@ import coil3.compose.AsyncImage
 import com.aimdi.xtanative.core.format.Formats
 import com.aimdi.xtanative.services.links.LinkPostContext
 import com.aimdi.xtanative.services.links.NetworkLink
-import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.currentLocale
+import com.aimdi.xtanative.ui.feed.rememberRunningPlugins
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_link_back_to_post
 import com.aimdi.xtanative.ui.generated.resources.reader_link_likes
 import com.aimdi.xtanative.ui.generated.resources.reader_link_replies
 import com.aimdi.xtanative.ui.generated.resources.reader_link_reposts
 import com.aimdi.xtanative.ui.generated.resources.reader_link_share_post
-import com.aimdi.xtanative.ui.feed.rememberRunningPlugins
 import com.aimdi.xtanative.ui.generated.resources.reader_network_bluesky
 import com.aimdi.xtanative.ui.generated.resources.reader_network_hackernews
 import com.aimdi.xtanative.ui.generated.resources.reader_network_instagram
@@ -78,8 +78,8 @@ private val AvatarSize = 32.dp
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun LinkPostContextBar(post: LinkPostContext, onBackToPost: () -> Unit, onSharePost: (() -> Unit)?, modifier: Modifier = Modifier) {
-    val graph = LocalGraph.current
-    val settings by graph.settings.state.collectAsStateWithLifecycle()
+    val settingsStore = LocalSettingsStore.current
+    val settings by settingsStore.state.collectAsStateWithLifecycle()
     val locale = currentLocale()
     val decimal = remember(locale) { DecimalFormatSymbols.getInstance(locale).decimalSeparator }
     val counts = LinkPostBar.counts(post, LinkPostBar.countsHidden(settings)) { Formats.count(it, decimal) }

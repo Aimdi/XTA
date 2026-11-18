@@ -39,4 +39,5 @@
         <item quantity="other">%1$d karma</item>
     </plurals>
     <string name="more_options">Opsi lainnya</string>
+    <string name="updated_ago">Diperbarui %1$s lalu</string>
 </resources>

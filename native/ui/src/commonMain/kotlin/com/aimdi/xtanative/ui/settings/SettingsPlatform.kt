@@ -21,6 +21,3 @@ internal expect fun rememberBackupSaver(onSaved: (String?) -> Unit): (fileName: 
 @Composable
 internal expect fun rememberFolderPicker(onPicked: (stored: String, name: String) -> Unit): () -> Unit
 
-/** The screens below in [language] (`language` and `region`, as [SettingsChoices.localeOf] gives them), or the system's for null. */
-@Composable
-expect fun ProvideAppLanguage(language: Pair<String, String>?, content: @Composable () -> Unit)

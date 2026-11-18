@@ -90,4 +90,6 @@
     <string name="window_24h">24 h</string>
     <string name="year_high">Máx. 52 sem.</string>
     <string name="year_low">Mín. 52 sem.</string>
+    <string name="all_tickers">Todos</string>
+    <string name="live_tickers">En directo · tickers: %1$d</string>
 </resources>

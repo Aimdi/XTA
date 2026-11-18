@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import com.aimdi.xtanative.store.downloads.mimeTypeFor
-import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.downloads.LocalPlatformFiles
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.downloads_open_file
 import com.aimdi.xtanative.ui.media.EngineVideo
@@ -56,12 +56,12 @@ internal actual fun OfflineVideo(file: File, active: Boolean, modifier: Modifier
 /** A click hands the kept video to the player the system has. */
 @Composable
 private fun SystemPlayer(file: File, modifier: Modifier) {
-    val graph = LocalGraph.current
+    val files = LocalPlatformFiles.current
     val scope = rememberCoroutineScope()
     val open = stringResource(Res.string.downloads_open_file)
     Box(
         modifier.clickable(role = Role.Button, onClickLabel = open) {
-            scope.launch { if (!graph.platformFiles.openFile(file, mimeTypeFor(file.name))) KeepNotices.show(KeepNotice.OpenFailed) }
+            scope.launch { if (!files.openFile(file, mimeTypeFor(file.name))) KeepNotices.show(KeepNotice.OpenFailed) }
         },
         contentAlignment = Alignment.Center,
     ) {

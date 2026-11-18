@@ -74,8 +74,8 @@ import com.aimdi.xtanative.store.settings.MediaPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.AltBadge
 import com.aimdi.xtanative.ui.common.AltTextDialog
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.common.ShowMediaTile
 import com.aimdi.xtanative.ui.common.mediaShown
 import com.aimdi.xtanative.ui.common.rememberPicture
@@ -207,9 +207,9 @@ private fun MediaTile(item: MediaItem, hidden: Boolean, modifier: Modifier, onCl
 @Composable
 private fun TileClip(item: MediaItem, poster: Any, modifier: Modifier) {
     val url = item.inlineVideoUrl ?: item.videoUrl ?: return
-    val graph = LocalGraph.current
+    val settingsStore = LocalSettingsStore.current
     if (item.kind == MediaItem.Kind.GIF) {
-        val source = remember(url) { VideoSource.of(url, true, graph.settings.state.value) }
+        val source = remember(url) { VideoSource.of(url, true, settingsStore.state.value) }
         return TileGif(source, poster, modifier)
     }
     val save = LocalMediaSave.current
@@ -329,17 +329,17 @@ private fun PagerBar(items: List<MediaItem>, pager: PagerState, onDownload: ((Me
  */
 @Composable
 private fun QualityVideoPage(item: MediaItem, qualities: List<VideoQuality>, active: Boolean) {
-    val graph = LocalGraph.current
+    val settingsStore = LocalSettingsStore.current
     val players = rememberVideoPlayers()
     if (players != null) {
-        val source = remember(item, qualities) { VideoSource.of(item.videoUrl, qualities, item.kind == MediaItem.Kind.GIF, graph.settings.state.value) }
+        val source = remember(item, qualities) { VideoSource.of(item.videoUrl, qualities, item.kind == MediaItem.Kind.GIF, settingsStore.state.value) }
         val poster = rememberPicture(item.imageUrl)
         return SourceVideoPage(source, item.aspectRatio, active, players, onPlaying = {}, onDownload = null) {
             AsyncImage(model = poster, contentDescription = item.alt, contentScale = ContentScale.Fit, modifier = Modifier.fillMaxSize())
         }
     }
     var chosen by rememberSaveable(item.videoUrl) {
-        mutableStateOf(VideoRules.defaultUrl(qualities, item.videoUrl, (graph.settings.state.value ?: Settings())[MediaPrefs.videoQuality]))
+        mutableStateOf(VideoRules.defaultUrl(qualities, item.videoUrl, (settingsStore.state.value ?: Settings())[MediaPrefs.videoQuality]))
     }
     val url = playedUrl(item, qualities, chosen)
     Box(Modifier.fillMaxSize()) {

@@ -39,4 +39,5 @@
         <item quantity="other">カルマ %1$d</item>
     </plurals>
     <string name="more_options">その他のオプション</string>
+    <string name="updated_ago">%1$s前に更新</string>
 </resources>

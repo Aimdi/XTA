@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.session.AccountLookup
 import com.aimdi.xtanative.core.session.FollowCheck
 import com.aimdi.xtanative.core.x.model.XUser
-import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.cancel
 import com.aimdi.xtanative.ui.generated.resources.close
@@ -76,7 +76,7 @@ fun BrokenSubscriptionsDialog(onDismiss: () -> Unit) {
                 TextButton(onClick = {
                     val ids = state.broken.map { it.first.id }.toSet()
                     scope.launch {
-                        Unfollowing.accounts(graph, ids)
+                        Unfollowing.accounts(graph.sessions, ids)
                         onDismiss()
                     }
                 }) { Text(stringResource(Res.string.groups_delete) + " (${state.broken.size})") }

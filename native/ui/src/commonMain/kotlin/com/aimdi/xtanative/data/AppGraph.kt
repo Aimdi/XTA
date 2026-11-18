@@ -1,5 +1,7 @@
 package com.aimdi.xtanative.data
 
+import com.aimdi.xtanative.ui.downloads.Downloading
+import com.aimdi.xtanative.ui.saved.Keeper
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.core.x.FileAccountHealthStore
 import com.aimdi.xtanative.core.x.XAccountHealthStore
@@ -12,6 +14,11 @@ import com.aimdi.xtanative.core.x.signing.SigningBootstrap
 import com.aimdi.xtanative.data.plugins.PluginPrefs
 import com.aimdi.xtanative.store.StoreDir
 import com.aimdi.xtanative.store.antenna.AntennaStore
+import com.aimdi.xtanative.store.backup.StoredWebDavBaselines
+import com.aimdi.xtanative.store.crash.CrashReport
+import com.aimdi.xtanative.store.crash.CrashReporter
+import com.aimdi.xtanative.store.crash.CrashReports
+import com.aimdi.xtanative.store.crash.OkHttpCrashReports
 import com.aimdi.xtanative.store.downloads.DownloadQueue
 import com.aimdi.xtanative.store.downloads.DownloadTransfer
 import com.aimdi.xtanative.store.downloads.FileDownloadHistory
@@ -38,16 +45,11 @@ import com.aimdi.xtanative.store.settings.CrashReportPrefs
 import com.aimdi.xtanative.store.settings.SettingsStore
 import com.aimdi.xtanative.ui.downloads.PlatformFiles
 import com.aimdi.xtanative.ui.settings.ChromeAvatar
-import com.aimdi.xtanative.ui.settings.CrashReport
-import com.aimdi.xtanative.ui.settings.CrashReporter
-import com.aimdi.xtanative.ui.settings.CrashReports
-import com.aimdi.xtanative.ui.settings.OkHttpCrashReports
 import com.aimdi.xtanative.ui.settings.DeviceBackup
 import com.aimdi.xtanative.ui.settings.KeptSections
 import com.aimdi.xtanative.ui.settings.MainThreadStalls
 import com.aimdi.xtanative.ui.settings.PluginBackups
 import com.aimdi.xtanative.ui.settings.SettingsStart
-import com.aimdi.xtanative.ui.settings.StoredWebDavBaselines
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -55,10 +57,10 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
@@ -119,6 +121,11 @@ class AppGraph(
     /** Pictures and videos, streamed for downloads and the offline library. */
     private val mediaHttp = OkHttpMediaHttp()
     val offline = OfflineStore(store, mediaHttp)
+
+    /** What keeping on the device needs of the app, for the parts that keep without the whole graph ([LocalKeeper]). */
+    val keeper: Keeper by lazy {
+        Keeper(saved, likes, settings, localPosts, noteDrafts, offline, ::keep, { requests -> Downloading.batch(this, requests) }, { post, index -> Downloading.media(this, post, index) }, { bytes, name, mime -> Downloading.shareMade(this, bytes, name, mime) })
+    }
 
     /** The picture the reader chose for the upper left (Settings › Accounts' Your avatar). */
     val avatar = ChromeAvatar(File(files, "chrome_avatar"), settings, mediaHttp)

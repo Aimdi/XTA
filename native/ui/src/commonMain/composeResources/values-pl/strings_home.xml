@@ -71,6 +71,17 @@
     <string name="home_unable_to_load_pages">Nie można załadować Twoich kart</string>
     <string name="feed_strip_unavailable">Ta oś czasu jest już niedostępna</string>
     <string name="home_feed_accounts_empty">Dodaj konto, aby wczytać Dla Ciebie.</string>
-    <string name="home_all_timelines">Wszystkie osie czasu</string>
-    <string name="home_bar_more">Więcej</string>
+    <string name="home_switcher_title">Przełącz wtyczkę</string>
+    <string name="home_switcher_start">Start</string>
+    <string name="home_switcher_start_hint">Obserwowane i wszystkie twoje osie czasu</string>
+    <string name="home_switcher_recent">Ostatnio używane</string>
+    <string name="home_manage_plugins">Zarządzaj wtyczkami</string>
+    <string name="home_xta_settings">Ustawienia XTA</string>
+    <string name="home_menu_xta">XTA</string>
+    <string name="home_sort_filter">Sortowanie i filtry</string>
+    <string name="home_sort_filter_on">Sortowanie i filtry, zmienione</string>
+    <string name="home_sort_reset">Resetuj</string>
+    <string name="home_plugin_settings">Ustawienia %1$s</string>
+    <string name="home_switch_account">Przełącz konto</string>
+    <string name="home_unread_count">Nieprzeczytane: %1$d</string>
 </resources>

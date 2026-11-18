@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.data
 
+import androidx.compose.runtime.staticCompositionLocalOf
 import com.aimdi.xtanative.core.x.http.XHttp
 import com.aimdi.xtanative.services.ai.AiConfig
 import com.aimdi.xtanative.services.translation.KeptTranslations
@@ -54,3 +55,6 @@ class ReaderTranslation(private val settings: SettingsStore, http: XHttp, store:
         )
     }
 }
+
+/** The reader's translation service, for the post views that offer one. */
+val LocalTranslation = staticCompositionLocalOf<ReaderTranslation> { error("No translation provided") }

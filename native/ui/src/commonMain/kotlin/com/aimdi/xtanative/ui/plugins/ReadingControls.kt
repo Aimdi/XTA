@@ -153,9 +153,17 @@ fun ReadingControlsBar(content: @Composable () -> Unit) {
  */
 @Composable
 fun ReadingControlsPinItem() {
+    // In the one menu the app's own entries carry it already.
+    if (LocalHomeReading.current == null || LocalShellMenu.current != null) return
+    HorizontalDivider()
+    ReadingControlsPinRow()
+}
+
+/** "Keep controls visible" alone, as the app's entries of a network's one menu draw it. Nothing off Home. */
+@Composable
+internal fun ReadingControlsPinRow() {
     val reading = LocalHomeReading.current ?: return
     val scope = rememberCoroutineScope()
-    HorizontalDivider()
     DropdownMenuItem(
         text = { Text(stringResource(Res.string.home_keep_controls_visible)) },
         trailingIcon = { Checkbox(checked = reading.ui.pinned, onCheckedChange = null) },

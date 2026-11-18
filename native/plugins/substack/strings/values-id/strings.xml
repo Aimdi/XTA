@@ -153,4 +153,6 @@
     <string name="speak_from_here">Speak from here</string>
     <string name="turned_away">Pemeriksaan bot Substack menolak koneksi ini. Buka di browser Anda, atau coba lagi nanti.</string>
     <string name="image_view">Lihat layar penuh</string>
+    <string name="feed_subscriptions">Langganan</string>
+    <string name="unread_count">%1$d belum dibaca</string>
 </resources>

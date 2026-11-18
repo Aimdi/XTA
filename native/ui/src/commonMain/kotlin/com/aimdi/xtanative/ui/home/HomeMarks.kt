@@ -24,7 +24,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
@@ -34,8 +33,8 @@ import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import com.aimdi.xtanative.core.backup.FollowGroup
 import com.aimdi.xtanative.core.x.XAccount
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.AccountPrefs
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.home_unread
 import org.jetbrains.compose.resources.stringResource
@@ -89,15 +88,6 @@ internal fun GroupMark(group: FollowGroup, size: Dp, modifier: Modifier = Modifi
     }
     Box(modifier.size(size).clip(CircleShape).background(MaterialTheme.colorScheme.surfaceVariant), contentAlignment = Alignment.Center) {
         Text(emoji, fontSize = with(LocalDensity.current) { (size * 0.5f).toSp() }, maxLines = 1)
-    }
-}
-
-/** One letter on a disc; the letter keeps its size whatever the text size, or it would leave the disc (as in XTA). */
-@Composable
-internal fun LetterMark(letter: String, colour: Color, size: Dp, modifier: Modifier = Modifier) {
-    Box(modifier.size(size).clip(CircleShape).background(colour), contentAlignment = Alignment.Center) {
-        val fontSize = with(LocalDensity.current) { (size * 0.46f).toSp() }
-        Text(letter, color = Color.White, fontWeight = FontWeight.Bold, fontSize = fontSize, lineHeight = fontSize, maxLines = 1)
     }
 }
 

@@ -31,12 +31,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.x.model.XUser
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.saved.ArchiveFilter
 import com.aimdi.xtanative.store.saved.ArchiveItem
 import com.aimdi.xtanative.store.saved.SavedContent
 import com.aimdi.xtanative.store.saved.profileArchive
 import com.aimdi.xtanative.ui.common.Hairline
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.saved_bookmarks
 import com.aimdi.xtanative.ui.generated.resources.saved_empty_likes

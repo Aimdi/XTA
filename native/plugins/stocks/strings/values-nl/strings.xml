@@ -88,4 +88,6 @@
     <string name="window_24h">24 u</string>
     <string name="year_high">52w hoog</string>
     <string name="year_low">52w laag</string>
+    <string name="all_tickers">Alle</string>
+    <string name="live_tickers">Live · tickers: %1$d</string>
 </resources>

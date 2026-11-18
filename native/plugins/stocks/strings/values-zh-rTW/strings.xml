@@ -86,4 +86,6 @@
     <string name="window_24h">24 小時</string>
     <string name="year_high">52週最高</string>
     <string name="year_low">52週最低</string>
+    <string name="all_tickers">全部</string>
+    <string name="live_tickers">即時 · 代號 %1$d 個</string>
 </resources>

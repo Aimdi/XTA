@@ -39,4 +39,5 @@
         <item quantity="other">%1$d karma</item>
     </plurals>
     <string name="more_options">Tùy chọn khác</string>
+    <string name="updated_ago">Cập nhật %1$s trước</string>
 </resources>

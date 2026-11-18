@@ -71,6 +71,17 @@
     <string name="home_unable_to_load_pages">Невозможно загрузить вашу главную страницу</string>
     <string name="feed_strip_unavailable">Эта лента больше недоступна</string>
     <string name="home_feed_accounts_empty">Добавьте аккаунт, чтобы загрузить «Для вас».</string>
-    <string name="home_all_timelines">Все ленты</string>
-    <string name="home_bar_more">Ещё</string>
+    <string name="home_switcher_title">Сменить плагин</string>
+    <string name="home_switcher_start">Начало</string>
+    <string name="home_switcher_start_hint">Подписки и все ваши ленты</string>
+    <string name="home_switcher_recent">Недавние</string>
+    <string name="home_manage_plugins">Управление плагинами</string>
+    <string name="home_xta_settings">Настройки XTA</string>
+    <string name="home_menu_xta">XTA</string>
+    <string name="home_sort_filter">Сортировка и фильтры</string>
+    <string name="home_sort_filter_on">Сортировка и фильтры, изменено</string>
+    <string name="home_sort_reset">Сбросить</string>
+    <string name="home_plugin_settings">Настройки %1$s</string>
+    <string name="home_switch_account">Сменить аккаунт</string>
+    <string name="home_unread_count">Непрочитанные: %1$d</string>
 </resources>

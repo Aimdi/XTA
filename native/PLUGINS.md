@@ -44,7 +44,7 @@ plugin API version it was built against, `PLUGIN_API_VERSION`) and `entry`
 
 ## The plugin API
 
-`PLUGIN_API_VERSION` is 13. Version 1 is what native-0.1.41 shipped; 2,
+`PLUGIN_API_VERSION` is 14. Version 1 is what native-0.1.41 shipped; 2,
 which native-0.1.45 shipped, added `cashtagStrip` and `routeForCashtag` and
 the kit's pieces of that time (the article reader, `FeedReads`, X posts in a
 plugin, the chip tabs, the shelf, the recent searches, the action row,
@@ -85,7 +85,47 @@ calls `translate` says 12 and an app of API 11 (native-1.0.7) offers it as
 keep loading in this app, which still has everything they use. 13 adds
 `PluginHomeTab.joinsMore`: where a plugin's tabs take Home's bottom bar, a
 tab that joins More (Pixiv's account and About) goes there instead of taking
-a place; the four-argument constructor stays for plugins built before.
+a place; the four-argument constructor stays for plugins built before. 14
+adds the unified plugin shell's parts: `ShellFeeds` (the feeds of the
+shell's second row, with a `ShellFilter`), `ShellSubtitle` with
+`ShellStatus` (the account or state under the plugin's name),
+`ShellUnread` (the count on its avatar), `ShellAccounts` (what opens its own
+account switcher, from a long press on its avatar), the sort
+sheet (`ShellSortSheet`, `ShellSortHeading`, `ShellSortOption`,
+`ShellSortPills`) and `ShellMenuButton`, a plugin's own entries, which are
+in the plugin sheet on Home and a ⋮ menu elsewhere. A plugin built before
+keeps its own chrome under the shell's header.
+
+On Home every plugin is one shell (option A of the "Unified Plugin Shell"
+canvas), two rows that hide together as the posts scroll:
+- 52 dp: the plugin's avatar (its mark on a tinted disc, a dot while it has
+  unread posts), which opens the plugin sheet; its name centred over its
+  subtitle, which goes back to the top; its search alone on the right.
+- 44 dp: its feeds as words, the one shown bold and underlined in the
+  accent, its filter at the end; a hairline under them.
+- The plugin sheet: the plugin's name, subtitle and settings, its own
+  entries and the app's for it (keep controls visible, Home's options for
+  the network), then Start (back to XTA's Home), the networks on Home with
+  the recently used first, the plugin store and XTA's settings.
+- Three or four sections of its own make the bottom bar, icons only; fewer
+  or more run as the feed row, and on Home's Feed there is then no bottom
+  bar at all.
+
+Beyond `ui.plugins`, plugins use about fifty of the app's own parts
+(`ui.common`'s `Avatar` and `Hairline`, `ui.post`'s `PostActions`, the media
+players and so on). They are part of the contract as much as the API, since
+a plugin is compiled against their names. `PluginSurfaceTest` (in `:ui`'s
+desktop tests) lists them and fails when a plugin starts to use another, so
+the surface grows on purpose: move what a plugin needs into `ui.plugins`, or
+add it to the list knowingly.
+
+None of what plugins use reaches the app graph (`AppGraph`, `LocalGraph`):
+it reads the narrow parts the app provides as composition locals instead
+(`LocalKeeper` for saving, liking, notes and offline copies,
+`LocalSettingsStore`, `LocalSessions`, `LocalXClient`, `LocalNavigator`, …),
+so it can one day stand in a module of its own. `tool/plugin_api_reach.py
+--check` fails when it reaches the graph again, and `--why File.kt` names the
+chain to cut; CI's desktop job runs it.
 
 The app loads the versions from `OLDEST_PLUGIN_API` (2) to its own, so a
 plugin built before keeps working until its update comes, for as long as what

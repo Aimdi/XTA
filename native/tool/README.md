@@ -143,6 +143,16 @@ python3 -I native/tool/plugin_abi.py --app "/tmp/ui:$(cat /tmp/deps.txt)" xta-pl
 The JARs are the desktop builds of the `native-plugins` release (the APKs
 hold the same classes, dexed); it reads them and runs nothing of them.
 
+`plugin_api_reach.py` measures, from the sources alone, how much of `:ui` the
+plugin API drags in and which of it still holds the app graph. `--check`
+fails when the API reaches a file holding `AppGraph` or `LocalGraph`;
+`--graph` lists those files and `--why File.kt` the chain that reaches one:
+
+```bash
+python3 -I native/tool/plugin_api_reach.py --edges 0 --check
+python3 -I native/tool/plugin_api_reach.py --edges 0 --why FollowMenu.kt
+```
+
 ## Downloaded voices (`voice_engine.py`, `voice_screens.sh`)
 
 Downloaded voices read with sherpa-onnx's C API through the app's JNI shim

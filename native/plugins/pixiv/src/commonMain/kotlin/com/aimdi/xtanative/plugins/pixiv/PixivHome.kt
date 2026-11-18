@@ -34,6 +34,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -51,14 +52,22 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.pixiv.PixivIllust
 import com.aimdi.xtanative.networks.pixiv.PixivSearchKind
 import com.aimdi.xtanative.networks.pixiv.PixivUserListKind
+import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.swipeTabs
+import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginHomeTab
 import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
 import com.aimdi.xtanative.ui.plugins.PluginText
-import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
+import com.aimdi.xtanative.ui.plugins.RefreshesOn
+import com.aimdi.xtanative.ui.plugins.ShellAccounts
+import com.aimdi.xtanative.ui.plugins.ShellFeeds
+import com.aimdi.xtanative.ui.plugins.ShellFilter
+import com.aimdi.xtanative.ui.plugins.ShellSortOption
+import com.aimdi.xtanative.ui.plugins.ShellSortSheet
+import com.aimdi.xtanative.ui.plugins.ShellSubtitle
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.post.PostIcons
@@ -81,6 +90,7 @@ internal fun PixivHome(runtime: PixivRuntime, frame: PluginFrame) {
         LaunchedEffect(view.tab, view.novels, signedIn) { model.ensureShown() }
         RefreshesOn(frame.refresh) { model.refreshShown() }
         val toTop = frame.toTop + reselected
+        if (LocalPluginClientBar.current != null && signedIn) ShellAccount(settings)
         Column(Modifier.fillMaxSize()) {
             ReadingControlsBar { HomeChrome(view, onTab = { tab -> if (tab == view.tab) reselected++ else model.show(tab) }, onMode = model::switchMode) }
             HorizontalDivider()
@@ -160,8 +170,10 @@ internal fun Chip(label: String, selected: Boolean, onClick: () -> Unit, icon: I
 @Composable
 private fun HomeSection(model: PixivHomeModel, view: PixivHomeView, padding: PaddingValues, toTop: Int) {
     val runtime = LocalPixiv.current
+    val shell = LocalPluginClientBar.current != null
+    if (shell) ShellSources(model, view)
     Column(Modifier.fillMaxSize()) {
-        ChipRow {
+        if (!shell) ChipRow {
             Chip(pluginString(Strings.tab_following), view.source == PixivHomeSource.FOLLOWING, { model.showSource(PixivHomeSource.FOLLOWING) })
             if (view.source == PixivHomeSource.FOLLOWING) RestrictMenu(view.restrict, model::restrict)
             IconButton(onClick = { runtime.open(PixivRoute.Users(PixivUserListKind.FOLLOWING, 0)) }) { Icon(PostIcons.People, pluginString(Strings.following)) }
@@ -182,6 +194,42 @@ private fun HomeSection(model: PixivHomeModel, view: PixivHomeView, padding: Pad
                 PixivHomeSource.MANGA -> PixivWorksGrid(model.manga, pluginString(Strings.manga_empty), padding = padding, toTop = toTop)
                 PixivHomeSource.WATCHLIST -> WatchlistFeed(model.watchlist, pluginString(Strings.watchlist_empty), padding, toTop, novels = false)
             }
+        }
+    }
+}
+
+/**
+ * Home's lists in the app's shell (the unified plugin shell): Following,
+ * Recommended, Manga and Watchlist as its feed row; on Following, whose
+ * works it shows, and the people followed, behind its filter.
+ */
+@Composable
+private fun ShellSources(model: PixivHomeModel, view: PixivHomeView) {
+    val runtime = LocalPixiv.current
+    var sorting by remember { mutableStateOf(false) }
+    val sources = listOf(
+        PixivHomeSource.FOLLOWING to Strings.tab_following,
+        PixivHomeSource.RECOMMENDED to Strings.tab_recommended,
+        PixivHomeSource.MANGA to Strings.tab_manga,
+        PixivHomeSource.WATCHLIST to Strings.tab_watchlist,
+    )
+    val following = view.source == PixivHomeSource.FOLLOWING
+    ShellFeeds(
+        sources.map { (source, label) -> PluginHomeTab(PostIcons.Image, pluginString(label), view.source == source) { model.showSource(source) } },
+        ShellFilter(active = view.restrict != PixivFollowRestrict.ALL) { sorting = true }.takeIf { following },
+    )
+    if (sorting && following) {
+        ShellSortSheet(pluginString(Strings.tab_following), onDismiss = { sorting = false }, onReset = { model.restrict(PixivFollowRestrict.ALL) }) {
+            listOf(
+                PixivFollowRestrict.ALL to Strings.follow_restrict_all,
+                PixivFollowRestrict.PUBLIC to Strings.follow_restrict_public,
+                PixivFollowRestrict.PRIVATE to Strings.follow_restrict_private,
+                PixivFollowRestrict.DEVICE to Strings.follow_restrict_device,
+            ).forEach { (value, label) -> ShellSortOption(pluginString(label), view.restrict == value) { model.restrict(value) } }
+            TextButton(onClick = {
+                sorting = false
+                runtime.open(PixivRoute.Users(PixivUserListKind.FOLLOWING, 0))
+            }) { Text(pluginString(Strings.following)) }
         }
     }
 }
@@ -230,8 +278,10 @@ private fun restrictIcon(restrict: PixivFollowRestrict): ImageVector = when (res
 /** Novel mode's Home: Recommended, Following (public or private) and Watchlist. */
 @Composable
 private fun NovelHomeSection(model: PixivHomeModel, view: PixivHomeView, padding: PaddingValues, toTop: Int) {
+    val shell = LocalPluginClientBar.current != null
+    if (shell) ShellNovelSources(model, view)
     Column(Modifier.fillMaxSize()) {
-        ChipRow {
+        if (!shell) ChipRow {
             Chip(pluginString(Strings.tab_recommended), view.novelSource == PixivNovelSource.RECOMMENDED, { model.showNovelSource(PixivNovelSource.RECOMMENDED) })
             Chip(pluginString(Strings.tab_following), view.novelSource == PixivNovelSource.FOLLOWING, { model.showNovelSource(PixivNovelSource.FOLLOWING) })
             if (view.novelSource == PixivNovelSource.FOLLOWING) {
@@ -280,4 +330,46 @@ private fun WalkthroughTile(illust: PixivIllust) {
             .clickable { runtime.tell(Strings.walkthrough_sign_in.get(language)) },
         contentDescription = illust.title,
     )
+}
+
+/** The novels' lists in the app's shell: Recommended, Following and Watchlist as its feed row; on Following, the public or the private follows behind its filter. */
+@Composable
+private fun ShellNovelSources(model: PixivHomeModel, view: PixivHomeView) {
+    var sorting by remember { mutableStateOf(false) }
+    val sources = listOf(
+        PixivNovelSource.RECOMMENDED to Strings.tab_recommended,
+        PixivNovelSource.FOLLOWING to Strings.tab_following,
+        PixivNovelSource.WATCHLIST to Strings.tab_watchlist,
+    )
+    val following = view.novelSource == PixivNovelSource.FOLLOWING
+    ShellFeeds(
+        sources.map { (source, label) -> PluginHomeTab(PixivIcons.MenuBook, pluginString(label), view.novelSource == source) { model.showNovelSource(source) } },
+        ShellFilter(active = view.novelRestrict != PixivFavoritesSource.PUBLIC) { sorting = true }.takeIf { following },
+    )
+    if (sorting && following) {
+        ShellSortSheet(pluginString(Strings.tab_following), onDismiss = { sorting = false }, onReset = { model.novelRestrict(PixivFavoritesSource.PUBLIC) }) {
+            ShellSortOption(pluginString(Strings.follow_public), view.novelRestrict == PixivFavoritesSource.PUBLIC) { model.novelRestrict(PixivFavoritesSource.PUBLIC) }
+            ShellSortOption(pluginString(Strings.follow_private), view.novelRestrict == PixivFavoritesSource.PRIVATE) { model.novelRestrict(PixivFavoritesSource.PRIVATE) }
+        }
+    }
+}
+
+/**
+ * The account in use under Pixiv's name in the app's shell, and its own
+ * account switcher behind a long press on its avatar and the plugin
+ * sheet's Switch account.
+ */
+@Composable
+private fun ShellAccount(settings: Settings) {
+    val runtime = LocalPixiv.current
+    var switching by remember { mutableStateOf(false) }
+    val active = PixivAccounts.active(settings)
+    ShellSubtitle(active?.let { account -> account.account.takeIf { it.isNotEmpty() }?.let { "@$it" } ?: account.displayName })
+    ShellAccounts { switching = true }
+    if (switching) {
+        AccountSwitcher(onClose = { switching = false }) {
+            switching = false
+            runtime.open(PixivRoute.SignIn)
+        }
+    }
 }

@@ -88,4 +88,6 @@
     <string name="window_24h">24 sa</string>
     <string name="year_high">52H en yüksek</string>
     <string name="year_low">52H en düşük</string>
+    <string name="all_tickers">Tümü</string>
+    <string name="live_tickers">Canlı · sembol: %1$d</string>
 </resources>

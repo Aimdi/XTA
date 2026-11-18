@@ -26,11 +26,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.store.offline.OfflineArticle
 import com.aimdi.xtanative.store.offline.OfflineSaved
 import com.aimdi.xtanative.store.saved.SavedContent
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.cancel
 import com.aimdi.xtanative.ui.generated.resources.offline_article_text_only
@@ -42,6 +40,8 @@ import com.aimdi.xtanative.ui.generated.resources.offline_sensitive_question
 import com.aimdi.xtanative.ui.generated.resources.offline_video_only
 import com.aimdi.xtanative.ui.generated.resources.retry
 import com.aimdi.xtanative.ui.saved.KeepNotices
+import com.aimdi.xtanative.ui.saved.Keeper
+import com.aimdi.xtanative.ui.saved.LocalKeeper
 import com.aimdi.xtanative.ui.saved.SavedIcons
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -61,14 +61,14 @@ private val keeping = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 @Composable
 fun OfflineSavedAction(postId: String, content: SavedContent, modifier: Modifier = Modifier) {
     if (!OfflineSaved.hasMedia(content)) return
-    val graph = LocalGraph.current
-    val state by graph.offline.state.collectAsStateWithLifecycle()
-    LaunchedEffect(graph) { graph.offline.load() }
+    val keeper = LocalKeeper.current
+    val state by keeper.offline.state.collectAsStateWithLifecycle()
+    LaunchedEffect(keeper) { keeper.offline.load() }
     var asking by remember { mutableStateOf(false) }
     val key = OfflineSaved.idFor(postId)
     val entry = state.entry(key)
     val busy = key in state.busy
-    val keep = { keepSaved(graph, postId, content) }
+    val keep = { keepSaved(keeper, postId, content) }
     ListItem(
         modifier = modifier.clickable(enabled = !busy) { if (OfflineSaved.sensitive(content)) asking = true else keep() },
         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
@@ -88,7 +88,7 @@ fun OfflineSavedAction(postId: String, content: SavedContent, modifier: Modifier
         },
         trailingContent = entry?.let {
             {
-                IconButton(onClick = { keeping.launch { graph.offline.remove(key) } }) { Icon(Icons.Filled.Delete, stringResource(Res.string.offline_remove)) }
+                IconButton(onClick = { keeping.launch { keeper.offline.remove(key) } }) { Icon(Icons.Filled.Delete, stringResource(Res.string.offline_remove)) }
             }
         },
     )
@@ -104,10 +104,10 @@ fun OfflineSavedAction(postId: String, content: SavedContent, modifier: Modifier
 }
 
 /** Keeps the post's pictures and videos, then says how it went. */
-private fun keepSaved(graph: AppGraph, postId: String, content: SavedContent) {
+private fun keepSaved(keeper: Keeper, postId: String, content: SavedContent) {
     keeping.launch {
         val key = OfflineSaved.idFor(postId)
-        graph.offline.keepMedia(
+        keeper.offline.keepMedia(
             id = key,
             title = OfflineSaved.title(content),
             source = OfflineSaved.source(content),
@@ -115,7 +115,7 @@ private fun keepSaved(graph: AppGraph, postId: String, content: SavedContent) {
             url = OfflineSaved.url(content),
             sensitive = OfflineSaved.sensitive(content),
         )
-        KeepNotices.show(OfflineRules.afterKeeping(graph.offline.state.value, key))
+        KeepNotices.show(OfflineRules.afterKeeping(keeper.offline.state.value, key))
     }
 }
 
@@ -126,9 +126,9 @@ private fun keepSaved(graph: AppGraph, postId: String, content: SavedContent) {
  */
 @Composable
 fun OfflineArticleAction(article: OfflineArticle) {
-    val graph = LocalGraph.current
-    val state by graph.offline.state.collectAsStateWithLifecycle()
-    LaunchedEffect(graph) { graph.offline.load() }
+    val keeper = LocalKeeper.current
+    val state by keeper.offline.state.collectAsStateWithLifecycle()
+    LaunchedEffect(keeper) { keeper.offline.load() }
     var open by remember { mutableStateOf(false) }
     val entry = state.entry(article.id)
     val busy = article.id in state.busy
@@ -147,13 +147,13 @@ fun OfflineArticleAction(article: OfflineArticle) {
                 onClick = {
                     open = false
                     keeping.launch {
-                        graph.offline.keepArticle(article)
-                        KeepNotices.show(OfflineRules.afterKeeping(graph.offline.state.value, article.id))
+                        keeper.offline.keepArticle(article)
+                        KeepNotices.show(OfflineRules.afterKeeping(keeper.offline.state.value, article.id))
                     }
                 },
             )
             if (entry != null) {
-                DropdownMenuItem(text = { Text(stringResource(Res.string.offline_remove)) }, onClick = { open = false; keeping.launch { graph.offline.remove(article.id) } })
+                DropdownMenuItem(text = { Text(stringResource(Res.string.offline_remove)) }, onClick = { open = false; keeping.launch { keeper.offline.remove(article.id) } })
                 DropdownMenuItem(text = { Text(detailText(OfflineRules.detail(entry))) }, enabled = false, onClick = {})
             }
             DropdownMenuItem(text = { Text(stringResource(Res.string.offline_article_text_only)) }, enabled = false, onClick = {})

@@ -1,88 +1,85 @@
 package com.aimdi.xtanative.ui.home
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.selected
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
-import com.aimdi.xtanative.ui.subscriptions.GroupIcons
+import androidx.compose.ui.unit.sp
+import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.generated.resources.Res
-import com.aimdi.xtanative.ui.generated.resources.home_all_timelines
-import com.aimdi.xtanative.ui.generated.resources.home_networks
+import com.aimdi.xtanative.ui.generated.resources.home_switch_account
+import com.aimdi.xtanative.ui.generated.resources.home_switcher_title
 import com.aimdi.xtanative.ui.generated.resources.home_unread
+import com.aimdi.xtanative.ui.generated.resources.home_unread_count
+import com.aimdi.xtanative.ui.generated.resources.posts_scroll_to_top
 import com.aimdi.xtanative.ui.plugins.PluginClientBar
-import com.aimdi.xtanative.ui.plugins.PluginHomeTab
-import com.aimdi.xtanative.ui.plugins.PluginSectionPicker
-import com.aimdi.xtanative.ui.plugins.PluginTabFit
+import com.aimdi.xtanative.ui.plugins.ShellFeedRow
+import com.aimdi.xtanative.ui.plugins.color
 import com.aimdi.xtanative.ui.plugins.pluginAccent
+import kotlin.math.roundToInt
 import org.jetbrains.compose.resources.stringResource
 
-/** The compact bar's height: one row for the network, its sections and its actions. */
-private val BAR_HEIGHT = 52.dp
+/** The shell's first row: the plugin's avatar, its name and subtitle, its search. */
+private val TITLE_ROW = 52.dp
 
-/** How much of the accent the network's disc is filled with. */
+/** How much of the accent the plugin's avatar is filled with. */
 private const val DISC_ALPHA = 0.16f
 
-/** What the network's button of the compact bar does: show another member, or open the timeline picker. */
-internal class NetworkBarCalls(val onMember: (String) -> Unit, val onPicker: () -> Unit)
+/** What the network's bar does: open the plugin sheet (its avatar) and go back to the top (its title). */
+internal class NetworkBarCalls(val onAvatar: () -> Unit, val onTitle: () -> Unit)
 
 /**
- * A network's timeline's one bar on Home (the header's variant A): the
- * network's mark in a tinted disc with its name and a chevron, which switches
- * between Mastodon, Bluesky and Threads while they are grouped and opens the
- * timeline picker; then the network's own sections, handed by its plugin to
- * [client], as text tabs underlined in the accent (folded into its section
- * picker where they do not fit); then the plugin's actions and the app's
- * ([actions]). The plugin's own strip under it gives way, so its posts start
- * one row higher. With [sectionsBelow] the sections are on the bottom bar
- * instead ([NetworkBarRules]), and the bar keeps the button and the actions.
+ * A network's timeline's header on Home (the unified plugin shell, option
+ * A): two rows that hide together as the posts scroll up and come back on
+ * any scroll down. The first, 52 dp: the plugin's avatar (its mark on a
+ * tinted disc, a dot while it has unread posts), which opens the plugin
+ * sheet; its name centred over its subtitle ([ShellSubtitle]), which goes
+ * back to the top; then its search ([actions], the plugin's and the
+ * app's). The second, 44 dp: the plugin's feeds ([ShellFeeds]) with its
+ * filter, or, where it hands none, its sections when they are not on the
+ * bottom bar ([sectionsBelow]); a hairline under it.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -91,169 +88,140 @@ internal fun NetworkTopBar(
     ui: HomeUi,
     networks: HomeNetworks,
     client: PluginClientBar,
-    unread: Set<String>,
     anyUnread: Boolean,
     calls: NetworkBarCalls,
     bar: TopAppBarScrollBehavior,
     sectionsBelow: Boolean = false,
-    actions: @Composable () -> Unit,
+    actions: @Composable RowScope.() -> Unit,
 ) {
     val content = client.content
     val accent = pluginAccent(content?.accent?.value)
-    TopAppBar(
-        expandedHeight = BAR_HEIGHT,
-        navigationIcon = { NetworkButton(id, ui, networks, unread, anyUnread, calls) },
-        title = {
-            val tabs = content?.tabs?.value.orEmpty()
-            if (tabs.isNotEmpty() && !sectionsBelow) TextTabs(tabs, accent)
-        },
-        actions = {
-            content?.actions?.value?.invoke(this)
-            actions()
-        },
-        scrollBehavior = bar,
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.background,
-            scrolledContainerColor = MaterialTheme.colorScheme.background,
-        ),
-    )
+    val handed = client.feeds
+    val tabs = content?.tabs?.value.orEmpty()
+    val feeds = handed?.feeds ?: tabs.takeIf { it.size > 1 && !sectionsBelow }
+    Column(Modifier.background(MaterialTheme.colorScheme.background).windowInsetsPadding(TopAppBarDefaults.windowInsets)) {
+        Collapsing(bar) {
+            Column {
+                TitleRow(id, ui, networks, client, anyUnread, calls) {
+                    content?.actions?.value?.invoke(this)
+                    actions()
+                }
+                if (feeds != null) ShellFeedRow(feeds, handed?.filter, accent) else Hairline()
+            }
+        }
+    }
 }
 
 /**
- * The network's button: its mark in a disc of the accent, its name and a
- * chevron, carrying the dot while a timeline has unread posts. It opens a
- * menu of the grouped microblogs and every timeline, or, with no group to
- * switch in, the timeline picker at once.
+ * [content] drawn whole while [bar] is expanded, and moved up out of sight
+ * as the list under it scrolls (the TopAppBar's own enterAlways), so the
+ * header's rows hide and return together.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun NetworkButton(id: String, ui: HomeUi, networks: HomeNetworks, unread: Set<String>, anyUnread: Boolean, calls: NetworkBarCalls) {
-    val members = if (ui.microblogsGrouped && AltMicroblogging.isMember(id)) AltMicroblogging.members(ui.tabs.filterIsInstance<HomeTab.Network>().map { it.id }) else emptyList()
-    var open by remember { mutableStateOf(false) }
+private fun Collapsing(bar: TopAppBarScrollBehavior, content: @Composable () -> Unit) {
+    var full by remember { mutableIntStateOf(0) }
+    SideEffect { if (full > 0 && bar.state.heightOffsetLimit != -full.toFloat()) bar.state.heightOffsetLimit = -full.toFloat() }
+    Layout(content, Modifier.clipToBounds()) { measurables, constraints ->
+        val placeable = measurables.single().measure(constraints.copy(minHeight = 0, maxHeight = Constraints.Infinity))
+        if (full != placeable.height) full = placeable.height
+        val offset = bar.state.heightOffset.roundToInt().coerceIn(-placeable.height, 0)
+        layout(placeable.width, placeable.height + offset) { placeable.place(0, offset) }
+    }
+}
+
+/** The first row: avatar, centred name and subtitle, the actions. */
+@Composable
+private fun TitleRow(id: String, ui: HomeUi, networks: HomeNetworks, client: PluginClientBar, anyUnread: Boolean, calls: NetworkBarCalls, actions: @Composable RowScope.() -> Unit) {
     val name = networkName(id, ui)
-    val label = listOfNotNull(name, stringResource(Res.string.home_unread).takeIf { anyUnread }, stringResource(Res.string.home_networks)).joinToString(", ")
-    val accent = MaterialTheme.colorScheme.primary
-    Box {
-        Row(
+    val subtitle = client.subtitle
+    Box(Modifier.fillMaxWidth().height(TITLE_ROW)) {
+        Avatar(id, name, networks, AvatarMark(anyUnread, client.unread), calls.onAvatar, client.switchAccount, Modifier.align(Alignment.CenterStart).padding(start = 6.dp))
+        Column(
             Modifier
-                .padding(start = 6.dp)
+                .align(Alignment.Center)
+                .widthIn(max = 220.dp)
                 .heightIn(min = 44.dp)
-                .clip(RoundedCornerShape(22.dp))
-                .clickable { if (members.size > 1) open = true else calls.onPicker() }
-                .clearAndSetSemantics {
-                    role = Role.DropdownList
-                    contentDescription = label
-                }
-                .padding(start = 4.dp, end = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
+                .clip(RoundedCornerShape(12.dp))
+                .clickable(onClickLabel = stringResource(Res.string.posts_scroll_to_top), onClick = calls.onTitle)
+                .padding(horizontal = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
         ) {
-            UnreadDot(anyUnread) {
-                Box(Modifier.size(28.dp).background(accent.copy(alpha = DISC_ALPHA), CircleShape), contentAlignment = Alignment.Center) {
-                    networks.Mark(id, 17.dp)
+            Text(name, fontSize = 17.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            if (subtitle != null) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                    subtitle.status.color()?.let { Box(Modifier.size(6.dp).background(it, CircleShape)) }
+                    Text(subtitle.text, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
             }
-            Spacer(Modifier.width(6.dp))
-            Text(
-                name,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.widthIn(max = 120.dp),
-            )
-            Spacer(Modifier.width(2.dp))
-            Icon(GroupIcons.ExpandMore, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
         }
-        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
-            members.forEach { member ->
-                val shown = member == id
-                val memberName = networkName(member, ui)
-                val lit = HomeTab.Network(member).key in unread
-                DropdownMenuItem(
-                    text = { Text(memberName) },
-                    leadingIcon = { UnreadDot(lit) { networks.Mark(member, 20.dp) } },
-                    trailingIcon = { if (shown) Icon(Icons.Filled.Check, contentDescription = null, modifier = Modifier.size(18.dp)) },
-                    onClick = {
-                        open = false
-                        if (!shown) calls.onMember(member)
-                    },
-                    modifier = Modifier.semantics { selected = shown },
-                )
-            }
-            HorizontalDivider()
-            DropdownMenuItem(
-                text = { Text(stringResource(Res.string.home_all_timelines)) },
-                onClick = {
-                    open = false
-                    calls.onPicker()
-                },
+        Row(Modifier.align(Alignment.CenterEnd).padding(end = 2.dp), verticalAlignment = Alignment.CenterVertically, content = actions)
+    }
+}
+
+/** What the avatar carries: the plugin's own unread count where it says one ([count]), else a dot while Home has [unread] posts for it. */
+internal class AvatarMark(val unread: Boolean, val count: Int?) {
+    /** The badge's text: the count, 99+ past that; null for a dot or nothing. */
+    val badge: String? get() = count?.takeIf { it > 0 }?.let { if (it > MAX_BADGE) "$MAX_BADGE+" else "$it" }
+
+    /** Whether a dot stands in for a count the plugin does not give. */
+    val dot: Boolean get() = count == null && unread
+
+    companion object {
+        const val MAX_BADGE = 99
+    }
+}
+
+/**
+ * The plugin's avatar: its mark on a disc tinted with the accent, ringed
+ * with the outline, with its unread count ([AvatarMark]) at its corner; a
+ * tap opens the plugin sheet ([PluginSwitcherSheet]), a long press the
+ * plugin's account switcher where it has one ([onAccounts]).
+ */
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun Avatar(id: String, name: String, networks: HomeNetworks, mark: AvatarMark, onClick: () -> Unit, onAccounts: (() -> Unit)?, modifier: Modifier) {
+    val accent = MaterialTheme.colorScheme.primary
+    val count = mark.count?.takeIf { it > 0 }?.let { stringResource(Res.string.home_unread_count, it) }
+    val label = listOfNotNull(name, count ?: stringResource(Res.string.home_unread).takeIf { mark.dot }, stringResource(Res.string.home_switcher_title)).joinToString(", ")
+    val switchLabel = stringResource(Res.string.home_switch_account)
+    Box(
+        modifier
+            .size(44.dp)
+            .clip(CircleShape)
+            .combinedClickable(onClick = onClick, onLongClick = onAccounts, onLongClickLabel = switchLabel.takeIf { onAccounts != null })
+            .clearAndSetSemantics {
+                role = Role.Button
+                contentDescription = label
+                if (onAccounts != null) customActions = listOf(CustomAccessibilityAction(switchLabel) { onAccounts(); true })
+            },
+        contentAlignment = Alignment.Center,
+    ) {
+        Box(
+            Modifier.size(32.dp).background(accent.copy(alpha = DISC_ALPHA), CircleShape).border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            networks.Mark(id, 17.dp)
+        }
+        val badge = mark.badge
+        when {
+            badge != null -> Text(
+                badge,
+                fontSize = 10.5.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onPrimary,
+                maxLines = 1,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .border(2.dp, MaterialTheme.colorScheme.background, CircleShape)
+                    .background(accent, CircleShape)
+                    .defaultMinSize(minWidth = 16.dp)
+                    .padding(horizontal = 4.dp),
             )
+            mark.dot -> Box(Modifier.align(Alignment.TopEnd).padding(top = 4.dp, end = 3.dp).size(10.dp).background(MaterialTheme.colorScheme.background, CircleShape).padding(2.dp).background(accent, CircleShape))
         }
     }
 }
 
 private fun networkName(id: String, ui: HomeUi): String = ui.networks.firstOrNull { it.id == id }?.title ?: id
-
-/**
- * A plugin's sections as words, the one shown bold and underlined in
- * [color] with a rounded three dp line; folded into the plugin's section
- * picker when they do not fit the room left between the button and the
- * actions.
- */
-@Composable
-private fun TextTabs(tabs: List<PluginHomeTab>, color: Color) {
-    val measurer = rememberTextMeasurer()
-    val style = MaterialTheme.typography.titleSmall
-    val density = LocalDensity.current
-    val widths = remember(tabs.map { it.label to it.selected }, style, density) {
-        tabs.map { tab ->
-            val measured = measurer.measure(tab.label, style.copy(fontWeight = FontWeight.Bold), maxLines = 1)
-            with(density) { measured.size.width.toDp().value } + TAB_PADDING * 2
-        }
-    }
-    BoxWithConstraints(Modifier.fillMaxHeight(), contentAlignment = Alignment.CenterEnd) {
-        if (tabs.size > 1 && widths.sum() > maxWidth.value) {
-            Box(Modifier.fillMaxHeight(), contentAlignment = Alignment.CenterEnd) { PluginSectionPicker(tabs, color, verticalPadding = 4.dp) }
-        } else {
-            Row(Modifier.fillMaxHeight(), horizontalArrangement = Arrangement.End) { tabs.forEach { TextTab(it, color) } }
-        }
-    }
-}
-
-private const val TAB_PADDING = 10f
-
-@Composable
-private fun TextTab(tab: PluginHomeTab, color: Color) {
-    Box(
-        Modifier
-            .fillMaxHeight()
-            .defaultMinSize(minWidth = PluginTabFit.TARGET.dp)
-            .clickable(onClick = tab.onSelect)
-            .semantics(mergeDescendants = true) {
-                role = Role.Tab
-                selected = tab.selected
-            }
-            .accentLine(tab.selected, color)
-            .padding(horizontal = TAB_PADDING.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            tab.label,
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = if (tab.selected) FontWeight.Bold else FontWeight.SemiBold,
-            color = if (tab.selected) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1,
-        )
-    }
-}
-
-/** A three dp line in [color], its ends rounded, along the bottom of what it is put on, inset six dp, while [on]. */
-private fun Modifier.accentLine(on: Boolean, color: Color): Modifier = if (!on) this else drawBehind {
-    val line = 3.dp.toPx()
-    val inset = 6.dp.toPx()
-    drawRoundRect(
-        color,
-        topLeft = Offset(inset, size.height - line),
-        size = Size(size.width - inset * 2, line),
-        cornerRadius = CornerRadius(line / 2, line / 2),
-    )
-}

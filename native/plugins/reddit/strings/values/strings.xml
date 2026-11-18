@@ -122,4 +122,8 @@
     </plurals>
     <string name="in_home_feed">Show in the home timeline</string>
     <string name="in_home_feed_description">Mixes posts from the subreddits you follow into Following and For you</string>
+    <string name="see_popular">See Popular</string>
+    <string name="nothing_new">Nothing new from the subreddits you follow</string>
+    <string name="feed_home">Home</string>
+    <string name="your_profile">Your profile</string>
 </resources>

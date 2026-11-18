@@ -69,6 +69,17 @@
     <string name="home_unable_to_load_pages">Não foi possível carregar suas páginas iniciais</string>
     <string name="feed_strip_unavailable">Esta timeline não está mais disponível</string>
     <string name="home_feed_accounts_empty">Adicione uma conta para carregar Para você.</string>
-    <string name="home_all_timelines">Todas as timelines</string>
-    <string name="home_bar_more">Mais</string>
+    <string name="home_switcher_title">Trocar de plugin</string>
+    <string name="home_switcher_start">Início</string>
+    <string name="home_switcher_start_hint">Seguindo e todas as suas linhas do tempo</string>
+    <string name="home_switcher_recent">Usados recentemente</string>
+    <string name="home_manage_plugins">Gerenciar plugins</string>
+    <string name="home_xta_settings">Configurações do XTA</string>
+    <string name="home_menu_xta">XTA</string>
+    <string name="home_sort_filter">Ordenar e filtrar</string>
+    <string name="home_sort_filter_on">Ordenar e filtrar, alterado</string>
+    <string name="home_sort_reset">Redefinir</string>
+    <string name="home_plugin_settings">Configurações de %1$s</string>
+    <string name="home_switch_account">Trocar de conta</string>
+    <string name="home_unread_count">Não lidas: %1$d</string>
 </resources>

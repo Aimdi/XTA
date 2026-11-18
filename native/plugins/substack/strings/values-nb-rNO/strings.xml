@@ -156,4 +156,6 @@
     <string name="speak_from_here">Speak from here</string>
     <string name="turned_away">Substacks robotsjekk avviste denne tilkoblingen. Åpne den i nettleseren, eller prøv igjen senere.</string>
     <string name="image_view">Vis i fullskjerm</string>
+    <string name="feed_subscriptions">Abonnementer</string>
+    <string name="unread_count">%1$d uleste</string>
 </resources>

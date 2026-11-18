@@ -128,4 +128,8 @@
     </plurals>
     <string name="in_home_feed">Pokazuj na osi czasu</string>
     <string name="in_home_feed_description">Dodaje wpisy z obserwowanych subredditów do zakładek „Obserwowane” i „Dla Ciebie”</string>
+    <string name="see_popular">Zobacz Popular</string>
+    <string name="nothing_new">Nic nowego w obserwowanych subredditach</string>
+    <string name="feed_home">Główna</string>
+    <string name="your_profile">Twój profil</string>
 </resources>

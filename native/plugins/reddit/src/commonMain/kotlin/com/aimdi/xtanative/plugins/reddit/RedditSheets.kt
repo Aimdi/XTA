@@ -64,15 +64,20 @@ import com.aimdi.xtanative.networks.reddit.RedditPost
 import com.aimdi.xtanative.networks.reddit.RedditSubredditAbout
 import com.aimdi.xtanative.networks.reddit.normaliseSubreddit
 import com.aimdi.xtanative.store.settings.RedditPrefs
-import com.aimdi.xtanative.ui.common.LoadingRow
-import com.aimdi.xtanative.ui.common.countText
-import com.aimdi.xtanative.ui.plugins.pluginPlural
-import com.aimdi.xtanative.ui.plugins.pluginString
-import com.aimdi.xtanative.ui.post.PostIcons
-import com.aimdi.xtanative.ui.saved.SavedIcons
-import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
 import com.aimdi.xtanative.store.settings.RedditSort as StoredSort
 import com.aimdi.xtanative.store.settings.RedditTimeFilter as StoredWindow
+import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.common.countText
+import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
+import com.aimdi.xtanative.ui.plugins.ShellSortHeading
+import com.aimdi.xtanative.ui.plugins.ShellSortOption
+import com.aimdi.xtanative.ui.plugins.ShellSortPills
+import com.aimdi.xtanative.ui.plugins.ShellSortSheet
+import com.aimdi.xtanative.ui.plugins.pluginPlural
+import com.aimdi.xtanative.ui.plugins.pluginString
+import com.aimdi.xtanative.ui.plugins.rememberOpenOutside
+import com.aimdi.xtanative.ui.post.PostIcons
+import com.aimdi.xtanative.ui.saved.SavedIcons
 
 /**
  * Everywhere a post can lead, without opening it (XTA's post sheet): its
@@ -157,8 +162,9 @@ private fun SheetAction(icon: ImageVector, label: String, onClick: () -> Unit) {
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-internal fun SortSheet(app: RedditApp, onDismiss: () -> Unit) {
+internal fun SortSheet(app: RedditApp, subtitle: String? = null, onDismiss: () -> Unit) {
     val choices by app.choices.collectAsState()
+    if (LocalPluginClientBar.current != null) return ShellSort(app, subtitle, onDismiss)
     var picked by remember { mutableStateOf<StoredSort?>(null) }
     val done = { sort: StoredSort, window: StoredWindow? ->
         app.change { settings -> settings.with(RedditPrefs.sort, sort).let { if (window == null) it else it.with(RedditPrefs.timeFilter, window) } }
@@ -183,6 +189,27 @@ internal fun SortSheet(app: RedditApp, onDismiss: () -> Unit) {
             } else {
                 StoredWindow.entries.forEach { window -> ChoiceChip(null, windowLabel(window), window == choices.window) { done(sort, window) } }
             }
+        }
+    }
+}
+
+/**
+ * The order as the shell's sort sheet: Reddit's orders, then the time
+ * window where the order takes one, each taking effect as it is picked;
+ * Reset back to Hot.
+ */
+@Composable
+private fun ShellSort(app: RedditApp, subtitle: String?, onDismiss: () -> Unit) {
+    val choices by app.choices.collectAsState()
+    ShellSortSheet(subtitle, onDismiss, onReset = { app.change { RedditHomeChrome.defaultSort(it) } }) {
+        ShellSortHeading(pluginString(Strings.sort))
+        StoredSort.entries.forEach { choice ->
+            ShellSortOption(sortLabel(choice), choice == choices.sort) { app.change { it.with(RedditPrefs.sort, choice) } }
+        }
+        if (choices.sort.usesTimeFilter) {
+            ShellSortHeading(pluginString(Strings.time_filter))
+            val windows = StoredWindow.entries
+            ShellSortPills(windows.map { windowLabel(it) }, windows.indexOf(choices.window)) { index -> app.change { it.with(RedditPrefs.timeFilter, windows[index]) } }
         }
     }
 }

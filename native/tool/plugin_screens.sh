@@ -71,6 +71,14 @@ fail() {
   exit 1
 }
 
+# A swipe from low on the screen to high, to bring up what a sheet holds below.
+swipe_up() {
+  local size
+  size=$(adb shell wm size | sed -n 's/.*: \([0-9]*\)x\([0-9]*\).*/\1 \2/p' | tail -1)
+  adb shell input swipe $((${size% *} / 2)) $((${size#* } * 85 / 100)) $((${size% *} / 2)) $((${size#* } * 25 / 100)) 300
+  sleep 1
+}
+
 # The account menu: no bar on Home has an avatar (as in XTA), so the timeline
 # picker's last row, under its timelines (the sheet is pulled up when that row
 # is below it). The picker is Following's button, or another timeline's mark.
@@ -79,16 +87,21 @@ open_menu() {
   open_picker || fail "No account menu or timeline picker on Home"
   sleep 2
   tap_node 'text="Open navigation menu"' && return 0
-  local size
-  size=$(adb shell wm size | sed -n 's/.*: \([0-9]*\)x\([0-9]*\).*/\1 \2/p' | tail -1)
-  adb shell input swipe $((${size% *} / 2)) $((${size#* } * 85 / 100)) $((${size% *} / 2)) $((${size#* } * 25 / 100)) 300
-  sleep 1
+  swipe_up
   tap_node 'text="Open navigation menu"' || fail "No account menu in the timeline picker"
 }
 
-# Home's timeline picker: Following's button, or the mark of the timeline shown ("Bluesky, Networks").
+# Home's timeline picker: Following's button. On a network's timeline its
+# button ("Bluesky, Switch plugin") opens the plugin switcher, whose Start
+# leads back to Following first.
 open_picker() {
-  tap_node 'content-desc="Following"' || tap_node ', Networks"'
+  tap_node 'content-desc="Following"' && return 0
+  tap_node ', Switch plugin"' || return 1
+  sleep 2
+  # The plugin's own entries come first; Start can be below them.
+  tap_node 'text="Start"' || { swipe_up; tap_node 'text="Start"'; } || return 1
+  sleep 2
+  tap_node 'content-desc="Following"'
 }
 
 # The store, from Home's account menu.

@@ -32,7 +32,6 @@ import com.aimdi.xtanative.store.saved.XtaTweetJson
 import com.aimdi.xtanative.store.settings.PostsPrefs
 import com.aimdi.xtanative.ui.common.HEART_BURST_MILLIS
 import com.aimdi.xtanative.ui.common.HeartBurst
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.generated.resources.Res
@@ -78,8 +77,8 @@ fun PostKeep.NoteAbout(post: XPost, onDismiss: () -> Unit) {
 /** What the media viewer's and the media menu's Download call: the media at an index of a post, saved where the setting says. */
 @Composable
 fun PostKeep.rememberDownload(): (post: XPost, index: Int) -> Unit {
-    val graph = LocalGraph.current
-    return remember(graph) { { post, index -> download(graph, post, index) } }
+    val keeper = LocalKeeper.current
+    return remember(keeper) { { post, index -> download(keeper, post, index) } }
 }
 
 /** Whether [postId] is saved on this device, as that changes. */
@@ -96,26 +95,26 @@ fun PostKeep.isLiked(postId: String): Boolean = likedHere(postId)
  */
 @Composable
 internal fun SavedNoteEditor(item: Keepable, onDismiss: () -> Unit) {
-    val graph = LocalGraph.current
-    val library by graph.saved.state.collectAsStateWithLifecycle()
-    LaunchedEffect(graph) { graph.saved.library() }
+    val keeper = LocalKeeper.current
+    val library by keeper.saved.state.collectAsStateWithLifecycle()
+    LaunchedEffect(keeper) { keeper.saved.library() }
     val loaded = library ?: return
     val note = remember(item.id) { loaded.post(item.id)?.note }
-    NoteEditorDialog(NoteTarget.Text(note, NoteRules.savedNoteKey(item.id)), onDismiss, saveText = { text -> Keeping.writeNote(graph, item, text) })
+    NoteEditorDialog(NoteTarget.Text(note, NoteRules.savedNoteKey(item.id)), onDismiss, saveText = { text -> Keeping.writeNote(keeper, item, text) })
 }
 
 @Composable
 internal fun savedHere(postId: String): Boolean {
-    val graph = LocalGraph.current
-    LaunchedEffect(graph) { graph.saved.library() }
-    val library by graph.saved.state.collectAsStateWithLifecycle()
+    val keeper = LocalKeeper.current
+    LaunchedEffect(keeper) { keeper.saved.library() }
+    val library by keeper.saved.state.collectAsStateWithLifecycle()
     return library?.isSaved(postId) == true
 }
 
 @Composable
 internal fun likedHere(postId: String): Boolean {
-    val graph = LocalGraph.current
-    val liked by remember(graph) { LikedIds.of(graph).ids }.collectAsStateWithLifecycle()
+    val keeper = LocalKeeper.current
+    val liked by remember(keeper) { LikedIds.of(keeper).ids }.collectAsStateWithLifecycle()
     return postId in liked
 }
 
@@ -129,7 +128,7 @@ internal fun DeviceSaveButton(post: XPost, modifier: Modifier, tint: Color) {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun KeepableSaveButton(item: Keepable, modifier: Modifier, tint: Color) {
-    val graph = LocalGraph.current
+    val keeper = LocalKeeper.current
     val saved = savedHere(item.id)
     var sheetFor by remember { mutableStateOf<Keepable?>(null) }
     val label = stringResource(if (saved) Res.string.saved_unsave else Res.string.saved_save_here)
@@ -140,7 +139,7 @@ internal fun KeepableSaveButton(item: Keepable, modifier: Modifier, tint: Color)
             .combinedClickable(
                 role = Role.Button,
                 onClickLabel = label,
-                onClick = { Keeping.toggleSave(graph, item) },
+                onClick = { Keeping.toggleSave(keeper, item) },
                 onLongClick = { sheetFor = item },
             ),
         contentAlignment = Alignment.Center,
@@ -162,7 +161,7 @@ internal fun KeepableSaveButton(item: Keepable, modifier: Modifier, tint: Color)
  */
 @Composable
 internal fun DeviceLikeButton(post: XPost, modifier: Modifier, tint: Color, count: Long) {
-    val graph = LocalGraph.current
+    val keeper = LocalKeeper.current
     val liked = likedHere(post.shown.id)
     val label = stringResource(if (liked) Res.string.saved_unlike else Res.string.saved_like)
     val rest = tint.takeOrElse { MaterialTheme.colorScheme.onSurfaceVariant }
@@ -191,7 +190,7 @@ internal fun DeviceLikeButton(post: XPost, modifier: Modifier, tint: Color, coun
                 burst.snapTo(0f)
                 if (!liked && !still) burst.animateTo(1f, tween(HEART_BURST_MILLIS, easing = LinearEasing))
             }
-            Keeping.toggleLike(graph, Keepable.of(post))
+            Keeping.toggleLike(keeper, Keepable.of(post))
         }
     }
 }
@@ -199,6 +198,6 @@ internal fun DeviceLikeButton(post: XPost, modifier: Modifier, tint: Color, coun
 /** Calm or zen mode is on, which keep actions quiet (XTA's quietActions). */
 @Composable
 private fun quietActions(): Boolean {
-    val settings by LocalGraph.current.settings.state.collectAsStateWithLifecycle()
+    val settings by LocalKeeper.current.settings.state.collectAsStateWithLifecycle()
     return settings?.let { it[PostsPrefs.calmMode] || it[PostsPrefs.zenMode] } ?: false
 }

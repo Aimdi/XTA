@@ -156,4 +156,6 @@
     <string name="speak_from_here">Speak from here</string>
     <string name="turned_away">Substack\'s bot check turned this connection away. Open it in your browser, or try again later.</string>
     <string name="image_view">View full screen</string>
+    <string name="feed_subscriptions">Subscriptions</string>
+    <string name="unread_count">%1$d unread</string>
 </resources>

@@ -5,9 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -16,21 +14,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.aimdi.xtanative.networks.rss.RssTimelineRules
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.swipeTabs
+import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
 import com.aimdi.xtanative.ui.plugins.PluginText
-import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
-import com.aimdi.xtanative.ui.plugins.ReadingControlsPinItem
+import com.aimdi.xtanative.ui.plugins.RefreshesOn
+import com.aimdi.xtanative.ui.plugins.ShellMenuButton
+import com.aimdi.xtanative.ui.plugins.ShellUnread
 import com.aimdi.xtanative.ui.plugins.pluginString
 
 /** The RSS tab's panes, in XTA's order. */
@@ -52,6 +50,9 @@ internal fun RssHome(app: RssApp, frame: PluginFrame) {
     // XTA reads its feeds, then the timeline once the tab is up, unless it is fresh; other follows read it again.
     LaunchedEffect(feeds) { if (feeds != null) app.timeline.refresh() }
     RefreshesOn(frame.refresh) { app.timeline.refresh(force = true) }
+    val timeline by app.timeline.state.collectAsState()
+    val read by app.read.collectAsState()
+    ShellUnread(RssTimelineRules.unread(timeline.items, read))
     Column(Modifier.fillMaxSize()) {
         ReadingControlsBar { Header(app, selected) { app.pane.value = it } }
         Hairline()
@@ -70,24 +71,22 @@ internal fun RssHome(app: RssApp, frame: PluginFrame) {
 @Composable
 private fun Header(app: RssApp, selected: RssPane, onSelect: (RssPane) -> Unit) {
     PluginHomeTabs(RssPane.entries, selected, onSelect, icon = { it.icon }, label = { pluginString(it.label) }) {
-        IconButton(onClick = app::openAdd) { Icon(Icons.Default.Add, pluginString(Strings.add)) }
+        // In the app's shell Add is in the plugin sheet ([HomeMenu]), and the bar keeps nothing else.
+        if (LocalPluginClientBar.current == null) IconButton(onClick = app::openAdd) { Icon(Icons.Default.Add, pluginString(Strings.add)) }
         HomeMenu(app, selected)
     }
 }
 
 @Composable
 private fun HomeMenu(app: RssApp, selected: RssPane) {
-    var open by rememberSaveable { mutableStateOf(false) }
     val timeline by app.timeline.state.collectAsState()
     val read by app.read.collectAsState()
-    Box {
-        IconButton(onClick = { open = true }) { Icon(Icons.Default.MoreVert, pluginString(Strings.more_options)) }
-        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
-            if (selected == RssPane.HOME && RssTimelineRules.anyUnread(timeline.items, read)) {
-                DropdownMenuItem(text = { Text(pluginString(Strings.mark_all_read)) }, onClick = { open = false; app.launch { app.markRead(timeline.items.map { it.id }) } })
-            }
-            DropdownMenuItem(text = { Text(pluginString(Strings.settings)) }, onClick = { open = false; app.host.openSettings() })
-            ReadingControlsPinItem()
+    val shell = LocalPluginClientBar.current != null
+    ShellMenuButton { close ->
+        if (shell) DropdownMenuItem(text = { Text(pluginString(Strings.add)) }, leadingIcon = { Icon(Icons.Default.Add, contentDescription = null) }, onClick = { close(); app.openAdd() })
+        if (selected == RssPane.HOME && RssTimelineRules.anyUnread(timeline.items, read)) {
+            DropdownMenuItem(text = { Text(pluginString(Strings.mark_all_read)) }, onClick = { close(); app.launch { app.markRead(timeline.items.map { it.id }) } })
         }
+        DropdownMenuItem(text = { Text(pluginString(Strings.settings)) }, onClick = { close(); app.host.openSettings() })
     }
 }

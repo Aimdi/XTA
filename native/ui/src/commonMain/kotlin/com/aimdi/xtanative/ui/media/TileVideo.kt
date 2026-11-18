@@ -35,8 +35,8 @@ import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.store.settings.MediaPrefs
 import com.aimdi.xtanative.store.settings.Settings
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_video
 import com.aimdi.xtanative.ui.generated.resources.reader_video_length
@@ -78,7 +78,7 @@ internal fun TileVideo(
     download: @Composable () -> ((VideoPlayer) -> Unit)?,
 ) {
     val tiles = rememberTilePlayer() ?: return Box(modifier) { TileCorner(VideoRules.cornerTimeMs(null, durationMs), play = true, Modifier.align(Alignment.BottomStart)) }
-    val settings by LocalGraph.current.settings.state.collectAsStateWithLifecycle()
+    val settings by LocalSettingsStore.current.state.collectAsStateWithLifecycle()
     val key = remember { Any() }
     var seen by remember { mutableStateOf(false) }
     var share by remember { mutableFloatStateOf(0f) }
@@ -143,8 +143,8 @@ private fun ReportsSeen(tiles: PlayerTurns<VideoPlayer>, key: Any, share: Float,
 /** A GIF looping silently in its tile while it is seen (in a feed, while it is the tile seen most), as XTA's GIFs loop whatever Autoplay says. */
 @Composable
 internal fun TileGif(media: XMedia, poster: Any?, modifier: Modifier = Modifier) {
-    val graph = LocalGraph.current
-    val source = remember(media) { VideoSource.of(media, graph.settings.state.value) }
+    val settingsStore = LocalSettingsStore.current
+    val source = remember(media) { VideoSource.of(media, settingsStore.state.value) }
     TileGif(source, poster, modifier)
 }
 

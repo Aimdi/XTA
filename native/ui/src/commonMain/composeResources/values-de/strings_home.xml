@@ -69,6 +69,17 @@
     <string name="home_unable_to_load_pages">Laden der Startseite nicht möglich</string>
     <string name="feed_strip_unavailable">Diese Timeline ist nicht mehr verfügbar</string>
     <string name="home_feed_accounts_empty">Konto hinzufügen, um Für dich zu laden.</string>
-    <string name="home_all_timelines">Alle Timelines</string>
-    <string name="home_bar_more">Mehr</string>
+    <string name="home_switcher_title">Plugin wechseln</string>
+    <string name="home_switcher_start">Start</string>
+    <string name="home_switcher_start_hint">Gefolgt und alle deine Timelines</string>
+    <string name="home_switcher_recent">Zuletzt verwendet</string>
+    <string name="home_manage_plugins">Plugins verwalten</string>
+    <string name="home_xta_settings">XTA-Einstellungen</string>
+    <string name="home_menu_xta">XTA</string>
+    <string name="home_sort_filter">Sortieren &amp; Filtern</string>
+    <string name="home_sort_filter_on">Sortieren &amp; Filtern, geändert</string>
+    <string name="home_sort_reset">Zurücksetzen</string>
+    <string name="home_plugin_settings">%1$s-Einstellungen</string>
+    <string name="home_switch_account">Konto wechseln</string>
+    <string name="home_unread_count">%1$d ungelesen</string>
 </resources>

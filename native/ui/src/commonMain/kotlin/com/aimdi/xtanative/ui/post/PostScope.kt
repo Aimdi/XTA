@@ -12,7 +12,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.store.settings.PostsPrefs
-import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.store.settings.SettingsStore
+import com.aimdi.xtanative.ui.common.LocalSettingsStore
 
 /**
  * Whether the sensitive media of one screen is hidden, as XTA's
@@ -62,7 +63,7 @@ val LocalPostScope = compositionLocalOf<PostScope?> { null }
 /** The reader's settings for the post screens, read and then followed as they change. */
 @Composable
 fun rememberPostPrefs(): PostPrefs {
-    val store = LocalGraph.current.settings
+    val store = LocalSettingsStore.current
     val settings by store.state.collectAsStateWithLifecycle()
     LaunchedEffect(store) { store.load() }
     return remember(settings) { settings?.let(PostPrefs::of) ?: PostPrefs() }
@@ -97,7 +98,7 @@ internal fun postScope(): PostScope {
 }
 
 /** "Always show sensitive media": saved, and every gate of the screen opens. */
-internal suspend fun alwaysShowSensitive(graph: com.aimdi.xtanative.data.AppGraph, reveal: SensitiveReveal) {
+internal suspend fun alwaysShowSensitive(settings: SettingsStore, reveal: SensitiveReveal) {
     reveal.hidden = false
-    graph.settings.set(PostsPrefs.alwaysShowSensitiveMedia, true)
+    settings.set(PostsPrefs.alwaysShowSensitiveMedia, true)
 }

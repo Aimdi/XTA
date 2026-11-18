@@ -13,11 +13,11 @@ class FolderFilingsTest {
     fun aPostFiledInAFolderIsHandedOnWithTheFolderAndAnUnfiledSaveIsNot(): Unit = runBlocking {
         val graph = AppGraph(Files.createTempDirectory("folder-filings").toFile(), flowOf(true), "test")
         val heard = mutableListOf<Pair<String, String>>()
-        FolderFilings.listen(graph) { folder, item -> synchronized(heard) { heard += folder.name to item.id } }
+        FolderFilings.listen(graph.keeper) { folder, item -> synchronized(heard) { heard += folder.name to item.id } }
         val folder = graph.saved.createFolder("Art", autoUpload = true)!!
 
-        Keeping.fileFromSheet(graph, Keepable("1", "u1", xTweet("1", photo = true)), folder.id)
-        Keeping.fileFromSheet(graph, Keepable("2", "u2", xTweet("2")), null)
+        Keeping.fileFromSheet(graph.keeper, Keepable("1", "u1", xTweet("1", photo = true)), folder.id)
+        Keeping.fileFromSheet(graph.keeper, Keepable("2", "u2", xTweet("2")), null)
         graph.awaitWrites()
 
         assertEquals(listOf("Art" to "1"), heard)
@@ -29,10 +29,10 @@ class FolderFilingsTest {
         val graph = AppGraph(Files.createTempDirectory("folder-filings-a").toFile(), flowOf(true), "test")
         val other = AppGraph(Files.createTempDirectory("folder-filings-b").toFile(), flowOf(true), "test")
         val heard = mutableListOf<String>()
-        FolderFilings.listen(graph) { _, item -> synchronized(heard) { heard += item.id } }
+        FolderFilings.listen(graph.keeper) { _, item -> synchronized(heard) { heard += item.id } }
         val folder = other.saved.createFolder("Art")!!
 
-        Keeping.fileFromSheet(other, Keepable("3", "u3", xTweet("3")), folder.id)
+        Keeping.fileFromSheet(other.keeper, Keepable("3", "u3", xTweet("3")), folder.id)
         other.awaitWrites()
 
         assertEquals(emptyList<String>(), heard)

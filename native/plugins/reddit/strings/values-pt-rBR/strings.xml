@@ -122,4 +122,8 @@
     </plurals>
     <string name="in_home_feed">Mostrar na linha do tempo principal</string>
     <string name="in_home_feed_description">Mistura as publicações dos subreddits que você segue em «Seguindo» e «Para você»</string>
+    <string name="see_popular">Ver Popular</string>
+    <string name="nothing_new">Nada de novo nos subreddits que você segue</string>
+    <string name="feed_home">Início</string>
+    <string name="your_profile">Seu perfil</string>
 </resources>

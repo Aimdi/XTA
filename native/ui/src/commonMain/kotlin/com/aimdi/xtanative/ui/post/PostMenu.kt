@@ -22,13 +22,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.x.model.XPost
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.plugins.PluginPostArchive
 import com.aimdi.xtanative.ui.plugins.PluginPostMenu
 import com.aimdi.xtanative.ui.plugins.PostMenuHandlers
 import com.aimdi.xtanative.ui.plugins.PostMenuRows
 import com.aimdi.xtanative.ui.profile.AuthorGroupsSheet
 import com.aimdi.xtanative.ui.saved.Keepable
+import com.aimdi.xtanative.ui.saved.LocalKeeper
 import com.aimdi.xtanative.ui.saved.NoteSheet
 import com.aimdi.xtanative.ui.saved.SaveSheet
 import com.aimdi.xtanative.ui.saved.isSaved
@@ -60,7 +60,7 @@ fun PostMenu(post: XPost, actions: PostActions, onDismiss: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MenuSheet(post: XPost, actions: PostActions, onDismiss: () -> Unit, onStep: (MenuStep) -> Unit) {
-    val graph = LocalGraph.current
+    val keeper = LocalKeeper.current
     val shown = post.shown
     val url = PostView.url(post, postScope().prefs)
     val saved = actions.keep.isSaved(shown.id)
@@ -74,9 +74,9 @@ private fun MenuSheet(post: XPost, actions: PostActions, onDismiss: () -> Unit, 
             quotes = { actions.openQuotes(shown.id) },
         )
     }
-    val handlers = remember(post, actions, graph) {
+    val handlers = remember(post, actions, keeper) {
         PostMenuHandlers(
-            toggleSaved = { actions.keep.toggleSave(graph, post) },
+            toggleSaved = { actions.keep.toggleSave(keeper, post) },
             editNote = { onStep(MenuStep.NOTE) },
             addToGroup = { onStep(MenuStep.GROUPS) },
             chooseFolder = { onStep(MenuStep.FOLDERS) },

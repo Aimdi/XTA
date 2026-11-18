@@ -96,4 +96,6 @@
     <string name="window_24h">24 س</string>
     <string name="year_high">أعلى 52 أسبوعًا</string>
     <string name="year_low">أدنى 52 أسبوعًا</string>
+    <string name="all_tickers">الكل</string>
+    <string name="live_tickers">مباشر · الرموز: %1$d</string>
 </resources>

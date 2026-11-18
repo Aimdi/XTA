@@ -16,7 +16,7 @@ import coil3.compose.AsyncImage
 import com.aimdi.xtanative.core.x.model.PhotoSize
 import com.aimdi.xtanative.core.x.model.XMedia
 import com.aimdi.xtanative.core.x.model.photoUrl
-import com.aimdi.xtanative.ui.common.LocalGraph
+import com.aimdi.xtanative.ui.common.LocalSettingsStore
 
 /**
  * A video or GIF on the viewer's page in a player of [players], playing
@@ -28,8 +28,8 @@ import com.aimdi.xtanative.ui.common.LocalGraph
  */
 @Composable
 internal fun PlayerVideoPage(media: XMedia, active: Boolean, players: VideoPlayers, onPlaying: (String) -> Unit, onDownload: ((playingUrl: String) -> Unit)?) {
-    val graph = LocalGraph.current
-    val source = remember(media) { VideoSource.of(media, graph.settings.state.value) }
+    val settingsStore = LocalSettingsStore.current
+    val source = remember(media) { VideoSource.of(media, settingsStore.state.value) }
     SourceVideoPage(source, media.aspectRatio, active, players, onPlaying, onDownload) {
         AsyncImage(model = photoUrl(media.url, PhotoSize.LARGE), contentDescription = media.alt, contentScale = ContentScale.Fit, modifier = Modifier.fillMaxSize())
     }
@@ -50,10 +50,10 @@ internal fun SourceVideoPage(
     onDownload: ((playingUrl: String) -> Unit)?,
     poster: @Composable () -> Unit,
 ) {
-    val graph = LocalGraph.current
+    val settingsStore = LocalSettingsStore.current
     val opened = remember(source, players) {
         source?.let {
-            val player = players.make(VideoOptions.of(graph.settings.state.value)).apply { open(it) }
+            val player = players.make(VideoOptions.of(settingsStore.state.value)).apply { open(it) }
             player to KeptPlayer(player::release)
         }
     } ?: return

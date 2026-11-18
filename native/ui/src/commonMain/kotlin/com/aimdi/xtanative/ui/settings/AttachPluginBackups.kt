@@ -2,8 +2,8 @@ package com.aimdi.xtanative.ui.settings
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.data.plugins.RunningPlugin
-import com.aimdi.xtanative.ui.common.LocalGraph
 import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
 
 /**

@@ -32,8 +32,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.Warning
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -79,7 +77,6 @@ import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.home_add_timeline
 import com.aimdi.xtanative.ui.generated.resources.home_alt_microblogging
-import com.aimdi.xtanative.ui.generated.resources.home_bar_more
 import com.aimdi.xtanative.ui.generated.resources.home_discover
 import com.aimdi.xtanative.ui.generated.resources.home_home
 import com.aimdi.xtanative.ui.generated.resources.home_networks
@@ -87,7 +84,6 @@ import com.aimdi.xtanative.ui.generated.resources.home_networks_all
 import com.aimdi.xtanative.ui.generated.resources.home_networks_recent
 import com.aimdi.xtanative.ui.generated.resources.home_saved
 import com.aimdi.xtanative.ui.generated.resources.home_subscriptions
-import com.aimdi.xtanative.ui.plugins.PluginHomeTab
 import com.aimdi.xtanative.ui.plugins.pluginAccent
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupMark
@@ -223,7 +219,9 @@ internal fun HomeBottomBar(
     onNetworks: () -> Unit,
     onHoldHome: () -> Unit,
     sections: NetworkBarSections? = null,
+    hidden: Boolean = false,
 ) {
+    if (hidden) return
     val slots = remember(ui.bar, ui.recentNetworks) { HomeBar.slots(ui.bar, ui.recentNetworks) }
     if (sections != null) return NetworkSectionsBar(ui, state, sections) { onPage(ui.bar.indexOf(BarPage.Feed).coerceAtLeast(0)) }
     val selected = HomeBar.slotOf(slots, page)
@@ -254,17 +252,17 @@ internal fun HomeBottomBar(
 }
 
 /**
- * The bottom bar while a network takes it over ([NetworkBarRules]): XTA's
- * house, which leads back to the app's own bar ([onHome]), a hairline, then
- * the network's own sections, the one shown in its colour on a tinted pill.
- * Sections that did not fit, or that join it, stand behind More.
+ * The bottom bar while a network takes it over ([NetworkBarRules]): its
+ * three or four sections, the one shown in its colour on a tinted pill. On
+ * a network's own page of the bar XTA's house comes first, and a hairline,
+ * leading back to the app's own bar ([onHome]); on Home's Feed the
+ * network's button leads back instead. Sections that join the menu are in
+ * the network's menu, not here.
  */
 @Composable
 private fun NetworkSectionsBar(ui: HomeUi, state: HomeBarsState, takeover: NetworkBarSections, onHome: () -> Unit) {
     val accent = pluginAccent(takeover.accent)
-    val split = NetworkBarRules.split(takeover.sections) { it.joinsMore }
-    val title = ui.networks.firstOrNull { it.id == takeover.network }?.title ?: takeover.network
-    var open by remember { mutableStateOf(false) }
+    val split = takeover.split
     Column(
         Modifier
             .hiding(state)
@@ -273,32 +271,16 @@ private fun NetworkSectionsBar(ui: HomeUi, state: HomeBarsState, takeover: Netwo
     ) {
         Hairline()
         Row(Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.navigationBars).height(BAR_HEIGHT), verticalAlignment = Alignment.CenterVertically) {
-            BarItem(stringResource(Res.string.home_home), selected = false, labels = ui.navigationLabels, onClick = takeover.onHome ?: onHome) {
-                Icon(HomeBarIcons.Home, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(26.dp))
+            if (takeover.house) {
+                BarItem(stringResource(Res.string.home_home), selected = false, labels = ui.navigationLabels, onClick = takeover.onHome ?: onHome) {
+                    Icon(HomeBarIcons.Home, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(26.dp))
+                }
+                Box(Modifier.width(1.dp).height(28.dp).background(MaterialTheme.colorScheme.outlineVariant))
             }
-            Box(Modifier.width(1.dp).height(28.dp).background(MaterialTheme.colorScheme.outlineVariant))
             split.bar.forEach { section ->
-                BarItem(section.label, section.selected, ui.navigationLabels, onClick = section.onSelect, tint = accent.takeIf { section.selected }) { on ->
+                BarItem(section.label, section.selected, labels = false, onClick = section.onSelect, tint = accent.takeIf { section.selected }) { on ->
                     SectionIcon(section.icon, on, accent)
                 }
-            }
-            if (split.more.isNotEmpty()) {
-                val moreShown = split.more.any { it.selected }
-                BarItem(
-                    stringResource(Res.string.home_bar_more),
-                    selected = moreShown,
-                    labels = ui.navigationLabels,
-                    onClick = { open = true },
-                    tint = accent.takeIf { moreShown },
-                    menu = {
-                        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
-                            MoreMenu(title, split.more, accent) { section ->
-                                open = false
-                                section.onSelect()
-                            }
-                        }
-                    },
-                ) { on -> SectionIcon(HomeBarIcons.More, on, accent) }
             }
         }
     }
@@ -308,23 +290,10 @@ private fun NetworkSectionsBar(ui: HomeUi, state: HomeBarsState, takeover: Netwo
 @Composable
 private fun SectionIcon(icon: ImageVector, selected: Boolean, accent: Color) {
     Box(
-        Modifier.height(34.dp).clip(RoundedCornerShape(17.dp)).background(if (selected) accent.copy(alpha = 0.16f) else Color.Transparent).padding(horizontal = 14.dp),
+        Modifier.size(width = 52.dp, height = 32.dp).clip(RoundedCornerShape(16.dp)).background(if (selected) accent.copy(alpha = 0.16f) else Color.Transparent),
         contentAlignment = Alignment.Center,
     ) {
-        Icon(icon, contentDescription = null, tint = if (selected) accent else MaterialTheme.colorScheme.onBackground, modifier = Modifier.size(26.dp))
-    }
-}
-
-/** More's rows: the network's [sections] that are not on the bar; one that joins More by itself is named after the network ([title]), as Pixiv's account and About. */
-@Composable
-private fun MoreMenu(title: String, sections: List<PluginHomeTab>, accent: Color, onPick: (PluginHomeTab) -> Unit) {
-    val alone = sections.none { !it.joinsMore }
-    sections.forEach { section ->
-        DropdownMenuItem(
-            text = { Text(if (section.joinsMore && alone) title else section.label, fontWeight = if (section.selected) FontWeight.Bold else null, color = if (section.selected) accent else Color.Unspecified) },
-            leadingIcon = { Icon(section.icon, contentDescription = null, tint = if (section.selected) accent else MaterialTheme.colorScheme.onBackground, modifier = Modifier.size(24.dp)) },
-            onClick = { onPick(section) },
-        )
+        Icon(icon, contentDescription = null, tint = if (selected) accent else MaterialTheme.colorScheme.onBackground, modifier = Modifier.size(24.dp))
     }
 }
 

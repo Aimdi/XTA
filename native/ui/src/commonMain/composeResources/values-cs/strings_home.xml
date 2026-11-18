@@ -71,6 +71,17 @@
     <string name="home_unable_to_load_pages">Nepodařilo se načíst vaše domovské stránky</string>
     <string name="feed_strip_unavailable">Tato timeline už není dostupná</string>
     <string name="home_feed_accounts_empty">Přidejte účet pro načtení Pro vás.</string>
-    <string name="home_all_timelines">Všechny časové osy</string>
-    <string name="home_bar_more">Více</string>
+    <string name="home_switcher_title">Přepnout plugin</string>
+    <string name="home_switcher_start">Start</string>
+    <string name="home_switcher_start_hint">Sledované a všechny vaše časové osy</string>
+    <string name="home_switcher_recent">Nedávno použité</string>
+    <string name="home_manage_plugins">Spravovat pluginy</string>
+    <string name="home_xta_settings">Nastavení XTA</string>
+    <string name="home_menu_xta">XTA</string>
+    <string name="home_sort_filter">Řazení a filtry</string>
+    <string name="home_sort_filter_on">Řazení a filtry, změněno</string>
+    <string name="home_sort_reset">Obnovit</string>
+    <string name="home_plugin_settings">Nastavení %1$s</string>
+    <string name="home_switch_account">Přepnout účet</string>
+    <string name="home_unread_count">Nepřečteno: %1$d</string>
 </resources>

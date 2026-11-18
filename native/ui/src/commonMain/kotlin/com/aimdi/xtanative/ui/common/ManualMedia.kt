@@ -15,7 +15,7 @@ import kotlinx.coroutines.withContext
 /** Whether media waits for a tap before it loads: Settings › Media's "Load media manually". */
 @Composable
 fun rememberLoadsManually(): Boolean {
-    val settings by LocalGraph.current.settings.state.collectAsState()
+    val settings by LocalSettingsStore.current.state.collectAsState()
     return settings?.get(MediaPrefs.loadManually) == true
 }
 

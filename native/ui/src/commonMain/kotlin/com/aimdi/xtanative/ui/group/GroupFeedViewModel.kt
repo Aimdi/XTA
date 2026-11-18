@@ -159,7 +159,7 @@ class GroupFeedViewModel(
     private val marks = ReadMarks(graph.feedCache(ReadMarks.key(key)))
     private val run = MutableStateFlow(FeedRun())
     private val current = MutableStateFlow<GroupFeed?>(null)
-    val groupActions = GroupActions(graph, viewModelScope)
+    val groupActions = GroupActions(graph.sessions, graph.settings, viewModelScope)
     val settingsActions = GroupSettingsActions(graph, key, viewModelScope)
 
     private var plan: GroupFeedPlan? = null

@@ -3,6 +3,7 @@ package com.aimdi.xtanative.plugins.substack
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -17,6 +18,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -27,8 +29,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -38,6 +44,8 @@ import com.aimdi.xtanative.networks.substack.SubstackHomeRules
 import com.aimdi.xtanative.networks.substack.SubstackPost
 import com.aimdi.xtanative.store.settings.SubstackPrefs
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
+import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.pluginString
@@ -54,12 +62,15 @@ internal fun HomeFeedPane(app: SubstackApp, state: HomeState, frame: PluginFrame
     val marks = rememberMarks(app)
     val controls = state.controls
     val options = controls.home
-    val visible = SubstackHomeRules.home(feed.posts, followed, controls.filter, marks.readIds, marks::saved, options)
+    val shell = LocalPluginClientBar.current != null
+    val visible = SubstackHomeRules.home(feed.posts, followed, controls.filter, marks.readIds, marks::saved, options, controls.publication.takeIf { shell })
     val list = rememberLazyListState()
     val markOnScroll by app.host.settings.observe(SubstackPrefs.markReadOnScroll).collectAsState(false)
     if (markOnScroll) MarksReadScrolledPast(app, list, visible)
+    // In the app's shell the publications are its feed row and the filters its filter ([SubstackShell]).
+    if (shell) SubstackShell(app, state, followed)
     FeedList(state.feed, feed, list, frame) {
-        pinnedToolbar { ReadingToolbar(app, state, HomePane.HOME, followed) }
+        if (!shell) pinnedToolbar { ReadingToolbar(app, state, HomePane.HOME, followed) }
         if (visible.isEmpty()) {
             item(key = "empty") { EmptyFeed(state, HomePane.HOME) }
         } else {
@@ -101,13 +112,19 @@ internal fun InboxPane(app: SubstackApp, state: HomeState, frame: PluginFrame) {
 private fun FeedList(feed: SubstackHomeFeed, state: SubstackHomeFeed.State, list: LazyListState, frame: PluginFrame, rows: LazyListScope.() -> Unit) {
     ScrollsToTop(list, frame.toTop)
     val error = state.refreshError
-    PullToRefreshBox(isRefreshing = state.refreshing && state.loaded, onRefresh = { feed.refresh(force = true) }, modifier = Modifier.fillMaxSize()) {
+    // A pull shows the pull's spinner; a refresh of its own runs as a thin bar over the posts already shown.
+    var pulled by remember { mutableStateOf(false) }
+    LaunchedEffect(state.refreshing) { if (!state.refreshing) pulled = false }
+    PullToRefreshBox(isRefreshing = pulled && state.refreshing && state.loaded, onRefresh = { pulled = true; feed.refresh(force = true) }, modifier = Modifier.fillMaxSize()) {
         LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
             when {
                 !state.loaded && error != null -> item(key = "problem") { FailurePane(error, onRetry = { feed.refresh(force = true) }) }
-                !state.loaded -> item(key = "loading") { LoadingRow() }
+                !state.loaded -> item(key = "loading") { PluginFeedSkeleton() }
                 else -> rows()
             }
+        }
+        if (state.refreshing && state.loaded && !pulled) {
+            LinearProgressIndicator(Modifier.fillMaxWidth().height(3.dp).align(Alignment.TopCenter).padding(top = frame.padding.calculateTopPadding()))
         }
     }
 }

@@ -39,4 +39,5 @@
         <item quantity="other">%1$d 点 karma</item>
     </plurals>
     <string name="more_options">更多选项</string>
+    <string name="updated_ago">%1$s前更新</string>
 </resources>

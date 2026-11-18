@@ -68,6 +68,17 @@
     <string name="home_unable_to_load_pages">无法加载主页</string>
     <string name="feed_strip_unavailable">此时间线已不可用</string>
     <string name="home_feed_accounts_empty">添加账号以加载“推荐”。</string>
-    <string name="home_all_timelines">所有时间线</string>
-    <string name="home_bar_more">更多</string>
+    <string name="home_switcher_title">切换插件</string>
+    <string name="home_switcher_start">开始</string>
+    <string name="home_switcher_start_hint">关注和你的所有时间线</string>
+    <string name="home_switcher_recent">最近使用</string>
+    <string name="home_manage_plugins">管理插件</string>
+    <string name="home_xta_settings">XTA 设置</string>
+    <string name="home_menu_xta">XTA</string>
+    <string name="home_sort_filter">排序和筛选</string>
+    <string name="home_sort_filter_on">排序和筛选（已更改）</string>
+    <string name="home_sort_reset">重置</string>
+    <string name="home_plugin_settings">%1$s 设置</string>
+    <string name="home_switch_account">切换账号</string>
+    <string name="home_unread_count">%1$d 篇未读</string>
 </resources>

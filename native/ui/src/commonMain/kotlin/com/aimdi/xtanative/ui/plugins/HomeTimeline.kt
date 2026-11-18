@@ -19,11 +19,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.data.plugins.showsPluginAsTab
+import com.aimdi.xtanative.data.plugins.withPluginAsTab
+import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.generated.resources.Res
-import com.aimdi.xtanative.ui.generated.resources.settings_in_home_timeline_description
 import com.aimdi.xtanative.ui.generated.resources.settings_in_home_timeline
+import com.aimdi.xtanative.ui.generated.resources.settings_in_home_timeline_description
 import com.aimdi.xtanative.ui.home.HomeIcons
-import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -36,10 +37,10 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun ShowTabSwitch(settings: PluginSettings, title: String, description: String, modifier: Modifier = Modifier) {
     val current by settings.state.collectAsState()
-    val plugins = LocalPlugins.current
+    val store = LocalSettingsStore.current
     val scope = rememberCoroutineScope()
     val id = settings.pluginId
-    PluginSwitchRow(title, current?.showsPluginAsTab(id) == true, { on -> scope.launch { plugins.showAsTab(id, on) } }, modifier, description)
+    PluginSwitchRow(title, current?.showsPluginAsTab(id) == true, { on -> scope.launch { store.update { it.withPluginAsTab(id, on) } } }, modifier, description)
 }
 
 /**
