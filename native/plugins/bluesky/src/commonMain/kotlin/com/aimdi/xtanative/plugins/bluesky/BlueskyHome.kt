@@ -19,12 +19,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.aimdi.xtanative.networks.bluesky.Bluesky
 import com.aimdi.xtanative.networks.bluesky.BlueskyTab
 import com.aimdi.xtanative.networks.bluesky.BlueskyUrls
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginHomeTab
 import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
@@ -111,8 +113,31 @@ private fun ShellBar(app: BlueskyApp, tab: BlueskyTab, onTab: (BlueskyTab) -> Un
         IconButton(onClick = { app.openSearch() }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) }
         HomeMenu(app)
     }
-    ShellFeeds(BlueskyTab.entries, tab, onTab, label = { pluginString(it.label) }, filter = filters?.let { ShellFilter(it.first.setCount() > 0) { filtering = true } })
+    ShellFeeds(shellFeeds(app, tab, onTab), filter = filters?.let { ShellFilter(it.first.setCount() > 0) { filtering = true } })
     if (filtering && filters != null) FiltersSheet(filters.first, filters.second) { filtering = false }
+}
+
+/**
+ * The shell's feed row: Following, Discover and each custom feed pinned
+ * (which open in Discover's place, as its chips did), then Lists and Liked.
+ */
+@Composable
+private fun shellFeeds(app: BlueskyApp, tab: BlueskyTab, onTab: (BlueskyTab) -> Unit): List<PluginHomeTab> {
+    val feeds = app.feeds
+    val state by feeds.state.collectAsState()
+    val pinned by app.prefs.pinnedFeeds.collectAsState()
+    val discover = pluginString(Strings.tab_discover)
+    val custom = listOf(Bluesky.DISCOVER_FEED_URI to discover) + feeds.offered(pinned).map { it.uri to it.displayName }
+    val inDiscover = custom.map { (uri, name) ->
+        PluginHomeTab(BlueskyTab.DISCOVER.icon, name, tab == BlueskyTab.DISCOVER && state.selected.uri == uri) {
+            feeds.open(uri, name)
+            onTab(BlueskyTab.DISCOVER)
+        }
+    }
+    val (following, rest) = listOf(BlueskyTab.FOLLOWING, BlueskyTab.LISTS, BlueskyTab.LIKED)
+        .map { other -> PluginHomeTab(other.icon, pluginString(other.label), tab == other) { onTab(other) } }
+        .let { it.take(1) to it.drop(1) }
+    return following + inDiscover + rest
 }
 
 /** XTA's Bluesky menu: add an account, what was saved from Bluesky, import follows three ways, the settings. */

@@ -39,6 +39,7 @@ import com.aimdi.xtanative.networks.bluesky.BlueskyFeedGenerator
 import com.aimdi.xtanative.networks.bluesky.BlueskyListInfo
 import com.aimdi.xtanative.networks.bluesky.BlueskyPost
 import com.aimdi.xtanative.ui.common.XIcons
+import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.MessageText
 import com.aimdi.xtanative.ui.plugins.PagedItems
 import com.aimdi.xtanative.ui.plugins.PagedList
@@ -78,8 +79,10 @@ internal fun FeedsPane(app: BlueskyApp, frame: PluginFrame) {
     val title = if (selected.uri == Bluesky.DISCOVER_FEED_URI) discover else described?.displayName ?: selected.name
     var opening by rememberSaveable { mutableStateOf(false) }
     val problem = state.catalog.problem ?: state.createdProblem
+    // In the app's shell the pinned feeds are its feed row already.
+    val shell = LocalPluginClientBar.current != null
     SourceList(app, pages, frame, pluginString(Strings.feed_empty)) {
-        item(key = "chips") { ChipStrip(chips, selected.uri) { chip -> feeds.open(chip.uri, chip.label) } }
+        if (!shell) item(key = "chips") { ChipStrip(chips, selected.uri) { chip -> feeds.open(chip.uri, chip.label) } }
         item(key = "selected") {
             SelectedHeader(
                 title = title,

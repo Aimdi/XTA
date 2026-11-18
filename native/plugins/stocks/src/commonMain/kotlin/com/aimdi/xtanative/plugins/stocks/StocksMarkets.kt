@@ -38,6 +38,7 @@ import com.aimdi.xtanative.networks.stocks.StocksSection
 import com.aimdi.xtanative.networks.stocks.StocksSectionKind
 import com.aimdi.xtanative.networks.stocks.TickerQuote
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.pluginString
 import java.time.Instant
@@ -85,16 +86,32 @@ internal fun sectionStatus(section: StocksSection): String? = when (section.kind
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun StocksMarketsList(quotes: Map<String, TickerQuote>, failed: Set<String>, onOpen: (String) -> Unit, onRetry: (String) -> Unit, onRefresh: () -> Unit, refreshing: Boolean, padding: PaddingValues, toTop: Int) {
+internal fun StocksMarketsList(
+    quotes: Map<String, TickerQuote>,
+    failed: Set<String>,
+    onOpen: (String) -> Unit,
+    onRetry: (String) -> Unit,
+    onRefresh: () -> Unit,
+    refreshing: Boolean,
+    padding: PaddingValues,
+    toTop: Int,
+    groups: Set<MarketGroup> = MarketGroup.entries.toSet(),
+) {
     val now = Instant.now()
     val list = rememberLazyListState()
     ScrollsToTop(list, toTop)
     PullToRefreshBox(isRefreshing = refreshing, onRefresh = onRefresh, modifier = Modifier.fillMaxSize()) {
         LazyColumn(state = list, contentPadding = padding, modifier = Modifier.fillMaxSize()) {
-            marketSection("indices", QuoteRows.INDICES, quotes, failed, now, onOpen, onRetry) { pluginString(Strings.section_indices) }
-            marketSection("coins", QuoteRows.COINS, quotes, failed, now, onOpen, onRetry) { pluginString(Strings.type_crypto) }
+            if (MarketGroup.INDICES in groups) marketSection("indices", QuoteRows.INDICES, quotes, failed, now, onOpen, onRetry) { pluginString(Strings.section_indices) }
+            if (MarketGroup.COINS in groups) marketSection("coins", QuoteRows.COINS, quotes, failed, now, onOpen, onRetry) { pluginString(Strings.type_crypto) }
         }
     }
+}
+
+/** Markets' groups: the indices and the coins, as its sections or the shell's feed row. */
+internal enum class MarketGroup(val label: PluginText) {
+    INDICES(Strings.section_indices),
+    COINS(Strings.type_crypto),
 }
 
 private fun LazyListScope.marketSection(

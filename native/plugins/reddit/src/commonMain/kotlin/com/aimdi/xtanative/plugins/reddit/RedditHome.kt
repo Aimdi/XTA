@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -125,7 +126,7 @@ internal fun RedditHome(app: RedditApp, frame: PluginFrame) {
 private fun ShellBar(app: RedditApp, home: RedditHomeSource, followed: List<String>) {
     var sorting by remember { mutableStateOf(false) }
     val choices by app.choices.collectAsState()
-    val account by produceState<String?>(null, app) { value = app.accountName()?.let { "u/$it" } }
+    val account by produceState<String?>(null, app) { value = app.accountName() }
     val modes = RedditFeedMode.entries.map { mode ->
         PluginHomeTab(barIcon(mode), pluginString(feedLabel(mode)), !home.viewingSubreddit && home.mode == mode) { app.selectMode(mode) }
     }
@@ -135,10 +136,10 @@ private fun ShellBar(app: RedditApp, home: RedditHomeSource, followed: List<Stri
     val feeds = modes + communities
     PluginHomeTabs(emptyList()) {
         IconButton(onClick = { app.host.openSearch(null) }) { Icon(Icons.Filled.Search, contentDescription = pluginString(Strings.search_hint)) }
-        HomeMenu(app, choices)
+        HomeMenu(app, choices, account)
     }
     ShellFeeds(feeds, ShellFilter(active = RedditHomeChrome.sortChanged(choices)) { sorting = true })
-    ShellSubtitle(account)
+    ShellSubtitle(account?.let { "u/$it" })
     if (sorting) SortSheet(app, subtitle = feeds.firstOrNull { it.selected }?.label) { sorting = false }
 }
 
@@ -199,9 +200,11 @@ private fun railLabel(mode: RedditFeedMode): PluginText = when (mode) {
  * Reddit's settings.
  */
 @Composable
-private fun HomeMenu(app: RedditApp, choices: RedditChoices) {
+private fun HomeMenu(app: RedditApp, choices: RedditChoices, account: String? = null) {
     var communities by remember { mutableStateOf(false) }
     ShellMenuButton { close ->
+        // The signed-in reader's own profile, read like anyone's: posts and comments, nothing sent.
+        if (account != null) MenuRow(Icons.Outlined.Person, pluginString(Strings.your_profile)) { close(); app.host.open(RedditRoutes.user(account)) }
         RedditHomeChrome.menu.forEach { item ->
             when (item) {
                 RedditHomeChrome.MenuItem.SAVED -> MenuRow(RedditGlyphs.BookmarkBorder, pluginString(Strings.saved)) { close(); app.host.open(RedditRoutes.SAVED) }

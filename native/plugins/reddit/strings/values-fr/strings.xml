@@ -125,4 +125,5 @@
     <string name="see_popular">Voir Popular</string>
     <string name="nothing_new">Rien de neuf dans les subreddits que vous suivez</string>
     <string name="feed_home">Accueil</string>
+    <string name="your_profile">Votre profil</string>
 </resources>

@@ -88,7 +88,9 @@ tab that joins More (Pixiv's account and About) goes there instead of taking
 a place; the four-argument constructor stays for plugins built before. 14
 adds the unified plugin shell's parts: `ShellFeeds` (the feeds of the
 shell's second row, with a `ShellFilter`), `ShellSubtitle` with
-`ShellStatus` (the account or state under the plugin's name), the sort
+`ShellStatus` (the account or state under the plugin's name),
+`ShellUnread` (the count on its avatar), `ShellAccounts` (what opens its own
+account switcher, from a long press on its avatar), the sort
 sheet (`ShellSortSheet`, `ShellSortHeading`, `ShellSortOption`,
 `ShellSortPills`) and `ShellMenuButton`, a plugin's own entries, which are
 in the plugin sheet on Home and a ⋮ menu elsewhere. A plugin built before

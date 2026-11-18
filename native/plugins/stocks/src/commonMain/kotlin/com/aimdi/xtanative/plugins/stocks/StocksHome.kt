@@ -133,7 +133,7 @@ private fun StocksTabBody(app: StocksApp, model: StocksHomeModel, view: StocksVi
     val failed = remember(tickers, crypto) { tickers.failed + crypto.failed }
     val trending = view.trending
     when {
-        view.tab == StocksTab.MARKETS -> StocksMarketsList(quotes, failed, app::open, model::retry, model::pull, view.refreshing, frame.padding, frame.toTop)
+        view.tab == StocksTab.MARKETS -> MarketsHome(quotes, failed, app, model, view, frame)
         view.tab == StocksTab.TRENDING && trending.isEmpty() && view.trendingLoading -> PluginFeedSkeleton()
         view.tab == StocksTab.TRENDING && trending.isEmpty() -> EmptyStocks(app, model, view, frame, onAdd)
         view.tab == StocksTab.TRENDING -> PostsHome(app, model, view, trending, entries, quotes, failed, frame)
@@ -141,6 +141,18 @@ private fun StocksTabBody(app: StocksApp, model: StocksHomeModel, view: StocksVi
         view.tab == StocksTab.POSTS -> PostsHome(app, model, view, entries.ids, entries, quotes, failed, frame)
         else -> StocksWatchlistList(app, entries, tickers, quotes, failed, onAdd, model::retry, model::pull, view.refreshing, frame)
     }
+}
+
+/**
+ * Markets: the indices and the coins, as two sections; in the app's shell
+ * they are its feed row instead, one shown at a time.
+ */
+@Composable
+private fun MarketsHome(quotes: Map<String, TickerQuote>, failed: Set<String>, app: StocksApp, model: StocksHomeModel, view: StocksView, frame: PluginFrame) {
+    var group by rememberSaveable { mutableStateOf(MarketGroup.INDICES) }
+    val shell = LocalPluginClientBar.current != null
+    if (shell) ShellFeeds(MarketGroup.entries, group, { group = it }, label = { pluginString(it.label) })
+    StocksMarketsList(quotes, failed, app::open, model::retry, model::pull, view.refreshing, frame.padding, frame.toTop, groups = if (shell) setOf(group) else MarketGroup.entries.toSet())
 }
 
 /** The strip of [symbols] over "Posts" and the ticker they are filtered to, over the posts about them. */
@@ -166,9 +178,16 @@ private fun PostsHome(
         val all = PluginHomeTab(StocksIcons.ShowChart, pluginString(Strings.all_tickers), filter == null) { filter?.let(model::toggleFilter) }
         ShellFeeds(listOf(all) + symbols.map { symbol -> PluginHomeTab(StocksIcons.ShowChart, entries.label(symbol), filter == symbol) { if (filter != symbol) model.toggleFilter(symbol) } })
     }
+    if (shell) {
+        // The reel of prices scrolls away with the posts, the shell's feed row staying.
+        StocksPostsList(app, feed, frame.padding, frame.toTop, onRefresh = model::pull) {
+            item(key = "reel") { StocksReel(symbols, entries.assets, quotes, failed, filter, model::toggleFilter, app::open) }
+        }
+        return
+    }
     Column(Modifier.fillMaxSize()) {
         StocksReel(symbols, entries.assets, quotes, failed, filter, model::toggleFilter, app::open)
-        if (!shell) Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             Text(pluginString(Strings.posts), style = MaterialTheme.typography.titleMedium)
             if (filter != null) {
                 Spacer(Modifier.width(8.dp))
