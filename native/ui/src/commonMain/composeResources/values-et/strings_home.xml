@@ -80,4 +80,6 @@
     <string name="home_sort_filter_on">Sortimine ja filtrid, muudetud</string>
     <string name="home_sort_reset">Lähtesta</string>
     <string name="home_plugin_settings">%1$s seaded</string>
+    <string name="home_switch_account">Vaheta kontot</string>
+    <string name="home_unread_count">Lugemata: %1$d</string>
 </resources>

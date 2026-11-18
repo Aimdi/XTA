@@ -78,6 +78,12 @@ class PluginClientBar {
 
     /** What the shell's title says under the plugin's name ([ShellSubtitle]). */
     internal var subtitle: ShellSubtitleContent? by mutableStateOf(null)
+
+    /** How many posts the plugin has unread, for its avatar's badge ([ShellUnread]); null when it does not say. */
+    internal var unread: Int? by mutableStateOf(null)
+
+    /** What opens the plugin's own account switcher ([ShellAccounts]); null when it has none. */
+    internal var switchAccount: (() -> Unit)? by mutableStateOf(null)
 }
 
 internal class PluginBarContent(

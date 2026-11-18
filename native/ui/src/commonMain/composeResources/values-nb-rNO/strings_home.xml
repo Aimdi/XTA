@@ -80,4 +80,6 @@
     <string name="home_sort_filter_on">Sorter og filtrer, endret</string>
     <string name="home_sort_reset">Tilbakestill</string>
     <string name="home_plugin_settings">%1$s-innstillinger</string>
+    <string name="home_switch_account">Bytt konto</string>
+    <string name="home_unread_count">%1$d uleste</string>
 </resources>

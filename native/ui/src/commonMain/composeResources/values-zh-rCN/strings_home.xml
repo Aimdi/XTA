@@ -79,4 +79,6 @@
     <string name="home_sort_filter_on">排序和筛选（已更改）</string>
     <string name="home_sort_reset">重置</string>
     <string name="home_plugin_settings">%1$s 设置</string>
+    <string name="home_switch_account">切换账号</string>
+    <string name="home_unread_count">%1$d 篇未读</string>
 </resources>

@@ -82,4 +82,6 @@
     <string name="home_sort_filter_on">Сартаванне і фільтры, зменена</string>
     <string name="home_sort_reset">Скінуць</string>
     <string name="home_plugin_settings">Налады %1$s</string>
+    <string name="home_switch_account">Змяніць уліковы запіс</string>
+    <string name="home_unread_count">Непрачытаныя: %1$d</string>
 </resources>

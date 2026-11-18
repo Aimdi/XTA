@@ -91,4 +91,5 @@
     <string name="year_high">Max 52 set.</string>
     <string name="year_low">Min 52 set.</string>
     <string name="all_tickers">Tutti</string>
+    <string name="live_tickers">Live · ticker: %1$d</string>
 </resources>

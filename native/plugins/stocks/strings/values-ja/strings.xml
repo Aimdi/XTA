@@ -87,4 +87,5 @@
     <string name="year_high">52週高値</string>
     <string name="year_low">52週安値</string>
     <string name="all_tickers">すべて</string>
+    <string name="live_tickers">ライブ · ティッカー %1$d件</string>
 </resources>

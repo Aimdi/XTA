@@ -80,4 +80,6 @@
     <string name="home_sort_filter_on">Ordenatu eta iragazi, aldatua</string>
     <string name="home_sort_reset">Berrezarri</string>
     <string name="home_plugin_settings">%1$s ezarpenak</string>
+    <string name="home_switch_account">Aldatu kontua</string>
+    <string name="home_unread_count">Irakurri gabeak: %1$d</string>
 </resources>

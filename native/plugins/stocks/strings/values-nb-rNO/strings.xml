@@ -89,4 +89,5 @@
     <string name="year_high">52 u. høy</string>
     <string name="year_low">52 u. lav</string>
     <string name="all_tickers">Alle</string>
+    <string name="live_tickers">Direkte · tickere: %1$d</string>
 </resources>

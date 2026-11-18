@@ -80,4 +80,6 @@
     <string name="home_sort_filter_on">Ordena i filtra, canviat</string>
     <string name="home_sort_reset">Restableix</string>
     <string name="home_plugin_settings">Configuració de %1$s</string>
+    <string name="home_switch_account">Canvia de compte</string>
+    <string name="home_unread_count">No llegits: %1$d</string>
 </resources>

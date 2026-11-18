@@ -28,6 +28,7 @@ import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.ShellMenuButton
+import com.aimdi.xtanative.ui.plugins.ShellUnread
 import com.aimdi.xtanative.ui.plugins.pluginString
 
 /** The RSS tab's panes, in XTA's order. */
@@ -49,6 +50,9 @@ internal fun RssHome(app: RssApp, frame: PluginFrame) {
     // XTA reads its feeds, then the timeline once the tab is up, unless it is fresh; other follows read it again.
     LaunchedEffect(feeds) { if (feeds != null) app.timeline.refresh() }
     RefreshesOn(frame.refresh) { app.timeline.refresh(force = true) }
+    val timeline by app.timeline.state.collectAsState()
+    val read by app.read.collectAsState()
+    ShellUnread(RssTimelineRules.unread(timeline.items, read))
     Column(Modifier.fillMaxSize()) {
         ReadingControlsBar { Header(app, selected) { app.pane.value = it } }
         Hairline()

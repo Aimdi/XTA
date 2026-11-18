@@ -138,6 +138,31 @@ fun ShellSubtitle(text: String?, status: ShellStatus = ShellStatus.NONE) {
     DisposableEffect(bar) { onDispose { if (bar.subtitle === held.value) bar.subtitle = null } }
 }
 
+/**
+ * How many posts the plugin has unread, the number on its avatar in the
+ * app's shell (a dot alone where the plugin says nothing). Nothing where the
+ * app does not draw the plugin's bar.
+ */
+@Composable
+fun ShellUnread(count: Int) {
+    val bar = LocalPluginClientBar.current ?: return
+    SideEffect { bar.unread = count.coerceAtLeast(0) }
+    DisposableEffect(bar) { onDispose { bar.unread = null } }
+}
+
+/**
+ * What opens the plugin's own account switcher ([onSwitch]), for the
+ * plugins that keep several accounts: a long press on its avatar in the
+ * app's shell, and Switch account in its plugin sheet. Nothing where the
+ * app does not draw the plugin's bar.
+ */
+@Composable
+fun ShellAccounts(onSwitch: () -> Unit) {
+    val bar = LocalPluginClientBar.current ?: return
+    SideEffect { bar.switchAccount = onSwitch }
+    DisposableEffect(bar) { onDispose { bar.switchAccount = null } }
+}
+
 private class Held<T> {
     var value: T? = null
 }

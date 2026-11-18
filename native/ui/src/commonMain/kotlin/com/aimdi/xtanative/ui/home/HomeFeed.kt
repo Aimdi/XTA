@@ -406,7 +406,9 @@ private fun PluginSheet(
             client.subtitle,
             shell.items,
             settings?.let { route -> { onDismiss(); routes.open(route) } },
-        ) { close -> ShellEntries(id, ui, networks, extras, null, onPins, close) },
+            appEntries = { close -> ShellEntries(id, ui, networks, extras, null, onPins, close) },
+            onSwitchAccount = client.switchAccount?.let { switch -> { onDismiss(); switch() } },
+        ),
     )
 }
 

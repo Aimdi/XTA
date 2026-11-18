@@ -91,4 +91,5 @@
     <string name="year_high">Màx. 52 set.</string>
     <string name="year_low">Mín. 52 set.</string>
     <string name="all_tickers">Tots</string>
+    <string name="live_tickers">En directe · tickers: %1$d</string>
 </resources>

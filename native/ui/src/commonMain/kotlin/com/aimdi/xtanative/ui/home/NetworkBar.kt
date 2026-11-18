@@ -1,13 +1,16 @@
 package com.aimdi.xtanative.ui.home
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -33,9 +36,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -44,12 +49,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.generated.resources.Res
+import com.aimdi.xtanative.ui.generated.resources.home_switch_account
 import com.aimdi.xtanative.ui.generated.resources.home_switcher_title
 import com.aimdi.xtanative.ui.generated.resources.home_unread
+import com.aimdi.xtanative.ui.generated.resources.home_unread_count
 import com.aimdi.xtanative.ui.generated.resources.posts_scroll_to_top
 import com.aimdi.xtanative.ui.plugins.PluginClientBar
 import com.aimdi.xtanative.ui.plugins.ShellFeedRow
-import com.aimdi.xtanative.ui.plugins.ShellSubtitleContent
 import com.aimdi.xtanative.ui.plugins.color
 import com.aimdi.xtanative.ui.plugins.pluginAccent
 import kotlin.math.roundToInt
@@ -96,7 +102,7 @@ internal fun NetworkTopBar(
     Column(Modifier.background(MaterialTheme.colorScheme.background).windowInsetsPadding(TopAppBarDefaults.windowInsets)) {
         Collapsing(bar) {
             Column {
-                TitleRow(id, ui, networks, client.subtitle, anyUnread, calls) {
+                TitleRow(id, ui, networks, client, anyUnread, calls) {
                     content?.actions?.value?.invoke(this)
                     actions()
                 }
@@ -126,10 +132,11 @@ private fun Collapsing(bar: TopAppBarScrollBehavior, content: @Composable () -> 
 
 /** The first row: avatar, centred name and subtitle, the actions. */
 @Composable
-private fun TitleRow(id: String, ui: HomeUi, networks: HomeNetworks, subtitle: ShellSubtitleContent?, anyUnread: Boolean, calls: NetworkBarCalls, actions: @Composable RowScope.() -> Unit) {
+private fun TitleRow(id: String, ui: HomeUi, networks: HomeNetworks, client: PluginClientBar, anyUnread: Boolean, calls: NetworkBarCalls, actions: @Composable RowScope.() -> Unit) {
     val name = networkName(id, ui)
+    val subtitle = client.subtitle
     Box(Modifier.fillMaxWidth().height(TITLE_ROW)) {
-        Avatar(id, name, networks, anyUnread, calls.onAvatar, Modifier.align(Alignment.CenterStart).padding(start = 6.dp))
+        Avatar(id, name, networks, AvatarMark(anyUnread, client.unread), calls.onAvatar, client.switchAccount, Modifier.align(Alignment.CenterStart).padding(start = 6.dp))
         Column(
             Modifier
                 .align(Alignment.Center)
@@ -153,23 +160,41 @@ private fun TitleRow(id: String, ui: HomeUi, networks: HomeNetworks, subtitle: S
     }
 }
 
+/** What the avatar carries: the plugin's own unread count where it says one ([count]), else a dot while Home has [unread] posts for it. */
+internal class AvatarMark(val unread: Boolean, val count: Int?) {
+    /** The badge's text: the count, 99+ past that; null for a dot or nothing. */
+    val badge: String? get() = count?.takeIf { it > 0 }?.let { if (it > MAX_BADGE) "$MAX_BADGE+" else "$it" }
+
+    /** Whether a dot stands in for a count the plugin does not give. */
+    val dot: Boolean get() = count == null && unread
+
+    companion object {
+        const val MAX_BADGE = 99
+    }
+}
+
 /**
  * The plugin's avatar: its mark on a disc tinted with the accent, ringed
- * with the outline, with the accent's dot while a timeline has unread
- * posts; it opens the plugin sheet ([PluginSwitcherSheet]).
+ * with the outline, with its unread count ([AvatarMark]) at its corner; a
+ * tap opens the plugin sheet ([PluginSwitcherSheet]), a long press the
+ * plugin's account switcher where it has one ([onAccounts]).
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun Avatar(id: String, name: String, networks: HomeNetworks, anyUnread: Boolean, onClick: () -> Unit, modifier: Modifier) {
+private fun Avatar(id: String, name: String, networks: HomeNetworks, mark: AvatarMark, onClick: () -> Unit, onAccounts: (() -> Unit)?, modifier: Modifier) {
     val accent = MaterialTheme.colorScheme.primary
-    val label = listOfNotNull(name, stringResource(Res.string.home_unread).takeIf { anyUnread }, stringResource(Res.string.home_switcher_title)).joinToString(", ")
+    val count = mark.count?.takeIf { it > 0 }?.let { stringResource(Res.string.home_unread_count, it) }
+    val label = listOfNotNull(name, count ?: stringResource(Res.string.home_unread).takeIf { mark.dot }, stringResource(Res.string.home_switcher_title)).joinToString(", ")
+    val switchLabel = stringResource(Res.string.home_switch_account)
     Box(
         modifier
             .size(44.dp)
             .clip(CircleShape)
-            .clickable(onClick = onClick)
+            .combinedClickable(onClick = onClick, onLongClick = onAccounts, onLongClickLabel = switchLabel.takeIf { onAccounts != null })
             .clearAndSetSemantics {
                 role = Role.Button
                 contentDescription = label
+                if (onAccounts != null) customActions = listOf(CustomAccessibilityAction(switchLabel) { onAccounts(); true })
             },
         contentAlignment = Alignment.Center,
     ) {
@@ -179,7 +204,23 @@ private fun Avatar(id: String, name: String, networks: HomeNetworks, anyUnread: 
         ) {
             networks.Mark(id, 17.dp)
         }
-        if (anyUnread) Box(Modifier.align(Alignment.TopEnd).padding(top = 4.dp, end = 3.dp).size(10.dp).background(MaterialTheme.colorScheme.background, CircleShape).padding(2.dp).background(accent, CircleShape))
+        val badge = mark.badge
+        when {
+            badge != null -> Text(
+                badge,
+                fontSize = 10.5.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onPrimary,
+                maxLines = 1,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .border(2.dp, MaterialTheme.colorScheme.background, CircleShape)
+                    .background(accent, CircleShape)
+                    .defaultMinSize(minWidth = 16.dp)
+                    .padding(horizontal = 4.dp),
+            )
+            mark.dot -> Box(Modifier.align(Alignment.TopEnd).padding(top = 4.dp, end = 3.dp).size(10.dp).background(MaterialTheme.colorScheme.background, CircleShape).padding(2.dp).background(accent, CircleShape))
+        }
     }
 }
 

@@ -84,4 +84,6 @@
     <string name="home_sort_filter_on">الترتيب والتصفية، مُعدَّل</string>
     <string name="home_sort_reset">إعادة الضبط</string>
     <string name="home_plugin_settings">إعدادات %1$s</string>
+    <string name="home_switch_account">تبديل الحساب</string>
+    <string name="home_unread_count">غير المقروءة: %1$d</string>
 </resources>

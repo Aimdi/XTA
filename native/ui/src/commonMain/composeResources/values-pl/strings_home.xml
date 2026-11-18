@@ -82,4 +82,6 @@
     <string name="home_sort_filter_on">Sortowanie i filtry, zmienione</string>
     <string name="home_sort_reset">Resetuj</string>
     <string name="home_plugin_settings">Ustawienia %1$s</string>
+    <string name="home_switch_account">Przełącz konto</string>
+    <string name="home_unread_count">Nieprzeczytane: %1$d</string>
 </resources>

@@ -91,4 +91,5 @@
     <string name="year_high">Max. 52 týd.</string>
     <string name="year_low">Min. 52 týd.</string>
     <string name="all_tickers">Vše</string>
+    <string name="live_tickers">Živě · tickery: %1$d</string>
 </resources>

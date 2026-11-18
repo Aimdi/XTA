@@ -82,4 +82,6 @@
     <string name="home_sort_filter_on">Сортування й фільтри, змінено</string>
     <string name="home_sort_reset">Скинути</string>
     <string name="home_plugin_settings">Налаштування %1$s</string>
+    <string name="home_switch_account">Змінити обліковий запис</string>
+    <string name="home_unread_count">Непрочитані: %1$d</string>
 </resources>

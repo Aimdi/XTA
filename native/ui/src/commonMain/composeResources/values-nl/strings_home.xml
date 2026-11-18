@@ -80,4 +80,6 @@
     <string name="home_sort_filter_on">Sorteren en filteren, gewijzigd</string>
     <string name="home_sort_reset">Herstellen</string>
     <string name="home_plugin_settings">%1$s-instellingen</string>
+    <string name="home_switch_account">Account wisselen</string>
+    <string name="home_unread_count">%1$d ongelezen</string>
 </resources>

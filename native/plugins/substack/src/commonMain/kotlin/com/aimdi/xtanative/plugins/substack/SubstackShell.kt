@@ -13,6 +13,7 @@ import com.aimdi.xtanative.ui.plugins.ShellFeeds
 import com.aimdi.xtanative.ui.plugins.ShellFilter
 import com.aimdi.xtanative.ui.plugins.ShellStatus
 import com.aimdi.xtanative.ui.plugins.ShellSubtitle
+import com.aimdi.xtanative.ui.plugins.ShellUnread
 import com.aimdi.xtanative.ui.plugins.pluginString
 
 /**
@@ -33,6 +34,7 @@ internal fun SubstackShell(app: SubstackApp, state: HomeState, followed: List<Su
     }
     ShellFeeds(listOf(all) + publications, ShellFilter(SubstackHomeRules.filtered(controls.home, controls.filter)) { options = true })
     val unread = SubstackHomeRules.unread(feed.posts, followed, read)
+    ShellUnread(unread)
     when {
         feed.failed -> ShellSubtitle(failureLabel(feed.failedCount, feed.refreshError), ShellStatus.PROBLEM)
         unread > 0 -> ShellSubtitle(pluginString(Strings.unread_count, unread), ShellStatus.UNREAD)

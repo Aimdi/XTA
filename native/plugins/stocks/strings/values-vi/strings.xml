@@ -87,4 +87,5 @@
     <string name="year_high">Đỉnh 52 tuần</string>
     <string name="year_low">Đáy 52 tuần</string>
     <string name="all_tickers">Tất cả</string>
+    <string name="live_tickers">Trực tiếp · mã: %1$d</string>
 </resources>

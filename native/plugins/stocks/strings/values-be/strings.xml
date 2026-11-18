@@ -93,4 +93,5 @@
     <string name="year_high">Макс. 52 тыд.</string>
     <string name="year_low">Мін. 52 тыд.</string>
     <string name="all_tickers">Усе</string>
+    <string name="live_tickers">Наўпрост · тыкеры: %1$d</string>
 </resources>

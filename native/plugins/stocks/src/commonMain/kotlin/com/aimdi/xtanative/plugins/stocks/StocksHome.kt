@@ -65,6 +65,8 @@ import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.ShellFeeds
 import com.aimdi.xtanative.ui.plugins.ShellMenuButton
+import com.aimdi.xtanative.ui.plugins.ShellStatus
+import com.aimdi.xtanative.ui.plugins.ShellSubtitle
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.post.PostIcons
@@ -90,6 +92,8 @@ internal fun StocksHome(app: StocksApp, frame: PluginFrame) {
     var adding by rememberSaveable { mutableStateOf(false) }
     var managing by rememberSaveable { mutableStateOf(false) }
     val notices = remember { PluginNotices() }
+    // The quotes are read again every so often while this is shown: live, for as many tickers as are watched.
+    entries?.let { ShellSubtitle(pluginString(Strings.live_tickers, it.ids.size), ShellStatus.LIVE) }
     LaunchedEffect(model, view.tab, entries?.ids, view.trending) {
         while (true) {
             model.refreshQuotes()

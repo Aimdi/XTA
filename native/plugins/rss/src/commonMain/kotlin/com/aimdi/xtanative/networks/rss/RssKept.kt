@@ -116,4 +116,7 @@ object RssTimelineRules {
 
     /** Mark all as read is offered while the home pane has an unread item. */
     fun anyUnread(items: List<RssItem>, read: Set<String>): Boolean = items.any { it.id !in read }
+
+    /** How many of [items] are unread: the number on the plugin's avatar in the app's shell. */
+    fun unread(items: List<RssItem>, read: Set<String>): Int = items.count { it.id !in read }
 }

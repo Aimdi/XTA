@@ -82,4 +82,6 @@
     <string name="home_sort_filter_on">Řazení a filtry, změněno</string>
     <string name="home_sort_reset">Obnovit</string>
     <string name="home_plugin_settings">Nastavení %1$s</string>
+    <string name="home_switch_account">Přepnout účet</string>
+    <string name="home_unread_count">Nepřečteno: %1$d</string>
 </resources>

@@ -153,7 +153,7 @@ internal fun PremiumBadge() {
 /** The accounts on this device to switch between, and Add account. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AccountSwitcher(onClose: () -> Unit, onAdd: () -> Unit) {
+internal fun AccountSwitcher(onClose: () -> Unit, onAdd: () -> Unit) {
     ModalBottomSheet(onDismissRequest = onClose) {
         Column(Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = 16.dp).padding(bottom = 16.dp)) {
             Text(pluginString(Strings.switch_account), style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(vertical = 8.dp))

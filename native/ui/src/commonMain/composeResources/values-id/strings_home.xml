@@ -79,4 +79,6 @@
     <string name="home_sort_filter_on">Urutkan &amp; filter, diubah</string>
     <string name="home_sort_reset">Atur ulang</string>
     <string name="home_plugin_settings">Pengaturan %1$s</string>
+    <string name="home_switch_account">Ganti akun</string>
+    <string name="home_unread_count">%1$d belum dibaca</string>
 </resources>

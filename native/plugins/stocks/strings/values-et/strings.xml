@@ -89,4 +89,5 @@
     <string name="year_high">52 näd. kõrgeim</string>
     <string name="year_low">52 näd. madalaim</string>
     <string name="all_tickers">Kõik</string>
+    <string name="live_tickers">Otse · tickerid: %1$d</string>
 </resources>

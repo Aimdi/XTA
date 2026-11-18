@@ -80,4 +80,6 @@
     <string name="home_sort_filter_on">Sırala ve filtrele, değiştirildi</string>
     <string name="home_sort_reset">Sıfırla</string>
     <string name="home_plugin_settings">%1$s ayarları</string>
+    <string name="home_switch_account">Hesap değiştir</string>
+    <string name="home_unread_count">%1$d okunmamış</string>
 </resources>

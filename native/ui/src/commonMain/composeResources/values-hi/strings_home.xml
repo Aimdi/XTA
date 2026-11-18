@@ -80,4 +80,6 @@
     <string name="home_sort_filter_on">क्रम और फ़िल्टर, बदला गया</string>
     <string name="home_sort_reset">रीसेट करें</string>
     <string name="home_plugin_settings">%1$s सेटिंग्स</string>
+    <string name="home_switch_account">खाता बदलें</string>
+    <string name="home_unread_count">अपठित: %1$d</string>
 </resources>

@@ -46,4 +46,5 @@
         <item quantity="other">Karma: %1$d</item>
     </plurals>
     <string name="more_options">Dadatkovyja parametry</string>
+    <string name="updated_ago">Abnoŭlena %1$s tamu</string>
 </resources>

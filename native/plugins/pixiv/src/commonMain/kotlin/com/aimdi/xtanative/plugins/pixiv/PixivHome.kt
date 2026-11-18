@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.networks.pixiv.PixivIllust
 import com.aimdi.xtanative.networks.pixiv.PixivSearchKind
 import com.aimdi.xtanative.networks.pixiv.PixivUserListKind
+import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
@@ -61,10 +62,12 @@ import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
+import com.aimdi.xtanative.ui.plugins.ShellAccounts
 import com.aimdi.xtanative.ui.plugins.ShellFeeds
 import com.aimdi.xtanative.ui.plugins.ShellFilter
 import com.aimdi.xtanative.ui.plugins.ShellSortOption
 import com.aimdi.xtanative.ui.plugins.ShellSortSheet
+import com.aimdi.xtanative.ui.plugins.ShellSubtitle
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.post.PostIcons
@@ -87,6 +90,7 @@ internal fun PixivHome(runtime: PixivRuntime, frame: PluginFrame) {
         LaunchedEffect(view.tab, view.novels, signedIn) { model.ensureShown() }
         RefreshesOn(frame.refresh) { model.refreshShown() }
         val toTop = frame.toTop + reselected
+        if (LocalPluginClientBar.current != null && signedIn) ShellAccount(settings)
         Column(Modifier.fillMaxSize()) {
             ReadingControlsBar { HomeChrome(view, onTab = { tab -> if (tab == view.tab) reselected++ else model.show(tab) }, onMode = model::switchMode) }
             HorizontalDivider()
@@ -346,6 +350,26 @@ private fun ShellNovelSources(model: PixivHomeModel, view: PixivHomeView) {
         ShellSortSheet(pluginString(Strings.tab_following), onDismiss = { sorting = false }, onReset = { model.novelRestrict(PixivFavoritesSource.PUBLIC) }) {
             ShellSortOption(pluginString(Strings.follow_public), view.novelRestrict == PixivFavoritesSource.PUBLIC) { model.novelRestrict(PixivFavoritesSource.PUBLIC) }
             ShellSortOption(pluginString(Strings.follow_private), view.novelRestrict == PixivFavoritesSource.PRIVATE) { model.novelRestrict(PixivFavoritesSource.PRIVATE) }
+        }
+    }
+}
+
+/**
+ * The account in use under Pixiv's name in the app's shell, and its own
+ * account switcher behind a long press on its avatar and the plugin
+ * sheet's Switch account.
+ */
+@Composable
+private fun ShellAccount(settings: Settings) {
+    val runtime = LocalPixiv.current
+    var switching by remember { mutableStateOf(false) }
+    val active = PixivAccounts.active(settings)
+    ShellSubtitle(active?.let { account -> account.account.takeIf { it.isNotEmpty() }?.let { "@$it" } ?: account.displayName })
+    ShellAccounts { switching = true }
+    if (switching) {
+        AccountSwitcher(onClose = { switching = false }) {
+            switching = false
+            runtime.open(PixivRoute.SignIn)
         }
     }
 }

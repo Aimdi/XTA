@@ -80,4 +80,6 @@
     <string name="home_sort_filter_on">Ordina e filtra, modificato</string>
     <string name="home_sort_reset">Ripristina</string>
     <string name="home_plugin_settings">Impostazioni di %1$s</string>
+    <string name="home_switch_account">Cambia account</string>
+    <string name="home_unread_count">Da leggere: %1$d</string>
 </resources>

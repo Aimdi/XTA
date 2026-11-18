@@ -79,4 +79,6 @@
     <string name="home_sort_filter_on">정렬 및 필터, 변경됨</string>
     <string name="home_sort_reset">초기화</string>
     <string name="home_plugin_settings">%1$s 설정</string>
+    <string name="home_switch_account">계정 전환</string>
+    <string name="home_unread_count">읽지 않음 %1$d</string>
 </resources>

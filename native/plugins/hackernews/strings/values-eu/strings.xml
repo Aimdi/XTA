@@ -42,4 +42,5 @@
         <item quantity="other">%1$d karma</item>
     </plurals>
     <string name="more_options">Aukera gehiago</string>
+    <string name="updated_ago">Duela %1$s eguneratua</string>
 </resources>

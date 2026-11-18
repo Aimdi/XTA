@@ -82,4 +82,6 @@
     <string name="home_sort_filter_on">Sartavannie i filtry, zmieniena</string>
     <string name="home_sort_reset">Skinuć</string>
     <string name="home_plugin_settings">Nalady %1$s</string>
+    <string name="home_switch_account">Zmianić ulikovy zapis</string>
+    <string name="home_unread_count">Niepračytanyja: %1$d</string>
 </resources>

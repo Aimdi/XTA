@@ -80,4 +80,6 @@
     <string name="home_sort_filter_on">Sortieren &amp; Filtern, geändert</string>
     <string name="home_sort_reset">Zurücksetzen</string>
     <string name="home_plugin_settings">%1$s-Einstellungen</string>
+    <string name="home_switch_account">Konto wechseln</string>
+    <string name="home_unread_count">%1$d ungelesen</string>
 </resources>

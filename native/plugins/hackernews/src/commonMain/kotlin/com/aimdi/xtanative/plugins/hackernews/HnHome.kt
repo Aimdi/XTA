@@ -21,7 +21,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
@@ -35,6 +37,7 @@ import com.aimdi.xtanative.networks.hackernews.HnFollowingReader
 import com.aimdi.xtanative.networks.hackernews.HnStory
 import com.aimdi.xtanative.ui.common.FeedSkeleton
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.agoText
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.EmptyPane
 import com.aimdi.xtanative.ui.plugins.NetworkProblemView
@@ -47,6 +50,8 @@ import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
 import com.aimdi.xtanative.ui.plugins.ShellMenuButton
+import com.aimdi.xtanative.ui.plugins.ShellStatus
+import com.aimdi.xtanative.ui.plugins.ShellSubtitle
 import com.aimdi.xtanative.ui.plugins.loaded
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.problemOf
@@ -54,6 +59,9 @@ import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.saved.SavedIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
+import java.time.Duration
+import java.time.Instant
+import kotlinx.coroutines.delay
 
 /** The tabs of XTA's Hacker News reader, in its order: the six lists, then what is saved here and the accounts followed here. */
 internal enum class HnTab(val feed: HnFeed?, val label: PluginText) {
@@ -120,6 +128,7 @@ private fun FeedPane(app: HnApp, feed: HnFeed, frame: PluginFrame) {
     }
     val paged by pages.state.collectAsState()
     val ranks = remember(paged.items) { paged.items.withIndex().associate { (index, story) -> story.id to index + 1 } }
+    UpdatedLine(paged.loaded && !paged.loading, paged.items)
     RefreshesOn(frame.refresh) { pages.refresh() }
     HnStoryList(app, pages, PostIcons.Forum, pluginString(Strings.feed_empty), frame) { story ->
         HnStoryRow(app, story, rank = ranks[story.id])
@@ -174,3 +183,28 @@ private fun FollowingPane(app: HnApp, frame: PluginFrame) {
 
 /** Hacker News' orange. */
 internal val HnBrand = Color(0xFFFF6600)
+
+/**
+ * When the list shown was last read, under Hacker News' name in the app's
+ * shell ("Updated 5m ago"), live while that is under ten minutes; the line
+ * moves on each minute.
+ */
+@Composable
+private fun UpdatedLine(done: Boolean, items: List<Any>) {
+    var at by remember { mutableStateOf<Instant?>(null) }
+    LaunchedEffect(done, items) { if (done && items.isNotEmpty()) at = Instant.now() }
+    val read = at ?: return
+    val minute by produceState(0, read) {
+        while (true) {
+            delay(60_000)
+            value++
+        }
+    }
+    key(minute) {
+        val fresh = Duration.between(read, Instant.now()) < LIVE_FOR
+        ShellSubtitle(pluginString(Strings.updated_ago, agoText(read)), if (fresh) ShellStatus.LIVE else ShellStatus.NONE)
+    }
+}
+
+/** How long a list read counts as live. */
+private val LIVE_FOR: Duration = Duration.ofMinutes(10)

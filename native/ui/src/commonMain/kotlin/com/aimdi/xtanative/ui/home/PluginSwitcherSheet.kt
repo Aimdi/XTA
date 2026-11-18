@@ -44,6 +44,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.home_manage_plugins
+import com.aimdi.xtanative.ui.generated.resources.home_switch_account
 import com.aimdi.xtanative.ui.generated.resources.home_switcher_recent
 import com.aimdi.xtanative.ui.generated.resources.home_switcher_start
 import com.aimdi.xtanative.ui.generated.resources.home_switcher_start_hint
@@ -78,6 +79,7 @@ internal class SheetPlugin(
     val items: (@Composable ColumnScope.(close: () -> Unit) -> Unit)?,
     val onSettings: (() -> Unit)?,
     val appEntries: @Composable ColumnScope.(close: () -> Unit) -> Unit,
+    val onSwitchAccount: (() -> Unit)? = null,
 )
 
 /** Where the switcher's choices lead. */
@@ -159,6 +161,11 @@ private fun PluginPart(plugin: SheetPlugin, ui: HomeUi, networks: HomeNetworks, 
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(name, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
             plugin.subtitle?.let { Text(it.text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+        }
+        plugin.onSwitchAccount?.let { switch ->
+            OutlinedButton(onClick = switch, modifier = Modifier.heightIn(min = 44.dp)) {
+                Text(stringResource(Res.string.home_switch_account), maxLines = 1)
+            }
         }
         plugin.onSettings?.let { settings ->
             OutlinedButton(onClick = settings, modifier = Modifier.heightIn(min = 44.dp)) {

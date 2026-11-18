@@ -42,4 +42,5 @@
         <item quantity="other">%1$d karma</item>
     </plurals>
     <string name="more_options">Meer opties</string>
+    <string name="updated_ago">%1$s geleden bijgewerkt</string>
 </resources>

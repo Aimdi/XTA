@@ -89,4 +89,5 @@
     <string name="year_high">52 ast. gorena</string>
     <string name="year_low">52 ast. beherena</string>
     <string name="all_tickers">Guztiak</string>
+    <string name="live_tickers">Zuzenean · tickerrak: %1$d</string>
 </resources>
