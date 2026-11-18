@@ -36,7 +36,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -45,24 +44,28 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.store.backup.TikTokSubscriptionRow
 import com.aimdi.xtanative.store.settings.Settings
-import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.FeedSkeleton
+import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.EmptyPane
+import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginChipTabs
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.PullToReload
+import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
+import com.aimdi.xtanative.ui.plugins.ReportsReadingScroll
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
+import com.aimdi.xtanative.ui.plugins.ShellFeeds
+import com.aimdi.xtanative.ui.plugins.ShellMenuButton
 import com.aimdi.xtanative.ui.plugins.SwipeToUnfollow
 import com.aimdi.xtanative.ui.plugins.WithSettings
-import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
-import com.aimdi.xtanative.ui.plugins.ReportsReadingScroll
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.search.DiscoverIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
@@ -89,8 +92,12 @@ internal fun TikTokHome(app: TikTokApp, frame: PluginFrame, ownActions: Boolean 
     ReportsReadingScroll(lists.getValue(tab))
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
-            ReadingControlsBar { TabRow(tab, onTab = { app.tab.value = it }, actions = if (ownActions) HomeActions({ app.openSearch() }, app.host::openSettings) else null) }
-            Hairline()
+            if (LocalPluginClientBar.current != null) {
+                ShellBar(app, tab) { app.tab.value = it }
+            } else {
+                ReadingControlsBar { TabRow(tab, onTab = { app.tab.value = it }, actions = if (ownActions) HomeActions({ app.openSearch() }, app.host::openSettings) else null) }
+                Hairline()
+            }
             Box(Modifier.weight(1f).swipeTabs(TikTokTab.entries, tab) { app.tab.value = it }) {
                 when (tab) {
                     TikTokTab.FOLLOWING -> FollowingTab(app, follows, settings, frame.padding, lists.getValue(tab))
@@ -103,6 +110,21 @@ internal fun TikTokHome(app: TikTokApp, frame: PluginFrame, ownActions: Boolean 
 }
 
 private class HomeActions(val search: () -> Unit, val settings: () -> Unit)
+
+/** TikTok in the app's shell (the unified plugin shell): its tabs as the feed row, its search alone on the bar, its settings in the plugin sheet. */
+@Composable
+private fun ShellBar(app: TikTokApp, tab: TikTokTab, onTab: (TikTokTab) -> Unit) {
+    PluginHomeTabs(emptyList()) {
+        IconButton(onClick = { app.openSearch() }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) }
+        ShellMenuButton { close ->
+            DropdownMenuItem(text = { Text(pluginString(Strings.settings)) }, onClick = {
+                close()
+                app.host.openSettings()
+            })
+        }
+    }
+    ShellFeeds(TikTokTab.entries, tab, onTab, label = { pluginString(tabLook(it).second) })
+}
 
 @Composable
 private fun TabRow(tab: TikTokTab, onTab: (TikTokTab) -> Unit, actions: HomeActions?) {

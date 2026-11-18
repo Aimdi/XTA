@@ -80,4 +80,8 @@
     <string name="home_manage_plugins">Kiravać plahinami</string>
     <string name="home_xta_settings">Nalady XTA</string>
     <string name="home_menu_xta">XTA</string>
+    <string name="home_sort_filter">Sartavannie i filtry</string>
+    <string name="home_sort_filter_on">Sartavannie i filtry, zmieniena</string>
+    <string name="home_sort_reset">Skinuć</string>
+    <string name="home_plugin_settings">Nalady %1$s</string>
 </resources>

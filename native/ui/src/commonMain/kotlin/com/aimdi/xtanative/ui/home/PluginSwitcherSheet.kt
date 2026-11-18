@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +20,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -45,6 +48,8 @@ import com.aimdi.xtanative.ui.generated.resources.home_switcher_start
 import com.aimdi.xtanative.ui.generated.resources.home_switcher_start_hint
 import com.aimdi.xtanative.ui.generated.resources.home_switcher_title
 import com.aimdi.xtanative.ui.generated.resources.home_unread
+import com.aimdi.xtanative.ui.generated.resources.home_xta_settings
+import com.aimdi.xtanative.ui.plugins.ShellSubtitleContent
 import com.aimdi.xtanative.ui.generated.resources.settings
 import org.jetbrains.compose.resources.stringResource
 
@@ -60,6 +65,20 @@ internal object PluginSwitcher {
     }
 }
 
+/**
+ * The plugin shown, at the top of its sheet: its name and [subtitle], its
+ * settings ([onSettings]), its own entries ([items], [ShellMenuButton]) and
+ * the app's for it ([appEntries]: keep controls visible, Home's options for
+ * the network, its sections in the menu).
+ */
+internal class SheetPlugin(
+    val id: String,
+    val subtitle: ShellSubtitleContent?,
+    val items: (@Composable ColumnScope.(close: () -> Unit) -> Unit)?,
+    val onSettings: (() -> Unit)?,
+    val appEntries: @Composable ColumnScope.(close: () -> Unit) -> Unit,
+)
+
 /** Where the switcher's choices lead. */
 internal class SwitcherCalls(
     val onStart: () -> Unit,
@@ -70,15 +89,17 @@ internal class SwitcherCalls(
 )
 
 /**
- * The plugin switcher, which a network's button opens (the unified plugin
- * shell): Start, back to XTA's own Home (Following, with the app's bar and
- * every timeline); the networks on Home in a grid, the recently used first,
- * the one shown ringed in the accent and each with a dot while it has
- * unread posts; then the plugin store and the settings.
+ * The plugin sheet, which a network's avatar opens (the unified plugin
+ * shell, which has no ⋮): the [plugin] shown first, its name and subtitle,
+ * its settings and its own entries; then Start, back to XTA's own Home
+ * (Following, with the app's bar and every timeline); the networks on Home
+ * in a grid, the recently used first, the one shown ringed in the accent
+ * and each with a dot while it has unread posts; then the plugin store and
+ * XTA's settings.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun PluginSwitcherSheet(ui: HomeUi, networks: HomeNetworks, current: String?, unread: Set<String>, calls: SwitcherCalls) {
+internal fun PluginSwitcherSheet(ui: HomeUi, networks: HomeNetworks, current: String?, unread: Set<String>, calls: SwitcherCalls, plugin: SheetPlugin? = null) {
     val ids = remember(ui.tabs, ui.recentNetworks) { PluginSwitcher.networks(ui.tabs, ui.recentNetworks) }
     val title = stringResource(Res.string.home_switcher_title)
     ModalBottomSheet(onDismissRequest = calls.onDismiss, modifier = Modifier.semantics { paneTitle = title }) {
@@ -86,6 +107,10 @@ internal fun PluginSwitcherSheet(ui: HomeUi, networks: HomeNetworks, current: St
             Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 16.dp).padding(bottom = 24.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
+            if (plugin != null) {
+                PluginPart(plugin, ui, networks, calls.onDismiss)
+                HorizontalDivider()
+            }
             StartRow(calls.onStart)
             if (ids.isNotEmpty()) {
                 Text(
@@ -110,10 +135,38 @@ internal fun PluginSwitcherSheet(ui: HomeUi, networks: HomeNetworks, current: St
                     Text(stringResource(Res.string.home_manage_plugins), maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
                 FilledTonalButton(onClick = calls.onSettings, modifier = Modifier.weight(1f).heightIn(min = 44.dp)) {
-                    Text(stringResource(Res.string.settings), maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(stringResource(Res.string.home_xta_settings), maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
             }
         }
+    }
+}
+
+/** The plugin's part of its sheet: its avatar, name and subtitle, its settings, its entries and the app's for it. */
+@Composable
+private fun PluginPart(plugin: SheetPlugin, ui: HomeUi, networks: HomeNetworks, close: () -> Unit) {
+    val accent = MaterialTheme.colorScheme.primary
+    val name = ui.networks.firstOrNull { it.id == plugin.id }?.title ?: plugin.id
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.padding(horizontal = 4.dp)) {
+        Box(
+            Modifier.size(40.dp).background(accent.copy(alpha = 0.16f), CircleShape).border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            networks.Mark(plugin.id, 20.dp)
+        }
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(name, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            plugin.subtitle?.let { Text(it.text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+        }
+        plugin.onSettings?.let { settings ->
+            OutlinedButton(onClick = settings, modifier = Modifier.heightIn(min = 44.dp)) {
+                Text(stringResource(Res.string.settings), maxLines = 1)
+            }
+        }
+    }
+    Column {
+        plugin.items?.invoke(this, close)
+        plugin.appEntries(this, close)
     }
 }
 

@@ -124,4 +124,5 @@
     <string name="in_home_feed_description">Inserisce i post dei subreddit che segui in «Seguiti» e «Per te»</string>
     <string name="see_popular">Vedi Popular</string>
     <string name="nothing_new">Niente di nuovo dai subreddit che segui</string>
+    <string name="feed_home">Home</string>
 </resources>

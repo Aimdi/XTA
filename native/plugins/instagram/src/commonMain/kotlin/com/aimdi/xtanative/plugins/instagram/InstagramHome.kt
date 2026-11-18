@@ -63,18 +63,22 @@ import com.aimdi.xtanative.ui.common.FeedSkeleton
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.EmptyPane
+import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PagedItems
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.PullToReload
+import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
 import com.aimdi.xtanative.ui.plugins.ReadsMoreNearEnd
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.RetryMessage
 import com.aimdi.xtanative.ui.plugins.RetryRow
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
+import com.aimdi.xtanative.ui.plugins.ShellFeeds
+import com.aimdi.xtanative.ui.plugins.ShellMenuButton
 import com.aimdi.xtanative.ui.plugins.SwipeToUnfollow
-import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
 import com.aimdi.xtanative.ui.post.PostIcons
@@ -100,8 +104,12 @@ internal fun InstagramHome(app: InstagramApp, frame: PluginFrame) {
     RefreshesOn(frame.refresh) { if (tab == InstagramTab.FOLLOWING) app.following.refresh(force = true) else forYou.refresh() }
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
-            ReadingControlsBar { HomeBar(app, tab, onTab = { tab = it }, onSearch = { searching = true }) }
-            HorizontalDivider()
+            if (LocalPluginClientBar.current != null) {
+                ShellBar(app, tab, onTab = { tab = it }, onSearch = { searching = true })
+            } else {
+                ReadingControlsBar { HomeBar(app, tab, onTab = { tab = it }, onSearch = { searching = true }) }
+                HorizontalDivider()
+            }
             Box(Modifier.weight(1f).swipeTabs(InstagramTab.entries, tab) { tab = it }) {
                 when (tab) {
                     InstagramTab.FOR_YOU -> ForYou(app, forYou, frame) { searching = true }
@@ -113,6 +121,21 @@ internal fun InstagramHome(app: InstagramApp, frame: PluginFrame) {
         NoticeHost(app.notices)
     }
     if (searching) InstagramSearchSheet(app, initial = null) { searching = false }
+}
+
+/** Instagram in the app's shell (the unified plugin shell): its tabs as the feed row, its search alone on the bar, its settings in the plugin sheet. */
+@Composable
+private fun ShellBar(app: InstagramApp, tab: InstagramTab, onTab: (InstagramTab) -> Unit, onSearch: () -> Unit) {
+    PluginHomeTabs(emptyList()) {
+        IconButton(onClick = onSearch) { Icon(Icons.Filled.Search, contentDescription = pluginString(Strings.search)) }
+        ShellMenuButton { close ->
+            DropdownMenuItem(text = { Text(pluginString(Strings.settings)) }, onClick = {
+                close()
+                app.host.openSettings()
+            })
+        }
+    }
+    ShellFeeds(InstagramTab.entries, tab, onTab, label = { pluginString(it.label) })
 }
 
 @Composable

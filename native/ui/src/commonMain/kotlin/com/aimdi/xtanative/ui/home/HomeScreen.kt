@@ -64,8 +64,8 @@ import com.aimdi.xtanative.ui.group.FeedSettingsSheet
 import com.aimdi.xtanative.ui.group.GroupFeedScreen
 import com.aimdi.xtanative.ui.group.groupFeedViewModel
 import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
-import com.aimdi.xtanative.ui.plugins.LocalShellMenu
 import com.aimdi.xtanative.ui.plugins.PluginClientBar
+import com.aimdi.xtanative.ui.plugins.ShellFeedRow
 import com.aimdi.xtanative.ui.plugins.pluginAccent
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.search.LoadedFeedSearchScreen
@@ -77,7 +77,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
 /** The sheets Home opens over itself. */
-internal enum class HomeSheet { FILTER, STRIP, PICKER, NETWORKS, FOLLOWING_FILTERS, AVATAR, SWITCHER }
+internal enum class HomeSheet { FILTER, STRIP, PICKER, NETWORKS, FOLLOWING_FILTERS, AVATAR }
 
 /** What opens over all of Home, its bar included: the search of a timeline's loaded posts, Following's Custom rules. */
 internal enum class HomeLayer { LOADED_SEARCH, FOLLOWING_CUSTOM }
@@ -359,8 +359,8 @@ private fun barTapped(shell: HomeShellState, ui: HomeUi, index: Int) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NetworkPage(id: String, ui: HomeUi, networks: HomeNetworks, toTop: Int, refresh: () -> Unit, onPins: (String, List<String>) -> Unit, takeover: NetworkBarTakeover, routes: HomeRoutes) {
-    // A network whose sections take the bottom bar hands them to Home rather than drawing its own strip.
-    val client = remember(id) { PluginClientBar() }.takeIf { id in NetworkBarRules.NETWORKS }
+    // A plugin hands its sections and feeds to Home's bars rather than drawing its own strip.
+    val client = remember(id) { PluginClientBar() }
     val owner = NetworkBarRules.owner(BarPage.Network(id))!!
     DisposableEffect(takeover, id, client) {
         takeover.show(owner, id, client)
@@ -370,22 +370,22 @@ private fun NetworkPage(id: String, ui: HomeUi, networks: HomeNetworks, toTop: I
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             val extras = takeover.on(BarPage.Network(id))?.split?.more.orEmpty()
-            val shell = rememberShellMenu(id, ui, networks, extras, routes, onPins)
             Column {
-                CompositionLocalProvider(LocalShellMenu provides shell) {
                 TopAppBar(
                     title = { Text(ui.networks.firstOrNull { it.id == id }?.title ?: id, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     actions = {
-                        client?.content?.actions?.value?.invoke(this)
-                        if (client == null || id !in NetworkBarRules.ONE_MENU) key(id) { NetworkActions(id, ui, networks, onPins, routes, extras, menu = !shell.drawnByPlugin) }
+                        // Off Home's Feed there is no plugin sheet: the plugin's own entries stay its ⋮ ([ShellMenuButton]).
+                        client.content?.actions?.value?.invoke(this)
+                        if (id !in NetworkBarRules.ONE_MENU) key(id) { NetworkActions(id, ui, networks, onPins, routes, extras) }
                         if (LocalDesktopActions.current != null) IconButton(onClick = refresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
                 )
-                }
-                // Sections that do not make the bottom bar run as the network's feed row, as on Home's Feed.
-                val tabs = client?.content?.tabs?.value.orEmpty()
-                if (tabs.size > 1 && takeover.on(BarPage.Network(id)) == null) FeedRow(tabs, pluginAccent(client?.content?.accent?.value))
+                // The plugin's feeds, or sections that do not make the bottom bar, run as its feed row, as on Home's Feed.
+                val handed = client.feeds
+                val tabs = client.content?.tabs?.value.orEmpty()
+                val feeds = handed?.feeds ?: tabs.takeIf { it.size > 1 && takeover.on(BarPage.Network(id)) == null }
+                if (feeds != null) ShellFeedRow(feeds, handed?.filter, pluginAccent(client.content?.accent?.value))
             }
         },
     ) { padding ->
@@ -475,7 +475,7 @@ private fun HomeSheets(parts: HomeParts, shell: HomeShellState, following: Follo
     val ui = parts.ui
     val scope = rememberCoroutineScope()
     val close = { shell.sheet = null }
-    LaunchedEffect(shell.sheet) { if (shell.sheet == HomeSheet.PICKER || shell.sheet == HomeSheet.SWITCHER) parts.vm.reloadUnread() }
+    LaunchedEffect(shell.sheet) { if (shell.sheet == HomeSheet.PICKER) parts.vm.reloadUnread() }
     when (shell.sheet) {
         HomeSheet.FILTER -> HomeFilterSheet(ui, onApply = { draft ->
             parts.vm.apply(draft)
@@ -537,31 +537,6 @@ private fun HomeSheets(parts: HomeParts, shell: HomeShellState, following: Follo
             }, onDismiss = close, following = true)
         }
         HomeSheet.AVATAR -> AvatarSheet(onDismiss = close)
-        HomeSheet.SWITCHER -> PluginSwitcherSheet(
-            ui,
-            parts.networks,
-            current = (ui.tabs.firstOrNull { it.key == shell.shownKey } as? HomeTab.Network)?.id,
-            unread,
-            SwitcherCalls(
-                onStart = {
-                    close()
-                    showTimeline(shell, ui, HomeTab.Following.key)
-                },
-                onNetwork = { id ->
-                    close()
-                    showTimeline(shell, ui, HomeTab.Network(id).key)
-                },
-                onManage = {
-                    close()
-                    parts.routes.openIfExists(HomeDestination.PLUGINS.route)
-                },
-                onSettings = {
-                    close()
-                    parts.routes.openIfExists(HomeDestination.SETTINGS.route)
-                },
-                onDismiss = close,
-            ),
-        )
         null -> Unit
     }
 }

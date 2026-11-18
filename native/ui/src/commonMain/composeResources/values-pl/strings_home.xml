@@ -80,4 +80,8 @@
     <string name="home_manage_plugins">Zarządzaj wtyczkami</string>
     <string name="home_xta_settings">Ustawienia XTA</string>
     <string name="home_menu_xta">XTA</string>
+    <string name="home_sort_filter">Sortowanie i filtry</string>
+    <string name="home_sort_filter_on">Sortowanie i filtry, zmienione</string>
+    <string name="home_sort_reset">Resetuj</string>
+    <string name="home_plugin_settings">Ustawienia %1$s</string>
 </resources>

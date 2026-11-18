@@ -124,4 +124,5 @@
     <string name="in_home_feed_description">Barreja les publicacions dels subreddits que segueixes a «Seguint» i «Per a tu»</string>
     <string name="see_popular">Mira Popular</string>
     <string name="nothing_new">Res de nou als subreddits que segueixes</string>
+    <string name="feed_home">Inici</string>
 </resources>

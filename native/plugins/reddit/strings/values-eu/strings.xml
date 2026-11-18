@@ -124,4 +124,5 @@
     <string name="in_home_feed_description">Jarraitzen dituzun subredditen bidalketak «Jarraitzen» eta «Zuretzat» ataletan tartekatzen ditu</string>
     <string name="see_popular">Ikusi Popular</string>
     <string name="nothing_new">Ezer berririk jarraitzen dituzun subredditetan</string>
+    <string name="feed_home">Hasiera</string>
 </resources>

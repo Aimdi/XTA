@@ -77,4 +77,8 @@
     <string name="home_manage_plugins">プラグインを管理</string>
     <string name="home_xta_settings">XTAの設定</string>
     <string name="home_menu_xta">XTA</string>
+    <string name="home_sort_filter">並べ替えと絞り込み</string>
+    <string name="home_sort_filter_on">並べ替えと絞り込み（変更あり）</string>
+    <string name="home_sort_reset">リセット</string>
+    <string name="home_plugin_settings">%1$sの設定</string>
 </resources>

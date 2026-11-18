@@ -219,4 +219,15 @@ class RedditRulesTest {
         assertNull(RedditHomeChrome.choosing(chosen, RedditHomeChrome.MenuItem.SOURCE_PUBLIC), "the route in force: nothing to read again")
         assertNull(RedditHomeChrome.choosing(chosen, RedditHomeChrome.MenuItem.SAVED))
     }
+
+    @Test
+    fun theShellsFilterLightsOnlyForAnOrderOtherThanTheDefault() {
+        fun choices(sort: StoredSort, window: StoredWindow) = RedditChoices(sort, window, RedditNsfwMode.TAP, showSpoilers = false, preferPublic = false)
+        assertFalse(RedditHomeChrome.sortChanged(choices(StoredSort.HOT, StoredWindow.DAY)))
+        assertFalse(RedditHomeChrome.sortChanged(choices(StoredSort.HOT, StoredWindow.YEAR)), "Hot takes no time window, so one left set is no change")
+        assertTrue(RedditHomeChrome.sortChanged(choices(StoredSort.NEWEST, StoredWindow.DAY)))
+        val reset = RedditHomeChrome.defaultSort(Settings().with(RedditPrefs.sort, StoredSort.TOP).with(RedditPrefs.timeFilter, StoredWindow.YEAR))
+        assertEquals(StoredSort.HOT, reset[RedditPrefs.sort])
+        assertEquals(RedditPrefs.timeFilter.default, reset[RedditPrefs.timeFilter])
+    }
 }

@@ -162,4 +162,6 @@
     <string name="speak_from_here">Speak from here</string>
     <string name="turned_away">Праверка Substack на ботаў не прапусціла гэта злучэнне. Адкрыйце ў браўзеры або паспрабуйце пазней.</string>
     <string name="image_view">Глядзець на ўвесь экран</string>
+    <string name="feed_subscriptions">Падпіскі</string>
+    <string name="unread_count">Непрачытаныя: %1$d</string>
 </resources>

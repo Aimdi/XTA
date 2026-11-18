@@ -52,6 +52,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.EmptyPane
+import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginFrame
@@ -60,6 +61,7 @@ import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
+import com.aimdi.xtanative.ui.plugins.ShellFeeds
 import com.aimdi.xtanative.ui.plugins.ShellMenuButton
 import com.aimdi.xtanative.ui.plugins.currentLanguage
 import com.aimdi.xtanative.ui.plugins.pluginPlural
@@ -109,7 +111,10 @@ internal fun ThreadsHome(app: ThreadsApp, frame: PluginFrame) {
 /** XTA's chrome for the tab (PluginHomeChrome): Home, For you and Liked, then search and the menu: add an account, what was saved from Threads, the settings. */
 @Composable
 private fun HomeBar(app: ThreadsApp, section: ThreadsSection, onSearch: () -> Unit, onAdd: () -> Unit) {
-    PluginHomeTabs(ThreadsSection.entries, section, app::show, icon = ::iconOf, label = { pluginString(labelOf(it)) }) {
+    // In the app's shell the feeds are its feed row, at the top (the unified plugin shell).
+    val shell = LocalPluginClientBar.current != null
+    if (shell) ShellFeeds(ThreadsSection.entries, section, app::show, label = { pluginString(labelOf(it)) })
+    PluginHomeTabs(if (shell) emptyList() else ThreadsSection.entries, section, app::show, icon = ::iconOf, label = { pluginString(labelOf(it)) }) {
         IconButton(onClick = onSearch) { Icon(Icons.Filled.Search, contentDescription = pluginString(Strings.search)) }
         HomeMenu(app, onAdd)
     }

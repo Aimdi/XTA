@@ -159,4 +159,6 @@
     <string name="speak_from_here">Speak from here</string>
     <string name="turned_away">Kontrola botů na Substacku toto připojení odmítla. Otevřete to v prohlížeči, nebo to zkuste později.</string>
     <string name="image_view">Zobrazit na celou obrazovku</string>
+    <string name="feed_subscriptions">Odběry</string>
+    <string name="unread_count">Nepřečteno: %1$d</string>
 </resources>

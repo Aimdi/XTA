@@ -78,4 +78,8 @@
     <string name="home_manage_plugins">Administri kromprogramojn</string>
     <string name="home_xta_settings">Agordoj de XTA</string>
     <string name="home_menu_xta">XTA</string>
+    <string name="home_sort_filter">Ordigi kaj filtri</string>
+    <string name="home_sort_filter_on">Ordigi kaj filtri, ŝanĝita</string>
+    <string name="home_sort_reset">Restarigi</string>
+    <string name="home_plugin_settings">Agordoj de %1$s</string>
 </resources>

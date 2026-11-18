@@ -156,4 +156,6 @@
     <string name="speak_from_here">Speak from here</string>
     <string name="turned_away">Substack की बॉट जाँच ने यह कनेक्शन लौटा दिया। इसे अपने ब्राउज़र में खोलें, या बाद में फिर कोशिश करें।</string>
     <string name="image_view">पूर्ण स्क्रीन पर देखें</string>
+    <string name="feed_subscriptions">सदस्यताएँ</string>
+    <string name="unread_count">अपठित: %1$d</string>
 </resources>

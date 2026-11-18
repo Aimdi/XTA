@@ -136,4 +136,5 @@
     <string name="in_home_feed_description">يدمج منشورات السَبريديتس التي تتابعها في \"المتابَعون\" و\"لك\"</string>
     <string name="see_popular">عرض الرائج</string>
     <string name="nothing_new">لا جديد من المجتمعات التي تتابعها</string>
+    <string name="feed_home">الرئيسية</string>
 </resources>

@@ -159,4 +159,6 @@
     <string name="speak_from_here">Speak from here</string>
     <string name="turned_away">Verificarea anti-bot a Substack a respins această conexiune. Deschide-l în browser sau încearcă mai târziu.</string>
     <string name="image_view">Vezi pe tot ecranul</string>
+    <string name="feed_subscriptions">Abonamente</string>
+    <string name="unread_count">Necitite: %1$d</string>
 </resources>

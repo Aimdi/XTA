@@ -121,4 +121,5 @@
     <string name="in_home_feed_description">Menggabungkan kiriman dari subreddit yang Anda ikuti ke Mengikuti dan Untuk Anda</string>
     <string name="see_popular">Lihat Popular</string>
     <string name="nothing_new">Tidak ada yang baru dari subreddit yang Anda ikuti</string>
+    <string name="feed_home">Beranda</string>
 </resources>

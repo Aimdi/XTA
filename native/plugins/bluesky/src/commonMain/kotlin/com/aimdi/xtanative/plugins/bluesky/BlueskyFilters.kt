@@ -64,7 +64,7 @@ private fun BlueskyReading.with(likes: Boolean, filter: BlueskyReaderFilter): Bl
     if (likes) copy(likes = filter) else copy(following = filter)
 
 /** How many of a filter's controls are set, for the badge on Filters. */
-private fun BlueskyReaderFilter.setCount(): Int =
+internal fun BlueskyReaderFilter.setCount(): Int =
     listOf(query.isNotBlank(), content != BlueskyReaderFilter.Content.ALL, hideReposts, hideReplies, order != BlueskyReaderFilter.Order.FEED).count { it }
 
 internal val BlueskyReaderFilter.Order.label: PluginText
@@ -99,7 +99,7 @@ internal fun FiltersButton(filter: BlueskyReaderFilter, onChange: (BlueskyReader
 /** The filters themselves: the order, words to find, what kind of post, reposts and replies, and a reset. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun FiltersSheet(filter: BlueskyReaderFilter, onChange: (BlueskyReaderFilter) -> Unit, onDismiss: () -> Unit) {
+internal fun FiltersSheet(filter: BlueskyReaderFilter, onChange: (BlueskyReaderFilter) -> Unit, onDismiss: () -> Unit) {
     ModalBottomSheet(onDismissRequest = onDismiss) {
         Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 16.dp, bottom = 24.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {

@@ -105,7 +105,7 @@ internal fun ReadingToolbar(app: SubstackApp, state: HomeState, pane: HomePane, 
 
 /** What failed, in a line: how many publications, else why the refresh did. */
 @Composable
-private fun failureLabel(failedCount: Int, error: Throwable?): String = when {
+internal fun failureLabel(failedCount: Int, error: Throwable?): String = when {
     failedCount > 0 -> pluginPlural(Strings.partial_error, failedCount, failedCount)
     error != null -> problemText(error)
     else -> pluginString(Strings.load_error)
@@ -120,7 +120,7 @@ private fun Marked(on: Boolean, content: @Composable () -> Unit) {
 /** The feed's search, order and (on Home) content filter, as XTA's reading options sheet. */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-private fun ReadingOptions(state: HomeState, pane: HomePane, autofocus: Boolean, onDismiss: () -> Unit) {
+internal fun ReadingOptions(state: HomeState, pane: HomePane, autofocus: Boolean, onDismiss: () -> Unit) {
     val controls = state.controls
     val options = controls.options(pane)
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {

@@ -78,4 +78,8 @@
     <string name="home_manage_plugins">Halda pistikprogramme</string>
     <string name="home_xta_settings">XTA seaded</string>
     <string name="home_menu_xta">XTA</string>
+    <string name="home_sort_filter">Sortimine ja filtrid</string>
+    <string name="home_sort_filter_on">Sortimine ja filtrid, muudetud</string>
+    <string name="home_sort_reset">Lähtesta</string>
+    <string name="home_plugin_settings">%1$s seaded</string>
 </resources>

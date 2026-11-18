@@ -77,4 +77,8 @@
     <string name="home_manage_plugins">管理外掛程式</string>
     <string name="home_xta_settings">XTA 設定</string>
     <string name="home_menu_xta">XTA</string>
+    <string name="home_sort_filter">排序與篩選</string>
+    <string name="home_sort_filter_on">排序與篩選（已變更）</string>
+    <string name="home_sort_reset">重設</string>
+    <string name="home_plugin_settings">%1$s 設定</string>
 </resources>

@@ -162,4 +162,6 @@
     <string name="speak_from_here">Speak from here</string>
     <string name="turned_away">Проверка Substack на ботов не пропустила это соединение. Откройте в браузере или попробуйте позже.</string>
     <string name="image_view">Открыть на весь экран</string>
+    <string name="feed_subscriptions">Подписки</string>
+    <string name="unread_count">Непрочитанные: %1$d</string>
 </resources>

@@ -124,4 +124,5 @@
     <string name="in_home_feed_description">Miksas afiŝojn el la subredditoj kiujn vi sekvas en «Sekvataj» kaj «Por vi»</string>
     <string name="see_popular">Vidi Popular</string>
     <string name="nothing_new">Nenio nova el la subreddit-oj, kiujn vi sekvas</string>
+    <string name="feed_home">Hejmo</string>
 </resources>

@@ -23,10 +23,13 @@ import com.aimdi.xtanative.networks.bluesky.BlueskyTab
 import com.aimdi.xtanative.networks.bluesky.BlueskyUrls
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.swipeTabs
+import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
+import com.aimdi.xtanative.ui.plugins.ShellFeeds
+import com.aimdi.xtanative.ui.plugins.ShellFilter
 import com.aimdi.xtanative.ui.plugins.ShellMenuButton
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.post.PostIcons
@@ -87,11 +90,29 @@ private val BlueskyTab.icon: ImageVector
 /** XTA's chrome for the tab (PluginHomeChrome with its dock): its four tabs, then search, the list's [filters] where it has some, and the menu. */
 @Composable
 private fun HomeBar(app: BlueskyApp, tab: BlueskyTab, onTab: (BlueskyTab) -> Unit, filters: ReaderFilter?) {
+    if (LocalPluginClientBar.current != null) return ShellBar(app, tab, onTab, filters)
     PluginHomeTabs(BlueskyTab.entries, tab, onTab, icon = { it.icon }, label = { pluginString(it.label) }) {
         IconButton(onClick = { app.openSearch() }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) }
         if (filters != null) FiltersButton(filters.first, filters.second)
         HomeMenu(app)
     }
+}
+
+/**
+ * Bluesky in the app's shell (the unified plugin shell): its four lists as
+ * the shell's feed row, the list's filters, where it has some, as its
+ * filter; its search alone on the bar, its menu in the plugin sheet. No
+ * sections of its own, so no bottom bar.
+ */
+@Composable
+private fun ShellBar(app: BlueskyApp, tab: BlueskyTab, onTab: (BlueskyTab) -> Unit, filters: ReaderFilter?) {
+    var filtering by rememberSaveable { mutableStateOf(false) }
+    PluginHomeTabs(emptyList()) {
+        IconButton(onClick = { app.openSearch() }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) }
+        HomeMenu(app)
+    }
+    ShellFeeds(BlueskyTab.entries, tab, onTab, label = { pluginString(it.label) }, filter = filters?.let { ShellFilter(it.first.setCount() > 0) { filtering = true } })
+    if (filtering && filters != null) FiltersSheet(filters.first, filters.second) { filtering = false }
 }
 
 /** XTA's Bluesky menu: add an account, what was saved from Bluesky, import follows three ways, the settings. */

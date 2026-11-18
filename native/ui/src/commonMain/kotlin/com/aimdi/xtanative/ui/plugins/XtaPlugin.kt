@@ -42,8 +42,10 @@ import kotlinx.serialization.json.JsonElement
  * translation service ([PluginHost.translator], [PluginHost.translate] with
  * [PluginTranslation]), so a plugin's posts translate as X's do; 13 adds a
  * tab that joins Home's More ([PluginHomeTab.joinsMore]) where a plugin's
- * tabs take the bottom bar; 14 adds the one menu of the unified plugin
- * shell ([ShellMenuButton]), which carries the app's entries on Home.
+ * tabs take the bottom bar; 14 adds the unified plugin shell's parts: the
+ * feed row ([ShellFeeds], [ShellFilter]), the subtitle ([ShellSubtitle],
+ * [ShellStatus]), the sort sheet ([ShellSortSheet]) and the plugin's own
+ * entries ([ShellMenuButton]), in the plugin sheet on Home.
  */
 const val PLUGIN_API_VERSION: Int = 14
 

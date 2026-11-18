@@ -130,4 +130,5 @@
     <string name="in_home_feed_description">Дадае запісы з сабрэдытаў, на якія вы падпісаны, у «Падпіскі» і «Для вас»</string>
     <string name="see_popular">Глядзець Popular</string>
     <string name="nothing_new">Нічога новага ў супольнасцях, за якімі вы сочыце</string>
+    <string name="feed_home">Галоўная</string>
 </resources>

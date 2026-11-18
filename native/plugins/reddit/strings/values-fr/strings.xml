@@ -124,4 +124,5 @@
     <string name="in_home_feed_description">Intègre les publications des subreddits que vous suivez dans « Abonnements » et « Pour vous »</string>
     <string name="see_popular">Voir Popular</string>
     <string name="nothing_new">Rien de neuf dans les subreddits que vous suivez</string>
+    <string name="feed_home">Accueil</string>
 </resources>

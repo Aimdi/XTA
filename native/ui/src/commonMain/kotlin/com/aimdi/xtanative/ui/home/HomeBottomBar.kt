@@ -280,7 +280,7 @@ private fun NetworkSectionsBar(ui: HomeUi, state: HomeBarsState, takeover: Netwo
                 Box(Modifier.width(1.dp).height(28.dp).background(MaterialTheme.colorScheme.outlineVariant))
             }
             split.bar.forEach { section ->
-                BarItem(section.label, section.selected, ui.navigationLabels, onClick = section.onSelect, tint = accent.takeIf { section.selected }) { on ->
+                BarItem(section.label, section.selected, labels = false, onClick = section.onSelect, tint = accent.takeIf { section.selected }) { on ->
                     SectionIcon(section.icon, on, accent)
                 }
             }
@@ -292,10 +292,10 @@ private fun NetworkSectionsBar(ui: HomeUi, state: HomeBarsState, takeover: Netwo
 @Composable
 private fun SectionIcon(icon: ImageVector, selected: Boolean, accent: Color) {
     Box(
-        Modifier.height(34.dp).clip(RoundedCornerShape(17.dp)).background(if (selected) accent.copy(alpha = 0.16f) else Color.Transparent).padding(horizontal = 14.dp),
+        Modifier.size(width = 52.dp, height = 32.dp).clip(RoundedCornerShape(16.dp)).background(if (selected) accent.copy(alpha = 0.16f) else Color.Transparent),
         contentAlignment = Alignment.Center,
     ) {
-        Icon(icon, contentDescription = null, tint = if (selected) accent else MaterialTheme.colorScheme.onBackground, modifier = Modifier.size(26.dp))
+        Icon(icon, contentDescription = null, tint = if (selected) accent else MaterialTheme.colorScheme.onBackground, modifier = Modifier.size(24.dp))
     }
 }
 

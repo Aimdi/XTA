@@ -86,19 +86,28 @@ keep loading in this app, which still has everything they use. 13 adds
 `PluginHomeTab.joinsMore`: where a plugin's tabs take Home's bottom bar, a
 tab that joins More (Pixiv's account and About) goes there instead of taking
 a place; the four-argument constructor stays for plugins built before. 14
-adds `ShellMenuButton`, the one menu of the unified plugin shell: a plugin's
-⋮ with its own entries, which on Home go under the network's name and are
-followed by the app's (keep controls visible, Home's options for the
-network, its sections that join the menu, the plugin store, XTA's settings),
-so Home leaves its own menu out. A plugin built before keeps its menu, and
-Home's stays beside it.
+adds the unified plugin shell's parts: `ShellFeeds` (the feeds of the
+shell's second row, with a `ShellFilter`), `ShellSubtitle` with
+`ShellStatus` (the account or state under the plugin's name), the sort
+sheet (`ShellSortSheet`, `ShellSortHeading`, `ShellSortOption`,
+`ShellSortPills`) and `ShellMenuButton`, a plugin's own entries, which are
+in the plugin sheet on Home and a ⋮ menu elsewhere. A plugin built before
+keeps its own chrome under the shell's header.
 
-On Home a network's page is one shell: its button (mark, name, chevron)
-opens the plugin switcher (Start, back to XTA's Home; the networks on Home,
-the recently used first; the plugin store and the settings), then its
-search and its one menu. Three or four sections of its own make the bottom
-bar, with nothing else on it; fewer or more run as the feed row under the
-top bar, and on Home's Feed there is then no bottom bar at all.
+On Home every plugin is one shell (option A of the "Unified Plugin Shell"
+canvas), two rows that hide together as the posts scroll:
+- 52 dp: the plugin's avatar (its mark on a tinted disc, a dot while it has
+  unread posts), which opens the plugin sheet; its name centred over its
+  subtitle, which goes back to the top; its search alone on the right.
+- 44 dp: its feeds as words, the one shown bold and underlined in the
+  accent, its filter at the end; a hairline under them.
+- The plugin sheet: the plugin's name, subtitle and settings, its own
+  entries and the app's for it (keep controls visible, Home's options for
+  the network), then Start (back to XTA's Home), the networks on Home with
+  the recently used first, the plugin store and XTA's settings.
+- Three or four sections of its own make the bottom bar, icons only; fewer
+  or more run as the feed row, and on Home's Feed there is then no bottom
+  bar at all.
 
 Beyond `ui.plugins`, plugins use about fifty of the app's own parts
 (`ui.common`'s `Avatar` and `Hairline`, `ui.post`'s `PostActions`, the media

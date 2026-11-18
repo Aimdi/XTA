@@ -80,4 +80,8 @@
     <string name="home_manage_plugins">Spravovat pluginy</string>
     <string name="home_xta_settings">Nastavení XTA</string>
     <string name="home_menu_xta">XTA</string>
+    <string name="home_sort_filter">Řazení a filtry</string>
+    <string name="home_sort_filter_on">Řazení a filtry, změněno</string>
+    <string name="home_sort_reset">Obnovit</string>
+    <string name="home_plugin_settings">Nastavení %1$s</string>
 </resources>

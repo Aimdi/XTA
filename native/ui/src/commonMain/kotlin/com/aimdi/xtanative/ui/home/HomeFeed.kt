@@ -33,6 +33,7 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -88,6 +89,7 @@ import com.aimdi.xtanative.ui.plugins.PluginHomeTab
 import com.aimdi.xtanative.ui.plugins.ReadingControlsPinRow
 import com.aimdi.xtanative.ui.plugins.ShellMenu
 import com.aimdi.xtanative.ui.plugins.rememberHomeReading
+import com.aimdi.xtanative.ui.pluginstore.PluginRoutes
 import com.aimdi.xtanative.ui.post.PostActions
 import com.aimdi.xtanative.ui.settings.SettingsRoutes
 import com.aimdi.xtanative.ui.settings.SettingsSection
@@ -175,7 +177,8 @@ internal fun HomeFeedPage(
                 FollowingTopBar(following, followingCalls(calls, desktop, refresh), bar)
             } else if (current is HomeTab.Network) {
                 val extras = takeover?.on(BarPage.Feed)?.takeIf { it.network == current.id }?.split?.more.orEmpty()
-                val shell = rememberShellMenu(current.id, ui, networks, extras, routes, vm::setTopBarPins)
+                val shell = remember(current.id) { ShellMenu(current.id) }
+                var sheet by remember { mutableStateOf(false) }
                 CompositionLocalProvider(LocalShellMenu provides shell) {
                     NetworkTopBar(
                         current.id,
@@ -183,16 +186,20 @@ internal fun HomeFeedPage(
                         networks,
                         client,
                         anyUnread,
-                        NetworkBarCalls(onSwitcher = { calls.openSheet(HomeSheet.SWITCHER) }),
+                        NetworkBarCalls(onAvatar = { sheet = true }, onTitle = calls.toTitleTop),
                         bar,
                         sectionsBelow = sectionsBelow,
                     ) {
-                        // The plugin's own menu carries the app's entries once it draws the one menu ([ShellMenuButton]).
+                        // Only the search and what the reader pinned stay on the bar; the rest is in the plugin sheet.
                         if (current.id !in NetworkBarRules.ONE_MENU) {
-                            key(current.id) { NetworkActions(current.id, ui, networks, vm::setTopBarPins, routes, extras, menu = !shell.drawnByPlugin) }
+                            key(current.id) { NetworkActions(current.id, ui, networks, vm::setTopBarPins, routes, extras, menu = false) }
                         }
                         if (desktop) IconButton(onClick = refresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) }
                     }
+                }
+                if (sheet) {
+                    LaunchedEffect(Unit) { vm.reloadUnread() }
+                    PluginSheet(current.id, ui, networks, client, shell, extras, timelines.unread, routes, calls, vm::setTopBarPins) { sheet = false }
                 }
             } else {
                 TimelineTopBar(current, TopBarLook(ui, anyUnread, timelines.unread), networks, routes, refresh, calls, bar, vm::setTopBarPins)
@@ -351,18 +358,59 @@ private fun RowScope.TabActions(
     }
 }
 
-/** The app's part of network [id]'s one menu ([ShellMenu]), kept while it is shown and reading what changes. */
+/**
+ * Network [id]'s plugin sheet ([PluginSwitcherSheet]): the plugin's own
+ * entries ([shell]) and the app's for it, then Start, the networks on Home,
+ * the plugin store and XTA's settings.
+ */
 @Composable
-internal fun rememberShellMenu(id: String, ui: HomeUi, networks: HomeNetworks, extras: List<PluginHomeTab>, routes: HomeRoutes, onPins: (String, List<String>) -> Unit): ShellMenu {
-    val now by rememberUpdatedState(ShellParts(ui, networks, extras, routes, onPins))
-    val title = ui.networks.firstOrNull { it.id == id }?.title ?: id
-    return remember(id, title) {
-        ShellMenu(title) { close -> now.run { ShellEntries(id, ui, networks, extras, routes, onPins, close) } }
-    }
+private fun PluginSheet(
+    id: String,
+    ui: HomeUi,
+    networks: HomeNetworks,
+    client: PluginClientBar,
+    shell: ShellMenu,
+    extras: List<PluginHomeTab>,
+    unread: Set<String>,
+    routes: HomeRoutes,
+    calls: FeedPageCalls,
+    onPins: (String, List<String>) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val tabs = ui.tabs
+    val settings = PluginRoutes.settings(id).takeIf { routes.exists(PluginRoutes.SETTINGS) }
+    PluginSwitcherSheet(
+        ui,
+        networks,
+        current = id,
+        unread = unread,
+        calls = SwitcherCalls(
+            onStart = {
+                onDismiss()
+                calls.onTab(tabs.indexOf(HomeTab.Following).coerceAtLeast(0))
+            },
+            onNetwork = { other ->
+                onDismiss()
+                tabs.indexOf(HomeTab.Network(other)).takeIf { it >= 0 }?.let(calls.onTab)
+            },
+            onManage = {
+                onDismiss()
+                routes.openIfExists(HomeDestination.PLUGINS.route)
+            },
+            onSettings = {
+                onDismiss()
+                routes.openIfExists(HomeDestination.SETTINGS.route)
+            },
+            onDismiss = onDismiss,
+        ),
+        plugin = SheetPlugin(
+            id,
+            client.subtitle,
+            shell.items,
+            settings?.let { route -> { onDismiss(); routes.open(route) } },
+        ) { close -> ShellEntries(id, ui, networks, extras, null, onPins, close) },
+    )
 }
-
-/** What the app's entries of a network's menu read, as they are now. */
-private class ShellParts(val ui: HomeUi, val networks: HomeNetworks, val extras: List<PluginHomeTab>, val routes: HomeRoutes, val onPins: (String, List<String>) -> Unit)
 
 /** X's options, by the ids its pins keep: its library, the reader's accounts, and the loaded posts' search, Home feed accounts and Refresh. */
 @Composable
@@ -420,7 +468,7 @@ internal fun NetworkActions(
  * sections in the menu, the plugin store and XTA's settings.
  */
 @Composable
-internal fun ColumnScope.ShellEntries(id: String, ui: HomeUi, networks: HomeNetworks, extras: List<PluginHomeTab>, routes: HomeRoutes, onPins: (String, List<String>) -> Unit, close: () -> Unit) {
+internal fun ColumnScope.ShellEntries(id: String, ui: HomeUi, networks: HomeNetworks, extras: List<PluginHomeTab>, routes: HomeRoutes?, onPins: (String, List<String>) -> Unit, close: () -> Unit) {
     ReadingControlsPinRow()
     OptionItems(id, networks.options(id), ui.topBarPins[id].orEmpty(), onPins, close)
     AppEntries(extras, routes, close)

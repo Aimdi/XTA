@@ -80,4 +80,8 @@
     <string name="home_manage_plugins">Кіраваць плагінамі</string>
     <string name="home_xta_settings">Налады XTA</string>
     <string name="home_menu_xta">XTA</string>
+    <string name="home_sort_filter">Сартаванне і фільтры</string>
+    <string name="home_sort_filter_on">Сартаванне і фільтры, зменена</string>
+    <string name="home_sort_reset">Скінуць</string>
+    <string name="home_plugin_settings">Налады %1$s</string>
 </resources>

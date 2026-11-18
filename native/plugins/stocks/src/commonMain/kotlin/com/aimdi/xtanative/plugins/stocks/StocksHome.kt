@@ -53,6 +53,7 @@ import com.aimdi.xtanative.networks.stocks.Watchlist
 import com.aimdi.xtanative.networks.stocks.WatchlistEntries
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.swipeTabs
+import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.NetworkProblemView
 import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
@@ -226,8 +227,9 @@ private fun EmptyStocks(app: StocksApp, model: StocksHomeModel, view: StocksView
 @Composable
 private fun StocksHeader(app: StocksApp, selected: StocksTab, onSelect: (StocksTab) -> Unit, onAdd: () -> Unit, onManage: () -> Unit) {
     PluginHomeTabs(StocksTab.entries, selected, onSelect, icon = ::tabIcon, label = { pluginString(it.label) }, accent = MaterialTheme.colorScheme.primary) {
-        IconButton(onClick = onAdd) { Icon(Icons.Default.Add, pluginString(Strings.add)) }
-        StocksMenu(app, onManage)
+        // In the app's shell only its search stays on the bar: Add is in the plugin sheet ([StocksMenu]).
+        if (LocalPluginClientBar.current == null) IconButton(onClick = onAdd) { Icon(Icons.Default.Add, pluginString(Strings.add)) }
+        StocksMenu(app, onManage, onAdd)
     }
 }
 
@@ -240,10 +242,21 @@ private fun tabIcon(tab: StocksTab): ImageVector = when (tab) {
 
 /** The sliders: the watchlist itself, and how Stocks shows things. */
 @Composable
-private fun StocksMenu(app: StocksApp, onManage: () -> Unit) {
+private fun StocksMenu(app: StocksApp, onManage: () -> Unit, onAdd: () -> Unit) {
     val chart by app.chart.collectAsState()
     val fold by app.foldSignals.collectAsState()
+    val shell = LocalPluginClientBar.current != null
     ShellMenuButton { close ->
+        if (shell) {
+            DropdownMenuItem(
+                text = { Text(pluginString(Strings.add)) },
+                onClick = {
+                    close()
+                    onAdd()
+                },
+                leadingIcon = { Icon(Icons.Default.Add, contentDescription = null) },
+            )
+        }
         DropdownMenuItem(
             text = { Text(pluginString(Strings.manage_watchlist)) },
             onClick = {

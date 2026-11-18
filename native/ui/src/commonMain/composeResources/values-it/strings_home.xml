@@ -78,4 +78,8 @@
     <string name="home_manage_plugins">Gestisci plugin</string>
     <string name="home_xta_settings">Impostazioni di XTA</string>
     <string name="home_menu_xta">XTA</string>
+    <string name="home_sort_filter">Ordina e filtra</string>
+    <string name="home_sort_filter_on">Ordina e filtra, modificato</string>
+    <string name="home_sort_reset">Ripristina</string>
+    <string name="home_plugin_settings">Impostazioni di %1$s</string>
 </resources>

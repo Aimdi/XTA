@@ -124,4 +124,5 @@
     <string name="in_home_feed_description">Takip ettiğin subredditlerin gönderilerini Takip ve Sana Özel akışlarına karıştırır</string>
     <string name="see_popular">Popular\'a bak</string>
     <string name="nothing_new">Takip ettiğin subredditlerde yeni bir şey yok</string>
+    <string name="feed_home">Ana sayfa</string>
 </resources>

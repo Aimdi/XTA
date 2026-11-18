@@ -78,4 +78,8 @@
     <string name="home_manage_plugins">Eklentileri yönet</string>
     <string name="home_xta_settings">XTA ayarları</string>
     <string name="home_menu_xta">XTA</string>
+    <string name="home_sort_filter">Sırala ve filtrele</string>
+    <string name="home_sort_filter_on">Sırala ve filtrele, değiştirildi</string>
+    <string name="home_sort_reset">Sıfırla</string>
+    <string name="home_plugin_settings">%1$s ayarları</string>
 </resources>

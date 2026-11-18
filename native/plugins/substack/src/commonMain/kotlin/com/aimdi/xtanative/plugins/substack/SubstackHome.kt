@@ -56,6 +56,9 @@ internal class HomeControls {
     var home by mutableStateOf(SubstackLoadedOptions())
     var inbox by mutableStateOf(SubstackLoadedOptions())
     var filter by mutableStateOf(SubstackFeedFilter.ALL)
+
+    /** The publication Home's feed is narrowed to from the shell's feed row; null for all followed. */
+    var publication by mutableStateOf<String?>(null)
     var librarySection by mutableStateOf(SubstackLibrarySection.FOLLOWING)
     var libraryQuery by mutableStateOf("")
 

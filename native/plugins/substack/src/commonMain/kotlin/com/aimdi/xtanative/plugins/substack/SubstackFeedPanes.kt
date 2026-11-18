@@ -44,6 +44,7 @@ import com.aimdi.xtanative.networks.substack.SubstackHomeRules
 import com.aimdi.xtanative.networks.substack.SubstackPost
 import com.aimdi.xtanative.store.settings.SubstackPrefs
 import com.aimdi.xtanative.ui.common.LoadingRow
+import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
@@ -61,12 +62,15 @@ internal fun HomeFeedPane(app: SubstackApp, state: HomeState, frame: PluginFrame
     val marks = rememberMarks(app)
     val controls = state.controls
     val options = controls.home
-    val visible = SubstackHomeRules.home(feed.posts, followed, controls.filter, marks.readIds, marks::saved, options)
+    val shell = LocalPluginClientBar.current != null
+    val visible = SubstackHomeRules.home(feed.posts, followed, controls.filter, marks.readIds, marks::saved, options, controls.publication.takeIf { shell })
     val list = rememberLazyListState()
     val markOnScroll by app.host.settings.observe(SubstackPrefs.markReadOnScroll).collectAsState(false)
     if (markOnScroll) MarksReadScrolledPast(app, list, visible)
+    // In the app's shell the publications are its feed row and the filters its filter ([SubstackShell]).
+    if (shell) SubstackShell(app, state, followed)
     FeedList(state.feed, feed, list, frame) {
-        pinnedToolbar { ReadingToolbar(app, state, HomePane.HOME, followed) }
+        if (!shell) pinnedToolbar { ReadingToolbar(app, state, HomePane.HOME, followed) }
         if (visible.isEmpty()) {
             item(key = "empty") { EmptyFeed(state, HomePane.HOME) }
         } else {

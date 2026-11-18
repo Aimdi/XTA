@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.aimdi.xtanative.networks.rss.RssTimelineRules
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.swipeTabs
+import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
@@ -66,7 +67,8 @@ internal fun RssHome(app: RssApp, frame: PluginFrame) {
 @Composable
 private fun Header(app: RssApp, selected: RssPane, onSelect: (RssPane) -> Unit) {
     PluginHomeTabs(RssPane.entries, selected, onSelect, icon = { it.icon }, label = { pluginString(it.label) }) {
-        IconButton(onClick = app::openAdd) { Icon(Icons.Default.Add, pluginString(Strings.add)) }
+        // In the app's shell Add is in the plugin sheet ([HomeMenu]), and the bar keeps nothing else.
+        if (LocalPluginClientBar.current == null) IconButton(onClick = app::openAdd) { Icon(Icons.Default.Add, pluginString(Strings.add)) }
         HomeMenu(app, selected)
     }
 }
@@ -75,7 +77,9 @@ private fun Header(app: RssApp, selected: RssPane, onSelect: (RssPane) -> Unit) 
 private fun HomeMenu(app: RssApp, selected: RssPane) {
     val timeline by app.timeline.state.collectAsState()
     val read by app.read.collectAsState()
+    val shell = LocalPluginClientBar.current != null
     ShellMenuButton { close ->
+        if (shell) DropdownMenuItem(text = { Text(pluginString(Strings.add)) }, leadingIcon = { Icon(Icons.Default.Add, contentDescription = null) }, onClick = { close(); app.openAdd() })
         if (selected == RssPane.HOME && RssTimelineRules.anyUnread(timeline.items, read)) {
             DropdownMenuItem(text = { Text(pluginString(Strings.mark_all_read)) }, onClick = { close(); app.launch { app.markRead(timeline.items.map { it.id }) } })
         }

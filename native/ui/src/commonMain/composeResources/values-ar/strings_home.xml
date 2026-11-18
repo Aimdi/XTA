@@ -82,4 +82,8 @@
     <string name="home_manage_plugins">إدارة الإضافات</string>
     <string name="home_xta_settings">إعدادات XTA</string>
     <string name="home_menu_xta">XTA</string>
+    <string name="home_sort_filter">الترتيب والتصفية</string>
+    <string name="home_sort_filter_on">الترتيب والتصفية، مُعدَّل</string>
+    <string name="home_sort_reset">إعادة الضبط</string>
+    <string name="home_plugin_settings">إعدادات %1$s</string>
 </resources>

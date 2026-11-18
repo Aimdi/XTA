@@ -31,12 +31,14 @@ import com.aimdi.xtanative.networks.mastodon.MastodonTimeline
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.AddToGroupButton
+import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.NetworkPersonRow
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
+import com.aimdi.xtanative.ui.plugins.ShellFeeds
 import com.aimdi.xtanative.ui.plugins.ShellMenuButton
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.post.PostIcons
@@ -125,7 +127,10 @@ private fun MastodonTimeline.emptyIcon(): ImageVector = when (this) {
  */
 @Composable
 private fun SectionBar(app: MastodonApp, selected: MastodonTimeline, onSelect: (MastodonTimeline) -> Unit, extras: @Composable () -> Unit) {
-    PluginHomeTabs(MastodonTimeline.entries, selected, onSelect, icon = { it.icon() }, label = { pluginString(it.label()) }) {
+    // In the app's shell the timelines are its feed row, at the top rather than on the bottom bar (the unified plugin shell).
+    val shell = LocalPluginClientBar.current != null
+    if (shell) ShellFeeds(MastodonTimeline.entries, selected, onSelect, label = { pluginString(it.label()) })
+    PluginHomeTabs(if (shell) emptyList() else MastodonTimeline.entries, selected, onSelect, icon = { it.icon() }, label = { pluginString(it.label()) }) {
         extras()
         IconButton(onClick = { app.host.openSearch(null) }) { Icon(Icons.Filled.Search, pluginString(Strings.search)) }
         MoreMenu(app)

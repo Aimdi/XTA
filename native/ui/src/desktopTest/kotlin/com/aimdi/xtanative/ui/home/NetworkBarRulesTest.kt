@@ -10,13 +10,12 @@ import kotlin.test.assertTrue
 class NetworkBarRulesTest {
     @Test
     fun threeOrFourSectionsMakeTheBarFewerOrMoreMakeNone() {
-        listOf("reddit", "bluesky", "mastodon", "threads", "rss", "hackernews", "pixiv", "substack", "stocks").forEach {
+        listOf("reddit", "bluesky", "mastodon", "threads", "rss", "hackernews", "pixiv", "substack", "stocks", "booru").forEach {
             assertTrue(NetworkBarRules.takesOver(it, 3), it)
             assertTrue(NetworkBarRules.takesOver(it, 4), it)
         }
         assertFalse(NetworkBarRules.takesOver("reddit", 2), "two sections are a feed row's tabs, not destinations")
         assertFalse(NetworkBarRules.takesOver("hackernews", 8), "Hacker News' lists run as its feed row, with no bottom bar")
-        assertFalse(NetworkBarRules.takesOver("booru", 3), "a network without sections of its own keeps the app's bar")
         assertFalse(NetworkBarRules.takesOver(null, 3), "Following and X keep the app's bar")
     }
 

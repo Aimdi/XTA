@@ -78,4 +78,8 @@
     <string name="home_manage_plugins">Gestiona els connectors</string>
     <string name="home_xta_settings">Configuració d\'XTA</string>
     <string name="home_menu_xta">XTA</string>
+    <string name="home_sort_filter">Ordena i filtra</string>
+    <string name="home_sort_filter_on">Ordena i filtra, canviat</string>
+    <string name="home_sort_reset">Restableix</string>
+    <string name="home_plugin_settings">Configuració de %1$s</string>
 </resources>

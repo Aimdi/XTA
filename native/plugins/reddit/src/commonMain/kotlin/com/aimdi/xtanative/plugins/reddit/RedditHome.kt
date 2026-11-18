@@ -1,6 +1,5 @@
 package com.aimdi.xtanative.plugins.reddit
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
@@ -19,11 +18,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Home
@@ -44,11 +41,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -73,7 +70,10 @@ import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
+import com.aimdi.xtanative.ui.plugins.ShellFeeds
+import com.aimdi.xtanative.ui.plugins.ShellFilter
 import com.aimdi.xtanative.ui.plugins.ShellMenuButton
+import com.aimdi.xtanative.ui.plugins.ShellSubtitle
 import com.aimdi.xtanative.ui.plugins.pluginString
 
 /**
@@ -92,8 +92,12 @@ internal fun RedditHome(app: RedditApp, frame: PluginFrame) {
     Column(Modifier.fillMaxSize()) {
         ReadingControlsBar {
             Column {
-                HomeBar(app, home, if (place == CommunitiesPlace.MENU) followed else emptyList(), oneBar)
-                if (oneBar || place == CommunitiesPlace.STRIP) CommunityStrip(app, followed.takeIf { place == CommunitiesPlace.STRIP }.orEmpty(), home, sortChip = oneBar)
+                if (oneBar) {
+                    ShellBar(app, home, followed)
+                } else {
+                    HomeBar(app, home, if (place == CommunitiesPlace.MENU) followed else emptyList())
+                    if (place == CommunitiesPlace.STRIP) CommunityStrip(app, followed, home)
+                }
             }
         }
         // A community picked from the strip is no section of its own: the swipes turn Following, Popular and All (Home keeps its swipes to itself).
@@ -111,20 +115,54 @@ internal fun RedditHome(app: RedditApp, frame: PluginFrame) {
 }
 
 /**
+ * Reddit in the app's shell (the unified plugin shell): its feeds, Home
+ * (the communities followed), Popular, All and each community followed, as
+ * the shell's second row with the order as its filter; the account read
+ * with under its name; its search alone on the bar, its menu in the plugin
+ * sheet. No sections of its own, so no bottom bar.
+ */
+@Composable
+private fun ShellBar(app: RedditApp, home: RedditHomeSource, followed: List<String>) {
+    var sorting by remember { mutableStateOf(false) }
+    val choices by app.choices.collectAsState()
+    val account by produceState<String?>(null, app) { value = app.accountName()?.let { "u/$it" } }
+    val modes = RedditFeedMode.entries.map { mode ->
+        PluginHomeTab(barIcon(mode), pluginString(feedLabel(mode)), !home.viewingSubreddit && home.mode == mode) { app.selectMode(mode) }
+    }
+    val communities = followed.map { name ->
+        PluginHomeTab(RedditGlyphs.Forum, "r/$name", home.isSelected(name)) { app.selectSubreddit(name) }
+    }
+    val feeds = modes + communities
+    PluginHomeTabs(emptyList()) {
+        IconButton(onClick = { app.host.openSearch(null) }) { Icon(Icons.Filled.Search, contentDescription = pluginString(Strings.search_hint)) }
+        HomeMenu(app, choices)
+    }
+    ShellFeeds(feeds, ShellFilter(active = RedditHomeChrome.sortChanged(choices)) { sorting = true })
+    ShellSubtitle(account)
+    if (sorting) SortSheet(app, subtitle = feeds.firstOrNull { it.selected }?.label) { sorting = false }
+}
+
+/** A feed's word on the shell's row: Home for the communities followed, as Reddit's own app names it. */
+private fun feedLabel(mode: RedditFeedMode): PluginText = when (mode) {
+    RedditFeedMode.FOLLOWING -> Strings.feed_home
+    else -> railLabel(mode)
+}
+
+/**
  * Following, Popular and All, then Reddit's search, the order and the menu,
  * in XTA's order (reddit_screen.dart's RedditHomeChrome, reddit_actions.dart):
  * one bar on Reddit's own screen, a strip folding into a section picker in Home.
  */
 @Composable
-private fun HomeBar(app: RedditApp, home: RedditHomeSource, communities: List<String>, oneBar: Boolean) {
+private fun HomeBar(app: RedditApp, home: RedditHomeSource, communities: List<String>) {
     var sorting by remember { mutableStateOf(false) }
     val choices by app.choices.collectAsState()
     val tabs = RedditFeedMode.entries.map { mode ->
-        PluginHomeTab(if (oneBar) barIcon(mode) else railIcon(mode), pluginString(railLabel(mode)), if (oneBar) home.barSelected(mode) else home.railSelected(mode)) { app.selectMode(mode) }
+        PluginHomeTab(railIcon(mode), pluginString(railLabel(mode)), home.railSelected(mode)) { app.selectMode(mode) }
     }
     PluginHomeTabs(tabs) {
         if (communities.isNotEmpty()) CommunitiesMenu(app, communities, home)
-        (if (oneBar) RedditHomeChrome.homeActions else RedditHomeChrome.actions).forEach { action ->
+        RedditHomeChrome.actions.forEach { action ->
             when (action) {
                 RedditHomeChrome.Action.SEARCH -> IconButton(onClick = { app.host.openSearch(null) }) { Icon(Icons.Filled.Search, contentDescription = pluginString(Strings.search_hint)) }
                 RedditHomeChrome.Action.SORT -> IconButton(onClick = { sorting = true }) { Icon(sortIcon(choices.sort), contentDescription = pluginString(Strings.sort)) }
@@ -216,9 +254,7 @@ private fun SourceRow(
 
 /** The followed communities as a strip, so r/one and r/other stay on this tab; the one open again goes back to the rail. */
 @Composable
-private fun CommunityStrip(app: RedditApp, names: List<String>, home: RedditHomeSource, sortChip: Boolean = false) {
-    var sorting by remember { mutableStateOf(false) }
-    val choices by app.choices.collectAsState()
+private fun CommunityStrip(app: RedditApp, names: List<String>, home: RedditHomeSource) {
     val strip = pluginString(Strings.followed_communities)
     val accent = MaterialTheme.colorScheme.primary
     Column(Modifier.fillMaxWidth()) {
@@ -227,19 +263,6 @@ private fun CommunityStrip(app: RedditApp, names: List<String>, home: RedditHome
             Modifier.fillMaxWidth().height(48.dp).horizontalScroll(rememberScrollState()).padding(horizontal = 4.dp).semantics { contentDescription = strip },
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (sortChip) {
-                // The order every listing reads in, named, where an icon alone had to be known.
-                Row(
-                    Modifier.fillMaxHeight().clip(RoundedCornerShape(8.dp)).clickable(role = Role.Button) { sorting = true }.padding(horizontal = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(RedditGlyphs.Tune, contentDescription = pluginString(Strings.sort), modifier = Modifier.size(20.dp))
-                    Spacer(Modifier.width(8.dp))
-                    Text(sortLabel(choices.sort), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = accent)
-                    Icon(Icons.Filled.ArrowDropDown, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
-                }
-                if (names.isNotEmpty()) Box(Modifier.padding(horizontal = 6.dp).width(1.dp).height(20.dp).background(MaterialTheme.colorScheme.outlineVariant))
-            }
             names.forEach { name ->
                 val selected = home.isSelected(name)
                 Box(
@@ -271,7 +294,6 @@ private fun CommunityStrip(app: RedditApp, names: List<String>, home: RedditHome
             }
         }
     }
-    if (sorting) SortSheet(app) { sorting = false }
 }
 
 /** A three dp line in [color] along the bottom of the one [shown], its ends rounded, as Home's own tabs are underlined. */

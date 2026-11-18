@@ -124,4 +124,5 @@
     <string name="in_home_feed_description">Mezcla las publicaciones de los subreddits que sigues en «Siguiendo» y «Para ti»</string>
     <string name="see_popular">Ver Popular</string>
     <string name="nothing_new">Nada nuevo en los subreddits que sigues</string>
+    <string name="feed_home">Inicio</string>
 </resources>

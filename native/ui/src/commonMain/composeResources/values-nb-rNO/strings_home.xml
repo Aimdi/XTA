@@ -78,4 +78,8 @@
     <string name="home_manage_plugins">Administrer programtillegg</string>
     <string name="home_xta_settings">XTA-innstillinger</string>
     <string name="home_menu_xta">XTA</string>
+    <string name="home_sort_filter">Sorter og filtrer</string>
+    <string name="home_sort_filter_on">Sorter og filtrer, endret</string>
+    <string name="home_sort_reset">Tilbakestill</string>
+    <string name="home_plugin_settings">%1$s-innstillinger</string>
 </resources>

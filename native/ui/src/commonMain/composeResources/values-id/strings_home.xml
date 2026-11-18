@@ -77,4 +77,8 @@
     <string name="home_manage_plugins">Kelola plugin</string>
     <string name="home_xta_settings">Pengaturan XTA</string>
     <string name="home_menu_xta">XTA</string>
+    <string name="home_sort_filter">Urutkan &amp; filter</string>
+    <string name="home_sort_filter_on">Urutkan &amp; filter, diubah</string>
+    <string name="home_sort_reset">Atur ulang</string>
+    <string name="home_plugin_settings">Pengaturan %1$s</string>
 </resources>

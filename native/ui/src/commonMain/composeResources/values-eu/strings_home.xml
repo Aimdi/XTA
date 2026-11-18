@@ -78,4 +78,8 @@
     <string name="home_manage_plugins">Kudeatu pluginak</string>
     <string name="home_xta_settings">XTAren ezarpenak</string>
     <string name="home_menu_xta">XTA</string>
+    <string name="home_sort_filter">Ordenatu eta iragazi</string>
+    <string name="home_sort_filter_on">Ordenatu eta iragazi, aldatua</string>
+    <string name="home_sort_reset">Berrezarri</string>
+    <string name="home_plugin_settings">%1$s ezarpenak</string>
 </resources>

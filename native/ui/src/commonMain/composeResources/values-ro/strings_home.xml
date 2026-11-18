@@ -79,4 +79,8 @@
     <string name="home_manage_plugins">Gestionează pluginurile</string>
     <string name="home_xta_settings">Setări XTA</string>
     <string name="home_menu_xta">XTA</string>
+    <string name="home_sort_filter">Sortare și filtre</string>
+    <string name="home_sort_filter_on">Sortare și filtre, modificate</string>
+    <string name="home_sort_reset">Resetează</string>
+    <string name="home_plugin_settings">Setări %1$s</string>
 </resources>

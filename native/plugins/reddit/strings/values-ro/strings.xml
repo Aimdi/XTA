@@ -127,4 +127,5 @@
     <string name="in_home_feed_description">Adaugă postările din subredditurile urmărite în „Urmăriți” și „Pentru tine”</string>
     <string name="see_popular">Vezi Popular</string>
     <string name="nothing_new">Nimic nou în subredditurile pe care le urmărești</string>
+    <string name="feed_home">Acasă</string>
 </resources>
