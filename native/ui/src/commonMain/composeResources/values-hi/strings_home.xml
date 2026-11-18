@@ -71,4 +71,11 @@
     <string name="home_feed_accounts_empty">आपके लिए लोड करने हेतु खाता जोड़ें।</string>
     <string name="home_all_timelines">सभी टाइमलाइन</string>
     <string name="home_bar_more">और</string>
+    <string name="home_switcher_title">प्लगइन बदलें</string>
+    <string name="home_switcher_start">शुरुआत</string>
+    <string name="home_switcher_start_hint">फ़ॉलो किए गए और आपकी सभी टाइमलाइनें</string>
+    <string name="home_switcher_recent">हाल में इस्तेमाल किए गए</string>
+    <string name="home_manage_plugins">प्लगइन प्रबंधित करें</string>
+    <string name="home_xta_settings">XTA सेटिंग्स</string>
+    <string name="home_menu_xta">XTA</string>
 </resources>

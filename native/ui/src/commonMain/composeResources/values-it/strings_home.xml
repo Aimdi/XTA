@@ -71,4 +71,11 @@
     <string name="home_feed_accounts_empty">Aggiungi un account per caricare Per te.</string>
     <string name="home_all_timelines">Tutte le timeline</string>
     <string name="home_bar_more">Altro</string>
+    <string name="home_switcher_title">Cambia plugin</string>
+    <string name="home_switcher_start">Inizio</string>
+    <string name="home_switcher_start_hint">Seguiti e tutte le tue timeline</string>
+    <string name="home_switcher_recent">Usati di recente</string>
+    <string name="home_manage_plugins">Gestisci plugin</string>
+    <string name="home_xta_settings">Impostazioni di XTA</string>
+    <string name="home_menu_xta">XTA</string>
 </resources>

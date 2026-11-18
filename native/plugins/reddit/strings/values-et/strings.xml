@@ -122,4 +122,6 @@
     </plurals>
     <string name="in_home_feed">Näita avalehe voos</string>
     <string name="in_home_feed_description">Lisab jälgitavate subredditide postitused voogudesse „Jälgitavad“ ja „Sulle“</string>
+    <string name="see_popular">Vaata Popular</string>
+    <string name="nothing_new">Jälgitavates subredditites pole midagi uut</string>
 </resources>

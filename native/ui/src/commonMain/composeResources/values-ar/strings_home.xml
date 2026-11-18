@@ -75,4 +75,11 @@
     <string name="home_feed_accounts_empty">أضف حساباً لتحميل «لك».</string>
     <string name="home_all_timelines">كل الخطوط الزمنية</string>
     <string name="home_bar_more">المزيد</string>
+    <string name="home_switcher_title">تبديل الإضافة</string>
+    <string name="home_switcher_start">البداية</string>
+    <string name="home_switcher_start_hint">المتابَعون وكل خطوطك الزمنية</string>
+    <string name="home_switcher_recent">المستخدمة مؤخرًا</string>
+    <string name="home_manage_plugins">إدارة الإضافات</string>
+    <string name="home_xta_settings">إعدادات XTA</string>
+    <string name="home_menu_xta">XTA</string>
 </resources>

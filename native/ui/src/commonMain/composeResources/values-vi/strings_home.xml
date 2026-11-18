@@ -70,4 +70,11 @@
     <string name="home_feed_accounts_empty">Thêm tài khoản để tải Dành cho bạn.</string>
     <string name="home_all_timelines">Tất cả dòng thời gian</string>
     <string name="home_bar_more">Thêm</string>
+    <string name="home_switcher_title">Đổi plugin</string>
+    <string name="home_switcher_start">Bắt đầu</string>
+    <string name="home_switcher_start_hint">Đang theo dõi và mọi dòng thời gian của bạn</string>
+    <string name="home_switcher_recent">Dùng gần đây</string>
+    <string name="home_manage_plugins">Quản lý plugin</string>
+    <string name="home_xta_settings">Cài đặt XTA</string>
+    <string name="home_menu_xta">XTA</string>
 </resources>

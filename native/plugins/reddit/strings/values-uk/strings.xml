@@ -128,4 +128,6 @@
     </plurals>
     <string name="in_home_feed">Показувати в головній стрічці</string>
     <string name="in_home_feed_description">Додає дописи із сабредитів, на які ви підписані, у «Підписки» та «Для вас»</string>
+    <string name="see_popular">Переглянути Popular</string>
+    <string name="nothing_new">Нічого нового в сабредітах, які ви відстежуєте</string>
 </resources>

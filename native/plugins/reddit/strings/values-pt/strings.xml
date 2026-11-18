@@ -122,4 +122,6 @@
     </plurals>
     <string name="in_home_feed">Mostrar na cronologia principal</string>
     <string name="in_home_feed_description">Mistura as publicações dos subreddits que segue em «A seguir» e «Para si»</string>
+    <string name="see_popular">Ver Popular</string>
+    <string name="nothing_new">Nada de novo nos subreddits que segue</string>
 </resources>

@@ -128,4 +128,6 @@
     </plurals>
     <string name="in_home_feed">Pakazvać u hałoŭnaj stužcy</string>
     <string name="in_home_feed_description">Dadaje zapisy z sabredytaŭ, na jakija vy padpisany, u «Padpiski» i «Dla vas»</string>
+    <string name="see_popular">Hladzieć Popular</string>
+    <string name="nothing_new">Ničoha novaha ŭ supolnasciach, za jakimi vy sočycie</string>
 </resources>

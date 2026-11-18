@@ -71,4 +71,11 @@
     <string name="home_feed_accounts_empty">Voeg een account toe om Voor jou te laden.</string>
     <string name="home_all_timelines">Alle tijdlijnen</string>
     <string name="home_bar_more">Meer</string>
+    <string name="home_switcher_title">Plug-in wisselen</string>
+    <string name="home_switcher_start">Start</string>
+    <string name="home_switcher_start_hint">Gevolgd en al je tijdlijnen</string>
+    <string name="home_switcher_recent">Recent gebruikt</string>
+    <string name="home_manage_plugins">Plug-ins beheren</string>
+    <string name="home_xta_settings">XTA-instellingen</string>
+    <string name="home_menu_xta">XTA</string>
 </resources>

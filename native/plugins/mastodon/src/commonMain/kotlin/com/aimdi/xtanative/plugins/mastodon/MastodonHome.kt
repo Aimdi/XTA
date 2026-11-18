@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DropdownMenu
@@ -37,8 +36,8 @@ import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
-import com.aimdi.xtanative.ui.plugins.ReadingControlsPinItem
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
+import com.aimdi.xtanative.ui.plugins.ShellMenuButton
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.post.PostIcons
 
@@ -135,20 +134,15 @@ private fun SectionBar(app: MastodonApp, selected: MastodonTimeline, onSelect: (
 
 @Composable
 private fun MoreMenu(app: MastodonApp) {
-    var open by remember { mutableStateOf(false) }
-    Box {
-        IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, pluginString(Strings.more)) }
-        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
-            DropdownMenuItem(text = { Text(pluginString(Strings.saved)) }, onClick = {
-                open = false
-                app.openSaved()
-            })
-            DropdownMenuItem(text = { Text(pluginString(Strings.settings)) }, onClick = {
-                open = false
-                app.host.openSettings()
-            })
-            ReadingControlsPinItem()
-        }
+    ShellMenuButton { close ->
+        DropdownMenuItem(text = { Text(pluginString(Strings.saved)) }, onClick = {
+            close()
+            app.openSaved()
+        })
+        DropdownMenuItem(text = { Text(pluginString(Strings.settings)) }, onClick = {
+            close()
+            app.host.openSettings()
+        })
     }
 }
 

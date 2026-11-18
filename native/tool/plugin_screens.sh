@@ -86,9 +86,16 @@ open_menu() {
   tap_node 'text="Open navigation menu"' || fail "No account menu in the timeline picker"
 }
 
-# Home's timeline picker: Following's button, or the mark of the timeline shown ("Bluesky, Networks").
+# Home's timeline picker: Following's button. On a network's timeline its
+# button ("Bluesky, Switch plugin") opens the plugin switcher, whose Start
+# leads back to Following first.
 open_picker() {
-  tap_node 'content-desc="Following"' || tap_node ', Networks"'
+  tap_node 'content-desc="Following"' && return 0
+  tap_node ', Switch plugin"' || return 1
+  sleep 2
+  tap_node 'text="Start"' || return 1
+  sleep 2
+  tap_node 'content-desc="Following"'
 }
 
 # The store, from Home's account menu.

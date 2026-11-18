@@ -119,4 +119,6 @@
     </plurals>
     <string name="in_home_feed">ホームのタイムラインに表示</string>
     <string name="in_home_feed_description">フォロー中のサブレディットの投稿を「フォロー中」と「おすすめ」に混ぜます</string>
+    <string name="see_popular">Popularを見る</string>
+    <string name="nothing_new">フォロー中のサブレディットに新着はありません</string>
 </resources>

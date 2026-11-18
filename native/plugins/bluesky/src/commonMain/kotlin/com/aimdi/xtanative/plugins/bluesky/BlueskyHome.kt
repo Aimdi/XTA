@@ -5,10 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,7 +27,7 @@ import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
-import com.aimdi.xtanative.ui.plugins.ReadingControlsPinItem
+import com.aimdi.xtanative.ui.plugins.ShellMenuButton
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.post.PostIcons
 
@@ -99,25 +97,20 @@ private fun HomeBar(app: BlueskyApp, tab: BlueskyTab, onTab: (BlueskyTab) -> Uni
 /** XTA's Bluesky menu: add an account, what was saved from Bluesky, import follows three ways, the settings. */
 @Composable
 private fun HomeMenu(app: BlueskyApp) {
-    var open by rememberSaveable { mutableStateOf(false) }
     var adding by rememberSaveable { mutableStateOf(false) }
-    Box {
-        IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, pluginString(Strings.more_options)) }
-        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
-            listOf<Pair<PluginText, () -> Unit>>(
-                Strings.add_account to { adding = true },
-                Strings.saved to { app.host.open(BlueskyRoutes.SAVED) },
-                Strings.import_following to { app.host.open(BlueskyRoutes.import(ImportKind.FOLLOWING)) },
-                Strings.import_list to { app.host.open(BlueskyRoutes.import(ImportKind.LIST)) },
-                Strings.import_starter to { app.host.open(BlueskyRoutes.import(ImportKind.STARTER)) },
-                Strings.settings to { app.host.openSettings() },
-            ).forEach { (text, action) ->
-                DropdownMenuItem(text = { Text(pluginString(text)) }, onClick = {
-                    open = false
-                    action()
-                })
-            }
-            ReadingControlsPinItem()
+    ShellMenuButton { close ->
+        listOf<Pair<PluginText, () -> Unit>>(
+            Strings.add_account to { adding = true },
+            Strings.saved to { app.host.open(BlueskyRoutes.SAVED) },
+            Strings.import_following to { app.host.open(BlueskyRoutes.import(ImportKind.FOLLOWING)) },
+            Strings.import_list to { app.host.open(BlueskyRoutes.import(ImportKind.LIST)) },
+            Strings.import_starter to { app.host.open(BlueskyRoutes.import(ImportKind.STARTER)) },
+            Strings.settings to { app.host.openSettings() },
+        ).forEach { (text, action) ->
+            DropdownMenuItem(text = { Text(pluginString(text)) }, onClick = {
+                close()
+                action()
+            })
         }
     }
     if (adding) AddAccountDialog(app) { adding = false }

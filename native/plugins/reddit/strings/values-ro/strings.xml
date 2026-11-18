@@ -125,4 +125,6 @@
     </plurals>
     <string name="in_home_feed">Afișează în cronologia principală</string>
     <string name="in_home_feed_description">Adaugă postările din subredditurile urmărite în „Urmăriți” și „Pentru tine”</string>
+    <string name="see_popular">Vezi Popular</string>
+    <string name="nothing_new">Nimic nou în subredditurile pe care le urmărești</string>
 </resources>

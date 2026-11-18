@@ -1,7 +1,5 @@
 package com.aimdi.xtanative.plugins.stocks
 
-import com.aimdi.xtanative.ui.common.swipeTabs
-import com.aimdi.xtanative.ui.post.PostIcons
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +22,6 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -55,17 +52,19 @@ import com.aimdi.xtanative.networks.stocks.TickerQuote
 import com.aimdi.xtanative.networks.stocks.Watchlist
 import com.aimdi.xtanative.networks.stocks.WatchlistEntries
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.NetworkProblemView
 import com.aimdi.xtanative.ui.plugins.NoticeHost
-import com.aimdi.xtanative.ui.plugins.PluginNotices
 import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
-import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
 import com.aimdi.xtanative.ui.plugins.PluginFrame
-import com.aimdi.xtanative.ui.plugins.RefreshesOn
+import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
+import com.aimdi.xtanative.ui.plugins.PluginNotices
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
-import com.aimdi.xtanative.ui.plugins.ReadingControlsPinItem
+import com.aimdi.xtanative.ui.plugins.RefreshesOn
+import com.aimdi.xtanative.ui.plugins.ShellMenuButton
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
+import com.aimdi.xtanative.ui.post.PostIcons
 import kotlinx.coroutines.delay
 
 /** While a tab is on screen its quotes are asked for this often, the caches answering what is fresh. */
@@ -242,29 +241,24 @@ private fun tabIcon(tab: StocksTab): ImageVector = when (tab) {
 /** The sliders: the watchlist itself, and how Stocks shows things. */
 @Composable
 private fun StocksMenu(app: StocksApp, onManage: () -> Unit) {
-    var open by remember { mutableStateOf(false) }
     val chart by app.chart.collectAsState()
     val fold by app.foldSignals.collectAsState()
-    Box {
-        IconButton(onClick = { open = true }) { Icon(PostIcons.Tune, pluginString(Strings.settings_title)) }
-        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
-            DropdownMenuItem(
-                text = { Text(pluginString(Strings.manage_watchlist)) },
-                onClick = {
-                    open = false
-                    onManage()
-                },
-                leadingIcon = { Spacer(Modifier.size(24.dp)) },
-            )
-            CheckedItem(pluginString(Strings.ticker_chart), chart) {
-                open = false
-                app.toggleChart()
-            }
-            CheckedItem(pluginString(Strings.fold_signal_posts), fold) {
-                open = false
-                app.toggleFoldSignals()
-            }
-            ReadingControlsPinItem()
+    ShellMenuButton { close ->
+        DropdownMenuItem(
+            text = { Text(pluginString(Strings.manage_watchlist)) },
+            onClick = {
+                close()
+                onManage()
+            },
+            leadingIcon = { Spacer(Modifier.size(24.dp)) },
+        )
+        CheckedItem(pluginString(Strings.ticker_chart), chart) {
+            close()
+            app.toggleChart()
+        }
+        CheckedItem(pluginString(Strings.fold_signal_posts), fold) {
+            close()
+            app.toggleFoldSignals()
         }
     }
 }

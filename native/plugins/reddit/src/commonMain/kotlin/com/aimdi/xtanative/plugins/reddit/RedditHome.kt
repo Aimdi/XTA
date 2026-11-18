@@ -3,7 +3,6 @@ package com.aimdi.xtanative.plugins.reddit
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -25,7 +25,6 @@ import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.DropdownMenu
@@ -38,6 +37,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -63,17 +63,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.store.settings.RedditFeedMode
 import com.aimdi.xtanative.ui.common.FeedSkeleton
-import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.common.Hairline
+import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginHomeTab
 import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
 import com.aimdi.xtanative.ui.plugins.PluginText
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
-import com.aimdi.xtanative.ui.plugins.ReadingControlsPinItem
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
 import com.aimdi.xtanative.ui.plugins.ScrollsToTop
+import com.aimdi.xtanative.ui.plugins.ShellMenuButton
 import com.aimdi.xtanative.ui.plugins.pluginString
 
 /**
@@ -162,28 +162,22 @@ private fun railLabel(mode: RedditFeedMode): PluginText = when (mode) {
  */
 @Composable
 private fun HomeMenu(app: RedditApp, choices: RedditChoices) {
-    var open by remember { mutableStateOf(false) }
     var communities by remember { mutableStateOf(false) }
-    Box {
-        IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, contentDescription = pluginString(Strings.more_options)) }
-        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
-            val close = { open = false }
-            RedditHomeChrome.menu.forEach { item ->
-                when (item) {
-                    RedditHomeChrome.MenuItem.SAVED -> MenuRow(RedditGlyphs.BookmarkBorder, pluginString(Strings.saved)) { close(); app.host.open(RedditRoutes.SAVED) }
-                    RedditHomeChrome.MenuItem.SUBSCRIPTIONS -> MenuRow(Icons.AutoMirrored.Filled.List, pluginString(Strings.subscriptions)) { close(); communities = true }
-                    RedditHomeChrome.MenuItem.SOURCE_AUTO -> {
-                        HorizontalDivider()
-                        SourceRow(app, item, Strings.source_auto, Strings.source_auto_description, RedditHomeChrome.checked(item, choices), close)
-                    }
-                    RedditHomeChrome.MenuItem.SOURCE_PUBLIC -> SourceRow(app, item, Strings.source_public, Strings.source_public_description, RedditHomeChrome.checked(item, choices), close)
-                    RedditHomeChrome.MenuItem.SETTINGS -> {
-                        HorizontalDivider()
-                        MenuRow(RedditGlyphs.Forum, pluginString(Strings.plugin_name) + " · " + pluginString(Strings.settings)) { close(); app.host.openSettings() }
-                    }
+    ShellMenuButton { close ->
+        RedditHomeChrome.menu.forEach { item ->
+            when (item) {
+                RedditHomeChrome.MenuItem.SAVED -> MenuRow(RedditGlyphs.BookmarkBorder, pluginString(Strings.saved)) { close(); app.host.open(RedditRoutes.SAVED) }
+                RedditHomeChrome.MenuItem.SUBSCRIPTIONS -> MenuRow(Icons.AutoMirrored.Filled.List, pluginString(Strings.subscriptions)) { close(); communities = true }
+                RedditHomeChrome.MenuItem.SOURCE_AUTO -> {
+                    HorizontalDivider()
+                    SourceRow(app, item, Strings.source_auto, Strings.source_auto_description, RedditHomeChrome.checked(item, choices), close)
+                }
+                RedditHomeChrome.MenuItem.SOURCE_PUBLIC -> SourceRow(app, item, Strings.source_public, Strings.source_public_description, RedditHomeChrome.checked(item, choices), close)
+                RedditHomeChrome.MenuItem.SETTINGS -> {
+                    HorizontalDivider()
+                    MenuRow(RedditGlyphs.Forum, pluginString(Strings.plugin_name) + " · " + pluginString(Strings.settings)) { close(); app.host.openSettings() }
                 }
             }
-            ReadingControlsPinItem()
         }
     }
     if (communities) CommunitiesSheet(app) { communities = false }
@@ -339,7 +333,8 @@ private fun FollowingFeed(app: RedditApp, frame: PluginFrame) {
         LazyColumn(state = list, contentPadding = frame.padding, modifier = Modifier.fillMaxSize()) {
             val problem = state.problem
             when (RedditFeedBody.of(rows != null, names.isEmpty(), state)) {
-                RedditFeedBody.NOTHING_FOLLOWED, RedditFeedBody.EMPTY -> item(key = "nothing") { AddFirst(app) }
+                RedditFeedBody.NOTHING_FOLLOWED -> item(key = "nothing") { AddFirst(app) }
+                RedditFeedBody.EMPTY -> item(key = "quiet") { RedditEmpty(RedditGlyphs.Forum, pluginString(Strings.nothing_new)) }
                 RedditFeedBody.PROBLEM -> item(key = "problem") { RedditProblemView(problem!!, onRetry = { app.feed.refresh(names, force = true) }) }
                 RedditFeedBody.BONES -> item(key = "loading") { FeedSkeleton() }
                 RedditFeedBody.POSTS -> Unit
@@ -349,14 +344,24 @@ private fun FollowingFeed(app: RedditApp, frame: PluginFrame) {
     }
 }
 
-/** The tab a reader following nothing, or nothing that posted, sees: where to start (reddit_feed_list.dart's empty state). */
+/**
+ * The tab a reader following nothing sees, and only then (the unified
+ * shell's empty state): where to start, adding a subreddit or reading
+ * Popular meanwhile. A feed whose subreddits only have nothing new says so
+ * quietly instead.
+ */
 @Composable
 private fun AddFirst(app: RedditApp) {
     var adding by remember { mutableStateOf(false) }
     RedditEmpty(RedditGlyphs.Forum, pluginString(Strings.empty)) {
-        FilledTonalButton(onClick = { adding = true }) {
-            Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
-            Text(pluginString(Strings.add), modifier = Modifier.padding(start = 8.dp))
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            FilledTonalButton(onClick = { adding = true }) {
+                Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+                Text(pluginString(Strings.add), modifier = Modifier.padding(start = 8.dp))
+            }
+            TextButton(onClick = { app.selectMode(RedditFeedMode.POPULAR) }, modifier = Modifier.heightIn(min = 44.dp)) {
+                Text(pluginString(Strings.see_popular))
+            }
         }
     }
     if (adding) AddSubredditDialog(app) { adding = false }

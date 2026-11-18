@@ -122,4 +122,6 @@
     </plurals>
     <string name="in_home_feed">Mostra a la cronologia principal</string>
     <string name="in_home_feed_description">Barreja les publicacions dels subreddits que segueixes a «Seguint» i «Per a tu»</string>
+    <string name="see_popular">Mira Popular</string>
+    <string name="nothing_new">Res de nou als subreddits que segueixes</string>
 </resources>

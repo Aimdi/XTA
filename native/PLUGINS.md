@@ -44,7 +44,7 @@ plugin API version it was built against, `PLUGIN_API_VERSION`) and `entry`
 
 ## The plugin API
 
-`PLUGIN_API_VERSION` is 13. Version 1 is what native-0.1.41 shipped; 2,
+`PLUGIN_API_VERSION` is 14. Version 1 is what native-0.1.41 shipped; 2,
 which native-0.1.45 shipped, added `cashtagStrip` and `routeForCashtag` and
 the kit's pieces of that time (the article reader, `FeedReads`, X posts in a
 plugin, the chip tabs, the shelf, the recent searches, the action row,
@@ -85,7 +85,20 @@ calls `translate` says 12 and an app of API 11 (native-1.0.7) offers it as
 keep loading in this app, which still has everything they use. 13 adds
 `PluginHomeTab.joinsMore`: where a plugin's tabs take Home's bottom bar, a
 tab that joins More (Pixiv's account and About) goes there instead of taking
-a place; the four-argument constructor stays for plugins built before.
+a place; the four-argument constructor stays for plugins built before. 14
+adds `ShellMenuButton`, the one menu of the unified plugin shell: a plugin's
+⋮ with its own entries, which on Home go under the network's name and are
+followed by the app's (keep controls visible, Home's options for the
+network, its sections that join the menu, the plugin store, XTA's settings),
+so Home leaves its own menu out. A plugin built before keeps its menu, and
+Home's stays beside it.
+
+On Home a network's page is one shell: its button (mark, name, chevron)
+opens the plugin switcher (Start, back to XTA's Home; the networks on Home,
+the recently used first; the plugin store and the settings), then its
+search and its one menu. Three or four sections of its own make the bottom
+bar, with nothing else on it; fewer or more run as the feed row under the
+top bar, and on Home's Feed there is then no bottom bar at all.
 
 Beyond `ui.plugins`, plugins use about fifty of the app's own parts
 (`ui.common`'s `Avatar` and `Hairline`, `ui.post`'s `PostActions`, the media
