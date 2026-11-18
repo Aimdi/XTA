@@ -1,8 +1,6 @@
 package com.aimdi.xtanative.ui.saved
 
 import com.aimdi.xtanative.core.x.model.XPost
-import com.aimdi.xtanative.data.AppGraph
-import com.aimdi.xtanative.ui.downloads.Downloading
 
 /**
  * What a post's footer and menus do with the device's own saves, likes and
@@ -16,17 +14,17 @@ import com.aimdi.xtanative.ui.downloads.Downloading
  */
 class PostKeep {
     /** The bookmark tapped: saves [post] where a plain tap files (the remembered folder, else unfiled), or removes the save. */
-    fun toggleSave(graph: AppGraph, post: XPost) = Keeping.toggleSave(graph, Keepable.of(post))
+    fun toggleSave(keeper: Keeper, post: XPost) = Keeping.toggleSave(keeper, Keepable.of(post))
 
     /** Files [post] in [folderId] (null for unfiled), saving it first, as a chip of the save sheet does. */
-    fun file(graph: AppGraph, post: XPost, folderId: String?) = Keeping.fileFromSheet(graph, Keepable.of(post), folderId)
+    fun file(keeper: Keeper, post: XPost, folderId: String?) = Keeping.fileFromSheet(keeper, Keepable.of(post), folderId)
 
     /** The heart tapped: [post] liked on this device, or no longer. */
-    fun toggleLike(graph: AppGraph, post: XPost) = Keeping.toggleLike(graph, Keepable.of(post))
+    fun toggleLike(keeper: Keeper, post: XPost) = Keeping.toggleLike(keeper, Keepable.of(post))
 
     /** A double-tap on [post], with Settings › Accessibility's "Double-tap to like" on: liked on this device unless it is already. */
-    fun likeHere(graph: AppGraph, post: XPost) = Keeping.likeHere(graph, Keepable.of(post))
+    fun likeHere(keeper: Keeper, post: XPost) = Keeping.likeHere(keeper, Keepable.of(post))
 
     /** Saves the media at [index] of [post] where the download setting says, and says how it went. */
-    fun download(graph: AppGraph, post: XPost, index: Int) = Downloading.media(graph, post, index)
+    fun download(keeper: Keeper, post: XPost, index: Int) = keeper.downloadMedia(post, index)
 }

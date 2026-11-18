@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.store.settings.PostsPrefs
+import com.aimdi.xtanative.store.settings.SettingsStore
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 
 /**
@@ -97,7 +98,7 @@ internal fun postScope(): PostScope {
 }
 
 /** "Always show sensitive media": saved, and every gate of the screen opens. */
-internal suspend fun alwaysShowSensitive(graph: com.aimdi.xtanative.data.AppGraph, reveal: SensitiveReveal) {
+internal suspend fun alwaysShowSensitive(settings: SettingsStore, reveal: SensitiveReveal) {
     reveal.hidden = false
-    graph.settings.set(PostsPrefs.alwaysShowSensitiveMedia, true)
+    settings.set(PostsPrefs.alwaysShowSensitiveMedia, true)
 }

@@ -1,5 +1,7 @@
 package com.aimdi.xtanative.data
 
+import com.aimdi.xtanative.ui.downloads.Downloading
+import com.aimdi.xtanative.ui.saved.Keeper
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.core.x.FileAccountHealthStore
 import com.aimdi.xtanative.core.x.XAccountHealthStore
@@ -103,6 +105,11 @@ class AppGraph(
     val timelineCache = TimelineCache(store)
 
     /** The reader's translation service for every network's posts (Settings › Translation), off until chosen. */
+    /** What saving and liking need of the app, for the parts that save and like without the whole graph ([LocalKeeper]). */
+    val keeper: Keeper by lazy {
+        Keeper(saved, likes, settings, ::keep, { requests -> Downloading.batch(this, requests) }, { post, index -> Downloading.media(this, post, index) }, { bytes, name, mime -> Downloading.shareMade(this, bytes, name, mime) })
+    }
+
     val translation = ReaderTranslation(settings, OkHttpXHttp(), store)
 
     /** Profiles as X last gave them, shown for a week while X is read again. */

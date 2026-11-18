@@ -110,6 +110,15 @@ def main():
     moved = sum(info[f][3] for f in movable)
     print(f"Movable to a module today: {len(movable)} of {len(api)} API-like files, {moved} of {api_lines} lines ({100 * moved // api_lines}%).")
 
+    # The sharper test: nothing in a file's closure holds the app graph, sits in a package only the
+    # app's own screens use, or reads :ui's strings, whatever package the file itself is in.
+    graph_bound = {f for f in files if {"AppGraph", "LocalGraph"} & info[f][2]}
+    screens_only = {BASE + "ui." + p for p in ["settings", "home", "pluginstore", "chrome", "intro", "signin"]}
+    free = [f for f in api if not any(x in graph_bound or info[x][0] in screens_only or info[x][4] for x in closure({f}))]
+    freed = sum(info[f][3] for f in free)
+    print(f"Free of the app graph and the app's screens: {len(free)} of {len(api)} API-like files, {freed} of {api_lines} lines ({100 * freed // api_lines}%).")
+    print(f"Files that still hold the app graph: {len(graph_bound)}; the API reaches {len(graph_bound & reach)} of them.")
+
     links, examples = collections.Counter(), collections.defaultdict(set)
     for f in api:
         pkg, imports, _, _, _ = info[f]

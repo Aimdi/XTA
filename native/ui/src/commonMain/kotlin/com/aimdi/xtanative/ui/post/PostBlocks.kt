@@ -44,8 +44,8 @@ import com.aimdi.xtanative.core.x.model.XGrokShare
 import com.aimdi.xtanative.core.x.model.XLive
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.parse.XText
-import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.ui.common.Avatar
+import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_article_on_x
 import com.aimdi.xtanative.ui.generated.resources.posts_community_notes
@@ -87,7 +87,7 @@ fun SensitiveGate(reveal: SensitiveReveal, message: String? = null, framed: Bool
         content()
         return
     }
-    val graph = LocalGraph.current
+    val settingsStore = LocalSettingsStore.current
     val scope = rememberCoroutineScope()
     val body: @Composable () -> Unit = {
         Column(Modifier.fillMaxWidth().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -101,7 +101,7 @@ fun SensitiveGate(reveal: SensitiveReveal, message: String? = null, framed: Bool
             )
             Row(Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                 Button(onClick = { reveal.hidden = false }) { Text(stringResource(Res.string.posts_sensitive_show)) }
-                TextButton(onClick = { scope.launch { alwaysShowSensitive(graph, reveal) } }) {
+                TextButton(onClick = { scope.launch { alwaysShowSensitive(settingsStore, reveal) } }) {
                     Text(stringResource(Res.string.posts_sensitive_always), textAlign = TextAlign.Center)
                 }
             }

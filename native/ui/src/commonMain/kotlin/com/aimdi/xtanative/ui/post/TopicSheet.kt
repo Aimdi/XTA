@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.aimdi.xtanative.data.LocalGraph
+import com.aimdi.xtanative.ui.common.LocalSessions
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.topic_follow
 import com.aimdi.xtanative.ui.generated.resources.topic_follow_done
@@ -20,6 +20,7 @@ import com.aimdi.xtanative.ui.generated.resources.topic_following
 import com.aimdi.xtanative.ui.generated.resources.topic_unsubscribe
 import com.aimdi.xtanative.ui.plugins.pathIcon
 import com.aimdi.xtanative.ui.saved.KeepNotices
+import com.aimdi.xtanative.ui.saved.LocalKeeper
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 
@@ -31,15 +32,16 @@ import org.jetbrains.compose.resources.stringResource
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun TopicSheet(topic: String, onDismiss: () -> Unit) {
-    val graph = LocalGraph.current
-    val session by graph.sessions.state.collectAsStateWithLifecycle()
+    val sessions = LocalSessions.current
+    val keeper = LocalKeeper.current
+    val session by sessions.state.collectAsStateWithLifecycle()
     val followed = session?.let { TopicLinks.isFollowed(it, topic) } ?: false
     ModalBottomSheet(onDismissRequest = onDismiss) {
         Column(Modifier.padding(bottom = 16.dp)) {
             MenuRow(if (followed) Icons.Outlined.Check else TagIcon, stringResource(if (followed) Res.string.topic_following else Res.string.topic_follow)) {
                 onDismiss()
-                graph.keep {
-                    graph.sessions.update { TopicLinks.toggled(it, topic, System.currentTimeMillis()) }
+                keeper.keep {
+                    sessions.update { TopicLinks.toggled(it, topic, System.currentTimeMillis()) }
                     KeepNotices.say(if (followed) getString(Res.string.topic_unsubscribe) else getString(Res.string.topic_follow_done, topic))
                 }
             }

@@ -248,7 +248,7 @@ class AppPlugins(
     private val changing = Mutex()
 
     init {
-        FolderFilings.listen(graph, ::filed)
+        FolderFilings.listen(graph.keeper, ::filed)
     }
 
     /** Reads what is installed and starts it, then follows every install, update and uninstall. */
@@ -693,15 +693,15 @@ class AppPlugins(
 
         override val savedPosts: StateFlow<List<PluginSavedPost>?> by lazy { plugins.savedPostsOf(id) }
 
-        override fun toggleSaved(post: PluginPostArchive) = Keeping.toggleSave(plugins.graph, post.keepable())
+        override fun toggleSaved(post: PluginPostArchive) = Keeping.toggleSave(plugins.graph.keeper, post.keepable())
 
         override fun chooseFolder(post: PluginPostArchive) = plugins.show(PluginSheet.Folders(post))
 
         override fun editNote(post: PluginPostArchive) = plugins.show(PluginSheet.Note(post))
 
-        override fun setLiked(post: PluginPostArchive, liked: Boolean) = Keeping.setLiked(plugins.graph, post.keepable(), liked)
+        override fun setLiked(post: PluginPostArchive, liked: Boolean) = Keeping.setLiked(plugins.graph.keeper, post.keepable(), liked)
 
-        override fun likedOnDevice() = Keeping.likedElsewhere(plugins.graph)
+        override fun likedOnDevice() = Keeping.likedElsewhere(plugins.graph.keeper)
 
         override fun addToGroup(account: String, follow: suspend () -> Unit) =
             plugins.show(PluginSheet.Groups(PluginMembers.memberId(id, account), follow))

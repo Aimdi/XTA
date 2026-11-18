@@ -96,7 +96,7 @@ private fun PostMenuSheet(sheet: PluginSheet.Menu, onDismiss: () -> Unit) {
     val handlers = remember(menu) {
         val item = menu.post.keepable()
         PostMenuHandlers(
-            toggleSaved = { Keeping.toggleSave(graph, item) },
+            toggleSaved = { Keeping.toggleSave(graph.keeper, item) },
             editNote = { plugins.show(PluginSheet.Note(menu.post)) },
             addToGroup = { author -> plugins.show(PluginSheet.Groups(PluginMembers.memberId(sheet.pluginId, author), menu.follow)) },
             chooseFolder = { plugins.show(PluginSheet.Folders(menu.post)) },

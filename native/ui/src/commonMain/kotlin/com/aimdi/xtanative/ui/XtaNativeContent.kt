@@ -13,6 +13,8 @@ import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.data.plugins.AppPlugins
 import com.aimdi.xtanative.store.crash.CrashIssue
 import com.aimdi.xtanative.ui.common.FullPageError
+import com.aimdi.xtanative.ui.common.LocalOnline
+import com.aimdi.xtanative.ui.common.LocalSessions
 import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.common.SwitchedHapticsFrame
 import com.aimdi.xtanative.ui.common.addPlatformPictureDecoders
@@ -25,6 +27,7 @@ import com.aimdi.xtanative.ui.generated.resources.dismiss
 import com.aimdi.xtanative.ui.links.LinksFrame
 import com.aimdi.xtanative.ui.media.VideoFullscreenFrame
 import com.aimdi.xtanative.ui.pluginstore.PluginsFrame
+import com.aimdi.xtanative.ui.saved.LocalKeeper
 import com.aimdi.xtanative.ui.settings.trimImageCache
 import com.aimdi.xtanative.ui.speech.SpeechBarScaffold
 import com.aimdi.xtanative.ui.theme.XtaTheme
@@ -38,7 +41,7 @@ import org.jetbrains.compose.resources.stringResource
  */
 @Composable
 fun XtaNativeContent(graph: AppGraph, plugins: AppPlugins) {
-    CompositionLocalProvider(LocalGraph provides graph, LocalSettingsStore provides graph.settings) {
+    CompositionLocalProvider(LocalGraph provides graph, LocalSettingsStore provides graph.settings, LocalKeeper provides graph.keeper, LocalOnline provides graph.online, LocalSessions provides graph.sessions) {
         XtaTheme { SwitchedHapticsFrame { LinksFrame { PluginsFrame(plugins) { DownloadsFrame { VideoFullscreenFrame { SpeechBarScaffold { RootOrBroken(graph) } } } } } } }
     }
 }

@@ -54,11 +54,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.model.XUser
-import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.services.ai.TranslationStatus
+import com.aimdi.xtanative.ui.common.LocalSessions
 import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.common.countText
-import com.aimdi.xtanative.ui.downloads.Downloading
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_add_to_group
 import com.aimdi.xtanative.ui.generated.resources.posts_open_post
@@ -81,6 +80,7 @@ import com.aimdi.xtanative.ui.profile.AuthorGroupsSheet
 import com.aimdi.xtanative.ui.saved.KeepNotice
 import com.aimdi.xtanative.ui.saved.KeepNotices
 import com.aimdi.xtanative.ui.saved.LikeButton
+import com.aimdi.xtanative.ui.saved.LocalKeeper
 import com.aimdi.xtanative.ui.saved.NoteAbout
 import com.aimdi.xtanative.ui.saved.SaveButton
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
@@ -209,16 +209,16 @@ private fun FooterEndButtons(post: XPost, actions: PostActions, onShare: () -> U
  */
 @Composable
 private fun rememberPictureShare(post: XPost, picture: PostPicture?): (() -> Unit)? {
-    val graph = LocalGraph.current
+    val keeper = LocalKeeper.current
     val coroutines = rememberCoroutineScope()
-    return remember(graph, coroutines, post, picture) {
+    return remember(keeper, coroutines, post, picture) {
         if (picture == null) {
             null
         } else {
             fun() {
                 coroutines.launch {
                     val png = picture.png()
-                    if (png == null) KeepNotices.show(KeepNotice.SomethingWentWrong) else Downloading.shareMade(graph, png, PostShare.imageName(post.shown), "image/png")
+                    if (png == null) KeepNotices.show(KeepNotice.SomethingWentWrong) else keeper.shareMade(png, PostShare.imageName(post.shown), "image/png")
                 }
             }
         }
@@ -311,12 +311,12 @@ private enum class BadgeSheet { NONE, CHOICES, GROUPS }
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun FollowBadge(author: XUser, size: Dp, avatar: @Composable () -> Unit) {
-    val graph = LocalGraph.current
-    val session by graph.sessions.state.collectAsStateWithLifecycle()
+    val sessions = LocalSessions.current
+    val session by sessions.state.collectAsStateWithLifecycle()
     val followed = session?.followed(author.id) != null
     var sheet by rememberSaveable(author.id) { mutableStateOf(BadgeSheet.NONE) }
     val coroutines = rememberCoroutineScope()
-    val follow = { coroutines.launch { graph.sessions.update { it.follow(author, System.currentTimeMillis()) } } }
+    val follow = { coroutines.launch { sessions.update { it.follow(author, System.currentTimeMillis()) } } }
     val subscribe = stringResource(Res.string.posts_subscribe)
     val addToGroup = stringResource(Res.string.posts_add_to_group)
     Box(Modifier.size(size)) {
