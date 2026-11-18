@@ -64,7 +64,8 @@ The app id is `com.aimdi.xtanative`; JDK 17.
   `J`, typed failures, fixtures, live tests).
 - `native/tool/README.md`: checking without Gradle, where Gradle cannot reach
   Maven (`jvmcheck.sh`, `uilogic.sh`, `uicheck.sh`, `plugincheck.sh`,
-  `plugin_abi.py`, `belarusian_latin.py`, `voice_engine.py`).
+  `plugin_abi.py`, `plugin_api_reach.py`, `belarusian_latin.py`,
+  `voice_engine.py`).
 - `native/RELEASE.md` / `native/PRERELEASE.md`: the notes a release and a
   prerelease publish.
 - `native/PARITY/`: the record of the port from the Flutter app.
@@ -93,6 +94,9 @@ published plugins behind moves `OLDEST_PLUGIN_API` up with it. CI's desktop
 job checks both with `tool/plugin_abi.py`. Plugins may also use a fixed list
 of the app's parts outside `ui.plugins` (`PluginSurfaceTest`): those are
 contract too, and the test fails when a plugin starts to use another.
+What they reach reads narrow composition locals (`LocalKeeper`,
+`LocalSettingsStore`, …), never the app graph; `tool/plugin_api_reach.py
+--check` (CI's desktop job) fails when it does.
 Plugins are signed with the
 app's key and verified before loading; never weaken that.
 

@@ -1,27 +1,20 @@
 package com.aimdi.xtanative.ui.feed
 
-import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,17 +24,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.PostsPrefs
-import com.aimdi.xtanative.ui.common.LocalReducedMotion
-import com.aimdi.xtanative.ui.common.XIcons
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.groups_caught_up
-import com.aimdi.xtanative.ui.generated.resources.posts_collapse
-import com.aimdi.xtanative.ui.generated.resources.posts_link_more
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
 import com.aimdi.xtanative.ui.post.BoostRunRow
 import com.aimdi.xtanative.ui.post.BoostRuns
 import com.aimdi.xtanative.ui.post.PostActions
-import com.aimdi.xtanative.ui.post.PostIcons
 import com.aimdi.xtanative.ui.post.ThreadRows
 import org.jetbrains.compose.resources.stringResource
 
@@ -101,28 +89,6 @@ fun FeedThreadRow(part: FeedPart, thread: XThread, actions: PostActions, draw: @
         FeedPart.Hidden -> Unit
         is FeedPart.Stack -> LinkStackRow(part.keys) { key -> if (key == FeedLayout.xKey(thread)) plain() else draw(key) }
         is FeedPart.Run -> BoostRunRow(BoostRuns.Item.Run(part.threads), actions)
-    }
-}
-
-/**
- * The posts sharing one article (link_stack.dart): the newest, then "More
- * posts sharing this link: N", which lays the others out under it, and
- * "Collapse", which folds them again. [draw] draws a post from its key.
- */
-@Composable
-fun LinkStackRow(keys: List<String>, draw: @Composable (String) -> Unit) {
-    var open by rememberSaveable(keys.first()) { mutableStateOf(false) }
-    val reduced = LocalReducedMotion.current
-    Column(Modifier.fillMaxWidth().then(if (reduced) Modifier else Modifier.animateContentSize())) {
-        key(keys.first()) { draw(keys.first()) }
-        TextButton(onClick = { open = !open }, modifier = Modifier.padding(horizontal = 16.dp)) {
-            Icon(if (open) PostIcons.UnfoldLess else XIcons.Link, contentDescription = null, modifier = Modifier.size(18.dp))
-            Text(
-                if (open) stringResource(Res.string.posts_collapse) else stringResource(Res.string.posts_link_more, keys.size - 1),
-                modifier = Modifier.padding(start = 8.dp),
-            )
-        }
-        if (open) keys.drop(1).forEach { other -> key(other) { draw(other) } }
     }
 }
 

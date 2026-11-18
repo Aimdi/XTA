@@ -13,11 +13,16 @@ the sources alone (no build):
   `:ui`'s string resources;
 - the direct links from those packages into the app, the ones to cut next.
 
+--graph lists the files holding the app graph the API reaches, --why the
+chain that reaches one, and --check fails when the API reaches any: what
+the plugin API needs comes from narrow composition locals (LocalKeeper,
+LocalSettingsStore, ...), never the whole graph. CI's desktop job runs it.
+
 A file depends on another when it imports one of its top-level names, or
 names one in the same package (comments and strings left out). It is a
 sketch of the compiler's view, good enough to steer by.
 
-    python3 -I native/tool/plugin_api_reach.py [--edges N] [--graph] [--why File.kt]
+    python3 -I native/tool/plugin_api_reach.py [--edges N] [--graph] [--why File.kt] [--check]
 """
 import collections
 import os
@@ -118,6 +123,11 @@ def main():
     freed = sum(info[f][3] for f in free)
     print(f"Free of the app graph and the app's screens: {len(free)} of {len(api)} API-like files, {freed} of {api_lines} lines ({100 * freed // api_lines}%).")
     print(f"Files that still hold the app graph: {len(graph_bound)}; the API reaches {len(graph_bound & reach)} of them.")
+    if "--check" in sys.argv and graph_bound & reach:
+        print("The plugin API reaches the app graph again; cut the link --why names:", file=sys.stderr)
+        for f in sorted(graph_bound & reach):
+            print("  " + os.path.relpath(f, UI), file=sys.stderr)
+        sys.exit(1)
     if "--graph" in sys.argv:
         for f in sorted(graph_bound & reach):
             print("  " + os.path.relpath(f, UI))

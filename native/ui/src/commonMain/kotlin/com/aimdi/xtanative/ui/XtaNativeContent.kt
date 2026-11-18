@@ -45,8 +45,17 @@ import org.jetbrains.compose.resources.stringResource
  */
 @Composable
 fun XtaNativeContent(graph: AppGraph, plugins: AppPlugins) {
-    CompositionLocalProvider(LocalGraph provides graph, LocalSettingsStore provides graph.settings, LocalKeeper provides graph.keeper, LocalOnline provides graph.online, LocalSessions provides graph.sessions,
-        LocalXClient provides graph.client, LocalTranslation provides graph.translation, LocalPostCache provides graph.posts, LocalPlatformFiles provides graph.platformFiles,
+    CompositionLocalProvider(
+        LocalGraph provides graph,
+        // The narrow parts, for what reads one or two of them rather than the whole graph.
+        LocalSettingsStore provides graph.settings,
+        LocalKeeper provides graph.keeper,
+        LocalOnline provides graph.online,
+        LocalSessions provides graph.sessions,
+        LocalXClient provides graph.client,
+        LocalTranslation provides graph.translation,
+        LocalPostCache provides graph.posts,
+        LocalPlatformFiles provides graph.platformFiles,
     ) {
         XtaTheme { SwitchedHapticsFrame { LinksFrame { PluginsFrame(plugins) { DownloadsFrame { VideoFullscreenFrame { SpeechBarScaffold { RootOrBroken(graph) } } } } } } }
     }

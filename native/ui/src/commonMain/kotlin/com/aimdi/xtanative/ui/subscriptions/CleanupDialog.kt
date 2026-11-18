@@ -76,7 +76,7 @@ fun BrokenSubscriptionsDialog(onDismiss: () -> Unit) {
                 TextButton(onClick = {
                     val ids = state.broken.map { it.first.id }.toSet()
                     scope.launch {
-                        Unfollowing.accounts(graph, ids)
+                        Unfollowing.accounts(graph.sessions, ids)
                         onDismiss()
                     }
                 }) { Text(stringResource(Res.string.groups_delete) + " (${state.broken.size})") }

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -48,7 +47,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.offline.OfflineArticle
-import com.aimdi.xtanative.store.offline.OfflineAvailability
 import com.aimdi.xtanative.store.offline.OfflineEntry
 import com.aimdi.xtanative.store.offline.OfflineStore
 import com.aimdi.xtanative.ui.common.Hairline
@@ -56,14 +54,10 @@ import com.aimdi.xtanative.ui.common.currentLocale
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.cancel
-import com.aimdi.xtanative.ui.generated.resources.offline_article_detail
-import com.aimdi.xtanative.ui.generated.resources.offline_available
 import com.aimdi.xtanative.ui.generated.resources.offline_clear
 import com.aimdi.xtanative.ui.generated.resources.offline_clear_description
 import com.aimdi.xtanative.ui.generated.resources.offline_clear_question
 import com.aimdi.xtanative.ui.generated.resources.offline_empty
-import com.aimdi.xtanative.ui.generated.resources.offline_media_count
-import com.aimdi.xtanative.ui.generated.resources.offline_partial
 import com.aimdi.xtanative.ui.generated.resources.offline_remove
 import com.aimdi.xtanative.ui.generated.resources.offline_sensitive_description
 import com.aimdi.xtanative.ui.generated.resources.offline_sensitive_open
@@ -72,7 +66,6 @@ import com.aimdi.xtanative.ui.generated.resources.offline_storage_error
 import com.aimdi.xtanative.ui.generated.resources.offline_storage_limit
 import com.aimdi.xtanative.ui.generated.resources.offline_storage_used
 import com.aimdi.xtanative.ui.generated.resources.offline_title
-import com.aimdi.xtanative.ui.generated.resources.offline_unavailable
 import com.aimdi.xtanative.ui.generated.resources.retry
 import com.aimdi.xtanative.ui.generated.resources.saved_open_in_browser
 import com.aimdi.xtanative.ui.saved.KeepNotice
@@ -231,16 +224,3 @@ private fun EntryRow(entry: OfflineEntry, onOpen: () -> Unit, onRemove: () -> Un
     }
 }
 
-/** Available offline, partly, or not at all. */
-@Composable
-fun statusText(availability: OfflineAvailability): String = when (availability) {
-    OfflineAvailability.AVAILABLE -> stringResource(Res.string.offline_available)
-    OfflineAvailability.PARTIAL -> stringResource(Res.string.offline_partial)
-    OfflineAvailability.UNAVAILABLE -> stringResource(Res.string.offline_unavailable)
-}
-
-/** How much of an entry was kept: an article's text and pictures, or a post's media files. */
-@Composable
-fun detailText(detail: OfflineDetail): String =
-    if (detail.article) stringResource(Res.string.offline_article_detail, detail.saved, detail.total)
-    else stringResource(Res.string.offline_media_count, detail.saved, detail.total)

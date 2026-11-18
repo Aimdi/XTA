@@ -569,26 +569,3 @@ fun sourceLabel(source: SavedSource): String = when (source) {
     SavedSource.OTHER -> stringResource(Res.string.saved_source_other)
 }
 
-/** The network's mark, so the picker reads at a glance: X's own, a globe for all, a letter for the others. */
-@Composable
-fun SourceMark(source: SavedSource, size: Int) {
-    when (source) {
-        SavedSource.ALL -> Icon(SavedIcons.Public, contentDescription = null, modifier = Modifier.size(size.dp))
-        SavedSource.X -> Icon(SavedIcons.XMark, contentDescription = null, modifier = Modifier.size(size.dp))
-        SavedSource.OTHER -> Icon(SavedIcons.Extension, contentDescription = null, modifier = Modifier.size(size.dp))
-        else -> Box(
-            Modifier.size(size.dp).clip(RoundedCornerShape(50)).background(MaterialTheme.colorScheme.surfaceContainerHighest),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(sourceInitial(source), fontSize = (size * 0.6f).sp, fontWeight = FontWeight.Bold, lineHeight = (size * 0.6f).sp)
-        }
-    }
-}
-
-private fun sourceInitial(source: SavedSource): String = when (source) {
-    SavedSource.REDDIT -> "r"
-    SavedSource.MASTODON -> "M"
-    SavedSource.BLUESKY -> "B"
-    SavedSource.THREADS -> "@"
-    else -> ""
-}

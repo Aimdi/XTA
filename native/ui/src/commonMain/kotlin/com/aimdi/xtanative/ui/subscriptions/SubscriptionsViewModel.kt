@@ -85,7 +85,7 @@ sealed interface SubscriptionsNotice {
  * and everything their menus change.
  */
 class SubscriptionsViewModel(private val graph: AppGraph, private val follows: PluginFollows = PluginFollows.None) : ViewModel() {
-    val groups = GroupActions(graph, viewModelScope)
+    val groups = GroupActions(graph.sessions, graph.settings, viewModelScope)
 
     private val view = MutableStateFlow(View())
     private val unread = MutableStateFlow<Set<String>>(emptySet())
@@ -203,8 +203,8 @@ class SubscriptionsViewModel(private val graph: AppGraph, private val follows: P
     fun unfollow(row: SubscriptionRow) = graph.keep {
         when {
             row.plugin != null -> follows.unfollow(row)?.let(Unfollowing::offer)
-            row.search -> Unfollowing.search(graph, row.id)
-            else -> Unfollowing.accounts(graph, listOf(row.id))
+            row.search -> Unfollowing.search(graph.sessions, row.id)
+            else -> Unfollowing.accounts(graph.sessions, listOf(row.id))
         }
     }
 

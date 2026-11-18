@@ -6,10 +6,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.data.plugins.Destination
+import com.aimdi.xtanative.data.plugins.LocalNavigator
 import com.aimdi.xtanative.ui.feed.FeedLayout
 import com.aimdi.xtanative.ui.feed.FeedPart
 import com.aimdi.xtanative.ui.feed.LinkStackRow
-import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
 import com.aimdi.xtanative.ui.post.PostActions
 
 /**
@@ -22,7 +22,7 @@ import com.aimdi.xtanative.ui.post.PostActions
  */
 @Composable
 fun rememberXPostActions(host: PluginHost, threads: List<XThread>): PostActions {
-    val navigator = LocalPlugins.current.navigator
+    val navigator = LocalNavigator.current
     val outside = rememberOpenOutside()
     val shown by rememberUpdatedState(threads)
     return remember(host, navigator, outside) {

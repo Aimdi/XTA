@@ -82,7 +82,7 @@ internal class DiscoveryViewModel(
     private val notices = MutableSharedFlow<DiscoveryNotice>(extraBufferCapacity = 4)
     val notice: SharedFlow<DiscoveryNotice> = notices.asSharedFlow()
 
-    private val groups = GroupActions(graph, viewModelScope)
+    private val groups = GroupActions(graph.sessions, graph.settings, viewModelScope)
     private val ai by lazy { AiClient(OkHttpXHttp()) }
 
     private var board = DiscoveryBoard()

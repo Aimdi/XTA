@@ -95,6 +95,14 @@ desktop tests) lists them and fails when a plugin starts to use another, so
 the surface grows on purpose: move what a plugin needs into `ui.plugins`, or
 add it to the list knowingly.
 
+None of what plugins use reaches the app graph (`AppGraph`, `LocalGraph`):
+it reads the narrow parts the app provides as composition locals instead
+(`LocalKeeper` for saving, liking, notes and offline copies,
+`LocalSettingsStore`, `LocalSessions`, `LocalXClient`, `LocalNavigator`, …),
+so it can one day stand in a module of its own. `tool/plugin_api_reach.py
+--check` fails when it reaches the graph again, and `--why File.kt` names the
+chain to cut; CI's desktop job runs it.
+
 The app loads the versions from `OLDEST_PLUGIN_API` (2) to its own, so a
 plugin built before keeps working until its update comes, for as long as what
 it uses is still here: CI's desktop job checks the plugins published in

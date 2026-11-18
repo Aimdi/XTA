@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aimdi.xtanative.data.Problem
 import com.aimdi.xtanative.data.plugins.Destination
+import com.aimdi.xtanative.data.plugins.LocalNavigator
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.ProblemRow
 import com.aimdi.xtanative.ui.common.ReadFailureSheet
@@ -57,7 +58,6 @@ import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.problem_cached_content
 import com.aimdi.xtanative.ui.generated.resources.problem_source_loading
 import com.aimdi.xtanative.ui.links.LocalLinks
-import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
 import com.aimdi.xtanative.ui.plugins.LocalPostNetwork
 import com.aimdi.xtanative.ui.plugins.NetworkPost
 import com.aimdi.xtanative.ui.plugins.NetworkPostActions
@@ -65,6 +65,7 @@ import com.aimdi.xtanative.ui.plugins.NetworkPostCard
 import com.aimdi.xtanative.ui.plugins.NetworkPostExtras
 import com.aimdi.xtanative.ui.plugins.XtaPlugin
 import com.aimdi.xtanative.ui.plugins.currentLanguage
+import com.aimdi.xtanative.ui.pluginstore.LocalPlugins
 import com.aimdi.xtanative.ui.search.DiscoverIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import org.jetbrains.compose.resources.stringResource
@@ -198,7 +199,7 @@ fun SourceChips(state: PluginPostsState, plugins: Map<String, XtaPlugin>, onRetr
 private fun SourceChip(id: String, read: SourceRead, plugin: XtaPlugin?, onRetry: (String) -> Unit) {
     val language = currentLanguage()
     val name = remember(id, language, plugin) { runCatching { plugin?.title(language) }.getOrNull() ?: id }
-    val navigator = LocalPlugins.current.navigator
+    val navigator = LocalNavigator.current
     val problem = read.problem
     val seconds = rememberReadRecovery(ReadRetries.recoverable(problem), read.loading) { onRetry(id) }
     var open by remember { mutableStateOf(false) }

@@ -1,7 +1,6 @@
 package com.aimdi.xtanative.data.plugins
 
 import androidx.compose.runtime.Stable
-import androidx.compose.ui.graphics.vector.ImageVector
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.core.x.XClient
 import com.aimdi.xtanative.core.x.http.OkHttpXHttp
@@ -101,9 +100,6 @@ class RunningPlugin internal constructor(val plugin: XtaPlugin, val installed: I
 /** What a plugin takes on the device: the [items] it keeps, the bytes of its folder and of its code. */
 data class PluginUse(val items: Int, val dataBytes: Long, val codeBytes: Long)
 
-/** A running plugin's entry in a post sheet, in the reader's language: [run] once the sheet has closed. */
-class SheetEntry(val icon: ImageVector, val label: String, val run: () -> Unit)
-
 /**
  * The app's downloadable plugins (PLUGINS.md), beside [graph], made by the
  * shell with how its platform checks and loads a plugin ([platform]) and
@@ -180,7 +176,7 @@ class AppPlugins(
     val sheet: StateFlow<PluginSheet?> = mutableSheet.asStateFlow()
 
     /** The group changes the plugins' group picker makes, written to their end whatever screen asked. */
-    internal val groups = GroupActions(graph, scope)
+    internal val groups = GroupActions(graph.sessions, graph.settings, scope)
 
     /** Where the screens go once they are up, instead of staying on Home: CI's desktop check opens the store or a plugin so. */
     @Volatile

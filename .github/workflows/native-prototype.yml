@@ -432,6 +432,11 @@ jobs:
             for f in plugins/build/out/desktop/*.jar; do echo "- $(basename "$f"): $(stat -c %s "$f") bytes"; done
           } >> "$GITHUB_STEP_SUMMARY"
 
+      # What plugins use of the app reads narrow parts of it, never the app
+      # graph: the step towards a module of its own (tool/plugin_api_reach.py).
+      - name: The plugin API stays off the app graph
+        run: python3 -I native/tool/plugin_api_reach.py --edges 0 --check
+
       - uses: actions/upload-artifact@v4
         with:
           name: xta-native-plugins-desktop-${{ env.VERSION_NAME }}
