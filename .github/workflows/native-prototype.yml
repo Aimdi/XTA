@@ -212,7 +212,9 @@ jobs:
   # core/x/signing is repaired by hand; nothing opens a repair by itself.
   live:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # The live reads pace their requests a few seconds apart, and every network's run in sequence
+    # now takes about 14 minutes on a quiet day; 25 leaves a slow evening room.
+    timeout-minutes: 25
     defaults:
       run:
         working-directory: native
