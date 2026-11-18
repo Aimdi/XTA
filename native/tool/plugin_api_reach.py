@@ -17,7 +17,7 @@ A file depends on another when it imports one of its top-level names, or
 names one in the same package (comments and strings left out). It is a
 sketch of the compiler's view, good enough to steer by.
 
-    python3 -I native/tool/plugin_api_reach.py [--edges N]
+    python3 -I native/tool/plugin_api_reach.py [--edges N] [--graph] [--why File.kt]
 """
 import collections
 import os
@@ -118,6 +118,25 @@ def main():
     freed = sum(info[f][3] for f in free)
     print(f"Free of the app graph and the app's screens: {len(free)} of {len(api)} API-like files, {freed} of {api_lines} lines ({100 * freed // api_lines}%).")
     print(f"Files that still hold the app graph: {len(graph_bound)}; the API reaches {len(graph_bound & reach)} of them.")
+    if "--graph" in sys.argv:
+        for f in sorted(graph_bound & reach):
+            print("  " + os.path.relpath(f, UI))
+    if "--why" in sys.argv:
+        # The shortest chain from a root to the named file: the link to cut.
+        target = sys.argv[sys.argv.index("--why") + 1]
+        parent, queue = {r: None for r in roots}, collections.deque(roots)
+        while queue:
+            f = queue.popleft()
+            for d in deps(f):
+                if d not in parent:
+                    parent[d] = f
+                    queue.append(d)
+        end = next((f for f in parent if f.endswith("/" + target)), None)
+        chain = []
+        while end:
+            chain.append(os.path.basename(end))
+            end = parent[end]
+        print("\n" + (" <- ".join(chain) if chain else target + " is not reached"))
 
     links, examples = collections.Counter(), collections.defaultdict(set)
     for f in api:

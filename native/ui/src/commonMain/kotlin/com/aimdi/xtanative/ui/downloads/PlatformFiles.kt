@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.ui.downloads
 
+import androidx.compose.runtime.staticCompositionLocalOf
 import com.aimdi.xtanative.store.downloads.DownloadCancellation
 import com.aimdi.xtanative.store.downloads.DownloadEntry
 import com.aimdi.xtanative.store.downloads.SaveStaged
@@ -69,3 +70,6 @@ fun copyCancellable(file: File, target: java.io.OutputStream, cancellation: Down
         target.flush()
     }
 }
+
+/** The platform's files, for the views that share or save one. */
+val LocalPlatformFiles = staticCompositionLocalOf<PlatformFiles> { PlatformFiles.Unavailable }

@@ -58,10 +58,11 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.aimdi.xtanative.core.x.model.XMedia
-import com.aimdi.xtanative.data.LocalGraph
+import com.aimdi.xtanative.data.LocalPostCache
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
 import com.aimdi.xtanative.ui.common.rememberCopyText
 import com.aimdi.xtanative.ui.common.turnTo
+import com.aimdi.xtanative.ui.downloads.LocalPlatformFiles
 import com.aimdi.xtanative.ui.downloads.MediaSharing
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.posts_open_post
@@ -97,8 +98,8 @@ internal expect val viewerPageButtons: Boolean
  */
 @Composable
 fun MediaViewer(postId: String, start: Int, onClose: () -> Unit) {
-    val graph = LocalGraph.current
-    val viewed = remember(postId) { ViewerMedia.of(graph.posts.post(postId), postId) }
+    val posts = LocalPostCache.current
+    val viewed = remember(postId) { ViewerMedia.of(posts.post(postId), postId) }
     MediaPages(viewed, start, onClose)
 }
 
@@ -133,7 +134,7 @@ fun GalleryViewer(key: String, start: Int, fallbackPostId: String?, fallbackInde
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onOpenPost: ((ViewerPage) -> Unit)? = null, onNearEnd: (() -> Unit)? = null) {
-    val graph = LocalGraph.current
+    val files = LocalPlatformFiles.current
     val items = viewed.items
     val size = rememberPhotoSize()
     val reduced = LocalReducedMotion.current
@@ -157,7 +158,7 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
     // A photo as the picture itself where the platform shares files, else its address (_media.dart).
     fun share(save: MediaSave) {
         scope.launch {
-            if (MediaSharing.share(graph.platformFiles, save) || links?.share(save.url) == true) return@launch
+            if (MediaSharing.share(files, save) || links?.share(save.url) == true) return@launch
             copyText(save.url)
             snackbar.showSnackbar(copied)
         }
@@ -195,7 +196,7 @@ private fun MediaPages(viewed: ViewerMedia, start: Int, onClose: () -> Unit, onO
                     IconButton(onClick = { saver.save(save) }) { Icon(ReaderIcons.Download, stringResource(Res.string.reader_download), tint = Color.White) }
                 }
                 if (save != null) {
-                    val label = if (MediaSharing.sharesPicture(graph.platformFiles, save)) Res.string.reader_share_image else Res.string.reader_link_share
+                    val label = if (MediaSharing.sharesPicture(files, save)) Res.string.reader_share_image else Res.string.reader_link_share
                     IconButton(onClick = { share(save) }) { Icon(Icons.Filled.Share, stringResource(label), tint = Color.White) }
                 }
             }

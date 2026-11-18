@@ -39,7 +39,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.aimdi.xtanative.core.x.model.XLive
-import com.aimdi.xtanative.data.LocalGraph
+import com.aimdi.xtanative.ui.common.LocalSettingsStore
+import com.aimdi.xtanative.ui.common.LocalXClient
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.back
 import com.aimdi.xtanative.ui.generated.resources.posts_filter_broadcasts
@@ -107,7 +108,7 @@ fun LivePlayerScreen(live: XLive, onBack: () -> Unit) {
 /** The room's stream, asked for again on "Restart video player" after X gave none. */
 @Composable
 private fun LiveRoom(live: XLive, modifier: Modifier) {
-    val client = LocalGraph.current.client
+    val client = LocalXClient.current
     var attempt by remember { mutableIntStateOf(0) }
     val stream by produceState<LiveStream>(LiveStream.Asking, live, attempt) {
         value = LiveStream.Asking
@@ -134,7 +135,7 @@ private fun LiveRoom(live: XLive, modifier: Modifier) {
 /** The stream under XTA's controls in place, its mute corner and full screen; where the platform has no player, a tap hands it to the system's. */
 @Composable
 private fun LiveVideo(url: String, live: XLive, poster: @Composable () -> Unit) {
-    val graph = LocalGraph.current
+    val settingsStore = LocalSettingsStore.current
     val players = rememberVideoPlayers()
     if (players == null) {
         val links = LocalLinks.current
@@ -145,7 +146,7 @@ private fun LiveVideo(url: String, live: XLive, poster: @Composable () -> Unit) 
         return
     }
     val opened = remember(url, players) {
-        val settings = graph.settings.state.value
+        val settings = settingsStore.state.value
         val player = players.make(VideoOptions.of(settings)).apply { open(VideoSource.of(url, gif = false, settings).copy(loop = false)) }
         player to KeptPlayer(player::release)
     }

@@ -105,11 +105,6 @@ class AppGraph(
     val timelineCache = TimelineCache(store)
 
     /** The reader's translation service for every network's posts (Settings › Translation), off until chosen. */
-    /** What saving and liking need of the app, for the parts that save and like without the whole graph ([LocalKeeper]). */
-    val keeper: Keeper by lazy {
-        Keeper(saved, likes, settings, ::keep, { requests -> Downloading.batch(this, requests) }, { post, index -> Downloading.media(this, post, index) }, { bytes, name, mime -> Downloading.shareMade(this, bytes, name, mime) })
-    }
-
     val translation = ReaderTranslation(settings, OkHttpXHttp(), store)
 
     /** Profiles as X last gave them, shown for a week while X is read again. */
@@ -126,6 +121,11 @@ class AppGraph(
     /** Pictures and videos, streamed for downloads and the offline library. */
     private val mediaHttp = OkHttpMediaHttp()
     val offline = OfflineStore(store, mediaHttp)
+
+    /** What keeping on the device needs of the app, for the parts that keep without the whole graph ([LocalKeeper]). */
+    val keeper: Keeper by lazy {
+        Keeper(saved, likes, settings, localPosts, noteDrafts, offline, ::keep, { requests -> Downloading.batch(this, requests) }, { post, index -> Downloading.media(this, post, index) }, { bytes, name, mime -> Downloading.shareMade(this, bytes, name, mime) })
+    }
 
     /** The picture the reader chose for the upper left (Settings › Accounts' Your avatar). */
     val avatar = ChromeAvatar(File(files, "chrome_avatar"), settings, mediaHttp)

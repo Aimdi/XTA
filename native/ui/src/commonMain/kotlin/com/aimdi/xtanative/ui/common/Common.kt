@@ -19,6 +19,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.aimdi.xtanative.core.x.XClient
 import com.aimdi.xtanative.data.SessionStore
 import com.aimdi.xtanative.store.settings.SettingsStore
 import kotlinx.coroutines.flow.Flow
@@ -66,3 +67,6 @@ fun LoadingRow(modifier: Modifier = Modifier) {
         CircularProgressIndicator(Modifier.size(24.dp), strokeWidth = 2.dp)
     }
 }
+
+/** The X client the post views read through (translation, a live room), without the whole app graph. */
+val LocalXClient = staticCompositionLocalOf<XClient> { error("No X client provided") }

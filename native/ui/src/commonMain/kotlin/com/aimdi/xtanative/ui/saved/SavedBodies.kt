@@ -47,7 +47,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.aimdi.xtanative.data.LocalGraph
+import com.aimdi.xtanative.data.LocalPostCache
 import com.aimdi.xtanative.store.offline.OfflineSaved
 import com.aimdi.xtanative.store.saved.LocalPost
 import com.aimdi.xtanative.store.saved.SavedContent
@@ -228,11 +228,11 @@ private fun NoteLine(note: String?, offline: Boolean, onEdit: () -> Unit, onOffl
  */
 @Composable
 fun KeptPost(content: SavedContent, actions: PostActions) {
-    val graph = LocalGraph.current
+    val posts = LocalPostCache.current
     val post = content.xPost
     when {
         post != null -> {
-            LaunchedEffect(post.id) { graph.posts.remember(post) }
+            LaunchedEffect(post.id) { posts.remember(post) }
             PostCard(post, actions)
         }
         content.kind == SavedContent.Kind.NONE -> TooLarge()
@@ -267,14 +267,14 @@ private fun KeptNetworkPost(content: SavedContent) {
  */
 @Composable
 private fun MediaGrid(tiles: List<SavedMediaTile>, actions: PostActions, contentPadding: PaddingValues, onRemove: (String) -> Unit) {
-    val graph = LocalGraph.current
+    val posts = LocalPostCache.current
     var removing by remember { mutableStateOf<String?>(null) }
     if (tiles.isEmpty()) {
         Message(stringResource(Res.string.saved_no_media))
     } else {
         val items = remember(tiles) { tiles.map { it.item } }
         // "Open post" in the viewer draws the kept post at once.
-        LaunchedEffect(items) { items.forEach { graph.posts.remember(it.post) } }
+        LaunchedEffect(items) { items.forEach { posts.remember(it.post) } }
         val grid = rememberMediaGridRows(items, actions, onLongPress = { item -> removing = tiles.firstOrNull { it.item.key == item.key }?.savedId })
         LazyColumn(Modifier.fillMaxSize(), contentPadding = contentPadding) { mediaGrid(grid) }
     }

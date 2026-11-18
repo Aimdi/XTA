@@ -1,5 +1,6 @@
 package com.aimdi.xtanative.data
 
+import androidx.compose.runtime.staticCompositionLocalOf
 import com.aimdi.xtanative.core.x.model.XPost
 import com.aimdi.xtanative.core.x.model.XThread
 import com.aimdi.xtanative.core.x.model.XUser
@@ -44,3 +45,6 @@ class PostCache {
         }
     }
 }
+
+/** The posts read so far, for views opened by id (the media viewer). */
+val LocalPostCache = staticCompositionLocalOf<PostCache> { error("No post cache provided") }

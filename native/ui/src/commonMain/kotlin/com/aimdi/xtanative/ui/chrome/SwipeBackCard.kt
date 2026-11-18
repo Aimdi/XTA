@@ -52,9 +52,9 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.settings.AccessibilityPrefs
 import com.aimdi.xtanative.ui.common.LocalReducedMotion
+import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.home.DesktopShortcuts
 import kotlin.math.roundToInt
 import kotlinx.coroutines.CancellationException
@@ -73,7 +73,7 @@ import kotlinx.coroutines.flow.first
  */
 @Composable
 fun SwipeBackCard(behind: ImageBitmap?, canLeave: Boolean, leave: () -> Unit, content: @Composable (back: () -> Unit) -> Unit) {
-    val settings by LocalGraph.current.settings.state.collectAsStateWithLifecycle()
+    val settings by LocalSettingsStore.current.state.collectAsStateWithLifecycle()
     val reducedSetting = LocalReducedMotion.current
     var systemStill by remember { mutableStateOf(false) }
     var arrived by rememberSaveable { mutableStateOf(false) }

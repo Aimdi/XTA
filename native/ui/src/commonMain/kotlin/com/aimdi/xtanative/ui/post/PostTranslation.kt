@@ -10,11 +10,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.aimdi.xtanative.core.x.model.XPost
-import com.aimdi.xtanative.data.LocalGraph
+import com.aimdi.xtanative.data.LocalTranslation
 import com.aimdi.xtanative.services.ai.TranslationStatus
 import com.aimdi.xtanative.services.ai.XTranslator
 import com.aimdi.xtanative.services.translation.TranslationException
 import com.aimdi.xtanative.services.translation.TranslationFailure
+import com.aimdi.xtanative.ui.common.LocalXClient
 import com.aimdi.xtanative.ui.common.currentLocale
 import kotlinx.coroutines.CancellationException
 
@@ -70,16 +71,16 @@ class PostTranslation internal constructor(private val post: XPost, private val 
 @Composable
 internal fun rememberPostTranslation(post: XPost, scope: PostScope): PostTranslation? {
     val locale = currentLocale()
-    val graph = LocalGraph.current
-    val service by graph.translation.config.collectAsState(graph.translation.current())
+    val translations = LocalTranslation.current
+    val service by translations.config.collectAsState(translations.current())
     val appTarget = remember(scope.prefs.locale, locale) { scope.prefs.translationTarget(locale.toString()) }
     val target = if (service.enabled && service.target.isNotEmpty()) service.target.replace('_', '-') else appTarget
     if (!PostView.offersTranslation(post, target)) return null
-    val client = graph.client
+    val client = LocalXClient.current
     val translation = remember(post.id, target, service) {
         if (service.enabled) {
             PostTranslation(post) {
-                val translated = graph.translation.translate(ServiceTranslation.text(post), target, service)
+                val translated = translations.translate(ServiceTranslation.text(post), target, service)
                     ?: throw TranslationException(TranslationFailure.NOT_CONFIGURED)
                 ServiceTranslation.applied(post, translated.text)
             }

@@ -49,13 +49,13 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.services.speech.OfflineVoice
 import com.aimdi.xtanative.services.speech.Tts
 import com.aimdi.xtanative.services.speech.VoiceEngines
 import com.aimdi.xtanative.services.speech.VoiceFailure
 import com.aimdi.xtanative.services.speech.VoiceInstall
 import com.aimdi.xtanative.services.util.formatByteSize
+import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_back
 import com.aimdi.xtanative.ui.generated.resources.reader_cancel
@@ -138,9 +138,9 @@ fun VoiceSettingsSheet(onDismiss: () -> Unit) {
 
 @Composable
 private fun voiceSettingsViewModel(): VoiceSettingsViewModel {
-    val graph = LocalGraph.current
+    val settings = LocalSettingsStore.current
     val parts = rememberSpeechParts()
-    return viewModel { VoiceSettingsViewModel(graph, parts) }
+    return viewModel { VoiceSettingsViewModel(settings, parts) }
 }
 
 @Composable

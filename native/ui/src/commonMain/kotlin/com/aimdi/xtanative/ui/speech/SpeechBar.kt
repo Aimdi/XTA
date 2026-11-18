@@ -36,10 +36,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.services.speech.SpeechPlayback
 import com.aimdi.xtanative.services.speech.Tts
 import com.aimdi.xtanative.services.speech.TtsFailureAction
+import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.generated.resources.Res
 import com.aimdi.xtanative.ui.generated.resources.reader_dismiss
 import com.aimdi.xtanative.ui.generated.resources.reader_speech_get_sherpa
@@ -69,9 +69,9 @@ internal expect fun rememberSpeechPlatform(): () -> SpeechPlatform
 /** Reading aloud's parts for this app, made the first time a screen asks for them. */
 @Composable
 internal fun rememberSpeechParts(): SpeechParts {
-    val graph = LocalGraph.current
+    val settings = LocalSettingsStore.current
     val platform = rememberSpeechPlatform()
-    return remember(graph) { SpeechParts.of(graph, platform) }
+    return remember(settings) { SpeechParts.of(settings, platform) }
 }
 
 /**

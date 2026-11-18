@@ -1,6 +1,5 @@
 package com.aimdi.xtanative.ui.speech
 
-import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.services.speech.ClipPlayer
 import com.aimdi.xtanative.services.speech.InstalledVoice
 import com.aimdi.xtanative.services.speech.OfflineSpeechEngine
@@ -13,6 +12,7 @@ import com.aimdi.xtanative.services.speech.VoiceEnginePackage
 import com.aimdi.xtanative.services.speech.VoiceEngineStore
 import com.aimdi.xtanative.services.speech.VoiceSynthesizer
 import com.aimdi.xtanative.store.downloads.OkHttpMediaHttp
+import com.aimdi.xtanative.store.settings.SettingsStore
 import com.aimdi.xtanative.store.settings.SpeechPrefs
 import java.io.File
 import java.util.Locale
@@ -66,12 +66,12 @@ interface SpeechPlatform {
 }
 
 /**
- * Reading aloud's parts, one set per app graph, made the first time a
+ * Reading aloud's parts, one set per settings store (one per app), made the first time a
  * screen asks: the reading itself ([speech]), the downloadable voices and
  * the engine that runs them ([voices]), and what the platform offers to
  * choose from ([systemVoices]). They outlive every screen.
  */
-class SpeechParts private constructor(graph: AppGraph, platform: SpeechPlatform) {
+class SpeechParts private constructor(settings: SettingsStore, platform: SpeechPlatform) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     val voices: VoiceDownloadStore = run {
@@ -96,15 +96,15 @@ class SpeechParts private constructor(graph: AppGraph, platform: SpeechPlatform)
     }
 
     val speech: AppSpeech = run {
-        val offline = synthesis?.let { offlineEngine(graph, it) }
+        val offline = synthesis?.let { offlineEngine(settings, it) }
         val engines = listOfNotNull(offline, platform.engine)
-        AppSpeech(SpeechReader(engines, platform.session), graph.settings, scope, hasEngine = engines.isNotEmpty(), voicesOnly = platform.engine == null && offline != null)
+        AppSpeech(SpeechReader(engines, platform.session), settings, scope, hasEngine = engines.isNotEmpty(), voicesOnly = platform.engine == null && offline != null)
     }
 
     /** A downloaded voice reading, while the setting allows it and one speaks the text's language (offline_speech_setup.dart). */
-    private fun offlineEngine(graph: AppGraph, synthesis: VoiceSynthesis) = OfflineSpeechEngine(
+    private fun offlineEngine(settings: SettingsStore, synthesis: VoiceSynthesis) = OfflineSpeechEngine(
         voiceFor = voices::installedFor,
-        enabled = { graph.settings.state.value?.get(SpeechPrefs.offlineVoice) ?: true },
+        enabled = { settings.state.value?.get(SpeechPrefs.offlineVoice) ?: true },
         load = { installed -> synthesis.load(installed, voices.engine.loadFrom) },
         player = synthesis.player,
         discard = { path -> File(path).delete() },
@@ -113,10 +113,10 @@ class SpeechParts private constructor(graph: AppGraph, platform: SpeechPlatform)
     )
 
     companion object {
-        private val made = WeakHashMap<AppGraph, SpeechParts>()
+        private val made = WeakHashMap<SettingsStore, SpeechParts>()
 
-        /** [graph]'s parts, made with [platform] the first time. */
+        /** The parts that read with [settings], made with [platform] the first time. */
         @Synchronized
-        fun of(graph: AppGraph, platform: () -> SpeechPlatform): SpeechParts = made.getOrPut(graph) { SpeechParts(graph, platform()) }
+        fun of(settings: SettingsStore, platform: () -> SpeechPlatform): SpeechParts = made.getOrPut(settings) { SpeechParts(settings, platform()) }
     }
 }

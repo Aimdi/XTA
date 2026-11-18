@@ -62,8 +62,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import com.aimdi.xtanative.data.AppGraph
-import com.aimdi.xtanative.data.LocalGraph
 import com.aimdi.xtanative.store.saved.LocalPost
 import com.aimdi.xtanative.store.saved.LocalPosts
 import com.aimdi.xtanative.store.saved.NoteEditor
@@ -114,11 +112,11 @@ fun NoteEditorDialog(
     onSaved: (LocalPost?) -> Unit = {},
     saveText: (suspend (String?) -> Unit)? = null,
 ) {
-    val graph = LocalGraph.current
+    val keeper = LocalKeeper.current
     val scope = rememberCoroutineScope()
     val note = target as? NoteTarget.Note
     val newId = remember { note?.editing?.id ?: UUID.randomUUID().toString() }
-    val editor = remember { editorFor(target, newId, graph) }
+    val editor = remember { editorFor(target, newId, keeper) }
     val state by editor.state.collectAsStateWithLifecycle()
     var text by remember { mutableStateOf(editor.state.value.body) }
     var confirming by remember { mutableStateOf(false) }
@@ -133,7 +131,7 @@ fun NoteEditorDialog(
     DisposableEffect(editor) {
         onDispose {
             editor.close()
-            if (editor.state.value.discarded && note != null) dropNewFiles(graph, editor.postId ?: newId, editor.initialMedia)
+            if (editor.state.value.discarded && note != null) dropNewFiles(keeper, editor.postId ?: newId, editor.initialMedia)
         }
     }
 
@@ -150,7 +148,7 @@ fun NoteEditorDialog(
                 var kept: LocalPost? = null
                 val saved = editor.save {
                     val now = editor.state.value
-                    kept = graph.localPosts.save(
+                    kept = keeper.localPosts.save(
                         body = now.body,
                         media = now.media,
                         id = editor.postId ?: newId,
@@ -219,7 +217,7 @@ fun NoteEditorDialog(
                         )
                     }
                     HorizontalDivider()
-                    EditorFoot(state.body, attach = note?.let { { scope.launch { editor.attach { attachPicked(graph, editor.postId ?: newId, pick) } } } }, state.attaching, state.busy)
+                    EditorFoot(state.body, attach = note?.let { { scope.launch { editor.attach { attachPicked(keeper, editor.postId ?: newId, pick) } } } }, state.attaching, state.busy)
                 }
             }
         }
@@ -241,7 +239,7 @@ fun NoteEditorDialog(
 }
 
 /** The editor for [target], its draft written as typed in a scope of its own, so the last keystroke is kept. */
-private fun editorFor(target: NoteTarget, newId: String, graph: AppGraph): NoteEditor {
+private fun editorFor(target: NoteTarget, newId: String, keeper: Keeper): NoteEditor {
     val drafts = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     return when (target) {
         is NoteTarget.Note -> NoteEditor(
@@ -249,28 +247,28 @@ private fun editorFor(target: NoteTarget, newId: String, graph: AppGraph): NoteE
             media = target.editing?.media.orEmpty(),
             draftKey = NoteRules.draftKey(target),
             postId = newId,
-            drafts = graph.noteDrafts,
+            drafts = keeper.noteDrafts,
             scope = drafts,
         )
-        is NoteTarget.Text -> NoteEditor(body = target.note.orEmpty(), draftKey = target.draftKey, drafts = graph.noteDrafts, scope = drafts)
+        is NoteTarget.Text -> NoteEditor(body = target.note.orEmpty(), draftKey = target.draftKey, drafts = keeper.noteDrafts, scope = drafts)
     }
 }
 
 /** The picked file, kept as one of note [postId]'s files; null when the reader backed out. */
-private suspend fun attachPicked(graph: AppGraph, postId: String, pick: suspend () -> PickedFile?): NoteMedia? {
+private suspend fun attachPicked(keeper: Keeper, postId: String, pick: suspend () -> PickedFile?): NoteMedia? {
     val picked = pick() ?: return null
     if (picked.bytes.isEmpty()) return null
     val id = UUID.randomUUID().toString()
-    graph.localPosts.writeMedia(postId, id, picked.bytes)
+    keeper.localPosts.writeMedia(postId, id, picked.bytes)
     return NoteMedia(id, picked.name, picked.mime)
 }
 
 /** An abandoned edit removes the files it attached, never those the note already had. */
-private fun dropNewFiles(graph: AppGraph, postId: String, kept: List<NoteMedia>) {
-    graph.keep {
+private fun dropNewFiles(keeper: Keeper, postId: String, kept: List<NoteMedia>) {
+    keeper.keep {
         withContext(Dispatchers.IO) {
             val keep = kept.mapTo(HashSet()) { it.id }
-            graph.localPosts.mediaFile(postId, "probe").parentFile?.listFiles()?.filter { it.isFile && it.name !in keep }?.forEach { it.delete() }
+            keeper.localPosts.mediaFile(postId, "probe").parentFile?.listFiles()?.filter { it.isFile && it.name !in keep }?.forEach { it.delete() }
         }
     }
 }
@@ -334,12 +332,12 @@ private fun ReplyParent(parent: LocalPost) {
 /** The files attached so far, each with a button that removes it. */
 @Composable
 private fun MediaStrip(postId: String, media: List<NoteMedia>, enabled: Boolean, onRemove: (String) -> Unit) {
-    val graph = LocalGraph.current
+    val keeper = LocalKeeper.current
     LazyRow(Modifier.padding(top = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         items(media, key = { it.id }) { item ->
             Box(Modifier.size(96.dp).clip(RoundedCornerShape(12.dp)).background(MaterialTheme.colorScheme.surfaceContainerHighest)) {
                 if (item.isImage) {
-                    AsyncImage(model = graph.localPosts.mediaFile(postId, item.id), contentDescription = item.name, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
+                    AsyncImage(model = keeper.localPosts.mediaFile(postId, item.id), contentDescription = item.name, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
                 } else {
                     Icon(if (item.isVideo) SavedIcons.Videocam else SavedIcons.AttachMedia, contentDescription = item.name, modifier = Modifier.align(Alignment.Center))
                 }

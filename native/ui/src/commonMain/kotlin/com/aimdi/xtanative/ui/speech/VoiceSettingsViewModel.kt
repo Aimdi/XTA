@@ -2,10 +2,10 @@ package com.aimdi.xtanative.ui.speech
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.aimdi.xtanative.data.AppGraph
 import com.aimdi.xtanative.services.speech.OfflineVoice
 import com.aimdi.xtanative.services.speech.TtsChoice
 import com.aimdi.xtanative.services.speech.VoiceInstall
+import com.aimdi.xtanative.store.settings.SettingsStore
 import com.aimdi.xtanative.store.settings.SpeechPrefs
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -29,16 +29,16 @@ data class VoiceSettingsUi(
  * change of engine stops what is being read, as the sheet's OK does in XTA;
  * downloads run on when the screen is left.
  */
-class VoiceSettingsViewModel(private val graph: AppGraph, private val parts: SpeechParts) : ViewModel() {
+class VoiceSettingsViewModel(private val settings: SettingsStore, private val parts: SpeechParts) : ViewModel() {
     private val options = MutableStateFlow<VoiceOptions?>(null)
 
-    val ui: StateFlow<VoiceSettingsUi> = combine(graph.settings.settings, options, parts.voices.state, parts.voices.engine.state) { settings, options, installs, engine ->
+    val ui: StateFlow<VoiceSettingsUi> = combine(settings.settings, options, parts.voices.state, parts.voices.engine.state) { settings, options, installs, engine ->
         VoiceSettingsUi(VoiceChoices.choiceOf(settings), settings[SpeechPrefs.offlineVoice], options, installs, engine)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), VoiceSettingsUi())
 
     init {
         viewModelScope.launch { parts.voices.ensureLoaded() }
-        viewModelScope.launch { load(VoiceChoices.choiceOf(graph.settings.load()).engine) }
+        viewModelScope.launch { load(VoiceChoices.choiceOf(settings.load()).engine) }
     }
 
     /** What [engine] offers: the platform binds it to list its voices. */
@@ -48,7 +48,7 @@ class VoiceSettingsViewModel(private val graph: AppGraph, private val parts: Spe
 
     fun setEngine(engine: String?) {
         viewModelScope.launch {
-            graph.settings.update { VoiceChoices.withEngine(it, engine) }
+            settings.update { VoiceChoices.withEngine(it, engine) }
             parts.speech.stop()
             load(engine)
         }
@@ -57,15 +57,15 @@ class VoiceSettingsViewModel(private val graph: AppGraph, private val parts: Spe
     fun pickSherpa() = setEngine(VoiceChoices.sherpaPackage(options.value?.engines.orEmpty()))
 
     fun setVoice(voice: SystemVoice?) {
-        viewModelScope.launch { graph.settings.update { VoiceChoices.withVoice(it, voice) } }
+        viewModelScope.launch { settings.update { VoiceChoices.withVoice(it, voice) } }
     }
 
     fun setRate(rate: Double) {
-        viewModelScope.launch { graph.settings.update { VoiceChoices.withRate(it, rate) } }
+        viewModelScope.launch { settings.update { VoiceChoices.withRate(it, rate) } }
     }
 
     fun setOfflineVoice(on: Boolean) {
-        viewModelScope.launch { graph.settings.set(SpeechPrefs.offlineVoice, on) }
+        viewModelScope.launch { settings.set(SpeechPrefs.offlineVoice, on) }
     }
 
     fun download(voice: OfflineVoice) = parts.keep { parts.voices.download(voice) }
