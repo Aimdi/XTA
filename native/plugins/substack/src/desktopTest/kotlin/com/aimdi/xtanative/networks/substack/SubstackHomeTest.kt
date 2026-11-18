@@ -110,6 +110,15 @@ class SubstackHomeTest {
     }
 
     @Test
+    fun theShellsFeedRowNarrowsHomeToOnePublicationAndCountsTheUnread() {
+        val posts = listOf(post(alpha, 1), post(alpha, 2), post(beta, 3), post(SubstackPublication("gone", "https://gone.substack.com", "Gone"), 4))
+        val read = setOf(posts[0].key)
+        val alphaOnly = SubstackHomeRules.home(posts, listOf(alpha, beta), SubstackFeedFilter.ALL, read, { false }, SubstackLoadedOptions(), publication = alpha.baseUrl)
+        assertEquals(listOf("alpha2", "alpha1"), alphaOnly.map { it.id }, "one publication picked in the feed row: its posts alone")
+        assertEquals(2, SubstackHomeRules.unread(posts, listOf(alpha, beta), read), "unread of those followed only: alpha2 and beta3")
+    }
+
+    @Test
     fun homeShowsTheFollowedPublicationsPostsThroughItsFilterAndInboxOnlyTheUnread() {
         val posts = listOf(post(alpha, 1), post(alpha, 2).copy(audience = "only_paid"), post(beta, 3), post(SubstackPublication("gone", "https://gone.substack.com", "Gone"), 4))
         val read = setOf(posts[0].key)

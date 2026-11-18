@@ -69,8 +69,6 @@
     <string name="home_unable_to_load_pages">Ana sayfalarınız yüklenemiyor</string>
     <string name="feed_strip_unavailable">Bu zaman çizelgesi artık yok</string>
     <string name="home_feed_accounts_empty">Sana özel’i yüklemek için bir hesap ekleyin.</string>
-    <string name="home_all_timelines">Tüm zaman akışları</string>
-    <string name="home_bar_more">Daha fazla</string>
     <string name="home_switcher_title">Eklenti değiştir</string>
     <string name="home_switcher_start">Başlangıç</string>
     <string name="home_switcher_start_hint">Takip edilenler ve tüm zaman akışların</string>

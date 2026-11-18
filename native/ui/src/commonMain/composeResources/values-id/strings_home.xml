@@ -68,8 +68,6 @@
     <string name="home_unable_to_load_pages">Tidak bisa memuat beranda Anda</string>
     <string name="feed_strip_unavailable">Timeline ini tidak lagi tersedia</string>
     <string name="home_feed_accounts_empty">Tambahkan akun untuk memuat Untuk Anda.</string>
-    <string name="home_all_timelines">Semua linimasa</string>
-    <string name="home_bar_more">Lainnya</string>
     <string name="home_switcher_title">Ganti plugin</string>
     <string name="home_switcher_start">Awal</string>
     <string name="home_switcher_start_hint">Diikuti dan semua lini masa Anda</string>

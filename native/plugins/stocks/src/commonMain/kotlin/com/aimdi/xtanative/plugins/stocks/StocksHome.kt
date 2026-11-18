@@ -58,10 +58,12 @@ import com.aimdi.xtanative.ui.plugins.NetworkProblemView
 import com.aimdi.xtanative.ui.plugins.NoticeHost
 import com.aimdi.xtanative.ui.plugins.PluginFeedSkeleton
 import com.aimdi.xtanative.ui.plugins.PluginFrame
+import com.aimdi.xtanative.ui.plugins.PluginHomeTab
 import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
 import com.aimdi.xtanative.ui.plugins.PluginNotices
 import com.aimdi.xtanative.ui.plugins.ReadingControlsBar
 import com.aimdi.xtanative.ui.plugins.RefreshesOn
+import com.aimdi.xtanative.ui.plugins.ShellFeeds
 import com.aimdi.xtanative.ui.plugins.ShellMenuButton
 import com.aimdi.xtanative.ui.plugins.pluginString
 import com.aimdi.xtanative.ui.plugins.rememberKept
@@ -154,9 +156,15 @@ private fun PostsHome(
     // One ticker's posts, also when the watchlist holds only that one, put the followed accounts' first.
     val followedFirst = filter != null || symbols.size == 1
     val feed = rememberKept("stocks-posts:$followedFirst:$query") { StocksPostsFeed(app, query, signals = true, followedFirst = followedFirst, scope = it) }
+    // In the app's shell the tickers are its feed row: All, then each, one picked filtering the posts to it.
+    val shell = LocalPluginClientBar.current != null
+    if (shell) {
+        val all = PluginHomeTab(StocksIcons.ShowChart, pluginString(Strings.all_tickers), filter == null) { filter?.let(model::toggleFilter) }
+        ShellFeeds(listOf(all) + symbols.map { symbol -> PluginHomeTab(StocksIcons.ShowChart, entries.label(symbol), filter == symbol) { if (filter != symbol) model.toggleFilter(symbol) } })
+    }
     Column(Modifier.fillMaxSize()) {
         StocksReel(symbols, entries.assets, quotes, failed, filter, model::toggleFilter, app::open)
-        Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+        if (!shell) Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             Text(pluginString(Strings.posts), style = MaterialTheme.typography.titleMedium)
             if (filter != null) {
                 Spacer(Modifier.width(8.dp))

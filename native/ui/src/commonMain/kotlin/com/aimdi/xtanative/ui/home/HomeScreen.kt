@@ -376,7 +376,7 @@ private fun NetworkPage(id: String, ui: HomeUi, networks: HomeNetworks, toTop: I
                     actions = {
                         // Off Home's Feed there is no plugin sheet: the plugin's own entries stay its ⋮ ([ShellMenuButton]).
                         client.content?.actions?.value?.invoke(this)
-                        if (id !in NetworkBarRules.ONE_MENU) key(id) { NetworkActions(id, ui, networks, onPins, routes, extras) }
+                        key(id) { NetworkActions(id, ui, networks, onPins, routes, extras) }
                         if (LocalDesktopActions.current != null) IconButton(onClick = refresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),

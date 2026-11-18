@@ -191,9 +191,7 @@ internal fun HomeFeedPage(
                         sectionsBelow = sectionsBelow,
                     ) {
                         // Only the search and what the reader pinned stay on the bar; the rest is in the plugin sheet.
-                        if (current.id !in NetworkBarRules.ONE_MENU) {
-                            key(current.id) { NetworkActions(current.id, ui, networks, vm::setTopBarPins, routes, extras, menu = false) }
-                        }
+                        key(current.id) { NetworkActions(current.id, ui, networks, vm::setTopBarPins, routes, extras, menu = false) }
                         if (desktop) IconButton(onClick = refresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) }
                     }
                 }

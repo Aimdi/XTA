@@ -69,8 +69,6 @@
     <string name="home_unable_to_load_pages">Laden der Startseite nicht möglich</string>
     <string name="feed_strip_unavailable">Diese Timeline ist nicht mehr verfügbar</string>
     <string name="home_feed_accounts_empty">Konto hinzufügen, um Für dich zu laden.</string>
-    <string name="home_all_timelines">Alle Timelines</string>
-    <string name="home_bar_more">Mehr</string>
     <string name="home_switcher_title">Plugin wechseln</string>
     <string name="home_switcher_start">Start</string>
     <string name="home_switcher_start_hint">Gefolgt und alle deine Timelines</string>

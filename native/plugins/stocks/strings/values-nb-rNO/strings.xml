@@ -88,4 +88,5 @@
     <string name="window_24h">24 t</string>
     <string name="year_high">52 u. høy</string>
     <string name="year_low">52 u. lav</string>
+    <string name="all_tickers">Alle</string>
 </resources>

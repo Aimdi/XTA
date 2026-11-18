@@ -359,14 +359,3 @@ fun ShellMenuButton(attention: Boolean = false, items: @Composable ColumnScope.(
         DropdownMenu(expanded = open, onDismissRequest = close) { items(close) }
     }
 }
-
-/** A small grey heading over a part of a menu or sheet. */
-@Composable
-internal fun MenuHeading(text: String) {
-    Text(
-        text,
-        style = MaterialTheme.typography.labelMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 2.dp).semantics { heading() },
-    )
-}

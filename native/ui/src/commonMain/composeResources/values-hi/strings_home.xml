@@ -69,8 +69,6 @@
     <string name="home_unable_to_load_pages">होम पृष्ठ लोड नहीं किए जा सके</string>
     <string name="feed_strip_unavailable">यह टाइमलाइन अब उपलब्ध नहीं है</string>
     <string name="home_feed_accounts_empty">आपके लिए लोड करने हेतु खाता जोड़ें।</string>
-    <string name="home_all_timelines">सभी टाइमलाइन</string>
-    <string name="home_bar_more">और</string>
     <string name="home_switcher_title">प्लगइन बदलें</string>
     <string name="home_switcher_start">शुरुआत</string>
     <string name="home_switcher_start_hint">फ़ॉलो किए गए और आपकी सभी टाइमलाइनें</string>

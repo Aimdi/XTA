@@ -32,7 +32,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.Warning
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -85,7 +84,6 @@ import com.aimdi.xtanative.ui.generated.resources.home_networks_all
 import com.aimdi.xtanative.ui.generated.resources.home_networks_recent
 import com.aimdi.xtanative.ui.generated.resources.home_saved
 import com.aimdi.xtanative.ui.generated.resources.home_subscriptions
-import com.aimdi.xtanative.ui.plugins.PluginHomeTab
 import com.aimdi.xtanative.ui.plugins.pluginAccent
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupMark
@@ -296,19 +294,6 @@ private fun SectionIcon(icon: ImageVector, selected: Boolean, accent: Color) {
         contentAlignment = Alignment.Center,
     ) {
         Icon(icon, contentDescription = null, tint = if (selected) accent else MaterialTheme.colorScheme.onBackground, modifier = Modifier.size(24.dp))
-    }
-}
-
-/** More's rows: the network's [sections] that are not on the bar; one that joins More by itself is named after the network ([title]), as Pixiv's account and About. */
-@Composable
-private fun MoreMenu(title: String, sections: List<PluginHomeTab>, accent: Color, onPick: (PluginHomeTab) -> Unit) {
-    val alone = sections.none { !it.joinsMore }
-    sections.forEach { section ->
-        DropdownMenuItem(
-            text = { Text(if (section.joinsMore && alone) title else section.label, fontWeight = if (section.selected) FontWeight.Bold else null, color = if (section.selected) accent else Color.Unspecified) },
-            leadingIcon = { Icon(section.icon, contentDescription = null, tint = if (section.selected) accent else MaterialTheme.colorScheme.onBackground, modifier = Modifier.size(24.dp)) },
-            onClick = { onPick(section) },
-        )
     }
 }
 

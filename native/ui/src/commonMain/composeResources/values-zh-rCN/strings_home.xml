@@ -68,8 +68,6 @@
     <string name="home_unable_to_load_pages">无法加载主页</string>
     <string name="feed_strip_unavailable">此时间线已不可用</string>
     <string name="home_feed_accounts_empty">添加账号以加载“推荐”。</string>
-    <string name="home_all_timelines">所有时间线</string>
-    <string name="home_bar_more">更多</string>
     <string name="home_switcher_title">切换插件</string>
     <string name="home_switcher_start">开始</string>
     <string name="home_switcher_start_hint">关注和你的所有时间线</string>

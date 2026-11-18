@@ -69,8 +69,6 @@
     <string name="home_unable_to_load_pages">No s'ha pogut carregar la pàgina d'inici</string>
     <string name="feed_strip_unavailable">Aquesta cronologia ja no està disponible</string>
     <string name="home_feed_accounts_empty">Afegeix un compte per carregar Per a tu.</string>
-    <string name="home_all_timelines">Totes les cronologies</string>
-    <string name="home_bar_more">Més</string>
     <string name="home_switcher_title">Canvia de connector</string>
     <string name="home_switcher_start">Inici</string>
     <string name="home_switcher_start_hint">Seguits i totes les teves cronologies</string>

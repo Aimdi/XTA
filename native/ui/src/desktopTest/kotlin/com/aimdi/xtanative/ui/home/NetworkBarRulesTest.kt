@@ -28,12 +28,6 @@ class NetworkBarRulesTest {
     }
 
     @Test
-    fun redditsOwnMenuIsTheBarsOnlyOne() {
-        assertTrue("reddit" in NetworkBarRules.ONE_MENU)
-        assertFalse("bluesky" in NetworkBarRules.ONE_MENU, "the others keep Home's menu of their options")
-    }
-
-    @Test
     fun eachPageKeepsItsOwnNetwork() {
         val takeover = NetworkBarTakeover()
         takeover.show(NetworkBarRules.FEED, "reddit", PluginClientBar())

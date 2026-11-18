@@ -92,4 +92,5 @@
     <string name="window_24h">24 h</string>
     <string name="year_high">Maks. 52 tyg.</string>
     <string name="year_low">Min. 52 tyg.</string>
+    <string name="all_tickers">Wszystkie</string>
 </resources>

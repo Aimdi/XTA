@@ -90,4 +90,5 @@
     <string name="window_24h">24 h</string>
     <string name="year_high">Max. 52 săpt.</string>
     <string name="year_low">Min. 52 săpt.</string>
+    <string name="all_tickers">Toate</string>
 </resources>

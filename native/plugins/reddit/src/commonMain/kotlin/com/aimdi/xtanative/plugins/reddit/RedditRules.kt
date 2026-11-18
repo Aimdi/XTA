@@ -147,13 +147,6 @@ internal data class RedditHomeSource(val mode: RedditFeedMode = RedditFeedMode.F
 
     fun railSelected(rail: RedditFeedMode): Boolean = !viewingSubreddit && mode == rail
 
-    /**
-     * Which section Home's bottom bar lights: the rail shown, and Following
-     * while a followed community is open, since that is where it came from
-     * (a bar with nothing lit does not say where the reader is).
-     */
-    fun barSelected(rail: RedditFeedMode): Boolean = if (viewingSubreddit) rail == RedditFeedMode.FOLLOWING else mode == rail
-
     fun isSelected(name: String): Boolean = subreddit?.equals(name, ignoreCase = true) == true
 
     companion object {
@@ -287,9 +280,6 @@ internal object RedditHomeChrome {
     enum class MenuItem { SAVED, SUBSCRIPTIONS, SOURCE_AUTO, SOURCE_PUBLIC, SETTINGS }
 
     val actions: List<Action> = listOf(Action.SEARCH, Action.SORT, Action.MENU)
-
-    /** The actions in Home's one bar, where the order is a chip at the start of the communities' strip instead. */
-    val homeActions: List<Action> = actions - Action.SORT
 
     val menu: List<MenuItem> = MenuItem.entries
 

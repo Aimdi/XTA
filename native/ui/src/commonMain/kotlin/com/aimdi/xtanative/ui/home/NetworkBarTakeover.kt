@@ -16,13 +16,6 @@ import com.aimdi.xtanative.ui.plugins.PluginHomeTab
  * (the plugin switcher) and its menu.
  */
 internal object NetworkBarRules {
-    /**
-     * The networks whose own menu is the bar's only one: Home leaves its menu
-     * of the network's options out, since the plugin's has its search and
-     * settings already and two menus side by side cannot be told apart.
-     */
-    val ONE_MENU: Set<String> = setOf("reddit")
-
     /** The most of a network's sections the bar shows. */
     const val ON_BAR = 4
 

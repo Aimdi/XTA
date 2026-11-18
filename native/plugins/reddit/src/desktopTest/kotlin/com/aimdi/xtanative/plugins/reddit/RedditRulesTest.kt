@@ -125,9 +125,6 @@ class RedditRulesTest {
         assertEquals("FlutterDev", open.subreddit)
         assertEquals("r/flutterdev", open.key)
         assertFalse(open.railSelected(RedditFeedMode.FOLLOWING))
-        assertTrue(open.barSelected(RedditFeedMode.FOLLOWING), "Home's bottom bar lights Following while a followed community is open")
-        assertFalse(open.barSelected(RedditFeedMode.POPULAR))
-        assertTrue(rail.barSelected(RedditFeedMode.FOLLOWING))
         assertTrue(open.isSelected("flutterdev"))
 
         val popular = RedditHomeSource.of(RedditHomeSource.selectingMode(RedditHomeSource.selectingSubreddit(Settings(), "pics"), RedditFeedMode.POPULAR))
@@ -193,7 +190,6 @@ class RedditRulesTest {
     @Test
     fun theBarLeadsWithSearchThenTheOrderThenOneMenuAndNoPlus() {
         assertEquals(listOf(RedditHomeChrome.Action.SEARCH, RedditHomeChrome.Action.SORT, RedditHomeChrome.Action.MENU), RedditHomeChrome.actions)
-        assertEquals(listOf(RedditHomeChrome.Action.SEARCH, RedditHomeChrome.Action.MENU), RedditHomeChrome.homeActions, "in Home the order is a chip on the strip")
     }
 
     @Test

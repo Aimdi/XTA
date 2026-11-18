@@ -92,4 +92,5 @@
     <string name="window_24h">24 год</string>
     <string name="year_high">Макс. 52 тиж.</string>
     <string name="year_low">Мін. 52 тиж.</string>
+    <string name="all_tickers">Усі</string>
 </resources>
