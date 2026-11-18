@@ -21,11 +21,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -49,8 +50,8 @@ import com.aimdi.xtanative.ui.generated.resources.home_switcher_start_hint
 import com.aimdi.xtanative.ui.generated.resources.home_switcher_title
 import com.aimdi.xtanative.ui.generated.resources.home_unread
 import com.aimdi.xtanative.ui.generated.resources.home_xta_settings
-import com.aimdi.xtanative.ui.plugins.ShellSubtitleContent
 import com.aimdi.xtanative.ui.generated.resources.settings
+import com.aimdi.xtanative.ui.plugins.ShellSubtitleContent
 import org.jetbrains.compose.resources.stringResource
 
 /** What the plugin switcher offers, decided apart from its sheet. */
@@ -102,7 +103,8 @@ internal class SwitcherCalls(
 internal fun PluginSwitcherSheet(ui: HomeUi, networks: HomeNetworks, current: String?, unread: Set<String>, calls: SwitcherCalls, plugin: SheetPlugin? = null) {
     val ids = remember(ui.tabs, ui.recentNetworks) { PluginSwitcher.networks(ui.tabs, ui.recentNetworks) }
     val title = stringResource(Res.string.home_switcher_title)
-    ModalBottomSheet(onDismissRequest = calls.onDismiss, modifier = Modifier.semantics { paneTitle = title }) {
+    // Whole at once: the plugin's own entries come first, and Start and the networks must not wait below the fold.
+    ModalBottomSheet(onDismissRequest = calls.onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true), modifier = Modifier.semantics { paneTitle = title }) {
         Column(
             Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 16.dp).padding(bottom = 24.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
