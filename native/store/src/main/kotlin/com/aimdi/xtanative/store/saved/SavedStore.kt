@@ -107,5 +107,16 @@ class SavedStore(
         }
     }
 
+    /**
+     * A restore: [merge] gets what is kept now and gives what to keep (null
+     * for no change), under the same lock as every save, so a post saved
+     * while a long restore runs is not written over.
+     */
+    suspend fun restore(merge: (SavedLibrary) -> SavedLibrary?) {
+        stored.update { now ->
+            merge(now)?.let { SavedLibrary(it.posts.distinctBy { post -> post.id }, SavedLibrary.ordered(it.folders.distinctBy { folder -> folder.id })) } ?: now
+        }
+    }
+
     private fun SavedLibrary.withPosts(change: (SavedPost) -> SavedPost) = copy(posts = posts.map(change))
 }

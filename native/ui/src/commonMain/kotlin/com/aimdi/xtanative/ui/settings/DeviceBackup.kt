@@ -79,12 +79,13 @@ class DeviceBackup(private val graph: AppGraph, private val clock: () -> Instant
         graph.sessions.update { FeedSwitches.mirrored(BackupRestore.session(it, restoring, accounts), settings) }
         BackupRestore.accountHealth(restoring)?.forEach { (id, health) -> graph.accountHealth.write(id, health) }
         BackupRestore.showPrivate(restoring)?.let { show -> graph.pluginPrefs.update { it.copy(showPrivate = show) } }
-        BackupRestore.library(graph.saved.library(), restoring, now)?.let { graph.saved.replace(it) }
-        BackupRestore.likes(graph.likes.likes(), restoring, now)?.let { graph.likes.replace(it) }
+        // Merged under each store's lock: a post saved or liked while the restore runs stays.
+        graph.saved.restore { BackupRestore.library(it, restoring, now) }
+        graph.likes.restore { BackupRestore.likes(it, restoring, now) }
         BackupRestore.localPosts(graph.localPosts.notes(), restoring, now)?.let { graph.localPosts.replace(it) }
         BackupRestore.annotations(restoring)?.let { graph.archiveNotes.merge(it) }
         BackupRestore.antennas(restoring, now)?.let { graph.antennas.merge(it) }
-        BackupRestore.journal(restoring)?.let { graph.readingJournal.replace(it) }
+        BackupRestore.journal(restoring)?.let { graph.readingJournal.merge(it) }
         BackupRestore.appearance(restoring)?.let { graph.readingAppearance.set(it) }
         restoreProfiles(restoring)
         graph.kept.merge(KeptSections.keptOf(restoring))

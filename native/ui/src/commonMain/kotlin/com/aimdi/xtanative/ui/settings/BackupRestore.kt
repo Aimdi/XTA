@@ -270,10 +270,17 @@ object BackupRestore {
         return (likes.filterNot { it.id in incoming } + incoming.values).sortedByDescending { it.likedAt }
     }
 
-    /** The notes with the backup's; their files' bytes travel with them and become files again. */
+    /**
+     * The notes with the backup's; their files' bytes travel with them and
+     * become files again. A note rewritten here since the backup's was keeps
+     * the rewrite: a sync's restore must not bring back an older copy.
+     */
     fun localPosts(posts: List<LocalPost>, document: BackupDocument, now: Long): List<LocalPost>? {
         val rows = document.localPosts ?: return null
-        val incoming = rows.mapNotNull { XtaRows.localPost(J(it.toJson()), now) }.associateBy { it.id }
+        val local = posts.associateBy { it.id }
+        val incoming = rows.mapNotNull { XtaRows.localPost(J(it.toJson()), now) }
+            .filterNot { row -> local[row.id]?.let { it.updatedAt > row.updatedAt } == true }
+            .associateBy { it.id }
         return (posts.filterNot { it.id in incoming } + incoming.values).sortedByDescending { it.createdAt }
     }
 
@@ -283,9 +290,23 @@ object BackupRestore {
         return XtaRows.annotations(J(JsonObject(section.mapValues { it.value.toJson() })))
     }
 
-    /** The private notes on profiles with the backup's: a note replaces the one on its profile, every other stays. */
-    fun profileNotes(notes: List<ProfileNoteRow>, document: BackupDocument): List<ProfileNoteRow>? =
-        document.profileNotes?.let { rows -> upsert(notes, rows) { it.profileId }.orEmpty() }
+    /**
+     * The private notes on profiles with the backup's: a note replaces the one
+     * on its profile, every other stays, unless the one here was written later.
+     */
+    fun profileNotes(notes: List<ProfileNoteRow>, document: BackupDocument): List<ProfileNoteRow>? {
+        val rows = document.profileNotes ?: return null
+        val local = notes.associateBy { it.profileId }
+        val newer = rows.filterNot { row -> local[row.profileId]?.let { writtenAfter(it.updatedAt, row.updatedAt) } == true }
+        return upsert(notes, newer) { it.profileId }.orEmpty()
+    }
+
+    /** Whether [mine] is a time later than [theirs]; a time missing or unread says nothing. */
+    private fun writtenAfter(mine: String?, theirs: String?): Boolean {
+        val a = XtaTime.parse(mine) ?: return false
+        val b = XtaTime.parse(theirs) ?: return false
+        return a.isAfter(b)
+    }
 
     /** The hidden reposts and replies with the backup's, by account; null when the file carries neither. */
     fun profileFilters(filters: Pair<List<FeedFilterRow>, List<FeedFilterRow>>, document: BackupDocument): Pair<List<FeedFilterRow>, List<FeedFilterRow>>? {

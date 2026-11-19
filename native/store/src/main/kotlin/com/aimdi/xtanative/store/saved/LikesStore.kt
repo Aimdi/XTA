@@ -40,6 +40,11 @@ class LikesStore(dir: StoreDir, private val clock: () -> Long = System::currentT
     suspend fun replace(likes: List<LikedPost>) {
         stored.update { likes.distinctBy { it.id } }
     }
+
+    /** A restore: [merge] gets the likes kept now and gives those to keep (null for no change), under the lock every like takes. */
+    suspend fun restore(merge: (List<LikedPost>) -> List<LikedPost>?) {
+        stored.update { now -> merge(now)?.distinctBy { it.id } ?: now }
+    }
 }
 
 /** One heading of likes broken down by group: [groupId] null holds the likes whose author is in none of the groups shown. */

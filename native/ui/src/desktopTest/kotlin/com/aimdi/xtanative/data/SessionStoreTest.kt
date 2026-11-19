@@ -57,6 +57,16 @@ class SessionStoreTest {
     }
 
     @Test
+    fun anUnreadableFileIsKeptAsideBeforeAnyWriteReplacesIt() = withFile { file ->
+        file.writeText("{written by a newer build")
+        val store = SessionStore(file)
+        store.load()
+        store.update { it.copy(following = listOf(nasa)) }
+        assertEquals("{written by a newer build", File(file.parentFile, "session.json.unreadable").readText(), "the follows it held are not lost")
+        assertEquals(listOf(nasa), Session.decode(file.readText())?.following)
+    }
+
+    @Test
     fun aWriteClearsTheFailure() = withFile { file ->
         file.writeText("")
         val store = SessionStore(file)

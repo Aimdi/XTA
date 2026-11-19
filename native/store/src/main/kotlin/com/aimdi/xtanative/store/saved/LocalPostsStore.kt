@@ -85,15 +85,18 @@ class LocalPostsStore(
 
     /**
      * Replaces every note with [posts], as a restored backup does: the bytes
-     * they carry become files again, and the files of notes no longer kept are
-     * deleted. A damaged file in the backup is skipped, not the import.
+     * they carry become files again, and the files of the notes it no longer
+     * keeps are deleted. Files of no note kept before are left: they are a
+     * draft's ([NoteDrafts]), attached before its note was saved. A damaged
+     * file in the backup is skipped, not the import.
      */
     suspend fun replace(posts: List<LocalPost>) {
         val kept = posts.distinctBy { it.id }
+        val before = notes().mapTo(HashSet()) { safeName(it.id) }
         withContext(Dispatchers.IO) {
             kept.forEach(::materialize)
             val folders = kept.mapTo(HashSet()) { safeName(it.id) }
-            mediaRoot.listFiles()?.filter { it.name !in folders }?.forEach { it.deleteRecursively() }
+            mediaRoot.listFiles()?.filter { it.name in before && it.name !in folders }?.forEach { it.deleteRecursively() }
         }
         stored.update { kept.map { post -> post.copy(media = post.media.map { it.copy(data = null) }) } }
     }

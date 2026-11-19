@@ -113,6 +113,17 @@ class LocalPostsTest {
     }
 
     @Test
+    fun aRestoreKeepsADraftsFilesAndDropsThoseOfNotesItReplaces() = runBlocking {
+        val notes = store()
+        notes.writeMedia("old", "photo", byteArrayOf(1))
+        notes.save("old", listOf(NoteMedia("photo", "a.jpg", "image/jpeg")), id = "old")
+        notes.writeMedia("draft", "photo", byteArrayOf(2))
+        notes.replace(listOf(LocalPost("restored", "from the backup", 1, 1)))
+        assertFalse(notes.mediaFile("old", "photo").exists(), "a note the restore drops takes its files")
+        assertTrue(notes.mediaFile("draft", "photo").exists(), "a draft's file, attached before its note was saved, stays")
+    }
+
+    @Test
     fun anIdFromABackupCannotLeaveTheNotesFolder() = runBlocking {
         val notes = store()
         val file = notes.mediaFile("../../escape", "../x")

@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.data
 
 import com.aimdi.xtanative.core.session.Session
+import com.aimdi.xtanative.store.replaceWith
 import java.io.File
 import java.io.IOException
 import kotlinx.coroutines.Dispatchers
@@ -55,17 +56,22 @@ class SessionStore(private val file: File, private val initial: Session = Sessio
         failed.value = null
     }
 
+    /**
+     * The session the file holds; a file that cannot be read (damaged, or
+     * written by a newer build) is first copied aside to
+     * `session.json.unreadable`, so the empty session the app runs on in its
+     * place never writes over the reader's follows, groups and accounts.
+     */
     private fun read(): Result<Session?> = when {
         !file.exists() -> Result.success(null)
-        else -> runCatching { Session.decode(file.readText()) ?: throw IOException("Unreadable session file") }
-    }
-
-    private fun write(text: String) {
-        val partial = File(file.parentFile, file.name + ".part")
-        partial.writeText(text)
-        if (!partial.renameTo(file)) {
-            file.delete()
-            partial.renameTo(file)
+        else -> runCatching {
+            val text = file.readText()
+            Session.decode(text) ?: run {
+                File(file.parentFile, file.name + ".unreadable").replaceWith(text)
+                throw IOException("Unreadable session file")
+            }
         }
     }
+
+    private fun write(text: String) = file.replaceWith(text)
 }
