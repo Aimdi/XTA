@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -39,6 +41,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -146,8 +149,14 @@ fun ShellSubtitle(text: String?, status: ShellStatus = ShellStatus.NONE) {
 @Composable
 fun ShellUnread(count: Int) {
     val bar = LocalPluginClientBar.current ?: return
-    SideEffect { bar.unread = count.coerceAtLeast(0) }
-    DisposableEffect(bar) { onDispose { bar.unread = null } }
+    val shown = count.coerceAtLeast(0)
+    val held = remember(bar) { Held<Int>() }
+    SideEffect {
+        held.value = shown
+        bar.unread = shown
+    }
+    // Only its own count goes: another part of the plugin may have handed one since.
+    DisposableEffect(bar) { onDispose { if (bar.unread == held.value) bar.unread = null } }
 }
 
 /**
@@ -159,8 +168,12 @@ fun ShellUnread(count: Int) {
 @Composable
 fun ShellAccounts(onSwitch: () -> Unit) {
     val bar = LocalPluginClientBar.current ?: return
-    SideEffect { bar.switchAccount = onSwitch }
-    DisposableEffect(bar) { onDispose { bar.switchAccount = null } }
+    val held = remember(bar) { Held<() -> Unit>() }
+    SideEffect {
+        held.value = onSwitch
+        bar.switchAccount = onSwitch
+    }
+    DisposableEffect(bar) { onDispose { if (bar.switchAccount === held.value) bar.switchAccount = null } }
 }
 
 private class Held<T> {
@@ -214,8 +227,12 @@ private fun Modifier.fadingEnd(): Modifier = graphicsLayer { compositingStrategy
 
 @Composable
 private fun FeedWord(feed: PluginHomeTab, color: Color) {
+    // The feed shown is scrolled into the row, also when it was picked another way (a swipe, the plugin itself).
+    val view = remember { BringIntoViewRequester() }
+    LaunchedEffect(feed.selected) { if (feed.selected) view.bringIntoView() }
     Box(
         Modifier
+            .bringIntoViewRequester(view)
             .fillMaxHeight()
             .defaultMinSize(minWidth = 44.dp)
             .clickable(onClick = feed.onSelect)
