@@ -320,6 +320,7 @@ internal class RedditApp(val host: PluginHost) {
     /** Changes what listings read, and has the open ones and the feed read again. */
     fun change(edit: (Settings) -> Settings) = launch {
         prefs.update(edit)
+        identityChanged()
         reread()
     }
 
@@ -365,9 +366,17 @@ internal class RedditApp(val host: PluginHost) {
     @Volatile
     private var knownName: Pair<String, String>? = null
 
+    private val identityTurns = MutableStateFlow(0)
+
+    /** Turns each time whose Reddit is read as may have changed (a sign-in, a sign-out, the source), so [accountName] is asked again. */
+    val identity: StateFlow<Int> = identityTurns
+
+    private fun identityChanged() = identityTurns.update { it + 1 }
+
     /** After the credentials changed: the cached tokens were someone else's. */
     fun credentialsChanged() {
         knownName = null
+        identityChanged()
         sessions.forget()
         reading().client.forgetToken()
         launch { reread() }

@@ -63,6 +63,8 @@ internal fun HomeFeedPane(app: SubstackApp, state: HomeState, frame: PluginFrame
     val controls = state.controls
     val options = controls.home
     val shell = LocalPluginClientBar.current != null
+    // A publication unfollowed since it was picked no longer narrows Home.
+    LaunchedEffect(followed) { controls.publication = SubstackHomeRules.narrowedTo(controls.publication, followed) }
     val visible = SubstackHomeRules.home(feed.posts, followed, controls.filter, marks.readIds, marks::saved, options, controls.publication.takeIf { shell })
     val list = rememberLazyListState()
     val markOnScroll by app.host.settings.observe(SubstackPrefs.markReadOnScroll).collectAsState(false)
@@ -167,9 +169,10 @@ private fun NoFollows(app: SubstackApp, frame: PluginFrame, discover: Boolean) {
 @Composable
 private fun EmptyFeed(state: HomeState, pane: HomePane) {
     val controls = state.controls
-    val filtered = controls.filter != SubstackFeedFilter.ALL || controls.options(pane).searching
+    val narrowed = pane == HomePane.HOME && controls.publication != null
+    val filtered = controls.filter != SubstackFeedFilter.ALL || controls.options(pane).searching || narrowed
     EmptyState(pluginString(if (filtered) Strings.empty_filter else Strings.feed_empty)) {
-        TextButton(onClick = { if (filtered) controls.reset(pane) else state.feed.refresh(force = true) }) {
+        TextButton(onClick = { if (filtered) controls.clear(pane) else state.feed.refresh(force = true) }) {
             Icon(if (filtered) Icons.Default.Clear else Icons.Default.Refresh, null, Modifier.padding(end = 8.dp))
             Text(pluginString(if (filtered) Strings.reset_filters else Strings.retry))
         }

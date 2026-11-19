@@ -119,6 +119,16 @@ class SubstackHomeTest {
     }
 
     @Test
+    fun anUnfollowedPublicationNoLongerNarrowsHomeAndMarkAllReadKeepsToTheOneShown() {
+        assertEquals(alpha.baseUrl, SubstackHomeRules.narrowedTo(alpha.baseUrl, listOf(alpha, beta)))
+        assertNull(SubstackHomeRules.narrowedTo(alpha.baseUrl, listOf(beta)), "alpha unfollowed since it was picked")
+        assertNull(SubstackHomeRules.narrowedTo(null, listOf(alpha)))
+        val posts = listOf(post(alpha, 1), post(beta, 2))
+        assertEquals(listOf(post(alpha, 1)), SubstackHomeRules.within(posts, alpha.baseUrl))
+        assertEquals(posts, SubstackHomeRules.within(posts, null))
+    }
+
+    @Test
     fun homeShowsTheFollowedPublicationsPostsThroughItsFilterAndInboxOnlyTheUnread() {
         val posts = listOf(post(alpha, 1), post(alpha, 2).copy(audience = "only_paid"), post(beta, 3), post(SubstackPublication("gone", "https://gone.substack.com", "Gone"), 4))
         val read = setOf(posts[0].key)

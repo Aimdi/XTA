@@ -61,7 +61,14 @@ import com.aimdi.xtanative.ui.saved.SavedIcons
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import java.time.Duration
 import java.time.Instant
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 /** The tabs of XTA's Hacker News reader, in its order: the six lists, then what is saved here and the accounts followed here. */
 internal enum class HnTab(val feed: HnFeed?, val label: PluginText) {
@@ -128,7 +135,8 @@ private fun FeedPane(app: HnApp, feed: HnFeed, frame: PluginFrame) {
     }
     val paged by pages.state.collectAsState()
     val ranks = remember(paged.items) { paged.items.withIndex().associate { (index, story) -> story.id to index + 1 } }
-    UpdatedLine(paged.loaded && !paged.loading, paged.items)
+    val read = rememberKept("hn-feed-read:${feed.name}") { scope -> ReadTime(pages, scope) }
+    UpdatedLine(read)
     RefreshesOn(frame.refresh) { pages.refresh() }
     HnStoryList(app, pages, PostIcons.Forum, pluginString(Strings.feed_empty), frame) { story ->
         HnStoryRow(app, story, rank = ranks[story.id])
@@ -185,15 +193,32 @@ private fun FollowingPane(app: HnApp, frame: PluginFrame) {
 internal val HnBrand = Color(0xFFFF6600)
 
 /**
- * When the list shown was last read, under Hacker News' name in the app's
- * shell ("Updated 5m ago"), live while that is under ten minutes; the line
- * moves on each minute.
+ * When [pages]' first page was last read whole: set as a read or a refresh
+ * of it arrives, not as a later page does nor as the list is shown again,
+ * and kept with the list ([rememberKept]).
+ */
+private class ReadTime(pages: PagedItems<*>, scope: CoroutineScope) {
+    private val mutable = MutableStateFlow<Instant?>(null)
+    val at: StateFlow<Instant?> = mutable.asStateFlow()
+
+    init {
+        scope.launch {
+            pages.state.map { it.loading }.distinctUntilChanged().collect { loading ->
+                val now = pages.state.value
+                if (!loading && now.loaded && now.problem == null) mutable.value = Instant.now()
+            }
+        }
+    }
+}
+
+/**
+ * When the list shown was last read ([ReadTime]), under Hacker News' name in
+ * the app's shell ("Updated 5m ago"), live while that is under ten minutes;
+ * the line moves on each minute.
  */
 @Composable
-private fun UpdatedLine(done: Boolean, items: List<Any>) {
-    var at by remember { mutableStateOf<Instant?>(null) }
-    LaunchedEffect(done, items) { if (done && items.isNotEmpty()) at = Instant.now() }
-    val read = at ?: return
+private fun UpdatedLine(time: ReadTime) {
+    val read = time.at.collectAsState().value ?: return
     val minute by produceState(0, read) {
         while (true) {
             delay(60_000)
