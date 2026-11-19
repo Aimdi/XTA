@@ -185,7 +185,7 @@ internal fun HomeFeedPage(
                         ui,
                         networks,
                         client,
-                        anyUnread,
+                        HomeTab.Network(current.id).key in timelines.unread,
                         NetworkBarCalls(onAvatar = { sheet = true }, onTitle = calls.toTitleTop),
                         bar,
                         sectionsBelow = sectionsBelow,
@@ -404,7 +404,8 @@ private fun PluginSheet(
         plugin = SheetPlugin(
             id,
             client.subtitle,
-            shell.items,
+            // The plugin's entries see its shell as its page does.
+            shell.items?.let { items -> { close -> CompositionLocalProvider(LocalPluginClientBar provides client) { items(this, close) } } },
             settings?.let { route -> { onDismiss(); routes.open(route) } },
             appEntries = { close -> ShellEntries(id, ui, networks, extras, null, onPins, close) },
             onSwitchAccount = client.switchAccount?.let { switch -> { onDismiss(); switch() } },

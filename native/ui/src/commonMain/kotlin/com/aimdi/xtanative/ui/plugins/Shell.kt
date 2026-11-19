@@ -150,13 +150,20 @@ fun ShellSubtitle(text: String?, status: ShellStatus = ShellStatus.NONE) {
 fun ShellUnread(count: Int) {
     val bar = LocalPluginClientBar.current ?: return
     val shown = count.coerceAtLeast(0)
-    val held = remember(bar) { Held<Int>() }
+    val owner = remember(bar) { Any() }
     SideEffect {
-        held.value = shown
         bar.unread = shown
+        bar.unreadOwner = owner
     }
-    // Only its own count goes: another part of the plugin may have handed one since.
-    DisposableEffect(bar) { onDispose { if (bar.unread == held.value) bar.unread = null } }
+    // Only its own count goes: another part of the plugin may have handed one since, even the same number.
+    DisposableEffect(bar) {
+        onDispose {
+            if (bar.unreadOwner === owner) {
+                bar.unread = null
+                bar.unreadOwner = null
+            }
+        }
+    }
 }
 
 /**
@@ -387,8 +394,13 @@ internal val LocalShellMenu = staticCompositionLocalOf<ShellMenu?> { null }
 fun ShellMenuButton(attention: Boolean = false, items: @Composable ColumnScope.(close: () -> Unit) -> Unit) {
     val shell = LocalShellMenu.current
     if (shell != null) {
-        SideEffect { shell.items = items }
-        DisposableEffect(shell) { onDispose { shell.items = null } }
+        val held = remember(shell) { Held<@Composable ColumnScope.(close: () -> Unit) -> Unit>() }
+        SideEffect {
+            held.value = items
+            shell.items = items
+        }
+        // Only its own entries go: another button of the plugin may have handed some since.
+        DisposableEffect(shell) { onDispose { if (shell.items === held.value) shell.items = null } }
         return
     }
     var open by remember { mutableStateOf(false) }
