@@ -68,7 +68,7 @@ internal fun HomeFeedPane(app: SubstackApp, state: HomeState, frame: PluginFrame
     val markOnScroll by app.host.settings.observe(SubstackPrefs.markReadOnScroll).collectAsState(false)
     if (markOnScroll) MarksReadScrolledPast(app, list, visible)
     // In the app's shell the publications are its feed row and the filters its filter ([SubstackShell]).
-    if (shell) SubstackShell(app, state, followed)
+    if (shell) SubstackShell(state, followed)
     FeedList(state.feed, feed, list, frame) {
         if (!shell) pinnedToolbar { ReadingToolbar(app, state, HomePane.HOME, followed) }
         if (visible.isEmpty()) {

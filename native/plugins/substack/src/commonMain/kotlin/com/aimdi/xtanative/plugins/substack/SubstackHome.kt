@@ -29,6 +29,7 @@ import com.aimdi.xtanative.networks.substack.SubstackNotesFeed
 import com.aimdi.xtanative.networks.substack.postReads
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.swipeTabs
+import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
 import com.aimdi.xtanative.ui.plugins.PluginText
@@ -105,6 +106,8 @@ internal fun SubstackHome(app: SubstackApp, frame: PluginFrame) {
     RefreshesOn(frame.refresh) {
         if (selected == HomePane.NOTES) state.notes.refresh() else state.feed.refresh()
     }
+    val followed = publications
+    if (followed != null && LocalPluginClientBar.current != null) SubstackShellStatus(app, state, followed)
     Column(Modifier.fillMaxSize()) {
         ReadingControlsBar { HomeHeader(app, state, selected) { app.pane.value = it } }
         Hairline()
