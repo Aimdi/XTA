@@ -46,7 +46,9 @@ fun interface XHttp {
  * out, nor when the read's [XRequestBudget] has no time left for it. Each call
  * waits no longer than what is left of that budget.
  */
-class OkHttpXHttp(private val client: OkHttpClient = defaultClient) : XHttp {
+class OkHttpXHttp(client: OkHttpClient = defaultClient) : XHttp {
+    // A redirect to another site never carries the reader's cookies or tokens there.
+    private val client = CredentialGuard.on(client)
     private val noRedirects = client.newBuilder().followRedirects(false).followSslRedirects(false).build()
 
     override suspend fun get(url: HttpUrl, headers: Map<String, String>, followRedirects: Boolean): XResponse {
@@ -96,10 +98,12 @@ class OkHttpXHttp(private val client: OkHttpClient = defaultClient) : XHttp {
     companion object {
         private const val RETRY_DELAY_MILLIS = 200L
 
-        val defaultClient: OkHttpClient = OkHttpClient.Builder()
-            .connectTimeout(15, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
-            .callTimeout(30, TimeUnit.SECONDS)
-            .build()
+        val defaultClient: OkHttpClient = CredentialGuard.on(
+            OkHttpClient.Builder()
+                .connectTimeout(15, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .callTimeout(30, TimeUnit.SECONDS)
+                .build(),
+        )
     }
 }
