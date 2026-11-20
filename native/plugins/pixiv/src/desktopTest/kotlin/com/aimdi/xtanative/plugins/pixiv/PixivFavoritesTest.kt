@@ -48,7 +48,8 @@ class PixivFavoritesTest {
         eventually { read().lastOrNull() == "public:-" }
         home.favorites(PixivFavoritesSource.PUBLIC, "Favs", picked = true)
         home.favorites(PixivFavoritesSource.PRIVATE, home.view.value.tag)
-        eventually { read().lastOrNull() == "private:-" }
+        // The Favs read the switch cancelled may still reach the network after Private's; its page is dropped, so only Private's read counts.
+        eventually { "private:-" in read() }
         assertEquals(null, home.view.value.tag)
     }
 }
