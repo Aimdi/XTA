@@ -166,6 +166,8 @@
     <string name="settings_true_black_cards_description">Echtes Schwarz für Tweet-Kartenhintergrund verwenden</string>
     <string name="settings_navigation_labels">Navigationsbeschriftungen anzeigen</string>
     <string name="settings_hide_navigation">Leisten oben und unten beim Scrollen ausblenden</string>
+    <string name="settings_hide_status_bar">Statusleiste ausblenden</string>
+    <string name="settings_hide_status_bar_description">Den ganzen Bildschirm nutzen: Uhrzeit, Akku und Empfang oben werden ausgeblendet. Vom oberen Rand nach unten wischen, um sie kurz zu sehen.</string>
     <string name="settings_text_scale">Textskalierungsfaktor</string>
     <string name="settings_text_scale_description">Schriftgröße in der App anpassen</string>
     <string name="settings_disable_animations">Animationen deaktivieren</string>

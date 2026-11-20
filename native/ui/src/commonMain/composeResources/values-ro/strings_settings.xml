@@ -166,6 +166,8 @@
     <string name="settings_true_black_cards_description">Folosiți negru adevărat pentru carduri tweet</string>
     <string name="settings_navigation_labels">Afișați etichetele de navigare</string>
     <string name="settings_hide_navigation">Ascunde barele de sus și de jos la derulare</string>
+    <string name="settings_hide_status_bar">Ascunde bara de stare</string>
+    <string name="settings_hide_status_bar_description">Folosește tot ecranul: ora, bateria și semnalul de sus sunt ascunse. Glisează în jos de la marginea de sus ca să le vezi o clipă.</string>
     <string name="settings_text_scale">Factorul de scalare a textului</string>
     <string name="settings_text_scale_description">Ajustați dimensiunea fontului în aplicație</string>
     <string name="settings_disable_animations">Dezactivați animațiile</string>

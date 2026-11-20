@@ -166,6 +166,8 @@
     <string name="settings_true_black_cards_description">Použít skutečnou černou pro pozadí karet tweetů</string>
     <string name="settings_navigation_labels">Zobrazit navigační popisky</string>
     <string name="settings_hide_navigation">Skrýt horní a spodní lištu při posouvání</string>
+    <string name="settings_hide_status_bar">Skrýt stavový řádek</string>
+    <string name="settings_hide_status_bar_description">Využít celou obrazovku: čas, baterie a signál nahoře jsou skryté. Přejetím dolů od horního okraje je na chvíli zobrazíte.</string>
     <string name="settings_text_scale">Faktor měřítka textu</string>
     <string name="settings_text_scale_description">Upravit velikost písma v aplikaci</string>
     <string name="settings_disable_animations">Zakázat animace</string>

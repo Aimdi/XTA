@@ -166,6 +166,8 @@
     <string name="settings_true_black_cards_description">Use true black for tweet cards</string>
     <string name="settings_navigation_labels">Show navigation labels?</string>
     <string name="settings_hide_navigation">スクロール中は上部と下部のバーを隠す</string>
+    <string name="settings_hide_status_bar">ステータスバーを隠す</string>
+    <string name="settings_hide_status_bar_description">画面全体を使います。上部の時刻・電池・電波を隠します。上端から下にスワイプすると一時的に表示されます。</string>
     <string name="settings_text_scale">文字サイズ</string>
     <string name="settings_text_scale_description">アプリ全体で使用する文字サイズを設定</string>
     <string name="settings_disable_animations">アニメーションを無効化</string>

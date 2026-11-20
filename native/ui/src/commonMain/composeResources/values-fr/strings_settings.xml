@@ -166,6 +166,8 @@
     <string name="settings_true_black_cards_description">Utiliser un noir profond pour les tweets</string>
     <string name="settings_navigation_labels">Afficher les libellés de navigation</string>
     <string name="settings_hide_navigation">Masquer les barres du haut et du bas pendant le défilement</string>
+    <string name="settings_hide_status_bar">Masquer la barre d'état</string>
+    <string name="settings_hide_status_bar_description">Utiliser tout l'écran : l'heure, la batterie et le réseau en haut sont masqués. Balayez vers le bas depuis le bord supérieur pour les voir un instant.</string>
     <string name="settings_text_scale">Taille du texte</string>
     <string name="settings_text_scale_description">Ajuster la taille du texte dans l'application</string>
     <string name="settings_disable_animations">Désactiver les animations</string>

@@ -7,6 +7,7 @@ import android.util.Rational
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -19,6 +20,8 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.Lifecycle
+import com.aimdi.xtanative.store.settings.ThemePrefs
+import com.aimdi.xtanative.ui.common.LocalSettingsStore
 import com.aimdi.xtanative.ui.common.findActivity
 
 /**
@@ -35,12 +38,16 @@ internal actual fun FullscreenWindow(sideways: Boolean) {
         activity.requestedOrientation = if (sideways) ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE else ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
         onDispose { }
     }
+    // The status bar the reader keeps hidden (Settings › Theme) stays hidden once the video closes.
+    val settings = LocalSettingsStore.current
+    val statusHidden by remember(settings) { settings.observe(ThemePrefs.hideStatusBar) }.collectAsState(false)
+    val keepHidden by rememberUpdatedState(statusHidden)
     DisposableEffect(activity) {
         val bars = WindowCompat.getInsetsController(activity.window, activity.window.decorView)
         bars.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         bars.hide(WindowInsetsCompat.Type.systemBars())
         onDispose {
-            bars.show(WindowInsetsCompat.Type.systemBars())
+            bars.show(if (keepHidden) WindowInsetsCompat.Type.navigationBars() else WindowInsetsCompat.Type.systemBars())
             activity.requestedOrientation = first
         }
     }

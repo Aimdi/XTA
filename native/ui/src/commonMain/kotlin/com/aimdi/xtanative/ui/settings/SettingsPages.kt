@@ -453,6 +453,9 @@ internal fun ThemeSettings(title: String, vm: SettingsViewModel, focus: String?,
             )
             PrefSwitch(settings, ThemePrefs.showNavigationLabels, stringResource(Res.string.settings_navigation_labels), null, vm, focus)
             PrefSwitch(settings, ThemePrefs.hideNavigationOnScroll, stringResource(Res.string.settings_hide_navigation), null, vm, focus)
+            if (!isDesktop) {
+                PrefSwitch(settings, ThemePrefs.hideStatusBar, stringResource(Res.string.settings_hide_status_bar), stringResource(Res.string.settings_hide_status_bar_description), vm, focus)
+            }
         }
     }
 }

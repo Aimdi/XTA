@@ -12,7 +12,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.aimdi.xtanative.store.settings.GeneralPrefs
+import com.aimdi.xtanative.store.settings.ThemePrefs
 import com.aimdi.xtanative.ui.XtaNativeContent
+import com.aimdi.xtanative.ui.chrome.StatusBarFrame
 import com.aimdi.xtanative.ui.speech.VoiceCheck
 
 class MainActivity : ComponentActivity() {
@@ -32,7 +34,9 @@ class MainActivity : ComponentActivity() {
             LaunchedEffect(secure) {
                 if (secure) window.addFlags(WindowManager.LayoutParams.FLAG_SECURE) else window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
             }
-            XtaNativeContent(graph, app.plugins)
+            // Settings › Theme › Hide the status bar.
+            val statusHidden by graph.settings.observe(ThemePrefs.hideStatusBar).collectAsState(initial = false)
+            StatusBarFrame(window, statusHidden) { XtaNativeContent(graph, app.plugins) }
         }
     }
 

@@ -261,6 +261,7 @@ theme.true_black
 theme.true_black_tweet_cards
 theme.show_navigation_labels
 theme.hide_navigation_on_scroll
+theme.hide_status_bar
 option.absolute_timestamp
 tweets.hide_sensitive
 tweets.always_show_sensitive_media

@@ -166,6 +166,8 @@
     <string name="settings_true_black_cards_description">Użyj czarnego tła dla kart tweetów</string>
     <string name="settings_navigation_labels">Pokaż etykiety nawigacji</string>
     <string name="settings_hide_navigation">Ukrywaj górny i dolny pasek podczas przewijania</string>
+    <string name="settings_hide_status_bar">Ukryj pasek stanu</string>
+    <string name="settings_hide_status_bar_description">Korzystaj z całego ekranu: godzina, bateria i zasięg u góry są ukryte. Przesuń w dół od górnej krawędzi, aby je na chwilę zobaczyć.</string>
     <string name="settings_text_scale">Współczynnik skalowania tekstu</string>
     <string name="settings_text_scale_description">Dostosuj rozmiar czcionki w aplikacji</string>
     <string name="settings_disable_animations">Wyłącz animacje</string>

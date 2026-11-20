@@ -166,6 +166,8 @@
     <string name="settings_true_black_cards_description">استخدام الأسود الحقيقي لخلفية بطاقات التغريدات</string>
     <string name="settings_navigation_labels">إظهار تسميات التنقل</string>
     <string name="settings_hide_navigation">إخفاء الشريطين العلوي والسفلي أثناء التمرير</string>
+    <string name="settings_hide_status_bar">إخفاء شريط الحالة</string>
+    <string name="settings_hide_status_bar_description">استخدام الشاشة كاملة: يُخفى الوقت والبطارية والإشارة في الأعلى. اسحب من الحافة العلوية إلى الأسفل لرؤيتها لحظة.</string>
     <string name="settings_text_scale">معامل مقياس النص</string>
     <string name="settings_text_scale_description">ضبط حجم الخط في التطبيق</string>
     <string name="settings_disable_animations">تعطيل الرسوم المتحركة</string>

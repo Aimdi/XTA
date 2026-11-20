@@ -166,6 +166,8 @@
     <string name="settings_true_black_cards_description">Использовать настоящий чёрный для фона карточек твитов</string>
     <string name="settings_navigation_labels">Показывать подписи навигации</string>
     <string name="settings_hide_navigation">Скрывать верхнюю и нижнюю панели при прокрутке</string>
+    <string name="settings_hide_status_bar">Скрывать строку состояния</string>
+    <string name="settings_hide_status_bar_description">Использовать весь экран: время, заряд и сигнал вверху скрыты. Проведите вниз от верхнего края, чтобы ненадолго их увидеть.</string>
     <string name="settings_text_scale">Коэффициент масштабирования текста</string>
     <string name="settings_text_scale_description">Настроить размер шрифта в приложении</string>
     <string name="settings_disable_animations">Отключить анимации</string>

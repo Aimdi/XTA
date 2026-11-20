@@ -166,6 +166,8 @@
     <string name="settings_true_black_cards_description">Usar preto verdadeiro para fundo de cartões de tweets</string>
     <string name="settings_navigation_labels">Mostrar rótulos de navegação</string>
     <string name="settings_hide_navigation">Ocultar as barras superior e inferior ao rolar</string>
+    <string name="settings_hide_status_bar">Ocultar a barra de status</string>
+    <string name="settings_hide_status_bar_description">Usar a tela inteira: a hora, a bateria e o sinal no topo ficam ocultos. Deslize para baixo a partir da borda de cima para vê-los por um instante.</string>
     <string name="settings_text_scale">Fator de escala do texto</string>
     <string name="settings_text_scale_description">Ajustar o tamanho da fonte no app</string>
     <string name="settings_disable_animations">Desativar animações</string>

@@ -166,6 +166,8 @@
     <string name="settings_true_black_cards_description">Tweet kartı arka planı için gerçek siyahı kullan</string>
     <string name="settings_navigation_labels">Gezinme etiketlerini göster</string>
     <string name="settings_hide_navigation">Kaydırırken üst ve alt çubukları gizle</string>
+    <string name="settings_hide_status_bar">Durum çubuğunu gizle</string>
+    <string name="settings_hide_status_bar_description">Tüm ekranı kullan: üstteki saat, pil ve sinyal gizlenir. Kısa bir süre görmek için üst kenardan aşağı kaydırın.</string>
     <string name="settings_text_scale">Metin ölçek faktörü</string>
     <string name="settings_text_scale_description">Uygulamadaki yazı tipi boyutunu ayarla</string>
     <string name="settings_disable_animations">Animasyonları devre dışı bırak</string>

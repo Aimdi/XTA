@@ -166,6 +166,8 @@
     <string name="settings_true_black_cards_description">Sử dụng màu tối đen cho bài viết</string>
     <string name="settings_navigation_labels">Hiện thị thanh điều hướng </string>
     <string name="settings_hide_navigation">Ẩn thanh trên và thanh dưới khi cuộn</string>
+    <string name="settings_hide_status_bar">Ẩn thanh trạng thái</string>
+    <string name="settings_hide_status_bar_description">Dùng toàn bộ màn hình: giờ, pin và sóng ở trên cùng được ẩn. Vuốt xuống từ cạnh trên để xem chúng trong chốc lát.</string>
     <string name="settings_text_scale">Kích thước chữ</string>
     <string name="settings_text_scale_description">Thiết lập kích thước chữ trong ứng dụng</string>
     <string name="settings_disable_animations">Vô hiệu hóa hiệu ứng </string>
