@@ -95,6 +95,8 @@ private class AndroidLinks(private val context: Context) : LinkPlatform {
 
     override fun launch(launch: LinkLaunch) {
         val url = launch.url
+        // Web pages only, as on the desktop: a feed's or a post's file://, tel: or another app's link starts nothing.
+        if (!url.startsWith("https://", ignoreCase = true) && !url.startsWith("http://", ignoreCase = true)) return
         when (launch) {
             is LinkLaunch.CustomTab, is LinkLaunch.InAppBrowser -> customTab(url, if (LinkSteps.claimedByApp(url)) defaultBrowser() else null) || view(url, null)
             is LinkLaunch.External -> (launch.browser.isNotEmpty() && view(url, launch.browser)) || view(url, null)

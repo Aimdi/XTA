@@ -51,11 +51,12 @@ data class Settings(val values: Map<String, PrefValue> = emptyMap()) {
     /**
      * [preferences] from a backup applied the way XTA's import applies them:
      * credentials are skipped so another device's cannot pair with this one's
-     * state, a list keeps its strings, null takes a key away, and anything
-     * preferences cannot hold is left out.
+     * state, nor is an address moved while this device holds a secret sent
+     * there ([SecretPrefs.addresses]); a list keeps its strings, null takes a
+     * key away, and anything preferences cannot hold is left out.
      */
     fun restoring(preferences: Map<String, JsonElement>): Settings =
-        preferences.entries.filterNot { SecretPrefs.isSecret(it.key) }.fold(this) { settings, (key, element) ->
+        preferences.entries.filterNot { SecretPrefs.isSecret(it.key) || SecretPrefs.guards(this, it.key) }.fold(this) { settings, (key, element) ->
             when (element) {
                 JsonNull -> settings.with(key, null)
                 else -> PrefValue.fromJson(element)?.let { settings.with(key, it) } ?: settings

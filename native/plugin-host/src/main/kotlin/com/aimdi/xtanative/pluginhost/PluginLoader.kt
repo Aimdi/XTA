@@ -32,17 +32,22 @@ sealed interface PluginLoad {
 /**
  * Makes an installed plugin's entry class with its no-argument constructor,
  * once its API is one this app loads and its file is still, byte for byte, the
- * one that was checked and installed.
+ * one that was checked and installed, and still signed with the app's key
+ * ([verifier]): the record of what was installed sits beside the file, so it
+ * alone cannot vouch for it.
  */
 class PluginLoader(
     private val classLoaders: PluginClassLoaderFactory,
     private val parent: ClassLoader,
     private val api: PluginApi,
+    private val verifier: PluginVerifier? = null,
 ) {
     fun load(plugin: InstalledPlugin, file: File): PluginLoad {
-        val refusal = api.refusal(plugin.apiVersion) ?: PluginFailure.Damaged.takeUnless { intact(plugin, file) }
+        val refusal = api.refusal(plugin.apiVersion) ?: PluginFailure.Damaged.takeUnless { intact(plugin, file) && signed(file) }
         return refusal?.let(PluginLoad::Refused) ?: instantiate(plugin, file)
     }
+
+    private fun signed(file: File): Boolean = verifier?.verify(file)?.let { it == Verdict.Trusted } ?: true
 
     private fun intact(plugin: InstalledPlugin, file: File): Boolean = try {
         file.isFile && file.length() == plugin.size && sha256Of(file) == plugin.sha256

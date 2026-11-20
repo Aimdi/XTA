@@ -35,6 +35,16 @@ class PluginLoaderTest {
     }
 
     @Test
+    fun aFileWhoseRecordWasRewrittenToMatchIsStillRefusedUnlessTheAppSignedIt() {
+        // Another program put an unsigned JAR here and wrote its digest into the record beside it.
+        val checking = PluginLoader(JarClassLoaderFactory, testPluginsHidden, PluginApi(1), JarSignatureVerifier(TestKeys.fingerprint(TestKeys.app)))
+        assertEquals(PluginLoad.Refused(PluginFailure.Damaged), checking.load(installed, file))
+        val signed = TestKeys.sign(jar, TestKeys.app)
+        val signedFile = File(file.parentFile, "signed.jar").apply { writeBytes(signed) }
+        assertIs<PluginLoad.Loaded>(checking.load(installed.copy(sha256 = sha256(signed), size = signed.size.toLong()), signedFile))
+    }
+
+    @Test
     fun aFileChangedOrGoneSinceItWasInstalledIsNotLoaded() {
         val changed = File(file.parentFile, "changed.jar").apply { writeBytes(pluginJar("hello", "1.0.0", entry = "com.example.Other")) }
         assertEquals(PluginLoad.Refused(PluginFailure.Damaged), loader.load(installed, changed))
