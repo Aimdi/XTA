@@ -76,8 +76,9 @@ object SubscriptionList {
 
     private fun sorted(rows: List<SubscriptionRow>, field: SubscriptionsOrder, ascending: Boolean): List<SubscriptionRow> {
         val order: Comparator<SubscriptionRow> = when (field) {
-            SubscriptionsOrder.NAME -> compareBy { it.name.lowercase() }
-            SubscriptionsOrder.SCREEN_NAME -> compareBy { it.screenName.lowercase() }
+            // Without case, with no string made per comparison: the Following feed sorts every account followed on each change.
+            SubscriptionsOrder.NAME -> compareBy(String.CASE_INSENSITIVE_ORDER) { it.name }
+            SubscriptionsOrder.SCREEN_NAME -> compareBy(String.CASE_INSENSITIVE_ORDER) { it.screenName }
             SubscriptionsOrder.CREATED_AT -> compareBy { it.followedAt }
         }
         return rows.sortedWith(if (ascending) order else order.reversed())
