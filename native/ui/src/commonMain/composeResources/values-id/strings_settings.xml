@@ -168,8 +168,6 @@
     <string name="settings_hide_navigation">Sembunyikan bilah atas dan bawah saat menggulir</string>
     <string name="settings_hide_status_bar">Sembunyikan bilah status</string>
     <string name="settings_hide_status_bar_description">Gunakan seluruh layar: jam, baterai, dan sinyal di atas disembunyikan. Geser ke bawah dari tepi atas untuk melihatnya sebentar.</string>
-    <string name="settings_hide_status_bar">Sembunyikan bilah status</string>
-    <string name="settings_hide_status_bar_description">Gunakan seluruh layar: jam, baterai, dan sinyal di atas disembunyikan. Geser ke bawah dari tepi atas untuk melihatnya sebentar.</string>
     <string name="settings_text_scale">Faktor skala teks</string>
     <string name="settings_text_scale_description">Sesuaikan ukuran font di aplikasi</string>
     <string name="settings_disable_animations">Nonaktifkan animasi</string>
