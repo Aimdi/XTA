@@ -30,6 +30,14 @@
     <string name="home_antennas">アンテナ</string>
     <string name="home_deck">デッキ</string>
     <string name="home_deck_empty">広い画面で並べて見るにはグループを固定してください</string>
+    <string name="home_deck_add">列を追加</string>
+    <string name="home_deck_move_left">左へ移動</string>
+    <string name="home_deck_move_right">右へ移動</string>
+    <string name="home_deck_remove">列を削除</string>
+    <string name="home_deck_width">列の幅</string>
+    <string name="home_deck_width_narrow">狭い</string>
+    <string name="home_deck_width_medium">標準</string>
+    <string name="home_deck_width_wide">広い</string>
     <string name="home_groups">グループ</string>
     <string name="home_no_groups">グループはまだありません</string>
     <string name="home_no_results">結果なし</string>

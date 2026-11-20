@@ -30,6 +30,14 @@
     <string name="home_antennas">الهوائيات</string>
     <string name="home_deck">الأعمدة</string>
     <string name="home_deck_empty">ثبّت مجموعات لتراها متجاورة على شاشة عريضة</string>
+    <string name="home_deck_add">إضافة عمود</string>
+    <string name="home_deck_move_left">نقل لليسار</string>
+    <string name="home_deck_move_right">نقل لليمين</string>
+    <string name="home_deck_remove">إزالة العمود</string>
+    <string name="home_deck_width">عرض العمود</string>
+    <string name="home_deck_width_narrow">ضيق</string>
+    <string name="home_deck_width_medium">متوسط</string>
+    <string name="home_deck_width_wide">عريض</string>
     <string name="home_groups">المجموعات</string>
     <string name="home_no_groups">لا توجد مجموعات بعد</string>
     <string name="home_no_results">لا نتائج</string>

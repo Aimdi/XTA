@@ -5,6 +5,7 @@ import com.aimdi.xtanative.core.backup.FollowedAccount
 import com.aimdi.xtanative.core.feed.FeedKeys
 import com.aimdi.xtanative.core.feed.ReadPosition
 import com.aimdi.xtanative.core.json.J
+import com.aimdi.xtanative.core.session.DeckColumn
 import com.aimdi.xtanative.core.session.SavedSearch
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.core.x.XAccount
@@ -207,7 +208,7 @@ object BackupRestore {
             ?.split(',')?.map(String::trim)?.filter(String::isNotEmpty)
         return session.copy(
             offFollowing = off?.filterTo(LinkedHashSet()) { it in groupIds } ?: session.offFollowing,
-            deck = deck?.filter { it in groupIds }?.distinct() ?: session.deck,
+            deck = deck?.filter { it in groupIds || DeckColumn.isTimeline(it) }?.distinct() ?: session.deck,
         )
     }
 

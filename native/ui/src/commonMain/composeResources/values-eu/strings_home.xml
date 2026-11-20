@@ -30,6 +30,14 @@
     <string name="home_antennas">Antenak</string>
     <string name="home_deck">Zutabeak</string>
     <string name="home_deck_empty">Ainguratu taldeak pantaila zabal batean elkarren ondoan ikusteko</string>
+    <string name="home_deck_add">Gehitu zutabea</string>
+    <string name="home_deck_move_left">Mugitu ezkerrera</string>
+    <string name="home_deck_move_right">Mugitu eskuinera</string>
+    <string name="home_deck_remove">Kendu zutabea</string>
+    <string name="home_deck_width">Zutabearen zabalera</string>
+    <string name="home_deck_width_narrow">Estua</string>
+    <string name="home_deck_width_medium">Ertaina</string>
+    <string name="home_deck_width_wide">Zabala</string>
     <string name="home_groups">Taldeak</string>
     <string name="home_no_groups">Oraindik ez dago talderik</string>
     <string name="home_no_results">Ez dago emaitzarik</string>

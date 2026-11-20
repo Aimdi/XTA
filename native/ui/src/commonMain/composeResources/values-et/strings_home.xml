@@ -30,6 +30,14 @@
     <string name="home_antennas">Antennid</string>
     <string name="home_deck">Veerud</string>
     <string name="home_deck_empty">Kinnita grupid, et näha neid laial ekraanil kõrvuti</string>
+    <string name="home_deck_add">Lisa veerg</string>
+    <string name="home_deck_move_left">Liiguta vasakule</string>
+    <string name="home_deck_move_right">Liiguta paremale</string>
+    <string name="home_deck_remove">Eemalda veerg</string>
+    <string name="home_deck_width">Veeru laius</string>
+    <string name="home_deck_width_narrow">Kitsas</string>
+    <string name="home_deck_width_medium">Keskmine</string>
+    <string name="home_deck_width_wide">Lai</string>
     <string name="home_groups">Grupid</string>
     <string name="home_no_groups">Gruppe pole veel</string>
     <string name="home_no_results">Tulemusi pole</string>

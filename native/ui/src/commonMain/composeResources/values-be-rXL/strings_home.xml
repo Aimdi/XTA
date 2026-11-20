@@ -30,6 +30,14 @@
     <string name="home_antennas">Anteny</string>
     <string name="home_deck">Kałonki</string>
     <string name="home_deck_empty">Zamacujcie hrupy, kab bačyć ich pobač na šyrokim ekranie</string>
+    <string name="home_deck_add">Dadać słupok</string>
+    <string name="home_deck_move_left">Pieramiascić uleva</string>
+    <string name="home_deck_move_right">Pieramiascić uprava</string>
+    <string name="home_deck_remove">Prybrać słupok</string>
+    <string name="home_deck_width">Šyrynia slupka</string>
+    <string name="home_deck_width_narrow">Vuzki</string>
+    <string name="home_deck_width_medium">Siaredni</string>
+    <string name="home_deck_width_wide">Šyroki</string>
     <string name="home_groups">Hrupy</string>
     <string name="home_no_groups">Pakul niama hrup</string>
     <string name="home_no_results">Niama vyniku</string>

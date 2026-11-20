@@ -287,6 +287,7 @@ other.calm_mode
 feed.languages
 feed.language_action
 home.deck_group_ids
+home.deck_column_width
 feed.reading_position
 feed.for_you_newest_cached_at
 feed.global_include_replies

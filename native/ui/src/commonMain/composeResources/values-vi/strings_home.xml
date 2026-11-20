@@ -30,6 +30,14 @@
     <string name="home_antennas">Ăng-ten</string>
     <string name="home_deck">Cột</string>
     <string name="home_deck_empty">Ghim các nhóm để xem chúng cạnh nhau trên màn hình rộng</string>
+    <string name="home_deck_add">Thêm cột</string>
+    <string name="home_deck_move_left">Chuyển sang trái</string>
+    <string name="home_deck_move_right">Chuyển sang phải</string>
+    <string name="home_deck_remove">Xóa cột</string>
+    <string name="home_deck_width">Độ rộng cột</string>
+    <string name="home_deck_width_narrow">Hẹp</string>
+    <string name="home_deck_width_medium">Vừa</string>
+    <string name="home_deck_width_wide">Rộng</string>
     <string name="home_groups">Nhóm</string>
     <string name="home_no_groups">Chưa có nhóm nào</string>
     <string name="home_no_results">Không có kết quả</string>

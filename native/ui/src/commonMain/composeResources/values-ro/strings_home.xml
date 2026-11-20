@@ -30,6 +30,14 @@
     <string name="home_antennas">Antene</string>
     <string name="home_deck">Coloane</string>
     <string name="home_deck_empty">Fixează grupuri ca să le vezi unul lângă altul pe un ecran lat</string>
+    <string name="home_deck_add">Adaugă coloană</string>
+    <string name="home_deck_move_left">Mută la stânga</string>
+    <string name="home_deck_move_right">Mută la dreapta</string>
+    <string name="home_deck_remove">Elimină coloana</string>
+    <string name="home_deck_width">Lățimea coloanei</string>
+    <string name="home_deck_width_narrow">Îngustă</string>
+    <string name="home_deck_width_medium">Medie</string>
+    <string name="home_deck_width_wide">Lată</string>
     <string name="home_groups">Grupuri</string>
     <string name="home_no_groups">Niciun grup încă</string>
     <string name="home_no_results">Niciun rezultat</string>

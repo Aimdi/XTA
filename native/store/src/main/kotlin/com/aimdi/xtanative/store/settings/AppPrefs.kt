@@ -94,6 +94,9 @@ object HomePrefs : PrefSection() {
     /** Groups shown as deck columns on wide screens, comma-separated. */
     val deckGroupIds = text("home.deck_group_ids", "")
 
+    /** How wide each of the deck's columns is, before they widen to fill the window. */
+    val deckColumnWidth = choice("home.deck_column_width", DeckWidth.MEDIUM, DeckWidth.entries, seeded = false)
+
     /** Mastodon, Bluesky and Threads share one entry in the feed switcher. */
     val altMicrobloggingGrouped = flag("home.alt_microblogging.grouped", true)
 

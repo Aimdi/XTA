@@ -111,3 +111,69 @@ object DeckGroups {
     /** A deck needs a tablet's shortest side or a wide window (in dp). */
     fun fits(widthDp: Float, shortestSideDp: Float): Boolean = shortestSideDp >= 600 || widthDp >= 900
 }
+
+/**
+ * One column of the deck, as [Session.deck] keeps it: a group by its id, as
+ * XTA kept the deck, or a timeline of Home's by a name no group id takes
+ * (they start with `@`): Following, X's For you, a network's timeline.
+ */
+sealed interface DeckColumn {
+    /** How [Session.deck] holds it. */
+    val id: String
+
+    data class Group(val groupId: String) : DeckColumn {
+        override val id: String get() = groupId
+    }
+
+    data object Following : DeckColumn {
+        override val id: String = "@following"
+    }
+
+    data object ForYou : DeckColumn {
+        override val id: String = "@foryou"
+    }
+
+    /** A network's timeline, by its plugin's id. */
+    data class Network(val networkId: String) : DeckColumn {
+        override val id: String get() = NETWORK + networkId
+    }
+
+    companion object {
+        private const val NETWORK = "@network:"
+
+        /** The column [id] names; a group's id is any that is not one of Home's timelines. */
+        fun of(id: String): DeckColumn? = when {
+            id == Following.id -> Following
+            id == ForYou.id -> ForYou
+            id.startsWith(NETWORK) -> id.removePrefix(NETWORK).takeIf { it.isNotBlank() }?.let(::Network)
+            id.startsWith("@") -> null
+            id.isBlank() -> null
+            else -> Group(id)
+        }
+
+        /** Whether [id] names one of Home's timelines rather than a group: a restore keeps it, as it keeps a group still there. */
+        fun isTimeline(id: String): Boolean = of(id).let { it != null && it !is Group }
+    }
+}
+
+/** The deck's columns as the reader arranges them. */
+object DeckColumns {
+    /** [ids] with the column at [from] moved by [by] places (-1 left, +1 right), as far as the ends allow. */
+    fun moved(ids: List<String>, from: Int, by: Int): List<String> {
+        if (from !in ids.indices) return ids
+        val to = (from + by).coerceIn(0, ids.lastIndex)
+        if (to == from) return ids
+        return ids.toMutableList().apply { add(to, removeAt(from)) }
+    }
+
+    /** [ids] with [column] last, unless it is a column already. */
+    fun added(ids: List<String>, column: DeckColumn): List<String> = if (column.id in ids) ids else ids + column.id
+
+    /**
+     * Each column's width in [available] dp for [count] columns of
+     * [preferred] dp: wider to fill the window while they fit, else
+     * [preferred], the deck scrolling sideways.
+     */
+    fun width(available: Float, count: Int, preferred: Float): Float =
+        if (count <= 0) preferred else maxOf(preferred, available / count)
+}

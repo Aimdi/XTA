@@ -30,6 +30,14 @@
     <string name="home_antennas">Антени</string>
     <string name="home_deck">Колонки</string>
     <string name="home_deck_empty">Закріпіть групи, щоб бачити їх поруч на широкому екрані</string>
+    <string name="home_deck_add">Додати колонку</string>
+    <string name="home_deck_move_left">Посунути ліворуч</string>
+    <string name="home_deck_move_right">Посунути праворуч</string>
+    <string name="home_deck_remove">Прибрати колонку</string>
+    <string name="home_deck_width">Ширина колонки</string>
+    <string name="home_deck_width_narrow">Вузька</string>
+    <string name="home_deck_width_medium">Середня</string>
+    <string name="home_deck_width_wide">Широка</string>
     <string name="home_groups">Групи</string>
     <string name="home_no_groups">Поки немає груп</string>
     <string name="home_no_results">Немає результатів</string>
