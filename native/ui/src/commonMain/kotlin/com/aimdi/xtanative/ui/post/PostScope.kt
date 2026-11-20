@@ -60,6 +60,19 @@ class PostScope(
 /** The screen's post scope; null outside [PostScopeProvider], where each card keeps its own. */
 val LocalPostScope = compositionLocalOf<PostScope?> { null }
 
+/** The reader's post settings read once for the whole app ([SharedPostPrefs]); null outside it. */
+private val LocalPostPrefs = compositionLocalOf<PostPrefs?> { null }
+
+/**
+ * [content] with the reader's post settings read once for all of it, so a
+ * card outside a [PostScopeProvider] (Home's feeds, search) reads them from
+ * here rather than following the settings by itself.
+ */
+@Composable
+internal fun SharedPostPrefs(content: @Composable () -> Unit) {
+    CompositionLocalProvider(LocalPostPrefs provides rememberPostPrefs(), content = content)
+}
+
 /** The reader's settings for the post screens, read and then followed as they change. */
 @Composable
 fun rememberPostPrefs(): PostPrefs {
@@ -92,7 +105,8 @@ fun PostScopeProvider(
 @Composable
 internal fun postScope(): PostScope {
     LocalPostScope.current?.let { return it }
-    val prefs = rememberPostPrefs()
+    // Each card keeps its own sensitive gate, as a feed's do; the settings are read once for the app.
+    val prefs = LocalPostPrefs.current ?: rememberPostPrefs()
     val sensitive = remember(prefs.sensitiveHidden) { SensitiveReveal(prefs.sensitiveHidden) }
     return remember(prefs, sensitive) { PostScope(prefs, sensitive) }
 }

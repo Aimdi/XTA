@@ -59,7 +59,8 @@ fun LazyListScope.feedThreads(
     keyOf: (XThread) -> Any = { it.id },
     row: @Composable (XThread) -> Unit = { ThreadRows(it, actions) },
 ) {
-    val byKey = threads.associateBy(FeedLayout::xKey)
+    // Only a stacked or folded row looks threads up by key: the map is made when one first does.
+    val byKey by lazy { threads.associateBy(FeedLayout::xKey) }
     itemsIndexed(threads, key = { _, thread -> keyOf(thread) }, contentType = { _, _ -> "thread" }) { index, thread ->
         if (index == divider) CaughtUpDivider()
         FeedThreadRow(layout.ofThread(index, thread), thread, actions, draw = { key -> byKey[key]?.let { row(it) } }) { row(thread) }

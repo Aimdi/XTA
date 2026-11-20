@@ -126,6 +126,12 @@ data class Session(
     /** [userId] followed here, or null. */
     fun followed(userId: String): FollowedAccount? = following.firstOrNull { it.id == userId }
 
+    /** The ids of [following], made once per session: what an avatar asks of every post shown. */
+    private val followedIds: Set<String> by lazy { following.mapTo(HashSet()) { it.id } }
+
+    /** Whether [userId] is followed here, without walking [following]. */
+    fun isFollowed(userId: String): Boolean = userId in followedIds
+
     /**
      * [user] followed here from [at] (epoch milliseconds), in the Following
      * feed. Nothing is sent to X. An account already followed keeps its place
