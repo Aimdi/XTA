@@ -254,7 +254,7 @@ class PluginManager(
 
     /** The catalogue and the text it came as; null when it cannot be read, or what came is no catalogue. */
     private suspend fun readCatalogue(): Pair<PluginCatalogue, String>? {
-        val url = catalogueAddress().toHttpUrlOrNull() ?: return null
+        val url = catalogueAddress().toHttpUrlOrNull()?.takeIf(PluginAddresses::allowed) ?: return null
         return try {
             val response = http.get(url, emptyMap(), followRedirects = true)
             response.body.takeIf { response.isSuccessful }?.let { body -> PluginCatalogue.parse(body)?.let { it to body } }

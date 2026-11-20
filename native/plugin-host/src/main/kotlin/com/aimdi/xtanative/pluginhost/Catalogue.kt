@@ -5,6 +5,7 @@ import java.util.Locale
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
 /** The platforms a plugin is built for; each has its own file in the catalogue. */
@@ -91,7 +92,7 @@ data class PluginArtifact(val url: String, val sha256: String, val size: Long) {
 
         /** The file [json] describes; null when any part is missing or not what it should be. */
         internal fun from(json: J): PluginArtifact? {
-            val url = json["url"].string?.trim()?.takeIf { it.toHttpUrlOrNull() != null } ?: return null
+            val url = json["url"].string?.trim()?.takeIf { it.toHttpUrlOrNull()?.let(PluginAddresses::allowed) == true } ?: return null
             val sha256 = json["sha256"].string?.trim()?.takeIf(hex::matches)?.lowercase() ?: return null
             val size = json["size"].long?.takeIf { it > 0 } ?: return null
             return PluginArtifact(url, sha256, size)
@@ -171,4 +172,15 @@ internal object PluginNames {
     fun isVersion(text: String): Boolean = version.matches(text)
 
     fun isClassName(text: String): Boolean = text.length <= 512 && className.matches(text)
+}
+
+/**
+ * Where plugins and their catalogue may come from: https, so no one on the
+ * way can hand the app another signed version than the catalogue names; plain
+ * http only to this machine or the emulator's host, as the checks serve them.
+ */
+internal object PluginAddresses {
+    private val local = setOf("127.0.0.1", "localhost", "::1", "10.0.2.2")
+
+    fun allowed(url: HttpUrl): Boolean = url.isHttps || url.host in local
 }
