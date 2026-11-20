@@ -223,9 +223,11 @@ object XLinks {
         else -> null
     }
 
-    private fun postOf(screenName: String?, raw: String, photo: Int?): XLink.Post {
+    /** A post by its numeric id; anything else after `/status/` is no post, as for lists and communities. */
+    private fun postOf(screenName: String?, raw: String, photo: Int?): XLink.Post? {
         val direct = raw.endsWith(".jpg") || raw.endsWith(".mp4")
-        return XLink.Post(screenName, raw.replace(Regex("\\.(?:jpg|mp4)$"), ""), photo, direct)
+        val id = raw.replace(Regex("\\.(?:jpg|mp4)$"), "")
+        return if (digits.matches(id)) XLink.Post(screenName, id, photo, direct) else null
     }
 
     private fun photoNumber(parts: List<String>, index: Int): Int? =
