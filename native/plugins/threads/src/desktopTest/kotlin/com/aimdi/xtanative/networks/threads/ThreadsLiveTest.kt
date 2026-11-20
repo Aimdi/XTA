@@ -23,15 +23,15 @@ class ThreadsLiveTest {
         assumeTrue(System.getenv("RUN_LIVE") == "true", "Set RUN_LIVE=true to read live threads.com")
         val client = ThreadsDirectClient(OkHttpXHttp())
 
-        val profile = client.guestProfile("zuck")
+        val profile = unlessThrottled("@zuck") { client.guestProfile("zuck") }
         assertEquals("zuck", profile.username)
         assertTrue(profile.fullName.isNotBlank(), "the page names the profile")
 
-        val threads = client.guestAccount("zuck").items
+        val threads = unlessThrottled("@zuck's threads") { client.guestAccount("zuck").items }
         assertTrue(threads.isNotEmpty(), "a guest is shown @zuck's threads")
         assertTrue(threads.any { it.handle == "zuck" || it.repostedByHandle == "zuck" })
 
-        val conversation = client.postThread(threads.firstNotNullOf { it.url })
+        val conversation = unlessThrottled("a thread") { client.postThread(threads.firstNotNullOf { it.url }) }
         assertTrue(conversation.isNotEmpty(), "a guest is shown a thread's page")
         println("LIVE Threads @zuck: ${profile.followerCount} followers, ${threads.size} threads, a conversation of ${conversation.size}")
     }

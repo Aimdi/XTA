@@ -24,7 +24,7 @@ class ThreadsConversationLiveTest {
         assumeTrue(System.getenv("RUN_LIVE") == "true", "Set RUN_LIVE=true to read live threads.com")
         val http = OkHttpXHttp()
         val client = ThreadsDirectClient(http)
-        val post = client.guestAccount("zuck").items.firstNotNullOfOrNull { it.url }
+        val post = unlessThrottled("@zuck") { client.guestAccount("zuck").items }.firstNotNullOfOrNull { it.url }
         val reply = runCatching { client.guestReplies("zuck").items.firstNotNullOfOrNull { it.url } }.getOrNull()
         listOfNotNull(post?.let { "post" to it }, reply?.let { "reply" to it }).forEach { (label, url) ->
             delay(GAP_MILLIS)
