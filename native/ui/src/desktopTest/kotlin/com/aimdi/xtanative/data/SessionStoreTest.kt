@@ -67,6 +67,16 @@ class SessionStoreTest {
     }
 
     @Test
+    fun aWriteThatFailsKeepsTheChangeForThisRunInsteadOfThrowing() = withFile { file ->
+        // A file where its folder should be: nothing can be written under it, as on a full disk.
+        val blocked = File(file.parentFile, "blocked").apply { writeText("") }
+        val store = SessionStore(File(blocked, "session.json"))
+        store.load()
+        store.update { it.copy(following = listOf(nasa)) }
+        assertEquals(listOf(nasa), store.state.value?.following)
+    }
+
+    @Test
     fun aWriteClearsTheFailure() = withFile { file ->
         file.writeText("")
         val store = SessionStore(file)

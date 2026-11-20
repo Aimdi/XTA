@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.store.settings
 
 import com.aimdi.xtanative.store.StoreDir
+import java.io.IOException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -80,9 +81,17 @@ class SettingsStore(private val dir: StoreDir) {
         return migrated
     }
 
+    /**
+     * Takes [settings] at once and writes them. A write that fails (a full
+     * disk) keeps them for this run rather than ending it: the next change
+     * writes them whole again.
+     */
     private suspend fun save(settings: Settings) {
-        file.write(encode(settings))
         current.value = settings
+        try {
+            file.write(encode(settings))
+        } catch (_: IOException) {
+        }
     }
 
     internal companion object {

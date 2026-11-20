@@ -49,11 +49,19 @@ class SessionStore(private val file: File, private val initial: Session = Sessio
         read.getOrNull()?.let { current.value = it }
     }
 
+    /**
+     * The session changed by [transform], taken at once and written. A write
+     * that fails (a full disk) keeps it for this run rather than ending it:
+     * the next change writes it whole again.
+     */
     suspend fun update(transform: (Session) -> Session) = mutex.withLock {
         val next = transform(current.value ?: initial)
         current.value = next
-        withContext(Dispatchers.IO) { write(Session.encode(next)) }
-        failed.value = null
+        try {
+            withContext(Dispatchers.IO) { write(Session.encode(next)) }
+            failed.value = null
+        } catch (_: IOException) {
+        }
     }
 
     /**
