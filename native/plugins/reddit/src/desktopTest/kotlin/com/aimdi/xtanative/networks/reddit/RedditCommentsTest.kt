@@ -435,4 +435,11 @@ class RedditCommentsTest {
         assertFalse(RedditComment(id = "s", body = "", permalink = "/r/x/comments/y/", moreCount = 3).isRemoved)
         assertFalse(RedditComment(id = "g", body = "still says something", author = "[deleted]").isRemoved)
     }
+
+    @Test
+    fun aCommentThatIsOnlyAPictureIsACommentNotAStub() {
+        val picture = RedditComment(id = "g", body = "", permalink = "/r/x/comments/y/z/g/", mediaUrls = listOf("https://i.redd.it/a.gif"))
+        assertFalse(picture.isStub, "its picture is what it says")
+        assertTrue(RedditComment(id = "s", body = "", permalink = "/r/x/comments/y/z/s/").isStub, "no words, no picture: more to load")
+    }
 }

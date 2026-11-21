@@ -143,7 +143,9 @@ class RedditFollowingFeed(
                 }
             }.awaitAll()
         }
-        return newestFirst(pages.flatten())
+        // None of them could be read (offline, refused): that is a failed read to say so, not a feed with nothing new.
+        if (pages.all { it.isFailure }) throw pages.first().exceptionOrNull()!!
+        return newestFirst(pages.flatMap { it.getOrDefault(emptyList()) })
     }
 
     private suspend fun postsOf(
@@ -153,12 +155,12 @@ class RedditFollowingFeed(
         hideNsfw: Boolean,
         limit: Int,
         fetch: suspend () -> Page<RedditPost>,
-    ): List<RedditPost> = try {
-        filterRedditPosts(cache.listing(key, forceRefresh, fetch).items.filterNot { it.stickied }, hideNsfw).take(limit)
+    ): Result<List<RedditPost>> = try {
+        Result.success(filterRedditPosts(cache.listing(key, forceRefresh, fetch).items.filterNot { it.stickied }, hideNsfw).take(limit))
     } catch (e: CancellationException) {
         throw e
     } catch (e: Exception) {
-        emptyList()
+        Result.failure(e)
     }
 
     /** Signing in or out and choosing the account-free route change which Reddit answers, so what was cached is not the answer. */

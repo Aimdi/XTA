@@ -12,7 +12,14 @@ class RedditRoutesTest {
         assertEquals(RedditRoute.Subreddit("dartlang"), opened("https://www.reddit.com/r/dartlang/"))
         assertEquals(RedditRoute.Subreddit("FlutterDev"), opened("https://old.reddit.com/r/FlutterDev/top/?t=week"))
         assertEquals(RedditRoute.Subreddit("pics"), opened("https://reddit.com/R/pics"))
-        assertEquals(RedditRoute.Subreddit("pics"), opened("https://www.reddit.com/r/pics/s/AbCdEf123"))
+    }
+
+    @Test
+    fun aShareLinkOrACommunitysOtherPagesOpenOnRedditNotAsItsFeed() {
+        // A share link names a post only Reddit can resolve; the community's feed is not what was linked.
+        assertNull(RedditRoutes.forUrl("https://www.reddit.com/r/pics/s/AbCdEf123"))
+        assertNull(RedditRoutes.forUrl("https://www.reddit.com/r/pics/wiki/index"))
+        assertNull(RedditRoutes.forUrl("https://www.reddit.com/r/pics/about/rules"))
     }
 
     @Test

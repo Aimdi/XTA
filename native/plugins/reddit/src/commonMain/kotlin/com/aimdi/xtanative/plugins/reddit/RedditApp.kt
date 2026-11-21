@@ -179,7 +179,10 @@ internal class RedditApp(val host: PluginHost) {
 
     fun follow(subreddit: String, follow: Boolean) = launch {
         if (follow) subscriptions.add(subreddit) else unfollowNow(subreddit)
-        feed.refresh(RedditSubscriptions.names(subscriptions.load()))
+        val names = RedditSubscriptions.names(subscriptions.load())
+        // A community open in the tab that was just unfollowed is no longer open there.
+        prefs.update { RedditHomeSource.reconciled(it, names) }
+        feed.refresh(names)
     }
 
     /** [subreddit] no longer followed here and out of the app's groups, as XTA's RedditSubredditsStore.remove takes it out of them. */

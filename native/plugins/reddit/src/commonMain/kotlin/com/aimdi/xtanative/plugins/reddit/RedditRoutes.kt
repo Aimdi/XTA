@@ -80,15 +80,25 @@ internal object RedditRoutes {
         }
     }
 
-    private fun communityRoute(segments: List<String>): String {
+    /**
+     * A community's listing (bare, or under one of its orders), or a post's
+     * thread. Null for its other pages (a share link `/s/…`, its wiki, its
+     * rules), which are no listing: they open on Reddit rather than as the
+     * community's feed.
+     */
+    private fun communityRoute(segments: List<String>): String? {
         val subreddit = segments[1]
-        val id = segments.getOrNull(3)?.takeIf { segments[2] == "comments" && postId.matches(it) }?.lowercase() ?: return subreddit(subreddit)
+        val page = segments.getOrNull(2)?.lowercase() ?: return subreddit(subreddit)
+        if (page in listingOrders) return subreddit(subreddit)
+        if (page != "comments") return null
+        val id = segments.getOrNull(3)?.takeIf { postId.matches(it) }?.lowercase() ?: return subreddit(subreddit)
         val title = segments.getOrNull(4)?.replace('_', ' ')
         return "thread" + params("permalink" to "/r/$subreddit/comments/$id/", "id" to id, "sub" to subreddit, "title" to title)
     }
 
     private fun community(first: String, name: String) = (first == "r" || first == "R") && communityName.matches(name)
 
+    private val listingOrders = setOf("hot", "new", "top", "rising", "best", "controversial")
     private val communityName = Regex("^[A-Za-z0-9_]{2,50}$")
     private val postId = Regex("^[A-Za-z0-9]{5,10}$")
 

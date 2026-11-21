@@ -140,7 +140,8 @@ data class RedditComment(
     /** On a stub for comments held back at a thread's top: where www.reddit.com serves the next of them. */
     val nextPage: RedditCommentsCursor? = null,
 ) {
-    val isStub: Boolean get() = moreCount != null || (body.isEmpty() && permalink != null && replies.isEmpty())
+    // A comment that is only a picture or a GIF has no words either, and is no stub.
+    val isStub: Boolean get() = moreCount != null || (body.isEmpty() && mediaUrls.isEmpty() && permalink != null && replies.isEmpty())
 
     /** Reddit kept the row but took the words: deleted by its author or removed by a moderator. */
     val isRemoved: Boolean get() = !isStub && body.trim().lowercase() in REMOVED_BODIES
