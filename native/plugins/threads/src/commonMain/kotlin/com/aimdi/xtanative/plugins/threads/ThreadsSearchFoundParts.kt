@@ -197,7 +197,10 @@ internal fun rememberSessionPeople(app: ThreadsApp, terms: ThreadsSearchTerms): 
     val fetch = rememberKept(ThreadsSearchRules.peopleKey(terms.query, session)) { scope ->
         Fetch(scope) {
             app.ready()
-            if (session) app.direct.searchUsers(terms.query).items else app.direct.guestPeople(terms.query).orEmpty()
+            ThreadsSearchRules.people(
+                guest = { app.direct.guestPeople(terms.query) },
+                account = if (session) ({ app.direct.searchUsers(terms.query).items }) else null,
+            )
         }
     }
     LaunchedEffect(fetch) { fetch.ensure() }

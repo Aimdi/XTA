@@ -123,7 +123,8 @@ internal class ThreadsActivityModel(private val app: ThreadsApp, private val fil
 /**
  * The signed-in reader's activity, as Threads' Activity lists it: Meta's own
  * line for each reply, mention, quote, repost, like and new follower, with
- * who did it and when, All, Replies and Mentions to choose from. A line opens
+ * who did it and when; All, Replies and Mentions as Meta gives them, and
+ * quotes, reposts and new followers picked out of All here. A line opens
  * the post it is about, else the profile of whoever did it. Read only:
  * nothing is marked seen on Threads, answered or followed back.
  */
@@ -149,17 +150,21 @@ private fun filterLabel(filter: ThreadsActivityFilter): PluginText = when (filte
     ThreadsActivityFilter.ALL -> Strings.all
     ThreadsActivityFilter.REPLIES -> Strings.replies
     ThreadsActivityFilter.MENTIONS -> Strings.mentions
+    ThreadsActivityFilter.QUOTES -> Strings.quotes
+    ThreadsActivityFilter.REPOSTS -> Strings.profile_reposts
+    ThreadsActivityFilter.FOLLOWS -> Strings.followers
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ActivityList(app: ThreadsApp, filter: ThreadsActivityFilter) {
-    val model = rememberKept("threads-activity-${filter.name}") { scope -> ThreadsActivityModel(app, filter, scope) }
+    // A kind picked out on the device shows what All has read: one list, one read.
+    val model = rememberKept("threads-activity-${filter.asked.name}") { scope -> ThreadsActivityModel(app, filter.asked, scope) }
     LaunchedEffect(model) { model.first.ensure() }
     val first by model.first.state.collectAsState()
     val more by model.more.state.collectAsState()
     LaunchedEffect(first.value) { first.value?.let { model.more.start(it.items, it.next) } }
-    val lines = remember(first.value, more.items) { (first.value?.items.orEmpty() + more.items).distinctBy { it.id } }
+    val lines = remember(first.value, more.items, filter) { filter.shown((first.value?.items.orEmpty() + more.items).distinctBy { it.id }) }
     val body = ThreadsPeopleView.body(signedIn = true, read = first.value != null, problem = first.problem != null, people = lines.size, typed = "")
     val state = rememberLazyListState()
     ReadsMoreNear(state, model.more, more)
@@ -173,7 +178,10 @@ private fun ActivityList(app: ThreadsApp, filter: ThreadsActivityFilter) {
                 ThreadsPeopleView.Body.PEOPLE -> items(lines, key = { "activity:" + it.id }, contentType = { "activity" }) { line -> ActivityRow(app, line) }
                 else -> item(key = "empty") { MessageText(pluginString(Strings.activity_empty)) }
             }
-            if (body == ThreadsPeopleView.Body.PEOPLE) sessionMoreFoot("activity", more, model.more::loadMore) { model.more.retry() }
+            // A kind with no line yet may have some further down what was read.
+            if (body == ThreadsPeopleView.Body.PEOPLE || (filter.kind != null && first.value != null && first.problem == null)) {
+                sessionMoreFoot("activity", more, model.more::loadMore) { model.more.retry() }
+            }
         }
     }
 }

@@ -17,6 +17,9 @@ import kotlinx.serialization.json.JsonPrimitive
 internal data class ThreadsFeedSnapshot(val posts: List<ThreadsPost> = emptyList(), val answeredAt: Map<String, Instant> = emptyMap()) {
     val isEmpty: Boolean get() = posts.isEmpty()
 
+    /** Whether the posts may have been cut at [CAP], so an account with none here may still have some. */
+    val isCut: Boolean get() = posts.size >= CAP
+
     fun encode(): String = JsonObject(
         mapOf(
             "v" to JsonPrimitive(VERSION),

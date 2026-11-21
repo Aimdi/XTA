@@ -17,11 +17,25 @@ enum class ThreadsActivityKind {
     OTHER,
 }
 
-/** The part of the activity asked for: everything, or one of the filters Threads' Activity offers. */
-enum class ThreadsActivityFilter(val selected: String?) {
+/**
+ * The part of the activity shown: everything, one of the filters Meta is
+ * asked for by name ([selected]), or one kind picked out of everything on
+ * the device ([kind]), which costs the account no read of its own.
+ */
+enum class ThreadsActivityFilter(val selected: String?, val kind: ThreadsActivityKind? = null) {
     ALL(null),
     REPLIES("text_post_app_replies"),
     MENTIONS("text_post_app_mentions"),
+    QUOTES(null, ThreadsActivityKind.QUOTE),
+    REPOSTS(null, ThreadsActivityKind.REPOST),
+    FOLLOWS(null, ThreadsActivityKind.FOLLOW),
+    ;
+
+    /** The filter Meta is asked for: everything, for one picked out here. */
+    val asked: ThreadsActivityFilter get() = if (kind == null) this else ALL
+
+    /** [items] as this filter shows them. */
+    fun shown(items: List<ThreadsActivityItem>): List<ThreadsActivityItem> = if (kind == null) items else items.filter { it.kind == kind }
 }
 
 /**

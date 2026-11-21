@@ -367,7 +367,10 @@ class ThreadsDirectClient(
      */
     fun sessionChanged() {
         synchronized(sessionPages) { sessionPages.clear() }
-        synchronized(keeping) { answeringPaths.clear() }
+        synchronized(keeping) {
+            answeringPaths.clear()
+            homeTimeline = null
+        }
         guard.sessionChanged()
     }
 
@@ -447,8 +450,20 @@ class ThreadsDirectClient(
         return guestAccount(handle)
     }
 
-    /** The first page of the Bearer session's For you timeline, at most [limit] threads. */
-    suspend fun followingTimeline(limit: Int = 40): Page<ThreadsPost> = Page(forYouTimeline().items.take(limit), null)
+    /**
+     * The first page of the Bearer session's For you timeline, at most
+     * [limit] threads: the one read in the last [CARD_TTL_MILLIS] unless
+     * [fresh], as an account's threads are held, so coming back to Home
+     * spends the account nothing.
+     */
+    suspend fun followingTimeline(limit: Int = 40, fresh: Boolean = false): Page<ThreadsPost> {
+        if (!fresh) synchronized(keeping) { homeTimeline?.takeIf { (at, _) -> clock() - at < CARD_TTL_MILLIS }?.second }?.let { return Page(it.take(limit), null) }
+        val items = forYouTimeline().items
+        synchronized(keeping) { homeTimeline = clock() to items }
+        return Page(items.take(limit), null)
+    }
+
+    private var homeTimeline: Pair<Long, List<ThreadsPost>>? = null
 
     /**
      * One page of the Bearer session's For you timeline, as the Threads app
@@ -516,6 +531,12 @@ class ThreadsDirectClient(
     suspend fun moreReposts(handle: String, cursor: String): ThreadsMore<ThreadsPost> {
         val key = handle.trim().lowercase()
         return more(cursor, profileUrl(key, "reposts")) { ThreadsPages.reposts(ThreadsPages.chainsIn(it), key) }
+    }
+
+    /** [handle]'s media after [cursor], the cursor [guestMedia] gave. */
+    suspend fun moreMedia(handle: String, cursor: String): ThreadsMore<ThreadsPost> {
+        val key = handle.trim().lowercase()
+        return more(cursor, profileUrl(key, "media")) { ThreadsPages.media(ThreadsPages.chainsIn(it), key) }
     }
 
     /**
@@ -623,6 +644,34 @@ class ThreadsDirectClient(
         val page = guestPage(profileUrl(key, "reposts"))
         val posts = withContext(Dispatchers.Default) { ThreadsPages.reposts(ThreadsPages.chains(page), key) }
         return Page(posts, ThreadsNextPages.first(page) { "RepostsTab" in it.query.orEmpty() }?.encoded())
+    }
+
+    /**
+     * [handle]'s posts with a picture or a video, from the public
+     * `/@handle/media` page (Threads' own Media tab): its threads and its
+     * replies alike, without the posts of others they are shown under.
+     * Empty when Meta embedded none for a guest; the cursor after them when
+     * the page named one.
+     */
+    suspend fun guestMedia(handle: String): Page<ThreadsPost> {
+        val key = handle.trim().lowercase()
+        val page = guestPage(profileUrl(key, "media"))
+        val posts = withContext(Dispatchers.Default) { ThreadsPages.media(ThreadsPages.chains(page), key) }
+        return Page(posts, ThreadsNextPages.first(page) { "MediaTab" in it.query.orEmpty() }?.encoded())
+    }
+
+    /**
+     * [handle]'s threads as the reader's own account is shown them, for a
+     * profile a guest is shown nothing of (a private account the reader
+     * follows on Threads): asked only when its profile is opened, whatever
+     * the switch for background reads says, through the guard as every
+     * session read. Empty when Meta gives the account none.
+     */
+    suspend fun sessionThreads(handle: String, count: Int = POSTS_PER_ACCOUNT): Page<ThreadsPost> {
+        val current = requireCookies()
+        val id = resolveUserId(handle)
+        val url = ThreadsLinks.web("/api/v1/text_feed/$id/profile/", listOf("count" to "$count"))
+        return Page(ThreadsParser.feed(sessionRead(url, cookieHeaders(current))), null)
     }
 
     /**

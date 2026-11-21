@@ -126,6 +126,9 @@ class ThreadsForYou(
         const val MAX_EXPLORED = 12
 
         private const val GUEST_CURSOR = "guest:"
+
+        /** Where a guest's selection kept from the last run goes on: the public page, read again. */
+        const val AFTER_RESTORE = GUEST_CURSOR + "1"
         private const val EXPLORE_CURSOR = "explore:"
 
         /** What Meta says to a session that the public page can stand in for. */
@@ -182,10 +185,19 @@ class ThreadsForYouFeed(
 
     private val reading = Mutex()
 
-    /** What the reader last saw, painted before anything is asked; nothing when posts are shown already. */
+    /**
+     * What the reader last saw, painted before anything is asked; nothing
+     * when posts are shown already. A guest's selection goes on where a
+     * guest's always can, by reading the public page again, so its end is
+     * no dead end; a session's is read on by a refresh. Restored posts are
+     * no answer from Meta: the feed is not yet loaded.
+     */
     fun restore(posts: List<ThreadsPost>, source: ThreadsForYouSource?, readAt: Instant?) {
         if (posts.isEmpty()) return
-        mutable.update { if (it.posts.isEmpty()) it.copy(posts = posts.distinctBy(ThreadsPost::id), source = source, readAt = readAt) else it }
+        val next = ThreadsForYou.AFTER_RESTORE.takeIf { source == ThreadsForYouSource.GUEST }
+        mutable.update {
+            if (it.posts.isEmpty()) it.copy(posts = posts.distinctBy(ThreadsPost::id), source = source, readAt = readAt, next = next) else it
+        }
     }
 
     /** Whether a read may leave now: not while one is under way, nor before a rate limit's end. */

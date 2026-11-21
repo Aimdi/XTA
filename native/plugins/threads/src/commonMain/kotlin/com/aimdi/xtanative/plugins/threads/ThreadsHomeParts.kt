@@ -142,14 +142,14 @@ private fun FilterSheet(app: ThreadsApp, onDismiss: () -> Unit) {
                 contents.forEachIndexed { index, (content, label) ->
                     SegmentedButton(
                         selected = options.content == content,
-                        onClick = { app.setOptions(options.copy(content = content)) },
+                        onClick = { app.changeOptions { it.copy(content = content) } },
                         shape = SegmentedButtonDefaults.itemShape(index, contents.size),
                         icon = { SegmentIcon(content) },
                     ) { Text(pluginString(label), maxLines = 1) }
                 }
             }
-            SwitchRow(Strings.hide_replies, options.hideReplies) { app.setOptions(options.copy(hideReplies = it)) }
-            SwitchRow(Strings.hide_reposts, options.hideReposts) { app.setOptions(options.copy(hideReposts = it)) }
+            SwitchRow(Strings.hide_replies, options.hideReplies) { on -> app.changeOptions { it.copy(hideReplies = on) } }
+            SwitchRow(Strings.hide_reposts, options.hideReposts) { on -> app.changeOptions { it.copy(hideReposts = on) } }
             MutedWords(options) { app.setOptions(it) }
             MutedAccounts(options.mutedAccounts) { app.muteAccount(it, muted = false) }
             if (options.hiddenPosts.isNotEmpty()) {

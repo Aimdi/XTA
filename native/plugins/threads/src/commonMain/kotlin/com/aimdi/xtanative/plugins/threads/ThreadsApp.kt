@@ -6,10 +6,10 @@ import com.aimdi.xtanative.networks.threads.ThreadsDirectClient
 import com.aimdi.xtanative.networks.threads.ThreadsDiscovery
 import com.aimdi.xtanative.networks.threads.ThreadsException
 import com.aimdi.xtanative.networks.threads.ThreadsFailure
-import com.aimdi.xtanative.networks.threads.ThreadsTopic
 import com.aimdi.xtanative.networks.threads.ThreadsFeedMix
 import com.aimdi.xtanative.networks.threads.ThreadsForYou
 import com.aimdi.xtanative.networks.threads.ThreadsForYouFeed
+import com.aimdi.xtanative.networks.threads.ThreadsForYouSource
 import com.aimdi.xtanative.networks.threads.ThreadsLinks
 import com.aimdi.xtanative.networks.threads.ThreadsPeople
 import com.aimdi.xtanative.networks.threads.ThreadsPost
@@ -25,6 +25,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsSession
 import com.aimdi.xtanative.networks.threads.ThreadsSetup
 import com.aimdi.xtanative.networks.threads.ThreadsSuggested
 import com.aimdi.xtanative.networks.threads.ThreadsSuggestedAccount
+import com.aimdi.xtanative.networks.threads.ThreadsTopic
 import com.aimdi.xtanative.networks.threads.ThreadsXy
 import com.aimdi.xtanative.store.backup.ProfileSubscriptionRow
 import com.aimdi.xtanative.store.backup.XtaTime
@@ -176,7 +177,10 @@ internal class ThreadsApp(val host: PluginHost) {
         // A session pasted, signed in with or cleared is a new one to the account guard: not signed out, sent today's headers.
         scope.launch {
             host.settings.state.filterNotNull().map { it[ThreadsPrefs.directCookies] to it[ThreadsPrefs.directBearer] }
-                .distinctUntilChanged().drop(1).collect { direct.sessionChanged() }
+                .distinctUntilChanged().drop(1).collect {
+                    direct.sessionChanged()
+                    sessionLeft()
+                }
         }
         // What the For you section keeps is written a moment after the last change, not at every scrolled row.
         scope.launch {
@@ -282,6 +286,19 @@ internal class ThreadsApp(val host: PluginHost) {
         }
     }
 
+    /**
+     * What the session before showed is not the new one's, nor a guest's:
+     * whom it signed in as is asked again when needed, and a For you read
+     * with it is forgotten, on screen and in its file.
+     */
+    private fun sessionLeft() {
+        signedInNow.value = null
+        if (forYou.state.value.source != ThreadsForYouSource.SESSION) return
+        forYou.forget()
+        forYouPlace = ThreadsPlace()
+        forYouChanged.update { it + 1 }
+    }
+
     /** The session gone from this device: the cookies and the Bearer, and whom they signed in as. */
     fun clearSession() {
         signedInNow.value = null
@@ -302,7 +319,11 @@ internal class ThreadsApp(val host: PluginHost) {
         val handles = ThreadsAccounts.handles(accounts.load()).toSet()
         val snapshot = ThreadsFeedSnapshot.decode(settings()[ThreadsPrefs.feedSnapshot]).followedBy(handles)
         if (snapshot.isEmpty) return
-        snapshot.answeredAt.forEach { (handle, at) -> reader.remember(handle, snapshot.postsOf(handle), at) }
+        // A snapshot cut at its cap may hold nothing of a quiet account: that one is read, not taken as answered with nothing.
+        snapshot.answeredAt.forEach { (handle, at) ->
+            val posts = snapshot.postsOf(handle)
+            if (posts.isNotEmpty() || !snapshot.isCut) reader.remember(handle, posts, at)
+        }
         feed.restore(snapshot.posts)
     }
 
@@ -541,6 +562,9 @@ internal class ThreadsApp(val host: PluginHost) {
     fun setOptions(options: ThreadsFeedOptions) = update { it.with(ThreadsPrefs.feedOptions, options.encode()) }
 
     /** The feed's choices changed from what they are when the change is written, so two changes made at once both stay. */
+    /** One change to the feed's options, made to what is kept now: two taps in a row both hold. */
+    fun changeOptions(edit: (ThreadsFeedOptions) -> ThreadsFeedOptions) = editOptions(edit)
+
     private fun editOptions(edit: (ThreadsFeedOptions) -> ThreadsFeedOptions) =
         update { it.with(ThreadsPrefs.feedOptions, edit(ThreadsFeedOptions.decode(it[ThreadsPrefs.feedOptions])).encode()) }
 
@@ -651,9 +675,12 @@ internal class ThreadsApp(val host: PluginHost) {
      * it is not one of them.
      */
     fun openMedia(post: ThreadsPost, index: Int, opens: Boolean, among: List<ThreadsPost>?) {
-        val start = among?.let { ThreadsMediaItems.galleryStart(it, post, index) } ?: return openMedia(post, index, opens)
-        val quality = current()[MediaPrefs.videoQuality]
-        val viewed = ThreadsViewed(among.flatMap { ThreadsMediaItems.items(it, quality) }, among.flatMap(ThreadsMediaItems::qualities))
+        // Media still behind its cover is not swiped into: only the post tapped, which the reader uncovered, and what shows.
+        val settings = current()
+        val shown = among?.filter { it.id == post.id || !ThreadsMediaCover.covers(it, settings) }
+        val start = shown?.let { ThreadsMediaItems.galleryStart(it, post, index) } ?: return openMedia(post, index, opens)
+        val quality = settings[MediaPrefs.videoQuality]
+        val viewed = ThreadsViewed(shown.flatMap { ThreadsMediaItems.items(it, quality) }, shown.flatMap(ThreadsMediaItems::qualities))
         host.open(ThreadsRoutes.media(shelf.put(viewed), start))
     }
 
