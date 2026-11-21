@@ -98,7 +98,7 @@ class OfflineSpeechEngineTest {
         val system = SystemEngine()
         assertTrue(SpeechReader(listOf(engine(), system)).speak("Post", germanText, TtsChoice()))
         assertEquals(german, loaded.single().voice)
-        assertEquals(1, log.count { it.startsWith("play:") })
+        assertEquals(chunkForSpeech(germanText, 300, 100).size, log.count { it.startsWith("play:") })
         assertTrue(system.spoken.isEmpty(), "the system engine stays quiet")
     }
 
@@ -148,15 +148,23 @@ class OfflineSpeechEngineTest {
 
     @Test
     fun aShortArticleIsASingleClip() = runBlocking {
+        val short = germanText.substringBefore(". ") + "."
+        SpeechReader(listOf(engine())).speak("Post", short, TtsChoice())
+        assertEquals(listOf("synth:$short", "play:clip:$short", "done:clip:$short"), log.toList())
+    }
+
+    @Test
+    fun anArticleStartsWithOneSentenceSoTheVoiceSpeaksSoon() = runBlocking {
         SpeechReader(listOf(engine())).speak("Post", germanText, TtsChoice())
-        assertEquals(1, chunkForSpeech(germanText, 300).size)
-        assertEquals(listOf("synth:$germanText", "play:clip:$germanText", "done:clip:$germanText"), log.toList())
+        val first = germanText.substringBefore(". ") + "."
+        assertEquals("synth:$first", log.first(), "the first clip to make is one sentence, not the whole opening")
+        assertEquals(2, log.count { it.startsWith("play:") })
     }
 
     @Test
     fun chunksPlayInOrderWithTheNextOneReadyBeforeThisOneEnds() = runBlocking {
         val text = List(4) { germanText }.joinToString(" ")
-        val chunks = chunkForSpeech(text, 300)
+        val chunks = chunkForSpeech(text, 300, 100)
         assertTrue(chunks.size > 2)
         SpeechReader(listOf(engine())).speak("Post", text, TtsChoice())
         assertEquals(chunks.map { "play:clip:$it" }, log.filter { it.startsWith("play:") })
@@ -187,6 +195,6 @@ class OfflineSpeechEngineTest {
     @Test
     fun theSpeechRateBecomesSherpaSpeed() = runBlocking {
         SpeechReader(listOf(engine())).speak("Post", germanText, TtsChoice(rate = 0.6))
-        assertEquals(1.2, synthesizers.single().speeds.single(), 1e-9)
+        assertEquals(1.2, synthesizers.single().speeds.distinct().single(), 1e-9)
     }
 }
