@@ -1,15 +1,10 @@
 package com.aimdi.xtanative.ui.chrome
 
+import android.os.Build
 import android.view.Window
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.displayCutout
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.windowInsetsPadding
+import android.view.WindowManager
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -17,20 +12,28 @@ import androidx.core.view.WindowInsetsControllerCompat
 /**
  * Settings › Theme › Hide the status bar: [window]'s status bar (time,
  * battery, signal) hidden while [hidden], a swipe from the top edge showing
- * it a moment; the navigation bar stays. While it is hidden the screens are
- * kept clear of a camera cutout at the top, which the status bar covered
- * before and the screens' own bars no longer leave room for.
+ * it a moment; the navigation bar stays. The screens then take the space it
+ * had, up to the top edge, the strip beside a camera cutout included.
  */
 @Composable
 fun StatusBarFrame(window: Window, hidden: Boolean, content: @Composable () -> Unit) {
     LaunchedEffect(window, hidden) { StatusBar.show(window, !hidden) }
-    val clear = if (hidden) Modifier.windowInsetsPadding(WindowInsets.displayCutout.only(WindowInsetsSides.Top)) else Modifier
-    Box(clear) { content() }
+    content()
 }
 
 /** The status bar of a window, shown or hidden. */
 object StatusBar {
     fun show(window: Window, shown: Boolean) {
+        // Drawn up to the top edge beside a camera cutout, where the status bar was.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            window.attributes = window.attributes.apply {
+                layoutInDisplayCutoutMode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
+                } else {
+                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+                }
+            }
+        }
         val bars = WindowCompat.getInsetsController(window, window.decorView)
         bars.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         if (shown) bars.show(WindowInsetsCompat.Type.statusBars()) else bars.hide(WindowInsetsCompat.Type.statusBars())
