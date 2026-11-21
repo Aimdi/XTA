@@ -69,7 +69,11 @@ object ThreadsRelayProviders {
             "HasStitchedAttachment HasTopLevelSaveButton HasUnseenReplies HasViewerReplied HasWebFavicons IsCrawler IsInternalUser " +
             "IsLoggedIn IsLoggedOut IsLoggedOutShareTestEnabled IsSearchDiscoveryEnabled MessagesHasLiveChatMessaging " +
             "MessagingHasMetaAIBot OptInNotifWebEnabled OptionalCookiesEnabled ShouldFetchPostAuthorFullName " +
-            "ShouldFulfillLightboxQuery ShouldShowFediverseM075Features ShouldShowFediverseM1Features"
+            "ShouldFulfillLightboxQuery ShouldShowFediverseM075Features ShouldShowFediverseM1Features " +
+            // Run 195's probe: declared by the queries asked by a bundle's id, which Meta refuses with one of them missing.
+            "HasAdditionalLikeCount HasCommunityCustomizationPermission HasLocalTrendLabelInFeed HasLocalTrendLabelInSearch " +
+            "HasMiddlemistConsumption HasThreadsFriendsApplication HasUFINotInterested IsDesktop IsLiveChatProfileCardEnabled " +
+            "QuotedPostParentCaptionEnabled"
         ).split(' ').filter { it.isNotEmpty() }
 
     /** What a guest is sent for each name seen, before any page said otherwise. */

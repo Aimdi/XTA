@@ -764,7 +764,8 @@ class ThreadsDirectClient(
         val key = ThreadsLinks.normaliseHandle(handle) ?: return null
         val id = guestProfile(key).pk.takeIf { it.isNotEmpty() && it.all(Char::isDigit) } ?: return null
         val variables = ThreadsBundleReads.variables(values.aboutProfileVariable, id)
-        val roots = bundleRead(values.aboutProfileDocId, ThreadsBundleReads.ABOUT_PROFILE, variables, profileUrl(key), provided = emptySet()) ?: return null
+        // Asked with no provided variable Meta said one was missing (run 195): every one seen goes with it.
+        val roots = bundleRead(values.aboutProfileDocId, ThreadsBundleReads.ABOUT_PROFILE, variables, profileUrl(key)) ?: return null
         return ThreadsBundleReads.about(roots)
     }
 
@@ -1031,7 +1032,7 @@ class ThreadsDirectClient(
 
     /** The trends guest GraphQL names when the search page carried none; none while the read is off, without a token, or refused. */
     private suspend fun askedTrends(): List<ThreadsTrend> = try {
-        bundleRead(repairs().trendingTopicsDocId, ThreadsBundleReads.TRENDING_TOPICS, JsonObject(emptyMap()), ThreadsLinks.web("/search"), readPage = false, provided = ThreadsBundleReads.TRENDING_PROVIDED)
+        bundleRead(repairs().trendingTopicsDocId, ThreadsBundleReads.TRENDING_TOPICS, ThreadsBundleReads.TRENDING_VARIABLES, ThreadsLinks.web("/search"), readPage = false, provided = ThreadsBundleReads.TRENDING_PROVIDED)
             ?.let(ThreadsTrends::fromRoots).orEmpty()
     } catch (e: Exception) {
         if (!e.isReadFailure()) throw e

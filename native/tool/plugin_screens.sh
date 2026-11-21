@@ -138,18 +138,14 @@ installed=$(installed_plugin)
 tap_node "text=\"$installed\"" || fail "No box for $installed"
 shot plugin-home 15
 
-# Home, where its timeline is now one of Home's, picked in the timeline picker.
-# Mastodon, Bluesky and Threads share one timeline there while "Group
-# microblogging services" is on, as it is at first, as in XTA.
-timeline="text=\"$name\""
-case "$name" in
-  Mastodon | Bluesky | Threads) timeline='text="Mastodon &amp; Bluesky"' ;;
-esac
+# Home, where its timeline is now one of Home's, picked in Home's sheet: a
+# tile of its own among the networks, said by its name (and "unread").
+timeline="content-desc=\"$name"
 back
 back
-open_picker || fail "No timeline picker on Home"
+open_picker || fail "No sheet on Home"
 wait_for "$timeline" 15 || { shot plugin-strip-missing 0; fail "$name is not among Home's timelines"; }
-tap_node "$timeline" || fail "No $name in Home's timeline picker"
+tap_node "$timeline" || fail "No $name in Home's sheet"
 shot plugin-strip 12
 
 # Uninstalled from the store, after its confirmation.

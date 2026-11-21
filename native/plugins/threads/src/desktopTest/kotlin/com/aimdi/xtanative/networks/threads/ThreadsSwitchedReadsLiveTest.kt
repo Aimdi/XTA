@@ -96,7 +96,7 @@ class ThreadsSwitchedReadsLiveTest {
         asked("unused, feeds", client, http, query("BarcelonaCustomFeedPickerPageQuery", "27445118868519809", emptyMap()), "/", posts)
         asked(
             "unused, front page on", client, http,
-            query("BarcelonaLoggedOutFeedPaginationQuery", "41291939227071792", mapOf("first" to JsonPrimitive(ThreadsNextPage.PAGE_SIZE))),
+            query("BarcelonaLoggedOutFeedPaginationQuery", "41291939227071792", mapOf("first" to JsonPrimitive(ThreadsNextPage.PAGE_SIZE), "after" to JsonNull)),
             "/", posts,
         )
     }
@@ -112,7 +112,7 @@ class ThreadsSwitchedReadsLiveTest {
         read("trending page", http) { "parsed: ${client.trends(force = true).size} trends (the page's, else the query's)" }
         val docId = values.trendingTopicsDocId
         if (docId.isEmpty()) return println("LIVE Threads switched trending query: off")
-        val variables = ThreadsRelayProviders.with(JsonObject(emptyMap()), only = ThreadsBundleReads.TRENDING_PROVIDED)
+        val variables = ThreadsRelayProviders.with(ThreadsBundleReads.TRENDING_VARIABLES, only = ThreadsBundleReads.TRENDING_PROVIDED)
         asked("trending query", client, http, GuestQuery(docId, ThreadsBundleReads.TRENDING_TOPICS, variables, GuestQuery.relayForm(ThreadsBundleReads.TRENDING_TOPICS)), "/search") { roots ->
             "parsed: ${ThreadsTrends.fromRoots(roots).size} trends"
         }
