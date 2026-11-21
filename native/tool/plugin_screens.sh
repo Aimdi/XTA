@@ -68,6 +68,8 @@ fail() {
   echo "On screen:"
   adb shell uiautomator dump /sdcard/ui.xml > /dev/null 2>&1 || true
   adb exec-out cat /sdcard/ui.xml 2> /dev/null | tr '>' '\n' | sed -n 's/.* text="\([^"][^"]*\)".*/  \1/p' | head -40 || true
+  echo "Said on screen:"
+  adb exec-out cat /sdcard/ui.xml 2> /dev/null | tr '>' '\n' | sed -n 's/.* content-desc="\([^"][^"]*\)".*/  \1/p' | head -40 || true
   exit 1
 }
 
@@ -139,8 +141,8 @@ tap_node "text=\"$installed\"" || fail "No box for $installed"
 shot plugin-home 15
 
 # Home, where its timeline is now one of Home's, picked in Home's sheet: a
-# tile of its own among the networks, said by its name (and "unread").
-timeline="content-desc=\"$name"
+# tile of its own among the networks, under its name.
+timeline="text=\"$name\""
 back
 back
 open_picker || fail "No sheet on Home"

@@ -595,12 +595,14 @@ class ThreadsDirectClient(
             if (e.failure != SIGN_IN_REQUIRED) throw e
             return Page(emptyList(), null)
         }
-        return Page(ThreadsPages.recommended(page), ThreadsNextPages.first(page, wanted = ::isFeed)?.encoded())
+        return withContext(Dispatchers.Default) {
+            Page(ThreadsPages.recommended(page), ThreadsNextPages.first(page, refetchBy(ThreadsRefetch.FRONT_PAGE) { null }, wanted = ::isFeed)?.encoded())
+        }
     }
 
     /** The front page's threads after [cursor], as [guestForYou]'s list goes on. */
     suspend fun moreRecommended(cursor: String): ThreadsMore<ThreadsPost> =
-        more(cursor, ThreadsLinks.web("/")) { ThreadsPages.profileThreads(ThreadsPages.chainsIn(it), "") }
+        more(cursor, ThreadsLinks.web("/"), ThreadsRefetch.FRONT_PAGE) { ThreadsPages.profileThreads(ThreadsPages.chainsIn(it), "") }
 
     /** [handle]'s threads after [cursor], the cursor [profileNext] gave. */
     suspend fun moreThreads(handle: String, cursor: String): ThreadsMore<ThreadsPost> {
@@ -617,7 +619,7 @@ class ThreadsDirectClient(
     /** [handle]'s reposts after [cursor], the cursor [guestReposts] gave. */
     suspend fun moreReposts(handle: String, cursor: String): ThreadsMore<ThreadsPost> {
         val key = handle.trim().lowercase()
-        return more(cursor, profileUrl(key, "reposts")) { ThreadsPages.reposts(ThreadsPages.chainsIn(it), key) }
+        return more(cursor, profileUrl(key, "reposts"), ThreadsRefetch.PROFILE_REPOSTS) { ThreadsPages.reposts(ThreadsPages.chainsIn(it), key) }
     }
 
     /** [handle]'s media after [cursor], the cursor [guestMedia] gave. */
@@ -734,8 +736,10 @@ class ThreadsDirectClient(
     suspend fun guestReposts(handle: String): Page<ThreadsPost> {
         val key = handle.trim().lowercase()
         val page = guestPage(profileUrl(key, "reposts"))
-        val posts = withContext(Dispatchers.Default) { ThreadsPages.reposts(ThreadsPages.chains(page), key) }
-        return Page(posts, ThreadsNextPages.first(page) { "RepostsTab" in it.query.orEmpty() }?.encoded())
+        return withContext(Dispatchers.Default) {
+            val refetch = refetchBy(ThreadsRefetch.PROFILE_REPOSTS) { ThreadsPages.userId(page, key) }
+            Page(ThreadsPages.reposts(ThreadsPages.chains(page), key), ThreadsNextPages.first(page, refetch) { "RepostsTab" in it.query.orEmpty() }?.encoded())
+        }
     }
 
     /**

@@ -45,6 +45,7 @@ import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -62,8 +63,8 @@ import com.aimdi.xtanative.ui.generated.resources.home_unread
 import com.aimdi.xtanative.ui.generated.resources.home_xta_settings
 import com.aimdi.xtanative.ui.generated.resources.settings
 import com.aimdi.xtanative.ui.generated.resources.settings_avatar_title
-import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import com.aimdi.xtanative.ui.plugins.ShellSubtitleContent
+import com.aimdi.xtanative.ui.subscriptions.GroupIcons
 import org.jetbrains.compose.resources.stringResource
 
 /** What the switcher sheet offers, decided apart from its sheet. */
@@ -264,16 +265,17 @@ private fun Word(label: String, picked: Boolean, lit: Boolean, onClick: () -> Un
 @Composable
 private fun NetworkTile(id: String, ui: HomeUi, networks: HomeNetworks, shown: Boolean, lit: Boolean, modifier: Modifier, onClick: () -> Unit) {
     val name = ui.networks.firstOrNull { it.id == id }?.title ?: id
-    val label = listOfNotNull(name, stringResource(Res.string.home_unread).takeIf { lit }).joinToString(", ")
+    val unread = stringResource(Res.string.home_unread)
     Box(
         modifier
             .height(88.dp)
             .clip(RoundedCornerShape(12.dp))
             .clickable(onClick = onClick)
-            .clearAndSetSemantics {
+            // One thing to a screen reader: its name as written, shown or not, and "unread" as its state.
+            .semantics(mergeDescendants = true) {
                 role = Role.Button
                 selected = shown
-                contentDescription = label
+                if (lit) stateDescription = unread
             },
         contentAlignment = Alignment.Center,
     ) {

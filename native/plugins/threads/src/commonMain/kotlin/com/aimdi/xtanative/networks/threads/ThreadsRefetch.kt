@@ -13,7 +13,7 @@ import kotlinx.serialization.json.JsonPrimitive
  * is a repair slot ([ThreadsRepairs.refetchDocId]). A refetch query is a
  * fallback only: asked where the page's own query names no doc id, is
  * refused, or brings nothing, so a list that pages today pages as it did.
- * All three are queries; nothing here writes to Threads.
+ * All are queries; nothing here writes to Threads.
  */
 enum class ThreadsRefetch(val query: String, val idVariable: String) {
     /** A conversation's replies: variables `after`, `filterType`, `first`, `postID`, `sortOrder`. */
@@ -24,10 +24,23 @@ enum class ThreadsRefetch(val query: String, val idVariable: String) {
 
     /** A profile's threads: variables `after`, `first`, `userID` and more. */
     PROFILE_THREADS("BarcelonaProfileThreadsTabRefetchableDirectQuery", "userID"),
+
+    /** A profile's reposts: variables `after`, `first`, `userID` and more. CI's probe (run 196) saw it give a guest the posts. */
+    PROFILE_REPOSTS("BarcelonaProfileRepostsTabRefetchableDirectQuery", "userID"),
+
+    /** The front page a guest is shown: variables `after`, `first` and more, about no one. CI's probe (run 196) saw it give a guest seven threads and a cursor. */
+    FRONT_PAGE("BarcelonaLoggedOutFeedPaginationQuery", ""),
     ;
 
-    /** The variables a first page that named none is followed with: the one thing the query is about, [id]; null without it. */
-    fun seed(id: String?): JsonObject? = id?.trim()?.ifEmpty { null }?.let { JsonObject(mapOf(idVariable to JsonPrimitive(it))) }
+    /**
+     * The variables a first page that named none is followed with: the one
+     * thing the query is about, [id]; null without it. A query about no one
+     * ([idVariable] empty) starts from none.
+     */
+    fun seed(id: String?): JsonObject? = when {
+        idVariable.isEmpty() -> JsonObject(emptyMap())
+        else -> id?.trim()?.ifEmpty { null }?.let { JsonObject(mapOf(idVariable to JsonPrimitive(it))) }
+    }
 
     companion object {
         /** The refetch asked under [query]'s name; null for any other query. */
