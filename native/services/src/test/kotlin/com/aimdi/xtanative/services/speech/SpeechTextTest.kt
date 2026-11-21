@@ -90,4 +90,23 @@ class SpeechTextTest {
         assertNull(detectTextLanguage("Hello there"))
         assertNull(detectTextLanguage(""))
     }
+
+    @Test
+    fun theFirstUtteranceIsShortSoADownloadedVoiceStartsSoon() {
+        val sentence = "This sentence is here to be read aloud by a voice."
+        val text = List(12) { sentence }.joinToString(" ")
+        val chunks = chunkForSpeech(text, maxChars = 300, firstMaxChars = 100)
+        assertEquals(sentence, chunks.first(), "one sentence to begin with")
+        assertTrue(chunks.drop(1).all { it.length <= 300 })
+        assertTrue(chunks[1].length > 100, "the rest fill up as before")
+        assertEquals(text, chunks.joinToString(" "))
+        assertEquals(listOf("Short."), chunkForSpeech("Short.", maxChars = 300, firstMaxChars = 100))
+    }
+
+    @Test
+    fun paragraphsStayApartSoATitleIsNotRunIntoItsText() {
+        val chunks = chunkForSpeech("A Title\n\nA Publication\n\n" + "The body begins here. ".repeat(20).trim(), maxChars = 300, firstMaxChars = 100)
+        assertEquals("A Title\n\nA Publication\n\nThe body begins here. The body begins here. The body begins here.", chunks.first())
+        assertEquals("One.\n\nTwo.", chunkForSpeech("One.\n \n\nTwo.", maxChars = 5, firstMaxChars = 5).joinToString("|").replace("|", "\n\n"))
+    }
 }

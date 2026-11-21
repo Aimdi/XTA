@@ -26,6 +26,9 @@ interface SpeechEngine {
     /** The longest piece of text [say] is handed at once. */
     val maxChunkChars: Int
 
+    /** The longest first piece, for an engine that is quicker to start on a short one; [maxChunkChars] for the others. */
+    val firstChunkChars: Int get() = maxChunkChars
+
     /** Gets ready to read text in [textLanguage] (`de`, `en`, … or null when unknown); false when it cannot speak at all. */
     suspend fun prepare(choice: TtsChoice, textLanguage: String?): Boolean
 
@@ -93,7 +96,7 @@ class SpeechReader(
         session.prepareAudio()
         session.bind(title, ::stop)
         playback.value = SpeechPlayback(title, speaking = true)
-        val read = readChunks(engine, chunkForSpeech(text, engine.maxChunkChars), mine) { engine.prepare(choice, language) }
+        val read = readChunks(engine, chunkForSpeech(text, engine.maxChunkChars, engine.firstChunkChars), mine) { engine.prepare(choice, language) }
         if (mine == generation.get()) finished()
         return read
     }
@@ -130,7 +133,7 @@ class SpeechReader(
     private suspend fun readChunks(engine: SpeechEngine, chunks: List<String>, mine: Int, retry: suspend () -> Boolean): Boolean {
         for ((index, chunk) in chunks.withIndex()) {
             if (mine != generation.get()) return true
-            var outcome = engine.sayAhead(chunk, chunks.getOrNull(index + 1))
+            var outcome = engine.sayAhead(chunk, ahead(chunks, index))
             if (outcome == UtteranceOutcome.FAILED && index == 0 && mine == generation.get()) {
                 retry()
                 outcome = engine.say(chunk)
@@ -141,13 +144,26 @@ class SpeechReader(
         return true
     }
 
-    /** Says [chunk], telling a lookahead engine about [next] once this one is under way. */
-    private suspend fun SpeechEngine.sayAhead(chunk: String, next: String?): UtteranceOutcome {
-        if (this !is SpeechLookahead || next == null) return say(chunk)
+    /**
+     * The chunks to announce while the one at [index] is said: each chunk is
+     * announced once, [AHEAD] chunks before its turn, so a slow voice has
+     * more than one chunk's playing time to get the next one ready.
+     */
+    private fun ahead(chunks: List<String>, index: Int): List<String> =
+        if (index == 0) chunks.drop(1).take(AHEAD) else listOfNotNull(chunks.getOrNull(index + AHEAD))
+
+    /** Says [chunk], telling a lookahead engine about what comes [next] once this one is under way. */
+    private suspend fun SpeechEngine.sayAhead(chunk: String, next: List<String>): UtteranceOutcome {
+        if (this !is SpeechLookahead || next.isEmpty()) return say(chunk)
         return coroutineScope {
             val saying = async(start = CoroutineStart.UNDISPATCHED) { say(chunk) }
-            upcoming(next)
+            next.forEach(::upcoming)
             saying.await()
         }
+    }
+
+    private companion object {
+        /** How many chunks ahead of the one being said are being made ready. */
+        const val AHEAD = 2
     }
 }
