@@ -408,7 +408,7 @@ private fun followingLook(following: FollowingSettingsViewModel, ui: HomeUi, unr
     return FollowingLook(
         feed = feed,
         mediaOnly = FollowingBar.MEDIA_KEY in media,
-        unread = SourcePicker.sources(ui.tabs).any { it.key in unread },
+        unread = ui.tabs.any { it !is HomeTab.Group &&  it.key in unread },
         accountsOff = HomeFilter.turnedOff(ui.filter, ui.session.accounts, ui.session.groups),
     )
 }
@@ -497,13 +497,13 @@ private fun HomeSheets(parts: HomeParts, shell: HomeShellState, following: Follo
             onMove = parts.vm::move,
             onDismiss = close,
         )
-        HomeSheet.PICKER -> SourcePickerSheet(
+        HomeSheet.PICKER -> PluginSwitcherSheet(
             ui,
             parts.networks,
-            shell.shownKey,
-            unread,
-            PickerCalls(
-                onSource = { tab ->
+            shown = ui.tabs.firstOrNull { it.key == shell.shownKey },
+            unread = unread,
+            calls = SwitcherCalls(
+                onTimeline = { tab ->
                     close()
                     showTimeline(shell, ui, tab.key)
                 },
@@ -511,13 +511,25 @@ private fun HomeSheets(parts: HomeParts, shell: HomeShellState, following: Follo
                     close()
                     openGroup(group, parts.routes, shell.drawer, scope)
                 },
+                onNetwork = { id ->
+                    close()
+                    showTimeline(shell, ui, HomeTab.Network(id).key)
+                },
                 onAdd = { shell.sheet = HomeSheet.STRIP },
                 onMenu = {
                     close()
                     scope.launch { shell.drawer.open() }
                 },
-                onAvatar = { shell.sheet = HomeSheet.AVATAR },
+                onManage = {
+                    close()
+                    parts.routes.openIfExists(HomeDestination.PLUGINS.route)
+                },
+                onSettings = {
+                    close()
+                    parts.routes.openIfExists(HomeDestination.SETTINGS.route)
+                },
                 onDismiss = close,
+                onAvatar = { shell.sheet = HomeSheet.AVATAR },
             ),
         )
         HomeSheet.NETWORKS -> NetworksSheet(

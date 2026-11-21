@@ -80,8 +80,6 @@
     <string name="feed_strip_unavailable">Гэта стужка больш недаступная</string>
     <string name="home_feed_accounts_empty">Дадайце акаўнт, каб загрузіць «Для вас».</string>
     <string name="home_switcher_title">Змяніць плагін</string>
-    <string name="home_switcher_start">Пачатак</string>
-    <string name="home_switcher_start_hint">Падпіскі і ўсе вашы стужкі</string>
     <string name="home_switcher_recent">Нядаўнія</string>
     <string name="home_manage_plugins">Кіраваць плагінамі</string>
     <string name="home_xta_settings">Налады XTA</string>

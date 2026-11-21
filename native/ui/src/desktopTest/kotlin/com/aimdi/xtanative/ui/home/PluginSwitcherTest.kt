@@ -20,4 +20,11 @@ class PluginSwitcherTest {
         )
         assertEquals(emptyList(), PluginSwitcher.networks(listOf(HomeTab.Following), listOf("reddit")))
     }
+
+    @Test
+    fun theWordsAreXtasOwnTimelinesAndNoNetworkOrGroup() {
+        val tabs = listOf(HomeTab.Following, HomeTab.ForYou, HomeTab.Network("reddit"), HomeTab.Group("g", "G"))
+        assertEquals(listOf(HomeTab.Following, HomeTab.ForYou), PluginSwitcher.timelines(tabs))
+        assertEquals(listOf(HomeTab.Following), PluginSwitcher.timelines(listOf(HomeTab.Following, HomeTab.Network("reddit"))), "X left Home: no word for it")
+    }
 }

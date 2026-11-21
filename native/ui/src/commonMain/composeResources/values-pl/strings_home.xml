@@ -80,8 +80,6 @@
     <string name="feed_strip_unavailable">Ta oś czasu jest już niedostępna</string>
     <string name="home_feed_accounts_empty">Dodaj konto, aby wczytać Dla Ciebie.</string>
     <string name="home_switcher_title">Przełącz wtyczkę</string>
-    <string name="home_switcher_start">Start</string>
-    <string name="home_switcher_start_hint">Obserwowane i wszystkie twoje osie czasu</string>
     <string name="home_switcher_recent">Ostatnio używane</string>
     <string name="home_manage_plugins">Zarządzaj wtyczkami</string>
     <string name="home_xta_settings">Ustawienia XTA</string>

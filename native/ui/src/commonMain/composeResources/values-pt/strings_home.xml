@@ -78,8 +78,6 @@
     <string name="feed_strip_unavailable">Esta timeline já não está disponível</string>
     <string name="home_feed_accounts_empty">Adicione uma conta para carregar Para si.</string>
     <string name="home_switcher_title">Mudar de plugin</string>
-    <string name="home_switcher_start">Início</string>
-    <string name="home_switcher_start_hint">A seguir e todas as suas cronologias</string>
     <string name="home_switcher_recent">Usados recentemente</string>
     <string name="home_manage_plugins">Gerir plugins</string>
     <string name="home_xta_settings">Definições do XTA</string>

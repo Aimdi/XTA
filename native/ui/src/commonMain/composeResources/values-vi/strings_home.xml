@@ -77,8 +77,6 @@
     <string name="feed_strip_unavailable">Dòng thời gian này không còn khả dụng</string>
     <string name="home_feed_accounts_empty">Thêm tài khoản để tải Dành cho bạn.</string>
     <string name="home_switcher_title">Đổi plugin</string>
-    <string name="home_switcher_start">Bắt đầu</string>
-    <string name="home_switcher_start_hint">Đang theo dõi và mọi dòng thời gian của bạn</string>
     <string name="home_switcher_recent">Dùng gần đây</string>
     <string name="home_manage_plugins">Quản lý plugin</string>
     <string name="home_xta_settings">Cài đặt XTA</string>

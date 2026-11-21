@@ -62,23 +62,6 @@ object FollowingBar {
     fun opensCustom(picked: FeedSort): Boolean = picked == FeedSort.CUSTOM
 }
 
-/** The sheet that picks Home's timeline (home_timeline_picker.dart, home_source_picker.dart). */
-object SourcePicker {
-    /** The search field shows once there are more rows than this, or a search is typed. */
-    const val SEARCH_AFTER = 8
-
-    fun hasSearch(rows: Int, query: String): Boolean = rows > SEARCH_AFTER || query.isNotEmpty()
-
-    /** Whether every word of [query] is in [label], whatever the case. */
-    fun matches(label: String, query: String): Boolean {
-        val text = label.lowercase()
-        return query.lowercase().split(Regex("\\s+")).filter { it.isNotEmpty() }.all { it in text }
-    }
-
-    /** The timelines the sheet offers: Following, For you and the networks, in the strip's order; groups have a section of their own. */
-    fun sources(tabs: List<HomeTab>): List<HomeTab> = tabs.filter { it !is HomeTab.Group }
-}
-
 /**
  * What another screen asks Home to show (XTA's FeedTabStore, which a group's
  * title menu sets before going back to Home): a timeline, by its tab's key.

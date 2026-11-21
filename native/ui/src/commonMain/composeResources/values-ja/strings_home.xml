@@ -77,8 +77,6 @@
     <string name="feed_strip_unavailable">このタイムラインはもう使えません</string>
     <string name="home_feed_accounts_empty">おすすめを表示するにはアカウントを追加してください。</string>
     <string name="home_switcher_title">プラグインを切り替え</string>
-    <string name="home_switcher_start">スタート</string>
-    <string name="home_switcher_start_hint">フォロー中とすべてのタイムライン</string>
     <string name="home_switcher_recent">最近使用したもの</string>
     <string name="home_manage_plugins">プラグインを管理</string>
     <string name="home_xta_settings">XTAの設定</string>

@@ -78,8 +78,6 @@
     <string name="feed_strip_unavailable">Deze tijdlijn is niet meer beschikbaar</string>
     <string name="home_feed_accounts_empty">Voeg een account toe om Voor jou te laden.</string>
     <string name="home_switcher_title">Plug-in wisselen</string>
-    <string name="home_switcher_start">Start</string>
-    <string name="home_switcher_start_hint">Gevolgd en al je tijdlijnen</string>
     <string name="home_switcher_recent">Recent gebruikt</string>
     <string name="home_manage_plugins">Plug-ins beheren</string>
     <string name="home_xta_settings">XTA-instellingen</string>

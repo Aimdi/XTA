@@ -79,29 +79,22 @@ swipe_up() {
   sleep 1
 }
 
-# The account menu: no bar on Home has an avatar (as in XTA), so the timeline
-# picker's last row, under its timelines (the sheet is pulled up when that row
-# is below it). The picker is Following's button, or another timeline's mark.
+# The account menu: no bar on Home has an avatar (as in XTA), so it is a row
+# of Home's sheet, under the shown timeline's entries (the sheet is pulled up
+# when that row is below it).
 open_menu() {
   tap_node 'content-desc="Open navigation menu"' && return 0
-  open_picker || fail "No account menu or timeline picker on Home"
+  open_picker || fail "No account menu or sheet on Home"
   sleep 2
   tap_node 'text="Open navigation menu"' && return 0
   swipe_up
-  tap_node 'text="Open navigation menu"' || fail "No account menu in the timeline picker"
+  tap_node 'text="Open navigation menu"' || fail "No account menu in Home's sheet"
 }
 
-# Home's timeline picker: Following's button. On a network's timeline its
-# button ("Bluesky, Switch plugin") opens the plugin switcher, whose Start
-# leads back to Following first.
+# Home's sheet: Following's button, or a network's ("Bluesky, Switch plugin").
 open_picker() {
   tap_node 'content-desc="Following"' && return 0
-  tap_node ', Switch plugin"' || return 1
-  sleep 2
-  # The plugin's own entries come first; Start can be below them.
-  tap_node 'text="Start"' || { swipe_up; tap_node 'text="Start"'; } || return 1
-  sleep 2
-  tap_node 'content-desc="Following"'
+  tap_node ', Switch plugin"'
 }
 
 # The store, from Home's account menu.
