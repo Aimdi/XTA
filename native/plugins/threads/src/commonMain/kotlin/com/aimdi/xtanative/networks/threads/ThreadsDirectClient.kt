@@ -259,6 +259,20 @@ class ThreadsDirectClient(
         ThreadsNextPage.decode(cursor)?.let { ownMore(it) } ?: ownPage("/")
 
     /**
+     * A public page the reader opened: as a guest is shown it, and, where
+     * Meta sends a guest to sign in, as the reader's own cookies are shown
+     * it, when there are any. Only for what a reader opens (a post, a
+     * profile's tab): a read made on its own in the background stays a
+     * guest's, and so does everything a guest is given.
+     */
+    private suspend fun openedPage(url: HttpUrl): String = try {
+        guestPage(url)
+    } catch (e: ThreadsException) {
+        if (e.failure != SIGN_IN_REQUIRED || !session().hasCookies || coroutineContext[ThreadsBackground.Key] != null) throw e
+        sessionPage(url)
+    }
+
+    /**
      * A page of threads.com as the signed-in reader's browser is shown it:
      * a session read, through the guard, sent as a browser opens a page
      * (the cookies, no API header). A redirect to a challenge parks the
@@ -701,7 +715,7 @@ class ThreadsDirectClient(
         val key = ThreadsLinks.shortcode(url.toString()) ?: url.toString()
         if (!force) rememberedConversation(key)?.let { return it }
         return conversationReads.run(key) {
-            val body = guestPage(url)
+            val body = openedPage(url)
             // A post's page is a megabyte of scripts: read off the caller's thread, which is a screen's.
             withContext(Dispatchers.Default) {
                 val read = ThreadsPostPage.read(body)
@@ -722,7 +736,7 @@ class ThreadsDirectClient(
     /** [handle]'s replies, from the public `/@handle/replies` page; empty when Meta did not embed them for a guest. */
     suspend fun guestReplies(handle: String): Page<ThreadsPost> {
         val key = handle.trim().lowercase()
-        val page = guestPage(profileUrl(key, "replies"))
+        val page = openedPage(profileUrl(key, "replies"))
         return withContext(Dispatchers.Default) {
             Page(ThreadsPages.replies(page, key), ThreadsNextPages.first(page) { "RepliesTab" in it.query.orEmpty() }?.encoded())
         }
@@ -735,7 +749,7 @@ class ThreadsDirectClient(
      */
     suspend fun guestReposts(handle: String): Page<ThreadsPost> {
         val key = handle.trim().lowercase()
-        val page = guestPage(profileUrl(key, "reposts"))
+        val page = openedPage(profileUrl(key, "reposts"))
         return withContext(Dispatchers.Default) {
             val refetch = refetchBy(ThreadsRefetch.PROFILE_REPOSTS) { ThreadsPages.userId(page, key) }
             Page(ThreadsPages.reposts(ThreadsPages.chains(page), key), ThreadsNextPages.first(page, refetch) { "RepostsTab" in it.query.orEmpty() }?.encoded())
@@ -751,7 +765,7 @@ class ThreadsDirectClient(
      */
     suspend fun guestMedia(handle: String): Page<ThreadsPost> {
         val key = handle.trim().lowercase()
-        val page = guestPage(profileUrl(key, "media"))
+        val page = openedPage(profileUrl(key, "media"))
         val posts = withContext(Dispatchers.Default) { ThreadsPages.media(ThreadsPages.chains(page), key) }
         return Page(posts, ThreadsNextPages.first(page) { "MediaTab" in it.query.orEmpty() }?.encoded())
     }

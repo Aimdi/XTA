@@ -133,6 +133,22 @@ class ThreadsForYouTest {
     }
 
     @Test
+    fun aTabAGuestIsSentToSignInForIsReadWithTheReadersCookiesAndOnlyThen(): Unit = runBlocking {
+        val meta = FakeMeta { asked ->
+            if (asked.headers.containsKey("Cookie")) ok(frontPage(postJson("10", user = "nasa")))
+            else XResponse(302, "", mapOf("Location" to listOf("https://www.threads.com/login")))
+        }
+        direct(meta, ThreadsSession(COOKIES), time = time).guestReplies("nasa")
+        assertEquals(listOf("/@nasa/replies", "/@nasa/replies"), meta.asked.map { it.path })
+        assertEquals(listOf(false, true), meta.asked.map { it.headers.containsKey("Cookie") }, "a guest first; the account only when Meta asks for one")
+
+        val guest = FakeMeta { XResponse(302, "", mapOf("Location" to listOf("https://www.threads.com/login"))) }
+        val failure = assertFailsWith<ThreadsException> { direct(guest, time = time).guestReplies("nasa") }
+        assertEquals(ThreadsFailure.SIGN_IN_REQUIRED, failure.failure)
+        assertEquals(1, guest.asked.size)
+    }
+
+    @Test
     fun thePublicPageIsReadAgainForMoreAFewTimesAndNoFurther(): Unit = runBlocking {
         val meta = FakeMeta { ok(frontPage(postJson("${it.hashCode()}", user = "nasa"))) }
         val forYou = ThreadsForYou(direct(meta, time = time))
