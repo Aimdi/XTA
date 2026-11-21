@@ -4,6 +4,7 @@ import com.aimdi.xtanative.core.x.http.XResponse
 import java.time.Instant
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -96,11 +97,39 @@ class ThreadsForYouTest {
     }
 
     @Test
-    fun pastedCookiesAloneReadThePublicPageAndAreNotSent(): Unit = runBlocking {
+    fun cookiesReadTheReadersOwnFrontPageOnlyWithTheSwitchOn(): Unit = runBlocking {
         val meta = FakeMeta { ok(frontPage(postJson("10", user = "nasa"))) }
         val forYou = ThreadsForYou(direct(meta, ThreadsSession(COOKIES, useSessionApis = true), time = time))
-        assertEquals(ThreadsForYouSource.GUEST, forYou.page().source)
-        assertFalse(meta.asked.single().headers.containsKey("Cookie"))
+        val own = forYou.page()
+        assertEquals(ThreadsForYouSource.SESSION, own.source)
+        assertEquals(listOf("10"), own.posts.map { it.id })
+        val sent = meta.asked.single()
+        assertEquals("/", sent.path)
+        assertTrue(sent.headers.containsKey("Cookie"), "the page is the reader's own")
+        assertFalse(sent.headers.containsKey("X-CSRFToken"), "opened as a browser opens a page, with no API header")
+
+        val quiet = FakeMeta { ok(frontPage(postJson("10", user = "nasa"))) }
+        val guest = ThreadsForYou(direct(quiet, ThreadsSession(COOKIES), time = time))
+        assertEquals(ThreadsForYouSource.GUEST, guest.page().source, "For you reads on its own: without the switch the account is not spent on it")
+        assertFalse(quiet.asked.single().headers.containsKey("Cookie"))
+    }
+
+    @Test
+    fun theLikedPostsAreReadFromTheirPageWithTheCookiesAsABrowserOpensIt(): Unit = runBlocking {
+        val meta = FakeMeta { ok(frontPage(postJson("7", user = "ann"))) }
+        val client = direct(meta, ThreadsSession(COOKIES), time = time)
+        assertEquals(listOf("7"), client.ownFeed(ThreadsOwnFeed.LIKED).items.map { it.id })
+        val sent = meta.asked.single()
+        assertEquals("/liked", sent.path)
+        assertTrue(sent.headers.containsKey("Cookie"))
+        assertFalse(sent.headers.containsKey("X-CSRFToken"))
+    }
+
+    @Test
+    fun aLikedPageThatSendsTheReaderElsewhereIsNoSuchListAndOneToSignInSignsOut(): Unit = runBlocking {
+        val moved = FakeMeta { XResponse(302, "", mapOf("Location" to listOf("https://www.threads.com/"))) }
+        assertEquals(ThreadsFailure.NO_SUCH_FEED, assertFailsWith<ThreadsException> { direct(moved, ThreadsSession(COOKIES), time = time).ownFeed(ThreadsOwnFeed.LIKED) }.failure)
+        assertEquals(1, moved.asked.size, "the liked posts have no other read: its 404 paths are not asked")
     }
 
     @Test

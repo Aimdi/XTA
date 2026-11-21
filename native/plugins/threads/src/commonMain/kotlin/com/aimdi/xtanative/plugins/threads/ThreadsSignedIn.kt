@@ -33,12 +33,12 @@ internal enum class ThreadsSignedInPlace {
  */
 internal object ThreadsSignedInRules {
     /**
-     * Whether the Following feed's read is known to work. Its first path is
-     * the timeline a Bearer's For you is read from, but whether Meta takes
-     * `feed_type=following` there no guest can see (a guest is sent to sign
-     * in whatever is asked), so it waits for a session's word.
+     * Whether the Following feed is offered: threads.com has a page for it
+     * (`/following`, which sends a guest home in CI's probe), read with the
+     * cookies as any page is, before the app's timeline is asked. No probe
+     * can see a session's answer, so a page Meta gives nothing on says so.
      */
-    const val FOLLOWING_PATH_KNOWN = false
+    const val FOLLOWING_PATH_KNOWN = true
 
     /** Whether one of the activity's paths is known to answer: CI's probe (run 111) saw both send a guest to sign in, as real session paths do. */
     const val ACTIVITY_PATH_KNOWN = true
@@ -46,8 +46,8 @@ internal object ThreadsSignedInRules {
     /** Whether one of the saved posts' paths is known to answer: CI's probe (run 111) saw `text_feed/saved_posts/` send a guest to sign in; the other guesses were 404. */
     const val SAVED_PATH_KNOWN = true
 
-    /** Whether one of the liked posts' paths is known to answer: every guess was a 404 in CI's probe (run 111). */
-    const val LIKED_PATH_KNOWN = false
+    /** Whether the liked posts are offered: every API guess was a 404 (run 111), but `/liked` is a page that sends a guest to sign in (run 195), read with the cookies. */
+    const val LIKED_PATH_KNOWN = true
 
     /** Whether [place]'s read is known to answer; the reader's profile is a public page, and whom the cookies sign in as a read the sign-in itself makes. */
     fun pathKnown(place: ThreadsSignedInPlace): Boolean = when (place) {

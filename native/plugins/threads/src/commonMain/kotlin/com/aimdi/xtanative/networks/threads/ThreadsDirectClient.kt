@@ -203,6 +203,93 @@ class ThreadsDirectClient(
      * followed, saved, liked or marked seen.
      */
     suspend fun ownFeed(feed: ThreadsOwnFeed, cursor: String? = null, fresh: Boolean = false): Page<ThreadsPost> {
+        ThreadsNextPage.decode(cursor)?.let { return ownMore(it) }
+        if (cursor == null && session().hasCookies) {
+            // The saved posts' API path is known to be there; the liked ones' and the Following feed's are not, their pages are.
+            // The liked posts' page is their one read: every API guess was a 404, and is not asked again.
+            if (feed == ThreadsOwnFeed.LIKED) return ownPage(ThreadsOwnFeeds.webPage(feed))
+            if (feed == ThreadsOwnFeed.FOLLOWING) attemptOwnPage(feed)?.let { return it }
+            try {
+                return ownApi(feed, null, fresh)
+            } catch (e: ThreadsException) {
+                if (e.failure != NO_SUCH_FEED || feed != ThreadsOwnFeed.SAVED) throw e
+                return attemptOwnPage(feed) ?: throw e
+            }
+        }
+        return ownApi(feed, cursor, fresh)
+    }
+
+    /** [feed]'s page on threads.com, read with the cookies; null when Meta has no such page, so that the API is asked. */
+    private suspend fun attemptOwnPage(feed: ThreadsOwnFeed): Page<ThreadsPost>? = try {
+        // A page with no post in it may be one that embeds none: the API is asked then.
+        ownPage(ThreadsOwnFeeds.webPage(feed)).takeIf { it.items.isNotEmpty() }
+    } catch (e: ThreadsException) {
+        if (e.failure != NO_SUCH_FEED) throw e
+        null
+    }
+
+    /**
+     * The posts a signed-in page of threads.com embeds, each thread's first,
+     * and the cursor after them when the page names one for its own list.
+     */
+    private suspend fun ownPage(path: String): Page<ThreadsPost> {
+        val body = sessionPage(ThreadsLinks.web(path))
+        return withContext(Dispatchers.Default) {
+            val posts = ThreadsPages.profileThreads(ThreadsPages.chains(body), "")
+            Page(posts, ThreadsNextPages.first(body) { ThreadsOwnFeeds.isOwnList(it.query) }?.encoded().takeIf { posts.isNotEmpty() })
+        }
+    }
+
+    /** The page after one a signed-in page named, asked as its client asks it: the page's own query, with the cookies. */
+    private suspend fun ownMore(asked: ThreadsNextPage): Page<ThreadsPost> {
+        val root = sessionQuery(asked.query, asked.docId, asked.requestVariables).raw ?: return Page(emptyList(), null)
+        return withContext(Dispatchers.Default) {
+            val posts = ThreadsPages.profileThreads(ThreadsPages.chainsIn(listOf(root)), "")
+            Page(posts, ThreadsNextPages.after(asked, root)?.encoded().takeIf { posts.isNotEmpty() })
+        }
+    }
+
+    /**
+     * The reader's own For you as threads.com's front page shows it to their
+     * cookies: for a session signed in with on the sign-in page, which has
+     * no Bearer for the app's timeline. A read only, through the guard; a
+     * page after the first is asked by the [cursor] the one before gave.
+     */
+    suspend fun webForYou(cursor: String? = null): Page<ThreadsPost> =
+        ThreadsNextPage.decode(cursor)?.let { ownMore(it) } ?: ownPage("/")
+
+    /**
+     * A page of threads.com as the signed-in reader's browser is shown it:
+     * a session read, through the guard, sent as a browser opens a page
+     * (the cookies, no API header). A redirect to a challenge parks the
+     * session and one to sign-in signs it out; any other is a page Meta
+     * does not have for this account.
+     */
+    private suspend fun sessionPage(url: HttpUrl): String {
+        val current = requireCookies()
+        val headers = mapOf(
+            "User-Agent" to pinned().webUserAgent,
+            "Accept" to "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language" to ACCEPT_LANGUAGE,
+            "Cookie" to ThreadsSession.REQUIRED_COOKIES.joinToString("; ") { "$it=${current.cookies[it]}" },
+        )
+        val response = sendSession(url, paging = false) { http.get(url, headers, followRedirects = false) }
+        if (response.code in REDIRECTS) {
+            when (response.header("Location")?.let(url::resolve)?.let(ThreadsAccountSignals::ofRedirect)) {
+                ThreadsSignal.CHALLENGE -> throw parked(url, response)
+                ThreadsSignal.SIGNED_OUT -> throw signedOut(url, response.code)
+                else -> throw ThreadsException(NO_SUCH_FEED, "$url: sent elsewhere", response.code, manual = true)
+            }
+        }
+        return when (response.code) {
+            200 -> response.body
+            429 -> throw ThreadsException(THROTTLED, "$url: rate limited", 429, retryAt = guard.warned(retryAfter(response)))
+            404 -> throw ThreadsException(NO_SUCH_FEED, "$url: 404", 404, manual = true)
+            else -> throw ThreadsException(UNREACHABLE, "$url: ${response.code}", response.code, manual = true)
+        }
+    }
+
+    private suspend fun ownApi(feed: ThreadsOwnFeed, cursor: String?, fresh: Boolean): Page<ThreadsPost> {
         val accepts: (J) -> Boolean = if (feed == ThreadsOwnFeed.FOLLOWING) ThreadsOwnFeeds::isFollowing else { _ -> true }
         val body = sessionApi("own:$feed", ThreadsOwnFeeds.paths(feed), ThreadsOwnFeeds.params(feed, cursor, deviceId()), accepts = accepts, paging = cursor != null, fresh = fresh)
         return ThreadsOwnFeeds.page(body)

@@ -30,6 +30,23 @@ object ThreadsOwnFeeds {
     /** The timeline path the Threads app reads its home from, the Following feed's first candidate. */
     const val TIMELINE = "/api/v1/feed/text_post_app_timeline/"
 
+    /**
+     * The page threads.com shows the signed-in reader [feed] on: CI's probe
+     * saw `/liked` and `/saved` send a guest to sign in, as pages that are
+     * there do, and `/following` send one home. Read with the cookies as
+     * a public page is read as a guest: the posts its scripts embed.
+     */
+    fun webPage(feed: ThreadsOwnFeed): String = when (feed) {
+        ThreadsOwnFeed.FOLLOWING -> "/following"
+        ThreadsOwnFeed.SAVED -> "/saved"
+        ThreadsOwnFeed.LIKED -> "/liked"
+    }
+
+    /** Whether a list on one of those pages is [feed]'s own, by its query's name: not the suggestions beside it. */
+    fun isOwnList(query: String?): Boolean = OWN_LISTS.any { it in query.orEmpty() }
+
+    private val OWN_LISTS = listOf("Feed", "Liked", "Saved", "Following", "Timeline")
+
     /** Every path [feed] may be read at, in the order they are tried. */
     fun paths(feed: ThreadsOwnFeed): List<String> = when (feed) {
         ThreadsOwnFeed.FOLLOWING -> listOf(TIMELINE, "/api/v1/text_feed/following_timeline/")

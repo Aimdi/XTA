@@ -27,11 +27,14 @@ class ThreadsSignedInViewTest {
             "whom a Bearer signs in as is read nowhere, so it has no profile to open",
         )
         assertEquals(
-            listOf(ThreadsSignedInPlace.ACTIVITY, ThreadsSignedInPlace.SAVED, ThreadsSignedInPlace.PROFILE),
+            ThreadsSignedInPlace.entries,
             ThreadsSignedInRules.offered(cookies),
-            "the lists CI saw a path answer for (run 111), and no list Meta was never seen to answer",
+            "every list threads.com has a page or a path for (runs 111 and 195)",
         )
-        assertEquals(listOf(ThreadsSignedInPlace.ACTIVITY, ThreadsSignedInPlace.SAVED), ThreadsSignedInRules.offered(bearer))
+        assertEquals(
+            listOf(ThreadsSignedInPlace.FOLLOWING, ThreadsSignedInPlace.ACTIVITY, ThreadsSignedInPlace.SAVED, ThreadsSignedInPlace.LIKED),
+            ThreadsSignedInRules.offered(bearer),
+        )
         assertEquals(listOf(ThreadsSignedInPlace.ACTIVITY), ThreadsSignedInRules.offered(bearer) { it == ThreadsSignedInPlace.ACTIVITY })
     }
 
