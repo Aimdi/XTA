@@ -96,4 +96,17 @@ class WatchlistTest {
         assertEquals(WatchlistRow(token.id, token.encode()), Watchlist.row(token.encode()))
         assertNull(Watchlist.row("not a ticker"))
     }
+
+    @Test
+    fun aCashtagMeansTheTokenWatchedUnderItNotWhateverElseSharesItsLetters() {
+        val mine = CryptoAsset("solana", "PoDxyzAbCdEfGh123456789AbCdEfGh1234", "POD", "The POD I follow")
+        val other = CryptoAsset("base", "0x00000000000000000000000000000000000000aa", "POD", "Another POD")
+        val both = Watchlist.read(listOf(mine.encode(), other.encode(), "AAPL"), order = listOf(mine.id, other.id))
+        assertEquals(mine, both.assetForCashtag("POD"), "the first of them in the reader's order")
+        assertEquals(mine, both.assetForCashtag("\$pod"))
+        assertNull(both.assetForCashtag("AAPL"), "a plain ticker is no token")
+        assertNull(both.assetForCashtag("TSLA"), "nor is a symbol nobody watches")
+        val withTicker = Watchlist.read(listOf(mine.encode(), "POD"), order = null)
+        assertNull(withTicker.assetForCashtag("POD"), "the plain ticker, watched too, is what the cashtag says")
+    }
 }
