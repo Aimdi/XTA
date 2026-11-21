@@ -30,6 +30,14 @@
     <string name="home_antennas">Antenler</string>
     <string name="home_deck">Sütunlar</string>
     <string name="home_deck_empty">Geniş ekranda yan yana görmek için grupları sabitle</string>
+    <string name="home_deck_add">Sütun ekle</string>
+    <string name="home_deck_move_left">Sola taşı</string>
+    <string name="home_deck_move_right">Sağa taşı</string>
+    <string name="home_deck_remove">Sütunu kaldır</string>
+    <string name="home_deck_width">Sütun genişliği</string>
+    <string name="home_deck_width_narrow">Dar</string>
+    <string name="home_deck_width_medium">Orta</string>
+    <string name="home_deck_width_wide">Geniş</string>
     <string name="home_groups">Gruplar</string>
     <string name="home_no_groups">Henüz grup yok</string>
     <string name="home_no_results">Sonuç yok</string>

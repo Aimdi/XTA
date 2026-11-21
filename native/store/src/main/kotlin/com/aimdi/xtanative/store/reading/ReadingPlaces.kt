@@ -95,6 +95,15 @@ class ReadingJournal(dir: StoreDir, name: String = DEFAULT) {
         stored.update { newest(places) }
     }
 
+    /**
+     * Adds [places] from a backup to those kept here: of an article in both,
+     * the place updated last stays, so a restore never takes the reader back
+     * in an article read since nor drops one the backup lacks.
+     */
+    suspend fun merge(places: Map<String, ArticleReadPoint>) {
+        stored.update { kept -> newest(merged(kept, places)) }
+    }
+
     private fun encode(places: Map<String, ArticleReadPoint>) = buildJsonObject {
         put("v", 1)
         put("places", toXta(places))
@@ -106,6 +115,10 @@ class ReadingJournal(dir: StoreDir, name: String = DEFAULT) {
         /** XTA's article journal, `reading.articles.v1`. */
         const val DEFAULT = "articles"
         const val LIMIT = 300
+
+        /** [kept] with [incoming] added, of an article in both the one updated last. */
+        fun merged(kept: Map<String, ArticleReadPoint>, incoming: Map<String, ArticleReadPoint>): Map<String, ArticleReadPoint> =
+            kept + incoming.filter { (id, point) -> kept[id].let { it == null || point.updatedAt > it.updatedAt } }
 
         fun newest(places: Map<String, ArticleReadPoint>): Map<String, ArticleReadPoint> =
             places.entries.sortedByDescending { it.value.updatedAt }.take(LIMIT).associate { it.key to it.value }

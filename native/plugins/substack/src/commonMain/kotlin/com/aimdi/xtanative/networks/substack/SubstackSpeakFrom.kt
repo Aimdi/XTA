@@ -19,12 +19,22 @@ object SubstackSpeakFrom {
         var cursor = 0
         for (i in 0..target) {
             val needle = spoken(blocks[i])?.take(NEEDLE) ?: continue
-            val at = full.indexOf(needle, cursor)
+            val found = spaced(needle).find(full, cursor)
+            val at = found?.range?.first ?: -1
             if (i == target) return if (at >= 0) full.substring(at) else textFromHere(full, needle)
-            if (at >= 0) cursor = at + needle.length
+            if (found != null) cursor = found.range.last + 1
         }
         return full
     }
+
+    /**
+     * [needle] as the speech text may space it: a line break within a
+     * paragraph is a new line there and a space in the block's own words, so
+     * any white space stands for any other.
+     */
+    private fun spaced(needle: String): Regex = Regex(needle.split(space).filter { it.isNotEmpty() }.joinToString("\\s+") { Regex.escape(it) })
+
+    private val space = Regex("\\s+")
 
     /** What a block says aloud, as the speech text has it: footnote numbers left out, white space as one. */
     internal fun spoken(block: SubstackBlock): String? {

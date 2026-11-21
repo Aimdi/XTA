@@ -155,6 +155,14 @@ class XLinksTest {
     }
 
     @Test
+    fun aPostIdThatIsNoNumberIsNoPost() {
+        // An escaped slash or question mark would otherwise reach the app's route to the post and crash it.
+        listOf("https://x.com/a/status/1%2F2", "https://x.com/a/status/1%3Fmedia=x", "https://x.com/a/status/abc", "https://x.com/i/topics/tweet/9%2F9").forEach {
+            assertTrue(XLinks.parse(it) !is XLink.Post, it)
+        }
+    }
+
+    @Test
     fun broadcastsAndSpacesAreReadInsteadOfFailingOpen() {
         assertEquals(XLink.Live("https://x.com/i/broadcasts/1abc", isSpace = false), XLinks.parse("https://x.com/i/broadcasts/1abc"))
         assertEquals(XLink.Live("https://x.com/i/spaces/1room", isSpace = true), XLinks.parse("https://x.com/i/spaces/1room"))

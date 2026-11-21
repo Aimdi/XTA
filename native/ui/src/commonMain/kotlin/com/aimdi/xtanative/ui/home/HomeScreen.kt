@@ -64,6 +64,7 @@ import com.aimdi.xtanative.ui.group.FeedSettingsSheet
 import com.aimdi.xtanative.ui.group.GroupFeedScreen
 import com.aimdi.xtanative.ui.group.groupFeedViewModel
 import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
+import com.aimdi.xtanative.ui.plugins.PluginActions
 import com.aimdi.xtanative.ui.plugins.PluginClientBar
 import com.aimdi.xtanative.ui.plugins.ShellFeedRow
 import com.aimdi.xtanative.ui.plugins.pluginAccent
@@ -375,7 +376,7 @@ private fun NetworkPage(id: String, ui: HomeUi, networks: HomeNetworks, toTop: I
                     title = { Text(ui.networks.firstOrNull { it.id == id }?.title ?: id, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     actions = {
                         // Off Home's Feed there is no plugin sheet: the plugin's own entries stay its ⋮ ([ShellMenuButton]).
-                        client.content?.actions?.value?.invoke(this)
+                        PluginActions(client)
                         key(id) { NetworkActions(id, ui, networks, onPins, routes, extras) }
                         if (LocalDesktopActions.current != null) IconButton(onClick = refresh) { Icon(Icons.Filled.Refresh, stringResource(Res.string.home_refresh)) }
                     },
@@ -384,8 +385,10 @@ private fun NetworkPage(id: String, ui: HomeUi, networks: HomeNetworks, toTop: I
                 // The plugin's feeds, or sections that do not make the bottom bar, run as its feed row, as on Home's Feed.
                 val handed = client.feeds
                 val tabs = client.content?.tabs?.value.orEmpty()
-                val feeds = handed?.feeds ?: tabs.takeIf { it.size > 1 && takeover.on(BarPage.Network(id)) == null }
-                if (feeds != null) ShellFeedRow(feeds, handed?.filter, pluginAccent(client.content?.accent?.value))
+                val rows = ShellRows.of(handed?.feeds, tabs, onBar = takeover.on(BarPage.Network(id)) != null)
+                val accent = pluginAccent(client.content?.accent?.value)
+                rows.sections?.let { ShellFeedRow(it, null, accent) }
+                rows.feeds?.let { ShellFeedRow(it, handed?.filter, accent) }
             }
         },
     ) { padding ->

@@ -56,8 +56,11 @@ class OfflineSpeechEngine(
     /** Bumped by [stop], so a clip that finishes synthesising afterwards is not played. */
     private val epoch = AtomicInteger()
 
-    /** A sentence or two: short enough that the first one is ready quickly. */
+    /** A sentence or two: each is synthesised whole before it plays, so a long one is a long silence. */
     override val maxChunkChars: Int = 300
+
+    /** One sentence to begin with, so the reading starts after a moment's synthesis, not twenty seconds' worth. */
+    override val firstChunkChars: Int = 100
 
     override suspend fun prepare(choice: TtsChoice, textLanguage: String?): Boolean {
         if (!enabled()) return false

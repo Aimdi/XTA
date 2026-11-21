@@ -2,6 +2,7 @@ package com.aimdi.xtanative.ui.common
 
 import android.text.format.DateFormat
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import java.time.Instant
@@ -15,4 +16,9 @@ internal actual fun datePattern(locale: Locale, skeleton: String): String = Date
 
 /** The phone's own time format, which follows its 12- or 24-hour setting rather than the locale's. */
 @Composable
-internal actual fun timeOfDayText(then: Instant, locale: Locale): String = DateFormat.getTimeFormat(LocalContext.current).format(Date.from(then))
+internal actual fun timeOfDayText(then: Instant, locale: Locale): String {
+    val context = LocalContext.current
+    // One format per screen and locale, not one per post: the 12- or 24-hour setting is read as it is made.
+    val format = remember(context, locale) { DateFormat.getTimeFormat(context) }
+    return format.format(Date.from(then))
+}

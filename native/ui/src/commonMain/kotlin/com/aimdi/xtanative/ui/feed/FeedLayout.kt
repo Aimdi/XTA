@@ -20,7 +20,21 @@ object ArticleLinks {
      * a profile, a home page, an app's route in the fragment.
      */
     fun canonical(value: String?): String? {
-        val url = value?.trim()?.toHttpUrlOrNull() ?: return null
+        if (value == null) return null
+        // Each page added lays the whole feed out again: a link read before is not parsed again.
+        synchronized(known) { known[value] }?.let { return it.takeIf { it != NONE } }
+        return read(value).also { synchronized(known) { known[value] = it ?: NONE } }
+    }
+
+    /** What [canonical] found of each link lately, [NONE] for no article; the oldest go past [KNOWN]. */
+    private val known = object : LinkedHashMap<String, String>(256, 0.75f, true) {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, String>?) = size > KNOWN
+    }
+    private const val KNOWN = 4_096
+    private const val NONE = ""
+
+    private fun read(value: String): String? {
+        val url = value.trim().toHttpUrlOrNull() ?: return null
         if (url.username.isNotEmpty() || url.password.isNotEmpty()) return null
         val host = url.host.lowercase()
         if (SOCIAL.any { host == it || host.endsWith(".$it") }) return null

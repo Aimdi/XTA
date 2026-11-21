@@ -126,6 +126,12 @@ data class Session(
     /** [userId] followed here, or null. */
     fun followed(userId: String): FollowedAccount? = following.firstOrNull { it.id == userId }
 
+    /** The ids of [following], made once per session: what an avatar asks of every post shown. */
+    private val followedIds: Set<String> by lazy { following.mapTo(HashSet()) { it.id } }
+
+    /** Whether [userId] is followed here, without walking [following]. */
+    fun isFollowed(userId: String): Boolean = userId in followedIds
+
     /**
      * [user] followed here from [at] (epoch milliseconds), in the Following
      * feed. Nothing is sent to X. An account already followed keeps its place
@@ -236,8 +242,13 @@ data class Session(
     /** [groupId] pinned as the deck's last column, or unpinned. */
     fun toggledDeck(groupId: String): Session = copy(deck = DeckGroups.toggled(deck, groupId))
 
-    /** The deck's columns: the pinned groups that still exist, in pin order. */
+    /** The deck's groups: the pinned groups that still exist, in pin order. */
     val deckGroups: List<FollowGroup> get() = deck.mapNotNull { id -> groups.firstOrNull { it.id == id } }
+
+    /** The deck's columns in order: its timelines, and its groups that still exist. */
+    val deckColumns: List<DeckColumn> get() = deck.mapNotNull { id ->
+        DeckColumn.of(id)?.takeIf { column -> column !is DeckColumn.Group || groups.any { it.id == column.groupId } }
+    }
 
     /** [list] as a new group [groupId] named after it, its accounts not followed yet followed from [at]. */
     fun importingList(list: ImportedList, groupId: String, at: Long): Session =

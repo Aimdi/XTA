@@ -166,6 +166,8 @@
     <string name="settings_true_black_cards_description">Bruk ekte svart for bakgrunn på tweet-kort</string>
     <string name="settings_navigation_labels">Vis navigasjonsetiketter</string>
     <string name="settings_hide_navigation">Skjul topp- og bunnlinjen mens du blar</string>
+    <string name="settings_hide_status_bar">Skjul statuslinjen</string>
+    <string name="settings_hide_status_bar_description">Bruk hele skjermen: klokken, batteriet og signalet øverst skjules. Sveip ned fra øverste kant for å se dem et øyeblikk.</string>
     <string name="settings_text_scale">Tekstskalafaktor</string>
     <string name="settings_text_scale_description">Juster skriftstørrelsen i appen</string>
     <string name="settings_disable_animations">Deaktiver animasjoner</string>

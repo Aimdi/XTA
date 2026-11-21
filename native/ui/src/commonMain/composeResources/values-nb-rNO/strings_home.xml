@@ -30,6 +30,14 @@
     <string name="home_antennas">Antenner</string>
     <string name="home_deck">Kolonner</string>
     <string name="home_deck_empty">Fest grupper for å se dem side om side på en bred skjerm</string>
+    <string name="home_deck_add">Legg til kolonne</string>
+    <string name="home_deck_move_left">Flytt til venstre</string>
+    <string name="home_deck_move_right">Flytt til høyre</string>
+    <string name="home_deck_remove">Fjern kolonne</string>
+    <string name="home_deck_width">Kolonnebredde</string>
+    <string name="home_deck_width_narrow">Smal</string>
+    <string name="home_deck_width_medium">Middels</string>
+    <string name="home_deck_width_wide">Bred</string>
     <string name="home_groups">Grupper</string>
     <string name="home_no_groups">Ingen grupper ennå</string>
     <string name="home_no_results">Ingen resultater</string>

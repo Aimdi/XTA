@@ -30,6 +30,14 @@
     <string name="home_antennas">天線</string>
     <string name="home_deck">多欄</string>
     <string name="home_deck_empty">釘選群組，在寬螢幕上並排查看</string>
+    <string name="home_deck_add">新增欄</string>
+    <string name="home_deck_move_left">左移</string>
+    <string name="home_deck_move_right">右移</string>
+    <string name="home_deck_remove">移除欄</string>
+    <string name="home_deck_width">欄寬</string>
+    <string name="home_deck_width_narrow">窄</string>
+    <string name="home_deck_width_medium">中</string>
+    <string name="home_deck_width_wide">寬</string>
     <string name="home_groups">群組</string>
     <string name="home_no_groups">尚無群組</string>
     <string name="home_no_results">沒有結果</string>

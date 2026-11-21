@@ -28,9 +28,13 @@ internal class Asked(
     private fun decode(text: String) = URLDecoder.decode(text, Charsets.UTF_8)
 }
 
-/** Pixiv as tests play it: every request is kept, and [answer] says what comes back. */
+/**
+ * Pixiv as tests play it: every request is kept, and [answer] says what comes
+ * back. The runtime asks from its own threads while a test reads [asked], so
+ * the list is one both can use at once.
+ */
 internal class FakePixivHttp(private val answer: suspend (Asked) -> XResponse) : XHttp {
-    val asked = mutableListOf<Asked>()
+    val asked: MutableList<Asked> = java.util.concurrent.CopyOnWriteArrayList()
 
     val reads: List<Asked> get() = asked.filterNot { it.isTokenCall }
     val tokenCalls: List<Asked> get() = asked.filter { it.isTokenCall }

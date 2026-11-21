@@ -166,6 +166,8 @@
     <string name="settings_true_black_cards_description">Erabili benetako beltza txio-txartelen atzealderako</string>
     <string name="settings_navigation_labels">Erakutsi nabigazioko etiketak</string>
     <string name="settings_hide_navigation">Ezkutatu goiko eta beheko barrak korritzean</string>
+    <string name="settings_hide_status_bar">Ezkutatu egoera-barra</string>
+    <string name="settings_hide_status_bar_description">Erabili pantaila osoa: goiko ordua, bateria eta seinalea ezkutatzen dira. Pasatu hatza goiko ertzetik behera une batez ikusteko.</string>
     <string name="settings_text_scale">Testuaren eskala-faktorea</string>
     <string name="settings_text_scale_description">Doitu letra-tamaina aplikazioan</string>
     <string name="settings_disable_animations">Desgaitu animazioak</string>

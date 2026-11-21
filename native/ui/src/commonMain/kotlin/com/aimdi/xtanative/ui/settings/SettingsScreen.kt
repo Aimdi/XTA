@@ -285,6 +285,7 @@ private val INDEX = listOf(
     Indexed(SettingsSection.THEME, ThemePrefs.trueBlackPostCards.key, Res.string.settings_true_black_cards, Res.string.settings_true_black_cards_description),
     Indexed(SettingsSection.THEME, ThemePrefs.showNavigationLabels.key, Res.string.settings_navigation_labels, null),
     Indexed(SettingsSection.THEME, ThemePrefs.hideNavigationOnScroll.key, Res.string.settings_hide_navigation, null),
+    Indexed(SettingsSection.THEME, ThemePrefs.hideStatusBar.key, Res.string.settings_hide_status_bar, Res.string.settings_hide_status_bar_description),
     Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.textScale.key, Res.string.settings_text_scale, Res.string.settings_text_scale_description),
     Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.disableAnimations.key, Res.string.settings_disable_animations, Res.string.settings_disable_animations_description),
     Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.haptics.key, Res.string.settings_haptics, Res.string.settings_haptics_description),
@@ -294,8 +295,11 @@ private val INDEX = listOf(
     Indexed(SettingsSection.ACCESSIBILITY, AccessibilityPrefs.swipeBackTilt.key, Res.string.settings_swipe_back_tilt, Res.string.settings_swipe_back_tilt_description),
 )
 
-/** Every control the search can find, in this platform's settings: the desktop has no screenshot switch nor haptics. */
+/** The controls only Android has: the desktop's window takes no screenshot block, gives no haptics and has no status bar. */
+private val ANDROID_ONLY = setOf(GeneralPrefs.disableScreenshots.key, AccessibilityPrefs.haptics.key, ThemePrefs.hideStatusBar.key)
+
+/** Every control the search can find, in this platform's settings: the desktop has none of [ANDROID_ONLY]. */
 @Composable
 private fun searchableControls(): List<SettingsControl> = INDEX
-    .filter { !isDesktop || (it.key != GeneralPrefs.disableScreenshots.key && it.key != AccessibilityPrefs.haptics.key) }
+    .filter { !isDesktop || it.key !in ANDROID_ONLY }
     .map { SettingsControl(it.section, it.key, stringResource(it.title), it.description?.let { res -> stringResource(res) }.orEmpty()) }

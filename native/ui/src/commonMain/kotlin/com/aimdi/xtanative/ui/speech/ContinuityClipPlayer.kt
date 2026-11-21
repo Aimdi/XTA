@@ -55,7 +55,16 @@ class ContinuityClipPlayer(
                 if (!started.get()) settle(UtteranceOutcome.FAILED, mine)
             }
             // Not waited for: a player that never answers is the watchdog's business.
-            launch { if (!start(player, path)) settle(UtteranceOutcome.FAILED, mine) }
+            launch {
+                if (!start(player, path)) {
+                    settle(UtteranceOutcome.FAILED, mine)
+                } else {
+                    // Playing once play() has answered, even when the frame that said so went by unread:
+                    // a short clip can start and finish before the changes above are read.
+                    started.set(true)
+                    if (player.frame.completed) settle(UtteranceOutcome.COMPLETED, mine)
+                }
+            }
             mine.await().also { coroutineContext.cancelChildren() }
         }
     }

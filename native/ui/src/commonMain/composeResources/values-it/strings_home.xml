@@ -30,6 +30,14 @@
     <string name="home_antennas">Antenne</string>
     <string name="home_deck">Deck</string>
     <string name="home_deck_empty">Fissa dei gruppi per vederli affiancati su uno schermo ampio</string>
+    <string name="home_deck_add">Aggiungi colonna</string>
+    <string name="home_deck_move_left">Sposta a sinistra</string>
+    <string name="home_deck_move_right">Sposta a destra</string>
+    <string name="home_deck_remove">Rimuovi colonna</string>
+    <string name="home_deck_width">Larghezza colonne</string>
+    <string name="home_deck_width_narrow">Stretta</string>
+    <string name="home_deck_width_medium">Media</string>
+    <string name="home_deck_width_wide">Larga</string>
     <string name="home_groups">Gruppi</string>
     <string name="home_no_groups">Nessun gruppo ancora</string>
     <string name="home_no_results">Nessun risultato</string>

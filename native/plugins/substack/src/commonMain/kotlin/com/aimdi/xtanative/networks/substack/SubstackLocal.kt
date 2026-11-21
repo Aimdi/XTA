@@ -63,11 +63,13 @@ class SubstackReadMarks(kept: SubstackKept) :
     private suspend fun markAll(ids: List<String>) {
         val requested = ids.filter { it.isNotEmpty() }.toSet()
         if (requested.isEmpty()) return
-        update { marks -> (requested + marks.filterNot { it in requested }).take(CAP).toCollection(LinkedHashSet()) }
+        // Everything asked for is kept, however many: a count cut short left posts unread that Mark all as read had just marked.
+        update { marks -> (requested + marks.filterNot { it in requested }).take(maxOf(CAP, requested.size)).toCollection(LinkedHashSet()) }
     }
 
     companion object {
-        const val CAP = 400
+        /** How many read marks are kept, the latest first. */
+        const val CAP = 1_500
     }
 }
 

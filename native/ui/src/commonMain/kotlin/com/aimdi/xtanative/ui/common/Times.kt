@@ -39,8 +39,8 @@ fun agoText(then: Instant?): String {
         is Ago.Minutes -> stringResource(Res.string.ago_minutes, ago.n)
         is Ago.Hours -> stringResource(Res.string.ago_hours, ago.n)
         is Ago.OnDate -> {
-            val pattern = remember(locale, ago.sameYear) { datePattern(locale, if (ago.sameYear) "MMMd" else "yMMMd") }
-            DateTimeFormatter.ofPattern(pattern, locale).format(ago.at.atZone(zone))
+            val formatter = remember(locale, ago.sameYear) { DateTimeFormatter.ofPattern(datePattern(locale, if (ago.sameYear) "MMMd" else "yMMMd"), locale) }
+            formatter.format(ago.at.atZone(zone))
         }
     }
 }
@@ -51,7 +51,8 @@ fun fullTimeText(then: Instant?): String {
     if (then == null) return ""
     val locale = currentLocale()
     val time = timeOfDayText(then, locale)
-    val date = DateTimeFormatter.ofPattern(datePattern(locale, "yMMMd"), locale).format(then.atZone(ZoneId.systemDefault()))
+    val formatter = remember(locale) { DateTimeFormatter.ofPattern(datePattern(locale, "yMMMd"), locale) }
+    val date = formatter.format(then.atZone(ZoneId.systemDefault()))
     return "$time · $date"
 }
 
@@ -59,8 +60,8 @@ fun fullTimeText(then: Instant?): String {
 @Composable
 fun monthText(then: Instant): String {
     val locale = currentLocale()
-    val pattern = remember(locale) { datePattern(locale, "yMMMM") }
-    return DateTimeFormatter.ofPattern(pattern, locale).format(then.atZone(ZoneId.systemDefault()))
+    val formatter = remember(locale) { DateTimeFormatter.ofPattern(datePattern(locale, "yMMMM"), locale) }
+    return formatter.format(then.atZone(ZoneId.systemDefault()))
 }
 
 /** 1.2K, 3.4M, with the locale's decimal separator. */

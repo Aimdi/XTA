@@ -30,6 +30,14 @@
     <string name="home_antennas">Antény</string>
     <string name="home_deck">Sloupce</string>
     <string name="home_deck_empty">Připněte skupiny a uvidíte je na širokém displeji vedle sebe</string>
+    <string name="home_deck_add">Přidat sloupec</string>
+    <string name="home_deck_move_left">Posunout doleva</string>
+    <string name="home_deck_move_right">Posunout doprava</string>
+    <string name="home_deck_remove">Odebrat sloupec</string>
+    <string name="home_deck_width">Šířka sloupce</string>
+    <string name="home_deck_width_narrow">Úzký</string>
+    <string name="home_deck_width_medium">Střední</string>
+    <string name="home_deck_width_wide">Široký</string>
     <string name="home_groups">Skupiny</string>
     <string name="home_no_groups">Zatím žádné skupiny</string>
     <string name="home_no_results">Žádné výsledky</string>

@@ -15,6 +15,7 @@ import com.aimdi.xtanative.store.settings.ReadingPrefs
 import com.aimdi.xtanative.store.settings.Settings
 import com.aimdi.xtanative.store.settings.SettingsStore
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
@@ -33,6 +34,12 @@ class ReaderTranslation(private val settings: SettingsStore, http: XHttp, store:
     val config: Flow<TranslationConfig> = settings.settings.map(::configOf).distinctUntilChanged()
 
     fun current(): TranslationConfig = configOf(settings.state.value ?: Settings())
+
+    /** The settings as read so far, kept current: cheap to follow from every post shown, unlike [config]. */
+    val settingsNow: StateFlow<Settings?> get() = settings.state
+
+    /** The service [now] sets ([settingsNow]'s value). */
+    fun configFor(now: Settings?): TranslationConfig = configOf(now ?: Settings())
 
     /**
      * [text] translated with the service set, into its language or else

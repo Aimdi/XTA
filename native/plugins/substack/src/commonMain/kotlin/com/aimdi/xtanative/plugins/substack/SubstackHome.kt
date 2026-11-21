@@ -29,6 +29,7 @@ import com.aimdi.xtanative.networks.substack.SubstackNotesFeed
 import com.aimdi.xtanative.networks.substack.postReads
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.swipeTabs
+import com.aimdi.xtanative.ui.plugins.LocalPluginClientBar
 import com.aimdi.xtanative.ui.plugins.PluginFrame
 import com.aimdi.xtanative.ui.plugins.PluginHomeTabs
 import com.aimdi.xtanative.ui.plugins.PluginText
@@ -68,6 +69,12 @@ internal class HomeControls {
         if (pane == HomePane.INBOX) inbox = options else home = options
     }
 
+    /** [reset], and on Home the publication it is narrowed to: what an empty, filtered feed's Reset does. */
+    fun clear(pane: HomePane) {
+        reset(pane)
+        if (pane == HomePane.HOME) publication = null
+    }
+
     fun reset(pane: HomePane) {
         configure(pane, SubstackLoadedOptions())
         if (pane == HomePane.HOME) filter = SubstackFeedFilter.ALL
@@ -105,6 +112,8 @@ internal fun SubstackHome(app: SubstackApp, frame: PluginFrame) {
     RefreshesOn(frame.refresh) {
         if (selected == HomePane.NOTES) state.notes.refresh() else state.feed.refresh()
     }
+    val followed = publications
+    if (followed != null && LocalPluginClientBar.current != null) SubstackShellStatus(app, state, followed)
     Column(Modifier.fillMaxSize()) {
         ReadingControlsBar { HomeHeader(app, state, selected) { app.pane.value = it } }
         Hairline()
@@ -132,11 +141,14 @@ private fun HomeHeader(app: SubstackApp, state: HomeState, selected: HomePane, o
 private fun HomeMenu(app: SubstackApp, state: HomeState, selected: HomePane) {
     val feed by state.feed.state.collectAsState()
     val read by app.read.state.collectAsState()
+    val shell = LocalPluginClientBar.current != null
     ShellMenuButton { close ->
         DropdownMenuItem(text = { Text(pluginString(Strings.discover)) }, onClick = { close(); app.openDiscover() })
         DropdownMenuItem(text = { Text(pluginString(Strings.add)) }, onClick = { close(); app.openAdd() })
-        if (selected.ordinal < 2 && SubstackHomeRules.anyUnread(feed.posts, read)) {
-            DropdownMenuItem(text = { Text(pluginString(Strings.mark_all_read)) }, onClick = { close(); app.launch { app.read.markRead(feed.posts) } })
+        // On Home narrowed to one publication, only its posts.
+        val posts = SubstackHomeRules.within(feed.posts, state.controls.publication.takeIf { selected == HomePane.HOME && shell })
+        if (selected.ordinal < 2 && SubstackHomeRules.anyUnread(posts, read)) {
+            DropdownMenuItem(text = { Text(pluginString(Strings.mark_all_read)) }, onClick = { close(); app.launch { app.read.markRead(posts) } })
         }
     }
 }

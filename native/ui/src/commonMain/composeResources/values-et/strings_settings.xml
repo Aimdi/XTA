@@ -166,6 +166,8 @@
     <string name="settings_true_black_cards_description">Kasuta tõelist musta postituskaartide taustaks</string>
     <string name="settings_navigation_labels">Kuva navigeerimissildid</string>
     <string name="settings_hide_navigation">Peida ülemine ja alumine riba kerimisel</string>
+    <string name="settings_hide_status_bar">Peida olekuriba</string>
+    <string name="settings_hide_status_bar_description">Kasuta kogu ekraani: kellaaeg, aku ja levi üleval on peidetud. Nende hetkeks nägemiseks pühi ülaservast alla.</string>
     <string name="settings_text_scale">Teksti skaleerimistegur</string>
     <string name="settings_text_scale_description">Kohandage rakenduses fondi suurust</string>
     <string name="settings_disable_animations">Keela animatsioonid</string>

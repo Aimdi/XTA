@@ -166,6 +166,8 @@
     <string name="settings_true_black_cards_description">Выкарыстоўваць сапраўдны чорны колер для фону картак твітаў</string>
     <string name="settings_navigation_labels">Паказваць ярлыкі навігацыі</string>
     <string name="settings_hide_navigation">Хаваць верхнюю і ніжнюю панэлі пры прагортцы</string>
+    <string name="settings_hide_status_bar">Хаваць радок стану</string>
+    <string name="settings_hide_status_bar_description">Выкарыстоўваць увесь экран: час, батарэя і сігнал уверсе схаваныя. Правядзіце ўніз ад верхняга краю, каб на момант іх убачыць.</string>
     <string name="settings_text_scale">Каэфіцыент маштабавання тэксту</string>
     <string name="settings_text_scale_description">Наладзіць памер шрыфту ў праграме</string>
     <string name="settings_disable_animations">Адключыць анімацыі</string>

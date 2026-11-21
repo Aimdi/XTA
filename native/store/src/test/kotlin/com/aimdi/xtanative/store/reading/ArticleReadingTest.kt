@@ -229,4 +229,14 @@ class ArticleReadingTest {
         assertEquals(VisibleBlock(1, -60.0), firstVisibleBlock(blocks))
         assertNull(firstVisibleBlock(listOf(BlockExtent(0, -100.0, 100.0))))
     }
+
+    @Test
+    fun aRestoreAddsPlacesAndKeepsTheOneReadLast() {
+        val kept = mapOf("a" to ArticleReadPoint(updatedAt = 20), "b" to ArticleReadPoint(updatedAt = 5))
+        val backup = mapOf("a" to ArticleReadPoint(updatedAt = 10), "b" to ArticleReadPoint(updatedAt = 9), "c" to ArticleReadPoint(updatedAt = 1))
+        val merged = ReadingJournal.merged(kept, backup)
+        assertEquals(20, merged["a"]?.updatedAt, "read here since the backup")
+        assertEquals(9, merged["b"]?.updatedAt, "read since on the device the backup came from")
+        assertEquals(setOf("a", "b", "c"), merged.keys)
+    }
 }

@@ -166,6 +166,8 @@
     <string name="settings_true_black_cards_description">Use true black for tweet cards</string>
     <string name="settings_navigation_labels">Show navigation labels?</string>
     <string name="settings_hide_navigation">Hide top and bottom bars while scrolling</string>
+    <string name="settings_hide_status_bar">Hide the status bar</string>
+    <string name="settings_hide_status_bar_description">Use the whole screen: the time, battery and signal at the top are hidden. Swipe down from the top edge to see them for a moment.</string>
     <string name="settings_text_scale">Text size</string>
     <string name="settings_text_scale_description">Set the text size for the entire app</string>
     <string name="settings_disable_animations">Disable animations?</string>

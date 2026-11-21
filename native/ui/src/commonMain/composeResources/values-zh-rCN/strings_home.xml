@@ -30,6 +30,14 @@
     <string name="home_antennas">天线</string>
     <string name="home_deck">多栏</string>
     <string name="home_deck_empty">在宽屏上将分组固定以便并排查看</string>
+    <string name="home_deck_add">添加栏</string>
+    <string name="home_deck_move_left">左移</string>
+    <string name="home_deck_move_right">右移</string>
+    <string name="home_deck_remove">移除栏</string>
+    <string name="home_deck_width">栏宽</string>
+    <string name="home_deck_width_narrow">窄</string>
+    <string name="home_deck_width_medium">中</string>
+    <string name="home_deck_width_wide">宽</string>
     <string name="home_groups">订阅组</string>
     <string name="home_no_groups">还没有分组</string>
     <string name="home_no_results">没有结果</string>

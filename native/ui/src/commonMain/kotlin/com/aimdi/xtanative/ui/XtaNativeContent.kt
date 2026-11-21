@@ -31,6 +31,7 @@ import com.aimdi.xtanative.ui.generated.resources.dismiss
 import com.aimdi.xtanative.ui.links.LinksFrame
 import com.aimdi.xtanative.ui.media.VideoFullscreenFrame
 import com.aimdi.xtanative.ui.pluginstore.PluginsFrame
+import com.aimdi.xtanative.ui.post.SharedPostPrefs
 import com.aimdi.xtanative.ui.saved.LocalKeeper
 import com.aimdi.xtanative.ui.settings.trimImageCache
 import com.aimdi.xtanative.ui.speech.SpeechBarScaffold
@@ -57,7 +58,7 @@ fun XtaNativeContent(graph: AppGraph, plugins: AppPlugins) {
         LocalPostCache provides graph.posts,
         LocalPlatformFiles provides graph.platformFiles,
     ) {
-        XtaTheme { SwitchedHapticsFrame { LinksFrame { PluginsFrame(plugins) { DownloadsFrame { VideoFullscreenFrame { SpeechBarScaffold { RootOrBroken(graph) } } } } } } }
+        XtaTheme { SharedPostPrefs { SwitchedHapticsFrame { LinksFrame { PluginsFrame(plugins) { DownloadsFrame { VideoFullscreenFrame { SpeechBarScaffold { RootOrBroken(graph) } } } } } } } }
     }
 }
 

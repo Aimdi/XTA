@@ -176,7 +176,9 @@ private fun PostsHome(
     val shell = LocalPluginClientBar.current != null
     if (shell) {
         val all = PluginHomeTab(StocksIcons.ShowChart, pluginString(Strings.all_tickers), filter == null) { filter?.let(model::toggleFilter) }
-        ShellFeeds(listOf(all) + symbols.map { symbol -> PluginHomeTab(StocksIcons.ShowChart, entries.label(symbol), filter == symbol) { if (filter != symbol) model.toggleFilter(symbol) } })
+        // A ticker filtered to that has since left the list (Trending moving on) keeps its word, so the row says what is shown.
+        val listed = if (filter != null && filter !in symbols) symbols + filter else symbols
+        ShellFeeds(listOf(all) + listed.map { symbol -> PluginHomeTab(StocksIcons.ShowChart, entries.label(symbol), filter == symbol) { if (filter != symbol) model.toggleFilter(symbol) } })
     }
     if (shell) {
         // The reel of prices scrolls away with the posts, the shell's feed row staying.

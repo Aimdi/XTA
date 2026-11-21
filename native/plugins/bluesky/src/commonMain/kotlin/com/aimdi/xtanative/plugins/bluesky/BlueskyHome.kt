@@ -127,7 +127,10 @@ private fun shellFeeds(app: BlueskyApp, tab: BlueskyTab, onTab: (BlueskyTab) -> 
     val state by feeds.state.collectAsState()
     val pinned by app.prefs.pinnedFeeds.collectAsState()
     val discover = pluginString(Strings.tab_discover)
-    val custom = listOf(Bluesky.DISCOVER_FEED_URI to discover) + feeds.offered(pinned).map { it.uri to it.displayName }
+    val offered = listOf(Bluesky.DISCOVER_FEED_URI to discover) + feeds.offered(pinned).map { it.uri to it.displayName }
+    // A feed opened another way (a pasted address) has a word too, so the row says what is shown.
+    val open = state.selected.takeIf { selected -> selected.uri.isNotEmpty() && offered.none { it.first == selected.uri } }
+    val custom = offered + listOfNotNull(open?.let { it.uri to it.name.ifBlank { discover } })
     val inDiscover = custom.map { (uri, name) ->
         PluginHomeTab(BlueskyTab.DISCOVER.icon, name, tab == BlueskyTab.DISCOVER && state.selected.uri == uri) {
             feeds.open(uri, name)

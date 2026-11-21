@@ -30,6 +30,14 @@
     <string name="home_antennas">Антэны</string>
     <string name="home_deck">Калонкі</string>
     <string name="home_deck_empty">Замацуйце групы, каб бачыць іх побач на шырокім экране</string>
+    <string name="home_deck_add">Дадаць слупок</string>
+    <string name="home_deck_move_left">Перамясціць улева</string>
+    <string name="home_deck_move_right">Перамясціць управа</string>
+    <string name="home_deck_remove">Прыбраць слупок</string>
+    <string name="home_deck_width">Шырыня слупка</string>
+    <string name="home_deck_width_narrow">Вузкі</string>
+    <string name="home_deck_width_medium">Сярэдні</string>
+    <string name="home_deck_width_wide">Шырокі</string>
     <string name="home_groups">Групы</string>
     <string name="home_no_groups">Пакуль няма груп</string>
     <string name="home_no_results">Нічога не знойдзена</string>

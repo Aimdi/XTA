@@ -166,6 +166,8 @@
     <string name="settings_true_black_cards_description">Utilitza el negre real per al fons de les targetes de tuits</string>
     <string name="settings_navigation_labels">Mostra les etiquetes de navegació</string>
     <string name="settings_hide_navigation">Amaga les barres superior i inferior en desplaçar</string>
+    <string name="settings_hide_status_bar">Amaga la barra d'estat</string>
+    <string name="settings_hide_status_bar_description">Fes servir tota la pantalla: l'hora, la bateria i la cobertura de dalt queden amagades. Llisca cap avall des de la vora superior per veure-les un moment.</string>
     <string name="settings_text_scale">Factor d'escala del text</string>
     <string name="settings_text_scale_description">Ajusta la mida de la lletra a l'app</string>
     <string name="settings_disable_animations">Desactiva les animacions</string>

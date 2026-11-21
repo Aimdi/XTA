@@ -30,6 +30,14 @@
     <string name="home_antennas">안테나</string>
     <string name="home_deck">덱</string>
     <string name="home_deck_empty">넓은 화면에서 나란히 보려면 그룹을 고정하세요</string>
+    <string name="home_deck_add">열 추가</string>
+    <string name="home_deck_move_left">왼쪽으로 이동</string>
+    <string name="home_deck_move_right">오른쪽으로 이동</string>
+    <string name="home_deck_remove">열 삭제</string>
+    <string name="home_deck_width">열 너비</string>
+    <string name="home_deck_width_narrow">좁게</string>
+    <string name="home_deck_width_medium">보통</string>
+    <string name="home_deck_width_wide">넓게</string>
     <string name="home_groups">그룹</string>
     <string name="home_no_groups">아직 그룹이 없습니다</string>
     <string name="home_no_results">결과 없음</string>

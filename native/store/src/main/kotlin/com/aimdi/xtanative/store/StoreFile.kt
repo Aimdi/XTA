@@ -1,6 +1,7 @@
 package com.aimdi.xtanative.store
 
 import java.io.File
+import java.io.FileOutputStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -20,15 +21,7 @@ class StoreFile(private val file: File) {
     }
 
     suspend fun write(text: String) = mutex.withLock {
-        withContext(Dispatchers.IO) {
-            file.parentFile?.mkdirs()
-            val partial = File(file.parentFile, file.name + ".part")
-            partial.writeText(text)
-            if (!partial.renameTo(file)) {
-                file.delete()
-                partial.renameTo(file)
-            }
-        }
+        withContext(Dispatchers.IO) { file.replaceWith(text) }
     }
 
     suspend fun delete() = mutex.withLock {
@@ -43,4 +36,22 @@ class StoreDir(val root: File) {
     /** [name] may hold one level of folder ("saved/folders.json"). */
     @Synchronized
     fun file(name: String): StoreFile = files.getOrPut(name) { StoreFile(File(root, name)) }
+}
+
+/**
+ * Replaces this file's text with [text] whole: written beside it and flushed
+ * to the disk first, then given its name, so neither a crash nor a power
+ * loss mid-save leaves it half written or empty.
+ */
+fun File.replaceWith(text: String) {
+    parentFile?.mkdirs()
+    val partial = File(parentFile, "$name.part")
+    FileOutputStream(partial).use {
+        it.write(text.toByteArray())
+        it.fd.sync()
+    }
+    if (!partial.renameTo(this)) {
+        delete()
+        partial.renameTo(this)
+    }
 }

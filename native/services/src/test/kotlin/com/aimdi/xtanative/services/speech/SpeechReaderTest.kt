@@ -151,6 +151,7 @@ class SpeechReaderTest {
         assertEquals(chunks.size - 1, heard.count { it.startsWith("next:") })
         assertEquals("say:${chunks[0].length}", heard[0])
         assertEquals("next:${chunks[1].length}", heard[1], "the next chunk is announced once the first is under way")
+        assertEquals("next:${chunks[2].length}", heard[2], "and the one after it, so a slow voice has time for both")
     }
 
     @Test

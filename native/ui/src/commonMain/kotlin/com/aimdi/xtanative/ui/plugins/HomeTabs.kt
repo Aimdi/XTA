@@ -24,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -81,6 +82,9 @@ class PluginClientBar {
 
     /** How many posts the plugin has unread, for its avatar's badge ([ShellUnread]); null when it does not say. */
     internal var unread: Int? by mutableStateOf(null)
+
+    /** Who handed [unread] ([ShellUnread]), so only that one takes it back. */
+    internal var unreadOwner: Any? = null
 
     /** What opens the plugin's own account switcher ([ShellAccounts]); null when it has none. */
     internal var switchAccount: (() -> Unit)? by mutableStateOf(null)
@@ -336,7 +340,7 @@ internal fun PluginStandaloneBar(
                 }
             }
         }
-        if (content != null) content.actions.value(this) else fallbackActions()
+        if (content != null) PluginActions(bar) else fallbackActions()
     }
     // The plugin's feeds ([ShellFeeds]) under its bar, as on Home.
     bar.feeds?.let { ShellFeedRow(it.feeds, it.filter, content?.accent?.value) }
@@ -350,3 +354,15 @@ private fun BarMark(title: String, mark: @Composable () -> Unit) {
 
 /** The standalone bar's height, XTA's pluginToolbarHeight at the default text size. */
 private const val STANDALONE_BAR = 52f
+
+/**
+ * The actions a plugin handed [bar] ([PluginHomeTabs]), drawn by the app's
+ * bar with [LocalPluginClientBar] as the plugin's own page sees it, so a
+ * plugin reads the same shell in its actions as in its page.
+ */
+@Composable
+internal fun RowScope.PluginActions(bar: PluginClientBar) {
+    val actions = bar.content?.actions?.value ?: return
+    val scope = this
+    CompositionLocalProvider(LocalPluginClientBar provides bar) { actions(scope) }
+}

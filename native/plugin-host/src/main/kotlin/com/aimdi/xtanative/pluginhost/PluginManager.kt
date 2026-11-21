@@ -60,11 +60,17 @@ class HostPlatform(
     val verifier: PluginVerifier,
     val classLoaders: PluginClassLoaderFactory,
     val parentClassLoader: ClassLoader,
+    /**
+     * Whether an installed plugin is checked with [verifier] again each time
+     * it loads: where its folder can be written by more than the app (the
+     * desktop's, by any program the reader runs). Android's is the app's alone.
+     */
+    val verifiesOnLoad: Boolean = false,
 ) {
     companion object {
-        /** The Linux desktop: JARs signed by the certificate whose SHA-256 is [certificateSha256], loaded with a URLClassLoader. */
+        /** The Linux desktop: JARs signed by the certificate whose SHA-256 is [certificateSha256], loaded with a URLClassLoader, and checked again at each load. */
         fun desktop(certificateSha256: String, parent: ClassLoader = HostPlatform::class.java.classLoader): HostPlatform =
-            HostPlatform(PluginPlatform.DESKTOP, JarSignatureVerifier(certificateSha256), JarClassLoaderFactory, parent)
+            HostPlatform(PluginPlatform.DESKTOP, JarSignatureVerifier(certificateSha256), JarClassLoaderFactory, parent, verifiesOnLoad = true)
     }
 }
 
@@ -112,7 +118,7 @@ class PluginManager(
     private val records = InstalledRecords(store.file("plugins/installed.json"))
     private val cache = CatalogueCache(store.file("plugins/catalogue.json"))
     private val installer = PluginInstaller(files, PluginDownloader(artifacts), host.verifier, host.platform, api)
-    private val loader = PluginLoader(host.classLoaders, host.parentClassLoader, api)
+    private val loader = PluginLoader(host.classLoaders, host.parentClassLoader, api, host.verifier.takeIf { host.verifiesOnLoad })
 
     private val lock = Any()
     private var inputs = Inputs(showPrivate = showPrivate)
@@ -248,7 +254,7 @@ class PluginManager(
 
     /** The catalogue and the text it came as; null when it cannot be read, or what came is no catalogue. */
     private suspend fun readCatalogue(): Pair<PluginCatalogue, String>? {
-        val url = catalogueAddress().toHttpUrlOrNull() ?: return null
+        val url = catalogueAddress().toHttpUrlOrNull()?.takeIf(PluginAddresses::allowed) ?: return null
         return try {
             val response = http.get(url, emptyMap(), followRedirects = true)
             response.body.takeIf { response.isSuccessful }?.let { body -> PluginCatalogue.parse(body)?.let { it to body } }

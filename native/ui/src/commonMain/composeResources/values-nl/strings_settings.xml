@@ -166,6 +166,8 @@
     <string name="settings_true_black_cards_description">Echt zwart gebruiken voor tweet-kaarten</string>
     <string name="settings_navigation_labels">Navigatielabels tonen</string>
     <string name="settings_hide_navigation">Bovenste en onderste balk verbergen tijdens scrollen</string>
+    <string name="settings_hide_status_bar">Statusbalk verbergen</string>
+    <string name="settings_hide_status_bar_description">Het hele scherm gebruiken: de tijd, batterij en ontvangst bovenaan worden verborgen. Veeg omlaag vanaf de bovenrand om ze even te zien.</string>
     <string name="settings_text_scale">Tekstschaalfactor</string>
     <string name="settings_text_scale_description">Lettergrootte in de app aanpassen</string>
     <string name="settings_disable_animations">Animaties uitschakelen</string>

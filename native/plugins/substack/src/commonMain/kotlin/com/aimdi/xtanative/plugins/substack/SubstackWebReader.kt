@@ -86,7 +86,7 @@ internal fun WebArticle(app: SubstackApp, model: ReaderModel, state: ReaderModel
     val post = state.post
     val reading = state.reading ?: return
     val speech = LocalSpeech.current
-    val speakText by rememberUpdatedState(state.speakText)
+    val latest by rememberUpdatedState(state)
     val fontScale = LocalDensity.current.fontScale
     val colors = pageColors()
     val words = pageWords(post, content)
@@ -110,7 +110,7 @@ internal fun WebArticle(app: SubstackApp, model: ReaderModel, state: ReaderModel
             onLoaded = { loaded = true },
             onFailed = { failed = it },
             onReading = { message -> if (failed == null) reading.receiveProgress(message) },
-            onSpeakFrom = { needle -> speech?.speak(post.title, textFromHere(speakText, needle)) },
+            onSpeakFrom = { needle -> speech?.speak(post.title, textFromHere(latest.speakText, needle)) },
         )
     }
     failed?.let { return ReaderFailure(post, IllegalStateException(it)) { model.load(force = false) } }
@@ -164,7 +164,7 @@ private fun pageColors(): SubstackPageColors {
 
 @Composable
 private fun pageWords(post: SubstackPost, content: ReaderContent.Article): SubstackPageWords {
-    val minutes = SubstackReading.readMinutes(post, content.article.plainText)
+    val minutes = remember(post, content.article) { SubstackReading.readMinutes(post, content.article.plainText) }
     val preview = content.preview
     return SubstackPageWords(
         readTime = minutes?.let { pluginPlural(Strings.read_minutes, it, it) },

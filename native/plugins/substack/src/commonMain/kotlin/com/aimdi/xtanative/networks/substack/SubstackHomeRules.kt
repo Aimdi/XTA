@@ -48,6 +48,14 @@ object SubstackHomeRules {
         posts.filterNot { SubstackPosts.isRead(readIds, it) }.mapTo(HashSet()) { it.publicationBaseUrl.lowercase() }
 
     /** Whether "Mark all as read" has anything to do. */
+    /** [publication], the one Home is narrowed to, while it is still followed; null for all of them. */
+    fun narrowedTo(publication: String?, publications: List<SubstackPublication>): String? =
+        publication?.takeIf { url -> publications.any { it.baseUrl == url } }
+
+    /** The loaded [posts] of [publication] alone, or all of them for null: what Mark all as read marks. */
+    fun within(posts: List<SubstackPost>, publication: String?): List<SubstackPost> =
+        if (publication == null) posts else posts.filter { it.publicationBaseUrl == publication }
+
     fun anyUnread(posts: List<SubstackPost>, readIds: Set<String>): Boolean = posts.any { !SubstackPosts.isRead(readIds, it) }
 
     /** How many loaded posts of the publications followed are unread: the shell's subtitle. */

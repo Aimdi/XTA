@@ -25,17 +25,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.TopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -54,7 +52,9 @@ import com.aimdi.xtanative.ui.generated.resources.home_switcher_title
 import com.aimdi.xtanative.ui.generated.resources.home_unread
 import com.aimdi.xtanative.ui.generated.resources.home_unread_count
 import com.aimdi.xtanative.ui.generated.resources.posts_scroll_to_top
+import com.aimdi.xtanative.ui.plugins.PluginActions
 import com.aimdi.xtanative.ui.plugins.PluginClientBar
+import com.aimdi.xtanative.ui.plugins.PluginHomeTab
 import com.aimdi.xtanative.ui.plugins.ShellFeedRow
 import com.aimdi.xtanative.ui.plugins.color
 import com.aimdi.xtanative.ui.plugins.pluginAccent
@@ -88,7 +88,7 @@ internal fun NetworkTopBar(
     ui: HomeUi,
     networks: HomeNetworks,
     client: PluginClientBar,
-    anyUnread: Boolean,
+    unread: Boolean,
     calls: NetworkBarCalls,
     bar: TopAppBarScrollBehavior,
     sectionsBelow: Boolean = false,
@@ -98,15 +98,16 @@ internal fun NetworkTopBar(
     val accent = pluginAccent(content?.accent?.value)
     val handed = client.feeds
     val tabs = content?.tabs?.value.orEmpty()
-    val feeds = handed?.feeds ?: tabs.takeIf { it.size > 1 && !sectionsBelow }
+    val rows = ShellRows.of(handed?.feeds, tabs, onBar = sectionsBelow)
     Column(Modifier.background(MaterialTheme.colorScheme.background).windowInsetsPadding(TopAppBarDefaults.windowInsets)) {
         Collapsing(bar) {
             Column {
-                TitleRow(id, ui, networks, client, anyUnread, calls) {
-                    content?.actions?.value?.invoke(this)
+                TitleRow(id, ui, networks, client, unread, calls) {
+                    PluginActions(client)
                     actions()
                 }
-                if (feeds != null) ShellFeedRow(feeds, handed?.filter, accent) else Hairline()
+                rows.sections?.let { ShellFeedRow(it, null, accent) }
+                rows.feeds?.let { ShellFeedRow(it, handed?.filter, accent) } ?: Hairline()
             }
         }
     }
@@ -120,23 +121,37 @@ internal fun NetworkTopBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Collapsing(bar: TopAppBarScrollBehavior, content: @Composable () -> Unit) {
-    var full by remember { mutableIntStateOf(0) }
-    SideEffect { if (full > 0 && bar.state.heightOffsetLimit != -full.toFloat()) bar.state.heightOffsetLimit = -full.toFloat() }
-    Layout(content, Modifier.clipToBounds()) { measurables, constraints ->
+    val state = bar.state
+    Layout(
+        // Keyed by the state, so a new one (hide on scroll turned on or off) is told the height too.
+        { key(state) { Box(Modifier.onSizeChanged { state.collapsesBy(it.height) }) { content() } } },
+        Modifier.clipToBounds(),
+    ) { measurables, constraints ->
         val placeable = measurables.single().measure(constraints.copy(minHeight = 0, maxHeight = Constraints.Infinity))
-        if (full != placeable.height) full = placeable.height
-        val offset = bar.state.heightOffset.roundToInt().coerceIn(-placeable.height, 0)
+        val offset = state.heightOffset.roundToInt().coerceIn(-placeable.height, 0)
         layout(placeable.width, placeable.height + offset) { placeable.place(0, offset) }
     }
 }
 
+/**
+ * Lets the header hide by [height], its measured height, as its rows come
+ * and go (a plugin handing its feeds, a pane without them), and keeps what
+ * is hidden within that, so a shorter header is not owed scroll it no
+ * longer has.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+private fun TopAppBarState.collapsesBy(height: Int) {
+    heightOffsetLimit = -height.toFloat()
+    heightOffset = heightOffset.coerceIn(heightOffsetLimit, 0f)
+}
+
 /** The first row: avatar, centred name and subtitle, the actions. */
 @Composable
-private fun TitleRow(id: String, ui: HomeUi, networks: HomeNetworks, client: PluginClientBar, anyUnread: Boolean, calls: NetworkBarCalls, actions: @Composable RowScope.() -> Unit) {
+private fun TitleRow(id: String, ui: HomeUi, networks: HomeNetworks, client: PluginClientBar, unread: Boolean, calls: NetworkBarCalls, actions: @Composable RowScope.() -> Unit) {
     val name = networkName(id, ui)
     val subtitle = client.subtitle
     Box(Modifier.fillMaxWidth().height(TITLE_ROW)) {
-        Avatar(id, name, networks, AvatarMark(anyUnread, client.unread), calls.onAvatar, client.switchAccount, Modifier.align(Alignment.CenterStart).padding(start = 6.dp))
+        Avatar(id, name, networks, AvatarMark(unread, client.unread), calls.onAvatar, client.switchAccount, Modifier.align(Alignment.CenterStart).padding(start = 6.dp))
         Column(
             Modifier
                 .align(Alignment.Center)
@@ -225,3 +240,18 @@ private fun Avatar(id: String, name: String, networks: HomeNetworks, mark: Avata
 }
 
 private fun networkName(id: String, ui: HomeUi): String = ui.networks.firstOrNull { it.id == id }?.title ?: id
+
+/**
+ * The rows under a network's title: its sections, where they are not on
+ * the bottom bar and the plugin hands feeds as well (so neither hides the
+ * other), then its feeds, or its sections in their place when it hands
+ * none. One section alone is no row.
+ */
+internal class ShellRows(val sections: List<PluginHomeTab>?, val feeds: List<PluginHomeTab>?) {
+    companion object {
+        fun of(handed: List<PluginHomeTab>?, sections: List<PluginHomeTab>, onBar: Boolean): ShellRows {
+            val own = sections.takeIf { it.size > 1 && !onBar }
+            return if (handed != null) ShellRows(own, handed) else ShellRows(null, own)
+        }
+    }
+}

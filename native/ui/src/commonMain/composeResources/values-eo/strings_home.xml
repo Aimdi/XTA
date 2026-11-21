@@ -30,6 +30,14 @@
     <string name="home_antennas">Antenoj</string>
     <string name="home_deck">Kolumnaro</string>
     <string name="home_deck_empty">Alpinglu grupojn por vidi ilin unu apud la alia sur larĝa ekrano</string>
+    <string name="home_deck_add">Aldoni kolumnon</string>
+    <string name="home_deck_move_left">Movi maldekstren</string>
+    <string name="home_deck_move_right">Movi dekstren</string>
+    <string name="home_deck_remove">Forigi kolumnon</string>
+    <string name="home_deck_width">Kolumna larĝo</string>
+    <string name="home_deck_width_narrow">Mallarĝa</string>
+    <string name="home_deck_width_medium">Meza</string>
+    <string name="home_deck_width_wide">Larĝa</string>
     <string name="home_groups">Grupoj</string>
     <string name="home_no_groups">Ankoraŭ neniuj grupoj</string>
     <string name="home_no_results">Neniuj rezultoj</string>

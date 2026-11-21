@@ -166,6 +166,8 @@
     <string name="settings_true_black_cards_description">Usa il nero vero per lo sfondo delle schede tweet</string>
     <string name="settings_navigation_labels">Mostra etichette di navigazione</string>
     <string name="settings_hide_navigation">Nascondi le barre superiore e inferiore durante lo scorrimento</string>
+    <string name="settings_hide_status_bar">Nascondi la barra di stato</string>
+    <string name="settings_hide_status_bar_description">Usa tutto lo schermo: ora, batteria e segnale in alto vengono nascosti. Scorri verso il basso dal bordo superiore per vederli un momento.</string>
     <string name="settings_text_scale">Fattore di scala del testo</string>
     <string name="settings_text_scale_description">Regola la dimensione del testo nell'app</string>
     <string name="settings_disable_animations">Disabilita animazioni</string>

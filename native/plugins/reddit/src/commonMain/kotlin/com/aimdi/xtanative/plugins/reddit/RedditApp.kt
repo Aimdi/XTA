@@ -320,6 +320,7 @@ internal class RedditApp(val host: PluginHost) {
     /** Changes what listings read, and has the open ones and the feed read again. */
     fun change(edit: (Settings) -> Settings) = launch {
         prefs.update(edit)
+        identityChanged()
         reread()
     }
 
@@ -350,14 +351,32 @@ internal class RedditApp(val host: PluginHost) {
      */
     suspend fun accountName(): String? {
         val signedIn = credentials.load()
-        val asks = signedIn[RedditPrefs.refreshToken].isNotBlank() && signedIn[RedditPrefs.clientId].isNotBlank() &&
+        val token = signedIn[RedditPrefs.refreshToken]
+        val asks = token.isNotBlank() && signedIn[RedditPrefs.clientId].isNotBlank() &&
             prefs.load()[RedditPrefs.source] != RedditSource.PUBLIC
         if (!asks) return null
-        return attempt { session().userToken?.let { auth.accountName(it) } }.getOrNull()
+        // Asked once per sign-in while the app runs: the shell shows it each time Reddit is opened.
+        knownName?.takeIf { it.first == token }?.let { return it.second }
+        val name = attempt { session().userToken?.let { auth.accountName(it) } }.getOrNull()
+        if (name != null) knownName = token to name
+        return name
     }
+
+    /** The name [accountName] found, with the refresh token it was found for; held in memory only. */
+    @Volatile
+    private var knownName: Pair<String, String>? = null
+
+    private val identityTurns = MutableStateFlow(0)
+
+    /** Turns each time whose Reddit is read as may have changed (a sign-in, a sign-out, the source), so [accountName] is asked again. */
+    val identity: StateFlow<Int> = identityTurns
+
+    private fun identityChanged() = identityTurns.update { it + 1 }
 
     /** After the credentials changed: the cached tokens were someone else's. */
     fun credentialsChanged() {
+        knownName = null
+        identityChanged()
         sessions.forget()
         reading().client.forgetToken()
         launch { reread() }

@@ -313,7 +313,7 @@ private enum class BadgeSheet { NONE, CHOICES, GROUPS }
 internal fun FollowBadge(author: XUser, size: Dp, avatar: @Composable () -> Unit) {
     val sessions = LocalSessions.current
     val session by sessions.state.collectAsStateWithLifecycle()
-    val followed = session?.followed(author.id) != null
+    val followed = session?.isFollowed(author.id) == true
     var sheet by rememberSaveable(author.id) { mutableStateOf(BadgeSheet.NONE) }
     val coroutines = rememberCoroutineScope()
     val follow = { coroutines.launch { sessions.update { it.follow(author, System.currentTimeMillis()) } } }

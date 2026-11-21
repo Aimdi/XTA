@@ -30,6 +30,14 @@
     <string name="home_antennas">Antennes</string>
     <string name="home_deck">Deck</string>
     <string name="home_deck_empty">Zet groepen vast om ze op een breed scherm naast elkaar te zien</string>
+    <string name="home_deck_add">Kolom toevoegen</string>
+    <string name="home_deck_move_left">Naar links</string>
+    <string name="home_deck_move_right">Naar rechts</string>
+    <string name="home_deck_remove">Kolom verwijderen</string>
+    <string name="home_deck_width">Kolombreedte</string>
+    <string name="home_deck_width_narrow">Smal</string>
+    <string name="home_deck_width_medium">Gemiddeld</string>
+    <string name="home_deck_width_wide">Breed</string>
     <string name="home_groups">Groepen</string>
     <string name="home_no_groups">Nog geen groepen</string>
     <string name="home_no_results">Geen resultaten</string>

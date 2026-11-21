@@ -34,31 +34,47 @@ private val stopWords: Map<String, Set<String>> = mapOf(
  * Text cut into utterances an engine will actually finish (speech_store.dart):
  * the platform silently drops the end of a very long one. Cuts fall between
  * sentences, so a break never lands mid-word; a single sentence longer than
- * [maxChars] is cut where it has to be.
+ * [maxChars] is cut where it has to be. The first utterance is kept to
+ * [firstMaxChars] where sentences allow: a voice that synthesises before it
+ * plays starts speaking sooner on a short one. Paragraphs stay apart within
+ * an utterance, so a title is not run into the line after it.
  */
-fun chunkForSpeech(text: String, maxChars: Int = 3500): List<String> {
+fun chunkForSpeech(text: String, maxChars: Int = 3500, firstMaxChars: Int = maxChars): List<String> {
     val trimmed = text.trim()
     if (trimmed.isEmpty()) return emptyList()
-    if (trimmed.length <= maxChars) return listOf(trimmed)
+    if (trimmed.length <= minOf(maxChars, firstMaxChars)) return listOf(trimmed)
     val chunks = ArrayList<String>()
     val buffer = StringBuilder()
     fun flush() {
         if (buffer.isNotEmpty()) chunks.add(buffer.toString())
         buffer.clear()
     }
-    for (sentence in trimmed.split(sentenceBreak)) {
-        if (sentence.length > maxChars) {
-            flush()
-            chunks.addAll(sentence.chunked(maxChars))
-            continue
+    for (paragraph in trimmed.split(paragraphBreak)) {
+        var opening = true
+        for (sentence in paragraph.split(sentenceBreak)) {
+            if (sentence.isEmpty()) continue
+            if (sentence.length > maxChars) {
+                flush()
+                chunks.addAll(sentence.chunked(maxChars))
+                opening = false
+                continue
+            }
+            val limit = if (chunks.isEmpty()) minOf(maxChars, firstMaxChars) else maxChars
+            val joint = if (opening) PARAGRAPH else " "
+            if (buffer.length + sentence.length + joint.length > limit) flush()
+            if (buffer.isNotEmpty()) buffer.append(joint)
+            buffer.append(sentence)
+            opening = false
         }
-        if (buffer.length + sentence.length + 1 > maxChars) flush()
-        if (buffer.isNotEmpty()) buffer.append(' ')
-        buffer.append(sentence)
     }
     flush()
     return chunks
 }
+
+private const val PARAGRAPH = "\n\n"
+
+/** A blank line, however it is spaced. */
+private val paragraphBreak = Regex("[\\s\\p{Z}]*\\n[\\s\\p{Z}]*\\n[\\s\\p{Z}]*")
 
 /** After a sentence's end, any run of space, the ideographic space included. */
 private val sentenceBreak = Regex("(?<=[.!?。！？])[\\s\\p{Z}]+")

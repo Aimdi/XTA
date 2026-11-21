@@ -58,6 +58,9 @@ object ThemePrefs : PrefSection() {
     /** The Home bar slips away while scrolling down and comes back on the first scroll up. */
     val hideNavigationOnScroll = flag("theme.hide_navigation_on_scroll", true)
 
+    /** Android's status bar (time, battery, signal) hidden while the app is shown; a swipe from the top shows it a moment. */
+    val hideStatusBar = flag("theme.hide_status_bar", false, seeded = false)
+
     val mode = choice("theme.mode", ThemeMode.SYSTEM, ThemeMode.entries)
     val color = choice("theme.color", ThemeColor.ACCENT, ThemeColor.entries)
 
@@ -90,6 +93,9 @@ object HomePrefs : PrefSection() {
 
     /** Groups shown as deck columns on wide screens, comma-separated. */
     val deckGroupIds = text("home.deck_group_ids", "")
+
+    /** How wide each of the deck's columns is, before they widen to fill the window. */
+    val deckColumnWidth = choice("home.deck_column_width", DeckWidth.MEDIUM, DeckWidth.entries, seeded = false)
 
     /** Mastodon, Bluesky and Threads share one entry in the feed switcher. */
     val altMicrobloggingGrouped = flag("home.alt_microblogging.grouped", true)

@@ -44,6 +44,7 @@ import com.aimdi.xtanative.ui.generated.resources.signin_username
 import com.aimdi.xtanative.ui.links.LocalLinks
 import com.aimdi.xtanative.ui.settings.SettingsPage
 import com.aimdi.xtanative.ui.subscriptions.GroupIcons
+import java.io.File
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -97,6 +98,13 @@ internal expect val signInOffersImport: Boolean
  * back the session the reader just took off this device.
  */
 internal expect fun forgetWebSessions()
+
+/**
+ * [forgetWebSessions] once on this device, for the X sessions an earlier
+ * build left in the web view after signing in, which the in-app browser
+ * shared; [files] holds the mark that it was done.
+ */
+internal expect fun forgetLeftWebSessionsOnce(files: File)
 
 /**
  * The desktop's sign-in (XTA's XCookieLogin): how to copy the session's two

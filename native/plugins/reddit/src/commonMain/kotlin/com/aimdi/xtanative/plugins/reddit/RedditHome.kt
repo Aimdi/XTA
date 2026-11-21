@@ -126,7 +126,8 @@ internal fun RedditHome(app: RedditApp, frame: PluginFrame) {
 private fun ShellBar(app: RedditApp, home: RedditHomeSource, followed: List<String>) {
     var sorting by remember { mutableStateOf(false) }
     val choices by app.choices.collectAsState()
-    val account by produceState<String?>(null, app) { value = app.accountName() }
+    val identity by app.identity.collectAsState()
+    val account by produceState<String?>(null, app, identity) { value = app.accountName() }
     val modes = RedditFeedMode.entries.map { mode ->
         PluginHomeTab(barIcon(mode), pluginString(feedLabel(mode)), !home.viewingSubreddit && home.mode == mode) { app.selectMode(mode) }
     }

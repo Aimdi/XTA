@@ -37,6 +37,7 @@ import com.aimdi.xtanative.store.backup.SearchSubscriptionRow
 import com.aimdi.xtanative.store.backup.SubstackSubscriptionRow
 import com.aimdi.xtanative.store.backup.UserSubscriptionRow
 import com.aimdi.xtanative.store.reading.ArticleReadPoint
+import com.aimdi.xtanative.store.saved.LocalPost
 import com.aimdi.xtanative.store.saved.ProfileNotesStore
 import com.aimdi.xtanative.store.saved.SavedLibrary
 import com.aimdi.xtanative.store.saved.SavedPost
@@ -207,6 +208,23 @@ class BackupRestoreTest {
         assertEquals("later", restored.posts.first().note)
         assertTrue(restored.folders.single().autoDownload)
         assertEquals("t3", BackupRestore.likes(emptyList(), backup(), 1_000)!!.single().id)
+    }
+
+    @Test
+    fun aNoteOrProfileNoteWrittenHereSinceTheBackupKeepsTheRewrite() {
+        val backupTime = Instant.parse("2026-01-02T03:04:05Z").toEpochMilli()
+        val dated = BackupDocument(localPosts = listOf(LocalPostRow("n1", "stays", "2026-01-02T03:04:05.000Z", "2026-01-02T03:04:05.000Z")))
+        val since = LocalPost("n1", "rewritten here", 1, backupTime + 1)
+        assertEquals("rewritten here", BackupRestore.localPosts(listOf(since), dated, 1_000)!!.single().body, "a sync's restore keeps the later rewrite")
+        val before = LocalPost("n1", "older here", 1, backupTime - 1)
+        assertEquals("stays", BackupRestore.localPosts(listOf(before), dated, 1_000)!!.single().body)
+
+        val later = ProfileNoteRow("1", "rewritten here", "2026-03-01T00:00:00.000Z")
+        assertEquals("rewritten here", BackupRestore.profileNotes(listOf(later), backup())!!.single().note)
+        val older = ProfileNoteRow("1", "older here", "2025-12-01T00:00:00.000Z")
+        assertEquals("met at a conference", BackupRestore.profileNotes(listOf(older), backup())!!.single().note)
+        val undated = ProfileNoteRow("1", "no time", null)
+        assertEquals("met at a conference", BackupRestore.profileNotes(listOf(undated), backup())!!.single().note, "with no time to compare the backup's row replaces it, as before")
     }
 
     @Test

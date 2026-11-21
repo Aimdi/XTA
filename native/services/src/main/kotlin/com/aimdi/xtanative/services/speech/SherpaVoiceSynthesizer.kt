@@ -85,7 +85,7 @@ class SherpaVoiceSynthesizer private constructor(
          * when it cannot. [clips] is emptied first, so clips a killed process
          * left behind do not pile up (offline_speech_setup.dart).
          */
-        suspend fun load(installed: InstalledVoice, clips: File, threads: Int = 2, engine: () -> SherpaEngine): VoiceSynthesizer {
+        suspend fun load(installed: InstalledVoice, clips: File, threads: Int = defaultThreads(), engine: () -> SherpaEngine): VoiceSynthesizer {
             val thread = Executors.newSingleThreadExecutor { work -> Thread(work, "offline-voice").apply { isDaemon = true } }
             val loaded = AtomicReference<Pair<SherpaEngine, Long>?>()
             try {
@@ -99,6 +99,13 @@ class SherpaVoiceSynthesizer private constructor(
                 throw error
             }
         }
+
+        /**
+         * The threads a voice synthesises on: half the processor's cores,
+         * two at least and four at most. Two on an eight-core phone made
+         * speech slower than it is spoken, a silence after every sentence.
+         */
+        fun defaultThreads(cores: Int = Runtime.getRuntime().availableProcessors()): Int = (cores / 2).coerceIn(2, 4)
 
         private fun open(installed: InstalledVoice, clips: File, threads: Int, engine: () -> SherpaEngine): Pair<SherpaEngine, Long> {
             clips.deleteRecursively()

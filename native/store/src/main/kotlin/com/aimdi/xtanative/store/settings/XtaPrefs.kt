@@ -49,6 +49,27 @@ object SecretPrefs {
         EhViewerPrefs.cookies, TikTokPrefs.cookies, InstagramPrefs.cookies,
     ).mapTo(HashSet()) { it.key }
 
+    /**
+     * Each address a secret is sent to, with the secrets sent there. A backup
+     * from elsewhere must not move one while this device holds a secret for
+     * it: the reader's own key would go to whatever server the file names.
+     */
+    val addresses: Map<String, List<String>> = listOf(
+        AiPrefs.baseUrl to listOf(AiPrefs.apiKey),
+        ReadingPrefs.translation to listOf(ReadingPrefs.translationApiKey),
+        KarakeepPrefs.serverUrl to listOf(KarakeepPrefs.apiKey),
+        ImmichPrefs.serverUrl to listOf(ImmichPrefs.apiKey),
+        DeepmarksPrefs.apiBase to listOf(DeepmarksPrefs.apiKey, DeepmarksPrefs.secretKey),
+        ThreadsPrefs.apiBase to listOf(ThreadsPrefs.apiToken),
+        DataPrefs.webDavUrl to listOf(DataPrefs.webDavPassword),
+        // Booru sends its login and key to this host alone.
+        BooruPrefs.credentialsHost to listOf(BooruPrefs.apiKey, BooruPrefs.siteCredentials),
+    ).associate { (address, secrets) -> address.key to secrets.map { it.key } }
+
+    /** Whether [settings] hold a secret sent to [key], an address in [addresses]. */
+    fun guards(settings: Settings, key: String): Boolean =
+        addresses[key].orEmpty().any { secret -> (settings.values[secret] as? PrefValue.Text)?.value?.isNotBlank() == true }
+
     fun isSecret(key: String): Boolean =
         key in keys || key.endsWith("api_key") || key.endsWith("secret_key") || key.endsWith("_token") || key.endsWith("password")
 }

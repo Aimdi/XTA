@@ -234,3 +234,10 @@ enum class EhReadingMode(override val stored: String) : PrefChoice {
     RIGHT_TO_LEFT("rightToLeft"),
     VERTICAL("vertical"),
 }
+
+/** A deck column's width in dp ([dp]): narrow fits more columns, wide reads like a page. */
+enum class DeckWidth(override val stored: String, val dp: Int) : PrefChoice {
+    NARROW("narrow", 320),
+    MEDIUM("medium", 380),
+    WIDE("wide", 460),
+}

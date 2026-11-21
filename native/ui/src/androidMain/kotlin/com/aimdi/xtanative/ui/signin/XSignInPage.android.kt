@@ -5,6 +5,8 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.content.ContextWrapper
+import android.os.Handler
+import android.os.Looper
 import android.os.Message
 import android.webkit.CookieManager
 import android.webkit.WebChromeClient
@@ -31,6 +33,7 @@ import com.aimdi.xtanative.ui.generated.resources.settings_ok
 import com.aimdi.xtanative.ui.generated.resources.signin_logging_in_text
 import com.aimdi.xtanative.ui.generated.resources.signin_logging_in_title
 import com.aimdi.xtanative.ui.settings.SettingsPage
+import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.resume
 import kotlinx.coroutines.CoroutineScope
@@ -95,6 +98,16 @@ internal actual fun forgetWebSessions() {
     }
 }
 
+internal actual fun forgetLeftWebSessionsOnce(files: File) {
+    val mark = File(files, "web-sessions-forgotten")
+    if (mark.exists()) return
+    // The web view's cookie store is the main thread's.
+    Handler(Looper.getMainLooper()).post {
+        forgetWebSessions()
+        runCatching { mark.createNewFile() }
+    }
+}
+
 /** Calls [onHome] each time the page's address becomes X's home page: X moves there without loading a page, so the history is watched. */
 private class HomeWatcher(private val onHome: (WebView) -> Unit) : WebViewClient() {
     override fun doUpdateVisitedHistory(view: WebView, url: String?, isReload: Boolean) {
@@ -103,11 +116,21 @@ private class HomeWatcher(private val onHome: (WebView) -> Unit) : WebViewClient
     }
 }
 
-/** The handle off [view]'s page, then the account the session's cookies make; [reading] is let go when either is not there yet. */
+/**
+ * The handle off [view]'s page, then the account the session's cookies make,
+ * after which the web views forget the session; [reading] is let go when
+ * either is not there yet.
+ */
 private fun read(view: WebView, scope: CoroutineScope, reading: AtomicBoolean, onAccount: (XAccount) -> Unit) {
     scope.launch {
         val account = screenName(view)?.let { name -> XSignIn.account(XSignIn.cookiesOf(CookieManager.getInstance().getCookie(XSignIn.LOGIN_PAGE)), name) }
-        if (account == null) reading.set(false) else onAccount(account)
+        if (account == null) {
+            reading.set(false)
+        } else {
+            // The account holds the session now: the web views keep none, so no page the in-app browser opens is X signed in as the reader.
+            forgetWebSessions()
+            onAccount(account)
+        }
     }
 }
 

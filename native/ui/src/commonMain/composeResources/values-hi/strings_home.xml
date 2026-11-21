@@ -30,6 +30,14 @@
     <string name="home_antennas">एंटेना</string>
     <string name="home_deck">कॉलम</string>
     <string name="home_deck_empty">चौड़ी स्क्रीन पर समूहों को साथ-साथ देखने के लिए उन्हें पिन करें</string>
+    <string name="home_deck_add">कॉलम जोड़ें</string>
+    <string name="home_deck_move_left">बाईं ओर ले जाएँ</string>
+    <string name="home_deck_move_right">दाईं ओर ले जाएँ</string>
+    <string name="home_deck_remove">कॉलम हटाएँ</string>
+    <string name="home_deck_width">कॉलम की चौड़ाई</string>
+    <string name="home_deck_width_narrow">संकरा</string>
+    <string name="home_deck_width_medium">मध्यम</string>
+    <string name="home_deck_width_wide">चौड़ा</string>
     <string name="home_groups">समूह</string>
     <string name="home_no_groups">अभी कोई समूह नहीं</string>
     <string name="home_no_results">कोई परिणाम नहीं</string>

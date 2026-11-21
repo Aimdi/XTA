@@ -168,7 +168,7 @@ private object Routes {
     const val LIVE = "live?broadcast={broadcast}&space={space}&key={key}&image={image}&ratio={ratio}"
 
     /** Post [id], its media's row at picture [media]: the one a grid's viewer was on. */
-    fun post(id: String, media: Int = 0) = if (media > 0) "post/$id?media=$media" else "post/$id"
+    fun post(id: String, media: Int = 0) = "post/" + encoded(id) + if (media > 0) "?media=$media" else ""
     /**
      * [screenName]'s profile, read by [id] when known, opening on [tab] when one is named.
      * An account X sent without a handle goes by its id: the route needs a name.
@@ -177,7 +177,7 @@ private object Routes {
         val params = listOfNotNull(id?.takeIf { it.isNotBlank() }?.let { "id=" + encoded(it) }, tab?.let { "tab=" + it.routeName })
         return "profile/" + encoded(screenName.ifEmpty { id.orEmpty() }) + if (params.isEmpty()) "" else "?" + params.joinToString("&")
     }
-    fun media(postId: String, index: Int) = "media/$postId/$index"
+    fun media(postId: String, index: Int) = "media/" + encoded(postId) + "/$index"
 
     /** The viewer over the gallery kept as [key], from [index]; [page] is where it falls back to once the gallery is gone. */
     fun gallery(key: String, index: Int, page: ViewerPage?) =
@@ -203,10 +203,10 @@ private object Routes {
     fun groupDiscover(id: String) = "group/" + encoded(id) + "/discover"
     fun importList(list: String?) = if (list.isNullOrBlank()) "subscriptions/import-list" else "subscriptions/import-list?list=" + encoded(list)
     fun sortOne(ids: List<String>) = "subscriptions/sort-one?ids=" + encoded(ids.joinToString(","))
-    fun quotes(id: String) = "post/$id/quotes"
-    fun reposters(id: String) = "post/$id/reposters"
+    fun quotes(id: String) = "post/" + encoded(id) + "/quotes"
+    fun reposters(id: String) = "post/" + encoded(id) + "/reposters"
     fun follows(screenName: String, followers: Boolean) = "profile/" + encoded(screenName) + if (followers) "/followers" else "/following"
-    fun article(postId: String) = "article/$postId"
+    fun article(postId: String) = "article/" + encoded(postId)
     fun library(query: String?) = if (query.isNullOrBlank()) "library" else "library?q=" + encoded(query.trim())
 
     /** The live player on [live]: what X is asked its stream with, and its picture and shape meanwhile. */

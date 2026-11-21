@@ -1,7 +1,5 @@
 package com.aimdi.xtanative.data
 
-import com.aimdi.xtanative.ui.downloads.Downloading
-import com.aimdi.xtanative.ui.saved.Keeper
 import com.aimdi.xtanative.core.session.Session
 import com.aimdi.xtanative.core.x.FileAccountHealthStore
 import com.aimdi.xtanative.core.x.XAccountHealthStore
@@ -43,13 +41,16 @@ import com.aimdi.xtanative.store.saved.SavedStore
 import com.aimdi.xtanative.store.search.RecentSearches
 import com.aimdi.xtanative.store.settings.CrashReportPrefs
 import com.aimdi.xtanative.store.settings.SettingsStore
+import com.aimdi.xtanative.ui.downloads.Downloading
 import com.aimdi.xtanative.ui.downloads.PlatformFiles
+import com.aimdi.xtanative.ui.saved.Keeper
 import com.aimdi.xtanative.ui.settings.ChromeAvatar
 import com.aimdi.xtanative.ui.settings.DeviceBackup
 import com.aimdi.xtanative.ui.settings.KeptSections
 import com.aimdi.xtanative.ui.settings.MainThreadStalls
 import com.aimdi.xtanative.ui.settings.PluginBackups
 import com.aimdi.xtanative.ui.settings.SettingsStart
+import com.aimdi.xtanative.ui.signin.forgetLeftWebSessionsOnce
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -243,6 +244,7 @@ class AppGraph(
             }
             // XTA's launch steps on the settings, once; then the feeds' switches follow the settings.
             scope.launch { SettingsStart.keepSessionInStep(settings, sessions) }
+            if (mockX == null) forgetLeftWebSessionsOnce(files)
             scope.launch { SettingsStart.keepAccountsOffInStep(settings) { accountsOff = it } }
             scope.launch {
                 DeviceBackup(this@AppGraph).adoptKeptProfiles()

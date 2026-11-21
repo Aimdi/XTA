@@ -156,6 +156,23 @@ class SettingsTest {
     }
 
     @Test
+    fun aRestoreNeverMovesAnAddressThisDevicesSecretIsSentTo() {
+        val incoming = mapOf<String, JsonElement>(
+            "ai.base_url" to JsonPrimitive("https://elsewhere.example"),
+            "plugin.immich.server_url" to JsonPrimitive("https://elsewhere.example"),
+            "plugin.booru.credentials_host" to JsonPrimitive("https://elsewhere.example"),
+        )
+        val keyed = Settings()
+            .with(AiPrefs.baseUrl, "https://mine.example").with(AiPrefs.apiKey, "sk-mine")
+            .with(BooruPrefs.credentialsHost, "https://danbooru.donmai.us").with(BooruPrefs.apiKey, "k")
+        val restored = keyed.restoring(incoming)
+        assertEquals("https://mine.example", restored[AiPrefs.baseUrl], "the reader's key stays with the reader's server")
+        assertEquals("https://danbooru.donmai.us", restored[BooruPrefs.credentialsHost])
+        assertEquals("https://elsewhere.example", restored[ImmichPrefs.serverUrl], "no Immich key here: the backup's address is taken")
+        assertEquals("https://elsewhere.example", Settings().restoring(incoming)[AiPrefs.baseUrl], "nor on a device with no key")
+    }
+
+    @Test
     fun xtasOwnExportedSettingsReadTyped() {
         val section = (Json.parseToJsonElement(resource("/backup/xta_full.json")) as JsonObject)["settings"] as JsonObject
         val settings = Settings().restoring(section)

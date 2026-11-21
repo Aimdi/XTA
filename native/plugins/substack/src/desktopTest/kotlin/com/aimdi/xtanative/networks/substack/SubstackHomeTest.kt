@@ -52,6 +52,27 @@ class SubstackHomeTest {
     }
 
     @Test
+    fun followsChangedWhileARefreshRunsAreReadAndTheRefreshEnds(): Unit = runBlocking {
+        val gate = kotlinx.coroutines.CompletableDeferred<Unit>()
+        var held = true
+        val reads = SubstackPostReads { publication, _, _ ->
+            if (held) gate.await()
+            listOf(post(publication, 1))
+        }
+        val home = SubstackHomeFeed(reads, this, recall = { emptyMap() }, remember = {}, clock = { now })
+        home.follow(listOf(alpha))
+        settle()
+        assertTrue(home.state.value.refreshing, "alpha's read is under way")
+        held = false
+        home.follow(listOf(alpha, beta))
+        settle()
+        gate.complete(Unit)
+        settle()
+        assertFalse(home.state.value.refreshing, "the refresh for the follows before does not go on counting")
+        assertEquals(listOf("alpha1", "beta1"), home.state.value.posts.map { it.id }.sorted(), "and the publication just followed is read")
+    }
+
+    @Test
     fun aFailedRefreshKeepsThePostsAndSaysSoUntilARefreshAnswers(): Unit = runBlocking {
         var failing = false
         val reads = SubstackPostReads { publication, _, _ ->
@@ -116,6 +137,16 @@ class SubstackHomeTest {
         val alphaOnly = SubstackHomeRules.home(posts, listOf(alpha, beta), SubstackFeedFilter.ALL, read, { false }, SubstackLoadedOptions(), publication = alpha.baseUrl)
         assertEquals(listOf("alpha2", "alpha1"), alphaOnly.map { it.id }, "one publication picked in the feed row: its posts alone")
         assertEquals(2, SubstackHomeRules.unread(posts, listOf(alpha, beta), read), "unread of those followed only: alpha2 and beta3")
+    }
+
+    @Test
+    fun anUnfollowedPublicationNoLongerNarrowsHomeAndMarkAllReadKeepsToTheOneShown() {
+        assertEquals(alpha.baseUrl, SubstackHomeRules.narrowedTo(alpha.baseUrl, listOf(alpha, beta)))
+        assertNull(SubstackHomeRules.narrowedTo(alpha.baseUrl, listOf(beta)), "alpha unfollowed since it was picked")
+        assertNull(SubstackHomeRules.narrowedTo(null, listOf(alpha)))
+        val posts = listOf(post(alpha, 1), post(beta, 2))
+        assertEquals(listOf(post(alpha, 1)), SubstackHomeRules.within(posts, alpha.baseUrl))
+        assertEquals(posts, SubstackHomeRules.within(posts, null))
     }
 
     @Test

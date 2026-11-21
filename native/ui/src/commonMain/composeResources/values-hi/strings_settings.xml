@@ -166,6 +166,8 @@
     <string name="settings_true_black_cards_description">पोस्ट कार्ड के लिए ट्रू ब्लैक उपयोग करें</string>
     <string name="settings_navigation_labels">नेविगेशन लेबल दिखाएं</string>
     <string name="settings_hide_navigation">स्क्रॉल करते समय ऊपर और नीचे की पट्टियाँ छिपाएँ</string>
+    <string name="settings_hide_status_bar">स्टेटस बार छिपाएँ</string>
+    <string name="settings_hide_status_bar_description">पूरी स्क्रीन इस्तेमाल करें: ऊपर का समय, बैटरी और सिग्नल छिप जाते हैं। उन्हें एक पल देखने के लिए ऊपरी किनारे से नीचे स्वाइप करें।</string>
     <string name="settings_text_scale">टेक्स्ट स्केल फ़ैक्टर</string>
     <string name="settings_text_scale_description">ऐप में फ़ॉन्ट आकार समायोजित करें</string>
     <string name="settings_disable_animations">एनिमेशन अक्षम करें</string>

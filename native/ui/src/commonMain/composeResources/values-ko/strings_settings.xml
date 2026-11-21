@@ -166,6 +166,8 @@
     <string name="settings_true_black_cards_description">트윗 카드 배경에 완전한 검정 사용</string>
     <string name="settings_navigation_labels">탐색 레이블 표시</string>
     <string name="settings_hide_navigation">스크롤하는 동안 상단 및 하단 바 숨기기</string>
+    <string name="settings_hide_status_bar">상태 표시줄 숨기기</string>
+    <string name="settings_hide_status_bar_description">화면 전체를 사용합니다. 위쪽의 시간, 배터리, 신호가 숨겨집니다. 위쪽 가장자리에서 아래로 쓸어내리면 잠시 볼 수 있습니다.</string>
     <string name="settings_text_scale">텍스트 배율</string>
     <string name="settings_text_scale_description">앱에서 글꼴 크기 조정</string>
     <string name="settings_disable_animations">애니메이션 비활성화</string>

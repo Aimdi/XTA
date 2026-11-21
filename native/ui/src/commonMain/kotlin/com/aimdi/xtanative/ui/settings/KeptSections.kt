@@ -18,6 +18,7 @@ import kotlinx.coroutines.sync.withLock
  */
 class KeptSections(dir: StoreDir) {
     private val file = dir.file(FILE)
+    private val unreadable = dir.file("$FILE.unreadable")
     private val mutex = Mutex()
     private var current: BackupDocument? = null
 
@@ -63,7 +64,10 @@ class KeptSections(dir: StoreDir) {
 
     private suspend fun loaded(): BackupDocument {
         current?.let { return it }
-        val stored = file.read()?.let(BackupDocument::parse)
+        val text = file.read()
+        val stored = text?.let(BackupDocument::parse)
+        // A file that cannot be read may be the only copy of an uninstalled plugin's rows: kept aside before anything replaces it.
+        if (text != null && stored == null) unreadable.write(text)
         legacyProfiles = stored?.let(::profilesOf)
         return (stored?.let(::keptOf) ?: BackupDocument()).also { current = it }
     }
