@@ -66,6 +66,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 
 /**
  * What the Threads plugin's screens share while it runs: Meta's public pages
@@ -419,10 +420,11 @@ internal class ThreadsApp(val host: PluginHost) {
     suspend fun restoreForYou() = forYouRestore.withLock {
         if (forYouRestored) return@withLock
         val text = forYouFile.read()
-        val kept = ThreadsForYouKept.decode(text)
+        // Read once, off the screen's thread: the file is the whole feed.
+        val kept = withContext(Dispatchers.Default) { ThreadsForYouKept.decode(text) }
         forYou.restore(kept.posts, kept.source, kept.readAt)
         forYouPlace = kept.place
-        section.value = ThreadsForYouKept.openingSection(text, follows = attemptKept { accounts.load() }.orEmpty().isNotEmpty())
+        section.value = ThreadsForYouKept.openingSection(text, kept, follows = attemptKept { accounts.load() }.orEmpty().isNotEmpty())
         forYouRestored = true
     }
 

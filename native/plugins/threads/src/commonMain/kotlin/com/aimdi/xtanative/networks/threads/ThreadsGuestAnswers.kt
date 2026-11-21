@@ -73,8 +73,11 @@ internal class ThreadsGuestAnswers(private val clock: () -> Long) {
         synchronized(this) {
             if (mine != null && leaving[key] === mine) leaving.remove(key)
             if (keep && response.code == 200) {
+                // An answer serves the other lane for a moment only: a megabyte page is not held past it.
+                val now = clock()
+                answered.values.removeAll { now - it.at > RECENT_MILLIS }
                 answered.remove(key)
-                answered[key] = Answered(clock(), background, response)
+                answered[key] = Answered(now, background, response)
                 while (answered.size > KEPT) answered.remove(answered.keys.first())
             }
         }

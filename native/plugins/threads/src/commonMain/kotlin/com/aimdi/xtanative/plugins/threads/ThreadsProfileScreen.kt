@@ -38,6 +38,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsPost
 import com.aimdi.xtanative.networks.threads.ThreadsProfile
 import com.aimdi.xtanative.networks.threads.ThreadsProfilePage
 import com.aimdi.xtanative.networks.threads.ThreadsProfileTab
+import com.aimdi.xtanative.store.settings.ThreadsPrefs
 import com.aimdi.xtanative.ui.common.LoadingRow
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.Fetch
@@ -203,7 +204,7 @@ private fun ProfileBody(
     }
     val settings by app.prefs.collectAsState()
     val likedIds by app.likes.state.collectAsState()
-    val all = remember(page, tab, settings, likedIds, shared, ownMedia) {
+    val all = remember(page, tab, settings[ThreadsPrefs.likedPosts], likedIds, shared, ownMedia) {
         when (tab) {
             ProfileTab.POSTS -> ThreadsProfileHeader.threads(page)
             ProfileTab.REPLIES -> page.tab(ThreadsProfileTab.REPLIES)

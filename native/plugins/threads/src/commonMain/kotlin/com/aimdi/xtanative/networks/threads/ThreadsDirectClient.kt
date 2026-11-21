@@ -419,7 +419,7 @@ class ThreadsDirectClient(
         val key = handle.trim().lowercase()
         if (!force) rememberedCard(key)?.let { return it }
         val page = profilePage(key)
-        val profile = ThreadsProfileOwner.enrich(ThreadsPages.guestProfile(page, key), page, key)
+        val profile = withContext(Dispatchers.Default) { ThreadsProfileOwner.enrich(ThreadsPages.guestProfile(page, key), page, key) }
             ?: throw ThreadsException(NO_SUCH_FEED, "guest profile missing: @$key")
         if (profile.pk.isNotEmpty()) rememberUserId(key, profile.pk)
         rememberCard(key, profile)
@@ -595,8 +595,8 @@ class ThreadsDirectClient(
             rememberUserId(key, userId)
             guestThreadsOrNull(key, userId, pageLsd)?.let { return Page(it, null) }
         }
-        val posts = ThreadsPages.profileThreads(page, key)
-        if (posts.isEmpty() && isPrivate(page, key)) throw ThreadsException(PRIVATE_ACCOUNT, "@$key is private")
+        val posts = withContext(Dispatchers.Default) { ThreadsPages.profileThreads(page, key) }
+        if (posts.isEmpty() && withContext(Dispatchers.Default) { isPrivate(page, key) }) throw ThreadsException(PRIVATE_ACCOUNT, "@$key is private")
         if (posts.isEmpty()) throw ThreadsException(NO_SUCH_FEED, "no posts for @$key (GraphQL+SSR empty)")
         return Page(posts, null)
     }
@@ -613,11 +613,14 @@ class ThreadsDirectClient(
         if (!force) rememberedConversation(key)?.let { return it }
         return conversationReads.run(key) {
             val body = guestPage(url)
-            val read = ThreadsPostPage.read(body)
-            val permalink = read.target?.let(ThreadsPeople::mediaId)
-            val next = ThreadsNextPages.first(body, refetchBy(ThreadsRefetch.REPLIES) { permalink }) { it.path.endsWith(REPLIES_PAGE_INFO) }?.encoded()
-            rememberReplyPlaces(read.replies, permalink)
-            read.copy(repliesNext = next).also { rememberConversation(key, it) }
+            // A post's page is a megabyte of scripts: read off the caller's thread, which is a screen's.
+            withContext(Dispatchers.Default) {
+                val read = ThreadsPostPage.read(body)
+                val permalink = read.target?.let(ThreadsPeople::mediaId)
+                val next = ThreadsNextPages.first(body, refetchBy(ThreadsRefetch.REPLIES) { permalink }) { it.path.endsWith(REPLIES_PAGE_INFO) }?.encoded()
+                rememberReplyPlaces(read.replies, permalink)
+                read.copy(repliesNext = next).also { rememberConversation(key, it) }
+            }
         }
     }
 
@@ -631,7 +634,9 @@ class ThreadsDirectClient(
     suspend fun guestReplies(handle: String): Page<ThreadsPost> {
         val key = handle.trim().lowercase()
         val page = guestPage(profileUrl(key, "replies"))
-        return Page(ThreadsPages.replies(page, key), ThreadsNextPages.first(page) { "RepliesTab" in it.query.orEmpty() }?.encoded())
+        return withContext(Dispatchers.Default) {
+            Page(ThreadsPages.replies(page, key), ThreadsNextPages.first(page) { "RepliesTab" in it.query.orEmpty() }?.encoded())
+        }
     }
 
     /**
@@ -828,7 +833,7 @@ class ThreadsDirectClient(
     private suspend fun profilePage(handle: String): String {
         val key = handle.trim().lowercase()
         val lane = if (coroutineContext[ThreadsBackground.Key] != null) "background:" else "shown:"
-        return profilePages.run(lane + key) { guestPage(profileUrl(key)).also { rememberProfileNext(key, it) } }
+        return profilePages.run(lane + key) { guestPage(profileUrl(key)).also { page -> withContext(Dispatchers.Default) { rememberProfileNext(key, page) } } }
     }
 
     /**
@@ -846,8 +851,10 @@ class ThreadsDirectClient(
         val response = sendGuest("GET $url", url) { followed(url, headers) }
         return when (response.code) {
             200 -> response.body.also {
-                rememberGuestLsd(ThreadsPages.lsd(it))
-                rememberProviders(it)
+                withContext(Dispatchers.Default) {
+                    rememberGuestLsd(ThreadsPages.lsd(it))
+                    rememberProviders(it)
+                }
             }
             404 -> throw ThreadsException(NO_SUCH_FEED, "$url: 404", 404)
             429 -> throw guestThrottled(url)

@@ -49,6 +49,7 @@ import com.aimdi.xtanative.networks.threads.ThreadsDiscovery
 import com.aimdi.xtanative.networks.threads.ThreadsException
 import com.aimdi.xtanative.networks.threads.ThreadsFailure
 import com.aimdi.xtanative.networks.threads.ThreadsPost
+import com.aimdi.xtanative.store.settings.ThreadsPrefs
 import com.aimdi.xtanative.ui.common.Hairline
 import com.aimdi.xtanative.ui.common.swipeTabs
 import com.aimdi.xtanative.ui.plugins.EmptyPane
@@ -352,7 +353,8 @@ private fun NothingYet(app: ThreadsApp, onAdd: () -> Unit, onSearch: () -> Unit)
 private fun LikedPane(app: ThreadsApp, frame: PluginFrame) {
     val settings by app.prefs.collectAsState()
     val ids by app.likes.state.collectAsState()
-    val posts = remember(settings, ids) { ThreadsLikes.liked(settings, ids).distinctBy { it.id } }
+    // Read again only when the kept posts or the likes change, not at every setting written.
+    val posts = remember(settings[ThreadsPrefs.likedPosts], ids) { ThreadsLikes.liked(settings, ids).distinctBy { it.id } }
     val scope = rememberCoroutineScope()
     val list = rememberLazyListState()
     ScrollsToTop(list, frame.toTop)

@@ -41,6 +41,8 @@ internal class ThreadsLikes(
         val ids = loaded()
         val liked = post.id in ids
         val next = if (liked) ids - post.id else ids + post.id
+        // The heart turns at once; the file and the kept post follow.
+        mutable.value = next
         save(next)
         update { stored -> stored.with(ThreadsPrefs.likedPosts, ThreadsPostJson.listText(toggled(posts(stored), post, liked))) }
         !liked
