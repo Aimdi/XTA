@@ -141,13 +141,14 @@ tap_node "text=\"$installed\"" || fail "No box for $installed"
 shot plugin-home 15
 
 # Home, where its timeline is now one of Home's, picked in Home's sheet: a
-# tile of its own among the networks, under its name.
-timeline="text=\"$name\""
+# tile of its own among the networks, under the name on its box in the store
+# (the plugin installed is the catalogue's first, whichever was asked for).
+timeline="text=\"$installed\""
 back
 back
 open_picker || fail "No sheet on Home"
-wait_for "$timeline" 15 || { shot plugin-strip-missing 0; fail "$name is not among Home's timelines"; }
-tap_node "$timeline" || fail "No $name in Home's sheet"
+wait_for "$timeline" 15 || { shot plugin-strip-missing 0; fail "$installed is not among Home's timelines"; }
+tap_node "$timeline" || fail "No $installed in Home's sheet"
 shot plugin-strip 12
 
 # Uninstalled from the store, after its confirmation.
