@@ -171,7 +171,7 @@
     <string name="media_picture_of">Bildo %1$d el %2$d</string>
     <string name="media_covered">Threads metis averton super ĉi tiun aŭdvidaĵon</string>
     <string name="add_accounts_hint">Plurajn samtempe: apartigu ilin per spacetoj aŭ komoj</string>
-    <string name="session_unlocks">Kion aldonas seanco: abonantojn kaj abonatojn, kiu ŝatis afiŝon, vian aktivecon kaj serĉon de homoj, ĉiu legata per via konto nur kiam vi malfermas ĝin. Kun la supra ŝaltilo ŝaltita, ankaŭ Hejmo kaj Por vi estas legataj per ĝi.</string>
+    <string name="session_unlocks">Kion aldonas seanco: vian fluon de sekvataj, la afiŝojn, kiujn vi ŝatis kaj konservis, vian aktivecon, abonantojn kaj abonatojn, kiu ŝatis afiŝon, kaj afiŝojn aŭ profilajn langetojn, kiujn Threads kaŝas de gastoj, ĉiu legata per via konto nur kiam vi malfermas ĝin. Kun la supra ŝaltilo ŝaltita, ankaŭ Hejmo kaj Por vi estas legataj per ĝi.</string>
     <string name="instance_intro">Nedeviga. Via propra RSSHub-instanco legas la kontojn, kiujn vi sekvas; se ĝi malsukcesas, la publikaj paĝoj de Threads anstataŭas ĝin. Lasu malplena por legi nur la publikajn paĝojn.</string>
     <string name="account_missing">Ne trovita — ĉu renomita, forigita aŭ mistajpita?</string>
     <string name="account_private">Privata — Threads montras al gasto neniun el ĝiaj afiŝoj</string>
@@ -288,7 +288,7 @@
     <string name="account_active">Aktiva — uzata nur kiam vi malfermas ion, kio bezonas ĝin</string>
     <string name="account_resting_until">Ripozas ĝis %1$s</string>
     <string name="account_usage">Legoj per la konto en la lastaj 24 horoj: %1$d el %2$d</string>
-    <string name="account_guard_detail">Abonantoj, «Ŝatata de», aktiveco kaj serĉo de homoj uzas vian konton nur kiam vi malfermas ilin, kelkajn sekundojn inter legoj, kaj paŭzas antaŭ ol Meta rimarkus. Ĉio alia estas legata kiel gasto.</string>
+    <string name="account_guard_detail">Viaj listoj de sekvataj, ŝatitaj kaj konservitaj, aktiveco, abonantoj kaj «Ŝatata de» uzas vian konton nur kiam vi malfermas ilin, kelkajn sekundojn inter legoj, kaj paŭzas antaŭ ol Meta rimarkus. Same afiŝo aŭ profila langeto, kiun Threads ne montras al gasto. Ĉio alia, inkluzive de serĉo de homoj, estas unue legata kiel gasto.</string>
     <string name="suggested_for_you">Proponitaj por vi</string>
     <string name="suggestion_follow">Sekvi %1$s en ĉi tiu aparato</string>
     <string name="suggestion_unfollow">Ĉesi sekvi %1$s en ĉi tiu aparato</string>

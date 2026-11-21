@@ -175,7 +175,7 @@
     <string name="media_picture_of">Imaginea %1$d din %2$d</string>
     <string name="media_covered">Threads a pus un avertisment peste aceste conținuturi media</string>
     <string name="add_accounts_hint">Mai multe deodată: separă-le prin spații sau virgule</string>
-    <string name="session_unlocks">Ce aduce o sesiune: urmăritori și urmăriți, cui i-a plăcut o postare, activitatea ta și căutarea de persoane, fiecare citită cu contul tău doar când o deschizi. Cu comutatorul de mai sus activat, Acasă și Pentru dvs. se citesc și ele cu ea.</string>
+    <string name="session_unlocks">Ce aduce o sesiune: fluxul tău Urmăriți, postările pe care le-ai apreciat și salvat, activitatea ta, urmăritori și urmăriți, cui i-a plăcut o postare și postările sau filele de profil pe care Threads le ascunde vizitatorilor, fiecare citită cu contul tău doar când o deschizi. Cu comutatorul de mai sus activat, Acasă și Pentru dvs. se citesc și ele cu ea.</string>
     <string name="instance_intro">Opțional. O instanță RSSHub proprie citește conturile pe care le urmăriți; dacă eșuează, paginile publice Threads îi țin locul. Lăsați gol pentru a citi doar paginile publice.</string>
     <string name="account_missing">Negăsit — redenumit, șters sau scris greșit?</string>
     <string name="account_private">Privat — Threads nu arată unui vizitator nicio postare</string>
@@ -295,7 +295,7 @@
     <string name="account_active">Activ — folosit doar când deschizi ceva care are nevoie de el</string>
     <string name="account_resting_until">În repaus până la %1$s</string>
     <string name="account_usage">Citiri cu contul în ultimele 24 de ore: %1$d din %2$d</string>
-    <string name="account_guard_detail">Urmăritorii, „Apreciat de”, activitatea și căutarea de persoane îți folosesc contul doar când le deschizi, la câteva secunde distanță, și se opresc înainte ca Meta să observe. Restul se citește ca vizitator.</string>
+    <string name="account_guard_detail">Listele tale Urmăriți, Apreciate și Salvate, activitatea, urmăritorii și „Apreciat de” îți folosesc contul doar când le deschizi, la câteva secunde distanță, și se opresc înainte ca Meta să observe. La fel și o postare sau o filă de profil pe care Threads nu o arată unui vizitator. Restul, inclusiv căutarea de persoane, se citește mai întâi ca vizitator.</string>
     <string name="suggested_for_you">Sugestii pentru tine</string>
     <string name="suggestion_follow">Urmărește %1$s pe acest dispozitiv</string>
     <string name="suggestion_unfollow">Nu mai urmări %1$s pe acest dispozitiv</string>

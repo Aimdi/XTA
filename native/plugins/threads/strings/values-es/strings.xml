@@ -174,7 +174,7 @@
     <string name="media_picture_of">Imagen %1$d de %2$d</string>
     <string name="media_covered">Threads ha puesto una advertencia sobre este contenido multimedia</string>
     <string name="add_accounts_hint">Varios a la vez: sepáralos con espacios o comas</string>
-    <string name="session_unlocks">Lo que añade una sesión: seguidores y seguidos, a quién le gusta una publicación, tu actividad y la búsqueda de personas, cada uno leído con tu cuenta solo cuando lo abres. Con el interruptor de arriba activado, también se leen con ella Inicio y Para ti.</string>
+    <string name="session_unlocks">Lo que añade una sesión: tu feed de Siguiendo, las publicaciones que te gustan y las que guardaste, tu actividad, seguidores y seguidos, a quién le gusta una publicación, y las publicaciones o pestañas de perfil que Threads oculta a los invitados, cada uno leído con tu cuenta solo cuando lo abres. Con el interruptor de arriba activado, también se leen con ella Inicio y Para ti.</string>
     <string name="instance_intro">Opcional. Una instancia de RSSHub propia lee las cuentas que sigues; si falla, se leen las páginas públicas de Threads. Déjalo vacío para leer solo las páginas públicas.</string>
     <string name="account_missing">No encontrada: ¿cambió de nombre, se eliminó o está mal escrita?</string>
     <string name="account_private">Privada: Threads no muestra ninguna de sus publicaciones a un invitado</string>
@@ -294,7 +294,7 @@
     <string name="account_active">Activa — solo se usa cuando abres algo que la necesita</string>
     <string name="account_resting_until">En reposo hasta las %1$s</string>
     <string name="account_usage">Lecturas con la cuenta en las últimas 24 horas: %1$d de %2$d</string>
-    <string name="account_guard_detail">Los seguidores, «Les gusta a», la actividad y la búsqueda de personas usan tu cuenta solo cuando los abres, con unos segundos entre lecturas, y se detienen antes de que Meta lo note. Todo lo demás se lee como invitado.</string>
+    <string name="account_guard_detail">Tus listas Siguiendo, Me gusta y Guardado, la actividad, los seguidores y «Les gusta a» usan tu cuenta solo cuando los abres, con unos segundos entre lecturas, y se detienen antes de que Meta lo note. Lo mismo una publicación o pestaña de perfil que Threads no muestra a un invitado. Todo lo demás, incluida la búsqueda de personas, se lee primero como invitado.</string>
     <string name="suggested_for_you">Sugerencias para ti</string>
     <string name="suggestion_follow">Seguir a %1$s en este dispositivo</string>
     <string name="suggestion_unfollow">Dejar de seguir a %1$s en este dispositivo</string>

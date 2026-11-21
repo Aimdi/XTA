@@ -167,7 +167,7 @@
     <string name="media_picture_of">Hình ảnh %1$d/%2$d</string>
     <string name="media_covered">Threads đã đặt cảnh báo lên nội dung đa phương tiện này</string>
     <string name="add_accounts_hint">Nhiều tài khoản cùng lúc: phân tách bằng dấu cách hoặc dấu phẩy</string>
-    <string name="session_unlocks">Phiên thêm được gì: người theo dõi và đang theo dõi, ai đã thích bài viết, hoạt động của bạn và tìm người, mỗi thứ chỉ được đọc bằng tài khoản của bạn khi bạn mở nó. Khi bật công tắc ở trên, Trang chủ và Dành cho bạn cũng được đọc bằng nó.</string>
+    <string name="session_unlocks">Phiên thêm được gì: bảng tin Đang theo dõi của bạn, các bài viết bạn đã thích và đã lưu, hoạt động của bạn, người theo dõi và đang theo dõi, ai đã thích bài viết, cùng những bài viết hoặc thẻ hồ sơ mà Threads không cho khách xem, mỗi thứ chỉ được đọc bằng tài khoản của bạn khi bạn mở nó. Khi bật công tắc ở trên, Trang chủ và Dành cho bạn cũng được đọc bằng nó.</string>
     <string name="instance_intro">Không bắt buộc. Một máy chủ RSSHub do bạn chạy sẽ đọc các tài khoản bạn theo dõi; nếu nó lỗi, các trang công khai của Threads sẽ thay thế. Để trống để chỉ đọc các trang công khai.</string>
     <string name="account_missing">Không tìm thấy — đã đổi tên, bị xóa hay gõ sai?</string>
     <string name="account_private">Riêng tư — Threads không hiển thị bài viết nào cho khách</string>
@@ -281,7 +281,7 @@
     <string name="account_active">Đang hoạt động — chỉ dùng khi bạn mở thứ cần đến nó</string>
     <string name="account_resting_until">Nghỉ đến %1$s</string>
     <string name="account_usage">Lượt đọc bằng tài khoản trong 24 giờ qua: %1$d / %2$d</string>
-    <string name="account_guard_detail">Người theo dõi, Người đã thích, Hoạt động và tìm người chỉ dùng tài khoản của bạn khi bạn mở chúng, cách nhau vài giây, và dừng lại trước khi Meta để ý. Mọi thứ khác được đọc dưới dạng khách.</string>
+    <string name="account_guard_detail">Các danh sách Đang theo dõi, Đã thích và Đã lưu của bạn, Hoạt động, Người theo dõi và Người đã thích chỉ dùng tài khoản của bạn khi bạn mở chúng, cách nhau vài giây, và dừng lại trước khi Meta để ý. Bài viết hoặc thẻ hồ sơ mà Threads không cho khách xem cũng vậy. Mọi thứ khác, kể cả tìm người, được đọc dưới dạng khách trước.</string>
     <string name="suggested_for_you">Gợi ý cho bạn</string>
     <string name="suggestion_follow">Theo dõi %1$s trên thiết bị này</string>
     <string name="suggestion_unfollow">Bỏ theo dõi %1$s trên thiết bị này</string>

@@ -173,7 +173,7 @@
     <string name="media_picture_of">Picture %1$d of %2$d</string>
     <string name="media_covered">Threads put a warning over this media</string>
     <string name="add_accounts_hint">Several at once: separate them with spaces or commas</string>
-    <string name="session_unlocks">What a session adds: followers and following, who liked a post, your Activity and people search, each read with your account only when you open it. With the switch above on, Home and For you are read with it too.</string>
+    <string name="session_unlocks">What a session adds: your Following feed, the posts you liked and saved, your Activity, followers and following, who liked a post, and posts or profile tabs Threads keeps from guests, each read with your account only when you open it. With the switch above on, Home and For you are read with it too.</string>
     <string name="instance_intro">Optional. An RSSHub instance you run reads the accounts you follow; Threads’ public pages stand in when it fails. Leave it empty to read the public pages only.</string>
     <string name="account_missing">Not found — renamed, deleted or mistyped?</string>
     <string name="account_private">Private — Threads shows a guest none of its posts</string>
@@ -290,7 +290,7 @@
     <string name="account_active">Active — used only when you open something that needs it</string>
     <string name="account_resting_until">Resting until %1$s</string>
     <string name="account_usage">Account reads in the last 24 hours: %1$d of %2$d</string>
-    <string name="account_guard_detail">Followers, Liked by, Activity and people search use your account only when you open them, a few seconds apart, and pause before Meta would notice. Everything else is read as a guest.</string>
+    <string name="account_guard_detail">Your Following, Liked and Saved lists, Activity, Followers and Liked by use your account only when you open them, a few seconds apart, and pause before Meta would notice. So does a post or profile tab Threads will not show a guest. Everything else, people search included, is read as a guest first.</string>
     <string name="suggested_for_you">Suggested for you</string>
     <string name="suggestion_follow">Follow %1$s on this device</string>
     <string name="suggestion_unfollow">Unfollow %1$s on this device</string>

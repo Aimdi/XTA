@@ -171,7 +171,7 @@
     <string name="media_picture_of">Bilde %1$d av %2$d</string>
     <string name="media_covered">Threads har lagt en advarsel over dette mediet</string>
     <string name="add_accounts_hint">Flere samtidig: skill dem med mellomrom eller komma</string>
-    <string name="session_unlocks">Hva en økt gir: følgere og fulgte, hvem som likte et innlegg, aktiviteten din og personsøk, hver lest med kontoen din bare når du åpner den. Med bryteren over på leses også Hjem og For deg med den.</string>
+    <string name="session_unlocks">Hva en økt gir: Følger-feeden din, innleggene du har likt og lagret, aktiviteten din, følgere og fulgte, hvem som likte et innlegg, og innlegg eller profilfaner Threads ikke viser gjester, hver lest med kontoen din bare når du åpner den. Med bryteren over på leses også Hjem og For deg med den.</string>
     <string name="instance_intro">Valgfritt. En RSSHub-instans du driver selv, leser kontoene du følger; svikter den, brukes Threads’ offentlige sider i stedet. La feltet stå tomt for bare å lese de offentlige sidene.</string>
     <string name="account_missing">Ikke funnet – nytt navn, slettet eller skrevet feil?</string>
     <string name="account_private">Privat – Threads viser ingen av innleggene til en gjest</string>
@@ -288,7 +288,7 @@
     <string name="account_active">Aktiv — brukes bare når du åpner noe som trenger den</string>
     <string name="account_resting_until">Hviler til %1$s</string>
     <string name="account_usage">Lesinger med kontoen siste 24 timer: %1$d av %2$d</string>
-    <string name="account_guard_detail">Følgere, Likt av, Aktivitet og personsøk bruker kontoen din bare når du åpner dem, noen sekunder imellom, og tar pause før Meta ville merket noe. Alt annet leses som gjest.</string>
+    <string name="account_guard_detail">Listene dine Følger, Likt og Lagret, Aktivitet, Følgere og Likt av bruker kontoen din bare når du åpner dem, noen sekunder imellom, og tar pause før Meta ville merket noe. Det samme gjelder et innlegg eller en profilfane Threads ikke viser en gjest. Alt annet, også personsøk, leses først som gjest.</string>
     <string name="suggested_for_you">Foreslått for deg</string>
     <string name="suggestion_follow">Følg %1$s på denne enheten</string>
     <string name="suggestion_unfollow">Slutt å følge %1$s på denne enheten</string>

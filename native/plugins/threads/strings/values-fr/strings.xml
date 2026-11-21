@@ -174,7 +174,7 @@
     <string name="media_picture_of">Image %1$d sur %2$d</string>
     <string name="media_covered">Threads a placé un avertissement sur ce média</string>
     <string name="add_accounts_hint">Plusieurs à la fois : séparez-les par des espaces ou des virgules</string>
-    <string name="session_unlocks">Ce qu’ajoute une session : abonnés et abonnements, qui a aimé une publication, votre activité et la recherche de personnes, chacun lu avec votre compte seulement quand vous l’ouvrez. Avec l’interrupteur ci-dessus activé, l’Accueil et Pour vous sont aussi lus avec elle.</string>
+    <string name="session_unlocks">Ce qu’ajoute une session : votre fil Abonnements, les publications que vous avez aimées et enregistrées, votre activité, abonnés et abonnements, qui a aimé une publication, et les publications ou onglets de profil que Threads cache aux invités, chacun lu avec votre compte seulement quand vous l’ouvrez. Avec l’interrupteur ci-dessus activé, l’Accueil et Pour vous sont aussi lus avec elle.</string>
     <string name="instance_intro">Facultatif. Une instance RSSHub que vous hébergez lit les comptes que vous suivez ; si elle échoue, les pages publiques de Threads prennent le relais. Laissez vide pour ne lire que les pages publiques.</string>
     <string name="account_missing">Introuvable — renommé, supprimé ou mal orthographié ?</string>
     <string name="account_private">Privé — Threads ne montre aucune de ses publications à un invité</string>
@@ -294,7 +294,7 @@
     <string name="account_active">Actif — utilisé seulement quand vous ouvrez ce qui en a besoin</string>
     <string name="account_resting_until">Au repos jusqu’à %1$s</string>
     <string name="account_usage">Lectures avec le compte ces dernières 24 heures : %1$d sur %2$d</string>
-    <string name="account_guard_detail">Les abonnés, « Aimé par », l’activité et la recherche de personnes n’utilisent votre compte que lorsque vous les ouvrez, à quelques secondes d’intervalle, et s’arrêtent avant que Meta ne le remarque. Tout le reste est lu en invité.</string>
+    <string name="account_guard_detail">Vos listes Abonnements, Aimés et Enregistré, l’activité, les abonnés et « Aimé par » n’utilisent votre compte que lorsque vous les ouvrez, à quelques secondes d’intervalle, et s’arrêtent avant que Meta ne le remarque. Il en va de même pour une publication ou un onglet de profil que Threads ne montre pas à un invité. Tout le reste, recherche de personnes comprise, est d’abord lu en invité.</string>
     <string name="suggested_for_you">Suggestions pour vous</string>
     <string name="suggestion_follow">Suivre %1$s sur cet appareil</string>
     <string name="suggestion_unfollow">Ne plus suivre %1$s sur cet appareil</string>

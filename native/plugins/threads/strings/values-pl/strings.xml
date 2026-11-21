@@ -179,7 +179,7 @@
     <string name="media_picture_of">Obraz %1$d z %2$d</string>
     <string name="media_covered">Threads oznaczył te multimedia ostrzeżeniem</string>
     <string name="add_accounts_hint">Kilka naraz: oddziel je spacjami lub przecinkami</string>
-    <string name="session_unlocks">Co daje sesja: obserwujących i obserwowanych, kto polubił post, twoją aktywność i wyszukiwanie osób, każde czytane z twojego konta tylko wtedy, gdy je otwierasz. Z włączonym przełącznikiem powyżej czytane są nią także Strona główna i Dla Ciebie.</string>
+    <string name="session_unlocks">Co daje sesja: twój kanał Obserwowani, polubione i zapisane posty, twoją aktywność, obserwujących i obserwowanych, kto polubił post, oraz posty i karty profilu, których Threads nie pokazuje gościom, każde czytane z twojego konta tylko wtedy, gdy je otwierasz. Z włączonym przełącznikiem powyżej czytane są nią także Strona główna i Dla Ciebie.</string>
     <string name="instance_intro">Opcjonalne. Własna instancja RSSHub czyta obserwowane konta; gdy zawiedzie, zastępują ją publiczne strony Threads. Zostaw puste, by czytać tylko strony publiczne.</string>
     <string name="account_missing">Nie znaleziono — zmiana nazwy, usunięcie czy literówka?</string>
     <string name="account_private">Prywatne — Threads nie pokazuje gościowi żadnego wpisu</string>
@@ -302,7 +302,7 @@
     <string name="account_active">Aktywne — używane tylko wtedy, gdy otwierasz coś, co tego wymaga</string>
     <string name="account_resting_until">Odpoczywa do %1$s</string>
     <string name="account_usage">Odczyty z konta w ciągu ostatnich 24 godzin: %1$d z %2$d</string>
-    <string name="account_guard_detail">Obserwujący, Polubione przez, Aktywność i wyszukiwanie osób używają twojego konta tylko wtedy, gdy je otwierasz, w odstępach kilku sekund, i zatrzymują się, zanim Meta by to zauważyła. Wszystko inne jest czytane jako gość.</string>
+    <string name="account_guard_detail">Twoje listy Obserwowani, Polubione i Zapisane, Aktywność, Obserwujący i Polubione przez używają twojego konta tylko wtedy, gdy je otwierasz, w odstępach kilku sekund, i zatrzymują się, zanim Meta by to zauważyła. Tak samo post lub karta profilu, których Threads nie pokaże gościowi. Wszystko inne, także wyszukiwanie osób, jest najpierw czytane jako gość.</string>
     <string name="suggested_for_you">Proponowane dla Ciebie</string>
     <string name="suggestion_follow">Obserwuj %1$s na tym urządzeniu</string>
     <string name="suggestion_unfollow">Przestań obserwować %1$s na tym urządzeniu</string>

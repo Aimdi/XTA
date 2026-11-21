@@ -179,7 +179,7 @@
     <string name="media_picture_of">Obrázek %1$d z %2$d</string>
     <string name="media_covered">Threads u těchto médií zobrazuje varování</string>
     <string name="add_accounts_hint">Více najednou: oddělte je mezerami nebo čárkami</string>
-    <string name="session_unlocks">Co relace přidá: sledující a sledované, kdo dal příspěvku To se mi líbí, vaši aktivitu a hledání lidí, vše čtené s vaším účtem jen tehdy, když to otevřete. Se zapnutým přepínačem výše se s ní čtou i Domů a Pro tebe.</string>
+    <string name="session_unlocks">Co relace přidá: váš kanál Sledované, příspěvky, které se vám líbí a které jste si uložili, vaši aktivitu, sledující a sledované, kdo dal příspěvku To se mi líbí, a příspěvky nebo karty profilu, které Threads hostům neukazuje, vše čtené s vaším účtem jen tehdy, když to otevřete. Se zapnutým přepínačem výše se s ní čtou i Domů a Pro tebe.</string>
     <string name="instance_intro">Volitelné. Vlastní instance RSSHub čte účty, které sledujete; když selže, nastoupí veřejné stránky Threads. Nechte prázdné a čtou se jen veřejné stránky.</string>
     <string name="account_missing">Nenalezeno — přejmenováno, smazáno, nebo překlep?</string>
     <string name="account_private">Soukromý — Threads hostovi neukáže žádný jeho příspěvek</string>
@@ -302,7 +302,7 @@
     <string name="account_active">Aktivní — použije se jen tehdy, když otevřete něco, co ho potřebuje</string>
     <string name="account_resting_until">Odpočívá do %1$s</string>
     <string name="account_usage">Čtení s účtem za posledních 24 hodin: %1$d z %2$d</string>
-    <string name="account_guard_detail">Sledující, To se líbí, aktivita a hledání lidí používají váš účet jen tehdy, když je otevřete, s odstupem několika sekund, a zastaví se dřív, než by si toho Meta všimla. Vše ostatní se čte jako host.</string>
+    <string name="account_guard_detail">Vaše seznamy Sledované, Líbí se a Uloženo, aktivita, sledující a To se líbí používají váš účet jen tehdy, když je otevřete, s odstupem několika sekund, a zastaví se dřív, než by si toho Meta všimla. Stejně tak příspěvek nebo karta profilu, které Threads hostovi neukáže. Vše ostatní, včetně hledání lidí, se nejprve čte jako host.</string>
     <string name="suggested_for_you">Navrženo pro vás</string>
     <string name="suggestion_follow">Sledovat %1$s v tomto zařízení</string>
     <string name="suggestion_unfollow">Přestat sledovat %1$s v tomto zařízení</string>

@@ -174,7 +174,7 @@
     <string name="media_picture_of">Imagem %1$d de %2$d</string>
     <string name="media_covered">O Threads colocou um aviso sobre esta mídia</string>
     <string name="add_accounts_hint">Vários de uma vez: separe com espaços ou vírgulas</string>
-    <string name="session_unlocks">O que uma sessão acrescenta: seguidores e seguidos, quem curtiu um post, sua atividade e a busca de pessoas, cada um lido com sua conta só quando você abre. Com a chave acima ativada, o Início e Para você também são lidos com ela.</string>
+    <string name="session_unlocks">O que uma sessão acrescenta: seu feed Seguindo, os posts que você curtiu e salvou, sua atividade, seguidores e seguidos, quem curtiu um post, e posts ou abas de perfil que o Threads esconde de visitantes, cada um lido com sua conta só quando você abre. Com a chave acima ativada, o Início e Para você também são lidos com ela.</string>
     <string name="instance_intro">Opcional. Uma instância RSSHub sua lê as contas que você segue; se ela falhar, as páginas públicas do Threads entram no lugar. Deixe vazio para ler só as páginas públicas.</string>
     <string name="account_missing">Não encontrada — mudou de nome, foi excluída ou está escrita errado?</string>
     <string name="account_private">Privada — o Threads não mostra nenhuma publicação a um visitante</string>
@@ -294,7 +294,7 @@
     <string name="account_active">Ativa — só é usada quando você abre algo que precisa dela</string>
     <string name="account_resting_until">Em descanso até %1$s</string>
     <string name="account_usage">Leituras com a conta nas últimas 24 horas: %1$d de %2$d</string>
-    <string name="account_guard_detail">Seguidores, Curtido por, Atividade e a busca de pessoas usam sua conta só quando você os abre, com alguns segundos de intervalo, e param antes que a Meta perceba. Todo o resto é lido como visitante.</string>
+    <string name="account_guard_detail">Suas listas Seguindo, Curtidos e Salvo, Atividade, Seguidores e Curtido por usam sua conta só quando você os abre, com alguns segundos de intervalo, e param antes que a Meta perceba. O mesmo vale para um post ou aba de perfil que o Threads não mostra a um visitante. Todo o resto, inclusive a busca de pessoas, é lido primeiro como visitante.</string>
     <string name="suggested_for_you">Sugestões para você</string>
     <string name="suggestion_follow">Seguir %1$s neste dispositivo</string>
     <string name="suggestion_unfollow">Deixar de seguir %1$s neste dispositivo</string>

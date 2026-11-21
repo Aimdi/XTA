@@ -171,7 +171,7 @@
     <string name="media_picture_of">Görsel %1$d/%2$d</string>
     <string name="media_covered">Threads bu medyanın üzerine bir uyarı koydu</string>
     <string name="add_accounts_hint">Birden fazla: boşluk ya da virgülle ayırın</string>
-    <string name="session_unlocks">Oturumun kattıkları: takipçiler ve takip edilenler, bir gönderiyi kimin beğendiği, etkinliğiniz ve kişi araması; her biri hesabınızla yalnızca açtığınızda okunur. Yukarıdaki anahtar açıkken Ana sayfa ve Senin için de onunla okunur.</string>
+    <string name="session_unlocks">Oturumun kattıkları: takip ettiklerinizin akışı, beğendiğiniz ve kaydettiğiniz gönderiler, etkinliğiniz, takipçiler ve takip edilenler, bir gönderiyi kimin beğendiği ve Threads\'in konuklardan gizlediği gönderiler veya profil sekmeleri; her biri hesabınızla yalnızca açtığınızda okunur. Yukarıdaki anahtar açıkken Ana sayfa ve Senin için de onunla okunur.</string>
     <string name="instance_intro">İsteğe bağlı. Kendi çalıştırdığınız bir RSSHub örneği takip ettiğiniz hesapları okur; başarısız olursa Threads’in herkese açık sayfaları devreye girer. Yalnızca herkese açık sayfaları okumak için boş bırakın.</string>
     <string name="account_missing">Bulunamadı — adı mı değişti, silindi mi, yoksa yanlış mı yazıldı?</string>
     <string name="account_private">Gizli — Threads misafire gönderilerinin hiçbirini göstermiyor</string>
@@ -288,7 +288,7 @@
     <string name="account_active">Etkin — yalnızca ona ihtiyaç duyan bir şeyi açtığınızda kullanılır</string>
     <string name="account_resting_until">%1$s saatine kadar dinleniyor</string>
     <string name="account_usage">Son 24 saatte hesapla yapılan okumalar: %1$d / %2$d</string>
-    <string name="account_guard_detail">Takipçiler, Beğenenler, Etkinlik ve kişi araması hesabınızı yalnızca onları açtığınızda, birkaç saniye arayla kullanır ve Meta fark etmeden önce durur. Geri kalan her şey konuk olarak okunur.</string>
+    <string name="account_guard_detail">Takip edilenler, beğenilenler ve kaydedilenler listeleriniz, Etkinlik, Takipçiler ve Beğenenler hesabınızı yalnızca onları açtığınızda, birkaç saniye arayla kullanır ve Meta fark etmeden önce durur. Threads\'in bir konuğa göstermediği gönderi veya profil sekmesi için de aynısı geçerlidir. Kişi araması dahil geri kalan her şey önce konuk olarak okunur.</string>
     <string name="suggested_for_you">Senin için önerilenler</string>
     <string name="suggestion_follow">%1$s hesabını bu cihazda takip et</string>
     <string name="suggestion_unfollow">%1$s hesabını bu cihazda takipten çık</string>

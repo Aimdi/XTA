@@ -171,7 +171,7 @@
     <string name="media_picture_of">%1$d. irudia (%2$d guztira)</string>
     <string name="media_covered">Threads-ek abisu bat jarri dio multimedia honi</string>
     <string name="add_accounts_hint">Hainbat batera: bereizi zuriuneekin edo komekin</string>
-    <string name="session_unlocks">Saio batek zer gehitzen duen: jarraitzaileak eta jarraituak, argitalpen bat nori gustatu zaion, zure jarduera eta pertsonen bilaketa, bakoitza zure kontuarekin irekitzen duzunean bakarrik irakurria. Goiko etengailua aktibatuta, Hasiera eta Zuretzat ere harekin irakurtzen dira.</string>
+    <string name="session_unlocks">Saio batek zer gehitzen duen: jarraitzen dituzunen jarioa, gustatu zaizkizun eta gorde dituzun argitalpenak, zure jarduera, jarraitzaileak eta jarraituak, argitalpen bat nori gustatu zaion, eta Threads-ek gonbidatuei erakusten ez dizkien argitalpenak edo profileko fitxak, bakoitza zure kontuarekin irekitzen duzunean bakarrik irakurria. Goiko etengailua aktibatuta, Hasiera eta Zuretzat ere harekin irakurtzen dira.</string>
     <string name="instance_intro">Aukerakoa. Zuk zeuk darabilzun RSSHub instantzia batek jarraitzen dituzun kontuak irakurtzen ditu; huts egiten badu, Threadsen orri publikoak erabiltzen dira. Utzi hutsik orri publikoak soilik irakurtzeko.</string>
     <string name="account_missing">Ez da aurkitu: izenez aldatu, ezabatu edo gaizki idatzi da?</string>
     <string name="account_private">Pribatua: Threads-ek ez dio gonbidatuari bere argitalpenik erakusten</string>
@@ -288,7 +288,7 @@
     <string name="account_active">Aktibo — behar duen zerbait irekitzen duzunean bakarrik erabiltzen da</string>
     <string name="account_resting_until">Atsedenean %1$s arte</string>
     <string name="account_usage">Kontuarekin egindako irakurketak azken 24 orduetan: %1$d / %2$d</string>
-    <string name="account_guard_detail">Jarraitzaileek, «Gustuko dute»-k, jarduerak eta pertsonen bilaketak zure kontua irekitzen dituzunean bakarrik erabiltzen dute, segundo batzuetako tartearekin, eta Meta ohartu aurretik gelditzen dira. Gainerako guztia gonbidatu gisa irakurtzen da.</string>
+    <string name="account_guard_detail">Jarraitzen dituzunen, gogokoen eta gordeen zerrendek, jarduerak, jarraitzaileek eta «Gustuko dute»-k zure kontua irekitzen dituzunean bakarrik erabiltzen dute, segundo batzuetako tartearekin, eta Meta ohartu aurretik gelditzen dira. Gauza bera Threads-ek gonbidatu bati erakusten ez dion argitalpen edo profileko fitxa batekin. Gainerako guztia, pertsonen bilaketa barne, gonbidatu gisa irakurtzen da lehenik.</string>
     <string name="suggested_for_you">Zuretzako iradokizunak</string>
     <string name="suggestion_follow">Jarraitu %1$s gailu honetan</string>
     <string name="suggestion_unfollow">Utzi %1$s jarraitzeari gailu honetan</string>

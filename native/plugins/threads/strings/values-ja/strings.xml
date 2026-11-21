@@ -167,7 +167,7 @@
     <string name="media_picture_of">画像 %1$d/%2$d</string>
     <string name="media_covered">Threads はこのメディアに警告を表示しています</string>
     <string name="add_accounts_hint">まとめて追加: スペースかカンマで区切ってください</string>
-    <string name="session_unlocks">セッションで使えるもの: フォロワーとフォロー中、投稿にいいねした人、あなたのアクティビティ、人物検索。どれも開いたときだけアカウントで読み込みます。上のスイッチをオンにすると、ホームと For you もセッションで読み込みます。</string>
+    <string name="session_unlocks">セッションで使えるもの: フォロー中フィード、いいねした投稿と保存した投稿、あなたのアクティビティ、フォロワーとフォロー中、投稿にいいねした人、Threads がゲストに見せない投稿やプロフィールのタブ。どれも開いたときだけアカウントで読み込みます。上のスイッチをオンにすると、ホームと For you もセッションで読み込みます。</string>
     <string name="instance_intro">任意。自分で運用する RSSHub インスタンスがフォロー中のアカウントを読み込みます。失敗したときは Threads の公開ページが代わりに使われます。公開ページだけを読むには空のままにしてください。</string>
     <string name="account_missing">見つかりません — 名前の変更、削除、または入力ミスかもしれません</string>
     <string name="account_private">非公開 — Threads はゲストに投稿を表示しません</string>
@@ -281,7 +281,7 @@
     <string name="account_active">有効 — 必要なものを開いたときだけ使われます</string>
     <string name="account_resting_until">%1$s まで休止中</string>
     <string name="account_usage">過去 24 時間のアカウントでの読み込み: %1$d / %2$d</string>
-    <string name="account_guard_detail">フォロワー、いいねした人、アクティビティ、人物検索は、開いたときだけ数秒おきにアカウントを使い、Meta に気づかれる前に休止します。それ以外はすべてゲストとして読み込みます。</string>
+    <string name="account_guard_detail">フォロー中・いいね・保存の各リスト、アクティビティ、フォロワー、いいねした人は、開いたときだけ数秒おきにアカウントを使い、Meta に気づかれる前に休止します。Threads がゲストに見せない投稿やプロフィールのタブも同じです。人物検索を含め、それ以外はすべてまずゲストとして読み込みます。</string>
     <string name="suggested_for_you">おすすめのアカウント</string>
     <string name="suggestion_follow">このデバイスで%1$sをフォロー</string>
     <string name="suggestion_unfollow">このデバイスで%1$sのフォローを解除</string>
