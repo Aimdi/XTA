@@ -50,6 +50,9 @@ class SubstackHomeFeed(
     private var loadedIdentity: Set<String>? = null
     private var fetchedAt: Long? = null
     private var recalled = false
+
+    /** Whether pages past the first are shown, which only a refresh the reader asks for replaces. */
+    private var paged = false
     private var job: Job? = null
 
     /** Follows [publications] from now on, and reads what that changed, as a refresh that is not forced. */
@@ -57,7 +60,10 @@ class SubstackHomeFeed(
         val next = publications.mapTo(HashSet()) { "${it.id}\n${it.baseUrl}" }
         if (next == identity) return
         identity = next
-        mutable.update { it.copy(publications = publications) }
+        // A read under way was for the follows before: its answer is dropped, so it must not go on counting as a refresh.
+        job?.cancel()
+        paged = false
+        mutable.update { it.copy(publications = publications, refreshing = false, loadingMore = false) }
         scope.launch {
             feed.follow(publications)
             if (!recalled) {
@@ -77,6 +83,8 @@ class SubstackHomeFeed(
         if (now.publications.isEmpty() || (!force && now.refreshing)) return
         val fresh = fetchedAt?.let { clock() - it < SubstackFeed.FRESH_MS } == true
         if (!force && loadedIdentity == identity && !now.failed && fresh) return
+        // Coming back to a feed read further down: a refresh nobody asked for would take the later pages, and the reader's place, away.
+        if (!force && loadedIdentity == identity && !now.failed && paged) return
         load(more = false, force = force)
     }
 
@@ -107,11 +115,14 @@ class SubstackHomeFeed(
 
     private suspend fun answered(snapshot: SubstackFeed.Snapshot, more: Boolean, asked: Set<String>?) {
         loadedIdentity = asked
+        paged = more
         val failure = snapshot.failures.firstOrNull()
         if (failure == null) fetchedAt = clock()
+        // A next page that brought posts did its work: a publication that cannot be read is said above the feed, not in place of Load more.
+        val brought = more && snapshot.posts.size > state.value.posts.size
         publish(snapshot)
         mutable.update {
-            if (more) it.copy(loadingMore = false, loadMoreError = failure, refreshError = if (failure == null) null else it.refreshError)
+            if (more) it.copy(loadingMore = false, loadMoreError = failure.takeUnless { brought }, refreshError = if (failure == null) null else it.refreshError)
             else it.copy(refreshing = false, refreshError = failure)
         }
         safely { remember(feed.remembered()) }

@@ -83,4 +83,13 @@ class SubstackWebPageTest {
         assertEquals(full.substring(full.lastIndexOf("Same words.")), SubstackSpeakFrom.fromBlock(full, blocks, 2), "a picture starts at what follows, and a repeated paragraph is the later one")
         assertEquals("The last one.", SubstackSpeakFrom.fromBlock(full, blocks, 4))
     }
+
+    @Test
+    fun speakingFromAParagraphWithALineBreakReadsOnFromThere() {
+        val article = SubstackArticle.parse("<p>Before.</p><p>Roses are red,<br>violets are blue, and so it goes on for a while.</p><p>After.</p>")
+        val full = SubstackHtml.speakText("A post", bodyPlain = article.plainText)
+        val from = SubstackSpeakFrom.fromBlock(full, article.blocks, 1)
+        assertTrue(from.startsWith("Roses are red,"), from)
+        assertTrue(from.trimEnd().endsWith("After."), "and reads on to the end, not only the words held")
+    }
 }

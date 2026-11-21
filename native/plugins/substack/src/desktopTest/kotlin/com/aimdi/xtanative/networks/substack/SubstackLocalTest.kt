@@ -41,9 +41,13 @@ class SubstackLocalTest {
     fun readMarksStopAtTheirCapDroppingTheOldest(): Unit = runBlocking {
         val marks = SubstackReadMarks(MemoryKept())
         marks.markRead((1..SubstackReadMarks.CAP + 5).map { post("$it") })
-        assertEquals(SubstackReadMarks.CAP, marks.state.value.size)
+        assertEquals(SubstackReadMarks.CAP + 5, marks.state.value.size, "Mark all as read marks all of them, however many")
         assertTrue(marks.isRead(post("1")))
-        assertFalse(marks.isRead(post("${SubstackReadMarks.CAP + 5}")))
+        assertTrue(marks.isRead(post("${SubstackReadMarks.CAP + 5}")))
+        marks.markRead(listOf(post("new")))
+        assertEquals(SubstackReadMarks.CAP, marks.state.value.size, "the next mark brings them back to the cap")
+        assertTrue(marks.isRead(post("new")))
+        assertFalse(marks.isRead(post("${SubstackReadMarks.CAP + 5}")), "the oldest go first")
     }
 
     @Test

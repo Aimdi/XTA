@@ -162,7 +162,8 @@ private fun ReaderArticle(app: SubstackApp, state: ReaderModel.State, content: R
     val blocks = content.article.blocks
     val images = remember(blocks) { blocks.filterIsInstance<SubstackImageBlock>() }
     val speech = LocalSpeech.current
-    val speakText by rememberUpdatedState(state.speakText)
+    // Asked for when Speak from here is tapped: the reader's place changes with every scroll, and the whole text is not gathered for each.
+    val latest by rememberUpdatedState(state)
     var pressed by remember(blocks) { mutableIntStateOf(-1) }
     val taps = remember(app, post, images) {
         ArticleTaps(
@@ -172,17 +173,18 @@ private fun ReaderArticle(app: SubstackApp, state: ReaderModel.State, content: R
             onPress = { pressed = it },
         )
     }
+    val minutes = remember(post, content.article) { SubstackReading.readMinutes(post, content.article.plainText) }
     KeepsReaderPlace(reading, list, before = ROWS_BEFORE_BLOCKS, blocks = blocks.size)
     HighlightingSelection(
         pluginString(Strings.highlight),
         onHighlight = { selected -> app.launch { app.highlights.add(post, SubstackHighlights.quotes(selected)) } },
         speakLabel = pluginString(Strings.speak_from_here),
-        onSpeak = speech?.let { voice -> { voice.speak(post.title, SubstackSpeakFrom.fromBlock(speakText, blocks, pressed)) } },
+        onSpeak = speech?.let { voice -> { voice.speak(post.title, SubstackSpeakFrom.fromBlock(latest.speakText, blocks, pressed)) } },
     ) {
         ArticleList(
             post = post,
             blocks = blocks,
-            readMinutes = SubstackReading.readMinutes(post, content.article.plainText),
+            readMinutes = minutes,
             preview = content.preview,
             look = ArticleLook(font, column, type.fontSize, type.lineHeight),
             highlights = highlights[post.key].orEmpty(),

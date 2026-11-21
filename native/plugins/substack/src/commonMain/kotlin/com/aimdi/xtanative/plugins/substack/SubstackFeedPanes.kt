@@ -68,7 +68,7 @@ internal fun HomeFeedPane(app: SubstackApp, state: HomeState, frame: PluginFrame
     val visible = SubstackHomeRules.home(feed.posts, followed, controls.filter, marks.readIds, marks::saved, options, controls.publication.takeIf { shell })
     val list = rememberLazyListState()
     val markOnScroll by app.host.settings.observe(SubstackPrefs.markReadOnScroll).collectAsState(false)
-    if (markOnScroll) MarksReadScrolledPast(app, list, visible)
+    if (markOnScroll) MarksReadScrolledPast(app, list, visible, rowsBefore = if (shell) 0 else 1)
     // In the app's shell the publications are its feed row and the filters its filter ([SubstackShell]).
     if (shell) SubstackShell(state, followed)
     FeedList(state.feed, feed, list, frame) {
@@ -196,17 +196,18 @@ private fun EmptyInbox(state: HomeState) {
 /**
  * Marks posts read as their cards leave the top of the list while the reader
  * scrolls down, at most once a second, as XTA's SubstackScrolledPast: the
- * setting "Mark posts read as you scroll past". The list's first row is its
- * toolbar, so the post at [posts]' index i is row i + 1.
+ * setting "Mark posts read as you scroll past". [rowsBefore] rows come
+ * before the posts (the toolbar, where the list has it), so the post at
+ * [posts]' index i is row i + [rowsBefore].
  */
 @Composable
-private fun MarksReadScrolledPast(app: SubstackApp, list: LazyListState, posts: List<SubstackPost>) {
+private fun MarksReadScrolledPast(app: SubstackApp, list: LazyListState, posts: List<SubstackPost>, rowsBefore: Int) {
     val shown by rememberUpdatedState(posts)
     LaunchedEffect(list) {
         var furthest = 0
         snapshotFlow { list.firstVisibleItemIndex }.distinctUntilChanged().collect { first ->
             if (first <= furthest) return@collect
-            val past = shown.take((first - 1).coerceAtMost(shown.size)).drop((furthest - 1).coerceAtLeast(0))
+            val past = shown.take((first - rowsBefore).coerceIn(0, shown.size)).drop((furthest - rowsBefore).coerceAtLeast(0))
             furthest = first
             if (past.isEmpty()) return@collect
             delay(1_000)
